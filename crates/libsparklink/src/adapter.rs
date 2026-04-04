@@ -231,6 +231,108 @@ impl Adapter {
         Ok(())
     }
 
+    // ----- SSAP Service -----
+
+    /// Register all configured services with the controller
+    pub fn ssap_register(&self) -> Result<()> {
+        unsafe { ioctl::sl_ssap_register_svc(self.raw_fd())? };
+        debug!("SSAP services registered");
+        Ok(())
+    }
+
+    /// Get SSAP summary information
+    pub fn ssap_info(&self) -> Result<SsapSummary> {
+        let mut info = unsafe { std::mem::zeroed::<SsapSummary>() };
+        unsafe { ioctl::sl_ssap_info(self.raw_fd(), &mut info)? };
+        Ok(info)
+    }
+
+    /// Read a property value by handle
+    pub fn ssap_read(&self, handle: u16) -> Result<SsapReadWrite> {
+        let mut rw = unsafe { std::mem::zeroed::<SsapReadWrite>() };
+        rw.handle = handle;
+        unsafe { ioctl::sl_ssap_read(self.raw_fd(), &mut rw)? };
+        Ok(rw)
+    }
+
+    /// Write a property value by handle
+    pub fn ssap_write(&self, rw: &SsapReadWrite) -> Result<()> {
+        unsafe { ioctl::sl_ssap_write(self.raw_fd(), rw)? };
+        Ok(())
+    }
+
+    /// Discover local services
+    pub fn ssap_find_svc(&self) -> Result<SsapServiceList> {
+        let mut list = unsafe { std::mem::zeroed::<SsapServiceList>() };
+        unsafe { ioctl::sl_ssap_find_svc(self.raw_fd(), &mut list)? };
+        Ok(list)
+    }
+
+    /// Send a notification/indication on a property handle
+    pub fn ssap_notify(&self, handle: u16) -> Result<()> {
+        unsafe { ioctl::sl_ssap_notify(self.raw_fd(), handle as _)? };
+        Ok(())
+    }
+
+    /// Dequeue a pending notification
+    pub fn ssap_dequeue_ntf(&self) -> Result<SsapNotification> {
+        let mut ntf = unsafe { std::mem::zeroed::<SsapNotification>() };
+        unsafe { ioctl::sl_ssap_dequeue_ntf(self.raw_fd(), &mut ntf)? };
+        Ok(ntf)
+    }
+
+    /// Add a service to the local database
+    pub fn ssap_add_svc(&self, svc: &mut SsapAddService) -> Result<()> {
+        unsafe { ioctl::sl_ssap_add_svc(self.raw_fd(), svc)? };
+        debug!(handle = svc.start_handle, uuid16 = svc.uuid16, "service added");
+        Ok(())
+    }
+
+    /// Add a property (characteristic) to a service
+    pub fn ssap_add_prop(&self, prop: &mut SsapAddProperty) -> Result<()> {
+        unsafe { ioctl::sl_ssap_add_prop(self.raw_fd(), prop)? };
+        debug!(handle = prop.handle, uuid16 = prop.uuid16, "property added");
+        Ok(())
+    }
+
+    /// Remove a service by start handle
+    pub fn ssap_remove_svc(&self, start_handle: u16) -> Result<()> {
+        unsafe { ioctl::sl_ssap_remove_svc(self.raw_fd(), start_handle as _)? };
+        debug!(start_handle, "service removed");
+        Ok(())
+    }
+
+    /// Exchange SSAP info with a remote peer (initiate service discovery)
+    pub fn ssap_exchange_info(&self, cmd: &SsapRemoteCmd) -> Result<()> {
+        unsafe { ioctl::sl_ssap_exchange_info(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Discover services on a remote peer
+    pub fn ssap_remote_discover(&self, disc: &mut SsapRemoteDiscover) -> Result<()> {
+        unsafe { ioctl::sl_ssap_remote_discover(self.raw_fd(), disc)? };
+        Ok(())
+    }
+
+    /// Read a property on a remote peer
+    pub fn ssap_remote_read(&self, rw: &mut SsapRemoteReadWrite) -> Result<()> {
+        unsafe { ioctl::sl_ssap_remote_read(self.raw_fd(), rw)? };
+        Ok(())
+    }
+
+    /// Write a property on a remote peer
+    pub fn ssap_remote_write(&self, rw: &SsapRemoteReadWrite) -> Result<()> {
+        unsafe { ioctl::sl_ssap_remote_write(self.raw_fd(), rw)? };
+        Ok(())
+    }
+
+    /// Receive a remote event (notification/indication from peer)
+    pub fn ssap_remote_event(&self) -> Result<SsapNotification> {
+        let mut ntf = unsafe { std::mem::zeroed::<SsapNotification>() };
+        unsafe { ioctl::sl_ssap_remote_event(self.raw_fd(), &mut ntf)? };
+        Ok(ntf)
+    }
+
     // ----- DLI -----
 
     /// Get DLI controller info

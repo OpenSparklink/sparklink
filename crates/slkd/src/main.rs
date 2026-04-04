@@ -2,6 +2,7 @@ mod config;
 mod dbus_iface;
 mod kernel;
 mod security;
+mod service;
 mod state;
 
 use std::sync::Arc;
@@ -15,6 +16,7 @@ use crate::config::DaemonConfig;
 use crate::dbus_iface::{AdapterIface, DeviceIface, Root};
 use crate::kernel::KernelLink;
 use crate::security::SecurityIface;
+use crate::service::SsapManagerIface;
 use crate::state::{AdapterState, SharedState};
 
 #[derive(Parser)]
@@ -74,6 +76,7 @@ async fn main() -> anyhow::Result<()> {
         .serve_at("/org/sparklink", Root::new(shared.clone()))?
         .serve_at("/org/sparklink/slk0", AdapterIface::new(shared.clone()))?
         .serve_at("/org/sparklink/slk0/security", SecurityIface::new(shared.clone()))?
+        .serve_at("/org/sparklink/slk0/services", SsapManagerIface::new(shared.clone()))?
         .build()
         .await?;
 
@@ -136,6 +139,14 @@ async fn event_loop(state: SharedState, connection: zbus::Connection) {
                     connected,
                     "connection state changed"
                 );
+
+                if connected {
+                    let path = format!("/org/sparklink/slk0/conn_{:04x}", handle);
+                    let iface = service::RemoteServiceIface::new(state.clone(), handle);
+                    if let Err(e) = connection.object_server().at(path.as_str(), iface).await {
+                        error!(%e, path, "failed to register remote service interface");
+                    }
+                }
             }
             Ok(libsparklink::Event::SecurityChanged { state: sec_state, method, encrypted }) => {
                 let method_label = match method {

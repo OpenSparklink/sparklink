@@ -78,6 +78,50 @@ enum Command {
 
     /// Reset security state
     SecReset,
+
+    /// Show SSAP service summary
+    Services,
+
+    /// List local services
+    ListServices,
+
+    /// Read a local property value
+    ReadProp {
+        /// Property handle (hex, e.g. 0x0001)
+        handle: String,
+    },
+
+    /// Write a local property value
+    WriteProp {
+        /// Property handle (hex, e.g. 0x0001)
+        handle: String,
+        /// Value as hex bytes
+        value: String,
+    },
+
+    /// Discover services on a remote peer
+    RemoteDiscover {
+        /// Connection handle (hex, e.g. 0x0001)
+        conn: String,
+    },
+
+    /// Read a property on a remote peer
+    RemoteRead {
+        /// Connection handle
+        conn: String,
+        /// Property handle
+        handle: String,
+    },
+
+    /// Write a property on a remote peer
+    RemoteWrite {
+        /// Connection handle
+        conn: String,
+        /// Property handle
+        handle: String,
+        /// Value as hex bytes
+        value: String,
+    },
 }
 
 fn main() {
@@ -107,6 +151,13 @@ fn main() {
         Command::Encrypt => cmd_encrypt(&adapter),
         Command::SetPsk { psk } => cmd_set_psk(&adapter, &psk),
         Command::SecReset => cmd_sec_reset(&adapter),
+        Command::Services => cmd_services(&adapter),
+        Command::ListServices => cmd_list_services(&adapter),
+        Command::ReadProp { handle } => cmd_read_prop(&adapter, &handle),
+        Command::WriteProp { handle, value } => cmd_write_prop(&adapter, &handle, &value),
+        Command::RemoteDiscover { conn } => cmd_remote_discover(&adapter, &conn),
+        Command::RemoteRead { conn, handle } => cmd_remote_read(&adapter, &conn, &handle),
+        Command::RemoteWrite { conn, handle, value } => cmd_remote_write(&adapter, &conn, &handle, &value),
     };
 
     if let Err(e) = result {
@@ -438,4 +489,172 @@ fn cmd_sec_reset(adapter: &Adapter) -> libsparklink::Result<()> {
     adapter.sec_reset()?;
     println!("Security state reset");
     Ok(())
+}
+
+fn cmd_services(adapter: &Adapter) -> libsparklink::Result<()> {
+    let info = adapter.ssap_info()?;
+
+    println!("SSAP Summary:");
+    println!("  Services:       {}", info.service_count);
+    println!("  Properties:     {}", info.property_count);
+    println!("  Total entries:  {}", info.total_entries);
+    println!("  MTU:            {}", info.mtu);
+    println!("  Notifications:  {}", info.notification_count);
+
+    Ok(())
+}
+
+fn cmd_list_services(adapter: &Adapter) -> libsparklink::Result<()> {
+    let list = adapter.ssap_find_svc()?;
+
+    if list.count == 0 {
+        println!("No services registered");
+        return Ok(());
+    }
+
+    println!("{} service(s):", list.count);
+    for i in 0..list.count as usize {
+        let s = &list.services[i];
+        let kind = if s.primary != 0 { "Primary" } else { "Secondary" };
+        println!(
+            "  [{:#06x}-{:#06x}] UUID={:#06x} {kind}",
+            s.start_handle, s.end_handle, s.uuid16
+        );
+    }
+
+    Ok(())
+}
+
+fn cmd_read_prop(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()> {
+    let handle = parse_handle(handle_str)?;
+    let rw = adapter.ssap_read(handle)?;
+
+    let data = &rw.data[..rw.length as usize];
+    println!("Property {:#06x} ({} bytes):", handle, rw.length);
+    print!("  ");
+    for b in data {
+        print!("{:02x} ", b);
+    }
+    println!();
+
+    if let Ok(s) = std::str::from_utf8(data) {
+        println!("  UTF-8: \"{s}\"");
+    }
+
+    Ok(())
+}
+
+fn cmd_write_prop(adapter: &Adapter, handle_str: &str, value_hex: &str) -> libsparklink::Result<()> {
+    let handle = parse_handle(handle_str)?;
+    let value = parse_hex_bytes(value_hex)?;
+    let len = value.len().min(252);
+
+    let mut rw = slk_protocol::SsapReadWrite {
+        handle,
+        length: len as u16,
+        data: [0; 252],
+    };
+    rw.data[..len].copy_from_slice(&value[..len]);
+
+    adapter.ssap_write(&rw)?;
+    println!("Written {} bytes to property {:#06x}", len, handle);
+    Ok(())
+}
+
+fn cmd_remote_discover(adapter: &Adapter, conn_str: &str) -> libsparklink::Result<()> {
+    use slk_protocol::SsapRemoteCmd;
+
+    let conn_handle = parse_handle(conn_str)?;
+
+    // Exchange info first
+    let cmd = SsapRemoteCmd {
+        conn_handle,
+        _reserved: [0; 2],
+    };
+    adapter.ssap_exchange_info(&cmd)?;
+    println!("SSAP info exchanged with connection {:#06x}", conn_handle);
+
+    // Discover all services 0x0001..0xFFFF
+    let mut disc = slk_protocol::SsapRemoteDiscover {
+        conn_handle,
+        start_handle: 0x0001,
+        end_handle: 0xFFFF,
+        count: 0,
+    };
+    adapter.ssap_remote_discover(&mut disc)?;
+    println!("Discovered {} service(s)", disc.count);
+
+    Ok(())
+}
+
+fn cmd_remote_read(adapter: &Adapter, conn_str: &str, handle_str: &str) -> libsparklink::Result<()> {
+    let conn_handle = parse_handle(conn_str)?;
+    let handle = parse_handle(handle_str)?;
+
+    let mut rw = slk_protocol::SsapRemoteReadWrite {
+        conn_handle,
+        handle,
+        length: 0,
+        _pad: [0; 2],
+        data: [0; 248],
+    };
+    adapter.ssap_remote_read(&mut rw)?;
+
+    let data = &rw.data[..rw.length as usize];
+    println!("Remote property {:#06x} ({} bytes):", handle, rw.length);
+    print!("  ");
+    for b in data {
+        print!("{:02x} ", b);
+    }
+    println!();
+
+    if let Ok(s) = std::str::from_utf8(data) {
+        println!("  UTF-8: \"{s}\"");
+    }
+
+    Ok(())
+}
+
+fn cmd_remote_write(adapter: &Adapter, conn_str: &str, handle_str: &str, value_hex: &str) -> libsparklink::Result<()> {
+    let conn_handle = parse_handle(conn_str)?;
+    let handle = parse_handle(handle_str)?;
+    let value = parse_hex_bytes(value_hex)?;
+    let len = value.len().min(248);
+
+    let rw = slk_protocol::SsapRemoteReadWrite {
+        conn_handle,
+        handle,
+        length: len as u16,
+        _pad: [0; 2],
+        data: {
+            let mut d = [0u8; 248];
+            d[..len].copy_from_slice(&value[..len]);
+            d
+        },
+    };
+    adapter.ssap_remote_write(&rw)?;
+    println!("Written {} bytes to remote property {:#06x}", len, handle);
+    Ok(())
+}
+
+fn parse_handle(s: &str) -> libsparklink::Result<u16> {
+    let s = s.strip_prefix("0x").unwrap_or(s);
+    u16::from_str_radix(s, 16).map_err(|_| {
+        libsparklink::Error::InvalidParam("invalid hex handle")
+    })
+}
+
+fn parse_hex_bytes(hex: &str) -> libsparklink::Result<Vec<u8>> {
+    let hex = hex.strip_prefix("0x").unwrap_or(hex);
+    if hex.len() % 2 != 0 {
+        return Err(libsparklink::Error::InvalidParam("hex string must have even length"));
+    }
+    let mut bytes = Vec::with_capacity(hex.len() / 2);
+    for i in (0..hex.len()).step_by(2) {
+        let byte = u8::from_str_radix(&hex[i..i + 2], 16).map_err(|_| {
+            libsparklink::Error::InvalidParam("invalid hex character")
+        })?;
+        bytes.push(byte);
+    }
+    Ok(bytes)
 }

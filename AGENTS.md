@@ -80,7 +80,6 @@ sparklink-userspace: <简短描述>
 
 <详细说明>
 
-Signed-off-by: sanchuanhehe <wyihe5220@gmail.com>
 ```
 
 ## 文件布局

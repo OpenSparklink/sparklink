@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_build:
+	cargo build --release --workspace
+
+override_dh_auto_install:
+	# Binaries
+	install -Dm755 target/release/slkd        debian/sparklink/usr/sbin/slkd
+	install -Dm755 target/release/slkconfig    debian/sparklink/usr/bin/slkconfig
+	install -Dm755 target/release/slctl        debian/sparklink/usr/bin/slctl
+	install -Dm755 target/release/slkmon       debian/sparklink/usr/bin/slkmon
+	install -Dm755 target/release/slkdump      debian/sparklink/usr/bin/slkdump
+	# Shared library
+	install -Dm755 target/release/libsparklink.so debian/libsparklink0/usr/lib/$(DEB_HOST_MULTIARCH)/libsparklink.so.0.1.0
+	ln -sf libsparklink.so.0.1.0 debian/libsparklink0/usr/lib/$(DEB_HOST_MULTIARCH)/libsparklink.so.0
+	ln -sf libsparklink.so.0     debian/libsparklink0/usr/lib/$(DEB_HOST_MULTIARCH)/libsparklink.so
+	# Development header
+	install -Dm644 crates/libsparklink/include/sparklink.h debian/libsparklink-dev/usr/include/sparklink.h
+	# Configuration
+	install -Dm644 data/config/main.conf      debian/sparklink/etc/sparklink/main.conf
+	# D-Bus
+	install -Dm644 data/dbus/org.sparklink.service  debian/sparklink/usr/share/dbus-1/system-services/org.sparklink.service
+	install -Dm644 data/dbus/sparklink.conf         debian/sparklink/usr/share/dbus-1/system.d/sparklink.conf
+	# systemd
+	install -Dm644 data/systemd/sparklink.service   debian/sparklink/usr/lib/systemd/system/sparklink.service
+	# State directory
+	install -dm755 debian/sparklink/var/lib/sparklink
+
+override_dh_auto_test:
+	cargo test --workspace

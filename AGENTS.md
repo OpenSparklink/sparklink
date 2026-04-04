@@ -128,7 +128,7 @@ sparklink-userspace: <简短描述>
 | 4 | SSAP 服务管理 (Profile 插件) | 完成 |
 | 5 | 命令行工具 + 监控 (slctl/slkmon/slkdump) | 完成 |
 | 6 | 语言绑定 (C/Python) + 性能优化 | 完成 |
-| 7 | CI/CD + 包分发 | 待开始 |
+| 7 | CI/CD + 包分发 | 完成 |
 
 ## 注意事项
 

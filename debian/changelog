@@ -1,0 +1,11 @@
+sparklink (0.1.0-1) unstable; urgency=medium
+
+  * Initial release.
+  * slkd: SparkLink D-Bus management daemon
+  * slkconfig: CLI configuration tool
+  * slctl: interactive control shell
+  * slkmon: protocol analyzer
+  * slkdump: frame dump utility
+  * libsparklink: shared library with C FFI
+
+ -- SparkLink Maintainers <sparklink@example.com>  Mon, 01 Jan 2025 00:00:00 +0800

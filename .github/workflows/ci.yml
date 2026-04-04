@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+
+jobs:
+  check:
+    name: cargo check
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo check --workspace
+
+  test:
+    name: cargo test
+    runs-on: ubuntu-24.04
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace
+
+  clippy:
+    name: clippy
+    runs-on: ubuntu-24.04
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo clippy --workspace -- -W clippy::all
+
+  fmt:
+    name: rustfmt
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: cargo fmt --all -- --check
+
+  cbindgen:
+    name: C header generation
+    runs-on: ubuntu-24.04
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo install cbindgen --locked
+      - name: Generate sparklink.h
+        working-directory: crates/libsparklink
+        run: cbindgen --config cbindgen.toml --crate libsparklink --output /tmp/sparklink.h
+      - name: Verify header unchanged
+        run: diff -u crates/libsparklink/include/sparklink.h /tmp/sparklink.h
+
+  build-release:
+    name: release build
+    runs-on: ubuntu-24.04
+    needs: [test, clippy]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --release --workspace
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: sparklink-binaries
+          path: |
+            target/release/slkd
+            target/release/slkconfig
+            target/release/slctl
+            target/release/slkmon
+            target/release/slkdump
+            target/release/libsparklink.so
+          retention-days: 14
+
+  python-check:
+    name: Python binding lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m py_compile bindings/python/sparklink/__init__.py
+      - run: python -m py_compile bindings/python/sparklink/structs.py
+      - run: python -m py_compile bindings/python/sparklink/adapter.py

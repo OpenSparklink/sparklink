@@ -1,0 +1,31 @@
+Source: sparklink
+Section: net
+Priority: optional
+Maintainer: SparkLink Maintainers <sparklink@example.com>
+Build-Depends: debhelper-compat (= 13), cargo, rustc (>= 1.85)
+Standards-Version: 4.6.2
+Homepage: https://gitee.com/sparklinkZ/sparklink-userspace
+
+Package: sparklink
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, dbus
+Description: SparkLink wireless protocol userspace stack
+ Complete userspace infrastructure for the SparkLink (星闪) wireless
+ communication protocol. Includes the management daemon (slkd),
+ command-line tools, and shared library.
+
+Package: libsparklink0
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: SparkLink shared library
+ C-compatible shared library (libsparklink.so) providing programmatic
+ access to SparkLink hardware through ioctl/chardev interfaces.
+
+Package: libsparklink-dev
+Architecture: any
+Section: libdevel
+Depends: libsparklink0 (= ${binary:Version}), ${misc:Depends}
+Description: SparkLink development headers
+ C header file (sparklink.h) for developing applications against
+ libsparklink.

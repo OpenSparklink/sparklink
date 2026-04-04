@@ -47,77 +47,58 @@ def _load_lib():
     )
 
 
-_lib = _load_lib()
+_lib = None
 
-# -- Declare FFI function signatures --
 
-_lib.slk_adapter_open.argtypes = [ctypes.c_char_p]
-_lib.slk_adapter_open.restype = ctypes.c_void_p
+def _get_lib():
+    global _lib
+    if _lib is not None:
+        return _lib
+    lib = _load_lib()
 
-_lib.slk_adapter_free.argtypes = [ctypes.c_void_p]
-_lib.slk_adapter_free.restype = None
+    lib.slk_adapter_open.argtypes = [ctypes.c_char_p]
+    lib.slk_adapter_open.restype = ctypes.c_void_p
+    lib.slk_adapter_free.argtypes = [ctypes.c_void_p]
+    lib.slk_adapter_free.restype = None
+    lib.slk_device_count.argtypes = [ctypes.c_void_p]
+    lib.slk_device_count.restype = ctypes.c_int
+    lib.slk_start_scan.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleScanParams)]
+    lib.slk_start_scan.restype = ctypes.c_int
+    lib.slk_stop_scan.argtypes = [ctypes.c_void_p]
+    lib.slk_stop_scan.restype = ctypes.c_int
+    lib.slk_connect.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleConnectParams)]
+    lib.slk_connect.restype = ctypes.c_int
+    lib.slk_disconnect.argtypes = [ctypes.c_void_p, ctypes.c_uint16]
+    lib.slk_disconnect.restype = ctypes.c_int
+    lib.slk_conn_info.argtypes = [ctypes.c_void_p, ctypes.c_uint16, ctypes.POINTER(SleConnInfo)]
+    lib.slk_conn_info.restype = ctypes.c_int
+    lib.slk_sec_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleSecInfo)]
+    lib.slk_sec_info.restype = ctypes.c_int
+    lib.slk_pair.argtypes = [ctypes.c_void_p, ctypes.POINTER(SlePairParams)]
+    lib.slk_pair.restype = ctypes.c_int
+    lib.slk_encrypt_on.argtypes = [ctypes.c_void_p]
+    lib.slk_encrypt_on.restype = ctypes.c_int
+    lib.slk_ssap_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SsapSummary)]
+    lib.slk_ssap_info.restype = ctypes.c_int
+    lib.slk_ssap_read.argtypes = [ctypes.c_void_p, ctypes.c_uint16, ctypes.POINTER(SsapReadWrite)]
+    lib.slk_ssap_read.restype = ctypes.c_int
+    lib.slk_ssap_write.argtypes = [ctypes.c_void_p, ctypes.POINTER(SsapReadWrite)]
+    lib.slk_ssap_write.restype = ctypes.c_int
+    lib.slk_poll_event.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleDliEvent)]
+    lib.slk_poll_event.restype = ctypes.c_int
+    lib.slk_device_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SciDevInfo)]
+    lib.slk_device_info.restype = ctypes.c_int
+    lib.slk_dli_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleDliInfo)]
+    lib.slk_dli_info.restype = ctypes.c_int
+    lib.slk_phy_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SlePhyInfo)]
+    lib.slk_phy_info.restype = ctypes.c_int
+    lib.slk_set_role.argtypes = [ctypes.c_void_p, ctypes.c_uint8]
+    lib.slk_set_role.restype = ctypes.c_int
+    lib.slk_get_role.argtypes = [ctypes.c_void_p]
+    lib.slk_get_role.restype = ctypes.c_int
 
-_lib.slk_device_count.argtypes = [ctypes.c_void_p]
-_lib.slk_device_count.restype = ctypes.c_int
-
-_lib.slk_start_scan.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleScanParams)]
-_lib.slk_start_scan.restype = ctypes.c_int
-
-_lib.slk_stop_scan.argtypes = [ctypes.c_void_p]
-_lib.slk_stop_scan.restype = ctypes.c_int
-
-_lib.slk_connect.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleConnectParams)]
-_lib.slk_connect.restype = ctypes.c_int
-
-_lib.slk_disconnect.argtypes = [ctypes.c_void_p, ctypes.c_uint16]
-_lib.slk_disconnect.restype = ctypes.c_int
-
-_lib.slk_conn_info.argtypes = [
-    ctypes.c_void_p,
-    ctypes.c_uint16,
-    ctypes.POINTER(SleConnInfo),
-]
-_lib.slk_conn_info.restype = ctypes.c_int
-
-_lib.slk_sec_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleSecInfo)]
-_lib.slk_sec_info.restype = ctypes.c_int
-
-_lib.slk_pair.argtypes = [ctypes.c_void_p, ctypes.POINTER(SlePairParams)]
-_lib.slk_pair.restype = ctypes.c_int
-
-_lib.slk_encrypt_on.argtypes = [ctypes.c_void_p]
-_lib.slk_encrypt_on.restype = ctypes.c_int
-
-_lib.slk_ssap_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SsapSummary)]
-_lib.slk_ssap_info.restype = ctypes.c_int
-
-_lib.slk_ssap_read.argtypes = [
-    ctypes.c_void_p,
-    ctypes.c_uint16,
-    ctypes.POINTER(SsapReadWrite),
-]
-_lib.slk_ssap_read.restype = ctypes.c_int
-
-_lib.slk_ssap_write.argtypes = [ctypes.c_void_p, ctypes.POINTER(SsapReadWrite)]
-_lib.slk_ssap_write.restype = ctypes.c_int
-
-_lib.slk_poll_event.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleDliEvent)]
-_lib.slk_poll_event.restype = ctypes.c_int
-
-_lib.slk_device_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SciDevInfo)]
-_lib.slk_device_info.restype = ctypes.c_int
-
-_lib.slk_dli_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleDliInfo)]
-_lib.slk_dli_info.restype = ctypes.c_int
-
-_lib.slk_phy_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SlePhyInfo)]
-_lib.slk_phy_info.restype = ctypes.c_int
-
-_lib.slk_set_role.argtypes = [ctypes.c_void_p, ctypes.c_uint8]
-_lib.slk_set_role.restype = ctypes.c_int
-
-_lib.slk_get_role.argtypes = [ctypes.c_void_p]
-_lib.slk_get_role.restype = ctypes.c_int
+    _lib = lib
+    return _lib
 
 
 class SparkLinkError(RuntimeError):
@@ -137,14 +118,15 @@ class Adapter:
     """
 
     def __init__(self, dev_path="/dev/sparklink"):
+        lib = _get_lib()
         path_bytes = dev_path.encode("utf-8") if isinstance(dev_path, str) else dev_path
-        self._handle = _lib.slk_adapter_open(path_bytes)
+        self._handle = lib.slk_adapter_open(path_bytes)
         if not self._handle:
             raise SparkLinkError(f"Failed to open adapter: {dev_path}")
 
     def close(self):
         if self._handle:
-            _lib.slk_adapter_free(self._handle)
+            _get_lib().slk_adapter_free(self._handle)
             self._handle = None
 
     def __enter__(self):
@@ -161,76 +143,55 @@ class Adapter:
             raise SparkLinkError(msg)
         return ret
 
-    # -- Device --
-
     def device_count(self):
-        return self._check(_lib.slk_device_count(self._handle), "device_count")
+        return self._check(_get_lib().slk_device_count(self._handle), "device_count")
 
     def device_info(self):
         info = SciDevInfo()
-        self._check(_lib.slk_device_info(self._handle, ctypes.byref(info)), "device_info")
+        self._check(_get_lib().slk_device_info(self._handle, ctypes.byref(info)), "device_info")
         return info
-
-    # -- Scanning --
 
     def start_scan(self, scan_type=0, phy=0, interval=100, window=50, duration=0):
         params = SleScanParams(
-            scan_type=scan_type,
-            phy=phy,
-            interval=interval,
-            window=window,
-            duration=duration,
+            scan_type=scan_type, phy=phy,
+            interval=interval, window=window, duration=duration,
         )
-        self._check(_lib.slk_start_scan(self._handle, ctypes.byref(params)), "start_scan")
+        self._check(_get_lib().slk_start_scan(self._handle, ctypes.byref(params)), "start_scan")
 
     def stop_scan(self):
-        self._check(_lib.slk_stop_scan(self._handle), "stop_scan")
-
-    # -- Connection --
+        self._check(_get_lib().slk_stop_scan(self._handle), "stop_scan")
 
     def connect(self, params):
-        self._check(_lib.slk_connect(self._handle, ctypes.byref(params)), "connect")
+        self._check(_get_lib().slk_connect(self._handle, ctypes.byref(params)), "connect")
 
     def disconnect(self, handle):
-        self._check(
-            _lib.slk_disconnect(self._handle, ctypes.c_uint16(handle)), "disconnect"
-        )
+        self._check(_get_lib().slk_disconnect(self._handle, ctypes.c_uint16(handle)), "disconnect")
 
     def conn_info(self, handle):
         info = SleConnInfo()
-        self._check(
-            _lib.slk_conn_info(self._handle, ctypes.c_uint16(handle), ctypes.byref(info)),
-            "conn_info",
-        )
+        self._check(_get_lib().slk_conn_info(self._handle, ctypes.c_uint16(handle), ctypes.byref(info)), "conn_info")
         return info
-
-    # -- Security --
 
     def sec_info(self):
         info = SleSecInfo()
-        self._check(_lib.slk_sec_info(self._handle, ctypes.byref(info)), "sec_info")
+        self._check(_get_lib().slk_sec_info(self._handle, ctypes.byref(info)), "sec_info")
         return info
 
     def pair(self, method=0):
         params = SlePairParams(method=method)
-        self._check(_lib.slk_pair(self._handle, ctypes.byref(params)), "pair")
+        self._check(_get_lib().slk_pair(self._handle, ctypes.byref(params)), "pair")
 
     def encrypt_on(self):
-        self._check(_lib.slk_encrypt_on(self._handle), "encrypt_on")
-
-    # -- SSAP --
+        self._check(_get_lib().slk_encrypt_on(self._handle), "encrypt_on")
 
     def ssap_info(self):
         info = SsapSummary()
-        self._check(_lib.slk_ssap_info(self._handle, ctypes.byref(info)), "ssap_info")
+        self._check(_get_lib().slk_ssap_info(self._handle, ctypes.byref(info)), "ssap_info")
         return info
 
     def ssap_read(self, handle):
         rw = SsapReadWrite()
-        self._check(
-            _lib.slk_ssap_read(self._handle, ctypes.c_uint16(handle), ctypes.byref(rw)),
-            "ssap_read",
-        )
+        self._check(_get_lib().slk_ssap_read(self._handle, ctypes.c_uint16(handle), ctypes.byref(rw)), "ssap_read")
         return bytes(rw.data[: rw.length])
 
     def ssap_write(self, handle, data):
@@ -239,38 +200,30 @@ class Adapter:
         rw.length = len(data)
         for i, b in enumerate(data[: min(len(data), 252)]):
             rw.data[i] = b
-        self._check(_lib.slk_ssap_write(self._handle, ctypes.byref(rw)), "ssap_write")
-
-    # -- Events --
+        self._check(_get_lib().slk_ssap_write(self._handle, ctypes.byref(rw)), "ssap_write")
 
     def poll_event(self):
         """Poll for a DLI event. Returns SleDliEvent or None."""
         ev = SleDliEvent()
-        ret = _lib.slk_poll_event(self._handle, ctypes.byref(ev))
+        ret = _get_lib().slk_poll_event(self._handle, ctypes.byref(ev))
         if ret == 1:
             return ev
         if ret == 0:
             return None
         raise SparkLinkError("poll_event failed")
 
-    # -- Info --
-
     def dli_info(self):
         info = SleDliInfo()
-        self._check(_lib.slk_dli_info(self._handle, ctypes.byref(info)), "dli_info")
+        self._check(_get_lib().slk_dli_info(self._handle, ctypes.byref(info)), "dli_info")
         return info
 
     def phy_info(self):
         info = SlePhyInfo()
-        self._check(_lib.slk_phy_info(self._handle, ctypes.byref(info)), "phy_info")
+        self._check(_get_lib().slk_phy_info(self._handle, ctypes.byref(info)), "phy_info")
         return info
 
-    # -- Role --
-
     def set_role(self, role):
-        self._check(
-            _lib.slk_set_role(self._handle, ctypes.c_uint8(role)), "set_role"
-        )
+        self._check(_get_lib().slk_set_role(self._handle, ctypes.c_uint8(role)), "set_role")
 
     def get_role(self):
-        return self._check(_lib.slk_get_role(self._handle), "get_role")
+        return self._check(_get_lib().slk_get_role(self._handle), "get_role")

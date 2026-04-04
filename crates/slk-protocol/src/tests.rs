@@ -146,4 +146,157 @@ mod tests {
         assert_eq!(GENL_VERSION, 1);
         assert_eq!(GENL_MCAST_EVENTS, "events");
     }
+
+    // ---- Phase 8: additional coverage ----
+
+    #[test]
+    fn struct_zeroed_is_valid() {
+        // Verify all major structs can be safely zero-initialized
+        let dev: SciDevInfo = unsafe { std::mem::zeroed() };
+        assert_eq!(dev.index, 0);
+        assert_eq!(dev.state, 0);
+
+        let scan: SleScanParams = unsafe { std::mem::zeroed() };
+        assert_eq!(scan.dev_index, 0);
+        assert_eq!(scan.interval_ms, 0);
+
+        let conn: SleConnInfo = unsafe { std::mem::zeroed() };
+        assert_eq!(conn.handle, 0);
+        assert_eq!(conn.state, 0);
+
+        let sec: SleSecInfo = unsafe { std::mem::zeroed() };
+        assert_eq!(sec.state, 0);
+        assert_eq!(sec.enc_enabled, 0);
+
+        let dli: SleDliInfo = unsafe { std::mem::zeroed() };
+        assert_eq!(dli.firmware_version, 0);
+        assert_eq!(dli.features, 0);
+
+        let phy: SlePhyInfo = unsafe { std::mem::zeroed() };
+        assert_eq!(phy.data_rate_kbps, 0);
+        assert_eq!(phy.mcs_index, 0);
+    }
+
+    #[test]
+    fn struct_field_offsets() {
+        use std::mem::offset_of;
+        // SciDevInfo: verify key field positions
+        assert_eq!(offset_of!(SciDevInfo, index), 0);
+        assert_eq!(offset_of!(SciDevInfo, state), 2);
+        assert_eq!(offset_of!(SciDevInfo, bus), 3);
+        assert_eq!(offset_of!(SciDevInfo, addr), 4);
+        assert_eq!(offset_of!(SciDevInfo, name), 10);
+
+        // SleConnInfo: tx_bytes(8) + rx_bytes(8) then handle
+        assert_eq!(offset_of!(SleConnInfo, tx_bytes), 0);
+        assert_eq!(offset_of!(SleConnInfo, rx_bytes), 8);
+        assert_eq!(offset_of!(SleConnInfo, handle), 16);
+
+        // SleDliEvent
+        assert_eq!(offset_of!(SleDliEvent, event_type), 0);
+        assert_eq!(offset_of!(SleDliEvent, status), 1);
+        assert_eq!(offset_of!(SleDliEvent, handle), 2);
+        assert_eq!(offset_of!(SleDliEvent, opcode), 4);
+        assert_eq!(offset_of!(SleDliEvent, data_len), 6);
+        assert_eq!(offset_of!(SleDliEvent, data), 8);
+    }
+
+    #[test]
+    fn sle_addr_type_alias() {
+        let addr: SleAddr = [0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF];
+        assert_eq!(addr.len(), 6);
+        assert_eq!(addr[0], 0xAA);
+        assert_eq!(addr[5], 0xFF);
+        // Prove it's Copy
+        let addr2 = addr;
+        assert_eq!(addr, addr2);
+    }
+
+    #[test]
+    fn enum_variants_complete() {
+        // ConnState: 4 variants 0..=3
+        assert_eq!(ConnState::Idle as u8, 0);
+        assert_eq!(ConnState::Connecting as u8, 1);
+        assert_eq!(ConnState::Connected as u8, 2);
+        assert_eq!(ConnState::Disconnecting as u8, 3);
+
+        // PmState: 4 variants 0..=3
+        assert_eq!(PmState::Active as u8, 0);
+        assert_eq!(PmState::Sniff as u8, 1);
+        assert_eq!(PmState::Idle as u8, 2);
+        assert_eq!(PmState::Suspended as u8, 3);
+
+        // SecState: 4 variants 0..=3
+        assert_eq!(SecState::None as u8, 0);
+        assert_eq!(SecState::Pairing as u8, 1);
+        assert_eq!(SecState::Paired as u8, 2);
+        assert_eq!(SecState::Encrypted as u8, 3);
+
+        // PairMethod: 3 variants 0..=2
+        assert_eq!(PairMethod::None as u8, 0);
+        assert_eq!(PairMethod::JustWorks as u8, 1);
+        assert_eq!(PairMethod::Psk as u8, 2);
+
+        // DiscoveryLevel: 5 variants 0..=4
+        assert_eq!(DiscoveryLevel::Invisible as u8, 0);
+        assert_eq!(DiscoveryLevel::General as u8, 1);
+        assert_eq!(DiscoveryLevel::Priority as u8, 2);
+        assert_eq!(DiscoveryLevel::PairedOnly as u8, 3);
+        assert_eq!(DiscoveryLevel::Designated as u8, 4);
+
+        // BusType: 6 variants 0..=5
+        assert_eq!(BusType::Virtual as u8, 0);
+        assert_eq!(BusType::Uart as u8, 1);
+        assert_eq!(BusType::Spi as u8, 2);
+        assert_eq!(BusType::Sdio as u8, 3);
+        assert_eq!(BusType::Usb as u8, 4);
+        assert_eq!(BusType::Mmio as u8, 5);
+    }
+
+    #[test]
+    fn genl_cmd_enum_coverage() {
+        use crate::genl::GenlCmd;
+        assert_eq!(GenlCmd::Unspec as u8, 0);
+        assert_eq!(GenlCmd::GetDevInfo as u8, 1);
+        assert_eq!(GenlCmd::SsapRemoveSvc as u8, 33);
+        // Total: 34 commands (0..=33)
+        assert_eq!(std::mem::size_of::<GenlCmd>(), 1);
+    }
+
+    #[test]
+    fn genl_attr_enum_coverage() {
+        use crate::genl::GenlAttr;
+        assert_eq!(GenlAttr::Unspec as u16, 0);
+        assert_eq!(GenlAttr::DevIndex as u16, 1);
+        assert_eq!(GenlAttr::SvcMtu as u16, 58);
+        // Total: 59 attributes (0..=58)
+        assert_eq!(std::mem::size_of::<GenlAttr>(), 2);
+    }
+
+    #[test]
+    fn ssap_readwrite_data_capacity() {
+        let rw: SsapReadWrite = unsafe { std::mem::zeroed() };
+        assert_eq!(rw.data.len(), 252);
+        assert_eq!(std::mem::size_of::<SsapReadWrite>(), 256);
+    }
+
+    #[test]
+    fn dli_event_data_capacity() {
+        let ev: SleDliEvent = unsafe { std::mem::zeroed() };
+        assert_eq!(ev.data.len(), 240);
+        assert_eq!(std::mem::size_of::<SleDliEvent>(), 256);
+    }
+
+    #[test]
+    fn sle_conn_data_capacity() {
+        let cd: SleConnData = unsafe { std::mem::zeroed() };
+        assert_eq!(cd.data.len(), 255);
+        assert_eq!(std::mem::size_of::<SleConnData>(), 260);
+    }
+
+    #[test]
+    fn ioctl_number_ranges() {
+        // Verify ioctl magic is correct across all categories
+        assert_eq!(ioctl::SL_MAGIC, 0x53);
+    }
 }

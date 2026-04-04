@@ -658,3 +658,71 @@ fn parse_hex_bytes(hex: &str) -> libsparklink::Result<Vec<u8>> {
     }
     Ok(bytes)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_fmt_addr() {
+        assert_eq!(fmt_addr(&[0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF]), "AA:BB:CC:DD:EE:FF");
+        assert_eq!(fmt_addr(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), "00:00:00:00:00:00");
+        assert_eq!(fmt_addr(&[0x01, 0x23, 0x45, 0x67, 0x89, 0xAB]), "01:23:45:67:89:AB");
+    }
+
+    #[test]
+    fn test_parse_addr_valid() {
+        let addr = parse_addr("AA:BB:CC:DD:EE:FF").unwrap();
+        assert_eq!(addr, [0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF]);
+
+        let addr = parse_addr("00:00:00:00:00:00").unwrap();
+        assert_eq!(addr, [0; 6]);
+
+        // Lowercase
+        let addr = parse_addr("ab:cd:ef:01:23:45").unwrap();
+        assert_eq!(addr, [0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45]);
+    }
+
+    #[test]
+    fn test_parse_addr_invalid() {
+        assert!(parse_addr("AA:BB:CC:DD:EE").is_err()); // too short
+        assert!(parse_addr("AA:BB:CC:DD:EE:FF:00").is_err()); // too long
+        assert!(parse_addr("GG:BB:CC:DD:EE:FF").is_err()); // invalid hex
+        assert!(parse_addr("").is_err());
+        assert!(parse_addr("AABBCCDDEEFF").is_err()); // no colons
+    }
+
+    #[test]
+    fn test_parse_handle() {
+        assert_eq!(parse_handle("0x0001").unwrap(), 1);
+        assert_eq!(parse_handle("0xFFFF").unwrap(), 0xFFFF);
+        assert_eq!(parse_handle("00AB").unwrap(), 0x00AB);
+        assert_eq!(parse_handle("0xab").unwrap(), 0xAB);
+
+        assert!(parse_handle("GGGG").is_err());
+        assert!(parse_handle("0xGGGG").is_err());
+    }
+
+    #[test]
+    fn test_parse_hex_bytes_valid() {
+        assert_eq!(parse_hex_bytes("AABB").unwrap(), vec![0xAA, 0xBB]);
+        assert_eq!(parse_hex_bytes("0xAABB").unwrap(), vec![0xAA, 0xBB]);
+        assert_eq!(parse_hex_bytes("0x0102030405").unwrap(), vec![1, 2, 3, 4, 5]);
+        assert_eq!(parse_hex_bytes("").unwrap(), Vec::<u8>::new());
+    }
+
+    #[test]
+    fn test_parse_hex_bytes_invalid() {
+        assert!(parse_hex_bytes("A").is_err()); // odd length
+        assert!(parse_hex_bytes("0xA").is_err()); // odd length after prefix
+        assert!(parse_hex_bytes("GGXX").is_err()); // invalid hex chars
+    }
+
+    #[test]
+    fn test_fmt_addr_roundtrip() {
+        let original = [0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC];
+        let formatted = fmt_addr(&original);
+        let parsed = parse_addr(&formatted).unwrap();
+        assert_eq!(original, parsed);
+    }
+}

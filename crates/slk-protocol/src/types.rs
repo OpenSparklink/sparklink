@@ -168,7 +168,7 @@ pub struct SleExtAdvConfig {
     pub tx_power_dbm: i8,
     pub include_tx_power: u8,
     pub interval_ms: u16,
-    pub ext_adv_timing: u16,
+    pub ext_adv_timing: u8,
     pub _reserved: [u8; 5],
 }
 
@@ -237,8 +237,8 @@ pub struct SleConnInfo {
     pub local_role: u8,
     pub bandwidth_mhz: u8,
     pub mcs_index: u8,
-    pub tx_seq: u16,
-    pub rx_seq: u16,
+    pub tx_seq: u8,
+    pub rx_seq: u8,
     pub data_mtu: u16,
     pub data_mps: u16,
     pub svc_mtu: u16,
@@ -256,7 +256,7 @@ pub struct SleConnInfo {
 #[repr(C)]
 pub struct SleConnData {
     pub handle: u16,
-    pub length: u8,
+    pub length: u16,
     pub data: [u8; 255],
     pub _reserved: u8,
 }
@@ -304,7 +304,7 @@ pub struct SleAfhMapParams {
     pub _pad: u8,
     pub map: [u8; 10],
     pub used_count: u8,
-    pub _pad2: [u8; 5],
+    pub _pad2: u8,
 }
 
 /// AFH RSSI report (ioctl 0x3C)
@@ -325,7 +325,7 @@ pub struct SleAfhClassifyParams {
     pub min_channels: u8,
     pub map_out: [u8; 10],
     pub used_count: u8,
-    pub _pad: [u8; 5],
+    pub _pad: u8,
 }
 
 /// AFH hop info (ioctl 0x3E)
@@ -502,7 +502,7 @@ pub struct SsapAddProperty {
     pub value_len: u8,
     pub value: [u8; 248],
     pub handle: u16,
-    pub _reserved: [u8; 6],
+    pub _reserved: [u8; 2],
 }
 
 /// SSAP remote command (ioctl 0x5A)
@@ -547,9 +547,9 @@ pub struct SlePmInfo {
     pub latency: u16,
     pub idle_count: u16,
     pub transitions: u32,
-    pub active_events: u32,
-    pub sniff_events: u32,
-    pub idle_events: u32,
+    pub active_events: u64,
+    pub sniff_events: u64,
+    pub idle_events: u64,
     pub _reserved: [u8; 8],
 }
 
@@ -666,7 +666,7 @@ pub struct SleDliInfo {
     pub bus: u8,
     pub _pad: [u8; 3],
     pub firmware_version: u32,
-    pub features: u32,
+    pub features: u64,
     pub max_connections: u8,
     pub max_adv_sets: u8,
     pub transport_modes: u8,
@@ -699,7 +699,7 @@ pub struct SleDliEvent {
 pub struct SleDliCmd {
     pub opcode: u16,
     pub param_len: u16,
-    pub seq: u16,
+    pub seq: u32,
     pub params: [u8; 240],
 }
 
@@ -707,11 +707,11 @@ pub struct SleDliCmd {
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct SleMgmtStats {
-    pub pending: u32,
-    pub _pad: u32,
-    pub total_submitted: u64,
-    pub total_resolved: u64,
-    pub total_timeouts: u64,
+    pub pending: u16,
+    pub _pad: u16,
+    pub total_submitted: u32,
+    pub total_resolved: u32,
+    pub total_timeouts: u32,
 }
 
 /// Subsystem stats (ioctl 0x86)

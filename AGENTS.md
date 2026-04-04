@@ -6,7 +6,7 @@ SparkLink (星闪) 无线通信协议的用户态基础设施，对标 BlueZ 的
 基于 Rust 实现，通过 ioctl/chardev/genetlink 与内核子系统 (`net/sparklink/`) 交互。
 遵循 T/XS 00001-2025、T/XS 10002-2025、T/XS 20002-2025 等星闪技术标准。
 
-**代码规模**: 4 crate, ~4600 行 Rust
+**代码规模**: 7 crate + Python 绑定, ~6500 行 Rust + Python
 
 ## 构建
 
@@ -26,7 +26,7 @@ cargo test
 | Crate | 类型 | 职责 |
 |-------|------|------|
 | `slk-protocol` | lib | UAPI 绑定: 99 ioctl 包装 (nix 宏), 70+ repr(C) 结构体, Generic Netlink 常量 |
-| `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型 |
+| `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型, C FFI (ffi.rs, 20 导出函数), cbindgen 生成 sparklink.h |
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
 | `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset/services/list-services/read-prop/write-prop/remote-discover/remote-read/remote-write 子命令, clap 4 |
 | `slctl` | bin | 交互式控制工具 (对标 bluetoothctl): rustyline 15, 通过 D-Bus 与 slkd 通信 |
@@ -99,6 +99,8 @@ sparklink-userspace: <简短描述>
 │   ├── slctl/src/ (main.rs, commands.rs)
 │   ├── slkmon/src/ (main.rs, decode.rs)
 │   └── slkdump/src/ (main.rs)
+├── bindings/
+│   └── python/ (pyproject.toml, sparklink/__init__.py, structs.py, adapter.py)
 ├── data/
 │   ├── config/main.conf
 │   ├── dbus/ (org.sparklink.service, sparklink.conf)
@@ -125,7 +127,7 @@ sparklink-userspace: <简短描述>
 | 3 | 安全配对 (Agent 框架) | 完成 |
 | 4 | SSAP 服务管理 (Profile 插件) | 完成 |
 | 5 | 命令行工具 + 监控 (slctl/slkmon/slkdump) | 完成 |
-| 6 | 语言绑定 (C/Python) + 性能优化 | 待开始 |
+| 6 | 语言绑定 (C/Python) + 性能优化 | 完成 |
 | 7 | CI/CD + 包分发 | 待开始 |
 
 ## 注意事项

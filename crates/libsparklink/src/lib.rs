@@ -1,6 +1,7 @@
 mod adapter;
 mod error;
 mod event;
+pub mod ffi;
 
 pub use adapter::Adapter;
 pub use error::Error;

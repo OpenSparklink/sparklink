@@ -204,7 +204,7 @@ impl Adapter {
     pub async fn next_event(&self) -> Result<Event> {
         loop {
             let mut guard = self.fd.readable().await
-                .map_err(|e| Error::OpenDevice(e))?;
+                .map_err(Error::OpenDevice)?;
 
             match self.poll_event()? {
                 Some(raw) => {

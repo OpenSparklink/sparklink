@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::path::Path;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 pub struct DaemonConfig {
     #[serde(default)]
     pub general: GeneralConfig,
@@ -25,7 +25,7 @@ pub struct GeneralConfig {
     pub name: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 pub struct PolicyConfig {
     /// Auto-pair with JustWorks when possible
     #[serde(default)]
@@ -36,14 +36,6 @@ pub struct PolicyConfig {
     pub min_encryption: u8,
 }
 
-impl Default for DaemonConfig {
-    fn default() -> Self {
-        Self {
-            general: GeneralConfig::default(),
-            policy: PolicyConfig::default(),
-        }
-    }
-}
 
 impl Default for GeneralConfig {
     fn default() -> Self {
@@ -55,14 +47,6 @@ impl Default for GeneralConfig {
     }
 }
 
-impl Default for PolicyConfig {
-    fn default() -> Self {
-        Self {
-            auto_pair: false,
-            min_encryption: 0,
-        }
-    }
-}
 
 impl DaemonConfig {
     pub fn load(path: impl AsRef<Path>) -> Result<Self, Box<dyn std::error::Error>> {

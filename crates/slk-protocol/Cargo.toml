@@ -3,7 +3,6 @@ name = "slk-protocol"
 description = "SparkLink UAPI protocol constants, ioctl numbers, and type definitions"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
 
 [dependencies]
 nix = { workspace = true }

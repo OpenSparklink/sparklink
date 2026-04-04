@@ -3,7 +3,6 @@ name = "slkd"
 description = "SparkLink daemon - central management service"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
 
 [[bin]]
 name = "slkd"

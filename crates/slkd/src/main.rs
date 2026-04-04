@@ -1,6 +1,7 @@
 mod config;
 mod dbus_iface;
 mod kernel;
+mod security;
 mod state;
 
 use std::sync::Arc;
@@ -13,6 +14,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilte
 use crate::config::DaemonConfig;
 use crate::dbus_iface::{AdapterIface, DeviceIface, Root};
 use crate::kernel::KernelLink;
+use crate::security::SecurityIface;
 use crate::state::{AdapterState, SharedState};
 
 #[derive(Parser)]
@@ -71,6 +73,7 @@ async fn main() -> anyhow::Result<()> {
         .name("org.sparklink")?
         .serve_at("/org/sparklink", Root::new(shared.clone()))?
         .serve_at("/org/sparklink/slk0", AdapterIface::new(shared.clone()))?
+        .serve_at("/org/sparklink/slk0/security", SecurityIface::new(shared.clone()))?
         .build()
         .await?;
 
@@ -132,6 +135,19 @@ async fn event_loop(state: SharedState, connection: zbus::Connection) {
                     handle,
                     connected,
                     "connection state changed"
+                );
+            }
+            Ok(libsparklink::Event::SecurityChanged { state: sec_state, method, encrypted }) => {
+                let method_label = match method {
+                    1 => "JustWorks",
+                    2 => "PSK",
+                    _ => "None",
+                };
+                info!(
+                    state = sec_state,
+                    method = method_label,
+                    encrypted,
+                    "security state changed"
                 );
             }
             Ok(event) => {

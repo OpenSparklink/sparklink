@@ -28,7 +28,7 @@ cargo test
 | `slk-protocol` | lib | UAPI 绑定: 99 ioctl 包装 (nix 宏), 70+ repr(C) 结构体, Generic Netlink 常量 |
 | `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型 |
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
-| `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections 子命令, clap 4 |
+| `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset 子命令, clap 4 |
 
 ## 核心依赖
 
@@ -71,7 +71,7 @@ unsafe { ioctl::sl_stop_adv(self.raw_fd())? };
 
 - 总线名称: `org.sparklink`
 - 对象路径: `/org/sparklink`, `/org/sparklink/adapter<N>`
-- 接口: `org.sparklink.Manager`, `org.sparklink.Adapter`
+- 接口: `org.sparklink.Manager`, `org.sparklink.Adapter`, `org.sparklink.Device`, `org.sparklink.Security`
 
 ### Commit 规范
 
@@ -91,7 +91,7 @@ sparklink-userspace: <简短描述>
 ├── crates/
 │   ├── slk-protocol/src/ (ioctl.rs, types.rs, genl.rs)
 │   ├── libsparklink/src/ (adapter.rs, error.rs, event.rs)
-│   ├── slkd/src/ (main.rs, config.rs, kernel.rs, dbus_iface.rs)
+│   ├── slkd/src/ (main.rs, config.rs, kernel.rs, dbus_iface.rs, state.rs, security.rs)
 │   └── slkconfig/src/ (main.rs)
 ├── data/
 │   ├── config/main.conf
@@ -116,7 +116,7 @@ sparklink-userspace: <简短描述>
 |------|------|------|
 | 1 | Cargo 框架 + UAPI 绑定 | 完成 |
 | 2 | 发现与连接 (scan/connect D-Bus 接口) | 完成 |
-| 3 | 安全配对 (Agent 框架) | 待开始 |
+| 3 | 安全配对 (Agent 框架) | 完成 |
 | 4 | SSAP 服务管理 (Profile 插件) | 待开始 |
 | 5 | 命令行工具 + 监控 (slctl/slkmon/slkdump) | 待开始 |
 | 6 | 语言绑定 (C/Python) + 性能优化 | 待开始 |

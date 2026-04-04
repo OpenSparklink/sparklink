@@ -181,6 +181,56 @@ impl Adapter {
         Ok(())
     }
 
+    /// Set PSK (Pre-Shared Key)
+    pub fn set_psk(&self, psk: &SlePskParams) -> Result<()> {
+        unsafe { ioctl::sl_sec_set_psk(self.raw_fd(), psk)? };
+        Ok(())
+    }
+
+    /// Get passkey displayed by the controller
+    pub fn get_passkey(&self) -> Result<u32> {
+        let mut passkey: u32 = 0;
+        unsafe { ioctl::sl_sec_get_passkey(self.raw_fd(), &mut passkey)? };
+        Ok(passkey)
+    }
+
+    /// Confirm passkey match (numeric comparison)
+    pub fn confirm_passkey(&self) -> Result<()> {
+        unsafe { ioctl::sl_sec_confirm_passkey(self.raw_fd())? };
+        Ok(())
+    }
+
+    /// Reject passkey match
+    pub fn reject_passkey(&self) -> Result<()> {
+        unsafe { ioctl::sl_sec_reject_passkey(self.raw_fd())? };
+        Ok(())
+    }
+
+    /// Input passkey from user
+    pub fn input_passkey(&self, passkey: u32) -> Result<()> {
+        let input = SlePasskeyInput { passkey };
+        unsafe { ioctl::sl_sec_input_passkey(self.raw_fd(), &input)? };
+        Ok(())
+    }
+
+    /// Set OOB data for pairing
+    pub fn set_oob(&self, data: &SleOobData) -> Result<()> {
+        unsafe { ioctl::sl_sec_set_oob(self.raw_fd(), data)? };
+        Ok(())
+    }
+
+    /// Set password for pairing
+    pub fn set_password(&self, params: &SlePasswordParams) -> Result<()> {
+        unsafe { ioctl::sl_sec_set_password(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Reset security state
+    pub fn sec_reset(&self) -> Result<()> {
+        unsafe { ioctl::sl_sec_reset(self.raw_fd())? };
+        Ok(())
+    }
+
     // ----- DLI -----
 
     /// Get DLI controller info

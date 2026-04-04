@@ -56,6 +56,28 @@ enum Command {
         /// Connection handle (hex, e.g. 0x0001)
         handle: String,
     },
+
+    /// Show security state
+    Security,
+
+    /// Initiate pairing
+    Pair {
+        /// Pairing method: just_works, psk, none
+        #[arg(short, long, default_value = "just_works")]
+        method: String,
+    },
+
+    /// Enable encryption on active connection
+    Encrypt,
+
+    /// Set Pre-Shared Key (32-char hex string = 16 bytes)
+    SetPsk {
+        /// PSK as hex, e.g. 00112233445566778899aabbccddeeff
+        psk: String,
+    },
+
+    /// Reset security state
+    SecReset,
 }
 
 fn main() {
@@ -80,6 +102,11 @@ fn main() {
         Command::Scan { duration } => cmd_scan(&adapter, duration),
         Command::Connect { address } => cmd_connect(&adapter, &address),
         Command::Disconnect { handle } => cmd_disconnect(&adapter, &handle),
+        Command::Security => cmd_security(&adapter),
+        Command::Pair { method } => cmd_pair(&adapter, &method),
+        Command::Encrypt => cmd_encrypt(&adapter),
+        Command::SetPsk { psk } => cmd_set_psk(&adapter, &psk),
+        Command::SecReset => cmd_sec_reset(&adapter),
     };
 
     if let Err(e) = result {
@@ -321,4 +348,94 @@ fn parse_addr(s: &str) -> Result<[u8; 6], &'static str> {
         addr[i] = u8::from_str_radix(part, 16).map_err(|_| "invalid hex byte")?;
     }
     Ok(addr)
+}
+
+fn cmd_security(adapter: &Adapter) -> libsparklink::Result<()> {
+    let info = adapter.sec_info()?;
+
+    let state_label = match info.state {
+        0 => "none",
+        1 => "pairing",
+        2 => "paired",
+        3 => "encrypted",
+        _ => "unknown",
+    };
+    let method_label = match info.method {
+        0 => "none",
+        1 => "just_works",
+        2 => "psk",
+        _ => "unknown",
+    };
+
+    println!("Security State:");
+    println!("  State:       {state_label} ({})", info.state);
+    println!("  Method:      {method_label} ({})", info.method);
+    println!("  Mode:        {}", info.mode);
+    println!("  Encrypted:   {}", info.enc_enabled != 0);
+    println!(
+        "  Key fingerprint: {:02x}{:02x}{:02x}{:02x}",
+        info.enc_key_fingerprint[0],
+        info.enc_key_fingerprint[1],
+        info.enc_key_fingerprint[2],
+        info.enc_key_fingerprint[3]
+    );
+
+    Ok(())
+}
+
+fn cmd_pair(adapter: &Adapter, method: &str) -> libsparklink::Result<()> {
+    use slk_protocol::SlePairParams;
+
+    let m = match method {
+        "just_works" => 1u8,
+        "psk" => 2,
+        "none" => 0,
+        _ => {
+            return Err(libsparklink::Error::InvalidParam(
+                "method must be 'just_works', 'psk', or 'none'",
+            ));
+        }
+    };
+
+    let params = SlePairParams {
+        method: m,
+        _reserved: [0; 3],
+    };
+    adapter.pair(&params)?;
+    println!("Pairing initiated (method: {method})");
+    Ok(())
+}
+
+fn cmd_encrypt(adapter: &Adapter) -> libsparklink::Result<()> {
+    adapter.encrypt_on()?;
+    println!("Encryption enabled");
+    Ok(())
+}
+
+fn cmd_set_psk(adapter: &Adapter, psk_hex: &str) -> libsparklink::Result<()> {
+    use slk_protocol::SlePskParams;
+
+    let hex = psk_hex.strip_prefix("0x").unwrap_or(psk_hex);
+    if hex.len() != 32 {
+        return Err(libsparklink::Error::InvalidParam(
+            "PSK must be exactly 32 hex chars (16 bytes)",
+        ));
+    }
+
+    let mut params = SlePskParams { psk: [0; 16] };
+    for i in 0..16 {
+        params.psk[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16).map_err(|_| {
+            libsparklink::Error::InvalidParam("invalid hex character in PSK")
+        })?;
+    }
+
+    adapter.set_psk(&params)?;
+    println!("PSK set successfully");
+    Ok(())
+}
+
+fn cmd_sec_reset(adapter: &Adapter) -> libsparklink::Result<()> {
+    adapter.sec_reset()?;
+    println!("Security state reset");
+    Ok(())
 }

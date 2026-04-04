@@ -449,3 +449,47 @@ pub unsafe extern "C" fn slk_get_role(adapter: *const SlkAdapter) -> c_int {
         Err(_) => -1,
     }
 }
+
+/// Invoke a method on a remote peer's SSAP service.
+///
+/// # Safety
+/// `adapter` must be a valid non-null pointer.
+/// `input` must point to `input_len` readable bytes.
+/// `output` must point to `output_len` writable bytes.
+/// On success, `output_len` is updated with the actual output size.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_ssap_call_method(
+    adapter: *const SlkAdapter,
+    conn_handle: u16,
+    method_handle: u16,
+    input: *const u8,
+    input_len: usize,
+    output: *mut u8,
+    output_len: *mut usize,
+) -> c_int {
+    let adapter = match unsafe { adapter.as_ref() } {
+        Some(a) => a,
+        None => return -1,
+    };
+    let mut rw: slk_protocol::SsapRemoteReadWrite = unsafe { core::mem::zeroed() };
+    rw.conn_handle = conn_handle;
+    rw.handle = method_handle;
+    let copy_len = input_len.min(rw.data.len());
+    if !input.is_null() && copy_len > 0 {
+        unsafe { core::ptr::copy_nonoverlapping(input, rw.data.as_mut_ptr(), copy_len) };
+    }
+    rw.length = copy_len as u16;
+    match adapter.inner.ssap_call_method(&mut rw) {
+        Ok(()) => {
+            let out_len = (rw.length as usize).min(rw.data.len());
+            if !output.is_null() && !output_len.is_null() {
+                let max_out = unsafe { *output_len };
+                let actual = out_len.min(max_out);
+                unsafe { core::ptr::copy_nonoverlapping(rw.data.as_ptr(), output, actual) };
+                unsafe { *output_len = actual };
+            }
+            0
+        }
+        Err(_) => -1,
+    }
+}

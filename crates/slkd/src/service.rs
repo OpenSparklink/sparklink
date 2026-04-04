@@ -252,6 +252,22 @@ impl RemoteServiceIface {
             data: ntf.data[..ntf.length as usize].to_vec(),
         })
     }
+
+    /// Invoke a method on a remote peer's SSAP service
+    async fn call_method(&self, handle: u16, input: Vec<u8>) -> zbus::fdo::Result<Vec<u8>> {
+        let st = self.state.lock().await;
+        let mut rw: slk_protocol::SsapRemoteReadWrite = unsafe { std::mem::zeroed() };
+        rw.conn_handle = self.conn_handle;
+        rw.handle = handle;
+        let copy_len = input.len().min(rw.data.len());
+        rw.data[..copy_len].copy_from_slice(&input[..copy_len]);
+        rw.length = copy_len as u16;
+        st.adapter.ssap_call_method(&mut rw).map_err(|e| {
+            zbus::fdo::Error::Failed(format!("ssap_call_method: {e}"))
+        })?;
+        let out_len = rw.length as usize;
+        Ok(rw.data[..out_len.min(rw.data.len())].to_vec())
+    }
 }
 
 // ----- D-Bus return types -----

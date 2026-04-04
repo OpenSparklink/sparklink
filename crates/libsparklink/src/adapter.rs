@@ -333,6 +333,12 @@ impl Adapter {
         Ok(ntf)
     }
 
+    /// Invoke a method on a remote peer's SSAP service
+    pub fn ssap_call_method(&self, rw: &mut SsapRemoteReadWrite) -> Result<()> {
+        unsafe { ioctl::sl_ssap_call_method(self.raw_fd(), rw)? };
+        Ok(())
+    }
+
     // ----- DLI -----
 
     /// Get DLI controller info

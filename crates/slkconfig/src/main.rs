@@ -122,6 +122,16 @@ enum Command {
         /// Value as hex bytes
         value: String,
     },
+
+    /// Call a method on a remote peer
+    CallMethod {
+        /// Connection handle
+        conn: String,
+        /// Method handle
+        handle: String,
+        /// Input data as hex bytes
+        input: String,
+    },
 }
 
 fn main() {
@@ -158,6 +168,7 @@ fn main() {
         Command::RemoteDiscover { conn } => cmd_remote_discover(&adapter, &conn),
         Command::RemoteRead { conn, handle } => cmd_remote_read(&adapter, &conn, &handle),
         Command::RemoteWrite { conn, handle, value } => cmd_remote_write(&adapter, &conn, &handle, &value),
+        Command::CallMethod { conn, handle, input } => cmd_call_method(&adapter, &conn, &handle, &input),
     };
 
     if let Err(e) = result {
@@ -634,6 +645,35 @@ fn cmd_remote_write(adapter: &Adapter, conn_str: &str, handle_str: &str, value_h
     };
     adapter.ssap_remote_write(&rw)?;
     println!("Written {} bytes to remote property {:#06x}", len, handle);
+    Ok(())
+}
+
+fn cmd_call_method(adapter: &Adapter, conn_str: &str, handle_str: &str, input_hex: &str) -> libsparklink::Result<()> {
+    let conn_handle = parse_handle(conn_str)?;
+    let handle = parse_handle(handle_str)?;
+    let input = parse_hex_bytes(input_hex)?;
+    let len = input.len().min(248);
+
+    let mut rw = slk_protocol::SsapRemoteReadWrite {
+        conn_handle,
+        handle,
+        length: len as u16,
+        _pad: [0; 2],
+        data: {
+            let mut d = [0u8; 248];
+            d[..len].copy_from_slice(&input[..len]);
+            d
+        },
+    };
+    adapter.ssap_call_method(&mut rw)?;
+
+    let out_len = (rw.length as usize).min(rw.data.len());
+    let data = &rw.data[..out_len];
+    println!("Method {:#06x} returned {} bytes:", handle, out_len);
+    for chunk in data.chunks(16) {
+        let hex: Vec<String> = chunk.iter().map(|b| format!("{b:02x}")).collect();
+        println!("  {}", hex.join(" "));
+    }
     Ok(())
 }
 

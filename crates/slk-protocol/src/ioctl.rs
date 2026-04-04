@@ -76,7 +76,7 @@ nix::ioctl_write_ptr!(sl_sec_set_oob, SL_MAGIC, 0x4D, super::SleOobData);
 nix::ioctl_write_ptr!(sl_sec_input_passkey, SL_MAGIC, 0x4E, super::SlePasskeyInput);
 nix::ioctl_write_ptr!(sl_sec_set_password, SL_MAGIC, 0x4F, super::SlePasswordParams);
 
-// ----- SSAP Service (0x50 - 0x5E) -----
+// ----- SSAP Service (0x50 - 0x5F) -----
 
 nix::ioctl_none!(sl_ssap_register_svc, SL_MAGIC, 0x50);
 nix::ioctl_read!(sl_ssap_info, SL_MAGIC, 0x51, super::SsapSummary);
@@ -93,6 +93,7 @@ nix::ioctl_readwrite!(sl_ssap_remote_discover, SL_MAGIC, 0x5B, super::SsapRemote
 nix::ioctl_readwrite!(sl_ssap_remote_read, SL_MAGIC, 0x5C, super::SsapRemoteReadWrite);
 nix::ioctl_write_ptr!(sl_ssap_remote_write, SL_MAGIC, 0x5D, super::SsapRemoteReadWrite);
 nix::ioctl_read!(sl_ssap_remote_event, SL_MAGIC, 0x5E, super::SsapNotification);
+nix::ioctl_readwrite!(sl_ssap_call_method, SL_MAGIC, 0x5F, super::SsapRemoteReadWrite);
 
 // ----- Power Management (0x60 - 0x65) -----
 

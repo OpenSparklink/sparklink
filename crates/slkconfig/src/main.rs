@@ -37,6 +37,25 @@ enum Command {
 
     /// List active connections
     Connections,
+
+    /// Start scanning and print discovered devices
+    Scan {
+        /// Scan duration in seconds (default: 5)
+        #[arg(short, long, default_value_t = 5)]
+        duration: u64,
+    },
+
+    /// Connect to a peer by address
+    Connect {
+        /// Peer address in AA:BB:CC:DD:EE:FF format
+        address: String,
+    },
+
+    /// Disconnect a connection by handle
+    Disconnect {
+        /// Connection handle (hex, e.g. 0x0001)
+        handle: String,
+    },
 }
 
 fn main() {
@@ -58,6 +77,9 @@ fn main() {
         Command::Reset => cmd_reset(&adapter),
         Command::Stats => cmd_stats(&adapter),
         Command::Connections => cmd_connections(&adapter),
+        Command::Scan { duration } => cmd_scan(&adapter, duration),
+        Command::Connect { address } => cmd_connect(&adapter, &address),
+        Command::Disconnect { handle } => cmd_disconnect(&adapter, &handle),
     };
 
     if let Err(e) = result {
@@ -210,4 +232,93 @@ fn cmd_connections(adapter: &Adapter) -> libsparklink::Result<()> {
     }
 
     Ok(())
+}
+
+fn cmd_scan(adapter: &Adapter, duration: u64) -> libsparklink::Result<()> {
+    use slk_protocol::SleScanParams;
+
+    let params = SleScanParams {
+        dev_index: 0,
+        window_ms: 100,
+        interval_ms: 200,
+        filter_discovery_level: 0,
+        _reserved: [0; 9],
+    };
+    adapter.start_scan(&params)?;
+    println!("Scanning for {duration} seconds...\n");
+
+    let start = std::time::Instant::now();
+    let mut count = 0u32;
+
+    while start.elapsed().as_secs() < duration {
+        match adapter.poll_event()? {
+            Some(event) => {
+                let name_end = event.data.iter().position(|&b| b == 0).unwrap_or(event.data_len as usize);
+                let name = std::str::from_utf8(&event.data[..name_end]).unwrap_or("");
+                count += 1;
+                println!(
+                    "  [{count}] {} RSSI={:>4} Level={} Name=\"{name}\"",
+                    fmt_addr(&event.addr),
+                    event.status as i8,
+                    event.data[name_end.saturating_add(1).min(event.data.len() - 1)],
+                );
+            }
+            None => {
+                std::thread::sleep(std::time::Duration::from_millis(10));
+            }
+        }
+    }
+
+    adapter.stop_scan()?;
+    println!("\nScan complete: {count} report(s)");
+    Ok(())
+}
+
+fn cmd_connect(adapter: &Adapter, address: &str) -> libsparklink::Result<()> {
+    use slk_protocol::SleConnectParams;
+
+    let addr = parse_addr(address).map_err(|_| {
+        libsparklink::Error::InvalidParam("address must be AA:BB:CC:DD:EE:FF")
+    })?;
+
+    let params = SleConnectParams {
+        peer_addr: addr,
+        gt_role: 0,
+        bandwidth: 0,
+        mcs_index: 0,
+        _pad: 0,
+        timeout_10ms: 100,
+        _reserved: [0; 4],
+    };
+    adapter.connect(&params)?;
+    println!("Connection initiated to {address}");
+    Ok(())
+}
+
+fn cmd_disconnect(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()> {
+    let handle = if let Some(hex) = handle_str.strip_prefix("0x") {
+        u16::from_str_radix(hex, 16).map_err(|_| {
+            libsparklink::Error::InvalidParam("invalid hex handle")
+        })?
+    } else {
+        handle_str.parse::<u16>().map_err(|_| {
+            libsparklink::Error::InvalidParam("invalid handle number")
+        })?
+    };
+
+    adapter.disconnect(handle)?;
+    println!("Disconnected handle {handle:#06x}");
+    Ok(())
+}
+
+fn parse_addr(s: &str) -> Result<[u8; 6], &'static str> {
+    let parts: Vec<&str> = s.split(':').collect();
+    if parts.len() != 6 {
+        return Err("address must be AA:BB:CC:DD:EE:FF");
+    }
+    let mut addr = [0u8; 6];
+    for (i, part) in parts.iter().enumerate() {
+        addr[i] = u8::from_str_radix(part, 16).map_err(|_| "invalid hex byte")?;
+    }
+    Ok(addr)
 }

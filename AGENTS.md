@@ -115,7 +115,7 @@ sparklink-userspace: <简短描述>
 | 阶段 | 内容 | 状态 |
 |------|------|------|
 | 1 | Cargo 框架 + UAPI 绑定 | 完成 |
-| 2 | 发现与连接 (scan/connect D-Bus 接口) | 待开始 |
+| 2 | 发现与连接 (scan/connect D-Bus 接口) | 完成 |
 | 3 | 安全配对 (Agent 框架) | 待开始 |
 | 4 | SSAP 服务管理 (Profile 插件) | 待开始 |
 | 5 | 命令行工具 + 监控 (slctl/slkmon/slkdump) | 待开始 |

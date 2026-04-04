@@ -1,13 +1,19 @@
 mod config;
 mod dbus_iface;
 mod kernel;
+mod state;
+
+use std::sync::Arc;
 
 use clap::Parser;
+use tokio::sync::Mutex;
 use tracing::{error, info};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 use crate::config::DaemonConfig;
+use crate::dbus_iface::{AdapterIface, DeviceIface, Root};
 use crate::kernel::KernelLink;
+use crate::state::{AdapterState, SharedState};
 
 #[derive(Parser)]
 #[command(name = "slkd", about = "SparkLink daemon")]
@@ -56,17 +62,24 @@ async fn main() -> anyhow::Result<()> {
     let dev_count = link.adapter().device_count()?;
     info!(dev_count, device = %cli.device, "kernel link established");
 
+    // Create shared state
+    let adapter = link.into_adapter();
+    let shared: SharedState = Arc::new(Mutex::new(AdapterState::new(adapter, config)));
+
     // D-Bus session
     let connection = zbus::connection::Builder::system()?
         .name("org.sparklink")?
-        .serve_at("/org/sparklink", dbus_iface::Root::new(config))?
+        .serve_at("/org/sparklink", Root::new(shared.clone()))?
+        .serve_at("/org/sparklink/slk0", AdapterIface::new(shared.clone()))?
         .build()
         .await?;
 
     info!("D-Bus service registered on org.sparklink");
 
     // Main event loop
-    let event_loop = tokio::spawn(event_loop(link));
+    let conn_clone = connection.clone();
+    let state_clone = shared.clone();
+    let event_loop = tokio::spawn(event_loop(state_clone, conn_clone));
 
     // Wait for shutdown signal
     tokio::signal::ctrl_c().await?;
@@ -79,12 +92,50 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn event_loop(link: KernelLink) {
+async fn event_loop(state: SharedState, connection: zbus::Connection) {
     loop {
-        match link.adapter().next_event().await {
+        let event = {
+            let st = state.lock().await;
+            st.adapter.next_event().await
+        };
+
+        match event {
+            Ok(libsparklink::Event::AdvReport { addr, rssi, discovery_level, name }) => {
+                let mut st = state.lock().await;
+                let is_new = st.on_adv_report(addr, rssi, discovery_level, name.clone());
+                if is_new {
+                    let object_path = st.devices[&addr].object_path.clone();
+                    drop(st);
+                    let iface = DeviceIface::new(state.clone(), addr);
+                    if let Err(e) = connection
+                        .object_server()
+                        .at(object_path.as_str(), iface)
+                        .await
+                    {
+                        error!(%e, path = %object_path, "failed to register device object");
+                    } else {
+                        info!(
+                            address = %dbus_iface::format_addr(&addr),
+                            name = %name,
+                            rssi,
+                            "new device discovered"
+                        );
+                    }
+                }
+            }
+            Ok(libsparklink::Event::ConnectionStateChanged { handle, state: conn_state, peer_addr }) => {
+                let mut st = state.lock().await;
+                st.on_conn_state_changed(handle, conn_state, peer_addr);
+                let connected = conn_state == slk_protocol::ConnState::Connected as u8;
+                info!(
+                    address = %dbus_iface::format_addr(&peer_addr),
+                    handle,
+                    connected,
+                    "connection state changed"
+                );
+            }
             Ok(event) => {
                 tracing::debug!(?event, "kernel event");
-                // TODO: dispatch to D-Bus signals, update object tree
             }
             Err(e) => {
                 error!(%e, "event read error");

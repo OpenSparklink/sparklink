@@ -14,4 +14,8 @@ impl KernelLink {
     pub fn adapter(&self) -> &Adapter {
         &self.adapter
     }
+
+    pub fn into_adapter(self) -> Adapter {
+        self.adapter
+    }
 }

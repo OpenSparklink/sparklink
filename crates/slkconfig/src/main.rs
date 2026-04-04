@@ -132,6 +132,22 @@ enum Command {
         /// Input data as hex bytes
         input: String,
     },
+
+    /// Find a remote service by UUID
+    FindByUuid {
+        /// Connection handle
+        conn: String,
+        /// 16-bit UUID in hex (e.g. 0x1800)
+        uuid: String,
+    },
+
+    /// Read a remote property by UUID
+    ReadByUuid {
+        /// Connection handle
+        conn: String,
+        /// 16-bit UUID in hex (e.g. 0x2A00)
+        uuid: String,
+    },
 }
 
 fn main() {
@@ -169,6 +185,8 @@ fn main() {
         Command::RemoteRead { conn, handle } => cmd_remote_read(&adapter, &conn, &handle),
         Command::RemoteWrite { conn, handle, value } => cmd_remote_write(&adapter, &conn, &handle, &value),
         Command::CallMethod { conn, handle, input } => cmd_call_method(&adapter, &conn, &handle, &input),
+        Command::FindByUuid { conn, uuid } => cmd_find_by_uuid(&adapter, &conn, &uuid),
+        Command::ReadByUuid { conn, uuid } => cmd_read_by_uuid(&adapter, &conn, &uuid),
     };
 
     if let Err(e) = result {
@@ -673,6 +691,40 @@ fn cmd_call_method(adapter: &Adapter, conn_str: &str, handle_str: &str, input_he
     for chunk in data.chunks(16) {
         let hex: Vec<String> = chunk.iter().map(|b| format!("{b:02x}")).collect();
         println!("  {}", hex.join(" "));
+    }
+    Ok(())
+}
+
+fn cmd_find_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libsparklink::Result<()> {
+    let conn_handle = parse_handle(conn_str)?;
+    let uuid16 = parse_handle(uuid_str)?;
+
+    let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
+    op.conn_handle = conn_handle;
+    op.uuid16 = uuid16;
+    adapter.ssap_find_by_uuid(&mut op)?;
+    println!("UUID {:#06x} found at handle {:#06x}", uuid16, op.handle);
+    Ok(())
+}
+
+fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libsparklink::Result<()> {
+    let conn_handle = parse_handle(conn_str)?;
+    let uuid16 = parse_handle(uuid_str)?;
+
+    let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
+    op.conn_handle = conn_handle;
+    op.uuid16 = uuid16;
+    adapter.ssap_read_by_uuid(&mut op)?;
+
+    let out_len = (op.length as usize).min(op.data.len());
+    let data = &op.data[..out_len];
+    println!("UUID {:#06x} at handle {:#06x} ({} bytes):", uuid16, op.handle, out_len);
+    for chunk in data.chunks(16) {
+        let hex: Vec<String> = chunk.iter().map(|b| format!("{b:02x}")).collect();
+        println!("  {}", hex.join(" "));
+    }
+    if let Ok(s) = std::str::from_utf8(data) {
+        println!("  UTF-8: \"{s}\"");
     }
     Ok(())
 }

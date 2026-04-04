@@ -268,6 +268,31 @@ impl RemoteServiceIface {
         let out_len = rw.length as usize;
         Ok(rw.data[..out_len.min(rw.data.len())].to_vec())
     }
+
+    /// Find a remote service by UUID (16-bit)
+    async fn find_by_uuid(&self, uuid16: u16) -> zbus::fdo::Result<u16> {
+        let st = self.state.lock().await;
+        let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
+        op.conn_handle = self.conn_handle;
+        op.uuid16 = uuid16;
+        st.adapter.ssap_find_by_uuid(&mut op).map_err(|e| {
+            zbus::fdo::Error::Failed(format!("ssap_find_by_uuid: {e}"))
+        })?;
+        Ok(op.handle)
+    }
+
+    /// Read a remote property by UUID (16-bit)
+    async fn read_by_uuid(&self, uuid16: u16) -> zbus::fdo::Result<Vec<u8>> {
+        let st = self.state.lock().await;
+        let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
+        op.conn_handle = self.conn_handle;
+        op.uuid16 = uuid16;
+        st.adapter.ssap_read_by_uuid(&mut op).map_err(|e| {
+            zbus::fdo::Error::Failed(format!("ssap_read_by_uuid: {e}"))
+        })?;
+        let out_len = (op.length as usize).min(op.data.len());
+        Ok(op.data[..out_len].to_vec())
+    }
 }
 
 // ----- D-Bus return types -----

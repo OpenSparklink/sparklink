@@ -493,3 +493,78 @@ pub unsafe extern "C" fn slk_ssap_call_method(
         Err(_) => -1,
     }
 }
+
+/// Find a remote service by UUID.
+///
+/// # Safety
+/// `adapter` must be a valid non-null pointer.
+/// Use `uuid16` for 16-bit UUIDs or `uuid128` for 128-bit UUIDs (set uuid16=0).
+/// On success, `out_handle` receives the matched service handle.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_ssap_find_by_uuid(
+    adapter: *const SlkAdapter,
+    conn_handle: u16,
+    uuid16: u16,
+    uuid128: *const u8,
+    out_handle: *mut u16,
+) -> c_int {
+    let adapter = match unsafe { adapter.as_ref() } {
+        Some(a) => a,
+        None => return -1,
+    };
+    let mut op: slk_protocol::SsapUuidOp = unsafe { core::mem::zeroed() };
+    op.conn_handle = conn_handle;
+    op.uuid16 = uuid16;
+    if uuid16 == 0 && !uuid128.is_null() {
+        unsafe { core::ptr::copy_nonoverlapping(uuid128, op.uuid128.as_mut_ptr(), 16) };
+    }
+    match adapter.inner.ssap_find_by_uuid(&mut op) {
+        Ok(()) => {
+            if !out_handle.is_null() {
+                unsafe { *out_handle = op.handle };
+            }
+            0
+        }
+        Err(_) => -1,
+    }
+}
+
+/// Read a remote property by UUID.
+///
+/// # Safety
+/// `adapter` must be a valid non-null pointer.
+/// `output` must point to `output_len` writable bytes.
+/// On success, `output_len` is updated with the actual data size.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_ssap_read_by_uuid(
+    adapter: *const SlkAdapter,
+    conn_handle: u16,
+    uuid16: u16,
+    uuid128: *const u8,
+    output: *mut u8,
+    output_len: *mut usize,
+) -> c_int {
+    let adapter = match unsafe { adapter.as_ref() } {
+        Some(a) => a,
+        None => return -1,
+    };
+    let mut op: slk_protocol::SsapUuidOp = unsafe { core::mem::zeroed() };
+    op.conn_handle = conn_handle;
+    op.uuid16 = uuid16;
+    if uuid16 == 0 && !uuid128.is_null() {
+        unsafe { core::ptr::copy_nonoverlapping(uuid128, op.uuid128.as_mut_ptr(), 16) };
+    }
+    match adapter.inner.ssap_read_by_uuid(&mut op) {
+        Ok(()) => {
+            let out_len = (op.length as usize).min(op.data.len());
+            if !output.is_null() && !output_len.is_null() {
+                let max_out = unsafe { *output_len };
+                let actual = out_len.min(max_out);
+                unsafe { core::ptr::copy_nonoverlapping(op.data.as_ptr(), output, actual) };
+                unsafe { *output_len = actual };
+            }
+            0
+        }
+        Err(_) => -1,
+    }
+}

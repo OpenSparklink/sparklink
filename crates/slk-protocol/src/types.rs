@@ -534,6 +534,18 @@ pub struct SsapRemoteReadWrite {
     pub data: [u8; 248],
 }
 
+/// UUID-based SSAP operation (find-by-uuid, read-by-uuid)
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct SsapUuidOp {
+    pub conn_handle: u16,
+    pub uuid16: u16,
+    pub uuid128: [u8; 16],
+    pub handle: u16,
+    pub length: u16,
+    pub data: [u8; 232],
+}
+
 /// Power management info (ioctl 0x60)
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]

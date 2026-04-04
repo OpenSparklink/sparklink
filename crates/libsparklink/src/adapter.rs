@@ -339,6 +339,18 @@ impl Adapter {
         Ok(())
     }
 
+    /// Find a remote service by UUID
+    pub fn ssap_find_by_uuid(&self, op: &mut SsapUuidOp) -> Result<()> {
+        unsafe { ioctl::sl_ssap_find_by_uuid(self.raw_fd(), op)? };
+        Ok(())
+    }
+
+    /// Read a remote property by UUID
+    pub fn ssap_read_by_uuid(&self, op: &mut SsapUuidOp) -> Result<()> {
+        unsafe { ioctl::sl_ssap_read_by_uuid(self.raw_fd(), op)? };
+        Ok(())
+    }
+
     // ----- DLI -----
 
     /// Get DLI controller info

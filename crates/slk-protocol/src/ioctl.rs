@@ -94,6 +94,8 @@ nix::ioctl_readwrite!(sl_ssap_remote_read, SL_MAGIC, 0x5C, super::SsapRemoteRead
 nix::ioctl_write_ptr!(sl_ssap_remote_write, SL_MAGIC, 0x5D, super::SsapRemoteReadWrite);
 nix::ioctl_read!(sl_ssap_remote_event, SL_MAGIC, 0x5E, super::SsapNotification);
 nix::ioctl_readwrite!(sl_ssap_call_method, SL_MAGIC, 0x5F, super::SsapRemoteReadWrite);
+nix::ioctl_readwrite!(sl_ssap_find_by_uuid, SL_MAGIC, 0x6F, super::SsapUuidOp);
+nix::ioctl_readwrite!(sl_ssap_read_by_uuid, SL_MAGIC, 0x72, super::SsapUuidOp);
 
 // ----- Power Management (0x60 - 0x65) -----
 

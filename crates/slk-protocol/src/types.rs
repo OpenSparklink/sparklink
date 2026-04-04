@@ -191,9 +191,9 @@ pub struct SleExtAdvInfo {
     pub sid: u8,
     pub primary_phy: u8,
     pub data_len: u16,
-    pub ext_adv_timing: u16,
-    pub max_adv_events: u16,
-    pub tx_count: u32,
+    pub ext_adv_timing: u8,
+    pub max_adv_events: u8,
+    pub tx_count: u64,
     pub events_sent: u32,
     pub _pad: [u8; 4],
 }
@@ -719,11 +719,11 @@ pub struct SleMgmtStats {
 #[repr(C)]
 pub struct SleSubsysStats {
     pub dev_count: u16,
-    pub proto_count: u16,
-    pub binding_count: u16,
+    pub proto_count: u8,
+    pub binding_count: u8,
     pub active_connections: u16,
     pub mgmt_pending: u16,
-    pub total_conn_created: u16,
+    pub total_conn_created: u32,
     pub total_conn_completed: u32,
     pub total_mgmt_submitted: u32,
     pub total_mgmt_timeouts: u32,

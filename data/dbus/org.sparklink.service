@@ -1,0 +1,5 @@
+[D-BUS Service]
+Name=org.sparklink
+Exec=/usr/sbin/slkd
+User=root
+SystemdService=sparklink.service

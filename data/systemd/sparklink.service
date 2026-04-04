@@ -1,0 +1,23 @@
+[Unit]
+Description=SparkLink Management Daemon
+Documentation=man:slkd(8)
+After=dbus.service
+
+[Service]
+Type=dbus
+BusName=org.sparklink
+ExecStart=/usr/sbin/slkd
+NotifyAccess=main
+LimitNPROC=1
+Restart=on-failure
+RestartSec=5s
+
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/sparklink
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

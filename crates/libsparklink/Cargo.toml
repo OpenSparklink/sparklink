@@ -1,0 +1,16 @@
+[package]
+name = "libsparklink"
+description = "SparkLink userspace library - adapter, device, connection, and service management"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+slk-protocol = { workspace = true }
+tokio = { workspace = true }
+nix = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }

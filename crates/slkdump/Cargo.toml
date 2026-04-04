@@ -1,0 +1,14 @@
+[package]
+name = "slkdump"
+description = "SparkLink frame dump tool"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "slkdump"
+path = "src/main.rs"
+
+[dependencies]
+slk-protocol = { workspace = true }
+libsparklink = { workspace = true }
+clap = { workspace = true }

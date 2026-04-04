@@ -1,0 +1,15 @@
+[package]
+name = "slkmon"
+description = "SparkLink protocol monitor and analyzer"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "slkmon"
+path = "src/main.rs"
+
+[dependencies]
+slk-protocol = { workspace = true }
+libsparklink = { workspace = true }
+clap = { workspace = true }
+chrono = { workspace = true }

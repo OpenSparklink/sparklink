@@ -1,0 +1,99 @@
+mod commands;
+
+use std::process;
+
+use rustyline::error::ReadlineError;
+use rustyline::DefaultEditor;
+
+const PROMPT: &str = "[slk]# ";
+
+fn main() {
+    let rt = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap_or_else(|e| {
+            eprintln!("failed to create runtime: {e}");
+            process::exit(1);
+        });
+
+    if let Err(e) = rt.block_on(run()) {
+        eprintln!("error: {e}");
+        process::exit(1);
+    }
+}
+
+async fn run() -> anyhow::Result<()> {
+    let conn = zbus::Connection::system().await?;
+    let mut ctx = commands::Context::new(conn);
+
+    let mut rl = DefaultEditor::new()?;
+    let history_path = dirs_history_path();
+    if let Some(ref path) = history_path {
+        let _ = rl.load_history(path);
+    }
+
+    println!("SparkLink interactive tool — type 'help' for commands, 'quit' to exit");
+
+    loop {
+        match rl.readline(PROMPT) {
+            Ok(line) => {
+                let line = line.trim();
+                if line.is_empty() {
+                    continue;
+                }
+                let _ = rl.add_history_entry(line);
+
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                match parts[0] {
+                    "quit" | "exit" => break,
+                    "help" => print_help(),
+                    _ => {
+                        if let Err(e) = ctx.dispatch(&parts).await {
+                            eprintln!("error: {e}");
+                        }
+                    }
+                }
+            }
+            Err(ReadlineError::Interrupted | ReadlineError::Eof) => break,
+            Err(e) => {
+                eprintln!("readline error: {e}");
+                break;
+            }
+        }
+    }
+
+    if let Some(ref path) = history_path {
+        let _ = rl.save_history(path);
+    }
+
+    Ok(())
+}
+
+fn print_help() {
+    println!(
+        "\
+Commands:
+  list                          List adapters
+  show                          Show adapter details
+  scan on|off                   Start/stop scanning
+  devices                       List discovered devices
+  info <address>                Show device details
+  pair <address>                Pair with device
+  connect <address>             Connect to device
+  disconnect [address]          Disconnect
+  services                      List local SSAP services
+  remote-services               List remote services
+  read <handle>                 Read property value
+  write <handle> <hex>          Write property value
+  security                      Show security state
+  role [g|t]                    Get/set role
+  phy                           Show PHY parameters
+  stats                         Show subsystem statistics
+  help                          Print this help
+  quit                          Exit"
+    );
+}
+
+fn dirs_history_path() -> Option<String> {
+    std::env::var("HOME").ok().map(|h| format!("{h}/.slctl_history"))
+}

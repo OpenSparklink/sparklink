@@ -29,6 +29,9 @@ cargo test
 | `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型 |
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
 | `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset/services/list-services/read-prop/write-prop/remote-discover/remote-read/remote-write 子命令, clap 4 |
+| `slctl` | bin | 交互式控制工具 (对标 bluetoothctl): rustyline 15, 通过 D-Bus 与 slkd 通信 |
+| `slkmon` | bin | 协议分析器 (对标 btmon): DLI 帧解码、事件过滤、hexdump、文件填出 |
+| `slkdump` | bin | 帧转储工具 (对标 hcidump): 轻量级、原始数据捕获、二进制输出 |
 
 ## 核心依赖
 
@@ -93,6 +96,9 @@ sparklink-userspace: <简短描述>
 │   ├── libsparklink/src/ (adapter.rs, error.rs, event.rs)
 │   ├── slkd/src/ (main.rs, config.rs, kernel.rs, dbus_iface.rs, state.rs, security.rs, service.rs)
 │   └── slkconfig/src/ (main.rs)
+│   ├── slctl/src/ (main.rs, commands.rs)
+│   ├── slkmon/src/ (main.rs, decode.rs)
+│   └── slkdump/src/ (main.rs)
 ├── data/
 │   ├── config/main.conf
 │   ├── dbus/ (org.sparklink.service, sparklink.conf)
@@ -118,7 +124,7 @@ sparklink-userspace: <简短描述>
 | 2 | 发现与连接 (scan/connect D-Bus 接口) | 完成 |
 | 3 | 安全配对 (Agent 框架) | 完成 |
 | 4 | SSAP 服务管理 (Profile 插件) | 完成 |
-| 5 | 命令行工具 + 监控 (slctl/slkmon/slkdump) | 待开始 |
+| 5 | 命令行工具 + 监控 (slctl/slkmon/slkdump) | 完成 |
 | 6 | 语言绑定 (C/Python) + 性能优化 | 待开始 |
 | 7 | CI/CD + 包分发 | 待开始 |
 

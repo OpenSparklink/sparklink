@@ -5,6 +5,9 @@ members = [
     "crates/libsparklink",
     "crates/slkd",
     "crates/slkconfig",
+    "crates/slctl",
+    "crates/slkmon",
+    "crates/slkdump",
 ]
 
 [workspace.package]
@@ -25,3 +28,5 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-journald = "0.3"
 clap = { version = "4", features = ["derive"] }
 thiserror = "2"
+rustyline = "15"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }

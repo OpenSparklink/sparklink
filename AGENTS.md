@@ -78,12 +78,29 @@ unsafe { ioctl::sl_stop_adv(self.raw_fd())? };
 
 ### Commit 规范
 
+使用 [Conventional Commits](https://www.conventionalcommits.org/) 风格:
+
 ```
-sparklink-userspace: <简短描述>
+<type>(sparklink): <简短描述>
 
 <详细说明>
 
+Signed-off-by: sanchuanhehe <wyihe5220@gmail.com>
+Assisted-by: GitHub Copilot <copilot@github.com>
 ```
+
+type 取值:
+- `feat`: 新功能 (ioctl 新增、D-Bus 方法、CLI 子命令等)
+- `fix`: 缺陷修复 (ABI 不匹配、逻辑错误等)
+- `docs`: 文档变更 (README、API.md 等)
+- `refactor`: 重构 (不改变外部行为)
+- `test`: 测试增补或修复
+- `chore`: 构建/CI/依赖变更
+- `perf`: 性能优化
+
+Trailer 要求:
+- 所有提交必须包含 `Signed-off-by` 和 `Assisted-by` 两行
+- 邮箱地址不可省略
 
 ## 文件布局
 

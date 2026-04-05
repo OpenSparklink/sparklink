@@ -156,3 +156,24 @@ pub struct ExtAdvInfo {
     pub tx_count: u64,
     pub events_sent: u32,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ext_adv_info_fields() {
+        let info = ExtAdvInfo {
+            handle: 0,
+            state: 1,
+            sid: 2,
+            primary_phy: 1,
+            data_len: 31,
+            tx_count: 500,
+            events_sent: 100,
+        };
+        assert_eq!(info.handle, 0);
+        assert_eq!(info.data_len, 31);
+        assert_eq!(info.tx_count, 500);
+    }
+}

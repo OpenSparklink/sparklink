@@ -586,3 +586,141 @@ pub struct PeerVersion {
     pub manufacturer: u16,
     pub subversion: u16,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn subsys_stats_default_values() {
+        let stats = SubsysStats {
+            dev_count: 1,
+            active_connections: 0,
+            total_conn_created: 10,
+            total_mgmt_submitted: 5,
+            total_mgmt_timeouts: 0,
+            crc_errors: 0,
+            power_state: 0,
+        };
+        assert_eq!(stats.dev_count, 1);
+        assert_eq!(stats.power_state, 0);
+    }
+
+    #[test]
+    fn event_stats_serialization() {
+        let stats = EventStats {
+            pending: 3,
+            total_enqueued: 100,
+            total_dropped: 2,
+            total_delivered: 98,
+        };
+        assert_eq!(stats.total_enqueued - stats.total_dropped, stats.total_delivered);
+    }
+
+    #[test]
+    fn phy_info_fields() {
+        let info = PhyInfo {
+            mcs_index: 7,
+            bandwidth_mhz: 20,
+            tx_power_dbm: 10,
+            data_rate_kbps: 12000,
+            hop_channel: 5,
+            modulation: 2,
+        };
+        assert_eq!(info.mcs_index, 7);
+        assert_eq!(info.data_rate_kbps, 12000);
+    }
+
+    #[test]
+    fn hop_info_fields() {
+        let hop = HopInfo {
+            channel: 15,
+            freq_mhz: 2440,
+            event_counter: 1024,
+        };
+        assert_eq!(hop.channel, 15);
+        assert!(hop.freq_mhz >= 2400);
+    }
+
+    #[test]
+    fn pm_info_force_active() {
+        let pm = PmInfo {
+            state: 0,
+            force_active: true,
+            current_interval: 100,
+            transitions: 5,
+        };
+        assert!(pm.force_active);
+        assert_eq!(pm.state, 0);
+    }
+
+    #[test]
+    fn dli_info_name() {
+        let dli = DliInfo {
+            bus: 4,
+            firmware_version: 0x0100,
+            max_connections: 8,
+            max_adv_sets: 4,
+            max_mtu: 512,
+            name: "SLK-TestCtrl".into(),
+        };
+        assert_eq!(dli.name, "SLK-TestCtrl");
+        assert_eq!(dli.bus, 4);
+    }
+
+    #[test]
+    fn mgmt_stats_consistency() {
+        let stats = MgmtStats {
+            pending: 2,
+            total_submitted: 100,
+            total_resolved: 95,
+            total_timeouts: 3,
+        };
+        assert!(stats.total_resolved + stats.total_timeouts + stats.pending as u32
+            <= stats.total_submitted);
+    }
+
+    #[test]
+    fn meas_cap_fields() {
+        let cap = MeasCap {
+            meas_types: 0x03,
+            max_instances: 2,
+            antenna_count: 4,
+        };
+        assert_eq!(cap.antenna_count, 4);
+    }
+
+    #[test]
+    fn mcs_select_result() {
+        let result = McsSelectResult {
+            selected_mcs: 5,
+            effective_kbps: 8000,
+        };
+        assert!(result.effective_kbps > 0);
+        assert!(result.selected_mcs <= 12);
+    }
+
+    #[test]
+    fn sync_link_info_fields() {
+        let info = SyncLinkInfo {
+            sync_handle: 1,
+            acl_handle: 0x0040,
+            group_id: 0,
+            stream_id: 0,
+            link_type: 1,
+            state: 2,
+        };
+        assert_eq!(info.link_type, 1);
+    }
+
+    #[test]
+    fn peer_version_fields() {
+        let ver = PeerVersion {
+            version: 1,
+            manufacturer: 0x1234,
+            subversion: 0x0001,
+        };
+        assert_eq!(ver.version, 1);
+        assert_eq!(ver.manufacturer, 0x1234);
+    }
+}

@@ -299,4 +299,124 @@ mod tests {
         // Verify ioctl magic is correct across all categories
         assert_eq!(ioctl::SL_MAGIC, 0x53);
     }
+
+    #[test]
+    fn ext_adv_data_buffer_capacity() {
+        let data: SleExtAdvData = unsafe { std::mem::zeroed() };
+        assert_eq!(data.data.len(), 252);
+        assert_eq!(std::mem::size_of::<SleExtAdvData>(), 256);
+    }
+
+    #[test]
+    fn afh_map_params_layout() {
+        let params: SleAfhMapParams = unsafe { std::mem::zeroed() };
+        assert_eq!(params.map.len(), 10);
+        assert_eq!(params.handle, 0);
+        assert_eq!(params.used_count, 0);
+    }
+
+    #[test]
+    fn sync_config_handles_capacity() {
+        let cig: SleSyncCigConfig = unsafe { std::mem::zeroed() };
+        assert_eq!(cig.handles_out.len(), 8);
+        let big: SleSyncBigConfig = unsafe { std::mem::zeroed() };
+        assert_eq!(big.handles_out.len(), 8);
+    }
+
+    #[test]
+    fn ral_params_irk_sizes() {
+        let ral: SleRalAddParams = unsafe { std::mem::zeroed() };
+        assert_eq!(ral.peer_irk.len(), 16);
+        assert_eq!(ral.local_irk.len(), 16);
+        assert_eq!(ral.peer_id.len(), 6);
+    }
+
+    #[test]
+    fn sinr_thresholds_capacity() {
+        let sinr: SleSinrThresholds = unsafe { std::mem::zeroed() };
+        assert_eq!(sinr.thresholds.len(), 13);
+    }
+
+    #[test]
+    fn conn_peer_cap_features_size() {
+        let cap: SleConnPeerCap = unsafe { std::mem::zeroed() };
+        assert_eq!(cap.features.len(), 10);
+        assert_eq!(cap.features_valid, 0);
+        assert_eq!(cap.version_valid, 0);
+    }
+
+    #[test]
+    fn uuid_op_data_capacity() {
+        let op: SsapUuidOp = unsafe { std::mem::zeroed() };
+        assert_eq!(op.data.len(), 232);
+        assert_eq!(op.uuid128.len(), 16);
+    }
+
+    #[test]
+    fn pm_info_event_counters_zero() {
+        let pm: SlePmInfo = unsafe { std::mem::zeroed() };
+        assert_eq!(pm.active_events, 0);
+        assert_eq!(pm.sniff_events, 0);
+        assert_eq!(pm.idle_events, 0);
+        assert_eq!(pm.transitions, 0);
+    }
+
+    #[test]
+    fn dli_cmd_params_capacity() {
+        let cmd: SleDliCmd = unsafe { std::mem::zeroed() };
+        assert_eq!(cmd.params.len(), 240);
+        assert_eq!(cmd.opcode, 0);
+        assert_eq!(cmd.seq, 0);
+    }
+
+    #[test]
+    fn event_stats_zeroed() {
+        let stats: SleEventStats = unsafe { std::mem::zeroed() };
+        assert_eq!(stats.pending, 0);
+        assert_eq!(stats.total_enqueued, 0);
+        assert_eq!(stats.total_dropped, 0);
+        assert_eq!(stats.total_delivered, 0);
+    }
+
+    #[test]
+    fn measurement_structs_zeroed() {
+        let cap: SleMeasCap = unsafe { std::mem::zeroed() };
+        assert_eq!(cap.meas_types, 0);
+        assert_eq!(cap.max_instances, 0);
+
+        let param: SleMeasLinkParam = unsafe { std::mem::zeroed() };
+        assert_eq!(param.handle, 0);
+        assert_eq!(param.interval, 0);
+
+        let action: SleMeasAction = unsafe { std::mem::zeroed() };
+        assert_eq!(action.handle, 0);
+        assert_eq!(action.action, 0);
+    }
+
+    #[test]
+    fn struct_field_offsets_extended() {
+        use std::mem::offset_of;
+
+        // SleExtAdvConfig layout
+        assert_eq!(offset_of!(SleExtAdvConfig, handle), 0);
+        assert_eq!(offset_of!(SleExtAdvConfig, discovery_level), 1);
+        assert_eq!(offset_of!(SleExtAdvConfig, sid), 2);
+        assert_eq!(offset_of!(SleExtAdvConfig, interval_ms), 8);
+
+        // SleAfhMapParams layout
+        assert_eq!(offset_of!(SleAfhMapParams, handle), 0);
+        assert_eq!(offset_of!(SleAfhMapParams, min_channels), 2);
+        assert_eq!(offset_of!(SleAfhMapParams, map), 4);
+
+        // SlePmInfo layout
+        assert_eq!(offset_of!(SlePmInfo, state), 0);
+        assert_eq!(offset_of!(SlePmInfo, force_active), 1);
+        assert_eq!(offset_of!(SlePmInfo, transitions), 12);
+
+        // SleRalAddParams layout
+        assert_eq!(offset_of!(SleRalAddParams, resolve_algo), 0);
+        assert_eq!(offset_of!(SleRalAddParams, peer_id), 4);
+        assert_eq!(offset_of!(SleRalAddParams, peer_irk), 12);
+        assert_eq!(offset_of!(SleRalAddParams, local_irk), 28);
+    }
 }

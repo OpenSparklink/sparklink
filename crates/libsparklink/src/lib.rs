@@ -70,6 +70,18 @@ mod tests {
 
         let ev = Event::HwError { code: 0x42 };
         assert!(format!("{ev:?}").contains("66") || format!("{ev:?}").contains("0x42"));
+
+        let ev = Event::DataReceived {
+            handle: 0x0001,
+            data: vec![0xAA, 0xBB, 0xCC],
+        };
+        let dbg = format!("{ev:?}");
+        assert!(dbg.contains("DataReceived"));
+        assert!(dbg.contains("handle: 1"));
+
+        let raw_evt: slk_protocol::SleDliEvent = unsafe { std::mem::zeroed() };
+        let ev = Event::RawDli(raw_evt);
+        assert!(format!("{ev:?}").contains("RawDli"));
     }
 
     #[test]

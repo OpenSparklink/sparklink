@@ -204,6 +204,22 @@ impl ControllerIface {
         })
     }
 
+    /// Classify channels by RSSI threshold
+    async fn afh_classify(
+        &self,
+        handle: u16,
+        threshold_dbm: i8,
+        min_channels: u8,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        let mut params: slk_protocol::SleAfhClassifyParams = unsafe { std::mem::zeroed() };
+        params.handle = handle;
+        params.threshold_dbm = threshold_dbm;
+        params.min_channels = min_channels;
+        let st = self.state.lock().await;
+        st.adapter.afh_classify(&mut params).map_err(map_err)?;
+        Ok(params.map_out.to_vec())
+    }
+
     // ----- Connection Capability -----
 
     /// Read peer features for a connection
@@ -211,6 +227,17 @@ impl ControllerIface {
         let st = self.state.lock().await;
         let cap = st.adapter.conn_read_peer_features(handle).map_err(map_err)?;
         Ok(cap.features.to_vec())
+    }
+
+    /// Read peer version for a connection
+    async fn conn_read_peer_version(&self, handle: u16) -> zbus::fdo::Result<PeerVersion> {
+        let st = self.state.lock().await;
+        let cap = st.adapter.conn_read_peer_version(handle).map_err(map_err)?;
+        Ok(PeerVersion {
+            version: cap.version,
+            manufacturer: cap.manufacturer,
+            subversion: cap.subversion,
+        })
     }
 
     /// Update connection parameters
@@ -287,6 +314,37 @@ impl ControllerIface {
 
     // ----- RAL / RPA -----
 
+    /// Add an entry to the Resolving Address List
+    async fn ral_add(
+        &self,
+        peer_id: Vec<u8>,
+        peer_irk: Vec<u8>,
+        local_irk: Vec<u8>,
+    ) -> zbus::fdo::Result<()> {
+        if peer_id.len() != 6 || peer_irk.len() != 16 || local_irk.len() != 16 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "peer_id=6 bytes, IRKs=16 bytes".into(),
+            ));
+        }
+        let mut params: slk_protocol::SleRalAddParams = unsafe { std::mem::zeroed() };
+        params.peer_id.copy_from_slice(&peer_id);
+        params.peer_irk.copy_from_slice(&peer_irk);
+        params.local_irk.copy_from_slice(&local_irk);
+        let st = self.state.lock().await;
+        st.adapter.ral_add(&params).map_err(map_err)
+    }
+
+    /// Remove an entry from the RAL
+    async fn ral_remove(&self, peer_id: Vec<u8>) -> zbus::fdo::Result<()> {
+        if peer_id.len() != 6 {
+            return Err(zbus::fdo::Error::InvalidArgs("peer_id must be 6 bytes".into()));
+        }
+        let mut params: slk_protocol::SleRalRemoveParams = unsafe { std::mem::zeroed() };
+        params.peer_id.copy_from_slice(&peer_id);
+        let st = self.state.lock().await;
+        st.adapter.ral_remove(&params).map_err(map_err)
+    }
+
     /// Clear all RAL entries
     async fn ral_clear(&self) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
@@ -311,6 +369,30 @@ impl ControllerIface {
         st.adapter.rpa_set_timeout(timeout_secs).map_err(map_err)
     }
 
+    /// Read the peer RPA for a given identity address
+    async fn ral_read_peer_rpa(&self, id: Vec<u8>) -> zbus::fdo::Result<Vec<u8>> {
+        if id.len() != 6 {
+            return Err(zbus::fdo::Error::InvalidArgs("id must be 6 bytes".into()));
+        }
+        let mut params: slk_protocol::SleRalQueryParams = unsafe { std::mem::zeroed() };
+        params.id.copy_from_slice(&id);
+        let st = self.state.lock().await;
+        st.adapter.ral_read_peer_rpa(&mut params).map_err(map_err)?;
+        Ok(params.rpa.to_vec())
+    }
+
+    /// Read the local RPA for a given identity address
+    async fn ral_read_local_rpa(&self, id: Vec<u8>) -> zbus::fdo::Result<Vec<u8>> {
+        if id.len() != 6 {
+            return Err(zbus::fdo::Error::InvalidArgs("id must be 6 bytes".into()));
+        }
+        let mut params: slk_protocol::SleRalQueryParams = unsafe { std::mem::zeroed() };
+        params.id.copy_from_slice(&id);
+        let st = self.state.lock().await;
+        st.adapter.ral_read_local_rpa(&mut params).map_err(map_err)?;
+        Ok(params.rpa.to_vec())
+    }
+
     // ----- Measurement -----
 
     /// Read measurement capability
@@ -328,6 +410,42 @@ impl ControllerIface {
     async fn meas_enable(&self, enable: bool) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
         st.adapter.meas_enable(enable).map_err(map_err)
+    }
+
+    /// Set measurement link parameter
+    async fn meas_set_link_param(
+        &self,
+        handle: u16,
+        meas_type: u8,
+        config_index: u8,
+        interval: u16,
+        duration: u16,
+    ) -> zbus::fdo::Result<()> {
+        let param = slk_protocol::SleMeasLinkParam {
+            handle,
+            meas_type,
+            config_index,
+            interval,
+            duration,
+        };
+        let st = self.state.lock().await;
+        st.adapter.meas_set_link_param(&param).map_err(map_err)
+    }
+
+    /// Execute a measurement action (start/stop/report)
+    async fn meas_action(
+        &self,
+        handle: u16,
+        action: u8,
+        config_index: u8,
+    ) -> zbus::fdo::Result<()> {
+        let act = slk_protocol::SleMeasAction {
+            handle,
+            action,
+            config_index,
+        };
+        let st = self.state.lock().await;
+        st.adapter.meas_action(&act).map_err(map_err)
     }
 
     // ----- Sync Link -----
@@ -460,4 +578,11 @@ pub struct SyncLinkInfo {
     pub stream_id: u8,
     pub link_type: u8,
     pub state: u8,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, zbus::zvariant::Type)]
+pub struct PeerVersion {
+    pub version: u8,
+    pub manufacturer: u16,
+    pub subversion: u16,
 }

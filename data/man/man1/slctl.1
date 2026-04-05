@@ -1,0 +1,187 @@
+.TH SLCTL 1 "2025-04-05" "SparkLink" "User Commands"
+.SH NAME
+slctl \- SparkLink device control utility
+.SH SYNOPSIS
+.B slctl
+.RI [ command ]
+.RI [ arguments ]
+.SH DESCRIPTION
+.B slctl
+is an interactive command\-line tool for controlling SparkLink wireless
+devices. It communicates with the
+.BR slkd (8)
+daemon over D\-Bus or directly through
+.BR libsparklink .
+.PP
+When invoked without arguments,
+.B slctl
+enters an interactive shell with a
+.B [slk]#
+prompt. Command history is saved to
+.IR ~/.slctl_history .
+.SH COMMANDS
+.SS Discovery and Connection
+.TP
+.B list
+List available adapters.
+.TP
+.B show
+Show adapter information and status.
+.TP
+.B scan on|off
+Start or stop device scanning.
+.TP
+.B devices
+List discovered devices.
+.TP
+.BI info " address"
+Show detailed information for a device.
+.TP
+.BI pair " address"
+Pair with a device.
+.TP
+.BI connect " address"
+Connect to a device.
+.TP
+.BI disconnect " [address]"
+Disconnect the current or specified device.
+.SS SSAP Services
+.TP
+.B services
+List local SSAP services and properties.
+.TP
+.B remote\-services
+List remote SSAP services from a connected peer.
+.TP
+.BI read " handle"
+Read a service property by handle.
+.TP
+.BI write " handle hex_data"
+Write data to a service property.
+.SS PHY and Radio Control
+.TP
+.BI role " [g|t]"
+Get or set role (GL or T).
+.TP
+.B phy
+Show current PHY parameters.
+.TP
+.BI mcs " index"
+Set MCS (modulation/coding scheme) index.
+.TP
+.BI txpower " dBm"
+Set transmit power in dBm.
+.TP
+.BI bandwidth " MHz"
+Show or set channel bandwidth.
+.SS Adaptive Frequency Hopping
+.TP
+.B afh get
+Get current AFH channel map.
+.TP
+.BI afh " set hex_map"
+Set AFH channel map.
+.TP
+.BI afh " hop handle"
+Trigger a frequency hop on a connection.
+.SS Resolving Address List
+.TP
+.B ral size
+Show RAL capacity and usage.
+.TP
+.B ral clear
+Clear the resolving address list.
+.TP
+.BI ral " add irk_hex addr_hex"
+Add an entry to the RAL.
+.TP
+.BI ral " remove addr_hex"
+Remove an entry from the RAL.
+.SS Resolvable Private Address
+.TP
+.B rpa on|off
+Enable or disable RPA generation.
+.TP
+.BI rpa " timeout seconds"
+Set RPA rotation timeout.
+.SS Sync Links
+.TP
+.BI sync " info id"
+Show sync link information.
+.TP
+.BI sync " ucast\-rm id"
+Remove a unicast sync link.
+.TP
+.BI sync " mcast\-rm id"
+Remove a multicast sync link.
+.SS Peer Information
+.TP
+.BI peer " features handle"
+Query supported features of a connected peer.
+.TP
+.BI peer " version handle"
+Query version information of a connected peer.
+.SS Measurement
+.TP
+.B meas cap
+Show measurement capabilities.
+.TP
+.B meas on
+Enable measurement reporting.
+.TP
+.B meas off
+Disable measurement reporting.
+.SS Extended Advertising
+.TP
+.BI extadv " enable handle"
+Enable an extended advertising instance.
+.TP
+.BI extadv " disable handle"
+Disable an extended advertising instance.
+.TP
+.BI extadv " remove handle"
+Remove an extended advertising instance.
+.TP
+.BI extadv " info handle"
+Get extended advertising instance information.
+.SS Statistics and Diagnostics
+.TP
+.B power
+Show power management status.
+.TP
+.B dli
+Show data\-link indicator information.
+.TP
+.B stats
+Show controller statistics.
+.TP
+.B events
+Show event statistics.
+.TP
+.B mgmt
+Show management statistics.
+.SS Interactive Shell
+.TP
+.B help
+Print the list of available commands.
+.TP
+.B quit\fR,\fP exit
+Exit the interactive shell.
+.SH ENVIRONMENT
+.TP
+.B DBUS_SYSTEM_BUS_ADDRESS
+Override the system bus address for D\-Bus communication.
+.SH FILES
+.TP
+.I ~/.slctl_history
+Interactive shell command history.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+Error communicating with slkd or invalid command.
+.SH SEE ALSO
+.BR slkd (8),
+.BR sparklink.conf (5)

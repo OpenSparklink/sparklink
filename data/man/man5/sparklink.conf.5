@@ -1,0 +1,57 @@
+.TH SPARKLINK.CONF 5 "2025-04-05" "SparkLink" "File Formats Manual"
+.SH NAME
+sparklink.conf \- SparkLink daemon configuration file
+.SH SYNOPSIS
+.I /etc/sparklink/main.conf
+.SH DESCRIPTION
+This file controls the runtime behaviour of
+.BR slkd (8).
+It uses TOML syntax.
+.PP
+If the file does not exist or cannot be parsed, the daemon starts with
+built\-in defaults.
+.SH SECTIONS
+.SS [general]
+.TP
+.B discovery_level
+Integer 0\(en4. Minimum discovery level filter for scan results.
+Devices advertising below this level are ignored. Default:
+.BR 1 .
+.TP
+.B auto_enable
+Boolean. Automatically power on the adapter at daemon startup. Default:
+.BR true .
+.TP
+.B name
+String. Local device name advertised to peers. Default:
+.BR \(dqSparkLink\(dq .
+.SS [policy]
+.TP
+.B auto_pair
+Boolean. Automatically accept pairing requests. Default:
+.BR false .
+.TP
+.B min_encryption
+Integer 0\(en3. Minimum encryption level required for incoming connections.
+.B 0
+disables enforcement. Default:
+.BR 0 .
+.SH EXAMPLE
+.nf
+[general]
+discovery_level = 1
+auto_enable = true
+name = "Living Room Hub"
+
+[policy]
+auto_pair = false
+min_encryption = 0
+.fi
+.SH FILES
+.TP
+.I /etc/sparklink/main.conf
+Default location loaded by
+.BR slkd (8).
+.SH SEE ALSO
+.BR slkd (8),
+.BR slctl (1)

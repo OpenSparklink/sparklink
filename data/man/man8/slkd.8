@@ -1,0 +1,176 @@
+.TH SLKD 8 "2025-04-05" "SparkLink" "System Manager's Manual"
+.SH NAME
+slkd \- SparkLink wireless daemon
+.SH SYNOPSIS
+.B slkd
+.RB [ \-c
+.IR config ]
+.RB [ \-d
+.IR device ]
+.RB [ \-n ]
+.SH DESCRIPTION
+.B slkd
+is the central management daemon for SparkLink wireless devices. It
+communicates with the kernel SparkLink subsystem through the character device,
+exposes a D\-Bus system bus interface for applications and CLI tools, manages
+device discovery, connections, security, and SSAP services.
+.PP
+On startup the daemon opens the kernel device, loads bonding data from
+.IR /var/lib/sparklink/ ,
+connects to the system D\-Bus, and enters the event loop.
+.SH OPTIONS
+.TP
+.BI \-c " path" "\fR,\fP \-\-config " path
+Path to the configuration file. Default:
+.IR /etc/sparklink/main.conf .
+See
+.BR sparklink.conf (5).
+.TP
+.BI \-d " path" "\fR,\fP \-\-device " path
+Kernel character device path. Default:
+.IR /dev/sparklink .
+.TP
+.BR \-n ", " \-\-nodetach
+Run in foreground, do not daemonize. Useful for debugging and systemd
+.BR Type=simple .
+.SH D\-BUS INTERFACE
+.B slkd
+registers the well\-known name
+.B org.sparklink
+on the system bus and serves the following object paths:
+.SS /org/sparklink (org.sparklink.Manager)
+.TP
+.B Version() \-> s
+Return the daemon version string.
+.TP
+.B ListAdapters() \-> as
+Return object paths of available adapters.
+.SS /org/sparklink/slk0 (org.sparklink.Adapter)
+.TP
+.B StartDiscovery()
+Begin scanning for nearby devices.
+.TP
+.B StopDiscovery()
+Stop scanning.
+.TP
+.B ConnectDevice(s addr)
+Initiate a connection to the device with the given hex address.
+.TP
+.B GetDevices() \-> a(ssqb)
+Return a list of discovered devices. Each entry contains the address, name,
+RSSI, and connected flag.
+.PP
+Properties:
+.BR Powered " (b),"
+.BR Discovering " (b),"
+.BR Name " (s)."
+.SS /org/sparklink/slk0/dev_{ADDR} (org.sparklink.Device)
+.TP
+.B Connect()
+Connect to this device.
+.TP
+.B Disconnect()
+Disconnect this device.
+.PP
+Properties:
+.BR Address " (s),"
+.BR Name " (s),"
+.BR Rssi " (n),"
+.BR Connected " (b),"
+.BR DiscoveryLevel " (y)."
+.SS /org/sparklink/slk0/security (org.sparklink.Security)
+.TP
+.B GetInfo() \-> (ssyb)
+Return current security state, method, mode and encryption flag.
+.TP
+.B SetPsk(s hex)
+Set a 16\-byte Pre\-Shared Key in hex.
+.TP
+.B Pair(s method)
+Start pairing. Method: "just_works", "psk", or "none".
+.TP
+.B Encrypt()
+Enable encryption on the active connection.
+.TP
+.B GetPasskey() \-> u
+Return the displayed passkey for numeric comparison.
+.TP
+.B ConfirmPasskey() / RejectPasskey()
+Accept or reject the passkey.
+.TP
+.B InputPasskey(u passkey)
+Enter a 6\-digit passkey.
+.TP
+.B ListBonded() \-> as
+Return addresses of all bonded devices.
+.TP
+.B RemoveBond(s addr)
+Remove bonding information for the given device.
+.TP
+.B Reset()
+Reset security state.
+.PP
+Properties:
+.BR Encrypted " (b),"
+.BR Paired " (b)."
+.SS /org/sparklink/slk0/services (org.sparklink.ServiceManager)
+.TP
+.B RegisterServices(s json)
+Register local SSAP services described in JSON.
+.TP
+.B AddService(q uuid, y type)
+Add a single SSAP service.
+.TP
+.B AddProperty(q svc_handle, q uuid, y perms, ay data)
+Add a property to a service.
+.TP
+.B ReadProperty(q handle) \-> ay
+Read a property value.
+.TP
+.B WriteProperty(q handle, ay data)
+Write a property value.
+.TP
+.B Notify(q handle, ay data)
+Send a notification on a property.
+.SS /org/sparklink/slk0/extadv (org.sparklink.ExtAdv)
+.TP
+.B Configure(y type, q interval, y txpower)
+Configure an extended advertising instance.
+.TP
+.B SetData(y handle, ay data)
+Set advertising data.
+.TP
+.B Enable(y handle) / Disable(y handle) / Remove(y handle)
+Control advertising instances.
+.TP
+.B GetInfo(y handle) \-> (yyqy)
+Get advertising instance information.
+.SS /org/sparklink/slk0/controller (org.sparklink.Controller)
+Provides low\-level controller access: role management, PHY/MCS configuration,
+power management, AFH, connection statistics, DLI, measurement, sync link
+control, resolving address list, and subsystem statistics. Approximately 40
+methods; consult
+.BR slctl (1)
+for the corresponding CLI commands.
+.SH FILES
+.TP
+.I /etc/sparklink/main.conf
+Daemon configuration file. See
+.BR sparklink.conf (5).
+.TP
+.I /dev/sparklink
+Kernel driver character device.
+.TP
+.I /var/lib/sparklink/
+Persistent bonding data directory.
+.TP
+.I /var/run/dbus/system_bus_socket
+D\-Bus system bus socket.
+.SH SIGNALS
+.TP
+.B SIGINT, SIGTERM
+Graceful shutdown.
+.SH SEE ALSO
+.BR slctl (1),
+.BR sparklink.conf (5),
+.BR dbus\-daemon (1)

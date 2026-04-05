@@ -5,6 +5,7 @@ use tokio::sync::Mutex;
 use libsparklink::Adapter;
 use slk_protocol::{SleAddr, SleConnectParams, SleScanParams};
 
+use crate::bonding::BondingStore;
 use crate::config::DaemonConfig;
 
 /// Discovered device info maintained by the daemon
@@ -27,10 +28,11 @@ pub struct AdapterState {
     pub discovering: bool,
     pub devices: HashMap<SleAddr, DeviceEntry>,
     pub name: String,
+    pub bonding: BondingStore,
 }
 
 impl AdapterState {
-    pub fn new(adapter: Adapter, config: DaemonConfig) -> Self {
+    pub fn new(adapter: Adapter, config: DaemonConfig, bonding: BondingStore) -> Self {
         let name = config.general.name.clone();
         Self {
             adapter,
@@ -39,6 +41,7 @@ impl AdapterState {
             discovering: false,
             devices: HashMap::new(),
             name,
+            bonding,
         }
     }
 

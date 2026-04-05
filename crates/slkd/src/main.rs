@@ -1,3 +1,4 @@
+mod bonding;
 mod config;
 mod controller;
 mod dbus_iface;
@@ -14,6 +15,7 @@ use tokio::sync::Mutex;
 use tracing::{error, info};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
+use crate::bonding::BondingStore;
 use crate::config::DaemonConfig;
 use crate::controller::ControllerIface;
 use crate::dbus_iface::{AdapterIface, DeviceIface, Root};
@@ -70,9 +72,17 @@ async fn main() -> anyhow::Result<()> {
     let dev_count = link.adapter().device_count()?;
     info!(dev_count, device = %cli.device, "kernel link established");
 
+    // Load bonding store
+    let bonding_dir = std::path::PathBuf::from("/var/lib/sparklink");
+    let mut bonding = BondingStore::new(&bonding_dir, "slk0");
+    match bonding.load() {
+        Ok(n) => info!(count = n, "bonded devices loaded"),
+        Err(e) => info!(%e, "no bonding data (first run?)"),
+    }
+
     // Create shared state
     let adapter = link.into_adapter();
-    let shared: SharedState = Arc::new(Mutex::new(AdapterState::new(adapter, config)));
+    let shared: SharedState = Arc::new(Mutex::new(AdapterState::new(adapter, config, bonding)));
 
     // D-Bus session
     let connection = zbus::connection::Builder::system()?
@@ -166,6 +176,29 @@ async fn event_loop(state: SharedState, connection: zbus::Connection) {
                     encrypted,
                     "security state changed"
                 );
+
+                // Persist bonding when pairing completes
+                if sec_state >= slk_protocol::SecState::Paired as u8 {
+                    let mut st = state.lock().await;
+                    if let Some((&addr, dev)) = st.devices.iter().find(|(_, d)| d.connected) {
+                        let info = crate::bonding::BondingInfo {
+                            name: dev.name.clone(),
+                            method: method_label.to_string(),
+                            enc_key_fingerprint: String::new(),
+                            paired_at: {
+                                let d = std::time::SystemTime::now()
+                                    .duration_since(std::time::UNIX_EPOCH)
+                                    .unwrap_or_default();
+                                format!("{}", d.as_secs())
+                            },
+                        };
+                        if let Err(e) = st.bonding.save(&addr, info) {
+                            error!(%e, "failed to save bonding");
+                        } else {
+                            info!(address = %dbus_iface::format_addr(&addr), "bonding saved");
+                        }
+                    }
+                }
             }
             Ok(event) => {
                 tracing::debug!(?event, "kernel event");

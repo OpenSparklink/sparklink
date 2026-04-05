@@ -111,6 +111,39 @@ impl SecurityIface {
         })
     }
 
+    /// List bonded device addresses
+    async fn list_bonded(&self) -> zbus::fdo::Result<Vec<String>> {
+        let st = self.state.lock().await;
+        let addrs = st.bonding.bonded_addrs();
+        Ok(addrs
+            .iter()
+            .map(|a| {
+                a.iter()
+                    .map(|b| format!("{b:02X}"))
+                    .collect::<Vec<_>>()
+                    .join(":")
+            })
+            .collect())
+    }
+
+    /// Remove bonding for a device
+    async fn remove_bond(&self, addr_hex: &str) -> zbus::fdo::Result<()> {
+        let parts: Vec<&str> = addr_hex.split(':').collect();
+        if parts.len() != 6 {
+            return Err(zbus::fdo::Error::InvalidArgs("expected AA:BB:CC:DD:EE:FF".into()));
+        }
+        let mut addr = [0u8; 6];
+        for (i, part) in parts.iter().enumerate() {
+            addr[i] = u8::from_str_radix(part, 16).map_err(|_| {
+                zbus::fdo::Error::InvalidArgs("invalid hex byte".into())
+            })?;
+        }
+        let mut st = self.state.lock().await;
+        st.bonding.remove(&addr).map_err(|e| {
+            zbus::fdo::Error::Failed(format!("remove_bond failed: {e}"))
+        })
+    }
+
     /// Current security state as property
     #[zbus(property)]
     async fn encrypted(&self) -> bool {

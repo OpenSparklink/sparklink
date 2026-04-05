@@ -44,7 +44,7 @@
 
 ### 发现的问题
 
-1. **slkd GetDevices 返回类型不一致**：`dbus_iface.rs` 中 `GetDevices()` 返回 `Vec<String>`（对象路径），但 `slctl` 的 `cmd_devices()` 期望 `Vec<(String, String, i16, bool)>`。需要统一。
+1. ~~**slkd GetDevices 返回类型不一致**~~：已修复。`get_devices()` 现在返回 `Vec<(String, String, i16, bool)>`（地址、名称、RSSI、连接状态），与 slctl 期望一致。
 
 2. **CLI 命令覆盖不完整**：AFH、同步链路、RAL/RPA、测距等子系统在 D-Bus 接口中已实现，但 slctl 没有对应的 CLI 命令。这些属于低频操作，但应当至少提供基础命令。
 

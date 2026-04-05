@@ -74,10 +74,13 @@ impl AdapterIface {
         })
     }
 
-    /// List discovered device object paths
-    async fn get_devices(&self) -> Vec<String> {
+    /// List discovered devices as (addr_hex, name, rssi, connected) tuples
+    async fn get_devices(&self) -> Vec<(String, String, i16, bool)> {
         let st = self.state.lock().await;
-        st.devices.values().map(|d| d.object_path.clone()).collect()
+        st.devices.values().map(|d| {
+            let addr_hex = d.addr.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(":");
+            (addr_hex, d.name.clone(), d.rssi as i16, d.connected)
+        }).collect()
     }
 
     /// Adapter power state

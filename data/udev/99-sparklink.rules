@@ -1,0 +1,9 @@
+# SparkLink character device permissions
+# Install to /etc/udev/rules.d/99-sparklink.rules
+
+# Allow sparklink group access to /dev/sparklink
+KERNEL=="sparklink", GROUP="sparklink", MODE="0660"
+
+# USB SparkLink controllers: auto-load module and set permissions
+SUBSYSTEM=="usb", ATTR{idVendor}=="*", ATTR{idProduct}=="*", \
+  ENV{ID_SPARKLINK}=="1", TAG+="systemd", GROUP="sparklink", MODE="0660"

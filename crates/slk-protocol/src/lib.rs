@@ -1,5 +1,6 @@
 pub mod ioctl;
 pub mod advdata;
+pub mod service_hash;
 mod types;
 mod genl;
 #[cfg(test)]

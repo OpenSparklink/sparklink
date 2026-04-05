@@ -9,6 +9,7 @@ mod profile;
 mod security;
 mod service;
 mod state;
+mod transport;
 
 use std::sync::Arc;
 

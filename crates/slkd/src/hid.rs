@@ -1,29 +1,35 @@
-//! SparkLink HID Profile (T/XS 30013-2025)
+//! SparkLink HID Data Interaction Service (T/XS 30004-2025)
 //!
-//! Implements the "人机数据交互" (HID Data Interaction) service as defined in
-//! the SparkLink USB HID Application Configuration and Management standard.
+//! Implements the "人机数据交互" service as defined in TXS-30004-2025.
+//! UUID assignments from Appendix A (normative).
 //!
-//! Service UUID: 0x0003 (application-layer assignment)
+//! Service UUID: 0x060B
 //!
-//! Mandatory characteristics:
-//!   - Type and Format Description (0x1010) — read
-//!   - Report Index Info (0x1011) — read
-//!   - Input Report (0x1012) — read + notify
+//! Mandatory properties:
+//!   - 类型和格式描述 (0x1039) — read/notify/indicate/broadcast
+//!   - 工作状态指示   (0x103A) — read/write/notify/indicate/broadcast
+//!   - 报告索引信息   (0x103B) — read/notify/indicate/broadcast
 //!
-//! Optional characteristics:
-//!   - Working Status Indicator (0x1013) — read + write
-//!   - Output Report (0x1014) — write
-//!   - Feature Report (0x1015) — read + write
+//! Conditional properties (at least one required):
+//!   - 输入报告信息   (0x103C) — read/notify/indicate/broadcast
+//!   - 输出报告信息   (0x103D) — read/write/notify/indicate/broadcast
+//!   - 特性报告信息   (0x103E) — read/write/notify/indicate/broadcast
 
 use std::collections::HashMap;
 use std::sync::Mutex;
 
 use crate::profile::{CharacteristicDef, Profile, ProfileError};
 
-/// HID device type identifiers as defined in T/XS 30013-2025 section 7.2
+/// HID device type identifiers (T/XS 30004-2025 section 8.2, table 4 byte 2)
+///
+/// 0x00 — no specific device type
+/// 0x01 — USB Boot Keyboard
+/// 0x02 — USB Boot Mouse
+/// Other values defined by application instance standards (T/XS 30013-2025)
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum HidDeviceType {
+    Unspecified = 0x00,
     Keyboard = 0x01,
     Mouse = 0x02,
     GenericHid = 0x03,
@@ -36,8 +42,9 @@ pub enum HidDeviceType {
 impl HidDeviceType {
     pub fn label(self) -> &'static str {
         match self {
-            Self::Keyboard => "USB Standard Keyboard",
-            Self::Mouse => "USB Standard Mouse",
+            Self::Unspecified => "Unspecified",
+            Self::Keyboard => "USB Boot Keyboard",
+            Self::Mouse => "USB Boot Mouse",
             Self::GenericHid => "USB HID Device",
             Self::Stylus => "High-precision Stylus",
             Self::Mouse1Khz => "1KHz Mouse",
@@ -47,25 +54,97 @@ impl HidDeviceType {
     }
 }
 
-/// HID working status
+/// Working status (T/XS 30004-2025 section 7.2.1)
+///
+/// 0x00 — normal operation
+/// 0x01 — suspended
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum HidStatus {
-    Idle = 0x00,
-    Active = 0x01,
-    Suspended = 0x02,
+    Normal = 0x00,
+    Suspended = 0x01,
 }
 
-// Characteristic UUID assignments (application-layer range 0x1000-0x6FFF)
-const UUID_TYPE_FORMAT: u16 = 0x1010;
-const UUID_REPORT_INDEX: u16 = 0x1011;
-const UUID_INPUT_REPORT: u16 = 0x1012;
-const UUID_STATUS: u16 = 0x1013;
-const UUID_OUTPUT_REPORT: u16 = 0x1014;
-const UUID_FEATURE_REPORT: u16 = 0x1015;
+/// Report type identifiers (T/XS 30004-2025 Report Index byte 1)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum ReportType {
+    Input = 0x01,
+    Output = 0x02,
+    Feature = 0x03,
+}
 
-/// HID service UUID (application-layer range 0x0002-0x0FFF)
-const HID_SERVICE_UUID: u16 = 0x0003;
+/// Type format indicator (T/XS 30004-2025 section 7.2.1 byte 0)
+///
+/// 0x00 — custom report descriptor follows in bytes 1..N
+/// 0x01 — USB HID Boot Keyboard format, no descriptor bytes
+/// 0x02 — USB HID Boot Mouse format, no descriptor bytes
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum TypeFormatIndicator {
+    CustomDescriptor = 0x00,
+    BootKeyboard = 0x01,
+    BootMouse = 0x02,
+}
+
+/// Report Index entry (T/XS 30004-2025 section 7.2.1)
+///
+/// 8 bytes:
+///   [0]     Report ID
+///   [1]     Report type (0x01=input, 0x02=output, 0x03=feature)
+///   [2..3]  Handle of the matching report property (big-endian)
+///   [4..5]  Data plane source port (0=unsupported, 0xFFFF=BSL passthrough)
+///   [6..7]  Data plane destination port
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ReportIndexEntry {
+    pub report_id: u8,
+    pub report_type: ReportType,
+    pub handle: u16,
+    pub src_port: u16,
+    pub dst_port: u16,
+}
+
+impl ReportIndexEntry {
+    pub fn to_bytes(&self) -> [u8; 8] {
+        [
+            self.report_id,
+            self.report_type as u8,
+            (self.handle >> 8) as u8,
+            (self.handle & 0xFF) as u8,
+            (self.src_port >> 8) as u8,
+            (self.src_port & 0xFF) as u8,
+            (self.dst_port >> 8) as u8,
+            (self.dst_port & 0xFF) as u8,
+        ]
+    }
+
+    pub fn from_bytes(b: &[u8; 8]) -> Option<Self> {
+        let rt = match b[1] {
+            0x01 => ReportType::Input,
+            0x02 => ReportType::Output,
+            0x03 => ReportType::Feature,
+            _ => return None,
+        };
+        Some(Self {
+            report_id: b[0],
+            report_type: rt,
+            handle: u16::from_be_bytes([b[2], b[3]]),
+            src_port: u16::from_be_bytes([b[4], b[5]]),
+            dst_port: u16::from_be_bytes([b[6], b[7]]),
+        })
+    }
+}
+
+// UUID assignments per TXS-30004-2025 Appendix A (normative)
+const UUID_TYPE_FORMAT: u16 = 0x1039;
+const UUID_STATUS: u16 = 0x103A;
+const UUID_REPORT_INDEX: u16 = 0x103B;
+const UUID_INPUT_REPORT: u16 = 0x103C;
+const UUID_OUTPUT_REPORT: u16 = 0x103D;
+const UUID_FEATURE_REPORT: u16 = 0x103E;
+
+/// 人机数据交互 service UUID (TXS-30004-2025 Appendix A)
+const HID_SERVICE_UUID: u16 = 0x060B;
 
 /// SparkLink HID Data Interaction profile.
 ///
@@ -75,9 +154,12 @@ const HID_SERVICE_UUID: u16 = 0x0003;
 /// SSAP notification.
 pub struct HidProfile {
     device_type: HidDeviceType,
+    type_indicator: TypeFormatIndicator,
     status: HidStatus,
-    /// USB HID Report Descriptor (type and format description)
+    /// USB HID Report Descriptor (only present when type_indicator == CustomDescriptor)
     report_descriptor: Vec<u8>,
+    /// Report index entries for this service instance
+    report_indices: Vec<ReportIndexEntry>,
     /// Current input report data (sent via notification)
     input_report: Mutex<Vec<u8>>,
     /// Last received output report data
@@ -94,11 +176,17 @@ impl HidProfile {
     /// `device_type` — the HID device category (keyboard, mouse, etc.)
     /// `report_descriptor` — the USB HID Report Descriptor bytes that
     ///   describe the data format of input/output/feature reports.
-    pub fn new(device_type: HidDeviceType, report_descriptor: Vec<u8>) -> Self {
+    pub fn new(
+        device_type: HidDeviceType,
+        type_indicator: TypeFormatIndicator,
+        report_descriptor: Vec<u8>,
+    ) -> Self {
         Self {
             device_type,
-            status: HidStatus::Idle,
+            type_indicator,
+            status: HidStatus::Normal,
             report_descriptor,
+            report_indices: Vec::new(),
             input_report: Mutex::new(Vec::new()),
             output_report: Mutex::new(Vec::new()),
             feature_report: Mutex::new(Vec::new()),
@@ -106,7 +194,32 @@ impl HidProfile {
         }
     }
 
-    /// Create a minimal boot keyboard profile with standard report descriptor.
+    /// Build the type format description property value.
+    ///
+    /// For BootKeyboard/BootMouse the value is a single byte (0x01/0x02).
+    /// For CustomDescriptor byte 0 is 0x00 followed by the report descriptor.
+    fn type_format_value(&self) -> Vec<u8> {
+        match self.type_indicator {
+            TypeFormatIndicator::BootKeyboard => vec![0x01],
+            TypeFormatIndicator::BootMouse => vec![0x02],
+            TypeFormatIndicator::CustomDescriptor => {
+                let mut v = vec![0x00];
+                v.extend_from_slice(&self.report_descriptor);
+                v
+            }
+        }
+    }
+
+    /// Serialize all report index entries into a byte vector.
+    fn report_index_value(&self) -> Vec<u8> {
+        self.report_indices.iter().flat_map(|e| e.to_bytes()).collect()
+    }
+
+    /// Create a boot keyboard profile (type indicator 0x01).
+    ///
+    /// Per TXS-30004-2025, when type indicator is 0x01 the report format is
+    /// defined by USB HID Boot Keyboard and no report descriptor follows.
+    /// We still store the descriptor internally for local report parsing.
     pub fn boot_keyboard() -> Self {
         // Minimal USB HID Boot Keyboard descriptor: 8-byte input report
         // (modifier, reserved, 6 keycodes), 1-byte output (LEDs)
@@ -141,13 +254,35 @@ impl HidProfile {
             0x91, 0x02, //   Output (Data, Variable, Absolute) — LED state
             0xC0,       // End Collection
         ];
-        let mut p = Self::new(HidDeviceType::Keyboard, descriptor);
+        let mut p = Self::new(
+            HidDeviceType::Keyboard,
+            TypeFormatIndicator::BootKeyboard,
+            descriptor,
+        );
         *p.input_report.get_mut().unwrap() = vec![0u8; 8]; // 8-byte boot report
         *p.output_report.get_mut().unwrap() = vec![0u8; 1]; // 1-byte LED
+        // Default report indices: input(ID=0) + output(ID=0)
+        // Handles and ports are populated after SSAP registration
+        p.report_indices = vec![
+            ReportIndexEntry {
+                report_id: 0,
+                report_type: ReportType::Input,
+                handle: 0,
+                src_port: 0,
+                dst_port: 0,
+            },
+            ReportIndexEntry {
+                report_id: 0,
+                report_type: ReportType::Output,
+                handle: 0,
+                src_port: 0,
+                dst_port: 0,
+            },
+        ];
         p
     }
 
-    /// Create a minimal boot mouse profile with standard report descriptor.
+    /// Create a boot mouse profile (type indicator 0x02).
     pub fn boot_mouse() -> Self {
         let descriptor = vec![
             0x05, 0x01, // Usage Page (Generic Desktop)
@@ -177,8 +312,21 @@ impl HidProfile {
             0xC0,       //   End Collection
             0xC0,       // End Collection
         ];
-        let mut p = Self::new(HidDeviceType::Mouse, descriptor);
+        let mut p = Self::new(
+            HidDeviceType::Mouse,
+            TypeFormatIndicator::BootMouse,
+            descriptor,
+        );
         *p.input_report.get_mut().unwrap() = vec![0u8; 3]; // buttons + X + Y
+        p.report_indices = vec![
+            ReportIndexEntry {
+                report_id: 0,
+                report_type: ReportType::Input,
+                handle: 0,
+                src_port: 0,
+                dst_port: 0,
+            },
+        ];
         p
     }
 
@@ -213,43 +361,42 @@ impl Profile for HidProfile {
 
     fn characteristics(&self) -> Vec<CharacteristicDef> {
         vec![
-            // Type and Format Description — mandatory, read-only
+            // 类型和格式描述 — mandatory, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_TYPE_FORMAT,
-                ops: 0x01, // read
-                initial_value: self.report_descriptor.clone(),
+                ops: 0x01 | 0x04, // read + notify
+                initial_value: self.type_format_value(),
             },
-            // Report Index — mandatory, read-only
-            // Byte 0: device type, Byte 1: report count
+            // 工作状态指示 — mandatory, read/write/notify/indicate/broadcast
+            CharacteristicDef {
+                uuid16: UUID_STATUS,
+                ops: 0x01 | 0x02 | 0x04, // read + write + notify
+                initial_value: vec![self.status as u8],
+            },
+            // 报告索引信息 — mandatory, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_REPORT_INDEX,
-                ops: 0x01, // read
-                initial_value: vec![self.device_type as u8, 0x01],
+                ops: 0x01 | 0x04, // read + notify
+                initial_value: self.report_index_value(),
             },
-            // Input Report — mandatory, read + notify
+            // 输入报告信息 — conditional, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_INPUT_REPORT,
                 ops: 0x01 | 0x04, // read + notify
                 initial_value: self.input_report.lock()
                     .map(|b| b.clone()).unwrap_or_default(),
             },
-            // Working Status — optional, read + write
-            CharacteristicDef {
-                uuid16: UUID_STATUS,
-                ops: 0x01 | 0x02, // read + write
-                initial_value: vec![self.status as u8],
-            },
-            // Output Report — optional, write only
+            // 输出报告信息 — conditional, read/write/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_OUTPUT_REPORT,
-                ops: 0x02, // write
+                ops: 0x01 | 0x02 | 0x04, // read + write + notify
                 initial_value: self.output_report.lock()
                     .map(|b| b.clone()).unwrap_or_default(),
             },
-            // Feature Report — optional, read + write
+            // 特性报告信息 — conditional, read/write/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_FEATURE_REPORT,
-                ops: 0x01 | 0x02, // read + write
+                ops: 0x01 | 0x02 | 0x04, // read + write + notify
                 initial_value: self.feature_report.lock()
                     .map(|b| b.clone()).unwrap_or_default(),
             },
@@ -273,8 +420,8 @@ impl Profile for HidProfile {
             .ok_or(ProfileError::NotSupported)?;
 
         match uuid {
-            UUID_TYPE_FORMAT => Ok(self.report_descriptor.clone()),
-            UUID_REPORT_INDEX => Ok(vec![self.device_type as u8, 0x01]),
+            UUID_TYPE_FORMAT => Ok(self.type_format_value()),
+            UUID_REPORT_INDEX => Ok(self.report_index_value()),
             UUID_INPUT_REPORT => {
                 Ok(self.input_report.lock()
                     .map(|b| b.clone())
@@ -307,9 +454,8 @@ impl Profile for HidProfile {
                     return Err(ProfileError::InvalidValue);
                 }
                 self.status = match data[0] {
-                    0x00 => HidStatus::Idle,
-                    0x01 => HidStatus::Active,
-                    0x02 => HidStatus::Suspended,
+                    0x00 => HidStatus::Normal,
+                    0x01 => HidStatus::Suspended,
                     _ => return Err(ProfileError::InvalidValue),
                 };
                 Ok(())
@@ -331,11 +477,11 @@ impl Profile for HidProfile {
     }
 
     fn on_connect(&mut self, _conn_handle: u16) {
-        self.status = HidStatus::Active;
+        self.status = HidStatus::Normal;
     }
 
     fn on_disconnect(&mut self, _conn_handle: u16) {
-        self.status = HidStatus::Idle;
+        self.status = HidStatus::Suspended;
         // Clear input report on disconnect
         if let Ok(mut buf) = self.input_report.lock() {
             buf.iter_mut().for_each(|b| *b = 0);
@@ -352,13 +498,22 @@ mod tests {
         let p = HidProfile::boot_keyboard();
         assert_eq!(p.name(), "hid");
         assert_eq!(p.uuid16(), HID_SERVICE_UUID);
+        assert_eq!(p.uuid16(), 0x060B);
         assert_eq!(p.device_type(), HidDeviceType::Keyboard);
         let chars = p.characteristics();
         assert_eq!(chars.len(), 6);
-        // input report should be 8 bytes for boot keyboard
-        let input = &chars[2];
+        // Type format should be a single byte 0x01 for boot keyboard
+        let tf = &chars[0];
+        assert_eq!(tf.uuid16, 0x1039);
+        assert_eq!(tf.initial_value, vec![0x01]);
+        // Input report should be 8 bytes for boot keyboard
+        let input = &chars[3];
         assert_eq!(input.uuid16, UUID_INPUT_REPORT);
         assert_eq!(input.initial_value.len(), 8);
+        // Report index: 2 entries * 8 bytes = 16 bytes
+        let ri = &chars[2];
+        assert_eq!(ri.uuid16, 0x103B);
+        assert_eq!(ri.initial_value.len(), 16);
     }
 
     #[test]
@@ -367,9 +522,13 @@ mod tests {
         assert_eq!(p.device_type(), HidDeviceType::Mouse);
         let chars = p.characteristics();
         assert_eq!(chars.len(), 6);
+        // Type format: single byte 0x02 for boot mouse
+        assert_eq!(chars[0].initial_value, vec![0x02]);
         // input report 3 bytes for boot mouse (buttons + X + Y)
-        let input = &chars[2];
+        let input = &chars[3];
         assert_eq!(input.initial_value.len(), 3);
+        // Report index: 1 entry (input only) = 8 bytes
+        assert_eq!(chars[2].initial_value.len(), 8);
     }
 
     #[test]
@@ -384,11 +543,11 @@ mod tests {
         handles.insert(UUID_FEATURE_REPORT, 105u16);
         p.on_registered(&handles);
 
-        // Read status — should be Idle (0x00)
+        // Read status — should be Normal (0x00)
         let status = p.on_read(100).unwrap();
         assert_eq!(status, vec![0x00]);
 
-        // Write status to Active
+        // Write status to Suspended
         p.on_write(100, &[0x01]).unwrap();
         let status = p.on_read(100).unwrap();
         assert_eq!(status, vec![0x01]);
@@ -425,26 +584,62 @@ mod tests {
 
     #[test]
     fn hid_device_type_labels() {
-        assert_eq!(HidDeviceType::Keyboard.label(), "USB Standard Keyboard");
+        assert_eq!(HidDeviceType::Keyboard.label(), "USB Boot Keyboard");
         assert_eq!(HidDeviceType::Mouse4Khz.label(), "4KHz Mouse");
         assert_eq!(HidDeviceType::Stylus.label(), "High-precision Stylus");
+        assert_eq!(HidDeviceType::Unspecified.label(), "Unspecified");
     }
 
     #[test]
     fn hid_connect_disconnect_lifecycle() {
         let mut p = HidProfile::boot_mouse();
-        assert_eq!(p.status, HidStatus::Idle);
+        assert_eq!(p.status, HidStatus::Normal);
 
         p.on_connect(1);
-        assert_eq!(p.status, HidStatus::Active);
+        assert_eq!(p.status, HidStatus::Normal);
 
         // Set some input data
         p.set_input_report(vec![0x01, 0x10, 0x20]);
 
         p.on_disconnect(1);
-        assert_eq!(p.status, HidStatus::Idle);
+        assert_eq!(p.status, HidStatus::Suspended);
         // Input report should be zeroed after disconnect
         let report = p.input_report.lock().unwrap().clone();
         assert_eq!(report, vec![0x00, 0x00, 0x00]);
+    }
+
+    #[test]
+    fn report_index_entry_roundtrip() {
+        let entry = ReportIndexEntry {
+            report_id: 0x01,
+            report_type: ReportType::Input,
+            handle: 0x0042,
+            src_port: 0x1234,
+            dst_port: 0x5678,
+        };
+        let bytes = entry.to_bytes();
+        assert_eq!(bytes, [0x01, 0x01, 0x00, 0x42, 0x12, 0x34, 0x56, 0x78]);
+        let parsed = ReportIndexEntry::from_bytes(&bytes).unwrap();
+        assert_eq!(parsed, entry);
+    }
+
+    #[test]
+    fn type_format_boot_keyboard() {
+        let p = HidProfile::boot_keyboard();
+        let val = p.type_format_value();
+        assert_eq!(val, vec![0x01]); // single byte, no descriptor
+    }
+
+    #[test]
+    fn type_format_custom_descriptor() {
+        let desc = vec![0x05, 0x01, 0x09, 0x06];
+        let p = HidProfile::new(
+            HidDeviceType::GenericHid,
+            TypeFormatIndicator::CustomDescriptor,
+            desc.clone(),
+        );
+        let val = p.type_format_value();
+        assert_eq!(val[0], 0x00); // custom indicator
+        assert_eq!(&val[1..], &desc);
     }
 }

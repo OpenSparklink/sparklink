@@ -1,4 +1,6 @@
+use std::collections::HashMap;
 use zbus::interface;
+use zbus::zvariant::Value;
 
 use crate::state::SharedState;
 
@@ -180,6 +182,42 @@ impl DeviceIface {
         st.devices.get(&self.addr)
             .map(|d| d.discovery_level)
             .unwrap_or(0)
+    }
+
+    /// Query connection info as a property dict.
+    ///
+    /// Returns key-value pairs: handle, state, data_mtu, data_mps,
+    /// data_mode, ssap_mtu, ssap_reliable_mode, smtc_tx_credits,
+    /// smtc_rx_credits, dudtc_tx_credits, dudtc_rx_credits,
+    /// tx_bytes, rx_bytes.
+    async fn get_connection_info(&self) -> zbus::fdo::Result<HashMap<String, Value<'static>>> {
+        let st = self.state.lock().await;
+        let handle = st.devices.get(&self.addr)
+            .and_then(|d| d.conn_handle)
+            .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
+        let info = st.conn_info(handle).map_err(|e| {
+            zbus::fdo::Error::Failed(format!("conn_info failed: {e}"))
+        })?;
+        let mut m = HashMap::new();
+        m.insert("handle".into(), Value::from(info.handle));
+        m.insert("state".into(), Value::from(info.state));
+        m.insert("data_mtu".into(), Value::from(info.data_mtu));
+        m.insert("data_mps".into(), Value::from(info.data_mps));
+        m.insert("data_mode".into(), Value::from(info.data_mode));
+        m.insert("svc_mtu".into(), Value::from(info.svc_mtu));
+        m.insert("ssap_mtu".into(), Value::from(info.ssap_mtu));
+        m.insert("ssap_reliable_mode".into(), Value::from(info.ssap_reliable_mode));
+        m.insert("ssap_version_major".into(), Value::from(info.ssap_version_major));
+        m.insert("smtc_tx_credits".into(), Value::from(info.smtc_tx_credits));
+        m.insert("smtc_rx_credits".into(), Value::from(info.smtc_rx_credits));
+        m.insert("dudtc_tx_credits".into(), Value::from(info.dudtc_tx_credits));
+        m.insert("dudtc_rx_credits".into(), Value::from(info.dudtc_rx_credits));
+        m.insert("tx_bytes".into(), Value::from(info.tx_bytes));
+        m.insert("rx_bytes".into(), Value::from(info.rx_bytes));
+        m.insert("bandwidth_mhz".into(), Value::from(info.bandwidth_mhz));
+        m.insert("mcs_index".into(), Value::from(info.mcs_index));
+        m.insert("supervision_timeout".into(), Value::from(info.supervision_timeout));
+        Ok(m)
     }
 }
 

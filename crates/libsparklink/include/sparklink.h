@@ -66,6 +66,8 @@ typedef struct SleConnInfo {
     uint8_t data_mode;
     uint8_t ssap_info_exchanged;
     uint16_t ssap_mtu;
+    uint8_t ssap_reliable_mode;
+    uint8_t ssap_version_major;
     uint16_t smtc_tx_credits;
     uint16_t smtc_rx_credits;
     uint16_t dudtc_tx_credits;

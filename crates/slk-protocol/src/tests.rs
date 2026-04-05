@@ -30,7 +30,7 @@ mod tests {
         check_size!(errors, SleExtAdvInfo, 24);
         check_size!(errors, SleExtAdvEnableParams, 8);
         check_size!(errors, SleConnectParams, 16);
-        check_size!(errors, SleConnInfo, 56);
+        check_size!(errors, SleConnInfo, 64);
         check_size!(errors, SleConnData, 260);
         check_size!(errors, SleInjectConnResp, 12);
         check_size!(errors, SleConnList, 24);

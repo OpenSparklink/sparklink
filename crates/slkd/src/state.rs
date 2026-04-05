@@ -147,6 +147,11 @@ impl AdapterState {
             });
         }
     }
+
+    /// Query connection info from the kernel for a given handle.
+    pub fn conn_info(&self, handle: u16) -> libsparklink::Result<slk_protocol::SleConnInfo> {
+        self.adapter.conn_info(handle)
+    }
 }
 
 /// Thread-safe shared handle to adapter state

@@ -245,6 +245,8 @@ pub struct SleConnInfo {
     pub data_mode: u8,
     pub ssap_info_exchanged: u8,
     pub ssap_mtu: u16,
+    pub ssap_reliable_mode: u8,
+    pub ssap_version_major: u8,
     pub smtc_tx_credits: u16,
     pub smtc_rx_credits: u16,
     pub dudtc_tx_credits: u16,

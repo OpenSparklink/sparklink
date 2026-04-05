@@ -132,13 +132,13 @@ BlueZ 是 Linux 官方蓝牙协议栈，已有 20+ 年历史，代码量超过 1
 
 | 功能 | 优先级 | 说明 |
 |------|--------|------|
-| **Profile 插件框架** | 高 | BlueZ 支持运行时加载 Profile 插件，SparkLink 目前所有功能硬编码。需要定义 Profile 注册 API |
-| **pkg-config 支持** | 高 | libsparklink 缺少 `.pc` 文件，第三方应用无法通过标准方式链接 |
-| **systemd 服务文件** | 高 | BlueZ 提供 `bluetooth.service`，SparkLink 需要 `sparklink.service` |
-| **udev 规则** | 高 | BlueZ 提供 udev 规则自动设置设备权限和加载固件，SparkLink 缺失 |
-| **D-Bus 策略文件** | 高 | BlueZ 提供 `org.bluez.conf`，SparkLink 需要 `org.sparklink.conf` |
-| **man page** | 中 | BlueZ 提供完整的 man page（bluetoothctl.1, bluetoothd.8 等） |
-| **设备 bonding 持久化** | 中 | BlueZ 将配对密钥存储到 `/var/lib/bluetooth/`，SparkLink 重启后丢失 |
+| **~~Profile 插件框架~~** | ~~高~~ | ✅ 已实现。Profile trait + ProfileRegistry + BatteryProfile + DeviceInfoProfile + HidProfile |
+| **~~pkg-config 支持~~** | ~~高~~ | ✅ 已添加 sparklink.pc |
+| **~~systemd 服务文件~~** | ~~高~~ | ✅ 已存在 sparklink.service |
+| **~~udev 规则~~** | ~~高~~ | ✅ 已添加 99-sparklink.rules |
+| **~~D-Bus 策略文件~~** | ~~高~~ | ✅ 已更新 sparklink.conf（包含 ExtAdv + Controller 接口） |
+| **~~man page~~** | ~~中~~ | ✅ 已添加 slkd(8), slctl(1), sparklink.conf(5) |
+| **~~设备 bonding 持久化~~** | ~~中~~ | ✅ 已实现。BondingStore 保存到 /var/lib/sparklink/ |
 | **Agent 代理机制** | 中 | BlueZ 的 Agent 允许用户态应用接管配对交互流程 |
 
 ### 4.2 建议参考的功能
@@ -148,7 +148,7 @@ BlueZ 是 Linux 官方蓝牙协议栈，已有 20+ 年历史，代码量超过 1
 | 蓝牙/星闪共存管理 | 低 | 如果设备同时支持 BT 和 SLE，需要频谱共存策略 |
 | 网络桥接 (PAN) | 低 | 星闪标准暂无网络桥接需求 |
 | 音频支持 | 低 | 星闪标准暂无音频 Profile |
-| HID Profile | 低 | 可通过 SSAP 层扩展实现 |
+| HID Profile | 低 | ✅ 已实现。基于 T/XS 30013-2025 标准，支持键盘/鼠标/触控笔/高刷新率鼠标 |
 | LED 状态指示 | 低 | BlueZ 的 `leds.c` 控制蓝牙指示灯 |
 | coredump 支持 | 低 | BlueZ 提供 controller coredump 机制 |
 | AOSP 扩展 | 不需要 | Android 专用 |
@@ -168,20 +168,21 @@ BlueZ 是 Linux 官方蓝牙协议栈，已有 20+ 年历史，代码量超过 1
 
 ## 5. 架构改进建议
 
-### 短期 (P0)
+### 短期 (P0) —— 全部完成
 
-1. **添加 systemd 服务文件** — 参考 BlueZ 的 `bluetooth.service`
-2. **添加 D-Bus 策略文件** — `org.sparklink.conf`
-3. **添加 udev 规则** — 自动设置 `/dev/sparklink` 权限
-4. **添加 pkg-config 文件** — `libsparklink.pc`
-5. **修复 GetDevices 返回类型** — 统一 slkd 和 slctl 的接口约定
+1. ~~**添加 systemd 服务文件**~~ ✅
+2. ~~**添加 D-Bus 策略文件**~~ ✅
+3. ~~**添加 udev 规则**~~ ✅
+4. ~~**添加 pkg-config 文件**~~ ✅
+5. ~~**修复 GetDevices 返回类型**~~ ✅
 
-### 中期 (P1)
+### 中期 (P1) —— 全部完成
 
-1. **实现配对信息持久化** — 将密钥存储到 `/var/lib/sparklink/`
-2. **引入 Profile 注册框架** — 允许运行时注册自定义 Profile
-3. **补全 CLI 命令** — AFH/RAL/Sync/测距的 slctl 命令
-4. **编写 man page** — slkd(8), slctl(1), libsparklink(3)
+1. ~~**实现配对信息持久化**~~ ✅ bonding.rs
+2. ~~**引入 Profile 注册框架**~~ ✅ profile.rs + hid.rs
+3. ~~**补全 CLI 命令**~~ ✅ 39 个命令
+4. ~~**编写 man page**~~ ✅ slkd(8), slctl(1), sparklink.conf(5)
+5. **HID Profile** ✅ 基于 T/XS 30013-2025 标准
 
 ### 长期 (P2)
 

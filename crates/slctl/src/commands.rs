@@ -92,6 +92,7 @@ impl Context {
             }
             "events" => self.cmd_events().await,
             "mgmt" => self.cmd_mgmt().await,
+            "bonded" => self.cmd_bonded(args).await,
             _ => {
                 anyhow::bail!("unknown command '{}' — type 'help'", args[0]);
             }
@@ -711,6 +712,33 @@ impl Context {
         println!("  Events Received:   {}", stats.1);
         println!("  Timeouts:          {}", stats.2);
         println!("  Queue Depth:       {}", stats.3);
+        Ok(())
+    }
+
+    async fn cmd_bonded(&self, args: &[&str]) -> anyhow::Result<()> {
+        let proxy = self.security_proxy().await?;
+        let subcmd = args.get(1).copied().unwrap_or("list");
+        match subcmd {
+            "list" | "" => {
+                let addrs: Vec<String> = proxy.call("ListBonded", &()).await?;
+                if addrs.is_empty() {
+                    println!("No bonded devices.");
+                } else {
+                    println!("Bonded devices ({}):", addrs.len());
+                    for addr in &addrs {
+                        println!("  {addr}");
+                    }
+                }
+            }
+            "remove" => {
+                let addr = args.get(2).ok_or_else(|| {
+                    anyhow::anyhow!("usage: bonded remove <AA:BB:CC:DD:EE:FF>")
+                })?;
+                proxy.call::<_, _, ()>("RemoveBond", &(*addr,)).await?;
+                println!("Bond removed: {addr}");
+            }
+            _ => anyhow::bail!("usage: bonded [list|remove <addr>]"),
+        }
         Ok(())
     }
 }

@@ -8,7 +8,7 @@
 | 内核 UAPI 头文件 | 1 | 937 | C |
 | 内核驱动 (drivers/sparklink/) | 1 | 32 | Rust |
 | 内核 selftest | 3 (2 .c + 1 .sh) | 13,587 | C + Shell |
-| 用户态工具链 (7 crates) | 24 | 7,148 | Rust |
+| 用户态工具链 (7 crates) | 28 | ~8,700 | Rust |
 | **项目合计** | **54** | **50,274** | |
 
 ## 2. ioctl 接口完整性审计
@@ -46,7 +46,7 @@
 
 1. ~~**slkd GetDevices 返回类型不一致**~~：已修复。`get_devices()` 现在返回 `Vec<(String, String, i16, bool)>`（地址、名称、RSSI、连接状态），与 slctl 期望一致。
 
-2. **CLI 命令覆盖不完整**：AFH、同步链路、RAL/RPA、测距等子系统在 D-Bus 接口中已实现，但 slctl 没有对应的 CLI 命令。这些属于低频操作，但应当至少提供基础命令。
+2. ~~**CLI 命令覆盖不完整**~~：已修复。slctl 现已覆盖 AFH、同步链路、RAL/RPA、测距、带宽、事件统计、管理面等全部子系统，共 39 个命令。
 
 3. **slkdump 和 slkmon 的事件解码表**：目前仅覆盖 6 种基础事件类型，未覆盖 DLI 事件和 SSAP 通知。
 
@@ -84,7 +84,7 @@
 |-------|--------|---------|
 | slk-protocol | 29 | struct layout, field offsets, buffer capacity, zero-init safety |
 | libsparklink | 6 | error conversion, event variants, FFI null safety |
-| slkd | 18 | config parsing, D-Bus return type validation, interface fields |
+| slkd | 33 | config parsing, D-Bus return type validation, interface fields, bonding persistence, profile framework, HID profile |
 | slkconfig | 7 | argument parsing |
 
 ### 测试缺口
@@ -148,8 +148,8 @@
 | 指标 | 值 | 说明 |
 |------|------|------|
 | 内核编译警告 | 0 | `-D warnings` 全部作为错误处理 |
-| 用户态编译警告 | 3 | dead_code 警告（slkd config/state 字段） |
-| QEMU 测试通过率 | 100% (737/737) | 96 个测试 × 多参数组合 |
-| 用户态测试通过率 | 100% (60/60) | — |
+| 用户态编译警告 | 3 | dead_code 警告（slkd config/state/profile 字段） |
+| QEMU 测试通过率 | 100% (737/737) | 96 个测试 x 多参数组合 |
+| 用户态测试通过率 | 100% (75/75) | 7 个 crate 全部通过 |
 | unsafe 使用 | 仅限 FFI 边界 | C 回调、ioctl 调用、指针传递 |
 | clippy 审查 | 通过 | 遵循标准 Rust 风格 |

@@ -3,6 +3,7 @@ mod config;
 mod controller;
 mod dbus_iface;
 mod extadv;
+mod hid;
 mod kernel;
 mod profile;
 mod security;
@@ -89,6 +90,7 @@ async fn main() -> anyhow::Result<()> {
     let mut profiles = ProfileRegistry::new();
     profiles.add(Box::new(BatteryProfile::new(100)));
     profiles.add(Box::new(DeviceInfoProfile::new()));
+    profiles.add(Box::new(hid::HidProfile::boot_keyboard()));
     let profile_count = profiles.init_all(&adapter);
     info!(count = profile_count, "profiles registered");
 

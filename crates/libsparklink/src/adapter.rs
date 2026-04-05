@@ -869,32 +869,45 @@ impl Adapter {
 
     fn decode_event(&self, raw: SleDliEvent) -> Event {
         match raw.event_type {
-            EVT_CONN_STATE => Event::ConnectionStateChanged {
+            EVT_CONN_COMPLETE => Event::ConnectionStateChanged {
                 handle: raw.handle,
-                state: raw.status,
+                state: if raw.status == 0 {
+                    ConnState::Connected as u8
+                } else {
+                    ConnState::Idle as u8
+                },
+                peer_addr: raw.addr,
+            },
+            EVT_DISCONNECTED => Event::ConnectionStateChanged {
+                handle: raw.handle,
+                state: ConnState::Idle as u8,
                 peer_addr: raw.addr,
             },
             EVT_ADV_REPORT => {
-                let name_end = raw.data.iter().position(|&b| b == 0).unwrap_or(raw.data_len as usize);
-                let name = String::from_utf8_lossy(&raw.data[..name_end]).into_owned();
+                let rssi = raw.data[0] as i8;
+                let discovery_level = raw.data[1];
+                let adv_data_len = (raw.data_len as usize).saturating_sub(2);
+                let adv_data = raw.data[2..2 + adv_data_len].to_vec();
+                let (entries, _) = slk_protocol::parse_adv_data(&adv_data);
+                let name = slk_protocol::find_local_name(&entries)
+                    .unwrap_or_default()
+                    .to_string();
                 Event::AdvReport {
                     addr: raw.addr,
-                    rssi: raw.status as i8,
-                    discovery_level: raw.data[name_end.saturating_add(1).min(raw.data.len() - 1)],
+                    rssi,
+                    discovery_level,
                     name,
+                    adv_data,
                 }
             }
             EVT_DATA_RECV => Event::DataReceived {
                 handle: raw.handle,
                 data: raw.data[..raw.data_len as usize].to_vec(),
             },
-            EVT_SEC_CHANGED => Event::SecurityChanged {
-                state: raw.data[0],
-                method: raw.data[1],
-                encrypted: raw.data[2] != 0,
-            },
-            EVT_PWR_CHANGED => Event::PowerChanged {
-                state: raw.data[0],
+            EVT_ENCRYPTION_CHANGED => Event::SecurityChanged {
+                state: if raw.data[0] != 0 { 3 } else { 0 },
+                method: 0,
+                encrypted: raw.data[0] != 0,
             },
             EVT_HW_ERROR => Event::HwError {
                 code: raw.data[0],

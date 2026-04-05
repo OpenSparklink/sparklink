@@ -107,12 +107,17 @@ mod tests {
 
     #[test]
     fn event_type_constants_valid() {
-        assert_eq!(EVT_CONN_STATE, 0x01);
-        assert_eq!(EVT_ADV_REPORT, 0x02);
-        assert_eq!(EVT_DATA_RECV, 0x03);
-        assert_eq!(EVT_SEC_CHANGED, 0x04);
-        assert_eq!(EVT_PWR_CHANGED, 0x05);
-        assert_eq!(EVT_HW_ERROR, 0x06);
+        assert_eq!(EVT_CMD_COMPLETE, 0x01);
+        assert_eq!(EVT_CMD_STATUS, 0x02);
+        assert_eq!(EVT_ADV_REPORT, 0x03);
+        assert_eq!(EVT_CONN_COMPLETE, 0x04);
+        assert_eq!(EVT_DATA_RECV, 0x05);
+        assert_eq!(EVT_DISCONNECTED, 0x06);
+        assert_eq!(EVT_ENCRYPTION_CHANGED, 0x07);
+        assert_eq!(EVT_PAIR_REQUEST, 0x08);
+        assert_eq!(EVT_HW_ERROR, 0x09);
+        assert_eq!(EVT_BROADCAST_END, 0x0A);
+        assert_eq!(EVT_PHY_UPDATE, 0x0B);
     }
 
     #[test]

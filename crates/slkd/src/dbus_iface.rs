@@ -184,6 +184,33 @@ impl DeviceIface {
             .unwrap_or(0)
     }
 
+    /// Raw advertisement data bytes
+    async fn get_adv_data(&self) -> Vec<u8> {
+        let st = self.state.lock().await;
+        st.devices.get(&self.addr)
+            .map(|d| d.adv_data.clone())
+            .unwrap_or_default()
+    }
+
+    /// Parsed 16-bit service UUIDs from advertisement TLV data
+    #[zbus(property)]
+    async fn service_uuids(&self) -> Vec<u16> {
+        let st = self.state.lock().await;
+        st.devices.get(&self.addr)
+            .map(|d| d.service_uuids.clone())
+            .unwrap_or_default()
+    }
+
+    /// TX power level from advertisement (dBm), -128 if absent
+    #[zbus(property)]
+    async fn tx_power(&self) -> i16 {
+        let st = self.state.lock().await;
+        st.devices.get(&self.addr)
+            .and_then(|d| d.tx_power)
+            .map(|p| p as i16)
+            .unwrap_or(-128)
+    }
+
     /// Query connection info as a property dict.
     ///
     /// Returns key-value pairs: handle, state, data_mtu, data_mps,

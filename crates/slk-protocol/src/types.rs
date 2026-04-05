@@ -80,14 +80,19 @@ pub const DLI_PKT_ASYNC_UCAST: u8 = 0xA3;
 pub const DLI_PKT_SYNC_UCAST: u8 = 0xA4;
 pub const DLI_PKT_ASYNC_MCAST: u8 = 0xA5;
 
-// ----- Event Types -----
+// ----- DLI Event Types (sle_dli_event_to_wire encoding) -----
 
-pub const EVT_CONN_STATE: u8 = 0x01;
-pub const EVT_ADV_REPORT: u8 = 0x02;
-pub const EVT_DATA_RECV: u8 = 0x03;
-pub const EVT_SEC_CHANGED: u8 = 0x04;
-pub const EVT_PWR_CHANGED: u8 = 0x05;
-pub const EVT_HW_ERROR: u8 = 0x06;
+pub const EVT_CMD_COMPLETE: u8 = 0x01;
+pub const EVT_CMD_STATUS: u8 = 0x02;
+pub const EVT_ADV_REPORT: u8 = 0x03;
+pub const EVT_CONN_COMPLETE: u8 = 0x04;
+pub const EVT_DATA_RECV: u8 = 0x05;
+pub const EVT_DISCONNECTED: u8 = 0x06;
+pub const EVT_ENCRYPTION_CHANGED: u8 = 0x07;
+pub const EVT_PAIR_REQUEST: u8 = 0x08;
+pub const EVT_HW_ERROR: u8 = 0x09;
+pub const EVT_BROADCAST_END: u8 = 0x0A;
+pub const EVT_PHY_UPDATE: u8 = 0x0B;
 
 // ----- UAPI Structs (repr(C) for ioctl ABI compatibility) -----
 

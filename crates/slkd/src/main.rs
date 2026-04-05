@@ -135,9 +135,9 @@ async fn event_loop(state: SharedState, connection: zbus::Connection) {
         };
 
         match event {
-            Ok(libsparklink::Event::AdvReport { addr, rssi, discovery_level, name }) => {
+            Ok(libsparklink::Event::AdvReport { addr, rssi, discovery_level, name, adv_data }) => {
                 let mut st = state.lock().await;
-                let is_new = st.on_adv_report(addr, rssi, discovery_level, name.clone());
+                let is_new = st.on_adv_report(addr, rssi, discovery_level, name.clone(), adv_data);
                 if is_new {
                     let object_path = st.devices[&addr].object_path.clone();
                     drop(st);

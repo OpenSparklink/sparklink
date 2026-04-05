@@ -16,6 +16,7 @@ pub enum Event {
         rssi: i8,
         discovery_level: u8,
         name: String,
+        adv_data: Vec<u8>,
     },
 
     /// Data received on a connection

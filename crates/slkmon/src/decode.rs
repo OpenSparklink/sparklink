@@ -10,26 +10,29 @@ pub fn print_event(event: &SleDliEvent, timestamp: &str, hexdump: bool) {
     );
 
     match event.event_type {
-        EVT_CONN_STATE => {
-            let state = match event.status {
-                0 => "IDLE",
-                1 => "CONNECTING",
-                2 => "CONNECTED",
-                3 => "DISCONNECTING",
-                _ => "UNKNOWN",
-            };
+        EVT_CONN_COMPLETE => {
+            let state = if event.status == 0 { "CONNECTED" } else { "FAILED" };
             let addr = format_addr(&event.addr);
-            println!("    Peer: {addr}  State: {state}");
+            println!("    Peer: {addr}  Result: {state}");
+        }
+        EVT_DISCONNECTED => {
+            let reason = event.data.first().copied().unwrap_or(0);
+            println!("    Handle: {:#06x}  Reason: {:#04x}", event.handle, reason);
         }
         EVT_ADV_REPORT => {
             let addr = format_addr(&event.addr);
-            let rssi = event.status as i8;
-            let name_end = event.data[..data_len]
-                .iter()
-                .position(|&b| b == 0)
-                .unwrap_or(data_len);
-            let name = std::str::from_utf8(&event.data[..name_end]).unwrap_or("<binary>");
-            println!("    Peer: {addr}  RSSI: {rssi} dBm  Name: \"{name}\"");
+            let rssi = event.data[0] as i8;
+            let disc_level = event.data[1];
+            let adv_len = (data_len).saturating_sub(2);
+            let adv_data = &event.data[2..2 + adv_len];
+            let (entries, _) = slk_protocol::parse_adv_data(adv_data);
+            let name = slk_protocol::find_local_name(&entries).unwrap_or_default();
+            let uuids = slk_protocol::collect_service_uuids16(&entries);
+            println!("    Peer: {addr}  RSSI: {rssi} dBm  Level: {disc_level}  Name: \"{name}\"");
+            if !uuids.is_empty() {
+                let uuid_str: Vec<String> = uuids.iter().map(|u| format!("{u:#06x}")).collect();
+                println!("    Services: {}", uuid_str.join(", "));
+            }
         }
         EVT_DATA_RECV => {
             println!("    Data: {} bytes on handle {:#06x}", data_len, event.handle);
@@ -37,26 +40,14 @@ pub fn print_event(event: &SleDliEvent, timestamp: &str, hexdump: bool) {
                 print_data_summary(&event.data[..data_len]);
             }
         }
-        EVT_SEC_CHANGED => {
-            let sec_state = match event.data.first().copied().unwrap_or(0) {
-                0 => "none",
-                1 => "pairing",
-                2 => "paired",
-                3 => "encrypted",
-                _ => "unknown",
-            };
-            let method = match event.data.get(1).copied().unwrap_or(0) {
-                0 => "none",
-                1 => "just_works",
-                2 => "psk",
-                _ => "unknown",
-            };
-            let encrypted = event.data.get(2).copied().unwrap_or(0) != 0;
-            println!("    State: {sec_state}  Method: {method}  Encrypted: {encrypted}");
+        EVT_ENCRYPTION_CHANGED => {
+            let enabled = event.data.first().copied().unwrap_or(0) != 0;
+            println!("    Handle: {:#06x}  Encrypted: {enabled}", event.handle);
         }
-        EVT_PWR_CHANGED => {
-            let pwr_state = event.data.first().copied().unwrap_or(0);
-            println!("    Power state: {pwr_state}");
+        EVT_PAIR_REQUEST => {
+            let addr = format_addr(&event.addr);
+            let method = event.data.first().copied().unwrap_or(0);
+            println!("    Peer: {addr}  Method: {method}");
         }
         EVT_HW_ERROR => {
             let code = event.data.first().copied().unwrap_or(0);
@@ -76,12 +67,17 @@ pub fn print_event(event: &SleDliEvent, timestamp: &str, hexdump: bool) {
 
 fn event_type_name(t: u8) -> &'static str {
     match t {
-        EVT_CONN_STATE => "ConnectionStateChanged",
+        EVT_CMD_COMPLETE => "CommandComplete",
+        EVT_CMD_STATUS => "CommandStatus",
         EVT_ADV_REPORT => "AdvertisementReport",
+        EVT_CONN_COMPLETE => "ConnectionComplete",
         EVT_DATA_RECV => "DataReceived",
-        EVT_SEC_CHANGED => "SecurityChanged",
-        EVT_PWR_CHANGED => "PowerChanged",
+        EVT_DISCONNECTED => "Disconnected",
+        EVT_ENCRYPTION_CHANGED => "EncryptionChanged",
+        EVT_PAIR_REQUEST => "PairRequest",
         EVT_HW_ERROR => "HardwareError",
+        EVT_BROADCAST_END => "BroadcastEnd",
+        EVT_PHY_UPDATE => "PhyUpdate",
         _ => "Unknown",
     }
 }

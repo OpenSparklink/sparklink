@@ -19,6 +19,9 @@ pub struct DeviceEntry {
     pub connected: bool,
     pub conn_handle: Option<u16>,
     pub object_path: String,
+    pub adv_data: Vec<u8>,
+    pub service_uuids: Vec<u16>,
+    pub tx_power: Option<i8>,
 }
 
 /// Shared adapter state accessible from D-Bus + event loop
@@ -101,12 +104,18 @@ impl AdapterState {
         rssi: i8,
         discovery_level: u8,
         name: String,
+        adv_data: Vec<u8>,
     ) -> bool {
         let is_new = !self.devices.contains_key(&addr);
         let object_path = format!(
             "/org/sparklink/slk0/dev_{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
             addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]
         );
+
+        let (entries, _) = slk_protocol::parse_adv_data(&adv_data);
+        let service_uuids = slk_protocol::collect_service_uuids16(&entries);
+        let tx_power = slk_protocol::find_tx_power(&entries);
+
         let entry = self.devices.entry(addr).or_insert_with(|| DeviceEntry {
             addr,
             name: String::new(),
@@ -115,11 +124,19 @@ impl AdapterState {
             connected: false,
             conn_handle: None,
             object_path,
+            adv_data: Vec::new(),
+            service_uuids: Vec::new(),
+            tx_power: None,
         });
         entry.rssi = rssi;
         entry.discovery_level = discovery_level;
         if !name.is_empty() {
             entry.name = name;
+        }
+        if !adv_data.is_empty() {
+            entry.adv_data = adv_data;
+            entry.service_uuids = service_uuids;
+            entry.tx_power = tx_power;
         }
         is_new
     }
@@ -127,6 +144,14 @@ impl AdapterState {
     /// Update connection state from kernel event
     pub fn on_conn_state_changed(&mut self, handle: u16, state: u8, peer_addr: SleAddr) {
         let connected = state == slk_protocol::ConnState::Connected as u8;
+        if !connected {
+            // Disconnection: look up by handle first (DLI Disconnected may lack addr)
+            if let Some(dev) = self.devices.values_mut().find(|d| d.conn_handle == Some(handle)) {
+                dev.connected = false;
+                dev.conn_handle = None;
+                return;
+            }
+        }
         if let Some(dev) = self.devices.get_mut(&peer_addr) {
             dev.connected = connected;
             dev.conn_handle = if connected { Some(handle) } else { None };
@@ -144,6 +169,9 @@ impl AdapterState {
                 connected: true,
                 conn_handle: Some(handle),
                 object_path,
+                adv_data: Vec::new(),
+                service_uuids: Vec::new(),
+                tx_power: None,
             });
         }
     }

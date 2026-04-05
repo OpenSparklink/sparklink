@@ -55,6 +55,7 @@ mod tests {
             rssi: -50,
             discovery_level: 1,
             name: "TestDevice".into(),
+            adv_data: vec![0x02, 0x01, 0x01],
         };
         assert!(format!("{ev:?}").contains("TestDevice"));
 

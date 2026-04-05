@@ -89,11 +89,20 @@ Commands:
   role [g|t]                    Get/set role
   phy                           Show PHY parameters
   stats                         Show subsystem statistics
+  events                        Show event queue statistics
+  mgmt                          Show management plane statistics
   extadv <sub>                  Extended advertising management
   power                         Show power management state
   dli                           Show DLI controller info
   mcs <index>                   Set MCS index
   txpower <dBm>                 Set TX power
+  bandwidth <MHz>               Set bandwidth
+  afh <sub>                     AFH channel map management
+  ral <sub>                     Resolving address list management
+  rpa <sub>                     Resolvable private address control
+  sync <sub>                    Sync link management
+  meas <sub>                    Measurement / ranging control
+  peer <sub>                    Peer capability queries
   help                          Print this help
   quit                          Exit"
     );

@@ -1,53 +1,275 @@
-# API 参考
+# API 参考 — ioctl 命令
 
-## slk-protocol
+所有 ioctl 以 magic number `0x53` (`'S'`) 编号，通过 `/dev/sparklink` 字符设备执行。
 
-### ioctl 命令
-
-所有 ioctl 以 magic number `0x53` (`'S'`) 编号，基于 nix 宏生成。
+## ioctl 分组一览
 
 | 分类 | 序号范围 | 数量 | 功能 |
 |------|----------|------|------|
-| 设备 | 0x00-0x0F | 6 | 基本信息、版本、重置、统计 |
-| 广播 | 0x10-0x1F | 2 | 广播参数配置、控制 |
-| 扫描 | 0x20-0x2F | 4 | 扫描参数、启停、结果获取 |
-| 连接 | 0x30-0x3F | 5 | 连接建立、断开、信息查询 |
-| 安全 | 0x40-0x5F | 11 | PSK、配对、加密、认证 |
-| SSAP | 0x60-0x7F | 15 | 服务注册/注销、特性读写、通知 |
-| DLI | 0x80-0x8F | 3 | DLI 配置与事件 |
-| PHY | 0x90-0x9F | 1 | PHY 层参数 |
-| 角色 | 0xA0-0xAF | 2 | T/G 角色切换 |
+| 设备管理 | 0x01-0x08 | 8 | 注册/注销/枚举/切换控制器 |
+| 广播与扫描 | 0x10-0x1C | 13 | 传统广播/扫描 + 扩展广播全生命周期 |
+| 扫描注入/过滤 | 0x20-0x24 | 5 | 注入模拟广播包、UUID 过滤 |
+| 连接管理 | 0x30-0x39 | 10 | 连接/断开/数据收发/MTU/连接列表 |
+| AFH | 0x3A-0x3F | 6 | 信道图设置/获取、RSSI 上报、跳频 |
+| 安全 | 0x40-0x4F | 16 | PSK/配对/加密/Passkey/OOB/SM3/SM4/HMAC 测试 |
+| SSAP 服务 | 0x50-0x5F, 0x6F, 0x72 | 18 | 服务注册/属性读写/远程发现/UUID 查询 |
+| 功率管理 | 0x60-0x65 | 6 | 状态查询/切换/唤醒间隔/强制活跃 |
+| 同步链路 | 0x66-0x6E | 9 | 单播/组播 CIG/BIG 配置与数据通路 |
+| 事件队列 | 0x70-0x71 | 2 | 事件计数/统计 |
+| DLI 控制器 | 0x80-0x86 | 7 | 控制器信息/事件轮询/重置/命令下发/统计 |
+| PHY 层 | 0x90-0x97 | 8 | 信息/MCS/功率/带宽/跳频/SINR |
+| 能力协商 | 0x98-0x9B | 4 | 对端特性/版本/参数更新/PHY 更新 |
+| 角色 | 0xA0-0xA1 | 2 | T/G 角色读写 |
+| RAL/RPA | 0xB0-0xB7 | 8 | 地址解析列表与可解析私有地址管理 |
+| 测距 | 0xC0-0xC3 | 4 | 能力查询/链路参数/动作/使能 |
+| **合计** | | **126** | |
 
-### 核心结构体
+## 设备管理 (0x01-0x08)
+
+| CMD | 序号 | 方向 | 参数类型 | 说明 |
+|-----|------|------|----------|------|
+| `DEV_REGISTER` | 0x01 | none | — | 注册虚拟控制器 |
+| `DEV_UNREGISTER` | 0x02 | write_int | dev_id | 注销控制器 |
+| `DEV_COUNT` | 0x03 | read | `u32` | 查询控制器数量 |
+| `DEV_INFO` | 0x04 | read | `SciDevInfo` | 获取活跃设备信息 |
+| `DEV_SWITCH` | 0x05 | write_int | dev_id | 切换活跃控制器 |
+| `DEV_LIST` | 0x06 | read | `u16` | 获取设备 ID 列表 |
+| `DEV_SELECT` | 0x07 | write_int | dev_id | 为本 fd 选择设备 |
+| `DEV_GET_ACTIVE` | 0x08 | read | `u16` | 查询当前活跃 ID |
+
+## 广播与扫描 (0x10-0x1C)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `START_ADV` | 0x10 | write_ptr | `SleAdvParams` |
+| `STOP_ADV` | 0x11 | none | — |
+| `START_SCAN` | 0x12 | write_ptr | `SleScanParams` |
+| `STOP_SCAN` | 0x13 | none | — |
+| `EXT_ADV_CONFIGURE` | 0x14 | write_ptr | `SleExtAdvConfig` |
+| `EXT_ADV_SET_DATA` | 0x15 | write_ptr | `SleExtAdvData` |
+| `EXT_ADV_ENABLE` | 0x16 | write_int | handle |
+| `EXT_ADV_DISABLE` | 0x17 | write_int | handle |
+| `EXT_ADV_REMOVE` | 0x18 | write_int | handle |
+| `EXT_ADV_INFO` | 0x19 | readwrite | `SleExtAdvInfo` |
+| `EXT_ADV_ENABLE_EX` | 0x1A | write_ptr | `SleExtAdvEnableParams` |
+| `EXT_ADV_TICK` | 0x1B | none | — |
+| `EXT_ADV_SET_SCAN_RSP` | 0x1C | write_ptr | `SleExtAdvData` |
+
+## 扫描注入/过滤 (0x20-0x24)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `INJECT_ADV` | 0x20 | write_ptr | `SleInjectAdv` |
+| `SCAN_RESULT_COUNT` | 0x21 | none | — |
+| `INJECT_RAW_ADV` | 0x22 | write_ptr | `SleInjectRawAdv` |
+| `SET_SCAN_FILTER` | 0x23 | write_ptr | `SleScanFilter` |
+| `CLEAR_SCAN_FILTER` | 0x24 | none | — |
+
+## 连接管理 (0x30-0x39)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `CONNECT` | 0x30 | write_ptr | `SleConnectParams` |
+| `DISCONNECT` | 0x31 | write_int | handle |
+| `CONN_INFO` | 0x32 | readwrite | `SleConnInfo` |
+| `CONN_SEND` | 0x33 | write_ptr | `SleConnData` |
+| `CONN_RECV` | 0x34 | readwrite | `SleConnData` |
+| `INJECT_CONN_RESP` | 0x35 | write_ptr | `SleInjectConnResp` |
+| `INJECT_CONN_DATA` | 0x36 | write_ptr | `SleConnData` |
+| `CONN_COUNT` | 0x37 | none | — (返回值) |
+| `CONN_LIST` | 0x38 | read | `SleConnList` |
+| `SET_CONN_MTU` | 0x39 | write_ptr | `SleConnMtuParams` |
+
+## AFH (0x3A-0x3F)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `AFH_SET_MAP` | 0x3A | write_ptr | `SleAfhMapParams` |
+| `AFH_GET_MAP` | 0x3B | readwrite | `SleAfhMapParams` |
+| `AFH_REPORT_RSSI` | 0x3C | write_ptr | `SleAfhRssiReport` |
+| `AFH_CLASSIFY` | 0x3D | readwrite | `SleAfhClassifyParams` |
+| `AFH_HOP_NEXT` | 0x3E | readwrite | `SleAfhHopInfo` |
+| `AFH_REPORT_RETX` | 0x3F | write_ptr | `SleAfhRetxReport` |
+
+## 安全 (0x40-0x4F)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `SEC_SET_PSK` | 0x40 | write_ptr | `SlePskParams` |
+| `SEC_PAIR` | 0x41 | write_ptr | `SlePairParams` |
+| `SEC_INFO` | 0x42 | read | `SleSecInfo` |
+| `SEC_ENCRYPT_ON` | 0x43 | none | — |
+| `SEC_SM3_TEST` | 0x44 | write_ptr | `SleHashTest` |
+| `SEC_SM4_ENC_TEST` | 0x45 | write_ptr | `SleConnData` |
+| `SEC_SM4_DEC_TEST` | 0x46 | write_ptr | `SleConnData` |
+| `SEC_SM4_BLOCK_TEST` | 0x47 | readwrite | `SleSm4BlockTest` |
+| `SEC_HMAC_TEST` | 0x48 | readwrite | `SleHmacTest` |
+| `SEC_RESET` | 0x49 | none | — |
+| `SEC_GET_PASSKEY` | 0x4A | read | `u32` |
+| `SEC_CONFIRM_PASSKEY` | 0x4B | none | — |
+| `SEC_REJECT_PASSKEY` | 0x4C | none | — |
+| `SEC_SET_OOB` | 0x4D | write_ptr | `SleOobData` |
+| `SEC_INPUT_PASSKEY` | 0x4E | write_ptr | `SlePasskeyInput` |
+| `SEC_SET_PASSWORD` | 0x4F | write_ptr | `SlePasswordParams` |
+
+## SSAP 服务 (0x50-0x5F, 0x6F, 0x72)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `SSAP_REGISTER_SVC` | 0x50 | none | — |
+| `SSAP_INFO` | 0x51 | read | `SsapSummary` |
+| `SSAP_READ` | 0x52 | readwrite | `SsapReadWrite` |
+| `SSAP_WRITE` | 0x53 | write_ptr | `SsapReadWrite` |
+| `SSAP_FIND_SVC` | 0x54 | read | `SsapServiceList` |
+| `SSAP_NOTIFY` | 0x55 | write_int | prop_handle |
+| `SSAP_DEQUEUE_NTF` | 0x56 | read | `SsapNotification` |
+| `SSAP_ADD_SVC` | 0x57 | readwrite | `SsapAddService` |
+| `SSAP_ADD_PROP` | 0x58 | readwrite | `SsapAddProperty` |
+| `SSAP_REMOVE_SVC` | 0x59 | write_int | svc_handle |
+| `SSAP_EXCHANGE_INFO` | 0x5A | write_ptr | `SsapRemoteCmd` |
+| `SSAP_REMOTE_DISCOVER` | 0x5B | readwrite | `SsapRemoteDiscover` |
+| `SSAP_REMOTE_READ` | 0x5C | readwrite | `SsapRemoteReadWrite` |
+| `SSAP_REMOTE_WRITE` | 0x5D | write_ptr | `SsapRemoteReadWrite` |
+| `SSAP_REMOTE_EVENT` | 0x5E | read | `SsapNotification` |
+| `SSAP_CALL_METHOD` | 0x5F | readwrite | `SsapRemoteReadWrite` |
+| `SSAP_FIND_BY_UUID` | 0x6F | readwrite | `SsapUuidOp` |
+| `SSAP_READ_BY_UUID` | 0x72 | readwrite | `SsapUuidOp` |
+
+## 功率管理 (0x60-0x65)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `PM_INFO` | 0x60 | read | `SlePmInfo` |
+| `PM_SET_STATE` | 0x61 | write_ptr | `SlePmStateCmd` |
+| `PM_SET_INTERVAL` | 0x62 | write_ptr | `SlePmInterval` |
+| `PM_FORCE_ACTIVE` | 0x63 | write_int | — |
+| `PM_TICK` | 0x64 | none | — |
+| `PM_ACTIVITY` | 0x65 | none | — |
+
+## 同步链路 (0x66-0x6E)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `SYNC_UCAST_PARAM` | 0x66 | readwrite | `SleSyncCigConfig` |
+| `SYNC_UCAST_CREATE` | 0x67 | write_ptr | `SleSyncCreateCmd` |
+| `SYNC_UCAST_REMOVE` | 0x68 | write_int | handle |
+| `SYNC_MCAST_PARAM` | 0x69 | readwrite | `SleSyncBigConfig` |
+| `SYNC_MCAST_CREATE` | 0x6A | write_ptr | `SleSyncCreateCmd` |
+| `SYNC_MCAST_REMOVE` | 0x6B | write_int | handle |
+| `SYNC_DATAPATH_CFG` | 0x6C | write_ptr | `SleSyncDatapathCmd` |
+| `SYNC_DATAPATH_REMOVE` | 0x6D | write_int | handle |
+| `SYNC_INFO` | 0x6E | readwrite | `SleSyncLinkInfo` |
+
+## 事件队列 (0x70-0x71)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `EVENT_COUNT` | 0x70 | none | — (返回值) |
+| `EVENT_STATS` | 0x71 | read | `SleEventStats` |
+
+## DLI 控制器 (0x80-0x86)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `DLI_INFO` | 0x80 | read | `SleDliInfo` |
+| `USB_DEV_COUNT` | 0x81 | none | — (返回值) |
+| `DLI_POLL_EVENT` | 0x82 | read | `SleDliEvent` |
+| `DLI_RESET` | 0x83 | none | — |
+| `DLI_SEND_CMD` | 0x84 | readwrite | `SleDliCmd` |
+| `MGMT_STATS` | 0x85 | read | `SleMgmtStats` |
+| `SUBSYS_STATS` | 0x86 | read | `SleSubsysStats` |
+
+## PHY 层 (0x90-0x97)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `PHY_INFO` | 0x90 | read | `SlePhyInfo` |
+| `PHY_SET_MCS` | 0x91 | write_ptr | `SlePhyMcsCmd` |
+| `PHY_SET_TXPOWER` | 0x92 | write_ptr | `SlePhyTxPowerCmd` |
+| `PHY_MCS_SELECT` | 0x93 | readwrite | `SlePhyMcsSelect` |
+| `PHY_HOP_NEXT` | 0x94 | read | `SlePhyHopInfo` |
+| `PHY_SET_BW` | 0x95 | write_ptr | `SlePhyBwCmd` |
+| `PHY_GET_SINR` | 0x96 | read | `SleSinrThresholds` |
+| `PHY_SET_SINR` | 0x97 | write_ptr | `SleSinrThresholds` |
+
+## 能力协商 (0x98-0x9B)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `CONN_READ_PEER_FEATURES` | 0x98 | readwrite | `SleConnPeerCap` |
+| `CONN_READ_PEER_VERSION` | 0x99 | readwrite | `SleConnPeerCap` |
+| `CONN_UPDATE_PARAMS` | 0x9A | write_ptr | `SleConnParamUpdate` |
+| `CONN_PHY_UPDATE` | 0x9B | write_ptr | `SleConnPhyUpdate` |
+
+## 角色 (0xA0-0xA1)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `SET_ROLE` | 0xA0 | write_int | role (0=T, 1=G) |
+| `GET_ROLE` | 0xA1 | read | `u8` |
+
+## RAL/RPA (0xB0-0xB7)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `RAL_ADD` | 0xB0 | write_ptr | `SleRalAddParams` |
+| `RAL_REMOVE` | 0xB1 | write_ptr | `SleRalRemoveParams` |
+| `RAL_CLEAR` | 0xB2 | none | — |
+| `RAL_SIZE` | 0xB3 | read | `u8` |
+| `RAL_READ_PEER_RPA` | 0xB4 | readwrite | `SleRalQueryParams` |
+| `RAL_READ_LOCAL_RPA` | 0xB5 | readwrite | `SleRalQueryParams` |
+| `RPA_ENABLE` | 0xB6 | write_int | 0/1 |
+| `RPA_SET_TIMEOUT` | 0xB7 | write_int | seconds |
+
+## 测距 (0xC0-0xC3)
+
+| CMD | 序号 | 方向 | 参数类型 |
+|-----|------|------|----------|
+| `MEAS_READ_CAP` | 0xC0 | read | `SleMeasCap` |
+| `MEAS_SET_LINK_PARAM` | 0xC1 | write_ptr | `SleMeasLinkParam` |
+| `MEAS_ACTION` | 0xC2 | write_ptr | `SleMeasAction` |
+| `MEAS_ENABLE` | 0xC3 | write_int | 0/1 |
+
+## 核心数据类型
 
 ```rust
 pub type SleAddr = [u8; 6];
 
 #[repr(C)]
 pub struct SciDevInfo {
-    pub device_name: [u8; 32],
-    pub firmware_rev: [u8; 16],
-    pub hardware_rev: [u8; 16],
-    pub software_rev: [u8; 16],
-    pub manufacturer: [u8; 32],
-    pub serial_number: [u8; 32],
+    pub index: u16,
+    pub state: u8,
+    pub bus: u8,
     pub addr: SleAddr,
-    pub addr_type: u8,
-    pub role: u8,
-    pub state: u32,
-    pub flags: u32,
+    pub name: [u8; 32],
+    pub _reserved: [u8; 24],
 }
 
 #[repr(C)]
 pub struct SleScanParams {
-    pub scan_type: u8,
-    pub scan_phy: u8,
-    pub interval: u16,
-    pub window: u16,
-    pub duration: u16,
-    pub filter_policy: u8,
+    pub dev_index: u16,
+    pub window_ms: u16,
+    pub interval_ms: u16,
+    pub filter_discovery_level: u8,
+    pub _reserved: [u8; 9],
 }
 
+#[repr(C)]
+pub struct SleConnInfo {
+    pub handle: u16,
+    pub state: u8,
+    pub role: u8,
+    pub peer_addr: SleAddr,
+    pub mtu: u16,
+    pub mps: u16,
+    pub tx_credits: u16,
+    pub rx_credits: u16,
+    pub rssi: i8,
+    pub _reserved: [u8; 7],
+}
+```
+
+完整类型定义参见 `crates/slk-protocol/src/types.rs`（922 行，80+ 结构体）。
 #[repr(C)]
 pub struct SleConnectParams {
     pub peer_addr: SleAddr,

@@ -4,6 +4,7 @@ mod controller;
 mod dbus_iface;
 mod extadv;
 mod kernel;
+mod profile;
 mod security;
 mod service;
 mod state;
@@ -21,6 +22,7 @@ use crate::controller::ControllerIface;
 use crate::dbus_iface::{AdapterIface, DeviceIface, Root};
 use crate::extadv::ExtAdvIface;
 use crate::kernel::KernelLink;
+use crate::profile::{BatteryProfile, DeviceInfoProfile, ProfileRegistry};
 use crate::security::SecurityIface;
 use crate::service::SsapManagerIface;
 use crate::state::{AdapterState, SharedState};
@@ -82,7 +84,15 @@ async fn main() -> anyhow::Result<()> {
 
     // Create shared state
     let adapter = link.into_adapter();
-    let shared: SharedState = Arc::new(Mutex::new(AdapterState::new(adapter, config, bonding)));
+
+    // Initialize profile framework
+    let mut profiles = ProfileRegistry::new();
+    profiles.add(Box::new(BatteryProfile::new(100)));
+    profiles.add(Box::new(DeviceInfoProfile::new()));
+    let profile_count = profiles.init_all(&adapter);
+    info!(count = profile_count, "profiles registered");
+
+    let shared: SharedState = Arc::new(Mutex::new(AdapterState::new(adapter, config, bonding, profiles)));
 
     // D-Bus session
     let connection = zbus::connection::Builder::system()?
@@ -157,11 +167,15 @@ async fn event_loop(state: SharedState, connection: zbus::Connection) {
                 );
 
                 if connected {
+                    st.profiles.on_connect(handle);
                     let path = format!("/org/sparklink/slk0/conn_{:04x}", handle);
+                    drop(st);
                     let iface = service::RemoteServiceIface::new(state.clone(), handle);
                     if let Err(e) = connection.object_server().at(path.as_str(), iface).await {
                         error!(%e, path, "failed to register remote service interface");
                     }
+                } else {
+                    st.profiles.on_disconnect(handle);
                 }
             }
             Ok(libsparklink::Event::SecurityChanged { state: sec_state, method, encrypted }) => {

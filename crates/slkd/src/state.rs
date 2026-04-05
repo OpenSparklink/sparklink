@@ -7,6 +7,7 @@ use slk_protocol::{SleAddr, SleConnectParams, SleScanParams};
 
 use crate::bonding::BondingStore;
 use crate::config::DaemonConfig;
+use crate::profile::ProfileRegistry;
 
 /// Discovered device info maintained by the daemon
 #[derive(Debug, Clone)]
@@ -29,10 +30,11 @@ pub struct AdapterState {
     pub devices: HashMap<SleAddr, DeviceEntry>,
     pub name: String,
     pub bonding: BondingStore,
+    pub profiles: ProfileRegistry,
 }
 
 impl AdapterState {
-    pub fn new(adapter: Adapter, config: DaemonConfig, bonding: BondingStore) -> Self {
+    pub fn new(adapter: Adapter, config: DaemonConfig, bonding: BondingStore, profiles: ProfileRegistry) -> Self {
         let name = config.general.name.clone();
         Self {
             adapter,
@@ -42,6 +44,7 @@ impl AdapterState {
             devices: HashMap::new(),
             name,
             bonding,
+            profiles,
         }
     }
 

@@ -123,6 +123,65 @@ impl Adapter {
         Ok(())
     }
 
+    // ----- Extended Advertising -----
+
+    /// Configure an extended advertising set
+    pub fn ext_adv_configure(&self, config: &SleExtAdvConfig) -> Result<()> {
+        unsafe { ioctl::sl_ext_adv_configure(self.raw_fd(), config)? };
+        debug!(handle = config.handle, "ext adv configured");
+        Ok(())
+    }
+
+    /// Set extended advertising data
+    pub fn ext_adv_set_data(&self, data: &SleExtAdvData) -> Result<()> {
+        unsafe { ioctl::sl_ext_adv_set_data(self.raw_fd(), data)? };
+        Ok(())
+    }
+
+    /// Set extended advertising scan response data
+    pub fn ext_adv_set_scan_rsp(&self, data: &SleExtAdvData) -> Result<()> {
+        unsafe { ioctl::sl_ext_adv_set_scan_rsp(self.raw_fd(), data)? };
+        Ok(())
+    }
+
+    /// Enable an extended advertising set
+    pub fn ext_adv_enable(&self, handle: u8) -> Result<()> {
+        unsafe { ioctl::sl_ext_adv_enable(self.raw_fd(), handle as _)? };
+        Ok(())
+    }
+
+    /// Disable an extended advertising set
+    pub fn ext_adv_disable(&self, handle: u8) -> Result<()> {
+        unsafe { ioctl::sl_ext_adv_disable(self.raw_fd(), handle as _)? };
+        Ok(())
+    }
+
+    /// Remove an extended advertising set
+    pub fn ext_adv_remove(&self, handle: u8) -> Result<()> {
+        unsafe { ioctl::sl_ext_adv_remove(self.raw_fd(), handle as _)? };
+        Ok(())
+    }
+
+    /// Get extended advertising set info
+    pub fn ext_adv_info(&self, handle: u8) -> Result<SleExtAdvInfo> {
+        let mut info = unsafe { std::mem::zeroed::<SleExtAdvInfo>() };
+        info.handle = handle;
+        unsafe { ioctl::sl_ext_adv_info(self.raw_fd(), &mut info)? };
+        Ok(info)
+    }
+
+    /// Enable ext adv with duration and max events
+    pub fn ext_adv_enable_ex(&self, params: &SleExtAdvEnableParams) -> Result<()> {
+        unsafe { ioctl::sl_ext_adv_enable_ex(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Advance the ext adv tick timer
+    pub fn ext_adv_tick(&self) -> Result<()> {
+        unsafe { ioctl::sl_ext_adv_tick(self.raw_fd())? };
+        Ok(())
+    }
+
     // ----- Connection -----
 
     /// Initiate a connection to a peer
@@ -158,6 +217,68 @@ impl Adapter {
         let mut list = unsafe { std::mem::zeroed::<SleConnList>() };
         unsafe { ioctl::sl_conn_list(self.raw_fd(), &mut list)? };
         Ok(list)
+    }
+
+    /// Receive data from a connection
+    pub fn conn_recv(&self, handle: u16) -> Result<SleConnData> {
+        let mut data = unsafe { std::mem::zeroed::<SleConnData>() };
+        data.handle = handle;
+        unsafe { ioctl::sl_conn_recv(self.raw_fd(), &mut data)? };
+        Ok(data)
+    }
+
+    /// Get active connection count
+    pub fn conn_count(&self) -> Result<i32> {
+        let ret = unsafe { ioctl::sl_conn_count(self.raw_fd())? };
+        Ok(ret)
+    }
+
+    /// Set connection MTU parameters
+    pub fn set_conn_mtu(&self, params: &SleConnMtuParams) -> Result<()> {
+        unsafe { ioctl::sl_set_conn_mtu(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    // ----- AFH -----
+
+    /// Set the AFH channel map
+    pub fn afh_set_map(&self, params: &SleAfhMapParams) -> Result<()> {
+        unsafe { ioctl::sl_afh_set_map(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Get the current AFH channel map
+    pub fn afh_get_map(&self, handle: u16) -> Result<SleAfhMapParams> {
+        let mut params = unsafe { std::mem::zeroed::<SleAfhMapParams>() };
+        params.handle = handle;
+        unsafe { ioctl::sl_afh_get_map(self.raw_fd(), &mut params)? };
+        Ok(params)
+    }
+
+    /// Report an RSSI measurement on a channel
+    pub fn afh_report_rssi(&self, report: &SleAfhRssiReport) -> Result<()> {
+        unsafe { ioctl::sl_afh_report_rssi(self.raw_fd(), report)? };
+        Ok(())
+    }
+
+    /// Classify channels based on RSSI threshold
+    pub fn afh_classify(&self, params: &mut SleAfhClassifyParams) -> Result<()> {
+        unsafe { ioctl::sl_afh_classify(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Get the next hopping channel
+    pub fn afh_hop_next(&self, handle: u16) -> Result<SleAfhHopInfo> {
+        let mut info = unsafe { std::mem::zeroed::<SleAfhHopInfo>() };
+        info.handle = handle;
+        unsafe { ioctl::sl_afh_hop_next(self.raw_fd(), &mut info)? };
+        Ok(info)
+    }
+
+    /// Report a retransmission on a channel
+    pub fn afh_report_retx(&self, report: &SleAfhRetxReport) -> Result<()> {
+        unsafe { ioctl::sl_afh_report_retx(self.raw_fd(), report)? };
+        Ok(())
     }
 
     // ----- Security -----
@@ -228,6 +349,36 @@ impl Adapter {
     /// Reset security state
     pub fn sec_reset(&self) -> Result<()> {
         unsafe { ioctl::sl_sec_reset(self.raw_fd())? };
+        Ok(())
+    }
+
+    /// Run SM3 hash test
+    pub fn sec_sm3_test(&self, test: &SleHashTest) -> Result<()> {
+        unsafe { ioctl::sl_sec_sm3_test(self.raw_fd(), test)? };
+        Ok(())
+    }
+
+    /// Run SM4 encrypt test
+    pub fn sec_sm4_enc_test(&self, data: &SleConnData) -> Result<()> {
+        unsafe { ioctl::sl_sec_sm4_enc_test(self.raw_fd(), data)? };
+        Ok(())
+    }
+
+    /// Run SM4 decrypt test
+    pub fn sec_sm4_dec_test(&self, data: &SleConnData) -> Result<()> {
+        unsafe { ioctl::sl_sec_sm4_dec_test(self.raw_fd(), data)? };
+        Ok(())
+    }
+
+    /// Run SM4 block encrypt/decrypt test
+    pub fn sec_sm4_block_test(&self, test: &mut SleSm4BlockTest) -> Result<()> {
+        unsafe { ioctl::sl_sec_sm4_block_test(self.raw_fd(), test)? };
+        Ok(())
+    }
+
+    /// Run HMAC-SM3 test
+    pub fn sec_hmac_test(&self, test: &mut SleHmacTest) -> Result<()> {
+        unsafe { ioctl::sl_sec_hmac_test(self.raw_fd(), test)? };
         Ok(())
     }
 
@@ -351,6 +502,118 @@ impl Adapter {
         Ok(())
     }
 
+    // ----- Power Management -----
+
+    /// Get power management info
+    pub fn pm_info(&self) -> Result<SlePmInfo> {
+        let mut info = unsafe { std::mem::zeroed::<SlePmInfo>() };
+        unsafe { ioctl::sl_pm_info(self.raw_fd(), &mut info)? };
+        Ok(info)
+    }
+
+    /// Set target power state
+    pub fn pm_set_state(&self, cmd: &SlePmStateCmd) -> Result<()> {
+        unsafe { ioctl::sl_pm_set_state(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Set power management interval parameters
+    pub fn pm_set_interval(&self, interval: &SlePmInterval) -> Result<()> {
+        unsafe { ioctl::sl_pm_set_interval(self.raw_fd(), interval)? };
+        Ok(())
+    }
+
+    /// Force active power state
+    pub fn pm_force_active(&self, enable: bool) -> Result<()> {
+        unsafe { ioctl::sl_pm_force_active(self.raw_fd(), enable as _)? };
+        Ok(())
+    }
+
+    /// Advance PM tick timer
+    pub fn pm_tick(&self) -> Result<()> {
+        unsafe { ioctl::sl_pm_tick(self.raw_fd())? };
+        Ok(())
+    }
+
+    /// Report activity to the PM subsystem
+    pub fn pm_activity(&self) -> Result<()> {
+        unsafe { ioctl::sl_pm_activity(self.raw_fd())? };
+        Ok(())
+    }
+
+    // ----- Sync Link -----
+
+    /// Configure unicast sync link (CIG) parameters
+    pub fn sync_ucast_param(&self, config: &mut SleSyncCigConfig) -> Result<()> {
+        unsafe { ioctl::sl_sync_ucast_param(self.raw_fd(), config)? };
+        Ok(())
+    }
+
+    /// Create unicast sync links
+    pub fn sync_ucast_create(&self, cmd: &SleSyncCreateCmd) -> Result<()> {
+        unsafe { ioctl::sl_sync_ucast_create(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Remove a unicast sync group
+    pub fn sync_ucast_remove(&self, cig_id: u8) -> Result<()> {
+        unsafe { ioctl::sl_sync_ucast_remove(self.raw_fd(), cig_id as _)? };
+        Ok(())
+    }
+
+    /// Configure multicast sync link (BIG) parameters
+    pub fn sync_mcast_param(&self, config: &mut SleSyncBigConfig) -> Result<()> {
+        unsafe { ioctl::sl_sync_mcast_param(self.raw_fd(), config)? };
+        Ok(())
+    }
+
+    /// Create multicast sync links
+    pub fn sync_mcast_create(&self, cmd: &SleSyncCreateCmd) -> Result<()> {
+        unsafe { ioctl::sl_sync_mcast_create(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Remove a multicast sync group
+    pub fn sync_mcast_remove(&self, big_id: u8) -> Result<()> {
+        unsafe { ioctl::sl_sync_mcast_remove(self.raw_fd(), big_id as _)? };
+        Ok(())
+    }
+
+    /// Configure a sync link datapath
+    pub fn sync_datapath_cfg(&self, cmd: &SleSyncDatapathCmd) -> Result<()> {
+        unsafe { ioctl::sl_sync_datapath_cfg(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Remove a sync link datapath
+    pub fn sync_datapath_remove(&self, sync_handle: u16) -> Result<()> {
+        unsafe { ioctl::sl_sync_datapath_remove(self.raw_fd(), sync_handle as _)? };
+        Ok(())
+    }
+
+    /// Get sync link info
+    pub fn sync_info(&self, sync_handle: u16) -> Result<SleSyncLinkInfo> {
+        let mut info = unsafe { std::mem::zeroed::<SleSyncLinkInfo>() };
+        info.sync_handle = sync_handle;
+        unsafe { ioctl::sl_sync_info(self.raw_fd(), &mut info)? };
+        Ok(info)
+    }
+
+    // ----- Event Queue -----
+
+    /// Get pending event count
+    pub fn event_count(&self) -> Result<i32> {
+        let ret = unsafe { ioctl::sl_event_count(self.raw_fd())? };
+        Ok(ret)
+    }
+
+    /// Get event queue statistics
+    pub fn event_stats(&self) -> Result<SleEventStats> {
+        let mut stats = unsafe { std::mem::zeroed::<SleEventStats>() };
+        unsafe { ioctl::sl_event_stats(self.raw_fd(), &mut stats)? };
+        Ok(stats)
+    }
+
     // ----- DLI -----
 
     /// Get DLI controller info
@@ -387,6 +650,31 @@ impl Adapter {
         }
     }
 
+    /// Reset the DLI controller
+    pub fn dli_reset(&self) -> Result<()> {
+        unsafe { ioctl::sl_dli_reset(self.raw_fd())? };
+        Ok(())
+    }
+
+    /// Send a DLI command
+    pub fn dli_send_cmd(&self, cmd: &mut SleDliCmd) -> Result<()> {
+        unsafe { ioctl::sl_dli_send_cmd(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Get the number of USB DLI devices
+    pub fn usb_dev_count(&self) -> Result<i32> {
+        let ret = unsafe { ioctl::sl_usb_dev_count(self.raw_fd())? };
+        Ok(ret)
+    }
+
+    /// Get management queue statistics
+    pub fn mgmt_stats(&self) -> Result<SleMgmtStats> {
+        let mut stats = unsafe { std::mem::zeroed::<SleMgmtStats>() };
+        unsafe { ioctl::sl_mgmt_stats(self.raw_fd(), &mut stats)? };
+        Ok(stats)
+    }
+
     // ----- PHY -----
 
     /// Get PHY info
@@ -394,6 +682,50 @@ impl Adapter {
         let mut info = unsafe { std::mem::zeroed::<SlePhyInfo>() };
         unsafe { ioctl::sl_phy_info(self.raw_fd(), &mut info)? };
         Ok(info)
+    }
+
+    /// Set MCS index
+    pub fn phy_set_mcs(&self, cmd: &SlePhyMcsCmd) -> Result<()> {
+        unsafe { ioctl::sl_phy_set_mcs(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Set TX power
+    pub fn phy_set_txpower(&self, cmd: &SlePhyTxPowerCmd) -> Result<()> {
+        unsafe { ioctl::sl_phy_set_txpower(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Select optimal MCS for given SINR and bandwidth
+    pub fn phy_mcs_select(&self, params: &mut SlePhyMcsSelect) -> Result<()> {
+        unsafe { ioctl::sl_phy_mcs_select(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Get next hopping channel from PHY layer
+    pub fn phy_hop_next(&self) -> Result<SlePhyHopInfo> {
+        let mut info = unsafe { std::mem::zeroed::<SlePhyHopInfo>() };
+        unsafe { ioctl::sl_phy_hop_next(self.raw_fd(), &mut info)? };
+        Ok(info)
+    }
+
+    /// Set PHY bandwidth
+    pub fn phy_set_bw(&self, cmd: &SlePhyBwCmd) -> Result<()> {
+        unsafe { ioctl::sl_phy_set_bw(self.raw_fd(), cmd)? };
+        Ok(())
+    }
+
+    /// Get SINR thresholds
+    pub fn phy_get_sinr(&self) -> Result<SleSinrThresholds> {
+        let mut thresholds = unsafe { std::mem::zeroed::<SleSinrThresholds>() };
+        unsafe { ioctl::sl_phy_get_sinr(self.raw_fd(), &mut thresholds)? };
+        Ok(thresholds)
+    }
+
+    /// Set SINR thresholds
+    pub fn phy_set_sinr(&self, thresholds: &SleSinrThresholds) -> Result<()> {
+        unsafe { ioctl::sl_phy_set_sinr(self.raw_fd(), thresholds)? };
+        Ok(())
     }
 
     // ----- Role -----
@@ -418,6 +750,114 @@ impl Adapter {
         let mut stats = unsafe { std::mem::zeroed::<SleSubsysStats>() };
         unsafe { ioctl::sl_subsys_stats(self.raw_fd(), &mut stats)? };
         Ok(stats)
+    }
+
+    // ----- Capability / Connection Update -----
+
+    /// Read peer features
+    pub fn conn_read_peer_features(&self, handle: u16) -> Result<SleConnPeerCap> {
+        let mut cap = unsafe { std::mem::zeroed::<SleConnPeerCap>() };
+        cap.handle = handle;
+        unsafe { ioctl::sl_conn_read_peer_features(self.raw_fd(), &mut cap)? };
+        Ok(cap)
+    }
+
+    /// Read peer version
+    pub fn conn_read_peer_version(&self, handle: u16) -> Result<SleConnPeerCap> {
+        let mut cap = unsafe { std::mem::zeroed::<SleConnPeerCap>() };
+        cap.handle = handle;
+        unsafe { ioctl::sl_conn_read_peer_version(self.raw_fd(), &mut cap)? };
+        Ok(cap)
+    }
+
+    /// Update connection parameters
+    pub fn conn_update_params(&self, params: &SleConnParamUpdate) -> Result<()> {
+        unsafe { ioctl::sl_conn_update_params(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Update connection PHY parameters
+    pub fn conn_phy_update(&self, params: &SleConnPhyUpdate) -> Result<()> {
+        unsafe { ioctl::sl_conn_phy_update(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    // ----- RAL / RPA -----
+
+    /// Add an entry to the Resolving Address List
+    pub fn ral_add(&self, params: &SleRalAddParams) -> Result<()> {
+        unsafe { ioctl::sl_ral_add(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Remove an entry from the RAL
+    pub fn ral_remove(&self, params: &SleRalRemoveParams) -> Result<()> {
+        unsafe { ioctl::sl_ral_remove(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Clear all RAL entries
+    pub fn ral_clear(&self) -> Result<()> {
+        unsafe { ioctl::sl_ral_clear(self.raw_fd())? };
+        Ok(())
+    }
+
+    /// Get the current RAL size
+    pub fn ral_size(&self) -> Result<u8> {
+        let mut size: u8 = 0;
+        unsafe { ioctl::sl_ral_size(self.raw_fd(), &mut size)? };
+        Ok(size)
+    }
+
+    /// Read the peer RPA for a given identity
+    pub fn ral_read_peer_rpa(&self, params: &mut SleRalQueryParams) -> Result<()> {
+        unsafe { ioctl::sl_ral_read_peer_rpa(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Read the local RPA for a given identity
+    pub fn ral_read_local_rpa(&self, params: &mut SleRalQueryParams) -> Result<()> {
+        unsafe { ioctl::sl_ral_read_local_rpa(self.raw_fd(), params)? };
+        Ok(())
+    }
+
+    /// Enable or disable RPA resolution
+    pub fn rpa_enable(&self, enable: bool) -> Result<()> {
+        unsafe { ioctl::sl_rpa_enable(self.raw_fd(), enable as _)? };
+        Ok(())
+    }
+
+    /// Set RPA refresh timeout in seconds
+    pub fn rpa_set_timeout(&self, timeout_secs: u16) -> Result<()> {
+        unsafe { ioctl::sl_rpa_set_timeout(self.raw_fd(), timeout_secs as _)? };
+        Ok(())
+    }
+
+    // ----- Measurement -----
+
+    /// Read measurement capability
+    pub fn meas_read_cap(&self) -> Result<SleMeasCap> {
+        let mut cap = unsafe { std::mem::zeroed::<SleMeasCap>() };
+        unsafe { ioctl::sl_meas_read_cap(self.raw_fd(), &mut cap)? };
+        Ok(cap)
+    }
+
+    /// Set measurement link parameter
+    pub fn meas_set_link_param(&self, param: &SleMeasLinkParam) -> Result<()> {
+        unsafe { ioctl::sl_meas_set_link_param(self.raw_fd(), param)? };
+        Ok(())
+    }
+
+    /// Execute a measurement action
+    pub fn meas_action(&self, action: &SleMeasAction) -> Result<()> {
+        unsafe { ioctl::sl_meas_action(self.raw_fd(), action)? };
+        Ok(())
+    }
+
+    /// Enable or disable measurement
+    pub fn meas_enable(&self, enable: bool) -> Result<()> {
+        unsafe { ioctl::sl_meas_enable(self.raw_fd(), enable as _)? };
+        Ok(())
     }
 
     // ----- Internal helpers -----

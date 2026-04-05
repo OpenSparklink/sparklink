@@ -26,6 +26,7 @@ nix::ioctl_write_int!(sl_ext_adv_remove, SL_MAGIC, 0x18);
 nix::ioctl_readwrite!(sl_ext_adv_info, SL_MAGIC, 0x19, super::SleExtAdvInfo);
 nix::ioctl_write_ptr!(sl_ext_adv_enable_ex, SL_MAGIC, 0x1A, super::SleExtAdvEnableParams);
 nix::ioctl_none!(sl_ext_adv_tick, SL_MAGIC, 0x1B);
+nix::ioctl_write_ptr!(sl_ext_adv_set_scan_rsp, SL_MAGIC, 0x1C, super::SleExtAdvData);
 
 // ----- Scan Injection / Filtering (0x20 - 0x24) -----
 

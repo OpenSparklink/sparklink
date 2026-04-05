@@ -1,5 +1,7 @@
 mod config;
+mod controller;
 mod dbus_iface;
+mod extadv;
 mod kernel;
 mod security;
 mod service;
@@ -13,7 +15,9 @@ use tracing::{error, info};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 use crate::config::DaemonConfig;
+use crate::controller::ControllerIface;
 use crate::dbus_iface::{AdapterIface, DeviceIface, Root};
+use crate::extadv::ExtAdvIface;
 use crate::kernel::KernelLink;
 use crate::security::SecurityIface;
 use crate::service::SsapManagerIface;
@@ -77,6 +81,8 @@ async fn main() -> anyhow::Result<()> {
         .serve_at("/org/sparklink/slk0", AdapterIface::new(shared.clone()))?
         .serve_at("/org/sparklink/slk0/security", SecurityIface::new(shared.clone()))?
         .serve_at("/org/sparklink/slk0/services", SsapManagerIface::new(shared.clone()))?
+        .serve_at("/org/sparklink/slk0/extadv", ExtAdvIface::new(shared.clone()))?
+        .serve_at("/org/sparklink/slk0/controller", ControllerIface::new(shared.clone()))?
         .build()
         .await?;
 

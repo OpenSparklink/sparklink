@@ -89,6 +89,11 @@ Commands:
   role [g|t]                    Get/set role
   phy                           Show PHY parameters
   stats                         Show subsystem statistics
+  extadv <sub>                  Extended advertising management
+  power                         Show power management state
+  dli                           Show DLI controller info
+  mcs <index>                   Set MCS index
+  txpower <dBm>                 Set TX power
   help                          Print this help
   quit                          Exit"
     );

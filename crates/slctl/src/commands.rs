@@ -63,6 +63,21 @@ impl Context {
             }
             "phy" => self.cmd_phy().await,
             "stats" => self.cmd_stats().await,
+            "extadv" => self.cmd_extadv(args).await,
+            "power" => self.cmd_power().await,
+            "dli" => self.cmd_dli().await,
+            "mcs" => {
+                if args.len() < 2 {
+                    anyhow::bail!("usage: mcs <index>");
+                }
+                self.cmd_set_mcs(args[1]).await
+            }
+            "txpower" => {
+                if args.len() < 2 {
+                    anyhow::bail!("usage: txpower <dBm>");
+                }
+                self.cmd_set_txpower(args[1]).await
+            }
             _ => {
                 anyhow::bail!("unknown command '{}' — type 'help'", args[0]);
             }
@@ -102,6 +117,24 @@ impl Context {
             "org.sparklink",
             "/org/sparklink",
             "org.sparklink.Manager",
+        ).await?)
+    }
+
+    async fn controller_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
+        Ok(zbus::Proxy::new(
+            &self.conn,
+            "org.sparklink",
+            "/org/sparklink/slk0/controller",
+            "org.sparklink.Controller",
+        ).await?)
+    }
+
+    async fn extadv_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
+        Ok(zbus::Proxy::new(
+            &self.conn,
+            "org.sparklink",
+            "/org/sparklink/slk0/extadv",
+            "org.sparklink.ExtAdv",
         ).await?)
     }
 
@@ -263,28 +296,155 @@ impl Context {
     }
 
     async fn cmd_role(&self, value: Option<&str>) -> anyhow::Result<()> {
+        let proxy = self.controller_proxy().await?;
         match value {
             Some("g") | Some("0") => {
-                println!("Setting role to G-node (requires direct ioctl via slkconfig)");
+                let _: () = proxy.call("SetRole", &(0u8,)).await?;
+                println!("Role set to G-node");
             }
             Some("t") | Some("1") => {
-                println!("Setting role to T-node (requires direct ioctl via slkconfig)");
+                let _: () = proxy.call("SetRole", &(1u8,)).await?;
+                println!("Role set to T-node");
             }
             Some(_) => anyhow::bail!("role: g or t"),
             None => {
-                println!("Use 'slkconfig role' to query/set role (direct ioctl)");
+                let role: u8 = proxy.call("GetRole", &()).await?;
+                let label = if role == 0 { "G-node" } else { "T-node" };
+                println!("Role: {label} ({role})");
             }
         }
         Ok(())
     }
 
     async fn cmd_phy(&self) -> anyhow::Result<()> {
-        println!("Use 'slkconfig phy' for PHY details (direct ioctl)");
+        let proxy = self.controller_proxy().await?;
+        let info: (u8, u8, i8, u32, u8, u8) = proxy.call("GetPhyInfo", &()).await?;
+        println!("PHY:");
+        println!("  MCS Index:    {}", info.0);
+        println!("  Bandwidth:    {} MHz", info.1);
+        println!("  TX Power:     {} dBm", info.2);
+        println!("  Data Rate:    {} kbps", info.3);
+        println!("  Hop Channel:  {}", info.4);
+        println!("  Modulation:   {}", info.5);
         Ok(())
     }
 
     async fn cmd_stats(&self) -> anyhow::Result<()> {
-        println!("Use 'slkconfig stats' for subsystem statistics (direct ioctl)");
+        let proxy = self.controller_proxy().await?;
+        let stats: (u16, u16, u32, u32, u32, u32, u8) =
+            proxy.call("GetStats", &()).await?;
+        println!("Subsystem Statistics:");
+        println!("  Devices:         {}", stats.0);
+        println!("  Connections:     {}", stats.1);
+        println!("  Total Created:   {}", stats.2);
+        println!("  Mgmt Submitted:  {}", stats.3);
+        println!("  Mgmt Timeouts:   {}", stats.4);
+        println!("  CRC Errors:      {}", stats.5);
+        let pm_label = match stats.6 {
+            0 => "Active",
+            1 => "Sniff",
+            2 => "Idle",
+            3 => "Suspended",
+            _ => "Unknown",
+        };
+        println!("  Power State:     {pm_label}");
+        Ok(())
+    }
+
+    async fn cmd_extadv(&self, args: &[&str]) -> anyhow::Result<()> {
+        let proxy = self.extadv_proxy().await?;
+        let sub = args.get(1).copied().unwrap_or("help");
+        match sub {
+            "enable" => {
+                let handle: u8 = args.get(2)
+                    .ok_or_else(|| anyhow::anyhow!("usage: extadv enable <handle>"))?
+                    .parse()?;
+                let _: () = proxy.call("Enable", &(handle,)).await?;
+                println!("ExtAdv set {handle} enabled");
+            }
+            "disable" => {
+                let handle: u8 = args.get(2)
+                    .ok_or_else(|| anyhow::anyhow!("usage: extadv disable <handle>"))?
+                    .parse()?;
+                let _: () = proxy.call("Disable", &(handle,)).await?;
+                println!("ExtAdv set {handle} disabled");
+            }
+            "remove" => {
+                let handle: u8 = args.get(2)
+                    .ok_or_else(|| anyhow::anyhow!("usage: extadv remove <handle>"))?
+                    .parse()?;
+                let _: () = proxy.call("Remove", &(handle,)).await?;
+                println!("ExtAdv set {handle} removed");
+            }
+            "info" => {
+                let handle: u8 = args.get(2)
+                    .ok_or_else(|| anyhow::anyhow!("usage: extadv info <handle>"))?
+                    .parse()?;
+                let info: (u8, u8, u8, u8, u16, u64, u32) =
+                    proxy.call("GetInfo", &(handle,)).await?;
+                println!("ExtAdv Set {handle}:");
+                println!("  State:       {}", info.1);
+                println!("  SID:         {}", info.2);
+                println!("  Primary PHY: {}", info.3);
+                println!("  Data Length: {}", info.4);
+                println!("  TX Count:    {}", info.5);
+                println!("  Events Sent: {}", info.6);
+            }
+            _ => {
+                println!("Extended Advertising:");
+                println!("  extadv enable <handle>   Enable set");
+                println!("  extadv disable <handle>  Disable set");
+                println!("  extadv remove <handle>   Remove set");
+                println!("  extadv info <handle>     Show set info");
+            }
+        }
+        Ok(())
+    }
+
+    async fn cmd_power(&self) -> anyhow::Result<()> {
+        let proxy = self.controller_proxy().await?;
+        let info: (u8, bool, u16, u32) = proxy.call("GetPmInfo", &()).await?;
+        let state_label = match info.0 {
+            0 => "Active",
+            1 => "Sniff",
+            2 => "Idle",
+            3 => "Suspended",
+            _ => "Unknown",
+        };
+        println!("Power Management:");
+        println!("  State:          {state_label}");
+        println!("  Force Active:   {}", info.1);
+        println!("  Interval:       {} ms", info.2);
+        println!("  Transitions:    {}", info.3);
+        Ok(())
+    }
+
+    async fn cmd_dli(&self) -> anyhow::Result<()> {
+        let proxy = self.controller_proxy().await?;
+        let info: (u8, u32, u8, u8, u16, String) = proxy.call("GetDliInfo", &()).await?;
+        println!("DLI Controller:");
+        println!("  Name:            {}", info.5);
+        println!("  Bus:             {}", info.0);
+        println!("  FW Version:      {:#010x}", info.1);
+        println!("  Max Connections:  {}", info.2);
+        println!("  Max AdvSets:      {}", info.3);
+        println!("  Max MTU:          {}", info.4);
+        Ok(())
+    }
+
+    async fn cmd_set_mcs(&self, index_str: &str) -> anyhow::Result<()> {
+        let index: u8 = index_str.parse()?;
+        let proxy = self.controller_proxy().await?;
+        let _: () = proxy.call("SetMcs", &(index,)).await?;
+        println!("MCS index set to {index}");
+        Ok(())
+    }
+
+    async fn cmd_set_txpower(&self, dbm_str: &str) -> anyhow::Result<()> {
+        let dbm: i8 = dbm_str.parse()?;
+        let proxy = self.controller_proxy().await?;
+        let _: () = proxy.call("SetTxPower", &(dbm,)).await?;
+        println!("TX power set to {dbm} dBm");
         Ok(())
     }
 }

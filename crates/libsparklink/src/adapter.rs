@@ -633,18 +633,35 @@ impl Adapter {
         }
     }
 
-    /// Wait for the next event asynchronously
+    /// Wait for the next event asynchronously.
+    ///
+    /// Uses a hybrid approach: waits for epoll readability with a
+    /// timeout fallback. The timeout handles events delivered by the
+    /// kernel's EventPump via the DLI ring, which currently do not
+    /// trigger epoll wakeup (only ioctl-initiated events do).
     pub async fn next_event(&self) -> Result<Event> {
         loop {
-            let mut guard = self.fd.readable().await
-                .map_err(Error::OpenDevice)?;
+            // First try a non-blocking poll for any pending DLI event.
+            if let Some(raw) = self.poll_event()? {
+                return Ok(self.decode_event(raw));
+            }
 
-            match self.poll_event()? {
-                Some(raw) => {
-                    return Ok(self.decode_event(raw));
-                }
-                None => {
+            // Wait for fd readability with a timeout. Instant wakeup for
+            // events that trigger event_poll.notify_all (inject, ioctl);
+            // 50ms fallback for EventPump-delivered events.
+            let result = tokio::time::timeout(
+                tokio::time::Duration::from_millis(50),
+                self.fd.readable(),
+            )
+            .await;
+
+            match result {
+                Ok(Ok(mut guard)) => {
                     guard.clear_ready();
+                }
+                Ok(Err(e)) => return Err(Error::OpenDevice(e)),
+                Err(_) => {
+                    // Timeout: fall through to retry poll_event.
                 }
             }
         }

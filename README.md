@@ -6,34 +6,34 @@ SparkLink 无线通信协议的完整用户态基础设施，对标 BlueZ 的架
 
 ```
                      ┌──────────────────────────────────────────────┐
-   Applications      │  slctl        slkconfig     slkmon  slkdump │
-                     │  (REPL)       (CLI)         (monitor)(dump) │
-                     └──────┬──────────┬──────────────┬───────┬────┘
-                            │ D-Bus    │ D-Bus        │       │
-                     ┌──────▼──────────▼──────────────┘       │
-    Daemon           │           slkd                         │
-                     │      org.sparklink                     │
-                     │  ┌─────────────────────────┐           │
+   Applications      │  slctl        slkconfig     slkmon  slkdump  │
+                     │  (REPL)       (CLI)         (monitor)(dump)  │
+                     └──────┬──────────┬──────────────┬────────┬────┘
+                            │ D-Bus    │ D-Bus        │        │
+                     ┌──────▼──────────▼──────────────┘        │
+    Daemon           │           slkd                          │
+                     │      org.sparklink                      │
+                     │  ┌──────────────────────────┐           │
                      │  │ AdapterIface             │           │
                      │  │ DeviceIface (per device) │           │
                      │  │ SecurityIface            │           │
                      │  │ SsapManagerIface         │           │
                      │  │ RemoteServiceIface       │           │
-                     │  └─────────────────────────┘           │
-                     └──────────────┬──────────────────────────┘
+                     │  └──────────────────────────┘           │
+                     └─────────────┬───────────────────────────┘
                                    │
-                     ┌─────────────▼──────────────┐
+                     ┌─────────────▼───────────────┐
     Library          │       libsparklink          │
                      │  Adapter (async, tokio)     │──── C FFI (ffi.rs)
                      │  Error / Event types        │──── Python bindings
-                     └─────────────┬──────────────┘
+                     └─────────────┬───────────────┘
                                    │
-                     ┌─────────────▼──────────────┐
+                     ┌─────────────▼───────────────┐
     Protocol         │       slk-protocol          │
                      │  99 ioctl wrappers (nix)    │
                      │  70+ repr(C) structs        │
                      │  Generic Netlink constants  │
-                     └─────────────┬──────────────┘
+                     └─────────────┬───────────────┘
                                    │ ioctl / chardev
                      ──────────────▼──────────────────────
                           Linux Kernel (net/sparklink/)

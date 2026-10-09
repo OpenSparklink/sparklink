@@ -62,10 +62,10 @@ fn main() {
     loop {
         match adapter.poll_event() {
             Ok(Some(event)) => {
-                if let Some(ft) = filter_type {
-                    if event.event_type != ft {
-                        continue;
-                    }
+                if let Some(ft) = filter_type
+                    && event.event_type != ft
+                {
+                    continue;
                 }
 
                 captured += 1;

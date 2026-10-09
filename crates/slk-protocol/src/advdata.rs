@@ -272,7 +272,7 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
                 }));
             }
             0x05 | 0x07 => {
-                if length % 2 != 0 {
+                if !length.is_multiple_of(2) {
                     errors.push(AdvDataError::UnalignedUuidList {
                         type_id,
                         len: length,
@@ -291,7 +291,7 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
                 }
             }
             0x06 | 0x08 => {
-                if length % 16 != 0 {
+                if !length.is_multiple_of(16) {
                     errors.push(AdvDataError::UnalignedUuidList {
                         type_id,
                         len: length,

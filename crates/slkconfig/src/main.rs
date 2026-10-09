@@ -784,10 +784,13 @@ fn parse_handle(s: &str) -> libsparklink::Result<u16> {
 
 fn parse_hex_bytes(hex: &str) -> libsparklink::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
-    if hex.len() % 2 != 0 {
+    if !hex.len().is_multiple_of(2) {
         return Err(libsparklink::Error::InvalidParam(
             "hex string must have even length",
         ));
+    }
+    if !hex.is_ascii() {
+        return Err(libsparklink::Error::InvalidParam("invalid hex character"));
     }
     let mut bytes = Vec::with_capacity(hex.len() / 2);
     for i in (0..hex.len()).step_by(2) {
@@ -867,6 +870,7 @@ mod tests {
         assert!(parse_hex_bytes("A").is_err()); // odd length
         assert!(parse_hex_bytes("0xA").is_err()); // odd length after prefix
         assert!(parse_hex_bytes("GGXX").is_err()); // invalid hex chars
+        assert!(parse_hex_bytes("aéa").is_err()); // even byte count, invalid UTF-8 slice boundary
     }
 
     #[test]

@@ -769,12 +769,28 @@ fn parse_handle(s: &str) -> anyhow::Result<u16> {
 
 fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
-    if hex.len() % 2 != 0 {
+    if !hex.len().is_multiple_of(2) {
         anyhow::bail!("hex string must have even length");
+    }
+    if !hex.is_ascii() {
+        anyhow::bail!("invalid hex character");
     }
     let mut bytes = Vec::with_capacity(hex.len() / 2);
     for i in (0..hex.len()).step_by(2) {
         bytes.push(u8::from_str_radix(&hex[i..i + 2], 16)?);
     }
     Ok(bytes)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hex_input_handles_ascii_and_rejects_unicode_without_panicking() {
+        assert_eq!(parse_hex_bytes("0xaA01").unwrap(), [0xAA, 1]);
+        assert!(parse_hex_bytes("aéa").is_err());
+        assert!(parse_hex_bytes("GG").is_err());
+        assert!(parse_hex_bytes("a").is_err());
+    }
 }

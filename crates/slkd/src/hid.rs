@@ -105,7 +105,7 @@ pub struct ReportIndexEntry {
 }
 
 impl ReportIndexEntry {
-    pub fn to_bytes(&self) -> [u8; 8] {
+    pub fn to_bytes(self) -> [u8; 8] {
         [
             self.report_id,
             self.report_type as u8,

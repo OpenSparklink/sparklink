@@ -291,3 +291,74 @@ manifest 绑定 kernel/config/QEMU/initramfs 与日志 hash。
 仍为 0 只 WS73，KVM 可读写；未开展本轮 RF。内核完整门禁仍 FAIL，保持未提交，
 整项 issues 和全部真实北极星 checklist 保持开放。下一步统一每设备 Host 的
 直接/排队命令发送与 credit、事务归属，随后继续 WS73 HCC/BSLE/真实 DLI。
+
+
+## 统一 USB command Host 与 pending 修复（2026-10-10）
+
+Runtime 新增 IRQ-safe `CommandHost`，64 槽队列、绝对 credit、单个在途命令
+及独立匹配回复槽均属于同一 registration owner。runtime USB 的 typed 与
+raw 命令共用调度；只有 TX worker 在保留 owner 后调用实际 bulk OUT。
+匹配回复保留到协议消费者取走后才释放在途槽，不因普通 discovery/data
+ring 满而被丢弃。raw 回复按发出时捕获的 sequence 解析，internal/unmatched
+回复不消费 raw pending。同步 bootstrap 三查询仍为 C 初始化路径，不据此
+宣称所有 bootstrap/driver/profile 已统一到完整 Host。
+
+满队列返回 EBUSY；入队失败回滚 raw pending/count，Host queue 拒绝超长输入。
+待发送的已取消/过期 raw entry 不再发到设备。回复等待和排队有界，传输错误
+或超时 latch 该 Host fault、停发和清理其队列，不补造 credits；完整 Fault
+状态发布/恢复、PM、完整 raw ioctl schema 验证与错误码保真待完成。
+单在途策略比 controller 可宣告的
+多条窗口保守，不宣称已实现多在途吞吐和乱序 terminal correlation。
+
+每个广播/扫描 enable/disable 记录内部 cookie 和 enable 意图；disable
+或被新请求替代的 enable 回复不确认新的 pending start。停止命令的入队
+错误不再忽略，也不把入队失败伪装为本地已停止。实际 disable 确认、完整
+参数/data 配置、异步请求返回与事件 ABI仍待补全。成功 CommandStatus 仅
+接受工作，后续 domain terminal 尚未全部关联；不能关闭 K#1/#2/#16/#17。
+
+IRQ completion 的立即 RX kick 使用 mod_delayed_work，提前已有的长定时
+工作；非零 heartbeat 不推迟已有 kick。借助 Rust RawWorkItem::__enqueue
+转交引用：新排队才交出新的 Arc，已有 pending 保留原队列 Arc 并回收多余
+输入引用。stop gate 与调度互斥，工作不使用 disable，锁外 flush 仍通过
+Rust trampoline 回收引用。仍只有每设备 RX/TX 两份 work；中途 #29 的分离
+maintenance 方案只构建，未跑 guest，最终源码不采用它。RT/lockdep、完整
+引用回收故障矩阵及高压力晚回调尚未验收。
+
+突发测试暴露 `CmdPendingEntry` 的逻辑错误：pending sentinel=u32::MAX，
+旧 is_resolved 仅检测最高位，把 pending 也算作完成；GC 会删掉仍等待的
+entry，计数却继续 pending。现排除 sentinel，并避免 tail 覆盖其他 live
+slot。旧 #31 两设备均只收 1 个 internal Reset，MAC=0、pending=13、submitted
++13、resolved +0、timeout +0，在 4 秒截止严格失败。相同测试在修正后的
+#32 和最终 #33 均通过，失败目录完整保留，不以重试覆盖。
+
+最终 #33 无警告构建，构造函数栈预留保持 0x7c0（非全调用链证明）。
+新的 guest 测试同时用两个子进程、各自绑定 fd，混合一个 internal Reset、
+一个 raw Reset 和 12 条相同 MAC opcode；逐条核验各自地址及 2 条 Reset
+回复，raw submitted/resolved 恰好各 +13、pending=0、无新增 timeout。
+两设备均 PASS，随后旧 fd ENODEV、另一设备继续查询、重插索引复用与新 fd
+查询通过，整体 VIRTUAL_RUNTIME_LIFECYCLE PASS、guest exit=0。测试仍为
+QEMU 标准模型，不能证明真实 WS73/RF、slkd/no-sudo、20 轮、四设备，或专门
+零 credit/迟到 callback/fault/PM 场景。
+
+完整 #33 回归：96 项、21 条失败断言、0 skip、strict FAIL；精确命令归属
+单项 PASS（2×10,000 身份查询、各自匹配 MAC、精确 +1 submitted/+1 resolved、
+pending=0、无新增 timeout）。残留连接、异步 terminal 和压力/背压相关失败
+仍存在；后续日志有 9 个 raw pending 超时，不能作为成功完成。仍有 printk
+打断 marker，按严格判定保持失败。正常未知 ioctl 已改为 debug 日志，errno
+不变；没有隐藏真实 kernel fault、删除断言或放宽判定。未知 DLI reply opcode
+不再被归并到 VendorBase，短 bulk OUT 也不再返回成功；这些错误分支尚未完成
+专门注入验证。verdict/lab/lifecycle verifier 共 25+16+14=55 项通过；新 guest
+C 程序在 runner 内以静态链接、-Wall -Wextra -Werror 编译通过。
+
+本地最终证据：`.dev/qemu-usb-host-final/`、
+`.dev/kernel-usb-host-final-evidence.json`、
+`.dev/runtime-lifecycle-usb-host-final/manifest.json`，
+`.dev/usb-host-final-source-snapshot/`。最终完整 run 目录另冻结 image #33、
+config 与 QEMU binary，manifest 绑定来源/dirty diff、原始 logs、initramfs
+和每份文件 hash。旧 #28、#30、#32 完整失败分别在
+`qemu-usb-host-first/`、`qemu-usb-host-wakeup/`、`qemu-usb-host-pending/`；
+#31 突发失败在 `runtime-lifecycle-usb-host-{bursts,burst-counts}/`，
+#30 原单次 gate 与 #32 新突发 gate 也分别保留。
+内核完整门禁未通过，保持未提交；整项 issues/北极星验收保持开放。
+下一步补全广播/扫描确认与参数/data 事务、Ready/fault 和 WS73 HCC/BSLE
+接口，继续真实 DLI 纵向路径，完整方案原范围保留。

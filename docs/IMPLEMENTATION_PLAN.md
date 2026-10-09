@@ -19,29 +19,35 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 完整 S0–S6、原 issue checklist 和 CI/安全门禁均保留；SSAP/配对策略等
 后续完整功能不作为此第一条广播/发现路径的前置依赖。部分成果不关闭整项 issue。
 
-最小 Runtime 已迁移为稳定 `Arc<ControllerRuntime>`、每设备协议锁、RX 环
-及嵌入 RX/TX work；USB 接收 context 现携带 immutable registration generation，
-probe 失败撤销 owner 与 C URB，初始化严格核对 Reset/版本/MAC 回复。
-核对本地 T/XS 10003-2025 后修正标准 CommandComplete/Status 的 command-credit
-字段和 5 字节版本返回；原始 DLI 队列开始遵守 controller credit，其他直接
-命令路径仍待统一。旧 QEMU 结果不能作为完整标准 DLI/credit 符合性证明。
+最小 Runtime 已持稳定 `Arc<ControllerRuntime>`、每设备协议锁、IRQ RX 环
+及 RX/TX work；USB context 携带注册 generation，probe 失败撤销 owner/URB。
+标准 DLI parser/fixture 已补齐 command-credit 与五字节版本；旧 fixture
+结果仍保留，但不证明完整标准符合性。
 
-最新 image #27 构建成功；独立虚拟单次拔插/索引复用 gate PASS，旧 fd 持续
-ENODEV，另一设备和重插实例完成各自 MAC 事务。完整 96 项回归为 10 条失败
-断言、0 skip、strict FAIL，精确命令单项此次 FAIL（旧 pending 未清零），
-日志有 management completion 丢失，因果链与 Host 调度仍需修复。image #25
-的启动栈溢出及 image #26 的同样超大栈预留均留存；显式原位初始化队列后
-#27 构造函数栈预留回到 0x7c0。这不证明整个调用链、真实 WS73、slkd、
-无 sudo 应用、20 轮/四设备或完整生命周期条件。内核未提交；下一步统一
-每设备 Host 的所有命令发送、credit 与事务归属，继续 WS73 HCC/BSLE 的
-纵向路径，不把完整连接/SSAP/security policy 扩大为北极星前置条件。
+所有 runtime USB typed/raw 命令现共用每设备有界 Host 队列和 credit；单个
+在途命令等待匹配 Status/Complete，管理回复单独保留，raw 结果按已发送的
+sequence 解析。广播/扫描的旧 enable/disable 回复不确认较新的 intent。
+修正 pending sentinel 被误判为 resolved、导致 GC 删除未完成条目的问题；
+回复超时/传输失败停发该设备，不猜测恢复 credit。该层仍不是完整 Host：
+bootstrap credit waiter、异步 terminal correlation、Ready/fault 发布、恢复
+以及 typed 参数/数据完整事务仍未完成。
+
+最新 image #33 无警告构建；两虚拟设备同时各 12 次 MAC 查询并混合 internal /
+raw Reset，逐条地址匹配，raw submitted/resolved 恰好各 +13、pending=0、无
+新增 timeout；随后单次拔插/索引复用 gate PASS。完整回归的精确命令归属单项
+亦 PASS；完整 96 项、21 条失败断言、0 skip、strict FAIL，仍有残留连接、
+异步完成关联与压力/背压失败，另有 printk 打断 marker。旧失败不覆盖、不删
+断言；内核未提交。这些均不证明真实 WS73、slkd/no-sudo、20 轮、四设备或
+全部生命周期条件。下一步补全广播/扫描的确认与参数/数据事务、Ready/fault
+和 WS73 HCC/BSLE 接口，继续真实 DLI 纵向路径；完整连接/SSAP/security policy
+原范围保留，不扩大为第一北极星前置依赖。
 完整记录和证据边界见 [Runtime 开发记录](WS73_DISCOVERY_NORTH_STAR.md#runtime-第一阶段开发记录2026-10-10)。
 
 ## 基线与当前证据
 
 | 项目 | 已核验状态 | 证据边界 |
 |---|---|---|
-| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot / lab / Runtime 第一阶段 | 稳定每设备 Arc/协议锁/RX 环/worker，Deref 桥已移除；仍有静态 Backend enum、generation-tagged USB RX context、非完整 Host 事务和内核 SSAP 数据库 |
+| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot / lab / Runtime 第一阶段 | 稳定每设备 Arc/协议锁/RX 环/worker，Deref 桥已移除；仍有静态 Backend enum、generation-tagged USB RX、统一 USB command Host 队列；bootstrap/terminal/Ready/fault/恢复未完整和内核 SSAP 数据库 |
 | 用户态源码 | 功能分支 `codex/sparklink-ws73`，代码提交至 `7adb796`（见交付记录） | 事件等待已移到独立任务；对象仍固定 slk0；Bond 不含可恢复凭据；没有 slk-vendord |
 | 参考实现 | libws73-usb `f4d85d0e95af2d0043432e1301fd2f6b660a4906` | 参考源码及作者 capture 只作协议证据，另列来源，不能冒充本项目实测 |
 | 新增 Host 参考 | OpenHarmony communication_nearlink_service `f0872dfaac33ffa99b80b352f6c05fba2df6414e` | 已检查分层、DLI/TCID/SSAP/安全与 HAL/桩边界；未构建/运行，不作为实测。调整见下节 |

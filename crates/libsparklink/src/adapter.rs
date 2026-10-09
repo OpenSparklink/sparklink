@@ -638,6 +638,80 @@ impl Adapter {
         crate::controller_events::poll(self.raw_fd(), cursor)
     }
 
+    /// Probe the selected registration's identity and confirmed radio state.
+    /// This interface does not itself establish SparkLink Ready.
+    pub fn discovery_snapshot(&self) -> Result<SleDiscoveryResult> {
+        let mut result = SleDiscoveryResult {
+            version: DISCOVERY_VERSION,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_discovery_result(self.raw_fd(), &mut result)? };
+        Ok(result)
+    }
+
+    /// Submit a complete typed operation. A nonzero caller request_id identifies
+    /// it within generation; successful admission is not completion. Select an
+    /// adapter, probe its generation, and supply every profile parameter.
+    pub fn submit_discovery(&self, request: &SleDiscoverySubmit) -> Result<()> {
+        unsafe { ioctl::sl_discovery_submit(self.raw_fd(), request)? };
+        Ok(())
+    }
+
+    /// Non-destructive result. None means absent/evicted, not pending. Terminal
+    /// controller errors remain in status, host errors remain in error.
+    pub fn discovery_result(
+        &self,
+        generation: u64,
+        request_id: u64,
+    ) -> Result<Option<SleDiscoveryResult>> {
+        if generation == 0 || request_id == 0 {
+            return Err(crate::Error::InvalidParam(
+                "discovery identity must be nonzero",
+            ));
+        }
+        let mut result = SleDiscoveryResult {
+            version: DISCOVERY_VERSION,
+            generation,
+            request_id,
+            ..Default::default()
+        };
+        match unsafe { ioctl::sl_discovery_result(self.raw_fd(), &mut result) } {
+            Ok(_) => Ok(Some(result)),
+            Err(nix::errno::Errno::ENOENT) => Ok(None),
+            Err(error) => Err(error.into()),
+        }
+    }
+
+    /// Wait with a monotonic timeout; return failed/cancelled/faulted records
+    /// intact so the caller can display the actual controller/host reason.
+    pub async fn wait_discovery(
+        &self,
+        generation: u64,
+        request_id: u64,
+        timeout: std::time::Duration,
+    ) -> Result<SleDiscoveryResult> {
+        let deadline = tokio::time::Instant::now()
+            .checked_add(timeout)
+            .ok_or(crate::Error::InvalidParam("discovery timeout is too large"))?;
+        loop {
+            if let Some(result) = self.discovery_result(generation, request_id)? {
+                if result.is_terminal() {
+                    return Ok(result);
+                }
+            } else {
+                return Err(crate::Error::InvalidParam(
+                    "discovery result absent or evicted",
+                ));
+            }
+            let now = tokio::time::Instant::now();
+            if now >= deadline {
+                return Err(crate::Error::Timeout);
+            }
+            tokio::time::sleep_until((now + std::time::Duration::from_millis(10)).min(deadline))
+                .await;
+        }
+    }
+
     /// Transfer this selected fd to an independent native event subscriber.
     /// Requires the versioned kernel interface and a Tokio I/O runtime.
     pub fn into_controller_event_receiver(self) -> Result<crate::ControllerEventReceiver> {

@@ -19,6 +19,16 @@ mod tests {
     use super::*;
     use std::ptr;
 
+    #[tokio::test]
+    async fn overflowing_discovery_deadline_returns_error_before_ioctl() {
+        let adapter = Adapter::open("/dev/null").unwrap();
+        let result = adapter.wait_discovery(1, 1, std::time::Duration::MAX).await;
+        assert!(matches!(
+            result,
+            Err(Error::InvalidParam("discovery timeout is too large"))
+        ));
+    }
+
     #[test]
     fn error_display() {
         let e = Error::InvalidParam("test");

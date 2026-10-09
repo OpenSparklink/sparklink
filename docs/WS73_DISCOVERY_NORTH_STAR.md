@@ -793,3 +793,44 @@ QEMU 因 sandbox QMP socket bind EPERM 在来宾启动前失败，确认 session
 失败/故障恢复，随后动态 adapter/slctl。Runtime 仍 metadata-only SETUP，RF
 仍拒绝。全部七项真实双设备验收、随后四设备两组和完整 S0–S6 保持；所有原
 issues 开放，不以 preparation 或支持 QEMU PASS 提前关闭整项。
+
+## 原生 typed 操作提交与结果（2026-10-10，部分成果）
+
+内核 [6b927a4d07f4](https://github.com/OpenSparklink/linux/commit/6b927a4d07f43cfa602f5c6d7c52e1c14af0cabf) 接通版本化
+DISCOVERY_SUBMIT/RESULT（704/64字节，32/64位ABI一致）。显式选择fd，probe获取
+profile/generation，再使用非零调用者request_id提交完整参数/数据。write-only
+提交不在admission后copyout；结果独立重复读，64条保留，非终态不淘汰，最旧
+终态可淘汰ENOENT。duplicate保留id返回EEXIST，wrong generation/旧fd不跟随重插。
+核心现在实际调用driver prepare，将完整原生recipe排入同一owner Host，经TX
+worker发送USB/HCC/DLI；不扩大raw metadata白名单。结果保留成功/失败步骤、
+原始status、负host errno、取消和driver标注步骤的实际TX power（不取请求功率）。
+两radio domain初始Unknown，先等两个stop完成再start；成功Status不终结操作，
+stop提交不宣称Off，失败stop保留先前确认状态。取消在途enable成功后标为Unknown，
+physical stop完成才Off；timeout锁存单owner故障并将radio标Unknown，不发后续使能。
+这些字段是确认的命令状态，不代表PHY实时活动；自主终止事件仍待接。
+
+用户态同步ABI、ioctl、Adapter probe/submit/non-destructive query/async wait，
+deadline溢出返回错误且不执行ioctl；尚未接动态slkd adapter与slctl命令。冻结image
+#55无警告构建；8独立QEMU gate PASS，包括**实际虚拟WS73 USB完整typed事务**：
+3/4步广播、扫描、每步骤0xfd失败、stop失败重试、取消、selected power=-42、
+结果EFAULT重试、独立request_id、timeout故障隔离及重插新generation/结果状态。
+每owner五个控制循环为合成支持测试，绝不是20轮真实角色交换或空口证据。
+模型检查参数、数据、地址与次序，延迟Complete并断言未提前发下一命令；reserved
+模式显式触发合成故障，禁止用于真实设备。另7条原支持gate保持通过。
+完整原96-case标准三控制器回归strict PASS，1056 OK/0 FAIL/0 SKIP/3旧WARN；
+旧air-medium/跨设备数据弱断言保持。14项生产Host、7项生产result-store、450105
+次codec检查与ASan/UBSan/LSan、110项harness、32/64位C ABI、139项workspace
+和改动crates strict clippy PASS。此前全workspace slkd strict-clippy未使用项仍未解决。
+
+证据 `.dev/discovery-submit-final-evidence.json`、`discovery-submit-source-snapshot/`、
+`discovery-submit-full-qemu/`、`discovery-submit-v3-gate-*/manifest.json`；19冻结内核
+源码hash与提交一致、8 gate输入/源码前后不变。初次sandbox socket EPERM、CLI
+条件tuple错误、guest缩进-Werror以及未绑定fd错返ENODEV的#54失败全部保留；
+修正后#55通过。#52/53/54是中间镜像，不作最终证据。选定submit/result/prepare
+局部栈分配1416/104/88字节，不宣称完整调用链安全。
+
+本机WS73=[]。Native仍SETUP；新typed接口可实验执行完整命令，legacy bare-enable
+与raw RF仍拒绝。真正Ready/能力和板级校准策略、自主终止、动态adapter/slctl、
+AD内外层封装、普通用户与全部七项真实验收待完成。下一步处理原生Ready/故障
+可见性并把新接口与完整发现事件接入动态adapter/slctl，再做真实双设备闭环和
+四设备两组；全部原issues和完整S0–S6保持开放，不能以virtual事务提前关闭整项。

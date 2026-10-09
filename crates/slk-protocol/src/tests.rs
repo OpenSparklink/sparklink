@@ -483,3 +483,27 @@ fn complete_controller_event_abi_and_ws73_fields() {
     event.flags = 1;
     assert!(event.ws73_discovery().is_none());
 }
+
+#[test]
+fn typed_discovery_abi_and_terminal_states() {
+    use std::mem::{align_of, offset_of, size_of};
+    assert_eq!(size_of::<SleDiscoveryAdvConfig>(), 116);
+    assert_eq!(size_of::<SleDiscoveryScanConfig>(), 28);
+    assert_eq!(size_of::<SleDiscoverySubmit>(), 704);
+    assert_eq!(align_of::<SleDiscoverySubmit>(), 8);
+    assert_eq!(offset_of!(SleDiscoverySubmit, advertising), 32);
+    assert_eq!(offset_of!(SleDiscoverySubmit, data), 200);
+    assert_eq!(size_of::<SleDiscoveryResult>(), 64);
+    assert_eq!(offset_of!(SleDiscoveryResult, dev_index), 52);
+    assert_eq!(
+        std::mem::size_of_val(&SleDiscoverySubmit::default().data),
+        251
+    );
+    for state in 0..=7 {
+        let r = SleDiscoveryResult {
+            state,
+            ..Default::default()
+        };
+        assert_eq!(r.is_terminal(), (3..=6).contains(&state));
+    }
+}

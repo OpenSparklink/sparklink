@@ -997,3 +997,132 @@ pub struct SleMeasAction {
     pub action: u8,
     pub config_index: u8,
 }
+
+// Version 1 typed discovery ABI. Select a registration before probing/submitting.
+// Explicit profile fields/units, opaque data; no implicit board/radio defaults.
+pub const DISCOVERY_VERSION: u32 = 1;
+pub const DISCOVERY_ADV_START: u32 = 1;
+pub const DISCOVERY_ADV_STOP: u32 = 2;
+pub const DISCOVERY_SCAN_START: u32 = 3;
+pub const DISCOVERY_SCAN_STOP: u32 = 4;
+pub const DISCOVERY_SCAN_RESPONSE: u32 = 1;
+pub const DISCOVERY_FAULT: u32 = 1;
+pub const DISCOVERY_RADIO_UNKNOWN: u32 = 0;
+pub const DISCOVERY_RADIO_OFF: u32 = 1;
+pub const DISCOVERY_RADIO_ON: u32 = 2;
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+pub struct SleDiscoveryAdvConfig {
+    pub handle: u32,
+    pub mode: u32,
+    pub gt_role: u32,
+    pub interval_min: u32,
+    pub interval_max: u32,
+    pub channel_map: u32,
+    pub own_address_type: u32,
+    pub peer_address_type: u32,
+    pub own_address: [u8; 6],
+    pub peer_address: [u8; 6],
+    pub filter: u32,
+    pub tx_power: i32,
+    pub primary_frame: u32,
+    pub secondary_frame: u32,
+    pub secondary_phy: u32,
+    pub secondary_pilot: u32,
+    pub secondary_mcs: u32,
+    pub secondary_max_skip: u32,
+    pub sid: u32,
+    pub request_notification: u32,
+    pub max_requests: u32,
+    pub request_rx_duration: u32,
+    pub conn_interval_min: u32,
+    pub conn_interval_max: u32,
+    pub conn_max_latency: u32,
+    pub supervision_timeout: u32,
+    pub min_event_length: u32,
+    pub max_event_length: u32,
+}
+impl Default for SleDiscoveryAdvConfig {
+    fn default() -> Self {
+        // SAFETY: every field is an integer or byte array; zero is valid.
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+pub struct SleDiscoveryScanConfig {
+    pub own_address_type: u32,
+    pub filter: u32,
+    pub frame_types: u32,
+    pub active: u32,
+    pub interval: u32,
+    pub window: u32,
+    pub filter_duplicates: u32,
+}
+impl Default for SleDiscoveryScanConfig {
+    fn default() -> Self {
+        // SAFETY: every field is an integer or byte array; zero is valid.
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug)]
+pub struct SleDiscoverySubmit {
+    pub version: u32,
+    pub profile: u32,
+    pub operation: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub request_id: u64,
+    pub advertising: SleDiscoveryAdvConfig,
+    pub scanning: SleDiscoveryScanConfig,
+    pub handle: u32,
+    pub duration: u32,
+    pub max_events: u32,
+    pub data_len: u32,
+    pub scan_response_len: u32,
+    pub reserved: u32,
+    pub data: [u8; 251],
+    pub scan_response: [u8; 251],
+    pub reserved_tail: [u8; 2],
+}
+impl Default for SleDiscoverySubmit {
+    fn default() -> Self {
+        // SAFETY: every field is an integer or byte array; zero is valid.
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug)]
+pub struct SleDiscoveryResult {
+    pub generation: u64,
+    pub request_id: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub profile: u32,
+    pub operation: u32,
+    pub state: u32,
+    pub error: i32,
+    pub selected_power: i32,
+    pub radio_adv: u32,
+    pub radio_scan: u32,
+    pub dev_index: u16,
+    pub opcode: u16,
+    pub step: u8,
+    pub count: u8,
+    pub status: u8,
+    pub power_valid: u8,
+    pub reserved: [u8; 4],
+}
+impl Default for SleDiscoveryResult {
+    fn default() -> Self {
+        // SAFETY: every field is an integer or byte array; zero is valid.
+        unsafe { std::mem::zeroed() }
+    }
+}
+impl SleDiscoveryResult {
+    /// Queued/pending results are never mistaken for radio completion.
+    pub fn is_terminal(&self) -> bool {
+        (3..=6).contains(&self.state)
+    }
+}

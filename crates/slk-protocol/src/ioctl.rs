@@ -275,3 +275,17 @@ nix::ioctl_write_ptr!(
 );
 nix::ioctl_write_ptr!(sl_meas_action, SL_MAGIC, 0xC2, super::SleMeasAction);
 nix::ioctl_write_int!(sl_meas_enable, SL_MAGIC, 0xC3);
+
+// Versioned per-registration typed discovery. Submit has no output copy.
+nix::ioctl_write_ptr!(
+    sl_discovery_submit,
+    SL_MAGIC,
+    0x88,
+    super::SleDiscoverySubmit
+);
+nix::ioctl_readwrite!(
+    sl_discovery_result,
+    SL_MAGIC,
+    0x89,
+    super::SleDiscoveryResult
+);

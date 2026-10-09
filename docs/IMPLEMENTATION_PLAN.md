@@ -412,3 +412,14 @@ slctl。实机清点为空、北极星七项未验收、全部原 issues 与完�
 尚未调用准备或排入原生事务；公开 cookie/result、状态/恢复与 adapter/slctl
 仍待接。WS73=[]，Runtime SETUP/拒绝 RF，七项真实验收和全部 issues/S0–S6
 保持。详见 [准备与发送边界记录](WS73_DISCOVERY_NORTH_STAR.md#驱动拥有完整发现事务准备与发送边界2026-10-10部分成果)。
+
+### 原生 typed 操作提交与结果（2026-10-10，部分成果）
+
+[6b927a4d07f4](https://github.com/OpenSparklink/linux/commit/6b927a4d07f43cfa602f5c6d7c52e1c14af0cabf) 接通完整driver prepare→
+Host→native USB/HCC/DLI事务与版本化submit/result；显式fd/generation/caller id，
+非破坏性64条有界结果，原始status/失败步骤/取消/实际功率可见，stop确认与故障
+状态不提前完成。image #55八gate（含完整native虚拟事务/错误/超时/重插）、原96-case
+回归、14+7生产Rust、450105次codec与sanitizers、110harness、32/64ABI、139workspace
+及改动crate strict clippy PASS，旧3条WARN保留。新用户态Adapter接口尚未接slkd/slctl，
+WS73=[]、仍SETUP，真正Ready/自主终止/七项真实验收待完成。完整S0–S6与原issues保持。
+详见 [原生操作记录](WS73_DISCOVERY_NORTH_STAR.md#原生-typed-操作提交与结果2026-10-10部分成果)。

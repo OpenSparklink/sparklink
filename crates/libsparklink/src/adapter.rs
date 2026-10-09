@@ -3,20 +3,19 @@ use std::path::Path;
 
 use nix::fcntl::{OFlag, open};
 use nix::sys::stat::Mode;
-use tokio::io::unix::AsyncFd;
 use tracing::{debug, info};
 
 use slk_protocol::ioctl;
 use slk_protocol::*;
 
-use crate::{Error, Event, Result};
+use crate::{Error, Event, EventReceiver, Result};
 
 /// Default device path for SparkLink chardev
 pub const DEFAULT_DEV_PATH: &str = "/dev/sparklink";
 
 /// Represents an open SparkLink adapter (controller)
 pub struct Adapter {
-    fd: AsyncFd<OwnedFd>,
+    fd: OwnedFd,
     dev_index: u16,
 }
 
@@ -30,19 +29,17 @@ impl Adapter {
         )
         .map_err(|e| Error::OpenDevice(std::io::Error::from(e)))?;
 
-        let async_fd = AsyncFd::new(owned).map_err(Error::OpenDevice)?;
-
         info!(path = %path.as_ref().display(), "opened SparkLink device");
 
         Ok(Self {
-            fd: async_fd,
+            fd: owned,
             dev_index: 0,
         })
     }
 
     /// Get the raw file descriptor (for use with poll/epoll)
     pub fn as_fd(&self) -> BorrowedFd<'_> {
-        self.fd.get_ref().as_fd()
+        self.fd.as_fd()
     }
 
     /// Get the number of registered devices
@@ -628,44 +625,23 @@ impl Adapter {
 
     /// Poll for a DLI event (non-blocking)
     pub fn poll_event(&self) -> Result<Option<SleDliEvent>> {
-        let mut event = unsafe { std::mem::zeroed::<SleDliEvent>() };
-        match unsafe { ioctl::sl_dli_poll_event(self.raw_fd(), &mut event) } {
-            Ok(_) => Ok(Some(event)),
-            Err(nix::Error::EAGAIN) => Ok(None),
-            Err(e) => Err(Error::Ioctl(e)),
-        }
+        crate::receiver::poll_event(self.raw_fd())
     }
 
-    /// Wait for the next event asynchronously.
+    /// Transfer this independently opened fd to a single async event consumer.
     ///
-    /// Uses a hybrid approach: waits for epoll readability with a
-    /// timeout fallback. The timeout handles events delivered by the
-    /// kernel's EventPump via the DLI ring, which currently do not
-    /// trigger epoll wakeup (only ioctl-initiated events do).
+    /// Requires a Tokio runtime with I/O enabled. Control adapters and C/Python
+    /// handles do not require a runtime. Until the kernel subscription UAPI is
+    /// implemented, this receiver uses the legacy destructive DLI event ioctl.
+    pub fn into_event_receiver(self) -> Result<EventReceiver> {
+        EventReceiver::from_fd(self.fd)
+    }
+
+    /// Compatibility helper; prefer a persistent, independently owned receiver.
+    #[deprecated(note = "Open a dedicated Adapter and use into_event_receiver")]
     pub async fn next_event(&self) -> Result<Event> {
-        loop {
-            // First try a non-blocking poll for any pending DLI event.
-            if let Some(raw) = self.poll_event()? {
-                return Ok(self.decode_event(raw));
-            }
-
-            // Wait for fd readability with a timeout. Instant wakeup for
-            // events that trigger event_poll.notify_all (inject, ioctl);
-            // 50ms fallback for EventPump-delivered events.
-            let result =
-                tokio::time::timeout(tokio::time::Duration::from_millis(50), self.fd.readable())
-                    .await;
-
-            match result {
-                Ok(Ok(mut guard)) => {
-                    guard.clear_ready();
-                }
-                Ok(Err(e)) => return Err(Error::OpenDevice(e)),
-                Err(_) => {
-                    // Timeout: fall through to retry poll_event.
-                }
-            }
-        }
+        let fd = self.fd.try_clone().map_err(Error::OpenDevice)?;
+        EventReceiver::from_fd(fd)?.next_event().await
     }
 
     /// Reset the DLI controller
@@ -882,53 +858,65 @@ impl Adapter {
 
     fn raw_fd(&self) -> std::os::fd::RawFd {
         use std::os::fd::AsRawFd;
-        self.fd.get_ref().as_raw_fd()
+        self.fd.as_raw_fd()
     }
+}
 
-    fn decode_event(&self, raw: SleDliEvent) -> Event {
-        match raw.event_type {
-            EVT_CONN_COMPLETE => Event::ConnectionStateChanged {
-                handle: raw.handle,
-                state: if raw.status == 0 {
-                    ConnState::Connected as u8
-                } else {
-                    ConnState::Idle as u8
-                },
-                peer_addr: raw.addr,
-            },
-            EVT_DISCONNECTED => Event::ConnectionStateChanged {
-                handle: raw.handle,
-                state: ConnState::Idle as u8,
-                peer_addr: raw.addr,
-            },
-            EVT_ADV_REPORT => {
-                let rssi = raw.data[0] as i8;
-                let discovery_level = raw.data[1];
-                let adv_data_len = (raw.data_len as usize).saturating_sub(2);
-                let adv_data = raw.data[2..2 + adv_data_len].to_vec();
-                let (entries, _) = slk_protocol::parse_adv_data(&adv_data);
-                let name = slk_protocol::find_local_name(&entries)
-                    .unwrap_or_default()
-                    .to_string();
-                Event::AdvReport {
-                    addr: raw.addr,
-                    rssi,
-                    discovery_level,
-                    name,
-                    adv_data,
-                }
-            }
-            EVT_DATA_RECV => Event::DataReceived {
-                handle: raw.handle,
-                data: raw.data[..raw.data_len as usize].to_vec(),
-            },
-            EVT_ENCRYPTION_CHANGED => Event::SecurityChanged {
-                state: if raw.data[0] != 0 { 3 } else { 0 },
-                method: 0,
-                encrypted: raw.data[0] != 0,
-            },
-            EVT_HW_ERROR => Event::HwError { code: raw.data[0] },
-            _ => Event::RawDli(raw),
-        }
+pub(crate) fn decode_event(raw: SleDliEvent) -> Result<Event> {
+    let length = usize::from(raw.data_len);
+    if length > raw.data.len() {
+        return Err(Error::InvalidParam("event payload exceeds buffer"));
     }
+    let minimum = match raw.event_type {
+        EVT_ADV_REPORT => 2,
+        EVT_ENCRYPTION_CHANGED | EVT_HW_ERROR => 1,
+        _ => 0,
+    };
+    if length < minimum {
+        return Err(Error::InvalidParam("truncated event payload"));
+    }
+    Ok(match raw.event_type {
+        EVT_CONN_COMPLETE => Event::ConnectionStateChanged {
+            handle: raw.handle,
+            state: if raw.status == 0 {
+                ConnState::Connected as u8
+            } else {
+                ConnState::Idle as u8
+            },
+            peer_addr: raw.addr,
+        },
+        EVT_DISCONNECTED => Event::ConnectionStateChanged {
+            handle: raw.handle,
+            state: ConnState::Idle as u8,
+            peer_addr: raw.addr,
+        },
+        EVT_ADV_REPORT => {
+            let rssi = raw.data[0] as i8;
+            let discovery_level = raw.data[1];
+            let adv_data_len = (raw.data_len as usize).saturating_sub(2);
+            let adv_data = raw.data[2..2 + adv_data_len].to_vec();
+            let (entries, _) = slk_protocol::parse_adv_data(&adv_data);
+            let name = slk_protocol::find_local_name(&entries)
+                .unwrap_or_default()
+                .to_string();
+            Event::AdvReport {
+                addr: raw.addr,
+                rssi,
+                discovery_level,
+                name,
+                adv_data,
+            }
+        }
+        EVT_DATA_RECV => Event::DataReceived {
+            handle: raw.handle,
+            data: raw.data[..raw.data_len as usize].to_vec(),
+        },
+        EVT_ENCRYPTION_CHANGED => Event::SecurityChanged {
+            state: if raw.data[0] != 0 { 3 } else { 0 },
+            method: 0,
+            encrypted: raw.data[0] != 0,
+        },
+        EVT_HW_ERROR => Event::HwError { code: raw.data[0] },
+        _ => Event::RawDli(raw),
+    })
 }

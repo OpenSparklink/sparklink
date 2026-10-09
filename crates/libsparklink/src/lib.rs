@@ -2,10 +2,12 @@ mod adapter;
 mod error;
 mod event;
 pub mod ffi;
+mod receiver;
 
-pub use adapter::Adapter;
+pub use adapter::{Adapter, DEFAULT_DEV_PATH};
 pub use error::Error;
 pub use event::Event;
+pub use receiver::EventReceiver;
 pub use slk_protocol as protocol;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -115,9 +117,44 @@ mod tests {
     #[test]
     fn result_type_alias() {
         let ok: Result<i32> = Ok(42);
-        assert_eq!(ok.unwrap(), 42);
+        assert!(matches!(ok, Ok(42)));
 
         let err: Result<i32> = Err(Error::Timeout);
         assert!(err.is_err());
+    }
+
+    #[test]
+    fn synchronous_control_and_ffi_open_without_tokio() {
+        use std::os::fd::AsRawFd;
+        let adapter = Adapter::open("/dev/null").expect("synchronous open requires no reactor");
+        assert!(adapter.as_fd().as_raw_fd() >= 0);
+        assert!(matches!(adapter.device_count(), Err(Error::Ioctl(_))));
+        assert!(matches!(
+            adapter.into_event_receiver(),
+            Err(Error::InvalidParam(_))
+        ));
+        let path = b"/dev/null\0";
+        let handle = unsafe { ffi::slk_adapter_open(path.as_ptr().cast()) };
+        assert!(!handle.is_null());
+        assert_eq!(unsafe { ffi::slk_device_count(handle) }, -1);
+        unsafe { ffi::slk_adapter_free(handle) };
+    }
+
+    #[test]
+    fn malformed_event_lengths_are_errors() {
+        use slk_protocol::*;
+        let mut event: SleDliEvent = unsafe { std::mem::zeroed() };
+        event.event_type = EVT_DATA_RECV;
+        event.data_len = u16::MAX;
+        assert!(adapter::decode_event(event).is_err());
+        for (event_type, length) in [
+            (EVT_ADV_REPORT, 1),
+            (EVT_HW_ERROR, 0),
+            (EVT_ENCRYPTION_CHANGED, 0),
+        ] {
+            event.event_type = event_type;
+            event.data_len = length;
+            assert!(adapter::decode_event(event).is_err());
+        }
     }
 }

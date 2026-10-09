@@ -115,8 +115,8 @@ impl SecurityIface {
 
     /// List bonded device addresses
     async fn list_bonded(&self) -> zbus::fdo::Result<Vec<String>> {
-        let st = self.state.lock().await;
-        let addrs = st.bonding.bonded_addrs();
+        let bonding = self.state.lock().await.bonding.clone();
+        let addrs = bonding.bonded_addrs().await;
         Ok(addrs
             .iter()
             .map(|a| {
@@ -141,9 +141,10 @@ impl SecurityIface {
             addr[i] = u8::from_str_radix(part, 16)
                 .map_err(|_| zbus::fdo::Error::InvalidArgs("invalid hex byte".into()))?;
         }
-        let mut st = self.state.lock().await;
-        st.bonding
-            .remove(&addr)
+        let bonding = self.state.lock().await.bonding.clone();
+        bonding
+            .remove(addr)
+            .await
             .map_err(|e| zbus::fdo::Error::Failed(format!("remove_bond failed: {e}")))
     }
 
@@ -201,10 +202,24 @@ fn parse_hex_key(hex: &str, expected_len: usize) -> Result<Vec<u8>, &'static str
     if hex.len() != expected_len * 2 {
         return Err("hex string has wrong length");
     }
+    if !hex.is_ascii() {
+        return Err("invalid hex character");
+    }
     let mut bytes = Vec::with_capacity(expected_len);
     for i in (0..hex.len()).step_by(2) {
         let byte = u8::from_str_radix(&hex[i..i + 2], 16).map_err(|_| "invalid hex character")?;
         bytes.push(byte);
     }
     Ok(bytes)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn key_input_rejects_unicode_at_expected_byte_length() {
+        assert!(parse_hex_key(&"aéa".repeat(8), 16).is_err());
+        assert_eq!(parse_hex_key(&"a1".repeat(16), 16).unwrap(), vec![0xA1; 16]);
+    }
 }

@@ -2,10 +2,12 @@ mod bonding;
 mod config;
 mod controller;
 mod dbus_iface;
+mod event_loop;
 mod extadv;
 mod hid;
 mod kernel;
 mod profile;
+mod profile_runtime;
 mod security;
 mod service;
 mod state;
@@ -15,13 +17,14 @@ use std::sync::Arc;
 
 use clap::Parser;
 use tokio::sync::Mutex;
-use tracing::{error, info};
+use tracing::info;
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::bonding::BondingStore;
 use crate::config::DaemonConfig;
 use crate::controller::ControllerIface;
-use crate::dbus_iface::{AdapterIface, DeviceIface, Root};
+use crate::dbus_iface::{AdapterIface, Root};
+use crate::event_loop::EventTask;
 use crate::extadv::ExtAdvIface;
 use crate::kernel::KernelLink;
 use crate::profile::{BatteryProfile, DeviceInfoProfile, ProfileRegistry};
@@ -77,8 +80,13 @@ async fn main() -> anyhow::Result<()> {
 
     // Load bonding store
     let bonding_dir = std::path::PathBuf::from("/var/lib/sparklink");
-    let mut bonding = BondingStore::new(&bonding_dir, "slk0");
-    match bonding.load() {
+    let (bonding, loaded) = tokio::task::spawn_blocking(move || {
+        let mut bonding = BondingStore::new(&bonding_dir, "slk0");
+        let loaded = bonding.load();
+        (bonding, loaded)
+    })
+    .await?;
+    match loaded {
         Ok(n) => info!(count = n, "bonded devices loaded"),
         Err(e) => info!(%e, "no bonding data (first run?)"),
     }
@@ -124,133 +132,25 @@ async fn main() -> anyhow::Result<()> {
 
     info!("D-Bus service registered on org.sparklink");
 
-    // Main event loop
-    let conn_clone = connection.clone();
-    let state_clone = shared.clone();
-    let event_loop = tokio::spawn(event_loop(state_clone, conn_clone));
+    // Separate open-file ownership; waiting never borrows SharedState.
+    // This still uses the legacy DLI ring until independent subscriptions land.
+    let receiver = libsparklink::Adapter::open(&cli.device)?.into_event_receiver()?;
+    let event_loop = EventTask::start(receiver, shared.clone(), connection.clone());
 
     // Wait for shutdown signal
-    tokio::signal::ctrl_c().await?;
+    let shutdown_signal = tokio::signal::ctrl_c().await;
     info!("shutdown signal received");
 
-    event_loop.abort();
+    let event_result = event_loop.shutdown().await;
     drop(connection);
+    let (bonding, profiles) = {
+        let state = shared.lock().await;
+        (state.bonding.clone(), state.profiles.clone())
+    };
+    tokio::join!(bonding.shutdown(), profiles.shutdown());
+    event_result?;
+    shutdown_signal?;
 
     info!("slkd stopped");
     Ok(())
-}
-
-async fn event_loop(state: SharedState, connection: zbus::Connection) {
-    loop {
-        let event = {
-            let st = state.lock().await;
-            st.adapter.next_event().await
-        };
-
-        match event {
-            Ok(libsparklink::Event::AdvReport {
-                addr,
-                rssi,
-                discovery_level,
-                name,
-                adv_data,
-            }) => {
-                let mut st = state.lock().await;
-                let is_new = st.on_adv_report(addr, rssi, discovery_level, name.clone(), adv_data);
-                if is_new {
-                    let object_path = st.devices[&addr].object_path.clone();
-                    drop(st);
-                    let iface = DeviceIface::new(state.clone(), addr);
-                    if let Err(e) = connection
-                        .object_server()
-                        .at(object_path.as_str(), iface)
-                        .await
-                    {
-                        error!(%e, path = %object_path, "failed to register device object");
-                    } else {
-                        info!(
-                            address = %dbus_iface::format_addr(&addr),
-                            name = %name,
-                            rssi,
-                            "new device discovered"
-                        );
-                    }
-                }
-            }
-            Ok(libsparklink::Event::ConnectionStateChanged {
-                handle,
-                state: conn_state,
-                peer_addr,
-            }) => {
-                let mut st = state.lock().await;
-                st.on_conn_state_changed(handle, conn_state, peer_addr);
-                let connected = conn_state == slk_protocol::ConnState::Connected as u8;
-                info!(
-                    address = %dbus_iface::format_addr(&peer_addr),
-                    handle,
-                    connected,
-                    "connection state changed"
-                );
-
-                if connected {
-                    st.profiles.on_connect(handle);
-                    let path = format!("/org/sparklink/slk0/conn_{:04x}", handle);
-                    drop(st);
-                    let iface = service::RemoteServiceIface::new(state.clone(), handle);
-                    if let Err(e) = connection.object_server().at(path.as_str(), iface).await {
-                        error!(%e, path, "failed to register remote service interface");
-                    }
-                } else {
-                    st.profiles.on_disconnect(handle);
-                }
-            }
-            Ok(libsparklink::Event::SecurityChanged {
-                state: sec_state,
-                method,
-                encrypted,
-            }) => {
-                let method_label = match method {
-                    1 => "JustWorks",
-                    2 => "PSK",
-                    _ => "None",
-                };
-                info!(
-                    state = sec_state,
-                    method = method_label,
-                    encrypted,
-                    "security state changed"
-                );
-
-                // Persist bonding when pairing completes
-                if sec_state >= slk_protocol::SecState::Paired as u8 {
-                    let mut st = state.lock().await;
-                    if let Some((&addr, dev)) = st.devices.iter().find(|(_, d)| d.connected) {
-                        let info = crate::bonding::BondingInfo {
-                            name: dev.name.clone(),
-                            method: method_label.to_string(),
-                            enc_key_fingerprint: String::new(),
-                            paired_at: {
-                                let d = std::time::SystemTime::now()
-                                    .duration_since(std::time::UNIX_EPOCH)
-                                    .unwrap_or_default();
-                                format!("{}", d.as_secs())
-                            },
-                        };
-                        if let Err(e) = st.bonding.save(&addr, info) {
-                            error!(%e, "failed to save bonding");
-                        } else {
-                            info!(address = %dbus_iface::format_addr(&addr), "bonding saved");
-                        }
-                    }
-                }
-            }
-            Ok(event) => {
-                tracing::debug!(?event, "kernel event");
-            }
-            Err(e) => {
-                error!(%e, "event read error");
-                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-            }
-        }
-    }
 }

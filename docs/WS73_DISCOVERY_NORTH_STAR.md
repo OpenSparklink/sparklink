@@ -632,3 +632,53 @@ strict PASS，四条旧 air-medium WARN 的断言局限继续保留。16 个冻�
 事件与动态 adapter/slctl；实际硬件及板级配置仍需要恢复后核验。
 下一步继续真实设备/板级核验与 DLI 查询，并实现完整广播/扫描参数与异步完成、
 discovery 事件和动态 adapter/slctl；之后才执行真实交替 20 轮及热插拔闭环。
+
+### 完整原生事件通路（2026-10-10，部分成果）
+
+[ece59f703711](https://github.com/OpenSparklink/linux/commit/ece59f7037110ad7db3e64b653347aa10f902511)
+让 WS73 driver 的已校验 `0x180b` 报告进入每注册的预分配完整事件日志，绕开
+只适用于管理回复的 260 字节 slot 上限。32 条日志使用 IRQ-safe lock；直接
+复制完整 23 字节厂商头和最多 255 字节数据，无 per-report 分配和借用指针遗留。
+管理回复保留在 Host 的匹配槽，不被报告压力抢走。
+
+新增 version 1 `CONTROLLER_EVENT_GET`：固定 360 字节 query / 336 字节 record，
+288 字节 payload，带真实设备 index/generation、profile、原始 code、接收
+boottime、每注册 sequence 和游标覆盖 `lost`。读者独立取相同记录；参数尾部、
+flags/reserved 清零；拒绝错误版本/flags、未来游标和错代注册。copyout EFAULT
+不确认记录；GET 含 EAGAIN 切到该设备的原生 poll，直接 RX 唤醒，移除时
+HUP/ENODEV，重选清订阅，旧 fd 不跟随 index 复用。GET 不触发 radio power
+同步或命令。旧事件布局保留。当前日志只接 WS73 发现报告，不是完整 snoop、
+标准/原生事件统一、重组或数据通路完成。
+
+用户态 `slk-protocol` 同步 ABI、严格 WS73 report view；`libsparklink` 增加
+caller-owned cursor 的同步读取和独立 OwnedFd/Tokio receiver，不使用旧 destructive
+或截短流 fallback。header 保留原始地址类型、定向地址、PHY、未知厂商字节与
+报告数据状态，有符号 RSSI 不被归一化。文档见 [API](API.md#dli-控制器-0x80-0x87)。
+尚未接入 slkd 动态 adapter 或 slctl。
+
+生产驱动合成 gate 在两个设备各注入 40 条最大报告：保留 seq 9..40，首记录
+lost=8，每条 payload=278；两个独立 fd 读取内容完全一致。验证 copyout 失败
+重试、空/就绪 poll、错代与未来游标、旧注册 HUP 和重插新 generation/独立序号。
+这些是无 RF fixture 的 USB/HCC/driver/UAPI 证据，不能冒充真实扫描结果。
+
+最终冻结 image #45 无警告构建；完整事件、原生 metadata Host、畸形 HCC 单
+实例撤销和标准生命周期四 gate PASS，15 个源码 hash 与提交一致，输入/源码
+前后未变。完整标准三控制器 96 case / 0 FAIL / 0 SKIP、strict PASS，本轮保留
+3 条旧 air-medium WARN，其弱断言仍不证明跨设备连接/数据。中间 image #44
+曾有 5 条 WARN，包括一个旧 data-loopback 在异步断开未完成时读到 EPIPE；
+现等待真正移除，并把错误的断开后发送/空接收结果记 FAIL，没有削弱断言。
+native verdict 也强制完整 kernel log 和早期记录。91 项 Python harness、32 位
+C ABI 检查 PASS；用户态 workspace 137 项 PASS、fmt 和改动两 crate 的 strict
+clippy PASS。全 workspace strict clippy 因未改动 slkd 的未使用项仍 FAIL。
+
+证据 `.dev/native-event-stream-final-evidence.json`、
+`native-event-stream-final-source-snapshot/`、`qemu-native-event-stream-final/`、
+`runtime-lifecycle-native-event-final-{events,native,native-fault,standard}/manifest.json`。
+初次内核编译错误、缺少 static libc 路径、sandbox socketpair 拒绝、D-Bus daemon
+不在 PATH 的失败均保留，修正构建/测试环境后重测通过；#44 中间记录不作最终
+源码证据。选定 getter 的 0x448 栈 frame 仅是局部检查，不是完整调用链证明。
+
+主机级 inventory 仍 WS73=[]。Runtime 仍 metadata-only SETUP，发现命令仍拒绝；
+没有真实 Ready/空口/20 轮交换/拔插或普通用户应用结果。七项验收全部未完成，
+完整 S0–S6 和全部原 issues 继续开放。下一步接完整广播参数与 SetParam →
+SetData → Enable、扫描参数/使能的异步事务，随后接动态 adapter/slctl 和实机验收。

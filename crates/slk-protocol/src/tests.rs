@@ -71,6 +71,8 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleDliInfo, 64);
     check_size!(errors, SleDliEvent, 256);
     check_size!(errors, SleDliCmd, 248);
+    check_size!(errors, SleControllerEvent, 336);
+    check_size!(errors, SleControllerEventQuery, 360);
     check_size!(errors, SleMgmtStats, 16);
     check_size!(errors, SleSubsysStats, 36);
     check_size!(errors, SlePhyInfo, 24);
@@ -423,4 +425,61 @@ fn struct_field_offsets_extended() {
     assert_eq!(offset_of!(SleRalAddParams, peer_id), 4);
     assert_eq!(offset_of!(SleRalAddParams, peer_irk), 12);
     assert_eq!(offset_of!(SleRalAddParams, local_irk), 28);
+}
+
+#[test]
+fn complete_controller_event_abi_and_ws73_fields() {
+    use std::mem::{align_of, offset_of};
+    assert_eq!(align_of::<SleControllerEvent>(), 8);
+    assert_eq!(offset_of!(SleControllerEvent, payload), 48);
+    assert_eq!(offset_of!(SleControllerEventQuery, event), 24);
+    assert_eq!(nix::request_code_readwrite!(b'S', 0x87, 360), 0xc1685387);
+    let mut event: SleControllerEvent = unsafe { std::mem::zeroed() };
+    event.seq = 9;
+    event.generation = 2;
+    event.profile = CONTROLLER_EVENT_PROFILE_WS73_HCC;
+    event.event_code = 0x180b;
+    event.payload[..23].copy_from_slice(&[
+        3, 6, 2, 0x73, 1, 2, 3, 4, 4, 9, 8, 7, 6, 5, 4, 1, 2, 3, 0x44, 0x55, 0xa7, 0xd6, 0,
+    ]);
+    for length in 0..=255 {
+        event.payload[22] = length as u8;
+        event.payload_len = 23 + length;
+        for i in 0..usize::from(length) {
+            event.payload[23 + i] = i as u8;
+        }
+        let report = event.ws73_discovery().unwrap();
+        assert_eq!(report.header[1], 6);
+        assert_eq!(&report.header[9..15], &[9, 8, 7, 6, 5, 4]);
+        assert_eq!(report.header[20], 0xa7);
+        assert_eq!(report.rssi, -42);
+        assert_eq!(report.data.len(), usize::from(length));
+        for (i, byte) in report.data.iter().enumerate() {
+            assert_eq!(*byte, i as u8);
+        }
+        event.payload_len -= 1;
+        assert!(event.ws73_discovery().is_none());
+        event.payload_len += 2;
+        assert!(event.ws73_discovery().is_none());
+        event.payload_len -= 1;
+    }
+    for byte in 0..=255 {
+        event.payload[21] = byte;
+        assert_eq!(event.ws73_discovery().unwrap().rssi, byte as i8);
+    }
+    let good = event;
+    event.profile = 0;
+    assert!(event.ws73_discovery().is_none());
+    event = good;
+    event.event_code = 0x001a;
+    assert!(event.ws73_discovery().is_none());
+    event = good;
+    event.payload_len = 289;
+    assert!(event.ws73_discovery().is_none());
+    event = good;
+    event._reserved = 1;
+    assert!(event.ws73_discovery().is_none());
+    event = good;
+    event.flags = 1;
+    assert!(event.ws73_discovery().is_none());
 }

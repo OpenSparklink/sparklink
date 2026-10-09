@@ -366,3 +366,16 @@ Ready、广播/扫描、动态 adapter/slctl、无 sudo 与空口七项仍未完
 codec、3,097 项查询、3,198 项 BSLE、sanitizers 和 80 项 harness PASS，旧四条
 air-medium WARN 的局限保留。真实设备清点为空、七项北极星仍未验收，issues
 开放；全部 S0–S6 依赖和原验收不收缩。详见 [发现方言记录](WS73_DISCOVERY_NORTH_STAR.md#ws73-发现方言准备2026-10-10部分成果)。
+
+### 完整原生事件通路（2026-10-10，部分成果）
+
+[ece59f703711](https://github.com/OpenSparklink/linux/commit/ece59f7037110ad7db3e64b653347aa10f902511)
+接齐 WS73 已校验发现报告的每注册完整日志、版本化 cursor ioctl 与每设备 poll。
+保留全部 278 字节参数、profile/id/generation/sequence/boottime；独立读者不竞争，
+覆盖丢失可见，copyout 失败不确认，移除旧 fd HUP/ENODEV。用户态同步完整 ABI、
+严格报告 view 和独立 async receiver，尚未接 slkd/slctl。image #45 四支持 gate
+与完整 96 case/0 FAIL/0 SKIP PASS；91 项 harness、32 位 C ABI、137 项 workspace
+测试及改动 crate strict clippy PASS，全 workspace strict clippy 的 slkd 未使用项
+仍 FAIL。旧 air-medium 警告/弱断言继续保留；真实 WS73=[]，SETUP/metadata-only，
+七项真实验收仍全部未完成，原 issues/S0–S6 保持。接下来继续完整广播/扫描事务。
+详见 [完整事件记录](WS73_DISCOVERY_NORTH_STAR.md#完整原生事件通路2026-10-10部分成果)。

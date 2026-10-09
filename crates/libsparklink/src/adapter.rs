@@ -628,6 +628,22 @@ impl Adapter {
         crate::receiver::poll_event(self.raw_fd())
     }
 
+    /// Non-destructively fetch complete native controller parameters.
+    /// The cursor belongs to this registration; generation mismatch fails.
+    /// Calling this selects native-stream poll readiness for this fd.
+    pub fn poll_controller_event(
+        &self,
+        cursor: &mut crate::ControllerEventCursor,
+    ) -> Result<Option<SleControllerEvent>> {
+        crate::controller_events::poll(self.raw_fd(), cursor)
+    }
+
+    /// Transfer this selected fd to an independent native event subscriber.
+    /// Requires the versioned kernel interface and a Tokio I/O runtime.
+    pub fn into_controller_event_receiver(self) -> Result<crate::ControllerEventReceiver> {
+        crate::ControllerEventReceiver::from_fd(self.fd)
+    }
+
     /// Transfer this independently opened fd to a single async event consumer.
     ///
     /// Requires a Tokio runtime with I/O enabled. Control adapters and C/Python

@@ -712,6 +712,76 @@ pub struct SleDliEvent {
     pub _pad: [u8; 2],
 }
 
+/// Supported native controller event ABI version.
+pub const CONTROLLER_EVENT_VERSION: u32 = 1;
+pub const CONTROLLER_EVENT_PAYLOAD_MAX: usize = 288;
+pub const CONTROLLER_EVENT_PROFILE_WS73_HCC: u32 = 1;
+
+/// Complete, validated controller parameters from one registration.
+/// Sequence and loss counts belong to that registration and reader cursor.
+#[derive(Debug, Clone, Copy)]
+#[repr(C, align(8))]
+pub struct SleControllerEvent {
+    pub seq: u64,
+    pub generation: u64,
+    /// CLOCK_BOOTTIME receipt timestamp, in nanoseconds.
+    pub timestamp_ns: u64,
+    pub lost: u64,
+    pub profile: u32,
+    pub dev_index: u16,
+    pub event_code: u16,
+    pub payload_len: u16,
+    pub flags: u16,
+    pub _reserved: u32,
+    pub payload: [u8; CONTROLLER_EVENT_PAYLOAD_MAX],
+}
+
+/// Input cursor/version with an output-only event record (ioctl 0x87).
+#[derive(Debug, Clone, Copy)]
+#[repr(C, align(8))]
+pub struct SleControllerEventQuery {
+    pub after_seq: u64,
+    pub generation: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub event: SleControllerEvent,
+}
+
+/// Borrowed WS73 discovery parameters. The raw header preserves address
+/// types, direct address, PHY and vendor byte without standard aliases.
+#[derive(Debug)]
+pub struct Ws73DiscoveryReport<'a> {
+    pub header: &'a [u8; 23],
+    pub data: &'a [u8],
+    pub rssi: i8,
+}
+
+impl SleControllerEvent {
+    /// Decode exactly one WS73 0x180b report. Fragment/truncation flags in
+    /// header[0] are retained; this does not reassemble or invent a level.
+    pub fn ws73_discovery(&self) -> Option<Ws73DiscoveryReport<'_>> {
+        if self.profile != CONTROLLER_EVENT_PROFILE_WS73_HCC
+            || self.event_code != 0x180b
+            || self.flags != 0
+            || self._reserved != 0
+            || self.seq == 0
+            || self.generation == 0
+        {
+            return None;
+        }
+        let body = self.payload.get(..usize::from(self.payload_len))?;
+        let header: &[u8; 23] = body.get(..23)?.try_into().ok()?;
+        if body.len() != 23 + usize::from(header[22]) {
+            return None;
+        }
+        Some(Ws73DiscoveryReport {
+            header,
+            data: &body[23..],
+            rssi: header[21] as i8,
+        })
+    }
+}
+
 /// DLI command (ioctl 0x84)
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]

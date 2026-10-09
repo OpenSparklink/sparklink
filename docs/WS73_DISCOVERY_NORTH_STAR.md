@@ -230,3 +230,64 @@ python3 tools/testing/selftests/sparklink/run_runtime_lifecycle.py \
 
 该 runner 只创建 QEMU 标准 DLI 虚拟设备，不接管主机 USB；guest 测试使用
 开发 root 环境，不能据此完成应用无需 sudo 的验收。
+
+
+## USB registration generation / 标准 DLI credit 开发记录（2026-10-10）
+
+USB IN URB context 现在在 submit 前固定 `{registration_id, generation}`；
+Rust callback 在 IRQ 路由锁下按完整 identity 获取 owner Arc，并将同一个
+owner 传入解码/入队。旧 opaque 数值 context 不再路由 RX，inline drain
+也匹配完整 identity。移除关闭 scheduling gate 后拒绝入队。此源码机制
+尚未由专门的迟到 callback/地址复用故障注入证明，不能宣称完整 cookie/PM
+矩阵通过。
+
+probe 不再把 attach 失败替换成占位 MAX id，也不忽略 controller/listener
+启动失败；错误路径 quiesce owner、join/free C URBs、撤销注册，然后返回
+错误。Reset、版本、MAC 初始化逐条检查 event/opcode/length/status；全部
+成功且 MAC 非零后才保存元数据。boot 注册和查询成功仍不等同于完整 Ready；
+能力、WS73 dialect 和 Host 状态发布待完成。
+
+本地 T/XS 10003-2025 §9.1.1/9.1.2 要求 Status/Complete 的 opcode 后有
+1 字节可用指令数量；先前标准 USB parser 与 QEMU fixture 同时漏掉该字段，
+Status 还使用旧的 status-first 排列。现修正为 opcode/credit/status，版本
+查询按 §8.1.4 返回 1+2+2 共 5 字节；legacy u32 版本元数据仅投影前 4 字节，
+不冒称完整 tuple。旧 QEMU 运行仍保留为当时 fixture 的证据，不能据此宣称
+完整标准 DLI/credit 符合性；此修正不推定 WS73 vendor dialect 使用同一格式。
+
+credit 按 controller 宣告的绝对数量更新，不累加；opcode=0 的更新不解析为
+本地事务结果；成功 CommandStatus 只接受异步工作，不提前 resolve。原始
+DLI 队列为零 credit 时停发，由 RX 更新后唤醒。同步 bootstrap 暂无 credit
+等待器：Reset/版本后 credit=0 时以 EAGAIN 失败撤销 probe，不继续偷发下一条
+查询；最后 MAC 后的 credit 可为零并传入 Runtime。直接广播/扫描/连接等路径
+仍绕过统一调度，异步 terminal correlation、超时后排队命令取消、每事务
+cookie 与恢复未完成。没有零 credit/unsolicited grant 的独立故障测试，不能
+据此关闭 K#1/#16/#17 或宣称完整 Host 流控。
+
+image #25 编译成功但启动在 ControllerState::new_boxed 栈溢出 double fault，
+suite 未开始，strict FAIL。反汇编定位 64 槽 CmdRequestQueue 的大栈临时变量；
+仅修改 DLI 环的 #26 仍预留 0x4560，未运行 guest。pending/request/broadcast/DLI
+数组均改为显式原位初始化后，#27 构造函数预留为 0x7c0（另有寄存器保存）。
+这不是整个调用链栈安全证明。#27 编译成功、匹配的新 QEMU 已重新构建；
+完整双虚拟设备回归：96 项、10 条失败断言、0 skip、strict FAIL。精确命令
+单项 FAIL：旧 pending=2/0 未清零；安全原始命令九条 EBUSY。日志记录 sle0
+ring=37、command-complete=23、MAC=0、decode=0，证明管理回复丢失，但尚未
+证明每条失败的完整因果链。全部失败保留，不扩大 ring、忽略 timeout、放宽
+统计断言或把直接发送的 Bulk 成功当作事务完成来通过测试。
+
+同一 image #27 和新标准 fixture 的独立虚拟单次生命周期 gate PASS、guest
+exit=0：动态增加第二设备，移除第一设备后旧 fd ENODEV，第二设备继续 MAC
+事务；复用第一索引后旧 fd 仍 ENODEV，新 fd 查询新 MAC，第二设备再次查询。
+这是普通 QEMU 模型，不能替代真实 WS73/RF、slkd/no-sudo、20 轮、四设备，
+也不能证明尚未注入的 stale-callback/零 credit/fault/PM 情形。
+
+本地记录：`.dev/qemu-usb-credit-stack-failure/` 和
+`.dev/kernel-usb-credit-evidence.json` 保存启动失败；
+`.dev/qemu-usb-generation-credit/`、`.dev/kernel-usb-credit-final-evidence.json`
+保存最终完整回归；`.dev/runtime-lifecycle-usb-generation-credit/manifest.json`
+保存独立生命周期及 QMP。两份 source-snapshot 保留各次源码/dirty diff；
+manifest 绑定 kernel/config/QEMU/initramfs 与日志 hash。
+`.dev/kernel-usb-credit-stack-constructors.log` 保存最终构造函数反汇编。
+主机只读 inventory `.dev/usb-credit-host-inventory.json`（2026-10-09T18:59:24Z）
+仍为 0 只 WS73，KVM 可读写；未开展本轮 RF。内核完整门禁仍 FAIL，保持未提交，
+整项 issues 和全部真实北极星 checklist 保持开放。下一步统一每设备 Host 的
+直接/排队命令发送与 credit、事务归属，随后继续 WS73 HCC/BSLE/真实 DLI。

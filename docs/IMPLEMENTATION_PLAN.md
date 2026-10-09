@@ -19,26 +19,34 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 完整 S0–S6、原 issue checklist 和 CI/安全门禁均保留；SSAP/配对策略等
 后续完整功能不作为此第一条广播/发现路径的前置依赖。部分成果不关闭整项 issue。
 
-最小 Runtime 已进一步迁移为稳定 `Arc<ControllerRuntime>`、每设备协议锁、
-RX 环及嵌入的 RX/TX delayed work；临时 Deref/default-selection 协议桥已移除。
-最新 image #20 无警告构建；双虚拟设备精确命令归属单项通过，完整 96 项回归
-仍有 9 条失败断言、0 skip、strict FAIL。虚拟单次拔插/索引复用测试通过：
-旧 fd 持续 ENODEV，另一设备地址与 DLI 查询保持有效，新 fd 查询重插实例。
-这不证明真实 WS73、slkd、无 sudo 应用、20 轮/四设备或全部生命周期条件。
-内核未提交；下一步继续 USB generation/cookie、Host transaction/credit 与
-迟到连接事件/handle 映射，再接 WS73 HCC/BSLE 与真实 DLI 查询。
+最小 Runtime 已迁移为稳定 `Arc<ControllerRuntime>`、每设备协议锁、RX 环
+及嵌入 RX/TX work；USB 接收 context 现携带 immutable registration generation，
+probe 失败撤销 owner 与 C URB，初始化严格核对 Reset/版本/MAC 回复。
+核对本地 T/XS 10003-2025 后修正标准 CommandComplete/Status 的 command-credit
+字段和 5 字节版本返回；原始 DLI 队列开始遵守 controller credit，其他直接
+命令路径仍待统一。旧 QEMU 结果不能作为完整标准 DLI/credit 符合性证明。
+
+最新 image #27 构建成功；独立虚拟单次拔插/索引复用 gate PASS，旧 fd 持续
+ENODEV，另一设备和重插实例完成各自 MAC 事务。完整 96 项回归为 10 条失败
+断言、0 skip、strict FAIL，精确命令单项此次 FAIL（旧 pending 未清零），
+日志有 management completion 丢失，因果链与 Host 调度仍需修复。image #25
+的启动栈溢出及 image #26 的同样超大栈预留均留存；显式原位初始化队列后
+#27 构造函数栈预留回到 0x7c0。这不证明整个调用链、真实 WS73、slkd、
+无 sudo 应用、20 轮/四设备或完整生命周期条件。内核未提交；下一步统一
+每设备 Host 的所有命令发送、credit 与事务归属，继续 WS73 HCC/BSLE 的
+纵向路径，不把完整连接/SSAP/security policy 扩大为北极星前置条件。
 完整记录和证据边界见 [Runtime 开发记录](WS73_DISCOVERY_NORTH_STAR.md#runtime-第一阶段开发记录2026-10-10)。
 
 ## 基线与当前证据
 
 | 项目 | 已核验状态 | 证据边界 |
 |---|---|---|
-| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot / lab / Runtime 第一阶段 | 稳定每设备 Arc/协议锁/RX 环/worker，Deref 桥已移除；仍有静态 Backend enum、数值 USB context、非完整 Host 事务和内核 SSAP 数据库 |
+| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot / lab / Runtime 第一阶段 | 稳定每设备 Arc/协议锁/RX 环/worker，Deref 桥已移除；仍有静态 Backend enum、generation-tagged USB RX context、非完整 Host 事务和内核 SSAP 数据库 |
 | 用户态源码 | 功能分支 `codex/sparklink-ws73`，代码提交至 `7adb796`（见交付记录） | 事件等待已移到独立任务；对象仍固定 slk0；Bond 不含可恢复凭据；没有 slk-vendord |
 | 参考实现 | libws73-usb `f4d85d0e95af2d0043432e1301fd2f6b660a4906` | 参考源码及作者 capture 只作协议证据，另列来源，不能冒充本项目实测 |
 | 新增 Host 参考 | OpenHarmony communication_nearlink_service `f0872dfaac33ffa99b80b352f6c05fba2df6414e` | 已检查分层、DLI/TCID/SSAP/安全与 HAL/桩边界；未构建/运行，不作为实测。调整见下节 |
 | WS73 boot | 旧 run `ws73-run-20261009-225342`：四设备分别下载三镜像，重新枚举到 runtime，4/4 同时绑定 | 逐个启动；并发固件上传曾失败；未实现 BSLE/SLE、DLI、RF、PM。旧 run 未保存完整 artifact/firmware hash，不追补伪造绑定 |
-| 本轮硬件环境 | WS73 inventory 为空；隔离环境设备节点隐藏，但最新提权只读检查确认 KVM 可读写、USB nodes 存在 | 自定义 QEMU guest 已能运行；真实 WS73/RF gate 未验收。每次实机运行前重新核验，不能把隔离视图当作主机权限结论 |
+| 本轮硬件环境 | 2026-10-09T18:59:24Z 主机只读检查：WS73 inventory 为空；隔离环境设备节点隐藏，但最新提权只读检查确认 KVM 可读写、USB nodes 存在 | 自定义 QEMU guest 已能运行；真实 WS73/RF gate 未验收。每次实机运行前重新核验，不能把隔离视图当作主机权限结论 |
 | 初始自测缺陷 | C selftest 无条件返回 0、runner 可降级 USB 模型后 PASS，已在工作树修复 | 25 项判定器测试通过；实际 guest 回归尚未运行，历史 PASS 不作新架构证据 |
 | 初始 ABI 漂移 | Python `SleConnInfo` 56B→64B；用户态 `SleDliInfo` 两字段 u8→u16，已修复 | C/Rust/Python 11 个结构、100 字段 conformance 与写入回归通过；完整 ABI/32 位/真实调用仍待验收 |
 | 软件测试 | Python 23/23、Rust workspace 135/135（含真实私有 D-Bus 静默 30s、存储与 Profile 阻塞/取消/drain/panic、Unicode 输入）；判定器 25/25；lab 16/16 | 全仓 fmt、除 slkd 外六 crate 的 all-targets 严格 clippy 通过；Bond I/O 与连接 Profile callback 已移出业务锁；slkd 未接通的策略/SSAP/transport 与旧接口 lint 仍未通过严格 CI，尚未满足完整 CI 或硬件验收 |

@@ -362,3 +362,83 @@ config 与 QEMU binary，manifest 绑定来源/dirty diff、原始 logs、initra
 内核完整门禁未通过，保持未提交；整项 issues/北极星验收保持开放。
 下一步补全广播/扫描确认与参数/data 事务、Ready/fault 和 WS73 HCC/BSLE
 接口，继续真实 DLI 纵向路径，完整方案原范围保留。
+
+
+## WS73 原生 HCC/BSLE 启动实现（2026-10-10）
+
+内核工作树新增独立实现的 `drivers/sparklink/ws73/wire.{c,h}` 与
+`bsle.{c,h}`，从本地 SDK 的 `hcc_usb_host.h`、`hcc_comm.h`、
+`customize_bsle_ext.h` 核对封装事实，以 libws73-usb 作者的 wire 观察作
+额外参考；作者 capture 不作为本项目实机证据。USB TX package/descriptor、
+queue switch/reset、queue-9 PM 和 queue-10 BSLE customize 均由本项目编码。
+800 字节 customize allocation 的 TX pay_len 是明确的 vendor 行为，不用于
+解释设备 RX 的 payload length。没有复制 SDK 或 LGPL 的实现代码。
+
+五端点 runtime probe 现在启动每接口自己的 worker，buffers、TX sequence
+和启动 phase 归该 USB instance 所有，没有参考实现的全局 TX 序号。流程为
+BSP_READY → PM/BSLE 配置 → CUSTOMIZE_RECEIVED → class SLE_OPEN(ordinal 29)
+→ BOOT_FINISH，各等待阶段使用独立 10 秒 monotonic deadline；持续无关流量
+不延长截止时间，panic、短写、传输错误和 disconnect 中止该实例。
+DEVICE_ACTION_STATUS(SLE_OPEN) 不代替 BOOT_FINISH；提前收到的 boot reply
+不保存给尚未发出的 open。disconnect 阻止新 I/O，在释放 buffer 前 join
+两个 bounded 同步 worker。完整异步 URB streaming、reference/fault/PM
+矩阵和自动恢复仍待实现。
+
+RX 只接受当前 SDK 的 92 字节 aggregate header 和最多 24 个 slot，先验证
+全包 declared length、所有 slot 边界及 HCC 长度，才交给消费者。只读每个
+slot 前端的 netbuf，忽略 padding 内像帧头的旧数据；没有盲扫或未核验的
+raw-netbuf fallback。BSLE status 的 tag length、type 和 message 分别核对。
+这已实现有界原生启动路径，尚未与 Rust ControllerRuntime 的 native
+Backend/Host 注册和事件流衔接。
+
+启动还要求部署提供 `sparklink/ws73/bsle_custom.bin` 原始 140 字节和
+`pm_config.bin` 原始 4 字节，来自对应 board/SDK 或注明来源的 vendor
+配置；驱动不猜默认校准/功率值。两份文件均验证大小并在 I/O 前记录 SHA256。
+缺失/错误则该实例 Failed，不发布 Ready。本地 SDK 有
+`build/config/ws73_cfg_default.ini`，但尚未导出并核验适配本硬件的两份 raw
+payload；仅长度正确不证明 RF 校准正确。lab `pack --runtime-config-dir`
+支持显式输入，按实际归档字节独立记录 source、大小和 hash。没有提交固件。
+
+`boot_stage` 可观察完整握手阶段，完成为 `sle-awaiting-dli`，仍非 Ready。
+新 `runtime_transport` 仅表示五端点 descriptor 验证/绑定；原 boot-only
+harness 用它计数，避免把正在握手和最终 Ready 混为一谈。boot PASS 可以与
+后续 BSLE Failed 同时存在，必须另看 phase、errno 和 kernel log；该 gate
+不验收 SLE、DLI、RF。双端真实 DLI 查询仍是 Ready 的必备后续条件。
+
+`ws73_bsle_test.c` 直接编译生产 codec/sequencer，3,198 条检查 PASS；输入
+均合成，不能部署为 calibration。覆盖 padding 伪帧、坏后续 slot 导致整包
+不推进握手、错误 ack 顺序、action-only、持续流量超时、panic、send/open
+失败、断连及另一独立实例。GCC -Wall -Wextra -Werror、kselftest Makefile
+目标通过；同一源码的 Clang ASan/UBSan/LSan 主机执行 PASS，不代表内核
+sanitizer 验收。初次 GCC sanitizer 链接缺系统 runtime、隔离器 ptrace
+使 LSan 停止的记录保留，随后用已安装的 Clang runtime 在主机通过。
+verdict/lab/lifecycle 共 57 项 PASS；pack fixture 初次缺 parent 的测试错误
+已修正，旧失败保留。三个 driver C 文件 checkpatch 为 0 error/0 warning。
+
+image #34 无警告构建，独立双虚拟 Runtime gate PASS；完整回归在第 95 个
+case 的 ioctl fuzz 因原 `ioctl_inject_conn_data` 对空 slice 访问 raw[0]
+触发 panic，未产生完整 summary，strict FAIL。已归档该源码、binary 和
+console。现入口在 handle lookup/TCID/SSAP 处理前拒绝空帧及超长输入，
+超长不再截断；添加有效连接上的两条回归断言，不删除原 fuzz。
+
+最终 image #35 无警告构建；新增两条断言、connection data case、ioctl
+fuzz 和精确 command isolation case PASS，未再观察到该 panic。独立
+双虚拟 Runtime 混合命令/13 条 raw 归属及单次拔插/索引复用再次 PASS。
+完整 suite 96 项、24 条失败断言、strict FAIL：残留连接、迟到完成和
+压力下状态转换仍未解决，且 printk 仍会打断 marker。summary 的 skipped=0
+仅为当前 suite 字段；日志中两条 need 3+ controllers 的子路径没有执行，
+不把它们计作完整分支覆盖。此标准 DLI fixture 不模拟原生 WS73 HCC/BSLE。
+
+最终证据 `.dev/ws73-bsle-codec-evidence.json`、
+`kernel-ws73-bsle-{,bounds-}evidence.json`、
+`qemu-ws73-bsle-{panic,bounds}/`、
+`runtime-lifecycle-ws73-bsle{,-bounds}/manifest.json` 和两份 source-snapshot
+均保留；完整 run 冻结各自 image/config/QEMU binary，绑定 raw logs、
+initramfs、源码/dirty diff 与文件 hashes。内核复现说明在
+`Documentation/networking/ws73-development.rst`。
+
+2026-10-09T19:50:32Z 主机只读 inventory：WS73=[]，KVM 可读写。本轮没有
+真实 USB、BSLE、DLI 或 RF 验收；slkd/no-sudo、20 轮和四设备仍未完成。
+下一步导出并核验 SDK 板级配置、接入原生 DLI 查询与 Runtime 生命周期，
+再补广播/扫描完整事务和动态 adapter；保留用户指定纵向依赖顺序。内核
+完整 QEMU 门禁未过，保持未提交；全部原 issues 和七项北极星验收保持开放。

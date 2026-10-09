@@ -32,15 +32,26 @@ sequence 解析。广播/扫描的旧 enable/disable 回复不确认较新的 in
 bootstrap credit waiter、异步 terminal correlation、Ready/fault 发布、恢复
 以及 typed 参数/数据完整事务仍未完成。
 
-最新 image #33 无警告构建；两虚拟设备同时各 12 次 MAC 查询并混合 internal /
+上一轮 image #33 无警告构建；两虚拟设备同时各 12 次 MAC 查询并混合 internal /
 raw Reset，逐条地址匹配，raw submitted/resolved 恰好各 +13、pending=0、无
 新增 timeout；随后单次拔插/索引复用 gate PASS。完整回归的精确命令归属单项
 亦 PASS；完整 96 项、21 条失败断言、0 skip、strict FAIL，仍有残留连接、
 异步完成关联与压力/背压失败，另有 printk 打断 marker。旧失败不覆盖、不删
 断言；内核未提交。这些均不证明真实 WS73、slkd/no-sudo、20 轮、四设备或
-全部生命周期条件。下一步补全广播/扫描的确认与参数/数据事务、Ready/fault
-和 WS73 HCC/BSLE 接口，继续真实 DLI 纵向路径；完整连接/SSAP/security policy
+全部生命周期条件。后续补全广播/扫描的确认与参数/数据事务、Ready/fault
+和 WS73 原生 DLI 接口，继续纵向路径；完整连接/SSAP/security policy
 原范围保留，不扩大为第一北极星前置依赖。
+原生 WS73 工作树已实现 per-interface USB/HCC/BSLE 启动序列及严格 aggregate
+解析，读取外部 board customization/PM 两份 raw 配置；完成仅为
+`sle-awaiting-dli`，尚未注册 Ready 或打通原生 DLI。生产 codec/sequencer
+合成测试 3,198 checks 与主机 ASan/UBSan/LSan PASS，lab/verifier 共 57 项
+PASS。新 image #34 的完整回归暴露原连接注入的空 slice panic，已修复并
+加空/超长帧拒绝回归；最终 #35 两条断言、fuzz、精确 command 单项和独立
+虚拟 Runtime 拔插 PASS。完整 96 项仍 24 条失败断言、strict FAIL；两条
+三设备子路径未执行，不作全分支覆盖。本轮主机 WS73=[]，真实北极星未验收。
+下一步先核验 SDK board 配置，继续 WS73 原生 DLI/Runtime 接入，再完成
+广播/扫描确认、内核事件和动态 adapter/slctl。全部原范围和门禁保留。
+
 完整记录和证据边界见 [Runtime 开发记录](WS73_DISCOVERY_NORTH_STAR.md#runtime-第一阶段开发记录2026-10-10)。
 
 ## 基线与当前证据
@@ -51,7 +62,7 @@ raw Reset，逐条地址匹配，raw submitted/resolved 恰好各 +13、pending=
 | 用户态源码 | 功能分支 `codex/sparklink-ws73`，代码提交至 `7adb796`（见交付记录） | 事件等待已移到独立任务；对象仍固定 slk0；Bond 不含可恢复凭据；没有 slk-vendord |
 | 参考实现 | libws73-usb `f4d85d0e95af2d0043432e1301fd2f6b660a4906` | 参考源码及作者 capture 只作协议证据，另列来源，不能冒充本项目实测 |
 | 新增 Host 参考 | OpenHarmony communication_nearlink_service `f0872dfaac33ffa99b80b352f6c05fba2df6414e` | 已检查分层、DLI/TCID/SSAP/安全与 HAL/桩边界；未构建/运行，不作为实测。调整见下节 |
-| WS73 boot | 旧 run `ws73-run-20261009-225342`：四设备分别下载三镜像，重新枚举到 runtime，4/4 同时绑定 | 逐个启动；并发固件上传曾失败；未实现 BSLE/SLE、DLI、RF、PM。旧 run 未保存完整 artifact/firmware hash，不追补伪造绑定 |
+| WS73 boot / native transport | HCC/BSLE 新实现尚未实机验收；旧 run `ws73-run-20261009-225342`：四设备分别下载三镜像，重新枚举到 runtime，4/4 同时绑定 | 旧 run 逐个启动；并发固件上传曾失败。新 HCC/BSLE 合成测试不验证真实 SLE；DLI/Ready/RF/PM 仍未完成。旧 run 未保存完整 artifact/firmware hash，不追补伪造绑定 |
 | 本轮硬件环境 | 2026-10-09T18:59:24Z 主机只读检查：WS73 inventory 为空；隔离环境设备节点隐藏，但最新提权只读检查确认 KVM 可读写、USB nodes 存在 | 自定义 QEMU guest 已能运行；真实 WS73/RF gate 未验收。每次实机运行前重新核验，不能把隔离视图当作主机权限结论 |
 | 初始自测缺陷 | C selftest 无条件返回 0、runner 可降级 USB 模型后 PASS，已在工作树修复 | 25 项判定器测试通过；实际 guest 回归尚未运行，历史 PASS 不作新架构证据 |
 | 初始 ABI 漂移 | Python `SleConnInfo` 56B→64B；用户态 `SleDliInfo` 两字段 u8→u16，已修复 | C/Rust/Python 11 个结构、100 字段 conformance 与写入回归通过；完整 ABI/32 位/真实调用仍待验收 |

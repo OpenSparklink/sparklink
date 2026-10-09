@@ -128,3 +128,43 @@ RX 入队与每设备 worker，再继续核验 pending/late completion。
 `.dev/qemu-runtime-context-timeout/`，对应同名 evidence JSON；后者另保存
 精确源码/image/config hashes。定向日志已移除，后续继续正常构建；失败
 记录完整保留。北极星与全部原 issues 仍未完成，内核提交门禁仍未通过。
+
+### IRQ RX 与 worker 停止的后续进展（同日）
+
+通用 DLI USB completion 的接收队列和 wakeup 引用改用短 raw spinlock，
+保存/恢复 IRQ flags；解析与 payload 分配使用 GFP_ATOMIC，OOM 丢弃整包，
+拒绝声明长度不足的广播 report。Bulk OUT completion 保留传输状态，不再
+将发送缓冲交给 RX 解码。新增 RX ring/command-complete/MAC-complete/decode
+分类丢失计数，损失不合成为成功 completion。
+
+现有 EventPump/CommandWorker 新增 IRQ 安全 scheduling gate：stop 先拒绝
+新调度和 self-rearm，再在锁外 flush_delayed_work，让 Rust trampoline 回收
+队列持有的 Arc。模块 guard 先移除 wakeup 引用、drain worker，再释放状态和
+关闭 backend；worker 分配失败传播初始化错误，完整状态发布后才启动 pump。
+这仍是全局 worker 的过渡实现，尚非每设备 worker；内建配置下未执行模块
+teardown，RT/lockdep/atomic-debug 与异步 TX completion 的独立测试也未完成。
+
+最新 image #16 构建成功；静态 C -Wall -Wextra -Werror 通过，harness 41 测试
+通过。完整双虚拟设备回归：96 项、3 条失败断言、0 skip、guest exit 1、strict
+FAIL，仍有 printk 打断 case marker。失败为 test_ioctl_throughput、
+test_dev_switch_isolation、test_per_fd_device_select；残留连接/迟到 ConnComplete
+仍需修复。test_runtime_command_isolation 在该轮 PASS：2×10,000 归属查询和
+两设备 MAC 回复/独立完成计数均匹配；早先失败仍保留，不能宣称稳定全套通过。
+
+RX 记录两次损失：ring=2/command=0/MAC=0/decode=0，以及
+ring=24/command=11/MAC=0/decode=0。这证明该轮有管理完成丢失，没有证明此前
+MAC 失败的具体因果关系。后续优先推进每设备 Arc、RX/command queues、独立
+worker/锁和真实 Host 事务/credit；不靠扩大缓存或忽略丢失完成验收。
+
+最终原始记录为 `.dev/qemu-irq-ingress-final/`，对应
+`.dev/kernel-irq-ingress-final-evidence.json`，保存 25 个源码 hash、dirty diff、
+config/image/initramfs/console/stderr 与构建/验证日志 hash。旧三轮 IRQ 相关
+日志分别留存，均只支撑虚拟开发；真实双 WS73、拔插和空口验收仍未完成。
+
+命令单项验收另已收紧：先等旧 pending 清零且不新增 timeout、清空旧报告，
+再要求每设备恰好 +1 submitted/+1 resolved、pending=0、timeout 不变及一次
+匹配 MAC，排除旧命令增长使总计数误判。收紧后的 image #16 回归仍为 96 项、
+3 条失败断言、0 skip、strict FAIL；该命令单项 PASS，RX 丢失为 ring=6、
+command/MAC/decode=0。最终精确记录另存 `.dev/qemu-irq-exact/` 和
+`.dev/kernel-irq-exact-evidence.json`；上述旧记录不覆盖。该轮不证明模块 drain、
+RT/lockdep、异步 TX callback 的独立行为或任何实机闭环。

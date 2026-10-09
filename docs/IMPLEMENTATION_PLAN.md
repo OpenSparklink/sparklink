@@ -391,3 +391,13 @@ Complete gate 验证单实例 EPROTO 撤销/另一实例继续查询。旧 air-m
 保留；仍 metadata-only SETUP，下一步分步广播/扫描 Host 事务与动态 adapter/
 slctl。实机清点为空、北极星七项未验收、全部原 issues 与完整 S0–S6 保持。
 详见 [参数与回复记录](WS73_DISCOVERY_NORTH_STAR.md#完整参数编码与驱动回复规则2026-10-10部分成果)。
+
+### 每设备 Host 分步事务基础（2026-10-10，部分成果）
+
+[fee81e705a03](https://github.com/OpenSparklink/linux/commit/fee81e705a031634b6b1d7334bc82e1c97a1dae9) 增加原子整组入队、整组期限、Status/Complete 分离、失败取消
+及 stop 屏障，标准 USB typed 控制接单步骤事务。冻结 image #50 七 gate 与完整
+原 96 case/0 FAIL/0 SKIP PASS，14 项生产模块测试、100 项 harness PASS；旧 #47
+在同一延迟 Complete 模型触发提前发命令断言，是保留的预期负对照。三个旧
+全回归警告及原生完整 recipe/结果接口的边界保留。WS73=[]，仍 SETUP/拒绝 RF，
+动态 adapter/slctl 与七项真实验收均未完成。全部 issues、完整 S0–S6 和后续四
+设备两组目标继续保持。详见 [分步事务记录](WS73_DISCOVERY_NORTH_STAR.md#每设备-host-分步事务基础2026-10-10部分成果)。

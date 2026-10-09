@@ -722,3 +722,35 @@ libws73-usb@f4d85d0、完整 Host@f0872df；未复制参考实现或固件/校�
 接入每设备 Host，逐步等待匹配 Complete；任一步错误中止后续使能，处理超时、
 取消及新旧 start/stop intent，再接动态 adapter/slctl 和真实双设备验收。七项
 北极星和全部原 issues 继续开放，完整 S0–S6 及后续四设备两组目标保留。
+
+## 每设备 Host 分步事务基础（2026-10-10，部分成果）
+
+内核 [fee81e705a03](https://github.com/OpenSparklink/linux/commit/fee81e705a031634b6b1d7334bc82e1c97a1dae9) 为每设备 Host 增加有界分步事务与原子整组入队，
+共享整组 5 秒期限，逐步等待对应 Complete；成功 Status 仅确认受理，不能释放
+在途槽位。失败取消剩余步骤，替换 start 保留先前 stop 屏障；仅当前 intent
+完成才能确认广播/扫描。队列继续直接堆上初始化，生产路径不构造约 20KB 队列。
+标准 USB typed 广播/扫描控制已使用单步骤事务；真实 WS73 完整多步骤事务尚未
+接入，不能把该标准模型测试称为原生 RF 测试。公开 operation cookie/result、
+驱动 typed 参数准备与发送校验、停止失败状态及原生故障恢复仍待实现。
+
+冻结 image #50 无警告构建；生产队列/进度模块 14 项 Rust 测试、100 项 harness、
+七条独立 gate PASS（标准 recipe、标准生命周期、原生 metadata、HCC fault、
+短/长成功回复和完整事件）。recipe fixture 在 Status 后延迟 Complete，并断言
+期间不收到下一命令。相同 fixture/测试程序对旧 image #47 因提前发送命令触发
+断言而预期失败，完整负对照证据保留。多步骤/取消/队列边界覆盖来自生产模块
+单元测试；在 USB 上实际跑通的 recipe 是单步骤。完整标准三控制器原 96 case /
+0 FAIL / 0 SKIP strict PASS，1056 OK / 3 条旧 WARN，跨设备数据弱断言的局限保留。
+
+证据 `.dev/host-recipe-final-evidence.json`、`host-recipe-source-snapshot/`、
+`host-recipe-final-full-qemu/`、`host-recipe-final-gate-*/manifest.json` 及
+`host-recipe-negative-verdict.json`；14 个冻结源码 hash 与提交一致。初次静态
+链接缺少 libc 路径、中间 image #48/#49、预期负对照失败均保留；修正环境后
+最终门禁通过。QEMU 构建旧 unused helper 警告保留。选定局部栈帧最大 312 字节，
+不据此宣称完整调用链安全。用户态仅更新文档，未重复 workspace 测试；此前
+全 workspace strict clippy 的未改动 slkd 未使用项失败仍保留。
+
+主机级清点仍 WS73=[]。原生 Runtime 仍 metadata-only SETUP，RF 命令继续拒绝。
+下一步接 driver-owned typed SetParam → SetData（按需 ScanRsp）→ Enable、
+ScanParam → Enable 及结果接口，再接动态 adapter/slctl；按原七项验收进行真实
+双设备空口、20 轮角色交换和拔插测试，随后四设备两组。七项均未完成，不关闭
+整项 issue，完整 S0–S6、全部原验收与两组并行目标保持。

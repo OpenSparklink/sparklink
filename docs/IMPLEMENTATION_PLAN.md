@@ -343,3 +343,14 @@ Native C/Rust 注册接口与 WS73 异步 RX 接入每设备 Runtime/Host，显�
 21 条失败断言，strict FAIL，内核门禁未通过。实际 WS73=[]，板级候选未合格；
 没有真实 Ready/RF/slkd/slctl 验收，不关闭整项 issue。完整 S0–S6 依赖与原验收保留。
 详细输入、失败记录和边界见 [原生 Runtime 记录](WS73_DISCOVERY_NORTH_STAR.md#原生-ws73-runtime-接入记录2026-10-10部分成果)。
+
+### 首次内核交付与回归门禁（2026-10-10）
+
+[7918bb9757bf](https://github.com/OpenSparklink/linux/commit/7918bb9757bfe3c365521b66d30ffee4f1e3d0c6)
+已签名推送，[Draft PR #20](https://github.com/OpenSparklink/linux/pull/20) 可审阅；未合入 master。
+image #42 的三标准虚拟控制器原清单 96 case/0 FAIL/0 SKIP、strict PASS，三条独立
+Runtime/native fault gate PASS，80 项 harness PASS。修复 typed 失败 peer 归属与
+异步断开条目清理；测试等待真实模型完成并强制完整 kernel log，不忽略错误。
+旧 air-medium 仍有 4 条 WARN/不完整 data 断言，不认定其链路成功。真实硬件、
+Ready、广播/扫描、动态 adapter/slctl、无 sudo 与空口七项仍未完成；所有 issues
+开放。完整方案不收缩，详情与旧失败留存在 [交付记录](WS73_DISCOVERY_NORTH_STAR.md#异步事务清理与首次内核交付2026-10-10)。

@@ -543,3 +543,43 @@ Ready、slkd 动态 adapter、普通用户 slctl 或空口结果，七项北极�
 内核受“QEMU 自测通过后才能提交”的现有门禁约束，完整回归通过前保留工作树；
 进度文档签名提交并推送，issues 继续开放。下一步核验回归中的异步事务/清理，
 并继续板级核验/真实查询 → 广播扫描 → 事件 → 动态 adapter/slctl。
+
+### 异步事务清理与首次内核交付（2026-10-10）
+
+已签名提交并推送 [7918bb9757bf](https://github.com/OpenSparklink/linux/commit/7918bb9757bfe3c365521b66d30ffee4f1e3d0c6)，
+开发分支 `codex/sparklink-ws73-runtime`，可审阅 [Draft PR #20](https://github.com/OpenSparklink/linux/pull/20)。
+测试前冻结的 53 个源码 hash 与该提交逐一匹配；内核工作树干净，未合入 master。
+
+后续修复保留 outgoing connection 条目与控制器实际 handle，等待 Disconnected
+才删除；建立完成前的 disconnect 延后到获知 handle 时发送，迟到建立事件不能
+据此制造新 incoming。失败的 typed CreateConnection 关联 Host 捕获的 peer，
+清理对应未建立条目。该步骤只处理最小建立/断开归属，不宣称完整 data/control
+handle 映射、domain transaction FSM 或连接/安全矩阵已完成。
+
+测试原先忽略 1000 轮启停的 ioctl 错误，现每轮必须收到真正的 enable/disable
+Complete；stale-handle、连接清理与压力测试也等待实际断开，错误/超时仍 FAIL。
+不能把 enqueue 成功当作完成。三设备子路径的条件不满足现记显式 SKIP。
+串口静默仅隔离 case marker，全部 printk 仍留在 kernel ring；verdict 必须收到
+完整 ring dump 与早期记录，并继续拒绝其中的 WARNING/BUG/panic。
+
+最终冻结 image #42 无警告构建，使用三个标准 DLI QEMU controller，原 96 case
+清单全部执行：0 failed assertions、0 skips、guest exit 0、strict PASS。1000 轮
+广播启停、200 轮连接/断开和 30 轮角色切换均通过。**旧 air-medium 案例仍有
+4 条 WARN，跨设备连接/数据断言不够严格；全套 harness PASS 不证明该链路成功。**
+它们保留在 K#19 的后续测试工作中，不据此认定 RF 或连接实现完成。
+WS73 生产驱动的合成双设备查询/拔插、畸形 HCC 单设备撤销、标准 Runtime 生命周期
+三条独立 gate 均 PASS，输入与源码 hash 前后不变；Python harness 80 项 PASS，
+静态 C `-Wall -Wextra -Werror` 通过。
+
+本地最终证据 `.dev/kernel-runtime-submit-evidence.json`、
+`runtime-submit-source-snapshot/`、`qemu-runtime-submit/` 与
+`runtime-lifecycle-submit-{native,native-fault,standard}/manifest.json` 保留来源、
+实际测试 binary、image/config/initramfs、全部 console/QMP 和 hash。六个选定函数
+栈 prologue 归档不视为完整调用链安全证明。#41 的 120 秒超时/99 条失败记录、
+#42 第一轮的 1 FAIL/1 SKIP，以及此前全部失败均保留，没有放宽断言或覆盖失败。
+
+第一北极星七项验收仍全部未完成；真实 WS73 清点仍为空，SDK 板级候选未合格。
+Native Runtime 仍仅 SETUP，没有真实 Ready、广播/扫描、空口数据、slkd 动态 adapter
+或普通用户 slctl 结果。全部原 issues 与 S0–S6 保持开放，Draft PR 不带自动关闭词。
+下一步继续真实设备/板级核验与 DLI 查询，并实现完整广播/扫描参数与异步完成、
+discovery 事件和动态 adapter/slctl；之后才执行真实交替 20 轮及热插拔闭环。

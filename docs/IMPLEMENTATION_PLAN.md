@@ -28,7 +28,7 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 | 参考实现 | libws73-usb `f4d85d0e95af2d0043432e1301fd2f6b660a4906` | 参考源码及作者 capture 只作协议证据，另列来源，不能冒充本项目实测 |
 | 新增 Host 参考 | OpenHarmony communication_nearlink_service `f0872dfaac33ffa99b80b352f6c05fba2df6414e` | 已检查分层、DLI/TCID/SSAP/安全与 HAL/桩边界；未构建/运行，不作为实测。调整见下节 |
 | WS73 boot | 旧 run `ws73-run-20261009-225342`：四设备分别下载三镜像，重新枚举到 runtime，4/4 同时绑定 | 逐个启动；并发固件上传曾失败；未实现 BSLE/SLE、DLI、RF、PM。旧 run 未保存完整 artifact/firmware hash，不追补伪造绑定 |
-| 本轮硬件环境 | inventory 空；`/dev/kvm` 不存在，提权检查仍如此 | 当前无法重复硬件 gate；继续接口、codec、模拟和用户态开发。每次实机运行前重新核验 |
+| 本轮硬件环境 | WS73 inventory 为空；隔离环境设备节点隐藏，但最新提权只读检查确认 KVM 可读写、USB nodes 存在 | 自定义 QEMU guest 已能运行；真实 WS73/RF gate 未验收。每次实机运行前重新核验，不能把隔离视图当作主机权限结论 |
 | 初始自测缺陷 | C selftest 无条件返回 0、runner 可降级 USB 模型后 PASS，已在工作树修复 | 25 项判定器测试通过；实际 guest 回归尚未运行，历史 PASS 不作新架构证据 |
 | 初始 ABI 漂移 | Python `SleConnInfo` 56B→64B；用户态 `SleDliInfo` 两字段 u8→u16，已修复 | C/Rust/Python 11 个结构、100 字段 conformance 与写入回归通过；完整 ABI/32 位/真实调用仍待验收 |
 | 软件测试 | Python 23/23、Rust workspace 135/135（含真实私有 D-Bus 静默 30s、存储与 Profile 阻塞/取消/drain/panic、Unicode 输入）；判定器 25/25；lab 16/16 | 全仓 fmt、除 slkd 外六 crate 的 all-targets 严格 clippy 通过；Bond I/O 与连接 Profile callback 已移出业务锁；slkd 未接通的策略/SSAP/transport 与旧接口 lint 仍未通过严格 CI，尚未满足完整 CI 或硬件验收 |

@@ -75,3 +75,35 @@ QEMU/原生部署环境、固件/校准 hash、USB 前后 inventory、console/QM
 
 里程碑完成后记录实际命令和所有证据链接，再检查每个关联 issue 的全部
 原 checklist；仅部分 Runtime/HCC/广播链路完成不能提前关闭整项 issue。
+
+## Runtime 第一阶段开发记录（2026-10-10）
+
+内核工作树新增固定堆分配的 `ControllerRuntime`：Backend、连接、发现、
+安全、SSAP、PHY/电源、RPA、command/pending、DLI ring 与 broadcast ring
+均归该设备所有。选择只改索引，不再分配或搬移协议字段；detach 不需分配
+占位状态。CommandWorker 遍历各 Runtime 的队列，RX 按设备路由，停止丢弃
+非 active 设备的连接生命周期事件。per-fd 绑定保存注册 generation，read/poll
+按绑定选择事件环；USB ingress 尚未携带 generation。
+
+这只是迁移第一阶段。仍有 `SUBSYSTEM` 全局锁和临时 `Deref` 选择桥，
+旧 ioctl 的选择/执行竞争窗口尚未消除；fd 尚未持稳定 Arc，worker 尚未
+按设备独立，Ready/lifecycle/锁外取消仍需实现。不得据此宣称完整 Runtime、
+拔插隔离或第一北极星已通过。
+
+实测开发支撑：内核 image #7 构建成功；静态 C `-Wall -Wextra -Werror`
+通过；verdict/lab 共 41 个测试通过。新增两虚拟设备的
+`test_runtime_command_isolation` 通过：相同 ReadMacAddr opcode 的回复分别
+匹配各自 MAC，提交/完成计数各自增长。它使用 QEMU model，不是真实 WS73
+DLI 查询，也不是空口证据。
+
+完整 guest 清单 96 项，summary 96 项、3 条失败断言、0 skip，guest exit 1、
+strict verdict FAIL；失败为 `test_ioctl_throughput`、`test_dev_switch_isolation`、
+`test_per_fd_device_select`，另有 printk 打断 case marker。迟到 ConnComplete
+在已清理的 outgoing connection 之后被当作 incoming 的日志已留存，controller
+handle/Host handle 的对应关系仍需核验。不能通过丢弃合法异设备事件、忽略
+清理错误或删除断言通过门禁。证据保存在本地 `.dev/qemu-runtime-first/` 和
+`.dev/kernel-runtime-first-evidence.json`，含源码/dirty diff、config、image、
+initramfs、console/stderr 与构建日志 hash；全套失败记录保留。
+
+该轮主机只读 inventory 发现 0 只 WS73，KVM 存在且可读写。硬件闭环未运行。
+内核保持未提交，等待现有 QEMU 门禁通过；方案与 issues 持续更新。

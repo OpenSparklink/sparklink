@@ -19,11 +19,16 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 完整 S0–S6、原 issue checklist 和 CI/安全门禁均保留；SSAP/配对策略等
 后续完整功能不作为此第一条广播/发现路径的前置依赖。部分成果不关闭整项 issue。
 
+Runtime 第一阶段已进入工作树，新增双虚拟设备命令归属测试通过；完整
+96 项 QEMU 清单仍有 3 条失败断言，strict verdict FAIL，内核未提交。
+每设备 Arc/锁/worker 与显式路由仍未完成，下一步先消除临时全局选择桥。
+完整记录和证据边界见 [Runtime 开发记录](WS73_DISCOVERY_NORTH_STAR.md#runtime-第一阶段开发记录2026-10-10)。
+
 ## 基线与当前证据
 
 | 项目 | 已核验状态 | 证据边界 |
 |---|---|---|
-| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot 驱动 / lab 修改 | 核心仍有静态 Backend enum、全局 active 状态交换和内核 SSAP 数据库 |
+| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot / lab / Runtime 第一阶段 | 固定每设备 Runtime 已移除字段交换；仍有静态 Backend enum、全局锁/Deref 路由桥和内核 SSAP 数据库 |
 | 用户态源码 | 功能分支 `codex/sparklink-ws73`，代码提交至 `7adb796`（见交付记录） | 事件等待已移到独立任务；对象仍固定 slk0；Bond 不含可恢复凭据；没有 slk-vendord |
 | 参考实现 | libws73-usb `f4d85d0e95af2d0043432e1301fd2f6b660a4906` | 参考源码及作者 capture 只作协议证据，另列来源，不能冒充本项目实测 |
 | 新增 Host 参考 | OpenHarmony communication_nearlink_service `f0872dfaac33ffa99b80b352f6c05fba2df6414e` | 已检查分层、DLI/TCID/SSAP/安全与 HAL/桩边界；未构建/运行，不作为实测。调整见下节 |

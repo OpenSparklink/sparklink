@@ -107,3 +107,24 @@ initramfs、console/stderr 与构建日志 hash；全套失败记录保留。
 
 该轮主机只读 inventory 发现 0 只 WS73，KVM 存在且可读写。硬件闭环未运行。
 内核保持未提交，等待现有 QEMU 门禁通过；方案与 issues 持续更新。
+
+### 显式 ioctl 身份路由的后续进展（同日）
+
+RuntimeContext 已显式传入 25 个控制辅助函数；每次取 SUBSYSTEM 锁时，
+同时验证注册 generation 并确定请求所属设备，不再依赖 ioctl 入口先切换、
+解锁后执行的窗口。默认选择也按请求捕获身份；无设备控制请求返回 ENODEV。
+registry 查询保留独立范围。此步骤仍使用全局锁和 Deref 桥，不等于最终的
+Arc/per-Runtime lock/worker 架构；多步骤事务、USB generation 与取消仍待完成。
+
+image #9 的双进程并发测试通过：两个绑定 fd 各执行 10,000 次 DEV_INFO，
+每次索引和 MAC 都匹配。完整回归 96 项、1 条失败断言、0 skip、strict FAIL：
+Runtime 0 收到 MAC report，submitted 2→3，但 resolved 0→0。该失败未被
+放宽断言处理。带定向日志的 image #10 又在 test_ioctl_throughput 停住，
+120 秒 QEMU timeout，suite 未完成，不能计入通过次数。USB completion
+仍直接获取 sleeping mutex，是否导致这次停住尚未证实，需先迁移 IRQ 安全
+RX 入队与每设备 worker，再继续核验 pending/late completion。
+
+两轮原始记录分别为 `.dev/qemu-runtime-context-first/` 与
+`.dev/qemu-runtime-context-timeout/`，对应同名 evidence JSON；后者另保存
+精确源码/image/config hashes。定向日志已移除，后续继续正常构建；失败
+记录完整保留。北极星与全部原 issues 仍未完成，内核提交门禁仍未通过。

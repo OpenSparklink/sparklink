@@ -19,9 +19,11 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 完整 S0–S6、原 issue checklist 和 CI/安全门禁均保留；SSAP/配对策略等
 后续完整功能不作为此第一条广播/发现路径的前置依赖。部分成果不关闭整项 issue。
 
-Runtime 第一阶段已进入工作树，新增双虚拟设备命令归属测试通过；完整
-96 项 QEMU 清单仍有 3 条失败断言，strict verdict FAIL，内核未提交。
-每设备 Arc/锁/worker 与显式路由仍未完成，下一步先消除临时全局选择桥。
+Runtime 第一阶段和显式 RuntimeContext 已进入工作树；双虚拟设备初始
+命令归属测试与后续 2×10,000 并发查询各有 PASS 记录，但完整回归仍 FAIL。
+后续 image #9 的 96 项清单有 1 条命令完成计数失败断言；定向日志 image #10
+在吞吐测试超时。内核未提交。每设备 Arc/锁/worker、IRQ 安全 RX 入队和
+USB generation 尚未完成，下一步继续迁移并排查 pending/late completion。
 完整记录和证据边界见 [Runtime 开发记录](WS73_DISCOVERY_NORTH_STAR.md#runtime-第一阶段开发记录2026-10-10)。
 
 ## 基线与当前证据

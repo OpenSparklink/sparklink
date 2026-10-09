@@ -379,3 +379,15 @@ air-medium WARN 的局限保留。真实设备清点为空、七项北极星仍�
 仍 FAIL。旧 air-medium 警告/弱断言继续保留；真实 WS73=[]，SETUP/metadata-only，
 七项真实验收仍全部未完成，原 issues/S0–S6 保持。接下来继续完整广播/扫描事务。
 详见 [完整事件记录](WS73_DISCOVERY_NORTH_STAR.md#完整原生事件通路2026-10-10部分成果)。
+
+### 完整参数编码与驱动回复规则（2026-10-10，部分成果）
+
+[b7b7708ffaa8](https://github.com/OpenSparklink/linux/commit/b7b7708ffaa821e3baa5e1714d8cdb5c35b9b415)
+实现全部 WS73 49 字节参数编码与无截短的 16/24 位周期转换；成功管理回复
+长度规则归 WS73 driver，在 Host ingress 前检查，保留实际功率与原始错误。
+image #47 六支持 gate 和完整原 96 case/0 FAIL/0 SKIP PASS；47,568 项 codec、
+110,654 项 DLI、91 项 harness 和 sanitizers PASS。两个新 valid-HCC malformed-
+Complete gate 验证单实例 EPROTO 撤销/另一实例继续查询。旧 air-medium 警告
+保留；仍 metadata-only SETUP，下一步分步广播/扫描 Host 事务与动态 adapter/
+slctl。实机清点为空、北极星七项未验收、全部原 issues 与完整 S0–S6 保持。
+详见 [参数与回复记录](WS73_DISCOVERY_NORTH_STAR.md#完整参数编码与驱动回复规则2026-10-10部分成果)。

@@ -682,3 +682,43 @@ clippy PASS。全 workspace strict clippy 因未改动 slkd 的未使用项仍 F
 没有真实 Ready/空口/20 轮交换/拔插或普通用户应用结果。七项验收全部未完成，
 完整 S0–S6 和全部原 issues 继续开放。下一步接完整广播参数与 SetParam →
 SetData → Enable、扫描参数/使能的异步事务，随后接动态 adapter/slctl 和实机验收。
+
+## 完整参数编码与驱动回复规则（2026-10-10，部分成果）
+
+内核 [b7b7708ffaa8](https://github.com/OpenSparklink/linux/commit/b7b7708ffaa821e3baa5e1714d8cdb5c35b9b415)
+补齐 WS73 49 字节广播参数 encoder。显式传入两个 24 位周期、两类地址及其
+原始字节、TX power、PHY/帧类型、查询请求通知/数量/持续时间和七个 16 位
+持续时间/连接字段；宽 host 字段先检查溢出，再写整个输出。零功率保留为零，
+127 才是明确无偏好；字节 33/34 不从角色推导厂商默认值，地址类型不套用
+标准枚举映射。此 encoder 只表达协议字段，不证明控制器支持或板级/RF 校准。
+毫秒到 125μs 单位转换拒绝溢出：扫描最大整毫秒值 8191，广播 2097151。
+
+WS73 driver 在管理回复进入 Host 前校验本方言的成功返回长度，移除 generic
+native core 中的厂商 opcode/返回长度表。0x0C02 成功 Complete 必须保留一个
+实际 TX power 字节；0x0C03/04/05、0x1001/02 成功后无额外返回数据；四项
+metadata 查询保持原精确长度。Status 接受仍不终结事务；错误 status 及 opaque
+data 原样保留，未知返回格式不增加命令权限。广播数据仍使用 WS73 三字节头，
+不能混入完整 Host 标准版本的 selection 字节。测试 marker 是 opaque 数据，
+不据此宣称已完成 T/XS 20001 内层公开信息和 SLE 外层 type 255 的封装。
+
+image #47 无警告构建。六 gate PASS：metadata Host、HCC 畸形单实例撤销、
+完整事件、多设备标准生命周期，加上有效 HCC/DLI 内短一字节或多一字节的
+成功地址 Complete 两条负例。两条新负例都要求 EPROTO 撤销且只撤销出错
+实例，另一实例完成 18 次查询与后续地址查询，替换设备使用新 generation。
+完整标准三控制器原 96 case / 0 FAIL / 0 SKIP strict PASS，1056 OK / 3 WARN；
+旧 air-medium 警告及跨设备数据弱断言保留。生产 codec 47,568 项、DLI 110,654
+项、91 项 harness 及 ASan/UBSan/LSan PASS。初次 sandbox 下 LSan 因 ptrace
+限制失败，原日志保留；主机运行 sanitizer 后通过。用户态代码未变，本轮未重跑
+workspace；上一阶段全 workspace strict clippy 的 slkd 未使用项仍未解决。
+
+证据 `.dev/ws73-params-final-evidence.json`、`ws73-params-source-snapshot/`、
+`ws73-params-full-qemu/` 和 `ws73-params-gate-*/manifest.json`，12 个冻结源码
+hash 与提交一致，六 gate 前后源码/输入未变。参考只提取协议事实，pin 保持
+libws73-usb@f4d85d0、完整 Host@f0872df；未复制参考实现或固件/校准数据。
+
+本轮主机清点仍 WS73=[]。原生 Runtime 仍 metadata-only SETUP，发现命令仍
+拒绝；**分步异步事务尚未接入，不能把参数 encoder 视为已启用广播/扫描**。
+下一步把 SetParam → SetData（按需 ScanRsp）→ Enable 和 ScanParam → Enable
+接入每设备 Host，逐步等待匹配 Complete；任一步错误中止后续使能，处理超时、
+取消及新旧 start/stop intent，再接动态 adapter/slctl 和真实双设备验收。七项
+北极星和全部原 issues 继续开放，完整 S0–S6 及后续四设备两组目标保留。

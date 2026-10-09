@@ -19,18 +19,21 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 完整 S0–S6、原 issue checklist 和 CI/安全门禁均保留；SSAP/配对策略等
 后续完整功能不作为此第一条广播/发现路径的前置依赖。部分成果不关闭整项 issue。
 
-Runtime 第一阶段、显式 RuntimeContext、IRQ 安全通用 USB RX 与 worker
-停止 gate 已进入工作树。最新 image #16 构建成功，双虚拟设备归属/命令单项
-通过，完整 96 项回归仍有 3 条失败断言，strict FAIL；旧命令失败与超时记录
-保留。已捕获管理 completion 丢失。内核未提交；每设备 Arc/锁/queue/worker、
-USB generation 与真实 Host transaction/credit 尚待完成，仍先推进最小 Runtime。
+最小 Runtime 已进一步迁移为稳定 `Arc<ControllerRuntime>`、每设备协议锁、
+RX 环及嵌入的 RX/TX delayed work；临时 Deref/default-selection 协议桥已移除。
+最新 image #20 无警告构建；双虚拟设备精确命令归属单项通过，完整 96 项回归
+仍有 9 条失败断言、0 skip、strict FAIL。虚拟单次拔插/索引复用测试通过：
+旧 fd 持续 ENODEV，另一设备地址与 DLI 查询保持有效，新 fd 查询重插实例。
+这不证明真实 WS73、slkd、无 sudo 应用、20 轮/四设备或全部生命周期条件。
+内核未提交；下一步继续 USB generation/cookie、Host transaction/credit 与
+迟到连接事件/handle 映射，再接 WS73 HCC/BSLE 与真实 DLI 查询。
 完整记录和证据边界见 [Runtime 开发记录](WS73_DISCOVERY_NORTH_STAR.md#runtime-第一阶段开发记录2026-10-10)。
 
 ## 基线与当前证据
 
 | 项目 | 已核验状态 | 证据边界 |
 |---|---|---|
-| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot / lab / Runtime 第一阶段 | 固定每设备 Runtime 已移除字段交换；仍有静态 Backend enum、全局锁/Deref 路由桥和内核 SSAP 数据库 |
+| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot / lab / Runtime 第一阶段 | 稳定每设备 Arc/协议锁/RX 环/worker，Deref 桥已移除；仍有静态 Backend enum、数值 USB context、非完整 Host 事务和内核 SSAP 数据库 |
 | 用户态源码 | 功能分支 `codex/sparklink-ws73`，代码提交至 `7adb796`（见交付记录） | 事件等待已移到独立任务；对象仍固定 slk0；Bond 不含可恢复凭据；没有 slk-vendord |
 | 参考实现 | libws73-usb `f4d85d0e95af2d0043432e1301fd2f6b660a4906` | 参考源码及作者 capture 只作协议证据，另列来源，不能冒充本项目实测 |
 | 新增 Host 参考 | OpenHarmony communication_nearlink_service `f0872dfaac33ffa99b80b352f6c05fba2df6414e` | 已检查分层、DLI/TCID/SSAP/安全与 HAL/桩边界；未构建/运行，不作为实测。调整见下节 |

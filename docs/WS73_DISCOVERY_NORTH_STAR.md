@@ -168,3 +168,65 @@ config/image/initramfs/console/stderr 与构建/验证日志 hash。旧三轮 IR
 command/MAC/decode=0。最终精确记录另存 `.dev/qemu-irq-exact/` 和
 `.dev/kernel-irq-exact-evidence.json`；上述旧记录不覆盖。该轮不证明模块 drain、
 RT/lockdep、异步 TX callback 的独立行为或任何实机闭环。
+
+### 稳定 Arc、每设备锁/队列/worker 与虚拟拔插（同日）
+
+协议状态改为堆分配 `ControllerState`，由稳定 `Arc<ControllerRuntime>` 和
+该 Runtime 的协议 mutex 持有。fd 的显式绑定保留 Arc 与 immutable generation；
+移除时拒绝新访问、排空 worker、取走状态，旧 fd 不能跟随复用的索引。
+注册表只持 owner 引用和元数据，RuntimeContext 不再切换默认索引或持全局锁
+执行协议 I/O；临时 Deref/DerefMut 桥与无设备占位协议状态均已移除。
+默认 genl/debugfs 路径同样先捕获 owner，再获取设备锁。
+
+每设备持独立堆分配 IRQ-safe RX ring（容量未扩大）、command/pending/broadcast
+队列和两份 delayed work。WorkItem ID 0/1 区分 RX/TX，队列暂持 owner Arc，
+不建立 owner/worker 引用循环。completion 在短 IRQ 路由锁下 clone owner，
+进入该设备 RX 环并唤醒其 worker。停止 gate 阻止入队和 self-rearm，锁外 flush
+两份工作；USB remove 先 quiesce Runtime，保持索引保留，再 join/free C URBs，
+最后移除注册。初始化先发布 subsystem，再注册 USB driver，以支持已有设备
+在 driver 注册过程中立即 probe。inline 与 worker 在同一设备协议锁下取事件，
+避免 worker 预取旧事件后被 inline 路径超越。仍需完整 generation/cookie、
+Host 事务/credit、异步故障与 PM 验证；C completion context 尚以数值 ID 表示。
+
+image #20 无警告构建；静态 C -Wall -Wextra -Werror 通过。判定器 25、lab 16、
+新生命周期判定器 9 项测试均通过（50 项）。完整双虚拟设备回归：96 项、
+9 条失败断言、0 skip、strict FAIL。精确命令单项 PASS：两个 fd 各查询 10,000
+次身份，恰好 +1 submitted/+1 resolved、pending=0、无新增 timeout、各自 MAC
+匹配。新增断言验证 bound-fd 操作不改写 unbound fd 所见的默认设备。残留连接、
+迟到 ConnComplete 与 handle 对应关系仍导致其他失败；不能忽略或删除断言。
+该轮记录 sle0 ring=2、command/MAC/decode=0，不能据此宣称压力下不会丢失。
+先前 Arc/全局 worker 版本的 10 条失败断言和 command-complete 丢失仍完整保留。
+
+独立虚拟生命周期 gate 在同一个 guest 进程内先查询设备 0，再动态加入设备 1；
+移除设备 0 后，旧 fd 返回 ENODEV，设备 1 地址不变且完成 MAC 事务；重新加入
+设备 0、复用索引后，旧 fd 仍 ENODEV，新 fd 查询到新实例，设备 1 再次完成
+事务。最终严格单项 PASS、guest exit 0，QMP 设备删除完成事件和 kernel log
+均保留。第一次测试在 registration 已可见而 Runtime 尚未发布时绑定失败，
+记录未覆盖；后续按异步 probe 语义在 10 秒内等待控制可用，必须再完成 DLI
+往返，registry bit 不视作 Ready。这个单次虚拟结果不证明 slkd 动态对象、
+真实 WS73、20 轮、四设备、无 sudo 应用或 late-URB/PM 故障矩阵。
+
+完整记录为 `.dev/qemu-owner-workers/`、`.dev/kernel-owner-workers-evidence.json`；
+前一版本为 `.dev/qemu-arc-runtime-first/` 与 `.dev/kernel-arc-runtime-evidence.json`。
+生命周期记录为 `.dev/runtime-lifecycle-arc-first/`（失败）和
+`.dev/runtime-lifecycle-arc-retry/`（PASS），各自 manifest 绑定源码/dirty diff、
+config/image/QEMU/busybox/initramfs hash、exact argv、console/stderr/QMP。
+本地 `.dev/kernel-owner-stack-constructors.log` 记录 image #20 的
+ControllerState::new_boxed / inline drain 栈预留分别为 0x7b0 / 0x88，
+不作为整个调用链的栈安全证明。内核完整门禁仍 FAIL，保持未提交；整项 issues
+和全部北极星 checklist 仍开放。
+
+可复现虚拟拔插命令（从 Linux 源码根运行，KBUILD/QEMU/BUSYBOX 需指定本地
+构建产物；输出目录必须尚不存在，LIBRARY_PATH 仅本机静态链接环境需要）：
+
+```sh
+LIBRARY_PATH=../.dev/tools/qemu-deps/root/usr/lib64 \
+python3 tools/testing/selftests/sparklink/run_runtime_lifecycle.py \
+  --kernel-build ../.dev/kernel \
+  --qemu tools/testing/selftests/sparklink/qemu-sle-dli/bin/bin/qemu-system-x86_64 \
+  --busybox ../.dev/tools/qemu-deps/root/usr/bin/busybox \
+  --output ../.dev/runtime-lifecycle-new-run
+```
+
+该 runner 只创建 QEMU 标准 DLI 虚拟设备，不接管主机 USB；guest 测试使用
+开发 root 环境，不能据此完成应用无需 sudo 的验收。

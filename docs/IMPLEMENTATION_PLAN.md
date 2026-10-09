@@ -333,3 +333,13 @@ ReadCmdLen 误发。生产源码合成查询 2,830 项、BSLE 回归 3,198 项�
 下一步仍按 native Runtime/async RX/lifecycle → 板级核验/真实查询 → 完整广播扫描
 事务 → 内核事件 → 动态 adapter/slctl 推进，不用 Virtual 替代真实 20 轮。
 详细边界与证据见 [北极星记录](WS73_DISCOVERY_NORTH_STAR.md#原生-ws73-查询与配置候选记录2026-10-10)。
+
+## 原生 WS73 Runtime 推进（2026-10-10，部分成果）
+
+Native C/Rust 注册接口与 WS73 异步 RX 接入每设备 Runtime/Host，显式方言、
+引用保留、SETUP/Ready 分离、精确 generation 注销及错误隔离已进入工作树。
+冻结 image #40 的生产 WS73 driver 合成双设备查询/拔插、畸形 HCC 单设备隔离
+以及标准 DLI 生命周期三项 PASS；78 项 harness 测试 PASS。完整 96 项回归仍有
+21 条失败断言，strict FAIL，内核门禁未通过。实际 WS73=[]，板级候选未合格；
+没有真实 Ready/RF/slkd/slctl 验收，不关闭整项 issue。完整 S0–S6 依赖与原验收保留。
+详细输入、失败记录和边界见 [原生 Runtime 记录](WS73_DISCOVERY_NORTH_STAR.md#原生-ws73-runtime-接入记录2026-10-10部分成果)。

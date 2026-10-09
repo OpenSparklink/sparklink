@@ -494,3 +494,52 @@ initramfs、完整 console）、`runtime-lifecycle-ws73-native-query/manifest.js
 2026-10-09T20:16Z 附近主机只读 inventory 仍为 `WS73=[]`；未做真实 DLI 或 RF。
 内核完整 QEMU 提交门禁未过，工作树保留未提交；工具与进度文档持续签名提交推送。
 所有原 issues 与七项北极星验收继续开放，不提前关闭整项 issue。
+
+## 原生 WS73 Runtime 接入记录（2026-10-10，部分成果）
+
+内核工作树新增内部 Native 注册接口，显式选择 WS73 HCC profile；C/Rust
+元数据布局为 32 字节，保留五字节版本与完整 80-bit features。注册时仅创建
+SETUP 对象；独立 Runtime/Host、id/generation、credit 和查询结果不借用其他
+设备的状态，也不改变它的默认选择。C context 与模块引用一直保留到 owner
+撤销并排空 callback/worker 后，旧 fd 不跟随复用索引。
+
+WS73 完成 bootstrap 后启用每实例 bulk/notification RX URB。Host 在 TX worker
+串行发送查询，成功 Status 仅表示接受，继续等对应 Complete；credit-only
+事件不能完成查询。未知非零 status 原字节保留，不归一成成功。原生查询白名单
+在占用 pending/credit 前拒绝不支持的命令，`0x0401` 不误作 ReadCmdLen。
+畸形 HCC、USB 错误与硬件错误在 work context 撤销该实例，不能在 USB callback
+中同步注销。未知合法业务事件当前只计数，尚未提供完整诊断保留和 discovery
+解码；完整广播/扫描事务、自动恢复和 PM 矩阵均未完成。
+
+新增独立 `usb-ws73-test` 合成 QEMU 模型运行生产 WS73 driver 的 HCC/BSLE/
+DLI/异步 URB 路径；它使用假元数据与不可部署的配置，不执行真实 ROM/固件，
+没有 RF medium。冻结 image #40 无警告构建，52 个修改/新增源码和全部输入
+hash 在测试前后保持一致。最终三条独立 gate 均 PASS、guest exit 0：
+
+- 原生双设备各 18 次实际模型 DLI 往返，验证完整 version/features、精确 pending
+  增量和无新增 timeout；status `0xfe` 原样保留，拒绝方言误用。A 移除后旧 fd
+  ENODEV，B 保持 generation 并继续查询；A 重加使用新 generation。
+- A 收到畸形 HCC 聚合包后以 EPROTO 撤销，旧 fd 失效，B 保持 generation 并
+  完成查询；物理模型移除/重加 A 后，新 fd 可查询且旧 fd 仍失效。
+- 标准 DLI 双虚拟 Runtime 的独立 Host burst 与拔插/索引复用通过。
+
+verdict/lab 的 78 项 Python 测试通过，C harness 静态编译使用
+`-Wall -Wextra -Werror`。完整标准 DLI 回归仍为 96 项、21 条失败断言、strict
+FAIL，集中在异步事件等待、扫描/广播切换和连接清理；summary skipped=0
+不能代表两条要求 3+ controllers 的子路径已覆盖。日志没有 kernel fault。
+不能用上述三条单项 PASS 替代完整门禁或真实北极星。
+
+最终证据 `.dev/kernel-native-runtime-final-evidence.json`、
+`native-runtime-final-source-snapshot/`、`qemu-native-runtime-final/`，以及
+`runtime-lifecycle-native-{final-v2,fault-final-v2,standard-final-v2}/manifest.json`
+保存源码/构建/实际 guest binary/initramfs/console/QMP 与 SHA256。早期故障注入
+因模型在改坏包头前唤醒接收端而失败，修正构包/唤醒顺序后重测，未削弱驱动
+校验。一次中间测试与重链接重叠，实际加载 #38，已明确排除为最终源码证据。
+归档 QEMU 失去 BIOS 相对路径导致的启动失败也保留；最终运行用原构建位置的
+哈希相同二进制，冻结源码与镜像没有变化。
+
+本轮只读 inventory 仍为 `WS73=[]`；SDK 板级配置候选仍未合格。没有真实 DLI、
+Ready、slkd 动态 adapter、普通用户 slctl 或空口结果，七项北极星验收全部未完成。
+内核受“QEMU 自测通过后才能提交”的现有门禁约束，完整回归通过前保留工作树；
+进度文档签名提交并推送，issues 继续开放。下一步核验回归中的异步事务/清理，
+并继续板级核验/真实查询 → 广播扫描 → 事件 → 动态 adapter/slctl。

@@ -4,6 +4,21 @@
 
 Linux 主跟踪：[厂商框架与 WS73 #8](https://github.com/OpenSparklink/linux/issues/8)。联合跟踪：[跟踪：Linux 与用户态 SparkLink 全部 issues 的联合实施和验收](https://github.com/OpenSparklink/sparklink/issues/8)。本文中的 `K#n` 指 OpenSparklink/linux，`U#n` 指 OpenSparklink/sparklink。
 
+## 第一北极星与优先交付路径（2026-10-10）
+
+**普通用户通过 slctl 选择两只真实 WS73，让一只广播、另一只发现它；
+交换角色和拔插后仍能重复成功。** 两只独立 Ready，每轮随机标识，
+10 秒内显示匹配数据/地址/RSSI；交换角色连续 20 轮；单设备拔出不影响
+另一只，重插无需重启 slkd；应用无需 sudo，并留存可复现测试和真实空口
+证据。详细定义与阴性对照见 [北极星验收](WS73_DISCOVERY_NORTH_STAR.md)，
+联合里程碑为 [U#10](https://github.com/OpenSparklink/sparklink/issues/10)。
+
+按 **最小每设备 Runtime → WS73 启动/HCC/BSLE → 真实 DLI 查询 →
+广播/扫描 → 内核事件 → 动态 adapter/slctl** 推进 S1–S3 相关纵向路径。
+Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四设备两组并行。
+完整 S0–S6、原 issue checklist 和 CI/安全门禁均保留；SSAP/配对策略等
+后续完整功能不作为此第一条广播/发现路径的前置依赖。部分成果不关闭整项 issue。
+
 ## 基线与当前证据
 
 | 项目 | 已核验状态 | 证据边界 |

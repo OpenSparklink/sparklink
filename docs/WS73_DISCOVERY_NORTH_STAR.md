@@ -1,0 +1,77 @@
+# 第一北极星：普通用户的双真实 WS73 广播与发现
+
+用户确定于 2026-10-10。完整联合方案与全部原 issues 保留；本目标决定
+第一条优先交付路径，不替代 SSAP、安全、Vendor Proxy 等后续验收。
+
+普通用户通过 `slctl` 选择两只真实 WS73，让一只广播、另一只发现它；
+交换角色和拔插后仍能重复成功。Virtual/QEMU 是开发支撑，不能替代此闭环。
+
+## 必须满足的验收
+
+- 两只真实设备各自独立 Ready。必须完成各自启动、SLE 握手和真实 DLI
+  查询，记录 controller id/generation、物理 USB 路径、地址、版本与能力。
+  USB runtime 枚举、驱动绑定或缓存默认值均不能单独作为 Ready。
+- 每轮生成新随机标识，编码进广播数据；另一只硬件在 10 秒内上报匹配
+  数据、广播方地址和 RSSI，`slctl` 可显示全部字段。超时从实际扫描启动
+  事务成功起按 monotonic clock 计算；禁止缓存命中、Host echo 或注入代替。
+- 连续 20 轮成功，每轮交换广播/扫描角色，使用新标识并留存原始数据。
+  任一失败打断连续成功计数；不能通过重跑覆盖失败记录。
+- 拔出一只时，另一只的 Ready、generation 与控制能力保持有效。
+  另一只的管理/停止/启动事务仍正常响应；消失的 peer 不再被当作新发现。
+  旧 fd、迟到 completion 与旧 generation 不能指向重插设备。
+- 重插后 slkd 无需重启；动态移除/添加 adapter，完成该设备重新初始化
+  后能再次选择并完成闭环。保留 slkd PID、总线连接与两设备生命周期日志。
+- 应用运行无需 sudo、root、setuid 或附加 capability。安装内核/固件及
+  初次部署权限规则与应用运行分别记录；D-Bus 管理授权不放开 raw DLI。
+- 提供可复现测试与真实空口证据。记录实际接收端返回的原始 USB/HCC/DLI
+  discovery report、双端时间线、随机标识、地址/RSSI、固件/校准来源及
+  源码/构建 hash；增加广播停止的阴性对照和重新启用的新标识验证。
+  USB capture 不冒称 PHY 嗅探器的原始空口 PDU；有独立嗅探器时另列其来源。
+
+20 轮表示至少 20 次交替角色的成功发现。热插拔后的复验单列，不能用它
+补齐之前失败的连续轮次。随后扩展四设备两组并行，验证交叉报告归属及
+单设备移除对另外三只的隔离，仍不关闭尚有原验收未完成的整项 issue。
+
+## 实施依赖与最小 Runtime
+
+1. **最小每设备 Runtime**（K#4/#9/#10/#11/#12）：引用计数对象独立拥有
+   Backend、Host 初始化/命令状态、generation、RX/event/command 队列、
+   生命周期和广播/扫描状态。注册表仅索引对象，查询后释放注册表锁；
+   per-fd 持稳定对象引用。彻底消除 active device 状态交换和全局 pending
+   的命令归属。Ready 不与注册合并。停止先拒绝新请求并失效 generation，
+   再在锁外取消/drain I/O 与 worker；USB callback 不取 sleeping mutex。
+2. **WS73 启动/HCC/BSLE**（K#13/#14/#15）：先核验端点、镜像与校准，再
+   启动 BSLE/customize/SLE；每实例独立 buffer、聚合解析、URB 和错误恢复。
+   Boot/runtime 重新枚举与无线 Ready 分开。禁止共享静态接收缓存或校准。
+3. **真实 DLI 查询**（K#16）：显式 WS73 dialect 与 typed 查询，匹配
+   Status/Complete 的 opcode、实例和 generation；发送成功不等于完成。
+   查询结果验证后才发布 Ready，错误/超时只使该设备 Fault。
+4. **广播/扫描**（K#2/#16）：完整参数、数据和 enable/disable 顺序；
+   两个 Runtime 可同时处于不同角色，交换角色先停止原事务再开始新事务。
+   首条路径不以完整连接/SSAP/security policy 为前置依赖。
+5. **内核事件**（K#3/#5、U#2）：事件带 controller/generation，独立订阅
+   与有界队列；discovery payload/address/RSSI 原样保留、显式 overflow。
+   内核状态路由与用户态 adapter 路由均不能依赖当前全局 active id。
+6. **动态 adapter / slctl**（U#6、U#1/#2）：枚举 Ready 与非 Ready 对象，
+   显式选择 adapter，广播参数/数据和 scan 结果可见，添加/移除无需重启；
+   daemon 与 CLI 同时运行不争抢破坏性事件队列。以普通用户完成上述全部步骤。
+
+K#n 指 OpenSparklink/linux，U#n 指 OpenSparklink/sparklink。阶段内可以用
+Virtual 验证路由、乱序/迟到完成、队列满与取消；软件 PASS 只能支撑对应
+机制，北极星必须由两只真实硬件跑完。完整 S0–S6 的其他事项保持开放，
+严格 CI 警告也保留修复任务，不为完成北极星删除未实现协议或放宽验收。
+
+## 可复现运行记录
+
+最终 harness 应使用与用户相同的 slctl/D-Bus 路径，保存每轮角色、随机
+标识、提交/完成/发现的 monotonic 时间、实际 scan 原文及运行 exit status。
+目前该硬件 harness 和动态 adapter 命令尚未实现，此文不是可执行测试。
+
+每次实机运行先做 inventory，确认两只物理 WS73 与 guest/controller
+映射。保存 Linux/用户态 commit、dirty diff、config、kernel/initramfs、
+QEMU/原生部署环境、固件/校准 hash、USB 前后 inventory、console/QMP、
+去敏 USB/HCC/DLI capture、slkd/slctl 日志与测试结果。设备或工具不可见
+时明确记为未验收，不能以旧四设备 boot 日志替代本轮无线证据。
+
+里程碑完成后记录实际命令和所有证据链接，再检查每个关联 issue 的全部
+原 checklist；仅部分 Runtime/HCC/广播链路完成不能提前关闭整项 issue。

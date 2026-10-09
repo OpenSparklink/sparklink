@@ -401,3 +401,14 @@ slctl。实机清点为空、北极星七项未验收、全部原 issues 与完�
 全回归警告及原生完整 recipe/结果接口的边界保留。WS73=[]，仍 SETUP/拒绝 RF，
 动态 adapter/slctl 与七项真实验收均未完成。全部 issues、完整 S0–S6 和后续四
 设备两组目标继续保持。详见 [分步事务记录](WS73_DISCOVERY_NORTH_STAR.md#每设备-host-分步事务基础2026-10-10部分成果)。
+
+### 驱动拥有完整发现事务准备与发送边界（2026-10-10，部分成果）
+
+[edd8cf016f1d](https://github.com/OpenSparklink/linux/commit/edd8cf016f1d6c0610622d4ba049af5e80c6ffa2) 增加 driver-owned typed 准备：完整广播 3/4 步、扫描 2 步与
+独立 stop；整组预检后写输出、不插入 caller 默认。Host tag 在 transfer 前交由
+驱动按操作/位置/数量/schema/enable 校验，raw metadata 白名单保持。image #51
+七支持 gate、450,104 次生产 compiler/codec 检查、sanitizers、100 项 harness、
+原 96-case/0 FAIL/0 SKIP 回归 PASS（1057 OK / 3 旧 WARN）。核心 typed submit
+尚未调用准备或排入原生事务；公开 cookie/result、状态/恢复与 adapter/slctl
+仍待接。WS73=[]，Runtime SETUP/拒绝 RF，七项真实验收和全部 issues/S0–S6
+保持。详见 [准备与发送边界记录](WS73_DISCOVERY_NORTH_STAR.md#驱动拥有完整发现事务准备与发送边界2026-10-10部分成果)。

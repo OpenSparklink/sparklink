@@ -754,3 +754,42 @@ libws73-usb@f4d85d0、完整 Host@f0872df；未复制参考实现或固件/校�
 ScanParam → Enable 及结果接口，再接动态 adapter/slctl；按原七项验收进行真实
 双设备空口、20 轮角色交换和拔插测试，随后四设备两组。七项均未完成，不关闭
 整项 issue，完整 S0–S6、全部原验收与两组并行目标保持。
+
+## 驱动拥有完整发现事务准备与发送边界（2026-10-10，部分成果）
+
+内核 [edd8cf016f1d](https://github.com/OpenSparklink/linux/commit/edd8cf016f1d6c0610622d4ba049af5e80c6ffa2) 增加内部 typed 发现准备接口（非用户态/线上 ABI）。
+WS73 callback 生成 SetParam → SetData →（显式可选 ScanRsp）→ Enable，
+ScanParam → Enable 或独立 stop。使用一个 255 字节 scratch 先检查整组，再
+写入调用者 plan，晚步骤错误不改变任何输出；未使用字节/步骤清零。所有
+参数由调用者显式提供，不插入角色、功率、地址或板级默认。输入在调用期间
+须不可变且与输出不重叠；callback 不进行 I/O，也不保留借用指针。
+
+TX worker 把 Host 私有 recipe tag 经 Backend 交给原生驱动，在实际 transfer
+前校验操作种类、步骤位置/数量、方言 schema 及 enable 方向。typed 回调成对
+可选，缺少支持拒绝操作；raw DLI 仍使用原 metadata 白名单。核心没有新增
+WS73 opcode/布局表，准备出合法 RF 帧也不扩大 raw 权限。原广播参数 host
+结构移到内部公共请求层，其 wire 编码仍归 WS73；不存在标准 USB/厂商数据
+头混用。公开 UAPI 未改，生产用户态代码未改。
+
+冻结 image #51 无警告构建；生产 compiler/codec 450,104 次检查、ASan/UBSan/
+LSan、100 项 harness 和七独立 QEMU gate PASS。测试检查全部 0..251 数据长度、
+显式空/完整 response、原始参数字段、整组错误原子性、unused 字段拒绝、每
+步骤序号/数量与全部 256 enable 值；每个合法 RF 步骤同时验证 raw 拒绝。
+完整标准三控制器原 96 case / 0 FAIL / 0 SKIP strict PASS，1057 OK / 3 条旧
+WARN，旧 air-medium/跨设备数据弱断言继续保留。七 gate 仍为支持门禁，**没有
+执行新的原生多步骤 RF 事务**。选定 build 局部栈分配 272 字节，不宣称完整
+调用链已验证。用户态仅文档变更未重跑 workspace，旧 slkd strict-clippy 未使用
+项失败继续保留。
+
+证据 `.dev/typed-discovery-final-evidence.json`、`typed-discovery-source-snapshot/`、
+`typed-discovery-full-qemu/`、`typed-discovery-final-gate-*/manifest.json`；13 个冻结
+源码 hash 与提交一致，七 gate 源码/输入前后不变。最初 standalone 全局 kernel
+include 路径污染 libc header，改为受限访问公共内部 header 后构建通过；首次
+QEMU 因 sandbox QMP socket bind EPERM 在来宾启动前失败，确认 session 终止
+后在新目录使用主机权限重测通过。失败、中间辅助脚本断言与最终日志均保留。
+
+主机清点 WS73=[]。核心提交 API 尚未调用 prepare callback 或排入原生 recipe；
+下一步必须接版本化 typed 操作提交与 cookie/result、原生参数能力策略、停止
+失败/故障恢复，随后动态 adapter/slctl。Runtime 仍 metadata-only SETUP，RF
+仍拒绝。全部七项真实双设备验收、随后四设备两组和完整 S0–S6 保持；所有原
+issues 开放，不以 preparation 或支持 QEMU PASS 提前关闭整项。

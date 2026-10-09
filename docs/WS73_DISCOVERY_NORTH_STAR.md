@@ -442,3 +442,55 @@ initramfs、源码/dirty diff 与文件 hashes。内核复现说明在
 下一步导出并核验 SDK 板级配置、接入原生 DLI 查询与 Runtime 生命周期，
 再补广播/扫描完整事务和动态 adapter；保留用户指定纵向依赖顺序。内核
 完整 QEMU 门禁未过，保持未提交；全部原 issues 和七项北极星验收保持开放。
+
+## 原生 WS73 查询与配置候选记录（2026-10-10）
+
+SDK 配置导出工具已签名提交并推送：
+[`91999ed`](https://github.com/OpenSparklink/sparklink/commit/91999edbb5c381449b2da0efae9ecf51aef72a1d)。
+`tools/ws73-board-config.py` 要求显式 INI、board 来源和 USB link-check 编译开关；
+输出原始 140 字节 BSLE 与 4 字节 PM payload 及 source/exporter/配置/hash manifest。
+选中配置缺失、重复、越界、启用未知 per-device flash/MAC、或已有输出目录则拒绝；
+没有用默认值补齐校准。18 项测试通过，从实际 SDK INI 导出并打包后逐字节回读相等。
+使用方法和限制见 [WS73_BOARD_CONFIGURATION.md](WS73_BOARD_CONFIGURATION.md)。
+当前默认 SDK 的 PM 是 `0x215`（GPIO 10），与参考 dongle 的 `0x1` 不同；
+仍是未验证板级候选，不代表这批硬件的 PM、功率和 RF 校准已合格。没有提交 blobs，
+没有用这份候选执行 USB/RF 测试。
+
+内核工作树新增原生 `ws73/dli.c`：BSLE 成功后用该实例 buffer/sequence 选择
+SLE queue 8，依次查询版本 `0x0404`（5 字节）、缓存 `0x0402`（6 字节）、
+80 位特性 `0x0403`（10 字节）、带 `address_type=0` 的地址 `0x0406`（6 字节）。
+最后一条来自 T/XS 10003-2025 §8.1.6，**WS73 固件是否支持仍需实机验证**；
+不支持时直接失败，不借用缓存或合成地址。没有把 WS73 SetEventMask 的 `0x0401`
+当标准 ReadCmdLen 发出，也不宣称完整长度协商。fresh BSLE 后仅提供首个 probe slot；
+后续绝对 credit 只来自校验过的回复，零窗口等待真实 grant，不自动重发不确定事务。
+
+CmdStatus 成功不代替 CmdComplete；匹配 opcode、完整 aggregate 边界及精确返回长度，
+opcode-zero 仅更新 credit。保留未知 controller status 原值；失败、panic、断连、
+迟到完成和 10 秒 monotonic 超时终止该实例。四次查询的候选元数据全部有效才一次性发布，
+检查 buffer 长度/count、拒绝全零/全 FF 地址。`metadata_valid` 与
+`controller_information` 可读，阶段完成为 `dli-awaiting-runtime`。
+**仍没有注册 native Rust Runtime 或发布 Ready**，异步 RX/Host/lifecycle 接入继续作为
+下一项依赖；真实双设备 Ready 和广播/发现均未验收。
+
+`ws73_dli_test.c` 直接编译生产 codec/query，2,830 项合成检查通过；
+BSLE 回归 3,198 项通过。覆盖零/final-zero credit、无关事件、先 Status 后 Complete、
+错 opcode、原始失败状态、坏长度/重复回复、send error、断连、panic、无效地址/容量、
+持续等待及迟到完成，并核对另一独立实例不变。GCC 严格警告、kselftest Makefile
+目标、Clang ASan/UBSan/LSan 主机执行均通过；三个 C 文件 checkpatch 0 error/0 warning。
+这些检查没有执行物理 USB，也没有启用内核 sanitizer。
+
+最终 image #36 无警告构建；独立双虚拟 Runtime 混合命令/归属/拔插/索引复用 PASS。
+完整标准 DLI QEMU 回归 96 项、19 条失败断言、strict FAIL：事件等待、高频连接和
+角色/扫描切换仍有失败；不能把与上一轮的计数差异当修复证据。summary skipped=0
+仍不表示所有子路径覆盖，日志中两条 need 3+ controllers 子路径未执行。
+未观察到 kernel panic/warning，但这不代替完整门禁。此 QEMU 模型不模拟 WS73
+vendor USB/HCC/BSLE，不能证明原生查询在硬件成功。
+
+本地证据 `.dev/kernel-ws73-native-query-evidence.json`、
+`ws73-native-query-source-snapshot/`（45 个修改/新增源文件及 tracked diff）、
+`qemu-ws73-native-query/`（冻结 image/config/QEMU binary、实际测试 binary、
+initramfs、完整 console）、`runtime-lifecycle-ws73-native-query/manifest.json`，
+以及配置 candidate/归档 roundtrip 均保留并绑定 SHA256。
+2026-10-09T20:16Z 附近主机只读 inventory 仍为 `WS73=[]`；未做真实 DLI 或 RF。
+内核完整 QEMU 提交门禁未过，工作树保留未提交；工具与进度文档持续签名提交推送。
+所有原 issues 与七项北极星验收继续开放，不提前关闭整项 issue。

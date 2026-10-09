@@ -316,3 +316,20 @@ CI 每 PR 跑 fmt/check/clippy/unit/golden/ABI/Python/私有 D-Bus；有适用�
 - Bond 存储与旧连接 Profile callback 均以独立服务执行，已接受操作在取消后仍保持顺序，退出 drain 并关闭所有 clone；callback panic 关闭服务。业务状态锁不覆盖存储、回调或 D-Bus object 注册；真实私有 D-Bus 回归验证阻塞期间管理接口响应。
 - 此批覆盖 U#1 六项原验收的本地回归；issue 保持开放，等待审查和合入。U#3 只完成旧连接 callback 隔离，未完成 SSAP Engine。历史批次测试数量与来源记录保留，不以本批结果覆盖旧硬件证据。
 - slkd 现存未接通策略/SSAP/transport 和旧 lint 仍导致严格 CI 失败；未放宽 `RUSTFLAGS=-D warnings`。单控制器 slk0、顺序 dispatcher 背压、legacy destructive ring、缺少可恢复 Bond 凭据及硬件/RF gate 仍需后续阶段实现。
+
+## 原生 WS73 查询推进（2026-10-10，部分成果）
+
+配置候选导出工具已签名提交并推送 `91999ed`，18 项测试通过；实际 SDK INI 导出
+140/4 字节候选并验证归档回读一致。默认 PM `0x215` 与参考 dongle `0x1` 不同，
+board GPIO/功率/校准仍未验证，不部署为已合格配置。
+
+内核工作树接入 per-instance 原生 DLI version/buffer/80-bit features/address 查询，
+完整验证 opcode/status/credit/长度，四项均有效后仅发布元数据，不发布 Ready。
+`0x0406(address_type=0)` 的 WS73 固件支持尚需实机核验；`0x0401` 不按标准
+ReadCmdLen 误发。生产源码合成查询 2,830 项、BSLE 回归 3,198 项、host sanitizers
+与 kselftest 目标通过；image #36 无警告构建。独立双虚拟 Runtime 生命周期 PASS，
+完整标准 DLI QEMU 96 项/19 失败断言，strict FAIL；两条三设备子路径未执行。
+当前清点 WS73=[]，没有真实 DLI/Ready/RF 验收。内核提交门禁保持，全部 issues 开放。
+下一步仍按 native Runtime/async RX/lifecycle → 板级核验/真实查询 → 完整广播扫描
+事务 → 内核事件 → 动态 adapter/slctl 推进，不用 Virtual 替代真实 20 轮。
+详细边界与证据见 [北极星记录](WS73_DISCOVERY_NORTH_STAR.md#原生-ws73-查询与配置候选记录2026-10-10)。

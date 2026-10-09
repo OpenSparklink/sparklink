@@ -155,8 +155,8 @@ typedef struct SleDliInfo {
     uint8_t measurement_cap;
     uint16_t max_mtu;
     uint16_t max_mps;
-    uint8_t security_cap;
-    uint8_t features_ext;
+    uint16_t security_cap;
+    uint16_t features_ext;
     uint8_t name[32];
     uint8_t _reserved[4];
 } SleDliInfo;
@@ -368,6 +368,52 @@ int slk_set_role(const struct SlkAdapter *adapter, uint8_t role);
  * `adapter` must be a valid non-null pointer.
  */
 int slk_get_role(const struct SlkAdapter *adapter);
+
+/**
+ * Invoke a method on a remote peer's SSAP service.
+ *
+ * # Safety
+ * `adapter` must be a valid non-null pointer.
+ * `input` must point to `input_len` readable bytes.
+ * `output` must point to `output_len` writable bytes.
+ * On success, `output_len` is updated with the actual output size.
+ */
+int slk_ssap_call_method(const struct SlkAdapter *adapter,
+                         uint16_t conn_handle,
+                         uint16_t method_handle,
+                         const uint8_t *input,
+                         uintptr_t input_len,
+                         uint8_t *output,
+                         uintptr_t *output_len);
+
+/**
+ * Find a remote service by UUID.
+ *
+ * # Safety
+ * `adapter` must be a valid non-null pointer.
+ * Use `uuid16` for 16-bit UUIDs or `uuid128` for 128-bit UUIDs (set uuid16=0).
+ * On success, `out_handle` receives the matched service handle.
+ */
+int slk_ssap_find_by_uuid(const struct SlkAdapter *adapter,
+                          uint16_t conn_handle,
+                          uint16_t uuid16,
+                          const uint8_t *uuid128,
+                          uint16_t *out_handle);
+
+/**
+ * Read a remote property by UUID.
+ *
+ * # Safety
+ * `adapter` must be a valid non-null pointer.
+ * `output` must point to `output_len` writable bytes.
+ * On success, `output_len` is updated with the actual data size.
+ */
+int slk_ssap_read_by_uuid(const struct SlkAdapter *adapter,
+                          uint16_t conn_handle,
+                          uint16_t uuid16,
+                          const uint8_t *uuid128,
+                          uint8_t *output,
+                          uintptr_t *output_len);
 
 #ifdef __cplusplus
 }  // extern "C"

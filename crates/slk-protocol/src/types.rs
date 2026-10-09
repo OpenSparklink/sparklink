@@ -692,8 +692,8 @@ pub struct SleDliInfo {
     pub measurement_cap: u8,
     pub max_mtu: u16,
     pub max_mps: u16,
-    pub security_cap: u8,
-    pub features_ext: u8,
+    pub security_cap: u16,
+    pub features_ext: u16,
     pub name: [u8; 32],
     pub _reserved: [u8; 4],
 }

@@ -90,13 +90,28 @@ jobs:
           retention-days: 14
 
   python-check:
-    name: Python binding lint
+    name: Python bindings and kernel ABI conformance
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Check out matching canonical kernel UAPI
+        uses: actions/checkout@v4
+        with:
+          repository: OpenSparklink/linux
+          # Update this pin together with intentional kernel UAPI changes.
+          ref: e9aac11ff601da9cf9d50d0916262a285c7e9b81
+          path: .kernel-uapi
+          sparse-checkout: include/uapi/linux/sparklink_ioctl.h
+          sparse-checkout-cone-mode: false
+      - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m py_compile bindings/python/sparklink/__init__.py
       - run: python -m py_compile bindings/python/sparklink/structs.py
       - run: python -m py_compile bindings/python/sparklink/adapter.py
+      - name: Run Python unit and compiled C/Rust ABI tests
+        env:
+          PYTHONPATH: bindings/python
+          SPARKLINK_KERNEL_UAPI: ${{ github.workspace }}/.kernel-uapi/include/uapi/linux/sparklink_ioctl.h
+        run: python -m unittest discover -s bindings/python/tests -v

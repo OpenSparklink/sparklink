@@ -1,0 +1,44 @@
+# OpenHarmony NearLink Host 参考与设计调整
+
+用户提供的本地参考：`../communication_nearlink_service`。核验基线为
+`f0872dfaac33ffa99b80b352f6c05fba2df6414e`，origin 为
+`https://gitcode.com/openharmony/communication_nearlink_service.git`；检查时工作树无修改。
+README.OpenSource 声明 Apache-2.0，源码有相应许可头。本次只读取与记录事实，
+没有复制参考代码到 Linux 或 Rust crates。逐文件复用须单独记录许可、来源和依赖。
+
+这是覆盖 DLI、连接管理、数据传输、安全、SSAP 与 Profiles 的 Host 源码参考。
+本次未构建或运行 OpenHarmony 服务，也未验证其 WS73 互通；“有实现”不代表
+本项目已有协议、硬件或标准认证证据。
+
+以下路径均相对于参考仓库。完整 hash 清单见本地开发证据
+`.dev/nearlink-host-reference.json`（工作区根），不把本地文件 hash 当作实测结果。
+
+| 已读取来源 | 观察 | 本项目决定 / 对应 issue |
+|---|---|---|
+| `services/stack/src/dli/interface/dli_opcode.h` | SetEventMask=0x0401，ReadLocalBuffer=0x0402，ReadLocalVersion=0x0404；状态与完成事件不同 | 增加 OpenHarmony reference profile 对照；与本地 T/XS 10003 V1.1 的冲突必须显式映射。不据参考自动判断 WS73 方言。K#11/#13/#16 |
+| `services/stack/src/dli/interface/dli_event_struct.h` | Buffer 返回 ACB/ICB 长度与数量，version/company/subversion，独立 capabilities | Ready 查询按 dialect 解码，并保留 unknown，不能把 USB 枚举或回调成功当 Ready。K#10/#15/#16 |
+| `services/stack/src/dli/layer/src/dli_layer.c`、`dli_layer_config.c` | pending command、command count、10s 命令 timer、按 lcid 重组；核心为静态 g_info | 借鉴流程，不照搬全局模型和超时常量。每 controller/generation 独立 pending/credit/reassembly；迟到事件必须隔离。K#3/#4/#17 |
+| `services/stack/src/dp/dtap/interface/dtap_tcid.h` | SLE CMTC=0x02、SMTC=0x0A、默认数据=0x1F，动态单播范围 0x80–0xDF，TCID 为 uint8_t | 与本地 TCID 标准交叉核验；区分 TCID 与厂商 envelope/LCID，测试 local/remote TCID 映射。K#6/#17 |
+| `services/stack/src/cp/bsl/sle/servm/ssap/include/inner/ssap_pkt.h`、`src/ssapc_client.c`、`src/ssap_link.c` | ExchangeInfo、min MTU/version、1.3 fragment/multiProcessing 扩展、独立重组 timer | 本地标准基线为 V1.2.0；先实现经标准确认的协商与降级，1.3 只作为待核验扩展，不提前宣告支持。SSAP 分片与 ACB 分片各自测试。U#3、K#6 |
+| `services/stack/src/cp/bsl/sle/sm/src/sm_slink.c`、`sm_numcmp.c` | 安全上下文关联 lcid；不同方法状态机、用户确认与密钥安装 | 连接级机制/Agent policy 边界保持既定设计；参考完整失败与确认路径，不继续使用全局安全状态或 fingerprint 代替 credential。K#7/#18、U#5 |
+| `services/stack/src/cp/bal/profile/bas/include/nlstk_bas_def.h` | Battery service=0x060A，percentage attribute=0x1034 | 与已查本地 30011 一致，修复旧 Bluetooth UUID，补真实 PDU/Profile 测试。U#3 |
+| `services/hardware/src/SleDliLayerAdapter.cpp`、`services/hardware/BUILD.gn` | HAL 调用外部 HDI ISleHciInterface；全局实例；service death/reset 使用 SIGKILL；依赖 HDF/IPC/FFRT | 不能直接当 Linux USB 驱动。Linux Native driver 与 vendord Proxy 独立实现；故障只影响对应 controller。K#9/#10/#12，U#7 |
+| `services/stack/src/dli/sapi/src/dli_sapi.c`、`dli_data_stub.c` | 真实 HAL 初始化等待与 NEARLINK_SERVICE_STACK_LOCAL_TEST 条件桩分开；桩模拟回复和分片 | 新测试 manifest 必须记录真实 HAL/桩路径。桩测试只能证明软件，不计入 WS73 RF 验收。K#19 |
+| `services/stack/BUILD.gn`、`services/stack/src/dli/BUILD.gn` | GN/OpenHarmony 依赖 SDF、securec、hilog、OpenSSL、硬件服务等 | 不假定普通 Linux 可直接构建。后续先隔离纯 codec 或构建独立参考 harness，实际运行后才称为差分测试。K#13/#19 |
+
+## 方案变更
+
+1. S0 增加来源版本与 dialect/feature 差异表。证据同时标注标准、参考源码、
+   libws73 作者 capture、本项目 synthetic 和本项目实机，保持原 issue 验收要求。
+2. S1/S2 Host 的 descriptor 显式记录 standard DLI、WS73 profile 与所选版本；
+   不把三套 opcode 混成统一 enum。未知版本 fail closed 或仅提供受权 diagnostic。
+3. S4 SSAP 首先交付本地标准基线，再测试旧版本协商/降级；reference 1.3
+   扩展需新标准或互通证据，并受协商 feature gate 控制。
+4. S5 安全用参考状态机检查方法覆盖与错误路径；密码学和凭据设计仍依据
+   标准及本项目 kernel/userspace 边界，不搬用 OpenHarmony 的系统密钥依赖。
+5. S6 增加差分测试矩阵：标准兼容样本、显式 dialect 样本、异常长度/乱序/
+   超时/credit、两个 controller、真实 HAL 与桩路径。reference build 不可用时
+   明确 SKIP，不能将源码比较称为互通 PASS。
+
+WS73 优先级与 S0–S6 总顺序不变；不扩大到参考库的音频、测距等无关联 issue
+的产品功能。参考复核不替代四设备实机与双端空口通信验收。

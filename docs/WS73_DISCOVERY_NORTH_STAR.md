@@ -581,5 +581,54 @@ WS73 生产驱动的合成双设备查询/拔插、畸形 HCC 单设备撤销、
 第一北极星七项验收仍全部未完成；真实 WS73 清点仍为空，SDK 板级候选未合格。
 Native Runtime 仍仅 SETUP，没有真实 Ready、广播/扫描、空口数据、slkd 动态 adapter
 或普通用户 slctl 结果。全部原 issues 与 S0–S6 保持开放，Draft PR 不带自动关闭词。
+
+### WS73 发现方言准备（2026-10-10，部分成果）
+
+[cef9dc445968](https://github.com/OpenSparklink/linux/commit/cef9dc4459686ab44db89b38f7c8a58ea58bac99)
+把原生命令校验迁入被引用保留的 driver ops，核心在分配 pending/credit 前及
+实际传输前调用。WS73 Runtime 仍只允许四项元数据查询；正确编码的扫描命令
+也返回 EOPNOTSUPP，等待发现事务及事件通路接齐。raw DLI ioctl 的声明参数
+超过 240 字节现返回 EINVAL，消除原先静默截短行为。
+
+独立实现生产 `discovery.c/h`，按 `libws73-usb@f4d85d0`、
+`communication_nearlink_service@f0872df` 和 T/XS 10003-2025 8.2/8.3/9.1.19
+核对协议事实，没有复制参考实现代码。厂商差异保留在 WS73 profile：
+
+| 内容 | WS73 profile | 限制 |
+| --- | --- | --- |
+| 广播参数 `0x0c02` | 固定 49 字节结构 | 当前只检查长度；参数能力由控制器确认，完整参数 builder/事务待实现 |
+| 完整广播数据 `0x0c03` | `[handle, operation=3, length, payload]`，三字节头 | 标准/完整 Host 使用四字节头；编码器最多 251 字节数据，旧 raw ioctl 不能承载最大长度 |
+| 查询回复 `0x0c04` | 参考共享三字节数据格式 | 本机未独立实机核验；不能把参考实现的假设写成验收 |
+| 广播使能 `0x0c05` | 五字节，含 handle、LE16 duration 和 max events | 不使用旧标准虚拟 Backend 的单字节快捷格式 |
+| 扫描参数 `0x1001` | 八字节、frame type 1 单配置 | 多帧类型明确拒绝，不像参考实现那样只取第一个 PHY |
+| 扫描使能 `0x1002` | enable、filter duplicates 两字节 | 尚未开放原生 Runtime 支持 |
+| 发现报告 `0x180b` | 23 字节参数头 + 声明数据；最多 278 字节参数 | 标准事件号 `0x001a`、22 字节头；不能套用标准布局 |
+
+新编码器不补入功率、地址或时间默认值。报告 decoder 完整保留 header，包括
+地址类型、定向地址、PHY 和 offset 20 的未解释厂商字节，读取 offset 21 的
+有符号 RSSI；长度必须精确，短包/尾随字节失败且输出不变。借用视图只在
+输入存活期间有效，未做分片重组、字段归一化或发现等级推断。decoder 尚未
+接入原生 RX 和用户事件 ABI：现有 260 字节 slot 上限和旧事件参数缓冲不足以
+容纳全部合法报告，需要显式扩展后才能开放扫描，不能截短后宣称发现成功。
+
+新增纯内存合成测试：38,293 项协议检查与 ASan/UBSan/LSan PASS，覆盖手工
+marker/control/report 向量、所有数据/报告长度、RSSI 全字节域、错误输出不变
+及生产 HCC 编帧。元数据查询 3,097 项、BSLE 3,198 项、Python harness 80 项
+PASS。image #43 无警告构建；原生双实例查询/拔插、畸形 HCC 单实例隔离和
+标准 Runtime 生命周期三 gate PASS，完整标准三控制器 96 case/0 FAIL/0 SKIP
+strict PASS，四条旧 air-medium WARN 的断言局限继续保留。16 个冻结源码 hash
+与提交匹配，源码和测试输入在 gates 前后未变。
+
+证据位于 `.dev/ws73-discovery-profile-evidence.json`、
+`ws73-discovery-profile-source-snapshot/`、`ws73-discovery-profile/v2/`、
+`qemu-ws73-discovery-profile/` 和
+`runtime-lifecycle-discovery-profile-{native,native-fault,standard}/manifest.json`。
+第一次 C 测试编译的有符号比较警告及 sandbox ptrace 导致 LSan 启动失败均
+保留；修正测试比较类型后通过，相同 sanitizer binary 在 sandbox 外通过。
+
+本轮只读清点仍是 WS73=[]，没有真实 DLI/Ready/广播扫描/空口/slkd/slctl 证据，
+北极星七项验收全部未完成。完整 S0–S6 继续保留，不关闭整项 issue。下一步是
+完整广播参数构造与 SetParam → SetData → Enable 异步事务，再接齐完整发现
+事件与动态 adapter/slctl；实际硬件及板级配置仍需要恢复后核验。
 下一步继续真实设备/板级核验与 DLI 查询，并实现完整广播/扫描参数与异步完成、
 discovery 事件和动态 adapter/slctl；之后才执行真实交替 20 轮及热插拔闭环。

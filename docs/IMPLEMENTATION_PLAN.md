@@ -354,3 +354,15 @@ Runtime/native fault gate PASS，80 项 harness PASS。修复 typed 失败 peer 
 旧 air-medium 仍有 4 条 WARN/不完整 data 断言，不认定其链路成功。真实硬件、
 Ready、广播/扫描、动态 adapter/slctl、无 sudo 与空口七项仍未完成；所有 issues
 开放。完整方案不收缩，详情与旧失败留存在 [交付记录](WS73_DISCOVERY_NORTH_STAR.md#异步事务清理与首次内核交付2026-10-10)。
+
+### WS73 发现方言准备（2026-10-10，部分成果）
+
+[cef9dc445968](https://github.com/OpenSparklink/linux/commit/cef9dc4459686ab44db89b38f7c8a58ea58bac99)
+迁移 driver-owned 原生命令校验，拒绝 raw 参数截短，并新增独立 WS73 发现
+编码/严格报告 decoder。保留三字节数据头、五/两字节使能、八字节单帧扫描与
+0x180b/23 字节报告头，完整保留厂商字段。原生 Runtime 仍 metadata-only SETUP，
+发现命令不开放；完整广播 builder/事务和完整事件 ABI 尚待实现。image #43
+三 lifecycle gate 与完整标准三控制器 96 case/0 FAIL/0 SKIP PASS；38,293 项
+codec、3,097 项查询、3,198 项 BSLE、sanitizers 和 80 项 harness PASS，旧四条
+air-medium WARN 的局限保留。真实设备清点为空、七项北极星仍未验收，issues
+开放；全部 S0–S6 依赖和原验收不收缩。详见 [发现方言记录](WS73_DISCOVERY_NORTH_STAR.md#ws73-发现方言准备2026-10-10部分成果)。

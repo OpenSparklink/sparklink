@@ -20,10 +20,7 @@ pub enum Event {
     },
 
     /// Data received on a connection
-    DataReceived {
-        handle: u16,
-        data: Vec<u8>,
-    },
+    DataReceived { handle: u16, data: Vec<u8> },
 
     /// Security state changed
     SecurityChanged {
@@ -33,14 +30,10 @@ pub enum Event {
     },
 
     /// Power state changed
-    PowerChanged {
-        state: u8,
-    },
+    PowerChanged { state: u8 },
 
     /// Hardware error
-    HwError {
-        code: u8,
-    },
+    HwError { code: u8 },
 
     /// Raw DLI event (for unhandled event types)
     RawDli(SleDliEvent),

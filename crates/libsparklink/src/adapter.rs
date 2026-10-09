@@ -1,7 +1,7 @@
 use std::os::fd::{AsFd, BorrowedFd, OwnedFd};
 use std::path::Path;
 
-use nix::fcntl::{open, OFlag};
+use nix::fcntl::{OFlag, open};
 use nix::sys::stat::Mode;
 use tokio::io::unix::AsyncFd;
 use tracing::{debug, info};
@@ -30,8 +30,7 @@ impl Adapter {
         )
         .map_err(|e| Error::OpenDevice(std::io::Error::from(e)))?;
 
-        let async_fd = AsyncFd::new(owned)
-            .map_err(Error::OpenDevice)?;
+        let async_fd = AsyncFd::new(owned).map_err(Error::OpenDevice)?;
 
         info!(path = %path.as_ref().display(), "opened SparkLink device");
 
@@ -435,7 +434,11 @@ impl Adapter {
     /// Add a service to the local database
     pub fn ssap_add_svc(&self, svc: &mut SsapAddService) -> Result<()> {
         unsafe { ioctl::sl_ssap_add_svc(self.raw_fd(), svc)? };
-        debug!(handle = svc.start_handle, uuid16 = svc.uuid16, "service added");
+        debug!(
+            handle = svc.start_handle,
+            uuid16 = svc.uuid16,
+            "service added"
+        );
         Ok(())
     }
 
@@ -649,11 +652,9 @@ impl Adapter {
             // Wait for fd readability with a timeout. Instant wakeup for
             // events that trigger event_poll.notify_all (inject, ioctl);
             // 50ms fallback for EventPump-delivered events.
-            let result = tokio::time::timeout(
-                tokio::time::Duration::from_millis(50),
-                self.fd.readable(),
-            )
-            .await;
+            let result =
+                tokio::time::timeout(tokio::time::Duration::from_millis(50), self.fd.readable())
+                    .await;
 
             match result {
                 Ok(Ok(mut guard)) => {
@@ -926,9 +927,7 @@ impl Adapter {
                 method: 0,
                 encrypted: raw.data[0] != 0,
             },
-            EVT_HW_ERROR => Event::HwError {
-                code: raw.data[0],
-            },
+            EVT_HW_ERROR => Event::HwError { code: raw.data[0] },
             _ => Event::RawDli(raw),
         }
     }

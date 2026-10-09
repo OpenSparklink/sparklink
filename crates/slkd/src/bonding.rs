@@ -35,7 +35,8 @@ impl BondingStore {
     }
 
     fn device_path(&self, addr: &SleAddr) -> PathBuf {
-        let name = addr.iter()
+        let name = addr
+            .iter()
             .map(|b| format!("{b:02X}"))
             .collect::<Vec<_>>()
             .join("_");
@@ -56,14 +57,14 @@ impl BondingStore {
             if path.extension().is_some_and(|e| e == "toml") {
                 if let Some(addr) = self.parse_filename(&path) {
                     match std::fs::read_to_string(&path) {
-                        Ok(content) => {
-                            match toml::from_str::<BondingInfo>(&content) {
-                                Ok(info) => { self.cache.insert(addr, info); }
-                                Err(e) => {
-                                    tracing::warn!("bad bonding file {}: {e}", path.display());
-                                }
+                        Ok(content) => match toml::from_str::<BondingInfo>(&content) {
+                            Ok(info) => {
+                                self.cache.insert(addr, info);
                             }
-                        }
+                            Err(e) => {
+                                tracing::warn!("bad bonding file {}: {e}", path.display());
+                            }
+                        },
                         Err(e) => {
                             tracing::warn!("cannot read {}: {e}", path.display());
                         }

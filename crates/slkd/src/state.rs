@@ -37,7 +37,12 @@ pub struct AdapterState {
 }
 
 impl AdapterState {
-    pub fn new(adapter: Adapter, config: DaemonConfig, bonding: BondingStore, profiles: ProfileRegistry) -> Self {
+    pub fn new(
+        adapter: Adapter,
+        config: DaemonConfig,
+        bonding: BondingStore,
+        profiles: ProfileRegistry,
+    ) -> Self {
         let name = config.general.name.clone();
         Self {
             adapter,
@@ -90,7 +95,11 @@ impl AdapterState {
     /// Disconnect a device by connection handle
     pub fn disconnect_device(&mut self, handle: u16) -> libsparklink::Result<()> {
         self.adapter.disconnect(handle)?;
-        if let Some(dev) = self.devices.values_mut().find(|d| d.conn_handle == Some(handle)) {
+        if let Some(dev) = self
+            .devices
+            .values_mut()
+            .find(|d| d.conn_handle == Some(handle))
+        {
             dev.connected = false;
             dev.conn_handle = None;
         }
@@ -146,7 +155,11 @@ impl AdapterState {
         let connected = state == slk_protocol::ConnState::Connected as u8;
         if !connected {
             // Disconnection: look up by handle first (DLI Disconnected may lack addr)
-            if let Some(dev) = self.devices.values_mut().find(|d| d.conn_handle == Some(handle)) {
+            if let Some(dev) = self
+                .devices
+                .values_mut()
+                .find(|d| d.conn_handle == Some(handle))
+            {
                 dev.connected = false;
                 dev.conn_handle = None;
                 return;
@@ -158,21 +171,23 @@ impl AdapterState {
         } else if connected {
             let object_path = format!(
                 "/org/sparklink/slk0/dev_{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-                peer_addr[0], peer_addr[1], peer_addr[2],
-                peer_addr[3], peer_addr[4], peer_addr[5]
+                peer_addr[0], peer_addr[1], peer_addr[2], peer_addr[3], peer_addr[4], peer_addr[5]
             );
-            self.devices.insert(peer_addr, DeviceEntry {
-                addr: peer_addr,
-                name: String::new(),
-                rssi: 0,
-                discovery_level: 0,
-                connected: true,
-                conn_handle: Some(handle),
-                object_path,
-                adv_data: Vec::new(),
-                service_uuids: Vec::new(),
-                tx_power: None,
-            });
+            self.devices.insert(
+                peer_addr,
+                DeviceEntry {
+                    addr: peer_addr,
+                    name: String::new(),
+                    rssi: 0,
+                    discovery_level: 0,
+                    connected: true,
+                    conn_handle: Some(handle),
+                    object_path,
+                    adv_data: Vec::new(),
+                    service_uuids: Vec::new(),
+                    tx_power: None,
+                },
+            );
         }
     }
 

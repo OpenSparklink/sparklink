@@ -11,7 +11,11 @@ pub fn print_event(event: &SleDliEvent, timestamp: &str, hexdump: bool) {
 
     match event.event_type {
         EVT_CONN_COMPLETE => {
-            let state = if event.status == 0 { "CONNECTED" } else { "FAILED" };
+            let state = if event.status == 0 {
+                "CONNECTED"
+            } else {
+                "FAILED"
+            };
             let addr = format_addr(&event.addr);
             println!("    Peer: {addr}  Result: {state}");
         }
@@ -35,7 +39,10 @@ pub fn print_event(event: &SleDliEvent, timestamp: &str, hexdump: bool) {
             }
         }
         EVT_DATA_RECV => {
-            println!("    Data: {} bytes on handle {:#06x}", data_len, event.handle);
+            println!(
+                "    Data: {} bytes on handle {:#06x}",
+                data_len, event.handle
+            );
             if data_len > 0 {
                 print_data_summary(&event.data[..data_len]);
             }
@@ -110,7 +117,13 @@ fn print_hexdump(data: &[u8]) {
             .join(" ");
         let ascii: String = chunk
             .iter()
-            .map(|&b| if b.is_ascii_graphic() || b == b' ' { b as char } else { '.' })
+            .map(|&b| {
+                if b.is_ascii_graphic() || b == b' ' {
+                    b as char
+                } else {
+                    '.'
+                }
+            })
             .collect();
         println!("    {addr:04x}: {hex:<48} {ascii}");
     }

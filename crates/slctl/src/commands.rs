@@ -105,7 +105,8 @@ impl Context {
             "org.sparklink",
             "/org/sparklink/slk0",
             "org.sparklink.Adapter",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn security_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
@@ -114,7 +115,8 @@ impl Context {
             "org.sparklink",
             "/org/sparklink/slk0/security",
             "org.sparklink.Security",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn service_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
@@ -123,7 +125,8 @@ impl Context {
             "org.sparklink",
             "/org/sparklink/slk0/services",
             "org.sparklink.ServiceManager",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn manager_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
@@ -132,7 +135,8 @@ impl Context {
             "org.sparklink",
             "/org/sparklink",
             "org.sparklink.Manager",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn controller_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
@@ -141,7 +145,8 @@ impl Context {
             "org.sparklink",
             "/org/sparklink/slk0/controller",
             "org.sparklink.Controller",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn extadv_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
@@ -150,7 +155,8 @@ impl Context {
             "org.sparklink",
             "/org/sparklink/slk0/extadv",
             "org.sparklink.ExtAdv",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn cmd_list(&self) -> anyhow::Result<()> {
@@ -210,16 +216,14 @@ impl Context {
     }
 
     async fn cmd_info(&self, address: &str) -> anyhow::Result<()> {
-        let object_path = format!(
-            "/org/sparklink/slk0/dev_{}",
-            address.replace(':', "")
-        );
+        let object_path = format!("/org/sparklink/slk0/dev_{}", address.replace(':', ""));
         let proxy = zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
             object_path.as_str(),
             "org.sparklink.Device",
-        ).await?;
+        )
+        .await?;
 
         let name: String = proxy.get_property("Name").await?;
         let rssi: i16 = proxy.get_property("Rssi").await?;
@@ -262,7 +266,10 @@ impl Context {
         } else {
             for (start, end, uuid16, primary) in &services {
                 let kind = if *primary { "Primary" } else { "Secondary" };
-                println!("  [{:#06x}-{:#06x}] UUID={:#06x} {kind}", start, end, uuid16);
+                println!(
+                    "  [{:#06x}-{:#06x}] UUID={:#06x} {kind}",
+                    start, end, uuid16
+                );
             }
         }
         Ok(())
@@ -346,8 +353,7 @@ impl Context {
 
     async fn cmd_stats(&self) -> anyhow::Result<()> {
         let proxy = self.controller_proxy().await?;
-        let stats: (u16, u16, u32, u32, u32, u32, u8) =
-            proxy.call("GetStats", &()).await?;
+        let stats: (u16, u16, u32, u32, u32, u32, u8) = proxy.call("GetStats", &()).await?;
         println!("Subsystem Statistics:");
         println!("  Devices:         {}", stats.0);
         println!("  Connections:     {}", stats.1);
@@ -371,28 +377,32 @@ impl Context {
         let sub = args.get(1).copied().unwrap_or("help");
         match sub {
             "enable" => {
-                let handle: u8 = args.get(2)
+                let handle: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: extadv enable <handle>"))?
                     .parse()?;
                 let _: () = proxy.call("Enable", &(handle,)).await?;
                 println!("ExtAdv set {handle} enabled");
             }
             "disable" => {
-                let handle: u8 = args.get(2)
+                let handle: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: extadv disable <handle>"))?
                     .parse()?;
                 let _: () = proxy.call("Disable", &(handle,)).await?;
                 println!("ExtAdv set {handle} disabled");
             }
             "remove" => {
-                let handle: u8 = args.get(2)
+                let handle: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: extadv remove <handle>"))?
                     .parse()?;
                 let _: () = proxy.call("Remove", &(handle,)).await?;
                 println!("ExtAdv set {handle} removed");
             }
             "info" => {
-                let handle: u8 = args.get(2)
+                let handle: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: extadv info <handle>"))?
                     .parse()?;
                 let info: (u8, u8, u8, u8, u16, u64, u32) =
@@ -468,7 +478,8 @@ impl Context {
         let sub = args.get(1).copied().unwrap_or("help");
         match sub {
             "get" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: afh get <conn_handle>"))?
                     .parse()?;
                 let map: Vec<u8> = proxy.call("AfhGetMap", &(handle,)).await?;
@@ -488,7 +499,8 @@ impl Context {
                 println!("AFH channel map updated for handle {handle}");
             }
             "hop" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: afh hop <conn_handle>"))?
                     .parse()?;
                 let info: (u16, u8, u8) = proxy.call("AfhHopNext", &(handle,)).await?;
@@ -526,7 +538,9 @@ impl Context {
                 let peer_irk = parse_hex_bytes(args[2])?;
                 let local_irk = parse_hex_bytes(args[3])?;
                 let peer_id = parse_hex_bytes(args[4])?;
-                let _: () = proxy.call("RalAdd", &(peer_irk, local_irk, peer_id)).await?;
+                let _: () = proxy
+                    .call("RalAdd", &(peer_irk, local_irk, peer_id))
+                    .await?;
                 println!("RAL entry added");
             }
             "remove" => {
@@ -561,7 +575,8 @@ impl Context {
                 println!("RPA disabled");
             }
             "timeout" => {
-                let secs: u16 = args.get(2)
+                let secs: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: rpa timeout <seconds>"))?
                     .parse()?;
                 let _: () = proxy.call("RpaSetTimeout", &(secs,)).await?;
@@ -582,11 +597,11 @@ impl Context {
         let sub = args.get(1).copied().unwrap_or("help");
         match sub {
             "info" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: sync info <handle>"))?
                     .parse()?;
-                let info: (u16, u8, u8, u8, u16, u16) =
-                    proxy.call("SyncInfo", &(handle,)).await?;
+                let info: (u16, u8, u8, u8, u16, u16) = proxy.call("SyncInfo", &(handle,)).await?;
                 println!("Sync Link {handle}:");
                 println!("  State:          {}", info.1);
                 println!("  Direction:      {}", info.2);
@@ -595,14 +610,16 @@ impl Context {
                 println!("  Latency:        {}", info.5);
             }
             "ucast-rm" => {
-                let cig_id: u8 = args.get(2)
+                let cig_id: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: sync ucast-rm <cig_id>"))?
                     .parse()?;
                 let _: () = proxy.call("SyncUcastRemove", &(cig_id,)).await?;
                 println!("Unicast CIG {cig_id} removed");
             }
             "mcast-rm" => {
-                let big_id: u8 = args.get(2)
+                let big_id: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: sync mcast-rm <big_id>"))?
                     .parse()?;
                 let _: () = proxy.call("SyncMcastRemove", &(big_id,)).await?;
@@ -652,7 +669,8 @@ impl Context {
         let sub = args.get(1).copied().unwrap_or("help");
         match sub {
             "features" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: peer features <conn_handle>"))?
                     .parse()?;
                 let feats: Vec<u8> = proxy.call("ConnReadPeerFeatures", &(handle,)).await?;
@@ -663,7 +681,8 @@ impl Context {
                 println!();
             }
             "version" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: peer version <conn_handle>"))?
                     .parse()?;
                 let ver: (u8, u16, u16) = proxy.call("ConnReadPeerVersion", &(handle,)).await?;
@@ -731,9 +750,9 @@ impl Context {
                 }
             }
             "remove" => {
-                let addr = args.get(2).ok_or_else(|| {
-                    anyhow::anyhow!("usage: bonded remove <AA:BB:CC:DD:EE:FF>")
-                })?;
+                let addr = args
+                    .get(2)
+                    .ok_or_else(|| anyhow::anyhow!("usage: bonded remove <AA:BB:CC:DD:EE:FF>"))?;
                 proxy.call::<_, _, ()>("RemoveBond", &(*addr,)).await?;
                 println!("Bond removed: {addr}");
             }

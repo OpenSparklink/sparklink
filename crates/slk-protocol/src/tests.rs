@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use crate::*;
     use crate::ioctl;
+    use crate::*;
 
     macro_rules! check_size {
         ($errors:ident, $t:ty, $expected:expr) => {
@@ -9,7 +9,9 @@ mod tests {
             if actual != $expected {
                 $errors.push(format!(
                     "{}: got {}, expected {}",
-                    stringify!($t), actual, $expected
+                    stringify!($t),
+                    actual,
+                    $expected
                 ));
             }
         };

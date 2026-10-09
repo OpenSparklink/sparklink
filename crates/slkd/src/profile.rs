@@ -147,14 +147,18 @@ impl ProfileRegistry {
 
     /// Dispatch a read to the owning profile
     pub fn dispatch_read(&self, handle: u16) -> Result<Vec<u8>, ProfileError> {
-        let idx = self.handle_map.get(&handle)
+        let idx = self
+            .handle_map
+            .get(&handle)
             .ok_or(ProfileError::NotSupported)?;
         self.profiles[*idx].on_read(handle)
     }
 
     /// Dispatch a write to the owning profile
     pub fn dispatch_write(&mut self, handle: u16, data: &[u8]) -> Result<(), ProfileError> {
-        let idx = *self.handle_map.get(&handle)
+        let idx = *self
+            .handle_map
+            .get(&handle)
             .ok_or(ProfileError::NotSupported)?;
         self.profiles[idx].on_write(handle, data)
     }
@@ -207,12 +211,16 @@ impl BatteryProfile {
 }
 
 impl Profile for BatteryProfile {
-    fn name(&self) -> &str { "battery" }
-    fn uuid16(&self) -> u16 { 0x180F }
+    fn name(&self) -> &str {
+        "battery"
+    }
+    fn uuid16(&self) -> u16 {
+        0x180F
+    }
 
     fn characteristics(&self) -> Vec<CharacteristicDef> {
         vec![CharacteristicDef {
-            uuid16: 0x2A19, // Battery Level
+            uuid16: 0x2A19,   // Battery Level
             ops: 0x01 | 0x04, // read + notify
             initial_value: vec![self.level],
         }]
@@ -258,8 +266,12 @@ impl DeviceInfoProfile {
 }
 
 impl Profile for DeviceInfoProfile {
-    fn name(&self) -> &str { "device_info" }
-    fn uuid16(&self) -> u16 { 0x180A }
+    fn name(&self) -> &str {
+        "device_info"
+    }
+    fn uuid16(&self) -> u16 {
+        0x180A
+    }
 
     fn characteristics(&self) -> Vec<CharacteristicDef> {
         vec![

@@ -40,9 +40,9 @@ impl ExtAdvIface {
             _reserved: [0; 5],
         };
         let st = self.state.lock().await;
-        st.adapter.ext_adv_configure(&config).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_configure: {e}"))
-        })
+        st.adapter
+            .ext_adv_configure(&config)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_configure: {e}")))
     }
 
     /// Set advertising data for an extended advertising set
@@ -56,9 +56,9 @@ impl ExtAdvIface {
         };
         adv_data.data[..len].copy_from_slice(&data[..len]);
         let st = self.state.lock().await;
-        st.adapter.ext_adv_set_data(&adv_data).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_set_data: {e}"))
-        })
+        st.adapter
+            .ext_adv_set_data(&adv_data)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_set_data: {e}")))
     }
 
     /// Set scan response data for an extended advertising set
@@ -72,41 +72,42 @@ impl ExtAdvIface {
         };
         adv_data.data[..len].copy_from_slice(&data[..len]);
         let st = self.state.lock().await;
-        st.adapter.ext_adv_set_scan_rsp(&adv_data).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_set_scan_rsp: {e}"))
-        })
+        st.adapter
+            .ext_adv_set_scan_rsp(&adv_data)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_set_scan_rsp: {e}")))
     }
 
     /// Enable an extended advertising set
     async fn enable(&self, handle: u8) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.ext_adv_enable(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_enable: {e}"))
-        })
+        st.adapter
+            .ext_adv_enable(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_enable: {e}")))
     }
 
     /// Disable an extended advertising set
     async fn disable(&self, handle: u8) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.ext_adv_disable(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_disable: {e}"))
-        })
+        st.adapter
+            .ext_adv_disable(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_disable: {e}")))
     }
 
     /// Remove an extended advertising set
     async fn remove(&self, handle: u8) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.ext_adv_remove(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_remove: {e}"))
-        })
+        st.adapter
+            .ext_adv_remove(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_remove: {e}")))
     }
 
     /// Get extended advertising set info
     async fn get_info(&self, handle: u8) -> zbus::fdo::Result<ExtAdvInfo> {
         let st = self.state.lock().await;
-        let info = st.adapter.ext_adv_info(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_info: {e}"))
-        })?;
+        let info = st
+            .adapter
+            .ext_adv_info(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_info: {e}")))?;
         Ok(ExtAdvInfo {
             handle: info.handle,
             state: info.state,
@@ -132,17 +133,17 @@ impl ExtAdvIface {
             _reserved: [0; 4],
         };
         let st = self.state.lock().await;
-        st.adapter.ext_adv_enable_ex(&params).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_enable_ex: {e}"))
-        })
+        st.adapter
+            .ext_adv_enable_ex(&params)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_enable_ex: {e}")))
     }
 
     /// Advance the ext adv tick timer
     async fn tick(&self) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.ext_adv_tick().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ext_adv_tick: {e}"))
-        })
+        st.adapter
+            .ext_adv_tick()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ext_adv_tick: {e}")))
     }
 }
 

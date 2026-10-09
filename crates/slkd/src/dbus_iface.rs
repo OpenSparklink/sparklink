@@ -44,45 +44,47 @@ impl AdapterIface {
     /// Start device discovery (scanning)
     async fn start_discovery(&self) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
-        st.start_scan().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("scan start failed: {e}"))
-        })
+        st.start_scan()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("scan start failed: {e}")))
     }
 
     /// Stop device discovery
     async fn stop_discovery(&self) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
-        st.stop_scan().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("scan stop failed: {e}"))
-        })
+        st.stop_scan()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("scan stop failed: {e}")))
     }
 
     /// Connect to a device by address string "AA:BB:CC:DD:EE:FF"
     async fn connect_device(&self, address: &str) -> zbus::fdo::Result<()> {
-        let addr = parse_addr(address).map_err(|e| {
-            zbus::fdo::Error::InvalidArgs(e.to_string())
-        })?;
+        let addr = parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
         let mut st = self.state.lock().await;
-        st.connect_device(&addr).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("connect failed: {e}"))
-        })
+        st.connect_device(&addr)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("connect failed: {e}")))
     }
 
     /// Disconnect a device by connection handle
     async fn disconnect_device(&self, handle: u16) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
-        st.disconnect_device(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("disconnect failed: {e}"))
-        })
+        st.disconnect_device(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("disconnect failed: {e}")))
     }
 
     /// List discovered devices as (addr_hex, name, rssi, connected) tuples
     async fn get_devices(&self) -> Vec<(String, String, i16, bool)> {
         let st = self.state.lock().await;
-        st.devices.values().map(|d| {
-            let addr_hex = d.addr.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(":");
-            (addr_hex, d.name.clone(), d.rssi as i16, d.connected)
-        }).collect()
+        st.devices
+            .values()
+            .map(|d| {
+                let addr_hex = d
+                    .addr
+                    .iter()
+                    .map(|b| format!("{b:02X}"))
+                    .collect::<Vec<_>>()
+                    .join(":");
+                (addr_hex, d.name.clone(), d.rssi as i16, d.connected)
+            })
+            .collect()
     }
 
     /// Adapter power state
@@ -126,20 +128,20 @@ impl DeviceIface {
     /// Connect to this device
     async fn connect(&self) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
-        st.connect_device(&self.addr).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("connect failed: {e}"))
-        })
+        st.connect_device(&self.addr)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("connect failed: {e}")))
     }
 
     /// Disconnect from this device
     async fn disconnect(&self) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
-        let handle = st.devices.get(&self.addr)
+        let handle = st
+            .devices
+            .get(&self.addr)
             .and_then(|d| d.conn_handle)
             .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
-        st.disconnect_device(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("disconnect failed: {e}"))
-        })
+        st.disconnect_device(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("disconnect failed: {e}")))
     }
 
     /// Device MAC address "AA:BB:CC:DD:EE:FF"
@@ -152,7 +154,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn name(&self) -> String {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.name.clone())
             .unwrap_or_default()
     }
@@ -161,7 +164,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn rssi(&self) -> i16 {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.rssi as i16)
             .unwrap_or(0)
     }
@@ -170,7 +174,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn connected(&self) -> bool {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.connected)
             .unwrap_or(false)
     }
@@ -179,7 +184,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn discovery_level(&self) -> u8 {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.discovery_level)
             .unwrap_or(0)
     }
@@ -187,7 +193,8 @@ impl DeviceIface {
     /// Raw advertisement data bytes
     async fn get_adv_data(&self) -> Vec<u8> {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.adv_data.clone())
             .unwrap_or_default()
     }
@@ -196,7 +203,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn service_uuids(&self) -> Vec<u16> {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.service_uuids.clone())
             .unwrap_or_default()
     }
@@ -205,7 +213,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn tx_power(&self) -> i16 {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .and_then(|d| d.tx_power)
             .map(|p| p as i16)
             .unwrap_or(-128)
@@ -219,12 +228,14 @@ impl DeviceIface {
     /// tx_bytes, rx_bytes.
     async fn get_connection_info(&self) -> zbus::fdo::Result<HashMap<String, Value<'static>>> {
         let st = self.state.lock().await;
-        let handle = st.devices.get(&self.addr)
+        let handle = st
+            .devices
+            .get(&self.addr)
             .and_then(|d| d.conn_handle)
             .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
-        let info = st.conn_info(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("conn_info failed: {e}"))
-        })?;
+        let info = st
+            .conn_info(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("conn_info failed: {e}")))?;
         let mut m = HashMap::new();
         m.insert("handle".into(), Value::from(info.handle));
         m.insert("state".into(), Value::from(info.state));
@@ -233,17 +244,32 @@ impl DeviceIface {
         m.insert("data_mode".into(), Value::from(info.data_mode));
         m.insert("svc_mtu".into(), Value::from(info.svc_mtu));
         m.insert("ssap_mtu".into(), Value::from(info.ssap_mtu));
-        m.insert("ssap_reliable_mode".into(), Value::from(info.ssap_reliable_mode));
-        m.insert("ssap_version_major".into(), Value::from(info.ssap_version_major));
+        m.insert(
+            "ssap_reliable_mode".into(),
+            Value::from(info.ssap_reliable_mode),
+        );
+        m.insert(
+            "ssap_version_major".into(),
+            Value::from(info.ssap_version_major),
+        );
         m.insert("smtc_tx_credits".into(), Value::from(info.smtc_tx_credits));
         m.insert("smtc_rx_credits".into(), Value::from(info.smtc_rx_credits));
-        m.insert("dudtc_tx_credits".into(), Value::from(info.dudtc_tx_credits));
-        m.insert("dudtc_rx_credits".into(), Value::from(info.dudtc_rx_credits));
+        m.insert(
+            "dudtc_tx_credits".into(),
+            Value::from(info.dudtc_tx_credits),
+        );
+        m.insert(
+            "dudtc_rx_credits".into(),
+            Value::from(info.dudtc_rx_credits),
+        );
         m.insert("tx_bytes".into(), Value::from(info.tx_bytes));
         m.insert("rx_bytes".into(), Value::from(info.rx_bytes));
         m.insert("bandwidth_mhz".into(), Value::from(info.bandwidth_mhz));
         m.insert("mcs_index".into(), Value::from(info.mcs_index));
-        m.insert("supervision_timeout".into(), Value::from(info.supervision_timeout));
+        m.insert(
+            "supervision_timeout".into(),
+            Value::from(info.supervision_timeout),
+        );
         Ok(m)
     }
 }

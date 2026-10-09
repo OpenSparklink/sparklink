@@ -91,8 +91,12 @@ impl AccessLayerCap {
 
     pub fn to_byte(self) -> u8 {
         let mut v = 0u8;
-        if self.slb { v |= 0x01; }
-        if self.sle { v |= 0x02; }
+        if self.slb {
+            v |= 0x01;
+        }
+        if self.sle {
+            v |= 0x02;
+        }
         v
     }
 }
@@ -158,13 +162,25 @@ pub enum AdvDataEntry {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AdvDataError {
     /// Not enough bytes remaining for the declared length.
-    Truncated { offset: usize, declared: u8, available: usize },
+    Truncated {
+        offset: usize,
+        declared: u8,
+        available: usize,
+    },
     /// A fixed-length field has an unexpected size.
-    InvalidLength { type_id: u8, expected: usize, got: usize },
+    InvalidLength {
+        type_id: u8,
+        expected: usize,
+        got: usize,
+    },
     /// UTF-8 decoding failed for a name field.
     InvalidUtf8 { type_id: u8 },
     /// UUID list length is not a multiple of the UUID size.
-    UnalignedUuidList { type_id: u8, len: usize, uuid_size: usize },
+    UnalignedUuidList {
+        type_id: u8,
+        len: usize,
+        uuid_size: usize,
+    },
 }
 
 // ---------------------------------------------------------------------------
@@ -201,7 +217,9 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
             0x01 => {
                 if length < 1 {
                     errors.push(AdvDataError::InvalidLength {
-                        type_id, expected: 1, got: length,
+                        type_id,
+                        expected: 1,
+                        got: length,
                     });
                     continue;
                 }
@@ -212,18 +230,22 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
             0x02 => {
                 if length < 1 {
                     errors.push(AdvDataError::InvalidLength {
-                        type_id, expected: 1, got: length,
+                        type_id,
+                        expected: 1,
+                        got: length,
                     });
                     continue;
                 }
-                entries.push(AdvDataEntry::AccessLayerCap(
-                    AccessLayerCap::from_byte(value[0]),
-                ));
+                entries.push(AdvDataEntry::AccessLayerCap(AccessLayerCap::from_byte(
+                    value[0],
+                )));
             }
             0x03 => {
                 if length < 2 {
                     errors.push(AdvDataError::InvalidLength {
-                        type_id, expected: 2, got: length,
+                        type_id,
+                        expected: 2,
+                        got: length,
                     });
                     continue;
                 }
@@ -236,7 +258,9 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
             0x04 => {
                 if length < 16 {
                     errors.push(AdvDataError::InvalidLength {
-                        type_id, expected: 16, got: length,
+                        type_id,
+                        expected: 16,
+                        got: length,
                     });
                     continue;
                 }
@@ -250,11 +274,14 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
             0x05 | 0x07 => {
                 if length % 2 != 0 {
                     errors.push(AdvDataError::UnalignedUuidList {
-                        type_id, len: length, uuid_size: 2,
+                        type_id,
+                        len: length,
+                        uuid_size: 2,
                     });
                     continue;
                 }
-                let uuids: Vec<u16> = value.chunks_exact(2)
+                let uuids: Vec<u16> = value
+                    .chunks_exact(2)
                     .map(|c| u16::from_le_bytes([c[0], c[1]]))
                     .collect();
                 if type_id == 0x05 {
@@ -266,11 +293,14 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
             0x06 | 0x08 => {
                 if length % 16 != 0 {
                     errors.push(AdvDataError::UnalignedUuidList {
-                        type_id, len: length, uuid_size: 16,
+                        type_id,
+                        len: length,
+                        uuid_size: 16,
                     });
                     continue;
                 }
-                let uuids: Vec<[u8; 16]> = value.chunks_exact(16)
+                let uuids: Vec<[u8; 16]> = value
+                    .chunks_exact(16)
                     .map(|c| {
                         let mut u = [0u8; 16];
                         u.copy_from_slice(c);
@@ -286,7 +316,9 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
             0x09 => {
                 if length != 16 {
                     errors.push(AdvDataError::InvalidLength {
-                        type_id, expected: 16, got: length,
+                        type_id,
+                        expected: 16,
+                        got: length,
                     });
                     continue;
                 }
@@ -294,24 +326,24 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
                 hash.copy_from_slice(value);
                 entries.push(AdvDataEntry::ServiceStructureHash(hash));
             }
-            0x0A | 0x0B => {
-                match core::str::from_utf8(value) {
-                    Ok(s) => {
-                        if type_id == 0x0A {
-                            entries.push(AdvDataEntry::ShortenedLocalName(s.to_string()));
-                        } else {
-                            entries.push(AdvDataEntry::CompleteLocalName(s.to_string()));
-                        }
-                    }
-                    Err(_) => {
-                        errors.push(AdvDataError::InvalidUtf8 { type_id });
+            0x0A | 0x0B => match core::str::from_utf8(value) {
+                Ok(s) => {
+                    if type_id == 0x0A {
+                        entries.push(AdvDataEntry::ShortenedLocalName(s.to_string()));
+                    } else {
+                        entries.push(AdvDataEntry::CompleteLocalName(s.to_string()));
                     }
                 }
-            }
+                Err(_) => {
+                    errors.push(AdvDataError::InvalidUtf8 { type_id });
+                }
+            },
             0x0C => {
                 if length < 1 {
                     errors.push(AdvDataError::InvalidLength {
-                        type_id, expected: 1, got: length,
+                        type_id,
+                        expected: 1,
+                        got: length,
                     });
                     continue;
                 }
@@ -369,22 +401,30 @@ pub fn build_adv_data(entries: &[AdvDataEntry]) -> Vec<u8> {
             AdvDataEntry::CompleteStdServiceList(uuids) => {
                 buf.push(0x05);
                 buf.push((uuids.len() * 2) as u8);
-                for u in uuids { buf.extend_from_slice(&u.to_le_bytes()); }
+                for u in uuids {
+                    buf.extend_from_slice(&u.to_le_bytes());
+                }
             }
             AdvDataEntry::CompleteCustomServiceList(uuids) => {
                 buf.push(0x06);
                 buf.push((uuids.len() * 16) as u8);
-                for u in uuids { buf.extend_from_slice(u); }
+                for u in uuids {
+                    buf.extend_from_slice(u);
+                }
             }
             AdvDataEntry::PartialStdServiceList(uuids) => {
                 buf.push(0x07);
                 buf.push((uuids.len() * 2) as u8);
-                for u in uuids { buf.extend_from_slice(&u.to_le_bytes()); }
+                for u in uuids {
+                    buf.extend_from_slice(&u.to_le_bytes());
+                }
             }
             AdvDataEntry::PartialCustomServiceList(uuids) => {
                 buf.push(0x08);
                 buf.push((uuids.len() * 16) as u8);
-                for u in uuids { buf.extend_from_slice(u); }
+                for u in uuids {
+                    buf.extend_from_slice(u);
+                }
             }
             AdvDataEntry::ServiceStructureHash(hash) => {
                 buf.push(0x09);
@@ -481,8 +521,7 @@ pub fn collect_service_uuids16(entries: &[AdvDataEntry]) -> Vec<u16> {
     let mut uuids = Vec::new();
     for e in entries {
         match e {
-            AdvDataEntry::CompleteStdServiceList(u)
-            | AdvDataEntry::PartialStdServiceList(u) => {
+            AdvDataEntry::CompleteStdServiceList(u) | AdvDataEntry::PartialStdServiceList(u) => {
                 uuids.extend_from_slice(u);
             }
             _ => {}
@@ -495,9 +534,10 @@ pub fn collect_service_uuids16(entries: &[AdvDataEntry]) -> Vec<u16> {
 pub fn has_service_uuid16(entries: &[AdvDataEntry], target: u16) -> bool {
     for e in entries {
         match e {
-            AdvDataEntry::CompleteStdServiceList(u)
-            | AdvDataEntry::PartialStdServiceList(u) => {
-                if u.contains(&target) { return true; }
+            AdvDataEntry::CompleteStdServiceList(u) | AdvDataEntry::PartialStdServiceList(u) => {
+                if u.contains(&target) {
+                    return true;
+                }
             }
             AdvDataEntry::StandardServiceData(sd) if sd.uuid == target => {
                 return true;
@@ -522,7 +562,10 @@ mod tests {
         let (entries, errors) = parse_adv_data(&data);
         assert!(errors.is_empty());
         assert_eq!(entries.len(), 1);
-        assert_eq!(entries[0], AdvDataEntry::DiscoveryLevel(crate::DiscoveryLevel::Priority));
+        assert_eq!(
+            entries[0],
+            AdvDataEntry::DiscoveryLevel(crate::DiscoveryLevel::Priority)
+        );
     }
 
     #[test]
@@ -552,7 +595,10 @@ mod tests {
         data.extend_from_slice(name.as_bytes());
         let (entries, errors) = parse_adv_data(&data);
         assert!(errors.is_empty());
-        assert_eq!(entries[0], AdvDataEntry::CompleteLocalName("SparkLink-KB".into()));
+        assert_eq!(
+            entries[0],
+            AdvDataEntry::CompleteLocalName("SparkLink-KB".into())
+        );
     }
 
     #[test]
@@ -573,10 +619,13 @@ mod tests {
         let data = [0x03, 0x04, 0x0B, 0x06, 0x01, 0x02];
         let (entries, errors) = parse_adv_data(&data);
         assert!(errors.is_empty());
-        assert_eq!(entries[0], AdvDataEntry::StandardServiceData(ServiceData16 {
-            uuid: 0x060B,
-            data: vec![0x01, 0x02],
-        }));
+        assert_eq!(
+            entries[0],
+            AdvDataEntry::StandardServiceData(ServiceData16 {
+                uuid: 0x060B,
+                data: vec![0x01, 0x02],
+            })
+        );
     }
 
     #[test]
@@ -608,7 +657,10 @@ mod tests {
     fn parse_manufacturer_specific() {
         let data = [0xFF, 0x03, 0x01, 0x02, 0x03];
         let (entries, _) = parse_adv_data(&data);
-        assert_eq!(entries[0], AdvDataEntry::ManufacturerSpecific(vec![1, 2, 3]));
+        assert_eq!(
+            entries[0],
+            AdvDataEntry::ManufacturerSpecific(vec![1, 2, 3])
+        );
     }
 
     #[test]
@@ -634,7 +686,10 @@ mod tests {
     fn roundtrip_all_types() {
         let entries = vec![
             AdvDataEntry::DiscoveryLevel(crate::DiscoveryLevel::Priority),
-            AdvDataEntry::AccessLayerCap(AccessLayerCap { slb: false, sle: true }),
+            AdvDataEntry::AccessLayerCap(AccessLayerCap {
+                slb: false,
+                sle: true,
+            }),
             AdvDataEntry::StandardServiceData(ServiceData16 {
                 uuid: 0x060B,
                 data: vec![0x01],
@@ -667,7 +722,10 @@ mod tests {
         let (entries, errors) = parse_adv_data(&data);
         assert!(entries.is_empty());
         assert_eq!(errors.len(), 1);
-        assert!(matches!(errors[0], AdvDataError::InvalidLength { type_id: 0x09, .. }));
+        assert!(matches!(
+            errors[0],
+            AdvDataError::InvalidLength { type_id: 0x09, .. }
+        ));
     }
 
     #[test]
@@ -684,17 +742,18 @@ mod tests {
         let data = [0x42, 0x02, 0xAA, 0xBB];
         let (entries, errors) = parse_adv_data(&data);
         assert!(errors.is_empty());
-        assert_eq!(entries[0], AdvDataEntry::Unknown {
-            type_id: 0x42,
-            data: vec![0xAA, 0xBB],
-        });
+        assert_eq!(
+            entries[0],
+            AdvDataEntry::Unknown {
+                type_id: 0x42,
+                data: vec![0xAA, 0xBB],
+            }
+        );
     }
 
     #[test]
     fn has_service_uuid_lookup() {
-        let entries = vec![
-            AdvDataEntry::CompleteStdServiceList(vec![0x060B, 0x180F]),
-        ];
+        let entries = vec![AdvDataEntry::CompleteStdServiceList(vec![0x060B, 0x180F])];
         assert!(has_service_uuid16(&entries, 0x060B));
         assert!(!has_service_uuid16(&entries, 0x1234));
     }
@@ -718,9 +777,10 @@ mod tests {
 
     #[test]
     fn adv_data_type_roundtrip() {
-        for v in [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-                   0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,
-                   0xFE, 0xFF] {
+        for v in [
+            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
+            0x0F, 0x10, 0xFE, 0xFF,
+        ] {
             let t = AdvDataType::from_u8(v).unwrap();
             assert_eq!(t as u8, v);
         }

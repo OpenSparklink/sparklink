@@ -59,11 +59,21 @@ impl TransportControl {
 
     fn to_bits(self) -> u16 {
         let mut v = 0u16;
-        if self.start { v |= CTRL_START; }
-        if self.start_ack { v |= CTRL_START_ACK; }
-        if self.end { v |= CTRL_END; }
-        if self.end_ack { v |= CTRL_END_ACK; }
-        if self.reset { v |= CTRL_RESET; }
+        if self.start {
+            v |= CTRL_START;
+        }
+        if self.start_ack {
+            v |= CTRL_START_ACK;
+        }
+        if self.end {
+            v |= CTRL_END;
+        }
+        if self.end_ack {
+            v |= CTRL_END_ACK;
+        }
+        if self.reset {
+            v |= CTRL_RESET;
+        }
         v
     }
 }
@@ -84,10 +94,18 @@ pub struct OptionalFields {
 impl OptionalFields {
     fn bitmap(&self) -> u16 {
         let mut b = 0u16;
-        if self.payload_len.is_some() { b |= OPT_PAYLOAD_LEN; }
-        if self.checksum.is_some() { b |= OPT_CHECKSUM; }
-        if self.transport_ctrl.is_some() { b |= OPT_TRANSPORT_CTRL; }
-        if self.recv_window.is_some() { b |= OPT_RECV_WINDOW; }
+        if self.payload_len.is_some() {
+            b |= OPT_PAYLOAD_LEN;
+        }
+        if self.checksum.is_some() {
+            b |= OPT_CHECKSUM;
+        }
+        if self.transport_ctrl.is_some() {
+            b |= OPT_TRANSPORT_CTRL;
+        }
+        if self.recv_window.is_some() {
+            b |= OPT_RECV_WINDOW;
+        }
         b
     }
 
@@ -130,23 +148,31 @@ impl OptionalFields {
         let mut opts = OptionalFields::default();
 
         if bm & OPT_PAYLOAD_LEN != 0 {
-            if pos + 2 > data.len() { return Err(PacketError::TooShort); }
+            if pos + 2 > data.len() {
+                return Err(PacketError::TooShort);
+            }
             opts.payload_len = Some(u16::from_be_bytes([data[pos], data[pos + 1]]));
             pos += 2;
         }
         if bm & OPT_CHECKSUM != 0 {
-            if pos + 2 > data.len() { return Err(PacketError::TooShort); }
+            if pos + 2 > data.len() {
+                return Err(PacketError::TooShort);
+            }
             opts.checksum = Some(u16::from_be_bytes([data[pos], data[pos + 1]]));
             pos += 2;
         }
         if bm & OPT_TRANSPORT_CTRL != 0 {
-            if pos + 2 > data.len() { return Err(PacketError::TooShort); }
+            if pos + 2 > data.len() {
+                return Err(PacketError::TooShort);
+            }
             let bits = u16::from_be_bytes([data[pos], data[pos + 1]]);
             opts.transport_ctrl = Some(TransportControl::from_bits(bits));
             pos += 2;
         }
         if bm & OPT_RECV_WINDOW != 0 {
-            if pos + 2 > data.len() { return Err(PacketError::TooShort); }
+            if pos + 2 > data.len() {
+                return Err(PacketError::TooShort);
+            }
             opts.recv_window = Some(u16::from_be_bytes([data[pos], data[pos + 1]]));
             pos += 2;
         }
@@ -230,7 +256,12 @@ impl ConnectionlessPacket {
         };
 
         let payload = data[hdr_end..].to_vec();
-        Ok(Self { src_port, dst_port, options, payload })
+        Ok(Self {
+            src_port,
+            dst_port,
+            options,
+            payload,
+        })
     }
 }
 
@@ -246,13 +277,7 @@ pub struct ConnectedPacket {
 }
 
 impl ConnectedPacket {
-    pub fn new(
-        src_port: u16,
-        dst_port: u16,
-        seq_no: u32,
-        ack_no: u32,
-        payload: Vec<u8>,
-    ) -> Self {
+    pub fn new(src_port: u16, dst_port: u16, seq_no: u32, ack_no: u32, payload: Vec<u8>) -> Self {
         Self {
             src_port,
             dst_port,
@@ -308,7 +333,14 @@ impl ConnectedPacket {
         };
 
         let payload = data[hdr_end..].to_vec();
-        Ok(Self { src_port, dst_port, seq_no, ack_no, options, payload })
+        Ok(Self {
+            src_port,
+            dst_port,
+            seq_no,
+            ack_no,
+            options,
+            payload,
+        })
     }
 }
 
@@ -398,27 +430,19 @@ impl SenderState {
             (Self::Closed, SenderEvent::StartTransmission) => {
                 (Self::WaitStartAck, Action::SendStart)
             }
-            (Self::WaitStartAck, SenderEvent::RecvStartAck) => {
-                (Self::Sending, Action::None)
-            }
+            (Self::WaitStartAck, SenderEvent::RecvStartAck) => (Self::Sending, Action::None),
             (Self::Sending, SenderEvent::TransmissionComplete) => {
                 (Self::WaitEndAck, Action::SendEnd)
             }
-            (Self::WaitEndAck, SenderEvent::RecvEndAck) => {
-                (Self::Closed, Action::None)
-            }
+            (Self::WaitEndAck, SenderEvent::RecvEndAck) => (Self::Closed, Action::None),
             // Error/Reset from any active state
-            (Self::WaitStartAck | Self::Sending | Self::WaitEndAck,
-             SenderEvent::Error) => {
+            (Self::WaitStartAck | Self::Sending | Self::WaitEndAck, SenderEvent::Error) => {
                 (Self::Reset, Action::SendReset)
             }
-            (Self::WaitStartAck | Self::Sending | Self::WaitEndAck,
-             SenderEvent::RecvReset) => {
+            (Self::WaitStartAck | Self::Sending | Self::WaitEndAck, SenderEvent::RecvReset) => {
                 (Self::Reset, Action::None)
             }
-            (Self::Reset, SenderEvent::ResetComplete) => {
-                (Self::Closed, Action::None)
-            }
+            (Self::Reset, SenderEvent::ResetComplete) => (Self::Closed, Action::None),
             // Stay in current state for unhandled events
             _ => (self, Action::None),
         }
@@ -429,31 +453,15 @@ impl ReceiverState {
     /// Apply an event and return the new state and required action.
     pub fn next(self, event: ReceiverEvent) -> (Self, Action) {
         match (self, event) {
-            (Self::Closed, ReceiverEvent::RecvStart) => {
-                (Self::Receiving, Action::SendStartAck)
-            }
-            (Self::Receiving, ReceiverEvent::RecvEnd) => {
-                (Self::EndTransmit, Action::SendEndAck)
-            }
-            (Self::EndTransmit, ReceiverEvent::CloseComplete) => {
-                (Self::Closed, Action::None)
-            }
+            (Self::Closed, ReceiverEvent::RecvStart) => (Self::Receiving, Action::SendStartAck),
+            (Self::Receiving, ReceiverEvent::RecvEnd) => (Self::EndTransmit, Action::SendEndAck),
+            (Self::EndTransmit, ReceiverEvent::CloseComplete) => (Self::Closed, Action::None),
             // Error/Reset from active states
-            (Self::Receiving, ReceiverEvent::Error) => {
-                (Self::Reset, Action::SendReset)
-            }
-            (Self::Receiving, ReceiverEvent::RecvReset) => {
-                (Self::Reset, Action::None)
-            }
-            (Self::EndTransmit, ReceiverEvent::Error) => {
-                (Self::Reset, Action::SendReset)
-            }
-            (Self::EndTransmit, ReceiverEvent::RecvReset) => {
-                (Self::Reset, Action::None)
-            }
-            (Self::Reset, ReceiverEvent::ResetComplete) => {
-                (Self::Closed, Action::None)
-            }
+            (Self::Receiving, ReceiverEvent::Error) => (Self::Reset, Action::SendReset),
+            (Self::Receiving, ReceiverEvent::RecvReset) => (Self::Reset, Action::None),
+            (Self::EndTransmit, ReceiverEvent::Error) => (Self::Reset, Action::SendReset),
+            (Self::EndTransmit, ReceiverEvent::RecvReset) => (Self::Reset, Action::None),
+            (Self::Reset, ReceiverEvent::ResetComplete) => (Self::Closed, Action::None),
             _ => (self, Action::None),
         }
     }

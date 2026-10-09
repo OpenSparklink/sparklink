@@ -16,7 +16,7 @@ use std::sync::Arc;
 use clap::Parser;
 use tokio::sync::Mutex;
 use tracing::{error, info};
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::bonding::BondingStore;
 use crate::config::DaemonConfig;
@@ -50,8 +50,7 @@ async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     // Logging: prefer journald, fall back to stderr
-    let env_filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| EnvFilter::new("info"));
+    let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
 
     let registry = tracing_subscriber::registry().with(env_filter);
 
@@ -95,17 +94,31 @@ async fn main() -> anyhow::Result<()> {
     let profile_count = profiles.init_all(&adapter);
     info!(count = profile_count, "profiles registered");
 
-    let shared: SharedState = Arc::new(Mutex::new(AdapterState::new(adapter, config, bonding, profiles)));
+    let shared: SharedState = Arc::new(Mutex::new(AdapterState::new(
+        adapter, config, bonding, profiles,
+    )));
 
     // D-Bus session
     let connection = zbus::connection::Builder::system()?
         .name("org.sparklink")?
         .serve_at("/org/sparklink", Root::new(shared.clone()))?
         .serve_at("/org/sparklink/slk0", AdapterIface::new(shared.clone()))?
-        .serve_at("/org/sparklink/slk0/security", SecurityIface::new(shared.clone()))?
-        .serve_at("/org/sparklink/slk0/services", SsapManagerIface::new(shared.clone()))?
-        .serve_at("/org/sparklink/slk0/extadv", ExtAdvIface::new(shared.clone()))?
-        .serve_at("/org/sparklink/slk0/controller", ControllerIface::new(shared.clone()))?
+        .serve_at(
+            "/org/sparklink/slk0/security",
+            SecurityIface::new(shared.clone()),
+        )?
+        .serve_at(
+            "/org/sparklink/slk0/services",
+            SsapManagerIface::new(shared.clone()),
+        )?
+        .serve_at(
+            "/org/sparklink/slk0/extadv",
+            ExtAdvIface::new(shared.clone()),
+        )?
+        .serve_at(
+            "/org/sparklink/slk0/controller",
+            ControllerIface::new(shared.clone()),
+        )?
         .build()
         .await?;
 
@@ -135,7 +148,13 @@ async fn event_loop(state: SharedState, connection: zbus::Connection) {
         };
 
         match event {
-            Ok(libsparklink::Event::AdvReport { addr, rssi, discovery_level, name, adv_data }) => {
+            Ok(libsparklink::Event::AdvReport {
+                addr,
+                rssi,
+                discovery_level,
+                name,
+                adv_data,
+            }) => {
                 let mut st = state.lock().await;
                 let is_new = st.on_adv_report(addr, rssi, discovery_level, name.clone(), adv_data);
                 if is_new {
@@ -158,7 +177,11 @@ async fn event_loop(state: SharedState, connection: zbus::Connection) {
                     }
                 }
             }
-            Ok(libsparklink::Event::ConnectionStateChanged { handle, state: conn_state, peer_addr }) => {
+            Ok(libsparklink::Event::ConnectionStateChanged {
+                handle,
+                state: conn_state,
+                peer_addr,
+            }) => {
                 let mut st = state.lock().await;
                 st.on_conn_state_changed(handle, conn_state, peer_addr);
                 let connected = conn_state == slk_protocol::ConnState::Connected as u8;
@@ -181,7 +204,11 @@ async fn event_loop(state: SharedState, connection: zbus::Connection) {
                     st.profiles.on_disconnect(handle);
                 }
             }
-            Ok(libsparklink::Event::SecurityChanged { state: sec_state, method, encrypted }) => {
+            Ok(libsparklink::Event::SecurityChanged {
+                state: sec_state,
+                method,
+                encrypted,
+            }) => {
                 let method_label = match method {
                     1 => "JustWorks",
                     2 => "PSK",

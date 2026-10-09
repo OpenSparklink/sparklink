@@ -183,8 +183,16 @@ fn main() {
         Command::WriteProp { handle, value } => cmd_write_prop(&adapter, &handle, &value),
         Command::RemoteDiscover { conn } => cmd_remote_discover(&adapter, &conn),
         Command::RemoteRead { conn, handle } => cmd_remote_read(&adapter, &conn, &handle),
-        Command::RemoteWrite { conn, handle, value } => cmd_remote_write(&adapter, &conn, &handle, &value),
-        Command::CallMethod { conn, handle, input } => cmd_call_method(&adapter, &conn, &handle, &input),
+        Command::RemoteWrite {
+            conn,
+            handle,
+            value,
+        } => cmd_remote_write(&adapter, &conn, &handle, &value),
+        Command::CallMethod {
+            conn,
+            handle,
+            input,
+        } => cmd_call_method(&adapter, &conn, &handle, &input),
         Command::FindByUuid { conn, uuid } => cmd_find_by_uuid(&adapter, &conn, &uuid),
         Command::ReadByUuid { conn, uuid } => cmd_read_by_uuid(&adapter, &conn, &uuid),
     };
@@ -204,7 +212,11 @@ fn fmt_addr(addr: &[u8; 6]) -> String {
 
 fn cmd_info(adapter: &Adapter) -> libsparklink::Result<()> {
     let info = adapter.device_info()?;
-    let name_end = info.name.iter().position(|&b| b == 0).unwrap_or(info.name.len());
+    let name_end = info
+        .name
+        .iter()
+        .position(|&b| b == 0)
+        .unwrap_or(info.name.len());
     let name = std::str::from_utf8(&info.name[..name_end]).unwrap_or("<invalid>");
 
     println!("Device #{}", info.index);
@@ -221,7 +233,11 @@ fn cmd_info(adapter: &Adapter) -> libsparklink::Result<()> {
 
 fn cmd_dli(adapter: &Adapter) -> libsparklink::Result<()> {
     let info = adapter.dli_info()?;
-    let name_end = info.name.iter().position(|&b| b == 0).unwrap_or(info.name.len());
+    let name_end = info
+        .name
+        .iter()
+        .position(|&b| b == 0)
+        .unwrap_or(info.name.len());
     let name = std::str::from_utf8(&info.name[..name_end]).unwrap_or("<invalid>");
 
     println!("DLI Controller: {name}");
@@ -248,9 +264,15 @@ fn cmd_phy(adapter: &Adapter) -> libsparklink::Result<()> {
     println!("  TX power:      {} dBm", info.tx_power_dbm);
     println!("  Data rate:     {} kbps", info.data_rate_kbps);
     println!("  Modulation:    {}", info.modulation);
-    println!("  Code rate:     {}/{}", info.code_rate_num, info.code_rate_den);
+    println!(
+        "  Code rate:     {}/{}",
+        info.code_rate_num, info.code_rate_den
+    );
     println!("  MIMO mode:     {}", info.mimo_mode);
-    println!("  Antennas:      TX={} RX={}", info.num_tx_ant, info.num_rx_ant);
+    println!(
+        "  Antennas:      TX={} RX={}",
+        info.num_tx_ant, info.num_rx_ant
+    );
     println!("  Hop channel:   {}", info.hop_channel);
 
     Ok(())
@@ -360,7 +382,11 @@ fn cmd_scan(adapter: &Adapter, duration: u64) -> libsparklink::Result<()> {
     while start.elapsed().as_secs() < duration {
         match adapter.poll_event()? {
             Some(event) => {
-                let name_end = event.data.iter().position(|&b| b == 0).unwrap_or(event.data_len as usize);
+                let name_end = event
+                    .data
+                    .iter()
+                    .position(|&b| b == 0)
+                    .unwrap_or(event.data_len as usize);
                 let name = std::str::from_utf8(&event.data[..name_end]).unwrap_or("");
                 count += 1;
                 println!(
@@ -384,9 +410,8 @@ fn cmd_scan(adapter: &Adapter, duration: u64) -> libsparklink::Result<()> {
 fn cmd_connect(adapter: &Adapter, address: &str) -> libsparklink::Result<()> {
     use slk_protocol::SleConnectParams;
 
-    let addr = parse_addr(address).map_err(|_| {
-        libsparklink::Error::InvalidParam("address must be AA:BB:CC:DD:EE:FF")
-    })?;
+    let addr = parse_addr(address)
+        .map_err(|_| libsparklink::Error::InvalidParam("address must be AA:BB:CC:DD:EE:FF"))?;
 
     let params = SleConnectParams {
         peer_addr: addr,
@@ -404,13 +429,12 @@ fn cmd_connect(adapter: &Adapter, address: &str) -> libsparklink::Result<()> {
 
 fn cmd_disconnect(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()> {
     let handle = if let Some(hex) = handle_str.strip_prefix("0x") {
-        u16::from_str_radix(hex, 16).map_err(|_| {
-            libsparklink::Error::InvalidParam("invalid hex handle")
-        })?
+        u16::from_str_radix(hex, 16)
+            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex handle"))?
     } else {
-        handle_str.parse::<u16>().map_err(|_| {
-            libsparklink::Error::InvalidParam("invalid handle number")
-        })?
+        handle_str
+            .parse::<u16>()
+            .map_err(|_| libsparklink::Error::InvalidParam("invalid handle number"))?
     };
 
     adapter.disconnect(handle)?;
@@ -504,9 +528,8 @@ fn cmd_set_psk(adapter: &Adapter, psk_hex: &str) -> libsparklink::Result<()> {
 
     let mut params = SlePskParams { psk: [0; 16] };
     for i in 0..16 {
-        params.psk[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16).map_err(|_| {
-            libsparklink::Error::InvalidParam("invalid hex character in PSK")
-        })?;
+        params.psk[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16)
+            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex character in PSK"))?;
     }
 
     adapter.set_psk(&params)?;
@@ -544,7 +567,11 @@ fn cmd_list_services(adapter: &Adapter) -> libsparklink::Result<()> {
     println!("{} service(s):", list.count);
     for i in 0..list.count as usize {
         let s = &list.services[i];
-        let kind = if s.primary != 0 { "Primary" } else { "Secondary" };
+        let kind = if s.primary != 0 {
+            "Primary"
+        } else {
+            "Secondary"
+        };
         println!(
             "  [{:#06x}-{:#06x}] UUID={:#06x} {kind}",
             s.start_handle, s.end_handle, s.uuid16
@@ -573,7 +600,11 @@ fn cmd_read_prop(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()
     Ok(())
 }
 
-fn cmd_write_prop(adapter: &Adapter, handle_str: &str, value_hex: &str) -> libsparklink::Result<()> {
+fn cmd_write_prop(
+    adapter: &Adapter,
+    handle_str: &str,
+    value_hex: &str,
+) -> libsparklink::Result<()> {
     let handle = parse_handle(handle_str)?;
     let value = parse_hex_bytes(value_hex)?;
     let len = value.len().min(252);
@@ -616,7 +647,11 @@ fn cmd_remote_discover(adapter: &Adapter, conn_str: &str) -> libsparklink::Resul
     Ok(())
 }
 
-fn cmd_remote_read(adapter: &Adapter, conn_str: &str, handle_str: &str) -> libsparklink::Result<()> {
+fn cmd_remote_read(
+    adapter: &Adapter,
+    conn_str: &str,
+    handle_str: &str,
+) -> libsparklink::Result<()> {
     let conn_handle = parse_handle(conn_str)?;
     let handle = parse_handle(handle_str)?;
 
@@ -644,7 +679,12 @@ fn cmd_remote_read(adapter: &Adapter, conn_str: &str, handle_str: &str) -> libsp
     Ok(())
 }
 
-fn cmd_remote_write(adapter: &Adapter, conn_str: &str, handle_str: &str, value_hex: &str) -> libsparklink::Result<()> {
+fn cmd_remote_write(
+    adapter: &Adapter,
+    conn_str: &str,
+    handle_str: &str,
+    value_hex: &str,
+) -> libsparklink::Result<()> {
     let conn_handle = parse_handle(conn_str)?;
     let handle = parse_handle(handle_str)?;
     let value = parse_hex_bytes(value_hex)?;
@@ -666,7 +706,12 @@ fn cmd_remote_write(adapter: &Adapter, conn_str: &str, handle_str: &str, value_h
     Ok(())
 }
 
-fn cmd_call_method(adapter: &Adapter, conn_str: &str, handle_str: &str, input_hex: &str) -> libsparklink::Result<()> {
+fn cmd_call_method(
+    adapter: &Adapter,
+    conn_str: &str,
+    handle_str: &str,
+    input_hex: &str,
+) -> libsparklink::Result<()> {
     let conn_handle = parse_handle(conn_str)?;
     let handle = parse_handle(handle_str)?;
     let input = parse_hex_bytes(input_hex)?;
@@ -718,7 +763,10 @@ fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libspa
 
     let out_len = (op.length as usize).min(op.data.len());
     let data = &op.data[..out_len];
-    println!("UUID {:#06x} at handle {:#06x} ({} bytes):", uuid16, op.handle, out_len);
+    println!(
+        "UUID {:#06x} at handle {:#06x} ({} bytes):",
+        uuid16, op.handle, out_len
+    );
     for chunk in data.chunks(16) {
         let hex: Vec<String> = chunk.iter().map(|b| format!("{b:02x}")).collect();
         println!("  {}", hex.join(" "));
@@ -731,21 +779,20 @@ fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libspa
 
 fn parse_handle(s: &str) -> libsparklink::Result<u16> {
     let s = s.strip_prefix("0x").unwrap_or(s);
-    u16::from_str_radix(s, 16).map_err(|_| {
-        libsparklink::Error::InvalidParam("invalid hex handle")
-    })
+    u16::from_str_radix(s, 16).map_err(|_| libsparklink::Error::InvalidParam("invalid hex handle"))
 }
 
 fn parse_hex_bytes(hex: &str) -> libsparklink::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
     if hex.len() % 2 != 0 {
-        return Err(libsparklink::Error::InvalidParam("hex string must have even length"));
+        return Err(libsparklink::Error::InvalidParam(
+            "hex string must have even length",
+        ));
     }
     let mut bytes = Vec::with_capacity(hex.len() / 2);
     for i in (0..hex.len()).step_by(2) {
-        let byte = u8::from_str_radix(&hex[i..i + 2], 16).map_err(|_| {
-            libsparklink::Error::InvalidParam("invalid hex character")
-        })?;
+        let byte = u8::from_str_radix(&hex[i..i + 2], 16)
+            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex character"))?;
         bytes.push(byte);
     }
     Ok(bytes)
@@ -757,9 +804,18 @@ mod tests {
 
     #[test]
     fn test_fmt_addr() {
-        assert_eq!(fmt_addr(&[0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF]), "AA:BB:CC:DD:EE:FF");
-        assert_eq!(fmt_addr(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), "00:00:00:00:00:00");
-        assert_eq!(fmt_addr(&[0x01, 0x23, 0x45, 0x67, 0x89, 0xAB]), "01:23:45:67:89:AB");
+        assert_eq!(
+            fmt_addr(&[0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF]),
+            "AA:BB:CC:DD:EE:FF"
+        );
+        assert_eq!(
+            fmt_addr(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+            "00:00:00:00:00:00"
+        );
+        assert_eq!(
+            fmt_addr(&[0x01, 0x23, 0x45, 0x67, 0x89, 0xAB]),
+            "01:23:45:67:89:AB"
+        );
     }
 
     #[test]
@@ -799,7 +855,10 @@ mod tests {
     fn test_parse_hex_bytes_valid() {
         assert_eq!(parse_hex_bytes("AABB").unwrap(), vec![0xAA, 0xBB]);
         assert_eq!(parse_hex_bytes("0xAABB").unwrap(), vec![0xAA, 0xBB]);
-        assert_eq!(parse_hex_bytes("0x0102030405").unwrap(), vec![1, 2, 3, 4, 5]);
+        assert_eq!(
+            parse_hex_bytes("0x0102030405").unwrap(),
+            vec![1, 2, 3, 4, 5]
+        );
         assert_eq!(parse_hex_bytes("").unwrap(), Vec::<u8>::new());
     }
 

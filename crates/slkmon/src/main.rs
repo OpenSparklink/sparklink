@@ -73,8 +73,11 @@ fn main() {
 
                 if let Some(ref mut out) = output {
                     use std::io::Write;
-                    let _ = writeln!(out, "{ts} type={:#04x} handle={:#06x} status={} len={}",
-                        event.event_type, event.handle, event.status, event.data_len);
+                    let _ = writeln!(
+                        out,
+                        "{ts} type={:#04x} handle={:#06x} status={} len={}",
+                        event.event_type, event.handle, event.status, event.data_len
+                    );
                     if cli.hexdump {
                         let hex: String = event.data[..event.data_len as usize]
                             .iter()

@@ -18,9 +18,10 @@ impl SecurityIface {
     /// Get current security state
     async fn get_info(&self) -> zbus::fdo::Result<SecurityInfo> {
         let st = self.state.lock().await;
-        let info = st.adapter.sec_info().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("sec_info failed: {e}"))
-        })?;
+        let info = st
+            .adapter
+            .sec_info()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("sec_info failed: {e}")))?;
         Ok(SecurityInfo {
             state: sec_state_label(info.state),
             method: pair_method_label(info.method),
@@ -31,15 +32,14 @@ impl SecurityIface {
 
     /// Set Pre-Shared Key (16 bytes hex string)
     async fn set_psk(&self, psk_hex: &str) -> zbus::fdo::Result<()> {
-        let psk = parse_hex_key(psk_hex, 16).map_err(|e| {
-            zbus::fdo::Error::InvalidArgs(e.to_string())
-        })?;
+        let psk =
+            parse_hex_key(psk_hex, 16).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
         let mut params = slk_protocol::SlePskParams { psk: [0; 16] };
         params.psk.copy_from_slice(&psk);
         let st = self.state.lock().await;
-        st.adapter.set_psk(&params).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("set_psk failed: {e}"))
-        })
+        st.adapter
+            .set_psk(&params)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("set_psk failed: {e}")))
     }
 
     /// Initiate pairing with the given method
@@ -49,66 +49,68 @@ impl SecurityIface {
             "just_works" => slk_protocol::PairMethod::JustWorks as u8,
             "psk" => slk_protocol::PairMethod::Psk as u8,
             "none" | "" => slk_protocol::PairMethod::None as u8,
-            _ => return Err(zbus::fdo::Error::InvalidArgs(
-                "method must be 'just_works', 'psk', or 'none'".into()
-            )),
+            _ => {
+                return Err(zbus::fdo::Error::InvalidArgs(
+                    "method must be 'just_works', 'psk', or 'none'".into(),
+                ));
+            }
         };
         let params = slk_protocol::SlePairParams {
             method: m,
             _reserved: [0; 3],
         };
         let st = self.state.lock().await;
-        st.adapter.pair(&params).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("pair failed: {e}"))
-        })
+        st.adapter
+            .pair(&params)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("pair failed: {e}")))
     }
 
     /// Enable encryption on the active connection
     async fn encrypt(&self) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.encrypt_on().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("encrypt_on failed: {e}"))
-        })
+        st.adapter
+            .encrypt_on()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("encrypt_on failed: {e}")))
     }
 
     /// Get the passkey displayed by the controller (for numeric comparison)
     async fn get_passkey(&self) -> zbus::fdo::Result<u32> {
         let st = self.state.lock().await;
-        st.adapter.get_passkey().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("get_passkey failed: {e}"))
-        })
+        st.adapter
+            .get_passkey()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("get_passkey failed: {e}")))
     }
 
     /// Confirm passkey match (user accepted numeric comparison)
     async fn confirm_passkey(&self) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.confirm_passkey().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("confirm_passkey failed: {e}"))
-        })
+        st.adapter
+            .confirm_passkey()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("confirm_passkey failed: {e}")))
     }
 
     /// Reject passkey match (user rejected)
     async fn reject_passkey(&self) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.reject_passkey().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("reject_passkey failed: {e}"))
-        })
+        st.adapter
+            .reject_passkey()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("reject_passkey failed: {e}")))
     }
 
     /// Input a passkey (user-entered 6-digit code)
     async fn input_passkey(&self, passkey: u32) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.input_passkey(passkey).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("input_passkey failed: {e}"))
-        })
+        st.adapter
+            .input_passkey(passkey)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("input_passkey failed: {e}")))
     }
 
     /// Reset security state
     async fn reset(&self) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.sec_reset().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("sec_reset failed: {e}"))
-        })
+        st.adapter
+            .sec_reset()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("sec_reset failed: {e}")))
     }
 
     /// List bonded device addresses
@@ -130,25 +132,27 @@ impl SecurityIface {
     async fn remove_bond(&self, addr_hex: &str) -> zbus::fdo::Result<()> {
         let parts: Vec<&str> = addr_hex.split(':').collect();
         if parts.len() != 6 {
-            return Err(zbus::fdo::Error::InvalidArgs("expected AA:BB:CC:DD:EE:FF".into()));
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "expected AA:BB:CC:DD:EE:FF".into(),
+            ));
         }
         let mut addr = [0u8; 6];
         for (i, part) in parts.iter().enumerate() {
-            addr[i] = u8::from_str_radix(part, 16).map_err(|_| {
-                zbus::fdo::Error::InvalidArgs("invalid hex byte".into())
-            })?;
+            addr[i] = u8::from_str_radix(part, 16)
+                .map_err(|_| zbus::fdo::Error::InvalidArgs("invalid hex byte".into()))?;
         }
         let mut st = self.state.lock().await;
-        st.bonding.remove(&addr).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("remove_bond failed: {e}"))
-        })
+        st.bonding
+            .remove(&addr)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("remove_bond failed: {e}")))
     }
 
     /// Current security state as property
     #[zbus(property)]
     async fn encrypted(&self) -> bool {
         let st = self.state.lock().await;
-        st.adapter.sec_info()
+        st.adapter
+            .sec_info()
             .map(|info| info.enc_enabled != 0)
             .unwrap_or(false)
     }
@@ -157,7 +161,8 @@ impl SecurityIface {
     #[zbus(property)]
     async fn paired(&self) -> bool {
         let st = self.state.lock().await;
-        st.adapter.sec_info()
+        st.adapter
+            .sec_info()
             .map(|info| info.state >= slk_protocol::SecState::Paired as u8)
             .unwrap_or(false)
     }
@@ -198,8 +203,7 @@ fn parse_hex_key(hex: &str, expected_len: usize) -> Result<Vec<u8>, &'static str
     }
     let mut bytes = Vec::with_capacity(expected_len);
     for i in (0..hex.len()).step_by(2) {
-        let byte = u8::from_str_radix(&hex[i..i + 2], 16)
-            .map_err(|_| "invalid hex character")?;
+        let byte = u8::from_str_radix(&hex[i..i + 2], 16).map_err(|_| "invalid hex character")?;
         bytes.push(byte);
     }
     Ok(bytes)

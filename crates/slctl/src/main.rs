@@ -2,8 +2,8 @@ mod commands;
 
 use std::process;
 
-use rustyline::error::ReadlineError;
 use rustyline::DefaultEditor;
+use rustyline::error::ReadlineError;
 
 const PROMPT: &str = "[slk]# ";
 
@@ -110,5 +110,7 @@ Commands:
 }
 
 fn dirs_history_path() -> Option<String> {
-    std::env::var("HOME").ok().map(|h| format!("{h}/.slctl_history"))
+    std::env::var("HOME")
+        .ok()
+        .map(|h| format!("{h}/.slctl_history"))
 }

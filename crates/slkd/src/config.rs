@@ -36,7 +36,6 @@ pub struct PolicyConfig {
     pub min_encryption: u8,
 }
 
-
 impl Default for GeneralConfig {
     fn default() -> Self {
         Self {
@@ -47,7 +46,6 @@ impl Default for GeneralConfig {
     }
 }
 
-
 impl DaemonConfig {
     pub fn load(path: impl AsRef<Path>) -> Result<Self, Box<dyn std::error::Error>> {
         let contents = std::fs::read_to_string(path)?;
@@ -56,9 +54,15 @@ impl DaemonConfig {
     }
 }
 
-fn default_discovery_level() -> u8 { 1 }
-fn default_true() -> bool { true }
-fn default_name() -> String { "SparkLink".into() }
+fn default_discovery_level() -> u8 {
+    1
+}
+fn default_true() -> bool {
+    true
+}
+fn default_name() -> String {
+    "SparkLink".into()
+}
 
 #[cfg(test)]
 mod tests {

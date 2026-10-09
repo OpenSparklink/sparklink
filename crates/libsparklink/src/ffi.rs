@@ -1,4 +1,4 @@
-use std::ffi::{c_char, c_int, CStr};
+use std::ffi::{CStr, c_char, c_int};
 use std::ptr;
 
 use crate::Adapter;

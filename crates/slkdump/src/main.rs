@@ -75,7 +75,11 @@ fn main() {
                 if cli.raw {
                     // Raw hex output
                     let all_bytes = raw_frame_bytes(&event);
-                    let hex: String = all_bytes.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" ");
+                    let hex: String = all_bytes
+                        .iter()
+                        .map(|b| format!("{:02X}", b))
+                        .collect::<Vec<_>>()
+                        .join(" ");
                     println!("{direction} {hex}");
                 } else {
                     // Decoded output
@@ -89,16 +93,31 @@ fn main() {
                         _ => "UNK",
                     };
 
-                    let hex: String = data.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" ");
+                    let hex: String = data
+                        .iter()
+                        .map(|b| format!("{:02X}", b))
+                        .collect::<Vec<_>>()
+                        .join(" ");
 
                     if cli.hexascii {
-                        let ascii: String = data.iter()
-                            .map(|&b| if b.is_ascii_graphic() || b == b' ' { b as char } else { '.' })
+                        let ascii: String = data
+                            .iter()
+                            .map(|&b| {
+                                if b.is_ascii_graphic() || b == b' ' {
+                                    b as char
+                                } else {
+                                    '.'
+                                }
+                            })
                             .collect();
                         println!(
                             "{direction} {:02X} {:04X} {:02X} {:02X} {:<48} {}",
-                            event.event_type, event.handle, event.status, event.data_len,
-                            hex, ascii
+                            event.event_type,
+                            event.handle,
+                            event.status,
+                            event.data_len,
+                            hex,
+                            ascii
                         );
                     } else {
                         println!(

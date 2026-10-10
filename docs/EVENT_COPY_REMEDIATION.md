@@ -53,3 +53,18 @@ Complete计时，不能用恢复耗时替换发现计时。host四只仍在并�
 9作业成功，实际日志核对167 Rust/33 Python/141工具，以及security6/backend2/
 TX11/SSAP9/event-copy9与C sanitizers。此处event-copy依赖fixture范围仍适用，
 不能把本批RF证据当作read(2)故障测试。后续文档head与实际编译head分别记录。
+
+## live VFS门禁准备
+
+新增canonical C selftest通过两个绑定相同controller的独立fd读取真实管理事件。
+专用VM工具由普通用户slctl scan on/off产生事件，C调用实际read(2)/mmap/mprotect：
+零/短buffer、完全不可写地址、首条和后续guarded-page部分复制、capacity尾部及
+完整batch。失败后与另一fd参考记录逐字节比较，核对pending/enqueued/drop/delivered，
+确认空队列EAGAIN。部分copy必须观察到已写的前缀，不能仅测试预检查拒绝。
+没有生产注入hook，不执行raw DLI、不重置设备或重启daemon。
+
+使用新prepared环境运行ws73_target.py run --event-copy-verify --fault-recovery。
+该选项仅支持明确opt-in的隔离NVMe/Btrfs VM，不能在宿主执行；固化C source、
+canonical header、编译命令/程序及Python supervisor。CLI退出/进度截止时间、
+reference bytes/统计/类型/顺序均为门禁，开发verifier fixtures不算live结果。
+实机执行及独立核对结果需另行记录；R12旧DLI迁移/移除唤醒仍OPEN。

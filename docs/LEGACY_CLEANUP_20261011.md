@@ -80,3 +80,11 @@ bde171beb2e0/aece3407e1c1将旧Profile声明和实际library/D-Bus调用入口�
 [9作业CI](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)
 通过；默认daemon仍不链接实验Profile。残余local staging/旧UAPI、每peer数据库、
 全局默认设备/总线枚举和内核现有global dead_code仍按替代门禁处理，未记为已清完。
+
+### R12 read消费修复与旧DLI迁移
+
+20f431f54af0修复实际read_iter，完整copy才提交head/delivered；无调用者的
+drain_to_buf已删，dequeue只作私有提交。copy/锁模拟限selftests，9项实际代码
+开发门禁通过。[调用审计](EVENT_COPY_REMEDIATION.md)区分Native typed subscription
+与legacy EventReceiver的DLI_POLL_EVENT；后者先pop再copy和backend直读fallback
+尚待替代，不能因read修复提前删除其有效测试或关闭完整事件issue。

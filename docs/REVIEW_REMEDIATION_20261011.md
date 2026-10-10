@@ -213,3 +213,13 @@ R14严格CI已恢复，但完整构建/发布/硬件矩阵仍OPEN。
 四设备两组、其他Native/Proxy顺序推进。无新UAPI兼容承诺，调用者同步迁移后
 可直接删除旧接口。诊断观察不代替Ready，人工故障不代替自然根因，VM证据不
 代替未授权的宿主原生对照；北极星仍7/8。
+
+### R12 旧read记录提交（部分整改）
+
+Linux20f431f54af0在完整copy_to_iter后才消费per-fd记录及delivered计数；首条
+部分复制返回EFAULT，后续部分复制只返回前缀完整记录，失败head保留。短buffer
+EINVAL而不是假EOF。无人调用drain_to_buf删除，dequeue私有，仅唯一copy_records
+提交。9项编译实际event/read代码的依赖fixture回归及完整核心对象构建通过；
+没有新增生产测试hook或global lint。见[调用审计和验收边界](EVENT_COPY_REMEDIATION.md)。
+旧DLI_POLL_EVENT仍是另一消费路径，legacy lib receiver使用它，迁移/坏地址/断链/
+移除唤醒仍待验收，R12/K3/U2整项OPEN。新镜像WS73回归和远端CI另行记录。

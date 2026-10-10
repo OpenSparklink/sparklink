@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: bde171beb2e0aee6d10515235ec4f0bb03e99663
+          ref: 20f431f54af01334faa37a6af84bbce1260ef9c9
           path: .kernel-uapi
           sparse-checkout: include/uapi/linux/sparklink_ioctl.h
           sparse-checkout-cone-mode: false
@@ -133,7 +133,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: bde171beb2e0aee6d10515235ec4f0bb03e99663
+          ref: 20f431f54af01334faa37a6af84bbce1260ef9c9
           path: .kernel-tools
           sparse-checkout: tools/testing/selftests/sparklink
       - uses: actions/setup-python@v5
@@ -144,13 +144,13 @@ jobs:
           SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-tools
 
   kernel-containment:
-    name: Actual kernel security, TX and legacy SSAP boundaries
+    name: Actual kernel security, TX, SSAP and event copy boundaries
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: bde171beb2e0aee6d10515235ec4f0bb03e99663
+          ref: 20f431f54af01334faa37a6af84bbce1260ef9c9
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -170,3 +170,4 @@ jobs:
           python tools/testing/selftests/sparklink/run_backend_containment.py
           python tools/testing/selftests/sparklink/run_connection_tx.py
           python tools/testing/selftests/sparklink/run_ssap_containment.py
+          python tools/testing/selftests/sparklink/run_event_copy.py

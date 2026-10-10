@@ -72,3 +72,13 @@ xHCI endpoint恢复后丢回复，触发-110命令超时，有限恢复至新gen
 
 远端CI基线：[run38072489528](https://github.com/OpenSparklink/sparklink/actions/runs/38072489528)。
 这里没有宣称完整生态、标准一致性认证、PHY嗅探证据、板级校准资格或安全实机验收。
+
+## 架构与清理增补（2026-10-11）
+
+采用 [ADR 0001](decisions/0001-management-channel-service-boundaries.md)，最终连接
+数据面是每逻辑通道独立 socket fd；SSAP/服务/Profile 用户态所有者，管理/事件/
+诊断/Proxy 独立。 [三类调用审计](LEGACY_CLEANUP_20261011.md)细分立即删除、
+移入 selftests、等待新路径替代；不增加未发布 UAPI 的兼容负担。
+[BlueZ 对比](BLUEZ_COMPARISON.md)删除错误完整/优势宣称，参考官方 MGMT、
+GATT、Agent、L2CAP 和 VM 测试语义。R01/R02/R05 首批实现验证中，未完成
+每连接安全/真实其他 backend 验收；R06–R14、自然恢复及整项 issues 仍 OPEN。

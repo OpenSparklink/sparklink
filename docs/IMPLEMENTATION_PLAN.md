@@ -19,54 +19,28 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 完整 S0–S6、原 issue checklist 和 CI/安全门禁均保留；SSAP/配对策略等
 后续完整功能不作为此第一条广播/发现路径的前置依赖。部分成果不关闭整项 issue。
 
-最小 Runtime 已持稳定 `Arc<ControllerRuntime>`、每设备协议锁、IRQ RX 环
-及 RX/TX work；USB context 携带注册 generation，probe 失败撤销 owner/URB。
-标准 DLI parser/fixture 已补齐 command-credit 与五字节版本；旧 fixture
-结果仍保留，但不证明完整标准符合性。
+## 当前实施与证据（2026-10-11 重审）
 
-所有 runtime USB typed/raw 命令现共用每设备有界 Host 队列和 credit；单个
-在途命令等待匹配 Status/Complete，管理回复单独保留，raw 结果按已发送的
-sequence 解析。广播/扫描的旧 enable/disable 回复不确认较新的 intent。
-修正 pending sentinel 被误判为 resolved、导致 GC 删除未完成条目的问题；
-回复超时/传输失败停发该设备，不猜测恢复 credit。该层仍不是完整 Host：
-bootstrap credit waiter、异步 terminal correlation、Ready/fault 发布、恢复
-以及 typed 参数/数据完整事务仍未完成。
+最新生产审查基线 Linux `fc0b4d1a44b6` / 用户态 `157ec71c3b9a`；
+诊断和文档提交至 Linux `ae06d9766fdd` / 用户态 `27358b1beff4`，不表示14项
+生产缺陷已修复。具体状态以[整改计划](REVIEW_REMEDIATION_20261011.md)及后续
+提交证据为准。历史 image #33–#35/USB 不可见/固定 slk0 等阶段描述不代表现状；
+完整历史失败与协议来源保留在下文及北极星开发记录中。
 
-上一轮 image #33 无警告构建；两虚拟设备同时各 12 次 MAC 查询并混合 internal /
-raw Reset，逐条地址匹配，raw submitted/resolved 恰好各 +13、pending=0、无
-新增 timeout；随后单次拔插/索引复用 gate PASS。完整回归的精确命令归属单项
-亦 PASS；完整 96 项、21 条失败断言、0 skip、strict FAIL，仍有残留连接、
-异步完成关联与压力/背压失败，另有 printk 打断 marker。旧失败不覆盖、不删
-断言；内核未提交。这些均不证明真实 WS73、slkd/no-sudo、20 轮、四设备或
-全部生命周期条件。后续补全广播/扫描的确认与参数/数据事务、Ready/fault
-和 WS73 原生 DLI 接口，继续纵向路径；完整连接/SSAP/security policy
-原范围保留，不扩大为第一北极星前置依赖。
-原生 WS73 工作树已实现 per-interface USB/HCC/BSLE 启动序列及严格 aggregate
-解析，读取外部 board customization/PM 两份 raw 配置；完成仅为
-`sle-awaiting-dli`，尚未注册 Ready 或打通原生 DLI。生产 codec/sequencer
-合成测试 3,198 checks 与主机 ASan/UBSan/LSan PASS，lab/verifier 共 57 项
-PASS。新 image #34 的完整回归暴露原连接注入的空 slice panic，已修复并
-加空/超长帧拒绝回归；最终 #35 两条断言、fuzz、精确 command 单项和独立
-虚拟 Runtime 拔插 PASS。完整 96 项仍 24 条失败断言、strict FAIL；两条
-三设备子路径未执行，不作全分支覆盖。本轮主机 WS73=[]，真实北极星未验收。
-下一步先核验 SDK board 配置，继续 WS73 原生 DLI/Runtime 接入，再完成
-广播/扫描确认、内核事件和动态 adapter/slctl。全部原范围和门禁保留。
+已验证：每设备 Native WS73 Runtime、HCC/BSLE/DLI、typed discovery、管理租约、
+独立事件与 snoop、动态 adapter/slctl；VM 两只真实 WS73 20+2轮、普通 UID/caps0、
+同 daemon、物理拔插重接。[物理证据](evidence/ws73-vm-physical-20261010.json)
+仍保留 xHCI 警告；[一次人工错误恢复支持](evidence/ws73-vm-artificial-recovery-20261010.json)
+证明单设备有限恢复/幸存者/2轮恢复 RF，不代表自然根因或完整自主恢复验收。
+U10 保持7/8，四设备两组、完整 sandbox、连接/SSAP/安全/Bond/Profile/Proxy 待验。
 
-完整记录和证据边界见 [Runtime 开发记录](WS73_DISCOVERY_NORTH_STAR.md#runtime-第一阶段开发记录2026-10-10)。
-
-## 基线与当前证据
-
-| 项目 | 已核验状态 | 证据边界 |
-|---|---|---|
-| Linux 源码 | `e9aac11ff601da9cf9d50d0916262a285c7e9b81` + 未提交 WS73 boot / lab / Runtime 第一阶段 | 稳定每设备 Arc/协议锁/RX 环/worker，Deref 桥已移除；仍有静态 Backend enum、generation-tagged USB RX、统一 USB command Host 队列；bootstrap/terminal/Ready/fault/恢复未完整和内核 SSAP 数据库 |
-| 用户态源码 | 功能分支 `codex/sparklink-ws73`，代码提交至 `7adb796`（见交付记录） | 事件等待已移到独立任务；对象仍固定 slk0；Bond 不含可恢复凭据；没有 slk-vendord |
-| 参考实现 | libws73-usb `f4d85d0e95af2d0043432e1301fd2f6b660a4906` | 参考源码及作者 capture 只作协议证据，另列来源，不能冒充本项目实测 |
-| 新增 Host 参考 | OpenHarmony communication_nearlink_service `f0872dfaac33ffa99b80b352f6c05fba2df6414e` | 已检查分层、DLI/TCID/SSAP/安全与 HAL/桩边界；未构建/运行，不作为实测。调整见下节 |
-| WS73 boot / native transport | HCC/BSLE 新实现尚未实机验收；旧 run `ws73-run-20261009-225342`：四设备分别下载三镜像，重新枚举到 runtime，4/4 同时绑定 | 旧 run 逐个启动；并发固件上传曾失败。新 HCC/BSLE 合成测试不验证真实 SLE；DLI/Ready/RF/PM 仍未完成。旧 run 未保存完整 artifact/firmware hash，不追补伪造绑定 |
-| 本轮硬件环境 | 2026-10-09T18:59:24Z 主机只读检查：WS73 inventory 为空；隔离环境设备节点隐藏，但最新提权只读检查确认 KVM 可读写、USB nodes 存在 | 自定义 QEMU guest 已能运行；真实 WS73/RF gate 未验收。每次实机运行前重新核验，不能把隔离视图当作主机权限结论 |
-| 初始自测缺陷 | C selftest 无条件返回 0、runner 可降级 USB 模型后 PASS，已在工作树修复 | 25 项判定器测试通过；实际 guest 回归尚未运行，历史 PASS 不作新架构证据 |
-| 初始 ABI 漂移 | Python `SleConnInfo` 56B→64B；用户态 `SleDliInfo` 两字段 u8→u16，已修复 | C/Rust/Python 11 个结构、100 字段 conformance 与写入回归通过；完整 ABI/32 位/真实调用仍待验收 |
-| 软件测试 | Python 23/23、Rust workspace 135/135（含真实私有 D-Bus 静默 30s、存储与 Profile 阻塞/取消/drain/panic、Unicode 输入）；判定器 25/25；lab 16/16 | 全仓 fmt、除 slkd 外六 crate 的 all-targets 严格 clippy 通过；Bond I/O 与连接 Profile callback 已移出业务锁；slkd 未接通的策略/SSAP/transport 与旧接口 lint 仍未通过严格 CI，尚未满足完整 CI 或硬件验收 |
+采用[ADR 0001](decisions/0001-management-channel-service-boundaries.md)：每逻辑
+通道独立 socket fd 是连接阶段最终数据面；管理、事件、诊断和 Proxy 独立。
+SSAP codec/协商/事务/数据库/Profile 在 slkd，内核拥有链路机制与可信状态。
+执行[调用审计三类清单](LEGACY_CLEANUP_20261011.md)，与生命周期/恢复并行；
+先拒绝不可靠能力和恢复严格 CI，再连接 socket、用户态 SSAP/安全/Bond/Profile，
+四设备两组，其他 Native/Proxy。不以语言、行数或 ioctl 数量声称优于 BlueZ；
+[重新核对的竞争分析](BLUEZ_COMPARISON.md)按可重复行为与官方接口证据比较。
 
 ## 目标架构与所有权
 
@@ -152,13 +126,13 @@ Host 提供 typed 广播、扫描、连接事务，编码完整参数和顺序�
 
 以 Linux `include/uapi/linux/sparklink{,_ioctl}.h` 为 ABI 规范来源；新接口包含固定宽度 version/size/flags/reserved、长度/队列上限、controller/generation/sequence。C、Rust、Python 比较同一字段的 size、align、offset、enum 和 ioctl 编号，覆盖成功打开和真实调用；布局测试不只比较复制的常量。结构升级采用新版本/编号或协商，禁止静默改旧布局。
 
-三个 owner 相互独立：slkd Managed writer、slk-vendord BackendProxy owner、用户态 per-connection PDU owner。重复 owner、错误 id/lease/generation、非法状态/长度均拒绝。只读订阅与 owner 分开；Diagnostic raw 需 CAP_NET_ADMIN 并独占，进入前停止 Managed writer 的冲突活动。configfs 仅启动配置；debugfs 仅诊断；genl 与 ioctl 不再形成多个无协调写入口。32/64 位兼容、保留字段与旧 API 的弃用窗口纳入 conformance。
+三个 owner 相互独立：slkd Managed writer、slk-vendord BackendProxy owner、用户态 per-connection PDU owner。重复 owner、错误 id/lease/generation、非法状态/长度均拒绝。只读订阅与 owner 分开；Diagnostic raw 需 CAP_NET_ADMIN 并独占，进入前停止 Managed writer 的冲突活动。configfs 仅启动配置；debugfs 仅诊断；genl 与 ioctl 不再形成多个无协调写入口。32/64 位兼容与保留字段纳入 conformance。UAPI 未发布，调用者同步迁移后直接删除旧 API，无旧 ABI 兼容期。
 
 Proxy v1 使用有界 `read/write/poll`，包括 REGISTER、START/STOP/RESET/RECOVER、READY/FAILED/FAULT/HANGUP/UNREGISTER 与完整 packet。fd-close 自动 detach，旧 lease/generation 不能重新注入。READY 是初始化事实声明，Host 仍真实查询验证。先测复制/切换成本，再决定是否引入可协商 mmap ring，不让共享内存成为 v1 前提。
 
 ### SSAP、安全与 PHY
 
-内核 connection channel 定位 controller/generation/connection/peer/local+remote TCID，提供完整 SSAP PDU、顺序、bounded queue、断链和安全上下文；不拥有服务数据库。slkd Engine 拥有 codec、MTU、SSAP 分片、协商后事务、超时、remote cache、handle 分配与 Profile callback。Profile request context 包含请求 id、连接、attribute/op/offset/payload/security/deadline；read/write/method/notify/indication+ack 经真实 PDU 路由。属性/描述符的读写、认证、加密和授权分别校验。
+内核最终 connection channel 是每逻辑通道独立 socket fd，定位 controller/generation/connection/peer/local+remote TCID，提供完整 SSAP PDU、顺序、bounded queue、断链和安全上下文；不拥有服务数据库。slkd Engine 拥有 codec、MTU、SSAP 分片、协商后事务、超时、remote cache、handle 分配与 Profile callback。Profile request context 包含请求 id、连接、attribute/op/offset/payload/security/deadline；read/write/method/notify/indication+ack 经真实 PDU 路由。属性/描述符的读写、认证、加密和授权分别校验。
 
 内核保留配对时序、密码学、active credential、加密安装和强制机制；slkd 决定方法、MITM、接受/拒绝、Agent/passkey/OOB/PSK 和 trust。没有 owner、拒绝、超时或 owner 崩溃均 fail closed。Bond 采用可恢复的 wrapped credential baseline，按 controller+peer 持久化，原子写入、安全目录、0600、格式版本及敏感缓冲清理；仅有 fingerprint 不合格。opaque token 只在明确 capability 时启用。revoke 同时撤销持久存储、内核/RAL 与可选 token。默认 D-Bus 可读，写入需 root/polkit 或等价授权。
 
@@ -273,7 +247,7 @@ CI 每 PR 跑 fmt/check/clippy/unit/golden/ABI/Python/私有 D-Bus；有适用�
 
 ## 迁移与删除条件
 
-迁移开关是临时兼容措施，不成为永久双权威：新 runtime 先接 Virtual/标准 USB/WS73，每条路径显式选择 legacy/new；同一 controller 不能同时拥有两套 Host。旧用户态 ioctl 布局保持版本兼容，新 Managed/订阅/channel 通过能力协商进入；文档列出支持组合和弃用窗口。
+迁移期间同一 controller 不能同时拥有两套 Host。新 runtime 接通调用者和回归后删除 legacy；UAPI 未发布，内核/Rust/C/Python/CLI/daemon 同步替换，直接移除旧接口，不承诺旧布局兼容或永久迁移开关。文档列出实际支持组合和迁移门禁。
 
 | 旧路径 | 删除前必须满足 |
 |---|---|

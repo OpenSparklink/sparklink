@@ -1,0 +1,47 @@
+# 旧内核实验实现：调用审计与清理清单
+
+审计日期：2026-10-11。基线 Linux fc0b4d1a44b6、用户态 157ec71c3b9a；
+最新已提交 ae06d9766fdd / 27358b1beff4 的生产调用链仍相同。以下记录首批
+整改工作树及迁移条件，不能当作已提交或实机通过。UAPI 未发布，无兼容期。
+
+## 立即删除：生产测试行为及错误完成
+
+| 对象/调用链 | 本批措施 | 验收状态 |
+|---|---|---|
+| core ioctl_dispatch_security → SecurityInner::start_pairing；workers PairInfo/Option/Random/Confirm/DHKeyVerify → SecurityInner | 删除固定 nonce、ECDH 失败测试密钥降级和未验证 proof 的 Paired 转移；旧步骤 reset 后 EOPNOTSUPP，调用者不得发送认证成功回复 | 工作树已改；须实际内核编译及错误 proof/截短公钥/乱序步骤失败测试。完整每连接安全仍开放 |
+| sle_crypto Rust wrappers → sle_crypto_ffi.c；security KDF/CTR/RPA 和 core 查询调用者 | Result 传播原 errno、检查长度/计数；CTR C 临时缓冲完整成功后才提交数据/IV；失败不提交 keys/counter/address | 工作树已改；须实际函数分配/算法/密钥/部分失败注入；不是标准密码算法验收 |
+| core SEC_SM3/SM4/HMAC_TEST ioctl → SecurityInner 测试辅助/CTR counter=0 | 移除生产执行，返回 EOPNOTSUPP；删除 SecurityInner 测试辅助，迁算法/错误覆盖到 selftests；编号/绑定随调用者迁移删除 | 工作树已改；不能继续用旧 ioctl 成功测试证明生产能力 |
+| backend SleController::open/send_command/send_data/reset → UART/SPI 自制 CommandComplete(Success) | 删除伪成功及仅编码却报告发送成功；无真实硬件实现的操作 EOPNOTSUPP | 工作树已改；纯 framing 留作测试，不宣称 UART/SPI 支持 |
+| slkd config → main defaults，未消费策略 | 显式配置错误拒绝；不支持的非默认策略拒绝。不得静默降级安全 | R06 下一小批；尚未改，不勾选完成 |
+
+## 移入测试：保留有效开发支撑
+
+| 内容 | 专用位置/边界 | 状态 |
+|---|---|---|
+| crypto FFI 故障注入、私有状态计数检查 | tools/testing/selftests/sparklink；编译实际 Rust 包装/security 及实际 CTR C 函数，依赖用可控 stub，明确非 RF/非算法向量 | 本批添加，不把 stub 编入生产内核 |
+| UART/SPI 纯 codec、分片/边界 | selftests framing；硬件未接通不能用 codec 或本地 Complete 替代支持 | 待保留/迁移有效用例；伪 Complete 直接删除，无业务价值 |
+| 核心 Virtual、连接/SSAP 模型及注入 ioctl | 专用 Virtual backend / selftests；相同 Runtime、生命周期和契约 | K1/K19 待迁；不先删除有价值失败用例 |
+| QEMU 一次 bulk IN81 错误、autoscan/re-enum/open 故障工具 | 已在专用 qemu-sle-dli 和 VM 工具；默认关闭、单对象 guard、有故障边界回归 | 保留；人工故障支持与自然根因/自动恢复验收分开 |
+| Profile callback 阻塞/cancel/drain/panic 测试、transport codec | 旧 profile0 注册和连接 callback 确实接通；Native profile1 不注册；请求回调未接通。隔离未接通功能或迁到测试 crate | 不误删已接通生命周期回归；不加全局 allow(dead_code) |
+
+## 等待替代：先迁调用者及回归，再删除
+
+| 旧路径/调用者 | 唯一替代所有者与删除门禁 | issues |
+|---|---|---|
+| core CONN_SEND → conn.send 入 tx_queue + controller.send_data；查询 tx_pending；队列无消费者/handle0 使用错误 | 每连接发送事务/credit/提交；最终通道 socket。>64包、错误/短写/零credit、断链/旧generation、多设备；删除重复队列/直发及旧 UAPI | K4/K17，R03/R10 |
+| workers TCID SERVICE_MGMT/动态 reliable → sle_ssap；core SSAP ioctl → 内核数据库 | slkd SSAP Engine/数据库，kernel 完整 PDU socket；跨语言权限位、长度/预算/offset/deadline、notify credit/连接归属、Profile 实际路由回归后删旧 Engine | K6/K17、U3，R04/R07/R08 |
+| SecurityInner controller-local 状态、SEC_ENCRYPT_ON 提前提交；Bond 仅元数据 | 每连接机制/匹配真实完成，Agent/policy/Bond 用户态；错误 proof、安装拒绝/超时、restore/revoke、真实互通后删旧状态及控制接口 | K7/K18、U5，R01/R02/R09 |
+| core legacy read_iter → 旧 event dequeue/copy；Native subscription 另一实现 | 独立订阅、完整记录 copy 后提交、移除唤醒；迁 lib/工具 read 调用者，坏地址/部分 copy/短 buffer/多订阅后删旧队列/UAPI | K3、U2，R12 |
+| backend enum、core USB/serdev 注册；serdev 回调忽略 ctx/全局 parser | 可引用 Backend 注册接口，bus 在 drivers；parser/waiter per-runtime+generation；USB=n/m、driver y/m、Virtual卸载和 WS73 原路径后删枚举/全局切换 | K1/K4/K9/K10/K12，R11/R13 |
+| slkd transport 未消费、Profile/HID read/write/notify 未路由、过时配置和文档 | 接通、明确实验隔离或删除；保留有效 codec/生命周期测试，严格 check/test/clippy/fmt/release，不以 allow(dead_code) 消除报错 | U3/U8，R14 |
+
+## 每批门禁和证据
+
+本批只约束不可靠能力，不声称完成安全、其他总线或 SSAP。每批签名小提交记录
+调用者、删除范围、回归、开放条件，推送后更新现有 issues 的实现/开发测试/实机/
+未决状态；不关闭整项。旧源码历史由 git 保留，故障证据文件不删不覆盖。
+
+WS73 Native HCC/BSLE/discovery 生产实现不改；新内核必须重新 VM 启动并用两只
+真实 WS73 20 轮交换随机广播/扫描，再检查恢复/幸存者。编译或 fixture 不能证明
+真实路径未退化。自然恢复/根因未明继续开放，四设备、服务 sandbox 未验收。
+架构迁移按 [ADR 0001](decisions/0001-management-channel-service-boundaries.md)。

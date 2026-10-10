@@ -1356,3 +1356,36 @@ snapshot 小于200ms、另一设备真实 DLI 查询正常、100ms内保持 pend
 复现见内核 `Documentation/networking/ws73-development.rst` 的
 `--native-ws73 --native-ws73-tx-barrier`，编译显式选择具有matching rust-src的
 `--rustc`。没有提前关闭整项issue或把开发支撑提升为真实北极星验收。
+
+### 提前 Complete 后发送失败及在途拔插（部分成果）
+
+新增三个独立真实驱动路径的合成门禁：先经 IN 交付成功 Complete、保留 OUT，
+再返回 STALL、成功但短写一字节，或在 OUT 尚未完成时移除模型。普通成功
+路径默认不变。USB worker/Host 的实现仍是上一批 #71，没有重编内核或改
+用户态 Rust；模型、静态 C 测试和严格 verifier 是本批变化。
+
+三种最终场景均 PASS：接受 Status 可见而 query 仍 pending；不会发布成功
+features；只有目标 Runtime 注销，旧 raw result/admission/snapshot 返回
+ENODEV，旧 event subscription HUP。失败 driver 两次读取保留首个 EPIPE /
+EREMOTEIO，夹着幸存设备的18个实际 DLI 查询。拔插模式在 device_del 前
+再次经 QMP 确认 OUT 仍 pending，必须留下实际 CANCEL、不能接受迟到成功。
+从 pending barrier 后测得注销分别1849.309 / 1847.687 / 26.692ms。
+
+重加后新 generation/address、正确十字节 features 与另一设备原 generation
+均保持隔离；保留旧 fd 并按 monotonic 实测至少2200ms，跨过旧包原始 deadline
+后再次检查旧 fd 不复活、幸存设备可查询、新查询仍属于新实例。相同最终
+compiled unplug 测试对旧#69检测到1967.032ms阻塞并 FAIL。
+
+九新增verifier用例/259 kernel harness通过；成功OUT race及原生发现、事件、
+管理权限回归通过；新QEMU原96-case本轮1058OK/0FAIL/0SKIP/3既存WARN。
+新客体普通应用合成20+2轮/同slkd及owner/TX-off/重插、189TX/172命令链、
+2251USB/177空完成/22匹配/32独立snoop和8observe/4writer通过，Host/guest
+佐证一致。真实入口仍无 WS73；真实七项0/7、board NOT_ASSERTED。合成取消
+不能冒称物理拔插，模型成功不能冒称 RF；四设备两组及完整 S0–S6 和全部
+原整项 issues 继续开放。未重跑Rust tests/clippy/远端CI。
+
+本地 `.dev/tx-terminal-final-evidence.json`冻结本批源码、实际model/object/QEMU/
+内核/guest/capture与旧反例hash；首次三场景运行与加强后的最终记录都保留。
+复现：内核 `run_runtime_lifecycle.py --native-ws73` 加
+`--native-ws73-tx-terminal out-error`、`short-out` 或 `unplug`，其余参数见
+`Documentation/networking/ws73-development.rst`。

@@ -315,10 +315,14 @@ def corroborate_diagnostic(run, capture, diagnostic):
             or diagnostic.get('automatic_fault_recovery_acceptance') is not False):
         raise CaptureError('scoped successful diagnostic syscall run required')
     version = diagnostic.get('format_version', 1)
-    if type(version) is not int or version not in (1, 2) or (version == 2 and diagnostic.get('admission_copyout_requested') is not True) or (version == 1 and diagnostic.get('admission_copyout_requested') not in (None, False)):
+    if (type(version) is not int or version not in (1, 2, 3)
+            or (version >= 2 and diagnostic.get('admission_copyout_requested') is not True)
+            or (version == 1 and diagnostic.get('admission_copyout_requested') not in (None, False))
+            or (version == 3 and diagnostic.get('admission_eviction_requested') is not True)
+            or (version < 3 and diagnostic.get('admission_eviction_requested') not in (None, False))):
         raise CaptureError('explicit diagnostic admission evidence version required')
     try:
-        verify_records(diagnostic['records'], admission=version == 2)
+        verify_records(diagnostic['records'], admission=version >= 2, eviction=version == 3)
     except (ValueError, KeyError, TypeError) as error:
         raise CaptureError('invalid diagnostic syscall records') from error
     owner = run['initial'][0]
@@ -339,6 +343,33 @@ def corroborate_diagnostic(run, capture, diagnostic):
             item['admission_copyout'] = admissions[0]
         proofs.append(item)
         previous = row['end_wall_ns']
+    if version == 3:
+        eviction_rows = [r for r in diagnostic['records'] if 'eviction' in r]
+        start = eviction_rows[0]['start_wall_ns']
+        end = eviction_rows[-2]['end_wall_ns']
+        if not previous <= start < end < owner['observed_wall_ns']:
+            raise CaptureError('eviction phase differs from diagnostic registration/time')
+        fill_proofs = []
+        for row in eviction_rows[:-1]:
+            proof = command_reply(capture, owner, 0x0406, row['start_wall_ns'], row['end_wall_ns'], b'', expected[0x0406])
+            fill_proofs.append({'caller':'C eviction fill', 'request_id':row['request_id'],
+                                'local_admission_seq':row['seq'], **proof})
+        def window(key, first, last):
+            return [r for r in capture[key] if r['bus']==owner['bus'] and r['device']==owner['device']
+                    and first <= r['wall_ns'] <= last]
+        # The enclosing interval includes inter-query gaps, too. No extra
+        # opcode or repeated OUT/reply may hide outside a single fill's window.
+        if (window('commands', start, end) != [p['command'] for p in fill_proofs]
+                or window('complete', start, end) != [p['reply'] for p in fill_proofs]):
+            raise CaptureError('eviction fill phase contains extra or unordered commands/replies')
+        rejection = eviction_rows[-1]
+        if (not end <= rejection['start_wall_ns'] < rejection['end_wall_ns'] < owner['observed_wall_ns']
+                or window('commands', rejection['start_wall_ns'], rejection['end_wall_ns'])
+                or window('complete', rejection['start_wall_ns'], rejection['end_wall_ns'])):
+            raise CaptureError('evicted-ID/retained-ID quiet observation sent a command or consumed a reply')
+        proofs.extend(fill_proofs)
+        proofs.append({'caller':'C eviction rejection', 'commands':0, 'replies':0, 'evidence':rejection})
+        previous = rejection['end_wall_ns']
     cli = diagnostic['cli_queries']
     if len(cli) != 4:
         raise CaptureError('four actual diagnostic CLI queries required')

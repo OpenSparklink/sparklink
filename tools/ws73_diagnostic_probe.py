@@ -33,8 +33,10 @@ ORDER = ['metadata'] * 4 + ['inherited_fd_cap0', 'read_only_output', 'partial_ou
 QUERIES = [('mac', 0x0406, 6), ('features', 0x0403, 10), ('version', 0x0404, 5), ('buffers', 0x0402, 6)]
 
 
-def verify_records(records, final=True, admission=False):
-    tags = ('case', 'identity', 'phase', 'admission') if admission else ('case', 'identity', 'phase')
+def verify_records(records, final=True, admission=False, eviction=False):
+    if eviction and not admission:
+        raise ValueError('eviction evidence requires preceding admission gate')
+    tags = ('case', 'identity', 'phase') + (('admission',) if admission else ()) + (('eviction',) if eviction else ())
     if any(sum(k in r for k in tags) != 1 for r in records):
         raise ValueError('unknown or ambiguous diagnostic record')
     cases = [r for r in records if 'case' in r]
@@ -69,6 +71,7 @@ def verify_records(records, final=True, admission=False):
             if type(r['partial_prefix']) is not int or r['partial_prefix'] != prefix:
                 raise ValueError('actual copy boundary mismatch')
     if admission: verify_admissions(records)
+    if eviction: verify_evictions(records)
     child = [r for r in records if r.get('identity') == 'inherited_fd_child']
     if child != [{'identity': 'inherited_fd_child', 'uid': 1000, 'euid': 1000, 'cap_eff': 0, 'cap_prm': 0}] or any(type(r[k]) is not int for r in child for k in ('uid', 'euid', 'cap_eff', 'cap_prm')):
         raise ValueError('actual inherited fd child identity/capabilities required')
@@ -123,12 +126,75 @@ def verify_admissions(records):
             raise ValueError('replay changed admission/resolution/timeout accounting')
 
 
+def verify_evictions(records):
+    """Actual second-fd retention boundary; wire and quiet window checked apart."""
+    rows = [r for r in records if 'eviction' in r]
+    if [r['eviction'] for r in rows] != ['fill'] * 33 + ['old_id_and_result_rejected']:
+        raise ValueError('33 actual fills and one ordered eviction rejection interval required')
+    foreign = next(i for i, r in enumerate(records) if r.get('case') == 'foreign_author_with_lease')
+    if [i for i, r in enumerate(records) if 'eviction' in r] != list(range(foreign+1, foreign+35)):
+        raise ValueError('foreign author refusal must precede contiguous second-fd eviction gate')
+    metadata = [r for r in records if r.get('case') == 'metadata']
+    generation = metadata[0]['generation']
+    previous_seq, previous_end = metadata[-1]['seq'], metadata[-1]['end_wall_ns']
+    counters = ('submitted', 'resolved', 'pending', 'timeouts')
+    previous_counts = None
+    for i, row in enumerate(rows):
+        for field in ('generation', 'request_id', 'seq', 'opcode', 'start_wall_ns', 'end_wall_ns'):
+            if type(row[field]) is not int:
+                raise ValueError('exact typed eviction identity and interval required')
+        if (row['generation'] != generation or row['opcode'] != 0x0406
+                or not previous_end <= row['start_wall_ns'] < row['end_wall_ns']):
+            raise ValueError('eviction registration/opcode/ordered clock mismatch')
+        before, after = [], []
+        for counter in counters:
+            for suffix, values in [('before', before), ('after', after)]:
+                value = row[f'{counter}_{suffix}']
+                if type(value) is not int or not 0 <= value < 1 << 32:
+                    raise ValueError('actual eviction bounded counters required')
+                values.append(value)
+        if (before[2] or after[2] or before[3] != after[3]
+                or previous_counts is not None and before != previous_counts):
+            raise ValueError('eviction quiet accounting/continuity mismatch')
+        if i < 33:
+            if (row['request_id'] != i+1 or not previous_seq < row['seq'] < 1 << 32
+                    or after[:2] != [v+1 for v in before[:2]] or row['data'] != metadata[0]['data']):
+                raise ValueError('eviction fill must admit and complete exactly once')
+            value = SleDiagnosticSubmit(version=1, generation=generation, request_id=i+1,
+                                        timeout_ms=5000, opcode=0x0406, action=1)
+            if row['input'] != bytes(value).hex():
+                raise ValueError('eviction canonical submission input mismatch')
+            value.seq = row['seq']
+            result = SleDiagnosticResult(version=1, generation=generation, seq=row['seq'],
+                                         opcode=0x0406, state=2, data_len=6)
+            result.data[:6] = bytes.fromhex(row['data'])
+            if row['output'] != bytes(value).hex() or row['result_bytes'] != bytes(result).hex():
+                raise ValueError('eviction complete admission/result bytes mismatch')
+            previous_seq = row['seq']
+        else:
+            first, retained = rows[:2]
+            old_query = SleDiagnosticResult(version=1, generation=generation, seq=first['seq'])
+            if (row['request_id'] != 1 or row['seq'] != first['seq'] or before != after
+                    or row['retry_results'] != [-1]*3 or row['retry_errnos'] != [errno.ESTALE]*3
+                    or type(row['result_query_return']) is not int or row['result_query_return'] != -1
+                    or type(row['result_query_errno']) is not int or row['result_query_errno'] != errno.ENOENT
+                    or row['old_input'] != first['input'] or row['retry_outputs'] != [first['input']]*3
+                    or row['result_query_input'] != bytes(old_query).hex()
+                    or row['result_query_output'] != row['result_query_input']
+                    or row['retained_input'] != retained['input'] or row['retained_output'] != retained['output']
+                    or row['retained_result'] != retained['result_bytes']
+                    or type(row['quiet_observation_ms']) is not int or row['quiet_observation_ms'] != 100
+                    or row['end_wall_ns'] - row['start_wall_ns'] < 100_000_000):
+                raise ValueError('old-ID/sequence must reject unchanged, retained ID2 retries and quiet counters must remain')
+        previous_counts, previous_end = after, row['end_wall_ns']
+
+
 def run(args):
     if (os.getuid() != 0 or os.geteuid() != 0 or not Path('/scratch-root-uuid').is_file()
             or 'ws73.diagnostic=1' not in Path('/proc/cmdline').read_text().split()):
         raise ValueError('privileged opt-in scratch-root VM required')
     output = args.output.resolve(); output.mkdir(mode=0o700)
-    record = {'format_version': 2, 'admission_copyout_requested': True, 'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
+    record = {'format_version': 3, 'admission_copyout_requested': True, 'admission_eviction_requested': True, 'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'probe': file_record(args.probe), 'sources': [file_record(Path(__file__))],
               'index': args.index, 'records': [], 'cli_queries': [], 'uid': os.getuid(), 'euid': os.geteuid()}
@@ -154,7 +220,7 @@ def run(args):
                         line, pending = pending.split(b'\n', 1); item = json.loads(line)
                         record['records'].append(item); save()
                         if item.get('phase') == 'BEFORE_DAEMON_PASS':
-                            verify_records(record['records'], final=False, admission=True)
+                            verify_records(record['records'], final=False, admission=True, eviction=True)
                             for name, opcode, _ in QUERIES:
                                 generation = record['records'][0]['generation']
                                 command = [str(args.slkconfig), '--adapter', str(args.index), '--generation', str(generation), 'query', name]
@@ -173,7 +239,7 @@ def run(args):
             selector.close()
             record['probe_exit'] = child.wait(timeout=5)
             if record['probe_exit'] or pending or not acknowledged: raise ValueError('probe exit or retirement handshake')
-        verify_records(record['records'], admission=True)
+        verify_records(record['records'], admission=True, eviction=True)
         record['status'] = 'DIAGNOSTIC_RESULT_LIVE_PASS'; save()
     except BaseException as error:
         record.update(status='FAIL', error=str(error)); save(); raise

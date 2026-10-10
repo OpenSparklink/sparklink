@@ -54,6 +54,41 @@ def admission_fixture(records=None):
     return output
 
 
+def eviction_fixture(records=None):
+    records = copy.deepcopy(admission_fixture() if records is None else records)
+    meta = [r for r in records if r.get('case') == 'metadata']
+    generation = meta[0]['generation']; fills = []
+    for i in range(33):
+        value = SleDiagnosticSubmit(version=1, generation=generation, request_id=i+1,
+                                    timeout_ms=5000, opcode=0x0406, action=1)
+        raw = bytes(value).hex(); value.seq = meta[-1]['seq']+i+1
+        result = SleDiagnosticResult(version=1, generation=generation, seq=value.seq,
+                                     opcode=0x0406, state=2, data_len=6)
+        result.data[:6] = bytes.fromhex(meta[0]['data'])
+        start = meta[-1]['end_wall_ns']+20+i*20
+        fills.append({'eviction':'fill', 'generation':generation, 'request_id':i+1,
+                      'seq':value.seq, 'opcode':0x0406, 'start_wall_ns':start, 'end_wall_ns':start+10,
+                      'data':meta[0]['data'], 'input':raw, 'output':bytes(value).hex(),
+                      'result_bytes':bytes(result).hex(), 'submitted_before':4+i, 'submitted_after':5+i,
+                      'resolved_before':4+i, 'resolved_after':5+i, 'pending_before':0, 'pending_after':0,
+                      'timeouts_before':0, 'timeouts_after':0})
+    first, retained = fills[:2]
+    query = SleDiagnosticResult(version=1, generation=generation, seq=first['seq'])
+    start = fills[-1]['end_wall_ns']+10
+    negative = {'eviction':'old_id_and_result_rejected', 'generation':generation, 'request_id':1,
+                'seq':first['seq'], 'opcode':0x0406, 'start_wall_ns':start, 'end_wall_ns':start+100_000_010,
+                'quiet_observation_ms':100, 'retry_results':[-1]*3, 'retry_errnos':[116]*3,
+                'old_input':first['input'], 'retry_outputs':[first['input']]*3,
+                'result_query_return':-1, 'result_query_errno':2,
+                'result_query_input':bytes(query).hex(), 'result_query_output':bytes(query).hex(),
+                'retained_input':retained['input'], 'retained_output':retained['output'],
+                'retained_result':retained['result_bytes'], 'submitted_before':37, 'submitted_after':37,
+                'resolved_before':37, 'resolved_after':37, 'pending_before':0, 'pending_after':0,
+                'timeouts_before':0, 'timeouts_after':0}
+    at = next(i for i,r in enumerate(records) if r.get('case')=='foreign_author_with_lease')+1
+    return records[:at]+fills+[negative]+records[at:]
+
+
 class DiagnosticEvidenceTests(unittest.TestCase):
     def test_exact_fixture_and_predaemon_phase_are_accepted_only_for_scoped_verifier(self):
         records = fixture(); verify_records(records); verify_records(records[:-2], final=False)
@@ -128,6 +163,36 @@ class DiagnosticEvidenceTests(unittest.TestCase):
                                    diagnostic_verify=True, fault_recovery=recovery)
             with patch('ws73_target.ordinary_identity'), self.assertRaisesRegex(ValueError, 'requires real fault-recovery VM mode'):
                 _run(args)
+
+    def test_eviction_requires_actual_33_fills_after_foreign_author_check(self):
+        records = eviction_fixture()
+        verify_records(records, admission=True, eviction=True)
+        verify_records(records[:-2], final=False, admission=True, eviction=True)
+        for mutation in ('missing', 'foreign_order', 'mode', 'repeat_sequence'):
+            bad = copy.deepcopy(records); at = next(i for i,r in enumerate(bad) if 'eviction' in r)
+            if mutation=='missing': bad.pop(at)
+            elif mutation=='foreign_order': bad[at-1],bad[at] = bad[at],bad[at-1]
+            elif mutation=='repeat_sequence': bad[at+1]['seq'] = bad[at]['seq']
+            with self.assertRaises(ValueError):
+                verify_records(bad, admission=True, eviction=mutation!='mode')
+
+    def test_eviction_rejection_retained_bytes_and_quiet_accounting_are_strict(self):
+        for field,value in [('retry_errnos',[2]*3), ('retry_outputs',['00']*3),
+                            ('result_query_errno',116), ('result_query_output','00'),
+                            ('retained_output','00'), ('retained_result','00'),
+                            ('submitted_after',38), ('timeouts_after',1), ('pending_before',False),
+                            ('quiet_observation_ms',99), ('end_wall_ns',1)]:
+            rows = eviction_fixture(); negative = next(r for r in rows if r.get('eviction')=='old_id_and_result_rejected')
+            negative[field] = value
+            with self.assertRaises(ValueError): verify_records(rows, admission=True, eviction=True)
+
+    def test_eviction_fill_canonical_bytes_counter_continuity_and_clock_are_checked(self):
+        for field,value in [('request_id',3), ('seq',False), ('input','00'), ('output','00'),
+                            ('result_bytes','00'), ('data','00'), ('submitted_after',7),
+                            ('resolved_before',6), ('start_wall_ns',0)]:
+            rows = eviction_fixture(); fills = [r for r in rows if r.get('eviction')=='fill']
+            fills[1][field] = value
+            with self.assertRaises(ValueError): verify_records(rows, admission=True, eviction=True)
 
 
 if __name__ == '__main__': unittest.main()

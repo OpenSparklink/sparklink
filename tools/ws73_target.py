@@ -25,6 +25,7 @@ from types import SimpleNamespace
 
 from ws73_north_star import file_record, ordinary_identity
 from ws73_capture import check_capture_stats, read_capture
+import ws73_vm_native_root as native_vm
 
 USERSPACE = Path(__file__).resolve().parents[1]
 LINUX = USERSPACE.parent / 'linux'
@@ -52,12 +53,13 @@ def write_json(path, data):
     temporary.replace(path)
 
 
-def config_required(path):
+def config_required(path, module_profile=False):
     lines = path.read_text().splitlines()
     for name in ['RUST', 'SPARKLINK', 'SPARKLINK_SLE', 'SPARKLINK_WS73_USB',
                  'USB_MON', 'NET_9P', 'NET_9P_VIRTIO', '9P_FS', 'VIRTIO_PCI']:
-        if f'CONFIG_{name}=y' not in lines:
-            raise ValueError(f'CONFIG_{name}=y required; do not silently omit capture or evidence export')
+        value = 'm' if module_profile and name in ['SPARKLINK_WS73_USB', 'NET_9P', 'NET_9P_VIRTIO', '9P_FS'] else 'y'
+        if f'CONFIG_{name}={value}' not in lines:
+            raise ValueError(f'CONFIG_{name}={value} required; do not silently omit capture or evidence export')
 
 
 def board_files(directory):
@@ -90,13 +92,15 @@ def prepare(args):
                 'physical_acceptance':False, 'status':'PREPARING', 'inputs':[],
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     try:
-        config_required(args.kernel_build / '.config')
+        module_profile = native_vm.enabled(args)
+        config_required(args.kernel_build / '.config', module_profile)
         lab = lab_module()
         images = lab.firmware(args)
         board = board_files(args.runtime_config_dir)
         inputs = [args.kernel_build/'arch/x86/boot/bzImage',args.kernel_build/'.config',
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
+                  HERE/'ws73_vm_native_root.py',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',
                   HERE/'ws73_target_control.py',
                   HERE/'ws73_bindings_probe.c',HERE/'ws73_bindings_probe.py',
@@ -124,7 +128,7 @@ def prepare(args):
             (root/name).mkdir(parents=True,exist_ok=True)
         (root/'tmp').chmod(0o1777)
         shutil.copy2(args.busybox,root/'bin/busybox')
-        for name in ['sh','mount','mdev','sleep','poweroff','dmesg','su','id','grep','awk',
+        for name in ['sh','mount','mdev','sleep','poweroff','dmesg','su','id','grep','awk','insmod','uname',
                      'seq','cat','pidof','chmod','mkdir','chown','kill','sync','setsid']:
             (root/'bin'/name).symlink_to('busybox')
         programs = {'dbus-daemon':args.dbus_daemon,'tcpdump':args.tcpdump}
@@ -173,16 +177,22 @@ def prepare(args):
 <busconfig><type>system</type><listen>unix:path=/run/slkbus</listen><auth>EXTERNAL</auth>
 <policy context="default"><allow user="*"/><allow own="*"/><allow send_destination="*"/><allow receive_sender="*"/></policy>
 <include>/etc/sparklink.conf</include></busconfig>''')
+        if module_profile:
+            native_vm.stage(args, manifest, root, USERSPACE, copy_elf)
         manifest['guest_files'] = [file_record(p) for p in sorted(root.rglob('*')) if p.is_file() and not p.is_symlink()]
         archive = output/'initramfs.cpio.gz'
-        with (output/'pack.log').open('wb') as log,archive.open('wb') as packed:
-            files = subprocess.Popen(['find','.','-print0'],cwd=root,stdout=subprocess.PIPE)
-            cpio = subprocess.Popen(['cpio','--null','-o','--format=newc','--owner=0:0'],cwd=root,
-                                    stdin=files.stdout,stdout=subprocess.PIPE,stderr=log);files.stdout.close()
-            gzip = subprocess.Popen(['gzip','-n'],stdin=cpio.stdout,stdout=packed,stderr=log);cpio.stdout.close()
-            if any([files.wait(),cpio.wait(),gzip.wait()]): raise ValueError('packing failed')
+        if module_profile:
+            native_vm.pack(args, manifest, root)
+        else:
+            with (output/'pack.log').open('wb') as log,archive.open('wb') as packed:
+                files = subprocess.Popen(['find','.','-print0'],cwd=root,stdout=subprocess.PIPE)
+                cpio = subprocess.Popen(['cpio','--null','-o','--format=newc','--owner=0:0'],cwd=root,
+                                        stdin=files.stdout,stdout=subprocess.PIPE,stderr=log);files.stdout.close()
+                gzip = subprocess.Popen(['gzip','-n'],stdin=cpio.stdout,stdout=packed,stderr=log);cpio.stdout.close()
+                if any([files.wait(),cpio.wait(),gzip.wait()]): raise ValueError('packing failed')
         if any(file_record(r['path']) != r for r in manifest['inputs']+manifest['userspace_sources']):raise ValueError('inputs/sources changed during preparation')
-        manifest['artifacts'] = [file_record(output/name) for name in ['bzImage','kernel.config','initramfs.cpio.gz']]
+        artifact_names = ['bzImage','kernel.config','initramfs.cpio.gz'] + (['root.btrfs'] if module_profile else [])
+        manifest['artifacts'] = [file_record(output/name) for name in artifact_names]
         manifest['qemu'] = file_record(args.qemu)
         manifest['status'] = 'PREPARED'
     except Exception as error:
@@ -197,12 +207,17 @@ def prepared(path):
     m=json.loads((path/'manifest.json').read_text())
     if m.get('status')!='PREPARED' or m.get('physical_acceptance') is not False:raise ValueError('prepared environment manifest required')
     artifacts=m['artifacts']
-    if len(artifacts)!=3 or {Path(r['path']).name for r in artifacts}!={'bzImage','kernel.config','initramfs.cpio.gz'}:raise ValueError('exact kernel/config/initramfs artifact set required')
+    expected = {'bzImage','kernel.config','initramfs.cpio.gz'} | ({'root.btrfs'} if 'native_vm' in m else set())
+    if len(artifacts)!=len(expected) or {Path(r['path']).name for r in artifacts}!=expected:raise ValueError('exact kernel/config/initramfs/root artifact set required')
     for record in artifacts:
         if Path(record['path']).resolve()!=(path/Path(record['path']).name).resolve():raise ValueError('prepared artifact path differs from actual QEMU input')
     for record in artifacts+[m['qemu']]:
         if file_record(record['path']) != record:raise ValueError('prepared artifact changed: '+record['path'])
-    config_required(path/'kernel.config')
+    if 'native_vm' in m:
+        for record in m['native_vm']['qemu_data']:
+            Path(record['path']).resolve().relative_to((path/'qemu-data').resolve())
+            if file_record(record['path']) != record:raise ValueError('prepared QEMU data changed: '+record['path'])
+    config_required(path/'kernel.config', 'native_vm' in m)
     return m
 
 
@@ -311,6 +326,7 @@ def _run(args):
        'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False)),
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
+    m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py')]
     m['qmp_guest_hotplug']=passthrough
     process=monitor=channel=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
@@ -350,6 +366,11 @@ def _run(args):
                 # guest cannot seal dmesg after an environment timeout.
                 index=command.index('-append')+1
                 command[index]=command[index].replace('loglevel=5', 'loglevel=6')
+            if 'native_vm' in package:
+                options, append = native_vm.launch(args.prepared.resolve(), output, package)
+                command += options
+                command[command.index('-append')+1] += append
+                m['native_vm'] = package['native_vm']
             m['qemu_args']=command;write_json(output/'manifest.json',m)
             with (output/'qemu-stderr.log').open('wb') as stderr,(output/'console.log').open('wb') as log:
                 process=subprocess.Popen(command,stdout=subprocess.DEVNULL,stderr=stderr)
@@ -426,8 +447,20 @@ def _run(args):
                 except (TimeoutError,ConnectionResetError):pass
                 m['qemu_exit']=process.returncode
                 text=transcript.decode(errors='replace').replace('\r','')
+                # Generic dracut uses terminal control sequences immediately
+                # before switch-root output; they are not part of markers.
+                text=re.sub(r'\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)', '', text)
+                text=re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text)
                 if process.returncode or 'WS73_TARGET_FAILURE:' in text or 'WS73_TARGET_FINISHED' not in text:raise ValueError('guest environment failed')
                 if kernel_fault(text+(share/'kernel.log').read_text()):raise ValueError('kernel fault in environment')
+                if 'native_vm' in package:
+                    marker = 'WS73_TARGET_NATIVE_VM_ROOT: ' + package['native_vm']['release'] + ' NVMe/Btrfs signed-module'
+                    if text.splitlines().count(marker) != 1 or text.splitlines().count('WS73_TARGET_NATIVE_VM_TAINT: 0') != 1:
+                        raise ValueError('native module VM root/signature proof missing')
+                    status = (share/'slkd-process-status.txt').read_text()
+                    if (not re.search(r'^Name:\s+slkd$', status, re.M)
+                            or not re.search(r'^Uid:\s+0\s+0\s+0\s+0$', status, re.M)):
+                        raise ValueError('native module VM daemon is not root')
                 if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
                 if not support and not passthrough and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
                 if passthrough and 'WS73_TARGET_PASSTHROUGH_SUPPORT: PASS' not in text:raise ValueError('QMP passthrough proof missing')
@@ -468,6 +501,8 @@ def _run(args):
         m['host_timeline']=file_record(output/'host-inventory.jsonl')
         m['host_lifecycle_files']=[file_record(output/name) for name in
             ['usb-lifecycle.events', 'usb-lifecycle.log'] if (output/name).is_file()]
+        if (output/'root.btrfs').is_file():
+            m['vm_disk_after'] = file_record(output/'root.btrfs')
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
     return 0 if m['status'] in ['SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','ENVIRONMENT_FINISHED'] else 1
@@ -488,6 +523,9 @@ def main():
         pack.add_argument('--'+name,type=Path,required=True)
     pack.add_argument('--tcpdump',type=Path,default=Path('/usr/bin/tcpdump'))
     pack.add_argument('--python',type=Path,default=Path(sys.executable))
+    for name in native_vm.OPTIONS:
+        pack.add_argument('--'+name.replace('_','-'),type=Path,
+                          help='optional signed module/NVMe scratch-root VM profile; all three options required')
     for name in ['run','support']:
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)

@@ -23,9 +23,33 @@ fail() {
     sync
     poweroff -f
 }
-mount -t proc none /proc || fail proc
-mount -t sysfs none /sys || fail sysfs
-mount -t devtmpfs none /dev || mdev -s
+ensure_mount() {
+    if [ -r /proc/mounts ]; then
+        while read -r source target kind rest; do
+            [ "$target" = "$1" ] || continue
+            [ "$kind" = "$2" ] || fail "unexpected filesystem on $1: $kind"
+            return
+        done < /proc/mounts
+    fi
+    mount -t "$2" none "$1" || fail "$1"
+}
+ensure_mount /proc proc
+ensure_mount /sys sysfs
+ensure_mount /dev devtmpfs
+if [ -f /scratch-root-uuid ]; then
+    [ "$(uname -r)" = "$(cat /expected-release)" ] || fail 'VM release mismatch'
+    grep -q '^/dev/nvme0n1 / btrfs ' /proc/mounts || fail 'private NVMe/Btrfs root missing'
+    [ ! -d /sys/module/sparklink_ws73_usb ] || fail 'WS73 module loaded before capture'
+    [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'initial VM kernel taint'
+    # mkfs --rootdir preserves host uid1000. Normalize only the VM code/config
+    # tree before starting any ordinary app; never expose host system paths.
+    chown 0:0 / /init /native-evidence-modules.sh /native-ws73-module.sh /expected-release /scratch-root-uuid || fail 'VM root ownership'
+    for directory in /bin /usr /lib /lib64 /etc; do
+        [ ! -d "$directory" ] || chown -R 0:0 "$directory" || fail 'VM code ownership'
+    done
+    . /native-evidence-modules.sh
+    echo "WS73_TARGET_NATIVE_VM_ROOT: $(uname -r) NVMe/Btrfs signed-module"
+fi
 mount -t 9p -o trans=virtio,version=9p2000.L evidence /evidence || fail 'private evidence share'
 chown 0:0 /evidence; chmod 0755 /evidence
 mkdir /evidence/application; chown 1000:1002 /evidence/application; chmod 0700 /evidence/application
@@ -42,15 +66,26 @@ done
 grep -q 'listening on usbmon1' /evidence/capture-stats.txt || fail 'capture readiness'
 chmod 0600 /evidence/ws73.pcap /evidence/capture-stats.txt
 cat "/proc/$capture/status" > /evidence/capture-process-status.txt || fail 'capture process credentials'
+if [ -f /native-ws73-module.sh ]; then
+    . /native-ws73-module.sh
+    [ -d /sys/module/sparklink_ws73_usb ] || fail 'VM WS73 module missing'
+    [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'VM module signature/taint'
+fi
 /bin/dbus-daemon --config-file=/etc/dbus.conf --nofork > /evidence/dbus.log 2>&1 &
 for n in $(seq 1 100); do [ -S /run/slkbus ] && break; sleep 0.1; done
 [ -S /run/slkbus ] || fail 'system bus startup'
-/bin/slkd --storage /tmp/bonds -n > /evidence/slkd.log 2>&1 & daemon=$!
+storage=/tmp/bonds
+if [ -f /scratch-root-uuid ]; then
+    storage=/var/lib/sparklink
+    mkdir -p "$storage"; chown 0:0 "$storage"; chmod 0700 "$storage"
+fi
+/bin/slkd --storage "$storage" -n > /evidence/slkd.log 2>&1 & daemon=$!
 echo 'WS73_TARGET_CAPTURE_READY'
 /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready 0 || fail 'first independent Ready'
 echo 'WS73_TARGET_READY: slot=0'
 /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready 1 || fail 'second independent Ready'
 echo 'WS73_TARGET_READY: slot=1'
+cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'daemon process credentials'
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c '/bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py support-input' || fail 'ordinary serial input'
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py support || fail 'synthetic environment integration'
@@ -72,6 +107,10 @@ kill -INT "$capture"
 wait "$capture" || fail 'capture shutdown'
 chown 0:1000 /evidence/ws73.pcap /evidence/capture-stats.txt; chmod 0640 /evidence/ws73.pcap /evidence/capture-stats.txt
 dmesg > /evidence/kernel.log
+if [ -f /scratch-root-uuid ]; then
+    [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'final VM kernel taint'
+    echo 'WS73_TARGET_NATIVE_VM_TAINT: 0'
+fi
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-support || fail 'sealed actual capture'
 fi

@@ -254,13 +254,17 @@ BLS和grubenv测试标记逐字节不变。另有小型文件系统测试覆盖�
 创建、symlink、损坏payload、中途复制失败、未知模块和修改BLS的拒绝路径。
 这些结果仅证明文件系统生命周期，**没有运行真实主机的grubby分支**。
 
-实际主机安装需管理员权限，把上述`install`的目标改为`/`；工具要求sudo/root，
+当前用户只授权**虚拟机部署和设备测试**。不得在本次开发中将目标改为主机
+`/`、安装主机引导项、重启主机或修改主机服务/权限。此前未执行主机安装。
+下面的主机路径说明仅保留为将来的部署设计，不是待执行动作或权限请求。
+
+实际主机安装路径需管理员权限；工具要求sudo/root，
 安装前后读取`grubby --default-kernel`并要求相同，不覆盖现有发行版文件或
 保存的默认选择，也不运行grub配置重建/内核安装hooks或自动重启。实际回滚
 前必须已启动保留的发行版内核；若默认已被外部修改，先恢复原发行版默认，
 工具才执行移除。选择实验项并重启会中断主机任务，需要单独安排。
 
-当前仍无非交互sudo（`sudo -n id -u`返回需要密码），没有向主机安装或更改
+没有向主机安装或更改
 BLS。该包是**受控加载前的内核启动包**；固件/板级校准、slkd/slctl及
 udev/D-Bus/systemd策略部署仍需独立核对和封存，不能将安装包通过记为原生
 WS73 Ready或普通用户应用通过。原生1/2/4、物理隔离、无人工恢复、完整
@@ -282,3 +286,64 @@ WS73 Ready或普通用户应用通过。原生1/2/4、物理隔离、无人工�
 当前未安装`/usr/sbin/slkd`，未启动实际systemd服务，也未将状态目录声明
 计为完整服务sandbox或native Bond/key持久化资格。实际daemon/固件/权限包
 及系统总线测试继续推进。
+
+## VM 中的模块、daemon 与普通用户控制
+
+用户只授权 VM。`ws73_native_service_bundle.py`在新私有目录以独立 Cargo target
+离线构建 release workspace，核对三个 firmware hash header 和选定 combined SHA256，
+按版本目录封存五个程序、cdylib、五个固件/板级文件及策略配置。输出不安装或
+启动主机服务；板级文件仅检查长度，`board_qualification=NOT_ASSERTED`。
+每个文件记录 SHA256、尺寸和权限，Rust/策略 source scope 必须干净且构建前后
+不变；其他开发脚本变化不被声称为编译输入。
+
+```sh
+python3 tools/ws73_native_service_bundle.py \
+  --source /path/to/sparklink \
+  --kernel-manifest /path/to/native-artifacts/manifest.json \
+  --firmware-dir /path/to/selected-111-files \
+  --runtime-config-dir /path/to/explicit-board-files \
+  --combined-sha256 <selected-combined-sha256> \
+  --output /path/to/new-private-service-bundle
+```
+
+`ws73_target.py prepare`可选三个必须同时提供的参数，增加模块 VM profile。
+它复用成功的 NVMe/Btrfs scratch boot 证据，逐项匹配 kernel/config、QEMU、
+initramfs、签名 WS73 module 和 release daemon 的 Rust/策略源文件。`modprobe
+--show-depends`只读取私有模块树；所有 insmod 在 guest 内进行。9p及其依赖必须
+为模块，WS73也必须为模块；原有 builtin profile 的条件保持独立。
+
+```sh
+python3 tools/ws73_target.py prepare \
+  --kernel-build /path/to/native-build \
+  --qemu /path/to/qualified-qemu \
+  --busybox /path/to/static-busybox \
+  --dbus-daemon /path/to/dbus-daemon \
+  --firmware-dir /path/to/selected-111-files \
+  --runtime-config-dir /path/to/explicit-board-files \
+  --native-module-tree /path/to/stage/lib/modules/<release> \
+  --native-boot-smoke /path/to/passed-root-smoke/manifest.json \
+  --native-service-bundle /path/to/private-service-bundle \
+  --output /path/to/new-private-vm-profile
+
+python3 tools/ws73_target.py support \
+  --prepared /path/to/private-vm-profile --output /path/to/new-support-run \
+  --timeout 240 --hotplug --empty-bulk --warm
+
+python3 tools/ws73_target.py run \
+  --prepared /path/to/private-vm-profile --output /path/to/new-real-run \
+  --ports <first-host-usb-port> <second-host-usb-port> --qmp-hotplug
+```
+
+每轮从封存的1GiB Btrfs文件复制独立可写根，guest只挂载该 emulated NVMe和
+本轮私有 evidence 9p目录。完整 initramfs先完成 NVMe/Btrfs启动，再 switch-root；
+guest将复制来的代码树属主规范为root，启用9p依赖及usbmon捕获后才加载签名
+WS73模块。guest创建专属用户/组，root运行slkd、uid1000无capabilities运行slctl，
+系统类型D-Bus应用仓库策略，uid1001 observer检查控制拒绝。不会修改主机组、
+udev、服务、引导项或磁盘；真实 USB透传仍遵循既有显式端口、禁止隐式reset和
+detach的边界。日志记录真实slkd exec后的凭据、根路径和最终taint0。
+
+root daemon使用`/var/lib/sparklink`（0700），版本化release executable与部署包
+一致。此profile的PID1是受控init脚本，**未运行根目录systemd unit及sandbox**；
+静态unit校验不替代实际服务sandbox验收。合成support不计真实空口；真实RF加
+QMP移除/重接不计物理拔插或自动故障恢复。原生主机对照条件继续开放，完整
+S0–S6方案和原issue验收清单保持不变。

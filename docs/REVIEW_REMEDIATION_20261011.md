@@ -190,3 +190,26 @@ Linux bde171beb2e0aee6d10515235ec4f0bb03e99663 与本批用户态采用表32权�
 D-Bus入口拒绝无效/超长属性。Python超长write也拒绝u16回绕。[实现/语义门禁](SSAP_OPERATIONS.md)
 记录C/Rust/Python2052输入、167 Rust/33 Python/9 kernel实际测试；不是wire Engine
 或真实服务验收，R07与整项服务/socket/security issues保持OPEN。
+
+[本批新镜像回归](evidence/ws73-vm-ssap-operations-regression-20261011.json)
+确认两只真实WS73 20+2轮、最长620ms、22份独立RX/1163 USB零drop，普通用户、
+同daemon、幸存generation保持，VM无warning/taint；人工恢复约10272.715ms。
+[固定两仓库提交的CI](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)
+9个作业成功且实际日志已核对。R07的声明/转换/入口拒绝已修，完整每peer权限、
+descriptor配置和SSAP服务互通仍待替代Engine，不提前关闭整项。
+
+### Bluetooth／BlueZ分析再次核对
+
+2026-10-11再次收到的分析与已纳入的版本内容相同；逐项按
+[ADR 0001](decisions/0001-management-channel-service-boundaries.md)核对，保留
+第一北极星及完整S0–S6。R01/R02/R05/R06已限制危险或未接通入口；R03/R10已
+统一backend提交和成功记账；R04/R08删除未达标准wire Engine和无归属通知；
+R07本批对齐跨语言权限语义。上述均为限定整改，安全、连接、SSAP整项未验收。
+R09/R12状态与事件提交、R11/R13每设备parser/总线所有权迁移仍待实现；
+R14严格CI已恢复，但完整构建/发布/硬件矩阵仍OPEN。
+
+后续优先闭合自然启动超时/重枚举/消失及单设备有限恢复，且并行推进旧代码清理；
+再按socket开发门禁与真实双设备数据、用户态SSAP/每连接安全/Bond/Profile、
+四设备两组、其他Native/Proxy顺序推进。无新UAPI兼容承诺，调用者同步迁移后
+可直接删除旧接口。诊断观察不代替Ready，人工故障不代替自然根因，VM证据不
+代替未授权的宿主原生对照；北极星仍7/8。

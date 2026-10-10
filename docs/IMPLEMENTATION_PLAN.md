@@ -48,6 +48,15 @@ SSAP codec/协商/事务/数据库/Profile 在 slkd，内核拥有链路机制�
 四设备两组，其他 Native/Proxy。不以语言、行数或 ioctl 数量声称优于 BlueZ；
 [重新核对的竞争分析](BLUEZ_COMPARISON.md)按可重复行为与官方接口证据比较。
 
+2026-10-11再次提供的Bluetooth／BlueZ分析已按最新提交复核，职责/所有权、
+socket/UAPI契约、六步依赖与失败测试门禁均保留；复核对应
+[14项当前状态](REVIEW_REMEDIATION_20261011.md#bluetoothbluez分析再次核对)。
+最新bde171beb2e0/aece3407e1c1对齐SSAP权限及真实调用入口；
+[新镜像实机证据](evidence/ws73-vm-ssap-operations-regression-20261011.json)通过
+真实20+2轮及单对象人工恢复支持，[固定提交CI](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)
+9作业通过。标准Engine/socket/安全/Profile和自然故障根因仍OPEN，不能据此
+宣称服务互通、完整自主恢复或优于BlueZ。
+
 ## 目标架构与所有权
 
 ### NearLink Host 参考纳入（2026-10-10）

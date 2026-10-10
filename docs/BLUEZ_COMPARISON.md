@@ -23,10 +23,10 @@
 |---|---|---|
 | WS73 Native discovery | VM 两只真实 WS73 20+2 轮，普通用户、同 daemon、物理重接；动态 adapter/独立事件/snoop | 故障根因及完整自主恢复；四设备两组并行；完整服务 sandbox |
 | 人工错误恢复 | 单对象 bulk IN81 注入，真实 RF 后恢复新 generation，幸存者不变 | 不能证明自然消失/重枚举根因闭合；宿主原生对照未授权/未执行 |
-| 连接/socket | 旧连接实现及开发测试存在 | 重复发送/credit/状态缺陷；原生 socket 未实现，无真实数据通道验收 |
-| 安全/Bond | 旧 API 与 Bond 元数据存在 | 生产测试配对整改、每连接认证、真实安装/可恢复凭据、Agent 互通 |
-| SSAP/Profile/HID | 注册/连接 callback 框架及测试存在 | 权限位/预算/credit 缺陷、用户态 Engine、请求路由、服务和应用互通 |
-| 其他 backend/发布 | UART/SPI codec、Virtual 模型、部署文件存在 | 真实 backend、Proxy、权限/PM/兼容/全 sandbox 与严格 CI |
+| 连接/socket | 影子TX ring/重复提交已删，解析wire handle并在backend成功后记账，实际Rust/C边界测试通过 | credit/协议/通道状态仍待接通；原生socket未实现，无真实数据通道验收 |
+| 安全/Bond | 危险旧配对/测试密钥降级已删，FFI失败传播；Bond元数据及错误边界测试存在 | 每连接认证、标准向量、真实安装/可恢复凭据、Agent互通 |
+| SSAP/Profile/HID | 未达标准旧wire Engine/通知队列已删；权限命名/转换/入口已对齐，实验框架隔离 | 用户态Engine/PDU socket、每peer权限/预算/credit/ACK、请求路由、服务和应用互通 |
+| 其他 backend/发布 | UART/SPI不再伪造成功，Virtual模型/部署文件存在；固定提交9个严格CI作业成功 | 真实backend、Proxy、权限/PM/完整构建/兼容/全sandbox矩阵 |
 
 [物理证据](evidence/ws73-vm-physical-20261010.json)和
 [人工恢复证据](evidence/ws73-vm-artificial-recovery-20261010.json)保留其历史
@@ -46,3 +46,9 @@ generation、owner、恢复状态和证据链是我们的设计重点，需要�
 或过时“已完成”标记替代接通与验收。
 
 旧内核SSAP wire Engine已因标准格式不符限制并移除；用户态标准Engine尚未接通，不能将历史codec用例或本地staging视为服务互通。见[当前边界](SSAP_LEGACY_CONTAINMENT.md)。
+
+2026-10-11再次收到的分析已对最新bde171beb2e0/aece3407e1c1核对；
+[权限整改与实际调用门禁](SSAP_OPERATIONS.md)、
+[新镜像20+2回归](evidence/ws73-vm-ssap-operations-regression-20261011.json)和
+[CI](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)记录当前变化。
+保留物理历史证据及其xHCI warning，不用本批无warning替代历史故障根因。

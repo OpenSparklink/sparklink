@@ -80,3 +80,12 @@ T/XS 20001-2025表72/75/76规定分片消息控制码；旧内核offset/短包�
 Engine/数据库在slkd接通PDU socket后实施；本地staging不是服务发布。见
 [整改和门禁](../SSAP_LEGACY_CONTAINMENT.md)。不通过修改旧格式的长度界限
 继续保留第二套生产Engine。
+
+## 再次核对（2026-10-11）
+
+用户再次提供的分析内容与既有分析一致（文本SHA256
+f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a）。
+本ADR继续采用，无架构回退。最新权限整改见[契约](../SSAP_OPERATIONS.md)，
+14项最新实现/测试/未决条件见[整改记录](../REVIEW_REMEDIATION_20261011.md)。
+声明位验证、框架存在和CI成功不证明服务互通或安全强制；实际socket、用户态
+Engine、安全/Bond和自然恢复门禁仍需独立交付。已验证discovery持续回归。

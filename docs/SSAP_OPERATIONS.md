@@ -42,7 +42,18 @@ C/Rust/Python编译实际头/库模块，比对2052组输入（所有低11位组
 strict Clippy通过；实际library /dev/null测试证明非法值先拒绝、有效值保留真实
 ENOTTY；实际D-Bus方法在故意持有state锁时仍及时返回InvalidArgs。Kernel实际
 模块9项含全部保留位/权限表及超长注册前不变，核心对象构建无代码warning。
-make已有jobserver警告仍记录。新完整image/VM真实WS73回归另行记录。
+make已有jobserver警告仍记录。
+
+[新完整镜像实机回归](evidence/ws73-vm-ssap-operations-regression-20261011.json)
+对应内核 bde171beb2e0、编译用户态 aece3407e1c1：真实双设备20+2轮全部匹配，
+最长620ms；host独立核对22份RX、1163 USB记录且零drop。UID1000/caps0，
+slkd PID525/start330及bus owner不变，幸存generation2不变，目标1→3，
+最终两只STOP_CONFIRMED；VM warning0/taint0。单对象人工IN81故障至新Ready
+约10272.715ms；10秒发现门限从成功scan Complete计时，不套用于故障恢复。
+本次没有物理拔插、自然故障根因或完整自主恢复验收。
+[CI38081123658](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)
+9个作业成功，实际日志核对167 Rust/33 Python/141工具及9项SSAP/11项sender；
+与本文后续文档提交区分编译head，冻结生产source hashes保留在私有bundle。
 
 这是R07的掩码/转换/调用入口整改及Engine基础类型。R04/R07/R08、U3/K6/K19
 整项继续OPEN：标准消息控制码、PDU socket/owner/预算、协商/事务/deadline/取消、

@@ -70,3 +70,13 @@ slk-experimental；默认daemon运行时依赖图无该crate，默认停止旧�
 严格检查覆盖default及all-targets/all-features，不增加dead-code lint压制。
 
 本批R04/R08详细范围见[SSAP路径限制](SSAP_LEGACY_CONTAINMENT.md)；删除不可靠旧行为不等于替代Engine已经完成。
+
+### 权限调用者迁移与实机复核
+
+bde171beb2e0/aece3407e1c1将旧Profile声明和实际library/D-Bus调用入口统一到
+[验证权限类型](SSAP_OPERATIONS.md)：保留位、descriptor缩窄及超长值拒绝，
+不新增第二套Engine。2052组C/Rust/Python语义矩阵及实际syscall/锁前拒绝通过。
+[新镜像20+2实机](evidence/ws73-vm-ssap-operations-regression-20261011.json)与
+[9作业CI](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)
+通过；默认daemon仍不链接实验Profile。残余local staging/旧UAPI、每peer数据库、
+全局默认设备/总线枚举和内核现有global dead_code仍按替代门禁处理，未记为已清完。

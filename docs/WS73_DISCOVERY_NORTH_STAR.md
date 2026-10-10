@@ -438,6 +438,37 @@ fuzz 和精确 command isolation case PASS，未再观察到该 panic。独立
 initramfs、源码/dirty diff 与文件 hashes。内核复现说明在
 `Documentation/networking/ws73-development.rst`。
 
+### 每设备初始化锁和撤销注册竞争（合成支撑进展）
+
+Linux 原生 WS73 注册改为持有独立 transport 引用，在每设备 lifecycle mutex
+下调用 `open()`，期间释放 Runtime 协议状态锁。SETUP 快照可查询；打开成功
+前租约返回 `EAGAIN`，不消耗租约计数，也不允许无租约 raw send。成功打开
+仅建立传输条件，不据此宣称 Ready。slkd 现有按 adapter 的注册协调会重试
+未完成的租约获取；本批未修改其 Rust 实现。
+
+注销先关闭 admission，再等待初始化结束。迟到成功只能进入清理路径并
+关闭一次，失败自行清理部分资源；注册失败按旧 generation 撤销，不能
+移除复用 index 的新设备。原生启动不重新发布已退役 owner。
+
+新增 guest 内外部模块夹具及 C 测试：成功、EIO、打开中注销后成功、打开中
+注销后 EIO 四路径，十次 EAGAIN/no-send、完整 SETUP 元数据、index 预留、
+同 index 复用时旧 fd/旧注销身份、精确 get/put/close、幸存模型实际 DLI
+查询及模块卸载均通过。最终 #74 四次快照0.002/0.001/0.001/0.002ms；旧#71使用相同 guest
+可执行文件和 byte-identical 夹具 C object 阻塞10065.533ms并失败。模块
+release 元数据按旧内核单独编译，未强制加载不匹配模块。
+
+267 kernel harness / 四路径夹具 / 十二传输和生命周期回归通过；原96项
+1058OK/0FAIL/0SKIP/3既存WARN通过。新内核普通应用合成20+2轮、同 slkd、
+TX-off、重插、幸存设备、独立捕获和 C/Python 权限门禁通过。用户态 Rust
+源码和实际程序 hash 不变，未新增 Rust tests/clippy、远端CI或32位验证。
+
+复现入口为内核 `run_native_open_test.py`，详见内核开发文档；夹具只在
+隔离 guest 中加载，不是产品传输驱动。本地
+`.dev/native-open-final-evidence.json` 保存最终源文件、编译输入、内核、
+模块、guest、capture 和旧反例 hash；早期#73及修正记录保留。真实硬件
+入口仍未得到两只 WS73，真实七项0/7、board NOT_ASSERTED。真实空口、四
+设备两组、完整 S0–S6 及每个原 issue 的剩余验收继续保留，整项不提前关闭。
+
 2026-10-09T19:50:32Z 主机只读 inventory：WS73=[]，KVM 可读写。本轮没有
 真实 USB、BSLE、DLI 或 RF 验收；slkd/no-sudo、20 轮和四设备仍未完成。
 下一步导出并核验 SDK 板级配置、接入原生 DLI 查询与 Runtime 生命周期，

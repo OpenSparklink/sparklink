@@ -265,3 +265,20 @@ BLS。该包是**受控加载前的内核启动包**；固件/板级校准、slk
 udev/D-Bus/systemd策略部署仍需独立核对和封存，不能将安装包通过记为原生
 WS73 Ready或普通用户应用通过。原生1/2/4、物理隔离、无人工恢复、完整
 动态依赖/PM/兼容和S0–S6继续开放，两个acceptance标记保持false。
+
+## 用户态部署准备
+
+`slctl`的全局选项现在在创建runtime和连接D-Bus之前解析。`--help`、
+`--version`和单独`help`无需服务或设备；`--session`和一轮命令的`--adapter`
+选择继续支持，缺少adapter参数/命令先以退出2报错。命令开始后的参数保留
+给原dispatcher，包括`txpower -12`，不会把负数误解析成全局选项。
+旧封存binary在无bus环境中`--help`失败，新release binary对应离线查询
+退出0；现有真实CLI/隔离D-Bus扫描鲜度及Complete后完整10秒窗口测试已通过。
+这只验证参数与测试peer行为，不增加真实硬件验收项。
+
+系统服务增加`StateDirectory=sparklink`和`StateDirectoryMode=0700`，使systemd
+负责创建`/var/lib/sparklink`后再应用已有`ReadWritePaths`限制。服务仍以root
+身份拥有系统D-Bus名称；普通用户的slctl授权由已有`sparklink`组策略管理。
+当前未安装`/usr/sbin/slkd`，未启动实际systemd服务，也未将状态目录声明
+计为完整服务sandbox或native Bond/key持久化资格。实际daemon/固件/权限包
+及系统总线测试继续推进。

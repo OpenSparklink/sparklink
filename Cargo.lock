@@ -964,6 +964,7 @@ name = "slctl"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "clap",
  "libsparklink",
  "nix 0.30.1",
  "rustyline",

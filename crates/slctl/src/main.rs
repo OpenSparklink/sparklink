@@ -2,12 +2,34 @@ mod commands;
 
 use std::process;
 
+use clap::Parser;
 use rustyline::DefaultEditor;
 use rustyline::error::ReadlineError;
 
 const PROMPT: &str = "[slk]# ";
 
+#[derive(Debug, Parser)]
+#[command(name = "slctl", version, about = "SparkLink control tool", after_help = COMMAND_HELP)]
+struct Cli {
+    /// Use the session bus for isolated tests.
+    #[arg(long)]
+    session: bool,
+
+    /// Select an adapter for a one-shot command.
+    #[arg(long, value_name = "PATH", requires = "command")]
+    adapter: Option<String>,
+
+    /// Run one command, or start the interactive shell when omitted.
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    command: Vec<String>,
+}
+
 fn main() {
+    let cli = Cli::parse();
+    if cli.command == ["help"] {
+        print_help();
+        return;
+    }
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -16,19 +38,14 @@ fn main() {
             process::exit(1);
         });
 
-    if let Err(e) = rt.block_on(run()) {
+    if let Err(e) = rt.block_on(run(cli)) {
         eprintln!("error: {e}");
         process::exit(1);
     }
 }
 
-async fn run() -> anyhow::Result<()> {
-    let mut args = std::env::args().skip(1).collect::<Vec<_>>();
-    let session = args.first().is_some_and(|a| a == "--session");
-    if session {
-        args.remove(0);
-    }
-    let conn = if session {
+async fn run(cli: Cli) -> anyhow::Result<()> {
+    let conn = if cli.session {
         zbus::Connection::session().await?
     } else {
         zbus::Connection::system().await?
@@ -36,15 +53,11 @@ async fn run() -> anyhow::Result<()> {
     let mut ctx = commands::Context::new(conn);
 
     // One-shot commands make automation reproducible.
-    if !args.is_empty() {
-        if args.len() >= 2 && args[0] == "--adapter" {
-            ctx.dispatch(&["select", &args[1]]).await?;
-            args.drain(..2);
+    if !cli.command.is_empty() {
+        if let Some(adapter) = &cli.adapter {
+            ctx.dispatch(&["select", adapter]).await?;
         }
-        if args.is_empty() {
-            anyhow::bail!("missing command");
-        }
-        let parts = args.iter().map(String::as_str).collect::<Vec<_>>();
+        let parts = cli.command.iter().map(String::as_str).collect::<Vec<_>>();
         return ctx.dispatch(&parts).await;
     }
     let mut rl = DefaultEditor::new()?;
@@ -91,8 +104,10 @@ async fn run() -> anyhow::Result<()> {
 }
 
 fn print_help() {
-    println!(
-        "\
+    println!("{COMMAND_HELP}");
+}
+
+const COMMAND_HELP: &str = "\
 Commands:
   daemon                        Show the bus-authenticated slkd owner/PID/UID
   list                          List adapters
@@ -132,9 +147,7 @@ Commands:
   peer <sub>                    Peer capability queries
   bonded [list|remove <addr>]   Manage bonded devices
   help                          Print this help
-  quit                          Exit"
-    );
-}
+  quit                          Exit";
 
 fn dirs_history_path() -> Option<String> {
     std::env::var("HOME")

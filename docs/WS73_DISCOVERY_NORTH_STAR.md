@@ -886,3 +886,24 @@ PID/UID，另检查内核process start_ticks。控制PASS仍是EVIDENCE_PENDING�
 RX_CORROBORATED；不代表固件/板级资格或PHY嗅探器。抓包来源仍须审查，
 合成fixture只验证解析和拒绝错误，不能满足七项实机验收。本机WS73=[]，
 整项issues与完整S0–S6继续OPEN。见[可复现操作与边界](WS73_PHYSICAL_TEST.md)。
+
+## 生产 D-Bus 观察/控制授权（2026-10-10，部分成果）
+
+系统策略从全用户任意控制改为默认逐项观察、sparklink 组控制、root 持有服务。
+Properties.Set、敏感或有副作用的读取、新方法、省略接口与 unique-owner 写入
+均需授权。公开属性仍是公共读取，静态 XML 不过滤属性消息体。管理员一次性
+部署和组加入与应用运行分开，应用无需 sudo/capability。
+
+实际 guest 门禁显式加载生产 XML：root slkd、uid1000 主组1002/补充组1000
+控制、uid1001 非组观察。两种应用的 UID/GID 与四类 capability=0 被检查；
+未授权用户不能直接访问 chardev，但观察成功，16条总线拒绝和组用户服务名
+拒绝成功，状态未变/无 admission。组用户再完成合成20轮、同 daemon PID/
+owner 的拔插后2轮与 TX-off。原 uid1000 daemon/CLI 会话门禁也通过。
+
+145 harness、145 workspace、36物理工具测试与改动crate strict clippy PASS；
+完整原96-case QEMU strict PASS（1054 OK/0 FAIL/0 SKIP/3旧WARN）。首轮
+guest 调试镜像过大解包失败被保留，guest 副本裁掉调试符号后最终门禁通过；
+源码/策略/输入前后不变。见 `.dev/bus-policy-production-gate-v3/manifest.json`、
+`.dev/bus-policy-session-gate/manifest.json` 与[授权文档](DBUS_AUTHORIZATION.md)。
+静态策略不实现内核 Managed/Diagnostic writer lease 或全部 raw DLI/其他入口
+隔离，不能关闭 K#5/U#6。主机 WS73=[]，未运行真实控制或抓包，七项仍待验。

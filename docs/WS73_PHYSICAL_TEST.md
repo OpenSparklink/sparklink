@@ -13,6 +13,11 @@
 使用系统 D-Bus；工具拒绝 root、setid 身份与 effective/permitted/ambient capability。
 slctl 可执行文件也不得带 setuid/setgid 或 file capability。
 
+系统 D-Bus 使用[观察/控制策略](DBUS_AUTHORIZATION.md)：未授权用户仅查看，
+管理员一次性加入 `sparklink` 组的用户可控制。安装后的新会话确认 `id` 包含
+该组，再运行 slctl；不要用开放的 session bus 代替生产授权。内核 owner lease
+与直接 ioctl 的权限隔离仍待实现，静态总线策略不能算完整权限 issue 已完成。
+
 选定两个固定物理 USB 端口，例如 `1-2.1.1`、`1-2.1.2`。工具从 sysfs 验证
 ffff:3733、真实原生驱动绑定、metadata、streaming、每代次地址/版本/80-bit features。
 它拒绝标为 synthetic/fixture 的设备。`slctl daemon` 通过总线返回实际 slkd

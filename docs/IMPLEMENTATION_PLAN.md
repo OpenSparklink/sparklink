@@ -445,3 +445,14 @@ RX_CORROBORATED仍须实际来源与固件/板级/部署审查，不自动算七
 和实际uid1000合成CLI门禁PASS；96-case完整回归1057 OK/0 FAIL/0 SKIP/3旧WARN。
 WS73=[]，未运行真实闭环；全部原issues、四设备两组和完整S0–S6继续保留。
 见[物理验收操作](WS73_PHYSICAL_TEST.md)。
+
+### 生产 D-Bus 授权（2026-10-10，部分成果）
+
+默认逐项只读、sparklink 组控制、root 拥有服务；敏感/副作用读取、属性写入、
+未来方法、接口省略和 unique-owner 不能绕过授权。公开属性不得包含秘密。
+真实 guest UID1001 观察/16条拒绝、UID1000 补充组授权/capability=0、root
+daemon 同 PID/owner 的合成20轮+重插2轮/TX-off 门禁通过；原会话门禁保持。
+145harness/145workspace/36工具与改动crate strict clippy PASS，原96-case
+1054 OK/0 FAIL/0 SKIP/3旧WARN；首轮过大调试镜像失败保留，最终输入/源码未变。
+这是 D-Bus 集成证据；内核唯一writer/Diagnostic/raw权限、真实WS73空口、四设备
+与完整S0–S6继续待验，所有原issues保持OPEN。见[策略与测试边界](DBUS_AUTHORIZATION.md)。

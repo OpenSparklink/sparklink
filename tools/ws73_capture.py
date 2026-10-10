@@ -211,8 +211,15 @@ def corroborate(run, capture):
     """Require exact receiver-side bytes in each successful CLI observation."""
     if run.get('scope') != 'physical' or run.get('status') != 'CONTROL_PASS_EVIDENCE_PENDING':
         raise CaptureError('successful physical control run required; simulations excluded')
+    if run.get('hotplug_method', 'PHYSICAL_UNPLUG_REPLUG') != 'PHYSICAL_UNPLUG_REPLUG':
+        raise CaptureError('QMP disconnect excluded from physical unplug corroboration')
     # Recheck the recorded descriptor boundary independently of the recorder's
     # class/status label. Renaming a synthetic control record is not hardware.
+    physical_descriptors(run)
+    return _corroborate_control(run, capture)
+
+
+def physical_descriptors(run):
     for r in [*run['initial'],run['replacement']]:
         descriptors=r.get('descriptors')
         if not isinstance(descriptors,dict) or set(descriptors)!={'manufacturer','product','serial'}:
@@ -222,6 +229,16 @@ def corroborate(run, capture):
                 raise CaptureError('invalid recorded USB descriptor')
             if value and ('synthetic' in value.lower() or 'fixture' in value.lower()):
                 raise CaptureError('synthetic descriptors excluded from physical corroboration')
+
+
+def corroborate_passthrough(run, capture):
+    """Real RF with QMP guest lifecycle, never physical unplug acceptance."""
+    if (run.get('scope') != 'real WS73 RF with QMP guest-detach control support'
+            or run.get('status') != 'CONTROL_PASSTHROUGH_EVIDENCE_PENDING'
+            or run.get('hotplug_method') != 'QMP_DEVICE_DEL_ADD'
+            or run.get('physical_acceptance') is not False):
+        raise CaptureError('explicit passthrough QMP control run required')
+    physical_descriptors(run)
     return _corroborate_control(run, capture)
 
 

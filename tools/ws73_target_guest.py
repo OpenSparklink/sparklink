@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 
-from ws73_capture import command_reply, check_capture_stats, corroborate, corroborate_synthetic, discovery, read_capture, CaptureError
+from ws73_capture import command_reply, check_capture_stats, corroborate, corroborate_synthetic, corroborate_passthrough, discovery, read_capture, CaptureError
 from ws73_north_star import daemon_identity, healthy_native_runtime, ordinary_identity, registration
 
 EVIDENCE = Path('/evidence')
@@ -241,6 +241,14 @@ def verify_support():
         except CaptureError:pass
         else:raise ValueError('physical corroborator admitted synthetic control')
         renamed=dict(control,scope='physical',status='CONTROL_PASS_EVIDENCE_PENDING')
+        # Verify the independent descriptor boundary after testing the QMP
+        # method boundary. Neither renaming scope nor removing that label
+        # can promote synthetic bytes to a physical unplug receipt.
+        try:corroborate(renamed,capture)
+        except CaptureError as error:
+            if 'QMP disconnect excluded' not in str(error):raise
+        else:raise ValueError('QMP method promoted to physical unplug')
+        renamed.pop('hotplug_method',None)
         try:corroborate(renamed,capture)
         except CaptureError as error:
             if 'synthetic descriptors excluded' not in str(error):raise
@@ -286,11 +294,25 @@ def support_input():
     print('WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1',flush=True)
 
 
+def verify_passthrough():
+    run=json.loads((EVIDENCE/'application/passthrough-control/run.json').read_text())
+    identities=[*run['initial'],run['replacement']]
+    capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
+    packets=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
+    if packets!=capture['packet_count']:raise ValueError('passthrough capture packet count mismatch')
+    proofs=corroborate_passthrough(run,capture)
+    (EVIDENCE/'passthrough-control-proofs.json').write_text(json.dumps({
+        'scope':'real WS73 RF with QMP guest-detach control support',
+        'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')
+    print('WS73_TARGET_PASSTHROUGH_SUPPORT: PASS',flush=True)
+
+
 if __name__=='__main__':
     action=sys.argv[1]
     if action=='ready':ready(int(sys.argv[2]))
     elif action=='support':support()
     elif action=='verify-support':verify_support()
+    elif action=='verify-passthrough':verify_passthrough()
     elif action=='instructions':instructions()
     elif action=='support-input':support_input()
     elif action=='bindings-writer':bindings(writer=True)

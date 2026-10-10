@@ -54,6 +54,8 @@ echo 'WS73_TARGET_READY: slot=1'
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c '/bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py support-input' || fail 'ordinary serial input'
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py support || fail 'synthetic environment integration'
+elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
+    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
 else
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py instructions || fail 'physical mapping'
     # The only interactive shell is uid1000; raw capture and slkd remain root.
@@ -71,6 +73,9 @@ chown 0:1000 /evidence/ws73.pcap /evidence/capture-stats.txt; chmod 0640 /eviden
 dmesg > /evidence/kernel.log
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-support || fail 'sealed actual capture'
+fi
+if grep -q 'ws73.passthrough=1' /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-passthrough || fail 'sealed QMP passthrough capture'
 fi
 echo 'WS73_TARGET_FINISHED'
 sync

@@ -112,3 +112,23 @@ customize/open/BOOT_FINISH用于一次有界暖采纳，无hub reset或重新上
 单独复核；当前封存组合为当轮冷上传111的1-2.1.1与保留110的1-2.1.3。
 两者DLI version tuple相同，不能据此推断两只都是111。完整拔插隔离曾失败，
 自动恢复及设备消失根因未闭环，见[恢复与验收](WS73_RECOVERY.md)。
+
+
+### 故障恢复参考：协议关闭与芯片复位是不同层级
+
+继续核对 libws73-usb f4d85d0e95af2d0043432e1301fd2f6b660a4906：
+`src/ws73_usb_control.c` 的 reset_device 使用运行态 register endpoints，
+读 GLB_RST_CRG_CTL0(0x4001f118)，设置 mask0x10 后写回，等待 boot-mode
+重新枚举；它不是 libusb_reset_device 的 USB 总线复位。两者不能混写。
+`src/ws73_host_bridge.c` 另行按原路径重新打开并确认该路径有两个端点，
+避免 wait_mode 被另一只已经 boot 的 WS73 满足。这支持恢复预算与确认必须
+按物理端口记录的设计；不允许“任意一只复位成功”使当前 owner 恢复成功。
+
+参考实现读寄存器失败时会退为只写 RST_MASK；本项目尚未实现/验证芯片复位，
+不能据此执行未知寄存器写入或宣称恢复完成。下一层实现须保留原位、读失败
+终止、先撤销当前 generation 并停止该 owner URB/worker、跨重枚举有限预算、
+仅同端口确认 boot/runtime，然后完整重新查询并通过广播/扫描 OFF。不可复位
+整个 hub，也不可把无 handle 的 Absent当作可以发命令的运行态故障。
+
+kernel92 的真实 QMP guest-detach 对照20+2轮已通过，但主机物理连接未掉线，
+不会据此关闭物理根因或自主恢复 issues；详情见 WS73_RECOVERY.md。

@@ -655,3 +655,35 @@ STOP_CONFIRMED。capture SHA256
 本地 `.dev/physical-retained-off-initial20-evidence.json` 仅证明初始阶段；未执行
 物理拔插，完整control在确认拔出时EOF，整体environment也保留FAIL，不能升格
 为完整北极星通过。北极星仍4/8；设备.4仍缺失、根因与自动恢复issues继续开放。
+
+
+### 真实 RF / QMP 单 owner 断开对照（kernel92）
+
+新增可复现命令：在当前源码准备的隔离环境执行
+`ws73_target.py run --prepared <目录> --output <新目录> --ports <端口A> <端口B> --qmp-hotplug`。
+两只均是真实 WS73，普通 UID1000/capabilities0 使用 slctl；主机物理连接保持，
+仅 QMP 移除并在同固定 guest 端口重新加入 owner0。记录独立 scope、
+`hotplug_method=QMP_DEVICE_DEL_ADD` 和 `physical_acceptance=false`。
+独立抓包验证器拒绝把该结果作为物理拔插验收，即使只改 scope/status。
+合成负例分别验证方法边界与 USB 描述符边界；本次校验器曾期待旧错误文本而
+使整体合成 FAIL，日志保留，修复后重跑全套，不修改失败 receipt。
+
+最终冻结工具实机 PASSTHROUGH_SUPPORT_PASS：20初始+2重接轮，每轮新随机
+标识、数据、地址、RSSI及实际成功 Complete 逐条 USB 关联，308–613ms。
+1295包、zero drops，同 slkd PID97/start_ticks76及同 D-Bus owner；幸存
+设备 generation2 不变，被移除的 generation1 失效，重接 generation3。
+2秒 TX-off 负例与两只最终 STOP_CONFIRMED 通过。主机三只始终保留原 USB
+地址，未选中的1-2.1.2保持无driver接管。QMP恰好执行初始两次add、一只del、
+同属性一次add；guest-reset/guest-resets-all/host-reset/kernel-driver-detach均false，
+时间戳 trace 无 usb_host_reset。
+
+capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d`；本地`.dev/passthrough-control-evidence.json`。
+100工具/282内核脚本 tests 通过，既有 kernel92 的12条 Runtime gates不倒填
+成新内核构建；最终严格合成门禁也完整 SUPPORT_PASS：2557包、zero drops、
+192 empty completions、22条独立控制证明及 C/Python 绑定、same daemon/bus通过。
+实机固件仍111/110保留版本，board NOT_ASSERTED。
+
+结论范围：静止射频域下 QMP guest 退出可单 owner 隔离，未复现旧物理拔出时
+幸存设备 IN -108 / generation 改变。**并未定位该物理根因，也不是设备消失后
+自主恢复。** 北极星仍4/8，物理隔离/重插、完整物理复现包、原生主机对照、
+有限自动恢复和四设备两组及完整S0–S6继续开放；.4端口仍缺失。

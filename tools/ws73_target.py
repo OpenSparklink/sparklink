@@ -278,11 +278,13 @@ def _run(args):
     ordinary_identity()
     output=args.output.resolve();output.mkdir(mode=0o700,parents=True,exist_ok=False)
     support=args.command=='support'
+    passthrough=bool(getattr(args,'qmp_hotplug',False))
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
        'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
        'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False)),
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
+    m['qmp_guest_hotplug']=passthrough
     process=monitor=channel=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
@@ -309,6 +311,7 @@ def _run(args):
                      '-qmp',f'unix:{qmp},server=on,wait=off','-kernel',str(args.prepared.resolve()/'bzImage'),
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
                      '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+(' ws73.support=1' if support else '')+
+                     (' ws73.passthrough=1' if passthrough else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -333,29 +336,32 @@ def _run(args):
                 watcher=lab.ReattachmentWatcher(addresses,m.setdefault('reattach',[]),owned=opened_usb_node)
                 while process.poll() is None:
                     if time.monotonic()>deadline:raise ValueError('environment timeout; preserve partial console/capture')
-                    readers=[channel]+([] if support else [sys.stdin])
+                    readers=[channel]+([] if support or passthrough else [sys.stdin])
                     readable,_,_=select.select(readers,[],[],0.1)
                     if channel in readable:
                         data=channel.recv(65536)
                         if data:
                             log.write(data);log.flush();transcript.extend(data);sys.stdout.buffer.write(data);sys.stdout.buffer.flush()
-                    if not support and sys.stdin in readable:
+                    if not support and not passthrough and sys.stdin in readable:
                         data=os.read(sys.stdin.fileno(),4096)
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
                     text=transcript.decode(errors='replace')
                     if support and not support_input and 'WS73_TARGET_INPUT_READY' in text:
                         channel.sendall(b'target-ordinary-input\n');support_input=True
-                    if support and getattr(args,'hotplug',False):
-                        if hotplug_phase==0 and 'WS73_TARGET_CONTROL_REMOVE_READY' in text:
+                    if (support and getattr(args,'hotplug',False)) or passthrough:
+                        prefix='WS73_TARGET_PASSTHROUGH_' if passthrough else 'WS73_TARGET_CONTROL_'
+                        acknowledgement='passthrough' if passthrough else 'support'
+                        if hotplug_phase==0 and prefix+'REMOVE_READY' in text:
                             monitor.execute('device_del',{'id':'ws73_0'});monitor.wait_deleted('ws73_0')
-                            channel.sendall(b'support-remove\n');hotplug_phase=1
-                        if hotplug_phase==1 and 'WS73_TARGET_CONTROL_READD_READY' in text:
+                            channel.sendall((acknowledgement+'-remove\n').encode());hotplug_phase=1
+                        if hotplug_phase==1 and prefix+'READD_READY' in text:
                             props=dict(driver='usb-ws73-test',id='ws73_0',bus='xhci.0',port='1',
                                        **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                        **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
                                        **{'runtime-idle-scan-stop':True}, **({'runtime-warm':True} if getattr(args,'warm',False) else {}))
-                            monitor.execute('device_add',props);channel.sendall(b'support-readd\n');hotplug_phase=2
+                            if passthrough:props=usb_properties(args.ports[0],0)
+                            monitor.execute('device_add',props);channel.sendall((acknowledgement+'-readd\n').encode());hotplug_phase=2
                     if active<2 and ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text:
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
@@ -366,6 +372,7 @@ def _run(args):
                         current={d['path']:d for d in lab.inventory()}
                         timeline.observe(current)
                         for index,port in enumerate(args.ports[:active]):
+                            if passthrough and hotplug_phase==1 and index==0:continue
                             watcher.poll(index,port,current.get(port),process.pid,monitor)
                 # Drain bytes already delivered when QEMU powers down.
                 channel.setblocking(True);channel.settimeout(1)
@@ -377,13 +384,15 @@ def _run(args):
                 if process.returncode or 'WS73_TARGET_FAILURE:' in text or 'WS73_TARGET_FINISHED' not in text:raise ValueError('guest environment failed')
                 if kernel_fault(text+(share/'kernel.log').read_text()):raise ValueError('kernel fault in environment')
                 if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
-                if not support and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
+                if not support and not passthrough and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
+                if passthrough and 'WS73_TARGET_PASSTHROUGH_SUPPORT: PASS' not in text:raise ValueError('QMP passthrough proof missing')
                 identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(2)]
-                if getattr(args,'hotplug',False):
+                if getattr(args,'hotplug',False) or passthrough:
                     if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
-                    markers=re.findall(r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$',text,re.M)
+                    pattern=r'^WS73_TARGET_PASSTHROUGH_(REMOVE|READD)_READY$' if passthrough else r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$'
+                    markers=re.findall(pattern,text,re.M)
                     if markers!=['REMOVE','READD']:raise ValueError('missing/duplicate/out-of-order synthetic control confirmations')
-                    control=json.loads((share/'application/support-control/run.json').read_text())
+                    control=json.loads((share/('application/passthrough-control/run.json' if passthrough else 'application/support-control/run.json')).read_text())
                     identities=[*control['initial'],control['replacement']]
                 packets=check_capture_stats((share/'capture-stats.txt').read_text())
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
@@ -392,7 +401,7 @@ def _run(args):
                 m['empty_bulk_completions']=len(capture['empty_bulk_completions'])
                 if getattr(args,'empty_bulk',False) and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in identities):
                     raise ValueError('successful empty bulk completions missing from either selected USB identity')
-                m['status']='SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
         prepared(args.prepared.resolve())
         if file_record(args.prepared.resolve()/'manifest.json')!=m['prepared_manifest']:raise ValueError('prepared manifest changed during run')
     except (Exception,KeyboardInterrupt) as error:
@@ -412,7 +421,7 @@ def _run(args):
             ['usb-lifecycle.events', 'usb-lifecycle.log'] if (output/name).is_file()]
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
-    return 0 if m['status'] in ['SUPPORT_PASS','ENVIRONMENT_FINISHED'] else 1
+    return 0 if m['status'] in ['SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','ENVIRONMENT_FINISHED'] else 1
 
 
 def run(args):
@@ -433,7 +442,9 @@ def main():
     for name in ['run','support']:
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
-        if name=='run':cmd.add_argument('--ports',nargs=2,required=True)
+        if name=='run':
+            cmd.add_argument('--ports',nargs=2,required=True)
+            cmd.add_argument('--qmp-hotplug',action='store_true',help='real RF with QMP guest-only disconnect/reconnect; never physical unplug or automatic recovery acceptance')
         else:
             cmd.add_argument('--empty-bulk',action='store_true',help='inject successful zero-length bulk IN before synthetic runtime replies; never a physical option')
             cmd.add_argument('--hotplug',action='store_true',help='run the full control orchestrator with explicitly synthetic USB removal/replug; never physical acceptance')

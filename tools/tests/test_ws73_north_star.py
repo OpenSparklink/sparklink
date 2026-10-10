@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_capture import CaptureError, check_capture_stats, corroborate, corroborate_synthetic, hcc_receive, marker_data, read_capture
+from ws73_capture import CaptureError, check_capture_stats, corroborate, corroborate_synthetic, corroborate_passthrough, hcc_receive, marker_data, read_capture
 from ws73_north_star import parse_match, parse_result, registration, reports
 
 
@@ -155,6 +155,29 @@ class CaptureTests(unittest.TestCase):
         with self.assertRaisesRegex(CaptureError,'simulations excluded'):corroborate(run,parsed)
         run['initial'][0]['descriptors']['manufacturer']='real vendor'
         with self.assertRaisesRegex(CaptureError,'fixture descriptors'):corroborate_synthetic(run,parsed)
+    def test_qmp_real_radios_cannot_be_promoted_to_physical_unplug(self):
+        run,records=fixture()
+        run.update(scope='real WS73 RF with QMP guest-detach control support',
+                   status='CONTROL_PASSTHROUGH_EVIDENCE_PENDING',
+                   hotplug_method='QMP_DEVICE_DEL_ADD',physical_acceptance=False)
+        parsed=self.read(pcap(records))
+        self.assertEqual(len(corroborate_passthrough(run,parsed)),22)
+        with self.assertRaises(CaptureError):corroborate(run,parsed)
+        run.update(scope='physical',status='CONTROL_PASS_EVIDENCE_PENDING')
+        with self.assertRaisesRegex(CaptureError,'QMP disconnect excluded'):corroborate(run,parsed)
+
+    def test_passthrough_scope_requires_method_and_real_descriptors(self):
+        run,records=fixture();parsed=self.read(pcap(records))
+        with self.assertRaisesRegex(CaptureError,'explicit passthrough'):corroborate_passthrough(run,parsed)
+        run.update(scope='real WS73 RF with QMP guest-detach control support',
+                   status='CONTROL_PASSTHROUGH_EVIDENCE_PENDING',
+                   hotplug_method='QMP_DEVICE_DEL_ADD',physical_acceptance=False)
+        for mutate in [lambda r:r.update(physical_acceptance=True),
+                       lambda r:r.update(hotplug_method='PHYSICAL_UNPLUG_REPLUG'),
+                       lambda r:r['initial'][0]['descriptors'].update(product='WS73 runtime fixture (NO RF)')]:
+            bad=copy.deepcopy(run);mutate(bad)
+            with self.assertRaises(CaptureError):corroborate_passthrough(bad,parsed)
+
     def test_physical_record_cannot_enter_synthetic_corroboration(self):
         run,records=fixture()
         with self.assertRaisesRegex(CaptureError,'explicit synthetic'):corroborate_synthetic(run,self.read(pcap(records)))

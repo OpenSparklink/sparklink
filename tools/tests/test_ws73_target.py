@@ -9,7 +9,7 @@ from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parents[1]))
 from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_host_boundary, usb_properties, HostTimeline, lifecycle_trace, USB_LIFECYCLE_EVENTS
 from ws73_north_star import _registration, file_record, healthy_native_runtime, registration, Run
-from ws73_target_control import SyntheticControlRun
+from ws73_target_control import SyntheticControlRun, PassthroughControlRun
 from types import SimpleNamespace
 import ws73_target_guest as guest
 
@@ -104,9 +104,13 @@ class TargetEnvironment(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             physical=Run(SimpleNamespace(output=Path(d)/'physical'))
             synthetic=SyntheticControlRun(SimpleNamespace(output=Path(d)/'synthetic'))
+            passthrough=PassthroughControlRun(SimpleNamespace(output=Path(d)/'passthrough'))
             self.assertEqual(physical.data['scope'],'physical')
             self.assertEqual(synthetic.data['scope'],'synthetic WS73 USB control support')
             self.assertNotEqual(physical.SUCCESS,synthetic.SUCCESS)
+            self.assertNotEqual(passthrough.SUCCESS,physical.SUCCESS)
+            self.assertEqual(passthrough.data['hotplug_method'],'QMP_DEVICE_DEL_ADD')
+            self.assertIs(passthrough.data['physical_acceptance'],False)
     def test_live_owned_fd_matches_current_device_not_deleted_handle(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);fd=root/'10/fd';fd.mkdir(parents=True)

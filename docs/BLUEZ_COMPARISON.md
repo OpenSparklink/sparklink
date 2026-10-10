@@ -44,3 +44,5 @@ generation、owner、恢复状态和证据链是我们的设计重点，需要�
 吞吐、延迟分位数、功耗要有同条件 Bluetooth 基线才可比较，目前不宣称领先。
 清理安排见[生产调用审计](LEGACY_CLEANUP_20261011.md)，不以全局 allow(dead_code)
 或过时“已完成”标记替代接通与验收。
+
+旧内核SSAP wire Engine已因标准格式不符限制并移除；用户态标准Engine尚未接通，不能将历史codec用例或本地staging视为服务互通。见[当前边界](SSAP_LEGACY_CONTAINMENT.md)。

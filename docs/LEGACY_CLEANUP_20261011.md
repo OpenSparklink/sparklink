@@ -30,7 +30,7 @@
 | 旧路径/调用者 | 唯一替代所有者与删除门禁 | issues |
 |---|---|---|
 | 原core CONN_SEND → conn.send 入 tx_queue + controller.send_data；队列无消费者/handle0错误 | 75b77fc19613已删影子TX ring/重复直发，统一单次backend提交、句柄映射及成功记账，短写/长度拒绝；实际函数回归通过。仍待每通道socket、真实可靠/credit/分片/断链/权限/旧generation及数据实机，迁调用者后删旧UAPI | K4/K17，R03/R10；完整验收OPEN |
-| workers TCID SERVICE_MGMT/动态 reliable → sle_ssap；core SSAP ioctl → 内核数据库 | slkd SSAP Engine/数据库，kernel 完整 PDU socket；跨语言权限位、长度/预算/offset/deadline、notify credit/连接归属、Profile 实际路由回归后删旧 Engine | K6/K17、U3，R04/R07/R08 |
+| 原workers SERVICE_MGMT/动态reliable与core remote ioctl → 旧wire Engine；local staging留待迁移 | 4d8a0d61673d77c5fd104d219346e0a2d3e23ef2已删除未达标准的wire Engine、无界累积器/无归属通知与method echo，历史codec仅selftests，remote不支持。最终slkd标准Engine/数据库与kernel PDU socket仍待权限/预算/deadline/credit/ACK/Profile及实机门禁；本地staging及旧编号在调用者迁移后删除 | K6/K17、U3，R04/R07/R08 |
 | SecurityInner controller-local 状态、SEC_ENCRYPT_ON 提前提交；Bond 仅元数据 | 每连接机制/匹配真实完成，Agent/policy/Bond 用户态；错误 proof、安装拒绝/超时、restore/revoke、真实互通后删旧状态及控制接口 | K7/K18、U5，R01/R02/R09 |
 | core legacy read_iter → 旧 event dequeue/copy；Native subscription 另一实现 | 独立订阅、完整记录 copy 后提交、移除唤醒；迁 lib/工具 read 调用者，坏地址/部分 copy/短 buffer/多订阅后删旧队列/UAPI | K3、U2，R12 |
 | backend enum、core USB/serdev 注册；serdev 回调忽略 ctx/全局 parser | 可引用 Backend 注册接口，bus 在 drivers；parser/waiter per-runtime+generation；USB=n/m、driver y/m、Virtual卸载和 WS73 原路径后删枚举/全局切换 | K1/K4/K9/K10/K12，R11/R13 |
@@ -68,3 +68,5 @@ slk-experimental；默认daemon运行时依赖图无该crate，默认停止旧�
 显式experimental-legacy-profiles保留profile0旧注册/实际actor；Native profile1
 仍不注册。原模型和actor回归保留，R07/SSAP请求路由/互通等待替代，不宣称完成。
 严格检查覆盖default及all-targets/all-features，不增加dead-code lint压制。
+
+本批R04/R08详细范围见[SSAP路径限制](SSAP_LEGACY_CONTAINMENT.md)；删除不可靠旧行为不等于替代Engine已经完成。

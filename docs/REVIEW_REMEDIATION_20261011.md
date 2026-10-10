@@ -168,3 +168,13 @@ Rust sender/resolver/ioctl回归及实际C USB范围/分配/errno/所有短写/e
 继续OPEN；下一步仍是socket每通道队列/背压/权限/generation/退役、真实连接数据。
 保留旧正向连接/SSAP测试与历史失败，它们须接专用backend/真实controller事件，
 禁止把底层失败却增加tx_bytes当作通过。WS73自然恢复/根因同步继续，不因本批关闭。
+
+### R04/R08 旧协议路径限制与新标准核对
+
+Linux 4d8a0d61673d77c5fd104d219346e0a2d3e23ef2 删除生产旧 SSAP codec/构造器/无界事务、全局无归属通知
+队列、两套通知 drain 和未接通 method echo。remote/notify/indicate 明确不支持，
+本地 staging OOM 保留旧值，超长输入拒绝。表72/75/76的消息控制码与旧 offset/
+短包格式不一致，修复最终落在用户态标准 Engine；不把长度修补称为标准长读写。
+[调用链、迁移和8项实际代码回归](SSAP_LEGACY_CONTAINMENT.md)；历史codec只保留
+selftests。整项 R04/R07/R08 仍OPEN：socket/owner/预算/期限、标准codec、跨语言
+权限、通知提交/ACK、Profile和真实服务互通待实施。WS73新镜像实机须另外验收。

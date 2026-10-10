@@ -71,3 +71,12 @@ socket 门禁覆盖消息边界、超长拒绝、持续发送/背压、取消/�
 
 执行清单见[调用审计与清理](../LEGACY_CLEANUP_20261011.md)、
 [14 项整改](../REVIEW_REMEDIATION_20261011.md)、[联合方案](../IMPLEMENTATION_PLAN.md)。
+
+
+## 标准核对与旧 Engine 开放条件
+
+T/XS 20001-2025表72/75/76规定分片消息控制码；旧内核offset/短包结束格式不符合
+这套格式。先删除不可靠wire Engine并拒绝操作，历史codec只供selftests。标准
+Engine/数据库在slkd接通PDU socket后实施；本地staging不是服务发布。见
+[整改和门禁](../SSAP_LEGACY_CONTAINMENT.md)。不通过修改旧格式的长度界限
+继续保留第二套生产Engine。

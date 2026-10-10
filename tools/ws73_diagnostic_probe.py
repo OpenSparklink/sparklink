@@ -19,7 +19,7 @@ import time
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / ('python' if (HERE.parent / 'python').is_dir() else 'bindings/python')))
-from sparklink.structs import SleDiagnosticResult
+from sparklink.structs import SleDiagnosticResult, SleDiagnosticSubmit
 from ws73_north_star import file_record
 
 NEGATIVE = {'inherited_fd_cap0': errno.EPERM, 'version': errno.EOPNOTSUPP,
@@ -33,8 +33,9 @@ ORDER = ['metadata'] * 4 + ['inherited_fd_cap0', 'read_only_output', 'partial_ou
 QUERIES = [('mac', 0x0406, 6), ('features', 0x0403, 10), ('version', 0x0404, 5), ('buffers', 0x0402, 6)]
 
 
-def verify_records(records, final=True):
-    if any(sum(k in r for k in ('case', 'identity', 'phase')) != 1 for r in records):
+def verify_records(records, final=True, admission=False):
+    tags = ('case', 'identity', 'phase', 'admission') if admission else ('case', 'identity', 'phase')
+    if any(sum(k in r for k in tags) != 1 for r in records):
         raise ValueError('unknown or ambiguous diagnostic record')
     cases = [r for r in records if 'case' in r]
     if [r['case'] for r in cases] != (ORDER if final else ORDER[:-1]):
@@ -67,6 +68,7 @@ def verify_records(records, final=True):
             prefix = 56 if r['case'] == 'partial_output' else 0
             if type(r['partial_prefix']) is not int or r['partial_prefix'] != prefix:
                 raise ValueError('actual copy boundary mismatch')
+    if admission: verify_admissions(records)
     child = [r for r in records if r.get('identity') == 'inherited_fd_child']
     if child != [{'identity': 'inherited_fd_child', 'uid': 1000, 'euid': 1000, 'cap_eff': 0, 'cap_prm': 0}] or any(type(r[k]) is not int for r in child for k in ('uid', 'euid', 'cap_eff', 'cap_prm')):
         raise ValueError('actual inherited fd child identity/capabilities required')
@@ -75,12 +77,58 @@ def verify_records(records, final=True):
         raise ValueError('diagnostic phase/retirement completion missing')
 
 
+def verify_admissions(records):
+    """Two actual copyout failures, exact retry identity/bytes and counters.
+
+    The capture verifier separately requires a single completed OUT/reply over
+    each entire failure/retry interval. Records alone are not wire evidence.
+    """
+    rows = [r for r in records if 'admission' in r]
+    metadata = [r for r in records if r.get('case') == 'metadata']
+    if [r['admission'] for r in rows] != ['submit_read_only_output', 'submit_partial_output']:
+        raise ValueError('both ordered actual admission copyout cases required')
+    for i, (r, meta) in enumerate(zip(rows, metadata)):
+        prefix = 36 if i else 0
+        if (type(r['result']) is not int or r['result'] != -1
+                or type(r['errno']) is not int or r['errno'] != errno.EFAULT
+                or type(r['partial_prefix']) is not int or r['partial_prefix'] != prefix
+                or type(r['user_address_mod8']) is not int or r['user_address_mod8'] != (4 if i else 0)
+                or type(r['request_id']) is not int or r['request_id'] != i + 1):
+            raise ValueError('actual admission copyout errno/identity/boundary required')
+        for field in ('generation', 'seq', 'opcode', 'start_wall_ns', 'end_wall_ns'):
+            if type(r[field]) is not int or r[field] != meta[field]:
+                raise ValueError('admission interval/sequence differs from metadata proof')
+        raw = bytes.fromhex(r['input'])
+        if len(raw) != ctypes.sizeof(SleDiagnosticSubmit):
+            raise ValueError('exact canonical admission input bytes required')
+        value = SleDiagnosticSubmit.from_buffer_copy(raw)
+        if (value.version != 1 or value.flags or value.generation != meta['generation']
+                or value.request_id != r['request_id'] or value.timeout_ms != 5000
+                or value.opcode != meta['opcode'] or value.reserved or value.seq or value.action != 1):
+            raise ValueError('admission input fields mismatch')
+        value.seq = meta['seq']; expected = bytes(value).hex()
+        if r['retry_outputs'] != [expected] * 3:
+            raise ValueError('same caller-known ID retry changed admission')
+        observed = bytes.fromhex(r['fault_output'])
+        if len(observed) != len(raw) or observed != bytes(value)[:prefix] + raw[prefix:]:
+            raise ValueError('copyout failure bytes do not show the actual expected prefix')
+        for field in ('submitted_before', 'submitted_after', 'resolved_before', 'resolved_after',
+                      'pending_before', 'pending_after', 'timeouts_before', 'timeouts_after'):
+            if type(r[field]) is not int or not 0 <= r[field] < 1 << 32:
+                raise ValueError('actual bounded counters required')
+        if (r['submitted_after'] != r['submitted_before'] + 1
+                or r['resolved_after'] != r['resolved_before'] + 1
+                or r['pending_before'] or r['pending_after']
+                or r['timeouts_before'] != r['timeouts_after']):
+            raise ValueError('replay changed admission/resolution/timeout accounting')
+
+
 def run(args):
     if (os.getuid() != 0 or os.geteuid() != 0 or not Path('/scratch-root-uuid').is_file()
             or 'ws73.diagnostic=1' not in Path('/proc/cmdline').read_text().split()):
         raise ValueError('privileged opt-in scratch-root VM required')
     output = args.output.resolve(); output.mkdir(mode=0o700)
-    record = {'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
+    record = {'format_version': 2, 'admission_copyout_requested': True, 'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'probe': file_record(args.probe), 'sources': [file_record(Path(__file__))],
               'index': args.index, 'records': [], 'cli_queries': [], 'uid': os.getuid(), 'euid': os.geteuid()}
@@ -106,7 +154,7 @@ def run(args):
                         line, pending = pending.split(b'\n', 1); item = json.loads(line)
                         record['records'].append(item); save()
                         if item.get('phase') == 'BEFORE_DAEMON_PASS':
-                            verify_records(record['records'], final=False)
+                            verify_records(record['records'], final=False, admission=True)
                             for name, opcode, _ in QUERIES:
                                 generation = record['records'][0]['generation']
                                 command = [str(args.slkconfig), '--adapter', str(args.index), '--generation', str(generation), 'query', name]
@@ -125,7 +173,7 @@ def run(args):
             selector.close()
             record['probe_exit'] = child.wait(timeout=5)
             if record['probe_exit'] or pending or not acknowledged: raise ValueError('probe exit or retirement handshake')
-        verify_records(record['records'])
+        verify_records(record['records'], admission=True)
         record['status'] = 'DIAGNOSTIC_RESULT_LIVE_PASS'; save()
     except BaseException as error:
         record.update(status='FAIL', error=str(error)); save(); raise

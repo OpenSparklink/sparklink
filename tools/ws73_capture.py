@@ -314,8 +314,11 @@ def corroborate_diagnostic(run, capture, diagnostic):
             or diagnostic.get('physical_acceptance') is not False
             or diagnostic.get('automatic_fault_recovery_acceptance') is not False):
         raise CaptureError('scoped successful diagnostic syscall run required')
+    version = diagnostic.get('format_version', 1)
+    if type(version) is not int or version not in (1, 2) or (version == 2 and diagnostic.get('admission_copyout_requested') is not True) or (version == 1 and diagnostic.get('admission_copyout_requested') not in (None, False)):
+        raise CaptureError('explicit diagnostic admission evidence version required')
     try:
-        verify_records(diagnostic['records'])
+        verify_records(diagnostic['records'], admission=version == 2)
     except (ValueError, KeyError, TypeError) as error:
         raise CaptureError('invalid diagnostic syscall records') from error
     owner = run['initial'][0]
@@ -330,7 +333,11 @@ def corroborate_diagnostic(run, capture, diagnostic):
         if row['data'] != expected[row['opcode']] or not previous <= row['start_wall_ns'] < row['end_wall_ns'] < owner['observed_wall_ns']:
             raise CaptureError('diagnostic data/time differs from registration')
         proof = command_reply(capture, owner, row['opcode'], row['start_wall_ns'], row['end_wall_ns'], b'', row['data'])
-        proofs.append({'caller': 'C syscall', 'local_admission_seq': row['seq'], **proof})
+        item = {'caller': 'C syscall', 'local_admission_seq': row['seq'], **proof}
+        admissions = [r for r in diagnostic['records'] if r.get('admission') and r['seq'] == row['seq']]
+        if admissions:
+            item['admission_copyout'] = admissions[0]
+        proofs.append(item)
         previous = row['end_wall_ns']
     cli = diagnostic['cli_queries']
     if len(cli) != 4:

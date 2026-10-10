@@ -4,7 +4,7 @@ import copy
 import struct
 import unittest
 
-from test_ws73_diagnostic_probe import fixture
+from test_ws73_diagnostic_probe import fixture, admission_fixture
 from ws73_capture import CaptureError, command_reply, corroborate_diagnostic, json_identity
 from ws73_diagnostic_probe import QUERIES
 
@@ -46,6 +46,21 @@ class DiagnosticCaptureTests(unittest.TestCase):
         self.assertEqual(boundary, {json_identity(owner): 100})
         self.assertEqual(len(proofs), 8)
         for _, opcode, _ in QUERIES: command_reply(capture, owner, opcode, 0, boundary[json_identity(owner)])
+
+    def test_submission_fault_and_retries_share_one_exact_wire_interval(self):
+        run, capture, diagnostic = inputs()
+        diagnostic.update(format_version=2, admission_copyout_requested=True,
+                          records=admission_fixture(diagnostic['records']))
+        _, proofs = corroborate_diagnostic(run, capture, diagnostic)
+        self.assertEqual([p['admission_copyout']['request_id'] for p in proofs[:2]], [1, 2])
+        for mutation in ('duplicate_out', 'missing_fault_record', 'missing_mode', 'downgrade', 'boolean_version'):
+            d = copy.deepcopy(diagnostic); c = copy.deepcopy(capture)
+            if mutation == 'duplicate_out': c['commands'].append(copy.deepcopy(c['commands'][4]))
+            elif mutation == 'missing_fault_record': d['records'] = [r for r in d['records'] if r.get('admission') != 'submit_read_only_output']
+            elif mutation == 'missing_mode': d.pop('admission_copyout_requested')
+            elif mutation == 'downgrade': d['format_version'] = 1
+            else: d['format_version'] = True
+            with self.assertRaises(CaptureError): corroborate_diagnostic(run, c, d)
 
     def test_unknown_failed_unprivileged_or_wrong_registration_run_rejects(self):
         run, capture, diagnostic = inputs()

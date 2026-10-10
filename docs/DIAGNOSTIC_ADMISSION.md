@@ -88,3 +88,23 @@ event9、C sanitizers和历史PHY3/拒绝arm1保持。CI仅编译live C，不执
 **提交copyout幂等性、实际排队/在途取消、原deadline与迟到回复没有live证明**。
 这些仍为开发门禁，下一批必须专门执行，不关闭R12/K3/U2或完整事务issue。
 自然故障根因/自主恢复、物理xHCI警告、旧消费者删除和完整S0–S6继续OPEN。
+
+
+## 实际提交copyout门禁实施（待新镜像执行）
+
+专用C probe在MAC提交时制造全输出页只读EFAULT，在features提交时制造跨页
+输出EFAULT：前36字节可写（包含offset32的seq），其余4字节只读。输入40字节
+全部可读，直接ioctl采用byte buffer/memcpy，无未对齐C结构体解引用。
+保留完整输入与失败输出，核对确实写入的sequence，再以同ID/fields取回seq、
+等待真实结果，并三次重复提交比较完整40字节与104字节结果不变；统计只增加
+一次提交/完成、pending归零、timeout不变。四种metadata正常窗口覆盖全部重试。
+
+诊断证据format_version=2强制包含这两条admission记录；supervisor/runner拒绝
+缺失、下调版本或与metadata身份/时间窗不一致。独立capture仍要求完整失败/
+重试窗口恰好一个成功OUT和一个实际成功Complete，不能凭返回同seq证明未重发。
+旧format1仅用于历史结果证据复核；当前执行明确要求format2。新增4项verifier
+开发测试（总159），合成fixtures只证明拒绝边界，不证明实际syscall/USB行为。
+
+Linux本轮仅修改专用selftest，生产驱动/core未改变；用户态只改测试工具及
+捕获验证。将用固定新提交的新镜像重新执行后另记结果；实际取消、迟到回复、
+原deadline、并发/移除及自然故障根因仍OPEN，不关闭整项事务/恢复issue。

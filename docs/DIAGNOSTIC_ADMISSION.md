@@ -1,7 +1,7 @@
 # Native metadata 诊断请求身份、截止时间与取消
 
 2026-10-11，Linux `c89e961b80a2b99922ddd0715590c01edfe39c88`；未发布UAPI同步迁移，不保留Native双提交入口。
-这是一项实现/开发门禁记录，新的实际syscall故障和迟到回复门禁尚未验收。
+提交copyout/取消/迟到回复尚无实际验收；结果接口与当前真实路径回归见文末。
 此前K49/Ud8的实机证据继续保留，只证明那个冻结版本。
 
 ## 接口和身份
@@ -62,3 +62,29 @@ Bond/Profile/Proxy及全S0–S6范围不变。继续VM-only，不安装或重启
 首次完整内核构建（922a009）因Pin guard的as_mut分派失败，原失败log/manifest
 保留；c89e961改为显式Option::as_mut借用，再重新完整构建。依赖fixture通过
 不代表内核lock/Pin/并发可用，新的镜像构建和实机结果必须独立核对。
+
+
+## 当前新镜像路径回归（限定通过）
+
+[新冻结镜像证据](evidence/ws73-vm-diagnostic-admission-20261011.json)基于Linux
+`c89e961b80a2` / 编译用户态 `df9cff7d750d`。完整build/image/modules和空USB
+root两次加载卸载通过，配置不变；原922a009失败构建与service-bundle目录参数
+传错的准备FAIL保留，不回写成功，没有把环境失败称为硬件自然故障。
+
+新入口的四种C metadata与四次实际slkconfig均通过，独立8组USB命令/成功
+Complete/数据证明；原16类结果syscall及7类实际legacy read门禁保持通过。
+真实20＋2轮最长620ms、22份RX/1279 USB包零drop，普通UID1000/caps0，同
+slkd PID650/start1532/bus owner；幸存g2不变、目标g1→g3，最终两只停止确认。
+VM warning0/taint0/trace overrun0，13条QMP无device_del，只有一次人工IN81
+错误，无host open/close/reset失败标记；host4只仍在且已释放。人工错误到新
+Ready约10572.303ms，发现10秒从成功scan Complete起算，RX证据不是PHY嗅探。
+
+[CI38089420254](https://github.com/OpenSparklink/sparklink/actions/runs/38089420254)
+9作业成功，三个kernel pin均为c89e961；实际日志核对170 Rust/34 Python/155
+工具与诊断原代码23项（结果12/提交11），既有security7/backend2/TX11/SSAP9/
+event9、C sanitizers和历史PHY3/拒绝arm1保持。CI仅编译live C，不执行真实设备。
+
+本轮实际结果/metadata回归只证明新生产提交的正常路径及既有结果门禁；
+**提交copyout幂等性、实际排队/在途取消、原deadline与迟到回复没有live证明**。
+这些仍为开发门禁，下一批必须专门执行，不关闭R12/K3/U2或完整事务issue。
+自然故障根因/自主恢复、物理xHCI警告、旧消费者删除和完整S0–S6继续OPEN。

@@ -145,3 +145,9 @@ Diagnostic/API/事件验收。旧DLI消费者与共享队列迁移/删除、admi
 Native旧输出seq-only提交入口不支持，C/Rust/Python、CLI和专用probe同步迁移。
 开发测试通过不引用K49/Ud8旧镜像证明新语义；完整实际取消/迟到回复及剩余DLI
 迁移继续OPEN，当前真实路径须用新镜像独立回归。自然恢复根因和完整S0–S6不缩减。
+
+[当前新入口回归](DIAGNOSTIC_ADMISSION.md#当前新镜像路径回归限定通过)已用Kc89/
+编译Udf9新冻结镜像复核metadata8、结果syscall16、read7和真实20+2，最长620ms，
+同daemon/幸存g2保持；固定源码9作业CI通过。新提交copyout幂等、实际取消/
+迟到回复尚未验收，不能把已有结果copyout门禁当作提交门禁。迁移及完整issue
+继续OPEN，自然恢复根因与S0–S6范围不变。原失败构建/环境记录保留。

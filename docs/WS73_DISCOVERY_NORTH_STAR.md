@@ -1446,3 +1446,31 @@ compiled unplug 测试对旧#69检测到1967.032ms阻塞并 FAIL。
 复现：内核 `run_runtime_lifecycle.py --native-ws73` 加
 `--native-ws73-tx-terminal out-error`、`short-out` 或 `unplug`，其余参数见
 `Documentation/networking/ws73-development.rst`。
+
+### 管理 ioctl 页故障与拔插并发（部分成果）
+
+QUERY 在管理锁内生成整数快照，锁外复制用户内存；已经生成的旧 generation
+快照可返回，但不代表控制权限。退役关闭 admission 后先通知 event/snoop，
+再等待管理事务和 native lifecycle。ACQUIRE 复制候选 token 后，在 admission
+锁内重查存活并提交；若期间退役则返回 ENODEV，失败 ioctl 复制出的候选
+token 必须丢弃，不算获得租约。
+
+新增隔离 guest 的 `run_native_open_test.py --userfault`：通过实际 userfaultfd
+WP 停住内核 ioctl copyout，核对地址、WRITE/WP 和线程；未解除故障时要求
+独立查询及已注册的 event/snoop epoll 继续工作。解除后检查旧快照/ENODEV、
+恰好一次 get/put/close、旧 fd、新 generation/首个租约、幸存模型 DLI 和模块
+卸载。仅在测试 guest 启用 USERFAULTFD，由 guest root 运行夹具，不改变
+普通应用或主机权限。
+
+同配置旧 #76 阻塞第二查询 200.668ms、退役通知超时并错误返回成功租约；
+新 #77 查询 1.088ms、两场景通知 0.096/0.101ms、迟到申请 ENODEV。两版 guest
+executable/夹具 C object 相同，模块各自匹配内核；负例清理并卸载成功。
+277 verifier、Werror C、四个 open 场景、十二 runtime gates、原96项
+（1059OK/0FAIL/0SKIP/3既存WARN）及普通用户 slctl 合成20+2轮通过。
+同slkd/bus、TX-off、幸存设备、重插和独立USB捕获证据保存在本地
+`.dev/rpc-fault-final-evidence.json`；Rust companion/QEMU实现未变。
+
+真实入口仍未枚举到 WS73，物理 guest 未启动，实机七项仍 **0/7**、board
+**NOT_ASSERTED**。第一北极星仍是普通用户选择两只真实 WS73 完成随机广播、
+10秒内数据/地址/RSSI匹配、20轮互换及同slkd拔插恢复，随后四设备两组并行。
+完整方案及原整项 issues 保持开放；未宣称远端CI或新Rust tests/clippy通过。

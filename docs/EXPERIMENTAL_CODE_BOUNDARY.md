@@ -32,3 +32,7 @@ workspace test、clippy、fmt、默认 release、跨语言 ABI、VM 真双设备
 新代码与实验边界各项证据在当前 issues 维护，完整 SSAP/security/Profile、自然
 故障恢复/根因及完整发布验收仍开放。历史物理/人工注入证据保留，不用新 fixture
 替代真实 RF 或旧故障。
+
+工具 CI 需加载匹配内核的 lab helper，固定 c2c4aa4ad0bd；通过
+`SPARKLINK_KERNEL_SOURCE` 指定 checkout 根目录，本地默认仍为相邻 linux。
+首轮新增 CI 暴露了相邻仓库假设导致的两项失败，保留失败记录；修复不跳过测试。

@@ -129,10 +129,19 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Check out matching kernel lab helpers
+        uses: actions/checkout@v4
+        with:
+          repository: OpenSparklink/linux
+          ref: c2c4aa4ad0bd5b33294b8744a56727445f761a29
+          path: .kernel-tools
+          sparse-checkout: tools/testing/selftests/sparklink
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m unittest discover -s tools/tests -v
+        env:
+          SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-tools
 
   kernel-containment:
     name: Actual kernel security and unsupported backend boundaries

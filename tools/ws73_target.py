@@ -28,7 +28,9 @@ from ws73_capture import check_capture_stats, read_capture
 import ws73_vm_native_root as native_vm
 
 USERSPACE = Path(__file__).resolve().parents[1]
-LINUX = USERSPACE.parent / 'linux'
+# Local workspaces keep both repositories side by side. CI checks out the
+# pinned kernel selftests inside its workspace instead of assuming that layout.
+LINUX = Path(os.environ.get('SPARKLINK_KERNEL_SOURCE', USERSPACE.parent / 'linux')).resolve()
 HERE = Path(__file__).resolve().parent
 
 

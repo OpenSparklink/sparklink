@@ -1,0 +1,224 @@
+{
+  "status": "BUILT_TEST_ONLY_QEMU_HOST_HOLD",
+  "version": "9.2.0",
+  "live_on_wire_cancel_acceptance": false,
+  "live_usb_acceptance": false,
+  "production_changes": false,
+  "inputs": {
+    "binary": {
+      "path": ".dev/diagnostic-hold-qemu/qemu-system-x86_64",
+      "sha256": "b176c57b914e1dded37fbb804e489225fff81dbf1df97565b1706000b4211f8a"
+    },
+    "host_source": {
+      "path": ".dev/diagnostic-hold-qemu/host-libusb.c",
+      "sha256": "8ad22bb694ea4cbf62f3b905407348aaf24008216dcd8b0c0c5d72f8b8f92ba1"
+    },
+    "object": {
+      "path": ".dev/diagnostic-hold-qemu/hw_usb_host-libusb.c.o",
+      "sha256": "d479cb42b170f123754f49e4af2bd47c16fb42faaa0c2da4878c94867285be11"
+    },
+    "compile_commands": {
+      "path": ".dev/diagnostic-hold-qemu/compile_commands.json",
+      "sha256": "14fa67c732f37238a3013a40353f67296946f2e42fc8b6f50e530882ef44be64"
+    },
+    "configuration": {
+      "path": ".dev/diagnostic-hold-qemu/config-host.mak",
+      "sha256": "0e68dab1c2c75639f7950da43a7edc9ac99424e86ec3b62ad2d756d032a69624"
+    },
+    "xhci_source": {
+      "path": ".dev/diagnostic-hold-qemu/hcd-xhci.c",
+      "sha256": "3bca9e7dc314e95ed111433ab3a2b1141cdd91128a543f0ccdd6fe6c51a1ecf2"
+    }
+  },
+  "dependency_fixture": {
+    "status": "PASS_ACTUAL_QEMU_HOLD_WITH_DEPENDENCY_FIXTURES",
+    "scope": "Actual QEMU hold/callback/abort/cancel code with counted dependencies.\n\nTimers, transport, digest and USB combining are fixtures, not live USB,\nQEMU scheduler, cancellation protocol or hardware recovery qualification.\n",
+    "live_usb_acceptance": false,
+    "live_on_wire_cancel_acceptance": false,
+    "qemu_scheduler_acceptance": false,
+    "actual_close_routing_audit": true,
+    "source_sha256": "8ad22bb694ea4cbf62f3b905407348aaf24008216dcd8b0c0c5d72f8b8f92ba1",
+    "actual_functions": [
+      "usb_host_test_clear_hold",
+      "usb_host_test_release_hold",
+      "usb_host_test_hold_timeout",
+      "usb_host_req_complete_data",
+      "usb_host_req_abort",
+      "usb_host_cancel_packet",
+      "usb_host_get_test_runtime_hold",
+      "usb_host_get_test_runtime_held",
+      "usb_host_set_test_runtime_hold",
+      "usb_host_get_test_runtime_release",
+      "usb_host_set_test_runtime_release",
+      "usb_host_set_test_runtime_in_error"
+    ],
+    "production_sha256": "5b36f5f61cfad556609a35a53fe01223ea45e232d90849fbdc528bec305f7fd0",
+    "compile_command": [
+      "clang",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-unused-parameter",
+      ".dev/diagnostic-hold-boundary-sanitized-v3/check.c",
+      "-o",
+      ".dev/diagnostic-hold-boundary-sanitized-v3/check"
+    ]
+  },
+  "patch_and_qmp": {
+    "status": "PASS",
+    "scope": "QEMU production guard bodies and patch mechanics only",
+    "physical_acceptance": false,
+    "guard_cases": 7,
+    "retry_cases": 5,
+    "reenumeration_cases": 6,
+    "host_lifecycle_sites": 3,
+    "patch_cases": 18,
+    "supported_patch_prefixes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "hold_source_drift_cases": 3,
+    "source_sha256": "8ad22bb694ea4cbf62f3b905407348aaf24008216dcd8b0c0c5d72f8b8f92ba1",
+    "production_sha256": "fb97273da0971ee8e9e894975cfc61f2f96fa23e6c99087b7e0799483c9e31dd",
+    "qmp": "PASS paused/unattached property probe; not physical passthrough",
+    "qemu_sha256": "b176c57b914e1dded37fbb804e489225fff81dbf1df97565b1706000b4211f8a"
+  },
+  "runtime_error_regression": {
+    "status": "PASS_MOCKED_ACTUAL_RUNTIME_ERROR_BOUNDARY",
+    "scope": "actual callback/setter with transport mocks; no USB/hardware acceptance",
+    "source_sha256": "8ad22bb694ea4cbf62f3b905407348aaf24008216dcd8b0c0c5d72f8b8f92ba1",
+    "production_sha256": "0fba21d669f5110d2ff87a98b76946d913f2ba3ec5e8f0a08d3da057d4a93a95",
+    "compile_command": [
+      "cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-unused-parameter",
+      ".dev/diagnostic-hold-error-boundary-final/check.c",
+      "-o",
+      ".dev/diagnostic-hold-error-boundary-final/check"
+    ]
+  },
+  "original_live_qemu_sha256": "d27bb224e2ea95b8246033fab7058c13f30e817bd978343441321934fc9e042e",
+  "upstream_tar_sha256": "f859f0bc65e1f533d040bbe8c92bcfecee5af2c921a6687c652fb44d089bd894",
+  "failed_attempts_retained": [
+    ".dev/diagnostic-hold-boundary-first",
+    ".dev/diagnostic-hold-chain-18",
+    ".dev/diagnostic-hold-boundary-sanitized-v2",
+    ".dev/diagnostic-hold-qemu-build.log",
+    ".dev/diagnostic-hold-qemu-build-v2.log"
+  ],
+  "reproduction": {
+    "status": "PASS_PINNED_QEMU_DEPENDENCY_BOUNDARIES",
+    "archive_sha256": "f859f0bc65e1f533d040bbe8c92bcfecee5af2c921a6687c652fb44d089bd894",
+    "upstream_version": "9.2.0",
+    "source_sha256": "8ad22bb694ea4cbf62f3b905407348aaf24008216dcd8b0c0c5d72f8b8f92ba1",
+    "chain": {
+      "status": "PASS",
+      "scope": "QEMU production guard bodies and patch mechanics only",
+      "physical_acceptance": false,
+      "guard_cases": 7,
+      "retry_cases": 5,
+      "reenumeration_cases": 6,
+      "host_lifecycle_sites": 3,
+      "patch_cases": 18,
+      "supported_patch_prefixes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "hold_source_drift_cases": 3,
+      "source_sha256": "8ad22bb694ea4cbf62f3b905407348aaf24008216dcd8b0c0c5d72f8b8f92ba1",
+      "production_sha256": "fb97273da0971ee8e9e894975cfc61f2f96fa23e6c99087b7e0799483c9e31dd",
+      "qmp": "PASS paused/unattached property probe; not physical passthrough",
+      "qemu_sha256": "b176c57b914e1dded37fbb804e489225fff81dbf1df97565b1706000b4211f8a"
+    },
+    "error": {
+      "status": "PASS_MOCKED_ACTUAL_RUNTIME_ERROR_BOUNDARY",
+      "scope": "actual callback/setter with transport mocks; no USB/hardware acceptance",
+      "source_sha256": "8ad22bb694ea4cbf62f3b905407348aaf24008216dcd8b0c0c5d72f8b8f92ba1",
+      "production_sha256": "0fba21d669f5110d2ff87a98b76946d913f2ba3ec5e8f0a08d3da057d4a93a95",
+      "compile_command": [
+        "clang",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-parameter",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/diagnostic-hold-reproduce/error/check.c",
+        "-o",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/diagnostic-hold-reproduce/error/check"
+      ]
+    },
+    "hold": {
+      "status": "PASS_ACTUAL_QEMU_HOLD_WITH_DEPENDENCY_FIXTURES",
+      "scope": "Actual QEMU hold/callback/abort/cancel code with counted dependencies.\n\nTimers, transport, digest and USB combining are fixtures, not live USB,\nQEMU scheduler, cancellation protocol or hardware recovery qualification.\n",
+      "live_usb_acceptance": false,
+      "live_on_wire_cancel_acceptance": false,
+      "qemu_scheduler_acceptance": false,
+      "actual_close_routing_audit": true,
+      "source_sha256": "8ad22bb694ea4cbf62f3b905407348aaf24008216dcd8b0c0c5d72f8b8f92ba1",
+      "actual_functions": [
+        "usb_host_test_clear_hold",
+        "usb_host_test_release_hold",
+        "usb_host_test_hold_timeout",
+        "usb_host_req_complete_data",
+        "usb_host_req_abort",
+        "usb_host_cancel_packet",
+        "usb_host_get_test_runtime_hold",
+        "usb_host_get_test_runtime_held",
+        "usb_host_set_test_runtime_hold",
+        "usb_host_get_test_runtime_release",
+        "usb_host_set_test_runtime_release",
+        "usb_host_set_test_runtime_in_error"
+      ],
+      "production_sha256": "5b36f5f61cfad556609a35a53fe01223ea45e232d90849fbdc528bec305f7fd0",
+      "compile_command": [
+        "clang",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-parameter",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/diagnostic-hold-reproduce/hold/check.c",
+        "-o",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/diagnostic-hold-reproduce/hold/check"
+      ]
+    },
+    "live_usb_acceptance": false,
+    "live_on_wire_cancel_acceptance": false,
+    "qemu_scheduler_acceptance": false,
+    "natural_fault_root_cause_closed": false
+  },
+  "kernel_head": "091a57bb52f43ae0d1b9ae9358c4c802809535e1",
+  "compiled_userspace_head": "1d3a17b688eefb35ba9ba6d8aa02bf3ba2a4da21",
+  "production_kernel_unchanged_from": "54621800ee4c171a6642f6b8d065b692a4d31408",
+  "production_userspace_unchanged_from": "df9cff7d750dd889ea7403d8a53906f92d3faf46",
+  "analysis_attachment_sha256": "f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a",
+  "latest_actual_ws73_evidence": "ws73-vm-legacy-poll-live-20261011.json",
+  "no_new_rf_execution": true,
+  "full_goal_complete": false,
+  "north_star": {
+    "passed": 7,
+    "total": 8
+  },
+  "ci": "fixed-kernel check added; remote run not yet executed",
+  "reproduce_command": "python3 tools/testing/selftests/sparklink/qemu-sle-dli/run-usb-host-boundaries.py --archive /absolute/qemu-9.2.0.tar.xz --cc clang --output /absolute/private/fresh-qemu-host-boundaries"
+}

@@ -1,5 +1,10 @@
 # 2026-10-11 复核与当前整改计划
 
+当前取消/迟到/期限工作见[实际门禁与测试基础](DIAGNOSTIC_CANCEL_GATES.md)：
+K`091a57bb52f4`只更新专用QEMU测试后端，完整构建/依赖fixture/暂停QMP通过；
+真实线上取消、实际timer/close及自然恢复仍待验证。生产WS73路径不变，最新
+真实基线仍为K9b16e634bfd3/编译U1d3a17b688ee。全部issues保持OPEN。
+
 这份复核基于用户提供的14项报告，逐项检查实现与调用者。原审查基线：
 Linux `fc0b4d1a44b6cd417eb99ebee1378bda52a63300`、用户态
 `157ec71c3b9a088e39318425299c17c9a70fcd4a`。复核时新增Linux

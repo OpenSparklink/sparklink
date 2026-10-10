@@ -1,5 +1,10 @@
 # SparkLink / Linux 联合实施方案
 
+当前取消/迟到/期限工作见[实际门禁与测试基础](DIAGNOSTIC_CANCEL_GATES.md)：
+K`091a57bb52f4`只更新专用QEMU测试后端，完整构建/依赖fixture/暂停QMP通过；
+真实线上取消、实际timer/close及自然恢复仍待验证。生产WS73路径不变，最新
+真实基线仍为K9b16e634bfd3/编译U1d3a17b688ee。全部issues保持OPEN。
+
 规划基线：2026-10-09。覆盖 Linux #1–#19、sparklink #1–#7 的全部现有范围；逐项验收仍以各 issue 的原始 checklist 为准。本文件描述目标设计和执行顺序，不能作为功能已经完成的证明。
 
 Linux 主跟踪：[厂商框架与 WS73 #8](https://github.com/OpenSparklink/linux/issues/8)。联合跟踪：[跟踪：Linux 与用户态 SparkLink 全部 issues 的联合实施和验收](https://github.com/OpenSparklink/sparklink/issues/8)。本文中的 `K#n` 指 OpenSparklink/linux，`U#n` 指 OpenSparklink/sparklink。

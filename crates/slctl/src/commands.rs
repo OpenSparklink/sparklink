@@ -1,17 +1,25 @@
 use zbus::Connection;
 
+type NativeReportRecord = (u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
+
 pub struct Context {
     conn: Connection,
+    selected: Option<String>,
 }
 
 impl Context {
     pub fn new(conn: Connection) -> Self {
-        Self { conn }
+        Self {
+            conn,
+            selected: None,
+        }
     }
 
     pub async fn dispatch(&mut self, args: &[&str]) -> anyhow::Result<()> {
         match args[0] {
             "list" => self.cmd_list().await,
+            "select" => self.cmd_select(args.get(1).copied().unwrap_or("")).await,
+            "reports" => self.cmd_reports().await,
             "show" => self.cmd_show().await,
             "scan" => {
                 if args.len() < 2 {
@@ -99,11 +107,60 @@ impl Context {
         }
     }
 
+    async fn selected_path(&self) -> anyhow::Result<String> {
+        let paths: Vec<String> = self
+            .manager_proxy()
+            .await?
+            .call("ListAdapters", &())
+            .await?;
+        if let Some(selected) = &self.selected {
+            if paths.contains(selected) {
+                return Ok(selected.clone());
+            }
+            anyhow::bail!("selected registration removed; run list and select its replacement");
+        }
+        if paths.len() == 1 {
+            return Ok(paths[0].clone());
+        }
+        anyhow::bail!("select one of the live adapter paths using 'select <path>'");
+    }
+    async fn cmd_select(&mut self, path: &str) -> anyhow::Result<()> {
+        let paths: Vec<String> = self
+            .manager_proxy()
+            .await?
+            .call("ListAdapters", &())
+            .await?;
+        let candidate = if path.starts_with('/') {
+            path.to_owned()
+        } else {
+            format!("/org/sparklink/{path}")
+        };
+        if !paths.contains(&candidate) {
+            anyhow::bail!("adapter is not a live registration: {candidate}");
+        }
+        self.selected = Some(candidate.clone());
+        println!("Selected {candidate}");
+        Ok(())
+    }
+    async fn cmd_reports(&self) -> anyhow::Result<()> {
+        let proxy = self.adapter_proxy().await?;
+        let reports: Vec<NativeReportRecord> = proxy.call("GetReports", &()).await?;
+        for (seq, generation, ms, address, rssi, header, data, lost) in reports {
+            let hex = |bytes: &[u8]| bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
+            println!(
+                "seq={seq} generation={generation} time_ms={ms} address={address} RSSI={rssi} header={} data={} lost={lost}",
+                hex(&header),
+                hex(&data)
+            );
+        }
+        Ok(())
+    }
+
     async fn adapter_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0",
+            self.selected_path().await?,
             "org.sparklink.Adapter",
         )
         .await?)
@@ -113,7 +170,7 @@ impl Context {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0/security",
+            format!("{}/security", self.selected_path().await?),
             "org.sparklink.Security",
         )
         .await?)
@@ -123,7 +180,7 @@ impl Context {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0/services",
+            format!("{}/services", self.selected_path().await?),
             "org.sparklink.ServiceManager",
         )
         .await?)
@@ -143,7 +200,7 @@ impl Context {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0/controller",
+            format!("{}/controller", self.selected_path().await?),
             "org.sparklink.Controller",
         )
         .await?)
@@ -153,7 +210,7 @@ impl Context {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0/extadv",
+            format!("{}/extadv", self.selected_path().await?),
             "org.sparklink.ExtAdv",
         )
         .await?)
@@ -178,7 +235,19 @@ impl Context {
         let powered: bool = proxy.get_property("Powered").await?;
         let discovering: bool = proxy.get_property("Discovering").await?;
 
-        println!("Adapter slk0:");
+        let status: String = proxy.get_property("ControllerState").await?;
+        let generation: u64 = proxy.get_property("Generation").await?;
+        let address: String = proxy.get_property("Address").await?;
+        let profile: u32 = proxy.get_property("Profile").await?;
+        let error: String = proxy.get_property("InitializationError").await?;
+        println!("Adapter {}:", self.selected_path().await?);
+        println!("  State:       {status}");
+        println!("  Generation:  {generation}");
+        println!("  Address:     {address}");
+        println!("  Profile:     {profile}");
+        if !error.is_empty() {
+            println!("  Init error:  {error}");
+        }
         println!("  Name:        {name}");
         println!("  Powered:     {powered}");
         println!("  Discovering: {discovering}");
@@ -216,7 +285,11 @@ impl Context {
     }
 
     async fn cmd_info(&self, address: &str) -> anyhow::Result<()> {
-        let object_path = format!("/org/sparklink/slk0/dev_{}", address.replace(':', ""));
+        let object_path = format!(
+            "{}/dev_{}",
+            self.selected_path().await?,
+            address.replace(':', "").to_lowercase()
+        );
         let proxy = zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
@@ -278,7 +351,10 @@ impl Context {
     async fn cmd_remote_services(&self) -> anyhow::Result<()> {
         println!("Remote service discovery requires an active connection.");
         println!("Use 'connect <address>' first, then the daemon exposes");
-        println!("org.sparklink.RemoteService at /org/sparklink/slk0/conn_<handle>");
+        println!(
+            "org.sparklink.RemoteService at {}/conn_<handle>",
+            self.selected_path().await?
+        );
         Ok(())
     }
 

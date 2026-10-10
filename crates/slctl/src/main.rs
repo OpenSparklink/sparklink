@@ -23,9 +23,30 @@ fn main() {
 }
 
 async fn run() -> anyhow::Result<()> {
-    let conn = zbus::Connection::system().await?;
+    let mut args = std::env::args().skip(1).collect::<Vec<_>>();
+    let session = args.first().is_some_and(|a| a == "--session");
+    if session {
+        args.remove(0);
+    }
+    let conn = if session {
+        zbus::Connection::session().await?
+    } else {
+        zbus::Connection::system().await?
+    };
     let mut ctx = commands::Context::new(conn);
 
+    // One-shot commands make automation reproducible.
+    if !args.is_empty() {
+        if args.len() >= 2 && args[0] == "--adapter" {
+            ctx.dispatch(&["select", &args[1]]).await?;
+            args.drain(..2);
+        }
+        if args.is_empty() {
+            anyhow::bail!("missing command");
+        }
+        let parts = args.iter().map(String::as_str).collect::<Vec<_>>();
+        return ctx.dispatch(&parts).await;
+    }
     let mut rl = DefaultEditor::new()?;
     let history_path = dirs_history_path();
     if let Some(ref path) = history_path {
@@ -74,6 +95,8 @@ fn print_help() {
         "\
 Commands:
   list                          List adapters
+  select <path>                 Select a live adapter registration
+  reports                       Show exact native discovery reports
   show                          Show adapter details
   scan on|off                   Start/stop scanning
   devices                       List discovered devices

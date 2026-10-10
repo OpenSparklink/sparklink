@@ -449,3 +449,104 @@ async fn blocked_profile_callback_leaves_state_and_dbus_responsive() {
     assert_eq!(*probe.calls.lock().unwrap(), [(5, true)]);
     bonding.shutdown().await;
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn native_reports_preserve_identity_opaque_bytes_and_loss() {
+    let bus = PrivateBus::start();
+    let state = state();
+    let expected = slk_protocol::SleControllerSnapshot {
+        generation: 42,
+        profile: 1,
+        dev_index: 3,
+        flags: 2,
+        ..Default::default()
+    };
+    {
+        let mut st = state.lock().await;
+        st.controller = expected;
+        st.object_path = "/org/sparklink/slk3_g42".into();
+    }
+    let connection = server(&bus, state.clone()).await;
+    let mut event: slk_protocol::SleControllerEvent = unsafe { std::mem::zeroed() };
+    event.generation = 42;
+    event.profile = 1;
+    event.dev_index = 3;
+    event.seq = 9;
+    event.event_code = 0x180b;
+    event.lost = 8;
+    event.payload_len = 278;
+    event.payload[..23].copy_from_slice(&[
+        0x87, 6, 1, 2, 3, 4, 5, 6, 4, 7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 214, 255,
+    ]);
+    for (i, byte) in event.payload[23..278].iter_mut().enumerate() {
+        *byte = i as u8;
+    }
+    super::dispatch_native(Ok(event), &state, &connection, expected).await;
+    {
+        let st = state.lock().await;
+        assert_eq!(st.events_lost, 8);
+        assert_eq!(st.native_reports.len(), 1);
+        let report = &st.native_reports[0];
+        assert_eq!(report.sequence, 9);
+        assert_eq!(report.generation, 42);
+        assert_eq!(report.address, [1, 2, 3, 4, 5, 6]);
+        assert_eq!(report.rssi, -42);
+        assert_eq!(report.header, event.payload[..23]);
+        assert_eq!(report.data, event.payload[23..278]);
+        let peer = &st.devices[&report.address];
+        assert_eq!(peer.object_path, "/org/sparklink/slk3_g42/dev_010203040506");
+        assert!(peer.name.is_empty() && peer.service_uuids.is_empty() && peer.tx_power.is_none());
+    }
+    event.generation = 43;
+    super::dispatch_native(Ok(event), &state, &connection, expected).await;
+    event.generation = 42;
+    event.dev_index = 2;
+    super::dispatch_native(Ok(event), &state, &connection, expected).await;
+    event.dev_index = 3;
+    event.profile = 2;
+    super::dispatch_native(Ok(event), &state, &connection, expected).await;
+    assert_eq!(state.lock().await.native_reports.len(), 1);
+    {
+        state.lock().await.present = false;
+    }
+    event.profile = 1;
+    super::dispatch_native(Ok(event), &state, &connection, expected).await;
+    assert_eq!(state.lock().await.native_reports.len(), 1);
+    let (bonding, profiles) = {
+        let st = state.lock().await;
+        (st.bonding.clone(), st.profiles.clone())
+    };
+    tokio::join!(bonding.shutdown(), profiles.shutdown());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn ready_property_cache_observes_host_transition() {
+    let bus = PrivateBus::start();
+    let state = state();
+    let server = server(&bus, state.clone()).await;
+    let client = client(&bus).await;
+    let proxy = adapter_proxy(&client).await;
+    assert!(!proxy.get_property::<bool>("Ready").await.unwrap());
+    state.lock().await.controller.flags = slk_protocol::CONTROLLER_READY;
+    crate::adapters::invalidate_properties(
+        &server,
+        "/org/sparklink/slk0",
+        &["Ready", "ControllerState"],
+    )
+    .await;
+    timeout(Duration::from_secs(2), async {
+        loop {
+            if proxy.get_property::<bool>("Ready").await.unwrap() {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("cached Ready must follow property invalidation");
+    let (bonding, profiles) = {
+        let st = state.lock().await;
+        (st.bonding.clone(), st.profiles.clone())
+    };
+    tokio::join!(bonding.shutdown(), profiles.shutdown());
+}

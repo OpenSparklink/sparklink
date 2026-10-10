@@ -507,3 +507,22 @@ fn typed_discovery_abi_and_terminal_states() {
         assert_eq!(r.is_terminal(), (3..=6).contains(&state));
     }
 }
+
+#[test]
+fn selected_controller_snapshot_abi() {
+    assert_eq!(std::mem::size_of::<SleControllerSnapshot>(), 64);
+    assert_eq!(std::mem::align_of::<SleControllerSnapshot>(), 8);
+    assert_eq!(
+        std::mem::offset_of!(SleControllerSnapshot, version_tuple),
+        34
+    );
+    assert_eq!(std::mem::offset_of!(SleControllerSnapshot, features), 39);
+    assert_eq!(std::mem::offset_of!(SleControllerSnapshot, address), 49);
+    assert_eq!(std::mem::offset_of!(SleControllerSnapshot, error), 56);
+    assert_eq!(nix::request_code_readwrite!(b'S', 0x8a, 64), 0xc040538a);
+    // Affinity uses a pointer to signed 16-bit, not ioctl_write_int's int size.
+    assert_eq!(
+        nix::request_code_write!(b'S', 7, std::mem::size_of::<i16>()),
+        0x40025307
+    );
+}

@@ -3,7 +3,7 @@ use std::path::Path;
 
 use nix::fcntl::{OFlag, open};
 use nix::sys::stat::Mode;
-use tracing::{debug, info};
+use tracing::debug;
 
 use slk_protocol::ioctl;
 use slk_protocol::*;
@@ -29,7 +29,7 @@ impl Adapter {
         )
         .map_err(|e| Error::OpenDevice(std::io::Error::from(e)))?;
 
-        info!(path = %path.as_ref().display(), "opened SparkLink device");
+        debug!(path = %path.as_ref().display(), "opened SparkLink device");
 
         Ok(Self {
             fd: owned,
@@ -54,6 +54,49 @@ impl Adapter {
         let mut info = unsafe { std::mem::zeroed::<SciDevInfo>() };
         unsafe { ioctl::sl_dev_info(self.raw_fd(), &mut info)? };
         Ok(info)
+    }
+
+    /// Bind this fd to one registration. Unlike switch_device this does not
+    /// change the global legacy selection. Replug invalidates the binding.
+    pub fn select_device(&mut self, index: u16) -> Result<()> {
+        let index_i16 = i16::try_from(index)
+            .map_err(|_| Error::InvalidParam("device index exceeds signed affinity range"))?;
+        unsafe { ioctl::sl_dev_select(self.raw_fd(), &index_i16)? };
+        self.dev_index = index;
+        Ok(())
+    }
+
+    /// Return registered indices (not a contiguous device count).
+    pub fn device_indices(&self) -> Result<Vec<u16>> {
+        let mut mask = 0u16;
+        unsafe { ioctl::sl_dev_list(self.raw_fd(), &mut mask)? };
+        Ok((0..16).filter(|i| mask & (1 << i) != 0).collect())
+    }
+
+    /// Query only this selected registration. generation=0 probes its identity;
+    /// a nonzero generation fails if the selected registration changed.
+    pub fn controller_snapshot(&self, generation: u64) -> Result<SleControllerSnapshot> {
+        let mut snapshot = SleControllerSnapshot {
+            generation,
+            version: CONTROLLER_SNAPSHOT_VERSION,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_controller_snapshot(self.raw_fd(), &mut snapshot)? };
+        if snapshot.version != CONTROLLER_SNAPSHOT_VERSION
+            || snapshot.generation == 0
+            || (generation != 0 && snapshot.generation != generation)
+            || snapshot.dev_index != self.dev_index
+            || !matches!(
+                snapshot.flags,
+                CONTROLLER_READY | CONTROLLER_SETUP | CONTROLLER_FAULT
+            )
+            || snapshot.valid_fields & !CONTROLLER_FULL_METADATA != 0
+            || snapshot.reserved_byte != 0
+            || snapshot.reserved != [0; 4]
+        {
+            return Err(Error::InvalidParam("invalid controller snapshot response"));
+        }
+        Ok(snapshot)
     }
 
     /// Switch active device by index

@@ -54,6 +54,34 @@ impl EventTask {
         }
     }
 
+    /// Native subscribers preserve full parameters and never use the legacy ring.
+    pub(crate) fn start_native(
+        mut receiver: libsparklink::ControllerEventReceiver,
+        state: SharedState,
+        connection: zbus::Connection,
+        expected: slk_protocol::SleControllerSnapshot,
+    ) -> Self {
+        let (cancel, mut cancelled) = oneshot::channel();
+        let task = tokio::spawn(async move {
+            loop {
+                let event = tokio::select! {
+                    biased;
+                    _ = &mut cancelled => break,
+                    event = receiver.next_event() => event,
+                };
+                tokio::select! {
+                    biased;
+                    _ = &mut cancelled => break,
+                    _ = dispatch_native(event, &state, &connection, expected) => {},
+                }
+            }
+        });
+        Self {
+            cancel: Some(cancel),
+            task: Some(task),
+        }
+    }
+
     pub(crate) async fn shutdown(mut self) -> std::result::Result<(), JoinError> {
         if let Some(cancel) = self.cancel.take() {
             let _ = cancel.send(());
@@ -122,7 +150,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
             );
 
             if connected {
-                let path = format!("/org/sparklink/slk0/conn_{:04x}", handle);
+                let path = format!("{}/conn_{handle:04x}", state.lock().await.object_path);
                 let iface = service::RemoteServiceIface::new(state.clone(), handle);
                 if let Err(e) = connection.object_server().at(path.as_str(), iface).await {
                     error!(%e, path, "failed to register remote service interface");
@@ -171,6 +199,78 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
             tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         }
     }
+}
+
+async fn dispatch_native(
+    event: libsparklink::Result<slk_protocol::SleControllerEvent>,
+    state: &SharedState,
+    connection: &zbus::Connection,
+    expected: slk_protocol::SleControllerSnapshot,
+) {
+    let event = match event {
+        Ok(event) => event,
+        Err(error) => {
+            error!(%error, index=expected.dev_index, "native event read failed");
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+            return;
+        }
+    };
+    if event.generation != expected.generation
+        || event.dev_index != expected.dev_index
+        || event.profile != expected.profile
+    {
+        error!("native event identity mismatch");
+        return;
+    }
+    let mut st = state.lock().await;
+    if !st.present {
+        return;
+    }
+    st.events_lost = st.events_lost.saturating_add(event.lost);
+    let Some(report) = event.ws73_discovery() else {
+        let path = st.object_path.clone();
+        drop(st);
+        if event.lost != 0 {
+            crate::adapters::invalidate_properties(connection, &path, &["EventsLost"]).await;
+        }
+        return;
+    };
+    let address: [u8; 6] = report.header[2..8].try_into().expect("fixed WS73 address");
+    let received_at_ms = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis()
+        .min(u128::from(u64::MAX)) as u64;
+    if st.native_reports.len() == 128 {
+        st.native_reports.pop_front();
+    }
+    st.native_reports.push_back(crate::state::NativeReport {
+        sequence: event.seq,
+        generation: event.generation,
+        received_at_ms,
+        address,
+        rssi: report.rssi,
+        header: report.header.to_vec(),
+        data: report.data.to_vec(),
+        lost: event.lost,
+    });
+    let path = st.object_path.clone();
+    drop(st);
+    if event.lost != 0 {
+        crate::adapters::invalidate_properties(connection, &path, &["EventsLost"]).await;
+    }
+    dispatch(
+        Ok(Event::AdvReport {
+            addr: address,
+            rssi: report.rssi,
+            discovery_level: 0,
+            name: String::new(),
+            adv_data: report.data.to_vec(),
+        }),
+        state,
+        connection,
+    )
+    .await;
 }
 
 async fn pairing_record(

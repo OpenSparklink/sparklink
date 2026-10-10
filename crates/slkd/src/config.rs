@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::path::Path;
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 pub struct DaemonConfig {
     #[serde(default)]
     pub general: GeneralConfig,
@@ -10,7 +10,7 @@ pub struct DaemonConfig {
     pub policy: PolicyConfig,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct GeneralConfig {
     /// Default discovery level for this adapter
     #[serde(default = "default_discovery_level")]
@@ -25,7 +25,7 @@ pub struct GeneralConfig {
     pub name: String,
 }
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 pub struct PolicyConfig {
     /// Auto-pair with JustWorks when possible
     #[serde(default)]

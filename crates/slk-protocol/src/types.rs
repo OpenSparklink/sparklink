@@ -1126,3 +1126,33 @@ impl SleDiscoveryResult {
         (3..=6).contains(&self.state)
     }
 }
+
+/// Selected registration metadata and Host readiness, independent of RF state.
+/// FULL_METADATA marks the queried native five-byte version/80-bit features.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C, align(8))]
+pub struct SleControllerSnapshot {
+    pub generation: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub profile: u32,
+    pub valid_fields: u32,
+    pub dev_index: u16,
+    pub bus: u8,
+    pub command_credits: u8,
+    pub acb_length: u16,
+    pub icb_length: u16,
+    pub acb_count: u8,
+    pub icb_count: u8,
+    pub version_tuple: [u8; 5],
+    pub features: [u8; 10],
+    pub address: [u8; 6],
+    pub reserved_byte: u8,
+    pub error: i32,
+    pub reserved: [u8; 4],
+}
+pub const CONTROLLER_SNAPSHOT_VERSION: u32 = 1;
+pub const CONTROLLER_READY: u32 = 1;
+pub const CONTROLLER_SETUP: u32 = 2;
+pub const CONTROLLER_FAULT: u32 = 4;
+pub const CONTROLLER_FULL_METADATA: u32 = 1;

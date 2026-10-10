@@ -2,16 +2,16 @@ use std::collections::HashMap;
 use zbus::interface;
 use zbus::zvariant::Value;
 
-use crate::state::SharedState;
+use crate::state::{AdapterDirectory, SharedState};
 
 /// Root D-Bus object at /org/sparklink
 pub struct Root {
-    state: SharedState,
+    adapters: AdapterDirectory,
 }
 
 impl Root {
-    pub fn new(state: SharedState) -> Self {
-        Self { state }
+    pub fn new(adapters: AdapterDirectory) -> Self {
+        Self { adapters }
     }
 }
 
@@ -24,7 +24,7 @@ impl Root {
 
     /// List available adapter object paths
     async fn list_adapters(&self) -> Vec<String> {
-        vec!["/org/sparklink/slk0".into()]
+        self.adapters.lock().await.keys().cloned().collect()
     }
 }
 
@@ -85,6 +85,89 @@ impl AdapterIface {
                 (addr_hex, d.name.clone(), d.rssi as i16, d.connected)
             })
             .collect()
+    }
+
+    /// Exact received WS73 reports: sequence, generation, timestamp_ms,
+    /// address, RSSI, complete header, data and explicit lost-record count.
+    async fn get_reports(&self) -> Vec<(u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64)> {
+        self.state
+            .lock()
+            .await
+            .native_reports
+            .iter()
+            .map(|r| {
+                (
+                    r.sequence,
+                    r.generation,
+                    r.received_at_ms,
+                    format_addr(&r.address),
+                    i16::from(r.rssi),
+                    r.header.clone(),
+                    r.data.clone(),
+                    r.lost,
+                )
+            })
+            .collect()
+    }
+
+    #[zbus(property)]
+    async fn ready(&self) -> bool {
+        let st = self.state.lock().await;
+        st.present && st.controller.flags == slk_protocol::CONTROLLER_READY
+    }
+    #[zbus(property)]
+    async fn controller_state(&self) -> String {
+        let st = self.state.lock().await;
+        if !st.present {
+            "Removed"
+        } else {
+            match st.controller.flags {
+                slk_protocol::CONTROLLER_READY => "Ready",
+                slk_protocol::CONTROLLER_FAULT => "Fault",
+                _ => "Setup",
+            }
+        }
+        .into()
+    }
+    #[zbus(property)]
+    async fn generation(&self) -> u64 {
+        self.state.lock().await.controller.generation
+    }
+    #[zbus(property)]
+    async fn profile(&self) -> u32 {
+        self.state.lock().await.controller.profile
+    }
+    #[zbus(property)]
+    async fn address(&self) -> String {
+        format_addr(&self.state.lock().await.controller.address)
+    }
+    #[zbus(property)]
+    async fn controller_version(&self) -> Vec<u8> {
+        self.state.lock().await.controller.version_tuple.to_vec()
+    }
+    #[zbus(property)]
+    async fn features(&self) -> Vec<u8> {
+        self.state.lock().await.controller.features.to_vec()
+    }
+    #[zbus(property)]
+    async fn metadata_valid_fields(&self) -> u32 {
+        self.state.lock().await.controller.valid_fields
+    }
+    #[zbus(property)]
+    async fn command_credits(&self) -> u8 {
+        self.state.lock().await.controller.command_credits
+    }
+    #[zbus(property)]
+    async fn controller_error(&self) -> i32 {
+        self.state.lock().await.controller.error
+    }
+    #[zbus(property)]
+    async fn initialization_error(&self) -> String {
+        self.state.lock().await.initialization_error.clone()
+    }
+    #[zbus(property)]
+    async fn events_lost(&self) -> u64 {
+        self.state.lock().await.events_lost
     }
 
     /// Adapter power state

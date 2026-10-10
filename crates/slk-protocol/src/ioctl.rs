@@ -9,7 +9,7 @@ nix::ioctl_read!(sl_dev_count, SL_MAGIC, 0x03, u32);
 nix::ioctl_read!(sl_dev_info, SL_MAGIC, 0x04, super::SciDevInfo);
 nix::ioctl_write_int!(sl_dev_switch, SL_MAGIC, 0x05);
 nix::ioctl_read!(sl_dev_list, SL_MAGIC, 0x06, u16);
-nix::ioctl_write_int!(sl_dev_select, SL_MAGIC, 0x07);
+nix::ioctl_write_ptr!(sl_dev_select, SL_MAGIC, 0x07, i16);
 nix::ioctl_read!(sl_dev_get_active, SL_MAGIC, 0x08, u16);
 
 // ----- Advertising (0x10 - 0x1B) -----
@@ -288,4 +288,11 @@ nix::ioctl_readwrite!(
     SL_MAGIC,
     0x89,
     super::SleDiscoveryResult
+);
+
+nix::ioctl_readwrite!(
+    sl_controller_snapshot,
+    SL_MAGIC,
+    0x8a,
+    super::SleControllerSnapshot
 );

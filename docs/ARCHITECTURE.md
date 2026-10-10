@@ -228,3 +228,35 @@ DLI → 硬件
 | T/XS 40001-2022 | 网络安全通用要求 | 授权、凭据与安全验收待完成 |
 | T/XS 50003-2025 | SLE 一致性测试 | 部分覆盖 |
 | T/XS 50004-2025 | 互操作测试 | 待补充 |
+
+### Generation-specific adapters and native Ready (partial WS73 work)
+
+slkd starts independently of controller presence. The registry worker reads the
+allocated-device mask; each selected registration owns its control fd, bootstrap
+and event task. Paths include both ID and generation, e.g.
+`/org/sparklink/slk1_g2`. Removal stops that node's actors/subscription and removes
+its D-Bus objects. Other nodes keep their identity and continue running.
+
+`ControllerState` is Setup, Ready, Fault or Removed. Native Ready comes from the
+kernel snapshot after actual metadata queries and both initialization stop
+Complete events; `Powered` cannot establish Ready. `MetadataValidFields` bit 0
+marks the full five-byte version/80-bit features. Host faults expose their errno;
+initialization failures have a separate message. These states do not certify RF
+or the supplied board calibration. Native profiles and legacy `scan on|off` are
+unsupported while a reviewed WS73 radio policy/SSAP backend is pending.
+
+The native subscriber uses the non-destructive full event stream with explicit
+registration identity and loss. `GetReports` returns up to 128 exact native
+reports (sequence, generation, receive wall-clock milliseconds, address, RSSI,
+raw 23-byte header, data, lost count). Fragment/vendor/address-type/PHY bytes stay
+opaque; the daemon does not treat native data as legacy name/SSAP TLVs. This
+bounded history does not replace persistent USB/HCC/DLI evidence capture.
+
+Interactive usage is `list`, `select slk1_g2`, `show`, `reports`. Selection stays
+bound to that generation; after unplug, choose a new live path explicitly.
+Reproducible one-shot calls are `slctl list` and
+`slctl --adapter /org/sparklink/slk1_g2 show` (or `reports`). `--session` selects a
+private test bus in both programs; production continues using the system bus.
+The kernel selftest `run_daemon_lifecycle.py` runs these actual binaries as guest
+uid 1000 on synthetic WS73 controllers and checks hotplug with the same slkd.
+It is development support, not the seven real North Star acceptance criteria.

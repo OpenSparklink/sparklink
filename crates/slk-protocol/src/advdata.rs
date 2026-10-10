@@ -281,8 +281,10 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
                     continue;
                 }
                 let uuids: Vec<u16> = value
-                    .chunks_exact(2)
-                    .map(|c| u16::from_le_bytes([c[0], c[1]]))
+                    .as_chunks::<2>()
+                    .0
+                    .iter()
+                    .map(|&c| u16::from_le_bytes(c))
                     .collect();
                 if type_id == 0x05 {
                     entries.push(AdvDataEntry::CompleteStdServiceList(uuids));
@@ -299,14 +301,7 @@ pub fn parse_adv_data(data: &[u8]) -> (Vec<AdvDataEntry>, Vec<AdvDataError>) {
                     });
                     continue;
                 }
-                let uuids: Vec<[u8; 16]> = value
-                    .chunks_exact(16)
-                    .map(|c| {
-                        let mut u = [0u8; 16];
-                        u.copy_from_slice(c);
-                        u
-                    })
-                    .collect();
+                let uuids = value.as_chunks::<16>().0.to_vec();
                 if type_id == 0x06 {
                     entries.push(AdvDataEntry::CompleteCustomServiceList(uuids));
                 } else {

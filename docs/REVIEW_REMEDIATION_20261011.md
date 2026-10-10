@@ -337,8 +337,19 @@ K78e729c06a5e/编译U2dfd6bd09e7b的[证据](evidence/ws73-vm-diagnostic-evictio
 34 Python/165工具；生产Kc89/Udf9未变。这是限定顺序槽替换，不是完整事务验收。
 
 [剩余调用审计](DIAGNOSTIC_RESULT_MIGRATION.md)
-确认旧DLI_POLL_EVENT仍先消费后copy（含backend fallback），EventReceiver、
+该批K78/U2df审计确认旧DLI_POLL_EVENT先消费后copy（含backend fallback）；后续修复见下文，EventReceiver、
 profile0 C/Python/slkd、--legacy及旧raw selftests需迁移。新诊断结果不自动修复
 旧入口；下一步分别闭合复制失败、统一订阅、实际取消/迟到/期限，再删共享队列
 和重复UAPI。自然启动/重枚举/消失根因、自主恢复、物理xHCI警告、四设备及
 完整socket/SSAP/安全/Bond/Profile/Proxy/S0–S6继续OPEN，VM-only/北极星7/8不变。
+
+
+### R12 旧 poll 消费顺序修复与后续删除
+
+Linux `54621800ee4c`修复共享ring的peek/copy/commit，并在同一ring暂存backend
+fallback事件；复制失败后可重试，未增加生产模拟。实际代码依赖fixture新增6项，
+read_iter原9项保持。详见[修复、锁与溢出边界及实机门禁](EVENT_COPY_REMEDIATION.md#旧-dli-poll-过渡修复k54621800ee4c实机故障门禁待执行)。
+此处仅记录实现与开发测试，新镜像真实WS73回归和legacy ioctl/fallback实机故障
+门禁待执行。先接通独立订阅调用者再删除旧ring/fallback/UAPI，整项R12仍OPEN。
+最终职责及socket/用户态SSAP依赖按ADR0001；自然故障根因、自主恢复、历史
+xHCI warning、四设备和全部S0–S6范围保持，VM-only不变。

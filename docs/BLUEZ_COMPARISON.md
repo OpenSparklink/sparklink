@@ -2,10 +2,13 @@
 
 用户这次提供的分析与已采用文本相同（SHA256
 `f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a`）。
-最新复核基线为 Linux `372d3cbcd557` / 编译用户态 `ee2793301e9a`；本批只改
-selftest/验证工具，生产内核保持 `c89e961b80a2`，生产用户态保持 `df9cff7d750d`。
-[实际提交 copyout 证据](evidence/ws73-vm-diagnostic-copyout-20261011.json)补齐
-两类限定幂等提交门禁，不能推论取消、完整请求契约或自主故障恢复已完成。
+本次复核区分已验证与正在开发的基线：K`78e729c06a5e`/编译U`2dfd6bd09e7b`
+[实际诊断槽淘汰证据](evidence/ws73-vm-diagnostic-eviction-20261011.json)包含33个
+真实查询、旧ID/sequence拒绝和100ms无重发；read7、WS7320+2及同daemon保持。
+后续生产内核K`54621800ee4c`修复[旧DLI poll复制提交](EVENT_COPY_REMEDIATION.md)，
+新增6项开发fixture，真实新镜像回归与legacy ioctl故障门禁待执行。用户态生产
+保持`df9cff7d750d`。不能将上一镜像证据推广为新修复的实机验收，也不能据此
+推论取消、完整事件、连接服务或自主故障恢复完成。
 ADR 0001、最终 socket/用户态 SSAP 分层、WS73 北极星及 S0–S6 均保持。
 Rust、接口数量或代码量不构成架构/性能领先证据。
 

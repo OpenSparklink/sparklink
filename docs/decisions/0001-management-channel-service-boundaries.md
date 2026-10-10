@@ -90,12 +90,11 @@ f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a）。
 声明位验证、框架存在和CI成功不证明服务互通或安全强制；实际socket、用户态
 Engine、安全/Bond和自然恢复门禁仍需独立交付。已验证discovery持续回归。
 
-最新实施复核至 Linux `372d3cbcd557` / 编译用户态 `ee2793301e9a`。
-[当前证据](../evidence/ws73-vm-diagnostic-copyout-20261011.json)包含只读与部分输出
-EFAULT、同 ID 重试的一次 wire 提交；原请求者结果16类、legacy read7、真实
-WS73 20+2和同 daemon 回归保持。生产代码未变（Kc89/Udf9）；9作业严格CI成功。
-这些限定门禁推进作者专属结果和事务身份契约，不改变本ADR职责与依赖顺序。
+最新已验证基线为K`78e729c06a5e`/编译U`2dfd6bd09e7b`，见
+[诊断淘汰证据](../evidence/ws73-vm-diagnostic-eviction-20261011.json)。后续
+K`54621800ee4c`修复旧poll的复制提交顺序；[6项新开发fixture和未决实机门禁](../EVENT_COPY_REMEDIATION.md)
+明确区分，不将历史真实路径证据推广到尚未运行的新镜像。
 
-实际取消/迟到回复/淘汰、完整事件和旧DLI调用者删除仍开放；socket、用户态SSAP、
+实际取消/迟到回复/完整期限、事件与旧DLI调用者删除仍开放；socket、用户态SSAP、
 每连接安全/Bond及自然故障根因/自主恢复未验收。历史物理xHCI警告和旧版本
-证据保留，不能用本批无警告替代根因定位。部分成果不关闭完整issue。
+证据保留，不能用新批无警告替代根因定位。部分成果不关闭完整issue。

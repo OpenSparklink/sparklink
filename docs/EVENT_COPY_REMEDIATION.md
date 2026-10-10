@@ -9,7 +9,7 @@ K3/U2及完整独立事件/移除/旧路径清理验收仍OPEN。UAPI未发布�
 |---|---|---|
 | MiscDevice::read_iter → per-fd EventQueue | 旧kernel C selftest/ctl；固定44字节SleWireEvent | 使用唯一copy_records，完整记录复制成功才消费/增加delivered |
 | EventQueue::drain_to_buf | rg审计无调用者 | 立即删除；dequeue仅私有提交helper，无第二套生产drain |
-| DLI_POLL_EVENT → runtime.pop_dli_event/backend.poll_event | legacy lib EventReceiver、profile0 slkd、旧DLI工具/selftests | 是另一条旧路径，仍存在先消费再copy风险及backend直读fallback；等待独立订阅调用者迁移后删旧入口 |
+| DLI_POLL_EVENT → runtime.pop_dli_event/backend.poll_event | legacy lib EventReceiver、profile0 slkd、旧DLI工具/selftests | 共享消费旧路径；K54621800ee4c已增加复制后提交和fallback暂存；实际legacy ioctl故障验收、独立订阅迁移与删除仍待完成 |
 | slkconfig Native query → owner-private diagnostic result | 原生产调用者，已按 fd/generation/local sequence 迁移 | 删除 stale drain 与共享 poll；结果不消费，完整旧调用者迁移仍 OPEN |
 | ControllerEventReceiver → typed controller subscription | 当前Native WS73 slkd/slctl；新monitor独立snoop | 本批不改；重新用新镜像验证discovery及幸存者 |
 
@@ -117,3 +117,30 @@ syscall case、4次实际slkconfig查询和8组独立USB命令/回复。退役Ru
 旧DLI路径，也不关闭R12/K3/U2：下一步补齐admission copyout可找回/幂等、
 cancel/deadline及剩余消费者迁移，回归后删除重复实现。自然故障根因、完整
 无人工拔插恢复、socket/SSAP/每连接安全/Bond/Profile/Proxy及全S0–S6仍OPEN。
+
+
+## 旧 DLI poll 过渡修复（K54621800ee4c，实机故障门禁待执行）
+
+调用审计确认，共享 ring 与 backend fallback 都在复制到用户空间前消费事件。
+本提交让该入口先 peek，完整写入256字节后才 pop。若 ring 为空，backend 已取出的
+事件先放入同一现存 ring；EFAULT 后重试优先返回暂存事件，不再次取走 backend
+事件。选定 controller 的状态 mutex 保持到复制和提交结束，防止同期消费者或
+overflow 替换队首。没有新增第二队列、生产模拟、公开 UAPI 或全局 lint 豁免。
+
+这只修复复制失败的消费顺序：部分写入用户缓冲仍可能发生。ring 保持原32槽/
+31条可用及显式丢弃最旧记录策略；后续真实 overflow 仍可能丢弃保留事件。
+状态锁跨 usercopy 的过渡实现会阻塞同设备工作；不宣称完整并发、活性或lockdep
+验收。最终仍迁移 EventReceiver/profile0 C/Python/slkd、--legacy、旧 selftests，
+删除共享 ring、backend fallback 和 DLI_POLL_EVENT。UAPI未发布，无兼容期限。
+
+`python3 tools/testing/selftests/sparklink/run_event_copy.py`编译实际 canonical声明、
+push/peek/pop 与 ioctl helper；新增6项依赖fixture，已有9项read_iter继续通过。
+覆盖所有0..255复制前缀、backend仅取一次及重复失败后重试、FIFO/一次提交、
+wrap/overflow、空队列EAGAIN及退役ENODEV。controller/codec、usercopy与std mutex
+为依赖替身，不能当作真实backend、内核usercopy、权限或并发证明。
+
+新镜像必须先回归20+2真实WS73、普通用户、同slkd、read7、诊断result16/
+copyout2/淘汰33。随后新增实际legacy ioctl坏地址、只读与跨页部分输出：
+用真实MAC查询完成事件作为队首，核对256字节重试内容、成功后一次消费和空队列
+EAGAIN，并捕获唯一真实查询/回复。Native ring的实机结果也不能替代另一backend
+fallback的独立资格验收。当前这些新故障门禁仍待执行，完整R12/K3/U2保持OPEN。

@@ -96,3 +96,10 @@ GATT、Agent、L2CAP 和 VM 测试语义。R01/R02/R05 首批已签名推送并�
 - 未决：R01/R02完整认证/向量/凭据安装、旧正向测试与UAPI迁移；R05真实其他backend；
   R06–R14、自然根因/无人工恢复/四设备/全sandbox。严格CI39 warning不隐藏，
   新CI门禁不能代表全部质量基线已恢复，所有整项issue继续开放。
+
+### 最新远端质量门禁核对
+
+用户态 `082e6743e20b` 的 [CI run38075881263](https://github.com/OpenSparklink/sparklink/actions/runs/38075881263)：
+新增 actual kernel security/backend failure 门禁、Python/内核ABI和rustfmt成功；
+cargo check仍因slkd原有39个dead-code错误失败，test/clippy/header/release跳过。
+没有降低-D warnings，R14仍开放；新增门禁成功不表示全部质量或标准验收通过。

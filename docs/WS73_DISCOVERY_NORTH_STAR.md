@@ -65,7 +65,8 @@ Virtual 验证路由、乱序/迟到完成、队列满与取消；软件 PASS �
 
 最终 harness 应使用与用户相同的 slctl/D-Bus 路径，保存每轮角色、随机
 标识、提交/完成/发现的 monotonic 时间、实际 scan 原文及运行 exit status。
-目前该硬件 harness 和动态 adapter 命令尚未实现，此文不是可执行测试。
+动态 adapter/广播/扫描命令已实现，软件 gate 可执行；真实硬件自动验收与
+USB/HCC/DLI capture 的联合判定仍待接通，不能以软件 gate 替代硬件 harness。
 
 每次实机运行先做 inventory，确认两只物理 WS73 与 guest/controller
 映射。保存 Linux/用户态 commit、dirty diff、config、kernel/initramfs、
@@ -834,3 +835,41 @@ deadline溢出返回错误且不执行ioctl；尚未接动态slkd adapter与slct
 AD内外层封装、普通用户与全部七项真实验收待完成。下一步处理原生Ready/故障
 可见性并把新接口与完整发现事件接入动态adapter/slctl，再做真实双设备闭环和
 四设备两组；全部原issues和完整S0–S6保持开放，不能以virtual事务提前关闭整项。
+
+## slctl 原生广播/扫描闭环（2026-10-10，部分成果）
+
+实现基本 WS73 policy v1、D-Bus caller request id 提交/结果与 slctl
+`advertise on|off`、`scan on|off`、`result <id>`。广播采用 handle0、不可连接/
+不可查询、fixed T、150ms、三广播信道、控制器选择功率127、frame1编码0；
+被动扫描 frame1 bitmap1、200ms interval/100ms window、保留重复。
+参数由用户态完整提供，驱动仍独立验证/编码；不发送 raw RF、不伪造 UUID。
+随机16字节标识封装为 type255 接入层数据及发现等级/完整名称 `slk-<hex>`，
+依据 T/XS 10002 §7.1.4、20001 §6.5 和 10003 §8.2.1。真实固件支持必须由
+实际结果/空口证明，拒绝时保留原始 status，不偷偷切换参数。
+
+`slctl --adapter <TX> advertise on` 输出 marker/data/request 和实际功率；
+`slctl --adapter <RX> scan on <marker> <TX-address>` 等匹配 Complete 后，只
+接受该代次、历史 watermark 之后且完整数据/地址一致的新报告，显示 RSSI。
+10秒单调时间界限从扫描 admission 前开始；GetTimedReports 独立保留内核
+CLOCK_BOOTTIME receipt ns 和 daemon wall time。超时不撤销已接收操作，可以
+用 request id 查询或显式 stop。拔插须重新选择新代次，无需重启 slkd。
+
+新增可复现软件门禁 `run_daemon_lifecycle.py --radio-policy`：实际 slkd/slctl
+由 guest uid1000 运行，两只 synthetic USB/HCC/DLI model 经显式合成介质互收。
+20轮交换角色、每轮随机标识；拔插同 PID 新代次后再交换2轮；两阶段分别关闭
+TX 后观察2秒无新报告。验证器核对每个实际发送者地址、接收者代次/递增序号/
+内核时间、22个不同标识、43字节数据、10秒界限、88项 matched Complete 结果与
+admission ID，并拒绝缺失/重复/失败/跨生命周期证据。
+
+初次测试发现 zbus 默认执行器不在 Tokio runtime 中，导致 handler panic；
+启用 Tokio 后，又发现 AsyncFd 先订阅旧队列再切换 native queue，收不到 wakeup。
+现先激活 native subscription 再 epoll 注册，非破坏日志从0重读而不丢初始事件。
+所有失败与最终 source/image/program hash、QMP、完整内核日志保留在
+`.dev/radio-control-*`。软件闭环仅为开发支撑；本机 inventory=[]，七项真实验收
+全部继续未勾选，四设备并行与完整 S0–S6 保留，所有整项 issues 保持开放。
+
+本阶段冻结验证：原96-case完整QEMU strict PASS（1056 OK / 0 FAIL / 0 SKIP /
+3旧WARN）、8条原native/standard gate全部PASS、135项harness、145项workspace
+和protocol/library/slctl strict clippy PASS；最终双设备合成CLI gate保存于
+`.dev/radio-control-daemon-final-v2/manifest.json`，source/input前后不变。
+完整slkd strict clippy仍FAIL（旧未使用代码/测试helper/参数数目问题），不计为通过。

@@ -19,7 +19,7 @@ repository = "https://gitee.com/sparklinkZ/sparklink-userspace"
 slk-protocol = { path = "crates/slk-protocol" }
 libsparklink = { path = "crates/libsparklink" }
 tokio = { version = "1", features = ["full"] }
-zbus = "5"
+zbus = { version = "5", default-features = false, features = ["tokio"] }
 nix = { version = "0.30", features = ["ioctl", "fs", "net"] }
 serde = { version = "1", features = ["derive"] }
 toml = "0.8"

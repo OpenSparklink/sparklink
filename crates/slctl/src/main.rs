@@ -98,7 +98,10 @@ Commands:
   select <path>                 Select a live adapter registration
   reports                       Show exact native discovery reports
   show                          Show adapter details
-  scan on|off                   Start/stop scanning
+  scan on [marker address]|off  Scan and optionally await a fresh matching report
+  advertise on [32-hex-marker]   Start native beacon with a fresh random marker
+  advertise off                 Stop native beacon
+  result <request-id>           Inspect retained native operation result
   devices                       List discovered devices
   info <address>                Show device details
   pair <address>                Pair with device

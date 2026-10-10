@@ -242,8 +242,9 @@ kernel snapshot after actual metadata queries and both initialization stop
 Complete events; `Powered` cannot establish Ready. `MetadataValidFields` bit 0
 marks the full five-byte version/80-bit features. Host faults expose their errno;
 initialization failures have a separate message. These states do not certify RF
-or the supplied board calibration. Native profiles and legacy `scan on|off` are
-unsupported while a reviewed WS73 radio policy/SSAP backend is pending.
+or the supplied board calibration. Native SSAP profiles remain unsupported. Basic WS73 policy v1 supplies typed
+advertisement/scan/stop requests; firmware support is determined by the actual
+controller result, and does not certify real RF.
 
 The native subscriber uses the non-destructive full event stream with explicit
 registration identity and loss. `GetReports` returns up to 128 exact native
@@ -260,3 +261,38 @@ private test bus in both programs; production continues using the system bus.
 The kernel selftest `run_daemon_lifecycle.py` runs these actual binaries as guest
 uid 1000 on synthetic WS73 controllers and checks hotplug with the same slkd.
 It is development support, not the seven real North Star acceptance criteria.
+
+### Native basic discovery control
+
+D-Bus `SubmitAdvertising(request_id, marker[16])`, `SubmitScanning(request_id)`,
+`SubmitStopAdvertising(request_id)` and `SubmitStopScanning(request_id)` use an
+independently selected native fd and retain caller IDs. Successful submission
+means admission. `GetDiscoveryResult(request_id)` returns generation, ID,
+operation, state, host errno, raw controller status/opcode, step/count, actual
+selected power plus validity, confirmed advertisement/scan state and profile.
+Pending/admitted results are not success; only state 3 completes successfully.
+Absent/evicted results fail explicitly; unplugged paths never follow a reused ID.
+`AdvertisingState`/`ScanningState` expose confirmed states 0 unknown, 1 off, 2 on.
+Native `StartDiscovery`/`StopDiscovery` use the same policy and wait for Complete.
+
+`slctl --adapter <path> advertise on` generates a fresh 16-byte random marker;
+optional 32 hex digits allow reproducible payloads. `advertise off`, `scan on`,
+`scan off` await terminal results and display raw errors and selected power.
+`result <decimal-id>` recovers an admitted operation after a disconnected call.
+A client timeout does not cancel an admitted operation; explicit stop is needed.
+D-Bus runs on Tokio so task/timer calls inside service handlers are valid.
+The native subscription is activated before epoll registration, ensuring epoll
+watches the native owner queue rather than the earlier legacy event queue.
+
+`scan on <32-hex-marker> <advertiser-address>` accepts only a new sequence from
+the selected generation with exactly matching address and full encoded payload.
+It prints RSSI and kernel CLOCK_BOOTTIME nanoseconds. A 10-second monotonic bound
+starts before scan admission, including command completion and report delivery.
+`GetTimedReports` extends the unchanged `GetReports` API with this kernel receipt
+time; daemon wall time is a separate field and cannot establish that bound.
+
+The opt-in `run_daemon_lifecycle.py --radio-policy` fixture uses an explicit
+synthetic cross-controller medium. Only a distinct live model in the same group
+can originate a report: 20 alternating rounds, two more after hotplug and a
+transmitter-off negative control per phase use actual uid-1000 slkd/slctl. This
+verifies transport/event/control plumbing, never real WS73 firmware or air.

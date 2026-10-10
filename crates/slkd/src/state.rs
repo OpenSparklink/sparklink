@@ -28,6 +28,9 @@ pub struct DeviceEntry {
 /// Shared adapter state accessible from D-Bus + event loop
 pub struct AdapterState {
     pub adapter: Adapter,
+    pub native_control: Option<Arc<Adapter>>,
+    pub radio_advertising: u32,
+    pub radio_scanning: u32,
     pub object_path: String,
     pub controller: slk_protocol::SleControllerSnapshot,
     pub present: bool,
@@ -53,6 +56,9 @@ impl AdapterState {
         let name = config.general.name.clone();
         Self {
             adapter,
+            native_control: None,
+            radio_advertising: 0,
+            radio_scanning: 0,
             object_path: "/org/sparklink/slk0".into(),
             controller: slk_protocol::SleControllerSnapshot::default(),
             present: true,
@@ -241,6 +247,7 @@ pub struct NativeReport {
     pub sequence: u64,
     pub generation: u64,
     pub received_at_ms: u64,
+    pub kernel_boottime_ns: u64,
     pub address: SleAddr,
     pub rssi: i8,
     pub header: Vec<u8>,

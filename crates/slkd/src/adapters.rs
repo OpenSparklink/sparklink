@@ -180,6 +180,9 @@ impl Node {
         let mut state = AdapterState::new(adapter, config, bonding, profiles);
         state.object_path = path.clone();
         state.controller = snapshot;
+        if snapshot.profile == 1 {
+            state.native_control = Some(control.clone());
+        }
         let state = Arc::new(Mutex::new(state));
         // Roll back partial registration if any of the D-Bus interfaces fails.
         if let Err(error) = publish(connection, &path, &state).await {
@@ -226,12 +229,26 @@ impl Node {
     async fn refresh(&self) -> anyhow::Result<()> {
         let fd = self.control.clone();
         let generation = self.state.lock().await.controller.generation;
-        let snapshot =
-            tokio::task::spawn_blocking(move || fd.controller_snapshot(generation)).await??;
+        let (snapshot, radio) = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
+            let snapshot = fd.controller_snapshot(generation)?;
+            let radio = if snapshot.profile == 1 {
+                Some(fd.discovery_snapshot()?)
+            } else {
+                None
+            };
+            Ok((snapshot, radio))
+        })
+        .await??;
         let changed = {
             let mut st = self.state.lock().await;
-            let changed = st.controller != snapshot;
+            let mut changed = st.controller != snapshot;
             st.controller = snapshot;
+            if let Some(radio) = radio {
+                changed |= st.radio_advertising != radio.radio_adv
+                    || st.radio_scanning != radio.radio_scan;
+                st.radio_advertising = radio.radio_adv;
+                st.radio_scanning = radio.radio_scan;
+            }
             changed
         };
         if changed {
@@ -243,6 +260,9 @@ impl Node {
                     "ControllerState",
                     "CommandCredits",
                     "ControllerError",
+                    "AdvertisingState",
+                    "ScanningState",
+                    "Discovering",
                 ],
             )
             .await;

@@ -20,12 +20,14 @@ impl Context {
             "list" => self.cmd_list().await,
             "select" => self.cmd_select(args.get(1).copied().unwrap_or("")).await,
             "reports" => self.cmd_reports().await,
+            "advertise" => self.cmd_advertise(args).await,
+            "result" => self.cmd_result(args.get(1).copied().unwrap_or("")).await,
             "show" => self.cmd_show().await,
             "scan" => {
                 if args.len() < 2 {
                     anyhow::bail!("usage: scan on|off");
                 }
-                self.cmd_scan(args[1]).await
+                self.cmd_scan(args).await
             }
             "devices" => self.cmd_devices().await,
             "info" => {
@@ -254,8 +256,153 @@ impl Context {
         Ok(())
     }
 
-    async fn cmd_scan(&self, toggle: &str) -> anyhow::Result<()> {
+    async fn cmd_advertise(&self, args: &[&str]) -> anyhow::Result<()> {
         let proxy = self.adapter_proxy().await?;
+        let id = random_bytes::<8>()?;
+        let id = u64::from_ne_bytes(id).max(1);
+        match args.get(1).copied() {
+            Some("on") => {
+                let marker: [u8; 16] = if let Some(hex) = args.get(2) {
+                    parse_hex_bytes(hex)?
+                        .try_into()
+                        .map_err(|_| anyhow::anyhow!("marker must be 16 bytes (32 hex digits)"))?
+                } else {
+                    random_bytes()?
+                };
+                println!(
+                    "NativeAdvertisementRequest: request={id} marker={}",
+                    hex_bytes(&marker)
+                );
+                let data: Vec<u8> = tokio::time::timeout(
+                    std::time::Duration::from_secs(7),
+                    proxy.call("SubmitAdvertising", &(id, marker.to_vec())),
+                )
+                .await??;
+                println!(
+                    "NativeAdvertisementAccepted: request={id} marker={} data={}",
+                    hex_bytes(&marker),
+                    hex_bytes(&data)
+                );
+            }
+            Some("off") => {
+                println!("NativeStopAdvertisingRequest: request={id}");
+                let _: () = tokio::time::timeout(
+                    std::time::Duration::from_secs(7),
+                    proxy.call("SubmitStopAdvertising", &(id,)),
+                )
+                .await??;
+            }
+            _ => anyhow::bail!("usage: advertise on [32-hex-marker]|off"),
+        }
+        self.wait_native_result(&proxy, id).await
+    }
+    async fn cmd_result(&self, id: &str) -> anyhow::Result<()> {
+        let id: u64 = id.parse()?;
+        let proxy = self.adapter_proxy().await?;
+        let result: slk_protocol::DiscoveryResultRecord =
+            proxy.call("GetDiscoveryResult", &(id,)).await?;
+        print_native_result(result)?;
+        Ok(())
+    }
+    async fn wait_native_result(&self, proxy: &zbus::Proxy<'_>, id: u64) -> anyhow::Result<()> {
+        let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(7);
+        let generation: u64 =
+            tokio::time::timeout_at(deadline, proxy.get_property("Generation")).await??;
+        loop {
+            let result: slk_protocol::DiscoveryResultRecord =
+                tokio::time::timeout_at(deadline, proxy.call("GetDiscoveryResult", &(id,)))
+                    .await??;
+            if result.1 != id || result.0 != generation || result.13 != 1 {
+                anyhow::bail!("operation result identity mismatch");
+            }
+            if result.3 >= 3 {
+                print_native_result(result)?;
+                return Ok(());
+            }
+            if tokio::time::Instant::now() >= deadline {
+                anyhow::bail!(
+                    "operation wait timeout; inspect 'result {id}' or explicitly stop it"
+                );
+            }
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+    }
+
+    async fn cmd_scan(&self, args: &[&str]) -> anyhow::Result<()> {
+        let toggle = args[1];
+        let proxy = self.adapter_proxy().await?;
+        if proxy.get_property::<u32>("Profile").await? == 1 {
+            let id = u64::from_ne_bytes(random_bytes::<8>()?).max(1);
+            let method = match toggle {
+                "on" => "SubmitScanning",
+                "off" => "SubmitStopScanning",
+                _ => anyhow::bail!("usage: scan on|off"),
+            };
+            let matching = match args.len() {
+                2 => None,
+                4 if toggle == "on" => {
+                    let marker: [u8; 16] = parse_hex_bytes(args[2])?
+                        .try_into()
+                        .map_err(|_| anyhow::anyhow!("marker must have 32 hex digits"))?;
+                    let address = parse_peer_address(args[3])?;
+                    Some((marker, address))
+                }
+                _ => anyhow::bail!("usage: scan on [32-hex-marker advertiser-address]|off"),
+            };
+            let generation: u64 = proxy.get_property("Generation").await?;
+            let before: Vec<slk_protocol::TimedDiscoveryReportRecord> =
+                proxy.call("GetTimedReports", &()).await?;
+            let watermark = before.iter().map(|r| r.0).max().unwrap_or(0);
+            // Starting the bound before admission is stricter than starting at
+            // successful scan Complete. Both control and discovery fit in 10s.
+            let started = tokio::time::Instant::now();
+            println!("NativeScanRequest: request={id} enable={toggle}");
+            let _: () = tokio::time::timeout(
+                std::time::Duration::from_secs(7),
+                proxy.call(method, &(id,)),
+            )
+            .await??;
+            self.wait_native_result(&proxy, id).await?;
+            if let Some((marker, address)) = matching {
+                let expected = libsparklink::ws73_marker_data(&marker);
+                let deadline = started + std::time::Duration::from_secs(10);
+                loop {
+                    let rows: Vec<slk_protocol::TimedDiscoveryReportRecord> =
+                        tokio::time::timeout_at(deadline, proxy.call("GetTimedReports", &()))
+                            .await??;
+                    let now = tokio::time::Instant::now();
+                    if now >= deadline {
+                        anyhow::bail!(
+                            "fresh marker discovery timeout (10s bound includes scan admission)"
+                        );
+                    }
+                    for row in rows {
+                        if row.0 > watermark
+                            && row.1 == generation
+                            && row.2 != 0
+                            && row.4 == address
+                            && row.7 == expected
+                        {
+                            println!(
+                                "NativeDiscoveryMatch: generation={} seq={} address={} RSSI={} marker={} data={} kernel_boottime_ns={} elapsed_ms={} lost={}",
+                                row.1,
+                                row.0,
+                                row.4,
+                                row.5,
+                                hex_bytes(&marker),
+                                hex_bytes(&row.7),
+                                row.2,
+                                (now - started).as_millis(),
+                                row.8
+                            );
+                            return Ok(());
+                        }
+                    }
+                    tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+                }
+            }
+            return Ok(());
+        }
         match toggle {
             "on" => {
                 let _: () = proxy.call("StartDiscovery", &()).await?;
@@ -841,6 +988,65 @@ impl Context {
 fn parse_handle(s: &str) -> anyhow::Result<u16> {
     let s = s.strip_prefix("0x").unwrap_or(s);
     Ok(u16::from_str_radix(s, 16)?)
+}
+
+fn parse_peer_address(text: &str) -> anyhow::Result<String> {
+    let bytes = text
+        .split(':')
+        .map(|part| {
+            if part.len() != 2 {
+                anyhow::bail!("invalid peer address");
+            }
+            Ok(u8::from_str_radix(part, 16)?)
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    if bytes.len() != 6 {
+        anyhow::bail!("peer address must contain six bytes");
+    }
+    Ok(bytes
+        .iter()
+        .map(|b| format!("{b:02X}"))
+        .collect::<Vec<_>>()
+        .join(":"))
+}
+
+fn random_bytes<const N: usize>() -> anyhow::Result<[u8; N]> {
+    use std::io::Read;
+    let mut bytes = [0; N];
+    std::fs::File::open("/dev/urandom")?.read_exact(&mut bytes)?;
+    Ok(bytes)
+}
+fn hex_bytes(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+fn print_native_result(r: slk_protocol::DiscoveryResultRecord) -> anyhow::Result<()> {
+    println!(
+        "NativeOperationResult: generation={} request={} operation={} state={} errno={} status=0x{:02x} opcode=0x{:04x} step={}/{} power={} power_valid={} adv={} scan={} profile={}",
+        r.0,
+        r.1,
+        r.2,
+        r.3,
+        r.4,
+        r.5,
+        r.6,
+        r.7,
+        r.8,
+        r.9,
+        u8::from(r.10),
+        r.11,
+        r.12,
+        r.13
+    );
+    if r.3 > 3 {
+        anyhow::bail!(
+            "native operation failed: request={} state={} status=0x{:02x} errno={} (no radio success inferred)",
+            r.1,
+            r.3,
+            r.5,
+            r.4
+        );
+    }
+    Ok(())
 }
 
 fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {

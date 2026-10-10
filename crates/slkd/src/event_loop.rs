@@ -248,6 +248,7 @@ async fn dispatch_native(
         sequence: event.seq,
         generation: event.generation,
         received_at_ms,
+        kernel_boottime_ns: event.timestamp_ns,
         address,
         rssi: report.rssi,
         header: report.header.to_vec(),

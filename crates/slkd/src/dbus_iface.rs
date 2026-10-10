@@ -43,6 +43,11 @@ impl AdapterIface {
 impl AdapterIface {
     /// Start device discovery (scanning)
     async fn start_discovery(&self) -> zbus::fdo::Result<()> {
+        if self.state.lock().await.controller.profile == 1 {
+            let id = crate::radio::random_id().await?;
+            crate::radio::scan(&self.state, id).await?;
+            return crate::radio::wait(&self.state, id).await;
+        }
         let mut st = self.state.lock().await;
         st.start_scan()
             .map_err(|e| zbus::fdo::Error::Failed(format!("scan start failed: {e}")))
@@ -50,9 +55,50 @@ impl AdapterIface {
 
     /// Stop device discovery
     async fn stop_discovery(&self) -> zbus::fdo::Result<()> {
+        if self.state.lock().await.controller.profile == 1 {
+            let id = crate::radio::random_id().await?;
+            crate::radio::stop(&self.state, id, slk_protocol::DISCOVERY_SCAN_STOP).await?;
+            return crate::radio::wait(&self.state, id).await;
+        }
         let mut st = self.state.lock().await;
         st.stop_scan()
             .map_err(|e| zbus::fdo::Error::Failed(format!("scan stop failed: {e}")))
+    }
+
+    /// Policy v1 only, no raw DLI/config injection. Successful return is admission.
+    async fn submit_advertising(
+        &self,
+        request_id: u64,
+        marker: Vec<u8>,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        crate::radio::advertise(&self.state, request_id, marker).await
+    }
+    async fn submit_scanning(&self, request_id: u64) -> zbus::fdo::Result<()> {
+        crate::radio::scan(&self.state, request_id).await
+    }
+    async fn submit_stop_advertising(&self, request_id: u64) -> zbus::fdo::Result<()> {
+        crate::radio::stop(&self.state, request_id, slk_protocol::DISCOVERY_ADV_STOP).await
+    }
+    async fn submit_stop_scanning(&self, request_id: u64) -> zbus::fdo::Result<()> {
+        crate::radio::stop(&self.state, request_id, slk_protocol::DISCOVERY_SCAN_STOP).await
+    }
+    async fn get_discovery_result(
+        &self,
+        request_id: u64,
+    ) -> zbus::fdo::Result<slk_protocol::DiscoveryResultRecord> {
+        crate::radio::result(&self.state, request_id).await
+    }
+    #[zbus(property)]
+    fn radio_policy_version(&self) -> u32 {
+        libsparklink::WS73_BASIC_POLICY_VERSION
+    }
+    #[zbus(property)]
+    async fn advertising_state(&self) -> u32 {
+        self.state.lock().await.radio_advertising
+    }
+    #[zbus(property)]
+    async fn scanning_state(&self) -> u32 {
+        self.state.lock().await.radio_scanning
     }
 
     /// Connect to a device by address string "AA:BB:CC:DD:EE:FF"
@@ -99,6 +145,29 @@ impl AdapterIface {
                 (
                     r.sequence,
                     r.generation,
+                    r.received_at_ms,
+                    format_addr(&r.address),
+                    i16::from(r.rssi),
+                    r.header.clone(),
+                    r.data.clone(),
+                    r.lost,
+                )
+            })
+            .collect()
+    }
+
+    /// Versioned extension preserves the kernel CLOCK_BOOTTIME receipt time.
+    async fn get_timed_reports(&self) -> Vec<slk_protocol::TimedDiscoveryReportRecord> {
+        self.state
+            .lock()
+            .await
+            .native_reports
+            .iter()
+            .map(|r| {
+                (
+                    r.sequence,
+                    r.generation,
+                    r.kernel_boottime_ns,
                     r.received_at_ms,
                     format_addr(&r.address),
                     i16::from(r.rssi),
@@ -184,7 +253,12 @@ impl AdapterIface {
     /// Whether discovery is active
     #[zbus(property)]
     async fn discovering(&self) -> bool {
-        self.state.lock().await.discovering
+        let st = self.state.lock().await;
+        if st.controller.profile == 1 {
+            st.radio_scanning == slk_protocol::DISCOVERY_RADIO_ON
+        } else {
+            st.discovering
+        }
     }
 
     /// Adapter name

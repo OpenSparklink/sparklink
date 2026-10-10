@@ -58,6 +58,11 @@ impl ControllerEventReceiver {
     pub(crate) fn from_fd(fd: OwnedFd) -> Result<Self> {
         tokio::runtime::Handle::try_current()
             .map_err(|_| Error::InvalidParam("event receiver requires a Tokio I/O runtime"))?;
+        // The kernel chooses its poll wait queue when epoll registers this fd.
+        // Activate the native subscription first; switching it afterwards leaves
+        // epoll waiting on the legacy queue and loses native event wakeups.
+        // Reads are non-destructive: replay from zero on the first next_event.
+        poll(fd.as_raw_fd(), &mut ControllerEventCursor::default())?;
         Ok(Self {
             fd: AsyncFd::new(fd).map_err(Error::OpenDevice)?,
             cursor: ControllerEventCursor::default(),
@@ -89,18 +94,14 @@ mod tests {
     use std::os::unix::net::UnixStream;
 
     #[tokio::test]
-    async fn unsupported_transport_is_explicit_and_cursor_is_unchanged() {
+    async fn unsupported_transport_is_rejected_before_epoll_registration() {
         let (socket, mut peer) = UnixStream::pair().unwrap();
         peer.set_read_timeout(Some(std::time::Duration::from_secs(1)))
             .unwrap();
-        let mut receiver = ControllerEventReceiver::from_fd(socket.into()).unwrap();
         assert!(matches!(
-            receiver.next_event().await,
+            ControllerEventReceiver::from_fd(socket.into()),
             Err(Error::Ioctl(nix::Error::ENOTTY))
         ));
-        assert_eq!(receiver.cursor.after_seq, 0);
-        assert_eq!(receiver.cursor.generation, 0);
-        drop(receiver);
         assert_eq!(peer.read(&mut [0; 1]).unwrap(), 0);
     }
 }

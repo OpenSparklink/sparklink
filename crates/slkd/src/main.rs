@@ -8,6 +8,7 @@ mod extadv;
 mod hid;
 mod profile;
 mod profile_runtime;
+mod radio;
 mod security;
 mod service;
 mod state;

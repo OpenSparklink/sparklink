@@ -1156,3 +1156,47 @@ pub const CONTROLLER_READY: u32 = 1;
 pub const CONTROLLER_SETUP: u32 = 2;
 pub const CONTROLLER_FAULT: u32 = 4;
 pub const CONTROLLER_FULL_METADATA: u32 = 1;
+
+/// D-Bus operation record: generation, request id, operation, state, errno,
+/// raw status, opcode, step, count, actual selected power, power valid,
+/// confirmed adv state, confirmed scan state, profile. This is not a C ABI.
+pub type DiscoveryResultRecord = (
+    u64,
+    u64,
+    u32,
+    u32,
+    i32,
+    u8,
+    u16,
+    u8,
+    u8,
+    i32,
+    bool,
+    u32,
+    u32,
+    u32,
+);
+impl SleDiscoveryResult {
+    pub fn as_record(&self) -> DiscoveryResultRecord {
+        (
+            self.generation,
+            self.request_id,
+            self.operation,
+            self.state,
+            self.error,
+            self.status,
+            self.opcode,
+            self.step,
+            self.count,
+            self.selected_power,
+            self.power_valid != 0,
+            self.radio_adv,
+            self.radio_scan,
+            self.profile,
+        )
+    }
+}
+
+/// seq, generation, kernel CLOCK_BOOTTIME ns, daemon wall ms, address, RSSI,
+/// raw header, raw data, lost. Opaque headers never imply PHY reassembly.
+pub type TimedDiscoveryReportRecord = (u64, u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);

@@ -423,3 +423,13 @@ Host→native USB/HCC/DLI事务与版本化submit/result；显式fd/generation/c
 及改动crate strict clippy PASS，旧3条WARN保留。新用户态Adapter接口尚未接slkd/slctl，
 WS73=[]、仍SETUP，真正Ready/自主终止/七项真实验收待完成。完整S0–S6与原issues保持。
 详见 [原生操作记录](WS73_DISCOVERY_NORTH_STAR.md#原生-typed-操作提交与结果2026-10-10部分成果)。
+
+### Host Ready 与 slctl 原生广播/扫描（2026-10-10，部分成果）
+
+每设备 snapshot/双停止 Complete 决定 Host Ready，动态代次 adapter 和独立
+事件/control fd 已接 slkd。基本 WS73 policy v1 与 slctl random advertise、
+passive scan、新 report 精确匹配/10秒界限、caller id 非破坏结果与显式 stop
+已接通。软件门禁用真实 uid1000 slkd/slctl，经 synthetic USB/HCC/DLI 进行
+20轮角色交换、同 PID 拔插后2轮及 TX-off 负向；这不构成真实空口验收。
+本机 WS73=[]；七项真实北极星、四设备两组、全部原 issues 和 S0–S6 保持。
+详见 [原生 CLI 闭环记录](WS73_DISCOVERY_NORTH_STAR.md#slctl-原生广播扫描闭环2026-10-10部分成果)。

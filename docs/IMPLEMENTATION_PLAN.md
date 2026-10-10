@@ -456,3 +456,19 @@ daemon 同 PID/owner 的合成20轮+重插2轮/TX-off 门禁通过；原会话�
 1054 OK/0 FAIL/0 SKIP/3旧WARN；首轮过大调试镜像失败保留，最终输入/源码未变。
 这是 D-Bus 集成证据；内核唯一writer/Diagnostic/raw权限、真实WS73空口、四设备
 与完整S0–S6继续待验，所有原issues保持OPEN。见[策略与测试边界](DBUS_AUTHORIZATION.md)。
+
+### 内核调用时权限与无副作用观察（2026-10-10，部分成果）
+
+135个唯一声明ioctl显式分类：34观察、2fd选择、99需CAP_NET_ADMIN；权限在
+参数复制/电源同步/命令提交前检查，包含raw、远端读、破坏性读取及口令。
+configfs五写入口与genl五mutation bridge同样校验，观察不应用全局电源模式。
+实际继承fd后uid1001/补充组uid1000/uid0无capability各99+5+5拒绝且观察可用、
+状态/提交不变；root daemon管理、普通应用合成20轮+同owner/PID重插2轮通过。
+默认开发session gate也使用root daemon，普通应用不直接持有管理capability。
+
+168harness、八条既有native/standard/fault/event/recipe及两daemon集成门禁
+PASS；完整原96-case 1056 OK/0 FAIL/0 SKIP/3旧WARN。保持事件内容断言，
+独立观察fd等待实际seq40，修正把命令Complete当报告burst结束的测试竞态。
+构建缺rust-src导致功能关闭的错误配置及失败保留；合格#60镜像冻结，runner
+检查必需配置并验证拒绝路径。lease独占/撤销恢复/Proxy/PDU/canonical迁移、
+真实WS73、四设备及完整S0–S6仍待验；全部原issues继续OPEN。

@@ -52,7 +52,7 @@ python3 linux/tools/testing/selftests/sparklink/run_daemon_lifecycle.py \
   --busybox /absolute/path/static-busybox \
   --userspace /absolute/path/sparklink \
   --dbus-daemon /absolute/path/dbus-daemon \
-  --radio-policy --production-policy \
+  --radio-policy --production-policy --kernel-authorization \
   --output /absolute/path/new-evidence-directory
 ```
 
@@ -65,8 +65,31 @@ uid1000 slctl（主组1002、补充组sparklink/1000）、uid1001 非组观察�
 授权用户再走实际 slctl 的合成20轮交换、同 daemon owner/PID 拔插后2轮及 TX-off。
 记录实际 daemon UID、命令拒绝矩阵、源码/策略/程序/内核 hash 与完整内核日志。
 
-这只证明实际 D-Bus/daemon/CLI/内核与合成 USB 的权限及控制集成，不能替代
+`--kernel-authorization` 还让 uid1001、补充组 uid1000、uid0 无 capability
+进程继承实际已打开的 chardev/configfs fd。每名调用者的99条受保护 ioctl、
+5个configfs store与5条已实现genl管理操作必须拒绝；观察与fd选择可用，
+注册/元数据/提交计数未变，读取不触发待同步的全局idle电源策略。未知 ioctl
+保持 ENOTTY。这验证实际调用时的凭据，覆盖“特权打开后传 fd”和无capability
+的root，不只是文件权限下的失败open。编译静态测试程序须准备 static libc。
+
+## 内核权限边界与迁移
+
+内核明确分类135个唯一声明 ioctl（34观察、2fd选择、99受保护），在参数复制/
+电源同步/命令提交前检查实际调用者在初始user namespace中的 CAP_NET_ADMIN。
+raw DLI、破坏性事件读取、远端操作、口令读取也属于受保护操作，不能凭
+ioctl读方向判断权限。五个configfs写入口和genl mutation bridge同样检查；
+genl的已实现管理请求保留 GENL_ADMIN_PERM。公开观察不改变电源模式。
+
+设备组只提供节点访问，不授予直接管理权。普通 slctl 通过授权 D-Bus 调用
+有 CAP_NET_ADMIN 的 slkd；项目systemd服务已有该capability边界。使用
+slkconfig/raw/破坏性DLI旧工具直接管理设备需要管理员权限，它们不是普通
+应用接口。开发session fixture现在也使用root daemon；普通uid1000 slkd
+管理原生WS73的旧合成记录是历史结果，不能代表当前权限下可继续写入。
+观察端仍可读取chardev的状态/非破坏事件，不能用 raw poll 消费控制器队列。
+
+这些是实际 D-Bus/daemon/CLI/内核与合成 USB 的权限及控制集成，不能替代
 真实 WS73、固件/板级资格或 RF 验收。完整 Managed/Diagnostic owner lease、
-raw DLI 与直接 chardev/ioctl/其他入口的内核授权仍待实现；目前设备节点的
-组权限与 D-Bus 权限是两个入口，静态策略不提供内核单 owner 隔离。K#5/U#6
-及北极星整项保持开放。系统安装与实际用户的权限验收须单独记录。
+raw与managed事务互斥、Proxy/PDU owner、撤销/崩溃恢复、其他接口的canonical
+writer迁移仍待实现；多个具有CAP_NET_ADMIN的writer尚未被独占lease协调。
+静态总线策略与capability边界都不能算内核单owner隔离完成。K#5/U#6及
+北极星整项保持开放。安装与实际用户权限验收须单独记录。

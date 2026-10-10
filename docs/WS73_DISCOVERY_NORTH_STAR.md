@@ -907,3 +907,34 @@ guest 调试镜像过大解包失败被保留，guest 副本裁掉调试符号�
 `.dev/bus-policy-session-gate/manifest.json` 与[授权文档](DBUS_AUTHORIZATION.md)。
 静态策略不实现内核 Managed/Diagnostic writer lease 或全部 raw DLI/其他入口
 隔离，不能关闭 K#5/U#6。主机 WS73=[]，未运行真实控制或抓包，七项仍待验。
+
+## 内核实际调用者权限（2026-10-10，部分成果）
+
+新增显式授权表，135个唯一声明 ioctl 分为34观察、2fd选择和99受保护操作。
+受保护调用在复制参数、同步电源或提交命令前检查初始user namespace的
+CAP_NET_ADMIN；raw DLI、远端读、破坏性出队与口令同样受保护。未知命令
+保持ENOTTY，观察不再同步全局电源。五个configfs store与五个genl mutation
+bridge也检查权限；genl已实现的管理请求保留GENL_ADMIN_PERM。UAPI中两条
+重复但相同的discovery宏已去重，数值/布局未变，后续新ioctl须显式审查。
+
+真实syscall门禁继承实际fd，再分别变为uid1001、补充组uid1000、uid0且清空
+capability；每名99条protected ioctl、5个configfs写、5条genl管理拒绝，
+34观察和fd选择可用。注册/metadata/command admission未变；待同步idle
+配置不被观察激活。普通slctl仍通过root daemon完成合成20轮、同PID/owner
+拔插后2轮与TX-off。开发session fixture也改用root daemon，旧uid1000 slkd
+直接管理成功记录仅为历史状态；节点组不授予直接管理权限。
+
+八条原native/standard/recipe/event/fault门禁、生产权限组合门禁及开发session
+闭环均PASS；168harness通过，完整原96-case QEMU strict PASS（1056 OK /
+0 FAIL / 0 SKIP / 3旧WARN）。事件门禁首轮报告尚未全部接收就检查overflow，
+ReadFeatures Complete不能作40条报告接收屏障；独立观察fd限时确认seq40后，
+原32条完整payload/loss/fanout/copyfault/poll/旧代次HUP断言保持且通过。
+
+构建漂移曾因stable缺rust-src静默禁用Rust/SparkLink；错误配置/日志保留，
+runner已增加必需配置拒绝及实际负向命令。显式工具链恢复后，冻结合格#60
+镜像/配置/对象/编译指令，所有最终输入/源码guard通过。详见
+`.dev/kernel-auth-final-evidence.json`、`kernel-auth-image/`与
+[当前授权与迁移边界](DBUS_AUTHORIZATION.md)。
+多个特权writer尚未被独占lease协调，Managed/Diagnostic/Proxy/PDU owner及
+撤销/崩溃恢复、接口迁移继续待做。主机完整拓扑确认WS73四口hub在但其下
+设备未枚举，未运行实机；七项、四设备和所有原issues继续OPEN。

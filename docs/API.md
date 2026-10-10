@@ -209,6 +209,11 @@ poll 唤醒，不使用旧 destructive DLI fallback。取消等待不会改游�
 
 ## PHY 层 (0x90-0x97)
 
+当前这些旧接口全部明确返回不支持（通过既有权限和Runtime检查后为EOPNOTSUPP）。
+PHY_INFO不再把本地默认模型返回为硬件快照。legacy SEC_ENCRYPT_ON同样不支持，
+不能在匹配硬件完成前标记加密。真实PHY/每连接认证安装仍待实现；见
+[状态整改与开放门禁](LINK_STATE_REMEDIATION.md)。下表仅记录未发布旧编号。
+
 | CMD | 序号 | 方向 | 参数类型 |
 |-----|------|------|----------|
 | `PHY_INFO` | 0x90 | read | `SlePhyInfo` |

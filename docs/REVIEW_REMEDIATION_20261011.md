@@ -246,3 +246,16 @@ taint；[固定提交CI](https://github.com/OpenSparklink/sparklink/actions/runs
 7类read门禁已验证；R12旧DLI调用者/复制提交、完整订阅/所有权/移除唤醒仍OPEN。
 R09真实硬件完成前状态提交、R11/R13总线/parser迁移与自然故障根因继续整改。
 人工恢复约10773.253ms不算完整自主恢复，历史物理xHCI warning继续保留。
+
+### R09 提前状态提交及无依据的PHY快照
+
+`f16ac912a8ff`/`f1704a2e44dc`删除ControllerState默认PhyConfig及全部setter/本地
+估算查询，8个PHY/SINR ioctl不支持；legacy加密enable不再先置Encrypted，不改
+凭据/计数/状态，不发空参数StartEncrypt。无人调用command wrappers删除，历史
+MCS/MIMO/PHY codec移selftests；仍被连接调用的channel/hopping保留等待替代并
+删除phy模块global lint压制。security新增预填Paired等状态回归、隔离模型边界及
+实际拒绝分支开发测试通过。见[当前调用审计](LINK_STATE_REMEDIATION.md)。
+
+这是删除错误状态来源并限制未接通能力；真实PHY/加密事务、每连接凭据安装及
+匹配成功硬件完成尚未接通，R09/K7/K16/U4整项OPEN。新镜像/实机结果另行记录，
+自然恢复、旧DLI迁移、完整socket/SSAP/安全/Bond/Profile及S0–S6继续推进。

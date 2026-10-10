@@ -99,3 +99,12 @@ drain_to_buf已删，dequeue只作私有提交。copy/锁模拟限selftests，9�
 该测试仅编入selftests；生产没有注入、伪造成功或额外状态来源。三类清单不变：
 旧DLI_POLL_EVENT和调用者仍等待独立订阅替代，迁移后删除；完整事件/移除和
 自然恢复仍OPEN，不能因read门禁通过保留两套长期生产消费路径。
+
+### R09 PHY模型/提前加密清理
+
+`f16ac912a8ff`/`f1704a2e44dc`删除生产默认PhyConfig与setter/模拟查询，隔离MCS/
+MIMO/旧PHY codec到专用selftests，删除无人调用PHY/空参数加密命令helper。
+8个旧PHY/SINR入口与adapter-global加密enable不支持，后者不改凭据/计数/状态。
+仍有调用者的ChannelMap/Hopping保留等待连接迁移，并删phy模块global lint压制。
+见[调用关系、开发回归及重新开放条件](LINK_STATE_REMEDIATION.md)。本批不把
+拒绝未接通能力称为完成PHY/安全，也不删除有效历史测试或关闭整项issue。

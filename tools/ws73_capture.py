@@ -279,7 +279,7 @@ def command_reply(capture, owner, opcode, start, end, params=None, value=None):
     return dict(command=command, reply=replies[0])
 
 
-def corroborate_recovery(run, capture):
+def corroborate_recovery(run, capture, diagnostic=None):
     """Real RF after an artificial guest error; never physical/natural-fault acceptance."""
     if (run.get('scope') != 'real WS73 RF with artificial guest transport recovery support'
             or run.get('status') != 'RECOVERY_CONTROL_EVIDENCE_PENDING'
@@ -293,10 +293,62 @@ def corroborate_recovery(run, capture):
     old, new = run['initial'][0], run['replacement']
     if (old['bus'], old['device'], old['address']) != (new['bus'], new['device'], new['address']):
         raise CaptureError('protocol recovery changed USB/radio identity')
-    return _corroborate_control(run, capture, 'recovery', 'retirement_observed_wall_ns')
+    metadata_before, queries = {}, []
+    if diagnostic is not None:
+        metadata_before, queries = corroborate_diagnostic(run, capture, diagnostic)
+    proofs = _corroborate_control(run, capture, 'recovery', 'retirement_observed_wall_ns', metadata_before)
+    if queries:
+        proofs[0]['diagnostic_queries'] = queries
+    return proofs
 
 
-def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns'):
+def corroborate_diagnostic(run, capture, diagnostic):
+    """Separate bootstrap from eight explicit queries; never choose an arbitrary
+    same-opcode reply in a broad registration window. Every query must have one
+    completed OUT and one exact successful reply in its own observed interval.
+    """
+    from ws73_diagnostic_probe import QUERIES, verify_records
+    if (diagnostic.get('status') != 'DIAGNOSTIC_RESULT_LIVE_PASS' or diagnostic.get('probe_exit') != 0
+            or diagnostic.get('scope') != 'live real WS73 diagnostic syscall gate in isolated VM'
+            or diagnostic.get('uid') != 0 or diagnostic.get('euid') != 0
+            or diagnostic.get('physical_acceptance') is not False
+            or diagnostic.get('automatic_fault_recovery_acceptance') is not False):
+        raise CaptureError('scoped successful diagnostic syscall run required')
+    try:
+        verify_records(diagnostic['records'])
+    except (ValueError, KeyError, TypeError) as error:
+        raise CaptureError('invalid diagnostic syscall records') from error
+    owner = run['initial'][0]
+    rows = [r for r in diagnostic['records'] if r.get('case') == 'metadata']
+    if diagnostic['index'] != owner['index'] or any(r['generation'] != owner['generation'] for r in rows):
+        raise CaptureError('diagnostic controller instance differs from initial registration')
+    expected = {0x0406: owner['address'].replace(':', '').lower(), 0x0403: owner['features'],
+                0x0404: owner['version'], 0x0402: struct.pack('<HBHB', *owner['buffers']).hex()}
+    proofs = []
+    previous = 0
+    for row in rows:
+        if row['data'] != expected[row['opcode']] or not previous <= row['start_wall_ns'] < row['end_wall_ns'] < owner['observed_wall_ns']:
+            raise CaptureError('diagnostic data/time differs from registration')
+        proof = command_reply(capture, owner, row['opcode'], row['start_wall_ns'], row['end_wall_ns'], b'', row['data'])
+        proofs.append({'caller': 'C syscall', 'local_admission_seq': row['seq'], **proof})
+        previous = row['end_wall_ns']
+    cli = diagnostic['cli_queries']
+    if len(cli) != 4:
+        raise CaptureError('four actual diagnostic CLI queries required')
+    for row, (name, opcode, _) in zip(cli, QUERIES):
+        matches = re.findall(r'^NativeDiagnosticQuery: index=(\d+) generation=(\d+) opcode=0x([0-9a-f]+) admission_seq=(\d+) status=0x00 data=([0-9a-f]+)$', row['stdout'], re.M)
+        if (row['exit'] != 0 or len(matches) != 1 or matches[0][:3] != (str(owner['index']), str(owner['generation']), f'{opcode:04x}')
+                or int(matches[0][3]) <= 0 or matches[0][4] != expected[opcode]
+                or row['args'][1:] != ['--adapter', str(owner['index']), '--generation', str(owner['generation']), 'query', name]
+                or not previous <= row['start_wall_ns'] < row['end_wall_ns'] < owner['observed_wall_ns']):
+            raise CaptureError('diagnostic CLI identity/data/time/command mismatch')
+        proof = command_reply(capture, owner, opcode, row['start_wall_ns'], row['end_wall_ns'], b'', expected[opcode])
+        proofs.append({'caller': 'slkconfig', 'local_admission_seq': int(matches[0][3]), **proof})
+        previous = row['end_wall_ns']
+    return {json_identity(owner): rows[0]['start_wall_ns']}, proofs
+
+
+def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns', metadata_before=None):
     # Verify supporting records rather than trusting the success label alone.
     from ws73_north_star import parse_result, parse_match, parse_scan_window, parse_scan_complete, parse_scan_observed, stable
     identity = run['application_identity']
@@ -462,7 +514,7 @@ def _corroborate_control(run, capture, replacement_phase='replug', boundary_fiel
     for identity in identities.values():
         metadata[json_identity(identity)] = [command_reply(capture, identity, opcode,
             run[boundary_field] if identity == replacement else 0,
-            identity['observed_wall_ns'], b'', value)
+            (metadata_before or {}).get(json_identity(identity), identity['observed_wall_ns']), b'', value)
             for opcode,value in [(0x0404, identity['version']),
                                  (0x0402, struct.pack('<HBHB', *identity['buffers']).hex()),
                                  (0x0403, identity['features']),

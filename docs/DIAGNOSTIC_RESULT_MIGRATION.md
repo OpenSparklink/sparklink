@@ -92,3 +92,13 @@ runner等该标记才QMP接入，形成等待环。原私有失败目录
 修正诊断模式capture-ready标记顺序；测试metadata可用时允许Setup，
 不改变生产Ready定义，snapshot重试清零输出flags，transport-open只对
 EAGAIN/零lease有界6秒重试，不重置或跟随新注册。新镜像重新执行后再记录结果。
+
+第二轮新门禁中diagnostic/run.json为DIAGNOSTIC_RESULT_LIVE_PASS，
+C19条记录（16个case、子进程身份、2个phase）及4次实际CLI查询完成，
+真实20+2也完成，但整轮仍为FAIL：旧注册metadata证明窗口从0到Ready，
+包含新增C/CLI同opcode查询，严格唯一性校验拒绝。失败目录
+`.dev/diagnostic-live-v2-real-recovery`保留，不回写成功。
+现以首个诊断提交的实测开始时间界定初始化metadata上界，并逐一验证
+4次C与4次CLI的明确时间窗、参数、完成OUT和成功reply/data；仍拒绝窗口内
+重复命令/回复，不按同opcode任意挑选。旧无诊断模式门禁不变。新增3项
+捕获verifier用例，总工具门禁155项通过；修改后的工具须重新冻结/执行VM。

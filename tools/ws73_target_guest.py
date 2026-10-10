@@ -318,7 +318,9 @@ if __name__=='__main__':
         capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in [*run['initial'],run['replacement']]])
         packets=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
         if packets!=capture['packet_count']:raise ValueError('recovery capture count mismatch')
-        proofs=corroborate_recovery(run,capture)
+        diagnostic_path=EVIDENCE/'diagnostic/run.json'
+        diagnostic=json.loads(diagnostic_path.read_text()) if 'ws73.diagnostic=1' in Path('/proc/cmdline').read_text().split() else None
+        proofs=corroborate_recovery(run,capture,diagnostic)
         (EVIDENCE/'recovery-control-proofs.json').write_text(json.dumps({'scope':run['scope'],'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')
         print('WS73_TARGET_RECOVERY_SUPPORT: PASS',flush=True)
         raise SystemExit(0)

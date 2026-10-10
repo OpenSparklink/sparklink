@@ -85,6 +85,15 @@ fi
 /bin/dbus-daemon --config-file=/etc/dbus.conf --nofork > /evidence/dbus.log 2>&1 &
 for n in $(seq 1 100); do [ -S /run/slkbus ] && break; sleep 0.1; done
 [ -S /run/slkbus ] || fail 'system bus startup'
+if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_diagnostic_probe.py --probe /bin/diagnostic-result-probe --slkconfig /bin/slkconfig --output /evidence/diagnostic > /evidence/diagnostic-supervisor.log 2>&1 & diagnostic=$!
+    for n in $(seq 1 1200); do
+        [ -f /evidence/diagnostic/before-daemon.json ] && break
+        kill -0 "$diagnostic" || fail 'diagnostic pre-daemon gate'
+        sleep 0.1
+    done
+    [ -f /evidence/diagnostic/before-daemon.json ] || fail 'diagnostic pre-daemon deadline'
+fi
 storage=/tmp/bonds
 if [ -f /scratch-root-uuid ]; then
     storage=/var/lib/sparklink
@@ -112,6 +121,10 @@ else
     # The only interactive shell is uid1000; raw capture and slkd remain root.
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh || fail 'ordinary application shell'
     echo 'WS73_TARGET_SHELL_CLOSED'
+fi
+if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
+    /bin/busybox touch /run/diagnostic-retired
+    wait "$diagnostic" || fail 'diagnostic retired-fd gate'
 fi
 kill -TERM "$daemon"
 for n in $(seq 1 100); do kill -0 "$daemon" 2>/dev/null || break; sleep 0.1; done

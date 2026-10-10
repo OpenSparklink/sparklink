@@ -65,3 +65,22 @@ caps0，同slkd PID521/start331及bus owner，幸存generation2保持、目标1�
 
 这轮VM运行验证当前生产路径保持，不执行新diagnostic ioctl的权限/copy/退役
 验收，不代表原生宿主对照、物理拔插、自然恢复或全事件验收。完整issue保持OPEN。
+
+## 后续实际诊断门禁（实施中）
+
+Linux `7cc1175f28f4` 在 lease 检查前拒绝已关闭 admission 的 Runtime，退役 fd
+返回 ENODEV，避免被已撤销租约的 EPERM 掩盖。原 handler fixture 增至11项。
+新增专用 `sparklink_diagnostic_result_test.c`，仅在 root、scratch-root VM 和
+`ws73.diagnostic=1` 同时满足时运行；没有生产测试 hook。
+
+VM runner 的 `--diagnostic-verify` 必须同时使用 `--fault-recovery`，先在 slkd
+启动前测试四种实际只读 metadata、原 fd 子进程 UID1000/实测零有效及许可能力、
+Diagnostic 持有者与结果作者分别校验、零/错误 generation、version/flags/reserved、
+缺失 sequence；对只读输出页/跨页输出复制失败逐字节核对原结果重试。C 记录完成后
+释放租约，实际 slkconfig 再执行四种 query，才允许 slkd Managed 启动。
+旧 fd 无租约地保留至单设备人工恢复后，检查 ENODEV；不重启 daemon。
+
+新增6项证据 verifier 开发用例，拒绝缺失/错误 errno、copy 重试数据、身份、时钟、
+能力或退役步骤及错误测试模式。合成 verifier 输入不是真实 syscall 证据。
+冻结 C/工具/CLI 并用新镜像执行后另记结果；开发门禁不提前宣称实际验收通过。
+完整旧 DLI 调用者迁移、共享队列删除、提交 copyout 幂等/cancel 与自然恢复仍OPEN。

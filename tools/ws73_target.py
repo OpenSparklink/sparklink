@@ -107,7 +107,9 @@ def prepare(args):
                   HERE/'ws73_target_control.py',
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
+                  HERE/'ws73_diagnostic_probe.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
+                  LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'include/uapi/linux/sparklink_ioctl.h',
                   HERE/'ws73_bindings_probe.c',HERE/'ws73_bindings_probe.py',
                   LINUX/'tools/testing/selftests/sparklink/ws73-lab.py',
@@ -144,6 +146,13 @@ def prepare(args):
         subprocess.run(compile_probe, check=True)
         manifest['event_copy_probe_compile'] = compile_probe
         programs['event-copy-probe'] = probe
+        diagnostic_probe = output/'diagnostic-result-probe'
+        compile_diagnostic = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
+                              str(LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c'),
+                              '-o',str(diagnostic_probe)]
+        subprocess.run(compile_diagnostic, check=True)
+        manifest['diagnostic_probe_compile'] = compile_diagnostic
+        programs['diagnostic-result-probe'] = diagnostic_probe
         programs.update({name:USERSPACE/'target/debug'/name for name in ['slkd','slctl','slkconfig','slkmon','slkdump']})
         programs['bus-policy-probe'] = USERSPACE/'target/debug/examples/bus_policy_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
@@ -170,7 +179,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -338,8 +347,11 @@ def _run(args):
     passthrough=bool(getattr(args,'qmp_hotplug',False))
     recovery=bool(getattr(args,'fault_recovery',False))
     event_copy=bool(getattr(args,'event_copy_verify',False))
+    diagnostic=bool(getattr(args,'diagnostic_verify',False))
     if event_copy and (support or not recovery):
         raise ValueError('live event copy gate requires real fault-recovery VM mode')
+    if diagnostic and (support or not recovery):
+        raise ValueError('live diagnostic gate requires real fault-recovery VM mode')
     output.mkdir(mode=0o700,parents=True,exist_ok=False)
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
        'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
@@ -350,6 +362,7 @@ def _run(args):
     m['qmp_guest_hotplug']=passthrough
     m['artificial_guest_transport_fault']=recovery
     m['live_event_copy_requested']=event_copy
+    m['live_diagnostic_requested']=diagnostic
     process=monitor=channel=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
@@ -358,6 +371,8 @@ def _run(args):
             raise ValueError('prepared VM does not contain the frozen live copy probe')
         if event_copy and 'native_vm' not in package:
             raise ValueError('live copy gate requires the qualified scratch-root VM profile')
+        if diagnostic and ('diagnostic_probe_compile' not in package or 'native_vm' not in package):
+            raise ValueError('live diagnostic gate requires frozen probe and qualified scratch-root VM')
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
         timeline.observe(devices, 'initial')
         if not support:
@@ -383,6 +398,7 @@ def _run(args):
                      (' ws73.passthrough=1' if passthrough else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
+                     (' ws73.diagnostic=1' if diagnostic else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -541,6 +557,15 @@ def _run(args):
                             probe['bus_after']!=control['bus_before']):
                         raise ValueError('copy and RF gates require the same daemon/bus owner')
                     m['live_event_copy']=file_record(share/'application/event-copy/run.json')
+                if diagnostic:
+                    from ws73_diagnostic_probe import verify_records
+                    probe=json.loads((share/'diagnostic/run.json').read_text())
+                    if probe.get('status')!='DIAGNOSTIC_RESULT_LIVE_PASS' or probe.get('probe_exit')!=0:
+                        raise ValueError('live diagnostic probe failure')
+                    verify_records(probe['records'])
+                    if len(probe['cli_queries'])!=4:
+                        raise ValueError('actual diagnostic CLI query gates missing')
+                    m['live_diagnostic']=file_record(share/'diagnostic/run.json')
                 m['empty_bulk_completions']=len(capture['empty_bulk_completions'])
                 if getattr(args,'empty_bulk',False) and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in identities):
                     raise ValueError('successful empty bulk completions missing from either selected USB identity')
@@ -597,6 +622,7 @@ def main():
         if name=='run':
             cmd.add_argument('--ports',nargs=2,required=True)
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')
+            cmd.add_argument('--diagnostic-verify',action='store_true',help='opt-in live diagnostic owner/CAP/copy/retirement and metadata CLI gate; requires --fault-recovery')
             modes=cmd.add_mutually_exclusive_group()
             modes.add_argument('--qmp-hotplug',action='store_true',help='real RF with QMP guest-only disconnect/reconnect; never physical unplug or automatic recovery acceptance')
             modes.add_argument('--fault-recovery',action='store_true',help='one opt-in artificial guest bulk IN81 error with real radios; never natural-fault or physical unplug acceptance')

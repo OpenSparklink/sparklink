@@ -223,3 +223,9 @@ EINVAL而不是假EOF。无人调用drain_to_buf删除，dequeue私有，仅唯�
 没有新增生产测试hook或global lint。见[调用审计和验收边界](EVENT_COPY_REMEDIATION.md)。
 旧DLI_POLL_EVENT仍是另一消费路径，legacy lib receiver使用它，迁移/坏地址/断链/
 移除唤醒仍待验收，R12/K3/U2整项OPEN。新镜像WS73回归和远端CI另行记录。
+
+[本批新镜像](evidence/ws73-vm-event-copy-regression-20261011.json)通过真实20+2轮、
+最长621ms、22独立RX/1163 USB零drop，同daemon/幸存者/普通用户，VM无warning/
+taint；[CI38082158063](https://github.com/OpenSparklink/sparklink/actions/runs/38082158063)
+9作业成功，实际新增event-copy9及既有回归日志核对。人工恢复约10572.148ms，
+不是自然根因或live VFS坏地址验收。完整事件、自然恢复和北极星7/8保持OPEN。

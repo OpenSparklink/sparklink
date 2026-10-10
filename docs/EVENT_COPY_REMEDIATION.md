@@ -37,3 +37,19 @@ fixture不能证明真实read(2)坏地址/跨页用户copy、kernel mutex/lockde
 设备移除唤醒。后续须补实际VFS故障及R12旧DLI消费者迁移，保留有价值旧失败用例。
 R09 PHY/加密状态提前提交仍待修；WS73自然超时/重枚举/消失根因、完整无人工恢复、
 四设备两组及宿主原生对照（VM-only未授权）不因本批关闭。北极星仍7/8。
+
+## 新镜像实机及CI复核
+
+[本批VM证据](evidence/ws73-vm-event-copy-regression-20261011.json)对应内核
+20f431f54af0/编译用户态5f48a80b07b6：完整image/modules、冻结source/config/hash、
+空USB签名module两次load/unload通过。真实双设备20+2轮，最长621ms，host独立
+核对22份RX/1163 USB零drop；UID1000/caps0，同slkd PID528/start338及bus owner，
+幸存generation2不变，目标1→3，最终两只STOP_CONFIRMED，VM warning0/taint0。
+单对象人工guest IN81失败命令至新Ready约10572.148ms；10秒发现门限从成功scan
+Complete计时，不能用恢复耗时替换发现计时。host四只仍在并释放。本轮没有物理
+拔插、自然故障根因、完整自主恢复、live VFS坏地址或完整sandbox验收。
+
+[CI38082158063](https://github.com/OpenSparklink/sparklink/actions/runs/38082158063)
+9作业成功，实际日志核对167 Rust/33 Python/141工具，以及security6/backend2/
+TX11/SSAP9/event-copy9与C sanitizers。此处event-copy依赖fixture范围仍适用，
+不能把本批RF证据当作read(2)故障测试。后续文档head与实际编译head分别记录。

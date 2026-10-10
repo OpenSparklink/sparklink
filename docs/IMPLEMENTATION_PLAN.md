@@ -57,6 +57,13 @@ socket/UAPI契约、六步依赖与失败测试门禁均保留；复核对应
 9作业通过。标准Engine/socket/安全/Profile和自然故障根因仍OPEN，不能据此
 宣称服务互通、完整自主恢复或优于BlueZ。
 
+随后20f431f54af0修复旧read整条copy后消费并删无人调用drain helper；
+[R12调用审计/错误语义](EVENT_COPY_REMEDIATION.md)仍保留旧DLI迁移/live VFS门禁。
+[新镜像20+2](evidence/ws73-vm-event-copy-regression-20261011.json)及
+[固定提交9作业CI](https://github.com/OpenSparklink/sparklink/actions/runs/38082158063)
+通过，最长621ms；不是自然恢复、完整事件或socket/服务验收。下一步继续R09
+真实完成状态提交、旧调用者迁移和WS73自然故障根因；全S0–S6保留。
+
 ## 目标架构与所有权
 
 ### NearLink Host 参考纳入（2026-10-10）

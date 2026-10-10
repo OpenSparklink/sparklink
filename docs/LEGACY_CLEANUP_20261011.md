@@ -88,3 +88,7 @@ drain_to_buf已删，dequeue只作私有提交。copy/锁模拟限selftests，9�
 开发门禁通过。[调用审计](EVENT_COPY_REMEDIATION.md)区分Native typed subscription
 与legacy EventReceiver的DLI_POLL_EVENT；后者先pop再copy和backend直读fallback
 尚待替代，不能因read修复提前删除其有效测试或关闭完整事件issue。
+
+本批[新镜像20+2](evidence/ws73-vm-event-copy-regression-20261011.json)和
+[9作业CI](https://github.com/OpenSparklink/sparklink/actions/runs/38082158063)通过，
+仅证明新代码边界开发回归及WS73真实路径保持；不替代live VFS或旧DLI迁移验收。

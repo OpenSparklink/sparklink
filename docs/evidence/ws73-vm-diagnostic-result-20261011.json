@@ -571,7 +571,7 @@
       "run_id": 38086204506,
       "status": "COMPLETED_SUCCESS",
       "kernel_job_actual_9_ssap_and_11_tx": "VERIFIED",
-      "kernel_pin": "f1704a2e44dc750e6c325077bb234579f8922b6f",
+      "kernel_pin": "5c87f9075d37eef632e1ff5d4f578de2b4639de0",
       "actual_logs_verified": true,
       "jobs_passed": 9,
       "userspace_head": "f2aea829dab3864cd67b535c04649428f01f7e0c",

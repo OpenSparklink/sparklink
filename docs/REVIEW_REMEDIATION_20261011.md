@@ -229,3 +229,20 @@ EINVAL而不是假EOF。无人调用drain_to_buf删除，dequeue私有，仅唯�
 taint；[CI38082158063](https://github.com/OpenSparklink/sparklink/actions/runs/38082158063)
 9作业成功，实际新增event-copy9及既有回归日志核对。人工恢复约10572.148ms，
 不是自然根因或live VFS坏地址验收。完整事件、自然恢复和北极星7/8保持OPEN。
+
+### R12 实际read用户copy门禁与再次复核
+
+本次附件与已采纳的Bluetooth／BlueZ分析相同，ADR及S0–S6不变。复核更新至
+Linux `3a6669114069` / 用户态 `6c06b8f9ef83`：生产read修复保持，新增专用C
+selftest与VM gate完成7类真实read(2)，包括坏地址及首条/后续跨页部分复制。
+实际写入22字节，失败记录保留；后续fault只返回先前完整44字节，独立fd原始
+字节和统计均匹配。没有增加生产模拟成功或测试注入。见
+[错误语义和调用审计](EVENT_COPY_REMEDIATION.md)。
+
+[本次新镜像](evidence/ws73-vm-live-event-copy-20261011.json)另通过真实20+2轮，
+最长622ms、22独立RX/1247 USB零drop，同daemon/幸存者/普通用户，VM无warning/
+taint；[固定提交CI](https://github.com/OpenSparklink/sparklink/actions/runs/38083436958)
+9作业成功，167 Rust/33 Python/146工具及实际内核边界日志核对。
+7类read门禁已验证；R12旧DLI调用者/复制提交、完整订阅/所有权/移除唤醒仍OPEN。
+R09真实硬件完成前状态提交、R11/R13总线/parser迁移与自然故障根因继续整改。
+人工恢复约10773.253ms不算完整自主恢复，历史物理xHCI warning继续保留。

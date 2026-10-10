@@ -58,11 +58,18 @@ socket/UAPI契约、六步依赖与失败测试门禁均保留；复核对应
 宣称服务互通、完整自主恢复或优于BlueZ。
 
 随后20f431f54af0修复旧read整条copy后消费并删无人调用drain helper；
-[R12调用审计/错误语义](EVENT_COPY_REMEDIATION.md)仍保留旧DLI迁移/live VFS门禁。
+[R12调用审计/错误语义](EVENT_COPY_REMEDIATION.md)仍保留旧DLI迁移及完整事件门禁。
 [新镜像20+2](evidence/ws73-vm-event-copy-regression-20261011.json)及
 [固定提交9作业CI](https://github.com/OpenSparklink/sparklink/actions/runs/38082158063)
 通过，最长621ms；不是自然恢复、完整事件或socket/服务验收。下一步继续R09
 真实完成状态提交、旧调用者迁移和WS73自然故障根因；全S0–S6保留。
+
+当前`3a6669114069`/`6c06b8f9ef83`新增专用selftest/VM gate，
+[7类实际read用户copy及真实20+2回归](evidence/ws73-vm-live-event-copy-20261011.json)
+通过；最长622ms、22独立RX/1247 USB零drop。固定提交CI9作业成功，工具测试
+增至146。再次提供的BlueZ分析继续按ADR采用，当前7类read结果不改变socket/
+SSAP/安全分工或S0–S6范围。旧DLI入口/消费者、完整事件/移除、R09状态、自然
+恢复仍OPEN；未发布UAPI可直接同步迁移删除。测试范围继续VM-only。
 
 ## 目标架构与所有权
 

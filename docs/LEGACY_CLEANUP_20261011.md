@@ -92,3 +92,10 @@ drain_to_buf已删，dequeue只作私有提交。copy/锁模拟限selftests，9�
 本批[新镜像20+2](evidence/ws73-vm-event-copy-regression-20261011.json)和
 [9作业CI](https://github.com/OpenSparklink/sparklink/actions/runs/38082158063)通过，
 仅证明新代码边界开发回归及WS73真实路径保持；不替代live VFS或旧DLI迁移验收。
+
+随后`3a6669114069`增加专用C selftest，`6c06b8f9ef83`接入VM测试工具；
+[7类实际read门禁](EVENT_COPY_REMEDIATION.md#live-vfs门禁及新镜像验收)通过，
+坏地址/部分复制保留记录及统计由独立fd逐字节核对。真实WS7320+2轮也保持。
+该测试仅编入selftests；生产没有注入、伪造成功或额外状态来源。三类清单不变：
+旧DLI_POLL_EVENT和调用者仍等待独立订阅替代，迁移后删除；完整事件/移除和
+自然恢复仍OPEN，不能因read门禁通过保留两套长期生产消费路径。

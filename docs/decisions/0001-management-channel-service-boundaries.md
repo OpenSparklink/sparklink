@@ -89,3 +89,8 @@ f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a）。
 14项最新实现/测试/未决条件见[整改记录](../REVIEW_REMEDIATION_20261011.md)。
 声明位验证、框架存在和CI成功不证明服务互通或安全强制；实际socket、用户态
 Engine、安全/Bond和自然恢复门禁仍需独立交付。已验证discovery持续回归。
+
+最新实现复核至`3a6669114069`/`6c06b8f9ef83`，
+[7类实际read故障和WS73回归](../evidence/ws73-vm-live-event-copy-20261011.json)
+仅补齐限定用户copy门禁。旧DLI订阅/所有权迁移、完整移除、socket、SSAP、安全
+和自然故障恢复仍待实施，本ADR的最终职责与依赖顺序保持。

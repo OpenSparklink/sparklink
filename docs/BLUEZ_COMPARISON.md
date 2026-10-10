@@ -52,3 +52,8 @@ generation、owner、恢复状态和证据链是我们的设计重点，需要�
 [新镜像20+2回归](evidence/ws73-vm-ssap-operations-regression-20261011.json)和
 [CI](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)记录当前变化。
 保留物理历史证据及其xHCI warning，不用本批无warning替代历史故障根因。
+
+后续`3a6669114069`/`6c06b8f9ef83`的
+[7类live read及20+2回归](evidence/ws73-vm-live-event-copy-20261011.json)增加实际
+用户copy证据，完整事件/自然恢复/连接socket/SSAP/安全门禁仍OPEN。当前再次
+收到同一分析已按最新实现核对；没有架构回退或新的性能领先结论。

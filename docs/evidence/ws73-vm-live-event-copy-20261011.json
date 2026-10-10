@@ -1,0 +1,1031 @@
+{
+  "status": "RECOVERY_RX_CORROBORATED_SUPPORT_ONLY",
+  "scope": "seven live legacy-event read(2) fault/buffer cases in an isolated x86_64 VM using real WS73 Managed events, plus independent real discovery/artificial recovery regression; not complete event or natural recovery acceptance",
+  "kernel_release": "7.0.0-rc6-opensparklink-native-lab+",
+  "kernel_head": "3a6669114069cceef16b388c95eb4e44099d3e34",
+  "compiled_userspace_head": "6c06b8f9ef833c2d0af9171ee81952f13cac16d9",
+  "host_installation": false,
+  "native_host_acceptance": false,
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "systemd_sandbox_acceptance": false,
+  "board_qualification": "NOT_ASSERTED",
+  "firmware_runtime_version_qualification": "NOT_ASSERTED",
+  "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "qemu_sha256": "d27bb224e2ea95b8246033fab7058c13f30e817bd978343441321934fc9e042e",
+  "kernel_image_sha256": "dfb299b426b9efcafc322099e5f8e70a96e83e198862624974e12c1f194823a0",
+  "application_identity": {
+    "uids": [
+      1000,
+      1000,
+      1000,
+      1000
+    ],
+    "cap_eff": "0000000000000000",
+    "cap_prm": "0000000000000000",
+    "cap_amb": "0000000000000000",
+    "groups": [
+      1000,
+      1002
+    ]
+  },
+  "initial": [
+    {
+      "port": "1-1",
+      "bus": 1,
+      "device": 2,
+      "index": 0,
+      "generation": 1,
+      "path": "/org/sparklink/slk0_g1",
+      "address": "00:01:09:32:54:F9",
+      "version": "016c00a100"
+    },
+    {
+      "port": "1-2",
+      "bus": 1,
+      "device": 3,
+      "index": 1,
+      "generation": 2,
+      "path": "/org/sparklink/slk1_g2",
+      "address": "00:01:09:32:54:CD",
+      "version": "016c00a100"
+    }
+  ],
+  "replacement": {
+    "port": "1-1",
+    "bus": 1,
+    "device": 2,
+    "index": 0,
+    "generation": 3,
+    "path": "/org/sparklink/slk0_g3",
+    "address": "00:01:09:32:54:F9",
+    "version": "016c00a100"
+  },
+  "daemon_before": {
+    "pid": 523,
+    "start_ticks": 341
+  },
+  "daemon_after": {
+    "pid": 523,
+    "start_ticks": 341
+  },
+  "bus_owner_unchanged": true,
+  "fault_method": "QMP_GUEST_TRANSPORT_ERROR_ONCE",
+  "injected_count": 1,
+  "discarded_host_success_bytes": 178,
+  "fault_command_exit": 1,
+  "observed_native_failure_errno": -110,
+  "recovery_budget_before": "attempts=1 limit=2 uploads=0 upload_limit=3 cause=-110 result=0 exhausted=0 deadline_ms=133790 stable_since_ms=16134",
+  "recovery_budget_after": "attempts=2 limit=2 uploads=0 upload_limit=3 cause=-110 result=0 exhausted=0 deadline_ms=133790 stable_since_ms=0",
+  "fault_command_to_new_ready_ms": 10773.252702,
+  "capture_packets": 1247,
+  "capture_drops": 0,
+  "rx_proofs": 22,
+  "trace_overruns": 0,
+  "kernel_warning_count": 0,
+  "vm_taint": 0,
+  "cleanup": [
+    {
+      "port": "1-1",
+      "status": "STOP_CONFIRMED"
+    },
+    {
+      "port": "1-2",
+      "status": "STOP_CONFIRMED"
+    }
+  ],
+  "rounds": [
+    {
+      "phase": "initial",
+      "round": 1,
+      "marker": "af35d1bb7419d2e3901b0ad7f084914e",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 1,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "af35d1bb7419d2e3901b0ad7f084914e",
+        "data": "ff290101010b24736c6b2d6166333564316262373431396432653339303162306164376630383439313465",
+        "kernel_boottime_ns": 28782207458,
+        "elapsed_ms": 467,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 2,
+      "marker": "22eda0d673603d98d9928ac1dca0a848",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "22eda0d673603d98d9928ac1dca0a848",
+        "data": "ff290101010b24736c6b2d3232656461306436373336303364393864393932386163316463613061383438",
+        "kernel_boottime_ns": 28857673982,
+        "elapsed_ms": 11,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 3,
+      "marker": "b4a83cb42b44ee0f395906b19ebae8f4",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 2,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "b4a83cb42b44ee0f395906b19ebae8f4",
+        "data": "ff290101010b24736c6b2d6234613833636234326234346565306633393539303662313965626165386634",
+        "kernel_boottime_ns": 29073819837,
+        "elapsed_ms": 142,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 4,
+      "marker": "6cdbbef7d87ccea5a573aeabc1a3c73b",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 2,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "6cdbbef7d87ccea5a573aeabc1a3c73b",
+        "data": "ff290101010b24736c6b2d3663646262656637643837636365613561353733616561626331613363373362",
+        "kernel_boottime_ns": 29755318033,
+        "elapsed_ms": 619,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 5,
+      "marker": "876e554c22e0b47d59ac37139eda0136",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 3,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -16,
+        "marker": "876e554c22e0b47d59ac37139eda0136",
+        "data": "ff290101010b24736c6b2d3837366535353463323265306234376435396163333731333965646130313336",
+        "kernel_boottime_ns": 30433160590,
+        "elapsed_ms": 619,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 6,
+      "marker": "c492099daa4bfdd970de8b0fc02c2fc4",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 3,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -17,
+        "marker": "c492099daa4bfdd970de8b0fc02c2fc4",
+        "data": "ff290101010b24736c6b2d6334393230393964616134626664643937306465386230666330326332666334",
+        "kernel_boottime_ns": 30661324700,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 7,
+      "marker": "f72360554e8828d45b5d447c86044a6e",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 4,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -11,
+        "marker": "f72360554e8828d45b5d447c86044a6e",
+        "data": "ff290101010b24736c6b2d6637323336303535346538383238643435623564343437633836303434613665",
+        "kernel_boottime_ns": 31348784078,
+        "elapsed_ms": 622,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 8,
+      "marker": "3a5107ded170dff38b74fda897fb04b1",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 4,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "3a5107ded170dff38b74fda897fb04b1",
+        "data": "ff290101010b24736c6b2d3361353130376465643137306466663338623734666461383937666230346231",
+        "kernel_boottime_ns": 32039126007,
+        "elapsed_ms": 620,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 9,
+      "marker": "15c11e3e2bbdcfbdb9eae82c3d2bf981",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 5,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "15c11e3e2bbdcfbdb9eae82c3d2bf981",
+        "data": "ff290101010b24736c6b2d3135633131653365326262646366626462396561653832633364326266393831",
+        "kernel_boottime_ns": 32560043345,
+        "elapsed_ms": 466,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 10,
+      "marker": "dad35578355f55d0f4dfdb21f0e906df",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 5,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "dad35578355f55d0f4dfdb21f0e906df",
+        "data": "ff290101010b24736c6b2d6461643335353738333535663535643066346466646232316630653930366466",
+        "kernel_boottime_ns": 32944084339,
+        "elapsed_ms": 316,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 11,
+      "marker": "9cbaa818431a21eb580ef7cba1f7552a",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 6,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "9cbaa818431a21eb580ef7cba1f7552a",
+        "data": "ff290101010b24736c6b2d3963626161383138343331613231656235383065663763626131663735353261",
+        "kernel_boottime_ns": 33184141076,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 12,
+      "marker": "a72356b932ae06fe314abd971347fdd4",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 6,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -16,
+        "marker": "a72356b932ae06fe314abd971347fdd4",
+        "data": "ff290101010b24736c6b2d6137323335366239333261653036666533313461626439373133343766646434",
+        "kernel_boottime_ns": 33711242887,
+        "elapsed_ms": 471,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 13,
+      "marker": "2f61e7e919ea3a5b98c07b5e63b0b853",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 7,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "2f61e7e919ea3a5b98c07b5e63b0b853",
+        "data": "ff290101010b24736c6b2d3266363165376539313965613361356239386330376235653633623062383533",
+        "kernel_boottime_ns": 34389069264,
+        "elapsed_ms": 617,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 14,
+      "marker": "587a53dbbfbf273e54c473a0fb3469e0",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 7,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "587a53dbbfbf273e54c473a0fb3469e0",
+        "data": "ff290101010b24736c6b2d3538376135336462626662663237336535346334373361306662333436396530",
+        "kernel_boottime_ns": 34633506425,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 15,
+      "marker": "48f824178016169a84275a5e3b3668fb",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 8,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "48f824178016169a84275a5e3b3668fb",
+        "data": "ff290101010b24736c6b2d3438663832343137383031363136396138343237356135653362333636386662",
+        "kernel_boottime_ns": 35022133420,
+        "elapsed_ms": 315,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 16,
+      "marker": "a02bf324ff5ad91223dc4c6a782b3e62",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 8,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -16,
+        "marker": "a02bf324ff5ad91223dc4c6a782b3e62",
+        "data": "ff290101010b24736c6b2d6130326266333234666635616439313232336463346336613738326233653632",
+        "kernel_boottime_ns": 35567526134,
+        "elapsed_ms": 458,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 17,
+      "marker": "606d1bd9f49c99dd82982b85ccf4e281",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 9,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "606d1bd9f49c99dd82982b85ccf4e281",
+        "data": "ff290101010b24736c6b2d3630366431626439663439633939646438323938326238356363663465323831",
+        "kernel_boottime_ns": 36111006506,
+        "elapsed_ms": 467,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 18,
+      "marker": "1a9d24b7cde0f81a23dee1314bac07bf",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 9,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -14,
+        "marker": "1a9d24b7cde0f81a23dee1314bac07bf",
+        "data": "ff290101010b24736c6b2d3161396432346237636465306638316132336465653133313462616330376266",
+        "kernel_boottime_ns": 36646357459,
+        "elapsed_ms": 469,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 19,
+      "marker": "8049e7d8d963539098934feb5df988bb",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 10,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "8049e7d8d963539098934feb5df988bb",
+        "data": "ff290101010b24736c6b2d3830343965376438643936333533393039383933346665623564663938386262",
+        "kernel_boottime_ns": 37072173386,
+        "elapsed_ms": 315,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 20,
+      "marker": "d60bdb2fc94fb971f948e36c1913002c",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 10,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "d60bdb2fc94fb971f948e36c1913002c",
+        "data": "ff290101010b24736c6b2d6436306264623266633934666239373166393438653336633139313330303263",
+        "kernel_boottime_ns": 37345328297,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 1,
+      "marker": "3beca99c1ce92aa920c3b96735d787de",
+      "tx_generation": 3,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 11,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -12,
+        "marker": "3beca99c1ce92aa920c3b96735d787de",
+        "data": "ff290101010b24736c6b2d3362656361393963316365393261613932306333623936373335643738376465",
+        "kernel_boottime_ns": 50889870081,
+        "elapsed_ms": 316,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 2,
+      "marker": "f52bce9a3567df984e0d43cd88043b02",
+      "tx_generation": 2,
+      "rx_generation": 3,
+      "match": {
+        "generation": 3,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -13,
+        "marker": "f52bce9a3567df984e0d43cd88043b02",
+        "data": "ff290101010b24736c6b2d6635326263653961333536376466393834653064343363643838303433623032",
+        "kernel_boottime_ns": 51178640696,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    }
+  ],
+  "development_tests": {
+    "ssap_containment": {
+      "status": "SSAP_LEGACY_CONTAINMENT_PASS",
+      "rust_tests": 9,
+      "scope": "actual full local database/session module with allocation dependency fixture; one historical codec test",
+      "standard_ssap_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_ssap.rs": "1ae970db1092a5411dbcc49ad8439ba146a7b0b9d520f9d5514054f09093debf",
+        "sparklink_core.rs": "d2574b63adeaafbf35c19d0dfddb409af85fadb12b9cd71f6c465ac64208d163",
+        "sle_workers.rs": "79c85393783eb0ccbcc89772fe57d52a47b8fb5fe6c240fe4c64c4cb04bcb715"
+      },
+      "remaining": [
+        "Userspace standard codec/fragment controls, permissions and authenticated per-peer database",
+        "PDU socket owner, deadline/budget/credit/commit semantics and real peer interoperability"
+      ],
+      "execution_provenance": {
+        "ci_run": 38083436958,
+        "kernel_pin": "3a6669114069cceef16b388c95eb4e44099d3e34",
+        "job": 114304887086,
+        "log_sha256": "41fe6837188b1bf1f23b0b0aab12ce6af80daa60672f392a49ecd1de31d95c5f"
+      }
+    },
+    "connection_tx": {
+      "status": "CONNECTION_TX_SUBMISSION_BOUNDARY_PASS",
+      "scope": "actual sender/ioctl/legacy USB bodies with dependency fixtures; not socket/protocol/RF qualification",
+      "physical_acceptance": false,
+      "socket_acceptance": false,
+      "rust_tests": 11,
+      "usb_boundaries": [
+        "range",
+        "allocation",
+        "errno",
+        "all short completions",
+        "exact completion",
+        "max length"
+      ],
+      "sources": {
+        "sle_conn.rs": "272b27cacd871e43f3183b0c69ef5a9a5c42b73866bb30c295fb3a14303ac3a3",
+        "sparklink_core.rs": "d2574b63adeaafbf35c19d0dfddb409af85fadb12b9cd71f6c465ac64208d163",
+        "sle_usb_ffi.c": "23548b594694c6ed65e60f0fff53198e0f964911d252a898b5892bbc6a1b116e"
+      },
+      "execution_provenance": {
+        "ci_run": 38083436958,
+        "kernel_pin": "3a6669114069cceef16b388c95eb4e44099d3e34",
+        "job": 114304887086,
+        "log_sha256": "41fe6837188b1bf1f23b0b0aab12ce6af80daa60672f392a49ecd1de31d95c5f"
+      }
+    },
+    "security": {
+      "status": "SECURITY_FAILURE_BOUNDARY_PASS",
+      "physical_acceptance": false,
+      "scope": "actual Rust wrappers/security + C CTR body; mocked dependencies, not crypto vectors or RF",
+      "sources": {
+        "sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+        "sle_security.rs": "79f1db6ba74123e219169cf749fa1a4d9073646044c1b02cde5a2bc9869ca066",
+        "sle_crypto_ffi.c": "a2b13603d1fd8503b991edcd6d6a70ec8409b851ba48e9a4e1a41c09d82dfbf7"
+      },
+      "ctr_body_sha256": "9cdc334d7350c9ef5c5e044df39beb438bfbe68a643afbbfa2bcd74de03fb29a",
+      "rust_tests": 6,
+      "c_fault_stages": 5,
+      "remaining": [
+        "Per-connection authenticated pairing/relay/real encryption installation",
+        "Standard crypto vectors, zeroization audit and real peer interoperability",
+        "New kernel VM WS73 discovery/recovery regression"
+      ],
+      "execution_provenance": {
+        "ci_run": 38083436958,
+        "kernel_pin": "3a6669114069cceef16b388c95eb4e44099d3e34",
+        "job": 114304887086,
+        "log_sha256": "41fe6837188b1bf1f23b0b0aab12ce6af80daa60672f392a49ecd1de31d95c5f"
+      }
+    },
+    "backend": {
+      "status": "BACKEND_CONTAINMENT_PASS",
+      "sources": {
+        "sle_uart.rs": {
+          "sha256": "73cd7d549899b04558682ee785bc6858a536e1864282830d2376999e58c15e0d",
+          "methods_sha256": "0c3b79e855cedc07c5ddbf0ea7a02ebb03f5b199e8013674064d26a08c6a573f"
+        },
+        "sle_spi.rs": {
+          "sha256": "21102a8b895f6b7ec873a6367ef6a50541753edc9d82143b17af827ab8230fe0",
+          "methods_sha256": "6852e16fcc5833de95dec4b1b44601abe8a6eb2d5e78dadbf0b122bd0029db87"
+        }
+      },
+      "tests": 2,
+      "scope": "actual trait method bodies with fixture types; no UART/SPI hardware/framing qualification",
+      "physical_acceptance": false,
+      "execution_provenance": {
+        "ci_run": 38083436958,
+        "kernel_pin": "3a6669114069cceef16b388c95eb4e44099d3e34",
+        "job": 114304887086,
+        "log_sha256": "41fe6837188b1bf1f23b0b0aab12ce6af80daa60672f392a49ecd1de31d95c5f"
+      }
+    },
+    "python_abi_tests": 33,
+    "strict_checks": "all-targets/all-features check/clippy, rustfmt, release, header and tests passed in pinned remote CI; qualified default bundle sources match current head",
+    "workspace_tests": 167,
+    "tooling_tests": 146,
+    "remote_ci": {
+      "run_id": 38083436958,
+      "status": "COMPLETED_SUCCESS",
+      "kernel_job_actual_9_ssap_and_11_tx": "VERIFIED",
+      "kernel_pin": "3a6669114069cceef16b388c95eb4e44099d3e34",
+      "actual_logs_verified": true,
+      "jobs_passed": 9,
+      "userspace_head": "6c06b8f9ef833c2d0af9171ee81952f13cac16d9",
+      "event_copy_fixture_tests": 9,
+      "live_probe_compile": true,
+      "live_probe_execution_in_ci": false
+    },
+    "event_copy_fixture": {
+      "status": "EVENT_RECORD_COPY_BOUNDARY_PASS",
+      "rust_tests": 9,
+      "scope": "actual complete event module and read_iter; copy/lock dependencies are fixtures",
+      "live_vfs_fault_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_event.rs": "406cf69542a18de7b3f1827a117429f2ff3e1e613ff3bc0b0cfd332b026f9bbd",
+        "sparklink_core.rs": "d2574b63adeaafbf35c19d0dfddb409af85fadb12b9cd71f6c465ac64208d163"
+      },
+      "remaining": [
+        "Legacy DLI_POLL_EVENT consumer migration/fault retention",
+        "Live usercopy faults, removal wakeup and complete event ownership gates"
+      ],
+      "execution_provenance": {
+        "ci_run": 38083436958,
+        "kernel_pin": "3a6669114069cceef16b388c95eb4e44099d3e34",
+        "job": 114304887086,
+        "log_sha256": "41fe6837188b1bf1f23b0b0aab12ce6af80daa60672f392a49ecd1de31d95c5f"
+      }
+    }
+  },
+  "artifact_sha256": {
+    "capture": "056f1e141bc628655b67bb5fccc8cdc24efc7dd4319c0089bc66fa2dec2ee29c",
+    "control": "00d5caa957ae98e68db0ef21a2fa96c4783b32a50c1d5176de70b4e59bdc060d",
+    "run_manifest": "2c150a663311f21164258a2fd9600111aba0415b99d4831e74b15aead5fa635f",
+    "prepared_manifest": "d9105a862ed585d20bc273657503b4816d52ee9987d3c7ee6f9188029c74ee68",
+    "kernel_log": "8b9be4c5021a0bc76e171c436b505f87ebc18290b6e4f348d288a245b31cfcd3",
+    "xhci_trace": "b76f489b2cae2adffb256f88a55e7ae72113f03e6a03bc726a46daafd1e625f1",
+    "xhci_trace_stats": "7f40718a4cde2588aa7a5e1577dacedd290da97fa6e7ca8cdba4998a86fa0994",
+    "qmp": "70c22cd2bd79ffb3270aae3506c1c73aafb1e1076d4391fd4105f9edab21818b",
+    "host_inventory": "fc1ebb95a7fbd54b575564e178313f6767c8b7245d305abc1b24bb57f5e23e99",
+    "kernel_build_log": "02b9c0fc31a6789aded43fa911a89802c86335711a5553b5b08f662107546377",
+    "ssap_test_log": "41fe6837188b1bf1f23b0b0aab12ce6af80daa60672f392a49ecd1de31d95c5f",
+    "tx_test_log": "41fe6837188b1bf1f23b0b0aab12ce6af80daa60672f392a49ecd1de31d95c5f",
+    "tool_test_log": "3df0c9ef49995a134f1179d24bd3582c96bc080fe8f21231f7d705830d04231b",
+    "host_diagnostics": "9f9b5effacbab3eff32e2ba9522813d1e72e54af9689d3055f645d625021aeba",
+    "security_test_log": "41fe6837188b1bf1f23b0b0aab12ce6af80daa60672f392a49ecd1de31d95c5f",
+    "python_abi_log": "839e5e074c9a95d48a884ef36090589f82be60ac447192542ab62f5865079aaf",
+    "live_event_run": "2449add4331dc69792c725e5d52afb1fe57f53cf544d2722b56e5ea892ae0abb",
+    "live_event_transcript": "caa329d09811634a9d66456ced921c55cab769269acc0572140ba25560cd333f",
+    "live_event_binary": "8bf5fe06fadd0196c30ca6ea88c56f06d809383f5dd7949975f466b04d5ca97c",
+    "ci_jobs": "83d39e14599660400516d3591ecd8f1262b11eab84e2351758ad234ce8455bd9",
+    "independent_proofs": "d9f04aed4972423b66cf7321613f62a8e881c867b2e5d16c7e2abd77ffbbffa7",
+    "service_bundle": "96002dcc96fa9722204817127743be252507781b73e3ec9dc511e9459b2fdac4",
+    "root_smoke": "256e15c839a3e1b26141b030760900815b9c7fccd17ef25d944276a0eb4dae61"
+  },
+  "diagnostic_chain": [
+    "one host-success IN81 discarded; guest USB Transaction Error/Reset Endpoint",
+    "1001 timeout -110; old controller generation retires",
+    "bounded four-second per-device protocol restore; fresh metadata/generation3",
+    "survivor generation2 unchanged; same slkd pid/start ticks and bus owner",
+    "20 initial + 2 recovery alternating random-marker RF matches, each <=10s"
+  ],
+  "remaining": [
+    "Authenticated per-connection security, standard vectors and real encryption installation remain unavailable",
+    "Natural startup/disappearance/re-enumeration root cause and complete autonomous recovery unresolved",
+    "Physical-unplug xHCI warning, single/two/four-device matrix, complete sandbox remain open",
+    "Host-native comparison not authorized; VM results do not replace it",
+    "Old SSAP wire engine removed; userspace standard Engine/socket and local-staging/UAPI caller migration remain open alongside security/event/backend work",
+    "Legacy DLI_POLL_EVENT destructive pre-copy path/callers and complete event ownership/removal gates remain open; seven read cases do not close R12/K3/U2"
+  ],
+  "started_at": "2026-10-10T20:25:24.981932+00:00",
+  "finished_at": "2026-10-10T20:26:24.889648+00:00",
+  "live_vfs_fault_acceptance": true,
+  "live_vfs_fault_scope": "seven legacy read cases only; no legacy DLI ioctl, removal wakeup, kernel-lock concurrency/lockdep or full event ownership acceptance",
+  "legacy_dli_poll_migration_complete": false,
+  "full_event_acceptance": false,
+  "live_event_copy": {
+    "status": "LIVE_EVENT_COPY_PASS",
+    "application_identity": {
+      "uids": [
+        1000,
+        1000,
+        1000,
+        1000
+      ],
+      "cap_eff": "0000000000000000",
+      "cap_prm": "0000000000000000",
+      "cap_amb": "0000000000000000",
+      "groups": [
+        1000,
+        1002
+      ]
+    },
+    "probe": {
+      "path": "/bin/event-copy-probe",
+      "sha256": "8bf5fe06fadd0196c30ca6ea88c56f06d809383f5dd7949975f466b04d5ca97c"
+    },
+    "sources": [
+      {
+        "path": "/usr/share/sparklink/tools/ws73_event_copy_probe.py",
+        "sha256": "4a49d83c64d01f4429f9d72a2d713929dc6ab54b4df6f7e25c55273acde9289c"
+      }
+    ],
+    "cases": [
+      {
+        "case": "zero",
+        "result": 0,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "short",
+        "result": -1,
+        "errno": 22,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "bad_address",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_first",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 22,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_later",
+        "result": 44,
+        "errno": 0,
+        "partial_prefix": 22,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 2,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 1
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "07240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "capacity_tail",
+        "result": 44,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 2,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 1
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "07240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "complete_batch",
+        "result": 132,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": ""
+      }
+    ],
+    "daemon_before": {
+      "pid": 523,
+      "start_ticks": 341
+    },
+    "daemon_after": {
+      "pid": 523,
+      "start_ticks": 341
+    },
+    "initial": [
+      {
+        "port": "1-1",
+        "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+        "bus": 1,
+        "device": 2,
+        "index": 0,
+        "generation": 1,
+        "path": "/org/sparklink/slk0_g1",
+        "address": "00:01:09:32:54:F9",
+        "version": "016c00a100",
+        "features": "23155000120000010000",
+        "buffers": [
+          254,
+          5,
+          0,
+          0
+        ],
+        "attributes": {
+          "metadata_valid": "1",
+          "runtime_transport": "1",
+          "boot_error": "0",
+          "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+          "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+        },
+        "descriptors": {
+          "manufacturer": "00000000",
+          "product": "00000000",
+          "serial": ">04072<1705:229=0;6516:0"
+        },
+        "observed_wall_ns": 1791663956074083750
+      },
+      {
+        "port": "1-2",
+        "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+        "bus": 1,
+        "device": 3,
+        "index": 1,
+        "generation": 2,
+        "path": "/org/sparklink/slk1_g2",
+        "address": "00:01:09:32:54:CD",
+        "version": "016c00a100",
+        "features": "23155000120000010000",
+        "buffers": [
+          254,
+          5,
+          0,
+          0
+        ],
+        "attributes": {
+          "metadata_valid": "1",
+          "runtime_transport": "1",
+          "boot_error": "0",
+          "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+          "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+        },
+        "descriptors": {
+          "manufacturer": "00000000",
+          "product": "00000000",
+          "serial": ">04072<17<<<;29=0;69;7:0"
+        },
+        "observed_wall_ns": 1791663956080968662
+      }
+    ],
+    "final": [
+      {
+        "port": "1-1",
+        "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+        "bus": 1,
+        "device": 2,
+        "index": 0,
+        "generation": 1,
+        "path": "/org/sparklink/slk0_g1",
+        "address": "00:01:09:32:54:F9",
+        "version": "016c00a100",
+        "features": "23155000120000010000",
+        "buffers": [
+          254,
+          5,
+          0,
+          0
+        ],
+        "attributes": {
+          "metadata_valid": "1",
+          "runtime_transport": "1",
+          "boot_error": "0",
+          "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+          "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+        },
+        "descriptors": {
+          "manufacturer": "00000000",
+          "product": "00000000",
+          "serial": ">04072<1705:229=0;6516:0"
+        },
+        "observed_wall_ns": 1791663956457674065
+      },
+      {
+        "port": "1-2",
+        "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+        "bus": 1,
+        "device": 3,
+        "index": 1,
+        "generation": 2,
+        "path": "/org/sparklink/slk1_g2",
+        "address": "00:01:09:32:54:CD",
+        "version": "016c00a100",
+        "features": "23155000120000010000",
+        "buffers": [
+          254,
+          5,
+          0,
+          0
+        ],
+        "attributes": {
+          "metadata_valid": "1",
+          "runtime_transport": "1",
+          "boot_error": "0",
+          "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+          "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+        },
+        "descriptors": {
+          "manufacturer": "00000000",
+          "product": "00000000",
+          "serial": ">04072<17<<<;29=0;69;7:0"
+        },
+        "observed_wall_ns": 1791663956463168197
+      }
+    ],
+    "probe_exit": 0,
+    "cleanup": "STOP_CONFIRMED",
+    "binary_has_no_setid_or_file_capability": true,
+    "child_capabilities_separately_measured": false
+  },
+  "host_after": {
+    "devices_present_unbound": 4,
+    "recent_kernel_journal_records": 0,
+    "scope": "read-only inventory; not native-host driver acceptance"
+  }
+}

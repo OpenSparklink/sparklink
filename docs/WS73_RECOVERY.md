@@ -207,3 +207,26 @@ completions，22条独立控制抓包关联。12条 Runtime gates 全部 PASS；
 北极星仍4/8，物理拔出导致幸存 generation 改变的根因、物理重插、不依赖人工
 拔插的恢复、原生主机与QEMU对照、四设备两组及完整S0–S6仍开放。本次主机
 只枚举到1-2.1.1/.2/.3；.4仍未出现，不能把用户已插回解释为枚举恢复成功。
+
+
+### 三层生命周期诊断与 kernel92 实机初始阶段
+
+开发 runner 为真实 passthrough 自动记录 `host-inventory.jsonl`：初始、变化和
+结束时的全部 WS73（包括未选择的设备）及 wall/monotonic 时间。QEMU 开启十个
+显式白名单事件和时间戳，记录 open/close、端口 attach/detach、接口 claim/release、
+传输完成状态/长度及 reset；不记录 payload，不改变 USB 权限或恢复行为。
+日志写入独立文件并纳入 manifest SHA256；缺少事件则拒绝启动诊断测试。
+guest console 使用 loglevel6，以保留异常结束时的生命周期线索。98工具测试通过。
+
+旧隔离失败抓包显示：拔出侧在13:10:33.225190 UTC出现IN -71，幸存侧在
+13:10:35.018964 UTC出现IN -108，随后以新generation注册。该观察将问题缩小到
+USB/内核生命周期，但不能据此断言主机、QEMU或驱动的触发根因；原生主机对照
+与受控单owner故障注入仍是下一依赖。
+
+kernel92真实初始20轮再次逐轮独立复核：UID1000/capabilities0，111/110保留固件，
+299–616ms匹配新数据、地址与RSSI；1019USB包、zero drops，两只最终
+STOP_CONFIRMED。capture SHA256
+`a23c4d502ca60ca5d1adace7f476f79118a050117180a9982be3d7b6e5d287d8`。
+本地 `.dev/physical-retained-off-initial20-evidence.json` 仅证明初始阶段；未执行
+物理拔插，完整control在确认拔出时EOF，整体environment也保留FAIL，不能升格
+为完整北极星通过。北极星仍4/8；设备.4仍缺失、根因与自动恢复issues继续开放。

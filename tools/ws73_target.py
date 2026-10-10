@@ -231,6 +231,49 @@ def opened_usb_node(pid,node,proc=Path('/proc')):
     return False
 
 
+USB_LIFECYCLE_EVENTS = (
+    'usb_port_attach', 'usb_port_detach',
+    'usb_host_open_started', 'usb_host_open_success', 'usb_host_open_failure',
+    'usb_host_close', 'usb_host_claim_interface', 'usb_host_release_interface',
+    'usb_host_req_complete', 'usb_host_reset',
+)
+
+
+def lifecycle_trace(qemu, output):
+    """Metadata-only tracing; no control/data payload or host mutation."""
+    available = subprocess.check_output([str(qemu), '-trace', 'help'],
+                                        stderr=subprocess.STDOUT, text=True).splitlines()
+    missing = set(USB_LIFECYCLE_EVENTS) - set(available)
+    if missing:
+        raise ValueError('QEMU lifecycle trace events missing: ' + ','.join(sorted(missing)))
+    events, log = output/'usb-lifecycle.events', output/'usb-lifecycle.log'
+    if any(c in str(events) + str(log) for c in [',', '\n']):
+        raise ValueError('QEMU trace paths must not contain option delimiters')
+    events.write_text('\n'.join(USB_LIFECYCLE_EVENTS)+'\n')
+    return ['-msg', 'timestamp=on', '-trace', f'events={events},file={log}']
+
+
+class HostTimeline:
+    """Persist initial/change/final WS73 inventory with observation timestamps.
+
+    Absence is an observation, not a recovery claim. Include unselected WS73s
+    to distinguish an owner-local incident from a hub-wide inventory change.
+    """
+    def __init__(self, path):
+        self.path, self.previous, self.sequence = path, None, 0
+
+    def observe(self, inventory, phase='poll'):
+        if inventory == self.previous and phase == 'poll':
+            return
+        record = dict(sequence=self.sequence, phase=phase, wall_ns=time.time_ns(),
+                      monotonic_ns=time.monotonic_ns(), devices=inventory)
+        with self.path.open('a') as stream:
+            stream.write(json.dumps(record, sort_keys=True)+'\n')
+            stream.flush()
+        self.previous = inventory
+        self.sequence += 1
+
+
 def _run(args):
     ordinary_identity()
     output=args.output.resolve();output.mkdir(mode=0o700,parents=True,exist_ok=False)
@@ -241,9 +284,11 @@ def _run(args):
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
     process=monitor=channel=None
+    timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
+        timeline.observe(devices, 'initial')
         if not support:
             m['usb_host_boundary']=usb_host_boundary(package['qemu']['path'])
             if not m['usb_host_boundary']['supported']:
@@ -269,6 +314,12 @@ def _run(args):
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
                      '-fsdev',f'local,id=evidence,path={share},security_model=mapped-xattr',
                      '-device','virtio-9p-pci,fsdev=evidence,mount_tag=evidence']
+            if not support:
+                command += lifecycle_trace(package['qemu']['path'], output)
+                # Keep lifecycle diagnostics in the console even when the
+                # guest cannot seal dmesg after an environment timeout.
+                index=command.index('-append')+1
+                command[index]=command[index].replace('loglevel=5', 'loglevel=6')
             m['qemu_args']=command;write_json(output/'manifest.json',m)
             with (output/'qemu-stderr.log').open('wb') as stderr,(output/'console.log').open('wb') as log:
                 process=subprocess.Popen(command,stdout=subprocess.DEVNULL,stderr=stderr)
@@ -313,6 +364,7 @@ def _run(args):
                         monitor.execute('device_add',props);active+=1
                     if not support:
                         current={d['path']:d for d in lab.inventory()}
+                        timeline.observe(current)
                         for index,port in enumerate(args.ports[:active]):
                             watcher.poll(index,port,current.get(port),process.pid,monitor)
                 # Drain bytes already delivered when QEMU powers down.
@@ -354,6 +406,10 @@ def _run(args):
         if channel:channel.close()
         m['guest_files']=[file_record(p) for p in sorted((output/'guest-output').rglob('*')) if p.is_file() and not p.is_symlink()] if (output/'guest-output').exists() else []
         m['inventory_after']={d['path']:d for d in lab_module().inventory()}
+        timeline.observe(m['inventory_after'], 'final')
+        m['host_timeline']=file_record(output/'host-inventory.jsonl')
+        m['host_lifecycle_files']=[file_record(output/name) for name in
+            ['usb-lifecycle.events', 'usb-lifecycle.log'] if (output/name).is_file()]
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
     return 0 if m['status'] in ['SUPPORT_PASS','ENVIRONMENT_FINISHED'] else 1

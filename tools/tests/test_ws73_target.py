@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_host_boundary, usb_properties
+from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_host_boundary, usb_properties, HostTimeline, lifecycle_trace, USB_LIFECYCLE_EVENTS
 from ws73_north_star import _registration, file_record, healthy_native_runtime, registration, Run
 from ws73_target_control import SyntheticControlRun
 from types import SimpleNamespace
@@ -15,6 +15,31 @@ import ws73_target_guest as guest
 
 
 class TargetEnvironment(unittest.TestCase):
+    def test_inventory_timeline_retains_unselected_removal_and_final(self):
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/'inventory.jsonl';timeline=HostTimeline(path)
+            before={'1-1':{'address':1}, '1-2':{'address':2}}
+            after={'1-1':{'address':1}}
+            timeline.observe(before,'initial');timeline.observe(before)
+            timeline.observe(after);timeline.observe(after);timeline.observe(after,'final')
+            records=[json.loads(x) for x in path.read_text().splitlines()]
+            self.assertEqual([x['sequence'] for x in records],[0,1,2])
+            self.assertEqual([x['phase'] for x in records],['initial','poll','final'])
+            self.assertEqual(records[0]['devices'],before)
+            self.assertEqual(records[1]['devices'],after)
+            self.assertTrue(all(x['wall_ns']>0 and x['monotonic_ns']>0 for x in records))
+
+    def test_lifecycle_trace_requires_all_metadata_events(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            with patch('ws73_target.subprocess.check_output',return_value='\n'.join(USB_LIFECYCLE_EVENTS)) as call:
+                args=lifecycle_trace(Path('/test/qemu'),root)
+            self.assertEqual(call.call_args.args[0],['/test/qemu','-trace','help'])
+            self.assertEqual(args,['-msg','timestamp=on','-trace',f'events={root}/usb-lifecycle.events,file={root}/usb-lifecycle.log'])
+            self.assertEqual((root/'usb-lifecycle.events').read_text().splitlines(),list(USB_LIFECYCLE_EVENTS))
+            with patch('ws73_target.subprocess.check_output',return_value='usb_host_close\n'):
+                with self.assertRaisesRegex(ValueError,'events missing'):lifecycle_trace(Path('/test/qemu'),root)
+
     def test_bootstrap_failure_is_saved_without_waiting_ready_deadline(self):
         for diagnostics in [None, 'phase=10 error=-5 event=000a hardware_error=0']:
             with self.subTest(diagnostics=diagnostics),tempfile.TemporaryDirectory() as d:

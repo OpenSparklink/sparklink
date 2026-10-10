@@ -1225,3 +1225,21 @@ i386静态布局；新时间查询保持负errno及失败时输出不变。Kerne
 
 以上均为开发支撑，真实WS73/固件/RF/物理拔插仍待验；真实七项0/7，完整
 S0–S6、四设备两组和所有原整项issues保持OPEN，不以时间机制完成关闭整项。
+
+### 中断与启动失败的可复现记录（部分成果）
+
+所有 recorder slctl 路径现在共用先记录后启动的采集器，包括 daemon 身份查询
+和退役选择。超时/KeyboardInterrupt 回收实际 CLI、保留输出与 child returncode，
+启动错误记录 errno，意外采集错误同样回收进程；三种结束时间写入原记录。
+终止 CLI 不撤销已提交无线操作，仍需逐设备停止。清理成功也不能把中断运行
+改为成功或补齐连续轮次。持续存储故障无法保证证据落盘，必须另列失败。
+
+9 项真实本地子进程测试、全部 66 项工具测试 PASS。旧精确源码反例复现中断
+缺 exit、启动失败缺分类、总线查询中断未入记录，原失败日志保留。最终新客体
+使用未变的 image #69、实际 slkd/slctl，合成 20+2 轮、同 daemon/owner 重插、
+两次 TX-off 及原始 USB 佐证 PASS：2251 USB、177 空完成、22 匹配、32 独立
+snoop 一致；152 个 selected 调用、2 次 daemon 查询和退役选择均记录 PID/退出
+状态/三种时间。源码与当前 capsule/捕获/旧反例封存于本地
+`.dev/command-failure-final-evidence.json`。本批未修改 Rust/Linux，未重跑全仓
+Rust/clippy/96-case，也不宣称远端 CI 或实机通过。真实 WS73 仍未枚举，七项
+0/7、板参 NOT_ASSERTED；四设备及完整 S0–S6 与全部原 issues 继续保留。

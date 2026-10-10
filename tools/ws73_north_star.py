@@ -196,31 +196,75 @@ class Run:
 
     def bus_identity(self):
         command = [str(self.args.slctl.resolve()), 'daemon']
-        result = subprocess.run(command, text=True, capture_output=True, timeout=10)
-        self.data.setdefault('bus_observations',[]).append({'args':command,'stdout':result.stdout,'stderr':result.stderr,'exit':result.returncode,'observed_wall_ns':time.time_ns()})
+        result = self.command(command, 10, collection='bus_observations')
+        result['observed_wall_ns'] = time.time_ns()
         self.save()
-        match = re.fullmatch(r'DaemonIdentity: owner=(:[0-9]+\.[0-9]+) pid=(\d+) uid=(\d+)\n', result.stdout)
-        if result.returncode or match is None or int(match[2]) != self.args.slkd_pid:
+        match = re.fullmatch(r'DaemonIdentity: owner=(:[0-9]+\.[0-9]+) pid=(\d+) uid=(\d+)\n', result['stdout'])
+        if result['exit'] or match is None or int(match[2]) != self.args.slkd_pid:
             raise ValueError('provided PID disagrees with bus-authenticated slkd owner')
         return {'owner':match[1], 'pid':int(match[2]), 'uid':int(match[3])}
+
+    def command(self, command, timeout, *, collection=None, field=None):
+        if (collection is None) == (field is None):
+            raise ValueError('one evidence location required for a command')
+        record = {'args': command, 'start_wall_ns': time.time_ns(), 'start_monotonic_ns': time.monotonic_ns(), 'start_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)}
+        if collection is not None:
+            self.data.setdefault(collection, []).append(record)
+        else:
+            self.data[field] = record
+        self.save()
+        p = None
+        try:
+            try:
+                p = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            except OSError as error:
+                record.update({'exit': 'launch_error', 'errno': error.errno,
+                               'error': str(error), 'stdout': '', 'stderr': ''})
+                raise ValueError('slctl could not start; preserve failed command') from error
+            record['pid'] = p.pid
+            self.save()
+            try:
+                stdout, stderr = p.communicate(timeout=timeout)
+            except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
+                # Killing the CLI does not revoke an operation already admitted
+                # by slkd. Reap it and retain all output before the caller runs
+                # explicit per-device cleanup; never retry this round here.
+                if p.poll() is None:
+                    p.kill()
+                stdout, stderr = p.communicate()
+                record.update({'stdout': stdout, 'stderr': stderr,
+                               'exit': 'timeout' if isinstance(error, subprocess.TimeoutExpired) else 'interrupted',
+                               'child_returncode': p.returncode})
+                if isinstance(error, KeyboardInterrupt):
+                    raise
+                raise ValueError('slctl timed out; admitted operation may still exist') from error
+            record.update({'stdout': stdout, 'stderr': stderr, 'exit': p.returncode})
+        except BaseException as error:
+            if 'exit' not in record:
+                record.update({'exit': 'collector_error', 'error': str(error),
+                               'error_type': type(error).__name__})
+            raise
+        finally:
+            # Also reap on an unexpected collector/save error after launch.
+            if p is not None and p.poll() is None:
+                p.kill()
+                p.wait()
+            if p is not None:
+                if isinstance(record.get('exit'), str):
+                    record['child_returncode'] = p.returncode
+                for stream in [p.stdout, p.stderr]:
+                    if stream is not None and not stream.closed:
+                        stream.close()
+            record.update({'end_wall_ns': time.time_ns(), 'end_monotonic_ns': time.monotonic_ns(), 'end_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)})
+            self.save()
+        return record
 
     def ctl(self, identity, *words):
         self.alive()
         command = [str(self.args.slctl.resolve()), '--adapter', identity['path'], *words]
-        record = {'args': command, 'start_wall_ns': time.time_ns(), 'start_monotonic_ns': time.monotonic_ns(), 'start_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)}
-        self.data['commands'].append(record)
-        self.save()
-        try:
-            p = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30 if words[:2] == ('scan','on') else 15)
-            record.update({'stdout': p.stdout, 'stderr': p.stderr, 'exit': p.returncode})
-        except subprocess.TimeoutExpired as error:
-            record.update({'stdout': error.stdout.decode(errors='replace') if isinstance(error.stdout,bytes) else (error.stdout or ''), 'stderr': error.stderr.decode(errors='replace') if isinstance(error.stderr,bytes) else (error.stderr or ''), 'exit': 'timeout'})
-            raise ValueError('slctl timed out; admitted operation may still exist') from error
-        finally:
-            record.update({'end_wall_ns': time.time_ns(), 'end_monotonic_ns': time.monotonic_ns(), 'end_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)})
-            self.save()
+        record = self.command(command, 30 if words[:2] == ('scan','on') else 15, collection='commands')
         self.alive()
-        if p.returncode:
+        if record['exit']:
             raise ValueError(f'slctl failed; preserve command {len(self.data["commands"])}')
         return record
 
@@ -354,9 +398,8 @@ class Run:
             scan = self.ctl(b,'scan','on'); parse_result(scan['stdout'],b,3)
             self.stop(b,'scan')
             stale = [str(self.args.slctl.resolve()), '--adapter', a['path'], 'show']
-            p = subprocess.run(stale, text=True, capture_output=True, timeout=15)
-            self.data['stale_selection'] = {'args':stale,'exit':p.returncode,'stdout':p.stdout,'stderr':p.stderr}
-            if not p.returncode or 'not a live registration' not in p.stderr:
+            p = self.command(stale, 15, field='stale_selection')
+            if not p['exit'] or 'not a live registration' not in p['stderr']:
                 raise ValueError('stale selection was not rejected')
             self.data['survivor_control'] = {'identity':survivor, 'scan_request':scan}
             self.confirm(f"Reinsert WS73 at {a['port']}, then press Enter: ")

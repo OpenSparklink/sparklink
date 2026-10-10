@@ -87,6 +87,24 @@ python3 tools/ws73_north_star.py run \
 新输出目录不可复用；失败、超时、stdout/stderr、未完成操作和清理错误保留在
 `run.json`。停止抓包后再进行离线验证，两个输入与统计文件必须保持内容不变。
 
+所有 slctl 调用（含 daemon 身份查询与退役 adapter 选择）在启动前写入命令和
+三种开始时间；启动后记录 child PID。超时或 Ctrl-C 时终止并回收该 CLI，保存
+完整可收集的 stdout/stderr、`exit=timeout|interrupted`、实际 child returncode
+与结束时间；启动失败记 `launch_error`/errno，没有 child PID。采集器自身异常
+记 `collector_error`，不补造输出或成功。文件系统持续不可写时不能承诺完成落盘。
+终止 CLI 不撤销 slkd 已接收的无线操作，顶层流程仍尝试逐设备显式停止并记录
+清理结果。即使清理成功，被中断的整次运行仍为 FAIL，原轮次不自动重试。
+
+无硬件故障回归可运行：
+
+```sh
+python3 -m unittest discover -s tools/tests -p 'test_ws73_command_failure.py' -v
+```
+
+这些测试启动真实本地输出/等待子进程，缩短测试等待或注入一次 KeyboardInterrupt，
+检查输出、退出分类与 waitpid 回收；另检验中断后清理不将 FAIL 改成成功。
+它们不运行真实 slctl/D-Bus/WS73，不证明无线停止或物理拔插。
+
 ## 原始证据佐证
 
 ```sh

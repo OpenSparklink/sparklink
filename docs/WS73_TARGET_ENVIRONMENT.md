@@ -147,3 +147,23 @@ support基线保留；QMP操作仅为开发支撑，不能冒称物理拔插/重
 Fault；就绪判定拒绝任何错误字节、broken、不 streaming、零 generation。
 旧 recorder 错误要求 error=0 的问题已修正，保留 sentinel，并有实际模型与
 filesystem fixture 验证。
+
+## 实际 C/Python 原生绑定门禁
+
+prepare另构建实际cdylib与链接生成C头文件的`native-bindings-probe`，复制Python
+包及动态依赖。所有库、源、probe与客体副本纳入manifest/hash；Cargo输出名为
+`liblibsparklink.so`，客体同时提供`libsparklink.so`别名，不影响旧C符号。
+
+显式support在20轮（hotplug时20+2轮）完成后、同slkd仍持Managed时，执行两语言/
+两设备/root及uid1000共八次实际观察：完整snapshot、generation拒绝、另fd没有
+lease token、root忙锁、普通writer/snoop EPERM、独立事件/trace相同、quiet时不改
+cursor/output和模式混用拒绝。事件比较必须在真正模型RX之后，setup Complete
+不能冒称spontaneous事件。hotplug还保留四个C/Python event/trace旧handle，实测
+移除后poll ERR|HUP、ENODEV；重加后旧fd/旧代次仍拒绝，新实例匹配新generation。
+
+slkd实际TERM清理后，root两语言各在两只live注册上获得Managed、完成typed
+scan/adv stop、查询终态，再释放/等Free并接任Diagnostic；另fd拿相同token仍
+EPERM。四次writer的Complete必须存在于封存USB的对应USB身份、opcode及调用
+时间窗，返回成功文字不够。后继probe不重新启动daemon，不作为普通应用运行
+权限声明。8次observe/4次writer及旧handle日志保存在`bindings-*.json/log`；
+全部作为开发支撑，真实run不执行这些probe，也不改变七项实机验收。

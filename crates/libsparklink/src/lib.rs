@@ -16,6 +16,12 @@ pub use receiver::EventReceiver;
 mod controller_events;
 pub use controller_events::{ControllerEventCursor, ControllerEventReceiver};
 pub use slk_protocol as protocol;
+/// C header array bound, checked against the canonical protocol declaration.
+pub const CONTROLLER_EVENT_PAYLOAD_MAX: usize = 288;
+/// C header array bound, checked against the canonical protocol declaration.
+pub const SNOOP_PAYLOAD_MAX: usize = 320;
+const _: () = assert!(CONTROLLER_EVENT_PAYLOAD_MAX == slk_protocol::CONTROLLER_EVENT_PAYLOAD_MAX);
+const _: () = assert!(SNOOP_PAYLOAD_MAX == slk_protocol::SNOOP_PAYLOAD_MAX);
 
 pub type Result<T> = std::result::Result<T, Error>;
 

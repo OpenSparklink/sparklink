@@ -22,9 +22,33 @@ impl Root {
         env!("CARGO_PKG_VERSION")
     }
 
-    /// List available adapter object paths
-    async fn list_adapters(&self) -> Vec<String> {
-        self.adapters.lock().await.keys().cloned().collect()
+    /// List registrations still live in the kernel, even before the background
+    /// manager removes their cached D-Bus objects. Held observer fds cannot keep
+    /// a removed controller available. No business/directory lock crosses I/O.
+    async fn list_adapters(&self) -> zbus::fdo::Result<Vec<String>> {
+        let registrations = self.adapters.lock().await.clone();
+        tokio::task::spawn_blocking(move || {
+            let mut paths = Vec::new();
+            for (path, registration) in registrations {
+                match registration
+                    .adapter
+                    .controller_snapshot(registration.generation)
+                {
+                    Ok(_) => paths.push(path),
+                    Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => {}
+                    Err(error) => {
+                        return Err(zbus::fdo::Error::Failed(format!(
+                            "registration snapshot failed for {path}: {error}"
+                        )));
+                    }
+                }
+            }
+            Ok(paths)
+        })
+        .await
+        .map_err(|error| {
+            zbus::fdo::Error::Failed(format!("registration snapshot worker failed: {error}"))
+        })?
     }
 }
 

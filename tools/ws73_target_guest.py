@@ -77,6 +77,31 @@ def instructions():
                         for x in ['--artifact',label+'='+p]]]),flush=True)
 
 
+def bindings(writer=False):
+    """Actual C/Python library calls, only in the explicit synthetic guest."""
+    if 'ws73.support=1' not in Path('/proc/cmdline').read_text().split():
+        raise ValueError('binding probe is synthetic support only')
+    control=EVIDENCE/'application/support-control/run.json'
+    if control.exists():
+        run=json.loads(control.read_text());selected=[run['replacement'],run['initial'][1]]
+    else:selected=list(identities())
+    mode='writer' if writer else 'observe'
+    results=[]
+    for r in selected:
+        for name,program in [('c',['/bin/native-bindings-probe']),('python',['/bin/python3',str(TOOLS/'ws73_bindings_probe.py')])]:
+            for who in (['root'] if writer else ['root','ws73']):
+                p=application(*program,mode,str(r['index']),str(r['generation']),user=who,capture_output=True,timeout=10)
+                results.append({'language':name,'user':who,'index':r['index'],'generation':r['generation'],
+                                'exit':p.returncode,'stdout':p.stdout,'stderr':p.stderr})
+                if p.returncode:raise ValueError('actual binding probe failed: '+str(results[-1]))
+                if writer:
+                    lines=re.findall(r'^WS73_NATIVE_BINDING_RESULT: (.+)$',p.stdout,re.M)
+                    if len(lines)!=1:raise ValueError('binding writer result missing')
+                    results[-1]['result']=json.loads(lines[0])
+    (EVIDENCE/('bindings-'+mode+'.json')).write_text(json.dumps({'scope':'synthetic C/Python kernel binding support',
+        'physical_acceptance':False,'mode':mode,'results':results},indent=2)+'\n')
+
+
 def support():
     a,b=identities();pid=int(subprocess.check_output(['/bin/pidof','slkd'],text=True))
     before=daemon_identity(pid)
@@ -98,18 +123,25 @@ def support():
                          '--slctl','/bin/slctl','--slkd-pid',str(pid),'--output','/evidence/application/rejected',capture_output=True)
     rejection=json.loads((EVIDENCE/'application/rejected/run.json').read_text())
     if rejected.returncode!=1 or rejection['status']!='FAIL' or 'synthetic USB model excluded' not in rejection.get('error',''):raise ValueError('physical acceptance admitted fixture')
-    watchers=[]
+    watchers=[];stale_watchers=[]
     for name in ['slkmon','slkdump']:
         log=(EVIDENCE/(name+'.log')).open('w')
         p=subprocess.Popen(['/bin/'+name,'--adapter',str(b['index']),'--generation',str(b['generation']),
                             '--count','32','--write',str(EVIDENCE/(name+'.snoop'))],stdout=log,stderr=subprocess.STDOUT)
         watchers.append((p,log))
     try:
+        hotplug='ws73.hotplug=1' in Path('/proc/cmdline').read_text().split()
+        if hotplug:
+            for name,program in [('c',['/bin/native-bindings-probe']),('python',['/bin/python3',str(TOOLS/'ws73_bindings_probe.py')])]:
+                for mode in ['stale-event','stale-trace']:
+                    log=(EVIDENCE/f'bindings-{name}-{mode}.log').open('w')
+                    p=subprocess.Popen([*program,mode,str(a['index']),str(a['generation'])],stdout=log,stderr=subprocess.STDOUT)
+                    stale_watchers.append((p,log))
         deadline=time.monotonic()+10
         while any(not (EVIDENCE/(name+'.snoop')).exists() or (EVIDENCE/(name+'.snoop')).stat().st_size<16 for name in ['slkmon','slkdump']):
             if time.monotonic()>deadline or any(p.poll() is not None for p,_ in watchers):raise ValueError('snoop startup')
             time.sleep(0.05)
-        if 'ws73.hotplug=1' in Path('/proc/cmdline').read_text().split():
+        if hotplug:
             command=['/bin/python3',str(TOOLS/'ws73_target_control.py'),'--slctl','/bin/slctl','--slkd-pid',str(pid),
                      '--output','/evidence/application/support-control']
             process=subprocess.Popen(['/bin/busybox','setsid','-c','/bin/su','ws73','-s','/bin/sh','-c',shlex.join(command)],
@@ -126,10 +158,15 @@ def support():
                 application('/bin/sh',str(script),stdout=log,stderr=subprocess.STDOUT,timeout=60,check=True)
         for p,_ in watchers:
             if p.wait(timeout=10):raise ValueError('native snoop tool failure')
+        for p,_ in stale_watchers:
+            if p.wait(timeout=10):raise ValueError('C/Python retired binding failure')
     finally:
-        for p,log in watchers:
+        for p,log in watchers+stale_watchers:
             if p.poll() is None:p.terminate();p.wait(timeout=5)
             log.close()
+    # Controller events are spontaneous RX, not setup command completions.
+    # Require actual discovery traffic before comparing independent readers.
+    bindings()
     if before!=daemon_identity(pid):raise ValueError('daemon replaced during support radio')
     (EVIDENCE/'support.json').write_text(json.dumps({'scope':'synthetic environment support','physical_acceptance':False,
         'credentials':credentials,'daemon':before,'identities':[a,b],'fixture_rejected':True},indent=2)+'\n')
@@ -142,6 +179,27 @@ def verify_support():
     ids=[*control['initial'],control['replacement']] if hotplug else [a,b]
     capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in ids])
     if stats!=capture['packet_count']:raise ValueError('sealed pcap/statistics count mismatch')
+    if hotplug:
+        for language in ['c','python']:
+            for mode in ['event','trace']:
+                text=(EVIDENCE/f'bindings-{language}-stale-{mode}.log').read_text()
+                expected=f'WS73_NATIVE_{language.upper()}_STALE: PASS mode={mode} index={control["initial"][0]["index"]} old={control["initial"][0]["generation"]} new={control["replacement"]["generation"]} poll=ERR|HUP'
+                if text.count(expected)!=1:raise ValueError('retired C/Python binding proof missing')
+    for mode,expected in [('observe',8),('writer',4)]:
+        proof=json.loads((EVIDENCE/('bindings-'+mode+'.json')).read_text())
+        if proof['physical_acceptance'] is not False or proof['mode']!=mode or len(proof['results'])!=expected:
+            raise ValueError('actual C/Python binding proof missing')
+        for entry in proof['results']:
+            uid=1000 if entry['user']=='ws73' else 0
+            if entry['exit']!=0 or f'WS73_NATIVE_{entry["language"].upper()}_BINDINGS: PASS mode={mode} uid={uid} ' not in entry['stdout']:
+                raise ValueError('binding process/credential result failed')
+            if mode=='writer':
+                result=entry['result'];r=next(x for x in ids if (x['index'],x['generation'])==(entry['index'],entry['generation']))
+                if (result['generation'],result['state'],result['status'],result['error'],result['operation'])!=(r['generation'],3,0,0,4 if entry['language']=='c' else 2):
+                    raise ValueError('binding result disagrees with selected generation')
+                if not any((x['bus'],x['device'],x['opcode'],x['status'])==(r['bus'],r['device'],result['opcode'],0)
+                           and result['started_wall_ns']<=x['wall_ns']<=result['finished_wall_ns'] for x in capture['complete']):
+                    raise ValueError('binding writer lacks captured exact-generation Complete')
     empty_bulk='ws73.empty_bulk=1' in Path('/proc/cmdline').read_text().split()
     if empty_bulk and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in ids):
         raise ValueError('both selected controllers must have captured successful empty bulk completions')
@@ -203,4 +261,5 @@ if __name__=='__main__':
     elif action=='verify-support':verify_support()
     elif action=='instructions':instructions()
     elif action=='support-input':support_input()
+    elif action=='bindings-writer':bindings(writer=True)
     else:raise SystemExit('unknown guest action')

@@ -99,19 +99,26 @@ def prepare(args):
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',
                   HERE/'ws73_target_control.py',
+                  HERE/'ws73_bindings_probe.c',HERE/'ws73_bindings_probe.py',
                   LINUX/'tools/testing/selftests/sparklink/ws73-lab.py',
                   LINUX/'tools/testing/selftests/sparklink/qemu_verdict.py',
                   LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',
                   *board.values(),*[args.firmware_dir/name for name in images]]
         manifest['inputs'] = [file_record(p) for p in inputs]
-        source_files = subprocess.check_output(['git','ls-files','crates','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
-        source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates'],cwd=USERSPACE,text=True).splitlines()
+        source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
+        source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates','bindings/python/sparklink'],cwd=USERSPACE,text=True).splitlines()
         manifest['userspace_sources'] = [file_record(USERSPACE/p) for p in sorted(set(source_files))]
         manifest['userspace_head'] = subprocess.check_output(['git','rev-parse','HEAD'],cwd=USERSPACE,text=True).strip()
         with (output/'build.log').open('w') as log:
+            subprocess.run(['cargo','build','--offline','-p','libsparklink','--lib'],cwd=USERSPACE,
+                           stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['cargo','build','--offline','-p','slkd','-p','slctl','-p','slkconfig',
                             '-p','slkmon','-p','slkdump','--bins','--examples'],cwd=USERSPACE,
                            stdout=log,stderr=subprocess.STDOUT,check=True)
+            subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror',
+                            '-I'+str(USERSPACE/'crates/libsparklink/include'),str(HERE/'ws73_bindings_probe.c'),
+                            '-L'+str(USERSPACE/'target/debug'),'-Wl,-rpath,/usr/lib','-l:liblibsparklink.so',
+                            '-o',str(output/'native-bindings-probe')],stdout=log,stderr=subprocess.STDOUT,check=True)
         root = output/'root'
         for name in ['bin','usr/bin','dev','proc','sys','etc','tmp','run','evidence','boot']:
             (root/name).mkdir(parents=True,exist_ok=True)
@@ -123,11 +130,18 @@ def prepare(args):
         programs = {'dbus-daemon':args.dbus_daemon,'tcpdump':args.tcpdump}
         programs.update({name:USERSPACE/'target/debug'/name for name in ['slkd','slctl','slkconfig','slkmon','slkdump']})
         programs['bus-policy-probe'] = USERSPACE/'target/debug/examples/bus_policy_probe'
-        manifest['unstripped_programs'] = [file_record(p) for p in programs.values()]
+        programs['native-bindings-probe'] = output/'native-bindings-probe'
+        shared_library=USERSPACE/'target/debug/liblibsparklink.so'
+        manifest['unstripped_programs'] = [file_record(p) for p in [*programs.values(),shared_library]]
         for name, source in programs.items():
             copy_elf(source,root/'bin'/name,root)
             (root/'bin'/name).chmod(0o755)
             subprocess.run(['strip','--strip-debug',str(root/'bin'/name)],check=True)
+        copy_elf(shared_library,root/'usr/lib/liblibsparklink.so',root)
+        (root/'usr/lib/libsparklink.so').symlink_to('liblibsparklink.so')
+        subprocess.run(['strip','--strip-debug',str(root/'usr/lib/liblibsparklink.so')],check=True)
+        shutil.copytree(USERSPACE/'bindings/python/sparklink',root/'usr/share/sparklink/python/sparklink',
+                        ignore=shutil.ignore_patterns('__pycache__'))
         python = args.python.resolve()
         copy_elf(python,root/'usr/bin'/python.name,root)
         (root/'bin/python3').symlink_to('/usr/bin/'+python.name)
@@ -140,7 +154,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_bindings_probe.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)

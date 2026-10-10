@@ -149,3 +149,14 @@ credit通知，分别完成两设备八次查询。后继slkd同代次 Ready接�
 生产/session两条门禁、209harness、148workspace、slkconfig严格clippy及原
 96-case回归通过。早期Status、历史队列/credit数量假设失败保留；slkmon/
 slkdump独立snoop、C/Python ownership绑定、profile0完整迁移与故障矩阵仍待做。
+
+### 原生 C/Python 绑定（2026-10-10，部分成果）
+
+新C符号返回负errno；旧符号保留原0/-1约定。`slk_adapter_select`绑定每fd注册，
+snapshot/management query/acquire/release和typed discovery result保留generation、
+lease、状态/原始失败原因与异步清理；另fd拿token不获authority。Python独立
+`NativeAdapter`包装同一实际cdylib，避免静默u16/u64截断，close与ctypes调用串行。
+完整事件及snoop非消费读另见[Python契约](../bindings/python/README.md)。
+两语言/root及ordinary读写授权、Busy、接任/Diagnostic与真实模型Complete在
+[客体门禁](WS73_TARGET_ENVIRONMENT.md)验证；不是实际硬件完成。旧profile0、
+Diagnostic raw query binding、Proxy/PDU/Security ownership和完整故障矩阵仍待做。

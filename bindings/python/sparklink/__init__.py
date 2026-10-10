@@ -1,6 +1,7 @@
 """SparkLink Python bindings via ctypes FFI."""
 
 from sparklink.adapter import Adapter
+from sparklink.native import NativeAdapter
 from sparklink.structs import (
     SleAddr,
     SleConnInfo,
@@ -18,6 +19,7 @@ from sparklink.structs import (
 
 __all__ = [
     "Adapter",
+    "NativeAdapter",
     "SleAddr",
     "SleConnInfo",
     "SleConnectParams",

@@ -257,4 +257,9 @@ pub struct NativeReport {
 }
 /// Live paths include the generation so a selected stale D-Bus path cannot
 /// silently start addressing a replacement registration.
-pub type AdapterDirectory = Arc<Mutex<BTreeMap<String, SharedState>>>;
+#[derive(Clone)]
+pub struct AdapterRegistration {
+    pub adapter: Arc<Adapter>,
+    pub generation: u64,
+}
+pub type AdapterDirectory = Arc<Mutex<BTreeMap<String, AdapterRegistration>>>;

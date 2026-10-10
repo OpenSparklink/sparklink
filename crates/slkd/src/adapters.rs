@@ -11,7 +11,7 @@ use crate::{
     profile::{BatteryProfile, DeviceInfoProfile, ProfileRegistry},
     security::SecurityIface,
     service::{RemoteServiceIface, SsapManagerIface},
-    state::{AdapterDirectory, AdapterState, SharedState},
+    state::{AdapterDirectory, AdapterRegistration, AdapterState, SharedState},
 };
 use libsparklink::Adapter;
 use slk_protocol::{CONTROLLER_READY, SleControllerSnapshot, SleDiscoverySubmit};
@@ -279,7 +279,13 @@ impl Node {
                 invalidate_properties(&init_connection, &init_path, &["InitializationError"]).await;
             }
         });
-        directory.lock().await.insert(path.clone(), state.clone());
+        directory.lock().await.insert(
+            path.clone(),
+            AdapterRegistration {
+                adapter: control.clone(),
+                generation: snapshot.generation,
+            },
+        );
         info!(%path, "adapter registered");
         Ok(Self {
             path,

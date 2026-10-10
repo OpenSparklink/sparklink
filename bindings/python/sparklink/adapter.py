@@ -33,6 +33,8 @@ def _load_lib():
         pkg_dir / "libsparklink.so",
         pkg_dir.parent.parent.parent / "target" / "release" / "libsparklink.so",
         pkg_dir.parent.parent.parent / "target" / "debug" / "libsparklink.so",
+        pkg_dir.parent.parent.parent / "target" / "release" / "liblibsparklink.so",
+        pkg_dir.parent.parent.parent / "target" / "debug" / "liblibsparklink.so",
     ]:
         if candidate.is_file():
             return ctypes.CDLL(str(candidate))

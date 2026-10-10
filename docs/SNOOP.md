@@ -98,3 +98,13 @@ slctl 的地址/RSSI/data，验证慢 reader 丢失、copyout 重试、CAP/继�
 
 虚拟协议、安全/故障/PM/发布矩阵、其他 profile 与真实四设备并行仍需后续工作。
 本阶段不关闭任何整项 issue，也不声称达到真实空口验收。
+
+原生C/Python可分别通过`slk_controller_event`/`slk_snoop`与
+`NativeAdapter.poll_event()`/`poll_snoop()`读同一完整ABI。C返回1/0/负errno，
+Python返回独立record副本/None/OSError，quiet或失败不改cursor与output。
+需要独立selected fd、明确generation；先调用相应poll激活模式，再把借用fd
+注册epoll，不可自行close/改变affinity。不拿管理lease，不作旧消费流fallback。
+八次实际C/Python观察及四个跨拔插旧handle在[客体门禁](WS73_TARGET_ENVIRONMENT.md)
+验证；模式混用EBUSY、普通snoop EPERM、移除ERR|HUP/ENODEV及重加代次隔离。
+详细[绑定契约](../bindings/python/README.md)。C/Python profile0及PDU/Security等
+完整迁移仍待做，不将模型证据提升为真实硬件/RF。

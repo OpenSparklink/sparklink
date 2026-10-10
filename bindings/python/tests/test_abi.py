@@ -40,12 +40,22 @@ STRUCT_NAMES = {
     "SleDliEvent": "sle_dli_event",
     "SleDliInfo": "sle_dli_info",
     "SlePhyInfo": "sle_phy_info",
+    "SleControllerSnapshot": "sle_controller_snapshot",
+    "SleManagementQuery": "sle_management_query",
+    "SleControllerEvent": "sle_controller_event",
+    "SleControllerEventQuery": "sle_controller_event_query",
+    "SleSnoopRecord": "sle_snoop_record",
+    "SleSnoopQuery": "sle_snoop_query",
+    "SleDiscoveryAdvConfig": "sle_discovery_adv_config",
+    "SleDiscoveryScanConfig": "sle_discovery_scan_config",
+    "SleDiscoverySubmit": "sle_discovery_submit",
+    "SleDiscoveryResult": "sle_discovery_result",
 }
 
 
 def c_fields(source, name):
     """Get all member names from the selected flat UAPI struct declaration."""
-    match = re.search(r"\bstruct\s+" + re.escape(name) + r"\s*\{([^}]+)\}", source)
+    match = re.search(r"\bstruct\s+(?:SPARKLINK_ALIGN\(\d+\)\s+)?" + re.escape(name) + r"\s*\{([^}]+)\}", source)
     if not match:
         raise AssertionError(f"missing C struct declaration: {name}")
     body = re.sub(r"/\*.*?\*/|//[^\n]*", "", match.group(1), flags=re.S)
@@ -53,10 +63,11 @@ def c_fields(source, name):
     for declaration in body.split(";"):
         if not declaration.strip():
             continue
-        member = re.search(r"\b([A-Za-z_]\w*)\s*(?:\[\s*\d+\s*\])?\s*$", declaration)
-        if not member:
-            raise AssertionError(f"unsupported C member in {name}: {declaration}")
-        fields.append(member.group(1))
+        for part in declaration.split(","):
+            member = re.search(r"\b([A-Za-z_]\w*)\s*(?:\[\s*\w+\s*\])?\s*$", part)
+            if not member:
+                raise AssertionError(f"unsupported C member in {name}: {declaration}")
+            fields.append(member.group(1))
     return fields
 
 
@@ -159,6 +170,27 @@ class TestAbiConformance(unittest.TestCase):
             "--edition=2024", "-Dwarnings", str(rust_file), "-o", str(path / "rust-layout"),
         ])
         cls.layouts.update(parse_layout(run([str(path / "rust-layout")])))
+
+        # Compare generated C against canonical UAPI on i386 as well, without
+        # requiring a 32-bit libc/runtime. Native UAPI keeps explicit align(8).
+        assertions = ["#include <stddef.h>",
+                      f"#include {json.dumps(str(KERNEL_HEADER))}",
+                      f"#include {json.dumps(str(PUBLIC_HEADER))}"]
+        for name, kernel_name in STRUCT_NAMES.items():
+            kernel = "struct " + kernel_name
+            assertions += [
+                f'_Static_assert(sizeof({name}) == sizeof({kernel}), "{name} size");',
+                f'_Static_assert(_Alignof({name}) == _Alignof({kernel}), "{name} alignment");',
+            ]
+            for field in cls.fields[name]:
+                assertions += [
+                    f'_Static_assert(offsetof({name}, {field}) == offsetof({kernel}, {field}), "{name}.{field} offset");',
+                    f'_Static_assert(sizeof((({name} *)0)->{field}) == sizeof((({kernel} *)0)->{field}), "{name}.{field} size");',
+                ]
+        static_file = path / "layout-static.c"
+        static_file.write_text("\n".join(assertions))
+        run(compiler + ["-m32", "-ffreestanding", "-std=c11", "-Wall", "-Wextra", "-Werror",
+                        "-c", str(static_file), "-o", str(path / "layout32.o")])
 
         fill_source = path / "fill.c"
         fill_source.write_text(

@@ -3,6 +3,10 @@ use std::ptr;
 
 use crate::Adapter;
 
+#[path = "ffi_native.rs"]
+mod native;
+pub use native::*;
+
 /// Opaque adapter handle for C consumers
 pub struct SlkAdapter {
     inner: Adapter,

@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo install cbindgen --locked
+      - run: cargo install cbindgen --version 0.29.4 --locked
       - name: Generate sparklink.h
         working-directory: crates/libsparklink
         run: cbindgen --config cbindgen.toml --crate libsparklink --output /tmp/sparklink.h
@@ -88,7 +88,7 @@ jobs:
             target/release/slctl
             target/release/slkmon
             target/release/slkdump
-            target/release/libsparklink.so
+            target/release/liblibsparklink.so
           retention-days: 14
 
   python-check:
@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: e9aac11ff601da9cf9d50d0916262a285c7e9b81
+          ref: df4f7cd72daa719d235593609df9a8d57ae15926
           path: .kernel-uapi
           sparse-checkout: include/uapi/linux/sparklink_ioctl.h
           sparse-checkout-cone-mode: false
@@ -109,9 +109,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Prepare 32-bit header compilation and actual cdylib
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib
+          cargo build -p libsparklink --lib
       - run: python -m py_compile bindings/python/sparklink/__init__.py
       - run: python -m py_compile bindings/python/sparklink/structs.py
       - run: python -m py_compile bindings/python/sparklink/adapter.py
+      - run: python -m py_compile bindings/python/sparklink/native.py
       - name: Run Python unit and compiled C/Rust ABI tests
         env:
           PYTHONPATH: bindings/python

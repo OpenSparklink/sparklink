@@ -1130,3 +1130,48 @@ USB描述符并拒绝fixture。实际主机CLI针对合成run留FAIL；仅改sco
 这不认证任意可编辑capture/JSON。此前开发run的原始console/QMP/run/capture
 均保留；最终共同控制proof与全部source/input/artifact hash保存在.dev/control-*。
 当前真实设备仍为空、SDK板参NOT_ASSERTED、真实七项0/7，全方案及整项issuesOPEN。
+
+## 原生 C/Python 绑定与旧 adapter 存活修复（2026-10-10，部分成果）
+
+新增11个C原生符号和独立Python NativeAdapter：每fd显式select/generation、完整
+snapshot、Managed/Diagnostic query/acquire/异步release、typed discovery
+admission/result、非消费完整event/snoop和借用poll fd。新符号负errno，旧符号
+0/-1不变；quiet/失败不改output或cursor。Python的index/generation/request_id/lease
+参数拒绝越界，返回独立record
+副本，并在ctypes释放GIL时将free和本handle调用串行。八字节对齐不能由旧32位
+ctypes表达时明确拒绝；不宣称32位库/interpreter运行通过。
+
+真正generated C / Rust / Python / canonical kernel UAPI共21结构全部字段/size/
+align/offset相符，freestanding i386 C静态断言也通过。29绑定测试使用actual
+cdylib、/dev/null验证errno、null/output与失败constructor的fd清理；安装别名
+同样29通过。发现Cargo实际产物liblibsparklink.so与旧安装/加载/CI名字不同，
+修正source路径保留安装libsparklink.so别名；make install只在私有DESTDIR执行。
+cbindgen0.29.4固定并重生成逐字节一致；libsparklink全target strict-clippy通过。
+
+实际模型客体增加C/Python库调用：slkd持Managed期间两语言/两设备/root和
+uid1000共8次观察、授权/Busy/另fd无token、独立reader/quiet/模式拒绝；daemon
+TERM清理后4次root writer取得Managed，完成scan/adv stop、释放等Free并接任
+Diagnostic，每次Complete由对应USB身份/opcode/实际调用时间窗佐证。
+
+保留四个跨拔插旧C/Python event/trace句柄时，旧版ListAdapters只读directory
+cache的缺陷被复现：sysfs端口消失/幸存scan成功后，旧slctl show仍exit0且Ready，
+严格recorder留FAIL。修复directory存不可变selected fd/generation，ListAdapters
+在锁外blocking worker查询实际kernel身份；ENODEV不列出，其他错误显式返回，
+不等待business state/USB命令或使用默认可用值。没有放松recorder旧选择断言。
+同流程最终通过旧adapter立即拒绝、四旧fd ERR|HUP/ENODEV、新gen及同daemon
+20+2发现；原失败console/QMP/run/未封存部分capture、旧源码与实际guest程序保留。
+
+Linux仍冻结#68，152workspace、55工具测试通过。初次sandbox socket、缺dbus
+路径、cbindgen alignment/依赖常量、CCACHE只读、旧库文件名与首次无spontaneous
+event的探针错误均留原记录，修正环境/生成配置或测试时序后另起最终输出，不
+使用失败结果。最终capture与各模式数量/源码hash见本地.dev/bindings-*；本批
+没有重跑原96-case/full kernel build，CI更改尚未声称远端CI通过。没有实机Ready/
+firmware/RF/物理拔插；板参NOT_ASSERTED，WS73=[]、七项0/7，完整S0–S6/四设备
+两组/全部整项issues仍OPEN。profile0、Diagnostic raw/PDU/Security、Proxy和
+完整故障/PM/兼容/发布矩阵继续保留。
+
+最终同一prepared capsule三模式均PASS：hotplug+empty为2251条封存USB/
+177成功空完成/22应用-RX匹配，普通hotplug1897条/22匹配，无hotplug基线
+1537条/20匹配；各自32条独立snoop相同、8观察/4writer，hotplug各有四个旧
+handle终态证明。新增4个writer stop带来32条USB（empty时另有8条），不将
+这些额外Complete计作发现或用它们补齐连续20轮。C++17生成头也能编译。

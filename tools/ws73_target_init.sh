@@ -45,6 +45,9 @@ fi
 kill -TERM "$daemon"
 for n in $(seq 1 100); do kill -0 "$daemon" 2>/dev/null || break; sleep 0.1; done
 kill -0 "$daemon" 2>/dev/null && fail 'daemon cleanup timeout'
+if grep -q 'ws73.support=1' /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py bindings-writer || fail 'actual C/Python ownership writer'
+fi
 kill -INT "$capture"
 wait "$capture" || fail 'capture shutdown'
 chown 0:1000 /evidence/ws73.pcap /evidence/capture-stats.txt; chmod 0640 /evidence/ws73.pcap /evidence/capture-stats.txt

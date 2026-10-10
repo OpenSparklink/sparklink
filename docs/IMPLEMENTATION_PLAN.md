@@ -678,3 +678,13 @@ workspace all-features160项/零失败/零ignored；默认release和新默认dae
 通过，工具141/ABI29通过；远端完整CI独立核对。完整SSAP/安全策略/Profile互通
 不因此验收。首轮工具CI缺相邻kernel helper、远端Rust1.99新lint分别由
 7ad805e固定kernel输入和8a9cc28固定数组解析修复；保留原失败，不跳过测试。
+
+### 连接发送提交边界（2026-10-11）
+
+Linux75b77fc19613删除无消费者TX ring/重复直发，映射实际wire handle、backend
+成功后提交统计，旧USB拒绝短写；可靠/分片未接通时明确拒绝。实际函数11项
+Rust及C USB sanitizer回归、完整image/modules/空USB VM通过；
+[匹配新镜像真实20+2轮](evidence/ws73-vm-connection-tx-regression-20261011.json)
+及[完整9个CI jobs](https://github.com/OpenSparklink/sparklink/actions/runs/38078588074)
+通过。保留旧正向用例和迁移任务，不以fixture发送宣称socket或真实连接完成；
+继续每通道socket/SSAP、安全/Bond、四设备、其他backend和全S0–S6原验收。

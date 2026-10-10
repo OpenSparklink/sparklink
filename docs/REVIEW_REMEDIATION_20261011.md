@@ -155,7 +155,16 @@ Rust sender/resolver/ioctl回归及实际C USB范围/分配/errno/所有短写/e
 在ASan/UBSan/LSan通过；完整Rust kernel对象编译验证真实接线。依赖显式fixture，
 不是socket、协商协议、USB硬件或RF验收。新CI固定对应内核并执行此门禁。
 
-新完整image/modules、VM双真实WS73回归和远端新CI待核对。完整R03/R10、K4/K17
+新完整image/modules已构建并冻结、空USB隔离VM签名模块加载/卸载通过。
+[新内核实机记录](evidence/ws73-vm-connection-tx-regression-20261011.json)：
+匹配用户态630bf7f，20+2真实RF、最长614ms、1163 USB/零drop、22份独立RX/
+命令/metadata佐证，UID1000/caps0、slkd PID520/start331/bus及幸存generation2
+不变，最终停止确认、warning0/taint0、四个host USB身份不变。人工故障从失败
+命令开始到新Ready约11031.707ms，不将它宣称为小于10秒的恢复；发现窗口均满足。
+构建仅有一条make jobserver unavailable警告，无代码编译warning/error。
+[CI run38078588074](https://github.com/OpenSparklink/sparklink/actions/runs/38078588074)
+对应630bf7f，9 jobs全success，已核对新增实际11项sender及C USB边界日志。
+完整R03/R10、K4/K17
 继续OPEN；下一步仍是socket每通道队列/背压/权限/generation/退役、真实连接数据。
 保留旧正向连接/SSAP测试与历史失败，它们须接专用backend/真实controller事件，
 禁止把底层失败却增加tx_bytes当作通过。WS73自然恢复/根因同步继续，不因本批关闭。

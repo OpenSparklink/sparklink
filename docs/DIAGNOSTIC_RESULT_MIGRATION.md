@@ -1,7 +1,7 @@
 # Native diagnostic result ownership（部分迁移）
 
 2026-10-11。遵循 ADR 0001 的结果只交付原请求者、观察与管理分离要求。
-当前实测 Linux `49cabad043f6` / 编译用户态 `d8c091a4b243`；
+最新限定实测 Linux `78e729c06a5e` / 编译用户态 `2dfd6bd09e7b`；
 下文保留各历史批次基线，未发布 UAPI 无兼容期限。
 
 调用审计发现 `slkconfig query` 仍先清空共享 DLI 事件、再按 opcode 找回复。
@@ -169,3 +169,21 @@ Rust/34 Python/159工具）。生产Kc89/Udf9未变，本批仅selftest/验证�
 及历史xHCI警告继续OPEN；VM-only和北极星7/8不变。按严重程度继续拒绝未支持
 安全/服务能力，生命周期与旧代码清理并行；socket/用户态SSAP/每连接安全/
 Bond/Profile/四设备/其他Native/Proxy及全S0–S6保留全部原验收。
+
+
+## 当前调用审计及删除依赖（K78/U2df）
+
+| 调用者/路径 | 当前事实 | 替代与删除门禁 |
+|---|---|---|
+| slkconfig Native query、NativeAdapter Rust/C/Python | 已用caller ID提交与作者私有结果，正常、输出故障、顺序槽淘汰有实机证据 | 继续补实际取消/迟到/期限和完整权限/生命周期；不能用它替代事件订阅 |
+| libsparklink EventReceiver、Adapter.poll_event/旧next_event | 仍调用DLI_POLL_EVENT，共享破坏性消费；50ms fallback。旧receiver转移fd所有权不等于独立订阅 | profile0接入统一Runtime及完整订阅后迁移；保留cancel/drop/actor回归，再删除旧receiver与poll/helper |
+| slkd profile0 EventTask、legacy C slk_poll_event/Python Adapter.poll_event | 委托旧receiver/poll；Native EventTask使用独立ControllerEventReceiver，不能误改真实WS73路径 | 先接通所有事件类型/权限/退役，再同步删旧FFI/header/ctypes/daemon调用。未发布UAPI不留兼容期限 |
+| slkmon/slkdump --legacy | 明确只准profile0；默认Native snoop独立，不能当作已迁移所有legacy调用者 | 在通用独立capture接通profile0、保留hex/filter/文件/退出回归后删--legacy |
+| Adapter.dli_send_cmd、runtime/daemon_management/sparklink_test.c旧raw命令测试 | Native旧提交已EOPNOTSUPP；profile0路径仍存在，不应继续用于新Native测试 | 按诊断白名单或Typed Managed归属迁移；旧假完成/错误wire正向测试重写为拒绝或专用backend后删旧入口 |
+| 核心DLI_POLL_EVENT、共享dli_ring与controller.poll_event fallback | 仍先pop后copy；fallback也先消费。新作者私有结果不自动修复这个旧入口 | 剩余调用者接通独立订阅后删ring/fallback/UAPI；过渡期间复制失败不能消耗，需单独整改/实际故障回归，整项R12仍OPEN |
+
+[当前限定槽淘汰证据](evidence/ws73-vm-diagnostic-eviction-20261011.json)与
+[提交契约](DIAGNOSTIC_ADMISSION.md)只补齐
+作者私有诊断的顺序保留/拒绝。共享POLL入口仍有copy前消费，不能把read7或新
+result16/eviction验证当作该路径已修复。生命周期/自然根因并行，迁移后删除
+重复实现，完整R12/K3/U2及S0–S6保持OPEN。

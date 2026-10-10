@@ -136,7 +136,7 @@ DLI消费者删除仍需验收，R12/K3/U2及完整事务issue保持OPEN。北�
 自然根因/完整自主恢复、socket/SSAP/安全/Bond/Profile/Proxy及全S0–S6不缩减。
 
 
-## 实际结果槽淘汰门禁实施（待本批新镜像执行）
+## 实际结果槽淘汰门禁实施与限定验收
 
 独立Diagnostic作者fd在原foreign-author EPERM核对后，顺序完成33次真实MAC
 只读查询，超过32槽保留界限；每次保存输入/输出40字节、完整结果104字节、
@@ -150,5 +150,31 @@ DLI消费者删除仍需验收，R12/K3/U2及完整事务issue保持OPEN。北�
 唯一OUT/成功Complete，整个填充范围连查询间隙也拒绝额外命令/回复，拒绝范围
 限定该controller，不影响其他设备。历史format1/2仅复核各自旧证据。
 新增6项开发验证用例（工具165、诊断19）通过，但合成fixture不代表实际淘汰。
-本批仅专用selftest/工具；生产Kc89/Udf9保持。新镜像执行、取消/迟到回复/
+本批仅专用selftest/工具；生产Kc89/Udf9保持。新镜像结果见下；取消/迟到回复/
 原期限、并发/CAP/移除、旧调用者迁移与自然恢复根因仍需独立验收。
+
+### 本批实际槽替换、旧ID拒绝与独立命令证据
+
+[冻结镜像证据](evidence/ws73-vm-diagnostic-eviction-20261011.json)基于K78e729c06a5e/
+编译U2dfd6bd09e7b。第二作者fd的ID1..33对应seq5..37，33次实际MAC查询均
+完成、返回当前地址，提交/完成各+1。第二fd的ID1在原作者ID1仍保留时有自己
+的新seq及一次真实OUT，证明本批命名空间隔离；原作者结果事先对该fd拒EPERM。
+
+33次完成后，旧ID1三次ESTALE/旧seq ENOENT，输入40/104字节保持；边界ID2
+仍返回原seq6、完整40字节admission及104字节结果。统计完全不变，pending=0；
+100.261ms拒绝观察窗口内该controller没有OUT或DLI回复。每次填充窗口独立
+核对一条命令/成功Complete，整个33次范围含间隙也没有额外命令或回复。
+原fd此时结果也已淘汰，仍保留至generation退役并优先返回ENODEV。
+
+format3/55条记录、33填充+1拒绝窗口、copyout2/result16/CLI4、41组实际
+命令/回复通过；read7与真实20+2最长621ms/22份RX/1411 USB零drop保持。
+普通UID1000/caps0、同slkd PID654/start1557/bus owner、幸存g2保持/目标g1→g3；
+人工错误至新Ready10187.785ms，未作自然恢复或物理拔插验收。warning0/taint0/
+trace overrun0、13条QMP无device_del、host4只仍在且释放。
+
+[CI38091465529](https://github.com/OpenSparklink/sparklink/actions/runs/38091465529)
+9作业成功，实际日志170 Rust/34 Python/165工具/诊断fixture23；完整image/
+modules、空USB root两次加载卸载及默认bundle通过。生产Kc89/Udf9未变。
+**验收只覆盖顺序、单controller、第二作者metadata槽替换与上述无重发窗口**。
+真实排队/在途取消、迟到回复/原期限、并发/CAP/完整移除/32位runtime、旧DLI
+调用者及共享队列删除仍OPEN；自然根因/自主恢复、北极星7/8和全S0–S6不缩减。

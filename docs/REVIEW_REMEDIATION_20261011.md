@@ -325,3 +325,20 @@ Rust/34 Python/159工具）。生产Kc89/Udf9未变，本批仅selftest/验证�
 及历史xHCI警告继续OPEN；VM-only和北极星7/8不变。按严重程度继续拒绝未支持
 安全/服务能力，生命周期与旧代码清理并行；socket/用户态SSAP/每连接安全/
 Bond/Profile/四设备/其他Native/Proxy及全S0–S6保留全部原验收。
+
+
+## 最新诊断槽淘汰与剩余旧入口审计（2026-10-11）
+
+K78e729c06a5e/编译U2dfd6bd09e7b的[证据](evidence/ws73-vm-diagnostic-eviction-20261011.json)
+补齐第二作者fd的33次真实metadata与旧ID三次ESTALE/旧seq ENOENT；保留ID2
+完整40/104字节不变，100.261ms拒绝窗口零命令/回复、统计不变。33次填充各
+唯一wire且全范围含间隙无额外命令；既有copyout2/result16/CLI4/read7、真实
+20+2最长621ms/1411 USB零drop、同slkd及幸存g2保持。9作业CI日志170 Rust/
+34 Python/165工具；生产Kc89/Udf9未变。这是限定顺序槽替换，不是完整事务验收。
+
+[剩余调用审计](DIAGNOSTIC_RESULT_MIGRATION.md)
+确认旧DLI_POLL_EVENT仍先消费后copy（含backend fallback），EventReceiver、
+profile0 C/Python/slkd、--legacy及旧raw selftests需迁移。新诊断结果不自动修复
+旧入口；下一步分别闭合复制失败、统一订阅、实际取消/迟到/期限，再删共享队列
+和重复UAPI。自然启动/重枚举/消失根因、自主恢复、物理xHCI警告、四设备及
+完整socket/SSAP/安全/Bond/Profile/Proxy/S0–S6继续OPEN，VM-only/北极星7/8不变。

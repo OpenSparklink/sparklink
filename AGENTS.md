@@ -11,7 +11,7 @@ SparkLink (星闪) 无线通信协议的用户态基础设施，对标 BlueZ 的
 ## 构建
 
 ```bash
-cd ~/Documents/sparklink && cargo check
+cd ~/Documents/opensparklink/sparklink && cargo check
 cargo build
 cargo clippy -- -W clippy::all
 cargo test
@@ -19,14 +19,14 @@ cargo test
 
 - Edition: 2024
 - MSRV: 跟随 Rust stable 最新版
-- Workspace 根: `~/Documents/sparklink/`
+- Workspace 根: `~/Documents/opensparklink/sparklink/`
 
 ## Crate 结构
 
 | Crate | 类型 | 职责 |
 |-------|------|------|
-| `slk-protocol` | lib | UAPI 绑定: 99 ioctl 包装 (nix 宏), 70+ repr(C) 结构体, Generic Netlink 常量 |
-| `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型, C FFI (ffi.rs, 20 导出函数), cbindgen 生成 sparklink.h |
+| `slk-protocol` | lib | UAPI 绑定: ioctl 包装、repr(C) 结构体、Generic Netlink 常量；以当前源码及能力门禁为准 |
+| `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型, C FFI (ffi.rs/ffi_native.rs), cbindgen 生成 sparklink.h |
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
 | `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset/services/list-services/read-prop/write-prop/remote-discover/remote-read/remote-write 子命令, clap 4 |
 | `slctl` | bin | 交互式控制工具 (对标 bluetoothctl): rustyline 15, 通过 D-Bus 与 slkd 通信 |
@@ -105,7 +105,7 @@ Trailer 要求:
 ## 文件布局
 
 ```
-~/Documents/sparklink/
+~/Documents/opensparklink/sparklink/
 ├── Cargo.toml (workspace)
 ├── AGENTS.md
 ├── crates/
@@ -127,9 +127,9 @@ Trailer 要求:
 
 ## 内核侧对应关系
 
-内核子系统位于 `~/Documents/linux/net/sparklink/`，提供:
-- `/dev/sparklink` chardev (ioctl 接口, 99 个命令)
-- Generic Netlink `sparklink` family (34 commands, 59 attributes)
+内核子系统位于 `~/Documents/opensparklink/linux/net/sparklink/`，提供:
+- `/dev/sparklink` chardev (版本化 Native 管理/事件/诊断及待迁移旧 ioctl)
+- Generic Netlink `sparklink` 定义（接通与验收按具体调用路径核对）
 - debugfs `/sys/kernel/debug/sparklink/`
 - configfs (设备固件/名称)
 

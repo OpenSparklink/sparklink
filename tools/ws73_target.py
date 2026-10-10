@@ -217,13 +217,7 @@ def usb_properties(port,index):
 
 def usb_host_boundary(qemu):
     """Introspect properties without creating or opening any host USB device."""
-    command=[str(qemu),'-device','usb-host,help']
-    result=subprocess.run(command,capture_output=True,text=True,timeout=15)
-    required=['kernel-driver-detach','host-reset','guest-reset','guest-resets-all',
-              'vendorid','productid','hostbus','hostport']
-    present=[name for name in required if re.search(r'^\s*'+re.escape(name)+r'=<[^>]+>(?:\s|$)',result.stdout+result.stderr,re.M)]
-    return {'args':command,'exit':result.returncode,'stdout':result.stdout,'stderr':result.stderr,
-            'required':required,'present':present,'supported':result.returncode==0 and present==required}
+    return lab_module().usb_host_boundary(qemu)
 
 
 def opened_usb_node(pid,node,proc=Path('/proc')):
@@ -284,6 +278,7 @@ def _run(args):
                 channel=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);channel.connect(str(serial));channel.setblocking(False)
                 monitor=lab.Qmp(qmp,output/'qmp.jsonl')
                 active=0;addresses={port:devices[port]['address'] for port in getattr(args,'ports',[])};transcript=bytearray();support_input=False;hotplug_phase=0
+                watcher=lab.ReattachmentWatcher(addresses,m.setdefault('reattach',[]),owned=opened_usb_node)
                 while process.poll() is None:
                     if time.monotonic()>deadline:raise ValueError('environment timeout; preserve partial console/capture')
                     readers=[channel]+([] if support else [sys.stdin])
@@ -316,22 +311,7 @@ def _run(args):
                     if not support:
                         current={d['path']:d for d in lab.inventory()}
                         for index,port in enumerate(args.ports[:active]):
-                            d=current.get(port)
-                            if d and d['writable'] and d['address']!=addresses[port]:
-                                drivers={i['driver'] for i in d['interfaces'] if i['driver']}
-                                if drivers-{'usbfs'}:raise ValueError('host acquired WS73 after re-enumeration')
-                                # libusb may already have rebound the same fixed host
-                                # port. Preserve that active passthrough; do not tear
-                                # down a fresh BSLE exchange just to refresh QMP.
-                                attached=monitor.execute('qom-get',{'path':f'/machine/peripheral/ws73_{index}','property':'attached'})
-                                if attached is True and opened_usb_node(process.pid,d['node']):
-                                    addresses[port]=d['address']
-                                    m.setdefault('reattach',[]).append({'port':port,'device':d['address'],'action':'observed-own-live-auto-reattach'})
-                                    continue
-                                if drivers:raise ValueError('new usbfs binding is not verified as this QEMU; no detach')
-                                monitor.execute('device_del',{'id':f'ws73_{index}'});monitor.wait_deleted(f'ws73_{index}')
-                                monitor.execute('device_add',usb_properties(port,index));addresses[port]=d['address']
-                                m.setdefault('reattach',[]).append({'port':port,'device':d['address'],'action':'refresh-unclaimed-port'})
+                            watcher.poll(index,port,current.get(port),process.pid,monitor)
                 # Drain bytes already delivered when QEMU powers down.
                 channel.setblocking(True);channel.settimeout(1)
                 try:

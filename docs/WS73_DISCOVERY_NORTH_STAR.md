@@ -1266,3 +1266,30 @@ kernel-driver-detach/host-reset/guest-reset/guest-resets-all，所有重加路�
 `.dev/usb-host-boundary-final-evidence.json`。没有重跑Rust/clippy/远端CI或新内核
 构建；真实ROM/重新枚举/外部占用竞争/RF/物理拔插仍待验，七项0/7、板参
 NOT_ASSERTED、四设备与完整S0–S6及全部原issues OPEN。
+
+
+### 重插状态交接：保留物理透传对象（部分成果）
+
+上一版真实 launcher 在新USB地址出现、QEMU尚未同时附着/持有live fd时会
+立即device_del/device_add。使用准确旧提交58ffa152的physical分支与模拟QMP
+重现该删除；当前分支等待，6秒后仅对未占用对象发一次host-retry脉冲，仍不
+更新已确认地址。两个launcher共用非阻塞Watcher与9属性预检；每端口20秒
+权限/所有权期限，usbfs交接等待、外部驱动拒绝，失踪设备不删除对象。
+
+QEMU生产setter在QMP/auto-open序列化下检查handle/attached：busy时无操作，
+仅autoscan对象的errcount恢复0，由已有timer重试；不close/reset/detach，
+不改变其他对象/global timer。生产7guard+5retry计数mock、两个补丁的fresh/
+repeat/各自drift拒绝4项、实际暂停/未attached QMP脉冲读回false通过。16种
+确定性交接测试含并发opener胜出、usbfs/fd/attach顺序、权限/所有权超时、
+新地址重开预算与幸存端口，244harness/68工具通过。
+
+实际新libusb QEMU+未变#69内核/compiled Rust：原96-case仍1056OK/0FAIL/
+0SKIP/3旧WARN；合成20+2轮、同daemon重加/旧选择拒绝/幸存控制/两次TX-off，
+2251USB/177空完成/22匹配/32独立snoop与8C/Python观察/4writer通过。
+首次暂停probe受sandbox socket限制失败和预检fixture断言调整记录保留。
+`.dev/usb-reattach-final-evidence.json`封存13相关源码、实际production/binary/
+object/config/guest/raw捕获及失败hash；SDK/firmware/binary不上传。
+
+真实入口9属性通过后因WS73缺席FAIL，未启动VM；真实ROM重新枚举、主机
+绑定竞争、空口及物理拔插尚未验证。未重跑Rust/clippy/远端CI或重编内核。
+七项仍0/7、board NOT_ASSERTED，四设备和完整S0–S6及所有原整项issues OPEN。

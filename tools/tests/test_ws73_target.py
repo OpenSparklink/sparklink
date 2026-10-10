@@ -74,10 +74,11 @@ class TargetEnvironment(unittest.TestCase):
         self.assertFalse(proof['supported'])
         self.assertEqual(command.call_args.args[0],['/fixture/qemu','-device','usb-host,help'])
     def test_host_boundary_introspection_rejects_missing_or_failed_property_list(self):
-        names=['kernel-driver-detach','host-reset','guest-reset','guest-resets-all','vendorid','productid','hostbus','hostport']
+        names=['kernel-driver-detach','host-reset','host-retry','guest-reset','guest-resets-all','vendorid','productid','hostbus','hostport']
         text=''.join('  '+n+'=<fixture-type>\n' for n in names)
         for result,expected in [(SimpleNamespace(returncode=0,stdout=text,stderr=''),True),
                                 (SimpleNamespace(returncode=1,stdout=text,stderr='error'),False),
+                                (SimpleNamespace(returncode=0,stdout=text.replace('  host-retry=<fixture-type>\n',''),stderr=''),False),
                                 (SimpleNamespace(returncode=0,stdout=text.replace('  host-reset=<fixture-type>\n',''),stderr=''),False)]:
             with patch('ws73_target.subprocess.run',return_value=result):
                 self.assertEqual(usb_host_boundary(Path('/fixture/qemu'))['supported'],expected)

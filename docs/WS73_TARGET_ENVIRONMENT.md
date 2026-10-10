@@ -46,8 +46,8 @@ guest-files 的 SHA256；run 再核对实际使用的 artifacts，不用文件�
 ## 两只真实设备
 
 真实入口要求 QEMU 编入 libusb 的 `usb-host` 并带有项目的
-`kernel-driver-detach` / `host-reset` 扩展。Linux 自建 QEMU 脚本强制启用
-libusb，并应用[可复现边界补丁与检查](https://github.com/OpenSparklink/linux/blob/7a0354058ba822a157f1fb863422891591ae1635/tools/testing/selftests/sparklink/qemu-sle-dli/README.md)。
+`kernel-driver-detach` / `host-reset` / `host-retry` 扩展。Linux 自建 QEMU 脚本强制启用
+libusb，并应用[可复现边界补丁与检查](https://github.com/OpenSparklink/linux/blob/3d765538b178182eb86342ffe912bcf01f6a1cab/tools/testing/selftests/sparklink/qemu-sle-dli/README.md)。
 `run` 先执行 `-device usb-host,help` 记录实际属性；缺设备类型或任一所需
 属性就留下 FAIL、不启动 VM。原合成 QEMU 没有 libusb，这个前置条件未满足；
 仅 support 成功不能作为它支持透传的证据。
@@ -58,6 +58,14 @@ QEMU 默认值保持兼容，真实 runner 显式设置 false；不允许省略�
 这阻止 QEMU 的自动重连/配置/退出路径解绑、重新绑定主机驱动或执行生命周期
 reset。另一主机驱动已占用时，保留占用并等待/报错；guest 不能借此获得该接口。
 ROM 自身重新枚举与实际物理拔插仍需测试；补丁/暂停 QMP 检查不是实机证明。
+
+物理重连保留同一个固定端口 usb-host 对象，最多等待20秒确认 attached 与
+启动的QEMU子进程持有当前USB节点的live fd；udev/usbfs状态交接继续等待。
+6秒后仍未占用、未attached、无该live fd时仅请求一次 `host-retry=true`。
+这是恢复单对象failed-open预算的脉冲，读回false，既有autoscan负责再开；
+并发开成功时setter不做任何操作。请求不代表接管/Ready，不通过删掉重加
+对象刷新状态。外部驱动和权限/所有权超时保留失败；另一个端口独立轮询。
+两个launcher复用同一Watcher和预检，旧guarded binary缺host-retry也会拒绝。
 
 ```sh
 python3 sparklink/tools/ws73_target.py run \

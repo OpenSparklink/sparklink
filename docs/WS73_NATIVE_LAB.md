@@ -169,3 +169,99 @@ FAIL、日志及已有产物。动态终端控制字符去除后核对完整行�
 验证了必须检查完整启动证据。当前成功不等于解决了rootless ldconfig诊断，
 也不覆盖发行版完整systemd根目录、真实主机NVMe/USB/电源管理或全部库路径。
 `native_acceptance`和`physical_acceptance`仍为false；原生硬件及恢复issues继续开放。
+
+## 普通用户生成完整 loader cache
+
+已验证非特权user namespace可用，但不能把整个dracut放入只映射当前用户的
+namespace：主机源文件属主无法映射时，dracut-install保留ownership失败；实际
+发生多次安装错误却仍退出0。这一镜像已拒绝，保留失败记录。
+
+使用[`ws73_dracut_ldconfig.sh`](../tools/ws73_dracut_ldconfig.sh)仅隔离cache生成
+阶段：dracut仍由普通用户运行并复制文件；`ldconfig -r <private-initdir>`在
+仅映射当前用户的namespace中chroot。它不授予主机root或USB/引导权限。
+当前Fedora的dracut使用`-pN`只读cache查询和`-r DIR -f /etc/ld.so.conf`生成
+cache；helper仅接受这两种调用，其他形式失败。
+
+```sh
+# 在新的私有目录内准备 tmp 和 dracut-internal.log；输出镜像必须尚不存在。
+DRACUT_LDCONFIG=/absolute/path/to/tools/ws73_dracut_ldconfig.sh \
+dracut --no-hostonly --no-hostonly-cmdline --no-hostonly-default-device \
+  --no-uefi --no-early-microcode --kver '<release>' \
+  --kmoddir '/path/to/private-stage/lib/modules/<release>' \
+  --omit-drivers sparklink_ws73_usb --tmpdir /path/to/new/private/tmp \
+  --logfile /path/to/new/private/dracut-internal.log \
+  '/path/to/new/private/initramfs-<release>.img'
+```
+
+实际新镜像的`etc/ld.so.cache`为有效glibc cache，6023字节，126个库，包含
+64位loader和libc；无ldconfig及ownership复制错误。同一检查器再次实际启动
+该镜像、随机NVMe/Btrfs根目录及签名WS73模块成功，taint0。初始`realpath`
+默认主机模块目录诊断来自dracut先查默认路径、随后以显式`--kmoddir`覆盖的
+代码路径；工作区输出fsfreeze不可用的诊断也保留。旧镜像未覆盖或改记通过。
+cache存在及此启动路径不等于全部动态依赖/生产配置资格。
+
+## 独立启动 payload 与安装/回滚
+
+[`ws73_native_boot_bundle.py`](../tools/ws73_native_boot_bundle.py)将已校验的原生
+artifact snapshot、完整暂存模块和**实际通过根启动检查的同字节initramfs**封存
+到新的私有目录。它检查build的模块顺序与暂存ko顺序对应、完整模块集合与
+depmod索引、builtin元数据一致、原始启动日志的严格证明和匹配的三个输入
+hash，以及有效loader cache。拒绝多余模块、私钥/未知文件和意外symlink，
+明确排除指向构建目录的`build`链接。每个文件复制前后核对hash。
+
+```sh
+python3 tools/ws73_native_boot_bundle.py \
+  --artifacts /path/to/native-artifacts \
+  --module-root '/path/to/private-stage/lib/modules/<release>' \
+  --initramfs '/path/to/private/initramfs-<release>.img' \
+  --smoke /path/to/passed/root-smoke \
+  --root-uuid '<current-root-filesystem-UUID>' --rootflags subvol=root \
+  --output /path/to/new/private/boot-bundle
+```
+
+当前包实际封存4974个模块、4992个payload文件、787269326字节；包含独立
+`vmlinuz/config/System.map/initramfs-<release>`及`usr/lib/modules/<release>`。
+文件hash/大小清单、SHA256SUMS、完整启动证明、loader cache和具体部署/回滚
+计划保留在包内。BLS候选项单独生成，明确指定根UUID及Btrfs子卷，两个
+blacklist参数阻止WS73自动绑定；不会自动发布候选项、改变默认或重启。
+当前主机`/boot`为独立ext4，根目录为Btrfs的`root`子卷；根参数必须根据
+目标主机核对，不能把模拟根盘UUID当作实机参数。
+
+[`ws73_native_deploy.py`](../tools/ws73_native_deploy.py)要求显式`--target-root`：
+
+```sh
+python3 tools/ws73_native_deploy.py check \
+  --bundle /path/to/private/boot-bundle --target-root /path/to/scratch-root
+# 临时根先准备 usr/lib/modules、boot/loader/entries 和 var/lib。
+python3 tools/ws73_native_deploy.py install \
+  --bundle /path/to/private/boot-bundle --target-root /path/to/scratch-root
+python3 tools/ws73_native_deploy.py rollback \
+  --bundle /path/to/private/boot-bundle --target-root /path/to/scratch-root
+```
+
+工具先验证完整包和BLS内容、拒绝路径穿越/父目录symlink/现有目标，然后把
+每个单元复制到同一父目录的临时位置，用Linux`renameat2(RENAME_NOREPLACE)`
+原子发布；BLS最后发布。复制后的模块/启动文件由执行者拥有，文件0644、
+目录0755，不保留工作区文件属主。记录安装单元和状态到目标根内的
+`var/lib/opensparklink/native-lab/<release>.json`；正常进程失败移除本次已发布
+的匹配单元，拒绝删除未知/修改内容。回滚先核对**全部**单元，再先删除BLS、
+随后启动文件和本实验模块目录。完成后的日志保留；再次安装同一包会归档
+上次已回滚日志。进程失败测试不等于断电/存储崩溃矩阵。
+
+已将整个实际787MB包安装到工作区临时根，以独立`sha256sum --strict --check`
+核对4992个文件、权限及候选项，再回滚，所有实验单元移除，原发行版内核、
+BLS和grubenv测试标记逐字节不变。另有小型文件系统测试覆盖冲突、并发目标
+创建、symlink、损坏payload、中途复制失败、未知模块和修改BLS的拒绝路径。
+这些结果仅证明文件系统生命周期，**没有运行真实主机的grubby分支**。
+
+实际主机安装需管理员权限，把上述`install`的目标改为`/`；工具要求sudo/root，
+安装前后读取`grubby --default-kernel`并要求相同，不覆盖现有发行版文件或
+保存的默认选择，也不运行grub配置重建/内核安装hooks或自动重启。实际回滚
+前必须已启动保留的发行版内核；若默认已被外部修改，先恢复原发行版默认，
+工具才执行移除。选择实验项并重启会中断主机任务，需要单独安排。
+
+当前仍无非交互sudo（`sudo -n id -u`返回需要密码），没有向主机安装或更改
+BLS。该包是**受控加载前的内核启动包**；固件/板级校准、slkd/slctl及
+udev/D-Bus/systemd策略部署仍需独立核对和封存，不能将安装包通过记为原生
+WS73 Ready或普通用户应用通过。原生1/2/4、物理隔离、无人工恢复、完整
+动态依赖/PM/兼容和S0–S6继续开放，两个acceptance标记保持false。

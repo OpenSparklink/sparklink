@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_capture import CaptureError, check_capture_stats, corroborate, hcc_receive, marker_data, read_capture
+from ws73_capture import CaptureError, check_capture_stats, corroborate, corroborate_synthetic, hcc_receive, marker_data, read_capture
 from ws73_north_star import parse_match, parse_result, registration, reports
 
 
@@ -41,7 +41,8 @@ def identity(gen):
     return {'port': '1-2' if gen==2 else '1-1','generation':gen,'index':int(gen==2),
             'path':f'/org/sparklink/slk{int(gen==2)}_g{gen}','address':f'02:73:00:00:00:0{gen}',
             'bus':1,'device':gen+1,'version':'0201000120','features':f'{gen:02x}'*10,
-            'buffers':[254,5,0,0],'observed_wall_ns':1_000_000_000}
+            'buffers':[254,5,0,0],'observed_wall_ns':1_000_000_000,
+            'descriptors':{'manufacturer':'unit test vendor','product':'WS73 USB','serial':'sample-'+str(gen)}}
 
 
 def output_result(d,op,request):
@@ -101,6 +102,25 @@ class CaptureTests(unittest.TestCase):
         for endian,nano in [('<',False),('>',False),('<',True),('>',True)]:
             with self.subTest(endian=endian,nano=nano):
                 parsed=self.read(pcap(records,endian,nano));self.assertEqual(len(corroborate(run,parsed)),22)
+    def test_synthetic_corroboration_cannot_be_physical_acceptance(self):
+        run,records=fixture();run.update(scope='synthetic WS73 USB control support',status='CONTROL_SUPPORT_EVIDENCE_PENDING')
+        for r in [*run['initial'],run['replacement']]:
+            r['descriptors']={'manufacturer':'OpenSparklink synthetic test','product':'WS73 runtime fixture (NO RF)','serial':'WS73-TEST'}
+        parsed=self.read(pcap(records))
+        self.assertEqual(len(corroborate_synthetic(run,parsed)),22)
+        with self.assertRaisesRegex(CaptureError,'simulations excluded'):corroborate(run,parsed)
+        run['initial'][0]['descriptors']['manufacturer']='real vendor'
+        with self.assertRaisesRegex(CaptureError,'fixture descriptors'):corroborate_synthetic(run,parsed)
+    def test_physical_record_cannot_enter_synthetic_corroboration(self):
+        run,records=fixture()
+        with self.assertRaisesRegex(CaptureError,'explicit synthetic'):corroborate_synthetic(run,self.read(pcap(records)))
+    def test_renaming_synthetic_status_does_not_promote_record(self):
+        run,records=fixture()
+        run['initial'][0]['descriptors']['product']='WS73 runtime fixture (NO RF)'
+        with self.assertRaisesRegex(CaptureError,'synthetic descriptors excluded'):corroborate(run,self.read(pcap(records)))
+    def test_missing_descriptor_boundary_is_rejected(self):
+        run,records=fixture();del run['replacement']['descriptors']
+        with self.assertRaisesRegex(CaptureError,'recorded USB descriptors'):corroborate(run,self.read(pcap(records)))
     def test_submit_out_cannot_be_rx_proof(self):
         run,records=fixture();records=[(*r[:4],'S',0x01,r[6]) if r[4]=='C' else r for r in records]
         with self.assertRaises(CaptureError):corroborate(run,self.read(pcap(records)))

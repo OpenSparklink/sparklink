@@ -162,6 +162,32 @@ def corroborate(run, capture):
     """Require exact receiver-side bytes in each successful CLI observation."""
     if run.get('scope') != 'physical' or run.get('status') != 'CONTROL_PASS_EVIDENCE_PENDING':
         raise CaptureError('successful physical control run required; simulations excluded')
+    # Recheck the recorded descriptor boundary independently of the recorder's
+    # class/status label. Renaming a synthetic control record is not hardware.
+    for r in [*run['initial'],run['replacement']]:
+        descriptors=r.get('descriptors')
+        if not isinstance(descriptors,dict) or set(descriptors)!={'manufacturer','product','serial'}:
+            raise CaptureError('complete recorded USB descriptors required')
+        for value in descriptors.values():
+            if value is not None and not isinstance(value,str):
+                raise CaptureError('invalid recorded USB descriptor')
+            if value and ('synthetic' in value.lower() or 'fixture' in value.lower()):
+                raise CaptureError('synthetic descriptors excluded from physical corroboration')
+    return _corroborate_control(run, capture)
+
+
+def corroborate_synthetic(run, capture):
+    """Development control evidence only; never physical RX_CORROBORATED."""
+    if run.get('scope') != 'synthetic WS73 USB control support' or run.get('status') != 'CONTROL_SUPPORT_EVIDENCE_PENDING':
+        raise CaptureError('explicit synthetic control run required')
+    for r in [*run['initial'],run['replacement']]:
+        if (r['descriptors']['manufacturer'] != 'OpenSparklink synthetic test' or
+                r['descriptors']['product'] != 'WS73 runtime fixture (NO RF)'):
+            raise CaptureError('synthetic fixture descriptors missing')
+    return _corroborate_control(run, capture)
+
+
+def _corroborate_control(run, capture):
     # Verify supporting records rather than trusting the success label alone.
     from ws73_north_star import parse_result, parse_match, stable
     identity = run['application_identity']

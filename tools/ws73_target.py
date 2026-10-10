@@ -98,6 +98,7 @@ def prepare(args):
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',
+                  HERE/'ws73_target_control.py',
                   LINUX/'tools/testing/selftests/sparklink/ws73-lab.py',
                   LINUX/'tools/testing/selftests/sparklink/qemu_verdict.py',
                   LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',
@@ -139,7 +140,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -215,7 +216,8 @@ def _run(args):
     support=args.command=='support'
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
        'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
-       'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False))}
+       'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False)),
+       'synthetic_hotplug':bool(getattr(args,'hotplug',False))}
     process=monitor=channel=None
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
@@ -237,7 +239,8 @@ def _run(args):
                      '-qmp',f'unix:{qmp},server=on,wait=off','-kernel',str(args.prepared.resolve()/'bzImage'),
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
                      '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+(' ws73.support=1' if support else '')+
-                     (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else ''),
+                     (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
+                     (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
                      '-fsdev',f'local,id=evidence,path={share},security_model=mapped-xattr',
                      '-device','virtio-9p-pci,fsdev=evidence,mount_tag=evidence']
@@ -250,7 +253,7 @@ def _run(args):
                     time.sleep(0.05)
                 channel=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);channel.connect(str(serial));channel.setblocking(False)
                 monitor=lab.Qmp(qmp,output/'qmp.jsonl')
-                active=0;addresses={port:devices[port]['address'] for port in getattr(args,'ports',[])};transcript=bytearray();support_input=False
+                active=0;addresses={port:devices[port]['address'] for port in getattr(args,'ports',[])};transcript=bytearray();support_input=False;hotplug_phase=0
                 while process.poll() is None:
                     if time.monotonic()>deadline:raise ValueError('environment timeout; preserve partial console/capture')
                     readers=[channel]+([] if support else [sys.stdin])
@@ -266,6 +269,15 @@ def _run(args):
                     text=transcript.decode(errors='replace')
                     if support and not support_input and 'WS73_TARGET_INPUT_READY' in text:
                         channel.sendall(b'target-ordinary-input\n');support_input=True
+                    if support and getattr(args,'hotplug',False):
+                        if hotplug_phase==0 and 'WS73_TARGET_CONTROL_REMOVE_READY' in text:
+                            monitor.execute('device_del',{'id':'ws73_0'});monitor.wait_deleted('ws73_0')
+                            channel.sendall(b'support-remove\n');hotplug_phase=1
+                        if hotplug_phase==1 and 'WS73_TARGET_CONTROL_READD_READY' in text:
+                            props=dict(driver='usb-ws73-test',id='ws73_0',bus='xhci.0',port='1',
+                                       **{'runtime-discovery':True,'runtime-policy':True,'runtime-medium':1},
+                                       **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}))
+                            monitor.execute('device_add',props);channel.sendall(b'support-readd\n');hotplug_phase=2
                     if active<2 and ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text:
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-medium':1},
@@ -302,6 +314,12 @@ def _run(args):
                 if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
                 if not support and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
                 identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(2)]
+                if getattr(args,'hotplug',False):
+                    if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
+                    markers=re.findall(r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$',text,re.M)
+                    if markers!=['REMOVE','READD']:raise ValueError('missing/duplicate/out-of-order synthetic control confirmations')
+                    control=json.loads((share/'application/support-control/run.json').read_text())
+                    identities=[*control['initial'],control['replacement']]
                 packets=check_capture_stats((share/'capture-stats.txt').read_text())
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
                 if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
@@ -347,7 +365,9 @@ def main():
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':cmd.add_argument('--ports',nargs=2,required=True)
-        else:cmd.add_argument('--empty-bulk',action='store_true',help='inject successful zero-length bulk IN before synthetic runtime replies; never a physical option')
+        else:
+            cmd.add_argument('--empty-bulk',action='store_true',help='inject successful zero-length bulk IN before synthetic runtime replies; never a physical option')
+            cmd.add_argument('--hotplug',action='store_true',help='run the full control orchestrator with explicitly synthetic USB removal/replug; never physical acceptance')
     args=parser.parse_args()
     if not math.isfinite(getattr(args,'timeout',1)) or getattr(args,'timeout',1)<=0:parser.error('timeout must be finite and positive')
     return prepare(args) if args.command=='prepare' else run(args)

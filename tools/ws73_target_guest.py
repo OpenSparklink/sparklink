@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 
-from ws73_capture import check_capture_stats, discovery, read_capture
+from ws73_capture import check_capture_stats, corroborate, corroborate_synthetic, discovery, read_capture, CaptureError
 from ws73_north_star import daemon_identity, healthy_native_runtime, ordinary_identity, registration
 
 EVIDENCE = Path('/evidence')
@@ -109,11 +109,21 @@ def support():
         while any(not (EVIDENCE/(name+'.snoop')).exists() or (EVIDENCE/(name+'.snoop')).stat().st_size<16 for name in ['slkmon','slkdump']):
             if time.monotonic()>deadline or any(p.poll() is not None for p,_ in watchers):raise ValueError('snoop startup')
             time.sleep(0.05)
-        script=EVIDENCE/'support-radio.sh'
-        script.write_text('#!/bin/sh\nctl() { /bin/slctl "$@"; }\nfail() { echo "TARGET_RADIO_FAILURE: $*"; exit 1; }\n. /bin/test-radio\n'+
-                          'radio_rounds 20 '+shlex.quote(a['path'])+' '+shlex.quote(b['path'])+' target-support\n')
-        with (EVIDENCE/'support-radio.log').open('w') as log:
-            application('/bin/sh',str(script),stdout=log,stderr=subprocess.STDOUT,timeout=60,check=True)
+        if 'ws73.hotplug=1' in Path('/proc/cmdline').read_text().split():
+            command=['/bin/python3',str(TOOLS/'ws73_target_control.py'),'--slctl','/bin/slctl','--slkd-pid',str(pid),
+                     '--output','/evidence/application/support-control']
+            process=subprocess.Popen(['/bin/busybox','setsid','-c','/bin/su','ws73','-s','/bin/sh','-c',shlex.join(command)],
+                                     text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+            with (EVIDENCE/'support-control.log').open('w') as log:
+                for line in process.stdout:
+                    log.write(line);log.flush();print(line,end='',flush=True)
+            if process.wait():raise ValueError('synthetic full control orchestrator failed')
+        else:
+            script=EVIDENCE/'support-radio.sh'
+            script.write_text('#!/bin/sh\nctl() { /bin/slctl "$@"; }\nfail() { echo "TARGET_RADIO_FAILURE: $*"; exit 1; }\n. /bin/test-radio\n'+
+                              'radio_rounds 20 '+shlex.quote(a['path'])+' '+shlex.quote(b['path'])+' target-support\n')
+            with (EVIDENCE/'support-radio.log').open('w') as log:
+                application('/bin/sh',str(script),stdout=log,stderr=subprocess.STDOUT,timeout=60,check=True)
         for p,_ in watchers:
             if p.wait(timeout=10):raise ValueError('native snoop tool failure')
     finally:
@@ -127,16 +137,34 @@ def support():
 
 def verify_support():
     a,b=identities();stats=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
-    capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in [a,b]])
+    hotplug='ws73.hotplug=1' in Path('/proc/cmdline').read_text().split()
+    control=json.loads((EVIDENCE/'application/support-control/run.json').read_text()) if hotplug else None
+    ids=[*control['initial'],control['replacement']] if hotplug else [a,b]
+    capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in ids])
     if stats!=capture['packet_count']:raise ValueError('sealed pcap/statistics count mismatch')
     empty_bulk='ws73.empty_bulk=1' in Path('/proc/cmdline').read_text().split()
-    if empty_bulk and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in [a,b]):
+    if empty_bulk and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in ids):
         raise ValueError('both selected controllers must have captured successful empty bulk completions')
-    radio=(EVIDENCE/'support-radio.log').read_text()
-    matches=re.findall(r'^NativeDiscoveryMatch: generation=(\d+) seq=\d+ address=([0-9A-F:]+) RSSI=(-?\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+) ',radio,re.M)
-    if len(matches)!=20 or len({m[3] for m in matches})!=20:raise ValueError('20 independent ordinary-user matches required')
+    if hotplug:
+        proofs=corroborate_synthetic(control,capture)
+        try:corroborate(control,capture)
+        except CaptureError:pass
+        else:raise ValueError('physical corroborator admitted synthetic control')
+        renamed=dict(control,scope='physical',status='CONTROL_PASS_EVIDENCE_PENDING')
+        try:corroborate(renamed,capture)
+        except CaptureError as error:
+            if 'synthetic descriptors excluded' not in str(error):raise
+        else:raise ValueError('renaming synthetic control labels admitted physical corroboration')
+        (EVIDENCE/'support-control-proofs.json').write_text(json.dumps({'scope':'synthetic USB control corroboration; never physical acceptance',
+            'physical_acceptance':False,'physical_scope_rejected':True,'renamed_record_rejected':True,'proofs':proofs},indent=2)+'\n')
+        matches=[(str(r['match']['generation']),r['match']['address'],str(r['match']['rssi']),r['marker'],r['match']['data']) for r in control['rounds']]
+    else:
+        radio=(EVIDENCE/'support-radio.log').read_text()
+        matches=re.findall(r'^NativeDiscoveryMatch: generation=(\d+) seq=\d+ address=([0-9A-F:]+) RSSI=(-?\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+) ',radio,re.M)
+    count=22 if hotplug else 20
+    if len(matches)!=count or len({m[3] for m in matches})!=count:raise ValueError('independent ordinary-user matches required')
     for g,addr,rssi,marker,data in matches:
-        rx=next(r for r in [a,b] if r['generation']==int(g))
+        rx=next(r for r in ids if r['generation']==int(g))
         if not any((r['bus'],r['device'],r['address'],r['rssi'],r['data'])==(rx['bus'],rx['device'],addr,int(rssi),data) for r in capture['reports']):raise ValueError('actual USB capture disagrees with ordinary app')
     mon=(EVIDENCE/'slkmon.snoop').read_bytes();dump=(EVIDENCE/'slkdump.snoop').read_bytes()
     if mon!=dump or mon[:16]!=b'SLKSNP01'+struct.pack('<II',1,320) or len(mon)!=16+32*376:raise ValueError('independent snoop byte equality')
@@ -153,8 +181,9 @@ def verify_support():
     for r in reports:
         if not any((r['address'],r['rssi'],r['data'])==(addr,int(rssi),data) for g,addr,rssi,marker,data in matches if int(g)==b['generation']):raise ValueError('snoop/app report mismatch')
     result={'scope':'synthetic environment support; never firmware/RF acceptance','physical_acceptance':False,
-            'packet_count':stats,'raw_reports':len(capture['reports']),'matches':20,'snoop_records':32,'snoop_identical':True,
-            'synthetic_empty_bulk':empty_bulk,'empty_bulk_completions':len(capture['empty_bulk_completions'])}
+            'packet_count':stats,'raw_reports':len(capture['reports']),'matches':count,'snoop_records':32,'snoop_identical':True,
+            'synthetic_empty_bulk':empty_bulk,'empty_bulk_completions':len(capture['empty_bulk_completions']),
+            'synthetic_hotplug':hotplug}
     (EVIDENCE/'support-capture.json').write_text(json.dumps(result,indent=2)+'\n')
     print('WS73_TARGET_SUPPORT: PASS',flush=True)
 

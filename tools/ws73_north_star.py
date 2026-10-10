@@ -52,7 +52,7 @@ def healthy_native_runtime(value):
     return m
 
 
-def registration(port, root=USB_ROOT):
+def _registration(port, root, synthetic):
     if not re.fullmatch(r'\d+-\d+(?:\.\d+)*', port):
         raise ValueError('explicit physical USB port required')
     device = root / port
@@ -60,8 +60,11 @@ def registration(port, root=USB_ROOT):
     if text('idVendor').lower() != 'ffff' or text('idProduct').lower() != '3733':
         raise ValueError('port is not a WS73 USB device')
     descriptors = {name: text(name) if (device / name).exists() else None for name in ['manufacturer', 'product', 'serial']}
-    if any(value and ('synthetic' in value.lower() or 'fixture' in value.lower()) for value in descriptors.values()):
+    fixture = any(value and ('synthetic' in value.lower() or 'fixture' in value.lower()) for value in descriptors.values())
+    if fixture and not synthetic:
         raise ValueError('synthetic USB model excluded from physical acceptance')
+    if synthetic and not (descriptors['manufacturer'] == 'OpenSparklink synthetic test' and descriptors['product'] == 'WS73 runtime fixture (NO RF)'):
+        raise ValueError('explicit synthetic WS73 fixture descriptors required')
     interfaces = [p for p in root.glob(port + ':*') if (p / 'driver').is_symlink() and (p / 'driver').resolve().name == 'sparklink_ws73_usb']
     if len(interfaces) != 1:
         raise ValueError('exactly one bound native WS73 interface required')
@@ -79,6 +82,10 @@ def registration(port, root=USB_ROOT):
             'version': info[1].lower(), 'features': info[2].lower(),
             'buffers': [int(info[i]) for i in range(4, 8)], 'attributes': attrs,
             'descriptors': descriptors, 'observed_wall_ns': time.time_ns()}
+
+
+def registration(port, root=USB_ROOT):
+    return _registration(port, root, False)
 
 
 def stable(a, b):
@@ -133,16 +140,25 @@ def parse_match(output):
 
 
 class Run:
+    SCOPE = 'physical'
+    SUCCESS = 'CONTROL_PASS_EVIDENCE_PENDING'
+
     def __init__(self, args):
         self.args = args
         self.output = args.output.resolve()
         self.output.mkdir(parents=True, exist_ok=False, mode=0o700)
-        self.data = {'format_version': 1, 'scope': 'physical', 'status': 'RUNNING', 'rounds': [], 'negatives': [], 'commands': []}
+        self.data = {'format_version': 1, 'scope': self.SCOPE, 'status': 'RUNNING', 'rounds': [], 'negatives': [], 'commands': []}
         self.pid = None
         self.save()
 
     def save(self):
         self.output.joinpath('run.json').write_text(json.dumps(self.data, indent=2) + '\n')
+
+    def read_registration(self, port):
+        return registration(port)
+
+    def confirm(self, message):
+        input(message)
 
     def alive(self):
         if daemon_identity(self.args.slkd_pid) != self.pid:
@@ -179,7 +195,7 @@ class Run:
         return record
 
     def ready(self, port):
-        identity = registration(port)
+        identity = self.read_registration(port)
         output = self.ctl(identity, 'show')['stdout']
         expected = f"Adapter {identity['path']}:\n  State:       Ready\n  Generation:  {identity['generation']}\n  Address:     {identity['address']}\n  Profile:     1"
         if expected not in output:
@@ -187,7 +203,7 @@ class Run:
         return identity
 
     def check(self, identity):
-        if not stable(identity, registration(identity['port'])):
+        if not stable(identity, self.read_registration(identity['port'])):
             raise ValueError('physical mapping/registration changed during a round')
         self.alive()
 
@@ -297,7 +313,7 @@ class Run:
                 raise ValueError('distinct physical queried identities required')
             self.data['initial'] = [a,b]
             self.phase(a,b,20,'initial')
-            input(f"Unplug only WS73 at {a['port']}, then press Enter: ")
+            self.confirm(f"Unplug only WS73 at {a['port']}, then press Enter: ")
             self.wait_port(a['port'], False)
             self.data['unplug_observed_wall_ns'] = time.time_ns()
             survivor = self.ready(b['port'])
@@ -310,7 +326,7 @@ class Run:
             if not p.returncode or 'not a live registration' not in p.stderr:
                 raise ValueError('stale selection was not rejected')
             self.data['survivor_control'] = {'identity':survivor, 'scan_request':scan}
-            input(f"Reinsert WS73 at {a['port']}, then press Enter: ")
+            self.confirm(f"Reinsert WS73 at {a['port']}, then press Enter: ")
             new = self.wait_port(a['port'], True)
             if new['generation'] == a['generation'] or new['path'] == a['path']:
                 raise ValueError('replug reused retired registration')
@@ -325,7 +341,7 @@ class Run:
             for record in [self.data['slctl'], *self.data['sources'], *self.data['artifacts'].values()]:
                 if file_record(record['path']) != record:
                     raise ValueError('executable/source/provenance artifact changed during run')
-            self.data['status'] = 'CONTROL_PASS_EVIDENCE_PENDING'
+            self.data['status'] = self.SUCCESS
         except (Exception, KeyboardInterrupt) as error:
             self.data['status'] = 'FAIL'
             self.data['error'] = str(error) or type(error).__name__
@@ -335,7 +351,7 @@ class Run:
                 for port in self.args.ports:
                     if not (USB_ROOT / port).exists(): continue
                     try:
-                        identity = registration(port)
+                        identity = self.read_registration(port)
                         self.stop(identity,'advertise'); self.stop(identity,'scan')
                         self.data['cleanup'].append({'port':port,'status':'STOP_CONFIRMED'})
                     except Exception as error:
@@ -343,7 +359,7 @@ class Run:
                         self.data['status'] = 'FAIL'
             self.save()
         print(self.data['status'], str(self.output / 'run.json'), flush=True)
-        return 0 if self.data['status'] == 'CONTROL_PASS_EVIDENCE_PENDING' else 1
+        return 0 if self.data['status'] == self.SUCCESS else 1
 
 
 def main():

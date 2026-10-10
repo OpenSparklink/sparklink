@@ -6,6 +6,12 @@
 两者均不自动认证固件/板级校准，不自动关闭 issue，也不冒称 PHY 嗅探器。
 当前本机未枚举到 WS73，工具没有实机 PASS。
 
+离线verify也独立检查initial/replacement的完整manufacturer/product/serial
+记录（值可为None）；拒绝synthetic/fixture，不仅信任scope/status成功标签。
+这与实机registration的描述符拒绝规则一致，不认证可任意编辑的PCAP/JSON。
+开发客体可用独立合成入口复用同一控制/时间窗佐证流程；其结果不能进入实机
+RX_CORROBORATED，详见 [客体完整控制支撑门禁](WS73_TARGET_ENVIRONMENT.md)。
+
 可使用 [隔离 KVM 开发客体](WS73_TARGET_ENVIRONMENT.md) 打包并启动系统总线、
 普通应用和启动前 usbmon；它不安装主机服务，环境与实机验收分别记录。
 

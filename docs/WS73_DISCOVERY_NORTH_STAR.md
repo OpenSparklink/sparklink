@@ -1104,3 +1104,29 @@ stale generation与非空错误边界。重复运行和原始证据留在.dev/zl
 原资格QEMU binary与cached model已按原hash恢复；新BIOS文件hash也保存。
 SDK板参仍NOT_ASSERTED；模型没有真实ROM/firmware/RF。当前实机为空，真正
 双设备七项0/7；S0–S6/四设备两组/整项issues继续OPEN。
+
+## 同客体的完整控制/重插佐证门禁（2026-10-10）
+
+原target support只用独立shell做20轮，未在同一套系统总线/权限/捕获环境执行
+整个Python实机控制orchestrator。现单独SyntheticControlRun复用Run的所有
+phase/negative/wait/Ready/daemon/cleanup逻辑；scope/status明确为synthetic
+control support，只有read_registration与合成TTY确认入口不同。实机CLI仍固定
+Run、拒绝fixture、没有允许模型的开关。合成入口要求精确fixture描述符和真实
+sysfs/查询的原生身份。Host QMP只对自己VM移除/重加slot0，普通进程观察USB
+消失、执行幸存设备scan/stop、旧adapter拒绝、新代次Ready及两轮重插复验。
+
+最终guest代码普通hotplug支撑门禁PASS：20+2个唯一marker、两次TX-off、同一PID/
+start_ticks/bus owner、幸存generation稳定、旧选择拒绝、新generation及最终
+双设备stop。1865条封存客体USB记录中22个RX精确对应应用；对三代次四项启动
+查询、每轮全部DLI Complete命令时间窗和阴性区间做共同佐证。32条独立mon/
+dump仍一致。叠加empty-bulk门禁同样PASS：2211条USB记录、173条成功空完成
+（三代次均有）、22RX/22应用匹配、相同生命周期和独立snoop。原无hotplug基线
+继续保留。55工具测试PASS。Linux/core crates未改，继续冻结#68，不冒称新全仓
+Rust/clippy/96-case/kernel build。
+
+另修正离线物理验收只依scope/status分流的弱处：检查initial/replacement完整
+USB描述符并拒绝fixture。实际主机CLI针对合成run留FAIL；仅改scope/status的
+副本同样因fixture描述符留FAIL，不能将合成佐证提升为RX_CORROBORATED。
+这不认证任意可编辑capture/JSON。此前开发run的原始console/QMP/run/capture
+均保留；最终共同控制proof与全部source/input/artifact hash保存在.dev/control-*。
+当前真实设备仍为空、SDK板参NOT_ASSERTED、真实七项0/7，全方案及整项issuesOPEN。

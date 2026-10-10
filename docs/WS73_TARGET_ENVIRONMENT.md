@@ -115,6 +115,26 @@ in-flight 命令、不伪造 DLI。它覆盖异步初始化停止与后续管理
 空完成，仍须满足全部20轮、原始RX对应与独立snoop条件。该选项仅用于 support，
 真实 run 不提供注入选项。普通 support 不依赖新属性。
 
+`support --hotplug` 复用实机 recorder 的完整控制流程，但入口是单独的
+`ws73_target_control.py` 合成 subclass，scope/status 始终不同。它只接受明确的
+OpenSparklink/WS73 fixture 描述符，仍执行实际 sysfs 原生身份与普通 slctl
+Ready核验；实机 `run` 继续拒绝这些描述符，没有绕过开关。普通uid1000 TTY
+进程完成20轮交换/TX-off后发出合成移除请求；Host只对自己的QEMU移除slot0，
+确认删除后回应。应用确认客体sysfs中的该端口已消失、幸存身份/generation
+与scan事务保持、旧adapter选择拒绝，之后请求同端口合成重加、等新代次Ready，
+完成两轮与第二次TX-off。全程要求同一slkd PID/start_ticks及总线owner。
+
+可与 `--empty-bulk` 合用，显式 timeout 180。此时封存capture包含三代次USB
+身份：原两只与重加slot0。共同控制佐证必须核验22个唯一标识、全部参数/数据/
+enable/disable Complete的命令时间窗、每代次四个实际metadata查询、两次阴性
+区间、最终stop确认与生命周期记录。三代次有空完成时也分别核对。原20轮
+support基线保留；QMP操作仅为开发支撑，不能冒称物理拔插/重新枚举/RF。
+
+合成佐证单独保存在 `support-control-proofs.json`，`physical_acceptance=false`。
+实机 `verify` 拒绝该记录；即使仅将scope/status改成physical成功标签，仍根据
+原始descriptor拒绝fixture。缺失/格式错误的三项记录descriptor也拒绝。
+这个检查不认证PCAP或防止任意篡改；完整来源与真实硬件证据仍须独立审查。
+
 捕获解析器单列 `empty_bulk_completions`（USB身份、时间、URB与文件偏移）；
 不将它计入 HCC/DLI Complete 或 discovery report。成功空完成须无 payload、
 完整64字节usbmon header且两种时间误差不超过1ms；失败空完成仍进入 transport failures，

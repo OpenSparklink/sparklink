@@ -7,7 +7,9 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).parents[1]))
 from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_properties
-from ws73_north_star import file_record, healthy_native_runtime, registration
+from ws73_north_star import _registration, file_record, healthy_native_runtime, registration, Run
+from ws73_target_control import SyntheticControlRun
+from types import SimpleNamespace
 
 
 class TargetEnvironment(unittest.TestCase):
@@ -24,8 +26,21 @@ class TargetEnvironment(unittest.TestCase):
             for name,value in attrs.items():(interface/name).write_text(value+'\n')
             selected=registration('1-2',root)
             self.assertEqual((selected['path'],selected['features'],selected['bus'],selected['device']),('/org/sparklink/slk0_g5','01'*10,1,7))
+            with self.assertRaisesRegex(ValueError,'synthetic WS73 fixture'):_registration('1-2',root,True)
+            (device/'manufacturer').write_text('OpenSparklink synthetic test\n')
+            (device/'product').write_text('WS73 runtime fixture (NO RF)\n')
+            with self.assertRaisesRegex(ValueError,'excluded from physical'):registration('1-2',root)
+            self.assertEqual(_registration('1-2',root,True)['path'],'/org/sparklink/slk0_g5')
+            (device/'manufacturer').write_text('vendor\n');(device/'product').write_text('WS73\n')
             (interface/'native_runtime').write_text(native.replace('controller_error=100','controller_error=0'))
             with self.assertRaises(ValueError):registration('1-2',root)
+    def test_control_orchestrator_scopes_are_distinct_before_execution(self):
+        with tempfile.TemporaryDirectory() as d:
+            physical=Run(SimpleNamespace(output=Path(d)/'physical'))
+            synthetic=SyntheticControlRun(SimpleNamespace(output=Path(d)/'synthetic'))
+            self.assertEqual(physical.data['scope'],'physical')
+            self.assertEqual(synthetic.data['scope'],'synthetic WS73 USB control support')
+            self.assertNotEqual(physical.SUCCESS,synthetic.SUCCESS)
     def test_live_owned_fd_matches_current_device_not_deleted_handle(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);fd=root/'10/fd';fd.mkdir(parents=True)

@@ -14,7 +14,7 @@ mod service;
 mod state;
 mod transport;
 
-use std::sync::Arc;
+use std::{path::PathBuf, sync::Arc};
 
 use clap::Parser;
 use tokio::sync::Mutex;
@@ -29,9 +29,9 @@ use crate::state::AdapterDirectory;
 #[derive(Parser)]
 #[command(name = "slkd", about = "SparkLink daemon")]
 struct Cli {
-    /// Path to config file
-    #[arg(short, long, default_value = "/etc/sparklink/main.conf")]
-    config: String,
+    /// Explicit configuration path (required if supplied; implicit default: /etc/sparklink/main.conf)
+    #[arg(short, long)]
+    config: Option<PathBuf>,
 
     /// Bond metadata directory (no native key persistence is claimed).
     #[arg(long, default_value = "/var/lib/sparklink")]
@@ -69,11 +69,8 @@ async fn main() -> anyhow::Result<()> {
 
     info!(version = env!("CARGO_PKG_VERSION"), "slkd starting");
 
-    // Load config
-    let config = DaemonConfig::load(&cli.config).unwrap_or_else(|e| {
-        info!("no config file, using defaults: {e}");
-        DaemonConfig::default()
-    });
+    // Validate before publishing D-Bus objects or acquiring controller authority.
+    let config = DaemonConfig::startup(cli.config.as_deref())?;
 
     let directory: AdapterDirectory = Arc::new(Mutex::new(Default::default()));
     let builder = if cli.session {
@@ -105,4 +102,19 @@ async fn main() -> anyhow::Result<()> {
     shutdown_signal?;
     info!("slkd stopped");
     Ok(())
+}
+
+#[cfg(test)]
+mod cli_tests {
+    use super::*;
+    #[test]
+    fn implicit_and_explicit_default_paths_remain_distinct() {
+        assert!(Cli::try_parse_from(["slkd"]).unwrap().config.is_none());
+        assert_eq!(
+            Cli::try_parse_from(["slkd", "--config", config::DEFAULT_CONFIG])
+                .unwrap()
+                .config,
+            Some(PathBuf::from(config::DEFAULT_CONFIG))
+        );
+    }
 }

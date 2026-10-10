@@ -177,6 +177,7 @@ impl Node {
         connection: &zbus::Connection,
         directory: &AdapterDirectory,
     ) -> anyhow::Result<Self> {
+        config.validate_for_profile(snapshot.profile)?;
         let path = object_path(&snapshot);
         let device = device.to_owned();
         let receiver = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {

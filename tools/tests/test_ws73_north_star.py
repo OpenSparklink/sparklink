@@ -80,9 +80,9 @@ def fixture():
                     complete=b'\xa2\x02\x00'+struct.pack('<H',4+len(value))+struct.pack('<H',opcode)+b'\x01\x00'+value
                     records.append((1,owner['device'],command_start+5_000_000,aggregate(complete),'C',0x81,0))
                 request=100+len(run['commands'])
-                window=f'NativeScanWindow: generation={owner["generation"]} request={request} start_boottime_ns={command_start}\n' if op==3 else ''
+                window=f'NativeScanWindow: generation={owner["generation"]} request={request} start_boottime_ns={command_start}\nNativeScanComplete: generation={owner["generation"]} request={request} completed_boottime_ns={command_start+5_000_000}\nNativeScanObserved: generation={owner["generation"]} request={request} observed_boottime_ns={command_start+55_000_000}\n' if op==3 else ''
                 admission=f'NativeAdvertisementAccepted: request={request} marker={marker} data={marker_data(marker).hex()}\n' if op==1 else ''
-                indices.append(len(run['commands']));run['commands'].append({'args':['/usr/bin/slctl','--adapter',owner['path'],*args],'exit':0,'stdout':window+admission+output_result(owner,op,request)+(text if op==3 else ''),'start_wall_ns':command_start,'end_wall_ns':command_end,'start_monotonic_ns':command_start,'end_monotonic_ns':command_end})
+                indices.append(len(run['commands']));run['commands'].append({'args':['/usr/bin/slctl','--adapter',owner['path'],*args],'exit':0,'stdout':window+admission+output_result(owner,op,request)+(text if op==3 else ''),'start_wall_ns':command_start,'end_wall_ns':command_end,'start_monotonic_ns':command_start,'end_monotonic_ns':command_end,'start_boottime_ns':command_start,'end_boottime_ns':command_end})
             run['rounds'].append({'phase':phase,'round':n,'tx':tx,'rx':rx,'marker':marker,'watermark':seq-1,'match':match,'header':payload[5:28].hex(),'scan_window_wall_ns':[start+20_000_000,start+100_000_000],'command_indices':indices})
             records.append((1,rx['device'],start+50_000_000,aggregate(payload),'C',0x81,0));start+=200_000_000
             tx,rx=rx,tx
@@ -212,6 +212,21 @@ class CaptureTests(unittest.TestCase):
                text.replace('start_boottime_ns=2020000000','start_boottime_ns=0'),
                '\n'.join(x for x in text.splitlines() if not x.startswith('NativeScanWindow:')),
                text+'NativeScanWindow: generation=2 request=101 start_boottime_ns=2020000000\n']
+        for changed in cases:
+            bad=copy.deepcopy(run);bad['commands'][1]['stdout']=changed
+            with self.subTest(output=changed),self.assertRaises((CaptureError,ValueError)):
+                corroborate(bad,capture)
+
+    def test_complete_and_observation_clocks_reject_invalid_evidence(self):
+        run,records=fixture();capture=self.read(pcap(records));text=run['commands'][1]['stdout']
+        cases=[text.replace('completed_boottime_ns=2025000000','completed_boottime_ns=2019999999'),
+               text.replace('completed_boottime_ns=2025000000','completed_boottime_ns=2050000001'),
+               text.replace('observed_boottime_ns=2075000000','observed_boottime_ns=12025000000'),
+               text.replace('observed_boottime_ns=2075000000','observed_boottime_ns=2049999999'),
+               text.replace('request=101 completed_boottime_ns','request=99 completed_boottime_ns'),
+               text.replace('request=101 observed_boottime_ns','request=99 observed_boottime_ns'),
+               '\n'.join(x for x in text.splitlines() if not x.startswith('NativeScanComplete:')),
+               '\n'.join(x for x in text.splitlines() if not x.startswith('NativeScanObserved:'))]
         for changed in cases:
             bad=copy.deepcopy(run);bad['commands'][1]['stdout']=changed
             with self.subTest(output=changed),self.assertRaises((CaptureError,ValueError)):

@@ -12,7 +12,7 @@ from sparklink import NativeAdapter
 from sparklink.native import _get_native_lib
 from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
-    SleDiscoveryResult, SleControllerEventQuery, SleSnoopQuery,
+    SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
 )
 
 
@@ -42,6 +42,7 @@ class NativeBindingTests(unittest.TestCase):
             ("slk_management_query", [1], SleManagementQuery(lease=99)),
             ("slk_management_acquire", [1, 1], ctypes.c_uint64(99)),
             ("slk_discovery_result", [1, 1], SleDiscoveryResult(request_id=99)),
+            ("slk_discovery_timing", [1, 1], SleDiscoveryTiming(request_id=99)),
             ("slk_controller_event", [], SleControllerEventQuery(version=1, generation=1, after_seq=99)),
             ("slk_snoop", [], SleSnoopQuery(version=1, generation=1, after_seq=99)),
         ]:
@@ -61,6 +62,11 @@ class NativeBindingTests(unittest.TestCase):
             original = bytes(value)
             self.assertEqual(getattr(self.lib, name)(self.handle, ctypes.byref(value)), -errno.EINVAL)
             self.assertEqual(bytes(value), original)
+        timing = SleDiscoveryTiming(request_id=99)
+        original = bytes(timing)
+        for generation, request in [(0, 1), (1, 0)]:
+            self.assertEqual(self.lib.slk_discovery_timing(self.handle, generation, request, ctypes.byref(timing)), -errno.EINVAL)
+            self.assertEqual(bytes(timing), original)
         result = SleDiscoveryResult()
         for generation, request in [(0, 1), (1, 0)]:
             self.assertEqual(self.lib.slk_discovery_result(self.handle, generation, request, ctypes.byref(result)), -errno.EINVAL)

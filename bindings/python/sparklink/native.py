@@ -11,7 +11,7 @@ import threading
 from .adapter import SparkLinkError, _get_lib
 from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
-    SleDiscoveryResult, SleControllerEventQuery, SleSnoopQuery,
+    SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
 )
 
 _native_library = None
@@ -24,7 +24,7 @@ def _get_native_lib():
         return lib
     if any(ctypes.alignment(t) != 8 for t in (
         SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
-        SleDiscoveryResult, SleControllerEventQuery, SleSnoopQuery,
+        SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     )):
         raise OSError("native UAPI requires ctypes with 8-byte structure alignment")
     handle = ctypes.c_void_p
@@ -38,6 +38,7 @@ def _get_native_lib():
         "slk_management_query": [handle, u64, ctypes.POINTER(SleManagementQuery)],
         "slk_management_release": [handle, u64, u64, u32],
         "slk_discovery_submit": [handle, ctypes.POINTER(SleDiscoverySubmit)],
+        "slk_discovery_timing": [handle, u64, u64, ctypes.POINTER(SleDiscoveryTiming)],
         "slk_discovery_result": [handle, u64, u64, ctypes.POINTER(SleDiscoveryResult)],
         "slk_controller_event": [handle, ctypes.POINTER(SleControllerEventQuery)],
         "slk_snoop": [handle, ctypes.POINTER(SleSnoopQuery)],
@@ -169,6 +170,13 @@ class NativeAdapter:
         result = SleDiscoveryResult()
         present = self._invoke('slk_discovery_result', self.generation, request_id, ctypes.byref(result))
         return result if present else None
+
+    def discovery_timing(self, request_id):
+        """Read correlated final successful Complete clock; no permission grant."""
+        request_id = _unsigned(request_id, 64, "request_id", True)
+        result = SleDiscoveryTiming()
+        self._invoke('slk_discovery_timing', self.generation, request_id, ctypes.byref(result))
+        return result
 
     def poll_event(self):
         with self._lock:

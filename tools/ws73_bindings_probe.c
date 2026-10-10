@@ -86,6 +86,11 @@ static void writer(unsigned index, uint64_t generation)
 		nanosleep(&pause, NULL);
 	}
 	CHECK(tries < 200 && r.state == 3 && r.status == 0 && r.error == 0 && r.radio_scan == 1 && r.request_id == request && r.generation == generation);
+    SleDiscoveryTiming timing;
+    CHECK(slk_discovery_timing(a, generation, request, &timing) == 0);
+    struct timespec observed;
+    CHECK(clock_gettime(CLOCK_BOOTTIME, &observed) == 0);
+    CHECK(timing.generation == generation && timing.request_id == request && timing.state == 3 && timing.operation == 4 && timing.opcode == r.opcode && timing.status == 0 && timing.completed_boottime_ns > 0 && timing.completed_boottime_ns <= (uint64_t)observed.tv_sec * 1000000000 + observed.tv_nsec);
 	CHECK(clock_gettime(CLOCK_REALTIME, &wall) == 0);
 	printf("WS73_NATIVE_BINDING_RESULT: {\"generation\":%"PRIu64",\"request_id\":%"PRIu64",\"operation\":4,\"opcode\":%u,\"state\":%u,\"status\":%u,\"error\":%d,\"started_wall_ns\":%"PRIu64",\"finished_wall_ns\":%"PRIu64"}\n",
 	       generation, request, r.opcode, r.state, r.status, r.error, started, (uint64_t)wall.tv_sec*1000000000+wall.tv_nsec);

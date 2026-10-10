@@ -300,3 +300,15 @@ class SlePhyInfo(ctypes.Structure):
         ("code_rate_den", ctypes.c_uint8),
         ("_reserved", ctypes.c_uint8 * 5),
     ]
+
+
+class SleDiscoveryTiming(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [
+        ("generation", ctypes.c_uint64), ("request_id", ctypes.c_uint64),
+        ("completed_boottime_ns", ctypes.c_uint64), ("version", ctypes.c_uint32),
+        ("flags", ctypes.c_uint32), ("operation", ctypes.c_uint32),
+        ("state", ctypes.c_uint32), ("dev_index", ctypes.c_uint16),
+        ("opcode", ctypes.c_uint16), ("status", ctypes.c_uint8),
+        ("reserved", ctypes.c_uint8 * 3),
+    ]

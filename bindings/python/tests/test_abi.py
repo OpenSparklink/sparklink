@@ -50,6 +50,7 @@ STRUCT_NAMES = {
     "SleDiscoveryScanConfig": "sle_discovery_scan_config",
     "SleDiscoverySubmit": "sle_discovery_submit",
     "SleDiscoveryResult": "sle_discovery_result",
+    "SleDiscoveryTiming": "sle_discovery_timing",
 }
 
 

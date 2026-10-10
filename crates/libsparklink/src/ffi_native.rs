@@ -259,3 +259,26 @@ pub unsafe extern "C" fn slk_snoop(adapter: *const SlkAdapter, query: *mut SleSn
         Err(error) => errno(error),
     }
 }
+
+/// Query final matched Complete receipt (CLOCK_BOOTTIME ns), 0 or -errno.
+/// Pending/non-success timing is zero; output remains untouched on failure.
+/// # Safety
+/// Non-null pointers are valid, aligned, nonoverlapping; out is writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_discovery_timing(
+    adapter: *const SlkAdapter,
+    generation: u64,
+    request_id: u64,
+    out: *mut SleDiscoveryTiming,
+) -> c_int {
+    let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter.inner.discovery_timing(generation, request_id) {
+        Ok(value) => {
+            *out = value;
+            0
+        }
+        Err(error) => errno(error),
+    }
+}

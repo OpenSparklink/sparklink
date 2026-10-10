@@ -805,6 +805,29 @@ impl Adapter {
         }
     }
 
+    /// Non-destructive correlated final Complete receipt; requires timing UAPI.
+    pub fn discovery_timing(
+        &self,
+        generation: u64,
+        request_id: u64,
+    ) -> Result<slk_protocol::SleDiscoveryTiming> {
+        if generation == 0 || request_id == 0 {
+            return Err(crate::Error::InvalidParam(
+                "discovery identity must be nonzero",
+            ));
+        }
+        let mut timing = slk_protocol::SleDiscoveryTiming {
+            version: 1,
+            generation,
+            request_id,
+            ..Default::default()
+        };
+        unsafe {
+            ioctl::sl_discovery_timing(self.raw_fd(), &mut timing)?;
+        }
+        Ok(timing)
+    }
+
     /// Wait with a monotonic timeout; return failed/cancelled/faulted records
     /// intact so the caller can display the actual controller/host reason.
     pub async fn wait_discovery(

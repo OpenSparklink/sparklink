@@ -66,6 +66,9 @@ def writer(index,generation):
             if result.is_terminal:break
             assert time.monotonic()<deadline;time.sleep(.01)
         assert (result.state,result.status,result.error,result.radio_adv)==(3,0,0,1)
+        timing=a.discovery_timing(request.request_id)
+        assert (timing.generation,timing.request_id,timing.state,timing.operation,timing.opcode,timing.status)==(generation,request.request_id,3,2,result.opcode,0)
+        assert 0<timing.completed_boottime_ns<=time.clock_gettime_ns(time.CLOCK_BOOTTIME)
         print('WS73_NATIVE_BINDING_RESULT: '+json.dumps({'generation':generation,'request_id':request.request_id,
             'operation':2,'opcode':result.opcode,'state':result.state,'status':result.status,'error':result.error,
             'started_wall_ns':started,'finished_wall_ns':time.time_ns()}),flush=True)

@@ -1265,3 +1265,21 @@ pub struct SleManagementQuery {
     pub opcode: u32,
     pub reserved: u32,
 }
+
+/// Final successful matched Complete receipt (CLOCK_BOOTTIME ns).
+/// Pending, failed/cancelled/faulted without success have timestamp zero.
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SleDiscoveryTiming {
+    pub generation: u64,
+    pub request_id: u64,
+    pub completed_boottime_ns: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub operation: u32,
+    pub state: u32,
+    pub dev_index: u16,
+    pub opcode: u16,
+    pub status: u8,
+    pub reserved: [u8; 3],
+}

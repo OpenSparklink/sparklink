@@ -189,7 +189,7 @@ def corroborate_synthetic(run, capture):
 
 def _corroborate_control(run, capture):
     # Verify supporting records rather than trusting the success label alone.
-    from ws73_north_star import parse_result, parse_match, parse_scan_window, stable
+    from ws73_north_star import parse_result, parse_match, parse_scan_window, parse_scan_complete, parse_scan_observed, stable
     identity = run['application_identity']
     if (not identity['uids'][0] or len(identity['uids']) != 4 or len(set(identity['uids'])) != 1
             or any(int(identity[k], 16) for k in ['cap_eff','cap_prm','cap_amb'])):
@@ -255,15 +255,28 @@ def _corroborate_control(run, capture):
         scan_boottime = parse_scan_window(commands[1]['stdout'], rx, scan_result['request'])
         if match['kernel_boottime_ns'] < scan_boottime:
             raise CaptureError('kernel RX predates this scan invocation')
+        completed = parse_scan_complete(commands[1]['stdout'], rx, scan_result['request'])
         start_mono, end_mono = commands[1]['start_monotonic_ns'], commands[1]['end_monotonic_ns']
-        if not 0 <= end_mono - start_mono < 10_000_000_000:
-            raise CaptureError('monotonic scan bound exceeded')
-        if r['scan_window_wall_ns'] != [commands[1]['start_wall_ns'],commands[1]['end_wall_ns']]:
+        command=commands[1]
+        if not command['start_boottime_ns'] <= scan_boottime <= completed <= command['end_boottime_ns']:
+            raise CaptureError('Scan Complete clock outside command observation window')
+        observed=parse_scan_observed(commands[1]['stdout'],rx,scan_result['request'])
+        if not completed<=match['kernel_boottime_ns']<=observed<=command['end_boottime_ns']:
+            raise CaptureError('RX or observation outside correlated boottime interval')
+        if match['elapsed_ms']!=(observed-completed)//1_000_000:
+            raise CaptureError('elapsed time disagrees with correlated clocks')
+        if match['kernel_boottime_ns'] < completed:
+            raise CaptureError('kernel RX predates successful Scan Complete')
+        if r['scan_window_wall_ns'] != [command['start_wall_ns'],command['end_wall_ns']]:
             raise CaptureError('capture interval disagrees with command timestamps')
         start, end = r['scan_window_wall_ns']
-        if (end < start or end - start >= 10_000_000_000 or match['elapsed_ms'] >= 10000
+        if (end < start or end_mono < start_mono or match['elapsed_ms'] >= 10000
                 or abs((end-start)-(end_mono-start_mono)) > 250_000_000):
-            raise CaptureError('10 second discovery bound exceeded')
+            raise CaptureError('inconsistent command clocks or discovery timeout')
+        completions=[c for c in capture['complete'] if (c['bus'],c['device'],c['opcode'],c['status']) ==
+            (rx['bus'],rx['device'],0x1002,0) and start<=c['wall_ns']<=end]
+        if len(completions)!=1 :
+            raise CaptureError('one raw successful Scan Complete with post-completion deadline required')
         if (match['generation'] != rx['generation'] or match['address'] != tx['address']
                 or match['lost'] or match['seq'] <= r['watermark'] or match['kernel_boottime_ns'] <= 0
                 or match['data'] != marker_data(r['marker']).hex()):
@@ -272,7 +285,7 @@ def _corroborate_control(run, capture):
                for f in capture['failures'] for d in [tx,rx]):
             raise CaptureError('failed target IN URB during accepted discovery')
         rows = [p for p in capture['reports'] if p['bus'] == rx['bus'] and p['device'] == rx['device']
-                and start <= p['wall_ns'] <= end and p['address'] == tx['address']
+                and completions[0]['wall_ns'] <= p['wall_ns'] <= end and p['wall_ns']-completions[0]['wall_ns'] < 10_000_000_000 and p['address'] == tx['address']
                 and p['header'] == r['header'] and p['data'] == match['data'] and p['rssi'] == match['rssi']]
         if not rows:
             raise CaptureError(f"missing full receiver USB/HCC/DLI proof for {r['phase']} round {r['round']}")

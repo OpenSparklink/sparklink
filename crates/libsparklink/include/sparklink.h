@@ -372,6 +372,24 @@ typedef struct SPARKLINK_ALIGN(8) SleSnoopQuery {
     struct SleSnoopRecord record;
 } SleSnoopQuery;
 
+/**
+ * Final successful matched Complete receipt (CLOCK_BOOTTIME ns).
+ * Pending, failed/cancelled/faulted without success have timestamp zero.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleDiscoveryTiming {
+    uint64_t generation;
+    uint64_t request_id;
+    uint64_t completed_boottime_ns;
+    uint32_t version;
+    uint32_t flags;
+    uint32_t operation;
+    uint32_t state;
+    uint16_t dev_index;
+    uint16_t opcode;
+    uint8_t status;
+    uint8_t reserved[3];
+} SleDiscoveryTiming;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -708,6 +726,17 @@ int slk_controller_event(const struct SlkAdapter *adapter, struct SleControllerE
  * Non-null pointers are valid, aligned, nonoverlapping; query is read/write.
  */
 int slk_snoop(const struct SlkAdapter *adapter, struct SleSnoopQuery *query);
+
+/**
+ * Query final matched Complete receipt (CLOCK_BOOTTIME ns), 0 or -errno.
+ * Pending/non-success timing is zero; output remains untouched on failure.
+ * # Safety
+ * Non-null pointers are valid, aligned, nonoverlapping; out is writable.
+ */
+int slk_discovery_timing(const struct SlkAdapter *adapter,
+                         uint64_t generation,
+                         uint64_t request_id,
+                         struct SleDiscoveryTiming *out);
 
 #ifdef __cplusplus
 }  // extern "C"

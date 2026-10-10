@@ -316,3 +316,10 @@ nix::ioctl_readwrite!(
     super::SleManagementQuery
 );
 nix::ioctl_readwrite!(sl_snoop_get, SL_MAGIC, 0x8e, super::SleSnoopQuery);
+
+nix::ioctl_readwrite!(
+    sl_discovery_timing,
+    SL_MAGIC,
+    0x8f,
+    super::SleDiscoveryTiming
+);

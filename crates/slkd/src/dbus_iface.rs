@@ -112,6 +112,13 @@ impl AdapterIface {
     ) -> zbus::fdo::Result<slk_protocol::DiscoveryResultRecord> {
         crate::radio::result(&self.state, request_id).await
     }
+    /// Matched final Complete receipt; never substitute daemon observation time.
+    async fn get_discovery_timing(
+        &self,
+        request_id: u64,
+    ) -> zbus::fdo::Result<(u64, u64, u64, u32, u32, u16, u8)> {
+        crate::radio::timing(&self.state, request_id).await
+    }
     #[zbus(property)]
     fn radio_policy_version(&self) -> u32 {
         libsparklink::WS73_BASIC_POLICY_VERSION

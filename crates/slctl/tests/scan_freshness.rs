@@ -50,6 +50,8 @@ impl Manager {
 }
 struct ScanPeer {
     request: Arc<Mutex<u64>>,
+    completed: Mutex<u64>,
+    slow: bool,
 }
 #[zbus::interface(name = "org.sparklink.Adapter")]
 impl ScanPeer {
@@ -61,16 +63,44 @@ impl ScanPeer {
     fn generation(&self) -> u64 {
         7
     }
-    fn submit_scanning(&self, request_id: u64) {
+    async fn submit_scanning(&self, request_id: u64) {
+        if self.slow {
+            tokio::time::sleep(Duration::from_secs(6)).await;
+        }
+        let mut time = nix::libc::timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        };
+        // SAFETY: valid writable timespec and Linux clock id.
+        assert_eq!(
+            unsafe { nix::libc::clock_gettime(nix::libc::CLOCK_BOOTTIME, &mut time) },
+            0
+        );
+        *self.completed.lock().unwrap() = time.tv_sec as u64 * 1_000_000_000 + time.tv_nsec as u64;
         *self.request.lock().unwrap() = request_id;
     }
     fn get_discovery_result(&self, request_id: u64) -> DiscoveryResultRecord {
         assert_eq!(request_id, *self.request.lock().unwrap());
         (7, request_id, 3, 3, 0, 0, 0x1002, 1, 2, 0, false, 1, 2, 1)
     }
-    fn get_timed_reports(&self) -> Vec<TimedDiscoveryReportRecord> {
+    fn get_discovery_timing(&self, request_id: u64) -> (u64, u64, u64, u32, u32, u16, u8) {
+        assert_eq!(request_id, *self.request.lock().unwrap());
+        (
+            7,
+            request_id,
+            *self.completed.lock().unwrap(),
+            3,
+            3,
+            0x1002,
+            0,
+        )
+    }
+    async fn get_timed_reports(&self) -> Vec<TimedDiscoveryReportRecord> {
         if *self.request.lock().unwrap() == 0 {
             return Vec::new();
+        }
+        if self.slow {
+            tokio::time::sleep(Duration::from_secs(8)).await;
         }
         let mut time = nix::libc::timespec {
             tv_sec: 0,
@@ -114,8 +144,7 @@ impl ScanPeer {
         ]
     }
 }
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn delayed_old_rx_is_rejected_by_actual_cli() {
+async fn run_cli(slow: bool) {
     let bus = Bus::start();
     let server = zbus::connection::Builder::address(bus.address.as_str())
         .unwrap()
@@ -127,15 +156,18 @@ async fn delayed_old_rx_is_rejected_by_actual_cli() {
             PATH,
             ScanPeer {
                 request: Arc::new(Mutex::new(0)),
+                completed: Mutex::new(0),
+                slow,
             },
         )
         .unwrap()
         .build()
         .await
         .unwrap();
+    let started = std::time::Instant::now();
     let address = bus.address.clone();
     let output = tokio::time::timeout(
-        Duration::from_secs(15),
+        Duration::from_secs(25),
         tokio::task::spawn_blocking(move || {
             let binary = std::env::var_os("SPARKLINK_TEST_SLCTL")
                 .unwrap_or_else(|| env!("CARGO_BIN_EXE_slctl").into());
@@ -164,5 +196,18 @@ async fn delayed_old_rx_is_rejected_by_actual_cli() {
         "pre-scan report was accepted: {stdout}"
     );
     assert!(!stdout.contains("seq=1 "), "{stdout}");
+    if slow {
+        assert!(started.elapsed() >= Duration::from_secs(14));
+    }
+    assert!(stdout.contains("NativeScanComplete:"), "{stdout}");
     drop(server);
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn delayed_old_rx_is_rejected_by_actual_cli() {
+    run_cli(false).await;
+}
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn full_ten_seconds_start_after_complete_not_admission() {
+    run_cli(true).await;
 }

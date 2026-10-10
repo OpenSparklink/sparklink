@@ -1200,3 +1200,28 @@ one-shot slctl，覆盖延迟旧报告、未来时间、lost、错误 generation
 10 秒更早；此次没有实现精确 Complete 时间导出。该差异继续待修正，不能以
 收紧窗口代替完整时间语义或据此关闭 issue。真实七项0/7、四设备两组及完整
 S0–S6保留，所有原整项 issues 继续开放。
+
+### Scan Complete 后的完整十秒窗口
+
+补齐上节保留的时间语义：Host 在匹配 opcode 的回复进入保留槽时记录
+CLOCK_BOOTTIME，worker稍后消费时只为最终成功 Complete 保留该接收时间。
+新48字节只读 `SleDiscoveryTiming`/0x8f 使用显式generation/request，原64字节
+result不变；Status、失败、取消、过期或迟到回复不能构成成功时间。
+
+slkd新增GetDiscoveryTiming，生产观察策略允许查询。slctl校验相同generation/
+request、scan-start、Succeeded、0x1002及status=0，禁止零/早期/未来时间。
+匹配RX必须位于实际Complete与观察时间之间，观察须在Complete后十秒以内；
+查询延迟也计入预算。NativeScanWindow/Complete/Observed三条记录分别关联
+提交前下界、实际Complete和观察，recorder记录command的boottime/monotonic/wall
+边界，整体命令timeout30秒只用于防挂死，不代替发现期限。USB佐证另外核对
+唯一成功Scan Complete及十秒内完整原始RX；当前verifier不回填历史缺字段记录。
+
+实际one-shot CLI/private D-Bus新回归模拟提交6秒、Complete后8秒发现：总14秒
+成功。旧已封存CLI在约10秒提前超时，保留FAIL；这不是把原期限改得更短。
+纯Operation测试覆盖Status、各步骤失败、取消/旧intent、完整成功、重复回复及
+后续fault，成功时间不被重写。C/Python同步12项原生接口和22结构ABI，包括
+i386静态布局；新时间查询保持负errno及失败时输出不变。Kernel image #69
+保留匹配config及原始96-case；各门禁实际结果冻结后另见issue进展记录。
+
+以上均为开发支撑，真实WS73/固件/RF/物理拔插仍待验；真实七项0/7，完整
+S0–S6、四设备两组和所有原整项issues保持OPEN，不以时间机制完成关闭整项。

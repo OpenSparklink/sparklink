@@ -111,3 +111,23 @@ pub(crate) async fn wait(state: &SharedState, id: u64) -> zbus::fdo::Result<()> 
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
 }
+
+pub(crate) async fn timing(
+    state: &SharedState,
+    id: u64,
+) -> zbus::fdo::Result<(u64, u64, u64, u32, u32, u16, u8)> {
+    let (fd, generation) = selected(state).await?;
+    let t = tokio::task::spawn_blocking(move || fd.discovery_timing(generation, id))
+        .await
+        .map_err(failed)?
+        .map_err(failed)?;
+    Ok((
+        t.generation,
+        t.request_id,
+        t.completed_boottime_ns,
+        t.operation,
+        t.state,
+        t.opcode,
+        t.status,
+    ))
+}

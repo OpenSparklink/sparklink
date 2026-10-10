@@ -366,12 +366,8 @@ impl Context {
             let before: Vec<slk_protocol::TimedDiscoveryReportRecord> =
                 proxy.call("GetTimedReports", &()).await?;
             let watermark = before.iter().map(|r| r.0).max().unwrap_or(0);
-            // Starting the bound before admission is stricter than starting at
-            // successful scan Complete. Both control and discovery fit in 10s.
-            let started = tokio::time::Instant::now();
-            // Daemon history can acquire a new sequence after the watermark
-            // even when the kernel received it before this invocation. Compare
-            // the RX timestamp using the kernel's clock, never wall/Instant.
+            // The invocation lower bound rejects queued older kernel RX;
+            // the discovery deadline separately starts at matched Complete.
             let scan_boottime_ns = boottime_ns()?;
             println!(
                 "NativeScanWindow: generation={generation} request={id} start_boottime_ns={scan_boottime_ns}"
@@ -385,26 +381,60 @@ impl Context {
             self.wait_native_result(&proxy, id).await?;
             if let Some((marker, address)) = matching {
                 let expected = libsparklink::ws73_marker_data(&marker);
-                let deadline = started + std::time::Duration::from_secs(10);
+                let timing: (u64, u64, u64, u32, u32, u16, u8) = tokio::time::timeout(
+                    std::time::Duration::from_secs(7),
+                    proxy.call("GetDiscoveryTiming", &(id,)),
+                )
+                .await??;
+                let completed = timing.2;
+                let observed = boottime_ns()?;
+                if timing.0 != generation
+                    || timing.1 != id
+                    || timing.3 != 3
+                    || timing.4 != 3
+                    || timing.5 != 0x1002
+                    || timing.6 != 0
+                    || completed < scan_boottime_ns
+                    || completed > observed
+                {
+                    anyhow::bail!("invalid correlated Scan Complete timing");
+                }
+                println!(
+                    "NativeScanComplete: generation={generation} request={id} completed_boottime_ns={completed}"
+                );
+                let expires = completed
+                    .checked_add(10_000_000_000)
+                    .ok_or_else(|| anyhow::anyhow!("scan deadline overflow"))?;
                 loop {
-                    let rows: Vec<slk_protocol::TimedDiscoveryReportRecord> =
-                        tokio::time::timeout_at(deadline, proxy.call("GetTimedReports", &()))
-                            .await??;
-                    let now = tokio::time::Instant::now();
+                    let rows: Vec<slk_protocol::TimedDiscoveryReportRecord> = tokio::time::timeout(
+                        std::time::Duration::from_nanos(
+                            expires
+                                .checked_sub(boottime_ns()?)
+                                .filter(|n| *n > 0)
+                                .ok_or_else(|| {
+                                    anyhow::anyhow!(
+                                        "fresh marker discovery timeout (10s after Scan Complete)"
+                                    )
+                                })?,
+                        ),
+                        proxy.call("GetTimedReports", &()),
+                    )
+                    .await??;
                     let observed_boottime_ns = boottime_ns()?;
-                    if now >= deadline {
-                        anyhow::bail!(
-                            "fresh marker discovery timeout (10s bound includes scan admission)"
-                        );
+                    if observed_boottime_ns >= expires {
+                        anyhow::bail!("fresh marker discovery timeout (10s after Scan Complete)");
                     }
                     for row in rows {
                         if row.0 > watermark
                             && row.1 == generation
-                            && (scan_boottime_ns..=observed_boottime_ns).contains(&row.2)
+                            && (completed..=observed_boottime_ns).contains(&row.2)
                             && row.8 == 0
                             && row.4 == address
                             && row.7 == expected
                         {
+                            println!(
+                                "NativeScanObserved: generation={generation} request={id} observed_boottime_ns={observed_boottime_ns}"
+                            );
                             println!(
                                 "NativeDiscoveryMatch: generation={} seq={} address={} RSSI={} marker={} data={} kernel_boottime_ns={} elapsed_ms={} lost={}",
                                 row.1,
@@ -414,7 +444,7 @@ impl Context {
                                 hex_bytes(&marker),
                                 hex_bytes(&row.7),
                                 row.2,
-                                (now - started).as_millis(),
+                                (observed_boottime_ns - completed) / 1_000_000,
                                 row.8
                             );
                             return Ok(());

@@ -148,6 +148,27 @@ def parse_scan_window(output, identity, request):
     return int(rows[0][2])
 
 
+def parse_scan_complete(output, identity, request):
+    rows=re.findall(r'^NativeScanComplete: generation=(\d+) request=(\d+) completed_boottime_ns=(\d+)$',output,re.M)
+    if (len(rows)!=1 or output.count('NativeScanComplete:')!=1
+            or int(rows[0][0])!=identity['generation'] or int(rows[0][1])!=request
+            or int(rows[0][2])<parse_scan_window(output,identity,request)):
+        raise ValueError('one correlated final Scan Complete clock required')
+    return int(rows[0][2])
+
+
+def parse_scan_observed(output, identity, request):
+    rows=re.findall(r'^NativeScanObserved: generation=(\d+) request=(\d+) observed_boottime_ns=(\d+)$',output,re.M)
+    if (len(rows)!=1 or output.count('NativeScanObserved:')!=1
+            or int(rows[0][0])!=identity['generation'] or int(rows[0][1])!=request):
+        raise ValueError('one correlated scan observation clock required')
+    completed=parse_scan_complete(output,identity,request)
+    observed=int(rows[0][2])
+    if not 0<=observed-completed<10_000_000_000:
+        raise ValueError('scan observation outside ten seconds after Complete')
+    return observed
+
+
 class Run:
     SCOPE = 'physical'
     SUCCESS = 'CONTROL_PASS_EVIDENCE_PENDING'
@@ -186,17 +207,17 @@ class Run:
     def ctl(self, identity, *words):
         self.alive()
         command = [str(self.args.slctl.resolve()), '--adapter', identity['path'], *words]
-        record = {'args': command, 'start_wall_ns': time.time_ns(), 'start_monotonic_ns': time.monotonic_ns()}
+        record = {'args': command, 'start_wall_ns': time.time_ns(), 'start_monotonic_ns': time.monotonic_ns(), 'start_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)}
         self.data['commands'].append(record)
         self.save()
         try:
-            p = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+            p = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30 if words[:2] == ('scan','on') else 15)
             record.update({'stdout': p.stdout, 'stderr': p.stderr, 'exit': p.returncode})
         except subprocess.TimeoutExpired as error:
             record.update({'stdout': error.stdout.decode(errors='replace') if isinstance(error.stdout,bytes) else (error.stdout or ''), 'stderr': error.stderr.decode(errors='replace') if isinstance(error.stderr,bytes) else (error.stderr or ''), 'exit': 'timeout'})
             raise ValueError('slctl timed out; admitted operation may still exist') from error
         finally:
-            record.update({'end_wall_ns': time.time_ns(), 'end_monotonic_ns': time.monotonic_ns()})
+            record.update({'end_wall_ns': time.time_ns(), 'end_monotonic_ns': time.monotonic_ns(), 'end_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)})
             self.save()
         self.alive()
         if p.returncode:
@@ -238,12 +259,14 @@ class Run:
             scan = self.ctl(rx, 'scan', 'on', marker, tx['address'])
             scan_index = len(self.data['commands'])-1
             scan_result = parse_result(scan['stdout'], rx, 3)
-            scan_boottime = parse_scan_window(scan['stdout'], rx, scan_result['request'])
+            scan_boottime = parse_scan_complete(scan['stdout'], rx, scan_result['request'])
+            observed = parse_scan_observed(scan['stdout'], rx, scan_result['request'])
             match = parse_match(scan['stdout'])
             if (match['generation'] != rx['generation'] or match['seq'] <= watermark or match['marker'] != marker
                     or match['address'] != tx['address'] or match['data'] != marker_data(marker).hex()
                     or match['lost'] or match['kernel_boottime_ns'] < scan_boottime or match['elapsed_ms'] >= 10000
-                    or scan['end_monotonic_ns'] - scan['start_monotonic_ns'] >= 10_000_000_000):
+                    or not scan_boottime<=match['kernel_boottime_ns']<=observed<=scan['end_boottime_ns']
+                    or match['elapsed_ms']!=(observed-scan_boottime)//1_000_000):
                 raise ValueError('fresh marker/address/data/timing/loss invalid')
             after = reports(self.ctl(rx, 'reports')['stdout'], rx)
             exact = [r for r in after if all(r[k] == match[k] for k in ['seq', 'generation', 'address', 'rssi', 'data', 'lost'])]

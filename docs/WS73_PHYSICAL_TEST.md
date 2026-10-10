@@ -121,3 +121,10 @@ CLOCK_BOOTTIME 下界。内核 RX 时间必须不早于它；`slctl` 同时拒�
 verify 不接受缺失该记录的历史 run；不要给旧证据手工补字段，使用其冻结
 版本复核或重新完整运行。整体10秒限制目前仍从提交前计时；实际 scan
 Complete 后的精确10秒窗口尚待实现，不能宣称本改动完成这项时间语义。
+
+当前版本补齐精确完成计时：NativeScanComplete携带内核Host匹配到最终成功
+Complete时的CLOCK_BOOTTIME，NativeScanObserved记录匹配观察时刻，均与
+generation/request关联。RX时间位于两者之间且观察在Complete后十秒内；
+command的启动/退出可以超过十秒，30秒process timeout仅防挂死。verifier
+同时检查三条记录、command boottime边界及原始USB成功Complete/RX时间窗。
+缺任一记录的历史run必须使用其冻结版本，不能回填或以当前格式提升证据。

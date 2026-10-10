@@ -10,6 +10,7 @@ K3/U2及完整独立事件/移除/旧路径清理验收仍OPEN。UAPI未发布�
 | MiscDevice::read_iter → per-fd EventQueue | 旧kernel C selftest/ctl；固定44字节SleWireEvent | 使用唯一copy_records，完整记录复制成功才消费/增加delivered |
 | EventQueue::drain_to_buf | rg审计无调用者 | 立即删除；dequeue仅私有提交helper，无第二套生产drain |
 | DLI_POLL_EVENT → runtime.pop_dli_event/backend.poll_event | legacy lib EventReceiver、profile0 slkd、旧DLI工具/selftests | 是另一条旧路径，仍存在先消费再copy风险及backend直读fallback；等待独立订阅调用者迁移后删旧入口 |
+| slkconfig Native query → owner-private diagnostic result | 原生产调用者，已按 fd/generation/local sequence 迁移 | 删除 stale drain 与共享 poll；结果不消费，完整旧调用者迁移仍 OPEN |
 | ControllerEventReceiver → typed controller subscription | 当前Native WS73 slkd/slctl；新monitor独立snoop | 本批不改；重新用新镜像验证discovery及幸存者 |
 
 保持三类清理安排：无人调用的helper立即删除，copy故障模拟仅selftests；旧DLI
@@ -36,7 +37,7 @@ fan-out、实际read接线与同fd锁内提交。严格-D warnings通过；完�
 fixture不能证明真实read(2)坏地址/跨页用户copy、kernel mutex/lockdep、runtime路由或
 设备移除唤醒。实际VFS故障的后续验证见下文；R12旧DLI消费者迁移仍待实现，
 保留有价值旧失败用例。
-R09 PHY/加密状态提前提交仍待修；WS73自然超时/重枚举/消失根因、完整无人工恢复、
+原 R09 本地提前提交路径已[移除](LINK_STATE_REMEDIATION.md)，实际硬件事务仍待接通；WS73自然超时/重枚举/消失根因、完整无人工恢复、
 四设备两组及宿主原生对照（VM-only未授权）不因本批关闭。北极星仍7/8。
 
 ## 新镜像实机及CI复核

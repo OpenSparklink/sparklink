@@ -1,5 +1,10 @@
 # Linux Bluetooth / BlueZ 与 SparkLink：设计依据和验证边界
 
+本轮重复分析已核对至 Linux `5c87f9075d37` / 用户态 `f2aea829dab3`。
+[Native diagnostic caller 迁移](DIAGNOSTIC_RESULT_MIGRATION.md)推进原请求者结果
+交付，保留 ADR 0001 分层与最终 socket 方向；旧事件全迁移和完整请求契约仍开放。
+Rust、接口数量或代码量不构成架构/性能领先证据。
+
 2026-10-11 重审。对标是 Linux Bluetooth 内核协议栈加 BlueZ 用户态生态。
 目标为可维护、可扩展的 Linux 通信子系统；当前不能宣称完整、可投入使用或
 功能对等。审查基线与确定缺陷见[14 项整改](REVIEW_REMEDIATION_20261011.md)。

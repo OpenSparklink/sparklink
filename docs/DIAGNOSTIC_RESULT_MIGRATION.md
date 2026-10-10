@@ -48,3 +48,20 @@ DLI_POLL_EVENT 和 EventReceiver、legacy C/Python、slkd profile 0、监视工�
 WS73 真实双设备闭环必须用当前镜像持续回归；自然启动/重枚举/消失根因、
 无人工拔插恢复、物理 xHCI warning、四设备两组并行及 native-host 对照仍开放。
 仅使用 VM；该接口不改变 S0–S6、SSAP 用户态归属或最终 socket 数据面方向。
+
+## 当前镜像回归与复核证据
+
+[CI 38086204506](https://github.com/OpenSparklink/sparklink/actions/runs/38086204506)
+固定 Linux `5c87f9075d37` / 编译用户态 `f2aea829dab3`，9作业终态成功，实际日志
+核对169 Rust、33 Python、146工具及新增10项内核结果测试；既有security7、
+backend2、TX11、SSAP9、event9、历史PHY3/拒绝arm1与sanitizers仍通过。
+
+[新镜像VM证据](evidence/ws73-vm-diagnostic-result-20261011.json)：7类实际read
+门禁及真实20＋2轮通过，最长469ms；独立22份RX/1247 USB零drop，普通UID1000/
+caps0，同slkd PID521/start331及bus owner，幸存generation2保持、目标1→3。
+两只最终STOP_CONFIRMED，VM warning0/taint0/trace overrun0，host4只释放后仍在。
+单对象人工IN81错误至新Ready约10328.452ms，发现计时
+仍从成功scan Complete起算；RX USB/HCC/DLI佐证不等于PHY嗅探。
+
+这轮VM运行验证当前生产路径保持，不执行新diagnostic ioctl的权限/copy/退役
+验收，不代表原生宿主对照、物理拔插、自然恢复或全事件验收。完整issue保持OPEN。

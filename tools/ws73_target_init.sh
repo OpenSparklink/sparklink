@@ -5,7 +5,24 @@ export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/slkbus
 # The policy probe selects this address explicitly; the bus is type=system.
 export DBUS_SESSION_BUS_ADDRESS=$DBUS_SYSTEM_BUS_ADDRESS
 export PYTHONHOME=/usr
-fail() { echo "WS73_TARGET_FAILURE: $*"; dmesg; sync; poweroff -f; }
+fail() {
+    echo "WS73_TARGET_FAILURE: $*"
+    # A failed bootstrap is still evidence. Stop our owned processes and
+    # flush usbmon before shutdown, even when the ordinary shell never opened.
+    if [ -n "${daemon:-}" ]; then
+        kill -TERM "$daemon" 2>/dev/null
+        for n in $(seq 1 100); do kill -0 "$daemon" 2>/dev/null || break; sleep 0.1; done
+    fi
+    if [ -n "${capture:-}" ]; then
+        kill -INT "$capture" 2>/dev/null
+        wait "$capture"; capture_exit=$?
+        echo "$capture_exit" > /evidence/capture-failure-exit.txt
+    fi
+    [ -d /evidence/application ] && dmesg > /evidence/kernel.log
+    dmesg
+    sync
+    poweroff -f
+}
 mount -t proc none /proc || fail proc
 mount -t sysfs none /sys || fail sysfs
 mount -t devtmpfs none /dev || mdev -s

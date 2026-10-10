@@ -11,9 +11,28 @@ from ws73_target import board_files, config_required, opened_usb_node, prepared,
 from ws73_north_star import _registration, file_record, healthy_native_runtime, registration, Run
 from ws73_target_control import SyntheticControlRun
 from types import SimpleNamespace
+import ws73_target_guest as guest
 
 
 class TargetEnvironment(unittest.TestCase):
+    def test_bootstrap_failure_is_saved_without_waiting_ready_deadline(self):
+        for diagnostics in [None, 'phase=10 error=-5 event=000a hardware_error=0']:
+            with self.subTest(diagnostics=diagnostics),tempfile.TemporaryDirectory() as d:
+                root=Path(d);usb=root/'usb';interface=usb/'1-1/1-1:1.0';interface.mkdir(parents=True)
+                evidence=root/'evidence';evidence.mkdir()
+                for name,value in {'native_runtime':'id=-1 generation=0 streaming=0 broken=0',
+                                   'boot_stage':'failed','boot_error':'-5'}.items():
+                    (interface/name).write_text(value+'\n')
+                if diagnostics is not None:(interface/'failure_diagnostics').write_text(diagnostics+'\n')
+                def path(value):return usb if value=='/sys/bus/usb/devices' else Path(value)
+                with patch.object(guest,'Path',side_effect=path),patch.object(guest,'EVIDENCE',evidence),\
+                     patch.object(guest.time,'sleep') as sleep,patch.object(guest,'application') as app:
+                    with self.assertRaisesRegex(ValueError,'native bootstrap failed: -5'):guest.ready(0)
+                sleep.assert_not_called();app.assert_not_called()
+                saved=json.loads((evidence/'ready-progress-0.json').read_text())
+                self.assertEqual((saved['boot_stage'],saved['boot_error']),('failed',-5))
+                self.assertEqual(saved.get('failure_diagnostics'),diagnostics)
+
     def test_physical_registration_uses_actual_no_error_sentinel(self):
         # Filesystem fixture only. This is not a hardware/RF acceptance record.
         with tempfile.TemporaryDirectory() as d:

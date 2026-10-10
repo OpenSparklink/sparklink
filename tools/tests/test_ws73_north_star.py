@@ -83,7 +83,7 @@ def fixture():
         for op,value in [(0x0404,bytes.fromhex(d['version'])),(0x0403,bytes.fromhex(d['features'])),(0x0406,bytes.fromhex(d['address'].replace(':',''))),(0x0402,struct.pack('<HBHB',*d['buffers']))]:
             data=b'\xa2\x02\x00'+struct.pack('<H',4+len(value))+struct.pack('<H',op)+b'\x01\x00'+value
             moment=8_800_000_000 if d is new else 500_000_000
-            transmit(records,d['device'],moment,op,b'\x00' if op==0x0406 else b'')
+            transmit(records,d['device'],moment,op,b'')
             records.append((1,d['device'],moment,aggregate(data),'C',0x81,0))
     for phase,count,tx,rx in [('initial',20,a,b),('replug',2,new,b)]:
         for n in range(1,count+1):

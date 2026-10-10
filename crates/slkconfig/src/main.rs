@@ -404,7 +404,7 @@ fn cmd_native_query(
         let (opcode, _) = query.wire();
         let mut cmd = SleDliCmd {
             opcode,
-            param_len: u16::from(matches!(query, NativeQuery::Mac)),
+            param_len: 0, // WS73 metadata queries, including SDK 0406, have no parameters.
             seq: 0,
             params: [0; 240],
         };

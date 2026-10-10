@@ -408,7 +408,7 @@ def _corroborate_control(run, capture):
     for identity in identities.values():
         metadata[json_identity(identity)] = [command_reply(capture, identity, opcode,
             run['unplug_observed_wall_ns'] if identity == replacement else 0,
-            identity['observed_wall_ns'], b'\x00' if opcode == 0x0406 else b'', value)
+            identity['observed_wall_ns'], b'', value)
             for opcode,value in [(0x0404, identity['version']),
                                  (0x0402, struct.pack('<HBHB', *identity['buffers']).hex()),
                                  (0x0403, identity['features']),

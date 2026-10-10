@@ -34,6 +34,13 @@ def ready(slot):
             try:
                 state=(p/'native_runtime').read_text().strip()
                 progress['native_runtime']=state
+                progress['boot_stage']=(p/'boot_stage').read_text().strip()
+                progress['boot_error']=int((p/'boot_error').read_text().strip())
+                diagnostics=p/'failure_diagnostics'
+                if diagnostics.exists():progress['failure_diagnostics']=diagnostics.read_text().strip()
+                if progress['boot_stage']=='failed':
+                    (EVIDENCE/f'ready-progress-{slot}.json').write_text(json.dumps(progress,indent=2)+'\n')
+                    raise ValueError(f'{port}: native bootstrap failed: {progress["boot_error"]}')
                 try:m=healthy_native_runtime(state)
                 except ValueError:continue
                 path=f'/org/sparklink/slk{m[1]}_g{m[2]}'

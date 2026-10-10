@@ -42,3 +42,28 @@ README.OpenSource 声明 Apache-2.0，源码有相应许可头。本次只读取
 
 WS73 优先级与 S0–S6 总顺序不变；不扩大到参考库的音频、测距等无关联 issue
 的产品功能。参考复核不替代四设备实机与双端空口通信验收。
+
+## WS73 实机方言与 libws73-usb / SDK 交叉核验
+
+本地 libws73-usb 基线 `f4d85d0`（LGPL-3.0-or-later）继续作为线格式、
+状态/完成分离、RF双端验收的参考，独立实现Linux/Rust代码，不搬用其
+进程全局状态。`src/sle73/sle73_priv.h` 的0401是SetEventMask；
+`src/sle73/sle73_discovery.c` 的 get_local_addr 返回SetPublicAddress后的
+缓存，不能当作本项目真实0406查询成功。SetAdvParams与StopAdvertiser分别
+发送0c02与0c05；本项目实机fresh实例stop返回1e，与OpenHarmony
+`services/stack/src/dli/interface/dli_errno.h` 的UnknownAdvertisingIdentifier
+相符，须核验创建实例的前置步骤，不能吞掉失败发布Ready。
+
+用户授权检查的SDK `application/lib/v660/libsle_host.so` SHA256为
+`020349f35db6598bbae3cb7be3acfe8dbc2757c3a1785a2f22f67ef43eb97803`，
+`application/lib/stm32mp157/sle/libsle_host.a` SHA256为
+`aa89e30ab798cf0cae2cea2684de66047c6858d571b02f5ed34d4cfb535dba8c`。
+两者 get-public-address 构造0406时参数指针/长度均0。标准和OpenHarmony的
+地址类型字节不适用于这一WS73调用：本项目实机旧参数00触发Hardware Error，
+独立修正为零参数后四项元数据全通过、读到真实地址，但仍仅Setup。私有
+库、反汇编和固件均留本地，不提交；来源事实、模型与本项目实测分开记录。
+
+SDK `driver/bsle/sle_driver/sle_host_register.c::sle_recovery` 的重新customize/
+SLE_OPEN/BOOT_FINISH为后续恢复流程参考；其全局HCC/device状态不符合本项目
+多设备隔离要求，尚未作为本项目自动恢复执行。完整设计与未通过项见
+[WS73_RECOVERY.md](WS73_RECOVERY.md)。

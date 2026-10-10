@@ -238,7 +238,8 @@ def _run(args):
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
        'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
        'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False)),
-       'synthetic_hotplug':bool(getattr(args,'hotplug',False))}
+       'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
+       'synthetic_warm':bool(getattr(args,'warm',False))}
     process=monitor=channel=None
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
@@ -301,12 +302,14 @@ def _run(args):
                         if hotplug_phase==1 and 'WS73_TARGET_CONTROL_READD_READY' in text:
                             props=dict(driver='usb-ws73-test',id='ws73_0',bus='xhci.0',port='1',
                                        **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
-                                       **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}))
+                                       **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
+                                       **{'runtime-idle-scan-stop':True}, **({'runtime-warm':True} if getattr(args,'warm',False) else {}))
                             monitor.execute('device_add',props);channel.sendall(b'support-readd\n');hotplug_phase=2
                     if active<2 and ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text:
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
-                                    **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {})) if support else usb_properties(args.ports[active],active))
+                                    **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
+                                       **{'runtime-idle-scan-stop':True}, **({'runtime-warm':True} if getattr(args,'warm',False) else {})) if support else usb_properties(args.ports[active],active))
                         monitor.execute('device_add',props);active+=1
                     if not support:
                         current={d['path']:d for d in lab.inventory()}
@@ -378,6 +381,7 @@ def main():
         else:
             cmd.add_argument('--empty-bulk',action='store_true',help='inject successful zero-length bulk IN before synthetic runtime replies; never a physical option')
             cmd.add_argument('--hotplug',action='store_true',help='run the full control orchestrator with explicitly synthetic USB removal/replug; never physical acceptance')
+            cmd.add_argument('--warm',action='store_true',help='synthetic one-shot BSP already consumed; require warm restore')
     args=parser.parse_args()
     if not math.isfinite(getattr(args,'timeout',1)) or getattr(args,'timeout',1)<=0:parser.error('timeout must be finite and positive')
     return prepare(args) if args.command=='prepare' else run(args)

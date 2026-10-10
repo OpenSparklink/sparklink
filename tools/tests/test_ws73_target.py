@@ -21,7 +21,8 @@ class TargetEnvironment(unittest.TestCase):
                 root=Path(d);usb=root/'usb';interface=usb/'1-1/1-1:1.0';interface.mkdir(parents=True)
                 evidence=root/'evidence';evidence.mkdir()
                 for name,value in {'native_runtime':'id=-1 generation=0 streaming=0 broken=0',
-                                   'boot_stage':'failed','boot_error':'-5'}.items():
+                                   'boot_stage':'failed','boot_error':'-5',
+                                   'warm_recovery':'attempts=1 limit=1 cause=-110 result=-5 started_ms=10001'}.items():
                     (interface/name).write_text(value+'\n')
                 if diagnostics is not None:(interface/'failure_diagnostics').write_text(diagnostics+'\n')
                 def path(value):return usb if value=='/sys/bus/usb/devices' else Path(value)
@@ -32,6 +33,26 @@ class TargetEnvironment(unittest.TestCase):
                 saved=json.loads((evidence/'ready-progress-0.json').read_text())
                 self.assertEqual((saved['boot_stage'],saved['boot_error']),('failed',-5))
                 self.assertEqual(saved.get('failure_diagnostics'),diagnostics)
+                self.assertEqual(saved['warm_recovery'],'attempts=1 limit=1 cause=-110 result=-5 started_ms=10001')
+
+    def test_initialization_failure_retains_raw_status_without_waiting(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);usb=root/'usb';interface=usb/'1-1/1-1:1.0';interface.mkdir(parents=True)
+            evidence=root/'evidence';evidence.mkdir()
+            for name,value in {'native_runtime':'id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100',
+                               'boot_stage':'native-runtime-setup','boot_error':'0',
+                               'warm_recovery':'attempts=1 limit=1 cause=-110 result=0 started_ms=10001'}.items():
+                (interface/name).write_text(value+'\n')
+            def path(value):return usb if value=='/sys/bus/usb/devices' else Path(value)
+            error='initialization operation=6 state=4 status=0x0b errno=0'
+            result=SimpleNamespace(returncode=0,stdout='  State:       Setup\n  Init error:  '+error+'\n',stderr='')
+            with patch.object(guest,'Path',side_effect=path),patch.object(guest,'EVIDENCE',evidence), \
+                 patch.object(guest.time,'sleep') as sleep,patch.object(guest,'application',return_value=result):
+                with self.assertRaisesRegex(ValueError,'adapter initialization failed'):guest.ready(0)
+            sleep.assert_not_called()
+            saved=json.loads((evidence/'ready-progress-0.json').read_text())
+            self.assertIn(error,saved['stdout'])
+            self.assertEqual(saved['exit'],0)
 
     def test_physical_registration_uses_actual_no_error_sentinel(self):
         # Filesystem fixture only. This is not a hardware/RF acceptance record.

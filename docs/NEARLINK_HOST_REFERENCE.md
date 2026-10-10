@@ -65,7 +65,7 @@ WS73 优先级与 S0–S6 总顺序不变；不扩大到参考库的音频、测
 
 SDK `driver/bsle/sle_driver/sle_host_register.c::sle_recovery` 的重新customize/
 SLE_OPEN/BOOT_FINISH为后续恢复流程参考；其全局HCC/device状态不符合本项目
-多设备隔离要求，尚未作为本项目自动恢复执行。完整设计与未通过项见
+多设备隔离要求，最小每设备暖启动切片已独立实现，完整自动恢复验收仍开放。完整设计与未通过项见
 [WS73_RECOVERY.md](WS73_RECOVERY.md)。
 
 ## 固件版本对照与111基线
@@ -91,7 +91,7 @@ python3 tools/ws73_firmware.py \
 整包、每文件和payload hash；`ws73_target.py prepare --firmware-dir`选择该
 目录，原内核三文件加载路径无需改变。六项单元测试覆盖截断、改写、假内嵌
 header、额外段/尾字节、空payload、hash拒绝及不覆盖。导入时111客体仅已准备。随后实机冷启动通过下载/BSLE，但在buffer
-Complete的SLE subtype1处失败；当前仍不能宣称111完整启动或自动恢复通过。BSLE/PM板配置与
+Complete的SLE subtype1处失败；当时尚未证明修复后完整启动；后续实际结果见下节。BSLE/PM板配置与
 固件版本分开记录，板级校准/功率仍NOT_ASSERTED。
 
 111新增实机抓包显示ReadVersion回复tag=a0，ReadBuffer回复tag=a1，后者
@@ -102,3 +102,13 @@ sub_type，libws73-usb的`rx_slot_netbuf`/`is_data_header`按service/queue
 不扫描padding，仍验证全部slot和DLI长度。五帧实际捕获经生产C codec离线
 复核通过；修复后的实机启动/广播尚未重跑。原始反例/抓包保存在本地
 `.dev/ws73-real-111-standby`，零capture drops；不发布设备allocation padding。
+
+## 111实测进展与版本边界
+
+后续真实111已完成四项DLI查询与独立Ready。SDK CLOSE30/action3新ACK再
+customize/open/BOOT_FINISH用于一次有界暖采纳，无hub reset或重新上传。
+扫描初始OFF的0b在参数成功后仍复现；被动参数/ON/OFF三个Complete后
+才建立OFF。真实20轮数据/RSSI/地址及零drop USB证据已按初始双设备阶段
+单独复核；当前封存组合为当轮冷上传111的1-2.1.1与保留110的1-2.1.3。
+两者DLI version tuple相同，不能据此推断两只都是111。完整拔插隔离曾失败，
+自动恢复及设备消失根因未闭环，见[恢复与验收](WS73_RECOVERY.md)。

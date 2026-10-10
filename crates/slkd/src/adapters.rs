@@ -109,7 +109,7 @@ async fn initialize(
     .await??;
     for operation in [
         slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF,
-        slk_protocol::DISCOVERY_SCAN_STOP,
+        slk_protocol::DISCOVERY_SCAN_INITIALIZE_OFF,
     ] {
         if *cancelled.borrow() {
             return Ok(());
@@ -118,7 +118,7 @@ async fn initialize(
         let request = if operation == slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF {
             libsparklink::ws73_basic_standby(&snapshot, request_id)?
         } else {
-            libsparklink::ws73_basic_stop(&snapshot, request_id, operation)?
+            libsparklink::ws73_basic_scan_standby(&snapshot, request_id)?
         };
         let fd = adapter.clone();
         // No SharedState or directory guard is held across any ioctl/wait.

@@ -38,6 +38,8 @@ def ready(slot):
                 progress['boot_error']=int((p/'boot_error').read_text().strip())
                 diagnostics=p/'failure_diagnostics'
                 if diagnostics.exists():progress['failure_diagnostics']=diagnostics.read_text().strip()
+                recovery=p/'warm_recovery'
+                if recovery.exists():progress['warm_recovery']=recovery.read_text().strip()
                 if progress['boot_stage']=='failed':
                     (EVIDENCE/f'ready-progress-{slot}.json').write_text(json.dumps(progress,indent=2)+'\n')
                     raise ValueError(f'{port}: native bootstrap failed: {progress["boot_error"]}')
@@ -46,6 +48,10 @@ def ready(slot):
                 path=f'/org/sparklink/slk{m[1]}_g{m[2]}'
                 result=application('/bin/slctl','--adapter',path,'show',capture_output=True,timeout=10)
                 progress.update({'stdout':result.stdout,'stderr':result.stderr,'exit':result.returncode})
+                initialization=re.search(r'^  Init error:  (.+)$',result.stdout,re.M)
+                if initialization:
+                    (EVIDENCE/f'ready-progress-{slot}.json').write_text(json.dumps(progress,indent=2)+'\n')
+                    raise ValueError(f'{port}: adapter initialization failed: {initialization[1]}')
                 if result.returncode or '  State:       Ready\n' not in result.stdout:continue
                 address=re.search(r'^  Address:     ([0-9A-F:]+)$',result.stdout,re.M)
                 data={'port':port,'path':path,'index':int(m[1]),'generation':int(m[2]),

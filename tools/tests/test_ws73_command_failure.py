@@ -146,6 +146,30 @@ class CommandFailureTests(unittest.TestCase):
         with self.assertRaises(ChildProcessError):
             os.waitpid(record['pid'], os.WNOHANG)
 
+    def test_confirmed_idle_stop_is_requeried_without_another_off(self):
+        run=self.run_object();identity=dict(self.identity,generation=1)
+        output='NativeOperationResult: generation=1 request=23 operation=4 state=3 errno=0 status=0x00 opcode=0x1002 step=0/1 power=0 power_valid=0 adv=1 scan=1 profile=1\n'
+        run.data['commands']=[{'args':[str(self.binary),'--adapter',identity['path'],'scan','off'],'exit':0,'stdout':output}]
+        def query(owner,*words):
+            self.assertEqual(words,('result','23'))
+            record={'args':[str(self.binary),'--adapter',identity['path'],*words],'exit':0,'stdout':output}
+            run.data['commands'].append(record);return record
+        with patch.object(run,'check'),patch.object(run,'ctl',side_effect=query):run.stop(identity,'scan')
+        self.assertEqual(run.data['stop_confirmations'][0]['source_command'],0)
+        self.assertEqual(run.data['stop_confirmations'][0]['query_command'],1)
+
+    def test_idle_confirmation_does_not_accept_unknown_radio_or_wrong_generation(self):
+        good='NativeOperationResult: generation=1 request=23 operation=4 state=3 errno=0 status=0x00 opcode=0x1002 step=0/1 power=0 power_valid=0 adv=1 scan=1 profile=1\n'
+        for number,changed in enumerate([good.replace('scan=1','scan=0'),good.replace('generation=1','generation=2')]):
+            with self.subTest(changed=changed):
+                # Separate fixture record; no real controller is involved.
+                self.args.output=self.root/('confirmation-'+str(number))
+                run=self.run_object();identity=dict(self.identity,generation=1)
+                run.data['commands']=[{'args':[str(self.binary),'--adapter',identity['path'],'scan','off'],'exit':0,'stdout':good}]
+                with patch.object(run,'check'),patch.object(run,'ctl',return_value={'stdout':changed}):
+                    with self.assertRaises(ValueError):run.stop(identity,'scan')
+                self.assertNotIn('stop_confirmations',run.data)
+
     def test_interrupt_keeps_run_failed_after_cleanup(self):
         parent = self
 

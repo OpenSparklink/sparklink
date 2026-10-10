@@ -120,7 +120,12 @@ pub fn ws73_basic_scan(
 ) -> Result<SleDiscoverySubmit> {
     let mut request = identity(snapshot, request_id, true)?;
     request.operation = DISCOVERY_SCAN_START;
-    request.scanning = SleDiscoveryScanConfig {
+    request.scanning = basic_scanner_config();
+    Ok(request)
+}
+
+fn basic_scanner_config() -> SleDiscoveryScanConfig {
+    SleDiscoveryScanConfig {
         own_address_type: 0,
         filter: 0,
         frame_types: 1,
@@ -128,7 +133,18 @@ pub fn ws73_basic_scan(
         interval: 1600,
         window: 800,
         filter_duplicates: 0,
-    };
+    }
+}
+
+/// Probe a passive scanner ON then OFF, requiring both successful Completes.
+/// This briefly enables reception; it never sends active scan requests.
+pub fn ws73_basic_scan_standby(
+    snapshot: &SleControllerSnapshot,
+    request_id: u64,
+) -> Result<SleDiscoverySubmit> {
+    let mut request = identity(snapshot, request_id, false)?;
+    request.operation = DISCOVERY_SCAN_INITIALIZE_OFF;
+    request.scanning = basic_scanner_config();
     Ok(request)
 }
 
@@ -196,6 +212,48 @@ mod tests {
             )
             .is_err()
         );
+    }
+    #[test]
+    fn scan_standby_uses_setup_without_enable_and_rejects_faults() {
+        let setup = SleControllerSnapshot {
+            flags: CONTROLLER_SETUP,
+            ..snapshot()
+        };
+        let req = ws73_basic_scan_standby(&setup, 12).unwrap();
+        assert_eq!(req.operation, DISCOVERY_SCAN_INITIALIZE_OFF);
+        assert_eq!(
+            (
+                req.scanning.frame_types,
+                req.scanning.active,
+                req.scanning.interval,
+                req.scanning.window
+            ),
+            (1, 0, 1600, 800)
+        );
+        assert_eq!(
+            (
+                req.data_len,
+                req.flags,
+                req.handle,
+                req.duration,
+                req.max_events
+            ),
+            (0, 0, 0, 0, 0)
+        );
+        assert_eq!(
+            (
+                req.advertising.interval_min,
+                req.advertising.interval_max,
+                req.advertising.channel_map
+            ),
+            (0, 0, 0)
+        );
+        for flags in [CONTROLLER_FAULT, 0] {
+            assert!(
+                ws73_basic_scan_standby(&SleControllerSnapshot { flags, ..setup }, 13).is_err()
+            );
+        }
+        assert!(ws73_basic_scan_standby(&setup, 0).is_err());
     }
     #[test]
     fn marker_has_access_envelope_and_public_information_not_ble_tlv() {

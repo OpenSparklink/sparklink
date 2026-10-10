@@ -123,3 +123,61 @@ handle的stop返回1e，不能把旧模型“OFF总成功”当物理依据。
 现在四只均已warm，不追加人工重插作为通过手段；下一依赖是每设备warm
 恢复及重新查询，再实测operation5/OFF和双端广播。原生主机对照、自动
 有限恢复及真实北极星0/8仍未完成，issues不关闭。
+
+### 每设备暖启动与真实初始20轮（kernel90，部分验收）
+
+固件基线采用用户指定libws73-usb combined-1.10.111，制作方式保持
+`cat ws73.bin wifi_cali.bin btc_cali.bin > combined-<版本>.bin`，各段64字节
+hash头保留。暖启动不上传固件，不能仅凭准备目录将旧设备标成111。
+
+已实现一次有界暖启动采纳：仅初始BSP_READY超时、尚未发布Runtime时，
+每probe最多一次；先最多64包/1000ms排空旧输入，再发送SDK action30 CLOSE，
+等待新type4/message3关闭ACK，重新PM/customize、OPEN29/BOOT_FINISH及四项
+DLI查询。各阶段有截止时间和独立失败日志，`warm_recovery`导出attempts/
+limit/cause/result/start。旧BOOT、OPEN ACK及排空前CLOSE不能代替新关闭回执，
+panic/断开/超限均失败；不重置hub、不detach、不主动操作其他owner。
+这是启动恢复切片，不是持久端口预算、运行期故障恢复或设备消失根因闭环。
+
+真实111暖设备已验证关闭/重新启动/四项查询及广播配置/OFF成功。扫描初始
+OFF返回原始0b；补参数1001成功Complete后OFF仍0b，否定仅缺参数假设。
+新typed operation6 SCAN_INITIALIZE_OFF执行**被动参数 → ON → OFF**，三个
+成功Complete后才确认OFF/Ready；短暂开启接收，无主动scan request。只接受
+active=0/duplicates=0，必须先有广播OFF且无并行广播/扫描事务。中间ON在
+发送时使扫描状态未知，取消/迟到ON不能建立Ready，失败最终OFF仍保持未知；
+含enable的旧recipe不能在被替代后发送。operation5仍不启用广播。
+
+真实`.dev/ws73-real-scan-probe`两只独立Ready、20轮交换角色成功，但物理
+拔出1-2.1.4后幸存1-2.1.3的registration由slk1_g2变为slk0_g3，判FAIL。
+等待人工操作超过会话时限，capture无最终丢包统计，不能冒充完整证据。
+slkd日志保留两次退役和重新注册；QEMU/内核/USB供电归因尚未完成。
+
+独立重跑`.dev/ws73-real-initial20`：1-2.1.1当轮冷上传111，1-2.1.3保留110，
+地址分别00:01:09:32:54:CD和00:01:09:30:CE:85；两个不同Runtime generation
+均Ready。普通UID1000、全部capabilities=0，通过slctl交换角色20轮，随机标识
+均不同，数据/地址/RSSI匹配，成功Scan Complete后298–615ms内观测。封存
+1161 USB packets、zero kernel drops；独立执行生产corroborator原20轮块，
+逐轮匹配实际TX/Complete/完整RX/所有权/时间/marker/四元信息查询，输出
+`.dev/physical-initial20-evidence.json` INITIAL_20_RX_CORROBORATED。已验证2秒
+TX-off负例。此轮有意不执行物理拔出，完整脚本在EOF及重复idle扫描OFF处
+保留FAIL，不伪造replacement、cleanup或整体PASS。板级功率仍NOT_ASSERTED。
+
+北极星只确认第1/2/3/6项（独立Ready、新数据10秒内、20轮角色交换、普通应用），
+**4/8部分验收**；拔出隔离、同slkd重插、完整可复现验收包和自动恢复未完成。
+所有整项issues/PR草稿及S0–S6保持OPEN，四设备两组尚待扩展。
+
+kernel90验证：6078 BSLE/451067 discovery/115776既有DLI checks，11生产operation
+和15 Host plan tests；19库/64slkd tests，96工具tests，282内核脚本tests通过。
+四条WS73 discovery/management及标准Runtime/recipes回归PASS。clippy退出0，
+42既有slkd warnings保留。此前kernel85/87合成20+2 receipts独立保存，不能
+倒填成kernel90完整测试。新增idle-OFF=0b模型用于暴露管理清理前置条件。
+
+测试工具清理可重新读取同一generation、同一request的已成功OFF及当前OFF
+状态，确认无中间on/off，再保留其原始OFF命令关联；无需重复发送已idle的
+OFF。不把新0b改成功，错误/未知/旧代次均拒绝；真实旧失败记录保持。管理
+lease撤销及C/Python writer在此固件语义下的门禁继续独立验证。
+
+最新idle模型门禁：kernel90合成普通用户20+2轮、同slkd/bus与热重加控制阶段
+通过，独立复核2427 packets/191TX/179empty及4条保留OFF查询关联；整体
+`.dev/scan-probe-idle-support` **FAIL**，因为随后C binding writer对已经OFF的
+扫描器再次发送OFF，被模型返回0b。该失败未隐藏，管理撤销/绑定writer正确
+前置条件继续作为依赖处理；不以此宣称完整C/Python writer或发布矩阵通过。

@@ -287,6 +287,25 @@ def _corroborate_control(run, capture):
         raise CaptureError('replacement generation not proved')
     if len(run['cleanup']) != 2 or any(c['status'] != 'STOP_CONFIRMED' for c in run['cleanup']):
         raise CaptureError('final stops not confirmed')
+    for confirmation in run.get('stop_confirmations', []):
+        owner = confirmation['identity']
+        domain = confirmation['domain']
+        if domain not in ['advertise', 'scan']:
+            raise CaptureError('unknown OFF confirmation domain')
+        op, opcode, params = (2, 0x0c05, b'\0'*5) if domain == 'advertise' else (4, 0x1002, b'\0'*2)
+        source, query = [run['commands'][confirmation[k]] for k in ['source_command', 'query_command']]
+        prefix = [run['slctl']['path'], '--adapter', owner['path']]
+        result = parse_result(source['stdout'], owner, op)
+        observed = parse_result(query['stdout'], owner, op)
+        if (source['exit'] or query['exit'] or source['args'] != prefix+[domain, 'off']
+                or query['args'] != prefix+['result', str(result['request'])]
+                or observed['request'] != result['request']
+                or source['end_wall_ns'] > query['start_wall_ns']):
+            raise CaptureError('OFF confirmation differs from retained successful stop')
+        if any(c['args'][:4] == prefix+[domain] and c['args'][4:5] in [['on'], ['off']]
+               for c in run['commands'][confirmation['source_command']+1:confirmation['query_command']]):
+            raise CaptureError('radio operation intervened before OFF confirmation')
+        command_reply(capture, owner, opcode, source['start_wall_ns'], source['end_wall_ns'], params, '')
     rounds = run['rounds']
     if [(r['phase'], r['round']) for r in rounds] != [('initial', i) for i in range(1, 21)] + [('replug', 1), ('replug', 2)]:
         raise CaptureError('20 consecutive alternating rounds plus separate replug proof required')

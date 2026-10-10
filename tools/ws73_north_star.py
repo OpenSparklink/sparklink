@@ -282,8 +282,28 @@ class Run:
         self.alive()
 
     def stop(self, identity, domain):
+        operation = 2 if domain == 'advertise' else 4
+        prefix = [str(self.args.slctl.resolve()), '--adapter', identity['path'], domain]
+        previous = next(((i, c) for i, c in reversed(list(enumerate(self.data['commands'])))
+                         if c['args'][:4] == prefix and c['args'][4:5] in [['on'], ['off']]), None)
+        if previous and previous[1]['args'][4:] == ['off'] and previous[1]['exit'] == 0:
+            # Some real firmware rejects OFF when already idle. Re-read the
+            # exact generation's retained successful OFF, including current
+            # radio state; never convert a new 0x0b failure into success.
+            source = parse_result(previous[1]['stdout'], identity, operation)
+            self.check(identity)
+            current = self.ctl(identity, 'result', str(source['request']))
+            result = parse_result(current['stdout'], identity, operation)
+            if result['request'] != source['request']:
+                raise ValueError('OFF confirmation request changed')
+            self.check(identity)
+            self.data.setdefault('stop_confirmations', []).append({
+                'identity': identity, 'domain': domain, 'source_command': previous[0],
+                'query_command': len(self.data['commands'])-1})
+            self.save()
+            return
         r = self.ctl(identity, domain, 'off')
-        parse_result(r['stdout'], identity, 2 if domain == 'advertise' else 4)
+        parse_result(r['stdout'], identity, operation)
 
     def phase(self, a, b, count, phase):
         tx, rx = a, b

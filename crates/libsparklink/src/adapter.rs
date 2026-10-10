@@ -42,6 +42,16 @@ impl Adapter {
         self.fd.as_fd()
     }
 
+    /// Independent privileged trace read on this explicitly selected fd.
+    pub fn poll_snoop(&self, cursor: &mut crate::SnoopCursor) -> Result<Option<SleSnoopRecord>> {
+        crate::snoop::poll(self.raw_fd(), cursor, self.dev_index)
+    }
+    /// Activate trace poll readiness before epoll registration. Use a dedicated
+    /// observation fd; mixing native controller-event and trace modes is rejected.
+    pub fn into_snoop_receiver(self, generation: u64) -> Result<crate::SnoopReceiver> {
+        crate::SnoopReceiver::from_fd(self.fd, generation, self.dev_index)
+    }
+
     /// Get the number of registered devices
     pub fn device_count(&self) -> Result<u32> {
         let mut count: u32 = 0;

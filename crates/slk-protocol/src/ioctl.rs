@@ -315,3 +315,4 @@ nix::ioctl_readwrite!(
     0x8d,
     super::SleManagementQuery
 );
+nix::ioctl_readwrite!(sl_snoop_get, SL_MAGIC, 0x8e, super::SleSnoopQuery);

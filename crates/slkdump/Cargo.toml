@@ -9,6 +9,8 @@ name = "slkdump"
 path = "src/main.rs"
 
 [dependencies]
+anyhow = "1"
+tokio = { workspace = true }
 slk-protocol = { workspace = true }
 libsparklink = { workspace = true }
 clap = { workspace = true }

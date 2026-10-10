@@ -1208,6 +1208,39 @@ pub const MANAGEMENT_FREE: u32 = 0;
 pub const MANAGEMENT_HELD: u32 = 1;
 pub const MANAGEMENT_REVOKING: u32 = 2;
 pub const MANAGEMENT_FAULTED: u32 = 3;
+
+pub const SNOOP_VERSION: u32 = 1;
+pub const SNOOP_PAYLOAD_MAX: usize = 320;
+pub const SNOOP_TRUNCATED: u16 = 1;
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug)]
+pub struct SleSnoopRecord {
+    pub seq: u64,
+    pub generation: u64,
+    pub timestamp_ns: u64,
+    pub lost: u64,
+    pub profile: u32,
+    pub original_length: u32,
+    pub status: i32,
+    pub dev_index: u16,
+    pub direction: u8,
+    pub format: u8,
+    pub captured_length: u16,
+    pub flags: u16,
+    pub reserved: u32,
+    pub payload: [u8; SNOOP_PAYLOAD_MAX],
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug)]
+pub struct SleSnoopQuery {
+    pub generation: u64,
+    pub after_seq: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub reserved: u64,
+    pub record: SleSnoopRecord,
+}
+pub const SL_IOCTL_SNOOP_GET: u32 = 0xc198538e;
 #[repr(C, align(8))]
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct SleManagementRequest {

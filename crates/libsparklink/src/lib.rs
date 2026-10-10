@@ -3,6 +3,11 @@ mod error;
 mod event;
 pub mod ffi;
 mod receiver;
+mod snoop;
+pub use snoop::{
+    SnoopCursor, SnoopReceiver, create_snoop_capture, describe_snoop, snoop_packet_code,
+    write_snoop_header, write_snoop_record,
+};
 
 pub use adapter::{Adapter, DEFAULT_DEV_PATH};
 pub use error::Error;

@@ -1012,19 +1012,23 @@ dependencies = [
 name = "slkdump"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "clap",
  "libsparklink",
  "slk-protocol",
+ "tokio",
 ]
 
 [[package]]
 name = "slkmon"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "chrono",
  "clap",
  "libsparklink",
  "slk-protocol",
+ "tokio",
 ]
 
 [[package]]

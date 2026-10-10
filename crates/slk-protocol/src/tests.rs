@@ -1,6 +1,16 @@
 use crate::ioctl;
 use crate::*;
 
+#[test]
+fn snoop_abi_is_pointer_free_and_aligned() {
+    assert_eq!(std::mem::size_of::<SleSnoopRecord>(), 376);
+    assert_eq!(std::mem::size_of::<SleSnoopQuery>(), 408);
+    assert_eq!(std::mem::align_of::<SleSnoopQuery>(), 8);
+    assert_eq!(std::mem::offset_of!(SleSnoopQuery, record), 32);
+    assert_eq!(std::mem::offset_of!(SleSnoopRecord, payload), 56);
+    assert_eq!(SL_IOCTL_SNOOP_GET, 0xc198538e);
+}
+
 macro_rules! check_size {
     ($errors:ident, $t:ty, $expected:expr) => {
         let actual = std::mem::size_of::<$t>();

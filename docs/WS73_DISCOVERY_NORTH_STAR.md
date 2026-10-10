@@ -1004,3 +1004,42 @@ Status、历史回复与credit数量假设的失败记录保留；runtime内核�
 保留迁移入口；全部工具独立snoop、C/Python owner、完整Backend与故障矩阵
 尚待做。实机七项、四设备两组及完整S0–S6/全部整项issues继续开放，合成
 查询不算真实WS73固件/RF验收。
+
+
+### WS73 独立 snoop 与实际工具迁移（2026-10-10，部分成果）
+
+新增 CAP_NET_ADMIN 的被动每 Runtime DLI seam ring；不拿管理 lease、不发命令、
+不消耗 Host raw reply 或其他 reader。必须显式 index/generation，保留 seq/
+boottime/方向/transport结果/长度/截断与精确丢失。64 条预分配记录、每条最多
+320 字节；RX 是 HCC 验证后的 service10/queue8 SLE slot（DLI 解析前），
+TX_RESULT 为命令提交/传输尝试返回后的 A1 bytes，不能当成 DLI Complete 或
+空口发射证据。没有启动/USB aggregate/HCC header/PCAP/RF 捕获的声明。
+
+slkmon/slkdump 默认使用独立 fd/AsyncFd 和内核唤醒；旧内核不作消费型 fallback。
+两种实际工具在 slkd 持 Managed 时均能观察；native capture 新建 0600，禁止
+覆盖，固定可移植 SLKSNP01 格式，所有写入/flush 错误终止。旧 profile0 仅保留
+显式 --legacy，仍是旧消费型模式。普通 uid1000 的 raw 抓取 EPERM，不创建
+capture；普通应用 slctl 广播/扫描继续无需 sudo。
+
+最终生产/内核凭据矩阵和 session 两个合成 daemon 门禁 PASS，仍保留原来的
+20 轮交换、同 daemon PID/owner 重插 2 轮、TX-off 和 TERM/INT 管理接任。
+两份 32-record 真正导出的文件逐字节相同，host parser 重新核对每条 metadata、
+framing 与 raw RX 的 address/RSSI/data 对应独立 slctl 结果；旧 observer 拔出
+poll ERR|HUP/查询 ENODEV，实际工具终止，新 generation 重新抓取，旧代次拒绝。
+C probe 验证独立 reader、5 项 schema、模式混用、EFAULT 可读重试、继承 fd
+降权拒绝、无 command admission、明确慢 reader lost 和重新打开独立读取。
+大包截断目前有 ABI/library 校验，尚未声称 live producer 大包注入已验证。
+
+冻结内核 #67，9 个原 Runtime/ownership/标准 recipe/发现/事件/故障门禁 PASS；
+228 harness、152 workspace、slk-protocol/libsparklink/slkmon/slkdump 全 target
+strict-clippy、32/64 位 C ABI 编译断言 PASS。原 96-case QEMU 1056 OK /
+0 FAIL / 0 SKIP / 3 既有 WARN。保留最初 C signedness 构建错误、缺 busybox
+PATH 的回归先决条件失败和沙箱 Unix socket 受限失败；用缓存依赖与授权的
+隔离测试重跑，最终门禁不使用失败结果。完整 slkd strict-clippy 未声明通过。
+
+详见 [SNOOP 契约与复现](SNOOP.md)。本地 .dev/snoop-final-evidence.json、
+snoop-source-snapshot-v2、snoop-final-image、两个 snoop-*-gate/、9 个
+snoop-qualified-gate-* 与 snoop-full-qemu-archive 保留完整日志和 SHA256。
+C/Python snoop/owner 绑定、其他 profile、Proxy/PDU/Security ownership 和全
+故障/PM/发布矩阵仍待完成；不提前关闭任何整项 issue。最新主机只读枚举 WS73
+仍为 []，没有真实固件/空口证据；真实七项仍 0/7，四设备两组和完整 S0–S6 保留。

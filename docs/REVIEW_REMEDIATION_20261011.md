@@ -139,3 +139,23 @@ kernel warning0/taint0，四个host USB地址保持不变。这里的10秒是每
 U10仍7/8，自动恢复/根因相关issues继续OPEN。下一顺序：WS73自然根因与有限
 恢复并行推进，R03/R10发送提交与socket契约、R04/R07/R08 SSAP预算/权限/credit，
 R09/R12状态/事件提交、R11/R13每设备backend迁移；全部S0–S6范围不缩减。
+
+## R03/R10 单次提交及旧 USB 边界整改
+
+Linux 75b77fc19613删除没有消费者的TX ring，ConnManager只调用一次backend；
+成功后才提交sequence/tx_bytes/activity。handle0选择真实已连接Host对象，command
+Host backend使用学到的controller handle，未学到时拒绝；不再把0或Host编号误发。
+无效长度拒绝而非截断；连接/通道、MTU/MPS、overflow先验证。旧ioctl没有可靠
+framing/分片实现，明确拒绝，不能用TCID前缀冒充；tx_pending为0，tx_bytes只表示
+backend接受，不证明peer接收，错误后的部分传输也不自动重发。
+
+旧generic USB sender拒绝无效/超长/超范围handle，检查actual_len完全匹配并保留
+原errno。Native WS73 HCC/BSLE/discovery未改，Native连接数据仍不支持。11项实际
+Rust sender/resolver/ioctl回归及实际C USB范围/分配/errno/所有短写/exact/max-length
+在ASan/UBSan/LSan通过；完整Rust kernel对象编译验证真实接线。依赖显式fixture，
+不是socket、协商协议、USB硬件或RF验收。新CI固定对应内核并执行此门禁。
+
+新完整image/modules、VM双真实WS73回归和远端新CI待核对。完整R03/R10、K4/K17
+继续OPEN；下一步仍是socket每通道队列/背压/权限/generation/退役、真实连接数据。
+保留旧正向连接/SSAP测试与历史失败，它们须接专用backend/真实controller事件，
+禁止把底层失败却增加tx_bytes当作通过。WS73自然恢复/根因同步继续，不因本批关闭。

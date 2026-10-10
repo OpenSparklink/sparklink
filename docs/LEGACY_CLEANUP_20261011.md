@@ -29,7 +29,7 @@
 
 | 旧路径/调用者 | 唯一替代所有者与删除门禁 | issues |
 |---|---|---|
-| core CONN_SEND → conn.send 入 tx_queue + controller.send_data；查询 tx_pending；队列无消费者/handle0 使用错误 | 每连接发送事务/credit/提交；最终通道 socket。>64包、错误/短写/零credit、断链/旧generation、多设备；删除重复队列/直发及旧 UAPI | K4/K17，R03/R10 |
+| 原core CONN_SEND → conn.send 入 tx_queue + controller.send_data；队列无消费者/handle0错误 | 75b77fc19613已删影子TX ring/重复直发，统一单次backend提交、句柄映射及成功记账，短写/长度拒绝；实际函数回归通过。仍待每通道socket、真实可靠/credit/分片/断链/权限/旧generation及数据实机，迁调用者后删旧UAPI | K4/K17，R03/R10；完整验收OPEN |
 | workers TCID SERVICE_MGMT/动态 reliable → sle_ssap；core SSAP ioctl → 内核数据库 | slkd SSAP Engine/数据库，kernel 完整 PDU socket；跨语言权限位、长度/预算/offset/deadline、notify credit/连接归属、Profile 实际路由回归后删旧 Engine | K6/K17、U3，R04/R07/R08 |
 | SecurityInner controller-local 状态、SEC_ENCRYPT_ON 提前提交；Bond 仅元数据 | 每连接机制/匹配真实完成，Agent/policy/Bond 用户态；错误 proof、安装拒绝/超时、restore/revoke、真实互通后删旧状态及控制接口 | K7/K18、U5，R01/R02/R09 |
 | core legacy read_iter → 旧 event dequeue/copy；Native subscription 另一实现 | 独立订阅、完整记录 copy 后提交、移除唤醒；迁 lib/工具 read 调用者，坏地址/部分 copy/短 buffer/多订阅后删旧队列/UAPI | K3、U2，R12 |

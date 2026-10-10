@@ -1287,3 +1287,27 @@ pub struct SleDiscoveryTiming {
     pub status: u8,
     pub reserved: [u8; 3],
 }
+
+/// Owner-private non-destructive diagnostic result (ioctl 0xd0).
+#[derive(Debug, Clone, Copy)]
+#[repr(C, align(8))]
+pub struct SleDiagnosticResult {
+    pub version: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub seq: u32,
+    pub state: u32,
+    pub error: i32,
+    pub opcode: u16,
+    pub status: u8,
+    pub _pad: u8,
+    pub data_len: u16,
+    pub _reserved: [u8; 6],
+    pub data: [u8; 64],
+}
+impl Default for SleDiagnosticResult {
+    fn default() -> Self {
+        // SAFETY: fixed integers/byte arrays; zero is valid for every field.
+        unsafe { core::mem::zeroed() }
+    }
+}

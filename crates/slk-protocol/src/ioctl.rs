@@ -323,3 +323,10 @@ nix::ioctl_readwrite!(
     0x8f,
     super::SleDiscoveryTiming
 );
+
+nix::ioctl_readwrite!(
+    sl_diagnostic_result,
+    SL_MAGIC,
+    0xd0,
+    super::SleDiagnosticResult
+);

@@ -266,3 +266,12 @@ MCS/MIMO/PHY codec移selftests；仍被连接调用的channel/hopping保留等�
 [CI38084762680](https://github.com/OpenSparklink/sparklink/actions/runs/38084762680)
 9作业通过，实际security7和隔离PHY模型3/拒绝arm1及既有回归日志核对。
 这是清理后的路径保持，不是PHY/加密真实成功或自然故障根因验收。
+
+### R12 Native query 调用者迁移（整项仍 OPEN）
+
+[诊断结果迁移](DIAGNOSTIC_RESULT_MIGRATION.md)按 fd 作者、精确 generation 和
+Host captured local sequence 查询，不出队/确认共享事件，copyout 失败可重试。
+删除 slkconfig query 的 stale drain 与旧 poll；32槽完成结果有界保留/替换，
+超长失败、超时失败、sequence 用尽拒绝。专用10项实际代码边界测试通过，
+依赖 fixture 不替代实际 ioctl/CAP/退役验收。其余旧 DLI 调用者仍等待迁移，
+先接通回归再删旧实现；部分成果不能关闭完整 R12/K3/U2 或自然恢复 issue。

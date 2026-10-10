@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: f1704a2e44dc750e6c325077bb234579f8922b6f
+          ref: 5c87f9075d37eef632e1ff5d4f578de2b4639de0
           path: .kernel-uapi
           sparse-checkout: include/uapi/linux/sparklink_ioctl.h
           sparse-checkout-cone-mode: false
@@ -133,7 +133,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: f1704a2e44dc750e6c325077bb234579f8922b6f
+          ref: 5c87f9075d37eef632e1ff5d4f578de2b4639de0
           path: .kernel-tools
           sparse-checkout: tools/testing/selftests/sparklink
       - uses: actions/setup-python@v5
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: f1704a2e44dc750e6c325077bb234579f8922b6f
+          ref: 5c87f9075d37eef632e1ff5d4f578de2b4639de0
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -173,6 +173,7 @@ jobs:
           python tools/testing/selftests/sparklink/run_ssap_containment.py
           python tools/testing/selftests/sparklink/run_event_copy.py
           python tools/testing/selftests/sparklink/run_phy_model.py
+          python tools/testing/selftests/sparklink/run_diagnostic_result.py
       - name: Compile live VFS probe (not executed without a qualified VM)
         working-directory: .kernel-containment
         run: clang -std=c11 -O2 -Wall -Wextra -Werror tools/testing/selftests/sparklink/sparklink_event_copy_test.c -o /tmp/event-copy-probe

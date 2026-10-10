@@ -748,6 +748,35 @@ impl Adapter {
         Ok(info)
     }
 
+    /// Fetch a result admitted by this exact fd/generation. Requires the same
+    /// file to hold Diagnostic and CAP_NET_ADMIN; ENOENT means missing/evicted.
+    /// No cursor, shared event dequeue or legacy response fallback is used.
+    pub fn diagnostic_result(
+        &self,
+        generation: u64,
+        seq: u32,
+    ) -> Result<Option<SleDiagnosticResult>> {
+        if generation == 0 || seq == 0 {
+            return Err(Error::InvalidParam(
+                "diagnostic result requires generation and sequence",
+            ));
+        }
+        let mut result = SleDiagnosticResult {
+            version: 1,
+            generation,
+            seq,
+            ..Default::default()
+        };
+        match unsafe { ioctl::sl_diagnostic_result(self.raw_fd(), &mut result) } {
+            Ok(_) => {
+                validate_diagnostic_result(&result, generation, seq)?;
+                Ok(Some(result))
+            }
+            Err(nix::Error::ENOENT) => Ok(None),
+            Err(error) => Err(Error::Ioctl(error)),
+        }
+    }
+
     /// Poll for a DLI event (non-blocking)
     pub fn poll_event(&self) -> Result<Option<SleDliEvent>> {
         crate::receiver::poll_event(self.raw_fd())
@@ -1100,6 +1129,35 @@ impl Adapter {
     }
 }
 
+fn validate_diagnostic_result(
+    result: &SleDiagnosticResult,
+    generation: u64,
+    seq: u32,
+) -> Result<()> {
+    let state_valid = match result.state {
+        1 => result.error == 0 && result.status == 0 && result.data_len == 0,
+        2 => result.error == 0 && result.status == 0,
+        3 => {
+            (result.error < 0 && result.status == 0 && result.data_len == 0)
+                || (result.error == 0 && result.status != 0)
+        }
+        _ => false,
+    };
+    if result.version != 1
+        || result.flags != 0
+        || result.generation != generation
+        || result.seq != seq
+        || result.opcode == 0
+        || result._pad != 0
+        || result._reserved != [0; 6]
+        || usize::from(result.data_len) > result.data.len()
+        || !state_valid
+    {
+        return Err(Error::InvalidParam("invalid diagnostic result response"));
+    }
+    Ok(())
+}
+
 pub(crate) fn decode_event(raw: SleDliEvent) -> Result<Event> {
     let length = usize::from(raw.data_len);
     if length > raw.data.len() {
@@ -1162,6 +1220,99 @@ pub(crate) fn decode_event(raw: SleDliEvent) -> Result<Event> {
 #[cfg(test)]
 mod ssap_registration_tests {
     use super::*;
+
+    #[test]
+    fn diagnostic_result_rejects_invalid_identity_and_states() {
+        let good = SleDiagnosticResult {
+            version: 1,
+            generation: 7,
+            seq: 9,
+            opcode: 0x0403,
+            state: 2,
+            data_len: 10,
+            ..Default::default()
+        };
+        assert!(validate_diagnostic_result(&good, 7, 9).is_ok());
+        for bad in [
+            SleDiagnosticResult { version: 2, ..good },
+            SleDiagnosticResult { flags: 1, ..good },
+            SleDiagnosticResult {
+                generation: 8,
+                ..good
+            },
+            SleDiagnosticResult { seq: 10, ..good },
+            SleDiagnosticResult { opcode: 0, ..good },
+            SleDiagnosticResult { _pad: 1, ..good },
+            SleDiagnosticResult {
+                _reserved: [1; 6],
+                ..good
+            },
+            SleDiagnosticResult {
+                data_len: 65,
+                ..good
+            },
+            SleDiagnosticResult { state: 0, ..good },
+            SleDiagnosticResult { state: 1, ..good },
+            SleDiagnosticResult {
+                error: -110,
+                ..good
+            },
+            SleDiagnosticResult { status: 1, ..good },
+            SleDiagnosticResult { state: 3, ..good },
+            SleDiagnosticResult {
+                state: 3,
+                error: 1,
+                ..good
+            },
+        ] {
+            assert!(validate_diagnostic_result(&bad, 7, 9).is_err(), "{bad:?}");
+        }
+        let pending = SleDiagnosticResult {
+            state: 1,
+            data_len: 0,
+            ..good
+        };
+        assert!(validate_diagnostic_result(&pending, 7, 9).is_ok());
+        let failure = SleDiagnosticResult {
+            state: 3,
+            error: -110,
+            data_len: 0,
+            ..good
+        };
+        assert!(validate_diagnostic_result(&failure, 7, 9).is_ok());
+        let rejected = SleDiagnosticResult {
+            state: 3,
+            status: 0xfd,
+            ..good
+        };
+        assert!(validate_diagnostic_result(&rejected, 7, 9).is_ok());
+        assert!(
+            validate_diagnostic_result(
+                &SleDiagnosticResult {
+                    status: 1,
+                    ..failure
+                },
+                7,
+                9
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn diagnostic_query_preserves_real_syscall_errors() {
+        let adapter = Adapter::open("/dev/null").unwrap();
+        for (generation, seq) in [(0, 1), (1, 0)] {
+            assert!(matches!(
+                adapter.diagnostic_result(generation, seq),
+                Err(Error::InvalidParam(_))
+            ));
+        }
+        assert!(matches!(
+            adapter.diagnostic_result(1, 1),
+            Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+        ));
+    }
 
     #[test]
     fn invalid_property_rejects_before_actual_ioctl() {

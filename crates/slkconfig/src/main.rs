@@ -337,33 +337,35 @@ fn print_controller(s: &slk_protocol::SleControllerSnapshot) {
 
 fn validate_reply(
     query: NativeQuery,
-    event: &slk_protocol::SleDliEvent,
+    event: &slk_protocol::SleDiagnosticResult,
 ) -> anyhow::Result<Option<&[u8]>> {
     let (opcode, len) = query.wire();
-    // The validated WS73 zero-opcode credit notification can arrive between
-    // commands. Host owns credits; this legacy projection is not a query reply.
-    if event.event_type == 1 && event.opcode == 0 && event.status == 0 && event.data_len == 0 {
-        return Ok(None);
-    }
     anyhow::ensure!(
-        event.opcode == opcode && matches!(event.event_type, 1 | 2),
-        "unexpected diagnostic reply: type={} opcode=0x{:04x}",
-        event.event_type,
+        event.opcode == opcode,
+        "unexpected diagnostic opcode=0x{:04x}",
         event.opcode
     );
-    anyhow::ensure!(
-        event.status == 0,
-        "diagnostic controller status=0x{:02x} opcode=0x{:04x}",
-        event.status,
-        event.opcode
-    );
-    if event.event_type == 2 {
-        anyhow::ensure!(
-            event.data_len == 0,
-            "diagnostic Status contains response data"
-        );
-        return Ok(None); // Accepted Status is not a completed query.
+    match event.state {
+        1 => {
+            anyhow::ensure!(
+                event.error == 0 && event.status == 0 && event.data_len == 0,
+                "invalid pending diagnostic result"
+            );
+            return Ok(None);
+        }
+        2 => {}
+        3 => anyhow::bail!(
+            "diagnostic failed: error={} status=0x{:02x} opcode=0x{:04x}",
+            event.error,
+            event.status,
+            event.opcode
+        ),
+        _ => anyhow::bail!("invalid diagnostic result state"),
     }
+    anyhow::ensure!(
+        event.error == 0 && event.status == 0,
+        "invalid diagnostic success"
+    );
     anyhow::ensure!(
         event.data_len as usize == len,
         "diagnostic payload length: expected={len} actual={}",
@@ -387,16 +389,8 @@ fn cmd_native_query(
     );
     let lease = adapter.acquire_management(generation, MANAGEMENT_DIAGNOSTIC)?;
     let result = (|| -> anyhow::Result<_> {
-        // The legacy reply ABI has no sequence. Exclusive ownership and an
-        // empty reply baseline establish this single command's provenance.
-        let mut drained = 0;
-        while adapter.poll_event()?.is_some() {
-            drained += 1;
-            anyhow::ensure!(
-                drained <= 256,
-                "diagnostic stale reply drain exceeded bound"
-            );
-        }
+        // Result ownership and captured Host sequence establish provenance;
+        // observation does not steal data from any controller subscription.
         anyhow::ensure!(
             adapter.mgmt_stats()?.pending == 0,
             "diagnostic command queue is not quiet"
@@ -412,10 +406,10 @@ fn cmd_native_query(
         anyhow::ensure!(cmd.seq != 0, "diagnostic admission has no sequence");
         let deadline = Instant::now() + Duration::from_secs(6);
         loop {
-            if let Some(event) = adapter.poll_event()?
+            if let Some(event) = adapter.diagnostic_result(generation, cmd.seq)?
                 && let Some(data) = validate_reply(query, &event)?
             {
-                return Ok((opcode, cmd.seq, drained, data.to_vec()));
+                return Ok((opcode, cmd.seq, data.to_vec()));
             }
             anyhow::ensure!(Instant::now() < deadline, "diagnostic reply timeout");
             std::thread::sleep(Duration::from_millis(10));
@@ -450,10 +444,10 @@ fn cmd_native_query(
             Ok(_) => Err(error),
         };
     }
-    let (opcode, seq, drained, data) = result?;
+    let (opcode, seq, data) = result?;
     let hex: String = data.iter().map(|b| format!("{b:02x}")).collect();
     println!(
-        "NativeDiagnosticQuery: index={index} generation={generation} opcode=0x{opcode:04x} admission_seq={seq} status=0x00 drained={drained} data={hex}"
+        "NativeDiagnosticQuery: index={index} generation={generation} opcode=0x{opcode:04x} admission_seq={seq} status=0x00 data={hex}"
     );
     Ok(())
 }
@@ -1062,47 +1056,48 @@ mod tests {
 
     #[test]
     fn diagnostic_reply_requires_complete_opcode_status_and_exact_length() {
-        let mut event = slk_protocol::SleDliEvent {
-            event_type: 1,
-            status: 0,
-            handle: 0,
+        let mut event = slk_protocol::SleDiagnosticResult {
+            state: 2,
             opcode: 0x0403,
             data_len: 10,
-            data: [0x80; 240],
-            addr: [0; 6],
-            _pad: [0; 2],
+            data: [0x80; 64],
+            ..Default::default()
         };
         assert_eq!(
             validate_reply(NativeQuery::Features, &event).unwrap(),
             Some(&[0x80; 10][..])
         );
-        event.data_len = 9;
-        assert!(validate_reply(NativeQuery::Features, &event).is_err());
-        event.data_len = 11;
-        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        for len in [0, 9, 11, 64, 65535] {
+            event.data_len = len;
+            assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        }
         event.data_len = 10;
-        event.event_type = 2;
+        event.state = 1;
         assert!(validate_reply(NativeQuery::Features, &event).is_err());
         event.data_len = 0;
         assert_eq!(validate_reply(NativeQuery::Features, &event).unwrap(), None);
         event.data_len = 10;
-        event.event_type = 1;
+        event.state = 2;
         event.opcode = 0x0404;
         assert!(validate_reply(NativeQuery::Features, &event).is_err());
         event.opcode = 0x0403;
+        event.state = 3;
         event.status = 0xfd;
         assert!(
-            format!(
-                "{:#}",
-                validate_reply(NativeQuery::Features, &event).unwrap_err()
-            )
-            .contains("status=0xfd")
+            validate_reply(NativeQuery::Features, &event)
+                .unwrap_err()
+                .to_string()
+                .contains("status=0xfd")
         );
         event.status = 0;
-        event.opcode = 0;
-        event.data_len = 0;
-        assert_eq!(validate_reply(NativeQuery::Features, &event).unwrap(), None);
-        event.data_len = 1;
+        event.error = -110;
+        assert!(
+            validate_reply(NativeQuery::Features, &event)
+                .unwrap_err()
+                .to_string()
+                .contains("error=-110")
+        );
+        event.state = 2;
         assert!(validate_reply(NativeQuery::Features, &event).is_err());
     }
 

@@ -282,3 +282,28 @@ pub unsafe extern "C" fn slk_discovery_timing(
         Err(error) => errno(error),
     }
 }
+
+/// Query the originating fd's raw diagnostic result, without consuming events.
+/// Returns 1 present, 0 absent/evicted or -errno; failed queries leave out intact.
+/// Requires an exact generation, nonzero seq and Diagnostic ownership/admin.
+/// # Safety
+/// Non-null pointers are valid, aligned, nonoverlapping; out is writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_diagnostic_result(
+    adapter: *const SlkAdapter,
+    generation: u64,
+    seq: u32,
+    out: *mut SleDiagnosticResult,
+) -> c_int {
+    let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter.inner.diagnostic_result(generation, seq) {
+        Ok(Some(value)) => {
+            *out = value;
+            1
+        }
+        Ok(None) => 0,
+        Err(error) => errno(error),
+    }
+}

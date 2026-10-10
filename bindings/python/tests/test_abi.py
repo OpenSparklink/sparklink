@@ -46,6 +46,7 @@ STRUCT_NAMES = {
     "SleControllerEventQuery": "sle_controller_event_query",
     "SleSnoopRecord": "sle_snoop_record",
     "SleSnoopQuery": "sle_snoop_query",
+    "SleDiagnosticResult": "sle_diagnostic_result",
     "SleDiscoveryAdvConfig": "sle_discovery_adv_config",
     "SleDiscoveryScanConfig": "sle_discovery_scan_config",
     "SleDiscoverySubmit": "sle_discovery_submit",

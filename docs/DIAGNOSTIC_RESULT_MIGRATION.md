@@ -1,0 +1,50 @@
+# Native diagnostic result ownership（部分迁移）
+
+2026-10-11。遵循 ADR 0001 的结果只交付原请求者、观察与管理分离要求。
+Linux `5c87f9075d37`；用户态同步修改，未发布 UAPI 无兼容期限。
+
+调用审计发现 `slkconfig query` 仍先清空共享 DLI 事件、再按 opcode 找回复。
+诊断租约只能限制提交者，不能为共享出队增加可靠关联或保证 copyout 失败后重试。
+现在通过 `SL_IOCTL_DIAGNOSTIC_RESULT` 查询 admitted local sequence 的快照。
+sequence 由 Host 已捕获的在途 wire slot 完成；不假定 WS73 回传本地事务号。
+
+## 契约与实现
+
+- 必须显式选择 controller；generation 必须精确匹配，查询 fd 是原提交者。
+- 每次 syscall 仍需 CAP_NET_ADMIN 和该 fd 的 Diagnostic 所有权。
+  不同步电源，不申请或扩展管理权限，不能绕过 Managed/Diagnostic 互斥。
+- 固定 104 字节、8 字节对齐；version=1、flags=0、非零 generation/seq，
+  padding/reserved 为零。state=1 Pending、2 Complete、3 Failed；errno 与
+  controller status 分开。成功 Status 不作为最终 Complete。
+- 精确保存最多 64 字节；超长响应返回失败 EMSGSIZE，禁止截断后成功。
+  本地 pending 到期为 ETIMEDOUT；控制器失败保留非零 status。
+- 查询不确认、不出队、不推进订阅 cursor；复制失败可重新查询。
+  32 个槽有界，已完成记录保留至后续提交复用槽；不存在/已替换为 ENOENT。
+  sequence 用尽拒绝 EOVERFLOW，不循环复用旧身份。
+- 目前只支持 Native WS73 profile 1 原有只读 metadata 白名单。
+  其他 profile 不通过旧事件读取 fallback 模拟支持。
+- `slkconfig query` 已迁移，删除 stale drain、opcode-only legacy poll。
+  Rust/C/Python 结果查询同步接通；C 的失败/缺失保持调用者输出不变。
+
+## 开发门禁与未决条件
+
+专用 selftest 编译完整 `sle_mgmt.rs`、原 result handler 和原结构声明；10 项
+测试覆盖 pending/final、重复查询、copy fault 重试、失败/超长、作者与租约分别
+校验、generation/version/profile/显式选择/缺失、32槽替换、重复回复、到期、
+rollback 和 sequence 用尽。锁、时钟、租约、分配和 usercopy 依赖为 fixture，
+不是实际 VFS/CAP/并发/退役证明；模拟只在 selftests，生产无成功注入。
+
+实际 Rust 回归 169 项、严格 all-targets/all-features clippy 通过；Python 的
+canonical C/public C/Rust/ctypes layout 与 i386 C 对齐门禁包含新结构。
+共享库 `/dev/null` 负向测试覆盖 errno、零身份、空指针和输出保持。
+固定新内核提交的远端 CI 及新 VM 实机回归应独立记录，不能引用旧镜像证明新接口。
+
+尚未完成：新 ioctl 的 VM 实际 owner/CAP/坏地址/断链/退役验收；提交 ioctl
+自身 copyout 失败的幂等/可找回 admission、完整 cancel/deadline 契约；旧
+DLI_POLL_EVENT 和 EventReceiver、legacy C/Python、slkd profile 0、监视工具
+`--legacy`、旧 scan/selftests 的调用者迁移。只迁移一个生产调用者不能删除
+所有旧事件路径或关闭 R12/K3/U2。保留有价值的历史失败和回归测试。
+
+WS73 真实双设备闭环必须用当前镜像持续回归；自然启动/重枚举/消失根因、
+无人工拔插恢复、物理 xHCI warning、四设备两组并行及 native-host 对照仍开放。
+仅使用 VM；该接口不改变 S0–S6、SSAP 用户态归属或最终 socket 数据面方向。

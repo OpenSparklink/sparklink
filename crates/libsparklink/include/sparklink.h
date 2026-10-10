@@ -390,6 +390,24 @@ typedef struct SPARKLINK_ALIGN(8) SleDiscoveryTiming {
     uint8_t reserved[3];
 } SleDiscoveryTiming;
 
+/**
+ * Owner-private non-destructive diagnostic result (ioctl 0xd0).
+ */
+typedef struct SPARKLINK_ALIGN(8) SleDiagnosticResult {
+    uint32_t version;
+    uint32_t flags;
+    uint64_t generation;
+    uint32_t seq;
+    uint32_t state;
+    int32_t error;
+    uint16_t opcode;
+    uint8_t status;
+    uint8_t _pad;
+    uint16_t data_len;
+    uint8_t _reserved[6];
+    uint8_t data[64];
+} SleDiagnosticResult;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -737,6 +755,18 @@ int slk_discovery_timing(const struct SlkAdapter *adapter,
                          uint64_t generation,
                          uint64_t request_id,
                          struct SleDiscoveryTiming *out);
+
+/**
+ * Query the originating fd's raw diagnostic result, without consuming events.
+ * Returns 1 present, 0 absent/evicted or -errno; failed queries leave out intact.
+ * Requires an exact generation, nonzero seq and Diagnostic ownership/admin.
+ * # Safety
+ * Non-null pointers are valid, aligned, nonoverlapping; out is writable.
+ */
+int slk_diagnostic_result(const struct SlkAdapter *adapter,
+                          uint64_t generation,
+                          uint32_t seq,
+                          struct SleDiagnosticResult *out);
 
 #ifdef __cplusplus
 }  // extern "C"

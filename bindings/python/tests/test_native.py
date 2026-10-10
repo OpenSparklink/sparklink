@@ -13,6 +13,7 @@ from sparklink.native import _get_native_lib
 from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
+    SleDiagnosticResult,
 )
 
 
@@ -43,6 +44,7 @@ class NativeBindingTests(unittest.TestCase):
             ("slk_management_acquire", [1, 1], ctypes.c_uint64(99)),
             ("slk_discovery_result", [1, 1], SleDiscoveryResult(request_id=99)),
             ("slk_discovery_timing", [1, 1], SleDiscoveryTiming(request_id=99)),
+            ("slk_diagnostic_result", [1, 1], SleDiagnosticResult(seq=99)),
             ("slk_controller_event", [], SleControllerEventQuery(version=1, generation=1, after_seq=99)),
             ("slk_snoop", [], SleSnoopQuery(version=1, generation=1, after_seq=99)),
         ]:
@@ -70,6 +72,11 @@ class NativeBindingTests(unittest.TestCase):
         result = SleDiscoveryResult()
         for generation, request in [(0, 1), (1, 0)]:
             self.assertEqual(self.lib.slk_discovery_result(self.handle, generation, request, ctypes.byref(result)), -errno.EINVAL)
+        diagnostic = SleDiagnosticResult(seq=99)
+        original = bytes(diagnostic)
+        for generation, seq in [(0, 1), (1, 0)]:
+            self.assertEqual(self.lib.slk_diagnostic_result(self.handle, generation, seq, ctypes.byref(diagnostic)), -errno.EINVAL)
+            self.assertEqual(bytes(diagnostic), original)
 
     def test_writer_calls_preserve_transport_errors_and_null_guards(self):
         request = SleDiscoverySubmit()

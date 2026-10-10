@@ -94,3 +94,8 @@ Engine、安全/Bond和自然恢复门禁仍需独立交付。已验证discovery
 [7类实际read故障和WS73回归](../evidence/ws73-vm-live-event-copy-20261011.json)
 仅补齐限定用户copy门禁。旧DLI订阅/所有权迁移、完整移除、socket、SSAP、安全
 和自然故障恢复仍待实施，本ADR的最终职责与依赖顺序保持。
+
+本轮再次收到同 SHA256 分析，最终分层/socket/SSAP/安全边界不变。
+Linux `5c87f9075d37` 推进原请求者结果交付要求：
+[Native query 调用者迁移](../DIAGNOSTIC_RESULT_MIGRATION.md)。旧事件全迁移、
+完整请求契约与自然恢复仍开放，后续实现必须按新提交重新核对。

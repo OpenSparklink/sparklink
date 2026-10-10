@@ -82,6 +82,18 @@ class SleSnoopQuery(ctypes.Structure):
     ]
 
 
+class SleDiagnosticResult(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [
+        ("version", ctypes.c_uint32), ("flags", ctypes.c_uint32),
+        ("generation", ctypes.c_uint64), ("seq", ctypes.c_uint32),
+        ("state", ctypes.c_uint32), ("error", ctypes.c_int32),
+        ("opcode", ctypes.c_uint16), ("status", ctypes.c_uint8),
+        ("_pad", ctypes.c_uint8), ("data_len", ctypes.c_uint16),
+        ("_reserved", ctypes.c_uint8 * 6), ("data", ctypes.c_uint8 * 64),
+    ]
+
+
 class SleDiscoveryAdvConfig(ctypes.Structure):
     _fields_ = [
         ("handle", ctypes.c_uint32), ("mode", ctypes.c_uint32),

@@ -12,6 +12,7 @@ from .adapter import SparkLinkError, _get_lib
 from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
+    SleDiagnosticResult,
 )
 
 _native_library = None
@@ -25,6 +26,7 @@ def _get_native_lib():
     if any(ctypes.alignment(t) != 8 for t in (
         SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
         SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
+        SleDiagnosticResult,
     )):
         raise OSError("native UAPI requires ctypes with 8-byte structure alignment")
     handle = ctypes.c_void_p
@@ -42,6 +44,7 @@ def _get_native_lib():
         "slk_discovery_result": [handle, u64, u64, ctypes.POINTER(SleDiscoveryResult)],
         "slk_controller_event": [handle, ctypes.POINTER(SleControllerEventQuery)],
         "slk_snoop": [handle, ctypes.POINTER(SleSnoopQuery)],
+        "slk_diagnostic_result": [handle, u64, u32, ctypes.POINTER(SleDiagnosticResult)],
     }
     for name, arguments in signatures.items():
         try:
@@ -169,6 +172,17 @@ class NativeAdapter:
         request_id = _unsigned(request_id, 64, "request_id", True)
         result = SleDiscoveryResult()
         present = self._invoke('slk_discovery_result', self.generation, request_id, ctypes.byref(result))
+        return result if present else None
+
+    def diagnostic_result(self, seq):
+        """Non-consuming result for this fd, generation and admitted raw sequence.
+
+        Requires Diagnostic ownership and CAP_NET_ADMIN; missing/evicted is
+        None. This method does not grant raw submission or management rights.
+        """
+        seq = _unsigned(seq, 32, "seq", True)
+        result = SleDiagnosticResult()
+        present = self._invoke('slk_diagnostic_result', self.generation, seq, ctypes.byref(result))
         return result if present else None
 
     def discovery_timing(self, request_id):

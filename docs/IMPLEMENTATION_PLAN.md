@@ -722,3 +722,12 @@ Rust及C USB sanitizer回归、完整image/modules/空USB VM通过；
 继续每通道socket/SSAP、安全/Bond、四设备、其他backend和全S0–S6原验收。
 
 [权限基础与迁移门禁](SSAP_OPERATIONS.md)已同步C/Rust/Python；不能以掩码一致宣称SSAP/安全或Profile完成。
+
+### R12 Native query 调用者迁移（整项仍 OPEN）
+
+[诊断结果迁移](DIAGNOSTIC_RESULT_MIGRATION.md)按 fd 作者、精确 generation 和
+Host captured local sequence 查询，不出队/确认共享事件，copyout 失败可重试。
+删除 slkconfig query 的 stale drain 与旧 poll；32槽完成结果有界保留/替换，
+超长失败、超时失败、sequence 用尽拒绝。专用10项实际代码边界测试通过，
+依赖 fixture 不替代实际 ioctl/CAP/退役验收。其余旧 DLI 调用者仍等待迁移，
+先接通回归再删旧实现；部分成果不能关闭完整 R12/K3/U2 或自然恢复 issue。

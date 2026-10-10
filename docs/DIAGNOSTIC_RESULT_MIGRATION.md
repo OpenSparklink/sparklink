@@ -1,7 +1,8 @@
 # Native diagnostic result ownership（部分迁移）
 
 2026-10-11。遵循 ADR 0001 的结果只交付原请求者、观察与管理分离要求。
-Linux `5c87f9075d37`；用户态同步修改，未发布 UAPI 无兼容期限。
+当前实测 Linux `49cabad043f6` / 编译用户态 `d8c091a4b243`；
+下文保留各历史批次基线，未发布 UAPI 无兼容期限。
 
 调用审计发现 `slkconfig query` 仍先清空共享 DLI 事件、再按 opcode 找回复。
 诊断租约只能限制提交者，不能为共享出队增加可靠关联或保证 copyout 失败后重试。
@@ -28,7 +29,7 @@ sequence 由 Host 已捕获的在途 wire slot 完成；不假定 WS73 回传本
 
 ## 开发门禁与未决条件
 
-专用 selftest 编译完整 `sle_mgmt.rs`、原 result handler 和原结构声明；10 项
+专用 selftest 编译完整 `sle_mgmt.rs`、原 result handler 和原结构声明；当前11项
 测试覆盖 pending/final、重复查询、copy fault 重试、失败/超长、作者与租约分别
 校验、generation/version/profile/显式选择/缺失、32槽替换、重复回复、到期、
 rollback 和 sequence 用尽。锁、时钟、租约、分配和 usercopy 依赖为 fixture，
@@ -39,8 +40,9 @@ canonical C/public C/Rust/ctypes layout 与 i386 C 对齐门禁包含新结构�
 共享库 `/dev/null` 负向测试覆盖 errno、零身份、空指针和输出保持。
 固定新内核提交的远端 CI 及新 VM 实机回归应独立记录，不能引用旧镜像证明新接口。
 
-尚未完成：新 ioctl 的 VM 实际 owner/CAP/坏地址/断链/退役验收；提交 ioctl
-自身 copyout 失败的幂等/可找回 admission、完整 cancel/deadline 契约；旧
+新 ioctl 限定的 VM owner/CAP/坏地址/旧 generation 退役门禁已通过，见文末；
+完整并发、断链/移除、Pending/控制器失败/超长/槽替换的实际 syscall 验收仍缺。
+尚未完成提交 ioctl 自身 copyout 失败的幂等/可找回 admission、完整 cancel/deadline 契约；旧
 DLI_POLL_EVENT 和 EventReceiver、legacy C/Python、slkd profile 0、监视工具
 `--legacy`、旧 scan/selftests 的调用者迁移。只迁移一个生产调用者不能删除
 所有旧事件路径或关闭 R12/K3/U2。保留有价值的历史失败和回归测试。
@@ -66,7 +68,7 @@ caps0，同slkd PID521/start331及bus owner，幸存generation2保持、目标1�
 这轮VM运行验证当前生产路径保持，不执行新diagnostic ioctl的权限/copy/退役
 验收，不代表原生宿主对照、物理拔插、自然恢复或全事件验收。完整issue保持OPEN。
 
-## 后续实际诊断门禁（实施中）
+## 实际诊断门禁实施与保留失败
 
 Linux `7cc1175f28f4` 在 lease 检查前拒绝已关闭 admission 的 Runtime，退役 fd
 返回 ENODEV，避免被已撤销租约的 EPERM 掩盖。原 handler fixture 增至11项。
@@ -102,3 +104,35 @@ C19条记录（16个case、子进程身份、2个phase）及4次实际CLI查询�
 4次C与4次CLI的明确时间窗、参数、完成OUT和成功reply/data；仍拒绝窗口内
 重复命令/回复，不按同opcode任意挑选。旧无诊断模式门禁不变。新增3项
 捕获verifier用例，总工具门禁155项通过；修改后的工具须重新冻结/执行VM。
+
+## 当前限定实机门禁通过（完整 issue 仍 OPEN）
+
+[第三轮新冻结镜像证据](evidence/ws73-vm-diagnostic-live-20261011.json)基于
+Linux `49cabad043f6` / 编译用户态 `d8c091a4b243`。整轮 runner 退出0，
+状态 FAULT_RECOVERY_SUPPORT_PASS；前两轮原 FAIL 不改写，原因与 manifest
+hash 同时保留。修正测试启动顺序和 metadata 证明窗口没有放宽唯一回复校验。
+
+16个实际 syscall case 通过：四种 profile1 metadata；继承原 fd 的子进程
+单独实测 UID/eUID1000、有效及许可能力均0，被拒 EPERM；另一个 root fd 即使
+持有自己的 Diagnostic 租约仍不能读取原作者结果；只读输出页与跨页复制
+确实返回 EFAULT，后者已写56字节，完整104字节重试保持；非法版本/flags/
+reserved/零身份、错误 generation、缺失 sequence 与退役旧 fd 均拒绝。
+租约在 slkd 启动前释放，旧 fd 不持租约地保留到人工恢复后返回 ENODEV。
+随后实际 slkconfig 四次 query 均通过。独立核对8组 C/CLI USB命令、成功
+Complete 和 metadata 数据；每个明确窗口严格要求唯一完成命令/回复。
+
+普通用户的7类 legacy read 与真实双设备20＋2轮继续通过，最长606ms，22份
+RX / 1279 USB包零drop；同 slkd PID646/start1521 与 bus owner、幸存g2不变，
+目标g1→g3，两只最终STOP_CONFIRMED。VM warning0/taint0/trace overrun0，
+退出后host4只仍在且释放。人工IN81错误至新Ready约10412.540ms；发现10秒
+从成功 scan Complete计时，RX USB/HCC/DLI佐证不等于PHY嗅探。
+
+[CI38088063720](https://github.com/OpenSparklink/sparklink/actions/runs/38088063720)
+三个内核checkout固定当前K49，9作业成功，实际日志核对169 Rust、33 Python、
+155工具、11项诊断原handler fixture及既有security7/backend2/TX11/SSAP9/
+event9、C sanitizers、历史PHY3/拒绝arm1。CI只编译live C probe，不执行硬件用例。
+
+这补齐16个限定syscall case与一个生产CLI调用者的真实证明，不代表完整
+Diagnostic/API/事件验收。旧DLI消费者与共享队列迁移/删除、admission copyout
+找回及幂等、cancel/deadline、并发/完整移除仍待实现与实际回归；自然启动/
+重枚举/消失根因和无人工拔插完整恢复继续OPEN，VM-only和完整S0–S6不变。

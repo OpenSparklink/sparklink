@@ -121,3 +121,20 @@ Host captured local sequence 查询，不出队/确认共享事件，copyout 失
 超长失败、超时失败、sequence 用尽拒绝。专用10项实际代码边界测试通过，
 依赖 fixture 不替代实际 ioctl/CAP/退役验收。其余旧 DLI 调用者仍等待迁移，
 先接通回归再删旧实现；部分成果不能关闭完整 R12/K3/U2 或自然恢复 issue。
+
+### R12 当前限定 diagnostic 实机门禁（2026-10-11）
+
+Linux `49cabad043f6` / 编译用户态 `d8c091a4b243` 的
+[诊断迁移记录](DIAGNOSTIC_RESULT_MIGRATION.md#当前限定实机门禁通过完整-issue-仍-open)
+与[新镜像证据](evidence/ws73-vm-diagnostic-live-20261011.json)补齐16个实际
+syscall case、4次实际slkconfig查询和8组独立USB命令/回复。退役Runtime在租约
+检查前返回ENODEV；原fd继承的UID1000/caps0子进程、另一个持自己Diagnostic
+租约的root fd均拒EPERM；只读/部分输出EFAULT后的104字节结果重试保持。
+模拟只在selftests；新测试程序仅在显式隔离VM运行，没有生产成功注入。
+
+7类legacy read及真实20+2轮仍通过，最长606ms、22份RX/1279 USB零drop、
+同slkd与幸存g2不变；9作业CI实际169 Rust/33 Python/155工具/诊断fixture11。
+前两轮测试环境/证明窗口FAIL原记录保留。限定门禁通过不删除仍有调用者的
+旧DLI路径，也不关闭R12/K3/U2：下一步补齐admission copyout可找回/幂等、
+cancel/deadline及剩余消费者迁移，回归后删除重复实现。自然故障根因、完整
+无人工拔插恢复、socket/SSAP/每连接安全/Bond/Profile/Proxy及全S0–S6仍OPEN。

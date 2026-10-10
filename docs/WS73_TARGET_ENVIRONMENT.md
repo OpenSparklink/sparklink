@@ -108,6 +108,20 @@ support 只添加两只明确标记的合成模型，不接触主机 WS73。它�
 实机 recorder 必须明确拒绝这些 synthetic USB 描述符并保留 FAIL，不能把
 SUPPORT_PASS 当成真实 firmware/ROM/USB 透传/RF 或拔插七项验收。
 
+可单独增加 `support --empty-bulk`：自建 QEMU 须包含新 `runtime-zlp` 属性。
+模型在每条 post-bootstrap 命令回复前排入成功零长度 bulk IN 完成，不清除
+in-flight 命令、不伪造 DLI。它覆盖异步初始化停止与后续管理事务，避免把合法
+空 USB transfer 当成坏 HCC。客体与主机都从封存 usbmon 验证两只设备实际收到
+空完成，仍须满足全部20轮、原始RX对应与独立snoop条件。该选项仅用于 support，
+真实 run 不提供注入选项。普通 support 不依赖新属性。
+
+捕获解析器单列 `empty_bulk_completions`（USB身份、时间、URB与文件偏移）；
+不将它计入 HCC/DLI Complete 或 discovery report。成功空完成须无 payload、
+完整64字节usbmon header且两种时间误差不超过1ms；失败空完成仍进入 transport failures，
+非空畸形数据仍拒绝。驱动先处理 URB status，再跳过成功空 bulk、重投相同URB；
+八字节interrupt notification的约束保持。USB短读约定见
+[Linux USB API](https://docs.kernel.org/driver-api/usb/usb.html)。
+
 原生 sysfs `controller_error=100` 是 0x100 sentinel：尚未观察到错误事件。
 它不是“成功 status=0”。真实 controller error byte（包括 0）会使 transport
 Fault；就绪判定拒绝任何错误字节、broken、不 streaming、零 generation。

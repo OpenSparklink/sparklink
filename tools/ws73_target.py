@@ -214,7 +214,8 @@ def _run(args):
     output=args.output.resolve();output.mkdir(mode=0o700,parents=True,exist_ok=False)
     support=args.command=='support'
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
-       'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat()}
+       'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
+       'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False))}
     process=monitor=channel=None
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
@@ -235,7 +236,8 @@ def _run(args):
                      '-chardev',f'socket,id=console,path={serial},server=on,wait=off','-serial','chardev:console',
                      '-qmp',f'unix:{qmp},server=on,wait=off','-kernel',str(args.prepared.resolve()/'bzImage'),
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
-                     '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+(' ws73.support=1' if support else ''),
+                     '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+(' ws73.support=1' if support else '')+
+                     (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
                      '-fsdev',f'local,id=evidence,path={share},security_model=mapped-xattr',
                      '-device','virtio-9p-pci,fsdev=evidence,mount_tag=evidence']
@@ -266,7 +268,8 @@ def _run(args):
                         channel.sendall(b'target-ordinary-input\n');support_input=True
                     if active<2 and ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text:
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
-                                    **{'runtime-discovery':True,'runtime-policy':True,'runtime-medium':1}) if support else usb_properties(args.ports[active],active))
+                                    **{'runtime-discovery':True,'runtime-policy':True,'runtime-medium':1},
+                                    **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {})) if support else usb_properties(args.ports[active],active))
                         monitor.execute('device_add',props);active+=1
                     if not support:
                         current={d['path']:d for d in lab.inventory()}
@@ -303,6 +306,9 @@ def _run(args):
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
                 if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
                 m['capture_packets']=packets;m['guest_identities']=identities
+                m['empty_bulk_completions']=len(capture['empty_bulk_completions'])
+                if getattr(args,'empty_bulk',False) and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in identities):
+                    raise ValueError('successful empty bulk completions missing from either selected USB identity')
                 m['status']='SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
         prepared(args.prepared.resolve())
         if file_record(args.prepared.resolve()/'manifest.json')!=m['prepared_manifest']:raise ValueError('prepared manifest changed during run')
@@ -341,6 +347,7 @@ def main():
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':cmd.add_argument('--ports',nargs=2,required=True)
+        else:cmd.add_argument('--empty-bulk',action='store_true',help='inject successful zero-length bulk IN before synthetic runtime replies; never a physical option')
     args=parser.parse_args()
     if not math.isfinite(getattr(args,'timeout',1)) or getattr(args,'timeout',1)<=0:parser.error('timeout must be finite and positive')
     return prepare(args) if args.command=='prepare' else run(args)

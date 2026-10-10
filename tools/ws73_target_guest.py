@@ -129,6 +129,9 @@ def verify_support():
     a,b=identities();stats=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in [a,b]])
     if stats!=capture['packet_count']:raise ValueError('sealed pcap/statistics count mismatch')
+    empty_bulk='ws73.empty_bulk=1' in Path('/proc/cmdline').read_text().split()
+    if empty_bulk and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in [a,b]):
+        raise ValueError('both selected controllers must have captured successful empty bulk completions')
     radio=(EVIDENCE/'support-radio.log').read_text()
     matches=re.findall(r'^NativeDiscoveryMatch: generation=(\d+) seq=\d+ address=([0-9A-F:]+) RSSI=(-?\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+) ',radio,re.M)
     if len(matches)!=20 or len({m[3] for m in matches})!=20:raise ValueError('20 independent ordinary-user matches required')
@@ -150,7 +153,8 @@ def verify_support():
     for r in reports:
         if not any((r['address'],r['rssi'],r['data'])==(addr,int(rssi),data) for g,addr,rssi,marker,data in matches if int(g)==b['generation']):raise ValueError('snoop/app report mismatch')
     result={'scope':'synthetic environment support; never firmware/RF acceptance','physical_acceptance':False,
-            'packet_count':stats,'raw_reports':len(capture['reports']),'matches':20,'snoop_records':32,'snoop_identical':True}
+            'packet_count':stats,'raw_reports':len(capture['reports']),'matches':20,'snoop_records':32,'snoop_identical':True,
+            'synthetic_empty_bulk':empty_bulk,'empty_bulk_completions':len(capture['empty_bulk_completions'])}
     (EVIDENCE/'support-capture.json').write_text(json.dumps(result,indent=2)+'\n')
     print('WS73_TARGET_SUPPORT: PASS',flush=True)
 

@@ -75,7 +75,7 @@ def read_capture(path, targets):
     Keep raw file offsets and hashes for independently inspecting each proof.
     Capture content is not authenticated and synthetic fixtures are not RF.
     """
-    reports, complete, failures = [], [], []
+    reports, complete, failures, empty = [], [], [], []
     targets = set(tuple(t) for t in targets)
     with Path(path).open('rb') as stream:
         header = stream.read(24)
@@ -112,15 +112,19 @@ def read_capture(path, targets):
             if status:
                 failures.append({'bus':bus, 'device':device, 'wall_ns':usb_sec * 1_000_000_000 + usec * 1000, 'status':status, 'urb':urb})
                 continue
-            if not length:
-                continue
-            if flag_data or cap != length or captured != 64 + cap or original != captured:
-                raise CaptureError('target IN payload absent or truncated')
             if usb_sec < 0 or not 0 <= usec < 1_000_000:
                 raise CaptureError('invalid usbmon timestamp')
             timestamp = usb_sec * 1_000_000_000 + usec * 1000
             if abs(timestamp - (sec * 1_000_000_000 + fraction * scale)) > 1_000_000:
                 raise CaptureError('pcap/usbmon clocks disagree')
+            if not length:
+                if cap or captured != 64 or original != captured:
+                    raise CaptureError('successful empty IN completion contains data or truncation')
+                empty.append({'bus':bus, 'device':device, 'wall_ns':timestamp,
+                              'urb':urb, 'record':ordinal, 'file_offset':offset})
+                continue  # no HCC/DLI report, completion or credit
+            if flag_data or cap != length or captured != 64 + cap or original != captured:
+                raise CaptureError('target IN payload absent or truncated')
             raw = packet[64:]
             # Each aggregate is validated atomically before interpreting DLI.
             for service, queue, slot, payload in hcc_receive(raw):
@@ -137,7 +141,8 @@ def read_capture(path, targets):
                     if size != len(payload) - 5:
                         raise CaptureError('malformed Complete length')
                     complete.append(identity | {'opcode': opcode, 'status': payload[8], 'value': payload[9:].hex()})
-    return {'reports': reports, 'complete': complete, 'failures': failures, 'packet_count': ordinal}
+    return {'reports': reports, 'complete': complete, 'failures': failures,
+            'empty_bulk_completions':empty, 'packet_count': ordinal}
 
 
 def check_capture_stats(text):

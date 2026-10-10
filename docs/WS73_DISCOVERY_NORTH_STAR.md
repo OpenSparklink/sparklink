@@ -1080,3 +1080,27 @@ target-support-qualified与前期重复/失败记录保留。capsule仅验证文
 不认可SDK默认候选板参；board_qualification始终NOT_ASSERTED。真正冷启动/
 透传重新枚举/物理拔插与完整七项仍待硬件；原S0–S6、四设备两组与全部整项issues
 保持OPEN，七项0/7，不提前关闭。
+
+## 成功空 bulk 完成的 Runtime 修复（2026-10-10）
+
+检查真实接收链路发现 native URB 将成功零长度 bulk IN 送入 HCC parser，导致
+该设备撤销 Runtime。修复只跳过成功空 bulk 并重投同一URB；不发布DLI数据、
+credit、Complete或snoop。URB错误仍优先，interrupt必须八字节，非空畸形HCC/
+DLI仍Fault。新增模型runtime-zlp在post-bootstrap命令回复前注入空USB完成，
+不清除in-flight；用户态support --empty-bulk必须从actual guest usbmon确认
+两只身份都实际收到该完成，真实run不提供注入选项。
+
+同一新模型/guest程序对照：旧冻结#67，实际capture有一条成功empty completion，
+紧接着driver报native RX stopped: -22，sysfs为id=-1/streaming=0/broken=1；
+无法Ready，30秒环境deadline留FAIL。不是把QEMU退出或缺标记当作缺陷复现。
+新#68下双设备独立Ready与普通20轮/TX-off PASS：1799条实际guestUSB记录，
+147条成功空完成、20个RX报告与应用地址/RSSI/data对应，独立mon/dump32条相同。
+无空包基线仍1505条/20报告/32snoop PASS；工具50项PASS。正常、事件、ownership
+及HCC/short-reply/trailing-reply六条native生命周期门禁PASS，保留survivor、
+stale generation与非空错误边界。重复运行和原始证据留在.dev/zlp-*。
+
+构建时缺meson搜索路径、sandbox ccache目录不可写、独立QEMU缺默认BIOS目录的
+失败均留存；修正本地构建环境后另起新目录，未覆盖。新QEMU binary单独保存，
+原资格QEMU binary与cached model已按原hash恢复；新BIOS文件hash也保存。
+SDK板参仍NOT_ASSERTED；模型没有真实ROM/firmware/RF。当前实机为空，真正
+双设备七项0/7；S0–S6/四设备两组/整项issues继续OPEN。

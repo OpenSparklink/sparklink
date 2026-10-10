@@ -127,6 +127,19 @@ class CaptureTests(unittest.TestCase):
     def test_unknown_service_valid_slot_is_not_discovery(self):
         b=bytearray(aggregate(report_payload('01'*16,'02:73:00:00:00:01')));b[92]=0x70
         self.assertEqual(self.read(pcap([(1,2,1000,bytes(b),'C',0x81,0)]))['reports'],[])
+    def test_successful_empty_bulk_is_observation_not_dli(self):
+        parsed=self.read(pcap([(1,2,1000,b'','C',0x81,0)]))
+        self.assertEqual((parsed['reports'],parsed['complete'],parsed['failures']),([],[],[]))
+        self.assertEqual(len(parsed['empty_bulk_completions']),1)
+        self.assertEqual(parsed['empty_bulk_completions'][0]['wall_ns'],1000)
+    def test_failed_empty_bulk_retains_transport_error(self):
+        parsed=self.read(pcap([(1,2,1000,b'','C',0x81,-32)]))
+        self.assertEqual(parsed['empty_bulk_completions'],[])
+        self.assertEqual(parsed['failures'][0]['status'],-32)
+    def test_empty_bulk_declared_length_cannot_hide_payload(self):
+        blob=bytearray(pcap([(1,2,1000,b'not-empty','C',0x81,0)]))
+        struct.pack_into('<I',blob,24+16+32,0)
+        with self.assertRaises(CaptureError):self.read(blob)
     def test_snaplen_drops_payload(self):
         _,records=fixture();blob=bytearray(pcap(records));struct.pack_into('<I',blob,20-4,64)
         with self.assertRaises(CaptureError):self.read(blob)

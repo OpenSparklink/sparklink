@@ -396,13 +396,16 @@ fn cmd_native_query(
             "diagnostic command queue is not quiet"
         );
         let (opcode, _) = query.wire();
-        let mut cmd = SleDliCmd {
+        let mut cmd = SleDiagnosticSubmit {
+            version: 1,
+            generation,
+            request_id: 1, // This CLI opens a new author fd and submits once.
             opcode,
-            param_len: 0, // WS73 metadata queries, including SDK 0406, have no parameters.
-            seq: 0,
-            params: [0; 240],
+            timeout_ms: 5000,
+            action: 1,
+            ..Default::default()
         };
-        adapter.dli_send_cmd(&mut cmd)?;
+        adapter.diagnostic_submit(&mut cmd)?;
         anyhow::ensure!(cmd.seq != 0, "diagnostic admission has no sequence");
         let deadline = Instant::now() + Duration::from_secs(6);
         loop {

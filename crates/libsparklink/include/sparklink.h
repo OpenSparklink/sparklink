@@ -408,6 +408,22 @@ typedef struct SPARKLINK_ALIGN(8) SleDiagnosticResult {
     uint8_t data[64];
 } SleDiagnosticResult;
 
+/**
+ * Caller-keyed Native metadata admission or cancellation (ioctl 0xd1).
+ * Repeat the same request ID/fields after EFAULT; never invent a fresh ID.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleDiagnosticSubmit {
+    uint32_t version;
+    uint32_t flags;
+    uint64_t generation;
+    uint64_t request_id;
+    uint32_t timeout_ms;
+    uint16_t opcode;
+    uint16_t reserved;
+    uint32_t seq;
+    uint32_t action;
+} SleDiagnosticSubmit;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -767,6 +783,15 @@ int slk_diagnostic_result(const struct SlkAdapter *adapter,
                           uint64_t generation,
                           uint32_t seq,
                           struct SleDiagnosticResult *out);
+
+/**
+ * Idempotent metadata admission/cancel; returns 0 or -errno. Request storage is
+ * unchanged on failure, including syscall EFAULT. Retry the same caller-known
+ * ID/fields; a failure is not evidence that the command was not admitted.
+ * # Safety
+ * Non-null pointers are valid/aligned/nonoverlapping; request is writable.
+ */
+int slk_diagnostic_submit(const struct SlkAdapter *adapter, struct SleDiagnosticSubmit *request);
 
 #ifdef __cplusplus
 }  // extern "C"

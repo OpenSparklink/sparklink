@@ -292,3 +292,12 @@ syscall case、4次实际slkconfig查询和8组独立USB命令/回复。退役Ru
 旧DLI路径，也不关闭R12/K3/U2：下一步补齐admission copyout可找回/幂等、
 cancel/deadline及剩余消费者迁移，回归后删除重复实现。自然故障根因、完整
 无人工拔插恢复、socket/SSAP/每连接安全/Bond/Profile/Proxy及全S0–S6仍OPEN。
+
+### Native diagnostic admission 身份与取消（开发门禁，实机待复核）
+
+[新提交契约](DIAGNOSTIC_ADMISSION.md)用调用者预先持有的request ID找回copyout
+失败后的admission；保留重试不重发/不续期，淘汰旧ID拒绝ESTALE。取消排队命令
+保持FIFO，在途取消保留真实Host回复槽，超时/取消/Host错误保留本地errno。
+Native旧输出seq-only提交入口不支持，C/Rust/Python、CLI和专用probe同步迁移。
+开发测试通过不引用K49/Ud8旧镜像证明新语义；完整实际取消/迟到回复及剩余DLI
+迁移继续OPEN，当前真实路径须用新镜像独立回归。自然恢复根因和完整S0–S6不缩减。

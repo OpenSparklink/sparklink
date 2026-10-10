@@ -82,6 +82,17 @@ class SleSnoopQuery(ctypes.Structure):
     ]
 
 
+class SleDiagnosticSubmit(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [
+        ("version", ctypes.c_uint32), ("flags", ctypes.c_uint32),
+        ("generation", ctypes.c_uint64), ("request_id", ctypes.c_uint64),
+        ("timeout_ms", ctypes.c_uint32), ("opcode", ctypes.c_uint16),
+        ("reserved", ctypes.c_uint16), ("seq", ctypes.c_uint32),
+        ("action", ctypes.c_uint32),
+    ]
+
+
 class SleDiagnosticResult(ctypes.Structure):
     _align_ = 8
     _fields_ = [

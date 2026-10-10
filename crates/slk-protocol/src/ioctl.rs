@@ -330,3 +330,10 @@ nix::ioctl_readwrite!(
     0xd0,
     super::SleDiagnosticResult
 );
+
+nix::ioctl_readwrite!(
+    sl_diagnostic_submit,
+    SL_MAGIC,
+    0xd1,
+    super::SleDiagnosticSubmit
+);

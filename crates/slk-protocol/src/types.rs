@@ -1311,3 +1311,19 @@ impl Default for SleDiagnosticResult {
         unsafe { core::mem::zeroed() }
     }
 }
+
+/// Caller-keyed Native metadata admission or cancellation (ioctl 0xd1).
+/// Repeat the same request ID/fields after EFAULT; never invent a fresh ID.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[repr(C, align(8))]
+pub struct SleDiagnosticSubmit {
+    pub version: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub request_id: u64,
+    pub timeout_ms: u32,
+    pub opcode: u16,
+    pub reserved: u16,
+    pub seq: u32,
+    pub action: u32,
+}

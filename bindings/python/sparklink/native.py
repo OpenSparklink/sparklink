@@ -12,7 +12,7 @@ from .adapter import SparkLinkError, _get_lib
 from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
-    SleDiagnosticResult,
+    SleDiagnosticResult, SleDiagnosticSubmit,
 )
 
 _native_library = None
@@ -26,7 +26,7 @@ def _get_native_lib():
     if any(ctypes.alignment(t) != 8 for t in (
         SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
         SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
-        SleDiagnosticResult,
+        SleDiagnosticResult, SleDiagnosticSubmit,
     )):
         raise OSError("native UAPI requires ctypes with 8-byte structure alignment")
     handle = ctypes.c_void_p
@@ -44,6 +44,7 @@ def _get_native_lib():
         "slk_discovery_result": [handle, u64, u64, ctypes.POINTER(SleDiscoveryResult)],
         "slk_controller_event": [handle, ctypes.POINTER(SleControllerEventQuery)],
         "slk_snoop": [handle, ctypes.POINTER(SleSnoopQuery)],
+        "slk_diagnostic_submit": [handle, ctypes.POINTER(SleDiagnosticSubmit)],
         "slk_diagnostic_result": [handle, u64, u32, ctypes.POINTER(SleDiagnosticResult)],
     }
     for name, arguments in signatures.items():
@@ -173,6 +174,19 @@ class NativeAdapter:
         result = SleDiscoveryResult()
         present = self._invoke('slk_discovery_result', self.generation, request_id, ctypes.byref(result))
         return result if present else None
+
+    def submit_diagnostic(self, request):
+        """Submit/cancel using a caller-known ID; reuse the same ID after EFAULT.
+
+        New IDs increase on this open fd. Cancellation preserves any on-wire
+        reservation; it cannot make a late reply belong to a subsequent query.
+        """
+        if not isinstance(request, SleDiagnosticSubmit):
+            raise TypeError("SleDiagnosticSubmit required")
+        if request.generation != self.generation or request.request_id == 0:
+            raise ValueError("request must have this generation and a nonzero request id")
+        self._invoke('slk_diagnostic_submit', ctypes.byref(request))
+        return request.seq
 
     def diagnostic_result(self, seq):
         """Non-consuming result for this fd, generation and admitted raw sequence.

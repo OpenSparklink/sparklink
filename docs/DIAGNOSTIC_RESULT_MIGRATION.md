@@ -136,3 +136,12 @@ event9、C sanitizers、历史PHY3/拒绝arm1。CI只编译live C probe，不执
 Diagnostic/API/事件验收。旧DLI消费者与共享队列迁移/删除、admission copyout
 找回及幂等、cancel/deadline、并发/完整移除仍待实现与实际回归；自然启动/
 重枚举/消失根因和无人工拔插完整恢复继续OPEN，VM-only和完整S0–S6不变。
+
+### Native diagnostic admission 身份与取消（开发门禁，实机待复核）
+
+[新提交契约](DIAGNOSTIC_ADMISSION.md)用调用者预先持有的request ID找回copyout
+失败后的admission；保留重试不重发/不续期，淘汰旧ID拒绝ESTALE。取消排队命令
+保持FIFO，在途取消保留真实Host回复槽，超时/取消/Host错误保留本地errno。
+Native旧输出seq-only提交入口不支持，C/Rust/Python、CLI和专用probe同步迁移。
+开发测试通过不引用K49/Ud8旧镜像证明新语义；完整实际取消/迟到回复及剩余DLI
+迁移继续OPEN，当前真实路径须用新镜像独立回归。自然恢复根因和完整S0–S6不缩减。

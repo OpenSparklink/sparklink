@@ -748,6 +748,22 @@ impl Adapter {
         Ok(info)
     }
 
+    /// Native metadata-only idempotent admission/cancel. Caller supplies an ID
+    /// increasing for new requests on this fd, and reuses it after EFAULT.
+    /// Retained retries return the same sequence; evicted old IDs fail ESTALE.
+    /// Local cancel does not abort an on-wire command or release its reply slot.
+    pub fn diagnostic_submit(&self, request: &mut SleDiagnosticSubmit) -> Result<()> {
+        validate_diagnostic_submit(request)?;
+        let original = *request;
+        let mut value = original;
+        unsafe { ioctl::sl_diagnostic_submit(self.raw_fd(), &mut value)? };
+        if value.seq == 0 || (SleDiagnosticSubmit { seq: 0, ..value }) != original {
+            return Err(Error::InvalidParam("invalid diagnostic admission response"));
+        }
+        *request = value;
+        Ok(())
+    }
+
     /// Fetch a result admitted by this exact fd/generation. Requires the same
     /// file to hold Diagnostic and CAP_NET_ADMIN; ENOENT means missing/evicted.
     /// No cursor, shared event dequeue or legacy response fallback is used.
@@ -1129,6 +1145,24 @@ impl Adapter {
     }
 }
 
+fn validate_diagnostic_submit(value: &SleDiagnosticSubmit) -> Result<()> {
+    if value.version != 1
+        || value.flags != 0
+        || value.generation == 0
+        || value.request_id == 0
+        || value.seq != 0
+        || value.reserved != 0
+        || !(1..=5000).contains(&value.timeout_ms)
+        || !matches!(value.action, 1 | 2)
+        || !matches!(value.opcode, 0x0402 | 0x0403 | 0x0404 | 0x0406)
+    {
+        return Err(Error::InvalidParam(
+            "invalid Native metadata diagnostic request",
+        ));
+    }
+    Ok(())
+}
+
 fn validate_diagnostic_result(
     result: &SleDiagnosticResult,
     generation: u64,
@@ -1220,6 +1254,66 @@ pub(crate) fn decode_event(raw: SleDliEvent) -> Result<Event> {
 #[cfg(test)]
 mod ssap_registration_tests {
     use super::*;
+
+    #[test]
+    fn diagnostic_admission_guards_and_errno_preserve_caller_request() {
+        let good = SleDiagnosticSubmit {
+            version: 1,
+            generation: 7,
+            request_id: 1,
+            timeout_ms: 5000,
+            opcode: 0x0406,
+            action: 1,
+            ..Default::default()
+        };
+        let adapter = Adapter::open("/dev/null").unwrap();
+        for bad in [
+            SleDiagnosticSubmit { version: 2, ..good },
+            SleDiagnosticSubmit { flags: 1, ..good },
+            SleDiagnosticSubmit {
+                generation: 0,
+                ..good
+            },
+            SleDiagnosticSubmit {
+                request_id: 0,
+                ..good
+            },
+            SleDiagnosticSubmit { seq: 1, ..good },
+            SleDiagnosticSubmit {
+                reserved: 1,
+                ..good
+            },
+            SleDiagnosticSubmit { action: 3, ..good },
+            SleDiagnosticSubmit {
+                opcode: 0x0c05,
+                ..good
+            },
+            SleDiagnosticSubmit {
+                timeout_ms: 0,
+                ..good
+            },
+            SleDiagnosticSubmit {
+                timeout_ms: 5001,
+                ..good
+            },
+        ] {
+            let mut value = bad;
+            assert!(matches!(
+                adapter.diagnostic_submit(&mut value),
+                Err(Error::InvalidParam(_))
+            ));
+            assert_eq!(value, bad);
+        }
+        for action in [1, 2] {
+            let original = SleDiagnosticSubmit { action, ..good };
+            let mut value = original;
+            assert!(matches!(
+                adapter.diagnostic_submit(&mut value),
+                Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+            ));
+            assert_eq!(value, original);
+        }
+    }
 
     #[test]
     fn diagnostic_result_rejects_invalid_identity_and_states() {

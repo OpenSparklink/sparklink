@@ -13,7 +13,7 @@ from sparklink.native import _get_native_lib
 from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
-    SleDiagnosticResult,
+    SleDiagnosticResult, SleDiagnosticSubmit,
 )
 
 
@@ -84,6 +84,23 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(self.lib.slk_discovery_submit(self.handle, None), -errno.EINVAL)
         self.assertEqual(self.lib.slk_management_release(self.handle, 1, 1, 1), -errno.ENOTTY)
         self.assertEqual(self.lib.slk_management_release(None, 1, 1, 1), -errno.EINVAL)
+
+    def test_diagnostic_admission_fields_and_errno_preserve_request(self):
+        good = dict(version=1, generation=7, request_id=1, timeout_ms=5000, opcode=0x0406, action=1)
+        for changed in [dict(version=2), dict(flags=1), dict(generation=0), dict(request_id=0),
+                        dict(timeout_ms=0), dict(timeout_ms=5001), dict(reserved=1), dict(seq=1),
+                        dict(action=3), dict(opcode=0x0c05)]:
+            value = SleDiagnosticSubmit(**(good | changed))
+            original = bytes(value)
+            self.assertEqual(self.lib.slk_diagnostic_submit(self.handle, ctypes.byref(value)), -errno.EINVAL)
+            self.assertEqual(bytes(value), original)
+        for action in (1, 2):
+            value = SleDiagnosticSubmit(**(good | dict(action=action)))
+            original = bytes(value)
+            self.assertEqual(self.lib.slk_diagnostic_submit(self.handle, ctypes.byref(value)), -errno.ENOTTY)
+            self.assertEqual(bytes(value), original)
+        self.assertEqual(self.lib.slk_diagnostic_submit(None, ctypes.byref(value)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_diagnostic_submit(self.handle, None), -errno.EINVAL)
 
     def test_failed_native_constructor_closes_its_handle(self):
         count = lambda: len(list(Path('/proc/self/fd').iterdir()))

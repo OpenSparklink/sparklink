@@ -307,3 +307,23 @@ pub unsafe extern "C" fn slk_diagnostic_result(
         Err(error) => errno(error),
     }
 }
+
+/// Idempotent metadata admission/cancel; returns 0 or -errno. Request storage is
+/// unchanged on failure, including syscall EFAULT. Retry the same caller-known
+/// ID/fields; a failure is not evidence that the command was not admitted.
+/// # Safety
+/// Non-null pointers are valid/aligned/nonoverlapping; request is writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_diagnostic_submit(
+    adapter: *const SlkAdapter,
+    request: *mut SleDiagnosticSubmit,
+) -> c_int {
+    let (Some(adapter), Some(request)) = (unsafe { adapter.as_ref() }, unsafe { request.as_mut() })
+    else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter.inner.diagnostic_submit(request) {
+        Ok(()) => 0,
+        Err(error) => errno(error),
+    }
+}

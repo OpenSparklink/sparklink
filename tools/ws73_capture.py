@@ -279,7 +279,24 @@ def command_reply(capture, owner, opcode, start, end, params=None, value=None):
     return dict(command=command, reply=replies[0])
 
 
-def _corroborate_control(run, capture):
+def corroborate_recovery(run, capture):
+    """Real RF after an artificial guest error; never physical/natural-fault acceptance."""
+    if (run.get('scope') != 'real WS73 RF with artificial guest transport recovery support'
+            or run.get('status') != 'RECOVERY_CONTROL_EVIDENCE_PENDING'
+            or run.get('fault_method') != 'QMP_GUEST_TRANSPORT_ERROR_ONCE'
+            or run.get('physical_acceptance') is not False
+            or run.get('automatic_fault_recovery_acceptance') is not False):
+        raise CaptureError('explicit artificial transport recovery run required')
+    physical_descriptors(run)
+    if not isinstance(run['fault_command']['exit'], int) or not run['fault_command']['exit']:
+        raise CaptureError('fault command did not fail')
+    old, new = run['initial'][0], run['replacement']
+    if (old['bus'], old['device'], old['address']) != (new['bus'], new['device'], new['address']):
+        raise CaptureError('protocol recovery changed USB/radio identity')
+    return _corroborate_control(run, capture, 'recovery', 'retirement_observed_wall_ns')
+
+
+def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns'):
     # Verify supporting records rather than trusting the success label alone.
     from ws73_north_star import parse_result, parse_match, parse_scan_window, parse_scan_complete, parse_scan_observed, stable
     identity = run['application_identity']
@@ -324,7 +341,7 @@ def _corroborate_control(run, capture):
             raise CaptureError('radio operation intervened before OFF confirmation')
         command_reply(capture, owner, opcode, source['start_wall_ns'], source['end_wall_ns'], params, '')
     rounds = run['rounds']
-    if [(r['phase'], r['round']) for r in rounds] != [('initial', i) for i in range(1, 21)] + [('replug', 1), ('replug', 2)]:
+    if [(r['phase'], r['round']) for r in rounds] != [('initial', i) for i in range(1, 21)] + [(replacement_phase, 1), (replacement_phase, 2)]:
         raise CaptureError('20 consecutive alternating rounds plus separate replug proof required')
     if len({r['marker'] for r in rounds}) != 22:
         raise CaptureError('markers reused')
@@ -422,7 +439,7 @@ def _corroborate_control(run, capture):
         used.add(key)
         proofs.append({'phase': r['phase'], 'round': r['round'], 'marker': r['marker'],
                        'receiver': rx, 'raw': proof, 'radio_commands': radio})
-    if [n['phase'] for n in run['negatives']] != ['initial', 'replug']:
+    if [n['phase'] for n in run['negatives']] != ['initial', replacement_phase]:
         raise CaptureError('both negative controls required')
     for n in run['negatives']:
         start, end = n['window_wall_ns']
@@ -444,7 +461,7 @@ def _corroborate_control(run, capture):
     metadata = {}
     for identity in identities.values():
         metadata[json_identity(identity)] = [command_reply(capture, identity, opcode,
-            run['unplug_observed_wall_ns'] if identity == replacement else 0,
+            run[boundary_field] if identity == replacement else 0,
             identity['observed_wall_ns'], b'', value)
             for opcode,value in [(0x0404, identity['version']),
                                  (0x0402, struct.pack('<HBHB', *identity['buffers']).hex()),
@@ -453,7 +470,7 @@ def _corroborate_control(run, capture):
     for proof, r in zip(proofs, rounds):
         proof['registration_queries'] = {side: metadata[json_identity(r[side])] for side in ['tx','rx']}
     survivor = run['survivor_control']['scan_request']
-    if not run['unplug_observed_wall_ns'] <= survivor['start_wall_ns'] <= survivor['end_wall_ns'] <= replacement['observed_wall_ns']:
+    if not run[boundary_field] <= survivor['start_wall_ns'] <= survivor['end_wall_ns'] <= replacement['observed_wall_ns']:
         raise CaptureError('survivor control not between unplug and replacement Ready')
     steps = [command_reply(capture, initial[1], opcode, survivor['start_wall_ns'], survivor['end_wall_ns'],
                            b'\x01\x00' if opcode == 0x1002 else None, '')

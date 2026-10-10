@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 
-from ws73_capture import command_reply, check_capture_stats, corroborate, corroborate_synthetic, corroborate_passthrough, discovery, read_capture, CaptureError
+from ws73_capture import command_reply, check_capture_stats, corroborate, corroborate_synthetic, corroborate_passthrough, corroborate_recovery, discovery, read_capture, CaptureError
 from ws73_north_star import daemon_identity, healthy_native_runtime, ordinary_identity, registration
 
 EVIDENCE = Path('/evidence')
@@ -313,6 +313,15 @@ def verify_passthrough():
 
 if __name__=='__main__':
     action=sys.argv[1]
+    if action=='verify-recovery':
+        run=json.loads((EVIDENCE/'application/recovery-control/run.json').read_text())
+        capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in [*run['initial'],run['replacement']]])
+        packets=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
+        if packets!=capture['packet_count']:raise ValueError('recovery capture count mismatch')
+        proofs=corroborate_recovery(run,capture)
+        (EVIDENCE/'recovery-control-proofs.json').write_text(json.dumps({'scope':run['scope'],'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')
+        print('WS73_TARGET_RECOVERY_SUPPORT: PASS',flush=True)
+        raise SystemExit(0)
     if action=='ready':ready(int(sys.argv[2]))
     elif action=='support':support()
     elif action=='verify-support':verify_support()

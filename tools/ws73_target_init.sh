@@ -19,6 +19,13 @@ fail() {
         echo "$capture_exit" > /evidence/capture-failure-exit.txt
     fi
     [ -d /evidence/application ] && dmesg > /evidence/kernel.log
+    if [ -d /evidence/application ] && [ -f /sys/kernel/tracing/tracing_on ]; then
+        echo 0 > /sys/kernel/tracing/tracing_on
+        cat /sys/kernel/tracing/trace > /evidence/xhci-trace.log
+        for stats in /sys/kernel/tracing/per_cpu/cpu*/stats; do
+            cat "$stats" >> /evidence/xhci-trace-stats.txt
+        done
+    fi
     dmesg
     sync
     poweroff -f
@@ -48,6 +55,10 @@ if [ -f /scratch-root-uuid ]; then
         [ ! -d "$directory" ] || chown -R 0:0 "$directory" || fail 'VM code ownership'
     done
     . /native-evidence-modules.sh
+    ensure_mount /sys/kernel/tracing tracefs
+    [ -f /sys/kernel/tracing/events/xhci-hcd/enable ] || fail 'native xHCI trace events unavailable'
+    echo 1024 > /sys/kernel/tracing/buffer_size_kb || fail 'native xHCI trace buffer'
+    echo 1 > /sys/kernel/tracing/events/xhci-hcd/enable || fail 'native xHCI tracing'
     echo "WS73_TARGET_NATIVE_VM_ROOT: $(uname -r) NVMe/Btrfs signed-module"
 fi
 mount -t 9p -o trans=virtio,version=9p2000.L evidence /evidence || fail 'private evidence share'
@@ -89,6 +100,8 @@ cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'daemon p
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c '/bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py support-input' || fail 'ordinary serial input'
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py support || fail 'synthetic environment integration'
+elif grep -q 'ws73.recovery=1' /proc/cmdline; then
+    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_recovery.py --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/recovery-control" || fail 'artificial transport recovery control'
 elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
 else
@@ -108,6 +121,11 @@ wait "$capture" || fail 'capture shutdown'
 chown 0:1000 /evidence/ws73.pcap /evidence/capture-stats.txt; chmod 0640 /evidence/ws73.pcap /evidence/capture-stats.txt
 dmesg > /evidence/kernel.log
 if [ -f /scratch-root-uuid ]; then
+    echo 0 > /sys/kernel/tracing/tracing_on
+    cat /sys/kernel/tracing/trace > /evidence/xhci-trace.log || fail 'native xHCI trace seal'
+    for stats in /sys/kernel/tracing/per_cpu/cpu*/stats; do
+        cat "$stats" >> /evidence/xhci-trace-stats.txt || fail 'native xHCI trace statistics'
+    done
     [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'final VM kernel taint'
     echo 'WS73_TARGET_NATIVE_VM_TAINT: 0'
 fi
@@ -116,6 +134,9 @@ if grep -q 'ws73.support=1' /proc/cmdline; then
 fi
 if grep -q 'ws73.passthrough=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-passthrough || fail 'sealed QMP passthrough capture'
+fi
+if grep -q 'ws73.recovery=1' /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-recovery || fail 'sealed recovery capture'
 fi
 echo 'WS73_TARGET_FINISHED'
 sync

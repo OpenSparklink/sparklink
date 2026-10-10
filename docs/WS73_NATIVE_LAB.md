@@ -382,3 +382,35 @@ python3 tools/ws73_north_star.py verify \
 failed due to incorrect slot or ep state`，taint仍0且B未中断；该警告保留待定位，
 不被通用panic/oops匹配器遗漏后称为“无告警”。无人工恢复、原生主机对照、
 四设备两组并行、完整systemd sandbox及其他S0–S6条件仍未验收。
+
+### 真实 WS73 的人工传输错误恢复支持
+
+`ws73_target.py run --fault-recovery`与`--qmp-hotplug`互斥。先完成20轮真实
+交换，随后仅arm第一个USB对象的测试脉冲，再用普通用户发起扫描。一次成功的
+host bulk IN81数据被明确丢弃并向guest报IOERROR；整个测试没有人工拔插、
+QMP device_del/readd或主机USB reset/detach。这是人工错误下的恢复支持证据，
+不能关闭自然故障根因、消失恢复、原生主机或完整恢复矩阵条件。
+
+```sh
+python3 tools/ws73_target.py run \
+  --prepared /absolute/private/native-module-prepared-with-new-qemu \
+  --ports 1-2.1.4 1-2.1.1 --fault-recovery --timeout 420 \
+  --output /absolute/private/fresh-artificial-recovery-run
+```
+
+新QEMU必须重新通过同一镜像/签名模块的空USB scratch-root boot，随后重新
+prepare；旧prepared目录不能替换二进制或就地改镜像。native profile在加载
+WS73前启用guest xHCI trace，成功及失败都封存trace和各CPU统计。
+
+[2026-10-10记录](evidence/ws73-vm-artificial-recovery-20261010.json)中第4只
+host地址101与guest地址2均保持不变。QEMU只注入一次178字节成功回复；guest
+xHCI报告USB Transaction Error并成功Reset Endpoint。回复已丢失，因此
+1001最终超时为-110，并非native直接收到-71。恢复预算由1/2变为2/2，经
+4秒协议恢复产生新generation3；第1只始终generation2且实际扫描启停成功。
+从故障命令开始到重新观察Ready为10.28秒。slkd PID522/start_ticks333与bus
+owner保持不变，两轮真实恢复RF成功；独立host校验1163条USB记录、零capture
+丢包、22份RX证明，xHCI ringbuffer零overrun。公开JSON仅含解码结果、诊断
+和工件hash；原始抓包留在私有目录。
+
+北极星仍为7/8：人工错误恢复支持已增加，但自然故障根因、物理拔出时的xHCI
+warning、单/双/四设备矩阵及未经授权的原生主机对照均未完成。

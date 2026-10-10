@@ -103,6 +103,7 @@ def prepare(args):
                   HERE/'ws73_vm_native_root.py',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',
                   HERE/'ws73_target_control.py',
+                  HERE/'ws73_target_recovery.py',
                   HERE/'ws73_bindings_probe.c',HERE/'ws73_bindings_probe.py',
                   LINUX/'tools/testing/selftests/sparklink/ws73-lab.py',
                   LINUX/'tools/testing/selftests/sparklink/qemu_verdict.py',
@@ -158,7 +159,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_bindings_probe.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -250,7 +251,10 @@ USB_LIFECYCLE_EVENTS = (
     'usb_port_attach', 'usb_port_detach',
     'usb_host_open_started', 'usb_host_open_success', 'usb_host_open_failure',
     'usb_host_close', 'usb_host_claim_interface', 'usb_host_release_interface',
-    'usb_host_req_complete', 'usb_host_reset',
+    'usb_host_req_complete', 'usb_host_req_data', 'usb_host_reset',
+    'usb_xhci_slot_address', 'usb_xhci_slot_disable',
+    'usb_xhci_ep_stop', 'usb_xhci_ep_reset', 'usb_xhci_ep_state',
+    'usb_xhci_ep_set_dequeue', 'usb_xhci_ep_disable',
 )
 
 
@@ -321,6 +325,7 @@ def _run(args):
     output=args.output.resolve();output.mkdir(mode=0o700,parents=True,exist_ok=False)
     support=args.command=='support'
     passthrough=bool(getattr(args,'qmp_hotplug',False))
+    recovery=bool(getattr(args,'fault_recovery',False))
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
        'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
        'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False)),
@@ -328,6 +333,7 @@ def _run(args):
        'synthetic_warm':bool(getattr(args,'warm',False))}
     m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py')]
     m['qmp_guest_hotplug']=passthrough
+    m['artificial_guest_transport_fault']=recovery
     process=monitor=channel=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
@@ -355,6 +361,7 @@ def _run(args):
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
                      '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+(' ws73.support=1' if support else '')+
                      (' ws73.passthrough=1' if passthrough else '')+
+                     (' ws73.recovery=1' if recovery else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -387,7 +394,7 @@ def _run(args):
                     if time.monotonic()>deadline:
                         if timeout_seal is not None:
                             raise ValueError('environment timeout; graceful capture sealing deadline exceeded')
-                        if support or passthrough:
+                        if support or passthrough or recovery:
                             raise ValueError('environment timeout; preserve partial console/capture')
                         timeout_seal=SerialTimeoutSeal(transcript)
                         m['graceful_timeout']={'reason':'ENVIRONMENT_TIMEOUT','state':timeout_seal.phase,
@@ -396,17 +403,28 @@ def _run(args):
                         if timeout_seal.initial_input:channel.sendall(timeout_seal.initial_input)
                         deadline=time.monotonic()+30
                         write_json(output/'manifest.json',m)
-                    readers=[channel]+([] if support or passthrough or timeout_seal is not None else [sys.stdin])
+                    readers=[channel]+([] if support or passthrough or recovery or timeout_seal is not None else [sys.stdin])
                     readable,_,_=select.select(readers,[],[],0.1)
                     if channel in readable:
                         data=channel.recv(65536)
                         if data:
                             log.write(data);log.flush();transcript.extend(data);sys.stdout.buffer.write(data);sys.stdout.buffer.flush()
-                    if not support and not passthrough and timeout_seal is None and sys.stdin in readable:
+                    if not support and not passthrough and not recovery and timeout_seal is None and sys.stdin in readable:
                         data=os.read(sys.stdin.fileno(),4096)
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
                     text=transcript.decode(errors='replace')
+                    if recovery and hotplug_phase==0 and 'WS73_TARGET_RECOVERY_INJECT_READY' in text:
+                        target={'path':'/machine/peripheral/ws73_0'}
+                        if monitor.execute('qom-get',{**target,'property':'test-runtime-in-errors'})!=0:
+                            raise ValueError('fresh injection counter required')
+                        monitor.execute('qom-set',{**target,'property':'test-runtime-in-error-once','value':True})
+                        if monitor.execute('qom-get',{**target,'property':'test-runtime-in-error-once'}) is not True:
+                            raise ValueError('one-shot fault pulse did not arm')
+                        m['fault_injection']={'method':'QMP_GUEST_TRANSPORT_ERROR_ONCE','guest_slot':0,
+                                              'armed_wall_ns':time.time_ns(),'physical_acceptance':False,
+                                              'automatic_fault_recovery_acceptance':False}
+                        channel.sendall(b'recovery-injected\n');hotplug_phase=1
                     if timeout_seal is not None:
                         action=timeout_seal.feed(transcript)
                         if action:
@@ -462,8 +480,10 @@ def _run(args):
                             or not re.search(r'^Uid:\s+0\s+0\s+0\s+0$', status, re.M)):
                         raise ValueError('native module VM daemon is not root')
                 if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
-                if not support and not passthrough and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
+                if not support and not passthrough and not recovery and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
                 if passthrough and 'WS73_TARGET_PASSTHROUGH_SUPPORT: PASS' not in text:raise ValueError('QMP passthrough proof missing')
+                if recovery and (hotplug_phase!=1 or 'WS73_TARGET_RECOVERY_SUPPORT: PASS' not in text):
+                    raise ValueError('artificial transport recovery proof missing')
                 identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(2)]
                 if getattr(args,'hotplug',False) or passthrough:
                     if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
@@ -472,6 +492,18 @@ def _run(args):
                     if markers!=['REMOVE','READD']:raise ValueError('missing/duplicate/out-of-order synthetic control confirmations')
                     control=json.loads((share/('application/passthrough-control/run.json' if passthrough else 'application/support-control/run.json')).read_text())
                     identities=[*control['initial'],control['replacement']]
+                if recovery:
+                    control=json.loads((share/'application/recovery-control/run.json').read_text())
+                    identities=[*control['initial'],control['replacement']]
+                    injection=(output/'qemu-stderr.log').read_text()
+                    markers=re.findall(r'WS73_TEST_RUNTIME_IN_ERROR: dev (\d+):(\d+) ep 81 host_status=0 discarded_bytes=(\d+) injected_count=(\d+)',injection)
+                    expected=devices[args.ports[0]]
+                    if len(markers)!=1 or tuple(map(int,markers[0][:2]))!=(expected['bus'],expected['address']) or int(markers[0][2])<=0 or markers[0][3]!='1':
+                        raise ValueError('exact one target-only artificial successful-host-transfer injection required')
+                    trace=(output/'usb-lifecycle.log').read_text()
+                    if re.search(r'usb_host_(close|reset|open_failure) dev ',trace):
+                        raise ValueError('protocol recovery unexpectedly closed/reset a USB owner')
+                    m['fault_injection']['consumed_marker']=markers[0]
                 packets=check_capture_stats((share/'capture-stats.txt').read_text())
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
                 if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
@@ -479,7 +511,7 @@ def _run(args):
                 m['empty_bulk_completions']=len(capture['empty_bulk_completions'])
                 if getattr(args,'empty_bulk',False) and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in identities):
                     raise ValueError('successful empty bulk completions missing from either selected USB identity')
-                m['status']='PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
@@ -505,7 +537,7 @@ def _run(args):
             m['vm_disk_after'] = file_record(output/'root.btrfs')
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
-    return 0 if m['status'] in ['SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','ENVIRONMENT_FINISHED'] else 1
+    return 0 if m['status'] in ['SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','ENVIRONMENT_FINISHED'] else 1
 
 
 def run(args):
@@ -531,7 +563,9 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs=2,required=True)
-            cmd.add_argument('--qmp-hotplug',action='store_true',help='real RF with QMP guest-only disconnect/reconnect; never physical unplug or automatic recovery acceptance')
+            modes=cmd.add_mutually_exclusive_group()
+            modes.add_argument('--qmp-hotplug',action='store_true',help='real RF with QMP guest-only disconnect/reconnect; never physical unplug or automatic recovery acceptance')
+            modes.add_argument('--fault-recovery',action='store_true',help='one opt-in artificial guest bulk IN81 error with real radios; never natural-fault or physical unplug acceptance')
         else:
             cmd.add_argument('--empty-bulk',action='store_true',help='inject successful zero-length bulk IN before synthetic runtime replies; never a physical option')
             cmd.add_argument('--hotplug',action='store_true',help='run the full control orchestrator with explicitly synthetic USB removal/replug; never physical acceptance')

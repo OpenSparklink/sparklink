@@ -71,7 +71,12 @@ Virtual 验证路由、乱序/迟到完成、队列满与取消；软件 PASS �
 最终 harness 应使用与用户相同的 slctl/D-Bus 路径，保存每轮角色、随机
 标识、提交/完成/发现的 monotonic 时间、实际 scan 原文及运行 exit status。
 动态 adapter/广播/扫描命令和[物理控制/抓包佐证工具](WS73_PHYSICAL_TEST.md)已实现。
-本机真实运行仍待设备与有效部署/板级证据；不能以软件 gate 替代硬件验收。
+本机已获得[真实双设备物理闭环](evidence/ws73-vm-physical-20261010.json)和
+[整改后默认daemon回归](evidence/ws73-vm-config-cleanup-regression-20261011.json)。
+[最新生产代码及严格CI回归](evidence/ws73-vm-strict-ci-regression-20261011.json)
+进一步保留20+2真实轮次、普通应用、同daemon和独立接收证据。
+板级校准资格、固件运行版本区分、自然故障根因及完整自主恢复仍未验收；
+北极星保持7/8，不能以软件gate或人工注入替代剩余硬件验收。
 
 每次实机运行先做 inventory，确认两只物理 WS73 与 guest/controller
 映射。保存 Linux/用户态 commit、dirty diff、config、kernel/initramfs、

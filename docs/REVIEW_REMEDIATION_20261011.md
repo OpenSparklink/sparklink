@@ -97,7 +97,7 @@ GATT、Agent、L2CAP 和 VM 测试语义。R01/R02/R05 首批已签名推送并�
   R06–R14、自然根因/无人工恢复/四设备/全sandbox。严格CI39 warning不隐藏，
   新CI门禁不能代表全部质量基线已恢复，所有整项issue继续开放。
 
-### 最新远端质量门禁核对
+### 首批远端质量门禁历史
 
 用户态 `082e6743e20b` 的 [CI run38075881263](https://github.com/OpenSparklink/sparklink/actions/runs/38075881263)：
 新增 actual kernel security/backend failure 门禁、Python/内核ABI和rustfmt成功；
@@ -116,3 +116,26 @@ check/clippy/fmt及默认release已经通过，workspace all-features160项测�
 零ignored通过；工具/evidence测试纳入独立无硬件CI。新默认daemon的VM真实RF
 和远端CI须重新核对。
 原CI39错误是旧提交证据，不能据它断言本批仍有同样错误或已经绿；以新记录为准。
+
+### 最新整改回归及完整质量基线
+
+9f57d1e/34b54fd之后，7ad805e明确工具CI的固定内核输入，8a9cc28修复远端
+Rust1.99新增广告UUID解析lint。首轮run38077097118的两类失败保留，没有跳过
+用例或关闭-D warnings。[run38077403740](https://github.com/OpenSparklink/sparklink/actions/runs/38077403740)
+对应8a9cc28，9个jobs全部success：check/test/clippy/fmt/default release、C header、
+Python/32位C/Rust ABI、141项工具/evidence测试、实际内核失败边界。严格本地
+Rust1.96与1.99 clippy均通过；all-feature workspace160项/零失败/零ignored，
+配置实际进程回归和默认依赖隔离都保留。R14配置/生命周期/硬件完整矩阵仍开放。
+
+[34b54fd默认daemon证据](evidence/ws73-vm-config-cleanup-regression-20261011.json)
+和[8a9cc28最新生产代码证据](evidence/ws73-vm-strict-ci-regression-20261011.json)
+分别保留20+2真实轮次。后者最长775ms、1163USB记录/零drop、22份host独立
+RX/命令/元数据佐证；人工IN81错误后的新generation恢复耗时10301.731ms，
+幸存generation2与slkd PID/start/bus不变，UID1000/caps0，最终停止均确认；
+kernel warning0/taint0，四个host USB地址保持不变。这里的10秒是每次扫描
+成功Complete之后的发现窗口，不能把设备故障恢复耗时宣称为小于10秒。
+
+本轮没有物理拔插、自然故障根因或宿主原生验收；历史xHCI警告及物理证据不删，
+U10仍7/8，自动恢复/根因相关issues继续OPEN。下一顺序：WS73自然根因与有限
+恢复并行推进，R03/R10发送提交与socket契约、R04/R07/R08 SSAP预算/权限/credit，
+R09/R12状态/事件提交、R11/R13每设备backend迁移；全部S0–S6范围不缩减。

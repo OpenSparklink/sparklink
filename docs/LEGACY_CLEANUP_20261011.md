@@ -1,7 +1,8 @@
 # 旧内核实验实现：调用审计与清理清单
 
 审计日期：2026-10-11。基线 Linux fc0b4d1a44b6、用户态 157ec71c3b9a；
-最新已提交 ae06d9766fdd / 27358b1beff4 的生产调用链仍相同。首批 Linux 376bb1e8a544 / c2c4aa4ad0bd 已签名推送，以下记录调用链、
+后续 Linux 376bb1e8a544 / c2c4aa4ad0bd 和用户态 9f57d1e / 34b54fd 已整改部分
+生产调用链，以下分别记录原调用链、当前实现、
 迁移条件及限定回归。UAPI 未发布，无兼容期。
 
 ## 立即删除：生产测试行为及错误完成
@@ -22,7 +23,7 @@
 | UART/SPI 纯 codec、分片/边界 | selftests framing；硬件未接通不能用 codec 或本地 Complete 替代支持 | 待保留/迁移有效用例；伪 Complete 直接删除，无业务价值 |
 | 核心 Virtual、连接/SSAP 模型及注入 ioctl | 专用 Virtual backend / selftests；相同 Runtime、生命周期和契约 | K1/K19 待迁；不先删除有价值失败用例 |
 | QEMU 一次 bulk IN81 错误、autoscan/re-enum/open 故障工具 | 已在专用 qemu-sle-dli 和 VM 工具；默认关闭、单对象 guard、有故障边界回归 | 保留；人工故障支持与自然根因/自动恢复验收分开 |
-| Profile callback 阻塞/cancel/drain/panic 测试、transport codec | 旧 profile0 注册和连接 callback 确实接通；Native profile1 不注册；请求回调未接通。隔离未接通功能或迁到测试 crate | 不误删已接通生命周期回归；不加全局 allow(dead_code) |
+| Profile callback 阻塞/cancel/drain/panic 测试、transport codec | 34b54fd移到slk-experimental；默认daemon无运行时依赖，无旧服务注册/actor。显式实验feature保留profile0注册和连接callback，Native不注册；请求回调仍未接通 | 实际actor/codec回归保留，严格all-target/all-feature测试，不加全局allow(dead_code)；服务互通仍待验 |
 
 ## 等待替代：先迁调用者及回归，再删除
 

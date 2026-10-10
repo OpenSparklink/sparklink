@@ -24,7 +24,12 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 最新生产审查基线 Linux `fc0b4d1a44b6` / 用户态 `157ec71c3b9a`；
 后续 Linux `376bb1e8a544`/`c2c4aa4ad0bd` 已约束R01/R02/R05，并完成
 [新VM 20+2轮及人工恢复回归](evidence/ws73-vm-cleanup-regression-20261011.json)；
-完整安全/其他backend未验收，R06–R14仍开放。具体状态以[整改计划](REVIEW_REMEDIATION_20261011.md)及后续
+后续9f57d1e拒绝无效/被忽略配置策略，34b54fd隔离未接通实验服务并恢复严格
+本地质量基线；[新默认daemon回归](evidence/ws73-vm-config-cleanup-regression-20261011.json)
+复核真实20+2轮与独立USB佐证；[8a9cc28最新实机](evidence/ws73-vm-strict-ci-regression-20261011.json)
+最长775ms，[9个CI作业全部通过](https://github.com/OpenSparklink/sparklink/actions/runs/38077403740)。
+完整安全/其他backend未验收，剩余缺陷、完整R14
+矩阵与所有整项issues仍开放。具体状态以[整改计划](REVIEW_REMEDIATION_20261011.md)及后续
 提交证据为准。历史 image #33–#35/USB 不可见/固定 slk0 等阶段描述不代表现状；
 完整历史失败与协议来源保留在下文及北极星开发记录中。
 
@@ -669,5 +674,7 @@ capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d
 [实验边界](EXPERIMENTAL_CODE_BOUNDARY.md)将旧Profile/HID/transport独立保存；
 默认daemon不自动注册旧内建服务，旧注册与同actor仅显式experimental feature，
 Native路径不变。严格default/all-target/all-feature check/clippy通过，
-workspace all-features160项/零失败/零ignored；默认release、真实WS73新用户态
-和远端完整CI继续作为本批门禁。完整SSAP/安全策略/Profile互通不因此验收。
+workspace all-features160项/零失败/零ignored；默认release和新默认daemon真实20+2轮
+通过，工具141/ABI29通过；远端完整CI独立核对。完整SSAP/安全策略/Profile互通
+不因此验收。首轮工具CI缺相邻kernel helper、远端Rust1.99新lint分别由
+7ad805e固定kernel输入和8a9cc28固定数组解析修复；保留原失败，不跳过测试。

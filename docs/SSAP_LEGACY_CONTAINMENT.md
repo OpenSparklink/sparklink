@@ -52,7 +52,15 @@ indication 需匹配 ACK/期限；不得先出队再取credit或给未存入队�
 已知offset格式和短buffer检查。依赖分配器为显式 fixture；不属于标准或实机证据。
 完整Rust核心对象编译通过，无代码warning；make仍有已知jobserver警告。
 
-新的完整镜像、VM-only签名模块启动、真实两只WS73 20+2及独立RX证据随后单独
-记录；未生成新实机记录前，不能把旧head的证据用于本次内核。
+[新内核实机回归](evidence/ws73-vm-ssap-containment-regression-20261011.json)已完成：
+完整镜像、空USB VM签名模块load/unload、真实双设备20+2（最长622ms）、
+单对象人工IN81故障后generation1→3，幸存generation2和slkd PID518/start343
+及bus不变；应用UID1000/caps0。1163 USB/零drop，host独立核对22份RX。
+最后两只停止确认，VM warning0/taint0；宿主四口均保持身份并已释放。
+人工故障命令开始至新Ready约10204.609ms；10秒门限用于成功scan Complete后的
+发现，不用于冒称恢复时延。没有本轮物理拔插、自然根因或完整自主恢复验收。
+[CI38079779731](https://github.com/OpenSparklink/sparklink/actions/runs/38079779731)
+对应用户态558f556/内核4d8a0d61673d，9 jobs全success；已核对实际新增8项SSAP、
+11项sender和C USB边界日志。工具141、Rust160、ABI29和strict gates通过。
 R04/R07/R08、socket/SSAP/Profile和生命周期issues保持OPEN；自然故障根因、
 完整自主恢复、历史物理xHCI警告及native对照不因本批清理关闭。

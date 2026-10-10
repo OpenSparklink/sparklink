@@ -177,4 +177,8 @@ Linux 4d8a0d61673d77c5fd104d219346e0a2d3e23ef2 删除生产旧 SSAP codec/构造
 短包格式不一致，修复最终落在用户态标准 Engine；不把长度修补称为标准长读写。
 [调用链、迁移和8项实际代码回归](SSAP_LEGACY_CONTAINMENT.md)；历史codec只保留
 selftests。整项 R04/R07/R08 仍OPEN：socket/owner/预算/期限、标准codec、跨语言
-权限、通知提交/ACK、Profile和真实服务互通待实施。WS73新镜像实机须另外验收。
+权限、通知提交/ACK、Profile和真实服务互通待实施。
+[本批新镜像WS73回归](evidence/ws73-vm-ssap-containment-regression-20261011.json)
+已验证20+2、最长622ms、22独立RX/1163 USB零drop、同daemon/幸存者、warning0。
+远端[CI38079779731](https://github.com/OpenSparklink/sparklink/actions/runs/38079779731)
+9 jobs success，实际8项SSAP/11项sender日志已核对；自然根因及北极星7/8不变。

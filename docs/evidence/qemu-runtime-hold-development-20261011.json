@@ -208,7 +208,6 @@
     "natural_fault_root_cause_closed": false
   },
   "kernel_head": "091a57bb52f43ae0d1b9ae9358c4c802809535e1",
-  "compiled_userspace_head": "1d3a17b688eefb35ba9ba6d8aa02bf3ba2a4da21",
   "production_kernel_unchanged_from": "54621800ee4c171a6642f6b8d065b692a4d31408",
   "production_userspace_unchanged_from": "df9cff7d750dd889ea7403d8a53906f92d3faf46",
   "analysis_attachment_sha256": "f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a",
@@ -219,6 +218,46 @@
     "passed": 7,
     "total": 8
   },
-  "ci": "fixed-kernel check added; remote run not yet executed",
-  "reproduce_command": "python3 tools/testing/selftests/sparklink/qemu-sle-dli/run-usb-host-boundaries.py --archive /absolute/qemu-9.2.0.tar.xz --cc clang --output /absolute/private/fresh-qemu-host-boundaries"
+  "reproduce_command": "python3 tools/testing/selftests/sparklink/qemu-sle-dli/run-usb-host-boundaries.py --archive /absolute/qemu-9.2.0.tar.xz --cc clang --output /absolute/private/fresh-qemu-host-boundaries",
+  "remote_ci": {
+    "id": 38095468362,
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38095468362",
+    "head_sha": "8b29f097b68baf5de64e88ab9d86fb7d9770f75b",
+    "status": "completed",
+    "conclusion": "success",
+    "job_count": 9,
+    "rust_tests": 170,
+    "python_tests": 34,
+    "tool_tests": 170,
+    "actual_qemu_dependency_step_executed": true,
+    "live_usb_executed": false,
+    "qemu_scheduler_qualified": false,
+    "logs": [
+      {
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "id": 114340340855,
+        "log": ".dev/diagnostic-hold-ci-114340340855.log",
+        "sha256": "ebd24b3d22b8346e96f86ffce59154f0ee15f8e34132110523f9fc0146a0193f"
+      },
+      {
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "id": 114340340878,
+        "log": ".dev/diagnostic-hold-ci-114340340878.log",
+        "sha256": "d45bea2b173de7f2b7feba38d2b963ba232e844a6962cce4aecc85dbf566284c"
+      },
+      {
+        "name": "Python bindings and kernel ABI conformance",
+        "id": 114340340900,
+        "log": ".dev/diagnostic-hold-ci-114340340900.log",
+        "sha256": "93a052d82798b9d408c13b1af3d789a6b4944d5e53e3222aea933091ee139d0d"
+      },
+      {
+        "name": "cargo test",
+        "id": 114340410760,
+        "log": ".dev/diagnostic-hold-ci-114340410760.log",
+        "sha256": "e6b046b367e3ca893df4078e2d64210276b7d1e9c2ee369af51f5f39c769caa4"
+      }
+    ]
+  },
+  "latest_actual_compiled_userspace_head": "1d3a17b688eefb35ba9ba6d8aa02bf3ba2a4da21"
 }

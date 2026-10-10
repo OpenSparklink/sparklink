@@ -45,7 +45,9 @@ disarm 不丢弃已暂留的数据；无实际暂留的 release 和对其他对�
 
 timer、transport、digest、USB combining 是依赖替身。上述结果不证明实际 QEMU
 调度、完整 close drain、多设备并发、真实取消/迟到/期限或自然故障恢复。
-CI 运行固定归档的依赖门禁，不编译完整 QEMU、不执行 USB 或 guest。
+[固定源码CI38095468362](https://github.com/OpenSparklink/sparklink/actions/runs/38095468362)
+九作业全部成功；已读取终结日志确认新增QEMU门禁和170 Rust/34 Python/170工具
+实际执行。CI运行固定归档依赖门禁，不编译完整QEMU、不执行USB或guest。
 构建/fixture 的失败尝试保留，修正后重测；不能将它们抹成首次全部通过。
 
 ## 接下来执行的实际 VM 门禁

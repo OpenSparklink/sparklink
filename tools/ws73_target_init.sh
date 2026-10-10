@@ -60,6 +60,7 @@ else
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py instructions || fail 'physical mapping'
     # The only interactive shell is uid1000; raw capture and slkd remain root.
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh || fail 'ordinary application shell'
+    echo 'WS73_TARGET_SHELL_CLOSED'
 fi
 kill -TERM "$daemon"
 for n in $(seq 1 100); do kill -0 "$daemon" 2>/dev/null || break; sleep 0.1; done

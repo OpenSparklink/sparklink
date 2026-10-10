@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_host_boundary, usb_properties, HostTimeline, lifecycle_trace, USB_LIFECYCLE_EVENTS
+from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_host_boundary, usb_properties, HostTimeline, SerialTimeoutSeal, lifecycle_trace, USB_LIFECYCLE_EVENTS
 from ws73_north_star import _registration, file_record, healthy_native_runtime, registration, Run
 from ws73_target_control import SyntheticControlRun, PassthroughControlRun
 from types import SimpleNamespace
@@ -16,6 +16,30 @@ import ws73_target_guest as guest
 
 
 class TargetEnvironment(unittest.TestCase):
+    def test_timeout_never_confirms_manual_hotplug_or_uses_old_shell_prompt(self):
+        initial=b'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0\r\n/ $ \x1b[6n'
+        seal=SerialTimeoutSeal(initial)
+        self.assertEqual(seal.initial_input,b'\x03')
+        self.assertEqual(seal.feed(initial),b'')
+        waiting=initial+b'Unplug only WS73 at 1-1, then press Enter: '
+        self.assertEqual(seal.feed(waiting),b'')
+        self.assertEqual(seal.feed(waiting+b'Reinsert WS73 at 1-1, then press Enter: '),b'')
+        self.assertEqual(seal.feed(waiting+b'\r\nFAIL /evidence/application/control/run.json\r\n/ $ \x1b['),b'')
+        closed=waiting+b'\r\nFAIL /evidence/application/control/run.json\r\n/ $ \x1b[6n'
+        self.assertEqual(seal.feed(closed),b'exit 0\n')
+        self.assertEqual(seal.feed(closed),b'')
+        self.assertEqual(seal.phase,'EXIT_SENT')
+
+    def test_timeout_does_not_interrupt_root_supervisor_or_unready_guest(self):
+        with self.assertRaises(ValueError): SerialTimeoutSeal(b'WS73_TARGET_CAPTURE_READY\n')
+        closed=b'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0\nWS73_TARGET_SHELL_CLOSED\n'
+        seal=SerialTimeoutSeal(closed)
+        self.assertEqual(seal.initial_input,b'')
+        self.assertEqual(seal.feed(closed+b'/ $ '),b'')
+        self.assertEqual(seal.phase,'CLOSING')
+        active=SerialTimeoutSeal(closed.split(b'WS73_TARGET_SHELL_CLOSED')[0])
+        self.assertEqual(active.feed(closed+b'/ $ '),b'')
+
     def test_readiness_retries_only_transient_sysfs_metadata_errors(self):
         for code in (errno.EAGAIN, errno.ENODATA, errno.ENOENT, errno.EIO):
             with self.subTest(code=code), tempfile.TemporaryDirectory() as d:

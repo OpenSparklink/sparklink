@@ -94,6 +94,15 @@ attached backend 继续保留；未被占用的端口可刷新 QMP，未知 usbf
 survivor 隔离由 [实机 recorder](WS73_PHYSICAL_TEST.md) 验证。需要延长环境
 使用时间时显式调整有限正数 timeout，不把 timeout 当作成功。
 
+物理交互环境超时后，Host在普通用户shell已经就绪时发送取消信号，等待
+应用清理完毕后新出现的shell提示符，再退出shell让supervisor封存抓包。
+不会回复物理拔出/重插提示，也不会以旧提示符推断应用已经退出。
+普通shell返回0仅用于正常封存；被取消应用的FAIL仍保存在run.json，Host
+仍返回非零并记录原环境超时。最多额外等待30秒，超出后保留部分证据并
+停止guest。尚未就绪、合成及QMP自动控制路径继续保留原总超时边界。
+只有guest完整退出、封存统计为零丢包且pcap数量一致时，诊断state才为
+SEALED；这始终不是物理验收成功，也不清除原失败原因。
+
 应用测试完退出 shell。supervisor 停 slkd 并等待清理，随后 SIGINT 停 tcpdump、
 封存零丢失统计与完整 dmesg。Host 保留 console、QMP、前后 USB inventory、
 host/guest/controller 物理映射、自动重新枚举记录、pcap 和应用证据。状态至多

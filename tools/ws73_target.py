@@ -274,6 +274,33 @@ class HostTimeline:
         self.sequence += 1
 
 
+class SerialTimeoutSeal:
+    """Cancel ordinary work, then exit only a newly observed ordinary shell.
+
+    Never send Enter to a physical unplug/reinsert prompt. An interrupt may
+    leave cleanup running, so a pre-existing prompt cannot authorize exit.
+    """
+    def __init__(self, transcript):
+        text = transcript.decode(errors='replace')
+        if 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:
+            raise ValueError('environment timeout before ordinary shell readiness; preserve partial capture')
+        self.offset = len(transcript)
+        self.phase = 'CLOSING' if 'WS73_TARGET_SHELL_CLOSED' in text or 'WS73_TARGET_FINISHED' in text else 'WAITING_ORDINARY_SHELL'
+        self.initial_input = b'' if self.phase == 'CLOSING' else b'\x03'
+
+    def feed(self, transcript):
+        suffix = transcript[self.offset:].decode(errors='replace').replace('\r', '')
+        if 'WS73_TARGET_SHELL_CLOSED' in suffix or 'WS73_TARGET_FINISHED' in suffix:
+            self.phase = 'CLOSING'
+        if self.phase == 'WAITING_ORDINARY_SHELL' and re.search(r'(?:^|\n)/ \$ (?:\x1b\[6n)?$', suffix):
+            self.phase = 'EXIT_SENT'
+            # The cancelled application's status remains in run.json. Return
+            # success only from the shell to let the supervisor seal capture;
+            # the host still records the original environment timeout as FAIL.
+            return b'exit 0\n'
+        return b''
+
+
 def _run(args):
     ordinary_identity()
     output=args.output.resolve();output.mkdir(mode=0o700,parents=True,exist_ok=False)
@@ -334,19 +361,37 @@ def _run(args):
                 monitor=lab.Qmp(qmp,output/'qmp.jsonl')
                 active=0;addresses={port:devices[port]['address'] for port in getattr(args,'ports',[])};transcript=bytearray();support_input=False;hotplug_phase=0
                 watcher=lab.ReattachmentWatcher(addresses,m.setdefault('reattach',[]),owned=opened_usb_node)
+                timeout_seal=None
                 while process.poll() is None:
-                    if time.monotonic()>deadline:raise ValueError('environment timeout; preserve partial console/capture')
-                    readers=[channel]+([] if support or passthrough else [sys.stdin])
+                    if time.monotonic()>deadline:
+                        if timeout_seal is not None:
+                            raise ValueError('environment timeout; graceful capture sealing deadline exceeded')
+                        if support or passthrough:
+                            raise ValueError('environment timeout; preserve partial console/capture')
+                        timeout_seal=SerialTimeoutSeal(transcript)
+                        m['graceful_timeout']={'reason':'ENVIRONMENT_TIMEOUT','state':timeout_seal.phase,
+                                               'started_wall_ns':time.time_ns(),'grace_seconds':30,
+                                               'automatic_hotplug_confirmation':False}
+                        if timeout_seal.initial_input:channel.sendall(timeout_seal.initial_input)
+                        deadline=time.monotonic()+30
+                        write_json(output/'manifest.json',m)
+                    readers=[channel]+([] if support or passthrough or timeout_seal is not None else [sys.stdin])
                     readable,_,_=select.select(readers,[],[],0.1)
                     if channel in readable:
                         data=channel.recv(65536)
                         if data:
                             log.write(data);log.flush();transcript.extend(data);sys.stdout.buffer.write(data);sys.stdout.buffer.flush()
-                    if not support and not passthrough and sys.stdin in readable:
+                    if not support and not passthrough and timeout_seal is None and sys.stdin in readable:
                         data=os.read(sys.stdin.fileno(),4096)
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
                     text=transcript.decode(errors='replace')
+                    if timeout_seal is not None:
+                        action=timeout_seal.feed(transcript)
+                        if action:
+                            channel.sendall(action)
+                            m['graceful_timeout']['exit_sent_wall_ns']=time.time_ns()
+                        m['graceful_timeout']['state']=timeout_seal.phase
                     if support and not support_input and 'WS73_TARGET_INPUT_READY' in text:
                         channel.sendall(b'target-ordinary-input\n');support_input=True
                     if (support and getattr(args,'hotplug',False)) or passthrough:
@@ -402,6 +447,10 @@ def _run(args):
                 if getattr(args,'empty_bulk',False) and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in identities):
                     raise ValueError('successful empty bulk completions missing from either selected USB identity')
                 m['status']='PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                if timeout_seal is not None:
+                    m['graceful_timeout']['state']='SEALED'
+                    m['status']='FAIL'
+                    m['error']='environment timeout; capture sealed; physical control not accepted'
         prepared(args.prepared.resolve())
         if file_record(args.prepared.resolve()/'manifest.json')!=m['prepared_manifest']:raise ValueError('prepared manifest changed during run')
     except (Exception,KeyboardInterrupt) as error:

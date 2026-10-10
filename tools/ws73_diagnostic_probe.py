@@ -33,13 +33,16 @@ ORDER = ['metadata'] * 4 + ['inherited_fd_cap0', 'read_only_output', 'partial_ou
 QUERIES = [('mac', 0x0406, 6), ('features', 0x0403, 10), ('version', 0x0404, 5), ('buffers', 0x0402, 6)]
 
 
-def verify_records(records, final=True, admission=False, eviction=False, legacy_poll=False):
+def verify_records(records, final=True, admission=False, eviction=False, legacy_poll=False, cancellation=False):
     if eviction and not admission:
         raise ValueError('eviction evidence requires preceding admission gate')
     if legacy_poll and not eviction:
         raise ValueError('legacy poll evidence requires admission and eviction gates')
+    if cancellation and not legacy_poll:
+        raise ValueError('cancellation evidence requires preceding legacy and admission gates')
     tags = (('case', 'identity', 'phase') + (('admission',) if admission else ())
-            + (('eviction',) if eviction else ()) + (('legacy_poll',) if legacy_poll else ()))
+            + (('eviction',) if eviction else ()) + (('legacy_poll',) if legacy_poll else ())
+            + (('cancel','hold_phase') if cancellation else ()))
     if any(sum(k in r for k in tags) != 1 for r in records):
         raise ValueError('unknown or ambiguous diagnostic record')
     cases = [r for r in records if 'case' in r]
@@ -74,7 +77,10 @@ def verify_records(records, final=True, admission=False, eviction=False, legacy_
             if type(r['partial_prefix']) is not int or r['partial_prefix'] != prefix:
                 raise ValueError('actual copy boundary mismatch')
     if admission: verify_admissions(records)
-    if legacy_poll: verify_legacy_poll(records)
+    if legacy_poll: verify_legacy_poll(records, cancellation=cancellation)
+    if cancellation:
+        from ws73_diagnostic_cancel import verify_cancellations
+        verify_cancellations(records)
     if eviction: verify_evictions(records)
     child = [r for r in records if r.get('identity') == 'inherited_fd_child']
     if child != [{'identity': 'inherited_fd_child', 'uid': 1000, 'euid': 1000, 'cap_eff': 0, 'cap_prm': 0}] or any(type(r[k]) is not int for r in child for k in ('uid', 'euid', 'cap_eff', 'cap_prm')):
@@ -130,7 +136,7 @@ def verify_admissions(records):
             raise ValueError('replay changed admission/resolution/timeout accounting')
 
 
-def verify_legacy_poll(records):
+def verify_legacy_poll(records, cancellation=False):
     """Canonical real-seed event copy/commit evidence; wire checked separately.
 
     A Native ring test does not qualify controller.poll_event backend fallback.
@@ -140,7 +146,8 @@ def verify_legacy_poll(records):
         raise ValueError('three ordered actual legacy poll copy faults required')
     boundary = next(i for i, r in enumerate(records) if r.get('case') == 'missing_sequence')
     if ([i for i, r in enumerate(records) if 'legacy_poll' in r] != list(range(boundary+1, boundary+4))
-            or records[boundary+4].get('case') != 'foreign_author_with_lease'):
+            or (records[boundary+4].get('hold_phase') != 'arm_ready' if cancellation
+                else records[boundary+4].get('case') != 'foreign_author_with_lease')):
         raise ValueError('legacy faults must precede author release/foreign-fd gate')
     metadata = [r for r in records if r.get('case') == 'metadata']
     generation = metadata[0]['generation']
@@ -194,7 +201,7 @@ def verify_legacy_poll(records):
         previous_counts, previous_seq, previous_end = after, row['seq'], row['end_wall_ns']
     fill = next(r for r in records if r.get('eviction') == 'fill')
     if (fill['seq'] <= previous_seq or fill['start_wall_ns'] < previous_end
-            or any(fill[f'{k}_before'] != rows[-1][f'{k}_after']
+            or not cancellation and any(fill[f'{k}_before'] != rows[-1][f'{k}_after']
                    for k in ('submitted', 'resolved', 'pending', 'timeouts'))):
         raise ValueError('legacy poll/eviction sequence, clock or accounting continuity mismatch')
 
@@ -267,7 +274,10 @@ def run(args):
             or 'ws73.diagnostic=1' not in Path('/proc/cmdline').read_text().split()):
         raise ValueError('privileged opt-in scratch-root VM required')
     output = args.output.resolve(); output.mkdir(mode=0o700)
-    record = {'format_version': 4, 'admission_copyout_requested': True, 'admission_eviction_requested': True,
+    cancellation = 'ws73.diagnostic_cancel=1' in Path('/proc/cmdline').read_text().split()
+    record = {'format_version': 5 if cancellation else 4,
+              'cancellation_requested':cancellation, 'host_hold_acknowledgements':[],
+              'admission_copyout_requested': True, 'admission_eviction_requested': True,
               'legacy_poll_copy_requested': True, 'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'probe': file_record(args.probe), 'sources': [file_record(Path(__file__))],
@@ -277,14 +287,23 @@ def run(args):
     try:
         save()
         with (output / 'probe-stderr.txt').open('xb') as error, (output / 'probe.jsonl').open('xb') as transcript:
-            child = subprocess.Popen([str(args.probe), str(args.index)], stdin=subprocess.PIPE,
+            child = subprocess.Popen([str(args.probe), str(args.index)]+(['cancel'] if cancellation else []), stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE, stderr=error)
             selector = selectors.DefaultSelector(); selector.register(child.stdout, selectors.EVENT_READ)
-            pending = b''; deadline = time.monotonic() + 120; acknowledged = False
+            pending = b''; deadline = time.monotonic() + 120; acknowledged = False; hold_pending=None
             while True:
                 if time.monotonic() >= deadline: raise ValueError('diagnostic probe deadline')
                 if not acknowledged and (output / 'before-daemon.json').is_file() and args.retired_marker.is_file():
                     child.stdin.write(b'retired\n'); child.stdin.flush(); acknowledged = True
+                if hold_pending is not None:
+                    ack={'arm_ready':'armed','wait_held':'held','release_ready':'released'}[hold_pending]
+                    path=output/f'hold-{ack}-ack.json'
+                    if path.exists():
+                        response=json.loads(path.read_text())
+                        if response.get('stage') != ack or response.get('request') != record['records'][-1]:
+                            raise ValueError('hold acknowledgment does not match pending phase')
+                        record['host_hold_acknowledgements'].append(response);save()
+                        child.stdin.write((ack+'\n').encode());child.stdin.flush();hold_pending=None
                 for key, _ in selector.select(0.1):
                     data = os.read(key.fileobj.fileno(), 65536)
                     if not data:
@@ -293,8 +312,14 @@ def run(args):
                     while b'\n' in pending:
                         line, pending = pending.split(b'\n', 1); item = json.loads(line)
                         record['records'].append(item); save()
+                        if 'hold_phase' in item:
+                            if not cancellation or hold_pending is not None or item['hold_phase'] not in ('arm_ready','wait_held','release_ready'):
+                                raise ValueError('unexpected/duplicate hold coordination phase')
+                            hold_pending=item['hold_phase']
+                            from ws73_diagnostic_hold import write_marker
+                            write_marker(output/f'hold-{hold_pending}.json',item)
                         if item.get('phase') == 'BEFORE_DAEMON_PASS':
-                            verify_records(record['records'], final=False, admission=True, eviction=True, legacy_poll=True)
+                            verify_records(record['records'], final=False, admission=True, eviction=True, legacy_poll=True,cancellation=cancellation)
                             for name, opcode, _ in QUERIES:
                                 generation = record['records'][0]['generation']
                                 command = [str(args.slkconfig), '--adapter', str(args.index), '--generation', str(generation), 'query', name]
@@ -313,7 +338,7 @@ def run(args):
             selector.close()
             record['probe_exit'] = child.wait(timeout=5)
             if record['probe_exit'] or pending or not acknowledged: raise ValueError('probe exit or retirement handshake')
-        verify_records(record['records'], admission=True, eviction=True, legacy_poll=True)
+        verify_records(record['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation)
         record['status'] = 'DIAGNOSTIC_RESULT_LIVE_PASS'; save()
     except BaseException as error:
         record.update(status='FAIL', error=str(error)); save(); raise

@@ -179,7 +179,7 @@ def read_capture(path, targets):
             for service, queue, slot, payload in hcc_receive(raw):
                 if (service, queue) != (10, 8):
                     continue
-                identity = identity | {'hcc_offset': slot, 'usb_sha256': hashlib.sha256(raw).hexdigest()}
+                identity = identity | {'hcc_offset': slot, 'usb_sha256': hashlib.sha256(raw).hexdigest(), 'usb_length':len(raw)}
                 report = discovery(payload)
                 if report is not None:
                     reports.append(identity | report)
@@ -315,17 +315,19 @@ def corroborate_diagnostic(run, capture, diagnostic):
             or diagnostic.get('automatic_fault_recovery_acceptance') is not False):
         raise CaptureError('scoped successful diagnostic syscall run required')
     version = diagnostic.get('format_version', 1)
-    if (type(version) is not int or version not in (1, 2, 3, 4)
+    if (type(version) is not int or version not in (1, 2, 3, 4, 5)
             or (version >= 2 and diagnostic.get('admission_copyout_requested') is not True)
             or (version == 1 and diagnostic.get('admission_copyout_requested') not in (None, False))
             or (version >= 3 and diagnostic.get('admission_eviction_requested') is not True)
             or (version < 3 and diagnostic.get('admission_eviction_requested') not in (None, False))
-            or (version == 4 and diagnostic.get('legacy_poll_copy_requested') is not True)
-            or (version < 4 and diagnostic.get('legacy_poll_copy_requested') not in (None, False))):
+            or (version >= 4 and diagnostic.get('legacy_poll_copy_requested') is not True)
+            or (version < 4 and diagnostic.get('legacy_poll_copy_requested') not in (None, False))
+            or (version == 5 and diagnostic.get('cancellation_requested') is not True)
+            or (version < 5 and diagnostic.get('cancellation_requested') not in (None,False))):
         raise CaptureError('explicit diagnostic admission evidence version required')
     try:
         verify_records(diagnostic['records'], admission=version >= 2, eviction=version >= 3,
-                       legacy_poll=version == 4)
+                       legacy_poll=version >= 4,cancellation=version == 5)
     except (ValueError, KeyError, TypeError) as error:
         raise CaptureError('invalid diagnostic syscall records') from error
     owner = run['initial'][0]
@@ -349,7 +351,7 @@ def corroborate_diagnostic(run, capture, diagnostic):
             item['admission_copyout'] = admissions[0]
         proofs.append(item)
         previous = row['end_wall_ns']
-    if version == 4:
+    if version >= 4:
         legacy = [r for r in diagnostic['records'] if 'legacy_poll' in r]
         legacy_proofs = []
         for row in legacy:
@@ -363,6 +365,29 @@ def corroborate_diagnostic(run, capture, diagnostic):
                 or window('complete', legacy[0]['start_wall_ns'], previous) != [p['reply'] for p in legacy_proofs]):
             raise CaptureError('legacy poll seed/fault/retry phase contains extra commands or replies')
         proofs.extend(legacy_proofs)
+    if version == 5:
+        held, final = [r for r in diagnostic['records'] if 'cancel' in r]
+        if not previous <= held['start_wall_ns'] < final['end_wall_ns'] < owner['observed_wall_ns']:
+            raise CaptureError('cancellation phase differs from registration/time')
+        early=window('commands',held['start_wall_ns'],held['end_wall_ns'])
+        later=window('commands',held['end_wall_ns'],final['end_wall_ns'])
+        replies=window('complete',held['end_wall_ns'],final['end_wall_ns'])
+        if (len(early)!=1 or len(later)!=1 or len(replies)!=2
+                or window('complete',held['start_wall_ns'],held['end_wall_ns'])
+                or any(c['opcode']!=0x0406 or c['params'] or
+                       not c['wall_ns'] <= c['completion']['wall_ns'] <= final['end_wall_ns'] for c in early+later)
+                or any(r['opcode']!=0x0406 or r['status'] or r['value']!=expected[0x0406] for r in replies)
+                or not early[0]['record'] < replies[0]['record'] < later[0]['record'] < replies[1]['record']
+                or not early[0]['wall_ns'] <= replies[0]['wall_ns'] <= later[0]['wall_ns'] <= replies[1]['wall_ns']
+                or window('commands',held['start_wall_ns'],final['end_wall_ns'])!=early+later
+                or window('complete',held['start_wall_ns'],final['end_wall_ns'])!=replies):
+            raise CaptureError('held slot, queued cancellation or late reply wire isolation failed')
+        fresh=command_reply(capture,owner,0x0406,later[0]['wall_ns'],final['end_wall_ns'],b'',expected[0x0406])
+        proofs.extend([{'caller':'C held active cancel','command':early[0],'reply':replies[0],
+                        'cancellation':held},
+                       {'caller':'C fresh after held cancel',**fresh,'cancellation':final},
+                       {'caller':'C queued cancel','commands':0,'replies':0,'request_id':10}])
+        previous=final['end_wall_ns']
     if version >= 3:
         eviction_rows = [r for r in diagnostic['records'] if 'eviction' in r]
         start = eviction_rows[0]['start_wall_ns']

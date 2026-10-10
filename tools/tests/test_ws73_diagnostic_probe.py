@@ -61,6 +61,11 @@ def eviction_fixture(records=None):
     legacy = [r for r in records if 'legacy_poll' in r]
     previous = legacy[-1] if legacy else meta[-1]
     baseline = legacy[-1]['submitted_after'] if legacy else 4
+    cancellations = [r for r in records if 'cancel' in r]
+    if cancellations:
+        previous = {'seq': SleDiagnosticSubmit.from_buffer_copy(bytes.fromhex(cancellations[0]['outputs'][-1])).seq,
+                    'end_wall_ns': cancellations[-1]['end_wall_ns']}
+        baseline = cancellations[-1]['submitted_after']
     for i in range(33):
         value = SleDiagnosticSubmit(version=1, generation=generation, request_id=i+1,
                                     timeout_ms=5000, opcode=0x0406, action=1)

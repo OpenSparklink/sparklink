@@ -71,3 +71,24 @@ timer 到期前完成且 bounded-release 计数为零；自动到期不能冒充
 该镜像未使用本次新 QEMU binary；本次没有新增 RF 或取消实机验收声明。
 自然启动/重枚举/消失根因、自主恢复、历史物理 xHCI warning、四设备两组、
 socket/用户态 SSAP/每连接安全/Bond/Profile/Proxy/完整 sandbox 与发布仍 OPEN。
+
+## 实际门禁工具接通（实机执行待完成）
+
+Linux `cc4018c4e3a6`只新增专用C探针，生产路径不改。新显式模式先完成原
+metadata/copyout/legacy poll门禁，再通过三阶段host QMP握手测试在途MAC取消、
+排队Features取消、同opcode MAC等待旧槽，以及50ms重复ID/重复取消观察。
+释放原回复后，两个ECANCELED结果必须逐字节保持，新MAC仅由自己的回复完成；
+100ms观察后再执行原33次淘汰、CLI、作者/CAP和退役门禁。
+
+`--diagnostic-cancel-verify`必须同时指定`--diagnostic-verify --fault-recovery`；
+禁止support或单独启用。证据format5同时要求旧全部门禁和新取消记录，历史
+format1–4仍按原范围验证。guest/host JSON marker在写完后rename发布，拒绝重复。
+C stdin握手有超时，显式释放必须保持bounded-release/drop为零。抓包验证完整
+阶段恰有两个MAC OUT/回复，旧回复先于新OUT，Features无OUT；host成功IN的
+SHA256和长度必须与实际USB交付一致。QMP、syscall结构、计数及抓包分别核对。
+
+严格C编译和新增记录/抓包/QMP拒绝fixture通过，完整工具回归在原170项上增加
+这些开发门禁。fixture不能证明实际成功；正在构建冻结新VM，实机结果单独记录。
+当前只是取消/迟到回复门禁；完整原deadline、在途超时恢复、held状态close/drain、
+其他作者/CAP取消/多设备并发仍需独立验收。自然根因、北极星最后一项及S0–S6
+保持OPEN，不用新测试框架存在替代功能完成。

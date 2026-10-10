@@ -108,6 +108,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'include/uapi/linux/sparklink_ioctl.h',
@@ -179,7 +180,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -348,6 +349,9 @@ def _run(args):
     recovery=bool(getattr(args,'fault_recovery',False))
     event_copy=bool(getattr(args,'event_copy_verify',False))
     diagnostic=bool(getattr(args,'diagnostic_verify',False))
+    cancellation=bool(getattr(args,'diagnostic_cancel_verify',False))
+    if cancellation and (support or not recovery or not diagnostic):
+        raise ValueError('live cancellation gate requires diagnostic and real fault-recovery VM modes')
     if event_copy and (support or not recovery):
         raise ValueError('live event copy gate requires real fault-recovery VM mode')
     if diagnostic and (support or not recovery):
@@ -399,6 +403,7 @@ def _run(args):
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
                      (' ws73.diagnostic=1' if diagnostic else '')+
+                     (' ws73.diagnostic_cancel=1' if cancellation else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -424,6 +429,10 @@ def _run(args):
                     time.sleep(0.05)
                 channel=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);channel.connect(str(serial));channel.setblocking(False)
                 monitor=lab.Qmp(qmp,output/'qmp.jsonl')
+                hold=None
+                if cancellation:
+                    from ws73_diagnostic_hold import HoldCoordinator
+                    hold=HoldCoordinator(share,m.setdefault('diagnostic_hold',{}))
                 active=0;addresses={port:devices[port]['address'] for port in getattr(args,'ports',[])};transcript=bytearray();support_input=False;hotplug_phase=0
                 watcher=lab.ReattachmentWatcher(addresses,m.setdefault('reattach',[]),owned=opened_usb_node)
                 timeout_seal=None
@@ -451,6 +460,8 @@ def _run(args):
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
                     text=transcript.decode(errors='replace')
+                    if hold:
+                        hold.poll(monitor)
                     if recovery and hotplug_phase==0 and 'WS73_TARGET_RECOVERY_INJECT_READY' in text:
                         target={'path':'/machine/peripheral/ws73_0'}
                         if monitor.execute('qom-get',{**target,'property':'test-runtime-in-errors'})!=0:
@@ -562,11 +573,21 @@ def _run(args):
                     probe=json.loads((share/'diagnostic/run.json').read_text())
                     if probe.get('status')!='DIAGNOSTIC_RESULT_LIVE_PASS' or probe.get('probe_exit')!=0:
                         raise ValueError('live diagnostic probe failure')
-                    if (probe.get('format_version') != 4 or probe.get('admission_copyout_requested') is not True
+                    if (probe.get('format_version') != (5 if cancellation else 4)
+                            or probe.get('cancellation_requested',False) is not cancellation
+                            or probe.get('admission_copyout_requested') is not True
                             or probe.get('admission_eviction_requested') is not True
                             or probe.get('legacy_poll_copy_requested') is not True):
                         raise ValueError('current live diagnostic admission gate required')
-                    verify_records(probe['records'], admission=True, eviction=True, legacy_poll=True)
+                    verify_records(probe['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation)
+                    if cancellation:
+                        if not hold or not hold.record['complete'] or probe.get('host_hold_acknowledgements') != hold.record['observations']:
+                            raise ValueError('actual host hold and matching guest acknowledgments required')
+                        from ws73_diagnostic_hold import corroborate_host_hold
+                        from ws73_capture import corroborate_diagnostic
+                        _,cancel_proofs=corroborate_diagnostic(control,capture,probe)
+                        m['diagnostic_hold']['corroboration']=corroborate_host_hold(
+                            hold.record,probe,cancel_proofs,(output/'qemu-stderr.log').read_text(),devices[args.ports[0]])
                     if len(probe['cli_queries'])!=4:
                         raise ValueError('actual diagnostic CLI query gates missing')
                     m['live_diagnostic']=file_record(share/'diagnostic/run.json')
@@ -627,6 +648,7 @@ def main():
             cmd.add_argument('--ports',nargs=2,required=True)
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')
             cmd.add_argument('--diagnostic-verify',action='store_true',help='opt-in live diagnostic owner/CAP/copy/retirement and metadata CLI gate; requires --fault-recovery')
+            cmd.add_argument('--diagnostic-cancel-verify',action='store_true',help='hold one real IN81 to test active/queued cancel and late reply; requires --diagnostic-verify and --fault-recovery')
             modes=cmd.add_mutually_exclusive_group()
             modes.add_argument('--qmp-hotplug',action='store_true',help='real RF with QMP guest-only disconnect/reconnect; never physical unplug or automatic recovery acceptance')
             modes.add_argument('--fault-recovery',action='store_true',help='one opt-in artificial guest bulk IN81 error with real radios; never natural-fault or physical unplug acceptance')

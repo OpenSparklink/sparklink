@@ -9,7 +9,7 @@ K3/U2及完整独立事件/移除/旧路径清理验收仍OPEN。UAPI未发布�
 |---|---|---|
 | MiscDevice::read_iter → per-fd EventQueue | 旧kernel C selftest/ctl；固定44字节SleWireEvent | 使用唯一copy_records，完整记录复制成功才消费/增加delivered |
 | EventQueue::drain_to_buf | rg审计无调用者 | 立即删除；dequeue仅私有提交helper，无第二套生产drain |
-| DLI_POLL_EVENT → runtime.pop_dli_event/backend.poll_event | legacy lib EventReceiver、profile0 slkd、旧DLI工具/selftests | 共享消费旧路径；K54621800ee4c已增加复制后提交和fallback暂存；实际legacy ioctl故障验收、独立订阅迁移与删除仍待完成 |
+| DLI_POLL_EVENT → runtime.pop_dli_event/backend.poll_event | legacy lib EventReceiver、profile0 slkd、旧DLI工具/selftests | 共享消费旧路径；K54621800ee4c已增加复制后提交和fallback暂存；Native ring三类实际复制故障已通过；fallback资格、完整事件及独立订阅迁移/删除仍待完成 |
 | slkconfig Native query → owner-private diagnostic result | 原生产调用者，已按 fd/generation/local sequence 迁移 | 删除 stale drain 与共享 poll；结果不消费，完整旧调用者迁移仍 OPEN |
 | ControllerEventReceiver → typed controller subscription | 当前Native WS73 slkd/slctl；新monitor独立snoop | 本批不改；重新用新镜像验证discovery及幸存者 |
 
@@ -143,7 +143,7 @@ wrap/overflow、空队列EAGAIN及退役ENODEV。controller/codec、usercopy与s
 copyout2/淘汰33。随后新增实际legacy ioctl坏地址、只读与跨页部分输出：
 用真实MAC查询完成事件作为队首，核对256字节重试内容、成功后一次消费和空队列
 EAGAIN，并捕获唯一真实查询/回复。Native ring的实机结果也不能替代另一backend
-fallback的独立资格验收。当前这些新故障门禁仍待执行，完整R12/K3/U2保持OPEN。
+fallback的独立资格验收。在K546提交时这些新故障门禁仍待执行，完整R12/K3/U2保持OPEN。
 
 
 ## 新生产内核的已验证路径回归
@@ -163,12 +163,12 @@ copyout2、第二作者淘汰33/旧ID无重发及CLI4通过，捕获1411/零drop
 （read9/poll6），全部三个kernel pin均为新生产提交。CI编译live C而不执行
 设备；fixture仍不证明真实kernel mutex/并发或legacy ioctl用户copy。
 
-这轮证明新内核保持已验证WS73路径；**尚未执行新legacy poll复制故障门禁**，
+这轮K546镜像证明保持已验证WS73路径；该批尚未执行新legacy poll复制故障门禁，
 backend fallback资格、共享投影删除、完整事件/事务、自然故障根因及恢复仍OPEN。
 历史物理xHCI警告保留，不以本批无warning推论已修复；S0–S6范围不缩减。
 
 
-## 实际 legacy ioctl 复制故障工具（门禁待运行）
+## 实际 legacy ioctl 复制故障工具与限定验收
 
 K9b16e634bfd3新增专用C探针，生产内核保持K54621800ee4c。在slkd启动前，
 root Diagnostic独占同controller；最多31条清理本轮已有投影，再分别用ID5..7
@@ -180,9 +180,43 @@ fault输出、实际errno/时间/统计；没有生成测试Complete或生产注
 当前诊断runner使用format4，要求三条legacy记录位于missing_sequence之后、
 释放原作者并验证foreign作者之前；诊断淘汰33、copyout2、原结果16和CLI4仍是
 必须项。独立捕获每个seed/fault/retry窗口一个真实OUT/成功Complete，并核对整个
-legacy阶段含间隙没有额外命令/回复。预期58条C记录、44组诊断wire及一个拒绝
-观察窗口；这些是门禁要求，运行结果须另行记录，不能当作已经通过。
+legacy阶段含间隙没有额外命令/回复。58条C记录、44组诊断wire及一个拒绝观察窗口已在下述新镜像验证；
+只记录限定Native ring门禁，不扩展为完整事件或另一backend资格。
 
 verifier新增5项合成拒绝回归（诊断共24，工具共170），保留历史format1/2/3
 证据严格验证，当前runner不能降级。Native共享ring实机测试不能证明backend
 fallback硬件资格、内核并发/lockdep/移除唤醒或完整事件所有权；它们仍OPEN。
+
+
+## Native ring 三类实际 ioctl 复制故障通过
+
+[冻结证据](evidence/ws73-vm-legacy-poll-live-20261011.json)：K`9b16e634bfd3`/
+编译U`1d3a17b688ee`；生产内核保持K54621800ee4c，daemon/library/crates/data
+保持Udf9。完整image/modules、空USB VM两次签名模块load/unload、默认bundle
+重新构建通过。root Diagnostic在slkd之前执行真实MAC seed ID5..7/seq5..7。
+先清理本轮4条旧投影，再逐项执行：
+
+| 实际场景 | 第一次返回 | 观察输出与重试 |
+|---|---|---|
+| 地址1不可写 | -1 / EFAULT | 重试256字节与真实MAC结果的canonical事件完全相同 |
+| 整页只读 | -1 / EFAULT | 原256字节A5保持；重试完整事件 |
+| 前128字节可写，后128只读 | -1 / EFAULT | 前缀确实等于canonical事件，后缀A5保持；重试完整事件 |
+
+每项重试成功后再次poll为-1/EAGAIN；submitted/resolved各仅增加1、pending0/
+timeout不变。输入输出40、成功结果104、事件参考/重试256、可读故障输出及
+实际时间/errno均保存。独立捕获核对每个完整seed/fault/retry窗口唯一真实OUT/
+成功Complete，三项整体阶段包括间隙也没有额外命令/回复。不是用生成事件
+或模拟success测试。另一个backend的controller.poll_event fallback未实机验收。
+
+第二作者淘汰门禁现为seq8..40，33次真实查询/旧ID拒绝和100ms无重发保持；
+原结果16/copyout2/CLI4、read7和普通UID1000/caps0真实WS7320+2通过，最长620ms。
+同slkd PID654/start1559/bus owner，幸存g2不变、人工IN81目标g1→g3，新Ready
+约10917.300ms。1423 USB零drop、独立22份RX/44组诊断wire，warning0/taint0/
+trace overrun0，host四只存在且释放；无人工拔插/宿主部署。USB/HCC/DLI并非独立
+PHY嗅探，人工错误支撑不证明自然故障根因/自主恢复。
+
+[CI38093912963](https://github.com/OpenSparklink/sparklink/actions/runs/38093912963)
+9作业成功，实际日志170 Rust/34 Python/170工具、event15；三个kernel pin均新提交。
+当前runner必须format4，历史format1/2/3按各自范围严格验证，不升级历史验收。
+实际gate是顺序Native Diagnostic、x86_64与上述三种输出；并发/lockdep/活性/
+移除唤醒/32-bit runtime/完整所有权与subscriber迁移及ring/fallback/UAPI删除仍OPEN。

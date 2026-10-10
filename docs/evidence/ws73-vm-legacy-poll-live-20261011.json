@@ -1,0 +1,2745 @@
+{
+  "status": "LIVE_LEGACY_POLL_COPY_PASS_FULL_EVENT_GATES_OPEN",
+  "scope": "Three actual Native Diagnostic legacy DLI poll EFAULT outputs (bad address, read-only page,128-byte prefix/readonly suffix), canonical256-byte retry followed by EAGAIN and one real MAC seed each. Actual submit/result bytes and44 wire pairs corroborated; ordinary dual-WS73 RF20+2/read7/result16/copyout2/eviction33+CLI4 maintained. Backend fallback hardware, full event/transaction and natural recovery acceptance remain open.",
+  "kernel_head": "9b16e634bfd3cf6e6309171ed4bf023129cb9835",
+  "compiled_userspace_head": "1d3a17b688eefb35ba9ba6d8aa02bf3ba2a4da21",
+  "userspace_production_unchanged_from": "df9cff7d750dd889ea7403d8a53906f92d3faf46",
+  "kernel_production_unchanged_from": "54621800ee4c171a6642f6b8d065b692a4d31408",
+  "kernel_release": "7.0.0-rc6-opensparklink-native-lab+",
+  "host_installation": false,
+  "native_host_acceptance": false,
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "systemd_sandbox_acceptance": false,
+  "board_qualification": "NOT_ASSERTED",
+  "firmware_runtime_version_qualification": "NOT_ASSERTED",
+  "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "kernel_image_sha256": "ad665ec0a5da82f509f0100155dcbd12d64a65902106b3281d7620323d8bb560",
+  "qemu_sha256": "d27bb224e2ea95b8246033fab7058c13f30e817bd978343441321934fc9e042e",
+  "started_at": "2026-10-10T23:09:45.432522+00:00",
+  "finished_at": "2026-10-10T23:10:44.998555+00:00",
+  "application_identity": {
+    "uids": [
+      1000,
+      1000,
+      1000,
+      1000
+    ],
+    "cap_eff": "0000000000000000",
+    "cap_prm": "0000000000000000",
+    "cap_amb": "0000000000000000",
+    "groups": [
+      1000,
+      1002
+    ]
+  },
+  "initial": [
+    {
+      "port": "1-1",
+      "bus": 1,
+      "device": 2,
+      "index": 0,
+      "generation": 1,
+      "path": "/org/sparklink/slk0_g1",
+      "address": "00:01:09:32:54:F9",
+      "version": "016c00a100"
+    },
+    {
+      "port": "1-2",
+      "bus": 1,
+      "device": 3,
+      "index": 1,
+      "generation": 2,
+      "path": "/org/sparklink/slk1_g2",
+      "address": "00:01:09:32:54:CD",
+      "version": "016c00a100"
+    }
+  ],
+  "replacement": {
+    "port": "1-1",
+    "bus": 1,
+    "device": 2,
+    "index": 0,
+    "generation": 3,
+    "path": "/org/sparklink/slk0_g3",
+    "address": "00:01:09:32:54:F9",
+    "version": "016c00a100"
+  },
+  "daemon_before": {
+    "pid": 654,
+    "start_ticks": 1559
+  },
+  "daemon_after": {
+    "pid": 654,
+    "start_ticks": 1559
+  },
+  "bus_owner_unchanged": true,
+  "cleanup": [
+    {
+      "port": "1-1",
+      "status": "STOP_CONFIRMED"
+    },
+    {
+      "port": "1-2",
+      "status": "STOP_CONFIRMED"
+    }
+  ],
+  "fault_method": "QMP_GUEST_TRANSPORT_ERROR_ONCE",
+  "fault_command_to_new_ready_ms": 10917.299527,
+  "capture_packets": 1423,
+  "capture_drops": 0,
+  "rx_proofs": 22,
+  "capture_scope": "Actual WS73 USB/HCC/DLI command/reply and received RF discovery data, not an independent PHY sniffer",
+  "kernel_warning_count": 0,
+  "vm_taint": 0,
+  "trace_overruns": 0,
+  "qmp_records": 13,
+  "qmp_device_del_used": false,
+  "host_after": {
+    "devices_present_unbound": 4,
+    "kernel_journal_records": 0,
+    "scope": "Read-only host inventory; not native-host driver qualification"
+  },
+  "rounds": [
+    {
+      "phase": "initial",
+      "round": 1,
+      "marker": "fb23e8a1df0a7d492932f033b2c7d20c",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 1,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -14,
+        "marker": "fb23e8a1df0a7d492932f033b2c7d20c",
+        "data": "ff290101010b24736c6b2d6662323365386131646630613764343932393332663033336232633764323063",
+        "kernel_boottime_ns": 29472963528,
+        "elapsed_ms": 620,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 2,
+      "marker": "99c33391933f9646fe40394d0fca511f",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -14,
+        "marker": "99c33391933f9646fe40394d0fca511f",
+        "data": "ff290101010b24736c6b2d3939633333333931393333663936343666653430333934643066636135313166",
+        "kernel_boottime_ns": 29549568548,
+        "elapsed_ms": 11,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 3,
+      "marker": "464906c0ca3f0e8e0c5696eb783c131b",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 2,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -12,
+        "marker": "464906c0ca3f0e8e0c5696eb783c131b",
+        "data": "ff290101010b24736c6b2d3436343930366330636133663065386530633536393665623738336331333162",
+        "kernel_boottime_ns": 29596879431,
+        "elapsed_ms": 11,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 4,
+      "marker": "8b49b1180c4c08e0615f93bdb6c798c6",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 2,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "8b49b1180c4c08e0615f93bdb6c798c6",
+        "data": "ff290101010b24736c6b2d3862343962313138306334633038653036313566393362646236633739386336",
+        "kernel_boottime_ns": 30114784333,
+        "elapsed_ms": 466,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 5,
+      "marker": "b21ec09c50493f5372b647ddce94a0e1",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 3,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -18,
+        "marker": "b21ec09c50493f5372b647ddce94a0e1",
+        "data": "ff290101010b24736c6b2d6232316563303963353034393366353337326236343764646365393461306531",
+        "kernel_boottime_ns": 30338986808,
+        "elapsed_ms": 162,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 6,
+      "marker": "4896cf346a74d6c4141bf4b0de5d2f21",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 3,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "4896cf346a74d6c4141bf4b0de5d2f21",
+        "data": "ff290101010b24736c6b2d3438393663663334366137346436633431343162663462306465356432663231",
+        "kernel_boottime_ns": 30878116461,
+        "elapsed_ms": 466,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 7,
+      "marker": "3564878fdda4516c368dc6846455496d",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 4,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -17,
+        "marker": "3564878fdda4516c368dc6846455496d",
+        "data": "ff290101010b24736c6b2d3335363438373866646461343531366333363864633638343634353534393664",
+        "kernel_boottime_ns": 31108314663,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 8,
+      "marker": "d48253137a28ca48501a64e85f2285e5",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 4,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "d48253137a28ca48501a64e85f2285e5",
+        "data": "ff290101010b24736c6b2d6434383235333133376132386361343835303161363465383566323238356535",
+        "kernel_boottime_ns": 31476113754,
+        "elapsed_ms": 316,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 9,
+      "marker": "85252e9943c71add430e3231ed57dbe7",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 5,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -14,
+        "marker": "85252e9943c71add430e3231ed57dbe7",
+        "data": "ff290101010b24736c6b2d3835323532653939343363373161646434333065333233316564353764626537",
+        "kernel_boottime_ns": 32011219986,
+        "elapsed_ms": 468,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 10,
+      "marker": "a94f892806cb4c6db3c5f67550477bd5",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 5,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -11,
+        "marker": "a94f892806cb4c6db3c5f67550477bd5",
+        "data": "ff290101010b24736c6b2d6139346638393238303663623463366462336335663637353530343737626435",
+        "kernel_boottime_ns": 32549012481,
+        "elapsed_ms": 468,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 11,
+      "marker": "c1e54df2dcc8c5028e8a952ef5c8bb21",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 6,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "c1e54df2dcc8c5028e8a952ef5c8bb21",
+        "data": "ff290101010b24736c6b2d6331653534646632646363386335303238653861393532656635633862623231",
+        "kernel_boottime_ns": 33090806144,
+        "elapsed_ms": 467,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 12,
+      "marker": "ae6843843ec72574cb00f45aeb438556",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 6,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "ae6843843ec72574cb00f45aeb438556",
+        "data": "ff290101010b24736c6b2d6165363834333834336563373235373463623030663435616562343338353536",
+        "kernel_boottime_ns": 33483683657,
+        "elapsed_ms": 314,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 13,
+      "marker": "949b419c5e4a9b83d3c285270aaeef73",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 7,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "949b419c5e4a9b83d3c285270aaeef73",
+        "data": "ff290101010b24736c6b2d3934396234313963356534613962383364336332383532373061616565663733",
+        "kernel_boottime_ns": 33865418055,
+        "elapsed_ms": 315,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 14,
+      "marker": "fae8d4980b1f9a5b61e4296d38f5b1f9",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 7,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -14,
+        "marker": "fae8d4980b1f9a5b61e4296d38f5b1f9",
+        "data": "ff290101010b24736c6b2d6661653864343938306231663961356236316534323936643338663562316639",
+        "kernel_boottime_ns": 34398413561,
+        "elapsed_ms": 465,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 15,
+      "marker": "ef6a37d624d143bd51efb022a418e174",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 8,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -16,
+        "marker": "ef6a37d624d143bd51efb022a418e174",
+        "data": "ff290101010b24736c6b2d6566366133376436323464313433626435316566623032326134313865313734",
+        "kernel_boottime_ns": 35083952220,
+        "elapsed_ms": 613,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 16,
+      "marker": "8d8bd3840d9a8bac81d54290d46d3073",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 8,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -16,
+        "marker": "8d8bd3840d9a8bac81d54290d46d3073",
+        "data": "ff290101010b24736c6b2d3864386264333834306439613862616338316435343239306434366433303733",
+        "kernel_boottime_ns": 35480720064,
+        "elapsed_ms": 302,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 17,
+      "marker": "ec9c48b7023eeb2cfbe586349c222794",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 9,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "ec9c48b7023eeb2cfbe586349c222794",
+        "data": "ff290101010b24736c6b2d6563396334386237303233656562326366626535383633343963323232373934",
+        "kernel_boottime_ns": 35865418637,
+        "elapsed_ms": 317,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 18,
+      "marker": "344927c01c0b08de27a0c33aea83b459",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 9,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "344927c01c0b08de27a0c33aea83b459",
+        "data": "ff290101010b24736c6b2d3334343932376330316330623038646532376130633333616561383362343539",
+        "kernel_boottime_ns": 36121448100,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 19,
+      "marker": "b379c3d4311d2828d44de21a323fe35c",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 10,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "b379c3d4311d2828d44de21a323fe35c",
+        "data": "ff290101010b24736c6b2d6233373963336434333131643238323864343464653231613332336665333563",
+        "kernel_boottime_ns": 36513772482,
+        "elapsed_ms": 315,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 20,
+      "marker": "5fe15a35dc58b4615b07bbf0f4077b02",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 10,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -16,
+        "marker": "5fe15a35dc58b4615b07bbf0f4077b02",
+        "data": "ff290101010b24736c6b2d3566653135613335646335386234363135623037626266306634303737623032",
+        "kernel_boottime_ns": 37072465848,
+        "elapsed_ms": 469,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 1,
+      "marker": "3439c7d6f1ab34552ae8f19672b6df2f",
+      "tx_generation": 3,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 11,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -17,
+        "marker": "3439c7d6f1ab34552ae8f19672b6df2f",
+        "data": "ff290101010b24736c6b2d3334333963376436663161623334353532616538663139363732623664663266",
+        "kernel_boottime_ns": 50760636178,
+        "elapsed_ms": 314,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 2,
+      "marker": "afb5c687fa898b748ce1b3642d169212",
+      "tx_generation": 2,
+      "rx_generation": 3,
+      "match": {
+        "generation": 3,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "afb5c687fa898b748ce1b3642d169212",
+        "data": "ff290101010b24736c6b2d6166623563363837666138393862373438636531623336343264313639323132",
+        "kernel_boottime_ns": 51044711465,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    }
+  ],
+  "development_tests": {
+    "status": "EVENT_RECORD_COPY_BOUNDARY_PASS",
+    "rust_tests": 15,
+    "read_iter_tests": 9,
+    "legacy_dli_poll_tests": 6,
+    "scope": "actual complete event/read_iter, canonical legacy DLI event and ring/poll handler; copy/lock/controller-codec dependencies are fixtures",
+    "live_vfs_fault_acceptance": false,
+    "physical_acceptance": false,
+    "sources": {
+      "sle_event.rs": "406cf69542a18de7b3f1827a117429f2ff3e1e613ff3bc0b0cfd332b026f9bbd",
+      "sparklink_core.rs": "092cea7cf6484b489ec8e2a5e1fb6326f003960b9d90de2a4927774fb1c973e3",
+      "sle_uapi.rs": "d6469d5a6920ed856687aab25cff94b76dab118dad7b850417c64997cd4abcc3"
+    },
+    "remaining": [
+      "Legacy DLI_POLL_EVENT consumer migration and shared projection deletion",
+      "Live legacy poll usercopy and qualified backend fallback gates",
+      "Removal wakeup, actual kernel concurrency/locks and complete event ownership gates"
+    ]
+  },
+  "remote_ci": {
+    "conclusion": "success",
+    "databaseId": 38093912963,
+    "headSha": "1d3a17b688eefb35ba9ba6d8aa02bf3ba2a4da21",
+    "jobs": [
+      {
+        "completedAt": "2026-10-10T23:07:35Z",
+        "conclusion": "success",
+        "databaseId": 114335754646,
+        "name": "cargo check",
+        "startedAt": "2026-10-10T23:07:23Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:07:25Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:07:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:26Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:07:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:26Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T23:07:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:29Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T23:07:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:34Z",
+            "conclusion": "success",
+            "name": "Run cargo check --workspace --all-targets --all-features",
+            "number": 5,
+            "startedAt": "2026-10-10T23:07:29Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:34Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 9,
+            "startedAt": "2026-10-10T23:07:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:34Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "startedAt": "2026-10-10T23:07:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:34Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "startedAt": "2026-10-10T23:07:34Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114335754646"
+      },
+      {
+        "completedAt": "2026-10-10T23:07:53Z",
+        "conclusion": "success",
+        "databaseId": 114335754749,
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "startedAt": "2026-10-10T23:07:23Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:07:25Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:07:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:27Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:07:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:28Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T23:07:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:28Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 4,
+            "startedAt": "2026-10-10T23:07:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:37Z",
+            "conclusion": "success",
+            "name": "Install compiler and sanitizer runtimes",
+            "number": 5,
+            "startedAt": "2026-10-10T23:07:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:49Z",
+            "conclusion": "success",
+            "name": "Execute actual source failure boundaries (not RF or crypto vectors)",
+            "number": 6,
+            "startedAt": "2026-10-10T23:07:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:49Z",
+            "conclusion": "success",
+            "name": "Compile live VFS probe (not executed without a qualified VM)",
+            "number": 7,
+            "startedAt": "2026-10-10T23:07:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:49Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 13,
+            "startedAt": "2026-10-10T23:07:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:50Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 14,
+            "startedAt": "2026-10-10T23:07:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:50Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "startedAt": "2026-10-10T23:07:50Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114335754749"
+      },
+      {
+        "completedAt": "2026-10-10T23:07:28Z",
+        "conclusion": "success",
+        "databaseId": 114335754800,
+        "name": "rustfmt",
+        "startedAt": "2026-10-10T23:07:23Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:07:24Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:07:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:25Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:07:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:26Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T23:07:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:26Z",
+            "conclusion": "success",
+            "name": "Run cargo fmt --all -- --check",
+            "number": 4,
+            "startedAt": "2026-10-10T23:07:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:26Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 8,
+            "startedAt": "2026-10-10T23:07:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:26Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "startedAt": "2026-10-10T23:07:26Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114335754800"
+      },
+      {
+        "completedAt": "2026-10-10T23:07:55Z",
+        "conclusion": "success",
+        "databaseId": 114335754802,
+        "name": "Python bindings and kernel ABI conformance",
+        "startedAt": "2026-10-10T23:07:23Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:07:24Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:07:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:25Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:07:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:27Z",
+            "conclusion": "success",
+            "name": "Check out matching canonical kernel UAPI",
+            "number": 3,
+            "startedAt": "2026-10-10T23:07:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:27Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 4,
+            "startedAt": "2026-10-10T23:07:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:27Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 5,
+            "startedAt": "2026-10-10T23:07:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:51Z",
+            "conclusion": "success",
+            "name": "Prepare 32-bit header compilation and actual cdylib",
+            "number": 6,
+            "startedAt": "2026-10-10T23:07:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:51Z",
+            "conclusion": "success",
+            "name": "Run python -m py_compile bindings/python/sparklink/__init__.py",
+            "number": 7,
+            "startedAt": "2026-10-10T23:07:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:52Z",
+            "conclusion": "success",
+            "name": "Run python -m py_compile bindings/python/sparklink/structs.py",
+            "number": 8,
+            "startedAt": "2026-10-10T23:07:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:52Z",
+            "conclusion": "success",
+            "name": "Run python -m py_compile bindings/python/sparklink/adapter.py",
+            "number": 9,
+            "startedAt": "2026-10-10T23:07:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:52Z",
+            "conclusion": "success",
+            "name": "Run python -m py_compile bindings/python/sparklink/native.py",
+            "number": 10,
+            "startedAt": "2026-10-10T23:07:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:53Z",
+            "conclusion": "success",
+            "name": "Run Python unit and compiled C/Rust ABI tests",
+            "number": 11,
+            "startedAt": "2026-10-10T23:07:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:53Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 20,
+            "startedAt": "2026-10-10T23:07:53Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:53Z",
+            "conclusion": "success",
+            "name": "Post Check out matching canonical kernel UAPI",
+            "number": 21,
+            "startedAt": "2026-10-10T23:07:53Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:54Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 22,
+            "startedAt": "2026-10-10T23:07:53Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:54Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 23,
+            "startedAt": "2026-10-10T23:07:54Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114335754802"
+      },
+      {
+        "completedAt": "2026-10-10T23:07:37Z",
+        "conclusion": "success",
+        "databaseId": 114335754818,
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "startedAt": "2026-10-10T23:07:23Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:07:24Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:07:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:26Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:07:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:28Z",
+            "conclusion": "success",
+            "name": "Check out matching kernel lab helpers",
+            "number": 3,
+            "startedAt": "2026-10-10T23:07:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:28Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 4,
+            "startedAt": "2026-10-10T23:07:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:34Z",
+            "conclusion": "success",
+            "name": "Run python -m unittest discover -s tools/tests -v",
+            "number": 5,
+            "startedAt": "2026-10-10T23:07:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:35Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 8,
+            "startedAt": "2026-10-10T23:07:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:35Z",
+            "conclusion": "success",
+            "name": "Post Check out matching kernel lab helpers",
+            "number": 9,
+            "startedAt": "2026-10-10T23:07:35Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:35Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "startedAt": "2026-10-10T23:07:35Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:35Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "startedAt": "2026-10-10T23:07:35Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114335754818"
+      },
+      {
+        "completedAt": "2026-10-10T23:09:05Z",
+        "conclusion": "success",
+        "databaseId": 114335797058,
+        "name": "cargo test",
+        "startedAt": "2026-10-10T23:07:38Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:07:40Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:07:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:43Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:07:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:44Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T23:07:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:49Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T23:07:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:59Z",
+            "conclusion": "success",
+            "name": "Install private D-Bus regression dependency",
+            "number": 5,
+            "startedAt": "2026-10-10T23:07:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:02Z",
+            "conclusion": "success",
+            "name": "Run cargo test --workspace --all-features",
+            "number": 6,
+            "startedAt": "2026-10-10T23:07:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:02Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 11,
+            "startedAt": "2026-10-10T23:09:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:02Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 12,
+            "startedAt": "2026-10-10T23:09:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:02Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 13,
+            "startedAt": "2026-10-10T23:09:02Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114335797058"
+      },
+      {
+        "completedAt": "2026-10-10T23:07:53Z",
+        "conclusion": "success",
+        "databaseId": 114335797068,
+        "name": "clippy",
+        "startedAt": "2026-10-10T23:07:38Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:07:40Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:07:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:41Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:07:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:42Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T23:07:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:44Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T23:07:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:51Z",
+            "conclusion": "success",
+            "name": "Run cargo clippy --workspace --all-targets --all-features -- -W clippy::all",
+            "number": 5,
+            "startedAt": "2026-10-10T23:07:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:51Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 9,
+            "startedAt": "2026-10-10T23:07:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "startedAt": "2026-10-10T23:07:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "startedAt": "2026-10-10T23:07:52Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114335797068"
+      },
+      {
+        "completedAt": "2026-10-10T23:07:49Z",
+        "conclusion": "success",
+        "databaseId": 114335797079,
+        "name": "C header generation",
+        "startedAt": "2026-10-10T23:07:38Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:07:41Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:07:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:41Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:07:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:42Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T23:07:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:45Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T23:07:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:45Z",
+            "conclusion": "success",
+            "name": "Run cargo install cbindgen --version 0.29.4 --locked",
+            "number": 5,
+            "startedAt": "2026-10-10T23:07:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:46Z",
+            "conclusion": "success",
+            "name": "Generate sparklink.h",
+            "number": 6,
+            "startedAt": "2026-10-10T23:07:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:46Z",
+            "conclusion": "success",
+            "name": "Verify header unchanged",
+            "number": 7,
+            "startedAt": "2026-10-10T23:07:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:46Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 13,
+            "startedAt": "2026-10-10T23:07:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:46Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 14,
+            "startedAt": "2026-10-10T23:07:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:07:46Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "startedAt": "2026-10-10T23:07:46Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114335797079"
+      },
+      {
+        "completedAt": "2026-10-10T23:09:45Z",
+        "conclusion": "success",
+        "databaseId": 114336056989,
+        "name": "release build",
+        "startedAt": "2026-10-10T23:09:07Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T23:09:10Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T23:09:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:11Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T23:09:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:12Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T23:09:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:15Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T23:09:12Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:41Z",
+            "conclusion": "success",
+            "name": "Run cargo build --release --workspace",
+            "number": 5,
+            "startedAt": "2026-10-10T23:09:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:43Z",
+            "conclusion": "success",
+            "name": "Upload binaries",
+            "number": 6,
+            "startedAt": "2026-10-10T23:09:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:43Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 11,
+            "startedAt": "2026-10-10T23:09:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:43Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 12,
+            "startedAt": "2026-10-10T23:09:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T23:09:43Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 13,
+            "startedAt": "2026-10-10T23:09:43Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963/job/114336056989"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093912963",
+    "actual_test_counts": {
+      "rust": 170,
+      "python": 34,
+      "tools": 170
+    },
+    "logs_verified": true,
+    "kernel_event_fixture_tests": 15,
+    "live_probe_execution_in_ci": false
+  },
+  "live_event_copy": {
+    "status": "LIVE_EVENT_COPY_PASS",
+    "application_identity": {
+      "uids": [
+        1000,
+        1000,
+        1000,
+        1000
+      ],
+      "cap_eff": "0000000000000000",
+      "cap_prm": "0000000000000000",
+      "cap_amb": "0000000000000000",
+      "groups": [
+        1000,
+        1002
+      ]
+    },
+    "probe": {
+      "path": "/bin/event-copy-probe",
+      "sha256": "8bf5fe06fadd0196c30ca6ea88c56f06d809383f5dd7949975f466b04d5ca97c"
+    },
+    "sources": [
+      {
+        "path": "/usr/share/sparklink/tools/ws73_event_copy_probe.py",
+        "sha256": "4a49d83c64d01f4429f9d72a2d713929dc6ab54b4df6f7e25c55273acde9289c"
+      }
+    ],
+    "cases": [
+      {
+        "case": "zero",
+        "result": 0,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "short",
+        "result": -1,
+        "errno": 22,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "bad_address",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_first",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 22,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_later",
+        "result": 44,
+        "errno": 0,
+        "partial_prefix": 22,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 2,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 1
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "07240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "capacity_tail",
+        "result": 44,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 2,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 1
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "07240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "complete_batch",
+        "result": 132,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": ""
+      }
+    ],
+    "daemon_before": {
+      "pid": 654,
+      "start_ticks": 1559
+    },
+    "daemon_after": {
+      "pid": 654,
+      "start_ticks": 1559
+    },
+    "probe_exit": 0,
+    "cleanup": "STOP_CONFIRMED"
+  },
+  "live_diagnostic": {
+    "format_version": 4,
+    "status": "DIAGNOSTIC_RESULT_LIVE_PASS",
+    "uid": 0,
+    "euid": 0,
+    "probe": {
+      "path": "/bin/diagnostic-result-probe",
+      "sha256": "038e2283644422a96f7b43884423b7c28e6ede4f1f84211e603794752ad22a11"
+    },
+    "sources": [
+      {
+        "path": "/usr/share/sparklink/tools/ws73_diagnostic_probe.py",
+        "sha256": "ba2602dc472440db4ad9a78512e4fd78ff8407bd92dafa5137b56de44c307162"
+      }
+    ],
+    "records": [
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 1,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803194136863,
+        "end_wall_ns": 1791673803204262742,
+        "data": "0001093254f9"
+      },
+      {
+        "admission": "submit_read_only_output",
+        "result": -1,
+        "errno": 14,
+        "generation": 1,
+        "request_id": 1,
+        "seq": 1,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803194136863,
+        "end_wall_ns": 1791673803204262742,
+        "partial_prefix": 0,
+        "user_address_mod8": 0,
+        "input": "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+        "fault_output": "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+        "retry_outputs": [
+          "01000000000000000100000000000000010000000000000088130000060400000100000001000000",
+          "01000000000000000100000000000000010000000000000088130000060400000100000001000000",
+          "01000000000000000100000000000000010000000000000088130000060400000100000001000000"
+        ],
+        "submitted_before": 0,
+        "submitted_after": 1,
+        "resolved_before": 0,
+        "resolved_after": 1,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 2,
+        "opcode": 1027,
+        "start_wall_ns": 1791673803204353914,
+        "end_wall_ns": 1791673803214461459,
+        "data": "23155000120000010000"
+      },
+      {
+        "admission": "submit_partial_output",
+        "result": -1,
+        "errno": 14,
+        "generation": 1,
+        "request_id": 2,
+        "seq": 2,
+        "opcode": 1027,
+        "start_wall_ns": 1791673803204353914,
+        "end_wall_ns": 1791673803214461459,
+        "partial_prefix": 36,
+        "user_address_mod8": 4,
+        "input": "01000000000000000100000000000000020000000000000088130000030400000000000001000000",
+        "fault_output": "01000000000000000100000000000000020000000000000088130000030400000200000001000000",
+        "retry_outputs": [
+          "01000000000000000100000000000000020000000000000088130000030400000200000001000000",
+          "01000000000000000100000000000000020000000000000088130000030400000200000001000000",
+          "01000000000000000100000000000000020000000000000088130000030400000200000001000000"
+        ],
+        "submitted_before": 1,
+        "submitted_after": 2,
+        "resolved_before": 1,
+        "resolved_after": 2,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 3,
+        "opcode": 1028,
+        "start_wall_ns": 1791673803214499120,
+        "end_wall_ns": 1791673803224571689,
+        "data": "016c00a100"
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 4,
+        "opcode": 1026,
+        "start_wall_ns": 1791673803224581978,
+        "end_wall_ns": 1791673803234657062,
+        "data": "fe0005000000"
+      },
+      {
+        "identity": "inherited_fd_child",
+        "uid": 1000,
+        "euid": 1000,
+        "cap_eff": 0,
+        "cap_prm": 0
+      },
+      {
+        "case": "inherited_fd_cap0",
+        "result": -1,
+        "errno": 1
+      },
+      {
+        "case": "read_only_output",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "reference": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_output",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 56,
+        "reference": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "version",
+        "result": -1,
+        "errno": 95
+      },
+      {
+        "case": "flags",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "reserved",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "zero_seq",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "zero_generation",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "wrong_generation",
+        "result": -1,
+        "errno": 19
+      },
+      {
+        "case": "missing_sequence",
+        "result": -1,
+        "errno": 2
+      },
+      {
+        "legacy_poll": "bad_address",
+        "generation": 1,
+        "request_id": 5,
+        "seq": 5,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803235283141,
+        "end_wall_ns": 1791673803245365739,
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "drained_before": 4,
+        "final_poll_result": -1,
+        "final_poll_errno": 11,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000050000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000050000000000000088130000060400000500000001000000",
+        "result_bytes": "010000000000000001000000000000000500000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "reference": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "fault_output": null,
+        "submitted_before": 4,
+        "submitted_after": 5,
+        "resolved_before": 4,
+        "resolved_after": 5,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "legacy_poll": "read_only_output",
+        "generation": 1,
+        "request_id": 6,
+        "seq": 6,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803245398020,
+        "end_wall_ns": 1791673803255502178,
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "drained_before": 0,
+        "final_poll_result": -1,
+        "final_poll_errno": 11,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000060000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000060000000000000088130000060400000600000001000000",
+        "result_bytes": "010000000000000001000000000000000600000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "reference": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "fault_output": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+        "submitted_before": 5,
+        "submitted_after": 6,
+        "resolved_before": 5,
+        "resolved_after": 6,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "legacy_poll": "partial_output",
+        "generation": 1,
+        "request_id": 7,
+        "seq": 7,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803255590575,
+        "end_wall_ns": 1791673803265695695,
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 128,
+        "drained_before": 0,
+        "final_poll_result": -1,
+        "final_poll_errno": 11,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000070000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000070000000000000088130000060400000700000001000000",
+        "result_bytes": "010000000000000001000000000000000700000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "reference": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "fault_output": "01000000060406000001093254f9000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+        "submitted_before": 6,
+        "submitted_after": 7,
+        "resolved_before": 6,
+        "resolved_after": 7,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "case": "foreign_author_with_lease",
+        "result": -1,
+        "errno": 1
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 1,
+        "seq": 8,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803265808297,
+        "end_wall_ns": 1791673803275930089,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000010000000000000088130000060400000800000001000000",
+        "result_bytes": "010000000000000001000000000000000800000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 7,
+        "submitted_after": 8,
+        "resolved_before": 7,
+        "resolved_after": 8,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 2,
+        "seq": 9,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803275968260,
+        "end_wall_ns": 1791673803286045057,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000020000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000020000000000000088130000060400000900000001000000",
+        "result_bytes": "010000000000000001000000000000000900000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 8,
+        "submitted_after": 9,
+        "resolved_before": 8,
+        "resolved_after": 9,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 3,
+        "seq": 10,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803286068732,
+        "end_wall_ns": 1791673803296134378,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000030000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000030000000000000088130000060400000a00000001000000",
+        "result_bytes": "010000000000000001000000000000000a00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 9,
+        "submitted_after": 10,
+        "resolved_before": 9,
+        "resolved_after": 10,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 4,
+        "seq": 11,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803296157712,
+        "end_wall_ns": 1791673803306397095,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000040000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000040000000000000088130000060400000b00000001000000",
+        "result_bytes": "010000000000000001000000000000000b00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 10,
+        "submitted_after": 11,
+        "resolved_before": 10,
+        "resolved_after": 11,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 5,
+        "seq": 12,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803306420749,
+        "end_wall_ns": 1791673803316497626,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000050000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000050000000000000088130000060400000c00000001000000",
+        "result_bytes": "010000000000000001000000000000000c00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 11,
+        "submitted_after": 12,
+        "resolved_before": 11,
+        "resolved_after": 12,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 6,
+        "seq": 13,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803316520690,
+        "end_wall_ns": 1791673803326596725,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000060000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000060000000000000088130000060400000d00000001000000",
+        "result_bytes": "010000000000000001000000000000000d00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 12,
+        "submitted_after": 13,
+        "resolved_before": 12,
+        "resolved_after": 13,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 7,
+        "seq": 14,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803326619668,
+        "end_wall_ns": 1791673803336699771,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000070000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000070000000000000088130000060400000e00000001000000",
+        "result_bytes": "010000000000000001000000000000000e00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 13,
+        "submitted_after": 14,
+        "resolved_before": 13,
+        "resolved_after": 14,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 8,
+        "seq": 15,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803336722785,
+        "end_wall_ns": 1791673803346906092,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000080000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000080000000000000088130000060400000f00000001000000",
+        "result_bytes": "010000000000000001000000000000000f00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 14,
+        "submitted_after": 15,
+        "resolved_before": 14,
+        "resolved_after": 15,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 9,
+        "seq": 16,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803346928955,
+        "end_wall_ns": 1791673803357004109,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000090000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000090000000000000088130000060400001000000001000000",
+        "result_bytes": "010000000000000001000000000000001000000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 15,
+        "submitted_after": 16,
+        "resolved_before": 15,
+        "resolved_after": 16,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 10,
+        "seq": 17,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803357028024,
+        "end_wall_ns": 1791673803367149776,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000a0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000a0000000000000088130000060400001100000001000000",
+        "result_bytes": "010000000000000001000000000000001100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 16,
+        "submitted_after": 17,
+        "resolved_before": 16,
+        "resolved_after": 17,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 11,
+        "seq": 18,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803367183960,
+        "end_wall_ns": 1791673803377513002,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000b0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000b0000000000000088130000060400001200000001000000",
+        "result_bytes": "010000000000000001000000000000001200000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 17,
+        "submitted_after": 18,
+        "resolved_before": 17,
+        "resolved_after": 18,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 12,
+        "seq": 19,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803377548299,
+        "end_wall_ns": 1791673803387622731,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000c0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000c0000000000000088130000060400001300000001000000",
+        "result_bytes": "010000000000000001000000000000001300000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 18,
+        "submitted_after": 19,
+        "resolved_before": 18,
+        "resolved_after": 19,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 13,
+        "seq": 20,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803387645644,
+        "end_wall_ns": 1791673803397720237,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000d0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000d0000000000000088130000060400001400000001000000",
+        "result_bytes": "010000000000000001000000000000001400000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 19,
+        "submitted_after": 20,
+        "resolved_before": 19,
+        "resolved_after": 20,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 14,
+        "seq": 21,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803397743060,
+        "end_wall_ns": 1791673803407816791,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000e0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000e0000000000000088130000060400001500000001000000",
+        "result_bytes": "010000000000000001000000000000001500000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 20,
+        "submitted_after": 21,
+        "resolved_before": 20,
+        "resolved_after": 21,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 15,
+        "seq": 22,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803407839484,
+        "end_wall_ns": 1791673803417912904,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000f0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000f0000000000000088130000060400001600000001000000",
+        "result_bytes": "010000000000000001000000000000001600000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 21,
+        "submitted_after": 22,
+        "resolved_before": 21,
+        "resolved_after": 22,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 16,
+        "seq": 23,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803417936228,
+        "end_wall_ns": 1791673803428009067,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000100000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000100000000000000088130000060400001700000001000000",
+        "result_bytes": "010000000000000001000000000000001700000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 22,
+        "submitted_after": 23,
+        "resolved_before": 22,
+        "resolved_after": 23,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 17,
+        "seq": 24,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803428032642,
+        "end_wall_ns": 1791673803438137652,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000110000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000110000000000000088130000060400001800000001000000",
+        "result_bytes": "010000000000000001000000000000001800000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 23,
+        "submitted_after": 24,
+        "resolved_before": 23,
+        "resolved_after": 24,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 18,
+        "seq": 25,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803438163851,
+        "end_wall_ns": 1791673803448240588,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000120000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000120000000000000088130000060400001900000001000000",
+        "result_bytes": "010000000000000001000000000000001900000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 24,
+        "submitted_after": 25,
+        "resolved_before": 24,
+        "resolved_after": 25,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 19,
+        "seq": 26,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803448264232,
+        "end_wall_ns": 1791673803458340749,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000130000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000130000000000000088130000060400001a00000001000000",
+        "result_bytes": "010000000000000001000000000000001a00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 25,
+        "submitted_after": 26,
+        "resolved_before": 25,
+        "resolved_after": 26,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 20,
+        "seq": 27,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803458366267,
+        "end_wall_ns": 1791673803468444045,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000140000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000140000000000000088130000060400001b00000001000000",
+        "result_bytes": "010000000000000001000000000000001b00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 26,
+        "submitted_after": 27,
+        "resolved_before": 26,
+        "resolved_after": 27,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 21,
+        "seq": 28,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803468474603,
+        "end_wall_ns": 1791673803478549436,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000150000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000150000000000000088130000060400001c00000001000000",
+        "result_bytes": "010000000000000001000000000000001c00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 27,
+        "submitted_after": 28,
+        "resolved_before": 27,
+        "resolved_after": 28,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 22,
+        "seq": 29,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803478572640,
+        "end_wall_ns": 1791673803488647012,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000160000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000160000000000000088130000060400001d00000001000000",
+        "result_bytes": "010000000000000001000000000000001d00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 28,
+        "submitted_after": 29,
+        "resolved_before": 28,
+        "resolved_after": 29,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 23,
+        "seq": 30,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803488670466,
+        "end_wall_ns": 1791673803498747614,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000170000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000170000000000000088130000060400001e00000001000000",
+        "result_bytes": "010000000000000001000000000000001e00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 29,
+        "submitted_after": 30,
+        "resolved_before": 29,
+        "resolved_after": 30,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 24,
+        "seq": 31,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803498770607,
+        "end_wall_ns": 1791673803508847444,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000180000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000180000000000000088130000060400001f00000001000000",
+        "result_bytes": "010000000000000001000000000000001f00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 30,
+        "submitted_after": 31,
+        "resolved_before": 30,
+        "resolved_after": 31,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 25,
+        "seq": 32,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803508870487,
+        "end_wall_ns": 1791673803518946533,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000190000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000190000000000000088130000060400002000000001000000",
+        "result_bytes": "010000000000000001000000000000002000000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 31,
+        "submitted_after": 32,
+        "resolved_before": 31,
+        "resolved_after": 32,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 26,
+        "seq": 33,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803518969887,
+        "end_wall_ns": 1791673803529045471,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001a0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001a0000000000000088130000060400002100000001000000",
+        "result_bytes": "010000000000000001000000000000002100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 32,
+        "submitted_after": 33,
+        "resolved_before": 32,
+        "resolved_after": 33,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 27,
+        "seq": 34,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803529069246,
+        "end_wall_ns": 1791673803539128490,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001b0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001b0000000000000088130000060400002200000001000000",
+        "result_bytes": "010000000000000001000000000000002200000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 33,
+        "submitted_after": 34,
+        "resolved_before": 33,
+        "resolved_after": 34,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 28,
+        "seq": 35,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803539145552,
+        "end_wall_ns": 1791673803539595460,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001c0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001c0000000000000088130000060400002300000001000000",
+        "result_bytes": "010000000000000001000000000000002300000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 34,
+        "submitted_after": 35,
+        "resolved_before": 34,
+        "resolved_after": 35,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 29,
+        "seq": 36,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803539609566,
+        "end_wall_ns": 1791673803549684910,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001d0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001d0000000000000088130000060400002400000001000000",
+        "result_bytes": "010000000000000001000000000000002400000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 35,
+        "submitted_after": 36,
+        "resolved_before": 35,
+        "resolved_after": 36,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 30,
+        "seq": 37,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803549708585,
+        "end_wall_ns": 1791673803559788187,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001e0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001e0000000000000088130000060400002500000001000000",
+        "result_bytes": "010000000000000001000000000000002500000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 36,
+        "submitted_after": 37,
+        "resolved_before": 36,
+        "resolved_after": 37,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 31,
+        "seq": 38,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803559812563,
+        "end_wall_ns": 1791673803569888378,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001f0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001f0000000000000088130000060400002600000001000000",
+        "result_bytes": "010000000000000001000000000000002600000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 37,
+        "submitted_after": 38,
+        "resolved_before": 37,
+        "resolved_after": 38,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 32,
+        "seq": 39,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803569911682,
+        "end_wall_ns": 1791673803579987557,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000200000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000200000000000000088130000060400002700000001000000",
+        "result_bytes": "010000000000000001000000000000002700000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 38,
+        "submitted_after": 39,
+        "resolved_before": 38,
+        "resolved_after": 39,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 33,
+        "seq": 40,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803580011873,
+        "end_wall_ns": 1791673803590086405,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000210000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000210000000000000088130000060400002800000001000000",
+        "result_bytes": "010000000000000001000000000000002800000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 39,
+        "submitted_after": 40,
+        "resolved_before": 39,
+        "resolved_after": 40,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "old_id_and_result_rejected",
+        "generation": 1,
+        "request_id": 1,
+        "seq": 8,
+        "opcode": 1030,
+        "start_wall_ns": 1791673803590125940,
+        "end_wall_ns": 1791673803691087663,
+        "quiet_observation_ms": 100,
+        "retry_results": [
+          -1,
+          -1,
+          -1
+        ],
+        "retry_errnos": [
+          116,
+          116,
+          116
+        ],
+        "old_input": "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+        "retry_outputs": [
+          "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+          "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+          "01000000000000000100000000000000010000000000000088130000060400000000000001000000"
+        ],
+        "result_query_return": -1,
+        "result_query_errno": 2,
+        "result_query_input": "0100000000000000010000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "result_query_output": "0100000000000000010000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retained_input": "01000000000000000100000000000000020000000000000088130000060400000000000001000000",
+        "retained_output": "01000000000000000100000000000000020000000000000088130000060400000900000001000000",
+        "retained_result": "010000000000000001000000000000000900000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 40,
+        "submitted_after": 40,
+        "resolved_before": 40,
+        "resolved_after": 40,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "phase": "BEFORE_DAEMON_PASS"
+      },
+      {
+        "case": "retired_fd",
+        "result": -1,
+        "errno": 19
+      },
+      {
+        "phase": "DIAGNOSTIC_RESULT_LIVE_PASS"
+      }
+    ],
+    "cli_queries": [
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "mac"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0406 admission_seq=41 status=0x00 data=0001093254f9\n",
+        "stderr": "",
+        "start_wall_ns": 1791673803698967209,
+        "end_wall_ns": 1791673803704333641
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "features"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0403 admission_seq=42 status=0x00 data=23155000120000010000\n",
+        "stderr": "",
+        "start_wall_ns": 1791673803707384449,
+        "end_wall_ns": 1791673803721344794
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "version"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0404 admission_seq=43 status=0x00 data=016c00a100\n",
+        "stderr": "",
+        "start_wall_ns": 1791673803724837625,
+        "end_wall_ns": 1791673803738460914
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "buffers"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0402 admission_seq=44 status=0x00 data=fe0005000000\n",
+        "stderr": "",
+        "start_wall_ns": 1791673803742326988,
+        "end_wall_ns": 1791673803756362965
+      }
+    ],
+    "probe_exit": 0
+  },
+  "diagnostic_wire_command_reply_pairs": 44,
+  "diagnostic_eviction_live_acceptance": true,
+  "idempotent_submit_copyout_live_acceptance": true,
+  "diagnostic_result_full_acceptance": false,
+  "diagnostic_cancel_on_wire_live_acceptance": false,
+  "legacy_dli_poll_fault_live_acceptance": true,
+  "legacy_backend_fallback_live_acceptance": false,
+  "legacy_dli_poll_live_scope": "Sequential Native profile1 root Diagnostic, actual MAC seed then bad-address/read-only/128-byte-prefix EFAULT; identical256-byte retry and exactly-once consumption, one command/reply over each seed/fault/retry interval and entire three-query phase. Not another backend fallback, kernel concurrency or full ownership qualification.",
+  "legacy_dli_poll_records": [
+    {
+      "legacy_poll": "bad_address",
+      "generation": 1,
+      "request_id": 5,
+      "seq": 5,
+      "opcode": 1030,
+      "start_wall_ns": 1791673803235283141,
+      "end_wall_ns": 1791673803245365739,
+      "result": -1,
+      "errno": 14,
+      "partial_prefix": 0,
+      "drained_before": 4,
+      "final_poll_result": -1,
+      "final_poll_errno": 11,
+      "data": "0001093254f9",
+      "input": "01000000000000000100000000000000050000000000000088130000060400000000000001000000",
+      "output": "01000000000000000100000000000000050000000000000088130000060400000500000001000000",
+      "result_bytes": "010000000000000001000000000000000500000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "retry": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "fault_output": null,
+      "submitted_before": 4,
+      "submitted_after": 5,
+      "resolved_before": 4,
+      "resolved_after": 5,
+      "pending_before": 0,
+      "pending_after": 0,
+      "timeouts_before": 0,
+      "timeouts_after": 0
+    },
+    {
+      "legacy_poll": "read_only_output",
+      "generation": 1,
+      "request_id": 6,
+      "seq": 6,
+      "opcode": 1030,
+      "start_wall_ns": 1791673803245398020,
+      "end_wall_ns": 1791673803255502178,
+      "result": -1,
+      "errno": 14,
+      "partial_prefix": 0,
+      "drained_before": 0,
+      "final_poll_result": -1,
+      "final_poll_errno": 11,
+      "data": "0001093254f9",
+      "input": "01000000000000000100000000000000060000000000000088130000060400000000000001000000",
+      "output": "01000000000000000100000000000000060000000000000088130000060400000600000001000000",
+      "result_bytes": "010000000000000001000000000000000600000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "retry": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "fault_output": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "submitted_before": 5,
+      "submitted_after": 6,
+      "resolved_before": 5,
+      "resolved_after": 6,
+      "pending_before": 0,
+      "pending_after": 0,
+      "timeouts_before": 0,
+      "timeouts_after": 0
+    },
+    {
+      "legacy_poll": "partial_output",
+      "generation": 1,
+      "request_id": 7,
+      "seq": 7,
+      "opcode": 1030,
+      "start_wall_ns": 1791673803255590575,
+      "end_wall_ns": 1791673803265695695,
+      "result": -1,
+      "errno": 14,
+      "partial_prefix": 128,
+      "drained_before": 0,
+      "final_poll_result": -1,
+      "final_poll_errno": 11,
+      "data": "0001093254f9",
+      "input": "01000000000000000100000000000000070000000000000088130000060400000000000001000000",
+      "output": "01000000000000000100000000000000070000000000000088130000060400000700000001000000",
+      "result_bytes": "010000000000000001000000000000000700000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "retry": "01000000060406000001093254f90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "fault_output": "01000000060406000001093254f9000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "submitted_before": 6,
+      "submitted_after": 7,
+      "resolved_before": 6,
+      "resolved_after": 7,
+      "pending_before": 0,
+      "pending_after": 0,
+      "timeouts_before": 0,
+      "timeouts_after": 0
+    }
+  ],
+  "legacy_dli_poll_migration_complete": false,
+  "full_event_acceptance": false,
+  "remaining": [
+    "Native ring bad-address/read-only/partial-copy gates are limited sequential Diagnostic x86_64 evidence; qualified backend fallback hardware fault gates remain open",
+    "Migrate legacy EventReceiver/profile0 C/Python/slkd, monitors and raw selftests then delete shared ring/fallback/unpublished UAPI",
+    "State mutex spans legacy usercopy; real concurrency/liveness/lockdep/removal wakeup and complete event ownership remain open",
+    "Actual queued/active cancellation, late replies, absolute deadlines and concurrent ownership/CAP/removal/32-bit Diagnostic gates",
+    "Natural startup timeout/disappearance/re-enumeration RCA, autonomous recovery, historical physical xHCI warning; NorthStar7/8",
+    "Single/multiple/four-device recovery and two-pair RF matrix; VM-only does not qualify native-host comparison",
+    "Per-channel socket, standard userspace SSAP, per-connection security/Bond/Agent/Profile, other Native/Proxy/sandbox and complete S0-S6"
+  ],
+  "artifact_sha256": {
+    "capture": "b2efb045dd2f1a05f333b86beb90c741bf363d844254455df9101925a11224bf",
+    "control": "de563fba5fef4cee713cec8a7de0bb3cca1b79041d34cd11232a3946fbfef983",
+    "run_manifest": "3cdf4da64261f3a82eac0f9c26880e64d6c9470a035a4f4930d3685bc45803df",
+    "prepared_manifest": "599c053f60cb71e68bbae2b7c8716dc0481c699ebc68c20f8512a2f56316557a",
+    "build_record": "104f692bdfbb3599fa32f5d97c632fb9d0763a939e0295e90c4562c25d55b692",
+    "build_log": "ad57dbe5e2d0fe41ab546efb4282d3b450c833fdc91607bbbb2c6f35e7c94c30",
+    "service_manifest": "ca8026aa260c5f20f097ff092697ead4b04d7b192d2fb7f07c98943117fcd559",
+    "root_smoke": "6dc9ae6b467c1812eec37d185493f6b70d9ec2521e0f140561fe8fd1d5c6a1f8",
+    "development": "d157a3d00241c5a70916cbaa4c7dc7a4811c72640c0af9681e48139724ef954a",
+    "independent_proofs": "efa1a9c2698fc7ecb76f9f46b38fb6c3e196cd7169702db1a90f57314612bf03",
+    "kernel_log": "b08cebc09bcb16796cb8c1674f74462f9643ac58294a117161a6461bc4b89eb9",
+    "qmp": "70c22cd2bd79ffb3270aae3506c1c73aafb1e1076d4391fd4105f9edab21818b",
+    "qemu_stderr": "b9a9199bec26e09dc7d72af54f9ace8dc4c8c206dd3c9111107316f50443ae78",
+    "host_diagnostics": "4ccd96539bcc7a7abd3a867d6499aa27164c7785bd13a273c0a444d7d96341ae",
+    "ci_jobs": "dd57ee7287346f643e02efab98972f0e0bdd2d3677b4b63e55c7d7a4f120d0af",
+    "event_transcript": "caa329d09811634a9d66456ced921c55cab769269acc0572140ba25560cd333f",
+    "diagnostic_transcript": "131d19fca9ee5bf8bb1a81410b4747173350ac6755c927e1a187eaaa6cc67ccf",
+    "ci_rust": "ad5261e83f3859131c3067e4d8e4d8f181c6054fbb7d80bf7a7b79f3f6514e53",
+    "ci_kernel": "3728b5ee078df4564fe96cd3215d2d05e66576a1473bd9bdbd5d63f71ec8e7a4",
+    "ci_python": "9def24d755692ff5d33ef8f90cd301e374e7eaff64eb61e80cdf600b8359a571",
+    "ci_tools": "a77e0a57aa65f0d38b598d3b1d6e6b4147c93afe92b64ecd199b9d50b15db516"
+  }
+}

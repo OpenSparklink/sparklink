@@ -94,7 +94,9 @@ Engine、安全/Bond和自然恢复门禁仍需独立交付。已验证discovery
 [诊断淘汰证据](../evidence/ws73-vm-diagnostic-eviction-20261011.json)。后续
 K`54621800ee4c`修复旧poll的复制提交顺序；[6项新开发fixture和未决实机门禁](../EVENT_COPY_REMEDIATION.md)
 明确区分。[新镜像真实20+2/read/诊断回归](../evidence/ws73-vm-legacy-poll-copy-20261011.json)
-已通过，legacy ioctl复制故障与fallback资格仍待实际验证。
+已通过。后续K`9b16e634bfd3`/编译U`1d3a17b688ee`的
+[Native ring三类实际复制故障](../evidence/ws73-vm-legacy-poll-live-20261011.json)
+限定通过；fallback资格/完整事件与subscriber迁移仍待验证。
 
 实际取消/迟到回复/完整期限、事件与旧DLI调用者删除仍开放；socket、用户态SSAP、
 每连接安全/Bond及自然故障根因/自主恢复未验收。历史物理xHCI警告和旧版本

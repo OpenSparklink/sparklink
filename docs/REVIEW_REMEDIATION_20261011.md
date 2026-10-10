@@ -360,3 +360,19 @@ K54621800ee4c/编译Udc8745986044的[新镜像回归证据](evidence/ws73-vm-leg
 淘汰33及41组诊断wire通过，1411 USB零drop、warning0/taint0；9作业CI成功。
 这一结果更新上文“新镜像回归待执行”，不更新legacy ioctl复制故障/fallback
 资格门禁：它们仍待执行。详细锁、overflow、测试边界与最终删除条件见事件整改。
+
+
+### R12 Native 旧 poll 实际复制故障限定通过
+
+K9b16e634bfd3/编译U1d3a17b688ee的[新镜像证据](evidence/ws73-vm-legacy-poll-live-20261011.json)
+验证真实MAC seed ID5..7/seq5..7，坏地址/只读页/128字节前缀EFAULT后256字节
+原事件重试、成功后EAGAIN及一次提交/完成记账。每项唯一真实OUT/回复，并
+核对整体三项阶段含间隙没有额外命令。Native共享ring之外的backend fallback
+未验收，完整kernel并发/lockdep/移除/所有权及调用者迁移仍开放。详细字节、锁、
+overflow与删除条件见[事件整改](EVENT_COPY_REMEDIATION.md)。
+
+原result16/copyout2/淘汰33（第二作者seq8..40）/CLI4/read7及真实20+2保持，
+最长620ms、同slkd/普通用户、1423 USB零drop、9作业CI成功。保留全部历史
+故障和限定范围；自然根因/自主恢复/物理xHCI warning/四设备/完整sandbox与
+全部S0–S6不因本项通过关闭。下一步实际cancel/late/deadline及独立订阅迁移，
+迁完后删除共享ring/fallback/未发布UAPI，不保留永久双路径。

@@ -7,7 +7,9 @@
 真实查询、旧ID/sequence拒绝和100ms无重发；read7、WS7320+2及同daemon保持。
 后续生产内核K`54621800ee4c`修复[旧DLI poll复制提交](EVENT_COPY_REMEDIATION.md)，
 新增6项开发fixture；[新镜像真实20+2/read/诊断回归](evidence/ws73-vm-legacy-poll-copy-20261011.json)
-已通过，legacy ioctl故障门禁仍待执行。用户态生产
+已通过；后续K`9b16e634bfd3`/编译U`1d3a17b688ee`的
+[三类实际legacy ioctl复制故障](evidence/ws73-vm-legacy-poll-live-20261011.json)
+也限定通过，fallback资格/完整事件仍OPEN。用户态生产
 保持`df9cff7d750d`。不能将路径回归推广为新legacy ioctl故障验收，也不能据此
 推论取消、完整事件、连接服务或自主故障恢复完成。
 ADR 0001、最终 socket/用户态 SSAP 分层、WS73 北极星及 S0–S6 均保持。

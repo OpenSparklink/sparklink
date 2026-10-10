@@ -94,6 +94,7 @@ fn print_help() {
     println!(
         "\
 Commands:
+  daemon                        Show the bus-authenticated slkd owner/PID/UID
   list                          List adapters
   select <path>                 Select a live adapter registration
   reports                       Show exact native discovery reports

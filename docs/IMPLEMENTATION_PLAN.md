@@ -433,3 +433,15 @@ passive scan、新 report 精确匹配/10秒界限、caller id 非破坏结果�
 20轮角色交换、同 PID 拔插后2轮及 TX-off 负向；这不构成真实空口验收。
 本机 WS73=[]；七项真实北极星、四设备两组、全部原 issues 和 S0–S6 保持。
 详见 [原生 CLI 闭环记录](WS73_DISCOVERY_NORTH_STAR.md#slctl-原生广播扫描闭环2026-10-10部分成果)。
+
+### 物理控制记录与原始 RX 佐证（2026-10-10，部分成果）
+
+新增普通用户 `ws73_north_star.py run/verify`：真实物理端口/原生metadata/Ready
+匹配、slctl随机20轮交换、人工拔插同PID/start_ticks/bus owner后2轮及TX-off；
+独立全长usbmon pcap佐证实际RX字节、成功Complete、启动/重插查询和零drop
+统计。`slctl daemon`核对总线实际owner/PID/UID。CONTROL_PASS仍pending，
+RX_CORROBORATED仍须实际来源与固件/板级/部署审查，不自动算七项通过。
+36工具测试/12000生产C聚合一致性/137harness/145workspace/CLI strict clippy
+和实际uid1000合成CLI门禁PASS；96-case完整回归1057 OK/0 FAIL/0 SKIP/3旧WARN。
+WS73=[]，未运行真实闭环；全部原issues、四设备两组和完整S0–S6继续保留。
+见[物理验收操作](WS73_PHYSICAL_TEST.md)。

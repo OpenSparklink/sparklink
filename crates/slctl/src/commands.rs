@@ -18,6 +18,7 @@ impl Context {
     pub async fn dispatch(&mut self, args: &[&str]) -> anyhow::Result<()> {
         match args[0] {
             "list" => self.cmd_list().await,
+            "daemon" => self.cmd_daemon().await,
             "select" => self.cmd_select(args.get(1).copied().unwrap_or("")).await,
             "reports" => self.cmd_reports().await,
             "advertise" => self.cmd_advertise(args).await,
@@ -144,6 +145,18 @@ impl Context {
         println!("Selected {candidate}");
         Ok(())
     }
+    async fn cmd_daemon(&self) -> anyhow::Result<()> {
+        let bus = zbus::fdo::DBusProxy::new(&self.conn).await?;
+        let service = zbus::names::BusName::try_from("org.sparklink")?;
+        let owner = bus.get_name_owner(service).await?;
+        let pid = bus
+            .get_connection_unix_process_id(owner.as_ref().into())
+            .await?;
+        let uid = bus.get_connection_unix_user(owner.as_ref().into()).await?;
+        println!("DaemonIdentity: owner={owner} pid={pid} uid={uid}");
+        Ok(())
+    }
+
     async fn cmd_reports(&self) -> anyhow::Result<()> {
         let proxy = self.adapter_proxy().await?;
         let reports: Vec<NativeReportRecord> = proxy.call("GetReports", &()).await?;

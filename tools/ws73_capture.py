@@ -1,0 +1,282 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-2.0-only
+"""Strict offline USB/HCC/DLI corroboration, never a claim of PHY sniffing.
+
+Layouts: Linux Documentation/usb/usbmon.rst, drivers/usb/mon/mon_bin.c,
+libpcap pcap/usb.h and pcap-savefile(5); WS73 driver wire.c/discovery.c.
+Only classic pcap LINKTYPE_USB_LINUX_MMAPPED (220) is supported.
+"""
+import hashlib
+from pathlib import Path
+import struct
+import re
+
+
+class CaptureError(ValueError):
+    pass
+
+
+def marker_data(marker):
+    if len(marker) != 32 or any(c not in '0123456789abcdef' for c in marker):
+        raise CaptureError('expected 16-byte lowercase hex marker')
+    return bytes([255, 41, 1, 1, 1, 11, 36]) + ('slk-' + marker).encode()
+
+
+def hcc_receive(data):
+    """Validate every aggregate boundary before returning any slot."""
+    if not 12 <= len(data) <= 20 * 1024:
+        raise CaptureError('invalid USB aggregate size')
+    kind, size = struct.unpack_from('<II', data)
+    if kind == size == 0:
+        if any(data):
+            raise CaptureError('nonzero empty aggregate tail')
+        return []
+    if kind != 2 or size != len(data) or size < 92:
+        raise CaptureError('invalid RX aggregate header/length')
+    lengths = struct.unpack_from('<24H', data, 12)
+    slots, offset, ended = [], 92, False
+    for length in lengths:
+        if not length:
+            ended = True
+            continue
+        if ended or length < 4 or offset + length > size:
+            raise CaptureError('invalid HCC slot boundary')
+        tag, queue, payload_length = struct.unpack_from('<BBH', data, offset)
+        service = tag >> 4
+        if payload_length > length - 4:
+            raise CaptureError('HCC payload exceeds slot')
+        if (service, queue) in [(5, 10), (10, 8)] and tag & 15:
+            raise CaptureError('nonzero supported-service subtype')
+        slots.append((service, queue, offset, data[offset + 4:offset + 4 + payload_length]))
+        offset += length
+    if offset != size:
+        raise CaptureError('unassigned aggregate tail')
+    return slots
+
+
+def discovery(payload):
+    if len(payload) < 5 or payload[0] != 0xa2:
+        return None
+    event, size = struct.unpack_from('<HH', payload, 1)
+    if event != 0x180b:
+        return None
+    if size != len(payload) - 5 or size < 23 or size != 23 + payload[27]:
+        raise CaptureError('invalid WS73 discovery event length')
+    header = payload[5:28]
+    return {'address': ':'.join(f'{b:02X}' for b in header[2:8]),
+            'rssi': struct.unpack('b', header[21:22])[0],
+            'header': header.hex(), 'data': payload[28:].hex()}
+
+
+def read_capture(path, targets):
+    """Read complete successful endpoint-1 IN URBs for selected USB identities.
+
+    Refuse truncation/malformed traffic on a target; ignore unrelated USB data.
+    Keep raw file offsets and hashes for independently inspecting each proof.
+    Capture content is not authenticated and synthetic fixtures are not RF.
+    """
+    reports, complete, failures = [], [], []
+    targets = set(tuple(t) for t in targets)
+    with Path(path).open('rb') as stream:
+        header = stream.read(24)
+        if len(header) != 24:
+            raise CaptureError('missing pcap header')
+        formats = {b'\xd4\xc3\xb2\xa1': ('<', 1000), b'\xa1\xb2\xc3\xd4': ('>', 1000),
+                   b'\x4d\x3c\xb2\xa1': ('<', 1), b'\xa1\xb2\x3c\x4d': ('>', 1)}
+        try:
+            endian, scale = formats[header[:4]]
+        except KeyError as error:
+            raise CaptureError('unsupported capture format (classic pcap required)') from error
+        major, minor, _, _, snaplen, link = struct.unpack(endian + 'HHiiII', header[4:])
+        if (major, minor) != (2, 4) or link != 220 or not 64 <= snaplen <= 16 * 1024 * 1024:
+            raise CaptureError('unsupported pcap version/linktype/snaplen')
+        ordinal = 0
+        while True:
+            offset = stream.tell()
+            record = stream.read(16)
+            if not record:
+                break
+            if len(record) != 16:
+                raise CaptureError('truncated pcap record header')
+            sec, fraction, captured, original = struct.unpack(endian + 'IIII', record)
+            if captured > snaplen or captured > original or fraction >= 1_000_000_000 // scale:
+                raise CaptureError('invalid pcap record lengths/time')
+            packet = stream.read(captured)
+            if len(packet) != captured or captured < 64:
+                raise CaptureError('truncated USB packet/header')
+            ordinal += 1
+            # libpcap swaps the pseudoheader fields with the file byte order.
+            urb, kind, transfer, endpoint, device, bus, _, flag_data, usb_sec, usec, status, length, cap = struct.unpack_from(endian + 'QBBBBHBBqiiII', packet)
+            if (bus, device) not in targets or kind != ord('C') or transfer != 3 or endpoint != 0x81:
+                continue
+            if status:
+                failures.append({'bus':bus, 'device':device, 'wall_ns':usb_sec * 1_000_000_000 + usec * 1000, 'status':status, 'urb':urb})
+                continue
+            if not length:
+                continue
+            if flag_data or cap != length or captured != 64 + cap or original != captured:
+                raise CaptureError('target IN payload absent or truncated')
+            if usb_sec < 0 or not 0 <= usec < 1_000_000:
+                raise CaptureError('invalid usbmon timestamp')
+            timestamp = usb_sec * 1_000_000_000 + usec * 1000
+            if abs(timestamp - (sec * 1_000_000_000 + fraction * scale)) > 1_000_000:
+                raise CaptureError('pcap/usbmon clocks disagree')
+            raw = packet[64:]
+            # Each aggregate is validated atomically before interpreting DLI.
+            for service, queue, slot, payload in hcc_receive(raw):
+                if (service, queue) != (10, 8):
+                    continue
+                identity = {'bus': bus, 'device': device, 'wall_ns': timestamp,
+                            'urb': urb, 'record': ordinal, 'file_offset': offset,
+                            'hcc_offset': slot, 'usb_sha256': hashlib.sha256(raw).hexdigest()}
+                report = discovery(payload)
+                if report is not None:
+                    reports.append(identity | report)
+                if len(payload) >= 9 and payload[0] == 0xa2 and struct.unpack_from('<H', payload, 1)[0] == 2:
+                    size, opcode = struct.unpack_from('<HH', payload, 3)
+                    if size != len(payload) - 5:
+                        raise CaptureError('malformed Complete length')
+                    complete.append(identity | {'opcode': opcode, 'status': payload[8], 'value': payload[9:].hex()})
+    return {'reports': reports, 'complete': complete, 'failures': failures, 'packet_count': ordinal}
+
+
+def check_capture_stats(text):
+    drops = re.findall(r'^(\d+) packets dropped by kernel$', text, re.M)
+    if drops != ['0']:
+        raise CaptureError('one complete capture statistic with zero kernel drops required')
+    counts = re.findall(r'^(\d+) packets captured$', text, re.M)
+    if len(counts) != 1 or int(counts[0]) <= 0:
+        raise CaptureError('nonempty stopped capture statistic required')
+    interface_drops = re.findall(r'^(\d+) packets dropped by interface$',text,re.M)
+    if interface_drops not in ([],['0']):
+        raise CaptureError('capture interface drops')
+    return int(counts[0])
+
+
+def corroborate(run, capture):
+    """Require exact receiver-side bytes in each successful CLI observation."""
+    if run.get('scope') != 'physical' or run.get('status') != 'CONTROL_PASS_EVIDENCE_PENDING':
+        raise CaptureError('successful physical control run required; simulations excluded')
+    # Verify supporting records rather than trusting the success label alone.
+    from ws73_north_star import parse_result, parse_match, stable
+    identity = run['application_identity']
+    if (not identity['uids'][0] or len(identity['uids']) != 4 or len(set(identity['uids'])) != 1
+            or any(int(identity[k], 16) for k in ['cap_eff','cap_prm','cap_amb'])):
+        raise CaptureError('ordinary application identity required')
+    before, after = run['daemon_before'], run['daemon_after']
+    if before != after or before['pid'] <= 0 or before['start_ticks'] <= 0:
+        raise CaptureError('same live slkd process not proved')
+    if run['bus_before'] != run['bus_after'] or run['bus_before']['pid'] != before['pid']:
+        raise CaptureError('same bus-authenticated daemon owner not proved')
+    initial = run['initial']
+    if len(initial) != 2 or not stable(initial[1], run['survivor_control']['identity']):
+        raise CaptureError('survivor changed during removal')
+    parse_result(run['survivor_control']['scan_request']['stdout'], initial[1], 3)
+    stale = run['stale_selection']
+    if not isinstance(stale['exit'], int) or not stale['exit'] or 'not a live registration' not in stale['stderr']:
+        raise CaptureError('retired selection rejection missing')
+    replacement = run['replacement']
+    if (replacement['port'] != initial[0]['port'] or replacement['generation'] == initial[0]['generation']
+            or replacement['path'] == initial[0]['path']):
+        raise CaptureError('replacement generation not proved')
+    if len(run['cleanup']) != 2 or any(c['status'] != 'STOP_CONFIRMED' for c in run['cleanup']):
+        raise CaptureError('final stops not confirmed')
+    rounds = run['rounds']
+    if [(r['phase'], r['round']) for r in rounds] != [('initial', i) for i in range(1, 21)] + [('replug', 1), ('replug', 2)]:
+        raise CaptureError('20 consecutive alternating rounds plus separate replug proof required')
+    if len({r['marker'] for r in rounds}) != 22:
+        raise CaptureError('markers reused')
+    proofs, used = [], set()
+    for i, r in enumerate(rounds):
+        tx, rx, match = r['tx'], r['rx'], r['match']
+        if tx['port'] == rx['port'] or tx['address'] == rx['address']:
+            raise CaptureError('distinct physical devices required')
+        if i and rounds[i-1]['phase'] == r['phase'] and (tx != rounds[i-1]['rx'] or rx != rounds[i-1]['tx']):
+            raise CaptureError('roles did not alternate')
+        expected_pair = initial if r['phase'] == 'initial' else [replacement,initial[1]]
+        if {json_identity(tx),json_identity(rx)} != {json_identity(d) for d in expected_pair}:
+            raise CaptureError('round uses unrelated physical registrations')
+        commands = [run['commands'][j] for j in r['command_indices']]
+        if len(commands) != 4:
+            raise CaptureError('complete control command references required')
+        if any(a['end_monotonic_ns'] > b['start_monotonic_ns'] or a['end_wall_ns'] > b['start_wall_ns'] for a,b in zip(commands,commands[1:])):
+            raise CaptureError('radio command windows overlap or are out of order')
+        for c, op, owner, words in zip(commands, [1,3,2,4], [tx,rx,tx,rx],
+                [['advertise','on'],['scan','on',r['marker'],tx['address']],['advertise','off'],['scan','off']]):
+            if c['args'] != [run['slctl']['path'],'--adapter',owner['path'],*words] or c['exit'] != 0:
+                raise CaptureError('control command evidence mismatch')
+            parse_result(c['stdout'], owner, op)
+            opcodes = {1:[0x0c02,0x0c03,0x0c05],3:[0x1001,0x1002],2:[0x0c05],4:[0x1002]}[op]
+            for opcode in opcodes:
+                if not any(e['bus'] == owner['bus'] and e['device'] == owner['device']
+                           and c['start_wall_ns'] <= e['wall_ns'] <= c['end_wall_ns']
+                           and e['opcode'] == opcode and e['status'] == 0 for e in capture['complete']):
+                    raise CaptureError('raw successful radio Complete missing')
+        accepted = re.findall(r'^NativeAdvertisementAccepted: request=(\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+)$',commands[0]['stdout'],re.M)
+        adv_result = parse_result(commands[0]['stdout'],tx,1)
+        if (len(accepted) != 1 or int(accepted[0][0]) != adv_result['request']
+                or accepted[0][1] != r['marker'] or accepted[0][2] != marker_data(r['marker']).hex()
+                or match['marker'] != r['marker']):
+            raise CaptureError('admission/marker/result correlation mismatch')
+        if parse_match(commands[1]['stdout']) != match:
+            raise CaptureError('fresh match disagrees with raw slctl output')
+        start_mono, end_mono = commands[1]['start_monotonic_ns'], commands[1]['end_monotonic_ns']
+        if not 0 <= end_mono - start_mono < 10_000_000_000:
+            raise CaptureError('monotonic scan bound exceeded')
+        if r['scan_window_wall_ns'] != [commands[1]['start_wall_ns'],commands[1]['end_wall_ns']]:
+            raise CaptureError('capture interval disagrees with command timestamps')
+        start, end = r['scan_window_wall_ns']
+        if (end < start or end - start >= 10_000_000_000 or match['elapsed_ms'] >= 10000
+                or abs((end-start)-(end_mono-start_mono)) > 250_000_000):
+            raise CaptureError('10 second discovery bound exceeded')
+        if (match['generation'] != rx['generation'] or match['address'] != tx['address']
+                or match['lost'] or match['seq'] <= r['watermark'] or match['kernel_boottime_ns'] <= 0
+                or match['data'] != marker_data(r['marker']).hex()):
+            raise CaptureError('invalid fresh selected CLI observation')
+        if any(f['bus'] == d['bus'] and f['device'] == d['device'] and start <= f['wall_ns'] <= end
+               for f in capture['failures'] for d in [tx,rx]):
+            raise CaptureError('failed target IN URB during accepted discovery')
+        rows = [p for p in capture['reports'] if p['bus'] == rx['bus'] and p['device'] == rx['device']
+                and start <= p['wall_ns'] <= end and p['address'] == tx['address']
+                and p['header'] == r['header'] and p['data'] == match['data'] and p['rssi'] == match['rssi']]
+        if not rows:
+            raise CaptureError(f"missing full receiver USB/HCC/DLI proof for {r['phase']} round {r['round']}")
+        proof = rows[0]
+        key = (proof['record'], proof['hcc_offset'])
+        if key in used:
+            raise CaptureError('raw report reused')
+        used.add(key)
+        proofs.append({'phase': r['phase'], 'round': r['round'], 'marker': r['marker'], 'receiver': rx, 'raw': proof})
+    if [n['phase'] for n in run['negatives']] != ['initial', 'replug']:
+        raise CaptureError('both negative controls required')
+    for n in run['negatives']:
+        start, end = n['window_wall_ns']
+        if end - start < 2_000_000_000 or end <= start:
+            raise CaptureError('negative observation too short')
+        rx = n['rx']
+        scan_start, scan_end = n['scan_window_wall_ns']
+        stop_start, stop_end = n['stop_window_wall_ns']
+        if not scan_end <= start < end <= stop_start:
+            raise CaptureError('negative interval not enclosed by confirmed scan/stop')
+        for lower,upper in [(scan_start,scan_end),(stop_start,stop_end)]:
+            if not any(c['bus'] == rx['bus'] and c['device'] == rx['device'] and lower <= c['wall_ns'] <= upper
+                       and c['opcode'] == 0x1002 and c['status'] == 0 for c in capture['complete']):
+                raise CaptureError('negative capture lacks enclosing scan/stop Complete')
+        if any(p['bus'] == rx['bus'] and p['device'] == rx['device'] and start <= p['wall_ns'] <= end
+               and p['address'] in n['transmitter_addresses'] for p in capture['reports']):
+            raise CaptureError('test transmitter reported during TX-off negative control')
+    # Capture must include the actual metadata queries, not only radio reports.
+    identities = {json_identity(r[side]): r[side] for r in rounds for side in ['tx', 'rx']}
+    for identity in identities.values():
+        for opcode, value in [(0x0404, identity['version']), (0x0403, identity['features']),
+                              (0x0406, identity['address'].replace(':', '').lower()),
+                              (0x0402, struct.pack('<HBHB', *identity['buffers']).hex())]:
+            if not any(c['bus'] == identity['bus'] and c['device'] == identity['device']
+                       and (run['unplug_observed_wall_ns'] if identity == replacement else 0) <= c['wall_ns'] <= identity['observed_wall_ns'] and c['opcode'] == opcode
+                       and c['status'] == 0 and c['value'] == value for c in capture['complete']):
+                raise CaptureError('capture lacks successful actual metadata query for a registration')
+    return proofs
+
+
+def json_identity(identity):
+    return (identity['port'], identity['generation'])

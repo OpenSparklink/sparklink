@@ -65,8 +65,8 @@ Virtual 验证路由、乱序/迟到完成、队列满与取消；软件 PASS �
 
 最终 harness 应使用与用户相同的 slctl/D-Bus 路径，保存每轮角色、随机
 标识、提交/完成/发现的 monotonic 时间、实际 scan 原文及运行 exit status。
-动态 adapter/广播/扫描命令已实现，软件 gate 可执行；真实硬件自动验收与
-USB/HCC/DLI capture 的联合判定仍待接通，不能以软件 gate 替代硬件 harness。
+动态 adapter/广播/扫描命令和[物理控制/抓包佐证工具](WS73_PHYSICAL_TEST.md)已实现。
+本机真实运行仍待设备与有效部署/板级证据；不能以软件 gate 替代硬件验收。
 
 每次实机运行先做 inventory，确认两只物理 WS73 与 guest/controller
 映射。保存 Linux/用户态 commit、dirty diff、config、kernel/initramfs、
@@ -873,3 +873,16 @@ admission ID，并拒绝缺失/重复/失败/跨生命周期证据。
 和protocol/library/slctl strict clippy PASS；最终双设备合成CLI gate保存于
 `.dev/radio-control-daemon-final-v2/manifest.json`，source/input前后不变。
 完整slkd strict clippy仍FAIL（旧未使用代码/测试helper/参数数目问题），不计为通过。
+
+## 物理控制与原始 RX 佐证工具（2026-10-10，部分成果）
+
+新增 `tools/ws73_north_star.py` 的普通用户控制记录与独立 `verify`；物理端口/
+原生 sysfs 元数据/Ready 相互核对，经 slctl 连续20轮角色交换、人工单设备
+拔插/同进程新代次后2轮及两阶段TX-off。`slctl daemon` 给出D-Bus实际owner/
+PID/UID，另检查内核process start_ticks。控制PASS仍是EVIDENCE_PENDING。
+
+独立解析classic usbmon pcap完整IN USB/HCC/DLI，核对每轮真实RX字节、
+原始成功Complete、初始/重插实际查询、负向围住时间窗与零drop统计，输出
+RX_CORROBORATED；不代表固件/板级资格或PHY嗅探器。抓包来源仍须审查，
+合成fixture只验证解析和拒绝错误，不能满足七项实机验收。本机WS73=[]，
+整项issues与完整S0–S6继续OPEN。见[可复现操作与边界](WS73_PHYSICAL_TEST.md)。

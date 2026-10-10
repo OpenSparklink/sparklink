@@ -76,6 +76,8 @@ def snapshot(port, root=Path('/sys/bus/usb/devices')):
 
 def classify(port, observed, records, journal_available):
     if observed.get('present'):
+        if not all(name in observed for name in ['idVendor', 'idProduct']):
+            return 'PRESENT_IDENTITY_UNOBSERVED'
         if (observed.get('idVendor'), observed.get('idProduct')) != ('ffff', '3733'):
             return 'PRESENT_OTHER_DEVICE'
         return 'WS73_PRESENT_DRIVER_BOUND' if any(x['driver'] for x in observed['interfaces']) else 'WS73_PRESENT_UNBOUND'

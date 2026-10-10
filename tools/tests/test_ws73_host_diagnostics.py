@@ -42,6 +42,8 @@ class HostDiagnosis(unittest.TestCase):
         self.assertEqual(classify('1-2.1.4', {'present':False}, rows, True), 'ABSENT_CAUSE_UNOBSERVED')
 
     def test_presence_is_not_ready_and_foreign_device_not_ws73(self):
+        self.assertEqual(classify('1-2.1.4', {'present':True,'interfaces':[]}, [], False),
+                         'PRESENT_IDENTITY_UNOBSERVED')
         row={'present':True,'idVendor':'ffff','idProduct':'3733','interfaces':[{'driver':None}]}
         self.assertEqual(classify('1-2.1.4',row,[],False),'WS73_PRESENT_UNBOUND')
         row['interfaces'][0]['driver']='sparklink_ws73_usb'

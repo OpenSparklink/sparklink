@@ -1503,3 +1503,22 @@ SDK与libws73-usb交叉核验见[来源说明](NEARLINK_HOST_REFERENCE.md)。追
 幸存与重加通过；合成模型不是实机空口证据。物理失败抓包与诊断封存，
 board仍NOT_ASSERTED、真实北极星追加恢复后0/8。未宣称远端CI、原生主机
 驱动部署或完整自动恢复通过。
+
+### 111固件与显式广播实例OFF初始化（部分成果）
+
+根据用户提供版本，将参考实机基线切到combined-1.10.111；旧SDK/us与110
+逐字节相同，所有历史实测保持标为110。111完整性验证/拆分与receipt已
+完成，实机下载及BSLE通过，第一只在buffer回复tag=a1处EPROTO，第二只
+未接入，抓包271packets/零drops。SDK SLE RX与libws73都按service/queue
+路由、不要求subtype0；修正后五帧实际抓包生产C离线复核成功，尚未重跑
+实机完整启动。全部设备现warm，下一阶段解决每设备软件恢复。
+
+新operation5显式配置广播实例后等待OFF成功Complete，之后SCAN_STOP；
+不发enable，不吞原始1e，取消的配置Complete不能确认OFF。新模型支持
+全新广播handle及非零SLE subtype，不假设stop总成功。kernel#84与用户态
+18库/64守护测试、10生产operation状态测试、450548 discovery/115776 DLI
+checks、93工具测试通过；clippy执行成功但有既存warnings，不宣称零警告。
+新普通用户合成20+2轮与同slkd/bus、独立capture重算及相关四条原生/标准
+回归另存`.dev/111-final-*`。原#81原96项证据仍保留，不倒填成#84全量测试。
+operation5实机成功OFF、双设备Ready、真实20轮和自动恢复均待验收，完整
+S0–S6、所有原整项issue及新增不依赖人工拔插要求保持开放。

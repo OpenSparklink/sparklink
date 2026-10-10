@@ -132,6 +132,15 @@ class CaptureTests(unittest.TestCase):
     def read(self, blob, targets={(1,2),(1,3),(1,4)}):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)/'fixture.pcap';p.write_bytes(blob);return read_capture(p,targets)
+    def test_sle_rx_subtypes_preserve_exact_payload_and_bounds(self):
+        payload=report_payload('01'*16,'02:73:00:00:00:01')
+        for subtype in range(16):
+            raw=bytearray(aggregate(payload));raw[92]=0xa0|subtype
+            frames=hcc_receive(raw)
+            self.assertEqual(frames,[(10,8,92,payload)])
+            struct.pack_into('<H',raw,94,len(raw))
+            with self.assertRaises(CaptureError):hcc_receive(raw)
+
     def test_complete_endian_precision_variants(self):
         run,records=fixture()
         for endian,nano in [('<',False),('>',False),('<',True),('>',True)]:
@@ -175,7 +184,7 @@ class CaptureTests(unittest.TestCase):
             b=bytearray(good)
             if mutation=='length':struct.pack_into('<H',b,94,65535)
             if mutation=='hole':struct.pack_into('<H',b,12,0);struct.pack_into('<H',b,14,64)
-            if mutation=='subtype':b[92]=0xa1
+            if mutation=='subtype':b[92]=0x51;b[93]=10
             if mutation=='tail':b+=b'\0';struct.pack_into('<I',b,4,len(b))
             if mutation=='oversize':b=bytearray(20481)
             with self.subTest(mutation=mutation),self.assertRaises(CaptureError):hcc_receive(b)

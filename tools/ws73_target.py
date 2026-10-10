@@ -300,12 +300,12 @@ def _run(args):
                             channel.sendall(b'support-remove\n');hotplug_phase=1
                         if hotplug_phase==1 and 'WS73_TARGET_CONTROL_READD_READY' in text:
                             props=dict(driver='usb-ws73-test',id='ws73_0',bus='xhci.0',port='1',
-                                       **{'runtime-discovery':True,'runtime-policy':True,'runtime-medium':1},
+                                       **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                        **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}))
                             monitor.execute('device_add',props);channel.sendall(b'support-readd\n');hotplug_phase=2
                     if active<2 and ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text:
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
-                                    **{'runtime-discovery':True,'runtime-policy':True,'runtime-medium':1},
+                                    **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                     **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {})) if support else usb_properties(args.ports[active],active))
                         monitor.execute('device_add',props);active+=1
                     if not support:

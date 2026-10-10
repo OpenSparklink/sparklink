@@ -60,7 +60,15 @@ pub fn ws73_basic_advertisement(
 ) -> Result<SleDiscoverySubmit> {
     let mut request = identity(snapshot, request_id, true)?;
     request.operation = DISCOVERY_ADV_START;
-    request.advertising = SleDiscoveryAdvConfig {
+    request.advertising = basic_advertiser_config(snapshot);
+    let data = ws73_marker_data(marker);
+    request.data_len = data.len() as u32;
+    request.data[..data.len()].copy_from_slice(&data);
+    Ok(request)
+}
+
+fn basic_advertiser_config(snapshot: &SleControllerSnapshot) -> SleDiscoveryAdvConfig {
+    SleDiscoveryAdvConfig {
         handle: 0,
         mode: 0,
         gt_role: 2,
@@ -89,10 +97,18 @@ pub fn ws73_basic_advertisement(
         supervision_timeout: 200,
         min_event_length: 0,
         max_event_length: 0,
-    };
-    let data = ws73_marker_data(marker);
-    request.data_len = data.len() as u32;
-    request.data[..data.len()].copy_from_slice(&data);
+    }
+}
+
+/// Initialize a fresh handle with explicit policy, then confirm it is OFF.
+/// Neither this operation nor its kernel recipe sends an enable command.
+pub fn ws73_basic_standby(
+    snapshot: &SleControllerSnapshot,
+    request_id: u64,
+) -> Result<SleDiscoverySubmit> {
+    let mut request = identity(snapshot, request_id, false)?;
+    request.operation = DISCOVERY_ADV_CONFIGURE_OFF;
+    request.advertising = basic_advertiser_config(snapshot);
     Ok(request)
 }
 
@@ -142,6 +158,44 @@ mod tests {
             address: [2, 0x73, 0, 0, 0, 1],
             ..Default::default()
         }
+    }
+    #[test]
+    fn standby_uses_queried_setup_identity_without_payload_or_enable() {
+        let setup = SleControllerSnapshot {
+            flags: CONTROLLER_SETUP,
+            ..snapshot()
+        };
+        let request = ws73_basic_standby(&setup, 10).unwrap();
+        assert_eq!(request.operation, DISCOVERY_ADV_CONFIGURE_OFF);
+        assert_eq!(request.advertising.own_address, setup.address);
+        assert_eq!(request.advertising.interval_min, 1200);
+        assert_eq!(request.advertising.tx_power, 127);
+        assert_eq!(
+            (
+                request.flags,
+                request.data_len,
+                request.duration,
+                request.max_events
+            ),
+            (0, 0, 0, 0)
+        );
+        assert!(
+            request
+                .data
+                .iter()
+                .chain(&request.scan_response)
+                .all(|b| *b == 0)
+        );
+        assert!(
+            ws73_basic_standby(
+                &SleControllerSnapshot {
+                    flags: CONTROLLER_FAULT,
+                    ..setup
+                },
+                11
+            )
+            .is_err()
+        );
     }
     #[test]
     fn marker_has_access_envelope_and_public_information_not_ble_tlv() {

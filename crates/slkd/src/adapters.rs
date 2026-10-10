@@ -14,7 +14,7 @@ use crate::{
     state::{AdapterDirectory, AdapterRegistration, AdapterState, SharedState},
 };
 use libsparklink::Adapter;
-use slk_protocol::{CONTROLLER_READY, SleControllerSnapshot, SleDiscoverySubmit};
+use slk_protocol::{CONTROLLER_READY, SleControllerSnapshot};
 use std::{sync::Arc, time::Duration};
 use tokio::{
     sync::{Mutex, watch},
@@ -107,17 +107,18 @@ async fn initialize(
         Ok(u64::from_ne_bytes(bytes).max(1))
     })
     .await??;
-    for operation in [2, 4] {
+    for operation in [
+        slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF,
+        slk_protocol::DISCOVERY_SCAN_STOP,
+    ] {
         if *cancelled.borrow() {
             return Ok(());
         }
-        let request = SleDiscoverySubmit {
-            version: 1,
-            generation: snapshot.generation,
-            profile: snapshot.profile,
-            request_id: nonce.wrapping_add(operation as u64).max(1),
-            operation,
-            ..Default::default()
+        let request_id = nonce.wrapping_add(operation as u64).max(1);
+        let request = if operation == slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF {
+            libsparklink::ws73_basic_standby(&snapshot, request_id)?
+        } else {
+            libsparklink::ws73_basic_stop(&snapshot, request_id, operation)?
         };
         let fd = adapter.clone();
         // No SharedState or directory guard is held across any ioctl/wait.

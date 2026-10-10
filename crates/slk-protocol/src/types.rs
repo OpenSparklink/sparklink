@@ -1005,6 +1005,8 @@ pub const DISCOVERY_ADV_START: u32 = 1;
 pub const DISCOVERY_ADV_STOP: u32 = 2;
 pub const DISCOVERY_SCAN_START: u32 = 3;
 pub const DISCOVERY_SCAN_STOP: u32 = 4;
+/// Configure explicit advertiser parameters and obtain a successful OFF Complete.
+pub const DISCOVERY_ADV_CONFIGURE_OFF: u32 = 5;
 pub const DISCOVERY_SCAN_RESPONSE: u32 = 1;
 pub const DISCOVERY_FAULT: u32 = 1;
 pub const DISCOVERY_RADIO_UNKNOWN: u32 = 0;

@@ -90,6 +90,15 @@ python3 tools/ws73_firmware.py \
 验证拆出完整文件大小144604/21044/7740 bytes。`firmware-source.json`保留
 整包、每文件和payload hash；`ws73_target.py prepare --firmware-dir`选择该
 目录，原内核三文件加载路径无需改变。六项单元测试覆盖截断、改写、假内嵌
-header、额外段/尾字节、空payload、hash拒绝及不覆盖。新的111客体已准备
-但尚未实机运行，不能宣称其解决启动/广播或自动恢复。BSLE/PM板配置与
+header、额外段/尾字节、空payload、hash拒绝及不覆盖。导入时111客体仅已准备。随后实机冷启动通过下载/BSLE，但在buffer
+Complete的SLE subtype1处失败；当前仍不能宣称111完整启动或自动恢复通过。BSLE/PM板配置与
 固件版本分开记录，板级校准/功率仍NOT_ASSERTED。
+
+111新增实机抓包显示ReadVersion回复tag=a0，ReadBuffer回复tag=a1，后者
+内部为合法A2/0002/op0402/status0/6-byte返回值。SDK
+`driver/bsle/sle_driver/sle_hcc/sle_hcc_proc.c::sle_hcc_adapt_rx`不使用
+sub_type，libws73-usb的`rx_slot_netbuf`/`is_data_header`按service/queue
+识别SLE。独立修正只取消SLE RX的额外subtype==0约束，不修改TX或BSLE，
+不扫描padding，仍验证全部slot和DLI长度。五帧实际捕获经生产C codec离线
+复核通过；修复后的实机启动/广播尚未重跑。原始反例/抓包保存在本地
+`.dev/ws73-real-111-standby`，零capture drops；不发布设备allocation padding。

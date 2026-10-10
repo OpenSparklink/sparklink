@@ -45,7 +45,8 @@ def hcc_receive(data):
         service = tag >> 4
         if payload_length > length - 4:
             raise CaptureError('HCC payload exceeds slot')
-        if (service, queue) in [(5, 10), (10, 8)] and tag & 15:
+        # SDK SLE RX ignores subtype; real 111 CmdComplete uses a1.
+        if (service, queue) == (5, 10) and tag & 15:
             raise CaptureError('nonzero supported-service subtype')
         slots.append((service, queue, offset, data[offset + 4:offset + 4 + payload_length]))
         offset += length

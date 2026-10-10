@@ -15,7 +15,8 @@
 
 用户重插后四只设备可读写、无主机接口驱动。固定端口为 1-2.1.1–4。
 以下实机结果使用SDK/us，已确认与combined-1.10.110逐字节相同。用户追加
-指定111后，已验证拆出111并准备独立客体，尚未实机执行；版本不得混写。
+指定111后，已验证拆出111并实机执行，当前失败在非零SLE RX subtype，
+尚未完成Ready；版本不得混写。
 来源/hash/复现见[参考说明](NEARLINK_HOST_REFERENCE.md)。
 
 
@@ -107,3 +108,18 @@ credit和控制权不变。slkd保持PID及D-Bus连接，看到原owner移除与
 
 当前新增恢复验收未完成。仅已定位的软件错误、诊断、有限透传等待和模拟
 事件路由不能关闭 K#10/#14/#15/#16/#19 或 U#8/#10；其余原验收亦保留。
+
+## 后续111验证与广播实例初始化切片
+
+显式typed operation5 ADV_CONFIGURE_OFF已实现：参数配置0c02 → 成功Complete
+→ OFF0c05 → 成功Complete；无data/response/duration/enable。使用真实查询的
+地址及已有version1 basic policy，slkd随后执行SCAN_STOP。取消的配置前缀
+迟到Complete不能确认OFF；原始1e失败仍保留。全新实例合成模型会对未创建
+handle的stop返回1e，不能把旧模型“OFF总成功”当物理依据。
+
+111实机下载/BSLE通过，旧parser因SLE subtype1拒绝buffer Complete，第一
+只未发布Runtime，第二只未接入。SDK/libws73路由依据已核验并独立修正；
+真实五帧生产C离线校验与合成16种subtype通过，不等于修复后实机启动。
+现在四只均已warm，不追加人工重插作为通过手段；下一依赖是每设备warm
+恢复及重新查询，再实测operation5/OFF和双端广播。原生主机对照、自动
+有限恢复及真实北极星0/8仍未完成，issues不关闭。

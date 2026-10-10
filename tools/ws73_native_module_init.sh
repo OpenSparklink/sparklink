@@ -9,9 +9,31 @@ fail() {
     poweroff -f
     exit 1
 }
-mount -t proc none /proc || fail proc
-mount -t sysfs none /sys || fail sysfs
-mount -t devtmpfs none /dev || fail devtmpfs
+# Dracut moves these mounts into the root filesystem before switch-root.
+# Reuse only the expected filesystem; do not mask an existing wrong mount.
+ensure_mount() {
+    if [ -r /proc/mounts ]; then
+        while read -r source target kind rest; do
+            [ "$target" = "$1" ] || continue
+            [ "$kind" = "$2" ] || fail "unexpected filesystem on $1: $kind"
+            return
+        done < /proc/mounts
+    fi
+    mount -t "$2" none "$1" || fail "$1"
+}
+ensure_mount /proc proc
+ensure_mount /sys sysfs
+ensure_mount /dev devtmpfs
+if [ -f /scratch-root-uuid ]; then
+    root_seen=no
+    while read -r source target kind rest; do
+        [ "$target" = / ] || continue
+        [ "$source" = /dev/nvme0n1 ] && [ "$kind" = btrfs ] || fail 'scratch NVMe/Btrfs root'
+        echo "NATIVE_ROOT_MOUNT: $source $kind"
+        root_seen=yes
+    done < /proc/mounts
+    [ "$root_seen" = yes ] || fail 'scratch root mount missing'
+fi
 release=$(cat /expected-release) || fail 'expected release'
 [ "$(uname -r)" = "$release" ] || fail 'booted release mismatch'
 echo "NATIVE_MODULE_RELEASE: $release"

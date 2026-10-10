@@ -1,8 +1,8 @@
 # WS73 原生 Linux 构建与产物检查
 
 原生矩阵使用实际启动在主机上的项目内核。当前实机主机为 Fedora
-7.2.8-200.fc44.x86_64，项目 fork 基线为7.0.0-rc6；当前正在单独构建原生
-实验镜像和模块，尚未安装或启动。真实 USB 透传到 KVM 的结果按 QEMU
+7.2.8-200.fc44.x86_64，项目 fork 基线为7.0.0-rc6；原生实验镜像和全部模块
+已独立构建及私有暂存，尚未安装或在主机启动。真实 USB 透传到 KVM 的结果按 QEMU
 路径记录。原生单只、双只、四只、故障隔离和无需人工拔插恢复继续开放。
 
 ## 独立构建
@@ -123,3 +123,49 @@ sha512、vermagic一致、依赖为空。将该签名模块替换到上述空USB
 保留未签名原始构建及其8192 taint证据，不覆盖旧结果。签名后的空USB测试
 也不代表原生主机、强制签名策略或完整生产信任链已验收。完整部署/回退包
 及原生硬件矩阵仍在推进，未改主机引导或安装系统文件。
+
+## 完整 initramfs 的 NVMe/Btrfs 启动路径检查
+
+私有暂存的全部模块用于生成 generic dracut initramfs。指定实验发行号和
+`--kmoddir`，使用`--no-hostonly --no-hostonly-cmdline --no-hostonly-default-device`，
+不封装当前主机根分区参数；省略WS73驱动，避免早期启动自动绑定真实设备。
+生成路径、临时目录和日志均限制在新的私有工作区目录。完整部署仍需单独
+处理启动项、主机硬件兼容、固件资格和受控加载，不能只复制空USB测试initramfs。
+
+rootless dracut实际退出0，但报告`ldconfig -r`需要root、默认主机模块目录
+不存在和无法fsfreeze输出目录；archive包含64位动态loader、systemd、
+实验发行号的NVMe模块及depmod索引，没有`ld.so.cache`。保留这些诊断，
+不能依据退出0宣称完整initramfs可用，也不能据此声称所有动态依赖已覆盖。
+
+[`ws73_native_root_smoke.py`](../tools/ws73_native_root_smoke.py)用**实际生成的完整
+initramfs**验证启动路径。它校验bzImage与native build manifest的hash、签名
+WS73模块的架构/发行号/依赖和静态busybox，将输入及QEMU data复制并校验至
+新目录，构造512MiB普通文件Btrfs测试盘。测试根目录含`os-release`和独立
+init脚本，通过QEMU emulated NVMe暴露；没有主机磁盘、USB、网络、QMP或
+人工输入。initramfs内的systemd/udev必须加载NVMe模块、按随机UUID找到Btrfs
+根目录并switch-root，随后检查SparkLink节点和签名WS73模块的两轮生命周期。
+
+```sh
+python3 tools/ws73_native_root_smoke.py \
+  --kernel-manifest /path/to/native-artifacts/manifest.json \
+  --kernel /path/to/native-artifacts/artifacts/arch/x86/boot/bzImage \
+  --initramfs /path/to/private/generic-initramfs.img \
+  --module /path/to/private-stage/lib/modules/<release>/kernel/drivers/sparklink/sparklink_ws73_usb.ko \
+  --busybox /path/to/static/busybox \
+  --qemu /path/to/qemu-system-x86_64 --qemu-data /path/to/qemu-data \
+  --output /path/to/new/private/root-smoke
+```
+
+检查器要求匹配发行号、实际`/dev/nvme0n1` Btrfs根挂载、随机UUID的内核挂载
+日志、两轮LOAD/UNLOAD严格唯一顺序、taint始终0、完整0秒内核日志、正常关机
+和QEMU退出0，才输出`PASS_ISOLATED_NATIVE_ROOT_SMOKE`。超时或任一失败保留
+FAIL、日志及已有产物。动态终端控制字符去除后核对完整行，PASS不能覆盖
+早期内核warning、签名失败或启动错误。
+
+实际检查已通过上述路径。此前两轮失败也保留：测试根目录缺少`os-release`
+时systemd拒绝switch-root；补全后旧脚本重复挂载sysfs失败。脚本现复用dracut
+移入的proc/sysfs/devtmpfs并核对类型。另一次移动QEMU二进制后默认相对data
+路径失效，现显式封存data并传入`-L`。这些失败均正常关机且QEMU退出0，
+验证了必须检查完整启动证据。当前成功不等于解决了rootless ldconfig诊断，
+也不覆盖发行版完整systemd根目录、真实主机NVMe/USB/电源管理或全部库路径。
+`native_acceptance`和`physical_acceptance`仍为false；原生硬件及恢复issues继续开放。

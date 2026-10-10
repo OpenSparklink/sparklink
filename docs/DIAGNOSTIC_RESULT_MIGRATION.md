@@ -191,3 +191,8 @@ result16/eviction验证当作该路径已修复。生命周期/自然根因并�
 
 后续旧poll过渡修复见[事件整改](EVENT_COPY_REMEDIATION.md#旧-dli-poll-过渡修复k54621800ee4c实机故障门禁待执行)。
 作者私有结果与共享消费入口仍是不同契约；这个修复不完成调用者迁移或共享队列删除。
+
+
+后续K54621800ee4c/编译Udc8745986044的[新镜像证据](evidence/ws73-vm-legacy-poll-copy-20261011.json)
+保持result16/copyout2/淘汰33、真实20+2和read7；只修改旧poll消费顺序，不改变
+作者结果契约。legacy ioctl故障、完整cancel/late/deadline与调用者迁移仍待验。

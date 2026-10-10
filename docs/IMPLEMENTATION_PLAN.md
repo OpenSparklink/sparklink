@@ -809,3 +809,10 @@ read_iter原9项保持。详见[修复、锁与溢出边界及实机门禁](EVEN
 门禁待执行。先接通独立订阅调用者再删除旧ring/fallback/UAPI，整项R12仍OPEN。
 最终职责及socket/用户态SSAP依赖按ADR0001；自然故障根因、自主恢复、历史
 xHCI warning、四设备和全部S0–S6范围保持，VM-only不变。
+
+
+K54621800ee4c/编译Udc8745986044的[新镜像回归证据](evidence/ws73-vm-legacy-poll-copy-20261011.json)
+现已封存：真实20+2最长621ms、UID1000/caps0、同slkd、read7、result16/copyout2/
+淘汰33及41组诊断wire通过，1411 USB零drop、warning0/taint0；9作业CI成功。
+这一结果更新上文“新镜像回归待执行”，不更新legacy ioctl复制故障/fallback
+资格门禁：它们仍待执行。详细锁、overflow、测试边界与最终删除条件见事件整改。

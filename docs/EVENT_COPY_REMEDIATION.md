@@ -144,3 +144,25 @@ copyout2/淘汰33。随后新增实际legacy ioctl坏地址、只读与跨页部
 用真实MAC查询完成事件作为队首，核对256字节重试内容、成功后一次消费和空队列
 EAGAIN，并捕获唯一真实查询/回复。Native ring的实机结果也不能替代另一backend
 fallback的独立资格验收。当前这些新故障门禁仍待执行，完整R12/K3/U2保持OPEN。
+
+
+## 新生产内核的已验证路径回归
+
+[新镜像证据](evidence/ws73-vm-legacy-poll-copy-20261011.json)：K`54621800ee4c`/
+编译U`dc8745986044`，完整image/modules与默认bundle已冻结，空USB VM两次
+签名module加载/卸载通过。真实WS73双设备20+2均匹配随机数据、地址、RSSI，
+最长621ms；普通UID1000/caps0、同slkd PID649/start1567与bus owner。
+幸存generation2保持，人工IN81错误目标1→3，新Ready约10298.322ms；这不是
+自然故障验收，10秒发现门限仍从scan成功Complete开始计算。read7、result16/
+copyout2、第二作者淘汰33/旧ID无重发及CLI4通过，捕获1411/零drop，独立
+核对22份RX与41组诊断命令/回复；VM warning0/taint0/trace overrun0，四只host
+设备均存在且释放。USB/HCC/DLI捕获不等于独立PHY嗅探。
+
+[CI38093030937](https://github.com/OpenSparklink/sparklink/actions/runs/38093030937)
+9作业全部成功，实际日志核对170 Rust/34 Python/165工具及event-copy15
+（read9/poll6），全部三个kernel pin均为新生产提交。CI编译live C而不执行
+设备；fixture仍不证明真实kernel mutex/并发或legacy ioctl用户copy。
+
+这轮证明新内核保持已验证WS73路径；**尚未执行新legacy poll复制故障门禁**，
+backend fallback资格、共享投影删除、完整事件/事务、自然故障根因及恢复仍OPEN。
+历史物理xHCI警告保留，不以本批无warning推论已修复；S0–S6范围不缩减。

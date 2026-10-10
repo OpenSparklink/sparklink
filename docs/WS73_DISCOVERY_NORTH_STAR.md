@@ -983,3 +983,24 @@ daemon 重插2轮及 TX-off 之后保持广播/扫描运行，SIGTERM 后独立 
 BusyBox并让判定器拒绝shell依赖缺失，早期PASS不计入最终证据。daemon故障/强制终止、profile0/Proxy/PDU/Security
 及完整后续矩阵仍待做。主机真实 WS73 仍未枚举；实机七项、四设备两组与
 全部原S0–S6/整项issues仍开放，合成成功不算真实空口验收。
+
+
+### slkconfig 显式绑定与原生 Diagnostic（2026-10-10，部分成果）
+
+每设备CLI必须明确adapter，原生四种白名单查询还必须给出实际generation并
+取得独占Diagnostic。只读controller/management不拿lease、不消费raw；普通
+uid1000/CapEff=0观察成功，但raw查询EPERM。Managed冲突EBUSY，缺参数、
+旧代次与原生legacy reset均不增加命令/改变snapshot。普通应用经slctl/slkd。
+
+旧raw回复无sequence，工具不伪造关联：独占后清历史、检查quiet、一次一条
+查询；成功Status不算完成，等待Complete并验证6/10/5/6字节返回。零opcode
+credit通知只作非查询投影处理，credits归Host。失败/timeout仍release，未
+完成清理不打印成功。两设备八次实际查询、未读Status/Complete旧对清理与
+同代次daemon接任在生产/session合成门禁通过。209harness/148workspace、
+slkconfig严格clippy及原96-case 1058 OK/0 FAIL/0 SKIP/3旧WARN通过。早期
+Status、历史回复与credit数量假设的失败记录保留；runtime内核仍合格#64。
+
+见[ownership/复现与兼容边界](MANAGEMENT_OWNERSHIP.md)。旧profile0管理仅
+保留迁移入口；全部工具独立snoop、C/Python owner、完整Backend与故障矩阵
+尚待做。实机七项、四设备两组及完整S0–S6/全部整项issues继续开放，合成
+查询不算真实WS73固件/RF验收。

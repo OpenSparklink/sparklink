@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use libsparklink::Adapter;
 
 #[derive(Parser)]
@@ -8,12 +8,31 @@ struct Cli {
     #[arg(short, long, default_value = "/dev/sparklink")]
     device: String,
 
+    /// Registered adapter index (use adapters to list); never switches the global default
+    #[arg(long, global = true)]
+    adapter: Option<u16>,
+
+    /// Require this registration generation; mandatory for native diagnostic queries
+    #[arg(long, global = true)]
+    generation: Option<u64>,
+
     #[command(subcommand)]
     command: Command,
 }
 
 #[derive(Subcommand)]
 enum Command {
+    /// List registered controllers and their generations without acquiring ownership
+    Adapters,
+    /// Observe the selected controller and its command queue
+    Controller,
+    /// Observe native management ownership (does not acquire a lease)
+    Management,
+    /// Execute one whitelisted WS73 query with an exclusive Diagnostic lease
+    Query {
+        #[arg(value_enum)]
+        query: NativeQuery,
+    },
     /// Show adapter information
     Info,
 
@@ -150,18 +169,113 @@ enum Command {
     },
 }
 
+#[derive(Clone, Copy, Debug, ValueEnum)]
+enum NativeQuery {
+    Mac,
+    Features,
+    Version,
+    Buffers,
+}
+impl NativeQuery {
+    fn wire(self) -> (u16, usize) {
+        match self {
+            Self::Mac => (0x0406, 6),
+            Self::Features => (0x0403, 10),
+            Self::Version => (0x0404, 5),
+            Self::Buffers => (0x0402, 6),
+        }
+    }
+}
+
+impl Command {
+    fn native_observation(&self) -> bool {
+        matches!(
+            self,
+            Self::Info | Self::Dli | Self::Controller | Self::Management | Self::Stats
+        )
+    }
+}
+
 fn main() {
     let cli = Cli::parse();
+    if let Err(error) = run(cli) {
+        eprintln!("error: {error:#}");
+        std::process::exit(1);
+    }
+}
 
-    let adapter = match Adapter::open(&cli.device) {
-        Ok(a) => a,
-        Err(e) => {
-            eprintln!("failed to open {}: {e}", cli.device);
-            std::process::exit(1);
+fn run(cli: Cli) -> anyhow::Result<()> {
+    if matches!(cli.command, Command::Adapters) {
+        anyhow::ensure!(
+            cli.adapter.is_none() && cli.generation.is_none(),
+            "adapters lists registrations; omit --adapter/--generation"
+        );
+        let mut adapter = Adapter::open(&cli.device)?;
+        for index in adapter.device_indices()? {
+            adapter.select_device(index)?;
+            let snapshot = adapter.controller_snapshot(0)?;
+            print_controller(&snapshot);
         }
-    };
-
+        return Ok(());
+    }
+    let index = cli.adapter.ok_or_else(|| {
+        anyhow::anyhow!("select a registration with --adapter; use adapters to list")
+    })?;
+    anyhow::ensure!(index < 16, "adapter index must be 0..15");
+    anyhow::ensure!(cli.generation != Some(0), "generation must be nonzero");
+    if matches!(cli.command, Command::Query { .. }) {
+        anyhow::ensure!(
+            cli.generation.is_some(),
+            "native query requires --generation from controller/adapters"
+        );
+    }
+    let mut adapter = Adapter::open(&cli.device)?;
+    adapter.select_device(index)?;
+    let snapshot = adapter.controller_snapshot(cli.generation.unwrap_or(0))?;
+    match cli.command {
+        Command::Controller => {
+            print_controller(&snapshot);
+            let stats = adapter.mgmt_stats()?;
+            println!(
+                "ManagementQueue: pending={} submitted={} resolved={} timeouts={}",
+                stats.pending, stats.total_submitted, stats.total_resolved, stats.total_timeouts
+            );
+            return Ok(());
+        }
+        Command::Management => {
+            let state = adapter.management_status(snapshot.generation)?;
+            println!(
+                "Management: index={} generation={} state={} mode={} owning_fd={} error={} status={} opcode=0x{:04x}",
+                index,
+                state.generation,
+                state.state,
+                state.mode,
+                state.flags & 1,
+                state.error,
+                state.status,
+                state.opcode
+            );
+            return Ok(());
+        }
+        Command::Query { query } => {
+            return cmd_native_query(
+                &adapter,
+                snapshot.generation,
+                index,
+                snapshot.profile,
+                query,
+            );
+        }
+        _ => {}
+    }
+    anyhow::ensure!(
+        snapshot.profile == 0 || cli.command.native_observation(),
+        "legacy management command is unsupported on this native controller; use slctl for discovery or query for exclusive diagnostics"
+    );
     let result = match cli.command {
+        Command::Adapters | Command::Controller | Command::Management | Command::Query { .. } => {
+            unreachable!()
+        }
         Command::Info => cmd_info(&adapter),
         Command::Dli => cmd_dli(&adapter),
         Command::Phy => cmd_phy(&adapter),
@@ -197,10 +311,151 @@ fn main() {
         Command::ReadByUuid { conn, uuid } => cmd_read_by_uuid(&adapter, &conn, &uuid),
     };
 
-    if let Err(e) = result {
-        eprintln!("error: {e}");
-        std::process::exit(1);
+    result?;
+    Ok(())
+}
+
+fn print_controller(s: &slk_protocol::SleControllerSnapshot) {
+    let state = match s.flags {
+        slk_protocol::CONTROLLER_READY => "Ready",
+        slk_protocol::CONTROLLER_SETUP => "Setup",
+        slk_protocol::CONTROLLER_FAULT => "Fault",
+        _ => "Unknown",
+    };
+    println!(
+        "ControllerSnapshot: index={} generation={} profile={} state={} error={} address={} metadata_valid={} credits={}",
+        s.dev_index,
+        s.generation,
+        s.profile,
+        state,
+        s.error,
+        fmt_addr(&s.address),
+        s.valid_fields,
+        s.command_credits
+    );
+}
+
+fn validate_reply(
+    query: NativeQuery,
+    event: &slk_protocol::SleDliEvent,
+) -> anyhow::Result<Option<&[u8]>> {
+    let (opcode, len) = query.wire();
+    // The validated WS73 zero-opcode credit notification can arrive between
+    // commands. Host owns credits; this legacy projection is not a query reply.
+    if event.event_type == 1 && event.opcode == 0 && event.status == 0 && event.data_len == 0 {
+        return Ok(None);
     }
+    anyhow::ensure!(
+        event.opcode == opcode && matches!(event.event_type, 1 | 2),
+        "unexpected diagnostic reply: type={} opcode=0x{:04x}",
+        event.event_type,
+        event.opcode
+    );
+    anyhow::ensure!(
+        event.status == 0,
+        "diagnostic controller status=0x{:02x} opcode=0x{:04x}",
+        event.status,
+        event.opcode
+    );
+    if event.event_type == 2 {
+        anyhow::ensure!(
+            event.data_len == 0,
+            "diagnostic Status contains response data"
+        );
+        return Ok(None); // Accepted Status is not a completed query.
+    }
+    anyhow::ensure!(
+        event.data_len as usize == len,
+        "diagnostic payload length: expected={len} actual={}",
+        event.data_len
+    );
+    Ok(Some(&event.data[..len]))
+}
+
+fn cmd_native_query(
+    adapter: &Adapter,
+    generation: u64,
+    index: u16,
+    profile: u32,
+    query: NativeQuery,
+) -> anyhow::Result<()> {
+    use slk_protocol::*;
+    use std::time::{Duration, Instant};
+    anyhow::ensure!(
+        profile == 1,
+        "native diagnostic query currently requires WS73 profile 1"
+    );
+    let lease = adapter.acquire_management(generation, MANAGEMENT_DIAGNOSTIC)?;
+    let result = (|| -> anyhow::Result<_> {
+        // The legacy reply ABI has no sequence. Exclusive ownership and an
+        // empty reply baseline establish this single command's provenance.
+        let mut drained = 0;
+        while adapter.poll_event()?.is_some() {
+            drained += 1;
+            anyhow::ensure!(
+                drained <= 256,
+                "diagnostic stale reply drain exceeded bound"
+            );
+        }
+        anyhow::ensure!(
+            adapter.mgmt_stats()?.pending == 0,
+            "diagnostic command queue is not quiet"
+        );
+        let (opcode, _) = query.wire();
+        let mut cmd = SleDliCmd {
+            opcode,
+            param_len: u16::from(matches!(query, NativeQuery::Mac)),
+            seq: 0,
+            params: [0; 240],
+        };
+        adapter.dli_send_cmd(&mut cmd)?;
+        anyhow::ensure!(cmd.seq != 0, "diagnostic admission has no sequence");
+        let deadline = Instant::now() + Duration::from_secs(6);
+        loop {
+            if let Some(event) = adapter.poll_event()?
+                && let Some(data) = validate_reply(query, &event)?
+            {
+                return Ok((opcode, cmd.seq, drained, data.to_vec()));
+            }
+            anyhow::ensure!(Instant::now() < deadline, "diagnostic reply timeout");
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    })();
+    // Release even on malformed/error replies; last-close remains a crash
+    // fallback. Never print a successful query if its cleanup did not settle.
+    let cleanup = (|| -> anyhow::Result<()> {
+        adapter.release_management(generation, lease, MANAGEMENT_DIAGNOSTIC)?;
+        let deadline = Instant::now() + Duration::from_secs(6);
+        loop {
+            let status = adapter.management_status(generation)?;
+            match status.state {
+                MANAGEMENT_FREE => return Ok(()),
+                MANAGEMENT_HELD if status.flags & 1 == 0 => return Ok(()),
+                MANAGEMENT_REVOKING => {}
+                _ => anyhow::bail!(
+                    "diagnostic cleanup state={} error={} status={} opcode=0x{:04x}",
+                    status.state,
+                    status.error,
+                    status.status,
+                    status.opcode
+                ),
+            }
+            anyhow::ensure!(Instant::now() < deadline, "diagnostic cleanup timeout");
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    })();
+    if let Err(error) = cleanup {
+        return match result {
+            Err(original) => Err(original.context(format!("cleanup also failed: {error:#}"))),
+            Ok(_) => Err(error),
+        };
+    }
+    let (opcode, seq, drained, data) = result?;
+    let hex: String = data.iter().map(|b| format!("{b:02x}")).collect();
+    println!(
+        "NativeDiagnosticQuery: index={index} generation={generation} opcode=0x{opcode:04x} admission_seq={seq} status=0x00 drained={drained} data={hex}"
+    );
+    Ok(())
 }
 
 fn fmt_addr(addr: &[u8; 6]) -> String {
@@ -367,7 +622,7 @@ fn cmd_scan(adapter: &Adapter, duration: u64) -> libsparklink::Result<()> {
     use slk_protocol::SleScanParams;
 
     let params = SleScanParams {
-        dev_index: 0,
+        dev_index: adapter.device_info()?.index,
         window_ms: 100,
         interval_ms: 200,
         filter_discovery_level: 0,
@@ -804,6 +1059,90 @@ fn parse_hex_bytes(hex: &str) -> libsparklink::Result<Vec<u8>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn diagnostic_reply_requires_complete_opcode_status_and_exact_length() {
+        let mut event = slk_protocol::SleDliEvent {
+            event_type: 1,
+            status: 0,
+            handle: 0,
+            opcode: 0x0403,
+            data_len: 10,
+            data: [0x80; 240],
+            addr: [0; 6],
+            _pad: [0; 2],
+        };
+        assert_eq!(
+            validate_reply(NativeQuery::Features, &event).unwrap(),
+            Some(&[0x80; 10][..])
+        );
+        event.data_len = 9;
+        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        event.data_len = 11;
+        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        event.data_len = 10;
+        event.event_type = 2;
+        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        event.data_len = 0;
+        assert_eq!(validate_reply(NativeQuery::Features, &event).unwrap(), None);
+        event.data_len = 10;
+        event.event_type = 1;
+        event.opcode = 0x0404;
+        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        event.opcode = 0x0403;
+        event.status = 0xfd;
+        assert!(
+            format!(
+                "{:#}",
+                validate_reply(NativeQuery::Features, &event).unwrap_err()
+            )
+            .contains("status=0xfd")
+        );
+        event.status = 0;
+        event.opcode = 0;
+        event.data_len = 0;
+        assert_eq!(validate_reply(NativeQuery::Features, &event).unwrap(), None);
+        event.data_len = 1;
+        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+    }
+
+    #[test]
+    fn native_query_requires_explicit_target_before_open() {
+        let cli = Cli::try_parse_from([
+            "slkconfig",
+            "--device",
+            "/missing-sparklink-test-device",
+            "query",
+            "mac",
+            "--generation",
+            "5",
+        ])
+        .unwrap();
+        assert!(run(cli).unwrap_err().to_string().contains("--adapter"));
+        let cli = Cli::try_parse_from([
+            "slkconfig",
+            "--device",
+            "/missing-sparklink-test-device",
+            "query",
+            "mac",
+            "--adapter",
+            "0",
+        ])
+        .unwrap();
+        assert!(run(cli).unwrap_err().to_string().contains("--generation"));
+        assert!(
+            Cli::try_parse_from([
+                "slkconfig",
+                "query",
+                "reset",
+                "--adapter",
+                "0",
+                "--generation",
+                "5"
+            ])
+            .is_err()
+        );
+    }
 
     #[test]
     fn test_fmt_addr() {

@@ -983,6 +983,7 @@ dependencies = [
 name = "slkconfig"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "clap",
  "libsparklink",
  "slk-protocol",

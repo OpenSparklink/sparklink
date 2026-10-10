@@ -105,3 +105,47 @@ Off/Ready，daemon 自己在保留控制 fd 时确认释放。新 PID/新 D-Bus 
 并再次观察 Free/Off/Ready。合成 fixture 的数据与 RSSI 不属于真实空口证据。
 该扩展验证成功清理；daemon 故障清理、强制终止及完整 Backend 接任矩阵
 仍待扩展，已有内核失败停止/在途关闭/缺失 Complete 门禁继续保留。
+
+## slkconfig 的显式选择与离线 Diagnostic 查询
+
+所有每设备命令现在要求 `--adapter INDEX`，不改变全局默认 controller。
+`adapters` 列出 registration/generation；`controller` 显示选定 snapshot 与
+每设备命令队列，`management` 只读观察 owner 状态。可用 `--generation G`
+拒绝误用重插后的代次，0不合法。只读观察不取得 lease，也不消耗 raw 回复。
+
+```sh
+slkconfig adapters
+slkconfig --adapter 0 controller
+slkconfig --adapter 0 --generation 123 management
+slkconfig --adapter 0 --generation 123 query features
+```
+
+以上 index/generation 为示例，使用实际观察值。原生 `query` 必须提供确切
+generation；只支持 WS73 profile 1 的 mac/features/version/buffers。它取得
+独占 Diagnostic lease，Managed owner 存在则 EBUSY；无 CAP_NET_ADMIN 则 EPERM。
+普通应用仍通过 slctl/slkd 控制，不需要 sudo；离线 raw 诊断是管理员入口，
+不靠设备组权限获得 capability，也不抢占/停止其他 owner。
+
+旧 raw POLL ABI 没有 reply sequence。工具不伪造请求关联：取得 exclusive
+lease 后最多清空256条历史回复，检查 pending=0，然后只提交一个白名单查询。
+输出 `admission_seq` 仅为内核接受时的编号，不是回复中的字段。匹配 opcode
+的成功 Status 只表示接受，继续等待 Complete；失败 Status/Complete 保留
+原 status。成功 Complete 严格校验 MAC/features/version/buffer 的6/10/5/6
+字节，不截短80位 features或版本。已由内核验证的零opcode空 credit 通知可
+夹在命令之间，它不是查询回复，credits 始终由 Host 管理。其他意外回复拒绝。
+`drained` 是提交前清掉的历史投影记录数，可以包含 credit 通知。
+
+回复与清理各有6秒观察期限；错误路径也 RELEASE，清理失败不打印成功。
+旧 PHY、扫描、连接、配对与 SSAP 管理命令仅在 profile0迁移路径保留，原生
+路径在调用旧 ioctl 前明确拒绝。旧 profile0 scan 参数使用选定设备 index。
+缺省设备选择已移除，原调用应加 `--adapter`；原生 reset未实现，不宣称恢复。
+
+在上述 daemon 复现命令后增加 `--diagnostic-tools`（要求
+`--management-handoff --radio-policy`），运行实际 slkconfig：普通UID1000/
+CapEff=0可观察、查询被拒绝；Managed冲突、缺目标/代次、旧generation与
+legacy reset均不增加命令或改变snapshot。随后 C Diagnostic owner先清空
+历史管理回复，再留下一条未读查询；工具清空其 Status/Complete 对及可能的
+credit通知，分别完成两设备八次查询。后继slkd同代次 Ready接管，正常退出。
+生产/session两条门禁、209harness、148workspace、slkconfig严格clippy及原
+96-case回归通过。早期Status、历史队列/credit数量假设失败保留；slkmon/
+slkdump独立snoop、C/Python ownership绑定、profile0完整迁移与故障矩阵仍待做。

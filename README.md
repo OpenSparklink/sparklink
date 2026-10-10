@@ -67,20 +67,27 @@ sudo systemctl enable --now sparklink
 ### 使用 slkconfig
 
 ```bash
-# 查看设备信息
-slkconfig info
+# 列出注册的 controller 与 generation
+slkconfig adapters
 
-# 扫描 5 秒
-slkconfig scan 5
+# 明确选择设备，独立只读观察（0 仅为示例 index）
+slkconfig --adapter 0 controller
+slkconfig --adapter 0 management
+slkconfig --adapter 0 info
 
-# 连接设备
-slkconfig connect AA:BB:CC:DD:EE:FF
+# 普通应用的原生 WS73 广播/扫描由 slkd 管理
+slctl list
 
-# 查看安全状态
-slkconfig security
+# 管理员离线诊断：先停止该设备的 Managed owner；generation 使用实际观察值
+slkconfig --adapter 0 --generation 123 query mac
+
+# 以下旧管理命令仅适用于 profile 0 迁移路径
+slkconfig --adapter 0 scan --duration 5
+slkconfig --adapter 0 connect AA:BB:CC:DD:EE:FF
+slkconfig --adapter 0 security
 
 # 列出 SSAP 服务
-slkconfig services
+slkconfig --adapter 0 services
 ```
 
 ### 使用 slctl 交互式控制台
@@ -133,7 +140,7 @@ D-Bus 管理守护进程，使用 zbus 5 在 `org.sparklink` 总线名称下暴�
 
 ### slkconfig
 
-离线配置命令行工具，提供 22 个子命令，覆盖设备信息、DLI 控制器、PHY 参数、扫描、连接、安全配对、SSAP 服务读写和远程操作。基于 clap 4 的 derive API。
+离线配置命令行工具。每设备命令要求 `--adapter`，可用 `--generation` 防止误用重插后的代次；`adapters/controller/management` 提供独立只读观察。原生 WS73 的 `query mac/features/version/buffers` 要求确切 generation、CAP_NET_ADMIN 和独占 Diagnostic lease，不能与 slkd 的 Managed owner 并行。旧 PHY/扫描/连接/配对/SSAP 管理命令仅在 profile 0 迁移路径保留。普通应用控制通过 slctl/slkd。基于 clap 4 的 derive API。
 
 ### slctl
 

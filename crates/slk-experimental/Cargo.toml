@@ -1,0 +1,11 @@
+[package]
+name = "slk-experimental"
+description = "Quarantined legacy Profile/HID and transport development models; no production support claim"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+libsparklink = { workspace = true }
+slk-protocol = { workspace = true }
+tracing = { workspace = true }

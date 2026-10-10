@@ -1,4 +1,5 @@
-//! SparkLink Transport Layer (T/XS 20007-2025)
+//! Experimental transport codec/state model (T/XS 20007-2025 reference).
+//! No production transport consumer or negotiated data channel.
 //!
 //! Implements packet encoding/decoding and connection state machines for
 //! the SparkLink Basic Service Layer transport protocol.

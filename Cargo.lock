@@ -974,6 +974,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "slk-experimental"
+version = "0.1.0"
+dependencies = [
+ "libsparklink",
+ "slk-protocol",
+ "tracing",
+]
+
+[[package]]
 name = "slk-protocol"
 version = "0.1.0"
 dependencies = [
@@ -1000,6 +1009,7 @@ dependencies = [
  "libsparklink",
  "nix 0.30.1",
  "serde",
+ "slk-experimental",
  "slk-protocol",
  "thiserror",
  "tokio",

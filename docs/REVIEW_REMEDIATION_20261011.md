@@ -103,3 +103,16 @@ GATT、Agent、L2CAP 和 VM 测试语义。R01/R02/R05 首批已签名推送并�
 新增 actual kernel security/backend failure 门禁、Python/内核ABI和rustfmt成功；
 cargo check仍因slkd原有39个dead-code错误失败，test/clippy/header/release跳过。
 没有降低-D warnings，R14仍开放；新增门禁成功不表示全部质量或标准验收通过。
+
+## R06/R14 后续实施（2026-10-11）
+
+R06的9f57d1e：仅缺失隐式默认文件可使用默认；显式缺失/权限/解析/未知字段
+和未实现策略拒绝，启动前验证；Native拒绝未实现legacy过滤器后才允许管理lease。
+10项单元/CLI/实际子进程回归通过。完整auto-enable、安全策略实现仍开放。
+
+R14：[实验边界](EXPERIMENTAL_CODE_BOUNDARY.md)隔离未接通Profile/HID/transport，
+保留实际actor与有效失败回归，不隐藏死代码；严格默认及all-target/all-feature
+check/clippy/fmt及默认release已经通过，workspace all-features160项测试/零失败/
+零ignored通过；工具/evidence测试纳入独立无硬件CI。新默认daemon的VM真实RF
+和远端CI须重新核对。
+原CI39错误是旧提交证据，不能据它断言本批仍有同样错误或已经绿；以新记录为准。

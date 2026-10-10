@@ -1,6 +1,10 @@
 //! Each registration has its own fd, bootstrap and subscription. Workers are
 //! independent: a controller waiting for a USB timeout cannot hold the directory
 //! or prevent another controller from being enumerated or removed.
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
+use crate::profile::ProfileRegistry;
+#[cfg(feature = "experimental-legacy-profiles")]
+use crate::profile::{BatteryProfile, DeviceInfoProfile};
 use crate::{
     bonding::BondingStore,
     config::DaemonConfig,
@@ -8,7 +12,6 @@ use crate::{
     dbus_iface::{AdapterIface, DeviceIface},
     event_loop::EventTask,
     extadv::ExtAdvIface,
-    profile::{BatteryProfile, DeviceInfoProfile, ProfileRegistry},
     security::SecurityIface,
     service::{RemoteServiceIface, SsapManagerIface},
     state::{AdapterDirectory, AdapterRegistration, AdapterState, SharedState},
@@ -212,7 +215,7 @@ impl Node {
         .await??;
         let control = adapter.clone();
         let storage = storage.to_owned();
-        let (adapter, bonding, profiles) = tokio::task::spawn_blocking(move || {
+        let (adapter, bonding) = tokio::task::spawn_blocking(move || {
             let key = format!(
                 "p{}-{}",
                 snapshot.profile,
@@ -226,19 +229,19 @@ impl Node {
             if let Err(error) = bonding.load() {
                 info!(%error, "no bonding metadata loaded");
             }
-            let mut profiles = ProfileRegistry::new();
-            // Native discovery has no SSAP/profile backend yet. Never attempt
-            // legacy profile registration against a native registration.
-            if snapshot.profile == 0 {
-                profiles.add(Box::new(BatteryProfile::new(100)));
-                profiles.add(Box::new(DeviceInfoProfile::new()));
-                profiles.add(Box::new(crate::hid::HidProfile::boot_keyboard()));
-                profiles.init_all(&adapter);
-            }
-            (adapter, bonding, profiles)
+            (adapter, bonding)
         })
         .await?;
+        #[cfg(any(test, feature = "experimental-legacy-profiles"))]
+        let profiles = {
+            let fd = adapter.clone();
+            tokio::task::spawn_blocking(move || experimental_profiles(&fd, snapshot.profile))
+                .await?
+        };
+        #[cfg(any(test, feature = "experimental-legacy-profiles"))]
         let mut state = AdapterState::new(adapter, config, bonding, profiles);
+        #[cfg(not(any(test, feature = "experimental-legacy-profiles")))]
+        let mut state = AdapterState::new(adapter, config, bonding);
         state.object_path = path.clone();
         state.controller = snapshot;
         if snapshot.profile == 1 {
@@ -247,18 +250,13 @@ impl Node {
         let state = Arc::new(Mutex::new(state));
         // Roll back partial registration if any of the D-Bus interfaces fails.
         if let Err(error) = publish(connection, &path, &state).await {
-            if let Some(lease) = lease {
-                if let Err(cleanup) = relinquish(control.clone(), snapshot.generation, lease).await
-                {
-                    warn!(%cleanup, %path, "partial adapter publication cleanup failed");
-                }
+            if let Some(lease) = lease
+                && let Err(cleanup) = relinquish(control.clone(), snapshot.generation, lease).await
+            {
+                warn!(%cleanup, %path, "partial adapter publication cleanup failed");
             }
             remove_interfaces(connection, &path).await;
-            let (bonding, profiles) = {
-                let st = state.lock().await;
-                (st.bonding.clone(), st.profiles.clone())
-            };
-            tokio::join!(bonding.shutdown(), profiles.shutdown());
+            crate::state::shutdown_services(&state).await;
             return Err(error);
         }
         let event = match subscription {
@@ -360,7 +358,7 @@ impl Node {
             let _ = event.shutdown().await;
         }
         let _ = self.init.await;
-        let (device_paths, handles, bonding, profiles) = {
+        let (device_paths, handles) = {
             let st = self.state.lock().await;
             (
                 st.devices
@@ -371,8 +369,6 @@ impl Node {
                     .values()
                     .filter_map(|d| d.conn_handle)
                     .collect::<Vec<_>>(),
-                st.bonding.clone(),
-                st.profiles.clone(),
             )
         };
         for path in device_paths {
@@ -389,7 +385,7 @@ impl Node {
                 .await;
         }
         remove_interfaces(connection, &self.path).await;
-        tokio::join!(bonding.shutdown(), profiles.shutdown());
+        crate::state::shutdown_services(&self.state).await;
         info!(path=%self.path, "adapter removed");
     }
 }
@@ -514,12 +510,11 @@ impl AdapterManager {
                             warn!(%error, index=id, "adapter snapshot unavailable; removing registration");
                             node.take().unwrap().remove(&connection, &directory).await;
                         }
-                    } else if currently_registered {
-                        if let Ok((adapter, snapshot)) = open_selected(device.clone(), id).await {
-                            match Node::create(&device, adapter, snapshot, config.clone(), &storage, &connection, &directory).await {
-                                Ok(ready) => node = Some(ready),
-                                Err(error) => warn!(%error, index=id, "adapter registration failed"),
-                            }
+                    } else if currently_registered
+                        && let Ok((adapter, snapshot)) = open_selected(device.clone(), id).await {
+                        match Node::create(&device, adapter, snapshot, config.clone(), &storage, &connection, &directory).await {
+                            Ok(ready) => node = Some(ready),
+                            Err(error) => warn!(%error, index=id, "adapter registration failed"),
                         }
                     }
                     tokio::select! {
@@ -558,4 +553,22 @@ pub(crate) async fn invalidate_properties(c: &zbus::Connection, path: &str, name
     {
         warn!(%error, %path, "adapter property invalidation failed");
     }
+}
+
+#[cfg(feature = "experimental-legacy-profiles")]
+fn experimental_profiles(adapter: &Adapter, profile: u32) -> ProfileRegistry {
+    let mut profiles = ProfileRegistry::new();
+    // Native discovery has no SSAP/Profile backend. No legacy registration.
+    if profile == 0 {
+        tracing::warn!("experimental legacy Profiles enabled: no service/security qualification");
+        profiles.add(Box::new(BatteryProfile::new(100)));
+        profiles.add(Box::new(DeviceInfoProfile::new()));
+        profiles.add(Box::new(crate::hid::HidProfile::boot_keyboard()));
+        profiles.init_all(adapter);
+    }
+    profiles
+}
+#[cfg(all(test, not(feature = "experimental-legacy-profiles")))]
+fn experimental_profiles(_adapter: &Adapter, _profile: u32) -> ProfileRegistry {
+    ProfileRegistry::new()
 }

@@ -16,6 +16,10 @@ impl ExtAdvIface {
 #[interface(name = "org.sparklink.ExtAdv")]
 impl ExtAdvIface {
     /// Configure an extended advertising set
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "D-Bus method exposes named, typed protocol parameters"
+    )]
     async fn configure(
         &self,
         handle: u8,

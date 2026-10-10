@@ -12,7 +12,7 @@
 | sle_crypto Rust wrappers → sle_crypto_ffi.c；security KDF/CTR/RPA 和 core 查询调用者 | Result 传播原 errno、检查长度/计数；CTR C 临时缓冲完整成功后才提交数据/IV；失败不提交 keys/counter/address | 376bb1e8a544：实际函数分配/算法/密钥/部分写入失败注入及 sanitizers 通过；不是标准密码算法验收 |
 | core SEC_SM3/SM4/HMAC_TEST ioctl → SecurityInner 测试辅助/CTR counter=0 | 移除生产执行，返回 EOPNOTSUPP；删除 SecurityInner 测试辅助，迁算法/错误覆盖到 selftests；编号/绑定随调用者迁移删除 | 376bb1e8a544：生产执行已删；旧调用者/UAPI 与正向向量迁移仍待完成，不能用旧 ioctl 成功测试证明生产能力 |
 | backend SleController::open/send_command/send_data/reset → UART/SPI 自制 CommandComplete(Success) | 删除伪成功及仅编码却报告发送成功；无真实硬件实现的操作 EOPNOTSUPP | c2c4aa4ad0bd：实际 trait 方法拒绝回归通过，虚假 firmware/capability 已删；纯 framing 留作测试，不宣称硬件支持 |
-| slkd config → main defaults，未消费策略 | 显式配置错误拒绝；不支持的非默认策略拒绝。不得静默降级安全 | R06 下一小批；尚未改，不勾选完成 |
+| slkd config → main defaults，未消费策略 | 显式配置错误拒绝；不支持的非默认策略拒绝。不得静默降级安全 | 9f57d1e 已签名推送：启动前拒绝无效/未知配置和未实现策略，10项配置/实际进程测试；完整策略仍待实现 |
 
 ## 移入测试：保留有效开发支撑
 
@@ -59,3 +59,11 @@ STOP_CONFIRMED。没有本次物理拔插、自然根因或全自主恢复验收
 C/Rust布局/ioctl/32位ABI29项通过。新增CI生产代码失败门禁和同步kernel pin；
 远端执行结果须单独核对，用户态39个warning/严格CI仍未闭合。旧正向配对/crypto
 ioctl用例尚未迁入算法测试后端，不把其移除或失败改记为成功。R06–R14继续推进。
+
+### 未接通用户态模块的隔离
+
+[实验边界](EXPERIMENTAL_CODE_BOUNDARY.md)：旧Profile/HID/transport移到独立
+slk-experimental；默认daemon运行时依赖图无该crate，默认停止旧内建服务注册。
+显式experimental-legacy-profiles保留profile0旧注册/实际actor；Native profile1
+仍不注册。原模型和actor回归保留，R07/SSAP请求路由/互通等待替代，不宣称完成。
+严格检查覆盖default及all-targets/all-features，不增加dead-code lint压制。

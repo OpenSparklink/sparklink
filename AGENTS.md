@@ -6,7 +6,7 @@ SparkLink (星闪) 无线通信协议的用户态基础设施，对标 BlueZ 的
 基于 Rust 实现，通过 ioctl/chardev/genetlink 与内核子系统 (`net/sparklink/`) 交互。
 遵循 T/XS 00001-2025、T/XS 10002-2025、T/XS 20002-2025 等星闪技术标准。
 
-**代码规模**: 7 crate + Python 绑定, ~6500 行 Rust + Python
+**代码边界**: 默认 daemon 与独立未发布 slk-experimental 开发 crate 分开；Python 绑定保留。
 
 ## 构建
 
@@ -150,3 +150,11 @@ UAPI 尚未发布，可同步修改或移除，无需保留旧接口兼容期。
 - `AsyncFd<OwnedFd>` 拥有文件描述符生命周期，`get_ref().as_raw_fd()` 获取原始 fd
 - zbus 5 使用 `#[interface]` proc macro 声明 D-Bus 接口
 - UAPI 结构体大小变更会改变 ioctl 编号 (size 编码在 `_IOWR` 中)，修改 types.rs 后需同步内核侧
+
+## 旧实验能力
+
+默认slkd不链接slk-experimental，不自动注册未经互通验收的旧Profile/HID；
+transport无生产消费者，仅实验crate。旧注册/连接callback由显式
+experimental-legacy-profiles构建feature保留，不能宣称完整SSAP服务。
+测试保留同一actor的阻塞/cancel/drain/panic回归，严格default/all-features
+检查不得以全局allow(dead_code)掩盖。见[实验边界](docs/EXPERIMENTAL_CODE_BOUNDARY.md)。

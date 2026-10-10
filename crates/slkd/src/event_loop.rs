@@ -139,6 +139,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
         }) => {
             let mut st = state.lock().await;
             st.on_conn_state_changed(handle, conn_state, peer_addr);
+            #[cfg(any(test, feature = "experimental-legacy-profiles"))]
             let profiles = st.profiles.clone();
             let connected = conn_state == slk_protocol::ConnState::Connected as u8;
             drop(st);
@@ -156,6 +157,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
                     error!(%e, path, "failed to register remote service interface");
                 }
             }
+            #[cfg(any(test, feature = "experimental-legacy-profiles"))]
             if let Err(e) = profiles.connection_changed(handle, connected).await {
                 error!(%e, handle, "profile connection callback failed");
             }

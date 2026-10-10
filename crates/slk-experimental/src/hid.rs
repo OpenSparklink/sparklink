@@ -1,4 +1,5 @@
-//! SparkLink HID Data Interaction Service (T/XS 30004-2025)
+//! Experimental HID service model; no slkd request routing or application interop.
+//! Intended specification: T/XS 30004-2025.
 //!
 //! Implements the "人机数据交互" service as defined in TXS-30004-2025.
 //! UUID assignments from Appendix A (normative).

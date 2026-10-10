@@ -1,3 +1,7 @@
+#[cfg(feature = "experimental-legacy-profiles")]
+use slk_experimental::hid;
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
+use slk_experimental::profile;
 mod adapters;
 mod bonding;
 mod config;
@@ -5,14 +9,12 @@ mod controller;
 mod dbus_iface;
 mod event_loop;
 mod extadv;
-mod hid;
-mod profile;
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
 mod profile_runtime;
 mod radio;
 mod security;
 mod service;
 mod state;
-mod transport;
 
 use std::{path::PathBuf, sync::Arc};
 

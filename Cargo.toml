@@ -4,6 +4,7 @@ members = [
     "crates/slk-protocol",
     "crates/libsparklink",
     "crates/slkd",
+    "crates/slk-experimental",
     "crates/slkconfig",
     "crates/slctl",
     "crates/slkmon",

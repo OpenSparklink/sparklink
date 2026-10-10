@@ -164,6 +164,7 @@ impl BondingStore {
     }
 
     /// Look up a cached bonding record
+    #[cfg(test)]
     pub fn get(&self, addr: &SleAddr) -> Option<&BondingInfo> {
         self.cache.get(addr)
     }
@@ -174,6 +175,7 @@ impl BondingStore {
     }
 
     /// Check if a device is bonded
+    #[cfg(test)]
     pub fn is_bonded(&self, addr: &SleAddr) -> bool {
         self.cache.contains_key(addr)
     }

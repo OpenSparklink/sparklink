@@ -30,3 +30,8 @@ connection/TCID。可靠模式优先 SOCK_SEQPACKET；连接式 SOCK_DGRAM 仅�
 真实测试遵守 VM-only。保留[物理历史证据](evidence/ws73-vm-physical-20261010.json)
 与[人工恢复历史证据](evidence/ws73-vm-artificial-recovery-20261010.json)，源码
 更新后重新核对。任何部分成果不提前关闭完整 issue；完整 goal 继续 active。
+
+旧Profile/HID/transport已按[实验边界](EXPERIMENTAL_CODE_BOUNDARY.md)移入独立
+slk-experimental。默认daemon不自动注册旧内建Profile、不链接实验crate；
+显式experimental-legacy-profiles保留旧profile0注册/同actor生命周期，
+Native profile1仍不注册。模型与callback回归保留，完整请求路由/标准/互通待验。

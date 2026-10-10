@@ -7,7 +7,9 @@ use slk_protocol::{SleAddr, SleConnectParams, SleScanParams};
 
 use crate::bonding::{BondingService, BondingStore};
 use crate::config::DaemonConfig;
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
 use crate::profile::ProfileRegistry;
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
 use crate::profile_runtime::ProfileService;
 
 /// Discovered device info maintained by the daemon
@@ -43,6 +45,7 @@ pub struct AdapterState {
     pub devices: HashMap<SleAddr, DeviceEntry>,
     pub name: String,
     pub bonding: BondingService,
+    #[cfg(any(test, feature = "experimental-legacy-profiles"))]
     pub profiles: ProfileService,
 }
 
@@ -51,7 +54,7 @@ impl AdapterState {
         adapter: impl Into<Arc<Adapter>>,
         config: DaemonConfig,
         bonding: BondingStore,
-        profiles: ProfileRegistry,
+        #[cfg(any(test, feature = "experimental-legacy-profiles"))] profiles: ProfileRegistry,
     ) -> Self {
         let adapter = adapter.into();
         let name = config.general.name.clone();
@@ -72,6 +75,7 @@ impl AdapterState {
             devices: HashMap::new(),
             name,
             bonding: BondingService::new(bonding),
+            #[cfg(any(test, feature = "experimental-legacy-profiles"))]
             profiles: ProfileService::new(profiles),
         }
     }
@@ -263,3 +267,15 @@ pub struct AdapterRegistration {
     pub generation: u64,
 }
 pub type AdapterDirectory = Arc<Mutex<BTreeMap<String, AdapterRegistration>>>;
+
+/// Drain experimental callbacks and Bond I/O without holding adapter state.
+pub async fn shutdown_services(state: &SharedState) {
+    let bonding = state.lock().await.bonding.clone();
+    #[cfg(any(test, feature = "experimental-legacy-profiles"))]
+    {
+        let profiles = state.lock().await.profiles.clone();
+        tokio::join!(bonding.shutdown(), profiles.shutdown());
+    }
+    #[cfg(not(any(test, feature = "experimental-legacy-profiles")))]
+    bonding.shutdown().await;
+}

@@ -71,6 +71,6 @@ fn unreadable_explicit_config_does_not_fall_back() {
     let f = Fixture::new();
     let path = f.0.join("unreadable");
     fs::write(&path, "").unwrap();
-    fs::set_permissions(&path, fs::Permissions::from_mode(0)).unwrap();
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o000)).unwrap();
     f.reject(&path, "cannot read configuration");
 }

@@ -662,3 +662,12 @@ capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d
 幸存设备 IN -108 / generation 改变。**并未定位该物理根因，也不是设备消失后
 自主恢复。** 北极星仍4/8，物理隔离/重插、完整物理复现包、原生主机对照、
 有限自动恢复和四设备两组及完整S0–S6继续开放；.4端口仍缺失。
+
+### 配置拒绝与未接通模块隔离（2026-10-11）
+
+9f57d1e已修复R06启动前配置/策略拒绝，10项配置/CLI实际进程回归通过。
+[实验边界](EXPERIMENTAL_CODE_BOUNDARY.md)将旧Profile/HID/transport独立保存；
+默认daemon不自动注册旧内建服务，旧注册与同actor仅显式experimental feature，
+Native路径不变。严格default/all-target/all-feature check/clippy通过，
+workspace all-features160项/零失败/零ignored；默认release、真实WS73新用户态
+和远端完整CI继续作为本批门禁。完整SSAP/安全策略/Profile互通不因此验收。

@@ -1,3 +1,5 @@
+//! Legacy kernel-SSAP Profile development model. Request callbacks are not
+//! routed by slkd; UUID/permission/interop qualification remains outstanding.
 use std::collections::HashMap;
 
 use libsparklink::Adapter;
@@ -66,6 +68,7 @@ impl std::fmt::Display for ProfileError {
 impl std::error::Error for ProfileError {}
 
 /// Manages profile registration and lifecycle
+#[derive(Default)]
 pub struct ProfileRegistry {
     profiles: Vec<Box<dyn Profile>>,
     /// Maps SSAP handle -> profile index
@@ -74,10 +77,7 @@ pub struct ProfileRegistry {
 
 impl ProfileRegistry {
     pub fn new() -> Self {
-        Self {
-            profiles: Vec::new(),
-            handle_map: HashMap::new(),
-        }
+        Self::default()
     }
 
     /// Register a profile.  Call before `init_all`.
@@ -252,6 +252,12 @@ pub struct DeviceInfoProfile {
     model: String,
     firmware_rev: String,
     software_rev: String,
+}
+
+impl Default for DeviceInfoProfile {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl DeviceInfoProfile {

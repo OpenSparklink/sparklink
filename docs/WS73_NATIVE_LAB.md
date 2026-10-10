@@ -347,3 +347,38 @@ root daemon使用`/var/lib/sparklink`（0700），版本化release executable与
 静态unit校验不替代实际服务sandbox验收。合成support不计真实空口；真实RF加
 QMP移除/重接不计物理拔插或自动故障恢复。原生主机对照条件继续开放，完整
 S0–S6方案和原issue验收清单保持不变。
+
+### 真实物理拔插的 VM 记录
+
+2026-10-10 UTC，使用上述模块 profile 和 SDK111文件选择完成真实两设备测试。
+去除私有路径和原始USB padding的可共享记录在
+[`ws73-vm-physical-20261010.json`](evidence/ws73-vm-physical-20261010.json)。
+实际运行仍保留完整私有pcap、capture stats、console、QMP、usb lifecycle、
+主机inventory、slkd/slctl日志、源/产物hash和失败历史，未将专有镜像或raw
+padding提交。record中的`data`是接收端上报的本轮随机广播数据，不是完整USB
+包或PHY嗅探器捕获。DLI版本不能证明设备正在运行哪个文件版本。
+
+本轮host A为`1-2.1.4`、B为`1-2.1.1`，guest为`1-1`和`1-2`：两只分别Ready，
+20轮交换角色成功。用户实际拔出A后，host inventory确认A消失、B及未选两只
+地址不变；B的generation2、Ready和扫描启停保持有效，旧A选择被拒绝。
+用户将A插回原口，A重新初始化为generation3，完成另外两轮闭环。slkd
+PID522/start_ticks338及D-Bus owner保持不变。QMP只有两次初始device_add，
+后续仅查询attached，没有注入device_del/readd/reset；QEMU未关闭或重开B。
+双方STOP_CONFIRMED，应用uid1000、无effective/permitted/ambient capability。
+
+guest退出后tcpdump封存1373条记录、0drop；在host独立执行既有验证器：
+
+```sh
+python3 tools/ws73_north_star.py verify \
+  --run /path/to/run/guest-output/application/control/run.json \
+  --pcap /path/to/run/guest-output/ws73.pcap \
+  --capture-stats /path/to/run/guest-output/capture-stats.txt \
+  --output /path/to/new-verification
+```
+
+结果`RX_CORROBORATED`：22个逐轮原始接收证明，包含命令Complete/扫描窗口、
+随机数据、地址/RSSI、广播停止阴性对照及移除期间survivor控制。完整物理流程
+通过不等于故障恢复通过：实际拔出时还有一条xHCI `WARN Set TR Deq Ptr cmd
+failed due to incorrect slot or ep state`，taint仍0且B未中断；该警告保留待定位，
+不被通用panic/oops匹配器遗漏后称为“无告警”。无人工恢复、原生主机对照、
+四设备两组并行、完整systemd sandbox及其他S0–S6条件仍未验收。

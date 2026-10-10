@@ -59,6 +59,27 @@ static void observe(unsigned index, uint64_t generation, int ordinary)
 	slk_adapter_free(t); slk_adapter_free(s); slk_adapter_free(b); slk_adapter_free(a);
 }
 
+static void scan_ready(SlkAdapter *adapter, uint64_t generation, uint64_t request)
+{
+    SleDiscoverySubmit submit = {.version=1, .profile=1, .operation=3,
+        .generation=generation, .request_id=request};
+    submit.scanning.frame_types=1; submit.scanning.interval=1600; submit.scanning.window=800;
+    struct timespec wall, pause={.tv_nsec=10000000};
+    CHECK(clock_gettime(CLOCK_REALTIME,&wall)==0);
+    uint64_t started=(uint64_t)wall.tv_sec*1000000000+wall.tv_nsec;
+    CHECK(slk_discovery_submit(adapter,&submit)==0);
+    SleDiscoveryResult result; unsigned tries;
+    for (tries=0;tries<200;tries++) {
+        CHECK(slk_discovery_result(adapter,generation,request,&result)==1);
+        if (result.state>=3) break;
+        nanosleep(&pause,NULL);
+    }
+    CHECK(tries<200 && result.state==3 && result.status==0 && result.error==0 && result.radio_scan==2);
+    CHECK(clock_gettime(CLOCK_REALTIME,&wall)==0);
+    printf("WS73_NATIVE_BINDING_SCAN_READY: {\"generation\":%"PRIu64",\"request_id\":%"PRIu64",\"started_wall_ns\":%"PRIu64",\"finished_wall_ns\":%"PRIu64"}\n",
+        generation,request,started,(uint64_t)wall.tv_sec*1000000000+wall.tv_nsec);
+}
+
 static void writer(unsigned index, uint64_t generation)
 {
 	SlkAdapter *a = selected(index), *b = selected(index);
@@ -74,6 +95,7 @@ static void writer(unsigned index, uint64_t generation)
 	CHECK(slk_discovery_result(a, generation, request, &r) == 0 && r.request_id == 99);
 	SleDiscoverySubmit submit = {.version=1, .profile=1, .operation=4, .generation=generation, .request_id=request};
 	CHECK(slk_discovery_submit(b, &submit) == -EPERM);
+	scan_ready(a, generation, request-1);
 	struct timespec wall;
 	CHECK(clock_gettime(CLOCK_REALTIME, &wall) == 0);
 	uint64_t started = (uint64_t)wall.tv_sec * 1000000000 + wall.tv_nsec;
@@ -94,6 +116,13 @@ static void writer(unsigned index, uint64_t generation)
 	CHECK(clock_gettime(CLOCK_REALTIME, &wall) == 0);
 	printf("WS73_NATIVE_BINDING_RESULT: {\"generation\":%"PRIu64",\"request_id\":%"PRIu64",\"operation\":4,\"opcode\":%u,\"state\":%u,\"status\":%u,\"error\":%d,\"started_wall_ns\":%"PRIu64",\"finished_wall_ns\":%"PRIu64"}\n",
 	       generation, request, r.opcode, r.state, r.status, r.error, started, (uint64_t)wall.tv_sec*1000000000+wall.tv_nsec);
+    /* Release while scanning is ON and advertising is already confirmed OFF.
+     * Native cleanup must stop only scanning, preserve this generation and
+     * not fabricate a successful public result for an idle OFF command.
+     */
+    scan_ready(a, generation, request+1);
+    CHECK(clock_gettime(CLOCK_REALTIME,&wall)==0);
+    uint64_t release_started=(uint64_t)wall.tv_sec*1000000000+wall.tv_nsec;
 	CHECK(slk_management_release(a, generation, lease, 1) == 0);
 	for (tries=0; tries<200; tries++) {
 		CHECK(slk_management_query(b, generation, &owner) == 0);
@@ -101,6 +130,12 @@ static void writer(unsigned index, uint64_t generation)
 		nanosleep(&pause, NULL);
 	}
 	CHECK(tries < 200 && owner.mode == 0 && owner.lease == 0);
+    SleControllerSnapshot snapshot;
+    CHECK(slk_controller_snapshot(b,generation,&snapshot)==0 && snapshot.flags==1);
+    CHECK(clock_gettime(CLOCK_REALTIME,&wall)==0);
+    printf("WS73_NATIVE_BINDING_RELEASE: {\"generation\":%"PRIu64",\"started_wall_ns\":%"PRIu64",\"finished_wall_ns\":%"PRIu64",\"ready\":true}\n",
+        generation,release_started,(uint64_t)wall.tv_sec*1000000000+wall.tv_nsec);
+
 	CHECK(slk_management_acquire(b, generation, 2, &other) == 0 && other != 0 && other != lease);
 	CHECK(slk_management_release(b, generation, other, 2) == 0);
 	slk_adapter_free(b); slk_adapter_free(a);

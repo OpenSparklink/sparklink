@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 
-from ws73_capture import check_capture_stats, corroborate, corroborate_synthetic, discovery, read_capture, CaptureError
+from ws73_capture import command_reply, check_capture_stats, corroborate, corroborate_synthetic, discovery, read_capture, CaptureError
 from ws73_north_star import daemon_identity, healthy_native_runtime, ordinary_identity, registration
 
 EVIDENCE = Path('/evidence')
@@ -111,6 +111,13 @@ def bindings(writer=False):
                     lines=re.findall(r'^WS73_NATIVE_BINDING_RESULT: (.+)$',p.stdout,re.M)
                     if len(lines)!=1:raise ValueError('binding writer result missing')
                     results[-1]['result']=json.loads(lines[0])
+                    if name=='c':
+                        scans=re.findall(r'^WS73_NATIVE_BINDING_SCAN_READY: (.+)$',p.stdout,re.M)
+                        releases=re.findall(r'^WS73_NATIVE_BINDING_RELEASE: (.+)$',p.stdout,re.M)
+                        if len(scans)!=2 or len(releases)!=1:raise ValueError('binding scan/revoke precondition missing')
+                        results[-1]['scan_setup']=[json.loads(x) for x in scans]
+                        results[-1]['release_scan']=json.loads(releases[0])
+
     (EVIDENCE/('bindings-'+mode+'.json')).write_text(json.dumps({'scope':'synthetic C/Python kernel binding support',
         'physical_acceptance':False,'mode':mode,'results':results},indent=2)+'\n')
 
@@ -213,6 +220,18 @@ def verify_support():
                 if not any((x['bus'],x['device'],x['opcode'],x['status'])==(r['bus'],r['device'],result['opcode'],0)
                            and result['started_wall_ns']<=x['wall_ns']<=result['finished_wall_ns'] for x in capture['complete']):
                     raise ValueError('binding writer lacks captured exact-generation Complete')
+                if entry['language']=='c':
+                    for scan in entry['scan_setup']:
+                        if scan['generation']!=r['generation']:raise ValueError('binding scan owner changed')
+                        for opcode,params in [(0x1001,bytes.fromhex('0000010040062003')),(0x1002,b'\x01\x00')]:
+                            command_reply(capture,r,opcode,scan['started_wall_ns'],scan['finished_wall_ns'],params,'')
+                    release=entry['release_scan']
+                    if release['generation']!=r['generation'] or not release['ready']:raise ValueError('binding release lost owner/Ready')
+                    start,end=release['started_wall_ns'],release['finished_wall_ns']
+                    command_reply(capture,r,0x1002,start,end,b'\x00\x00','')
+                    if any((c['bus'],c['device'],c['opcode'])==(r['bus'],r['device'],0x0c05) and start<=c['wall_ns']<=end for c in capture['commands']):
+                        raise ValueError('binding release resent already-confirmed advertising OFF')
+
     empty_bulk='ws73.empty_bulk=1' in Path('/proc/cmdline').read_text().split()
     if empty_bulk and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in ids):
         raise ValueError('both selected controllers must have captured successful empty bulk completions')

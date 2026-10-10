@@ -181,3 +181,29 @@ lease撤销及C/Python writer在此固件语义下的门禁继续独立验证。
 `.dev/scan-probe-idle-support` **FAIL**，因为随后C binding writer对已经OFF的
 扫描器再次发送OFF，被模型返回0b。该失败未隐藏，管理撤销/绑定writer正确
 前置条件继续作为依赖处理；不以此宣称完整C/Python writer或发布矩阵通过。
+
+
+### 管理释放保留已确认 OFF（kernel92，合成门禁通过）
+
+管理撤销曾对两个射频域都发送 STOP；扫描已经 OFF 时真实111和严格模型返回
+原始0b，不能改成成功。现在仅内部撤销的一步 STOP、匹配本次租约撤销 cookie、
+同一 owner 已确认 OFF，才保留该状态。决定发生在前一个线上的请求消耗之后；
+未知/ON、取消的 enable、公有请求和多步 recipe 仍走正常调度。保留 OFF 不发送
+USB OUT，不伪造 Complete、credits、时钟或公有请求结果；另一个域仍须成功停止。
+故障或超时不能绕过，两个域均完成后才允许后继管理租约。
+
+C binding writer 先真实配置并开启扫描，再验证公有 STOP；随后重新开启扫描，
+在广播已 OFF、扫描 ON 时释放管理租约。USB 抓包要求实际扫描 OFF 成功，释放
+窗口内无重复广播 OFF，同 generation 回到 Ready。management 原生门禁也使用
+被动扫描初始化，并启用 idle-scan-stop=0b 模型；失败/取消/超时负例保留。
+
+冻结 kernel92 和56源文件、QEMU及6编译输入后，`.dev/retained-off-support`
+完整 SUPPORT_PASS：普通用户20+2轮、合成拔插、同 slkd/bus、暖启动、empty bulk
+与 C/Python 绑定均通过；2557 USB packets、zero capture drops、192 empty
+completions，22条独立控制抓包关联。12条 Runtime gates 全部 PASS；16 Host-plan、
+11 operation、96用户工具、282内核脚本 tests 通过。旧 kernel90 整体失败证据保留。
+
+这是合成开发门禁的修复；真实20轮证据仍是先前 kernel90 的111/110混合版本。
+北极星仍4/8，物理拔出导致幸存 generation 改变的根因、物理重插、不依赖人工
+拔插的恢复、原生主机与QEMU对照、四设备两组及完整S0–S6仍开放。本次主机
+只枚举到1-2.1.1/.2/.3；.4仍未出现，不能把用户已插回解释为枚举恢复成功。

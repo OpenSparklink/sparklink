@@ -1,7 +1,7 @@
 # Native metadata 诊断请求身份、截止时间与取消
 
 2026-10-11，Linux `c89e961b80a2b99922ddd0715590c01edfe39c88`；未发布UAPI同步迁移，不保留Native双提交入口。
-提交copyout/取消/迟到回复尚无实际验收；结果接口与当前真实路径回归见文末。
+两类限定提交copyout幂等性已实际验证；取消/迟到回复等完整门禁仍开放，见文末。
 此前K49/Ud8的实机证据继续保留，只证明那个冻结版本。
 
 ## 接口和身份
@@ -53,7 +53,7 @@ ring位置删除与raw不能遮蔽recipe deadline。用户态170项Rust回归、
 public C/Rust/ctypes与i386 C布局比较。专用C实机probe已迁移四种metadata提交，
 保持原16个结果syscall门禁；新镜像必须重新执行后才能证明当前真实WS73路径。
 
-尚需实际提交只读/部分copyout失败及重复ID的单次wire证明，真实排队与在途取消/
+该开发批次尚无实际提交copyout证明，后续两类限定验收见文末。真实排队与在途取消/
 迟到回复、原期限、并发/CAP/移除、完整生命周期、32位runtime及剩余legacy
 DLI消费者迁移。开发fixture不替代这些实际门禁。R12/K3/U2保持OPEN；自然
 启动/重枚举/消失根因与完整无人工拔插恢复、北极星7/8、socket/SSAP/安全/
@@ -84,13 +84,13 @@ Ready约10572.303ms，发现10秒从成功scan Complete起算，RX证据不是PH
 工具与诊断原代码23项（结果12/提交11），既有security7/backend2/TX11/SSAP9/
 event9、C sanitizers和历史PHY3/拒绝arm1保持。CI仅编译live C，不执行真实设备。
 
-本轮实际结果/metadata回归只证明新生产提交的正常路径及既有结果门禁；
+上述Kc89/Udf9批次只证明正常metadata与结果门禁；
 **提交copyout幂等性、实际排队/在途取消、原deadline与迟到回复没有live证明**。
 这些仍为开发门禁，下一批必须专门执行，不关闭R12/K3/U2或完整事务issue。
 自然故障根因/自主恢复、物理xHCI警告、旧消费者删除和完整S0–S6继续OPEN。
 
 
-## 实际提交copyout门禁实施（待新镜像执行）
+## 实际提交copyout门禁实施与限定验收
 
 专用C probe在MAC提交时制造全输出页只读EFAULT，在features提交时制造跨页
 输出EFAULT：前36字节可写（包含offset32的seq），其余4字节只读。输入40字节
@@ -106,5 +106,31 @@ event9、C sanitizers和历史PHY3/拒绝arm1保持。CI仅编译live C，不执
 开发测试（总159），合成fixtures只证明拒绝边界，不证明实际syscall/USB行为。
 
 Linux本轮仅修改专用selftest，生产驱动/core未改变；用户态只改测试工具及
-捕获验证。将用固定新提交的新镜像重新执行后另记结果；实际取消、迟到回复、
+捕获验证。已用固定新提交的新镜像执行，结果见下；实际取消、迟到回复、
 原deadline、并发/移除及自然故障根因仍OPEN，不关闭整项事务/恢复issue。
+
+### 本批冻结新镜像与证据
+
+Linux `372d3cbcd557` / 编译用户态 `ee2793301e9a` 的
+[实际证据](evidence/ws73-vm-diagnostic-copyout-20261011.json)记录两个真实提交
+EFAULT：全输出只读、36字节可写前缀。输入/失败输出40字节、取回的seq、三次
+同ID重复返回完整40字节及不变的104字节结果均核对；提交/完成统计各增加一次，
+pending=0、timeout不变。每个完整故障/重试窗口独立USB核对恰好一次OUT及
+对应成功Complete，不能只从相同seq推断没有重发。
+
+诊断证据format2/21条记录（结果case16、admission2、身份1、phase2），实际
+CLI4、独立wire8全部通过；legacy read7及真实20+2最长620ms/22份RX保持，
+1279 USB包零drop。普通UID1000/caps0，同slkd PID648/start1532/bus owner，
+幸存g2保持、目标g1→g3；人工错误到新Ready10798.365ms，非自然故障验收。
+VM warning0/taint0/trace overrun0、13条QMP无device_del，host4只仍在且释放。
+
+完整image/modules、空USB root两次加载卸载、默认bundle重新构建通过；
+[CI38090373115](https://github.com/OpenSparklink/sparklink/actions/runs/38090373115)
+9作业成功，实际日志170 Rust/34 Python/159工具/诊断fixture23。CI只编译live
+C，不执行硬件；开发fixture依赖与旧失败记录保留。生产内核与用户态分别仍为
+Kc89/Udf9。本批没有物理拔插或宿主原生试验。
+
+**通过范围仅为两类顺序metadata提交copyout与同ID重试**。实际淘汰旧ID不重发、
+排队/在途取消和迟到回复、原deadline、并发/CAP/完整移除/32位runtime、旧
+DLI消费者删除仍需验收，R12/K3/U2及完整事务issue保持OPEN。北极星7/8、
+自然根因/完整自主恢复、socket/SSAP/安全/Bond/Profile/Proxy及全S0–S6不缩减。

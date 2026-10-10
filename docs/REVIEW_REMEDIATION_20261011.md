@@ -307,3 +307,21 @@ Native旧输出seq-only提交入口不支持，C/Rust/Python、CLI和专用probe
 同daemon/幸存g2保持；固定源码9作业CI通过。新提交copyout幂等、实际取消/
 迟到回复尚未验收，不能把已有结果copyout门禁当作提交门禁。迁移及完整issue
 继续OPEN，自然恢复根因与S0–S6范围不变。原失败构建/环境记录保留。
+
+
+## 最新限定提交故障验收与 BlueZ 分析复核（2026-10-11）
+
+再次收到的BlueZ分析与已采用文本SHA256相同，ADR 0001和最终每通道socket、
+用户态SSAP/服务/Profile、安全机制/策略边界保持；未发布UAPI可同步替换，
+不保留永久双实现。基线更新为Linux `372d3cbcd557` / 编译用户态 `ee2793301e9a`。
+[限定提交故障证据](evidence/ws73-vm-diagnostic-copyout-20261011.json)证明只读/
+部分输出EFAULT后同ID取回原seq、三次重复完整返回，提交/完成各一次；完整
+窗口实际USB只有一个OUT/成功Complete。结果16/CLI4/wire8/read7和真实20+2
+保持，同slkd/幸存g2不变，最长620ms、1279 USB零drop；9作业CI成功（170
+Rust/34 Python/159工具）。生产Kc89/Udf9未变，本批仅selftest/验证与证据。
+
+实际淘汰旧ID、取消/迟到回复/期限/并发及剩余legacy DLI迁移仍待接通和回归，
+随后删除共享结果/事件和重复UAPI。自然启动/重枚举/消失根因、无人工自主恢复
+及历史xHCI警告继续OPEN；VM-only和北极星7/8不变。按严重程度继续拒绝未支持
+安全/服务能力，生命周期与旧代码清理并行；socket/用户态SSAP/每连接安全/
+Bond/Profile/四设备/其他Native/Proxy及全S0–S6保留全部原验收。

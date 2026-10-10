@@ -1,8 +1,12 @@
 # Linux Bluetooth / BlueZ 与 SparkLink：设计依据和验证边界
 
-本轮重复分析已核对至 Linux `5c87f9075d37` / 用户态 `f2aea829dab3`。
-[Native diagnostic caller 迁移](DIAGNOSTIC_RESULT_MIGRATION.md)推进原请求者结果
-交付，保留 ADR 0001 分层与最终 socket 方向；旧事件全迁移和完整请求契约仍开放。
+用户这次提供的分析与已采用文本相同（SHA256
+`f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a`）。
+最新复核基线为 Linux `372d3cbcd557` / 编译用户态 `ee2793301e9a`；本批只改
+selftest/验证工具，生产内核保持 `c89e961b80a2`，生产用户态保持 `df9cff7d750d`。
+[实际提交 copyout 证据](evidence/ws73-vm-diagnostic-copyout-20261011.json)补齐
+两类限定幂等提交门禁，不能推论取消、完整请求契约或自主故障恢复已完成。
+ADR 0001、最终 socket/用户态 SSAP 分层、WS73 北极星及 S0–S6 均保持。
 Rust、接口数量或代码量不构成架构/性能领先证据。
 
 2026-10-11 重审。对标是 Linux Bluetooth 内核协议栈加 BlueZ 用户态生态。

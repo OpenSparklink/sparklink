@@ -110,7 +110,7 @@ flowchart TB
 
 SSAP Engine 先 ExchangeInfo，再使用协商 MTU/扩展码/分片/事务号/可靠能力；未协商事务号时，每 peer/channel 的 request-response 与 indication-ack 各自单在途，双向交互按标准 30s 失败门禁；command/notify 不受该等待阻塞。分片 timer、丢片/断链、属性修改的不确定状态按正文错误语义测试。
 
-当前 Battery 使用 Bluetooth 的 `0x180F/0x2A19`，须按星闪标准改为 `0x060A/0x1034` 并验证描述符/权限/通知；DeviceInfo 的旧 `0x180A` 须重新核对 30012。HID 不能仅靠 callback unit test 宣告符合，需完成应用配置及必选 DeviceInfo 依赖。标准没有规定 SSAP 必须在哪个 OS 层，迁入 slkd 是本项目的明确架构选择。
+实验 Battery 已改为星闪 `0x060A/0x1034` 和正确命名权限；描述符/通知/用户态 Engine/真实互通仍须验收。DeviceInfo 的旧 `0x180A` 须重新核对 30012。HID 不能仅靠 callback unit test 宣告符合，需完成应用配置及必选 DeviceInfo 依赖。标准没有规定 SSAP 必须在哪个 OS 层，迁入 slkd 是本项目的明确架构选择。
 
 每条验收增加 `标准号/版本/hash → 章/表/规范用例 id → 角色与 mandatory/conditional 判定 → 实现 → golden/负向测试 → 实机证据`。标准内部疑似勘误单列（例如 DLI §7.2 表 7 的范围与分组规则），结合具体命令表/实际 wire 核对，不盲抄；固件不支持或偏离标准的能力显式报告，不能由 Host 伪造符合性。完整正文 PDF 保持本地归档，不附到公共 issues。
 
@@ -688,3 +688,5 @@ Rust及C USB sanitizer回归、完整image/modules/空USB VM通过；
 及[完整9个CI jobs](https://github.com/OpenSparklink/sparklink/actions/runs/38078588074)
 通过。保留旧正向用例和迁移任务，不以fixture发送宣称socket或真实连接完成；
 继续每通道socket/SSAP、安全/Bond、四设备、其他backend和全S0–S6原验收。
+
+[权限基础与迁移门禁](SSAP_OPERATIONS.md)已同步C/Rust/Python；不能以掩码一致宣称SSAP/安全或Profile完成。

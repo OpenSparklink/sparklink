@@ -598,7 +598,7 @@ mod tests {
 
     #[test]
     fn parse_std_service_list() {
-        // Two 16-bit UUIDs: 0x060B (HID), 0x180F (Battery)
+        // Two arbitrary UUIDs for codec testing; this is not a Profile declaration.
         let data = [0x05, 0x04, 0x0B, 0x06, 0x0F, 0x18];
         let (entries, errors) = parse_adv_data(&data);
         assert!(errors.is_empty());

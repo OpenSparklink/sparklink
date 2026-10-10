@@ -16,6 +16,7 @@
 //!   - 输出报告信息   (0x103D) — read/write/notify/indicate/broadcast
 //!   - 特性报告信息   (0x103E) — read/write/notify/indicate/broadcast
 
+use slk_protocol::SsapOperations;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
@@ -373,25 +374,25 @@ impl Profile for HidProfile {
             // 类型和格式描述 — mandatory, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_TYPE_FORMAT,
-                ops: 0x01 | 0x04, // read + notify
+                ops: SsapOperations::READ | SsapOperations::NOTIFY,
                 initial_value: self.type_format_value(),
             },
             // 工作状态指示 — mandatory, read/write/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_STATUS,
-                ops: 0x01 | 0x02 | 0x04, // read + write + notify
+                ops: SsapOperations::READ | SsapOperations::WRITE_NO_RSP | SsapOperations::NOTIFY,
                 initial_value: vec![self.status as u8],
             },
             // 报告索引信息 — mandatory, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_REPORT_INDEX,
-                ops: 0x01 | 0x04, // read + notify
+                ops: SsapOperations::READ | SsapOperations::NOTIFY,
                 initial_value: self.report_index_value(),
             },
             // 输入报告信息 — conditional, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_INPUT_REPORT,
-                ops: 0x01 | 0x04, // read + notify
+                ops: SsapOperations::READ | SsapOperations::NOTIFY,
                 initial_value: self
                     .input_report
                     .lock()
@@ -401,7 +402,7 @@ impl Profile for HidProfile {
             // 输出报告信息 — conditional, read/write/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_OUTPUT_REPORT,
-                ops: 0x01 | 0x02 | 0x04, // read + write + notify
+                ops: SsapOperations::READ | SsapOperations::WRITE_NO_RSP | SsapOperations::NOTIFY,
                 initial_value: self
                     .output_report
                     .lock()
@@ -411,7 +412,7 @@ impl Profile for HidProfile {
             // 特性报告信息 — conditional, read/write/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_FEATURE_REPORT,
-                ops: 0x01 | 0x02 | 0x04, // read + write + notify
+                ops: SsapOperations::READ | SsapOperations::WRITE_NO_RSP | SsapOperations::NOTIFY,
                 initial_value: self
                     .feature_report
                     .lock()
@@ -513,6 +514,28 @@ impl Profile for HidProfile {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn advertised_permissions_do_not_turn_notifications_into_writes() {
+        use crate::profile::Profile;
+        use slk_protocol::SsapOperations;
+        let profile = super::HidProfile::boot_keyboard();
+        for ch in profile.characteristics() {
+            assert!(ch.ops.contains(SsapOperations::NOTIFY));
+            assert!(!ch.ops.contains(SsapOperations::WRITE_WITH_RSP));
+            if [
+                super::UUID_STATUS,
+                super::UUID_OUTPUT_REPORT,
+                super::UUID_FEATURE_REPORT,
+            ]
+            .contains(&ch.uuid16)
+            {
+                assert!(ch.ops.contains(SsapOperations::WRITE_NO_RSP));
+            } else {
+                assert!(!ch.ops.contains(SsapOperations::WRITE_NO_RSP));
+            }
+        }
+    }
     use super::*;
 
     #[test]

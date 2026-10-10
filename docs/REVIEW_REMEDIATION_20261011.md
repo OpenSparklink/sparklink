@@ -182,3 +182,11 @@ selftests。整项 R04/R07/R08 仍OPEN：socket/owner/预算/期限、标准code
 已验证20+2、最长622ms、22独立RX/1163 USB零drop、同daemon/幸存者、warning0。
 远端[CI38079779731](https://github.com/OpenSparklink/sparklink/actions/runs/38079779731)
 9 jobs success，实际8项SSAP/11项sender日志已核对；自然根因及北极星7/8不变。
+
+### R07 权限契约及调用入口整改
+
+Linux bde171beb2e0aee6d10515235ec4f0bb03e99663 与本批用户态采用表32权限命名/32位类型，拒绝保留位和
+旧8位接口的descriptor截断；修正Battery/HID声明、Battery UUID，实际library和
+D-Bus入口拒绝无效/超长属性。Python超长write也拒绝u16回绕。[实现/语义门禁](SSAP_OPERATIONS.md)
+记录C/Rust/Python2052输入、167 Rust/33 Python/9 kernel实际测试；不是wire Engine
+或真实服务验收，R07与整项服务/socket/security issues保持OPEN。

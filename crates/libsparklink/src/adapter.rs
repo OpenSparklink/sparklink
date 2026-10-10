@@ -564,6 +564,8 @@ impl Adapter {
 
     /// Add a property (characteristic) to a service
     pub fn ssap_add_prop(&self, prop: &mut SsapAddProperty) -> Result<()> {
+        prop.validate_legacy_staging()
+            .map_err(|_| Error::InvalidParam("invalid legacy SSAP property"))?;
         unsafe { ioctl::sl_ssap_add_prop(self.raw_fd(), prop)? };
         debug!(handle = prop.handle, uuid16 = prop.uuid16, "property added");
         Ok(())
@@ -1155,4 +1157,44 @@ pub(crate) fn decode_event(raw: SleDliEvent) -> Result<Event> {
         EVT_HW_ERROR => Event::HwError { code: raw.data[0] },
         _ => Event::RawDli(raw),
     })
+}
+
+#[cfg(test)]
+mod ssap_registration_tests {
+    use super::*;
+
+    #[test]
+    fn invalid_property_rejects_before_actual_ioctl() {
+        let adapter = Adapter::open("/dev/null").unwrap();
+        let mut prop = SsapAddProperty::for_legacy_staging(
+            1,
+            SsapOperations::READ | SsapOperations::NOTIFY,
+            b"original",
+        )
+        .unwrap();
+        prop.ops |= 0x40;
+        assert!(matches!(
+            adapter.ssap_add_prop(&mut prop),
+            Err(Error::InvalidParam(_))
+        ));
+        assert_eq!(prop.handle, 0);
+        prop.ops = 9;
+        prop.value_len = 249;
+        assert!(matches!(
+            adapter.ssap_add_prop(&mut prop),
+            Err(Error::InvalidParam(_))
+        ));
+        prop.value_len = 8;
+        prop._reserved[0] = 1;
+        assert!(matches!(
+            adapter.ssap_add_prop(&mut prop),
+            Err(Error::InvalidParam(_))
+        ));
+        prop._reserved = [0; 2];
+        // Valid staging reaches the real syscall and keeps ENOTTY on /dev/null.
+        assert!(matches!(
+            adapter.ssap_add_prop(&mut prop),
+            Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+        ));
+    }
 }

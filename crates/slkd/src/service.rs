@@ -58,19 +58,14 @@ impl SsapManagerIface {
     }
 
     /// Add a property (characteristic) to a service
-    /// ops: bitmask of read(0x01)/write(0x02)/notify(0x04)/indicate(0x08)
+    /// Local staging only: READ=01, WRITE_NO_RSP=02, WRITE_WITH_RSP=04,
+    /// NOTIFY=08, INDICATE=10, BROADCAST=20; reserved bits are rejected.
     /// Returns the assigned handle
     async fn add_property(&self, uuid16: u16, ops: u8, value: Vec<u8>) -> zbus::fdo::Result<u16> {
-        let len = value.len().min(248);
-        let mut prop = slk_protocol::SsapAddProperty {
-            uuid16,
-            ops,
-            value_len: len as u8,
-            value: [0; 248],
-            handle: 0,
-            _reserved: [0; 2],
-        };
-        prop.value[..len].copy_from_slice(&value[..len]);
+        let ops = slk_protocol::SsapOperations::from_bits(u32::from(ops))
+            .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        let mut prop = slk_protocol::SsapAddProperty::for_legacy_staging(uuid16, ops, &value)
+            .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
         let st = self.state.lock().await;
         st.adapter
             .ssap_add_prop(&mut prop)
@@ -311,4 +306,37 @@ pub struct NotificationData {
     pub handle: u16,
     pub indication: bool,
     pub data: Vec<u8>,
+}
+
+#[cfg(test)]
+mod validation_tests {
+    use super::*;
+    use crate::{bonding::BondingStore, config::DaemonConfig, state::AdapterState};
+    use libsparklink::Adapter;
+    use slk_experimental::profile::ProfileRegistry;
+    use std::sync::Arc;
+    use tokio::sync::Mutex;
+
+    #[tokio::test]
+    async fn actual_service_method_rejects_invalid_input_before_state_lock_or_ioctl() {
+        let state = Arc::new(Mutex::new(AdapterState::new(
+            Adapter::open("/dev/null").unwrap(),
+            DaemonConfig::default(),
+            BondingStore::new(&std::env::temp_dir(), "unused-ssap-validation-test"),
+            ProfileRegistry::new(),
+        )));
+        let service = SsapManagerIface::new(state.clone());
+        let _locked = state.lock().await;
+        // The state lock is deliberately held. Incorrect validation order
+        // blocks here and fails the deadline, rather than silently succeeding.
+        for (ops, value) in [(0x49, vec![]), (9, vec![0; 249])] {
+            let result = tokio::time::timeout(
+                std::time::Duration::from_secs(1),
+                service.add_property(1, ops, value),
+            )
+            .await
+            .unwrap();
+            assert!(matches!(result, Err(zbus::fdo::Error::InvalidArgs(_))));
+        }
+    }
 }

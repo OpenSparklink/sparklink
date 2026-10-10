@@ -64,3 +64,5 @@ indication 需匹配 ACK/期限；不得先出队再取credit或给未存入队�
 11项sender和C USB边界日志。工具141、Rust160、ABI29和strict gates通过。
 R04/R07/R08、socket/SSAP/Profile和生命周期issues保持OPEN；自然故障根因、
 完整自主恢复、历史物理xHCI警告及native对照不因本批清理关闭。
+
+后续[权限契约整改](SSAP_OPERATIONS.md)已消除旧通知/写位混淆并拒绝保留位/截断；原wire Engine仍不支持，真实SSAP互通继续OPEN。

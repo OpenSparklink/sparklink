@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 7cc1175f28f4c9a5d1acb3db0c518acf37e7f8e4
+          ref: 49cabad043f6e4915fea19dc0ea3bc02f4063496
           path: .kernel-uapi
           sparse-checkout: include/uapi/linux/sparklink_ioctl.h
           sparse-checkout-cone-mode: false
@@ -133,7 +133,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 7cc1175f28f4c9a5d1acb3db0c518acf37e7f8e4
+          ref: 49cabad043f6e4915fea19dc0ea3bc02f4063496
           path: .kernel-tools
           sparse-checkout: tools/testing/selftests/sparklink
       - uses: actions/setup-python@v5
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 7cc1175f28f4c9a5d1acb3db0c518acf37e7f8e4
+          ref: 49cabad043f6e4915fea19dc0ea3bc02f4063496
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink

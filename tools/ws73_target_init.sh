@@ -86,6 +86,9 @@ fi
 for n in $(seq 1 100); do [ -S /run/slkbus ] && break; sleep 0.1; done
 [ -S /run/slkbus ] || fail 'system bus startup'
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
+    # The runner attaches the first USB owner after capture readiness. Signal
+    # before the diagnostic barrier, which needs that owner before slkd starts.
+    echo 'WS73_TARGET_CAPTURE_READY'
     /bin/python3 /usr/share/sparklink/tools/ws73_diagnostic_probe.py --probe /bin/diagnostic-result-probe --slkconfig /bin/slkconfig --output /evidence/diagnostic > /evidence/diagnostic-supervisor.log 2>&1 & diagnostic=$!
     for n in $(seq 1 1200); do
         [ -f /evidence/diagnostic/before-daemon.json ] && break
@@ -100,7 +103,9 @@ if [ -f /scratch-root-uuid ]; then
     mkdir -p "$storage"; chown 0:0 "$storage"; chmod 0700 "$storage"
 fi
 /bin/slkd --storage "$storage" -n > /evidence/slkd.log 2>&1 & daemon=$!
-echo 'WS73_TARGET_CAPTURE_READY'
+if ! grep -q 'ws73.diagnostic=1' /proc/cmdline; then
+    echo 'WS73_TARGET_CAPTURE_READY'
+fi
 /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready 0 || fail 'first independent Ready'
 echo 'WS73_TARGET_READY: slot=0'
 /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready 1 || fail 'second independent Ready'

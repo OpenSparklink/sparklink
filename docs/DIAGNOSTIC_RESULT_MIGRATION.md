@@ -84,3 +84,11 @@ Diagnostic 持有者与结果作者分别校验、零/错误 generation、versio
 能力或退役步骤及错误测试模式。合成 verifier 输入不是真实 syscall 证据。
 冻结 C/工具/CLI 并用新镜像执行后另记结果；开发门禁不提前宣称实际验收通过。
 完整旧 DLI 调用者迁移、共享队列删除、提交 copyout 幂等/cancel 与自然恢复仍OPEN。
+
+首轮新门禁VM因测试启动顺序失败：probe在capture-ready标记之前等待USB，
+runner等该标记才QMP接入，形成等待环。原私有失败目录
+`.dev/diagnostic-live-real-recovery`保留；QMP只有握手、无device_add，
+不能把这个环境错误称为WS73启动/自然恢复失败或将其计作通过。
+修正诊断模式capture-ready标记顺序；测试metadata可用时允许Setup，
+不改变生产Ready定义，snapshot重试清零输出flags，transport-open只对
+EAGAIN/零lease有界6秒重试，不重置或跟随新注册。新镜像重新执行后再记录结果。

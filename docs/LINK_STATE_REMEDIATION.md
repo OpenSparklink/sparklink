@@ -27,7 +27,7 @@ channel-map/hopping，覆盖边界、环绕、空map、参数失败不改字段�
 实际security模块新增回归遍历Idle/Pairing/Paired/Encrypted，预填密钥/SM4/counter后
 legacy enable仍拒绝，状态、凭据、计数保持，无FFI调用。security7及原C失败阶段/
 sanitizers本地通过；既有backend2、TX11、SSAP9、event9实际实现边界回归通过。
-固定新kernel pin的CI增加模型/拒绝分支门禁；完整镜像和新VM实机回归结果另行记录，
+固定新kernel pin的CI增加模型/拒绝分支门禁；完整镜像和新VM实机回归见下文，
 之前`3a6669114069`的20+2/live read证据只支持当时源码，不能自动覆盖本次生产变化。
 
 ## 重新开放能力所需门禁
@@ -41,3 +41,25 @@ sanitizers本地通过；既有backend2、TX11、SSAP9、event9实际实现边�
 普通用户真实双设备数据、PHY策略及安全互通、旧generation/多连接隔离、标准向量/
 Agent/Bond恢复均仍待验收。自然WS73超时/重枚举/消失根因和无人工恢复独立开放，
 北极星7/8、VM-only与完整S0–S6不变。
+
+## 新镜像、真实路径保持及CI
+
+[本次证据](evidence/ws73-vm-link-state-cleanup-20261011.json)对应Linux
+`f1704a2e44dc750e6c325077bb234579f8922b6f` / 编译用户态
+`04b48467d49c5030dd22f8bc54c275cfaf9c5645`。完整image/modules与冻结source/config/
+hash、空USB VM签名模块两次加载/卸载通过；无代码compiler warning/error，已知
+make jobserver警告单独记录。工具链固定1.96.1，ccache限定workspace目录。
+
+新VM保留7类实际read用户copy门禁，真实双设备20+2轮最长622ms，host独立核对
+22份RX/1247 USB零drop。普通用户UID1000/caps0，同slkd PID522/start327及bus，
+幸存generation2保持、目标1→3，最终两只STOP_CONFIRMED，VM warning0/taint0/
+trace overrun0。单对象人工IN81故障至新Ready约10168.645ms；10秒发现门限从
+成功scan Complete计时。本批未物理拔插，host四只仍在并释放；RX USB/HCC/DLI
+不是PHY嗅探。上述证明清理后discovery和read路径保持，不证明PHY操作已接通。
+
+[CI38084762680](https://github.com/OpenSparklink/sparklink/actions/runs/38084762680)
+固定上述两仓库源码，9作业成功且实际日志核对167 Rust/33 Python/146工具、
+security7/backend2/TX11/SSAP9/event fixture9、C sanitizers，以及隔离模型3和
+实际PHY拒绝arm1。PHY arm的常量/错误依赖fixture边界仍适用，尚未进行这些旧
+PHY ioctl的实际VFS验收；更不能将拒绝未接通操作称为硬件完成、标准符合性或
+安全安装。全R09/K7/K16/U4、自然恢复、旧DLI迁移及完整S0–S6仍OPEN。

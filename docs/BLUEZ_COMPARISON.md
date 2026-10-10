@@ -57,3 +57,7 @@ generation、owner、恢复状态和证据链是我们的设计重点，需要�
 [7类live read及20+2回归](evidence/ws73-vm-live-event-copy-20261011.json)增加实际
 用户copy证据，完整事件/自然恢复/连接socket/SSAP/安全门禁仍OPEN。当前再次
 收到同一分析已按最新实现核对；没有架构回退或新的性能领先结论。
+
+`f1704a2e44dc`/`04b48467d49c`后续删除旧默认PHY/提前加密状态来源，隔离模型并
+拒绝未接通入口。[新镜像回归](evidence/ws73-vm-link-state-cleanup-20261011.json)
+证明WS73 discovery/read保持，不能被解释为真实PHY、安全事务或完整生态已交付。

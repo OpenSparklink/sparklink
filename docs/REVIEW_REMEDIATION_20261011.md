@@ -257,5 +257,12 @@ MCS/MIMO/PHY codec移selftests；仍被连接调用的channel/hopping保留等�
 实际拒绝分支开发测试通过。见[当前调用审计](LINK_STATE_REMEDIATION.md)。
 
 这是删除错误状态来源并限制未接通能力；真实PHY/加密事务、每连接凭据安装及
-匹配成功硬件完成尚未接通，R09/K7/K16/U4整项OPEN。新镜像/实机结果另行记录，
+匹配成功硬件完成尚未接通，R09/K7/K16/U4整项OPEN。新镜像/实机结果见下文，
 自然恢复、旧DLI迁移、完整socket/SSAP/安全/Bond/Profile及S0–S6继续推进。
+
+[R09新镜像回归](evidence/ws73-vm-link-state-cleanup-20261011.json)已重新核对7类
+实际read及真实20+2轮，最长622ms，22份RX/1247 USB零drop；普通用户、同daemon/
+幸存者，VM warning0/taint0。人工恢复约10168.645ms。固定源码的
+[CI38084762680](https://github.com/OpenSparklink/sparklink/actions/runs/38084762680)
+9作业通过，实际security7和隔离PHY模型3/拒绝arm1及既有回归日志核对。
+这是清理后的路径保持，不是PHY/加密真实成功或自然故障根因验收。

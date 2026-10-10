@@ -108,3 +108,7 @@ MIMO/旧PHY codec到专用selftests，删除无人调用PHY/空参数加密命�
 仍有调用者的ChannelMap/Hopping保留等待连接迁移，并删phy模块global lint压制。
 见[调用关系、开发回归及重新开放条件](LINK_STATE_REMEDIATION.md)。本批不把
 拒绝未接通能力称为完成PHY/安全，也不删除有效历史测试或关闭整项issue。
+
+[清理后新镜像](evidence/ws73-vm-link-state-cleanup-20261011.json)及固定提交9作业
+CI通过，真实20+2/7类read保持。生产phy模块不再编入MCS/MIMO/PhyConfig模型；
+待迁移的connection channel/hopping、security全局上下文和DLI路径仍明确记录。

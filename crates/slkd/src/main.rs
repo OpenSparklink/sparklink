@@ -94,7 +94,11 @@ async fn main() -> anyhow::Result<()> {
         directory,
     );
     info!("D-Bus service registered; watching controller registrations");
-    let shutdown_signal = tokio::signal::ctrl_c().await;
+    let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
+    let shutdown_signal = tokio::select! {
+        result = tokio::signal::ctrl_c() => result,
+        _ = terminate.recv() => Ok(()),
+    };
     let result = manager.shutdown().await;
     drop(connection);
     result?;

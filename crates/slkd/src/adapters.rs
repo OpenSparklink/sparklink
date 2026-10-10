@@ -24,6 +24,55 @@ use tracing::{info, warn};
 
 const POLL: Duration = Duration::from_millis(250);
 
+/// Withdraw authority while SharedState and outstanding RPCs still retain the
+/// fd. Last-close cleanup is a crash fallback, not the normal daemon handoff.
+async fn relinquish(adapter: Arc<Adapter>, generation: u64, lease: u64) -> anyhow::Result<()> {
+    let fd = adapter.clone();
+    match tokio::task::spawn_blocking(move || {
+        fd.release_management(generation, lease, slk_protocol::MANAGEMENT_MANAGED)
+    })
+    .await?
+    {
+        Ok(()) => {}
+        Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => return Ok(()),
+        Err(error) => return Err(error.into()),
+    }
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(6);
+    loop {
+        let fd = adapter.clone();
+        let status =
+            match tokio::task::spawn_blocking(move || fd.management_status(generation)).await? {
+                Ok(status) => status,
+                Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => return Ok(()),
+                Err(error) => return Err(error.into()),
+            };
+        match status.state {
+            slk_protocol::MANAGEMENT_FREE => {
+                info!(
+                    generation,
+                    "adapter management relinquished while fd retained"
+                );
+                return Ok(());
+            }
+            slk_protocol::MANAGEMENT_FAULTED => anyhow::bail!(
+                "management cleanup fault: generation={generation} errno={} status={} opcode={}",
+                status.error,
+                status.status,
+                status.opcode
+            ),
+            slk_protocol::MANAGEMENT_REVOKING => {}
+            // A successor may acquire between RELEASE and QUERY. Its token is
+            // hidden from this fd: it has authority, the withdrawn fd does not.
+            slk_protocol::MANAGEMENT_HELD if status.flags & 1 == 0 => return Ok(()),
+            _ => anyhow::bail!("management authority retained after release"),
+        }
+        if tokio::time::Instant::now() >= deadline {
+            anyhow::bail!("management cleanup observation timeout: generation={generation}");
+        }
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+}
+
 pub(crate) fn object_path(snapshot: &SleControllerSnapshot) -> String {
     format!(
         "/org/sparklink/slk{}_g{}",
@@ -111,6 +160,7 @@ struct Node {
     path: String,
     state: SharedState,
     control: Arc<Adapter>,
+    lease: Option<u64>,
     connection: zbus::Connection,
     event: Option<EventTask>,
     init: JoinHandle<()>,
@@ -145,12 +195,17 @@ impl Node {
         } else {
             Subscription::Native(receiver.into_controller_event_receiver()?)
         };
-        let adapter = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
-            if snapshot.profile != 0 {
-                adapter
-                    .acquire_management(snapshot.generation, slk_protocol::MANAGEMENT_MANAGED)?;
-            }
-            Ok(Arc::new(adapter))
+        let (adapter, lease) = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
+            let lease =
+                if snapshot.profile != 0 {
+                    Some(adapter.acquire_management(
+                        snapshot.generation,
+                        slk_protocol::MANAGEMENT_MANAGED,
+                    )?)
+                } else {
+                    None
+                };
+            Ok((Arc::new(adapter), lease))
         })
         .await??;
         let control = adapter.clone();
@@ -190,6 +245,12 @@ impl Node {
         let state = Arc::new(Mutex::new(state));
         // Roll back partial registration if any of the D-Bus interfaces fails.
         if let Err(error) = publish(connection, &path, &state).await {
+            if let Some(lease) = lease {
+                if let Err(cleanup) = relinquish(control.clone(), snapshot.generation, lease).await
+                {
+                    warn!(%cleanup, %path, "partial adapter publication cleanup failed");
+                }
+            }
             remove_interfaces(connection, &path).await;
             let (bonding, profiles) = {
                 let st = state.lock().await;
@@ -224,6 +285,7 @@ impl Node {
             path,
             state,
             control,
+            lease,
             connection: connection.clone(),
             event: Some(event),
             init,
@@ -276,8 +338,16 @@ impl Node {
     async fn remove(mut self, connection: &zbus::Connection, directory: &AdapterDirectory) {
         directory.lock().await.remove(&self.path);
         self.state.lock().await.present = false;
-        invalidate_properties(connection, &self.path, &["Ready", "ControllerState"]).await;
         let _ = self.cancel.send(true);
+        // Do this before awaiting event/actor/RPC teardown. Queries can finish,
+        // but retained clones cannot admit another management operation.
+        if let Some(lease) = self.lease.take() {
+            let generation = self.state.lock().await.controller.generation;
+            if let Err(error) = relinquish(self.control.clone(), generation, lease).await {
+                warn!(%error, path=%self.path, "adapter management cleanup failed");
+            }
+        }
+        invalidate_properties(connection, &self.path, &["Ready", "ControllerState"]).await;
         if let Some(event) = self.event.take() {
             let _ = event.shutdown().await;
         }

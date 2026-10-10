@@ -497,3 +497,23 @@ errno稳定、pending wire回复缺失时取消/timeout、重插代次隔离。�
 合格#64镜像/配置/对象、最终source/input guards与日志保留于
 `.dev/management-final-evidence.json`。原完整slkd strict-clippy旧问题仍待处理。
 实际主机完整USB拓扑仍WS73=[]，未做实机控制/RF；七项及全部整项issues保持OPEN。
+
+
+### daemon 显式撤销与同代次接任（2026-10-10，部分成果）
+
+每设备保存 native lease；对象撤销/部分发布失败显式 RELEASE，不等在途 RPC
+共享的控制 fd 最后关闭。释放后按每设备独立 QUERY 观察清理，最多6秒；
+不跨 ioctl/等待持有目录或 SharedState 锁。ENODEV 结束旧 registration，
+Fault/timeout 记录原错误，不伪造 Off/恢复；SIGTERM 与 SIGINT 共用正常清理。
+
+新增实际 root slkd + uid1000 slctl + 原生 USB 合成模型门禁：20轮换向、同
+daemon 重插2轮及 TX-off 之后保持广播/扫描运行，SIGTERM 后独立 C observer
+确认两个 Free/Off/Ready、隐藏 owner token；daemon 在 fd 仍保留时确认释放。
+新 PID/新 D-Bus owner 不经 USB 重插接管原 generation，SIGINT 再次清理。
+生产策略/内核凭据降权矩阵一起验证，复现参数及边界见
+[ownership 契约](MANAGEMENT_OWNERSHIP.md)。198 harness、146 workspace 与原
+完整96-case回归通过（0 FAIL/0 SKIP，3既有WARN）；首次阶段顺序判定错误
+记录保留；早期接任记录发现缺失sort导致一项列表比较无效，最终改用
+BusyBox并让判定器拒绝shell依赖缺失，早期PASS不计入最终证据。daemon故障/强制终止、profile0/Proxy/PDU/Security
+及完整后续矩阵仍待做。主机真实 WS73 仍未枚举；实机七项、四设备两组与
+全部原S0–S6/整项issues仍开放，合成成功不算真实空口验收。

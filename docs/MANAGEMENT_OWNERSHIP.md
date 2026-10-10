@@ -70,3 +70,38 @@ ACQUIRE EFAULT 不提交、无权限 inherited owner、最后关闭后实际停�
 通过，11条集成门禁通过。完整原96-case QEMU 1056 OK/0 FAIL/0 SKIP/3旧WARN。
 最终qualified源码/输入guard与#64镜像冻结；不完整两设备回归的SKIP及先前构建/
 测试环境失败保留。全slkd已有strict-clippy问题仍未通过。实机WS73=[]，未做RF。
+
+## daemon 正常撤销与接任
+
+slkd 保存每个 native registration 的 lease。在对象撤销时，先从目录移除、
+标记不在场并取消初始化，再显式 RELEASE；此时 SharedState、控制 Arc 和
+可能在途的 RPC 仍可持有同一 fd。内核撤销 authority 后，这些引用不能继续
+提交管理命令。事件/接口/actor 的异步退出在释放后进行，最后关闭仅作为
+崩溃时的兜底。部分 D-Bus 发布失败也显式释放，而非等引用消失。
+
+RELEASE 后每设备独立观察 QUERY，最多6秒等待 Free；不持有目录/SharedState
+锁跨 ioctl 或等待。设备已拔出（ENODEV）视为该 registration 已失效；Faulted
+或观察超时记录原因，不将 radio 改成 Off，也不强行重置/重新授权。若其他
+fd 已成为新 owner，旧 fd 观察到 Held 但没有 owner flag，即已成功交接。
+SIGTERM（systemd 正常停止信号）与 SIGINT 使用同一正常 shutdown 路径。
+
+新增实际 daemon 门禁：
+
+```sh
+python3 linux/tools/testing/selftests/sparklink/run_daemon_lifecycle.py \
+  --kernel-build /absolute/path/qualified-kernel-build \
+  --qemu /absolute/path/custom-qemu-system-x86_64 \
+  --busybox /absolute/path/static-busybox \
+  --userspace /absolute/path/sparklink \
+  --dbus-daemon /absolute/path/dbus-daemon \
+  --radio-policy --production-policy --kernel-authorization --management-handoff \
+  --output /absolute/path/new-evidence-directory
+```
+
+先运行原20轮换向与同 daemon 重插2轮，再保持一只广播、另一只扫描，SIGTERM
+停止；独立 C 观察 fd 校验隐去 token 的 Held→Free、真实 Host stop 完成后的
+Off/Ready，daemon 自己在保留控制 fd 时确认释放。新 PID/新 D-Bus owner 在
+同 generation 重新取得两个 Managed lease，无 USB 重插；随后 SIGINT 停止
+并再次观察 Free/Off/Ready。合成 fixture 的数据与 RSSI 不属于真实空口证据。
+该扩展验证成功清理；daemon 故障清理、强制终止及完整 Backend 接任矩阵
+仍待扩展，已有内核失败停止/在途关闭/缺失 Complete 门禁继续保留。

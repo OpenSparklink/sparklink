@@ -4,8 +4,9 @@
 Linux `fc0b4d1a44b6cd417eb99ebee1378bda52a63300`、用户态
 `157ec71c3b9a088e39318425299c17c9a70fcd4a`。复核时新增Linux
 `2ba3978d22f2`及用户态`8042eb7`只改变QEMU诊断、VM控制/证据工具和文档；
-以下生产路径尚未修复，因此14项继续有效。后续生产提交必须按下表重审，
-不能引用旧基线的结论作为新提交已通过的证据。
+该时点14项生产路径尚未修复。随后376bb1e8a544/c2c4aa4ad0bd已约束
+R01/R02/R05，最新分项证据见文末；表中“确认”是原基线发现，不表示新代码
+仍具有被删除的测试行为。每批生产提交重新核对，不能复用旧基线验收结论。
 
 用户确认UAPI尚未发布：没有旧公开ABI兼容期要求。修改时同步内核头、Rust/C/
 Python绑定、CLI、D-Bus调用者、测试和CI内核pin；迁移调用者后直接移除旧接口。
@@ -80,5 +81,18 @@ xHCI endpoint恢复后丢回复，触发-110命令超时，有限恢复至新gen
 诊断/Proxy 独立。 [三类调用审计](LEGACY_CLEANUP_20261011.md)细分立即删除、
 移入 selftests、等待新路径替代；不增加未发布 UAPI 的兼容负担。
 [BlueZ 对比](BLUEZ_COMPARISON.md)删除错误完整/优势宣称，参考官方 MGMT、
-GATT、Agent、L2CAP 和 VM 测试语义。R01/R02/R05 首批实现验证中，未完成
+GATT、Agent、L2CAP 和 VM 测试语义。R01/R02/R05 首批已签名推送并完成限定开发/新镜像实机回归，仍未完成
 每连接安全/真实其他 backend 验收；R06–R14、自然恢复及整项 issues 仍 OPEN。
+
+### 首批实现、开发测试与实机状态
+
+- 实现：Linux `376bb1e8a544`删除不安全配对/生产crypto测试执行并传播FFI错误；
+  `c2c4aa4ad0bd`删除UART/SPI伪Complete/发送成功和虚假能力。未支持操作EOPNOTSUPP。
+- 开发：实际Rust6项安全失败回归、实际C CTR5阶段失败和ASan/UBSan/LSan、UART/SPI
+  实际方法2项、跨语言/32位ABI29项通过。kernel完整镜像/modules及对象无warning。
+- 实机：[整改后新VM证据](evidence/ws73-vm-cleanup-regression-20261011.json)记录
+  20+2真实RF（最长624ms）、单对象人工故障有限恢复、同daemon/幸存者、22份独立RX
+  佐证及1163记录零drop，taint0。历史物理证据保留，本批未重做人工物理拔插。
+- 未决：R01/R02完整认证/向量/凭据安装、旧正向测试与UAPI迁移；R05真实其他backend；
+  R06–R14、自然根因/无人工恢复/四设备/全sandbox。严格CI39 warning不隐藏，
+  新CI门禁不能代表全部质量基线已恢复，所有整项issue继续开放。

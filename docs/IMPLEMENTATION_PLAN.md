@@ -22,8 +22,9 @@ Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四
 ## 当前实施与证据（2026-10-11 重审）
 
 最新生产审查基线 Linux `fc0b4d1a44b6` / 用户态 `157ec71c3b9a`；
-诊断和文档提交至 Linux `ae06d9766fdd` / 用户态 `27358b1beff4`，不表示14项
-生产缺陷已修复。具体状态以[整改计划](REVIEW_REMEDIATION_20261011.md)及后续
+后续 Linux `376bb1e8a544`/`c2c4aa4ad0bd` 已约束R01/R02/R05，并完成
+[新VM 20+2轮及人工恢复回归](evidence/ws73-vm-cleanup-regression-20261011.json)；
+完整安全/其他backend未验收，R06–R14仍开放。具体状态以[整改计划](REVIEW_REMEDIATION_20261011.md)及后续
 提交证据为准。历史 image #33–#35/USB 不可见/固定 slk0 等阶段描述不代表现状；
 完整历史失败与协议来源保留在下文及北极星开发记录中。
 

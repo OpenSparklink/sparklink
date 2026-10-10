@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 0dd66bf0dd2e2f846d0be566c59dee49c0c782d0
+          ref: c2c4aa4ad0bd5b33294b8744a56727445f761a29
           path: .kernel-uapi
           sparse-checkout: include/uapi/linux/sparklink_ioctl.h
           sparse-checkout-cone-mode: false
@@ -123,3 +123,29 @@ jobs:
           PYTHONPATH: bindings/python
           SPARKLINK_KERNEL_UAPI: ${{ github.workspace }}/.kernel-uapi/include/uapi/linux/sparklink_ioctl.h
         run: python -m unittest discover -s bindings/python/tests -v
+
+  kernel-containment:
+    name: Actual kernel security and unsupported backend boundaries
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: OpenSparklink/linux
+          ref: c2c4aa4ad0bd5b33294b8744a56727445f761a29
+          path: .kernel-containment
+          sparse-checkout: |
+            net/sparklink
+            tools/testing/selftests/sparklink
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install compiler and sanitizer runtimes
+        run: sudo apt-get update && sudo apt-get install -y clang
+      - name: Execute actual source failure boundaries (not RF or crypto vectors)
+        working-directory: .kernel-containment
+        env:
+          CC: clang
+        run: |
+          python tools/testing/selftests/sparklink/run_security_remediation.py
+          python tools/testing/selftests/sparklink/run_backend_containment.py

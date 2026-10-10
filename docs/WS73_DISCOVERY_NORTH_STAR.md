@@ -1661,3 +1661,14 @@ capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d
 幸存设备 IN -108 / generation 改变。**并未定位该物理根因，也不是设备消失后
 自主恢复。** 北极星仍4/8，物理隔离/重插、完整物理复现包、原生主机对照、
 有限自动恢复和四设备两组及完整S0–S6继续开放；.4端口仍缺失。
+
+## 旧实验清理后的新内核回归（2026-10-11）
+
+Linux c2c4aa4ad0bd / 编译用户态a5da8dac54dd，VM-only 新镜像20+2轮真实
+广播扫描全部匹配，最长624ms；一次明确人工bulk IN81错误使1001超时-110，
+有限恢复到新generation3，幸存generation2不变，slkd PID525/start339和bus
+owner不变。capture1163/零drop，host独立验证22份RX。私有签名模块空USB
+VM两次加载/卸载及完整镜像编译通过，实机taint0/无warning。
+[限定范围、hash和逐轮结果](evidence/ws73-vm-cleanup-regression-20261011.json)。
+这是保持已验证WS73路径的整改回归，不重新声称物理拔插或自然根因闭合。
+北极星保持7/8，完整无人工恢复、四设备、全sandbox等仍OPEN。

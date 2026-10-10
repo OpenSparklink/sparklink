@@ -1,24 +1,24 @@
 # 旧内核实验实现：调用审计与清理清单
 
 审计日期：2026-10-11。基线 Linux fc0b4d1a44b6、用户态 157ec71c3b9a；
-最新已提交 ae06d9766fdd / 27358b1beff4 的生产调用链仍相同。以下记录首批
-整改工作树及迁移条件，不能当作已提交或实机通过。UAPI 未发布，无兼容期。
+最新已提交 ae06d9766fdd / 27358b1beff4 的生产调用链仍相同。首批 Linux 376bb1e8a544 / c2c4aa4ad0bd 已签名推送，以下记录调用链、
+迁移条件及限定回归。UAPI 未发布，无兼容期。
 
 ## 立即删除：生产测试行为及错误完成
 
 | 对象/调用链 | 本批措施 | 验收状态 |
 |---|---|---|
-| core ioctl_dispatch_security → SecurityInner::start_pairing；workers PairInfo/Option/Random/Confirm/DHKeyVerify → SecurityInner | 删除固定 nonce、ECDH 失败测试密钥降级和未验证 proof 的 Paired 转移；旧步骤 reset 后 EOPNOTSUPP，调用者不得发送认证成功回复 | 工作树已改；须实际内核编译及错误 proof/截短公钥/乱序步骤失败测试。完整每连接安全仍开放 |
-| sle_crypto Rust wrappers → sle_crypto_ffi.c；security KDF/CTR/RPA 和 core 查询调用者 | Result 传播原 errno、检查长度/计数；CTR C 临时缓冲完整成功后才提交数据/IV；失败不提交 keys/counter/address | 工作树已改；须实际函数分配/算法/密钥/部分失败注入；不是标准密码算法验收 |
-| core SEC_SM3/SM4/HMAC_TEST ioctl → SecurityInner 测试辅助/CTR counter=0 | 移除生产执行，返回 EOPNOTSUPP；删除 SecurityInner 测试辅助，迁算法/错误覆盖到 selftests；编号/绑定随调用者迁移删除 | 工作树已改；不能继续用旧 ioctl 成功测试证明生产能力 |
-| backend SleController::open/send_command/send_data/reset → UART/SPI 自制 CommandComplete(Success) | 删除伪成功及仅编码却报告发送成功；无真实硬件实现的操作 EOPNOTSUPP | 工作树已改；纯 framing 留作测试，不宣称 UART/SPI 支持 |
+| core ioctl_dispatch_security → SecurityInner::start_pairing；workers PairInfo/Option/Random/Confirm/DHKeyVerify → SecurityInner | 删除固定 nonce、ECDH 失败测试密钥降级和未验证 proof 的 Paired 转移；旧步骤 reset 后 EOPNOTSUPP，调用者不得发送认证成功回复 | 376bb1e8a544：实际编译和错误 proof/截短公钥/乱序步骤拒绝回归通过；完整每连接安全仍开放 |
+| sle_crypto Rust wrappers → sle_crypto_ffi.c；security KDF/CTR/RPA 和 core 查询调用者 | Result 传播原 errno、检查长度/计数；CTR C 临时缓冲完整成功后才提交数据/IV；失败不提交 keys/counter/address | 376bb1e8a544：实际函数分配/算法/密钥/部分写入失败注入及 sanitizers 通过；不是标准密码算法验收 |
+| core SEC_SM3/SM4/HMAC_TEST ioctl → SecurityInner 测试辅助/CTR counter=0 | 移除生产执行，返回 EOPNOTSUPP；删除 SecurityInner 测试辅助，迁算法/错误覆盖到 selftests；编号/绑定随调用者迁移删除 | 376bb1e8a544：生产执行已删；旧调用者/UAPI 与正向向量迁移仍待完成，不能用旧 ioctl 成功测试证明生产能力 |
+| backend SleController::open/send_command/send_data/reset → UART/SPI 自制 CommandComplete(Success) | 删除伪成功及仅编码却报告发送成功；无真实硬件实现的操作 EOPNOTSUPP | c2c4aa4ad0bd：实际 trait 方法拒绝回归通过，虚假 firmware/capability 已删；纯 framing 留作测试，不宣称硬件支持 |
 | slkd config → main defaults，未消费策略 | 显式配置错误拒绝；不支持的非默认策略拒绝。不得静默降级安全 | R06 下一小批；尚未改，不勾选完成 |
 
 ## 移入测试：保留有效开发支撑
 
 | 内容 | 专用位置/边界 | 状态 |
 |---|---|---|
-| crypto FFI 故障注入、私有状态计数检查 | tools/testing/selftests/sparklink；编译实际 Rust 包装/security 及实际 CTR C 函数，依赖用可控 stub，明确非 RF/非算法向量 | 本批添加，不把 stub 编入生产内核 |
+| crypto FFI 故障注入、私有状态计数检查 | tools/testing/selftests/sparklink；编译实际 Rust 包装/security 及实际 CTR C 函数，依赖用可控 stub，明确非 RF/非算法向量 | 已通过，stub 不编入生产内核 |
 | UART/SPI 纯 codec、分片/边界 | selftests framing；硬件未接通不能用 codec 或本地 Complete 替代支持 | 待保留/迁移有效用例；伪 Complete 直接删除，无业务价值 |
 | 核心 Virtual、连接/SSAP 模型及注入 ioctl | 专用 Virtual backend / selftests；相同 Runtime、生命周期和契约 | K1/K19 待迁；不先删除有价值失败用例 |
 | QEMU 一次 bulk IN81 错误、autoscan/re-enum/open 故障工具 | 已在专用 qemu-sle-dli 和 VM 工具；默认关闭、单对象 guard、有故障边界回归 | 保留；人工故障支持与自然根因/自动恢复验收分开 |
@@ -45,3 +45,17 @@ WS73 Native HCC/BSLE/discovery 生产实现不改；新内核必须重新 VM 启
 真实 WS73 20 轮交换随机广播/扫描，再检查恢复/幸存者。编译或 fixture 不能证明
 真实路径未退化。自然恢复/根因未明继续开放，四设备、服务 sandbox 未验收。
 架构迁移按 [ADR 0001](decisions/0001-management-channel-service-boundaries.md)。
+
+### 首批新镜像复核证据
+
+[新镜像回归](evidence/ws73-vm-cleanup-regression-20261011.json)：Linux c2c4aa4ad0bd，
+完整 image/modules 构建无 warning；私有签名模块在空 USB VM 两次加载/卸载、
+taint0/无 warning。新 VM 真双设备20+2轮全部匹配（最长624ms），一次人工
+IN81故障后 generation1→3、幸存generation2不变，slkd PID525/start339不变；
+1163 USB记录/零drop，host独立核对22份 RX。应用 UID1000/caps0，最终两只
+STOP_CONFIRMED。没有本次物理拔插、自然根因或全自主恢复验收，北极星仍7/8。
+
+实际Rust安全失败测试6项 + C CTR五阶段错误/ASan/UBSan/LSan、后端2项、Python
+C/Rust布局/ioctl/32位ABI29项通过。新增CI生产代码失败门禁和同步kernel pin；
+远端执行结果须单独核对，用户态39个warning/严格CI仍未闭合。旧正向配对/crypto
+ioctl用例尚未迁入算法测试后端，不把其移除或失败改记为成功。R06–R14继续推进。

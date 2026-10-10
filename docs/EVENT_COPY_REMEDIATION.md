@@ -166,3 +166,23 @@ copyout2、第二作者淘汰33/旧ID无重发及CLI4通过，捕获1411/零drop
 这轮证明新内核保持已验证WS73路径；**尚未执行新legacy poll复制故障门禁**，
 backend fallback资格、共享投影删除、完整事件/事务、自然故障根因及恢复仍OPEN。
 历史物理xHCI警告保留，不以本批无warning推论已修复；S0–S6范围不缩减。
+
+
+## 实际 legacy ioctl 复制故障工具（门禁待运行）
+
+K9b16e634bfd3新增专用C探针，生产内核保持K54621800ee4c。在slkd启动前，
+root Diagnostic独占同controller；最多31条清理本轮已有投影，再分别用ID5..7
+提交真实MAC查询。成功结果104字节与实际地址核对后，对输出256字节事件执行
+坏地址、只读页、128字节可写前缀+只读后缀测试；实际EFAULT后取回完整相同事件，
+再poll必须EAGAIN。存储提交输入/输出40、结果104、事件参考/重试256、可读
+fault输出、实际errno/时间/统计；没有生成测试Complete或生产注入hook。
+
+当前诊断runner使用format4，要求三条legacy记录位于missing_sequence之后、
+释放原作者并验证foreign作者之前；诊断淘汰33、copyout2、原结果16和CLI4仍是
+必须项。独立捕获每个seed/fault/retry窗口一个真实OUT/成功Complete，并核对整个
+legacy阶段含间隙没有额外命令/回复。预期58条C记录、44组诊断wire及一个拒绝
+观察窗口；这些是门禁要求，运行结果须另行记录，不能当作已经通过。
+
+verifier新增5项合成拒绝回归（诊断共24，工具共170），保留历史format1/2/3
+证据严格验证，当前runner不能降级。Native共享ring实机测试不能证明backend
+fallback硬件资格、内核并发/lockdep/移除唤醒或完整事件所有权；它们仍OPEN。

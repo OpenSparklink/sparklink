@@ -303,7 +303,7 @@ def corroborate_recovery(run, capture, diagnostic=None):
 
 
 def corroborate_diagnostic(run, capture, diagnostic):
-    """Separate bootstrap from eight explicit queries; never choose an arbitrary
+    """Separate bootstrap from explicit query/fault/quiet windows; never choose an arbitrary
     same-opcode reply in a broad registration window. Every query must have one
     completed OUT and one exact successful reply in its own observed interval.
     """
@@ -315,17 +315,23 @@ def corroborate_diagnostic(run, capture, diagnostic):
             or diagnostic.get('automatic_fault_recovery_acceptance') is not False):
         raise CaptureError('scoped successful diagnostic syscall run required')
     version = diagnostic.get('format_version', 1)
-    if (type(version) is not int or version not in (1, 2, 3)
+    if (type(version) is not int or version not in (1, 2, 3, 4)
             or (version >= 2 and diagnostic.get('admission_copyout_requested') is not True)
             or (version == 1 and diagnostic.get('admission_copyout_requested') not in (None, False))
-            or (version == 3 and diagnostic.get('admission_eviction_requested') is not True)
-            or (version < 3 and diagnostic.get('admission_eviction_requested') not in (None, False))):
+            or (version >= 3 and diagnostic.get('admission_eviction_requested') is not True)
+            or (version < 3 and diagnostic.get('admission_eviction_requested') not in (None, False))
+            or (version == 4 and diagnostic.get('legacy_poll_copy_requested') is not True)
+            or (version < 4 and diagnostic.get('legacy_poll_copy_requested') not in (None, False))):
         raise CaptureError('explicit diagnostic admission evidence version required')
     try:
-        verify_records(diagnostic['records'], admission=version >= 2, eviction=version == 3)
+        verify_records(diagnostic['records'], admission=version >= 2, eviction=version >= 3,
+                       legacy_poll=version == 4)
     except (ValueError, KeyError, TypeError) as error:
         raise CaptureError('invalid diagnostic syscall records') from error
     owner = run['initial'][0]
+    def window(key, first, last):
+        return [r for r in capture[key] if r['bus']==owner['bus'] and r['device']==owner['device']
+                and first <= r['wall_ns'] <= last]
     rows = [r for r in diagnostic['records'] if r.get('case') == 'metadata']
     if diagnostic['index'] != owner['index'] or any(r['generation'] != owner['generation'] for r in rows):
         raise CaptureError('diagnostic controller instance differs from initial registration')
@@ -343,7 +349,21 @@ def corroborate_diagnostic(run, capture, diagnostic):
             item['admission_copyout'] = admissions[0]
         proofs.append(item)
         previous = row['end_wall_ns']
-    if version == 3:
+    if version == 4:
+        legacy = [r for r in diagnostic['records'] if 'legacy_poll' in r]
+        legacy_proofs = []
+        for row in legacy:
+            if not previous <= row['start_wall_ns'] < row['end_wall_ns'] < owner['observed_wall_ns']:
+                raise CaptureError('legacy poll seed/fault interval differs from registration/time')
+            proof = command_reply(capture, owner, 0x0406, row['start_wall_ns'], row['end_wall_ns'], b'', expected[0x0406])
+            legacy_proofs.append({'caller':'C legacy poll fault', 'local_admission_seq':row['seq'],
+                                  'legacy_poll_copy':row, **proof})
+            previous = row['end_wall_ns']
+        if (window('commands', legacy[0]['start_wall_ns'], previous) != [p['command'] for p in legacy_proofs]
+                or window('complete', legacy[0]['start_wall_ns'], previous) != [p['reply'] for p in legacy_proofs]):
+            raise CaptureError('legacy poll seed/fault/retry phase contains extra commands or replies')
+        proofs.extend(legacy_proofs)
+    if version >= 3:
         eviction_rows = [r for r in diagnostic['records'] if 'eviction' in r]
         start = eviction_rows[0]['start_wall_ns']
         end = eviction_rows[-2]['end_wall_ns']
@@ -354,9 +374,6 @@ def corroborate_diagnostic(run, capture, diagnostic):
             proof = command_reply(capture, owner, 0x0406, row['start_wall_ns'], row['end_wall_ns'], b'', expected[0x0406])
             fill_proofs.append({'caller':'C eviction fill', 'request_id':row['request_id'],
                                 'local_admission_seq':row['seq'], **proof})
-        def window(key, first, last):
-            return [r for r in capture[key] if r['bus']==owner['bus'] and r['device']==owner['device']
-                    and first <= r['wall_ns'] <= last]
         # The enclosing interval includes inter-query gaps, too. No extra
         # opcode or repeated OUT/reply may hide outside a single fill's window.
         if (window('commands', start, end) != [p['command'] for p in fill_proofs]

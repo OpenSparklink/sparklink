@@ -4,7 +4,7 @@ import copy
 import struct
 import unittest
 
-from test_ws73_diagnostic_probe import fixture, admission_fixture, eviction_fixture
+from test_ws73_diagnostic_probe import fixture, admission_fixture, eviction_fixture, legacy_poll_fixture
 from ws73_capture import CaptureError, command_reply, corroborate_diagnostic, json_identity
 from ws73_diagnostic_probe import QUERIES
 
@@ -38,12 +38,13 @@ def inputs():
     return {'initial': [owner]}, capture, diagnostic
 
 
-def eviction_inputs():
+def eviction_inputs(legacy=False):
     run, capture, diagnostic = inputs()
-    diagnostic.update(format_version=3, admission_copyout_requested=True, admission_eviction_requested=True,
-                      records=eviction_fixture(admission_fixture(diagnostic['records'])))
+    diagnostic.update(format_version=4 if legacy else 3, admission_copyout_requested=True, admission_eviction_requested=True,
+                      records=(legacy_poll_fixture if legacy else eviction_fixture)(admission_fixture(diagnostic['records'])))
+    if legacy: diagnostic['legacy_poll_copy_requested']=True
     eviction = [r for r in diagnostic['records'] if 'eviction' in r]
-    for row in eviction[:-1]:
+    for row in [r for r in diagnostic['records'] if 'legacy_poll' in r]+eviction[:-1]:
         start = row['start_wall_ns']
         capture['commands'].append({'bus':1, 'device':2, 'opcode':0x0406, 'wall_ns':start+1,
                                     'params':'', 'completion':{'wall_ns':start+2}})
@@ -140,6 +141,32 @@ class DiagnosticCaptureTests(unittest.TestCase):
             capture[name].append(row)
         _,proofs = corroborate_diagnostic(run,capture,diagnostic)
         self.assertEqual(proofs[37]['commands'],0)
+
+    def test_legacy_poll_faults_each_have_one_real_seed_before_eviction(self):
+        run,capture,diagnostic=eviction_inputs(legacy=True)
+        _,proofs=corroborate_diagnostic(run,capture,diagnostic)
+        self.assertEqual(len(proofs),45)
+        self.assertEqual([p['legacy_poll_copy']['legacy_poll'] for p in proofs[4:7]],
+                         ['bad_address','read_only_output','partial_output'])
+        self.assertEqual([p['request_id'] for p in proofs[7:40]],list(range(1,34)))
+        self.assertEqual(proofs[40]['commands'],0)
+
+    def test_legacy_poll_cannot_omit_faults_mode_or_duplicate_seeds_even_in_gaps(self):
+        run,capture,diagnostic=eviction_inputs(legacy=True)
+        rows=[r for r in diagnostic['records'] if 'legacy_poll' in r]
+        for mutation in ('mode','downgrade','missing','duplicate','gap','wrong_reply','registration'):
+            c,d=copy.deepcopy(capture),copy.deepcopy(diagnostic)
+            if mutation=='mode':d.pop('legacy_poll_copy_requested')
+            elif mutation=='downgrade':d['format_version']=3
+            elif mutation=='missing':d['records']=[r for r in d['records'] if r.get('legacy_poll')!='bad_address']
+            elif mutation=='registration':d['records'][next(i for i,r in enumerate(d['records']) if 'legacy_poll' in r)]['generation']=8
+            elif mutation=='wrong_reply':
+                next(r for r in c['complete'] if r['wall_ns']==rows[0]['start_wall_ns']+3)['value']='00'
+            else:
+                tx=copy.deepcopy(next(r for r in c['commands'] if r['wall_ns']==rows[0]['start_wall_ns']+1))
+                if mutation=='gap':tx['wall_ns']=rows[0]['end_wall_ns']+1
+                c['commands'].append(tx)
+            with self.assertRaises(CaptureError):corroborate_diagnostic(run,c,d)
 
 
 if __name__ == '__main__': unittest.main()

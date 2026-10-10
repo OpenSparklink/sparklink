@@ -562,10 +562,11 @@ def _run(args):
                     probe=json.loads((share/'diagnostic/run.json').read_text())
                     if probe.get('status')!='DIAGNOSTIC_RESULT_LIVE_PASS' or probe.get('probe_exit')!=0:
                         raise ValueError('live diagnostic probe failure')
-                    if (probe.get('format_version') != 3 or probe.get('admission_copyout_requested') is not True
-                            or probe.get('admission_eviction_requested') is not True):
+                    if (probe.get('format_version') != 4 or probe.get('admission_copyout_requested') is not True
+                            or probe.get('admission_eviction_requested') is not True
+                            or probe.get('legacy_poll_copy_requested') is not True):
                         raise ValueError('current live diagnostic admission gate required')
-                    verify_records(probe['records'], admission=True, eviction=True)
+                    verify_records(probe['records'], admission=True, eviction=True, legacy_poll=True)
                     if len(probe['cli_queries'])!=4:
                         raise ValueError('actual diagnostic CLI query gates missing')
                     m['live_diagnostic']=file_record(share/'diagnostic/run.json')

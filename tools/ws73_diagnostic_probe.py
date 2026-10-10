@@ -19,7 +19,7 @@ import time
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / ('python' if (HERE.parent / 'python').is_dir() else 'bindings/python')))
-from sparklink.structs import SleDiagnosticResult, SleDiagnosticSubmit
+from sparklink.structs import SleDiagnosticResult, SleDiagnosticSubmit, SleDliEvent
 from ws73_north_star import file_record
 
 NEGATIVE = {'inherited_fd_cap0': errno.EPERM, 'version': errno.EOPNOTSUPP,
@@ -33,10 +33,13 @@ ORDER = ['metadata'] * 4 + ['inherited_fd_cap0', 'read_only_output', 'partial_ou
 QUERIES = [('mac', 0x0406, 6), ('features', 0x0403, 10), ('version', 0x0404, 5), ('buffers', 0x0402, 6)]
 
 
-def verify_records(records, final=True, admission=False, eviction=False):
+def verify_records(records, final=True, admission=False, eviction=False, legacy_poll=False):
     if eviction and not admission:
         raise ValueError('eviction evidence requires preceding admission gate')
-    tags = ('case', 'identity', 'phase') + (('admission',) if admission else ()) + (('eviction',) if eviction else ())
+    if legacy_poll and not eviction:
+        raise ValueError('legacy poll evidence requires admission and eviction gates')
+    tags = (('case', 'identity', 'phase') + (('admission',) if admission else ())
+            + (('eviction',) if eviction else ()) + (('legacy_poll',) if legacy_poll else ()))
     if any(sum(k in r for k in tags) != 1 for r in records):
         raise ValueError('unknown or ambiguous diagnostic record')
     cases = [r for r in records if 'case' in r]
@@ -71,6 +74,7 @@ def verify_records(records, final=True, admission=False, eviction=False):
             if type(r['partial_prefix']) is not int or r['partial_prefix'] != prefix:
                 raise ValueError('actual copy boundary mismatch')
     if admission: verify_admissions(records)
+    if legacy_poll: verify_legacy_poll(records)
     if eviction: verify_evictions(records)
     child = [r for r in records if r.get('identity') == 'inherited_fd_child']
     if child != [{'identity': 'inherited_fd_child', 'uid': 1000, 'euid': 1000, 'cap_eff': 0, 'cap_prm': 0}] or any(type(r[k]) is not int for r in child for k in ('uid', 'euid', 'cap_eff', 'cap_prm')):
@@ -124,6 +128,75 @@ def verify_admissions(records):
                 or r['pending_before'] or r['pending_after']
                 or r['timeouts_before'] != r['timeouts_after']):
             raise ValueError('replay changed admission/resolution/timeout accounting')
+
+
+def verify_legacy_poll(records):
+    """Canonical real-seed event copy/commit evidence; wire checked separately.
+
+    A Native ring test does not qualify controller.poll_event backend fallback.
+    """
+    rows = [r for r in records if 'legacy_poll' in r]
+    if [r['legacy_poll'] for r in rows] != ['bad_address', 'read_only_output', 'partial_output']:
+        raise ValueError('three ordered actual legacy poll copy faults required')
+    boundary = next(i for i, r in enumerate(records) if r.get('case') == 'missing_sequence')
+    if ([i for i, r in enumerate(records) if 'legacy_poll' in r] != list(range(boundary+1, boundary+4))
+            or records[boundary+4].get('case') != 'foreign_author_with_lease'):
+        raise ValueError('legacy faults must precede author release/foreign-fd gate')
+    metadata = [r for r in records if r.get('case') == 'metadata']
+    generation = metadata[0]['generation']
+    previous_seq, previous_end = metadata[-1]['seq'], metadata[-1]['end_wall_ns']
+    expected = SleDliEvent(event_type=1, opcode=0x0406, data_len=6)
+    expected.data[:6] = bytes.fromhex(metadata[0]['data'])
+    canonical_event = bytes(expected)
+    if len(canonical_event) != 256:
+        raise ValueError('canonical legacy event ABI must remain256 bytes')
+    previous_counts = None
+    for i, row in enumerate(rows):
+        prefix = 128 if i == 2 else 0
+        for field in ('generation', 'request_id', 'seq', 'opcode', 'start_wall_ns', 'end_wall_ns',
+                      'result', 'errno', 'partial_prefix', 'drained_before', 'final_poll_result', 'final_poll_errno'):
+            if type(row[field]) is not int:
+                raise ValueError('exact typed legacy fault identity/boundary/results required')
+        if (row['generation'] != generation or row['request_id'] != 5+i or row['opcode'] != 0x0406
+                or not previous_seq < row['seq'] < 1 << 32
+                or not previous_end <= row['start_wall_ns'] < row['end_wall_ns']
+                or row['result'] != -1 or row['errno'] != errno.EFAULT
+                or row['partial_prefix'] != prefix or not 0 <= row['drained_before'] <= 31
+                or i and row['drained_before'] != 0
+                or row['final_poll_result'] != -1 or row['final_poll_errno'] != errno.EAGAIN
+                or row['data'] != metadata[0]['data']):
+            raise ValueError('legacy fault identity/clock/EFAULT/once-consumed EAGAIN mismatch')
+        submit = SleDiagnosticSubmit(version=1, generation=generation, request_id=5+i,
+                                     timeout_ms=5000, opcode=0x0406, action=1)
+        if row['input'] != bytes(submit).hex():
+            raise ValueError('legacy seed canonical input mismatch')
+        submit.seq = row['seq']
+        result = SleDiagnosticResult(version=1, generation=generation, seq=row['seq'],
+                                     opcode=0x0406, state=2, data_len=6)
+        result.data[:6] = bytes.fromhex(row['data'])
+        if row['output'] != bytes(submit).hex() or row['result_bytes'] != bytes(result).hex():
+            raise ValueError('legacy seed must have actual exact successful metadata result')
+        if row['reference'] != canonical_event.hex() or row['retry'] != row['reference']:
+            raise ValueError('legacy retry lost or changed canonical event bytes')
+        fault = None if not i else (canonical_event[:prefix] + b'\xa5'*(256-prefix)).hex()
+        if row['fault_output'] != fault:
+            raise ValueError('legacy fault must show actual prefix and inaccessible unchanged suffix')
+        before, after = [], []
+        for counter in ('submitted', 'resolved', 'pending', 'timeouts'):
+            for suffix, values in [('before', before), ('after', after)]:
+                value = row[f'{counter}_{suffix}']
+                if type(value) is not int or not 0 <= value < 1 << 32:
+                    raise ValueError('actual legacy poll counters required')
+                values.append(value)
+        if (after[:2] != [v+1 for v in before[:2]] or before[2] or after[2]
+                or before[3] != after[3] or previous_counts is not None and before != previous_counts):
+            raise ValueError('legacy poll must seed once without changing command accounting on retry')
+        previous_counts, previous_seq, previous_end = after, row['seq'], row['end_wall_ns']
+    fill = next(r for r in records if r.get('eviction') == 'fill')
+    if (fill['seq'] <= previous_seq or fill['start_wall_ns'] < previous_end
+            or any(fill[f'{k}_before'] != rows[-1][f'{k}_after']
+                   for k in ('submitted', 'resolved', 'pending', 'timeouts'))):
+        raise ValueError('legacy poll/eviction sequence, clock or accounting continuity mismatch')
 
 
 def verify_evictions(records):
@@ -194,7 +267,8 @@ def run(args):
             or 'ws73.diagnostic=1' not in Path('/proc/cmdline').read_text().split()):
         raise ValueError('privileged opt-in scratch-root VM required')
     output = args.output.resolve(); output.mkdir(mode=0o700)
-    record = {'format_version': 3, 'admission_copyout_requested': True, 'admission_eviction_requested': True, 'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
+    record = {'format_version': 4, 'admission_copyout_requested': True, 'admission_eviction_requested': True,
+              'legacy_poll_copy_requested': True, 'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'probe': file_record(args.probe), 'sources': [file_record(Path(__file__))],
               'index': args.index, 'records': [], 'cli_queries': [], 'uid': os.getuid(), 'euid': os.geteuid()}
@@ -220,7 +294,7 @@ def run(args):
                         line, pending = pending.split(b'\n', 1); item = json.loads(line)
                         record['records'].append(item); save()
                         if item.get('phase') == 'BEFORE_DAEMON_PASS':
-                            verify_records(record['records'], final=False, admission=True, eviction=True)
+                            verify_records(record['records'], final=False, admission=True, eviction=True, legacy_poll=True)
                             for name, opcode, _ in QUERIES:
                                 generation = record['records'][0]['generation']
                                 command = [str(args.slkconfig), '--adapter', str(args.index), '--generation', str(generation), 'query', name]
@@ -239,7 +313,7 @@ def run(args):
             selector.close()
             record['probe_exit'] = child.wait(timeout=5)
             if record['probe_exit'] or pending or not acknowledged: raise ValueError('probe exit or retirement handshake')
-        verify_records(record['records'], admission=True, eviction=True)
+        verify_records(record['records'], admission=True, eviction=True, legacy_poll=True)
         record['status'] = 'DIAGNOSTIC_RESULT_LIVE_PASS'; save()
     except BaseException as error:
         record.update(status='FAIL', error=str(error)); save(); raise

@@ -8,7 +8,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
-from ws73_diagnostic_probe import NEGATIVE, ORDER, QUERIES, SleDiagnosticResult, SleDiagnosticSubmit, verify_records
+from ws73_diagnostic_probe import NEGATIVE, ORDER, QUERIES, SleDiagnosticResult, SleDiagnosticSubmit, SleDliEvent, verify_records
 from ws73_target import _run
 
 
@@ -58,19 +58,22 @@ def eviction_fixture(records=None):
     records = copy.deepcopy(admission_fixture() if records is None else records)
     meta = [r for r in records if r.get('case') == 'metadata']
     generation = meta[0]['generation']; fills = []
+    legacy = [r for r in records if 'legacy_poll' in r]
+    previous = legacy[-1] if legacy else meta[-1]
+    baseline = legacy[-1]['submitted_after'] if legacy else 4
     for i in range(33):
         value = SleDiagnosticSubmit(version=1, generation=generation, request_id=i+1,
                                     timeout_ms=5000, opcode=0x0406, action=1)
-        raw = bytes(value).hex(); value.seq = meta[-1]['seq']+i+1
+        raw = bytes(value).hex(); value.seq = previous['seq']+i+1
         result = SleDiagnosticResult(version=1, generation=generation, seq=value.seq,
                                      opcode=0x0406, state=2, data_len=6)
         result.data[:6] = bytes.fromhex(meta[0]['data'])
-        start = meta[-1]['end_wall_ns']+20+i*20
+        start = previous['end_wall_ns']+20+i*20
         fills.append({'eviction':'fill', 'generation':generation, 'request_id':i+1,
                       'seq':value.seq, 'opcode':0x0406, 'start_wall_ns':start, 'end_wall_ns':start+10,
                       'data':meta[0]['data'], 'input':raw, 'output':bytes(value).hex(),
-                      'result_bytes':bytes(result).hex(), 'submitted_before':4+i, 'submitted_after':5+i,
-                      'resolved_before':4+i, 'resolved_after':5+i, 'pending_before':0, 'pending_after':0,
+                      'result_bytes':bytes(result).hex(), 'submitted_before':baseline+i, 'submitted_after':baseline+i+1,
+                      'resolved_before':baseline+i, 'resolved_after':baseline+i+1, 'pending_before':0, 'pending_after':0,
                       'timeouts_before':0, 'timeouts_after':0})
     first, retained = fills[:2]
     query = SleDiagnosticResult(version=1, generation=generation, seq=first['seq'])
@@ -82,11 +85,39 @@ def eviction_fixture(records=None):
                 'result_query_return':-1, 'result_query_errno':2,
                 'result_query_input':bytes(query).hex(), 'result_query_output':bytes(query).hex(),
                 'retained_input':retained['input'], 'retained_output':retained['output'],
-                'retained_result':retained['result_bytes'], 'submitted_before':37, 'submitted_after':37,
-                'resolved_before':37, 'resolved_after':37, 'pending_before':0, 'pending_after':0,
+                'retained_result':retained['result_bytes'], 'submitted_before':baseline+33, 'submitted_after':baseline+33,
+                'resolved_before':baseline+33, 'resolved_after':baseline+33, 'pending_before':0, 'pending_after':0,
                 'timeouts_before':0, 'timeouts_after':0}
     at = next(i for i,r in enumerate(records) if r.get('case')=='foreign_author_with_lease')+1
     return records[:at]+fills+[negative]+records[at:]
+
+
+def legacy_poll_fixture(records=None):
+    records = copy.deepcopy(admission_fixture() if records is None else records)
+    meta = [r for r in records if r.get('case') == 'metadata']
+    generation = meta[0]['generation']; rows = []
+    event = SleDliEvent(event_type=1, opcode=0x0406, data_len=6)
+    event.data[:6] = bytes.fromhex(meta[0]['data']); raw_event = bytes(event)
+    for i,name in enumerate(['bad_address','read_only_output','partial_output']):
+        prefix = 128 if i==2 else 0
+        value = SleDiagnosticSubmit(version=1, generation=generation, request_id=5+i,
+                                    timeout_ms=5000, opcode=0x0406, action=1)
+        raw = bytes(value).hex(); value.seq = meta[-1]['seq']+i+1
+        result = SleDiagnosticResult(version=1, generation=generation, seq=value.seq,
+                                     opcode=0x0406, state=2, data_len=6)
+        result.data[:6] = bytes.fromhex(meta[0]['data'])
+        start = meta[-1]['end_wall_ns']+20+i*20
+        rows.append({'legacy_poll':name,'generation':generation,'request_id':5+i,'seq':value.seq,
+                     'opcode':0x0406,'start_wall_ns':start,'end_wall_ns':start+10,
+                     'result':-1,'errno':14,'partial_prefix':prefix,'drained_before':4 if not i else 0,
+                     'final_poll_result':-1,'final_poll_errno':11,'data':meta[0]['data'],
+                     'input':raw,'output':bytes(value).hex(),'result_bytes':bytes(result).hex(),
+                     'reference':raw_event.hex(),'retry':raw_event.hex(),
+                     'fault_output':None if not i else (raw_event[:prefix]+b'\xa5'*(256-prefix)).hex(),
+                     'submitted_before':4+i,'submitted_after':5+i,'resolved_before':4+i,
+                     'resolved_after':5+i,'pending_before':0,'pending_after':0,'timeouts_before':0,'timeouts_after':0})
+    at = next(i for i,r in enumerate(records) if r.get('case')=='missing_sequence')+1
+    return eviction_fixture(records[:at]+rows+records[at:])
 
 
 class DiagnosticEvidenceTests(unittest.TestCase):
@@ -193,6 +224,38 @@ class DiagnosticEvidenceTests(unittest.TestCase):
             rows = eviction_fixture(); fills = [r for r in rows if r.get('eviction')=='fill']
             fills[1][field] = value
             with self.assertRaises(ValueError): verify_records(rows, admission=True, eviction=True)
+
+    def test_three_legacy_faults_are_ordered_contiguous_and_required_in_current_mode(self):
+        rows = legacy_poll_fixture(); self.assertEqual(len(rows),58)
+        verify_records(rows,admission=True,eviction=True,legacy_poll=True)
+        verify_records(rows[:-2],final=False,admission=True,eviction=True,legacy_poll=True)
+        with self.assertRaises(ValueError): verify_records(rows,admission=True,eviction=True)
+        for mutation in ('missing','order','boundary'):
+            bad = copy.deepcopy(rows); at = next(i for i,r in enumerate(bad) if 'legacy_poll' in r)
+            if mutation=='missing': bad.pop(at)
+            elif mutation=='order': bad[at],bad[at+1]=bad[at+1],bad[at]
+            else: bad[at-1],bad[at]=bad[at],bad[at-1]
+            with self.assertRaises(ValueError): verify_records(bad,admission=True,eviction=True,legacy_poll=True)
+
+    def test_legacy_copy_must_preserve_exact_bytes_padding_and_observed_prefix(self):
+        for key,value in [('reference','00'),('retry','00'),('fault_output',None),('partial_prefix',0),
+                          ('input','00'),('output','00'),('result_bytes','00')]:
+            rows=legacy_poll_fixture(); row=next(r for r in rows if r.get('legacy_poll')=='partial_output');row[key]=value
+            with self.assertRaises(ValueError): verify_records(rows,admission=True,eviction=True,legacy_poll=True)
+        rows=legacy_poll_fixture(); row=next(r for r in rows if r.get('legacy_poll')=='partial_output')
+        row['fault_output']=(b'\xa5'*256).hex()
+        with self.assertRaises(ValueError): verify_records(rows,admission=True,eviction=True,legacy_poll=True)
+
+    def test_legacy_actual_errno_identity_once_commit_and_counter_continuity_are_checked(self):
+        for key,value in [('errno',0),('result',0),('final_poll_errno',0),('final_poll_result',0),
+                          ('request_id',1),('seq',False),('generation',8),('opcode',0x0404),
+                          ('start_wall_ns',1),('drained_before',32),('pending_after',1),
+                          ('submitted_after',99),('resolved_before',1),('timeouts_after',1)]:
+            rows=legacy_poll_fixture(); row=next(r for r in rows if r.get('legacy_poll')=='partial_output');row[key]=value
+            with self.assertRaises(ValueError): verify_records(rows,admission=True,eviction=True,legacy_poll=True)
+        rows=legacy_poll_fixture(); fill=next(r for r in rows if r.get('eviction')=='fill')
+        fill['submitted_before']+=1
+        with self.assertRaises(ValueError): verify_records(rows,admission=True,eviction=True,legacy_poll=True)
 
 
 if __name__ == '__main__': unittest.main()

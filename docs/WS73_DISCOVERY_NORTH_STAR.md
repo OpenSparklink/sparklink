@@ -1320,3 +1320,39 @@ snoop及8C/Python观察/4writer仍通过。每轮JSON保存发送/USB完成/设�
 clippy或远端CI，未变kernel/QEMU的原96证据明确引用上一轮。真实入口通过
 工具预检后因无WS73 FAIL且未开VM；真实七项仍0/7，board NOT_ASSERTED，
 ROM/重新枚举/物理拔插/RF和四设备两组待验，完整S0–S6及全部原issues OPEN。
+
+### WS73 发送释放 Runtime 状态锁（部分成果）
+
+原 native TX worker 在 owner 状态锁内等待阻塞 USB OUT，同设备 snapshot 与
+RX 状态处理也会等待。当前先取得独立引用计数 transport，再释放状态锁发送；
+注销仍先停止接纳、等待 worker 结束，然后关闭 Backend。C context/module
+由最后一个引用释放，不通过设备 id 重新查找 transport。
+
+Complete 可能先于 OUT callback：Host 保留回复和原始 BOOTTIME，但匹配 cookie
+的 OUT 成功前不发布 terminal result、不释放在途命令。提前回复也不能屏蔽
+超时；fault/invalidation 清掉 pending 后，迟到的发送成功不能复活旧 Host。
+接受 Status 与独立 credit grant 可见，但不能当作命令完成。
+
+新合成门禁确实把第一次 post-bootstrap ReadLocalFeatures OUT 延后两秒，
+先通过 IN 交付 Complete，再经 QMP 状态和独立 UART 同步 guest。要求本设备
+snapshot 小于200ms、另一设备真实 DLI 查询正常、100ms内保持 pending、OUT
+完成后正确返回十字节 features；随后跑原移除/重加。这里初始状态是 SETUP，
+要求状态不变，不把原始诊断查询当作 Ready。相同最终测试/模型：旧#69查询
+阻塞约1.97秒 FAIL，新#71为0.004ms PASS。六新增 verdict 用例/250 harness
+通过，九个标准/原生生命周期、recipe、故障、事件、发现和权限 gate 通过。
+本轮重跑三控制器原96-case：1056OK、0FAIL/0SKIP、3条既存WARN。
+
+新#71/延迟属性默认关闭的新QEMU/未改Rust实现：普通用户 slctl 合成20+2轮、
+同slkd及owner、两次TX-off和重插复验 PASS；Host重算与guest相同，189成功TX、
+172条命令链、2251USB/177空完成/22report/32独立snoop及8observe/4writer。
+真实入口通过预检后因无WS73 FAIL，未开VM；实机七项仍0/7、board NOT_ASSERTED。
+这批只迁移 WS73 发送；标准 USB/旧 Backend 和 native open 的锁迁移、真实
+拔插/RF、四设备两组及全部原整项 issue 仍开放。未重跑远端CI/clippy。
+
+`.dev/tx-unlock-final-evidence.json`保存56内核输入、新kernel/config/QEMU/guest/
+捕获、旧反例及失败hash。首轮误用缺rust-src的stable proxy，自动配置删掉Rust，
+预检拒绝于开VM前；已恢复原config并用固定工具链构建，失败不覆盖。初始
+测试对SETUP/Status解释不准确的失败也保留；最终测试显式区分 Status 与 Complete。
+复现见内核 `Documentation/networking/ws73-development.rst` 的
+`--native-ws73 --native-ws73-tx-barrier`，编译显式选择具有matching rust-src的
+`--rustc`。没有提前关闭整项issue或把开发支撑提升为真实北极星验收。

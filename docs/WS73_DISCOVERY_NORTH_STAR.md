@@ -469,6 +469,32 @@ TX-off、重插、幸存设备、独立捕获和 C/Python 权限门禁通过。�
 入口仍未得到两只 WS73，真实七项0/7、board NOT_ASSERTED。真实空口、四
 设备两组、完整 S0–S6 及每个原 issue 的剩余验收继续保留，整项不提前关闭。
 
+### 初始化未结束时通知旧订阅退役（合成支撑进展）
+
+Runtime 注销在关闭 admission 后，等待 native open/清理之前立即唤醒
+controller-event 和 snoop 订阅，保留清理结束后的通知。旧订阅因此可在
+初始化仍等待驱动返回时得知自身已经退役。
+
+测试在注销前给同一 owner 两个独立 fd 建立 event/snoop 订阅并注册到
+edge-triggered epoll，确认 ready list 为空。注销后仅等待原 epoll，不重加
+或重新注册 interest；两种身份各收到精确 ERR|HUP，200ms 内完成，同时
+open 仍阻塞、close/put 均0、index 仍预留，然后继续原有迟到成功/EIO、
+资源计数、旧 fd/新 generation、幸存设备和模块卸载验收。
+
+#75 两种打开中注销场景分别3.009/3.083ms唤醒。相同 guest 程序与
+byte-identical 夹具 C object 在#74阻塞201.909ms并FAIL；负例主动释放并
+join 后模块卸载成功，旧 release 元数据使用匹配模块，未强制加载。
+四新增verdict使 kernel harness 达271；四种 open 路径、十二原传输/
+生命周期门禁通过，原96项1059OK/0FAIL/0SKIP/3既存WARN通过。
+
+新内核普通应用合成20+2轮/同 slkd/bus/owner、TX-off、幸存设备、重插、
+capture及 C/Python 权限门禁通过；独立 Host 重算和 guest 佐证一致。
+用户态 Rust 源码/实际程序和 QEMU 实际编译输入未变，未新增 Rust
+tests/clippy、远端CI或32位运行验证。最终源码、编译输入、guest/module/
+capture及旧反例 hash 位于本地 `.dev/open-wake-final-evidence.json`。
+真实入口仍无 WS73：七项0/7、board NOT_ASSERTED；两只真实设备闭环仍
+优先，随后四设备两组，完整 S0–S6 和各原整项 issue 继续保留开放。
+
 2026-10-09T19:50:32Z 主机只读 inventory：WS73=[]，KVM 可读写。本轮没有
 真实 USB、BSLE、DLI 或 RF 验收；slkd/no-sudo、20 轮和四设备仍未完成。
 下一步导出并核验 SDK 板级配置、接入原生 DLI 查询与 Runtime 生命周期，

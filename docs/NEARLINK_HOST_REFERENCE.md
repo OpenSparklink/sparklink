@@ -67,3 +67,29 @@ SDK `driver/bsle/sle_driver/sle_host_register.c::sle_recovery` 的重新customiz
 SLE_OPEN/BOOT_FINISH为后续恢复流程参考；其全局HCC/device状态不符合本项目
 多设备隔离要求，尚未作为本项目自动恢复执行。完整设计与未通过项见
 [WS73_RECOVERY.md](WS73_RECOVERY.md)。
+
+## 固件版本对照与111基线
+
+用户指定libws73-usb使用SDK后缀111。其`blobs/README`记录合并格式为
+`cat ws73.bin wifi_cali.bin btc_cali.bin > combined-<版本>.bin`，三段各保留
+64字节小写SHA256头，顺序固定，没有长度字段。当前本地SDK/us三文件
+拼接后与110逐字节相同：`09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f`。
+上述实机启动与1e失败因此属于110，不倒填成111测试。
+
+111参考blob SHA256：`7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3`。
+独立工具先验证显式整包hash，再按三段各自hash定位边界，全部验证成功才
+写入全新私有目录，保留原文件头与payload、不覆盖SDK、不提交二进制：
+
+```sh
+python3 tools/ws73_firmware.py \
+  --combined ../libws73-usb/blobs/fw/combined-1.10.111.bin \
+  --sha256 7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3 \
+  --output ../.dev/firmware-1.10.111
+```
+
+验证拆出完整文件大小144604/21044/7740 bytes。`firmware-source.json`保留
+整包、每文件和payload hash；`ws73_target.py prepare --firmware-dir`选择该
+目录，原内核三文件加载路径无需改变。六项单元测试覆盖截断、改写、假内嵌
+header、额外段/尾字节、空payload、hash拒绝及不覆盖。新的111客体已准备
+但尚未实机运行，不能宣称其解决启动/广播或自动恢复。BSLE/PM板配置与
+固件版本分开记录，板级校准/功率仍NOT_ASSERTED。

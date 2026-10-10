@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 import json
+import errno
 from pathlib import Path
 import sys
 import tempfile
@@ -15,6 +16,36 @@ import ws73_target_guest as guest
 
 
 class TargetEnvironment(unittest.TestCase):
+    def test_readiness_retries_only_transient_sysfs_metadata_errors(self):
+        for code in (errno.EAGAIN, errno.ENODATA, errno.ENOENT, errno.EIO):
+            with self.subTest(code=code), tempfile.TemporaryDirectory() as d:
+                root=Path(d); usb=root/'usb'; device=usb/'1-1'; interface=device/'1-1:1.0'
+                interface.mkdir(parents=True); evidence=root/'evidence'; evidence.mkdir()
+                for name,value in {'native_runtime':'id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100',
+                                   'boot_stage':'native-runtime-ready','boot_error':'0',
+                                   'recovery_budget':'attempts=1 limit=2 cause=-71 result=0',
+                                   'controller_information':'queried metadata'}.items():
+                    (interface/name).write_text(value+'\n')
+                (device/'busnum').write_text('1\n'); (device/'devnum').write_text('7\n')
+                result=SimpleNamespace(returncode=0,stdout='  State:       Ready\n  Address:     02:73:00:00:00:01\n',stderr='')
+                original=Path.read_text; reads=0
+                def read(path,*args,**kwargs):
+                    nonlocal reads
+                    if path.name=='controller_information':
+                        reads+=1
+                        if reads==1:raise OSError(code,'metadata invalidated during restore')
+                    return original(path,*args,**kwargs)
+                def path(value):return usb if value=='/sys/bus/usb/devices' else Path(value)
+                with patch.object(guest,'Path',side_effect=path),patch.object(guest,'EVIDENCE',evidence), \
+                     patch.object(Path,'read_text',read),patch.object(guest.time,'sleep'), \
+                     patch.object(guest,'application',return_value=result):
+                    if code==errno.EIO:
+                        with self.assertRaises(OSError):guest.ready(0)
+                    else:guest.ready(0)
+                if code!=errno.EIO:
+                    self.assertEqual(json.loads((evidence/'ready-0.json').read_text())['controller_information'],'queried metadata')
+                    self.assertEqual(reads,2)
+
     def test_inventory_timeline_retains_unselected_removal_and_final(self):
         with tempfile.TemporaryDirectory() as d:
             path=Path(d)/'inventory.jsonl';timeline=HostTimeline(path)

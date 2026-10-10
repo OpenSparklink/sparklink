@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Guest readiness and explicit synthetic environment support, never RF."""
 import json
+import errno
 import os
 from pathlib import Path
 import re
@@ -40,6 +41,8 @@ def ready(slot):
                 if diagnostics.exists():progress['failure_diagnostics']=diagnostics.read_text().strip()
                 recovery=p/'warm_recovery'
                 if recovery.exists():progress['warm_recovery']=recovery.read_text().strip()
+                budget=p/'recovery_budget'
+                if budget.exists():progress['recovery_budget']=budget.read_text().strip()
                 if progress['boot_stage']=='failed':
                     (EVIDENCE/f'ready-progress-{slot}.json').write_text(json.dumps(progress,indent=2)+'\n')
                     raise ValueError(f'{port}: native bootstrap failed: {progress["boot_error"]}')
@@ -61,7 +64,8 @@ def ready(slot):
                 if data['bus']!=1:raise ValueError('capture bus and actual guest WS73 bus differ')
                 (EVIDENCE/f'ready-{slot}.json').write_text(json.dumps(data,indent=2)+'\n')
                 return
-            except FileNotFoundError:pass
+            except OSError as error:
+                if error.errno not in (errno.ENOENT, errno.ENODATA, errno.EAGAIN):raise
         if progress!=last:
             (EVIDENCE/f'ready-progress-{slot}.json').write_text(json.dumps(progress,indent=2)+'\n');last=progress
         time.sleep(0.2)

@@ -965,6 +965,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "libsparklink",
+ "nix 0.30.1",
  "rustyline",
  "slk-protocol",
  "tokio",

@@ -114,3 +114,10 @@ python3 tools/ws73_north_star.py verify \
 
 开发检查：`python3 -m unittest discover -s tools/tests -p 'test*.py'`。完成真实
 双设备验收后，再扩展四只两组并行及交叉报告/单设备拔插隔离；完整 S0–S6 保留。
+
+扫描命令现输出唯一 `NativeScanWindow`，关联 generation/request 与提交前
+CLOCK_BOOTTIME 下界。内核 RX 时间必须不早于它；`slctl` 同时拒绝未来时间和
+非零 lost，避免 daemon 延迟排队的新序号被误认成本轮发现。当前 recorder/
+verify 不接受缺失该记录的历史 run；不要给旧证据手工补字段，使用其冻结
+版本复核或重新完整运行。整体10秒限制目前仍从提交前计时；实际 scan
+Complete 后的精确10秒窗口尚待实现，不能宣称本改动完成这项时间语义。

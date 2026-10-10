@@ -69,8 +69,8 @@ def fixture():
         for n in range(1,count+1):
             marker=f'{len(run["rounds"])+1:032x}'
             payload=report_payload(marker,tx['address']);seq=seqs.get(rx['generation'],0)+1;seqs[rx['generation']]=seq
-            match={'generation':rx['generation'],'seq':seq,'address':tx['address'],'rssi':-42,'marker':marker,'data':marker_data(marker).hex(),'kernel_boottime_ns':start,'elapsed_ms':50,'lost':0}
-            text=(f'NativeDiscoveryMatch: generation={rx["generation"]} seq={seq} address={tx["address"]} RSSI=-42 marker={marker} data={match["data"]} kernel_boottime_ns={start} elapsed_ms=50 lost=0\n')
+            match={'generation':rx['generation'],'seq':seq,'address':tx['address'],'rssi':-42,'marker':marker,'data':marker_data(marker).hex(),'kernel_boottime_ns':start+50_000_000,'elapsed_ms':50,'lost':0}
+            text=(f'NativeDiscoveryMatch: generation={rx["generation"]} seq={seq} address={tx["address"]} RSSI=-42 marker={marker} data={match["data"]} kernel_boottime_ns={start+50_000_000} elapsed_ms=50 lost=0\n')
             indices=[]
             for op,owner,args in [(1,tx,['advertise','on']),(3,rx,['scan','on',marker,tx['address']]),(2,tx,['advertise','off']),(4,rx,['scan','off'])]:
                 command_start = start + {1:0,3:20_000_000,2:110_000_000,4:130_000_000}[op]
@@ -80,8 +80,9 @@ def fixture():
                     complete=b'\xa2\x02\x00'+struct.pack('<H',4+len(value))+struct.pack('<H',opcode)+b'\x01\x00'+value
                     records.append((1,owner['device'],command_start+5_000_000,aggregate(complete),'C',0x81,0))
                 request=100+len(run['commands'])
+                window=f'NativeScanWindow: generation={owner["generation"]} request={request} start_boottime_ns={command_start}\n' if op==3 else ''
                 admission=f'NativeAdvertisementAccepted: request={request} marker={marker} data={marker_data(marker).hex()}\n' if op==1 else ''
-                indices.append(len(run['commands']));run['commands'].append({'args':['/usr/bin/slctl','--adapter',owner['path'],*args],'exit':0,'stdout':admission+output_result(owner,op,request)+(text if op==3 else ''),'start_wall_ns':command_start,'end_wall_ns':command_end,'start_monotonic_ns':command_start,'end_monotonic_ns':command_end})
+                indices.append(len(run['commands']));run['commands'].append({'args':['/usr/bin/slctl','--adapter',owner['path'],*args],'exit':0,'stdout':window+admission+output_result(owner,op,request)+(text if op==3 else ''),'start_wall_ns':command_start,'end_wall_ns':command_end,'start_monotonic_ns':command_start,'end_monotonic_ns':command_end})
             run['rounds'].append({'phase':phase,'round':n,'tx':tx,'rx':rx,'marker':marker,'watermark':seq-1,'match':match,'header':payload[5:28].hex(),'scan_window_wall_ns':[start+20_000_000,start+100_000_000],'command_indices':indices})
             records.append((1,rx['device'],start+50_000_000,aggregate(payload),'C',0x81,0));start+=200_000_000
             tx,rx=rx,tx
@@ -202,6 +203,20 @@ class CaptureTests(unittest.TestCase):
         for name,change in mutations.items():
             bad=copy.deepcopy(run);change(bad)
             with self.subTest(name=name),self.assertRaises((CaptureError,ValueError)):corroborate(bad,capture)
+    def test_kernel_clock_window_is_required_and_correlated(self):
+        run,records=fixture();capture=self.read(pcap(records))
+        text=run['commands'][1]['stdout']
+        cases=[text.replace('start_boottime_ns=2020000000','start_boottime_ns=2050000001'),
+               text.replace('generation=2 request=101 start_boottime_ns','generation=3 request=101 start_boottime_ns'),
+               text.replace('request=101 start_boottime_ns','request=102 start_boottime_ns'),
+               text.replace('start_boottime_ns=2020000000','start_boottime_ns=0'),
+               '\n'.join(x for x in text.splitlines() if not x.startswith('NativeScanWindow:')),
+               text+'NativeScanWindow: generation=2 request=101 start_boottime_ns=2020000000\n']
+        for changed in cases:
+            bad=copy.deepcopy(run);bad['commands'][1]['stdout']=changed
+            with self.subTest(output=changed),self.assertRaises((CaptureError,ValueError)):
+                corroborate(bad,capture)
+
     def test_no_metadata_startup_capture(self):
         run,records=fixture();capture=self.read(pcap(records));capture['complete']=[]
         with self.assertRaises(CaptureError):corroborate(run,capture)

@@ -139,6 +139,15 @@ def parse_match(output):
                     [int(r[0]),int(r[1]),r[2],int(r[3]),r[4],r[5],int(r[6]),int(r[7]),int(r[8])]))
 
 
+def parse_scan_window(output, identity, request):
+    rows = re.findall(r'^NativeScanWindow: generation=(\d+) request=(\d+) start_boottime_ns=(\d+)$', output, re.M)
+    if (len(rows) != 1 or output.count('NativeScanWindow:') != 1
+            or int(rows[0][0]) != identity['generation'] or int(rows[0][1]) != request
+            or int(rows[0][2]) <= 0):
+        raise ValueError('one correlated positive kernel-clock scan window required')
+    return int(rows[0][2])
+
+
 class Run:
     SCOPE = 'physical'
     SUCCESS = 'CONTROL_PASS_EVIDENCE_PENDING'
@@ -228,11 +237,12 @@ class Run:
                 raise ValueError('random marker reused')
             scan = self.ctl(rx, 'scan', 'on', marker, tx['address'])
             scan_index = len(self.data['commands'])-1
-            parse_result(scan['stdout'], rx, 3)
+            scan_result = parse_result(scan['stdout'], rx, 3)
+            scan_boottime = parse_scan_window(scan['stdout'], rx, scan_result['request'])
             match = parse_match(scan['stdout'])
             if (match['generation'] != rx['generation'] or match['seq'] <= watermark or match['marker'] != marker
                     or match['address'] != tx['address'] or match['data'] != marker_data(marker).hex()
-                    or match['lost'] or match['kernel_boottime_ns'] <= 0 or match['elapsed_ms'] >= 10000
+                    or match['lost'] or match['kernel_boottime_ns'] < scan_boottime or match['elapsed_ms'] >= 10000
                     or scan['end_monotonic_ns'] - scan['start_monotonic_ns'] >= 10_000_000_000):
                 raise ValueError('fresh marker/address/data/timing/loss invalid')
             after = reports(self.ctl(rx, 'reports')['stdout'], rx)

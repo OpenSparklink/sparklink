@@ -189,7 +189,7 @@ def corroborate_synthetic(run, capture):
 
 def _corroborate_control(run, capture):
     # Verify supporting records rather than trusting the success label alone.
-    from ws73_north_star import parse_result, parse_match, stable
+    from ws73_north_star import parse_result, parse_match, parse_scan_window, stable
     identity = run['application_identity']
     if (not identity['uids'][0] or len(identity['uids']) != 4 or len(set(identity['uids'])) != 1
             or any(int(identity[k], 16) for k in ['cap_eff','cap_prm','cap_amb'])):
@@ -251,6 +251,10 @@ def _corroborate_control(run, capture):
             raise CaptureError('admission/marker/result correlation mismatch')
         if parse_match(commands[1]['stdout']) != match:
             raise CaptureError('fresh match disagrees with raw slctl output')
+        scan_result = parse_result(commands[1]['stdout'], rx, 3)
+        scan_boottime = parse_scan_window(commands[1]['stdout'], rx, scan_result['request'])
+        if match['kernel_boottime_ns'] < scan_boottime:
+            raise CaptureError('kernel RX predates this scan invocation')
         start_mono, end_mono = commands[1]['start_monotonic_ns'], commands[1]['end_monotonic_ns']
         if not 0 <= end_mono - start_mono < 10_000_000_000:
             raise CaptureError('monotonic scan bound exceeded')

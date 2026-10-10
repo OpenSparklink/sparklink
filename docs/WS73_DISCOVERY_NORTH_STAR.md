@@ -1175,3 +1175,28 @@ firmware/RF/物理拔插；板参NOT_ASSERTED，WS73=[]、七项0/7，完整S0�
 1537条/20匹配；各自32条独立snoop相同、8观察/4writer，hotplug各有四个旧
 handle终态证明。新增4个writer stop带来32条USB（empty时另有8条），不将
 这些额外Complete计作发现或用它们补齐连续20轮。C++17生成头也能编译。
+
+### 防止 daemon 延迟读取旧 RX 被误判为本轮发现
+
+`slctl scan on <marker> <address>` 在提交前记录 Linux `CLOCK_BOOTTIME`
+下界，与原生 event 的 `timestamp_ns` 使用同一时钟。匹配同时要求本次
+watermark 之后的序号、正确 generation/address/data、零 lost，以及 RX 时间
+位于本次提交前下界与读取后的当前 boottime 之间。不能把 wall clock 或
+Tokio Instant 与 kernel boottime 混比；不修改现有 command/report UAPI。
+
+`NativeScanWindow` 记录 generation/request/start_boottime_ns；实机 recorder
+和离线 USB 佐证要求该记录唯一且与成功 scan result 相关，拒绝时间下界以前
+的 RX。较旧的完整控制记录若缺此字段，当前 verifier 会拒绝；旧已冻结证据
+仍保留其原源码/判定器版本，不回填记录或宣称通过新检查。
+
+新增 `crates/slctl/tests/scan_freshness.rs` 使用私有 D-Bus 合成 peer 和实际
+one-shot slctl，覆盖延迟旧报告、未来时间、lost、错误 generation/address/data
+及真正本次时间窗口内的记录。旧实际 CLI 接受 timestamp=1 的记录，反例保留；
+修复后的 CLI 只接受最后一条有效记录。这证明应用过滤，不能当作真实 RX/RF。
+复现：`cargo test -p slctl --test scan_freshness -- --nocapture`；需要 dbus-daemon，
+可通过 `SPARKLINK_TEST_DBUS_DAEMON` 指定私有 binary。
+
+10 秒整体命令限制暂仍从提交前计时，比北极星要求的实际 scan Complete 后
+10 秒更早；此次没有实现精确 Complete 时间导出。该差异继续待修正，不能以
+收紧窗口代替完整时间语义或据此关闭 issue。真实七项0/7、四设备两组及完整
+S0–S6保留，所有原整项 issues 继续开放。

@@ -369,6 +369,13 @@ impl Context {
             // Starting the bound before admission is stricter than starting at
             // successful scan Complete. Both control and discovery fit in 10s.
             let started = tokio::time::Instant::now();
+            // Daemon history can acquire a new sequence after the watermark
+            // even when the kernel received it before this invocation. Compare
+            // the RX timestamp using the kernel's clock, never wall/Instant.
+            let scan_boottime_ns = boottime_ns()?;
+            println!(
+                "NativeScanWindow: generation={generation} request={id} start_boottime_ns={scan_boottime_ns}"
+            );
             println!("NativeScanRequest: request={id} enable={toggle}");
             let _: () = tokio::time::timeout(
                 std::time::Duration::from_secs(7),
@@ -384,6 +391,7 @@ impl Context {
                         tokio::time::timeout_at(deadline, proxy.call("GetTimedReports", &()))
                             .await??;
                     let now = tokio::time::Instant::now();
+                    let observed_boottime_ns = boottime_ns()?;
                     if now >= deadline {
                         anyhow::bail!(
                             "fresh marker discovery timeout (10s bound includes scan admission)"
@@ -392,7 +400,8 @@ impl Context {
                     for row in rows {
                         if row.0 > watermark
                             && row.1 == generation
-                            && row.2 != 0
+                            && (scan_boottime_ns..=observed_boottime_ns).contains(&row.2)
+                            && row.8 == 0
                             && row.4 == address
                             && row.7 == expected
                         {
@@ -1021,6 +1030,26 @@ fn parse_peer_address(text: &str) -> anyhow::Result<String> {
         .map(|b| format!("{b:02X}"))
         .collect::<Vec<_>>()
         .join(":"))
+}
+
+/// Linux kernel native events use CLOCK_BOOTTIME (including suspend).
+/// Keep this clock separate from Tokio's command deadline and wall logging.
+fn boottime_ns() -> anyhow::Result<u64> {
+    let mut value = nix::libc::timespec {
+        tv_sec: 0,
+        tv_nsec: 0,
+    };
+    // SAFETY: the pointer is a valid writable timespec and no aliases escape.
+    if unsafe { nix::libc::clock_gettime(nix::libc::CLOCK_BOOTTIME, &mut value) } != 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let seconds = u64::try_from(value.tv_sec)?;
+    let nanos = u64::try_from(value.tv_nsec)?;
+    anyhow::ensure!(nanos < 1_000_000_000, "invalid boottime nanoseconds");
+    seconds
+        .checked_mul(1_000_000_000)
+        .and_then(|n| n.checked_add(nanos))
+        .ok_or_else(|| anyhow::anyhow!("boottime overflow"))
 }
 
 fn random_bytes<const N: usize>() -> anyhow::Result<[u8; N]> {

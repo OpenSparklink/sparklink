@@ -66,7 +66,7 @@ uid1000 slctl（主组1002、补充组sparklink/1000）、uid1001 非组观察�
 记录实际 daemon UID、命令拒绝矩阵、源码/策略/程序/内核 hash 与完整内核日志。
 
 `--kernel-authorization` 还让 uid1001、补充组 uid1000、uid0 无 capability
-进程继承实际已打开的 chardev/configfs fd。每名调用者的99条受保护 ioctl、
+进程继承实际已打开的 chardev/configfs fd。每名调用者的101条受保护 ioctl、
 5个configfs store与5条已实现genl管理操作必须拒绝；观察与fd选择可用，
 注册/元数据/提交计数未变，读取不触发待同步的全局idle电源策略。未知 ioctl
 保持 ENOTTY。这验证实际调用时的凭据，覆盖“特权打开后传 fd”和无capability
@@ -74,7 +74,7 @@ uid1000 slctl（主组1002、补充组sparklink/1000）、uid1001 非组观察�
 
 ## 内核权限边界与迁移
 
-内核明确分类135个唯一声明 ioctl（34观察、2fd选择、99受保护），在参数复制/
+内核明确分类138个唯一声明 ioctl（35观察、2fd选择、101受保护），在参数复制/
 电源同步/命令提交前检查实际调用者在初始user namespace中的 CAP_NET_ADMIN。
 raw DLI、破坏性事件读取、远端操作、口令读取也属于受保护操作，不能凭
 ioctl读方向判断权限。五个configfs写入口和genl mutation bridge同样检查；
@@ -88,8 +88,19 @@ slkconfig/raw/破坏性DLI旧工具直接管理设备需要管理员权限，它
 观察端仍可读取chardev的状态/非破坏事件，不能用 raw poll 消费控制器队列。
 
 这些是实际 D-Bus/daemon/CLI/内核与合成 USB 的权限及控制集成，不能替代
-真实 WS73、固件/板级资格或 RF 验收。完整 Managed/Diagnostic owner lease、
-raw与managed事务互斥、Proxy/PDU owner、撤销/崩溃恢复、其他接口的canonical
-writer迁移仍待实现；多个具有CAP_NET_ADMIN的writer尚未被独占lease协调。
-静态总线策略与capability边界都不能算内核单owner隔离完成。K#5/U#6及
-北极星整项保持开放。安装与实际用户权限验收须单独记录。
+真实 WS73、固件/板级资格或 RF 验收。原生 WS73 的文件 ownership 已接入；
+跨全部 Backend 的 Managed/Diagnostic、Proxy/PDU/Security owner、自动原地
+恢复和其余接口 canonical writer 迁移仍待实现。profile 0 继续旧迁移窗口，
+不能用原生路径证明全部 ownership 完成。K#5/U#6及北极星整项保持开放，
+实际安装与普通用户的实机权限验收须单独记录。
+
+## 原生每设备 owner 的迁移
+
+原生 WS73 现由 registration-bound Managed/Diagnostic fd 互斥控制；slkd
+在发布 adapter 前取得 Managed，所有管理方法共用一个 fd。观察 fd 独立，
+无 fd ownership 的 native genl mutation 不再作为写入口。释放/最后关闭后
+保留已上线回复并以真实停止确认清理；失败/timeout 为 Fault/Unknown，成功
+清理可同代次换 owner，不确定故障当前须重插。profile 0、Proxy/PDU/Security
+及其余 canonical 接口仍待迁移。详见[ownership 契约与测试](MANAGEMENT_OWNERSHIP.md)。
+原生路径的结果不能推及全部 Backend 或自动原地恢复；K#5/U#6和真实
+北极星继续保持开放。

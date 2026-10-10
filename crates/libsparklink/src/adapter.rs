@@ -49,6 +49,76 @@ impl Adapter {
         Ok(count)
     }
 
+    /// Own native management on this open file description. Clones of an Arc
+    /// share this owner; separately opened observation fds do not. CAP_NET_ADMIN
+    /// is checked on acquisition and every protected call. Kernel copyout faults
+    /// do not acquire an invisible lease. Legacy profile 0 is not migrated yet.
+    pub fn acquire_management(&self, generation: u64, mode: u32) -> Result<u64> {
+        let mut request = SleManagementRequest {
+            version: MANAGEMENT_VERSION,
+            generation,
+            mode,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_management_acquire(self.raw_fd(), &mut request)? };
+        if request.version != MANAGEMENT_VERSION
+            || request.generation != generation
+            || request.mode != mode
+            || request.lease == 0
+            || request.flags != 0
+            || request.reserved != 0
+        {
+            return Err(Error::InvalidParam(
+                "invalid management acquisition response",
+            ));
+        }
+        Ok(request.lease)
+    }
+    /// Observe ownership/revocation without consuming control results. A token
+    /// is returned only to the owning file, and alone never grants authority.
+    pub fn management_status(&self, generation: u64) -> Result<SleManagementQuery> {
+        let mut query = SleManagementQuery {
+            version: MANAGEMENT_VERSION,
+            generation,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_management_query(self.raw_fd(), &mut query)? };
+        if query.version != MANAGEMENT_VERSION
+            || query.generation == 0
+            || (generation != 0 && query.generation != generation)
+            || query.state > MANAGEMENT_FAULTED
+            || query.mode > MANAGEMENT_DIAGNOSTIC
+            || query.flags & !3 != 0
+            || query.status > 255
+            || query.opcode > 65535
+            || (query.flags & 1 == 0 && query.lease != 0)
+            || (query.state != MANAGEMENT_HELD && query.mode != 0)
+            || (query.flags & 2 != 0
+                && (query.state != MANAGEMENT_FAULTED
+                    || query.error >= 0
+                    || query.status == 0
+                    || query.opcode == 0))
+            || query.reserved != 0
+            || (query.flags & 1 != 0 && (query.lease == 0 || query.state != MANAGEMENT_HELD))
+        {
+            return Err(Error::InvalidParam("invalid management status response"));
+        }
+        Ok(query)
+    }
+    /// Asynchronous release. A successor is admitted only after actual cleanup
+    /// stop replies, or immediately when the owner was already safely quiet.
+    pub fn release_management(&self, generation: u64, lease: u64, mode: u32) -> Result<()> {
+        let request = SleManagementRequest {
+            version: MANAGEMENT_VERSION,
+            generation,
+            lease,
+            mode,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_management_release(self.raw_fd(), &request)? };
+        Ok(())
+    }
+
     /// Get device info for the active device
     pub fn device_info(&self) -> Result<SciDevInfo> {
         let mut info = unsafe { std::mem::zeroed::<SciDevInfo>() };

@@ -27,7 +27,7 @@ pub struct DeviceEntry {
 
 /// Shared adapter state accessible from D-Bus + event loop
 pub struct AdapterState {
-    pub adapter: Adapter,
+    pub adapter: Arc<Adapter>,
     pub native_control: Option<Arc<Adapter>>,
     pub radio_advertising: u32,
     pub radio_scanning: u32,
@@ -48,11 +48,12 @@ pub struct AdapterState {
 
 impl AdapterState {
     pub fn new(
-        adapter: Adapter,
+        adapter: impl Into<Arc<Adapter>>,
         config: DaemonConfig,
         bonding: BondingStore,
         profiles: ProfileRegistry,
     ) -> Self {
+        let adapter = adapter.into();
         let name = config.general.name.clone();
         Self {
             adapter,

@@ -472,3 +472,28 @@ PASS；完整原96-case 1056 OK/0 FAIL/0 SKIP/3旧WARN。保持事件内容断�
 构建缺rust-src导致功能关闭的错误配置及失败保留；合格#60镜像冻结，runner
 检查必需配置并验证拒绝路径。lease独占/撤销恢复/Proxy/PDU/canonical迁移、
 真实WS73、四设备及完整S0–S6仍待验；全部原issues继续OPEN。
+
+
+### 原生 WS73 的文件 ownership 与撤销（2026-10-10，部分成果）
+
+三个固定布局入口提供 Managed/Diagnostic acquire/release/query，文件描述
+绑定 generation 与单调 token。slkd 每设备初始化、typed discovery、旧管理
+统一控制 fd，观察订阅独立；原生 unowned genl bridge 返回 EPERM。关闭或
+release 撤销 queued intent，但保留 active wire reply，以 driver-prepared
+停止 recipe 确认 Off 后才允许后继。失败/缺失 Complete 保留 Fault/Unknown、
+首次错误及 raw reply status/opcode；成功清理同代次可换 owner，不确定故障
+目前通过重插新代次恢复。profile0、Proxy/PDU/Security、自动原地恢复和其余
+canonical 迁移继续待做。可复现命令见[ownership 契约](MANAGEMENT_OWNERSHIP.md)。
+实机北极星七项、四设备两组与完整S0–S6保持；合成验证不替代真实固件/RF。
+
+
+当前最终验证：181harness、146workspace及protocol/library/slctl strict-clippy
+PASS；九条native/standard/事件/故障/ownership与生产/默认session两daemon
+门禁全部PASS。真实syscall新增六项schema拒绝、owner fd降权传递、dup最后关闭、
+两个实际停止确认、失败停止原始status=253/opcode=0x0c05、超过原deadline首次
+errno稳定、pending wire回复缺失时取消/timeout、重插代次隔离。普通slctl合成
+20轮交换+同PID/owner重插2轮/TX-off保持通过。完整原96-case 1056 OK/0 FAIL/
+0 SKIP/3旧WARN；两控制器初轮严格SKIP(2)保留，完整使用三控制器配置通过。
+合格#64镜像/配置/对象、最终source/input guards与日志保留于
+`.dev/management-final-evidence.json`。原完整slkd strict-clippy旧问题仍待处理。
+实际主机完整USB拓扑仍WS73=[]，未做实机控制/RF；七项及全部整项issues保持OPEN。

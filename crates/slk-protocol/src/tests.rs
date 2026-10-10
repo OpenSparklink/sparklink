@@ -526,3 +526,16 @@ fn selected_controller_snapshot_abi() {
         0x40025307
     );
 }
+
+#[test]
+fn native_management_abi() {
+    assert_eq!(std::mem::size_of::<SleManagementRequest>(), 32);
+    assert_eq!(std::mem::size_of::<SleManagementQuery>(), 48);
+    assert_eq!(std::mem::align_of::<SleManagementRequest>(), 8);
+    assert_eq!(std::mem::align_of::<SleManagementQuery>(), 8);
+    assert_eq!(std::mem::offset_of!(SleManagementRequest, mode), 20);
+    assert_eq!(std::mem::offset_of!(SleManagementQuery, error), 32);
+    assert_eq!(nix::request_code_readwrite!(b'S', 0x8b, 32), 0xc020538b);
+    assert_eq!(nix::request_code_write!(b'S', 0x8c, 32), 0x4020538c);
+    assert_eq!(nix::request_code_readwrite!(b'S', 0x8d, 48), 0xc030538d);
+}

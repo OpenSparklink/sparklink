@@ -128,17 +128,13 @@ impl Node {
     ) -> anyhow::Result<Self> {
         let path = object_path(&snapshot);
         let device = device.to_owned();
-        let (receiver, init_adapter) =
-            tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
-                let mut receiver = Adapter::open(&device)?;
-                receiver.select_device(snapshot.dev_index)?;
-                receiver.controller_snapshot(snapshot.generation)?;
-                let mut init_adapter = Adapter::open(&device)?;
-                init_adapter.select_device(snapshot.dev_index)?;
-                init_adapter.controller_snapshot(snapshot.generation)?;
-                Ok((receiver, init_adapter))
-            })
-            .await??;
+        let receiver = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
+            let mut receiver = Adapter::open(&device)?;
+            receiver.select_device(snapshot.dev_index)?;
+            receiver.controller_snapshot(snapshot.generation)?;
+            Ok(receiver)
+        })
+        .await??;
         enum Subscription {
             Legacy(libsparklink::EventReceiver),
             Native(libsparklink::ControllerEventReceiver),
@@ -149,7 +145,15 @@ impl Node {
         } else {
             Subscription::Native(receiver.into_controller_event_receiver()?)
         };
-        let control = Arc::new(init_adapter);
+        let adapter = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
+            if snapshot.profile != 0 {
+                adapter
+                    .acquire_management(snapshot.generation, slk_protocol::MANAGEMENT_MANAGED)?;
+            }
+            Ok(Arc::new(adapter))
+        })
+        .await??;
+        let control = adapter.clone();
         let storage = storage.to_owned();
         let (adapter, bonding, profiles) = tokio::task::spawn_blocking(move || {
             let key = format!(

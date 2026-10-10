@@ -1200,3 +1200,35 @@ impl SleDiscoveryResult {
 /// seq, generation, kernel CLOCK_BOOTTIME ns, daemon wall ms, address, RSSI,
 /// raw header, raw data, lost. Opaque headers never imply PHY reassembly.
 pub type TimedDiscoveryReportRecord = (u64, u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
+
+pub const MANAGEMENT_VERSION: u32 = 1;
+pub const MANAGEMENT_MANAGED: u32 = 1;
+pub const MANAGEMENT_DIAGNOSTIC: u32 = 2;
+pub const MANAGEMENT_FREE: u32 = 0;
+pub const MANAGEMENT_HELD: u32 = 1;
+pub const MANAGEMENT_REVOKING: u32 = 2;
+pub const MANAGEMENT_FAULTED: u32 = 3;
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SleManagementRequest {
+    pub generation: u64,
+    pub lease: u64,
+    pub version: u32,
+    pub mode: u32,
+    pub flags: u32,
+    pub reserved: u32,
+}
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SleManagementQuery {
+    pub generation: u64,
+    pub lease: u64,
+    pub version: u32,
+    pub mode: u32,
+    pub state: u32,
+    pub flags: u32,
+    pub error: i32,
+    pub status: u32,
+    pub opcode: u32,
+    pub reserved: u32,
+}

@@ -296,3 +296,22 @@ nix::ioctl_readwrite!(
     0x8a,
     super::SleControllerSnapshot
 );
+
+nix::ioctl_readwrite!(
+    sl_management_acquire,
+    SL_MAGIC,
+    0x8b,
+    super::SleManagementRequest
+);
+nix::ioctl_write_ptr!(
+    sl_management_release,
+    SL_MAGIC,
+    0x8c,
+    super::SleManagementRequest
+);
+nix::ioctl_readwrite!(
+    sl_management_query,
+    SL_MAGIC,
+    0x8d,
+    super::SleManagementQuery
+);

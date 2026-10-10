@@ -6,6 +6,9 @@
 两者均不自动认证固件/板级校准，不自动关闭 issue，也不冒称 PHY 嗅探器。
 当前本机未枚举到 WS73，工具没有实机 PASS。
 
+可使用 [隔离 KVM 开发客体](WS73_TARGET_ENVIRONMENT.md) 打包并启动系统总线、
+普通应用和启动前 usbmon；它不安装主机服务，环境与实机验收分别记录。
+
 ## 准备
 
 目标机器须运行本项目内核、驱动和 slkd，部署适用本板的固件、校准与权限。
@@ -15,13 +18,16 @@ slctl 可执行文件也不得带 setuid/setgid 或 file capability。
 
 系统 D-Bus 使用[观察/控制策略](DBUS_AUTHORIZATION.md)：未授权用户仅查看，
 管理员一次性加入 `sparklink` 组的用户可控制。安装后的新会话确认 `id` 包含
-该组，再运行 slctl；不要用开放的 session bus 代替生产授权。内核 owner lease
-与直接 ioctl 的权限隔离仍待实现，静态总线策略不能算完整权限 issue 已完成。
+该组，再运行 slctl；不要用开放的 session bus 代替生产授权。原生 WS73 已有
+fd/generation owner lease 与 CAP 检查；完整其他 profile/Proxy/PDU/Security
+权限迁移仍待做，静态总线策略不能算完整权限 issue 已完成。
 
 选定两个固定物理 USB 端口，例如 `1-2.1.1`、`1-2.1.2`。工具从 sysfs 验证
 ffff:3733、真实原生驱动绑定、metadata、streaming、每代次地址/版本/80-bit features。
 它拒绝标为 synthetic/fixture 的设备。`slctl daemon` 通过总线返回实际 slkd
 unique owner、PID、UID；运行期间同时核对 PID/start_ticks，防止误认同名或重启进程。
+正常 native_runtime 中 controller_error=100 表示未收到错误事件；真实错误
+字节（包括0）不是正常状态。验证器按驱动实际 sentinel 检查，不伪造成功事件。
 `slctl --adapter <path> show` 的 Ready/代次/地址须与该物理映射一致。
 
 由有权限的捕获进程在测试 USB 总线上启动全长 usbmon 抓包，**在设备冷启动查询

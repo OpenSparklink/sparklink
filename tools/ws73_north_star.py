@@ -42,6 +42,16 @@ def daemon_identity(pid):
     return {'pid': pid, 'start_ticks': int(rest[19])}
 
 
+def healthy_native_runtime(value):
+    # usb.c initializes 0x100 to mean no controller error byte was observed.
+    # An actual 0x000a event (even with byte 0) faults the transport; never
+    # invent a successful error event or accept one as healthy.
+    m = re.fullmatch(r'id=(\d+) generation=(\d+) streaming=1 broken=0 unsupported=(\d+) last_event=([0-9a-fA-F]{4}) controller_error=100', value)
+    if m is None or not 0 <= int(m[1]) < 16 or not 0 < int(m[2]) < 1 << 64:
+        raise ValueError('healthy native runtime with no controller error event required')
+    return m
+
+
 def registration(port, root=USB_ROOT):
     if not re.fullmatch(r'\d+-\d+(?:\.\d+)*', port):
         raise ValueError('explicit physical USB port required')
@@ -59,7 +69,7 @@ def registration(port, root=USB_ROOT):
     attrs = {name: (interface / name).read_text().strip() for name in ['metadata_valid', 'runtime_transport', 'boot_error', 'native_runtime', 'controller_information']}
     if attrs['metadata_valid'] != '1' or attrs['runtime_transport'] != '1' or attrs['boot_error'] != '0':
         raise ValueError('native metadata/transport initialization incomplete')
-    runtime = re.fullmatch(r'id=(\d+) generation=(\d+) streaming=1 broken=0 unsupported=(\d+) last_event=([0-9a-fA-F]{4}) controller_error=0', attrs['native_runtime'])
+    runtime = healthy_native_runtime(attrs['native_runtime'])
     info = re.fullmatch(r'version=([0-9a-fA-F]{10}) features=([0-9a-fA-F]{20}) address=([0-9a-fA-F:]{17}) acb=(\d+)/(\d+) icb=(\d+)/(\d+) bootstrap_credits=(\d+)', attrs['controller_information'])
     if runtime is None or int(runtime[2]) == 0 or info is None or info[3] == '00:00:00:00:00:00':
         raise ValueError('native registration/queried identity invalid')

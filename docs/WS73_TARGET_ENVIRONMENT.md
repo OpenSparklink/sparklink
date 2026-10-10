@@ -1,0 +1,115 @@
+# 隔离 WS73 开发客体
+
+`tools/ws73_target.py` 创建本机 KVM 客体：运行选定内核、原生 WS73 驱动、系统
+D-Bus 及项目生产权限策略、slkd、普通 uid1000 slctl、Python 实机验收工具和
+tcpdump。它不安装主机内核/服务、不修改主机权限、不解绑主机驱动，也不需要
+嵌套虚拟化。主机操作者使用已有 KVM/USB 权限；普通应用没有 sudo、setid 或
+capability。**环境就绪不是七项真实北极星通过。**
+
+主机仍负责一次性 USB 权限配置和提供适用板子的固件/校准/customize/PM 输入。
+打包校验 SDK 文件的 64 字节 SHA256 header 和两个 raw 配置的大小，记录 hash；
+不把文件格式正确当成板级认可，manifest 明确 `board_qualification=NOT_ASSERTED`。
+文件仅复制到本机私有开发目录，不作为仓库发布内容。
+
+## 准备
+
+从 opensparklink 工作区执行，所有路径用实际本机路径替换：
+
+```sh
+python3 sparklink/tools/ws73_target.py prepare \
+  --kernel-build /absolute/qualified-kernel-build \
+  --qemu /absolute/custom-qemu-system-x86_64 \
+  --busybox /absolute/static-busybox \
+  --dbus-daemon /absolute/dbus-daemon \
+  --firmware-dir /absolute/ws73_SDK/firmware/us \
+  --runtime-config-dir /absolute/reviewed-board-config \
+  --output /absolute/private/fresh-prepared
+```
+
+还需要本机 tcpdump、当前 Python、gcc/cargo 工具链依赖及 cpio/gzip/strip/ldd。
+`--tcpdump` 可选择具体 binary；`--python` 必须与运行脚本的解释器一致，避免
+stdlib ABI 混用。prepare 离线构建实际项目程序，复制动态依赖及 Python stdlib，
+strip 的只是客体副本；不修改原 binary。默认内核须内建 SparkLink/WS73、usbmon
+与 virtio/9p；缺任一配置就拒绝。支持自建 QEMU 的 `usb-ws73-test` 与 virtio-9p。
+
+archive 的所有 inode 强制 root:root；普通应用不能改写 daemon、代码或固件。
+密码账号锁定，交互入口由客体 supervisor 切换至 uid1000/gid1002，附属
+sparklink 组为 gid1000。raw chardev 权限仍由内核 CAP/ownership 检查，不下放
+usbmon。tcpdump 启动时打开限定客体 USB bus，随后显式降至 capture uid1003/
+gid1003、零 capabilities。正在写的 pcap/statistics 为 root 私有；停捕获后才
+封存为控制组可读。
+
+manifest 封存 kernel/config/initramfs/QEMU、输入/source、原/strip 后程序及
+guest-files 的 SHA256；run 再核对实际使用的 artifacts，不用文件名或旧 PASS
+判断内容。失败、超时与未完成的运行保留，不自动重试并覆盖。输出目录必须全新。
+
+## 两只真实设备
+
+```sh
+python3 sparklink/tools/ws73_target.py run \
+  --prepared /absolute/private/fresh-prepared \
+  --ports 1-2.1.1 1-2.1.2 \
+  --output /absolute/private/fresh-physical-run --timeout 1800
+```
+
+必须在有 stdin 的终端运行。两个端口须是可写的 ffff:3733，且启动前没有主机
+驱动占用。进程与旧固件 lab 共用真实 flock，防止同时透传同一设备；锁文件本身
+不当作“正在运行”证据。客体无网卡，只把本轮空的 guest-output 目录通过 mapped
+9p 导出；不暴露主机仓库或其他目录。所有复制、9p 写入与 VM 都由主机普通用户
+执行。涉及 root 的初始化/daemon/打开捕获只发生在一次性客体中。
+
+VM 启动时不附 USB。tcpdump 确认监听后才添加第一只，普通 slctl 证明第一只
+独立 Ready 后才加第二只。固定 hostbus/hostport 对应客体 1-1/1-2，不使用容易
+变化的 host address。ROM/重插枚举地址变化时，已有本 QEMU 的 live fd 和
+attached backend 继续保留；未被占用的端口可刷新 QMP，未知 usbfs/其他主机
+驱动不会被解绑。这个真实透传/ROM/重插路径尚待实机检验，合成 support 不能
+证明它。
+
+两只 Ready 后，程序显示普通用户的完整 North Star 命令，包含实际 daemon PID、
+客体端口、kernel/firmware/config artifact 路径与新的输出目录。进入的交互 shell
+只有 uid1000。执行所显示命令，按提示真实拔出/重插第一只；Host 不自动代替
+物理拔插或回复确认。10 秒随机标识匹配、20 轮交换、同 daemon owner/PID 与
+survivor 隔离由 [实机 recorder](WS73_PHYSICAL_TEST.md) 验证。需要延长环境
+使用时间时显式调整有限正数 timeout，不把 timeout 当作成功。
+
+应用测试完退出 shell。supervisor 停 slkd 并等待清理，随后 SIGINT 停 tcpdump、
+封存零丢失统计与完整 dmesg。Host 保留 console、QMP、前后 USB inventory、
+host/guest/controller 物理映射、自动重新枚举记录、pcap 和应用证据。状态至多
+为 ENVIRONMENT_FINISHED，`physical_acceptance` 始终 false；单纯退出 shell
+不代表广播发现通过。
+
+之后在主机普通用户下验证实际导出的 run/pcap/statistics：
+
+```sh
+python3 sparklink/tools/ws73_north_star.py verify \
+  --run /absolute/fresh-physical-run/guest-output/application/control/run.json \
+  --pcap /absolute/fresh-physical-run/guest-output/ws73.pcap \
+  --capture-stats /absolute/fresh-physical-run/guest-output/capture-stats.txt \
+  --output /absolute/private/fresh-verified
+```
+
+USB 地址使用 run 中的客体映射，不混用 host bus/device。RX_CORROBORATED 仍不
+自动认可板级参数/实际部署 provenance，也不自动关闭 issue。详细边界见
+[物理证据](WS73_PHYSICAL_TEST.md)和[完整验收定义](WS73_DISCOVERY_NORTH_STAR.md)。
+
+## 开发支撑门禁
+
+```sh
+python3 sparklink/tools/ws73_target.py support \
+  --prepared /absolute/private/fresh-prepared \
+  --output /absolute/private/fresh-support --timeout 120
+python3 -m unittest discover -s sparklink/tools/tests -p 'test*.py'
+```
+
+support 只添加两只明确标记的合成模型，不接触主机 WS73。它验证系统 D-Bus
+观察/控制策略、uid1000/零 capabilities 的串口 TTY 输入、代码/固件不可改写、
+应用无 usbmon 权限、capture 进程降权、两只 Ready、20 次普通应用交换及 TX-off、
+实际客体 usbmon 原始数据与应用结果、两种独立 snoop 文件字节一致。Python
+实机 recorder 必须明确拒绝这些 synthetic USB 描述符并保留 FAIL，不能把
+SUPPORT_PASS 当成真实 firmware/ROM/USB 透传/RF 或拔插七项验收。
+
+原生 sysfs `controller_error=100` 是 0x100 sentinel：尚未观察到错误事件。
+它不是“成功 status=0”。真实 controller error byte（包括 0）会使 transport
+Fault；就绪判定拒绝任何错误字节、broken、不 streaming、零 generation。
+旧 recorder 错误要求 error=0 的问题已修正，保留 sentinel，并有实际模型与
+filesystem fixture 验证。

@@ -1043,3 +1043,40 @@ snoop-qualified-gate-* 与 snoop-full-qemu-archive 保留完整日志和 SHA256�
 C/Python snoop/owner 绑定、其他 profile、Proxy/PDU/Security ownership 和全
 故障/PM/发布矩阵仍待完成；不提前关闭任何整项 issue。最新主机只读枚举 WS73
 仍为 []，没有真实固件/空口证据；真实七项仍 0/7，四设备两组和完整 S0–S6 保留。
+
+
+### 隔离开发客体 / 实机入口 sentinel 修正（2026-10-10，部分成果）
+
+新增 tools/ws73_target.py prepare/run/support、guest supervisor 和 readiness/
+probe。只准备本机私有 KVM capsule，不装主机服务，不要求嵌套虚拟化；严格
+固定 kernel/config/initramfs/QEMU 输入路径与 SHA，防止核对旧路径却启动另一份
+文件。实际系统 D-Bus 使用生产策略，root slkd 与 uid1000/gid1002/附属组1000
+应用分开；archive 强制 root inode、账号锁定、代码/固件不可由普通应用改写。
+
+客体启动时无 USB，tcpdump 在 guest usbmon1 全长启动并降权 uid1003/零
+capabilities 后才透传第一只，第一只经普通 slctl 独立 Ready 后再加第二只。
+固定 host-port/guest-port/registration 映射，带本 QEMU live fd 的自动重新
+枚举保持，不解绑未知主机占用。只有本轮空的 mapped-9p evidence 目录导出，
+不暴露工作区；普通串口 shell可运行原有完整物理 recorder，退出后封存 PCAP/
+统计、dmesg/daemon/console/QMP。ENVIRONMENT_FINISHED 不等于北极星通过。
+
+实际客体发现旧实机 recorder 要求 controller_error=0，而 driver 明确定义
+0x100 为“未收到错误事件”，导致正常设备拒绝。现在共用 healthy native parser
+保留 sentinel=100；任何错误字节（包括0）、broken、不streaming、零代次拒绝。
+新增完整 filesystem fixture与实际模型sysfs读回；不把未收到的错误事件写成成功。
+
+冻结 #67/core crates 未修改。最终 capsule support PASS：两个真实执行的
+模型 Runtime 独立 Ready；系统总线控制/观察策略、普通应用只读代码/固件、无
+usbmon权限、collector降权、普通 uid1000/零caps TTY输入、20轮交换/TX-off，
+实际导出的1505条客体USB记录/20个完整RX报告对应应用，mon/dump32条一致。
+之前同guest-code的完整支持门禁可重复，最终输入路径/manifest guards也重跑。
+47个工具测试通过。模型没有ROM/firmware执行/RF，实机 recorder明确拒绝其
+描述符且保留FAIL。初次tcpdump缺降权账号、两次sentinel误判超时记录均保留；
+并验证真实flock阻止并行lab。真实入口在当前WS73=[]时启动VM前拒绝，留FAIL。
+
+见 [客体准备/真实端口与支持门禁](WS73_TARGET_ENVIRONMENT.md)。本地
+.dev/target-final-evidence.json、target-source-snapshot、target-prepared-qualified、
+target-support-qualified与前期重复/失败记录保留。capsule仅验证文件hash/格式，
+不认可SDK默认候选板参；board_qualification始终NOT_ASSERTED。真正冷启动/
+透传重新枚举/物理拔插与完整七项仍待硬件；原S0–S6、四设备两组与全部整项issues
+保持OPEN，七项0/7，不提前关闭。

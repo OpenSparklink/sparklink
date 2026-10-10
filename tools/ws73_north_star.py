@@ -457,7 +457,7 @@ def main():
         if args.ports[0] == args.ports[1]: p.error('two distinct USB ports required')
         return Run(args).execute()
     args.output.mkdir(parents=True, exist_ok=False)
-    result = {'format_version':1, 'scope':'USB/HCC/DLI RX corroboration, not board qualification or PHY sniffing', 'status':'FAIL'}
+    result = {'format_version':1, 'scope':'USB/HCC/DLI TX/RX corroboration, not board qualification or PHY sniffing', 'status':'FAIL'}
     try:
         result['run'] = file_record(args.run); result['pcap'] = file_record(args.pcap)
         result['capture_stats'] = file_record(args.capture_stats)

@@ -1293,3 +1293,30 @@ object/config/guest/raw捕获及失败hash；SDK/firmware/binary不上传。
 真实入口9属性通过后因WS73缺席FAIL，未启动VM；真实ROM重新枚举、主机
 绑定竞争、空口及物理拔插尚未验证。未重跑Rust/clippy/远端CI或重编内核。
 七项仍0/7、board NOT_ASSERTED，四设备和完整S0–S6及所有原整项issues OPEN。
+
+
+### 真实闭环证据必须关联主机 TX（部分成果）
+
+原 verifier 只寻找成功 DLI Complete 与匹配 report，没有检查实际主机命令。
+当前严格配对 endpoint-1 OUT S/C（USB身份+URB，完整提交/成功实际长度），
+仅解码固定 TX header/HCC/SLE slot，不搜索padding；失败/提交错误/未完成/
+短写/跨设备/重复pending拒绝。完成后URB复用正常。每步唯一TX→DLI Complete、
+前一步Complete→下一TX均核对；IN与OUT callback可竞争，不错误假定回调先后。
+
+17新增byte/顺序/URB/元数据/随机标识/幸存控制测试，去重85工具用例通过。
+实际旧35a520 verifier对上一轮模型PCAP的五种坏证据仍接受support：去掉全
+OUT、改发送随机标识、OUT失败、去掉metadata TX、去掉survivor TX；新工具
+全部拒绝。原始PCAP、旧确切源码与五派生文件hash保留，这不是实机证据。
+
+新工具封存客体在未变#69内核/libusb retry QEMU/compiled Rust上运行合成
+20+2轮、同daemon/owner、两次TX-off与普通应用权限门禁PASS。客体与Host独立
+重算佐证完全一致：189成功TX、154radio步骤、12metadata查询、4negative
+scan/stop、2survivor scan步骤；2251USB/177空完成/22report匹配、32独立
+snoop及8C/Python观察/4writer仍通过。每轮JSON保存发送/USB完成/设备回复
+偏移、sequence和hash、两端注册查询及完整数据/地址/selected power检查。
+
+`.dev/native-tx-final-evidence.json`冻结6相关源码、当前guest/捕获/佐证与
+五反例来源；本批没有修改Linux/QEMU/Rust、重编内核、重跑原96-case、Rust/
+clippy或远端CI，未变kernel/QEMU的原96证据明确引用上一轮。真实入口通过
+工具预检后因无WS73 FAIL且未开VM；真实七项仍0/7，board NOT_ASSERTED，
+ROM/重新枚举/物理拔插/RF和四设备两组待验，完整S0–S6及全部原issues OPEN。

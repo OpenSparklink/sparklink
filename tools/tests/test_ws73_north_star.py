@@ -31,10 +31,28 @@ def pcap(records, endian='<', nano=False):
     blob = magic+struct.pack(endian+'HHiiII',2,4,0,0,65535,220)
     for bus,device,timestamp,payload,kind,endpoint,status in records:
         sec,ns=divmod(timestamp,1_000_000_000)
-        packet=struct.pack(endian+'QBBBBHBBqiiII',123,ord(kind),3,endpoint,device,bus,0,0,sec,ns//1000,status,len(payload),len(payload))+bytes(24)+payload
+        length=len(payload)
+        data=b'' if endpoint==1 and kind in 'CE' else payload
+        flag=ord('>') if endpoint==1 and kind in 'CE' else 0
+        packet=struct.pack(endian+'QBBBBHBBqiiII',123,ord(kind),3,endpoint,device,bus,0,flag,sec,ns//1000,status,length,len(data))+bytes(24)+data
         fraction=ns if nano else ns//1000
         blob+=struct.pack(endian+'IIII',sec,fraction,len(packet),len(packet))+packet
     return blob
+
+
+def command_payload(opcode, params=b''):
+    b=bytearray(64+max(64,9+len(params)))
+    struct.pack_into('<III',b,0,0,len(b),1)
+    struct.pack_into('<BBH',b,64,0xa0,8,5+len(params))
+    b[68]=0xa1;struct.pack_into('<HH',b,69,opcode,len(params))
+    b[73:73+len(params)]=params
+    return bytes(b)
+
+
+def transmit(records, device, moment, opcode, params=b''):
+    payload=command_payload(opcode,params)
+    records.extend([(1,device,moment-2000,payload,'S',1,-115),
+                    (1,device,moment-1000,payload,'C',1,0)])
 
 
 def identity(gen):
@@ -57,14 +75,16 @@ def fixture():
          'application_identity':{'uids':[1000]*4,'cap_eff':'0','cap_prm':'0','cap_amb':'0'},'daemon_before':{'pid':100,'start_ticks':20},
          'daemon_after':{'pid':100,'start_ticks':20},'bus_before':{'owner':':1.4','pid':100,'uid':0},
          'bus_after':{'owner':':1.4','pid':100,'uid':0},'initial':[a,b],
-         'survivor_control':{'identity':b,'scan_request':{'stdout':output_result(b,3,40)}},
+         'survivor_control':{'identity':b,'scan_request':{'stdout':output_result(b,3,40),'start_wall_ns':8_600_000_000,'end_wall_ns':8_610_000_000}},
          'stale_selection':{'exit':1,'stderr':'adapter is not a live registration'},'replacement':new,'unplug_observed_wall_ns':8_500_000_000,
          'cleanup':[{'status':'STOP_CONFIRMED'}]*2,'slctl':{'path':'/usr/bin/slctl'},'commands':[], 'rounds':[], 'negatives':[]}
     records=[];seqs={};start=2_000_000_000
     for d in [a,b,new]:
         for op,value in [(0x0404,bytes.fromhex(d['version'])),(0x0403,bytes.fromhex(d['features'])),(0x0406,bytes.fromhex(d['address'].replace(':',''))),(0x0402,struct.pack('<HBHB',*d['buffers']))]:
             data=b'\xa2\x02\x00'+struct.pack('<H',4+len(value))+struct.pack('<H',op)+b'\x01\x00'+value
-            records.append((1,d['device'],8_800_000_000 if d is new else 500_000_000,aggregate(data),'C',0x81,0))
+            moment=8_800_000_000 if d is new else 500_000_000
+            transmit(records,d['device'],moment,op,b'\x00' if op==0x0406 else b'')
+            records.append((1,d['device'],moment,aggregate(data),'C',0x81,0))
     for phase,count,tx,rx in [('initial',20,a,b),('replug',2,new,b)]:
         for n in range(1,count+1):
             marker=f'{len(run["rounds"])+1:032x}'
@@ -75,10 +95,18 @@ def fixture():
             for op,owner,args in [(1,tx,['advertise','on']),(3,rx,['scan','on',marker,tx['address']]),(2,tx,['advertise','off']),(4,rx,['scan','off'])]:
                 command_start = start + {1:0,3:20_000_000,2:110_000_000,4:130_000_000}[op]
                 command_end = start + {1:10_000_000,3:100_000_000,2:120_000_000,4:140_000_000}[op]
-                for opcode in {1:[0x0c02,0x0c03,0x0c05],3:[0x1001,0x1002],2:[0x0c05],4:[0x1002]}[op]:
+                opcodes={1:[0x0c02,0x0c03,0x0c05],3:[0x1001,0x1002],2:[0x0c05],4:[0x1002]}[op]
+                for step,opcode in enumerate(opcodes):
                     value=b'\xf8' if opcode==0x0c02 else b''
                     complete=b'\xa2\x02\x00'+struct.pack('<H',4+len(value))+struct.pack('<H',opcode)+b'\x01\x00'+value
-                    records.append((1,owner['device'],command_start+5_000_000,aggregate(complete),'C',0x81,0))
+                    params={0x0c03:bytes([0,3,len(marker_data(marker))])+marker_data(marker),
+                            0x0c05:bytes([int(op==1),0,0,0,0]),0x1002:bytes([int(op==3),0]),
+                            0x1001:bytes([0,0,1,0,0x20,0x03,0x90,1])}.get(opcode)
+                    if opcode==0x0c02:
+                        params=bytearray(49);params[12:18]=bytes.fromhex(owner['address'].replace(':',''));params=bytes(params)
+                    moment=command_start+5_000_000-(len(opcodes)-step-1)*10_000
+                    transmit(records,owner['device'],moment,opcode,params)
+                    records.append((1,owner['device'],moment,aggregate(complete),'C',0x81,0))
                 request=100+len(run['commands'])
                 window=f'NativeScanWindow: generation={owner["generation"]} request={request} start_boottime_ns={command_start}\nNativeScanComplete: generation={owner["generation"]} request={request} completed_boottime_ns={command_start+5_000_000}\nNativeScanObserved: generation={owner["generation"]} request={request} observed_boottime_ns={command_start+55_000_000}\n' if op==3 else ''
                 admission=f'NativeAdvertisementAccepted: request={request} marker={marker} data={marker_data(marker).hex()}\n' if op==1 else ''
@@ -86,11 +114,17 @@ def fixture():
             run['rounds'].append({'phase':phase,'round':n,'tx':tx,'rx':rx,'marker':marker,'watermark':seq-1,'match':match,'header':payload[5:28].hex(),'scan_window_wall_ns':[start+20_000_000,start+100_000_000],'command_indices':indices})
             records.append((1,rx['device'],start+50_000_000,aggregate(payload),'C',0x81,0));start+=200_000_000
             tx,rx=rx,tx
-        run['negatives'].append({'phase':phase,'rx':rx,'transmitter_addresses':[tx['address'],rx['address']],'window_wall_ns':[start,start+2_000_000_000], 'scan_window_wall_ns':[start-1000,start], 'stop_window_wall_ns':[start+2_000_000_000,start+2_000_001_000]})
-        for moment in [start-1000,start+2_000_000_000]:
+        run['negatives'].append({'phase':phase,'rx':rx,'transmitter_addresses':[tx['address'],rx['address']],'window_wall_ns':[start,start+2_000_000_000], 'scan_window_wall_ns':[start-3000,start], 'stop_window_wall_ns':[start+2_000_000_000,start+2_000_010_000]})
+        for moment in [start-1000,start+2_000_005_000]:
             complete=b'\xa2\x02\x00\x04\x00\x02\x10\x01\x00'
+            transmit(records,rx['device'],moment,0x1002,bytes([int(moment==start-1000),0]))
             records.append((1,rx['device'],moment,aggregate(complete),'C',0x81,0))
         start+=3_000_000_000
+    for i,opcode in enumerate([0x1001,0x1002]):
+        moment=8_605_000_000+i*10_000
+        transmit(records,b['device'],moment,opcode,bytes([0,0,1,0,0x20,3,0x90,1]) if i==0 else b'\x01\x00')
+        complete=b'\xa2\x02\x00\x04\x00'+struct.pack('<H',opcode)+b'\x01\x00'
+        records.append((1,b['device'],moment,aggregate(complete),'C',0x81,0))
     return run,records
 
 

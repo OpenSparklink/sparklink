@@ -122,6 +122,26 @@ python3 tools/ws73_north_star.py verify \
 或发送者自己的数据不能充当 RX。控制命令的成功 Complete、各注册实际元数据
 查询 Complete 也须存在；重插查询须在首次移除之后。
 
+当前核验还要求每个命令的主机 bulk OUT submission 与成功 OUT completion
+按 `(bus, device, URB)` 配对，实际完成长度等于提交长度。URB 可在完成后复用，
+不能跨设备匹配、覆盖未完成提交或在 capture 结束留下未完成 OUT。
+失败/提交错误保留，不产生成功命令；C 回调没有 payload，字节来自对应 S。
+只按固定 TX header/HCC/SLE slot 解码 A1 命令，不在 padding 搜索。
+
+每个 typed recipe 步骤必须有一条时间窗内的成功 OUT 和随后唯一成功 DLI
+Complete；下一步骤不得在前一步 Complete 前发出。IN 到达可能先于主机
+OUT completion callback，因此核对 S→IN 和 S→C，不猜测两种回调的先后。
+核验广播参数中的实际地址、0C03 完整随机数据、启停参数、scan frame type
+及实际 selected power；多余同 opcode 的 TX/成功回复也拒绝。
+每代次四个 metadata 查询须有实际 OUT 参数（0406 明确 type=0）和与 sysfs
+一致的返回值，发生在 Ready 观察前；重插须在移除之后。幸存控制的 scan
+参数/enable 也须有原始 TX/回复，处于拔出与新代次 Ready 之间。
+
+每轮佐证保留 `radio_commands`（七步）、两端 `registration_queries`、S/C/IN
+文件偏移、HCC sequence 与 TX hash。每阶段最后一轮另保留负向 scan/stop
+配对；initial 最后一轮保留 `survivor_scan_commands`。成功状态名称仍为
+`RX_CORROBORATED`，scope 明确 TX/RX；它仍不认证来源或提供独立 PHY 嗅探。
+
 负向时间窗必须由原始 ScanEnable/ScanStop Complete 围住，并有封存的零丢包统计。
 该窗内出现测试地址报告就失败。拔插导致的取消 URB 保留为失败记录；它可以在
 预期的拔插区间出现，不能出现在已通过发现轮次中。

@@ -68,14 +68,33 @@ def discovery(payload):
             'header': header.hex(), 'data': payload[28:].hex()}
 
 
+def hcc_command(data):
+    """Decode the driver's single-slot TX profile; never search padding."""
+    if len(data) < 68 or struct.unpack_from('<I', data)[0] != 0:
+        return None  # ROM/control messages have no native command proof.
+    if data[64] >> 4 != 10 or data[65] != 8:
+        return None  # PM/BSLE profiles have different TX allocation rules.
+    _, size, sequence = struct.unpack_from('<III', data)
+    payload_size = struct.unpack_from('<H', data, 66)[0]
+    if (size != len(data) or data[64] != 0xa0 or payload_size < 5
+            or len(data) < 73 or data[68] != 0xa1):
+        raise CaptureError('invalid native TX HCC/header')
+    opcode, params_size = struct.unpack_from('<HH', data, 69)
+    if (not opcode or params_size > 255 or payload_size != 5 + params_size
+            or len(data) != 64 + max(64, 9 + params_size)):
+        raise CaptureError('invalid native TX command length/opcode')
+    return dict(opcode=opcode, params=data[73:73 + params_size].hex(), sequence=sequence)
+
+
 def read_capture(path, targets):
-    """Read complete successful endpoint-1 IN URBs for selected USB identities.
+    """Read endpoint-1 IN and pair OUT submission/completion by USB/URB identity.
 
     Refuse truncation/malformed traffic on a target; ignore unrelated USB data.
     Keep raw file offsets and hashes for independently inspecting each proof.
     Capture content is not authenticated and synthetic fixtures are not RF.
     """
-    reports, complete, failures, empty = [], [], [], []
+    reports, complete, failures, empty, commands = [], [], [], [], []
+    pending = {}
     targets = set(tuple(t) for t in targets)
     with Path(path).open('rb') as stream:
         header = stream.read(24)
@@ -107,16 +126,45 @@ def read_capture(path, targets):
             ordinal += 1
             # libpcap swaps the pseudoheader fields with the file byte order.
             urb, kind, transfer, endpoint, device, bus, _, flag_data, usb_sec, usec, status, length, cap = struct.unpack_from(endian + 'QBBBBHBBqiiII', packet)
-            if (bus, device) not in targets or kind != ord('C') or transfer != 3 or endpoint != 0x81:
-                continue
-            if status:
-                failures.append({'bus':bus, 'device':device, 'wall_ns':usb_sec * 1_000_000_000 + usec * 1000, 'status':status, 'urb':urb})
+            if ((bus, device) not in targets or transfer != 3
+                    or not (endpoint == 0x81 and kind == ord('C')
+                            or endpoint == 0x01 and kind in map(ord, 'SCE'))):
                 continue
             if usb_sec < 0 or not 0 <= usec < 1_000_000:
                 raise CaptureError('invalid usbmon timestamp')
             timestamp = usb_sec * 1_000_000_000 + usec * 1000
             if abs(timestamp - (sec * 1_000_000_000 + fraction * scale)) > 1_000_000:
                 raise CaptureError('pcap/usbmon clocks disagree')
+            identity = {'bus': bus, 'device': device, 'wall_ns': timestamp,
+                        'urb': urb, 'record': ordinal, 'file_offset': offset}
+            if endpoint == 0x01:
+                key = (bus, device, urb)
+                if kind == ord('S'):
+                    if key in pending:
+                        raise CaptureError('duplicate pending OUT URB')
+                    if flag_data or cap != length or captured != 64 + cap or original != captured:
+                        raise CaptureError('target OUT submission absent or truncated')
+                    raw = packet[64:]
+                    pending[key] = (identity | {'usb_sha256': hashlib.sha256(raw).hexdigest()},
+                                    length, hcc_command(raw))
+                    continue
+                submitted = pending.pop(key, None)
+                if submitted is None:
+                    raise CaptureError('OUT completion/error without captured submission')
+                start, expected, command = submitted
+                if timestamp < start['wall_ns']:
+                    raise CaptureError('OUT completion predates submission')
+                if status or kind == ord('E'):
+                    failures.append(identity | {'status': status, 'endpoint': endpoint})
+                    continue
+                if length != expected or cap or captured != 64 or original != captured:
+                    raise CaptureError('short or data-bearing OUT completion')
+                if command is not None:
+                    commands.append(start | command | {'completion': identity})
+                continue
+            if status:
+                failures.append(identity | {'status':status, 'endpoint':endpoint})
+                continue
             if not length:
                 if cap or captured != 64 or original != captured:
                     raise CaptureError('successful empty IN completion contains data or truncation')
@@ -130,9 +178,7 @@ def read_capture(path, targets):
             for service, queue, slot, payload in hcc_receive(raw):
                 if (service, queue) != (10, 8):
                     continue
-                identity = {'bus': bus, 'device': device, 'wall_ns': timestamp,
-                            'urb': urb, 'record': ordinal, 'file_offset': offset,
-                            'hcc_offset': slot, 'usb_sha256': hashlib.sha256(raw).hexdigest()}
+                identity = identity | {'hcc_offset': slot, 'usb_sha256': hashlib.sha256(raw).hexdigest()}
                 report = discovery(payload)
                 if report is not None:
                     reports.append(identity | report)
@@ -141,7 +187,9 @@ def read_capture(path, targets):
                     if size != len(payload) - 5:
                         raise CaptureError('malformed Complete length')
                     complete.append(identity | {'opcode': opcode, 'status': payload[8], 'value': payload[9:].hex()})
-    return {'reports': reports, 'complete': complete, 'failures': failures,
+    if pending:
+        raise CaptureError('unfinished OUT submission at capture end')
+    return {'reports': reports, 'complete': complete, 'commands': commands, 'failures': failures,
             'empty_bulk_completions':empty, 'packet_count': ordinal}
 
 
@@ -187,6 +235,32 @@ def corroborate_synthetic(run, capture):
     return _corroborate_control(run, capture)
 
 
+def command_reply(capture, owner, opcode, start, end, params=None, value=None):
+    """One submitted-and-completed OUT and one later successful DLI reply.
+
+    IN delivery may race the host OUT-completion callback; both must precede
+    the caller's observation end. The reply must follow the submission itself.
+    """
+    tx = [c for c in capture.get('commands', [])
+          if (c['bus'], c['device'], c['opcode']) == (owner['bus'], owner['device'], opcode)
+          and start <= c['wall_ns'] <= c['completion']['wall_ns'] <= end]
+    if len(tx) != 1:
+        raise CaptureError('one successful captured OUT command required')
+    command = tx[0]
+    if params is not None and command['params'] != params.hex():
+        raise CaptureError('captured OUT parameters disagree with operation')
+    replies = [c for c in capture['complete']
+               if (c['bus'], c['device'], c['opcode'], c['status']) ==
+                  (owner['bus'], owner['device'], opcode, 0)
+               and command['wall_ns'] <= c['wall_ns'] <= end
+               and command['record'] < c['record']]
+    if len(replies) != 1:
+        raise CaptureError('one successful DLI reply after captured OUT required')
+    if value is not None and replies[0]['value'] != value:
+        raise CaptureError('captured DLI result disagrees with operation')
+    return dict(command=command, reply=replies[0])
+
+
 def _corroborate_control(run, capture):
     # Verify supporting records rather than trusting the success label alone.
     from ws73_north_star import parse_result, parse_match, parse_scan_window, parse_scan_complete, parse_scan_observed, stable
@@ -228,6 +302,7 @@ def _corroborate_control(run, capture):
         if {json_identity(tx),json_identity(rx)} != {json_identity(d) for d in expected_pair}:
             raise CaptureError('round uses unrelated physical registrations')
         commands = [run['commands'][j] for j in r['command_indices']]
+        radio = []
         if len(commands) != 4:
             raise CaptureError('complete control command references required')
         if any(a['end_monotonic_ns'] > b['start_monotonic_ns'] or a['end_wall_ns'] > b['start_wall_ns'] for a,b in zip(commands,commands[1:])):
@@ -238,13 +313,27 @@ def _corroborate_control(run, capture):
                 raise CaptureError('control command evidence mismatch')
             parse_result(c['stdout'], owner, op)
             opcodes = {1:[0x0c02,0x0c03,0x0c05],3:[0x1001,0x1002],2:[0x0c05],4:[0x1002]}[op]
+            recipe = []
             for opcode in opcodes:
-                if not any(e['bus'] == owner['bus'] and e['device'] == owner['device']
-                           and c['start_wall_ns'] <= e['wall_ns'] <= c['end_wall_ns']
-                           and e['opcode'] == opcode and e['status'] == 0 for e in capture['complete']):
-                    raise CaptureError('raw successful radio Complete missing')
+                expected = {0x0c03: bytes([0,3,len(marker_data(r['marker']))])+marker_data(r['marker']),
+                            0x0c05: bytes([int(op == 1),0,0,0,0]),
+                            0x1002: bytes([int(op == 3),0])}.get(opcode)
+                step = command_reply(capture, owner, opcode, c['start_wall_ns'], c['end_wall_ns'],
+                                     expected, None if opcode == 0x0c02 else '')
+                params = bytes.fromhex(step['command']['params'])
+                if opcode == 0x0c02 and (len(params) != 49 or params[0] != 0
+                        or params[12:18] != bytes.fromhex(owner['address'].replace(':',''))):
+                    raise CaptureError('captured advertisement parameters use wrong handle/address')
+                if opcode == 0x1001 and (len(params) != 8 or params[2] != 1):
+                    raise CaptureError('captured scan parameters use unsupported frame')
+                if recipe and recipe[-1]['reply']['wall_ns'] > step['command']['wall_ns']:
+                    raise CaptureError('recipe sent next step before previous Complete')
+                recipe.append(step)
+            radio.extend(recipe)
         accepted = re.findall(r'^NativeAdvertisementAccepted: request=(\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+)$',commands[0]['stdout'],re.M)
         adv_result = parse_result(commands[0]['stdout'],tx,1)
+        if radio[0]['reply']['value'] != struct.pack('b', adv_result['selected_power']).hex():
+            raise CaptureError('selected power disagrees with raw parameter Complete')
         if (len(accepted) != 1 or int(accepted[0][0]) != adv_result['request']
                 or accepted[0][1] != r['marker'] or accepted[0][2] != marker_data(r['marker']).hex()
                 or match['marker'] != r['marker']):
@@ -283,7 +372,7 @@ def _corroborate_control(run, capture):
             raise CaptureError('invalid fresh selected CLI observation')
         if any(f['bus'] == d['bus'] and f['device'] == d['device'] and start <= f['wall_ns'] <= end
                for f in capture['failures'] for d in [tx,rx]):
-            raise CaptureError('failed target IN URB during accepted discovery')
+            raise CaptureError('failed target URB during accepted discovery')
         rows = [p for p in capture['reports'] if p['bus'] == rx['bus'] and p['device'] == rx['device']
                 and completions[0]['wall_ns'] <= p['wall_ns'] <= end and p['wall_ns']-completions[0]['wall_ns'] < 10_000_000_000 and p['address'] == tx['address']
                 and p['header'] == r['header'] and p['data'] == match['data'] and p['rssi'] == match['rssi']]
@@ -294,7 +383,8 @@ def _corroborate_control(run, capture):
         if key in used:
             raise CaptureError('raw report reused')
         used.add(key)
-        proofs.append({'phase': r['phase'], 'round': r['round'], 'marker': r['marker'], 'receiver': rx, 'raw': proof})
+        proofs.append({'phase': r['phase'], 'round': r['round'], 'marker': r['marker'],
+                       'receiver': rx, 'raw': proof, 'radio_commands': radio})
     if [n['phase'] for n in run['negatives']] != ['initial', 'replug']:
         raise CaptureError('both negative controls required')
     for n in run['negatives']:
@@ -306,23 +396,34 @@ def _corroborate_control(run, capture):
         stop_start, stop_end = n['stop_window_wall_ns']
         if not scan_end <= start < end <= stop_start:
             raise CaptureError('negative interval not enclosed by confirmed scan/stop')
-        for lower,upper in [(scan_start,scan_end),(stop_start,stop_end)]:
-            if not any(c['bus'] == rx['bus'] and c['device'] == rx['device'] and lower <= c['wall_ns'] <= upper
-                       and c['opcode'] == 0x1002 and c['status'] == 0 for c in capture['complete']):
-                raise CaptureError('negative capture lacks enclosing scan/stop Complete')
+        negative = [command_reply(capture, rx, 0x1002, lower, upper, bytes([enable,0]), '')
+                    for lower,upper,enable in [(scan_start,scan_end,1),(stop_start,stop_end,0)]]
+        next(p for p in reversed(proofs) if p['phase'] == n['phase'])['negative_scan_commands'] = negative
         if any(p['bus'] == rx['bus'] and p['device'] == rx['device'] and start <= p['wall_ns'] <= end
                and p['address'] in n['transmitter_addresses'] for p in capture['reports']):
             raise CaptureError('test transmitter reported during TX-off negative control')
     # Capture must include the actual metadata queries, not only radio reports.
     identities = {json_identity(r[side]): r[side] for r in rounds for side in ['tx', 'rx']}
+    metadata = {}
     for identity in identities.values():
-        for opcode, value in [(0x0404, identity['version']), (0x0403, identity['features']),
-                              (0x0406, identity['address'].replace(':', '').lower()),
-                              (0x0402, struct.pack('<HBHB', *identity['buffers']).hex())]:
-            if not any(c['bus'] == identity['bus'] and c['device'] == identity['device']
-                       and (run['unplug_observed_wall_ns'] if identity == replacement else 0) <= c['wall_ns'] <= identity['observed_wall_ns'] and c['opcode'] == opcode
-                       and c['status'] == 0 and c['value'] == value for c in capture['complete']):
-                raise CaptureError('capture lacks successful actual metadata query for a registration')
+        metadata[json_identity(identity)] = [command_reply(capture, identity, opcode,
+            run['unplug_observed_wall_ns'] if identity == replacement else 0,
+            identity['observed_wall_ns'], b'\x00' if opcode == 0x0406 else b'', value)
+            for opcode,value in [(0x0404, identity['version']),
+                                 (0x0402, struct.pack('<HBHB', *identity['buffers']).hex()),
+                                 (0x0403, identity['features']),
+                                 (0x0406, identity['address'].replace(':', '').lower())]]
+    for proof, r in zip(proofs, rounds):
+        proof['registration_queries'] = {side: metadata[json_identity(r[side])] for side in ['tx','rx']}
+    survivor = run['survivor_control']['scan_request']
+    if not run['unplug_observed_wall_ns'] <= survivor['start_wall_ns'] <= survivor['end_wall_ns'] <= replacement['observed_wall_ns']:
+        raise CaptureError('survivor control not between unplug and replacement Ready')
+    steps = [command_reply(capture, initial[1], opcode, survivor['start_wall_ns'], survivor['end_wall_ns'],
+                           b'\x01\x00' if opcode == 0x1002 else None, '')
+             for opcode in [0x1001,0x1002]]
+    if steps[0]['reply']['wall_ns'] > steps[1]['command']['wall_ns']:
+        raise CaptureError('survivor scan recipe sent before parameter Complete')
+    next(p for p in reversed(proofs) if p['phase'] == 'initial')['survivor_scan_commands'] = steps
     return proofs
 
 

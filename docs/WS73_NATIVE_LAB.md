@@ -84,3 +84,33 @@ vmlinux仅记录hash，其余必要检查产物复制到新目录。检查器不
 真实双端随机广播发现、物理拔插和有限故障恢复；沿用
 [北极星](WS73_DISCOVERY_NORTH_STAR.md)与[恢复矩阵](WS73_RECOVERY.md)原条件。
 只通过产物检查不关闭原生驱动、恢复、兼容或完整方案issues。
+
+## 空 USB 模块启动检查
+
+当前原生实验构建已完成`bzImage modules`，并通过上述产物正例检查。
+在没有任何WS73或其他USB设备传入的KVM中，已实际引导该镜像，运行
+[`ws73_native_module_init.sh`](../tools/ws73_native_module_init.sh)：验证发行号和
+内建`/dev/sparklink`，两次加载/卸载独立WS73模块，每次检查USB驱动注册与
+移除，保留从0秒开始的完整内核日志并正常关机。未观察到内核warning/oops。
+
+复现时将静态busybox及必要applet软链接、该脚本作为可执行`/init`、已校验的
+`sparklink_ws73_usb.ko`和`include/config/kernel.release`作为`/expected-release`
+打包为cpio newc initramfs。当前模块`modinfo depends`为空；若其他配置产生
+模块依赖，先处理依赖，不能忽略insmod失败。用同一个已校验的bzImage启动：
+
+```sh
+qemu-system-x86_64 -machine q35,accel=kvm -cpu host -m 1024M -smp 2 \
+  -nodefaults -display none -monitor none -serial stdio -no-reboot -nic none \
+  -kernel /path/to/verified/bzImage -initrd /path/to/smoke-initramfs.cpio.gz \
+  -append 'console=ttyS0 loglevel=6 log_buf_len=4M panic=1 oops=panic'
+```
+
+不增加usb-host或WS73模型设备。脚本在加载模块前也拒绝已存在的ffff:3733。
+通过记录必须含预期发行号、LOAD1/UNLOAD1/LOAD2/UNLOAD2的唯一顺序、完整
+早期内核日志、唯一`PASS (EMPTY_USB_KVM_ONLY)`、无FAIL/warning/oops以及正常
+QEMU退出；不能只依据末尾PASS标签。设置有限观察截止，保留失败日志。
+
+当前直接构建的模块未签名，实验配置未强制模块签名，加载后taint从0变为
+8192；记录该事实，不计作模块签名/信任链验收。完整部署包需处理安装阶段
+签名和对应内核信任。这个检查仅证明实验镜像启动及空USB模块生命周期；
+原生主机引导、WS73 probe/启动、真实RF和故障恢复继续开放。

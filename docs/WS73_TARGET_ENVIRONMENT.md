@@ -45,6 +45,20 @@ guest-files 的 SHA256；run 再核对实际使用的 artifacts，不用文件�
 
 ## 两只真实设备
 
+真实入口要求 QEMU 编入 libusb 的 `usb-host` 并带有项目的
+`kernel-driver-detach` / `host-reset` 扩展。Linux 自建 QEMU 脚本强制启用
+libusb，并应用[可复现边界补丁与检查](https://github.com/OpenSparklink/linux/blob/7a0354058ba822a157f1fb863422891591ae1635/tools/testing/selftests/sparklink/qemu-sle-dli/README.md)。
+`run` 先执行 `-device usb-host,help` 记录实际属性；缺设备类型或任一所需
+属性就留下 FAIL、不启动 VM。原合成 QEMU 没有 libusb，这个前置条件未满足；
+仅 support 成功不能作为它支持透传的证据。
+
+物理对象限定 hostbus/hostport **和** ffff:3733，所有首次/重加路径同时关闭
+`kernel-driver-detach`、`host-reset`、`guest-reset`、`guest-resets-all`。
+QEMU 默认值保持兼容，真实 runner 显式设置 false；不允许省略选项回退。
+这阻止 QEMU 的自动重连/配置/退出路径解绑、重新绑定主机驱动或执行生命周期
+reset。另一主机驱动已占用时，保留占用并等待/报错；guest 不能借此获得该接口。
+ROM 自身重新枚举与实际物理拔插仍需测试；补丁/暂停 QMP 检查不是实机证明。
+
 ```sh
 python3 sparklink/tools/ws73_target.py run \
   --prepared /absolute/private/fresh-prepared \

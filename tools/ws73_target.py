@@ -210,7 +210,20 @@ def usb_properties(port,index):
     if not re.fullmatch(r'[1-9][0-9]*-[1-9][0-9]*(?:\.[1-9][0-9]*)*',port):raise ValueError('explicit physical USB port required')
     bus,path=port.split('-',1)
     return {'driver':'usb-host','id':f'ws73_{index}','bus':'xhci.0','port':str(index+1),
-            'hostbus':int(bus),'hostport':path,'guest-reset':False}
+            'hostbus':int(bus),'hostport':path,'vendorid':0xffff,'productid':0x3733,
+            'guest-reset':False,'guest-resets-all':False,
+            'kernel-driver-detach':False,'host-reset':False}
+
+
+def usb_host_boundary(qemu):
+    """Introspect properties without creating or opening any host USB device."""
+    command=[str(qemu),'-device','usb-host,help']
+    result=subprocess.run(command,capture_output=True,text=True,timeout=15)
+    required=['kernel-driver-detach','host-reset','guest-reset','guest-resets-all',
+              'vendorid','productid','hostbus','hostport']
+    present=[name for name in required if re.search(r'^\s*'+re.escape(name)+r'=<[^>]+>(?:\s|$)',result.stdout+result.stderr,re.M)]
+    return {'args':command,'exit':result.returncode,'stdout':result.stdout,'stderr':result.stderr,
+            'required':required,'present':present,'supported':result.returncode==0 and present==required}
 
 
 def opened_usb_node(pid,node,proc=Path('/proc')):
@@ -237,6 +250,9 @@ def _run(args):
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
         if not support:
+            m['usb_host_boundary']=usb_host_boundary(package['qemu']['path'])
+            if not m['usb_host_boundary']['supported']:
+                raise ValueError('QEMU lacks required USB host opt-outs; build the pinned patched QEMU before physical passthrough')
             if len(set(args.ports))!=2:raise ValueError('two distinct physical ports required')
             for index,port in enumerate(args.ports):
                 usb_properties(port,index)

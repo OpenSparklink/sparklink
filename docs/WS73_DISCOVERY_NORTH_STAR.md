@@ -1243,3 +1243,26 @@ snoop 一致；152 个 selected 调用、2 次 daemon 查询和退役选择均�
 `.dev/command-failure-final-evidence.json`。本批未修改 Rust/Linux，未重跑全仓
 Rust/clippy/96-case，也不宣称远端 CI 或实机通过。真实 WS73 仍未枚举，七项
 0/7、板参 NOT_ASSERTED；四设备及完整 S0–S6 与全部原 issues 继续保留。
+
+### 可用的真实 USB 透传入口与主机生命周期边界（部分成果）
+
+源码与实际二进制核对发现，早先合成 QEMU 未编入 libusb，没有 usb-host 类型。
+QEMU 9.2 的 usb-host 还会默认解绑内核驱动，并在打开失败/关闭/退出时 reset。
+自建脚本现强制 --enable-libusb，并应用可重复、拒绝上下文漂移的两个 opt-out
+属性补丁；默认 true 保留兼容。WS73 入口限定物理端口和 ffff:3733，显式关闭
+kernel-driver-detach/host-reset/guest-reset/guest-resets-all，所有重加路径一致。
+真实入口先封存 help introspection，缺设备类型或属性时 FAIL、不启动 VM。
+
+依赖仅使用工作区解包、签名验证的 libusb1-devel 1.0.30 与同版本主机 runtime，
+无 sudo/主机安装。实际生产函数体计数 mock 的7项、三处生命周期路由、补丁
+新应用/重复/漂移拒绝及暂停/未attached QMP属性读回 PASS；它们不打开目标USB。
+68工具/228harness通过。最终正确模型的新QEMU和未变#69内核：原96-case
+1056 OK/0 FAIL/0 SKIP/3旧WARN，合成20+2轮/同daemon重插/TX-off、2251USB/
+177空完成/22匹配/32独立snoop一致及C/Python门禁 PASS。首轮缓存模型缺zlp
+属性失败和编译/依赖/链接/PCI probe失败记录保留，不覆盖为成功。
+
+物理入口旧binary拒绝于缺usb-host，新最终binary通过预检后因WS73缺席FAIL，
+均未启动VM。当前源码、source/实际binary/依赖/guest/捕获/失败hash封存于本地
+`.dev/usb-host-boundary-final-evidence.json`。没有重跑Rust/clippy/远端CI或新内核
+构建；真实ROM/重新枚举/外部占用竞争/RF/物理拔插仍待验，七项0/7、板参
+NOT_ASSERTED、四设备与完整S0–S6及全部原issues OPEN。

@@ -4,9 +4,10 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_properties
+from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_host_boundary, usb_properties
 from ws73_north_star import _registration, file_record, healthy_native_runtime, registration, Run
 from ws73_target_control import SyntheticControlRun
 from types import SimpleNamespace
@@ -62,6 +63,24 @@ class TargetEnvironment(unittest.TestCase):
         p=usb_properties('1-2.1.3',1)
         self.assertEqual((p['hostbus'],p['hostport'],p['port'],p['guest-reset']),(1,'2.1.3','2',False))
         self.assertNotIn('hostaddr',p)
+        self.assertEqual((p['vendorid'],p['productid']),(0xffff,0x3733))
+        for name in ['guest-reset','guest-resets-all','kernel-driver-detach','host-reset']:
+            self.assertIs(p[name],False)
+    def test_unpatched_qemu_cannot_enter_physical_passthrough(self):
+        # Introspection fixtures only, not evidence about libusb operations.
+        old=SimpleNamespace(returncode=0,stdout='  guest-reset=<bool>\n  hostport=<str>\n',stderr='')
+        with patch('ws73_target.subprocess.run',return_value=old) as command:
+            proof=usb_host_boundary(Path('/fixture/qemu'))
+        self.assertFalse(proof['supported'])
+        self.assertEqual(command.call_args.args[0],['/fixture/qemu','-device','usb-host,help'])
+    def test_host_boundary_introspection_rejects_missing_or_failed_property_list(self):
+        names=['kernel-driver-detach','host-reset','guest-reset','guest-resets-all','vendorid','productid','hostbus','hostport']
+        text=''.join('  '+n+'=<fixture-type>\n' for n in names)
+        for result,expected in [(SimpleNamespace(returncode=0,stdout=text,stderr=''),True),
+                                (SimpleNamespace(returncode=1,stdout=text,stderr='error'),False),
+                                (SimpleNamespace(returncode=0,stdout=text.replace('  host-reset=<fixture-type>\n',''),stderr=''),False)]:
+            with patch('ws73_target.subprocess.run',return_value=result):
+                self.assertEqual(usb_host_boundary(Path('/fixture/qemu'))['supported'],expected)
     def test_reject_nonphysical_port_names(self):
         for name in ['usb0','1-0','0-1','1-2:1.0','1-2.0','1-2,hostaddr=3','1-2\n']:
             with self.subTest(name=name),self.assertRaises(ValueError):usb_properties(name,0)

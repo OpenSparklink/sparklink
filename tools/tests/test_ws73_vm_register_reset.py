@@ -7,36 +7,46 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_states, checked_interface_zero, run
+from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, run
 
 class RegisterResetTests(unittest.TestCase):
+    descriptor=bytes.fromhex('09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200')
+
     def state_reader(self,fd,request,argument):
         self.assertEqual(fd,77);self.assertEqual(request,0xc0185500)
-        c=Control.from_buffer_copy(argument);self.assertEqual(c.value,0)
-        self.assertEqual(c.timeout,2000)
-        raw=b'\x01' if c.request==8 else bytes(c.length)
+        c=Control.from_buffer_copy(argument);self.assertEqual(c.kind,0x80)
+        self.assertEqual(c.index,0);self.assertEqual(c.timeout,2000)
+        raw=b'\x01' if c.request==8 else self.descriptor
+        self.assertEqual((c.request,c.value,c.length),(8,0,1) if c.request==8 else (6,512,53))
         ctypes.memmove(c.data,raw,len(raw));return len(raw)
 
-    def test_fixed_readonly_configuration_interface_endpoint_state(self):
+    def test_actual_single_alt_descriptor_without_fake_get_interface(self):
         with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=self.state_reader) as ioctl:
-            rows=read_usb_states(77);checked_interface_zero(rows)
-        self.assertEqual([(r['kind'],r['request'],r['index'],r['length']) for r in rows],
-            [(0x80,8,0,1),(0x81,10,0,1),*[(0x82,0,ep,2) for ep in [1,2,129,130,131]]])
-        self.assertEqual(ioctl.call_count,7)
+            rows=read_usb_configuration(77);self.assertEqual(checked_single_runtime_interface(rows),self.descriptor)
+        self.assertEqual(ioctl.call_count,2)
         self.assertTrue(all(r['before_wall_ns']<=r['after_wall_ns'] for r in rows))
 
-    def test_unknown_interface_or_configuration_cannot_rebind(self):
-        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=self.state_reader):rows=read_usb_states(77)
-        for field,value in [('data','00'),('returned',0),('error','timeout')]:
-            changed=[dict(r) for r in rows];changed[0][field]=value
-            with self.subTest(field=field),self.assertRaises(ValueError):checked_interface_zero(changed)
-        with self.assertRaises(ValueError):checked_interface_zero(rows[:2])
+    def test_unknown_configuration_alternate_or_endpoints_cannot_rebind(self):
+        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=self.state_reader):rows=read_usb_configuration(77)
+        for change in ['short','error','boolean','configuration','extra-interface','alt','duplicate-ep','packet-size']:
+            changed=[dict(r) for r in rows];raw=bytearray(self.descriptor)
+            if change=='short':changed[1]['returned']=52
+            if change=='error':changed[1]['error']='timeout'
+            if change=='boolean':changed[0]['returned']=True
+            if change=='configuration':changed[0]['data']='00'
+            if change=='extra-interface':raw[4]=2
+            if change=='alt':raw[12]=1
+            if change=='duplicate-ep':raw[48]=1
+            if change=='packet-size':raw[22]=8
+            changed[1]['data']=raw.hex()
+            with self.subTest(change=change),self.assertRaises(ValueError):checked_single_runtime_interface(changed)
+        with self.assertRaises(ValueError):checked_single_runtime_interface(rows[:1])
 
-    def test_usb_state_error_remains_raw_and_is_not_success(self):
+    def test_configuration_error_remains_raw_and_is_not_success(self):
         with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=OSError(errno.EPIPE,'halted')):
-            rows=read_usb_states(77)
-        self.assertEqual(len(rows),7);self.assertTrue(all(r['errno']==errno.EPIPE and 'data' not in r for r in rows))
-        with self.assertRaises(ValueError):checked_interface_zero(rows)
+            rows=read_usb_configuration(77)
+        self.assertEqual(len(rows),2);self.assertTrue(all(r['errno']==errno.EPIPE and 'data' not in r for r in rows))
+        with self.assertRaises(ValueError):checked_single_runtime_interface(rows)
 
     def test_runtime_route_is_exact_bsle_control_without_register_write(self):
         self.assertEqual(route_packet(0,1,10).hex(),'030000000000000000000000010000000a00000000000000000000000000000000000000')

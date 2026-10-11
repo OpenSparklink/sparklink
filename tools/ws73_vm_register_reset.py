@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-2.0-only
-"""Single VM-only volatile SoC register reset; no read-failure write fallback.
+"""Bounded VM-only WS73 maintenance probes; never production recovery.
+
+Explicit modes compare real register reads, SDK wakeup, BSLE route and one
+interface rebind. The default SoC reset requires a successful register read;
+no read-failure write fallback or synthesized controller acknowledgement.
 
 Protocol facts: WS73 SDK plat_pm_board_ws73.c and libws73-usb
 ws73_usb_control.c. Never run this on a host USB path or claim natural recovery.
@@ -47,30 +51,44 @@ def route_packet(sequence, descriptor, queue):
     return struct.pack('<IIII',3,0,sequence,descriptor)+bytes([queue])+bytes(19)
 
 
-def read_usb_states(fd):
-    """Fixed read-only standard requests; retain unsupported/error replies."""
+def read_usb_configuration(fd):
+    """Two fixed standard reads; no GET_INTERFACE/GET_STATUS substitution."""
     rows=[]
-    for name,kind,request,index,size in [('configuration',0x80,8,0,1),('interface',0x81,10,0,1),
-            *[(f'endpoint-{ep:02x}',0x82,0,ep,2) for ep in (1,2,0x81,0x82,0x83)]]:
+    for name,request,value,size in [('configuration',8,0,1),('descriptor',6,0x200,53)]:
         data=ctypes.create_string_buffer(size)
-        control=Control(kind,request,0,index,size,2000,ctypes.addressof(data))
-        row=dict(name=name,kind=kind,request=request,index=index,length=size,before_wall_ns=time.time_ns())
+        control=Control(0x80,request,value,0,size,2000,ctypes.addressof(data))
+        row=dict(name=name,kind=0x80,request=request,value=value,length=size,before_wall_ns=time.time_ns())
         try:
             count=fcntl.ioctl(fd,0xc0185500,bytearray(bytes(control)))
             row.update(returned=count,data=data.raw[:max(0,min(count,size))].hex())
-            if count!=size:row['error']='short USB state reply'
+            if count!=size:row['error']='short USB configuration reply'
         except OSError as error:
             row.update(error=str(error),errno=error.errno)
         row['after_wall_ns']=time.time_ns();rows.append(row)
     return rows
 
 
-def checked_interface_zero(rows):
-    # Descriptor/sysfs checks alone cannot establish these actual replies.
-    for row,name,data in zip(rows[:2],['configuration','interface'],['01','00']):
-        if row['name']!=name or row.get('returned')!=1 or row.get('data')!=data or 'error' in row:
-            raise ValueError('actual configuration1/interface0-alt0 state required')
-    if len(rows)!=7:raise ValueError('complete fixed USB state observations required')
+def checked_single_runtime_interface(rows):
+    # An unsupported GET_INTERFACE is not a zero reply. The real configuration
+    # descriptor can independently prove the sole advertised interface0/alt0.
+    if len(rows)!=2:raise ValueError('complete fixed configuration observations required')
+    for row,name,size in zip(rows,['configuration','descriptor'],[1,53]):
+        if row['name']!=name or type(row.get('returned')) is not int or row['returned']!=size or 'error' in row:
+            raise ValueError('actual complete USB configuration replies required')
+    raw=bytes.fromhex(rows[1]['data'])
+    if (rows[0]['data']!='01' or len(raw)!=53 or raw[:6]!=bytes.fromhex('090235000101')
+            or raw[9:17]!=bytes.fromhex('0904000005e00202')):
+        raise ValueError('one actual runtime interface0/alt0 descriptor required')
+    endpoints=[]
+    for offset in range(18,53,7):
+        endpoint=raw[offset:offset+7]
+        if endpoint[:2]!=bytes([7,5]):raise ValueError('only five exact endpoint descriptors allowed')
+        address=endpoint[2];kind=3 if address==0x83 else 2;size=8 if kind==3 else 512
+        if endpoint[3]!=kind or int.from_bytes(endpoint[4:6],'little')!=size:
+            raise ValueError('qualified WS73 endpoint type/size required')
+        endpoints.append(address)
+    if sorted(endpoints)!=[1,2,129,130,131]:raise ValueError('exact unique runtime endpoints required')
+    return raw
 
 
 def async_register_read(fd):
@@ -189,16 +207,17 @@ def run(args):
             if count!=4:raise ValueError('complete SDK DISALLOW_TO_SLEEP control required')
         fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
         if rebind:
-            record['usb_state_before_interface']=read_usb_states(fd);save()
-            checked_interface_zero(record['usb_state_before_interface'])
+            record['usb_configuration_before_interface']=read_usb_configuration(fd);save()
+            before_descriptor=checked_single_runtime_interface(record['usb_configuration_before_interface'])
             record['set_interface_before_wall_ns']=time.time_ns();save()
             # USBDEVFS_SETINTERFACE, interface0/alt0, within this exclusively
             # owned guest USB file. Never a bus/hub/SoC reset or driver detach.
             count=fcntl.ioctl(fd,0x80085504,bytearray(8))
             record.update(set_interface_returned=count,set_interface_after_wall_ns=time.time_ns());save()
             if count!=0:raise ValueError('single interface rebind failed')
-            record['usb_state_after_interface']=read_usb_states(fd);save()
-            checked_interface_zero(record['usb_state_after_interface'])
+            record['usb_configuration_after_interface']=read_usb_configuration(fd);save()
+            after_descriptor=checked_single_runtime_interface(record['usb_configuration_after_interface'])
+            if before_descriptor!=after_descriptor:raise ValueError('runtime descriptor changed during rebind')
         def transfer(endpoint,data,length=None):
             buffer=ctypes.create_string_buffer(data if isinstance(data,bytes) else data)
             size=len(data) if isinstance(data,bytes) else data

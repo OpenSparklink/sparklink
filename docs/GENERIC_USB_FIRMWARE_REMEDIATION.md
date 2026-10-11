@@ -92,4 +92,3 @@ UID1000/caps0真实20+2，最长773/622ms，各自同RF slkd及peer不变，USB1
 [精确源码CI38109661941](https://github.com/OpenSparklink/sparklink/actions/runs/38109661941)
 九作业终结成功，实际170 Rust/34 Python/228工具/32期限/10管理及新增69 C/
 12 Rust固件源码门禁。USB/HCC/DLI不等于独立PHY嗅探；hold期间同daemon未资格。
-

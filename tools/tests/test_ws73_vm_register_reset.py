@@ -7,7 +7,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, clear_runtime_endpoints, async_register_read, run
+from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, clear_runtime_endpoints, async_register_read, read_credit_control, run
 
 class RegisterResetTests(unittest.TestCase):
     descriptor=bytes.fromhex('09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200')
@@ -184,3 +184,44 @@ class RegisterResetTests(unittest.TestCase):
         with patch('ws73_vm_register_reset.os.geteuid',return_value=1000),patch('ws73_vm_register_reset.os.open') as opened:
             with self.assertRaises(ValueError):run(SimpleNamespace(output=Path('/invalid')))
             opened.assert_not_called()
+
+    def test_credit_read_uses_exact_sdk_class_input_and_preserves_zero_or_u32(self):
+        for value in [0,1,0xffffffff]:
+            record={};saves=[]
+            def ioctl(fd,request,arg):
+                self.assertEqual((fd,request),(77,0xc0185500))
+                c=Control.from_buffer_copy(arg)
+                self.assertEqual((c.kind,c.request,c.value,c.index,c.length,c.timeout),(0xa1,5,0,0,4,2000))
+                self.assertIn('credit_control',record)
+                ctypes.memmove(c.data,value.to_bytes(4,'little'),4);return 4
+            with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=ioctl) as call:
+                read_credit_control(77,record,lambda:saves.append(True))
+            row=record['credit_control'];self.assertEqual(row['raw_credit_u32'],value)
+            self.assertEqual(row['data'],value.to_bytes(4,'little').hex())
+            self.assertEqual(call.call_count,1);self.assertEqual(len(saves),2)
+            self.assertNotIn('status',record);self.assertNotIn('ready',record)
+
+    def test_credit_short_boolean_and_errno_never_become_ready_or_raw_credit(self):
+        for result in [0,1,3,5,True,OSError(errno.EPIPE,'raw physical refusal'),OSError(errno.ETIMEDOUT,'raw timeout')]:
+            record={}
+            with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=result if isinstance(result,Exception) else None,return_value=result) as call:
+                with self.assertRaises((OSError,ValueError)):read_credit_control(77,record,lambda:None)
+            row=record['credit_control'];self.assertIn('error',row);self.assertNotIn('raw_credit_u32',row)
+            self.assertEqual(call.call_count,1)
+            if isinstance(result,OSError):self.assertEqual(row['errno'],result.errno)
+            self.assertLessEqual(row['before_wall_ns'],row['after_wall_ns'])
+
+    def test_credit_requires_exact_explicit_boot_and_excludes_all_mutating_modes(self):
+        for change in ['missing','duplicate','wrong','bool-string','reset','wake','route','async','rebind','clear','register-clear']:
+            args=SimpleNamespace(usb_credit_read_only=True)
+            tokens='ws73.register_reset_lab=1 ws73.usb_credit_lab=1'
+            if change=='missing':tokens='ws73.register_reset_lab=1'
+            if change=='duplicate':tokens+=' ws73.usb_credit_lab=1'
+            if change=='wrong':tokens=tokens.replace('usb_credit_lab=1','usb_credit_lab=2')
+            if change=='bool-string':args.usb_credit_read_only='1'
+            fields={'reset':'guest_usb_reset_before_read','wake':'sdk_wakeup_before_read','route':'runtime_route_before_module','async':'async_read_only','rebind':'guest_set_interface_before_route','clear':'guest_clear_halt_before_route','register-clear':'guest_clear_halt_before_register_read'}
+            if change in fields:setattr(args,fields[change],True)
+            def read(p):return tokens if str(p)=='/proc/cmdline' else 'QEMU'
+            with self.subTest(change=change),patch('ws73_vm_register_reset.os.geteuid',return_value=0),patch.object(Path,'read_text',read),patch.object(Path,'is_file',return_value=True),patch('ws73_vm_register_reset.os.open') as opened:
+                with self.assertRaises(ValueError):run(args)
+                opened.assert_not_called()

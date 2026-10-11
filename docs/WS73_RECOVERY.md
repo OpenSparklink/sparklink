@@ -396,3 +396,22 @@ capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d
 原封存证据“no new physical USB transfer”措辞过宽，限定为没有新增诊断bulk／
 寄存器／固件／实验驱动传输；模型VM没有接host USB。原证据文件保持不变，
 这次主机观察不增加真实Managed、Ready同行、RF或恢复资格。
+
+
+## EP0 HCC memory-credit 只读诊断入口（2026-10-11）
+
+为定位现有bulk超时，SDK `hcc_usb_get_credit` 是可追溯的只读class/interface
+IN入口：bmRequestType=0xa1、request5、value/index0、length4。新增专用VM
+`ws73.usb_credit_lab=1` 与 `--usb-credit-read-only` 必须精确匹配且排除USB
+reset、wakeup、route、rebind、clear-halt及寄存器模式。必须先核对真实runtime
+单interface0/alt0五端点，独占guest usbfs，仅执行一次有界2秒读取，核对前后
+完整配置，随即退出；不写SoC、不加载实验模块、不重启hub。短回复和原errno
+保留，不追加恢复性重试。292工具测试通过；本提交尚无该读取的实机证据。
+
+返回值是原四字节HCC高优先级内存计数，0和任意u32都原样记录；它不是DLI
+命令credits、BSP/BSLE ACK或Ready，不能触发生产Runtime注册或恢复成功。
+后续实机结果必须核对actual usb-host/libusb、guest USB抓包及零bulk/复位，
+异常VM不能转成成功。现有bulk超时、原Managed门禁、活动Ready同行、自动恢复
+和自然RCA继续OPEN。静态111固件头SHA校验通过，但stock反汇编存在未识别
+芯片扩展且USB控制路径调用ROM；`RESET_BCPU`仅枚举不足以证明处理或ACK，
+不会据此盲发复位。固件/SDK二进制及反汇编仅私有本地研究，不提交到仓库。

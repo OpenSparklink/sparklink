@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Bounded VM-only WS73 maintenance probes; never production recovery.
 
-Explicit modes compare real register reads, SDK wakeup, BSLE route and one
-interface rebind. The default SoC reset requires a successful register read;
+Explicit modes compare real register reads, SDK wakeup, BSLE route, one
+interface rebind and one read-only EP0 HCC memory-credit request. The default SoC reset requires a successful register read;
 no read-failure write fallback or synthesized controller acknowledgement.
 
 Protocol facts: WS73 SDK plat_pm_board_ws73.c and libws73-usb
@@ -121,6 +121,24 @@ def clear_runtime_endpoints(fd,record,save,*,register_read=False):
     if before!=after:raise ValueError('runtime descriptor changed during endpoint clear-halt')
 
 
+def read_credit_control(fd,record,save):
+    """One SDK class-IN credit read. Raw memory count, never Ready/ACK."""
+    row=dict(kind=0xa1,request=5,value=0,index=0,length=4,timeout_ms=2000,
+             before_wall_ns=time.time_ns())
+    record['credit_control']=row;save()
+    data=ctypes.create_string_buffer(4)
+    control=Control(0xa1,5,0,0,4,2000,ctypes.addressof(data))
+    try:
+        count=fcntl.ioctl(fd,0xc0185500,bytearray(bytes(control)))
+        row.update(returned=count,data=data.raw[:count].hex() if type(count) is int and 0<=count<=4 else '')
+        if type(count) is not int or count!=4:raise ValueError('exact four-byte SDK credit read required')
+        row['raw_credit_u32']=int.from_bytes(data.raw[:4],'little')
+    except BaseException as error:
+        row.update(error=str(error),error_type=type(error).__name__,errno=getattr(error,'errno',None));raise
+    finally:
+        row['after_wall_ns']=time.time_ns();save()
+
+
 def async_register_read(fd,diagnostics=None,save=lambda:None):
     # SUBMITURB retains the userspace URB pointer. libc ioctl uses the stable
     # ctypes object directly, unlike fcntl's small-buffer temporary copy.
@@ -211,6 +229,12 @@ def run(args):
     if Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU' or not Path('/scratch-root-uuid').is_file():
         raise ValueError('dedicated QEMU scratch root required')
     if ctypes.sizeof(Bulk)!=24 or ctypes.sizeof(Control)!=24:raise ValueError('qualified 64-bit usbfs ABI required')
+    credit=getattr(args,'usb_credit_read_only',False)
+    if type(credit) is not bool:raise ValueError('typed explicit credit probe mode required')
+    credit_tokens=[v for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.usb_credit_lab=')]
+    if credit_tokens!=(['ws73.usb_credit_lab=1'] if credit else []):raise ValueError('exact matching credit read-only boot required')
+    if credit and any(getattr(args,k,False) for k in ['runtime_route_before_module','guest_set_interface_before_route','guest_clear_halt_before_route','guest_clear_halt_before_register_read','guest_usb_reset_before_read','sdk_wakeup_before_read','async_read_only']):
+        raise ValueError('credit read-only excludes reset, route, wakeup, clear-halt and register modes')
     route=bool(getattr(args,'runtime_route_before_module',False))
     rebind=bool(getattr(args,'guest_set_interface_before_route',False))
     clear_halt=bool(getattr(args,'guest_clear_halt_before_route',False))
@@ -259,6 +283,17 @@ def run(args):
             record.update(sdk_wakeup_returned=count,sdk_wakeup_after_wall_ns=time.time_ns());save()
             if count!=4:raise ValueError('complete SDK DISALLOW_TO_SLEEP control required')
         fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
+        if credit:
+            record.update(usb_credit_read_only=True,register_write_not_requested=True,
+                          module_load_requested=False,ready_acknowledgement_observed=False,
+                          usb_configuration_before_credit=read_usb_configuration(fd));save()
+            before=checked_single_runtime_interface(record['usb_configuration_before_credit'])
+            read_credit_control(fd,record,save)
+            record['usb_configuration_after_credit']=read_usb_configuration(fd);save()
+            after=checked_single_runtime_interface(record['usb_configuration_after_credit'])
+            if before!=after:raise ValueError('runtime descriptor changed during credit read')
+            record.update(status='VM_USB_CREDIT_READ_GUEST_REQUIRES_HOST_CORROBORATION',finished_wall_ns=time.time_ns());save()
+            return
         if clear_halt:
             clear_runtime_endpoints(fd,record,save)
         if register_clear_halt:
@@ -351,4 +386,4 @@ def run(args):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-register-read',action='store_true');run(p.parse_args())
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--usb-credit-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-register-read',action='store_true');run(p.parse_args())

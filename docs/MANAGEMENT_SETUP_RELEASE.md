@@ -745,3 +745,34 @@ Native/Proxy/sandbox/发布验收。原生主机对照受VM-only约束未执行�
 自然启动超时/重枚举/设备消失、软件off/on未恢复bulk、历史xHCI warning的RCA与无需
 人工干预的单设备恢复继续OPEN；人工冷断电只是诊断且VBUS未测，人工guest IN错误仅
 开发支撑。28项原scope及两个draft保持OPEN未合并，完整goal active。
+
+
+## 普通调度下的未执行替代队列与结果淘汰门禁（待真实执行）
+
+新增 `--managed-ordinary-eviction`，必须同时选择真实 first-step partial、
+selected cleanup、活动 Ready peer；扫描使用 parameter-only cleanup。格式9
+不接受模型、后续 selector、单CPU/FIFO或缺少任一完整原始记录。两CPU scratch VM
+里 hold 一条原成功 IN81；先提交一个同域替代请求，读回原 Pending 请求变为
+Cancelled，再让两个 SCHED_OTHER 线程通过 owning File 的独立 dup fd，各提交
+32个不重复ID。直接 ioctl 故意绕开 Python adapter 的用户态 RLock，核对与
+canonical C UAPI 的编号一致；不改变生产绑定的串行约定。
+
+65个替代请求使64项终态结果表发生真实淘汰；广告原ID/首替代ID、扫描再加先前
+初始化结果必须 ENOENT，不能恢复为新成功结果。其余64项包含唯一实际 Queued
+替代请求和63项未选择 Cancelled；两个线程的实际 ioctl 调用时间窗必须重叠，
+worker dup 均真正关闭，仍未执行的替代请求 opcode/step/power保持0。分别
+release、最后fd关闭、dup首次关闭保留owner/末引用撤销后，64项全部
+Cancelled/-ECANCELED；原回复排空和实际清理后仍保持。完整前/后集合与原
+supersession Cancelled字节独立保留，不投影成已淘汰ID的实际结果。
+
+复用同一份实际 USB recipe/host SHA验证；广告只原C02及必要C05，扫描先实际
+广告Off、原1001且零未选择START/STOP。完整500ms原期限不延长；65替代burst
+限定200ms，提交到释放仍小于400ms。活动同行跨原held回复/取消/Free保持
+Ready/Managed/current scanning On，随后真实STOP/START/STOP。每新VM还需
+同slkd/bus、普通UID1000/caps0的随机RF20+2；人工guest IN错误仅开发支撑。
+
+开发支撑验证完整六个role/fd组合、错误/缺失/错身份/假成功/假Ready/额外
+命令/错held SHA/同行失败/无实际调用重叠，并保留原历史格式。待六个原
+source runner全部终态且独立USB/RF核对后，才记录此限定普通调度子集通过。
+整项Managed、daemon运行中原hold、物理拔插、四设备两组和自然自动恢复/RCA
+仍保持OPEN；完整S0–S6及28项原scope不缩减。

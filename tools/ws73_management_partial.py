@@ -63,6 +63,12 @@ def verify_preparation(record, snapshot):
 
 
 def verify_records(record, cleanup_rejected=False):
+    ordinary=record.get('ordinary_queue_eviction',False)
+    if type(ordinary) is not bool:raise ValueError('exact ordinary queue gate required')
+    if ordinary:
+        if cleanup_rejected:raise ValueError('actual ordinary gate cannot normalize controller refusal')
+        from ws73_management_eviction import verify_records as verify_eviction
+        return verify_eviction(record)
     synthetic=record.get('synthetic_support')
     step=record.get('initialization_step',0)
     selected=record.get('selected_domain_cleanup',False)
@@ -187,7 +193,16 @@ def verify_records(record, cleanup_rejected=False):
 
 
 def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False):
-    snapshots=verify_records(record,cleanup_rejected)
+    if record.get('ordinary_queue_eviction') is True:
+        if cleanup_rejected:raise ValueError('actual ordinary gate cannot normalize controller refusal')
+        from ws73_management_eviction import corroborate as corroborate_eviction
+        return corroborate_eviction(record,host,capture,stderr,expected)
+    return corroborate_wire(record,verify_records(record,cleanup_rejected),host,capture,stderr,expected,cleanup_rejected)
+
+
+def corroborate_wire(record, snapshots, host, capture, stderr, expected, cleanup_rejected=False):
+    # Only actual USB commands/replies, host hold and active-peer wire evidence.
+    # Callers must independently verify their own complete UAPI record format.
     preparation=[]
     if record['domain']=='scanning':
         row=record['preparation'][0]
@@ -299,6 +314,7 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
 
 
 def run(args):
+    ordinary=getattr(args,'ordinary_queue_eviction',False)
     synthetic=getattr(args,'synthetic_support',False)
     step=getattr(args,'initialization_step',0)
     selected=getattr(args,'selected_domain_cleanup',False)
@@ -307,6 +323,8 @@ def run(args):
     real_later=getattr(args,'real_later_step',False)
     if type(step) is not int or not 0<=step<(2 if args.domain=='advertising' else 3) or step and synthetic is not True and not real_later:raise ValueError('later steps require bounded explicit model support')
     cmdline=Path('/proc/cmdline').read_text().split()
+    if type(ordinary) is not bool or ordinary!=('ws73.ordinary_queue_eviction=1' in cmdline) or ordinary and (synthetic or step or real_later or not selected or not active_peer or parameter_only!=(args.domain=='scanning')):
+        raise ValueError('explicit actual ordinary first-step Ready peer eviction gate required')
     if type(selected) is not bool or selected!=('ws73.selected_domain_cleanup=1' in cmdline) or selected and (synthetic or step and not real_later):
         raise ValueError('matching explicit real selected-domain cleanup boot gate required')
     if type(parameter_only) is not bool or parameter_only!=('ws73.scan_parameter_cleanup=1' in cmdline) or parameter_only and (not selected or args.domain!='scanning'):
@@ -326,7 +344,7 @@ def run(args):
     if subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode==0:
         raise ValueError('partial gate requires untouched Setup before daemon')
     folder=args.output; folder.mkdir(parents=True,exist_ok=False)
-    record=dict(format_version=8 if real_later else 7 if active_peer else 6 if parameter_only else 5 if selected else 4 if step else 3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
+    record=dict(format_version=9 if ordinary else 8 if real_later else 7 if active_peer else 6 if parameter_only else 5 if selected else 4 if step else 3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
         physical_acceptance=False,automatic_fault_recovery_acceptance=False,
         daemon_running_during_hold=False,hold_acknowledgements=[],markers=[],peer_queries=[])
     if step:record['initialization_step']=step
@@ -334,6 +352,7 @@ def run(args):
     if parameter_only:record['scan_parameter_cleanup']=True
     if active_peer:record['active_ready_peer']=True
     if real_later:record['real_later_step']=True
+    if ordinary:record['ordinary_queue_eviction']=True
     def save(): save_record(folder,record)
     def stage(phase,ack):
         value=dict(hold_phase=phase,wall_ns=time.time_ns());record['markers'].append(value);save()
@@ -413,6 +432,10 @@ def run(args):
         if pending.state!=2 or pending.opcode!=expected or pending.step!=step or pending.status or pending.error or pending.radio_adv!=(1 if args.domain=='scanning' else 0) or pending.radio_scan:
             raise ValueError('actual selected-step in-flight recipe required')
         peer_query(2)
+        if ordinary:
+            from ws73_management_eviction import burst
+            burst(target,observers[0],snapshots[0],record);save()
+        result_id=record['cancelled_request_id'] if ordinary else 1
         record['before_management']=bytes(observers[0].management_status()).hex()
         record['release_before_wall_ns']=time.time_ns()
         if args.case=='release':target.release_management(lease,1)
@@ -433,7 +456,11 @@ def run(args):
                 alias=None
         record['release_after_wall_ns']=time.time_ns()
         record['revoking']=bytes(observers[0].management_status()).hex()
-        record['cancelled']=bytes(observers[0].discovery_result(1)).hex();save()
+        record['cancelled']=bytes(observers[0].discovery_result(result_id)).hex()
+        if ordinary:
+            from ws73_management_eviction import collect
+            record['after_release_results']=collect(observers[0].fileno(),snapshots[0],args.domain)
+        save()
         if observers[0].management_status().state!=2:raise ValueError('in-flight release must retain Revoking')
         stage('release_ready','released')
         deadline=time.monotonic()+6
@@ -445,7 +472,8 @@ def run(args):
             time.sleep(.005)
         record['final_management']=bytes(q).hex()
         record['final_snapshot']=bytes(observers[0].snapshot()).hex()
-        record['final_result']=bytes(observers[0].discovery_result(1)).hex()
+        record['final_result']=bytes(observers[0].discovery_result(result_id)).hex()
+        if ordinary:record['after_drain_results']=collect(observers[0].fileno(),snapshots[0],args.domain)
         record['peer_after']=bytes(observers[1].snapshot()).hex()
         record['peer_management_after']=bytes(observers[1].management_status()).hex();save()
         peer_query(3)
@@ -457,7 +485,7 @@ def run(args):
         peer_expected=ready_bytes(snapshots[1]) if active_peer else record['initial_snapshots'][1]
         if record['peer_after']!=peer_expected or record['peer_management_before']!=record['peer_management_after']:
             raise ValueError('peer changed during target cleanup')
-        record['status']='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS' if synthetic else 'MANAGED_PARTIAL_HELD_REPLY_PASS'
+        record['status']='MANAGED_ORDINARY_QUEUE_EVICTION_PASS' if ordinary else 'MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS' if synthetic else 'MANAGED_PARTIAL_HELD_REPLY_PASS'
         verify_records(record);save()
         print('WS73_TARGET_MANAGED_PARTIAL_SYNTHETIC_SUPPORT_PASS' if synthetic else 'WS73_TARGET_MANAGED_PARTIAL_PASS',flush=True)
     except BaseException as e:
@@ -488,6 +516,7 @@ if __name__=='__main__':
     p.add_argument('--initialization-step',type=int,default=0,help='model-only later terminal step; original deadline retained')
     p.add_argument('--synthetic-support',action='store_true',help='dedicated simulated USB VM only; never physical qualification')
     p.add_argument('--selected-domain-cleanup',action='store_true',help='real first-step cleanup; untouched Unknown remains Setup')
+    p.add_argument('--ordinary-queue-eviction',action='store_true',help='actual SCHED_OTHER two-worker raw ioctl admission and terminal result eviction')
     p.add_argument('--real-later-step',action='store_true',help='real original successful host frame selector, requires selected/Ready peer and later step')
     p.add_argument('--ready-peer',action='store_true',help='real independently Ready Managed scanning peer spans cleanup')
     p.add_argument('--scan-parameter-cleanup',action='store_true',help='real first-step scan parameters only; scan remains Unknown, no unselected START')

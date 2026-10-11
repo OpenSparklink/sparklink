@@ -136,6 +136,7 @@ if grep -q 'ws73.managed_partial=1' /proc/cmdline; then
     if grep -q 'ws73.selected_domain_cleanup=1' /proc/cmdline; then selected_cleanup_arg='--selected-domain-cleanup'; fi
     if grep -q 'ws73.scan_parameter_cleanup=1' /proc/cmdline; then selected_cleanup_arg="$selected_cleanup_arg --scan-parameter-cleanup"; fi
     if grep -q 'ws73.managed_ready_peer=1' /proc/cmdline; then selected_cleanup_arg="$selected_cleanup_arg --ready-peer"; fi
+    if grep -q 'ws73.ordinary_queue_eviction=1' /proc/cmdline; then selected_cleanup_arg="$selected_cleanup_arg --ordinary-queue-eviction"; fi
     if grep -q 'ws73.real_later_step=1' /proc/cmdline; then
         real_step=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_step=/){sub(/^ws73.partial_step=/,"",$i);print $i}}' /proc/cmdline)
         selected_cleanup_arg="$selected_cleanup_arg --real-later-step --initialization-step $real_step"

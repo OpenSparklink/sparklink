@@ -3,12 +3,15 @@
 最新[四设备时序矩阵](WS73_PARALLEL_RF.md)在同一冻结 VM 镜像上完成 37 ms
 对照 RF40，并重现默认 0 ms 的第三轮发现超时。失败时真实同行 abort 和四只
 STOP 已核对，不能将测试清理当作生产自动恢复。自然启动/消失根因、有限
-单设备非人工恢复、物理拔插和默认四设备继续开放；正常 VM 累计 61、维护 20。
+单设备非人工恢复、物理拔插和默认四设备继续开放；正常 VM 累计 63、维护 20。
 新增连续被动扫描对照在真实等窗口参数下仍超时，候选已恢复原策略。
 失败接收端仍收到其他发射端报告、目标也被另一接收端收到；仅填满窗口
 未解决问题，具体射频/固件根因未证实。实机清理不能替代非人工故障恢复。
 新增每设备策略v3的默认真实RF20+2与guest-only重注册已封存；参数请求观测
 和相同wire值不是物理拔插、自然故障恢复或自定义功率/周期的验收。
+之后新服务Ua9dfe3fcbb80使用两个冻结私有配置，周期及功率分别完成真实双设备
+RF20+2/guest-only生命周期。[策略证据](WS73_DISCOVERY_POLICY.md)记录全部请求、
+实际Complete及空口；请求0/实际选中-2的差异明确保留。仍非物理拔插或自然恢复。
 此前人工恢复、冷断电、ganged hub 切电、QMP 退役和历史失败均保留原范围。
 
 2026-10-10 用户追加要求。本文补充完整 S0–S6 与第一北极星；原 issues、
@@ -768,7 +771,7 @@ guest没有旧成功Complete/START/STOP。同行保持generation2/Ready/scanning
 并实际STOP；原端口重加后目标generation1→3，旧选择仍失效，同slkd/bus、
 普通UID1000/caps0 RF20+2通过，1279包/零drop、taint0/无kernel fault。
 
-当前源码K4ee4af55f38c/冻结工具U7bcc7866c368，实际编译K060011963b5e/
+该取消/退役历史门禁源码K4ee4af55f38c/冻结工具U7bcc7866c368，实际编译K060011963b5e/
 服务Uab1a34b07f1c生产哈希一致。专用QEMU实际回调DROP诊断/四种清理
 ASan/UBSan/LSan、无USB边界和隔离boot smoke通过；329工具测试和
 [精确源码CI38159520269](https://github.com/OpenSparklink/sparklink/actions/runs/38159520269)

@@ -55,7 +55,8 @@ SDK `sle_device_discovery.h` 的周期/窗口单位为125us。广播 min/max 范
 
 回归覆盖 SDK 数值边界、地址规范化/重复拒绝、两只策略隔离、Setup/START
 参数一致、管理凭据失效先拒绝及退役查询。实际默认双设备已由精确源码
-Ud17f3f6f531c 的新 VM 验证；自定义参数空口验证仍开放，源码回归不能替代它。
+Ud17f3f6f531c 的新 VM 验证；该默认receipt不验收自定义参数。后续两个限定案例
+见下文，源码回归不能替代空口证据。
 先验证默认路径，再将周期和功率分别作为独立变量做四设备对照；默认并行、
 自然根因、单只非人工恢复及完整 S0–S6/原28项 issues 保持原验收范围。
 
@@ -87,3 +88,55 @@ daemon 显式加载该文件，缺失时不能回退到默认值。它不安装�
 自定义 RF 验收标为 false；只有终止后独立核对每个实际注册的策略查询、
 全部初始化/START 原始参数、Complete、随机 marker 空口与同 daemon 重注册
 的 receipt 才能验收。周期和功率分开实验，保留默认路径及所有失败证据。
+
+## 两个单变量实际案例（2026-10-12）
+
+新服务源码Ua9dfe3fcbb80、内核K060011963b5e，两次独立VM均选主机
+1-2.1.1/CD与1-2.1.4/F9。每例两只独立Ready、RF20交换角色，QMP guest-only
+退役CD、保持F9原注册，再加CD为新generation并RF2；同slkd/认证bus，
+UID1000/caps0。两例分别1265包、零capture drop、taint0、QEMU0。
+每例三项注册/六次show、全部25个广播和28个扫描参数、22轮marker/data/
+地址/RSSI/Complete及10秒期限已在进程终止后独立核对，重算与父进程证明相同。
+
+| 案例 | CD请求 | F9请求 | 实际参数/回复 | 限定证据 |
+|---|---|---|---|---|
+| 周期 | 广播min/max1237，power127，scan1600/800 | 默认1200/127/1600/800 | CD全部广告参数1237，F9全部1200，扫描不变 | [周期RF22 receipt](evidence/ws73-frozen-custom-period-real-20261012.json) |
+| 功率 | 默认1200，power0，scan1600/800 | 默认1200/127/1600/800 | CD实际Complete选中-2，F9选中20，周期/扫描不变 | [功率RF22 receipt](evidence/ws73-frozen-custom-power-real-20261012.json) |
+
+周期receipt SHA256 `8c0857f87616bc843837e2f34e0b2d019ec67940f43ab598374d9d9cf16d827d`；
+功率receipt SHA256 `c03edf817ba5dd8e00225fd29853ce2fb1871a498d40d5bd023919b40dcfc0d1`。
+功率请求是偏好，不把0请求写成0实际生效；独立核对器原先假定实际0而拒绝，
+随后保留失败并按原始`fe`/有符号-2及slctl关联重算，没有改写实际run。
+CD被接收的RSSI约-40，仍非校准辐射功率测量或四设备根因证明。
+
+复现使用同一验签kernel/module/boot smoke和此精确源码的service bundle。
+周期私有配置：
+
+```toml
+[[ws73.adapters]]
+address = "00:01:09:32:54:CD"
+[ws73.adapters.policy]
+advertising_interval_min_slots = 1237
+advertising_interval_max_slots = 1237
+```
+
+另一次功率配置只保留同一地址/policy表及`tx_power_dbm = 0`，省略周期字段
+使其回到内建1200；不要在同一次实验同时改变周期和功率。以新的output运行
+prepare，并分别追加`--native-discovery-config <case.conf>`。配置必须在
+prepare后保持不变；不得手改冻结root、manifest或服务payload。运行：
+
+```sh
+python3 tools/ws73_target.py run --prepared <case-prepared> --output <fresh-case-output> \
+    --ports 1-2.1.1 1-2.1.4 --qmp-hotplug --timeout 1800
+```
+
+`PASSTHROUGH_SUPPORT_PASS`仅是父进程的RF/guest生命周期判断；还须核对
+导出的`slkd-config.conf`/校验输出与冻结SHA、每项show请求策略及初始化/START
+原始参数。功率以关联Complete的有符号字节为准，不能从配置或RSSI反推。
+精确源码[CI38169431821](https://github.com/OpenSparklink/sparklink/actions/runs/38169431821)
+九项成功；本地配置CLI4例、340工具例及严格all-target/all-features clippy通过。
+
+正常VM累计63、维护20、四设备尝试仍5。后续先迁移四设备证明对自定义策略
+的范围标记，再分别开展周期/功率对照；保持默认0启动偏移，无测试sleep补偿。
+这两个案例不验收默认四设备、物理拔插、自然故障RCA、单只非人工恢复或整项
+Managed；全部原S0–S6/28项scope保持，相关issues继续开放。

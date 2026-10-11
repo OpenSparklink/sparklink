@@ -129,6 +129,8 @@ def run(args):
                 raise ValueError('collector must label simulated evidence explicitly')
             capture = read_capture(share/'ws73.pcap', [(1, n) for n in range(1, 128)])
             record['capture_packets'] = check_capture_stats((share/'capture-stats.txt').read_text())
+            if record['capture_packets'] != capture['packet_count']:
+                raise ValueError('sealed USB capture count mismatch')
             record['corroboration'] = corroborate(probe, capture)
             prepared(args.prepared.resolve())
             if record['runner_inputs'] != [file_record(Path(__file__)), file_record(Path(__file__).with_name('ws73_management_queued.py'))]:

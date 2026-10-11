@@ -14,7 +14,7 @@ import time
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / ('python' if (HERE.parent / 'python').is_dir() else 'bindings/python')))
 from sparklink.native import NativeAdapter
-from sparklink.structs import SleControllerSnapshot, SleDiscoveryResult, SleManagementQuery
+from sparklink.structs import SleControllerSnapshot, SleDiscoveryResult, SleDiscoverySubmit, SleManagementQuery
 from ws73_diagnostic_hold import write_marker
 
 
@@ -54,9 +54,9 @@ def verify_records(record):
     synthetic = record.get('synthetic_support', False)
     if type(synthetic) is not bool:
         raise ValueError('exact synthetic evidence scope required')
-    expected_status = ('QUEUED_MANAGED_RELEASE_SYNTHETIC_SUPPORT_PASS' if synthetic
-                       else 'QUEUED_MANAGED_RELEASE_LIVE_PASS')
-    if (type(record.get('format_version')) is not int or record.get('format_version') != 1
+    expected_status = ('QUEUED_UNKNOWN_SETUP_RELEASE_SYNTHETIC_SUPPORT_PASS' if synthetic
+                       else 'QUEUED_UNKNOWN_SETUP_RELEASE_LIVE_PASS')
+    if (type(record.get('format_version')) is not int or record.get('format_version') != 2
             or record.get('status') != expected_status
             or type(record.get('probe_exit')) is not int or record.get('probe_exit') != 0 or record.get('daemon_running') is not False
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False):
@@ -94,10 +94,23 @@ def verify_records(record):
                 result = decode(SleDiscoveryResult, v[key][domain])
                 expected = SleDiscoveryResult(version=1, generation=generation,
                     request_id=(case_number%3)*2+1+domain,
-                    profile=1, operation=5+domain, count=2+domain,
+                    profile=1, operation=(5, 4)[domain], count=(2, 1)[domain],
                     dev_index=index, state=state, error=error)
                 if bytes(result) != bytes(expected):
                     raise ValueError('full Queued to Cancelled UAPI with no selected opcode/step required')
+        rejected = v['scan_initialize_rejections']
+        if len(rejected) != 2:
+            raise ValueError('Unknown and pending-advertising scan admission guards required')
+        for n, row in enumerate(rejected):
+            expected = SleDiscoverySubmit(version=1, generation=generation, profile=1,
+                                          request_id=(n+1)*100+case_number%3, operation=6)
+            expected.scanning.frame_types = 1
+            expected.scanning.interval = 1600
+            expected.scanning.window = 800
+            if (bytes(decode(SleDiscoverySubmit, row['input'])) != bytes(expected)
+                    or type(row['submit_errno']) is not int or row['submit_errno'] != errno.EBUSY
+                    or type(row['result_errno']) is not int or row['result_errno'] != errno.ENOENT):
+                raise ValueError('rejected scan initialization must remain unadmitted, without a result')
         for a, b, raw in [('snapshot_before', 'snapshot_after', snapshots[index]), ('peer_before', 'peer_after', snapshots[peer])]:
             if v[a] != v[b] or v[a] != raw:
                 raise ValueError('full Setup metadata and survivor must remain unchanged')
@@ -132,7 +145,8 @@ def corroborate(record, capture):
             'cases': 6, 'commands': 0, 'completions': 0, 'failures': 0,
             'start_wall_ns': start, 'end_wall_ns': end,
             'synthetic_support': record.get('synthetic_support', False),
-            'managed_preselection_live_acceptance': not record.get('synthetic_support', False),
+            'managed_preselection_live_acceptance': False,
+            'managed_unknown_setup_preselection_live_acceptance': not record.get('synthetic_support', False),
             'managed_preselection_synthetic_support_acceptance': record.get('synthetic_support', False),
             'active_ready_peer_isolation_acceptance': False,
             'normal_scheduler_concurrency_acceptance': False, 'setup_preserved': True, 'peer_snapshot_preserved': True,
@@ -158,7 +172,7 @@ def run(args):
     if 'ws73.managed_queue=1' not in Path('/proc/cmdline').read_text().split() or subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode == 0:
         raise ValueError('explicit VM mode before daemon startup required')
     folder = args.output; folder.mkdir(parents=True, exist_ok=False)
-    record = {'format_version': 1, 'status': 'RUNNING', 'daemon_running': False,
+    record = {'format_version': 2, 'status': 'RUNNING', 'daemon_running': False,
               'synthetic_support': synthetic,
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'initial_snapshots': [], 'cases': []}
@@ -192,8 +206,8 @@ def run(args):
         record['cases'] = [json.loads(line) for line in (folder/'probe.jsonl').read_text().splitlines()]
         if p.returncode:
             raise ValueError('real release/last-file-close probe failed')
-        record['status'] = ('QUEUED_MANAGED_RELEASE_SYNTHETIC_SUPPORT_PASS' if synthetic
-                            else 'QUEUED_MANAGED_RELEASE_LIVE_PASS')
+        record['status'] = ('QUEUED_UNKNOWN_SETUP_RELEASE_SYNTHETIC_SUPPORT_PASS' if synthetic
+                            else 'QUEUED_UNKNOWN_SETUP_RELEASE_LIVE_PASS')
         verify_records(record); save()
         print('WS73_TARGET_MANAGED_QUEUE_SYNTHETIC_SUPPORT_PASS' if synthetic
               else 'WS73_TARGET_MANAGED_QUEUE_PASS', flush=True)

@@ -4,19 +4,28 @@ import errno
 import unittest
 from test_ws73_management_setup import fixture as setup_fixture
 from ws73_management_queued import verify_records, corroborate
-from sparklink.structs import SleDiscoveryResult
+from sparklink.structs import SleDiscoveryResult, SleDiscoverySubmit
 
 
 def fixture():
     record = setup_fixture()
-    record['status'] = 'QUEUED_MANAGED_RELEASE_LIVE_PASS'
+    record['format_version'] = 2
+    record['status'] = 'QUEUED_UNKNOWN_SETUP_RELEASE_LIVE_PASS'
     for n, row in enumerate(record['cases']):
         row.update(critical_start_ns=row['start_wall_ns']+1,
                    critical_end_ns=row['start_wall_ns']+1_000_000, scheduler_restored=True)
         for key, state, error in [('queued', 1, 0), ('cancelled', 5, -errno.ECANCELED)]:
             row[key] = [bytes(SleDiscoveryResult(version=1, generation=row['generation'],
-                request_id=(n%3)*2+1+i, profile=1, operation=5+i, count=2+i,
+                request_id=(n%3)*2+1+i, profile=1, operation=(5, 4)[i], count=(2, 1)[i],
                 dev_index=row['index'], state=state, error=error)).hex() for i in [0, 1]]
+        row['scan_initialize_rejections'] = []
+        for step in [0, 1]:
+            command = SleDiscoverySubmit(version=1, generation=row['generation'], profile=1,
+                                         request_id=(step+1)*100+n%3, operation=6)
+            command.scanning.frame_types = 1
+            command.scanning.interval = 1600
+            command.scanning.window = 800
+            row['scan_initialize_rejections'].append(dict(input=bytes(command).hex(), submit_errno=errno.EBUSY, result_errno=errno.ENOENT))
     return record
 
 
@@ -25,7 +34,8 @@ class QueuedTests(unittest.TestCase):
         record = fixture()
         verify_records(record)
         proof = corroborate(record, {k: [] for k in ['commands', 'complete', 'failures']})
-        self.assertTrue(proof['managed_preselection_live_acceptance'])
+        self.assertFalse(proof['managed_preselection_live_acceptance'])
+        self.assertTrue(proof['managed_unknown_setup_preselection_live_acceptance'])
         self.assertFalse(proof['normal_scheduler_concurrency_acceptance'])
         self.assertFalse(proof['partial_initialization_cleanup_acceptance'])
         self.assertFalse(proof['active_ready_peer_isolation_acceptance'])
@@ -34,16 +44,16 @@ class QueuedTests(unittest.TestCase):
     def test_synthetic_scope_cannot_claim_live_acceptance(self):
         record = fixture()
         record['synthetic_support'] = True
-        record['status'] = 'QUEUED_MANAGED_RELEASE_SYNTHETIC_SUPPORT_PASS'
+        record['status'] = 'QUEUED_UNKNOWN_SETUP_RELEASE_SYNTHETIC_SUPPORT_PASS'
         proof = corroborate(record, {k: [] for k in ['commands', 'complete', 'failures']})
         self.assertFalse(proof['managed_preselection_live_acceptance'])
         self.assertTrue(proof['managed_preselection_synthetic_support_acceptance'])
         self.assertFalse(proof['active_ready_peer_isolation_acceptance'])
 
     def test_scope_status_mismatch_and_non_boolean_rejected(self):
-        for synthetic, status in [(True, 'QUEUED_MANAGED_RELEASE_LIVE_PASS'),
-                                  (False, 'QUEUED_MANAGED_RELEASE_SYNTHETIC_SUPPORT_PASS'),
-                                  (1, 'QUEUED_MANAGED_RELEASE_LIVE_PASS')]:
+        for synthetic, status in [(True, 'QUEUED_UNKNOWN_SETUP_RELEASE_LIVE_PASS'),
+                                  (False, 'QUEUED_UNKNOWN_SETUP_RELEASE_SYNTHETIC_SUPPORT_PASS'),
+                                  (1, 'QUEUED_UNKNOWN_SETUP_RELEASE_LIVE_PASS')]:
             record = fixture(); record.update(synthetic_support=synthetic, status=status)
             with self.subTest(synthetic=synthetic, status=status), self.assertRaises(ValueError):
                 verify_records(record)
@@ -78,3 +88,13 @@ class QueuedTests(unittest.TestCase):
             if change == 'peer': record['cases'][0]['peer_after'] = record['initial_snapshots'][0]
             else: record['cases'][0]['cancelled'].pop()
             with self.subTest(change=change), self.assertRaises(ValueError): verify_records(record)
+
+    def test_scan_initialization_cannot_replace_valid_stop_or_be_admitted(self):
+        record = fixture()
+        result = SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['cases'][0]['queued'][1]))
+        result.operation = 6; result.count = 3
+        record['cases'][0]['queued'][1] = bytes(result).hex()
+        with self.assertRaises(ValueError): verify_records(record)
+        for key, value in [('submit_errno', 0), ('submit_errno', errno.EIO), ('result_errno', 0)]:
+            record = fixture(); record['cases'][0]['scan_initialize_rejections'][0][key] = value
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError): verify_records(record)

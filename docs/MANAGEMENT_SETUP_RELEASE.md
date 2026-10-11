@@ -181,6 +181,15 @@ sandbox/发布及全部S0–S6/28项原scope保持，北极星7/8，VM-only，�
 
 ## Managed Queued 专用真实设备门禁（待实机执行）
 
+**前置条件勘误（实际 VM fd 执行发现）**：旧探针同时在 Unknown Setup 排入
+广播配置与扫描初始化，第二笔实际返回 EBUSY；扫描初始化会短暂启用扫描，
+必须先有真实广播 Off 且无 pending 广播操作。旧探针失败证据保留，不能放宽
+内核保护或将 EBUSY 算作取消成功。当前 Unknown Setup 子门禁排入合法的广播
+配置与扫描 STOP，另严格验证扫描初始化在 Unknown／pending 广播时 EBUSY，
+且没有结果记录（ENOENT）。完整扫描初始化排队取消须在正确的 confirmed-Off
+前置条件下另行验收；它与 Ready 同伴活动隔离继续 OPEN。因此本子门禁不得
+将 `managed_preselection_live_acceptance` 置 true，仅记录精确有限范围。
+
 独立开发支撑入口 `tools/ws73_managed_queue_support.py --prepared <冻结包>
 --output <新目录>` 只在签名 kernel 的 scratch VM 中添加两只 `usb-ws73-test`，
 不接受 hostbus/hostport。它运行相同 C fd probe 的 release／最后fd／dup 六案例，

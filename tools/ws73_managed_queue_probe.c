@@ -56,13 +56,24 @@ int main(int argc,char **argv) {
   struct sle_discovery_submit commands[2]={
    {.version=1,.profile=1,.generation=generations[target],.request_id=kind*2+1,.operation=SLE_DISCOVERY_ADV_CONFIGURE_OFF,
     .advertising={.gt_role=2,.interval_min=1200,.interval_max=1200,.channel_map=7,.tx_power=127,.supervision_timeout=200}},
-   {.version=1,.profile=1,.generation=generations[target],.request_id=kind*2+2,.operation=SLE_DISCOVERY_SCAN_INITIALIZE_OFF,
+   {.version=1,.profile=1,.generation=generations[target],.request_id=kind*2+2,.operation=SLE_DISCOVERY_SCAN_STOP}};
+  struct sle_discovery_submit rejected[2]={
+   {.version=1,.profile=1,.generation=generations[target],.request_id=100+kind,.operation=SLE_DISCOVERY_SCAN_INITIALIZE_OFF,
+    .scanning={.frame_types=1,.interval=1600,.window=800}},
+   {.version=1,.profile=1,.generation=generations[target],.request_id=200+kind,.operation=SLE_DISCOVERY_SCAN_INITIALIZE_OFF,
     .scanning={.frame_types=1,.interval=1600,.window=800}}};
+  int rejected_errno[2],missing_errno[2];
   memcpy(commands[0].advertising.own_address,before.address,6);
   if(kind==2){duplicate=dup(writer);CHECK(duplicate>=0);}
   struct sched_param rt={.sched_priority=1},normal={0};
   uint64_t critical_start=wall_ns();CHECK(!sched_setscheduler(0,SCHED_FIFO,&rt));
+  errno=0;CHECK(ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&rejected[0])==-1&&errno==EBUSY);rejected_errno[0]=errno;
+  struct sle_discovery_result absent={.version=1,.generation=generations[target],.request_id=rejected[0].request_id};
+  errno=0;CHECK(ioctl(observe[target],SL_IOCTL_DISCOVERY_RESULT,&absent)==-1&&errno==ENOENT);missing_errno[0]=errno;
   CHECK(!ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&commands[0]));
+  errno=0;CHECK(ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&rejected[1])==-1&&errno==EBUSY);rejected_errno[1]=errno;
+  absent=(struct sle_discovery_result){.version=1,.generation=generations[target],.request_id=rejected[1].request_id};
+  errno=0;CHECK(ioctl(observe[target],SL_IOCTL_DISCOVERY_RESULT,&absent)==-1&&errno==ENOENT);missing_errno[1]=errno;
   CHECK(!ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&commands[1]));
   struct sle_discovery_result queued[2]={operation(observe[target],generations[target],commands[0].request_id,SLE_DISCOVERY_QUEUED),operation(observe[target],generations[target],commands[1].request_id,SLE_DISCOVERY_QUEUED)};
   struct sle_management_query held=query(observe[target],generations[target],SLE_MANAGEMENT_HELD),first={0};
@@ -90,7 +101,9 @@ int main(int argc,char **argv) {
   uint64_t end=wall_ns();
   printf("{\"case\":\"%s\",\"index\":%u,\"generation\":%llu,\"peer_index\":%u,\"peer_generation\":%llu,\"start_wall_ns\":%llu,\"end_wall_ns\":%llu,\"writer_fd\":%d,\"duplicate_fd\":%d,\"wrong_token_errno\":%d,\"snapshot_before\":",kind==0?"explicit-release":kind==1?"last-fd-close":"dup-last-fd-close",target,(unsigned long long)generations[target],peer,(unsigned long long)generations[peer],(unsigned long long)start,(unsigned long long)end,writer,duplicate,wrong_errno);
   hex(&before,sizeof(before));printf(",\"snapshot_after\":");hex(&after,sizeof(after));printf(",\"peer_before\":");hex(&pb,sizeof(pb));printf(",\"peer_after\":");hex(&pa,sizeof(pa));
-  printf(",\"radio_before\":");hex(&rb,sizeof(rb));printf(",\"radio_after\":");hex(&ra,sizeof(ra));printf(",\"held\":");hex(&held,sizeof(held));printf(",\"after_first_close\":");hex(&first,sizeof(first));printf(",\"free\":");hex(&free,sizeof(free));printf(",\"queued\":[");hex(&queued[0],sizeof(queued[0]));printf(",");hex(&queued[1],sizeof(queued[1]));printf("],\"cancelled\":[");hex(&cancelled[0],sizeof(cancelled[0]));printf(",");hex(&cancelled[1],sizeof(cancelled[1]));printf("],\"critical_start_ns\":%llu,\"critical_end_ns\":%llu,\"scheduler_restored\":true}\n",(unsigned long long)critical_start,(unsigned long long)critical_end);fflush(stdout);
+  printf(",\"radio_before\":");hex(&rb,sizeof(rb));printf(",\"radio_after\":");hex(&ra,sizeof(ra));printf(",\"held\":");hex(&held,sizeof(held));printf(",\"after_first_close\":");hex(&first,sizeof(first));printf(",\"free\":");hex(&free,sizeof(free));printf(",\"queued\":[");hex(&queued[0],sizeof(queued[0]));printf(",");hex(&queued[1],sizeof(queued[1]));printf("],\"cancelled\":[");hex(&cancelled[0],sizeof(cancelled[0]));printf(",");hex(&cancelled[1],sizeof(cancelled[1]));printf("],\"scan_initialize_rejections\":[");
+  for(unsigned i=0;i<2;i++){if(i)printf(",");printf("{\"input\":");hex(&rejected[i],sizeof(rejected[i]));printf(",\"submit_errno\":%d,\"result_errno\":%d}",rejected_errno[i],missing_errno[i]);}
+  printf("],\"critical_start_ns\":%llu,\"critical_end_ns\":%llu,\"scheduler_restored\":true}\n",(unsigned long long)critical_start,(unsigned long long)critical_end);fflush(stdout);
   if(!kind)closed(writer);
  }
  closed(observe[0]);closed(observe[1]);return 0;

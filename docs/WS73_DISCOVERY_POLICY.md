@@ -54,7 +54,17 @@ SDK `sle_device_discovery.h` 的周期/窗口单位为125us。广播 min/max 范
 广播数据、管理凭据或真实结果的来源。C头由cbindgen同步生成。
 
 回归覆盖 SDK 数值边界、地址规范化/重复拒绝、两只策略隔离、Setup/START
-参数一致、管理凭据失效先拒绝及退役查询。实际默认双设备与新参数空口验证
-仍需精确源码的 VM/真实 WS73 证据，源码回归不能替代它。
+参数一致、管理凭据失效先拒绝及退役查询。实际默认双设备已由精确源码
+Ud17f3f6f531c 的新 VM 验证；自定义参数空口验证仍开放，源码回归不能替代它。
 先验证默认路径，再将周期和功率分别作为独立变量做四设备对照；默认并行、
 自然根因、单只非人工恢复及完整 S0–S6/原28项 issues 保持原验收范围。
+
+[默认实机 receipt](evidence/ws73-per-device-policy-default-real-20261012.json)
+SHA256 `cbec285f3fe4d0704fdaa558650e722124eec5f5ff07e9c5c135c3d615129ad5`：
+真实双设备交换角色 RF20，QMP guest-only 退役/重注册后 RF2，同 slkd/bus，
+UID1000/caps0，1265包/零capture drop、QEMU0。父进程封存的22轮原始证明已
+独立重算一致；初始化/START 的49字节广播参数、8字节扫描参数与v1默认一致。
+三个实际注册对象的Ready查询及一次Setup查询显示同一请求策略v3；自定义
+覆盖、物理拔插、默认四设备、完整Managed和自动恢复均不由此receipt验收。
+源码[CI38167553391](https://github.com/OpenSparklink/sparklink/actions/runs/38167553391)
+九项成功；本轮原始捕获和服务二进制保持私有，SDK/固件blob未提交。

@@ -248,3 +248,9 @@ root CAP_NET_ADMIN、同 fd 的 UID0/caps0、UID1000/caps0；逐字节核对 sna
 完整 image/modules、私有签名模块 root smoke，再用真实双设备20+2轮及
 原 read/diagnostic/cancel/recovery 门禁回归。自然故障根因及完整恢复仍 OPEN；
 有限拒绝资格不关闭 K1/K3/K4/K9/K10/K12/K19 或全 S0–S6。
+
+完整新内核重编译另发现 first_deadline 仅被独立 queue selftest 使用，生产 Host
+已经采用实际 active 和 recipe 的截止时间，不调用此旧 accessor。本批删除
+未使用方法，测试改为检查四个实际 pop 结果各自保留原 deadline，18 项
+严格 Rust queue/progress 测试保持。首次有 warning 构建和 root smoke 保留，
+最终镜像将重新构建和资格检查，不能把增量构建没有触发重编译当成无警告证明。

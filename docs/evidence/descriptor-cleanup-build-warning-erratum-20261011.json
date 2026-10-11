@@ -1,0 +1,33 @@
+{
+  "status": "HISTORICAL_DESCRIPTOR_BUILD_COMPILER_WARNING_COUNT_CORRECTION",
+  "original_evidence": {
+    "path": "docs/evidence/ws73-vm-descriptor-cleanup-held-close-20261011.json",
+    "sha256": "2d4b9b8d1ba72bab84ba2223e40614c88b27bc21632d057368cfc70561ffd965",
+    "kernel_head": "c5ec97f50c0609040ed376a1a3801bdd4eb11b18",
+    "recorded_compiler_warning_count": 0,
+    "actual_compiler_warning_count": 1,
+    "recorded_make_jobserver_warning_count": 1,
+    "actual_make_jobserver_warning_count": 1
+  },
+  "original_build_log": {
+    "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/usb-discovery-close-live-kernel-build.log",
+    "sha256": "306c5465acaea8a8968619a971c515326987e106d89139d40e2b1538bd97e79e",
+    "diagnostics": [
+      "warning: unused import: `MAX_PAYLOAD_LEN`"
+    ],
+    "summary": "warning: 1 warning emitted"
+  },
+  "scope": "Correct the historical compiler warning tally; original signed/sealed file retained unchanged. Independent actual guest kernel warning count, RF rounds, USB capture, VFS and deadline evidence are separate and not changed by this erratum. This does not qualify any new source/image.",
+  "fix_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+  "fixed_build": {
+    "record": ".dev/managed-unsubmitted-fixed-live-build-record.json",
+    "log_sha256": "0e7efd751d469d6274cd70b51bd57b98e5edc1e26652894153bc901811ecb5c6",
+    "compiler_warning_count": 0,
+    "make_jobserver_warning_count": 1
+  },
+  "new_image_rf_acceptance": false,
+  "managed_preselection_live_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "goal_complete": false
+}

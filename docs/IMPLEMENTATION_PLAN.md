@@ -1011,7 +1011,7 @@ K`c5ec97f50c06`／编译U`ad5e28727229`已删除生产descriptor失败的“test
 18个实际C register/unregister sanitizer案例、5个实际Rust info/default/attach测试
 通过；原固件69 C/12 Rust及管理10门禁保持。6个在途close负例测试使工具总数234。
 提取器void支持和测试入口错误、一次错误expected HEAD被快照校验器拒绝的原日志
-均保留；修正后完整内核/private modules/签名smoke通过，编译器warning0、GNU make
+均保留；修正后完整内核/private modules/签名smoke通过，编译器原0计数有误、实际1条warning（见下方勘误）；GNU make
 一次jobserver警告。Native WS73 driver/已查询metadata未改。
 
 [新镜像两个独立VM封存](evidence/ws73-vm-descriptor-cleanup-held-close-20261011.json)
@@ -1068,3 +1068,20 @@ cleanup。保留真实 WS73 普通用户双设备 20+2 回归。已有 Diagnosti
 自然启动/重枚举/消失根因、无人工拔插的完整恢复、历史物理 xHCI warning、
 完整能力来源/事件迁移/socket/SSAP/安全/Bond/Profile/四设备/Native/Proxy/PM/
 sandbox/发布及 S0–S6、全部 28 项原 scope 仍 OPEN。VM-only、不关闭整项、不合并 draft。
+
+
+## 构建警告计数勘误（原封存保留）
+
+上一批 K`c5ec97f50c06` 的“编译器 warning0”计数错误：原构建日志实际有
+1 条 `MAX_PAYLOAD_LEN` 未使用导入警告，另有 1 条 GNU make jobserver 警告。
+[勘误及原日志/封存哈希](evidence/descriptor-cleanup-build-warning-erratum-20261011.json)
+保留原 JSON 字节，不把错误记录改成成功；文档和 issue 中的原编译器零计数应以
+此勘误为准。原 guest warning/taint、RF/USB/VFS/deadline 证据来自独立实测，
+不与编译器 warning 混同，也不因勘误宣称新源码或新 Managed 分支验收。
+
+K`292f9fec84b6` 已删除导入，新完整构建 compiler warning0、make jobserver warning1。
+离线 build checker 增加终结日志 SHA-256 验证与 diagnostics 分类：编译器 warning、
+make warning、未分类 warning 分别记录，Rust/Clang 汇总行不当作第二条警告。
+未知 producer 不能被宣称为 warning-free，活跃/失败/无哈希/日志篡改拒绝。
+六项新增负例/计数测试及全部 240 工具测试通过。日志计数仍不等于全部 compiler
+输入来源、实机或完整发布资格；自然 RCA、完整恢复和 S0–S6 原验收继续 OPEN。

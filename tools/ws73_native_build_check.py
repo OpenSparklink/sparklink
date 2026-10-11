@@ -72,6 +72,42 @@ def completed_build(record, head, config_hash):
         raise ValueError('source/config stability was not established by the build recorder')
 
 
+def build_diagnostics(text):
+    """Count emitted diagnostics, not Rust/Clang summary lines or make notices.
+
+    Unknown warning producers remain explicit: a zero compiler count alone is
+    insufficient to claim a warning-free build. This is log accounting, not
+    independent proof that every compiler invocation was captured.
+    """
+    text = re.sub(r'\x1b\[[0-9;]*m', '', text)
+    compiler, make, unknown = [], [], []
+    for line in text.splitlines():
+        if re.fullmatch(r'\s*warning: \d+ warnings? emitted\s*', line) or re.fullmatch(r'\s*\d+ warnings? generated\.\s*', line):
+            continue
+        if re.match(r'^(?:g?make)(?:\[\d+\])?:.*(?:warning:|警告:)', line):
+            make.append(line)
+        elif re.match(r'^\s*warning(?:\[[^\]]+\])?:', line) or re.match(r'^.+:\d+(?::\d+)?:\s*warning:', line):
+            compiler.append(line)
+        elif re.search(r'warning(?:\[[^\]]+\])?:|警告:', line):
+            unknown.append(line)
+    return {'compiler_warning_count': len(compiler), 'compiler_diagnostics': compiler,
+            'make_warning_count': len(make), 'make_diagnostics': make,
+            'unclassified_warning_count': len(unknown), 'unclassified_diagnostics': unknown,
+            'warning_free_log': not (compiler or make or unknown)}
+
+
+def checked_build_diagnostics(record):
+    if record.get('status') != 'BUILD_PASSED' or record.get('build_exit') != 0:
+        raise ValueError('terminal successful build required before reading its log')
+    saved = record.get('build_log', {})
+    if not isinstance(saved.get('path'), str) or not re.fullmatch('[0-9a-f]{64}', saved.get('sha256', '')):
+        raise ValueError('build recorder must identify the exact complete log')
+    data = Path(saved['path']).read_bytes()
+    if hashlib.sha256(data).hexdigest() != saved['sha256']:
+        raise ValueError('build log differs from terminal recorder')
+    return {'log_sha256': saved['sha256'], **build_diagnostics(data.decode('utf-8'))}
+
+
 def file_record(path):
     digest = hashlib.sha256()
     with path.open('rb') as stream:
@@ -89,6 +125,7 @@ def collect(args):
     release = release_name((build/'include/config/kernel.release').read_text())
     record = json.loads(args.build_record.read_text())
     completed_build(record, head, file_record(build/'.config')['sha256'])
+    diagnostics = checked_build_diagnostics(record)
     module = build/'drivers/sparklink/sparklink_ws73_usb.ko'
     elf_header(module, {1}); elf_header(build/'vmlinux', {2, 3})
     boot_image(build/'arch/x86/boot/bzImage')
@@ -132,6 +169,7 @@ def collect(args):
               'native_acceptance': False, 'scope': 'offline native lab artifact check only',
               'source_head': head, 'release': release, 'configuration': config,
               'module_info': info, 'inputs': inputs, 'build_record': file_record(args.build_record),
+              'build_diagnostics': diagnostics,
               'limits': ['No installation, boot entry, initramfs generation, module loading or USB access.',
                          'Snapshot is not a complete boot/install bundle; other modules/dependencies are not staged.',
                          'Source HEAD/config agreement does not independently prove all compiler input provenance.',

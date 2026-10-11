@@ -93,7 +93,7 @@ def stable(a, b):
     return all(a[k] == b[k] for k in ['port', 'bus', 'device', 'index', 'generation', 'path', 'address', 'version', 'features'])
 
 
-def parse_result(output, identity, operation):
+def parse_result(output, identity, operation, *, retained_off=False):
     pattern = (r'^NativeOperationResult: generation=(\d+) request=(\d+) operation=(\d+) state=(\d+) errno=(-?\d+) status=0x([0-9a-f]{2}) '
                r'opcode=0x([0-9a-f]{4}) step=(\d+)/(\d+) power=(-?\d+) power_valid=(\d+) adv=(\d+) scan=(\d+) profile=(\d+)$')
     rows = re.findall(pattern, output, re.M)
@@ -102,6 +102,14 @@ def parse_result(output, identity, operation):
     r = rows[0]
     expected = {1: ('0c05', 2, 3, 2, 1), 2: ('0c05', 0, 1, 1, 1),
                 3: ('1002', 1, 2, 1, 2), 4: ('1002', 0, 1, 1, 1)}[operation]
+    if retained_off:
+        # A retained successful OFF may be queried while the independent
+        # policy is currently On. The selected domain must still be Idle;
+        # Unknown/Error states and failed original operations remain rejected.
+        other = int(r[12] if operation == 2 else r[11])
+        if operation not in [2, 4] or other not in [1, 2]:
+            raise ValueError('retained OFF requires a known independent radio state')
+        expected = (*expected[:3], 1, other) if operation == 2 else (*expected[:3], other, 1)
     if (int(r[0]) != identity['generation'] or int(r[1]) == 0 or int(r[2]) != operation
             or r[3:6] != ('3', '0', '00') or r[13] != '1'
             or (r[6], int(r[7]), int(r[8]), int(r[11]), int(r[12])) != expected
@@ -293,7 +301,7 @@ class Run:
             source = parse_result(previous[1]['stdout'], identity, operation)
             self.check(identity)
             current = self.ctl(identity, 'result', str(source['request']))
-            result = parse_result(current['stdout'], identity, operation)
+            result = parse_result(current['stdout'], identity, operation, retained_off=True)
             if result['request'] != source['request']:
                 raise ValueError('OFF confirmation request changed')
             self.check(identity)

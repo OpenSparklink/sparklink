@@ -118,7 +118,7 @@ def corroborate_stops(run, capture):
         source, query = [run['commands'][confirmation[k]] for k in ['source_command', 'query_command']]
         prefix = [run['slctl']['path'], '--adapter', owner['path']]
         result = parse_result(source['stdout'], owner, op)
-        observed = parse_result(query['stdout'], owner, op)
+        observed = parse_result(query['stdout'], owner, op, retained_off=True)
         if (source['exit'] or query['exit'] or source['args'] != prefix+[domain, 'off']
                 or query['args'] != prefix+['result', str(result['request'])]
                 or observed['request'] != result['request']

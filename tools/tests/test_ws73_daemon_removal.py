@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 from test_ws73_daemon_hold import fixture as held_fixture
-from ws73_daemon_removal import RemovalCoordinator, RESET_OPTIONS, corroborate, verify_records
+from ws73_daemon_removal import RemovalCoordinator, RESET_OPTIONS, corroborate, verify_records, verify_sealed_record
 from ws73_diagnostic_hold import PROPERTIES, write_marker
 from ws73_target import usb_properties
 
@@ -44,6 +44,17 @@ def fixture():
 
 
 class RemovalTests(unittest.TestCase):
+    def test_final_serialized_evidence_cannot_be_erased_after_online_pass(self):
+        r, h, c, log = fixture()
+        h['host_identity_at_arm'] = dict(path='1-2.1.4', bus=1, address=124)
+        h['corroboration'] = corroborate(r, h, c, log, h['host_identity_at_arm'])
+        before = copy.deepcopy(h)
+        self.assertEqual(verify_sealed_record(r, h, c, log), h['corroboration'])
+        self.assertEqual(h, before)
+        for changes in [dict(observations=[], complete=False), dict(corroboration={})]:
+            with self.subTest(changes=changes), self.assertRaises(ValueError):
+                verify_sealed_record(r, dict(h, **changes), c, log)
+
     def test_original_cancel_then_real_error_and_peer_success_are_separate(self):
         r, h, c, log = fixture()
         proof = corroborate(r, h, c, log, dict(path='1-2.1.4', bus=1, address=124))

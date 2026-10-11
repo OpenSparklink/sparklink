@@ -333,3 +333,12 @@ def corroborate(r, host, capture, stderr, identity):
     return dict(status='DAEMON_CANCEL_REMOVAL_CORROBORATED', **wire, clocks=clocks, host_transfer_sha256=holds[0][4], host_transfer_bytes=int(holds[0][2]),
                 guest_cancel_removal_support_acceptance=True, whole_managed_acceptance=False,
                 physical_acceptance=False, automatic_fault_recovery_acceptance=False, natural_fault_root_cause_closed=False)
+
+
+def verify_sealed_record(guest, host, capture, stderr):
+    """Require independent JSON round-trip replay before publishing a PASS."""
+    guest, host = json.loads(json.dumps([guest, host]))
+    proof = corroborate(guest, host, capture, stderr, host['host_identity_at_arm'])
+    if proof != host.get('corroboration'):
+        raise ValueError('final serialized removal proof changed or is missing')
+    return proof

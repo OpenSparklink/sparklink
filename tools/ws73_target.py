@@ -760,9 +760,6 @@ def _run(args):
                     if probe.get('scan_parameter_cleanup',False) is not parameter_cleanup:raise ValueError('actual scan parameter cleanup must match requested gate')
                     m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
                     m['live_managed_partial']=file_record(share/'managed-partial/run.json')
-                if daemon_remove:
-                    from ws73_daemon_removal import RemovalCoordinator
-                    hold=RemovalCoordinator(share,m.setdefault('daemon_removal',{}))
                 if daemon_hold:
                     from ws73_daemon_hold import corroborate as corroborate_daemon
                     control=json.loads((share/'application/recovery-control/run.json').read_text())
@@ -825,6 +822,11 @@ def _run(args):
                 m['empty_bulk_completions']=len(capture['empty_bulk_completions'])
                 if getattr(args,'empty_bulk',False) and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in identities):
                     raise ValueError('successful empty bulk completions missing from either selected USB identity')
+                if daemon_remove:
+                    # Re-read the final serialized record, not the live coordinator:
+                    # later qualification must not erase/mutate earlier evidence.
+                    from ws73_daemon_removal import verify_sealed_record
+                    verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
                 m['status']='FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'

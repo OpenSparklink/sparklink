@@ -52,3 +52,8 @@ WS73 固定 1.10.111 combined 的验证。WS73 双设备回归只证明这批旧
 自动恢复、自然故障根因、部分初始化/在途 fd-close cleanup、四设备两组、连接
 socket、用户态 SSAP、安全/Agent/Bond/Profile、Proxy/PM/sandbox/发布仍按原 issue
 开放。保留历史失败和物理 xHCI warning，不据单批测试关闭完整事项。
+
+首次完整内核编译发现当前 Rust prelude 未导出 EPROTO，实际源码 fixture 的依赖
+定义未揭示这个集成错误。[失败记录](evidence/generic-firmware-kernel-build-failed-20261011.json)
+保留；修正为 canonical kernel bindings 后必须重新编译和 VM 验证，旧 image
+不能记为本提交通过。

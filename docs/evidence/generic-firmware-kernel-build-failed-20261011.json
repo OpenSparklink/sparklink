@@ -1,0 +1,53 @@
+{
+  "status": "FULL_KERNEL_BUILD_FAILED_MISSING_RUST_PRELUDE_EPROTO",
+  "kernel_head": "4216cac413294c3d3da3c78881a621b1460dab02",
+  "build": {
+    "status": "BUILD_FAILED",
+    "source_head": "4216cac413294c3d3da3c78881a621b1460dab02",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-host-config",
+      "LLVM=1",
+      "-j4",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 2,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/generic-fw-live-kernel-build.log",
+      "sha256": "af05d4afdc270ee62d6b6456b46bf2152925a261cf1b6cd2f6611e44f8e68534"
+    }
+  },
+  "development_fixture": {
+    "status": "GENERIC_USB_FIRMWARE_SOURCE_BOUNDARIES_PASS",
+    "c_cases": 69,
+    "rust_tests": 12,
+    "scope": "actual C download/sync/validator and Rust loader/prepare/probe bodies; fixture USB, allocation, request_firmware and registry dependencies; C static linkage only lifted for extraction",
+    "generic_firmware_wire_acceptance": false,
+    "native_ws73_firmware_acceptance": false,
+    "natural_fault_root_cause_closed": false,
+    "sources": {
+      "sle_usb_ffi.c": "22b9ed13e489934e841dc79c97b5867a54eb0aa4355aff0f42c79ce37ad5acb7",
+      "sle_fw.rs": "eca3c775cfed1a9d93d90d5ff639b130ff7476f5ab42e3c8bf61b78c5da202c5",
+      "sle_usb.rs": "ef4bbb100eb6455f637741cd2bf85e7d308b22e038fe3513889c1a22cb483d1b"
+    }
+  },
+  "fix_kernel_head": "7f2ba1f81ce0846608feecc21bc3af212999bfbf",
+  "real_vm_acceptance": false,
+  "generic_firmware_wire_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "goal_complete": false,
+  "scope": "Actual-body dependency fixtures passed, but real kernel build failed on unavailable Rust prelude EPROTO. Failure retained; fix uses canonical kernel bindings. No historical image relabelled as this source."
+}

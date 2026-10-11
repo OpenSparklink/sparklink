@@ -643,3 +643,19 @@ held回复/三fd/Ready同行，需真实原USB帧skip/hold/hash证明，不能�
 之前三份证据及原0x0b拒绝、捕获窗口失败、不合格构建仍保留。
 28项原scope、两个draft、自动恢复/自然超时-重枚举-消失RCA和历史xHCI warning继续OPEN；
 原生主机对照受VM-only约束未执行，完整goal active。
+
+### Ready scanning peer around never-selected queue cancellation (hardware pending)
+
+`ws73_target.py run --managed-queue-verify --managed-queue-confirmed-off
+--managed-queue-ready-peer` in the separate Setup/recovery VM gate performs two
+actual five-command bootstraps, then both target roles and all three fd cases.
+Each case starts the independently Managed peer scanner before the quiet window,
+observes its complete ownership/current On before, inside and after the FIFO
+section, and only after target Queued→Cancelled/Free issues peer STOP/START/STOP
+and releases that lease. Format 4 records preserve all actual inputs/results.
+The six quiet windows require zero DLI commands/replies/failures on either
+controller. Between windows only the exact recorded peer commands and successful
+replies are allowed; the complete bootstrap-to-final-release interval rejects
+unmatched traffic. Ordinary scheduler concurrency remains a separate gate.
+Old formats and immutable evidence remain intact. This is explicit development
+VM tooling; no production backend or success event is simulated.

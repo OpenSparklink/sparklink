@@ -53,12 +53,14 @@ def query(raw, generation, state):
 def verify_records(record):
     synthetic = record.get('synthetic_support', False)
     confirmed=record.get('confirmed_off',False)
+    ready_peer=record.get('ready_peer',False)
+    if type(ready_peer) is not bool or ready_peer and (confirmed is not True or synthetic is not False):raise ValueError('Ready peer requires real confirmed-Off queued gate')
     if type(confirmed) is not bool:raise ValueError('exact confirmed-Off scope required')
     if type(synthetic) is not bool:
         raise ValueError('exact synthetic evidence scope required')
     prefix='QUEUED_CONFIRMED_OFF_INITIALIZE_RELEASE' if confirmed else 'QUEUED_UNKNOWN_SETUP_RELEASE'
     expected_status=prefix+('_SYNTHETIC_SUPPORT_PASS' if synthetic else '_LIVE_PASS')
-    if (type(record.get('format_version')) is not int or record.get('format_version') != (3 if confirmed else 2)
+    if (type(record.get('format_version')) is not int or record.get('format_version') != (4 if ready_peer else 3 if confirmed else 2)
             or record.get('status') != expected_status
             or type(record.get('probe_exit')) is not int or record.get('probe_exit') != 0 or record.get('daemon_running') is not False
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False):
@@ -163,22 +165,28 @@ def verify_records(record):
             raise ValueError('unexpected duplicate reference')
         if v['wrong_token_errno'] != (errno.EPERM if v['case'] == 'explicit-release' else 0):
             raise ValueError('wrong token must remain rejected')
+    if ready_peer:
+        from ws73_management_queue_ready_peer import verify as verify_ready_peer
+        verify_ready_peer(record,identities)
     return identities
 
 
 def corroborate(record, capture):
-    verify_records(record)
+    snapshots=verify_records(record)
+    ready_peer=record.get('ready_peer',False)
     start = record['cases'][0]['start_wall_ns']; end = record['cases'][-1]['end_wall_ns']
     # Include gaps and both registrations, not just each release syscall.
     traffic = [v for kind in ['commands', 'complete', 'failures'] for v in capture[kind]
                if start <= v['wall_ns'] <= end]
+    if ready_peer:
+        traffic=[v for v in traffic if any(row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns'] for row in record['cases'])]
     if traffic:
         raise ValueError('untouched release emitted controller command/reply traffic')
     bootstrap=[]
     if record.get('confirmed_off',False):
         for row in record['bootstrap']:
             index=row['index']
-            if any(v['bus']==1 and v['device']==index+2 and row['end_wall_ns']<=v['wall_ns']<=end for kind in ['commands','complete','failures'] for v in capture[kind]):raise ValueError('no mutation after original confirmed-Off bootstrap permitted')
+            if not ready_peer and any(v['bus']==1 and v['device']==index+2 and row['end_wall_ns']<=v['wall_ns']<=end for kind in ['commands','complete','failures'] for v in capture[kind]):raise ValueError('no mutation after original confirmed-Off bootstrap permitted')
             snapshot=decode(SleControllerSnapshot,record['initial_snapshots'][index]);commands=[v for v in capture['commands'] if v['bus']==1 and v['device']==index+2 and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns']]
             if [v['opcode'] for v in commands]!=[0xc02,0xc05,0x1001,0x1002,0x1002]:raise ValueError('complete captured bootstrap wire order required')
             adv=bytes.fromhex(commands[0]['params'])
@@ -193,14 +201,18 @@ def corroborate(record, capture):
                 original_replies.append(replies[0]);bootstrap.append(dict(command=command,reply=replies[0]))
             all_replies=[v for v in capture['complete'] if v['bus']==1 and v['device']==index+2 and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns']]
             if original_replies!=all_replies or any(v['bus']==1 and v['device']==index+2 and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns'] for v in capture['failures']):raise ValueError('no extra or failed bootstrap reply permitted')
-    return {'bootstrap':bootstrap,'confirmed_off':record.get('confirmed_off',False),'scope': 'six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices' ,
+    peer_proof=None
+    if ready_peer:
+        from ws73_management_queue_ready_peer import corroborate as corroborate_ready_peer
+        peer_proof=corroborate_ready_peer(record,snapshots,capture,bootstrap)
+    return {'ready_peer_activity':peer_proof,'bootstrap':bootstrap,'confirmed_off':record.get('confirmed_off',False),'scope': 'six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices' ,
             'cases': 6, 'commands': 0, 'completions': 0, 'failures': 0,
             'start_wall_ns': start, 'end_wall_ns': end,
             'synthetic_support': record.get('synthetic_support', False),
             'managed_preselection_live_acceptance': False,
             'managed_unknown_setup_preselection_live_acceptance': not record.get('synthetic_support', False) and not record.get('confirmed_off',False),
             'managed_preselection_synthetic_support_acceptance': record.get('synthetic_support', False),
-            'active_ready_peer_isolation_acceptance': False,
+            'active_ready_peer_isolation_acceptance': peer_proof is not None,
             'normal_scheduler_concurrency_acceptance': False, 'setup_preserved': not record.get('confirmed_off',False),'confirmed_off_preserved':record.get('confirmed_off',False), 'peer_snapshot_preserved': True,
             'partial_initialization_cleanup_acceptance': False, 'held_transport_fd_close_acceptance': False,
             'automatic_fault_recovery_acceptance': False}
@@ -216,7 +228,9 @@ def save_record(folder, record):
 def run(args):
     synthetic = bool(getattr(args, 'synthetic_support', False))
     confirmed=bool(getattr(args,'confirmed_off',False))
+    ready_peer=bool(getattr(args,'ready_peer',False))
     cmdline = Path('/proc/cmdline').read_text().split()
+    if ready_peer!=('ws73.managed_queue_ready_peer=1' in cmdline) or ready_peer and (not confirmed or synthetic):raise ValueError('matching real confirmed-Off Ready peer boot mode required')
     if confirmed!=('ws73.managed_queue_confirmed_off=1' in cmdline):raise ValueError('explicit matching confirmed-Off boot mode required')
     if synthetic != ('ws73.managed_queue_support=1' in cmdline):
         raise ValueError('explicit matching synthetic boot and collector required')
@@ -226,10 +240,11 @@ def run(args):
     if 'ws73.managed_queue=1' not in Path('/proc/cmdline').read_text().split() or subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode == 0:
         raise ValueError('explicit VM mode before daemon startup required')
     folder = args.output; folder.mkdir(parents=True, exist_ok=False)
-    record = {'format_version': 3 if confirmed else 2,'confirmed_off':confirmed,'bootstrap':[], 'status': 'RUNNING', 'daemon_running': False,
+    record = {'format_version': 4 if ready_peer else 3 if confirmed else 2,'confirmed_off':confirmed,'bootstrap':[], 'status': 'RUNNING', 'daemon_running': False,
               'synthetic_support': synthetic,
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'initial_snapshots': [], 'cases': []}
+    if ready_peer:record.update(ready_peer=True,peer_activities=[],peer_releases=[])
     def save():
         save_record(folder, record)
     adapters = []
@@ -255,12 +270,16 @@ def run(args):
                 write_marker(folder/'metadata-0.json', {'slot': 0, 'initial_snapshot': bytes(snapshot).hex()})
         command = [str(args.probe), *[str(a.generation) for a in adapters]]
         if confirmed:command.append('--confirmed-off')
+        if ready_peer:command.append('--ready-peer')
         with (folder/'probe.jsonl').open('w') as out, (folder/'probe-stderr.txt').open('w') as err:
             p = subprocess.run(command, stdout=out, stderr=err, timeout=15)
         record['probe_exit'] = p.returncode
         lines=[json.loads(line) for line in (folder/'probe.jsonl').read_text().splitlines()]
         record['bootstrap']=[v for v in lines if v.get('bootstrap') is True]
-        record['cases']=[v for v in lines if v.get('bootstrap') is not True]
+        record['cases']=[v for v in lines if not any(v.get(k) is True for k in ['bootstrap','peer_activity','peer_release'])]
+        if ready_peer:
+            record['peer_activities']=[v for v in lines if v.get('peer_activity') is True]
+            record['peer_releases']=[v for v in lines if v.get('peer_release') is True]
         if p.returncode:
             raise ValueError('real release/last-file-close probe failed')
         record['status']=('QUEUED_CONFIRMED_OFF_INITIALIZE_RELEASE' if confirmed else 'QUEUED_UNKNOWN_SETUP_RELEASE')+('_SYNTHETIC_SUPPORT_PASS' if synthetic else '_LIVE_PASS')
@@ -278,6 +297,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--probe', type=Path, default=Path('/bin/managed-queue-probe'))
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--ready-peer',action='store_true',help='real Ready Managed scanner On across every queued cancellation')
     parser.add_argument('--confirmed-off',action='store_true',help='actual complete bootstraps before full scan initializer queue cancellation')
     parser.add_argument('--synthetic-support', action='store_true',
                         help='dedicated simulated USB VM; never live hardware acceptance')

@@ -146,7 +146,7 @@ class ParallelTests(unittest.TestCase):
 
     def test_vm_modes_reject_shared_injection_and_hotplug_before_output(self):
         import ws73_target
-        for changes in [dict(command='support'), dict(qmp_hotplug=True), dict(fault_recovery=True), dict(daemon_cancel_remove=True), dict(setup_release_verify=True)]:
+        for changes in [dict(command='support'), dict(qmp_hotplug=True), dict(fault_recovery=True), dict(daemon_cancel_remove=True), dict(setup_release_verify=True), dict(hotplug=True), dict(warm=True), dict(empty_bulk=True)]:
             with self.subTest(changes=changes), tempfile.TemporaryDirectory() as tmp:
                 output = Path(tmp)/'never-created'
                 fields = dict(command='run', output=output, parallel_pairs=True)

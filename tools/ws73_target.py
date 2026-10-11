@@ -403,7 +403,7 @@ def _run(args):
     passthrough=bool(getattr(args,'qmp_hotplug',False))
     recovery=bool(getattr(args,'fault_recovery',False))
     parallel=bool(getattr(args,'parallel_pairs',False))
-    if parallel and (support or passthrough or recovery or any(getattr(args,k,False) for k in ['event_copy_verify','diagnostic_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify'])):
+    if parallel and (support or passthrough or recovery or any(getattr(args,k,False) for k in ['hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify'])):
         raise ValueError('four-device parallel RF requires separate real VM without other gates')
     selected_count=4 if parallel else 2
     event_copy=bool(getattr(args,'event_copy_verify',False))

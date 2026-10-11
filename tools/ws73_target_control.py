@@ -57,15 +57,52 @@ class PassthroughControlRun(Run):
             raise ValueError('passthrough QMP confirmation mismatch')
 
 
+class CancelRemovalRun(PassthroughControlRun):
+    def __init__(self, args):
+        super().__init__(args)
+        from ws73_daemon_removal import RemovalSession
+        self.removal = RemovalSession(self)
+
+    def confirm(self, message):
+        if self.confirmations == 0:
+            self.removal.begin()
+            super().confirm(message)
+            self.removal.removed()
+        else:
+            super().confirm(message)
+
+    def execute(self):
+        try:
+            return super().execute()
+        finally:
+            self.removal.close()
+
+    def phase(self, a, b, count, label):
+        if label == 'replug':
+            r = self.removal.record
+            row = self.command([str(self.args.slctl), '--adapter', r['target']['path'], 'show'], 3, field='removal_retired_after_readd')
+            r['retired_after_readd'] = row
+            r['replacement'] = a
+            self.save()
+            if not row['exit'] or 'not a live registration' not in row['stderr']:
+                raise ValueError('re-added owner must not revive old selection')
+        return super().phase(a, b, count, label)
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--slctl',type=Path,required=True)
     parser.add_argument('--slkd-pid',type=int,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--passthrough',action='store_true',help='real RF, QMP guest-only disconnect; excludes physical unplug acceptance')
+    parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')
     args=parser.parse_args()
+    if args.daemon_cancel_remove and not args.passthrough:
+        parser.error('held cancellation/removal requires real passthrough mode')
     args.ports=['1-1','1-2'];args.artifact=['qmp_control='+str(Path(__file__).resolve())]
-    return (PassthroughControlRun if args.passthrough else SyntheticControlRun)(args).execute()
+    if args.daemon_cancel_remove:
+        args.artifact.append('daemon_removal='+str(Path(__file__).with_name('ws73_daemon_removal.py').resolve()))
+    return (CancelRemovalRun if args.daemon_cancel_remove else PassthroughControlRun if args.passthrough else SyntheticControlRun)(args).execute()
 
 
 if __name__=='__main__':

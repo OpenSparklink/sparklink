@@ -189,7 +189,9 @@ elif grep -q 'ws73.recovery=1' /proc/cmdline; then
     if [ -n "$daemon_hold_case" ]; then daemon_hold_arg="--daemon-hold-case $daemon_hold_case"; fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_recovery.py $daemon_hold_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/recovery-control" || fail 'artificial transport recovery control'
 elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
-    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
+    daemon_remove_arg=''
+    if grep -q 'ws73.daemon_remove=1' /proc/cmdline; then daemon_remove_arg='--daemon-cancel-remove'; fi
+    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
 else
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py instructions || fail 'physical mapping'
     # The only interactive shell is uid1000; raw capture and slkd remain root.

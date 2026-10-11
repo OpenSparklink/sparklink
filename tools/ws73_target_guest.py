@@ -305,6 +305,9 @@ def verify_passthrough():
     packets=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     if packets!=capture['packet_count']:raise ValueError('passthrough capture packet count mismatch')
     proofs=corroborate_passthrough(run,capture)
+    if 'daemon_removal' in run:
+        from ws73_daemon_removal import corroborate_wire
+        proofs.append({'daemon_cancel_removal':corroborate_wire(run['daemon_removal'],capture)})
     (EVIDENCE/'passthrough-control-proofs.json').write_text(json.dumps({
         'scope':'real WS73 RF with QMP guest-detach control support',
         'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')

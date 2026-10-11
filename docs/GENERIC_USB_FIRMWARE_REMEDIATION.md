@@ -57,3 +57,39 @@ socket、用户态 SSAP、安全/Agent/Bond/Profile、Proxy/PM/sandbox/发布仍
 定义未揭示这个集成错误。[失败记录](evidence/generic-firmware-kernel-build-failed-20261011.json)
 保留；修正为 canonical kernel bindings 后必须重新编译和 VM 验证，旧 image
 不能记为本提交通过。
+
+## 下一批调用关系清理
+
+| 类别 | 代码及调用者 | 处理与门禁 |
+|---|---|---|
+| 立即删除 | C `sle_usb_dev_register` 由实际 Rust probe 调用；descriptor 失败分支以 “test mode” 回退硬编码端点、大小和 interval | 返回真实 descriptor 错误；在分配/发布前拒绝，实际 register 依赖 fixture 验证错误和清理，再做新镜像 WS73 回归 |
+| 移入测试／已隔离 | 本批 USB、固件请求、分配、registry 注入 | 仅 selftests dependency fixture；生产不得链接模拟返回成功 |
+| 等待替代 | 有实际 probe 消费者的 loader、旧 USB backend、route/parser、global fallback 和 shared event ring | 先接通 drivers-owned backend／独立消费者和真实 Runtime 生命周期，再迁调用者和有价值测试，删除重复逻辑及未发布旧 UAPI |
+
+实际 register 只分配 event/data contexts，未提交 URB；probe 的同步 bootstrap／
+上传／再查询在 `sle_switch_controller_usb` 调用 `controller.open()` 之前。
+不能仅凭 register 分配 URB 宣称 bootstrap 已有并发收包竞态。启动后、重启和
+PM 的 IN 所有权仍需另外核对。下一批清理不能扩展本批证据范围。
+
+## 本批新镜像限定回归通过
+
+K`7f2ba1f81ce0`／编译U`ae542f568e03`修复实际C短写/最终ACK校验及Rust
+loader/probe错误传播，只有ENOENT允许使用已bootstrap固件；上传后重新查询，
+禁止发布旧身份或失败设备。[调用链、三类清单和限制](GENERIC_USB_FIRMWARE_REMEDIATION.md)
+明确Native WS73 driver未改、专用fixture不等于通用固件真实方言资格。
+69个ASan/UBSan/LSan C案例、12个严格Rust实际函数测试通过；首次缺少EPROTO
+完整编译[失败记录](evidence/generic-firmware-kernel-build-failed-20261011.json)保留，
+修正canonical binding后全内核/private modules/签名smoke通过。编译器warning0，
+GNU make一次jobserver警告；一次过早smoke在缺少私有module时退出、未创建VM，
+原日志保留，实际stage终结后才运行通过。
+
+[新镜像两个独立VM证据](evidence/ws73-vm-generic-firmware-boundaries-20261011.json)
+保留各6 Setup release/last-file/dup门禁和整个窗口零DLI，实际在途500ms超时/
+Runtime退役/稳定预算归零，以及另一VM原诊断63记录/50proof/46wire、read7/
+result16/copyout2/poll3/淘汰33/CLI4/旧注册27拒绝及queued原期限。每VM
+UID1000/caps0真实20+2，最长773/622ms，各自同RF slkd及peer不变，USB1345/
+1431、各22RX/零drop，guest warning0/taint0/traceoverrun0，结束四只释放在位。
+[精确源码CI38109661941](https://github.com/OpenSparklink/sparklink/actions/runs/38109661941)
+九作业终结成功，实际170 Rust/34 Python/228工具/32期限/10管理及新增69 C/
+12 Rust固件源码门禁。USB/HCC/DLI不等于独立PHY嗅探；hold期间同daemon未资格。
+

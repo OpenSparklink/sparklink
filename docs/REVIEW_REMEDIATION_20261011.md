@@ -507,7 +507,7 @@ dup门禁已纳入专用VM工具。Unknown/部分初始化/在途仍需真实cle
 Ready。新镜像回归未执行前不更新实机资格；自然恢复/根因和全部S0–S6仍OPEN。
 
 
-### 本批 Setup 释放限定实机复核及完整 issue 集合
+### 上批 Setup 释放限定实机复核及完整 issue 集合
 
 K`f822db7756d7`／编译U`ccb3d34ae1bc`已通过[两个新VM的6项实际文件生命周期门禁及20+2](evidence/ws73-vm-setup-release-20261011.json)，
 [完整条件和未决项](MANAGEMENT_SETUP_RELEASE.md#setup-租约释放新镜像限定通过完整生命周期仍-open)明确
@@ -522,3 +522,36 @@ transport fd-close仍OPEN。原诊断/在途期限/稳定预算、普通UID1000/
 C通用固件短传输/最终ACK、部分初始化/自然根因/无人工恢复、历史物理xHCI警告、
 完整事件/socket/SSAP/每连接安全/Bond/Profile/四设备/Native/Proxy/PM/sandbox与
 全部S0–S6继续OPEN；VM-only/北极星7/8，部分成果不关闭整项或合并draft。
+
+
+### 当前通用 USB 固件错误传播整改及新镜像回归
+
+K`7f2ba1f81ce0`／编译U`ae542f568e03`修复实际C短写/最终ACK校验及Rust
+loader/probe错误传播，只有ENOENT允许使用已bootstrap固件；上传后重新查询，
+禁止发布旧身份或失败设备。[调用链、三类清单和限制](GENERIC_USB_FIRMWARE_REMEDIATION.md)
+明确Native WS73 driver未改、专用fixture不等于通用固件真实方言资格。
+69个ASan/UBSan/LSan C案例、12个严格Rust实际函数测试通过；首次缺少EPROTO
+完整编译[失败记录](evidence/generic-firmware-kernel-build-failed-20261011.json)保留，
+修正canonical binding后全内核/private modules/签名smoke通过。编译器warning0，
+GNU make一次jobserver警告；一次过早smoke在缺少私有module时退出、未创建VM，
+原日志保留，实际stage终结后才运行通过。
+
+[新镜像两个独立VM证据](evidence/ws73-vm-generic-firmware-boundaries-20261011.json)
+保留各6 Setup release/last-file/dup门禁和整个窗口零DLI，实际在途500ms超时/
+Runtime退役/稳定预算归零，以及另一VM原诊断63记录/50proof/46wire、read7/
+result16/copyout2/poll3/淘汰33/CLI4/旧注册27拒绝及queued原期限。每VM
+UID1000/caps0真实20+2，最长773/622ms，各自同RF slkd及peer不变，USB1345/
+1431、各22RX/零drop，guest warning0/taint0/traceoverrun0，结束四只释放在位。
+[精确源码CI38109661941](https://github.com/OpenSparklink/sparklink/actions/runs/38109661941)
+九作业终结成功，实际170 Rust/34 Python/228工具/32期限/10管理及新增69 C/
+12 Rust固件源码门禁。USB/HCC/DLI不等于独立PHY嗅探；hold期间同daemon未资格。
+
+下一批立即删除实际generic USB register描述符失败“test mode”硬编码端点fallback，
+返回真实错误、实际register fixture和新镜像回归；register本身仅分配URB不提交，
+不能据此虚构bootstrap并发竞态。有真实调用者的loader/backend/parser/全局fallback/
+shared ring等待新路径接通及调用者迁移后删除，未发布UAPI直接弃用。并行推进
+WS73 partial/unknown初始化真实cleanup、held transport last-file-close/drain、
+有限恢复和自然RCA。完整分层/socket/SSAP/每连接安全/Agent/Bond/Profile/四设备
+两组/其他Native/Proxy/PM/sandbox/发布及全部S0–S6保持；最新附件SHA与已采纳决策
+相同。实际开放集合28（K19/U9），原scope不改；VM-only/北极星7/8，自然故障根因、
+无人工拔插恢复、历史物理xHCI warning继续OPEN，不关闭整项、不合并draft。

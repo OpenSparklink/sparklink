@@ -11,6 +11,7 @@ import errno
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 import time
 
@@ -71,6 +72,10 @@ def verify_records(record):
             or record.get('automatic_fault_recovery_acceptance') is not False
             or record.get('daemon_running_during_hold') is not False):
         raise ValueError('limited pre-daemon active retirement format required')
+    if (record.get('initializer_method') != 'EXISTING_SLKD_MANAGED_STANDBY'
+            or type(record.get('initializer_pid')) is not int or not 1 < record['initializer_pid'] < 1 << 32
+            or type(record.get('initializer_exit')) is not int or record['initializer_exit'] != 0):
+        raise ValueError('existing initializer daemon must exit before the held gate')
     target = _decode(SleControllerSnapshot, record['target_snapshot'])
     peers = [_decode(SleControllerSnapshot, v) for v in record['peer_snapshots']]
     if (target.version != 1 or target.flags != 1 or target.profile != 1 or target.valid_fields != 1 or target.dev_index != 0
@@ -194,9 +199,22 @@ def corroborate(record, host, capture, stderr, kernel_log, owner, peer, host_own
     if len(timeouts) != 1 or sum(timeouts[0] <= v <= last for v in retirements) != 1:
         raise ValueError('causal target Host timeout and native retirement during passive wait required')
     from ws73_capture import command_reply
-    initialization_proofs = [[command_reply(capture, identity, opcode, row['start_wall_ns'], row['end_wall_ns'], b'\0')
-                              for opcode in [0x0c05,0x1002]]
-                             for identity,row in zip([owner,peer],record['initializations'])]
+    initialization_proofs = []
+    for identity,row in zip([owner,peer],record['initializations']):
+        proofs = []
+        for opcode,params in [(0x0c02,None),(0x0c05,'0000000000'),(0x1001,'0000010040062003'),(0x1002,'0100'),(0x1002,'0000')]:
+            candidates = [c for c in capture['commands'] if (c['bus'],c['device'],c['opcode']) ==
+                          (identity['bus'],identity['device'],opcode) and row['start_wall_ns'] <= c['wall_ns'] <= row['end_wall_ns']
+                          and (params is None or c['params']==params)]
+            if len(candidates)!=1: raise ValueError('one real canonical initializer recipe step required')
+            command=candidates[0]
+            following=[c['wall_ns'] for c in capture['commands'] if (c['bus'],c['device'],c['opcode']) ==
+                       (identity['bus'],identity['device'],opcode) and command['wall_ns'] < c['wall_ns'] <= row['end_wall_ns']]
+            end=min(following)-1 if following else row['end_wall_ns']
+            filtered=dict(capture,commands=[command])
+            proofs.append(command_reply(filtered,identity,opcode,command['wall_ns'],end,
+                                        None if params is None else bytes.fromhex(params)))
+        initialization_proofs.append(proofs)
     peer_proofs = [command_reply(capture, peer, 0x0406, q['start_wall_ns'], q['end_wall_ns'], b'',
                                 bytes(_decode(SleControllerSnapshot, record['peer_snapshots'][0]).address).hex())
                    for q in record['peer_queries']]
@@ -233,6 +251,7 @@ def run(args):
         record['guest_ack_receipts'].append({'stage':ack,'wall_ns':time.time_ns(),'monotonic_ns':time.monotonic_ns()})
         record['host_hold_acknowledgements'].append(response); save()
     adapters = []
+    initializer = None
     try:
         for index in [0, 1]:
             deadline = time.monotonic()+90
@@ -242,23 +261,7 @@ def run(args):
                 try:
                     adapter = NativeAdapter(index); snapshot = adapter.snapshot()
                     if snapshot.valid_fields == 1 and snapshot.profile == 1 and snapshot.flags != 4:
-                        # Fresh registration publishes Setup. The real two
-                        # initialization stops are committed by Managed release;
-                        # waiting for Ready before that would never progress.
-                        initialization_deadline = time.monotonic()+6
-                        initialization = {'initial_snapshot':bytes(snapshot).hex(),'start_wall_ns':time.time_ns()}
-                        while True:
-                            try: lease = adapter.acquire_management(1); break
-                            except OSError as error:
-                                if error.errno not in (errno.EAGAIN,errno.EBUSY) or time.monotonic()>initialization_deadline: raise
-                                time.sleep(0.01)
-                        adapter.release_management(lease,1)
-                        while adapter.management_status().state != 0 or adapter.snapshot().flags != 1:
-                            if time.monotonic()>initialization_deadline: raise TimeoutError('real initialization stops did not settle Ready/Free')
-                            time.sleep(0.01)
-                        snapshot = adapter.snapshot()
-                        initialization.update(ready_snapshot=bytes(snapshot).hex(),end_wall_ns=time.time_ns())
-                        record['initializations'].append(initialization)
+                        record['initializations'].append({'initial_snapshot':bytes(snapshot).hex()})
                         ready = True
                         break
                 except OSError as error:
@@ -269,9 +272,24 @@ def run(args):
                 time.sleep(0.01)
             adapters.append(adapter)
             if index == 0:
-                record['target_snapshot'] = bytes(snapshot).hex()
-                print('WS73_TARGET_READY: slot=0', flush=True)
-            else: record['peer_snapshots'].append(bytes(snapshot).hex())
+                print('WS73_TARGET_ACTIVE_METADATA: slot=0', flush=True)
+        for row in record['initializations']: row['start_wall_ns']=time.time_ns()
+        with (folder/'initializer.log').open('wb') as log:
+            initializer=subprocess.Popen(['/bin/slkd','--storage','/tmp/active-init-bonds','-n'],stdout=log,stderr=subprocess.STDOUT)
+            record.update(initializer_method='EXISTING_SLKD_MANAGED_STANDBY',initializer_pid=initializer.pid);save()
+            deadline=time.monotonic()+20
+            while not all(adapter.snapshot().flags==1 for adapter in adapters):
+                if initializer.poll() is not None or time.monotonic()>deadline: raise TimeoutError('existing slkd did not initialize both actual Ready controllers')
+                time.sleep(0.01)
+            initializer.terminate();record['initializer_exit']=initializer.wait(timeout=10)
+        for adapter,row in zip(adapters,record['initializations']):
+            deadline=time.monotonic()+6
+            while adapter.management_status().state!=0:
+                if time.monotonic()>deadline: raise TimeoutError('initializer did not relinquish Managed ownership')
+                time.sleep(0.01)
+            row.update(ready_snapshot=bytes(adapter.snapshot()).hex(),end_wall_ns=time.time_ns())
+        record['target_snapshot']=record['initializations'][0]['ready_snapshot']
+        record['peer_snapshots'].append(record['initializations'][1]['ready_snapshot'])
         target, peer = adapters
         leases = [a.acquire_management(2) for a in adapters]
         def query_peer(request_id):
@@ -314,6 +332,10 @@ def run(args):
     except BaseException as error:
         record.update(status='FAIL', error=str(error)); save(); raise
     finally:
+        if initializer is not None and initializer.poll() is None:
+            initializer.terminate()
+            try: initializer.wait(timeout=5)
+            except subprocess.TimeoutExpired: initializer.kill();initializer.wait(timeout=5)
         for adapter in reversed(adapters): adapter.close()
 
 

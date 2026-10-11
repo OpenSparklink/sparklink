@@ -516,7 +516,7 @@ def _run(args):
                                        **{'runtime-idle-scan-stop':True}, **({'runtime-warm':True} if getattr(args,'warm',False) else {}))
                             if passthrough:props=usb_properties(args.ports[0],0)
                             monitor.execute('device_add',props);channel.sendall((acknowledgement+'-readd\n').encode());hotplug_phase=2
-                    if active<2 and ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text:
+                    if active<2 and ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_ACTIVE_METADATA: slot=0' if active_gate else 'WS73_TARGET_READY: slot=0') in text:
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                     **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),

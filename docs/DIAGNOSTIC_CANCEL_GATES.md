@@ -316,3 +316,12 @@ active请求。源码说明fresh Runtime先发布Setup，需真实lease release�
 取得Diagnostic做元数据请求；生产行为保持正确角色边界，不为测试改变它。
 前文“Diagnostic初始化lease release会生成stop”的假设撤回。后续必须实际核对
 四组stop wire和Ready，不能从请求成功或Free推导Ready。
+
+第三轮[真实早期Managed释放失败](evidence/ws73-vm-uninitialized-managed-release-failed-20261011.json)
+捕获到0C05/`0000000000`和真实固件status`0x1e`；随后Runtime以-EIO退役，仍未
+进入暂留。仅直接release也不能作为初始化路径；早期释放的精确状态含义/安全
+清理/有限恢复需另行整改，继续OPEN。新门禁改为复用已有slkd的完整configure-off
+初始化，两个Setup转Ready后终结这个独立初始化进程，再取得Diagnostic。主RF
+测试daemon随后才启动；不宣称整个暂留阶段同daemon连续，也不把测试初始化方式
+当作上述生产生命周期问题的修复。初始化十组真实wire含配置、广播off、scan on/off
+必须核对。正常运行的RF daemon仍需20+2同PID，原完整诊断门禁另跑新VM回归。

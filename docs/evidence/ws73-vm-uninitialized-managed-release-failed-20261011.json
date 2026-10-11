@@ -1,0 +1,81 @@
+{
+  "status": "FAILED_UNINITIALIZED_MANAGED_RELEASE_REAL_STATUS_1E",
+  "kernel_head": "016aa7ee68130076d692366eceaafeb815003099",
+  "compiled_userspace_head": "86c969f9dff5fcd9e95010d7dda0dbd04484c090",
+  "started_at": "2026-10-11T02:01:56.635200+00:00",
+  "finished_at": "2026-10-11T02:03:46.189848+00:00",
+  "probe": {
+    "format_version": 1,
+    "status": "FAIL",
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "daemon_running_during_hold": false,
+    "host_hold_acknowledgements": [],
+    "guest_ack_receipts": [],
+    "markers": [],
+    "peer_queries": [],
+    "peer_snapshots": [],
+    "initializations": [],
+    "error": "independent metadata availability"
+  },
+  "hold": {
+    "method": "QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT",
+    "observations": [],
+    "complete": false,
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false
+  },
+  "actual_stop": {
+    "command": {
+      "bus": 1,
+      "device": 2,
+      "wall_ns": 1791684134319327000,
+      "urb": 18446619643227120576,
+      "record": 184,
+      "file_offset": 18150,
+      "usb_sha256": "c897bed53fe1c3583cca9b6be2dd20c283ff0e8ca8ca866c303fb5bdd850fca5",
+      "opcode": 3077,
+      "params": "0000000000",
+      "sequence": 12,
+      "completion": {
+        "bus": 1,
+        "device": 2,
+        "wall_ns": 1791684134319621000,
+        "urb": 18446619643227120576,
+        "record": 185,
+        "file_offset": 18358
+      }
+    },
+    "reply": {
+      "bus": 1,
+      "device": 2,
+      "wall_ns": 1791684134319983000,
+      "urb": 18446619644177201984,
+      "record": 186,
+      "file_offset": 18438,
+      "hcc_offset": 92,
+      "usb_sha256": "a74088009f0e6c47c2fac741944c4e73631276e49a2f38f68bbb78deaf180161",
+      "usb_length": 178,
+      "opcode": 3077,
+      "status": 30,
+      "value": ""
+    }
+  },
+  "scope": "Before any held test, release of a fresh Managed lease issued a bare advertising stop; real firmware replied status0x1e and Runtime retired with-EIO. Its precise firmware meaning and safe bounded early-release recovery remain open. Next hold test uses the already validated slkd configure-off initialization, terminated before Diagnostic admission; this does not repair or close the earlier lifecycle issue.",
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "active_usb_deadline_live_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "host_installation": false,
+  "manual_replug_used": false,
+  "console_warnings": "DRM vblank warnings preserved in failed shutdown transcript; separate from historical xHCI failure",
+  "artifact_sha256": {
+    "manifest.json": "ab36c568e72e5a9a1207c08a8291686166fd119cf8e4e26bdecce72aadaa0e6a",
+    "console.log": "a70d1a884535589373c49a139b2c4ac2224002a6e171edca2d59e4c6b17236c2",
+    "qemu-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qmp.jsonl": "35090110e55363afe2379e3af7ae0293bca4729e0f4224d2b7977e45be5281b0",
+    "guest-output/active-deadline-supervisor.log": "1fe0372f525d1cf1fac21a38631e8d52c32d5bb2b9072f242dd93ca06f5645f2",
+    "guest-output/kernel.log": "701d22b78c71e658d871f42962962157eac27f65abcb0092206c4b7d8c4b57ec",
+    "guest-output/ws73.pcap": "b05b9d379b132cd4471089da4c2c1849f24d509225c036a8501a1bafa6cdd448"
+  }
+}

@@ -35,8 +35,8 @@ def fixture():
     for i,snapshot in enumerate([target,peer]):
         initial=SleControllerSnapshot.from_buffer_copy(bytes(snapshot));initial.flags=2
         initializations.append({'initial_snapshot':bytes(initial).hex(),'ready_snapshot':bytes(snapshot).hex(),
-                                'start_wall_ns':1+i*3,'end_wall_ns':3+i*3})
-    for i, (start, end) in enumerate([(10,90),(320,400)]):
+                                'start_wall_ns':1+i*20,'end_wall_ns':20+i*20})
+    for i, (start, end) in enumerate([(50,90),(320,400)]):
         output = SleDiagnosticSubmit(version=1, generation=2, request_id=i+1, timeout_ms=5000,
                                      opcode=0x0406, seq=i+1, action=1)
         result = SleDiagnosticResult(version=1, generation=2, seq=i+1, state=2, opcode=0x0406, data_len=6)
@@ -44,6 +44,7 @@ def fixture():
         queries.append({'output':bytes(output).hex(),'result':bytes(result).hex(),'start_wall_ns':start,'end_wall_ns':end})
     return {'format_version':1,'status':'ACTIVE_DEADLINE_PRE_DAEMON_PASS','physical_acceptance':False,
             'automatic_fault_recovery_acceptance':False,'daemon_running_during_hold':False,
+            'initializer_method':'EXISTING_SLKD_MANAGED_STANDBY','initializer_pid':50,'initializer_exit':0,
             'target_snapshot':bytes(target).hex(),'peer_snapshots':[bytes(peer).hex()]*2,
             'input':original,'output':bytes(command).hex(),'initial_result':bytes(pending).hex(),
             'submit_before_monotonic_ns':1_000_000_000,'submit_after_monotonic_ns':1_001_000_000,
@@ -123,27 +124,20 @@ class ActiveDeadlineTests(unittest.TestCase):
         record=fixture();host={'method':'QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT','complete':True,
                                'observations':copy.deepcopy(record['host_hold_acknowledgements'])}
         capture={'commands':[],'reports':[],'complete':[]}
-        for device,first in [(1,1),(2,4)]:
-            for opcode in [0x0c05,0x1002]:
-                ordinal=len(capture['commands'])*2+10
-                capture['commands'].append({'bus':1,'device':device,'opcode':opcode,'params':'00',
-                                            'wall_ns':first,'record':ordinal,'completion':{'wall_ns':first+1}})
-                capture['complete'].append({'bus':1,'device':device,'opcode':opcode,'status':0,
-                                            'wall_ns':first+1,'record':ordinal+1,'value':''})
         with self.assertRaises(ValueError):corroborate(record,host,capture,'','',{'bus':1,'device':1},{'bus':1,'device':2},{'bus':9,'address':101})
 
     def test_wire_verifier_requires_single_target_out_peer_pairs_and_no_late_payload(self):
         record=fixture();host={'method':'QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT','complete':True,
                                'observations':copy.deepcopy(record['host_hold_acknowledgements'])}
         capture={'commands':[],'reports':[],'complete':[]}
-        for device,first in [(1,1),(2,4)]:
-            for opcode in [0x0c05,0x1002]:
-                ordinal=len(capture['commands'])*2+10
-                capture['commands'].append({'bus':1,'device':device,'opcode':opcode,'params':'00',
-                                            'wall_ns':first,'record':ordinal,'completion':{'wall_ns':first+1}})
+        for device,first in [(1,1),(2,21)]:
+            for j,(opcode,params) in enumerate([(0x0c02,'abcd'),(0x0c05,'0000000000'),(0x1001,'0000010040062003'),(0x1002,'0100'),(0x1002,'0000')]):
+                stamp=first+3*j;ordinal=len(capture['commands'])*2+10
+                capture['commands'].append({'bus':1,'device':device,'opcode':opcode,'params':params,
+                                            'wall_ns':stamp,'record':ordinal,'completion':{'wall_ns':stamp+1}})
                 capture['complete'].append({'bus':1,'device':device,'opcode':opcode,'status':0,
-                                            'wall_ns':first+1,'record':ordinal+1,'value':''})
-        for device,start,finish,ordinal in [(1,180,185,3),(2,30,40,1),(2,330,340,5)]:
+                                            'wall_ns':stamp+2,'record':ordinal+1,'value':''})
+        for device,start,finish,ordinal in [(1,180,185,3),(2,60,70,1),(2,330,340,5)]:
             capture['commands'].append({'bus':1,'device':device,'opcode':0x0406,'params':'',
                                         'wall_ns':start,'record':ordinal,'completion':{'wall_ns':finish}})
             if device==2:capture['complete'].append({'bus':1,'device':2,'opcode':0x0406,'status':0,

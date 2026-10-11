@@ -1,5 +1,9 @@
 # 每设备 WS73 发现策略
 
+最新生产 U7b1bd0464ec9 的默认真实RF22保持通过；四设备功率0首轮仍超时，
+初始化出处与失败清理的限定实机范围通过。策略与硬件状态仍分别查询，出处
+不改写为新STOP，详见[初始化OFF边界与receipt](WS73_INITIALIZATION_OFF.md)。
+
 策略格式 v3 将请求参数保存在每个查询得到的 WS73 注册对象上。Setup 的
 configure-OFF/scan-initialize-OFF 和后续 START 使用同一份不可变策略。
 角色交换、取消/reacquire 不改变它；新注册重新按查询得到的地址选择配置。

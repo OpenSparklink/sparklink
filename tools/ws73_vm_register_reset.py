@@ -81,6 +81,15 @@ def run(args):
             record['guest_usb_reset_before_read_wall_ns']=time.time_ns();save()
             fcntl.ioctl(fd,0x5514)
             record['guest_usb_reset_returned_wall_ns']=time.time_ns();save()
+        if args.sdk_wakeup_before_read:
+            if 'ws73.register_wakeup_lab=1' not in Path('/proc/cmdline').read_text().split():
+                raise ValueError('explicit SDK USB wakeup maintenance boot required')
+            wake=ctypes.create_string_buffer(bytes(4))
+            request=Control(0x21,2,0,0,4,2000,ctypes.addressof(wake))
+            record['sdk_wakeup_before_wall_ns']=time.time_ns();save()
+            count=fcntl.ioctl(fd,0xc0185500,bytearray(bytes(request)))
+            record.update(sdk_wakeup_returned=count,sdk_wakeup_after_wall_ns=time.time_ns());save()
+            if count!=4:raise ValueError('complete SDK DISALLOW_TO_SLEEP control required')
         fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
         def transfer(endpoint,data,length=None):
             buffer=ctypes.create_string_buffer(data if isinstance(data,bytes) else data)
@@ -89,17 +98,23 @@ def run(args):
             if fcntl.ioctl(fd,0xc0185502,bytearray(bytes(x)))!=size:raise ValueError('short register USB transfer')
             return buffer.raw[:size]
         transfer(2,setup_packet(False));raw=transfer(130,4);value=checked_reset_value(raw)
-        record.update(register_before=raw.hex(),register_write=value.to_bytes(4,'little').hex());save()
-        transfer(2,setup_packet(True))
-        try:transfer(2,value.to_bytes(4,'little'))
-        except OSError as error:
-            # A reset may interrupt its own data completion. Record the error;
-            # only exact subsequent boot-mode re-enumeration can qualify it.
-            record['write_errno']=error.errno;save()
-        os.close(fd);fd=None
-        interface,device=wait_interface(2,15)
-        record.update(boot_mode_observed_wall_ns=time.time_ns(),boot_device=int((device/'devnum').read_text()))
+        record['register_before']=raw.hex()
+        if not args.sdk_wakeup_before_read:record['register_write']=value.to_bytes(4,'little').hex()
         save()
+        if not args.sdk_wakeup_before_read:
+            transfer(2,setup_packet(True))
+            try:transfer(2,value.to_bytes(4,'little'))
+            except OSError as error:
+                # A reset may interrupt its own data completion. Record the error;
+                # only exact subsequent boot-mode re-enumeration can qualify it.
+                record['write_errno']=error.errno;save()
+            os.close(fd);fd=None
+            interface,device=wait_interface(2,15)
+            record.update(boot_mode_observed_wall_ns=time.time_ns(),boot_device=int((device/'devnum').read_text()))
+            save()
+        else:
+            record.update(register_write_not_requested=True,wakeup_only_experiment=True);save()
+            os.close(fd);fd=None
         subprocess.run(['/bin/sh','/native-ws73-module.sh'],check=True)
         sys.path.insert(0,'/usr/share/sparklink/python')
         from sparklink.native import NativeAdapter
@@ -116,7 +131,7 @@ def run(args):
                 if adapter is not None:adapter.close()
             if time.monotonic()>deadline:raise TimeoutError('real rebootstrap Setup metadata')
             time.sleep(.02)
-        record.update(status='VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS',finished_wall_ns=time.time_ns());save()
+        record.update(status='VM_SDK_WAKEUP_RUNTIME_SETUP_PASS' if args.sdk_wakeup_before_read else 'VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS',finished_wall_ns=time.time_ns());save()
     except BaseException as error:
         record.update(status='FAIL',error=str(error),error_type=type(error).__name__,errno=getattr(error,'errno',None));save();raise
     finally:
@@ -124,4 +139,4 @@ def run(args):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');run(p.parse_args())
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');run(p.parse_args())

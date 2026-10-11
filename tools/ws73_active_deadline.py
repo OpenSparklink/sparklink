@@ -335,6 +335,10 @@ def run(args):
         marker('wait_held', 'held')
         record['quiet_before_monotonic_ns'] = time.monotonic_ns()
         marker('abort_ready', 'aborted')  # passive filesystem/QMP wait: no ioctl can expire the author
+        # The QEMU cancellation ack can precede the driver's joined-retirement
+        # log by a few milliseconds. Keep observing passively before any ioctl;
+        # capture corroboration still requires the real log inside this window.
+        time.sleep(0.05)
         record['quiet_after_monotonic_ns'] = time.monotonic_ns()
         retry = SleDiagnosticSubmit.from_buffer_copy(bytes.fromhex(record['input']))
         record['retired_submit_input'] = bytes(retry).hex()

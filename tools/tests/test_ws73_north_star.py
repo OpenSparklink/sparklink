@@ -68,8 +68,8 @@ def output_result(d,op,request):
     return f'NativeOperationResult: generation={d["generation"]} request={request} operation={op} state=3 errno=0 status=0x00 opcode=0x{details[op]} profile=1\n'
 
 
-def fixture():
-    a,b,new=identity(1),identity(2),identity(3)
+def fixture(marker_base=0, identity_factory=identity):
+    a,b,new=identity_factory(1),identity_factory(2),identity_factory(3)
     new['observed_wall_ns']=8_900_000_000
     run={'format_version':1,'scope':'physical','status':'CONTROL_PASS_EVIDENCE_PENDING',
          'application_identity':{'uids':[1000]*4,'cap_eff':'0','cap_prm':'0','cap_amb':'0'},'daemon_before':{'pid':100,'start_ticks':20},
@@ -87,7 +87,7 @@ def fixture():
             records.append((1,d['device'],moment,aggregate(data),'C',0x81,0))
     for phase,count,tx,rx in [('initial',20,a,b),('replug',2,new,b)]:
         for n in range(1,count+1):
-            marker=f'{len(run["rounds"])+1:032x}'
+            marker=f'{marker_base+len(run["rounds"])+1:032x}'
             payload=report_payload(marker,tx['address']);seq=seqs.get(rx['generation'],0)+1;seqs[rx['generation']]=seq
             match={'generation':rx['generation'],'seq':seq,'address':tx['address'],'rssi':-42,'marker':marker,'data':marker_data(marker).hex(),'kernel_boottime_ns':start+50_000_000,'elapsed_ms':50,'lost':0}
             text=(f'NativeDiscoveryMatch: generation={rx["generation"]} seq={seq} address={tx["address"]} RSSI=-42 marker={marker} data={match["data"]} kernel_boottime_ns={start+50_000_000} elapsed_ms=50 lost=0\n')

@@ -104,7 +104,7 @@ def prepare(args):
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
                   HERE/'ws73_vm_native_root.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
-                  HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',
+                  HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
                   HERE/'ws73_target_control.py',
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
@@ -194,7 +194,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -402,6 +402,10 @@ def _run(args):
     support=args.command=='support'
     passthrough=bool(getattr(args,'qmp_hotplug',False))
     recovery=bool(getattr(args,'fault_recovery',False))
+    parallel=bool(getattr(args,'parallel_pairs',False))
+    if parallel and (support or passthrough or recovery or any(getattr(args,k,False) for k in ['event_copy_verify','diagnostic_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify'])):
+        raise ValueError('four-device parallel RF requires separate real VM without other gates')
+    selected_count=4 if parallel else 2
     event_copy=bool(getattr(args,'event_copy_verify',False))
     diagnostic=bool(getattr(args,'diagnostic_verify',False))
     cancellation=bool(getattr(args,'diagnostic_cancel_verify',False))
@@ -466,6 +470,8 @@ def _run(args):
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
     m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py')]
+    m['four_device_parallel_rf']=parallel
+    if parallel:m['parallel_verifier']=file_record(HERE/'ws73_parallel.py')
     m['qmp_guest_hotplug']=passthrough
     m['artificial_guest_transport_fault']=recovery
     m['live_event_copy_requested']=event_copy
@@ -504,6 +510,8 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if parallel and 'native_vm' not in package:
+            raise ValueError('four-device gate requires qualified scratch-root native VM')
         if event_copy and 'event_copy_probe_compile' not in package:
             raise ValueError('prepared VM does not contain the frozen live copy probe')
         if event_copy and 'native_vm' not in package:
@@ -522,7 +530,7 @@ def _run(args):
             m['usb_host_boundary']=usb_host_boundary(package['qemu']['path'])
             if not m['usb_host_boundary']['supported']:
                 raise ValueError('QEMU lacks required USB host opt-outs; build the pinned patched QEMU before physical passthrough')
-            if len(set(args.ports))!=2:raise ValueError('two distinct physical ports required')
+            if len(args.ports)!=selected_count or len(set(args.ports))!=selected_count:raise ValueError('exact distinct physical port count required')
             for index,port in enumerate(args.ports):
                 usb_properties(port,index)
                 if port not in devices or not devices[port]['writable']:raise ValueError(port+': writable WS73 required; no host permission changes')
@@ -539,6 +547,7 @@ def _run(args):
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
                      '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+(' ws73.support=1' if support else '')+
                      (' ws73.passthrough=1' if passthrough else '')+
+                     (' ws73.parallel=1' if parallel else '')+
                      (' ws73.daemon_remove=1' if daemon_remove else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
@@ -610,7 +619,7 @@ def _run(args):
                     if time.monotonic()>deadline:
                         if timeout_seal is not None:
                             raise ValueError('environment timeout; graceful capture sealing deadline exceeded')
-                        if support or passthrough or recovery:
+                        if support or passthrough or recovery or parallel:
                             raise ValueError('environment timeout; preserve partial console/capture')
                         timeout_seal=SerialTimeoutSeal(transcript)
                         m['graceful_timeout']={'reason':'ENVIRONMENT_TIMEOUT','state':timeout_seal.phase,
@@ -619,13 +628,13 @@ def _run(args):
                         if timeout_seal.initial_input:channel.sendall(timeout_seal.initial_input)
                         deadline=time.monotonic()+30
                         write_json(output/'manifest.json',m)
-                    readers=[channel]+([] if support or passthrough or recovery or timeout_seal is not None else [sys.stdin])
+                    readers=[channel]+([] if support or passthrough or recovery or parallel or timeout_seal is not None else [sys.stdin])
                     readable,_,_=select.select(readers,[],[],0.1)
                     if channel in readable:
                         data=channel.recv(65536)
                         if data:
                             log.write(data);log.flush();transcript.extend(data);sys.stdout.buffer.write(data);sys.stdout.buffer.flush()
-                    if not support and not passthrough and not recovery and timeout_seal is None and sys.stdin in readable:
+                    if not support and not passthrough and not recovery and not parallel and timeout_seal is None and sys.stdin in readable:
                         data=os.read(sys.stdin.fileno(),4096)
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
@@ -679,7 +688,7 @@ def _run(args):
                     elif active_gate and active == 1:
                         from ws73_active_deadline import metadata_ready
                         peer_metadata = metadata_ready(share)
-                    if active<2 and (peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text):
+                    if active<selected_count and (peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else f'WS73_TARGET_READY: slot={active-1}') in text):
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                     **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
@@ -713,11 +722,12 @@ def _run(args):
                             or not re.search(r'^Uid:\s+0\s+0\s+0\s+0$', status, re.M)):
                         raise ValueError('native module VM daemon is not root')
                 if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
-                if not support and not passthrough and not recovery and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
+                if not support and not passthrough and not recovery and not parallel and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
                 if passthrough and 'WS73_TARGET_PASSTHROUGH_SUPPORT: PASS' not in text:raise ValueError('QMP passthrough proof missing')
                 if recovery and (hotplug_phase!=1 or 'WS73_TARGET_RECOVERY_SUPPORT: PASS' not in text):
                     raise ValueError('artificial transport recovery proof missing')
-                identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(2)]
+                if parallel and 'WS73_TARGET_PARALLEL_RF: PASS' not in text:raise ValueError('four-device parallel USB proof missing')
+                identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(selected_count)]
                 if getattr(args,'hotplug',False) or passthrough:
                     if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
                     pattern=r'^WS73_TARGET_PASSTHROUGH_(REMOVE|READD)_READY$' if passthrough else r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$'
@@ -741,6 +751,11 @@ def _run(args):
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
                 if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
                 m['capture_packets']=packets;m['guest_identities']=identities
+                if parallel:
+                    from ws73_parallel import corroborate as corroborate_parallel
+                    control=json.loads((share/'application/parallel-control/run.json').read_text())
+                    m['parallel_corroboration']=corroborate_parallel(control,capture)
+                    m['parallel_control']=file_record(share/'application/parallel-control/run.json')
                 if daemon_remove:
                     from ws73_daemon_removal import corroborate as corroborate_removal
                     m['daemon_removal']['corroboration']=corroborate_removal(control['daemon_removal'],hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
@@ -827,11 +842,13 @@ def _run(args):
                     # later qualification must not erase/mutate earlier evidence.
                     from ws73_daemon_removal import verify_sealed_record
                     verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']='FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='FOUR_DEVICE_PARALLEL_RF_PASS' if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
                     m['error']='environment timeout; capture sealed; physical control not accepted'
+        if parallel and file_record(HERE/'ws73_parallel.py')!=m['parallel_verifier']:
+            raise ValueError('parallel verifier changed during run')
         prepared(args.prepared.resolve())
         if queue_peer and file_record(HERE/'ws73_management_queue_ready_peer.py')!=m['managed_queue_ready_peer_verifier']:
             raise ValueError('Ready queue peer verifier changed during run')
@@ -874,7 +891,7 @@ def _run(args):
             m['vm_disk_after'] = file_record(output/'root.btrfs')
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
-    return 0 if m['status'] in ['SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','ENVIRONMENT_FINISHED'] else 1
+    return 0 if m['status'] in ['SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','ENVIRONMENT_FINISHED'] else 1
 
 
 def run(args):
@@ -899,7 +916,8 @@ def main():
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
-            cmd.add_argument('--ports',nargs=2,required=True)
+            cmd.add_argument('--ports',nargs='+',required=True)
+            cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--daemon-hold-case',choices=['supersede','caller-exit','cancel-caller-exit','cancel-busy'],help='ordinary D-Bus callers cancel an original successful held reply with same daemon and active peer')
             cmd.add_argument('--managed-ordinary-eviction',action='store_true',help='two SCHED_OTHER ioctl submitters and terminal result eviction under actual held first reply; separate Ready-peer VM gate')

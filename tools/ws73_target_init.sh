@@ -172,10 +172,12 @@ fi
 if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline && ! grep -q 'ws73.setup_release=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
 fi
-/bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready 0 || fail 'first independent Ready'
-echo 'WS73_TARGET_READY: slot=0'
-/bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready 1 || fail 'second independent Ready'
-echo 'WS73_TARGET_READY: slot=1'
+last_slot=1
+if grep -q 'ws73.parallel=1' /proc/cmdline; then last_slot=3; fi
+for slot in $(seq 0 $last_slot); do
+    /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready "$slot" || fail "independent Ready slot=$slot"
+    echo "WS73_TARGET_READY: slot=$slot"
+done
 cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'daemon process credentials'
 if grep -q 'ws73.event_copy=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_event_copy_probe.py --probe /bin/event-copy-probe --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/event-copy" || fail 'live event copy fault gate'
@@ -188,6 +190,8 @@ elif grep -q 'ws73.recovery=1' /proc/cmdline; then
     daemon_hold_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.daemon_hold=/){sub(/^ws73.daemon_hold=/,"",$i);print $i}}' /proc/cmdline)
     if [ -n "$daemon_hold_case" ]; then daemon_hold_arg="--daemon-hold-case $daemon_hold_case"; fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_recovery.py $daemon_hold_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/recovery-control" || fail 'artificial transport recovery control'
+elif grep -q 'ws73.parallel=1' /proc/cmdline; then
+    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_parallel.py run --ports 1-1 1-2 1-3 1-4 --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/parallel-control" || fail 'four-device parallel control'
 elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     daemon_remove_arg=''
     if grep -q 'ws73.daemon_remove=1' /proc/cmdline; then daemon_remove_arg='--daemon-cancel-remove'; fi
@@ -223,6 +227,9 @@ if [ -f /scratch-root-uuid ]; then
 fi
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-support || fail 'sealed actual capture'
+fi
+if grep -q 'ws73.parallel=1' /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-parallel || fail 'sealed four-device parallel capture'
 fi
 if grep -q 'ws73.passthrough=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-passthrough || fail 'sealed QMP passthrough capture'

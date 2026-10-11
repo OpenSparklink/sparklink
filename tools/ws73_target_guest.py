@@ -298,6 +298,18 @@ def support_input():
     print('WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1',flush=True)
 
 
+def verify_parallel():
+    from ws73_parallel import corroborate
+    run=json.loads((EVIDENCE/'application/parallel-control/run.json').read_text())
+    owners=[o for w in run['workers'] for o in w['run']['initial']]
+    capture=read_capture(EVIDENCE/'ws73.pcap',[(o['bus'],o['device']) for o in owners])
+    count=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
+    if capture['packet_count']!=count:raise ValueError('parallel sealed capture count mismatch')
+    proof=corroborate(run,capture)
+    (EVIDENCE/'parallel-control-proofs.json').write_text(json.dumps(proof,indent=2)+'\n')
+    print('WS73_TARGET_PARALLEL_RF: PASS',flush=True)
+
+
 def verify_passthrough():
     run=json.loads((EVIDENCE/'application/passthrough-control/run.json').read_text())
     identities=[*run['initial'],run['replacement']]
@@ -337,6 +349,7 @@ if __name__=='__main__':
     elif action=='support':support()
     elif action=='verify-support':verify_support()
     elif action=='verify-passthrough':verify_passthrough()
+    elif action=='verify-parallel':verify_parallel()
     elif action=='instructions':instructions()
     elif action=='support-input':support_input()
     elif action=='bindings-writer':bindings(writer=True)

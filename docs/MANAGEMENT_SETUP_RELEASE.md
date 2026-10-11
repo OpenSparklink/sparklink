@@ -416,3 +416,12 @@ idle STOP 拒绝，保留 Off 没有依赖宽松模拟 STOP。冻结工具 U502�
 有界 FIFO／一CPU 模拟支撑，未增加真实 Managed／活动 Ready peer／普通并发
 或恢复资格。既有真实路由／寄存器失败、partial 第一步及 Unknown Setup
 证据不覆盖重写；后续初始化步骤、真实在途回复及完整实际 RF 仍需执行。
+
+[后续终结帧模型选择支撑](evidence/ws73-later-terminal-model-selector-20261011.json)
+记录 K092 的默认0、有界0..2 skip选择与只读消费计数。早期原帧正常交还，
+只有后续原终结帧保留；Status/credit不消费，reset不补已消费预算。实际函数
+clang ASan/UBSan/LSan与暂停QEMU的五类类型/范围/只读/未打开拒绝通过，实际
+QEMU已构建冻结。访客、timer/wakeup/digest计数替代不算调度／物理证据；
+暂停对象也未运行内核。前几次夹具编译／GCC库环境／运行器异常分类失败保留。
+**后续步骤采集器、格式迁移及内核fd VM仍未接通／执行**，不能记扫描START
+在途清理通过。已有第一步与完整队列证据保留，真实 Managed／恢复／RCA仍OPEN。

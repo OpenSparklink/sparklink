@@ -1277,3 +1277,11 @@ release／最后fd／dup 取消全初始化，原 Off 保留，369包零丢包�
 冻结 U502、验证器 U55a、镜像 K292／服务 Ud749 分开，286工具测试仅开发资格。
 本批不新增物理尝试或真实 Managed，活动 Ready、普通调度、partial 后续步骤、
 真实启动／自动恢复／自然 RCA 和完整 S0–S6／原28项 scope 继续 OPEN。
+
+[后续帧选择模型支撑](evidence/ws73-later-terminal-model-selector-20261011.json)
+只实现有界0..2原终结帧skip及后续单帧保留。实际模型函数 sanitizer与暂停
+QMP拒绝通过、QEMU已冻结；尚无后续步骤采集器／内核fd VM。下一步迁移格式
+且保留旧第一步证据，核对每个早期成功回复、具体待回复步骤、原deadline、
+release／最后fd／dup及清理。扫描START后实际STOP成功应与第一步idle拒绝
+区分，禁止将未查明根因或未知radio状态归零。真实Ready／活动peer／RF及
+全部原整项条件不变，部分开发支撑不关闭 issues。

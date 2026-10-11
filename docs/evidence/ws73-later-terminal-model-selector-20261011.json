@@ -1,0 +1,260 @@
+{
+  "status": "BOUNDED_MODEL_SELECTOR_BUILT_SANITIZED_PAUSED_QMP_REFUSALS_LATER_FD_OPEN",
+  "created_wall_ns": 1791713736946509548,
+  "kernel_test_source_head": "0926cfca33bf9aed6fc1b62a8504991ac494cf3a",
+  "vm_only": true,
+  "production_linux_rust_changed": false,
+  "physical_usb_contact": false,
+  "supersedes_prior_evidence": false,
+  "build": {
+    "status": "MODEL_LATER_TERMINAL_SELECTOR_BUILT_NOT_PARTIAL_VM_QUALIFIED",
+    "created_wall_ns": 1791713507409410756,
+    "files": [
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/linux/tools/testing/selftests/sparklink/qemu-sle-dli/usb-ws73-test.c",
+        "sha256": "1209ce01a2bccabd01d6e6f41d2ef88f95a96fa59ce8d88ae14c63af1b9ab740"
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/linux/tools/testing/selftests/sparklink/qemu-sle-dli/check-ws73-model-hold.py",
+        "sha256": "9cab27fd39e84ca041f75cff779b4c729b2b213647da1abd12863aa8f49111bc"
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/linux/tools/testing/selftests/sparklink/qemu-sle-dli/.build/qemu-9.2.0/hw/usb/host-libusb.c",
+        "sha256": "9fef03d5f739c70286348959308e0478f287e82c70ee6c866c3d490f8553c81c"
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-qemu/qemu-system-x86_64",
+        "sha256": "09a5d28ce109a8173e3d581fdeb101c9f42841e8eb5ec831671c2de4cdaa3686"
+      }
+    ],
+    "counted_boundaries": {
+      "status": "PASS_ACTUAL_MODEL_HOLD_WITH_COUNTED_DEPENDENCIES",
+      "scope": "Actual test-model retention functions with counted dependency fixtures.\n\nNo QEMU scheduler, host USB, successful libusb transfer or physical RF proof.\nTimers, wakeup and digest are counted substitutes. Queue bytes remain real.\n",
+      "actual_functions": [
+        "reset",
+        "model_release",
+        "model_bounded_release",
+        "model_arm_get",
+        "model_arm_set",
+        "model_held_get",
+        "model_armable_get",
+        "model_release_get",
+        "model_release_set",
+        "model_skip_get",
+        "model_skip_set",
+        "model_retain_terminal"
+      ],
+      "source_sha256": "1209ce01a2bccabd01d6e6f41d2ef88f95a96fa59ce8d88ae14c63af1b9ab740",
+      "queue_bytes_preserved": true,
+      "budget_survives_reset": true,
+      "physical_acceptance": false,
+      "qemu_scheduler_acceptance": false,
+      "managed_partial_live_acceptance": false,
+      "compile_command": [
+        "clang",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-parameter",
+        "../.dev/managed-later-model-boundaries-clang/check.c",
+        "-o",
+        "../.dev/managed-later-model-boundaries-clang/check"
+      ]
+    },
+    "physical_acceptance": false,
+    "managed_partial_live_acceptance": false,
+    "later_partial_vm_acceptance": false
+  },
+  "counted_dependencies": {
+    "status": "PASS_ACTUAL_MODEL_HOLD_WITH_COUNTED_DEPENDENCIES",
+    "scope": "Actual test-model retention functions with counted dependency fixtures.\n\nNo QEMU scheduler, host USB, successful libusb transfer or physical RF proof.\nTimers, wakeup and digest are counted substitutes. Queue bytes remain real.\n",
+    "actual_functions": [
+      "reset",
+      "model_release",
+      "model_bounded_release",
+      "model_arm_get",
+      "model_arm_set",
+      "model_held_get",
+      "model_armable_get",
+      "model_release_get",
+      "model_release_set",
+      "model_skip_get",
+      "model_skip_set",
+      "model_retain_terminal"
+    ],
+    "source_sha256": "1209ce01a2bccabd01d6e6f41d2ef88f95a96fa59ce8d88ae14c63af1b9ab740",
+    "queue_bytes_preserved": true,
+    "budget_survives_reset": true,
+    "physical_acceptance": false,
+    "qemu_scheduler_acceptance": false,
+    "managed_partial_live_acceptance": false,
+    "compile_command": [
+      "clang",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-unused-parameter",
+      "../.dev/managed-later-model-boundaries-clang/check.c",
+      "-o",
+      "../.dev/managed-later-model-boundaries-clang/check"
+    ]
+  },
+  "paused_qmp": {
+    "status": "PASS_PAUSED_QMP_MODEL_SELECTOR_REFUSALS_ONLY",
+    "scope": "paused simulated object QMP property/type/default refusals only; no kernel or host USB",
+    "physical_acceptance": false,
+    "partial_vm_acceptance": false,
+    "qemu_args": [
+      "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-qemu/qemu-system-x86_64",
+      "-L",
+      "/home/sanchuanhehe/Documents/opensparklink/.dev/share/qemu",
+      "-machine",
+      "q35,accel=tcg",
+      "-m",
+      "128M",
+      "-smp",
+      "1",
+      "-display",
+      "none",
+      "-monitor",
+      "none",
+      "-nic",
+      "none",
+      "-S",
+      "-qmp",
+      "unix:/tmp/slks-nf6r1dlv/qmp.sock,server=on,wait=off",
+      "-device",
+      "qemu-xhci,id=xhci",
+      "-device",
+      "usb-ws73-test,id=ws73_0,bus=xhci.0,runtime-discovery=on"
+    ],
+    "errors": [
+      {
+        "property": "model-terminal-skip-count",
+        "value": true,
+        "error": "QMP qom-set: {'class': 'GenericError', 'desc': \"Parameter 'model-terminal-skip-count' expects uint64\"}"
+      },
+      {
+        "property": "model-terminal-skip-count",
+        "value": -1,
+        "error": "QMP qom-set: {'class': 'GenericError', 'desc': 'model terminal skip requires idle unused budget and count 0..2'}"
+      },
+      {
+        "property": "model-terminal-skip-count",
+        "value": 3,
+        "error": "QMP qom-set: {'class': 'GenericError', 'desc': 'model terminal skip requires idle unused budget and count 0..2'}"
+      },
+      {
+        "property": "model-terminal-skip-count",
+        "value": 1,
+        "error": "QMP qom-set: {'class': 'GenericError', 'desc': 'model terminal skip requires idle unused budget and count 0..2'}"
+      },
+      {
+        "property": "model-terminal-skipped",
+        "value": 1,
+        "error": "QMP qom-set: {'class': 'GenericError', 'desc': \"Property 'usb-ws73-test.model-terminal-skipped' is not writable\"}"
+      }
+    ],
+    "qemu_exit": 0,
+    "finished_wall_ns": 1791713632537348081
+  },
+  "assets": [
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-qemu/build-manifest.json",
+      "sha256": "7b100c80c2a08324c288ececb8a0448e56ed09c103fae603b4fc3fbb7be0581b",
+      "bytes": 2469
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-qemu/qemu-system-x86_64",
+      "sha256": "09a5d28ce109a8173e3d581fdeb101c9f42841e8eb5ec831671c2de4cdaa3686",
+      "bytes": 30090336
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-boundaries-clang/actual-functions.h",
+      "sha256": "61b8d9273a1c9a2e90299f66d15464434b3b4bcc775ef62440743154c599f09b",
+      "bytes": 6796
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-boundaries-clang/check",
+      "sha256": "b949ef40e9ecb0bc396fb55fab0136fa2503847f3be19b2f831a154b90746fc5",
+      "bytes": 1822544
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-boundaries-clang/check.c",
+      "sha256": "4e28a26397f50037560a9c5879fecdc9009401b638896de914e387063bd6a304",
+      "bytes": 7507
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-boundaries-clang/manifest.json",
+      "sha256": "cae715d4d97bcd741754873bf85fac902a55e938c7761a9195c7fdd66b8f790e",
+      "bytes": 1206
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-paused-qmp2/manifest.json",
+      "sha256": "904a35d1ec63da03a921474be22c754d55e6a4cda1eaa2132e3a899705c3629f",
+      "bytes": 1900
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-paused-qmp2/qmp.jsonl",
+      "sha256": "e0ebeda87ab84f92c2be80405e7d4a97fcd6577214da83fccde5e46e4c65eb8b",
+      "bytes": 2936
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-paused-qmp2/stderr.log",
+      "sha256": "aa879276d91080c4659f75fc6d834da7f77e82785bce3877ef7a84381f63187e",
+      "bytes": 72
+    }
+  ],
+  "failed_support_attempts": [
+    {
+      "classification": "fixture compile missing headers/signed comparison/unused getter",
+      "asset": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-boundaries.log",
+        "sha256": "427fa97693ae840c53ba0828ed472f40d29df7678b3bd501cd9351e714a25683",
+        "bytes": 4926
+      }
+    },
+    {
+      "classification": "fixture compile signed comparison/unused getter",
+      "asset": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-boundaries2.log",
+        "sha256": "394f28bb0d558555216cdb634de67f6318cb3e0e045e693f70a51b39f215b1b4",
+        "bytes": 2861
+      }
+    },
+    {
+      "classification": "GCC sanitizer link libraries missing; no host package installed",
+      "asset": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-boundaries3.log",
+        "sha256": "def9a462df876e060040374c54a0eadcb195d98f8763d60560198ec569d7e530",
+        "bytes": 1244
+      }
+    },
+    {
+      "classification": "test runner caught wrong exception type for expected QMP refusal",
+      "asset": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-paused-qmp.log",
+        "sha256": "3cee987fff7702aecf8e78f7db3fd89a26d53e6750d21fdfd553e6216347ca63",
+        "bytes": 596
+      }
+    }
+  ],
+  "later_partial_kernel_fd_vm_acceptance": false,
+  "managed_partial_live_acceptance": false,
+  "active_ready_peer_isolation_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "full_goal_complete": false,
+  "conclusions": [
+    "Default skip0 preserves the original first-step model selector. Explicit skip0..2 is configurable only on unused opened/idle objects; status/credit/non-DLI do not spend skip budget. Skipped frames retain original normal delivery and hash evidence; only the later original terminal frame is held.",
+    "Actual-function counted dependency tests cover skip1/2, bytes/in-flight state, visitor get/set, bounds and consumed selection across reset. Timer/wakeup/digest/visitor are test substitutes, not scheduler or physical proof.",
+    "Actual paused QEMU readbacks verify typed defaults and five uint64/read-only/unopened refusal cases. No guest kernel, initialization or partial fd flow was run.",
+    "QEMU rebuilt and frozen separately; old physical/model artifacts unchanged. Later collector/schema and kernel fd VM execution remain required, along with all physical/Ready/recovery/RCA gates."
+  ]
+}

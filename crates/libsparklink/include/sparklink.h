@@ -16,7 +16,7 @@
  */
 #define SNOOP_PAYLOAD_MAX 320
 
-#define WS73_BASIC_POLICY_VERSION 1
+#define WS73_BASIC_POLICY_VERSION 2
 
 /**
  * Opaque adapter handle for C consumers

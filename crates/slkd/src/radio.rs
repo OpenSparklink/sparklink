@@ -60,7 +60,11 @@ async fn submit(
         .native_lease
         .clone()
         .ok_or_else(|| failed("management unavailable"))?;
-    let authority = lease.lock_owned().await;
+    // Do not queue an RPC behind withdrawal and silently admit it under a
+    // successor credential. The caller can explicitly retry after handoff.
+    let authority = lease
+        .try_lock_owned()
+        .map_err(|_| failed("device management admission or handoff busy"))?;
     if !authority.accepting || authority.token.is_none() || !state.lock().await.present {
         return Err(failed("management unavailable or registration removed"));
     }
@@ -715,6 +719,41 @@ mod tests {
             discovery_policy(&peer).await.unwrap(),
             (3, 1200, 1200, 127, 1600, 800)
         );
+    }
+
+    #[tokio::test]
+    async fn busy_business_admission_never_waits_for_successor_authority() {
+        let first = selected_null();
+        let peer = selected_null();
+        first.lock().await.native_discovery_policy =
+            Some(libsparklink::Ws73DiscoveryPolicy::default());
+        peer.lock().await.native_discovery_policy =
+            Some(libsparklink::Ws73DiscoveryPolicy::default());
+        let lease = first.lock().await.native_lease.clone().unwrap();
+        let mut guard = lease.lock().await;
+        for operation in 1..=4 {
+            let result = tokio::time::timeout(
+                Duration::from_millis(100),
+                submit(&first, move |_, _| {
+                    panic!("busy operation {operation} reached request construction")
+                }),
+            )
+            .await
+            .expect("busy admission must not wait behind authority handoff");
+            assert!(result.unwrap_err().to_string().contains("busy"));
+        }
+        // A different device reaches its actual ioctl, independently. No
+        // synthetic successful snapshot or radio state is supplied here.
+        let error = tokio::time::timeout(Duration::from_millis(100), scan(&peer, 41))
+            .await
+            .unwrap()
+            .unwrap_err()
+            .to_string();
+        assert!(error.contains("ENOTTY"), "{error}");
+        guard.token = Some(8);
+        drop(guard);
+        let error = scan(&first, 42).await.unwrap_err().to_string();
+        assert!(error.contains("ENOTTY"), "{error}");
     }
 
     #[tokio::test]

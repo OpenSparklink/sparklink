@@ -154,6 +154,8 @@ def verify_records(record):
         raise ValueError('retired selected result must reject ENODEV')
     if record['retired_submit_errno'] != errno.ENODEV or type(record['retired_submit_errno']) is not int:
         raise ValueError('retired selected retry must reject ENODEV')
+    if record['retired_submit_input'] != record['input']:
+        raise ValueError('retired retry must use original canonical admission bytes')
     if (type(record['submit_before_wall_ns']) is not int or type(record['submit_after_wall_ns']) is not int
             or not receipts[0]['wall_ns'] <= record['submit_before_wall_ns']
             <= record['submit_after_wall_ns'] <= markers[1]['wall_ns'] <= receipts[1]['wall_ns']
@@ -334,8 +336,10 @@ def run(args):
         record['quiet_before_monotonic_ns'] = time.monotonic_ns()
         marker('abort_ready', 'aborted')  # passive filesystem/QMP wait: no ioctl can expire the author
         record['quiet_after_monotonic_ns'] = time.monotonic_ns()
+        retry = SleDiagnosticSubmit.from_buffer_copy(bytes.fromhex(record['input']))
+        record['retired_submit_input'] = bytes(retry).hex()
         for key, operation in [('retired_result_errno', lambda: target.diagnostic_result(command.seq)),
-                               ('retired_submit_errno', lambda: target.submit_diagnostic(command))]:
+                               ('retired_submit_errno', lambda: target.submit_diagnostic(retry))]:
             try: operation()
             except OSError as error: record[key] = error.errno
             else: raise ValueError('retired selected fd accepted request')

@@ -54,7 +54,8 @@ def fixture():
             'initializations':initializations,
             'guest_ack_receipts':[{'stage':stage,'wall_ns':wall,'monotonic_ns':mono} for stage,wall,mono in
                                   [('armed',110,900_000_000),('held',210,1_010_000_000),('aborted',310,1_549_000_000)]],
-            'retired_result_errno':errno.ENODEV,'retired_submit_errno':errno.ENODEV}
+            'retired_result_errno':errno.ENODEV,'retired_submit_errno':errno.ENODEV,
+            'retired_submit_input':original}
 
 
 class ActiveDeadlineTests(unittest.TestCase):
@@ -98,6 +99,8 @@ class ActiveDeadlineTests(unittest.TestCase):
         for field in ['retired_result_errno','retired_submit_errno']:
             record=fixture();record[field]=errno.EBUSY
             with self.subTest(field=field),self.assertRaises(ValueError):verify_records(record)
+        record=fixture();record['retired_submit_input']=record['output']
+        with self.assertRaises(ValueError):verify_records(record)
 
     def test_causal_clocks_real_hold_and_peer_intervals_are_required(self):
         mutations=[('quiet_after_monotonic_ns',1_010_000_000),('quiet_after_monotonic_ns',4_000_000_000),

@@ -106,7 +106,7 @@ def prepare(args):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
-                  HERE/'ws73_target_control.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',
+                  HERE/'ws73_target_control.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -195,7 +195,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -406,12 +406,16 @@ def _run(args):
     parallel=bool(getattr(args,'parallel_pairs',False))
     initializer_lifecycle=bool(getattr(args,'initializer_lifecycle',False))
     observer_policy=bool(getattr(args,'observer_policy',False))
+    daemon_crash=bool(getattr(args,'daemon_crash',False))
+    if daemon_crash and (args.command != 'run' or not passthrough or recovery or parallel
+            or any(getattr(args,k,False) for k in ['observer_policy','initializer_lifecycle','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify','managed_ordinary_eviction','managed_ready_peer','managed_real_later_step'])):
+        raise ValueError('daemon crash requires separate real QMP-hotplug native VM')
     if observer_policy and (args.command != 'run' or not passthrough or recovery or parallel
-            or any(getattr(args,k,False) for k in ['initializer_lifecycle','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify','managed_ordinary_eviction','managed_ready_peer','managed_real_later_step'])):
+            or any(getattr(args,k,False) for k in ['daemon_crash','initializer_lifecycle','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify','managed_ordinary_eviction','managed_ready_peer','managed_real_later_step'])):
         raise ValueError('observer policy requires separate real QMP-hotplug native VM')
 
     if initializer_lifecycle and (args.command != 'run' or not passthrough or recovery or parallel
-            or any(getattr(args,k,False) for k in ['observer_policy','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify','managed_ordinary_eviction','managed_ready_peer','managed_real_later_step'])):
+            or any(getattr(args,k,False) for k in ['daemon_crash','observer_policy','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify','managed_ordinary_eviction','managed_ready_peer','managed_real_later_step'])):
         raise ValueError('initializer lifecycle requires separate real QMP-hotplug native VM')
     if parallel and (support or passthrough or recovery or any(getattr(args,k,False) for k in ['hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify'])):
         raise ValueError('four-device parallel RF requires separate real VM without other gates')
@@ -489,6 +493,8 @@ def _run(args):
         m['scope']='four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
     if parallel:m['parallel_verifier']=file_record(HERE/'ws73_parallel.py')
     m['qmp_guest_hotplug']=passthrough
+    m['daemon_crash_requested']=daemon_crash
+    if daemon_crash:m['daemon_crash_verifier']=file_record(HERE/'ws73_daemon_crash.py')
     m['observer_policy_requested']=observer_policy
     if observer_policy:m['observer_policy_verifier']=file_record(HERE/'ws73_observer_policy.py')
     m['initializer_lifecycle_requested']=initializer_lifecycle
@@ -530,6 +536,8 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if daemon_crash and 'native_vm' not in package:
+            raise ValueError('daemon crash requires qualified native module VM')
         if observer_policy and 'native_vm' not in package:
             raise ValueError('observer policy requires qualified native module VM')
         if initializer_lifecycle and 'native_vm' not in package:
@@ -585,6 +593,7 @@ def _run(args):
                      (' ws73.daemon_remove=1' if daemon_remove else '')+
                      (' ws73.initializer_lifecycle=1' if initializer_lifecycle else '')+
                      (' ws73.observer_policy=1' if observer_policy else '')+
+                     (' ws73.daemon_crash=1' if daemon_crash else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
                      (' ws73.diagnostic=1' if diagnostic else '')+
@@ -804,6 +813,17 @@ def _run(args):
                     from ws73_daemon_removal import corroborate as corroborate_removal
                     m['daemon_removal']['corroboration']=corroborate_removal(control['daemon_removal'],hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
                     m['live_daemon_removal']=file_record(share/'application/passthrough-control/run.json')
+                if daemon_crash != (share/'daemon-crash/run.json').exists():
+                    raise ValueError('explicit daemon crash request and evidence must agree')
+                if daemon_crash:
+                    crash_record=json.loads((share/'daemon-crash/run.json').read_text())
+                    old_pid=crash_record['phases'][0]['pid']
+                    if re.findall(r'^WS73_TARGET_DAEMON_CRASH_EXIT: pid=(\d+) status=(\d+)$',text,re.M)!=[(str(old_pid),'137')]:
+                        raise ValueError('actual guest SIGKILL/reap console evidence required')
+                    if re.findall(r'^WS73_TARGET_DAEMON_CRASH_PHASE: (\w+)$',text,re.M)!=['before','free','after']:
+                        raise ValueError('ordered actual guest crash phases required')
+                    from ws73_daemon_crash import corroborate as crash_corroborate
+                    m['daemon_crash_corroboration']=crash_corroborate(json.loads((share/'daemon-crash/run.json').read_text()),control,capture)
                 if observer_policy != (share/'observer-policy/run.json').exists():
                     raise ValueError('explicit observer policy request and evidence must agree')
                 if observer_policy:
@@ -913,6 +933,8 @@ def _run(args):
             raise ValueError('daemon removal verifier changed during run')
         if daemon_hold and file_record(HERE/'ws73_daemon_hold.py')!=m['daemon_hold_verifier']:
             raise ValueError('daemon held verifier changed during run')
+        if daemon_crash and file_record(HERE/'ws73_daemon_crash.py')!=m['daemon_crash_verifier']:
+            raise ValueError('daemon crash verifier changed during run')
         if observer_policy and file_record(HERE/'ws73_observer_policy.py')!=m['observer_policy_verifier']:
             raise ValueError('observer policy verifier changed during run')
         if initializer_lifecycle and file_record(HERE/'ws73_initialization_lifecycle.py')!=m['initializer_lifecycle_verifier']:
@@ -979,6 +1001,7 @@ def main():
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
+            cmd.add_argument('--daemon-crash',action='store_true',help='actual active-radio SIGKILL/last-File cleanup and successor before native RF22; separate --qmp-hotplug mode')
             cmd.add_argument('--observer-policy',action='store_true',help='actual default observer/control read and denial roles before/after native RF22; separate --qmp-hotplug mode')
             cmd.add_argument('--initializer-lifecycle',action='store_true',help='real initializer withdrawal, eviction and guest-generation gate; separate native --qmp-hotplug mode')
             cmd.add_argument('--daemon-hold-case',choices=['supersede','caller-exit','cancel-caller-exit','cancel-busy','cancel-admission'],help='ordinary D-Bus callers cancel an original successful held reply with same daemon and active peer')

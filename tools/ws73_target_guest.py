@@ -326,6 +326,12 @@ def verify_passthrough():
     if requested:
         from ws73_initialization_lifecycle import corroborate_wire
         proofs.append({'initializer_lifecycle':corroborate_wire(run,capture)})
+    requested_crash = 'ws73.daemon_crash=1' in Path('/proc/cmdline').read_text().split()
+    if requested_crash != (EVIDENCE/'daemon-crash/run.json').exists():
+        raise ValueError('explicit daemon crash request and evidence must agree')
+    if requested_crash:
+        from ws73_daemon_crash import corroborate as crash_corroborate
+        proofs.append({'daemon_crash':crash_corroborate(json.loads((EVIDENCE/'daemon-crash/run.json').read_text()),run,capture)})
     requested_observer = 'ws73.observer_policy=1' in Path('/proc/cmdline').read_text().split()
     if requested_observer != (EVIDENCE/'observer-policy/run.json').exists():
         raise ValueError('explicit observer policy request and evidence must agree')
@@ -340,6 +346,11 @@ def verify_passthrough():
 
 if __name__=='__main__':
     action=sys.argv[1]
+    if action=='daemon-crash':
+        from ws73_daemon_crash import record_phase
+        record_phase(application,[registration('1-1'),registration('1-2')],sys.argv[2],int(sys.argv[3]),int(sys.argv[4]) if len(sys.argv)>4 else None)
+        print('WS73_TARGET_DAEMON_CRASH_PHASE: '+sys.argv[2],flush=True)
+        raise SystemExit(0)
     if action=='observer-policy':
         from ws73_observer_policy import record_phase
         phase=sys.argv[2]

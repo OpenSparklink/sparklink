@@ -128,7 +128,7 @@ def check_discovery_config_gate(package, args):
     if (args.command != 'run'
             or not (getattr(args, 'qmp_hotplug', False) or getattr(args, 'parallel_pairs', False))
             or any(getattr(args, flag, False) for flag in (
-                'fault_recovery', 'daemon_cancel_remove', 'initializer_lifecycle', 'observer_policy',
+                'fault_recovery', 'daemon_cancel_remove', 'initializer_lifecycle', 'observer_policy', 'daemon_crash',
                 'event_copy_verify', 'diagnostic_verify', 'active_deadline_verify',
                 'active_close_verify', 'setup_release_verify', 'managed_queue_verify',
                 'managed_partial_case', 'daemon_hold_case'))):

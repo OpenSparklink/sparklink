@@ -192,6 +192,18 @@ for slot in $(seq 0 $last_slot); do
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready "$slot" || fail "independent Ready slot=$slot"
     echo "WS73_TARGET_READY: slot=$slot"
 done
+if grep -q 'ws73.daemon_crash=1' /proc/cmdline; then
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py daemon-crash before "$daemon" || fail 'active crash preparation'
+    old_daemon=$daemon
+    kill -KILL "$daemon" || fail 'guest daemon SIGKILL'
+    wait "$daemon"; killed_exit=$?
+    echo "WS73_TARGET_DAEMON_CRASH_EXIT: pid=$daemon status=$killed_exit"
+    [ "$killed_exit" = 137 ] || fail 'guest SIGKILL wait status'
+    daemon=''
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py daemon-crash free "$old_daemon" "$killed_exit" || fail 'last-File real cleanup'
+    /bin/slkd $config_args --storage "$storage" -n > /evidence/slkd-successor.log 2>&1 & daemon=$!
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py daemon-crash after "$daemon" || fail 'same-generation successor'
+fi
 cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'daemon process credentials'
 if grep -q 'ws73.observer_policy=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py observer-policy initial || fail 'native observer initial role gate'

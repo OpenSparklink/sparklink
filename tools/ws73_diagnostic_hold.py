@@ -92,7 +92,7 @@ class HoldCoordinator:
         self.record['complete'] = self.phase == 'done'
 
 
-def corroborate_host_hold(record, diagnostic, proofs, stderr, expected):
+def corroborate_host_hold(record, diagnostic, proofs, stderr, expected, *, held_reply=None):
     if (record.get('method')!='QMP_HOLD_ACTUAL_SUCCESSFUL_IN81' or record.get('complete') is not True
             or record.get('physical_acceptance') is not False
             or record.get('automatic_fault_recovery_acceptance') is not False
@@ -118,7 +118,13 @@ def corroborate_host_hold(record, diagnostic, proofs, stderr, expected):
     if (len(holds)!=1 or len(releases)!=1 or tuple(map(int,holds[0][:2]))!=(expected['bus'],expected['address'])
             or holds[0][:3]!=releases[0][:3] or holds[0][3]!='1' or releases[0][3:]!=('0','1')):
         raise ValueError('one target-only actual successful host hold and explicit release required')
-    old=next(p['reply'] for p in proofs if p.get('caller')=='C held active cancel')
+    if held_reply is None:
+        matches=[p['reply'] for p in proofs if p.get('caller')=='C held active cancel']
+        if len(matches)!=1:raise ValueError('one original diagnostic held reply required')
+        old=matches[0]
+    else:
+        if proofs:raise ValueError('typed held reply must not borrow diagnostic proof labels')
+        old=held_reply
     if old.get('usb_sha256')!=holds[0][4] or old.get('usb_length')!=int(holds[0][2]):
         raise ValueError('released old reply does not match original host transfer hash/length')
     return {'status':'ACTUAL_HOST_HOLD_CORROBORATED','host_transfer_sha256':holds[0][4],

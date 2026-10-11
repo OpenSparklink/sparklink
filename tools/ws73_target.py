@@ -415,6 +415,8 @@ def _run(args):
     partial_case=getattr(args,'managed_partial_case',None)
     partial_gate=partial_case is not None
     partial_domain=getattr(args,'managed_partial_domain','advertising')
+    selected_cleanup=bool(getattr(args,'managed_selected_cleanup',False))
+    if selected_cleanup and not partial_gate:raise ValueError('selected-domain cleanup requires explicit real partial gate')
     if partial_case not in (None,'release','close','dup') or partial_domain not in ('advertising','scanning'):
         raise ValueError('explicit supported Managed partial case/domain required')
     if partial_gate and (support or not recovery or not setup_gate or diagnostic or active_gate):
@@ -454,6 +456,7 @@ def _run(args):
     m['live_active_close_requested']=active_close_gate
     m['live_managed_partial_case']=partial_case
     m['live_managed_partial_domain']=partial_domain if partial_gate else None
+    m['live_managed_selected_cleanup']=selected_cleanup
     m['live_managed_queue_requested']=queued_gate
     m['live_setup_release_requested']=setup_gate
     if queued_gate:
@@ -515,6 +518,7 @@ def _run(args):
                      (' ws73.managed_queue=1' if queued_gate else '')+
                      (' ws73.managed_queue_confirmed_off=1' if getattr(args,'managed_queue_confirmed_off',False) else '')+
                      (f' ws73.managed_partial=1 ws73.partial_case={partial_case} ws73.partial_domain={partial_domain}' if partial_gate else '')+
+                     (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -692,6 +696,7 @@ def _run(args):
                 if partial_gate:
                     from ws73_management_partial import corroborate as corroborate_partial
                     probe=json.loads((share/'managed-partial/run.json').read_text())
+                    if probe.get('selected_domain_cleanup',False) is not selected_cleanup:raise ValueError('actual selected-domain cleanup must match requested gate')
                     m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
                     m['live_managed_partial']=file_record(share/'managed-partial/run.json')
                 if queued_gate:
@@ -811,6 +816,7 @@ def main():
             cmd.add_argument('--ports',nargs=2,required=True)
             cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
             cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')
+            cmd.add_argument('--managed-selected-cleanup',action='store_true',help='new real first-step gate: untouched Unknown is not Ready; requires --managed-partial-case')
             cmd.add_argument('--managed-queue-confirmed-off',action='store_true',help='complete initialization before full scanning initializer queue cancellation; requires --managed-queue-verify')
             cmd.add_argument('--managed-queue-verify',action='store_true',help='bounded one-vCPU FIFO real queued-policy cancellation; requires Setup and recovery gates; not ordinary concurrency acceptance')
             cmd.add_argument('--setup-release-verify',action='store_true',help='pre-daemon untouched Setup release/last-fd/dup gate; requires real fault-recovery scratch VM')

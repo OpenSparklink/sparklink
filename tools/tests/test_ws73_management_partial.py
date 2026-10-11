@@ -50,6 +50,60 @@ def fixture(case='release',domain='advertising'):
 
 
 class PartialTests(unittest.TestCase):
+    def test_selected_cleanup_preserves_untouched_unknown_without_false_ready(self):
+        for case in ['release','close','dup']:
+            record=fixture(case)
+            record.update(format_version=5,selected_domain_cleanup=True)
+            snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));snapshot.flags=2
+            record['final_snapshot']=bytes(snapshot).hex()
+            result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.radio_scan=0
+            record['final_result']=bytes(result).hex()
+            verify_records(record)
+            for change in ['false-ready','false-off','old-format','model','later-step']:
+                import copy
+                bad=copy.deepcopy(record)
+                if change=='false-ready':snapshot.flags=1;bad['final_snapshot']=bytes(snapshot).hex()
+                if change=='false-off':result.radio_scan=1;bad['final_result']=bytes(result).hex()
+                if change=='old-format':bad['format_version']=3
+                if change=='model':bad['synthetic_support']=True
+                if change=='later-step':bad['initialization_step']=1
+                with self.subTest(case=case,change=change),self.assertRaises(ValueError):verify_records(bad)
+        # Scan preparation really touched both domains; it still requires Off.
+        record=fixture(domain='scanning');record.update(format_version=5,selected_domain_cleanup=True)
+        verify_records(record)
+
+    def test_selected_cleanup_typed_host_reply_and_exact_wire_scope(self):
+        record=fixture();record.update(format_version=5,selected_domain_cleanup=True)
+        snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));snapshot.flags=2
+        record['final_snapshot']=bytes(snapshot).hex()
+        result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.radio_scan=0
+        record['final_result']=bytes(result).hex()
+        record['management_observations'][-1]['wall_ns']=450
+        record['peer_queries'][2].update(start_wall_ns=490,end_wall_ns=500)
+        def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
+        def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0)
+        original=dict(reply(0xc02,410,'06'),usb_length=178,usb_sha256='a'*64,record=8)
+        capture=dict(commands=[command(0xc02,155,'00'*49),command(0xc05,420,'00'*5)],
+            complete=[original,reply(0xc05,430)])
+        for row in record['peer_queries']:
+            capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
+            capture['complete'].append(reply(0x406,row['end_wall_ns'],'313233343536',device=3))
+        host=dict(method='QMP_HOLD_ACTUAL_SUCCESSFUL_IN81',complete=True,physical_acceptance=False,
+            automatic_fault_recovery_acceptance=False,observations=record['hold_acknowledgements'])
+        stderr='WS73_TEST_RUNTIME_HOLD: dev 1:124 bytes=178 host_status=0 holds=1 sha256='+ 'a'*64+'\nWS73_TEST_RUNTIME_HOLD_RELEASE: dev 1:124 bytes=178 bounded=0 releases=1\n'
+        proof=corroborate(record,host,capture,stderr,dict(bus=1,address=124))
+        self.assertTrue(proof['selected_domain_cleanup'])
+        self.assertEqual(proof['host_hold']['delivered_usb_record'],8)
+        self.assertEqual([v['opcode'] for v in proof['commands']],[0xc02,0xc05])
+        for change in ['unnecessary-scan-stop','wrong-frame','wrong-owner','lost-adv-stop']:
+            import copy
+            bad=copy.deepcopy(capture);expected=dict(bus=1,address=124)
+            if change=='unnecessary-scan-stop':bad['commands'].insert(2,command(0x1002,440,'0000'))
+            if change=='wrong-frame':bad['complete'][0]['usb_sha256']='b'*64
+            if change=='wrong-owner':expected['address']=123
+            if change=='lost-adv-stop':bad['complete'].pop(1)
+            with self.subTest(change=change),self.assertRaises(ValueError):corroborate(record,host,bad,stderr,expected)
+
     def test_exact_model_stop_refusal_keeps_blocked_faulted_and_cancelled(self):
         for domain in ['advertising','scanning']:
             for case in ['release','close','dup']:

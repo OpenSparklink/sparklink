@@ -423,5 +423,33 @@ idle STOP 拒绝，保留 Off 没有依赖宽松模拟 STOP。冻结工具 U502�
 clang ASan/UBSan/LSan与暂停QEMU的五类类型/范围/只读/未打开拒绝通过，实际
 QEMU已构建冻结。访客、timer/wakeup/digest计数替代不算调度／物理证据；
 暂停对象也未运行内核。前几次夹具编译／GCC库环境／运行器异常分类失败保留。
-**后续步骤采集器、格式迁移及内核fd VM仍未接通／执行**，不能记扫描START
+当时**后续步骤采集器、格式迁移及内核fd VM仍未接通／执行**（本批结果见下文），不能记扫描START
 在途清理通过。已有第一步与完整队列证据保留，真实 Managed／恢复／RCA仍OPEN。
+
+
+## 后续 partial 模拟 fd 矩阵（2026-10-11）
+
+[本批封存证据](evidence/ws73-managed-later-partial-model-fd-20261011.json)包含九个
+成功与三个独立拒绝案例：广告最后STOP、扫描START和扫描最后STOP，各覆盖
+release／最后fd／dup。格式4只允许模拟USB后续step1/2；先前格式3十二案例
+用新验证器全部复核。原500ms期限、完整UAPI Cancelled/-ECANCELED、早期
+成功回复的power／SHA／长度、保留帧、命令窗口及同伴三次查询逐一核对。
+
+扫描START取消后由新STOP确认Off；扫描原最后STOP取消后由其迟到成功回复
+确认Off，无重复STOP，原请求不改为Succeeded。六个扫描案例均开启模型idle
+STOP拒绝。广告最后STOP后仍需清理未知扫描域，三个idle拒绝案例保留原FAIL、
+0x0b/-EIO、RecoveryBlocked/Faulted和Unknown，不伪造Free/Ready。289工具测试
+及源码905b318的九个CI作业通过；签名镜像K292、编译服务Ud749、工具源码与
+新测试QEMU分别封存。正式Linux/Rust WS73路径未改，历史真实RF证据保留。
+
+本批未接真实USB执行传输，只读核对四只仍枚举且有效主机权限正常：前三只
+五端点runtime，第四只两端点ROM，power active。模拟同伴为Setup/Diagnostic，
+尚无活动Ready／真实空口隔离；新增真实Managed通过数仍零。正常实机门禁7、
+维护18的失败历史保留，既有ganged hub重枚举不证明VBUS/SoC冷启动或单设备
+自动恢复。本批模型结果不改变这些资格，相关issues继续OPEN。
+
+下一优先级仍为定位真实bulk超时并恢复两只独立启动／查询，然后执行完整
+Queued及partial实机矩阵，核对活动Ready同行、同slkd普通用户RF20+2及四设备
+两组。仅有新诊断假设时执行受控对照，有限重试和原始失败记录不能被模型
+成功替代。原生Linux对照因VM-only约束仍未执行，自然RCA和每设备自动恢复
+未通过；全部原S0–S6与14项整改范围不缩减。

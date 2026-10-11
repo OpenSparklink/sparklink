@@ -833,3 +833,31 @@ STOP且不把旧请求改成Succeeded。每个跳过/保留模型帧的哈希和
 289工具测试通过；此提交仅源码/回归支撑，后续步骤VM fd矩阵尚待运行，
 更不能替代真实Managed、活动Ready同伴或自动恢复。历史真实WS73路径不改，
 原28项及恢复/自然RCA继续OPEN。
+
+
+## 后续 partial 模拟 fd 矩阵（2026-10-11）
+
+[本批封存证据](evidence/ws73-managed-later-partial-model-fd-20261011.json)包含九个
+成功与三个独立拒绝案例：广告最后STOP、扫描START和扫描最后STOP，各覆盖
+release／最后fd／dup。格式4只允许模拟USB后续step1/2；先前格式3十二案例
+用新验证器全部复核。原500ms期限、完整UAPI Cancelled/-ECANCELED、早期
+成功回复的power／SHA／长度、保留帧、命令窗口及同伴三次查询逐一核对。
+
+扫描START取消后由新STOP确认Off；扫描原最后STOP取消后由其迟到成功回复
+确认Off，无重复STOP，原请求不改为Succeeded。六个扫描案例均开启模型idle
+STOP拒绝。广告最后STOP后仍需清理未知扫描域，三个idle拒绝案例保留原FAIL、
+0x0b/-EIO、RecoveryBlocked/Faulted和Unknown，不伪造Free/Ready。289工具测试
+及源码905b318的九个CI作业通过；签名镜像K292、编译服务Ud749、工具源码与
+新测试QEMU分别封存。正式Linux/Rust WS73路径未改，历史真实RF证据保留。
+
+本批未接真实USB执行传输，只读核对四只仍枚举且有效主机权限正常：前三只
+五端点runtime，第四只两端点ROM，power active。模拟同伴为Setup/Diagnostic，
+尚无活动Ready／真实空口隔离；新增真实Managed通过数仍零。正常实机门禁7、
+维护18的失败历史保留，既有ganged hub重枚举不证明VBUS/SoC冷启动或单设备
+自动恢复。本批模型结果不改变这些资格，相关issues继续OPEN。
+
+下一优先级仍为定位真实bulk超时并恢复两只独立启动／查询，然后执行完整
+Queued及partial实机矩阵，核对活动Ready同行、同slkd普通用户RF20+2及四设备
+两组。仅有新诊断假设时执行受控对照，有限重试和原始失败记录不能被模型
+成功替代。原生Linux对照因VM-only约束仍未执行，自然RCA和每设备自动恢复
+未通过；全部原S0–S6与14项整改范围不缩减。

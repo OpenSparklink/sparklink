@@ -379,3 +379,13 @@ capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d
 幸存设备 IN -108 / generation 改变。**并未定位该物理根因，也不是设备消失后
 自主恢复。** 北极星仍4/8，物理隔离/重插、完整物理复现包、原生主机对照、
 有限自动恢复和四设备两组及完整S0–S6继续开放；.4端口仍缺失。
+
+
+## 本批恢复资格保持开放（2026-10-11）
+
+[后续partial模型fd矩阵](evidence/ws73-managed-later-partial-model-fd-20261011.json)
+九个成功和三个精确拒绝仅证明模拟USB下实际内核fd及迟到回复处理，不算真实
+故障恢复。新只读host核对仍四只、有效权限正常、power active，第四只仍ROM；
+未新增真实传输、复位、hub循环或主机实验安装。既有两次ganged四口hub off/on
+只重新枚举，未恢复Ready或证明VBUS/SoC真正掉电；不能纳入单设备独立恢复。
+自然bulk超时、完全离线／重新枚举与历史xHCI根因、无需人工拔插恢复继续OPEN。

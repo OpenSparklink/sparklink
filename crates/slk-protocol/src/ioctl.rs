@@ -3,8 +3,7 @@ pub const SL_MAGIC: u8 = b'S';
 
 // ----- Device Management (0x01 - 0x08) -----
 
-nix::ioctl_none!(sl_dev_register, SL_MAGIC, 0x01);
-nix::ioctl_write_int!(sl_dev_unregister, SL_MAGIC, 0x02);
+// Removed unpublished no-op registration commands 0x01/0x02.
 nix::ioctl_read!(sl_dev_count, SL_MAGIC, 0x03, u32);
 nix::ioctl_read!(sl_dev_info, SL_MAGIC, 0x04, super::SciDevInfo);
 nix::ioctl_write_int!(sl_dev_switch, SL_MAGIC, 0x05);

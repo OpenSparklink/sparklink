@@ -222,3 +222,29 @@ overflow与删除条件见[事件整改](EVENT_COPY_REMEDIATION.md)。
 故障和限定范围；自然根因/自主恢复/物理xHCI warning/四设备/完整sandbox与
 全部S0–S6不因本项通过关闭。下一步实际cancel/late/deadline及独立订阅迁移，
 迁完后删除共享ring/fallback/未发布UAPI，不保留永久双路径。
+
+### 无实际操作的注册 UAPI 清理（新镜像验收待执行）
+
+调用审计覆盖两个仓库全部 tracked 文件：旧 DEV_REGISTER/DEV_UNREGISTER ioctl
+仅日志后返回成功，没有生产业务调用者；Rust 仅导出未使用的包装，旧 selftest
+却将空成功作为通过。Generic Netlink 两个注册名称没有 ops 实现。UAPI 未发布，
+本批同步删除 C/Rust 定义、授权/dispatch、Rust 包装和 Netlink 声明，撤下 API
+能力声明；旧序号暂不复用，其他命令编号不变。真实 sle_usb_dev_register/
+unregister、serdev 内部注册与 WS73 controller 生命周期保持。
+
+清理分类：这两个空接口立即删除；旧成功 selftest 改为专用拒绝测试；
+core 总线注册、backend enum、全局 serdev parser 等仍等待可靠替代和回归，
+不因本批删除而标为完成。权限矩阵同时补入遗漏的 DIAGNOSTIC_SUBMIT。
+
+严格编译 legacy/权限/live diagnostic 三个 C probe、完整 UAPI 分类和调用
+权限矩阵检查通过。新 live diagnostic selftest 在 stderr 单独记录原 C 编码
+0x00005301/0x40025302 及历史 Rust write_int 编码 0x40045302 的实际拒绝；
+每种编码用 NULL、不可访问地址和有效 sentinel，共每个身份九次。覆盖
+root CAP_NET_ADMIN、同 fd 的 UID0/caps0、UID1000/caps0；逐字节核对 snapshot
+及统计、枚举数量/掩码不变。该 probe 仅显式 scratch-root VM 内运行，
+没有生产注入或新的公开接口。历史 diagnostic 记录格式的资格不自动扩大。
+
+尚未执行本批新镜像实机门禁时，不引用旧 RF 证据证明新生产源码。后续构建
+完整 image/modules、私有签名模块 root smoke，再用真实双设备20+2轮及
+原 read/diagnostic/cancel/recovery 门禁回归。自然故障根因及完整恢复仍 OPEN；
+有限拒绝资格不关闭 K1/K3/K4/K9/K10/K12/K19 或全 S0–S6。

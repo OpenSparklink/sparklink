@@ -276,7 +276,8 @@ fn genl_cmd_enum_coverage() {
     assert_eq!(GenlCmd::Unspec as u8, 0);
     assert_eq!(GenlCmd::GetDevInfo as u8, 1);
     assert_eq!(GenlCmd::SsapRemoveSvc as u8, 33);
-    // Total: 34 commands (0..=33)
+    // Registration commands 2/3 were removed; remaining wire numbers stay.
+    assert_eq!(GenlCmd::StartAdv as u8, 4);
     assert_eq!(std::mem::size_of::<GenlCmd>(), 1);
 }
 

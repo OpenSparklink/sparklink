@@ -15,8 +15,8 @@ use crate::{
     security::SecurityIface,
     service::{RemoteServiceIface, SsapManagerIface},
     state::{
-        AdapterDirectory, AdapterRegistration, AdapterState, NativeLease, NativeManagement,
-        SharedState,
+        AdapterDirectory, AdapterRegistration, AdapterState, InitializationOff, NativeLease,
+        NativeManagement, SharedState,
     },
 };
 use libsparklink::Adapter;
@@ -142,10 +142,21 @@ async fn initialize(
         if *cancelled.borrow() || !authority.accepting || authority.token.is_none() {
             return Ok(());
         }
+        let token = authority
+            .token
+            .ok_or_else(|| anyhow::anyhow!("bootstrap authority absent"))?;
         // No SharedState or directory guard is held across any ioctl/wait.
         tokio::task::spawn_blocking(move || {
-            let _authority = authority;
-            fd.submit_discovery(&request)
+            let mut authority = authority;
+            fd.submit_discovery(&request)?;
+            let domain = usize::from(operation == slk_protocol::DISCOVERY_SCAN_INITIALIZE_OFF);
+            authority.initialized_off[domain] = Some(InitializationOff {
+                generation: request.generation,
+                token,
+                request_id: request.request_id,
+                operation,
+            });
+            Ok::<_, libsparklink::Error>(())
         })
         .await??;
         let deadline = tokio::time::Instant::now() + Duration::from_secs(7);
@@ -244,6 +255,7 @@ impl Node {
             Arc::new(Mutex::new(NativeManagement {
                 token: Some(token),
                 accepting: true,
+                initialized_off: [None; 2],
             }))
         });
         let control = adapter.clone();
@@ -389,6 +401,7 @@ impl Node {
         if let Some(lease) = self.lease.take() {
             let mut lease = lease.lock().await;
             lease.accepting = false;
+            lease.initialized_off = [None; 2];
             let generation = self.state.lock().await.controller.generation;
             if let Some(token) = lease.token.take()
                 && let Err(error) = relinquish(self.control.clone(), generation, token).await

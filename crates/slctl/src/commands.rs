@@ -279,6 +279,11 @@ impl Context {
     }
 
     async fn cmd_advertise(&self, args: &[&str]) -> anyhow::Result<()> {
+        if args == ["advertise", "initialized-off"] {
+            return self
+                .cmd_initialization_off(slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF)
+                .await;
+        }
         let proxy = self.adapter_proxy().await?;
         let id = random_bytes::<8>()?;
         let id = u64::from_ne_bytes(id).max(1);
@@ -325,6 +330,15 @@ impl Context {
             proxy.call("GetDiscoveryResult", &(id,)).await?;
         print_native_result(result)?;
         Ok(())
+    }
+    async fn cmd_initialization_off(&self, operation: u32) -> anyhow::Result<()> {
+        let proxy = self.adapter_proxy().await?;
+        let result: slk_protocol::DiscoveryResultRecord = tokio::time::timeout(
+            std::time::Duration::from_secs(3),
+            proxy.call("GetInitializationOff", &(operation,)),
+        )
+        .await??;
+        print_native_result(result)
     }
     async fn wait_native_result(&self, proxy: &zbus::Proxy<'_>, id: u64) -> anyhow::Result<()> {
         let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(7);
@@ -391,6 +405,11 @@ impl Context {
     }
 
     async fn cmd_scan(&self, args: &[&str]) -> anyhow::Result<()> {
+        if args == ["scan", "initialized-off"] {
+            return self
+                .cmd_initialization_off(slk_protocol::DISCOVERY_SCAN_INITIALIZE_OFF)
+                .await;
+        }
         let toggle = args[1];
         let proxy = self.adapter_proxy().await?;
         if proxy.get_property::<u32>("Profile").await? == 1 {

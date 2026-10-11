@@ -1,7 +1,7 @@
 //! Typed discovery controls scoped to one live registration. No business lock
 //! is held across a device ioctl or a wait. IDs come from callers so admission
 //! can be recovered after a disconnected D-Bus request.
-use crate::state::SharedState;
+use crate::state::{InitializationOff, SharedState};
 use libsparklink::Adapter;
 use slk_protocol::{DiscoveryResultRecord, SleControllerSnapshot, SleDiscoverySubmit};
 use std::{sync::Arc, time::Duration};
@@ -70,9 +70,13 @@ async fn submit(
     tokio::task::spawn_blocking(move || {
         // Keep this guard in the blocking task even if its RPC is abandoned.
         // Cancellation/removal cannot hand off authority underneath an ioctl.
-        let _authority = authority;
+        let mut authority = authority;
         let snapshot = fd.controller_snapshot(generation)?;
         let request = build(snapshot, policy)?;
+        // Conservative even when admission fails: never reuse initialization
+        // provenance after attempting a later policy in the same domain.
+        let domain = usize::from(matches!(request.operation, 3 | 4 | 6));
+        authority.initialized_off[domain] = None;
         fd.submit_discovery(&request)?;
         Ok::<_, libsparklink::Error>(request.data[..request.data_len as usize].to_vec())
     })
@@ -120,6 +124,7 @@ pub(crate) async fn cancel_policies(state: &SharedState) -> zbus::fdo::Result<u6
                 ));
             }
             authority.accepting = false;
+            authority.initialized_off = [None; 2];
             // Keep the credential on failure so removal can retry its withdrawal;
             // submissions stay disabled until a successful new acquisition.
             crate::adapters::relinquish(fd.clone(), generation, token)
@@ -210,6 +215,122 @@ pub(crate) async fn result(
         .map(|r| r.as_record())
         .ok_or_else(|| zbus::fdo::Error::UnknownObject("operation absent or evicted".into()))
 }
+
+/// Read the actual initializer's result only while its registration, credential
+/// and untouched business domain still match. Never submit OFF, recreate an
+/// evicted result, or project op5/6 as a new op2/4 successful command.
+pub(crate) async fn initialization_off(
+    state: &SharedState,
+    operation: u32,
+) -> zbus::fdo::Result<DiscoveryResultRecord> {
+    let domain = match operation {
+        slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF => 0,
+        slk_protocol::DISCOVERY_SCAN_INITIALIZE_OFF => 1,
+        _ => {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "initializer operation must be 5 or 6".into(),
+            ));
+        }
+    };
+    let (fd, generation) = selected(state).await?;
+    let lease = state
+        .lock()
+        .await
+        .native_lease
+        .clone()
+        .ok_or_else(|| failed("management unavailable"))?;
+    let authority = lease
+        .try_lock_owned()
+        .map_err(|_| failed("device management admission or handoff busy"))?;
+    let reference = authority.initialized_off[domain]
+        .filter(|r| {
+            authority.accepting
+                && authority.token == Some(r.token)
+                && r.generation == generation
+                && r.operation == operation
+                && r.request_id != 0
+        })
+        .ok_or_else(|| {
+            zbus::fdo::Error::UnknownObject("initializer provenance absent or invalidated".into())
+        })?;
+    if !state.lock().await.present {
+        return Err(failed("registration removed"));
+    }
+    let result = tokio::task::spawn_blocking(move || {
+        // Keep the guard through all observations, even if the RPC disappears.
+        let _authority = authority;
+        let snapshot = fd.controller_snapshot(generation).map_err(failed)?;
+        let before = fd.management_status(generation).map_err(failed)?;
+        let result = fd
+            .discovery_result(generation, reference.request_id)
+            .map_err(failed)?
+            .ok_or_else(|| {
+                zbus::fdo::Error::UnknownObject("initializer result absent or evicted".into())
+            })?;
+        validate_initialization_off(reference, snapshot, before, result).map_err(failed)?;
+        let after = fd.management_status(generation).map_err(failed)?;
+        validate_initialization_off(reference, snapshot, after, result).map_err(failed)?;
+        Ok::<_, zbus::fdo::Error>(result.as_record())
+    })
+    .await
+    .map_err(failed)??;
+    if !state.lock().await.present {
+        return Err(failed("registration removed during initializer query"));
+    }
+    Ok(result)
+}
+
+fn validate_initialization_off(
+    reference: InitializationOff,
+    snapshot: SleControllerSnapshot,
+    management: slk_protocol::SleManagementQuery,
+    result: slk_protocol::SleDiscoveryResult,
+) -> Result<(), &'static str> {
+    let (opcode, step, count, power_valid, own, other) = match reference.operation {
+        slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF => {
+            (0x0c05, 1, 2, 1, result.radio_adv, result.radio_scan)
+        }
+        slk_protocol::DISCOVERY_SCAN_INITIALIZE_OFF => {
+            (0x1002, 2, 3, 0, result.radio_scan, result.radio_adv)
+        }
+        _ => return Err("unsupported initializer provenance"),
+    };
+    if reference.generation == 0
+        || reference.token == 0
+        || reference.request_id == 0
+        || snapshot.generation != reference.generation
+        || snapshot.profile != 1
+        || snapshot.flags != slk_protocol::CONTROLLER_READY
+        || snapshot.error != 0
+        || management.generation != reference.generation
+        || management.lease != reference.token
+        || management.mode != slk_protocol::MANAGEMENT_MANAGED
+        || management.state != slk_protocol::MANAGEMENT_HELD
+        || management.flags != 1
+        || management.error != 0
+        || result.version != slk_protocol::DISCOVERY_VERSION
+        || result.flags != 0
+        || result.generation != reference.generation
+        || result.request_id != reference.request_id
+        || result.dev_index != snapshot.dev_index
+        || result.profile != 1
+        || result.operation != reference.operation
+        || result.state != 3
+        || result.error != 0
+        || result.status != 0
+        || result.opcode != opcode
+        || result.step != step
+        || result.count != count
+        || result.power_valid != power_valid
+        || own != 1
+        || !matches!(other, 1 | 2)
+    {
+        return Err(
+            "initializer OFF is not confirmed for the current registration and management authority",
+        );
+    }
+    Ok(())
+}
 pub(crate) async fn random_id() -> zbus::fdo::Result<u64> {
     tokio::task::spawn_blocking(|| -> std::io::Result<u64> {
         use std::io::Read;
@@ -291,8 +412,245 @@ mod tests {
         state.native_lease = Some(Arc::new(Mutex::new(NativeManagement {
             token: Some(7),
             accepting: true,
+            initialized_off: [None; 2],
         })));
         Arc::new(Mutex::new(state))
+    }
+
+    #[test]
+    fn initializer_proof_rejects_stale_authority_fault_and_wrong_domain() {
+        // Explicit synthetic integer fixtures exercise rejection predicates;
+        // they never stand in for a kernel ioctl or a real Complete.
+        for operation in [5, 6] {
+            let reference = InitializationOff {
+                generation: 23,
+                token: 7,
+                request_id: 41,
+                operation,
+            };
+            let snapshot = SleControllerSnapshot {
+                generation: 23,
+                dev_index: 2,
+                profile: 1,
+                flags: 1,
+                ..Default::default()
+            };
+            let management = slk_protocol::SleManagementQuery {
+                generation: 23,
+                lease: 7,
+                version: 1,
+                flags: 1,
+                mode: 1,
+                state: 1,
+                ..Default::default()
+            };
+            let result = slk_protocol::SleDiscoveryResult {
+                generation: 23,
+                request_id: 41,
+                operation,
+                version: 1,
+                profile: 1,
+                state: 3,
+                dev_index: 2,
+                radio_adv: 1,
+                radio_scan: 1,
+                opcode: if operation == 5 { 0x0c05 } else { 0x1002 },
+                step: if operation == 5 { 1 } else { 2 },
+                count: if operation == 5 { 2 } else { 3 },
+                power_valid: u8::from(operation == 5),
+                selected_power: if operation == 5 { 20 } else { 0 },
+                ..Default::default()
+            };
+            assert!(validate_initialization_off(reference, snapshot, management, result).is_ok());
+            let mut other_on = result;
+            if operation == 5 {
+                other_on.radio_scan = 2;
+            } else {
+                other_on.radio_adv = 2;
+            }
+            assert!(validate_initialization_off(reference, snapshot, management, other_on).is_ok());
+            for invalid in [
+                slk_protocol::SleDiscoveryResult {
+                    generation: 24,
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult {
+                    request_id: 42,
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult {
+                    operation: if operation == 5 { 2 } else { 4 },
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult { flags: 1, ..result },
+                slk_protocol::SleDiscoveryResult { state: 2, ..result },
+                slk_protocol::SleDiscoveryResult {
+                    state: 4,
+                    status: 0x0b,
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult {
+                    error: -125,
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult {
+                    status: 0x0b,
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult {
+                    dev_index: 3,
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult {
+                    opcode: 0x0404,
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult { step: 0, ..result },
+                slk_protocol::SleDiscoveryResult { count: 1, ..result },
+                slk_protocol::SleDiscoveryResult {
+                    power_valid: u8::from(operation != 5),
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult {
+                    radio_adv: 0,
+                    ..result
+                },
+                slk_protocol::SleDiscoveryResult {
+                    radio_scan: 3,
+                    ..result
+                },
+            ] {
+                assert!(
+                    validate_initialization_off(reference, snapshot, management, invalid).is_err(),
+                    "{invalid:?}"
+                );
+            }
+            let mut own_on = result;
+            if operation == 5 {
+                own_on.radio_adv = 2;
+            } else {
+                own_on.radio_scan = 2;
+            }
+            assert!(validate_initialization_off(reference, snapshot, management, own_on).is_err());
+            for invalid in [
+                slk_protocol::SleManagementQuery {
+                    generation: 24,
+                    ..management
+                },
+                slk_protocol::SleManagementQuery {
+                    lease: 8,
+                    ..management
+                },
+                slk_protocol::SleManagementQuery {
+                    lease: 0,
+                    ..management
+                },
+                slk_protocol::SleManagementQuery {
+                    state: 2,
+                    ..management
+                },
+                slk_protocol::SleManagementQuery {
+                    mode: 2,
+                    ..management
+                },
+                slk_protocol::SleManagementQuery {
+                    flags: 0,
+                    ..management
+                },
+                slk_protocol::SleManagementQuery {
+                    error: -110,
+                    ..management
+                },
+            ] {
+                assert!(validate_initialization_off(reference, snapshot, invalid, result).is_err());
+            }
+            for invalid in [
+                SleControllerSnapshot {
+                    generation: 24,
+                    ..snapshot
+                },
+                SleControllerSnapshot {
+                    profile: 0,
+                    ..snapshot
+                },
+                SleControllerSnapshot {
+                    flags: 2,
+                    ..snapshot
+                },
+                SleControllerSnapshot {
+                    error: -110,
+                    ..snapshot
+                },
+            ] {
+                assert!(
+                    validate_initialization_off(reference, invalid, management, result).is_err()
+                );
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn initializer_query_never_falls_back_or_blocks_a_peer() {
+        let first = selected_null();
+        let peer = selected_null();
+        assert!(matches!(
+            initialization_off(&first, 2).await,
+            Err(zbus::fdo::Error::InvalidArgs(_))
+        ));
+        assert!(matches!(
+            initialization_off(&first, 5).await,
+            Err(zbus::fdo::Error::UnknownObject(_))
+        ));
+        first.lock().await.controller.generation = 23;
+        let lease = first.lock().await.native_lease.clone().unwrap();
+        let mut guard = lease.lock().await;
+        guard.initialized_off[0] = Some(InitializationOff {
+            generation: 23,
+            token: 7,
+            request_id: 41,
+            operation: 5,
+        });
+        let busy = tokio::time::timeout(Duration::from_millis(100), initialization_off(&first, 5))
+            .await
+            .unwrap();
+        assert!(busy.err().unwrap().to_string().contains("busy"));
+        assert!(matches!(
+            initialization_off(&peer, 5).await,
+            Err(zbus::fdo::Error::UnknownObject(_))
+        ));
+        guard.token = Some(8);
+        drop(guard);
+        assert!(matches!(
+            initialization_off(&first, 5).await,
+            Err(zbus::fdo::Error::UnknownObject(_))
+        ));
+        lease.lock().await.token = Some(7);
+        assert!(
+            initialization_off(&first, 5)
+                .await
+                .err()
+                .unwrap()
+                .to_string()
+                .contains("ENOTTY")
+        );
+        assert!(matches!(
+            initialization_off(&first, 6).await,
+            Err(zbus::fdo::Error::UnknownObject(_))
+        ));
+        lease.lock().await.accepting = false;
+        assert!(matches!(
+            initialization_off(&first, 5).await,
+            Err(zbus::fdo::Error::UnknownObject(_))
+        ));
+        first.lock().await.present = false;
+        assert!(
+            initialization_off(&first, 5)
+                .await
+                .err()
+                .unwrap()
+                .to_string()
+                .contains("registration removed")
+        );
     }
 
     #[test]

@@ -117,6 +117,8 @@ Commands:
   scan on [marker address]|off  Scan and optionally await a fresh matching report
   advertise on [32-hex-marker]   Start native beacon with a fresh random marker
   advertise off                 Stop native beacon
+  advertise initialized-off     Query real initializer OFF for untouched advertising
+  scan initialized-off          Query real initializer OFF for untouched scanning
   result <request-id>           Inspect retained native operation result
   cancel-discovery              Cancel both native policies and drain this device
   management                    Query native kernel management state without token

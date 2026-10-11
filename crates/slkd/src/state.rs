@@ -31,6 +31,16 @@ pub struct DeviceEntry {
 pub(crate) struct NativeManagement {
     pub token: Option<u64>,
     pub accepting: bool,
+    /// Correlation only, never cached radio success. A business admission or
+    /// lease withdrawal invalidates its domain before touching the kernel.
+    pub initialized_off: [Option<InitializationOff>; 2],
+}
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct InitializationOff {
+    pub generation: u64,
+    pub token: u64,
+    pub request_id: u64,
+    pub operation: u32,
 }
 pub(crate) type NativeLease = Arc<Mutex<NativeManagement>>;
 

@@ -120,6 +120,13 @@ impl AdapterIface {
     ) -> zbus::fdo::Result<slk_protocol::DiscoveryResultRecord> {
         crate::radio::result(&self.state, request_id).await
     }
+    /// Read-only actual op5/6 provenance for an untouched business domain.
+    async fn get_initialization_off(
+        &self,
+        operation: u32,
+    ) -> zbus::fdo::Result<slk_protocol::DiscoveryResultRecord> {
+        crate::radio::initialization_off(&self.state, operation).await
+    }
     /// Matched final Complete receipt; never substitute daemon observation time.
     async fn get_discovery_timing(
         &self,

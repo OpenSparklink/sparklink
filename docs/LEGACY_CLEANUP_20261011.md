@@ -314,7 +314,7 @@ cancel/abort/close/drain、完整并发/权限/移除。旧调用者/shared ring
 仍OPEN。最小socket、用户态SSAP、安全/Bond/Profile及完整S0–S6继续推进，
 北极星7/8、VM-only不变，部分成果不关闭整项 issue。
 
-### 当前固件模块调用审计（实施待回归）
+### 上批固件模块调用审计（清理候选，随后实施）
 
 K`016aa7ee6813`复核：`sle_fw.load_usb_firmware`仍被旧Rust USB probe调用，
 需等待drivers拥有固件迁移，不能盲删整个模块。立即删除候选是无人调用的
@@ -354,3 +354,19 @@ drain、全部owner/CAP/并发/removal/32-bit、精确期限上界或自然恢�
 每连接安全/Bond/Profile、四设备两组/Native/Proxy/PM/sandbox及完整S0–S6
 继续OPEN，北极星7/8。不关闭整项issue或合并draft。USB/HCC/DLI证据不是
 独立PHY嗅探；原生宿主对照未执行、历史物理xHCI warning仍未闭合。
+
+## 旧固件门面实际清理（新内核回归待执行）
+
+K`d38cada9120f`已删除无人调用的三组固件路径常量、未实际选版本的
+load_usb_firmware_versioned，以及无人读取且恒为true的FwDownloadResult.success。
+实际load_usb_firmware返回Result<usize>，唯一Rust USB probe接收size；错误和
+调用者fallback策略保持。fw模块global allow(dead_code)已删除，仍有调用者的
+真实固件加载没有盲删；Native WS73 drivers固件/HCC/BSLE路径未修改。模块
+文档移除未实现UART固件和版本选择宣称，固件请求失败保留真实错误信息。
+
+这是立即删除类的已实施小提交；仅编译/静态调用关系不能证明WS73路径保持，
+新内核正在严格构建，新VM需分别回归active原期限/稳定预算与原完整诊断/真实
+20+2。以前K016镜像资格不推广到新K。transport/serdev/dev/mgmt剩余lint、
+旧调用者/shared ring/fallback、driver/backend/parser迁移仍等待替代；C旧通用
+固件协议自身互通/回复验证尚未验收，不宣称本批完成其他backend固件支持。
+早期Managed release0x1e与自然根因/自主恢复、全部S0–S6继续OPEN，VM-only。

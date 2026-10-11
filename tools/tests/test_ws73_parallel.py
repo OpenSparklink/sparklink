@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import test_ws73_north_star as fixture_module
 from test_ws73_north_star import fixture as old_fixture, identity, pcap
-from ws73_parallel import EventReader, PREFIX, SEQUENCE, SCOPE, SUCCESS, corroborate, verify_records
+from ws73_parallel import EventReader, PREFIX, SEQUENCE, SCOPE, SUCCESS, abort_workers, corroborate, verify_records
 
 
 def fixture():
@@ -67,10 +67,11 @@ class ParallelTests(unittest.TestCase):
         self.assertFalse(p['full_goal_complete'])
 
     def test_missing_barrier_early_off_wrong_owner_and_reused_markers_rejected(self):
-        for change in ['worker-failed', 'same-pid', 'wrong-argv', 'root', 'caps', 'other-daemon', 'same-controller', 'same-marker', 'not-ready', 'missing-stage', 'missing-child', 'wrong-ack', 'early-off', 'wrong-round', 'missing-cleanup', 'synthetic']:
+        for change in ['worker-failed', 'aborted', 'same-pid', 'wrong-argv', 'root', 'caps', 'other-daemon', 'same-controller', 'same-marker', 'not-ready', 'missing-stage', 'missing-child', 'wrong-ack', 'early-off', 'wrong-round', 'missing-cleanup', 'synthetic']:
             r, c = fixture()
             a, b = [w['run'] for w in r['workers']]
             if change == 'worker-failed': r['workers'][1]['exit'] = 1
+            if change == 'aborted': r['failure_shutdown'] = [dict(pid=10, forced_kill=False)]
             if change == 'same-pid': r['workers'][1]['pid'] = r['workers'][0]['pid']
             if change == 'wrong-argv': r['workers'][1]['args'][6] = '1-1'
             if change == 'root': r['application_identity']['uids'] = [0]*4
@@ -154,3 +155,29 @@ class ParallelTests(unittest.TestCase):
                 with patch.object(ws73_target, 'ordinary_identity'), self.assertRaisesRegex(ValueError, 'four-device parallel RF requires'):
                     ws73_target._run(SimpleNamespace(**fields))
                 self.assertFalse(output.exists())
+
+    def test_actual_peer_abort_is_graceful_with_bounded_forced_kill(self):
+        for stuck in [False, True]:
+            processes, rows = [], []
+            reader = None
+            try:
+                for pair in range(2):
+                    ending = 'time.sleep(60)' if stuck else 'print(sys.stdin.readline().strip(),flush=True); sys.exit(7)'
+                    program = f'import json,time,sys; print({PREFIX!r}+json.dumps(dict(pair={pair},phase="ready",round=0,wait_wall_ns=time.time_ns())),flush=True); {ending}'
+                    processes.append(subprocess.Popen([sys.executable, '-c', program], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+                    rows.append(dict(stdout='', stderr=''))
+                reader = EventReader(processes, rows)
+                reader.waits(processes, 'ready', 0)
+                shutdown = abort_workers(processes, reader, timeout=.05 if stuck else 2)
+                for p in processes: p.wait(timeout=3)
+                while reader.watch.get_map(): reader.pump(.01)
+                self.assertTrue(all(r['sent'] for r in shutdown))
+                self.assertTrue(all(r['forced_kill'] == stuck for r in shutdown))
+                self.assertTrue(all(p.returncode == (-9 if stuck else 7) for p in processes))
+                if not stuck: self.assertTrue(all('parallel-abort' in r['stdout'] for r in rows))
+            finally:
+                for p in processes:
+                    if p.poll() is None: p.kill()
+                    p.wait()
+                    for pipe in [p.stdin, p.stdout, p.stderr]: pipe.close()
+                if reader: reader.watch.close()

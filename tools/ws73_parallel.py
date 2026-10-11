@@ -44,7 +44,10 @@ class PairRun(Run):
         print(PREFIX+json.dumps(row, separators=(',', ':')), flush=True)
         if not select.select([sys.stdin], [], [], 15)[0]:
             raise TimeoutError('bounded parallel peer barrier')
-        if sys.stdin.readline() != f'parallel-{phase}-{number}\n':
+        token = sys.stdin.readline()
+        if token == 'parallel-abort\n':
+            raise ValueError('parallel peer failed; perform bounded real cleanup')
+        if token != f'parallel-{phase}-{number}\n':
             raise ValueError('wrong parallel peer acknowledgement')
         row['ack_wall_ns'] = time.time_ns()
         self.save()
@@ -94,8 +97,16 @@ class PairRun(Run):
                         continue
                     try:
                         owner = self.read_registration(port)
-                        self.stop(owner, 'advertise')
-                        self.stop(owner, 'scan')
+                        failures = []
+                        for domain in ['advertise', 'scan']:
+                            try:
+                                self.stop(owner, domain)
+                            except Exception as error:
+                                failures.append(dict(domain=domain, error=str(error)))
+                        if failures:
+                            self.data['cleanup'].append(dict(port=port, status='FAILED', errors=failures))
+                            self.data['status'] = 'FAIL'
+                            continue
                         self.data['cleanup'].append(dict(port=port, status='STOP_CONFIRMED'))
                     except Exception as error:
                         self.data['cleanup'].append(dict(port=port, status='FAILED', error=str(error)))
@@ -148,6 +159,33 @@ class EventReader:
         return result
 
 
+def abort_workers(processes, reader, timeout=30):
+    """Request real worker cleanup; retain a bounded forced-kill fallback."""
+    rows = []
+    for process in processes:
+        if process.poll() is not None:
+            continue
+        row = dict(pid=process.pid, requested_wall_ns=time.time_ns(), sent=False, forced_kill=False)
+        rows.append(row)
+        try:
+            process.stdin.write(b'parallel-abort\n')
+            process.stdin.flush()
+            row['sent'] = True
+        except (BrokenPipeError, OSError) as error:
+            row['error'] = str(error)
+    deadline = time.monotonic()+timeout
+    while any(p.poll() is None for p in processes) and time.monotonic() < deadline:
+        if reader:
+            reader.pump(.01)
+        else:
+            time.sleep(.01)
+    for process in processes:
+        if process.poll() is None:
+            process.kill()
+            next(row for row in rows if row['pid'] == process.pid)['forced_kill'] = True
+    return rows
+
+
 def run_parallel(args):
     if len(args.ports) != 4 or len(set(args.ports)) != 4:
         raise ValueError('four distinct physical guest ports required')
@@ -193,9 +231,7 @@ def run_parallel(args):
     except (Exception, KeyboardInterrupt) as error:
         record.update(status='FAIL', error=str(error) or type(error).__name__)
     finally:
-        for process in processes:
-            if process.poll() is None:
-                process.kill()
+        record['failure_shutdown'] = abort_workers(processes, reader)
         for pair, process in enumerate(processes):
             process.wait()
             record['workers'][pair].update(exit=process.returncode, end_wall_ns=time.time_ns())
@@ -210,6 +246,8 @@ def run_parallel(args):
                 record['workers'][pair].update(run=json.loads(path.read_text()), artifact=file_record(path))
             if process.returncode:
                 record['status'] = 'FAIL'
+            for pipe in [process.stdin, process.stdout, process.stderr]:
+                pipe.close()
         save()
     if record['status'] == 'PARALLEL_RF_EVIDENCE_PENDING':
         try:
@@ -226,6 +264,8 @@ def verify_records(record):
             or record.get('status') != 'PARALLEL_RF_EVIDENCE_PENDING' or record.get('physical_unplug_acceptance') is not False
             or record.get('automatic_fault_recovery_acceptance') is not False or len(record['workers']) != 2):
         raise CaptureError('explicit four-device parallel evidence required')
+    if record.get('failure_shutdown'):
+        raise CaptureError('an aborted or forcibly killed worker cannot qualify')
     app = record['application_identity']
     if app['uids'] != [1000]*4 or any(int(app[k], 16) for k in ['cap_eff', 'cap_prm', 'cap_amb']):
         raise CaptureError('ordinary UID1000 without capabilities required')

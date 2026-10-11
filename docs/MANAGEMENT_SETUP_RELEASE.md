@@ -210,3 +210,16 @@ FIFO 调度临界区排入两个 typed policy，实际读取 Queued/opcode=0/ste
 uhubctl直接执行可用，sudo非交互执行仍要求密码；两次off/on均使四口重新枚举，
 这不证明WS73真的冷启动，也不代表自动恢复或根因已解决。后续VM失败现在自动
 保存现有boot_stage/error、warm、budget、failure_diagnostics等只读sysfs诊断。
+
+## 独立 VM 维护性寄存器复位（实验支撑，待执行）
+
+专用 `rebootstrap-init`/`ws73_vm_register_reset.py` 使用现有签名kernel、scratch
+NVMe/Btrfs及固件111。只允许显式QEMU scratch root、guest 1-1 WS73且无driver
+owner，确认完整VID/PID/runtime endpoints及usbfs ABI；读取volatile reset寄存器
+成功且reset位尚未置位时才写入。禁止libws73中读失败后直接写mask的降级。
+之后必须在同一guest端口看到真实boot双endpoint、再加载已有WS73模块进行
+固件/BSLE/真实DLI元数据初始化；设备消失或期限内不成功均失败。
+
+这是一次性实验维护工具，与默认daemon及正常验收启动完全隔离；无模拟回复，
+不代表自然故障RCA、无人工介入自动恢复、Managed cleanup或peer隔离通过。
+所有原始控制传输、usbmon、sysfs与错误保留。维护工具暂未纳入生产恢复状态机。

@@ -122,3 +122,30 @@ fn check_config_uses_real_validation_without_bus_or_controller_startup() {
     assert!(!implicit.status.success());
     assert!(String::from_utf8_lossy(&implicit.stderr).contains("--config"));
 }
+
+#[test]
+fn normalized_dump_resolves_overrides_with_the_actual_daemon_parser() {
+    let f = Fixture::new();
+    let path = f.0.join("normalized.conf");
+    fs::write(&path, "[ws73.defaults]\ntx_power_dbm=10\n[[ws73.adapters]]\naddress='00:01:09:32:54:cd'\n[ws73.adapters.policy]\nadvertising_interval_min_slots=1237\nadvertising_interval_max_slots=1237\n").unwrap();
+    let result = Command::new(env!("CARGO_BIN_EXE_slkd"))
+        .args(["--check-config", "--dump-ws73-policies", "--config"])
+        .arg(&path)
+        .env(
+            "DBUS_SYSTEM_BUS_ADDRESS",
+            "unix:path=/nonexistent/check-only-bus",
+        )
+        .output()
+        .unwrap();
+    assert!(result.status.success());
+    assert_eq!(
+        String::from_utf8(result.stdout).unwrap(),
+        "Ws73DefaultPolicy: version=3 adv_slots=1200..1200 tx_power_dbm=10 scan_slots=1600/800\nWs73AdapterPolicy: address=00:01:09:32:54:CD version=3 adv_slots=1237..1237 tx_power_dbm=127 scan_slots=1600/800\n"
+    );
+    let missing_mode = Command::new(env!("CARGO_BIN_EXE_slkd"))
+        .args(["--dump-ws73-policies", "--config"])
+        .arg(&path)
+        .output()
+        .unwrap();
+    assert!(!missing_mode.status.success());
+}

@@ -170,6 +170,11 @@ if [ -f /scratch-root-uuid ]; then
 fi
 config_args=''
 if [ -f /expected-discovery-config-sha256 ]; then
+    chown 0:0 /expected-discovery-config-sha256 /etc/sparklink/main.conf || fail 'frozen config ownership'
+    if [ -f /expected-discovery-policies.json ]; then
+        chown 0:0 /expected-discovery-policies.json || fail 'policy expectation ownership'
+        chmod 0444 /expected-discovery-policies.json || fail 'policy expectation mode'
+    fi
     expected=$(cat /expected-discovery-config-sha256)
     actual=$(/bin/busybox sha256sum /etc/sparklink/main.conf | awk '{print $1}')
     [ "$actual" = "$expected" ] || fail 'frozen discovery config hash'
@@ -201,7 +206,7 @@ elif grep -q 'ws73.recovery=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_recovery.py $daemon_hold_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/recovery-control" || fail 'artificial transport recovery control'
 elif grep -q 'ws73.parallel=1' /proc/cmdline; then
     parallel_offset=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.parallel_offset=/){sub(/^ws73.parallel_offset=/,"",$i);print $i}}' /proc/cmdline)
-    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_parallel.py run --ports 1-1 1-2 1-3 1-4 --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/parallel-control --second-pair-start-offset-ms ${parallel_offset:-0}" || fail 'four-device parallel control'
+    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_parallel.py run --ports 1-1 1-2 1-3 1-4 --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/parallel-control --policy-expectation /expected-discovery-policies.json --second-pair-start-offset-ms ${parallel_offset:-0}" || fail 'four-device parallel control'
 elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     daemon_remove_arg=''
     if grep -q 'ws73.daemon_remove=1' /proc/cmdline; then daemon_remove_arg='--daemon-cancel-remove'; fi

@@ -15,6 +15,7 @@ import uuid
 from ws73_native_root_smoke import digest
 from ws73_native_service_bundle import PROGRAMS, source_state
 from ws73_north_star import file_record
+from ws73_discovery_policy_capture import normalized_dump
 
 OPTIONS = ('native_module_tree', 'native_boot_smoke', 'native_service_bundle')
 
@@ -65,6 +66,24 @@ def checked_copy(source, target):
         raise ValueError('VM input changed while copying: ' + str(source))
 
 
+def freeze_policy_expectation(daemon, target, root, manifest, custom, command=None, result=None):
+    before = digest(target)
+    if result is None:
+        command = [str(daemon), '--check-config', '--dump-ws73-policies', '--config', str(target)]
+        result = subprocess.run(command, capture_output=True, text=True, timeout=15)
+    if result.returncode or digest(target) != before:
+        raise ValueError('staged daemon policy expectation rejected or changed')
+    data = {'custom_configuration': custom, 'config_sha256': before,
+            'daemon_dump': result.stdout, 'policies': normalized_dump(result.stdout)}
+    path = root / 'expected-discovery-policies.json'
+    path.write_text(json.dumps(data, indent=2) + '\n')
+    path.chmod(0o444)
+    manifest['policy_expectation'] = {'data': data, 'guest_sha256': digest(path),
+                                      'validator': file_record(daemon), 'validation_command': command,
+                                      'validation_exit': result.returncode}
+    (root / 'expected-discovery-config-sha256').write_text(before + '\n')
+
+
 def stage_discovery_config(source, daemon, root, manifest):
     """Freeze a private VM config and check it with the exact staged daemon.
 
@@ -79,12 +98,13 @@ def stage_discovery_config(source, daemon, root, manifest):
     checked_copy(source, target)
     if digest(target) != record['sha256']:
         raise ValueError('discovery config changed before validation')
-    command = [str(daemon), '--check-config', '--config', str(target)]
+    command = [str(daemon), '--check-config', '--dump-ws73-policies', '--config', str(target)]
     result = subprocess.run(command, capture_output=True, text=True, timeout=15)
     if result.returncode:
         raise ValueError('staged slkd rejected discovery config: ' + result.stderr[-4096:])
     if file_record(source) != record or digest(target) != record['sha256']:
         raise ValueError('discovery config changed during validation')
+    freeze_policy_expectation(daemon, target, root, manifest, True, command, result)
     manifest['inputs'].append(record)
     manifest['discovery_config'] = {
         'source': record, 'guest_path': '/etc/sparklink/main.conf',
@@ -105,13 +125,16 @@ def check_discovery_config_gate(package, args):
     """
     if 'discovery_config' not in package:
         return
-    if (args.command != 'run' or not getattr(args, 'qmp_hotplug', False)
+    if (args.command != 'run'
+            or not (getattr(args, 'qmp_hotplug', False) or getattr(args, 'parallel_pairs', False))
             or any(getattr(args, flag, False) for flag in (
-                'parallel_pairs', 'fault_recovery', 'daemon_cancel_remove',
+                'fault_recovery', 'daemon_cancel_remove',
                 'event_copy_verify', 'diagnostic_verify', 'active_deadline_verify',
                 'active_close_verify', 'setup_release_verify', 'managed_queue_verify',
                 'managed_partial_case', 'daemon_hold_case'))):
-        raise ValueError('custom discovery config requires separate two-radio QMP lifecycle gate')
+        raise ValueError('custom discovery config requires separate QMP or parallel RF gate')
+    if getattr(args, 'parallel_pairs', False) and not package.get('policy_expectation', {}).get('data', {}).get('custom_configuration'):
+        raise ValueError('custom parallel gate requires frozen policy expectation')
 
 
 def stage(args, manifest, root, source, copy_elf):
@@ -171,6 +194,9 @@ def stage(args, manifest, root, source, copy_elf):
     custom_config = getattr(args, 'native_discovery_config', None)
     if custom_config is not None:
         stage_discovery_config(custom_config, service_path / 'payload' / prefix / 'slkd', root, manifest)
+    else:
+        freeze_policy_expectation(service_path / 'payload' / prefix / 'slkd',
+                                  root / 'etc/sparklink/main.conf', root, manifest, False)
     for name in ('ws73.bin', 'wifi_cali.bin', 'btc_cali.bin', 'bsle_custom.bin', 'pm_config.bin'):
         if digest(root / 'lib/firmware/sparklink/ws73' / name) != digest(
                 root / 'usr/lib/firmware/sparklink/ws73' / name):

@@ -112,6 +112,31 @@ fn ws73_address(text: &str) -> Result<[u8; 6], ConfigError> {
 }
 
 impl Ws73Config {
+    /// Offline host configuration only, never firmware or RF qualification.
+    pub fn diagnostic_policies(&self) -> Result<String, ConfigError> {
+        self.validate()?;
+        let line = |prefix: &str, policy: libsparklink::Ws73DiscoveryPolicy| {
+            let (version, min, max, power, interval, window) = policy.parameters();
+            format!(
+                "{prefix} version={version} adv_slots={min}..{max} tx_power_dbm={power} scan_slots={interval}/{window}\n"
+            )
+        };
+        let mut result = line("Ws73DefaultPolicy:", self.defaults.build()?);
+        for adapter in &self.adapters {
+            let address = ws73_address(&adapter.address)?;
+            let text = address
+                .iter()
+                .map(|b| format!("{b:02X}"))
+                .collect::<Vec<_>>()
+                .join(":");
+            result.push_str(&line(
+                &format!("Ws73AdapterPolicy: address={text}"),
+                self.for_address(address)?,
+            ));
+        }
+        Ok(result)
+    }
+
     fn validate(&self) -> Result<(), ConfigError> {
         self.defaults.build()?;
         let mut addresses = std::collections::BTreeSet::new();

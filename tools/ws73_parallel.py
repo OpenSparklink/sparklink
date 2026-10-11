@@ -19,12 +19,22 @@ import time
 from ws73_north_star import Run, USB_ROOT, daemon_identity, file_record, ordinary_identity, stable, parse_result
 from ws73_capture import CaptureError, command_reply, physical_device_descriptors, json_identity
 from ws73_rf_rounds import corroborate_rounds, corroborate_stops
+from ws73_discovery_policy_capture import checked_expectation, query_proofs, wire_proofs, DEFAULT
 
 
 PREFIX = 'WS73_PARALLEL_EVENT:'
 SCOPE = 'real WS73 parallel pair RF'
 SUCCESS = 'PARALLEL_PAIR_RF_EVIDENCE_PENDING'
 SEQUENCE = [('ready', 0), *[(phase, n) for n in range(1, 21) for phase in ['start', 'matched']]]
+
+
+def policy_expectation(path):
+    path = path.resolve(strict=True)
+    record = file_record(path)
+    data = checked_expectation(json.loads(path.read_text()))
+    if file_record(path) != record:
+        raise ValueError('policy expectation changed while reading')
+    return {'file': record, 'data': data}
 
 
 def start_offset(value):
@@ -42,6 +52,7 @@ class PairRun(Run):
         super().__init__(args)
         self.barriers_active = False
         self.data['advertise_start_offset_ms'] = args.start_offset_ms
+        self.data['policy_expectation'] = policy_expectation(args.policy_expectation)
 
     def barrier(self, phase, number):
         row = dict(pair=self.args.pair, phase=phase, round=number, wait_wall_ns=time.time_ns())
@@ -92,6 +103,8 @@ class PairRun(Run):
             for record in [self.data['slctl'], *self.data['sources'], *self.data['artifacts'].values()]:
                 if file_record(record['path']) != record:
                     raise ValueError('parallel executable or source changed')
+            if policy_expectation(self.args.policy_expectation) != self.data['policy_expectation']:
+                raise ValueError('parallel policy expectation changed')
             self.data['status'] = self.SUCCESS
         except (Exception, KeyboardInterrupt) as error:
             self.data.update(status='FAIL', error=str(error) or type(error).__name__)
@@ -202,8 +215,9 @@ def run_parallel(args):
     offset = start_offset(args.second_pair_start_offset_ms)
     output = args.output.resolve()
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
-    record = dict(format_version=1, scope='four real WS73 two-pair parallel RF', status='RUNNING',
+    record = dict(format_version=2, scope='four real WS73 two-pair parallel RF', status='RUNNING',
                   application_identity=ordinary_identity(), stages=[], workers=[],
+                  policy_expectation=policy_expectation(args.policy_expectation),
                   second_pair_start_offset_ms=offset,
                   physical_unplug_acceptance=False, automatic_fault_recovery_acceptance=False)
     def save():
@@ -215,7 +229,9 @@ def run_parallel(args):
         for pair in range(2):
             argv = [sys.executable, str(Path(__file__).resolve()), 'pair', '--pair', str(pair), '--ports',
                     *args.ports[pair*2:pair*2+2], '--slctl', str(args.slctl), '--slkd-pid', str(args.slkd_pid),
-                    '--output', str(output/f'pair-{pair}'), '--start-offset-ms', str(offset if pair else 0)]
+                    '--output', str(output/f'pair-{pair}'),
+                    '--policy-expectation', record['policy_expectation']['file']['path'],
+                    '--start-offset-ms', str(offset if pair else 0)]
             row = dict(args=argv, start_wall_ns=time.time_ns(), stdout='', stderr='')
             record['workers'].append(row)
             process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -271,10 +287,13 @@ def run_parallel(args):
 
 
 def verify_records(record):
-    if (record.get('format_version') != 1 or record.get('scope') != 'four real WS73 two-pair parallel RF'
+    if (record.get('format_version') not in [1, 2] or record.get('scope') != 'four real WS73 two-pair parallel RF'
             or record.get('status') != 'PARALLEL_RF_EVIDENCE_PENDING' or record.get('physical_unplug_acceptance') is not False
             or record.get('automatic_fault_recovery_acceptance') is not False or len(record['workers']) != 2):
         raise CaptureError('explicit four-device parallel evidence required')
+    current = record['format_version'] == 2
+    if current:
+        checked_expectation(record['policy_expectation']['data'])
     if record.get('failure_shutdown'):
         raise CaptureError('an aborted or forcibly killed worker cannot qualify')
     offset = record.get('second_pair_start_offset_ms')
@@ -296,6 +315,11 @@ def verify_records(record):
         delay = offset if pair else 0
         if r.get('advertise_start_offset_ms') != delay or argv[-2:] != ['--start-offset-ms', str(delay)]:
             raise CaptureError('worker diagnostic start offset differs from parent')
+        if current:
+            if (r.get('policy_expectation') != record['policy_expectation']
+                    or argv[-4:-2] != ['--policy-expectation', record['policy_expectation']['file']['path']]):
+                raise CaptureError('both workers must use the frozen policy expectation')
+            query_proofs(r, record['policy_expectation']['data'])
         if len(r['initial']) != 2 or len(r['after']) != 2 or not all(stable(a, b) for a, b in zip(r['initial'], r['after'])):
             raise CaptureError('four registrations stay independently Ready')
         if r['daemon_before'] != r['daemon_after'] or r['bus_before'] != r['bus_after'] or r['bus_before']['pid'] != r['daemon_before']['pid']:
@@ -339,6 +363,8 @@ def verify_records(record):
 
 def corroborate(record, capture):
     owners = verify_records(record)
+    expectation = record.get('policy_expectation') if record['format_version'] == 2 else None
+    policies = wire_proofs(capture, owners, expectation['data']) if expectation else []
     pairs, used = [], set()
     for worker in record['workers']:
         r = worker['run']
@@ -382,7 +408,12 @@ def corroborate(record, capture):
     return dict(status='FOUR_REAL_PARALLEL_RF_CORROBORATED', pairs=pairs, overlaps=overlaps,
                 actual_pair_start_gaps_ns=[b['radio_commands'][2]['command']['wall_ns']-a['radio_commands'][2]['command']['wall_ns'] for a,b in zip(*pairs)],
                 second_pair_start_offset_ms=record['second_pair_start_offset_ms'],
-                default_parallel_gate_acceptance=record['second_pair_start_offset_ms'] == 0,
+                policy_expectation=expectation,
+                configured_parameter_proofs=policies,
+                policy_readback_proofs=[p for w in record['workers'] for p in query_proofs(w['run'], expectation['data'])] if expectation else [],
+                default_parallel_gate_acceptance=bool(expectation) and not expectation['data']['custom_configuration'] and expectation['data']['policies'] == {'defaults': DEFAULT, 'adapters': {}} and record['second_pair_start_offset_ms'] == 0,
+                custom_policy_parallel_contrast_acceptance=bool(expectation) and expectation['data']['custom_configuration'],
+                historical_parameter_scope=expectation is None,
                 parallel_offset_contrast_acceptance=record['second_pair_start_offset_ms'] != 0,
                 whole_concurrency_acceptance=False,
                 four_device_two_pair_rf_acceptance=True, physical_unplug_acceptance=False,
@@ -396,6 +427,8 @@ def main():
     parser.add_argument('--slctl', type=Path, required=True)
     parser.add_argument('--slkd-pid', type=int, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--policy-expectation', type=Path, required=True,
+                        help='immutable expectation produced by the actual staged daemon, not a TOML reimplementation')
     parser.add_argument('--pair', type=int, choices=[0, 1])
     parser.add_argument('--second-pair-start-offset-ms', type=start_offset, default=0,
                         help='explicit diagnostic contrast; default parallel gate remains offset 0')
@@ -407,6 +440,7 @@ def main():
     if args.pair is None or len(args.ports) != 2 or len(set(args.ports)) != 2 or args.second_pair_start_offset_ms:
         parser.error('worker requires explicit pair and two distinct ports')
     args.artifact = ['parallel_control='+str(Path(__file__).resolve()),
+                     'policy_verifier='+str(Path(__file__).with_name('ws73_discovery_policy_capture.py').resolve()),
                      'rf_verifier='+str(Path(__file__).with_name('ws73_rf_rounds.py').resolve())]
     return PairRun(args).execute()
 

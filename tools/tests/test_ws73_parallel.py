@@ -70,7 +70,8 @@ class ParallelTests(unittest.TestCase):
         self.assertFalse(p['physical_unplug_acceptance'])
         self.assertFalse(p['automatic_fault_recovery_acceptance'])
         self.assertFalse(p['full_goal_complete'])
-        self.assertTrue(p['default_parallel_gate_acceptance'])
+        self.assertFalse(p['default_parallel_gate_acceptance'])
+        self.assertTrue(p['historical_parameter_scope'])
         self.assertFalse(p['whole_concurrency_acceptance'])
 
     def test_explicit_offset_contrast_never_certifies_default_parallel_gate(self):

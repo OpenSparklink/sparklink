@@ -39,6 +39,10 @@ struct Cli {
     #[arg(long, requires = "config")]
     check_config: bool,
 
+    /// Print normalized WS73 policies while checking explicit configuration.
+    #[arg(long, requires = "check_config")]
+    dump_ws73_policies: bool,
+
     /// Bond metadata directory (no native key persistence is claimed).
     #[arg(long, default_value = "/var/lib/sparklink")]
     storage: String,
@@ -64,7 +68,11 @@ async fn main() -> anyhow::Result<()> {
     // does not establish firmware support or open controller authority.
     let config = DaemonConfig::startup(cli.config.as_deref())?;
     if cli.check_config {
-        println!("Configuration valid (syntax and host policy only).");
+        if cli.dump_ws73_policies {
+            print!("{}", config.ws73.diagnostic_policies()?);
+        } else {
+            println!("Configuration valid (syntax and host policy only).");
+        }
         return Ok(());
     }
 

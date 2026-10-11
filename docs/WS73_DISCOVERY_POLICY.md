@@ -83,8 +83,9 @@ TOML 和 SDK 数值范围不表示固件支持、实际发射功率或 RF 验收
 guest 在启动 daemon 前核对 SHA256、再校验，并导出实际配置与校验输出；
 daemon 显式加载该文件，缺失时不能回退到默认值。它不安装主机文件。
 
-首个自定义参数验收只允许独立双设备 `run --qmp-hotplug`。现有默认四设备
-和 Managed 注入验收不得带此配置，待其策略证明迁移后再开放。父进程仍将
+首批自定义参数验收只允许独立双设备 `run --qmp-hotplug`。随后四设备格式v2
+接通下述策略证明，允许独立 `--parallel-pairs` 对照；Managed 注入仍不得带
+自定义配置。父进程的双设备记录仍将
 自定义 RF 验收标为 false；只有终止后独立核对每个实际注册的策略查询、
 全部初始化/START 原始参数、Complete、随机 marker 空口与同 daemon 重注册
 的 receipt 才能验收。周期和功率分开实验，保留默认路径及所有失败证据。
@@ -140,3 +141,23 @@ python3 tools/ws73_target.py run --prepared <case-prepared> --output <fresh-case
 的范围标记，再分别开展周期/功率对照；保持默认0启动偏移，无测试sleep补偿。
 这两个案例不验收默认四设备、物理拔插、自然故障RCA、单只非人工恢复或整项
 Managed；全部原S0–S6/28项scope保持，相关issues继续开放。
+
+## 四设备参数证明格式v2
+
+`slkd --check-config --dump-ws73-policies --config <file>` 输出实际解析器的
+规范化默认值和地址覆盖，仍在总线/设备管理权前退出。prepare以精确staged
+daemon生成冻结的expectation，保存配置及expectation哈希；不在Python重写TOML
+解析或默认值继承规则。guest将expectation归root、设为0444，并显式加载经
+哈希核对的配置。两个普通用户worker必须引用同一expectation且前后不变。
+
+每项注册RF前后各一次Ready/show查询，核对generation/address/profile及
+全部请求策略；独立USB重算检查每个初始化/START的完整49字节广告与8字节扫描
+参数、真实成功Complete、每次选中功率原始字节。原RF40/20重叠、实际OFF、
+阴性对照、同daemon、随机marker与10秒期限均保持。
+
+只有格式v2、无自定义配置、规范化值严格为默认v3且启动偏移0，才可获得
+`default_parallel_gate_acceptance`。自定义配置通过时仅为
+`custom_policy_parallel_contrast_acceptance`，不可关闭默认并行issue。旧格式v1
+继续核对历史RF/时序，标记`historical_parameter_scope`，不补发缺失的完整参数
+资格。新合成回归拒绝配置/worker/argv不一致、缺失/失效/时序错误查询、广告
+周期/信道/功率或扫描窗口漂移、缺失domain和失败Complete；不作为实机证据。

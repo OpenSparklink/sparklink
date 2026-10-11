@@ -52,11 +52,11 @@ class NativeVMProfile(unittest.TestCase):
             daemon = base / 'slkd'
             daemon.write_bytes(b'fixture executable')
             manifest = {'inputs': []}
-            result = subprocess.CompletedProcess([], 0, 'valid', '')
+            result = subprocess.CompletedProcess([], 0, 'Ws73DefaultPolicy: version=3 adv_slots=1200..1200 tx_power_dbm=0 scan_slots=1600/800\n', '')
             with patch('ws73_vm_native_root.subprocess.run', return_value=result) as run:
                 stage_discovery_config(config, daemon, base / 'root', manifest)
             target = base / 'root/etc/sparklink/main.conf'
-            run.assert_called_once_with([str(daemon), '--check-config', '--config', str(target)],
+            run.assert_called_once_with([str(daemon), '--check-config', '--dump-ws73-policies', '--config', str(target)],
                                         capture_output=True, text=True, timeout=15)
             self.assertEqual(target.read_bytes(), config.read_bytes())
             self.assertEqual(manifest['inputs'], [file_record(config)])
@@ -102,11 +102,14 @@ class NativeVMProfile(unittest.TestCase):
         package = {'discovery_config': {}}
         check_discovery_config_gate({}, SimpleNamespace(command='support'))
         check_discovery_config_gate(package, SimpleNamespace(command='run', qmp_hotplug=True))
+        with self.assertRaisesRegex(ValueError, 'frozen policy'):
+            check_discovery_config_gate(package, SimpleNamespace(command='run', parallel_pairs=True))
+        check_discovery_config_gate({'discovery_config': {}, 'policy_expectation': {'data': {'custom_configuration': True}}}, SimpleNamespace(command='run', parallel_pairs=True))
         for flags in ({'command': 'support'}, {'command': 'run'},
-                      {'command': 'run', 'qmp_hotplug': True, 'parallel_pairs': True},
+
                       {'command': 'run', 'qmp_hotplug': True, 'daemon_cancel_remove': True},
                       {'command': 'run', 'qmp_hotplug': True, 'managed_partial_case': 'dup'}):
-            with self.subTest(flags=flags), self.assertRaisesRegex(ValueError, 'separate two-radio'):
+            with self.subTest(flags=flags), self.assertRaisesRegex(ValueError, 'separate QMP or parallel'):
                 check_discovery_config_gate(package, SimpleNamespace(**flags))
 
 

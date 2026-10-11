@@ -103,6 +103,7 @@ def prepare(args):
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
                   HERE/'ws73_vm_native_root.py',
+                  HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
                   HERE/'ws73_target_control.py',
@@ -194,7 +195,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -523,6 +524,10 @@ def _run(args):
             m['default_policy_acceptance'] = False
         if parallel and 'native_vm' not in package:
             raise ValueError('four-device gate requires qualified scratch-root native VM')
+        if parallel and 'policy_expectation' not in package:
+            raise ValueError('current four-device gate requires frozen policy expectation')
+        if 'policy_expectation' in package:
+            m['policy_expectation'] = package['policy_expectation']
         if event_copy and 'event_copy_probe_compile' not in package:
             raise ValueError('prepared VM does not contain the frozen live copy probe')
         if event_copy and 'native_vm' not in package:
@@ -768,6 +773,10 @@ def _run(args):
                     control=json.loads((share/'application/parallel-control/run.json').read_text())
                     if control['second_pair_start_offset_ms']!=parallel_offset:
                         raise ValueError('guest start offset differs from actual requested diagnostic')
+                    expectation = control['policy_expectation']
+                    if (expectation['data'] != package['policy_expectation']['data']
+                            or expectation['file']['sha256'] != package['policy_expectation']['guest_sha256']):
+                        raise ValueError('actual parallel policy expectation differs from frozen preparation')
                     m['parallel_corroboration']=corroborate_parallel(control,capture)
                     m['parallel_control']=file_record(share/'application/parallel-control/run.json')
                 if daemon_remove:

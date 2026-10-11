@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import struct
 import time
 
 
@@ -35,6 +36,15 @@ class Urb(ctypes.Structure):
 
 class AsyncFdClosed(RuntimeError):
     """The exclusive usbfs file was closed to join pending URBs."""
+
+
+def route_packet(sequence, descriptor, queue):
+    # ws73_wire_control / libws73 ws73_sle_qs_frame: USB_HCC_CONTROL_MSG,
+    # queue selection then ASSEM_RESET. No SoC register write or fake ACK.
+    if (type(sequence) is not int or not 0<=sequence<=0xffffffff
+            or (descriptor,queue) not in ((1,10),(0,0))):
+        raise ValueError('bounded BSLE route experiment only')
+    return struct.pack('<IIII',3,0,sequence,descriptor)+bytes([queue])+bytes(19)
 
 
 def async_register_read(fd):
@@ -112,6 +122,9 @@ def run(args):
     if Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU' or not Path('/scratch-root-uuid').is_file():
         raise ValueError('dedicated QEMU scratch root required')
     if ctypes.sizeof(Bulk)!=24 or ctypes.sizeof(Control)!=24:raise ValueError('qualified 64-bit usbfs ABI required')
+    route=bool(getattr(args,'runtime_route_before_module',False))
+    if route and (args.guest_usb_reset_before_read or args.sdk_wakeup_before_read or args.async_read_only):
+        raise ValueError('route comparison excludes other reset/read/wakeup modes')
     output=args.output;output.mkdir(parents=True,exist_ok=False)
     record=dict(status='STARTING',physical_acceptance=False,automatic_fault_recovery_acceptance=False,
                 natural_fault_root_cause_closed=False,managed_acceptance=False)
@@ -163,11 +176,23 @@ def run(args):
             record.update(register_before=raw.hex(),async_completions=completions,
                 register_write_not_requested=True,status='VM_ASYNC_REGISTER_READ_SUPPORT_PASS',finished_wall_ns=time.time_ns());save()
             return
-        transfer(2,setup_packet(False));raw=transfer(130,4);value=checked_reset_value(raw)
-        record['register_before']=raw.hex()
-        if not args.sdk_wakeup_before_read:record['register_write']=value.to_bytes(4,'little').hex()
-        save()
-        if not args.sdk_wakeup_before_read:
+        if route:
+            if 'ws73.runtime_route_lab=1' not in Path('/proc/cmdline').read_text().split():
+                raise ValueError('explicit VM runtime route boot required')
+            record.update(runtime_route_experiment=True,register_write_not_requested=True,route_transfers=[]);save()
+            for seq,descriptor,queue in [(0,1,10),(1,0,0)]:
+                packet=route_packet(seq,descriptor,queue)
+                row=dict(endpoint=1,data=packet.hex(),before_wall_ns=time.time_ns())
+                record['route_transfers'].append(row);save()
+                transfer(1,packet)
+                row['completed_wall_ns']=time.time_ns();save()
+            os.close(fd);fd=None
+        else:
+            transfer(2,setup_packet(False));raw=transfer(130,4);value=checked_reset_value(raw)
+            record['register_before']=raw.hex()
+            if not args.sdk_wakeup_before_read:record['register_write']=value.to_bytes(4,'little').hex()
+            save()
+        if not route and not args.sdk_wakeup_before_read:
             transfer(2,setup_packet(True))
             try:transfer(2,value.to_bytes(4,'little'))
             except OSError as error:
@@ -178,7 +203,7 @@ def run(args):
             interface,device=wait_interface(2,15)
             record.update(boot_mode_observed_wall_ns=time.time_ns(),boot_device=int((device/'devnum').read_text()))
             save()
-        else:
+        elif not route:
             record.update(register_write_not_requested=True,wakeup_only_experiment=True);save()
             os.close(fd);fd=None
         subprocess.run(['/bin/sh','/native-ws73-module.sh'],check=True)
@@ -197,7 +222,8 @@ def run(args):
                 if adapter is not None:adapter.close()
             if time.monotonic()>deadline:raise TimeoutError('real rebootstrap Setup metadata')
             time.sleep(.02)
-        record.update(status='VM_SDK_WAKEUP_RUNTIME_SETUP_PASS' if args.sdk_wakeup_before_read else 'VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS',finished_wall_ns=time.time_ns());save()
+        status='VM_RUNTIME_ROUTE_SETUP_PASS' if route else 'VM_SDK_WAKEUP_RUNTIME_SETUP_PASS' if args.sdk_wakeup_before_read else 'VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS'
+        record.update(status=status,finished_wall_ns=time.time_ns());save()
     except BaseException as error:
         record.update(status='FAIL',error=str(error),error_type=type(error).__name__,errno=getattr(error,'errno',None));save();raise
     finally:
@@ -208,4 +234,4 @@ def run(args):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');run(p.parse_args())
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');run(p.parse_args())

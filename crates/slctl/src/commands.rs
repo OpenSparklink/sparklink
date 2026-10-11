@@ -23,6 +23,7 @@ impl Context {
             "reports" => self.cmd_reports().await,
             "advertise" => self.cmd_advertise(args).await,
             "cancel-discovery" if args.len() == 1 => self.cmd_cancel_discovery().await,
+            "management" if args.len() == 1 => self.cmd_management().await,
             "result" => self.cmd_result(args.get(1).copied().unwrap_or("")).await,
             "show" => self.cmd_show().await,
             "scan" => {
@@ -356,6 +357,29 @@ impl Context {
             "policy cancellation changed generation"
         );
         println!("NativePoliciesCancelled: generation={confirmed}");
+        Ok(())
+    }
+
+    async fn cmd_management(&self) -> anyhow::Result<()> {
+        let proxy = self.adapter_proxy().await?;
+        let expected: u64 = proxy.get_property("Generation").await?;
+        let (generation, mode, state, flags, error, status, opcode): (
+            u64,
+            u32,
+            u32,
+            u32,
+            i32,
+            u32,
+            u32,
+        ) = tokio::time::timeout(
+            std::time::Duration::from_secs(3),
+            proxy.call("GetManagementStatus", &()),
+        )
+        .await??;
+        anyhow::ensure!(generation == expected, "management generation mismatch");
+        println!(
+            "NativeManagementStatus: generation={generation} mode={mode} state={state} flags={flags} errno={error} status=0x{status:02x} opcode=0x{opcode:04x}"
+        );
         Ok(())
     }
 

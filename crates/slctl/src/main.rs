@@ -119,6 +119,7 @@ Commands:
   advertise off                 Stop native beacon
   result <request-id>           Inspect retained native operation result
   cancel-discovery              Cancel both native policies and drain this device
+  management                    Query native kernel management state without token
   devices                       List discovered devices
   info <address>                Show device details
   pair <address>                Pair with device

@@ -9,6 +9,31 @@ fn failed(error: impl std::fmt::Display) -> zbus::fdo::Error {
     zbus::fdo::Error::Failed(error.to_string())
 }
 
+pub(crate) type ManagementRecord = (u64, u32, u32, u32, i32, u32, u32);
+
+fn public_management(q: slk_protocol::SleManagementQuery) -> ManagementRecord {
+    // The owning kernel File sees a credential. Ordinary D-Bus observers must
+    // never receive it, including while inspecting a failed handoff.
+    (
+        q.generation,
+        q.mode,
+        q.state,
+        q.flags,
+        q.error,
+        q.status,
+        q.opcode,
+    )
+}
+
+pub(crate) async fn management(state: &SharedState) -> zbus::fdo::Result<ManagementRecord> {
+    let (fd, generation) = selected(state).await?;
+    let query = tokio::task::spawn_blocking(move || fd.management_status(generation))
+        .await
+        .map_err(failed)?
+        .map_err(failed)?;
+    Ok(public_management(query))
+}
+
 async fn selected(state: &SharedState) -> zbus::fdo::Result<(Arc<Adapter>, u64)> {
     let st = state.lock().await;
     if !st.present {
@@ -246,6 +271,33 @@ mod tests {
             accepting: true,
         })));
         Arc::new(Mutex::new(state))
+    }
+
+    #[test]
+    fn management_projection_preserves_diagnostics_without_credential() {
+        let q = slk_protocol::SleManagementQuery {
+            generation: 23,
+            lease: u64::MAX,
+            mode: 1,
+            state: 1,
+            flags: 1,
+            error: -110,
+            status: 11,
+            opcode: 0x1002,
+            ..Default::default()
+        };
+        assert_eq!(public_management(q), (23, 1, 1, 1, -110, 11, 0x1002));
+        assert_eq!(
+            public_management(q),
+            public_management(slk_protocol::SleManagementQuery { lease: 0, ..q })
+        );
+    }
+
+    #[tokio::test]
+    async fn management_query_propagates_actual_ioctl_error() {
+        let state = selected_null();
+        let error = management(&state).await.unwrap_err().to_string();
+        assert!(error.contains("ENOTTY"), "{error}");
     }
 
     #[tokio::test]

@@ -110,6 +110,10 @@ impl AdapterIface {
     async fn cancel_discovery_policies(&self) -> zbus::fdo::Result<u64> {
         crate::radio::cancel_policies(&self.state).await
     }
+    /// Actual non-destructive kernel state; never expose the owning credential.
+    async fn get_management_status(&self) -> zbus::fdo::Result<crate::radio::ManagementRecord> {
+        crate::radio::management(&self.state).await
+    }
     async fn get_discovery_result(
         &self,
         request_id: u64,

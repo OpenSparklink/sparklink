@@ -7,6 +7,8 @@
 随后[每设备策略v3](WS73_DISCOVERY_POLICY.md)保留旧默认wire并通过真实双设备
 RF20+2/guest生命周期回归；随后两个冻结单变量配置各通过双设备RF22，
 见[周期与功率案例](WS73_DISCOVERY_POLICY.md)。默认四设备仍未验收。
+随后[四设备策略单变量矩阵](WS73_PARALLEL_POLICY_MATRIX.md)默认/周期/功率三例
+均FAIL，完整配置/参数证明一致；功率失败的清理缺口继续开放。
 
 ## 连续被动扫描对照：失败并恢复原策略
 

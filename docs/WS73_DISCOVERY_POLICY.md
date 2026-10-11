@@ -161,3 +161,7 @@ daemon生成冻结的expectation，保存配置及expectation哈希；不在Pyth
 继续核对历史RF/时序，标记`historical_parameter_scope`，不补发缺失的完整参数
 资格。新合成回归拒绝配置/worker/argv不一致、缺失/失效/时序错误查询、广告
 周期/信道/功率或扫描窗口漂移、缺失domain和失败Complete；不作为实机证据。
+
+格式v2已执行[三个四设备单变量案例](WS73_PARALLEL_POLICY_MATRIX.md)，均FAIL；
+配置/实际参数一致不等于RF40。新鲜OFF所属domain解析修复有离线原始Complete
+重算，重复OFF的0x0b仍失败；初始化OFF出处查询和实际失败清理验收继续开放。

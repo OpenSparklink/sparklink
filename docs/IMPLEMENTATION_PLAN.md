@@ -1,5 +1,14 @@
 # SparkLink / Linux 联合实施方案
 
+当前 production U`0acafc943f94` 已修复业务 RPC 等待交权后跨凭据 admission：
+交权期间立即 busy，用户显式重试。新实际编译服务/工具 U`ac3bbf33e392` 的
+VM70实机门禁通过，原成功回复暂留时六类业务/初始化 RPC 均7.85–8.79ms拒绝、
+原Cancelled历史仍可读、同行继续扫描，交权后真实START/STOP及RF20+2保持。
+1191包/零drop/taint0/QEMU0，原500ms期限不延长；人工 guest bulk 错误只作
+开发支撑。[问题、实机与fd源码复核](DAEMON_ADMISSION_HANDOFF.md)。正常VM70/
+维护20、四设备9/默认资格0；完整Managed/权限事件/默认并行/物理/自然恢复及
+原S0–S6保持开放。下文69/68计数均为原封存历史，不覆盖其失败或资格范围。
+
 当前新增测试工具 U`232c3b3a702b`：真实 VM69 独立通过初始化管理权撤销、
 64 个真实业务终态导致 result 淘汰、旧/新 guest generation 与同行保持扫描；
 同 slkd/bus 保持 RF20+2，1837包/零drop/taint0/QEMU0。实际编译 daemon 仍

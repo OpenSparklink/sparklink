@@ -999,3 +999,14 @@ run.json，捕获用`ws73_capture.read_capture`，RF另由`corroborate_passthrou
 28项原scope/14项整改/旧代码三类清理保持，未发布UAPI迁移后删除继续。
 自动恢复/根因未明/整项Managed仍OPEN，部分成果不关闭整项；goal active，
 VM-only，两个draft不合并。
+
+
+## 2026-10-12 交权期间的业务与初始化 RPC admission
+
+[生产修复与独立实机门禁](DAEMON_ADMISSION_HANDOFF.md)已阻止业务 RPC 排在
+per-device authority guard 后、在新管理权下默默执行；现在立即返回 busy，
+由调用者显式重试。新daemon同slkd/bus的真实held gate独立核对六类拒绝、
+原Cancelled结果、同行On、原回复排空后实际业务恢复及RF20+2。正常VM70/
+维护20，四设备9/默认资格0。历史原生fd生产源码与当前内核相同，但门禁
+范围不扩大；event/权限/全部RPC、强杀接任、物理/自然故障恢复和完整Managed
+仍开放，部分成果不关整项。详细来源、复现和receipt见上述文档。

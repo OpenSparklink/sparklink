@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_host_boundary, usb_properties, HostTimeline, SerialTimeoutSeal, lifecycle_trace, USB_LIFECYCLE_EVENTS
+from ws73_target import board_files, config_required, opened_usb_node, prepared, usb_host_boundary, usb_properties, HostTimeline, SerialTimeoutSeal, lifecycle_trace, USB_LIFECYCLE_EVENTS, live_runtime_owner, verify_recovery_lifecycle
 from ws73_north_star import _registration, file_record, healthy_native_runtime, registration, Run
 from ws73_target_control import SyntheticControlRun, PassthroughControlRun
 from types import SimpleNamespace
@@ -16,6 +16,37 @@ import ws73_target_guest as guest
 
 
 class TargetEnvironment(unittest.TestCase):
+    def test_runtime_owner_uses_live_port_not_pre_upload_address(self):
+        row=dict(path='1-2.1.4',bus=1,address=124,node='/dev/bus/usb/001/124',writable=True,
+                 interfaces=[dict(name='1-2.1.4:1.0',endpoints=5,driver=None)])
+        with patch('ws73_target.opened_usb_node',return_value=True) as owned:
+            result=live_runtime_owner('1-2.1.4',99,[row]);owned.assert_called_once_with(99,row['node'])
+        self.assertEqual(result,row);result['interfaces'][0]['endpoints']=2;self.assertEqual(row['interfaces'][0]['endpoints'],5)
+        for changes in [dict(address=True),dict(bus=True),dict(node='/dev/bus/usb/001/123'),dict(writable=False),
+                        dict(interfaces=[dict(name='1-2.1.4:1.0',endpoints=2,driver=None)]),
+                        dict(interfaces=[dict(name='1-2.1.4:1.0',endpoints=5,driver='other')])]:
+            with self.subTest(changes=changes),patch('ws73_target.opened_usb_node',return_value=True),self.assertRaises(ValueError):
+                live_runtime_owner('1-2.1.4',99,[dict(row,**changes)])
+        for rows in [[],[row,row]]:
+            with self.assertRaises(ValueError):live_runtime_owner('1-2.1.4',99,rows)
+        with patch('ws73_target.opened_usb_node',return_value=False),self.assertRaises(ValueError):
+            live_runtime_owner('1-2.1.4',99,[row])
+
+    def test_recovery_lifecycle_allows_only_original_rom_close_before_arm(self):
+        boot=dict(bus=1,address=123,interfaces=[dict(endpoints=2)])
+        warm=dict(bus=1,address=124,interfaces=[dict(endpoints=5)])
+        self.assertEqual(verify_recovery_lifecycle('42@100.999999:usb_host_close dev 1:123',101_000_000_000,[boot,warm]),[(1,123)])
+        for line in ['42@101.000000:usb_host_close dev 1:123',
+                     '42@102.000000:usb_host_close dev 1:124',
+                     '42@100.000000:usb_host_close dev 1:124',
+                     '42@100.000000:usb_host_reset dev 1:123',
+                     '42@100.000000:usb_host_open_failure dev 1:123, err -1',
+                     'usb_host_close dev 1:123',
+                     '42@100.000000:usb_host_close dev 1:123\n42@100.000001:usb_host_close dev 1:123']:
+            with self.subTest(line=line),self.assertRaises(ValueError):verify_recovery_lifecycle(line,101_000_000_000,[boot,warm])
+        for bad in [True,0,-1]:
+            with self.assertRaises(ValueError):verify_recovery_lifecycle('',bad,[boot])
+
     def test_active_deadline_gate_rejects_synthetic_and_release_modes_before_output(self):
         import ws73_target
         for changes in [dict(command='support'),dict(fault_recovery=False),dict(diagnostic_verify=True),

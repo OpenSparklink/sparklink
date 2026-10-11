@@ -460,3 +460,15 @@ VBUS。ROM首包失败也不能仅用运行态HCC memory-credit0解释。现有g
 可安全重试的边界、总期限、原错误记录及重枚举等待；部分固件/寄存器写入不能
 直接重放。先定位共同bulk故障并恢复真实查询，再执行完整Managed和活动同行
 门禁。自然RCA、无人工恢复、四设备及整项issues继续OPEN，历史RF证据保持。
+
+## 冷启动后的测试工具地址绑定修复
+
+物理冷断电后原VM实际完成111上传和USB重枚举，target4主机地址123→124。
+原验证器把运行态一次故障标记与启动前地址比较，整轮FAIL原记录保留。
+新工具在arm前绑定当前固定端口、五端点runtime、实际child持有的USB fd；
+故障/hold核对使用该快照，不接受其他设备或未持有的node。只允许初始ROM
+owner各一次且发生在arm前的close；运行态close、任何reset/open failure、
+重复close或缺少时间戳均拒绝。此改动仅测试工具，不更改正式Linux/Rust驱动。
+294工具测试通过；冷启动原抓包的独立复核与新工具实机状态另行封存。
+人工冷断电不计自动恢复，Unknown Setup队列子门禁不替代confirmed-Off完整
+初始化或活动Ready同行。原bulk根因/自然恢复与整项issues继续OPEN。

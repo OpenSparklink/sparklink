@@ -283,6 +283,46 @@ def opened_usb_node(pid,node,proc=Path('/proc')):
     return False
 
 
+def live_runtime_owner(port, pid, inventory):
+    """Bind a test pulse to this child's current port after firmware re-enumeration."""
+    matches = [row for row in inventory if row.get('path') == port]
+    if len(matches) != 1:
+        raise ValueError('one current selected host port required')
+    row = matches[0]
+    bus = usb_properties(port, 0)['hostbus']
+    if (type(row.get('bus')) is not int or row['bus'] != bus
+            or type(row.get('address')) is not int or not 1 <= row['address'] <= 127
+            or row.get('node') != f"/dev/bus/usb/{bus:03}/{row['address']:03}"
+            or row.get('writable') is not True
+            or row.get('interfaces') != [dict(name=port+':1.0', endpoints=5, driver=None)]
+            or not opened_usb_node(pid, row['node'])):
+        raise ValueError('current unowned runtime interface and live child USB fd required')
+    return json.loads(json.dumps(row))
+
+
+def verify_recovery_lifecycle(trace, armed_wall_ns, initial_devices):
+    """Only proven initial ROM owners may close before the fault pulse."""
+    from decimal import Decimal
+    if type(armed_wall_ns) is not int or armed_wall_ns <= 0:
+        raise ValueError('exact recovery arm time required')
+    boot = {(r['bus'], r['address']) for r in initial_devices
+            if r['interfaces'] and all(i['endpoints'] == 2 for i in r['interfaces'])}
+    seen = set()
+    for line in trace.splitlines():
+        if not re.search(r'usb_host_(close|reset|open_failure) dev ', line):
+            continue
+        match = re.fullmatch(r'\d+@(\d+\.\d+):usb_host_(close|reset|open_failure) dev (\d+):(\d+)(?:,.*)?', line)
+        if not match:
+            raise ValueError('timestamped USB owner lifecycle action required')
+        stamp, action, bus, address = match.groups()
+        identity = (int(bus), int(address))
+        if (action != 'close' or int(Decimal(stamp)*1_000_000_000) >= armed_wall_ns
+                or identity not in boot or identity in seen):
+            raise ValueError('protocol recovery unexpectedly closed/reset a USB owner')
+        seen.add(identity)
+    return sorted(seen)
+
+
 USB_LIFECYCLE_EVENTS = (
     'usb_port_attach', 'usb_port_detach',
     'usb_host_open_started', 'usb_host_open_success', 'usb_host_open_failure',
@@ -538,8 +578,12 @@ def _run(args):
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
                     text=transcript.decode(errors='replace')
                     if hold:
+                        if hold.phase == 'arm_ready' and (hold.folder/'hold-arm_ready.json').exists():
+                            hold.record['host_identity_at_arm'] = live_runtime_owner(
+                                args.ports[0], process.pid, lab.inventory())
                         hold.poll(monitor)
                     if recovery and hotplug_phase==0 and 'WS73_TARGET_RECOVERY_INJECT_READY' in text:
+                        host_at_arm = live_runtime_owner(args.ports[0], process.pid, lab.inventory())
                         target={'path':'/machine/peripheral/ws73_0'}
                         if monitor.execute('qom-get',{**target,'property':'test-runtime-in-errors'})!=0:
                             raise ValueError('fresh injection counter required')
@@ -547,7 +591,7 @@ def _run(args):
                         if monitor.execute('qom-get',{**target,'property':'test-runtime-in-error-once'}) is not True:
                             raise ValueError('one-shot fault pulse did not arm')
                         m['fault_injection']={'method':'QMP_GUEST_TRANSPORT_ERROR_ONCE','guest_slot':0,
-                                              'armed_wall_ns':time.time_ns(),'physical_acceptance':False,
+                                              'armed_wall_ns':time.time_ns(),'host_identity_at_arm':host_at_arm,'physical_acceptance':False,
                                               'automatic_fault_recovery_acceptance':False}
                         channel.sendall(b'recovery-injected\n');hotplug_phase=1
                     if timeout_seal is not None:
@@ -629,12 +673,12 @@ def _run(args):
                     identities=[*control['initial'],control['replacement']]
                     injection=(output/'qemu-stderr.log').read_text()
                     markers=re.findall(r'WS73_TEST_RUNTIME_IN_ERROR: dev (\d+):(\d+) ep 81 host_status=0 discarded_bytes=(\d+) injected_count=(\d+)',injection)
-                    expected=devices[args.ports[0]]
+                    expected=m['fault_injection']['host_identity_at_arm']
                     if len(markers)!=1 or tuple(map(int,markers[0][:2]))!=(expected['bus'],expected['address']) or int(markers[0][2])<=0 or markers[0][3]!='1':
                         raise ValueError('exact one target-only artificial successful-host-transfer injection required')
                     trace=(output/'usb-lifecycle.log').read_text()
-                    if re.search(r'usb_host_(close|reset|open_failure) dev ',trace):
-                        raise ValueError('protocol recovery unexpectedly closed/reset a USB owner')
+                    m['fault_injection']['initial_rom_closes'] = verify_recovery_lifecycle(
+                        trace, m['fault_injection']['armed_wall_ns'], [devices[p] for p in args.ports])
                     m['fault_injection']['consumed_marker']=markers[0]
                 packets=check_capture_stats((share/'capture-stats.txt').read_text())
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
@@ -648,7 +692,7 @@ def _run(args):
                 if partial_gate:
                     from ws73_management_partial import corroborate as corroborate_partial
                     probe=json.loads((share/'managed-partial/run.json').read_text())
-                    m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),devices[args.ports[0]])
+                    m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
                     m['live_managed_partial']=file_record(share/'managed-partial/run.json')
                 if queued_gate:
                     from ws73_management_queued import corroborate as corroborate_queued
@@ -662,7 +706,7 @@ def _run(args):
                         raise ValueError('actual close evidence must match requested gate')
                     m['active_deadline_hold']['corroboration']=corroborate(
                         probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),
-                        (share/'kernel.log').read_text(),identities[0],identities[1],devices[args.ports[0]])
+                        (share/'kernel.log').read_text(),identities[0],identities[1],hold.record['host_identity_at_arm'])
                     m['live_active_deadline']=file_record(share/'active-deadline/run.json')
                 if event_copy:
                     from ws73_event_copy_probe import verify_cases
@@ -697,7 +741,7 @@ def _run(args):
                         from ws73_capture import corroborate_diagnostic
                         _,cancel_proofs=corroborate_diagnostic(control,capture,probe)
                         m['diagnostic_hold']['corroboration']=corroborate_host_hold(
-                            hold.record,probe,cancel_proofs,(output/'qemu-stderr.log').read_text(),devices[args.ports[0]])
+                            hold.record,probe,cancel_proofs,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
                     if len(probe['cli_queries'])!=4:
                         raise ValueError('actual diagnostic CLI query gates missing')
                     m['live_diagnostic']=file_record(share/'diagnostic/run.json')

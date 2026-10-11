@@ -108,7 +108,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_managed_queue_probe.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
@@ -161,6 +161,12 @@ def prepare(args):
         subprocess.run(compile_setup, check=True)
         manifest['setup_release_probe_compile'] = compile_setup
         programs['setup-release-probe'] = setup_probe
+        queued_probe = output/'managed-queue-probe'
+        compile_queued = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
+                          '-iquote'+str(LINUX/'include/uapi/linux'),str(HERE/'ws73_managed_queue_probe.c'),'-o',str(queued_probe)]
+        subprocess.run(compile_queued, check=True)
+        manifest['managed_queue_probe_compile'] = compile_queued
+        programs['managed-queue-probe'] = queued_probe
         programs.update({name:USERSPACE/'target/debug'/name for name in ['slkd','slctl','slkconfig','slkmon','slkdump']})
         programs['bus-policy-probe'] = USERSPACE/'target/debug/examples/bus_policy_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
@@ -187,7 +193,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -364,6 +370,9 @@ def _run(args):
     if active_close_gate and bool(getattr(args,'active_deadline_verify',False)):
         raise ValueError('select one active deadline or last-file-close gate')
     setup_gate=bool(getattr(args,'setup_release_verify',False))
+    queued_gate=bool(getattr(args,'managed_queue_verify',False))
+    if queued_gate and (support or not recovery or not setup_gate):
+        raise ValueError('Managed queued gate requires real recovery VM and Setup attachment gate')
     if setup_gate and (support or not recovery):
         raise ValueError('Setup release requires explicit real fault-recovery VM mode')
     if active_gate and (support or not recovery or diagnostic or cancellation or deadline_gate or autonomous_gate):
@@ -393,6 +402,7 @@ def _run(args):
     m['live_diagnostic_autonomous_requested']=autonomous_gate
     m['live_active_deadline_requested']=active_gate
     m['live_active_close_requested']=active_close_gate
+    m['live_managed_queue_requested']=queued_gate
     m['live_setup_release_requested']=setup_gate
     if setup_gate:
         m['setup_release_verifier']=file_record(HERE/'ws73_management_setup.py')
@@ -408,6 +418,8 @@ def _run(args):
             raise ValueError('live copy gate requires the qualified scratch-root VM profile')
         if setup_gate and ('setup_release_probe_compile' not in package or 'native_vm' not in package):
             raise ValueError('Setup release requires frozen probe and qualified scratch-root VM')
+        if queued_gate and ('managed_queue_probe_compile' not in package or 'native_vm' not in package):
+            raise ValueError('Managed queue gate requires frozen probe and scratch-root VM')
         if active_gate and 'native_vm' not in package:
             raise ValueError('active retirement requires qualified scratch-root VM')
         if diagnostic and ('diagnostic_probe_compile' not in package or 'native_vm' not in package):
@@ -428,7 +440,7 @@ def _run(args):
         if any(c in str(share) for c in [',','\n']):raise ValueError('QEMU evidence share path must not contain option delimiters')
         with tempfile.TemporaryDirectory(prefix='ws73-target-') as tmp:
             serial=Path(tmp)/'serial.sock';qmp=Path(tmp)/'qmp.sock'
-            command=[package['qemu']['path'],'-machine','q35,accel=kvm','-cpu','host','-m','1024M','-smp','2',
+            command=[package['qemu']['path'],'-machine','q35,accel=kvm','-cpu','host','-m','1024M','-smp',('1' if queued_gate else '2'),
                      '-display','none','-monitor','none','-no-reboot','-nic','none',
                      '-chardev',f'socket,id=console,path={serial},server=on,wait=off','-serial','chardev:console',
                      '-qmp',f'unix:{qmp},server=on,wait=off','-kernel',str(args.prepared.resolve()/'bzImage'),
@@ -444,6 +456,7 @@ def _run(args):
                      (' ws73.active_deadline=1' if active_gate else '')+
                      (' ws73.active_close=1' if active_close_gate else '')+
                      (' ws73.setup_release=1' if setup_gate else '')+
+                     (' ws73.managed_queue=1' if queued_gate else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -611,6 +624,11 @@ def _run(args):
                     probe=json.loads((share/'setup-release/run.json').read_text())
                     m['setup_release_corroboration']=corroborate_setup(probe,capture)
                     m['live_setup_release']=file_record(share/'setup-release/run.json')
+                if queued_gate:
+                    from ws73_management_queued import corroborate as corroborate_queued
+                    probe=json.loads((share/'managed-queue/run.json').read_text())
+                    m['managed_queue_corroboration']=corroborate_queued(probe,capture)
+                    m['live_managed_queue']=file_record(share/'managed-queue/run.json')
                 if active_gate:
                     from ws73_active_deadline import corroborate
                     probe=json.loads((share/'active-deadline/run.json').read_text())
@@ -716,6 +734,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs=2,required=True)
+            cmd.add_argument('--managed-queue-verify',action='store_true',help='bounded one-vCPU FIFO real queued-policy cancellation; requires Setup and recovery gates; not ordinary concurrency acceptance')
             cmd.add_argument('--setup-release-verify',action='store_true',help='pre-daemon untouched Setup release/last-fd/dup gate; requires real fault-recovery scratch VM')
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')
             cmd.add_argument('--active-deadline-verify',action='store_true',help='separate pre-daemon real IN81 timeout/abort gate; requires real fault-recovery and excludes explicit-release diagnostic modes')

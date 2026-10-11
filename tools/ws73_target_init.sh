@@ -89,6 +89,9 @@ if grep -q 'ws73.setup_release=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_setup.py --output /evidence/setup-release > /evidence/setup-release-supervisor.log 2>&1 || fail 'untouched Setup lease release gate'
 fi
+if grep -q 'ws73.managed_queue=1' /proc/cmdline; then
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_queued.py --output /evidence/managed-queue > /evidence/managed-queue-supervisor.log 2>&1 || fail 'queued Managed cancellation gate'
+fi
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     # The runner attaches the first USB owner after capture readiness. Signal
     # before the diagnostic barrier, which needs that owner before slkd starts.

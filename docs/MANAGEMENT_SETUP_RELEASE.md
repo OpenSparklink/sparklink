@@ -178,3 +178,16 @@ backend/parser/默认路由/shared ring/旧UAPI等待新路径接通和回归后
 背压/所有权、SSAP/每连接安全/Agent/Bond/Profile、四设备两组、Native/Proxy/
 sandbox/发布及全部S0–S6/28项原scope保持，北极星7/8，VM-only，不关闭整项、
 不合并draft、完整goal active。
+
+## Managed Queued 专用真实设备门禁（待实机执行）
+
+新增显式 `--managed-queue-verify --setup-release-verify --fault-recovery`，仅可在
+合格的签名模块 scratch VM 内启用。单 vCPU、root 测试探针用小于 50ms 的
+FIFO 调度临界区排入两个 typed policy，实际读取 Queued/opcode=0/step=0 后
+覆盖 release、最后 fd close、dup 第一次 close 保持 Held 和最后 close。
+调度恢复后观察完整 Cancelled/-ECANCELED、Unknown/Setup 保持、peer metadata
+及 lease 不变，并核对包括间隙的整个区间两设备零 DLI 流量。
+
+这是特权测试调度支撑，不代表普通用户并发调度验收；不模拟 Complete、Off 或 Ready。
+现有两设备普通用户 RF20+2 仍为后续回归门禁。新探针的验证器通过负向测试，
+真实设备结果尚待执行。部分初始化及在途 reply 清理、自动恢复和自然故障根因仍开放。

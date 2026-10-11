@@ -183,13 +183,16 @@ def corroborate(record, capture):
             if [v['opcode'] for v in commands]!=[0xc02,0xc05,0x1001,0x1002,0x1002]:raise ValueError('complete captured bootstrap wire order required')
             adv=bytes.fromhex(commands[0]['params'])
             if len(adv)!=49 or adv[0]!=0 or adv[12:18]!=bytes(snapshot.address) or [v['params'] for v in commands[1:]]!=['0000000000','0000010040062003','0100','0000']:raise ValueError('qualified original bootstrap parameters required')
+            original_replies=[]
             for n,command in enumerate(commands):
                 stop=commands[n+1]['wall_ns'] if n+1<len(commands) else row['end_wall_ns']
                 replies=[v for v in capture['complete'] if (v['bus'],v['device'],v['opcode'])==(command['bus'],command['device'],command['opcode']) and command['completion']['wall_ns']<=v['wall_ns']<stop]
                 if len(replies)!=1 or replies[0]['status']!=0:raise ValueError('original successful bootstrap Complete required')
                 value=bytes([decode(SleDiscoveryResult,row['advertising_result']).selected_power&255]).hex() if command['opcode']==0xc02 else ''
                 if replies[0]['value']!=value:raise ValueError('bootstrap reply/power mismatch')
-                bootstrap.append(dict(command=command,reply=replies[0]))
+                original_replies.append(replies[0]);bootstrap.append(dict(command=command,reply=replies[0]))
+            all_replies=[v for v in capture['complete'] if v['bus']==1 and v['device']==index+2 and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns']]
+            if original_replies!=all_replies or any(v['bus']==1 and v['device']==index+2 and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns'] for v in capture['failures']):raise ValueError('no extra or failed bootstrap reply permitted')
     return {'bootstrap':bootstrap,'confirmed_off':record.get('confirmed_off',False),'scope': 'six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices' ,
             'cases': 6, 'commands': 0, 'completions': 0, 'failures': 0,
             'start_wall_ns': start, 'end_wall_ns': end,

@@ -151,13 +151,15 @@ class ConfirmedOffTests(unittest.TestCase):
             with self.subTest(change=change),self.assertRaises(ValueError):verify_records(r)
 
     def test_original_start_stop_reply_order_and_payload_are_required(self):
-        for change in ['missing','status','start','duplicate','power','gap','bootstrap-gap']:
+        for change in ['missing','status','start','duplicate','power','gap','bootstrap-gap','extra-reply','failed-transfer']:
             r=confirmed_fixture();cap=confirmed_capture(r)
             if change=='missing':cap['complete'].pop(3)
             if change=='status':cap['complete'][4]['status']=11
             if change=='start':cap['commands'][3]['params']='0000'
             if change=='duplicate':cap['complete'].append(dict(cap['complete'][4]))
             if change=='power':cap['complete'][0]['value']='00'
+            if change=='extra-reply':cap['complete'].append(dict(cap['complete'][0],opcode=0x406))
+            if change=='failed-transfer':cap['failures'].append(dict(cap['complete'][0],status=-5))
             if change=='bootstrap-gap':cap['commands'].append(dict(cap['commands'][0],wall_ns=r['bootstrap'][0]['end_wall_ns']+1))
             if change=='gap':cap['commands'].append(dict(cap['commands'][0],wall_ns=r['cases'][1]['start_wall_ns']-1))
             with self.subTest(change=change),self.assertRaises(ValueError):corroborate(r,cap)

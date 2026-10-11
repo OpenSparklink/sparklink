@@ -1346,3 +1346,22 @@ Queued及partial实机矩阵，核对活动Ready同行、同slkd普通用户RF20
 通过数仍零，当前没有双设备Ready／活动同行证据，所有恢复/RCA及原整项保持
 OPEN。下一步需核对供电路径及成功状态基线/ROM分发或HCC资源初始化的可追溯
 证据，再选择受控实机对照。不能靠重复ganged hub重枚举或模型通过代替根因。
+
+## 当前实机门禁：ROM 首包也超时，供电拓扑已确认（2026-10-11）
+
+[ROM 启动原失败与独立抓包核对](evidence/ws73-rom-startup-timeout-20261011.json)：
+第4只两端点 ROM 模式在新隔离 VM 使用正式 K292 驱动，第一笔19字节
+`READM 0x40019380 4 ` OUT 即超时，phase1/-110；77包零丢包，原取消回执-2。
+失败 OUT 的 guest actual19 不代表物理成功；没有寄存器写入、111上传或 Setup。
+第3只未接入，Managed release／最后fd／dup／在途及活动Ready同行均未执行。
+正常启动累计8、维护20，新增真实Managed仍0；本批无hub循环或生产代码变更。
+
+用户确认 hub 无外接电源、WS73 无其他供电线路；该事实不等于测量了 off 时
+VBUS。ROM首包失败也不能仅用运行态HCC memory-credit0解释。现有ganged hub
+整组切电仅是受授权的维护操作，不能作为隔离单只恢复实现或验收。
+
+原boot budget记录uploads1、attempts0/cause0/result0，而boot_error=-110：
+启动路径尚无已验收的有限恢复，预算result也未反映此次错误。整改须明确每阶段
+可安全重试的边界、总期限、原错误记录及重枚举等待；部分固件/寄存器写入不能
+直接重放。先定位共同bulk故障并恢复真实查询，再执行完整Managed和活动同行
+门禁。自然RCA、无人工恢复、四设备及整项issues继续OPEN，历史RF证据保持。

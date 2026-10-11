@@ -624,3 +624,6 @@ cleanup。保留真实 WS73 普通用户双设备 20+2 回归。已有 Diagnosti
 自然启动/重枚举/消失根因、无人工拔插的完整恢复、历史物理 xHCI warning、
 完整能力来源/事件迁移/socket/SSAP/安全/Bond/Profile/四设备/Native/Proxy/PM/
 sandbox/发布及 S0–S6、全部 28 项原 scope 仍 OPEN。VM-only、不关闭整项、不合并 draft。
+
+
+新完整 Rust 内核构建暴露 serdev 的遗留 `MAX_PAYLOAD_LEN` 未使用导入；已在独立提交 `292f9fec84b67d325055bff69c17ce3c7c81706d` 移除。原成功构建及该警告日志保留，重新构建待核对；此提交不修改 parser/frame/hardware 行为，Managed source gate 的实际 Host/core/queue/operation 字节保持。源码 CI38112681170 已九项 success；当前新镜像及 Managed 专用实机门禁尚未完成，整项保持开放。

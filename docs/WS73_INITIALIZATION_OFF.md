@@ -75,3 +75,49 @@ SHA256 `d31525f3f5d0003acd4c67cbdbbeaeca2f2f4a5152f4679f735833957534600e`。
 现有历史相应用例保留，不能从源码测试或 RF22 扩展为本 API 的完整矩阵。
 默认并行、完整 Managed、物理拔插、自然根因与不依赖人工拔插的自动恢复及
 完整 S0–S6/原28项 issues 继续开放，历史三例失败不改写。
+
+## 管理权、真实结果淘汰和 guest generation 的独立验收
+
+工具提交 U232c3b3a702b 新增单独的 `--initializer-lifecycle` 模式；仅允许
+默认配置的 Native VM 与 `--qmp-hotplug`，拒绝与注入、其他 Managed gate、
+四设备或自定义策略混用。353 项工具回归通过，合成 fixture 仍只验核对器。
+实际 daemon 保持 U7b1bd0464ec9、内核 K060011963b5e，测试工具的新 HEAD
+不能冒充本轮编译服务版本。生产源码和策略文件冻结哈希分别重新核对。
+
+真实双设备 VM69 已正常终止并独立重算原始 USB capture：
+
+- 初始真实 op5/6 结果可查询；目标 `cancel-discovery` 完成撤销/重获管理权后，
+  两个 initialized-off 查询都被拒绝。旧 op5/6 普通历史查询仍保持原 ID 和
+  operation，不能凭“历史仍可读”恢复旧管理轮次的初始化出处。目标 handoff
+  没有重复提交 radio 命令。
+- 另一只 WS73 的真实扫描保持 On，目标交接期间没有同行扫描控制命令；
+  同行未使用的广告初始化 OFF 仍可查询，随后真实扫描 STOP 成功。
+- 完成初段 20 轮角色交换后，只用 QMP 退役/重加目标 guest owner，旧 adapter
+  两个初始化查询均拒绝，generation 从 1 变为 3，同 slkd/bus 保持运行。
+- 新注册下完成 32 次真实广告 ON/OFF，即 64 个不同请求的终态业务操作，
+  超过当前容量 64 的保留边界。未被业务触碰的扫描初始化出处此时因真实
+  result 已 absent/evicted 而拒绝；普通历史查询也拒绝。不能因 radio 仍 Off
+  而生成新成功结果。最新真实业务 OFF 仍可读，同行继续扫描且注册不变。
+- 原始 capture 独立证明七项初始化查询 recipe、64 项完整真实业务 recipe、
+  两段同行真实扫描 ON/OFF，并与父进程、guest 的 proof 逐项一致；完整参数、
+  地址、随机数据、成功 Complete 和实际 selected power 均核对。最后两轮
+  RF 仍成功，整例 20+2 轮，1837 包/零 drop/taint0/QEMU0，UID1000/caps0。
+
+复现时先按已有 Native prepare 工作流准备**新**冻结镜像，随后：
+
+```sh
+python3 tools/ws73_target.py run --prepared <fresh-native-prepared> \
+  --output <new-evidence-directory> --ports 1-2.1.1 1-2.1.4 \
+  --qmp-hotplug --initializer-lifecycle --timeout 1800
+```
+
+[独立封存 receipt](evidence/ws73-initializer-lifecycle-real-20261012.json) 的 SHA256
+为 `f06b6e04af4ed66e967245c77192350220c26477d287c0a8bd3195ee6fde4aca`。
+另有18个只读观察窗口独立核对无所属设备 DLI 命令；结果淘汰拒绝不是重新提交
+初始化。精确工具提交的[CI38175391837](https://github.com/OpenSparklink/sparklink/actions/runs/38175391837)
+九项成功，CI与实机资格分别记录。
+
+此例没有关闭或 dup slkd 私有 fd，也没有暂停真实在途回复；这些 API 与 fd
+组合边界仍须独立验收。QMP 重新注册不能算物理拔插或自然故障自动恢复。
+正常 VM 累计69/维护20，四设备尝试仍9/默认资格0；原四设备失败及清理 receipt
+保持原状态，完整 Managed、物理拔插、自动恢复/根因与全部 S0–S6 仍开放。

@@ -690,3 +690,20 @@ close保持owner及Queued，最后close撤销；取消结果opcode0/step0/-ECANC
 VM-only不变；人工guest IN错误仅作开发支撑；上游人工冷断电只是诊断，VBUS未测，
 软件切电未恢复bulk、自然启动超时/重枚举/消失根因仍OPEN；不执行共享hub循环代替单设备恢复。
 28项原完整scope、两个draft未合并、整个goal active。
+
+### Later original physical replies (hardware acceptance pending)
+
+`--managed-real-later-step 1|2` requires the explicit selected partial gate and
+`--managed-ready-peer`. Advertising uses only step1 (original final STOP);
+scanning step1 holds original START and step2 holds original final STOP. This
+format8 gate remains separate from all synthetic support and historical formats.
+The host selector delivers one/two earlier successful original IN81 frames, then
+retains the next original frame; each host hash/length must match the captured
+Complete for that recipe step. All state/readbacks and original acknowledgments
+are preserved; no model Complete can qualify this gate. The original operation
+remains Cancelled, the 500ms deadline is unchanged, and only required Off barriers
+are allowed. Actual Ready Managed peer scanning spans cancellation/late reply/
+Free with exact successful peer traffic before and afterward. Fixtures cover nine
+step/fd combinations and rejection of wrong budget/hash/device/extra frames,
+model substitution, missing earlier replies, duplicate STOP and peer omission;
+they do not establish hardware acceptance.

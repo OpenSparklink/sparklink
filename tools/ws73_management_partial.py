@@ -68,13 +68,16 @@ def verify_records(record, cleanup_rejected=False):
     selected=record.get('selected_domain_cleanup',False)
     parameter_only=record.get('scan_parameter_cleanup',False)
     active_peer=record.get('active_ready_peer',False)
-    if type(active_peer) is not bool or active_peer and (not selected or synthetic or step or cleanup_rejected):
+    real_later=record.get('real_later_step',False)
+    if type(real_later) is not bool or real_later and (synthetic is not False or not selected or active_peer is not True or type(step) is not int or step not in [1,2] or parameter_only or cleanup_rejected):
+        raise ValueError('later actual host step requires independent Ready peer and exact selected gate')
+    if type(active_peer) is not bool or active_peer and (not selected or synthetic or step and not real_later or cleanup_rejected):
         raise ValueError('Ready peer requires real selected first-step cleanup')
     if type(parameter_only) is not bool or parameter_only and (selected is not True or record.get('domain')!='scanning'):
         raise ValueError('scan parameter-only cleanup requires explicit selected scanning gate')
-    if type(selected) is not bool or selected and (synthetic is not False or step or cleanup_rejected):
+    if type(selected) is not bool or selected and (synthetic is not False or step and not real_later or cleanup_rejected):
         raise ValueError('selected-domain cleanup requires explicit real first-step gate')
-    if type(step) is not int or not 0<=step< (2 if record.get('domain')=='advertising' else 3) or step and synthetic is not True:raise ValueError('bounded model-only later initialization step required')
+    if type(step) is not int or not 0<=step< (2 if record.get('domain')=='advertising' else 3) or step and synthetic is not True and not real_later:raise ValueError('bounded model-only later initialization step required')
     status='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS' if synthetic else 'MANAGED_PARTIAL_HELD_REPLY_PASS'
     if type(cleanup_rejected) is not bool or cleanup_rejected and (synthetic is not True or step and record.get('domain')=='scanning'):
         raise ValueError('explicit model-only cleanup refusal verification required')
@@ -83,7 +86,7 @@ def verify_records(record, cleanup_rejected=False):
         if (record.get('error')!='actual cleanup failed; preserve raw controller outcome'
                 or record.get('error_type')!='ValueError' or record.get('errno') is not None):
             raise ValueError('an arbitrary failed VM is not the expected controller refusal')
-    if (type(synthetic) is not bool or type(record.get('format_version')) is not int or record['format_version']!=(7 if active_peer else 6 if parameter_only else 5 if selected else 4 if step else 3)
+    if (type(synthetic) is not bool or type(record.get('format_version')) is not int or record['format_version']!=(8 if real_later else 7 if active_peer else 6 if parameter_only else 5 if selected else 4 if step else 3)
             or record.get('status')!=status
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False
             or record.get('daemon_running_during_hold') is not False
@@ -143,6 +146,9 @@ def verify_records(record, cleanup_rejected=False):
         raise ValueError('actual three host acknowledgements required')
     if not markers[0]['wall_ns']<clocks[0]<=clocks[1]<markers[1]['wall_ns']<clocks[2]<=clocks[3]<markers[2]['wall_ns']:
         raise ValueError('actual hold causality required')
+    if real_later:
+        from ws73_host_later_hold import verify_selector_rows
+        verify_selector_rows(acks,step)
     queries=record['peer_queries']
     if len(queries)!=(0 if active_peer else 3):raise ValueError('explicit peer wire activity required')
     observations=record['management_observations']
@@ -258,6 +264,9 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
         proof=corroborate_model_hold(host,record,replies[step],stderr)
         if proof['skipped_original_frames']!=[dict(serial=1,bytes=v['usb_length'],ordinal=i+1,sha256=v['usb_sha256']) for i,v in enumerate(replies[:step])]:
             raise ValueError('each earlier original model frame must match actual USB capture')
+    elif record.get('real_later_step'):
+        from ws73_host_later_hold import corroborate as corroborate_later
+        proof=corroborate_later(host,record,replies,stderr,expected)
     else:
         proof=corroborate_host_hold(host,{'records':record['markers'],'host_hold_acknowledgements':record['hold_acknowledgements']},
             [],stderr,expected,held_reply=replies[step])
@@ -275,7 +284,7 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
         from ws73_management_ready_peer import corroborate as corroborate_ready_peer
         ready_proof=corroborate_ready_peer(record,snapshots[1],capture)
     return dict(ready_peer_activity=ready_proof,scope=('one partial selected step and retained simulated terminal frame, actual kernel fd'
-                       if record['synthetic_support'] else 'one partial first-step and actual held late reply'),case=record['case'],domain=record['domain'],
+                       if record['synthetic_support'] else 'one later selected step and actual original held late reply' if record.get('real_later_step') else 'one partial first-step and actual held late reply'),case=record['case'],domain=record['domain'],
         initialization_step=step,commands=rows,replies=replies,host_hold=proof,peer_queries=peer,preparation=preparation,
         retained_original_final_stop=replies[step] if step==len(recipe)-1 else None,
         retained_advertising_off=preparation[-1] if preparation else None,
@@ -295,14 +304,17 @@ def run(args):
     selected=getattr(args,'selected_domain_cleanup',False)
     parameter_only=getattr(args,'scan_parameter_cleanup',False)
     active_peer=getattr(args,'ready_peer',False)
-    if type(step) is not int or not 0<=step<(2 if args.domain=='advertising' else 3) or step and synthetic is not True:raise ValueError('later steps require bounded explicit model support')
+    real_later=getattr(args,'real_later_step',False)
+    if type(step) is not int or not 0<=step<(2 if args.domain=='advertising' else 3) or step and synthetic is not True and not real_later:raise ValueError('later steps require bounded explicit model support')
     cmdline=Path('/proc/cmdline').read_text().split()
-    if type(selected) is not bool or selected!=('ws73.selected_domain_cleanup=1' in cmdline) or selected and (synthetic or step):
+    if type(selected) is not bool or selected!=('ws73.selected_domain_cleanup=1' in cmdline) or selected and (synthetic or step and not real_later):
         raise ValueError('matching explicit real selected-domain cleanup boot gate required')
     if type(parameter_only) is not bool or parameter_only!=('ws73.scan_parameter_cleanup=1' in cmdline) or parameter_only and (not selected or args.domain!='scanning'):
         raise ValueError('matching real scan parameter-only cleanup boot gate required')
-    if type(active_peer) is not bool or active_peer!=('ws73.managed_ready_peer=1' in cmdline) or active_peer and (not selected or synthetic or step or args.domain=='scanning' and not parameter_only):
+    if type(active_peer) is not bool or active_peer!=('ws73.managed_ready_peer=1' in cmdline) or active_peer and (not selected or synthetic or step and not real_later or args.domain=='scanning' and not parameter_only and not real_later):
         raise ValueError('matching real Ready peer first-step boot gate required')
+    if type(real_later) is not bool or real_later!=('ws73.real_later_step=1' in cmdline) or real_later and (synthetic or not selected or not active_peer or step not in [1,2] or parameter_only):
+        raise ValueError('matching actual later original host frame boot gate required')
     values=[v.split('=',1)[1] for v in cmdline if v.startswith('ws73.partial_step=')]
     if values!=([str(step)] if step else []):raise ValueError('exact matching later-step boot selector required')
     if type(synthetic) is not bool or synthetic!=('ws73.managed_partial_support=1' in cmdline):
@@ -314,13 +326,14 @@ def run(args):
     if subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode==0:
         raise ValueError('partial gate requires untouched Setup before daemon')
     folder=args.output; folder.mkdir(parents=True,exist_ok=False)
-    record=dict(format_version=7 if active_peer else 6 if parameter_only else 5 if selected else 4 if step else 3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
+    record=dict(format_version=8 if real_later else 7 if active_peer else 6 if parameter_only else 5 if selected else 4 if step else 3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
         physical_acceptance=False,automatic_fault_recovery_acceptance=False,
         daemon_running_during_hold=False,hold_acknowledgements=[],markers=[],peer_queries=[])
     if step:record['initialization_step']=step
     if selected:record['selected_domain_cleanup']=True
     if parameter_only:record['scan_parameter_cleanup']=True
     if active_peer:record['active_ready_peer']=True
+    if real_later:record['real_later_step']=True
     def save(): save_record(folder,record)
     def stage(phase,ack):
         value=dict(hold_phase=phase,wall_ns=time.time_ns());record['markers'].append(value);save()
@@ -475,6 +488,7 @@ if __name__=='__main__':
     p.add_argument('--initialization-step',type=int,default=0,help='model-only later terminal step; original deadline retained')
     p.add_argument('--synthetic-support',action='store_true',help='dedicated simulated USB VM only; never physical qualification')
     p.add_argument('--selected-domain-cleanup',action='store_true',help='real first-step cleanup; untouched Unknown remains Setup')
+    p.add_argument('--real-later-step',action='store_true',help='real original successful host frame selector, requires selected/Ready peer and later step')
     p.add_argument('--ready-peer',action='store_true',help='real independently Ready Managed scanning peer spans cleanup')
     p.add_argument('--scan-parameter-cleanup',action='store_true',help='real first-step scan parameters only; scan remains Unknown, no unselected START')
     run(p.parse_args())

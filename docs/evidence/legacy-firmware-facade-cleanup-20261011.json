@@ -1,6 +1,6 @@
 {
   "status": "IMPLEMENTED_SOURCE_CALL_AUDIT_NEW_KERNEL_VM_PENDING",
-  "kernel_head": "d38cada9120f39e4ae703631ad0a3ba9174affd5",
+  "kernel_head": "f5f83d7eb970dbf49524e67f2150069cfbe6fe43",
   "removed": [
     "FW_BASE_PATH",
     "FW_USB_DEFAULT",
@@ -16,7 +16,7 @@
   "full_cleanup_acceptance": false,
   "real_ws73_new_kernel_acceptance": false,
   "source_sha256": {
-    "linux/net/sparklink/sle_fw.rs": "53522bba218d89658b5840c32b5584e1f9ccb2f89ce767344f62a121143d258c",
+    "linux/net/sparklink/sle_fw.rs": "4ea88e1ea71c80cc47b242331712184c0015cd4eca5ceb7280d6fd8bcd23302d",
     "linux/net/sparklink/sle_usb.rs": "b1c150adb5c5222f07fd26cc11d18fa31746259eb618b2c6559279bead8ec20c"
   },
   "remaining": [
@@ -24,5 +24,8 @@
     "C generic firmware wire short transfer/final reply validation and actual backend qualification",
     "other kernel global dead-code allowances and real caller migrations",
     "early Managed release/unknown cleanup, full recovery/RCA and full S0-S6"
-  ]
+  ],
+  "compile_correction": "Full kernel build rejected Display of kernel::error::Error; log numeric to_errno instead, original error propagation unchanged.",
+  "first_failed_build_record_sha256": "0ec307ac4ecf685e5cb245d2f65b72ef201544ef3a668c484f775160f6640d7c",
+  "first_failed_build_log_sha256": "ab2e286520e79b3fb54332072ba15b2548e12d6eaf3302c18e517a544c859389"
 }

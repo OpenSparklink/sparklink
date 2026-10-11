@@ -370,3 +370,8 @@ load_usb_firmware_versioned，以及无人读取且恒为true的FwDownloadResult
 旧调用者/shared ring/fallback、driver/backend/parser迁移仍等待替代；C旧通用
 固件协议自身互通/回复验证尚未验收，不宣称本批完成其他backend固件支持。
 早期Managed release0x1e与自然根因/自主恢复、全部S0–S6继续OPEN，VM-only。
+
+全内核编译在首个清理提交捕获Error格式化E0277，未执行硬件；
+K`f5f83d7eb970`改为数值to_errno日志，原失败record/log SHA保留于
+[调用清理记录](evidence/legacy-firmware-facade-cleanup-20261011.json)。
+新编译和新VM仍是验收门禁，不能将源码CI或失败构建记作实机通过。

@@ -377,3 +377,10 @@ EP01/EP81 实际 libusb 返回均零，69包零丢包抓包证明两个 CLEAR_FE
 parent/hub/target suspend-time 增量零，四只 host inventory 一致；不能当作
 活动 Ready peer。私有观察器补丁／二进制封存，默认可变源码和二进制已精确
 恢复。标准端点清理没有恢复本次传输，不能据此宣布自然根因或自动恢复完成。
+
+寄存器只读对照另使用 `ws73.register_async_read_lab=1`，可加专用
+`ws73.register_clear_halt_lab=1` 清理固定 EP02/EP82。后者必须与复位、SDK唤醒、
+interface rebind 和路由模式互斥。异步 OUT16／IN4 保持原 ctypes URB／buffer
+至取消完成或独占 fd 关闭，分别保存提交、完成、原错误、取消请求／回收及
+关闭诊断；只读失败不降级为寄存器写或模块启动。源码／模型回归不能替代
+实际 libusb 返回与 USB 抓包核对，两只真实 Ready／Managed 条件仍开放。

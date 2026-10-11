@@ -5,9 +5,9 @@ import errno
 import sys
 import unittest
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, clear_runtime_route_endpoints, run
+from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, clear_runtime_endpoints, async_register_read, run
 
 class RegisterResetTests(unittest.TestCase):
     descriptor=bytes.fromhex('09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200')
@@ -35,7 +35,7 @@ class RegisterResetTests(unittest.TestCase):
                 return 0
             return self.state_reader(fd,request,arg)
         with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=ioctl):
-            clear_runtime_route_endpoints(77,record,lambda:None)
+            clear_runtime_endpoints(77,record,lambda:None)
         self.assertEqual(calls,[0xc0185500,0xc0185500,0x80045515,0x80045515,0xc0185500,0xc0185500])
         self.assertIs(record['physical_clear_halt_confirmed'],False)
         self.assertEqual([r['returned'] for r in record['clear_halt_transfers']],[0,0])
@@ -47,7 +47,7 @@ class RegisterResetTests(unittest.TestCase):
             if request==0x80045515:raise OSError(errno.EPIPE,'physical outcome not normalized')
             return self.state_reader(fd,request,arg)
         with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=ioctl),self.assertRaises(OSError):
-            clear_runtime_route_endpoints(77,record,lambda:None)
+            clear_runtime_endpoints(77,record,lambda:None)
         self.assertEqual(calls.count(0x80045515),1)
         self.assertEqual(record['clear_halt_transfers'][0]['errno'],errno.EPIPE)
         self.assertNotIn('usb_configuration_after_clear_halt',record)
@@ -57,8 +57,75 @@ class RegisterResetTests(unittest.TestCase):
         def ioctl(fd,request,arg):
             calls.append(request);raise OSError(errno.EPROTO,'bad configuration')
         with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=ioctl),self.assertRaises(ValueError):
-            clear_runtime_route_endpoints(77,{},lambda:None)
+            clear_runtime_endpoints(77,{},lambda:None)
         self.assertNotIn(0x80045515,calls)
+
+    def test_register_clear_halt_uses_only_fixed_register_endpoints(self):
+        endpoints=[];record={}
+        def ioctl(fd,request,arg):
+            if request==0x80045515:endpoints.append(int.from_bytes(arg,'little'));return 0
+            return self.state_reader(fd,request,arg)
+        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=ioctl):
+            clear_runtime_endpoints(77,record,lambda:None,register_read=True)
+        self.assertEqual(endpoints,[2,130]);self.assertEqual(record['clear_halt_scope'],'register-read EP02/EP82')
+        self.assertIs(record['physical_clear_halt_confirmed'],False)
+        with self.assertRaises(ValueError):clear_runtime_endpoints(77,{},lambda:None,register_read=1)
+
+    def test_register_clear_halt_refuses_mixed_or_missing_read_only_permission(self):
+        for override in [dict(async_read_only=False),dict(runtime_route_before_module=True),dict(guest_usb_reset_before_read=True),dict(sdk_wakeup_before_read=True),dict(guest_clear_halt_before_route=True),dict(permission=False)]:
+            args=SimpleNamespace(async_read_only=True,runtime_route_before_module=False,guest_set_interface_before_route=False,guest_usb_reset_before_read=False,sdk_wakeup_before_read=False,guest_clear_halt_before_route=False,guest_clear_halt_before_register_read=True)
+            permission=override.get('permission',True)
+            for k,v in override.items():setattr(args,k,v)
+            def read(p):return ('ws73.register_reset_lab=1 ws73.register_async_read_lab=1 ws73.clear_halt_lab=1'+(' ws73.register_clear_halt_lab=1' if permission else '')) if str(p)=='/proc/cmdline' else 'QEMU'
+            with self.subTest(override=override),patch('ws73_vm_register_reset.os.geteuid',return_value=0),patch.object(Path,'read_text',read),patch.object(Path,'is_file',return_value=True),patch('ws73_vm_register_reset.os.open') as opened:
+                with self.assertRaises(ValueError):run(args)
+                opened.assert_not_called()
+
+    def async_ioctl(self,mode):
+        submitted=[];cancelled=set()
+        def ioctl(fd,request,arg):
+            self.assertEqual(fd,77)
+            if request==0x8038550a:
+                urb=ctypes.cast(arg,ctypes.POINTER(Urb)).contents;pointer=ctypes.addressof(urb)
+                self.assertEqual((urb.endpoint,urb.length),(2,16) if not submitted else (130,4))
+                if urb.endpoint==2:self.assertEqual(ctypes.string_at(urb.buffer,urb.length),setup_packet(False))
+                submitted.append(pointer);return 0
+            if request==0x550b:
+                cancelled.add(arg.value);return 0
+            self.assertEqual(request,0x4008550d)
+            available=[p for p in submitted if mode=='success' or p in cancelled]
+            if mode=='close' and cancelled:ctypes.set_errno(errno.EIO);return -1
+            if not available:ctypes.set_errno(errno.EAGAIN);return -1
+            pointer=available[0];submitted.remove(pointer);urb=ctypes.cast(pointer,ctypes.POINTER(Urb)).contents
+            urb.status=-errno.ENOENT if pointer in cancelled else 0;urb.actual=0 if pointer in cancelled else urb.length
+            if urb.endpoint==130 and not urb.status:ctypes.memmove(urb.buffer,b'\x01\x02\x03\x04',4)
+            ctypes.cast(arg,ctypes.POINTER(ctypes.c_void_p))[0]=pointer;return 0
+        return Mock(ioctl=Mock(side_effect=ioctl))
+
+    def test_actual_async_pointer_buffers_success_and_raw_diagnostics(self):
+        d={}
+        with patch('ws73_vm_register_reset.ctypes.CDLL',return_value=self.async_ioctl('success')):
+            value,completed=async_register_read(77,d)
+        self.assertEqual(value,b'\x01\x02\x03\x04');self.assertEqual([r['endpoint'] for r in completed],[2,130])
+        self.assertEqual(len(d['submitted']),2);self.assertEqual(d['completed'],completed)
+        self.assertEqual(d['cancel_requested'],[]);self.assertIs(d['fd_closed_to_join'],False)
+
+    def test_async_timeout_preserves_primary_error_and_joins_both_cancel_replies(self):
+        d={};clock=iter(n/10 for n in range(1000))
+        with patch('ws73_vm_register_reset.ctypes.CDLL',return_value=self.async_ioctl('timeout')),patch('ws73_vm_register_reset.time.monotonic',side_effect=lambda:next(clock)),patch('ws73_vm_register_reset.time.sleep'),patch('ws73_vm_register_reset.os.close') as close:
+            with self.assertRaises(TimeoutError):async_register_read(77,d)
+        self.assertEqual(d['original_error']['type'],'TimeoutError');self.assertEqual(d['completed'],[])
+        self.assertEqual([r['endpoint'] for r in d['cancel_requested']],[2,130])
+        self.assertEqual([(r['status'],r['actual']) for r in d['cancel_reaped']],[(-errno.ENOENT,0),(-errno.ENOENT,0)])
+        close.assert_not_called()
+
+    def test_async_reap_failure_closes_owned_fd_and_keeps_original_timeout(self):
+        from ws73_vm_register_reset import AsyncFdClosed
+        d={};clock=iter(n/10 for n in range(1000))
+        with patch('ws73_vm_register_reset.ctypes.CDLL',return_value=self.async_ioctl('close')),patch('ws73_vm_register_reset.time.monotonic',side_effect=lambda:next(clock)),patch('ws73_vm_register_reset.time.sleep'),patch('ws73_vm_register_reset.os.close') as close:
+            with self.assertRaises(AsyncFdClosed):async_register_read(77,d)
+        self.assertEqual(d['original_error']['type'],'TimeoutError');self.assertEqual(d['cancel_reap_errno'],errno.EIO)
+        self.assertIs(d['fd_closed_to_join'],True);close.assert_called_once_with(77)
 
     def test_clear_halt_explicit_mode_rejects_missing_route_permission_or_rebind(self):
         for route,rebind,permission in [(False,False,True),(True,False,False),(True,True,True)]:

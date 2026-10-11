@@ -34,6 +34,7 @@ interface_arg=''
 if grep -q 'ws73.interface_rebind_lab=1' /proc/cmdline; then interface_arg='--guest-set-interface-before-route'; fi
 clear_halt_arg=''
 if grep -q 'ws73.clear_halt_lab=1' /proc/cmdline; then clear_halt_arg='--guest-clear-halt-before-route'; fi
+if grep -q 'ws73.register_clear_halt_lab=1' /proc/cmdline; then clear_halt_arg="$clear_halt_arg --guest-clear-halt-before-register-read"; fi
 /bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $reset_arg $wake_arg $async_arg $route_arg $interface_arg $clear_halt_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
 result=$?
 dmesg > /evidence/maintenance/kernel.log

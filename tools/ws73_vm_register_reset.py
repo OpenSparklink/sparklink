@@ -91,18 +91,20 @@ def checked_single_runtime_interface(rows):
     return raw
 
 
-def clear_runtime_route_endpoints(fd,record,save):
-    """Bounded guest EP01/EP81 comparison, not physical success certification.
+def clear_runtime_endpoints(fd,record,save,*,register_read=False):
+    """Fixed route or read-only register endpoint comparison, not recovery.
 
     QEMU's original CLEAR_FEATURE emulation ignores libusb_clear_halt's return.
     A zero guest ioctl must therefore be corroborated by the private observer's
     actual host return; it never establishes Ready or production recovery.
     """
+    if type(register_read) is not bool:raise ValueError('fixed endpoint comparison mode required')
+    record['clear_halt_scope']='register-read EP02/EP82' if register_read else 'route EP01/EP81'
     record['usb_configuration_before_clear_halt']=read_usb_configuration(fd);save()
     before=checked_single_runtime_interface(record['usb_configuration_before_clear_halt'])
     record['clear_halt_transfers']=[]
     record['physical_clear_halt_confirmed']=False;save()
-    for endpoint in (1,129):
+    for endpoint in ((2,130) if register_read else (1,129)):
         row=dict(endpoint=endpoint,before_wall_ns=time.time_ns())
         record['clear_halt_transfers'].append(row);save()
         try:
@@ -119,7 +121,7 @@ def clear_runtime_route_endpoints(fd,record,save):
     if before!=after:raise ValueError('runtime descriptor changed during endpoint clear-halt')
 
 
-def async_register_read(fd):
+def async_register_read(fd,diagnostics=None,save=lambda:None):
     # SUBMITURB retains the userspace URB pointer. libc ioctl uses the stable
     # ctypes object directly, unlike fcntl's small-buffer temporary copy.
     if ctypes.sizeof(Urb)!=56:raise ValueError('qualified 64-bit usbfs URB ABI required')
@@ -129,6 +131,9 @@ def async_register_read(fd):
     urbs=[Urb(kind=3,endpoint=2,buffer=ctypes.addressof(out),length=16),
           Urb(kind=3,endpoint=130,buffer=ctypes.addressof(incoming),length=4)]
     pending={};completed=[]
+    if diagnostics is None:diagnostics={}
+    diagnostics.update(submitted=[],completed=[],cancel_requested=[],cancel_reaped=[],fd_closed_to_join=False)
+    save()
     def call(request,arg):
         ret=libc.ioctl(fd,request,arg)
         if ret<0:raise OSError(ctypes.get_errno(),os.strerror(ctypes.get_errno()))
@@ -136,6 +141,7 @@ def async_register_read(fd):
     try:
         for urb in urbs:
             call(0x8038550a,ctypes.byref(urb));pending[ctypes.addressof(urb)]=urb
+            diagnostics['submitted'].append(dict(endpoint=urb.endpoint,length=urb.length,wall_ns=time.time_ns()));save()
         deadline=time.monotonic()+2.5
         while pending:
             pointer=ctypes.c_void_p()
@@ -146,21 +152,32 @@ def async_register_read(fd):
                 time.sleep(.002);continue
             if pointer.value not in pending:raise ValueError('unknown completed URB pointer')
             urb=pending.pop(pointer.value)
-            completed.append(dict(endpoint=urb.endpoint,status=urb.status,actual=urb.actual))
+            row=dict(endpoint=urb.endpoint,status=urb.status,actual=urb.actual,wall_ns=time.time_ns())
+            completed.append(row);diagnostics['completed'].append(row);save()
             if urb.status or urb.actual!=urb.length:raise ValueError('failed/short asynchronous register transfer')
         return incoming.raw,completed
+    except BaseException as error:
+        diagnostics['original_error']=dict(type=type(error).__name__,message=str(error),errno=getattr(error,'errno',None));save();raise
     finally:
         # Keep every object/buffer alive until cancellation is joined by reap
         # or closing this exclusively owned usbfs fd in the caller.
-        for pointer in pending:libc.ioctl(fd,0x550b,ctypes.c_void_p(pointer))
+        for pointer,urb in pending.items():
+            ret=libc.ioctl(fd,0x550b,ctypes.c_void_p(pointer))
+            diagnostics['cancel_requested'].append(dict(endpoint=urb.endpoint,returned=ret,errno=ctypes.get_errno() if ret<0 else None,wall_ns=time.time_ns()));save()
         deadline=time.monotonic()+2
         while pending and time.monotonic()<deadline:
             pointer=ctypes.c_void_p();ret=libc.ioctl(fd,0x4008550d,ctypes.byref(pointer))
-            if ret==0:pending.pop(pointer.value,None)
+            if ret==0:
+                urb=pending.pop(pointer.value,None)
+                if urb is None:
+                    diagnostics['cancel_unknown_pointer']=True;save();break
+                diagnostics['cancel_reaped'].append(dict(endpoint=urb.endpoint,status=urb.status,actual=urb.actual,wall_ns=time.time_ns()));save()
             elif ctypes.get_errno()==errno.EAGAIN:time.sleep(.002)
-            else:break
+            else:
+                diagnostics['cancel_reap_errno']=ctypes.get_errno();save();break
         if pending:
             os.close(fd)
+            diagnostics['fd_closed_to_join']=True;save()
             raise AsyncFdClosed('async URB cancellation did not reap; owned fd closed to join')
 
 def setup_packet(write):
@@ -197,10 +214,15 @@ def run(args):
     route=bool(getattr(args,'runtime_route_before_module',False))
     rebind=bool(getattr(args,'guest_set_interface_before_route',False))
     clear_halt=bool(getattr(args,'guest_clear_halt_before_route',False))
+    register_clear_halt=bool(getattr(args,'guest_clear_halt_before_register_read',False))
     if rebind and (not route or 'ws73.interface_rebind_lab=1' not in Path('/proc/cmdline').read_text().split()):
         raise ValueError('explicit route and single interface-rebind boot required')
     if clear_halt and (not route or rebind or 'ws73.clear_halt_lab=1' not in Path('/proc/cmdline').read_text().split()):
         raise ValueError('explicit route and exclusive endpoint clear-halt boot required')
+    if register_clear_halt and (not args.async_read_only or route or rebind or clear_halt
+            or args.guest_usb_reset_before_read or args.sdk_wakeup_before_read
+            or 'ws73.register_clear_halt_lab=1' not in Path('/proc/cmdline').read_text().split()):
+        raise ValueError('explicit exclusive read-only register endpoint clear-halt boot required')
     if route and (args.guest_usb_reset_before_read or args.sdk_wakeup_before_read or args.async_read_only):
         raise ValueError('route comparison excludes other reset/read/wakeup modes')
     output=args.output;output.mkdir(parents=True,exist_ok=False)
@@ -238,7 +260,9 @@ def run(args):
             if count!=4:raise ValueError('complete SDK DISALLOW_TO_SLEEP control required')
         fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
         if clear_halt:
-            clear_runtime_route_endpoints(fd,record,save)
+            clear_runtime_endpoints(fd,record,save)
+        if register_clear_halt:
+            clear_runtime_endpoints(fd,record,save,register_read=True)
         if rebind:
             record['usb_configuration_before_interface']=read_usb_configuration(fd);save()
             before_descriptor=checked_single_runtime_interface(record['usb_configuration_before_interface'])
@@ -261,12 +285,13 @@ def run(args):
             if 'ws73.register_async_read_lab=1' not in Path('/proc/cmdline').read_text().split():
                 raise ValueError('explicit SDK asynchronous read-only boot required')
             record['async_read_before_wall_ns']=time.time_ns();save()
-            try:raw,completions=async_register_read(fd)
+            record.update(register_read_diagnostics={},register_write_not_requested=True,register_read_experiment=True);save()
+            try:raw,completions=async_register_read(fd,record['register_read_diagnostics'],save)
             except AsyncFdClosed:
                 fd=None
                 raise
             record.update(register_before=raw.hex(),async_completions=completions,
-                register_write_not_requested=True,status='VM_ASYNC_REGISTER_READ_SUPPORT_PASS',finished_wall_ns=time.time_ns());save()
+                register_write_not_requested=True,status='VM_CLEAR_HALT_ASYNC_READ_GUEST_REQUIRES_HOST_CORROBORATION' if register_clear_halt else 'VM_ASYNC_REGISTER_READ_SUPPORT_PASS',finished_wall_ns=time.time_ns());save()
             return
         if route:
             if 'ws73.runtime_route_lab=1' not in Path('/proc/cmdline').read_text().split():
@@ -326,4 +351,4 @@ def run(args):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');run(p.parse_args())
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-register-read',action='store_true');run(p.parse_args())

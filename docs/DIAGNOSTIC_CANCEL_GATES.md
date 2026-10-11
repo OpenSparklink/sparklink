@@ -301,3 +301,11 @@ Host USB bus/address与guest bus/device分别核对。Host与guest wall clock不
 同步，三个ack各记录guest接收的wall/monotonic时间，捕获窗口只使用guest时钟；
 Host时钟只在自身域内检查有序。daemon启动后的Ready身份必须是目标新generation
 及幸存者原generation。214工具回归再次通过；前置bundle均未执行实机验收。
+
+首轮[新门禁失败记录](evidence/ws73-vm-active-ready-precondition-failed-20261011.json)
+保留，不记验收：探针在任何初始化租约操作前等待Ready90秒，未暂留/提交任何
+active请求。源码说明fresh Runtime先发布Setup，需真实lease release的两条stop
+才能初始化Ready。修正为先取得/释放Diagnostic初始化租约，观察Free及Ready，
+再重取测试租约；新增initialization记录及四组实际stop command/reply核对，禁止
+用字段假设Ready。失败关机console另有DRM vblank warning，原始日志保留，不能
+与历史物理xHCI warning混称。两类根因均不因后续新测试成功而自动关闭。

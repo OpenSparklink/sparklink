@@ -31,6 +31,11 @@ def fixture():
                      'host_wall_ns':marker['wall_ns']+1010,
                      'state':dict(zip(PROPERTIES,[i==0,i==1,int(i>0),0,0,int(i==2),False,0]))})
     queries = []
+    initializations=[]
+    for i,snapshot in enumerate([target,peer]):
+        initial=SleControllerSnapshot.from_buffer_copy(bytes(snapshot));initial.flags=2
+        initializations.append({'initial_snapshot':bytes(initial).hex(),'ready_snapshot':bytes(snapshot).hex(),
+                                'start_wall_ns':1+i*3,'end_wall_ns':3+i*3})
     for i, (start, end) in enumerate([(10,90),(320,400)]):
         output = SleDiagnosticSubmit(version=1, generation=2, request_id=i+1, timeout_ms=5000,
                                      opcode=0x0406, seq=i+1, action=1)
@@ -45,6 +50,7 @@ def fixture():
             'quiet_before_monotonic_ns':1_020_000_000,'quiet_after_monotonic_ns':1_550_000_000,
             'submit_before_wall_ns':150,'submit_after_wall_ns':160,
             'host_hold_acknowledgements':acks,'markers':markers,'peer_queries':queries,
+            'initializations':initializations,
             'guest_ack_receipts':[{'stage':stage,'wall_ns':wall,'monotonic_ns':mono} for stage,wall,mono in
                                   [('armed',110,900_000_000),('held',210,1_010_000_000),('aborted',310,1_549_000_000)]],
             'retired_result_errno':errno.ENODEV,'retired_submit_errno':errno.ENODEV}
@@ -117,12 +123,26 @@ class ActiveDeadlineTests(unittest.TestCase):
         record=fixture();host={'method':'QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT','complete':True,
                                'observations':copy.deepcopy(record['host_hold_acknowledgements'])}
         capture={'commands':[],'reports':[],'complete':[]}
+        for device,first in [(1,1),(2,4)]:
+            for opcode in [0x0c05,0x1002]:
+                ordinal=len(capture['commands'])*2+10
+                capture['commands'].append({'bus':1,'device':device,'opcode':opcode,'params':'00',
+                                            'wall_ns':first,'record':ordinal,'completion':{'wall_ns':first+1}})
+                capture['complete'].append({'bus':1,'device':device,'opcode':opcode,'status':0,
+                                            'wall_ns':first+1,'record':ordinal+1,'value':''})
         with self.assertRaises(ValueError):corroborate(record,host,capture,'','',{'bus':1,'device':1},{'bus':1,'device':2},{'bus':9,'address':101})
 
     def test_wire_verifier_requires_single_target_out_peer_pairs_and_no_late_payload(self):
         record=fixture();host={'method':'QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT','complete':True,
                                'observations':copy.deepcopy(record['host_hold_acknowledgements'])}
         capture={'commands':[],'reports':[],'complete':[]}
+        for device,first in [(1,1),(2,4)]:
+            for opcode in [0x0c05,0x1002]:
+                ordinal=len(capture['commands'])*2+10
+                capture['commands'].append({'bus':1,'device':device,'opcode':opcode,'params':'00',
+                                            'wall_ns':first,'record':ordinal,'completion':{'wall_ns':first+1}})
+                capture['complete'].append({'bus':1,'device':device,'opcode':opcode,'status':0,
+                                            'wall_ns':first+1,'record':ordinal+1,'value':''})
         for device,start,finish,ordinal in [(1,180,185,3),(2,30,40,1),(2,330,340,5)]:
             capture['commands'].append({'bus':1,'device':device,'opcode':0x0406,'params':'',
                                         'wall_ns':start,'record':ordinal,'completion':{'wall_ns':finish}})
@@ -136,7 +156,7 @@ class ActiveDeadlineTests(unittest.TestCase):
         for mutation in ['no_peer_reply','duplicate_target','late_payload','early_reply','release','missing_retirement','host_identity','peer_replaced','target_not_replaced']:
             values=copy.deepcopy(args)
             if mutation=='no_peer_reply':values[2]['complete'].pop()
-            elif mutation=='duplicate_target':values[2]['commands'].append(copy.deepcopy(values[2]['commands'][0]))
+            elif mutation=='duplicate_target':values[2]['commands'].append(copy.deepcopy(next(v for v in values[2]['commands'] if v['device']==1 and v['opcode']==0x0406)))
             elif mutation in ['late_payload','early_reply']:
                 values[2]['complete'].append({'bus':1,'device':1,'opcode':0x0406,'status':0,'wall_ns':1000 if mutation=='late_payload' else 190,
                                              'record':7,'usb_sha256':'a'*64 if mutation=='late_payload' else 'b'*64})

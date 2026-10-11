@@ -78,6 +78,17 @@ def verify_records(record):
             or peers[0].dev_index != 1 or peers[0].flags != 1 or peers[0].profile != 1 or peers[0].valid_fields != 1
             or not peers[0].generation or target.generation == peers[0].generation):
         raise ValueError('independent initial target and unchanged peer metadata required')
+    initializations = record['initializations']
+    if len(initializations) != 2:
+        raise ValueError('both real initialization stop barriers required')
+    for initialization, snapshot in zip(initializations, [target, peers[0]]):
+        initial = _decode(SleControllerSnapshot, initialization['initial_snapshot'])
+        ready = _decode(SleControllerSnapshot, initialization['ready_snapshot'])
+        if (initial.flags != 2 or initial.generation != snapshot.generation or initial.dev_index != snapshot.dev_index
+                or bytes(ready) != bytes(snapshot) or type(initialization['start_wall_ns']) is not int
+                or type(initialization['end_wall_ns']) is not int
+                or not 0 < initialization['start_wall_ns'] < initialization['end_wall_ns'] < record['markers'][0]['wall_ns']):
+            raise ValueError('real Setup to Ready initialization before arming required')
     command = _decode(SleDiagnosticSubmit, record['input'])
     expected = SleDiagnosticSubmit(version=1, generation=target.generation, request_id=1,
                                    timeout_ms=500, opcode=0x0406, action=1)
@@ -183,6 +194,9 @@ def corroborate(record, host, capture, stderr, kernel_log, owner, peer, host_own
     if len(timeouts) != 1 or sum(timeouts[0] <= v <= last for v in retirements) != 1:
         raise ValueError('causal target Host timeout and native retirement during passive wait required')
     from ws73_capture import command_reply
+    initialization_proofs = [[command_reply(capture, identity, opcode, row['start_wall_ns'], row['end_wall_ns'], b'\0')
+                              for opcode in [0x0c05,0x1002]]
+                             for identity,row in zip([owner,peer],record['initializations'])]
     peer_proofs = [command_reply(capture, peer, 0x0406, q['start_wall_ns'], q['end_wall_ns'], b'',
                                 bytes(_decode(SleControllerSnapshot, record['peer_snapshots'][0]).address).hex())
                    for q in record['peer_queries']]
@@ -190,6 +204,7 @@ def corroborate(record, host, capture, stderr, kernel_log, owner, peer, host_own
             'host_transfer_sha256': held[0][4], 'host_transfer_bytes': 178,
             'host_usb_identity': {'bus': host_owner['bus'], 'address': host_owner['address']},
             'held_command': commands[0], 'peer_queries': peer_proofs,
+            'initialization_stops': initialization_proofs,
             'host_timeout_monotonic_ns': timeouts[0],
             'exact_deadline_latency_bound_qualified': False,
             'daemon_continuity_during_hold_qualified': False,
@@ -203,7 +218,7 @@ def run(args):
     folder.mkdir(mode=0o700, parents=True, exist_ok=False)
     record = {'format_version': 1, 'status': 'STARTING', 'physical_acceptance': False,
               'automatic_fault_recovery_acceptance': False, 'daemon_running_during_hold': False,
-              'host_hold_acknowledgements': [], 'guest_ack_receipts': [], 'markers': [], 'peer_queries': [], 'peer_snapshots': []}
+              'host_hold_acknowledgements': [], 'guest_ack_receipts': [], 'markers': [], 'peer_queries': [], 'peer_snapshots': [], 'initializations': []}
     def save():
         temporary = folder / 'run.tmp'; temporary.write_text(json.dumps(record, indent=2)+'\n'); temporary.replace(folder/'run.json')
     def marker(phase, ack):
@@ -226,8 +241,26 @@ def run(args):
                 ready = False
                 try:
                     adapter = NativeAdapter(index); snapshot = adapter.snapshot()
-                    ready = snapshot.valid_fields == 1 and snapshot.profile == 1 and snapshot.flags == 1
-                    if ready: break
+                    if snapshot.valid_fields == 1 and snapshot.profile == 1 and snapshot.flags != 4:
+                        # Fresh registration publishes Setup. The real two
+                        # initialization stops are committed by lease release;
+                        # waiting for Ready before that would never progress.
+                        initialization_deadline = time.monotonic()+6
+                        initialization = {'initial_snapshot':bytes(snapshot).hex(),'start_wall_ns':time.time_ns()}
+                        while True:
+                            try: lease = adapter.acquire_management(2); break
+                            except OSError as error:
+                                if error.errno not in (errno.EAGAIN,errno.EBUSY) or time.monotonic()>initialization_deadline: raise
+                                time.sleep(0.01)
+                        adapter.release_management(lease,2)
+                        while adapter.management_status().state != 0 or adapter.snapshot().flags != 1:
+                            if time.monotonic()>initialization_deadline: raise TimeoutError('real initialization stops did not settle Ready/Free')
+                            time.sleep(0.01)
+                        snapshot = adapter.snapshot()
+                        initialization.update(ready_snapshot=bytes(snapshot).hex(),end_wall_ns=time.time_ns())
+                        record['initializations'].append(initialization)
+                        ready = True
+                        break
                 except OSError as error:
                     if error.errno not in (errno.ENODEV, errno.EAGAIN): raise
                 finally:

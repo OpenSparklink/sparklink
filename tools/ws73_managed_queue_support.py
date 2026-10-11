@@ -35,23 +35,30 @@ def properties(slot, partial=False, reject_idle=False):
                 'runtime-idle-scan-stop': reject_idle if partial else True})
 
 
-def verify_transport(rows, partial=False, reject_idle=False):
+def verify_transport(rows, partial=False, reject_idle=False, initialization_step=0):
     """Refuse host USB, resets, extra objects or unsuccessful QMP commands."""
+    if type(initialization_step) is not int or not 0<=initialization_step<=2 or initialization_step and not partial:
+        raise ValueError('bounded explicit partial model selector required')
     sent = [r['message'] for r in rows if r['direction'] == 'tx']
     attachments=[m for m in sent if m['execute'] not in ('qom-get','qom-set')]
     if [m['execute'] for m in attachments] != ['qmp_capabilities', 'device_add', 'device_add']:
         raise ValueError('only two synthetic device attachments permitted')
     if [m.get('arguments') for m in attachments[1:]] != [properties(0,partial,reject_idle), properties(1,partial,reject_idle)]:
         raise ValueError('exact synthetic transport properties required')
+    selectors=[m for m in sent if m['execute']=='qom-set' and m.get('arguments',{}).get('property')=='model-terminal-skip-count']
+    if len(selectors)!=(1 if initialization_step else 0):raise ValueError('one exact selector setup within a single model budget required')
     for message in sent:
         if message['execute'] in ('qom-get','qom-set'):
-            from ws73_model_hold import PROPERTIES
+            from ws73_model_hold import PROPERTIES, SELECTOR_PROPERTIES
             args=message.get('arguments',{})
             if not partial or args.get('path')!='/machine/peripheral/ws73_0':
                 raise ValueError('model-only target QOM scope required')
             if message['execute']=='qom-get':
-                if set(args)!={'path','property'} or args['property'] not in PROPERTIES+['model-terminal-armable']:
+                if set(args)!={'path','property'} or args['property'] not in PROPERTIES+['model-terminal-armable']+(SELECTOR_PROPERTIES if initialization_step else []):
                     raise ValueError('exact model observation property required')
+            elif args.get('property')=='model-terminal-skip-count':
+                if set(args)!={'path','property','value'} or not initialization_step or type(args['value']) is not int or args['value']!=initialization_step:
+                    raise ValueError('exact selected model prefix required')
             elif (set(args)!={'path','property','value'} or args['property'] not in ['model-terminal-hold-once','model-terminal-release'] or args['value'] is not True):
                 raise ValueError('only model arm/release pulses allowed')
         replies = [r['message'] for r in rows if r['direction'] == 'rx'
@@ -73,6 +80,9 @@ def run(args):
     lab = lab_module()
     partial=args.partial_case is not None
     confirmed=bool(getattr(args,'confirmed_off',False))
+    step=getattr(args,'partial_step',0)
+    if type(step) is not int or not 0<=step<(2 if args.partial_domain=='advertising' else 3) or step and not partial:
+        raise ValueError('bounded explicit partial step required')
     if confirmed and partial:raise ValueError('confirmed queue and partial hold are separate modes')
     if args.idle_scan_stop_reject and not partial or not partial and args.partial_domain!='advertising':
         raise ValueError('partial controls require explicit partial case')
@@ -88,7 +98,7 @@ def run(args):
                   automatic_fault_recovery_acceptance=False, natural_fault_root_cause_closed=False,
                   started_wall_ns=time.time_ns())
     record.update(confirmed_off=confirmed,partial_case=args.partial_case,partial_domain=args.partial_domain if partial else None,
-                  model_idle_stop_reject=args.idle_scan_stop_reject)
+                  model_idle_stop_reject=args.idle_scan_stop_reject,partial_step=step)
     process = monitor = channel = runtime = None
     def save():
         (output/'manifest.json').write_text(json.dumps(record, indent=2)+'\n')
@@ -100,8 +110,9 @@ def run(args):
             if 'native_vm' not in package or 'managed_queue_probe_compile' not in package:
                 raise ValueError('qualified signed scratch-root VM and frozen C fd probe required')
             record['prepared_manifest'] = file_record(args.prepared/'manifest.json')
-            record['runner_inputs'] = [file_record(Path(__file__)),
-                                      file_record(Path(__file__).with_name('ws73_management_queued.py'))]
+            runner_sources=[Path(__file__),Path(__file__).with_name('ws73_management_queued.py')]
+            if partial:runner_sources += [Path(__file__).with_name('ws73_management_partial.py'),Path(__file__).with_name('ws73_model_hold.py')]
+            record['runner_inputs'] = [file_record(p) for p in runner_sources]
             # AF_UNIX has a short pathname limit. Keep sockets in a private
             # runtime directory; the complete evidence stays in output.
             runtime=tempfile.TemporaryDirectory(prefix='slkm-')
@@ -109,6 +120,7 @@ def run(args):
             options, append = native_vm.launch(args.prepared.resolve(), output, package)
             boot=(f'ws73.managed_partial=1 ws73.managed_partial_support=1 ws73.partial_case={args.partial_case} ws73.partial_domain={args.partial_domain}'
                   if partial else 'ws73.managed_queue=1 ws73.managed_queue_support=1'+(' ws73.managed_queue_confirmed_off=1' if confirmed else ''))
+            if step:boot+=f' ws73.partial_step={step}'
             command = [package['qemu']['path'], '-machine', 'q35,accel=kvm', '-cpu', 'host',
                        '-m', '1024M', '-smp', '1', '-display', 'none', '-monitor', 'none',
                        '-no-reboot', '-nic', 'none', '-kernel', str(args.prepared/'bzImage'),
@@ -134,7 +146,7 @@ def run(args):
                 hold=None
                 if partial:
                     from ws73_model_hold import ModelHoldCoordinator
-                    hold=ModelHoldCoordinator(share,record.setdefault('model_hold',{}))
+                    hold=ModelHoldCoordinator(share,record.setdefault('model_hold',{}),step)
                 transcript = bytearray(); attached = 0
                 while process.poll() is None:
                     if time.monotonic() >= deadline:
@@ -163,7 +175,7 @@ def run(args):
             for marker in [f'WS73_TARGET_{mode}_SUPPORT_FINISHED', f'WS73_TARGET_{mode}_SUPPORT_TAINT: 0']:
                 if text.replace('\r', '').splitlines().count(marker) != 1:
                     raise ValueError('complete synthetic support marker required')
-            verify_transport([json.loads(l) for l in (output/'qmp.jsonl').read_text().splitlines()],partial,args.idle_scan_stop_reject)
+            verify_transport([json.loads(l) for l in (output/'qmp.jsonl').read_text().splitlines()],partial,args.idle_scan_stop_reject,step)
             probe = json.loads((share/('managed-partial' if partial else 'managed-queue')/'run.json').read_text())
             if probe.get('confirmed_off',False) is not confirmed and not partial:raise ValueError('exact queued evidence mode required')
             if probe.get('synthetic_support') is not True:
@@ -177,7 +189,7 @@ def run(args):
                 record['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),{})
             else:record['corroboration'] = corroborate(probe, capture)
             prepared(args.prepared.resolve())
-            if record['runner_inputs'] != [file_record(Path(__file__)), file_record(Path(__file__).with_name('ws73_management_queued.py'))]:
+            if record['runner_inputs'] != [file_record(p) for p in runner_sources]:
                 raise ValueError('runner or verifier changed during support VM')
             record['status'] = success
         except BaseException as error:
@@ -205,5 +217,6 @@ if __name__ == '__main__':
     parser.add_argument('--confirmed-off',action='store_true',help='complete confirmed-Off model bootstrap then full initializer queue cancellation; no real qualification')
     parser.add_argument('--partial-case',choices=['release','close','dup'])
     parser.add_argument('--partial-domain',choices=['advertising','scanning'],default='advertising')
+    parser.add_argument('--partial-step',type=int,default=0,help='model-only original terminal index; does not extend deadline')
     parser.add_argument('--idle-scan-stop-reject',action='store_true',help='model negative branch: preserve raw idle STOP refusal; expected VM failure, never a real pass')
     raise SystemExit(run(parser.parse_args()))

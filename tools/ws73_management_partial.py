@@ -41,7 +41,7 @@ def verify_preparation(record, snapshot):
     rows = record['preparation']
     if record['domain'] == 'advertising':
         if rows != []:
-            raise ValueError('advertising first-step gate must start untouched')
+            raise ValueError('advertising partial gate must start untouched')
         return
     if len(rows) != 1:
         raise ValueError('scan initialization requires completed advertising Off preparation')
@@ -64,15 +64,17 @@ def verify_preparation(record, snapshot):
 
 def verify_records(record, cleanup_rejected=False):
     synthetic=record.get('synthetic_support')
+    step=record.get('initialization_step',0)
+    if type(step) is not int or not 0<=step< (2 if record.get('domain')=='advertising' else 3) or step and synthetic is not True:raise ValueError('bounded model-only later initialization step required')
     status='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS' if synthetic else 'MANAGED_PARTIAL_HELD_REPLY_PASS'
-    if type(cleanup_rejected) is not bool or cleanup_rejected and synthetic is not True:
+    if type(cleanup_rejected) is not bool or cleanup_rejected and (synthetic is not True or step and record.get('domain')=='scanning'):
         raise ValueError('explicit model-only cleanup refusal verification required')
     if cleanup_rejected:
         status='FAIL'
         if (record.get('error')!='actual cleanup failed; preserve raw controller outcome'
                 or record.get('error_type')!='ValueError' or record.get('errno') is not None):
             raise ValueError('an arbitrary failed VM is not the expected controller refusal')
-    if (type(synthetic) is not bool or type(record.get('format_version')) is not int or record['format_version']!=3
+    if (type(synthetic) is not bool or type(record.get('format_version')) is not int or record['format_version']!=(4 if step else 3)
             or record.get('status')!=status
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False
             or record.get('daemon_running_during_hold') is not False
@@ -81,16 +83,18 @@ def verify_records(record, cleanup_rejected=False):
     snapshots=[setup(raw,i) for i,raw in enumerate(record['initial_snapshots'])]
     if len(snapshots)!=2 or snapshots[0].generation==snapshots[1].generation:
         raise ValueError('two independent untouched controllers required')
+    if record['domain']=='advertising' and step and (type(record.get('early_selected_power')) is not int or not -128<=record['early_selected_power']<=127):raise ValueError('original earlier selected advertising power required')
     verify_preparation(record, snapshots[0])
     command=decode(SleDiscoverySubmit,record['input'])
     if bytes(command)!=bytes(standby(snapshots[0],1,record['domain'])):
         raise ValueError('exact typed standby policy required')
-    opcode=0xc02 if record['domain']=='advertising' else 0x1001
+    opcode=(0xc02 if step==0 else 0xc05) if record['domain']=='advertising' else (0x1001 if step==0 else 0x1002)
     for key,state,error in [('pending',2,0),('cancelled',5,-errno.ECANCELED),('final_result',5,-errno.ECANCELED)]:
         result=decode(SleDiscoveryResult,record[key])
         expected=SleDiscoveryResult(version=1,generation=snapshots[0].generation,request_id=1,
-            dev_index=0,profile=1,operation=command.operation,count=2 if opcode==0xc02 else 3,
+            dev_index=0,profile=1,operation=command.operation,count=2 if record['domain']=='advertising' else 3,step=step,
             state=state,error=error,opcode=opcode,
+            power_valid=1 if record['domain']=='advertising' and step else 0,selected_power=record.get('early_selected_power',0) if record['domain']=='advertising' and step else 0,
             radio_adv=1 if key=='final_result' or record['domain']=='scanning' else 0,
             radio_scan=1 if key=='final_result' else 0)
         if cleanup_rejected and key=='final_result':
@@ -188,10 +192,26 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
     from ws73_diagnostic_hold import corroborate_host_hold
     start=record['submit_before_wall_ns'];end=record['management_observations'][-1]['wall_ns']
     rows=[v for v in capture['commands'] if v['bus']==1 and v['device']==2 and start<=v['wall_ns']<=end]
-    opcode=0xc02 if record['domain']=='advertising' else 0x1001
-    opcodes=[opcode,0xc05,0x1002] if record['domain']=='advertising' else [opcode,0x1002]
-    if [v['opcode'] for v in rows]!=opcodes or any(v['params']!={0xc05:'0000000000',0x1002:'0000'}[v['opcode']] for v in rows[1:]):
-        raise ValueError('only required actual stops may follow the held first step')
+    step=record.get('initialization_step',0)
+    advertising=record['domain']=='advertising'
+    recipe=[0xc02,0xc05] if advertising else [0x1001,0x1002,0x1002]
+    # A cancelled original final STOP may confirm Off; never invent a second
+    # STOP to make that outcome look like a new successful request.
+    opcodes=recipe[:step+1]+(([0xc05] if step==0 else [])+[0x1002] if advertising
+                            else [0x1002] if step<2 else [])
+    if [v['opcode'] for v in rows]!=opcodes:
+        raise ValueError('only selected original recipe prefix and required cleanup allowed')
+    for index,command in enumerate(rows):
+        params=command['params']
+        if command['opcode']==0xc02:
+            raw=bytes.fromhex(params)
+            if len(raw)!=49 or raw[0]!=0 or raw[12:18]!=bytes(snapshots[0].address):
+                raise ValueError('original advertising configure must address this controller')
+        else:
+            wanted='0000000000' if command['opcode']==0xc05 else '0000010040062003' if command['opcode']==0x1001 else '0100' if not advertising and index==1 and step>0 else '0000'
+            if params!=wanted:raise ValueError('exact original START/STOP parameters required')
+        if index<=step and command['wall_ns']>=record['release_before_wall_ns']:
+            raise ValueError('selected original prefix must be on wire before cancellation')
     if preparation:
         all_commands=[v for v in capture['commands'] if v['bus']==1 and v['device']==2
                       and record['preparation'][0]['start_wall_ns']<=v['wall_ns']<=end]
@@ -199,18 +219,34 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
             raise ValueError('confirmed advertising Off must have no intervening target traffic')
     replies=[]
     for index,command in enumerate(rows):
-        matches=[v for v in capture['complete'] if v['bus']==1 and v['device']==2 and v['opcode']==command['opcode'] and command['wall_ns']<=v['wall_ns']<=end]
+        limit=rows[index+1]['wall_ns'] if index+1<len(rows) else end+1
+        # Repeated scan opcodes are matched within their causal command window.
+        matches=[v for v in capture['complete'] if v['bus']==1 and v['device']==2 and v['opcode']==command['opcode'] and command['wall_ns']<=v['wall_ns']<limit]
         status=0x0b if cleanup_rejected and index==len(rows)-1 else 0
         if len(matches)!=1 or matches[0]['status']!=status:raise ValueError('every reply must match its actual success or exact model cleanup refusal')
-        replies.append(matches[0])
+        reply=matches[0]
+        if command['opcode']==0xc02:
+            value=reply['value']
+            if len(bytes.fromhex(value))!=1 or advertising and step and value!=bytes([record['early_selected_power'] & 255]).hex():
+                raise ValueError('original earlier power selection must match UAPI result')
+        elif reply['value']!='':raise ValueError('exact empty original terminal reply required')
+        if index<step and reply['wall_ns']>=record['release_before_wall_ns']:
+            raise ValueError('earlier recipe steps must finish before cancellation')
+        replies.append(reply)
+    complete_start=record['preparation'][0]['start_wall_ns'] if preparation else start
+    all_replies=[v for v in capture['complete'] if v['bus']==1 and v['device']==2 and complete_start<=v['wall_ns']<=end]
+    if all_replies!=[v['reply'] for v in preparation]+replies:
+        raise ValueError('no extra, duplicate or unmatched terminal reply allowed')
     if record['synthetic_support']:
         from ws73_model_hold import corroborate_model_hold
-        proof=corroborate_model_hold(host,record,replies[0],stderr)
+        proof=corroborate_model_hold(host,record,replies[step],stderr)
+        if proof['skipped_original_frames']!=[dict(serial=1,bytes=v['usb_length'],ordinal=i+1,sha256=v['usb_sha256']) for i,v in enumerate(replies[:step])]:
+            raise ValueError('each earlier original model frame must match actual USB capture')
     else:
         proof=corroborate_host_hold(host,{'records':record['markers'],'host_hold_acknowledgements':record['hold_acknowledgements']},
-            [{'caller':'C held active cancel','reply':replies[0]}],stderr,expected)
-    if replies[0]['wall_ns']<record['release_after_wall_ns'] or rows[1]['wall_ns']<replies[0]['wall_ns']:
-        raise ValueError('old reply must precede cleanup without escaping cancelled recipe')
+            [{'caller':'C held active cancel','reply':replies[step]}],stderr,expected)
+    if replies[step]['wall_ns']<record['release_after_wall_ns']:
+        raise ValueError('selected held reply cannot escape before cancellation')
     peer=[]
     for row in record['peer_queries']:
         commands=[v for v in capture['commands'] if v['bus']==1 and v['device']==3 and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns']]
@@ -218,9 +254,10 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
         if len(commands)!=1 or commands[0]['opcode']!=0x406 or len(completions)!=1 or completions[0]['opcode']!=0x406 or completions[0]['status'] or completions[0]['value']!=bytes(snapshots[1].address).hex():
             raise ValueError('peer queries require independent wire proof')
         peer.append(dict(command=commands[0],reply=completions[0]))
-    return dict(scope=('one partial first-step and retained simulated terminal frame, actual kernel fd'
+    return dict(scope=('one partial selected step and retained simulated terminal frame, actual kernel fd'
                        if record['synthetic_support'] else 'one partial first-step and actual held late reply'),case=record['case'],domain=record['domain'],
-        commands=rows,replies=replies,host_hold=proof,peer_queries=peer,preparation=preparation,
+        initialization_step=step,commands=rows,replies=replies,host_hold=proof,peer_queries=peer,preparation=preparation,
+        retained_original_final_stop=replies[step] if step==len(recipe)-1 else None,
         retained_advertising_off=preparation[-1] if preparation else None,
         synthetic_support=record['synthetic_support'],
         managed_partial_case_live_acceptance=not record['synthetic_support'] and not cleanup_rejected,
@@ -232,7 +269,11 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
 
 def run(args):
     synthetic=getattr(args,'synthetic_support',False)
+    step=getattr(args,'initialization_step',0)
+    if type(step) is not int or not 0<=step<(2 if args.domain=='advertising' else 3) or step and synthetic is not True:raise ValueError('later steps require bounded explicit model support')
     cmdline=Path('/proc/cmdline').read_text().split()
+    values=[v.split('=',1)[1] for v in cmdline if v.startswith('ws73.partial_step=')]
+    if values!=([str(step)] if step else []):raise ValueError('exact matching later-step boot selector required')
     if type(synthetic) is not bool or synthetic!=('ws73.managed_partial_support=1' in cmdline):
         raise ValueError('matching explicit model boot and collector required')
     if synthetic and (Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU' or not Path('/scratch-root-uuid').is_file()):
@@ -242,9 +283,10 @@ def run(args):
     if subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode==0:
         raise ValueError('partial gate requires untouched Setup before daemon')
     folder=args.output; folder.mkdir(parents=True,exist_ok=False)
-    record=dict(format_version=3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
+    record=dict(format_version=4 if step else 3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
         physical_acceptance=False,automatic_fault_recovery_acceptance=False,
         daemon_running_during_hold=False,hold_acknowledgements=[],markers=[],peer_queries=[])
+    if step:record['initialization_step']=step
     def save(): save_record(folder,record)
     def stage(phase,ack):
         value=dict(hold_phase=phase,wall_ns=time.time_ns());record['markers'].append(value);save()
@@ -313,9 +355,10 @@ def run(args):
         record['submit_before_wall_ns']=time.time_ns();target.submit_discovery(command);record['submit_after_wall_ns']=time.time_ns();save()
         stage('wait_held','held')
         pending=observers[0].discovery_result(1);record['pending']=bytes(pending).hex();save()
-        expected=0xc02 if args.domain=='advertising' else 0x1001
-        if pending.state!=2 or pending.opcode!=expected or pending.step or pending.status or pending.error or pending.radio_adv!=(1 if args.domain=='scanning' else 0) or pending.radio_scan:
-            raise ValueError('actual first-step in-flight recipe required')
+        expected=(0xc02 if step==0 else 0xc05) if args.domain=='advertising' else (0x1001 if step==0 else 0x1002)
+        if args.domain=='advertising' and step:record['early_selected_power']=pending.selected_power;save()
+        if pending.state!=2 or pending.opcode!=expected or pending.step!=step or pending.status or pending.error or pending.radio_adv!=(1 if args.domain=='scanning' else 0) or pending.radio_scan:
+            raise ValueError('actual selected-step in-flight recipe required')
         peer_query(2)
         record['before_management']=bytes(observers[0].management_status()).hex()
         record['release_before_wall_ns']=time.time_ns()
@@ -385,5 +428,6 @@ if __name__=='__main__':
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--case',choices=['release','close','dup'],required=True)
     p.add_argument('--domain',choices=['advertising','scanning'],required=True)
+    p.add_argument('--initialization-step',type=int,default=0,help='model-only later terminal step; original deadline retained')
     p.add_argument('--synthetic-support',action='store_true',help='dedicated simulated USB VM only; never physical qualification')
     run(p.parse_args())

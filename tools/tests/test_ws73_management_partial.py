@@ -83,7 +83,7 @@ class PartialTests(unittest.TestCase):
         def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
         def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0)
         capture=dict(commands=[command(0xc02,55,'00'*49),command(0xc05,75,'00'*5),
-            command(0x1001,155),command(0x1002,420,'0000')],
+            command(0x1001,155,'0000010040062003'),command(0x1002,420,'0000')],
             complete=[reply(0xc02,65,'06'),reply(0xc05,85),reply(0x1001,410),reply(0x1002,430)])
         for row in record['peer_queries']:
             capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
@@ -187,3 +187,57 @@ class PartialTests(unittest.TestCase):
             if change=='inverted':record['release_after_wall_ns']=250
             if change=='boolean':record['submit_before_wall_ns']=True
             with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
+    def test_later_original_start_stop_and_no_duplicate_stop(self):
+        import copy
+        from ws73_model_hold import PROPERTIES as MODEL_PROPERTIES, SELECTOR_PROPERTIES
+        for domain,step in [('advertising',1),('scanning',1),('scanning',2)]:
+            for case in ['release','close','dup']:
+                record=fixture(case,domain)
+                record.update(format_version=4,initialization_step=step,synthetic_support=True,status='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS')
+                if domain=='advertising':record['early_selected_power']=6
+                for key in ['pending','cancelled','final_result']:
+                    value=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record[key]));value.step=step;value.opcode=0xc05 if domain=='advertising' else 0x1002
+                    if domain=='advertising':value.power_valid=1;value.selected_power=6
+                    record[key]=bytes(value).hex()
+                record['management_observations']=[dict(wall_ns=440,raw=record['revoking']),dict(wall_ns=450,raw=record['final_management'])]
+                record['peer_queries'][2].update(start_wall_ns=490,end_wall_ns=500)
+                for i,row in enumerate(record['hold_acknowledgements']):
+                    row['state']=dict(zip(MODEL_PROPERTIES+SELECTOR_PROPERTIES,[i==0,i==1,int(i>0),int(i==2),0,0,step,0 if i==0 else step]))
+                host=dict(method='QMP_RETAIN_SIMULATED_TERMINAL_FRAME',complete=True,physical_acceptance=False,automatic_fault_recovery_acceptance=False,initialization_step=step,observations=record['hold_acknowledgements'])
+                def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
+                def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0,usb_length=156,usb_sha256=str(opcode%10)*64,record=t)
+                opcodes=[0xc02,0xc05,0x1002] if domain=='advertising' else [0x1001,0x1002,0x1002]
+                commands=[];replies=[]
+                for i,opcode in enumerate(opcodes):
+                    params='00'*49 if opcode==0xc02 else '00'*5 if opcode==0xc05 else '0000010040062003' if opcode==0x1001 else '0100' if i==1 else '0000'
+                    commands.append(command(opcode,155+i*20 if i<=step else 420,params))
+                    replies.append(reply(opcode,165+i*20 if i<step else 410 if i==step else 430,'06' if opcode==0xc02 else ''))
+                preparation_commands=[];preparation_replies=[]
+                if domain=='scanning':
+                    preparation_commands=[command(0xc02,55,'00'*49),command(0xc05,75,'00'*5)]
+                    preparation_replies=[reply(0xc02,65,'06'),reply(0xc05,85)]
+                capture=dict(commands=preparation_commands+commands,complete=preparation_replies+replies)
+                for row in record['peer_queries']:
+                    capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
+                    capture['complete'].append(reply(0x406,row['end_wall_ns'],'313233343536',device=3))
+                stderr=''.join(f"WS73_MODEL_TERMINAL_SKIP: serial=1 bytes=156 skipped={i+1} sha256={v['usb_sha256']}\n" for i,v in enumerate(replies[:step]))
+                stderr+=f"WS73_MODEL_TERMINAL_HOLD: serial=1 bytes=156 sha256={replies[step]['usb_sha256']}\nWS73_MODEL_TERMINAL_RELEASE: serial=1 bytes=156 bounded=0 sha256={replies[step]['usb_sha256']}\n"
+                proof=corroborate(record,host,capture,stderr,{})
+                self.assertEqual(proof['initialization_step'],step)
+                self.assertEqual(proof['retained_original_final_stop'] is not None,domain=='advertising' or step==2)
+                for change in ['early-hash','missing-early','duplicate-stop','bad-start','late-early','extra-complete','format','physical','bool-step','power']:
+                    bad=copy.deepcopy(record);wire=copy.deepcopy(capture);log=stderr
+                    if change=='early-hash':log=log.replace(replies[0]['usb_sha256'],'a'*64,1)
+                    if change=='missing-early':wire['complete'].remove(replies[0])
+                    if change=='duplicate-stop':wire['commands'].insert(len(preparation_commands)+step+1,command(0x1002,415,'0000'))
+                    if change=='bad-start':wire['commands'][len(preparation_commands)+1]['params']='0200'
+                    if change=='late-early':wire['complete'][len(preparation_replies)]['wall_ns']=320
+                    if change=='extra-complete':wire['complete'].insert(len(preparation_replies)+1,reply(0x406,166))
+                    if change=='format':bad['format_version']=3
+                    if change=='physical':bad['synthetic_support']=False
+                    if change=='bool-step':bad['initialization_step']=True
+                    if change=='power':
+                        if domain!='advertising':continue
+                        bad['early_selected_power']=7
+                    with self.subTest(domain=domain,step=step,case=case,change=change),self.assertRaises(ValueError):corroborate(bad,host,wire,log,{})

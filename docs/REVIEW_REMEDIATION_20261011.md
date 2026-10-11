@@ -820,3 +820,16 @@ Ready/Off 排入扫描参数／START／STOP 全recipe，再排广告配置；Que
 拒绝均保留。286工具测试通过；这只是有界 FIFO 一CPU 模型支撑，未验证真实
 活动同伴、普通并发或后续 partial／物理回复。正式 Linux/Rust WS73 路径未改；
 真实启动、Managed、恢复、自然 RCA、14项整改及原全部 issues 保持 OPEN。
+
+
+## 后续 partial 步骤采集与回归支撑（2026-10-11）
+
+模型专用 format4 增加原初始化 step1/2 的选择，保留原500ms请求期限与
+Cancelled/-ECANCELED。广告晚一步须核对原power回复；扫描START取消后只能
+由新STOP确认Off，原最终STOP取消后可由原迟到成功Complete确认Off，不重复
+STOP且不把旧请求改成Succeeded。每个跳过/保留模型帧的哈希和长度都须逐一
+匹配实际USB抓包，重复opcode按命令窗口匹配，额外Complete/STOP拒绝。
+旧format3第一步证据继续可复核，非零步骤禁止用于真实USB采集入口。
+289工具测试通过；此提交仅源码/回归支撑，后续步骤VM fd矩阵尚待运行，
+更不能替代真实Managed、活动Ready同伴或自动恢复。历史真实WS73路径不改，
+原28项及恢复/自然RCA继续OPEN。

@@ -49,3 +49,18 @@ class SyntheticTransportTests(unittest.TestCase):
         for slot in [True, False, -1, 2, '0']:
             with self.subTest(slot=slot), self.assertRaises(ValueError):
                 properties(slot)
+
+    def test_later_selector_cannot_mutate_peer_or_accept_bool_or_unrequested_step(self):
+        for step in [1,2]:
+            rows=commands()
+            for i in [0,1]:rows[i+1]['message']['arguments']=properties(i,True)
+            rows+=[dict(direction='tx',message=dict(execute='qom-set',id=4,arguments=dict(path='/machine/peripheral/ws73_0',property='model-terminal-skip-count',value=step))),dict(direction='rx',message={'id':4,'return':{}})]
+            verify_transport(rows,True,False,step)
+            for change in ['bool','wrong-step','peer','readonly']:
+                bad=copy.deepcopy(rows);args=bad[-2]['message']['arguments']
+                if change=='bool':args['value']=True
+                if change=='wrong-step':args['value']=3-step
+                if change=='peer':args['path']='/machine/peripheral/ws73_1'
+                if change=='readonly':args['property']='model-terminal-skipped'
+                with self.subTest(step=step,change=change),self.assertRaises(ValueError):verify_transport(bad,True,False,step)
+            with self.assertRaises(ValueError):verify_transport(rows,True)

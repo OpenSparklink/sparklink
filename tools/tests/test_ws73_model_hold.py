@@ -4,17 +4,21 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from ws73_model_hold import ModelHoldCoordinator, PROPERTIES, corroborate_model_hold
+from ws73_model_hold import ModelHoldCoordinator, PROPERTIES, SELECTOR_PROPERTIES, corroborate_model_hold
 from ws73_diagnostic_hold import write_marker
 
 
 class Monitor:
-    def __init__(self):
+    def __init__(self, step=0):
         self.state=dict(zip(PROPERTIES,[False,False,0,0,0,0]));self.armable=True
+        if step:self.state.update(dict(zip(SELECTOR_PROPERTIES,[0,0])))
     def execute(self, name, args):
         assert args['path']=='/machine/peripheral/ws73_0'
         key=args['property']
         if name=='qom-get':return self.armable if key=='model-terminal-armable' else self.state[key]
+        if key==SELECTOR_PROPERTIES[0]:
+            assert name=='qom-set' and type(args['value']) is int
+            self.state[key]=args['value'];return {}
         assert name=='qom-set' and args['value'] is True
         if key==PROPERTIES[0]:self.state[key]=True
         else:
@@ -23,18 +27,21 @@ class Monitor:
         return {}
 
 
-def handshake(folder):
-    record={};coordinator=ModelHoldCoordinator(folder,record);monitor=Monitor()
+def handshake(folder, step=0):
+    record={};coordinator=ModelHoldCoordinator(folder,record,step);monitor=Monitor(step)
     coordinator.folder.mkdir()
     markers=[]
     for i,phase in enumerate(['arm_ready','wait_held','release_ready']):
         marker=dict(hold_phase=phase,wall_ns=i+1);markers.append(marker)
         write_marker(coordinator.folder/f'hold-{phase}.json',marker)
         if phase=='wait_held':monitor.state=dict(zip(PROPERTIES,[False,True,1,0,0,0]))
+        if step and phase=='wait_held':monitor.state.update(dict(zip(SELECTOR_PROPERTIES,[step,step])))
         coordinator.poll(monitor)
     probe=dict(synthetic_support=True,hold_acknowledgements=record['observations'],markers=markers)
+    if step:probe['initialization_step']=step
     reply=dict(usb_sha256='a'*64,usb_length=156,record=42)
     stderr=f'WS73_MODEL_TERMINAL_HOLD: serial=1 bytes=156 sha256={"a"*64}\nWS73_MODEL_TERMINAL_RELEASE: serial=1 bytes=156 bounded=0 sha256={"a"*64}\n'
+    stderr=''.join(f'WS73_MODEL_TERMINAL_SKIP: serial=1 bytes=156 skipped={i+1} sha256={"b"*64}\n' for i in range(step))+stderr
     return record,probe,reply,stderr
 
 
@@ -69,3 +76,20 @@ class ModelHoldTests(unittest.TestCase):
             self.assertFalse((coordinator.folder/'hold-armed-ack.json').exists())
             monitor.state[PROPERTIES[2]]=True
             with self.assertRaises(ValueError):coordinator.poll(monitor)
+
+    def test_later_selector_typed_budget_and_skip_log_corroboration(self):
+        for step in [1,2]:
+            with tempfile.TemporaryDirectory() as d:
+                args=handshake(Path(d),step)
+                proof=corroborate_model_hold(*args)
+                self.assertEqual(len(proof['skipped_original_frames']),step)
+                for change in ['missing-skip','wrong-ordinal','wrong-step','bad-state','extra-skip']:
+                    record,probe,reply,stderr=copy.deepcopy(args)
+                    if change=='missing-skip':stderr='\n'.join(stderr.splitlines()[1:])
+                    if change=='wrong-ordinal':stderr=stderr.replace('skipped=1','skipped=0')
+                    if change=='wrong-step':probe['initialization_step']=0
+                    if change=='bad-state':record['observations'][1]['state'][SELECTOR_PROPERTIES[1]]=True
+                    if change=='extra-skip':stderr+=stderr.splitlines()[0]+'\n'
+                    with self.subTest(step=step,change=change),self.assertRaises(ValueError):corroborate_model_hold(record,probe,reply,stderr)
+        for step in [True,-1,3,'1']:
+            with self.assertRaises(ValueError):ModelHoldCoordinator(Path('/tmp'),{},step)

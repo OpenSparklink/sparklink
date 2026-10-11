@@ -1,6 +1,6 @@
 # 旧内核实验实现：调用审计与清理清单
 
-最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
+最新源码复核与新镜像回归（K`f5f83d7eb970`／编译U`8641ec61e804`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
 审计日期：2026-10-11。基线 Linux fc0b4d1a44b6、用户态 157ec71c3b9a；
 后续 Linux 376bb1e8a544 / c2c4aa4ad0bd 和用户态 9f57d1e / 34b54fd 已整改部分
@@ -355,7 +355,7 @@ drain、全部owner/CAP/并发/removal/32-bit、精确期限上界或自然恢�
 继续OPEN，北极星7/8。不关闭整项issue或合并draft。USB/HCC/DLI证据不是
 独立PHY嗅探；原生宿主对照未执行、历史物理xHCI warning仍未闭合。
 
-## 旧固件门面实际清理（新内核回归待执行）
+## 旧固件门面实际清理（源码实施记录；后续回归见下）
 
 K`d38cada9120f`已删除无人调用的三组固件路径常量、未实际选版本的
 load_usb_firmware_versioned，以及无人读取且恒为true的FwDownloadResult.success。
@@ -375,3 +375,37 @@ load_usb_firmware_versioned，以及无人读取且恒为true的FwDownloadResult
 K`f5f83d7eb970`改为数值to_errno日志，原失败record/log SHA保留于
 [调用清理记录](evidence/legacy-firmware-facade-cleanup-20261011.json)。
 新编译和新VM仍是验收门禁，不能将源码CI或失败构建记作实机通过。
+
+
+## 旧固件门面清理：新内核限定回归通过（整项仍 OPEN）
+
+[本批封存证据](evidence/ws73-vm-legacy-firmware-cleanup-20261011.json)使用
+K`f5f83d7eb970`、实际编译U`8641ec61e804`及固定1.10.111 combined blob；后续仅文档。
+三类清单更新：**立即删除已完成本批范围**为无人调用路径常量、伪版本选择loader、
+恒true且无人读取的success字段及sle_fw全局dead_code lint；**移入测试**保留已有
+专用QEMU/故障/边界测试；**等待替代**仍包括有真实probe调用者的loader、C通用
+固件短传输/最终ACK校验、drivers-owned backend/parser和剩余global lint。
+未发布UAPI未在本批改动，后续迁调用者与测试后直接删除；不保留永久双路径。
+Native WS73 drivers固件/HCC/BSLE生产路径未改，真实错误仍传播，未增加模拟成功。
+
+全内核构建与私有modules staging通过，空USB隔离VM接受签名模块、taint0。
+首个E0277失败构建原record/log保留；修正日志为to_errno后重编。
+编译器warning0；GNU make记录一次jobserver不可用警告，不宣称全部构建日志零警告。
+两个独立新VM分别核对原500ms在途超时/Runtime关闭暂留回复/现有稳定期预算归零，
+以及格式7原完整诊断63记录/50proof/46wire、read7/result16/copyout2/poll3/
+淘汰33/CLI4/旧注册27拒绝/排队原期限。每VM普通UID1000/caps0真实20+2轮，
+最长分别469ms、623ms，各自同RF slkd/peer generation不变；
+两capture各1345/1431 USB、22RX、零drop，guest warning0/taint0/traceoverrun0，
+host四只释放在位。主RF daemon在Diagnostic hold之后启动，本批不证明hold期间同daemon。
+[精确源码CI38106781023](https://github.com/OpenSparklink/sparklink/actions/runs/38106781023)
+九作业终结成功，实际170 Rust/34 Python/218工具/32实际内核期限边界。
+USB/HCC/DLI证据仍不是独立PHY嗅探；原生主机对照未执行，VM-only保持。
+
+按严重程度下一步：修复Setup下未触及radio policy的Managed release/fd-close；
+不能对unknown/部分初始化一概快速释放，不能伪造Off/Ready/Complete。已捕获0x1e
+未知广播handle与EIO继续OPEN，另需回归初始化中断/真实cleanup/旧generation/
+peer隔离/同slkd及有限恢复。C通用固件还需拒绝短写、截短/错opcode/非零ACK，
+并独立验收真实backend，不能沿用Native WS73资格。其余事件订阅调用者迁移、
+共享ring/fallback/旧UAPI删除、socket/SSAP/每连接安全/Bond/Profile、四设备两组/
+Native/Proxy/PM/sandbox及全部S0–S6保持。自然启动超时/重枚举/消失根因和无人工
+拔插恢复、历史物理xHCI警告未闭合；北极星7/8，不关闭整项issue或合并draft。

@@ -1,6 +1,6 @@
 # 2026-10-11 复核与当前整改计划
 
-最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
+最新源码复核与新镜像回归（K`f5f83d7eb970`／编译U`8641ec61e804`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
 此前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：
 K`cc4018c4e3a6`/编译U`4a9de6a91617`使用专用QEMU暂留178字节真实回复，
@@ -478,3 +478,22 @@ drain、全部owner/CAP/并发/removal/32-bit、精确期限上界或自然恢�
 每连接安全/Bond/Profile、四设备两组/Native/Proxy/PM/sandbox及完整S0–S6
 继续OPEN，北极星7/8。不关闭整项issue或合并draft。USB/HCC/DLI证据不是
 独立PHY嗅探；原生宿主对照未执行、历史物理xHCI warning仍未闭合。
+
+
+## 本批旧固件门面清理与重新复核
+
+K`f5f83d7eb970`／编译U`8641ec61e804`删除未使用固件路径、
+伪版本loader、恒true success字段和sle_fw全局lint；真实probe加载保留，Native
+WS73 driver未改。[三类清单、调用关系与未决条件](LEGACY_CLEANUP_20261011.md#旧固件门面清理新内核限定回归通过整项仍-open)
+及[两独立新VM证据](evidence/ws73-vm-legacy-firmware-cleanup-20261011.json)已核对。
+新内核/私有模块/签名smoke与每VM真实20+2（469/623ms）、完整原诊断及在途
+原期限/稳定预算通过；UID1000/caps0、各自同RF slkd和peer隔离，USB/HCC/DLI
+不等于独立PHY嗅探。[源码CI38106781023](https://github.com/OpenSparklink/sparklink/actions/runs/38106781023)
+九作业成功，170 Rust/34 Python/218工具/32实际内核期限测试。E0277失败原记录
+保留；修正后编译器warning0，GNU make仍有一次jobserver警告。
+
+下一步先修Setup早期Managed release/fd-close，保留unknown/部分初始化真实清理；
+C通用固件短传输/最终ACK校验需独立修复，不能沿用Native WS73资格。事件独立
+订阅迁移/旧UAPI、socket/SSAP/每连接安全/Bond/Profile/四设备/Native/Proxy/PM/
+sandbox及完整S0–S6仍开放；自然根因、无人工拔插恢复、历史物理xHCI警告未闭合。
+附件分析SHA未变，ADR/分层保持，VM-only/北极星7/8，整项不关闭。

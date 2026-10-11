@@ -1,5 +1,7 @@
 # SparkLink / Linux 联合实施方案
 
+本次复核（K`7f9314309e30`／U`f8c7efb`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
+
 当前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：
 K`cc4018c4e3a6`/编译U`4a9de6a91617`使用专用QEMU暂留178字节真实回复，
 在途/排队本地ECANCELED、旧槽隔离、新查询自己的回复及46组wire限定通过；

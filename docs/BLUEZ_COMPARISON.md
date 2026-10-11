@@ -1,5 +1,7 @@
 # Linux Bluetooth / BlueZ 与 SparkLink：设计依据和验证边界
 
+本次复核（K`7f9314309e30`／U`f8c7efb`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
+
 用户这次提供的分析与已采用文本相同（SHA256
 `f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a`）。
 本次复核区分已验证与正在开发的基线：K`78e729c06a5e`/编译U`2dfd6bd09e7b`

@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Canonical evidence fixtures only; actual ioctl/USB/RF qualification is separate."""
-import copy
-import ctypes
 import errno
 import subprocess
 import tempfile
@@ -9,7 +7,7 @@ import unittest
 from pathlib import Path
 from test_ws73_management_ready_peer import ready_fixture
 from ws73_management_partial import standby,verify_records,corroborate
-from ws73_management_eviction import expected,SURVIVORS,SUBMIT,RESULT
+from ws73_management_eviction import expected,replacement,SURVIVORS,SUBMIT,RESULT
 from sparklink.structs import SleControllerSnapshot
 
 
@@ -29,13 +27,14 @@ def fixture(case='release',domain='advertising'):
     r['cancelled']=expected(snapshot,1064,domain,5);r['final_result']=expected(snapshot,1064,domain,5,True)
     opcode=0xc02 if domain=='advertising' else 0x1001
     burst=dict(scheduler=0,online_cpus=2,start_wall_ns=260000,first_end_wall_ns=270000,end_wall_ns=281000,
-        first_input=bytes(standby(snapshot,1000,domain)).hex(),superseded_original=dict(request_id=1,errno=0,raw=expected(snapshot,1,domain,5,opcode=opcode)),
+        first_input=bytes(replacement(snapshot,1000,domain)).hex(),superseded_original=dict(request_id=1,errno=0,raw=expected(snapshot,1,domain,5,opcode=opcode)),
         before_release=collection(1064),workers=[])
+    if domain=='scanning':burst['initializer_rejection']=dict(input=bytes(standby(snapshot,1000,domain)).hex(),errno=errno.EBUSY,result=dict(request_id=1000,errno=errno.ENOENT,raw=None))
     for n in [0,1]:
         worker=dict(worker=n,tid=10+n,fd=30+n,scheduler=0,online_cpus=2,closed_errno=errno.EBADF,start_wall_ns=271000,end_wall_ns=280000,calls=[])
         for j,i in enumerate(SURVIVORS[n*32:(n+1)*32]):
             start=272000+100*j+25*n
-            worker['calls'].append(dict(request_id=i,input=bytes(standby(snapshot,i,domain)).hex(),errno=0,start_wall_ns=start,end_wall_ns=start+75))
+            worker['calls'].append(dict(request_id=i,input=bytes(replacement(snapshot,i,domain)).hex(),errno=0,start_wall_ns=start,end_wall_ns=start+75))
         burst['workers'].append(worker)
     r.update(ordinary_burst=burst,after_release_results=collection(),after_drain_results=collection(final=True))
     def command(op,t,params):return dict(bus=1,device=2,opcode=op,wall_ns=t,record=t,completion=dict(wall_ns=t+1),params=params)
@@ -105,10 +104,20 @@ class EvictionTests(unittest.TestCase):
             if change=='extra-reply':c['complete'].append(dict(c['complete'][-1],device=2,wall_ns=403000))
             with self.subTest(change=change),self.assertRaises(ValueError):corroborate(r,h,c,l,dict(bus=1,address=124))
 
+    def test_scan_initializer_refusal_preserves_no_admission(self):
+        for change in ['success','admitted','wrong-id','missing']:
+            r,h,c,l=fixture(domain='scanning');v=r['ordinary_burst']['initializer_rejection']
+            if change=='success':v['errno']=0
+            if change=='admitted':v['result']['errno']=0
+            if change=='wrong-id':v['result']['request_id']=1
+            if change=='missing':del r['ordinary_burst']['initializer_rejection']
+            with self.subTest(change=change),self.assertRaises((ValueError,KeyError)):verify_records(r)
+
     def test_raw_worker_ioctl_numbers_match_canonical_kernel_uapi(self):
-        root=Path(__file__).resolve().parents[3]
+        from ws73_target import LINUX
+        kernel=LINUX
         with tempfile.TemporaryDirectory() as tmp:
             c=Path(tmp)/'abi.c';binary=Path(tmp)/'abi'
             c.write_text('#include "sparklink_ioctl.h"\n_Static_assert(SL_IOCTL_DISCOVERY_SUBMIT == '+str(SUBMIT)+', "submit");\n_Static_assert(SL_IOCTL_DISCOVERY_RESULT == '+str(RESULT)+', "result");\nint main(void) { return 0; }\n')
-            subprocess.run(['cc','-std=c11','-Wall','-Wextra','-Werror','-I'+str(root/'linux/include/uapi/linux'),str(c),'-o',str(binary)],check=True)
+            subprocess.run(['cc','-std=c11','-Wall','-Wextra','-Werror','-I'+str(kernel/'include/uapi/linux'),str(c),'-o',str(binary)],check=True)
             subprocess.run([str(binary)],check=True)

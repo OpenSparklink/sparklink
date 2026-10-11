@@ -21,6 +21,15 @@ RESULT = 0xc0000000 | ctypes.sizeof(SleDiscoveryResult) << 16 | ord('S') << 8 | 
 SURVIVORS = list(range(1001, 1065))
 
 
+def replacement(snapshot, identifier, domain):
+    from ws73_management_partial import standby
+    if domain=='advertising':return standby(snapshot,identifier,domain)
+    # A pending ScanInitializeOff cannot admit another enable recipe. Its
+    # same-domain STOP is legal and is still never selected while IN is held.
+    return SleDiscoverySubmit(version=1,generation=snapshot.generation,
+        request_id=identifier,profile=1,operation=4)
+
+
 def result_row(fd, generation, identifier):
     value = bytearray(bytes(SleDiscoveryResult(version=1, generation=generation, request_id=identifier)))
     try:
@@ -40,9 +49,18 @@ def burst(target, observer, snapshot, record):
     from ws73_management_partial import standby
     fd = target.fileno()
     value = dict(scheduler=os.sched_getscheduler(0), online_cpus=len(os.sched_getaffinity(0)),
-                 start_wall_ns=time.time_ns(), first_input=bytes(standby(snapshot, 1000, record['domain'])).hex(), workers=[])
+                 start_wall_ns=time.time_ns(), first_input=bytes(replacement(snapshot, 1000, record['domain'])).hex(), workers=[])
     record['ordinary_burst'] = value
-    target.submit_discovery(standby(snapshot, 1000, record['domain']))
+    if record['domain']=='scanning':
+        rejected=dict(input=bytes(standby(snapshot,1000,'scanning')).hex())
+        value['initializer_rejection']=rejected
+        try:target.submit_discovery(standby(snapshot,1000,'scanning'))
+        except OSError as error:rejected['errno']=error.errno
+        else:raise ValueError('pending initializer must not admit another enable')
+        rejected['result']=result_row(observer.fileno(),snapshot.generation,1000)
+        if rejected['errno']!=errno.EBUSY or rejected['result']!=dict(request_id=1000,errno=errno.ENOENT,raw=None):
+            raise ValueError('refused initialization must not admit a result')
+    target.submit_discovery(replacement(snapshot, 1000, record['domain']))
     value['superseded_original'] = result_row(observer.fileno(), snapshot.generation, 1)
     value['first_end_wall_ns'] = time.time_ns()
     barrier = threading.Barrier(2, timeout=2)
@@ -55,7 +73,7 @@ def burst(target, observer, snapshot, record):
             barrier.wait()
             row['start_wall_ns'] = time.time_ns()
             for identifier in SURVIVORS[number*32:(number+1)*32]:
-                request = standby(snapshot, identifier, record['domain'])
+                request = replacement(snapshot, identifier, record['domain'])
                 call = dict(request_id=identifier, input=bytes(request).hex(), start_wall_ns=time.time_ns())
                 row['calls'].append(call)
                 try:
@@ -98,9 +116,9 @@ def burst(target, observer, snapshot, record):
 
 def expected(snapshot, identifier, domain, state, final=False, opcode=0):
     return bytes(SleDiscoveryResult(version=1, generation=snapshot.generation, dev_index=0,
-        request_id=identifier, profile=1, operation=5 if domain=='advertising' else 6,
+        request_id=identifier, profile=1, operation=5 if domain=='advertising' else 6 if opcode else 4,
         state=state, error=-errno.ECANCELED if state==5 else 0,
-        count=2 if domain=='advertising' else 3, opcode=opcode,
+        count=2 if domain=='advertising' else 3 if opcode else 1, opcode=opcode,
         radio_adv=1 if final or domain=='scanning' else 0)).hex()
 
 
@@ -145,8 +163,13 @@ def verify_records(record):
     if (type(start) is not int or type(end) is not int or not record['markers'][1]['wall_ns']<start<value['first_end_wall_ns']<end<record['release_before_wall_ns']
             or end-start>=200_000_000):
         raise ValueError('bounded actual submissions must precede lease release')
-    if value['first_input']!=bytes(standby(snapshot,1000,domain)).hex() or value['superseded_original']!=dict(request_id=1,errno=0,raw=expected(snapshot,1,domain,5,opcode=opcode)):
+    if value['first_input']!=bytes(replacement(snapshot,1000,domain)).hex() or value['superseded_original']!=dict(request_id=1,errno=0,raw=expected(snapshot,1,domain,5,opcode=opcode)):
         raise ValueError('actual original cancellation before eviction required')
+    if domain=='scanning':
+        rejected=value['initializer_rejection']
+        if rejected!=dict(input=bytes(standby(snapshot,1000,domain)).hex(),errno=errno.EBUSY,result=dict(request_id=1000,errno=errno.ENOENT,raw=None)):
+            raise ValueError('pending scan initializer must reject without admission')
+    elif 'initializer_rejection' in value:raise ValueError('unexpected initializer rejection')
     workers=value['workers']
     if len(workers)!=2 or [r['worker'] for r in workers]!=[0,1] or len({r['tid'] for r in workers})!=2 or len({r['fd'] for r in workers})!=2:
         raise ValueError('two distinct completed submitters and dup references required')
@@ -162,7 +185,7 @@ def verify_records(record):
             raise ValueError('complete disjoint64 replacement submissions required')
         previous=row['start_wall_ns']
         for call in row['calls']:
-            if (call['input']!=bytes(standby(snapshot,call['request_id'],domain)).hex()
+            if (call['input']!=bytes(replacement(snapshot,call['request_id'],domain)).hex()
                     or type(call['errno']) is not int or call['errno']!=0
                     or not previous<=call['start_wall_ns']<=call['end_wall_ns']<=row['end_wall_ns']):
                 raise ValueError('actual successful ordered typed ioctl required')

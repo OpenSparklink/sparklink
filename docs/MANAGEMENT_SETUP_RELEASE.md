@@ -776,3 +776,11 @@ Ready/Managed/current scanning On，随后真实STOP/START/STOP。每新VM还需
 source runner全部终态且独立USB/RF核对后，才记录此限定普通调度子集通过。
 整项Managed、daemon运行中原hold、物理拔插、四设备两组和自然自动恢复/RCA
 仍保持OPEN；完整S0–S6及28项原scope不缩减。
+
+
+首轮广告三fd实际通过；扫描首次完整initializer替代被EBUSY拒绝，原FAIL/同行
+Ready观察及未执行两例保留，不能作为通过。修为先核对重复initializer的
+EBUSY/ENOENT无admission，然后使用合法同域STOP作65个未选择替代请求；不
+放宽生产can_initialize_scan，不执行该STOP，也不制造scan Off。ABI测试首轮CI
+失败由于忽略SPARKLINK_KERNEL_SOURCE，仅修为采用与runner相同的显式内核路径。
+新扫描镜像和独立原source runner通过后才更新资格，旧失败不覆盖。

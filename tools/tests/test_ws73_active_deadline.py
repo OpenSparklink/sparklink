@@ -10,7 +10,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from ws73_active_deadline import ActiveDeadlineCoordinator, corroborate, verify_records
+from ws73_active_deadline import ActiveDeadlineCoordinator, corroborate, metadata_ready, verify_records
 from ws73_diagnostic_hold import PROPERTIES
 from sparklink.structs import SleControllerSnapshot, SleDiagnosticResult, SleDiagnosticSubmit
 from test_ws73_diagnostic_hold import Monitor
@@ -58,6 +58,25 @@ def fixture():
 
 
 class ActiveDeadlineTests(unittest.TestCase):
+    def test_peer_attachment_requires_atomic_real_setup_metadata(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            share = Path(temporary)
+            self.assertFalse(metadata_ready(share))
+            folder = share / 'active-deadline'; folder.mkdir()
+            initial = fixture()['initializations'][0]['initial_snapshot']
+            marker = folder / 'metadata-0.json'
+            marker.write_text(json.dumps({'slot': 0, 'initial_snapshot': initial}))
+            self.assertTrue(metadata_ready(share))
+            for field, value in [('flags', 1), ('flags', 4), ('dev_index', 1),
+                                 ('generation', 0), ('valid_fields', 0), ('profile', 0)]:
+                snapshot = SleControllerSnapshot.from_buffer_copy(bytes.fromhex(initial))
+                setattr(snapshot, field, value)
+                marker.write_text(json.dumps({'slot': 0, 'initial_snapshot': bytes(snapshot).hex()}))
+                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                    metadata_ready(share)
+            marker.write_text(json.dumps({'slot': False, 'initial_snapshot': initial}))
+            with self.assertRaises(ValueError): metadata_ready(share)
+
     def test_exact_fixture_is_only_record_validation(self):
         verify_records(fixture())
         self.assertEqual(ctypes.sizeof(SleDiagnosticResult),104)

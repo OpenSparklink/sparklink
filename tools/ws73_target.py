@@ -516,7 +516,11 @@ def _run(args):
                                        **{'runtime-idle-scan-stop':True}, **({'runtime-warm':True} if getattr(args,'warm',False) else {}))
                             if passthrough:props=usb_properties(args.ports[0],0)
                             monitor.execute('device_add',props);channel.sendall((acknowledgement+'-readd\n').encode());hotplug_phase=2
-                    if active<2 and ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_ACTIVE_METADATA: slot=0' if active_gate else 'WS73_TARGET_READY: slot=0') in text:
+                    peer_metadata = False
+                    if active_gate and active == 1:
+                        from ws73_active_deadline import metadata_ready
+                        peer_metadata = metadata_ready(share)
+                    if active<2 and (peer_metadata if active_gate and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text):
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                     **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
@@ -583,7 +587,7 @@ def _run(args):
                     probe=json.loads((share/'active-deadline/run.json').read_text())
                     m['active_deadline_hold']['corroboration']=corroborate(
                         probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),
-                        (share/'kernel.log').read_text(),*identities,devices[args.ports[0]])
+                        (share/'kernel.log').read_text(),identities[0],identities[1],devices[args.ports[0]])
                     m['live_active_deadline']=file_record(share/'active-deadline/run.json')
                 if event_copy:
                     from ws73_event_copy_probe import verify_cases

@@ -1,0 +1,47 @@
+{
+  "status": "FAILED_TEST_COORDINATION_REDIRECTED_METADATA_MARKER",
+  "kernel_head": "016aa7ee68130076d692366eceaafeb815003099",
+  "compiled_userspace_head": "ef9e97039c9448584107910057d435e29d0ba9cc",
+  "started_at": "2026-10-11T02:18:14.231455+00:00",
+  "finished_at": "2026-10-11T02:20:16.508158+00:00",
+  "probe": {
+    "format_version": 1,
+    "status": "FAIL",
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "daemon_running_during_hold": false,
+    "host_hold_acknowledgements": [],
+    "guest_ack_receipts": [],
+    "markers": [],
+    "peer_queries": [],
+    "peer_snapshots": [],
+    "initializations": [
+      {
+        "initial_snapshot": "01000000000000000100000002000000010000000100000000000401fe0000000500016c00a100231550001200000100000001093254f9000000000000000000"
+      }
+    ],
+    "error": "independent metadata availability"
+  },
+  "hold": {
+    "method": "QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT",
+    "observations": [],
+    "complete": false,
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false
+  },
+  "cause": "Helper stdout redirected to supervisor file; host incorrectly awaited metadata console marker. Peer was never attached. No active command or hold armed. Use atomic validated metadata file handshake.",
+  "active_usb_deadline_live_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "full_goal_complete": false,
+  "artifact_sha256": {
+    "manifest": "75b3e6de74bf48e2404931981cbbf0443e0601d2cf54a98430ebbbdf4140c920",
+    "probe": "5c7344c6c5c3facfead4f06306e9d4c37b58d5eb975db82e49a6084069174525",
+    "console": "d21dbe88829539660b10cdb1b45b8b74b2ac859977db365784a20e6fa6fa9d07",
+    "capture": "83e28cdb1c7810e5e2088dfc0158ba82a1302bbdcc57c233c62065b595b720b1",
+    "kernel": "7ddd7fe952bf42cdb8b144f82d29f6b9c9646a41584717a7a70e4d4c3d059583",
+    "qmp": "35090110e55363afe2379e3af7ae0293bca4729e0f4224d2b7977e45be5281b0",
+    "qemu_stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

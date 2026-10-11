@@ -65,6 +65,21 @@ def _decode(kind, raw):
     return kind.from_buffer_copy(bytes.fromhex(raw))
 
 
+def metadata_ready(share):
+    """A redirected guest stdout cannot be used to attach the second device."""
+    path = Path(share) / 'active-deadline/metadata-0.json'
+    if not path.exists():
+        return False
+    value = json.loads(path.read_text())
+    if set(value) != {'slot', 'initial_snapshot'} or type(value['slot']) is not int or value['slot'] != 0:
+        raise ValueError('exact initial target metadata marker required')
+    snapshot = _decode(SleControllerSnapshot, value['initial_snapshot'])
+    if (snapshot.version != 1 or snapshot.dev_index != 0 or not snapshot.generation
+            or snapshot.flags != 2 or snapshot.profile != 1 or snapshot.valid_fields != 1):
+        raise ValueError('actual target Setup metadata required before peer attachment')
+    return True
+
+
 def verify_records(record):
     if (record.get('format_version') != 1 or type(record['format_version']) is not int
             or record.get('status') != 'ACTIVE_DEADLINE_PRE_DAEMON_PASS'
@@ -272,6 +287,8 @@ def run(args):
                 time.sleep(0.01)
             adapters.append(adapter)
             if index == 0:
+                save()
+                write_marker(folder / 'metadata-0.json', {'slot': 0, 'initial_snapshot': bytes(snapshot).hex()})
                 print('WS73_TARGET_ACTIVE_METADATA: slot=0', flush=True)
         for row in record['initializations']: row['start_wall_ns']=time.time_ns()
         with (folder/'initializer.log').open('wb') as log:

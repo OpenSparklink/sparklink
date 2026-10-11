@@ -879,3 +879,40 @@ USB 窗口、真实原帧 SHA/长度、原取消结果和同行 On。原回复�
 CLI本身、取消/移除及其余RPC并发仍未实机验收**。完整Managed/作者/权限/
 事件/removal、当前镜像物理拔插、四设备两组、自然RCA/无人工恢复及其余
 S0–S6/28项保持OPEN。VM-only；部分成果不关闭整项，两个draft不合并。
+
+## 取消调用者退出与 busy 拒绝：新门禁待实机
+
+`slctl management` / `GetManagementStatus` 读取当前选定 kernel File 的
+实际 MANAGEMENT_QUERY，仅返回 generation/mode/state/flags/errno/status/opcode。
+不返回 lease token，不用 daemon credential 缓存替代内核结果，也不持 admission
+锁；因此可以在原 reply 未排空时观察 Revoking。flags1 表示该 File 实际拥有
+权限，不能把 Free 或另一个 File 的 Held 解释为已恢复 daemon 的管理权。
+
+新 `--daemon-hold-case cancel-caller-exit|cancel-busy` 沿用独立真实 recovery VM：
+原请求先被取消且原 CLI 返回 ECANCELED，再分别实际 kill/reap 取消 CLI，或
+由第二个普通 CLI 请求取消并要求立即 busy 失败。原 reply 仍被暂留时，
+内核必须仍 Revoking；取消 CLI 退出不伪造 handoff 成功。实际 release 后，
+普通 CLI 查询必须看到同 generation、Managed/owned Held，再实际扫描
+START/STOP 验证业务权限。另一只真实 Ready 设备保持 scanning On，完整
+目标窗口仅原1001和排空后的1001/START/STOP，busy请求无额外DLI。
+
+在取消调用者退出案例不要求被杀 CLI 伪造成功输出；通过实际内核状态与
+后续成功业务证明交权。管理查询不消费原 operation result。500ms 原 DLI
+期限不延长，host/QMP/捕获原SHA和所有时序独立核对，RF20+2同daemon/bus
+作为单独 gate。历史 schema2 的双案例证据继续可离线验证；新 lifecycle
+案例必须 schema3，不能将旧 token 字段或缺失观察记录默认成成功。
+
+复现时使用已资格化的新服务包和 signed module tree 准备独立 `PREPARED`
+目录，再分别执行（`PREPARED`/`OUT` 为自己的独立输出目录）：
+
+```sh
+python3 tools/ws73_target.py run --prepared PREPARED --output OUT \
+  --ports 1-2.1.4 1-2.1.3 --timeout 450 --fault-recovery \
+  --setup-release-verify --daemon-hold-case cancel-caller-exit
+# 另一独立 VM/OUT 使用 --daemon-hold-case cancel-busy；首失败停止批次。
+```
+
+目前322工具、4项 production admission/query 回归及严格clippy通过，是源码
+支撑。新案例尚待新服务编译/真实执行；取消与移除并发、当前镜像物理拔插、
+四设备、自然RCA/非人工恢复及完整S0–S6保持OPEN。原STOP0b失败和前批
+两案例/44轮资格不覆盖，不提前关闭整项issues，VM-only。

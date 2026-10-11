@@ -413,7 +413,7 @@ def _run(args):
         raise ValueError('select one active deadline or last-file-close gate')
     setup_gate=bool(getattr(args,'setup_release_verify',False))
     daemon_hold=getattr(args,'daemon_hold_case',None)
-    if daemon_hold not in [None,'supersede','caller-exit'] or daemon_hold is not None and (not recovery or support or diagnostic or active_gate or getattr(args,'managed_partial_case',None) is not None or getattr(args,'managed_queue_verify',False)):
+    if daemon_hold not in [None,'supersede','caller-exit','cancel-caller-exit','cancel-busy'] or daemon_hold is not None and (not recovery or support or diagnostic or active_gate or getattr(args,'managed_partial_case',None) is not None or getattr(args,'managed_queue_verify',False)):
         raise ValueError('separate real recovery VM for ordinary daemon held cancellation required')
     partial_case=getattr(args,'managed_partial_case',None)
     partial_gate=partial_case is not None
@@ -876,7 +876,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs=2,required=True)
-            cmd.add_argument('--daemon-hold-case',choices=['supersede','caller-exit'],help='ordinary D-Bus callers cancel an original successful held reply with same daemon and active peer')
+            cmd.add_argument('--daemon-hold-case',choices=['supersede','caller-exit','cancel-caller-exit','cancel-busy'],help='ordinary D-Bus callers cancel an original successful held reply with same daemon and active peer')
             cmd.add_argument('--managed-ordinary-eviction',action='store_true',help='two SCHED_OTHER ioctl submitters and terminal result eviction under actual held first reply; separate Ready-peer VM gate')
             cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
             cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')

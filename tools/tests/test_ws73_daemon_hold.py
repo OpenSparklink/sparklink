@@ -90,3 +90,63 @@ class DaemonHoldTests(unittest.TestCase):
         p=Invocation([sys.executable,'-c',script],'on')
         self.assertEqual(p.identifier(),7);r=p.finish();self.assertEqual(r['exit'],0);self.assertIn('done',r['stdout'])
         p=Invocation([sys.executable,'-c',script],'on');self.assertEqual(p.identifier(),7);self.assertEqual(p.finish(kill=True)['exit'],-9)
+
+class CancelAuthorTests(unittest.TestCase):
+    @staticmethod
+    def fixture(case):
+        r,h,c,l=fixture();a=r['target'];b=r['peer'];r.update(case=case,format_version=3)
+        r['original_caller']['end_wall_ns']=2600
+        def management(start,end,state):
+            return dict(args=['/bin/slctl','--adapter',a['path'],'management'],stdout=f"NativeManagementStatus: generation=1 mode={int(state==1)} state={state} flags={int(state==1)} errno=0 status=0x00 opcode=0x0000\n",stderr='',exit=0,start_wall_ns=start,end_wall_ns=end)
+        r['management_revoking']=management(2650,2700,2)
+        r['management_held']=management(3430,3470,1);r['management_polls']=[r['management_held']]
+        if case=='cancel-caller-exit':
+            r['cancel_caller'].update(exit=-9,kill_wall_ns=2720,end_wall_ns=2750,stdout='NativePoliciesCancelRequest: generation=1\n')
+            r['after_cancel_caller_exit']=dict(r['cancelled'],start_wall_ns=2800,end_wall_ns=2830)
+            r['management_after_cancel_exit']=management(2900,2930,2)
+        else:
+            r['busy_cancel']=dict(args=r['cancel_caller']['args'],stdout='NativePoliciesCancelRequest: generation=1\n',stderr='device management admission or handoff busy',exit=1,start_wall_ns=2730,end_wall_ns=2900)
+            r['first_cancel_pending_after_busy']=True
+        def result(i,op,start,end,scan):
+            text=f'NativeOperationResult: generation=1 request={i} operation={op} state=3 errno=0 status=0x00 opcode=0x1002 step={int(op==3)}/{2 if op==3 else 1} power=0 power_valid=0 adv=1 scan={scan} profile=1\n'
+            return dict(args=['/bin/slctl','--adapter',a['path'],'scan','on' if op==3 else 'off'],stdout=text,stderr='',exit=0,start_wall_ns=start,end_wall_ns=end)
+        r['target_resume']=[result(31,3,3700,4050,2),result(32,4,4080,4150,1)]
+        r['peer_on_after_drain'].update(start_wall_ns=4200,end_wall_ns=4300)
+        r['peer_stop'].update(start_wall_ns=4400,end_wall_ns=4700)
+        for op,params,start,end,sha in [(0x1001,'0000010040062003',3750,3800,'f'*64),(0x1002,'0100',3900,4000,'7'*64),(0x1002,'0000',4100,4130,'8'*64)]:
+            c['commands'].append(dict(bus=1,device=2,opcode=op,params=params,wall_ns=start,record=start,completion=dict(wall_ns=start+1)))
+            c['complete'].append(dict(bus=1,device=2,opcode=op,value='',status=0,wall_ns=end,record=end,usb_length=178,usb_sha256=sha))
+        for key in ['commands','complete']:
+            for v in c[key]:
+                if v['device']==3 and v['wall_ns']>=4000:
+                    v['wall_ns']+=500
+                    if key=='commands':v['completion']['wall_ns']+=500
+            c[key].sort(key=lambda v:v['wall_ns'])
+        return r,h,c,l
+
+    def test_abandoned_cancel_and_busy_handoff_require_real_owned_reacquisition(self):
+        for case in ['cancel-caller-exit','cancel-busy']:
+            r,h,c,l=self.fixture(case)
+            with self.subTest(case=case):
+                p=corroborate(r,h,c,l,dict(bus=1,address=124));self.assertEqual(len(p['target']),4);self.assertEqual(len(p['peer']),3)
+                self.assertFalse(p['whole_managed_acceptance'])
+
+    def test_wrong_revocation_caller_exit_reacquisition_or_wire_never_pass(self):
+        for change in ['false-exit','fake-confirmation','wrong-generation','leaked-token','wrong-owner','early-held','not-revoking','missing-history','wrong-resume','failed-resume','failed-wire','busy-succeeded','busy-no-error','original-handoff-ended']:
+            case='cancel-busy' if change.startswith('busy') or change=='original-handoff-ended' else 'cancel-caller-exit'
+            r,h,c,l=self.fixture(case)
+            if change=='false-exit':r['cancel_caller']['exit']=0
+            if change=='fake-confirmation':r['cancel_caller']['stdout']+='NativePoliciesCancelled: generation=1\n'
+            if change=='wrong-generation':r['management_held']['stdout']=r['management_held']['stdout'].replace('generation=1','generation=2')
+            if change=='leaked-token':r['management_held']['stdout']+='lease=999\n'
+            if change=='wrong-owner':r['management_held']['stdout']=r['management_held']['stdout'].replace('flags=1','flags=0')
+            if change=='early-held':r['management_held'].update(start_wall_ns=2400,end_wall_ns=2450)
+            if change=='not-revoking':r['management_after_cancel_exit']['stdout']=r['management_held']['stdout']
+            if change=='missing-history':r['management_polls']=[]
+            if change=='wrong-resume':r['target_resume'][0]['args'][2]=r['peer']['path']
+            if change=='failed-resume':r['target_resume'][0]['exit']=1
+            if change=='failed-wire':next(v for v in c['complete'] if v['device']==2 and v['wall_ns']==4000)['status']=11
+            if change=='busy-succeeded':r['busy_cancel']['exit']=0
+            if change=='busy-no-error':r['busy_cancel']['stderr']=''
+            if change=='original-handoff-ended':r['first_cancel_pending_after_busy']=False
+            with self.subTest(change=change),self.assertRaises(ValueError):corroborate(r,h,c,l,dict(bus=1,address=124))

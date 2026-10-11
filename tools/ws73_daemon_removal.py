@@ -74,6 +74,7 @@ class RemovalSession:
         folder = run.output/'daemon-remove'
         folder.mkdir(exist_ok=False)
         r = dict(format_version=1, status='RUNNING', target=a, peer=b, markers=[], hold_acknowledgements=[],
+                 acknowledgement_observed_wall_ns=[],
                  application_identity=ordinary_identity(), daemon_before=daemon_identity(run.args.slkd_pid),
                  bus_before=run.bus_identity(), cancel_polls=[], physical_acceptance=False,
                  automatic_fault_recovery_acceptance=False)
@@ -96,6 +97,7 @@ class RemovalSession:
             if value['stage'] != ack or value['request'] != marker:
                 raise ValueError('wrong held-removal acknowledgement')
             r['hold_acknowledgements'].append(value)
+            r['acknowledgement_observed_wall_ns'].append(time.time_ns())
             run.save()
 
         prefix = [str(run.args.slctl), '--adapter', a['path']]
@@ -217,6 +219,8 @@ def verify_records(r):
     times = [markers[0]['wall_ns'], original['start_wall_ns'], original['marker_wall_ns'], markers[1]['wall_ns'], r['pending']['start_wall_ns'], r['pending']['end_wall_ns'], r['peer_start']['start_wall_ns'], r['peer_start']['end_wall_ns'], cancel['start_wall_ns'], cancel['marker_wall_ns'], r['cancelled']['start_wall_ns'], r['cancelled']['end_wall_ns'], original['end_wall_ns'], r['management_revoking']['start_wall_ns'], r['management_revoking']['end_wall_ns'], r['remove_ready_wall_ns'], cancel['end_wall_ns'], r['peer_on_after_remove']['start_wall_ns'], r['peer_on_after_remove']['end_wall_ns'], r['peer_stop']['start_wall_ns'], r['peer_stop']['end_wall_ns'], r['retired_selection']['start_wall_ns'], r['retired_selection']['end_wall_ns']]
     if any(type(t) is not int or t <= 0 for t in times) or times != sorted(times) or r['remove_ready_wall_ns']-original['start_wall_ns'] >= 400_000_000:
         raise ValueError('actual cancellation-before-removal within original500ms deadline required')
+    if not r['remove_ready_wall_ns'] <= r['remove_ack_observed_wall_ns'] <= cancel['end_wall_ns']:
+        raise ValueError('actual delete acknowledgement must precede collecting RPC failure')
     if not r['cancel_polls'] or r['cancel_polls'][-1] != r['cancelled']:
         raise ValueError('actual Pending-to-Cancelled history required')
     previous = cancel['marker_wall_ns']
@@ -262,6 +266,41 @@ def corroborate_wire(r, capture):
     return dict(target_command=target[0], target_usb_retirement=failures, peer=peer)
 
 
+def corroborate_clocks(r, host):
+    """Bound host-minus-guest offset by atomic marker/ack round trips.
+
+    Raw wall clocks are never assumed equal. All deadline durations use one
+    clock per subtraction, with a conservative upper bound across the hold.
+    """
+    guest_acks = r['acknowledgement_observed_wall_ns']
+    if len(guest_acks) != 2:
+        raise ValueError('two actual guest ack observations required')
+    bounds = []
+    for marker, ack, guest_end in zip(r['markers'], host['observations'], guest_acks):
+        if type(guest_end) is not int or not marker['wall_ns'] <= guest_end:
+            raise ValueError('ordered atomic marker/ack observations required')
+        bounds.append((ack['host_wall_ns']-guest_end, ack['host_wall_ns']-marker['wall_ns']))
+    for begin, end, event in [(r['remove_ready_wall_ns'], r['remove_ack_observed_wall_ns'], host['delete_ack_wall_ns']),
+                              (r['readd_ready_wall_ns'], r['readd_ack_observed_wall_ns'], host['readd_wall_ns'])]:
+        if not begin <= end:
+            raise ValueError('ordered lifecycle acknowledgements required')
+        bounds.append((event-end, event-begin))
+    lower, upper = max(v[0] for v in bounds), min(v[1] for v in bounds)
+    if lower > upper:
+        raise ValueError('host/guest clock bounds do not intersect')
+    held_host = host['observations'][1]['host_wall_ns']
+    held_guest = guest_acks[1]
+    if not r['markers'][1]['wall_ns'] <= held_guest <= r['pending']['start_wall_ns']:
+        raise ValueError('held ack must precede actual Pending query')
+    if not held_host <= host['delete_request_wall_ns'] <= host['delete_ack_wall_ns'] <= host['readd_wall_ns']:
+        raise ValueError('host-only held/delete/re-add clock order required')
+    bound = held_guest-r['original_caller']['start_wall_ns'] + host['delete_request_wall_ns']-held_host
+    if not 0 <= bound < 400_000_000:
+        raise ValueError('conservative hold-to-delete bound exceeds original deadline')
+    return dict(method='ATOMIC_MARKER_ACK_OFFSET_INTERVAL', host_minus_guest_ns=[lower, upper],
+                original_to_delete_upper_bound_ns=bound, raw_wall_clocks_assumed_equal=False)
+
+
 def corroborate(r, host, capture, stderr, identity):
     wire = corroborate_wire(r, capture)
     if (host.get('method') != 'QMP_REMOVE_ACTUAL_HELD_IN81' or host.get('complete') is not True
@@ -270,7 +309,7 @@ def corroborate(r, host, capture, stderr, identity):
         raise ValueError('actual selected host removal and guest handshake required')
     for i, row in enumerate(host['observations']):
         expected = dict(zip(PROPERTIES, [i == 0, i == 1, int(i > 0), 0, 0, 0, False, 0]))
-        if row['state'] != expected or any(type(row['state'][k]) is not type(v) for k, v in expected.items()) or row['host_wall_ns'] < row['request']['wall_ns']:
+        if row['state'] != expected or any(type(row['state'][k]) is not type(v) for k, v in expected.items()) or type(row['host_wall_ns']) is not int or row['host_wall_ns'] <= 0:
             raise ValueError('exact fresh arm/held states required')
     if host['before_remove_state'] != host['observations'][1]['state'] or host['reset_options'] != dict.fromkeys(RESET_OPTIONS, False) or host['peer_before_remove'] != host['peer_after_remove']:
         raise ValueError('no release/reset/drop or peer change before deletion required')
@@ -280,18 +319,17 @@ def corroborate(r, host, capture, stderr, identity):
     props = host['readd_properties']
     if props.get('driver') != 'usb-host' or props.get('id') != 'ws73_0' or props.get('hostport') != identity['path'].split('-', 1)[1] or props.get('hostbus') != identity['bus'] or props.get('port') != '1' or any(props.get(k) is not False for k in RESET_OPTIONS):
         raise ValueError('same physical target only, all reset opt-outs on re-add required')
-    if not r['remove_ready_wall_ns'] <= host['delete_request_wall_ns'] <= host['delete_ack_wall_ns'] <= host['readd_wall_ns'] or not host['delete_request_wall_ns'] <= r['cancel_caller']['end_wall_ns'] < host['readd_wall_ns'] or host['delete_request_wall_ns']-r['original_caller']['start_wall_ns'] >= 400_000_000:
-        raise ValueError('actual deletion precedes failure/re-add and original deadline')
+    clocks = corroborate_clocks(r, host)
     replacement, retired = r['replacement'], r['retired_after_readd']
     if (replacement['port'] != r['target']['port'] or replacement['address'] != r['target']['address']
             or replacement['generation'] == r['target']['generation'] or replacement['path'] == r['target']['path']
             or retired['args'] != r['retired_selection']['args'] or not retired['exit'] or 'not a live registration' not in retired['stderr']
-            or not host['readd_wall_ns'] <= retired['start_wall_ns'] <= retired['end_wall_ns']):
+            or not r['cancel_caller']['end_wall_ns'] <= r['readd_ready_wall_ns'] <= r['readd_ack_observed_wall_ns'] <= retired['start_wall_ns'] <= retired['end_wall_ns']):
         raise ValueError('new generation and old selection rejection after actual re-add required')
     holds = re.findall(r'WS73_TEST_RUNTIME_HOLD: dev (\d+):(\d+) bytes=(\d+) host_status=0 holds=(\d+) sha256=([0-9a-f]{64})', stderr)
     drops = re.findall(r'WS73_TEST_RUNTIME_HOLD_DROP: dev (\d+):(\d+) bytes=(\d+) drops=(\d+) sha256=([0-9a-f]{64})', stderr)
     if len(holds) != 1 or holds != drops or holds[0][3] != '1' or tuple(map(int, holds[0][:2])) != (identity['bus'], identity['address']) or int(holds[0][2]) <= 0 or 'WS73_TEST_RUNTIME_HOLD_RELEASE:' in stderr:
         raise ValueError('exact original successful host-only bytes dropped once; no delivery/replay')
-    return dict(status='DAEMON_CANCEL_REMOVAL_CORROBORATED', **wire, host_transfer_sha256=holds[0][4], host_transfer_bytes=int(holds[0][2]),
+    return dict(status='DAEMON_CANCEL_REMOVAL_CORROBORATED', **wire, clocks=clocks, host_transfer_sha256=holds[0][4], host_transfer_bytes=int(holds[0][2]),
                 guest_cancel_removal_support_acceptance=True, whole_managed_acceptance=False,
                 physical_acceptance=False, automatic_fault_recovery_acceptance=False, natural_fault_root_cause_closed=False)

@@ -16,7 +16,9 @@ from ws73_target import usb_properties
 def fixture():
     r, h, c, _ = held_fixture()
     r.update(format_version=1, status='DAEMON_CANCEL_REMOVAL_EVIDENCE_PENDING',
-             cancel_pending_before_remove=True, remove_ready_wall_ns=2800)
+             cancel_pending_before_remove=True, remove_ready_wall_ns=2800,
+             remove_ack_observed_wall_ns=3100, readd_ready_wall_ns=4500, readd_ack_observed_wall_ns=4850,
+             acknowledgement_observed_wall_ns=[1050, 1250])
     r.pop('case')
     r['markers'] = r['markers'][:2]
     r['hold_acknowledgements'] = r['hold_acknowledgements'][:2]
@@ -98,6 +100,18 @@ class RemovalTests(unittest.TestCase):
             if change == 'deadline': h['delete_request_wall_ns'] += 400_000_000
             with self.subTest(change=change), self.assertRaises(ValueError):
                 corroborate(r, h, c, log, dict(path='1-2.1.4', bus=1, address=124))
+
+    def test_clock_offset_does_not_require_equal_host_and_guest_walls(self):
+        r, h, c, log = fixture()
+        skew = 950_000_000
+        for ack in h['observations']: ack['host_wall_ns'] += skew
+        for key in ['delete_request_wall_ns', 'delete_ack_wall_ns', 'readd_wall_ns']: h[key] += skew
+        p = corroborate(r, h, c, log, dict(path='1-2.1.4', bus=1, address=124))
+        self.assertFalse(p['clocks']['raw_wall_clocks_assumed_equal'])
+        self.assertGreater(p['clocks']['host_minus_guest_ns'][0], 900_000_000)
+        h['delete_ack_wall_ns'] += 1_000_000_000
+        with self.assertRaisesRegex(ValueError, 'clock bounds'):
+            corroborate(r, h, c, log, dict(path='1-2.1.4', bus=1, address=124))
 
     def test_removal_coordinator_never_releases_and_only_observes_peer(self):
         from test_ws73_diagnostic_hold import Monitor

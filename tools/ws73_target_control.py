@@ -4,6 +4,7 @@
 import argparse
 from pathlib import Path
 import sys
+import time
 
 from ws73_north_star import Run, USB_ROOT, _registration
 
@@ -67,9 +68,14 @@ class CancelRemovalRun(PassthroughControlRun):
         if self.confirmations == 0:
             self.removal.begin()
             super().confirm(message)
+            self.removal.record['remove_ack_observed_wall_ns'] = time.time_ns()
             self.removal.removed()
         else:
+            self.removal.record['readd_ready_wall_ns'] = time.time_ns()
+            self.save()
             super().confirm(message)
+            self.removal.record['readd_ack_observed_wall_ns'] = time.time_ns()
+            self.save()
 
     def execute(self):
         try:

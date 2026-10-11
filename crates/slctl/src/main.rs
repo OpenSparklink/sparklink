@@ -118,6 +118,7 @@ Commands:
   advertise on [32-hex-marker]   Start native beacon with a fresh random marker
   advertise off                 Stop native beacon
   result <request-id>           Inspect retained native operation result
+  cancel-discovery              Cancel both native policies and drain this device
   devices                       List discovered devices
   info <address>                Show device details
   pair <address>                Pair with device

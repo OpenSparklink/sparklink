@@ -27,10 +27,18 @@ pub struct DeviceEntry {
     pub tx_power: Option<i8>,
 }
 
-/// Shared adapter state accessible from D-Bus + event loop
+/// One shared credential and admission gate for RPCs, bootstrap and removal.
+pub(crate) struct NativeManagement {
+    pub token: Option<u64>,
+    pub accepting: bool,
+}
+pub(crate) type NativeLease = Arc<Mutex<NativeManagement>>;
+
+/// Shared adapter state accessible from D-Bus + event loop.
 pub struct AdapterState {
     pub adapter: Arc<Adapter>,
     pub native_control: Option<Arc<Adapter>>,
+    pub(crate) native_lease: Option<NativeLease>,
     pub radio_advertising: u32,
     pub radio_scanning: u32,
     pub object_path: String,
@@ -61,6 +69,7 @@ impl AdapterState {
         Self {
             adapter,
             native_control: None,
+            native_lease: None,
             radio_advertising: 0,
             radio_scanning: 0,
             object_path: "/org/sparklink/slk0".into(),

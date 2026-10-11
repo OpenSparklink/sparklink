@@ -826,27 +826,38 @@ VM-only不变；人工guest IN错误只是开发支撑，hub切电和人工冷�
 不关闭整项、两个draft不合并。
 
 
-## slkd运行中的普通客户端在途取消门禁（待真实执行）
+## slkd 运行中的普通客户端取消与 Managed 排空
 
-`--daemon-hold-case supersede|caller-exit` 仅限独立真实recovery VM，不能与
-前daemon partial/诊断/FIFO混用。先普通UID1000/caps0完成随机RF20，保持同
-slkd/bus和两只Ready。QMP暂留目标原成功IN81，再经普通slctl提交scan on，
-读取实际Pending/1001/0-of-2。在caller-exit案例实际SIGKILL并reap slctl，
-通过同daemon按原ID确认已admit操作仍Pending；显式STOP才使其Cancelled。
-客户端退出不冒充撤销daemon持有的内核File。
+首个真实 `supersede` VM 的普通 `scan off` 返回固件 `0x0b`：原参数
+1001 回复实际成功，未执行 START 的扫描 STOP 被拒绝。原请求保持
+Cancelled/-ECANCELED，STOP 不成功；整例 FAIL，另一例未执行，原输出和
+捕获保留。不能把这个状态当作 Off，也不能改成功判据。
 
-同行实际扫描START在hold期间成功，并保持On跨取消/原回复排空；目标
-STOP在Queued/opcode0且其CLI仍等待。连接案例原CLI先返回Cancelled，原USB
-槽仍保留，不能用CLI成功退出推断radio。400ms内明确release原帧、不延长
-500ms原期限；真正原成功参数回复SHA/长度匹配后只实际STOP成功，原操作
-仍Cancelled/-ECANCELED，没有未选择START或跨设备控制。完整两设备窗口
-仅目标1001/STOP、同行1001/START/STOP；无多余命令/Complete。
+新增 `slctl --adapter <path> cancel-discovery` / D-Bus
+`CancelDiscoveryPolicies` 明确取消选定 Ready WS73 的两项 discovery policies。
+它复用生产 Managed release/revoke/drain，等待真实内核清理后重新取得权限；
+已有确认 Off 的内核屏障可保留，无需无效 STOP。它返回实际 handoff 的
+registration generation，不创建成功 STOP/Complete 或新 operation ID。
+原请求 ID 的结果保持可查询。非 Ready/未支持 backend 明确返回不支持。
 
-随后同daemon保留原人工guest IN错误/退役/旧选择拒绝/同行操作/新Ready
-以及RF2，仍只是恢复开发支撑。原RF20+2独立原捕获核对；daemon持有设备
-时的取消测试不等于物理拔插/自然非人工恢复。测试live CLI只读pipe，不读
-未终结producer的redirect文件；结束先reap再记录stdout/stderr/真实returncode。
-源码 fixtures验证正确/错误生命周期、状态/身份/权限、deadline、原host SHA
-和完整USB窗口，不能冒充实机。新原source runner通过后才更新限定资格。
-完整作者/lease/权限/事件/removal并发、物理拔插、四设备两组、自然RCA/恢复
-及其余S0–S6保持OPEN，28原issues不提前关闭，VM-only。
+RPC、bootstrap 和 Node removal 共用每设备唯一 credential/admission gate，
+不持 SharedState/directory 锁跨 ioctl/排空；阻塞 ioctl 自己保留 gate，RPC
+放弃不会提早交权。一旦 cancel 开始，即便调用者退出，独立 bounded task
+也完成排空。清理/重新取得权限失败保留错误与日志并禁用该设备提交；
+移除先撤下注册，再等待该 gate，不能因取消恢复旧注册的业务权限。
+内核仍是 lease、radio、generation、reply 和 Ready 的状态来源。
+
+`--daemon-hold-case supersede|caller-exit` 在独立真实 recovery VM 中验证：
+普通 UID1000/caps0 随机 RF20 后保持同 slkd/bus。暂留原成功 IN81，实际
+scan on Pending/1001/0-of-2；caller-exit 实际 SIGKILL/reap 原 slctl 后原操作
+仍 Pending，客户端退出不撤销 daemon 的 File。另一个真实 Ready 设备在
+hold 期间启动扫描并保持 On。普通 `cancel-discovery` 使原请求 Cancelled，
+取消 CLI 必须仍等待原 reply。400ms 内 release，不延长500ms原期限；
+原参数 Complete 后才确认 handoff，原 ID 仍 Cancelled，无目标未选择
+START/STOP、虚构结果或跨设备命令。随后同 daemon 人工 guest IN 错误支持
+和 RF2 单独核对；它们不替代自然故障或物理拔插验收。
+
+修正门禁尚待新服务编译和真实执行。320 工具回归与严格 clippy 是开发
+支撑，不是实机资格。完整 Managed/作者/权限/事件/removal 并发、当前镜像
+物理拔插、四设备两组、自然 RCA/无人工恢复及其余 S0–S6/28项仍 OPEN。
+VM-only；部分成果不关闭整项，两个 draft 不合并。

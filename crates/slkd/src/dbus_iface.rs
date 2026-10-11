@@ -106,6 +106,10 @@ impl AdapterIface {
     async fn submit_stop_scanning(&self, request_id: u64) -> zbus::fdo::Result<()> {
         crate::radio::stop(&self.state, request_id, slk_protocol::DISCOVERY_SCAN_STOP).await
     }
+    /// Bounded per-device policy revocation/drain and Managed reacquisition.
+    async fn cancel_discovery_policies(&self) -> zbus::fdo::Result<u64> {
+        crate::radio::cancel_policies(&self.state).await
+    }
     async fn get_discovery_result(
         &self,
         request_id: u64,

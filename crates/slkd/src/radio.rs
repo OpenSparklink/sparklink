@@ -26,7 +26,20 @@ async fn submit(
     + 'static,
 ) -> zbus::fdo::Result<Vec<u8>> {
     let (fd, generation) = selected(state).await?;
+    let lease = state
+        .lock()
+        .await
+        .native_lease
+        .clone()
+        .ok_or_else(|| failed("management unavailable"))?;
+    let authority = lease.lock_owned().await;
+    if !authority.accepting || authority.token.is_none() || !state.lock().await.present {
+        return Err(failed("management unavailable or registration removed"));
+    }
     tokio::task::spawn_blocking(move || {
+        // Keep this guard in the blocking task even if its RPC is abandoned.
+        // Cancellation/removal cannot hand off authority underneath an ioctl.
+        let _authority = authority;
         let snapshot = fd.controller_snapshot(generation)?;
         let request = build(snapshot)?;
         fd.submit_discovery(&request)?;
@@ -35,6 +48,76 @@ async fn submit(
     .await
     .map_err(failed)?
     .map_err(failed)
+}
+
+/// Cancel both discovery policies through the kernel's lease revocation. This
+/// is not a successful STOP command or a fabricated operation result. Queries
+/// retain the original IDs while the actual reply and cleanup drain.
+pub(crate) async fn cancel_policies(state: &SharedState) -> zbus::fdo::Result<u64> {
+    let (fd, generation) = selected(state).await?;
+    let lease = state
+        .lock()
+        .await
+        .native_lease
+        .clone()
+        .ok_or_else(|| failed("management unavailable"))?;
+    let state = state.clone();
+    // Once started, finish the bounded handoff even if the D-Bus caller exits.
+    tokio::spawn(async move {
+        let outcome = async {
+            let mut authority = lease.lock_owned().await;
+            let token = authority
+                .token
+                .filter(|_| authority.accepting)
+                .ok_or_else(|| failed("management unavailable"))?;
+            if !state.lock().await.present {
+                return Err(failed("registration removed"));
+            }
+            let control = fd.clone();
+            let snapshot =
+                tokio::task::spawn_blocking(move || control.controller_snapshot(generation))
+                    .await
+                    .map_err(failed)?
+                    .map_err(failed)?;
+            if snapshot.profile != 1 || snapshot.flags != slk_protocol::CONTROLLER_READY {
+                return Err(zbus::fdo::Error::NotSupported(
+                    "policy cancellation requires a Ready WS73 registration".into(),
+                ));
+            }
+            authority.accepting = false;
+            // Keep the credential on failure so removal can retry its withdrawal;
+            // submissions stay disabled until a successful new acquisition.
+            crate::adapters::relinquish(fd.clone(), generation, token)
+                .await
+                .map_err(failed)?;
+            authority.token = None;
+            if !state.lock().await.present {
+                return Err(failed("registration removed during policy cleanup"));
+            }
+            let control = fd.clone();
+            let token = tokio::task::spawn_blocking(move || {
+                control.acquire_management(generation, slk_protocol::MANAGEMENT_MANAGED)
+            })
+            .await
+            .map_err(failed)?
+            .map_err(failed)?;
+            authority.token = Some(token);
+            if !state.lock().await.present {
+                // Leave the new credential for the waiting removal worker. It
+                // stays inaccessible to business operations and cannot revive it.
+                return Err(failed("registration removed during management acquisition"));
+            }
+            authority.accepting = true;
+            Ok(generation)
+        }
+        .await;
+        if let Err(error) = &outcome {
+            tracing::warn!(generation, %error, "discovery policy cancellation failed");
+        }
+        outcome
+    })
+    .await
+    .map_err(failed)?
 }
 
 pub(crate) async fn advertise(

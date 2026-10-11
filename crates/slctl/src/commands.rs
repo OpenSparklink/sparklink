@@ -22,6 +22,7 @@ impl Context {
             "select" => self.cmd_select(args.get(1).copied().unwrap_or("")).await,
             "reports" => self.cmd_reports().await,
             "advertise" => self.cmd_advertise(args).await,
+            "cancel-discovery" if args.len() == 1 => self.cmd_cancel_discovery().await,
             "result" => self.cmd_result(args.get(1).copied().unwrap_or("")).await,
             "show" => self.cmd_show().await,
             "scan" => {
@@ -339,6 +340,23 @@ impl Context {
             }
             tokio::time::sleep(std::time::Duration::from_millis(10)).await;
         }
+    }
+
+    async fn cmd_cancel_discovery(&self) -> anyhow::Result<()> {
+        let proxy = self.adapter_proxy().await?;
+        let generation: u64 = proxy.get_property("Generation").await?;
+        println!("NativePoliciesCancelRequest: generation={generation}");
+        let confirmed: u64 = tokio::time::timeout(
+            std::time::Duration::from_secs(8),
+            proxy.call("CancelDiscoveryPolicies", &()),
+        )
+        .await??;
+        anyhow::ensure!(
+            confirmed == generation,
+            "policy cancellation changed generation"
+        );
+        println!("NativePoliciesCancelled: generation={confirmed}");
+        Ok(())
     }
 
     async fn cmd_scan(&self, args: &[&str]) -> anyhow::Result<()> {

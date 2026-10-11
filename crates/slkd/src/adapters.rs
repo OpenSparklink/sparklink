@@ -14,7 +14,10 @@ use crate::{
     extadv::ExtAdvIface,
     security::SecurityIface,
     service::{RemoteServiceIface, SsapManagerIface},
-    state::{AdapterDirectory, AdapterRegistration, AdapterState, SharedState},
+    state::{
+        AdapterDirectory, AdapterRegistration, AdapterState, NativeLease, NativeManagement,
+        SharedState,
+    },
 };
 use libsparklink::Adapter;
 use slk_protocol::{CONTROLLER_READY, SleControllerSnapshot};
@@ -29,7 +32,11 @@ const POLL: Duration = Duration::from_millis(250);
 
 /// Withdraw authority while SharedState and outstanding RPCs still retain the
 /// fd. Last-close cleanup is a crash fallback, not the normal daemon handoff.
-async fn relinquish(adapter: Arc<Adapter>, generation: u64, lease: u64) -> anyhow::Result<()> {
+pub(crate) async fn relinquish(
+    adapter: Arc<Adapter>,
+    generation: u64,
+    lease: u64,
+) -> anyhow::Result<()> {
     let fd = adapter.clone();
     match tokio::task::spawn_blocking(move || {
         fd.release_management(generation, lease, slk_protocol::MANAGEMENT_MANAGED)
@@ -98,6 +105,7 @@ async fn open_selected(path: String, id: u16) -> anyhow::Result<(Adapter, SleCon
 async fn initialize(
     adapter: Arc<Adapter>,
     snapshot: SleControllerSnapshot,
+    lease: Option<NativeLease>,
     mut cancelled: watch::Receiver<bool>,
 ) -> anyhow::Result<()> {
     if snapshot.profile == 0 || snapshot.flags == CONTROLLER_READY {
@@ -124,8 +132,20 @@ async fn initialize(
             libsparklink::ws73_basic_scan_standby(&snapshot, request_id)?
         };
         let fd = adapter.clone();
+        let authority = lease
+            .clone()
+            .ok_or_else(|| anyhow::anyhow!("bootstrap management unavailable"))?
+            .lock_owned()
+            .await;
+        if *cancelled.borrow() || !authority.accepting || authority.token.is_none() {
+            return Ok(());
+        }
         // No SharedState or directory guard is held across any ioctl/wait.
-        tokio::task::spawn_blocking(move || fd.submit_discovery(&request)).await??;
+        tokio::task::spawn_blocking(move || {
+            let _authority = authority;
+            fd.submit_discovery(&request)
+        })
+        .await??;
         let deadline = tokio::time::Instant::now() + Duration::from_secs(7);
         loop {
             if *cancelled.borrow() {
@@ -164,7 +184,7 @@ struct Node {
     path: String,
     state: SharedState,
     control: Arc<Adapter>,
-    lease: Option<u64>,
+    lease: Option<NativeLease>,
     connection: zbus::Connection,
     event: Option<EventTask>,
     init: JoinHandle<()>,
@@ -213,6 +233,12 @@ impl Node {
             Ok((Arc::new(adapter), lease))
         })
         .await??;
+        let lease = lease.map(|token| {
+            Arc::new(Mutex::new(NativeManagement {
+                token: Some(token),
+                accepting: true,
+            }))
+        });
         let control = adapter.clone();
         let storage = storage.to_owned();
         let (adapter, bonding) = tokio::task::spawn_blocking(move || {
@@ -246,12 +272,14 @@ impl Node {
         state.controller = snapshot;
         if snapshot.profile == 1 {
             state.native_control = Some(control.clone());
+            state.native_lease = lease.clone();
         }
         let state = Arc::new(Mutex::new(state));
         // Roll back partial registration if any of the D-Bus interfaces fails.
         if let Err(error) = publish(connection, &path, &state).await {
-            if let Some(lease) = lease
-                && let Err(cleanup) = relinquish(control.clone(), snapshot.generation, lease).await
+            if let Some(lease) = &lease
+                && let Some(token) = lease.lock().await.token.take()
+                && let Err(cleanup) = relinquish(control.clone(), snapshot.generation, token).await
             {
                 warn!(%cleanup, %path, "partial adapter publication cleanup failed");
             }
@@ -272,8 +300,9 @@ impl Node {
         let init_state = state.clone();
         let init_connection = connection.clone();
         let init_path = path.clone();
+        let init_lease = lease.clone();
         let init = tokio::spawn(async move {
-            if let Err(error) = initialize(init_control, snapshot, cancelled).await {
+            if let Err(error) = initialize(init_control, snapshot, init_lease, cancelled).await {
                 warn!(%error, index=snapshot.dev_index, generation=snapshot.generation, "adapter initialization failed");
                 init_state.lock().await.initialization_error = error.to_string();
                 invalidate_properties(&init_connection, &init_path, &["InitializationError"]).await;
@@ -348,8 +377,12 @@ impl Node {
         // Do this before awaiting event/actor/RPC teardown. Queries can finish,
         // but retained clones cannot admit another management operation.
         if let Some(lease) = self.lease.take() {
+            let mut lease = lease.lock().await;
+            lease.accepting = false;
             let generation = self.state.lock().await.controller.generation;
-            if let Err(error) = relinquish(self.control.clone(), generation, lease).await {
+            if let Some(token) = lease.token.take()
+                && let Err(error) = relinquish(self.control.clone(), generation, token).await
+            {
                 warn!(%error, path=%self.path, "adapter management cleanup failed");
             }
         }

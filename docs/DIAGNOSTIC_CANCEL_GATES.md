@@ -173,7 +173,7 @@ owner／CAP／并发／removal／32-bit或自然故障恢复资格。下一步�
 及旧调用者迁移删除。北极星7／8，全部完整issues和S0–S6继续OPEN，VM-only。
 
 
-## 后台 queued expiry 新门禁（format7；实机待执行）
+## 后台 queued expiry 新门禁（format7；实现与开发）
 
 新增独立 --diagnostic-autonomous-verify，必须同时启用真实fault-recovery、
 diagnostic、cancel和原deadline门禁。C探针只在额外scratch-root cmdline许可下
@@ -192,3 +192,40 @@ ETIMEDOUT。MGMT_STATS的observation分类、RuntimeContext.lock和统计dispatc
 active USB timeout、held cancel/abort/close/drain及自然故障根因/恢复仍OPEN。
 本批205工具开发测试、59诊断测试和严格GCC/Clang通过不等于实机验收；需新镜像、
 独立raw/USB/QMP和真实WS7320+2。完整issues、北极星7/8及S0–S6保持，VM-only。
+
+
+## 后台 queued expiry 限定新镜像通过（完整生命周期仍 OPEN）
+
+[实际证据](evidence/ws73-vm-passive-queued-expiry-20261011.json)使用全新构建
+K`51119eecc251`／编译U`dcab9bb11a82`和新VM；本批无生产内核改动。ID12／seq12
+初始Pending、请求100ms，在连续重试ID11的原门禁完成后仅nanosleep。
+静默实际800.148168ms；首次结果查询前的
+16字节统计由`020000000c0000000a00000001000000`变为
+`010000000c0000000b00000002000000`：pending2→1、submitted12保持、resolved10→11、
+timeouts1→2，reserved也核对。统计读取结束16518972412ns先于首个结果查询
+16518972713ns，后者完整104字节ETIMEDOUT；释放后同ID重试／结果／计数保持。
+实际worker日志`[15.991364] sle0: 1 pending commands timed out`保留作支撑。
+统计入口及冻住的C程序证明静默期间没有提交／结果／取消／统计调用，不能把
+查询触发expire_stale记为本门禁通过。
+
+原ID11门禁仍有134连续样本；50份诊断proof包含46组wire，
+两只Features超时及queued取消全阶段／释放到淘汰间隙没有OUT／回复。Host真实
+178字节transfer SHA256 `8718b78265e044b8e37619b38d3c0f25cf815125f771583c8bdf37d576b34f18`
+与guest实际交付一致；QMP/guest ack一hold／一显式release，bounded0/drop0。
+原read7／result16／copyout2／legacy poll3／淘汰33／CLI4及旧注册三身份27次拒绝保持。
+真实WS73普通UID1000/caps0两设备20＋2轮全部随机数据／地址／RSSI匹配，最长616ms；
+同slkd PID671/start1727、幸存g2保持、人工IN81目标g1→3，重新Ready约10.823秒。
+1431 USB零drop、22RX、warning0／taint0／trace overrun0，host四只释放在位，
+没有device_del、宿主部署或人工拔插。USB/HCC/DLI不是独立PHY嗅探。
+
+[源码CI38100653292](https://github.com/OpenSparklink/sparklink/actions/runs/38100653292)
+九作业终结成功，实际170 Rust／34 Python／205工具、4授权／78verifier／18queue和
+严格C探针核对。本地59诊断开发测试通过；旧fixture／日志下载失败及物理xHCI
+warning历史证据保留。
+
+限定资格为**这个实际静默窗口内，queued到期已由后台计入统计，早于首次结果查询**。
+不宣称精确100ms执行、特定500ms heartbeat调用或实时性上界；故这些单独字段
+保持未验收。active USB timeout、held cancel／abort／close／drain、完整owner／CAP／
+并发／removal／32-bit及自然启动／重枚举／消失根因、无人工恢复仍OPEN。
+下一步实际在途超时及退役／取消边界，再推进剩余消费者与共享ring/fallback删除，
+连接socket／用户态SSAP及全部S0–S6。北极星7／8不变，VM-only，部分成果不关闭整项。

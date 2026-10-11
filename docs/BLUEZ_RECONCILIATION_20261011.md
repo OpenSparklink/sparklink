@@ -77,3 +77,11 @@ generation、owner、恢复状态和证据链必须通过行为与故障测试�
 WS73 第一北极星及完整 S0–S6 不缩减，北极星保持 7／8；自然故障根因、
 不依赖人工拔插的恢复、四设备、完整 sandbox 仍开放。历史物理 xHCI 警告保留。
 测试仅在 VM；原生宿主对照未执行。不提前关闭任何完整 issue，不合并 draft PR。
+
+
+后续K`51119eecc251`／编译U`dcab9bb11a82`的
+[后台queued到期新镜像证据](evidence/ws73-vm-passive-queued-expiry-20261011.json)
+限定通过：800.148168ms静默窗口结束后的统计已计入一次超时，早于首次结果查询；
+完整字节／原门禁／真实WS7320＋2保持。源码九作业CI成功，170 Rust／34 Python／
+205工具。它不证明特定timer调用、精确到期时延、active USB timeout、held close/drain
+或自然恢复。分层、清理三类、VM-only和完整S0–S6全部未决条件继续保持。

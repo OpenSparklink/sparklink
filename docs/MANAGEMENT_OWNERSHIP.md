@@ -1,3 +1,7 @@
+当前实机补充：[active-radio SIGKILL/原代次接任](DAEMON_CRASH_HANDOFF.md)
+已验证限定最后File关闭、真实STOP/Free/Off/Ready及新daemon RF22。本文旧
+“强制终止待扩展”是历史范围；在途回复强杀、完整Managed与自然恢复仍待完成。
+
 # 原生 WS73 管理 ownership v1
 
 每个原生 WS73 registration 只接受一个 Managed 或 Diagnostic 控制 fd。

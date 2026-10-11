@@ -1,3 +1,16 @@
+### 当前增量：active-radio SIGKILL / 原代次接任（2026-10-12）
+
+生产内核/服务保持已验证版本；工具a2c3b4951aa 在正常VM73完成真实两只
+SIGKILL137、独立non-owning Free/Off/Ready、原两条所需STOP Complete、新PID/
+bus在原generation接任、四项旧初始化凭据拒绝和接任阶段零设备命令，再完成
+同一接任者RF20+2；1293包/零丢包/taint0/QEMU0。VM72错误预期重新初始化
+而整轮FAIL及其原证据保留。正常73/维护20，四设备9/默认资格0。
+见[限定证据与复现](DAEMON_CRASH_HANDOFF.md)。本成果不覆盖在途强杀、
+全权限/Managed、自然根因或非人工自动恢复；所有原28项继续开放。
+下一主功能为S4真实WS73连接/SSAP，结合libws73-usb/完整NearLink Host/
+标准，接通Native per-device异步状态而非旧6字节create或伪成功；事件/result/
+在途强杀门禁及四设备根因/有限恢复并行推进，完整S0–S6范围保留。
+
 # SparkLink / Linux 联合实施方案
 
 当前生产策略 U`09fe426773cf` 已显式分类三个Native只读方法，修复默认observer

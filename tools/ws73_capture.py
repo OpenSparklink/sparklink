@@ -320,7 +320,8 @@ def corroborate_recovery(run, capture, diagnostic=None, active=None, partial=Non
         metadata_before, queries = corroborate_diagnostic(run, capture, diagnostic)
     proofs = _corroborate_control(run, capture, 'recovery', 'retirement_observed_wall_ns', metadata_before, metadata_after)
     if queries:
-        proofs[0]['partial_peer_queries' if partial is not None else 'diagnostic_queries'] = queries
+        key=('partial_ready_peer_activity' if partial.get('active_ready_peer') else 'partial_peer_queries') if partial is not None else 'diagnostic_queries'
+        proofs[0][key] = queries
     return proofs
 
 
@@ -342,6 +343,18 @@ def partial_metadata_bounds(run, capture, partial):
         if (snapshot.dev_index,snapshot.generation,bytes(snapshot.address).hex())!=(
                 identity['index'],identity['generation'],identity['address'].replace(':','').lower()):
             raise CaptureError('partial identities differ from RF registrations')
+    if partial.get('active_ready_peer'):
+        from ws73_management_ready_peer import corroborate as corroborate_ready_peer
+        try:proof=corroborate_ready_peer(partial,snapshots[1],capture)
+        except (ValueError,KeyError,TypeError) as error:raise CaptureError('canonical real Ready peer wire activity required') from error
+        start=partial['ready_peer']['bootstrap'][0]['start_wall_ns']
+        end=partial['ready_peer']['after'][-1]['end_wall_ns']
+        if not end<min(v['observed_wall_ns'] for v in initial):raise CaptureError('Ready peer phase must finish before RF Ready')
+        for identity in initial:
+            for key in ['commands','complete']:
+                if any((v['bus'],v['device'],v['opcode'])==(identity['bus'],identity['device'],0x406) and start<=v['wall_ns']<=identity['observed_wall_ns'] for v in capture[key]):
+                    raise CaptureError('unrecorded metadata query in Ready peer window')
+        return {json_identity(v):start for v in initial},[proof]
     start=partial['peer_queries'][0]['start_wall_ns']
     end=partial['peer_queries'][-1]['end_wall_ns']
     if not end<min(v['observed_wall_ns'] for v in initial):

@@ -586,3 +586,25 @@ Cancelled/-ECANCELED，dup首次close保留lease、最后close触发撤销，Rev
 随后扩展后续原终结帧、普通调度取消/结果淘汰及四设备两组。25实际Host源码、19命令计划、
 299工具测试与K4ece空USB启动通过；U5d CI38140975482九作业success，最新证据提交CI另核。
 自然启动超时/重枚举/消失RCA和无需人工拔插的每设备恢复仍开放；原生主机对照受VM-only约束未执行。
+
+### Real Ready peer cleanup gate (pending hardware acceptance)
+
+`ws73_target.py run --managed-ready-peer --managed-selected-cleanup`
+with `--managed-partial-case release|close|dup` and the existing separate
+Setup/recovery VM gate now initializes the second controller using five actual
+advertising/scanning commands. For scanning targets also select
+`--managed-scan-parameter-cleanup`. The peer holds its own Managed lease, starts
+and stops scanning before the target hold, then keeps scanning On across target
+cancellation, original late reply and the Free observation. Afterward it must
+retain the same Ready registration/owner/current radio state and complete another
+STOP/START/STOP sequence before releasing its lease.
+
+Format 7 records preserve complete syscall inputs/results and causal intervals.
+Capture verification requires all fourteen peer commands and successful replies,
+rejects extra commands/replies (including cross-device STOP), and separates boot
+metadata from the test window. This gate is development tooling in an explicitly
+selected scratch VM; it introduces no production simulation or fake success.
+Its existence and fixture tests do not establish hardware acceptance. The
+previous six real first-step cases and original failures remain valid historical
+evidence. Later initialization steps, ordinary queue concurrency, natural fault
+recovery and the complete Managed issue remain open.

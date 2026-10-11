@@ -134,6 +134,7 @@ if grep -q 'ws73.managed_partial=1' /proc/cmdline; then
     selected_cleanup_arg=''
     if grep -q 'ws73.selected_domain_cleanup=1' /proc/cmdline; then selected_cleanup_arg='--selected-domain-cleanup'; fi
     if grep -q 'ws73.scan_parameter_cleanup=1' /proc/cmdline; then selected_cleanup_arg="$selected_cleanup_arg --scan-parameter-cleanup"; fi
+    if grep -q 'ws73.managed_ready_peer=1' /proc/cmdline; then selected_cleanup_arg="$selected_cleanup_arg --ready-peer"; fi
     partial_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_case=/){sub(/^ws73.partial_case=/,"",$i);print $i}}' /proc/cmdline)
     partial_domain=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_domain=/){sub(/^ws73.partial_domain=/,"",$i);print $i}}' /proc/cmdline)
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_partial.py $selected_cleanup_arg --case "$partial_case" --domain "$partial_domain" --output /evidence/managed-partial > /evidence/managed-partial-supervisor.log 2>&1 || fail 'partial Managed held-reply cleanup gate'

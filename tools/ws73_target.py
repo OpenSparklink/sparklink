@@ -109,7 +109,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
@@ -194,7 +194,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_partial.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -417,6 +417,9 @@ def _run(args):
     partial_domain=getattr(args,'managed_partial_domain','advertising')
     selected_cleanup=bool(getattr(args,'managed_selected_cleanup',False))
     parameter_cleanup=bool(getattr(args,'managed_scan_parameter_cleanup',False))
+    ready_peer=bool(getattr(args,'managed_ready_peer',False))
+    if ready_peer and (not partial_gate or not selected_cleanup or partial_domain=='scanning' and not parameter_cleanup or getattr(args,'managed_queue_verify',False)):
+        raise ValueError('Ready peer requires separate selected real partial gate')
     if parameter_cleanup and (not selected_cleanup or partial_domain!='scanning'):raise ValueError('scan parameter cleanup requires selected scanning partial gate')
     if selected_cleanup and not partial_gate:raise ValueError('selected-domain cleanup requires explicit real partial gate')
     if partial_case not in (None,'release','close','dup') or partial_domain not in ('advertising','scanning'):
@@ -458,6 +461,8 @@ def _run(args):
     m['live_active_close_requested']=active_close_gate
     m['live_managed_partial_case']=partial_case
     m['live_managed_partial_domain']=partial_domain if partial_gate else None
+    m['live_managed_ready_peer']=ready_peer
+    if ready_peer:m['managed_ready_peer_verifier']=file_record(HERE/'ws73_management_ready_peer.py')
     m['live_managed_selected_cleanup']=selected_cleanup
     m['live_managed_scan_parameter_cleanup']=parameter_cleanup
     m['live_managed_queue_requested']=queued_gate
@@ -523,6 +528,7 @@ def _run(args):
                      (f' ws73.managed_partial=1 ws73.partial_case={partial_case} ws73.partial_domain={partial_domain}' if partial_gate else '')+
                      (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
                      (' ws73.scan_parameter_cleanup=1' if parameter_cleanup else '')+
+                     (' ws73.managed_ready_peer=1' if ready_peer else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -701,6 +707,7 @@ def _run(args):
                     from ws73_management_partial import corroborate as corroborate_partial
                     probe=json.loads((share/'managed-partial/run.json').read_text())
                     if probe.get('selected_domain_cleanup',False) is not selected_cleanup:raise ValueError('actual selected-domain cleanup must match requested gate')
+                    if probe.get('active_ready_peer',False) is not ready_peer:raise ValueError('actual Ready peer must match requested gate')
                     if probe.get('scan_parameter_cleanup',False) is not parameter_cleanup:raise ValueError('actual scan parameter cleanup must match requested gate')
                     m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
                     m['live_managed_partial']=file_record(share/'managed-partial/run.json')
@@ -766,6 +773,8 @@ def _run(args):
         prepared(args.prepared.resolve())
         if queued_gate and file_record(HERE/'ws73_management_queued.py')!=m['managed_queue_verifier']:
             raise ValueError('Managed queue verifier changed during run')
+        if ready_peer and file_record(HERE/'ws73_management_ready_peer.py')!=m['managed_ready_peer_verifier']:
+            raise ValueError('Ready peer verifier changed during run')
         if partial_gate and file_record(HERE/'ws73_management_partial.py')!=m['managed_partial_verifier']:
             raise ValueError('Managed partial verifier changed during run')
         if setup_gate and file_record(HERE/'ws73_management_setup.py')!=m['setup_release_verifier']:
@@ -821,6 +830,7 @@ def main():
             cmd.add_argument('--ports',nargs=2,required=True)
             cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
             cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')
+            cmd.add_argument('--managed-ready-peer',action='store_true',help='real Ready Managed scanning peer across target cancellation/Free')
             cmd.add_argument('--managed-selected-cleanup',action='store_true',help='new real first-step gate: untouched Unknown is not Ready; requires --managed-partial-case')
             cmd.add_argument('--managed-scan-parameter-cleanup',action='store_true',help='new scan first-step gate: Unknown remains Setup; requires selected scanning partial gate')
             cmd.add_argument('--managed-queue-confirmed-off',action='store_true',help='complete initialization before full scanning initializer queue cancellation; requires --managed-queue-verify')

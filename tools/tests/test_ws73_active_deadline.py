@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from ws73_active_deadline import ActiveDeadlineCoordinator, corroborate, metadata_ready, verify_records
 from ws73_diagnostic_hold import PROPERTIES
+from ws73_capture import active_metadata_bounds, CaptureError
 from sparklink.structs import SleControllerSnapshot, SleDiagnosticResult, SleDiagnosticSubmit
 from test_ws73_diagnostic_hold import Monitor
 
@@ -59,6 +60,17 @@ def fixture():
 
 
 class ActiveDeadlineTests(unittest.TestCase):
+    def test_bootstrap_bounds_exclude_retired_target_and_peer_diagnostic_queries(self):
+        run = {'initial': [{'port': '1-1', 'index': 0, 'generation': 3},
+                           {'port': '1-2', 'index': 1, 'generation': 2}]}
+        before, after = active_metadata_bounds(run, fixture())
+        self.assertEqual(before, {('1-2', 2): 21})
+        self.assertEqual(after, {('1-1', 3): 310})
+        for index, generation in [(0, 1), (1, 4)]:
+            changed = copy.deepcopy(run); changed['initial'][index]['generation'] = generation
+            with self.subTest(index=index), self.assertRaises(CaptureError):
+                active_metadata_bounds(changed, fixture())
+
     def test_peer_attachment_requires_atomic_real_setup_metadata(self):
         with tempfile.TemporaryDirectory() as temporary:
             share = Path(temporary)

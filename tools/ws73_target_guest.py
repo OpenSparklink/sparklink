@@ -320,7 +320,8 @@ if __name__=='__main__':
         if packets!=capture['packet_count']:raise ValueError('recovery capture count mismatch')
         diagnostic_path=EVIDENCE/'diagnostic/run.json'
         diagnostic=json.loads(diagnostic_path.read_text()) if 'ws73.diagnostic=1' in Path('/proc/cmdline').read_text().split() else None
-        proofs=corroborate_recovery(run,capture,diagnostic)
+        active=json.loads((EVIDENCE/'active-deadline/run.json').read_text()) if 'ws73.active_deadline=1' in Path('/proc/cmdline').read_text().split() else None
+        proofs=corroborate_recovery(run,capture,diagnostic,active)
         (EVIDENCE/'recovery-control-proofs.json').write_text(json.dumps({'scope':run['scope'],'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')
         print('WS73_TARGET_RECOVERY_SUPPORT: PASS',flush=True)
         raise SystemExit(0)

@@ -279,7 +279,21 @@ def command_reply(capture, owner, opcode, start, end, params=None, value=None):
     return dict(command=command, reply=replies[0])
 
 
-def corroborate_recovery(run, capture, diagnostic=None):
+def active_metadata_bounds(run, active):
+    """Select actual bootstraps by recorded retirement/initialization barriers."""
+    from ws73_active_deadline import verify_records, _decode, SleControllerSnapshot
+    verify_records(active)
+    old, peer = run['initial']
+    target = _decode(SleControllerSnapshot, active['target_snapshot'])
+    survivor = _decode(SleControllerSnapshot, active['peer_snapshots'][0])
+    if (old['index'] != target.dev_index or old['generation'] <= target.generation
+            or peer['index'] != survivor.dev_index or peer['generation'] != survivor.generation):
+        raise CaptureError('active retirement must precede fresh target and unchanged peer')
+    return ({json_identity(peer): active['initializations'][1]['start_wall_ns']},
+            {json_identity(old): active['guest_ack_receipts'][-1]['wall_ns']})
+
+
+def corroborate_recovery(run, capture, diagnostic=None, active=None):
     """Real RF after an artificial guest error; never physical/natural-fault acceptance."""
     if (run.get('scope') != 'real WS73 RF with artificial guest transport recovery support'
             or run.get('status') != 'RECOVERY_CONTROL_EVIDENCE_PENDING'
@@ -293,10 +307,14 @@ def corroborate_recovery(run, capture, diagnostic=None):
     old, new = run['initial'][0], run['replacement']
     if (old['bus'], old['device'], old['address']) != (new['bus'], new['device'], new['address']):
         raise CaptureError('protocol recovery changed USB/radio identity')
-    metadata_before, queries = {}, []
+    metadata_before, metadata_after, queries = {}, {}, []
+    if active is not None:
+        if diagnostic is not None:
+            raise CaptureError('active retirement and explicit-release diagnostic modes are separate')
+        metadata_before, metadata_after = active_metadata_bounds(run, active)
     if diagnostic is not None:
         metadata_before, queries = corroborate_diagnostic(run, capture, diagnostic)
-    proofs = _corroborate_control(run, capture, 'recovery', 'retirement_observed_wall_ns', metadata_before)
+    proofs = _corroborate_control(run, capture, 'recovery', 'retirement_observed_wall_ns', metadata_before, metadata_after)
     if queries:
         proofs[0]['diagnostic_queries'] = queries
     return proofs
@@ -440,7 +458,7 @@ def corroborate_diagnostic(run, capture, diagnostic):
     return {json_identity(owner): rows[0]['start_wall_ns']}, proofs
 
 
-def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns', metadata_before=None):
+def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns', metadata_before=None, metadata_after=None):
     # Verify supporting records rather than trusting the success label alone.
     from ws73_north_star import parse_result, parse_match, parse_scan_window, parse_scan_complete, parse_scan_observed, stable
     identity = run['application_identity']
@@ -605,7 +623,7 @@ def _corroborate_control(run, capture, replacement_phase='replug', boundary_fiel
     metadata = {}
     for identity in identities.values():
         metadata[json_identity(identity)] = [command_reply(capture, identity, opcode,
-            run[boundary_field] if identity == replacement else 0,
+            run[boundary_field] if identity == replacement else (metadata_after or {}).get(json_identity(identity), 0),
             (metadata_before or {}).get(json_identity(identity), identity['observed_wall_ns']), b'', value)
             for opcode,value in [(0x0404, identity['version']),
                                  (0x0402, struct.pack('<HBHB', *identity['buffers']).hex()),

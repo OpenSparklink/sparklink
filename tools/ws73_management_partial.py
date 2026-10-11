@@ -66,6 +66,9 @@ def verify_records(record, cleanup_rejected=False):
     synthetic=record.get('synthetic_support')
     step=record.get('initialization_step',0)
     selected=record.get('selected_domain_cleanup',False)
+    parameter_only=record.get('scan_parameter_cleanup',False)
+    if type(parameter_only) is not bool or parameter_only and (selected is not True or record.get('domain')!='scanning'):
+        raise ValueError('scan parameter-only cleanup requires explicit selected scanning gate')
     if type(selected) is not bool or selected and (synthetic is not False or step or cleanup_rejected):
         raise ValueError('selected-domain cleanup requires explicit real first-step gate')
     if type(step) is not int or not 0<=step< (2 if record.get('domain')=='advertising' else 3) or step and synthetic is not True:raise ValueError('bounded model-only later initialization step required')
@@ -77,7 +80,7 @@ def verify_records(record, cleanup_rejected=False):
         if (record.get('error')!='actual cleanup failed; preserve raw controller outcome'
                 or record.get('error_type')!='ValueError' or record.get('errno') is not None):
             raise ValueError('an arbitrary failed VM is not the expected controller refusal')
-    if (type(synthetic) is not bool or type(record.get('format_version')) is not int or record['format_version']!=(5 if selected else 4 if step else 3)
+    if (type(synthetic) is not bool or type(record.get('format_version')) is not int or record['format_version']!=(6 if parameter_only else 5 if selected else 4 if step else 3)
             or record.get('status')!=status
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False
             or record.get('daemon_running_during_hold') is not False
@@ -99,7 +102,7 @@ def verify_records(record, cleanup_rejected=False):
             state=state,error=error,opcode=opcode,
             power_valid=1 if record['domain']=='advertising' and step else 0,selected_power=record.get('early_selected_power',0) if record['domain']=='advertising' and step else 0,
             radio_adv=1 if key=='final_result' or record['domain']=='scanning' else 0,
-            radio_scan=1 if key=='final_result' and not (selected and record['domain']=='advertising') else 0)
+            radio_scan=1 if key=='final_result' and not (parameter_only or selected and record['domain']=='advertising') else 0)
         if cleanup_rejected and key=='final_result':
             expected.flags=1;expected.radio_adv=expected.radio_scan=0
         if bytes(result)!=bytes(expected):raise ValueError('exact pending/cancelled operation without fabricated success required')
@@ -109,7 +112,7 @@ def verify_records(record, cleanup_rejected=False):
             expected.flags=2;expected.error=-errno.EIO;expected.status=0x0b;expected.opcode=0x1002
         if bytes(q)!=bytes(expected):raise ValueError('exact independent ownership observation required')
     ready=decode(SleControllerSnapshot,record['final_snapshot'])
-    expected=SleControllerSnapshot.from_buffer_copy(bytes(snapshots[0]));expected.flags=2 if selected and record['domain']=='advertising' else 1
+    expected=SleControllerSnapshot.from_buffer_copy(bytes(snapshots[0]));expected.flags=2 if parameter_only or selected and record['domain']=='advertising' else 1
     if cleanup_rejected:expected.flags=4;expected.error=-errno.EIO;expected.command_credits=0
     if bytes(ready)!=bytes(expected):raise ValueError('only real successful cleanup may establish Ready')
     if record['peer_after']!=record['initial_snapshots'][1] or record['peer_management_before']!=record['peer_management_after']:
@@ -203,6 +206,7 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
     opcodes=recipe[:step+1]+(([0xc05] if step==0 else [])+[0x1002] if advertising
                             else [0x1002] if step<2 else [])
     if record.get('selected_domain_cleanup') and advertising:opcodes=[0xc02,0xc05]
+    if record.get('scan_parameter_cleanup'):opcodes=[0x1001]
     if [v['opcode'] for v in rows]!=opcodes:
         raise ValueError('only selected original recipe prefix and required cleanup allowed')
     for index,command in enumerate(rows):
@@ -265,6 +269,7 @@ def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False)
         retained_advertising_off=preparation[-1] if preparation else None,
         synthetic_support=record['synthetic_support'],
         selected_domain_cleanup=record.get('selected_domain_cleanup',False),
+        scan_parameter_cleanup=record.get('scan_parameter_cleanup',False),
         managed_partial_case_live_acceptance=not record['synthetic_support'] and not cleanup_rejected,
         managed_partial_case_synthetic_support_acceptance=record['synthetic_support'] and not cleanup_rejected,
         expected_model_cleanup_refusal_observed=cleanup_rejected,
@@ -276,10 +281,13 @@ def run(args):
     synthetic=getattr(args,'synthetic_support',False)
     step=getattr(args,'initialization_step',0)
     selected=getattr(args,'selected_domain_cleanup',False)
+    parameter_only=getattr(args,'scan_parameter_cleanup',False)
     if type(step) is not int or not 0<=step<(2 if args.domain=='advertising' else 3) or step and synthetic is not True:raise ValueError('later steps require bounded explicit model support')
     cmdline=Path('/proc/cmdline').read_text().split()
     if type(selected) is not bool or selected!=('ws73.selected_domain_cleanup=1' in cmdline) or selected and (synthetic or step):
         raise ValueError('matching explicit real selected-domain cleanup boot gate required')
+    if type(parameter_only) is not bool or parameter_only!=('ws73.scan_parameter_cleanup=1' in cmdline) or parameter_only and (not selected or args.domain!='scanning'):
+        raise ValueError('matching real scan parameter-only cleanup boot gate required')
     values=[v.split('=',1)[1] for v in cmdline if v.startswith('ws73.partial_step=')]
     if values!=([str(step)] if step else []):raise ValueError('exact matching later-step boot selector required')
     if type(synthetic) is not bool or synthetic!=('ws73.managed_partial_support=1' in cmdline):
@@ -291,11 +299,12 @@ def run(args):
     if subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode==0:
         raise ValueError('partial gate requires untouched Setup before daemon')
     folder=args.output; folder.mkdir(parents=True,exist_ok=False)
-    record=dict(format_version=5 if selected else 4 if step else 3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
+    record=dict(format_version=6 if parameter_only else 5 if selected else 4 if step else 3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
         physical_acceptance=False,automatic_fault_recovery_acceptance=False,
         daemon_running_during_hold=False,hold_acknowledgements=[],markers=[],peer_queries=[])
     if step:record['initialization_step']=step
     if selected:record['selected_domain_cleanup']=True
+    if parameter_only:record['scan_parameter_cleanup']=True
     def save(): save_record(folder,record)
     def stage(phase,ack):
         value=dict(hold_phase=phase,wall_ns=time.time_ns());record['markers'].append(value);save()
@@ -440,4 +449,5 @@ if __name__=='__main__':
     p.add_argument('--initialization-step',type=int,default=0,help='model-only later terminal step; original deadline retained')
     p.add_argument('--synthetic-support',action='store_true',help='dedicated simulated USB VM only; never physical qualification')
     p.add_argument('--selected-domain-cleanup',action='store_true',help='real first-step cleanup; untouched Unknown remains Setup')
+    p.add_argument('--scan-parameter-cleanup',action='store_true',help='real first-step scan parameters only; scan remains Unknown, no unselected START')
     run(p.parse_args())

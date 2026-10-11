@@ -50,6 +50,52 @@ def fixture(case='release',domain='advertising'):
 
 
 class PartialTests(unittest.TestCase):
+    def test_scan_parameter_cancel_requires_unknown_and_no_ready(self):
+        for case in ['release','close','dup']:
+            record=fixture(case,'scanning');record.update(format_version=6,selected_domain_cleanup=True,scan_parameter_cleanup=True)
+            snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));snapshot.flags=2
+            record['final_snapshot']=bytes(snapshot).hex()
+            result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.radio_scan=0
+            record['final_result']=bytes(result).hex();verify_records(record)
+            for change in ['false-ready','false-off','old-format','wrong-domain','missing-selection','boolean']:
+                import copy
+                bad=copy.deepcopy(record)
+                if change=='false-ready':snapshot.flags=1;bad['final_snapshot']=bytes(snapshot).hex()
+                if change=='false-off':result.radio_scan=1;bad['final_result']=bytes(result).hex()
+                if change=='old-format':bad['format_version']=5
+                if change=='wrong-domain':bad['domain']='advertising'
+                if change=='missing-selection':bad.pop('selected_domain_cleanup')
+                if change=='boolean':bad['scan_parameter_cleanup']=1
+                with self.subTest(case=case,change=change),self.assertRaises(ValueError):verify_records(bad)
+
+    def test_scan_parameter_capture_retains_adv_off_without_unselected_start_or_stop(self):
+        record=fixture(domain='scanning');record.update(format_version=6,selected_domain_cleanup=True,scan_parameter_cleanup=True)
+        snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));snapshot.flags=2
+        record['final_snapshot']=bytes(snapshot).hex()
+        result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.radio_scan=0
+        record['final_result']=bytes(result).hex()
+        record['management_observations'][-1]['wall_ns']=450;record['peer_queries'][2].update(start_wall_ns=490,end_wall_ns=500)
+        def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
+        def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0)
+        capture=dict(commands=[command(0xc02,55,'00'*49),command(0xc05,75,'00'*5),command(0x1001,155,'0000010040062003')],
+            complete=[reply(0xc02,65,'06'),reply(0xc05,85),reply(0x1001,410)])
+        for row in record['peer_queries']:
+            capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
+            capture['complete'].append(reply(0x406,row['end_wall_ns'],'313233343536',device=3))
+        with patch('ws73_diagnostic_hold.corroborate_host_hold',return_value={}):
+            proof=corroborate(record,{},capture,'',{})
+            self.assertEqual([v['opcode'] for v in proof['commands']],[0x1001])
+            self.assertEqual(proof['retained_advertising_off']['reply']['opcode'],0xc05)
+            for change in ['unselected-start','unnecessary-stop','extra-config','missing-config-reply','missing-adv-off']:
+                import copy
+                bad=copy.deepcopy(capture)
+                if change in ['unselected-start','unnecessary-stop']:
+                    bad['commands'].insert(3,command(0x1002,420,'0100' if change=='unselected-start' else '0000'))
+                if change=='extra-config':bad['commands'].insert(3,command(0x1001,420,'0000010040062003'))
+                if change=='missing-config-reply':bad['complete'].pop(2)
+                if change=='missing-adv-off':bad['complete'].pop(1)
+                with self.subTest(change=change),self.assertRaises(ValueError):corroborate(record,{},bad,'',{})
+
     def test_partial_metadata_bounds_preserve_bootstrap_and_reject_extra_queries(self):
         from ws73_capture import partial_metadata_bounds,CaptureError
         record=fixture()

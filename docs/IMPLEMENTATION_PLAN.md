@@ -1,3 +1,14 @@
+当前S4基础修复及原路径实机回归（2026-10-12）：Linux d227b8a37d96完成
+物理连接义务归一化/Host保留与copyout后重检源码修复，35+10源码测试，
+120165 DLI sanitizer checks；新完整内核/八export产物及签名空USB VM通过。
+实际Kernel d227／编译服务和工具195a936在正常VM74完成无连接路径强杀
+接任及真实RF20+2，1293包/零drop/taint0/QEMU0，独立封存SHA599b7273c22c。
+这不证明真实连接事件、live copyout race、连接teardown或SSAP，旧待构建/
+窗口记录是历史，原失败保存。正常74/维护21，四设备9/默认资格0。
+[范围/证据](WS73_NATIVE_LINK_FOUNDATION.md)。下一typedCreate/Disconnect及
+完整异步生命周期接入为主功能，不以基础或额外发现门禁替代原S4互通。
+全部原28项/S0–S6、自然RCA/非人工恢复和原物理/并行范围继续开放。
+
 当前S4修复：Linux d227b8a37d96 在首构建终态后补上acquire copyout后的
 Host/fault/quiet/连接义务复核并持锁commit；实际五路径/counter守卫及原回归
 共35项通过。首444450231937已完整构建，新修复版构建/VM尚待验收。初用户态

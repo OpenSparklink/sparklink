@@ -1,3 +1,19 @@
+当前修复版实机回归更新：实际kernel d227b8a37d96、编译服务/工具195a936a0643
+在正常VM74完成原无连接路径SIGKILL137／两条真实STOP／Free-Off-Ready／
+原generation接任／四项旧初始化凭据拒绝且接任阶段零设备命令，再完成同一
+接任者随机标识真实RF20+guest-only退役重注册RF2。1293包/零drop/taint0/
+QEMU0，父/guest原proof在生产者终止后独立重算，冻结输入再次核对。完整
+新kernel+modules、八GPL exports/产物检查及签名空USB VM引导均通过；
+维护VM21/正常74。先前首构建/路径错误/CI8绿1红均保留，匹配195a936a0643
+的CI38181871353为9/9。此为新生产代码保留北极星路径的回归，**没有发生
+真实连接outcome**，不覆盖live copyout race、连接teardown或S4互通。
+
+[当前原证据](evidence/ws73-native-link-foundation-rf-regression-20261012.json)
+SHA256 `599b7273c22cfc54641bbd849bd9f3d20a58b4936e250c12e897a0113147fbd0`。
+下一主功能仍为typed27字节Create/3字节Disconnect、命令接受与异步outcome
+分别关联同一Runtime operation、有限超时/取消/迟到事件和连接清理，再真实
+双设备连接/SSAP数据。完整原S0–S6/28项与自动恢复/根因仍开放。
+
 当前修复更新：Linux `d227b8a37d96334ac465eac83cc3d52959863845` 已补
 copyout后的Host/fault/quiet/link重新核对，按Host→gate持锁提交；实际提取
 commit block覆盖link/active reply/fault/retirement/成功五种情况，候选被拒绝

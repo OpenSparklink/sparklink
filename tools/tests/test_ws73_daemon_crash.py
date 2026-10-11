@@ -12,7 +12,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'bindings/python'))
 from sparklink.structs import SleControllerSnapshot, SleManagementQuery, SleDiscoveryResult
 from ws73_capture import CaptureError, marker_data, read_capture
-from ws73_daemon_crash import STATUS, corroborate, verify_records
+from ws73_daemon_crash import STATUS, corroborate, verify_records, record_phase
 from test_ws73_north_star import identity, aggregate, pcap, transmit
 from test_ws73_initialization_lifecycle import result
 import ws73_target
@@ -57,7 +57,7 @@ def fixture():
     before['commands'].append(command(['/usr/bin/slctl','--adapter',b['path'],'scan','on'],result(b,3,3),160_000_000,180_000_000))
     for i in range(4):
         o=owners[i//2];domain,op=('advertise',5) if i%2==0 else ('scan',6);t=670_000_000+i*5_000_000
-        after['commands'].append(command(['/usr/bin/slctl','--adapter',o['path'],domain,'initialized-off'],result(o,op,i+4),t,t+1_000_000))
+        row=command(['/usr/bin/slctl','--adapter',o['path'],domain,'initialized-off'],'',t,t+1_000_000);row.update(exit=1,stderr='error: org.freedesktop.DBus.Error.UnknownObject: initializer provenance absent or invalidated\n');after['commands'].append(row)
     def emit(o,t,opcode,params,value=b''):
         transmit(records,o['device'],t,opcode,params)
         payload=b'\xa2\x02\x00'+(4+len(value)).to_bytes(2,'little')+opcode.to_bytes(2,'little')+b'\1\0'+value
@@ -70,22 +70,26 @@ def fixture():
     for n,(op,p,value) in enumerate([(0xc02,adv,b'\x14'),(0xc03,bytes([0,3,43])+marker_data(marker),b''),(0xc05,b'\1\0\0\0\0',b'')]):emit(a,135_000_000+n*100_000,op,p,value)
     emit(b,165_000_000,0x1001,scan);emit(b,165_100_000,0x1002,b'\1\0')
     emit(a,250_000_000,0xc05,bytes(5));emit(b,260_000_000,0x1002,bytes(2))
-    for i,o in enumerate(owners):
-        adv,scan=parameters(o);start=400_000_000+i*100_000_000
-        for n,(op,p,value) in enumerate([(0xc02,adv,b'\x14'),(0xc05,bytes(5),b''),(0x1001,scan,b''),(0x1002,b'\1\0',b''),(0x1002,bytes(2),b'')]):emit(o,start+n*100_000,op,p,value)
     with tempfile.TemporaryDirectory() as tmp:
         path=Path(tmp)/'synthetic.pcap';path.write_bytes(pcap(records));capture=read_capture(path,[(1,o['device']) for o in owners])
     return record,run,capture
 
 
 class DaemonCrashTests(unittest.TestCase):
+    def test_host_recorder_refused_before_creating_output_or_running_application(self):
+        with tempfile.TemporaryDirectory() as tmp, patch('ws73_daemon_crash.Path.read_text',return_value='no-private-crash-mode'):
+            folder=Path(tmp)/'never'
+            with self.assertRaisesRegex(ValueError,'explicit private native VM'):
+                record_phase(lambda *a,**k:self.fail('host application invoked'),[],'before',1,folder=folder)
+            self.assertFalse(folder.exists())
+
     def test_complete_synthetic_last_file_cleanup_and_successor(self):
         record,run,capture=fixture();proof=corroborate(record,run,capture)
-        self.assertEqual(proof['selected_cleanup_commands'],2);self.assertEqual(len(proof['successor_initializers']),4)
+        self.assertEqual(proof['selected_cleanup_commands'],2);self.assertEqual(proof['successor_initializer_refusals'],4)
         self.assertFalse(proof['held_inflight_acceptance']);self.assertFalse(proof['automatic_recovery_acceptance'])
 
     def test_rejects_forged_or_unbounded_identity_state_and_observations(self):
-        for change in ['pid','bus','generation','status','lease','radio','raw','caps','late','kill','poll','whole']:
+        for change in ['pid','bus','generation','status','lease','radio','raw','caps','late','kill','poll','whole','cached-success']:
             record,run,capture=fixture();before,free,after=record['phases']
             if change=='pid':after['pid']=100
             if change=='bus':after['bus']['owner']=':1.1'
@@ -99,6 +103,7 @@ class DaemonCrashTests(unittest.TestCase):
             if change=='kill':free['killed_exit']=0
             if change=='poll':free['polls']=[]
             if change=='whole':record['whole_managed_acceptance']=True
+            if change=='cached-success':after['commands'][1].update(exit=0,stderr='',stdout=result(record['phases'][0]['owners'][0],5,4))
             with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record,run)
 
     def test_requires_original_complete_and_no_redundant_cleanup(self):

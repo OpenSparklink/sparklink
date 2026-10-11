@@ -15,7 +15,6 @@ import time
 
 from ws73_capture import CaptureError, command_reply, marker_data
 from ws73_north_star import daemon_identity, file_record, parse_result, stable
-from ws73_rf_rounds import initializer_recipe
 
 STATUS = 'NATIVE_DAEMON_SIGKILL_EVIDENCE_PENDING'
 FOLDER = Path('/evidence/daemon-crash')
@@ -77,6 +76,8 @@ def bus(row, pid):
 
 
 def record_phase(application, owners, phase, pid, killed_exit=None, folder=FOLDER):
+    if 'ws73.daemon_crash=1' not in Path('/proc/cmdline').read_text().split() or not Path('/scratch-root-uuid').is_file():
+        raise ValueError('explicit private native VM crash mode required')
     if phase not in ['before', 'free', 'after']:
         raise ValueError('explicit crash supervisor phase required')
     folder.mkdir(exist_ok=True)
@@ -90,12 +91,17 @@ def record_phase(application, owners, phase, pid, killed_exit=None, folder=FOLDE
     entry = dict(phase=phase, pid=pid, owners=owners, start_wall_ns=time.time_ns(), commands=[])
     record['phases'].append(entry)
     def save(): path.write_text(json.dumps(record, indent=2)+'\n')
-    def command(words):
+    def command(words, refusal=False):
         row = dict(args=words, start_wall_ns=time.time_ns())
         result = application(*words, capture_output=True, timeout=15)
         row.update(stdout=result.stdout, stderr=result.stderr, exit=result.returncode, end_wall_ns=time.time_ns())
         entry['commands'].append(row); save()
-        if row['exit']: raise ValueError('actual ordinary crash-gate application failed: '+row['stderr'])
+        if refusal:
+            if (not row['exit'] or 'org.freedesktop.DBus.Error.UnknownObject' not in row['stderr']
+                    or 'initializer provenance absent or invalidated' not in row['stderr']
+                    or 'NativeOperationResult:' in row['stdout']):
+                raise ValueError('successor must not reuse old initializer provenance')
+        elif row['exit']: raise ValueError('actual ordinary crash-gate application failed: '+row['stderr'])
         return row
     try:
         if phase == 'free':
@@ -142,8 +148,8 @@ def record_phase(application, owners, phase, pid, killed_exit=None, folder=FOLDE
                 entry['observations'] = [observation(o) for o in owners]
                 for o, row in zip(owners, entry['observations']): view(row, o, 1, 1, 1)
                 for o in owners:
-                    for domain, op in [('advertise', 5), ('scan', 6)]:
-                        parse_result(command([record['slctl']['path'], '--adapter', o['path'], domain, 'initialized-off'])['stdout'], o, op)
+                    for domain in ['advertise', 'scan']:
+                        command([record['slctl']['path'], '--adapter', o['path'], domain, 'initialized-off'], refusal=True)
                 record['status'] = STATUS
         entry['end_wall_ns'] = time.time_ns(); save()
     except BaseException as error:
@@ -174,7 +180,7 @@ def verify_records(record, run):
             or before['bus']['owner'] == after['bus']['owner'] or after['end_wall_ns']-before['end_wall_ns'] > 20_000_000_000):
         raise CaptureError('bounded reaped old daemon and authenticated same-generation successor required')
     if free['commands'] or len(before['commands']) != 3 or len(after['commands']) != 5:
-        raise CaptureError('exact original active commands and successor readonly initializer queries required')
+        raise CaptureError('exact original active commands and successor provenance refusals required')
     if not free['polls'] or free['polls'][-1] != free['observations'] or free['end_wall_ns']-free['start_wall_ns'] > 7_000_000_000:
         raise CaptureError('bounded actual Free observation polls required')
     for entry in [before, after]:
@@ -186,8 +192,9 @@ def verify_records(record, run):
                 or any(not re.search(r'^'+cap+r':\s+0+$',entry['application_status'],re.M) for cap in ['CapInh','CapPrm','CapEff','CapAmb'])):
             raise CaptureError('actual ordinary application without capabilities required')
         previous = entry['start_wall_ns']
-        for row in entry['commands']:
-            if row['exit'] or not previous <= row['start_wall_ns'] <= row['end_wall_ns'] <= entry['end_wall_ns']:
+        for i,row in enumerate(entry['commands']):
+            if (row['exit'] != (1 if entry is after and i else 0)
+                    or not previous <= row['start_wall_ns'] <= row['end_wall_ns'] <= entry['end_wall_ns']):
                 raise CaptureError('actual ordered ordinary application commands required')
             previous = row['end_wall_ns']
     for o, row, words, op in zip(before['owners'],before['commands'][1:],[['advertise','on'],['scan','on']],[1,3]):
@@ -196,7 +203,10 @@ def verify_records(record, run):
     for i,row in enumerate(after['commands'][1:]):
         o=after['owners'][i//2];domain,op=('advertise',5) if i%2==0 else ('scan',6)
         if row['args'] != [record['slctl']['path'],'--adapter',o['path'],domain,'initialized-off']: raise CaptureError('successor original initializer read mismatch')
-        parse_result(row['stdout'],o,op)
+        if ('org.freedesktop.DBus.Error.UnknownObject' not in row['stderr']
+                or 'initializer provenance absent or invalidated' not in row['stderr']
+                or 'NativeOperationResult:' in row['stdout']):
+            raise CaptureError('successor must actually refuse old initializer provenance')
     first=run['commands'][run['rounds'][0]['command_indices'][0]]
     if after['end_wall_ns'] >= first['start_wall_ns']: raise CaptureError('crash gate must finish before ordinary RF22')
     return before, free, after
@@ -221,14 +231,10 @@ def corroborate(record, run, capture):
         traffic=[c for c in capture['commands'] if (c['bus'],c['device'])==(owner['bus'],owner['device']) and start<=c['wall_ns']<=end]
         if len(traffic)!=1 or traffic[0]['opcode']!=opcode: raise CaptureError('last-File close must emit only the required selected STOP')
         cleanup.append(command_reply(capture,owner,opcode,start,end,params,''))
-    fresh=dict(capture,commands=[c for c in capture['commands'] if c['wall_ns']>free['end_wall_ns']])
-    initializers=[]
-    for i,row in enumerate(after['commands'][1:]):
-        owner=after['owners'][i//2];op=5 if i%2==0 else 6
-        value=parse_result(row['stdout'],owner,op)
-        initializers.append(initializer_recipe(fresh,owner,op,row,value['selected_power']))
+    fresh=[c for c in capture['commands'] if free['end_wall_ns']<=c['wall_ns']<=after['end_wall_ns']]
+    if fresh: raise CaptureError('same-generation successor must reuse actual Ready without redundant initialization or STOP')
     return dict(scope='actual active two-device SIGKILL last-File cleanup and same-generation successor before RF22',
-        active_recipes=recipes,cleanup_recipes=cleanup,successor_initializers=initializers,
+        active_recipes=recipes,cleanup_recipes=cleanup,successor_initializer_refusals=4,successor_device_commands=0,
         old_daemon_reaped=True,same_generations=True,new_daemon_and_bus=True,
         selected_cleanup_commands=2,physical_acceptance=False,automatic_recovery_acceptance=False,
         whole_managed_acceptance=False,held_inflight_acceptance=False)

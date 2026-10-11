@@ -4,10 +4,27 @@
 import argparse
 import os
 from pathlib import Path
+import re
 import stat
 import time
 
 from ws73_north_star import Run, daemon_identity, file_record, ordinary_identity, parse_result, stable
+
+
+def recovery_budget(value):
+    fields = ('attempts', 'limit', 'uploads', 'upload_limit', 'cause', 'result',
+              'exhausted', 'deadline_ms', 'stable_since_ms')
+    pattern = ' '.join(name + r'=(-?\d+)' for name in fields)
+    match = re.fullmatch(pattern, value)
+    if not match:
+        raise ValueError('complete driver recovery budget required')
+    result = dict(zip(fields, map(int, match.groups())))
+    if (result['limit'] != 2 or result['upload_limit'] != 3
+            or not 0 <= result['attempts'] <= 2 or not 0 <= result['uploads'] <= 3
+            or result['exhausted'] not in (0, 1) or result['deadline_ms'] < 0
+            or result['stable_since_ms'] <= 0):
+        raise ValueError('healthy bounded driver recovery budget required')
+    return result
 
 
 class RecoveryRun(Run):
@@ -30,6 +47,32 @@ class RecoveryRun(Run):
                     result[name] = (interface / name).read_text().strip()
         return result
 
+    def wait_stable_budget(self, a, b):
+        """Observe the driver's existing 60s reset; never write/reset a budget."""
+        record = {'method': 'OBSERVE_DRIVER_STABLE_BUDGET_RESET', 'samples': [],
+                  'start_monotonic_ns': time.monotonic_ns()}
+        self.data['recovery_budget_rearm'] = record
+        deadline = time.monotonic() + 75
+        while True:
+            self.alive()
+            if not stable(a, self.ready(a['port'])) or not stable(b, self.ready(b['port'])):
+                raise ValueError('stable budget observation changed controller identity')
+            sample = self.diagnostics(a['port'])
+            sample['monotonic_ns'] = time.monotonic_ns()
+            budget = recovery_budget(sample.get('recovery_budget', ''))
+            record['samples'].append(sample)
+            self.save()
+            if budget['exhausted']:
+                raise ValueError('budget exhausted before the next independent fault')
+            if all(budget[k] == 0 for k in ('attempts', 'uploads', 'cause', 'result', 'deadline_ms')):
+                record['end_monotonic_ns'] = time.monotonic_ns()
+                record['target'] = a; record['peer'] = b
+                self.save()
+                return
+            if time.monotonic() >= deadline:
+                raise TimeoutError('existing stable driver budget did not reset')
+            time.sleep(0.25)
+
     def execute(self):
         try:
             self.data['application_identity'] = ordinary_identity()
@@ -46,6 +89,8 @@ class RecoveryRun(Run):
             a, b = [self.ready(port) for port in self.args.ports]
             self.data['initial'] = [a, b]
             self.phase(a, b, 20, 'initial')
+            if 'ws73.active_deadline=1' in Path('/proc/cmdline').read_text().split():
+                self.wait_stable_budget(a, b)
             self.data['fault_before'] = self.diagnostics(a['port'])
             print('WS73_TARGET_RECOVERY_INJECT_READY', flush=True)
             if input() != 'recovery-injected':

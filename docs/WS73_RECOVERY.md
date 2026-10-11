@@ -553,3 +553,37 @@ Cancelled/-ECANCELED，dup首次close保留lease、最后close触发撤销，Rev
 随后扩展后续原终结帧、普通调度取消/结果淘汰及四设备两组。25实际Host源码、19命令计划、
 299工具测试与K4ece空USB启动通过；U5d CI38140975482九作业success，最新证据提交CI另核。
 自然启动超时/重枚举/消失RCA和无需人工拔插的每设备恢复仍开放；原生主机对照受VM-only约束未执行。
+
+
+## 2026-10-11 第一初始化步：真实 Ready Managed 扫描同行隔离六案例通过
+
+[独立实机证据](evidence/ws73-managed-ready-peer-real-20261011.json)
+SHA256 `dbc48ecd6f748b75e7d70d61336e87da8337554c2cfd97de5cbca07f91b5e69f`，
+编译内核 K4ece91aa5c7c、服务 U5d29cb7b3aa5、冻结工具 U44bf694f2652。
+广告/扫描第一初始化步 × release/最后 fd 关闭/dup 六个原 VM 都 PASS、QEMU0；
+每例同行先真实五命令初始化 Ready，独立持有 Managed lease，在目标保留原回复期间
+真实 START 并保持扫描 On，跨越目标取消、原迟到回复与 Free。目标 Free 后独立
+ioctl 仍观察到相同 generation/完整 Ready/owner/current On；继而实际 STOP/START/STOP
+成功，才释放同行 lease。查询请求203的 radio 字段由当前 Host 状态填写
+（`sparklink_core.rs::ioctl_discovery_result`），不是复用历史成功结果推断 On。
+每例十四条同行命令与成功 Complete 精确匹配，整个窗口拒绝未记录命令/回复及跨设备 STOP。
+
+目标原 held host 成功 IN 帧 SHA/长度与实际迟到 Complete 一致；原操作始终
+Cancelled/-ECANCELED，dup 首次 close 保留 owner、最后 close 撤销，Revoking→Free。
+广告目标只有 C02+C05；扫描目标先真实广告 Off，再只有原1001参数配置，无未选
+START/STOP，扫描仍 Unknown/Setup，未制造 Off/Ready。
+每例1207/1211包零丢包、taint0、无kernel fault；同slkd/bus、UID1000/caps0
+RF20+2随机标识/数据/地址/RSSI成功，共132轮。人工 guest IN错误是开发支撑，
+不等于自然故障自动恢复；本批无人工拔插、共享hub循环或主机实验安装。
+25实际Host源码、19命令计划、303工具测试通过；U44bf694 CI38143384779九作业success。
+正常启动VM累计29、维护20，历史失败不归零。
+
+只通过**第一实际步骤 partial 六案例的活动 Ready 同行隔离**；整项 Managed 未完成。
+下一优先顺序：confirmed-Off未选择队列取消期间同行保持 Ready/Managed/scanning On，
+两角色 release/最后fd/dup，quiet区间两只零DLI且前后实际启停成功；继续保留
+单CPU/FIFO限制，普通调度并发另验收。随后实际广告最后STOP、扫描START/最后STOP的
+held回复/三fd/Ready同行，需真实原USB帧skip/hold/hash证明，不能用模型Complete替代。
+再当前镜像物理拔插、四设备两组、结果淘汰和自然自动恢复/RCA。
+之前三份证据及原0x0b拒绝、捕获窗口失败、不合格构建仍保留。
+28项原scope、两个draft、自动恢复/自然超时-重枚举-消失RCA和历史xHCI warning继续OPEN；
+原生主机对照受VM-only约束未执行，完整goal active。

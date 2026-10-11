@@ -50,6 +50,32 @@ def fixture(case='release',domain='advertising'):
 
 
 class PartialTests(unittest.TestCase):
+    def test_exact_model_stop_refusal_keeps_blocked_faulted_and_cancelled(self):
+        for domain in ['advertising','scanning']:
+            for case in ['release','close','dup']:
+                record=fixture(case,domain);record.update(synthetic_support=True,status='FAIL',
+                    error='actual cleanup failed; preserve raw controller outcome',error_type='ValueError',errno=None)
+                q=SleManagementQuery(version=1,generation=1,state=3,flags=2,error=-errno.EIO,status=11,opcode=0x1002)
+                record['final_management']=bytes(q).hex();record['management_observations'][-1]['raw']=bytes(q).hex()
+                s=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));s.flags=4;s.error=-errno.EIO;s.command_credits=0
+                record['final_snapshot']=bytes(s).hex()
+                result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.flags=1;result.radio_adv=result.radio_scan=0
+                record['final_result']=bytes(result).hex()
+                with self.subTest(domain=domain,case=case):verify_records(record,True)
+                # A refused STOP cannot become Ready/Free or a normal pass.
+                with self.assertRaises(ValueError):verify_records(record)
+                for change in ['live','arbitrary-error','free','no-status','success-result']:
+                    import copy
+                    bad=copy.deepcopy(record)
+                    if change=='live':bad['synthetic_support']=False
+                    if change=='arbitrary-error':bad['error']='VM socket startup failed'
+                    if change=='free':bad['final_management']=bytes(SleManagementQuery(version=1,generation=1)).hex()
+                    if change=='no-status':
+                        state=SleManagementQuery.from_buffer_copy(bytes.fromhex(bad['final_management']));state.status=0;bad['final_management']=bytes(state).hex()
+                    if change=='success-result':
+                        value=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(bad['final_result']));value.state=3;value.error=0;bad['final_result']=bytes(value).hex()
+                    with self.subTest(domain=domain,case=case,change=change),self.assertRaises(ValueError):verify_records(bad,True)
+
     def test_scan_cleanup_retains_only_previously_proven_off(self):
         record=fixture(domain='scanning')
         record['management_observations']=[dict(wall_ns=440,raw=record['revoking']),dict(wall_ns=450,raw=record['final_management'])]

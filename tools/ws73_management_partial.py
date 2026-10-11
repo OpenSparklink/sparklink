@@ -62,9 +62,16 @@ def verify_preparation(record, snapshot):
         raise ValueError('bounded advertising preparation must finish before hold arm')
 
 
-def verify_records(record):
+def verify_records(record, cleanup_rejected=False):
     synthetic=record.get('synthetic_support')
     status='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS' if synthetic else 'MANAGED_PARTIAL_HELD_REPLY_PASS'
+    if type(cleanup_rejected) is not bool or cleanup_rejected and synthetic is not True:
+        raise ValueError('explicit model-only cleanup refusal verification required')
+    if cleanup_rejected:
+        status='FAIL'
+        if (record.get('error')!='actual cleanup failed; preserve raw controller outcome'
+                or record.get('error_type')!='ValueError' or record.get('errno') is not None):
+            raise ValueError('an arbitrary failed VM is not the expected controller refusal')
     if (type(synthetic) is not bool or type(record.get('format_version')) is not int or record['format_version']!=3
             or record.get('status')!=status
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False
@@ -86,12 +93,17 @@ def verify_records(record):
             state=state,error=error,opcode=opcode,
             radio_adv=1 if key=='final_result' or record['domain']=='scanning' else 0,
             radio_scan=1 if key=='final_result' else 0)
+        if cleanup_rejected and key=='final_result':
+            expected.flags=1;expected.radio_adv=expected.radio_scan=0
         if bytes(result)!=bytes(expected):raise ValueError('exact pending/cancelled operation without fabricated success required')
-    for key,state,mode in [('before_management',1,1),('revoking',2,0),('final_management',0,0)]:
+    for key,state,mode in [('before_management',1,1),('revoking',2,0),('final_management',3 if cleanup_rejected else 0,0)]:
         q=decode(SleManagementQuery,record[key]);expected=SleManagementQuery(version=1,generation=snapshots[0].generation,state=state,mode=mode)
+        if cleanup_rejected and key=='final_management':
+            expected.flags=2;expected.error=-errno.EIO;expected.status=0x0b;expected.opcode=0x1002
         if bytes(q)!=bytes(expected):raise ValueError('exact independent ownership observation required')
     ready=decode(SleControllerSnapshot,record['final_snapshot'])
     expected=SleControllerSnapshot.from_buffer_copy(bytes(snapshots[0]));expected.flags=1
+    if cleanup_rejected:expected.flags=4;expected.error=-errno.EIO;expected.command_credits=0
     if bytes(ready)!=bytes(expected):raise ValueError('only real successful cleanup may establish Ready')
     if record['peer_after']!=record['initial_snapshots'][1] or record['peer_management_before']!=record['peer_management_after']:
         raise ValueError('peer registration/metadata/owner changed')
@@ -126,7 +138,10 @@ def verify_records(record):
         if type(row['wall_ns']) is not int or row['wall_ns']<previous:
             raise ValueError('ownership observation time must follow held-reply release')
         previous=row['wall_ns']
-        expected=SleManagementQuery(version=1,generation=snapshots[0].generation,state=0 if i==len(observations)-1 else 2)
+        last=i==len(observations)-1
+        expected=SleManagementQuery(version=1,generation=snapshots[0].generation,state=(3 if cleanup_rejected else 0) if last else 2)
+        if cleanup_rejected and last:
+            expected.flags=2;expected.error=-errno.EIO;expected.status=0x0b;expected.opcode=0x1002
         if bytes(decode(SleManagementQuery,row['raw']))!=bytes(expected):
             raise ValueError('only Revoking followed by exact Free is allowed')
     sequences=set()
@@ -147,8 +162,8 @@ def verify_records(record):
     return snapshots
 
 
-def corroborate(record, host, capture, stderr, expected):
-    snapshots=verify_records(record)
+def corroborate(record, host, capture, stderr, expected, cleanup_rejected=False):
+    snapshots=verify_records(record,cleanup_rejected)
     preparation=[]
     if record['domain']=='scanning':
         row=record['preparation'][0]
@@ -183,9 +198,10 @@ def corroborate(record, host, capture, stderr, expected):
         if all_commands!=[v['command'] for v in preparation]+rows:
             raise ValueError('confirmed advertising Off must have no intervening target traffic')
     replies=[]
-    for command in rows:
+    for index,command in enumerate(rows):
         matches=[v for v in capture['complete'] if v['bus']==1 and v['device']==2 and v['opcode']==command['opcode'] and command['wall_ns']<=v['wall_ns']<=end]
-        if len(matches)!=1 or matches[0]['status']:raise ValueError('every cleanup Complete must be actual and successful')
+        status=0x0b if cleanup_rejected and index==len(rows)-1 else 0
+        if len(matches)!=1 or matches[0]['status']!=status:raise ValueError('every reply must match its actual success or exact model cleanup refusal')
         replies.append(matches[0])
     if record['synthetic_support']:
         from ws73_model_hold import corroborate_model_hold
@@ -207,8 +223,9 @@ def corroborate(record, host, capture, stderr, expected):
         commands=rows,replies=replies,host_hold=proof,peer_queries=peer,preparation=preparation,
         retained_advertising_off=preparation[-1] if preparation else None,
         synthetic_support=record['synthetic_support'],
-        managed_partial_case_live_acceptance=not record['synthetic_support'],
-        managed_partial_case_synthetic_support_acceptance=record['synthetic_support'],
+        managed_partial_case_live_acceptance=not record['synthetic_support'] and not cleanup_rejected,
+        managed_partial_case_synthetic_support_acceptance=record['synthetic_support'] and not cleanup_rejected,
+        expected_model_cleanup_refusal_observed=cleanup_rejected,
         full_cleanup_acceptance=False,active_ready_peer_isolation_acceptance=False,
         automatic_fault_recovery_acceptance=False,natural_fault_root_cause_closed=False)
 

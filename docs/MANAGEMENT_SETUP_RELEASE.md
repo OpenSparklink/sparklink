@@ -239,6 +239,18 @@ Setup 开始。这是修正测试方案，完整真实六案例及 Ready 同伴�
 及 USB 哈希核对禁止混用。相同 kernel fd 路径的开发支撑尚待实际执行；静态
 Setup peer 的三次查询也不代表活动 Ready peer 或 RF，整项实机条件继续开放。
 
+上述开发支撑现已执行：U f35ba6c／签名 K292 镜像的两个域×release／最后fd／
+dup 六个第一步案例通过；原始模拟终结帧 hash 与交还后的 USB 抓包一致，
+原期限未续期，Cancelled 保持，广播两域真实模型 STOP／扫描保留前置广播 Off
+后模型 STOP，以及 Revoking→Free 都有实际 kernel fd 证据。它只覆盖第一步，
+不是所有初始化步骤。U476ffcf 的新冻结包六个拒绝案例均保留 VM FAIL；独立
+验证器严格要求最终 RecoveryBlocked、status0x0b、opcode1002、-EIO，以及
+Faulted/credits0、Cancelled/Unknown、前／在途／后三次同伴匹配查询。不得将
+任意失败视为预期拒绝，不能把拒绝结果改成成功／Off／Ready。首次负向运行在
+guest 前因 Unix socket 长路径失败，原件保留并独立归为基础设施失败；socket
+现移至短私有目录，进程 join 后清理。274工具测试及 Uf35 CI 九作业通过，
+当前源头和执行冻结头分别记账。所有开发支撑均为模拟 USB，真实矩阵仍开放。
+
 本次已有四次实机启动失败，尚未进入新Managed门禁：单vCPU、uhubctl短断电后重试、
 原双vCPU对照和另一对设备都在Setup元数据前失败（warm恢复/再次启动均-110）。
 延长断电间隔的后续尝试也失败。所有日志、捕获和原始manifest保留在私有.dev。

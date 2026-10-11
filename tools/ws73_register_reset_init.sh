@@ -26,7 +26,9 @@ reset_arg=''
 if grep -q 'ws73.register_reset_usb=1' /proc/cmdline; then reset_arg='--guest-usb-reset-before-read'; fi
 wake_arg=''
 if grep -q 'ws73.register_wakeup_lab=1' /proc/cmdline; then wake_arg='--sdk-wakeup-before-read'; fi
-/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $reset_arg $wake_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
+async_arg=''
+if grep -q 'ws73.register_async_read_lab=1' /proc/cmdline; then async_arg='--async-read-only'; fi
+/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $reset_arg $wake_arg $async_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
 result=$?
 dmesg > /evidence/maintenance/kernel.log
 for interface in /sys/bus/usb/devices/*:*; do

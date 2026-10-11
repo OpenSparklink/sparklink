@@ -6,7 +6,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_vm_register_reset import Bulk, Control, setup_packet, checked_reset_value, run
+from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, run
 
 class RegisterResetTests(unittest.TestCase):
     def test_protocol_setup_packets_and_usbfs_width(self):
@@ -16,6 +16,9 @@ class RegisterResetTests(unittest.TestCase):
         self.assertEqual(ctypes.sizeof(Control),24)
         self.assertEqual(Bulk.data.offset,16)
         self.assertEqual(Control.data.offset,16)
+        self.assertEqual(ctypes.sizeof(Urb),56)
+        self.assertEqual(Urb.buffer.offset,16)
+        self.assertEqual(Urb.context.offset,48)
 
     def test_read_failure_never_generates_reset_write(self):
         for raw in [None,b'',b'\x00'*3,b'\x00'*5,bytearray(4),b'\xff'*4,b'\x10\x00\x00\x00']:

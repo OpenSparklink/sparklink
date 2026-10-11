@@ -415,3 +415,29 @@ reset、wakeup、route、rebind、clear-halt及寄存器模式。必须先核对
 和自然RCA继续OPEN。静态111固件头SHA校验通过，但stock反汇编存在未识别
 芯片扩展且USB控制路径调用ROM；`RESET_BCPU`仅枚举不足以证明处理或ACK，
 不会据此盲发复位。固件/SDK二进制及反汇编仅私有本地研究，不提交到仓库。
+
+
+## 真实 EP0 只读 credit 对照（2026-10-11）
+
+[两只实机的完整诊断证据](evidence/ws73-readonly-ep0-credit-20261011.json)封存端口
+1-2.1.2及1-2.1.1的独立VM：SDK class/interface IN request5各一次，均返回原
+四字节00000000，HCC高优先级内存credit=0。每轮65包零丢包，原USB提交/成功
+完成回执、actual usb-host req0xa105/length4及libusb控制回执匹配；零目标bulk
+及class OUT，无复位／hub循环、SoC写入或WS73模块加载。完整runtime配置与
+四只主机枚举、parent/hub/target suspend计数保持。这里只验证控制读取，
+不算活动Ready同行、RF、每设备恢复或本次固件版本查询。
+
+该结果证明本次SDK EP0控制读取可完成，而先前EP01/EP02 bulk仍有明确失败
+证据。原HCC memory-credit零值不能改成默认值，也不能当成DLI command-credit
+或Ready ACK；SDK data流控另外保留USB控制buffer，不能仅据零值认定路由／
+寄存器bulk超时根因、强行开放流控或盲发RESET_BCPU。111文件SHA头静态校验
+通过，但反汇编存在未识别扩展且关键USB路径调用ROM，缺少复位callback/ACK
+证明；不提交SDK、固件或反汇编字节。私有验证器最初把QMP hostport当完整sysfs
+路径，失败日志保留；修正为精确hostbus/hostport后复核原两轮，没有重跑VM或
+改写原结果。
+
+292工具测试与源码0a096ee九个CI作业通过。保持VM-only与历史真实WS73路径，
+正式Linux/Rust行为未改。正常启动门禁仍7，维护尝试增为20；新增真实Managed
+通过数仍零，当前没有双设备Ready／活动同行证据，所有恢复/RCA及原整项保持
+OPEN。下一步需核对供电路径及成功状态基线/ROM分发或HCC资源初始化的可追溯
+证据，再选择受控实机对照。不能靠重复ganged hub重枚举或模型通过代替根因。

@@ -37,8 +37,33 @@ def standby(snapshot, request_id, domain):
     return request
 
 
+def verify_preparation(record, snapshot):
+    rows = record['preparation']
+    if record['domain'] == 'advertising':
+        if rows != []:
+            raise ValueError('advertising first-step gate must start untouched')
+        return
+    if len(rows) != 1:
+        raise ValueError('scan initialization requires completed advertising Off preparation')
+    row = rows[0]
+    if row['input'] != bytes(standby(snapshot, 2, 'advertising')).hex():
+        raise ValueError('exact advertising preparation required')
+    result = decode(SleDiscoveryResult, row['result'])
+    if not -128 <= result.selected_power <= 127:
+        raise ValueError('actual selected advertising power required')
+    expected = SleDiscoveryResult(version=1, generation=snapshot.generation,
+        request_id=2, profile=1, operation=5, state=3, count=2, step=1,
+        opcode=0xc05, radio_adv=1, selected_power=result.selected_power, power_valid=1)
+    if bytes(result) != bytes(expected):
+        raise ValueError('only successful real preparation can establish advertising Off')
+    start, end = row['start_wall_ns'], row['end_wall_ns']
+    if (type(start) is not int or type(end) is not int or not 0 < start <= end
+            or end-start >= 6_000_000_000 or end >= record['markers'][0]['wall_ns']):
+        raise ValueError('bounded advertising preparation must finish before hold arm')
+
+
 def verify_records(record):
-    if (type(record.get('format_version')) is not int or record['format_version']!=1
+    if (type(record.get('format_version')) is not int or record['format_version']!=2
             or record.get('status')!='MANAGED_PARTIAL_HELD_REPLY_PASS'
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False
             or record.get('daemon_running_during_hold') is not False
@@ -47,6 +72,7 @@ def verify_records(record):
     snapshots=[setup(raw,i) for i,raw in enumerate(record['initial_snapshots'])]
     if len(snapshots)!=2 or snapshots[0].generation==snapshots[1].generation:
         raise ValueError('two independent untouched controllers required')
+    verify_preparation(record, snapshots[0])
     command=decode(SleDiscoverySubmit,record['input'])
     if bytes(command)!=bytes(standby(snapshots[0],1,record['domain'])):
         raise ValueError('exact typed standby policy required')
@@ -56,7 +82,8 @@ def verify_records(record):
         expected=SleDiscoveryResult(version=1,generation=snapshots[0].generation,request_id=1,
             dev_index=0,profile=1,operation=command.operation,count=2 if opcode==0xc02 else 3,
             state=state,error=error,opcode=opcode,
-            radio_adv=1 if key=='final_result' else 0,radio_scan=1 if key=='final_result' else 0)
+            radio_adv=1 if key=='final_result' or record['domain']=='scanning' else 0,
+            radio_scan=1 if key=='final_result' else 0)
         if bytes(result)!=bytes(expected):raise ValueError('exact pending/cancelled operation without fabricated success required')
     for key,state,mode in [('before_management',1,1),('revoking',2,0),('final_management',0,0)]:
         q=decode(SleManagementQuery,record[key]);expected=SleManagementQuery(version=1,generation=snapshots[0].generation,state=state,mode=mode)
@@ -120,6 +147,27 @@ def verify_records(record):
 
 def corroborate(record, host, capture, stderr, expected):
     snapshots=verify_records(record)
+    preparation=[]
+    if record['domain']=='scanning':
+        row=record['preparation'][0]
+        commands=[v for v in capture['commands'] if v['bus']==1 and v['device']==2
+                  and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns']]
+        if [v['opcode'] for v in commands]!=[0xc02,0xc05] or commands[1]['params']!='0000000000':
+            raise ValueError('real advertising configure and STOP preparation required')
+        params=bytes.fromhex(commands[0]['params'])
+        if len(params)!=49 or params[0]!=0 or params[12:18]!=bytes(snapshots[0].address):
+            raise ValueError('advertising preparation must address this real controller')
+        result=decode(SleDiscoveryResult,row['result'])
+        previous=row['start_wall_ns']
+        for i,command in enumerate(commands):
+            matches=[v for v in capture['complete'] if v['bus']==1 and v['device']==2
+                     and v['opcode']==command['opcode'] and command['wall_ns']<=v['wall_ns']<=row['end_wall_ns']]
+            if len(matches)!=1 or matches[0]['status'] or command['wall_ns']<previous:
+                raise ValueError('ordered actual successful preparation replies required')
+            reply=matches[0];previous=reply['wall_ns']
+            if reply['value'] != (bytes([result.selected_power & 255]).hex() if i==0 else ''):
+                raise ValueError('preparation power and STOP must match actual replies')
+            preparation.append(dict(command=command,reply=reply))
     from ws73_diagnostic_hold import corroborate_host_hold
     start=record['submit_before_wall_ns'];end=record['management_observations'][-1]['wall_ns']
     rows=[v for v in capture['commands'] if v['bus']==1 and v['device']==2 and start<=v['wall_ns']<=end]
@@ -143,7 +191,7 @@ def corroborate(record, host, capture, stderr, expected):
             raise ValueError('peer queries require independent wire proof')
         peer.append(dict(command=commands[0],reply=completions[0]))
     return dict(scope='one partial first-step and actual held late reply',case=record['case'],domain=record['domain'],
-        commands=rows,replies=replies,host_hold=proof,peer_queries=peer,
+        commands=rows,replies=replies,host_hold=proof,peer_queries=peer,preparation=preparation,
         managed_partial_case_live_acceptance=True,full_cleanup_acceptance=False,
         automatic_fault_recovery_acceptance=False,natural_fault_root_cause_closed=False)
 
@@ -154,7 +202,7 @@ def run(args):
     if subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode==0:
         raise ValueError('partial gate requires untouched Setup before daemon')
     folder=args.output; folder.mkdir(parents=True,exist_ok=False)
-    record=dict(format_version=1,status='STARTING',case=args.case,domain=args.domain,
+    record=dict(format_version=2,status='STARTING',case=args.case,domain=args.domain,preparation=[],
         physical_acceptance=False,automatic_fault_recovery_acceptance=False,
         daemon_running_during_hold=False,host_hold_acknowledgements=[],markers=[],peer_queries=[])
     def save(): save_record(folder,record)
@@ -191,6 +239,22 @@ def run(args):
         peer_probe=peer_query
         peer_query(1)
         lease=target.acquire_management(1);original=target.fileno()
+        if args.domain=='scanning':
+            # ScanInitializeOff contains a real START. Its admission requires
+            # confirmed advertising Off and no pending advertising operation.
+            # Never manufacture Off from the untouched Setup snapshot.
+            preparation=standby(snapshots[0],2,'advertising')
+            row=dict(input=bytes(preparation).hex(),start_wall_ns=time.time_ns())
+            record['preparation'].append(row);save()
+            target.submit_discovery(preparation);deadline=time.monotonic()+6
+            while True:
+                result=observers[0].discovery_result(2)
+                if result is not None and result.is_terminal:break
+                if time.monotonic()>deadline:raise TimeoutError('advertising Off preparation')
+                time.sleep(.002)
+            row.update(result=bytes(result).hex(),end_wall_ns=time.time_ns());save()
+            # Validate before arming any hold or submitting the scan recipe.
+            verify_preparation(dict(record,markers=[dict(wall_ns=time.time_ns())]),snapshots[0])
         if args.case=='dup':alias=os.dup(original)
         record.update(original_fd=original,duplicate_fd=alias if alias is not None else -1,lease=lease)
         stage('arm_ready','armed')
@@ -199,7 +263,7 @@ def run(args):
         stage('wait_held','held')
         pending=observers[0].discovery_result(1);record['pending']=bytes(pending).hex();save()
         expected=0xc02 if args.domain=='advertising' else 0x1001
-        if pending.state!=2 or pending.opcode!=expected or pending.step or pending.status or pending.error or pending.radio_adv or pending.radio_scan:
+        if pending.state!=2 or pending.opcode!=expected or pending.step or pending.status or pending.error or pending.radio_adv!=(1 if args.domain=='scanning' else 0) or pending.radio_scan:
             raise ValueError('actual first-step in-flight recipe required')
         peer_query(2)
         record['before_management']=bytes(observers[0].management_status()).hex()

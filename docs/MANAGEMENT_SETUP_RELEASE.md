@@ -216,6 +216,12 @@ FIFO 调度临界区排入两个 typed policy，实际读取 Queued/opcode=0/ste
 `--managed-partial-domain advertising|scanning`，需要独立 Setup/recovery scratch VM，
 与既有 Diagnostic/active hold 门禁互斥。仅暂停真实第一步回复，读取完整 Pending
 及 opcode/step，保留原命令500ms期限，在其前触发释放／关闭；dup第一次关闭仍Held。
+扫描案例先在同一 Managed 租约中真实完成广播配置／STOP，保留 request2 完整
+Succeeded 结果、selected power 及两笔有序成功 Complete 的抓包，再 arm request1
+扫描第一步。Pending/Cancelled 时广播保持 confirmed Off、扫描 Unknown；不能
+从 untouched Setup 直接假定广播 Off，或把 EBUSY 视为在途取消。格式2强制保存
+这段前置证据；旧格式失败原件保留，不能重新包装为通过。广播案例仍从 untouched
+Setup 开始。这是修正测试方案，完整真实六案例及 Ready 同伴活动隔离仍待执行。
 原真实回复交还后，应只有真实广告／扫描停止及成功 Complete，再Free/Ready；
 保留原操作 Cancelled/-ECANCELED。peer持独立Diagnostic租约，前／在途／后三次
 真实MAC查询及完整metadata/ownership检查均须匹配。任何原始status、EIO、代际退役

@@ -15,7 +15,7 @@ def fixture(case='release',domain='advertising'):
     markers=[dict(hold_phase=phase,wall_ns=t) for phase,t in [('arm_ready',100),('wait_held',200),('release_ready',400)]]
     ready=SleControllerSnapshot.from_buffer_copy(bytes(snapshots[0]));ready.flags=1
     q=lambda state,mode:bytes(SleManagementQuery(version=1,generation=1,state=state,mode=mode)).hex()
-    record=dict(format_version=1,status='MANAGED_PARTIAL_HELD_REPLY_PASS',case=case,domain=domain,
+    record=dict(format_version=2,status='MANAGED_PARTIAL_HELD_REPLY_PASS',case=case,domain=domain,preparation=[],
         physical_acceptance=False,automatic_fault_recovery_acceptance=False,daemon_running_during_hold=False,
         initial_snapshots=[bytes(s).hex() for s in snapshots],input=bytes(standby(snapshots[0],1,domain)).hex(),
         before_management=q(1,1),revoking=q(2,0),final_management=q(0,0),final_snapshot=bytes(ready).hex(),
@@ -24,6 +24,11 @@ def fixture(case='release',domain='advertising'):
         markers=markers,peer_queries=[],host_hold_acknowledgements=[])
     peer=bytes(SleManagementQuery(version=1,generation=2,state=1,mode=2)).hex()
     record.update(peer_management_before=peer,peer_management_after=peer)
+    if domain=='scanning':
+        preparation=SleDiscoveryResult(version=1,generation=1,request_id=2,profile=1,
+            operation=5,state=3,count=2,step=1,opcode=0xc05,radio_adv=1,power_valid=1,selected_power=6)
+        record['preparation']=[dict(input=bytes(standby(snapshots[0],2,'advertising')).hex(),
+            result=bytes(preparation).hex(),start_wall_ns=50,end_wall_ns=90)]
     if case!='release':record['original_fd_errno']=errno.EBADF
     if case=='dup':record.update(duplicate_fd_errno=errno.EBADF,after_first_management=q(1,1))
     record['management_observations']=[dict(wall_ns=401,raw=q(2,0)),dict(wall_ns=405,raw=q(0,0))]
@@ -31,7 +36,8 @@ def fixture(case='release',domain='advertising'):
     for key,state,error in [('pending',2,0),('cancelled',5,-errno.ECANCELED),('final_result',5,-errno.ECANCELED)]:
         record[key]=bytes(SleDiscoveryResult(version=1,generation=1,request_id=1,profile=1,operation=5 if opcode==0xc02 else 6,
             count=2 if opcode==0xc02 else 3,opcode=opcode,state=state,error=error,
-            radio_adv=1 if key=='final_result' else 0,radio_scan=1 if key=='final_result' else 0)).hex()
+            radio_adv=1 if key=='final_result' or domain=='scanning' else 0,
+            radio_scan=1 if key=='final_result' else 0)).hex()
     for i,m in enumerate(markers):
         record['host_hold_acknowledgements'].append(dict(stage=['armed','held','released'][i],request=m,
             host_wall_ns=m['wall_ns']+1,state=dict(zip(PROPERTIES,[i==0,i==1,int(i>0),int(i==2),0,0,False,0]))))
@@ -43,6 +49,31 @@ def fixture(case='release',domain='advertising'):
 
 
 class PartialTests(unittest.TestCase):
+    def test_scan_requires_real_prior_advertising_off_and_no_false_unknown(self):
+        for change in ['missing','failed','unknown','wrong-request','reserved','no-power','bad-power','late','bool','pending-radio']:
+            record=fixture(domain='scanning');row=record['preparation'][0]
+            result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(row['result']))
+            if change=='missing':record['preparation']=[]
+            if change=='failed':result.state=4;result.error=-errno.EIO;result.status=30
+            if change=='unknown':result.radio_adv=0
+            if change=='wrong-request':result.request_id=1
+            if change=='reserved':result.reserved[0]=1
+            if change=='no-power':result.power_valid=0
+            if change=='bad-power':result.selected_power=128
+            if change=='late':row['end_wall_ns']=100
+            if change=='bool':row['start_wall_ns']=True
+            if change=='pending-radio':
+                pending=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['pending']))
+                pending.radio_adv=0;record['pending']=bytes(pending).hex()
+            row['result']=bytes(result).hex()
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
+    def test_advertising_first_step_cannot_hide_a_prepared_or_old_format_gate(self):
+        record=fixture();record['preparation']=fixture(domain='scanning')['preparation']
+        with self.assertRaises(ValueError):verify_records(record)
+        record=fixture();record['format_version']=1
+        with self.assertRaises(ValueError):verify_records(record)
+
     def test_peer_canonical_result_and_causal_intervals(self):
         for change in ['reserved','tail','repeat-sequence','before-only','during-too-late','after-too-early','boolean']:
             record=fixture();row=record['peer_queries'][1]

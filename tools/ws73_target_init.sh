@@ -103,7 +103,9 @@ if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
 fi
 if grep -q 'ws73.active_deadline=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
-    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_active_deadline.py --output /evidence/active-deadline > /evidence/active-deadline-supervisor.log 2>&1 || fail 'active deadline retirement gate'
+    close_arg=''
+    if grep -q 'ws73.active_close=1' /proc/cmdline; then close_arg='--last-file-close'; fi
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_active_deadline.py $close_arg --output /evidence/active-deadline > /evidence/active-deadline-supervisor.log 2>&1 || fail 'active deadline retirement gate'
 fi
 storage=/tmp/bonds
 if [ -f /scratch-root-uuid ]; then

@@ -9,6 +9,8 @@ import argparse
 import ctypes
 import errno
 import json
+import os
+import fcntl
 from pathlib import Path
 import re
 import subprocess
@@ -18,7 +20,7 @@ import time
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / ('python' if (HERE.parent / 'python').is_dir() else 'bindings/python')))
 from sparklink.native import NativeAdapter
-from sparklink.structs import SleControllerSnapshot, SleDiagnosticResult, SleDiagnosticSubmit
+from sparklink.structs import SleControllerSnapshot, SleDiagnosticResult, SleDiagnosticSubmit, SleManagementQuery
 from ws73_diagnostic_hold import HoldCoordinator, PROPERTIES, write_marker
 
 
@@ -63,6 +65,43 @@ def _decode(kind, raw):
     if not isinstance(raw, str) or len(raw) != ctypes.sizeof(kind) * 2 or not re.fullmatch('[0-9a-f]+', raw):
         raise ValueError('canonical complete ABI bytes required')
     return kind.from_buffer_copy(bytes.fromhex(raw))
+
+
+
+def verify_last_file_close(record):
+    """Validate actual dup/last-close and observer ABI evidence; no hardware claim."""
+    row = record['last_file_close']
+    required = {'original_fd', 'duplicate_fd', 'original_fd_errno', 'duplicate_fd_errno',
+                'lease', 'before_management', 'first_management', 'last_management',
+                'first_before_wall_ns', 'first_after_wall_ns', 'last_before_wall_ns', 'last_after_wall_ns',
+                'first_before_monotonic_ns', 'first_after_monotonic_ns',
+                'last_before_monotonic_ns', 'last_after_monotonic_ns'}
+    if set(row) != required:
+        raise ValueError('complete actual file close evidence required')
+    for key in ['original_fd', 'duplicate_fd']:
+        if type(row[key]) is not int or not 0 <= row[key] < 1 << 20:
+            raise ValueError('actual distinct descriptor numbers required')
+    if row['original_fd'] == row['duplicate_fd'] or type(row['lease']) is not int or not 0 < row['lease'] < 1 << 64:
+        raise ValueError('duplicate reference and original owner lease required')
+    if any(type(row[k]) is not int or row[k] != errno.EBADF for k in ['original_fd_errno', 'duplicate_fd_errno']):
+        raise ValueError('actual closed descriptors must reject F_GETFD with EBADF')
+    generation = _decode(SleControllerSnapshot, record['target_snapshot']).generation
+    for key, state, mode in [('before_management', 1, 2), ('first_management', 1, 2), ('last_management', 2, 0)]:
+        value = _decode(SleManagementQuery, row[key])
+        expected = SleManagementQuery(version=1, generation=generation, state=state, mode=mode)
+        if bytes(value) != bytes(expected):
+            raise ValueError('observer must see exact Held/Held/Revoking without token or fault')
+    for clock in ['wall_ns', 'monotonic_ns']:
+        values = [row[name+'_'+clock] for name in ['first_before', 'first_after', 'last_before', 'last_after']]
+        if any(type(v) is not int or v <= 0 for v in values) or values != sorted(values):
+            raise ValueError('ordered actual close clocks required')
+    held = record['guest_ack_receipts'][1]
+    if (not held['wall_ns'] <= row['first_before_wall_ns'] <= row['last_after_wall_ns'] <= record['markers'][2]['wall_ns']
+            or not held['monotonic_ns'] <= row['first_before_monotonic_ns']
+            or not 90_000_000 <= row['last_before_monotonic_ns'] - row['first_after_monotonic_ns'] < 200_000_000
+            or not row['last_after_monotonic_ns'] <= record['quiet_before_monotonic_ns']
+            or row['last_after_monotonic_ns'] - record['submit_before_monotonic_ns'] >= 400_000_000):
+        raise ValueError('first close must retain lease and last close must precede original deadline')
 
 
 def metadata_ready(share):
@@ -162,6 +201,8 @@ def verify_records(record):
             or not receipts[0]['monotonic_ns'] <= clocks[0] <= clocks[1] <= receipts[1]['monotonic_ns']
             <= clocks[2] <= receipts[2]['monotonic_ns'] <= clocks[3]):
         raise ValueError('held successful host transfer must follow admission')
+    if 'last_file_close' in record:
+        verify_last_file_close(record)
     queries = record['peer_queries']
     if len(queries) != 2:
         raise ValueError('peer queries before and after target retirement required')
@@ -205,6 +246,11 @@ def corroborate(record, host, capture, stderr, kernel_log, owner, peer, host_own
     if any(c['opcode'] == 0x0406 and (c['bus'],c['device']) == (owner['bus'],owner['device'])
            and commands[0]['wall_ns'] <= c['wall_ns'] <= end for c in capture['complete']):
         raise ValueError('held target replied before retirement acknowledgment')
+    if 'last_file_close' in record:
+        after_hold = record['guest_ack_receipts'][1]['wall_ns']
+        if any((c['bus'], c['device']) == (owner['bus'], owner['device'])
+               and after_hold <= c['wall_ns'] <= end for c in capture['commands']):
+            raise ValueError('last-file-close must not send new target commands during retained wire slot')
     def log_times(pattern):
         from decimal import Decimal
         return [int(Decimal(v)*1_000_000_000) for v in re.findall(pattern, kernel_log, re.M)]
@@ -243,7 +289,9 @@ def corroborate(record, host, capture, stderr, kernel_log, owner, peer, host_own
             'host_timeout_monotonic_ns': timeouts[0],
             'exact_deadline_latency_bound_qualified': False,
             'daemon_continuity_during_hold_qualified': False,
-            'natural_fault_root_cause_closed': False, 'physical_acceptance': False}
+            'natural_fault_root_cause_closed': False, 'physical_acceptance': False,
+            'held_last_file_close_bounded_retirement': 'last_file_close' in record,
+            'immediate_close_abort_qualified': False}
 
 
 def run(args):
@@ -268,6 +316,7 @@ def run(args):
         record['guest_ack_receipts'].append({'stage':ack,'wall_ns':time.time_ns(),'monotonic_ns':time.monotonic_ns()})
         record['host_hold_acknowledgements'].append(response); save()
     adapters = []
+    duplicate_fd = None
     initializer = None
     try:
         for index in [0, 1]:
@@ -323,6 +372,12 @@ def run(args):
             record['peer_queries'].append({'output': bytes(command).hex(), 'result': bytes(result).hex(),
                                           'start_wall_ns': start, 'end_wall_ns': time.time_ns()}); save()
         query_peer(1)
+        observer = None
+        if getattr(args, 'last_file_close', False):
+            if 'ws73.active_close=1' not in Path('/proc/cmdline').read_text().split():
+                raise ValueError('explicit VM last-file-close boot mode required')
+            observer = NativeAdapter(target.index, target.generation)
+            adapters.append(observer)
         marker('arm_ready', 'armed')
         command = SleDiagnosticSubmit(version=1, generation=target.generation, request_id=1,
                                       timeout_ms=500, opcode=0x0406, action=1)
@@ -333,6 +388,29 @@ def run(args):
         record['output'] = bytes(command).hex()
         record['initial_result'] = bytes(target.diagnostic_result(command.seq)).hex()
         marker('wait_held', 'held')
+        if observer is not None:
+            original_fd = target.fileno()
+            duplicate_fd = os.dup(original_fd)
+            close = {'original_fd': original_fd, 'duplicate_fd': duplicate_fd,
+                     'lease': leases[0], 'before_management': bytes(observer.management_status()).hex()}
+            def closed_errno(fd):
+                try: fcntl.fcntl(fd, fcntl.F_GETFD)
+                except OSError as error: return error.errno
+                raise ValueError('closed descriptor remains live')
+            close.update(first_before_wall_ns=time.time_ns(), first_before_monotonic_ns=time.monotonic_ns())
+            target.close()
+            close.update(first_after_monotonic_ns=time.monotonic_ns(), first_after_wall_ns=time.time_ns(),
+                         original_fd_errno=closed_errno(original_fd))
+            time.sleep(0.1)
+            close['first_management'] = bytes(observer.management_status()).hex()
+            close.update(last_before_wall_ns=time.time_ns(), last_before_monotonic_ns=time.monotonic_ns())
+            os.close(duplicate_fd)
+            close.update(last_after_monotonic_ns=time.monotonic_ns(), last_after_wall_ns=time.time_ns(),
+                         duplicate_fd_errno=closed_errno(duplicate_fd))
+            duplicate_fd = None
+            close['last_management'] = bytes(observer.management_status()).hex()
+            record['last_file_close'] = close
+            save()
         record['quiet_before_monotonic_ns'] = time.monotonic_ns()
         marker('abort_ready', 'aborted')  # passive filesystem/QMP wait: no ioctl can expire the author
         # The QEMU cancellation ack can precede the driver's joined-retirement
@@ -342,8 +420,9 @@ def run(args):
         record['quiet_after_monotonic_ns'] = time.monotonic_ns()
         retry = SleDiagnosticSubmit.from_buffer_copy(bytes.fromhex(record['input']))
         record['retired_submit_input'] = bytes(retry).hex()
-        for key, operation in [('retired_result_errno', lambda: target.diagnostic_result(command.seq)),
-                               ('retired_submit_errno', lambda: target.submit_diagnostic(retry))]:
+        stale = observer if observer is not None else target
+        for key, operation in [('retired_result_errno', lambda: stale.diagnostic_result(command.seq)),
+                               ('retired_submit_errno', lambda: stale.submit_diagnostic(retry))]:
             try: operation()
             except OSError as error: record[key] = error.errno
             else: raise ValueError('retired selected fd accepted request')
@@ -361,10 +440,12 @@ def run(args):
             initializer.terminate()
             try: initializer.wait(timeout=5)
             except subprocess.TimeoutExpired: initializer.kill();initializer.wait(timeout=5)
+        if duplicate_fd is not None: os.close(duplicate_fd)
         for adapter in reversed(adapters): adapter.close()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--last-file-close', action='store_true', help='close original then final dup while actual reply remains held; retain original timeout, no explicit release')
     run(parser.parse_args())

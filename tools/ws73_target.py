@@ -359,7 +359,10 @@ def _run(args):
     cancellation=bool(getattr(args,'diagnostic_cancel_verify',False))
     deadline_gate=bool(getattr(args,'diagnostic_deadline_verify',False))
     autonomous_gate=bool(getattr(args,'diagnostic_autonomous_verify',False))
-    active_gate=bool(getattr(args,'active_deadline_verify',False))
+    active_close_gate=bool(getattr(args,'active_close_verify',False))
+    active_gate=bool(getattr(args,'active_deadline_verify',False)) or active_close_gate
+    if active_close_gate and bool(getattr(args,'active_deadline_verify',False)):
+        raise ValueError('select one active deadline or last-file-close gate')
     setup_gate=bool(getattr(args,'setup_release_verify',False))
     if setup_gate and (support or not recovery):
         raise ValueError('Setup release requires explicit real fault-recovery VM mode')
@@ -389,6 +392,7 @@ def _run(args):
     m['live_diagnostic_deadline_requested']=deadline_gate
     m['live_diagnostic_autonomous_requested']=autonomous_gate
     m['live_active_deadline_requested']=active_gate
+    m['live_active_close_requested']=active_close_gate
     m['live_setup_release_requested']=setup_gate
     if setup_gate:
         m['setup_release_verifier']=file_record(HERE/'ws73_management_setup.py')
@@ -438,6 +442,7 @@ def _run(args):
                      (' ws73.diagnostic_deadline=1' if deadline_gate else '')+
                      (' ws73.diagnostic_autonomous=1' if autonomous_gate else '')+
                      (' ws73.active_deadline=1' if active_gate else '')+
+                     (' ws73.active_close=1' if active_close_gate else '')+
                      (' ws73.setup_release=1' if setup_gate else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
@@ -609,6 +614,8 @@ def _run(args):
                 if active_gate:
                     from ws73_active_deadline import corroborate
                     probe=json.loads((share/'active-deadline/run.json').read_text())
+                    if ('last_file_close' in probe) != active_close_gate:
+                        raise ValueError('actual close evidence must match requested gate')
                     m['active_deadline_hold']['corroboration']=corroborate(
                         probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),
                         (share/'kernel.log').read_text(),identities[0],identities[1],devices[args.ports[0]])
@@ -712,6 +719,7 @@ def main():
             cmd.add_argument('--setup-release-verify',action='store_true',help='pre-daemon untouched Setup release/last-fd/dup gate; requires real fault-recovery scratch VM')
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')
             cmd.add_argument('--active-deadline-verify',action='store_true',help='separate pre-daemon real IN81 timeout/abort gate; requires real fault-recovery and excludes explicit-release diagnostic modes')
+            cmd.add_argument('--active-close-verify',action='store_true',help='actual held IN81 original/last dup close and bounded original-deadline retirement; requires separate real fault-recovery VM')
             cmd.add_argument('--diagnostic-verify',action='store_true',help='opt-in live diagnostic owner/CAP/copy/retirement and metadata CLI gate; requires --fault-recovery')
             cmd.add_argument('--diagnostic-autonomous-verify',action='store_true',help='queued expiry already counted before first result after a passive800ms window; requires all diagnostic/cancel/deadline/fault-recovery gates')
             cmd.add_argument('--diagnostic-deadline-verify',action='store_true',help='100ms queued expiry with continuous same-ID retries; requires --diagnostic-cancel-verify and real fault-recovery mode')

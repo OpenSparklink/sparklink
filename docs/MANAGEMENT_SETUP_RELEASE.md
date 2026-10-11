@@ -857,7 +857,25 @@ hold 期间启动扫描并保持 On。普通 `cancel-discovery` 使原请求 Can
 START/STOP、虚构结果或跨设备命令。随后同 daemon 人工 guest IN 错误支持
 和 RF2 单独核对；它们不替代自然故障或物理拔插验收。
 
-修正门禁尚待新服务编译和真实执行。320 工具回归与严格 clippy 是开发
-支撑，不是实机资格。完整 Managed/作者/权限/事件/removal 并发、当前镜像
-物理拔插、四设备两组、自然 RCA/无人工恢复及其余 S0–S6/28项仍 OPEN。
-VM-only；部分成果不关闭整项，两个 draft 不合并。
+[新镜像真实双案例证据](evidence/ws73-live-daemon-managed-cancel-real-20261012.json)
+SHA256 `81ed71737254b74704f276fd57c081491095961db4334d9a22cf357fae692192`：
+原客户端在线/退出两例均 source runner PASS、QEMU0，并独立核对完整
+USB 窗口、真实原帧 SHA/长度、原取消结果和同行 On。原回复分别在
+186.1ms/200.6ms 内明确释放，不延长500ms原期限。两例同 slkd/bus、
+普通 UID1000/caps0 的 RF20+2 共44轮通过，随机标识/数据/地址/RSSI均
+在10秒内匹配，capture各1179/零drop、taint0、无 kernel fault。
+实际编译 K060011963b5e/新服务及冻结工具 U9cdccd942e21/QEMU d53eb3d1b583，
+新服务源码/策略哈希一致；新镜像独立文件输出，旧服务与原 FAIL 不覆盖。
+原普通 STOP0x0b VM 为另一独立失败，初始 RF20 不计入新通过44轮，
+后续恢复/RF2未执行，原下一案例未执行。
+
+320工具回归、完整Rust170项及新生产admission两项通过，严格clippy通过；
+[精确U9cd CI38154578944](https://github.com/OpenSparklink/sparklink/actions/runs/38154578944)
+九项成功。busy/disabled/removed/unsupported-fd用例不产生成功 ioctl；它们
+是源码支撑。沙箱 Unix socket 禁止、首次缺测试 dbus-daemon 的本地失败保留，
+随后私有 session bus 完整重跑通过，不安装主机服务。正常VM累计49、维护20。
+
+本批只验证 first scan-parameter held reply 和原客户端生命周期。**放弃取消
+CLI本身、取消/移除及其余RPC并发仍未实机验收**。完整Managed/作者/权限/
+事件/removal、当前镜像物理拔插、四设备两组、自然RCA/无人工恢复及其余
+S0–S6/28项保持OPEN。VM-only；部分成果不关闭整项，两个draft不合并。

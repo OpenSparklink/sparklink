@@ -1589,3 +1589,31 @@ CI38150415339失败及随后sparse checkout缺头文件的CI38151129591失败保
 VM-only不变；人工guest IN错误只是开发支撑，hub切电和人工冷断电不是
 自动恢复验收。未查明根因、历史xHCI warning及恢复事项继续OPEN，部分成果
 不关闭整项、两个draft不合并。
+
+
+## 2026-10-12 新服务的 live slkd 取消与独立实机回归
+
+新增 `cancel-discovery` 通过每设备 Managed release/revoke/drain/reacquire
+取消两项 policies，保留实际原请求 Cancelled、清理失败和固件 STOP0x0b
+拒绝；不产生虚构成功 STOP/Complete。bootstrap/RPC/removal 共用一个
+credential/admission gate，设备忙立即报错，同行独立；非Ready不支持。
+
+[新双案例/44轮实机证据](evidence/ws73-live-daemon-managed-cancel-real-20261012.json)
+（SHA256 `81ed71737254b74704f276fd57c081491095961db4334d9a22cf357fae692192`）
+记录原CLI在线及实际退出，原参数reply暂留/取消/实际排空，零未选择
+目标START/STOP，另一只Ready保持扫描；同slkd/bus、普通UID1000/caps0
+各RF20+2，捕获各1179/零drop、taint0、无kernel fault。实际编译内核
+K060011963b5e，新服务/冻结工具U9cdccd942e21，不能沿用旧U7bd服务资格。
+原STOP0b整例FAIL及未执行下一例独立保留，未转成成功或Off。
+
+320工具、完整Rust170项加新生产admission2项和严格clippy通过；
+[精确源码CI38154578944](https://github.com/OpenSparklink/sparklink/actions/runs/38154578944)
+九项成功。正常VM累计49/维护20，失败不归零。完整限定语义与复现命令见
+[Managed验收](MANAGEMENT_SETUP_RELEASE.md)。人工guest IN错误仍是恢复开发
+支撑，不是自然故障恢复；冷断电对照也不计自动恢复。
+
+下一优先为取消CLI放弃/移除和其他admission/结果/事件/权限并发，当前资格
+镜像物理拔插/slkd不停机、四设备两组，以及自然启动/重枚举/消失RCA与有限
+单设备非人工恢复。完整S0–S6/28项原scope、14项整改与旧代码三类清理保持，
+自动恢复/未查明根因及整项Managed仍OPEN；部分成果不关闭整项，两个draft
+不合并，goal active，VM-only。

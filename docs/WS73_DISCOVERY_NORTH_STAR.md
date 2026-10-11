@@ -1677,3 +1677,14 @@ VM两次加载/卸载及完整镜像编译通过，实机taint0/无warning。
 [限定范围、hash和逐轮结果](evidence/ws73-vm-cleanup-regression-20261011.json)。
 这是保持已验证WS73路径的整改回归，不重新声称物理拔插或自然根因闭合。
 北极星保持7/8，完整无人工恢复、四设备、全sandbox等仍OPEN。
+
+
+## 2026-10-12 新服务保留真实RF路径
+
+[同slkd在途Managed取消双案例/44轮](evidence/ws73-live-daemon-managed-cancel-real-20261012.json)
+独立USB/HCC/DLI核对通过，普通UID1000/caps0、随机标识/数据/地址/RSSI
+10秒内匹配；原STOP0b拒绝仍FAIL，新的显式取消不假造STOP成功。实际
+编译K060011963b5e/服务U9cdccd942e21；此前物理拔插资格仍是历史镜像，
+当前镜像物理拔插与四设备两组需另验。人工错误恢复与冷断电不计自然
+非人工恢复，北极星完整无人工恢复和所有相关整项issues继续OPEN。
+详情、复现及后续优先序见[Managed验收](MANAGEMENT_SETUP_RELEASE.md)。

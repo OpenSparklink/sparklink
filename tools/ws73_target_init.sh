@@ -93,6 +93,8 @@ fi
 /bin/dbus-daemon --config-file=/etc/dbus.conf --nofork > /evidence/dbus.log 2>&1 &
 for n in $(seq 1 100); do [ -S /run/slkbus ] && break; sleep 0.1; done
 [ -S /run/slkbus ] || fail 'system bus startup'
+confirmed_off_arg=''
+if grep -q 'ws73.managed_queue_confirmed_off=1' /proc/cmdline; then confirmed_off_arg='--confirmed-off'; fi
 if grep -Eq 'ws73.managed_(queue|partial)_support=1' /proc/cmdline; then
     [ -f /scratch-root-uuid ] || fail 'synthetic queue scratch root'
     [ "$(cat /sys/class/dmi/id/sys_vendor)" = QEMU ] || fail 'synthetic queue QEMU VM'
@@ -108,7 +110,7 @@ if grep -Eq 'ws73.managed_(queue|partial)_support=1' /proc/cmdline; then
         grep -q 'ws73.managed_queue=1' /proc/cmdline || fail 'synthetic queue boot mode'
         ! grep -q 'ws73.managed_partial' /proc/cmdline || fail 'mixed synthetic support modes'
         support_mode=MANAGED_QUEUE
-        LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_queued.py --synthetic-support --output /evidence/managed-queue > /evidence/managed-queue-supervisor.log 2>&1 || fail 'synthetic Managed queue support'
+        LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_queued.py --synthetic-support $confirmed_off_arg --output /evidence/managed-queue > /evidence/managed-queue-supervisor.log 2>&1 || fail 'synthetic Managed queue support'
     fi
     kill -INT "$capture"; wait "$capture" || fail 'synthetic queue capture sealing'
     capture=''
@@ -124,7 +126,7 @@ if grep -q 'ws73.setup_release=1' /proc/cmdline; then
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_setup.py --output /evidence/setup-release > /evidence/setup-release-supervisor.log 2>&1 || fail 'untouched Setup lease release gate'
 fi
 if grep -q 'ws73.managed_queue=1' /proc/cmdline; then
-    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_queued.py --output /evidence/managed-queue > /evidence/managed-queue-supervisor.log 2>&1 || fail 'queued Managed cancellation gate'
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_queued.py $confirmed_off_arg --output /evidence/managed-queue > /evidence/managed-queue-supervisor.log 2>&1 || fail 'queued Managed cancellation gate'
 fi
 if grep -q 'ws73.managed_partial=1' /proc/cmdline; then
     partial_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_case=/){sub(/^ws73.partial_case=/,"",$i);print $i}}' /proc/cmdline)

@@ -72,9 +72,11 @@ def run(args):
         raise ValueError('bounded support VM timeout required')
     lab = lab_module()
     partial=args.partial_case is not None
+    confirmed=bool(getattr(args,'confirmed_off',False))
+    if confirmed and partial:raise ValueError('confirmed queue and partial hold are separate modes')
     if args.idle_scan_stop_reject and not partial or not partial and args.partial_domain!='advertising':
         raise ValueError('partial controls require explicit partial case')
-    success='PASS_MANAGED_PARTIAL_SYNTHETIC_KERNEL_FD_SUPPORT' if partial else 'PASS_MANAGED_QUEUE_SYNTHETIC_KERNEL_FD_SUPPORT'
+    success='PASS_MANAGED_PARTIAL_SYNTHETIC_KERNEL_FD_SUPPORT' if partial else 'PASS_MANAGED_CONFIRMED_OFF_QUEUE_SYNTHETIC_KERNEL_FD_SUPPORT' if confirmed else 'PASS_MANAGED_QUEUE_SYNTHETIC_KERNEL_FD_SUPPORT'
     mode='MANAGED_PARTIAL' if partial else 'MANAGED_QUEUE'
     output = args.output.resolve()
     if any(c in str(p) for p in [output, args.prepared.resolve()] for c in [',', '\n', '\r']):
@@ -85,7 +87,7 @@ def run(args):
                   active_ready_peer_isolation_acceptance=False,
                   automatic_fault_recovery_acceptance=False, natural_fault_root_cause_closed=False,
                   started_wall_ns=time.time_ns())
-    record.update(partial_case=args.partial_case,partial_domain=args.partial_domain if partial else None,
+    record.update(confirmed_off=confirmed,partial_case=args.partial_case,partial_domain=args.partial_domain if partial else None,
                   model_idle_stop_reject=args.idle_scan_stop_reject)
     process = monitor = channel = runtime = None
     def save():
@@ -106,7 +108,7 @@ def run(args):
             serial = Path(runtime.name)/'serial.sock'; qmp = Path(runtime.name)/'qmp.sock'
             options, append = native_vm.launch(args.prepared.resolve(), output, package)
             boot=(f'ws73.managed_partial=1 ws73.managed_partial_support=1 ws73.partial_case={args.partial_case} ws73.partial_domain={args.partial_domain}'
-                  if partial else 'ws73.managed_queue=1 ws73.managed_queue_support=1')
+                  if partial else 'ws73.managed_queue=1 ws73.managed_queue_support=1'+(' ws73.managed_queue_confirmed_off=1' if confirmed else ''))
             command = [package['qemu']['path'], '-machine', 'q35,accel=kvm', '-cpu', 'host',
                        '-m', '1024M', '-smp', '1', '-display', 'none', '-monitor', 'none',
                        '-no-reboot', '-nic', 'none', '-kernel', str(args.prepared/'bzImage'),
@@ -163,6 +165,7 @@ def run(args):
                     raise ValueError('complete synthetic support marker required')
             verify_transport([json.loads(l) for l in (output/'qmp.jsonl').read_text().splitlines()],partial,args.idle_scan_stop_reject)
             probe = json.loads((share/('managed-partial' if partial else 'managed-queue')/'run.json').read_text())
+            if probe.get('confirmed_off',False) is not confirmed and not partial:raise ValueError('exact queued evidence mode required')
             if probe.get('synthetic_support') is not True:
                 raise ValueError('collector must label simulated evidence explicitly')
             capture = read_capture(share/'ws73.pcap', [(1, n) for n in range(1, 128)])
@@ -199,6 +202,7 @@ if __name__ == '__main__':
     parser.add_argument('--prepared', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--timeout', type=float, default=180)
+    parser.add_argument('--confirmed-off',action='store_true',help='complete confirmed-Off model bootstrap then full initializer queue cancellation; no real qualification')
     parser.add_argument('--partial-case',choices=['release','close','dup'])
     parser.add_argument('--partial-domain',choices=['advertising','scanning'],default='advertising')
     parser.add_argument('--idle-scan-stop-reject',action='store_true',help='model negative branch: preserve raw idle STOP refusal; expected VM failure, never a real pass')

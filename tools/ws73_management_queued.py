@@ -52,11 +52,13 @@ def query(raw, generation, state):
 
 def verify_records(record):
     synthetic = record.get('synthetic_support', False)
+    confirmed=record.get('confirmed_off',False)
+    if type(confirmed) is not bool:raise ValueError('exact confirmed-Off scope required')
     if type(synthetic) is not bool:
         raise ValueError('exact synthetic evidence scope required')
-    expected_status = ('QUEUED_UNKNOWN_SETUP_RELEASE_SYNTHETIC_SUPPORT_PASS' if synthetic
-                       else 'QUEUED_UNKNOWN_SETUP_RELEASE_LIVE_PASS')
-    if (type(record.get('format_version')) is not int or record.get('format_version') != 2
+    prefix='QUEUED_CONFIRMED_OFF_INITIALIZE_RELEASE' if confirmed else 'QUEUED_UNKNOWN_SETUP_RELEASE'
+    expected_status=prefix+('_SYNTHETIC_SUPPORT_PASS' if synthetic else '_LIVE_PASS')
+    if (type(record.get('format_version')) is not int or record.get('format_version') != (3 if confirmed else 2)
             or record.get('status') != expected_status
             or type(record.get('probe_exit')) is not int or record.get('probe_exit') != 0 or record.get('daemon_running') is not False
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False):
@@ -67,11 +69,40 @@ def verify_records(record):
     identities = [setup(raw, index) for index, raw in enumerate(snapshots)]
     if identities[0].generation == identities[1].generation:
         raise ValueError('independent generations required')
+    expected_snapshots=list(snapshots)
+    bootstrap=record.get('bootstrap',[])
+    if confirmed:
+        if len(bootstrap)!=2:raise ValueError('two original complete bootstrap records required')
+        from ws73_management_partial import standby
+        last=0
+        for index,row in enumerate(bootstrap):
+            snapshot=identities[index];generation=snapshot.generation
+            if row.get('bootstrap') is not True or type(row['index']) is not int or row['index']!=index:
+                raise ValueError('exact bootstrap identities required')
+            if (row['advertising_input']!=bytes(standby(snapshot,1000,'advertising')).hex()
+                    or row['scanning_input']!=bytes(standby(snapshot,1001,'scanning')).hex()):
+                raise ValueError('actual complete typed initialization inputs required')
+            adv=decode(SleDiscoveryResult,row['advertising_result'])
+            if not -128<=adv.selected_power<=127:raise ValueError('actual bootstrap power required')
+            expected=SleDiscoveryResult(version=1,generation=generation,request_id=1000,profile=1,dev_index=index,operation=5,state=3,count=2,step=1,opcode=0xc05,radio_adv=1,power_valid=1,selected_power=adv.selected_power)
+            if bytes(adv)!=bytes(expected):raise ValueError('advertising bootstrap must complete successfully')
+            expected=SleDiscoveryResult(version=1,generation=generation,request_id=1001,profile=1,dev_index=index,operation=6,state=3,count=3,step=2,opcode=0x1002,radio_adv=1,radio_scan=1)
+            if row['scanning_result']!=bytes(expected).hex():raise ValueError('complete scan parameter/START/STOP bootstrap required')
+            ready=SleControllerSnapshot.from_buffer_copy(bytes(snapshot));ready.flags=1
+            expected_snapshots[index]=bytes(ready).hex()
+            if row['ready_snapshot']!=expected_snapshots[index]:raise ValueError('exact same-generation Ready metadata required')
+            expected=SleDiscoveryResult(version=1,generation=generation,profile=1,dev_index=index,radio_adv=1,radio_scan=1)
+            if row['radio']!=bytes(expected).hex():raise ValueError('both actually confirmed Off required')
+            if (type(row['start_wall_ns']) is not int or type(row['end_wall_ns']) is not int
+                    or not last<row['start_wall_ns']<row['end_wall_ns'] or row['end_wall_ns']-row['start_wall_ns']>2_000_000_000):
+                raise ValueError('bounded ordered bootstrap required')
+            last=row['end_wall_ns']
+    elif bootstrap:raise ValueError('untouched Setup cannot carry initialized bootstrap')
     cases = record['cases']
     expected = [(i, kind) for i in [0, 1] for kind in ['explicit-release', 'last-fd-close', 'dup-last-fd-close']]
     if [(v['index'], v['case']) for v in cases] != expected:
         raise ValueError('both roles and all three real file cases required')
-    previous = 0
+    previous = bootstrap[-1]['end_wall_ns'] if confirmed else 0
     for case_number, v in enumerate(cases):
         if not all(type(v[k]) is int for k in ['index', 'generation', 'peer_index', 'peer_generation', 'wrong_token_errno']):
             raise ValueError('exact integer identity and error fields required')
@@ -94,12 +125,13 @@ def verify_records(record):
                 result = decode(SleDiscoveryResult, v[key][domain])
                 expected = SleDiscoveryResult(version=1, generation=generation,
                     request_id=(case_number%3)*2+1+domain,
-                    profile=1, operation=(5, 4)[domain], count=(2, 1)[domain],
+                    profile=1, operation=(5, 6 if confirmed else 4)[domain], count=(2, 3 if confirmed else 1)[domain],
+                    radio_adv=int(confirmed),radio_scan=int(confirmed),
                     dev_index=index, state=state, error=error)
                 if bytes(result) != bytes(expected):
                     raise ValueError('full Queued to Cancelled UAPI with no selected opcode/step required')
         rejected = v['scan_initialize_rejections']
-        if len(rejected) != 2:
+        if len(rejected) != (0 if confirmed else 2):
             raise ValueError('Unknown and pending-advertising scan admission guards required')
         for n, row in enumerate(rejected):
             expected = SleDiscoverySubmit(version=1, generation=generation, profile=1,
@@ -111,13 +143,14 @@ def verify_records(record):
                     or type(row['submit_errno']) is not int or row['submit_errno'] != errno.EBUSY
                     or type(row['result_errno']) is not int or row['result_errno'] != errno.ENOENT):
                 raise ValueError('rejected scan initialization must remain unadmitted, without a result')
-        for a, b, raw in [('snapshot_before', 'snapshot_after', snapshots[index]), ('peer_before', 'peer_after', snapshots[peer])]:
+        for a, b, raw in [('snapshot_before', 'snapshot_after', expected_snapshots[index]), ('peer_before', 'peer_after', expected_snapshots[peer])]:
             if v[a] != v[b] or v[a] != raw:
                 raise ValueError('full Setup metadata and survivor must remain unchanged')
         if v['radio_before'] != v['radio_after']:
             raise ValueError('radio state changed during no-policy lease')
         radio = decode(SleDiscoveryResult, v['radio_after'])
-        if radio.version != 1 or radio.generation != generation or radio.radio_adv or radio.radio_scan or radio.error:
+        if confirmed and v['radio_after']!=bytes(SleDiscoveryResult(version=1,generation=generation,profile=1,dev_index=index,radio_adv=1,radio_scan=1)).hex():raise ValueError('complete confirmed-Off radio UAPI required')
+        if radio.version != 1 or radio.generation != generation or radio.radio_adv!=int(confirmed) or radio.radio_scan!=int(confirmed) or radio.error:
             raise ValueError('lease release must preserve Unknown and not invent Off')
         query(v['held'], generation, 1); query(v['free'], generation, 0)
         if type(v['writer_fd']) is not int or v['writer_fd'] < 0 or type(v['duplicate_fd']) is not int:
@@ -141,15 +174,31 @@ def corroborate(record, capture):
                if start <= v['wall_ns'] <= end]
     if traffic:
         raise ValueError('untouched release emitted controller command/reply traffic')
-    return {'scope': 'six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices' ,
+    bootstrap=[]
+    if record.get('confirmed_off',False):
+        for row in record['bootstrap']:
+            index=row['index']
+            if any(v['bus']==1 and v['device']==index+2 and row['end_wall_ns']<=v['wall_ns']<=end for kind in ['commands','complete','failures'] for v in capture[kind]):raise ValueError('no mutation after original confirmed-Off bootstrap permitted')
+            snapshot=decode(SleControllerSnapshot,record['initial_snapshots'][index]);commands=[v for v in capture['commands'] if v['bus']==1 and v['device']==index+2 and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns']]
+            if [v['opcode'] for v in commands]!=[0xc02,0xc05,0x1001,0x1002,0x1002]:raise ValueError('complete captured bootstrap wire order required')
+            adv=bytes.fromhex(commands[0]['params'])
+            if len(adv)!=49 or adv[0]!=0 or adv[12:18]!=bytes(snapshot.address) or [v['params'] for v in commands[1:]]!=['0000000000','0000010040062003','0100','0000']:raise ValueError('qualified original bootstrap parameters required')
+            for n,command in enumerate(commands):
+                stop=commands[n+1]['wall_ns'] if n+1<len(commands) else row['end_wall_ns']
+                replies=[v for v in capture['complete'] if (v['bus'],v['device'],v['opcode'])==(command['bus'],command['device'],command['opcode']) and command['completion']['wall_ns']<=v['wall_ns']<stop]
+                if len(replies)!=1 or replies[0]['status']!=0:raise ValueError('original successful bootstrap Complete required')
+                value=bytes([decode(SleDiscoveryResult,row['advertising_result']).selected_power&255]).hex() if command['opcode']==0xc02 else ''
+                if replies[0]['value']!=value:raise ValueError('bootstrap reply/power mismatch')
+                bootstrap.append(dict(command=command,reply=replies[0]))
+    return {'bootstrap':bootstrap,'confirmed_off':record.get('confirmed_off',False),'scope': 'six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices' ,
             'cases': 6, 'commands': 0, 'completions': 0, 'failures': 0,
             'start_wall_ns': start, 'end_wall_ns': end,
             'synthetic_support': record.get('synthetic_support', False),
             'managed_preselection_live_acceptance': False,
-            'managed_unknown_setup_preselection_live_acceptance': not record.get('synthetic_support', False),
+            'managed_unknown_setup_preselection_live_acceptance': not record.get('synthetic_support', False) and not record.get('confirmed_off',False),
             'managed_preselection_synthetic_support_acceptance': record.get('synthetic_support', False),
             'active_ready_peer_isolation_acceptance': False,
-            'normal_scheduler_concurrency_acceptance': False, 'setup_preserved': True, 'peer_snapshot_preserved': True,
+            'normal_scheduler_concurrency_acceptance': False, 'setup_preserved': not record.get('confirmed_off',False),'confirmed_off_preserved':record.get('confirmed_off',False), 'peer_snapshot_preserved': True,
             'partial_initialization_cleanup_acceptance': False, 'held_transport_fd_close_acceptance': False,
             'automatic_fault_recovery_acceptance': False}
 
@@ -163,7 +212,9 @@ def save_record(folder, record):
 
 def run(args):
     synthetic = bool(getattr(args, 'synthetic_support', False))
+    confirmed=bool(getattr(args,'confirmed_off',False))
     cmdline = Path('/proc/cmdline').read_text().split()
+    if confirmed!=('ws73.managed_queue_confirmed_off=1' in cmdline):raise ValueError('explicit matching confirmed-Off boot mode required')
     if synthetic != ('ws73.managed_queue_support=1' in cmdline):
         raise ValueError('explicit matching synthetic boot and collector required')
     if synthetic and (Path('/sys/class/dmi/id/sys_vendor').read_text().strip() != 'QEMU'
@@ -172,7 +223,7 @@ def run(args):
     if 'ws73.managed_queue=1' not in Path('/proc/cmdline').read_text().split() or subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode == 0:
         raise ValueError('explicit VM mode before daemon startup required')
     folder = args.output; folder.mkdir(parents=True, exist_ok=False)
-    record = {'format_version': 2, 'status': 'RUNNING', 'daemon_running': False,
+    record = {'format_version': 3 if confirmed else 2,'confirmed_off':confirmed,'bootstrap':[], 'status': 'RUNNING', 'daemon_running': False,
               'synthetic_support': synthetic,
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'initial_snapshots': [], 'cases': []}
@@ -200,14 +251,16 @@ def run(args):
             if index == 0:
                 write_marker(folder/'metadata-0.json', {'slot': 0, 'initial_snapshot': bytes(snapshot).hex()})
         command = [str(args.probe), *[str(a.generation) for a in adapters]]
+        if confirmed:command.append('--confirmed-off')
         with (folder/'probe.jsonl').open('w') as out, (folder/'probe-stderr.txt').open('w') as err:
             p = subprocess.run(command, stdout=out, stderr=err, timeout=15)
         record['probe_exit'] = p.returncode
-        record['cases'] = [json.loads(line) for line in (folder/'probe.jsonl').read_text().splitlines()]
+        lines=[json.loads(line) for line in (folder/'probe.jsonl').read_text().splitlines()]
+        record['bootstrap']=[v for v in lines if v.get('bootstrap') is True]
+        record['cases']=[v for v in lines if v.get('bootstrap') is not True]
         if p.returncode:
             raise ValueError('real release/last-file-close probe failed')
-        record['status'] = ('QUEUED_UNKNOWN_SETUP_RELEASE_SYNTHETIC_SUPPORT_PASS' if synthetic
-                            else 'QUEUED_UNKNOWN_SETUP_RELEASE_LIVE_PASS')
+        record['status']=('QUEUED_CONFIRMED_OFF_INITIALIZE_RELEASE' if confirmed else 'QUEUED_UNKNOWN_SETUP_RELEASE')+('_SYNTHETIC_SUPPORT_PASS' if synthetic else '_LIVE_PASS')
         verify_records(record); save()
         print('WS73_TARGET_MANAGED_QUEUE_SYNTHETIC_SUPPORT_PASS' if synthetic
               else 'WS73_TARGET_MANAGED_QUEUE_PASS', flush=True)
@@ -222,6 +275,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--probe', type=Path, default=Path('/bin/managed-queue-probe'))
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--confirmed-off',action='store_true',help='actual complete bootstraps before full scan initializer queue cancellation')
     parser.add_argument('--synthetic-support', action='store_true',
                         help='dedicated simulated USB VM; never live hardware acceptance')
     run(parser.parse_args())

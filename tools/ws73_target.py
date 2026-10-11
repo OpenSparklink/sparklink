@@ -380,6 +380,7 @@ def _run(args):
     if partial_gate and (support or not recovery or not setup_gate or diagnostic or active_gate):
         raise ValueError('Managed partial gate requires separate real recovery/Setup VM without other hold gates')
     queued_gate=bool(getattr(args,'managed_queue_verify',False))
+    if getattr(args,'managed_queue_confirmed_off',False) and not queued_gate:raise ValueError('confirmed-Off requires explicit Managed queued gate')
     if queued_gate and (support or not recovery or not setup_gate):
         raise ValueError('Managed queued gate requires real recovery VM and Setup attachment gate')
     if setup_gate and (support or not recovery):
@@ -472,6 +473,7 @@ def _run(args):
                      (' ws73.active_close=1' if active_close_gate else '')+
                      (' ws73.setup_release=1' if setup_gate else '')+
                      (' ws73.managed_queue=1' if queued_gate else '')+
+                     (' ws73.managed_queue_confirmed_off=1' if getattr(args,'managed_queue_confirmed_off',False) else '')+
                      (f' ws73.managed_partial=1 ws73.partial_case={partial_case} ws73.partial_domain={partial_domain}' if partial_gate else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
@@ -764,6 +766,7 @@ def main():
             cmd.add_argument('--ports',nargs=2,required=True)
             cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
             cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')
+            cmd.add_argument('--managed-queue-confirmed-off',action='store_true',help='complete initialization before full scanning initializer queue cancellation; requires --managed-queue-verify')
             cmd.add_argument('--managed-queue-verify',action='store_true',help='bounded one-vCPU FIFO real queued-policy cancellation; requires Setup and recovery gates; not ordinary concurrency acceptance')
             cmd.add_argument('--setup-release-verify',action='store_true',help='pre-daemon untouched Setup release/last-fd/dup gate; requires real fault-recovery scratch VM')
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')

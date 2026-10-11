@@ -394,3 +394,14 @@ interface rebind 和路由模式互斥。异步 OUT16／IN4 保持原 ctypes URB
 维护累计18，正常门禁仍7；283工具测试及 Ud8f CI 九作业通过仅提供源码支撑。
 当前数据失败也涉及独立寄存器通道，不能仅归因于路由 recipe；设备／固件／
 host／QEMU 自然根因及独立自动恢复继续 OPEN。
+
+完整扫描初始化排队门禁新增显式 `--confirmed-off`／
+`ws73.managed_queue_confirmed_off=1`。两只先在各自 Managed 租约内完成广播
+配置／STOP、扫描参数／START／STOP，记录完整结果及同 generation Ready/Off。
+随后在同一 CPU 的有界 FIFO 区间先排入扫描初始化、再广播配置，保持扫描
+准入的无 pending 广播前提；release／最后fd／dup 都要求完整 Queued→Cancelled，
+零已选 opcode/step，初次 dup close 仍 Held，最终 Free 且原 Off 不变。
+USB核对必须保留两只原初始化的每笔成功回复及参数，禁止初始化后至门禁结束
+发生额外目标命令。原 Unknown Setup／扫描 STOP 子门禁继续保留，格式2不能
+冒充格式3完整初始化。此为开发支撑；仍需真实设备、活动 Ready peer、普通
+调度并发、partial 后续步骤和 RF 验收，实际执行另以 manifest 判定。

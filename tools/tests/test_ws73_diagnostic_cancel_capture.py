@@ -13,13 +13,16 @@ from ws73_capture import corroborate_diagnostic, CaptureError
 from ws73_diagnostic_hold import corroborate_host_hold, PROPERTIES
 
 
-def capture_fixture(deadline=False):
+def capture_fixture(deadline=False,autonomous=False):
     run,capture,diag=inputs()
     factory=cancellation_fixture
     if deadline:
         from test_ws73_diagnostic_deadline import deadline_fixture
         factory=deadline_fixture
-    diag.update(format_version=6 if deadline else 5,deadline_requested=deadline,admission_copyout_requested=True,admission_eviction_requested=True,
+    if autonomous:
+        from test_ws73_diagnostic_autonomous import autonomous_fixture
+        factory=autonomous_fixture
+    diag.update(format_version=7 if autonomous else 6 if deadline else 5,deadline_requested=deadline or autonomous,autonomous_requested=autonomous,admission_copyout_requested=True,admission_eviction_requested=True,
                 legacy_poll_copy_requested=True,cancellation_requested=True,
                 records=factory(admission_fixture(diag['records'])))
     # Preserve original bootstrap/metadata; CLI windows move after new phases.

@@ -315,7 +315,7 @@ def corroborate_diagnostic(run, capture, diagnostic):
             or diagnostic.get('automatic_fault_recovery_acceptance') is not False):
         raise CaptureError('scoped successful diagnostic syscall run required')
     version = diagnostic.get('format_version', 1)
-    if (type(version) is not int or version not in (1, 2, 3, 4, 5, 6)
+    if (type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7)
             or (version >= 2 and diagnostic.get('admission_copyout_requested') is not True)
             or (version == 1 and diagnostic.get('admission_copyout_requested') not in (None, False))
             or (version >= 3 and diagnostic.get('admission_eviction_requested') is not True)
@@ -324,12 +324,14 @@ def corroborate_diagnostic(run, capture, diagnostic):
             or (version < 4 and diagnostic.get('legacy_poll_copy_requested') not in (None, False))
             or (version >= 5 and diagnostic.get('cancellation_requested') is not True)
             or (version < 5 and diagnostic.get('cancellation_requested') not in (None,False))
-            or (version == 6 and diagnostic.get('deadline_requested') is not True)
-            or (version < 6 and diagnostic.get('deadline_requested') not in (None,False))):
+            or (version >= 6 and diagnostic.get('deadline_requested') is not True)
+            or (version < 6 and diagnostic.get('deadline_requested') not in (None,False))
+            or (version == 7 and diagnostic.get('autonomous_requested') is not True)
+            or (version < 7 and diagnostic.get('autonomous_requested') not in (None,False))):
         raise CaptureError('explicit diagnostic admission evidence version required')
     try:
         verify_records(diagnostic['records'], admission=version >= 2, eviction=version >= 3,
-                       legacy_poll=version >= 4,cancellation=version >= 5,deadline=version == 6)
+                       legacy_poll=version >= 4,cancellation=version >= 5,deadline=version >= 6,autonomous=version == 7)
     except (ValueError, KeyError, TypeError) as error:
         raise CaptureError('invalid diagnostic syscall records') from error
     owner = run['initial'][0]
@@ -389,9 +391,12 @@ def corroborate_diagnostic(run, capture, diagnostic):
                         'cancellation':held},
                        {'caller':'C fresh after held cancel',**fresh,'cancellation':final},
                        {'caller':'C queued cancel','commands':0,'replies':0,'request_id':10}])
-        if version == 6:
+        if version >= 6:
             proofs.append({'caller':'C queued deadline','commands':0,'replies':0,'request_id':11,
                            'evidence':held['deadline'],'retained_result':final['deadline']})
+        if version == 7:
+            proofs.append({'caller':'C autonomous queued expiry','commands':0,'replies':0,'request_id':12,
+                           'evidence':held['autonomous'],'retained_result':final['autonomous']})
         previous=final['end_wall_ns']
     if version >= 3:
         eviction_rows = [r for r in diagnostic['records'] if 'eviction' in r]

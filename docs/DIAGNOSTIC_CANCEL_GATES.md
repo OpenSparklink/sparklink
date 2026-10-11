@@ -171,3 +171,24 @@ PID661/start1644，幸存g2保持，人工IN81目标g1→3，重新Ready约10.17
 heartbeat自主过期、active USB timeout、held cancel／abort／close／drain、完整
 owner／CAP／并发／removal／32-bit或自然故障恢复资格。下一步分别实现这些门禁
 及旧调用者迁移删除。北极星7／8，全部完整issues和S0–S6继续OPEN，VM-only。
+
+
+## 后台 queued expiry 新门禁（format7；实机待执行）
+
+新增独立 --diagnostic-autonomous-verify，必须同时启用真实fault-recovery、
+diagnostic、cancel和原deadline门禁。C探针只在额外scratch-root cmdline许可下
+选择autonomous，默认旧门禁不变。format7拒绝缺少记录、模式降级及伪造计数。
+
+在原ID11连续重试期限门禁后，新Features12/seq12请求100ms，初始Pending。
+随后800ms仅nanosleep，不做提交、结果、取消或统计调用；醒来后先读取完整
+16字节MGMT_STATS并验证一次resolve/timeout及pending2→1，再读取104字节
+ETIMEDOUT。MGMT_STATS的observation分类、RuntimeContext.lock和统计dispatch
+仅获取锁/复制计数，不处理回复、不调用expire_stale、不kick worker。
+因此不能用结果查询触发过期来假冒自主过期。完整40/104字节身份、单调时钟
+顺序、释放后结果/计数保持，以及全暂留阶段/释放间隙零Features wire仍强制。
+
+门禁最多证明在实际静默窗口内后台处理已到期的queued命令，不证明100ms精确
+到期或idle worker实时性上界。生产heartbeat500ms，实机记录再核对其日志。
+active USB timeout、held cancel/abort/close/drain及自然故障根因/恢复仍OPEN。
+本批205工具开发测试、59诊断测试和严格GCC/Clang通过不等于实机验收；需新镜像、
+独立raw/USB/QMP和真实WS7320+2。完整issues、北极星7/8及S0–S6保持，VM-only。

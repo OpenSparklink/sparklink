@@ -33,7 +33,9 @@ ORDER = ['metadata'] * 4 + ['inherited_fd_cap0', 'read_only_output', 'partial_ou
 QUERIES = [('mac', 0x0406, 6), ('features', 0x0403, 10), ('version', 0x0404, 5), ('buffers', 0x0402, 6)]
 
 
-def verify_records(records, final=True, admission=False, eviction=False, legacy_poll=False, cancellation=False, deadline=False):
+def verify_records(records, final=True, admission=False, eviction=False, legacy_poll=False, cancellation=False, deadline=False, autonomous=False):
+    if autonomous and not deadline:raise ValueError('autonomous evidence requires original deadline gate')
+    if not autonomous and any('autonomous' in r for r in records):raise ValueError('autonomous evidence cannot downgrade')
     if deadline and not cancellation:
         raise ValueError('deadline evidence requires real cancellation/hold gate')
     if not deadline and any('deadline' in r for r in records):
@@ -84,7 +86,7 @@ def verify_records(records, final=True, admission=False, eviction=False, legacy_
     if legacy_poll: verify_legacy_poll(records, cancellation=cancellation)
     if cancellation:
         from ws73_diagnostic_cancel import verify_cancellations
-        verify_cancellations(records, deadline=deadline)
+        verify_cancellations(records, deadline=deadline,autonomous=autonomous)
     if eviction: verify_evictions(records)
     child = [r for r in records if r.get('identity') == 'inherited_fd_child']
     if child != [{'identity': 'inherited_fd_child', 'uid': 1000, 'euid': 1000, 'cap_eff': 0, 'cap_prm': 0}] or any(type(r[k]) is not int for r in child for k in ('uid', 'euid', 'cap_eff', 'cap_prm')):
@@ -280,9 +282,11 @@ def run(args):
     output = args.output.resolve(); output.mkdir(mode=0o700)
     cancellation = 'ws73.diagnostic_cancel=1' in Path('/proc/cmdline').read_text().split()
     deadline_test = 'ws73.diagnostic_deadline=1' in Path('/proc/cmdline').read_text().split()
+    autonomous_test = 'ws73.diagnostic_autonomous=1' in Path('/proc/cmdline').read_text().split()
+    if autonomous_test and not deadline_test:raise ValueError('autonomous requires original deadline mode')
     if deadline_test and not cancellation:raise ValueError('deadline requires cancellation hold mode')
-    record = {'format_version': 6 if deadline_test else 5 if cancellation else 4,
-              'deadline_requested':deadline_test,
+    record = {'format_version': 7 if autonomous_test else 6 if deadline_test else 5 if cancellation else 4,
+              'deadline_requested':deadline_test,'autonomous_requested':autonomous_test,
               'cancellation_requested':cancellation, 'host_hold_acknowledgements':[],
               'admission_copyout_requested': True, 'admission_eviction_requested': True,
               'legacy_poll_copy_requested': True, 'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
@@ -294,7 +298,7 @@ def run(args):
     try:
         save()
         with (output / 'probe-stderr.txt').open('xb') as error, (output / 'probe.jsonl').open('xb') as transcript:
-            child = subprocess.Popen([str(args.probe), str(args.index)]+(['deadline'] if deadline_test else ['cancel'] if cancellation else []), stdin=subprocess.PIPE,
+            child = subprocess.Popen([str(args.probe), str(args.index)]+(['autonomous'] if autonomous_test else ['deadline'] if deadline_test else ['cancel'] if cancellation else []), stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE, stderr=error)
             selector = selectors.DefaultSelector(); selector.register(child.stdout, selectors.EVENT_READ)
             pending = b''; deadline = time.monotonic() + 120; acknowledged = False; hold_pending=None
@@ -326,7 +330,7 @@ def run(args):
                             from ws73_diagnostic_hold import write_marker
                             write_marker(output/f'hold-{hold_pending}.json',item)
                         if item.get('phase') == 'BEFORE_DAEMON_PASS':
-                            verify_records(record['records'], final=False, admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_test)
+                            verify_records(record['records'], final=False, admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_test,autonomous=autonomous_test)
                             for name, opcode, _ in QUERIES:
                                 generation = record['records'][0]['generation']
                                 command = [str(args.slkconfig), '--adapter', str(args.index), '--generation', str(generation), 'query', name]
@@ -345,7 +349,7 @@ def run(args):
             selector.close()
             record['probe_exit'] = child.wait(timeout=5)
             if record['probe_exit'] or pending or not acknowledged: raise ValueError('probe exit or retirement handshake')
-        verify_records(record['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_test)
+        verify_records(record['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_test,autonomous=autonomous_test)
         record['status'] = 'DIAGNOSTIC_RESULT_LIVE_PASS'; save()
     except BaseException as error:
         record.update(status='FAIL', error=str(error)); save(); raise

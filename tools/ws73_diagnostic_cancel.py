@@ -26,7 +26,7 @@ def result(generation, seq, opcode, state, error=0, data=b''):
     return bytes(value).hex()
 
 
-def verify_cancellations(records, deadline=False):
+def verify_cancellations(records, deadline=False, autonomous=False):
     legacy = [r for r in records if 'legacy_poll' in r]
     metadata = next(r for r in records if r.get('case') == 'metadata')
     if len(legacy) != 3:
@@ -92,10 +92,15 @@ def verify_cancellations(records, deadline=False):
         last_seq=verify_deadline(held,final,generation,last_seq)
     elif any('deadline' in r for r in records):
         raise ValueError('deadline records require explicit new evidence mode')
+    if autonomous:
+        from ws73_diagnostic_autonomous import verify_autonomous
+        last_seq=verify_autonomous(held,final,generation,last_seq)
+    elif any('autonomous' in r for r in records):
+        raise ValueError('autonomous records require explicit evidence mode')
     before, pending = counts(held,'before'), counts(held,'after')
     after = counts(final,'after')
     if (before != counts(legacy[-1],'after') or before[2] or
-            pending != [before[0]+3+int(deadline),before[1]+2+int(deadline),1,before[3]+int(deadline)] or
+            pending != [before[0]+3+int(deadline)+int(autonomous),before[1]+2+int(deadline)+int(autonomous),1,before[3]+int(deadline)+int(autonomous)] or
             counts(final,'before') != pending or
             after != [pending[0],pending[1]+1,0,pending[3]]):
         raise ValueError('cancellation/replay/reply accounting mismatch')

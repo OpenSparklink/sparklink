@@ -69,6 +69,8 @@ def eviction_fixture(records=None):
     timeouts = cancellations[-1]['timeouts_after'] if cancellations else 0
     if cancellations and 'deadline' in cancellations[0]:
         previous['seq'] = SleDiagnosticSubmit.from_buffer_copy(bytes.fromhex(cancellations[0]['deadline']['output'])).seq
+    if cancellations and 'autonomous' in cancellations[0]:
+        previous['seq'] = SleDiagnosticSubmit.from_buffer_copy(bytes.fromhex(cancellations[0]['autonomous']['output'])).seq
     for i in range(33):
         value = SleDiagnosticSubmit(version=1, generation=generation, request_id=i+1,
                                     timeout_ms=5000, opcode=0x0406, action=1)

@@ -13,6 +13,16 @@ def commands():
 
 
 class SyntheticTransportTests(unittest.TestCase):
+    def test_partial_model_controls_cannot_target_host_or_survivor(self):
+        for prop,value,path in [('test-runtime-in-hold-once',True,'/machine/peripheral/ws73_0'),
+                                ('model-terminal-release',True,'/machine/peripheral/ws73_1'),
+                                ('model-terminal-release',False,'/machine/peripheral/ws73_0')]:
+            rows=commands()
+            for i in [0,1]:rows[i+1]['message']['arguments']=properties(i,True)
+            rows+=[dict(direction='tx',message=dict(execute='qom-set',id=4,arguments=dict(path=path,property=prop,value=value))),
+                   dict(direction='rx',message={'id':4,'return':{}})]
+            with self.subTest(prop=prop,path=path,value=value),self.assertRaises(ValueError):verify_transport(rows,True)
+
     def test_successful_exact_simulated_objects(self):
         verify_transport(commands())
 

@@ -16,13 +16,13 @@ def fixture(case='release',domain='advertising'):
     markers=[dict(hold_phase=phase,wall_ns=t) for phase,t in [('arm_ready',100),('wait_held',200),('release_ready',400)]]
     ready=SleControllerSnapshot.from_buffer_copy(bytes(snapshots[0]));ready.flags=1
     q=lambda state,mode:bytes(SleManagementQuery(version=1,generation=1,state=state,mode=mode)).hex()
-    record=dict(format_version=2,status='MANAGED_PARTIAL_HELD_REPLY_PASS',case=case,domain=domain,preparation=[],
+    record=dict(format_version=3,status='MANAGED_PARTIAL_HELD_REPLY_PASS',synthetic_support=False,case=case,domain=domain,preparation=[],
         physical_acceptance=False,automatic_fault_recovery_acceptance=False,daemon_running_during_hold=False,
         initial_snapshots=[bytes(s).hex() for s in snapshots],input=bytes(standby(snapshots[0],1,domain)).hex(),
         before_management=q(1,1),revoking=q(2,0),final_management=q(0,0),final_snapshot=bytes(ready).hex(),
         peer_after=bytes(snapshots[1]).hex(),original_fd=5,duplicate_fd=6 if case=='dup' else -1,lease=1,
         submit_before_wall_ns=150,submit_after_wall_ns=160,release_before_wall_ns=300,release_after_wall_ns=310,
-        markers=markers,peer_queries=[],host_hold_acknowledgements=[])
+        markers=markers,peer_queries=[],hold_acknowledgements=[])
     peer=bytes(SleManagementQuery(version=1,generation=2,state=1,mode=2)).hex()
     record.update(peer_management_before=peer,peer_management_after=peer)
     if domain=='scanning':
@@ -40,7 +40,7 @@ def fixture(case='release',domain='advertising'):
             radio_adv=1 if key=='final_result' or domain=='scanning' else 0,
             radio_scan=1 if key=='final_result' else 0)).hex()
     for i,m in enumerate(markers):
-        record['host_hold_acknowledgements'].append(dict(stage=['armed','held','released'][i],request=m,
+        record['hold_acknowledgements'].append(dict(stage=['armed','held','released'][i],request=m,
             host_wall_ns=m['wall_ns']+1,state=dict(zip(PROPERTIES,[i==0,i==1,int(i>0),int(i==2),0,0,False,0]))))
     for i in range(3):
         command=SleDiagnosticSubmit(version=1,generation=2,request_id=i+1,seq=i+1,timeout_ms=5000,opcode=0x406,action=1)
@@ -156,7 +156,7 @@ class PartialTests(unittest.TestCase):
     def test_wrong_ack_and_late_release_rejected(self):
         for change in ['ack','late','inverted','boolean']:
             record=fixture()
-            if change=='ack':record['host_hold_acknowledgements'][1]['stage']='released'
+            if change=='ack':record['hold_acknowledgements'][1]['stage']='released'
             if change=='late':record['release_after_wall_ns']=400_000_151
             if change=='inverted':record['release_after_wall_ns']=250
             if change=='boolean':record['submit_before_wall_ns']=True

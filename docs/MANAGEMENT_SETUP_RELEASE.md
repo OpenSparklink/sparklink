@@ -230,6 +230,15 @@ Setup 开始。这是修正测试方案，完整真实六案例及 Ready 同伴�
 或超时均记失败，不通过忽略错误、合成成功或新注册替代旧cleanup。单案例通过也
 不代表整个partial初始化／并发／removal／自动恢复矩阵完成。
 
+专用支撑入口 `ws73_managed_queue_support.py --partial-case release|close|dup
+--partial-domain advertising|scanning` 在无 host USB 的签名模块 scratch VM 中
+运行同一 collector；`--idle-scan-stop-reject` 切换明确的模拟拒绝分支，失败原件
+保留，不归零 status。正常模拟分支和拒绝分支都须执行，不能以模拟通过代替
+真实固件资格。格式3显式区分 synthetic_support，记录完整 hold_acknowledgements；
+模型只保留原始终结队列帧，不是实际成功 libusb IN81 hold，独立 method/日志/属性
+及 USB 哈希核对禁止混用。相同 kernel fd 路径的开发支撑尚待实际执行；静态
+Setup peer 的三次查询也不代表活动 Ready peer 或 RF，整项实机条件继续开放。
+
 本次已有四次实机启动失败，尚未进入新Managed门禁：单vCPU、uhubctl短断电后重试、
 原双vCPU对照和另一对设备都在Setup元数据前失败（warm恢复/再次启动均-110）。
 延长断电间隔的后续尝试也失败。所有日志、捕获和原始manifest保留在私有.dev。

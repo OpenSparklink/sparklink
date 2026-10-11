@@ -63,8 +63,10 @@ def verify_preparation(record, snapshot):
 
 
 def verify_records(record):
-    if (type(record.get('format_version')) is not int or record['format_version']!=2
-            or record.get('status')!='MANAGED_PARTIAL_HELD_REPLY_PASS'
+    synthetic=record.get('synthetic_support')
+    status='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS' if synthetic else 'MANAGED_PARTIAL_HELD_REPLY_PASS'
+    if (type(synthetic) is not bool or type(record.get('format_version')) is not int or record['format_version']!=3
+            or record.get('status')!=status
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False
             or record.get('daemon_running_during_hold') is not False
             or record.get('case') not in ('release','close','dup') or record.get('domain') not in ('advertising','scanning')):
@@ -104,7 +106,7 @@ def verify_records(record):
             raise ValueError('actual distinct duplicate last-close required')
         if record['after_first_management']!=record['before_management']:raise ValueError('first dup close revoked owner')
     elif record['duplicate_fd']!=-1:raise ValueError('unexpected alias')
-    markers=record['markers'];acks=record['host_hold_acknowledgements']
+    markers=record['markers'];acks=record['hold_acknowledgements']
     if len(markers)!=3 or [m['hold_phase'] for m in markers]!=['arm_ready','wait_held','release_ready']:
         raise ValueError('ordered arm/held/release markers required')
     clocks=[record[k] for k in ['submit_before_wall_ns','submit_after_wall_ns','release_before_wall_ns','release_after_wall_ns']]
@@ -185,8 +187,12 @@ def corroborate(record, host, capture, stderr, expected):
         matches=[v for v in capture['complete'] if v['bus']==1 and v['device']==2 and v['opcode']==command['opcode'] and command['wall_ns']<=v['wall_ns']<=end]
         if len(matches)!=1 or matches[0]['status']:raise ValueError('every cleanup Complete must be actual and successful')
         replies.append(matches[0])
-    proof=corroborate_host_hold(host,{'records':record['markers'],'host_hold_acknowledgements':record['host_hold_acknowledgements']},
-        [{'caller':'C held active cancel','reply':replies[0]}],stderr,expected)
+    if record['synthetic_support']:
+        from ws73_model_hold import corroborate_model_hold
+        proof=corroborate_model_hold(host,record,replies[0],stderr)
+    else:
+        proof=corroborate_host_hold(host,{'records':record['markers'],'host_hold_acknowledgements':record['hold_acknowledgements']},
+            [{'caller':'C held active cancel','reply':replies[0]}],stderr,expected)
     if replies[0]['wall_ns']<record['release_after_wall_ns'] or rows[1]['wall_ns']<replies[0]['wall_ns']:
         raise ValueError('old reply must precede cleanup without escaping cancelled recipe')
     peer=[]
@@ -199,19 +205,28 @@ def corroborate(record, host, capture, stderr, expected):
     return dict(scope='one partial first-step and actual held late reply',case=record['case'],domain=record['domain'],
         commands=rows,replies=replies,host_hold=proof,peer_queries=peer,preparation=preparation,
         retained_advertising_off=preparation[-1] if preparation else None,
-        managed_partial_case_live_acceptance=True,full_cleanup_acceptance=False,
+        synthetic_support=record['synthetic_support'],
+        managed_partial_case_live_acceptance=not record['synthetic_support'],
+        managed_partial_case_synthetic_support_acceptance=record['synthetic_support'],
+        full_cleanup_acceptance=False,active_ready_peer_isolation_acceptance=False,
         automatic_fault_recovery_acceptance=False,natural_fault_root_cause_closed=False)
 
 
 def run(args):
+    synthetic=getattr(args,'synthetic_support',False)
+    cmdline=Path('/proc/cmdline').read_text().split()
+    if type(synthetic) is not bool or synthetic!=('ws73.managed_partial_support=1' in cmdline):
+        raise ValueError('matching explicit model boot and collector required')
+    if synthetic and (Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU' or not Path('/scratch-root-uuid').is_file()):
+        raise ValueError('model support requires dedicated QEMU scratch VM')
     if 'ws73.managed_partial=1' not in Path('/proc/cmdline').read_text().split() or os.geteuid()!=0:
         raise ValueError('explicit root scratch VM gate required')
     if subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode==0:
         raise ValueError('partial gate requires untouched Setup before daemon')
     folder=args.output; folder.mkdir(parents=True,exist_ok=False)
-    record=dict(format_version=2,status='STARTING',case=args.case,domain=args.domain,preparation=[],
+    record=dict(format_version=3,status='STARTING',case=args.case,domain=args.domain,preparation=[],synthetic_support=synthetic,
         physical_acceptance=False,automatic_fault_recovery_acceptance=False,
-        daemon_running_during_hold=False,host_hold_acknowledgements=[],markers=[],peer_queries=[])
+        daemon_running_during_hold=False,hold_acknowledgements=[],markers=[],peer_queries=[])
     def save(): save_record(folder,record)
     def stage(phase,ack):
         value=dict(hold_phase=phase,wall_ns=time.time_ns());record['markers'].append(value);save()
@@ -222,13 +237,24 @@ def run(args):
             time.sleep(.002)
         response=json.loads((folder/f'hold-{ack}-ack.json').read_text())
         if response['stage']!=ack or response['request']!=value:raise ValueError('wrong acknowledgement')
-        record['host_hold_acknowledgements'].append(response);save()
+        record['hold_acknowledgements'].append(response);save()
     handles=[];alias=None;observers=[];peer_probe=None
     try:
-        observers=[NativeAdapter(i) for i in [0,1]];handles+=observers
-        snapshots=[a.snapshot() for a in observers]
-        for i,s in enumerate(snapshots):setup(bytes(s).hex(),i)
-        record['initial_snapshots']=[bytes(s).hex() for s in snapshots];save()
+        snapshots=[];record['initial_snapshots']=[]
+        for i in [0,1]:
+            deadline=time.monotonic()+90
+            while True:
+                adapter=None
+                try:
+                    adapter=NativeAdapter(i);snapshot=adapter.snapshot();setup(bytes(snapshot).hex(),i);break
+                except OSError as error:
+                    if not synthetic or error.errno not in (errno.ENODEV,errno.EAGAIN):raise
+                    if adapter is not None:adapter.close()
+                if time.monotonic()>deadline:raise TimeoutError('independent model Setup availability')
+                time.sleep(.01)
+            observers.append(adapter);handles.append(adapter);snapshots.append(snapshot)
+            record['initial_snapshots'].append(bytes(snapshot).hex());save()
+            if synthetic and i==0:write_marker(folder/'metadata-0.json',dict(slot=0,initial_snapshot=bytes(snapshot).hex()))
         target=NativeAdapter(0,snapshots[0].generation);peer=NativeAdapter(1,snapshots[1].generation);handles += [target,peer]
         peer_lease=peer.acquire_management(2)
         record['peer_management_before']=bytes(observers[1].management_status()).hex()
@@ -313,8 +339,9 @@ def run(args):
         if q.state!=0 or q.error or q.status or q.opcode or q.flags:raise ValueError('actual cleanup failed; preserve raw controller outcome')
         if record['peer_after']!=record['initial_snapshots'][1] or record['peer_management_before']!=record['peer_management_after']:
             raise ValueError('peer changed during target cleanup')
-        record['status']='MANAGED_PARTIAL_HELD_REPLY_PASS';verify_records(record);save()
-        print('WS73_TARGET_MANAGED_PARTIAL_PASS',flush=True)
+        record['status']='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS' if synthetic else 'MANAGED_PARTIAL_HELD_REPLY_PASS'
+        verify_records(record);save()
+        print('WS73_TARGET_MANAGED_PARTIAL_SYNTHETIC_SUPPORT_PASS' if synthetic else 'WS73_TARGET_MANAGED_PARTIAL_PASS',flush=True)
     except BaseException as e:
         record.update(status='FAIL',error=str(e),error_type=type(e).__name__,errno=getattr(e,'errno',None));save()
         # Preserve the target error even if its registration disappeared. A
@@ -340,4 +367,5 @@ if __name__=='__main__':
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--case',choices=['release','close','dup'],required=True)
     p.add_argument('--domain',choices=['advertising','scanning'],required=True)
+    p.add_argument('--synthetic-support',action='store_true',help='dedicated simulated USB VM only; never physical qualification')
     run(p.parse_args())

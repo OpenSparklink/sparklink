@@ -1,3 +1,12 @@
+当前S4请求/operation依赖实现（2026-10-12）：Linux c8f2485dc3aa 新增
+selftests/connection中的独立27/3字节codec和gen/cookie/peer/handle关联Session。
+8个Rust契约及完整sanitizer通过。Queued/OnWire/Status接受/AwaitingOutcome/
+terminal分开，作者取消保留ECANCELED与真实迟到handle，物理fault独立且
+阻止复用；标准0x1402存在但111固件未实测，不假装取消物理流程。本次尚未
+迁入Host/driver生产或Native UAPI/D-Bus/slctl，没有互通验收；这是S4依赖工作，
+不替代真正主动连接功能。见[NATIVE_CONNECTION_STAGING](NATIVE_CONNECTION_STAGING.md)
+的5项生产接入依赖。原D227内核无连接RF22继续有效，完整原28项/S0–S6仍开放。
+
 当前S4基础修复及原路径实机回归（2026-10-12）：Linux d227b8a37d96完成
 物理连接义务归一化/Host保留与copyout后重检源码修复，35+10源码测试，
 120165 DLI sanitizer checks；新完整内核/八export产物及签名空USB VM通过。

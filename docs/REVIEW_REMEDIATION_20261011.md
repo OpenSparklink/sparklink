@@ -946,3 +946,24 @@ Kbea9fc6527f8 新修复保留每 Runtime 实际选择域的历史，撤销仅执
 → 活动 Ready 同伴前/中/后真实工作 → 同 daemon RF20+2及拔插 → 四设备两组。
 正常启动 VM 累计12、维护20，不归零历史失败；自动恢复、自然 RCA、完整 Managed
 与原各 issue 整项仍 OPEN。VM-only，无主机实验安装、无生产模拟成功或固件字节发布。
+
+
+## 2026-10-11 真实 partial 新镜像进展与扫描参数清理细化
+
+[不可覆盖的新实机证据](evidence/ws73-managed-selected-domain-real-20261011.json)：
+编译 Kbea9fc6527f8、服务 Uf04e6bba2233、冻结采集器 U0c609d0 的广播 release/last-fd/dup
+三个案例完整 PASS，各有实际保留的原 C02 frame SHA、Cancelled/-ECANCELED、真实 C05
+Off、scan Unknown/Setup、Revoking→Free、三次同行真实查询和同 daemon 普通用户 RF20+2。
+首次新镜像的抓包窗口误计同行查询导致原 VM FAIL，单独独立核对成功、不改写原状态；
+U0c修复窗口后重跑三案例，扫描 release 则保持真实 STOP1002 0x0b/-EIO、Faulted/Unknown
+失败，最后两案例未执行。正常启动 VM 累计17、维护20，整项/活动 Ready 同伴仍未通过。
+
+参考 Host/WS73 接口明确区分 SetScanParam1001 与 EnableScan1002。新 K4ece91aa5c7c
+将同一 Runtime 单调选择历史细分为广告、扫描参数、扫描控制：新 Runtime 仅选择过参数
+时，取消等待原回复并清掉未选择的 START，扫描保持 Unknown；任何扫描控制历史或已知
+扫描状态仍需真实/保留 Off 屏障。不是把0x0b解释为Off，也不将参数配置当扫描已关闭。
+新 U5d29cb7 显式版本6扫描参数门禁检查无额外START/STOP、保留原广告Off和scan Unknown；
+历史格式3/4/5、原失败和模型仍保留。25实际Host源码、19命令计划、299工具测试通过，
+新合格Rust镜像/签名模块空USB VM加载卸载通过；编译器零警告、保留一条make jobserver警告。
+新六案例正在独立冻结镜像上执行，尚不能计作新修复实机通过。后续真实初始化步骤、活动
+Ready同伴、普通调度并发、四设备两组、自然自动恢复/RCA仍按原整项条件OPEN。VM-only。

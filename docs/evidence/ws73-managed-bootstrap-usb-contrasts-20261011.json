@@ -1,0 +1,1987 @@
+{
+  "status": "VM_CONTROL_AND_BOUNDED_ENUMERATION_CONTRASTS_MANAGED_NOT_REACHED_RCA_OPEN",
+  "created_wall_ns": 1791704448137477634,
+  "published_kernel_head": "a3703a65ea69d98045ac53381cec101b599218fa",
+  "published_userspace_head": "919392dc41f2b940b236941050f0e9d6d70d67d1",
+  "supersedes_prior_evidence": false,
+  "prior_evidence": {
+    "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/docs/evidence/ws73-managed-gate-startup-failures-20261011.json",
+    "sha256": "b8d0e975deb512751a8db377473f8f56430aa82a3749cdb95d207823eb290388",
+    "bytes": 69296
+  },
+  "vm_only": true,
+  "managed_preselection_cases_executed": 0,
+  "managed_partial_cases_executed": 0,
+  "managed_preselection_live_acceptance": false,
+  "managed_partial_initialization_live_acceptance": false,
+  "active_ready_peer_isolation_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "full_goal_complete": false,
+  "source_tools_tests": 259,
+  "qemu_dependency_suite": {
+    "status": "PASS_PINNED_QEMU_DEPENDENCY_BOUNDARIES",
+    "manifest": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-chain-accessible/manifest.json",
+      "sha256": "013206409d0457041463f054d5bf270e46b2d51bbed37065e9401046da077b88",
+      "bytes": 4700
+    },
+    "supported_patch_prefixes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "actual_budget_functions": [
+      "usb_host_enum_reset_mode_valid",
+      "usb_host_handle_reset",
+      "usb_host_get_test_enum_reset_used",
+      "usb_host_post_load"
+    ],
+    "hardware_acceptance": false
+  },
+  "latest_source_ci_observed": {
+    "run_id": 38121731632,
+    "status": "in_progress",
+    "conclusion": "",
+    "hardware_acceptance": false
+  },
+  "conclusions": [
+    "GET_INTERFACE EPIPE was retained; no explicit setter was attempted in that getter-based run. Temporal degradation does not identify the getter as the natural root cause.",
+    "The descriptor-qualified interface0/alt0 setter on port3 returned zero, but both subsequent real configuration reads returned EPROTO. No HCC route or module was attempted; nominal setter success was not recovery.",
+    "The guest-resets-all enumeration contrast made five actual resets and a host address change. It was rejected as a production strategy; the replacement laboratory option defaults off and consumes before at most one reset per object.",
+    "The port4 once-budget run recorded one reset, readonly budget=true, two real guest ROM endpoints and bcdDevice1.00. The runtime-only maintenance probe correctly failed. Its launcher lost qemu_exit on a shutdown BrokenPipe; guest sealed failure/capture and poweroff evidence were preserved, not rewritten to success.",
+    "The port1 once-budget run recorded one reset, remained five-endpoint runtime and timed out on the reference36-byte queue10 EP01 OUT. Port4 ROM appearance is not a universal recovery or a proven causal chain.",
+    "A subsequent normal one-vCPU VM, with all reset/detach opt-outs false, recognized port4 ROM but failed at its first READM OUT with phase1=LOADING, error=-110, uploads1, metadata unavailable. No firmware upload, Setup or Managed case completed; the peer was not attached before failure.",
+    "Private one-shot physical SET_CONFIGURATION1 forwarding on port1 really returned libusb rc0, but reference EP01 OUT still timed out. The candidate was not integrated into production; mutable build source was restored, while the exact private patch, binary/source and failure artifacts were preserved.",
+    "Live re-enumeration persistence of the once budget and active Ready peer isolation remain unqualified. Counted dependencies prove source behavior, not physical device or scheduler acceptance.",
+    "Historical real dual-device RF evidence and production Linux/Rust path remain unchanged. Requested Managed queue release/last-fd/dup and partial/in-flight matrix remains next priority after genuine independent Setup/Ready; no issue may close from these contrasts."
+  ],
+  "runs": [
+    {
+      "name": "managed-vm-interface-rebind-run",
+      "status": "FAIL",
+      "qemu_exit_recorded": 0,
+      "launcher_error": "maintenance probe failed; preserve all evidence",
+      "frozen_runner_userspace_head": "9d3eee6ecd886c264e76fb8ca4f6e88c36aecaef",
+      "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+      "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+      "qemu": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/diagnostic-hold-qemu/qemu-system-x86_64",
+        "sha256": "b176c57b914e1dded37fbb804e489225fff81dbf1df97565b1706000b4211f8a"
+      },
+      "guest_probe": {
+        "status": "FAIL",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "managed_acceptance": false,
+        "node": "/dev/bus/usb/001/002",
+        "endpoints": [
+          1,
+          2,
+          129,
+          130,
+          131
+        ],
+        "started_wall_ns": 1791701828884688395,
+        "usb_state_before_interface": [
+          {
+            "name": "configuration",
+            "kind": 128,
+            "request": 8,
+            "index": 0,
+            "length": 1,
+            "before_wall_ns": 1791701828888433291,
+            "returned": 1,
+            "data": "01",
+            "after_wall_ns": 1791701828889103714
+          },
+          {
+            "name": "interface",
+            "kind": 129,
+            "request": 10,
+            "index": 0,
+            "length": 1,
+            "before_wall_ns": 1791701828889114053,
+            "error": "[Errno 32] Broken pipe",
+            "errno": 32,
+            "after_wall_ns": 1791701828889515670
+          },
+          {
+            "name": "endpoint-01",
+            "kind": 130,
+            "request": 0,
+            "index": 1,
+            "length": 2,
+            "before_wall_ns": 1791701828889550396,
+            "error": "[Errno 110] Connection timed out",
+            "errno": 110,
+            "after_wall_ns": 1791701830927954497
+          },
+          {
+            "name": "endpoint-02",
+            "kind": 130,
+            "request": 0,
+            "index": 2,
+            "length": 2,
+            "before_wall_ns": 1791701830928015472,
+            "error": "[Errno 110] Connection timed out",
+            "errno": 110,
+            "after_wall_ns": 1791701832975955341
+          },
+          {
+            "name": "endpoint-81",
+            "kind": 130,
+            "request": 0,
+            "index": 129,
+            "length": 2,
+            "before_wall_ns": 1791701832976014293,
+            "error": "[Errno 110] Connection timed out",
+            "errno": 110,
+            "after_wall_ns": 1791701835023877347
+          },
+          {
+            "name": "endpoint-82",
+            "kind": 130,
+            "request": 0,
+            "index": 130,
+            "length": 2,
+            "before_wall_ns": 1791701835023917212,
+            "error": "[Errno 71] Protocol error",
+            "errno": 71,
+            "after_wall_ns": 1791701835024602313
+          },
+          {
+            "name": "endpoint-83",
+            "kind": 130,
+            "request": 0,
+            "index": 131,
+            "length": 2,
+            "before_wall_ns": 1791701835024610549,
+            "error": "[Errno 71] Protocol error",
+            "errno": 71,
+            "after_wall_ns": 1791701835025215238
+          }
+        ],
+        "error": "actual configuration1/interface0-alt0 state required",
+        "error_type": "ValueError",
+        "errno": null
+      },
+      "inventory_before": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 113,
+          "node": "/dev/bus/usb/001/113",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "inventory_after": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 113,
+          "node": "/dev/bus/usb/001/113",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "actual_reset_trace_count": 0,
+      "actual_set_interface_trace_count": 0,
+      "enumeration_reset_used_qmp_observed": null,
+      "managed_cases_executed": 0,
+      "active_ready_peer_isolation_acceptance": false,
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/manifest.json",
+          "sha256": "41df75026e7e86550fd1d9980b9153460026d02e94ef83ecb75a01f8f0592bb7",
+          "bytes": 7517
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/console.log",
+          "sha256": "e45b8a64e2e92a11bc0f5ea32cca691ca94e9a3b7c3e6deb710b03ded96f1259",
+          "bytes": 13703
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/qmp.jsonl",
+          "sha256": "35090110e55363afe2379e3af7ae0293bca4729e0f4224d2b7977e45be5281b0",
+          "bytes": 651
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/usb-lifecycle.log",
+          "sha256": "85160a09ade9cb0898c97f5193a90b541a9d02ed86c9ed8cab1127d865ad77db",
+          "bytes": 19222
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/qemu-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-interface-rebind-prepared/manifest.json",
+          "sha256": "1e0ec06577c9d3874060b8fd548d88a50eec8202c65827e754238f3829b47d25",
+          "bytes": 231791
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/guest-output/maintenance/capture.log",
+          "sha256": "46d7fd244a6f10055d2b7b13eb3e0e8ab81c0f43bbe6692711f2c27006ab44de",
+          "bytes": 198
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/guest-output/maintenance/kernel.log",
+          "sha256": "40bf166645e14824deac81a931c4b7a261831e9fe8a6484b4f0c8009b2190ea6",
+          "bytes": 40360
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/guest-output/maintenance/probe.log",
+          "sha256": "2e24a2ba0ec0f197b28fdf23503768d444c935adcdee6272a1a7877d6a312a89",
+          "bytes": 1470
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/guest-output/maintenance/reset/run.json",
+          "sha256": "879a310561c6efa58edfd5ee6430d772c65d67a773f62f415f57f7501d4d81fd",
+          "bytes": 2357
+        }
+      ],
+      "captures": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-rebind-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "b0bc5bc5792b04a8e86a416f20af3307f1f94a12c8a7d3fdbb5be9fc1c40027f",
+          "bytes": 5813
+        }
+      ],
+      "failure_diagnostics": {}
+    },
+    {
+      "name": "managed-vm-interface-descriptor-run",
+      "status": "FAIL",
+      "qemu_exit_recorded": 0,
+      "launcher_error": "maintenance probe failed; preserve all evidence",
+      "frozen_runner_userspace_head": "234b2d9918d26968c842a99083f7abeefd3889b5",
+      "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+      "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+      "qemu": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/diagnostic-hold-qemu/qemu-system-x86_64",
+        "sha256": "b176c57b914e1dded37fbb804e489225fff81dbf1df97565b1706000b4211f8a"
+      },
+      "guest_probe": {
+        "status": "FAIL",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "managed_acceptance": false,
+        "error": "exact guest port 1-1 descriptor mode",
+        "error_type": "TimeoutError",
+        "errno": null
+      },
+      "inventory_before": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 113,
+          "node": "/dev/bus/usb/001/113",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "inventory_after": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 113,
+          "node": "/dev/bus/usb/001/113",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "actual_reset_trace_count": 0,
+      "actual_set_interface_trace_count": 0,
+      "enumeration_reset_used_qmp_observed": null,
+      "managed_cases_executed": 0,
+      "active_ready_peer_isolation_acceptance": false,
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/manifest.json",
+          "sha256": "b462f64b8643de53fe85acf01cc5593469617d840c65f0f05b0ec5b2439027e5",
+          "bytes": 5319
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/console.log",
+          "sha256": "a0b66e959e578e994fd66409f7376a8508fe739886915bb88315385767fd5583",
+          "bytes": 14258
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/qmp.jsonl",
+          "sha256": "35090110e55363afe2379e3af7ae0293bca4729e0f4224d2b7977e45be5281b0",
+          "bytes": 651
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/usb-lifecycle.log",
+          "sha256": "761aee32a7b08eb9c2204472cb5445ccc89b39c6aeb50edafc197b146343793f",
+          "bytes": 27142
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/qemu-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-interface-descriptor-prepared/manifest.json",
+          "sha256": "754874c9917b3eee1919900d98dfe5264753c0cfa074bae473bf3bb101da7e86",
+          "bytes": 235203
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/guest-output/maintenance/capture.log",
+          "sha256": "1ac8641012b21ff4192573da8782437adadbd08ead1acd78f3db7ff7d8956a62",
+          "bytes": 200
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/guest-output/maintenance/kernel.log",
+          "sha256": "c203e871e52f9ea82ea067d633704a38d0eb0cf8b0f6b075e563feb717713363",
+          "bytes": 40379
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/guest-output/maintenance/probe.log",
+          "sha256": "0313b642ecb2e925932b0d9d49b8ab56f95b22eb4ebefaa37b4ee7cc2bf36813",
+          "bytes": 1389
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/guest-output/maintenance/reset/run.json",
+          "sha256": "618ce3c01fee1ae0cc5801487de79e1b9768d23dfd4bdb5ce226d9b3126198ff",
+          "bytes": 278
+        }
+      ],
+      "captures": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "eef77babd57de5b8ce5c787248c4a7df318f104043946e4dc22b1d765ab23364",
+          "bytes": 10652
+        }
+      ],
+      "failure_diagnostics": {}
+    },
+    {
+      "name": "managed-vm-interface-descriptor-port3-run",
+      "status": "FAIL",
+      "qemu_exit_recorded": 0,
+      "launcher_error": "maintenance probe failed; preserve all evidence",
+      "frozen_runner_userspace_head": "234b2d9918d26968c842a99083f7abeefd3889b5",
+      "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+      "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+      "qemu": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/diagnostic-hold-qemu/qemu-system-x86_64",
+        "sha256": "b176c57b914e1dded37fbb804e489225fff81dbf1df97565b1706000b4211f8a"
+      },
+      "guest_probe": {
+        "status": "FAIL",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "managed_acceptance": false,
+        "node": "/dev/bus/usb/001/002",
+        "endpoints": [
+          1,
+          2,
+          129,
+          130,
+          131
+        ],
+        "started_wall_ns": 1791702439901867373,
+        "usb_configuration_before_interface": [
+          {
+            "name": "configuration",
+            "kind": 128,
+            "request": 8,
+            "value": 0,
+            "length": 1,
+            "before_wall_ns": 1791702439907288828,
+            "returned": 1,
+            "data": "01",
+            "after_wall_ns": 1791702439907972717
+          },
+          {
+            "name": "descriptor",
+            "kind": 128,
+            "request": 6,
+            "value": 512,
+            "length": 53,
+            "before_wall_ns": 1791702439908005950,
+            "returned": 53,
+            "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+            "after_wall_ns": 1791702439908702693
+          }
+        ],
+        "set_interface_before_wall_ns": 1791702439912522109,
+        "set_interface_returned": 0,
+        "set_interface_after_wall_ns": 1791702455628952067,
+        "usb_configuration_after_interface": [
+          {
+            "name": "configuration",
+            "kind": 128,
+            "request": 8,
+            "value": 0,
+            "length": 1,
+            "before_wall_ns": 1791702455633357137,
+            "error": "[Errno 71] Protocol error",
+            "errno": 71,
+            "after_wall_ns": 1791702455633998195
+          },
+          {
+            "name": "descriptor",
+            "kind": 128,
+            "request": 6,
+            "value": 512,
+            "length": 53,
+            "before_wall_ns": 1791702455634025767,
+            "error": "[Errno 71] Protocol error",
+            "errno": 71,
+            "after_wall_ns": 1791702455634660803
+          }
+        ],
+        "error": "actual complete USB configuration replies required",
+        "error_type": "ValueError",
+        "errno": null
+      },
+      "inventory_before": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 113,
+          "node": "/dev/bus/usb/001/113",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "inventory_after": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 113,
+          "node": "/dev/bus/usb/001/113",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "actual_reset_trace_count": 0,
+      "actual_set_interface_trace_count": 1,
+      "enumeration_reset_used_qmp_observed": null,
+      "managed_cases_executed": 0,
+      "active_ready_peer_isolation_acceptance": false,
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/manifest.json",
+          "sha256": "3824ac25af4ef9fe4280407ac06b91f42fb8aed2451c61f9bf616f19fb6046c0",
+          "bytes": 7001
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/console.log",
+          "sha256": "41585dc2fb6bd1b43640a9ffd0c1338bc240ddb56e905146c417c485406d4b95",
+          "bytes": 13822
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/qmp.jsonl",
+          "sha256": "9422c5311158edafe879fde4b8375af6e637a1384c4b4ae96b2597c02818071c",
+          "bytes": 651
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/usb-lifecycle.log",
+          "sha256": "f01ba1ab04f9cf5300a7375bca8dad7b7e020989d289ab8bb087038b7c84adc1",
+          "bytes": 19047
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/qemu-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-interface-descriptor-prepared/manifest.json",
+          "sha256": "754874c9917b3eee1919900d98dfe5264753c0cfa074bae473bf3bb101da7e86",
+          "bytes": 235203
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/guest-output/maintenance/capture.log",
+          "sha256": "adefd492708d7fc39728f19bd01d935e871f8d4128374de258424028444b10d3",
+          "bytes": 198
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/guest-output/maintenance/kernel.log",
+          "sha256": "1de6afa93f76b3d0589aac666f62e7cbdb10f848fd1762bc1c9a3432113fb2bc",
+          "bytes": 40107
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/guest-output/maintenance/probe.log",
+          "sha256": "ac71b126adabccc76ab040b5feb6dd59659cb17250128d413549cd190c5c7bf0",
+          "bytes": 1445
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/guest-output/maintenance/reset/run.json",
+          "sha256": "6f169ec884efe3b8598839a96126da572bb4bc6cd7a97cd64af3566c136eba94",
+          "bytes": 1804
+        }
+      ],
+      "captures": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-interface-descriptor-port3-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "b8168f19fedd7db8179d62fa07b3984ba802e416188a04154e1338e88205c2e6",
+          "bytes": 5546
+        }
+      ],
+      "failure_diagnostics": {}
+    },
+    {
+      "name": "managed-vm-early-enum-reset-run",
+      "status": "FAIL",
+      "qemu_exit_recorded": 0,
+      "launcher_error": "maintenance probe failed; preserve all evidence",
+      "frozen_runner_userspace_head": "234b2d9918d26968c842a99083f7abeefd3889b5",
+      "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+      "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+      "qemu": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/diagnostic-hold-qemu/qemu-system-x86_64",
+        "sha256": "b176c57b914e1dded37fbb804e489225fff81dbf1df97565b1706000b4211f8a"
+      },
+      "guest_probe": {
+        "status": "FAIL",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "managed_acceptance": false,
+        "error": "exact guest port 1-1 descriptor mode",
+        "error_type": "TimeoutError",
+        "errno": null
+      },
+      "inventory_before": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 113,
+          "node": "/dev/bus/usb/001/113",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "inventory_after": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "actual_reset_trace_count": 5,
+      "actual_set_interface_trace_count": 0,
+      "enumeration_reset_used_qmp_observed": null,
+      "managed_cases_executed": 0,
+      "active_ready_peer_isolation_acceptance": false,
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/manifest.json",
+          "sha256": "f05b0b8149c1fac96a1bee367d33e8ab814473480f5d9f9c058683977fe474e2",
+          "bytes": 7447
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/console.log",
+          "sha256": "c9dff6660fd78e55127b2ce9838f996b9546ae2316f8ffa433bd1d193305e29f",
+          "bytes": 13865
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/qmp.jsonl",
+          "sha256": "5cc26491007350a2dad2fd097d7351b567371cce3cd5fa34b2d284247011ad63",
+          "bytes": 3689
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/usb-lifecycle.log",
+          "sha256": "a791fb977b752014302a4de00a868f9d4e5ad762af4a303d60230cbf10b45f1a",
+          "bytes": 15321
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/qemu-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-interface-descriptor-prepared/manifest.json",
+          "sha256": "754874c9917b3eee1919900d98dfe5264753c0cfa074bae473bf3bb101da7e86",
+          "bytes": 235203
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/guest-output/maintenance/capture.log",
+          "sha256": "294e0548c0cd426bac2784cbc7ff6cb21c4c826ae0fb81115cd753d15fa10060",
+          "bytes": 200
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/guest-output/maintenance/kernel.log",
+          "sha256": "cdee3b6137bb3fe996f6580b6b436461f404f2aede747670faceae6903e45508",
+          "bytes": 39744
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/guest-output/maintenance/probe.log",
+          "sha256": "0313b642ecb2e925932b0d9d49b8ab56f95b22eb4ebefaa37b4ee7cc2bf36813",
+          "bytes": 1389
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/guest-output/maintenance/reset/run.json",
+          "sha256": "618ce3c01fee1ae0cc5801487de79e1b9768d23dfd4bdb5ce226d9b3126198ff",
+          "bytes": 278
+        }
+      ],
+      "captures": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-early-enum-reset-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "6248d01f67368baaf1230b3059600990cbe15019566854b090ead179e584ff19",
+          "bytes": 9525
+        }
+      ],
+      "failure_diagnostics": {}
+    },
+    {
+      "name": "managed-vm-enumeration-once-run",
+      "status": "FAIL",
+      "qemu_exit_recorded": null,
+      "launcher_error": "[Errno 32] Broken pipe",
+      "frozen_runner_userspace_head": "234b2d9918d26968c842a99083f7abeefd3889b5",
+      "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+      "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+      "qemu": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-qemu/qemu-system-x86_64",
+        "sha256": "ef06b08b62d7cc117c02606d749f7e939c2cc9cf2919b50c135207a2d98134a9"
+      },
+      "guest_probe": {
+        "status": "FAIL",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "managed_acceptance": false,
+        "error": "exact guest port 1-1 descriptor mode",
+        "error_type": "TimeoutError",
+        "errno": null
+      },
+      "inventory_before": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "inventory_after": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "actual_reset_trace_count": 1,
+      "actual_set_interface_trace_count": 0,
+      "enumeration_reset_used_qmp_observed": true,
+      "managed_cases_executed": 0,
+      "active_ready_peer_isolation_acceptance": false,
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/manifest.json",
+          "sha256": "0386bf2ff05aafccf3def8a2ed8e958f6d94eb82cbb4f6302a66264cb9843272",
+          "bytes": 5533
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/console.log",
+          "sha256": "0e0203a0ce5617f9edea56314475ec5396966fb426751a24d0c62c934b959df4",
+          "bytes": 13675
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/qmp.jsonl",
+          "sha256": "611582f3476f5aa43b421b62fef083a3b5c89f9b80b15aa2a8e12041088dd8ac",
+          "bytes": 67197
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/usb-lifecycle.log",
+          "sha256": "83be2840e04d8558e1732239c2083359f5ec506d7a27a184a63374c4d43330b7",
+          "bytes": 14618
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/qemu-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-prepared/manifest.json",
+          "sha256": "511be46268e7d3f3b01b12dad62df0dd3cdbce231851b88c0971dd018e602c73",
+          "bytes": 230099
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/guest-output/maintenance/capture.log",
+          "sha256": "1e045ddb0fc3ca0c5b69adf99c6cd1abc7430c31c2d2e7accdcbec337536be4d",
+          "bytes": 198
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/guest-output/maintenance/kernel.log",
+          "sha256": "41d32ab99134c12b54beef5bff6f01f48789c0de16eac2579d9889e971949a63",
+          "bytes": 39831
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/guest-output/maintenance/probe.log",
+          "sha256": "0313b642ecb2e925932b0d9d49b8ab56f95b22eb4ebefaa37b4ee7cc2bf36813",
+          "bytes": 1389
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/guest-output/maintenance/reset/run.json",
+          "sha256": "618ce3c01fee1ae0cc5801487de79e1b9768d23dfd4bdb5ce226d9b3126198ff",
+          "bytes": 278
+        }
+      ],
+      "captures": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "2183622652f1f085c0cf0d6a088c7ba56e1bdb315992db91a46de0a95806c2a0",
+          "bytes": 4315
+        }
+      ],
+      "failure_diagnostics": {}
+    },
+    {
+      "name": "managed-vm-enumeration-once-port1-run",
+      "status": "FAIL",
+      "qemu_exit_recorded": 0,
+      "launcher_error": "maintenance probe failed; preserve all evidence",
+      "frozen_runner_userspace_head": "234b2d9918d26968c842a99083f7abeefd3889b5",
+      "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+      "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+      "qemu": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-qemu/qemu-system-x86_64",
+        "sha256": "ef06b08b62d7cc117c02606d749f7e939c2cc9cf2919b50c135207a2d98134a9"
+      },
+      "guest_probe": {
+        "status": "FAIL",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "managed_acceptance": false,
+        "node": "/dev/bus/usb/001/002",
+        "endpoints": [
+          1,
+          2,
+          129,
+          130,
+          131
+        ],
+        "started_wall_ns": 1791703891251502590,
+        "runtime_route_experiment": true,
+        "register_write_not_requested": true,
+        "route_transfers": [
+          {
+            "endpoint": 1,
+            "data": "030000000000000000000000010000000a00000000000000000000000000000000000000",
+            "before_wall_ns": 1791703891260893995
+          }
+        ],
+        "error": "[Errno 110] Connection timed out",
+        "error_type": "TimeoutError",
+        "errno": 110
+      },
+      "inventory_before": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "inventory_after": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "actual_reset_trace_count": 1,
+      "actual_set_interface_trace_count": 0,
+      "enumeration_reset_used_qmp_observed": true,
+      "managed_cases_executed": 0,
+      "active_ready_peer_isolation_acceptance": false,
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/manifest.json",
+          "sha256": "b14f4f415753cba20bdd5c04b45320f282ae381895ebbc4b81a9beb5018ad111",
+          "bytes": 6366
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/console.log",
+          "sha256": "a3b65ea067062601dd51811c3a8c8c030130ea2beb621ce096d01334bf8fda69",
+          "bytes": 13675
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/qmp.jsonl",
+          "sha256": "f8301d2fe81b7a783863a904e8f877d6b25b601678365bdce514a552e036760c",
+          "bytes": 8050
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/usb-lifecycle.log",
+          "sha256": "56983646de0072c5f8bdca1bab9de904e02cd10013501bc1f0bd8ea37e552e43",
+          "bytes": 16529
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/qemu-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-prepared/manifest.json",
+          "sha256": "511be46268e7d3f3b01b12dad62df0dd3cdbce231851b88c0971dd018e602c73",
+          "bytes": 230099
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/guest-output/maintenance/capture.log",
+          "sha256": "b75bce97f822d5ec6306db15132389628224d459f75a08807d12f457bceea4f8",
+          "bytes": 198
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/guest-output/maintenance/kernel.log",
+          "sha256": "c23485e916267ebbfb624eb116e9ce8fefe11fc640fafbceeda7159ad45e155c",
+          "bytes": 39743
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/guest-output/maintenance/probe.log",
+          "sha256": "3c709a8f099fd2c1305250aaab3e79b4512596fb4c3fb785af46307f9459369f",
+          "bytes": 1443
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/guest-output/maintenance/reset/run.json",
+          "sha256": "28ed3d499b941a7555fb756e9561ea4730f59f31e8e7fc544d0ef636ba223b51",
+          "bytes": 682
+        }
+      ],
+      "captures": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-enumeration-once-port1-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "989396470520ee3450662179ec13872a2fe883461bd5fafcaf2d5c3fdabeae02",
+          "bytes": 4888
+        }
+      ],
+      "failure_diagnostics": {}
+    },
+    {
+      "name": "managed-queue-after-bounded-enumeration-run",
+      "status": "FAIL",
+      "qemu_exit_recorded": 0,
+      "launcher_error": "guest environment failed",
+      "frozen_runner_userspace_head": "234b2d9918d26968c842a99083f7abeefd3889b5",
+      "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+      "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+      "qemu": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-qemu/qemu-system-x86_64",
+        "sha256": "ef06b08b62d7cc117c02606d749f7e939c2cc9cf2919b50c135207a2d98134a9"
+      },
+      "guest_probe": null,
+      "inventory_before": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "inventory_after": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "actual_reset_trace_count": 0,
+      "actual_set_interface_trace_count": 0,
+      "enumeration_reset_used_qmp_observed": null,
+      "managed_cases_executed": 0,
+      "active_ready_peer_isolation_acceptance": false,
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/manifest.json",
+          "sha256": "6ec4765782bd3a7200e90ee618d456d9c3974adca79eb4ed8153dbe3ca56fd61",
+          "bytes": 37156
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/console.log",
+          "sha256": "1b937fda46eb33cb1803e9e6c8f1ed1cf95d8fcad153adcd735f79a2321668c4",
+          "bytes": 1243634
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/qmp.jsonl",
+          "sha256": "35090110e55363afe2379e3af7ae0293bca4729e0f4224d2b7977e45be5281b0",
+          "bytes": 651
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/usb-lifecycle.log",
+          "sha256": "8a48c52b9c58a2ddc54c63ae9ae510ca20b0c98abacc405264b4f35915656919",
+          "bytes": 13621
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/qemu-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-prepared/manifest.json",
+          "sha256": "511be46268e7d3f3b01b12dad62df0dd3cdbce231851b88c0971dd018e602c73",
+          "bytes": 230099
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/capture-failure-exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/capture-process-status.txt",
+          "sha256": "3ff6994346861197b475b2075b8dc61cba033f46777b9079c0aa657a51cb9ef7",
+          "bytes": 1485
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/capture-stats.txt",
+          "sha256": "ec4884349f91e01c708af356fa379b44f16106087eadf49f183d316395af98d9",
+          "bytes": 223
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/capture-stdout.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/dbus.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-boot_error.txt",
+          "sha256": "930d38874892b9c76e9fca13ba9548bc921ff10b2fc3f49f5c226e27389cc7f1",
+          "bytes": 5
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-boot_stage.txt",
+          "sha256": "6da5b18878e110928643ebcc38dbb7552cf3a296eea56493e23edc2b93eecff8",
+          "bytes": 7
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-controller_information.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-failure_diagnostics.txt",
+          "sha256": "a6870abb57a2c8b518ce66b5f6730084287531f38b5f681b01a63295bff85a35",
+          "bytes": 124
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-metadata_valid.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-native_runtime.txt",
+          "sha256": "62890c4a08f20b2a7d9207dd274abb2f0dc736ff6235696cabd7239c2570f697",
+          "bytes": 91
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-recovery_budget.txt",
+          "sha256": "fd0999ea5fa36d410e6474091f1babd71ff09f94ab9a8ce693e068b6ba8a2a88",
+          "bytes": 105
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-runtime_transport.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/device-failure/1-1:1.0-warm_recovery.txt",
+          "sha256": "9a9637fe89a7aedba7e854a024c7891c40b4167c06b782a3d95f216fa65fb4b2",
+          "bytes": 49
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/kernel.log",
+          "sha256": "fd640f9d56ad87650f261db3a76e086649d218e94bbd0e976b326a7666706f55",
+          "bytes": 1211449
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/setup-release/run.json",
+          "sha256": "990ba2b99ad25f295b85206e9f626531200c048dd77e7b547503c6f265755a6f",
+          "bytes": 249
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/setup-release-supervisor.log",
+          "sha256": "866c71f1d2b401b6467acc2bd86a3d552f8d24f58aba271c9622ba24b4f51a77",
+          "bytes": 376
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/xhci-trace-stats.txt",
+          "sha256": "a707a08f23ca5b146648cf5768aeccad7225563a4db2d61c183461ce339166c2",
+          "bytes": 139
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/xhci-trace.log",
+          "sha256": "f6e3c02a86b66243d63f77a77530eac5e182b07e9fc2525f125e26b3741ec3aa",
+          "bytes": 40608
+        }
+      ],
+      "captures": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-after-bounded-enumeration-run/guest-output/ws73.pcap",
+          "sha256": "d1906a560545ee3668d10b48de40e81ee432b795584c5ca78662e585ee852e0f",
+          "bytes": 6498
+        }
+      ],
+      "failure_diagnostics": {
+        "1-1:1.0-boot_stage.txt": "failed",
+        "1-1:1.0-boot_error.txt": "-110",
+        "1-1:1.0-warm_recovery.txt": "attempts=0 limit=1 cause=0 result=0 started_ms=0",
+        "1-1:1.0-recovery_budget.txt": "attempts=0 limit=2 uploads=1 upload_limit=3 cause=0 result=0 exhausted=0 deadline_ms=0 stable_since_ms=0",
+        "1-1:1.0-failure_diagnostics.txt": "phase=1 error=-110 at_ms=7049 tx_sequence=0 id=-1 generation=0 opcode=0000 command_status=100 event=0000 hardware_error=100",
+        "1-1:1.0-runtime_transport.txt": "0",
+        "1-1:1.0-metadata_valid.txt": "0",
+        "1-1:1.0-native_runtime.txt": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100",
+        "1-1:1.0-controller_information.txt": ""
+      }
+    },
+    {
+      "name": "managed-vm-single-configuration-once-run",
+      "status": "FAIL",
+      "qemu_exit_recorded": 0,
+      "launcher_error": "maintenance probe failed; preserve all evidence",
+      "frozen_runner_userspace_head": "919392dc41f2b940b236941050f0e9d6d70d67d1",
+      "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+      "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+      "qemu": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/single-configuration-once-qemu/qemu-system-x86_64",
+        "sha256": "bb3dde091ec3ee396727f4e3d4f67e153e2b6d534f10aad173adc4fbb3a3c49c"
+      },
+      "guest_probe": {
+        "status": "FAIL",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "managed_acceptance": false,
+        "node": "/dev/bus/usb/001/002",
+        "endpoints": [
+          1,
+          2,
+          129,
+          130,
+          131
+        ],
+        "started_wall_ns": 1791704308953345810,
+        "runtime_route_experiment": true,
+        "register_write_not_requested": true,
+        "route_transfers": [
+          {
+            "endpoint": 1,
+            "data": "030000000000000000000000010000000a00000000000000000000000000000000000000",
+            "before_wall_ns": 1791704308960966138
+          }
+        ],
+        "error": "[Errno 110] Connection timed out",
+        "error_type": "TimeoutError",
+        "errno": 110
+      },
+      "inventory_before": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "inventory_after": {
+        "1-2.1.1": {
+          "path": "1-2.1.1",
+          "bus": 1,
+          "address": 110,
+          "node": "/dev/bus/usb/001/110",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.1:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.2": {
+          "path": "1-2.1.2",
+          "bus": 1,
+          "address": 111,
+          "node": "/dev/bus/usb/001/111",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.2:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.3": {
+          "path": "1-2.1.3",
+          "bus": 1,
+          "address": 112,
+          "node": "/dev/bus/usb/001/112",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.3:1.0",
+              "endpoints": 5,
+              "driver": null
+            }
+          ]
+        },
+        "1-2.1.4": {
+          "path": "1-2.1.4",
+          "bus": 1,
+          "address": 117,
+          "node": "/dev/bus/usb/001/117",
+          "writable": true,
+          "interfaces": [
+            {
+              "name": "1-2.1.4:1.0",
+              "endpoints": 2,
+              "driver": null
+            }
+          ]
+        }
+      },
+      "actual_reset_trace_count": 0,
+      "actual_set_interface_trace_count": 0,
+      "enumeration_reset_used_qmp_observed": null,
+      "managed_cases_executed": 0,
+      "active_ready_peer_isolation_acceptance": false,
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/manifest.json",
+          "sha256": "2447f8e18bbac9c14f374f219a32c2db41844ef2d3c63672f948112b9ab163fb",
+          "bytes": 6131
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/console.log",
+          "sha256": "6be184064b9eadc21b69fb243cb2436cde28a5b044519d73810eea7b1eafafa9",
+          "bytes": 13675
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/qmp.jsonl",
+          "sha256": "6f4b8b3c1bdcf952e084f0ebdaeee17b7148c8688afe5cba7b898537522ed9ae",
+          "bytes": 691
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/usb-lifecycle.log",
+          "sha256": "78c4c05642970fdc00a213719c92eb6606824fe8275e3daa22f69e636774af5c",
+          "bytes": 16478
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/qemu-stderr.log",
+          "sha256": "c8de3d06796f031100b2c9ed4b0b2634052b3d67edf9ed4c301a7bbf6f80e9b5",
+          "bytes": 103
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/single-configuration-once-prepared/manifest.json",
+          "sha256": "05464688edd4f4ac1f1a1d92d830257f5eb99f931ed1bea06683d90ec5089ce0",
+          "bytes": 232664
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/guest-output/maintenance/capture.log",
+          "sha256": "b75bce97f822d5ec6306db15132389628224d459f75a08807d12f457bceea4f8",
+          "bytes": 198
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/guest-output/maintenance/kernel.log",
+          "sha256": "49926da4a975de81825d5de76cca059bc8eba543255c9ebb6c92e6c4f19d5122",
+          "bytes": 39831
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/guest-output/maintenance/probe.log",
+          "sha256": "3c709a8f099fd2c1305250aaab3e79b4512596fb4c3fb785af46307f9459369f",
+          "bytes": 1443
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/guest-output/maintenance/reset/run.json",
+          "sha256": "73677458ad1360e09a46cab4210129b530e146cebcc4285f2e7e961dfe6e1004",
+          "bytes": 682
+        }
+      ],
+      "captures": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-single-configuration-once-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "87bcb9bab6acf1dcf28469210e7ebac0a2e2028e796ebb3e5400e6b7f4314993",
+          "bytes": 4888
+        }
+      ],
+      "failure_diagnostics": {}
+    }
+  ],
+  "private_rejected_configuration_contrast": {
+    "patch": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/test-single-configuration-once.patch",
+      "sha256": "a9fbb3b066bddc10077b71d023aa1f1dbf0825c00acf1bb4caafcd8b498029fd",
+      "bytes": 2382
+    },
+    "patch_text": "--- a/hw/usb/host-libusb.c\n+++ b/hw/usb/host-libusb.c\n@@ -96,6 +96,8 @@\n     /* VM lab only: one budget across host detach/re-enumeration. */\n     bool                             test_enum_reset_once;\n     bool                             test_enum_reset_used;\n+    bool                             test_config_once;\n+    bool                             test_config_used;\n     bool                             suppress_remote_wake;\n     bool                             allow_kernel_driver_detach;\n     bool                             allow_host_reset;\n@@ -1299,7 +1301,8 @@\n     libusb_device *ldev;\n     int rc;\n \n-    if (s->test_enum_reset_once && !usb_host_enum_reset_mode_valid(s)) {\n+    if ((s->test_enum_reset_once || s->test_config_once) &&\n+        !usb_host_enum_reset_mode_valid(s)) {\n         error_setg(errp, \"enumeration-reset-once requires explicit WS73 port \"\n                    \"and all existing reset/detach opt-outs\");\n         return;\n@@ -1670,8 +1673,19 @@\n     trace_usb_host_set_config(s->bus_num, s->addr, config);\n \n     usb_host_release_interfaces(s);\n-    if (s->ddesc.bNumConfigurations != 1) {\n+    bool force_once = s->test_config_once && !s->test_config_used &&\n+                      s->dh && config == 1 && s->ddesc.bNumConfigurations == 1;\n+    if (s->ddesc.bNumConfigurations != 1 || force_once) {\n+        if (force_once) {\n+            s->test_config_used = true;\n+            fprintf(stderr, \"WS73_TEST_CONFIG_ONCE_BEGIN: bus=%d addr=%d config=%d\\n\",\n+                    s->bus_num, s->addr, config);\n+        }\n         rc = libusb_set_configuration(s->dh, config);\n+        if (force_once) {\n+            fprintf(stderr, \"WS73_TEST_CONFIG_ONCE_RESULT: bus=%d addr=%d rc=%d\\n\",\n+                    s->bus_num, s->addr, rc);\n+        }\n         if (rc != 0) {\n             usb_host_libusb_error(\"libusb_set_configuration\", rc);\n             p->status = USB_RET_STALL;\n@@ -2044,6 +2058,8 @@\n                      allow_kernel_driver_detach, true),\n     DEFINE_PROP_BOOL(\"host-reset\", USBHostDevice,\n                      allow_host_reset, true),\n+    DEFINE_PROP_BOOL(\"test-single-configuration-once\", USBHostDevice,\n+                     test_config_once, false),\n     DEFINE_PROP_BOOL(\"test-enumeration-reset-once\", USBHostDevice,\n                      test_enum_reset_once, false),\n     DEFINE_PROP_BOOL(\"guest-reset\", USBHostDevice,\n",
+    "compiled_artifacts": {
+      "scope": "private VM configuration forwarding experiment, not production recovery",
+      "artifacts": {
+        "qemu-system-x86_64": "bb3dde091ec3ee396727f4e3d4f67e153e2b6d534f10aad173adc4fbb3a3c49c",
+        "host-libusb.c": "8014ddfcd05d81d7d1253d37ccce96eb060276a2ce09ab600ed80a6f6e4ea666",
+        "host-libusb.c.o": "cdcae60164b9be327619fdd649a367738095db02120948f1f34d3b725924e433",
+        "test-single-configuration-once.patch": "a9fbb3b066bddc10077b71d023aa1f1dbf0825c00acf1bb4caafcd8b498029fd"
+      }
+    },
+    "counted_source_fixture": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/single-configuration-once-source-qualified/manifest.json",
+      "sha256": "d3c47d9345a4a1dfb0579a331eb1ea94cef2c91f8e382ca1ae673f99094ee01f",
+      "bytes": 461
+    },
+    "isolated_root_smoke": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/single-configuration-once-root-smoke/manifest.json",
+      "sha256": "a588f972fa486bc1361eccb5faa1130cc9fccdf9820412088b6cc7ddcd4d7e48",
+      "bytes": 37816
+    },
+    "production_integration": false,
+    "live_migration_qualified": false
+  }
+}

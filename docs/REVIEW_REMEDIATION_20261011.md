@@ -733,3 +733,35 @@ U44d7fb335c78加入参考实现的36字节HCC队列10选择及聚合重置对照
 硬件资格分开；继续优先启动根因→Queued六案例→partial两个域及三种释放
 和真实迟到回复→同daemon双设备RF及四设备。恢复、自然RCA与原整项issues
 保持OPEN，历史已封存WS73闭环路径和证据保留。
+
+## 当前 Managed 门禁：USB 对照补充（2026-10-11）
+
+[新封存证据](evidence/ws73-managed-bootstrap-usb-contrasts-20261011.json)补充八次
+已终结尝试（七次维护、一轮正常门禁），保留此前失败和真实双设备 RF 证据。
+**本批 Queued／partial 实机案例仍为零，当前没有 Ready peer 隔离资格。**
+真实 GET_INTERFACE 不支持时保留 EPIPE；以完整描述符限定的 interface0/alt0
+重设返回零，但后续两笔配置读取 EPROTO，未继续路由或加载模块。
+
+允许所有枚举 reset 的实验触发五次复位并重枚举，已排除为生产策略。
+K a3703a65ea69 的专用 VM 开关默认关闭，单对象最多一次，调用前消费预算，
+源码禁止 close/autoscan 补预算，排斥在途 error/hold 注入。固定归档完整七补丁
+新应用／幂等／所有前缀／漂移拒绝、实际函数依赖计数、ASan/UBSan 和暂停 QMP
+检查通过；新 QEMU 的无 USB scratch-root VM 启动也通过。这些是开发支撑，
+真实重新枚举后预算保持及完整自动恢复尚未验收。
+
+第4只一次复位后实际出现 ROM 两端点、bcdDevice1.00；运行态专用探针判失败。
+随后正常 VM 识别 ROM，但第一条 READM bulk OUT 即 -110，failure phase1=LOADING、
+uploads1、无 metadata；未上传固件，未建立 Setup，未接入另一只。第1只一次
+复位仍在运行态，参考 EP01 路由 OUT 超时。冻结111固件输入不代表当前固件版本
+查询／上传成功，不能从第4只状态变化推断通用恢复或自然根因。
+
+私有 QEMU 对照仅转发一次物理 SET_CONFIGURATION1，实际 libusb 返回0，但
+EP01仍超时。候选没有接入生产，已恢复可变构建源码；精确补丁、二进制、源码、
+抓包和失败均保留供复核。默认 Linux/Rust WS73 路径不变。正常门禁继续使用
+默认禁止 reset/detach 的对象，不使用实验开关冒充 Managed cleanup。
+
+优先顺序保持：真实独立启动／握手→Queued 两只×release／最后fd／dup 六案例
+→partial 广播／扫描×三种释放及真实迟到回复、两个 STOP、Revoking→Free
+→同 slkd 双设备 RF 和故障隔离→四设备两组。另一只必须真实活动且查询通过，
+仅 host 枚举不算隔离；不以整 hub 复位或人工重插满足自动恢复。相关 issues
+及完整 S0–S6 scope 保持开放，部分成果不提前关闭整项。

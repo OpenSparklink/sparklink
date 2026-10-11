@@ -100,7 +100,7 @@ close立即abort、Managed partial/unknown初始化真实cleanup、完整作者/
 removal/32-bit与自然RCA/自动恢复继续OPEN。
 
 
-## Managed 已入队但从未选择的取消实现（实机专用门禁待执行）
+## Managed 未选择取消的源码阶段记录（专用实机门禁仍待执行）
 
 内核 `f6709397c6d6e33546744c79193b14ba9f573660` 在现有 admission/state/Host 串行化下扩展释放路径：
 仅 Host 无 active/reply/fault/revocation、无已选择 recipe、未初始化且 radio 均
@@ -122,7 +122,7 @@ recipe 不因取消或结果淘汰清空，因此任何已选中、部分初始�
 保持。锁、时钟缩放、周围 transport 是依赖 fixtures，不能据此宣称 VFS/RF。
 初次 fixture 缺导入，以及扩展后缺模块层次/generic Result 的编译失败日志保留，
 修正仅 fixture 适配后再运行。生产未增加全局 dead-code suppression 或第二份 dirty
-状态。新镜像构建和专用 Managed pre-selection/partial-wire 实机门禁尚待核对。
+状态。源码阶段当时新镜像尚待核对；最新镜像回归见当前证据段，专用 Managed pre-selection/partial-wire 实机门禁仍开放。
 
 后续须在新冻结签名 VM 中证明实际 ioctl/last-file/dup、队列选择竞态、完整字节/
 USB 证据、另一设备和同 slkd 隔离；部分初始化各步骤不能借未执行路径逃过真实
@@ -133,4 +133,48 @@ cleanup。保留真实 WS73 普通用户双设备 20+2 回归。已有 Diagnosti
 sandbox/发布及 S0–S6、全部 28 项原 scope 仍 OPEN。VM-only、不关闭整项、不合并 draft。
 
 
-新完整 Rust 内核构建暴露 serdev 的遗留 `MAX_PAYLOAD_LEN` 未使用导入；已在独立提交 `292f9fec84b67d325055bff69c17ce3c7c81706d` 移除。原成功构建及该警告日志保留，重新构建待核对；此提交不修改 parser/frame/hardware 行为，Managed source gate 的实际 Host/core/queue/operation 字节保持。源码 CI38112681170 已九项 success；当前新镜像及 Managed 专用实机门禁尚未完成，整项保持开放。
+新完整 Rust 内核构建暴露 serdev 的遗留 `MAX_PAYLOAD_LEN` 未使用导入；已在独立提交 `292f9fec84b67d325055bff69c17ce3c7c81706d` 移除。原成功构建及该警告日志保留；清理版本已重新构建，结果见当前证据段；此提交不修改 parser/frame/hardware 行为，Managed source gate 的实际 Host/core/queue/operation 字节保持。源码 CI38112681170 已九项 success；当前新镜像及 Managed 专用实机门禁尚未完成，整项保持开放。
+
+
+## 当前 Managed 未选择取消源码修复与新镜像 WS73 回归
+
+K`292f9fec84b6`／编译U`d749cbb102c5`的
+[两个新 VM 封存](evidence/ws73-vm-managed-unsubmitted-regression-20261011.json)
+已经通过；新 Managed 取消分支仍只有源码门禁资格，**专用实机 pre-selection、
+partial-wire/unknown 初始化及 Managed held-close 不因以下回归而通过**。
+21 项门禁编译实际 Host predicates/cancel/TX selection/InFlight/core release：
+未选择才本地取消并保留 ECANCELED/Unknown/Setup；已选择证据跨取消/淘汰保留，
+继续真实 cleanup/原期限退役。未跟踪 raw、错误、在途、radio/初始化历史均不放行。
+
+完整新内核/private modules/签名无 USB scratch smoke、冻结显式38输入通过；
+第一次 prepare 因 module-tree 参数层级错误在启动前被拒绝，原 FAIL 保存，按
+staged lib/modules/release 在新目录重做，不篡改记录。Native WS73 driver 未变。
+两新 VM 各 Setup6 零DLI完整窗口、普通UID1000/caps0真实20+2，最长均469ms；
+各自同RF slkd/bus/peer隔离，USB1345/1431、各22RX/零drop、guest warning0/
+taint0/traceoverrun0，host四只结束释放在位。第一 VM保持 Diagnostic already-Off
+最后dup关闭→原500ms期限→一次真实IN81 abort/无reset-release-detach，稳定预算
+归零；第二VM保持完整原诊断63记录/50proof/46wire/read7/result16/copyout2/poll3/
+淘汰33/CLI4/旧注册27拒绝/queued100ms与首次RESULT前被动800ms到期。
+Diagnostic hold发生在主RF daemon之前，不证明hold期间同daemon连续性。
+USB/HCC/DLI不是独立PHY嗅探；完整传递性host-tool输入来源仍未资格。
+
+[精确源码与日志核对CI38113618256](https://github.com/OpenSparklink/sparklink/actions/runs/38113618256)
+九作业终结success，实际170 Rust/34 Python/240工具，32期限/21管理/固件69 C+
+12 Rust/descriptor18 C+info5 Rust。离线计数绑定终结构建日志哈希，不重复计Rust
+summary；本批编译器warning0、GNU make jobserver warning1、未知producer0，
+因此不称整个log warning-free。[上一封存编译计数勘误](evidence/descriptor-cleanup-build-warning-erratum-20261011.json)
+明确旧compiler0错误、实际1条unused import，原JSON保持，guest/RF证据独立。
+
+下一步专用实机使用测试进程的有界调度约束证明真实 Queued/opcode0→关闭/取消，
+完整UAPI/USB证明无OUT，恢复普通调度并验证peer；不能用调度fixture冒充正常
+并发/应用权限。随后暂留真实0c02回复，在实际选中后验证释放/最后fd/dup、迟到
+ACK及partial cleanup，记录实际status/errno，不把0x1e/EIO改成成功或无条件reset。
+生产有限恢复需按实际原因分类、保留原错误与每port预算；自然启动/重枚举/消失
+RCA、无人工拔插完整恢复及历史物理xHCI warning继续OPEN。
+
+三类清单保持：明确测试/默认行为立即删，模拟/注入只在专用测试；有调用者的
+backend/parser/默认路由/shared ring/旧UAPI等待新路径接通和回归后删。UAPI未发布，
+无需兼容期。完整能力来源、独立事件、drivers-owned backend/PM、socket协商/
+背压/所有权、SSAP/每连接安全/Agent/Bond/Profile、四设备两组、Native/Proxy/
+sandbox/发布及全部S0–S6/28项原scope保持，北极星7/8，VM-only，不关闭整项、
+不合并draft、完整goal active。

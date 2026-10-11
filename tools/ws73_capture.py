@@ -293,7 +293,7 @@ def active_metadata_bounds(run, active):
             {json_identity(old): active['guest_ack_receipts'][-1]['wall_ns']})
 
 
-def corroborate_recovery(run, capture, diagnostic=None, active=None):
+def corroborate_recovery(run, capture, diagnostic=None, active=None, partial=None):
     """Real RF after an artificial guest error; never physical/natural-fault acceptance."""
     if (run.get('scope') != 'real WS73 RF with artificial guest transport recovery support'
             or run.get('status') != 'RECOVERY_CONTROL_EVIDENCE_PENDING'
@@ -308,6 +308,10 @@ def corroborate_recovery(run, capture, diagnostic=None, active=None):
     if (old['bus'], old['device'], old['address']) != (new['bus'], new['device'], new['address']):
         raise CaptureError('protocol recovery changed USB/radio identity')
     metadata_before, metadata_after, queries = {}, {}, []
+    if partial is not None:
+        if diagnostic is not None or active is not None:
+            raise CaptureError('partial and other pre-daemon hold gates are separate')
+        metadata_before, queries = partial_metadata_bounds(run,capture,partial)
     if active is not None:
         if diagnostic is not None:
             raise CaptureError('active retirement and explicit-release diagnostic modes are separate')
@@ -316,8 +320,42 @@ def corroborate_recovery(run, capture, diagnostic=None, active=None):
         metadata_before, queries = corroborate_diagnostic(run, capture, diagnostic)
     proofs = _corroborate_control(run, capture, 'recovery', 'retirement_observed_wall_ns', metadata_before, metadata_after)
     if queries:
-        proofs[0]['diagnostic_queries'] = queries
+        proofs[0]['partial_peer_queries' if partial is not None else 'diagnostic_queries'] = queries
     return proofs
+
+
+def partial_metadata_bounds(run, capture, partial):
+    """Keep real bootstrap queries separate from three recorded peer probes.
+
+    Never pick an arbitrary same-opcode response or discard unmatched queries.
+    Host held-frame corroboration remains a separate mandatory runner check.
+    """
+    from ws73_management_partial import verify_records
+    try: snapshots=verify_records(partial)
+    except (ValueError,KeyError,TypeError) as error:
+        raise CaptureError('canonical successful partial records required') from error
+    if partial['synthetic_support'] is not False:
+        raise CaptureError('real partial metadata window required')
+    initial=run['initial']
+    if len(initial)!=2:raise CaptureError('two original partial registrations required')
+    for snapshot,identity in zip(snapshots,initial):
+        if (snapshot.dev_index,snapshot.generation,bytes(snapshot.address).hex())!=(
+                identity['index'],identity['generation'],identity['address'].replace(':','').lower()):
+            raise CaptureError('partial identities differ from RF registrations')
+    start=partial['peer_queries'][0]['start_wall_ns']
+    end=partial['peer_queries'][-1]['end_wall_ns']
+    if not end<min(v['observed_wall_ns'] for v in initial):
+        raise CaptureError('partial queries must finish before RF Ready observations')
+    peer=initial[1]
+    queries=[command_reply(capture,peer,0x406,row['start_wall_ns'],row['end_wall_ns'],
+        b'',bytes(snapshots[1].address).hex()) for row in partial['peer_queries']]
+    for index,identity in enumerate(initial):
+        for key,part in [('commands','command'),('complete','reply')]:
+            actual=[v for v in capture[key] if (v['bus'],v['device'],v['opcode'])==(
+                identity['bus'],identity['device'],0x406) and start<=v['wall_ns']<=identity['observed_wall_ns']]
+            if actual!=([v[part] for v in queries] if index==1 else []):
+                raise CaptureError('unmatched query in partial-to-Ready window')
+    return {json_identity(v):start for v in initial},queries
 
 
 def corroborate_diagnostic(run, capture, diagnostic):

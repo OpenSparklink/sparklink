@@ -325,7 +325,8 @@ if __name__=='__main__':
             from ws73_management_setup import corroborate as corroborate_setup
             setup_proof=corroborate_setup(json.loads((EVIDENCE/'setup-release/run.json').read_text()),capture)
             (EVIDENCE/'setup-release/capture-proof.json').write_text(json.dumps(setup_proof,indent=2)+'\n')
-        proofs=corroborate_recovery(run,capture,diagnostic,active)
+        partial=json.loads((EVIDENCE/'managed-partial/run.json').read_text()) if 'ws73.managed_partial=1' in Path('/proc/cmdline').read_text().split() else None
+        proofs=corroborate_recovery(run,capture,diagnostic,active,partial)
         (EVIDENCE/'recovery-control-proofs.json').write_text(json.dumps({'scope':run['scope'],'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')
         print('WS73_TARGET_RECOVERY_SUPPORT: PASS',flush=True)
         raise SystemExit(0)

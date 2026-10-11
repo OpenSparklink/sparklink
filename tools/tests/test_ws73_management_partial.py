@@ -50,6 +50,31 @@ def fixture(case='release',domain='advertising'):
 
 
 class PartialTests(unittest.TestCase):
+    def test_partial_metadata_bounds_preserve_bootstrap_and_reject_extra_queries(self):
+        from ws73_capture import partial_metadata_bounds,CaptureError
+        record=fixture()
+        identities=[dict(port=f'1-{i+1}',index=i,generation=i+1,bus=1,device=i+2,
+            observed_wall_ns=600) for i in [0,1]]
+        for identity,raw in zip(identities,record['initial_snapshots']):
+            snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(raw))
+            identity['address']=':'.join(f'{v:02x}' for v in snapshot.address)
+        capture=dict(commands=[],complete=[])
+        for i,row in enumerate(record['peer_queries']):
+            capture['commands'].append(dict(bus=1,device=3,opcode=0x406,params='',wall_ns=row['start_wall_ns'],
+                completion=dict(wall_ns=row['start_wall_ns']+1),record=i*2))
+            capture['complete'].append(dict(bus=1,device=3,opcode=0x406,status=0,value='313233343536',wall_ns=row['end_wall_ns'],record=i*2+1))
+        bounds,proofs=partial_metadata_bounds(dict(initial=identities),capture,record)
+        self.assertEqual(list(bounds.values()),[10,10]);self.assertEqual(len(proofs),3)
+        for change in ['duplicate-probe','unrecorded-later','wrong-peer','after-ready','model']:
+            import copy
+            bad=copy.deepcopy(capture);ids=copy.deepcopy(identities);r=copy.deepcopy(record)
+            if change=='duplicate-probe':bad['commands'].append(copy.deepcopy(bad['commands'][0]))
+            if change=='unrecorded-later':bad['commands'].append(dict(bad['commands'][0],wall_ns=550,completion=dict(wall_ns=551)))
+            if change=='wrong-peer':ids[1]['generation']=3
+            if change=='after-ready':ids[1]['observed_wall_ns']=410
+            if change=='model':r.update(synthetic_support=True,status='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS')
+            with self.subTest(change=change),self.assertRaises(CaptureError):partial_metadata_bounds(dict(initial=ids),bad,r)
+
     def test_selected_cleanup_preserves_untouched_unknown_without_false_ready(self):
         for case in ['release','close','dup']:
             record=fixture(case)

@@ -15,7 +15,7 @@ from test_ws73_north_star import fixture as old_fixture, identity, pcap
 from ws73_parallel import EventReader, PREFIX, SEQUENCE, SCOPE, SUCCESS, abort_workers, corroborate, verify_records
 
 
-def fixture():
+def fixture(offset=0):
     def second_owner(generation):
         value = identity(generation)
         index = 3 if generation == 2 else 2
@@ -26,7 +26,7 @@ def fixture():
     runs, records = [], []
     for pair in range(2):
         r, frames = old_fixture(marker_base=pair*100, identity_factory=second_owner if pair else identity)
-        r.update(pair=pair, scope=SCOPE, status=SUCCESS, after=copy.deepcopy(r['initial']), barriers=[])
+        r.update(pair=pair, scope=SCOPE, status=SUCCESS, after=copy.deepcopy(r['initial']), barriers=[], advertise_start_offset_ms=offset if pair else 0)
         r['rounds'] = r['rounds'][:20]
         for row in r['rounds']: row['phase'] = 'parallel'
         r['negatives'] = r['negatives'][:1]
@@ -34,7 +34,7 @@ def fixture():
         r['barriers'].append(dict(pair=pair, phase='ready', round=0, wait_wall_ns=1_500_000_000+pair, owners=r['initial']))
         for row in r['rounds']:
             commands = [r['commands'][i] for i in row['command_indices']]
-            r['barriers'].extend([dict(pair=pair, phase='start', round=row['round'], wait_wall_ns=commands[0]['start_wall_ns']-100+pair),
+            r['barriers'].extend([dict(pair=pair, phase='start', round=row['round'], wait_wall_ns=commands[0]['start_wall_ns']-100+pair-offset*1_000_000),
                                   dict(pair=pair, phase='matched', round=row['round'], wait_wall_ns=commands[1]['end_wall_ns']+10+pair)])
         runs.append(r)
         records.extend(frames)
@@ -46,10 +46,10 @@ def fixture():
         for r in runs: r['barriers'][i]['ack_wall_ns'] = release+1
     parent = dict(format_version=1, scope='four real WS73 two-pair parallel RF', status='PARALLEL_RF_EVIDENCE_PENDING',
                   physical_unplug_acceptance=False, automatic_fault_recovery_acceptance=False,
-                  application_identity=runs[0]['application_identity'], stages=stages, workers=[])
+                  application_identity=runs[0]['application_identity'], stages=stages, workers=[], second_pair_start_offset_ms=offset)
     for pair, r in enumerate(runs):
         argv = ['/bin/python3', '/fixture/ws73_parallel.py', 'pair', '--pair', str(pair), '--ports',
-                *[o['port'] for o in r['initial']], '--slctl', r['slctl']['path'], '--slkd-pid', '100', '--output', f'/fixture/pair-{pair}']
+                *[o['port'] for o in r['initial']], '--slctl', r['slctl']['path'], '--slkd-pid', '100', '--output', f'/fixture/pair-{pair}', '--start-offset-ms', str(offset if pair else 0)]
         parent['workers'].append(dict(run=r, exit=0, pid=10+pair, args=argv))
     capture = fixture_module.CaptureTests().read(pcap(records), {(1, 2), (1, 3), (1, 12), (1, 13)})
     return parent, capture
@@ -65,6 +65,25 @@ class ParallelTests(unittest.TestCase):
         self.assertFalse(p['physical_unplug_acceptance'])
         self.assertFalse(p['automatic_fault_recovery_acceptance'])
         self.assertFalse(p['full_goal_complete'])
+        self.assertTrue(p['default_parallel_gate_acceptance'])
+        self.assertFalse(p['whole_concurrency_acceptance'])
+
+    def test_explicit_offset_contrast_never_certifies_default_parallel_gate(self):
+        r,c=fixture(offset=37)
+        proof=corroborate(r,c)
+        self.assertTrue(proof['parallel_offset_contrast_acceptance'])
+        self.assertFalse(proof['default_parallel_gate_acceptance'])
+        self.assertFalse(proof['whole_concurrency_acceptance'])
+        for change in ['negative','excessive','worker-offset','argv-offset','actual-too-early']:
+            r,c=fixture(offset=37)
+            if change=='negative':r['second_pair_start_offset_ms']=-1
+            if change=='excessive':r['second_pair_start_offset_ms']=126
+            if change=='worker-offset':r['workers'][1]['run']['advertise_start_offset_ms']=0
+            if change=='argv-offset':r['workers'][1]['args'][-1]='0'
+            if change=='actual-too-early':
+                child=r['workers'][1]['run']
+                child['barriers'][1]['ack_wall_ns']=child['commands'][child['rounds'][0]['command_indices'][0]]['start_wall_ns']-10
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(r)
 
     def test_missing_barrier_early_off_wrong_owner_and_reused_markers_rejected(self):
         for change in ['worker-failed', 'aborted', 'same-pid', 'wrong-argv', 'root', 'caps', 'other-daemon', 'same-controller', 'same-marker', 'not-ready', 'missing-stage', 'missing-child', 'wrong-ack', 'early-off', 'wrong-round', 'missing-cleanup', 'synthetic']:

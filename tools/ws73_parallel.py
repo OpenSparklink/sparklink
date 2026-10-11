@@ -27,6 +27,13 @@ SUCCESS = 'PARALLEL_PAIR_RF_EVIDENCE_PENDING'
 SEQUENCE = [('ready', 0), *[(phase, n) for n in range(1, 21) for phase in ['start', 'matched']]]
 
 
+def start_offset(value):
+    value = int(value)
+    if not 0 <= value <= 125:
+        raise argparse.ArgumentTypeError('diagnostic start offset must be 0..125 ms')
+    return value
+
+
 class PairRun(Run):
     SCOPE = SCOPE
     SUCCESS = SUCCESS
@@ -34,6 +41,7 @@ class PairRun(Run):
     def __init__(self, args):
         super().__init__(args)
         self.barriers_active = False
+        self.data['advertise_start_offset_ms'] = args.start_offset_ms
 
     def barrier(self, phase, number):
         row = dict(pair=self.args.pair, phase=phase, round=number, wait_wall_ns=time.time_ns())
@@ -55,6 +63,7 @@ class PairRun(Run):
     def ctl(self, identity, *words):
         if self.barriers_active and words == ('advertise', 'on'):
             self.barrier('start', len(self.data['rounds'])+1)
+            time.sleep(self.args.start_offset_ms / 1000)
         return super().ctl(identity, *words)
 
     def stop(self, identity, domain):
@@ -190,10 +199,12 @@ def run_parallel(args):
     if len(args.ports) != 4 or len(set(args.ports)) != 4:
         raise ValueError('four distinct physical guest ports required')
     args.slctl = args.slctl.resolve()
+    offset = start_offset(args.second_pair_start_offset_ms)
     output = args.output.resolve()
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     record = dict(format_version=1, scope='four real WS73 two-pair parallel RF', status='RUNNING',
                   application_identity=ordinary_identity(), stages=[], workers=[],
+                  second_pair_start_offset_ms=offset,
                   physical_unplug_acceptance=False, automatic_fault_recovery_acceptance=False)
     def save():
         temporary = output/'run.tmp'
@@ -204,7 +215,7 @@ def run_parallel(args):
         for pair in range(2):
             argv = [sys.executable, str(Path(__file__).resolve()), 'pair', '--pair', str(pair), '--ports',
                     *args.ports[pair*2:pair*2+2], '--slctl', str(args.slctl), '--slkd-pid', str(args.slkd_pid),
-                    '--output', str(output/f'pair-{pair}')]
+                    '--output', str(output/f'pair-{pair}'), '--start-offset-ms', str(offset if pair else 0)]
             row = dict(args=argv, start_wall_ns=time.time_ns(), stdout='', stderr='')
             record['workers'].append(row)
             process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -266,6 +277,9 @@ def verify_records(record):
         raise CaptureError('explicit four-device parallel evidence required')
     if record.get('failure_shutdown'):
         raise CaptureError('an aborted or forcibly killed worker cannot qualify')
+    offset = record.get('second_pair_start_offset_ms')
+    if type(offset) is not int or not 0 <= offset <= 125:
+        raise CaptureError('explicit bounded diagnostic start offset required')
     app = record['application_identity']
     if app['uids'] != [1000]*4 or any(int(app[k], 16) for k in ['cap_eff', 'cap_prm', 'cap_amb']):
         raise CaptureError('ordinary UID1000 without capabilities required')
@@ -279,6 +293,9 @@ def verify_records(record):
         argv=worker['args']
         if argv[2:7]!=['pair','--pair',str(pair),'--ports',r['initial'][0]['port']] or argv[7]!=r['initial'][1]['port'] or argv[8:12]!=['--slctl',r['slctl']['path'],'--slkd-pid',str(r['daemon_before']['pid'])]:
             raise CaptureError('worker invocation affinity must match selected pair and daemon')
+        delay = offset if pair else 0
+        if r.get('advertise_start_offset_ms') != delay or argv[-2:] != ['--start-offset-ms', str(delay)]:
+            raise CaptureError('worker diagnostic start offset differs from parent')
         if len(r['initial']) != 2 or len(r['after']) != 2 or not all(stable(a, b) for a, b in zip(r['initial'], r['after'])):
             raise CaptureError('four registrations stay independently Ready')
         if r['daemon_before'] != r['daemon_after'] or r['bus_before'] != r['bus_after'] or r['bus_before']['pid'] != r['daemon_before']['pid']:
@@ -314,6 +331,8 @@ def verify_records(record):
             start, matched = barriers[2*n-1:2*n+1]
             if not start['ack_wall_ns'] <= commands[0]['start_wall_ns'] <= commands[1]['end_wall_ns'] <= matched['wait_wall_ns'] <= matched['ack_wall_ns'] <= commands[2]['start_wall_ns']:
                 raise CaptureError('both real matches must precede radio OFF')
+            if commands[0]['start_wall_ns']-start['ack_wall_ns'] < delay*1_000_000:
+                raise CaptureError('actual command predates diagnostic start offset')
     return owners
 
 
@@ -360,6 +379,10 @@ def corroborate(record, capture):
             raise CaptureError('actual on-air START/OFF intervals did not overlap')
         overlaps.append(dict(round=n, actual_radio_windows=windows, overlap_wall_ns=[start, end]))
     return dict(status='FOUR_REAL_PARALLEL_RF_CORROBORATED', pairs=pairs, overlaps=overlaps,
+                second_pair_start_offset_ms=record['second_pair_start_offset_ms'],
+                default_parallel_gate_acceptance=record['second_pair_start_offset_ms'] == 0,
+                parallel_offset_contrast_acceptance=record['second_pair_start_offset_ms'] != 0,
+                whole_concurrency_acceptance=False,
                 four_device_two_pair_rf_acceptance=True, physical_unplug_acceptance=False,
                 automatic_fault_recovery_acceptance=False, full_goal_complete=False)
 
@@ -372,11 +395,14 @@ def main():
     parser.add_argument('--slkd-pid', type=int, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--pair', type=int, choices=[0, 1])
+    parser.add_argument('--second-pair-start-offset-ms', type=start_offset, default=0,
+                        help='explicit diagnostic contrast; default parallel gate remains offset 0')
+    parser.add_argument('--start-offset-ms', type=start_offset, default=0)
     args = parser.parse_args()
     if args.mode == 'run':
-        if args.pair is not None: parser.error('pair selector is internal to worker mode')
+        if args.pair is not None or args.start_offset_ms: parser.error('pair selector/offset is internal to worker mode')
         return run_parallel(args)
-    if args.pair is None or len(args.ports) != 2 or len(set(args.ports)) != 2:
+    if args.pair is None or len(args.ports) != 2 or len(set(args.ports)) != 2 or args.second_pair_start_offset_ms:
         parser.error('worker requires explicit pair and two distinct ports')
     args.artifact = ['parallel_control='+str(Path(__file__).resolve()),
                      'rf_verifier='+str(Path(__file__).with_name('ws73_rf_rounds.py').resolve())]

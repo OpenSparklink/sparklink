@@ -52,3 +52,21 @@ SPARKLINK_KERNEL_SOURCE=/absolute/path/to/linux \
 缺失查询、错误数据/地址、失败 URB、报告复用和无真实重叠轨迹。
 真实子进程管道回归只证明协调协议，不产生硬件或空口验收证据。
 共享核对逻辑已重算历史真实双设备 22 轮，所得证明与原封存结果逐项一致。
+
+## 默认并行失败后的诊断对照
+
+首轮真实四设备默认测试在两组各成功两轮之后，第二组第三轮的匹配在真实
+Scan Complete 后 10 秒超时。原始 FAIL、成功子轮和封存捕获保留；不能仅因
+四只 Ready 或前两轮成功就宣称四设备验收完成。接收端仍收到另一组广播，
+目标标识也被其他接收端收到，尚不能据此确定射频碰撞或其他根因。
+
+`--parallel-start-offset-ms 37` 可将第二组每轮广告启动延后 37 ms，作为
+固定 150 ms 广播周期的相位对照，允许范围 0..125 ms。实际 argv、请求值、
+worker 值和 START 时间下界都独立核对。默认门禁仍为 0 ms；对照保持每组
+20 轮、10 秒发现期限及实际 START/OFF 重叠，不重试单轮或删去失败。
+
+对照即使通过，也只产生 `FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS`，
+`default_parallel_gate_acceptance=false`、`whole_concurrency_acceptance=false`。
+不能将对照结果替代默认门禁、生产参数修复或根因结论。失败时向另一 worker
+发送私有 abort，使其尝试两项真实 STOP；30 秒后保留强杀回退诊断。任何
+abort、非零退出、清理错误或强杀均拒绝资格，不合成 OFF/Complete。

@@ -168,7 +168,16 @@ if [ -f /scratch-root-uuid ]; then
     storage=/var/lib/sparklink
     mkdir -p "$storage"; chown 0:0 "$storage"; chmod 0700 "$storage"
 fi
-/bin/slkd --storage "$storage" -n > /evidence/slkd.log 2>&1 & daemon=$!
+config_args=''
+if [ -f /expected-discovery-config-sha256 ]; then
+    expected=$(cat /expected-discovery-config-sha256)
+    actual=$(/bin/busybox sha256sum /etc/sparklink/main.conf | awk '{print $1}')
+    [ "$actual" = "$expected" ] || fail 'frozen discovery config hash'
+    /bin/busybox cp /etc/sparklink/main.conf /evidence/slkd-config.conf || fail 'config evidence copy'
+    /bin/slkd --check-config --config /etc/sparklink/main.conf > /evidence/discovery-config-validation.txt 2>&1 || fail 'guest config validation'
+    config_args='--config /etc/sparklink/main.conf'
+fi
+/bin/slkd $config_args --storage "$storage" -n > /evidence/slkd.log 2>&1 & daemon=$!
 if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline && ! grep -q 'ws73.setup_release=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
 fi

@@ -74,3 +74,51 @@ fn unreadable_explicit_config_does_not_fall_back() {
     fs::set_permissions(&path, fs::Permissions::from_mode(0o000)).unwrap();
     f.reject(&path, "cannot read configuration");
 }
+
+#[test]
+fn check_config_uses_real_validation_without_bus_or_controller_startup() {
+    let f = Fixture::new();
+    let path = f.0.join("policy.conf");
+    let run = || {
+        Command::new(env!("CARGO_BIN_EXE_slkd"))
+            .args([
+                "--check-config",
+                "--session",
+                "--device",
+                "/nonexistent/ws73",
+                "--config",
+            ])
+            .arg(&path)
+            .env(
+                "DBUS_SESSION_BUS_ADDRESS",
+                "unix:path=/nonexistent/slkd-check-bus",
+            )
+            .output()
+            .unwrap()
+    };
+    fs::write(&path, "[[ws73.adapters]]\naddress='00:01:09:32:54:F9'\n[ws73.adapters.policy]\nadvertising_interval_min_slots=1237\nadvertising_interval_max_slots=1237\n").unwrap();
+    let valid = run();
+    assert!(valid.status.success(), "{:?}", valid);
+    assert!(String::from_utf8_lossy(&valid.stdout).contains("syntax and host policy only"));
+    assert!(!String::from_utf8_lossy(&valid.stderr).contains("D-Bus service registered"));
+    for text in [
+        "[ws73.defaults]\nscan_window_slots=1601",
+        "[ws73.defaults]\ntx_power_dbm=21",
+        "[ws73.defaults]\nscan_interva_slots=1600",
+        "[policy]\nauto_pair=true",
+    ] {
+        fs::write(&path, text).unwrap();
+        let invalid = run();
+        assert!(!invalid.status.success());
+        assert!(!String::from_utf8_lossy(&invalid.stdout).contains("Configuration valid"));
+        assert!(!String::from_utf8_lossy(&invalid.stderr).contains("D-Bus service registered"));
+    }
+    fs::remove_file(&path).unwrap();
+    assert!(!run().status.success());
+    let implicit = Command::new(env!("CARGO_BIN_EXE_slkd"))
+        .arg("--check-config")
+        .output()
+        .unwrap();
+    assert!(!implicit.status.success());
+    assert!(String::from_utf8_lossy(&implicit.stderr).contains("--config"));
+}

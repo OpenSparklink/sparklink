@@ -68,3 +68,22 @@ UID1000/caps0，1265包/零capture drop、QEMU0。父进程封存的22轮原始�
 覆盖、物理拔插、默认四设备、完整Managed和自动恢复均不由此receipt验收。
 源码[CI38167553391](https://github.com/OpenSparklink/sparklink/actions/runs/38167553391)
 九项成功；本轮原始捕获和服务二进制保持私有，SDK/固件blob未提交。
+
+## 冻结的 VM 配置输入
+
+`slkd --check-config --config <file>` 使用实际 daemon 的同一解析和策略校验，
+在连接 D-Bus、发布对象或取得控制器管理权前退出。必须显式指定文件；合法
+TOML 和 SDK 数值范围不表示固件支持、实际发射功率或 RF 验收。
+
+`ws73_target.py prepare --native-discovery-config <private.conf>` 必须同时
+指定三个完整 native VM profile 参数。它将文件冻结到 guest 的
+`/etc/sparklink/main.conf`，使用 bundle 中的精确 slkd 二进制执行上述检查，
+记录输入和二进制哈希，拒绝校验失败、超时及复制/校验期间的变化。
+guest 在启动 daemon 前核对 SHA256、再校验，并导出实际配置与校验输出；
+daemon 显式加载该文件，缺失时不能回退到默认值。它不安装主机文件。
+
+首个自定义参数验收只允许独立双设备 `run --qmp-hotplug`。现有默认四设备
+和 Managed 注入验收不得带此配置，待其策略证明迁移后再开放。父进程仍将
+自定义 RF 验收标为 false；只有终止后独立核对每个实际注册的策略查询、
+全部初始化/START 原始参数、Complete、随机 marker 空口与同 daemon 重注册
+的 receipt 才能验收。周期和功率分开实验，保留默认路径及所有失败证据。

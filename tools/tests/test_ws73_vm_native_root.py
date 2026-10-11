@@ -4,10 +4,13 @@ import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
+import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate
+from ws73_north_star import file_record
 
 
 class NativeVMProfile(unittest.TestCase):
@@ -17,6 +20,8 @@ class NativeVMProfile(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'together'):
                 enabled(SimpleNamespace(**{name: Path('/fixture')}))
         self.assertTrue(enabled(SimpleNamespace(**{name: Path('/fixture') for name in OPTIONS})))
+        with self.assertRaisesRegex(ValueError, 'complete native VM'):
+            enabled(SimpleNamespace(native_discovery_config=Path('/private.conf')))
 
     def test_module_guest_cannot_use_builtin_driver_or_omit_export_modules(self):
         symbols = ['RUST', 'SPARKLINK', 'SPARKLINK_SLE', 'SPARKLINK_WS73_USB',
@@ -38,6 +43,71 @@ class NativeVMProfile(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaisesRegex(ValueError, 'staged lib/modules'):
                 module_plan(Path(directory))
+
+    def test_exact_staged_daemon_checks_the_frozen_guest_config(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            config = base / 'private.conf'
+            config.write_text('[ws73.defaults]\ntx_power_dbm=0\n')
+            daemon = base / 'slkd'
+            daemon.write_bytes(b'fixture executable')
+            manifest = {'inputs': []}
+            result = subprocess.CompletedProcess([], 0, 'valid', '')
+            with patch('ws73_vm_native_root.subprocess.run', return_value=result) as run:
+                stage_discovery_config(config, daemon, base / 'root', manifest)
+            target = base / 'root/etc/sparklink/main.conf'
+            run.assert_called_once_with([str(daemon), '--check-config', '--config', str(target)],
+                                        capture_output=True, text=True, timeout=15)
+            self.assertEqual(target.read_bytes(), config.read_bytes())
+            self.assertEqual(manifest['inputs'], [file_record(config)])
+            record = manifest['discovery_config']
+            self.assertEqual(record['validator'], file_record(daemon))
+            self.assertEqual(record['guest_sha256'], file_record(target)['sha256'])
+            self.assertFalse(record['firmware_support_acceptance'])
+            self.assertFalse(record['custom_policy_rf_acceptance'])
+            self.assertEqual((base / 'root/expected-discovery-config-sha256').read_text().strip(),
+                             record['guest_sha256'])
+
+    def test_rejected_or_mutated_config_is_not_published_as_valid(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            config = base / 'private.conf'
+            config.write_text('valid input')
+            daemon = base / 'slkd'
+            daemon.write_bytes(b'fixture executable')
+            for case in ('reject', 'mutate-source', 'mutate-target', 'timeout'):
+                config.write_text('valid input')
+                manifest = {'inputs': []}
+                def validate(command, **kwargs):
+                    if case == 'timeout':
+                        raise subprocess.TimeoutExpired(command, 15)
+                    if case == 'mutate-source':
+                        config.write_text('changed input')
+                    if case == 'mutate-target':
+                        Path(command[-1]).write_text('changed snapshot')
+                    return subprocess.CompletedProcess(command, 1 if case == 'reject' else 0,
+                                                       '', 'invalid policy')
+                with self.subTest(case=case), patch('ws73_vm_native_root.subprocess.run', side_effect=validate):
+                    with self.assertRaises((ValueError, subprocess.TimeoutExpired)):
+                        stage_discovery_config(config, daemon, base / 'root', manifest)
+                self.assertNotIn('discovery_config', manifest)
+                self.assertEqual(manifest['inputs'], [])
+            config.write_bytes(bytes(65537))
+            with patch('ws73_vm_native_root.subprocess.run') as run:
+                with self.assertRaisesRegex(ValueError, '64 KiB'):
+                    stage_discovery_config(config, daemon, base / 'root', {'inputs': []})
+                run.assert_not_called()
+
+    def test_custom_policy_does_not_enter_default_parallel_or_injection_gates(self):
+        package = {'discovery_config': {}}
+        check_discovery_config_gate({}, SimpleNamespace(command='support'))
+        check_discovery_config_gate(package, SimpleNamespace(command='run', qmp_hotplug=True))
+        for flags in ({'command': 'support'}, {'command': 'run'},
+                      {'command': 'run', 'qmp_hotplug': True, 'parallel_pairs': True},
+                      {'command': 'run', 'qmp_hotplug': True, 'daemon_cancel_remove': True},
+                      {'command': 'run', 'qmp_hotplug': True, 'managed_partial_case': 'dup'}):
+            with self.subTest(flags=flags), self.assertRaisesRegex(ValueError, 'separate two-radio'):
+                check_discovery_config_gate(package, SimpleNamespace(**flags))
 
 
 if __name__ == '__main__':

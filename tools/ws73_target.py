@@ -516,6 +516,11 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        native_vm.check_discovery_config_gate(package, args)
+        if 'discovery_config' in package:
+            m['discovery_config'] = package['discovery_config']
+            m['custom_policy_rf_acceptance'] = False
+            m['default_policy_acceptance'] = False
         if parallel and 'native_vm' not in package:
             raise ValueError('four-device gate requires qualified scratch-root native VM')
         if event_copy and 'event_copy_probe_compile' not in package:
@@ -921,6 +926,8 @@ def main():
     for name in native_vm.OPTIONS:
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
+    pack.add_argument('--native-discovery-config', type=Path,
+                      help='freeze a private slkd TOML config in the native VM; checked by staged slkd, no RF qualification')
     for name in ['run','support']:
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)

@@ -35,6 +35,10 @@ struct Cli {
     #[arg(short, long)]
     config: Option<PathBuf>,
 
+    /// Validate explicit configuration and exit before D-Bus or controller startup.
+    #[arg(long, requires = "config")]
+    check_config: bool,
+
     /// Bond metadata directory (no native key persistence is claimed).
     #[arg(long, default_value = "/var/lib/sparklink")]
     storage: String,
@@ -56,6 +60,14 @@ struct Cli {
 async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
+    // The checker uses the daemon's actual parser and policy validation. It
+    // does not establish firmware support or open controller authority.
+    let config = DaemonConfig::startup(cli.config.as_deref())?;
+    if cli.check_config {
+        println!("Configuration valid (syntax and host policy only).");
+        return Ok(());
+    }
+
     // Logging: prefer journald, fall back to stderr
     let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
 
@@ -72,7 +84,6 @@ async fn main() -> anyhow::Result<()> {
     info!(version = env!("CARGO_PKG_VERSION"), "slkd starting");
 
     // Validate before publishing D-Bus objects or acquiring controller authority.
-    let config = DaemonConfig::startup(cli.config.as_deref())?;
 
     let directory: AdapterDirectory = Arc::new(Mutex::new(Default::default()));
     let builder = if cli.session {

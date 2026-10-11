@@ -23,6 +23,8 @@ def enabled(args):
     supplied = [getattr(args, name, None) is not None for name in OPTIONS]
     if any(supplied) and not all(supplied):
         raise ValueError('native VM profile requires module tree, boot smoke and service bundle together')
+    if getattr(args, 'native_discovery_config', None) is not None and not all(supplied):
+        raise ValueError('discovery config requires the complete native VM profile')
     return all(supplied)
 
 
@@ -61,6 +63,55 @@ def checked_copy(source, target):
     shutil.copy2(source, target)
     if digest(source) != before or digest(target) != before:
         raise ValueError('VM input changed while copying: ' + str(source))
+
+
+def stage_discovery_config(source, daemon, root, manifest):
+    """Freeze a private VM config and check it with the exact staged daemon.
+
+    No Python policy parser or firmware-support claim. The source is retained
+    in preparation inputs so a concurrent edit fails the final freeze check.
+    """
+    source = source.resolve(strict=True)
+    if not source.is_file() or source.stat().st_size > 65536:
+        raise ValueError('discovery config must be a regular file of at most 64 KiB')
+    record = file_record(source)
+    target = root / 'etc/sparklink/main.conf'
+    checked_copy(source, target)
+    if digest(target) != record['sha256']:
+        raise ValueError('discovery config changed before validation')
+    command = [str(daemon), '--check-config', '--config', str(target)]
+    result = subprocess.run(command, capture_output=True, text=True, timeout=15)
+    if result.returncode:
+        raise ValueError('staged slkd rejected discovery config: ' + result.stderr[-4096:])
+    if file_record(source) != record or digest(target) != record['sha256']:
+        raise ValueError('discovery config changed during validation')
+    manifest['inputs'].append(record)
+    manifest['discovery_config'] = {
+        'source': record, 'guest_path': '/etc/sparklink/main.conf',
+        'guest_sha256': digest(target), 'validator': file_record(daemon),
+        'validation_command': command, 'validation_exit': result.returncode,
+        'validation_stdout': result.stdout, 'validation_stderr': result.stderr,
+        'firmware_support_acceptance': False, 'custom_policy_rf_acceptance': False,
+        'host_installation': False,
+    }
+    (root / 'expected-discovery-config-sha256').write_text(record['sha256'] + '\n')
+
+
+def check_discovery_config_gate(package, args):
+    """Custom policy first uses the separate two-radio guest lifecycle gate.
+
+    Existing Managed injections and default four-radio acceptance must not
+    silently inherit a custom configuration before their verifiers migrate.
+    """
+    if 'discovery_config' not in package:
+        return
+    if (args.command != 'run' or not getattr(args, 'qmp_hotplug', False)
+            or any(getattr(args, flag, False) for flag in (
+                'parallel_pairs', 'fault_recovery', 'daemon_cancel_remove',
+                'event_copy_verify', 'diagnostic_verify', 'active_deadline_verify',
+                'active_close_verify', 'setup_release_verify', 'managed_queue_verify',
+                'managed_partial_case', 'daemon_hold_case'))):
+        raise ValueError('custom discovery config requires separate two-radio QMP lifecycle gate')
 
 
 def stage(args, manifest, root, source, copy_elf):
@@ -117,6 +168,9 @@ def stage(args, manifest, root, source, copy_elf):
         (root / 'bin' / name).symlink_to('/' + str(prefix / name))
     library = service_path / 'payload' / service['shared_library'].lstrip('/')
     copy_elf(library, root / 'usr/lib/liblibsparklink.so', root)
+    custom_config = getattr(args, 'native_discovery_config', None)
+    if custom_config is not None:
+        stage_discovery_config(custom_config, service_path / 'payload' / prefix / 'slkd', root, manifest)
     for name in ('ws73.bin', 'wifi_cali.bin', 'btc_cali.bin', 'bsle_custom.bin', 'pm_config.bin'):
         if digest(root / 'lib/firmware/sparklink/ws73' / name) != digest(
                 root / 'usr/lib/firmware/sparklink/ws73' / name):

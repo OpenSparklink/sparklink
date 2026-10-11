@@ -17,8 +17,8 @@ from test_ws73_diagnostic_hold import Monitor
 
 
 def fixture():
-    target = SleControllerSnapshot(version=1, generation=1, profile=1, valid_fields=1)
-    peer = SleControllerSnapshot(version=1, generation=2, profile=1, valid_fields=1, dev_index=1)
+    target = SleControllerSnapshot(version=1, generation=1, flags=1, profile=1, valid_fields=1)
+    peer = SleControllerSnapshot(version=1, generation=2, flags=1, profile=1, valid_fields=1, dev_index=1)
     peer.address[:] = b'123456'
     command = SleDiagnosticSubmit(version=1, generation=1, request_id=1, timeout_ms=500, opcode=0x0406, action=1)
     original = bytes(command).hex(); command.seq = 1

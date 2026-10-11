@@ -73,9 +73,9 @@ def verify_records(record):
         raise ValueError('limited pre-daemon active retirement format required')
     target = _decode(SleControllerSnapshot, record['target_snapshot'])
     peers = [_decode(SleControllerSnapshot, v) for v in record['peer_snapshots']]
-    if (target.version != 1 or target.profile != 1 or target.valid_fields != 1 or target.dev_index != 0
+    if (target.version != 1 or target.flags != 1 or target.profile != 1 or target.valid_fields != 1 or target.dev_index != 0
             or not target.generation or len(peers) != 2 or bytes(peers[0]) != bytes(peers[1])
-            or peers[0].dev_index != 1 or peers[0].profile != 1 or peers[0].valid_fields != 1
+            or peers[0].dev_index != 1 or peers[0].flags != 1 or peers[0].profile != 1 or peers[0].valid_fields != 1
             or not peers[0].generation or target.generation == peers[0].generation):
         raise ValueError('independent initial target and unchanged peer metadata required')
     command = _decode(SleDiagnosticSubmit, record['input'])
@@ -213,7 +213,7 @@ def run(args):
                 ready = False
                 try:
                     adapter = NativeAdapter(index); snapshot = adapter.snapshot()
-                    ready = snapshot.valid_fields == 1 and snapshot.profile == 1 and snapshot.flags != 4
+                    ready = snapshot.valid_fields == 1 and snapshot.profile == 1 and snapshot.flags == 1
                     if ready: break
                 except OSError as error:
                     if error.errno not in (errno.ENODEV, errno.EAGAIN): raise

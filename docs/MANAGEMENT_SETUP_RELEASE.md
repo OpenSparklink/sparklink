@@ -88,3 +88,13 @@ golden许可、最小基准抓包/连接ACB与pairing relay仍独立验收；FW1
 与历史物理xHCI warning继续OPEN。随后独立事件调用者迁移、shared ring/fallback/
 旧UAPI删除、socket/SSAP/每连接安全/Agent/Bond/Profile、四设备两组/Native/Proxy/
 PM/sandbox/发布及完整S0–S6保持，北极星7/8，整项不关闭，draft不合并。
+
+
+## Diagnostic 已 Off 的在途关闭限定资格
+
+[新门禁与证据边界](USB_DESCRIPTOR_CAPABILITY_CLEANUP.md)及
+[新镜像实测](evidence/ws73-vm-descriptor-cleanup-held-close-20261011.json)仅将
+Diagnostic already-Off 的原fd/最后dup在途关闭、保留原期限后Runtime有界退役
+加入资格。Setup六案例保持；此前未资格记录保持历史，不改为成功。
+close立即abort、Managed partial/unknown初始化真实cleanup、完整作者/权限/并发/
+removal/32-bit与自然RCA/自动恢复继续OPEN。

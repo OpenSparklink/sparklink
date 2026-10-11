@@ -181,7 +181,7 @@ C通用固件短传输/最终ACK、部分初始化/自然根因/无人工恢复�
 全部S0–S6继续OPEN；VM-only/北极星7/8，部分成果不关闭整项或合并draft。
 
 
-### 当前通用 USB 固件错误传播整改及新镜像回归
+### 上批通用 USB 固件错误传播整改及新镜像回归
 
 K`7f2ba1f81ce0`／编译U`ae542f568e03`修复实际C短写/最终ACK校验及Rust
 loader/probe错误传播，只有ENOENT允许使用已bootstrap固件；上传后重新查询，
@@ -212,3 +212,39 @@ WS73 partial/unknown初始化真实cleanup、held transport last-file-close/drai
 两组/其他Native/Proxy/PM/sandbox/发布及全部S0–S6保持；最新附件SHA与已采纳决策
 相同。实际开放集合28（K19/U9），原scope不改；VM-only/北极星7/8，自然故障根因、
 无人工拔插恢复、历史物理xHCI warning继续OPEN，不关闭整项、不合并draft。
+
+
+### 当前端点／能力默认值清理与真实在途最后文件关闭
+
+K`c5ec97f50c06`／编译U`ad5e28727229`已删除生产descriptor失败的“test mode”
+端点回退，context私有准备成功后才发布；删除USB/serdev/default/attach未经查询
+的feature、255/8/MTU/MPS/transport/measurement/crypto声明，保留实际身份/固件。
+[调用清单、未知值和门禁范围](USB_DESCRIPTOR_CAPABILITY_CLEANUP.md)明确0不代表
+无限制或已知不支持；完整caps/limit/quirk来源、旧DLI_INFO软件预算与UAPI迁移仍OPEN。
+18个实际C register/unregister sanitizer案例、5个实际Rust info/default/attach测试
+通过；原固件69 C/12 Rust及管理10门禁保持。6个在途close负例测试使工具总数234。
+提取器void支持和测试入口错误、一次错误expected HEAD被快照校验器拒绝的原日志
+均保留；修正后完整内核/private modules/签名smoke通过，编译器warning0、GNU make
+一次jobserver警告。Native WS73 driver/已查询metadata未改。
+
+[新镜像两个独立VM封存](evidence/ws73-vm-descriptor-cleanup-held-close-20261011.json)
+首轮实际Diagnostic MAC回复由QEMU暂留：原fd关闭得到EBADF，dup保有Held100ms；
+最后dup关闭EBADF、observer精确Revoking，原500ms Host deadline触发Runtime退役
+并取消实际IN81，一次abort／零release-reset-detach、无新目标命令或旧回复交付，
+旧generation拒绝、peer不变且两次真实MAC成功。此为already-Off Diagnostic有界
+原期限drain，**不证明close立即abort、Managed部分初始化或完整生命周期**。
+两新VM均各6 Setup release/last-file/dup及完整窗口零DLI；分别保留稳定预算归零
+和完整原诊断63记录/50proof/46wire/read7/result16/copyout2/poll3/淘汰33/CLI4/
+旧注册27拒绝、queued原期限。各UID1000/caps0真实20+2，最长470/774ms，各自
+同RF slkd/peer，USB1345/1431、各22RX/零drop，guest warning0/taint0/traceoverrun0，
+四只结束释放在位。USB/HCC/DLI不是独立PHY；hold期间同daemon未资格。
+[精确源码CI38111118827](https://github.com/OpenSparklink/sparklink/actions/runs/38111118827)
+九作业终结success，170 Rust/34 Python/234工具、32期限/10管理/固件69+12/
+新增descriptor18+info5门禁。
+
+下一步推进Managed部分初始化真实cleanup、不同radio/history/在途阶段的close与
+有限恢复／自然RCA；迁移独立事件消费者后删shared ring/fallback/未发布旧UAPI，
+并接通完整能力来源与显式不支持、drivers-owned backend/parser、最小socket、
+SSAP/每连接安全/Agent/Bond/Profile、四设备两组及Native/Proxy/PM/sandbox/发布。
+完整S0–S6与28项原scope保持，VM-only／北极星7/8，不关闭自然启动/重枚举/消失
+根因、无人工拔插恢复或历史物理xHCI warning，部分成果不关闭整项或合并draft。

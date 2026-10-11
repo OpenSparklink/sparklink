@@ -1,0 +1,65 @@
+{
+  "status": "MANAGED_NEVER_SELECTED_CANCELLATION_SOURCE_PASS_LIVE_GATE_PENDING",
+  "kernel_head": "f6709397c6d6e33546744c79193b14ba9f573660",
+  "source": {
+    "status": "MANAGEMENT_RELEASE_SOURCE_BOUNDARIES_PASS",
+    "rust_tests": 21,
+    "scope": "actual Host predicates/TX selection/InFlight and core fast-release block; source queue/operation/lease modules and opcode/timeout constants; locks, clock scaling and surrounding transport dependencies are fixtures",
+    "live_ioctl_acceptance": false,
+    "fd_close_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "physical_acceptance": false,
+    "sources": {
+      "sle_host.rs": "fbcd67ef32633a2761952a57faeaa09765414852eb5fa06665521562fb37aa28",
+      "sparklink_core.rs": "0a2a69132d1c3d89e604c5d46ebc2adfd487ab0e9c30368c1a4efd641cc4ce2e",
+      "sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+      "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+      "sle_command_queue.rs": "7e5f7e63e9adaf5e0b4bbed6559478d7da098382f4c285c932ac80f107ac1347",
+      "sle_command_plan.rs": "74dd00f54e919e1d12f57a37e20654e9982d61b9e5d54c28505a2a9dc12b79cb",
+      "sle_dli.rs": "5a18a50b4f541115bf988626444cea9c705c77e7dc3834934f540b172098e098",
+      "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29"
+    }
+  },
+  "deadline_regression": {
+    "status": "DIAGNOSTIC_RESULT_BOUNDARY_PASS",
+    "rust_tests": 32,
+    "result_tests": 14,
+    "admission_tests": 12,
+    "host_deadline_tests": 6,
+    "scope": "actual pending/queue modules, submit/result handlers and Host enqueue/cancel bodies; clock/lease/lock/usercopy/allocation dependencies are fixtures",
+    "live_vfs_acceptance": false,
+    "physical_acceptance": false,
+    "sources": {
+      "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+      "sle_uapi.rs": "b5e951320010c21296ee2f86b55c5d6883ab43e89502517f84f1eedf0d17aec9",
+      "sparklink_core.rs": "0a2a69132d1c3d89e604c5d46ebc2adfd487ab0e9c30368c1a4efd641cc4ce2e",
+      "sle_host.rs": "fbcd67ef32633a2761952a57faeaa09765414852eb5fa06665521562fb37aa28",
+      "sle_command_queue.rs": "7e5f7e63e9adaf5e0b4bbed6559478d7da098382f4c285c932ac80f107ac1347",
+      "sle_command_plan.rs": "74dd00f54e919e1d12f57a37e20654e9982d61b9e5d54c28505a2a9dc12b79cb",
+      "sle_workers.rs": "651b89a0d4678d10fe56a642575a4fd76101c0daa31497bcb7d844a08d4422c0"
+    },
+    "remaining": [
+      "Actual ioctl owner/CAP/usercopy/removal gates in qualified VM",
+      "Legacy DLI event callers and shared projection removal",
+      "Live idempotent admission/cancel/deadline syscall and on-wire late reply gates"
+    ]
+  },
+  "source_failures_preserved": [
+    {
+      "path": ".dev/managed-unsubmitted-source.log",
+      "sha256": "e026b012e1393e54fec31572e2e7c71be62c875a51411320b5c1040522b5423d",
+      "scope": "test fixture adapter failed before executing tests; production implementation unchanged during fixture correction"
+    },
+    {
+      "path": ".dev/managed-unsubmitted-selection.log",
+      "sha256": "6fae6b54231cf0e6c6eb42593e088b603856d899cf88995d5afda15c19839848",
+      "scope": "test fixture adapter failed before executing tests; production implementation unchanged during fixture correction"
+    }
+  ],
+  "live_managed_preselection_acceptance": false,
+  "partial_initialization_cleanup_acceptance": false,
+  "new_image_ws73_regression": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "goal_complete": false
+}

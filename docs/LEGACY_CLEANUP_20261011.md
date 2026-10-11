@@ -503,3 +503,36 @@ K`c5ec97f50c06`／编译U`ad5e28727229`已删除生产descriptor失败的“test
 SSAP/每连接安全/Agent/Bond/Profile、四设备两组及Native/Proxy/PM/sandbox/发布。
 完整S0–S6与28项原scope保持，VM-only／北极星7/8，不关闭自然启动/重枚举/消失
 根因、无人工拔插恢复或历史物理xHCI warning，部分成果不关闭整项或合并draft。
+
+
+## Managed 已入队但从未选择的取消实现（实机专用门禁待执行）
+
+内核 `f6709397c6d6e33546744c79193b14ba9f573660` 在现有 admission/state/Host 串行化下扩展释放路径：
+仅 Host 无 active/reply/fault/revocation、无已选择 recipe、未初始化且 radio 均
+Unknown，保留的操作仅未执行 Queued 或 ECANCELED、无 opcode/step/status/power/
+完成时间，policy cookies 有对应 operation，队列仅有其带 tag 的 typed 请求时，
+允许直接取消队列和操作、将租约 Free。结果保留 Cancelled/ECANCELED，cookie、
+credit、Unknown/Setup 不变，不发送不存在句柄的 stop，不合成 Complete/Off/Ready。
+原 quiet pristine Setup、已确认 Off 和 Diagnostic 路径保持。
+
+实际 TX `Host::next` 在返回给 transport 前设置 recipe 和 Pending/opcode；
+recipe 不因取消或结果淘汰清空，因此任何已选中、部分初始化、在途、待回复、错误
+或未知历史仍需真实 cleanup/退役。该判据依赖当前 Native raw whitelist 仅查询；
+未跟踪 raw 或独立 legacy recipe 队列不能采用此例外。仍有调用者的 legacy 路径
+等待迁移，未发布 UAPI 无兼容期；专用模拟和依赖 fixtures 留在 selftests。
+
+[源码证据](evidence/managed-unsubmitted-source-20261011.json)编译实际 predicates、
+取消、TX selection、InFlight、core release block，真实 operation/queue/lease 模块
+及实际 opcode/timeout 常量：21 项严格 Rust 门禁通过；原期限/result 开发门禁
+保持。锁、时钟缩放、周围 transport 是依赖 fixtures，不能据此宣称 VFS/RF。
+初次 fixture 缺导入，以及扩展后缺模块层次/generic Result 的编译失败日志保留，
+修正仅 fixture 适配后再运行。生产未增加全局 dead-code suppression 或第二份 dirty
+状态。新镜像构建和专用 Managed pre-selection/partial-wire 实机门禁尚待核对。
+
+后续须在新冻结签名 VM 中证明实际 ioctl/last-file/dup、队列选择竞态、完整字节/
+USB 证据、另一设备和同 slkd 隔离；部分初始化各步骤不能借未执行路径逃过真实
+cleanup。保留真实 WS73 普通用户双设备 20+2 回归。已有 Diagnostic 原期限关闭
+证据仅覆盖当时编译版本及 already-Off 模式，不替代这项 Managed 验收。
+自然启动/重枚举/消失根因、无人工拔插的完整恢复、历史物理 xHCI warning、
+完整能力来源/事件迁移/socket/SSAP/安全/Bond/Profile/四设备/Native/Proxy/PM/
+sandbox/发布及 S0–S6、全部 28 项原 scope 仍 OPEN。VM-only、不关闭整项、不合并 draft。

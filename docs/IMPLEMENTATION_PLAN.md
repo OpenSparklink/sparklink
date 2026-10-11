@@ -1206,3 +1206,30 @@ EP01仍超时。候选没有接入生产，已恢复可变构建源码；精确�
 →同 slkd 双设备 RF 和故障隔离→四设备两组。另一只必须真实活动且查询通过，
 仅 host 枚举不算隔离；不以整 hub 复位或人工重插满足自动恢复。相关 issues
 及完整 S0–S6 scope 保持开放，部分成果不提前关闭整项。
+
+## Managed 队列实际 fd 支撑与前置条件纠正（2026-10-11）
+
+[独立封存证据](evidence/ws73-managed-queue-support-and-bulk-submit-20261011.json)
+保留首次模拟 USB／实际内核执行的 EBUSY 失败和修正后的六案例支撑通过。
+Unknown Setup 不能同时排入广播配置和含 START 的扫描初始化；内核保护保持。
+当前子门禁只排入合法广播配置／扫描 STOP，逐案例验证两次非法扫描初始化
+EBUSY 且结果 ENOENT。两只模拟 USB 上实际 release／最后 fd／dup 均取消，
+整个区间及间隙零 DLI，Unknown/Setup 与同伴快照保持。这不增加实机通过数，
+`managed_preselection_live_acceptance` 仍 false，不能替代扫描初始化的完整门禁。
+
+部分扫描在途探针改为先于同一租约真实完成广播配置／STOP，保存完整成功结果、
+selected power 和两笔有序成功 USB Complete，再暂停扫描第一步；失败不进入
+扫描。格式2拒绝遗漏／失败／伪造 Off；268 项工具测试通过，新的 partial 前置
+路径尚未通过 VM 或实机在途验收。广播案例仍从 untouched Setup 开始。
+
+实机维护 VM 的 libusb debug 确认 length36 bulk URB 实际提交，然后超时取消并
+回收 -ENOENT/transferred0；这将“未提交到主机”的假设排除于该次 OUT，但不能
+据此判定设备／固件／QEMU 根因或 PHY 传输。读取 parent/hub/target 都 active，
+该区间 suspended-time 增量零，未改主机 PM；完整冷启动及自然 RCA 仍未知。
+
+顺序：先恢复真实独立启动／查询；执行 Unknown Setup 子门禁，再单独在真实
+confirmed advertising Off、无 pending 广播条件下验收扫描初始化排队取消；
+执行 partial 两个域×release／最后 fd／dup 和真实在途回复，核对原期限、两域
+成功 STOP、Revoking→Free、Ready 同伴前／在途／后活动不变；最后复跑同 slkd
+普通用户双设备20+2及四设备两组。整 hub 复位不算独立自动恢复，源测试／CI／
+模拟支撑不算真实验收。自动恢复、RCA、完整清理及原28项 scope 继续 OPEN。

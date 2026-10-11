@@ -1,0 +1,1105 @@
+{
+  "status": "LIMITED_SYNTHETIC_KERNEL_FD_SUPPORT_PASS_REAL_MANAGED_NOT_REACHED_RCA_OPEN",
+  "created_wall_ns": 1791706778498493703,
+  "published_kernel_head": "a3703a65ea69d98045ac53381cec101b599218fa",
+  "tool_source_head": "cc3be5bf1416512cf879937806bfe9231b3a02a3",
+  "vm_only": true,
+  "supersedes_prior_evidence": false,
+  "production_linux_rust_behavior_changed": false,
+  "managed_preselection_real_cases_executed": 0,
+  "managed_partial_real_cases_executed": 0,
+  "managed_preselection_live_acceptance": false,
+  "managed_partial_initialization_live_acceptance": false,
+  "active_ready_peer_isolation_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "full_goal_complete": false,
+  "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+  "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+  "prior_evidence": [
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/docs/evidence/ws73-managed-gate-startup-failures-20261011.json",
+      "sha256": "b8d0e975deb512751a8db377473f8f56430aa82a3749cdb95d207823eb290388",
+      "bytes": 69296
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/docs/evidence/ws73-managed-bootstrap-usb-contrasts-20261011.json",
+      "sha256": "8bc53807ea2e05089d08cca125d400ab34744e960d4240e4bd72ea87fbe458cb",
+      "bytes": 74178
+    }
+  ],
+  "first_actual_kernel_run": {
+    "frozen_tools_head": "4fc99eb2862732038c3624a4486cec4a1b6db9ff",
+    "manifest": {
+      "status": "FAIL",
+      "scope": "simulated USB, actual kernel fd contracts only",
+      "physical_acceptance": false,
+      "managed_preselection_live_acceptance": false,
+      "managed_partial_initialization_live_acceptance": false,
+      "active_ready_peer_isolation_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "natural_fault_root_cause_closed": false,
+      "started_wall_ns": 1791705661259553008,
+      "prepared_manifest": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-support-prepared/manifest.json",
+        "sha256": "18a7c4e0742fa3dd4b65b2f22196c7ac734f9f2b2b4a95ac029126371aa9fb24"
+      },
+      "runner_inputs": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/tools/ws73_managed_queue_support.py",
+          "sha256": "17f299edda601fb92f15c47a361555a4c6c4bc9c5de4611de1a61d61ed63bdd7"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/tools/ws73_management_queued.py",
+          "sha256": "0a8a4dcd69cc1d8d68ccb9a4fab07876aef422c784174999e21ad14647ac53f7"
+        }
+      ],
+      "qemu_args": [
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-qemu/qemu-system-x86_64",
+        "-machine",
+        "q35,accel=kvm",
+        "-cpu",
+        "host",
+        "-m",
+        "1024M",
+        "-smp",
+        "1",
+        "-display",
+        "none",
+        "-monitor",
+        "none",
+        "-no-reboot",
+        "-nic",
+        "none",
+        "-kernel",
+        ".dev/managed-queue-synthetic-support-prepared/bzImage",
+        "-initrd",
+        ".dev/managed-queue-synthetic-support-prepared/initramfs.cpio.gz",
+        "-chardev",
+        "socket,id=console,path=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/serial.sock,server=on,wait=off",
+        "-serial",
+        "chardev:console",
+        "-qmp",
+        "unix:/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/qmp.sock,server=on,wait=off",
+        "-device",
+        "qemu-xhci,id=xhci,p2=8,p3=8",
+        "-fsdev",
+        "local,id=evidence,path=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output,security_model=mapped-xattr",
+        "-device",
+        "virtio-9p-pci,fsdev=evidence,mount_tag=evidence",
+        "-append",
+        "console=ttyS0 loglevel=6 panic=1 oops=panic ws73.managed_queue=1 ws73.managed_queue_support=1 root=UUID=3655748b-92f3-4a11-971e-349dc7788478 rootfstype=btrfs rw init=/init rd.plymouth=0 plymouth.enable=0 rd.shell=0 rd.retry=30 rd.timeout=45",
+        "-L",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-support-prepared/qemu-data",
+        "-drive",
+        "file=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/root.btrfs,if=none,id=scratch,format=raw",
+        "-device",
+        "nvme,drive=scratch,serial=SLK_VM_ROOT_ONLY"
+      ],
+      "error": "support VM failed; preserve evidence",
+      "qemu_exit": 0,
+      "guest_files": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/capture-failure-exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/capture-process-status.txt",
+          "sha256": "7141ff47f1f3621129c52d20afb5144b83a4c844ca54b3b4f0ac2d1368cbfff1"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/capture-stats.txt",
+          "sha256": "e4f980a258095fab06f2c07fbdd752536d9c18cabc14b3327141a000e760e26a"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/capture-stdout.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/dbus.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-boot_error.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-boot_stage.txt",
+          "sha256": "a969bc7b726fd4b8b08f6a9bb1d46fec8c42c543a4c8b5e6c801b24e136c9e9e"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-controller_information.txt",
+          "sha256": "539fc535e11aa8803355857ffc9bcff933f7573dd0addc71911ef7e369bd57b1"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-failure_diagnostics.txt",
+          "sha256": "fb04f3ec39348c0411df623b770271d5bfd0807a7d8662515edda70d7ba28977"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-metadata_valid.txt",
+          "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-native_runtime.txt",
+          "sha256": "22ecfe2e9bb9fa24a951f76cd6396771e1174beffacd9c3355542ac5ebae87ae"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-recovery_budget.txt",
+          "sha256": "497164b7ca46aef674f59bce2374b4a7bc672fe7a7725eff4f9abde831c62920"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-runtime_transport.txt",
+          "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-warm_recovery.txt",
+          "sha256": "9a9637fe89a7aedba7e854a024c7891c40b4167c06b782a3d95f216fa65fb4b2"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-boot_error.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-boot_stage.txt",
+          "sha256": "a969bc7b726fd4b8b08f6a9bb1d46fec8c42c543a4c8b5e6c801b24e136c9e9e"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-controller_information.txt",
+          "sha256": "aff63d6d95ebc670e992476aa052430a6e7ac6cb991fd36258ddae6078dd8a2a"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-failure_diagnostics.txt",
+          "sha256": "2229ddf027f8d80c684b586cb60937a222d2a0a10b63a2cc4411232c45d2728e"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-metadata_valid.txt",
+          "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-native_runtime.txt",
+          "sha256": "971f2d80f7d753a4c02c4c72e2920c6af9bd793648cdd16996135dd9edc1a981"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-recovery_budget.txt",
+          "sha256": "497164b7ca46aef674f59bce2374b4a7bc672fe7a7725eff4f9abde831c62920"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-runtime_transport.txt",
+          "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-warm_recovery.txt",
+          "sha256": "9a9637fe89a7aedba7e854a024c7891c40b4167c06b782a3d95f216fa65fb4b2"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/kernel.log",
+          "sha256": "d2945de8fc2748f328010d363a033db19ca661c1b13083a80dc98d0d080174d2"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue/metadata-0.json",
+          "sha256": "22282dbcaf2cc7c126b1ee3deff6ebbcb3469f4951f61368bec0b08c96344aa7"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue/probe-stderr.txt",
+          "sha256": "6d2d068a6cf8706c844cdf8f64438fc58b0e5a5edd1fde6f5b0024511794ee7f"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue/probe.jsonl",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue/run.json",
+          "sha256": "b5e4f124d764d47a2eb01c13be0caa69955a158e2c9d78de385569765c4ac511"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue-supervisor.log",
+          "sha256": "ecc8ebf8668b1c9ca71c198cdaa1bbc16f4c2403ef72f5c91dd8ca4536edcea1"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/ws73.pcap",
+          "sha256": "3c6e080701ca7ce69a444fbee077864f8a06e4fcc02bbab4f22bc8fc21705a97"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/xhci-trace-stats.txt",
+          "sha256": "c6fe12bb1f2cd8a19f20a227d1626b6dda23cb243ca036c6673ae508d0c290a4"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/xhci-trace.log",
+          "sha256": "3cc0af530b24a480815178433d7a546da9d60e5e80d0fe9f8a130c1ef3b1f0ce"
+        }
+      ],
+      "finished_wall_ns": 1791705671133828364
+    },
+    "probe": {
+      "format_version": 1,
+      "status": "FAIL",
+      "daemon_running": false,
+      "synthetic_support": true,
+      "physical_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "initial_snapshots": [
+        "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+        "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000"
+      ],
+      "cases": [],
+      "probe_exit": 1,
+      "error": "real release/last-file-close probe failed"
+    },
+    "stderr": "line 66: !ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&commands[1]) errno=16\n",
+    "assets": [
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/console.log",
+        "sha256": "13de62eaa8007fdea16ae42684f8fbd6ca8bf838ba12597e16e0444a4b43373f",
+        "bytes": 74861
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/capture-failure-exit.txt",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "bytes": 2
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/capture-process-status.txt",
+        "sha256": "7141ff47f1f3621129c52d20afb5144b83a4c844ca54b3b4f0ac2d1368cbfff1",
+        "bytes": 1485
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/capture-stats.txt",
+        "sha256": "e4f980a258095fab06f2c07fbdd752536d9c18cabc14b3327141a000e760e26a",
+        "bytes": 225
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/capture-stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/dbus.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-boot_error.txt",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "bytes": 2
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-boot_stage.txt",
+        "sha256": "a969bc7b726fd4b8b08f6a9bb1d46fec8c42c543a4c8b5e6c801b24e136c9e9e",
+        "bytes": 21
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-controller_information.txt",
+        "sha256": "539fc535e11aa8803355857ffc9bcff933f7573dd0addc71911ef7e369bd57b1",
+        "bytes": 113
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-failure_diagnostics.txt",
+        "sha256": "fb04f3ec39348c0411df623b770271d5bfd0807a7d8662515edda70d7ba28977",
+        "bytes": 116
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-metadata_valid.txt",
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+        "bytes": 2
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-native_runtime.txt",
+        "sha256": "22ecfe2e9bb9fa24a951f76cd6396771e1174beffacd9c3355542ac5ebae87ae",
+        "bytes": 90
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-recovery_budget.txt",
+        "sha256": "497164b7ca46aef674f59bce2374b4a7bc672fe7a7725eff4f9abde831c62920",
+        "bytes": 105
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-runtime_transport.txt",
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+        "bytes": 2
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-1:1.0-warm_recovery.txt",
+        "sha256": "9a9637fe89a7aedba7e854a024c7891c40b4167c06b782a3d95f216fa65fb4b2",
+        "bytes": 49
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-boot_error.txt",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "bytes": 2
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-boot_stage.txt",
+        "sha256": "a969bc7b726fd4b8b08f6a9bb1d46fec8c42c543a4c8b5e6c801b24e136c9e9e",
+        "bytes": 21
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-controller_information.txt",
+        "sha256": "aff63d6d95ebc670e992476aa052430a6e7ac6cb991fd36258ddae6078dd8a2a",
+        "bytes": 113
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-failure_diagnostics.txt",
+        "sha256": "2229ddf027f8d80c684b586cb60937a222d2a0a10b63a2cc4411232c45d2728e",
+        "bytes": 116
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-metadata_valid.txt",
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+        "bytes": 2
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-native_runtime.txt",
+        "sha256": "971f2d80f7d753a4c02c4c72e2920c6af9bd793648cdd16996135dd9edc1a981",
+        "bytes": 90
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-recovery_budget.txt",
+        "sha256": "497164b7ca46aef674f59bce2374b4a7bc672fe7a7725eff4f9abde831c62920",
+        "bytes": 105
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-runtime_transport.txt",
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+        "bytes": 2
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/device-failure/1-2:1.0-warm_recovery.txt",
+        "sha256": "9a9637fe89a7aedba7e854a024c7891c40b4167c06b782a3d95f216fa65fb4b2",
+        "bytes": 49
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/kernel.log",
+        "sha256": "d2945de8fc2748f328010d363a033db19ca661c1b13083a80dc98d0d080174d2",
+        "bytes": 59176
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue/metadata-0.json",
+        "sha256": "22282dbcaf2cc7c126b1ee3deff6ebbcb3469f4951f61368bec0b08c96344aa7",
+        "bytes": 164
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue/probe-stderr.txt",
+        "sha256": "6d2d068a6cf8706c844cdf8f64438fc58b0e5a5edd1fde6f5b0024511794ee7f",
+        "bytes": 72
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue/probe.jsonl",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue/run.json",
+        "sha256": "b5e4f124d764d47a2eb01c13be0caa69955a158e2c9d78de385569765c4ac511",
+        "bytes": 573
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/managed-queue-supervisor.log",
+        "sha256": "ecc8ebf8668b1c9ca71c198cdaa1bbc16f4c2403ef72f5c91dd8ca4536edcea1",
+        "bytes": 378
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/ws73.pcap",
+        "sha256": "3c6e080701ca7ce69a444fbee077864f8a06e4fcc02bbab4f22bc8fc21705a97",
+        "bytes": 32278
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/xhci-trace-stats.txt",
+        "sha256": "c6fe12bb1f2cd8a19f20a227d1626b6dda23cb243ca036c6673ae508d0c290a4",
+        "bytes": 140
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/guest-output/xhci-trace.log",
+        "sha256": "3cc0af530b24a480815178433d7a546da9d60e5e80d0fe9f8a130c1ef3b1f0ce",
+        "bytes": 209354
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/manifest.json",
+        "sha256": "6e197e809e7b0a69ff2d63723e13f439e285452b97a842fb89ced207d669ba00",
+        "bytes": 10763
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/qemu-stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/qmp.jsonl",
+        "sha256": "a4d2e281eb59fba38c792857d1a3eecbe70cabea19bc41e826eeeaf00c087227",
+        "bytes": 1028
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-synthetic-kernel-fd-run/root.btrfs",
+        "sha256": "e2dab9a8f0cca5a23abfb0906aaf22aeb69461cb4a50d8f4d0a134ac42c4d4c8",
+        "bytes": 1073741824
+      }
+    ]
+  },
+  "corrected_actual_kernel_run": {
+    "frozen_tools_head": "40ab1d15fa835dd9595166174988156b840f4c7e",
+    "manifest": {
+      "status": "PASS_MANAGED_QUEUE_SYNTHETIC_KERNEL_FD_SUPPORT",
+      "scope": "simulated USB, actual kernel fd contracts only",
+      "physical_acceptance": false,
+      "managed_preselection_live_acceptance": false,
+      "managed_partial_initialization_live_acceptance": false,
+      "active_ready_peer_isolation_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "natural_fault_root_cause_closed": false,
+      "started_wall_ns": 1791706487073110914,
+      "prepared_manifest": {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-prepared/manifest.json",
+        "sha256": "7b3187ff8766343ea66d842beb6097fd250f592ae8206b35566e31c813de9278"
+      },
+      "runner_inputs": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/tools/ws73_managed_queue_support.py",
+          "sha256": "c634be394da04ba3bcf748a8ce14bfb5c5e8447f53ed4387a97fb84e31e19f18"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/tools/ws73_management_queued.py",
+          "sha256": "b81d3d699fd2eff66ee3f5d0dba8e0fbf4fdb8154853fead83706135c7b9850c"
+        }
+      ],
+      "qemu_args": [
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-qemu/qemu-system-x86_64",
+        "-machine",
+        "q35,accel=kvm",
+        "-cpu",
+        "host",
+        "-m",
+        "1024M",
+        "-smp",
+        "1",
+        "-display",
+        "none",
+        "-monitor",
+        "none",
+        "-no-reboot",
+        "-nic",
+        "none",
+        "-kernel",
+        ".dev/managed-queue-admission-corrected-prepared/bzImage",
+        "-initrd",
+        ".dev/managed-queue-admission-corrected-prepared/initramfs.cpio.gz",
+        "-chardev",
+        "socket,id=console,path=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/serial.sock,server=on,wait=off",
+        "-serial",
+        "chardev:console",
+        "-qmp",
+        "unix:/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/qmp.sock,server=on,wait=off",
+        "-device",
+        "qemu-xhci,id=xhci,p2=8,p3=8",
+        "-fsdev",
+        "local,id=evidence,path=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output,security_model=mapped-xattr",
+        "-device",
+        "virtio-9p-pci,fsdev=evidence,mount_tag=evidence",
+        "-append",
+        "console=ttyS0 loglevel=6 panic=1 oops=panic ws73.managed_queue=1 ws73.managed_queue_support=1 root=UUID=5e260ab4-683f-4717-a672-1537e7ecb974 rootfstype=btrfs rw init=/init rd.plymouth=0 plymouth.enable=0 rd.shell=0 rd.retry=30 rd.timeout=45",
+        "-L",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-prepared/qemu-data",
+        "-drive",
+        "file=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/root.btrfs,if=none,id=scratch,format=raw",
+        "-device",
+        "nvme,drive=scratch,serial=SLK_VM_ROOT_ONLY"
+      ],
+      "capture_packets": 289,
+      "corroboration": {
+        "scope": "six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices",
+        "cases": 6,
+        "commands": 0,
+        "completions": 0,
+        "failures": 0,
+        "start_wall_ns": 1791706495082855864,
+        "end_wall_ns": 1791706497189812483,
+        "synthetic_support": true,
+        "managed_preselection_live_acceptance": false,
+        "managed_unknown_setup_preselection_live_acceptance": false,
+        "managed_preselection_synthetic_support_acceptance": true,
+        "active_ready_peer_isolation_acceptance": false,
+        "normal_scheduler_concurrency_acceptance": false,
+        "setup_preserved": true,
+        "peer_snapshot_preserved": true,
+        "partial_initialization_cleanup_acceptance": false,
+        "held_transport_fd_close_acceptance": false,
+        "automatic_fault_recovery_acceptance": false
+      },
+      "qemu_exit": 0,
+      "guest_files": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/capture-process-status.txt",
+          "sha256": "f3cf76417a7114db75a3da052cf70457ec2147abf6ac26a3403879f521437929"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/capture-stats.txt",
+          "sha256": "26061992f6c80c5a095949ec5d5574a0c45da046af7863bb6021f8673b6d7659"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/capture-stdout.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/dbus.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/kernel.log",
+          "sha256": "4327f4c3188e236cf805be60aab154bb082334df79c70df083104026b18f60d9"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue/metadata-0.json",
+          "sha256": "22282dbcaf2cc7c126b1ee3deff6ebbcb3469f4951f61368bec0b08c96344aa7"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue/probe-stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue/probe.jsonl",
+          "sha256": "13fde91c8f695e614311bea7b6db273532186569bb7ea95bfffb304df4fd3d1c"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue/run.json",
+          "sha256": "88e951ca4799ee1045c4ade8fdf38ae06e4e8997e11128a2eb304413b38a32c9"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue-supervisor.log",
+          "sha256": "f59fae2e3d666f3422f3d174099cfb5d63c28c896853c9de235d88ed3a818be9"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/ws73.pcap",
+          "sha256": "370e32128b18264d61e7861d53d8932318c7c92feb27ee9126da41cb0bf9f744"
+        }
+      ],
+      "finished_wall_ns": 1791706499224203067
+    },
+    "probe": {
+      "format_version": 2,
+      "status": "QUEUED_UNKNOWN_SETUP_RELEASE_SYNTHETIC_SUPPORT_PASS",
+      "daemon_running": false,
+      "synthetic_support": true,
+      "physical_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "initial_snapshots": [
+        "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+        "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000"
+      ],
+      "cases": [
+        {
+          "case": "explicit-release",
+          "index": 0,
+          "generation": 1,
+          "peer_index": 1,
+          "peer_generation": 2,
+          "start_wall_ns": 1791706495082855864,
+          "end_wall_ns": 1791706495433166122,
+          "writer_fd": 5,
+          "duplicate_fd": -1,
+          "wrong_token_errno": 1,
+          "snapshot_before": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "snapshot_after": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "peer_before": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "peer_after": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "radio_before": "01000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "radio_after": "01000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "held": "010000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+          "after_first_close": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "free": "010000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+          "queued": [
+            "01000000000000000100000000000000010000000000000001000000050000000100000000000000000000000000000000000000000000000002000000000000",
+            "01000000000000000200000000000000010000000000000001000000040000000100000000000000000000000000000000000000000000000001000000000000"
+          ],
+          "cancelled": [
+            "01000000000000000100000000000000010000000000000001000000050000000500000083ffffff000000000000000000000000000000000002000000000000",
+            "01000000000000000200000000000000010000000000000001000000040000000500000083ffffff000000000000000000000000000000000001000000000000"
+          ],
+          "scan_initialize_rejections": [
+            {
+              "input": "0100000001000000060000000000000001000000000000006400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            },
+            {
+              "input": "010000000100000006000000000000000100000000000000c800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            }
+          ],
+          "critical_start_ns": 1791706495082867947,
+          "critical_end_ns": 1791706495082906570,
+          "scheduler_restored": true
+        },
+        {
+          "case": "last-fd-close",
+          "index": 0,
+          "generation": 1,
+          "peer_index": 1,
+          "peer_generation": 2,
+          "start_wall_ns": 1791706495434568625,
+          "end_wall_ns": 1791706495784908810,
+          "writer_fd": 5,
+          "duplicate_fd": -1,
+          "wrong_token_errno": 0,
+          "snapshot_before": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "snapshot_after": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "peer_before": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "peer_after": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "radio_before": "01000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "radio_after": "01000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "held": "010000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+          "after_first_close": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "free": "010000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+          "queued": [
+            "01000000000000000300000000000000010000000000000001000000050000000100000000000000000000000000000000000000000000000002000000000000",
+            "01000000000000000400000000000000010000000000000001000000040000000100000000000000000000000000000000000000000000000001000000000000"
+          ],
+          "cancelled": [
+            "01000000000000000300000000000000010000000000000001000000050000000500000083ffffff000000000000000000000000000000000002000000000000",
+            "01000000000000000400000000000000010000000000000001000000040000000500000083ffffff000000000000000000000000000000000001000000000000"
+          ],
+          "scan_initialize_rejections": [
+            {
+              "input": "0100000001000000060000000000000001000000000000006500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            },
+            {
+              "input": "010000000100000006000000000000000100000000000000c900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            }
+          ],
+          "critical_start_ns": 1791706495434615333,
+          "critical_end_ns": 1791706495434716353,
+          "scheduler_restored": true
+        },
+        {
+          "case": "dup-last-fd-close",
+          "index": 0,
+          "generation": 1,
+          "peer_index": 1,
+          "peer_generation": 2,
+          "start_wall_ns": 1791706495785682818,
+          "end_wall_ns": 1791706496135979180,
+          "writer_fd": 5,
+          "duplicate_fd": 6,
+          "wrong_token_errno": 0,
+          "snapshot_before": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "snapshot_after": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "peer_before": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "peer_after": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "radio_before": "01000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "radio_after": "01000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "held": "010000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+          "after_first_close": "010000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+          "free": "010000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+          "queued": [
+            "01000000000000000500000000000000010000000000000001000000050000000100000000000000000000000000000000000000000000000002000000000000",
+            "01000000000000000600000000000000010000000000000001000000040000000100000000000000000000000000000000000000000000000001000000000000"
+          ],
+          "cancelled": [
+            "01000000000000000500000000000000010000000000000001000000050000000500000083ffffff000000000000000000000000000000000002000000000000",
+            "01000000000000000600000000000000010000000000000001000000040000000500000083ffffff000000000000000000000000000000000001000000000000"
+          ],
+          "scan_initialize_rejections": [
+            {
+              "input": "0100000001000000060000000000000001000000000000006600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            },
+            {
+              "input": "010000000100000006000000000000000100000000000000ca00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            }
+          ],
+          "critical_start_ns": 1791706495785724567,
+          "critical_end_ns": 1791706495785790671,
+          "scheduler_restored": true
+        },
+        {
+          "case": "explicit-release",
+          "index": 1,
+          "generation": 2,
+          "peer_index": 0,
+          "peer_generation": 1,
+          "start_wall_ns": 1791706496137064715,
+          "end_wall_ns": 1791706496487306534,
+          "writer_fd": 5,
+          "duplicate_fd": -1,
+          "wrong_token_errno": 1,
+          "snapshot_before": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "snapshot_after": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "peer_before": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "peer_after": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "radio_before": "02000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000010000000000000000000000",
+          "radio_after": "02000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000010000000000000000000000",
+          "held": "020000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+          "after_first_close": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "free": "020000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+          "queued": [
+            "02000000000000000100000000000000010000000000000001000000050000000100000000000000000000000000000000000000010000000002000000000000",
+            "02000000000000000200000000000000010000000000000001000000040000000100000000000000000000000000000000000000010000000001000000000000"
+          ],
+          "cancelled": [
+            "02000000000000000100000000000000010000000000000001000000050000000500000083ffffff000000000000000000000000010000000002000000000000",
+            "02000000000000000200000000000000010000000000000001000000040000000500000083ffffff000000000000000000000000010000000001000000000000"
+          ],
+          "scan_initialize_rejections": [
+            {
+              "input": "0100000001000000060000000000000002000000000000006400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            },
+            {
+              "input": "010000000100000006000000000000000200000000000000c800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            }
+          ],
+          "critical_start_ns": 1791706496137104210,
+          "critical_end_ns": 1791706496137145217,
+          "scheduler_restored": true
+        },
+        {
+          "case": "last-fd-close",
+          "index": 1,
+          "generation": 2,
+          "peer_index": 0,
+          "peer_generation": 1,
+          "start_wall_ns": 1791706496488109688,
+          "end_wall_ns": 1791706496838443981,
+          "writer_fd": 5,
+          "duplicate_fd": -1,
+          "wrong_token_errno": 0,
+          "snapshot_before": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "snapshot_after": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "peer_before": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "peer_after": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "radio_before": "02000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000010000000000000000000000",
+          "radio_after": "02000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000010000000000000000000000",
+          "held": "020000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+          "after_first_close": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "free": "020000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+          "queued": [
+            "02000000000000000300000000000000010000000000000001000000050000000100000000000000000000000000000000000000010000000002000000000000",
+            "02000000000000000400000000000000010000000000000001000000040000000100000000000000000000000000000000000000010000000001000000000000"
+          ],
+          "cancelled": [
+            "02000000000000000300000000000000010000000000000001000000050000000500000083ffffff000000000000000000000000010000000002000000000000",
+            "02000000000000000400000000000000010000000000000001000000040000000500000083ffffff000000000000000000000000010000000001000000000000"
+          ],
+          "scan_initialize_rejections": [
+            {
+              "input": "0100000001000000060000000000000002000000000000006500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            },
+            {
+              "input": "010000000100000006000000000000000200000000000000c900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            }
+          ],
+          "critical_start_ns": 1791706496488152008,
+          "critical_end_ns": 1791706496488266393,
+          "scheduler_restored": true
+        },
+        {
+          "case": "dup-last-fd-close",
+          "index": 1,
+          "generation": 2,
+          "peer_index": 0,
+          "peer_generation": 1,
+          "start_wall_ns": 1791706496839490423,
+          "end_wall_ns": 1791706497189812483,
+          "writer_fd": 5,
+          "duplicate_fd": 6,
+          "wrong_token_errno": 0,
+          "snapshot_before": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "snapshot_after": "02000000000000000100000002000000010000000100000001000401fe0000000500020100012002020202020202020202027300000002000000000000000000",
+          "peer_before": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "peer_after": "01000000000000000100000002000000010000000100000000000401fe0000000500020100012001010101010101010101027300000001000000000000000000",
+          "radio_before": "02000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000010000000000000000000000",
+          "radio_after": "02000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000000000000010000000000000000000000",
+          "held": "020000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+          "after_first_close": "020000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+          "free": "020000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+          "queued": [
+            "02000000000000000500000000000000010000000000000001000000050000000100000000000000000000000000000000000000010000000002000000000000",
+            "02000000000000000600000000000000010000000000000001000000040000000100000000000000000000000000000000000000010000000001000000000000"
+          ],
+          "cancelled": [
+            "02000000000000000500000000000000010000000000000001000000050000000500000083ffffff000000000000000000000000010000000002000000000000",
+            "02000000000000000600000000000000010000000000000001000000040000000500000083ffffff000000000000000000000000010000000001000000000000"
+          ],
+          "scan_initialize_rejections": [
+            {
+              "input": "0100000001000000060000000000000002000000000000006600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            },
+            {
+              "input": "010000000100000006000000000000000200000000000000ca00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000400600002003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "submit_errno": 16,
+              "result_errno": 2
+            }
+          ],
+          "critical_start_ns": 1791706496839527573,
+          "critical_end_ns": 1791706496839587556,
+          "scheduler_restored": true
+        }
+      ],
+      "probe_exit": 0
+    },
+    "assets": [
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/console.log",
+        "sha256": "f90a6105680671fbde8e8867b7073b14ad96c8328b0e547f6e289087e21e4d62",
+        "bytes": 14809
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/capture-process-status.txt",
+        "sha256": "f3cf76417a7114db75a3da052cf70457ec2147abf6ac26a3403879f521437929",
+        "bytes": 1485
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/capture-stats.txt",
+        "sha256": "26061992f6c80c5a095949ec5d5574a0c45da046af7863bb6021f8673b6d7659",
+        "bytes": 225
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/capture-stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/dbus.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/kernel.log",
+        "sha256": "4327f4c3188e236cf805be60aab154bb082334df79c70df083104026b18f60d9",
+        "bytes": 59762
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue/metadata-0.json",
+        "sha256": "22282dbcaf2cc7c126b1ee3deff6ebbcb3469f4951f61368bec0b08c96344aa7",
+        "bytes": 164
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue/probe-stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue/probe.jsonl",
+        "sha256": "13fde91c8f695e614311bea7b6db273532186569bb7ea95bfffb304df4fd3d1c",
+        "bytes": 30090
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue/run.json",
+        "sha256": "88e951ca4799ee1045c4ade8fdf38ae06e4e8997e11128a2eb304413b38a32c9",
+        "bytes": 32906
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/managed-queue-supervisor.log",
+        "sha256": "f59fae2e3d666f3422f3d174099cfb5d63c28c896853c9de235d88ed3a818be9",
+        "bytes": 49
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/guest-output/ws73.pcap",
+        "sha256": "370e32128b18264d61e7861d53d8932318c7c92feb27ee9126da41cb0bf9f744",
+        "bytes": 31674
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/manifest.json",
+        "sha256": "0bc000c18b99c080b41c3ffe0b3056a04cb55ddc8cc255954263664232050ff4",
+        "bytes": 6512
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/qemu-stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/qmp.jsonl",
+        "sha256": "a4d2e281eb59fba38c792857d1a3eecbe70cabea19bc41e826eeeaf00c087227",
+        "bytes": 1028
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-queue-admission-corrected-kernel-fd-run/root.btrfs",
+        "sha256": "3d50e9dd6ee80e5b7ded336d583ed28d11269ae878b9f07ffde95395e96615a0",
+        "bytes": 1073741824
+      }
+    ],
+    "limited_synthetic_support_acceptance": true,
+    "physical_acceptance": false
+  },
+  "physical_bulk_diagnostic": {
+    "proof": {
+      "status": "FAIL_ROUTING_OUT_WITH_ACTUAL_HOST_SUBMISSION_AND_JOINED_CANCEL",
+      "natural_fault_root_cause_closed": false,
+      "automatic_fault_recovery_acceptance": false,
+      "managed_preselection_live_acceptance": false,
+      "power_suspend_deltas_zero": true,
+      "libusb_observations": [
+        "[ 0.404887] [00333b42] libusb: debug [submit_bulk_transfer] need 1 urbs for new transfer with length 36",
+        "[ 2.448298] [00333b42] libusb: debug [libusb_cancel_transfer] transfer 0x7f9b2c24c4e8",
+        "[ 2.448609] [00333b3e] libusb: debug [reap_for_handle] urb type=3 status=-2 transferred=0"
+      ],
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-bulk-submission-diagnostic-run/manifest.json",
+          "sha256": "4b46cc9640dbcc0ddc2f4074d3cc865057120e471fb2e4f5a3290f64b7ed6de6"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-bulk-submission-diagnostic-run/qemu-stderr.log",
+          "sha256": "d6f6d381b358939b3edb3d7152d71275e3c1fe932dcc6db57d762ca70903d151"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-bulk-submission-diagnostic-run/qmp.jsonl",
+          "sha256": "f53a1398672c46e22ee5702ee84abd18a95225c4a41446a15b5b046d039392a1"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-bulk-submission-diagnostic-run/usb-lifecycle.log",
+          "sha256": "cc66f9c63e6e823a71fff326624dee63b00a2f99813389a48dd4d2d6b4ad856e"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-bulk-submission-diagnostic-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "611d9aca795d431c63197f617986b60e67614ede92813a694894f9d3f3ef1467"
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-bulk-submission-diagnostic-run/guest-output/maintenance/reset/run.json",
+          "sha256": "ac6be78a0a2f50442dfbc41cd631bb2045fef57d46c1445bee0e7825cc211c29"
+        }
+      ]
+    },
+    "probe": {
+      "status": "FAIL",
+      "physical_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "natural_fault_root_cause_closed": false,
+      "managed_acceptance": false,
+      "node": "/dev/bus/usb/001/002",
+      "endpoints": [
+        1,
+        2,
+        129,
+        130,
+        131
+      ],
+      "started_wall_ns": 1791704947857199509,
+      "runtime_route_experiment": true,
+      "register_write_not_requested": true,
+      "route_transfers": [
+        {
+          "endpoint": 1,
+          "data": "030000000000000000000000010000000a00000000000000000000000000000000000000",
+          "before_wall_ns": 1791704947866623336
+        }
+      ],
+      "error": "[Errno 110] Connection timed out",
+      "error_type": "TimeoutError",
+      "errno": 110
+    },
+    "power_before": {
+      "1-2": {
+        "power/control": "auto",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "0",
+        "power/runtime_active_time": "392574050",
+        "speed": "480"
+      },
+      "1-2.1": {
+        "power/control": "auto",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "17001",
+        "power/runtime_active_time": "72022751",
+        "speed": "480"
+      },
+      "1-2.1.2": {
+        "power/control": "on",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "0",
+        "power/runtime_active_time": "6990881",
+        "speed": "480"
+      }
+    },
+    "power_after": {
+      "1-2": {
+        "power/control": "auto",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "0",
+        "power/runtime_active_time": "392582867",
+        "speed": "480"
+      },
+      "1-2.1": {
+        "power/control": "auto",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "17001",
+        "power/runtime_active_time": "72031568",
+        "speed": "480"
+      },
+      "1-2.1.2": {
+        "power/control": "on",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "0",
+        "power/runtime_active_time": "6999698",
+        "speed": "480"
+      }
+    },
+    "frozen_prepared": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/early-enumeration-once-prepared/manifest.json",
+      "sha256": "511be46268e7d3f3b01b12dad62df0dd3cdbce231851b88c0971dd018e602c73",
+      "bytes": 230099
+    },
+    "launcher": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/run_vm_bulk_submission_diagnostic.py",
+      "sha256": "9b9faf6d8c2ff7026d4aef27d134dc5c9b6c8ca577350572d81af9bfba7ac82b",
+      "bytes": 5560
+    },
+    "physical_acceptance": false
+  },
+  "source_validation": {
+    "tool_tests": 268,
+    "log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-partial-admission-tools-tests.log",
+      "sha256": "f728abdc19037cf713045f0b44d8592914620e9afafaa388bda02c92a5c1f2e6",
+      "bytes": 42565
+    },
+    "partial_scan_preparation_real_or_vm_acceptance": false,
+    "ci_support": [
+      {
+        "conclusion": "success",
+        "databaseId": 38123259995,
+        "headSha": "4fc99eb2862732038c3624a4486cec4a1b6db9ff",
+        "status": "completed"
+      }
+    ],
+    "ci_admission": [
+      {
+        "conclusion": "success",
+        "databaseId": 38124100001,
+        "headSha": "40ab1d15fa835dd9595166174988156b840f4c7e",
+        "status": "completed"
+      }
+    ]
+  },
+  "reproduction": {
+    "prepare": "tools/ws73_target.py prepare with signed K292 module tree, compiled Ud749 service bundle, seven-patch pinned QEMU, qualified no-USB scratch-root smoke; source and every input frozen in prepared manifest",
+    "command": "python3 tools/ws73_managed_queue_support.py --prepared <new frozen prepared directory> --output <new output directory> --timeout 180",
+    "host_usb_allowed": false,
+    "signed_module_required": true,
+    "scope": "two simulated USB devices, actual kernel ioctls/file release only"
+  },
+  "conclusions": [
+    "The first actual synthetic USB/kernel fd execution rejected ScanInitializeOff with EBUSY from Unknown Setup with pending advertising. No queued case completed; retain failure rather than relax kernel admission.",
+    "Corrected Unknown Setup subset queues legal AdvertisingConfigureOff and ScanStop; verifies two EBUSY/ENOENT rejected ScanInitializeOff submissions per case. Six real kernel release/last-file/dup cases pass on simulated USB devices; all DLI traffic across both devices and gaps is zero, Setup/Unknown and peer snapshot remain unchanged.",
+    "The subset does not prove queued ScanInitializeOff from confirmed advertising Off, active Ready survivor queries, normal scheduler concurrency, partial cleanup, held physical responses, RF, or automatic recovery. Whole managed_preselection_live_acceptance remains false.",
+    "Partial scan collector format2 now completes real advertising configure/STOP before arming its first scan step; requires full Succeeded result/selected power and ordered actual successful USB replies. Pending/cancelled scan preserves advertising Off. Source negative regressions pass; this partial change has not passed a VM or physical held-reply gate.",
+    "Physical route command was actually submitted as a length36 libusb bulk URB, then cancelled after timeout, reaped -ENOENT with transferred0, and joined. This rules out never submitting that OUT at the host layer; it does not prove USB PHY delivery or identify a device/firmware/QEMU cause.",
+    "Read-only parent/hub/target power status remained active with zero suspended-time delta over that failed run. No host PM configuration changed; observations do not prove cold SoC power or eliminate all PM causes.",
+    "Historical verified real WS73 path is retained. Previously authorized ganged uhubctl off/on re-enumeration did not establish Ready; no new reset or host experimental kernel was introduced by these tools. Natural RCA and independent bounded automatic recovery remain OPEN."
+  ]
+}

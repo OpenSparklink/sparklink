@@ -765,3 +765,24 @@ EP01仍超时。候选没有接入生产，已恢复可变构建源码；精确�
 →同 slkd 双设备 RF 和故障隔离→四设备两组。另一只必须真实活动且查询通过，
 仅 host 枚举不算隔离；不以整 hub 复位或人工重插满足自动恢复。相关 issues
 及完整 S0–S6 scope 保持开放，部分成果不提前关闭整项。
+
+## Managed 队列实际 fd 支撑与前置条件纠正（2026-10-11）
+
+[本批独立证据](evidence/ws73-managed-queue-support-and-bulk-submit-20261011.json)
+记录首次实际内核执行暴露的探针前置错误：Unknown Setup／pending 广播时
+ScanInitializeOff 返回 EBUSY，不生成结果。保持内核保护，修正子门禁为合法
+广播配置／扫描 STOP，另验证 EBUSY/ENOENT。模拟 USB 上两只×release／最后
+fd／dup 六案例实际通过，完整区间零 DLI、Unknown/Setup 及 peer 快照保持；
+真实案例数不增加，整个 Managed 未执行队列验收仍 false。
+
+partial 扫描探针格式2强制先用真实广播配置／STOP 成功 Complete 建立 Off，
+再 arm 扫描第一步；完整结果、power 和有序抓包都须匹配。268 工具测试通过，
+这段新前置路径还没有 VM／真实 held-reply 通过证据。不得把静态 Setup peer
+当作 Ready 同伴活动隔离，也不得用扫描 STOP 子案例代替扫描初始化全矩阵。
+
+新物理诊断确认 length36 bulk 实际提交到主机，再超时取消、回收 -ENOENT、
+transferred0；该区间 parent/hub/target active 且 suspend-time 增量零。这只
+缩小诊断范围，不证明实际 PHY 传输、冷启动、成功恢复或自然根因。VM-only、
+历史真实 WS73 RF 证据和正式 Linux/Rust 路径保持；恢复、RCA、完整矩阵与原
+28项 scope 开放。下一步按真实启动→合法子门禁／confirmed-Off 扫描初始化→
+partial 六案例及活动 Ready peer→同 daemon RF／故障隔离／四设备推进。

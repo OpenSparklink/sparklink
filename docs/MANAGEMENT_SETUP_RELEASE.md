@@ -308,3 +308,18 @@ EP01仍超时。候选没有接入生产，已恢复可变构建源码；精确�
 →同 slkd 双设备 RF 和故障隔离→四设备两组。另一只必须真实活动且查询通过，
 仅 host 枚举不算隔离；不以整 hub 复位或人工重插满足自动恢复。相关 issues
 及完整 S0–S6 scope 保持开放，部分成果不提前关闭整项。
+
+## 当前有限支撑执行结果（2026-10-11）
+
+[完整字节及资产哈希](evidence/ws73-managed-queue-support-and-bulk-submit-20261011.json)
+保留旧探针实际 EBUSY 失败，修正后的模拟 USB／实际内核六个 release／最后
+fd／dup 案例通过，289 包完整抓包、零丢包，取消区间两个设备零 DLI。每个案例
+另有两次非法 ScanInitializeOff 的 EBUSY/ENOENT 负向证明；全部仍 Unknown／
+Setup。运行于冻结 U40ab1d15fa83 工具、签名 K292 镜像、编译 Ud749 服务包；
+当前源码 K a370 的变化是测试依赖。源头、镜像和模拟资格均在证据中分开。
+
+partial 扫描前置修正已提交 Ucc3be5b，268工具测试通过，但尚无该新路径的
+VM／实机在途通过。CI38123259995（U4fc）及38124100001（U40ab）已终结 success，
+只提供源码支撑。实机 libusb 诊断仍是提交后超时、cancel/reap -ENOENT 和零
+传输；未新增 Ready 或 Managed 实机案例。真实完整队列／partial／活动 peer／
+普通用户 RF 回归和自动恢复、自然 RCA 继续开放。

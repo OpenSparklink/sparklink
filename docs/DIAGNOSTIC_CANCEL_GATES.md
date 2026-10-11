@@ -278,3 +278,20 @@ PID667/start1706、幸存g2保持、人工目标g1→3约10.350秒Ready。USB143
 removal/32-bit、自然启动/重枚举/设备消失根因和无人工恢复仍OPEN。下一步针对
 实际在途原期限与退役边界，再迁移旧event消费者并删除shared ring/fallback；
 最小socket、SSAP、安全/Bond/Profile及完整S0–S6不缩减。
+
+
+## 新在途期限/退役门禁（开发已通过，实机待执行）
+
+新增独立`ws73_target.py run --active-deadline-verify --fault-recovery`模式，与原
+显式释放诊断模式互斥；原门禁和verifier不变。仅在明确VM cmdline/root下运行，
+在daemon启动前对target提交500ms真实MAC请求。QMP暂留实际成功IN81后，guest
+被动等待取消ack，不提交/查询结果/取消/读取统计。宿主只观察held转为一次drop，
+不显式释放、保底释放、detach、reset或device_del；旧fd结果/重试必须ENODEV。
+另一只controller保持完整snapshot/generation，退役前后真实MAC查询必须完成。
+
+验收独立核对QMP三个因果ack、完整40/104字节、实际178字节host transfer hash、
+目标一OUT且暂留阶段零MAC回复、该payload全capture未交付、时间窗内目标Host
+超时和-110退役日志，以及另一只设备两组wire。随后仍执行普通用户真实20+2。
+这不证明daemon运行期间Diagnostic交接、不证明显式FD-close gate或实时性上界，
+不闭合自然根因；开发mock不能替代实机。新8项verifier/协调器测试及入口互斥
+测试通过，工具完整214项通过。下一步全新bundle/VM实机，原门禁另外新VM回归。

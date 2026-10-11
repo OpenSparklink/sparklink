@@ -16,6 +16,18 @@ import ws73_target_guest as guest
 
 
 class TargetEnvironment(unittest.TestCase):
+    def test_active_deadline_gate_rejects_synthetic_and_release_modes_before_output(self):
+        import ws73_target
+        for changes in [dict(command='support'),dict(fault_recovery=False),dict(diagnostic_verify=True),
+                        dict(diagnostic_cancel_verify=True),dict(diagnostic_deadline_verify=True),dict(diagnostic_autonomous_verify=True)]:
+            with self.subTest(changes=changes),tempfile.TemporaryDirectory() as temporary:
+                output=Path(temporary)/'never-created'
+                fields=dict(command='run',output=output,active_deadline_verify=True,fault_recovery=True)
+                fields.update(changes)
+                with patch.object(ws73_target,'ordinary_identity'),self.assertRaisesRegex(ValueError,'active retirement requires'):
+                    ws73_target._run(SimpleNamespace(**fields))
+                self.assertFalse(output.exists())
+
     def test_timeout_never_confirms_manual_hotplug_or_uses_old_shell_prompt(self):
         initial=b'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0\r\n/ $ \x1b[6n'
         seal=SerialTimeoutSeal(initial)

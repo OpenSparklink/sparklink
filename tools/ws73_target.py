@@ -108,7 +108,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'include/uapi/linux/sparklink_ioctl.h',
@@ -180,7 +180,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -352,6 +352,9 @@ def _run(args):
     cancellation=bool(getattr(args,'diagnostic_cancel_verify',False))
     deadline_gate=bool(getattr(args,'diagnostic_deadline_verify',False))
     autonomous_gate=bool(getattr(args,'diagnostic_autonomous_verify',False))
+    active_gate=bool(getattr(args,'active_deadline_verify',False))
+    if active_gate and (support or not recovery or diagnostic or cancellation or deadline_gate or autonomous_gate):
+        raise ValueError('active retirement requires separate real fault-recovery VM mode, without explicit-release diagnostic modes')
     if autonomous_gate and (support or not recovery or not diagnostic or not cancellation or not deadline_gate):
         raise ValueError('live autonomous gate requires real diagnostic/cancel/deadline/fault-recovery modes')
     if deadline_gate and (support or not recovery or not diagnostic or not cancellation):
@@ -375,6 +378,7 @@ def _run(args):
     m['live_diagnostic_requested']=diagnostic
     m['live_diagnostic_deadline_requested']=deadline_gate
     m['live_diagnostic_autonomous_requested']=autonomous_gate
+    m['live_active_deadline_requested']=active_gate
     process=monitor=channel=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
@@ -383,6 +387,8 @@ def _run(args):
             raise ValueError('prepared VM does not contain the frozen live copy probe')
         if event_copy and 'native_vm' not in package:
             raise ValueError('live copy gate requires the qualified scratch-root VM profile')
+        if active_gate and 'native_vm' not in package:
+            raise ValueError('active retirement requires qualified scratch-root VM')
         if diagnostic and ('diagnostic_probe_compile' not in package or 'native_vm' not in package):
             raise ValueError('live diagnostic gate requires frozen probe and qualified scratch-root VM')
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
@@ -414,6 +420,7 @@ def _run(args):
                      (' ws73.diagnostic_cancel=1' if cancellation else '')+
                      (' ws73.diagnostic_deadline=1' if deadline_gate else '')+
                      (' ws73.diagnostic_autonomous=1' if autonomous_gate else '')+
+                     (' ws73.active_deadline=1' if active_gate else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -440,6 +447,9 @@ def _run(args):
                 channel=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);channel.connect(str(serial));channel.setblocking(False)
                 monitor=lab.Qmp(qmp,output/'qmp.jsonl')
                 hold=None
+                if active_gate:
+                    from ws73_active_deadline import ActiveDeadlineCoordinator
+                    hold=ActiveDeadlineCoordinator(share,m.setdefault('active_deadline_hold',{}))
                 if cancellation:
                     from ws73_diagnostic_hold import HoldCoordinator
                     hold=HoldCoordinator(share,m.setdefault('diagnostic_hold',{}))
@@ -566,6 +576,16 @@ def _run(args):
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
                 if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
                 m['capture_packets']=packets;m['guest_identities']=identities
+                if active_gate:
+                    from ws73_active_deadline import corroborate
+                    probe=json.loads((share/'active-deadline/run.json').read_text())
+                    owners=[]
+                    for identity in identities:
+                        owners.append({'bus':identity['bus'],'device':identity['device']})
+                    m['active_deadline_hold']['corroboration']=corroborate(
+                        probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),
+                        (share/'kernel.log').read_text(),*owners)
+                    m['live_active_deadline']=file_record(share/'active-deadline/run.json')
                 if event_copy:
                     from ws73_event_copy_probe import verify_cases
                     probe=json.loads((share/'application/event-copy/run.json').read_text())
@@ -659,6 +679,7 @@ def main():
         if name=='run':
             cmd.add_argument('--ports',nargs=2,required=True)
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')
+            cmd.add_argument('--active-deadline-verify',action='store_true',help='separate pre-daemon real IN81 timeout/abort gate; requires real fault-recovery and excludes explicit-release diagnostic modes')
             cmd.add_argument('--diagnostic-verify',action='store_true',help='opt-in live diagnostic owner/CAP/copy/retirement and metadata CLI gate; requires --fault-recovery')
             cmd.add_argument('--diagnostic-autonomous-verify',action='store_true',help='queued expiry already counted before first result after a passive800ms window; requires all diagnostic/cancel/deadline/fault-recovery gates')
             cmd.add_argument('--diagnostic-deadline-verify',action='store_true',help='100ms queued expiry with continuous same-ID retries; requires --diagnostic-cancel-verify and real fault-recovery mode')

@@ -97,13 +97,17 @@ if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     done
     [ -f /evidence/diagnostic/before-daemon.json ] || fail 'diagnostic pre-daemon deadline'
 fi
+if grep -q 'ws73.active_deadline=1' /proc/cmdline; then
+    echo 'WS73_TARGET_CAPTURE_READY'
+    /bin/python3 /usr/share/sparklink/tools/ws73_active_deadline.py --output /evidence/active-deadline > /evidence/active-deadline-supervisor.log 2>&1 || fail 'active deadline retirement gate'
+fi
 storage=/tmp/bonds
 if [ -f /scratch-root-uuid ]; then
     storage=/var/lib/sparklink
     mkdir -p "$storage"; chown 0:0 "$storage"; chmod 0700 "$storage"
 fi
 /bin/slkd --storage "$storage" -n > /evidence/slkd.log 2>&1 & daemon=$!
-if ! grep -q 'ws73.diagnostic=1' /proc/cmdline; then
+if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
 fi
 /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready 0 || fail 'first independent Ready'

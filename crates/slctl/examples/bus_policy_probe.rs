@@ -19,7 +19,7 @@ fn denied(label: &str, result: zbus::Result<zbus::Message>) -> anyhow::Result<()
     }
 }
 
-async fn probe(path: &str, mode: &str) -> anyhow::Result<()> {
+async fn probe(path: &str, mode: &str, native_phase: Option<&str>) -> anyhow::Result<()> {
     let (uid, gid) = match mode {
         "observer" => (1001, 1001),
         "control" => (1000, 1002),
@@ -88,6 +88,9 @@ async fn probe(path: &str, mode: &str) -> anyhow::Result<()> {
             &(),
         )
         .await?;
+    if let Some(phase) = native_phase {
+        native_observations(&connection, path, phase, &owner).await?;
+    }
     println!("AUTH_OBSERVE: {mode}");
     let properties = zbus::Proxy::new(
         &connection,
@@ -115,6 +118,21 @@ async fn probe(path: &str, mode: &str) -> anyhow::Result<()> {
         return Ok(());
     }
     ensure!(mode == "observer", "unknown mode");
+    if native_phase.is_some() {
+        denied(
+            "CancelDiscoveryPolicies",
+            connection
+                .call_method(
+                    Some(SERVICE),
+                    path,
+                    Some(ADAPTER),
+                    "CancelDiscoveryPolicies",
+                    &(),
+                )
+                .await,
+        )?;
+    }
+
     for method in ["StartDiscovery", "StopDiscovery"] {
         denied(
             method,
@@ -270,16 +288,130 @@ async fn probe(path: &str, mode: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
+// Native-only read qualification. Original legacy fixture calls deliberately
+// keep their old method set and cannot qualify these real WS73 observations.
+async fn native_observations(
+    connection: &Connection,
+    path: &str,
+    phase: &str,
+    owner: &zbus::names::OwnedUniqueName,
+) -> anyhow::Result<()> {
+    ensure!(
+        matches!(phase, "native-initial" | "native-business"),
+        "explicit native phase required"
+    );
+    for destination in [SERVICE, owner.as_str()] {
+        let policy: (u32, u32, u32, i32, u32, u32) = connection
+            .call_method(
+                Some(destination),
+                path,
+                Some(ADAPTER),
+                "GetDiscoveryPolicy",
+                &(),
+            )
+            .await?
+            .body()
+            .deserialize()?;
+        let management: (u64, u32, u32, u32, i32, u32, u32) = connection
+            .call_method(
+                Some(destination),
+                path,
+                Some(ADAPTER),
+                "GetManagementStatus",
+                &(),
+            )
+            .await?
+            .body()
+            .deserialize()?;
+        ensure!(
+            policy.0 == 3
+                && management.0 != 0
+                && management.1 == 1
+                && management.2 == 1
+                && management.3 == 1
+                && management.4 == 0
+                && management.5 == 0
+                && management.6 == 0,
+            "actual owned native observations required"
+        );
+        let mut initializers = Vec::new();
+        for operation in [5u32, 6] {
+            let result = connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(ADAPTER),
+                    "GetInitializationOff",
+                    &(operation,),
+                )
+                .await;
+            if phase == "native-initial" {
+                let value: slk_protocol::DiscoveryResultRecord = result?.body().deserialize()?;
+                ensure!(
+                    value.0 == management.0
+                        && value.1 != 0
+                        && value.2 == operation
+                        && value.3 == 3
+                        && value.4 == 0
+                        && value.5 == 0
+                        && value.6 == if operation == 5 { 0x0c05 } else { 0x1002 }
+                        && value.7 == if operation == 5 { 1 } else { 2 }
+                        && value.8 == if operation == 5 { 2 } else { 3 }
+                        && value.10 == (operation == 5)
+                        && value.11 == 1
+                        && value.12 == 1
+                        && value.13 == 1,
+                    "actual successful initializer with its own ID required"
+                );
+                let history: slk_protocol::DiscoveryResultRecord = connection
+                    .call_method(
+                        Some(destination),
+                        path,
+                        Some(ADAPTER),
+                        "GetDiscoveryResult",
+                        &(value.1,),
+                    )
+                    .await?
+                    .body()
+                    .deserialize()?;
+                ensure!(
+                    serde_json::to_value(history)? == serde_json::to_value(value)?,
+                    "readonly initializer/history must retain original result"
+                );
+                initializers.push(serde_json::json!({"operation": operation, "result": value, "history": history}));
+            } else {
+                match result {
+                    Err(zbus::Error::MethodError(name, Some(description), _))
+                        if name.as_str() == "org.freedesktop.DBus.Error.UnknownObject"
+                            && description
+                                .contains("initializer provenance absent or invalidated") =>
+                    {
+                        initializers.push(serde_json::json!({"operation": operation, "outcome": "invalidated", "reason": description}));
+                    }
+                    _ => anyhow::bail!(
+                        "business-used initializer must refuse provenance rather than bus permission or cached success"
+                    ),
+                }
+            }
+        }
+        println!(
+            "AUTH_NATIVE_READ: {}",
+            serde_json::json!({"destination": destination, "phase": phase, "policy": policy, "management": management, "initializers": initializers})
+        );
+    }
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args: Vec<_> = std::env::args().collect();
     ensure!(
-        args.len() == 3,
-        "usage: bus_policy_probe ADAPTER observer|control"
+        matches!(args.len(), 3 | 4),
+        "usage: bus_policy_probe ADAPTER observer|control [native-initial|native-business]"
     );
     tokio::time::timeout(
         std::time::Duration::from_secs(20),
-        probe(&args[1], &args[2]),
+        probe(&args[1], &args[2], args.get(3).map(String::as_str)),
     )
     .await
     .context("policy probe timeout")??;

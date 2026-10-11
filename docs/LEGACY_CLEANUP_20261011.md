@@ -313,3 +313,44 @@ cancel/abort/close/drain、完整并发/权限/移除。旧调用者/shared ring
 全局dead-code清理与生命周期并行；自然故障根因、无人工恢复、历史物理xHCI警告
 仍OPEN。最小socket、用户态SSAP、安全/Bond/Profile及完整S0–S6继续推进，
 北极星7/8、VM-only不变，部分成果不关闭整项 issue。
+
+### 当前固件模块调用审计（实施待回归）
+
+K`016aa7ee6813`复核：`sle_fw.load_usb_firmware`仍被旧Rust USB probe调用，
+需等待drivers拥有固件迁移，不能盲删整个模块。立即删除候选是无人调用的
+FW_BASE_PATH/FW_USB_DEFAULT/FW_UART_DEFAULT、实际上未选版本的
+load_usb_firmware_versioned及无人读取的FwDownloadResult.success；调用者
+只用size，可缩为Result<usize>，随后移除该模块全局allow(dead_code)。
+Native WS73已有独立drivers固件路径保持。transport/dev/serdev/mgmt仍需
+各自调用审计和迁移；本条是清单，不是已实施声明。下一小批执行后必须新内核
+编译、VM和真实双设备回归，全部清理及恢复issues保持OPEN。
+
+## 新VM在途原期限退役限定通过，完整恢复仍开放
+
+[最新实际证据](evidence/ws73-vm-active-usb-retirement-20261011.json)为
+K`016aa7ee6813`／实际编译U`b68781ef5078`。复用既有slkd初始化两只实际Ready，
+独立初始化进程先终结；随后root Diagnostic提交原500ms MAC，真实成功178字节
+IN81被测试QEMU暂留。guest被动等待QMP/file ack加50ms，全静默窗口无
+result/cancel/stats ioctl；实际Host超时与Runtime退役使payload一次drop，
+零显式/保底释放、零detach/reset/device_del。40/104字节及原seq0请求重试
+ENODEV、日志时间和payload全capture未交付由独立验证器核对；peer完整
+snapshot/generation不变，退役前后两组实际MAC wire成功。
+
+主RF daemon之后才启动，不宣称暂留阶段同daemon。真实20+2最长623ms，
+UID1000/caps0、同PID534/start2859、目标g3→4而peer g2保持。165个真实预算
+样本证明driver按现有60000ms稳定期自动归零，再进行下一独立IN81故障并恢复；
+没有写预算或扩宽生产limit。另一个新VM原完整格式7门禁63记录/50proof/46wire、
+read7/result16/copyout2/legacy poll3/淘汰33/CLI4/三身份旧注册27拒绝及排队
+expiry保持，真实20+2最长619ms，同PID669/start1718。两VM各1345/1431 USB
+零drop、22RX、warning0/taint0/traceoverrun0，host四只释放在位，VM-only。
+[精确源码CI38105931415](https://github.com/OpenSparklink/sparklink/actions/runs/38105931415)
+九作业终结成功；实际170 Rust/34 Python/218工具与32内核期限边界日志核对。
+
+这限定证明实际在途超时触发Runtime关闭并取消暂留回复，不完成显式fd-close/
+drain、全部owner/CAP/并发/removal/32-bit、精确期限上界或自然恢复验收。
+早期Managed release的实际0x1e/EIO生产修复仍OPEN；参考Host“未知广播标识”
+解释不替代固件全根因和安全清理/恢复门禁。七份失败记录不覆盖、不改成成功，
+旧实现调用者迁移/dead-code清理与生命周期并行，最小socket、用户态SSAP、
+每连接安全/Bond/Profile、四设备两组/Native/Proxy/PM/sandbox及完整S0–S6
+继续OPEN，北极星7/8。不关闭整项issue或合并draft。USB/HCC/DLI证据不是
+独立PHY嗅探；原生宿主对照未执行、历史物理xHCI warning仍未闭合。

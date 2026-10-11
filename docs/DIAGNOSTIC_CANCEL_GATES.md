@@ -304,10 +304,9 @@ Host时钟只在自身域内检查有序。daemon启动后的Ready身份必须�
 
 首轮[新门禁失败记录](evidence/ws73-vm-active-ready-precondition-failed-20261011.json)
 保留，不记验收：探针在任何初始化租约操作前等待Ready90秒，未暂留/提交任何
-active请求。源码说明fresh Runtime先发布Setup，需真实lease release的两条stop
-才能初始化Ready。修正为先取得/释放Diagnostic初始化租约，观察Free及Ready，
-再重取测试租约；新增initialization记录及四组实际stop command/reply核对，禁止
-用字段假设Ready。失败关机console另有DRM vblank warning，原始日志保留，不能
+active请求。fresh Runtime先发布Setup；当时“Diagnostic release可产生初始化stop”的
+测试假设已由第二轮实际结果推翻，下文记录进一步纠正。不能用Free、请求成功
+或未执行的初始化设想推导Ready。失败关机console另有DRM vblank warning，原始日志保留，不能
 与历史物理xHCI warning混称。两类根因均不因后续新测试成功而自动关闭。
 
 第二轮[诊断初始化假设失败](evidence/ws73-vm-diagnostic-init-assumption-failed-20261011.json)
@@ -325,3 +324,78 @@ active请求。源码说明fresh Runtime先发布Setup，需真实lease release�
 测试daemon随后才启动；不宣称整个暂留阶段同daemon连续，也不把测试初始化方式
 当作上述生产生命周期问题的修复。初始化十组真实wire含配置、广播off、scan on/off
 必须核对。正常运行的RF daemon仍需20+2同PID，原完整诊断门禁另跑新VM回归。
+
+### 原子元数据握手与早期释放参考复核
+
+[第四轮失败](evidence/ws73-vm-active-metadata-coordination-failed-20261011.json)
+停在第二只设备附加前：helper stdout被重定向，host却等待控制台metadata标记。
+未启动初始化daemon、未暂留或提交active请求。U`5c2bdcc541e3`改为原子文件
+握手，严格验证目标index0、非零generation、profile1、完整Setup metadata；
+Ready/Faulted/错误身份标记拒绝。RF恢复后第三个replacement身份不再误传给
+只应核对初始target/peer的active verifier。新增边界回归，完整工具215项通过；
+新实机门禁必须重新执行，不从此开发测试或失败输出推导通过。
+
+[本地参考复核](evidence/ws73-early-managed-release-reference-20261011.json)在
+完整NearLink Host的DLI错误码中找到`0x1e = UNKNOWN_ADVERTISING_IDENTIFIER`。
+这与第三轮实际未创建广播handle0就执行disable相符；SDK的公共errcode属于
+另一编码空间，不能直接把其STATUS_ERR当作DLI字节。该解释不闭合所有固件内部、
+生产早期lease释放修复、有限恢复或自然设备消失根因。需补齐Setup时显式release/
+fd close、初始化中断、真实unknown状态cleanup及幸存peer/同daemon恢复门禁。
+不能将非零Complete改成成功、假设未知radio为Off，或以测试初始化绕过关闭issue。
+
+第五轮[退役重试输入失败](evidence/ws73-vm-active-retired-retry-input-failed-20261011.json)
+已实际暂留178字节成功IN81，QMP观察一次drop/零释放，真实Host超时和-110退役，
+旧result返回ENODEV、peer两次MAC查询完成。但测试重用了含输出seq的结构，库
+校验先拒EINVAL，整轮仍FAIL。修正保留40字节原seq0输入重试，verifier拒绝
+把输出结构当作重试输入；ENODEV要求不放宽。QMP取消ack可能先于driver join
+日志，ack后继续50ms被动等待，不发ioctl；独立capture仍要求Host超时/退役真实
+日志出现在整个静默窗口中。该被动等待不构成期限时延上界或自然恢复证据。
+
+第六轮[组合故障预算耗尽](evidence/ws73-vm-active-usb-retirement-budget-exhausted-20261011.json)
+完整保存：active probe通过独立wire/QMP/日志核对，真实20轮最长469ms；但暖启动
+恢复已用attempt1，active超时用attempt2。追加第三故障前只有约11秒Ready，未达到
+驱动现有60000ms稳定期，正确exhausted=1而不恢复；整轮FAIL，非20+2通过。
+生产限制2次/120000ms及稳定60000ms不变。只在active组合测试中先观察实际
+驱动自动reset到attempts/uploads/cause/result/deadline均0、同两只Ready身份，
+再执行另一个独立故障；不写预算、不重置USB或重启daemon。217工具开发测试
+通过，含未reset继续等待、exhausted/坏预算/peer变化拒绝。新全门禁须重跑，
+此限定active观察不闭合自然恢复根因或完整issue。
+
+第七轮[启动查询封存失败](evidence/ws73-vm-active-bootstrap-sealing-failed-20261011.json)
+保留为FAIL：实际active退役、165个预算样本、60000ms稳定reset和真实20+2/
+同daemon/两只STOP_CONFIRMED完成，但guest旧capture verifier将g1及g3两次
+bootstrap都算到initial g3，严格唯一OUT检查拒绝。新增active模式只用记录中的
+退役ack作target bootstrap下界、初始化开始作peer bootstrap上界；检查新target
+generation/幸存peer，并拒绝与原显式释放诊断模式混用。原模式默认规则不改。
+对原1345 USB/22RX独立按新边界复核通过，仍保留原manifest FAIL，不修改历史
+输出为成功；全新镜像须重新完成封存。新增边界回归，工具218项通过。
+
+## 新VM在途原期限退役限定通过，完整恢复仍开放
+
+[最新实际证据](evidence/ws73-vm-active-usb-retirement-20261011.json)为
+K`016aa7ee6813`／实际编译U`b68781ef5078`。复用既有slkd初始化两只实际Ready，
+独立初始化进程先终结；随后root Diagnostic提交原500ms MAC，真实成功178字节
+IN81被测试QEMU暂留。guest被动等待QMP/file ack加50ms，全静默窗口无
+result/cancel/stats ioctl；实际Host超时与Runtime退役使payload一次drop，
+零显式/保底释放、零detach/reset/device_del。40/104字节及原seq0请求重试
+ENODEV、日志时间和payload全capture未交付由独立验证器核对；peer完整
+snapshot/generation不变，退役前后两组实际MAC wire成功。
+
+主RF daemon之后才启动，不宣称暂留阶段同daemon。真实20+2最长623ms，
+UID1000/caps0、同PID534/start2859、目标g3→4而peer g2保持。165个真实预算
+样本证明driver按现有60000ms稳定期自动归零，再进行下一独立IN81故障并恢复；
+没有写预算或扩宽生产limit。另一个新VM原完整格式7门禁63记录/50proof/46wire、
+read7/result16/copyout2/legacy poll3/淘汰33/CLI4/三身份旧注册27拒绝及排队
+expiry保持，真实20+2最长619ms，同PID669/start1718。两VM各1345/1431 USB
+零drop、22RX、warning0/taint0/traceoverrun0，host四只释放在位，VM-only。
+[精确源码CI38105931415](https://github.com/OpenSparklink/sparklink/actions/runs/38105931415)
+九作业终结成功；实际170 Rust/34 Python/218工具与32内核期限边界日志核对。
+
+这限定证明实际在途超时触发Runtime关闭并取消暂留回复，不完成显式fd-close/
+drain、全部owner/CAP/并发/removal/32-bit、精确期限上界或自然恢复验收。
+早期Managed release的实际0x1e/EIO生产修复仍OPEN；参考Host“未知广播标识”
+解释不替代固件全根因和安全清理/恢复门禁。七份失败记录不覆盖、不改成成功，
+旧实现调用者迁移/dead-code清理与生命周期并行，最小socket、用户态SSAP、
+每连接安全/Bond/Profile、四设备两组/Native/Proxy/PM/sandbox及完整S0–S6
+继续OPEN，北极星7/8。不关闭整项issue或合并draft。USB/HCC/DLI证据不是
+独立PHY嗅探；原生宿主对照未执行、历史物理xHCI warning仍未闭合。

@@ -75,6 +75,12 @@ def run(args):
         control=Control(0x80,6,0x100,0,18,2000,ctypes.addressof(descriptor))
         if fcntl.ioctl(fd,0xc0185500,bytearray(bytes(control)))!=18 or descriptor.raw[8:12]!=bytes.fromhex('ffff3337'):
             raise ValueError('opened fd device identity mismatch')
+        if args.guest_usb_reset_before_read:
+            if 'ws73.register_reset_usb=1' not in Path('/proc/cmdline').read_text().split():
+                raise ValueError('explicit single guest USB reset boot permission required')
+            record['guest_usb_reset_before_read_wall_ns']=time.time_ns();save()
+            fcntl.ioctl(fd,0x5514)
+            record['guest_usb_reset_returned_wall_ns']=time.time_ns();save()
         fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
         def transfer(endpoint,data,length=None):
             buffer=ctypes.create_string_buffer(data if isinstance(data,bytes) else data)
@@ -118,4 +124,4 @@ def run(args):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);run(p.parse_args())
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');run(p.parse_args())

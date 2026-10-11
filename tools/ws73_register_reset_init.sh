@@ -22,7 +22,9 @@ mkdir -p /evidence/maintenance
 sleep 1
 kill -0 "$capture" || fail capture startup
 echo WS73_RESET_LAB_CAPTURE_READY
-/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
+reset_arg=''
+if grep -q 'ws73.register_reset_usb=1' /proc/cmdline; then reset_arg='--guest-usb-reset-before-read'; fi
+/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $reset_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
 result=$?
 dmesg > /evidence/maintenance/kernel.log
 for interface in /sys/bus/usb/devices/*:*; do

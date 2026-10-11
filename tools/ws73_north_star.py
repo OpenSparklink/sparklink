@@ -102,13 +102,15 @@ def parse_result(output, identity, operation, *, retained_off=False):
     r = rows[0]
     expected = {1: ('0c05', 2, 3, 2, 1), 2: ('0c05', 0, 1, 1, 1),
                 3: ('1002', 1, 2, 1, 2), 4: ('1002', 0, 1, 1, 1)}[operation]
-    if retained_off:
-        # A retained successful OFF may be queried while the independent
-        # policy is currently On. The selected domain must still be Idle;
-        # Unknown/Error states and failed original operations remain rejected.
+    if retained_off and operation not in [2, 4]:
+        raise ValueError('retained OFF requires a stop operation')
+    if operation in [2, 4]:
+        # Fresh and retained OFF both describe only their own domain. The
+        # independent domain may remain On; Unknown/Error and failed native
+        # results remain rejected. Never rewrite a controller 0x0b as success.
         other = int(r[12] if operation == 2 else r[11])
-        if operation not in [2, 4] or other not in [1, 2]:
-            raise ValueError('retained OFF requires a known independent radio state')
+        if other not in [1, 2]:
+            raise ValueError('OFF requires a known independent radio state')
         expected = (*expected[:3], 1, other) if operation == 2 else (*expected[:3], other, 1)
     if (int(r[0]) != identity['generation'] or int(r[1]) == 0 or int(r[2]) != operation
             or r[3:6] != ('3', '0', '00') or r[13] != '1'

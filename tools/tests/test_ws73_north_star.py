@@ -304,17 +304,19 @@ class CaptureTests(unittest.TestCase):
     def test_actual_power_not_requested_preference(self):
         d=identity(1);r=parse_result(output_result(d,1,50),d,1);self.assertEqual(r['selected_power'],-8)
         with self.assertRaises(ValueError):parse_result(output_result(d,1,50).replace('generation=1','generation=3'),d,1)
-    def test_retained_off_is_per_domain_and_never_accepts_unknown_or_failed(self):
+    def test_fresh_and_retained_off_are_per_domain_and_reject_unknown_or_failed(self):
         d=identity(1)
         for op,field in [(2,'scan'),(4,'adv')]:
             output=output_result(d,op,50).replace(field+'=1',field+'=2')
-            with self.assertRaises(ValueError):parse_result(output,d,op)
+            self.assertEqual(parse_result(output,d,op)['request'],50)
             self.assertEqual(parse_result(output,d,op,retained_off=True)['request'],50)
             for invalid in [output.replace(field+'=2',field+'=3'),
+                            output.replace(field+'=2',field+'=0'),
                             output.replace('status=0x00','status=0x0b'),
                             output.replace('generation=1','generation=3'),
                             output.replace(('adv' if op==2 else 'scan')+'=1',('adv' if op==2 else 'scan')+'=2')]:
-                with self.assertRaises(ValueError):parse_result(invalid,d,op,retained_off=True)
+                for retained in [False, True]:
+                    with self.subTest(op=op,retained=retained),self.assertRaises(ValueError):parse_result(invalid,d,op,retained_off=retained)
     def test_report_header_address_and_rssi_must_agree(self):
         d=identity(2);payload=report_payload('01'*16,identity(1)['address'])
         line=f'seq=1 generation=2 time_ms=100 address=02:73:00:00:00:01 RSSI=-42 header={payload[5:28].hex()} data={marker_data("01"*16).hex()} lost=0\n'

@@ -122,7 +122,7 @@ USB/HCC/DLI是实际radio接收证据，不是独立PHY嗅探。
 本次50ms重试不证明5000ms截止点不续期；它仍需独立实际到期门禁。历史物理
 xHCI warning不能由新批零warning抹除。北极星仍7/8，所有完整issues继续OPEN。
 
-## 原始 queued deadline 新门禁（format6；实机待执行）
+## 原始 queued deadline 新门禁（format6；实现与开发）
 
 新增显式 --diagnostic-deadline-verify，必须同时选择真实fault-recovery、
 diagnostic和cancel门禁；support拒绝。专用C探针新增deadline参数和独立
@@ -139,3 +139,35 @@ scratch-root cmdline许可，默认format1–5保持原范围。format6必须验
 周期的自主过期、active USB timeout、held cancel/abort/close/drain或自然恢复。
 开发fixture/严格C通过不等于实机通过。新镜像、全真实双设备20+2及独立raw/
 pcap/QMP复核后才能记录限定资格；完整transactions、自然根因与S0–S6继续OPEN。
+
+
+## 原始 queued deadline 限定实机通过（完整事务仍 OPEN）
+
+[本批新镜像证据](evidence/ws73-vm-queued-original-deadline-20261011.json)使用实际
+编译 K`7f9314309e30`／U`f8c7efb`，后续变更仅文档；全部编译源 hash 与冻结
+prepared 输入再次核对。原 Features11/seq11 请求 100ms，136 个真实连续重试
+样本中 90 个 Pending，首次观察 ETIMEDOUT 距 admission 前时钟 99.581092ms，
+采样跨度 149.374022ms（实现时钟精度与观测间隔限制保留，不宣称精确到期时刻）。
+40 字节 admission 和 104 字节结果完整核对；超时只记一次，释放后不复活。
+全暂留阶段和释放到淘汰之间没有 Features OUT／回复。
+
+原 host 成功 transfer 为178字节，SHA256
+`1a94d249b21c58f47ec1c7c5bce5b0f8af10358b950f03ff148b51561a6a1b69` 与实际 guest
+USB 记录一致；QMP与guest ack保持一hold／一显式release，无bounded release/drop。
+独立49份诊断证明含46组wire；旧MAC IN先于新MAC OUT／IN。原63条C、read7、
+result16、copyout2、legacy poll3、淘汰33／静默、CLI4、三身份旧注册27拒绝保持。
+真实WS73普通用户20＋2轮随机数据／地址／RSSI均匹配，最长621ms；同slkd
+PID661/start1644，幸存g2保持，人工IN81目标g1→3，重新Ready约10.175秒。
+1431 USB零drop、22份真实RX、warning0／taint0／trace overrun0；host四只释放在位，
+没有device_del、宿主部署或人工拔插。USB／HCC／DLI并非独立PHY嗅探。
+
+[源码CI38099897596](https://github.com/OpenSparklink/sparklink/actions/runs/38099897596)
+九作业终结成功，实际日志170 Rust／34 Python／195工具，4授权／78verifier／
+18queue及严格C探针通过。一次日志下载EOF保留，仅重新下载该作业日志；没有
+重跑或修改CI门禁。此前本地fixture错误、构建／prepare失败及物理xHCI warning
+历史记录保留，不用本批零warning抹除自然故障根因。
+
+这只更新 queued 原始期限／同ID不续期的 syscall 观测资格，不更新后台500ms
+heartbeat自主过期、active USB timeout、held cancel／abort／close／drain、完整
+owner／CAP／并发／removal／32-bit或自然故障恢复资格。下一步分别实现这些门禁
+及旧调用者迁移删除。北极星7／8，全部完整issues和S0–S6继续OPEN，VM-only。

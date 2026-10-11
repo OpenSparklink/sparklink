@@ -47,9 +47,12 @@ snapshot／统计／枚举不变、对应 USB 窗口零命令；真实双设备 
 权限 selftest，后续 K`7f9314309e30`／U`f8c7efb` 新增 queued 原始期限门禁。
 新门禁的开发 fixture 不能替代旧镜像证据或新实机验收。
 
-本次 queued 门禁验证原 100ms 期限内连续同 ID 重试不续期、一次 timeout 计数、
+本次[新镜像实际证据](evidence/ws73-vm-queued-original-deadline-20261011.json)限定通过：
+136 个连续样本、请求原 100ms 期限的同 ID 重试不续期、一次 timeout 计数、
 完整字节结果保留及排队零发包；以[该门禁独立记录](DIAGNOSTIC_CANCEL_GATES.md)
-为准。它不证明后台自主过期、在途 USB timeout、暂留时 close／drain 或自然恢复。
+为准。真实WS7320＋2／原门禁保持；源码CI九作业全部成功，170 Rust／34 Python／
+195工具实际日志核对。它不证明后台自主过期、在途 USB timeout、暂留时
+close／drain 或自然恢复。
 
 ## 严重程度及依赖顺序
 

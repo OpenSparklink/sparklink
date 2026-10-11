@@ -172,8 +172,14 @@ def corroborate(record, host, capture, stderr, expected):
     start=record['submit_before_wall_ns'];end=record['management_observations'][-1]['wall_ns']
     rows=[v for v in capture['commands'] if v['bus']==1 and v['device']==2 and start<=v['wall_ns']<=end]
     opcode=0xc02 if record['domain']=='advertising' else 0x1001
-    if [v['opcode'] for v in rows]!=[opcode,0xc05,0x1002] or rows[1]['params']!='0000000000' or rows[2]['params']!='0000':
-        raise ValueError('one initial step followed only by actual advertising/scan stops required')
+    opcodes=[opcode,0xc05,0x1002] if record['domain']=='advertising' else [opcode,0x1002]
+    if [v['opcode'] for v in rows]!=opcodes or any(v['params']!={0xc05:'0000000000',0x1002:'0000'}[v['opcode']] for v in rows[1:]):
+        raise ValueError('only required actual stops may follow the held first step')
+    if preparation:
+        all_commands=[v for v in capture['commands'] if v['bus']==1 and v['device']==2
+                      and record['preparation'][0]['start_wall_ns']<=v['wall_ns']<=end]
+        if all_commands!=[v['command'] for v in preparation]+rows:
+            raise ValueError('confirmed advertising Off must have no intervening target traffic')
     replies=[]
     for command in rows:
         matches=[v for v in capture['complete'] if v['bus']==1 and v['device']==2 and v['opcode']==command['opcode'] and command['wall_ns']<=v['wall_ns']<=end]
@@ -192,6 +198,7 @@ def corroborate(record, host, capture, stderr, expected):
         peer.append(dict(command=commands[0],reply=completions[0]))
     return dict(scope='one partial first-step and actual held late reply',case=record['case'],domain=record['domain'],
         commands=rows,replies=replies,host_hold=proof,peer_queries=peer,preparation=preparation,
+        retained_advertising_off=preparation[-1] if preparation else None,
         managed_partial_case_live_acceptance=True,full_cleanup_acceptance=False,
         automatic_fault_recovery_acceptance=False,natural_fault_root_cause_closed=False)
 

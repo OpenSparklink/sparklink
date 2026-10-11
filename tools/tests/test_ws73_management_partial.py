@@ -4,7 +4,8 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import errno
 import unittest
-from ws73_management_partial import verify_records, standby
+from unittest.mock import patch
+from ws73_management_partial import verify_records, standby, corroborate
 from ws73_diagnostic_hold import PROPERTIES
 from sparklink.structs import SleControllerSnapshot, SleManagementQuery, SleDiscoveryResult, SleDiagnosticSubmit, SleDiagnosticResult
 
@@ -49,6 +50,33 @@ def fixture(case='release',domain='advertising'):
 
 
 class PartialTests(unittest.TestCase):
+    def test_scan_cleanup_retains_only_previously_proven_off(self):
+        record=fixture(domain='scanning')
+        record['management_observations']=[dict(wall_ns=440,raw=record['revoking']),dict(wall_ns=450,raw=record['final_management'])]
+        record['peer_queries'][2].update(start_wall_ns=490,end_wall_ns=500)
+        def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
+        def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0)
+        capture=dict(commands=[command(0xc02,55,'00'*49),command(0xc05,75,'00'*5),
+            command(0x1001,155),command(0x1002,420,'0000')],
+            complete=[reply(0xc02,65,'06'),reply(0xc05,85),reply(0x1001,410),reply(0x1002,430)])
+        for row in record['peer_queries']:
+            capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
+            capture['complete'].append(reply(0x406,row['end_wall_ns'],'313233343536',device=3))
+        # The host hold contract is tested independently. Here exercise exact
+        # target capture ordering and refusal to replace prior OFF evidence.
+        with patch('ws73_diagnostic_hold.corroborate_host_hold',return_value={}):
+            proof=corroborate(record,{},capture,'',{})
+            self.assertEqual(proof['retained_advertising_off']['reply']['opcode'],0xc05)
+            self.assertEqual([v['opcode'] for v in proof['commands']],[0x1001,0x1002])
+            for change in ['missing-off','failed-off','extra-stop','intervening-enable']:
+                import copy
+                bad=copy.deepcopy(capture)
+                if change=='missing-off':bad['complete'].pop(1)
+                if change=='failed-off':bad['complete'][1]['status']=30
+                if change=='extra-stop':bad['commands'].insert(3,command(0xc05,415,'00'*5))
+                if change=='intervening-enable':bad['commands'].insert(2,command(0xc05,120,'0100000000'))
+                with self.subTest(change=change),self.assertRaises(ValueError):corroborate(record,{},bad,'',{})
+
     def test_scan_requires_real_prior_advertising_off_and_no_false_unknown(self):
         for change in ['missing','failed','unknown','wrong-request','reserved','no-power','bad-power','late','bool','pending-radio']:
             record=fixture(domain='scanning');row=record['preparation'][0]

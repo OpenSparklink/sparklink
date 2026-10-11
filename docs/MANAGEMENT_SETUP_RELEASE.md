@@ -222,7 +222,9 @@ Succeeded 结果、selected power 及两笔有序成功 Complete 的抓包，再
 从 untouched Setup 直接假定广播 Off，或把 EBUSY 视为在途取消。格式2强制保存
 这段前置证据；旧格式失败原件保留，不能重新包装为通过。广播案例仍从 untouched
 Setup 开始。这是修正测试方案，完整真实六案例及 Ready 同伴活动隔离仍待执行。
-原真实回复交还后，应只有真实广告／扫描停止及成功 Complete，再Free/Ready；
+原真实回复交还后，广播案例要求两域真实 STOP；扫描案例保留此前已证明的
+广播 STOP/Off（整个前置至清理区间不允许额外 target 命令），只发送仍未知的
+扫描 STOP。不要求重复已确认 Off 的命令，不伪造新 Complete；再Free/Ready。
 保留原操作 Cancelled/-ECANCELED。peer持独立Diagnostic租约，前／在途／后三次
 真实MAC查询及完整metadata/ownership检查均须匹配。任何原始status、EIO、代际退役
 或超时均记失败，不通过忽略错误、合成成功或新注册替代旧cleanup。单案例通过也

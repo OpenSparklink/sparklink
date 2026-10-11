@@ -1221,6 +1221,9 @@ EBUSY 且结果 ENOENT。两只模拟 USB 上实际 release／最后 fd／dup �
 selected power 和两笔有序成功 USB Complete，再暂停扫描第一步；失败不进入
 扫描。格式2拒绝遗漏／失败／伪造 Off；268 项工具测试通过，新的 partial 前置
 路径尚未通过 VM 或实机在途验收。广播案例仍从 untouched Setup 开始。
+调用关系复核确认扫描清理可保留前置阶段真实确认的广播 Off，只发送未知扫描
+STOP；验证器要求原成功 STOP 证据与前置至清理期间无额外目标命令。遗漏回复、
+失败 STOP、重复 STOP 或插入 enable 均拒绝。269工具测试通过，真实矩阵仍开放。
 
 实机维护 VM 的 libusb debug 确认 length36 bulk URB 实际提交，然后超时取消并
 回收 -ENOENT/transferred0；这将“未提交到主机”的假设排除于该次 OUT，但不能

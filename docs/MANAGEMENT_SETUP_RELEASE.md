@@ -405,3 +405,14 @@ USB核对必须保留两只原初始化的每笔成功回复及参数，禁止�
 发生额外目标命令。原 Unknown Setup／扫描 STOP 子门禁继续保留，格式2不能
 冒充格式3完整初始化。此为开发支撑；仍需真实设备、活动 Ready peer、普通
 调度并发、partial 后续步骤和 RF 验收，实际执行另以 manifest 判定。
+
+[完整队列模拟 fd 执行证据](evidence/ws73-confirmed-off-queue-model-fd-20261011.json)
+已封存：两只各完成五笔原初始化命令／成功回复，release／最后fd／dup 六案例
+实际 Queued→Cancelled/-ECANCELED，ScanInitializeOff count3、广告配置 count2，
+零已选 opcode/step；dup 初次关闭仍 Held，最终 Free 与原 Ready/Off 完整字节
+保持。369包零丢包，原初始化结束至矩阵完成各目标零额外 DLI。模型仍开启
+idle STOP 拒绝，保留 Off 没有依赖宽松模拟 STOP。冻结工具 U502、验证器 U55a、
+签名镜像 K292、编译服务 Ud749 及 QEMU hash 分开。286工具测试通过；只证明
+有界 FIFO／一CPU 模拟支撑，未增加真实 Managed／活动 Ready peer／普通并发
+或恢复资格。既有真实路由／寄存器失败、partial 第一步及 Unknown Setup
+证据不覆盖重写；后续初始化步骤、真实在途回复及完整实际 RF 仍需执行。

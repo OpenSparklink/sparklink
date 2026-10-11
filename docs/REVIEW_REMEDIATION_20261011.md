@@ -811,3 +811,12 @@ socket 路径错误，修正后重新执行，原失败不删除。274工具测�
 分别记录，失败长度不能代替真实成功。未写寄存器／复位／加载模块；283工具
 测试及 Ud8f CI 九作业仅源码支撑。自然 RCA、Ready同行、Managed真实矩阵、
 自动恢复、14项整改和全部原 issues 继续 OPEN；历史有效路径／证据保留。
+
+[完整初始化队列模拟 fd 证据](evidence/ws73-confirmed-off-queue-model-fd-20261011.json)
+封存两只各五笔原初始化成功回复与六个 release／最后fd／dup：全部从原确认
+Ready/Off 排入扫描参数／START／STOP 全recipe，再排广告配置；Queued 请求
+均 Cancelled/-ECANCELED、零已选 opcode/step、原 Off 与同伴完整快照保留，
+369包零丢包，初始化后零目标 DLI。扫描准入 EBUSY 保护及模型 idle STOP
+拒绝均保留。286工具测试通过；这只是有界 FIFO 一CPU 模型支撑，未验证真实
+活动同伴、普通并发或后续 partial／物理回复。正式 Linux/Rust WS73 路径未改；
+真实启动、Managed、恢复、自然 RCA、14项整改及原全部 issues 保持 OPEN。

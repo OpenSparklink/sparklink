@@ -1267,3 +1267,13 @@ EP01/EP81 两次实际 libusb clear-halt 返回零、前后完整配置不变，
 独立寄存器通道；继续核对设备／固件／host／QEMU 边界，禁止未读成功直接
 写 SoC 或把模型通过算硬件恢复。正常门禁仍7、维护累计18，新真实 Managed
 仍零。283工具测试与 Ud8f CI 九作业仅源码资格；原完整依赖和全部 gates 保留。
+
+[完整扫描初始化队列模拟 fd 矩阵](evidence/ws73-confirmed-off-queue-model-fd-20261011.json)
+新增实际内核六案例支撑。两只先真实执行模型上的广播配置／STOP、扫描
+参数／START／STOP，保存每笔原成功回复及完整 Ready/Off 字节；在有界 FIFO
+区间先排入完整 ScanInitializeOff，再广播配置，遵守无 pending 广播准入条件。
+release／最后fd／dup 取消全初始化，原 Off 保留，369包零丢包且初始化后至
+矩阵结束零目标 DLI。idle STOP 拒绝保持开启，没有改内核 guard 或正式路径。
+冻结 U502、验证器 U55a、镜像 K292／服务 Ud749 分开，286工具测试仅开发资格。
+本批不新增物理尝试或真实 Managed，活动 Ready、普通调度、partial 后续步骤、
+真实启动／自动恢复／自然 RCA 和完整 S0–S6／原28项 scope 继续 OPEN。

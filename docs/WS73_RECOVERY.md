@@ -656,3 +656,43 @@ Native/Proxy/sandbox/发布验收。原生主机对照受VM-only约束未执行�
 自然启动超时/重枚举/设备消失、软件off/on未恢复bulk、历史xHCI warning的RCA与无需
 人工干预的单设备恢复继续OPEN；人工冷断电只是诊断且VBUS未测，人工guest IN错误仅
 开发支撑。28项原scope及两个draft保持OPEN未合并，完整goal active。
+
+
+## 2026-10-11 普通调度的真实替代队列及结果淘汰六例通过
+
+[独立原始证据](evidence/ws73-managed-ordinary-eviction-real-20261011.json)，
+SHA256 `ecf708552083431d5280d94878379a00790f496679a07b79fe52f930f5a577e3`：广告/扫描各release、最后fd关闭、dup，六个
+实际source runner PASS/QEMU0。两CPU、两个SCHED_OTHER线程，每例实际ioctl
+时间窗重叠43–57对；65个同域合法替代提交耗时0.84–1.23ms。原在途请求先
+Cancelled，再被真实64项终态表淘汰；原ID/首替代ID（扫描再加准备ID）
+在release前/后和迟到回复排空后均ENOENT。其余64项仅最后一个实际Queued，
+释放后全部Cancelled/-ECANCELED，opcode/step/power0，无未选择命令逃逸。
+原提交到取消128–170ms，不延长500ms原期限；dup第一次关闭仍Held，末引用
+关闭Revoking到Free。实际host成功IN81原SHA/长度与原回复一致。
+
+广告只有原C02和必要C05，扫描先实际广告Off、原1001，零未选择START/STOP；
+扫描仍Unknown/Setup，不制造Ready。活动同行跨原held回复/取消/Free保持同
+generation/完整Ready/Managed/current scanning On，每例14条真实命令/
+成功Complete，随后STOP/START/STOP。同RF slkd/bus、UID1000/caps0随机
+RF20+2，共132轮均在10秒内匹配标识、数据、地址、RSSI；零抓包drop、taint0、
+无kernel fault。hold发生在RF daemon前，不能据此宣称daemon并发在途验收。
+
+原扫描initializer替代失败EBUSY及未执行两例保留；修正后先实际核对
+EBUSY/ENOENT无admission，再以合法同域STOP作未选择替代，不放宽生产
+can_initialize_scan。原首批广告冻结Ue18b25aa9c1b，新扫描冻结U542f7ae311ae；
+编译内核K060011963b5e、服务U7bd441625951，生产源码哈希一致，QEMU d53eb3d1b583。
+原prepare错误module-tree父目录参数保留（无VM/USB执行），新独立输出修正。
+316工具回归、25实际Host、19命令计划支撑保持；ABI测试忽略显式路径的
+CI38150415339失败及随后sparse checkout缺头文件的CI38151129591失败保留。
+修正只补 canonical pinned UAPI 依赖，U303b94c50260 CI38151508403九项成功；
+证据HEAD后续CI单独核对。正常VM累计46、维护20，失败不归零。
+
+[原后续步骤九例/198RF](evidence/ws73-managed-later-real-20261011.json)及
+此前静默/活动Ready队列、首步、0x0b拒绝与捕获窗口失败证据保持。
+当前通过限定于普通调度两个提交者的替代/淘汰/释放子集，**整项Managed和
+完整并发/事件/权限/移除仍OPEN**。下一优先为daemon运行中的在途取消与作者
+生命周期、当前资格镜像物理拔插/slkd不中断、四设备两组，然后自然
+启动/消失RCA和有限单设备非人工恢复，以及其余完整S0–S6/28项原验收。
+VM-only不变；人工guest IN错误只是开发支撑，hub切电和人工冷断电不是
+自动恢复验收。未查明根因、历史xHCI warning及恢复事项继续OPEN，部分成果
+不关闭整项、两个draft不合并。

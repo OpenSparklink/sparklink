@@ -1,3 +1,17 @@
+### 当前S4增量：Native物理链路义务，尚未连接互通（2026-10-12）
+
+Linux444450231937已签名推送，WS73 driver归一化实际连接/断开outcome并与
+完整日志原子进入每Runtime Host。活动/uncertain连接不再可用仅radio Off
+宣布清理/Free，别名留在driver，失败/错误handle/日志loss不清除义务。
+34项实际Host/revoke与10项实际ingress源码测试、120165 DLI sanitizer checks
+通过；均有明确依赖fixture，不是运行内核或RF验收。独立新内核构建仍在运行，
+原已验收镜像保留；进一步发现acquire可睡眠copyout后需要重新核对Host再
+commit的窗口尚待修复，完整atomic admission不通过。详见
+[依赖、已接通调用者与剩余窗口](WS73_NATIVE_LINK_FOUNDATION.md)。
+下一按commit窗口修复/新内核VM回归 → typed27字节连接/3字节断开请求及异步
+生命周期 → 真实双设备连接/SSAP推进，不用源码基础替代原S4功能。完整
+S0–S6/28项、四设备默认并行、自然RCA和非人工恢复仍开放。
+
 ### 当前增量：active-radio SIGKILL / 原代次接任（2026-10-12）
 
 生产内核/服务保持已验证版本；工具a2c3b4951aa 在正常VM73完成真实两只

@@ -179,6 +179,7 @@ jobs:
           python tools/testing/selftests/sparklink/run_phy_model.py
           python tools/testing/selftests/sparklink/run_diagnostic_result.py
           python tools/testing/selftests/sparklink/run_management_release.py
+          python tools/testing/selftests/sparklink/run_link_observation.py
           python tools/testing/selftests/sparklink/run_usb_firmware.py
           python tools/testing/selftests/sparklink/run_usb_discovery.py
       - name: Check complete ioctl authorization and queue contracts

@@ -61,11 +61,15 @@ pub(crate) async fn cancel_policies(state: &SharedState) -> zbus::fdo::Result<u6
         .native_lease
         .clone()
         .ok_or_else(|| failed("management unavailable"))?;
+    // Do not queue background handoffs without a bound behind another RPC or
+    // cancellation. The caller can retry a busy device explicitly.
+    let mut authority = lease.try_lock_owned().map_err(|_| {
+        zbus::fdo::Error::Failed("device management admission or handoff busy".into())
+    })?;
     let state = state.clone();
     // Once started, finish the bounded handoff even if the D-Bus caller exits.
     tokio::spawn(async move {
         let outcome = async {
-            let mut authority = lease.lock_owned().await;
             let token = authority
                 .token
                 .filter(|_| authority.accepting)
@@ -213,4 +217,81 @@ pub(crate) async fn timing(
         t.opcode,
         t.status,
     ))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        bonding::BondingStore,
+        config::DaemonConfig,
+        profile::ProfileRegistry,
+        state::{AdapterState, NativeManagement},
+    };
+    use tokio::sync::Mutex;
+
+    fn selected_null() -> SharedState {
+        // No simulated successful ioctl/Ready. /dev/null must return ENOTTY if
+        // reached; the test exercises admission and independent credentials.
+        let fd = Arc::new(Adapter::open("/dev/null").unwrap());
+        let mut state = AdapterState::new(
+            fd.clone(),
+            DaemonConfig::default(),
+            BondingStore::new(std::path::Path::new("/tmp"), "cancel-admission-test"),
+            ProfileRegistry::new(),
+        );
+        state.native_control = Some(fd);
+        state.native_lease = Some(Arc::new(Mutex::new(NativeManagement {
+            token: Some(7),
+            accepting: true,
+        })));
+        Arc::new(Mutex::new(state))
+    }
+
+    #[tokio::test]
+    async fn busy_cancel_does_not_queue_or_block_another_device() {
+        let first = selected_null();
+        let peer = selected_null();
+        let lease = first.lock().await.native_lease.clone().unwrap();
+        let guard = lease.lock().await;
+        let result = tokio::time::timeout(Duration::from_millis(100), cancel_policies(&first))
+            .await
+            .unwrap();
+        assert!(result.unwrap_err().to_string().contains("busy"));
+        let error = cancel_policies(&peer).await.unwrap_err().to_string();
+        assert!(error.contains("ENOTTY"), "{error}");
+        assert!(guard.accepting);
+        drop(guard);
+        let error = cancel_policies(&first).await.unwrap_err().to_string();
+        assert!(error.contains("ENOTTY"), "{error}");
+    }
+
+    #[tokio::test]
+    async fn failed_handoff_admission_and_removed_registration_are_rejected() {
+        let state = selected_null();
+        let lease = state.lock().await.native_lease.clone().unwrap();
+        lease.lock().await.accepting = false;
+        assert!(
+            cancel_policies(&state)
+                .await
+                .unwrap_err()
+                .to_string()
+                .contains("management unavailable")
+        );
+        assert!(
+            scan(&state, 19)
+                .await
+                .unwrap_err()
+                .to_string()
+                .contains("management unavailable")
+        );
+        state.lock().await.present = false;
+        assert!(
+            cancel_policies(&state)
+                .await
+                .unwrap_err()
+                .to_string()
+                .contains("registration removed")
+        );
+    }
 }

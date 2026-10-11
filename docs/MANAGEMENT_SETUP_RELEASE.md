@@ -880,7 +880,7 @@ CLI本身、取消/移除及其余RPC并发仍未实机验收**。完整Managed/
 事件/removal、当前镜像物理拔插、四设备两组、自然RCA/无人工恢复及其余
 S0–S6/28项保持OPEN。VM-only；部分成果不关闭整项，两个draft不合并。
 
-## 取消调用者退出与 busy 拒绝：新门禁待实机
+## 取消调用者退出与 busy 拒绝：新双案例资格
 
 `slctl management` / `GetManagementStatus` 读取当前选定 kernel File 的
 实际 MANAGEMENT_QUERY，仅返回 generation/mode/state/flags/errno/status/opcode。
@@ -912,7 +912,28 @@ python3 tools/ws73_target.py run --prepared PREPARED --output OUT \
 # 另一独立 VM/OUT 使用 --daemon-hold-case cancel-busy；首失败停止批次。
 ```
 
-目前322工具、4项 production admission/query 回归及严格clippy通过，是源码
-支撑。新案例尚待新服务编译/真实执行；取消与移除并发、当前镜像物理拔插、
-四设备、自然RCA/非人工恢复及完整S0–S6保持OPEN。原STOP0b失败和前批
-两案例/44轮资格不覆盖，不提前关闭整项issues，VM-only。
+[新实机作者生命周期证据](evidence/ws73-daemon-cancel-author-real-20261012.json)
+SHA256 `70b9c6f4be10eee572cdaabd338d1f0cbc687dfd38b7eaa86ba51b29639ab9a1`：
+取消CLI实际SIGKILL/reap与第二个取消实际busy失败两例均通过，source runner
+PASS/QEMU0，独立核对原host帧SHA/长度、完整target四条与peer三条DLI。
+被杀取消CLI没有伪造确认；实际观察同generation Revoking/flags0保持到
+release后，再实际Managed Held/flags1，随后target真实扫描START/STOP成功。
+另一只独立Ready保持scanning On，原operation排空后仍Cancelled/-ECANCELED。
+
+新镜像编译K060011963b5e/服务及冻结工具Uab1a34b07f1c，QEMU d53eb3d1b583，
+source/策略哈希一致。两例同slkd/bus、普通UID1000/caps0各RF20+2，共44轮
+随机标识/匹配数据/地址/RSSI在10秒内，capture零drop、taint0/无kernel fault。
+实际held window时间和逐包证据见JSON，不改500ms原DLI deadline。322工具、
+完整Rust174项、4项 production admission/query 与严格clippy通过；
+[精确源码CI38155998741](https://github.com/OpenSparklink/sparklink/actions/runs/38155998741)
+九项success。首次新fixture遗漏同步nested completion timestamp而被严格guard
+拒绝的原FAIL保留，修正fixture后重跑通过，未放宽生产或捕获判据。
+原schema2双案例已用新verifier重新读回，proof完全相同，旧资格不倒填为
+新镜像完整矩阵。正常VM累计51/维护20，失败不归零。
+
+本批没有执行取消/移除并发或当前镜像物理拔插。下一独立VM门禁将暂留原
+reply并启动cancel，再只移除目标的guest USB对象，要求取消实际失败且
+无虚构generation确认、旧选择退役、同行仍可控制，重接后新Ready及同slkd
+RF。此QMP退役是开发支撑，与人工真实物理拔插、自然设备消失RCA和有限
+非人工单设备恢复分开。其余RPC/admission/result/event/权限并发、四设备
+两组和完整S0–S6/28项保持OPEN，VM-only，部分成果不提前关闭整项。

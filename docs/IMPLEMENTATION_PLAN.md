@@ -1617,3 +1617,25 @@ K060011963b5e，新服务/冻结工具U9cdccd942e21，不能沿用旧U7bd服务�
 单设备非人工恢复。完整S0–S6/28项原scope、14项整改与旧代码三类清理保持，
 自动恢复/未查明根因及整项Managed仍OPEN；部分成果不关闭整项，两个draft
 不合并，goal active，VM-only。
+
+
+## 2026-10-12 取消CLI放弃及竞争取消的真实双案例
+
+[独立证据/新44轮RF](evidence/ws73-daemon-cancel-author-real-20261012.json)，
+SHA256 `70b9c6f4be10eee572cdaabd338d1f0cbc687dfd38b7eaa86ba51b29639ab9a1`：
+取消CLI实际被kill/reap，或第二个取消实际busy失败，原host参数reply仍held；
+内核实际Revoking到同generation Managed/owned Held，目标实际扫描START/STOP
+验证业务权限，同行Ready/scanning On保持。只读`management`不返回lease token，
+不消费operation结果，不锁住handoff；完整捕获目标仅原1001+排空后的
+1001/START/STOP，peer三条，无busy请求逃逸、虚构Complete/取消CLI成功。
+新服务/冻结工具Uab1a34b07f1c、内核K060011963b5e；同slkd/bus，普通
+UID1000/caps0，RF20+2各例/共44轮、10秒内随机数据/地址/RSSI匹配，零drop、
+taint0/无kernel fault。322工具/174Rust/严格clippy，精确CI38155998741九项
+成功；原新fixture拒绝及旧STOP0b/EBUSY/超时/warning历史不覆盖。
+
+正常VM累计51、维护20，失败不归零。下一取消/移除并发采用明确QMP guest
+单对象退役支撑，仍需单独真实物理拔插/四设备两组；自然启动超时/重枚举/
+消失RCA及非人工单设备恢复仍OPEN，不能用guest退役或人工错误替代。
+其余完整RPC/事件/权限/结果并发和S0–S6/28项原scope保持；旧代码三类清理、
+未发布UAPI迁移后删除继续，整项Managed未完成，部分成果不关闭整项。
+VM-only，goal active。复现/字段/限定范围见[Managed验收](MANAGEMENT_SETUP_RELEASE.md)。

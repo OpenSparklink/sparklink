@@ -1,6 +1,6 @@
 # ADR 0001：管理、连接 socket 与应用服务分层
 
-本次复核（K`7f9314309e30`／U`f8c7efb`）见[当前分层、整改与验收边界](../BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
+最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](../BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
 日期：2026-10-11。状态：目标架构已采用，分阶段实施；不代表 socket、SSAP、
 安全或完整生态已交付。根据用户提供的 Linux Bluetooth / BlueZ 分析调整原方案，
@@ -103,3 +103,21 @@ K`54621800ee4c`修复旧poll的复制提交顺序；[6项新开发fixture和未�
 实际取消/迟到回复/完整期限、事件与旧DLI调用者删除仍开放；socket、用户态SSAP、
 每连接安全/Bond及自然故障根因/自主恢复未验收。历史物理xHCI警告和旧版本
 证据保留，不能用新批无警告替代根因定位。部分成果不关闭完整issue。
+
+
+## 最早原始期限调度生产修复及新镜像回归（整项仍开放）
+
+[本批实际证据](../evidence/ws73-vm-deadline-rearm-20261011.json)为K`016aa7ee6813`／
+实际编译U`b6d6bf96101e`。本设备RX立即处理诊断提交/同ID重试，并按author、
+active wire、recipe和revocation最早原期限重新排期；取消仍保留active reservation。
+32项实际源码边界测试和匹配CI九作业通过；真实普通用户WS7320＋2轮最长470ms，
+同slkd、幸存generation保持，人工IN81注入目标重获Ready约10.350秒。
+排队请求静默800.173215ms后统计已计入一次expiry，早于首次RESULT；完整结果及
+此前所有copyout、取消、淘汰、旧注册拒绝和wire门禁保持。USB1431零drop、
+warning0/taint0/traceoverrun0，host四只释放在位；无宿主部署或人工拔插。
+
+这是新生产调度的路径回归，不证明精确100ms或时延上界、active USB超时、held
+cancel/abort/close/drain、完整并发/权限/移除。旧调用者/shared ring/fallback和内核
+全局dead-code清理与生命周期并行；自然故障根因、无人工恢复、历史物理xHCI警告
+仍OPEN。最小socket、用户态SSAP、安全/Bond/Profile及完整S0–S6继续推进，
+北极星7/8、VM-only不变，部分成果不关闭整项 issue。

@@ -231,7 +231,7 @@ warning历史证据保留。
 连接socket／用户态SSAP及全部S0–S6。北极星7／8不变，VM-only，部分成果不关闭整项。
 
 
-## 最早原始期限调度修复（生产变更；新镜像实机待执行）
+## 最早原始期限调度修复（生产变更；下述新镜像回归已通过）
 
 RX维护原先在空闲时只按500msheartbeat重新排队；诊断提交只kick TX，新短期限
 可能等下一次维护才处理。现在提交/同ID重试在释放协议/管理锁后schedule_rx(0)，
@@ -250,3 +250,31 @@ pending、12提交、6Host期限）通过；首次fixture语法错误记录保�
 schedule gate后立即执行排队callback，由Rust回收queue-owned Arc，而非等待timer。
 不能因wrapper名称误判为普通flush或未经审核手工回收Arc；仍需实际held close/
 退役门禁。active USB超时、完整取消/close/owner并发、自然根因及S0–S6保持OPEN。
+
+
+### 本批新生产镜像实际回归（完整事务/生命周期仍 OPEN）
+
+[冻结证据](evidence/ws73-vm-deadline-rearm-20261011.json)使用K`016aa7ee6813`／
+实际编译U`b6d6bf96101e`，全新内核/模块/service bundle/VM，所有输入及源码hash核对。
+[源码CI38101815253](https://github.com/OpenSparklink/sparklink/actions/runs/38101815253)
+九作业终结成功：170 Rust、34 Python、205工具、4授权、78verifier、18queue，
+本批诊断源码32＝14结果/pending＋12提交＋6Host期限，严格C探针编译。
+
+原ID11连续135样本，同ID不续期，timeout只计一次；ID12静默800.173215ms后
+首次只读统计已pending2→1/resolve+1/timeout+1。统计结束16250198955ns早于首次
+结果查询16250199115ns；完整104字节ETIMEDOUT、40字节admission和释放后重试
+保持。worker超时日志保留作支撑，不用它推断精确timer时延。
+实际178字节host transfer及guest交付一致，QMP/ack一hold/一显式release，bounded0/
+drop0；原50proof/46wire、两只Features全阶段/释放间隙零OUT/回复保持。
+read7/result16/copyout2/legacy poll3/淘汰33/CLI4及旧注册三身份27拒绝均保持。
+
+真实双WS73 UID1000/caps0随机20＋2轮最长470ms，匹配数据/地址/RSSI；同slkd
+PID667/start1706、幸存g2保持、人工目标g1→3约10.350秒Ready。USB1431零drop、
+22RX、warning0/taint0/traceoverrun0，host四只释放在位，无device_del/宿主部署/
+人工拔插。USB/HCC/DLI不是独立PHY嗅探，历史物理xHCI warning仍保留。
+
+这证明新生产调度保留真实路径和已有限验收的后台queued expiry，不证明精确100ms
+执行/延迟上界。active USB期限及held取消/abort/close/drain、完整owner/CAP/并发/
+removal/32-bit、自然启动/重枚举/设备消失根因和无人工恢复仍OPEN。下一步针对
+实际在途原期限与退役边界，再迁移旧event消费者并删除shared ring/fallback；
+最小socket、SSAP、安全/Bond/Profile及完整S0–S6不缩减。

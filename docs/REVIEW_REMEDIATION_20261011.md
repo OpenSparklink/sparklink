@@ -1,8 +1,8 @@
 # 2026-10-11 复核与当前整改计划
 
-本次复核（K`7f9314309e30`／U`f8c7efb`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
+最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
-当前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：
+此前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：
 K`cc4018c4e3a6`/编译U`4a9de6a91617`使用专用QEMU暂留178字节真实回复，
 在途/排队本地ECANCELED、旧槽隔离、新查询自己的回复及46组wire限定通过；
 原20+2/read7/诊断/legacy poll3保持。完整deadline/held close/并发和自然恢复
@@ -412,3 +412,21 @@ Backend、全局parser与重复状态迁移仍待验收。完整截止时间/不
 cancel/abort/close/drain、完整事件/所有权/并发、自然故障根因与自主恢复、
 四设备及S0–S6仍OPEN；北极星7/8。下一步实际queued deadline不续期门禁，
 然后剩余消费者与共享ring/fallback删除。
+
+
+## 最早原始期限调度生产修复及新镜像回归（整项仍开放）
+
+[本批实际证据](evidence/ws73-vm-deadline-rearm-20261011.json)为K`016aa7ee6813`／
+实际编译U`b6d6bf96101e`。本设备RX立即处理诊断提交/同ID重试，并按author、
+active wire、recipe和revocation最早原期限重新排期；取消仍保留active reservation。
+32项实际源码边界测试和匹配CI九作业通过；真实普通用户WS7320＋2轮最长470ms，
+同slkd、幸存generation保持，人工IN81注入目标重获Ready约10.350秒。
+排队请求静默800.173215ms后统计已计入一次expiry，早于首次RESULT；完整结果及
+此前所有copyout、取消、淘汰、旧注册拒绝和wire门禁保持。USB1431零drop、
+warning0/taint0/traceoverrun0，host四只释放在位；无宿主部署或人工拔插。
+
+这是新生产调度的路径回归，不证明精确100ms或时延上界、active USB超时、held
+cancel/abort/close/drain、完整并发/权限/移除。旧调用者/shared ring/fallback和内核
+全局dead-code清理与生命周期并行；自然故障根因、无人工恢复、历史物理xHCI警告
+仍OPEN。最小socket、用户态SSAP、安全/Bond/Profile及完整S0–S6继续推进，
+北极星7/8、VM-only不变，部分成果不关闭整项 issue。

@@ -691,7 +691,7 @@ VM-only不变；人工guest IN错误仅作开发支撑；上游人工冷断电�
 软件切电未恢复bulk、自然启动超时/重枚举/消失根因仍OPEN；不执行共享hub循环代替单设备恢复。
 28项原完整scope、两个draft未合并、整个goal active。
 
-### Later original physical replies (hardware acceptance pending)
+### Later original physical replies (nine-case result recorded below)
 
 `--managed-real-later-step 1|2` requires the explicit selected partial gate and
 `--managed-ready-peer`. Advertising uses only step1 (original final STOP);
@@ -707,3 +707,41 @@ Free with exact successful peer traffic before and afterward. Fixtures cover nin
 step/fd combinations and rejection of wrong budget/hash/device/extra frames,
 model substitution, missing earlier replies, duplicate STOP and peer omission;
 they do not establish hardware acceptance.
+
+
+## 2026-10-11 真实后续初始化步骤九案例通过；CI夹具失败保留并修复
+
+[九案例独立实机证据](evidence/ws73-managed-later-real-20261011.json)
+SHA256 `a44921486b773a9b58cb82e8a400d21a2d70ddbcaba8f5327dad46ae28423e5b`。
+编译内核K060011963b5e、服务/冻结工具U7bd441625951、QEMU二进制
+`d53eb3d1b583ff87e26cc7aec1d5f4655867d0e0891bb2beb761172f8ba35ac3`。
+广播原最后STOP、扫描原START、扫描原最后STOP，各release/最后fd关闭/dup，九个
+原VM全PASS/QEMU0。每例前一/两条实际成功host IN81原帧照常交付，随后保留原成功帧；
+所有skip/held帧长度/SHA与对应实际Complete逐项一致，selector预算/armed/held/released
+host/guest原完整读回一致，零bounded release/drop/error，原500ms deadline不变。
+原请求始终Cancelled/-ECANCELED，dup第一次close保留owner、最后close撤销，Revoking→Free。
+广播仅C02/C05，未触碰扫描Unknown/Setup；扫描已有真实广告Off，原START取消后只发
+必要STOP，原最后STOP的迟到成功保留为Off屏障，拒绝重复STOP或假Succeeded。
+同行每例实际五命令Ready，独立Managed并scan On跨越取消、迟到回复和Free，之后
+实际STOP/START/STOP成功；十四条同行命令/Complete完整匹配，无跨设备STOP/未记录交通。
+每例同slkd/bus、UID1000/caps0、真实随机RF20+2成功，共198轮，抓包零丢包、taint0、
+无kernel fault。没有人工拔插、ganged hub重置或主机实验安装。
+
+311工具回归与选择器实际函数ASan/UBSan依赖夹具、完整补丁链、暂停无匹配QMP属性
+检查通过；新Rust/SparkLink/Virtual关闭构建及签名模块空USB VM双加载卸载通过。
+编译器零警告，一条make jobserver警告保留；早期selector夹具编译错误、sandbox LSAN
+限制、私有编译路径/ccache失败和构建记录log描述形状拒绝均保留，不冒充资格通过。
+U7bd CI38147959246原failure也保留：共享runtime-error callback夹具漏加selector字段，
+非实机失败。独立副本完整固定档案链/ASan/UBSan验证修复通过；K53a49a9bbfe4仅补零初始化
+计数字段、不放宽断言，CI改为固定修复HEAD并重新验证，最终结果按精确HEAD另记录。
+
+此前第一步骤partial+Ready同行六案例132RF、未选择队列+Ready同行六案例22RF及旧
+Unknown/confirmed-Off静默队列各六例、原0x0b拒绝/捕获失败均有效且不改写。
+正常启动VM累计39、维护20。当前通过受控队列和所有三个初始化recipe后续步骤的
+三fd/原held帧/活动Ready同行门禁；**整项Managed、普通调度并发/结果淘汰仍OPEN**。
+下一优先为普通调度与结果淘汰、当前资格镜像物理拔插/daemon不中断、四设备两组并行，
+再继续完整S0–S6连接/SSAP/Profile、安全/Bond/PHY、drivers-owned backend/PM、
+Native/Proxy/sandbox/发布验收。原生主机对照受VM-only约束未执行。
+自然启动超时/重枚举/设备消失、软件off/on未恢复bulk、历史xHCI warning的RCA与无需
+人工干预的单设备恢复继续OPEN；人工冷断电只是诊断且VBUS未测，人工guest IN错误仅
+开发支撑。28项原scope及两个draft保持OPEN未合并，完整goal active。

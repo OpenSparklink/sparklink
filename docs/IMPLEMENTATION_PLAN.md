@@ -1251,3 +1251,11 @@ partial 后续步骤及 release／最后 fd／dup 的真实在途回复，再执
 同伴隔离、同 slkd 普通用户 RF20+2、物理拔插和四设备两组。274工具测试及
 Uf35 CI 九作业仅支撑开发；本矩阵不新增物理验收。S0–S6、旧实现三类清理和
 原28项完整条件保留，自动恢复及未查明根因的 issue 不关闭。
+
+[新增 VM 实机对照](evidence/ws73-clear-halt-route-diagnostic-20261011.json)验证
+EP01/EP81 两次实际 libusb clear-halt 返回零、前后完整配置不变，但首笔36字节
+路由 OUT 仍超时，cancel/reap -ENOENT、transferred0，未进入模块或 Managed。
+本次维护尝试16（正常门禁仍7），新增真实 Managed 仍零。四只保持 host 枚举
+不算 Ready 隔离；冻结私有观察器只记录返回，默认构建已恢复。下一步继续
+定位真实启动／数据传输原因，禁止把控制请求返回零当作成功恢复或弱化状态
+门禁。278工具测试仅源码支撑，恢复、自然 RCA 和全部原验收仍开放。

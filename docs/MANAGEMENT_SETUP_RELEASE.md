@@ -369,3 +369,11 @@ VM／实机在途通过；后续模拟结果见下文。CI38123259995（U4fc）�
 不能单独确认物理成功；需私有观察器实际返回与抓包独立核对。它不是生产恢复，
 也不能建立 Ready、活动同伴或 Managed 验收。源码 278工具测试通过，实际结果
 按独立 manifest 记录。
+
+[真实端点对照](evidence/ws73-clear-halt-route-diagnostic-20261011.json)已终结：
+EP01/EP81 实际 libusb 返回均零，69包零丢包抓包证明两个 CLEAR_FEATURE 完成，
+前后完整运行态配置一致。但第一笔36字节路由 OUT 仍 errno110，USB取消回收
+-ENOENT、host transferred0；未发第二帧、未加载模块或写 SoC。原 FAIL 保留。
+parent/hub/target suspend-time 增量零，四只 host inventory 一致；不能当作
+活动 Ready peer。私有观察器补丁／二进制封存，默认可变源码和二进制已精确
+恢复。标准端点清理没有恢复本次传输，不能据此宣布自然根因或自动恢复完成。

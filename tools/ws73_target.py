@@ -379,6 +379,8 @@ def _run(args):
     m['live_diagnostic_deadline_requested']=deadline_gate
     m['live_diagnostic_autonomous_requested']=autonomous_gate
     m['live_active_deadline_requested']=active_gate
+    if active_gate:
+        m['active_deadline_verifier']=file_record(HERE/'ws73_active_deadline.py')
     process=monitor=channel=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
@@ -579,12 +581,9 @@ def _run(args):
                 if active_gate:
                     from ws73_active_deadline import corroborate
                     probe=json.loads((share/'active-deadline/run.json').read_text())
-                    owners=[]
-                    for identity in identities:
-                        owners.append({'bus':identity['bus'],'device':identity['device']})
                     m['active_deadline_hold']['corroboration']=corroborate(
                         probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),
-                        (share/'kernel.log').read_text(),*owners)
+                        (share/'kernel.log').read_text(),*identities,devices[args.ports[0]])
                     m['live_active_deadline']=file_record(share/'active-deadline/run.json')
                 if event_copy:
                     from ws73_event_copy_probe import verify_cases
@@ -632,6 +631,8 @@ def _run(args):
                     m['status']='FAIL'
                     m['error']='environment timeout; capture sealed; physical control not accepted'
         prepared(args.prepared.resolve())
+        if active_gate and file_record(HERE/'ws73_active_deadline.py')!=m['active_deadline_verifier']:
+            raise ValueError('active deadline host verifier changed during run')
         if file_record(args.prepared.resolve()/'manifest.json')!=m['prepared_manifest']:raise ValueError('prepared manifest changed during run')
     except (Exception,KeyboardInterrupt) as error:
         m['status']='FAIL';m['error']=str(error) or type(error).__name__

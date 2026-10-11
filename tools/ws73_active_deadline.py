@@ -102,26 +102,32 @@ def verify_records(record):
         raise ValueError('hold must precede original deadline and passive abort must precede guard')
     acknowledgments = record['host_hold_acknowledgements']
     markers = record['markers']
-    if len(acknowledgments) != 3 or len(markers) != 3 or [v.get('stage') for v in acknowledgments] != ['armed', 'held', 'aborted']:
+    receipts = record['guest_ack_receipts']
+    if len(acknowledgments) != 3 or len(markers) != 3 or len(receipts) != 3 or [v.get('stage') for v in acknowledgments] != ['armed', 'held', 'aborted']:
         raise ValueError('one causal armed/held/aborted handshake required')
-    previous = 0
-    for i, (row, marker) in enumerate(zip(acknowledgments, markers)):
+    previous_host = previous_guest = previous_monotonic = 0
+    for i, (row, marker, receipt) in enumerate(zip(acknowledgments, markers, receipts)):
         values = [i == 0, i == 1, int(i > 0), 0, 0, int(i == 2), False, 0]
         if (row['request'] != marker or set(marker) != {'hold_phase', 'wall_ns'}
                 or marker['hold_phase'] != ['arm_ready', 'wait_held', 'abort_ready'][i]
-                or type(marker['wall_ns']) is not int or marker['wall_ns'] <= previous
-                or type(row['host_wall_ns']) is not int or row['host_wall_ns'] < marker['wall_ns']
+                or type(marker['wall_ns']) is not int or marker['wall_ns'] <= previous_guest
+                or type(row['host_wall_ns']) is not int or row['host_wall_ns'] <= previous_host
+                or set(receipt) != {'stage','wall_ns','monotonic_ns'} or receipt['stage'] != row['stage']
+                or type(receipt['wall_ns']) is not int or receipt['wall_ns'] < marker['wall_ns']
+                or type(receipt['monotonic_ns']) is not int or receipt['monotonic_ns'] <= previous_monotonic
                 or row['state'] != dict(zip(PROPERTIES, values))
                 or any(type(row['state'][key]) is not type(value) for key, value in zip(PROPERTIES, values))):
             raise ValueError('exact non-releasing QMP readbacks and causal markers required')
-        previous = row['host_wall_ns']
+        previous_host = row['host_wall_ns']; previous_guest = receipt['wall_ns']; previous_monotonic = receipt['monotonic_ns']
     if len(markers) != 3 or record['retired_result_errno'] != errno.ENODEV or type(record['retired_result_errno']) is not int:
         raise ValueError('retired selected result must reject ENODEV')
     if record['retired_submit_errno'] != errno.ENODEV or type(record['retired_submit_errno']) is not int:
         raise ValueError('retired selected retry must reject ENODEV')
     if (type(record['submit_before_wall_ns']) is not int or type(record['submit_after_wall_ns']) is not int
-            or not acknowledgments[0]['host_wall_ns'] <= record['submit_before_wall_ns']
-            <= record['submit_after_wall_ns'] <= markers[1]['wall_ns'] <= acknowledgments[1]['host_wall_ns']):
+            or not receipts[0]['wall_ns'] <= record['submit_before_wall_ns']
+            <= record['submit_after_wall_ns'] <= markers[1]['wall_ns'] <= receipts[1]['wall_ns']
+            or not receipts[0]['monotonic_ns'] <= clocks[0] <= clocks[1] <= receipts[1]['monotonic_ns']
+            <= clocks[2] <= receipts[2]['monotonic_ns'] <= clocks[3]):
         raise ValueError('held successful host transfer must follow admission')
     queries = record['peer_queries']
     if len(queries) != 2:
@@ -138,20 +144,25 @@ def verify_records(record):
                 or type(query['start_wall_ns']) is not int or type(query['end_wall_ns']) is not int
                 or not 0 < query['start_wall_ns'] < query['end_wall_ns']):
             raise ValueError('actual peer MAC query identity/result/interval required')
-    if queries[0]['end_wall_ns'] >= markers[0]['wall_ns'] or queries[1]['start_wall_ns'] <= acknowledgments[-1]['host_wall_ns']:
+    if queries[0]['end_wall_ns'] >= markers[0]['wall_ns'] or queries[1]['start_wall_ns'] <= receipts[-1]['wall_ns']:
         raise ValueError('peer queries must bracket held retirement')
 
 
-def corroborate(record, host, capture, stderr, kernel_log, owner, peer):
+def corroborate(record, host, capture, stderr, kernel_log, owner, peer, host_owner):
     verify_records(record)
     if (host.get('complete') is not True or host.get('method') != 'QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT'
             or host.get('observations') != record['host_hold_acknowledgements']):
         raise ValueError('matching actual host retirement readbacks required')
     held = re.findall(r'WS73_TEST_RUNTIME_HOLD: dev (\d+):(\d+) bytes=(\d+) host_status=0 holds=(\d+) sha256=([0-9a-f]{64})', stderr)
-    if (len(held) != 1 or tuple(map(int, held[0][:2])) != (owner['bus'], owner['device'])
+    if (len(held) != 1 or tuple(map(int, held[0][:2])) != (host_owner['bus'], host_owner['address'])
             or held[0][2:4] != ('178', '1') or 'WS73_TEST_RUNTIME_HOLD_RELEASE:' in stderr):
         raise ValueError('one real target-only MAC transfer held and never released required')
-    start = record['submit_before_wall_ns']; end = record['host_hold_acknowledgements'][-1]['host_wall_ns']
+    target_snapshot = _decode(SleControllerSnapshot, record['target_snapshot'])
+    peer_snapshot = _decode(SleControllerSnapshot, record['peer_snapshots'][0])
+    if (owner['index'] != 0 or owner['generation'] <= target_snapshot.generation
+            or peer['index'] != 1 or peer['generation'] != peer_snapshot.generation):
+        raise ValueError('new target and surviving peer registrations required before daemon RF')
+    start = record['submit_before_wall_ns']; end = record['guest_ack_receipts'][-1]['wall_ns']
     commands = [c for c in capture['commands'] if (c['bus'], c['device'], c['opcode']) ==
                 (owner['bus'], owner['device'], 0x0406) and start <= c['wall_ns'] <= c['completion']['wall_ns'] <= end]
     if len(commands) != 1 or commands[0]['params'] != '':
@@ -177,6 +188,7 @@ def corroborate(record, host, capture, stderr, kernel_log, owner, peer):
                    for q in record['peer_queries']]
     return {'status': 'ACTIVE_USB_TIMEOUT_RETIREMENT_CORROBORATED_PRE_DAEMON',
             'host_transfer_sha256': held[0][4], 'host_transfer_bytes': 178,
+            'host_usb_identity': {'bus': host_owner['bus'], 'address': host_owner['address']},
             'held_command': commands[0], 'peer_queries': peer_proofs,
             'host_timeout_monotonic_ns': timeouts[0],
             'exact_deadline_latency_bound_qualified': False,
@@ -191,7 +203,7 @@ def run(args):
     folder.mkdir(mode=0o700, parents=True, exist_ok=False)
     record = {'format_version': 1, 'status': 'STARTING', 'physical_acceptance': False,
               'automatic_fault_recovery_acceptance': False, 'daemon_running_during_hold': False,
-              'host_hold_acknowledgements': [], 'markers': [], 'peer_queries': [], 'peer_snapshots': []}
+              'host_hold_acknowledgements': [], 'guest_ack_receipts': [], 'markers': [], 'peer_queries': [], 'peer_snapshots': []}
     def save():
         temporary = folder / 'run.tmp'; temporary.write_text(json.dumps(record, indent=2)+'\n'); temporary.replace(folder/'run.json')
     def marker(phase, ack):
@@ -203,6 +215,7 @@ def run(args):
             time.sleep(0.005)
         response = json.loads((folder/f'hold-{ack}-ack.json').read_text())
         if response['stage'] != ack or response['request'] != value: raise ValueError('mismatched host acknowledgment')
+        record['guest_ack_receipts'].append({'stage':ack,'wall_ns':time.time_ns(),'monotonic_ns':time.monotonic_ns()})
         record['host_hold_acknowledgements'].append(response); save()
     adapters = []
     try:

@@ -295,3 +295,9 @@ removal/32-bit、自然启动/重枚举/设备消失根因和无人工恢复仍O
 这不证明daemon运行期间Diagnostic交接、不证明显式FD-close gate或实时性上界，
 不闭合自然根因；开发mock不能替代实机。新8项verifier/协调器测试及入口互斥
 测试通过，工具完整214项通过。下一步全新bundle/VM实机，原门禁另外新VM回归。
+
+启动前进一步核对：必须真正Ready后才暂留，显式选择VM冻结的native库；
+Host USB bus/address与guest bus/device分别核对。Host与guest wall clock不假定
+同步，三个ack各记录guest接收的wall/monotonic时间，捕获窗口只使用guest时钟；
+Host时钟只在自身域内检查有序。daemon启动后的Ready身份必须是目标新generation
+及幸存者原generation。214工具回归再次通过；前置bundle均未执行实机验收。

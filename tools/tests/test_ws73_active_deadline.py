@@ -28,7 +28,7 @@ def fixture():
     acks = []
     for i, marker in enumerate(markers):
         acks.append({'stage':['armed','held','aborted'][i], 'request':marker,
-                     'host_wall_ns':marker['wall_ns']+10,
+                     'host_wall_ns':marker['wall_ns']+1010,
                      'state':dict(zip(PROPERTIES,[i==0,i==1,int(i>0),0,0,int(i==2),False,0]))})
     queries = []
     for i, (start, end) in enumerate([(10,90),(320,400)]):
@@ -45,6 +45,8 @@ def fixture():
             'quiet_before_monotonic_ns':1_020_000_000,'quiet_after_monotonic_ns':1_550_000_000,
             'submit_before_wall_ns':150,'submit_after_wall_ns':160,
             'host_hold_acknowledgements':acks,'markers':markers,'peer_queries':queries,
+            'guest_ack_receipts':[{'stage':stage,'wall_ns':wall,'monotonic_ns':mono} for stage,wall,mono in
+                                  [('armed',110,900_000_000),('held',210,1_010_000_000),('aborted',310,1_549_000_000)]],
             'retired_result_errno':errno.ENODEV,'retired_submit_errno':errno.ENODEV}
 
 
@@ -115,7 +117,7 @@ class ActiveDeadlineTests(unittest.TestCase):
         record=fixture();host={'method':'QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT','complete':True,
                                'observations':copy.deepcopy(record['host_hold_acknowledgements'])}
         capture={'commands':[],'reports':[],'complete':[]}
-        with self.assertRaises(ValueError):corroborate(record,host,capture,'','',{'bus':1,'device':1},{'bus':1,'device':2})
+        with self.assertRaises(ValueError):corroborate(record,host,capture,'','',{'bus':1,'device':1},{'bus':1,'device':2},{'bus':9,'address':101})
 
     def test_wire_verifier_requires_single_target_out_peer_pairs_and_no_late_payload(self):
         record=fixture();host={'method':'QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT','complete':True,
@@ -126,11 +128,12 @@ class ActiveDeadlineTests(unittest.TestCase):
                                         'wall_ns':start,'record':ordinal,'completion':{'wall_ns':finish}})
             if device==2:capture['complete'].append({'bus':1,'device':2,'opcode':0x0406,'status':0,
                                                     'wall_ns':finish+10,'record':ordinal+1,'value':b'123456'.hex()})
-        stderr='WS73_TEST_RUNTIME_HOLD: dev 1:1 bytes=178 host_status=0 holds=1 sha256='+('a'*64)
+        stderr='WS73_TEST_RUNTIME_HOLD: dev 9:101 bytes=178 host_status=0 holds=1 sha256='+('a'*64)
         kernel='[1.500000] sparklink: sle0 USB command Host timed out\n[1.540000] sparklink_ws73_usb 1-1:1.0: native RX stopped: -110\n'
-        args=(record,host,capture,stderr,kernel,{'bus':1,'device':1},{'bus':1,'device':2})
+        args=(record,host,capture,stderr,kernel,{'bus':1,'device':1,'index':0,'generation':3},
+              {'bus':1,'device':2,'index':1,'generation':2},{'bus':9,'address':101})
         self.assertFalse(corroborate(*args)['daemon_continuity_during_hold_qualified'])
-        for mutation in ['no_peer_reply','duplicate_target','late_payload','early_reply','release','missing_retirement']:
+        for mutation in ['no_peer_reply','duplicate_target','late_payload','early_reply','release','missing_retirement','host_identity','peer_replaced','target_not_replaced']:
             values=copy.deepcopy(args)
             if mutation=='no_peer_reply':values[2]['complete'].pop()
             elif mutation=='duplicate_target':values[2]['commands'].append(copy.deepcopy(values[2]['commands'][0]))
@@ -138,6 +141,9 @@ class ActiveDeadlineTests(unittest.TestCase):
                 values[2]['complete'].append({'bus':1,'device':1,'opcode':0x0406,'status':0,'wall_ns':1000 if mutation=='late_payload' else 190,
                                              'record':7,'usb_sha256':'a'*64 if mutation=='late_payload' else 'b'*64})
             elif mutation=='release':values=(*values[:3],values[3]+'\nWS73_TEST_RUNTIME_HOLD_RELEASE:',*values[4:])
+            elif mutation=='host_identity':values[-1]['address']=1
+            elif mutation=='peer_replaced':values[-2]['generation']=4
+            elif mutation=='target_not_replaced':values[-3]['generation']=1
             else:values=(*values[:4],'',*values[5:])
             with self.subTest(mutation=mutation),self.assertRaises(ValueError):corroborate(*values)
 

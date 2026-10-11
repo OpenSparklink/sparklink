@@ -282,3 +282,14 @@ Backend、全局parser与重复状态迁移仍待验收。完整截止时间/不
 cancel/abort/close/drain、完整事件/所有权/并发、自然故障根因与自主恢复、
 四设备及S0–S6仍OPEN；北极星7/8。下一步实际queued deadline不续期门禁，
 然后剩余消费者与共享ring/fallback删除。
+
+新增CI契约门禁的首轮38098456852暴露旧权限selftest的NLMSG_OK有符号比较，
+Clang -Werror拒绝；4项完整分类、78项verifier和18项queue均已实际运行通过。
+独立小提交只修复该专用probe：recv长度非负/非零校验后使用unsigned remaining，
+不降低警告等级。GCC与Clang严格编译均通过；失败run/日志保留，新增门禁须
+在匹配修复提交上重新通过。生产代码和已封存的WS73 live diagnostic probe
+不变，实机证据仍指向实际编译K257ab5d5e5c6/U3506ec472957，不冒称后续镜像。
+
+API旧编号概览撤下不完整的总数，明确不是生产能力清单，版本化Native管理／
+诊断契约单独引用。用户态实验crate lint边界已收敛；内核transport/serdev/dev/
+mgmt/fw等历史模块的全局dead_code压制仍待调用迁移清理，不能宣称全内核已清完。

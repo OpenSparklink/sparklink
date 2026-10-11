@@ -45,3 +45,9 @@ fd-close/drain、并发/权限/32-bit和自然恢复不因本门禁通过而完�
 新内核实机资格待执行；完整事件迁移/旧UAPI删除、C通用固件ACK/短传输、安全/
 连接socket/SSAP/Bond/Profile、四设备/Native/Proxy/PM/sandbox及全部S0–S6保持。
 VM-only，不改变host内核/服务/权限，不使用人工拔插作为恢复，不关闭整项issue。
+
+
+首轮[失败证据](evidence/ws73-vm-setup-release-record-writer-failed-20261011.json)
+发生于测试progress写入第二份metadata：误用one-shot握手writer，C probe尚未启动，
+没有实机release/fd-close/RF资格。原RUNNING progress与terminal FAIL均保留；
+修为原子replace并补实际重复文件写入/FAIL持久化与one-shot拒绝回归，再跑新VM。

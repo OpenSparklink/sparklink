@@ -115,6 +115,13 @@ def corroborate(record, capture):
             'automatic_fault_recovery_acceptance': False}
 
 
+def save_record(folder, record):
+    """Progress is replaceable; peer-attachment handshake markers are one-shot."""
+    temporary = Path(folder)/'run.tmp'
+    temporary.write_text(json.dumps(record, indent=2)+'\n')
+    temporary.replace(Path(folder)/'run.json')
+
+
 def run(args):
     if 'ws73.setup_release=1' not in Path('/proc/cmdline').read_text().split() or subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode == 0:
         raise ValueError('explicit VM mode before daemon startup required')
@@ -123,7 +130,7 @@ def run(args):
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'initial_snapshots': [], 'cases': []}
     def save():
-        write_marker(folder/'run.json', record)
+        save_record(folder, record)
     adapters = []
     try:
         for index in [0, 1]:

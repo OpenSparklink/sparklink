@@ -8,7 +8,8 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from ws73_management_setup import metadata_ready, verify_records, corroborate
+from ws73_management_setup import metadata_ready, verify_records, corroborate, save_record
+from ws73_diagnostic_hold import write_marker
 from sparklink.structs import SleControllerSnapshot, SleDiscoveryResult, SleManagementQuery
 
 
@@ -36,6 +37,23 @@ def fixture():
 
 
 class SetupReleaseTests(unittest.TestCase):
+    def test_progress_replacement_persists_second_metadata_and_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp); record = {'status': 'RUNNING', 'initial_snapshots': ['first']}
+            save_record(folder, record)
+            record['initial_snapshots'].append('second'); save_record(folder, record)
+            self.assertEqual(json.loads((folder/'run.json').read_text()), record)
+            record['status'] = 'FAIL'; record['error'] = 'actual probe failure'; save_record(folder, record)
+            self.assertEqual(json.loads((folder/'run.json').read_text()), record)
+            self.assertFalse((folder/'run.tmp').exists())
+
+    def test_record_replacement_does_not_relax_one_shot_attachment_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp)/'metadata-0.json'; value = {'slot': 0, 'initial_snapshot': fixture()['initial_snapshots'][0]}
+            write_marker(path, value)
+            with self.assertRaises(ValueError): write_marker(path, value)
+            self.assertEqual(json.loads(path.read_text()), value)
+
     def test_complete_fixture_validates_bytes_only_not_hardware(self):
         identities = verify_records(fixture())
         self.assertEqual([s.flags for s in identities], [2, 2])

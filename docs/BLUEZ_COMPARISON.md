@@ -12,8 +12,8 @@
 也限定通过，fallback资格/完整事件仍OPEN。用户态生产
 保持`df9cff7d750d`。不能将Native ring三类故障推广为backend fallback或完整事件验收，也不能据此
 推论取消、完整事件、连接服务或自主故障恢复完成。
-本次K`091a57bb52f4`仅增加[实际取消门禁的QEMU测试基础](DIAGNOSTIC_CANCEL_GATES.md)，
-没有新增RF/线上取消/自然恢复验收。
+后续K`cc4018c4e3a6`/编译U`4a9de6a91617`的[实际取消/迟到限定门禁](DIAGNOSTIC_CANCEL_GATES.md)
+已通过，同时保持20+2/read/原诊断；完整deadline/close/并发及自然恢复仍OPEN。
 ADR 0001、最终 socket/用户态 SSAP 分层、WS73 北极星及 S0–S6 均保持。
 Rust、接口数量或代码量不构成架构/性能领先证据。
 

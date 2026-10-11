@@ -50,7 +50,7 @@ timer、transport、digest、USB combining 是依赖替身。上述结果不证�
 实际执行。CI运行固定归档依赖门禁，不编译完整QEMU、不执行USB或guest。
 构建/fixture 的失败尝试保留，修正后重测；不能将它们抹成首次全部通过。
 
-## 接下来执行的实际 VM 门禁
+## 实际 VM 门禁（部分限定通过，完整门禁仍 OPEN）
 
 | 门禁 | 需要的实际证据 | 失败处理 |
 |---|---|---|
@@ -92,3 +92,32 @@ SHA256和长度必须与实际USB交付一致。QMP、syscall结构、计数及�
 当前只是取消/迟到回复门禁；完整原deadline、在途超时恢复、held状态close/drain、
 其他作者/CAP取消/多设备并发仍需独立验收。自然根因、北极星最后一项及S0–S6
 保持OPEN，不用新测试框架存在替代功能完成。
+
+## 新镜像实际限定通过
+
+[冻结证据](evidence/ws73-vm-diagnostic-cancel-live-20261011.json)：Kcc4018c4e3a6/
+编译U4a9de6a91617，新QEMU binary与模块/root/bundle均冻结。Native root Diagnostic
+在slkd前执行；MAC ID8/seq8实际OUT后的成功178字节IN81被暂留，QMP实际held
+读回后取消，作者结果为state3/error-ECANCELED。ID9/seq9同opcode MAC保持Pending，
+ID10/seq10 Features排队后取消。50ms内重复ID/取消不重发、不增加计数；显式释放
+前新MAC无OUT，Features整段无OUT。释放旧MAC后旧两个结果逐字节保持取消，
+新MAC由自己新OUT/回复完成，之后100ms结果和计数稳定。scope是本地请求取消，
+没有宣称固件命令被线上中止；在途wire槽保持至旧回复被真实消费。
+
+QMP三个实际readback与guest ack相同，holds1/releases1/bounded0/drops0；原host
+成功transfer SHA256及178字节长度与guest USB交付完全相同。独立原始pcap重算
+确认旧IN先于新OUT/IN，全阶段两组MAC且无Features发包。63条C原始记录，40/104
+字节完整结构、计数和顺序均核对；原legacy poll3及33次第二作者淘汰保持，后者
+seq11..43。诊断46组wire加排队取消/淘汰两个零发包窗口分别记录。
+
+普通UID1000/caps0两只真实WS7320+2轮全部随机数据/地址/RSSI匹配，最长620ms；
+同slkd、幸存g2不变/人工错误目标g1→3、read7/result16/copyout2/CLI4保持。
+1431 USB零drop，warning0/taint0/trace overrun0，host四只在位且释放，无device_del/
+宿主部署/人工拔插。[源码CI38096557114](https://github.com/OpenSparklink/sparklink/actions/runs/38096557114)
+九作业完成成功，终结日志核对170 Rust/34 Python/185工具及实际源代码边界检查。
+USB/HCC/DLI是实际radio接收证据，不是独立PHY嗅探。
+
+这更新前面的取消/迟到门禁“待实机”，不更新完整原deadline、自动到期、实际
+暂留时USB cancel/abort/close drain、CAP/其他作者取消/退役并发/32-bit或自然根因。
+本次50ms重试不证明5000ms截止点不续期；它仍需独立实际到期门禁。历史物理
+xHCI warning不能由新批零warning抹除。北极星仍7/8，所有完整issues继续OPEN。

@@ -1,9 +1,10 @@
 # 旧事件 read 的消费提交与迁移门禁
 
-当前取消/迟到/期限工作见[实际门禁与测试基础](DIAGNOSTIC_CANCEL_GATES.md)：
-K`091a57bb52f4`只更新专用QEMU测试后端，完整构建/依赖fixture/暂停QMP通过；
-真实线上取消、实际timer/close及自然恢复仍待验证。生产WS73路径不变，最新
-真实基线仍为K9b16e634bfd3/编译U1d3a17b688ee。全部issues保持OPEN。
+当前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：
+K`cc4018c4e3a6`/编译U`4a9de6a91617`使用专用QEMU暂留178字节真实回复，
+在途/排队本地ECANCELED、旧槽隔离、新查询自己的回复及46组wire限定通过；
+原20+2/read7/诊断/legacy poll3保持。完整deadline/held close/并发和自然恢复
+仍OPEN，生产路径不变。全部issues和完整S0–S6保持开放。
 
 2026-10-11；Linux 20f431f54af01334faa37a6af84bbce1260ef9c9。R12限定整改；
 K3/U2及完整独立事件/移除/旧路径清理验收仍OPEN。UAPI未发布，无兼容期。

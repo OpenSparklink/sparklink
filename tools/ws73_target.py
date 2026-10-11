@@ -294,9 +294,9 @@ def live_runtime_owner(port, pid, inventory):
             or type(row.get('address')) is not int or not 1 <= row['address'] <= 127
             or row.get('node') != f"/dev/bus/usb/{bus:03}/{row['address']:03}"
             or row.get('writable') is not True
-            or row.get('interfaces') != [dict(name=port+':1.0', endpoints=5, driver=None)]
+            or row.get('interfaces') not in [[dict(name=port+':1.0', endpoints=5, driver=driver)] for driver in [None, 'usbfs']]
             or not opened_usb_node(pid, row['node'])):
-        raise ValueError('current unowned runtime interface and live child USB fd required')
+        raise ValueError('current runtime interface and live child USB fd required')
     return json.loads(json.dumps(row))
 
 
@@ -770,6 +770,7 @@ def _run(args):
             process.terminate()
             try:process.wait(timeout=5)
             except subprocess.TimeoutExpired:process.kill();process.wait()
+        if process is not None:m['qemu_exit']=process.returncode
         if monitor:monitor.close()
         if channel:channel.close()
         m['guest_files']=[file_record(p) for p in sorted((output/'guest-output').rglob('*')) if p.is_file() and not p.is_symlink()] if (output/'guest-output').exists() else []

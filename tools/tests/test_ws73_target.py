@@ -22,6 +22,9 @@ class TargetEnvironment(unittest.TestCase):
         with patch('ws73_target.opened_usb_node',return_value=True) as owned:
             result=live_runtime_owner('1-2.1.4',99,[row]);owned.assert_called_once_with(99,row['node'])
         self.assertEqual(result,row);result['interfaces'][0]['endpoints']=2;self.assertEqual(row['interfaces'][0]['endpoints'],5)
+        claimed=dict(row,interfaces=[dict(name='1-2.1.4:1.0',endpoints=5,driver='usbfs')])
+        with patch('ws73_target.opened_usb_node',return_value=True):self.assertEqual(live_runtime_owner('1-2.1.4',99,[claimed]),claimed)
+        with patch('ws73_target.opened_usb_node',return_value=False),self.assertRaises(ValueError):live_runtime_owner('1-2.1.4',99,[claimed])
         for changes in [dict(address=True),dict(bus=True),dict(node='/dev/bus/usb/001/123'),dict(writable=False),
                         dict(interfaces=[dict(name='1-2.1.4:1.0',endpoints=2,driver=None)]),
                         dict(interfaces=[dict(name='1-2.1.4:1.0',endpoints=5,driver='other')])]:

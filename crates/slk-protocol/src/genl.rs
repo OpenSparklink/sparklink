@@ -13,8 +13,7 @@ pub const GENL_MCAST_EVENTS: &str = "events";
 pub enum GenlCmd {
     Unspec = 0,
     GetDevInfo = 1,
-    DevRegister = 2,
-    DevUnregister = 3,
+    // Removed unpublished registration commands 2/3; not reused.
     StartAdv = 4,
     StopAdv = 5,
     StartScan = 6,

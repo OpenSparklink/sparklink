@@ -3,6 +3,7 @@
 slctl \- SparkLink device control utility
 .SH SYNOPSIS
 .B slctl
+.RI [ options ]
 .RI [ command ]
 .RI [ arguments ]
 .SH DESCRIPTION
@@ -10,8 +11,7 @@ slctl \- SparkLink device control utility
 is an interactive command\-line tool for controlling SparkLink wireless
 devices. It communicates with the
 .BR slkd (8)
-daemon over D\-Bus or directly through
-.BR libsparklink .
+daemon over D\-Bus.
 .PP
 When invoked without arguments,
 .B slctl
@@ -19,6 +19,25 @@ enters an interactive shell with a
 .B [slk]#
 prompt. Command history is saved to
 .IR ~/.slctl_history .
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show usage and commands without connecting to D\-Bus.
+.TP
+.B \-V, \-\-version
+Show the version without connecting to D\-Bus.
+.TP
+.B \-\-session
+Use the session bus for isolated tests. The system bus is the default.
+.TP
+.BI \-\-adapter " path"
+Select a live adapter registration for a one\-shot command. A command is required.
+For example, use the path returned by
+.B list
+with
+.B scan on
+or
+.BR "advertise on" .
 .SH COMMANDS
 .SS Discovery and Connection
 .TP

@@ -2,16 +2,16 @@ use std::collections::HashMap;
 use zbus::interface;
 use zbus::zvariant::Value;
 
-use crate::state::SharedState;
+use crate::state::{AdapterDirectory, SharedState};
 
 /// Root D-Bus object at /org/sparklink
 pub struct Root {
-    state: SharedState,
+    adapters: AdapterDirectory,
 }
 
 impl Root {
-    pub fn new(state: SharedState) -> Self {
-        Self { state }
+    pub fn new(adapters: AdapterDirectory) -> Self {
+        Self { adapters }
     }
 }
 
@@ -22,9 +22,33 @@ impl Root {
         env!("CARGO_PKG_VERSION")
     }
 
-    /// List available adapter object paths
-    async fn list_adapters(&self) -> Vec<String> {
-        vec!["/org/sparklink/slk0".into()]
+    /// List registrations still live in the kernel, even before the background
+    /// manager removes their cached D-Bus objects. Held observer fds cannot keep
+    /// a removed controller available. No business/directory lock crosses I/O.
+    async fn list_adapters(&self) -> zbus::fdo::Result<Vec<String>> {
+        let registrations = self.adapters.lock().await.clone();
+        tokio::task::spawn_blocking(move || {
+            let mut paths = Vec::new();
+            for (path, registration) in registrations {
+                match registration
+                    .adapter
+                    .controller_snapshot(registration.generation)
+                {
+                    Ok(_) => paths.push(path),
+                    Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => {}
+                    Err(error) => {
+                        return Err(zbus::fdo::Error::Failed(format!(
+                            "registration snapshot failed for {path}: {error}"
+                        )));
+                    }
+                }
+            }
+            Ok(paths)
+        })
+        .await
+        .map_err(|error| {
+            zbus::fdo::Error::Failed(format!("registration snapshot worker failed: {error}"))
+        })?
     }
 }
 
@@ -43,46 +67,207 @@ impl AdapterIface {
 impl AdapterIface {
     /// Start device discovery (scanning)
     async fn start_discovery(&self) -> zbus::fdo::Result<()> {
+        if self.state.lock().await.controller.profile == 1 {
+            let id = crate::radio::random_id().await?;
+            crate::radio::scan(&self.state, id).await?;
+            return crate::radio::wait(&self.state, id).await;
+        }
         let mut st = self.state.lock().await;
-        st.start_scan().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("scan start failed: {e}"))
-        })
+        st.start_scan()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("scan start failed: {e}")))
     }
 
     /// Stop device discovery
     async fn stop_discovery(&self) -> zbus::fdo::Result<()> {
+        if self.state.lock().await.controller.profile == 1 {
+            let id = crate::radio::random_id().await?;
+            crate::radio::stop(&self.state, id, slk_protocol::DISCOVERY_SCAN_STOP).await?;
+            return crate::radio::wait(&self.state, id).await;
+        }
         let mut st = self.state.lock().await;
-        st.stop_scan().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("scan stop failed: {e}"))
-        })
+        st.stop_scan()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("scan stop failed: {e}")))
+    }
+
+    /// Policy v1 only, no raw DLI/config injection. Successful return is admission.
+    async fn submit_advertising(
+        &self,
+        request_id: u64,
+        marker: Vec<u8>,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        crate::radio::advertise(&self.state, request_id, marker).await
+    }
+    async fn submit_scanning(&self, request_id: u64) -> zbus::fdo::Result<()> {
+        crate::radio::scan(&self.state, request_id).await
+    }
+    async fn submit_stop_advertising(&self, request_id: u64) -> zbus::fdo::Result<()> {
+        crate::radio::stop(&self.state, request_id, slk_protocol::DISCOVERY_ADV_STOP).await
+    }
+    async fn submit_stop_scanning(&self, request_id: u64) -> zbus::fdo::Result<()> {
+        crate::radio::stop(&self.state, request_id, slk_protocol::DISCOVERY_SCAN_STOP).await
+    }
+    async fn get_discovery_result(
+        &self,
+        request_id: u64,
+    ) -> zbus::fdo::Result<slk_protocol::DiscoveryResultRecord> {
+        crate::radio::result(&self.state, request_id).await
+    }
+    /// Matched final Complete receipt; never substitute daemon observation time.
+    async fn get_discovery_timing(
+        &self,
+        request_id: u64,
+    ) -> zbus::fdo::Result<(u64, u64, u64, u32, u32, u16, u8)> {
+        crate::radio::timing(&self.state, request_id).await
+    }
+    #[zbus(property)]
+    fn radio_policy_version(&self) -> u32 {
+        libsparklink::WS73_BASIC_POLICY_VERSION
+    }
+    #[zbus(property)]
+    async fn advertising_state(&self) -> u32 {
+        self.state.lock().await.radio_advertising
+    }
+    #[zbus(property)]
+    async fn scanning_state(&self) -> u32 {
+        self.state.lock().await.radio_scanning
     }
 
     /// Connect to a device by address string "AA:BB:CC:DD:EE:FF"
     async fn connect_device(&self, address: &str) -> zbus::fdo::Result<()> {
-        let addr = parse_addr(address).map_err(|e| {
-            zbus::fdo::Error::InvalidArgs(e.to_string())
-        })?;
+        let addr = parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
         let mut st = self.state.lock().await;
-        st.connect_device(&addr).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("connect failed: {e}"))
-        })
+        st.connect_device(&addr)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("connect failed: {e}")))
     }
 
     /// Disconnect a device by connection handle
     async fn disconnect_device(&self, handle: u16) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
-        st.disconnect_device(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("disconnect failed: {e}"))
-        })
+        st.disconnect_device(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("disconnect failed: {e}")))
     }
 
     /// List discovered devices as (addr_hex, name, rssi, connected) tuples
     async fn get_devices(&self) -> Vec<(String, String, i16, bool)> {
         let st = self.state.lock().await;
-        st.devices.values().map(|d| {
-            let addr_hex = d.addr.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(":");
-            (addr_hex, d.name.clone(), d.rssi as i16, d.connected)
-        }).collect()
+        st.devices
+            .values()
+            .map(|d| {
+                let addr_hex = d
+                    .addr
+                    .iter()
+                    .map(|b| format!("{b:02X}"))
+                    .collect::<Vec<_>>()
+                    .join(":");
+                (addr_hex, d.name.clone(), d.rssi as i16, d.connected)
+            })
+            .collect()
+    }
+
+    /// Exact received WS73 reports: sequence, generation, timestamp_ms,
+    /// address, RSSI, complete header, data and explicit lost-record count.
+    async fn get_reports(&self) -> Vec<(u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64)> {
+        self.state
+            .lock()
+            .await
+            .native_reports
+            .iter()
+            .map(|r| {
+                (
+                    r.sequence,
+                    r.generation,
+                    r.received_at_ms,
+                    format_addr(&r.address),
+                    i16::from(r.rssi),
+                    r.header.clone(),
+                    r.data.clone(),
+                    r.lost,
+                )
+            })
+            .collect()
+    }
+
+    /// Versioned extension preserves the kernel CLOCK_BOOTTIME receipt time.
+    async fn get_timed_reports(&self) -> Vec<slk_protocol::TimedDiscoveryReportRecord> {
+        self.state
+            .lock()
+            .await
+            .native_reports
+            .iter()
+            .map(|r| {
+                (
+                    r.sequence,
+                    r.generation,
+                    r.kernel_boottime_ns,
+                    r.received_at_ms,
+                    format_addr(&r.address),
+                    i16::from(r.rssi),
+                    r.header.clone(),
+                    r.data.clone(),
+                    r.lost,
+                )
+            })
+            .collect()
+    }
+
+    #[zbus(property)]
+    async fn ready(&self) -> bool {
+        let st = self.state.lock().await;
+        st.present && st.controller.flags == slk_protocol::CONTROLLER_READY
+    }
+    #[zbus(property)]
+    async fn controller_state(&self) -> String {
+        let st = self.state.lock().await;
+        if !st.present {
+            "Removed"
+        } else {
+            match st.controller.flags {
+                slk_protocol::CONTROLLER_READY => "Ready",
+                slk_protocol::CONTROLLER_FAULT => "Fault",
+                _ => "Setup",
+            }
+        }
+        .into()
+    }
+    #[zbus(property)]
+    async fn generation(&self) -> u64 {
+        self.state.lock().await.controller.generation
+    }
+    #[zbus(property)]
+    async fn profile(&self) -> u32 {
+        self.state.lock().await.controller.profile
+    }
+    #[zbus(property)]
+    async fn address(&self) -> String {
+        format_addr(&self.state.lock().await.controller.address)
+    }
+    #[zbus(property)]
+    async fn controller_version(&self) -> Vec<u8> {
+        self.state.lock().await.controller.version_tuple.to_vec()
+    }
+    #[zbus(property)]
+    async fn features(&self) -> Vec<u8> {
+        self.state.lock().await.controller.features.to_vec()
+    }
+    #[zbus(property)]
+    async fn metadata_valid_fields(&self) -> u32 {
+        self.state.lock().await.controller.valid_fields
+    }
+    #[zbus(property)]
+    async fn command_credits(&self) -> u8 {
+        self.state.lock().await.controller.command_credits
+    }
+    #[zbus(property)]
+    async fn controller_error(&self) -> i32 {
+        self.state.lock().await.controller.error
+    }
+    #[zbus(property)]
+    async fn initialization_error(&self) -> String {
+        self.state.lock().await.initialization_error.clone()
+    }
+    #[zbus(property)]
+    async fn events_lost(&self) -> u64 {
+        self.state.lock().await.events_lost
     }
 
     /// Adapter power state
@@ -99,7 +284,12 @@ impl AdapterIface {
     /// Whether discovery is active
     #[zbus(property)]
     async fn discovering(&self) -> bool {
-        self.state.lock().await.discovering
+        let st = self.state.lock().await;
+        if st.controller.profile == 1 {
+            st.radio_scanning == slk_protocol::DISCOVERY_RADIO_ON
+        } else {
+            st.discovering
+        }
     }
 
     /// Adapter name
@@ -126,20 +316,20 @@ impl DeviceIface {
     /// Connect to this device
     async fn connect(&self) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
-        st.connect_device(&self.addr).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("connect failed: {e}"))
-        })
+        st.connect_device(&self.addr)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("connect failed: {e}")))
     }
 
     /// Disconnect from this device
     async fn disconnect(&self) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
-        let handle = st.devices.get(&self.addr)
+        let handle = st
+            .devices
+            .get(&self.addr)
             .and_then(|d| d.conn_handle)
             .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
-        st.disconnect_device(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("disconnect failed: {e}"))
-        })
+        st.disconnect_device(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("disconnect failed: {e}")))
     }
 
     /// Device MAC address "AA:BB:CC:DD:EE:FF"
@@ -152,7 +342,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn name(&self) -> String {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.name.clone())
             .unwrap_or_default()
     }
@@ -161,7 +352,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn rssi(&self) -> i16 {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.rssi as i16)
             .unwrap_or(0)
     }
@@ -170,7 +362,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn connected(&self) -> bool {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.connected)
             .unwrap_or(false)
     }
@@ -179,7 +372,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn discovery_level(&self) -> u8 {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.discovery_level)
             .unwrap_or(0)
     }
@@ -187,7 +381,8 @@ impl DeviceIface {
     /// Raw advertisement data bytes
     async fn get_adv_data(&self) -> Vec<u8> {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.adv_data.clone())
             .unwrap_or_default()
     }
@@ -196,7 +391,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn service_uuids(&self) -> Vec<u16> {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .map(|d| d.service_uuids.clone())
             .unwrap_or_default()
     }
@@ -205,7 +401,8 @@ impl DeviceIface {
     #[zbus(property)]
     async fn tx_power(&self) -> i16 {
         let st = self.state.lock().await;
-        st.devices.get(&self.addr)
+        st.devices
+            .get(&self.addr)
             .and_then(|d| d.tx_power)
             .map(|p| p as i16)
             .unwrap_or(-128)
@@ -219,12 +416,14 @@ impl DeviceIface {
     /// tx_bytes, rx_bytes.
     async fn get_connection_info(&self) -> zbus::fdo::Result<HashMap<String, Value<'static>>> {
         let st = self.state.lock().await;
-        let handle = st.devices.get(&self.addr)
+        let handle = st
+            .devices
+            .get(&self.addr)
             .and_then(|d| d.conn_handle)
             .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
-        let info = st.conn_info(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("conn_info failed: {e}"))
-        })?;
+        let info = st
+            .conn_info(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("conn_info failed: {e}")))?;
         let mut m = HashMap::new();
         m.insert("handle".into(), Value::from(info.handle));
         m.insert("state".into(), Value::from(info.state));
@@ -233,17 +432,32 @@ impl DeviceIface {
         m.insert("data_mode".into(), Value::from(info.data_mode));
         m.insert("svc_mtu".into(), Value::from(info.svc_mtu));
         m.insert("ssap_mtu".into(), Value::from(info.ssap_mtu));
-        m.insert("ssap_reliable_mode".into(), Value::from(info.ssap_reliable_mode));
-        m.insert("ssap_version_major".into(), Value::from(info.ssap_version_major));
+        m.insert(
+            "ssap_reliable_mode".into(),
+            Value::from(info.ssap_reliable_mode),
+        );
+        m.insert(
+            "ssap_version_major".into(),
+            Value::from(info.ssap_version_major),
+        );
         m.insert("smtc_tx_credits".into(), Value::from(info.smtc_tx_credits));
         m.insert("smtc_rx_credits".into(), Value::from(info.smtc_rx_credits));
-        m.insert("dudtc_tx_credits".into(), Value::from(info.dudtc_tx_credits));
-        m.insert("dudtc_rx_credits".into(), Value::from(info.dudtc_rx_credits));
+        m.insert(
+            "dudtc_tx_credits".into(),
+            Value::from(info.dudtc_tx_credits),
+        );
+        m.insert(
+            "dudtc_rx_credits".into(),
+            Value::from(info.dudtc_rx_credits),
+        );
         m.insert("tx_bytes".into(), Value::from(info.tx_bytes));
         m.insert("rx_bytes".into(), Value::from(info.rx_bytes));
         m.insert("bandwidth_mhz".into(), Value::from(info.bandwidth_mhz));
         m.insert("mcs_index".into(), Value::from(info.mcs_index));
-        m.insert("supervision_timeout".into(), Value::from(info.supervision_timeout));
+        m.insert(
+            "supervision_timeout".into(),
+            Value::from(info.supervision_timeout),
+        );
         Ok(m)
     }
 }

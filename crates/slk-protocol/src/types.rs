@@ -692,8 +692,8 @@ pub struct SleDliInfo {
     pub measurement_cap: u8,
     pub max_mtu: u16,
     pub max_mps: u16,
-    pub security_cap: u8,
-    pub features_ext: u8,
+    pub security_cap: u16,
+    pub features_ext: u16,
     pub name: [u8; 32],
     pub _reserved: [u8; 4],
 }
@@ -710,6 +710,76 @@ pub struct SleDliEvent {
     pub data: [u8; 240],
     pub addr: SleAddr,
     pub _pad: [u8; 2],
+}
+
+/// Supported native controller event ABI version.
+pub const CONTROLLER_EVENT_VERSION: u32 = 1;
+pub const CONTROLLER_EVENT_PAYLOAD_MAX: usize = 288;
+pub const CONTROLLER_EVENT_PROFILE_WS73_HCC: u32 = 1;
+
+/// Complete, validated controller parameters from one registration.
+/// Sequence and loss counts belong to that registration and reader cursor.
+#[derive(Debug, Clone, Copy)]
+#[repr(C, align(8))]
+pub struct SleControllerEvent {
+    pub seq: u64,
+    pub generation: u64,
+    /// CLOCK_BOOTTIME receipt timestamp, in nanoseconds.
+    pub timestamp_ns: u64,
+    pub lost: u64,
+    pub profile: u32,
+    pub dev_index: u16,
+    pub event_code: u16,
+    pub payload_len: u16,
+    pub flags: u16,
+    pub _reserved: u32,
+    pub payload: [u8; CONTROLLER_EVENT_PAYLOAD_MAX],
+}
+
+/// Input cursor/version with an output-only event record (ioctl 0x87).
+#[derive(Debug, Clone, Copy)]
+#[repr(C, align(8))]
+pub struct SleControllerEventQuery {
+    pub after_seq: u64,
+    pub generation: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub event: SleControllerEvent,
+}
+
+/// Borrowed WS73 discovery parameters. The raw header preserves address
+/// types, direct address, PHY and vendor byte without standard aliases.
+#[derive(Debug)]
+pub struct Ws73DiscoveryReport<'a> {
+    pub header: &'a [u8; 23],
+    pub data: &'a [u8],
+    pub rssi: i8,
+}
+
+impl SleControllerEvent {
+    /// Decode exactly one WS73 0x180b report. Fragment/truncation flags in
+    /// header[0] are retained; this does not reassemble or invent a level.
+    pub fn ws73_discovery(&self) -> Option<Ws73DiscoveryReport<'_>> {
+        if self.profile != CONTROLLER_EVENT_PROFILE_WS73_HCC
+            || self.event_code != 0x180b
+            || self.flags != 0
+            || self._reserved != 0
+            || self.seq == 0
+            || self.generation == 0
+        {
+            return None;
+        }
+        let body = self.payload.get(..usize::from(self.payload_len))?;
+        let header: &[u8; 23] = body.get(..23)?.try_into().ok()?;
+        if body.len() != 23 + usize::from(header[22]) {
+            return None;
+        }
+        Some(Ws73DiscoveryReport {
+            header,
+            data: &body[23..],
+            rssi: header[21] as i8,
+        })
+    }
 }
 
 /// DLI command (ioctl 0x84)
@@ -926,4 +996,334 @@ pub struct SleMeasAction {
     pub handle: u16,
     pub action: u8,
     pub config_index: u8,
+}
+
+// Version 1 typed discovery ABI. Select a registration before probing/submitting.
+// Explicit profile fields/units, opaque data; no implicit board/radio defaults.
+pub const DISCOVERY_VERSION: u32 = 1;
+pub const DISCOVERY_ADV_START: u32 = 1;
+pub const DISCOVERY_ADV_STOP: u32 = 2;
+pub const DISCOVERY_SCAN_START: u32 = 3;
+pub const DISCOVERY_SCAN_STOP: u32 = 4;
+/// Configure explicit advertiser parameters and obtain a successful OFF Complete.
+pub const DISCOVERY_ADV_CONFIGURE_OFF: u32 = 5;
+/// Passive parameters/ON/OFF probe; only the final OFF Complete establishes off.
+pub const DISCOVERY_SCAN_INITIALIZE_OFF: u32 = 6;
+pub const DISCOVERY_SCAN_RESPONSE: u32 = 1;
+pub const DISCOVERY_FAULT: u32 = 1;
+pub const DISCOVERY_RADIO_UNKNOWN: u32 = 0;
+pub const DISCOVERY_RADIO_OFF: u32 = 1;
+pub const DISCOVERY_RADIO_ON: u32 = 2;
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+pub struct SleDiscoveryAdvConfig {
+    pub handle: u32,
+    pub mode: u32,
+    pub gt_role: u32,
+    pub interval_min: u32,
+    pub interval_max: u32,
+    pub channel_map: u32,
+    pub own_address_type: u32,
+    pub peer_address_type: u32,
+    pub own_address: [u8; 6],
+    pub peer_address: [u8; 6],
+    pub filter: u32,
+    pub tx_power: i32,
+    pub primary_frame: u32,
+    pub secondary_frame: u32,
+    pub secondary_phy: u32,
+    pub secondary_pilot: u32,
+    pub secondary_mcs: u32,
+    pub secondary_max_skip: u32,
+    pub sid: u32,
+    pub request_notification: u32,
+    pub max_requests: u32,
+    pub request_rx_duration: u32,
+    pub conn_interval_min: u32,
+    pub conn_interval_max: u32,
+    pub conn_max_latency: u32,
+    pub supervision_timeout: u32,
+    pub min_event_length: u32,
+    pub max_event_length: u32,
+}
+impl Default for SleDiscoveryAdvConfig {
+    fn default() -> Self {
+        // SAFETY: every field is an integer or byte array; zero is valid.
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+pub struct SleDiscoveryScanConfig {
+    pub own_address_type: u32,
+    pub filter: u32,
+    pub frame_types: u32,
+    pub active: u32,
+    pub interval: u32,
+    pub window: u32,
+    pub filter_duplicates: u32,
+}
+impl Default for SleDiscoveryScanConfig {
+    fn default() -> Self {
+        // SAFETY: every field is an integer or byte array; zero is valid.
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug)]
+pub struct SleDiscoverySubmit {
+    pub version: u32,
+    pub profile: u32,
+    pub operation: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub request_id: u64,
+    pub advertising: SleDiscoveryAdvConfig,
+    pub scanning: SleDiscoveryScanConfig,
+    pub handle: u32,
+    pub duration: u32,
+    pub max_events: u32,
+    pub data_len: u32,
+    pub scan_response_len: u32,
+    pub reserved: u32,
+    pub data: [u8; 251],
+    pub scan_response: [u8; 251],
+    pub reserved_tail: [u8; 2],
+}
+impl Default for SleDiscoverySubmit {
+    fn default() -> Self {
+        // SAFETY: every field is an integer or byte array; zero is valid.
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug)]
+pub struct SleDiscoveryResult {
+    pub generation: u64,
+    pub request_id: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub profile: u32,
+    pub operation: u32,
+    pub state: u32,
+    pub error: i32,
+    pub selected_power: i32,
+    pub radio_adv: u32,
+    pub radio_scan: u32,
+    pub dev_index: u16,
+    pub opcode: u16,
+    pub step: u8,
+    pub count: u8,
+    pub status: u8,
+    pub power_valid: u8,
+    pub reserved: [u8; 4],
+}
+impl Default for SleDiscoveryResult {
+    fn default() -> Self {
+        // SAFETY: every field is an integer or byte array; zero is valid.
+        unsafe { std::mem::zeroed() }
+    }
+}
+impl SleDiscoveryResult {
+    /// Queued/pending results are never mistaken for radio completion.
+    pub fn is_terminal(&self) -> bool {
+        (3..=6).contains(&self.state)
+    }
+}
+
+/// Selected registration metadata and Host readiness, independent of RF state.
+/// FULL_METADATA marks the queried native five-byte version/80-bit features.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C, align(8))]
+pub struct SleControllerSnapshot {
+    pub generation: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub profile: u32,
+    pub valid_fields: u32,
+    pub dev_index: u16,
+    pub bus: u8,
+    pub command_credits: u8,
+    pub acb_length: u16,
+    pub icb_length: u16,
+    pub acb_count: u8,
+    pub icb_count: u8,
+    pub version_tuple: [u8; 5],
+    pub features: [u8; 10],
+    pub address: [u8; 6],
+    pub reserved_byte: u8,
+    pub error: i32,
+    pub reserved: [u8; 4],
+}
+pub const CONTROLLER_SNAPSHOT_VERSION: u32 = 1;
+pub const CONTROLLER_READY: u32 = 1;
+pub const CONTROLLER_SETUP: u32 = 2;
+pub const CONTROLLER_FAULT: u32 = 4;
+pub const CONTROLLER_FULL_METADATA: u32 = 1;
+
+/// D-Bus operation record: generation, request id, operation, state, errno,
+/// raw status, opcode, step, count, actual selected power, power valid,
+/// confirmed adv state, confirmed scan state, profile. This is not a C ABI.
+pub type DiscoveryResultRecord = (
+    u64,
+    u64,
+    u32,
+    u32,
+    i32,
+    u8,
+    u16,
+    u8,
+    u8,
+    i32,
+    bool,
+    u32,
+    u32,
+    u32,
+);
+impl SleDiscoveryResult {
+    pub fn as_record(&self) -> DiscoveryResultRecord {
+        (
+            self.generation,
+            self.request_id,
+            self.operation,
+            self.state,
+            self.error,
+            self.status,
+            self.opcode,
+            self.step,
+            self.count,
+            self.selected_power,
+            self.power_valid != 0,
+            self.radio_adv,
+            self.radio_scan,
+            self.profile,
+        )
+    }
+}
+
+/// seq, generation, kernel CLOCK_BOOTTIME ns, daemon wall ms, address, RSSI,
+/// raw header, raw data, lost. Opaque headers never imply PHY reassembly.
+pub type TimedDiscoveryReportRecord = (u64, u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
+
+pub const MANAGEMENT_VERSION: u32 = 1;
+pub const MANAGEMENT_MANAGED: u32 = 1;
+pub const MANAGEMENT_DIAGNOSTIC: u32 = 2;
+pub const MANAGEMENT_FREE: u32 = 0;
+pub const MANAGEMENT_HELD: u32 = 1;
+pub const MANAGEMENT_REVOKING: u32 = 2;
+pub const MANAGEMENT_FAULTED: u32 = 3;
+
+pub const SNOOP_VERSION: u32 = 1;
+pub const SNOOP_PAYLOAD_MAX: usize = 320;
+pub const SNOOP_TRUNCATED: u16 = 1;
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug)]
+pub struct SleSnoopRecord {
+    pub seq: u64,
+    pub generation: u64,
+    pub timestamp_ns: u64,
+    pub lost: u64,
+    pub profile: u32,
+    pub original_length: u32,
+    pub status: i32,
+    pub dev_index: u16,
+    pub direction: u8,
+    pub format: u8,
+    pub captured_length: u16,
+    pub flags: u16,
+    pub reserved: u32,
+    pub payload: [u8; SNOOP_PAYLOAD_MAX],
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug)]
+pub struct SleSnoopQuery {
+    pub generation: u64,
+    pub after_seq: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub reserved: u64,
+    pub record: SleSnoopRecord,
+}
+pub const SL_IOCTL_SNOOP_GET: u32 = 0xc198538e;
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SleManagementRequest {
+    pub generation: u64,
+    pub lease: u64,
+    pub version: u32,
+    pub mode: u32,
+    pub flags: u32,
+    pub reserved: u32,
+}
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SleManagementQuery {
+    pub generation: u64,
+    pub lease: u64,
+    pub version: u32,
+    pub mode: u32,
+    pub state: u32,
+    pub flags: u32,
+    pub error: i32,
+    pub status: u32,
+    pub opcode: u32,
+    pub reserved: u32,
+}
+
+/// Final successful matched Complete receipt (CLOCK_BOOTTIME ns).
+/// Pending, failed/cancelled/faulted without success have timestamp zero.
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SleDiscoveryTiming {
+    pub generation: u64,
+    pub request_id: u64,
+    pub completed_boottime_ns: u64,
+    pub version: u32,
+    pub flags: u32,
+    pub operation: u32,
+    pub state: u32,
+    pub dev_index: u16,
+    pub opcode: u16,
+    pub status: u8,
+    pub reserved: [u8; 3],
+}
+
+/// Owner-private non-destructive diagnostic result (ioctl 0xd0).
+#[derive(Debug, Clone, Copy)]
+#[repr(C, align(8))]
+pub struct SleDiagnosticResult {
+    pub version: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub seq: u32,
+    pub state: u32,
+    pub error: i32,
+    pub opcode: u16,
+    pub status: u8,
+    pub _pad: u8,
+    pub data_len: u16,
+    pub _reserved: [u8; 6],
+    pub data: [u8; 64],
+}
+impl Default for SleDiagnosticResult {
+    fn default() -> Self {
+        // SAFETY: fixed integers/byte arrays; zero is valid for every field.
+        unsafe { core::mem::zeroed() }
+    }
+}
+
+/// Caller-keyed Native metadata admission or cancellation (ioctl 0xd1).
+/// Repeat the same request ID/fields after EFAULT; never invent a fresh ID.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[repr(C, align(8))]
+pub struct SleDiagnosticSubmit {
+    pub version: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub request_id: u64,
+    pub timeout_ms: u32,
+    pub opcode: u16,
+    pub reserved: u16,
+    pub seq: u32,
+    pub action: u32,
 }

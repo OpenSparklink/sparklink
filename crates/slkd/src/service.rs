@@ -18,9 +18,10 @@ impl SsapManagerIface {
     /// Get SSAP summary (service and property counts, MTU)
     async fn get_info(&self) -> zbus::fdo::Result<SsapInfo> {
         let st = self.state.lock().await;
-        let summary = st.adapter.ssap_info().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_info: {e}"))
-        })?;
+        let summary = st
+            .adapter
+            .ssap_info()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_info: {e}")))?;
         Ok(SsapInfo {
             service_count: summary.service_count,
             property_count: summary.property_count,
@@ -33,18 +34,14 @@ impl SsapManagerIface {
     /// Register all configured services with the controller
     async fn register_services(&self) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.ssap_register().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_register: {e}"))
-        })
+        st.adapter
+            .ssap_register()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_register: {e}")))
     }
 
     /// Add a service to the local database
     /// Returns the assigned start handle
-    async fn add_service(
-        &self,
-        uuid16: u16,
-        primary: bool,
-    ) -> zbus::fdo::Result<u16> {
+    async fn add_service(&self, uuid16: u16, primary: bool) -> zbus::fdo::Result<u16> {
         let mut svc = slk_protocol::SsapAddService {
             uuid16,
             primary: primary as u8,
@@ -54,52 +51,43 @@ impl SsapManagerIface {
             _reserved: [0; 6],
         };
         let st = self.state.lock().await;
-        st.adapter.ssap_add_svc(&mut svc).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_add_svc: {e}"))
-        })?;
+        st.adapter
+            .ssap_add_svc(&mut svc)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_add_svc: {e}")))?;
         Ok(svc.start_handle)
     }
 
     /// Add a property (characteristic) to a service
-    /// ops: bitmask of read(0x01)/write(0x02)/notify(0x04)/indicate(0x08)
+    /// Local staging only: READ=01, WRITE_NO_RSP=02, WRITE_WITH_RSP=04,
+    /// NOTIFY=08, INDICATE=10, BROADCAST=20; reserved bits are rejected.
     /// Returns the assigned handle
-    async fn add_property(
-        &self,
-        uuid16: u16,
-        ops: u8,
-        value: Vec<u8>,
-    ) -> zbus::fdo::Result<u16> {
-        let len = value.len().min(248);
-        let mut prop = slk_protocol::SsapAddProperty {
-            uuid16,
-            ops,
-            value_len: len as u8,
-            value: [0; 248],
-            handle: 0,
-            _reserved: [0; 2],
-        };
-        prop.value[..len].copy_from_slice(&value[..len]);
+    async fn add_property(&self, uuid16: u16, ops: u8, value: Vec<u8>) -> zbus::fdo::Result<u16> {
+        let ops = slk_protocol::SsapOperations::from_bits(u32::from(ops))
+            .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        let mut prop = slk_protocol::SsapAddProperty::for_legacy_staging(uuid16, ops, &value)
+            .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
         let st = self.state.lock().await;
-        st.adapter.ssap_add_prop(&mut prop).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_add_prop: {e}"))
-        })?;
+        st.adapter
+            .ssap_add_prop(&mut prop)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_add_prop: {e}")))?;
         Ok(prop.handle)
     }
 
     /// Remove a service by its start handle
     async fn remove_service(&self, start_handle: u16) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.ssap_remove_svc(start_handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_remove_svc: {e}"))
-        })
+        st.adapter
+            .ssap_remove_svc(start_handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remove_svc: {e}")))
     }
 
     /// List local services
     async fn list_services(&self) -> zbus::fdo::Result<Vec<ServiceEntry>> {
         let st = self.state.lock().await;
-        let list = st.adapter.ssap_find_svc().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_find_svc: {e}"))
-        })?;
+        let list = st
+            .adapter
+            .ssap_find_svc()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_find_svc: {e}")))?;
         let mut out = Vec::with_capacity(list.count as usize);
         for i in 0..list.count as usize {
             let s = &list.services[i];
@@ -116,9 +104,10 @@ impl SsapManagerIface {
     /// Read a local property value
     async fn read_property(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
         let st = self.state.lock().await;
-        let rw = st.adapter.ssap_read(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_read: {e}"))
-        })?;
+        let rw = st
+            .adapter
+            .ssap_read(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_read: {e}")))?;
         Ok(rw.data[..rw.length as usize].to_vec())
     }
 
@@ -132,25 +121,26 @@ impl SsapManagerIface {
         };
         rw.data[..len].copy_from_slice(&value[..len]);
         let st = self.state.lock().await;
-        st.adapter.ssap_write(&rw).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_write: {e}"))
-        })
+        st.adapter
+            .ssap_write(&rw)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_write: {e}")))
     }
 
     /// Send notification on a property handle
     async fn notify(&self, handle: u16) -> zbus::fdo::Result<()> {
         let st = self.state.lock().await;
-        st.adapter.ssap_notify(handle).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_notify: {e}"))
-        })
+        st.adapter
+            .ssap_notify(handle)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_notify: {e}")))
     }
 
     /// Dequeue a pending notification
     async fn dequeue_notification(&self) -> zbus::fdo::Result<NotificationData> {
         let st = self.state.lock().await;
-        let ntf = st.adapter.ssap_dequeue_ntf().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_dequeue_ntf: {e}"))
-        })?;
+        let ntf = st
+            .adapter
+            .ssap_dequeue_ntf()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_dequeue_ntf: {e}")))?;
         Ok(NotificationData {
             handle: ntf.handle,
             indication: ntf.indication != 0,
@@ -180,17 +170,13 @@ impl RemoteServiceIface {
             _reserved: [0; 2],
         };
         let st = self.state.lock().await;
-        st.adapter.ssap_exchange_info(&cmd).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_exchange_info: {e}"))
-        })
+        st.adapter
+            .ssap_exchange_info(&cmd)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_exchange_info: {e}")))
     }
 
     /// Discover services on the remote peer
-    async fn discover(
-        &self,
-        start_handle: u16,
-        end_handle: u16,
-    ) -> zbus::fdo::Result<u16> {
+    async fn discover(&self, start_handle: u16, end_handle: u16) -> zbus::fdo::Result<u16> {
         let mut disc = slk_protocol::SsapRemoteDiscover {
             conn_handle: self.conn_handle,
             start_handle,
@@ -198,9 +184,9 @@ impl RemoteServiceIface {
             count: 0,
         };
         let st = self.state.lock().await;
-        st.adapter.ssap_remote_discover(&mut disc).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_remote_discover: {e}"))
-        })?;
+        st.adapter
+            .ssap_remote_discover(&mut disc)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remote_discover: {e}")))?;
         Ok(disc.count)
     }
 
@@ -214,9 +200,9 @@ impl RemoteServiceIface {
             data: [0; 248],
         };
         let st = self.state.lock().await;
-        st.adapter.ssap_remote_read(&mut rw).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_remote_read: {e}"))
-        })?;
+        st.adapter
+            .ssap_remote_read(&mut rw)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remote_read: {e}")))?;
         Ok(rw.data[..rw.length as usize].to_vec())
     }
 
@@ -235,17 +221,18 @@ impl RemoteServiceIface {
             },
         };
         let st = self.state.lock().await;
-        st.adapter.ssap_remote_write(&rw).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_remote_write: {e}"))
-        })
+        st.adapter
+            .ssap_remote_write(&rw)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remote_write: {e}")))
     }
 
     /// Receive a remote notification/indication event
     async fn receive_event(&self) -> zbus::fdo::Result<NotificationData> {
         let st = self.state.lock().await;
-        let ntf = st.adapter.ssap_remote_event().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_remote_event: {e}"))
-        })?;
+        let ntf = st
+            .adapter
+            .ssap_remote_event()
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remote_event: {e}")))?;
         Ok(NotificationData {
             handle: ntf.handle,
             indication: ntf.indication != 0,
@@ -262,9 +249,9 @@ impl RemoteServiceIface {
         let copy_len = input.len().min(rw.data.len());
         rw.data[..copy_len].copy_from_slice(&input[..copy_len]);
         rw.length = copy_len as u16;
-        st.adapter.ssap_call_method(&mut rw).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_call_method: {e}"))
-        })?;
+        st.adapter
+            .ssap_call_method(&mut rw)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_call_method: {e}")))?;
         let out_len = rw.length as usize;
         Ok(rw.data[..out_len.min(rw.data.len())].to_vec())
     }
@@ -275,9 +262,9 @@ impl RemoteServiceIface {
         let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
         op.conn_handle = self.conn_handle;
         op.uuid16 = uuid16;
-        st.adapter.ssap_find_by_uuid(&mut op).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_find_by_uuid: {e}"))
-        })?;
+        st.adapter
+            .ssap_find_by_uuid(&mut op)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_find_by_uuid: {e}")))?;
         Ok(op.handle)
     }
 
@@ -287,9 +274,9 @@ impl RemoteServiceIface {
         let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
         op.conn_handle = self.conn_handle;
         op.uuid16 = uuid16;
-        st.adapter.ssap_read_by_uuid(&mut op).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("ssap_read_by_uuid: {e}"))
-        })?;
+        st.adapter
+            .ssap_read_by_uuid(&mut op)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_read_by_uuid: {e}")))?;
         let out_len = (op.length as usize).min(op.data.len());
         Ok(op.data[..out_len].to_vec())
     }
@@ -319,4 +306,37 @@ pub struct NotificationData {
     pub handle: u16,
     pub indication: bool,
     pub data: Vec<u8>,
+}
+
+#[cfg(test)]
+mod validation_tests {
+    use super::*;
+    use crate::{bonding::BondingStore, config::DaemonConfig, state::AdapterState};
+    use libsparklink::Adapter;
+    use slk_experimental::profile::ProfileRegistry;
+    use std::sync::Arc;
+    use tokio::sync::Mutex;
+
+    #[tokio::test]
+    async fn actual_service_method_rejects_invalid_input_before_state_lock_or_ioctl() {
+        let state = Arc::new(Mutex::new(AdapterState::new(
+            Adapter::open("/dev/null").unwrap(),
+            DaemonConfig::default(),
+            BondingStore::new(&std::env::temp_dir(), "unused-ssap-validation-test"),
+            ProfileRegistry::new(),
+        )));
+        let service = SsapManagerIface::new(state.clone());
+        let _locked = state.lock().await;
+        // The state lock is deliberately held. Incorrect validation order
+        // blocks here and fails the deadline, rather than silently succeeding.
+        for (ops, value) in [(0x49, vec![]), (9, vec![0; 249])] {
+            let result = tokio::time::timeout(
+                std::time::Duration::from_secs(1),
+                service.add_property(1, ops, value),
+            )
+            .await
+            .unwrap();
+            assert!(matches!(result, Err(zbus::fdo::Error::InvalidArgs(_))));
+        }
+    }
 }

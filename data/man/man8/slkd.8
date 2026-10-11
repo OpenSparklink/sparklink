@@ -21,7 +21,8 @@ connects to the system D\-Bus, and enters the event loop.
 .SH OPTIONS
 .TP
 .BI \-c " path" "\fR,\fP \-\-config " path
-Path to the configuration file. Default:
+Explicit path must be readable and valid; any error aborts startup. With no
+option, the implicit default is:
 .IR /etc/sparklink/main.conf .
 See
 .BR sparklink.conf (5).

@@ -1,23 +1,34 @@
 use zbus::Connection;
 
+type NativeReportRecord = (u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
+
 pub struct Context {
     conn: Connection,
+    selected: Option<String>,
 }
 
 impl Context {
     pub fn new(conn: Connection) -> Self {
-        Self { conn }
+        Self {
+            conn,
+            selected: None,
+        }
     }
 
     pub async fn dispatch(&mut self, args: &[&str]) -> anyhow::Result<()> {
         match args[0] {
             "list" => self.cmd_list().await,
+            "daemon" => self.cmd_daemon().await,
+            "select" => self.cmd_select(args.get(1).copied().unwrap_or("")).await,
+            "reports" => self.cmd_reports().await,
+            "advertise" => self.cmd_advertise(args).await,
+            "result" => self.cmd_result(args.get(1).copied().unwrap_or("")).await,
             "show" => self.cmd_show().await,
             "scan" => {
                 if args.len() < 2 {
                     anyhow::bail!("usage: scan on|off");
                 }
-                self.cmd_scan(args[1]).await
+                self.cmd_scan(args).await
             }
             "devices" => self.cmd_devices().await,
             "info" => {
@@ -99,31 +110,95 @@ impl Context {
         }
     }
 
+    async fn selected_path(&self) -> anyhow::Result<String> {
+        let paths: Vec<String> = self
+            .manager_proxy()
+            .await?
+            .call("ListAdapters", &())
+            .await?;
+        if let Some(selected) = &self.selected {
+            if paths.contains(selected) {
+                return Ok(selected.clone());
+            }
+            anyhow::bail!("selected registration removed; run list and select its replacement");
+        }
+        if paths.len() == 1 {
+            return Ok(paths[0].clone());
+        }
+        anyhow::bail!("select one of the live adapter paths using 'select <path>'");
+    }
+    async fn cmd_select(&mut self, path: &str) -> anyhow::Result<()> {
+        let paths: Vec<String> = self
+            .manager_proxy()
+            .await?
+            .call("ListAdapters", &())
+            .await?;
+        let candidate = if path.starts_with('/') {
+            path.to_owned()
+        } else {
+            format!("/org/sparklink/{path}")
+        };
+        if !paths.contains(&candidate) {
+            anyhow::bail!("adapter is not a live registration: {candidate}");
+        }
+        self.selected = Some(candidate.clone());
+        println!("Selected {candidate}");
+        Ok(())
+    }
+    async fn cmd_daemon(&self) -> anyhow::Result<()> {
+        let bus = zbus::fdo::DBusProxy::new(&self.conn).await?;
+        let service = zbus::names::BusName::try_from("org.sparklink")?;
+        let owner = bus.get_name_owner(service).await?;
+        let pid = bus
+            .get_connection_unix_process_id(owner.as_ref().into())
+            .await?;
+        let uid = bus.get_connection_unix_user(owner.as_ref().into()).await?;
+        println!("DaemonIdentity: owner={owner} pid={pid} uid={uid}");
+        Ok(())
+    }
+
+    async fn cmd_reports(&self) -> anyhow::Result<()> {
+        let proxy = self.adapter_proxy().await?;
+        let reports: Vec<NativeReportRecord> = proxy.call("GetReports", &()).await?;
+        for (seq, generation, ms, address, rssi, header, data, lost) in reports {
+            let hex = |bytes: &[u8]| bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
+            println!(
+                "seq={seq} generation={generation} time_ms={ms} address={address} RSSI={rssi} header={} data={} lost={lost}",
+                hex(&header),
+                hex(&data)
+            );
+        }
+        Ok(())
+    }
+
     async fn adapter_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0",
+            self.selected_path().await?,
             "org.sparklink.Adapter",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn security_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0/security",
+            format!("{}/security", self.selected_path().await?),
             "org.sparklink.Security",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn service_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0/services",
+            format!("{}/services", self.selected_path().await?),
             "org.sparklink.ServiceManager",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn manager_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
@@ -132,25 +207,28 @@ impl Context {
             "org.sparklink",
             "/org/sparklink",
             "org.sparklink.Manager",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn controller_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0/controller",
+            format!("{}/controller", self.selected_path().await?),
             "org.sparklink.Controller",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn extadv_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
         Ok(zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            "/org/sparklink/slk0/extadv",
+            format!("{}/extadv", self.selected_path().await?),
             "org.sparklink.ExtAdv",
-        ).await?)
+        )
+        .await?)
     }
 
     async fn cmd_list(&self) -> anyhow::Result<()> {
@@ -172,15 +250,211 @@ impl Context {
         let powered: bool = proxy.get_property("Powered").await?;
         let discovering: bool = proxy.get_property("Discovering").await?;
 
-        println!("Adapter slk0:");
+        let status: String = proxy.get_property("ControllerState").await?;
+        let generation: u64 = proxy.get_property("Generation").await?;
+        let address: String = proxy.get_property("Address").await?;
+        let profile: u32 = proxy.get_property("Profile").await?;
+        let error: String = proxy.get_property("InitializationError").await?;
+        println!("Adapter {}:", self.selected_path().await?);
+        println!("  State:       {status}");
+        println!("  Generation:  {generation}");
+        println!("  Address:     {address}");
+        println!("  Profile:     {profile}");
+        if !error.is_empty() {
+            println!("  Init error:  {error}");
+        }
         println!("  Name:        {name}");
         println!("  Powered:     {powered}");
         println!("  Discovering: {discovering}");
         Ok(())
     }
 
-    async fn cmd_scan(&self, toggle: &str) -> anyhow::Result<()> {
+    async fn cmd_advertise(&self, args: &[&str]) -> anyhow::Result<()> {
         let proxy = self.adapter_proxy().await?;
+        let id = random_bytes::<8>()?;
+        let id = u64::from_ne_bytes(id).max(1);
+        match args.get(1).copied() {
+            Some("on") => {
+                let marker: [u8; 16] = if let Some(hex) = args.get(2) {
+                    parse_hex_bytes(hex)?
+                        .try_into()
+                        .map_err(|_| anyhow::anyhow!("marker must be 16 bytes (32 hex digits)"))?
+                } else {
+                    random_bytes()?
+                };
+                println!(
+                    "NativeAdvertisementRequest: request={id} marker={}",
+                    hex_bytes(&marker)
+                );
+                let data: Vec<u8> = tokio::time::timeout(
+                    std::time::Duration::from_secs(7),
+                    proxy.call("SubmitAdvertising", &(id, marker.to_vec())),
+                )
+                .await??;
+                println!(
+                    "NativeAdvertisementAccepted: request={id} marker={} data={}",
+                    hex_bytes(&marker),
+                    hex_bytes(&data)
+                );
+            }
+            Some("off") => {
+                println!("NativeStopAdvertisingRequest: request={id}");
+                let _: () = tokio::time::timeout(
+                    std::time::Duration::from_secs(7),
+                    proxy.call("SubmitStopAdvertising", &(id,)),
+                )
+                .await??;
+            }
+            _ => anyhow::bail!("usage: advertise on [32-hex-marker]|off"),
+        }
+        self.wait_native_result(&proxy, id).await
+    }
+    async fn cmd_result(&self, id: &str) -> anyhow::Result<()> {
+        let id: u64 = id.parse()?;
+        let proxy = self.adapter_proxy().await?;
+        let result: slk_protocol::DiscoveryResultRecord =
+            proxy.call("GetDiscoveryResult", &(id,)).await?;
+        print_native_result(result)?;
+        Ok(())
+    }
+    async fn wait_native_result(&self, proxy: &zbus::Proxy<'_>, id: u64) -> anyhow::Result<()> {
+        let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(7);
+        let generation: u64 =
+            tokio::time::timeout_at(deadline, proxy.get_property("Generation")).await??;
+        loop {
+            let result: slk_protocol::DiscoveryResultRecord =
+                tokio::time::timeout_at(deadline, proxy.call("GetDiscoveryResult", &(id,)))
+                    .await??;
+            if result.1 != id || result.0 != generation || result.13 != 1 {
+                anyhow::bail!("operation result identity mismatch");
+            }
+            if result.3 >= 3 {
+                print_native_result(result)?;
+                return Ok(());
+            }
+            if tokio::time::Instant::now() >= deadline {
+                anyhow::bail!(
+                    "operation wait timeout; inspect 'result {id}' or explicitly stop it"
+                );
+            }
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+    }
+
+    async fn cmd_scan(&self, args: &[&str]) -> anyhow::Result<()> {
+        let toggle = args[1];
+        let proxy = self.adapter_proxy().await?;
+        if proxy.get_property::<u32>("Profile").await? == 1 {
+            let id = u64::from_ne_bytes(random_bytes::<8>()?).max(1);
+            let method = match toggle {
+                "on" => "SubmitScanning",
+                "off" => "SubmitStopScanning",
+                _ => anyhow::bail!("usage: scan on|off"),
+            };
+            let matching = match args.len() {
+                2 => None,
+                4 if toggle == "on" => {
+                    let marker: [u8; 16] = parse_hex_bytes(args[2])?
+                        .try_into()
+                        .map_err(|_| anyhow::anyhow!("marker must have 32 hex digits"))?;
+                    let address = parse_peer_address(args[3])?;
+                    Some((marker, address))
+                }
+                _ => anyhow::bail!("usage: scan on [32-hex-marker advertiser-address]|off"),
+            };
+            let generation: u64 = proxy.get_property("Generation").await?;
+            let before: Vec<slk_protocol::TimedDiscoveryReportRecord> =
+                proxy.call("GetTimedReports", &()).await?;
+            let watermark = before.iter().map(|r| r.0).max().unwrap_or(0);
+            // The invocation lower bound rejects queued older kernel RX;
+            // the discovery deadline separately starts at matched Complete.
+            let scan_boottime_ns = boottime_ns()?;
+            println!(
+                "NativeScanWindow: generation={generation} request={id} start_boottime_ns={scan_boottime_ns}"
+            );
+            println!("NativeScanRequest: request={id} enable={toggle}");
+            let _: () = tokio::time::timeout(
+                std::time::Duration::from_secs(7),
+                proxy.call(method, &(id,)),
+            )
+            .await??;
+            self.wait_native_result(&proxy, id).await?;
+            if let Some((marker, address)) = matching {
+                let expected = libsparklink::ws73_marker_data(&marker);
+                let timing: (u64, u64, u64, u32, u32, u16, u8) = tokio::time::timeout(
+                    std::time::Duration::from_secs(7),
+                    proxy.call("GetDiscoveryTiming", &(id,)),
+                )
+                .await??;
+                let completed = timing.2;
+                let observed = boottime_ns()?;
+                if timing.0 != generation
+                    || timing.1 != id
+                    || timing.3 != 3
+                    || timing.4 != 3
+                    || timing.5 != 0x1002
+                    || timing.6 != 0
+                    || completed < scan_boottime_ns
+                    || completed > observed
+                {
+                    anyhow::bail!("invalid correlated Scan Complete timing");
+                }
+                println!(
+                    "NativeScanComplete: generation={generation} request={id} completed_boottime_ns={completed}"
+                );
+                let expires = completed
+                    .checked_add(10_000_000_000)
+                    .ok_or_else(|| anyhow::anyhow!("scan deadline overflow"))?;
+                loop {
+                    let rows: Vec<slk_protocol::TimedDiscoveryReportRecord> = tokio::time::timeout(
+                        std::time::Duration::from_nanos(
+                            expires
+                                .checked_sub(boottime_ns()?)
+                                .filter(|n| *n > 0)
+                                .ok_or_else(|| {
+                                    anyhow::anyhow!(
+                                        "fresh marker discovery timeout (10s after Scan Complete)"
+                                    )
+                                })?,
+                        ),
+                        proxy.call("GetTimedReports", &()),
+                    )
+                    .await??;
+                    let observed_boottime_ns = boottime_ns()?;
+                    if observed_boottime_ns >= expires {
+                        anyhow::bail!("fresh marker discovery timeout (10s after Scan Complete)");
+                    }
+                    for row in rows {
+                        if row.0 > watermark
+                            && row.1 == generation
+                            && (completed..=observed_boottime_ns).contains(&row.2)
+                            && row.8 == 0
+                            && row.4 == address
+                            && row.7 == expected
+                        {
+                            println!(
+                                "NativeScanObserved: generation={generation} request={id} observed_boottime_ns={observed_boottime_ns}"
+                            );
+                            println!(
+                                "NativeDiscoveryMatch: generation={} seq={} address={} RSSI={} marker={} data={} kernel_boottime_ns={} elapsed_ms={} lost={}",
+                                row.1,
+                                row.0,
+                                row.4,
+                                row.5,
+                                hex_bytes(&marker),
+                                hex_bytes(&row.7),
+                                row.2,
+                                (observed_boottime_ns - completed) / 1_000_000,
+                                row.8
+                            );
+                            return Ok(());
+                        }
+                    }
+                    tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+                }
+            }
+            return Ok(());
+        }
         match toggle {
             "on" => {
                 let _: () = proxy.call("StartDiscovery", &()).await?;
@@ -211,15 +485,17 @@ impl Context {
 
     async fn cmd_info(&self, address: &str) -> anyhow::Result<()> {
         let object_path = format!(
-            "/org/sparklink/slk0/dev_{}",
-            address.replace(':', "")
+            "{}/dev_{}",
+            self.selected_path().await?,
+            address.replace(':', "").to_lowercase()
         );
         let proxy = zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
             object_path.as_str(),
             "org.sparklink.Device",
-        ).await?;
+        )
+        .await?;
 
         let name: String = proxy.get_property("Name").await?;
         let rssi: i16 = proxy.get_property("Rssi").await?;
@@ -262,7 +538,10 @@ impl Context {
         } else {
             for (start, end, uuid16, primary) in &services {
                 let kind = if *primary { "Primary" } else { "Secondary" };
-                println!("  [{:#06x}-{:#06x}] UUID={:#06x} {kind}", start, end, uuid16);
+                println!(
+                    "  [{:#06x}-{:#06x}] UUID={:#06x} {kind}",
+                    start, end, uuid16
+                );
             }
         }
         Ok(())
@@ -271,7 +550,10 @@ impl Context {
     async fn cmd_remote_services(&self) -> anyhow::Result<()> {
         println!("Remote service discovery requires an active connection.");
         println!("Use 'connect <address>' first, then the daemon exposes");
-        println!("org.sparklink.RemoteService at /org/sparklink/slk0/conn_<handle>");
+        println!(
+            "org.sparklink.RemoteService at {}/conn_<handle>",
+            self.selected_path().await?
+        );
         Ok(())
     }
 
@@ -346,8 +628,7 @@ impl Context {
 
     async fn cmd_stats(&self) -> anyhow::Result<()> {
         let proxy = self.controller_proxy().await?;
-        let stats: (u16, u16, u32, u32, u32, u32, u8) =
-            proxy.call("GetStats", &()).await?;
+        let stats: (u16, u16, u32, u32, u32, u32, u8) = proxy.call("GetStats", &()).await?;
         println!("Subsystem Statistics:");
         println!("  Devices:         {}", stats.0);
         println!("  Connections:     {}", stats.1);
@@ -371,28 +652,32 @@ impl Context {
         let sub = args.get(1).copied().unwrap_or("help");
         match sub {
             "enable" => {
-                let handle: u8 = args.get(2)
+                let handle: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: extadv enable <handle>"))?
                     .parse()?;
                 let _: () = proxy.call("Enable", &(handle,)).await?;
                 println!("ExtAdv set {handle} enabled");
             }
             "disable" => {
-                let handle: u8 = args.get(2)
+                let handle: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: extadv disable <handle>"))?
                     .parse()?;
                 let _: () = proxy.call("Disable", &(handle,)).await?;
                 println!("ExtAdv set {handle} disabled");
             }
             "remove" => {
-                let handle: u8 = args.get(2)
+                let handle: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: extadv remove <handle>"))?
                     .parse()?;
                 let _: () = proxy.call("Remove", &(handle,)).await?;
                 println!("ExtAdv set {handle} removed");
             }
             "info" => {
-                let handle: u8 = args.get(2)
+                let handle: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: extadv info <handle>"))?
                     .parse()?;
                 let info: (u8, u8, u8, u8, u16, u64, u32) =
@@ -468,7 +753,8 @@ impl Context {
         let sub = args.get(1).copied().unwrap_or("help");
         match sub {
             "get" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: afh get <conn_handle>"))?
                     .parse()?;
                 let map: Vec<u8> = proxy.call("AfhGetMap", &(handle,)).await?;
@@ -488,7 +774,8 @@ impl Context {
                 println!("AFH channel map updated for handle {handle}");
             }
             "hop" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: afh hop <conn_handle>"))?
                     .parse()?;
                 let info: (u16, u8, u8) = proxy.call("AfhHopNext", &(handle,)).await?;
@@ -526,7 +813,9 @@ impl Context {
                 let peer_irk = parse_hex_bytes(args[2])?;
                 let local_irk = parse_hex_bytes(args[3])?;
                 let peer_id = parse_hex_bytes(args[4])?;
-                let _: () = proxy.call("RalAdd", &(peer_irk, local_irk, peer_id)).await?;
+                let _: () = proxy
+                    .call("RalAdd", &(peer_irk, local_irk, peer_id))
+                    .await?;
                 println!("RAL entry added");
             }
             "remove" => {
@@ -561,7 +850,8 @@ impl Context {
                 println!("RPA disabled");
             }
             "timeout" => {
-                let secs: u16 = args.get(2)
+                let secs: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: rpa timeout <seconds>"))?
                     .parse()?;
                 let _: () = proxy.call("RpaSetTimeout", &(secs,)).await?;
@@ -582,11 +872,11 @@ impl Context {
         let sub = args.get(1).copied().unwrap_or("help");
         match sub {
             "info" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: sync info <handle>"))?
                     .parse()?;
-                let info: (u16, u8, u8, u8, u16, u16) =
-                    proxy.call("SyncInfo", &(handle,)).await?;
+                let info: (u16, u8, u8, u8, u16, u16) = proxy.call("SyncInfo", &(handle,)).await?;
                 println!("Sync Link {handle}:");
                 println!("  State:          {}", info.1);
                 println!("  Direction:      {}", info.2);
@@ -595,14 +885,16 @@ impl Context {
                 println!("  Latency:        {}", info.5);
             }
             "ucast-rm" => {
-                let cig_id: u8 = args.get(2)
+                let cig_id: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: sync ucast-rm <cig_id>"))?
                     .parse()?;
                 let _: () = proxy.call("SyncUcastRemove", &(cig_id,)).await?;
                 println!("Unicast CIG {cig_id} removed");
             }
             "mcast-rm" => {
-                let big_id: u8 = args.get(2)
+                let big_id: u8 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: sync mcast-rm <big_id>"))?
                     .parse()?;
                 let _: () = proxy.call("SyncMcastRemove", &(big_id,)).await?;
@@ -652,7 +944,8 @@ impl Context {
         let sub = args.get(1).copied().unwrap_or("help");
         match sub {
             "features" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: peer features <conn_handle>"))?
                     .parse()?;
                 let feats: Vec<u8> = proxy.call("ConnReadPeerFeatures", &(handle,)).await?;
@@ -663,7 +956,8 @@ impl Context {
                 println!();
             }
             "version" => {
-                let handle: u16 = args.get(2)
+                let handle: u16 = args
+                    .get(2)
                     .ok_or_else(|| anyhow::anyhow!("usage: peer version <conn_handle>"))?
                     .parse()?;
                 let ver: (u8, u16, u16) = proxy.call("ConnReadPeerVersion", &(handle,)).await?;
@@ -731,9 +1025,9 @@ impl Context {
                 }
             }
             "remove" => {
-                let addr = args.get(2).ok_or_else(|| {
-                    anyhow::anyhow!("usage: bonded remove <AA:BB:CC:DD:EE:FF>")
-                })?;
+                let addr = args
+                    .get(2)
+                    .ok_or_else(|| anyhow::anyhow!("usage: bonded remove <AA:BB:CC:DD:EE:FF>"))?;
                 proxy.call::<_, _, ()>("RemoveBond", &(*addr,)).await?;
                 println!("Bond removed: {addr}");
             }
@@ -748,14 +1042,109 @@ fn parse_handle(s: &str) -> anyhow::Result<u16> {
     Ok(u16::from_str_radix(s, 16)?)
 }
 
+fn parse_peer_address(text: &str) -> anyhow::Result<String> {
+    let bytes = text
+        .split(':')
+        .map(|part| {
+            if part.len() != 2 {
+                anyhow::bail!("invalid peer address");
+            }
+            Ok(u8::from_str_radix(part, 16)?)
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    if bytes.len() != 6 {
+        anyhow::bail!("peer address must contain six bytes");
+    }
+    Ok(bytes
+        .iter()
+        .map(|b| format!("{b:02X}"))
+        .collect::<Vec<_>>()
+        .join(":"))
+}
+
+/// Linux kernel native events use CLOCK_BOOTTIME (including suspend).
+/// Keep this clock separate from Tokio's command deadline and wall logging.
+fn boottime_ns() -> anyhow::Result<u64> {
+    let mut value = nix::libc::timespec {
+        tv_sec: 0,
+        tv_nsec: 0,
+    };
+    // SAFETY: the pointer is a valid writable timespec and no aliases escape.
+    if unsafe { nix::libc::clock_gettime(nix::libc::CLOCK_BOOTTIME, &mut value) } != 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let seconds = u64::try_from(value.tv_sec)?;
+    let nanos = u64::try_from(value.tv_nsec)?;
+    anyhow::ensure!(nanos < 1_000_000_000, "invalid boottime nanoseconds");
+    seconds
+        .checked_mul(1_000_000_000)
+        .and_then(|n| n.checked_add(nanos))
+        .ok_or_else(|| anyhow::anyhow!("boottime overflow"))
+}
+
+fn random_bytes<const N: usize>() -> anyhow::Result<[u8; N]> {
+    use std::io::Read;
+    let mut bytes = [0; N];
+    std::fs::File::open("/dev/urandom")?.read_exact(&mut bytes)?;
+    Ok(bytes)
+}
+fn hex_bytes(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+fn print_native_result(r: slk_protocol::DiscoveryResultRecord) -> anyhow::Result<()> {
+    println!(
+        "NativeOperationResult: generation={} request={} operation={} state={} errno={} status=0x{:02x} opcode=0x{:04x} step={}/{} power={} power_valid={} adv={} scan={} profile={}",
+        r.0,
+        r.1,
+        r.2,
+        r.3,
+        r.4,
+        r.5,
+        r.6,
+        r.7,
+        r.8,
+        r.9,
+        u8::from(r.10),
+        r.11,
+        r.12,
+        r.13
+    );
+    if r.3 > 3 {
+        anyhow::bail!(
+            "native operation failed: request={} state={} status=0x{:02x} errno={} (no radio success inferred)",
+            r.1,
+            r.3,
+            r.5,
+            r.4
+        );
+    }
+    Ok(())
+}
+
 fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
-    if hex.len() % 2 != 0 {
+    if !hex.len().is_multiple_of(2) {
         anyhow::bail!("hex string must have even length");
+    }
+    if !hex.is_ascii() {
+        anyhow::bail!("invalid hex character");
     }
     let mut bytes = Vec::with_capacity(hex.len() / 2);
     for i in (0..hex.len()).step_by(2) {
         bytes.push(u8::from_str_radix(&hex[i..i + 2], 16)?);
     }
     Ok(bytes)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hex_input_handles_ascii_and_rejects_unicode_without_panicking() {
+        assert_eq!(parse_hex_bytes("0xaA01").unwrap(), [0xAA, 1]);
+        assert!(parse_hex_bytes("aéa").is_err());
+        assert!(parse_hex_bytes("GG").is_err());
+        assert!(parse_hex_bytes("a").is_err());
+    }
 }

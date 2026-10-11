@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo check --workspace
+      - run: cargo check --workspace --all-targets --all-features
 
   test:
     name: cargo test
@@ -28,7 +28,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo test --workspace
+      - name: Install private D-Bus regression dependency
+        run: sudo apt-get update && sudo apt-get install -y dbus-daemon
+      - run: cargo test --workspace --all-features
 
   clippy:
     name: clippy
@@ -40,7 +42,7 @@ jobs:
         with:
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - run: cargo clippy --workspace -- -W clippy::all
+      - run: cargo clippy --workspace --all-targets --all-features -- -W clippy::all
 
   fmt:
     name: rustfmt
@@ -60,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo install cbindgen --locked
+      - run: cargo install cbindgen --version 0.29.4 --locked
       - name: Generate sparklink.h
         working-directory: crates/libsparklink
         run: cbindgen --config cbindgen.toml --crate libsparklink --output /tmp/sparklink.h
@@ -86,17 +88,108 @@ jobs:
             target/release/slctl
             target/release/slkmon
             target/release/slkdump
-            target/release/libsparklink.so
+            target/release/liblibsparklink.so
           retention-days: 14
 
   python-check:
-    name: Python binding lint
+    name: Python bindings and kernel ABI conformance
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Check out matching canonical kernel UAPI
+        uses: actions/checkout@v4
+        with:
+          repository: OpenSparklink/linux
+          # Update this pin together with intentional kernel UAPI changes.
+          ref: 016aa7ee68130076d692366eceaafeb815003099
+          path: .kernel-uapi
+          sparse-checkout: include/uapi/linux/sparklink_ioctl.h
+          sparse-checkout-cone-mode: false
+      - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Prepare 32-bit header compilation and actual cdylib
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib
+          cargo build -p libsparklink --lib
       - run: python -m py_compile bindings/python/sparklink/__init__.py
       - run: python -m py_compile bindings/python/sparklink/structs.py
       - run: python -m py_compile bindings/python/sparklink/adapter.py
+      - run: python -m py_compile bindings/python/sparklink/native.py
+      - name: Run Python unit and compiled C/Rust ABI tests
+        env:
+          PYTHONPATH: bindings/python
+          SPARKLINK_KERNEL_UAPI: ${{ github.workspace }}/.kernel-uapi/include/uapi/linux/sparklink_ioctl.h
+        run: python -m unittest discover -s bindings/python/tests -v
+
+  tooling-test:
+    name: WS73 tooling and evidence validation (no hardware)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out matching kernel lab helpers
+        uses: actions/checkout@v4
+        with:
+          repository: OpenSparklink/linux
+          ref: 016aa7ee68130076d692366eceaafeb815003099
+          path: .kernel-tools
+          sparse-checkout: tools/testing/selftests/sparklink
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest discover -s tools/tests -v
+        env:
+          SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-tools
+
+  kernel-containment:
+    name: Actual kernel security, TX, SSAP and event copy boundaries
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: OpenSparklink/linux
+          ref: 016aa7ee68130076d692366eceaafeb815003099
+          path: .kernel-containment
+          sparse-checkout: |
+            net/sparklink
+            tools/testing/selftests/sparklink
+            include/uapi/linux/sparklink_ioctl.h
+            include/uapi/linux/sparklink.h
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install compiler and sanitizer runtimes
+        run: sudo apt-get update && sudo apt-get install -y clang
+      - name: Execute actual source failure boundaries (not RF or crypto vectors)
+        working-directory: .kernel-containment
+        env:
+          CC: clang
+        run: |
+          python tools/testing/selftests/sparklink/run_security_remediation.py
+          python tools/testing/selftests/sparklink/run_backend_containment.py
+          python tools/testing/selftests/sparklink/run_connection_tx.py
+          python tools/testing/selftests/sparklink/run_ssap_containment.py
+          python tools/testing/selftests/sparklink/run_event_copy.py
+          python tools/testing/selftests/sparklink/run_phy_model.py
+          python tools/testing/selftests/sparklink/run_diagnostic_result.py
+      - name: Check complete ioctl authorization and queue contracts
+        working-directory: .kernel-containment
+        run: |
+          python -m unittest discover -s tools/testing/selftests/sparklink -p test_authorization_contract.py -v
+          python -m unittest discover -s tools/testing/selftests/sparklink -p test_daemon_lifecycle.py -v
+          rustc --edition=2021 --test -D warnings tools/testing/selftests/sparklink/sparklink_host_plan_test.rs -o /tmp/host-plan-test
+          /tmp/host-plan-test
+          clang -std=c11 -O2 -Wall -Wextra -Werror tools/testing/selftests/sparklink/kernel_authorization_test.c -o /tmp/kernel-authorization-probe
+      - name: Check pinned QEMU host test boundaries (no live USB or guest execution)
+        working-directory: .kernel-containment
+        run: |
+          curl --fail --location --retry 3 --output "$RUNNER_TEMP/qemu-9.2.0.tar.xz" https://download.qemu.org/qemu-9.2.0.tar.xz
+          python tools/testing/selftests/sparklink/qemu-sle-dli/run-usb-host-boundaries.py --archive "$RUNNER_TEMP/qemu-9.2.0.tar.xz" --cc clang --output "$RUNNER_TEMP/qemu-host-boundaries"
+      - name: Compile live VFS probe (not executed without a qualified VM)
+        working-directory: .kernel-containment
+        run: |
+          clang -std=c11 -O2 -Wall -Wextra -Werror tools/testing/selftests/sparklink/sparklink_event_copy_test.c -o /tmp/event-copy-probe
+          clang -std=c11 -O2 -Wall -Wextra -Werror tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c -o /tmp/diagnostic-result-probe

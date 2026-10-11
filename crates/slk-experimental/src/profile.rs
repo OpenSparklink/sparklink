@@ -1,13 +1,16 @@
+//! Legacy kernel-SSAP Profile development model. Request callbacks are not
+//! routed by slkd; UUID/permission/interop qualification remains outstanding.
 use std::collections::HashMap;
 
 use libsparklink::Adapter;
+use slk_protocol::SsapOperations;
 
 /// Definition of a characteristic to register with the SSAP database
 #[derive(Debug, Clone)]
 pub struct CharacteristicDef {
     pub uuid16: u16,
-    /// Bitmask: 0x01=read, 0x02=write, 0x04=notify, 0x08=indicate
-    pub ops: u8,
+    /// Validated standard operations; legacy narrowing is explicit.
+    pub ops: SsapOperations,
     pub initial_value: Vec<u8>,
 }
 
@@ -66,6 +69,7 @@ impl std::fmt::Display for ProfileError {
 impl std::error::Error for ProfileError {}
 
 /// Manages profile registration and lifecycle
+#[derive(Default)]
 pub struct ProfileRegistry {
     profiles: Vec<Box<dyn Profile>>,
     /// Maps SSAP handle -> profile index
@@ -74,10 +78,7 @@ pub struct ProfileRegistry {
 
 impl ProfileRegistry {
     pub fn new() -> Self {
-        Self {
-            profiles: Vec::new(),
-            handle_map: HashMap::new(),
-        }
+        Self::default()
     }
 
     /// Register a profile.  Call before `init_all`.
@@ -91,6 +92,23 @@ impl ProfileRegistry {
         let mut count = 0;
         for (idx, profile) in self.profiles.iter_mut().enumerate() {
             let chars = profile.characteristics();
+            let properties = chars
+                .iter()
+                .map(|ch| {
+                    slk_protocol::SsapAddProperty::for_legacy_staging(
+                        ch.uuid16,
+                        ch.ops,
+                        &ch.initial_value,
+                    )
+                })
+                .collect::<Result<Vec<_>, _>>();
+            let properties = match properties {
+                Ok(properties) => properties,
+                Err(e) => {
+                    tracing::warn!(profile = profile.name(), %e, "invalid legacy property definitions");
+                    continue;
+                }
+            };
             let mut svc = slk_protocol::SsapAddService {
                 uuid16: profile.uuid16(),
                 primary: 1,
@@ -106,17 +124,7 @@ impl ProfileRegistry {
 
             let mut handles = HashMap::new();
             let mut ok = true;
-            for ch in &chars {
-                let mut prop = slk_protocol::SsapAddProperty {
-                    uuid16: ch.uuid16,
-                    ops: ch.ops,
-                    value_len: ch.initial_value.len() as u8,
-                    value: [0; 248],
-                    handle: 0,
-                    _reserved: [0; 2],
-                };
-                let copy_len = ch.initial_value.len().min(248);
-                prop.value[..copy_len].copy_from_slice(&ch.initial_value[..copy_len]);
+            for (ch, mut prop) in chars.iter().zip(properties) {
                 if let Err(e) = adapter.ssap_add_prop(&mut prop) {
                     tracing::warn!(
                         profile = profile.name(),
@@ -147,14 +155,18 @@ impl ProfileRegistry {
 
     /// Dispatch a read to the owning profile
     pub fn dispatch_read(&self, handle: u16) -> Result<Vec<u8>, ProfileError> {
-        let idx = self.handle_map.get(&handle)
+        let idx = self
+            .handle_map
+            .get(&handle)
             .ok_or(ProfileError::NotSupported)?;
         self.profiles[*idx].on_read(handle)
     }
 
     /// Dispatch a write to the owning profile
     pub fn dispatch_write(&mut self, handle: u16, data: &[u8]) -> Result<(), ProfileError> {
-        let idx = *self.handle_map.get(&handle)
+        let idx = *self
+            .handle_map
+            .get(&handle)
             .ok_or(ProfileError::NotSupported)?;
         self.profiles[idx].on_write(handle, data)
     }
@@ -185,12 +197,12 @@ impl ProfileRegistry {
 }
 
 // ---------------------------------------------------------------------------
-// Built-in: Battery Service (UUID 0x180F)
+// Built-in: Battery Service (UUID 0x060A)
 // ---------------------------------------------------------------------------
 
 /// Minimal Battery Service profile.
 ///
-/// Exposes a single read-only characteristic (Battery Level, UUID 0x2A19)
+/// Exposes a single read-only characteristic (Battery Level, UUID 0x1034)
 /// with notify capability.
 pub struct BatteryProfile {
     level: u8,
@@ -207,19 +219,23 @@ impl BatteryProfile {
 }
 
 impl Profile for BatteryProfile {
-    fn name(&self) -> &str { "battery" }
-    fn uuid16(&self) -> u16 { 0x180F }
+    fn name(&self) -> &str {
+        "battery"
+    }
+    fn uuid16(&self) -> u16 {
+        0x060A
+    }
 
     fn characteristics(&self) -> Vec<CharacteristicDef> {
         vec![CharacteristicDef {
-            uuid16: 0x2A19, // Battery Level
-            ops: 0x01 | 0x04, // read + notify
+            uuid16: 0x1034, // Battery Level
+            ops: SsapOperations::READ | SsapOperations::NOTIFY,
             initial_value: vec![self.level],
         }]
     }
 
     fn on_registered(&mut self, handles: &HashMap<u16, u16>) {
-        self.handle = handles.get(&0x2A19).copied();
+        self.handle = handles.get(&0x1034).copied();
     }
 
     fn on_read(&self, _handle: u16) -> Result<Vec<u8>, ProfileError> {
@@ -246,6 +262,12 @@ pub struct DeviceInfoProfile {
     software_rev: String,
 }
 
+impl Default for DeviceInfoProfile {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DeviceInfoProfile {
     pub fn new() -> Self {
         Self {
@@ -258,29 +280,33 @@ impl DeviceInfoProfile {
 }
 
 impl Profile for DeviceInfoProfile {
-    fn name(&self) -> &str { "device_info" }
-    fn uuid16(&self) -> u16 { 0x180A }
+    fn name(&self) -> &str {
+        "device_info"
+    }
+    fn uuid16(&self) -> u16 {
+        0x180A
+    }
 
     fn characteristics(&self) -> Vec<CharacteristicDef> {
         vec![
             CharacteristicDef {
                 uuid16: 0x2A29, // Manufacturer Name
-                ops: 0x01,
+                ops: SsapOperations::READ,
                 initial_value: self.manufacturer.as_bytes().to_vec(),
             },
             CharacteristicDef {
                 uuid16: 0x2A24, // Model Number
-                ops: 0x01,
+                ops: SsapOperations::READ,
                 initial_value: self.model.as_bytes().to_vec(),
             },
             CharacteristicDef {
                 uuid16: 0x2A26, // Firmware Revision
-                ops: 0x01,
+                ops: SsapOperations::READ,
                 initial_value: self.firmware_rev.as_bytes().to_vec(),
             },
             CharacteristicDef {
                 uuid16: 0x2A28, // Software Revision
-                ops: 0x01,
+                ops: SsapOperations::READ,
                 initial_value: self.software_rev.as_bytes().to_vec(),
             },
         ]
@@ -305,10 +331,13 @@ mod tests {
     fn battery_profile_read() {
         let p = BatteryProfile::new(85);
         assert_eq!(p.name(), "battery");
-        assert_eq!(p.uuid16(), 0x180F);
+        assert_eq!(p.uuid16(), 0x060A);
         let chars = p.characteristics();
+        assert_eq!(chars[0].ops.bits(), 9);
+        assert!(!chars[0].ops.contains(SsapOperations::WRITE_NO_RSP));
+        assert!(!chars[0].ops.contains(SsapOperations::WRITE_WITH_RSP));
         assert_eq!(chars.len(), 1);
-        assert_eq!(chars[0].uuid16, 0x2A19);
+        assert_eq!(chars[0].uuid16, 0x1034);
         assert_eq!(p.on_read(0).unwrap(), vec![85]);
     }
 
@@ -327,7 +356,8 @@ mod tests {
         assert_eq!(chars.len(), 4);
         // All characteristics are read-only
         for ch in &chars {
-            assert_eq!(ch.ops & 0x02, 0, "write bit should not be set");
+            assert!(!ch.ops.contains(SsapOperations::WRITE_NO_RSP));
+            assert!(!ch.ops.contains(SsapOperations::WRITE_WITH_RSP));
         }
     }
 

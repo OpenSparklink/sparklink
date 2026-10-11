@@ -41,7 +41,7 @@ install: build
 	$(INSTALL) -Dm755 target/release/slkmon       $(DESTDIR)$(BINDIR)/slkmon
 	$(INSTALL) -Dm755 target/release/slkdump      $(DESTDIR)$(BINDIR)/slkdump
 	# Shared library
-	$(INSTALL) -Dm755 target/release/libsparklink.so $(DESTDIR)$(LIBDIR)/libsparklink.so.0.1.0
+	$(INSTALL) -Dm755 target/release/liblibsparklink.so $(DESTDIR)$(LIBDIR)/libsparklink.so.0.1.0
 	ln -sf libsparklink.so.0.1.0 $(DESTDIR)$(LIBDIR)/libsparklink.so.0
 	ln -sf libsparklink.so.0     $(DESTDIR)$(LIBDIR)/libsparklink.so
 	# Header

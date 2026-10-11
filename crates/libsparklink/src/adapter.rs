@@ -1,22 +1,21 @@
 use std::os::fd::{AsFd, BorrowedFd, OwnedFd};
 use std::path::Path;
 
-use nix::fcntl::{open, OFlag};
+use nix::fcntl::{OFlag, open};
 use nix::sys::stat::Mode;
-use tokio::io::unix::AsyncFd;
-use tracing::{debug, info};
+use tracing::debug;
 
 use slk_protocol::ioctl;
 use slk_protocol::*;
 
-use crate::{Error, Event, Result};
+use crate::{Error, Event, EventReceiver, Result};
 
 /// Default device path for SparkLink chardev
 pub const DEFAULT_DEV_PATH: &str = "/dev/sparklink";
 
 /// Represents an open SparkLink adapter (controller)
 pub struct Adapter {
-    fd: AsyncFd<OwnedFd>,
+    fd: OwnedFd,
     dev_index: u16,
 }
 
@@ -30,20 +29,27 @@ impl Adapter {
         )
         .map_err(|e| Error::OpenDevice(std::io::Error::from(e)))?;
 
-        let async_fd = AsyncFd::new(owned)
-            .map_err(Error::OpenDevice)?;
-
-        info!(path = %path.as_ref().display(), "opened SparkLink device");
+        debug!(path = %path.as_ref().display(), "opened SparkLink device");
 
         Ok(Self {
-            fd: async_fd,
+            fd: owned,
             dev_index: 0,
         })
     }
 
     /// Get the raw file descriptor (for use with poll/epoll)
     pub fn as_fd(&self) -> BorrowedFd<'_> {
-        self.fd.get_ref().as_fd()
+        self.fd.as_fd()
+    }
+
+    /// Independent privileged trace read on this explicitly selected fd.
+    pub fn poll_snoop(&self, cursor: &mut crate::SnoopCursor) -> Result<Option<SleSnoopRecord>> {
+        crate::snoop::poll(self.raw_fd(), cursor, self.dev_index)
+    }
+    /// Activate trace poll readiness before epoll registration. Use a dedicated
+    /// observation fd; mixing native controller-event and trace modes is rejected.
+    pub fn into_snoop_receiver(self, generation: u64) -> Result<crate::SnoopReceiver> {
+        crate::SnoopReceiver::from_fd(self.fd, generation, self.dev_index)
     }
 
     /// Get the number of registered devices
@@ -53,11 +59,124 @@ impl Adapter {
         Ok(count)
     }
 
+    /// Own native management on this open file description. Clones of an Arc
+    /// share this owner; separately opened observation fds do not. CAP_NET_ADMIN
+    /// is checked on acquisition and every protected call. Kernel copyout faults
+    /// do not acquire an invisible lease. Legacy profile 0 is not migrated yet.
+    pub fn acquire_management(&self, generation: u64, mode: u32) -> Result<u64> {
+        let mut request = SleManagementRequest {
+            version: MANAGEMENT_VERSION,
+            generation,
+            mode,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_management_acquire(self.raw_fd(), &mut request)? };
+        if request.version != MANAGEMENT_VERSION
+            || request.generation != generation
+            || request.mode != mode
+            || request.lease == 0
+            || request.flags != 0
+            || request.reserved != 0
+        {
+            return Err(Error::InvalidParam(
+                "invalid management acquisition response",
+            ));
+        }
+        Ok(request.lease)
+    }
+    /// Observe ownership/revocation without consuming control results. A token
+    /// is returned only to the owning file, and alone never grants authority.
+    pub fn management_status(&self, generation: u64) -> Result<SleManagementQuery> {
+        let mut query = SleManagementQuery {
+            version: MANAGEMENT_VERSION,
+            generation,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_management_query(self.raw_fd(), &mut query)? };
+        if query.version != MANAGEMENT_VERSION
+            || query.generation == 0
+            || (generation != 0 && query.generation != generation)
+            || query.state > MANAGEMENT_FAULTED
+            || query.mode > MANAGEMENT_DIAGNOSTIC
+            || query.flags & !3 != 0
+            || query.status > 255
+            || query.opcode > 65535
+            || (query.flags & 1 == 0 && query.lease != 0)
+            || (query.state != MANAGEMENT_HELD && query.mode != 0)
+            || (query.flags & 2 != 0
+                && (query.state != MANAGEMENT_FAULTED
+                    || query.error >= 0
+                    || query.status == 0
+                    || query.opcode == 0))
+            || query.reserved != 0
+            || (query.flags & 1 != 0 && (query.lease == 0 || query.state != MANAGEMENT_HELD))
+        {
+            return Err(Error::InvalidParam("invalid management status response"));
+        }
+        Ok(query)
+    }
+    /// Asynchronous release. A successor is admitted only after actual cleanup
+    /// stop replies, or immediately when the owner was already safely quiet.
+    pub fn release_management(&self, generation: u64, lease: u64, mode: u32) -> Result<()> {
+        let request = SleManagementRequest {
+            version: MANAGEMENT_VERSION,
+            generation,
+            lease,
+            mode,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_management_release(self.raw_fd(), &request)? };
+        Ok(())
+    }
+
     /// Get device info for the active device
     pub fn device_info(&self) -> Result<SciDevInfo> {
         let mut info = unsafe { std::mem::zeroed::<SciDevInfo>() };
         unsafe { ioctl::sl_dev_info(self.raw_fd(), &mut info)? };
         Ok(info)
+    }
+
+    /// Bind this fd to one registration. Unlike switch_device this does not
+    /// change the global legacy selection. Replug invalidates the binding.
+    pub fn select_device(&mut self, index: u16) -> Result<()> {
+        let index_i16 = i16::try_from(index)
+            .map_err(|_| Error::InvalidParam("device index exceeds signed affinity range"))?;
+        unsafe { ioctl::sl_dev_select(self.raw_fd(), &index_i16)? };
+        self.dev_index = index;
+        Ok(())
+    }
+
+    /// Return registered indices (not a contiguous device count).
+    pub fn device_indices(&self) -> Result<Vec<u16>> {
+        let mut mask = 0u16;
+        unsafe { ioctl::sl_dev_list(self.raw_fd(), &mut mask)? };
+        Ok((0..16).filter(|i| mask & (1 << i) != 0).collect())
+    }
+
+    /// Query only this selected registration. generation=0 probes its identity;
+    /// a nonzero generation fails if the selected registration changed.
+    pub fn controller_snapshot(&self, generation: u64) -> Result<SleControllerSnapshot> {
+        let mut snapshot = SleControllerSnapshot {
+            generation,
+            version: CONTROLLER_SNAPSHOT_VERSION,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_controller_snapshot(self.raw_fd(), &mut snapshot)? };
+        if snapshot.version != CONTROLLER_SNAPSHOT_VERSION
+            || snapshot.generation == 0
+            || (generation != 0 && snapshot.generation != generation)
+            || snapshot.dev_index != self.dev_index
+            || !matches!(
+                snapshot.flags,
+                CONTROLLER_READY | CONTROLLER_SETUP | CONTROLLER_FAULT
+            )
+            || snapshot.valid_fields & !CONTROLLER_FULL_METADATA != 0
+            || snapshot.reserved_byte != 0
+            || snapshot.reserved != [0; 4]
+        {
+            return Err(Error::InvalidParam("invalid controller snapshot response"));
+        }
+        Ok(snapshot)
     }
 
     /// Switch active device by index
@@ -435,12 +554,18 @@ impl Adapter {
     /// Add a service to the local database
     pub fn ssap_add_svc(&self, svc: &mut SsapAddService) -> Result<()> {
         unsafe { ioctl::sl_ssap_add_svc(self.raw_fd(), svc)? };
-        debug!(handle = svc.start_handle, uuid16 = svc.uuid16, "service added");
+        debug!(
+            handle = svc.start_handle,
+            uuid16 = svc.uuid16,
+            "service added"
+        );
         Ok(())
     }
 
     /// Add a property (characteristic) to a service
     pub fn ssap_add_prop(&self, prop: &mut SsapAddProperty) -> Result<()> {
+        prop.validate_legacy_staging()
+            .map_err(|_| Error::InvalidParam("invalid legacy SSAP property"))?;
         unsafe { ioctl::sl_ssap_add_prop(self.raw_fd(), prop)? };
         debug!(handle = prop.handle, uuid16 = prop.uuid16, "property added");
         Ok(())
@@ -623,48 +748,183 @@ impl Adapter {
         Ok(info)
     }
 
-    /// Poll for a DLI event (non-blocking)
-    pub fn poll_event(&self) -> Result<Option<SleDliEvent>> {
-        let mut event = unsafe { std::mem::zeroed::<SleDliEvent>() };
-        match unsafe { ioctl::sl_dli_poll_event(self.raw_fd(), &mut event) } {
-            Ok(_) => Ok(Some(event)),
-            Err(nix::Error::EAGAIN) => Ok(None),
-            Err(e) => Err(Error::Ioctl(e)),
+    /// Native metadata-only idempotent admission/cancel. Caller supplies an ID
+    /// increasing for new requests on this fd, and reuses it after EFAULT.
+    /// Retained retries return the same sequence; evicted old IDs fail ESTALE.
+    /// Local cancel does not abort an on-wire command or release its reply slot.
+    pub fn diagnostic_submit(&self, request: &mut SleDiagnosticSubmit) -> Result<()> {
+        validate_diagnostic_submit(request)?;
+        let original = *request;
+        let mut value = original;
+        unsafe { ioctl::sl_diagnostic_submit(self.raw_fd(), &mut value)? };
+        if value.seq == 0 || (SleDiagnosticSubmit { seq: 0, ..value }) != original {
+            return Err(Error::InvalidParam("invalid diagnostic admission response"));
+        }
+        *request = value;
+        Ok(())
+    }
+
+    /// Fetch a result admitted by this exact fd/generation. Requires the same
+    /// file to hold Diagnostic and CAP_NET_ADMIN; ENOENT means missing/evicted.
+    /// No cursor, shared event dequeue or legacy response fallback is used.
+    pub fn diagnostic_result(
+        &self,
+        generation: u64,
+        seq: u32,
+    ) -> Result<Option<SleDiagnosticResult>> {
+        if generation == 0 || seq == 0 {
+            return Err(Error::InvalidParam(
+                "diagnostic result requires generation and sequence",
+            ));
+        }
+        let mut result = SleDiagnosticResult {
+            version: 1,
+            generation,
+            seq,
+            ..Default::default()
+        };
+        match unsafe { ioctl::sl_diagnostic_result(self.raw_fd(), &mut result) } {
+            Ok(_) => {
+                validate_diagnostic_result(&result, generation, seq)?;
+                Ok(Some(result))
+            }
+            Err(nix::Error::ENOENT) => Ok(None),
+            Err(error) => Err(Error::Ioctl(error)),
         }
     }
 
-    /// Wait for the next event asynchronously.
-    ///
-    /// Uses a hybrid approach: waits for epoll readability with a
-    /// timeout fallback. The timeout handles events delivered by the
-    /// kernel's EventPump via the DLI ring, which currently do not
-    /// trigger epoll wakeup (only ioctl-initiated events do).
-    pub async fn next_event(&self) -> Result<Event> {
-        loop {
-            // First try a non-blocking poll for any pending DLI event.
-            if let Some(raw) = self.poll_event()? {
-                return Ok(self.decode_event(raw));
-            }
+    /// Poll for a DLI event (non-blocking)
+    pub fn poll_event(&self) -> Result<Option<SleDliEvent>> {
+        crate::receiver::poll_event(self.raw_fd())
+    }
 
-            // Wait for fd readability with a timeout. Instant wakeup for
-            // events that trigger event_poll.notify_all (inject, ioctl);
-            // 50ms fallback for EventPump-delivered events.
-            let result = tokio::time::timeout(
-                tokio::time::Duration::from_millis(50),
-                self.fd.readable(),
-            )
-            .await;
+    /// Non-destructively fetch complete native controller parameters.
+    /// The cursor belongs to this registration; generation mismatch fails.
+    /// Calling this selects native-stream poll readiness for this fd.
+    pub fn poll_controller_event(
+        &self,
+        cursor: &mut crate::ControllerEventCursor,
+    ) -> Result<Option<SleControllerEvent>> {
+        crate::controller_events::poll(self.raw_fd(), cursor)
+    }
 
-            match result {
-                Ok(Ok(mut guard)) => {
-                    guard.clear_ready();
-                }
-                Ok(Err(e)) => return Err(Error::OpenDevice(e)),
-                Err(_) => {
-                    // Timeout: fall through to retry poll_event.
-                }
-            }
+    /// Probe the selected registration's identity and confirmed radio state.
+    /// This interface does not itself establish SparkLink Ready.
+    pub fn discovery_snapshot(&self) -> Result<SleDiscoveryResult> {
+        let mut result = SleDiscoveryResult {
+            version: DISCOVERY_VERSION,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_discovery_result(self.raw_fd(), &mut result)? };
+        Ok(result)
+    }
+
+    /// Submit a complete typed operation. A nonzero caller request_id identifies
+    /// it within generation; successful admission is not completion. Select an
+    /// adapter, probe its generation, and supply every profile parameter.
+    pub fn submit_discovery(&self, request: &SleDiscoverySubmit) -> Result<()> {
+        unsafe { ioctl::sl_discovery_submit(self.raw_fd(), request)? };
+        Ok(())
+    }
+
+    /// Non-destructive result. None means absent/evicted, not pending. Terminal
+    /// controller errors remain in status, host errors remain in error.
+    pub fn discovery_result(
+        &self,
+        generation: u64,
+        request_id: u64,
+    ) -> Result<Option<SleDiscoveryResult>> {
+        if generation == 0 || request_id == 0 {
+            return Err(crate::Error::InvalidParam(
+                "discovery identity must be nonzero",
+            ));
         }
+        let mut result = SleDiscoveryResult {
+            version: DISCOVERY_VERSION,
+            generation,
+            request_id,
+            ..Default::default()
+        };
+        match unsafe { ioctl::sl_discovery_result(self.raw_fd(), &mut result) } {
+            Ok(_) => Ok(Some(result)),
+            Err(nix::errno::Errno::ENOENT) => Ok(None),
+            Err(error) => Err(error.into()),
+        }
+    }
+
+    /// Non-destructive correlated final Complete receipt; requires timing UAPI.
+    pub fn discovery_timing(
+        &self,
+        generation: u64,
+        request_id: u64,
+    ) -> Result<slk_protocol::SleDiscoveryTiming> {
+        if generation == 0 || request_id == 0 {
+            return Err(crate::Error::InvalidParam(
+                "discovery identity must be nonzero",
+            ));
+        }
+        let mut timing = slk_protocol::SleDiscoveryTiming {
+            version: 1,
+            generation,
+            request_id,
+            ..Default::default()
+        };
+        unsafe {
+            ioctl::sl_discovery_timing(self.raw_fd(), &mut timing)?;
+        }
+        Ok(timing)
+    }
+
+    /// Wait with a monotonic timeout; return failed/cancelled/faulted records
+    /// intact so the caller can display the actual controller/host reason.
+    pub async fn wait_discovery(
+        &self,
+        generation: u64,
+        request_id: u64,
+        timeout: std::time::Duration,
+    ) -> Result<SleDiscoveryResult> {
+        let deadline = tokio::time::Instant::now()
+            .checked_add(timeout)
+            .ok_or(crate::Error::InvalidParam("discovery timeout is too large"))?;
+        loop {
+            if let Some(result) = self.discovery_result(generation, request_id)? {
+                if result.is_terminal() {
+                    return Ok(result);
+                }
+            } else {
+                return Err(crate::Error::InvalidParam(
+                    "discovery result absent or evicted",
+                ));
+            }
+            let now = tokio::time::Instant::now();
+            if now >= deadline {
+                return Err(crate::Error::Timeout);
+            }
+            tokio::time::sleep_until((now + std::time::Duration::from_millis(10)).min(deadline))
+                .await;
+        }
+    }
+
+    /// Transfer this selected fd to an independent native event subscriber.
+    /// Requires the versioned kernel interface and a Tokio I/O runtime.
+    pub fn into_controller_event_receiver(self) -> Result<crate::ControllerEventReceiver> {
+        crate::ControllerEventReceiver::from_fd(self.fd)
+    }
+
+    /// Transfer this independently opened fd to a single async event consumer.
+    ///
+    /// Requires a Tokio runtime with I/O enabled. Control adapters and C/Python
+    /// handles do not require a runtime. Until the kernel subscription UAPI is
+    /// implemented, this receiver uses the legacy destructive DLI event ioctl.
+    pub fn into_event_receiver(self) -> Result<EventReceiver> {
+        EventReceiver::from_fd(self.fd)
+    }
+
+    /// Compatibility helper; prefer a persistent, independently owned receiver.
+    #[deprecated(note = "Open a dedicated Adapter and use into_event_receiver")]
+    pub async fn next_event(&self) -> Result<Event> {
+        let fd = self.fd.try_clone().map_err(Error::OpenDevice)?;
+        EventReceiver::from_fd(fd)?.next_event().await
     }
 
     /// Reset the DLI controller
@@ -881,55 +1141,305 @@ impl Adapter {
 
     fn raw_fd(&self) -> std::os::fd::RawFd {
         use std::os::fd::AsRawFd;
-        self.fd.get_ref().as_raw_fd()
+        self.fd.as_raw_fd()
+    }
+}
+
+fn validate_diagnostic_submit(value: &SleDiagnosticSubmit) -> Result<()> {
+    if value.version != 1
+        || value.flags != 0
+        || value.generation == 0
+        || value.request_id == 0
+        || value.seq != 0
+        || value.reserved != 0
+        || !(1..=5000).contains(&value.timeout_ms)
+        || !matches!(value.action, 1 | 2)
+        || !matches!(value.opcode, 0x0402 | 0x0403 | 0x0404 | 0x0406)
+    {
+        return Err(Error::InvalidParam(
+            "invalid Native metadata diagnostic request",
+        ));
+    }
+    Ok(())
+}
+
+fn validate_diagnostic_result(
+    result: &SleDiagnosticResult,
+    generation: u64,
+    seq: u32,
+) -> Result<()> {
+    let state_valid = match result.state {
+        1 => result.error == 0 && result.status == 0 && result.data_len == 0,
+        2 => result.error == 0 && result.status == 0,
+        3 => {
+            (result.error < 0 && result.status == 0 && result.data_len == 0)
+                || (result.error == 0 && result.status != 0)
+        }
+        _ => false,
+    };
+    if result.version != 1
+        || result.flags != 0
+        || result.generation != generation
+        || result.seq != seq
+        || result.opcode == 0
+        || result._pad != 0
+        || result._reserved != [0; 6]
+        || usize::from(result.data_len) > result.data.len()
+        || !state_valid
+    {
+        return Err(Error::InvalidParam("invalid diagnostic result response"));
+    }
+    Ok(())
+}
+
+pub(crate) fn decode_event(raw: SleDliEvent) -> Result<Event> {
+    let length = usize::from(raw.data_len);
+    if length > raw.data.len() {
+        return Err(Error::InvalidParam("event payload exceeds buffer"));
+    }
+    let minimum = match raw.event_type {
+        EVT_ADV_REPORT => 2,
+        EVT_ENCRYPTION_CHANGED | EVT_HW_ERROR => 1,
+        _ => 0,
+    };
+    if length < minimum {
+        return Err(Error::InvalidParam("truncated event payload"));
+    }
+    Ok(match raw.event_type {
+        EVT_CONN_COMPLETE => Event::ConnectionStateChanged {
+            handle: raw.handle,
+            state: if raw.status == 0 {
+                ConnState::Connected as u8
+            } else {
+                ConnState::Idle as u8
+            },
+            peer_addr: raw.addr,
+        },
+        EVT_DISCONNECTED => Event::ConnectionStateChanged {
+            handle: raw.handle,
+            state: ConnState::Idle as u8,
+            peer_addr: raw.addr,
+        },
+        EVT_ADV_REPORT => {
+            let rssi = raw.data[0] as i8;
+            let discovery_level = raw.data[1];
+            let adv_data_len = (raw.data_len as usize).saturating_sub(2);
+            let adv_data = raw.data[2..2 + adv_data_len].to_vec();
+            let (entries, _) = slk_protocol::parse_adv_data(&adv_data);
+            let name = slk_protocol::find_local_name(&entries)
+                .unwrap_or_default()
+                .to_string();
+            Event::AdvReport {
+                addr: raw.addr,
+                rssi,
+                discovery_level,
+                name,
+                adv_data,
+            }
+        }
+        EVT_DATA_RECV => Event::DataReceived {
+            handle: raw.handle,
+            data: raw.data[..raw.data_len as usize].to_vec(),
+        },
+        EVT_ENCRYPTION_CHANGED => Event::SecurityChanged {
+            state: if raw.data[0] != 0 { 3 } else { 0 },
+            method: 0,
+            encrypted: raw.data[0] != 0,
+        },
+        EVT_HW_ERROR => Event::HwError { code: raw.data[0] },
+        _ => Event::RawDli(raw),
+    })
+}
+
+#[cfg(test)]
+mod ssap_registration_tests {
+    use super::*;
+
+    #[test]
+    fn diagnostic_admission_guards_and_errno_preserve_caller_request() {
+        let good = SleDiagnosticSubmit {
+            version: 1,
+            generation: 7,
+            request_id: 1,
+            timeout_ms: 5000,
+            opcode: 0x0406,
+            action: 1,
+            ..Default::default()
+        };
+        let adapter = Adapter::open("/dev/null").unwrap();
+        for bad in [
+            SleDiagnosticSubmit { version: 2, ..good },
+            SleDiagnosticSubmit { flags: 1, ..good },
+            SleDiagnosticSubmit {
+                generation: 0,
+                ..good
+            },
+            SleDiagnosticSubmit {
+                request_id: 0,
+                ..good
+            },
+            SleDiagnosticSubmit { seq: 1, ..good },
+            SleDiagnosticSubmit {
+                reserved: 1,
+                ..good
+            },
+            SleDiagnosticSubmit { action: 3, ..good },
+            SleDiagnosticSubmit {
+                opcode: 0x0c05,
+                ..good
+            },
+            SleDiagnosticSubmit {
+                timeout_ms: 0,
+                ..good
+            },
+            SleDiagnosticSubmit {
+                timeout_ms: 5001,
+                ..good
+            },
+        ] {
+            let mut value = bad;
+            assert!(matches!(
+                adapter.diagnostic_submit(&mut value),
+                Err(Error::InvalidParam(_))
+            ));
+            assert_eq!(value, bad);
+        }
+        for action in [1, 2] {
+            let original = SleDiagnosticSubmit { action, ..good };
+            let mut value = original;
+            assert!(matches!(
+                adapter.diagnostic_submit(&mut value),
+                Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+            ));
+            assert_eq!(value, original);
+        }
     }
 
-    fn decode_event(&self, raw: SleDliEvent) -> Event {
-        match raw.event_type {
-            EVT_CONN_COMPLETE => Event::ConnectionStateChanged {
-                handle: raw.handle,
-                state: if raw.status == 0 {
-                    ConnState::Connected as u8
-                } else {
-                    ConnState::Idle as u8
-                },
-                peer_addr: raw.addr,
+    #[test]
+    fn diagnostic_result_rejects_invalid_identity_and_states() {
+        let good = SleDiagnosticResult {
+            version: 1,
+            generation: 7,
+            seq: 9,
+            opcode: 0x0403,
+            state: 2,
+            data_len: 10,
+            ..Default::default()
+        };
+        assert!(validate_diagnostic_result(&good, 7, 9).is_ok());
+        for bad in [
+            SleDiagnosticResult { version: 2, ..good },
+            SleDiagnosticResult { flags: 1, ..good },
+            SleDiagnosticResult {
+                generation: 8,
+                ..good
             },
-            EVT_DISCONNECTED => Event::ConnectionStateChanged {
-                handle: raw.handle,
-                state: ConnState::Idle as u8,
-                peer_addr: raw.addr,
+            SleDiagnosticResult { seq: 10, ..good },
+            SleDiagnosticResult { opcode: 0, ..good },
+            SleDiagnosticResult { _pad: 1, ..good },
+            SleDiagnosticResult {
+                _reserved: [1; 6],
+                ..good
             },
-            EVT_ADV_REPORT => {
-                let rssi = raw.data[0] as i8;
-                let discovery_level = raw.data[1];
-                let adv_data_len = (raw.data_len as usize).saturating_sub(2);
-                let adv_data = raw.data[2..2 + adv_data_len].to_vec();
-                let (entries, _) = slk_protocol::parse_adv_data(&adv_data);
-                let name = slk_protocol::find_local_name(&entries)
-                    .unwrap_or_default()
-                    .to_string();
-                Event::AdvReport {
-                    addr: raw.addr,
-                    rssi,
-                    discovery_level,
-                    name,
-                    adv_data,
-                }
-            }
-            EVT_DATA_RECV => Event::DataReceived {
-                handle: raw.handle,
-                data: raw.data[..raw.data_len as usize].to_vec(),
+            SleDiagnosticResult {
+                data_len: 65,
+                ..good
             },
-            EVT_ENCRYPTION_CHANGED => Event::SecurityChanged {
-                state: if raw.data[0] != 0 { 3 } else { 0 },
-                method: 0,
-                encrypted: raw.data[0] != 0,
+            SleDiagnosticResult { state: 0, ..good },
+            SleDiagnosticResult { state: 1, ..good },
+            SleDiagnosticResult {
+                error: -110,
+                ..good
             },
-            EVT_HW_ERROR => Event::HwError {
-                code: raw.data[0],
+            SleDiagnosticResult { status: 1, ..good },
+            SleDiagnosticResult { state: 3, ..good },
+            SleDiagnosticResult {
+                state: 3,
+                error: 1,
+                ..good
             },
-            _ => Event::RawDli(raw),
+        ] {
+            assert!(validate_diagnostic_result(&bad, 7, 9).is_err(), "{bad:?}");
         }
+        let pending = SleDiagnosticResult {
+            state: 1,
+            data_len: 0,
+            ..good
+        };
+        assert!(validate_diagnostic_result(&pending, 7, 9).is_ok());
+        let failure = SleDiagnosticResult {
+            state: 3,
+            error: -110,
+            data_len: 0,
+            ..good
+        };
+        assert!(validate_diagnostic_result(&failure, 7, 9).is_ok());
+        let rejected = SleDiagnosticResult {
+            state: 3,
+            status: 0xfd,
+            ..good
+        };
+        assert!(validate_diagnostic_result(&rejected, 7, 9).is_ok());
+        assert!(
+            validate_diagnostic_result(
+                &SleDiagnosticResult {
+                    status: 1,
+                    ..failure
+                },
+                7,
+                9
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn diagnostic_query_preserves_real_syscall_errors() {
+        let adapter = Adapter::open("/dev/null").unwrap();
+        for (generation, seq) in [(0, 1), (1, 0)] {
+            assert!(matches!(
+                adapter.diagnostic_result(generation, seq),
+                Err(Error::InvalidParam(_))
+            ));
+        }
+        assert!(matches!(
+            adapter.diagnostic_result(1, 1),
+            Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+        ));
+    }
+
+    #[test]
+    fn invalid_property_rejects_before_actual_ioctl() {
+        let adapter = Adapter::open("/dev/null").unwrap();
+        let mut prop = SsapAddProperty::for_legacy_staging(
+            1,
+            SsapOperations::READ | SsapOperations::NOTIFY,
+            b"original",
+        )
+        .unwrap();
+        prop.ops |= 0x40;
+        assert!(matches!(
+            adapter.ssap_add_prop(&mut prop),
+            Err(Error::InvalidParam(_))
+        ));
+        assert_eq!(prop.handle, 0);
+        prop.ops = 9;
+        prop.value_len = 249;
+        assert!(matches!(
+            adapter.ssap_add_prop(&mut prop),
+            Err(Error::InvalidParam(_))
+        ));
+        prop.value_len = 8;
+        prop._reserved[0] = 1;
+        assert!(matches!(
+            adapter.ssap_add_prop(&mut prop),
+            Err(Error::InvalidParam(_))
+        ));
+        prop._reserved = [0; 2];
+        // Valid staging reaches the real syscall and keeps ENOTTY on /dev/null.
+        assert!(matches!(
+            adapter.ssap_add_prop(&mut prop),
+            Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+        ));
     }
 }

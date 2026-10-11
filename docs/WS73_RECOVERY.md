@@ -1,0 +1,381 @@
+# WS73 根因定位与每设备自动恢复
+
+2026-10-10 用户追加要求。本文补充完整 S0–S6 与第一北极星；原 issues、
+广播发现 20 轮与随后四设备两组并行保持。新增验收：**故障恢复不依赖人工
+拔插，恢复单只不影响其他设备，恢复后无需重启 slkd**。未查明根因或仅
+通过重插恢复时，不关闭相关 issue。每端口有限协议恢复已有初版实现及下述
+合成运行验证及真实单对象人工传输故障后的恢复支持；设备消失后的完整自动恢复
+及自然根因仍未完成。最新已验证北极星为7/8，见下方当前状态；早期4/8记录保留
+为历史，不代表当前设备数量或本轮结果。
+
+## 当前恢复范围与未决根因（2026-10-11）
+
+保留[物理20+2轮记录](evidence/ws73-vm-physical-20261010.json)及其xHCI warning，
+[整改后匹配内核/用户态记录](evidence/ws73-vm-strict-ci-regression-20261011.json)
+提供另一条限定支持：一次guest IN81错误、命令超时-110、有限协议restore、
+generation更新、幸存者及同daemon/普通应用和恢复后真实RF。该轮四个host USB
+身份不变，没有设备消失/冷启动固件重传/物理拔插，不能据它关闭自然恢复。
+
+[发送路径整改后新内核回归](evidence/ws73-vm-connection-tx-regression-20261011.json)
+保留另一轮20+2真实RF、单对象人工错误、同daemon与幸存generation，以及四个
+host USB身份不变。只读近期host诊断显示四口present/unbound，journal资料亦
+关联保存；present不是Ready，也不能据近期无消失观测解释历史地址分配失败。
+
+确定并已修复的边界分别是QEMU固定port重新打开新USB地址、autoscan重入及
+枚举错误保留owner、BSLE ACK长度、WS73 0406空参数及广播实例/OFF初始化。
+这些修复各有明确输入/失败证据，不能合并为一个已经闭合的“所有USB故障根因”。
+
+仍需独立定位：host地址分配阶段失败/真正消失的电气、芯片或xHCI原因；历史
+物理拔出时Set TR Deq等warning及幸存者错误触发链；自然启动失败与完全离线
+之后的有限恢复。没有host handle时不能发送到其他device或复位整个hub。
+当前只允许VM，原生宿主对照未执行；单/双/四设备与完整电源/PM矩阵继续OPEN。
+复现时保存host port与地址、guest incarnation/generation、USB/QMP/xHCI时间线，
+区分物理离线、QEMU owner关闭和协议退役；不以人工replug或单次人工注入代验。
+
+## 来源与当前实机事实
+
+标准、SDK、libws73-usb、OpenHarmony、合成模型与本项目实机分别标注。
+私有 SDK 只用于读取调用约定和独立实现；不提交固件、校准、私有库或反汇编。
+继续参考 libws73-usb 的 USB/HCC、BSLE、广播/扫描、命令状态和双端 gate；
+其作者的实测结论不替代本项目实机验收，不能照搬进程全局状态。
+
+历史冷启动阶段曾确认四只设备可读写、无主机接口驱动，固定端口为
+1-2.1.1–4。早期一次用户回复插回后仍仅枚举 .1/.2/.3，.4 缺失；直接dmesg读取被限制，当时通过journalctl取得主机内核记录；.4重新枚举
+在主机地址分配阶段失败，但电气/芯片/xHCI根因仍未确认。以下历史结果使用
+SDK/us，与combined-1.10.110逐字节相同。随后修正111的非零SLE RX subtype
+及初始化事务，已通过真实双端Ready/广播发现。最新测试 .1 保留曾实际
+上传的111，.3 保留110，不能把暖态接入称为新上传111。
+来源/hash/复现见[参考说明](NEARLINK_HOST_REFERENCE.md)。
+
+
+- 旧透传停在重新枚举：同一端口已变成新 USB 地址，QEMU attached 仍 true，
+  但未持有新节点 live fd。autoscan 把新设备计为 seen 后保留旧 handle。
+  修复为固定 bus/port 下地址改变时调度既有 nodev 路径，先取消旧传输再自动
+  打开新地址；不删除/重建 QMP 对象，不复位或解绑主机驱动。
+- 实际 BSLE ACK 的 HCC pay_len 为32、tag body为4、整个有效状态为8字节。
+  旧代码把填充算进 tag 长度而 EPROTO。现按 tag 长度读取四字节消息，
+  允许 allocation 内非零填充；聚合包和 slot 边界仍全部验证后才消费。
+- 修复上述两项后，冷启动设备通过 BSLE BOOT_FINISH，并成功返回真实
+  0404(version)、0402(buffer)、0403(features)。随后旧0406参数00触发
+  A2/000A/长度1/原始错误00，尚未发布 Runtime 或 Ready。
+- SDK v660 ARM库与 stm32mp157 ARM静态库的 get-public-address 调用均为
+  0406、空参数、长度0。这与标准及 OpenHarmony 的地址类型参数不同。
+  WS73方言据此独立修正；下一轮实机四查询全部成功，真实地址为
+  00:01:09:30:CE:85，发布 id0/generation1 的 Setup Runtime。标准路径保持原规则。
+- 随后的首次 ADV_STOP(0c05, handle0) 返回原始状态1e，slkd保留Setup。
+  OpenHarmony dli_errno.h 定义1e为 UNKNOWN_ADVERTISING_IDENTIFIER；
+  libws73-usb 的 SetAdvParams(0c02) 与 Stop(0c05)是独立操作。下一步核验
+  先创建广播实例、再实际成功关闭的初始化事务，不能将1e改成成功或跳过OFF。
+- 本轮失败后主机仍能看到四只，其中三只已运行态五端点，最后一只仍启动态两端点。
+  QEMU关闭时的 NO_DEVICE 不是主机设备消失的证据。此前真正消失的个案
+  仍待结合主机事件、供电/拓扑和原生环境重现，不能宣称同一根因已解释。
+
+相关原始证据在本地 .dev/ws73-real-replug-20261010、
+ws73-real-reenumeration-fixed、ws73-real-padded-fixed、ws73-real-sdk-zero-param
+和 SDK逆向记录。最后一轮失败为广播初始化，四项元数据成功不代表Ready。
+失败测试现快速保存阶段、errno、DLI/Hardware Error、完整内核日志，并正常
+停止抓包、保存 capture exit 与零丢包统计，保留失败而不覆盖。
+
+## 故障归属与恢复状态
+
+恢复协调对象跟随一个物理控制器端口，不依赖当前 active adapter 或可复用
+的 controller index。Runtime/generation 与 USB incarnation 是不同身份：
+每次重新发布 Runtime 都分配新 generation；旧 fd、lease、pending、事件不迁移。
+预算须跨该端口的 boot/runtime 重新枚举保留，不能每次 probe 清零造成无限循环。
+
+计划状态：Observed → Booting → Reenumerating → Configuring → Querying →
+Setup → Ready；故障进入 Quiescing → Backoff → Recovering，然后重新走
+完整初始化；超预算或证据确定不支持的方言进入 Failed。真实物理离线单列
+Absent。每个状态有进入时间、原因和剩余预算；Ready仍要求完整元数据及
+广播/扫描 OFF 两项成功 Complete，不能由 recovery callback 成功代替。
+
+先关闭该 owner admission、解除等待者、通知 event/snoop，再在锁外停止
+URB与worker。仅注销失败 generation；幸存设备的 generation、队列、命令
+credit和控制权不变。slkd保持PID及D-Bus连接，看到原owner移除与新owner添加，
+只重建相应adapter；已撤销操作明确失败，不把旧cookie当新操作继续。
+
+当前协议策略为首次尝试加两次恢复，固定退避1秒、4秒；每阶段
+与整体都有 monotonic deadline。BSLE阶段10秒、单OUT3秒、单查询10秒沿用
+当前边界；恢复窗口总时长120秒，固件上传准入最多3次。所有限值须能
+在测试中验证，不能只提供配置项。超过预算停止自动动作、保留 Failed。
+正常稳定期后才重开预算；一条迟到成功或新USB地址不能重开预算。
+
+| 类别 | 证据与处理计划 |
+|---|---|
+| BSLE/查询超时 | 记录等待消息/opcode、OUT结果和最后RX/IRQ；不能盲目重发结果不确定的命令。先停止/drain，再验证可以从该阶段安全重启的前置状态 |
+| 短包/畸形HCC | 保存有界原始头/长度与解析拒绝原因，单owner失败；不得通过放宽边界或跳过坏包发布Ready |
+| DLI Hardware Error/方言错误 | 原始event/error与errno分开；验证SDK参数和初始化前置条件。已证明不支持的操作不得按传输故障重复执行 |
+| USB重枚举 | 固定bus/port等待新incarnation；主机节点/live fd、guest描述符和新Runtime分别确认；每端口有截止时间和有限重试 |
+| 主机设备消失 | 同步主机USB事件与guest/QMP/供电资料，确认真正离线。无设备handle时不向别的设备发命令，不复位整个hub |
+| 可用的软件恢复 | 优先设备协议的close/customize/open；验证原生驱动对自己设备的USB reset语义、guest透传差异与失败边界后才启用相应恢复层级 |
+| 端口电源恢复 | 仅在hub支持独立端口且部署允许时考虑。ganged hub电源/全hub reset会影响幸存设备，不能作为合格的单设备自动恢复 |
+
+没有可用的设备或独立端口恢复机制时，明确记录恢复失败和所缺部署能力；
+仍保持 issue OPEN，不能把人工重插写成自动恢复。普通应用不因恢复增加sudo，
+原生内核/固件部署所需权限另列；当前主机内核7.2.8并无本项目模块，原生
+实机矩阵尚未执行，不能把KVM guest内核称为原生主机对照。
+
+## 已实现的协议恢复初版（kernel97）
+
+端口记录以USB控制器对象、bus及devpath为键，跨设备地址、probe和Runtime
+变化保留；持有控制器引用防止指针复用。固定64条记录，满后拒绝新准入，
+不通过淘汰失败端口重新发放预算。模块卸载才释放记录。
+
+初次BSP超时的暖态恢复与运行期恢复共享两次预算。可恢复原因限定为
+ETIMEDOUT、EPROTO、EREMOTEIO；EPIPE、EIO、Hardware Error、离线、取消
+及不支持参数不会盲目重试。每次恢复先注销确切旧generation、加入旧Host
+回调和URB，再仅对该接口执行drain/CLOSE30/新ACK、PM/customize/OPEN29、
+BOOT_FINISH和四项真实查询，发布新的Setup。slkd仍需完成广播和扫描OFF
+事务才能Ready；旧fd、lease、cookie与事件不会迁移。
+
+1秒一次的观察型watchdog识别Host的命令超时/管理清理故障；它不提交I/O、
+补credit或制造Ready。只有连续观察Ready满60秒才刷新预算，单条成功、新
+地址或新generation均不刷新。同步恢复USB调用按120秒恢复窗口剩余时间
+缩短超时；初始固件上传另有单次120秒I/O截止与3次准入上限。固件加载、
+物理离线及端口电源恢复仍须独立资格验证，不能把这层称为全故障覆盖。
+
+只读`recovery_budget`报告次数、上传次数、首因、协议恢复结果、耗尽、
+截止和稳定期起点。`failure_diagnostics`的失败phase/errno/time在成功恢复
+后仍保留；其TX、当前owner和最近启动查询字段仍是诊断采样，不能当作
+原子故障包快照。`controller_information`在恢复改写时返回EAGAIN，元数据
+无效时返回ENODATA；测试环境仅重试这些瞬态读及ENOENT，不吞掉EIO。
+
+最终隔离KVM的13个Runtime场景全部通过，包括3种坏HCC/短或过长回复：
+无需QMP操作即恢复generation1→3、查询相同地址、重新确认两项OFF为Ready，
+幸存generation2不变，后续同端口重接保留预算。持续坏包场景实际进行1秒、
+4秒两次恢复后停在Failed，持续查询幸存设备，旧fd保持失效且无第三owner；
+QMP日志仅有加入幸存设备，未执行恢复用del/add。另覆盖OUT失败/短写/在途
+拔出、早回复、广播扫描、事件、管理权、标准路径和recipe。
+
+2038条独立策略检查、292个内核脚本和101个用户工具测试通过。错误工具链
+导致驱动关闭的镜像93/94在前置检查中被拒绝；早期短OUT诊断假设和故障
+用例遗漏广播初始化参数的失败也保留，未计为通过。
+
+同一kernel97重新验证普通UID1000/capabilities0、slctl、同slkd/bus的真实
+双WS73：20轮交换角色加QMP重接后2轮，306–607ms匹配标识/数据/地址/RSSI
+（−14..−7），1315 USB packets、零丢包，两只最终STOP_CONFIRMED。合成支撑
+也完成22轮、2557 packets/零丢包。暖态恢复耗时约1.16秒，同端口重接后的
+第二次约4.16秒；它们不是运行期真实坏包注入或物理掉线自主恢复证据。
+真实QMP仍为`physical_acceptance=false`；主机三只地址不变、未选 .2 未接管。
+
+冻结源码57项、QEMU输入6项、kernel97镜像/配置/对象/编译指令及原始日志/
+抓包在本地`.dev/port-recovery-evidence.json`关联。SDK、固件、校准与原始
+二进制不提交。板级配置仍NOT_ASSERTED。完整北极星仍4/8；先前物理拔出
+导致幸存设备IN −108、.4缺失根因、原生主机矩阵、真实运行期故障恢复及
+四设备两组并行均保持OPEN。芯片寄存器复位和独立端口电源恢复尚未实现。
+
+## QEMU autoscan 隔离问题与主机枚举证据
+
+读取实际QEMU9.2.0的`usb_host_auto_check`/`usb_host_close`后找到确定的
+重入错误：外层扫描发现A不存在，关闭A触发内层autoscan；内层清空B的seen，
+外层继续遍历便把B也关闭并重新打开。另一个错误分支在
+`libusb_get_device_list`返回负数时，把失败的枚举当成全设备消失。
+
+新增`usb-host-autoscan.patch`防止嵌套扫描改动外层seen，并在枚举失败时保留
+已有handle、继续有限周期观察。不会复位、解绑、改匹配端口或合成Ready。
+`check-usb-host-autoscan.py`编译实际两个生产函数及原重枚举谓词，配计数USB
+mock验证6种条件。旧函数在A缺失时实际关闭A/B各一次、重开B；新函数仅关闭A。
+枚举错误旧函数关闭全部，新函数保留全部。健康、初始化失败后再试、暂停及
+单owner重枚举也通过。四补丁的应用/幂等/漂移拒绝和实际未附着QMP探针通过。
+
+这提供了原物理失败的候选机制：旧抓包13:10:33.225190 UTC显示A IN−71，
+13:10:35.018964 UTC显示B IN−108，slkd随后把B重新注册为generation3；
+间隔约1.79秒与autoscan 2秒周期相符。**尚未进行修复后的物理拔出复测，
+不能把时间相符或mock复现直接认作完整物理根因关闭。**
+
+通过可读的主机kernel journal还确认，.4在21:13:27–21:13:56本地时间尝试
+地址93–96，出现SETUP超时、−62/−110/−32/−71，以及主机hub尝试power cycle，
+最终unable to enumerate。此失败发生在我们的USB接口probe之前。当前port4
+state=default、over_current_count=0；hub缓存描述符仅证明USB2单TT及声明
+self-powered，class hub电源描述符因权限未读到，不能断言独立电源控制。
+过流计数0不能排除欠压、芯片故障或xHCI问题，不启用整hub断电恢复。
+
+新增只读主机诊断命令，保留精确USB端口及共享xHCI错误的独立归属::
+
+    python3 tools/ws73_host_diagnostics.py --ports 1-2.1.1 1-2.1.2 1-2.1.3 1-2.1.4 \
+      --since '2026-10-10 21:08:00' --until '2026-10-10 21:16:00' \
+      --output <新私有证据文件.json>
+
+命令不reset/detach/upload/改权限；journal不可读时明确记未观察，而不是制造
+根因。返回的present/bound不是协议Ready，不会把公共控制器错误强加给某口。
+新QEMU复用已冻结kernel97，13个Runtime gates及292内核脚本测试通过；真实
+双WS73 QMP对照22轮、1331 packets/zero drops、158–616ms、RSSI−13..−7，
+同slkd与幸存generation不变。108用户工具测试通过。复现和旧反例/源码/
+QEMU对象/日志在本地`.dev/autoscan-evidence.json`关联；不是新内核构建，
+不是物理拔插验收。物理北极星仍4/8，全部未完成原issues保持OPEN。
+
+## 测试矩阵与验收
+
+每个用例同时保留负例和修复后证据，固定固件/校准、端点、源码及工具hash。
+原生主机Linux、真实USB经QEMU、纯合成QEMU三种路径分开记录；前两种各做
+单只、双只、四只，不能用合成模型替代。QEMU自身的主机handle问题单独判定。
+
+1. 冷启动、已有运行态接入、反复boot/runtime枚举：比较阶段时长、USB地址/
+   incarnation、IRQ及HCC时序；失败不能计入20轮无线成功。
+2. 注入无BSP、缺customize/BOOT_FINISH、缺/迟到Complete、短OUT、超时和
+   Hardware Error；证明次数/退避/总时长受限、失败原因完整、无无限worker。
+3. 恢复期间持续操作另外1–3只：普通slctl控制成功、真实RF报告归属不变，
+   generation不变，无命令/事件/lease跨owner；四只两组互换与并行闭环。
+4. 自动软件恢复完成后，保留同一slkd PID/总线，生成新generation、新随机
+   广播标识；按10秒发现边界重跑双端闭环，确认旧fd/cookie仍失效。
+5. 分别注入guest设备断开、物理USB掉线、固件主动重枚举及不支持参数；
+   区分cause与effect，不把QMP device_del/add记作无需人工拔插的真实恢复。
+6. 连续故障耗尽预算后保持Failed，CLI能读原因且幸存设备可用；用户显式
+   重试须建立新恢复事务并记录来源，禁止后台悄悄复位全部设备。
+
+当前新增恢复验收未完成。仅已定位的软件错误、诊断、有限透传等待和模拟
+事件路由不能关闭 K#10/#14/#15/#16/#19 或 U#8/#10；其余原验收亦保留。
+
+## 后续111验证与广播实例初始化切片
+
+显式typed operation5 ADV_CONFIGURE_OFF已实现：参数配置0c02 → 成功Complete
+→ OFF0c05 → 成功Complete；无data/response/duration/enable。使用真实查询的
+地址及已有version1 basic policy，slkd随后执行SCAN_STOP。取消的配置前缀
+迟到Complete不能确认OFF；原始1e失败仍保留。全新实例合成模型会对未创建
+handle的stop返回1e，不能把旧模型“OFF总成功”当物理依据。
+
+111实机下载/BSLE通过，旧parser因SLE subtype1拒绝buffer Complete，第一
+只未发布Runtime，第二只未接入。SDK/libws73路由依据已核验并独立修正；
+真实五帧生产C离线校验与合成16种subtype通过，不等于修复后实机启动。
+现在四只均已warm，不追加人工重插作为通过手段；下一依赖是每设备warm
+恢复及重新查询，再实测operation5/OFF和双端广播。原生主机对照、自动
+有限恢复及真实北极星0/8仍未完成，issues不关闭。
+
+### 每设备暖启动与真实初始20轮（kernel90，部分验收）
+
+固件基线采用用户指定libws73-usb combined-1.10.111，制作方式保持
+`cat ws73.bin wifi_cali.bin btc_cali.bin > combined-<版本>.bin`，各段64字节
+hash头保留。暖启动不上传固件，不能仅凭准备目录将旧设备标成111。
+
+已实现一次有界暖启动采纳：仅初始BSP_READY超时、尚未发布Runtime时，
+每probe最多一次；先最多64包/1000ms排空旧输入，再发送SDK action30 CLOSE，
+等待新type4/message3关闭ACK，重新PM/customize、OPEN29/BOOT_FINISH及四项
+DLI查询。各阶段有截止时间和独立失败日志，`warm_recovery`导出attempts/
+limit/cause/result/start。旧BOOT、OPEN ACK及排空前CLOSE不能代替新关闭回执，
+panic/断开/超限均失败；不重置hub、不detach、不主动操作其他owner。
+这是启动恢复切片，不是持久端口预算、运行期故障恢复或设备消失根因闭环。
+
+真实111暖设备已验证关闭/重新启动/四项查询及广播配置/OFF成功。扫描初始
+OFF返回原始0b；补参数1001成功Complete后OFF仍0b，否定仅缺参数假设。
+新typed operation6 SCAN_INITIALIZE_OFF执行**被动参数 → ON → OFF**，三个
+成功Complete后才确认OFF/Ready；短暂开启接收，无主动scan request。只接受
+active=0/duplicates=0，必须先有广播OFF且无并行广播/扫描事务。中间ON在
+发送时使扫描状态未知，取消/迟到ON不能建立Ready，失败最终OFF仍保持未知；
+含enable的旧recipe不能在被替代后发送。operation5仍不启用广播。
+
+真实`.dev/ws73-real-scan-probe`两只独立Ready、20轮交换角色成功，但物理
+拔出1-2.1.4后幸存1-2.1.3的registration由slk1_g2变为slk0_g3，判FAIL。
+等待人工操作超过会话时限，capture无最终丢包统计，不能冒充完整证据。
+slkd日志保留两次退役和重新注册；QEMU/内核/USB供电归因尚未完成。
+
+独立重跑`.dev/ws73-real-initial20`：1-2.1.1当轮冷上传111，1-2.1.3保留110，
+地址分别00:01:09:32:54:CD和00:01:09:30:CE:85；两个不同Runtime generation
+均Ready。普通UID1000、全部capabilities=0，通过slctl交换角色20轮，随机标识
+均不同，数据/地址/RSSI匹配，成功Scan Complete后298–615ms内观测。封存
+1161 USB packets、zero kernel drops；独立执行生产corroborator原20轮块，
+逐轮匹配实际TX/Complete/完整RX/所有权/时间/marker/四元信息查询，输出
+`.dev/physical-initial20-evidence.json` INITIAL_20_RX_CORROBORATED。已验证2秒
+TX-off负例。此轮有意不执行物理拔出，完整脚本在EOF及重复idle扫描OFF处
+保留FAIL，不伪造replacement、cleanup或整体PASS。板级功率仍NOT_ASSERTED。
+
+北极星只确认第1/2/3/6项（独立Ready、新数据10秒内、20轮角色交换、普通应用），
+**4/8部分验收**；拔出隔离、同slkd重插、完整可复现验收包和自动恢复未完成。
+所有整项issues/PR草稿及S0–S6保持OPEN，四设备两组尚待扩展。
+
+kernel90验证：6078 BSLE/451067 discovery/115776既有DLI checks，11生产operation
+和15 Host plan tests；19库/64slkd tests，96工具tests，282内核脚本tests通过。
+四条WS73 discovery/management及标准Runtime/recipes回归PASS。clippy退出0，
+42既有slkd warnings保留。此前kernel85/87合成20+2 receipts独立保存，不能
+倒填成kernel90完整测试。新增idle-OFF=0b模型用于暴露管理清理前置条件。
+
+测试工具清理可重新读取同一generation、同一request的已成功OFF及当前OFF
+状态，确认无中间on/off，再保留其原始OFF命令关联；无需重复发送已idle的
+OFF。不把新0b改成功，错误/未知/旧代次均拒绝；真实旧失败记录保持。管理
+lease撤销及C/Python writer在此固件语义下的门禁继续独立验证。
+
+最新idle模型门禁：kernel90合成普通用户20+2轮、同slkd/bus与热重加控制阶段
+通过，独立复核2427 packets/191TX/179empty及4条保留OFF查询关联；整体
+`.dev/scan-probe-idle-support` **FAIL**，因为随后C binding writer对已经OFF的
+扫描器再次发送OFF，被模型返回0b。该失败未隐藏，管理撤销/绑定writer正确
+前置条件继续作为依赖处理；不以此宣称完整C/Python writer或发布矩阵通过。
+
+
+### 管理释放保留已确认 OFF（kernel92，合成门禁通过）
+
+管理撤销曾对两个射频域都发送 STOP；扫描已经 OFF 时真实111和严格模型返回
+原始0b，不能改成成功。现在仅内部撤销的一步 STOP、匹配本次租约撤销 cookie、
+同一 owner 已确认 OFF，才保留该状态。决定发生在前一个线上的请求消耗之后；
+未知/ON、取消的 enable、公有请求和多步 recipe 仍走正常调度。保留 OFF 不发送
+USB OUT，不伪造 Complete、credits、时钟或公有请求结果；另一个域仍须成功停止。
+故障或超时不能绕过，两个域均完成后才允许后继管理租约。
+
+C binding writer 先真实配置并开启扫描，再验证公有 STOP；随后重新开启扫描，
+在广播已 OFF、扫描 ON 时释放管理租约。USB 抓包要求实际扫描 OFF 成功，释放
+窗口内无重复广播 OFF，同 generation 回到 Ready。management 原生门禁也使用
+被动扫描初始化，并启用 idle-scan-stop=0b 模型；失败/取消/超时负例保留。
+
+冻结 kernel92 和56源文件、QEMU及6编译输入后，`.dev/retained-off-support`
+完整 SUPPORT_PASS：普通用户20+2轮、合成拔插、同 slkd/bus、暖启动、empty bulk
+与 C/Python 绑定均通过；2557 USB packets、zero capture drops、192 empty
+completions，22条独立控制抓包关联。12条 Runtime gates 全部 PASS；16 Host-plan、
+11 operation、96用户工具、282内核脚本 tests 通过。旧 kernel90 整体失败证据保留。
+
+这是合成开发门禁的修复；真实20轮证据仍是先前 kernel90 的111/110混合版本。
+北极星仍4/8，物理拔出导致幸存 generation 改变的根因、物理重插、不依赖人工
+拔插的恢复、原生主机与QEMU对照、四设备两组及完整S0–S6仍开放。本次主机
+只枚举到1-2.1.1/.2/.3；.4仍未出现，不能把用户已插回解释为枚举恢复成功。
+
+
+### 三层生命周期诊断与 kernel92 实机初始阶段
+
+开发 runner 为真实 passthrough 自动记录 `host-inventory.jsonl`：初始、变化和
+结束时的全部 WS73（包括未选择的设备）及 wall/monotonic 时间。QEMU 开启十个
+显式白名单事件和时间戳，记录 open/close、端口 attach/detach、接口 claim/release、
+传输完成状态/长度及 reset；不记录 payload，不改变 USB 权限或恢复行为。
+日志写入独立文件并纳入 manifest SHA256；缺少事件则拒绝启动诊断测试。
+guest console 使用 loglevel6，以保留异常结束时的生命周期线索。98工具测试通过。
+
+旧隔离失败抓包显示：拔出侧在13:10:33.225190 UTC出现IN -71，幸存侧在
+13:10:35.018964 UTC出现IN -108，随后以新generation注册。该观察将问题缩小到
+USB/内核生命周期，但不能据此断言主机、QEMU或驱动的触发根因；原生主机对照
+与受控单owner故障注入仍是下一依赖。
+
+kernel92真实初始20轮再次逐轮独立复核：UID1000/capabilities0，111/110保留固件，
+299–616ms匹配新数据、地址与RSSI；1019USB包、zero drops，两只最终
+STOP_CONFIRMED。capture SHA256
+`a23c4d502ca60ca5d1adace7f476f79118a050117180a9982be3d7b6e5d287d8`。
+本地 `.dev/physical-retained-off-initial20-evidence.json` 仅证明初始阶段；未执行
+物理拔插，完整control在确认拔出时EOF，整体environment也保留FAIL，不能升格
+为完整北极星通过。北极星仍4/8；设备.4仍缺失、根因与自动恢复issues继续开放。
+
+
+### 真实 RF / QMP 单 owner 断开对照（kernel92）
+
+新增可复现命令：在当前源码准备的隔离环境执行
+`ws73_target.py run --prepared <目录> --output <新目录> --ports <端口A> <端口B> --qmp-hotplug`。
+两只均是真实 WS73，普通 UID1000/capabilities0 使用 slctl；主机物理连接保持，
+仅 QMP 移除并在同固定 guest 端口重新加入 owner0。记录独立 scope、
+`hotplug_method=QMP_DEVICE_DEL_ADD` 和 `physical_acceptance=false`。
+独立抓包验证器拒绝把该结果作为物理拔插验收，即使只改 scope/status。
+合成负例分别验证方法边界与 USB 描述符边界；本次校验器曾期待旧错误文本而
+使整体合成 FAIL，日志保留，修复后重跑全套，不修改失败 receipt。
+
+最终冻结工具实机 PASSTHROUGH_SUPPORT_PASS：20初始+2重接轮，每轮新随机
+标识、数据、地址、RSSI及实际成功 Complete 逐条 USB 关联，308–613ms。
+1295包、zero drops，同 slkd PID97/start_ticks76及同 D-Bus owner；幸存
+设备 generation2 不变，被移除的 generation1 失效，重接 generation3。
+2秒 TX-off 负例与两只最终 STOP_CONFIRMED 通过。主机三只始终保留原 USB
+地址，未选中的1-2.1.2保持无driver接管。QMP恰好执行初始两次add、一只del、
+同属性一次add；guest-reset/guest-resets-all/host-reset/kernel-driver-detach均false，
+时间戳 trace 无 usb_host_reset。
+
+capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d`；本地`.dev/passthrough-control-evidence.json`。
+100工具/282内核脚本 tests 通过，既有 kernel92 的12条 Runtime gates不倒填
+成新内核构建；最终严格合成门禁也完整 SUPPORT_PASS：2557包、zero drops、
+192 empty completions、22条独立控制证明及 C/Python 绑定、same daemon/bus通过。
+实机固件仍111/110保留版本，board NOT_ASSERTED。
+
+结论范围：静止射频域下 QMP guest 退出可单 owner 隔离，未复现旧物理拔出时
+幸存设备 IN -108 / generation 改变。**并未定位该物理根因，也不是设备消失后
+自主恢复。** 北极星仍4/8，物理隔离/重插、完整物理复现包、原生主机对照、
+有限自动恢复和四设备两组及完整S0–S6继续开放；.4端口仍缺失。

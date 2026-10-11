@@ -6,12 +6,12 @@ SparkLink (星闪) 无线通信协议的用户态基础设施，对标 BlueZ 的
 基于 Rust 实现，通过 ioctl/chardev/genetlink 与内核子系统 (`net/sparklink/`) 交互。
 遵循 T/XS 00001-2025、T/XS 10002-2025、T/XS 20002-2025 等星闪技术标准。
 
-**代码规模**: 7 crate + Python 绑定, ~6500 行 Rust + Python
+**代码边界**: 默认 daemon 与独立未发布 slk-experimental 开发 crate 分开；Python 绑定保留。
 
 ## 构建
 
 ```bash
-cd ~/Documents/sparklink && cargo check
+cd ~/Documents/opensparklink/sparklink && cargo check
 cargo build
 cargo clippy -- -W clippy::all
 cargo test
@@ -19,14 +19,14 @@ cargo test
 
 - Edition: 2024
 - MSRV: 跟随 Rust stable 最新版
-- Workspace 根: `~/Documents/sparklink/`
+- Workspace 根: `~/Documents/opensparklink/sparklink/`
 
 ## Crate 结构
 
 | Crate | 类型 | 职责 |
 |-------|------|------|
-| `slk-protocol` | lib | UAPI 绑定: 99 ioctl 包装 (nix 宏), 70+ repr(C) 结构体, Generic Netlink 常量 |
-| `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型, C FFI (ffi.rs, 20 导出函数), cbindgen 生成 sparklink.h |
+| `slk-protocol` | lib | UAPI 绑定: ioctl 包装、repr(C) 结构体、Generic Netlink 常量；以当前源码及能力门禁为准 |
+| `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型, C FFI (ffi.rs/ffi_native.rs), cbindgen 生成 sparklink.h |
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
 | `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset/services/list-services/read-prop/write-prop/remote-discover/remote-read/remote-write 子命令, clap 4 |
 | `slctl` | bin | 交互式控制工具 (对标 bluetoothctl): rustyline 15, 通过 D-Bus 与 slkd 通信 |
@@ -105,7 +105,7 @@ Trailer 要求:
 ## 文件布局
 
 ```
-~/Documents/sparklink/
+~/Documents/opensparklink/sparklink/
 ├── Cargo.toml (workspace)
 ├── AGENTS.md
 ├── crates/
@@ -127,25 +127,22 @@ Trailer 要求:
 
 ## 内核侧对应关系
 
-内核子系统位于 `~/Documents/linux/net/sparklink/`，提供:
-- `/dev/sparklink` chardev (ioctl 接口, 99 个命令)
-- Generic Netlink `sparklink` family (34 commands, 59 attributes)
+内核子系统位于 `~/Documents/opensparklink/linux/net/sparklink/`，提供:
+- `/dev/sparklink` chardev (版本化 Native 管理/事件/诊断及待迁移旧 ioctl)
+- Generic Netlink `sparklink` 定义（接通与验收按具体调用路径核对）
 - debugfs `/sys/kernel/debug/sparklink/`
 - configfs (设备固件/名称)
 
 用户态通过 `slk-protocol` crate 的 ioctl 包装与内核交互。
 
-## 开发阶段
+## 实施与验收状态
 
-| 阶段 | 内容 | 状态 |
-|------|------|------|
-| 1 | Cargo 框架 + UAPI 绑定 | 完成 |
-| 2 | 发现与连接 (scan/connect D-Bus 接口) | 完成 |
-| 3 | 安全配对 (Agent 框架) | 完成 |
-| 4 | SSAP 服务管理 (Profile 插件) | 完成 |
-| 5 | 命令行工具 + 监控 (slctl/slkmon/slkdump) | 完成 |
-| 6 | 语言绑定 (C/Python) + 性能优化 | 完成 |
-| 7 | CI/CD + 包分发 | 完成 |
+文件、API 和独立测试的存在不表示功能完成。原“七阶段全部完成”记录已移除；
+当前每设备 Native WS73 广播扫描/物理拔插已有 VM 真实设备证据，自动恢复根因、
+连接、SSAP、安全/Bond、Profile/HID、PHY/PM、Proxy 和完整发布验收仍开放。
+按 [当前复核与整改计划](docs/REVIEW_REMEDIATION_20261011.md) 和两仓库 issues
+维护能力状态。清理旧实现/死代码属于当前整改，先迁移调用者和有效测试再删除。
+UAPI 尚未发布，可同步修改或移除，无需保留旧接口兼容期。
 
 ## 注意事项
 
@@ -153,3 +150,11 @@ Trailer 要求:
 - `AsyncFd<OwnedFd>` 拥有文件描述符生命周期，`get_ref().as_raw_fd()` 获取原始 fd
 - zbus 5 使用 `#[interface]` proc macro 声明 D-Bus 接口
 - UAPI 结构体大小变更会改变 ioctl 编号 (size 编码在 `_IOWR` 中)，修改 types.rs 后需同步内核侧
+
+## 旧实验能力
+
+默认slkd不链接slk-experimental，不自动注册未经互通验收的旧Profile/HID；
+transport无生产消费者，仅实验crate。旧注册/连接callback由显式
+experimental-legacy-profiles构建feature保留，不能宣称完整SSAP服务。
+测试保留同一actor的阻塞/cancel/drain/panic回归，严格default/all-features
+检查不得以全局allow(dead_code)掩盖。见[实验边界](docs/EXPERIMENTAL_CODE_BOUNDARY.md)。

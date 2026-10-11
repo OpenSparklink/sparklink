@@ -2,11 +2,16 @@
 
 所有 ioctl 以 magic number `0x53` (`'S'`) 编号，通过 `/dev/sparklink` 字符设备执行。
 
-## ioctl 分组一览
+这里的旧接口编号表不是生产能力清单，也不包含全部版本化 Native 管理／
+诊断接口。部分旧入口已明确返回不支持，后续随调用者迁移删除；框架或绑定
+存在不表示设备支持。当前 Native 契约见[管理所有权](MANAGEMENT_OWNERSHIP.md)、
+[WS73 门禁](WS73_DISCOVERY_NORTH_STAR.md)和[诊断提交](DIAGNOSTIC_ADMISSION.md)。
+
+## 旧接口编号概览（等待调用迁移）
 
 | 分类 | 序号范围 | 数量 | 功能 |
 |------|----------|------|------|
-| 设备管理 | 0x01-0x08 | 8 | 注册/注销/枚举/切换控制器 |
+| 设备管理 | 0x03-0x08 | 6 | 枚举/查询/选择控制器 |
 | 广播与扫描 | 0x10-0x1C | 13 | 传统广播/扫描 + 扩展广播全生命周期 |
 | 扫描注入/过滤 | 0x20-0x24 | 5 | 注入模拟广播包、UUID 过滤 |
 | 连接管理 | 0x30-0x39 | 10 | 连接/断开/数据收发/MTU/连接列表 |
@@ -16,20 +21,20 @@
 | 功率管理 | 0x60-0x65 | 6 | 状态查询/切换/唤醒间隔/强制活跃 |
 | 同步链路 | 0x66-0x6E | 9 | 单播/组播 CIG/BIG 配置与数据通路 |
 | 事件队列 | 0x70-0x71 | 2 | 事件计数/统计 |
-| DLI 控制器 | 0x80-0x86 | 7 | 控制器信息/事件轮询/重置/命令下发/统计 |
+| DLI 控制器 | 0x80-0x87 | 8 | 控制器信息/事件轮询/重置/命令下发/统计/完整原生事件 |
 | PHY 层 | 0x90-0x97 | 8 | 信息/MCS/功率/带宽/跳频/SINR |
 | 能力协商 | 0x98-0x9B | 4 | 对端特性/版本/参数更新/PHY 更新 |
 | 角色 | 0xA0-0xA1 | 2 | T/G 角色读写 |
 | RAL/RPA | 0xB0-0xB7 | 8 | 地址解析列表与可解析私有地址管理 |
 | 测距 | 0xC0-0xC3 | 4 | 能力查询/链路参数/动作/使能 |
-| **合计** | | **126** | |
 
-## 设备管理 (0x01-0x08)
+## 设备管理 (0x03-0x08)
+
+旧 0x01/0x02 注册/注销 ioctl 从未实施真实操作，现已同步删除；旧编号返回
+ENOTTY，暂不复用。控制器由实际 backend 注册/移除。UAPI 尚未发布，无兼容期。
 
 | CMD | 序号 | 方向 | 参数类型 | 说明 |
 |-----|------|------|----------|------|
-| `DEV_REGISTER` | 0x01 | none | — | 注册虚拟控制器 |
-| `DEV_UNREGISTER` | 0x02 | write_int | dev_id | 注销控制器 |
 | `DEV_COUNT` | 0x03 | read | `u32` | 查询控制器数量 |
 | `DEV_INFO` | 0x04 | read | `SciDevInfo` | 获取活跃设备信息 |
 | `DEV_SWITCH` | 0x05 | write_int | dev_id | 切换活跃控制器 |
@@ -167,7 +172,7 @@
 | `EVENT_COUNT` | 0x70 | none | — (返回值) |
 | `EVENT_STATS` | 0x71 | read | `SleEventStats` |
 
-## DLI 控制器 (0x80-0x86)
+## DLI 控制器 (0x80-0x87)
 
 | CMD | 序号 | 方向 | 参数类型 |
 |-----|------|------|----------|
@@ -178,8 +183,41 @@
 | `DLI_SEND_CMD` | 0x84 | readwrite | `SleDliCmd` |
 | `MGMT_STATS` | 0x85 | read | `SleMgmtStats` |
 | `SUBSYS_STATS` | 0x86 | read | `SleSubsysStats` |
+| `CONTROLLER_EVENT_GET` | 0x87 | readwrite | `SleControllerEventQuery` (360 bytes) |
+
+`CONTROLLER_EVENT_GET` version 1 是独立的完整原生事件通路，当前接入已校验的
+WS73 `0x180b` 发现报告。它不会改变旧 44 字节普通事件或 256 字节 DLI 事件
+布局，也不表示原生扫描已开放。`SleControllerEvent` 固定 336 字节，payload
+最多 288 字节，保留设备 index/generation、profile、原始 event code、完整
+参数、CLOCK_BOOTTIME 接收时间、每次注册独立的 sequence 和覆盖丢失计数。
+管理回复仍走现有 Host 事务，不通过这个日志完成命令。
+
+输入 version=1、flags=0；初次可使用 after_seq=0/generation=0，之后使用响应
+generation 和上次 seq。多个读者独立读取或回放保留记录，不竞争出队。
+日志保留 32 条；`lost` 表示请求游标到响应之间被覆盖的条数。EAGAIN 表示
+没有更新，未知版本为 EOPNOTSUPP，未来游标/错误 flags 为 EINVAL，旧 generation
+或设备移除为 ENODEV。copyout 失败不确认记录。C 的 64 位字段明确按 8 字节
+对齐，32 位 C 检查和 Rust 镜像均保证相同大小、偏移和 ioctl 编号。
+
+调用 GET（含 EAGAIN）会将该 fd 的 poll 切到该注册的原生流；此模式不报告
+旧队列的可读状态。使用独立打开且已 `select_device` 的 fd。设备移除唤醒
+POLLHUP/POLLERR；重新选择会清空订阅，复用 index 不会重定向旧绑定。
+
+Rust 同步接口是 `Adapter::poll_controller_event(&mut ControllerEventCursor)`。
+异步接口 `Adapter::into_controller_event_receiver()` 转移 fd 所有权，要求
+Tokio I/O runtime；`try_next()` 非阻塞，`next_event().await` 使用内核的每设备
+poll 唤醒，不使用旧 destructive DLI fallback。取消等待不会改游标；未知内核
+接口返回 ioctl 错误。`SleControllerEvent::ws73_discovery()` 提供借用 header/data
+和有符号 RSSI，严格验证长度与 profile/code，并保留分片状态及厂商字段。
+应用必须处理 `lost`，并按完整事件状态/新标识判断新发现，不能把截断或旧记录
+当作新一轮匹配。该接口尚未接入 slkd 的动态 adapter/slctl 业务。
 
 ## PHY 层 (0x90-0x97)
+
+当前这些旧接口全部明确返回不支持（通过既有权限和Runtime检查后为EOPNOTSUPP）。
+PHY_INFO不再把本地默认模型返回为硬件快照。legacy SEC_ENCRYPT_ON同样不支持，
+不能在匹配硬件完成前标记加密。真实PHY/每连接认证安装仍待实现；见
+[状态整改与开放门禁](LINK_STATE_REMEDIATION.md)。下表仅记录未发布旧编号。
 
 | CMD | 序号 | 方向 | 参数类型 |
 |-----|------|------|----------|
@@ -298,7 +336,7 @@ pub struct SleConnInfo {
 ### Generic Netlink
 
 - Family: `"sparklink"`
-- GenlCmd: 34 variants (0..=33)
+- GenlCmd: 32 variants (0..=33, removed 2/3)
 - GenlAttr: 59 variants (0..=58)
 
 ## libsparklink

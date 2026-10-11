@@ -1,4 +1,5 @@
-//! SparkLink HID Data Interaction Service (T/XS 30004-2025)
+//! Experimental HID service model; no slkd request routing or application interop.
+//! Intended specification: T/XS 30004-2025.
 //!
 //! Implements the "人机数据交互" service as defined in TXS-30004-2025.
 //! UUID assignments from Appendix A (normative).
@@ -15,6 +16,7 @@
 //!   - 输出报告信息   (0x103D) — read/write/notify/indicate/broadcast
 //!   - 特性报告信息   (0x103E) — read/write/notify/indicate/broadcast
 
+use slk_protocol::SsapOperations;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
@@ -105,7 +107,7 @@ pub struct ReportIndexEntry {
 }
 
 impl ReportIndexEntry {
-    pub fn to_bytes(&self) -> [u8; 8] {
+    pub fn to_bytes(self) -> [u8; 8] {
         [
             self.report_id,
             self.report_type as u8,
@@ -212,7 +214,10 @@ impl HidProfile {
 
     /// Serialize all report index entries into a byte vector.
     fn report_index_value(&self) -> Vec<u8> {
-        self.report_indices.iter().flat_map(|e| e.to_bytes()).collect()
+        self.report_indices
+            .iter()
+            .flat_map(|e| e.to_bytes())
+            .collect()
     }
 
     /// Create a boot keyboard profile (type indicator 0x01).
@@ -252,7 +257,7 @@ impl HidProfile {
             0x19, 0x01, //   Usage Minimum (1)
             0x29, 0x05, //   Usage Maximum (5)
             0x91, 0x02, //   Output (Data, Variable, Absolute) — LED state
-            0xC0,       // End Collection
+            0xC0, // End Collection
         ];
         let mut p = Self::new(
             HidDeviceType::Keyboard,
@@ -309,8 +314,8 @@ impl HidProfile {
             0x75, 0x08, //     Report Size (8)
             0x95, 0x02, //     Report Count (2)
             0x81, 0x06, //     Input (Data, Variable, Relative) — X, Y
-            0xC0,       //   End Collection
-            0xC0,       // End Collection
+            0xC0, //   End Collection
+            0xC0, // End Collection
         ];
         let mut p = Self::new(
             HidDeviceType::Mouse,
@@ -318,15 +323,13 @@ impl HidProfile {
             descriptor,
         );
         *p.input_report.get_mut().unwrap() = vec![0u8; 3]; // buttons + X + Y
-        p.report_indices = vec![
-            ReportIndexEntry {
-                report_id: 0,
-                report_type: ReportType::Input,
-                handle: 0,
-                src_port: 0,
-                dst_port: 0,
-            },
-        ];
+        p.report_indices = vec![ReportIndexEntry {
+            report_id: 0,
+            report_type: ReportType::Input,
+            handle: 0,
+            src_port: 0,
+            dst_port: 0,
+        }];
         p
     }
 
@@ -341,7 +344,10 @@ impl HidProfile {
 
     /// Read the last output report received from the host.
     pub fn get_output_report(&self) -> Vec<u8> {
-        self.output_report.lock().map(|b| b.clone()).unwrap_or_default()
+        self.output_report
+            .lock()
+            .map(|b| b.clone())
+            .unwrap_or_default()
     }
 
     /// Get the device type.
@@ -356,49 +362,62 @@ impl HidProfile {
 }
 
 impl Profile for HidProfile {
-    fn name(&self) -> &str { "hid" }
-    fn uuid16(&self) -> u16 { HID_SERVICE_UUID }
+    fn name(&self) -> &str {
+        "hid"
+    }
+    fn uuid16(&self) -> u16 {
+        HID_SERVICE_UUID
+    }
 
     fn characteristics(&self) -> Vec<CharacteristicDef> {
         vec![
             // 类型和格式描述 — mandatory, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_TYPE_FORMAT,
-                ops: 0x01 | 0x04, // read + notify
+                ops: SsapOperations::READ | SsapOperations::NOTIFY,
                 initial_value: self.type_format_value(),
             },
             // 工作状态指示 — mandatory, read/write/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_STATUS,
-                ops: 0x01 | 0x02 | 0x04, // read + write + notify
+                ops: SsapOperations::READ | SsapOperations::WRITE_NO_RSP | SsapOperations::NOTIFY,
                 initial_value: vec![self.status as u8],
             },
             // 报告索引信息 — mandatory, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_REPORT_INDEX,
-                ops: 0x01 | 0x04, // read + notify
+                ops: SsapOperations::READ | SsapOperations::NOTIFY,
                 initial_value: self.report_index_value(),
             },
             // 输入报告信息 — conditional, read/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_INPUT_REPORT,
-                ops: 0x01 | 0x04, // read + notify
-                initial_value: self.input_report.lock()
-                    .map(|b| b.clone()).unwrap_or_default(),
+                ops: SsapOperations::READ | SsapOperations::NOTIFY,
+                initial_value: self
+                    .input_report
+                    .lock()
+                    .map(|b| b.clone())
+                    .unwrap_or_default(),
             },
             // 输出报告信息 — conditional, read/write/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_OUTPUT_REPORT,
-                ops: 0x01 | 0x02 | 0x04, // read + write + notify
-                initial_value: self.output_report.lock()
-                    .map(|b| b.clone()).unwrap_or_default(),
+                ops: SsapOperations::READ | SsapOperations::WRITE_NO_RSP | SsapOperations::NOTIFY,
+                initial_value: self
+                    .output_report
+                    .lock()
+                    .map(|b| b.clone())
+                    .unwrap_or_default(),
             },
             // 特性报告信息 — conditional, read/write/notify/indicate/broadcast
             CharacteristicDef {
                 uuid16: UUID_FEATURE_REPORT,
-                ops: 0x01 | 0x02 | 0x04, // read + write + notify
-                initial_value: self.feature_report.lock()
-                    .map(|b| b.clone()).unwrap_or_default(),
+                ops: SsapOperations::READ | SsapOperations::WRITE_NO_RSP | SsapOperations::NOTIFY,
+                initial_value: self
+                    .feature_report
+                    .lock()
+                    .map(|b| b.clone())
+                    .unwrap_or_default(),
             },
         ]
     }
@@ -414,7 +433,9 @@ impl Profile for HidProfile {
 
     fn on_read(&self, handle: u16) -> Result<Vec<u8>, ProfileError> {
         // Reverse-map handle to characteristic UUID
-        let uuid = self.handles.iter()
+        let uuid = self
+            .handles
+            .iter()
             .find(|(_, h)| **h == handle)
             .map(|(&u, _)| u)
             .ok_or(ProfileError::NotSupported)?;
@@ -422,28 +443,30 @@ impl Profile for HidProfile {
         match uuid {
             UUID_TYPE_FORMAT => Ok(self.type_format_value()),
             UUID_REPORT_INDEX => Ok(self.report_index_value()),
-            UUID_INPUT_REPORT => {
-                Ok(self.input_report.lock()
-                    .map(|b| b.clone())
-                    .unwrap_or_default())
-            }
+            UUID_INPUT_REPORT => Ok(self
+                .input_report
+                .lock()
+                .map(|b| b.clone())
+                .unwrap_or_default()),
             UUID_STATUS => Ok(vec![self.status as u8]),
-            UUID_OUTPUT_REPORT => {
-                Ok(self.output_report.lock()
-                    .map(|b| b.clone())
-                    .unwrap_or_default())
-            }
-            UUID_FEATURE_REPORT => {
-                Ok(self.feature_report.lock()
-                    .map(|b| b.clone())
-                    .unwrap_or_default())
-            }
+            UUID_OUTPUT_REPORT => Ok(self
+                .output_report
+                .lock()
+                .map(|b| b.clone())
+                .unwrap_or_default()),
+            UUID_FEATURE_REPORT => Ok(self
+                .feature_report
+                .lock()
+                .map(|b| b.clone())
+                .unwrap_or_default()),
             _ => Err(ProfileError::NotSupported),
         }
     }
 
     fn on_write(&mut self, handle: u16, data: &[u8]) -> Result<(), ProfileError> {
-        let uuid = self.handles.iter()
+        let uuid = self
+            .handles
+            .iter()
             .find(|(_, h)| **h == handle)
             .map(|(&u, _)| u)
             .ok_or(ProfileError::NotSupported)?;
@@ -491,6 +514,28 @@ impl Profile for HidProfile {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn advertised_permissions_do_not_turn_notifications_into_writes() {
+        use crate::profile::Profile;
+        use slk_protocol::SsapOperations;
+        let profile = super::HidProfile::boot_keyboard();
+        for ch in profile.characteristics() {
+            assert!(ch.ops.contains(SsapOperations::NOTIFY));
+            assert!(!ch.ops.contains(SsapOperations::WRITE_WITH_RSP));
+            if [
+                super::UUID_STATUS,
+                super::UUID_OUTPUT_REPORT,
+                super::UUID_FEATURE_REPORT,
+            ]
+            .contains(&ch.uuid16)
+            {
+                assert!(ch.ops.contains(SsapOperations::WRITE_NO_RSP));
+            } else {
+                assert!(!ch.ops.contains(SsapOperations::WRITE_NO_RSP));
+            }
+        }
+    }
     use super::*;
 
     #[test]

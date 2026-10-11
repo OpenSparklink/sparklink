@@ -2,11 +2,26 @@ mod adapter;
 mod error;
 mod event;
 pub mod ffi;
+mod receiver;
+mod snoop;
+pub use snoop::{
+    SnoopCursor, SnoopReceiver, create_snoop_capture, describe_snoop, snoop_packet_code,
+    write_snoop_header, write_snoop_record,
+};
 
-pub use adapter::Adapter;
+pub use adapter::{Adapter, DEFAULT_DEV_PATH};
 pub use error::Error;
 pub use event::Event;
+pub use receiver::EventReceiver;
+mod controller_events;
+pub use controller_events::{ControllerEventCursor, ControllerEventReceiver};
 pub use slk_protocol as protocol;
+/// C header array bound, checked against the canonical protocol declaration.
+pub const CONTROLLER_EVENT_PAYLOAD_MAX: usize = 288;
+/// C header array bound, checked against the canonical protocol declaration.
+pub const SNOOP_PAYLOAD_MAX: usize = 320;
+const _: () = assert!(CONTROLLER_EVENT_PAYLOAD_MAX == slk_protocol::CONTROLLER_EVENT_PAYLOAD_MAX);
+const _: () = assert!(SNOOP_PAYLOAD_MAX == slk_protocol::SNOOP_PAYLOAD_MAX);
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -14,6 +29,16 @@ pub type Result<T> = std::result::Result<T, Error>;
 mod tests {
     use super::*;
     use std::ptr;
+
+    #[tokio::test]
+    async fn overflowing_discovery_deadline_returns_error_before_ioctl() {
+        let adapter = Adapter::open("/dev/null").unwrap();
+        let result = adapter.wait_discovery(1, 1, std::time::Duration::MAX).await;
+        assert!(matches!(
+            result,
+            Err(Error::InvalidParam("discovery timeout is too large"))
+        ));
+    }
 
     #[test]
     fn error_display() {
@@ -115,9 +140,49 @@ mod tests {
     #[test]
     fn result_type_alias() {
         let ok: Result<i32> = Ok(42);
-        assert_eq!(ok.unwrap(), 42);
+        assert!(matches!(ok, Ok(42)));
 
         let err: Result<i32> = Err(Error::Timeout);
         assert!(err.is_err());
     }
+
+    #[test]
+    fn synchronous_control_and_ffi_open_without_tokio() {
+        use std::os::fd::AsRawFd;
+        let adapter = Adapter::open("/dev/null").expect("synchronous open requires no reactor");
+        assert!(adapter.as_fd().as_raw_fd() >= 0);
+        assert!(matches!(adapter.device_count(), Err(Error::Ioctl(_))));
+        assert!(matches!(
+            adapter.into_event_receiver(),
+            Err(Error::InvalidParam(_))
+        ));
+        let path = b"/dev/null\0";
+        let handle = unsafe { ffi::slk_adapter_open(path.as_ptr().cast()) };
+        assert!(!handle.is_null());
+        assert_eq!(unsafe { ffi::slk_device_count(handle) }, -1);
+        unsafe { ffi::slk_adapter_free(handle) };
+    }
+
+    #[test]
+    fn malformed_event_lengths_are_errors() {
+        use slk_protocol::*;
+        let mut event: SleDliEvent = unsafe { std::mem::zeroed() };
+        event.event_type = EVT_DATA_RECV;
+        event.data_len = u16::MAX;
+        assert!(adapter::decode_event(event).is_err());
+        for (event_type, length) in [
+            (EVT_ADV_REPORT, 1),
+            (EVT_HW_ERROR, 0),
+            (EVT_ENCRYPTION_CHANGED, 0),
+        ] {
+            event.event_type = event_type;
+            event.data_len = length;
+            assert!(adapter::decode_event(event).is_err());
+        }
+    }
 }
+mod ws73_discovery;
+pub use ws73_discovery::{
+    WS73_BASIC_POLICY_VERSION, ws73_basic_advertisement, ws73_basic_scan, ws73_basic_scan_standby,
+    ws73_basic_standby, ws73_basic_stop, ws73_marker_data,
+};

@@ -67,20 +67,27 @@ sudo systemctl enable --now sparklink
 ### 使用 slkconfig
 
 ```bash
-# 查看设备信息
-slkconfig info
+# 列出注册的 controller 与 generation
+slkconfig adapters
 
-# 扫描 5 秒
-slkconfig scan 5
+# 明确选择设备，独立只读观察（0 仅为示例 index）
+slkconfig --adapter 0 controller
+slkconfig --adapter 0 management
+slkconfig --adapter 0 info
 
-# 连接设备
-slkconfig connect AA:BB:CC:DD:EE:FF
+# 普通应用的原生 WS73 广播/扫描由 slkd 管理
+slctl list
 
-# 查看安全状态
-slkconfig security
+# 管理员离线诊断：先停止该设备的 Managed owner；generation 使用实际观察值
+slkconfig --adapter 0 --generation 123 query mac
+
+# 以下旧管理命令仅适用于 profile 0 迁移路径
+slkconfig --adapter 0 scan --duration 5
+slkconfig --adapter 0 connect AA:BB:CC:DD:EE:FF
+slkconfig --adapter 0 security
 
 # 列出 SSAP 服务
-slkconfig services
+slkconfig --adapter 0 services
 ```
 
 ### 使用 slctl 交互式控制台
@@ -97,25 +104,25 @@ slctl> disconnect 0x0001
 ### 使用 slkmon 协议分析
 
 ```bash
-# 监控所有事件
-slkmon
+# 先查询设备 index/generation；原生抓取需 CAP_NET_ADMIN
+slkconfig adapters
+slkmon --adapter 0 --generation 7
 
-# 过滤连接事件
-slkmon -t conn
-
-# 输出到文件
-slkmon -o capture.log
+# 按真实 WS73 event code 过滤并写独立抓取文件
+slkmon --adapter 0 --generation 7 --filter 0x180b --write scan.snoop
 ```
 
 ### 使用 slkdump 帧捕获
 
 ```bash
-# 十六进制+ASCII 输出
-slkdump
-
-# 原始二进制输出
-slkdump -r > raw.bin
+# 与 slkmon 同时观察同一 registration，不消费 slkd 的命令回复
+slkdump --adapter 0 --generation 7 --write full.snoop
 ```
+
+原生工具使用独立、有界、每设备 DLI snoop。抓取文件为私有、禁止覆盖的
+`SLKSNP01` 格式，保留方向、generation、内核时间戳、transport status 和丢失计数。
+拔出后工具以 ENODEV 结束；重插须重新查询 generation。普通用户的广播/扫描
+仍通过 `slctl`/`slkd`，无需 sudo。完整格式与权限边界见 [SNOOP.md](docs/SNOOP.md)。
 
 ## Crate 说明
 
@@ -133,7 +140,7 @@ D-Bus 管理守护进程，使用 zbus 5 在 `org.sparklink` 总线名称下暴�
 
 ### slkconfig
 
-离线配置命令行工具，提供 22 个子命令，覆盖设备信息、DLI 控制器、PHY 参数、扫描、连接、安全配对、SSAP 服务读写和远程操作。基于 clap 4 的 derive API。
+离线配置命令行工具。每设备命令要求 `--adapter`，可用 `--generation` 防止误用重插后的代次；`adapters/controller/management` 提供独立只读观察。原生 WS73 的 `query mac/features/version/buffers` 要求确切 generation、CAP_NET_ADMIN 和独占 Diagnostic lease，不能与 slkd 的 Managed owner 并行。旧 PHY/扫描/连接/配对/SSAP 管理命令仅在 profile 0 迁移路径保留。普通应用控制通过 slctl/slkd。基于 clap 4 的 derive API。
 
 ### slctl
 
@@ -141,11 +148,11 @@ D-Bus 管理守护进程，使用 zbus 5 在 `org.sparklink` 总线名称下暴�
 
 ### slkmon
 
-协议分析器 (对标 btmon)。从内核捕获 DLI 事件，支持事件类型过滤、结构化解码 (6 种事件类型)、hexdump 输出和文件写入。
+协议分析器 (对标 btmon)。原生 WS73 使用独立 DLI snoop，显式选择 index/generation，显示方向、内核时间戳、丢失与传输结果；按真实 opcode/event code 过滤并写可移植文件。旧解码需 `--legacy` 且仅允许 profile 0。
 
 ### slkdump
 
-轻量级帧转储工具 (对标 hcidump)。支持十六进制+ASCII 混合输出和原始二进制输出模式。
+轻量级帧转储工具 (对标 hcidump)。原生捕获使用与 slkmon 相同的独立 reader 和 `SLKSNP01` 格式；十六进制+ASCII/旧 raw 渲染仅属于 `--legacy`。
 
 ## 语言绑定
 

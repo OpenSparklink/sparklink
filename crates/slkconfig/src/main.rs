@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use libsparklink::Adapter;
 
 #[derive(Parser)]
@@ -8,12 +8,31 @@ struct Cli {
     #[arg(short, long, default_value = "/dev/sparklink")]
     device: String,
 
+    /// Registered adapter index (use adapters to list); never switches the global default
+    #[arg(long, global = true)]
+    adapter: Option<u16>,
+
+    /// Require this registration generation; mandatory for native diagnostic queries
+    #[arg(long, global = true)]
+    generation: Option<u64>,
+
     #[command(subcommand)]
     command: Command,
 }
 
 #[derive(Subcommand)]
 enum Command {
+    /// List registered controllers and their generations without acquiring ownership
+    Adapters,
+    /// Observe the selected controller and its command queue
+    Controller,
+    /// Observe native management ownership (does not acquire a lease)
+    Management,
+    /// Execute one whitelisted WS73 query with an exclusive Diagnostic lease
+    Query {
+        #[arg(value_enum)]
+        query: NativeQuery,
+    },
     /// Show adapter information
     Info,
 
@@ -150,18 +169,113 @@ enum Command {
     },
 }
 
+#[derive(Clone, Copy, Debug, ValueEnum)]
+enum NativeQuery {
+    Mac,
+    Features,
+    Version,
+    Buffers,
+}
+impl NativeQuery {
+    fn wire(self) -> (u16, usize) {
+        match self {
+            Self::Mac => (0x0406, 6),
+            Self::Features => (0x0403, 10),
+            Self::Version => (0x0404, 5),
+            Self::Buffers => (0x0402, 6),
+        }
+    }
+}
+
+impl Command {
+    fn native_observation(&self) -> bool {
+        matches!(
+            self,
+            Self::Info | Self::Dli | Self::Controller | Self::Management | Self::Stats
+        )
+    }
+}
+
 fn main() {
     let cli = Cli::parse();
+    if let Err(error) = run(cli) {
+        eprintln!("error: {error:#}");
+        std::process::exit(1);
+    }
+}
 
-    let adapter = match Adapter::open(&cli.device) {
-        Ok(a) => a,
-        Err(e) => {
-            eprintln!("failed to open {}: {e}", cli.device);
-            std::process::exit(1);
+fn run(cli: Cli) -> anyhow::Result<()> {
+    if matches!(cli.command, Command::Adapters) {
+        anyhow::ensure!(
+            cli.adapter.is_none() && cli.generation.is_none(),
+            "adapters lists registrations; omit --adapter/--generation"
+        );
+        let mut adapter = Adapter::open(&cli.device)?;
+        for index in adapter.device_indices()? {
+            adapter.select_device(index)?;
+            let snapshot = adapter.controller_snapshot(0)?;
+            print_controller(&snapshot);
         }
-    };
-
+        return Ok(());
+    }
+    let index = cli.adapter.ok_or_else(|| {
+        anyhow::anyhow!("select a registration with --adapter; use adapters to list")
+    })?;
+    anyhow::ensure!(index < 16, "adapter index must be 0..15");
+    anyhow::ensure!(cli.generation != Some(0), "generation must be nonzero");
+    if matches!(cli.command, Command::Query { .. }) {
+        anyhow::ensure!(
+            cli.generation.is_some(),
+            "native query requires --generation from controller/adapters"
+        );
+    }
+    let mut adapter = Adapter::open(&cli.device)?;
+    adapter.select_device(index)?;
+    let snapshot = adapter.controller_snapshot(cli.generation.unwrap_or(0))?;
+    match cli.command {
+        Command::Controller => {
+            print_controller(&snapshot);
+            let stats = adapter.mgmt_stats()?;
+            println!(
+                "ManagementQueue: pending={} submitted={} resolved={} timeouts={}",
+                stats.pending, stats.total_submitted, stats.total_resolved, stats.total_timeouts
+            );
+            return Ok(());
+        }
+        Command::Management => {
+            let state = adapter.management_status(snapshot.generation)?;
+            println!(
+                "Management: index={} generation={} state={} mode={} owning_fd={} error={} status={} opcode=0x{:04x}",
+                index,
+                state.generation,
+                state.state,
+                state.mode,
+                state.flags & 1,
+                state.error,
+                state.status,
+                state.opcode
+            );
+            return Ok(());
+        }
+        Command::Query { query } => {
+            return cmd_native_query(
+                &adapter,
+                snapshot.generation,
+                index,
+                snapshot.profile,
+                query,
+            );
+        }
+        _ => {}
+    }
+    anyhow::ensure!(
+        snapshot.profile == 0 || cli.command.native_observation(),
+        "legacy management command is unsupported on this native controller; use slctl for discovery or query for exclusive diagnostics"
+    );
     let result = match cli.command {
+        Command::Adapters | Command::Controller | Command::Management | Command::Query { .. } => {
+            unreachable!()
+        }
         Command::Info => cmd_info(&adapter),
         Command::Dli => cmd_dli(&adapter),
         Command::Phy => cmd_phy(&adapter),
@@ -183,16 +297,162 @@ fn main() {
         Command::WriteProp { handle, value } => cmd_write_prop(&adapter, &handle, &value),
         Command::RemoteDiscover { conn } => cmd_remote_discover(&adapter, &conn),
         Command::RemoteRead { conn, handle } => cmd_remote_read(&adapter, &conn, &handle),
-        Command::RemoteWrite { conn, handle, value } => cmd_remote_write(&adapter, &conn, &handle, &value),
-        Command::CallMethod { conn, handle, input } => cmd_call_method(&adapter, &conn, &handle, &input),
+        Command::RemoteWrite {
+            conn,
+            handle,
+            value,
+        } => cmd_remote_write(&adapter, &conn, &handle, &value),
+        Command::CallMethod {
+            conn,
+            handle,
+            input,
+        } => cmd_call_method(&adapter, &conn, &handle, &input),
         Command::FindByUuid { conn, uuid } => cmd_find_by_uuid(&adapter, &conn, &uuid),
         Command::ReadByUuid { conn, uuid } => cmd_read_by_uuid(&adapter, &conn, &uuid),
     };
 
-    if let Err(e) = result {
-        eprintln!("error: {e}");
-        std::process::exit(1);
+    result?;
+    Ok(())
+}
+
+fn print_controller(s: &slk_protocol::SleControllerSnapshot) {
+    let state = match s.flags {
+        slk_protocol::CONTROLLER_READY => "Ready",
+        slk_protocol::CONTROLLER_SETUP => "Setup",
+        slk_protocol::CONTROLLER_FAULT => "Fault",
+        _ => "Unknown",
+    };
+    println!(
+        "ControllerSnapshot: index={} generation={} profile={} state={} error={} address={} metadata_valid={} credits={}",
+        s.dev_index,
+        s.generation,
+        s.profile,
+        state,
+        s.error,
+        fmt_addr(&s.address),
+        s.valid_fields,
+        s.command_credits
+    );
+}
+
+fn validate_reply(
+    query: NativeQuery,
+    event: &slk_protocol::SleDiagnosticResult,
+) -> anyhow::Result<Option<&[u8]>> {
+    let (opcode, len) = query.wire();
+    anyhow::ensure!(
+        event.opcode == opcode,
+        "unexpected diagnostic opcode=0x{:04x}",
+        event.opcode
+    );
+    match event.state {
+        1 => {
+            anyhow::ensure!(
+                event.error == 0 && event.status == 0 && event.data_len == 0,
+                "invalid pending diagnostic result"
+            );
+            return Ok(None);
+        }
+        2 => {}
+        3 => anyhow::bail!(
+            "diagnostic failed: error={} status=0x{:02x} opcode=0x{:04x}",
+            event.error,
+            event.status,
+            event.opcode
+        ),
+        _ => anyhow::bail!("invalid diagnostic result state"),
     }
+    anyhow::ensure!(
+        event.error == 0 && event.status == 0,
+        "invalid diagnostic success"
+    );
+    anyhow::ensure!(
+        event.data_len as usize == len,
+        "diagnostic payload length: expected={len} actual={}",
+        event.data_len
+    );
+    Ok(Some(&event.data[..len]))
+}
+
+fn cmd_native_query(
+    adapter: &Adapter,
+    generation: u64,
+    index: u16,
+    profile: u32,
+    query: NativeQuery,
+) -> anyhow::Result<()> {
+    use slk_protocol::*;
+    use std::time::{Duration, Instant};
+    anyhow::ensure!(
+        profile == 1,
+        "native diagnostic query currently requires WS73 profile 1"
+    );
+    let lease = adapter.acquire_management(generation, MANAGEMENT_DIAGNOSTIC)?;
+    let result = (|| -> anyhow::Result<_> {
+        // Result ownership and captured Host sequence establish provenance;
+        // observation does not steal data from any controller subscription.
+        anyhow::ensure!(
+            adapter.mgmt_stats()?.pending == 0,
+            "diagnostic command queue is not quiet"
+        );
+        let (opcode, _) = query.wire();
+        let mut cmd = SleDiagnosticSubmit {
+            version: 1,
+            generation,
+            request_id: 1, // This CLI opens a new author fd and submits once.
+            opcode,
+            timeout_ms: 5000,
+            action: 1,
+            ..Default::default()
+        };
+        adapter.diagnostic_submit(&mut cmd)?;
+        anyhow::ensure!(cmd.seq != 0, "diagnostic admission has no sequence");
+        let deadline = Instant::now() + Duration::from_secs(6);
+        loop {
+            if let Some(event) = adapter.diagnostic_result(generation, cmd.seq)?
+                && let Some(data) = validate_reply(query, &event)?
+            {
+                return Ok((opcode, cmd.seq, data.to_vec()));
+            }
+            anyhow::ensure!(Instant::now() < deadline, "diagnostic reply timeout");
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    })();
+    // Release even on malformed/error replies; last-close remains a crash
+    // fallback. Never print a successful query if its cleanup did not settle.
+    let cleanup = (|| -> anyhow::Result<()> {
+        adapter.release_management(generation, lease, MANAGEMENT_DIAGNOSTIC)?;
+        let deadline = Instant::now() + Duration::from_secs(6);
+        loop {
+            let status = adapter.management_status(generation)?;
+            match status.state {
+                MANAGEMENT_FREE => return Ok(()),
+                MANAGEMENT_HELD if status.flags & 1 == 0 => return Ok(()),
+                MANAGEMENT_REVOKING => {}
+                _ => anyhow::bail!(
+                    "diagnostic cleanup state={} error={} status={} opcode=0x{:04x}",
+                    status.state,
+                    status.error,
+                    status.status,
+                    status.opcode
+                ),
+            }
+            anyhow::ensure!(Instant::now() < deadline, "diagnostic cleanup timeout");
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    })();
+    if let Err(error) = cleanup {
+        return match result {
+            Err(original) => Err(original.context(format!("cleanup also failed: {error:#}"))),
+            Ok(_) => Err(error),
+        };
+    }
+    let (opcode, seq, data) = result?;
+    let hex: String = data.iter().map(|b| format!("{b:02x}")).collect();
+    println!(
+        "NativeDiagnosticQuery: index={index} generation={generation} opcode=0x{opcode:04x} admission_seq={seq} status=0x00 data={hex}"
+    );
+    Ok(())
 }
 
 fn fmt_addr(addr: &[u8; 6]) -> String {
@@ -204,7 +464,11 @@ fn fmt_addr(addr: &[u8; 6]) -> String {
 
 fn cmd_info(adapter: &Adapter) -> libsparklink::Result<()> {
     let info = adapter.device_info()?;
-    let name_end = info.name.iter().position(|&b| b == 0).unwrap_or(info.name.len());
+    let name_end = info
+        .name
+        .iter()
+        .position(|&b| b == 0)
+        .unwrap_or(info.name.len());
     let name = std::str::from_utf8(&info.name[..name_end]).unwrap_or("<invalid>");
 
     println!("Device #{}", info.index);
@@ -221,7 +485,11 @@ fn cmd_info(adapter: &Adapter) -> libsparklink::Result<()> {
 
 fn cmd_dli(adapter: &Adapter) -> libsparklink::Result<()> {
     let info = adapter.dli_info()?;
-    let name_end = info.name.iter().position(|&b| b == 0).unwrap_or(info.name.len());
+    let name_end = info
+        .name
+        .iter()
+        .position(|&b| b == 0)
+        .unwrap_or(info.name.len());
     let name = std::str::from_utf8(&info.name[..name_end]).unwrap_or("<invalid>");
 
     println!("DLI Controller: {name}");
@@ -248,9 +516,15 @@ fn cmd_phy(adapter: &Adapter) -> libsparklink::Result<()> {
     println!("  TX power:      {} dBm", info.tx_power_dbm);
     println!("  Data rate:     {} kbps", info.data_rate_kbps);
     println!("  Modulation:    {}", info.modulation);
-    println!("  Code rate:     {}/{}", info.code_rate_num, info.code_rate_den);
+    println!(
+        "  Code rate:     {}/{}",
+        info.code_rate_num, info.code_rate_den
+    );
     println!("  MIMO mode:     {}", info.mimo_mode);
-    println!("  Antennas:      TX={} RX={}", info.num_tx_ant, info.num_rx_ant);
+    println!(
+        "  Antennas:      TX={} RX={}",
+        info.num_tx_ant, info.num_rx_ant
+    );
     println!("  Hop channel:   {}", info.hop_channel);
 
     Ok(())
@@ -345,7 +619,7 @@ fn cmd_scan(adapter: &Adapter, duration: u64) -> libsparklink::Result<()> {
     use slk_protocol::SleScanParams;
 
     let params = SleScanParams {
-        dev_index: 0,
+        dev_index: adapter.device_info()?.index,
         window_ms: 100,
         interval_ms: 200,
         filter_discovery_level: 0,
@@ -360,7 +634,11 @@ fn cmd_scan(adapter: &Adapter, duration: u64) -> libsparklink::Result<()> {
     while start.elapsed().as_secs() < duration {
         match adapter.poll_event()? {
             Some(event) => {
-                let name_end = event.data.iter().position(|&b| b == 0).unwrap_or(event.data_len as usize);
+                let name_end = event
+                    .data
+                    .iter()
+                    .position(|&b| b == 0)
+                    .unwrap_or(event.data_len as usize);
                 let name = std::str::from_utf8(&event.data[..name_end]).unwrap_or("");
                 count += 1;
                 println!(
@@ -384,9 +662,8 @@ fn cmd_scan(adapter: &Adapter, duration: u64) -> libsparklink::Result<()> {
 fn cmd_connect(adapter: &Adapter, address: &str) -> libsparklink::Result<()> {
     use slk_protocol::SleConnectParams;
 
-    let addr = parse_addr(address).map_err(|_| {
-        libsparklink::Error::InvalidParam("address must be AA:BB:CC:DD:EE:FF")
-    })?;
+    let addr = parse_addr(address)
+        .map_err(|_| libsparklink::Error::InvalidParam("address must be AA:BB:CC:DD:EE:FF"))?;
 
     let params = SleConnectParams {
         peer_addr: addr,
@@ -404,13 +681,12 @@ fn cmd_connect(adapter: &Adapter, address: &str) -> libsparklink::Result<()> {
 
 fn cmd_disconnect(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()> {
     let handle = if let Some(hex) = handle_str.strip_prefix("0x") {
-        u16::from_str_radix(hex, 16).map_err(|_| {
-            libsparklink::Error::InvalidParam("invalid hex handle")
-        })?
+        u16::from_str_radix(hex, 16)
+            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex handle"))?
     } else {
-        handle_str.parse::<u16>().map_err(|_| {
-            libsparklink::Error::InvalidParam("invalid handle number")
-        })?
+        handle_str
+            .parse::<u16>()
+            .map_err(|_| libsparklink::Error::InvalidParam("invalid handle number"))?
     };
 
     adapter.disconnect(handle)?;
@@ -504,9 +780,8 @@ fn cmd_set_psk(adapter: &Adapter, psk_hex: &str) -> libsparklink::Result<()> {
 
     let mut params = SlePskParams { psk: [0; 16] };
     for i in 0..16 {
-        params.psk[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16).map_err(|_| {
-            libsparklink::Error::InvalidParam("invalid hex character in PSK")
-        })?;
+        params.psk[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16)
+            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex character in PSK"))?;
     }
 
     adapter.set_psk(&params)?;
@@ -544,7 +819,11 @@ fn cmd_list_services(adapter: &Adapter) -> libsparklink::Result<()> {
     println!("{} service(s):", list.count);
     for i in 0..list.count as usize {
         let s = &list.services[i];
-        let kind = if s.primary != 0 { "Primary" } else { "Secondary" };
+        let kind = if s.primary != 0 {
+            "Primary"
+        } else {
+            "Secondary"
+        };
         println!(
             "  [{:#06x}-{:#06x}] UUID={:#06x} {kind}",
             s.start_handle, s.end_handle, s.uuid16
@@ -573,7 +852,11 @@ fn cmd_read_prop(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()
     Ok(())
 }
 
-fn cmd_write_prop(adapter: &Adapter, handle_str: &str, value_hex: &str) -> libsparklink::Result<()> {
+fn cmd_write_prop(
+    adapter: &Adapter,
+    handle_str: &str,
+    value_hex: &str,
+) -> libsparklink::Result<()> {
     let handle = parse_handle(handle_str)?;
     let value = parse_hex_bytes(value_hex)?;
     let len = value.len().min(252);
@@ -616,7 +899,11 @@ fn cmd_remote_discover(adapter: &Adapter, conn_str: &str) -> libsparklink::Resul
     Ok(())
 }
 
-fn cmd_remote_read(adapter: &Adapter, conn_str: &str, handle_str: &str) -> libsparklink::Result<()> {
+fn cmd_remote_read(
+    adapter: &Adapter,
+    conn_str: &str,
+    handle_str: &str,
+) -> libsparklink::Result<()> {
     let conn_handle = parse_handle(conn_str)?;
     let handle = parse_handle(handle_str)?;
 
@@ -644,7 +931,12 @@ fn cmd_remote_read(adapter: &Adapter, conn_str: &str, handle_str: &str) -> libsp
     Ok(())
 }
 
-fn cmd_remote_write(adapter: &Adapter, conn_str: &str, handle_str: &str, value_hex: &str) -> libsparklink::Result<()> {
+fn cmd_remote_write(
+    adapter: &Adapter,
+    conn_str: &str,
+    handle_str: &str,
+    value_hex: &str,
+) -> libsparklink::Result<()> {
     let conn_handle = parse_handle(conn_str)?;
     let handle = parse_handle(handle_str)?;
     let value = parse_hex_bytes(value_hex)?;
@@ -666,7 +958,12 @@ fn cmd_remote_write(adapter: &Adapter, conn_str: &str, handle_str: &str, value_h
     Ok(())
 }
 
-fn cmd_call_method(adapter: &Adapter, conn_str: &str, handle_str: &str, input_hex: &str) -> libsparklink::Result<()> {
+fn cmd_call_method(
+    adapter: &Adapter,
+    conn_str: &str,
+    handle_str: &str,
+    input_hex: &str,
+) -> libsparklink::Result<()> {
     let conn_handle = parse_handle(conn_str)?;
     let handle = parse_handle(handle_str)?;
     let input = parse_hex_bytes(input_hex)?;
@@ -718,7 +1015,10 @@ fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libspa
 
     let out_len = (op.length as usize).min(op.data.len());
     let data = &op.data[..out_len];
-    println!("UUID {:#06x} at handle {:#06x} ({} bytes):", uuid16, op.handle, out_len);
+    println!(
+        "UUID {:#06x} at handle {:#06x} ({} bytes):",
+        uuid16, op.handle, out_len
+    );
     for chunk in data.chunks(16) {
         let hex: Vec<String> = chunk.iter().map(|b| format!("{b:02x}")).collect();
         println!("  {}", hex.join(" "));
@@ -731,21 +1031,23 @@ fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libspa
 
 fn parse_handle(s: &str) -> libsparklink::Result<u16> {
     let s = s.strip_prefix("0x").unwrap_or(s);
-    u16::from_str_radix(s, 16).map_err(|_| {
-        libsparklink::Error::InvalidParam("invalid hex handle")
-    })
+    u16::from_str_radix(s, 16).map_err(|_| libsparklink::Error::InvalidParam("invalid hex handle"))
 }
 
 fn parse_hex_bytes(hex: &str) -> libsparklink::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
-    if hex.len() % 2 != 0 {
-        return Err(libsparklink::Error::InvalidParam("hex string must have even length"));
+    if !hex.len().is_multiple_of(2) {
+        return Err(libsparklink::Error::InvalidParam(
+            "hex string must have even length",
+        ));
+    }
+    if !hex.is_ascii() {
+        return Err(libsparklink::Error::InvalidParam("invalid hex character"));
     }
     let mut bytes = Vec::with_capacity(hex.len() / 2);
     for i in (0..hex.len()).step_by(2) {
-        let byte = u8::from_str_radix(&hex[i..i + 2], 16).map_err(|_| {
-            libsparklink::Error::InvalidParam("invalid hex character")
-        })?;
+        let byte = u8::from_str_radix(&hex[i..i + 2], 16)
+            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex character"))?;
         bytes.push(byte);
     }
     Ok(bytes)
@@ -756,10 +1058,104 @@ mod tests {
     use super::*;
 
     #[test]
+    fn diagnostic_reply_requires_complete_opcode_status_and_exact_length() {
+        let mut event = slk_protocol::SleDiagnosticResult {
+            state: 2,
+            opcode: 0x0403,
+            data_len: 10,
+            data: [0x80; 64],
+            ..Default::default()
+        };
+        assert_eq!(
+            validate_reply(NativeQuery::Features, &event).unwrap(),
+            Some(&[0x80; 10][..])
+        );
+        for len in [0, 9, 11, 64, 65535] {
+            event.data_len = len;
+            assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        }
+        event.data_len = 10;
+        event.state = 1;
+        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        event.data_len = 0;
+        assert_eq!(validate_reply(NativeQuery::Features, &event).unwrap(), None);
+        event.data_len = 10;
+        event.state = 2;
+        event.opcode = 0x0404;
+        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        event.opcode = 0x0403;
+        event.state = 3;
+        event.status = 0xfd;
+        assert!(
+            validate_reply(NativeQuery::Features, &event)
+                .unwrap_err()
+                .to_string()
+                .contains("status=0xfd")
+        );
+        event.status = 0;
+        event.error = -110;
+        assert!(
+            validate_reply(NativeQuery::Features, &event)
+                .unwrap_err()
+                .to_string()
+                .contains("error=-110")
+        );
+        event.state = 2;
+        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+    }
+
+    #[test]
+    fn native_query_requires_explicit_target_before_open() {
+        let cli = Cli::try_parse_from([
+            "slkconfig",
+            "--device",
+            "/missing-sparklink-test-device",
+            "query",
+            "mac",
+            "--generation",
+            "5",
+        ])
+        .unwrap();
+        assert!(run(cli).unwrap_err().to_string().contains("--adapter"));
+        let cli = Cli::try_parse_from([
+            "slkconfig",
+            "--device",
+            "/missing-sparklink-test-device",
+            "query",
+            "mac",
+            "--adapter",
+            "0",
+        ])
+        .unwrap();
+        assert!(run(cli).unwrap_err().to_string().contains("--generation"));
+        assert!(
+            Cli::try_parse_from([
+                "slkconfig",
+                "query",
+                "reset",
+                "--adapter",
+                "0",
+                "--generation",
+                "5"
+            ])
+            .is_err()
+        );
+    }
+
+    #[test]
     fn test_fmt_addr() {
-        assert_eq!(fmt_addr(&[0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF]), "AA:BB:CC:DD:EE:FF");
-        assert_eq!(fmt_addr(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), "00:00:00:00:00:00");
-        assert_eq!(fmt_addr(&[0x01, 0x23, 0x45, 0x67, 0x89, 0xAB]), "01:23:45:67:89:AB");
+        assert_eq!(
+            fmt_addr(&[0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF]),
+            "AA:BB:CC:DD:EE:FF"
+        );
+        assert_eq!(
+            fmt_addr(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+            "00:00:00:00:00:00"
+        );
+        assert_eq!(
+            fmt_addr(&[0x01, 0x23, 0x45, 0x67, 0x89, 0xAB]),
+            "01:23:45:67:89:AB"
+        );
     }
 
     #[test]
@@ -799,7 +1195,10 @@ mod tests {
     fn test_parse_hex_bytes_valid() {
         assert_eq!(parse_hex_bytes("AABB").unwrap(), vec![0xAA, 0xBB]);
         assert_eq!(parse_hex_bytes("0xAABB").unwrap(), vec![0xAA, 0xBB]);
-        assert_eq!(parse_hex_bytes("0x0102030405").unwrap(), vec![1, 2, 3, 4, 5]);
+        assert_eq!(
+            parse_hex_bytes("0x0102030405").unwrap(),
+            vec![1, 2, 3, 4, 5]
+        );
         assert_eq!(parse_hex_bytes("").unwrap(), Vec::<u8>::new());
     }
 
@@ -808,6 +1207,7 @@ mod tests {
         assert!(parse_hex_bytes("A").is_err()); // odd length
         assert!(parse_hex_bytes("0xA").is_err()); // odd length after prefix
         assert!(parse_hex_bytes("GGXX").is_err()); // invalid hex chars
+        assert!(parse_hex_bytes("aéa").is_err()); // even byte count, invalid UTF-8 slice boundary
     }
 
     #[test]

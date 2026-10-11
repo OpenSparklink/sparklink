@@ -35,7 +35,7 @@ class TestStructSizes(unittest.TestCase):
         self.assertEqual(ctypes.sizeof(SleConnectParams), 16)
 
     def test_sle_conn_info(self):
-        self.assertEqual(ctypes.sizeof(SleConnInfo), 56)
+        self.assertEqual(ctypes.sizeof(SleConnInfo), 64)
 
     def test_sle_sec_info(self):
         self.assertEqual(ctypes.sizeof(SleSecInfo), 16)

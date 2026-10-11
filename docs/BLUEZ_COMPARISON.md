@@ -1,191 +1,100 @@
-# SparkLink 与 BlueZ 架构对比分析
+# Linux Bluetooth / BlueZ 与 SparkLink：设计依据和验证边界
 
-## 1. 概览
+最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
-BlueZ 是 Linux 官方蓝牙协议栈，已有 20+ 年历史，代码量超过 10 万行（内核 + 用户态）。SparkLink 协议栈参考了 BlueZ 的设计范式，但针对星闪协议的特点做了简化和重构。
+用户这次提供的分析与已采用文本相同（SHA256
+`f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a`）。
+本次复核区分已验证与正在开发的基线：K`78e729c06a5e`/编译U`2dfd6bd09e7b`
+[实际诊断槽淘汰证据](evidence/ws73-vm-diagnostic-eviction-20261011.json)包含33个
+真实查询、旧ID/sequence拒绝和100ms无重发；read7、WS7320+2及同daemon保持。
+后续生产内核K`54621800ee4c`修复[旧DLI poll复制提交](EVENT_COPY_REMEDIATION.md)，
+新增6项开发fixture；[新镜像真实20+2/read/诊断回归](evidence/ws73-vm-legacy-poll-copy-20261011.json)
+已通过；后续K`9b16e634bfd3`/编译U`1d3a17b688ee`的
+[三类实际legacy ioctl复制故障](evidence/ws73-vm-legacy-poll-live-20261011.json)
+也限定通过，fallback资格/完整事件仍OPEN。用户态生产
+保持`df9cff7d750d`。不能将Native ring三类故障推广为backend fallback或完整事件验收，也不能据此
+推论取消、完整事件、连接服务或自主故障恢复完成。
+后续K`cc4018c4e3a6`/编译U`4a9de6a91617`的[实际取消/迟到限定门禁](DIAGNOSTIC_CANCEL_GATES.md)
+已通过，同时保持20+2/read/原诊断；完整deadline/close/并发及自然恢复仍OPEN。
+ADR 0001、最终 socket/用户态 SSAP 分层、WS73 北极星及 S0–S6 均保持。
+Rust、接口数量或代码量不构成架构/性能领先证据。
 
-| 维度 | BlueZ | SparkLink | 备注 |
-|------|-------|-----------|------|
-| 内核代码 | 62,144 行 C (net/bluetooth/) | 28,570 行 Rust (net/sparklink/) | SparkLink 约 BlueZ 的 46% |
-| 内核语言 | C | Rust + C FFI | SparkLink 使用 Rust 增强安全性 |
-| 协议栈年龄 | 2001 至今 (24 年) | 2024 至今 | BlueZ 经过长期迭代 |
-| 用户态守护进程 | bluetoothd (C, ~130,000 行) | slkd (Rust, ~1,900 行) | SparkLink 自用标准更少 |
-| CLI 工具 | bluetoothctl | slctl | 功能对等 |
-| IPC 机制 | D-Bus | D-Bus | 架构一致 |
-| 用户态库 | libbluetooth (C) | libsparklink (Rust + C FFI) | SparkLink 提供 Rust + C 双接口 |
+2026-10-11 重审。对标是 Linux Bluetooth 内核协议栈加 BlueZ 用户态生态。
+目标为可维护、可扩展的 Linux 通信子系统；当前不能宣称完整、可投入使用或
+功能对等。审查基线与确定缺陷见[14 项整改](REVIEW_REMEDIATION_20261011.md)。
 
-## 2. 内核层对比
+## 可借鉴的职责分界
 
-### 2.1 设备抽象
+| 接口/职责 | Bluetooth / BlueZ 官方依据 | SparkLink 采用的目标 |
+|---|---|---|
+| 管理与命令结果 | [MGMT](https://github.com/bluez/bluez/blob/master/doc/mgmt-protocol.rst) 定义控制器管理请求/事件 | Managed 与独立订阅；请求者专属结果，generation、超时/取消明确 |
+| 连接数据 | [L2CAP](https://github.com/bluez/bluez/wiki/L2CAP) 消息 socket、流控、安全选项 | 每逻辑通道独立 socket fd；协商可靠能力用 SEQPACKET，不可靠能力考虑连接式 DGRAM |
+| 应用服务注册 | [GattManager](https://github.com/bluez/bluez/blob/master/doc/org.bluez.GattManager.rst) 定义用户态服务对象注册 | slkd SSAP codec/协商/事务/数据库/Profile；内核提供 PDU、背压及安全上下文 |
+| 用户认证交互 | [Agent](https://github.com/bluez/bluez/blob/master/doc/org.bluez.Agent.rst) 确认/密码/授权交互 | slkd Agent/trust/Bond policy；内核拥有配对机制/密码学/安装与强制 |
+| 开发与系统测试 | [功能测试](https://github.com/bluez/bluez/blob/master/doc/functional-testing.rst)、[test-runner](https://github.com/bluez/bluez/wiki/test%E2%80%90runner) 包括协议测试器与内核 VM 方式 | Virtual、实际实现 selftests、VM 真设备，分别标注范围，不能把 fixture 当作实机 |
 
-| 特性 | BlueZ | SparkLink |
-|------|-------|-----------|
-| 设备结构体 | `struct hci_dev` (~150 字段) | `SleDev` + `PerDeviceState` |
-| 设备注册 | `hci_register_dev()` | ioctl `DEV_REGISTER` |
-| 控制接口 | HCI socket + mgmt socket | `/dev/sparklink` ioctl |
-| 多设备支持 | 每设备独立 hci_dev 实例 | 最多 8 个虚拟控制器，swap-on-switch |
-| sysfs 集成 | `/sys/class/bluetooth/hci0/` | configfs `/sys/kernel/config/sparklink/` |
+这是设计借鉴，不表示协议或 Profile 一一对应。最终职责、socket/UAPI 契约及
+迁移门禁见 [ADR 0001](decisions/0001-management-channel-service-boundaries.md)。
 
-**差异分析**：BlueZ 为每个蓝牙控制器创建独立的 hci_dev 实例和独立的 socket 接口。SparkLink 使用单一字符设备 + 设备 ID 选择的模型，简化了用户态接口但牺牲了多进程并发操作不同控制器的能力。
+## 当前能力按证据判断
 
-### 2.2 传输层
+| SparkLink 项目 | 已有证据 | 未决条件 |
+|---|---|---|
+| WS73 Native discovery | VM 两只真实 WS73 20+2 轮，普通用户、同 daemon、物理重接；动态 adapter/独立事件/snoop | 故障根因及完整自主恢复；四设备两组并行；完整服务 sandbox |
+| 人工错误恢复 | 单对象 bulk IN81 注入，真实 RF 后恢复新 generation，幸存者不变 | 不能证明自然消失/重枚举根因闭合；宿主原生对照未授权/未执行 |
+| 连接/socket | 影子TX ring/重复提交已删，解析wire handle并在backend成功后记账，实际Rust/C边界测试通过 | credit/协议/通道状态仍待接通；原生socket未实现，无真实数据通道验收 |
+| 安全/Bond | 危险旧配对/测试密钥降级已删，FFI失败传播；Bond元数据及错误边界测试存在 | 每连接认证、标准向量、真实安装/可恢复凭据、Agent互通 |
+| SSAP/Profile/HID | 未达标准旧wire Engine/通知队列已删；权限命名/转换/入口已对齐，实验框架隔离 | 用户态Engine/PDU socket、每peer权限/预算/credit/ACK、请求路由、服务和应用互通 |
+| 其他 backend/发布 | UART/SPI不再伪造成功，Virtual模型/部署文件存在；固定提交9个严格CI作业成功 | 真实backend、Proxy、权限/PM/完整构建/兼容/全sandbox矩阵 |
 
-| 传输 | BlueZ | SparkLink |
-|------|-------|-----------|
-| USB | `btusb.c` (3,800+ 行) | `sle_usb.rs` + `sle_usb_ffi.c` (2,718 行) |
-| UART | `hci_ldisc.c` + `hci_uart.h` + 多协议 | `sle_uart.rs` (530 行) |
-| SPI | 无标准支持 | `sle_spi.rs` (474 行) |
-| SDIO | `btsdio.c` | 定义了 BusType::Sdio 但未实现 |
-| 虚拟设备 | `hci_vhci.c` | `sparklink_virtual.rs` (32 行) |
+[物理证据](evidence/ws73-vm-physical-20261010.json)和
+[人工恢复证据](evidence/ws73-vm-artificial-recovery-20261010.json)保留其历史
+源码/hash 范围；后续源码变动须重新回归。U10 仍 7/8，全 S0–S6/issues 保持开放。
 
-**差异分析**：BlueZ 的 USB 驱动支持数百种蓝牙芯片的 vendor 特定初始化。SparkLink 的传输层更精简但缺少厂商适配层。
+## 纠正此前判断
 
-### 2.3 协议层
+Rust 可约束部分错误，不能自动消除竞态、协议错误或 FFI 生命周期风险。
+代码行数、ioctl 数量、框架/配置文件的存在都不能证明架构或支持更完整。
+BlueZ 有虚拟设备、协议测试器和内核 VM 测试；旧文档称其缺少系统测试不成立。
+原始硬件控制参数更多也不代表应用体验更好。
 
-| 协议/功能 | BlueZ | SparkLink | 状态 |
-|-----------|-------|-----------|------|
-| 空口帧编解码 | HCI (标准化) | SLE PDU + DLI | 完整 |
-| 连接管理 | `hci_conn.c` (4,500+ 行) | `sle_conn.rs` (3,071 行) | 完整 |
-| 安全配对 | SMP (`smp.c` 3,847 行) | `sle_security.rs` (977 行) | 完整 |
-| 广播/扫描 | HCI LE Adv | `sle_adv.rs` (863 行) | 完整 |
-| 服务发现 | SDP / GATT | SSAP (`sle_ssap.rs` 2,480 行) | 完整 |
-| L2CAP | `l2cap_core.c` (7,900+ 行) | 无独立 L2CAP | 星闪标准不需要 |
-| RFCOMM | `rfcomm/` 子目录 | 不适用 | 星闪标准无此需求 |
-| SCO 音频 | `sco.c` (1,608 行) | 同步链路 via Sync Link | 部分对应 |
-| ISO 同步 | `iso.c` | CIG/BIG via Sync Link | 设计对应 |
-| 6LoWPAN | `6lowpan.c` | 不适用 | 星闪标准无此需求 |
-| 功率管理 | HCI Sniff/Hold/Park | `sle_power.rs` 4 状态 | 完整 |
-| AFH 跳频 | HCI 命令实现 | `sle_phy.rs` + AFH ioctl | 完整 |
-| RAL/RPA | 内核 + bluetoothd | `sle_security.rs` RPA 管理 | 完整 |
-| Mesh 网络 | 用户态 mesh-cfgclient | 不适用 | 未来可能需要 |
+generation、owner、恢复状态和证据链是我们的设计重点，需要隔离/失败回归证明。
+竞争验收比较可重复的多设备隔离、异常恢复、安全拒绝、服务互通和应用集成。
+吞吐、延迟分位数、功耗要有同条件 Bluetooth 基线才可比较，目前不宣称领先。
+清理安排见[生产调用审计](LEGACY_CLEANUP_20261011.md)，不以全局 allow(dead_code)
+或过时“已完成”标记替代接通与验收。
 
-### 2.4 管理接口
+旧内核SSAP wire Engine已因标准格式不符限制并移除；用户态标准Engine尚未接通，不能将历史codec用例或本地staging视为服务互通。见[当前边界](SSAP_LEGACY_CONTAINMENT.md)。
 
-| 特性 | BlueZ | SparkLink |
-|------|-------|-----------|
-| 管理协议 | mgmt socket (`mgmt.c` 10,000+ 行) | ioctl (sparklink_core.rs 3,992 行) |
-| 命令数量 | 70+ mgmt 操作码 | 126 个 ioctl |
-| 事件推送 | mgmt 事件 + HCI 事件 | EventQueue + poll |
-| Netlink | 无 | Generic Netlink（可选） |
+2026-10-11再次收到的分析已对最新bde171beb2e0/aece3407e1c1核对；
+[权限整改与实际调用门禁](SSAP_OPERATIONS.md)、
+[新镜像20+2回归](evidence/ws73-vm-ssap-operations-regression-20261011.json)和
+[CI](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)记录当前变化。
+保留物理历史证据及其xHCI warning，不用本批无warning替代历史故障根因。
 
-## 3. 用户态对比
+后续`3a6669114069`/`6c06b8f9ef83`的
+[7类live read及20+2回归](evidence/ws73-vm-live-event-copy-20261011.json)增加实际
+用户copy证据，完整事件/自然恢复/连接socket/SSAP/安全门禁仍OPEN。当前再次
+收到同一分析已按最新实现核对；没有架构回退或新的性能领先结论。
 
-### 3.1 守护进程
+`f1704a2e44dc`/`04b48467d49c`后续删除旧默认PHY/提前加密状态来源，隔离模型并
+拒绝未接通入口。[新镜像回归](evidence/ws73-vm-link-state-cleanup-20261011.json)
+证明WS73 discovery/read保持，不能被解释为真实PHY、安全事务或完整生态已交付。
 
-| 特性 | bluetoothd | slkd |
-|------|-----------|------|
-| 代码量 | ~130,000 行 C | ~1,900 行 Rust |
-| D-Bus 接口数 | 10+ | 8 |
-| Profile 插件 | 30+ 个 profile 插件 | 无插件机制 |
-| 配置 | `/etc/bluetooth/main.conf` | TOML 配置文件 |
-| 音频集成 | PulseAudio/PipeWire 对接 | 不适用 |
-| 网络 | PAN/BNEP 集成 | 不适用 |
 
-**差异分析**：bluetoothd 的体量来自其庞大的 Profile 插件系统（A2DP、HFP、HID、PAN 等），每个 Profile 都是独立的 C 源文件。SparkLink 目前只实现了核心管理功能，没有引入 Profile 插件架构。
+## 最早原始期限调度生产修复及新镜像回归（整项仍开放）
 
-### 3.2 D-Bus 接口
+[本批实际证据](evidence/ws73-vm-deadline-rearm-20261011.json)为K`016aa7ee6813`／
+实际编译U`b6d6bf96101e`。本设备RX立即处理诊断提交/同ID重试，并按author、
+active wire、recipe和revocation最早原期限重新排期；取消仍保留active reservation。
+32项实际源码边界测试和匹配CI九作业通过；真实普通用户WS7320＋2轮最长470ms，
+同slkd、幸存generation保持，人工IN81注入目标重获Ready约10.350秒。
+排队请求静默800.173215ms后统计已计入一次expiry，早于首次RESULT；完整结果及
+此前所有copyout、取消、淘汰、旧注册拒绝和wire门禁保持。USB1431零drop、
+warning0/taint0/traceoverrun0，host四只释放在位；无宿主部署或人工拔插。
 
-| BlueZ D-Bus 接口 | SparkLink 对应 | 状态 |
-|-------------------|---------------|------|
-| `org.bluez.Adapter1` | `org.sparklink.Adapter` | 完整 |
-| `org.bluez.Device1` | `org.sparklink.Device` | 完整 |
-| `org.bluez.GattManager1` | `org.sparklink.ServiceManager` | 完整 |
-| `org.bluez.GattService1` | `org.sparklink.RemoteService` | 完整 |
-| `org.bluez.GattCharacteristic1` | SSAP 属性 via RemoteService | 简化合并 |
-| `org.bluez.AgentManager1` | 安全功能合并至 Security | 简化 |
-| `org.bluez.ProfileManager1` | 无 | **缺失** |
-| `org.bluez.MediaControl1` | 不适用 | 星闪无音频 Profile |
-| `org.bluez.NetworkServer1` | 不适用 | 星闪无 PAN Profile |
-| `org.bluez.Input1` | 不适用 | 星闪无 HID Profile |
-| — | `org.sparklink.ExtAdv` | SparkLink 独有 |
-| — | `org.sparklink.Controller` | SparkLink 独有 |
-
-### 3.3 CLI 工具
-
-| 特性 | bluetoothctl | slctl |
-|------|-------------|-------|
-| 交互模式 | REPL + 菜单 | REPL |
-| 命令数量 | 60+ | 30+ |
-| Tab 补全 | 支持 | 基于 rustyline |
-| 配色输出 | 支持 | 基础支持 |
-| 设备列表 | `devices` | `devices` |
-| 扫描 | `scan on/off` | `scan` |
-| 配对 | `pair <addr>` | `pair <addr>` |
-| 连接 | `connect <addr>` | `connect <addr>` |
-| Agent | `agent on/off` | 通过 Security 接口 |
-| GATT | `menu gatt` + 子命令 | `services`/`read`/`write` |
-| 广播 | `advertise on/off` | `advertise`/`extadv` |
-
-### 3.4 用户态库
-
-| 特性 | libbluetooth | libsparklink |
-|------|-------------|--------------|
-| 语言 | C | Rust + C FFI |
-| API 风格 | HCI socket + BSD socket | Adapter 方法 + unsafe FFI |
-| 头文件 | `bluetooth/bluetooth.h` 等 | `sparklink.h` |
-| pkg-config | `bluez` | 待添加 |
-| 编程语言绑定 | Python (pybluez)、Go 等 | C FFI（可桥接任何语言） |
-
-## 4. SparkLink 相对于 BlueZ 的缺失功能
-
-### 4.1 必须补充的功能
-
-| 功能 | 优先级 | 说明 |
-|------|--------|------|
-| **~~Profile 插件框架~~** | ~~高~~ | ✅ 已实现。Profile trait + ProfileRegistry + BatteryProfile + DeviceInfoProfile + HidProfile |
-| **~~pkg-config 支持~~** | ~~高~~ | ✅ 已添加 sparklink.pc |
-| **~~systemd 服务文件~~** | ~~高~~ | ✅ 已存在 sparklink.service |
-| **~~udev 规则~~** | ~~高~~ | ✅ 已添加 99-sparklink.rules |
-| **~~D-Bus 策略文件~~** | ~~高~~ | ✅ 已更新 sparklink.conf（包含 ExtAdv + Controller 接口） |
-| **~~man page~~** | ~~中~~ | ✅ 已添加 slkd(8), slctl(1), sparklink.conf(5) |
-| **~~设备 bonding 持久化~~** | ~~中~~ | ✅ 已实现。BondingStore 保存到 /var/lib/sparklink/ |
-| **Agent 代理机制** | 中 | BlueZ 的 Agent 允许用户态应用接管配对交互流程 |
-
-### 4.2 建议参考的功能
-
-| 功能 | 优先级 | 说明 |
-|------|--------|------|
-| 蓝牙/星闪共存管理 | 低 | 如果设备同时支持 BT 和 SLE，需要频谱共存策略 |
-| 网络桥接 (PAN) | 低 | 星闪标准暂无网络桥接需求 |
-| 音频支持 | 低 | 星闪标准暂无音频 Profile |
-| HID Profile | 低 | ✅ 已实现。基于 T/XS 30013-2025 标准，支持键盘/鼠标/触控笔/高刷新率鼠标 |
-| LED 状态指示 | 低 | BlueZ 的 `leds.c` 控制蓝牙指示灯 |
-| coredump 支持 | 低 | BlueZ 提供 controller coredump 机制 |
-| AOSP 扩展 | 不需要 | Android 专用 |
-| MSFT 扩展 | 不需要 | Microsoft 专用 |
-
-### 4.3 SparkLink 独有的优势
-
-| 功能 | 说明 |
-|------|------|
-| Rust 类型安全 | 内核层使用 Rust，编译期消除内存安全和并发问题 |
-| 统一 ioctl 接口 | 126 个 ioctl 覆盖全部功能，比 BlueZ 的 HCI socket + mgmt socket 更统一 |
-| 内核内置测试 | 96 个 selftest 用例在 QEMU 中运行，BlueZ 缺少内核侧的系统测试 |
-| 扩展广播管理 | 独立的 ExtAdv 接口提供比 BlueZ 更细粒度的广播控制 |
-| 控制器全面暴露 | Controller 接口直接暴露 PHY/PM/AFH/DLI/RAL/测距，BlueZ 隐藏内部实现 |
-| Sync Link | CIG/BIG 统一管理接口，比 BlueZ ISO socket 更简洁 |
-| SPI 传输 | 原生 SPI 控制器支持，BlueZ 无此功能 |
-
-## 5. 架构改进建议
-
-### 短期 (P0) —— 全部完成
-
-1. ~~**添加 systemd 服务文件**~~ ✅
-2. ~~**添加 D-Bus 策略文件**~~ ✅
-3. ~~**添加 udev 规则**~~ ✅
-4. ~~**添加 pkg-config 文件**~~ ✅
-5. ~~**修复 GetDevices 返回类型**~~ ✅
-
-### 中期 (P1) —— 全部完成
-
-1. ~~**实现配对信息持久化**~~ ✅ bonding.rs
-2. ~~**引入 Profile 注册框架**~~ ✅ profile.rs + hid.rs
-3. ~~**补全 CLI 命令**~~ ✅ 39 个命令
-4. ~~**编写 man page**~~ ✅ slkd(8), slctl(1), sparklink.conf(5)
-5. **HID Profile** ✅ 基于 T/XS 30013-2025 标准
-
-### 长期 (P2)
-
-1. **SSAP Profile 标准化** — 定义 SLE 等价的 GATT Profile 规范
-2. **蓝牙共存** — 与 BlueZ 协调频谱使用
-3. **跨平台 CI** — 在多架构上运行 QEMU 测试
+这是新生产调度的路径回归，不证明精确100ms或时延上界、active USB超时、held
+cancel/abort/close/drain、完整并发/权限/移除。旧调用者/shared ring/fallback和内核
+全局dead-code清理与生命周期并行；自然故障根因、无人工恢复、历史物理xHCI警告
+仍OPEN。最小socket、用户态SSAP、安全/Bond/Profile及完整S0–S6继续推进，
+北极星7/8、VM-only不变，部分成果不关闭整项 issue。

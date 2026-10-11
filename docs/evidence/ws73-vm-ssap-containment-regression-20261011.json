@@ -1,0 +1,615 @@
+{
+  "status": "RECOVERY_RX_CORROBORATED_SUPPORT_ONLY",
+  "scope": "default-daemon WS73 discovery/recovery regression after legacy SSAP wire engine and unowned notification removal",
+  "kernel_release": "7.0.0-rc6-opensparklink-native-lab+",
+  "kernel_head": "4d8a0d61673d77c5fd104d219346e0a2d3e23ef2",
+  "compiled_userspace_head": "558f5560e8ce60a9c65fd626843017bf5e0534d1",
+  "host_installation": false,
+  "native_host_acceptance": false,
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "systemd_sandbox_acceptance": false,
+  "board_qualification": "NOT_ASSERTED",
+  "firmware_runtime_version_qualification": "NOT_ASSERTED",
+  "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "qemu_sha256": "d27bb224e2ea95b8246033fab7058c13f30e817bd978343441321934fc9e042e",
+  "kernel_image_sha256": "1faf00a7e00c30d165c08e70e20e6aa94f9ff2946282714033578ece5e174c5a",
+  "application_identity": {
+    "uids": [
+      1000,
+      1000,
+      1000,
+      1000
+    ],
+    "cap_eff": "0000000000000000",
+    "cap_prm": "0000000000000000",
+    "cap_amb": "0000000000000000",
+    "groups": [
+      1000,
+      1002
+    ]
+  },
+  "initial": [
+    {
+      "port": "1-1",
+      "bus": 1,
+      "device": 2,
+      "index": 0,
+      "generation": 1,
+      "path": "/org/sparklink/slk0_g1",
+      "address": "00:01:09:32:54:F9",
+      "version": "016c00a100"
+    },
+    {
+      "port": "1-2",
+      "bus": 1,
+      "device": 3,
+      "index": 1,
+      "generation": 2,
+      "path": "/org/sparklink/slk1_g2",
+      "address": "00:01:09:32:54:CD",
+      "version": "016c00a100"
+    }
+  ],
+  "replacement": {
+    "port": "1-1",
+    "bus": 1,
+    "device": 2,
+    "index": 0,
+    "generation": 3,
+    "path": "/org/sparklink/slk0_g3",
+    "address": "00:01:09:32:54:F9",
+    "version": "016c00a100"
+  },
+  "daemon_before": {
+    "pid": 518,
+    "start_ticks": 343
+  },
+  "daemon_after": {
+    "pid": 518,
+    "start_ticks": 343
+  },
+  "bus_owner_unchanged": true,
+  "fault_method": "QMP_GUEST_TRANSPORT_ERROR_ONCE",
+  "injected_count": 1,
+  "discarded_host_success_bytes": 178,
+  "fault_command_exit": 1,
+  "observed_native_failure_errno": -110,
+  "recovery_budget_before": "attempts=1 limit=2 uploads=0 upload_limit=3 cause=-110 result=0 exhausted=0 deadline_ms=133818 stable_since_ms=16137",
+  "recovery_budget_after": "attempts=2 limit=2 uploads=0 upload_limit=3 cause=-110 result=0 exhausted=0 deadline_ms=133818 stable_since_ms=0",
+  "fault_command_to_new_ready_ms": 10204.608928,
+  "capture_packets": 1163,
+  "capture_drops": 0,
+  "rx_proofs": 22,
+  "trace_overruns": 0,
+  "kernel_warning_count": 0,
+  "vm_taint": 0,
+  "cleanup": [
+    {
+      "port": "1-1",
+      "status": "STOP_CONFIRMED"
+    },
+    {
+      "port": "1-2",
+      "status": "STOP_CONFIRMED"
+    }
+  ],
+  "rounds": [
+    {
+      "phase": "initial",
+      "round": 1,
+      "marker": "2692377f5df0d59174841cbd14590bf9",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 1,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "2692377f5df0d59174841cbd14590bf9",
+        "data": "ff290101010b24736c6b2d3236393233373766356466306435393137343834316362643134353930626639",
+        "kernel_boottime_ns": 28221458224,
+        "elapsed_ms": 312,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 2,
+      "marker": "d37b123d8121c2bd49925f75e7c2f612",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "d37b123d8121c2bd49925f75e7c2f612",
+        "data": "ff290101010b24736c6b2d6433376231323364383132316332626434393932356637356537633266363132",
+        "kernel_boottime_ns": 28759199351,
+        "elapsed_ms": 465,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 3,
+      "marker": "f71e7089aac0d92473b1c24d1abfb171",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 2,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -16,
+        "marker": "f71e7089aac0d92473b1c24d1abfb171",
+        "data": "ff290101010b24736c6b2d6637316537303839616163306439323437336231633234643161626662313731",
+        "kernel_boottime_ns": 29281529822,
+        "elapsed_ms": 468,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 4,
+      "marker": "22630949b9c5fb9ea0574f73505f886d",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 2,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -13,
+        "marker": "22630949b9c5fb9ea0574f73505f886d",
+        "data": "ff290101010b24736c6b2d3232363330393439623963356662396561303537346637333530356638383664",
+        "kernel_boottime_ns": 29805135084,
+        "elapsed_ms": 467,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 5,
+      "marker": "dddf2a5e8b6f808d08d12f2dc7cb9c4a",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 3,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -14,
+        "marker": "dddf2a5e8b6f808d08d12f2dc7cb9c4a",
+        "data": "ff290101010b24736c6b2d6464646632613565386236663830386430386431326632646337636239633461",
+        "kernel_boottime_ns": 30331584656,
+        "elapsed_ms": 470,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 6,
+      "marker": "ad482a5c65d86a0b14c9765b1514310d",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 3,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "ad482a5c65d86a0b14c9765b1514310d",
+        "data": "ff290101010b24736c6b2d6164343832613563363564383661306231346339373635623135313433313064",
+        "kernel_boottime_ns": 30548235782,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 7,
+      "marker": "270eaf312e26b9bdc91e5c9f89ad6f24",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 4,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "270eaf312e26b9bdc91e5c9f89ad6f24",
+        "data": "ff290101010b24736c6b2d3237306561663331326532366239626463393165356339663839616436663234",
+        "kernel_boottime_ns": 30909999240,
+        "elapsed_ms": 313,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 8,
+      "marker": "567f920c3558d3799eda7c1d88e2b6e9",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 4,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -11,
+        "marker": "567f920c3558d3799eda7c1d88e2b6e9",
+        "data": "ff290101010b24736c6b2d3536376639323063333535386433373939656461376331643838653262366539",
+        "kernel_boottime_ns": 31287339819,
+        "elapsed_ms": 315,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 9,
+      "marker": "d7279006e2ec67a0c30d5773597f8fd7",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 5,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -18,
+        "marker": "d7279006e2ec67a0c30d5773597f8fd7",
+        "data": "ff290101010b24736c6b2d6437323739303036653265633637613063333064353737333539376638666437",
+        "kernel_boottime_ns": 31819164038,
+        "elapsed_ms": 468,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 10,
+      "marker": "5bcaa6a6b5ba14d27b3cd0f17d376e08",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 5,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -13,
+        "marker": "5bcaa6a6b5ba14d27b3cd0f17d376e08",
+        "data": "ff290101010b24736c6b2d3562636161366136623562613134643237623363643066313764333736653038",
+        "kernel_boottime_ns": 32054663188,
+        "elapsed_ms": 162,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 11,
+      "marker": "b889f971f249854f877e9da11c01854c",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 6,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -14,
+        "marker": "b889f971f249854f877e9da11c01854c",
+        "data": "ff290101010b24736c6b2d6238383966393731663234393835346638373765396461313163303138353463",
+        "kernel_boottime_ns": 32749718769,
+        "elapsed_ms": 602,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 12,
+      "marker": "04ff16e455e9a4c3bf3a3637292a38de",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 6,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -14,
+        "marker": "04ff16e455e9a4c3bf3a3637292a38de",
+        "data": "ff290101010b24736c6b2d3034666631366534353565396134633362663361333633373239326133386465",
+        "kernel_boottime_ns": 33441397978,
+        "elapsed_ms": 622,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 13,
+      "marker": "2d5a1a8d55ef768c115c60b82a201d51",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 7,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "2d5a1a8d55ef768c115c60b82a201d51",
+        "data": "ff290101010b24736c6b2d3264356131613864353565663736386331313563363062383261323031643531",
+        "kernel_boottime_ns": 33989619793,
+        "elapsed_ms": 469,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 14,
+      "marker": "a407c6e7db8d3edeb9c0f2f278da0121",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 7,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "a407c6e7db8d3edeb9c0f2f278da0121",
+        "data": "ff290101010b24736c6b2d6134303763366537646238643365646562396330663266323738646130313231",
+        "kernel_boottime_ns": 34535441967,
+        "elapsed_ms": 469,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 15,
+      "marker": "3a736ea9f30c438ca8c4a36b6b572725",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 8,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "3a736ea9f30c438ca8c4a36b6b572725",
+        "data": "ff290101010b24736c6b2d3361373336656139663330633433386361386334613336623662353732373235",
+        "kernel_boottime_ns": 34771354135,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 16,
+      "marker": "22210bead9e6531fff9f3ccaa94463c3",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 8,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -16,
+        "marker": "22210bead9e6531fff9f3ccaa94463c3",
+        "data": "ff290101010b24736c6b2d3232323130626561643965363533316666663966336363616139343436336333",
+        "kernel_boottime_ns": 35002304163,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 17,
+      "marker": "e4eaa1f42ebc107fed32fc044939b87c",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 9,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -16,
+        "marker": "e4eaa1f42ebc107fed32fc044939b87c",
+        "data": "ff290101010b24736c6b2d6534656161316634326562633130376665643332666330343439333962383763",
+        "kernel_boottime_ns": 35541793905,
+        "elapsed_ms": 466,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 18,
+      "marker": "df1a15021729344568ca0d8602b10d81",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 9,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "df1a15021729344568ca0d8602b10d81",
+        "data": "ff290101010b24736c6b2d6466316131353032313732393334343536386361306438363032623130643831",
+        "kernel_boottime_ns": 36230321606,
+        "elapsed_ms": 621,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 19,
+      "marker": "8bd60f327740f37ded6510f02e64619a",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 10,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "8bd60f327740f37ded6510f02e64619a",
+        "data": "ff290101010b24736c6b2d3862643630663332373734306633376465643635313066303265363436313961",
+        "kernel_boottime_ns": 36804705496,
+        "elapsed_ms": 468,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 20,
+      "marker": "0d66b7d197d14eb4f655eb7fd203211f",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 10,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -10,
+        "marker": "0d66b7d197d14eb4f655eb7fd203211f",
+        "data": "ff290101010b24736c6b2d3064363662376431393764313465623466363535656237666432303332313166",
+        "kernel_boottime_ns": 37058984752,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 1,
+      "marker": "97bedaddb17e45e88bdd9798ffa97c08",
+      "tx_generation": 3,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 11,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -11,
+        "marker": "97bedaddb17e45e88bdd9798ffa97c08",
+        "data": "ff290101010b24736c6b2d3937626564616464623137653435653838626464393739386666613937633038",
+        "kernel_boottime_ns": 49999370539,
+        "elapsed_ms": 315,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 2,
+      "marker": "178ea3dd0160f19a23d0b2f61732c37e",
+      "tx_generation": 2,
+      "rx_generation": 3,
+      "match": {
+        "generation": 3,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "178ea3dd0160f19a23d0b2f61732c37e",
+        "data": "ff290101010b24736c6b2d3137386561336464303136306631396132336430623266363137333263333765",
+        "kernel_boottime_ns": 50283307576,
+        "elapsed_ms": 151,
+        "lost": 0
+      }
+    }
+  ],
+  "development_tests": {
+    "ssap_containment": {
+      "status": "SSAP_LEGACY_CONTAINMENT_PASS",
+      "rust_tests": 8,
+      "scope": "actual full local database/session module with allocation dependency fixture; one historical codec test",
+      "standard_ssap_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_ssap.rs": "46f3c70cc9e7263fe673421f3c1c43f41ef1b528f42059c770878ea525ddd92b",
+        "sparklink_core.rs": "105b818183c2573437a203bdf0effcd7b1de577633b18abf89d371cc440e7928",
+        "sle_workers.rs": "79c85393783eb0ccbcc89772fe57d52a47b8fb5fe6c240fe4c64c4cb04bcb715"
+      },
+      "remaining": [
+        "Userspace standard codec/fragment controls, permissions and authenticated per-peer database",
+        "PDU socket owner, deadline/budget/credit/commit semantics and real peer interoperability"
+      ]
+    },
+    "connection_tx": {
+      "status": "CONNECTION_TX_SUBMISSION_BOUNDARY_PASS",
+      "scope": "actual sender/ioctl/legacy USB bodies with dependency fixtures; not socket/protocol/RF qualification",
+      "physical_acceptance": false,
+      "socket_acceptance": false,
+      "rust_tests": 11,
+      "usb_boundaries": [
+        "range",
+        "allocation",
+        "errno",
+        "all short completions",
+        "exact completion",
+        "max length"
+      ],
+      "sources": {
+        "sle_conn.rs": "272b27cacd871e43f3183b0c69ef5a9a5c42b73866bb30c295fb3a14303ac3a3",
+        "sparklink_core.rs": "105b818183c2573437a203bdf0effcd7b1de577633b18abf89d371cc440e7928",
+        "sle_usb_ffi.c": "23548b594694c6ed65e60f0fff53198e0f964911d252a898b5892bbc6a1b116e"
+      }
+    },
+    "security": {
+      "status": "SECURITY_FAILURE_BOUNDARY_PASS",
+      "physical_acceptance": false,
+      "scope": "actual Rust wrappers/security + C CTR body; mocked dependencies, not crypto vectors or RF",
+      "sources": {
+        "sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+        "sle_security.rs": "79f1db6ba74123e219169cf749fa1a4d9073646044c1b02cde5a2bc9869ca066",
+        "sle_crypto_ffi.c": "a2b13603d1fd8503b991edcd6d6a70ec8409b851ba48e9a4e1a41c09d82dfbf7"
+      },
+      "ctr_body_sha256": "9cdc334d7350c9ef5c5e044df39beb438bfbe68a643afbbfa2bcd74de03fb29a",
+      "rust_tests": 6,
+      "c_fault_stages": 5,
+      "remaining": [
+        "Per-connection authenticated pairing/relay/real encryption installation",
+        "Standard crypto vectors, zeroization audit and real peer interoperability",
+        "New kernel VM WS73 discovery/recovery regression"
+      ]
+    },
+    "backend": {
+      "status": "BACKEND_CONTAINMENT_PASS",
+      "sources": {
+        "sle_uart.rs": {
+          "sha256": "73cd7d549899b04558682ee785bc6858a536e1864282830d2376999e58c15e0d",
+          "methods_sha256": "0c3b79e855cedc07c5ddbf0ea7a02ebb03f5b199e8013674064d26a08c6a573f"
+        },
+        "sle_spi.rs": {
+          "sha256": "21102a8b895f6b7ec873a6367ef6a50541753edc9d82143b17af827ab8230fe0",
+          "methods_sha256": "6852e16fcc5833de95dec4b1b44601abe8a6eb2d5e78dadbf0b122bd0029db87"
+        }
+      },
+      "tests": 2,
+      "scope": "actual trait method bodies with fixture types; no UART/SPI hardware/framing qualification",
+      "physical_acceptance": false
+    },
+    "python_abi_tests": 29,
+    "strict_checks": "default bundle rebuilt with -D warnings; all-targets/all-features check/clippy and 160 Rust tests run remotely; crate source unchanged",
+    "workspace_tests": 160,
+    "tooling_tests": 141,
+    "remote_ci": {
+      "run_id": 38079779731,
+      "userspace_head": "558f5560e8ce60a9c65fd626843017bf5e0534d1",
+      "kernel_pin": "4d8a0d61673d77c5fd104d219346e0a2d3e23ef2",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": 9,
+      "actual_kernel_log_verified": true,
+      "rust_ssap_tests": 8,
+      "rust_connection_tx_tests": 11
+    }
+  },
+  "artifact_sha256": {
+    "capture": "ea721fe5ba01360a7a600648af552119ba07ab302c49e4fcaf978b22398372a1",
+    "control": "6bf04df44d043fce09d221d2805d4909f60d2a392d2b96e160a0956d4fa8e8d7",
+    "run_manifest": "f72ada2b59bd7768588c8bf336623f93eac41892f8bbc07f77438111d468b72e",
+    "prepared_manifest": "ece1ca54e7a924e3804dadf65dfd1bf9f678fddf01a786754e328a969c0877e3",
+    "kernel_log": "4f2ab55bbb3a316f50089c7fb9f120a109ea46e45a9ccbd277ed397642cfcf9f",
+    "xhci_trace": "52c2cee5ef6b4094cf0cf3e29a0f55507e2a0753fd2e5242589507b6aafb39d0",
+    "xhci_trace_stats": "ce3f709e2094f66ef611843ea7dd67beaa828df386bded9c547b7d663cd560d6",
+    "qmp": "70c22cd2bd79ffb3270aae3506c1c73aafb1e1076d4391fd4105f9edab21818b",
+    "host_inventory": "6bb3ffa688acb90b5c684a83109951fcb41ead71261881cdf85963e9b371eedc",
+    "kernel_build_log": "7d461e046403d9f8c05366956277fad2c2eac819bac9d24a0750d00ac1e8bebe",
+    "ssap_test_log": "6ef798c7e44ffdaa30fd68718e70f18cfbb8e087eb8c98af2a89d413a1c70a47",
+    "tx_test_log": "6a25631521c131ac289aa8e5902a194a9d1a9c0f46d4053c2f7c03cbaf6540aa",
+    "tool_test_log": "992c498eea4bc93ec7da8538b32ffac6aa2f31a7d01dbf8339f028068f6e3a03",
+    "host_diagnostics": "0f8dd655663d3026d312f165e1260782de243c995be40f43f785d93027ed3640",
+    "security_test_log": "2af6f2e430862655d16373c1e6d6dd102ce85500bf01fce229757b95b263bd79",
+    "python_abi_log": "c8a063e79bd9d06c907f58ad67a1ec0e56873be86da9d5000700958e952579bf",
+    "ci_kernel_log": "f8250b2bd8c27a0a6f3341d1a830e86bf2a5fa8a2e90757f0bba408a14f6e528"
+  },
+  "diagnostic_chain": [
+    "one host-success IN81 discarded; guest USB Transaction Error/Reset Endpoint",
+    "1001 timeout -110; old controller generation retires",
+    "bounded four-second per-device protocol restore; fresh metadata/generation3",
+    "survivor generation2 unchanged; same slkd pid/start ticks and bus owner",
+    "20 initial + 2 recovery alternating random-marker RF matches, each <=10s"
+  ],
+  "remaining": [
+    "Authenticated per-connection security, standard vectors and real encryption installation remain unavailable",
+    "Natural startup/disappearance/re-enumeration root cause and complete autonomous recovery unresolved",
+    "Physical-unplug xHCI warning, single/two/four-device matrix, complete sandbox remain open",
+    "Host-native comparison not authorized; VM results do not replace it",
+    "Old SSAP wire engine removed; userspace standard Engine/socket and local-staging/UAPI caller migration remain open alongside security/event/backend work"
+  ]
+}

@@ -8,7 +8,13 @@ edition.workspace = true
 name = "slkd"
 path = "src/main.rs"
 
+[features]
+default = []
+# Unqualified legacy kernel-SSAP profile registration; never native WS73.
+experimental-legacy-profiles = ["dep:slk-experimental"]
+
 [dependencies]
+slk-experimental = { path = "../slk-experimental", optional = true }
 anyhow = "1"
 slk-protocol = { workspace = true }
 libsparklink = { workspace = true }
@@ -22,3 +28,6 @@ tracing-subscriber = { workspace = true }
 tracing-journald = { workspace = true }
 clap = { workspace = true }
 thiserror = { workspace = true }
+
+[dev-dependencies]
+slk-experimental = { path = "../slk-experimental" }

@@ -33,6 +33,8 @@ def _load_lib():
         pkg_dir / "libsparklink.so",
         pkg_dir.parent.parent.parent / "target" / "release" / "libsparklink.so",
         pkg_dir.parent.parent.parent / "target" / "debug" / "libsparklink.so",
+        pkg_dir.parent.parent.parent / "target" / "release" / "liblibsparklink.so",
+        pkg_dir.parent.parent.parent / "target" / "debug" / "liblibsparklink.so",
     ]:
         if candidate.is_file():
             return ctypes.CDLL(str(candidate))
@@ -196,9 +198,11 @@ class Adapter:
 
     def ssap_write(self, handle, data):
         rw = SsapReadWrite()
+        if len(data) > len(rw.data):
+            raise ValueError("legacy SSAP write exceeds 252 bytes")
         rw.handle = handle
         rw.length = len(data)
-        for i, b in enumerate(data[: min(len(data), 252)]):
+        for i, b in enumerate(data):
             rw.data[i] = b
         self._check(_get_lib().slk_ssap_write(self._handle, ctypes.byref(rw)), "ssap_write")
 

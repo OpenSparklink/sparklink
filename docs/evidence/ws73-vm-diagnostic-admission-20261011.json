@@ -1,0 +1,1604 @@
+{
+  "status": "RECOVERY_RX_CORROBORATED_SUPPORT_ONLY",
+  "scope": "Caller-keyed Native metadata admission happy path; sixteen actual diagnostic-result syscall cases, four actual slkconfig queries and eight captured command/reply pairs; legacy read7 and real dual-WS7320+2/artificial IN81 recovery regression. Submission copyout idempotency and on-wire cancellation have development fixture evidence only, not live acceptance.",
+  "kernel_release": "7.0.0-rc6-opensparklink-native-lab+",
+  "kernel_head": "c89e961b80a2b99922ddd0715590c01edfe39c88",
+  "compiled_userspace_head": "df9cff7d750dd889ea7403d8a53906f92d3faf46",
+  "host_installation": false,
+  "native_host_acceptance": false,
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "systemd_sandbox_acceptance": false,
+  "board_qualification": "NOT_ASSERTED",
+  "firmware_runtime_version_qualification": "NOT_ASSERTED",
+  "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "qemu_sha256": "d27bb224e2ea95b8246033fab7058c13f30e817bd978343441321934fc9e042e",
+  "kernel_image_sha256": "4c5c8383b3ecfad5b8bd687876e1f23ff99b233ead82deb0294e998d6d791a48",
+  "application_identity": {
+    "uids": [
+      1000,
+      1000,
+      1000,
+      1000
+    ],
+    "cap_eff": "0000000000000000",
+    "cap_prm": "0000000000000000",
+    "cap_amb": "0000000000000000",
+    "groups": [
+      1000,
+      1002
+    ]
+  },
+  "initial": [
+    {
+      "port": "1-1",
+      "bus": 1,
+      "device": 2,
+      "index": 0,
+      "generation": 1,
+      "path": "/org/sparklink/slk0_g1",
+      "address": "00:01:09:32:54:F9",
+      "version": "016c00a100"
+    },
+    {
+      "port": "1-2",
+      "bus": 1,
+      "device": 3,
+      "index": 1,
+      "generation": 2,
+      "path": "/org/sparklink/slk1_g2",
+      "address": "00:01:09:32:54:CD",
+      "version": "016c00a100"
+    }
+  ],
+  "replacement": {
+    "port": "1-1",
+    "bus": 1,
+    "device": 2,
+    "index": 0,
+    "generation": 3,
+    "path": "/org/sparklink/slk0_g3",
+    "address": "00:01:09:32:54:F9",
+    "version": "016c00a100"
+  },
+  "daemon_before": {
+    "pid": 650,
+    "start_ticks": 1532
+  },
+  "daemon_after": {
+    "pid": 650,
+    "start_ticks": 1532
+  },
+  "bus_owner_unchanged": true,
+  "fault_method": "QMP_GUEST_TRANSPORT_ERROR_ONCE",
+  "injected_count": 1,
+  "discarded_host_success_bytes": 178,
+  "fault_command_exit": 1,
+  "observed_native_failure_errno": -110,
+  "recovery_budget_before": "attempts=1 limit=2 uploads=0 upload_limit=3 cause=-110 result=0 exhausted=0 deadline_ms=133850 stable_since_ms=16146",
+  "recovery_budget_after": "attempts=2 limit=2 uploads=0 upload_limit=3 cause=-110 result=0 exhausted=0 deadline_ms=133850 stable_since_ms=0",
+  "fault_command_to_new_ready_ms": 10572.303171,
+  "capture_packets": 1279,
+  "capture_drops": 0,
+  "rx_proofs": 22,
+  "trace_overruns": 0,
+  "kernel_warning_count": 0,
+  "vm_taint": 0,
+  "cleanup": [
+    {
+      "port": "1-1",
+      "status": "STOP_CONFIRMED"
+    },
+    {
+      "port": "1-2",
+      "status": "STOP_CONFIRMED"
+    }
+  ],
+  "rounds": [
+    {
+      "phase": "initial",
+      "round": 1,
+      "marker": "f2505255d687cb8120ef6bf9c6263679",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 1,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -14,
+        "marker": "f2505255d687cb8120ef6bf9c6263679",
+        "data": "ff290101010b24736c6b2d6632353035323535643638376362383132306566366266396336323633363739",
+        "kernel_boottime_ns": 28216992375,
+        "elapsed_ms": 11,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 2,
+      "marker": "a85e7d4e09dd8552907bbaec9a36e463",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -11,
+        "marker": "a85e7d4e09dd8552907bbaec9a36e463",
+        "data": "ff290101010b24736c6b2d6138356537643465303964643835353239303762626165633961333665343633",
+        "kernel_boottime_ns": 28433237606,
+        "elapsed_ms": 142,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 3,
+      "marker": "57e88e06b94b48156092e9cd492d460b",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 2,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -16,
+        "marker": "57e88e06b94b48156092e9cd492d460b",
+        "data": "ff290101010b24736c6b2d3537653838653036623934623438313536303932653963643439326434363062",
+        "kernel_boottime_ns": 28658540424,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 4,
+      "marker": "913905d1844204645fc3c702e0e7dd37",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 2,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -16,
+        "marker": "913905d1844204645fc3c702e0e7dd37",
+        "data": "ff290101010b24736c6b2d3931333930356431383434323034363435666333633730326530653764643337",
+        "kernel_boottime_ns": 28884439115,
+        "elapsed_ms": 142,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 5,
+      "marker": "877bbbbe66b75e2504674cb9510c080b",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 3,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "877bbbbe66b75e2504674cb9510c080b",
+        "data": "ff290101010b24736c6b2d3837376262626265363662373565323530343637346362393531306330383062",
+        "kernel_boottime_ns": 29401869222,
+        "elapsed_ms": 466,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 6,
+      "marker": "122a8284ca887c269cf2276ab9f1e267",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 3,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "122a8284ca887c269cf2276ab9f1e267",
+        "data": "ff290101010b24736c6b2d3132326138323834636138383763323639636632323736616239663165323637",
+        "kernel_boottime_ns": 29928098058,
+        "elapsed_ms": 467,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 7,
+      "marker": "cf2845309d6e1aa4d3c1feb1ee5ed83f",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 4,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "cf2845309d6e1aa4d3c1feb1ee5ed83f",
+        "data": "ff290101010b24736c6b2d6366323834353330396436653161613464336331666562316565356564383366",
+        "kernel_boottime_ns": 30153358456,
+        "elapsed_ms": 161,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 8,
+      "marker": "54db55fe7c820ab6d186d63c2677ecbd",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 4,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "54db55fe7c820ab6d186d63c2677ecbd",
+        "data": "ff290101010b24736c6b2d3534646235356665376338323061623664313836643633633236373765636264",
+        "kernel_boottime_ns": 30390611390,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 9,
+      "marker": "e5b573900a24dec1e688fb1010c81260",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 5,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -16,
+        "marker": "e5b573900a24dec1e688fb1010c81260",
+        "data": "ff290101010b24736c6b2d6535623537333930306132346465633165363838666231303130633831323630",
+        "kernel_boottime_ns": 30923396158,
+        "elapsed_ms": 469,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 10,
+      "marker": "5150df99ec8398383aff1d7c9a1a2307",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 5,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -13,
+        "marker": "5150df99ec8398383aff1d7c9a1a2307",
+        "data": "ff290101010b24736c6b2d3531353064663939656338333938333833616666316437633961316132333037",
+        "kernel_boottime_ns": 31146126199,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 11,
+      "marker": "214337fa072e7805ca77282f37dad504",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 6,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "214337fa072e7805ca77282f37dad504",
+        "data": "ff290101010b24736c6b2d3231343333376661303732653738303563613737323832663337646164353034",
+        "kernel_boottime_ns": 31370510506,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 12,
+      "marker": "6c3bcd8e4c2f4d8036c054991e807880",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 6,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -14,
+        "marker": "6c3bcd8e4c2f4d8036c054991e807880",
+        "data": "ff290101010b24736c6b2d3663336263643865346332663464383033366330353439393165383037383830",
+        "kernel_boottime_ns": 31909631413,
+        "elapsed_ms": 467,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 13,
+      "marker": "a65d8ad9dd6331fcb2ff5d4c63c15a73",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 7,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -11,
+        "marker": "a65d8ad9dd6331fcb2ff5d4c63c15a73",
+        "data": "ff290101010b24736c6b2d6136356438616439646436333331666362326666356434633633633135613733",
+        "kernel_boottime_ns": 32603829658,
+        "elapsed_ms": 620,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 14,
+      "marker": "34d8b52a416acc2a531ad54bb4437ec3",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 7,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "34d8b52a416acc2a531ad54bb4437ec3",
+        "data": "ff290101010b24736c6b2d3334643862353261343136616363326135333161643534626234343337656333",
+        "kernel_boottime_ns": 32849558333,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 15,
+      "marker": "544311b70b814500868003562553aafa",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 8,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "544311b70b814500868003562553aafa",
+        "data": "ff290101010b24736c6b2d3534343331316237306238313435303038363830303335363235353361616661",
+        "kernel_boottime_ns": 33389959733,
+        "elapsed_ms": 464,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 16,
+      "marker": "a411c8919c6900f0e0954e66cd52d45f",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 8,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -11,
+        "marker": "a411c8919c6900f0e0954e66cd52d45f",
+        "data": "ff290101010b24736c6b2d6134313163383931396336393030663065303935346536366364353264343566",
+        "kernel_boottime_ns": 33940171527,
+        "elapsed_ms": 455,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 17,
+      "marker": "98f6af2291d32d0a68fdbe28a4a709f7",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 9,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "98f6af2291d32d0a68fdbe28a4a709f7",
+        "data": "ff290101010b24736c6b2d3938663661663232393164333264306136386664626532386134613730396637",
+        "kernel_boottime_ns": 34324149262,
+        "elapsed_ms": 316,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 18,
+      "marker": "d1fc05c7ffb15351b6d6d877130b7ed5",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 9,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -11,
+        "marker": "d1fc05c7ffb15351b6d6d877130b7ed5",
+        "data": "ff290101010b24736c6b2d6431666330356337666662313533353162366436643837373133306237656435",
+        "kernel_boottime_ns": 34710547307,
+        "elapsed_ms": 317,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 19,
+      "marker": "77e2e1bb8b759993702a0a8c3477e2c1",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 10,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -12,
+        "marker": "77e2e1bb8b759993702a0a8c3477e2c1",
+        "data": "ff290101010b24736c6b2d3737653265316262386237353939393337303261306138633334373765326331",
+        "kernel_boottime_ns": 34969111817,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 20,
+      "marker": "0fe4631b2f4f6f536ba39d539af233cb",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 10,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -16,
+        "marker": "0fe4631b2f4f6f536ba39d539af233cb",
+        "data": "ff290101010b24736c6b2d3066653436333162326634663666353336626133396435333961663233336362",
+        "kernel_boottime_ns": 35506841844,
+        "elapsed_ms": 466,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 1,
+      "marker": "4667e59d41b06e220c5dfabc2b143fdf",
+      "tx_generation": 3,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 11,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -13,
+        "marker": "4667e59d41b06e220c5dfabc2b143fdf",
+        "data": "ff290101010b24736c6b2d3436363765353964343162303665323230633564666162633262313433666466",
+        "kernel_boottime_ns": 48870224115,
+        "elapsed_ms": 316,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 2,
+      "marker": "e19fd30734d18be7de3776bc7b81721b",
+      "tx_generation": 2,
+      "rx_generation": 3,
+      "match": {
+        "generation": 3,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -11,
+        "marker": "e19fd30734d18be7de3776bc7b81721b",
+        "data": "ff290101010b24736c6b2d6531396664333037333464313862653764653337373662633762383137323162",
+        "kernel_boottime_ns": 49312091235,
+        "elapsed_ms": 316,
+        "lost": 0
+      }
+    }
+  ],
+  "development_tests": {
+    "ssap_containment": {
+      "status": "SSAP_LEGACY_CONTAINMENT_PASS",
+      "rust_tests": 9,
+      "scope": "actual full local database/session module with allocation dependency fixture; one historical codec test",
+      "standard_ssap_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_ssap.rs": "1ae970db1092a5411dbcc49ad8439ba146a7b0b9d520f9d5514054f09093debf",
+        "sparklink_core.rs": "dc44651f4304e398cf7f7af7644f354eca8843256ab06ea63086193e87c6371c",
+        "sle_workers.rs": "f4d8b346cc3faddc8c1a13ac967c36d686dcb42c148abfd2a93b98cd7e502bf8"
+      },
+      "remaining": [
+        "Userspace standard codec/fragment controls, permissions and authenticated per-peer database",
+        "PDU socket owner, deadline/budget/credit/commit semantics and real peer interoperability"
+      ]
+    },
+    "connection_tx": {
+      "status": "CONNECTION_TX_SUBMISSION_BOUNDARY_PASS",
+      "scope": "actual sender/ioctl/legacy USB bodies with dependency fixtures; not socket/protocol/RF qualification",
+      "physical_acceptance": false,
+      "socket_acceptance": false,
+      "rust_tests": 11,
+      "usb_boundaries": [
+        "range",
+        "allocation",
+        "errno",
+        "all short completions",
+        "exact completion",
+        "max length"
+      ],
+      "sources": {
+        "sle_conn.rs": "272b27cacd871e43f3183b0c69ef5a9a5c42b73866bb30c295fb3a14303ac3a3",
+        "sparklink_core.rs": "dc44651f4304e398cf7f7af7644f354eca8843256ab06ea63086193e87c6371c",
+        "sle_usb_ffi.c": "23548b594694c6ed65e60f0fff53198e0f964911d252a898b5892bbc6a1b116e"
+      }
+    },
+    "security": {
+      "status": "SECURITY_FAILURE_BOUNDARY_PASS",
+      "physical_acceptance": false,
+      "scope": "actual Rust wrappers/security + C CTR body; mocked dependencies, not crypto vectors or RF",
+      "sources": {
+        "sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+        "sle_security.rs": "ec5eba9f887316a76ac4a9c4904ba2b4bdf4cc18e1bfd2acbdce5902746ec9f4",
+        "sle_crypto_ffi.c": "a2b13603d1fd8503b991edcd6d6a70ec8409b851ba48e9a4e1a41c09d82dfbf7"
+      },
+      "ctr_body_sha256": "9cdc334d7350c9ef5c5e044df39beb438bfbe68a643afbbfa2bcd74de03fb29a",
+      "rust_tests": 7,
+      "c_fault_stages": 5,
+      "remaining": [
+        "Per-connection authenticated pairing/relay/real encryption installation",
+        "Standard crypto vectors, zeroization audit and real peer interoperability",
+        "New kernel VM WS73 discovery/recovery regression"
+      ]
+    },
+    "backend": {
+      "status": "BACKEND_CONTAINMENT_PASS",
+      "sources": {
+        "sle_uart.rs": {
+          "sha256": "73cd7d549899b04558682ee785bc6858a536e1864282830d2376999e58c15e0d",
+          "methods_sha256": "0c3b79e855cedc07c5ddbf0ea7a02ebb03f5b199e8013674064d26a08c6a573f"
+        },
+        "sle_spi.rs": {
+          "sha256": "21102a8b895f6b7ec873a6367ef6a50541753edc9d82143b17af827ab8230fe0",
+          "methods_sha256": "6852e16fcc5833de95dec4b1b44601abe8a6eb2d5e78dadbf0b122bd0029db87"
+        }
+      },
+      "tests": 2,
+      "scope": "actual trait method bodies with fixture types; no UART/SPI hardware/framing qualification",
+      "physical_acceptance": false
+    },
+    "python_abi_tests": 34,
+    "strict_checks": "all-targets/all-features check/clippy, rustfmt, release, header and tests passed in pinned remote CI; qualified default bundle sources match current head",
+    "workspace_tests": 170,
+    "tooling_tests": 155,
+    "remote_ci": {
+      "run_id": 38089420254,
+      "status": "COMPLETED_SUCCESS",
+      "kernel_job_actual_9_ssap_and_11_tx": "VERIFIED",
+      "kernel_pin": "c89e961b80a2b99922ddd0715590c01edfe39c88",
+      "actual_logs_verified": true,
+      "jobs_passed": 9,
+      "userspace_head": "df9cff7d750dd889ea7403d8a53906f92d3faf46",
+      "event_copy_fixture_tests": 9,
+      "live_probe_compile": true,
+      "live_probe_execution_in_ci": false,
+      "diagnostic_result_fixture_tests": 23
+    },
+    "historical_phy_model_and_actual_rejection_arm": {
+      "status": "PHY_MODEL_ISOLATION_PASS",
+      "model_tests": 3,
+      "actual_dispatch_tests": 1,
+      "unsupported_commands": [
+        "SL_IOCTL_PHY_INFO",
+        "SL_IOCTL_PHY_SET_MCS",
+        "SL_IOCTL_PHY_SET_TXPOWER",
+        "SL_IOCTL_PHY_MCS_SELECT",
+        "SL_IOCTL_PHY_HOP_NEXT",
+        "SL_IOCTL_PHY_SET_BW",
+        "SL_IOCTL_PHY_GET_SINR",
+        "SL_IOCTL_PHY_SET_SINR"
+      ],
+      "scope": "historical local model and actual rejection arm with dependency fixtures",
+      "hardware_phy_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_phy.rs": "19afbd4567b177e8e641076809bbf688f932ea7ae658dd10c7c47a3629e324c1",
+        "net/sparklink/sparklink_core.rs": "dc44651f4304e398cf7f7af7644f354eca8843256ab06ea63086193e87c6371c",
+        "tools/testing/selftests/sparklink/phy-model/legacy_model.rs": "1410a83a46c82de3172ae7a58cc495e525a5984d2702d4d6e8bb45cb274ca1cf",
+        "tools/testing/selftests/sparklink/phy-model/model_tests.rs": "3743f441d26e1ac306650082f1259e3bdae17474861d08a64ee9264749a74c66"
+      }
+    },
+    "event_copy_fixture": {
+      "status": "EVENT_RECORD_COPY_BOUNDARY_PASS",
+      "rust_tests": 9,
+      "scope": "actual complete event module and read_iter; copy/lock dependencies are fixtures",
+      "live_vfs_fault_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_event.rs": "406cf69542a18de7b3f1827a117429f2ff3e1e613ff3bc0b0cfd332b026f9bbd",
+        "sparklink_core.rs": "dc44651f4304e398cf7f7af7644f354eca8843256ab06ea63086193e87c6371c"
+      },
+      "remaining": [
+        "Legacy DLI_POLL_EVENT consumer migration/fault retention",
+        "Live usercopy faults, removal wakeup and complete event ownership gates"
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "capture": "db84afde0e55c6b181e1eba3b4126075fbd5d44e98f8ffb40c63c8831ed3b306",
+    "control": "0f09d709e8458fd47c476ca3beca4fa4f5c1475247cabd32d9b24b56f3193f2b",
+    "run_manifest": "f1fc6240e136e4a1f190404f964eb5637bdd16e421cbb59f4629280cf7e4f5b8",
+    "prepared_manifest": "eed9b05871618faad2c421c3c2abfff8db1f40e46374f914418501123e506dd9",
+    "kernel_log": "d3af99e3257ba85665d0eb002532d3dfbf51ff7a384080247e862b183242dcd8",
+    "xhci_trace": "901923de2c5c4ca2fff92467a18f5783a09d2f41fb8d51a357d76d227b7207aa",
+    "xhci_trace_stats": "79f35089f3502a5048795c426df0239a9c0a517de59bc70769115bc90db3f83b",
+    "qmp": "70c22cd2bd79ffb3270aae3506c1c73aafb1e1076d4391fd4105f9edab21818b",
+    "host_inventory": "cfaddb26db22bb6a80798a89555d425b57a307c7063e345e7877029c24616319",
+    "kernel_build_log": "55a12d96b9051bbacf2b033085399db0dad8332a7fed4d9728d1f836a0c4d268",
+    "ssap_test_log": "65bd2cab791362845565e428b5a2101064002e91ad2b6d8ccbb512e2badef689",
+    "tx_test_log": "65bd2cab791362845565e428b5a2101064002e91ad2b6d8ccbb512e2badef689",
+    "tool_test_log": "1a91450ec933be6fb8ad288ef1cdb88ae51f04b5069dea6a1e65412ff16ea52d",
+    "host_diagnostics": "1046b6e5406ee2a2abab1d3e8f1ff59fe5abbd9b3e225dd4b9a55c6263cce4b4",
+    "security_test_log": "65bd2cab791362845565e428b5a2101064002e91ad2b6d8ccbb512e2badef689",
+    "python_abi_log": "fab706321626c2ca4e3e4085a3f3af6c670f13a63735a76ba7dc29dffa272ec1",
+    "live_event_run": "cdd56479943041ff0d9703ccfcf7a2308565f263f67783ec9d3961a41556d768",
+    "live_event_transcript": "caa329d09811634a9d66456ced921c55cab769269acc0572140ba25560cd333f",
+    "live_event_binary": "8bf5fe06fadd0196c30ca6ea88c56f06d809383f5dd7949975f466b04d5ca97c",
+    "ci_jobs": "39dd6e56204940dbd6b474185cfd5df7c11257b59fb0a11d25fdc63f27c869af",
+    "independent_proofs": "6c99391d901b56b4b8af0f3a68c8d4319251ba9962d772cdb3cd42f7d0ea3df5",
+    "service_bundle": "2ce642818291036ee2cd515ac67f41a1133ddc2c98614e68d20dad005806178b",
+    "root_smoke": "6d7e920fad62d2be9c613d47ea6df341fc4f38cc623fd2d2676a09c076ea8ed7",
+    "diagnostic_run": "450a375a2cbd24241593368c32f75c938c158113e062954a88dbf422d62fd0c1",
+    "diagnostic_transcript": "e288fb01ff24bd85c31c57a3491d3da7a75094f12334726f8ad6948a9bbd31a9",
+    "diagnostic_binary": "a69c6513ed106db636748986af8bcf6e7754c603e6761b9a2bd2131057bb2d67",
+    "diagnostic_stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rust_test_log": "4cdedc76b381fa76b9c41091f90de60480784596c0d3e9276de22cf058f06852"
+  },
+  "diagnostic_chain": [
+    "one host-success IN81 discarded; guest USB Transaction Error/Reset Endpoint",
+    "1001 timeout -110; old controller generation retires",
+    "bounded four-second per-device protocol restore; fresh metadata/generation3",
+    "survivor generation2 unchanged; same slkd pid/start ticks and bus owner",
+    "20 initial + 2 recovery alternating random-marker RF matches, each <=10s"
+  ],
+  "remaining": [
+    "Authenticated per-connection security, standard vectors and real encryption installation remain unavailable",
+    "Natural startup/disappearance/re-enumeration root cause and complete autonomous recovery unresolved",
+    "Physical-unplug xHCI warning, single/two/four-device matrix, complete sandbox remain open",
+    "Host-native comparison not authorized; VM results do not replace it",
+    "Old SSAP wire engine removed; userspace standard Engine/socket and local-staging/UAPI caller migration remain open alongside security/event/backend work",
+    "Real per-connection authenticated PHY/security transactions and matching hardware completion are not implemented; legacy operations explicitly unsupported",
+    "Legacy DLI_POLL_EVENT destructive pre-copy path/callers and complete event ownership/removal gates remain open; seven read cases do not close R12/K3/U2",
+    "Actual Pending/controller-failure/oversize/eviction/concurrent query, complete shutdown/removal and 32-bit runtime gates remain open",
+    "Raw submission copyout failure admission discovery/idempotency and complete cancel/deadline contract remain open",
+    "No complete Diagnostic ABI acceptance: only profile1 metadata, sequential x86_64 live cases; no natural controller failures, actual oversize/eviction/concurrency or submission copyout/cancel idempotency proof",
+    "Actual submission EFAULT/partial copyout, repeat-ID one-wire proof, evicted ID/no-resend and cancel/deadline/late reply gates remain open",
+    "Native output-only raw entry replaced/rejected; profile0 legacy DLI consumers and queue deletion still open"
+  ],
+  "hardware_phy_acceptance": false,
+  "confirmed_phy_security_transaction_implemented": false,
+  "legacy_phy_ioctl_vfs_acceptance": false,
+  "started_at": "2026-10-10T21:58:15.035758+00:00",
+  "finished_at": "2026-10-10T21:59:13.437942+00:00",
+  "live_vfs_fault_acceptance": true,
+  "live_vfs_fault_scope": "seven legacy read cases only; no legacy DLI ioctl, removal wakeup, kernel-lock concurrency/lockdep or full event ownership acceptance",
+  "legacy_dli_poll_migration_complete": false,
+  "full_event_acceptance": false,
+  "live_event_copy": {
+    "status": "LIVE_EVENT_COPY_PASS",
+    "application_identity": {
+      "uids": [
+        1000,
+        1000,
+        1000,
+        1000
+      ],
+      "cap_eff": "0000000000000000",
+      "cap_prm": "0000000000000000",
+      "cap_amb": "0000000000000000",
+      "groups": [
+        1000,
+        1002
+      ]
+    },
+    "probe": {
+      "path": "/bin/event-copy-probe",
+      "sha256": "8bf5fe06fadd0196c30ca6ea88c56f06d809383f5dd7949975f466b04d5ca97c"
+    },
+    "sources": [
+      {
+        "path": "/usr/share/sparklink/tools/ws73_event_copy_probe.py",
+        "sha256": "4a49d83c64d01f4429f9d72a2d713929dc6ab54b4df6f7e25c55273acde9289c"
+      }
+    ],
+    "cases": [
+      {
+        "case": "zero",
+        "result": 0,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "short",
+        "result": -1,
+        "errno": 22,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "bad_address",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_first",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 22,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_later",
+        "result": 44,
+        "errno": 0,
+        "partial_prefix": 22,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 2,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 1
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "07240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "capacity_tail",
+        "result": 44,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 2,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 1
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "07240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "complete_batch",
+        "result": 132,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": ""
+      }
+    ],
+    "daemon_before": {
+      "pid": 650,
+      "start_ticks": 1532
+    },
+    "daemon_after": {
+      "pid": 650,
+      "start_ticks": 1532
+    },
+    "initial": [
+      {
+        "port": "1-1",
+        "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+        "bus": 1,
+        "device": 2,
+        "index": 0,
+        "generation": 1,
+        "path": "/org/sparklink/slk0_g1",
+        "address": "00:01:09:32:54:F9",
+        "version": "016c00a100",
+        "features": "23155000120000010000",
+        "buffers": [
+          254,
+          5,
+          0,
+          0
+        ],
+        "attributes": {
+          "metadata_valid": "1",
+          "runtime_transport": "1",
+          "boot_error": "0",
+          "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+          "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+        },
+        "descriptors": {
+          "manufacturer": "00000000",
+          "product": "00000000",
+          "serial": ">04072<1705:229=0;6516:0"
+        },
+        "observed_wall_ns": 1791669525948538817
+      },
+      {
+        "port": "1-2",
+        "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+        "bus": 1,
+        "device": 3,
+        "index": 1,
+        "generation": 2,
+        "path": "/org/sparklink/slk1_g2",
+        "address": "00:01:09:32:54:CD",
+        "version": "016c00a100",
+        "features": "23155000120000010000",
+        "buffers": [
+          254,
+          5,
+          0,
+          0
+        ],
+        "attributes": {
+          "metadata_valid": "1",
+          "runtime_transport": "1",
+          "boot_error": "0",
+          "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+          "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+        },
+        "descriptors": {
+          "manufacturer": "00000000",
+          "product": "00000000",
+          "serial": ">04072<17<<<;29=0;69;7:0"
+        },
+        "observed_wall_ns": 1791669525955667228
+      }
+    ],
+    "final": [
+      {
+        "port": "1-1",
+        "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+        "bus": 1,
+        "device": 2,
+        "index": 0,
+        "generation": 1,
+        "path": "/org/sparklink/slk0_g1",
+        "address": "00:01:09:32:54:F9",
+        "version": "016c00a100",
+        "features": "23155000120000010000",
+        "buffers": [
+          254,
+          5,
+          0,
+          0
+        ],
+        "attributes": {
+          "metadata_valid": "1",
+          "runtime_transport": "1",
+          "boot_error": "0",
+          "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+          "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+        },
+        "descriptors": {
+          "manufacturer": "00000000",
+          "product": "00000000",
+          "serial": ">04072<1705:229=0;6516:0"
+        },
+        "observed_wall_ns": 1791669526333772558
+      },
+      {
+        "port": "1-2",
+        "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+        "bus": 1,
+        "device": 3,
+        "index": 1,
+        "generation": 2,
+        "path": "/org/sparklink/slk1_g2",
+        "address": "00:01:09:32:54:CD",
+        "version": "016c00a100",
+        "features": "23155000120000010000",
+        "buffers": [
+          254,
+          5,
+          0,
+          0
+        ],
+        "attributes": {
+          "metadata_valid": "1",
+          "runtime_transport": "1",
+          "boot_error": "0",
+          "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+          "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+        },
+        "descriptors": {
+          "manufacturer": "00000000",
+          "product": "00000000",
+          "serial": ">04072<17<<<;29=0;69;7:0"
+        },
+        "observed_wall_ns": 1791669526339153167
+      }
+    ],
+    "probe_exit": 0,
+    "cleanup": "STOP_CONFIRMED",
+    "binary_has_no_setid_or_file_capability": true,
+    "child_capabilities_separately_measured": false
+  },
+  "host_after": {
+    "devices_present_unbound": 4,
+    "recent_kernel_journal_records": 0,
+    "scope": "read-only inventory; not native-host driver acceptance"
+  },
+  "diagnostic_result_api_live_acceptance": false,
+  "diagnostic_result_migrated_callers": [
+    "slkconfig Native query"
+  ],
+  "diagnostic_result_development_tests": {
+    "status": "DIAGNOSTIC_RESULT_BOUNDARY_PASS",
+    "rust_tests": 23,
+    "result_tests": 12,
+    "admission_tests": 11,
+    "scope": "actual pending/queue modules, submit/result handlers and Host enqueue/cancel bodies; clock/lease/lock/usercopy/allocation dependencies are fixtures",
+    "live_vfs_acceptance": false,
+    "physical_acceptance": false,
+    "sources": {
+      "sle_mgmt.rs": "27b52f6a7e06622f6b9075cff45d54bc11b8d06021f7b2a8a31c730e0075347c",
+      "sle_uapi.rs": "d6469d5a6920ed856687aab25cff94b76dab118dad7b850417c64997cd4abcc3",
+      "sparklink_core.rs": "dc44651f4304e398cf7f7af7644f354eca8843256ab06ea63086193e87c6371c",
+      "sle_host.rs": "e12eb13b315b8245d37ac06e9d5668daf3e88cd2b5777995f077ee2a010c087d",
+      "sle_command_queue.rs": "533a234cbe1851a2d7731f6cb881238605a44a92e853472b359a81c35bd1c846",
+      "sle_command_plan.rs": "74dd00f54e919e1d12f57a37e20654e9982d61b9e5d54c28505a2a9dc12b79cb",
+      "sle_workers.rs": "f4d8b346cc3faddc8c1a13ac967c36d686dcb42c148abfd2a93b98cd7e502bf8"
+    },
+    "remaining": [
+      "Actual ioctl owner/CAP/usercopy/removal gates in qualified VM",
+      "Legacy DLI event callers and shared projection removal",
+      "Live idempotent admission/cancel/deadline syscall and on-wire late reply gates"
+    ]
+  },
+  "diagnostic_result_live_syscall_gates": true,
+  "diagnostic_result_full_acceptance": false,
+  "live_diagnostic": {
+    "status": "DIAGNOSTIC_RESULT_LIVE_PASS",
+    "index": 0,
+    "uid": 0,
+    "euid": 0,
+    "probe": {
+      "path": "/bin/diagnostic-result-probe",
+      "sha256": "a69c6513ed106db636748986af8bcf6e7754c603e6761b9a2bd2131057bb2d67"
+    },
+    "sources": [
+      {
+        "path": "/usr/share/sparklink/tools/ws73_diagnostic_probe.py",
+        "sha256": "81683b7870b717ff39af43fc9428156e3fc849078943586fab6df96b6c9091e8"
+      }
+    ],
+    "records": [
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 1,
+        "opcode": 1030,
+        "start_wall_ns": 1791669513316728942,
+        "end_wall_ns": 1791669513326818383,
+        "data": "0001093254f9"
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 2,
+        "opcode": 1027,
+        "start_wall_ns": 1791669513326889637,
+        "end_wall_ns": 1791669513336961905,
+        "data": "23155000120000010000"
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 3,
+        "opcode": 1028,
+        "start_wall_ns": 1791669513336989357,
+        "end_wall_ns": 1791669513347058279,
+        "data": "016c00a100"
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 4,
+        "opcode": 1026,
+        "start_wall_ns": 1791669513347065993,
+        "end_wall_ns": 1791669513357207001,
+        "data": "fe0005000000"
+      },
+      {
+        "identity": "inherited_fd_child",
+        "uid": 1000,
+        "euid": 1000,
+        "cap_eff": 0,
+        "cap_prm": 0
+      },
+      {
+        "case": "inherited_fd_cap0",
+        "result": -1,
+        "errno": 1
+      },
+      {
+        "case": "read_only_output",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "reference": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_output",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 56,
+        "reference": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "version",
+        "result": -1,
+        "errno": 95
+      },
+      {
+        "case": "flags",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "reserved",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "zero_seq",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "zero_generation",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "wrong_generation",
+        "result": -1,
+        "errno": 19
+      },
+      {
+        "case": "missing_sequence",
+        "result": -1,
+        "errno": 2
+      },
+      {
+        "case": "foreign_author_with_lease",
+        "result": -1,
+        "errno": 1
+      },
+      {
+        "phase": "BEFORE_DAEMON_PASS"
+      },
+      {
+        "case": "retired_fd",
+        "result": -1,
+        "errno": 19
+      },
+      {
+        "phase": "DIAGNOSTIC_RESULT_LIVE_PASS"
+      }
+    ],
+    "cli_queries": [
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "mac"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0406 admission_seq=5 status=0x00 data=0001093254f9\n",
+        "stderr": "",
+        "start_wall_ns": 1791669513374522938,
+        "end_wall_ns": 1791669513395238821
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "features"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0403 admission_seq=6 status=0x00 data=23155000120000010000\n",
+        "stderr": "",
+        "start_wall_ns": 1791669513397807591,
+        "end_wall_ns": 1791669513410248823
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "version"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0404 admission_seq=7 status=0x00 data=016c00a100\n",
+        "stderr": "",
+        "start_wall_ns": 1791669513413050642,
+        "end_wall_ns": 1791669513427213468
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "buffers"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0402 admission_seq=8 status=0x00 data=fe0005000000\n",
+        "stderr": "",
+        "start_wall_ns": 1791669513430158708,
+        "end_wall_ns": 1791669513444096770
+      }
+    ],
+    "probe_exit": 0,
+    "cases": 16,
+    "binary_has_no_setid_or_file_capability": true,
+    "child_capabilities_separately_measured": true,
+    "wire_queries": [
+      {
+        "caller": "C syscall",
+        "local_admission_seq": 1,
+        "command": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513316743000,
+          "urb": 18446619377077700096,
+          "record": 184,
+          "file_offset": 18150,
+          "usb_sha256": "0d01db57f55fabb1eec634eb809b550d255cb1b6e7d7e3083bf092253ac62723",
+          "opcode": 1030,
+          "params": "",
+          "sequence": 12,
+          "completion": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791669513317148000,
+            "urb": 18446619377077700096,
+            "record": 185,
+            "file_offset": 18358
+          }
+        },
+        "reply": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513317154000,
+          "urb": 18446619377142329088,
+          "record": 186,
+          "file_offset": 18438,
+          "hcc_offset": 92,
+          "usb_sha256": "ccb2a725402f481f37b07d6cfbc7183d3e72f42e1d6d76dda0293c7e49a7d10d",
+          "opcode": 1030,
+          "status": 0,
+          "value": "0001093254f9"
+        }
+      },
+      {
+        "caller": "C syscall",
+        "local_admission_seq": 2,
+        "command": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513326906000,
+          "urb": 18446619377437490176,
+          "record": 188,
+          "file_offset": 18776,
+          "usb_sha256": "fd759658d0580db5b86f0188da85f11fa0a592be7441fa3bc416efdbd875a4ec",
+          "opcode": 1027,
+          "params": "",
+          "sequence": 13,
+          "completion": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791669513327326000,
+            "urb": 18446619377437490176,
+            "record": 189,
+            "file_offset": 18984
+          }
+        },
+        "reply": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513327354000,
+          "urb": 18446619377142329088,
+          "record": 190,
+          "file_offset": 19064,
+          "hcc_offset": 92,
+          "usb_sha256": "c5f1aa03f312ae6c2e627473068929c418ad306fff293fbe61da842dc9b4103c",
+          "opcode": 1027,
+          "status": 0,
+          "value": "23155000120000010000"
+        }
+      },
+      {
+        "caller": "C syscall",
+        "local_admission_seq": 3,
+        "command": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513337000000,
+          "urb": 18446619377437490176,
+          "record": 192,
+          "file_offset": 19402,
+          "usb_sha256": "85005def5c41d0c9afdd6aedefe3d97e7601cab701812000c2e1451ac6e6bacd",
+          "opcode": 1028,
+          "params": "",
+          "sequence": 14,
+          "completion": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791669513337236000,
+            "urb": 18446619377437490176,
+            "record": 193,
+            "file_offset": 19610
+          }
+        },
+        "reply": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513337349000,
+          "urb": 18446619377142329088,
+          "record": 194,
+          "file_offset": 19690,
+          "hcc_offset": 92,
+          "usb_sha256": "825f1ea56db1b3febad0671de21ab0073fa4e71f6903acaa9ed5fce0fa5844c6",
+          "opcode": 1028,
+          "status": 0,
+          "value": "016c00a100"
+        }
+      },
+      {
+        "caller": "C syscall",
+        "local_admission_seq": 4,
+        "command": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513347076000,
+          "urb": 18446619377437490176,
+          "record": 196,
+          "file_offset": 20028,
+          "usb_sha256": "0f2320e6a5a6bdaf04bb2b40a275424efd7c720be87de3130fb819a43fbd8df3",
+          "opcode": 1026,
+          "params": "",
+          "sequence": 15,
+          "completion": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791669513347449000,
+            "urb": 18446619377437490176,
+            "record": 197,
+            "file_offset": 20236
+          }
+        },
+        "reply": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513347453000,
+          "urb": 18446619377142329088,
+          "record": 198,
+          "file_offset": 20316,
+          "hcc_offset": 92,
+          "usb_sha256": "c0b67bd7106a6387efd82e39e2fd87ad68830aca33d1a3bb7617203a659c9ccb",
+          "opcode": 1026,
+          "status": 0,
+          "value": "fe0005000000"
+        }
+      },
+      {
+        "caller": "slkconfig",
+        "local_admission_seq": 5,
+        "command": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513379784000,
+          "urb": 18446619377438558272,
+          "record": 200,
+          "file_offset": 20654,
+          "usb_sha256": "eed1c53ab672c478202168723013e0e8b46333637a77435b1f707ce0c56b4864",
+          "opcode": 1030,
+          "params": "",
+          "sequence": 16,
+          "completion": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791669513379967000,
+            "urb": 18446619377438558272,
+            "record": 201,
+            "file_offset": 20862
+          }
+        },
+        "reply": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513380080000,
+          "urb": 18446619377142329088,
+          "record": 202,
+          "file_offset": 20942,
+          "hcc_offset": 92,
+          "usb_sha256": "cdac6854fda5dfe656e03b6726027afde64b7d5437c619c1514752b5acfe1404",
+          "opcode": 1030,
+          "status": 0,
+          "value": "0001093254f9"
+        }
+      },
+      {
+        "caller": "slkconfig",
+        "local_admission_seq": 6,
+        "command": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513398743000,
+          "urb": 18446619377438558272,
+          "record": 204,
+          "file_offset": 21280,
+          "usb_sha256": "42e5acc4ac8dd56e51d2266b357a4d4bf15bf707d6b37bf2096e1f0ef4bf80a9",
+          "opcode": 1027,
+          "params": "",
+          "sequence": 17,
+          "completion": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791669513398930000,
+            "urb": 18446619377438558272,
+            "record": 205,
+            "file_offset": 21488
+          }
+        },
+        "reply": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513399049000,
+          "urb": 18446619377142329088,
+          "record": 206,
+          "file_offset": 21568,
+          "hcc_offset": 92,
+          "usb_sha256": "0bd25fde8c891d05f5320d8e09980736ca5189f20a436a9765c46536eaeff48e",
+          "opcode": 1027,
+          "status": 0,
+          "value": "23155000120000010000"
+        }
+      },
+      {
+        "caller": "slkconfig",
+        "local_admission_seq": 7,
+        "command": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513414032000,
+          "urb": 18446619377438558272,
+          "record": 208,
+          "file_offset": 21906,
+          "usb_sha256": "1c3f40a6c6c4096a56844e58083f62abdb5f389090abc057af36d44ca3584dcf",
+          "opcode": 1028,
+          "params": "",
+          "sequence": 18,
+          "completion": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791669513414227000,
+            "urb": 18446619377438558272,
+            "record": 209,
+            "file_offset": 22114
+          }
+        },
+        "reply": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513414311000,
+          "urb": 18446619377142329088,
+          "record": 210,
+          "file_offset": 22194,
+          "hcc_offset": 92,
+          "usb_sha256": "e9fd0d36292572d523adb8c3e62da0b23c4fee8f3d3ad7fa80fc39bd65e05c99",
+          "opcode": 1028,
+          "status": 0,
+          "value": "016c00a100"
+        }
+      },
+      {
+        "caller": "slkconfig",
+        "local_admission_seq": 8,
+        "command": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513430977000,
+          "urb": 18446619377438558272,
+          "record": 212,
+          "file_offset": 22532,
+          "usb_sha256": "5f9f63abd44996a0fc023a14d0e916e079ae6ce2c42256aa47a95db9575b963a",
+          "opcode": 1026,
+          "params": "",
+          "sequence": 19,
+          "completion": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791669513431169000,
+            "urb": 18446619377438558272,
+            "record": 213,
+            "file_offset": 22740
+          }
+        },
+        "reply": {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791669513431281000,
+          "urb": 18446619377142329088,
+          "record": 214,
+          "file_offset": 22820,
+          "hcc_offset": 92,
+          "usb_sha256": "9debdf20d4875e83a05888eba1782c56df6b9490d702c53b8d1bd571ea337695",
+          "opcode": 1026,
+          "status": 0,
+          "value": "fe0005000000"
+        }
+      }
+    ],
+    "scope": "Root Diagnostic submits actual metadata; inherited original fd child separately measured UID/eUID1000 effective/permitted caps0 is denied EPERM; foreign root fd with its own Diagnostic lease denied EPERM; read-only/partial output EFAULT retries preserve all104 bytes; retired original fd ENODEV"
+  },
+  "retained_failed_runs": [
+    {
+      "private_path": ".dev/diagnostic-live-real-recovery",
+      "original_status": "FAIL",
+      "manifest_sha256": "07c768713f3041daa3d539ffcca516157d630e312b86c8caf8781b34554bf730",
+      "cause": "capture-ready/diagnostic ordering blocked USB attachment; QMP no device_add, not a hardware startup failure",
+      "relabelled_as_success": false
+    },
+    {
+      "private_path": ".dev/diagnostic-live-v2-real-recovery",
+      "original_status": "FAIL",
+      "manifest_sha256": "7d973703660ca2fc5bf83013eb5bd06a35b783c26a197e30a947f9fc96ae90e3",
+      "cause": "diagnostic scoped cases and20+2 completed but old broad initialization metadata proof ambiguous; original enclosing FAIL preserved",
+      "relabelled_as_success": false
+    }
+  ],
+  "caller_keyed_admission_happy_path_live": true,
+  "caller_keyed_admission_full_live_acceptance": false,
+  "idempotent_submit_copyout_live_acceptance": false,
+  "diagnostic_cancel_on_wire_live_acceptance": false,
+  "diagnostic_absolute_deadline_full_live_acceptance": false,
+  "retained_failed_build": {
+    "kernel_head": "922a00929282daf1ec04d5960b6a10e6d63ab895",
+    "record_sha256": "38c4f06695397d46e39ca6a2f8d9e5b9979b1f3af7823b6a21282650871adf49",
+    "log_sha256": "3303523e674d590bebb7451437ab16a5e4c01248d35cd374201ac3d4e0314196",
+    "status": "BUILD_FAILED",
+    "cause": "Pin lock-guard as_mut dispatch failed actual kernel compilation; corrected by c89e961; failure not relabelled"
+  },
+  "retained_failed_preparation": {
+    "manifest_sha256": "3d3c99bffdc9710bc3e5aab75b01fbd31df5e17611160c7c0e0f9b956a6868d7",
+    "status": "FAIL",
+    "cause": "private runner passed service-bundle manifest file instead of directory; no hardware run; correct preparation in a new directory"
+  }
+}

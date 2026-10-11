@@ -225,7 +225,10 @@ impl ControllerIface {
     /// Read peer features for a connection
     async fn conn_read_peer_features(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
         let st = self.state.lock().await;
-        let cap = st.adapter.conn_read_peer_features(handle).map_err(map_err)?;
+        let cap = st
+            .adapter
+            .conn_read_peer_features(handle)
+            .map_err(map_err)?;
         Ok(cap.features.to_vec())
     }
 
@@ -337,7 +340,9 @@ impl ControllerIface {
     /// Remove an entry from the RAL
     async fn ral_remove(&self, peer_id: Vec<u8>) -> zbus::fdo::Result<()> {
         if peer_id.len() != 6 {
-            return Err(zbus::fdo::Error::InvalidArgs("peer_id must be 6 bytes".into()));
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "peer_id must be 6 bytes".into(),
+            ));
         }
         let mut params: slk_protocol::SleRalRemoveParams = unsafe { std::mem::zeroed() };
         params.peer_id.copy_from_slice(&peer_id);
@@ -389,7 +394,9 @@ impl ControllerIface {
         let mut params: slk_protocol::SleRalQueryParams = unsafe { std::mem::zeroed() };
         params.id.copy_from_slice(&id);
         let st = self.state.lock().await;
-        st.adapter.ral_read_local_rpa(&mut params).map_err(map_err)?;
+        st.adapter
+            .ral_read_local_rpa(&mut params)
+            .map_err(map_err)?;
         Ok(params.rpa.to_vec())
     }
 
@@ -614,7 +621,10 @@ mod tests {
             total_dropped: 2,
             total_delivered: 98,
         };
-        assert_eq!(stats.total_enqueued - stats.total_dropped, stats.total_delivered);
+        assert_eq!(
+            stats.total_enqueued - stats.total_dropped,
+            stats.total_delivered
+        );
     }
 
     #[test]
@@ -676,8 +686,10 @@ mod tests {
             total_resolved: 95,
             total_timeouts: 3,
         };
-        assert!(stats.total_resolved + stats.total_timeouts + stats.pending as u32
-            <= stats.total_submitted);
+        assert!(
+            stats.total_resolved + stats.total_timeouts + stats.pending as u32
+                <= stats.total_submitted
+        );
     }
 
     #[test]

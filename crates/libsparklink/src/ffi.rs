@@ -1,7 +1,11 @@
-use std::ffi::{c_char, c_int, CStr};
+use std::ffi::{CStr, c_char, c_int};
 use std::ptr;
 
 use crate::Adapter;
+
+#[path = "ffi_native.rs"]
+mod native;
+pub use native::*;
 
 /// Opaque adapter handle for C consumers
 pub struct SlkAdapter {

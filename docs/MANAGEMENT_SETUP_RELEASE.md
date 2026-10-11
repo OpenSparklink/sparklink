@@ -361,3 +361,11 @@ VM／实机在途通过；后续模拟结果见下文。CI38123259995（U4fc）�
 保留。274工具测试与 Uf35 CI 九作业通过；源码 K6c2、验证器 U86a、镜像 K292、
 服务 Ud749、冻结工具及 QEMU hash 分别记录。没有新增真实 WS73 Managed 通过。
 真实在途 libusb 回复、后续初始化步骤、活动同伴、自动恢复及自然 RCA 继续开放。
+
+端点诊断另使用显式 `ws73.clear_halt_lab=1` 维护 VM。完整配置／五端点描述符
+合格且 guest interface0 独占后，只对 EP01/EP81 各执行一次 CLEAR_HALT，随后
+重读原配置；不与 interface rebind、USB reset、SDK wakeup 或 SoC 写入混用。
+错误立即保留并停止。原 QEMU 忽略 `libusb_clear_halt` 返回值，guest ioctl 零
+不能单独确认物理成功；需私有观察器实际返回与抓包独立核对。它不是生产恢复，
+也不能建立 Ready、活动同伴或 Managed 验收。源码 278工具测试通过，实际结果
+按独立 manifest 记录。

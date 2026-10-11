@@ -7,7 +7,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, run
+from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, clear_runtime_route_endpoints, run
 
 class RegisterResetTests(unittest.TestCase):
     descriptor=bytes.fromhex('09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200')
@@ -25,6 +25,49 @@ class RegisterResetTests(unittest.TestCase):
             rows=read_usb_configuration(77);self.assertEqual(checked_single_runtime_interface(rows),self.descriptor)
         self.assertEqual(ioctl.call_count,2)
         self.assertTrue(all(r['before_wall_ns']<=r['after_wall_ns'] for r in rows))
+
+    def test_clear_halt_is_qualified_bounded_and_never_physical_success(self):
+        calls=[];record={}
+        def ioctl(fd,request,arg):
+            calls.append(request)
+            if request==0x80045515:
+                self.assertEqual(int.from_bytes(arg,'little'),1 if calls.count(request)==1 else 129)
+                return 0
+            return self.state_reader(fd,request,arg)
+        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=ioctl):
+            clear_runtime_route_endpoints(77,record,lambda:None)
+        self.assertEqual(calls,[0xc0185500,0xc0185500,0x80045515,0x80045515,0xc0185500,0xc0185500])
+        self.assertIs(record['physical_clear_halt_confirmed'],False)
+        self.assertEqual([r['returned'] for r in record['clear_halt_transfers']],[0,0])
+
+    def test_clear_halt_preserves_error_and_stops_before_next_endpoint(self):
+        record={};calls=[]
+        def ioctl(fd,request,arg):
+            calls.append(request)
+            if request==0x80045515:raise OSError(errno.EPIPE,'physical outcome not normalized')
+            return self.state_reader(fd,request,arg)
+        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=ioctl),self.assertRaises(OSError):
+            clear_runtime_route_endpoints(77,record,lambda:None)
+        self.assertEqual(calls.count(0x80045515),1)
+        self.assertEqual(record['clear_halt_transfers'][0]['errno'],errno.EPIPE)
+        self.assertNotIn('usb_configuration_after_clear_halt',record)
+
+    def test_clear_halt_cannot_mutate_unqualified_configuration(self):
+        calls=[]
+        def ioctl(fd,request,arg):
+            calls.append(request);raise OSError(errno.EPROTO,'bad configuration')
+        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=ioctl),self.assertRaises(ValueError):
+            clear_runtime_route_endpoints(77,{},lambda:None)
+        self.assertNotIn(0x80045515,calls)
+
+    def test_clear_halt_explicit_mode_rejects_missing_route_permission_or_rebind(self):
+        for route,rebind,permission in [(False,False,True),(True,False,False),(True,True,True)]:
+            def read(p):
+                return ('ws73.register_reset_lab=1 ws73.runtime_route_lab=1 ws73.interface_rebind_lab=1'+(' ws73.clear_halt_lab=1' if permission else '')) if str(p)=='/proc/cmdline' else 'QEMU'
+            args=SimpleNamespace(guest_clear_halt_before_route=True,runtime_route_before_module=route,guest_set_interface_before_route=rebind)
+            with self.subTest(route=route,rebind=rebind,permission=permission),patch('ws73_vm_register_reset.os.geteuid',return_value=0),patch.object(Path,'read_text',read),patch.object(Path,'is_file',return_value=True),patch('ws73_vm_register_reset.os.open') as opened:
+                with self.assertRaises(ValueError):run(args)
+                opened.assert_not_called()
 
     def test_unknown_configuration_alternate_or_endpoints_cannot_rebind(self):
         with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=self.state_reader):rows=read_usb_configuration(77)

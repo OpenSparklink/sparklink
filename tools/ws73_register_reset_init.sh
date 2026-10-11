@@ -32,7 +32,9 @@ route_arg=''
 if grep -q 'ws73.runtime_route_lab=1' /proc/cmdline; then route_arg='--runtime-route-before-module'; fi
 interface_arg=''
 if grep -q 'ws73.interface_rebind_lab=1' /proc/cmdline; then interface_arg='--guest-set-interface-before-route'; fi
-/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $reset_arg $wake_arg $async_arg $route_arg $interface_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
+clear_halt_arg=''
+if grep -q 'ws73.clear_halt_lab=1' /proc/cmdline; then clear_halt_arg='--guest-clear-halt-before-route'; fi
+/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $reset_arg $wake_arg $async_arg $route_arg $interface_arg $clear_halt_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
 result=$?
 dmesg > /evidence/maintenance/kernel.log
 for interface in /sys/bus/usb/devices/*:*; do

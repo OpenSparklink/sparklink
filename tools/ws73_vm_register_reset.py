@@ -91,6 +91,34 @@ def checked_single_runtime_interface(rows):
     return raw
 
 
+def clear_runtime_route_endpoints(fd,record,save):
+    """Bounded guest EP01/EP81 comparison, not physical success certification.
+
+    QEMU's original CLEAR_FEATURE emulation ignores libusb_clear_halt's return.
+    A zero guest ioctl must therefore be corroborated by the private observer's
+    actual host return; it never establishes Ready or production recovery.
+    """
+    record['usb_configuration_before_clear_halt']=read_usb_configuration(fd);save()
+    before=checked_single_runtime_interface(record['usb_configuration_before_clear_halt'])
+    record['clear_halt_transfers']=[]
+    record['physical_clear_halt_confirmed']=False;save()
+    for endpoint in (1,129):
+        row=dict(endpoint=endpoint,before_wall_ns=time.time_ns())
+        record['clear_halt_transfers'].append(row);save()
+        try:
+            # USBDEVFS_CLEAR_HALT (_IOR('U',21,unsigned int)), exclusively
+            # claimed guest interface0. No reset, driver detach or SoC write.
+            count=fcntl.ioctl(fd,0x80045515,bytearray(endpoint.to_bytes(4,'little')))
+            row.update(returned=count,after_wall_ns=time.time_ns());save()
+            if type(count) is not int or count!=0:
+                raise ValueError('guest endpoint clear-halt ioctl failed')
+        except OSError as error:
+            row.update(error=str(error),errno=error.errno,after_wall_ns=time.time_ns());save();raise
+    record['usb_configuration_after_clear_halt']=read_usb_configuration(fd);save()
+    after=checked_single_runtime_interface(record['usb_configuration_after_clear_halt'])
+    if before!=after:raise ValueError('runtime descriptor changed during endpoint clear-halt')
+
+
 def async_register_read(fd):
     # SUBMITURB retains the userspace URB pointer. libc ioctl uses the stable
     # ctypes object directly, unlike fcntl's small-buffer temporary copy.
@@ -168,8 +196,11 @@ def run(args):
     if ctypes.sizeof(Bulk)!=24 or ctypes.sizeof(Control)!=24:raise ValueError('qualified 64-bit usbfs ABI required')
     route=bool(getattr(args,'runtime_route_before_module',False))
     rebind=bool(getattr(args,'guest_set_interface_before_route',False))
+    clear_halt=bool(getattr(args,'guest_clear_halt_before_route',False))
     if rebind and (not route or 'ws73.interface_rebind_lab=1' not in Path('/proc/cmdline').read_text().split()):
         raise ValueError('explicit route and single interface-rebind boot required')
+    if clear_halt and (not route or rebind or 'ws73.clear_halt_lab=1' not in Path('/proc/cmdline').read_text().split()):
+        raise ValueError('explicit route and exclusive endpoint clear-halt boot required')
     if route and (args.guest_usb_reset_before_read or args.sdk_wakeup_before_read or args.async_read_only):
         raise ValueError('route comparison excludes other reset/read/wakeup modes')
     output=args.output;output.mkdir(parents=True,exist_ok=False)
@@ -206,6 +237,8 @@ def run(args):
             record.update(sdk_wakeup_returned=count,sdk_wakeup_after_wall_ns=time.time_ns());save()
             if count!=4:raise ValueError('complete SDK DISALLOW_TO_SLEEP control required')
         fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
+        if clear_halt:
+            clear_runtime_route_endpoints(fd,record,save)
         if rebind:
             record['usb_configuration_before_interface']=read_usb_configuration(fd);save()
             before_descriptor=checked_single_runtime_interface(record['usb_configuration_before_interface'])
@@ -281,7 +314,7 @@ def run(args):
                 if adapter is not None:adapter.close()
             if time.monotonic()>deadline:raise TimeoutError('real rebootstrap Setup metadata')
             time.sleep(.02)
-        status='VM_INTERFACE_REBIND_SETUP_PASS' if rebind else 'VM_RUNTIME_ROUTE_SETUP_PASS' if route else 'VM_SDK_WAKEUP_RUNTIME_SETUP_PASS' if args.sdk_wakeup_before_read else 'VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS'
+        status='VM_CLEAR_HALT_GUEST_SETUP_REQUIRES_HOST_CORROBORATION' if clear_halt else 'VM_INTERFACE_REBIND_SETUP_PASS' if rebind else 'VM_RUNTIME_ROUTE_SETUP_PASS' if route else 'VM_SDK_WAKEUP_RUNTIME_SETUP_PASS' if args.sdk_wakeup_before_read else 'VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS'
         record.update(status=status,finished_wall_ns=time.time_ns());save()
     except BaseException as error:
         record.update(status='FAIL',error=str(error),error_type=type(error).__name__,errno=getattr(error,'errno',None));save();raise
@@ -293,4 +326,4 @@ def run(args):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');run(p.parse_args())
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');run(p.parse_args())

@@ -135,7 +135,10 @@ jobs:
           repository: OpenSparklink/linux
           ref: 53a49a9bbfe4af3c886187f828bd4a7a38aeb9cb
           path: .kernel-tools
-          sparse-checkout: tools/testing/selftests/sparklink
+          # Raw worker ioctls also compile against the canonical pinned UAPI.
+          sparse-checkout: |
+            tools/testing/selftests/sparklink
+            include/uapi/linux
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

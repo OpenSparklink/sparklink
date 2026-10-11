@@ -26,7 +26,7 @@ def result(generation, seq, opcode, state, error=0, data=b''):
     return bytes(value).hex()
 
 
-def verify_cancellations(records):
+def verify_cancellations(records, deadline=False):
     legacy = [r for r in records if 'legacy_poll' in r]
     metadata = next(r for r in records if r.get('case') == 'metadata')
     if len(legacy) != 3:
@@ -86,14 +86,20 @@ def verify_cancellations(records):
     expected[1] = result(generation,seqs[1],0x0406,2,data=bytes.fromhex(metadata['data']))
     if final['results'] != expected:
         raise ValueError('late reply revived canceled request or changed fresh result')
+    last_seq=seqs[-1]
+    if deadline:
+        from ws73_diagnostic_deadline import verify_deadline
+        last_seq=verify_deadline(held,final,generation,last_seq)
+    elif any('deadline' in r for r in records):
+        raise ValueError('deadline records require explicit new evidence mode')
     before, pending = counts(held,'before'), counts(held,'after')
     after = counts(final,'after')
     if (before != counts(legacy[-1],'after') or before[2] or
-            pending != [before[0]+3,before[1]+2,1,before[3]] or
+            pending != [before[0]+3+int(deadline),before[1]+2+int(deadline),1,before[3]+int(deadline)] or
             counts(final,'before') != pending or
             after != [pending[0],pending[1]+1,0,pending[3]]):
         raise ValueError('cancellation/replay/reply accounting mismatch')
     fill = next(r for r in records if r.get('eviction') == 'fill')
-    if (counts(fill,'before') != after or fill['seq'] != seqs[-1]+1 or
+    if (counts(fill,'before') != after or fill['seq'] != last_seq+1 or
             fill['start_wall_ns'] < final['end_wall_ns']):
         raise ValueError('cancellation/foreign eviction continuity mismatch')

@@ -66,6 +66,9 @@ def eviction_fixture(records=None):
         previous = {'seq': SleDiagnosticSubmit.from_buffer_copy(bytes.fromhex(cancellations[0]['outputs'][-1])).seq,
                     'end_wall_ns': cancellations[-1]['end_wall_ns']}
         baseline = cancellations[-1]['submitted_after']
+    timeouts = cancellations[-1]['timeouts_after'] if cancellations else 0
+    if cancellations and 'deadline' in cancellations[0]:
+        previous['seq'] = SleDiagnosticSubmit.from_buffer_copy(bytes.fromhex(cancellations[0]['deadline']['output'])).seq
     for i in range(33):
         value = SleDiagnosticSubmit(version=1, generation=generation, request_id=i+1,
                                     timeout_ms=5000, opcode=0x0406, action=1)
@@ -79,7 +82,7 @@ def eviction_fixture(records=None):
                       'data':meta[0]['data'], 'input':raw, 'output':bytes(value).hex(),
                       'result_bytes':bytes(result).hex(), 'submitted_before':baseline+i, 'submitted_after':baseline+i+1,
                       'resolved_before':baseline+i, 'resolved_after':baseline+i+1, 'pending_before':0, 'pending_after':0,
-                      'timeouts_before':0, 'timeouts_after':0})
+                      'timeouts_before':timeouts, 'timeouts_after':timeouts})
     first, retained = fills[:2]
     query = SleDiagnosticResult(version=1, generation=generation, seq=first['seq'])
     start = fills[-1]['end_wall_ns']+10
@@ -92,7 +95,7 @@ def eviction_fixture(records=None):
                 'retained_input':retained['input'], 'retained_output':retained['output'],
                 'retained_result':retained['result_bytes'], 'submitted_before':baseline+33, 'submitted_after':baseline+33,
                 'resolved_before':baseline+33, 'resolved_after':baseline+33, 'pending_before':0, 'pending_after':0,
-                'timeouts_before':0, 'timeouts_after':0}
+                'timeouts_before':timeouts, 'timeouts_after':timeouts}
     at = next(i for i,r in enumerate(records) if r.get('case')=='foreign_author_with_lease')+1
     return records[:at]+fills+[negative]+records[at:]
 

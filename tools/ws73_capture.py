@@ -315,19 +315,21 @@ def corroborate_diagnostic(run, capture, diagnostic):
             or diagnostic.get('automatic_fault_recovery_acceptance') is not False):
         raise CaptureError('scoped successful diagnostic syscall run required')
     version = diagnostic.get('format_version', 1)
-    if (type(version) is not int or version not in (1, 2, 3, 4, 5)
+    if (type(version) is not int or version not in (1, 2, 3, 4, 5, 6)
             or (version >= 2 and diagnostic.get('admission_copyout_requested') is not True)
             or (version == 1 and diagnostic.get('admission_copyout_requested') not in (None, False))
             or (version >= 3 and diagnostic.get('admission_eviction_requested') is not True)
             or (version < 3 and diagnostic.get('admission_eviction_requested') not in (None, False))
             or (version >= 4 and diagnostic.get('legacy_poll_copy_requested') is not True)
             or (version < 4 and diagnostic.get('legacy_poll_copy_requested') not in (None, False))
-            or (version == 5 and diagnostic.get('cancellation_requested') is not True)
-            or (version < 5 and diagnostic.get('cancellation_requested') not in (None,False))):
+            or (version >= 5 and diagnostic.get('cancellation_requested') is not True)
+            or (version < 5 and diagnostic.get('cancellation_requested') not in (None,False))
+            or (version == 6 and diagnostic.get('deadline_requested') is not True)
+            or (version < 6 and diagnostic.get('deadline_requested') not in (None,False))):
         raise CaptureError('explicit diagnostic admission evidence version required')
     try:
         verify_records(diagnostic['records'], admission=version >= 2, eviction=version >= 3,
-                       legacy_poll=version >= 4,cancellation=version == 5)
+                       legacy_poll=version >= 4,cancellation=version >= 5,deadline=version == 6)
     except (ValueError, KeyError, TypeError) as error:
         raise CaptureError('invalid diagnostic syscall records') from error
     owner = run['initial'][0]
@@ -365,7 +367,7 @@ def corroborate_diagnostic(run, capture, diagnostic):
                 or window('complete', legacy[0]['start_wall_ns'], previous) != [p['reply'] for p in legacy_proofs]):
             raise CaptureError('legacy poll seed/fault/retry phase contains extra commands or replies')
         proofs.extend(legacy_proofs)
-    if version == 5:
+    if version >= 5:
         held, final = [r for r in diagnostic['records'] if 'cancel' in r]
         if not previous <= held['start_wall_ns'] < final['end_wall_ns'] < owner['observed_wall_ns']:
             raise CaptureError('cancellation phase differs from registration/time')
@@ -387,10 +389,15 @@ def corroborate_diagnostic(run, capture, diagnostic):
                         'cancellation':held},
                        {'caller':'C fresh after held cancel',**fresh,'cancellation':final},
                        {'caller':'C queued cancel','commands':0,'replies':0,'request_id':10}])
+        if version == 6:
+            proofs.append({'caller':'C queued deadline','commands':0,'replies':0,'request_id':11,
+                           'evidence':held['deadline'],'retained_result':final['deadline']})
         previous=final['end_wall_ns']
     if version >= 3:
         eviction_rows = [r for r in diagnostic['records'] if 'eviction' in r]
         start = eviction_rows[0]['start_wall_ns']
+        if version >= 5 and (window('commands', previous, start) or window('complete', previous, start)):
+            raise CaptureError('held/expired queue sent traffic in the release-to-eviction gap')
         end = eviction_rows[-2]['end_wall_ns']
         if not previous <= start < end < owner['observed_wall_ns']:
             raise CaptureError('eviction phase differs from diagnostic registration/time')

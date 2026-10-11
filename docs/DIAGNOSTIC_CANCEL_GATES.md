@@ -121,3 +121,21 @@ USB/HCC/DLI是实际radio接收证据，不是独立PHY嗅探。
 暂留时USB cancel/abort/close drain、CAP/其他作者取消/退役并发/32-bit或自然根因。
 本次50ms重试不证明5000ms截止点不续期；它仍需独立实际到期门禁。历史物理
 xHCI warning不能由新批零warning抹除。北极星仍7/8，所有完整issues继续OPEN。
+
+## 原始 queued deadline 新门禁（format6；实机待执行）
+
+新增显式 --diagnostic-deadline-verify，必须同时选择真实fault-recovery、
+diagnostic和cancel门禁；support拒绝。专用C探针新增deadline参数和独立
+scratch-root cmdline许可，默认format1–5保持原范围。format6必须验证所有
+已有copy/legacy/eviction/cancel及Host hold门禁，不能降级绕过deadline记录。
+
+实际暂留MAC8后，MAC9继续Pending，Features10取消，额外Features11仅排队
+并在原100ms期限内失败。连续同ID重试记录精确40字节输出/104字节结果、
+单调时钟样本；前后计数只新增一次接受、一次resolve和一次timeout，显式释放
+原回复及新的MAC完成后，超时结果仍逐字节保持。完整阶段与结束到淘汰的间隙
+不得有Features OUT/回复；已有旧MAC IN→新MAC OUT/IN顺序和原SHA仍须核对。
+
+采样通过真实submit/result syscall触发expire_stale；不证明500ms后台维护
+周期的自主过期、active USB timeout、held cancel/abort/close/drain或自然恢复。
+开发fixture/严格C通过不等于实机通过。新镜像、全真实双设备20+2及独立raw/
+pcap/QMP复核后才能记录限定资格；完整transactions、自然根因与S0–S6继续OPEN。

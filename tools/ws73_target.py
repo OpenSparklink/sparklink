@@ -108,7 +108,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'include/uapi/linux/sparklink_ioctl.h',
@@ -180,7 +180,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -350,6 +350,9 @@ def _run(args):
     event_copy=bool(getattr(args,'event_copy_verify',False))
     diagnostic=bool(getattr(args,'diagnostic_verify',False))
     cancellation=bool(getattr(args,'diagnostic_cancel_verify',False))
+    deadline_gate=bool(getattr(args,'diagnostic_deadline_verify',False))
+    if deadline_gate and (support or not recovery or not diagnostic or not cancellation):
+        raise ValueError('live deadline gate requires real diagnostic/cancel/fault-recovery modes')
     if cancellation and (support or not recovery or not diagnostic):
         raise ValueError('live cancellation gate requires diagnostic and real fault-recovery VM modes')
     if event_copy and (support or not recovery):
@@ -367,6 +370,7 @@ def _run(args):
     m['artificial_guest_transport_fault']=recovery
     m['live_event_copy_requested']=event_copy
     m['live_diagnostic_requested']=diagnostic
+    m['live_diagnostic_deadline_requested']=deadline_gate
     process=monitor=channel=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
@@ -404,6 +408,7 @@ def _run(args):
                      (' ws73.event_copy=1' if event_copy else '')+
                      (' ws73.diagnostic=1' if diagnostic else '')+
                      (' ws73.diagnostic_cancel=1' if cancellation else '')+
+                     (' ws73.diagnostic_deadline=1' if deadline_gate else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -573,13 +578,14 @@ def _run(args):
                     probe=json.loads((share/'diagnostic/run.json').read_text())
                     if probe.get('status')!='DIAGNOSTIC_RESULT_LIVE_PASS' or probe.get('probe_exit')!=0:
                         raise ValueError('live diagnostic probe failure')
-                    if (probe.get('format_version') != (5 if cancellation else 4)
+                    if (probe.get('format_version') != (6 if deadline_gate else 5 if cancellation else 4)
                             or probe.get('cancellation_requested',False) is not cancellation
+                            or probe.get('deadline_requested',False) is not deadline_gate
                             or probe.get('admission_copyout_requested') is not True
                             or probe.get('admission_eviction_requested') is not True
                             or probe.get('legacy_poll_copy_requested') is not True):
                         raise ValueError('current live diagnostic admission gate required')
-                    verify_records(probe['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation)
+                    verify_records(probe['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_gate)
                     if cancellation:
                         if not hold or not hold.record['complete'] or probe.get('host_hold_acknowledgements') != hold.record['observations']:
                             raise ValueError('actual host hold and matching guest acknowledgments required')
@@ -648,6 +654,7 @@ def main():
             cmd.add_argument('--ports',nargs=2,required=True)
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')
             cmd.add_argument('--diagnostic-verify',action='store_true',help='opt-in live diagnostic owner/CAP/copy/retirement and metadata CLI gate; requires --fault-recovery')
+            cmd.add_argument('--diagnostic-deadline-verify',action='store_true',help='100ms queued expiry with continuous same-ID retries; requires --diagnostic-cancel-verify and real fault-recovery mode')
             cmd.add_argument('--diagnostic-cancel-verify',action='store_true',help='hold one real IN81 to test active/queued cancel and late reply; requires --diagnostic-verify and --fault-recovery')
             modes=cmd.add_mutually_exclusive_group()
             modes.add_argument('--qmp-hotplug',action='store_true',help='real RF with QMP guest-only disconnect/reconnect; never physical unplug or automatic recovery acceptance')

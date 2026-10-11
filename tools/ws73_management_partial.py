@@ -202,7 +202,8 @@ def corroborate(record, host, capture, stderr, expected):
         if len(commands)!=1 or commands[0]['opcode']!=0x406 or len(completions)!=1 or completions[0]['opcode']!=0x406 or completions[0]['status'] or completions[0]['value']!=bytes(snapshots[1].address).hex():
             raise ValueError('peer queries require independent wire proof')
         peer.append(dict(command=commands[0],reply=completions[0]))
-    return dict(scope='one partial first-step and actual held late reply',case=record['case'],domain=record['domain'],
+    return dict(scope=('one partial first-step and retained simulated terminal frame, actual kernel fd'
+                       if record['synthetic_support'] else 'one partial first-step and actual held late reply'),case=record['case'],domain=record['domain'],
         commands=rows,replies=replies,host_hold=proof,peer_queries=peer,preparation=preparation,
         retained_advertising_off=preparation[-1] if preparation else None,
         synthetic_support=record['synthetic_support'],

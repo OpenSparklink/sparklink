@@ -12,6 +12,7 @@ from pathlib import Path
 import select
 import socket
 import subprocess
+import tempfile
 import time
 from types import SimpleNamespace
 
@@ -86,7 +87,7 @@ def run(args):
                   started_wall_ns=time.time_ns())
     record.update(partial_case=args.partial_case,partial_domain=args.partial_domain if partial else None,
                   model_idle_stop_reject=args.idle_scan_stop_reject)
-    process = monitor = channel = None
+    process = monitor = channel = runtime = None
     def save():
         (output/'manifest.json').write_text(json.dumps(record, indent=2)+'\n')
     with lab.lab_lock(SimpleNamespace(action='managed-queue-synthetic-support', build_dir=args.prepared)):
@@ -99,7 +100,10 @@ def run(args):
             record['prepared_manifest'] = file_record(args.prepared/'manifest.json')
             record['runner_inputs'] = [file_record(Path(__file__)),
                                       file_record(Path(__file__).with_name('ws73_management_queued.py'))]
-            serial = output/'serial.sock'; qmp = output/'qmp.sock'
+            # AF_UNIX has a short pathname limit. Keep sockets in a private
+            # runtime directory; the complete evidence stays in output.
+            runtime=tempfile.TemporaryDirectory(prefix='slkm-')
+            serial = Path(runtime.name)/'serial.sock'; qmp = Path(runtime.name)/'qmp.sock'
             options, append = native_vm.launch(args.prepared.resolve(), output, package)
             boot=(f'ws73.managed_partial=1 ws73.managed_partial_support=1 ws73.partial_case={args.partial_case} ws73.partial_domain={args.partial_domain}'
                   if partial else 'ws73.managed_queue=1 ws73.managed_queue_support=1')
@@ -182,6 +186,7 @@ def run(args):
                 except subprocess.TimeoutExpired: process.kill(); process.wait()
             if monitor: monitor.close()
             if channel: channel.close()
+            if runtime: runtime.cleanup()
             record['qemu_exit'] = None if process is None else process.returncode
             record['guest_files'] = [file_record(p) for p in sorted(share.rglob('*')) if p.is_file() and not p.is_symlink()]
             record['finished_wall_ns'] = time.time_ns(); save()

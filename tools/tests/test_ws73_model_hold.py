@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 import copy
-import json
 from pathlib import Path
 import tempfile
 import unittest

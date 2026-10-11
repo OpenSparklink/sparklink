@@ -913,3 +913,36 @@ VBUS。ROM首包失败也不能仅用运行态HCC memory-credit0解释。现有g
 可安全重试的边界、总期限、原错误记录及重枚举等待；部分固件/寄存器写入不能
 直接重放。先定位共同bulk故障并恢复真实查询，再执行完整Managed和活动同行
 门禁。自然RCA、无人工恢复、四设备及整项issues继续OPEN，历史RF证据保持。
+
+
+## 2026-10-11 冷启动对照、真实队列子门禁与 partial 清理拒绝
+
+[新封存证据](evidence/ws73-managed-cold-real-progress-20261011.json)保留原失败：
+用户报告 hub/WS73 只有 USB 供电，并将上游物理断开至少 30 秒后重接；四只重新进入
+ROM，两只在同一冻结镜像输入上成功上传 1.10.111、真实 DLI 查询。人工冷断电只用于
+对照，不算自动恢复，也未实测 VBUS；先前软件 off/on 未恢复 bulk 的根因继续开放。
+
+真实 Unknown Setup 的合法队列子集六案例、两域完成真实初始化/Off 后完整初始化队列
+六案例分别核对 release、最后 fd 关闭和 dup。受控单 CPU/FIFO 窗口内未选中请求均保持
+Cancelled/-ECANCELED，完整矩阵区间两只零 DLI；这不等于普通调度并发。两次各 20+2
+随机空口轮次由抓包独立核对，应用同 UID1000/caps0、同 slkd，围绕人工 guest IN 错误；
+不用于关闭自然恢复。冷启动第一次原宿主验证误用 ROM 旧地址，原 VM FAIL 不改写；
+另一次 usbfs 所有权检查过严的捕获未封存失败亦保留，已修复精确 live fd/当前地址门禁。
+
+首个真实 partial 广播 release 在原 C02 回复被保留后取消；原 C02 迟到成功及 C05 STOP
+成功，但多余的未初始化 scan STOP1002 返回 0x0b，原目标 Faulted/Unknown、旧请求
+Cancelled/-ECANCELED 保留。另只三次真实 MAC 查询与 Setup/Diagnostic 身份保持，
+仍不是活动 Ready 同伴；剩余五案例当时未执行，不作为通过。
+
+Kbea9fc6527f8 新修复保留每 Runtime 实际选择域的历史，撤销仅执行已选择/已知域；
+跳过 untouched Unknown 只结束该域撤销等待，不制造 Off/Ready。24 项实际 Host 源码、
+19 项严格命令计划及 296 项工具回归通过。U8e20b69 新 `--managed-selected-cleanup`
+只用于实际第一步 partial、显式版本5记录：广播单域清理后 scan Unknown/Setup；扫描
+已有真实广告 Off 前置，仍需扫描真实 STOP。原历史格式3/4、模型和失败证据保留。
+
+新生产镜像尚未取得物理资格。初次复制目录构建因缺工具重新配置后丢失 CONFIG_RUST，
+构建产物资格检查明确拒绝；原日志/配置保留，恢复已验证配置并重建后才可继续。
+下一依赖：匹配镜像/签名模块的空USB启动检查 → 实际 release/last-fd/dup 与在途回复
+→ 活动 Ready 同伴前/中/后真实工作 → 同 daemon RF20+2及拔插 → 四设备两组。
+正常启动 VM 累计12、维护20，不归零历史失败；自动恢复、自然 RCA、完整 Managed
+与原各 issue 整项仍 OPEN。VM-only，无主机实验安装、无生产模拟成功或固件字节发布。

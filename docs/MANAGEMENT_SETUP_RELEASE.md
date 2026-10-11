@@ -1,6 +1,12 @@
-# 未触及 radio policy 的 Setup 租约释放
+# Setup 与 Managed 租约释放及 radio 清理
 
-源码实现：Linux `f822db7756d7c99eb6a7d0e1e9e32c513e91ad71`。本批新镜像K`f822db7756d7`／编译U`ccb3d34ae1bc`的
+最新[四设备时序矩阵](WS73_PARALLEL_RF.md)保留默认并行超时和前一核对器 FAIL；
+修复 retained OFF 的所属 domain 判定及有时限的同行 abort 后，默认失败重跑
+在真实设备上完成四只 STOP、worker 回收、无强杀。它只认证此测试清理子集，
+不替代整项 Managed/作者/事件/权限并发、物理拔插或自然故障自动恢复验收。
+实际内核 K060011963b5e、服务 Uab1a34b07f1c，冻结工具 Uaf0756d7a484。
+
+此前未触及 policy 的 Setup 修复：Linux `f822db7756d7c99eb6a7d0e1e9e32c513e91ad71`。该批镜像K`f822db7756d7`／编译U`ccb3d34ae1bc`的
 [两个独立新VM证据](evidence/ws73-vm-setup-release-20261011.json)已封存；
 资格仅限未触及policy的Setup release/last-file/dup，不引用历史镜像代替新源码。
 

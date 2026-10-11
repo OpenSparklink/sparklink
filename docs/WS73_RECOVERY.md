@@ -587,3 +587,34 @@ held回复/三fd/Ready同行，需真实原USB帧skip/hold/hash证明，不能�
 之前三份证据及原0x0b拒绝、捕获窗口失败、不合格构建仍保留。
 28项原scope、两个draft、自动恢复/自然超时-重枚举-消失RCA和历史xHCI warning继续OPEN；
 原生主机对照受VM-only约束未执行，完整goal active。
+
+
+## 2026-10-11 未选择队列取消：双角色活动 Ready 扫描同行六案例通过
+
+[新独立实机证据](evidence/ws73-managed-ready-queue-real-20261011.json)
+SHA256 `dcb672a9adc8b5e8726ec54d7a6ac42bb8d625a97594605858206fa97c92d38a`。
+编译内核K4ece91aa5c7c、服务U5d29cb7b3aa5、冻结工具U9a3b29c；原VM
+FAULT_RECOVERY_SUPPORT_PASS、QEMU0，探针六案例全成功。
+两只实际五命令初始化Ready；两种目标角色各release、最后fd关闭、dup。
+每例同行先独立持有Managed并以真实CFG/START开始扫描，在目标Queued→Cancelled
+及Free的完整窗口前、FIFO内、窗口后，实际ioctl都保持相同generation/Ready/owner/current On；
+随后真实STOP/START/STOP成功，同行再实际释放为Free。错误token仍EPERM，dup第一次
+close保持owner及Queued，最后close撤销；取消结果opcode0/step0/-ECANCELED，未选择执行。
+
+十条实际bootstrap命令及三十六条同行活动命令/成功Complete逐项核对；六个约350ms
+完整取消窗口两只均零命令/回复/失败；间隔只允许精确记录的同行活动，整个bootstrap
+到最后同行释放区间拒绝多余命令、Complete或失败。FIFO关键段约0.041–0.101ms，
+每例恢复SCHED_OTHER；这是受控单CPU开发支撑，**不等于普通调度并发通过**。
+1307包零丢包、taint0、无kernel fault，同slkd/bus、UID1000/caps0的RF20+2通过。
+306工具测试及严格C编译通过；25实际Host源码、19命令计划保持已有验证。
+正常启动VM累计30、维护20，失败与旧证据不归零。
+
+此前第一实际步骤partial六案例及活动Ready同行隔离、132RF仍有效，原Unknown Setup
+队列子集6、confirmed-Off静默队列6、0x0b拒绝和捕获/构建失败全部保留。
+当前仅通过受控未选择队列及第一实际初始化步骤的fd/同行门禁，**整项Managed仍OPEN**。
+下一优先：真实广告最后STOP、扫描START/最后STOP，分别release/last-fd/dup及Ready
+同行，保留原500ms deadline，需真实host成功USB帧skip/hold/hash证据，不用模型Complete。
+随后普通调度/结果淘汰、当前镜像物理拔插、四设备两组、自然自动恢复/RCA及完整S0–S6。
+VM-only不变；人工guest IN错误仅作开发支撑；上游人工冷断电只是诊断，VBUS未测，
+软件切电未恢复bulk、自然启动超时/重枚举/消失根因仍OPEN；不执行共享hub循环代替单设备恢复。
+28项原完整scope、两个draft未合并、整个goal active。

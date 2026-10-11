@@ -44,6 +44,11 @@ def fixture(offset=0):
         release = max(v['observed_wall_ns'] for v in waits)+1
         stages.append(dict(phase=phase, round=number, waits=waits, release_wall_ns=release))
         for r in runs: r['barriers'][i]['ack_wall_ns'] = release+1
+    if offset:
+        # First worker can acknowledge late after scheduling, then start
+        # immediately. Only the second worker has the requested delay.
+        for row in runs[0]['rounds']:
+            runs[0]['barriers'][2*row['round']-1]['ack_wall_ns'] = runs[0]['commands'][row['command_indices'][0]]['start_wall_ns']-10
     parent = dict(format_version=1, scope='four real WS73 two-pair parallel RF', status='PARALLEL_RF_EVIDENCE_PENDING',
                   physical_unplug_acceptance=False, automatic_fault_recovery_acceptance=False,
                   application_identity=runs[0]['application_identity'], stages=stages, workers=[], second_pair_start_offset_ms=offset)
@@ -74,6 +79,8 @@ class ParallelTests(unittest.TestCase):
         self.assertTrue(proof['parallel_offset_contrast_acceptance'])
         self.assertFalse(proof['default_parallel_gate_acceptance'])
         self.assertFalse(proof['whole_concurrency_acceptance'])
+        first=r['workers'][0]['run']
+        self.assertLess(first['commands'][first['rounds'][0]['command_indices'][0]]['start_wall_ns']-first['barriers'][1]['ack_wall_ns'],37_000_000)
         for change in ['negative','excessive','worker-offset','argv-offset','actual-too-early']:
             r,c=fixture(offset=37)
             if change=='negative':r['second_pair_start_offset_ms']=-1

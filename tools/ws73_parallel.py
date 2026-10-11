@@ -319,6 +319,7 @@ def verify_records(record):
         raise CaptureError('all ordered round barriers required')
     for pair, worker in enumerate(record['workers']):
         barriers = worker['run']['barriers']
+        delay = offset if pair else 0
         if [(b['phase'], b['round']) for b in barriers] != SEQUENCE:
             raise CaptureError('worker barrier history incomplete')
         for stage, child in zip(record['stages'], barriers):
@@ -379,6 +380,7 @@ def corroborate(record, capture):
             raise CaptureError('actual on-air START/OFF intervals did not overlap')
         overlaps.append(dict(round=n, actual_radio_windows=windows, overlap_wall_ns=[start, end]))
     return dict(status='FOUR_REAL_PARALLEL_RF_CORROBORATED', pairs=pairs, overlaps=overlaps,
+                actual_pair_start_gaps_ns=[b['radio_commands'][2]['command']['wall_ns']-a['radio_commands'][2]['command']['wall_ns'] for a,b in zip(*pairs)],
                 second_pair_start_offset_ms=record['second_pair_start_offset_ms'],
                 default_parallel_gate_acceptance=record['second_pair_start_offset_ms'] == 0,
                 parallel_offset_contrast_acceptance=record['second_pair_start_offset_ms'] != 0,

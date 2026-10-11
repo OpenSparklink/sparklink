@@ -1,6 +1,6 @@
 # SparkLink / Linux 联合实施方案
 
-最新源码复核与新镜像回归（K`f5f83d7eb970`／编译U`8641ec61e804`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
+最新源码复核与新镜像回归（K`f822db7756d7`／编译U`ccb3d34ae1bc`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
 此前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：
 K`cc4018c4e3a6`/编译U`4a9de6a91617`使用专用QEMU暂留178字节真实回复，
@@ -943,9 +943,26 @@ sandbox及完整S0–S6仍开放；自然根因、无人工拔插恢复、历史
 附件分析SHA未变，ADR/分层保持，VM-only/北极星7/8，整项不关闭。
 
 
-### Setup 租约生命周期修复实施（新镜像待验）
+### Setup 租约生命周期修复实施记录（后续限定验收见下）
 
 K`f822db7756d7`按[唯一Host状态判据与门禁](MANAGEMENT_SETUP_RELEASE.md)实现未触及
 radio policy的快速release；10项实际源码边界通过，6项两设备实际release/last-fd/
 dup门禁已纳入专用VM工具。Unknown/部分初始化/在途仍需真实cleanup，不假Off/
 Ready。新镜像回归未执行前不更新实机资格；自然恢复/根因和全部S0–S6仍OPEN。
+
+
+### 本批 Setup 释放限定实机复核及完整 issue 集合
+
+K`f822db7756d7`／编译U`ccb3d34ae1bc`已通过[两个新VM的6项实际文件生命周期门禁及20+2](evidence/ws73-vm-setup-release-20261011.json)，
+[完整条件和未决项](MANAGEMENT_SETUP_RELEASE.md#setup-租约释放新镜像限定通过完整生命周期仍-open)明确
+仅未触及policy的Setup可Free，保持Unknown/Setup；partial/unknown cleanup和held
+transport fd-close仍OPEN。原诊断/在途期限/稳定预算、普通UID1000/caps0及peer
+隔离保持；[源码CI38108517103](https://github.com/OpenSparklink/sparklink/actions/runs/38108517103)
+九作业成功，170 Rust/34 Python/228工具/32期限和10管理源码门禁。两次初始失败
+证据保留，GNU make一次jobserver警告未隐藏，不把fixture当硬件或USB当独立PHY。
+
+实际开放集合28项（K19/U9）；补齐近期维护清单漏掉的K11方言/caps/limits/quirks
+及K13来源/协议差异/捕获/许可，各原门禁仍有效，不扩大未知能力或FW运行时资格。
+C通用固件短传输/最终ACK、部分初始化/自然根因/无人工恢复、历史物理xHCI警告、
+完整事件/socket/SSAP/每连接安全/Bond/Profile/四设备/Native/Proxy/PM/sandbox与
+全部S0–S6继续OPEN；VM-only/北极星7/8，部分成果不关闭整项或合并draft。

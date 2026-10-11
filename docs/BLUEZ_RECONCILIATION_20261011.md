@@ -2,7 +2,7 @@
 
 用户再次提供的分析与已采用文本相同，SHA256 为
 `f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a`。
-最新源码复核与实际新镜像为 Linux `f5f83d7eb970`、编译用户态 `8641ec61e804`；
+最新源码复核与实际新镜像为 Linux `f822db7756d7`、编译用户态 `ccb3d34ae1bc`；
 后续仅文档，历史镜像资格保持原基线。
 原 review 基线 `fc0b4d1a44b6`／`157ec71c3b9a` 仅是历史缺陷定位依据，
 不能用于判断后续提交仍有相同缺陷或已经完成验收。
@@ -162,3 +162,20 @@ C通用固件短传输/最终ACK校验需独立修复，不能沿用Native WS73�
 订阅迁移/旧UAPI、socket/SSAP/每连接安全/Bond/Profile/四设备/Native/Proxy/PM/
 sandbox及完整S0–S6仍开放；自然根因、无人工拔插恢复、历史物理xHCI警告未闭合。
 附件分析SHA未变，ADR/分层保持，VM-only/北极星7/8，整项不关闭。
+
+
+### 本批 Setup 释放限定实机复核及完整 issue 集合
+
+K`f822db7756d7`／编译U`ccb3d34ae1bc`已通过[两个新VM的6项实际文件生命周期门禁及20+2](evidence/ws73-vm-setup-release-20261011.json)，
+[完整条件和未决项](MANAGEMENT_SETUP_RELEASE.md#setup-租约释放新镜像限定通过完整生命周期仍-open)明确
+仅未触及policy的Setup可Free，保持Unknown/Setup；partial/unknown cleanup和held
+transport fd-close仍OPEN。原诊断/在途期限/稳定预算、普通UID1000/caps0及peer
+隔离保持；[源码CI38108517103](https://github.com/OpenSparklink/sparklink/actions/runs/38108517103)
+九作业成功，170 Rust/34 Python/228工具/32期限和10管理源码门禁。两次初始失败
+证据保留，GNU make一次jobserver警告未隐藏，不把fixture当硬件或USB当独立PHY。
+
+实际开放集合28项（K19/U9）；补齐近期维护清单漏掉的K11方言/caps/limits/quirks
+及K13来源/协议差异/捕获/许可，各原门禁仍有效，不扩大未知能力或FW运行时资格。
+C通用固件短传输/最终ACK、部分初始化/自然根因/无人工恢复、历史物理xHCI警告、
+完整事件/socket/SSAP/每连接安全/Bond/Profile/四设备/Native/Proxy/PM/sandbox与
+全部S0–S6继续OPEN；VM-only/北极星7/8，部分成果不关闭整项或合并draft。

@@ -262,6 +262,13 @@ impl Context {
         println!("  Generation:  {generation}");
         println!("  Address:     {address}");
         println!("  Profile:     {profile}");
+        if profile == 1 {
+            let (version, min, max, power, interval, window): (u32, u32, u32, i32, u32, u32) =
+                proxy.call("GetDiscoveryPolicy", &()).await?;
+            println!(
+                "  Radio policy: version={version} adv_slots={min}..{max} tx_power_dbm={power} scan_slots={interval}/{window}"
+            );
+        }
         if !error.is_empty() {
             println!("  Init error:  {error}");
         }

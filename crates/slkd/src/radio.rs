@@ -46,7 +46,10 @@ async fn selected(state: &SharedState) -> zbus::fdo::Result<(Arc<Adapter>, u64)>
 }
 async fn submit(
     state: &SharedState,
-    build: impl FnOnce(SleControllerSnapshot) -> libsparklink::Result<SleDiscoverySubmit>
+    build: impl FnOnce(
+        SleControllerSnapshot,
+        libsparklink::Ws73DiscoveryPolicy,
+    ) -> libsparklink::Result<SleDiscoverySubmit>
     + Send
     + 'static,
 ) -> zbus::fdo::Result<Vec<u8>> {
@@ -61,12 +64,15 @@ async fn submit(
     if !authority.accepting || authority.token.is_none() || !state.lock().await.present {
         return Err(failed("management unavailable or registration removed"));
     }
+    let policy = state.lock().await.native_discovery_policy.ok_or_else(|| {
+        zbus::fdo::Error::NotSupported("registration discovery policy unavailable".into())
+    })?;
     tokio::task::spawn_blocking(move || {
         // Keep this guard in the blocking task even if its RPC is abandoned.
         // Cancellation/removal cannot hand off authority underneath an ioctl.
         let _authority = authority;
         let snapshot = fd.controller_snapshot(generation)?;
-        let request = build(snapshot)?;
+        let request = build(snapshot, policy)?;
         fd.submit_discovery(&request)?;
         Ok::<_, libsparklink::Error>(request.data[..request.data_len as usize].to_vec())
     })
@@ -157,24 +163,40 @@ pub(crate) async fn advertise(
     let marker: [u8; 16] = marker
         .try_into()
         .map_err(|_| zbus::fdo::Error::InvalidArgs("marker must be exactly 16 bytes".into()))?;
-    submit(state, move |snapshot| {
-        libsparklink::ws73_basic_advertisement(&snapshot, id, &marker)
+    submit(state, move |snapshot, policy| {
+        policy.advertisement(&snapshot, id, &marker)
     })
     .await
 }
 pub(crate) async fn scan(state: &SharedState, id: u64) -> zbus::fdo::Result<()> {
-    submit(state, move |snapshot| {
-        libsparklink::ws73_basic_scan(&snapshot, id)
+    submit(state, move |snapshot, policy| policy.scan(&snapshot, id)).await?;
+    Ok(())
+}
+pub(crate) async fn stop(state: &SharedState, id: u64, op: u32) -> zbus::fdo::Result<()> {
+    submit(state, move |snapshot, _policy| {
+        libsparklink::ws73_discovery_stop(&snapshot, id, op)
     })
     .await?;
     Ok(())
 }
-pub(crate) async fn stop(state: &SharedState, id: u64, op: u32) -> zbus::fdo::Result<()> {
-    submit(state, move |snapshot| {
-        libsparklink::ws73_basic_stop(&snapshot, id, op)
-    })
-    .await?;
-    Ok(())
+
+pub(crate) async fn discovery_policy(
+    state: &SharedState,
+) -> zbus::fdo::Result<(u32, u32, u32, i32, u32, u32)> {
+    let st = state.lock().await;
+    if !st.present {
+        return Err(failed("registration removed"));
+    }
+    if st.controller.profile != slk_protocol::CONTROLLER_EVENT_PROFILE_WS73_HCC
+        || st.native_control.is_none()
+    {
+        return Err(zbus::fdo::Error::NotSupported(
+            "WS73 discovery policy unavailable".into(),
+        ));
+    }
+    st.native_discovery_policy
+        .map(|p| p.parameters())
+        .ok_or_else(|| zbus::fdo::Error::NotSupported("WS73 discovery policy unavailable".into()))
 }
 pub(crate) async fn result(
     state: &SharedState,
@@ -298,6 +320,43 @@ mod tests {
         let state = selected_null();
         let error = management(&state).await.unwrap_err().to_string();
         assert!(error.contains("ENOTTY"), "{error}");
+    }
+
+    #[tokio::test]
+    async fn policy_query_has_no_fallback_and_is_registration_scoped() {
+        let first = selected_null();
+        let peer = selected_null();
+        assert!(matches!(
+            discovery_policy(&first).await,
+            Err(zbus::fdo::Error::NotSupported(_))
+        ));
+        let configured =
+            libsparklink::Ws73DiscoveryPolicy::new(1237, 1301, -20, 1703, 997).unwrap();
+        first.lock().await.controller.profile = slk_protocol::CONTROLLER_EVENT_PROFILE_WS73_HCC;
+        peer.lock().await.controller.profile = slk_protocol::CONTROLLER_EVENT_PROFILE_WS73_HCC;
+        first.lock().await.native_discovery_policy = Some(configured);
+        peer.lock().await.native_discovery_policy =
+            Some(libsparklink::Ws73DiscoveryPolicy::default());
+        assert_eq!(
+            discovery_policy(&first).await.unwrap(),
+            configured.parameters()
+        );
+        assert_eq!(
+            discovery_policy(&peer).await.unwrap(),
+            (3, 1200, 1200, 127, 1600, 800)
+        );
+        first.lock().await.present = false;
+        assert!(
+            discovery_policy(&first)
+                .await
+                .unwrap_err()
+                .to_string()
+                .contains("registration removed")
+        );
+        assert_eq!(
+            discovery_policy(&peer).await.unwrap(),
+            (3, 1200, 1200, 127, 1600, 800)
+        );
     }
 
     #[tokio::test]

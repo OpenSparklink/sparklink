@@ -106,11 +106,13 @@ async fn initialize(
     adapter: Arc<Adapter>,
     snapshot: SleControllerSnapshot,
     lease: Option<NativeLease>,
+    policy: Option<libsparklink::Ws73DiscoveryPolicy>,
     mut cancelled: watch::Receiver<bool>,
 ) -> anyhow::Result<()> {
     if snapshot.profile == 0 || snapshot.flags == CONTROLLER_READY {
         return Ok(());
     }
+    let policy = policy.ok_or_else(|| anyhow::anyhow!("native discovery policy unavailable"))?;
     let nonce = tokio::task::spawn_blocking(|| -> std::io::Result<u64> {
         use std::io::Read;
         let mut bytes = [0; 8];
@@ -127,9 +129,9 @@ async fn initialize(
         }
         let request_id = nonce.wrapping_add(operation as u64).max(1);
         let request = if operation == slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF {
-            libsparklink::ws73_basic_standby(&snapshot, request_id)?
+            policy.standby(&snapshot, request_id)?
         } else {
-            libsparklink::ws73_basic_scan_standby(&snapshot, request_id)?
+            policy.scan_standby(&snapshot, request_id)?
         };
         let fd = adapter.clone();
         let authority = lease
@@ -201,6 +203,11 @@ impl Node {
         directory: &AdapterDirectory,
     ) -> anyhow::Result<Self> {
         config.validate_for_profile(snapshot.profile)?;
+        let policy = if snapshot.profile == 1 {
+            Some(config.ws73.for_address(snapshot.address)?)
+        } else {
+            None
+        };
         let path = object_path(&snapshot);
         let device = device.to_owned();
         let receiver = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
@@ -273,6 +280,7 @@ impl Node {
         if snapshot.profile == 1 {
             state.native_control = Some(control.clone());
             state.native_lease = lease.clone();
+            state.native_discovery_policy = policy;
         }
         let state = Arc::new(Mutex::new(state));
         // Roll back partial registration if any of the D-Bus interfaces fails.
@@ -302,7 +310,9 @@ impl Node {
         let init_path = path.clone();
         let init_lease = lease.clone();
         let init = tokio::spawn(async move {
-            if let Err(error) = initialize(init_control, snapshot, init_lease, cancelled).await {
+            if let Err(error) =
+                initialize(init_control, snapshot, init_lease, policy, cancelled).await
+            {
                 warn!(%error, index=snapshot.dev_index, generation=snapshot.generation, "adapter initialization failed");
                 init_state.lock().await.initialization_error = error.to_string();
                 invalidate_properties(&init_connection, &init_path, &["InitializationError"]).await;

@@ -129,7 +129,11 @@ impl AdapterIface {
     }
     #[zbus(property)]
     fn radio_policy_version(&self) -> u32 {
-        libsparklink::WS73_BASIC_POLICY_VERSION
+        libsparklink::WS73_DISCOVERY_POLICY_VERSION
+    }
+    /// Immutable registration policy. Admission/Complete/RF are observed separately.
+    async fn get_discovery_policy(&self) -> zbus::fdo::Result<(u32, u32, u32, i32, u32, u32)> {
+        crate::radio::discovery_policy(&self.state).await
     }
     #[zbus(property)]
     async fn advertising_state(&self) -> u32 {

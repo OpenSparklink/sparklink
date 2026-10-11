@@ -183,6 +183,5 @@ mod tests {
 }
 mod ws73_discovery;
 pub use ws73_discovery::{
-    WS73_BASIC_POLICY_VERSION, ws73_basic_advertisement, ws73_basic_scan, ws73_basic_scan_standby,
-    ws73_basic_standby, ws73_basic_stop, ws73_marker_data,
+    WS73_DISCOVERY_POLICY_VERSION, Ws73DiscoveryPolicy, ws73_discovery_stop, ws73_marker_data,
 };

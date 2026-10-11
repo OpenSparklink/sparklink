@@ -33,6 +33,114 @@ pub struct DaemonConfig {
     pub general: GeneralConfig,
     #[serde(default)]
     pub policy: PolicyConfig,
+    #[serde(default)]
+    pub ws73: Ws73Config,
+}
+
+/// Applied only to the queried WS73 registration, before acquiring its lease.
+/// Overrides use controller addresses, never unstable enumeration indices.
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Ws73Config {
+    #[serde(default)]
+    pub defaults: Ws73PolicyConfig,
+    #[serde(default)]
+    pub adapters: Vec<Ws73AdapterConfig>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Ws73AdapterConfig {
+    pub address: String,
+    pub policy: Ws73PolicyConfig,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct Ws73PolicyConfig {
+    pub advertising_interval_min_slots: u32,
+    pub advertising_interval_max_slots: u32,
+    pub tx_power_dbm: i32,
+    pub scan_interval_slots: u32,
+    pub scan_window_slots: u32,
+}
+
+impl Default for Ws73PolicyConfig {
+    fn default() -> Self {
+        let (_, min, max, power, interval, window) =
+            libsparklink::Ws73DiscoveryPolicy::default().parameters();
+        Self {
+            advertising_interval_min_slots: min,
+            advertising_interval_max_slots: max,
+            tx_power_dbm: power,
+            scan_interval_slots: interval,
+            scan_window_slots: window,
+        }
+    }
+}
+
+impl Ws73PolicyConfig {
+    fn build(&self) -> Result<libsparklink::Ws73DiscoveryPolicy, ConfigError> {
+        libsparklink::Ws73DiscoveryPolicy::new(
+            self.advertising_interval_min_slots,
+            self.advertising_interval_max_slots,
+            self.tx_power_dbm,
+            self.scan_interval_slots,
+            self.scan_window_slots,
+        )
+        .map_err(|_| ConfigError::Invalid("ws73 policy has invalid slots, ordering or TX power"))
+    }
+}
+
+fn ws73_address(text: &str) -> Result<[u8; 6], ConfigError> {
+    let mut address = [0; 6];
+    let mut parts = text.split(':');
+    for byte in &mut address {
+        let part = parts
+            .next()
+            .ok_or(ConfigError::Invalid("invalid ws73 adapter address"))?;
+        if part.len() != 2 || !part.bytes().all(|b| b.is_ascii_hexdigit()) {
+            return Err(ConfigError::Invalid("invalid ws73 adapter address"));
+        }
+        *byte = u8::from_str_radix(part, 16)
+            .map_err(|_| ConfigError::Invalid("invalid ws73 adapter address"))?;
+    }
+    if parts.next().is_some() || address == [0; 6] {
+        return Err(ConfigError::Invalid("invalid ws73 adapter address"));
+    }
+    Ok(address)
+}
+
+impl Ws73Config {
+    fn validate(&self) -> Result<(), ConfigError> {
+        self.defaults.build()?;
+        let mut addresses = std::collections::BTreeSet::new();
+        for adapter in &self.adapters {
+            if !addresses.insert(ws73_address(&adapter.address)?) {
+                return Err(ConfigError::Invalid("duplicate ws73 adapter address"));
+            }
+            adapter.policy.build()?;
+        }
+        Ok(())
+    }
+
+    pub fn for_address(
+        &self,
+        address: [u8; 6],
+    ) -> Result<libsparklink::Ws73DiscoveryPolicy, ConfigError> {
+        self.validate()?;
+        if address == [0; 6] {
+            return Err(ConfigError::Invalid(
+                "WS73 policy requires queried nonzero address",
+            ));
+        }
+        for adapter in &self.adapters {
+            if ws73_address(&adapter.address)? == address {
+                return adapter.policy.build();
+            }
+        }
+        self.defaults.build()
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -113,6 +221,7 @@ impl DaemonConfig {
     }
 
     pub fn validate(&self) -> Result<(), ConfigError> {
+        self.ws73.validate()?;
         if self.general.discovery_level > 4 {
             return Err(ConfigError::Invalid("general.discovery_level must be 0..4"));
         }
@@ -163,6 +272,49 @@ fn default_name() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn ws73_overrides_are_address_scoped_and_do_not_mutate_defaults() {
+        let c = parse("[ws73.defaults]\ntx_power_dbm=0\n[[ws73.adapters]]\naddress='00:01:09:32:54:cD'\n[ws73.adapters.policy]\nadvertising_interval_min_slots=1237\nadvertising_interval_max_slots=1301\ntx_power_dbm=-20\n").unwrap();
+        let a = [0, 1, 9, 0x32, 0x54, 0xcd];
+        let b = [0, 1, 9, 0x30, 0xd1, 0xac];
+        let first = c.ws73.for_address(a).unwrap();
+        assert_eq!(first.parameters(), (3, 1237, 1301, -20, 1600, 800));
+        assert_eq!(
+            c.ws73.for_address(b).unwrap().parameters(),
+            (3, 1200, 1200, 0, 1600, 800)
+        );
+        assert_eq!(c.ws73.for_address(a).unwrap(), first);
+        assert!(c.ws73.for_address([0; 6]).is_err());
+    }
+    #[test]
+    fn ws73_invalid_and_ambiguous_policies_never_fall_back() {
+        for text in [
+            "[ws73.defaults]\nadvertising_interval_min_slots=31",
+            "[ws73.defaults]\nadvertising_interval_min_slots=1300",
+            "[ws73.defaults]\ntx_power_dbm=21",
+            "[ws73.defaults]\nscan_window_slots=1601",
+            "[[ws73.adapters]]\naddress='00:00:00:00:00:00'\npolicy={}",
+            "[[ws73.adapters]]\naddress='0:01:09:32:54:CD'\npolicy={}",
+            "[[ws73.adapters]]\naddress='00:01:09:32:54:CD'\npolicy={}\n[[ws73.adapters]]\naddress='00:01:09:32:54:cd'\npolicy={}",
+            "[[ws73.adapters]]\naddress='00:01:09:32:54:CD'\npolicy={tx_power_dbm=126}",
+        ] {
+            assert!(
+                matches!(parse(text), Err(ConfigError::Invalid(_))),
+                "{text}"
+            );
+        }
+        for text in [
+            "[ws73.defaults]\nscan_window_slot=800",
+            "[ws73.defaults]\nscan_window_slots=-1",
+            "[[ws73.adapters]]\naddress='00:01:09:32:54:CD'",
+            "[[ws73.adapters]]\naddress='00:01:09:32:54:CD'\npolicy={bad=true}",
+        ] {
+            assert!(
+                matches!(parse(text), Err(ConfigError::Parse { .. })),
+                "{text}"
+            );
+        }
+    }
     fn parse(text: &str) -> Result<DaemonConfig, ConfigError> {
         DaemonConfig::finish_load(Path::new("fixture.conf"), false, Ok(text.to_owned()))
     }

@@ -326,6 +326,12 @@ def verify_passthrough():
     if requested:
         from ws73_initialization_lifecycle import corroborate_wire
         proofs.append({'initializer_lifecycle':corroborate_wire(run,capture)})
+    requested_observer = 'ws73.observer_policy=1' in Path('/proc/cmdline').read_text().split()
+    if requested_observer != (EVIDENCE/'observer-policy/run.json').exists():
+        raise ValueError('explicit observer policy request and evidence must agree')
+    if requested_observer:
+        from ws73_observer_policy import corroborate as observer_corroborate
+        proofs.append({'observer_policy':observer_corroborate(json.loads((EVIDENCE/'observer-policy/run.json').read_text()),run,capture)})
     (EVIDENCE/'passthrough-control-proofs.json').write_text(json.dumps({
         'scope':'real WS73 RF with QMP guest-detach control support',
         'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')
@@ -334,6 +340,12 @@ def verify_passthrough():
 
 if __name__=='__main__':
     action=sys.argv[1]
+    if action=='observer-policy':
+        from ws73_observer_policy import record_phase
+        phase=sys.argv[2]
+        record_phase(application,[registration('1-1'),registration('1-2')],phase)
+        print('WS73_TARGET_OBSERVER_POLICY_PHASE: '+phase,flush=True)
+        raise SystemExit(0)
     if action=='verify-recovery':
         run=json.loads((EVIDENCE/'application/recovery-control/run.json').read_text())
         capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in [*run['initial'],run['replacement']]])

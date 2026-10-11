@@ -156,32 +156,40 @@ def corroborate_stops(run, capture):
         if any(c['args'][:4] == prefix+[domain] and c['args'][4:5] in [['on'], ['off']]
                for c in run['commands'][:query_index]):
             raise CaptureError('business operation precedes initializer OFF query')
-        # This owner/domain must have exactly its initialization recipe before
-        # observation. Independent domains may be On. No arbitrary same-opcode
-        # reply selection, raw failures or invented wire correlation ID.
-        opcodes = [0x0c02, 0x0c05] if operation == 5 else [0x1001, 0x1002, 0x1002]
-        rows = [c for c in capture['commands'] if (c['bus'], c['device']) == (owner['bus'], owner['device'])
-                and c['opcode'] in (set(opcodes) | ({0x0c03} if operation == 5 else set()))
-                and c['wall_ns'] <= query['end_wall_ns']]
-        if [c['opcode'] for c in rows] != opcodes:
-            raise CaptureError('exact untouched-domain initializer wire sequence required')
-        recipe = []
-        for index, row in enumerate(rows):
-            end = rows[index+1]['wall_ns']-1 if index+1 < len(rows) else query['end_wall_ns']
-            params = bytes.fromhex(row['params'])
-            if index == 0:
-                if len(params) != (49 if operation == 5 else 8):
-                    raise CaptureError('complete initializer parameters required')
-                value = f'{observed["selected_power"] & 255:02x}' if operation == 5 else ''
-            else:
-                expected = b'\0'*5 if operation == 5 else bytes([int(index == 1), 0])
-                if params != expected:
-                    raise CaptureError('initializer enable/OFF parameters disagree')
-                value = ''
-            recipe.append(command_reply(capture, owner, row['opcode'], row['wall_ns'], end, params, value))
-        if recipe[-1]['reply']['wall_ns'] > query['start_wall_ns']:
-            raise CaptureError('initializer final Complete must precede its readonly query')
+        recipe = initializer_recipe(capture, owner, operation, query, observed['selected_power'])
         proofs.append({'identity': owner, 'domain': domain, 'operation': operation,
                        'request': observed['request'], 'query_command': query_index,
                        'initializer_wire_recipe': recipe, 'new_stop_submission': False})
     return proofs
+
+
+def initializer_recipe(capture, owner, operation, query, selected_power):
+    """Corroborate an actual typed initializer observation without resubmission."""
+    if operation not in [5, 6]:
+        raise CaptureError("initializer operation must be 5 or 6")
+    # This owner/domain must have exactly its initialization recipe before
+    # observation. Independent domains may be On. No arbitrary same-opcode
+    # reply selection, raw failures or invented wire correlation ID.
+    opcodes = [0x0c02, 0x0c05] if operation == 5 else [0x1001, 0x1002, 0x1002]
+    rows = [c for c in capture['commands'] if (c['bus'], c['device']) == (owner['bus'], owner['device'])
+            and c['opcode'] in (set(opcodes) | ({0x0c03} if operation == 5 else set()))
+            and c['wall_ns'] <= query['end_wall_ns']]
+    if [c['opcode'] for c in rows] != opcodes:
+        raise CaptureError('exact untouched-domain initializer wire sequence required')
+    recipe = []
+    for index, row in enumerate(rows):
+        end = rows[index+1]['wall_ns']-1 if index+1 < len(rows) else query['end_wall_ns']
+        params = bytes.fromhex(row['params'])
+        if index == 0:
+            if len(params) != (49 if operation == 5 else 8):
+                raise CaptureError('complete initializer parameters required')
+            value = f'{selected_power & 255:02x}' if operation == 5 else ''
+        else:
+            expected = b'\0'*5 if operation == 5 else bytes([int(index == 1), 0])
+            if params != expected:
+                raise CaptureError('initializer enable/OFF parameters disagree')
+            value = ''
+        recipe.append(command_reply(capture, owner, row['opcode'], row['wall_ns'], end, params, value))
+    if recipe[-1]['reply']['wall_ns'] > query['start_wall_ns']:
+        raise CaptureError('initializer final Complete must precede its readonly query')
+    return recipe

@@ -193,6 +193,9 @@ for slot in $(seq 0 $last_slot); do
     echo "WS73_TARGET_READY: slot=$slot"
 done
 cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'daemon process credentials'
+if grep -q 'ws73.observer_policy=1' /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py observer-policy initial || fail 'native observer initial role gate'
+fi
 if grep -q 'ws73.event_copy=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_event_copy_probe.py --probe /bin/event-copy-probe --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/event-copy" || fail 'live event copy fault gate'
 fi
@@ -218,6 +221,9 @@ else
     # The only interactive shell is uid1000; raw capture and slkd remain root.
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh || fail 'ordinary application shell'
     echo 'WS73_TARGET_SHELL_CLOSED'
+fi
+if grep -q 'ws73.observer_policy=1' /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py observer-policy business || fail 'native observer business role gate'
 fi
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     /bin/busybox touch /run/diagnostic-retired

@@ -92,9 +92,9 @@ def management_observed(row,owner,state):
 
 
 def execute(run,a,b,case):
-    if case not in ['supersede','caller-exit','cancel-caller-exit','cancel-busy']:raise ValueError('explicit daemon caller case required')
+    if case not in ['supersede','caller-exit','cancel-caller-exit','cancel-busy','cancel-admission']:raise ValueError('explicit daemon caller case required')
     folder=run.output/'daemon-hold';folder.mkdir(exist_ok=False)
-    r=dict(format_version=3,status='RUNNING',case=case,target=a,peer=b,markers=[],hold_acknowledgements=[],
+    r=dict(format_version=4 if case=='cancel-admission' else 3,status='RUNNING',case=case,target=a,peer=b,markers=[],hold_acknowledgements=[],
         application_identity=ordinary_identity(),daemon_before=daemon_identity(run.args.slkd_pid),
         bus_before=run.bus_identity(),cancel_polls=[],physical_acceptance=False,automatic_fault_recovery_acceptance=False)
     run.data['daemon_hold']=r;run.save()
@@ -138,7 +138,7 @@ def execute(run,a,b,case):
         if case!='caller-exit':original.finish();run.save()
         r['replacement_pending_before_release']=replacement.process.poll() is None
         if r['replacement_pending_before_release'] is not True:raise ValueError('replacement CLI completed before original reply drain')
-        new_case=case in ['cancel-caller-exit','cancel-busy']
+        new_case=case in ['cancel-caller-exit','cancel-busy','cancel-admission']
         if new_case:
             r['management_revoking']=run.command([str(run.args.slctl),'--adapter',a['path'],'management'],3,field='daemon_hold_management')
             management_observed(r['management_revoking'],a,2)
@@ -153,6 +153,22 @@ def execute(run,a,b,case):
                     raise ValueError('second cancel must fail busy without starting another handoff')
                 r['first_cancel_pending_after_busy']=replacement.process.poll() is None
                 if not r['first_cancel_pending_after_busy']:raise ValueError('original handoff completed before release')
+        if case=='cancel-admission':
+            r['admission_refusals']=[]
+            for words in [('advertise','on'),('advertise','off'),('scan','on'),('scan','off'),('advertise','initialized-off'),('scan','initialized-off')]:
+                row=run.command([str(run.args.slctl),'--adapter',a['path'],*words],3,field='daemon_hold_admission')
+                r['admission_refusals'].append(row);run.save()
+                if (row['exit']!=1 or 'device management admission or handoff busy' not in row['stderr']
+                        or 'NativeOperationResult:' in row['stdout'] or 'NativeAdvertisementAccepted:' in row['stdout']
+                        or row['end_wall_ns']-row['start_wall_ns']>=100_000_000):
+                    raise ValueError('held handoff must reject business/initializer admission promptly')
+            r['still_cancelled']=query(old,'still_cancelled')
+            observed(r['still_cancelled'],a,old,3,5,0x1001,0,2)
+            peer_id=parse_result(peer['stdout'],b,3)['request']
+            r['peer_on_during_handoff']=run.command([str(run.args.slctl),'--adapter',b['path'],'result',str(peer_id)],3,field='daemon_hold_peer_during')
+            parse_result(r['peer_on_during_handoff']['stdout'],b,3)
+            r['first_cancel_pending_after_admission']=replacement.process.poll() is None
+            if not r['first_cancel_pending_after_admission']:raise ValueError('original handoff ended before held admission checks')
         r['cancel_observed_wall_ns']=time.time_ns();run.save()
         stage('release_ready','released')
         if case!='cancel-caller-exit':
@@ -191,8 +207,8 @@ def execute(run,a,b,case):
 
 
 def verify_records(r):
-    if (type(r.get('format_version')) is not int or r['format_version'] not in [2,3] or r.get('status')!='DAEMON_HELD_REPLY_CANCEL_EVIDENCE_PENDING'
-            or r.get('case') not in ['supersede','caller-exit','cancel-caller-exit','cancel-busy'] or r.get('physical_acceptance') is not False or r.get('automatic_fault_recovery_acceptance') is not False):
+    if (type(r.get('format_version')) is not int or r['format_version'] not in [2,3,4] or r.get('status')!='DAEMON_HELD_REPLY_CANCEL_EVIDENCE_PENDING'
+            or r.get('case') not in ['supersede','caller-exit','cancel-caller-exit','cancel-busy','cancel-admission'] or r.get('physical_acceptance') is not False or r.get('automatic_fault_recovery_acceptance') is not False):
         raise ValueError('explicit limited daemon original held reply case required')
     a,b=r['target'],r['peer']
     if a['generation']==b['generation'] or a['path']==b['path'] or a['address']==b['address'] or a['port']==b['port']:
@@ -248,9 +264,9 @@ def verify_records(r):
         observed(row,a,old,3,5 if n==len(polls)-1 else 2,0x1001,0,2)
         if not previous<=row['start_wall_ns']<=row['end_wall_ns']<=r['cancel_observed_wall_ns']:raise ValueError('ordered original Pending-to-Cancelled observation interval required')
         previous=row['end_wall_ns']
-    new_case=r['case'] in ['cancel-caller-exit','cancel-busy']
+    new_case=r['case'] in ['cancel-caller-exit','cancel-busy','cancel-admission']
     if new_case:
-        if r['format_version']!=3:raise ValueError('new handoff lifecycle schema required')
+        if r['format_version']!=(4 if r['case']=='cancel-admission' else 3):raise ValueError('new handoff lifecycle schema required')
         for key,st in [('management_revoking',2),('management_held',1)]:
             management_observed(r[key],a,st)
             if r[key]['args']!=prefix+['management']:raise ValueError('management query affinity required')
@@ -278,6 +294,34 @@ def verify_records(r):
                     or 'NativePoliciesCancelled:' in busy['stdout'] or 'NativeOperationResult:' in busy['stdout'] or r['first_cancel_pending_after_busy'] is not True
                     or not r['management_revoking']['end_wall_ns']<=busy['start_wall_ns']<=busy['end_wall_ns']<=r['cancel_observed_wall_ns']):
                 raise ValueError('second actual cancellation must fail busy while first retains reserved slot')
+        if r['case']=='cancel-admission':
+            rows=r['admission_refusals'];words=[('advertise','on'),('advertise','off'),('scan','on'),('scan','off'),('advertise','initialized-off'),('scan','initialized-off')]
+            if len(rows)!=len(words) or r['first_cancel_pending_after_admission'] is not True:
+                raise ValueError('all business and initializer refusals while handoff pending required')
+            previous=r['busy_cancel']['end_wall_ns'];ids=[]
+            for number,(row,arguments) in enumerate(zip(rows,words)):
+                if (row['args']!=prefix+list(arguments) or row['exit']!=1 or 'device management admission or handoff busy' not in row['stderr']
+                        or 'NativeOperationResult:' in row['stdout'] or 'NativeAdvertisementAccepted:' in row['stdout']
+                        or not previous<=row['start_wall_ns']<=row['end_wall_ns']<=r['cancel_observed_wall_ns']
+                        or row['end_wall_ns']-row['start_wall_ns']>=100_000_000):
+                    raise ValueError('bounded selected RPC busy refusal without successful admission required')
+                if number<4:
+                    pattern=(r'^NativeAdvertisementRequest: request=(\d+) marker=[0-9a-f]{32}$' if number==0 else
+                             r'^NativeStopAdvertisingRequest: request=(\d+)$' if number==1 else
+                             r'^NativeScanRequest: request=(\d+) enable='+arguments[1]+r'$')
+                    found=re.findall(pattern,row['stdout'],re.M)
+                    if len(found)!=1 or not int(found[0]):raise ValueError('one actual business caller request marker required')
+                    ids.append(int(found[0]))
+                previous=row['end_wall_ns']
+            if len(set(ids+[old]))!=5:raise ValueError('distinct business request IDs without old result alias required')
+            row=r['still_cancelled'];observed(row,a,old,3,5,0x1001,0,2)
+            if row['args']!=prefix+['result',str(old)] or not previous<=row['start_wall_ns']<=row['end_wall_ns']<=r['cancel_observed_wall_ns']:
+                raise ValueError('original cancelled result remains independently observable during handoff')
+            peer_id=parse_result(r['peer_start']['stdout'],b,3)['request'];peer_row=r['peer_on_during_handoff']
+            if (peer_row['args']!=[prefix[0],'--adapter',b['path'],'result',str(peer_id)] or peer_row['exit']
+                    or parse_result(peer_row['stdout'],b,3)['request']!=peer_id
+                    or not row['end_wall_ns']<=peer_row['start_wall_ns']<=peer_row['end_wall_ns']<=r['cancel_observed_wall_ns']):
+                raise ValueError('same peer remains actually On during target RPC refusals')
         previous=r['after_drain']['end_wall_ns']
         if len(r['target_resume'])!=2:raise ValueError('actual business scan restart/stop required')
         for row,(toggle,op) in zip(r['target_resume'],[('on',3),('off',4)]):
@@ -298,7 +342,7 @@ def corroborate_wire(r,capture):
     from ws73_capture import command_reply
     a,b=r['target'],r['peer'];start=r['original_caller']['start_wall_ns'];end=r['peer_stop']['end_wall_ns']
     target=command_reply(capture,a,0x1001,start,r['after_drain']['end_wall_ns'],bytes.fromhex('0000010040062003'),'')
-    if not target['command']['wall_ns']<r['pending']['end_wall_ns']<r['cancelled']['end_wall_ns']<r['markers'][2]['wall_ns']<=target['reply']['wall_ns']<=(r['management_held']['end_wall_ns'] if r['case'] in ['cancel-caller-exit','cancel-busy'] else r['cancel_caller']['end_wall_ns']):
+    if not target['command']['wall_ns']<r['pending']['end_wall_ns']<r['cancelled']['end_wall_ns']<r['markers'][2]['wall_ns']<=target['reply']['wall_ns']<=(r['management_held']['end_wall_ns'] if r['case'] in ['cancel-caller-exit','cancel-busy','cancel-admission'] else r['cancel_caller']['end_wall_ns']):
         raise ValueError('original successful reply must drain before actual Managed handoff confirmation')
     peer=[]
     for opcode,params in [(0x1001,bytes.fromhex('0000010040062003')),(0x1002,b'\1\0')]:
@@ -306,7 +350,7 @@ def corroborate_wire(r,capture):
     peer.append(command_reply(capture,b,0x1002,r['peer_stop']['start_wall_ns'],r['peer_stop']['end_wall_ns'],b'\0\0',''))
     if peer[0]['reply']['wall_ns']>peer[1]['command']['wall_ns']:raise ValueError('peer scan step requires original parameter Complete')
     target_proofs=[target]
-    if r['case'] in ['cancel-caller-exit','cancel-busy']:
+    if r['case'] in ['cancel-caller-exit','cancel-busy','cancel-admission']:
         on,off=r['target_resume']
         for opcode,params in [(0x1001,bytes.fromhex('0000010040062003')),(0x1002,b'\1\0')]:
             target_proofs.append(command_reply(capture,a,opcode,on['start_wall_ns'],on['end_wall_ns'],params,''))
@@ -324,4 +368,4 @@ def corroborate(r,host,capture,stderr,identity):
     wire=corroborate_wire(r,capture)
     hold=corroborate_host_hold(host,dict(records=r['markers'],host_hold_acknowledgements=r['hold_acknowledgements']),[],stderr,identity,held_reply=wire['target'][0]['reply'])
     return dict(status='DAEMON_ACTUAL_HELD_REPLY_CANCEL_CORROBORATED',case=r['case'],**wire,host_hold=hold,
-        ordinary_user_daemon_held_cancel_case_acceptance=True,whole_managed_acceptance=False,automatic_fault_recovery_acceptance=False,natural_fault_root_cause_closed=False)
+        ordinary_user_daemon_held_cancel_case_acceptance=True,**({'busy_business_initializer_admission_acceptance':True} if r['case']=='cancel-admission' else {}),whole_managed_acceptance=False,automatic_fault_recovery_acceptance=False,natural_fault_root_cause_closed=False)

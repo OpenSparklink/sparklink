@@ -150,3 +150,45 @@ class CancelAuthorTests(unittest.TestCase):
             if change=='busy-no-error':r['busy_cancel']['stderr']=''
             if change=='original-handoff-ended':r['first_cancel_pending_after_busy']=False
             with self.subTest(change=change),self.assertRaises(ValueError):corroborate(r,h,c,l,dict(bus=1,address=124))
+
+class BusinessAdmissionTests(unittest.TestCase):
+    @staticmethod
+    def fixture():
+        r,h,c,l=CancelAuthorTests.fixture('cancel-admission')
+        r['format_version']=4;r['busy_cancel']['end_wall_ns']=2740
+        r['admission_refusals']=[]
+        for number,words in enumerate([('advertise','on'),('advertise','off'),('scan','on'),('scan','off'),('advertise','initialized-off'),('scan','initialized-off')]):
+            identifier=51+number
+            text=(f'NativeAdvertisementRequest: request={identifier} marker='+ 'a'*32+'\n' if number==0 else
+                  f'NativeStopAdvertisingRequest: request={identifier}\n' if number==1 else
+                  f'NativeScanRequest: request={identifier} enable={words[1]}\n' if number<4 else '')
+            r['admission_refusals'].append(dict(args=['/bin/slctl','--adapter',r['target']['path'],*words],
+                exit=1,stdout=text,stderr='device management admission or handoff busy',start_wall_ns=2741+number*3,end_wall_ns=2743+number*3))
+        r['still_cancelled']=dict(r['cancelled'],start_wall_ns=2760,end_wall_ns=2762)
+        r['peer_on_during_handoff']=dict(r['peer_on_after_drain'],start_wall_ns=2764,end_wall_ns=2766)
+        r['first_cancel_pending_after_admission']=True
+        return r,h,c,l
+
+    def test_actual_busy_refusals_preserve_queries_and_peer_without_extra_wire(self):
+        r,h,c,l=self.fixture();p=corroborate(r,h,c,l,dict(bus=1,address=124))
+        self.assertTrue(p['busy_business_initializer_admission_acceptance'])
+        self.assertFalse(p['whole_managed_acceptance'])
+
+    def test_admission_delay_success_wrong_domain_result_alias_or_extra_wire_rejected(self):
+        for change in ['missing','success','delay','wrong-domain','missing-request','old-id','accepted','result','wrong-error','false-pending','original-success','peer-off','extra-wire','old-format']:
+            r,h,c,l=self.fixture();row=r['admission_refusals'][0]
+            if change=='missing':r['admission_refusals'].pop()
+            if change=='success':row['exit']=0
+            if change=='delay':row['end_wall_ns']=row['start_wall_ns']+100_000_000
+            if change=='wrong-domain':row['args'][2]=r['peer']['path']
+            if change=='missing-request':row['stdout']=''
+            if change=='old-id':row['stdout']=row['stdout'].replace('request=51','request=11')
+            if change=='accepted':row['stdout']+='NativeAdvertisementAccepted: request=51 marker=x data=y\n'
+            if change=='result':row['stdout']+=r['target_resume'][0]['stdout']
+            if change=='wrong-error':row['stderr']='initializer provenance absent or invalidated'
+            if change=='false-pending':r['first_cancel_pending_after_admission']=False
+            if change=='original-success':r['still_cancelled']['exit']=0
+            if change=='peer-off':r['peer_on_during_handoff']['stdout']=r['peer_on_during_handoff']['stdout'].replace('scan=2','scan=1')
+            if change=='extra-wire':c['commands'].append(dict(c['commands'][0],opcode=0x0c02,wall_ns=2750))
+            if change=='old-format':r['format_version']=3
+            with self.subTest(change=change),self.assertRaises(ValueError):corroborate(r,h,c,l,dict(bus=1,address=124))

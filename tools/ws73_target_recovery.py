@@ -175,7 +175,7 @@ class RecoveryRun(Run):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--daemon-hold-case',choices=['supersede','caller-exit','cancel-caller-exit','cancel-busy'],help='actual ordinary D-Bus cancellation while original successful host reply is held')
+    parser.add_argument('--daemon-hold-case',choices=['supersede','caller-exit','cancel-caller-exit','cancel-busy','cancel-admission'],help='actual ordinary D-Bus cancellation while original successful host reply is held')
     parser.add_argument('--slctl', type=Path, required=True)
     parser.add_argument('--slkd-pid', type=int, required=True)
     parser.add_argument('--output', type=Path, required=True)

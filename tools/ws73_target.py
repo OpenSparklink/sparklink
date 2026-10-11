@@ -428,7 +428,7 @@ def _run(args):
     if daemon_remove and (support or not passthrough or recovery or diagnostic or active_gate or setup_gate or getattr(args,'daemon_hold_case',None) is not None or getattr(args,'managed_partial_case',None) is not None or getattr(args,'managed_queue_verify',False)):
         raise ValueError('held daemon cancel/removal requires separate real QMP-hotplug VM')
     daemon_hold=getattr(args,'daemon_hold_case',None)
-    if daemon_hold not in [None,'supersede','caller-exit','cancel-caller-exit','cancel-busy'] or daemon_hold is not None and (not recovery or support or diagnostic or active_gate or getattr(args,'managed_partial_case',None) is not None or getattr(args,'managed_queue_verify',False)):
+    if daemon_hold not in [None,'supersede','caller-exit','cancel-caller-exit','cancel-busy','cancel-admission'] or daemon_hold is not None and (not recovery or support or diagnostic or active_gate or getattr(args,'managed_partial_case',None) is not None or getattr(args,'managed_queue_verify',False)):
         raise ValueError('separate real recovery VM for ordinary daemon held cancellation required')
     partial_case=getattr(args,'managed_partial_case',None)
     partial_gate=partial_case is not None
@@ -962,7 +962,7 @@ def main():
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--initializer-lifecycle',action='store_true',help='real initializer withdrawal, eviction and guest-generation gate; separate native --qmp-hotplug mode')
-            cmd.add_argument('--daemon-hold-case',choices=['supersede','caller-exit','cancel-caller-exit','cancel-busy'],help='ordinary D-Bus callers cancel an original successful held reply with same daemon and active peer')
+            cmd.add_argument('--daemon-hold-case',choices=['supersede','caller-exit','cancel-caller-exit','cancel-busy','cancel-admission'],help='ordinary D-Bus callers cancel an original successful held reply with same daemon and active peer')
             cmd.add_argument('--managed-ordinary-eviction',action='store_true',help='two SCHED_OTHER ioctl submitters and terminal result eviction under actual held first reply; separate Ready-peer VM gate')
             cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
             cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')

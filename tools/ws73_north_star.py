@@ -378,33 +378,37 @@ class Run:
             time.sleep(0.25)
         raise ValueError('physical hotplug/Ready deadline exceeded')
 
+    def begin(self):
+        self.data['application_identity'] = ordinary_identity()
+        self.args.slctl = self.args.slctl.resolve()
+        mode = self.args.slctl.stat().st_mode
+        if not stat.S_ISREG(mode) or mode & (stat.S_ISUID | stat.S_ISGID) or 'security.capability' in os.listxattr(self.args.slctl):
+            raise ValueError('ordinary slctl executable required, without setid/file capabilities')
+        self.data['slctl'] = file_record(self.args.slctl)
+        self.data['kernel_release'] = os.uname().release
+        self.data['kernel_version'] = Path('/proc/version').read_text()
+        self.data['repositories'] = {}
+        for repo in [Path(__file__).resolve().parents[1],Path(__file__).resolve().parents[2]/'linux']:
+            if not (repo/'.git').exists(): continue
+            head = subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip()
+            diff = subprocess.check_output(['git','diff','HEAD'],cwd=repo)
+            self.data['repositories'][str(repo)] = {'head':head,'dirty_diff_sha256':hashlib.sha256(diff).hexdigest()}
+            (self.output/(repo.name+'-dirty.diff')).write_bytes(diff)
+        self.data['sources'] = [file_record(Path(__file__)), file_record(Path(__file__).with_name('ws73_capture.py')),
+                                file_record(Path(__file__).with_name('ws73_rf_rounds.py'))]
+        self.data['artifacts'] = {}
+        for item in self.args.artifact:
+            label, path = item.split('=', 1)
+            if not label or label in self.data['artifacts']:
+                raise ValueError('unique labeled artifact paths required')
+            self.data['artifacts'][label] = file_record(path)
+        self.pid = daemon_identity(self.args.slkd_pid)
+        self.data['daemon_before'] = self.pid
+        self.data['bus_before'] = self.bus_identity()
+
     def execute(self):
         try:
-            self.data['application_identity'] = ordinary_identity()
-            self.args.slctl = self.args.slctl.resolve()
-            mode = self.args.slctl.stat().st_mode
-            if not stat.S_ISREG(mode) or mode & (stat.S_ISUID | stat.S_ISGID) or 'security.capability' in os.listxattr(self.args.slctl):
-                raise ValueError('ordinary slctl executable required, without setid/file capabilities')
-            self.data['slctl'] = file_record(self.args.slctl)
-            self.data['kernel_release'] = os.uname().release
-            self.data['kernel_version'] = Path('/proc/version').read_text()
-            self.data['repositories'] = {}
-            for repo in [Path(__file__).resolve().parents[1],Path(__file__).resolve().parents[2]/'linux']:
-                if not (repo/'.git').exists(): continue
-                head = subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip()
-                diff = subprocess.check_output(['git','diff','HEAD'],cwd=repo)
-                self.data['repositories'][str(repo)] = {'head':head,'dirty_diff_sha256':hashlib.sha256(diff).hexdigest()}
-                (self.output/(repo.name+'-dirty.diff')).write_bytes(diff)
-            self.data['sources'] = [file_record(Path(__file__)), file_record(Path(__file__).with_name('ws73_capture.py'))]
-            self.data['artifacts'] = {}
-            for item in self.args.artifact:
-                label, path = item.split('=', 1)
-                if not label or label in self.data['artifacts']:
-                    raise ValueError('unique labeled artifact paths required')
-                self.data['artifacts'][label] = file_record(path)
-            self.pid = daemon_identity(self.args.slkd_pid)
-            self.data['daemon_before'] = self.pid
-            self.data['bus_before'] = self.bus_identity()
+            self.begin()
             a, b = [self.ready(port) for port in self.args.ports]
             if a['address'] == b['address'] or (a['bus'],a['device']) == (b['bus'],b['device']):
                 raise ValueError('distinct physical queried identities required')

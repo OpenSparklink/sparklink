@@ -104,7 +104,7 @@ def prepare(args):
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
                   HERE/'ws73_vm_native_root.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
-                  HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',
+                  HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',
                   HERE/'ws73_target_control.py',
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
@@ -194,7 +194,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)

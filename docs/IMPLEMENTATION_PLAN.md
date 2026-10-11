@@ -1,3 +1,10 @@
+当前S4修复：Linux d227b8a37d96 在首构建终态后补上acquire copyout后的
+Host/fault/quiet/连接义务复核并持锁commit；实际五路径/counter守卫及原回归
+共35项通过。首444450231937已完整构建，新修复版构建/VM尚待验收。初用户态
+检查CI8绿/1红因三个kernel checkout仍固定4ee而缺新增selftest；已全部固定
+新d227b8a37d96，失败不倒填。下述待修复窗口记录为历史，原S4请求/异步生命周期/
+真实连接/SSAP、全S0–S6/28项仍继续推进。详见WS73_NATIVE_LINK_FOUNDATION。
+
 ### 当前S4增量：Native物理链路义务，尚未连接互通（2026-10-12）
 
 Linux444450231937已签名推送，WS73 driver归一化实际连接/断开outcome并与

@@ -1,3 +1,12 @@
+当前修复更新：Linux `d227b8a37d96334ac465eac83cc3d52959863845` 已补
+copyout后的Host/fault/quiet/link重新核对，按Host→gate持锁提交；实际提取
+commit block覆盖link/active reply/fault/retirement/成功五种情况，候选被拒绝
+不授权、不消耗counter，累计35项源码回归通过。首444450231937完整内核/
+module构建已终态通过，原产物保留；修复版尚待新构建/VM。以下“窗口待修复”
+是发现时历史，当前源码已修，不能外推运行内核已验收。用户态检查初CI因三个
+kernel checkout仍固定4ee、缺新增selftest而失败，原8绿/1红记录保留；三个
+checkout全部固定到d227b8a37d96，不跳过新门禁。Native连接/SSAP仍未互通。
+
 # S4 原生物理连接生命周期基础：当前范围
 
 2026-10-12，本轮主功能为真实 Native WS73连接/SSAP。当前先接通 driver RX 到

@@ -1,0 +1,70 @@
+{
+  "status": "READONLY_HOST_OBSERVATION_SCOPE_CLARIFICATION_NOT_PHYSICAL_GATE",
+  "created_wall_ns": 1791715314705860000,
+  "original_evidence": {
+    "path": "ws73-managed-later-partial-model-fd-20261011.json",
+    "sha256": "10e79b4140ea29a728f43c2b9d13ca91e510760e2534a038131f4d0ea0ef60e9"
+  },
+  "original_evidence_unchanged": true,
+  "vm_only_experimental_gate": true,
+  "host_observations": [
+    {
+      "command": [
+        "/usr/bin/uhubctl",
+        "-f",
+        "-l",
+        "1-2.1"
+      ],
+      "scope": "read-only stock hub status query; no --action/off/on option",
+      "exit": 0,
+      "hub": "1-2.1",
+      "vendor_product": "1a40:0101",
+      "power_switching_report": "ganged",
+      "ports": [
+        {
+          "port": 1,
+          "status": "0503",
+          "reported_power": true,
+          "reported_enabled": true,
+          "reported_connected": true
+        },
+        {
+          "port": 2,
+          "status": "0503",
+          "reported_power": true,
+          "reported_enabled": true,
+          "reported_connected": true
+        },
+        {
+          "port": 3,
+          "status": "0503",
+          "reported_power": true,
+          "reported_enabled": true,
+          "reported_connected": true
+        },
+        {
+          "port": 4,
+          "status": "0103",
+          "reported_power": true,
+          "reported_enabled": true,
+          "reported_connected": true
+        }
+      ],
+      "wire_packet_capture_available": false
+    },
+    {
+      "scope": "readonly sysfs enumeration/power and effective host access outside sandbox",
+      "devices": 4,
+      "host_usb_bulk_transfer_attempted": false
+    }
+  ],
+  "clarification": "The original conclusion saying no new physical USB transfer is too broad: a stock host-side uhubctl status query was executed. It means no new diagnostic bulk/register/firmware or experimental-driver transfer; the model VM matrix did not attach host USB. The host observation is not Ready, RF, recovery or fault-isolation qualification.",
+  "physical_managed_gate_cases_executed": 0,
+  "physical_usb_bulk_diagnostic_attempts_added": 0,
+  "hub_power_cycles_added": 0,
+  "host_experimental_kernel_module_service_changes": false,
+  "active_ready_peer_isolation_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "full_goal_complete": false
+}

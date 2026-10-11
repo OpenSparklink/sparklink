@@ -386,6 +386,13 @@ capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d
 [后续partial模型fd矩阵](evidence/ws73-managed-later-partial-model-fd-20261011.json)
 九个成功和三个精确拒绝仅证明模拟USB下实际内核fd及迟到回复处理，不算真实
 故障恢复。新只读host核对仍四只、有效权限正常、power active，第四只仍ROM；
-未新增真实传输、复位、hub循环或主机实验安装。既有两次ganged四口hub off/on
+未新增真实诊断bulk、复位、hub循环或主机实验安装。既有两次ganged四口hub off/on
 只重新枚举，未恢复Ready或证明VBUS/SoC真正掉电；不能纳入单设备独立恢复。
 自然bulk超时、完全离线／重新枚举与历史xHCI根因、无需人工拔插恢复继续OPEN。
+
+
+本批[主机只读观察范围补充](evidence/ws73-managed-later-partial-host-scope-20261011.json)
+明确记录调用stock `uhubctl -f -l 1-2.1`读取hub状态，未带action、未切换电源。
+原封存证据“no new physical USB transfer”措辞过宽，限定为没有新增诊断bulk／
+寄存器／固件／实验驱动传输；模型VM没有接host USB。原证据文件保持不变，
+这次主机观察不增加真实Managed、Ready同行、RF或恢复资格。

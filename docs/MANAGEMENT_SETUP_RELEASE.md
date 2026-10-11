@@ -442,7 +442,7 @@ STOP拒绝。广告最后STOP后仍需清理未知扫描域，三个idle拒绝�
 及源码905b318的九个CI作业通过；签名镜像K292、编译服务Ud749、工具源码与
 新测试QEMU分别封存。正式Linux/Rust WS73路径未改，历史真实RF证据保留。
 
-本批未接真实USB执行传输，只读核对四只仍枚举且有效主机权限正常：前三只
+本批未在真实USB执行实验门禁，只读核对四只仍枚举且有效主机权限正常：前三只
 五端点runtime，第四只两端点ROM，power active。模拟同伴为Setup/Diagnostic，
 尚无活动Ready／真实空口隔离；新增真实Managed通过数仍零。正常实机门禁7、
 维护18的失败历史保留，既有ganged hub重枚举不证明VBUS/SoC冷启动或单设备
@@ -453,3 +453,10 @@ Queued及partial实机矩阵，核对活动Ready同行、同slkd普通用户RF20
 两组。仅有新诊断假设时执行受控对照，有限重试和原始失败记录不能被模型
 成功替代。原生Linux对照因VM-only约束仍未执行，自然RCA和每设备自动恢复
 未通过；全部原S0–S6与14项整改范围不缩减。
+
+
+本批[主机只读观察范围补充](evidence/ws73-managed-later-partial-host-scope-20261011.json)
+明确记录调用stock `uhubctl -f -l 1-2.1`读取hub状态，未带action、未切换电源。
+原封存证据“no new physical USB transfer”措辞过宽，限定为没有新增诊断bulk／
+寄存器／固件／实验驱动传输；模型VM没有接host USB。原证据文件保持不变，
+这次主机观察不增加真实Managed、Ready同行、RF或恢复资格。

@@ -409,3 +409,11 @@ peer隔离/同slkd及有限恢复。C通用固件还需拒绝短写、截短/错
 共享ring/fallback/旧UAPI删除、socket/SSAP/每连接安全/Bond/Profile、四设备两组/
 Native/Proxy/PM/sandbox及全部S0–S6保持。自然启动超时/重枚举/消失根因和无人工
 拔插恢复、历史物理xHCI警告未闭合；北极星7/8，不关闭整项issue或合并draft。
+
+
+### Setup 租约生命周期修复实施（新镜像待验）
+
+K`f822db7756d7`按[唯一Host状态判据与门禁](MANAGEMENT_SETUP_RELEASE.md)实现未触及
+radio policy的快速release；10项实际源码边界通过，6项两设备实际release/last-fd/
+dup门禁已纳入专用VM工具。Unknown/部分初始化/在途仍需真实cleanup，不假Off/
+Ready。新镜像回归未执行前不更新实机资格；自然恢复/根因和全部S0–S6仍OPEN。

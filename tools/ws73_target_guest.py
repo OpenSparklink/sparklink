@@ -321,6 +321,10 @@ if __name__=='__main__':
         diagnostic_path=EVIDENCE/'diagnostic/run.json'
         diagnostic=json.loads(diagnostic_path.read_text()) if 'ws73.diagnostic=1' in Path('/proc/cmdline').read_text().split() else None
         active=json.loads((EVIDENCE/'active-deadline/run.json').read_text()) if 'ws73.active_deadline=1' in Path('/proc/cmdline').read_text().split() else None
+        if 'ws73.setup_release=1' in Path('/proc/cmdline').read_text().split():
+            from ws73_management_setup import corroborate as corroborate_setup
+            setup_proof=corroborate_setup(json.loads((EVIDENCE/'setup-release/run.json').read_text()),capture)
+            (EVIDENCE/'setup-release/capture-proof.json').write_text(json.dumps(setup_proof,indent=2)+'\n')
         proofs=corroborate_recovery(run,capture,diagnostic,active)
         (EVIDENCE/'recovery-control-proofs.json').write_text(json.dumps({'scope':run['scope'],'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')
         print('WS73_TARGET_RECOVERY_SUPPORT: PASS',flush=True)

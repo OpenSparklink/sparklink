@@ -85,6 +85,10 @@ fi
 /bin/dbus-daemon --config-file=/etc/dbus.conf --nofork > /evidence/dbus.log 2>&1 &
 for n in $(seq 1 100); do [ -S /run/slkbus ] && break; sleep 0.1; done
 [ -S /run/slkbus ] || fail 'system bus startup'
+if grep -q 'ws73.setup_release=1' /proc/cmdline; then
+    echo 'WS73_TARGET_CAPTURE_READY'
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_setup.py --output /evidence/setup-release > /evidence/setup-release-supervisor.log 2>&1 || fail 'untouched Setup lease release gate'
+fi
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     # The runner attaches the first USB owner after capture readiness. Signal
     # before the diagnostic barrier, which needs that owner before slkd starts.
@@ -107,7 +111,7 @@ if [ -f /scratch-root-uuid ]; then
     mkdir -p "$storage"; chown 0:0 "$storage"; chmod 0700 "$storage"
 fi
 /bin/slkd --storage "$storage" -n > /evidence/slkd.log 2>&1 & daemon=$!
-if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline; then
+if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline && ! grep -q 'ws73.setup_release=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
 fi
 /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready 0 || fail 'first independent Ready'

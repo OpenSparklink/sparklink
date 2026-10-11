@@ -108,9 +108,10 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
+                  LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
                   LINUX/'include/uapi/linux/sparklink_ioctl.h',
                   HERE/'ws73_bindings_probe.c',HERE/'ws73_bindings_probe.py',
                   LINUX/'tools/testing/selftests/sparklink/ws73-lab.py',
@@ -154,6 +155,12 @@ def prepare(args):
         subprocess.run(compile_diagnostic, check=True)
         manifest['diagnostic_probe_compile'] = compile_diagnostic
         programs['diagnostic-result-probe'] = diagnostic_probe
+        setup_probe = output/'setup-release-probe'
+        compile_setup = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
+                         str(LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c'),'-o',str(setup_probe)]
+        subprocess.run(compile_setup, check=True)
+        manifest['setup_release_probe_compile'] = compile_setup
+        programs['setup-release-probe'] = setup_probe
         programs.update({name:USERSPACE/'target/debug'/name for name in ['slkd','slctl','slkconfig','slkmon','slkdump']})
         programs['bus-policy-probe'] = USERSPACE/'target/debug/examples/bus_policy_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
@@ -180,7 +187,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -353,6 +360,9 @@ def _run(args):
     deadline_gate=bool(getattr(args,'diagnostic_deadline_verify',False))
     autonomous_gate=bool(getattr(args,'diagnostic_autonomous_verify',False))
     active_gate=bool(getattr(args,'active_deadline_verify',False))
+    setup_gate=bool(getattr(args,'setup_release_verify',False))
+    if setup_gate and (support or not recovery):
+        raise ValueError('Setup release requires explicit real fault-recovery VM mode')
     if active_gate and (support or not recovery or diagnostic or cancellation or deadline_gate or autonomous_gate):
         raise ValueError('active retirement requires separate real fault-recovery VM mode, without explicit-release diagnostic modes')
     if autonomous_gate and (support or not recovery or not diagnostic or not cancellation or not deadline_gate):
@@ -379,6 +389,9 @@ def _run(args):
     m['live_diagnostic_deadline_requested']=deadline_gate
     m['live_diagnostic_autonomous_requested']=autonomous_gate
     m['live_active_deadline_requested']=active_gate
+    m['live_setup_release_requested']=setup_gate
+    if setup_gate:
+        m['setup_release_verifier']=file_record(HERE/'ws73_management_setup.py')
     if active_gate:
         m['active_deadline_verifier']=file_record(HERE/'ws73_active_deadline.py')
     process=monitor=channel=None
@@ -389,6 +402,8 @@ def _run(args):
             raise ValueError('prepared VM does not contain the frozen live copy probe')
         if event_copy and 'native_vm' not in package:
             raise ValueError('live copy gate requires the qualified scratch-root VM profile')
+        if setup_gate and ('setup_release_probe_compile' not in package or 'native_vm' not in package):
+            raise ValueError('Setup release requires frozen probe and qualified scratch-root VM')
         if active_gate and 'native_vm' not in package:
             raise ValueError('active retirement requires qualified scratch-root VM')
         if diagnostic and ('diagnostic_probe_compile' not in package or 'native_vm' not in package):
@@ -423,6 +438,7 @@ def _run(args):
                      (' ws73.diagnostic_deadline=1' if deadline_gate else '')+
                      (' ws73.diagnostic_autonomous=1' if autonomous_gate else '')+
                      (' ws73.active_deadline=1' if active_gate else '')+
+                     (' ws73.setup_release=1' if setup_gate else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -517,10 +533,13 @@ def _run(args):
                             if passthrough:props=usb_properties(args.ports[0],0)
                             monitor.execute('device_add',props);channel.sendall((acknowledgement+'-readd\n').encode());hotplug_phase=2
                     peer_metadata = False
-                    if active_gate and active == 1:
+                    if setup_gate and active == 1:
+                        from ws73_management_setup import metadata_ready
+                        peer_metadata = metadata_ready(share)
+                    elif active_gate and active == 1:
                         from ws73_active_deadline import metadata_ready
                         peer_metadata = metadata_ready(share)
-                    if active<2 and (peer_metadata if active_gate and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text):
+                    if active<2 and (peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else 'WS73_TARGET_READY: slot=0') in text):
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                     **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
@@ -582,6 +601,11 @@ def _run(args):
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
                 if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
                 m['capture_packets']=packets;m['guest_identities']=identities
+                if setup_gate:
+                    from ws73_management_setup import corroborate as corroborate_setup
+                    probe=json.loads((share/'setup-release/run.json').read_text())
+                    m['setup_release_corroboration']=corroborate_setup(probe,capture)
+                    m['live_setup_release']=file_record(share/'setup-release/run.json')
                 if active_gate:
                     from ws73_active_deadline import corroborate
                     probe=json.loads((share/'active-deadline/run.json').read_text())
@@ -635,6 +659,8 @@ def _run(args):
                     m['status']='FAIL'
                     m['error']='environment timeout; capture sealed; physical control not accepted'
         prepared(args.prepared.resolve())
+        if setup_gate and file_record(HERE/'ws73_management_setup.py')!=m['setup_release_verifier']:
+            raise ValueError('Setup release verifier changed during run')
         if active_gate and file_record(HERE/'ws73_active_deadline.py')!=m['active_deadline_verifier']:
             raise ValueError('active deadline host verifier changed during run')
         if file_record(args.prepared.resolve()/'manifest.json')!=m['prepared_manifest']:raise ValueError('prepared manifest changed during run')
@@ -683,6 +709,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs=2,required=True)
+            cmd.add_argument('--setup-release-verify',action='store_true',help='pre-daemon untouched Setup release/last-fd/dup gate; requires real fault-recovery scratch VM')
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')
             cmd.add_argument('--active-deadline-verify',action='store_true',help='separate pre-daemon real IN81 timeout/abort gate; requires real fault-recovery and excludes explicit-release diagnostic modes')
             cmd.add_argument('--diagnostic-verify',action='store_true',help='opt-in live diagnostic owner/CAP/copy/retirement and metadata CLI gate; requires --fault-recovery')

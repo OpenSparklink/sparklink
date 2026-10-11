@@ -497,3 +497,11 @@ C通用固件短传输/最终ACK校验需独立修复，不能沿用Native WS73�
 订阅迁移/旧UAPI、socket/SSAP/每连接安全/Bond/Profile/四设备/Native/Proxy/PM/
 sandbox及完整S0–S6仍开放；自然根因、无人工拔插恢复、历史物理xHCI警告未闭合。
 附件分析SHA未变，ADR/分层保持，VM-only/北极星7/8，整项不关闭。
+
+
+### Setup 租约生命周期修复实施（新镜像待验）
+
+K`f822db7756d7`按[唯一Host状态判据与门禁](MANAGEMENT_SETUP_RELEASE.md)实现未触及
+radio policy的快速release；10项实际源码边界通过，6项两设备实际release/last-fd/
+dup门禁已纳入专用VM工具。Unknown/部分初始化/在途仍需真实cleanup，不假Off/
+Ready。新镜像回归未执行前不更新实机资格；自然恢复/根因和全部S0–S6仍OPEN。

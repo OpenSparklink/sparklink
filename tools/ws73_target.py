@@ -108,7 +108,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_managed_queue_probe.c',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
@@ -193,7 +193,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_partial.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -370,6 +370,13 @@ def _run(args):
     if active_close_gate and bool(getattr(args,'active_deadline_verify',False)):
         raise ValueError('select one active deadline or last-file-close gate')
     setup_gate=bool(getattr(args,'setup_release_verify',False))
+    partial_case=getattr(args,'managed_partial_case',None)
+    partial_gate=partial_case is not None
+    partial_domain=getattr(args,'managed_partial_domain','advertising')
+    if partial_case not in (None,'release','close','dup') or partial_domain not in ('advertising','scanning'):
+        raise ValueError('explicit supported Managed partial case/domain required')
+    if partial_gate and (support or not recovery or not setup_gate or diagnostic or active_gate):
+        raise ValueError('Managed partial gate requires separate real recovery/Setup VM without other hold gates')
     queued_gate=bool(getattr(args,'managed_queue_verify',False))
     if queued_gate and (support or not recovery or not setup_gate):
         raise ValueError('Managed queued gate requires real recovery VM and Setup attachment gate')
@@ -402,8 +409,14 @@ def _run(args):
     m['live_diagnostic_autonomous_requested']=autonomous_gate
     m['live_active_deadline_requested']=active_gate
     m['live_active_close_requested']=active_close_gate
+    m['live_managed_partial_case']=partial_case
+    m['live_managed_partial_domain']=partial_domain if partial_gate else None
     m['live_managed_queue_requested']=queued_gate
     m['live_setup_release_requested']=setup_gate
+    if queued_gate:
+        m['managed_queue_verifier']=file_record(HERE/'ws73_management_queued.py')
+    if partial_gate:
+        m['managed_partial_verifier']=file_record(HERE/'ws73_management_partial.py')
     if setup_gate:
         m['setup_release_verifier']=file_record(HERE/'ws73_management_setup.py')
     if active_gate:
@@ -457,6 +470,7 @@ def _run(args):
                      (' ws73.active_close=1' if active_close_gate else '')+
                      (' ws73.setup_release=1' if setup_gate else '')+
                      (' ws73.managed_queue=1' if queued_gate else '')+
+                     (f' ws73.managed_partial=1 ws73.partial_case={partial_case} ws73.partial_domain={partial_domain}' if partial_gate else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
                      '-device','qemu-xhci,id=xhci,p2=8,p3=8',
@@ -483,6 +497,9 @@ def _run(args):
                 channel=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);channel.connect(str(serial));channel.setblocking(False)
                 monitor=lab.Qmp(qmp,output/'qmp.jsonl')
                 hold=None
+                if partial_gate:
+                    from ws73_management_partial import PartialCoordinator
+                    hold=PartialCoordinator(share,m.setdefault('managed_partial_hold',{}))
                 if active_gate:
                     from ws73_active_deadline import ActiveDeadlineCoordinator
                     hold=ActiveDeadlineCoordinator(share,m.setdefault('active_deadline_hold',{}))
@@ -624,6 +641,11 @@ def _run(args):
                     probe=json.loads((share/'setup-release/run.json').read_text())
                     m['setup_release_corroboration']=corroborate_setup(probe,capture)
                     m['live_setup_release']=file_record(share/'setup-release/run.json')
+                if partial_gate:
+                    from ws73_management_partial import corroborate as corroborate_partial
+                    probe=json.loads((share/'managed-partial/run.json').read_text())
+                    m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),devices[args.ports[0]])
+                    m['live_managed_partial']=file_record(share/'managed-partial/run.json')
                 if queued_gate:
                     from ws73_management_queued import corroborate as corroborate_queued
                     probe=json.loads((share/'managed-queue/run.json').read_text())
@@ -684,6 +706,10 @@ def _run(args):
                     m['status']='FAIL'
                     m['error']='environment timeout; capture sealed; physical control not accepted'
         prepared(args.prepared.resolve())
+        if queued_gate and file_record(HERE/'ws73_management_queued.py')!=m['managed_queue_verifier']:
+            raise ValueError('Managed queue verifier changed during run')
+        if partial_gate and file_record(HERE/'ws73_management_partial.py')!=m['managed_partial_verifier']:
+            raise ValueError('Managed partial verifier changed during run')
         if setup_gate and file_record(HERE/'ws73_management_setup.py')!=m['setup_release_verifier']:
             raise ValueError('Setup release verifier changed during run')
         if active_gate and file_record(HERE/'ws73_active_deadline.py')!=m['active_deadline_verifier']:
@@ -734,6 +760,8 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs=2,required=True)
+            cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
+            cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')
             cmd.add_argument('--managed-queue-verify',action='store_true',help='bounded one-vCPU FIFO real queued-policy cancellation; requires Setup and recovery gates; not ordinary concurrency acceptance')
             cmd.add_argument('--setup-release-verify',action='store_true',help='pre-daemon untouched Setup release/last-fd/dup gate; requires real fault-recovery scratch VM')
             cmd.add_argument('--event-copy-verify',action='store_true',help='opt-in live VFS usercopy gate before real recovery/RF; requires --fault-recovery')

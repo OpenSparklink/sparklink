@@ -18,6 +18,14 @@ fail() {
         wait "$capture"; capture_exit=$?
         echo "$capture_exit" > /evidence/capture-failure-exit.txt
     fi
+    mkdir -p /evidence/device-failure
+    for interface in /sys/bus/usb/devices/*:*; do
+        [ -f "$interface/boot_stage" ] || continue
+        name=${interface##*/}
+        for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics runtime_transport metadata_valid native_runtime controller_information; do
+            [ -f "$interface/$attribute" ] && cat "$interface/$attribute" > "/evidence/device-failure/$name-$attribute.txt"
+        done
+    done
     [ -d /evidence/application ] && dmesg > /evidence/kernel.log
     if [ -d /evidence/application ] && [ -f /sys/kernel/tracing/tracing_on ]; then
         echo 0 > /sys/kernel/tracing/tracing_on
@@ -91,6 +99,11 @@ if grep -q 'ws73.setup_release=1' /proc/cmdline; then
 fi
 if grep -q 'ws73.managed_queue=1' /proc/cmdline; then
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_queued.py --output /evidence/managed-queue > /evidence/managed-queue-supervisor.log 2>&1 || fail 'queued Managed cancellation gate'
+fi
+if grep -q 'ws73.managed_partial=1' /proc/cmdline; then
+    partial_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_case=/){sub(/^ws73.partial_case=/,"",$i);print $i}}' /proc/cmdline)
+    partial_domain=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_domain=/){sub(/^ws73.partial_domain=/,"",$i);print $i}}' /proc/cmdline)
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_partial.py --case "$partial_case" --domain "$partial_domain" --output /evidence/managed-partial > /evidence/managed-partial-supervisor.log 2>&1 || fail 'partial Managed held-reply cleanup gate'
 fi
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     # The runner attaches the first USB owner after capture readiness. Signal

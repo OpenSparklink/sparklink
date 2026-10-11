@@ -191,3 +191,22 @@ FIFO 调度临界区排入两个 typed policy，实际读取 Queued/opcode=0/ste
 这是特权测试调度支撑，不代表普通用户并发调度验收；不模拟 Complete、Off 或 Ready。
 现有两设备普通用户 RF20+2 仍为后续回归门禁。新探针的验证器通过负向测试，
 真实设备结果尚待执行。部分初始化及在途 reply 清理、自动恢复和自然故障根因仍开放。
+
+## 部分初始化在途回复探针（待实机执行）
+
+新增显式 `--managed-partial-case release|close|dup` 和
+`--managed-partial-domain advertising|scanning`，需要独立 Setup/recovery scratch VM，
+与既有 Diagnostic/active hold 门禁互斥。仅暂停真实第一步回复，读取完整 Pending
+及 opcode/step，保留原命令500ms期限，在其前触发释放／关闭；dup第一次关闭仍Held。
+原真实回复交还后，应只有真实广告／扫描停止及成功 Complete，再Free/Ready；
+保留原操作 Cancelled/-ECANCELED。peer持独立Diagnostic租约，前／在途／后三次
+真实MAC查询及完整metadata/ownership检查均须匹配。任何原始status、EIO、代际退役
+或超时均记失败，不通过忽略错误、合成成功或新注册替代旧cleanup。单案例通过也
+不代表整个partial初始化／并发／removal／自动恢复矩阵完成。
+
+本次已有四次实机启动失败，尚未进入新Managed门禁：单vCPU、uhubctl短断电后重试、
+原双vCPU对照和另一对设备都在Setup元数据前失败（warm恢复/再次启动均-110）。
+延长断电间隔的后续尝试也失败。所有日志、捕获和原始manifest保留在私有.dev。
+uhubctl直接执行可用，sudo非交互执行仍要求密码；两次off/on均使四口重新枚举，
+这不证明WS73真的冷启动，也不代表自动恢复或根因已解决。后续VM失败现在自动
+保存现有boot_stage/error、warm、budget、failure_diagnostics等只读sysfs诊断。

@@ -740,9 +740,35 @@ UID1000/caps0，RF20+2各例/共44轮、10秒内随机数据/地址/RSSI匹配�
 taint0/无kernel fault。322工具/174Rust/严格clippy，精确CI38155998741九项
 成功；原新fixture拒绝及旧STOP0b/EBUSY/超时/warning历史不覆盖。
 
-正常VM累计51、维护20，失败不归零。下一取消/移除并发采用明确QMP guest
+该批次正常VM累计51、维护20，失败不归零。当时下一取消/移除并发安排采用明确QMP guest
 单对象退役支撑，仍需单独真实物理拔插/四设备两组；自然启动超时/重枚举/
 消失RCA及非人工单设备恢复仍OPEN，不能用guest退役或人工错误替代。
 其余完整RPC/事件/权限/结果并发和S0–S6/28项原scope保持；旧代码三类清理、
 未发布UAPI迁移后删除继续，整项Managed未完成，部分成果不关闭整项。
 VM-only，goal active。复现/字段/限定范围见[Managed验收](MANAGEMENT_SETUP_RELEASE.md)。
+
+
+## 2026-10-12 取消/目标guest移除支撑通过，保留两个失败
+
+[新真实设备证据](evidence/ws73-daemon-cancel-removal-real-20261012.json)，
+SHA256 `9b71ad70680c975c1c10f7d6e0bcceb21e93867915cc0bf0b6ed5cc6534d6859`：原真实1001 reply held、原请求Cancelled，实际Revoking时仅QMP
+退役目标；取消RPC返回ENODEV且无虚构确认，原178字节host缓冲只DROP一次，
+guest没有旧成功Complete/START/STOP。同行保持generation2/Ready/scanning On
+并实际STOP；原端口重加后目标generation1→3，旧选择仍失效，同slkd/bus、
+普通UID1000/caps0 RF20+2通过，1279包/零drop、taint0/无kernel fault。
+
+当前源码K4ee4af55f38c/冻结工具U7bcc7866c368，实际编译K060011963b5e/
+服务Uab1a34b07f1c生产哈希一致。专用QEMU实际回调DROP诊断/四种清理
+ASan/UBSan/LSan、无USB边界和隔离boot smoke通过；329工具测试和
+[精确源码CI38159520269](https://github.com/OpenSparklink/sparklink/actions/runs/38159520269)
+九项success。主机/guest墙钟用原子握手界定，原请求到delete保守上界206.37ms，
+不改变500ms原期限；最终JSON独立重算通过，不能只认console或在线proof。
+
+三次尝试仅一次验收：原跨墙钟FAIL、原在线PASS但最终manifest被重复初始化
+清空而独立拒绝的尝试均原样保留，后者临时结论已撤回。正常VM累计54/维护20。
+这只增加QMP guest生命周期支撑，不关闭物理拔插/四设备/自然RCA/非人工恢复。
+下一当前镜像物理拔插与四设备两组并行、其余RPC/结果/事件/权限并发和完整
+S0–S6/28项继续；14项整改、旧代码三类清理与未发布UAPI迁移后删除保持。
+自动恢复/根因未明与整项ManagedOPEN，部分成果不关闭整项，goal active，
+VM-only。最新冷断电报告不追加冷启动资格，VBUS仍未测。复现与限定范围见
+[Managed验收](MANAGEMENT_SETUP_RELEASE.md)。

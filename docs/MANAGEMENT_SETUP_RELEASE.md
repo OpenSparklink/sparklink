@@ -931,9 +931,65 @@ source/策略哈希一致。两例同slkd/bus、普通UID1000/caps0各RF20+2，�
 原schema2双案例已用新verifier重新读回，proof完全相同，旧资格不倒填为
 新镜像完整矩阵。正常VM累计51/维护20，失败不归零。
 
-本批没有执行取消/移除并发或当前镜像物理拔插。下一独立VM门禁将暂留原
+上述双案例批次没有执行取消/移除并发或该镜像物理拔插。当时安排的下一独立VM门禁将暂留原
 reply并启动cancel，再只移除目标的guest USB对象，要求取消实际失败且
 无虚构generation确认、旧选择退役、同行仍可控制，重接后新Ready及同slkd
 RF。此QMP退役是开发支撑，与人工真实物理拔插、自然设备消失RCA和有限
 非人工单设备恢复分开。其余RPC/admission/result/event/权限并发、四设备
 两组和完整S0–S6/28项保持OPEN，VM-only，部分成果不提前关闭整项。
+
+
+## 2026-10-12 取消中移除目标：真实双设备 guest 生命周期支撑
+
+[独立读回的真实设备证据](evidence/ws73-daemon-cancel-removal-real-20261012.json)
+SHA256 `9b71ad70680c975c1c10f7d6e0bcceb21e93867915cc0bf0b6ed5cc6534d6859`。仅 `--qmp-hotplug --daemon-cancel-remove` 专用 VM 模式：
+普通 UID1000/caps0 的 slctl 发扫描；暂扣原真实成功1001参数回复后，
+原请求先返回 Cancelled/-ECANCELED，实际管理查询为 Revoking。只删除目标
+`ws73_0` guest owner，取消 RPC 必须实际返回 ENODEV，不得输出
+NativePoliciesCancelled。原host缓冲区178字节只丢弃一次，DROP与HOLD的SHA
+相同；完整guest捕获仅原1001 OUT，没有目标成功Complete、START或STOP。
+同行保持原generation Ready/scanning On，实际查询和STOP成功，QMP未修改
+同行对象，其hold/error计数保持零。只重加原物理端口，全部host/guest reset
+及kernel-driver-detach关闭，新generation Ready，旧选择重接后仍被拒绝。
+
+最终source runner PASS/QEMU0和独立最终JSON重算均通过：目标generation1→3，
+同行一直generation2；同slkd/bus普通用户RF20+2，共22轮随机标识/数据/地址/
+RSSI在10秒内匹配，捕获1279包/零drop、taint0、无kernel fault。实际编译
+K060011963b5e、服务Uab1a34b07f1c；冻结工具U7bcc7866c368，当前K4ee4af55f38c
+仅selftests变化，生产内核和69份用户态/策略源码哈希一致。专用QEMU
+SHA256 `05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a`。
+实际host回调四条取消/abort清理路径通过ASan/UBSan/LSan，无重放/双重free；
+无USB边界和签名模块隔离启动均通过。329工具测试；
+[精确源码CI38159520269](https://github.com/OpenSparklink/sparklink/actions/runs/38159520269)
+九项success，包括完整Rust、严格clippy和release build。
+
+host/guest墙钟不假定相等：原子marker/ack交叉约束offset为789.5–799.5ms，
+保守原请求到delete上界206.37ms，原500ms DLI期限不延长。保留三次实际
+尝试，其中两次不验收：首次直接跨墙钟比较导致原runner FAIL；第二次
+在线PASS后重复初始化清空最终manifest，独立读回拒绝并撤回临时结论。
+原文件不改写、不倒填；移除重复初始化，最终落盘前JSON重算拒绝缺失或
+变化的proof，再以新冻结镜像重跑通过。历史STOP0b、EBUSY、超时和warning
+证据保持。正常VM累计54/维护20，失败不归零。
+
+复现需要使用带DROP诊断补丁的专用QEMU、匹配该QEMU的隔离native-root
+boot smoke，以及已验证的签名module tree/service bundle准备新的PREPARED；
+不能复用旧QEMU哈希的boot proof。随后只运行独立VM：
+
+```sh
+python3 tools/ws73_target.py run --prepared PREPARED --output OUT \
+  --ports 1-2.1.4 1-2.1.3 --timeout 450 --qmp-hotplug --daemon-cancel-remove
+```
+
+VM退出后以`ws73_daemon_removal.verify_sealed_record`重算最终manifest和
+run.json，捕获用`ws73_capture.read_capture`，RF另由`corroborate_passthrough`
+验证。只认原runner终态与独立读回均通过，不能仅凭console PASS宣称验收。
+
+本项是**真实无线设备上的QMP guest退役支撑**，不算物理拔插、自然设备
+消失根因或自动恢复。此前release/最后fd/dup及Ready同行矩阵保留原资格，
+不能倒填为本镜像完整矩阵。下一优先为当前资格镜像物理拔插/slkd不中断、
+四设备两组并行、其他RPC/result/event/权限并发，同时继续自然启动超时/
+重枚举/消失RCA与有限非人工单设备恢复。最新冷断电回复仅保留用户报告，
+当前枚举地址与既有基线一致，不追加冷启动成功次数；VBUS未测。完整S0–S6、
+28项原scope/14项整改/旧代码三类清理保持，未发布UAPI迁移后删除继续。
+自动恢复/根因未明/整项Managed仍OPEN，部分成果不关闭整项；goal active，
+VM-only，两个draft不合并。

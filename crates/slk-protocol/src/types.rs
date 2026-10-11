@@ -1327,3 +1327,58 @@ pub struct SleDiagnosticSubmit {
     pub seq: u32,
     pub action: u32,
 }
+
+/// Native connection parameters use the explicit controller profile dialect.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SleConnectionParameters {
+    pub filter: u32,
+    pub own_address_type: u32,
+    pub peer_address_type: u32,
+    pub peer_address: [u8; 6],
+    pub reserved: [u8; 2],
+    pub gt_negotiate: u32,
+    pub frame: u32,
+    pub scan_interval: u32,
+    pub scan_window: u32,
+    pub interval_min: u32,
+    pub interval_max: u32,
+    pub latency: u32,
+    pub supervision_timeout: u32,
+    pub event_min: u32,
+    pub event_max: u32,
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SleConnectionSubmit {
+    pub version: u32,
+    pub profile: u32,
+    pub operation: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub request_id: u64,
+    pub timeout_ms: u32,
+    pub handle: u32,
+    pub reason: u32,
+    pub reserved: u32,
+    pub parameters: SleConnectionParameters,
+    pub reserved_tail: u32,
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SleConnectionResult {
+    pub version: u32,
+    pub profile: u32,
+    pub state: u32,
+    pub operation: u32,
+    pub generation: u64,
+    pub request_id: u64,
+    pub error: i32,
+    pub fault_error: i32,
+    pub command_status: u32,
+    pub outcome_status: u32,
+    pub handle: u32,
+    pub flags: u32,
+    pub dev_index: u16,
+    pub reserved: [u8; 6],
+}

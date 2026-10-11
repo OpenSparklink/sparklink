@@ -1,3 +1,9 @@
+最新源码（2026-10-12）：Linux82318ed9fe3f接通typed连接提交/查询、driver
+27/3字节plan、共用TX及异步outcome关联，完整构建通过；本页RF22仍只资格
+原D227/服务195。真实撤销清理、slkd/slctl及实机连接/SSAP未验收，详见
+[Native连接生产接入](NATIVE_CONNECTION_IMPLEMENTATION.md)。下面历史
+“请求尚未接通”不代表当前源码；新源码也不表示新增实机连接通过。
+
 当前修复版实机回归更新：实际kernel d227b8a37d96、编译服务/工具195a936a0643
 在正常VM74完成原无连接路径SIGKILL137／两条真实STOP／Free-Off-Ready／
 原generation接任／四项旧初始化凭据拒绝且接任阶段零设备命令，再完成同一

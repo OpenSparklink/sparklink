@@ -335,3 +335,41 @@ class SleDiscoveryTiming(ctypes.Structure):
         ("opcode", ctypes.c_uint16), ("status", ctypes.c_uint8),
         ("reserved", ctypes.c_uint8 * 3),
     ]
+
+
+class SleConnectionParameters(ctypes.Structure):
+    _fields_ = [
+        ("filter", ctypes.c_uint32), ("own_address_type", ctypes.c_uint32),
+        ("peer_address_type", ctypes.c_uint32), ("peer_address", ctypes.c_uint8 * 6),
+        ("reserved", ctypes.c_uint8 * 2), ("gt_negotiate", ctypes.c_uint32),
+        ("frame", ctypes.c_uint32), ("scan_interval", ctypes.c_uint32),
+        ("scan_window", ctypes.c_uint32), ("interval_min", ctypes.c_uint32),
+        ("interval_max", ctypes.c_uint32), ("latency", ctypes.c_uint32),
+        ("supervision_timeout", ctypes.c_uint32), ("event_min", ctypes.c_uint32),
+        ("event_max", ctypes.c_uint32),
+    ]
+
+
+class SleConnectionSubmit(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [
+        ("version", ctypes.c_uint32), ("profile", ctypes.c_uint32),
+        ("operation", ctypes.c_uint32), ("flags", ctypes.c_uint32),
+        ("generation", ctypes.c_uint64), ("request_id", ctypes.c_uint64),
+        ("timeout_ms", ctypes.c_uint32), ("handle", ctypes.c_uint32),
+        ("reason", ctypes.c_uint32), ("reserved", ctypes.c_uint32),
+        ("parameters", SleConnectionParameters), ("reserved_tail", ctypes.c_uint32),
+    ]
+
+
+class SleConnectionResult(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [
+        ("version", ctypes.c_uint32), ("profile", ctypes.c_uint32),
+        ("state", ctypes.c_uint32), ("operation", ctypes.c_uint32),
+        ("generation", ctypes.c_uint64), ("request_id", ctypes.c_uint64),
+        ("error", ctypes.c_int32), ("fault_error", ctypes.c_int32),
+        ("command_status", ctypes.c_uint32), ("outcome_status", ctypes.c_uint32),
+        ("handle", ctypes.c_uint32), ("flags", ctypes.c_uint32),
+        ("dev_index", ctypes.c_uint16), ("reserved", ctypes.c_uint8 * 6),
+    ]

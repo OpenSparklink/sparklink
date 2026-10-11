@@ -424,6 +424,59 @@ typedef struct SPARKLINK_ALIGN(8) SleDiagnosticSubmit {
     uint32_t action;
 } SleDiagnosticSubmit;
 
+/**
+ * Native connection parameters use the explicit controller profile dialect.
+ */
+typedef struct SleConnectionParameters {
+    uint32_t filter;
+    uint32_t own_address_type;
+    uint32_t peer_address_type;
+    uint8_t peer_address[6];
+    uint8_t reserved[2];
+    uint32_t gt_negotiate;
+    uint32_t frame;
+    uint32_t scan_interval;
+    uint32_t scan_window;
+    uint32_t interval_min;
+    uint32_t interval_max;
+    uint32_t latency;
+    uint32_t supervision_timeout;
+    uint32_t event_min;
+    uint32_t event_max;
+} SleConnectionParameters;
+
+typedef struct SPARKLINK_ALIGN(8) SleConnectionSubmit {
+    uint32_t version;
+    uint32_t profile;
+    uint32_t operation;
+    uint32_t flags;
+    uint64_t generation;
+    uint64_t request_id;
+    uint32_t timeout_ms;
+    uint32_t handle;
+    uint32_t reason;
+    uint32_t reserved;
+    struct SleConnectionParameters parameters;
+    uint32_t reserved_tail;
+} SleConnectionSubmit;
+
+typedef struct SPARKLINK_ALIGN(8) SleConnectionResult {
+    uint32_t version;
+    uint32_t profile;
+    uint32_t state;
+    uint32_t operation;
+    uint64_t generation;
+    uint64_t request_id;
+    int32_t error;
+    int32_t fault_error;
+    uint32_t command_status;
+    uint32_t outcome_status;
+    uint32_t handle;
+    uint32_t flags;
+    uint16_t dev_index;
+    uint8_t reserved[6];
+} SleConnectionResult;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -792,6 +845,26 @@ int slk_diagnostic_result(const struct SlkAdapter *adapter,
  * Non-null pointers are valid/aligned/nonoverlapping; request is writable.
  */
 int slk_diagnostic_submit(const struct SlkAdapter *adapter, struct SleDiagnosticSubmit *request);
+
+/**
+ * Admit a typed Native connection procedure under this fd's Managed lease.
+ * Returns 0 or -errno; admission is not connection or physical cancellation.
+ * # Safety
+ * Pointers must be valid, aligned and nonoverlapping; request is readable.
+ */
+int slk_connection_submit(const struct SlkAdapter *adapter,
+                          const struct SleConnectionSubmit *request);
+
+/**
+ * Query this same fd's operation: 1 record, 0 absent/evicted or -errno.
+ * Output is untouched on 0/error. Require exact nonzero generation and ID.
+ * # Safety
+ * Pointers must be valid, aligned and nonoverlapping; output is writable.
+ */
+int slk_connection_result(const struct SlkAdapter *adapter,
+                          uint64_t generation,
+                          uint64_t request_id,
+                          struct SleConnectionResult *out);
 
 #ifdef __cplusplus
 }  // extern "C"

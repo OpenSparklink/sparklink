@@ -336,3 +336,17 @@ nix::ioctl_readwrite!(
     0xd1,
     super::SleDiagnosticSubmit
 );
+
+// Unpublished typed Native connection; raw DLI mutation stays unsupported.
+nix::ioctl_write_ptr!(
+    sl_connection_submit,
+    SL_MAGIC,
+    0x9c,
+    super::SleConnectionSubmit
+);
+nix::ioctl_readwrite!(
+    sl_connection_result,
+    SL_MAGIC,
+    0x9d,
+    super::SleConnectionResult
+);

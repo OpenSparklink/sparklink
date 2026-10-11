@@ -852,6 +852,42 @@ impl Adapter {
         }
     }
 
+    /// Typed Native connection admission with caller-supplied profile fields.
+    /// The request ID must increase across this open fd. Status acceptance is
+    /// not a connection outcome; query this same fd for terminal evidence.
+    /// In-flight author cancellation does not physically cancel a connection.
+    pub fn submit_native_connection(&self, request: &SleConnectionSubmit) -> Result<()> {
+        // SAFETY: initialized repr(C) request is borrowed for this syscall only.
+        unsafe { ioctl::sl_connection_submit(self.raw_fd(), request)? };
+        Ok(())
+    }
+
+    /// Author-only bounded result. None is absent/evicted, never success.
+    /// This is available after local cancellation, release and owner fault.
+    pub fn native_connection_result(
+        &self,
+        generation: u64,
+        request_id: u64,
+    ) -> Result<Option<SleConnectionResult>> {
+        if generation == 0 || request_id == 0 {
+            return Err(crate::Error::InvalidParam(
+                "connection identity must be nonzero",
+            ));
+        }
+        let mut result = SleConnectionResult {
+            version: 1,
+            generation,
+            request_id,
+            ..Default::default()
+        };
+        // SAFETY: writable initialized repr(C) storage is valid for the syscall.
+        match unsafe { ioctl::sl_connection_result(self.raw_fd(), &mut result) } {
+            Ok(_) => Ok(Some(result)),
+            Err(nix::errno::Errno::ENOENT) => Ok(None),
+            Err(error) => Err(error.into()),
+        }
+    }
+
     /// Non-destructive correlated final Complete receipt; requires timing UAPI.
     pub fn discovery_timing(
         &self,

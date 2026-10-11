@@ -12,7 +12,7 @@ from .adapter import SparkLinkError, _get_lib
 from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
-    SleDiagnosticResult, SleDiagnosticSubmit,
+    SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
 )
 
 _native_library = None
@@ -26,7 +26,7 @@ def _get_native_lib():
     if any(ctypes.alignment(t) != 8 for t in (
         SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
         SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
-        SleDiagnosticResult, SleDiagnosticSubmit,
+        SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     )):
         raise OSError("native UAPI requires ctypes with 8-byte structure alignment")
     handle = ctypes.c_void_p
@@ -39,6 +39,8 @@ def _get_native_lib():
         "slk_management_acquire": [handle, u64, u32, ctypes.POINTER(u64)],
         "slk_management_query": [handle, u64, ctypes.POINTER(SleManagementQuery)],
         "slk_management_release": [handle, u64, u64, u32],
+        "slk_connection_submit": [handle, ctypes.POINTER(SleConnectionSubmit)],
+        "slk_connection_result": [handle, u64, u64, ctypes.POINTER(SleConnectionResult)],
         "slk_discovery_submit": [handle, ctypes.POINTER(SleDiscoverySubmit)],
         "slk_discovery_timing": [handle, u64, u64, ctypes.POINTER(SleDiscoveryTiming)],
         "slk_discovery_result": [handle, u64, u64, ctypes.POINTER(SleDiscoveryResult)],
@@ -168,6 +170,23 @@ class NativeAdapter:
         if request.generation != self.generation or request.request_id == 0:
             raise ValueError("request must have this generation and a nonzero request id")
         self._invoke('slk_discovery_submit', ctypes.byref(request))
+
+    def submit_connection(self, request):
+        """Typed admission only; operation=3 cancels author, not physical I/O."""
+        if not isinstance(request, SleConnectionSubmit):
+            raise TypeError("SleConnectionSubmit required")
+        with self._lock:
+            self._require_open()
+            self._check(self._lib.slk_connection_submit(self._handle, ctypes.byref(request)))
+
+    def connection_result(self, generation, request_id):
+        """Same-fd bounded result; None means absent/evicted, never success."""
+        result = SleConnectionResult()
+        with self._lock:
+            self._require_open()
+            status = self._check(self._lib.slk_connection_result(
+                self._handle, generation, request_id, ctypes.byref(result)))
+        return result if status == 1 else None
 
     def discovery_result(self, request_id):
         request_id = _unsigned(request_id, 64, "request_id", True)

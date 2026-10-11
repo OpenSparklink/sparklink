@@ -13,7 +13,7 @@ from sparklink.native import _get_native_lib
 from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
-    SleDiagnosticResult, SleDiagnosticSubmit,
+    SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
 )
 
 
@@ -42,6 +42,7 @@ class NativeBindingTests(unittest.TestCase):
             ("slk_controller_snapshot", [1], SleControllerSnapshot(generation=99)),
             ("slk_management_query", [1], SleManagementQuery(lease=99)),
             ("slk_management_acquire", [1, 1], ctypes.c_uint64(99)),
+            ("slk_connection_result", [1, 1], SleConnectionResult(request_id=99)),
             ("slk_discovery_result", [1, 1], SleDiscoveryResult(request_id=99)),
             ("slk_discovery_timing", [1, 1], SleDiscoveryTiming(request_id=99)),
             ("slk_diagnostic_result", [1, 1], SleDiagnosticResult(seq=99)),
@@ -120,3 +121,23 @@ class NativeBindingTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class NativeConnectionBindingTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.lib = _get_native_lib()
+
+    def test_null_submit_and_zero_identity_are_rejected_without_output_change(self):
+        handle = self.lib.slk_adapter_open(b"/dev/null")
+        self.assertTrue(handle)
+        self.addCleanup(self.lib.slk_adapter_free, handle)
+        request = SleConnectionSubmit(version=1, generation=1, request_id=1)
+        self.assertEqual(self.lib.slk_connection_submit(None, ctypes.byref(request)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_connection_submit(handle, None), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_connection_submit(handle, ctypes.byref(request)), -errno.ENOTTY)
+        result = SleConnectionResult(request_id=99)
+        original = bytes(result)
+        for generation, request_id in [(0, 1), (1, 0)]:
+            self.assertEqual(self.lib.slk_connection_result(handle, generation, request_id, ctypes.byref(result)), -errno.EINVAL)
+            self.assertEqual(bytes(result), original)

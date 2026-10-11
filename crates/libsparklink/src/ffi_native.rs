@@ -327,3 +327,49 @@ pub unsafe extern "C" fn slk_diagnostic_submit(
         Err(error) => errno(error),
     }
 }
+
+/// Admit a typed Native connection procedure under this fd's Managed lease.
+/// Returns 0 or -errno; admission is not connection or physical cancellation.
+/// # Safety
+/// Pointers must be valid, aligned and nonoverlapping; request is readable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_submit(
+    adapter: *const SlkAdapter,
+    request: *const SleConnectionSubmit,
+) -> c_int {
+    let (Some(adapter), Some(request)) = (unsafe { adapter.as_ref() }, unsafe { request.as_ref() })
+    else {
+        return -nix::libc::EINVAL;
+    };
+    adapter
+        .inner
+        .submit_native_connection(request)
+        .map_or_else(errno, |()| 0)
+}
+
+/// Query this same fd's operation: 1 record, 0 absent/evicted or -errno.
+/// Output is untouched on 0/error. Require exact nonzero generation and ID.
+/// # Safety
+/// Pointers must be valid, aligned and nonoverlapping; output is writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_result(
+    adapter: *const SlkAdapter,
+    generation: u64,
+    request_id: u64,
+    out: *mut SleConnectionResult,
+) -> c_int {
+    let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter
+        .inner
+        .native_connection_result(generation, request_id)
+    {
+        Ok(Some(value)) => {
+            *out = value;
+            1
+        }
+        Ok(None) => 0,
+        Err(error) => errno(error),
+    }
+}

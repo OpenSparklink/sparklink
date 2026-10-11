@@ -53,6 +53,9 @@ STRUCT_NAMES = {
     "SleDiscoverySubmit": "sle_discovery_submit",
     "SleDiscoveryResult": "sle_discovery_result",
     "SleDiscoveryTiming": "sle_discovery_timing",
+    "SleConnectionParameters": "sle_connection_parameters",
+    "SleConnectionSubmit": "sle_connection_submit",
+    "SleConnectionResult": "sle_connection_result",
 }
 
 

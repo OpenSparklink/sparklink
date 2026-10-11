@@ -1,10 +1,22 @@
+当前S4生产接入（2026-10-12）：Linux82318ed9fe3f接通27/3字节codec、
+有界作者operation、typed UAPI/共用TX/异步physical outcome；重复staging
+已删除，新完整内核/modules无warnings构建通过。Rust/C/Python提交查询已
+接通；slkd/slctl连接、真实断开清理、新VM与连接/SSAP仍未验收，明确Faulted
+守卫不计作完整Managed teardown。已有实机资格仍是原D227/服务195无连接
+RF22。继续实现真实清理/消费者/VM互通，全原28项/S0–S6及默认四设备/
+根因/非人工恢复保持开放。详见
+[NATIVE_CONNECTION_IMPLEMENTATION](NATIVE_CONNECTION_IMPLEMENTATION.md)。
+
+下面c8等增量为按提交保留的历史状态；“尚未迁入生产”以本段新823源码状态
+为准，但运行资格不能倒填，原证据及原完整方案仍保留。
+
 当前S4请求/operation依赖实现（2026-10-12）：Linux c8f2485dc3aa 新增
 selftests/connection中的独立27/3字节codec和gen/cookie/peer/handle关联Session。
 8个Rust契约及完整sanitizer通过。Queued/OnWire/Status接受/AwaitingOutcome/
 terminal分开，作者取消保留ECANCELED与真实迟到handle，物理fault独立且
 阻止复用；标准0x1402存在但111固件未实测，不假装取消物理流程。本次尚未
 迁入Host/driver生产或Native UAPI/D-Bus/slctl，没有互通验收；这是S4依赖工作，
-不替代真正主动连接功能。见[NATIVE_CONNECTION_STAGING](NATIVE_CONNECTION_STAGING.md)
+不替代真正主动连接功能。见[NATIVE_CONNECTION_IMPLEMENTATION](NATIVE_CONNECTION_IMPLEMENTATION.md)
 的5项生产接入依赖。原D227内核无连接RF22继续有效，完整原28项/S0–S6仍开放。
 
 当前S4基础修复及原路径实机回归（2026-10-12）：Linux d227b8a37d96完成

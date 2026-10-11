@@ -804,3 +804,10 @@ socket 路径错误，修正后重新执行，原失败不删除。274工具测�
 无新增真实 Managed、Ready同伴或恢复资格。私有观察器与默认恢复构建哈希
 封存，278工具测试通过。该尝试仅排除标准端点清理能直接恢复本次传输的
 假设，未查明自然故障根因，相关问题继续 OPEN。
+
+[两次真实只读寄存器对照](evidence/ws73-register-read-contrasts-20261011.json)保留
+原 FAIL／TimeoutError、两个实际在途请求和取消回收，标准 EP02/EP82 清理
+实际返回0仍未恢复数据。guest 失败 OUT actual16 与 host 两笔 transferred0
+分别记录，失败长度不能代替真实成功。未写寄存器／复位／加载模块；283工具
+测试及 Ud8f CI 九作业仅源码支撑。自然 RCA、Ready同行、Managed真实矩阵、
+自动恢复、14项整改和全部原 issues 继续 OPEN；历史有效路径／证据保留。

@@ -384,3 +384,13 @@ interface rebind 和路由模式互斥。异步 OUT16／IN4 保持原 ctypes URB
 至取消完成或独占 fd 关闭，分别保存提交、完成、原错误、取消请求／回收及
 关闭诊断；只读失败不降级为寄存器写或模块启动。源码／模型回归不能替代
 实际 libusb 返回与 USB 抓包核对，两只真实 Ready／Managed 条件仍开放。
+
+[两轮真实寄存器对照](evidence/ws73-register-read-contrasts-20261011.json)已终结：
+基线与 EP02/EP82 清理后均在 OUT16／IN4 同时在途时超时，原 TimeoutError 与
+两个取消回收保留；清理的实际 libusb 返回均0、完整配置不变，host 两笔 bulk
+均 transferred0。guest 失败 OUT 的 actual=16、IN actual=0 原样保存，不能
+解释为物理成功；QEMU 在提交前复制 OUT 数据，失败时字节数不代表已送达。
+未写寄存器／复位／加载模块，四只 host inventory 一致；真实 Managed 仍零。
+维护累计18，正常门禁仍7；283工具测试及 Ud8f CI 九作业通过仅提供源码支撑。
+当前数据失败也涉及独立寄存器通道，不能仅归因于路由 recipe；设备／固件／
+host／QEMU 自然根因及独立自动恢复继续 OPEN。

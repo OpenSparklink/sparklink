@@ -382,3 +382,31 @@ overflow与删除条件见[事件整改](EVENT_COPY_REMEDIATION.md)。
 故障和限定范围；自然根因/自主恢复/物理xHCI warning/四设备/完整sandbox与
 全部S0–S6不因本项通过关闭。下一步实际cancel/late/deadline及独立订阅迁移，
 迁完后删除共享ring/fallback/未发布UAPI，不保留永久双路径。
+
+### 本批最终镜像实机复核：旧注册接口拒绝限定通过
+
+Linux `257ab5d5e5c6`／编译用户态 `3506ec472957` 的
+[冻结证据](evidence/ws73-vm-retired-registration-final-20261011.json)与
+[九作业 CI](https://github.com/OpenSparklink/sparklink/actions/runs/38098082157)
+通过；实际日志170 Rust、34 Python、185工具。首轮有 warning 的构建及两次
+prepare 参数失败保留，最终完整 image/modules 重编译、私有签名模块资格与
+新 VM 都重新执行；未安装或加载到宿主。
+
+特权root、同fd UID0/caps0、UID1000/caps0各九次真实旧编号调用全部ENOTTY：
+三种历史编码 × NULL/不可访问地址/有效sentinel；snapshot和命令统计逐字节
+不变、枚举数量/掩码不变；三个记录的独立USB窗口没有命令或Complete。
+三种身份的实际cap与时间记录来自live C stderr，仅限专用selftest，不扩大
+历史diagnostic格式的资格。Netlink只删除未实施声明，未宣称本批实际genl
+拒绝或完整权限/并发验收。真实内部USB/serdev注册不变。
+
+原门禁继续保持：真WS7320+2轮均10秒内匹配随机数据/地址/RSSI，最长620ms；
+read7、结果16、copyout2、legacy poll3、淘汰33＋静默及CLI4均通过；实际
+同作者在途/排队取消和显式释放迟到回复的限定资格保持。独立1431 USB零drop、
+22RX、46诊断wire对；warning0/taint0/traceoverrun0，同daemon与幸存g2不变，
+人工IN81目标g1→3。host四只存在且释放，没有device_del、宿主部署或人工拔插。
+
+这关闭两个空接口的生产假成功，不完成R13：drivers持有总线注册、可引用
+Backend、全局parser与重复状态迁移仍待验收。完整截止时间/不续期、暂留USB
+cancel/abort/close/drain、完整事件/所有权/并发、自然故障根因与自主恢复、
+四设备及S0–S6仍OPEN；北极星7/8。下一步实际queued deadline不续期门禁，
+然后剩余消费者与共享ring/fallback删除。

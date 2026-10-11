@@ -838,3 +838,9 @@ overflow与删除条件见[事件整改](EVENT_COPY_REMEDIATION.md)。
 故障和限定范围；自然根因/自主恢复/物理xHCI warning/四设备/完整sandbox与
 全部S0–S6不因本项通过关闭。下一步实际cancel/late/deadline及独立订阅迁移，
 迁完后删除共享ring/fallback/未发布UAPI，不保留永久双路径。
+
+2026-10-11清理增补：无真实操作且无业务调用者的未发布注册ioctl／Netlink
+声明与包装已同步删除，三身份27次实际ENOTTY与新镜像WS7320+2通过，见
+[证据](evidence/ws73-vm-retired-registration-final-20261011.json)。core总线注册
+迁移仍OPEN；不把两个空接口清理记为完整backend解耦或完整生命周期完成。
+下一步queued deadline／相同request ID不续期门禁；自然故障根因及恢复并行。

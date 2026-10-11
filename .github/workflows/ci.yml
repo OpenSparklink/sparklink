@@ -156,6 +156,7 @@ jobs:
             net/sparklink
             tools/testing/selftests/sparklink
             include/uapi/linux/sparklink_ioctl.h
+            include/uapi/linux/sparklink.h
       - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-python@v5
         with:
@@ -174,6 +175,14 @@ jobs:
           python tools/testing/selftests/sparklink/run_event_copy.py
           python tools/testing/selftests/sparklink/run_phy_model.py
           python tools/testing/selftests/sparklink/run_diagnostic_result.py
+      - name: Check complete ioctl authorization and queue contracts
+        working-directory: .kernel-containment
+        run: |
+          python -m unittest discover -s tools/testing/selftests/sparklink -p test_authorization_contract.py -v
+          python -m unittest discover -s tools/testing/selftests/sparklink -p test_daemon_lifecycle.py -v
+          rustc --edition=2021 --test -D warnings tools/testing/selftests/sparklink/sparklink_host_plan_test.rs -o /tmp/host-plan-test
+          /tmp/host-plan-test
+          clang -std=c11 -O2 -Wall -Wextra -Werror tools/testing/selftests/sparklink/kernel_authorization_test.c -o /tmp/kernel-authorization-probe
       - name: Check pinned QEMU host test boundaries (no live USB or guest execution)
         working-directory: .kernel-containment
         run: |

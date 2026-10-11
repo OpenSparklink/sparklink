@@ -1220,7 +1220,7 @@ EBUSY 且结果 ENOENT。两只模拟 USB 上实际 release／最后 fd／dup �
 部分扫描在途探针改为先于同一租约真实完成广播配置／STOP，保存完整成功结果、
 selected power 和两笔有序成功 USB Complete，再暂停扫描第一步；失败不进入
 扫描。格式2拒绝遗漏／失败／伪造 Off；268 项工具测试通过，新的 partial 前置
-路径尚未通过 VM 或实机在途验收。广播案例仍从 untouched Setup 开始。
+路径当时尚未通过 VM 或实机在途验收；后续模拟结果见下文。广播案例仍从 untouched Setup 开始。
 调用关系复核确认扫描清理可保留前置阶段真实确认的广播 Off，只发送未知扫描
 STOP；验证器要求原成功 STOP 证据与前置至清理期间无额外目标命令。遗漏回复、
 失败 STOP、重复 STOP 或插入 enable 均拒绝。269工具测试通过，真实矩阵仍开放。
@@ -1236,3 +1236,18 @@ confirmed advertising Off、无 pending 广播条件下验收扫描初始化排�
 成功 STOP、Revoking→Free、Ready 同伴前／在途／后活动不变；最后复跑同 slkd
 普通用户双设备20+2及四设备两组。整 hub 复位不算独立自动恢复，源测试／CI／
 模拟支撑不算真实验收。自动恢复、RCA、完整清理及原28项 scope 继续 OPEN。
+
+## 第一阶段 partial 模拟执行与下一步（2026-10-11）
+
+[新封存矩阵](evidence/ws73-managed-partial-model-fd-matrix-20261011.json)包含广播／
+扫描各 release、最后 fd、dup 六个模型成功案例及六个独立拒绝案例，使用实际
+内核 fd、完整 UAPI、QMP 与原终结帧 SHA/USB 抓包。只暂停第一个初始化步骤，
+不等于全部步骤或真实 libusb 回复验收。同伴仍 Setup/Diagnostic，三次查询
+一致不等于活动 Ready 隔离。拒绝分支保留 FAIL、0x0b/-EIO 和 Blocked/Faulted。
+Unix socket 过长的启动前失败独立归档，源码／工具／签名镜像 provenance 分开。
+
+依赖顺序仍为真实独立启动／查询，confirmed-Off 后完整扫描初始化队列取消，
+partial 后续步骤及 release／最后 fd／dup 的真实在途回复，再执行活动 Ready
+同伴隔离、同 slkd 普通用户 RF20+2、物理拔插和四设备两组。274工具测试及
+Uf35 CI 九作业仅支撑开发；本矩阵不新增物理验收。S0–S6、旧实现三类清理和
+原28项完整条件保留，自动恢复及未查明根因的 issue 不关闭。

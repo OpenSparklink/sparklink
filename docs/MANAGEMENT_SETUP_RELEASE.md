@@ -236,7 +236,7 @@ Setup 开始。这是修正测试方案，完整真实六案例及 Ready 同伴�
 保留，不归零 status。正常模拟分支和拒绝分支都须执行，不能以模拟通过代替
 真实固件资格。格式3显式区分 synthetic_support，记录完整 hold_acknowledgements；
 模型只保留原始终结队列帧，不是实际成功 libusb IN81 hold，独立 method/日志/属性
-及 USB 哈希核对禁止混用。相同 kernel fd 路径的开发支撑尚待实际执行；静态
+及 USB 哈希核对禁止混用。相同 kernel fd 路径的实际开发支撑结果见下文；静态
 Setup peer 的三次查询也不代表活动 Ready peer 或 RF，整项实机条件继续开放。
 
 上述开发支撑现已执行：U f35ba6c／签名 K292 镜像的两个域×release／最后fd／
@@ -341,8 +341,23 @@ fd／dup 案例通过，289 包完整抓包、零丢包，取消区间两个设�
 Setup。运行于冻结 U40ab1d15fa83 工具、签名 K292 镜像、编译 Ud749 服务包；
 当前源码 K a370 的变化是测试依赖。源头、镜像和模拟资格均在证据中分开。
 
-partial 扫描前置修正已提交 Ucc3be5b，268工具测试通过，但尚无该新路径的
-VM／实机在途通过。CI38123259995（U4fc）及38124100001（U40ab）已终结 success，
+partial 扫描前置修正当时提交 Ucc3be5b，268工具测试通过，当时尚无该新路径的
+VM／实机在途通过；后续模拟结果见下文。CI38123259995（U4fc）及38124100001（U40ab）已终结 success，
 只提供源码支撑。实机 libusb 诊断仍是提交后超时、cancel/reap -ENOENT 和零
 传输；未新增 Ready 或 Managed 实机案例。真实完整队列／partial／活动 peer／
 普通用户 RF 回归和自动恢复、自然 RCA 继续开放。
+
+## 第一阶段 partial 模拟 fd 矩阵封存（2026-10-11）
+
+[完整证据](evidence/ws73-managed-partial-model-fd-matrix-20261011.json)封存六个
+成功案例及六个独立拒绝案例，均使用模拟 USB 与实际签名内核 fd 路径。
+广播／扫描各覆盖 release、最后 fd 关闭及 dup，暂停的都是初始化第一个步骤。
+原模型终结帧、QMP 交还和 USB 抓包的字节／SHA 匹配，原请求保持 Cancelled。
+扫描前置广播 Off 有原成功回复证明；同伴三次真实内核查询保持一致，但同伴
+仅 Setup/Diagnostic，并非活动 Ready 或空口证明。
+
+六个拒绝案例保留原 VM FAIL、STOP status 0x0b、-EIO、RecoveryBlocked/Faulted，
+不能改写为 Free/Ready。另一次 Unix socket 过长导致的 guest 启动前失败独立
+保留。274工具测试与 Uf35 CI 九作业通过；源码 K6c2、验证器 U86a、镜像 K292、
+服务 Ud749、冻结工具及 QEMU hash 分别记录。没有新增真实 WS73 Managed 通过。
+真实在途 libusb 回复、后续初始化步骤、活动同伴、自动恢复及自然 RCA 继续开放。

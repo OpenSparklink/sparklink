@@ -777,7 +777,7 @@ fd／dup 六案例实际通过，完整区间零 DLI、Unknown/Setup 及 peer �
 
 partial 扫描探针格式2强制先用真实广播配置／STOP 成功 Complete 建立 Off，
 再 arm 扫描第一步；完整结果、power 和有序抓包都须匹配。268 工具测试通过，
-这段新前置路径还没有 VM／真实 held-reply 通过证据。不得把静态 Setup peer
+这段新前置路径当时还没有 VM／真实 held-reply 通过证据；后续模型结果见下文。不得把静态 Setup peer
 当作 Ready 同伴活动隔离，也不得用扫描 STOP 子案例代替扫描初始化全矩阵。
 
 新物理诊断确认 length36 bulk 实际提交到主机，再超时取消、回收 -ENOENT、
@@ -786,3 +786,14 @@ transferred0；该区间 parent/hub/target active 且 suspend-time 增量零。�
 历史真实 WS73 RF 证据和正式 Linux/Rust 路径保持；恢复、RCA、完整矩阵与原
 28项 scope 开放。下一步按真实启动→合法子门禁／confirmed-Off 扫描初始化→
 partial 六案例及活动 Ready peer→同 daemon RF／故障隔离／四设备推进。
+
+## 第一阶段 partial fd 模型整改证据（2026-10-11）
+
+[封存矩阵](evidence/ws73-managed-partial-model-fd-matrix-20261011.json)新增六个
+成功和六个精确拒绝案例：实际内核 release／最后 fd／dup、Pending→Cancelled、
+原模型终结帧交还后的哈希、完整 UAPI 和同伴查询均核对。负向原 VM FAIL 保留
+0x0b/-EIO 与 RecoveryBlocked/Faulted，不模拟 Free/Ready。另有一次启动前
+socket 路径错误，修正后重新执行，原失败不删除。274工具测试及 Uf35 CI 九作业
+通过。模拟暂停只覆盖第一个初始化步骤；不能当作真实 libusb IN、活动 Ready
+同伴或 RF。真实 Managed 通过数仍为零；14项整改、全清理、恢复、自然 RCA 和
+原28项完整验收继续 OPEN，已封存真实 WS73 路径与历史故障证据保留。

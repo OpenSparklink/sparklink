@@ -309,3 +309,10 @@ active请求。源码说明fresh Runtime先发布Setup，需真实lease release�
 再重取测试租约；新增initialization记录及四组实际stop command/reply核对，禁止
 用字段假设Ready。失败关机console另有DRM vblank warning，原始日志保留，不能
 与历史物理xHCI warning混称。两类根因均不因后续新测试成功而自动关闭。
+
+第二轮[诊断初始化假设失败](evidence/ws73-vm-diagnostic-init-assumption-failed-20261011.json)
+也保留且未验收、未暂留：query-only Diagnostic的quiet release正确地直接Free，
+不会修改无线策略。测试初始化改用Managed租约release执行真实stop，之后重新
+取得Diagnostic做元数据请求；生产行为保持正确角色边界，不为测试改变它。
+前文“Diagnostic初始化lease release会生成stop”的假设撤回。后续必须实际核对
+四组stop wire和Ready，不能从请求成功或Free推导Ready。

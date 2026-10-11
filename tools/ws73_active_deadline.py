@@ -243,16 +243,16 @@ def run(args):
                     adapter = NativeAdapter(index); snapshot = adapter.snapshot()
                     if snapshot.valid_fields == 1 and snapshot.profile == 1 and snapshot.flags != 4:
                         # Fresh registration publishes Setup. The real two
-                        # initialization stops are committed by lease release;
+                        # initialization stops are committed by Managed release;
                         # waiting for Ready before that would never progress.
                         initialization_deadline = time.monotonic()+6
                         initialization = {'initial_snapshot':bytes(snapshot).hex(),'start_wall_ns':time.time_ns()}
                         while True:
-                            try: lease = adapter.acquire_management(2); break
+                            try: lease = adapter.acquire_management(1); break
                             except OSError as error:
                                 if error.errno not in (errno.EAGAIN,errno.EBUSY) or time.monotonic()>initialization_deadline: raise
                                 time.sleep(0.01)
-                        adapter.release_management(lease,2)
+                        adapter.release_management(lease,1)
                         while adapter.management_status().state != 0 or adapter.snapshot().flags != 1:
                             if time.monotonic()>initialization_deadline: raise TimeoutError('real initialization stops did not settle Ready/Free')
                             time.sleep(0.01)

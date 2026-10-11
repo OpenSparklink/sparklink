@@ -26,6 +26,7 @@ def fixture(case='release',domain='advertising'):
     record.update(peer_management_before=peer,peer_management_after=peer)
     if case!='release':record['original_fd_errno']=errno.EBADF
     if case=='dup':record.update(duplicate_fd_errno=errno.EBADF,after_first_management=q(1,1))
+    record['management_observations']=[dict(wall_ns=401,raw=q(2,0)),dict(wall_ns=405,raw=q(0,0))]
     opcode=0xc02 if domain=='advertising' else 0x1001
     for key,state,error in [('pending',2,0),('cancelled',5,-errno.ECANCELED),('final_result',5,-errno.ECANCELED)]:
         record[key]=bytes(SleDiscoveryResult(version=1,generation=1,request_id=1,profile=1,operation=5 if opcode==0xc02 else 6,
@@ -42,6 +43,32 @@ def fixture(case='release',domain='advertising'):
 
 
 class PartialTests(unittest.TestCase):
+    def test_peer_canonical_result_and_causal_intervals(self):
+        for change in ['reserved','tail','repeat-sequence','before-only','during-too-late','after-too-early','boolean']:
+            record=fixture();row=record['peer_queries'][1]
+            if change in ('reserved','tail'):
+                result=SleDiagnosticResult.from_buffer_copy(bytes.fromhex(row['result']))
+                if change=='reserved':result._reserved[0]=1
+                else:result.data[6]=1
+                row['result']=bytes(result).hex()
+            if change=='repeat-sequence':row.update(input=record['peer_queries'][0]['input'],result=record['peer_queries'][0]['result'])
+            if change=='before-only':row.update(start_wall_ns=10,end_wall_ns=20)
+            if change=='during-too-late':row['end_wall_ns']=301
+            if change=='after-too-early':record['peer_queries'][2]['start_wall_ns']=405
+            if change=='boolean':row['start_wall_ns']=True
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
+    def test_unknown_or_incomplete_cleanup_observations(self):
+        for change in ['missing','premature-free','wrong-generation','reversed-time','error']:
+            record=fixture();rows=record['management_observations']
+            if change=='missing':record['management_observations']=[]
+            if change=='premature-free':rows[0]['raw']=record['final_management']
+            if change=='wrong-generation':rows[0]['raw']=record['peer_management_before']
+            if change=='reversed-time':rows[1]['wall_ns']=399
+            if change=='error':
+                q=SleManagementQuery.from_buffer_copy(bytes.fromhex(rows[0]['raw']));q.error=-errno.EIO;rows[0]['raw']=bytes(q).hex()
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
     def test_six_canonical_partial_cases(self):
         for case in ['release','close','dup']:
             for domain in ['advertising','scanning']:

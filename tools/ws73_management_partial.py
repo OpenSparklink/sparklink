@@ -89,11 +89,32 @@ def verify_records(record):
         raise ValueError('actual hold causality required')
     queries=record['peer_queries']
     if len(queries)!=3:raise ValueError('three peer wire probes required')
+    observations=record['management_observations']
+    if not observations or observations[-1]['raw']!=record['final_management']:
+        raise ValueError('complete ownership observation interval required')
+    previous=markers[2]['wall_ns']
+    for i,row in enumerate(observations):
+        if type(row['wall_ns']) is not int or row['wall_ns']<previous:
+            raise ValueError('ownership observation time must follow held-reply release')
+        previous=row['wall_ns']
+        expected=SleManagementQuery(version=1,generation=snapshots[0].generation,state=0 if i==len(observations)-1 else 2)
+        if bytes(decode(SleManagementQuery,row['raw']))!=bytes(expected):
+            raise ValueError('only Revoking followed by exact Free is allowed')
+    sequences=set()
     for i,row in enumerate(queries):
         submitted=decode(SleDiagnosticSubmit,row['input']);result=decode(SleDiagnosticResult,row['result'])
         expected=SleDiagnosticSubmit(version=1,generation=snapshots[1].generation,request_id=i+1,timeout_ms=5000,opcode=0x0406,action=1,seq=submitted.seq)
-        if not submitted.seq or bytes(submitted)!=bytes(expected) or result.state!=2 or result.opcode!=0x0406 or result.seq!=submitted.seq or result.generation!=submitted.generation or result.status or result.error or result.data_len!=6 or bytes(result.data[:6])!=bytes(snapshots[1].address):
+        reply=SleDiagnosticResult(version=1,generation=snapshots[1].generation,seq=submitted.seq,state=2,opcode=0x0406,data_len=6)
+        reply.data[:6]=snapshots[1].address
+        if not submitted.seq or submitted.seq in sequences or bytes(submitted)!=bytes(expected) or bytes(result)!=bytes(reply):
             raise ValueError('peer real query failed or wrong identity')
+        sequences.add(submitted.seq)
+        start,end=row['start_wall_ns'],row['end_wall_ns']
+        if type(start) is not int or type(end) is not int or not 0<start<=end:
+            raise ValueError('bounded actual peer query interval required')
+        if (i==0 and end>=markers[0]['wall_ns'] or i==1 and not markers[1]['wall_ns']<start<=end<clocks[2]
+                or i==2 and start<=observations[-1]['wall_ns']):
+            raise ValueError('peer must be queried before, during and after target cleanup')
     return snapshots
 
 
@@ -147,7 +168,7 @@ def run(args):
         response=json.loads((folder/f'hold-{ack}-ack.json').read_text())
         if response['stage']!=ack or response['request']!=value:raise ValueError('wrong acknowledgement')
         record['host_hold_acknowledgements'].append(response);save()
-    handles=[];alias=None
+    handles=[];alias=None;observers=[];peer_probe=None
     try:
         observers=[NativeAdapter(i) for i in [0,1]];handles+=observers
         snapshots=[a.snapshot() for a in observers]
@@ -167,6 +188,7 @@ def run(args):
             record['peer_queries'].append(dict(input=bytes(command).hex(),result=bytes(result).hex(),start_wall_ns=start,end_wall_ns=time.time_ns()));save()
             if result.state!=2 or result.status or result.error or result.data_len!=6 or bytes(result.data[:6])!=bytes(snapshots[1].address):
                 raise ValueError('peer query must remain successful')
+        peer_probe=peer_query
         peer_query(1)
         lease=target.acquire_management(1);original=target.fileno()
         if args.case=='dup':alias=os.dup(original)
@@ -223,7 +245,20 @@ def run(args):
         record['status']='MANAGED_PARTIAL_HELD_REPLY_PASS';verify_records(record);save()
         print('WS73_TARGET_MANAGED_PARTIAL_PASS',flush=True)
     except BaseException as e:
-        record['status']='FAIL';record['error']=str(e);save();raise
+        record.update(status='FAIL',error=str(e),error_type=type(e).__name__,errno=getattr(e,'errno',None));save()
+        # Preserve the target error even if its registration disappeared. A
+        # separate peer probe is still valuable failure-isolation evidence;
+        # its outcome must never turn this failed target case into a pass.
+        if peer_probe is not None:
+            failure_peer={}
+            for key,read in [('snapshot',observers[1].snapshot),('management',observers[1].management_status)]:
+                try:failure_peer[key]=bytes(read()).hex()
+                except Exception as peer_error:failure_peer[key+'_error']=str(peer_error)
+            if len(record['peer_queries'])==2:
+                try:peer_probe(3)
+                except Exception as peer_error:failure_peer['query_error']=str(peer_error)
+            record['failure_peer_observation']=failure_peer;save()
+        raise
     finally:
         if alias is not None:os.close(alias)
         for a in reversed(handles):a.close()

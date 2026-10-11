@@ -229,3 +229,24 @@ warning历史证据保留。
 并发／removal／32-bit及自然启动／重枚举／消失根因、无人工恢复仍OPEN。
 下一步实际在途超时及退役／取消边界，再推进剩余消费者与共享ring/fallback删除，
 连接socket／用户态SSAP及全部S0–S6。北极星7／8不变，VM-only，部分成果不关闭整项。
+
+
+## 最早原始期限调度修复（生产变更；新镜像实机待执行）
+
+RX维护原先在空闲时只按500msheartbeat重新排队；诊断提交只kick TX，新短期限
+可能等下一次维护才处理。现在提交/同ID重试在释放协议/管理锁后schedule_rx(0)，
+避免非零delayed enqueue无法缩短已排队heartbeat的问题。RX每次结束从本设备的
+未解决author、active wire、recipe和revocation期限中选最早值，与原维护/监督/
+fast-poll最小延迟合并。已过期但待处理时至少再过一个jiffy，避免零延迟忙循环。
+
+CmdPending和Host的deadline观察均不expire、不重发、不改变原期限；timed_out
+共用Host的选择结果。局部取消不删除active wire reservation，故该原期限仍被
+调度；已交付reply且transport完成则交给正常consume处理。失败Host不重复排期。
+UAPI不变，不引入生产测试hook或模拟Complete。32项实际源码开发回归（14结果/
+pending、12提交、6Host期限）通过；首次fixture语法错误记录保留。旧实机K511/Udcab
+不能证明新生产变更；需全新镜像/32源码门禁/严格CI及原真实WS7320+2复核。
+
+另外确认stop_workers的flush_work私有wrapper实际调用flush_delayed_work：关闭
+schedule gate后立即执行排队callback，由Rust回收queue-owned Arc，而非等待timer。
+不能因wrapper名称误判为普通flush或未经审核手工回收Arc；仍需实际held close/
+退役门禁。active USB超时、完整取消/close/owner并发、自然根因及S0–S6保持OPEN。

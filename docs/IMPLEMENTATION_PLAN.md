@@ -1,5 +1,14 @@
 # SparkLink / Linux 联合实施方案
 
+当前生产策略 U`09fe426773cf` 已显式分类三个Native只读方法，修复默认observer
+无法完整show的缺口。实际编译服务/工具 U`f572f7890d42` 的独立VM71通过真实
+observer/control角色：16项原初始化/历史与named/unique-owner读、68项observer
+bus拒绝/4项control服务名拒绝、无直接kernel/capture权限、两段零设备命令。
+同slkd/bus真实RF20+2保持，1265包/零drop/taint0/QEMU0。详见
+[Native角色策略与复现](WS73_OBSERVER_POLICY.md)。正常VM71/维护20、四设备9/
+默认资格0；Backend/事件/全部权限并发、强杀接任与S4–S6继续推进，物理/自然
+根因/自动恢复和完整Managed保持开放，下文70/69/68为原封存历史。
+
 当前 production U`0acafc943f94` 已修复业务 RPC 等待交权后跨凭据 admission：
 交权期间立即 busy，用户显式重试。新实际编译服务/工具 U`ac3bbf33e392` 的
 VM70实机门禁通过，原成功回复暂留时六类业务/初始化 RPC 均7.85–8.79ms拒绝、

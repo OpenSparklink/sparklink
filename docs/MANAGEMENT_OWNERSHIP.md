@@ -160,3 +160,13 @@ lease、状态/原始失败原因与异步清理；另fd拿token不获authority�
 两语言/root及ordinary读写授权、Busy、接任/Diagnostic与真实模型Complete在
 [客体门禁](WS73_TARGET_ENVIRONMENT.md)验证；不是实际硬件完成。旧profile0、
 Diagnostic raw query binding、Proxy/PDU/Security ownership和完整故障矩阵仍待做。
+
+
+## 2026-10-12 Native 默认观察者实机门禁
+
+三个精确的Native只读方法已经显式分类，实际默认observer可以完整show、
+读取不可变policy及token-redacted管理/原初始化结果；它不因此获得内核管理权。
+真实named/unique-owner读、写入/取消/服务名拒绝及RF20+2前后角色门禁已独立
+封存。详见[实际角色、参数与范围](WS73_OBSERVER_POLICY.md)。原合成门禁与
+历史严格检查失败保留原时间/来源，不代表当前状态；整个权限矩阵、所有Backend、
+事件/强杀接任、自然恢复和S0–S6仍开放，部分成果不提前关闭整项issue。

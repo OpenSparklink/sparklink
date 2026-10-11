@@ -1128,4 +1128,49 @@ backend/parser/默认路由/shared ring/旧UAPI等待新路径接通和回归后
 无需兼容期。完整能力来源、独立事件、drivers-owned backend/PM、socket协商/
 背压/所有权、SSAP/每连接安全/Agent/Bond/Profile、四设备两组、Native/Proxy/
 sandbox/发布及全部S0–S6/28项原scope保持，北极星7/8，VM-only，不关闭整项、
-不合并draft、完整goal active。
+不合并draft；用户已明确要求继续完整goal，部分成果不代表完成。
+
+## 2026-10-11 当前 Managed 实机门禁阻塞与推进顺序
+
+Managed未选择取消、partial初始化release/last-file/dup/在途回复及peer隔离仍是
+第一优先级，专用探针已接入独立VM门禁，但本轮六次完整启动尝试全部在第一只
+设备Setup元数据前失败，未运行任何新增Managed案例。原K292签名内核和编译
+生产Rust路径保持，原真实双设备20+2证据保留；当前设备状态不能重新Ready，
+不得宣称本批实机闭环或恢复通过。
+
+已比较单/双vCPU、两个物理pair、uhubctl短/长off-on（四口确实重新枚举但未证明
+VBUS或SoC冷启动）。独立维护VM无WS73 driver owner时EP02寄存器读setup仍-110，
+未写SoC复位；精确一次guest USB总线reset、EHCI与xHCI对照仍相同。SDK明确
+class/interface request2、四字节DISALLOW_TO_SLEEP=0的请求已真实返回4且有
+抓包，但仍未恢复EP02。不能把PM唤醒、CPU数、virtual hcd或hub切换认作已定位
+根因。保留QEMU/libusb共同路径、设备状态及实际供电等待核对项。一次维护VM
+抓包用户遗漏导致PID1退出panic，已修正；这是未接触设备的fixture失败，独立
+保存，不归为WS73 driver panic。详见[本轮失败证据](evidence/ws73-managed-gate-startup-failures-20261011.json)。
+
+下一步先建立可成功的每设备启动及真实握手诊断，随后执行两设备六项未执行
+队列取消和partial初始化三种释放／两个域／真实在途回复矩阵。失败必须保留
+原status/errno，不通过模拟成功、替换注册、绕过capture或无限重试满足验收。
+不依赖人工拔插、另一只仍可用且slkd不重启的完整自动恢复及自然RCA仍OPEN。
+旧代码三类清理继续并行；UAPI未发布，可迁调用者后直接删除。完整S0–S6、
+所有28项issue原范围、四设备/安全/连接/SSAP/Profile/Proxy/PM/发布矩阵保留。
+
+SDK异步寄存器读对照亦未通过：真实EP02 setup与EP82 IN同时提交，等待期限后
+两笔以原始-ENOENT取消收敛，没有读回值或SoC复位写入。保留其他三只host
+地址不变，但这不是Ready peer运行隔离证据。工具253项本地通过；U81d938f6b7ee
+源码CI38118294865九作业全部success，CI不包含硬件验收。新诊断VM已终结失败：只读failure phase17映射为RECOVERY_WAIT_CLOSE，
+原始-110、tx_sequence0、metadata_valid0、attempts2/limit2/exhausted1。
+只定位到真实SLE_CLOSE回复等待阶段，未查明自然根因。
+
+Uccfa29d7495c进一步严格核对peer完整UAPI字节、清理前／在途／后的查询时间窗
+及完整Revoking→Free观察序列；目标失败时独立采集peer，并保留原错误与失败。
+全部255工具测试本地通过。新Managed实机案例仍为零，当前peer Ready隔离不能
+以host三只仍枚举替代。所有scope、恢复及RCA仍开放。
+
+U44d7fb335c78加入参考实现的36字节HCC队列10选择及聚合重置对照。
+独立维护VM第一笔真实EP01 OUT即-110，未执行第二帧／加载WS73模块／写SoC
+复位；其他三只仅保持host枚举，不冒充Ready peer验收。本轮共六次正常启动
+和七次维护尝试（含一次未接触设备的fixture失败），新增Managed实机案例零。
+全部256工具测试本地通过；Uccfa29d的CI38118785456九作业success。源门禁与
+硬件资格分开；继续优先启动根因→Queued六案例→partial两个域及三种释放
+和真实迟到回复→同daemon双设备RF及四设备。恢复、自然RCA与原整项issues
+保持OPEN，历史已封存WS73闭环路径和证据保留。

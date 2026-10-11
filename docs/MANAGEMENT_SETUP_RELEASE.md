@@ -177,7 +177,7 @@ backend/parser/默认路由/shared ring/旧UAPI等待新路径接通和回归后
 无需兼容期。完整能力来源、独立事件、drivers-owned backend/PM、socket协商/
 背压/所有权、SSAP/每连接安全/Agent/Bond/Profile、四设备两组、Native/Proxy/
 sandbox/发布及全部S0–S6/28项原scope保持，北极星7/8，VM-only，不关闭整项、
-不合并draft、完整goal active。
+不合并draft；用户已明确要求继续完整goal，部分成果不代表完成。
 
 ## Managed Queued 专用真实设备门禁（待实机执行）
 
@@ -211,7 +211,7 @@ uhubctl直接执行可用，sudo非交互执行仍要求密码；两次off/on均
 这不证明WS73真的冷启动，也不代表自动恢复或根因已解决。后续VM失败现在自动
 保存现有boot_stage/error、warm、budget、failure_diagnostics等只读sysfs诊断。
 
-## 独立 VM 维护性寄存器复位（实验支撑，待执行）
+## 独立 VM 维护性寄存器复位（实验支撑，本轮读取失败）
 
 专用 `rebootstrap-init`/`ws73_vm_register_reset.py` 使用现有签名kernel、scratch
 NVMe/Btrfs及固件111。只允许显式QEMU scratch root、guest 1-1 WS73且无driver
@@ -223,3 +223,32 @@ owner，确认完整VID/PID/runtime endpoints及usbfs ABI；读取volatile reset
 这是一次性实验维护工具，与默认daemon及正常验收启动完全隔离；无模拟回复，
 不代表自然故障RCA、无人工介入自动恢复、Managed cleanup或peer隔离通过。
 所有原始控制传输、usbmon、sysfs与错误保留。维护工具暂未纳入生产恢复状态机。
+
+## 维护对照终结状态
+
+六次正常启动和七次独立维护尝试均已终结；新增Managed实机案例为零。
+无guest WS73 driver时寄存器读setup在EP02超时，无SoC reset写入；一次精确
+目标guest USB reset与EHCI对照亦失败。SDK USB wakeup request2已返回完整4字节
+并由usbmon确认四字节零payload，但随后EP02仍超时；PM仅唤醒假设不成立为
+充分恢复办法。当前代码未改生产WS73/Host路径，恢复／RCA／cleanup issues开放。
+
+SDK异步寄存器读对照亦未通过：真实EP02 setup与EP82 IN同时提交，等待期限后
+两笔以原始-ENOENT取消收敛，没有读回值或SoC复位写入。保留其他三只host
+地址不变，但这不是Ready peer运行隔离证据。工具253项本地通过；U81d938f6b7ee
+源码CI38118294865九作业全部success，CI不包含硬件验收。新诊断VM已终结失败：只读failure phase17映射为RECOVERY_WAIT_CLOSE，
+原始-110、tx_sequence0、metadata_valid0、attempts2/limit2/exhausted1。
+只定位到真实SLE_CLOSE回复等待阶段，未查明自然根因。
+
+Uccfa29d7495c进一步严格核对peer完整UAPI字节、清理前／在途／后的查询时间窗
+及完整Revoking→Free观察序列；目标失败时独立采集peer，并保留原错误与失败。
+全部255工具测试本地通过。新Managed实机案例仍为零，当前peer Ready隔离不能
+以host三只仍枚举替代。所有scope、恢复及RCA仍开放。
+
+U44d7fb335c78加入参考实现的36字节HCC队列10选择及聚合重置对照。
+独立维护VM第一笔真实EP01 OUT即-110，未执行第二帧／加载WS73模块／写SoC
+复位；其他三只仅保持host枚举，不冒充Ready peer验收。本轮共六次正常启动
+和七次维护尝试（含一次未接触设备的fixture失败），新增Managed实机案例零。
+全部256工具测试本地通过；Uccfa29d的CI38118785456九作业success。源门禁与
+硬件资格分开；继续优先启动根因→Queued六案例→partial两个域及三种释放
+和真实迟到回复→同daemon双设备RF及四设备。恢复、自然RCA与原整项issues
+保持OPEN，历史已封存WS73闭环路径和证据保留。

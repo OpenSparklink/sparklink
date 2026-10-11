@@ -1,14 +1,43 @@
 # SPDX-License-Identifier: GPL-2.0-only
 from pathlib import Path
 import ctypes
+import errno
 import sys
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, run
+from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_states, checked_interface_zero, run
 
 class RegisterResetTests(unittest.TestCase):
+    def state_reader(self,fd,request,argument):
+        self.assertEqual(fd,77);self.assertEqual(request,0xc0185500)
+        c=Control.from_buffer_copy(argument);self.assertEqual(c.value,0)
+        self.assertEqual(c.timeout,2000)
+        raw=b'\x01' if c.request==8 else bytes(c.length)
+        ctypes.memmove(c.data,raw,len(raw));return len(raw)
+
+    def test_fixed_readonly_configuration_interface_endpoint_state(self):
+        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=self.state_reader) as ioctl:
+            rows=read_usb_states(77);checked_interface_zero(rows)
+        self.assertEqual([(r['kind'],r['request'],r['index'],r['length']) for r in rows],
+            [(0x80,8,0,1),(0x81,10,0,1),*[(0x82,0,ep,2) for ep in [1,2,129,130,131]]])
+        self.assertEqual(ioctl.call_count,7)
+        self.assertTrue(all(r['before_wall_ns']<=r['after_wall_ns'] for r in rows))
+
+    def test_unknown_interface_or_configuration_cannot_rebind(self):
+        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=self.state_reader):rows=read_usb_states(77)
+        for field,value in [('data','00'),('returned',0),('error','timeout')]:
+            changed=[dict(r) for r in rows];changed[0][field]=value
+            with self.subTest(field=field),self.assertRaises(ValueError):checked_interface_zero(changed)
+        with self.assertRaises(ValueError):checked_interface_zero(rows[:2])
+
+    def test_usb_state_error_remains_raw_and_is_not_success(self):
+        with patch('ws73_vm_register_reset.fcntl.ioctl',side_effect=OSError(errno.EPIPE,'halted')):
+            rows=read_usb_states(77)
+        self.assertEqual(len(rows),7);self.assertTrue(all(r['errno']==errno.EPIPE and 'data' not in r for r in rows))
+        with self.assertRaises(ValueError):checked_interface_zero(rows)
+
     def test_runtime_route_is_exact_bsle_control_without_register_write(self):
         self.assertEqual(route_packet(0,1,10).hex(),'030000000000000000000000010000000a00000000000000000000000000000000000000')
         self.assertEqual(route_packet(1,0,0).hex(),'030000000000000001000000000000000000000000000000000000000000000000000000')

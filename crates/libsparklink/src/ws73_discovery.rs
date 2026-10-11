@@ -3,7 +3,7 @@
 use crate::{Error, Result};
 use slk_protocol::*;
 
-pub const WS73_BASIC_POLICY_VERSION: u32 = 1;
+pub const WS73_BASIC_POLICY_VERSION: u32 = 2;
 
 /// T/XS 20001 §6.5 public information inside the SLE access-layer type 255
 /// envelope (T/XS 10002 §7.1.4). A full local name avoids inventing a vendor UUID.
@@ -49,7 +49,7 @@ fn identity(
     })
 }
 
-/// Policy v1: handle 0, nonconnectable/nonqueryable, fixed T, public queried
+/// Policy v2 retains handle 0, nonconnectable/nonqueryable, fixed T, public queried
 /// address, 150 ms interval, channels 76/77/78, no power preference (127),
 /// primary frame type 1 (encoded 0). No scan response or autonomous termination.
 /// Support on actual firmware is proved by its result, never a fallback/echo.
@@ -112,8 +112,12 @@ pub fn ws73_basic_standby(
     Ok(request)
 }
 
-/// Passive frame-1 scan, any peer, duplicates retained; interval 200 ms,
-/// window 100 ms, both in 125-us slots. Scan frame-1 bitmap is 1, not adv's 0.
+/// Passive frame-1 scan, any peer, duplicates retained; interval and window
+/// both 200 ms in 125-us slots. Keep reception active while explicitly scanning,
+/// rather than leaving periodic gaps that can miss a periodic beacon. This is
+/// not active scanning: no scan requests are transmitted. STOP still ends it.
+/// Scan frame-1 bitmap is 1, not adv's 0; RF qualification is separate from
+/// successful parameter admission.
 pub fn ws73_basic_scan(
     snapshot: &SleControllerSnapshot,
     request_id: u64,
@@ -131,7 +135,7 @@ fn basic_scanner_config() -> SleDiscoveryScanConfig {
         frame_types: 1,
         active: 0,
         interval: 1600,
-        window: 800,
+        window: 1600,
         filter_duplicates: 0,
     }
 }
@@ -228,7 +232,7 @@ mod tests {
                 req.scanning.interval,
                 req.scanning.window
             ),
-            (1, 0, 1600, 800)
+            (1, 0, 1600, 1600)
         );
         assert_eq!(
             (
@@ -302,7 +306,7 @@ mod tests {
                 scan.scanning.interval,
                 scan.scanning.window
             ),
-            (1, 0, 1600, 800)
+            (1, 0, 1600, 1600)
         );
     }
     #[test]

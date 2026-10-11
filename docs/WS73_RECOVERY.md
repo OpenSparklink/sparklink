@@ -526,3 +526,30 @@ U0c修复窗口后重跑三案例，扫描 release 则保持真实 STOP1002 0x0b
 新合格Rust镜像/签名模块空USB VM加载卸载通过；编译器零警告、保留一条make jobserver警告。
 新六案例正在独立冻结镜像上执行，尚不能计作新修复实机通过。后续真实初始化步骤、活动
 Ready同伴、普通调度并发、四设备两组、自然自动恢复/RCA仍按原整项条件OPEN。VM-only。
+
+
+## 2026-10-11 第一初始化步真实六案例通过；活动 Ready 同伴仍是下一门禁
+
+[最新不可覆盖证据](evidence/ws73-managed-scan-parameter-real-20261011.json)以编译内核
+K4ece91aa5c7c、服务/冻结工具U5d29cb7b3aa5完成广告/扫描各 release、最后fd关闭、dup：
+六个原VM均PASS/QEMU0，原在途host成功帧SHA/长度与迟到Complete一致，原请求保持
+Cancelled/-ECANCELED，dup首次close保留lease、最后close触发撤销，Revoking→Free。
+广告只执行C02+C05、未触及scan保持Unknown；扫描先有真实广告Off，持有原1001配置
+回复后取消，零已选START/STOP，scan保持Unknown/Setup。既不推断0x0b为Off，也不制造Ready。
+每例三次同行实际MAC查询与身份保持；各1183/1187包零丢包，taint0、无内核fault。
+每例同slkd/bus、普通UID1000/caps0随机RF20+2及人工guest IN故障支撑由捕获独立核对，
+合计132轮；未使用人工拔插、hub切电或主机实验安装。原构建资格拒绝、抓包验证FAIL和
+两种真实STOP0x0b失败完整保留。正常启动VM累计23、维护20。
+
+**只验收初始化第一步六案例。** Unknown Setup/confirmed-Off未执行队列真实各六案例
+仍是受控单CPU/FIFO支撑；普通调度并发未验收。本批同行仍Setup/Diagnostic，不能把MAC
+查询或后续RF偷换为目标撤销期间活动Ready隔离；后续原广播最后STOP、扫描START/最后STOP
+的物理门禁仍待执行。整项Managed、恢复/RCA及28项原scope继续OPEN，goal active。
+
+下一门禁先用同行真实C02/C05/1001/START/STOP建立独立Ready，再持有同行Managed lease。
+在目标原回复被保留期间让同行真实扫描START成功、保持On跨越目标release/last-fd/dup与
+迟到回复清理；目标Free后核对同行同generation、Ready、owner和On，再STOP及重启扫描。
+以完整命令/Complete窗口和radio状态证明工作持续，无跨设备STOP、换generation或重启daemon。
+随后扩展后续原终结帧、普通调度取消/结果淘汰及四设备两组。25实际Host源码、19命令计划、
+299工具测试与K4ece空USB启动通过；U5d CI38140975482九作业success，最新证据提交CI另核。
+自然启动超时/重枚举/消失RCA和无需人工拔插的每设备恢复仍开放；原生主机对照受VM-only约束未执行。

@@ -101,21 +101,22 @@ def parse_result(output, identity, operation, *, retained_off=False):
         raise ValueError('one exact typed terminal result required')
     r = rows[0]
     expected = {1: ('0c05', 2, 3, 2, 1), 2: ('0c05', 0, 1, 1, 1),
-                3: ('1002', 1, 2, 1, 2), 4: ('1002', 0, 1, 1, 1)}[operation]
+                3: ('1002', 1, 2, 1, 2), 4: ('1002', 0, 1, 1, 1),
+                5: ('0c05', 1, 2, 1, 1), 6: ('1002', 2, 3, 1, 1)}[operation]
     if retained_off and operation not in [2, 4]:
         raise ValueError('retained OFF requires a stop operation')
-    if operation in [2, 4]:
+    if operation in [2, 4, 5, 6]:
         # Fresh and retained OFF both describe only their own domain. The
         # independent domain may remain On; Unknown/Error and failed native
         # results remain rejected. Never rewrite a controller 0x0b as success.
-        other = int(r[12] if operation == 2 else r[11])
+        other = int(r[12] if operation in [2, 5] else r[11])
         if other not in [1, 2]:
             raise ValueError('OFF requires a known independent radio state')
-        expected = (*expected[:3], 1, other) if operation == 2 else (*expected[:3], other, 1)
+        expected = (*expected[:3], 1, other) if operation in [2, 5] else (*expected[:3], other, 1)
     if (int(r[0]) != identity['generation'] or int(r[1]) == 0 or int(r[2]) != operation
             or r[3:6] != ('3', '0', '00') or r[13] != '1'
             or (r[6], int(r[7]), int(r[8]), int(r[11]), int(r[12])) != expected
-            or int(r[10]) != int(operation == 1)):
+            or int(r[10]) != int(operation in [1, 5])):
         raise ValueError('unsuccessful or wrong-generation native transaction')
     return {'request': int(r[1]), 'generation': int(r[0]), 'operation': operation,
             'selected_power': int(r[9]), 'power_valid': bool(int(r[10]))}
@@ -296,6 +297,11 @@ class Run:
         prefix = [str(self.args.slctl.resolve()), '--adapter', identity['path'], domain]
         previous = next(((i, c) for i, c in reversed(list(enumerate(self.data['commands'])))
                          if c['args'][:4] == prefix and c['args'][4:5] in [['on'], ['off']]), None)
+        if previous is None:
+            # Keep the actual op5/6 result. This is not a successful new STOP;
+            # absent/evicted provenance cannot be replaced by local idle state.
+            self.confirm_initialization_off(identity, domain)
+            return
         if previous and previous[1]['args'][4:] == ['off'] and previous[1]['exit'] == 0:
             # Some real firmware rejects OFF when already idle. Re-read the
             # exact generation's retained successful OFF, including current
@@ -314,6 +320,29 @@ class Run:
             return
         r = self.ctl(identity, domain, 'off')
         parse_result(r['stdout'], identity, operation)
+
+    def confirm_initialization_off(self, identity, domain):
+        operation = 5 if domain == 'advertise' else 6
+        self.check(identity)
+        query = self.ctl(identity, domain, 'initialized-off')
+        result = parse_result(query['stdout'], identity, operation)
+        self.check(identity)
+        self.data.setdefault('initialization_off_confirmations', []).append({
+            'identity': identity, 'domain': domain, 'query_command': len(self.data['commands'])-1,
+            'request': result['request'], 'operation': operation})
+        self.save()
+
+    def require_initialization_invalidated(self, identity, domain):
+        self.check(identity)
+        query = self.command([str(self.args.slctl.resolve()), '--adapter', identity['path'],
+                              domain, 'initialized-off'], 15, collection='commands')
+        if (query['exit'] != 1 or 'initializer provenance absent or invalidated' not in query['stderr']
+                or 'NativeOperationResult:' in query['stdout']):
+            raise ValueError('business-used domain must reject initialization provenance')
+        self.check(identity)
+        self.data.setdefault('initialization_off_rejections', []).append({
+            'identity': identity, 'domain': domain, 'query_command': len(self.data['commands'])-1})
+        self.save()
 
     def phase(self, a, b, count, phase):
         tx, rx = a, b

@@ -158,6 +158,28 @@ class CommandFailureTests(unittest.TestCase):
         self.assertEqual(run.data['stop_confirmations'][0]['source_command'],0)
         self.assertEqual(run.data['stop_confirmations'][0]['query_command'],1)
 
+    def test_unused_business_domain_queries_actual_initializer_without_new_stop(self):
+        for domain, operation, details in [('advertise', 5, '0c05 step=1/2 power=20 power_valid=1'),
+                                           ('scan', 6, '1002 step=2/3 power=0 power_valid=0')]:
+            self.args.output = self.root/domain
+            run = self.run_object(); identity = dict(self.identity, generation=1)
+            output = f'NativeOperationResult: generation=1 request=23 operation={operation} state=3 errno=0 status=0x00 opcode=0x{details} adv=1 scan=1 profile=1\n'
+            def query(owner, *words):
+                self.assertEqual(words, (domain, 'initialized-off'))
+                row = {'args': [str(self.binary), '--adapter', owner['path'], *words], 'exit': 0, 'stdout': output}
+                run.data['commands'].append(row); return row
+            with patch.object(run, 'check'), patch.object(run, 'ctl', side_effect=query):
+                run.stop(identity, domain)
+            self.assertEqual(run.data['initialization_off_confirmations'][0]['operation'], operation)
+            self.assertNotIn('stop_confirmations', run.data)
+
+    def test_missing_initializer_provenance_does_not_fabricate_or_resubmit_off(self):
+        run = self.run_object(); identity = dict(self.identity, generation=1)
+        with patch.object(run, 'check'), patch.object(run, 'ctl', side_effect=ValueError('initializer result absent or evicted')) as ctl:
+            with self.assertRaises(ValueError): run.stop(identity, 'scan')
+        ctl.assert_called_once_with(identity, 'scan', 'initialized-off')
+        self.assertNotIn('initialization_off_confirmations', run.data)
+
     def test_idle_confirmation_does_not_accept_unknown_radio_or_wrong_generation(self):
         good='NativeOperationResult: generation=1 request=23 operation=4 state=3 errno=0 status=0x00 opcode=0x1002 step=0/1 power=0 power_valid=0 adv=1 scan=1 profile=1\n'
         for number,changed in enumerate([good.replace('scan=1','scan=0'),good.replace('generation=1','generation=2')]):

@@ -88,6 +88,9 @@ class PairRun(Run):
             self.data['pair'] = self.args.pair
             a, b = [self.ready(port) for port in self.args.ports]
             self.data['initial'] = [a, b]
+            for owner in [a, b]:
+                for domain in ['advertise', 'scan']:
+                    self.confirm_initialization_off(owner, domain)
             self.barrier('ready', 0)
             self.barriers_active = True
             self.phase(a, b, 20, 'parallel')
@@ -122,6 +125,10 @@ class PairRun(Run):
                         failures = []
                         for domain in ['advertise', 'scan']:
                             try:
+                                prefix = [str(self.args.slctl.resolve()), '--adapter', owner['path'], domain]
+                                if any(c['args'][:4] == prefix and c['args'][4:5] in [['on'], ['off']]
+                                       for c in self.data['commands']):
+                                    self.require_initialization_invalidated(owner, domain)
                                 self.stop(owner, domain)
                             except Exception as error:
                                 failures.append(dict(domain=domain, error=str(error)))

@@ -103,6 +103,7 @@ def prepare(args):
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
                   HERE/'ws73_vm_native_root.py',
+                  HERE/'ws73_managed_queue_support.py',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',
                   HERE/'ws73_target_control.py',
                   HERE/'ws73_target_recovery.py',

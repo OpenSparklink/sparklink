@@ -181,6 +181,15 @@ sandbox/发布及全部S0–S6/28项原scope保持，北极星7/8，VM-only，�
 
 ## Managed Queued 专用真实设备门禁（待实机执行）
 
+独立开发支撑入口 `tools/ws73_managed_queue_support.py --prepared <冻结包>
+--output <新目录>` 只在签名 kernel 的 scratch VM 中添加两只 `usb-ws73-test`，
+不接受 hostbus/hostport。它运行相同 C fd probe 的 release／最后fd／dup 六案例，
+保留完整 UAPI、原期限与 USB 抓包；QMP 附着及成功回复必须与两个精确测试对象
+一致。collector 显式标记 `synthetic_support`，验证器禁止模拟与真实状态标识
+混用，模拟结果不能置 `managed_preselection_live_acceptance`。这里的静态 Setup
+peer snapshot 不证明 Ready 同伴活动隔离；普通应用调度、partial 和真实在途
+清理仍必须走下面的真实设备门禁。该模式在 daemon 启动前结束，不报告 RF。
+
 新增显式 `--managed-queue-verify --setup-release-verify --fault-recovery`，仅可在
 合格的签名模块 scratch VM 内启用。单 vCPU、root 测试探针用小于 50ms 的
 FIFO 调度临界区排入两个 typed policy，实际读取 Queued/opcode=0/step=0 后

@@ -51,8 +51,13 @@ def query(raw, generation, state):
 
 
 def verify_records(record):
+    synthetic = record.get('synthetic_support', False)
+    if type(synthetic) is not bool:
+        raise ValueError('exact synthetic evidence scope required')
+    expected_status = ('QUEUED_MANAGED_RELEASE_SYNTHETIC_SUPPORT_PASS' if synthetic
+                       else 'QUEUED_MANAGED_RELEASE_LIVE_PASS')
     if (type(record.get('format_version')) is not int or record.get('format_version') != 1
-            or record.get('status') != 'QUEUED_MANAGED_RELEASE_LIVE_PASS'
+            or record.get('status') != expected_status
             or type(record.get('probe_exit')) is not int or record.get('probe_exit') != 0 or record.get('daemon_running') is not False
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False):
         raise ValueError('limited Setup lease gate format required')
@@ -126,7 +131,11 @@ def corroborate(record, capture):
     return {'scope': 'six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices' ,
             'cases': 6, 'commands': 0, 'completions': 0, 'failures': 0,
             'start_wall_ns': start, 'end_wall_ns': end,
-            'managed_preselection_live_acceptance': True, 'normal_scheduler_concurrency_acceptance': False, 'setup_preserved': True, 'peer_snapshot_preserved': True,
+            'synthetic_support': record.get('synthetic_support', False),
+            'managed_preselection_live_acceptance': not record.get('synthetic_support', False),
+            'managed_preselection_synthetic_support_acceptance': record.get('synthetic_support', False),
+            'active_ready_peer_isolation_acceptance': False,
+            'normal_scheduler_concurrency_acceptance': False, 'setup_preserved': True, 'peer_snapshot_preserved': True,
             'partial_initialization_cleanup_acceptance': False, 'held_transport_fd_close_acceptance': False,
             'automatic_fault_recovery_acceptance': False}
 
@@ -139,10 +148,18 @@ def save_record(folder, record):
 
 
 def run(args):
+    synthetic = bool(getattr(args, 'synthetic_support', False))
+    cmdline = Path('/proc/cmdline').read_text().split()
+    if synthetic != ('ws73.managed_queue_support=1' in cmdline):
+        raise ValueError('explicit matching synthetic boot and collector required')
+    if synthetic and (Path('/sys/class/dmi/id/sys_vendor').read_text().strip() != 'QEMU'
+                      or not Path('/scratch-root-uuid').is_file()):
+        raise ValueError('synthetic support requires dedicated QEMU scratch VM')
     if 'ws73.managed_queue=1' not in Path('/proc/cmdline').read_text().split() or subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode == 0:
         raise ValueError('explicit VM mode before daemon startup required')
     folder = args.output; folder.mkdir(parents=True, exist_ok=False)
     record = {'format_version': 1, 'status': 'RUNNING', 'daemon_running': False,
+              'synthetic_support': synthetic,
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'initial_snapshots': [], 'cases': []}
     def save():
@@ -175,8 +192,11 @@ def run(args):
         record['cases'] = [json.loads(line) for line in (folder/'probe.jsonl').read_text().splitlines()]
         if p.returncode:
             raise ValueError('real release/last-file-close probe failed')
-        record['status'] = 'QUEUED_MANAGED_RELEASE_LIVE_PASS'; verify_records(record); save()
-        print('WS73_TARGET_MANAGED_QUEUE_PASS', flush=True)
+        record['status'] = ('QUEUED_MANAGED_RELEASE_SYNTHETIC_SUPPORT_PASS' if synthetic
+                            else 'QUEUED_MANAGED_RELEASE_LIVE_PASS')
+        verify_records(record); save()
+        print('WS73_TARGET_MANAGED_QUEUE_SYNTHETIC_SUPPORT_PASS' if synthetic
+              else 'WS73_TARGET_MANAGED_QUEUE_PASS', flush=True)
     except BaseException as error:
         record['status'] = 'FAIL'; record['error'] = str(error); save(); raise
     finally:
@@ -188,4 +208,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--probe', type=Path, default=Path('/bin/managed-queue-probe'))
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--synthetic-support', action='store_true',
+                        help='dedicated simulated USB VM; never live hardware acceptance')
     run(parser.parse_args())

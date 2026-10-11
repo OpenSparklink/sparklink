@@ -93,6 +93,21 @@ fi
 /bin/dbus-daemon --config-file=/etc/dbus.conf --nofork > /evidence/dbus.log 2>&1 &
 for n in $(seq 1 100); do [ -S /run/slkbus ] && break; sleep 0.1; done
 [ -S /run/slkbus ] || fail 'system bus startup'
+if grep -q 'ws73.managed_queue_support=1' /proc/cmdline; then
+    grep -q 'ws73.managed_queue=1' /proc/cmdline || fail 'synthetic queue boot mode'
+    [ -f /scratch-root-uuid ] || fail 'synthetic queue scratch root'
+    [ "$(cat /sys/class/dmi/id/sys_vendor)" = QEMU ] || fail 'synthetic queue QEMU VM'
+    echo 'WS73_TARGET_CAPTURE_READY'
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_queued.py --synthetic-support --output /evidence/managed-queue > /evidence/managed-queue-supervisor.log 2>&1 || fail 'synthetic Managed queue support'
+    kill -INT "$capture"; wait "$capture" || fail 'synthetic queue capture sealing'
+    capture=''
+    dmesg > /evidence/kernel.log
+    echo "WS73_TARGET_MANAGED_QUEUE_SUPPORT_TAINT: $(cat /proc/sys/kernel/tainted)"
+    echo 'WS73_TARGET_MANAGED_QUEUE_SUPPORT_FINISHED'
+    sync
+    poweroff -f
+    while :; do sleep 60; done
+fi
 if grep -q 'ws73.setup_release=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_setup.py --output /evidence/setup-release > /evidence/setup-release-supervisor.log 2>&1 || fail 'untouched Setup lease release gate'

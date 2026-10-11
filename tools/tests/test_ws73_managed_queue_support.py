@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: GPL-2.0-only
+import copy
+import unittest
+
+from ws73_managed_queue_support import properties, verify_transport
+
+
+def commands():
+    sent = [dict(execute='qmp_capabilities', id=1)]
+    sent += [dict(execute='device_add', id=i+2, arguments=properties(i)) for i in [0, 1]]
+    return [dict(direction='tx', message=m) for m in sent] + [
+        dict(direction='rx', message={'id': m['id'], 'return': {}}) for m in sent]
+
+
+class SyntheticTransportTests(unittest.TestCase):
+    def test_successful_exact_simulated_objects(self):
+        verify_transport(commands())
+
+    def test_host_usb_and_extra_owner_options_rejected(self):
+        for kind in ['driver', 'hostport', 'hostbus', 'guest-reset']:
+            rows = commands()
+            rows[1]['message']['arguments'][kind] = 'usb-host' if kind == 'driver' else 1
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                verify_transport(rows)
+
+    def test_extra_reset_command_missing_or_failed_reply_rejected(self):
+        variants = []
+        extra = commands(); extra.insert(3, {'direction': 'tx', 'message': {'execute': 'system_reset', 'id': 4}})
+        variants.append(extra)
+        absent = commands(); absent.pop(); variants.append(absent)
+        failed = commands(); failed[-1]['message'] = {'id': 3, 'error': {'desc': 'failure'}}
+        variants.append(failed)
+        duplicate = commands(); duplicate.append(copy.deepcopy(duplicate[-1])); variants.append(duplicate)
+        for rows in variants:
+            with self.subTest(rows=rows), self.assertRaises(ValueError):
+                verify_transport(rows)
+
+    def test_wrong_or_boolean_slot_rejected(self):
+        for slot in [True, False, -1, 2, '0']:
+            with self.subTest(slot=slot), self.assertRaises(ValueError):
+                properties(slot)

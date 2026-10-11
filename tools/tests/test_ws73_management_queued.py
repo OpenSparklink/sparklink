@@ -28,6 +28,25 @@ class QueuedTests(unittest.TestCase):
         self.assertTrue(proof['managed_preselection_live_acceptance'])
         self.assertFalse(proof['normal_scheduler_concurrency_acceptance'])
         self.assertFalse(proof['partial_initialization_cleanup_acceptance'])
+        self.assertFalse(proof['active_ready_peer_isolation_acceptance'])
+        self.assertFalse(proof['managed_preselection_synthetic_support_acceptance'])
+
+    def test_synthetic_scope_cannot_claim_live_acceptance(self):
+        record = fixture()
+        record['synthetic_support'] = True
+        record['status'] = 'QUEUED_MANAGED_RELEASE_SYNTHETIC_SUPPORT_PASS'
+        proof = corroborate(record, {k: [] for k in ['commands', 'complete', 'failures']})
+        self.assertFalse(proof['managed_preselection_live_acceptance'])
+        self.assertTrue(proof['managed_preselection_synthetic_support_acceptance'])
+        self.assertFalse(proof['active_ready_peer_isolation_acceptance'])
+
+    def test_scope_status_mismatch_and_non_boolean_rejected(self):
+        for synthetic, status in [(True, 'QUEUED_MANAGED_RELEASE_LIVE_PASS'),
+                                  (False, 'QUEUED_MANAGED_RELEASE_SYNTHETIC_SUPPORT_PASS'),
+                                  (1, 'QUEUED_MANAGED_RELEASE_LIVE_PASS')]:
+            record = fixture(); record.update(synthetic_support=synthetic, status=status)
+            with self.subTest(synthetic=synthetic, status=status), self.assertRaises(ValueError):
+                verify_records(record)
 
     def test_selected_or_fabricated_result_rejected(self):
         for key in ['queued', 'cancelled']:

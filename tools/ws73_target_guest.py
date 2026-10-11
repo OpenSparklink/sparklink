@@ -320,6 +320,12 @@ def verify_passthrough():
     if 'daemon_removal' in run:
         from ws73_daemon_removal import corroborate_wire
         proofs.append({'daemon_cancel_removal':corroborate_wire(run['daemon_removal'],capture)})
+    requested = 'ws73.initializer_lifecycle=1' in Path('/proc/cmdline').read_text().split()
+    if requested != ('initialization_lifecycle' in run):
+        raise ValueError('explicit initializer lifecycle request and evidence must agree')
+    if requested:
+        from ws73_initialization_lifecycle import corroborate_wire
+        proofs.append({'initializer_lifecycle':corroborate_wire(run,capture)})
     (EVIDENCE/'passthrough-control-proofs.json').write_text(json.dumps({
         'scope':'real WS73 RF with QMP guest-detach control support',
         'physical_acceptance':False,'packet_count':packets,'proofs':proofs},indent=2)+'\n')

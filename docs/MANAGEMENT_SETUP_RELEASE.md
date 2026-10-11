@@ -824,3 +824,29 @@ CI38150415339失败及随后sparse checkout缺头文件的CI38151129591失败保
 VM-only不变；人工guest IN错误只是开发支撑，hub切电和人工冷断电不是
 自动恢复验收。未查明根因、历史xHCI warning及恢复事项继续OPEN，部分成果
 不关闭整项、两个draft不合并。
+
+
+## slkd运行中的普通客户端在途取消门禁（待真实执行）
+
+`--daemon-hold-case supersede|caller-exit` 仅限独立真实recovery VM，不能与
+前daemon partial/诊断/FIFO混用。先普通UID1000/caps0完成随机RF20，保持同
+slkd/bus和两只Ready。QMP暂留目标原成功IN81，再经普通slctl提交scan on，
+读取实际Pending/1001/0-of-2。在caller-exit案例实际SIGKILL并reap slctl，
+通过同daemon按原ID确认已admit操作仍Pending；显式STOP才使其Cancelled。
+客户端退出不冒充撤销daemon持有的内核File。
+
+同行实际扫描START在hold期间成功，并保持On跨取消/原回复排空；目标
+STOP在Queued/opcode0且其CLI仍等待。连接案例原CLI先返回Cancelled，原USB
+槽仍保留，不能用CLI成功退出推断radio。400ms内明确release原帧、不延长
+500ms原期限；真正原成功参数回复SHA/长度匹配后只实际STOP成功，原操作
+仍Cancelled/-ECANCELED，没有未选择START或跨设备控制。完整两设备窗口
+仅目标1001/STOP、同行1001/START/STOP；无多余命令/Complete。
+
+随后同daemon保留原人工guest IN错误/退役/旧选择拒绝/同行操作/新Ready
+以及RF2，仍只是恢复开发支撑。原RF20+2独立原捕获核对；daemon持有设备
+时的取消测试不等于物理拔插/自然非人工恢复。测试live CLI只读pipe，不读
+未终结producer的redirect文件；结束先reap再记录stdout/stderr/真实returncode。
+源码 fixtures验证正确/错误生命周期、状态/身份/权限、deadline、原host SHA
+和完整USB窗口，不能冒充实机。新原source runner通过后才更新限定资格。
+完整作者/lease/权限/事件/removal并发、物理拔插、四设备两组、自然RCA/恢复
+及其余S0–S6保持OPEN，28原issues不提前关闭，VM-only。

@@ -319,6 +319,9 @@ def corroborate_recovery(run, capture, diagnostic=None, active=None, partial=Non
     if diagnostic is not None:
         metadata_before, queries = corroborate_diagnostic(run, capture, diagnostic)
     proofs = _corroborate_control(run, capture, 'recovery', 'retirement_observed_wall_ns', metadata_before, metadata_after)
+    if 'daemon_hold' in run:
+        from ws73_daemon_hold import corroborate_wire as daemon_wire
+        proofs[0]['daemon_held_cancel_wire']=daemon_wire(run['daemon_hold'],capture)
     if queries:
         key=('partial_ready_peer_activity' if partial.get('active_ready_peer') else 'partial_peer_queries') if partial is not None else 'diagnostic_queries'
         proofs[0][key] = queries

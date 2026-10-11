@@ -109,7 +109,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
@@ -194,7 +194,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -412,6 +412,9 @@ def _run(args):
     if active_close_gate and bool(getattr(args,'active_deadline_verify',False)):
         raise ValueError('select one active deadline or last-file-close gate')
     setup_gate=bool(getattr(args,'setup_release_verify',False))
+    daemon_hold=getattr(args,'daemon_hold_case',None)
+    if daemon_hold not in [None,'supersede','caller-exit'] or daemon_hold is not None and (not recovery or support or diagnostic or active_gate or getattr(args,'managed_partial_case',None) is not None or getattr(args,'managed_queue_verify',False)):
+        raise ValueError('separate real recovery VM for ordinary daemon held cancellation required')
     partial_case=getattr(args,'managed_partial_case',None)
     partial_gate=partial_case is not None
     partial_domain=getattr(args,'managed_partial_domain','advertising')
@@ -472,6 +475,8 @@ def _run(args):
     m['live_managed_partial_domain']=partial_domain if partial_gate else None
     m['live_managed_real_later_step']=real_step
     m['live_managed_ordinary_eviction']=ordinary_eviction
+    m['live_daemon_hold_case']=daemon_hold
+    if daemon_hold:m['daemon_hold_verifier']=file_record(HERE/'ws73_daemon_hold.py')
     if ordinary_eviction:m['managed_eviction_verifier']=file_record(HERE/'ws73_management_eviction.py')
     if real_later:m['managed_real_later_verifier']=file_record(HERE/'ws73_host_later_hold.py')
     m['live_managed_ready_peer']=ready_peer
@@ -546,6 +551,7 @@ def _run(args):
                      (' ws73.scan_parameter_cleanup=1' if parameter_cleanup else '')+
                      (' ws73.managed_ready_peer=1' if ready_peer else '')+
                      (' ws73.ordinary_queue_eviction=1' if ordinary_eviction else '')+
+                     (f' ws73.daemon_hold={daemon_hold}' if daemon_hold else '')+
                      (f' ws73.real_later_step=1 ws73.partial_step={real_step}' if real_later else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
@@ -579,6 +585,9 @@ def _run(args):
                         from ws73_host_later_hold import LaterHostCoordinator
                         hold=LaterHostCoordinator(share,m.setdefault('managed_partial_hold',{}),real_step)
                     else:hold=PartialCoordinator(share,m.setdefault('managed_partial_hold',{}))
+                if daemon_hold:
+                    from ws73_daemon_hold import DaemonHoldCoordinator
+                    hold=DaemonHoldCoordinator(share,m.setdefault('daemon_hold',{}))
                 if active_gate:
                     from ws73_active_deadline import ActiveDeadlineCoordinator
                     hold=ActiveDeadlineCoordinator(share,m.setdefault('active_deadline_hold',{}))
@@ -734,6 +743,13 @@ def _run(args):
                     if probe.get('scan_parameter_cleanup',False) is not parameter_cleanup:raise ValueError('actual scan parameter cleanup must match requested gate')
                     m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
                     m['live_managed_partial']=file_record(share/'managed-partial/run.json')
+                if daemon_hold:
+                    from ws73_daemon_hold import corroborate as corroborate_daemon
+                    control=json.loads((share/'application/recovery-control/run.json').read_text())
+                    record=control['daemon_hold']
+                    if record.get('case')!=daemon_hold:raise ValueError('actual daemon held caller case mismatch')
+                    m['daemon_hold']['corroboration']=corroborate_daemon(record,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
+                    m['live_daemon_hold']=file_record(share/'application/recovery-control/run.json')
                 if queued_gate:
                     from ws73_management_queued import corroborate as corroborate_queued
                     probe=json.loads((share/'managed-queue/run.json').read_text())
@@ -801,6 +817,8 @@ def _run(args):
             raise ValueError('Managed queue verifier changed during run')
         if real_later and file_record(HERE/'ws73_host_later_hold.py')!=m['managed_real_later_verifier']:
             raise ValueError('actual later host verifier changed during run')
+        if daemon_hold and file_record(HERE/'ws73_daemon_hold.py')!=m['daemon_hold_verifier']:
+            raise ValueError('daemon held verifier changed during run')
         if ordinary_eviction and file_record(HERE/'ws73_management_eviction.py')!=m['managed_eviction_verifier']:
             raise ValueError('ordinary queue verifier changed during run')
         if ready_peer and file_record(HERE/'ws73_management_ready_peer.py')!=m['managed_ready_peer_verifier']:
@@ -858,6 +876,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs=2,required=True)
+            cmd.add_argument('--daemon-hold-case',choices=['supersede','caller-exit'],help='ordinary D-Bus callers cancel an original successful held reply with same daemon and active peer')
             cmd.add_argument('--managed-ordinary-eviction',action='store_true',help='two SCHED_OTHER ioctl submitters and terminal result eviction under actual held first reply; separate Ready-peer VM gate')
             cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
             cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')

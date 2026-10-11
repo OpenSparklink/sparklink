@@ -89,6 +89,12 @@ class RecoveryRun(Run):
             a, b = [self.ready(port) for port in self.args.ports]
             self.data['initial'] = [a, b]
             self.phase(a, b, 20, 'initial')
+            case=getattr(self.args,'daemon_hold_case',None)
+            boot=[v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.daemon_hold=')]
+            if boot!=([case] if case is not None else []):raise ValueError('matching explicit daemon hold boot gate required')
+            if case is not None:
+                from ws73_daemon_hold import execute as held_cancel
+                held_cancel(self,a,b,case)
             if 'ws73.active_deadline=1' in Path('/proc/cmdline').read_text().split():
                 self.wait_stable_budget(a, b)
             self.data['fault_before'] = self.diagnostics(a['port'])
@@ -169,6 +175,7 @@ class RecoveryRun(Run):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--daemon-hold-case',choices=['supersede','caller-exit'],help='actual ordinary D-Bus cancellation while original successful host reply is held')
     parser.add_argument('--slctl', type=Path, required=True)
     parser.add_argument('--slkd-pid', type=int, required=True)
     parser.add_argument('--output', type=Path, required=True)

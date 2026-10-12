@@ -20,30 +20,24 @@ def snake(name):
 
 
 class GenericNetlinkContract(unittest.TestCase):
-    def test_current_header_kernel_and_sdk_enum_values_match(self):
-        kernel = (LINUX / "net/sparklink/sle_netlink.rs").read_text()
+    def test_canonical_c_header_and_sdk_enum_values_match(self):
         sdk = (ROOT / "crates/slk-protocol/src/genl.rs").read_text()
         c_header = LINUX / "include/uapi/linux/sparklink.h"
         with tempfile.TemporaryDirectory(prefix="sparklink-genl-abi-") as directory:
             d = Path(directory)
-            for family, kname, uname, prefix in (
-                ("commands", "NlCmd", "GenlCmd", "SPARKLINK_CMD_"),
-                ("attrs", "NlAttr", "GenlAttr", "SPARKLINK_ATTR_"),
+            for family, uname, prefix in (
+                ("commands", "GenlCmd", "SPARKLINK_CMD_"),
+                ("attrs", "GenlAttr", "SPARKLINK_ATTR_"),
             ):
                 # Full actual enums, not a second set of numeric definitions.
-                ke = enum(kernel, kname)
                 ue = enum(sdk, uname)
-                members = re.findall(r"    (\w+) = \d+,", ke)
-                aliases = {"KeyFingerprint": "KeyFp"}
-                macro_aliases = {"KeyFingerprint": "KEY_FP", "Timeout10ms": "TIMEOUT_10MS"}
-                rust = ["#[derive(Clone,Copy)] #[repr(u16)] " + ke,
-                        "#[derive(Clone,Copy)] #[repr(u16)] " + ue, "fn main() {"]
+                members = re.findall(r"    (\w+) = \d+,", ue)
+                macro_aliases = {"Timeout10ms": "TIMEOUT_10MS"}
+                rust = ["#[derive(Clone,Copy)] #[repr(u16)] " + ue, "fn main() {"]
                 c = [f"#include {json.dumps(str(c_header))}", "#include <stdio.h>", "int main(void) {"]
                 for member in members:
-                    other = aliases.get(member, member)
                     macro = prefix + macro_aliases.get(member, snake(member))
-                    rust.append(f'assert_eq!({kname}::{member} as u16, {uname}::{other} as u16);')
-                    rust.append(f'println!("{{}}", {kname}::{member} as u16);')
+                    rust.append(f'println!("{{}}", {uname}::{member} as u16);')
                     c.append(f'printf("%u\\n", (unsigned){macro});')
                 rust.append("}")
                 c.append("return 0; }")

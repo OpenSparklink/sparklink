@@ -51,14 +51,19 @@ impl ExtAdvIface {
 
     /// Set advertising data for an extended advertising set
     async fn set_data(&self, handle: u8, data: Vec<u8>) -> zbus::fdo::Result<()> {
-        let len = data.len().min(252);
+        if data.len() > 252 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "extended advertising data exceeds 252 bytes; truncation is not supported".into(),
+            ));
+        }
+        let len = data.len();
         let mut adv_data = slk_protocol::SleExtAdvData {
             handle,
             _pad: 0,
             data_len: len as u16,
             data: [0; 252],
         };
-        adv_data.data[..len].copy_from_slice(&data[..len]);
+        adv_data.data[..len].copy_from_slice(&data);
         let st = self.state.lock().await;
         st.adapter
             .ext_adv_set_data(&adv_data)
@@ -67,14 +72,19 @@ impl ExtAdvIface {
 
     /// Set scan response data for an extended advertising set
     async fn set_scan_response(&self, handle: u8, data: Vec<u8>) -> zbus::fdo::Result<()> {
-        let len = data.len().min(252);
+        if data.len() > 252 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "extended advertising data exceeds 252 bytes; truncation is not supported".into(),
+            ));
+        }
+        let len = data.len();
         let mut adv_data = slk_protocol::SleExtAdvData {
             handle,
             _pad: 0,
             data_len: len as u16,
             data: [0; 252],
         };
-        adv_data.data[..len].copy_from_slice(&data[..len]);
+        adv_data.data[..len].copy_from_slice(&data);
         let st = self.state.lock().await;
         st.adapter
             .ext_adv_set_scan_rsp(&adv_data)
@@ -165,6 +175,49 @@ pub struct ExtAdvInfo {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn actual_data_methods_reject_oversize_before_state_lock_or_ioctl() {
+        use crate::{bonding::BondingStore, config::DaemonConfig, state::AdapterState};
+        use libsparklink::Adapter;
+        use slk_experimental::profile::ProfileRegistry;
+        use std::sync::Arc;
+        use tokio::sync::Mutex;
+        let state = Arc::new(Mutex::new(AdapterState::new(
+            Adapter::open("/dev/null").unwrap(),
+            DaemonConfig::default(),
+            BondingStore::new(&std::env::temp_dir(), "unused-extadv-validation-test"),
+            ProfileRegistry::new(),
+        )));
+        let interface = ExtAdvIface::new(state.clone());
+        let locked = state.lock().await;
+        for size in [253, 254, 255, 65536] {
+            for scan_response in [false, true] {
+                let result = tokio::time::timeout(std::time::Duration::from_secs(1), async {
+                    if scan_response {
+                        interface.set_scan_response(0, vec![0x42; size]).await
+                    } else {
+                        interface.set_data(0, vec![0x42; size]).await
+                    }
+                })
+                .await
+                .unwrap();
+                assert!(matches!(result, Err(zbus::fdo::Error::InvalidArgs(_))));
+            }
+        }
+        drop(locked);
+        // In-range calls reach the real ioctl on /dev/null and fail ENOTTY.
+        // Never invent an accepted controller operation in this test.
+        for size in [0, 252] {
+            for result in [
+                interface.set_data(0, vec![1; size]).await,
+                interface.set_scan_response(0, vec![1; size]).await,
+            ] {
+                assert!(matches!(result, Err(zbus::fdo::Error::Failed(ref message))
+                    if message.contains("ENOTTY")));
+            }
+        }
+    }
 
     #[test]
     fn ext_adv_info_fields() {

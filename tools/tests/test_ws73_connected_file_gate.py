@@ -27,7 +27,7 @@ class ConnectedFileGate(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             source=Path(folder)/'abi.c';binary=Path(folder)/'abi'
             source.write_text('#include <stdio.h>\n#include <linux/sparklink_ioctl.h>\nint main(void){printf("%lu",(unsigned long)SL_IOCTL_CONNECTION_RESULT);}\n')
-            kernel=Path(__file__).resolve().parents[3]/'linux'
+            kernel=Path(os.environ.get('SPARKLINK_KERNEL_SOURCE',Path(__file__).resolve().parents[3]/'linux'))
             subprocess.run(['cc','-I',str(kernel/'include/uapi'),str(source),'-o',str(binary)],check=True,capture_output=True)
             expected=int(subprocess.check_output([str(binary)]))
             def ioctl(fd,number,raw,mutable):

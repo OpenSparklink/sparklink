@@ -7,7 +7,7 @@ first gate excludes release/last-File/dup/in-flight and SSAP acceptance.
 import re
 import time
 
-from ws73_capture import CaptureError
+from ws73_capture import CaptureError, command_reply
 from ws73_north_star import parse_result
 
 
@@ -36,9 +36,11 @@ def execute(run, a, b):
             phase = dict(caller=caller, peer=peer, start_wall_ns=time.time_ns())
             record['phases'].append(phase); run.save()
             run.check(caller); run.check(peer)
-            advertisement = run.ctl(peer, 'advertise', 'on')
+            advertisement = run.ctl(peer, 'advertise', 'connectable')
             parse_result(advertisement['stdout'], peer, 1)
             phase['advertisement_command'] = len(run.data['commands'])-1
+            run.ctl(peer, 'show')
+            phase['policy_query_command'] = len(run.data['commands'])-1
             # Type 0 is an explicit candidate, not inferred from discovery's
             # legacy fixed PUBLIC parser. Both raw connection events must
             # corroborate the actual type and peer below.
@@ -91,6 +93,20 @@ def corroborate(run, capture):
     proofs = []
     for phase in record['phases']:
         caller, peer = phase['caller'], phase['peer']
+        advertisement = run['commands'][phase['advertisement_command']]
+        query = run['commands'][phase['policy_query_command']]
+        policies = re.findall(r'^  Radio policy: version=(\d+) adv_slots=(\d+)\.\.(\d+) tx_power_dbm=(-?\d+) scan_slots=(\d+)/(\d+)$', query['stdout'], re.M)
+        if (advertisement['exit'] or advertisement['args'][-2:] != ['advertise','connectable']
+                or query['exit'] or query['args'][-1] != 'show' or len(policies)!=1
+                or int(policies[0][0])!=3):
+            raise CaptureError('explicit connectable request and policy readback required')
+        _, minimum, maximum, power, _, _ = map(int,policies[0])
+        expected=bytearray(49)
+        expected[1]=1; expected[2]=2; expected[3:6]=minimum.to_bytes(3,'little')
+        expected[6:9]=maximum.to_bytes(3,'little'); expected[9]=7
+        expected[12:18]=bytes.fromhex(peer['address'].replace(':',''))
+        expected[25]=power&255; expected[33]=1; expected[43:45]=(200).to_bytes(2,'little')
+        advertisement_proof=command_reply(capture,peer,0x0c02,advertisement['start_wall_ns'],advertisement['end_wall_ns'],bytes(expected))
         steps = []
         handles = {}
         for operation, opcode, key, event_ids in [(1,0x1401,'connect',{0x15,0x1401}), (2,0x1403,'disconnect',{5,0x1405})]:
@@ -136,5 +152,5 @@ def corroborate(run, capture):
                     raise CaptureError('peer Down must match its independently observed Up handle')
                 outcomes.append(events[0])
             steps.append(dict(command=commands[0], status=statuses[0], outcomes=outcomes, terminal=terminal))
-        proofs.append(dict(caller=caller, peer=peer, steps=steps))
+        proofs.append(dict(caller=caller, peer=peer, advertisement=advertisement_proof, steps=steps))
     return proofs

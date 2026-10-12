@@ -1,4 +1,4 @@
-//! Versioned user-space policy for a basic, nonconnectable frame-1 WS73 beacon.
+//! Versioned discovery policy and an explicit fixed-T connectable advertiser.
 //! The driver still owns encoding/validation; policy never sends raw DLI.
 use crate::{Error, Result};
 use slk_protocol::*;
@@ -134,6 +134,22 @@ impl Ws73DiscoveryPolicy {
         request.data[..data.len()].copy_from_slice(&data);
         Ok(request)
     }
+
+    /// Explicit fixed-T, connectable/non-scannable announcement. The default
+    /// beacon remains nonconnectable. WS73 mode1 and request posture1/0 are
+    /// independent protocol facts; accepting this command does not establish
+    /// a link or prove firmware interoperability.
+    pub fn connectable_advertisement(
+        &self,
+        snapshot: &SleControllerSnapshot,
+        request_id: u64,
+        marker: &[u8; 16],
+    ) -> Result<SleDiscoverySubmit> {
+        let mut request = self.advertisement(snapshot, request_id, marker)?;
+        request.advertising.mode = 1;
+        request.advertising.request_notification = 1;
+        Ok(request)
+    }
 }
 
 fn basic_advertiser_config(
@@ -244,6 +260,63 @@ pub fn ws73_discovery_stop(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn explicit_connectable_policy_keeps_default_beacon_and_identity_guards() {
+        let policy = Ws73DiscoveryPolicy::new(1237, 1301, -20, 1703, 997).unwrap();
+        let identity = snapshot();
+        let beacon = policy.advertisement(&identity, 11, &[0xab; 16]).unwrap();
+        let mut connection = policy
+            .connectable_advertisement(&identity, 11, &[0xab; 16])
+            .unwrap();
+        assert_eq!(
+            (
+                beacon.advertising.mode,
+                beacon.advertising.request_notification
+            ),
+            (0, 0)
+        );
+        assert_eq!(
+            (
+                connection.advertising.mode,
+                connection.advertising.gt_role,
+                connection.advertising.request_notification,
+                connection.advertising.max_requests
+            ),
+            (1, 2, 1, 0)
+        );
+        assert_eq!(connection.data, beacon.data);
+        assert_eq!(connection.generation, beacon.generation);
+        // Compare every named field without reading C padding.
+        connection.advertising.mode = 0;
+        connection.advertising.request_notification = 0;
+        assert_eq!(format!("{:?}", connection), format!("{:?}", beacon));
+        for invalid in [
+            SleControllerSnapshot {
+                flags: CONTROLLER_SETUP,
+                ..identity
+            },
+            SleControllerSnapshot {
+                generation: 0,
+                ..identity
+            },
+            SleControllerSnapshot {
+                profile: 0,
+                ..identity
+            },
+        ] {
+            assert!(
+                policy
+                    .connectable_advertisement(&invalid, 11, &[0; 16])
+                    .is_err()
+            );
+        }
+        assert!(
+            policy
+                .connectable_advertisement(&identity, 0, &[0; 16])
+                .is_err()
+        );
+        assert_eq!(policy.standby(&identity, 12).unwrap().advertising.mode, 0);
+    }
     #[test]
     fn numeric_policy_bounds_fail_before_constructing_requests() {
         for (min, max, power, interval, window) in [

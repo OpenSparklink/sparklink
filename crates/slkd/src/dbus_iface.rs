@@ -89,13 +89,22 @@ impl AdapterIface {
             .map_err(|e| zbus::fdo::Error::Failed(format!("scan stop failed: {e}")))
     }
 
-    /// Policy v1 only, no raw DLI/config injection. Successful return is admission.
+    /// Typed nonconnectable policy; successful return is admission.
     async fn submit_advertising(
         &self,
         request_id: u64,
         marker: Vec<u8>,
     ) -> zbus::fdo::Result<Vec<u8>> {
-        crate::radio::advertise(&self.state, request_id, marker).await
+        crate::radio::advertise(&self.state, request_id, marker, false).await
+    }
+
+    /// Explicit fixed-T connectable announcement; no link success inferred.
+    async fn submit_connectable_advertising(
+        &self,
+        request_id: u64,
+        marker: Vec<u8>,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        crate::radio::advertise(&self.state, request_id, marker, true).await
     }
     async fn submit_scanning(&self, request_id: u64) -> zbus::fdo::Result<()> {
         crate::radio::scan(&self.state, request_id).await

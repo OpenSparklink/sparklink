@@ -100,8 +100,15 @@ VM76（实际496内核/5f6服务/f41工具）首轮失败：397包无丢包，Cr
 观察，不能替代完整release/last-File/dup/in-flight验收。
 [失败捕获及复算摘要](evidence/ws73-native-connection-first-failure-20261012.json)。
 
-当前广播49字节中posture[33]/[34]为0/0。参考libws73-usb说明固定T为1/0、
-可协商角色为0/1；它是下一对照变量，尚未证明本次失败根因。应新增显式可配置
-候选姿态，仅在独立配置/VM验证，不修改已资格通过的默认发现路径；还须核对
-固件111的协商/拒绝/连接超时行为，不延长预算掩盖缺失结果，不假造outcome。
+进一步核对发现VM76测试选错了广播模式：默认beacon的mode=0是不可连接，
+posture[33]/[34]为0/0。该失败不能作为可连接模式的互通结论；缺失outcome及
+故障恢复仍须核对。新增显式`slctl advertise connectable [32-hex-marker]`，
+走新的SubmitConnectableAdvertising→同一Managed/driver typed recipe，固定T
+mode=1、gt=2、request posture1/0；原`advertise on`和初始化保持原字节。
+参考事实为libws73-usb头中的connectable/non-scannable mode1、fixed T role2及
+discovery编码器posture1/0，独立实现，没有合入参考代码。两个模式都保留
+原generation/Ready/marker/config范围检查，不推断连接成功。新门禁改为显式
+connectable命令，独立usbmon核对49字节全部字段及成功参数Complete；
+negative fixture拒绝mode0或posture0冒充可连接。先VM复测，不延长预算、
+不假造outcome；默认发现路径保持原资格和回归范围。
 两只连接成功是有连接生命周期验收的前置条件；相关issues仍OPEN。

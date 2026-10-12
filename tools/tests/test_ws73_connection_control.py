@@ -18,10 +18,19 @@ def fixture():
     owners=[dict(bus=1,device=2,generation=1,address='00:01:09:32:54:CD'),
             dict(bus=1,device=4,generation=2,address='00:01:09:32:54:F9')]
     run=dict(commands=[],connection_control=dict(status='CONNECTION_CONTROL_EVIDENCE_PENDING',phases=[]))
-    capture=dict(commands=[],native_events=[])
+    capture=dict(commands=[],native_events=[],complete=[])
     for n,(caller,peer) in enumerate([owners,owners[::-1]]):
         phase=dict(caller=caller,peer=peer,peer_address_type=0,end_wall_ns=100+n*100)
         run['connection_control']['phases'].append(phase)
+        phase['advertisement_command']=len(run['commands'])
+        run['commands'].append(dict(args=['slctl','advertise','connectable'],exit=0,start_wall_ns=n*100+1,end_wall_ns=n*100+6))
+        phase['policy_query_command']=len(run['commands'])
+        run['commands'].append(dict(args=['slctl','show'],exit=0,stdout='  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n'))
+        body=bytearray(49);body[1]=1;body[2]=2;body[3:6]=(1200).to_bytes(3,'little');body[6:9]=body[3:6];body[9]=7
+        body[12:18]=bytes.fromhex(peer['address'].replace(':',''));body[25]=127;body[33]=1;body[43:45]=(200).to_bytes(2,'little')
+        identity=dict(bus=peer['bus'],device=peer['device'])
+        capture['commands'].append(identity|dict(wall_ns=n*100+2,record=n*100+1,opcode=0x0c02,params=body.hex(),completion=dict(wall_ns=n*100+3)))
+        capture['complete'].append(identity|dict(wall_ns=n*100+4,record=n*100+2,opcode=0x0c02,status=0,value='14'))
         for operation,opcode,key,event in [(1,0x1401,'connect',0x15),(2,0x1403,'disconnect',5)]:
             start=n*100+operation*10
             phase[key+'_command']=len(run['commands'])
@@ -62,6 +71,12 @@ class ConnectionEvidenceTests(unittest.TestCase):
             elif mode=='handle':event['params']='000100'+event['params'][6:]
             else:bad['native_events'].append(copy.deepcopy(event))
             with self.subTest(mode=mode),self.assertRaises(CaptureError):corroborate(run,bad)
+
+    def test_nonconnectable_announcement_never_qualifies_connection_gate(self):
+        run,capture=fixture()
+        for offset in [1,33]:
+            bad=copy.deepcopy(capture);body=bytearray.fromhex(bad['commands'][0]['params']);body[offset]=0;bad['commands'][0]['params']=body.hex()
+            with self.subTest(offset=offset),self.assertRaises(CaptureError):corroborate(run,bad)
 
 
 if __name__=='__main__':unittest.main()

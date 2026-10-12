@@ -301,7 +301,7 @@ impl Context {
         let id = random_bytes::<8>()?;
         let id = u64::from_ne_bytes(id).max(1);
         match args.get(1).copied() {
-            Some("on") => {
+            Some("on" | "connectable") => {
                 let marker: [u8; 16] = if let Some(hex) = args.get(2) {
                     parse_hex_bytes(hex)?
                         .try_into()
@@ -313,9 +313,14 @@ impl Context {
                     "NativeAdvertisementRequest: request={id} marker={}",
                     hex_bytes(&marker)
                 );
+                let method = if args[1] == "connectable" {
+                    "SubmitConnectableAdvertising"
+                } else {
+                    "SubmitAdvertising"
+                };
                 let data: Vec<u8> = tokio::time::timeout(
                     std::time::Duration::from_secs(7),
-                    proxy.call("SubmitAdvertising", &(id, marker.to_vec())),
+                    proxy.call(method, &(id, marker.to_vec())),
                 )
                 .await??;
                 println!(
@@ -332,7 +337,7 @@ impl Context {
                 )
                 .await??;
             }
-            _ => anyhow::bail!("usage: advertise on [32-hex-marker]|off"),
+            _ => anyhow::bail!("usage: advertise on|connectable [32-hex-marker]|off"),
         }
         self.wait_native_result(&proxy, id).await
     }

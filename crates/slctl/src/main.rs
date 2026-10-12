@@ -116,6 +116,7 @@ Commands:
   show                          Show adapter details
   scan on [marker address]|off  Scan and optionally await a fresh matching report
   advertise on [32-hex-marker]   Start native beacon with a fresh random marker
+  advertise connectable [marker] Start explicit fixed-T connectable announcement
   advertise off                 Stop native beacon
   advertise initialized-off     Query real initializer OFF for untouched advertising
   scan initialized-off          Query real initializer OFF for untouched scanning

@@ -487,6 +487,8 @@ def _run(args):
     link_snapshot=bool(getattr(args,'managed_link_snapshot',False))
     peer_binding=bool(getattr(args,'managed_peer_binding',False))
     channel_grant=bool(getattr(args,'managed_channel_grant',False))
+    channel_scm_rights=bool(getattr(args,'managed_channel_scm_rights',False))
+    if channel_scm_rights and not channel_grant:raise ValueError('fd transfer requires standalone channel Grant')
     channel_directions=bool(getattr(args,'managed_channel_directions',False))
     if channel_directions and not channel_grant:raise ValueError('directional test requires standalone channel Grant')
     if channel_grant and (not connected_case or connected_reply or recovery):raise ValueError('channel Grant requires standalone real established File gate without fault injection')
@@ -604,6 +606,7 @@ def _run(args):
     m['live_link_snapshot_gate']=link_snapshot
     m['live_peer_binding_gate']=peer_binding
     m['live_channel_grant_gate']=channel_grant
+    m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_directions_gate']=channel_directions
     if channel_grant:m['channel_grant_verifier']=file_record(HERE/'ws73_channel_grant.py')
     if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py')
@@ -706,6 +709,7 @@ def _run(args):
                      (' ws73.link_snapshot=1' if link_snapshot else '')+
                      (' ws73.peer_binding=1' if peer_binding else '')+
                      (' ws73.channel_grant=1' if channel_grant else '')+
+                     (' ws73.channel_scm_rights=1' if channel_scm_rights else '')+
                      (' ws73.channel_directions=1' if channel_directions else '')+
                      (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
                      (' ws73.scan_parameter_cleanup=1' if parameter_cleanup else '')+
@@ -982,6 +986,7 @@ def _run(args):
                     from ws73_connected_file_gate import corroborate as connected_corroborate
                     probe=json.loads((share/'connected-file/run.json').read_text())
                     if bool(probe.get('channel_grant',{}).get('directional',False))!=channel_directions:raise ValueError('requested directional Grant gate mismatch')
+                    if bool(probe.get('channel_grant',{}).get('scm_rights',False))!=channel_scm_rights:raise ValueError('requested SCM_RIGHTS Grant gate mismatch')
                     if bool(probe.get('channel_grant'))!=channel_grant:raise ValueError('requested real channel Grant gate mismatch')
                     if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply or bool(probe.get('link_snapshot_gate'))!=link_snapshot or bool(probe.get('peer_binding_gate'))!=peer_binding:raise ValueError('connected File request mismatch')
                     m['connected_file_corroboration']=connected_corroborate(probe,capture,hold.record if connected_reply else None,
@@ -1169,6 +1174,7 @@ def main():
             cmd.add_argument('--managed-link-snapshot',action='store_true',help='actual canonical physical table/lifetime/barrier and VFS read errors; established File gate only')
             cmd.add_argument('--managed-peer-binding',action='store_true',help='actual peer/lifetime mismatch rejection without wire commands; established File gate only')
             cmd.add_argument('--managed-connected-reply',choices=['status','outcome'],help='retain actual original Create Status or outcome frame before File withdrawal')
+            cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
             cmd.add_argument('--managed-connected-index',type=int,choices=[0,1],default=0,help='actual Create caller in established-link File gate')

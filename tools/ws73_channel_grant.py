@@ -4,6 +4,7 @@ IPC carries application commands/receipts, never substitutes for radio RX.
 Children close all inherited control fds before dropping to UID1000/caps0.
 """
 import ctypes
+import array
 import errno
 import fcntl
 import json
@@ -58,8 +59,35 @@ def credentials():
     return dict(uids=list(map(int,values['Uid'].split())),caps={key:values[key] for key in ['CapEff','CapPrm','CapAmb']})
 
 
+def pass_channel(control, data, token):
+    payload=json.dumps(dict(stage='channel_fd',token=token)).encode()
+    if control.sendmsg([payload],[(socket.SOL_SOCKET,socket.SCM_RIGHTS,array.array('i',[data.fileno()]))])!=len(payload):
+        raise ValueError('partial channel fd transfer')
+
+
+def take_channel(control, token):
+    """Take exactly one close-on-exec fd; close all delivered fds on rejection."""
+    payload,ancillary,flags,_=control.recvmsg(16384,socket.CMSG_SPACE(16*array.array('i').itemsize),socket.MSG_CMSG_CLOEXEC)
+    delivered=[]
+    try:
+        unexpected=False
+        for level,kind,value in ancillary:
+            if (level,kind)!=(socket.SOL_SOCKET,socket.SCM_RIGHTS):
+                unexpected=True;continue
+            fds=array.array('i');fds.frombytes(value[:len(value)//fds.itemsize*fds.itemsize]);delivered.extend(fds)
+        if unexpected or flags&(socket.MSG_TRUNC|socket.MSG_CTRUNC) or len(delivered)!=1:
+            raise ValueError('exactly one complete channel fd required')
+        if json.loads(payload)!=dict(stage='channel_fd',token=token):raise ValueError('channel transfer identity mismatch')
+        fd=delivered[0]
+        if not fcntl.fcntl(fd,fcntl.F_GETFD)&fcntl.FD_CLOEXEC:raise ValueError('transferred fd must be close-on-exec')
+        channel=socket.socket(fileno=fd);delivered.clear();return channel
+    finally:
+        for fd in delivered:os.close(fd)
+
+
 def worker(data, control):
-    keep={0,1,2,data.fileno(),control.fileno()}
+    keep={0,1,2,control.fileno()}
+    if data is not None:keep.add(data.fileno())
     for name in os.listdir('/proc/self/fd'):
         fd=int(name)
         if fd not in keep:
@@ -70,6 +98,17 @@ def worker(data, control):
         os.setgroups([]);os.setgid(1002);os.setuid(1000)
     identity=credentials()
     if identity['uids']!=[1000]*4 or any(int(v,16) for v in identity['caps'].values()):raise ValueError('ordinary credentials required')
+    transfer=None
+    if data is None:
+        token=secrets.token_hex(16)
+        before=dict(stage='awaiting_channel_fd',pid=os.getpid(),credentials=identity,token=token,wall_ns=time.time_ns(),open_fds=[])
+        for name in os.listdir('/proc/self/fd'):
+            try:target=os.readlink('/proc/self/fd/'+name)
+            except FileNotFoundError:continue
+            before['open_fds'].append(dict(fd=int(name),target=target))
+        if any(v['fd'] not in keep for v in before['open_fds']):raise ValueError('inherited authority fd survived isolation')
+        send(control,before);data=take_channel(control,token)
+        transfer=dict(before=before,received_wall_ns=time.time_ns(),inode=os.fstat(data.fileno()).st_ino,close_on_exec=True)
     original=data.fileno();duplicate=data.dup();data.close();data=duplicate
     data.setblocking(True)
     try:fcntl.fcntl(original,fcntl.F_GETFD)
@@ -77,7 +116,9 @@ def worker(data, control):
         original_errno=error.errno
         if original_errno!=errno.EBADF:raise
     else:raise ValueError('original application socket still open')
-    send(control,dict(stage='ready',pid=os.getpid(),fd=data.fileno(),original=original,original_errno=original_errno,credentials=identity,wall_ns=time.time_ns()))
+    ready=dict(stage='ready',pid=os.getpid(),fd=data.fileno(),original=original,original_errno=original_errno,credentials=identity,wall_ns=time.time_ns())
+    if transfer is not None:ready['scm_rights']=transfer
+    send(control,ready)
     try:
         while True:
             command=receive(control);kind=command['kind']
@@ -139,11 +180,12 @@ def worker(data, control):
 
 
 class Gate:
-    def __init__(self, observers, snapshots, leases, index, record, save, directional=False):
+    def __init__(self, observers, snapshots, leases, index, record, save, directional=False, scm_rights=False):
         self.directional=directional
         self.index=index;self.record=record;self.save=save;self.children=[];self.parents=[]
         self.row=dict(status='STARTING',index=index,owners=[],workers=[],business=[],start_wall_ns=time.time_ns())
         if directional:self.row.update(directional=True,bind_rejections=[])
+        if scm_rights:self.row.update(scm_rights=True,transfers=[])
         record['channel_grant']=self.row;save();channels=[];pairs=[]
         libc=ctypes.CDLL(None,use_errno=True);libc.bind.argtypes=[ctypes.c_int,ctypes.c_void_p,ctypes.c_uint];libc.bind.restype=ctypes.c_int
         try:
@@ -169,10 +211,19 @@ class Gate:
             for n in range(2):
                 pid=os.fork()
                 if pid==0:
-                    try:worker(channels[n],pairs[n][1]);os._exit(0)
+                    try:worker(None if scm_rights else channels[n],pairs[n][1]);os._exit(0)
                     except BaseException:os._exit(1)
                 self.children.append(pid);parent=pairs[n][0];parent.settimeout(12);self.parents.append(parent)
                 pairs[n][1].close()
+            if scm_rights:
+                for n,parent in enumerate(self.parents):
+                    before=receive(parent)
+                    if before['stage']!='awaiting_channel_fd' or before['pid']!=self.children[n]:raise ValueError('isolated ordinary transfer receiver required')
+                    start=time.time_ns();inode=os.fstat(channels[n].fileno()).st_ino
+                    pass_channel(parent,channels[n],before['token'])
+                    channels[n].close()
+                    self.row['transfers'].append(dict(before=before,inode=inode,start_wall_ns=start,broker_fd_closed_wall_ns=time.time_ns()))
+                    save()
             for data in channels:data.close()
             for n,parent in enumerate(self.parents):
                 value=receive(parent)
@@ -262,6 +313,10 @@ def verify(row, outer):
             raise ValueError('exact original v2 socket identity/lease required')
     for n,worker_row in enumerate(row['workers']):
         if worker_row['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker_row['credentials']['caps'].values()) or worker_row['original']==worker_row['fd'] or worker_row['original_errno']!=errno.EBADF or worker_row['pid']<=0:raise ValueError('actual ordinary duplicated socket required')
+        if row.get('scm_rights',False):
+            transfer=row['transfers'][n];received=worker_row['scm_rights'];before=transfer['before']
+            if received['before']!=before or before['pid']!=worker_row['pid'] or before['credentials']!=worker_row['credentials'] or received['inode']!=transfer['inode'] or not received['close_on_exec'] or not before['wall_ns']<transfer['start_wall_ns']<=transfer['broker_fd_closed_wall_ns'] or received['received_wall_ns']<transfer['start_wall_ns'] or received['received_wall_ns']>worker_row['wall_ns']:raise ValueError('actual SCM_RIGHTS lineage required')
+            if len(before['token'])!=32 or any(v['fd'] not in [0,1,2] and not v['target'].startswith('socket:[') for v in before['open_fds']) or len([v for v in before['open_fds'] if v['fd']>2])!=1:raise ValueError('only IPC fd may survive before transfer')
     if not row.get('directional',False):
         samples=row['blocking_witness'];armed=row['armed'];result=row['blocked_result']
         if armed['pid']!=row['workers'][i]['pid'] or armed['fd']!=row['workers'][i]['fd']:raise ValueError('original ordinary worker must be the blocked process')
@@ -319,4 +374,5 @@ def corroborate(row, outer, capture):
     if row.get('directional',False):
         proof['one_way_deliveries']=len(row['business'])
         proof['scope']='pre-daemon two real devices/independent Managed Files; UID1000/caps0 TX-only to RX-only actual one-way validation, forbidden direction EACCES, protected/invalid bind rejection, revoked/successor stale-fd denial; no business round-trip or blocked RX claim'
+    if row.get('scm_rights',False):proof['scm_rights_acceptance']=True
     return proof

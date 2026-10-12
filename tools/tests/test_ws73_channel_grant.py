@@ -3,12 +3,42 @@
 import copy
 import ctypes
 import errno
+import array
+import fcntl
+import json
+import os
 from pathlib import Path
 import select
+import socket
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_channel_grant import Address, message, validate, verify
+from ws73_channel_grant import Address, message, validate, verify, pass_channel, take_channel
+
+
+class FdTransfer(unittest.TestCase):
+    """Actual local Unix fd passing; no Sparklink/WS73 qualification claim."""
+    def test_exact_fd_is_close_on_exec_and_outlives_sender_reference(self):
+        with socket.socket(socket.AF_UNIX,socket.SOCK_DGRAM) as data:
+            inode=os.fstat(data.fileno()).st_ino
+            a,b=socket.socketpair(socket.AF_UNIX,socket.SOCK_SEQPACKET)
+            with a,b:
+                pass_channel(a,data,'test-token')
+                data.close()
+                with take_channel(b,'test-token') as received:
+                    self.assertEqual(os.fstat(received.fileno()).st_ino,inode)
+                    self.assertTrue(fcntl.fcntl(received,fcntl.F_GETFD)&fcntl.FD_CLOEXEC)
+
+    def test_rejected_transfer_closes_delivered_fds(self):
+        a,b=socket.socketpair(socket.AF_UNIX,socket.SOCK_SEQPACKET)
+        with a,b,socket.socket(socket.AF_UNIX,socket.SOCK_DGRAM) as data:
+            before=set(os.listdir('/proc/self/fd'))
+            for count,payload in [(0,dict(stage='channel_fd',token='right')),(2,dict(stage='channel_fd',token='right')),(32,dict(stage='channel_fd',token='right')),(1,dict(stage='channel_fd',token='wrong')),(1,dict(stage='wrong',token='right')),(1,'malformed-json'),(1,'x'*17000)]:
+                ancillary=[(socket.SOL_SOCKET,socket.SCM_RIGHTS,array.array('i',[data.fileno()]*count))] if count else []
+                a.sendmsg([(payload if isinstance(payload,str) else json.dumps(payload)).encode()],ancillary)
+                with self.subTest(count=count,payload=payload),self.assertRaises((ValueError,json.JSONDecodeError)):
+                    take_channel(b,'right')
+                self.assertEqual(set(os.listdir('/proc/self/fd')),before)
 
 
 def fixture(case='release'):
@@ -30,6 +60,23 @@ def fixture(case='release'):
 
 
 class GrantReceipt(unittest.TestCase):
+    def test_transfer_receipt_requires_isolated_ordinary_receiver_and_fd_identity(self):
+        row,outer=fixture();row.update(scm_rights=True,transfers=[])
+        for n,worker in enumerate(row['workers']):
+            before=dict(stage='awaiting_channel_fd',pid=worker['pid'],credentials=worker['credentials'],token='a'*32,wall_ns=1,open_fds=[dict(fd=10,target='socket:[1]')])
+            row['transfers'].append(dict(before=before,inode=n+100,start_wall_ns=2,broker_fd_closed_wall_ns=3))
+            worker.update(wall_ns=5,scm_rights=dict(before=before,inode=n+100,received_wall_ns=4,close_on_exec=True))
+        verify(row,outer)
+        for kind in ['inode','order','inherited','cloexec','pid','credentials']:
+            changed=copy.deepcopy(row);transfer=changed['workers'][0]['scm_rights']
+            if kind=='inode':transfer['inode']=999
+            elif kind=='order':transfer['received_wall_ns']=1
+            elif kind=='inherited':transfer['before']['open_fds'].append(dict(fd=11,target='socket:[2]'))
+            elif kind=='cloexec':transfer['close_on_exec']=False
+            elif kind=='pid':transfer['before']['pid']=999
+            elif kind=='credentials':transfer['before']['credentials']=dict(uids=[0]*4,caps={})
+            with self.subTest(kind=kind),self.assertRaises(ValueError):verify(changed,outer)
+
     def test_actual_unpublished_layout_and_random_business_validation(self):
         self.assertEqual(ctypes.sizeof(Address),48)
         self.assertEqual(Address.lease.offset,24)

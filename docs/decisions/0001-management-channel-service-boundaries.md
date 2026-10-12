@@ -1,3 +1,5 @@
+2026-10-13增补：[ADR0002](0002-session-socket-lifetime-and-proof-contract.md)明确Session/Channel/Binding所有权、授权及实验socket可靠性限制；其明确契约取代本文件的类型候选描述。
+
 # ADR 0001：管理、连接 socket 与应用服务分层
 
 最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](../BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。

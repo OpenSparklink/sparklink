@@ -1,3 +1,5 @@
+当前能力集中见[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)，会话/fd/验证整改见[ADR0002](decisions/0002-session-socket-lifetime-and-proof-contract.md)。
+
 # SparkLink 架构与实施状态
 
 2026-10-11：以[联合方案](IMPLEMENTATION_PLAN.md)和

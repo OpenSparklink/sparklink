@@ -74,3 +74,28 @@ socket 的 fd 必须绑定已经确认的 controller/generation/lifetime 与通�
 保留广播扫描、真实建链断链回归。自然故障根因、非人工自动恢复、物理拔插及
 当前源码四设备验收未完成时，相关 issues 继续开放。仅 VM 内运行实验内核与设备 I/O。
 每个小提交分别标记“实现 / 离线回归 / 实机通过 / 缺失”，签名提交、推送并更新 issues。
+
+## D1/D2 首个接入提交：实现与验收范围分开
+
+Linux `1f78c540f1179aa7c8a37740b4c58eb64efb1a6b` 已接通 WS73 完整 SDU
+A3 传输 callback、Native A3 RX 和 0x0009 完成入口。每 Runtime 独立持有数据
+credit/debt 和最多 16 包、每包最多 2047 字节的 RX 队列。内部 DTAP seam 要求
+controller/generation/lifetime/handle，旧 handle-only trait 仍不支持，未开放 raw
+用户态数据 ioctl。完整 SDU 长度受真实查询值限制；缺 driver callback 不给发送容量。
+
+USB 调用前记 outstanding，真实 NOCP 数量归还；零 count 不补 1，超额/未知完成或
+不确定传输停止本 generation 数据 TX。旧 lifetime 的 debt 不因 Down 或 USB 成功
+清零，阻止复用 handle 的新 lifetime 发送。RX 在 ingress 从 canonical table 绑定
+lifetime；已知物理变更清理旧队列，Unknown 不推断新身份，断链/退休唤醒数据等待者。
+Host→data→gate 的 IRQ 锁顺序不跨 USB I/O，发送与 native close 用 lifecycle 串行化。
+
+17 个严格生产源码依赖测试、12 个原子 link ingress 回归，以及既有 12 connection
+storage / 48 Host 与 ASan/UBSan/LSan codec 检查通过；实际 C/Rust 对象编译通过。
+完整新 VM 内核正在独立构建，旧资格镜像未覆盖。离线测试中的 USB/owner/锁依赖
+为 fixtures，不能证明真实数据收发或硬件完成语义。
+
+仍缺：实机 A3/NOCP 捕获、必要 CMTC/能力/TCID/PI 路径、有限 socket TX 队列、
+普通用户 socket/poll/close，以及对端应用校验并回复的业务数据闭环。
+本提交没有提前完成 D1/D2，也不把内部 raw ACB seam 当成每逻辑通道 socket。
+后续首先对新 VM 内核做既有建链/断链/RF 回归，再用独立测试 backend 验证实际
+A3/NOCP；传输探测仍不代替普通用户业务数据验收。自然故障与自动恢复 issues 开放。

@@ -122,12 +122,20 @@ pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Res
         if responder { "peer" } else { "initiator" }
     );
     let mut nonces = std::collections::BTreeSet::new();
+    let mut wire_sequences = std::collections::BTreeSet::new();
     for sequence in 0..rounds {
         let started = Instant::now();
         let deadline = started + Duration::from_secs(10);
         if responder {
             let mut frame = receive(&fd, deadline)?;
-            validate(&frame, sequence, false)?;
+            if frame.len() != 61 {
+                anyhow::bail!("peer application message length mismatch");
+            }
+            let wire_sequence = u32::from_le_bytes(frame[24..28].try_into()?);
+            validate(&frame, wire_sequence, false)?;
+            if !wire_sequences.insert(wire_sequence) {
+                anyhow::bail!("duplicate wire sequence");
+            }
             if !nonces.insert(frame[8..24].to_vec()) {
                 anyhow::bail!("duplicate nonce");
             }
@@ -144,10 +152,13 @@ pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Res
         } else {
             let mut frame = vec![0u8; 61];
             frame[..8].copy_from_slice(b"SLKSOCK1");
-            std::fs::File::open("/dev/urandom")?.read_exact(&mut frame[8..24])?;
-            frame[24..28].copy_from_slice(&sequence.to_le_bytes());
+            std::fs::File::open("/dev/urandom")?.read_exact(&mut frame[8..28])?;
+            let wire_sequence = u32::from_le_bytes(frame[24..28].try_into()?);
+            if !wire_sequences.insert(wire_sequence) || !nonces.insert(frame[8..24].to_vec()) {
+                anyhow::bail!("random source repeated nonce or sequence");
+            }
             for i in 0..32 {
-                frame[29 + i] = frame[8 + i % 16] ^ (sequence as u8).wrapping_add(i as u8);
+                frame[29 + i] = frame[8 + i % 16] ^ (wire_sequence as u8).wrapping_add(i as u8);
             }
             println!(
                 "NativeChannelSent: sequence={sequence} bytes={}",
@@ -155,7 +166,7 @@ pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Res
             );
             send(&fd, &frame, deadline)?;
             let received = receive(&fd, deadline)?;
-            validate(&received, sequence, true)?;
+            validate(&received, wire_sequence, true)?;
             frame[28] = 1;
             if received != frame {
                 anyhow::bail!("actual peer reply differs from original random payload");

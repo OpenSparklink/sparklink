@@ -66,13 +66,16 @@ def application_frames(row):
         return [bytes.fromhex(v[-1]) for v in values]
     sent=rows('initiator','NativeChannelSent');received=rows('peer','NativeChannelReceived')
     reply=rows('peer','NativeChannelReply');returned=rows('initiator','NativeChannelRoundTrip',True)
-    nonces=set()
+    nonces=set();wire_sequences=set()
     for i,data in enumerate(sent):
-        if len(data)!=61 or data[:8]!=b'SLKSOCK1' or data[24:28]!=i.to_bytes(4,'little') or data[28]!=0:
+        if len(data)!=61 or data[:8]!=b'SLKSOCK1' or data[28]!=0:
             raise CaptureError('exact random application protocol required')
         if data[8:24] in nonces:raise CaptureError('fresh nonce per round required')
         nonces.add(data[8:24])
-        if any(data[29+j] != data[8+j%16]^((i+j)&255) for j in range(32)):raise CaptureError('application payload mismatch')
+        wire_sequence=int.from_bytes(data[24:28],'little')
+        if wire_sequence in wire_sequences:raise CaptureError('fresh random wire sequence required')
+        wire_sequences.add(wire_sequence)
+        if any(data[29+j] != data[8+j%16]^((wire_sequence+j)&255) for j in range(32)):raise CaptureError('application payload mismatch')
         expected=bytearray(data);expected[28]=1
         if received[i]!=data or reply[i]!=expected or returned[i]!=expected:
             raise CaptureError('actual peer validation and exact reply required')
@@ -82,7 +85,7 @@ def application_frames(row):
 def corroborate(run,capture):
     rows=run.get('channel_socket')
     if rows is None or len(rows)!=2:raise CaptureError('two connection direction phases required')
-    sdus=reassemble_acb(capture);proofs=[];all_nonces=set()
+    sdus=reassemble_acb(capture);proofs=[];all_nonces=set();all_sequences=set()
     for n,row in enumerate(rows):
         if row['phase']!=n or row['status']!='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING':raise CaptureError('original successful socket phase required')
         sent,replies=application_frames(row)
@@ -100,6 +103,9 @@ def corroborate(run,capture):
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
             if data[8:24] in all_nonces:raise CaptureError('random nonce reused across direction phases')
             all_nonces.add(data[8:24])
+            wire_sequence=int.from_bytes(data[24:28],'little')
+            if wire_sequence in all_sequences:raise CaptureError('wire sequence reused across direction phases')
+            all_sequences.add(wire_sequence)
             for sender,receiver,payload in [(owners[0],owners[1],data),(owners[1],owners[0],reply)]:
                 frame=b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload
                 legs.append(dict(sequence=sequence,tx=matched(sender,'out',frame),rx=matched(receiver,'in',frame)))

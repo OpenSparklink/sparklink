@@ -14,7 +14,8 @@ def fixture():
     apps=[dict(role=role,exit=0,credentials=copy.deepcopy(credentials),stdout=f'NativeChannelOpened: role={role} rounds=4\n') for role in ['initiator','peer']]
     for i in range(4):
         nonce=bytes([i+1])*16
-        body=b'SLKSOCK1'+nonce+i.to_bytes(4,'little')+bytes(1)+bytes(nonce[j%16]^((i+j)&255) for j in range(32))
+        sequence=0x12345678+i*17
+        body=b'SLKSOCK1'+nonce+sequence.to_bytes(4,'little')+bytes(1)+bytes(nonce[j%16]^((sequence+j)&255) for j in range(32))
         reply=bytearray(body);reply[28]=1
         apps[0]['stdout']+=f'NativeChannelSent: sequence={i} bytes={body.hex()}\nNativeChannelRoundTrip: sequence={i} elapsed_ms=10 bytes={reply.hex()}\n'
         apps[1]['stdout']+=f'NativeChannelReceived: sequence={i} bytes={body.hex()}\nNativeChannelReply: sequence={i} bytes={reply.hex()}\n'
@@ -27,7 +28,7 @@ class ApplicationProof(unittest.TestCase):
         self.assertEqual(len(sent),4);self.assertEqual(sent[0][28],0);self.assertEqual(replies[0][28],1)
 
     def test_missing_actual_reply_failed_process_privilege_or_duplicate(self):
-        for kind in ['reply','failed','root','cap','duplicate','deadline','payload']:
+        for kind in ['reply','failed','root','cap','duplicate','deadline','payload','wire-sequence']:
             row=fixture();a=row['applications'][0];b=row['applications'][1]
             if kind=='reply':b['stdout']=b['stdout'].replace('NativeChannelReply:','Missing:')
             if kind=='failed':a['exit']=1
@@ -36,6 +37,14 @@ class ApplicationProof(unittest.TestCase):
             if kind=='duplicate':a['stdout']+=a['stdout'].splitlines()[1]+'\n'
             if kind=='deadline':a['stdout']=a['stdout'].replace('elapsed_ms=10','elapsed_ms=10000')
             if kind=='payload':b['stdout']=b['stdout'].replace('bytes=534c4b','bytes=004c4b')
+            if kind=='wire-sequence':
+                sent,_=application_frames(row);changed=bytearray(sent[1]);changed[24:28]=sent[0][24:28]
+                sequence=int.from_bytes(changed[24:28],'little')
+                for j in range(32):changed[29+j]=changed[8+j%16]^((sequence+j)&255)
+                for app in row['applications']:
+                    for reply in [0,1]:
+                        old=bytearray(sent[1]);old[28]=reply;changed[28]=reply
+                        app['stdout']=app['stdout'].replace(old.hex(),changed.hex())
             with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(row)
 
 
@@ -53,9 +62,10 @@ class IndependentUSBProof(unittest.TestCase):
                 for app in row['applications']:
                     for i in range(4):
                         old=bytes([i+1])*16;new=bytes([i+11])*16
+                        old_sequence=0x12345678+i*17;new_sequence=0xabcdef12+i*17
                         for reply in [0,1]:
-                            a=b'SLKSOCK1'+old+i.to_bytes(4,'little')+bytes([reply])+bytes(old[j%16]^((i+j)&255) for j in range(32))
-                            b=b'SLKSOCK1'+new+i.to_bytes(4,'little')+bytes([reply])+bytes(new[j%16]^((i+j)&255) for j in range(32))
+                            a=b'SLKSOCK1'+old+old_sequence.to_bytes(4,'little')+bytes([reply])+bytes(old[j%16]^((old_sequence+j)&255) for j in range(32))
+                            b=b'SLKSOCK1'+new+new_sequence.to_bytes(4,'little')+bytes([reply])+bytes(new[j%16]^((new_sequence+j)&255) for j in range(32))
                             app['stdout']=app['stdout'].replace(a.hex(),b.hex())
             phases.append(row)
             def leg(sender,receiver,data):

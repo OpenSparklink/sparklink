@@ -316,3 +316,14 @@ connected release/last File/dup/inflight、新删除/重建真实FD边界、物�
 再canonical状态和peer/link lifetime、完整S0–S6原scope及旧实现清理。
 默认四设备并行、自然启动/bulk/设备消失根因和非人工恢复仍OPEN。
 正常VM累计97/维护37，所有实验VM-only，部分成果不关闭整项。
+
+新源VM99另外独立通过原Setup六项、发现队列六项、Native Create队列六项和
+独立Ready scanner-peer：每组36条真实peer命令/回复，1451包/零丢包/taint0、
+退出0，随后RF22，普通CLI同slkd/bus。显式release作者Cancelled/-125，最后
+File后仍记录不可观察null，dup首关Held/Queued、尾关Free/Ready/Off，外部fd
+前后ENOENT；扩展窗口无Create/Disconnect OUT，未制造credits/Complete。
+[新源File回归](evidence/ws73-native-advertising-state-queued-file-regression-20261012.json)，
+SHA256 `da835edeeb854f091ffac7fe753ed99947570d1cff847681194a31546581b5ad`。
+特权FIFO支撑及人工guest IN错误的限定不变，不证明connected/inflight/自然
+恢复。prelaunch尝试98参数缩写歧义在VM/USB前拒绝，原log保留，99使用完整
+参数；累计97→98→99不回退。新删除/重建真实FD与原partial当前源回归仍待。

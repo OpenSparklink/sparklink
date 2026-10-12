@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T20:55:20.583285+00:00",
+  "updated_at_utc": "2026-10-12T20:57:04.713556+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
-    "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
+    "userspace": "758f1fd"
   },
   "qualified_source_heads": {
     "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
@@ -281,7 +281,7 @@
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
   "current_batch": "Authorized RX dequeue/PEEK after wake implemented, actual source fixture and scoped LKMM passed, precise normal40/249 VM business and CI9/9 requalified. Controlled blocked RX/whole Grant remains open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
-  "issue_sync_status": "Original28 adoption and architecture-first scope preserved; new14 lease epoch comments read back exact and original issue body hashes OPEN unchanged",
+  "issue_sync_status": "Original28 scope preserved; latest14 authorized-RX source/proof/normal real/missing gate comments read back exact, all original body hashes unchanged and OPEN",
   "current_implementation_heads": {
     "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
     "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
@@ -319,8 +319,8 @@
     "docs/evidence/authorized-rx-formal-20261013/manifest.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/grant-epoch-issues-20261013.json",
-  "latest_evidence_commit": "79ba67a",
+  "latest_issue_progress_receipt": "docs/evidence/authorized-rx-issues-20261013.json",
+  "latest_evidence_commit": "758f1fd",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: actual authorized RX dequeue/blocked wake path and regressions, bounded lock scope model; no new whole Grant qualification"
+  "current_goal_turn_classification": "progress: production RX-after-wake authorization and unknown-tail fix, exact source C regression and scoped LKMM, new real40/249 and CI9/9,14 original-scope issue sync"
 }

@@ -65,7 +65,7 @@ def pass_channel(control, data, token):
         raise ValueError('partial channel fd transfer')
 
 
-def take_channel(control, token):
+def take_channel(control, token, family=46):
     """Take exactly one close-on-exec fd; close all delivered fds on rejection."""
     payload,ancillary,flags,_=control.recvmsg(16384,socket.CMSG_SPACE(16*array.array('i').itemsize),socket.MSG_CMSG_CLOEXEC)
     delivered=[]
@@ -80,7 +80,8 @@ def take_channel(control, token):
         if json.loads(payload)!=dict(stage='channel_fd',token=token):raise ValueError('channel transfer identity mismatch')
         fd=delivered[0]
         if not fcntl.fcntl(fd,fcntl.F_GETFD)&fcntl.FD_CLOEXEC:raise ValueError('transferred fd must be close-on-exec')
-        channel=socket.socket(fileno=fd);delivered.clear();return channel
+        # AF_SPARKLINK does not promise Python's auto-detection getsockname.
+        channel=socket.socket(family,socket.SOCK_DGRAM,0,fileno=fd);delivered.clear();return channel
     finally:
         for fd in delivered:os.close(fd)
 
@@ -212,7 +213,10 @@ class Gate:
                 pid=os.fork()
                 if pid==0:
                     try:worker(None if scm_rights else channels[n],pairs[n][1]);os._exit(0)
-                    except BaseException:os._exit(1)
+                    except BaseException as error:
+                        try:send(pairs[n][1],dict(error=str(error),error_type=type(error).__name__))
+                        except OSError:pass
+                        os._exit(1)
                 self.children.append(pid);parent=pairs[n][0];parent.settimeout(12);self.parents.append(parent)
                 pairs[n][1].close()
             if scm_rights:

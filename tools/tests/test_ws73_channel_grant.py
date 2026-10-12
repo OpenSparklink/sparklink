@@ -25,7 +25,7 @@ class FdTransfer(unittest.TestCase):
             with a,b:
                 pass_channel(a,data,'test-token')
                 data.close()
-                with take_channel(b,'test-token') as received:
+                with take_channel(b,'test-token',socket.AF_UNIX) as received:
                     self.assertEqual(os.fstat(received.fileno()).st_ino,inode)
                     self.assertTrue(fcntl.fcntl(received,fcntl.F_GETFD)&fcntl.FD_CLOEXEC)
 
@@ -37,7 +37,7 @@ class FdTransfer(unittest.TestCase):
                 ancillary=[(socket.SOL_SOCKET,socket.SCM_RIGHTS,array.array('i',[data.fileno()]*count))] if count else []
                 a.sendmsg([(payload if isinstance(payload,str) else json.dumps(payload)).encode()],ancillary)
                 with self.subTest(count=count,payload=payload),self.assertRaises((ValueError,json.JSONDecodeError)):
-                    take_channel(b,'right')
+                    take_channel(b,'right',socket.AF_UNIX)
                 self.assertEqual(set(os.listdir('/proc/self/fd')),before)
 
 

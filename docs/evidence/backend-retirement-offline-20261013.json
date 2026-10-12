@@ -1,0 +1,136 @@
+{
+  "status": "RETIRED_TRANSPORT_EMPTY_REGISTRY_OFFLINE_VM_PASS",
+  "kernel_head": "ab9e5ecdf048b7d5a8a580809fc5a9a27211abce",
+  "userspace_head": "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba",
+  "source_sha256": {
+    "net/sparklink/sparklink_core.rs": "03a75091623328fb189eb7dbdf98a99e6f15f87c53027d6e9cf37c24328c5b55",
+    "net/sparklink/sle_dli.rs": "32bf939cdb2d8c6a6a75327ccb2d4cb68a0db1dff24d0c0379c4470f8349a2be",
+    "net/sparklink/sle_uart.rs": "38fb315d154f3cf7f316c8261960da417430947ee367e3a65bb8218719c7340f",
+    "net/sparklink/sle_serdev.rs": "12e851cef7fbda7b92409752f36690d3c2d1d579a50cd1bff3eed3c98fd80ad7",
+    "net/sparklink/sle_configfs.rs": "6ede342100fcdf6ade32d5da954b53ce7cccbba67f6c5871c05ea0546a6d4cc8",
+    "tools/testing/selftests/sparklink/sparklink_no_ghost_backend_test.c": "636b53bf12b648ae9e9040586a127b4e75116d894fb819e29c9aeabb9e986ae6"
+  },
+  "build_record": {
+    "status": "BUILD_PASSED",
+    "source_head": "ab9e5ecdf048b7d5a8a580809fc5a9a27211abce",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-backend-retired-verified-kernel-build.log",
+      "sha256": "15553872daa9650b80daa71082b9b2b8f08f583ffc3cbb59b22bc730a2c384a2"
+    }
+  },
+  "warnings": 0,
+  "actual_empty_vm": {
+    "status": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+    "checks": 3,
+    "selector_inputs": 9,
+    "registered_mask": 0,
+    "active_id": 65535,
+    "missing_device_select_errno": 19,
+    "unbound_snapshot_errno": 22,
+    "raw_manifest_sha256": "9e80cf8bb0617b8406507d48e2996fa4dd36ca7001fe42e08714338e042ef5e1",
+    "raw_console_sha256": "92e02eba36ab42bad68ffc689eca2b1208f639fb149d6fdc1c4df9474e148256"
+  },
+  "historical_method_tests": {
+    "status": "BACKEND_CONTAINMENT_PASS",
+    "sources": {
+      "sle_uart.rs": {
+        "sha256": "73cd7d549899b04558682ee785bc6858a536e1864282830d2376999e58c15e0d",
+        "methods_sha256": "0c3b79e855cedc07c5ddbf0ea7a02ebb03f5b199e8013674064d26a08c6a573f"
+      },
+      "sle_spi.rs": {
+        "sha256": "21102a8b895f6b7ec873a6367ef6a50541753edc9d82143b17af827ab8230fe0",
+        "methods_sha256": "6852e16fcc5833de95dec4b1b44601abe8a6eb2d5e78dadbf0b122bd0029db87"
+      }
+    },
+    "tests": 2,
+    "scope": "archived unsupported trait bodies preserved outside production, fixture types; no UART/SPI hardware/framing qualification",
+    "physical_acceptance": false
+  },
+  "retained_codec_tests": {
+    "status": "RETAINED_AND_HISTORICAL_TRANSPORT_CODEC_PASS",
+    "tests": 5,
+    "sources": {
+      "/home/sanchuanhehe/Documents/opensparklink/linux/net/sparklink/sle_uart.rs": "38fb315d154f3cf7f316c8261960da417430947ee367e3a65bb8218719c7340f",
+      "/home/sanchuanhehe/Documents/opensparklink/linux/net/sparklink/sle_dli.rs": "32bf939cdb2d8c6a6a75327ccb2d4cb68a0db1dff24d0c0379c4470f8349a2be",
+      "/home/sanchuanhehe/Documents/opensparklink/linux/tools/testing/selftests/sparklink/retired-transport/sle_uart.rs": "73cd7d549899b04558682ee785bc6858a536e1864282830d2376999e58c15e0d",
+      "/home/sanchuanhehe/Documents/opensparklink/linux/tools/testing/selftests/sparklink/retired-transport/sle_spi.rs": "21102a8b895f6b7ec873a6367ef6a50541753edc9d82143b17af827ab8230fe0"
+    },
+    "scope": "actual retained UART parser; archived UART/SPI encoder bodies; Vec allocation dependency fixture; no hardware/serdev/SPI standard interoperability or allocation-failure qualification"
+  },
+  "tools_tests": 436,
+  "source_session_test_log_sha256": "2acc9b54a8acdce7d7e0c4a3b12ad96f3b149a5469707e961a6f7211f1dd6591",
+  "scope": "production no fabricated configfs controllers; retained serdev UART parser and historical method/codec regressions; empty USB VM actual kernel ioctl/configfs. Not real UART/SPI/serdev hardware or complete registrable Backend/module/callback/Virtual contract.",
+  "new_formal_proof": false,
+  "first_failures_preserved": [
+    "ddb58 first build with7 parser unreachable-pub warnings; fixed95f2c81 no suppression",
+    "95f2c81 empty VM probe incorrectly assumed unbound snapshot ENODEV; actual affinity contract EINVAL, fixedtestab9e5ec plus missing-device select ENODEV checks",
+    "private pipeline called old staging path; no-overwrite rejected before VM, old artifacts retained; continued verified artifacts with correct new path"
+  ],
+  "full_goal_complete": false,
+  "exact_ci": {
+    "run_id": 38322276411,
+    "source_head": "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba",
+    "jobs": [
+      {
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo check",
+        "conclusion": "success"
+      },
+      {
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "conclusion": "success"
+      },
+      {
+        "name": "rustfmt",
+        "conclusion": "success"
+      },
+      {
+        "name": "Python bindings and kernel ABI conformance",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo test",
+        "conclusion": "success"
+      },
+      {
+        "name": "C header generation",
+        "conclusion": "success"
+      },
+      {
+        "name": "clippy",
+        "conclusion": "success"
+      },
+      {
+        "name": "release build",
+        "conclusion": "success"
+      }
+    ],
+    "conclusion": "success"
+  }
+}

@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前Kbf8663bb78eb/U86bfbc8：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前Kab9e5ecdf048/U9124bc4：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -23,6 +23,11 @@ Grant由内核强制核对完整scope/方向/Managed epoch；bf8663锁下最终�
 专用fd客户端/接收器及init监督已在VM完成两角色真实共同slkd死亡/接任；
 两lease都撤销、旧fd不续权。首醒按Grant或物理lifetime先终止区分，见ADR0002。
 独立管理所有者/四设备两组同行业务、在途提交与完整生命周期证明仍缺。
+
+模块初始化现为空注册表；旧configfs假UART/SPI/None构造、忽略open错误注册及对应
+selector arms已退出。实际bus注册后才创建Runtime；历史模型移selftests，serdev使用的
+UART decoder保留且无全局dead_code掩盖。实际空USB门禁与新40/249通过。
+剩余三bus selector/per-device parser/module与callback引用仍待WP13，未完成整项Backend架构。
 
 ## 目标分层及架构决策
 

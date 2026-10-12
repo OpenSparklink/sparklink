@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T22:34:04.651039+00:00",
+  "updated_at_utc": "2026-10-12T23:35:47.654321+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,16 +26,16 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "dfae2124a7a4f1770778a2a7cdd6f57b555633ff"
+    "linux": "ab9e5ecdf048b7d5a8a580809fc5a9a27211abce",
+    "userspace": "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba"
   },
   "qualified_source_heads": {
-    "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "86bfbc81ba001539c3816f72b3efc5a911cf19ee"
+    "linux": "ab9e5ecdf048b7d5a8a580809fc5a9a27211abce",
+    "userspace": "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba"
   },
   "current_qualification": {
-    "DG01": "Kbf8663/U86bfbc8 new40 ordinary actual peer round trips, both roles; canonical Native events retained after default Legacy isolation; RF22/connection/QMP gates preserved",
-    "DG02": "Same exact new source8 app249 and16 oversize rejections absent capture; remaining same-Binding/other layers/long gates open",
+    "DG01": "Kab9e5ec/U9124bc4 new40 ordinary actual peer round trips after fabricated Backend registration retirement, both roles; RF22/connection/fd/QMP support gates preserved",
+    "DG02": "Same exact new source8 app249 and16 oversize rejections absent capture; same-Binding/other layers/long modes open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -44,11 +44,12 @@
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
-    "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open"
+    "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
+    "WP13": "PARTIAL: fabricated configfs None/Uart/Spi and ignored-open registration removed; archive models,retain actual serdev decoder; empty USB VM actual mask0/activeFFFF/select ENODEV/unbound EINVAL/9selectors checked3 times, signed load/unload/zero warnings/CI9. Registrable seam, per-device serdev, module/callback/Virtual remain open."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP05/06 common slkd death/retained ordinary fd/successor two-role real gate PASS at tools82aa65a; not independent-owner peer business isolation. Continue WP12 low-level legacy event migration and WP13 registrable Backend/generation/module/stop-callback contract before new features; remaining in-flight/security/NOCP gates parallel.",
+    "WP13 next actual register/unregister Backend descriptor and per-device parser/module/generation/stop callback contract for remaining USB/serdev/WS73; WP12 low-level legacy event clients and ring migration parallel. Preserve exact new normal data gates; earlier controlled Grant/daemon proofs remain at their exact historical source until affected regression.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -330,13 +331,16 @@
     "docs/evidence/ws73-default-event-isolated-249-boundary-20261013.json",
     "docs/evidence/default-event-isolation-offline-20261013.json",
     "docs/evidence/ws73-daemon-channel-death-20261013.json",
-    "docs/evidence/daemon-channel-death-offline-20261013.json"
+    "docs/evidence/daemon-channel-death-offline-20261013.json",
+    "docs/evidence/ws73-retired-backend-short-repeat-20261013.json",
+    "docs/evidence/ws73-retired-backend-249-boundary-20261013.json",
+    "docs/evidence/backend-retirement-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/daemon-channel-death-issues-20261013.json",
   "latest_evidence_commit": "dfae2124a7a4f1770778a2a7cdd6f57b555633ff",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: actual daemon death supervisor/client/receiver integration,signed corrections,435 offline gates,two-role exact real SIGKILL/Free/successor/old-fd denial with independent wire seal; initial two failures retained; exact toolsCI9 success and14 existing issue readbacks OPEN/original scope unchanged",
+  "current_goal_turn_classification": "progress: production fabricated Backend retirement/archival,retained strict decoder/method regressions,source visibility warning fix,actual empty VM3 kernel/configfs checks,exact new40/249/RF/CI9; failed probe contract and private staging typo retained",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
     "82aa65a77019804e78a95c1706c461e715187314"

@@ -376,15 +376,25 @@ Free后/新daemon后双方旧fd严格EACCES。初始顺序断言失败保留，�
 
 ### WP13：Backend可注册、driver拆分和Virtual（P2，S1/S6）
 
-当前源码审计：`sle_dli.rs::ControllerBackend`仍硬编码None/Uart/Spi/Usb/Serdev/Ws73；
-`sparklink_core.rs::init_subsystem`依configfs构造旧UART/SPI且忽略open错误，
-USB/serdev走`activate_new_device`的Runtime固定槽，尚无目标可注册Backend seam。
-整改不得只改enum名称：须先收敛register/unregister引用与generation、停止/回调屏障，
-迁移真实WS73调用者，再移driver与删除旧configfs假设备构造；
-UART/SPI历史codec/失败语义移selftests，未经真实transport接通的生产配置明确拒绝。
-这些范围未因当前Grant实机通过而完成。默认profile0拒绝是未迁移事件路径的临时
-能力拒绝，不是永久WS73-only目标；WP13统一Backend描述与canonical事件能力后，
-标准/Virtual按相同Runtime契约重新开放并验收，不能用实验旧ring绕过。
+当前整改三类审计（Kddb58a/95f2c81/ab9e5ec，参考原Kbf8663）：
+
+- **立即删除，已实施**：`init_subsystem`的configfs None/Uart/Spi构造、忽略open失败的
+  注册及临时默认ControllerState；`ControllerBackend`对应变体/构造器/dispatch。
+  模块启动为空注册表，只有实际bus driver成功注册后创建Runtime。全局selector仅none/0
+  接受，uart/spi/usb及数字选项EOPNOTSUPP，非法值EINVAL，不能制造已选择硬件。
+- **移入测试，已实施**：原UART/SPI完整模型精确保存在kernel selftests/retired-transport；
+  Unsupported方法原回归2项、实际UART接收parser/历史UART-SPI encoder5项严格测试保留。
+  SPI模块、UART controller/unused encoder退出默认module graph；UART全局dead_code掩盖移除，
+  保留parser的7项可见性警告以pub(crate)修复。旧模型不代表硬件或标准SPI互通。
+- **等待替代，仍开放**：USB/serdev/WS73剩余selector和driver callbacks、serdev全局parser、
+  core与USB耦合；须统一register/unregister描述、引用/模块/generation与停止-回调屏障，
+  真Virtual注册同Runtime、bus移drivers，再删除余下enum/active选择及重复event路径。
+  暂时profile0拒绝仍是未迁移能力限制，不能恢复旧ring或退回假UART/SPI对象来提供支持。
+
+新Kernel清洁构建零warning；Kab9e5ec/U9124bc4空USB实际configfs/ioctl三次检查、
+签名module/load-unload及双WS73准确40短/249八轮/16超限、RF22/建链断链通过，CI9。首轮空VM因测试错误地预期unbound snapshot ENODEV失败，
+实际接口要求fd affinity、无绑定EINVAL；改为额外检查缺设备选择ENODEV/活动idFFFF/注册mask0，
+原失败保留。未以静态审计或历史codec通过宣布整个WP13/相关issue完成。
 
 
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。

@@ -322,6 +322,11 @@ def verify_passthrough():
     if 'link_resync' in run:
         from ws73_link_resync import corroborate as resync_corroborate
         resync_corroborate(run,capture)
+    if ('ws73.acb_probe=1' in Path('/proc/cmdline').read_text().split()) != ('acb_transport_probe' in run):
+        raise ValueError('explicit ACB transport probe/evidence mismatch')
+    if 'acb_transport_probe' in run:
+        from ws73_acb_transport_probe import corroborate as acb_corroborate
+        acb_corroborate(run,capture,(EVIDENCE/'kernel.log').read_text())
     requested_connection = 'ws73.connection_verify=1' in Path('/proc/cmdline').read_text().split()
     if requested_connection != ('connection_control' in run):
         raise ValueError('explicit connection request and evidence must agree')

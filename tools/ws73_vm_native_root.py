@@ -234,6 +234,7 @@ def stage(args, manifest, root, source, copy_elf):
     if not qemu_data:
         raise ValueError('explicit verified QEMU data snapshot required')
     manifest['native_vm'] = {'release': release, 'root_uuid': root_uuid,
+                             'kernel_head': smoke['source_head'],
                              'qemu_data': qemu_data,
                              'modules': inputs, 'service_manifest_sha256': digest(service_path / 'manifest.json'),
                              'boot_smoke_manifest_sha256': digest(smoke_path),

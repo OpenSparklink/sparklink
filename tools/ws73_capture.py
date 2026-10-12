@@ -75,6 +75,8 @@ def hcc_command(data):
         return None  # ROM/control messages have no native command proof.
     if data[64] >> 4 != 10 or data[65] != 8:
         return None  # PM/BSLE profiles have different TX allocation rules.
+    if len(data) > 68 and data[68] == 0xa3:
+        return None  # validated separately as data, never a command receipt
     _, size, sequence = struct.unpack_from('<III', data)
     payload_size = struct.unpack_from('<H', data, 66)[0]
     if (size != len(data) or data[64] != 0xa0 or payload_size < 5
@@ -87,6 +89,29 @@ def hcc_command(data):
     return dict(opcode=opcode, params=data[73:73 + params_size].hex(), sequence=sequence)
 
 
+def acb(payload):
+    """Exact full-SDU A3; DTAP content stays opaque at the controller seam."""
+    if not payload or payload[0] != 0xa3:
+        return None
+    if len(payload) < 5:
+        raise CaptureError('short A3 header')
+    handle, length = struct.unpack_from('<HH', payload, 1)
+    if handle & 0xf000 or not 0 < length <= 2047 or length != len(payload) - 5:
+        raise CaptureError('unsupported or malformed full-SDU A3')
+    return dict(handle=handle, data=payload[5:].hex())
+
+
+def hcc_acb(data):
+    if len(data) < 69 or struct.unpack_from('<I', data)[0] != 0 or data[68] != 0xa3:
+        return None
+    if struct.unpack_from('<I', data, 4)[0] != len(data) or data[64:66] != bytes([0xa0, 8]):
+        raise CaptureError('invalid A3 USB/HCC TX envelope')
+    length = struct.unpack_from('<H', data, 66)[0]
+    if length > len(data) - 68 or len(data) != 64 + max(64, 4 + length) or any(data[68 + length:]):
+        raise CaptureError('invalid A3 TX payload boundary/padding')
+    return acb(data[68:68 + length])
+
+
 def read_capture(path, targets):
     """Read endpoint-1 IN and pair OUT submission/completion by USB/URB identity.
 
@@ -97,6 +122,7 @@ def read_capture(path, targets):
     reports, complete, failures, empty, commands = [], [], [], [], []
     pending = {}
     native_events = []
+    acb_packets = []
     targets = set(tuple(t) for t in targets)
     with Path(path).open('rb') as stream:
         header = stream.read(24)
@@ -148,12 +174,12 @@ def read_capture(path, targets):
                         raise CaptureError('target OUT submission absent or truncated')
                     raw = packet[64:]
                     pending[key] = (identity | {'usb_sha256': hashlib.sha256(raw).hexdigest()},
-                                    length, hcc_command(raw))
+                                    length, hcc_command(raw), hcc_acb(raw))
                     continue
                 submitted = pending.pop(key, None)
                 if submitted is None:
                     raise CaptureError('OUT completion/error without captured submission')
-                start, expected, command = submitted
+                start, expected, command, datagram = submitted
                 if timestamp < start['wall_ns']:
                     raise CaptureError('OUT completion predates submission')
                 if status or kind == ord('E'):
@@ -163,6 +189,8 @@ def read_capture(path, targets):
                     raise CaptureError('short or data-bearing OUT completion')
                 if command is not None:
                     commands.append(start | command | {'completion': identity})
+                if datagram is not None:
+                    acb_packets.append(start | datagram | dict(direction='out', completion=identity))
                 continue
             if status:
                 failures.append(identity | {'status':status, 'endpoint':endpoint})
@@ -181,6 +209,9 @@ def read_capture(path, targets):
                 if (service, queue) != (10, 8):
                     continue
                 identity = identity | {'hcc_offset': slot, 'usb_sha256': hashlib.sha256(raw).hexdigest(), 'usb_length':len(raw)}
+                datagram = acb(payload)
+                if datagram is not None:
+                    acb_packets.append(identity | datagram | dict(direction='in'))
                 if len(payload) >= 5 and payload[0] == 0xa2:
                     event, size = struct.unpack_from('<HH', payload, 1)
                     if size != len(payload)-5:
@@ -197,7 +228,8 @@ def read_capture(path, targets):
     if pending:
         raise CaptureError('unfinished OUT submission at capture end')
     return {'reports': reports, 'complete': complete, 'commands': commands, 'failures': failures,
-            'empty_bulk_completions':empty, 'native_events':native_events, 'packet_count': ordinal}
+            'empty_bulk_completions':empty, 'native_events':native_events,
+            'acb_packets':acb_packets, 'packet_count': ordinal}
 
 
 def check_capture_stats(text):

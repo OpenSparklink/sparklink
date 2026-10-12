@@ -30,12 +30,16 @@ class ReferenceCaptureTests(unittest.TestCase):
     def test_acl_is_not_a_native_command(self):
         self.assertFalse(self.read(self.acl())['commands'])
 
-    def test_native_reader_remains_strict_before_and_after_reference_read(self):
+    def test_native_reader_routes_acb_separately_before_and_after_reference_read(self):
         for before in [True, False]:
             if not before:
                 self.read(self.acl())
+            actual = self.read(self.acl(), reader=read_capture)
+            self.assertFalse(actual['commands'])
+            self.assertEqual(actual['acb_packets'][0]['data'], '010203')
+            invalid = self.acl(); invalid[71] ^= 1
             with self.assertRaises(CaptureError):
-                self.read(self.acl(), reader=read_capture)
+                self.read(invalid, reader=read_capture)
 
     def test_reference_does_not_hide_malformed_acl(self):
         for offset in [4, 66, 71]:

@@ -107,6 +107,9 @@ def execute(run, a, b):
                 phase['stale_object_rejections'].append(reject_old(run,old,'while-reused-handle-live'));run.save()
             selected=next(entry['object'] for entry in phase['typed_objects'] if entry['owner']==caller)
             if any(selected[key]!=phase['reference'][key] for key in ['lifetime','handle','role','address_type','address']):raise CaptureError('object differs from original canonical reference')
+            if getattr(run.args, 'acb_transport_probe', False):
+                from ws73_acb_transport_probe import execute as acb_execute
+                acb_execute(run, phase)
             phase['disconnect_command'] = len(run.data['commands'])
             row = run.command([str(run.args.slctl), '--adapter', caller['path'],
                 'disconnect-object',selected['path']], 18, collection='commands')

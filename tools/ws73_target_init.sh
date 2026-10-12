@@ -243,6 +243,9 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     daemon_remove_arg=''
     if grep -q 'ws73.daemon_remove=1' /proc/cmdline; then daemon_remove_arg='--daemon-cancel-remove'; fi
     connection_arg=''
+    if grep -qw ws73.acb_probe=1 /proc/cmdline; then
+        LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_acb_transport_probe.py > /evidence/acb-transport-supervisor.log 2>&1 & acb_supervisor=$!
+    fi
     if grep -qw ws73.link_resync=1 /proc/cmdline; then
         LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_link_resync.py --slkd-pid "$daemon" > /evidence/link-resync-supervisor.log 2>&1 & resync_supervisor=$!
     fi
@@ -250,12 +253,14 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         posture=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connection_advertising=/){sub(/^ws73.connection_advertising=/,"",$i);print $i}}' /proc/cmdline)
         case "$posture" in fixed-t|negotiable-t) ;; *) fail 'explicit connection posture' ;; esac
         connection_arg="--connection-verify --connection-advertising $posture"
+        if grep -qw ws73.acb_probe=1 /proc/cmdline; then connection_arg="$connection_arg --acb-transport-probe"; fi
         if grep -qw ws73.link_resync=1 /proc/cmdline; then connection_arg="$connection_arg --daemon-link-resync"; fi
     fi
     initializer_arg=''
     if grep -q 'ws73.initializer_lifecycle=1' /proc/cmdline; then initializer_arg='--initializer-lifecycle'; fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg $initializer_arg $connection_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
     if grep -qw ws73.link_resync=1 /proc/cmdline; then wait "$resync_supervisor" || fail 'real subscriber overflow supervisor'; fi
+    if grep -qw ws73.acb_probe=1 /proc/cmdline; then wait "$acb_supervisor" || fail 'real ACB transport supervisor'; fi
 else
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py instructions || fail 'physical mapping'
     # The only interactive shell is uid1000; raw capture and slkd remain root.
@@ -285,8 +290,10 @@ if [ -f /scratch-root-uuid ]; then
     for stats in /sys/kernel/tracing/per_cpu/cpu*/stats; do
         cat "$stats" >> /evidence/xhci-trace-stats.txt || fail 'native xHCI trace statistics'
     done
-    [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'final VM kernel taint'
-    echo 'WS73_TARGET_NATIVE_VM_TAINT: 0'
+    expected_taint=0
+    if grep -qw ws73.acb_probe=1 /proc/cmdline; then expected_taint=4096; fi
+    [ "$(cat /proc/sys/kernel/tainted)" = "$expected_taint" ] || fail 'final VM kernel taint'
+    echo "WS73_TARGET_NATIVE_VM_TAINT: $expected_taint"
 fi
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py verify-support || fail 'sealed actual capture'

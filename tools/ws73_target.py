@@ -106,7 +106,7 @@ def prepare(args):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
-                  HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -120,6 +120,9 @@ def prepare(args):
                   LINUX/'tools/testing/selftests/sparklink/qemu_verdict.py',
                   LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',
                   *board.values(),*[args.firmware_dir/name for name in images]]
+        if getattr(args, 'acb_probe_module', None) is not None:
+            if not module_profile: raise ValueError('ACB selftest module requires native VM profile')
+            inputs.append(args.acb_probe_module)
         manifest['inputs'] = [file_record(p) for p in inputs]
         source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
         source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates','bindings/python/sparklink'],cwd=USERSPACE,text=True).splitlines()
@@ -195,7 +198,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -217,6 +220,9 @@ def prepare(args):
 <include>/etc/sparklink.conf</include></busconfig>''')
         if module_profile:
             native_vm.stage(args, manifest, root, USERSPACE, copy_elf)
+            if getattr(args, 'acb_probe_module', None) is not None:
+                from ws73_acb_transport_probe import stage_module
+                stage_module(args.acb_probe_module, root, manifest)
         manifest['guest_files'] = [file_record(p) for p in sorted(root.rglob('*')) if p.is_file() and not p.is_symlink()]
         archive = output/'initramfs.cpio.gz'
         if module_profile:
@@ -408,7 +414,9 @@ def _run(args):
     observer_policy=bool(getattr(args,'observer_policy',False))
     daemon_crash=bool(getattr(args,'daemon_crash',False))
     connection_verify=bool(getattr(args,'connection_verify',False))
+    acb_probe=bool(getattr(args,'acb_transport_probe',False))
     link_resync=bool(getattr(args,'daemon_link_resync',False))
+    if acb_probe and (not connection_verify or link_resync):raise ValueError('ACB selftest requires separate explicit connection gate')
     if link_resync and not connection_verify:raise ValueError('link resync requires explicit ordinary native connection gate')
     connection_advertising=getattr(args,'connection_advertising','fixed-t')
     if connection_advertising!='fixed-t' and not connection_verify:
@@ -521,6 +529,8 @@ def _run(args):
     m['qmp_guest_hotplug']=passthrough
     m['connection_verify_requested']=connection_verify
     m['live_daemon_link_resync']=link_resync
+    m['acb_transport_selftest_requested']=acb_probe
+    m['ordinary_channel_socket_acceptance']=False
     m['connection_advertising_requested']=connection_advertising if connection_verify else None
     m['daemon_crash_requested']=daemon_crash
     if daemon_crash:m['daemon_crash_verifier']=file_record(HERE/'ws73_daemon_crash.py')
@@ -574,6 +584,7 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if acb_probe and 'acb_probe_module' not in package:raise ValueError('frozen signed ACB selftest module missing')
         if connection_verify and 'native_vm' not in package:
             raise ValueError('connection gate requires actual signed native VM')
         if daemon_crash and 'native_vm' not in package:
@@ -636,6 +647,7 @@ def _run(args):
                      (' ws73.daemon_crash=1' if daemon_crash else '')+
                      (f' ws73.connection_verify=1 ws73.connection_advertising={connection_advertising}' if connection_verify else '')+
                      (' ws73.link_resync=1' if link_resync else '')+
+                     (' ws73.acb_probe=1' if acb_probe else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
                      (' ws73.diagnostic=1' if diagnostic else '')+
@@ -812,7 +824,7 @@ def _run(args):
                 if kernel_fault(text+(share/'kernel.log').read_text()):raise ValueError('kernel fault in environment')
                 if 'native_vm' in package:
                     marker = 'WS73_TARGET_NATIVE_VM_ROOT: ' + package['native_vm']['release'] + ' NVMe/Btrfs signed-module'
-                    if text.splitlines().count(marker) != 1 or text.splitlines().count('WS73_TARGET_NATIVE_VM_TAINT: 0') != 1:
+                    if text.splitlines().count(marker) != 1 or text.splitlines().count('WS73_TARGET_NATIVE_VM_TAINT: '+('4096' if acb_probe else '0')) != 1:
                         raise ValueError('native module VM root/signature proof missing')
                     status = (share/'slkd-process-status.txt').read_text()
                     if (not re.search(r'^Name:\s+slkd$', status, re.M)
@@ -879,6 +891,11 @@ def _run(args):
                     if link_resync:
                         from ws73_link_resync import corroborate as resync_corroborate
                         m['link_resync_corroboration']=resync_corroborate(control,capture)
+                if acb_probe != ('acb_transport_probe' in control):raise ValueError('explicit ACB probe request/evidence mismatch')
+                if acb_probe:
+                    from ws73_acb_transport_probe import corroborate as acb_corroborate
+                    m['acb_transport_selftest_corroboration']=acb_corroborate(control,capture,(share/'kernel.log').read_text())
+                    m['expected_external_selftest_taint']=4096
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
                     raise ValueError('explicit daemon crash request and evidence must agree')
                 if daemon_crash:
@@ -1071,6 +1088,7 @@ def main():
     for name in native_vm.OPTIONS:
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
+    pack.add_argument('--acb-probe-module',type=Path,help='explicit signed external selftest; never ordinary socket qualification')
     pack.add_argument('--native-discovery-config', type=Path,
                       help='freeze a private slkd TOML config in the native VM; checked by staged slkd, no RF qualification')
     for name in ['run','support']:
@@ -1111,6 +1129,7 @@ def main():
             cmd.add_argument('--diagnostic-deadline-verify',action='store_true',help='100ms queued expiry with continuous same-ID retries; requires --diagnostic-cancel-verify and real fault-recovery mode')
             cmd.add_argument('--diagnostic-cancel-verify',action='store_true',help='hold one real IN81 to test active/queued cancel and late reply; requires --diagnostic-verify and --fault-recovery')
             cmd.add_argument('--daemon-link-resync',action='store_true',help='actual VM subscriber pause, real event ring overflow and canonical resync; requires connection verification')
+            cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')
             cmd.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t',help='explicit announcement contrast for --connection-verify')
             modes=cmd.add_mutually_exclusive_group()

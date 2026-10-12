@@ -564,9 +564,40 @@ async fn property_eventually(proxy: &zbus::Proxy<'_>, name: &str, value: bool) {
     .unwrap();
 }
 
+// Offline canonical ioctl dependency fixtures. Raw event payloads deliberately
+// disagree with tables: production properties must follow the snapshot only.
+fn native_table(
+    sequence: u64,
+    revision: u64,
+    links: &[(u64, u16, u8, u8, [u8; 6])],
+) -> slk_protocol::SleLinkSnapshot {
+    let mut table = slk_protocol::SleLinkSnapshot {
+        version: 1,
+        profile: 1,
+        generation: 7,
+        event_seq: sequence,
+        revision,
+        flags: 1,
+        count: links.len() as u32,
+        ..Default::default()
+    };
+    for (slot, &(lifetime, handle, role, address_type, address)) in
+        table.links.iter_mut().zip(links)
+    {
+        *slot = slk_protocol::SleLinkInfo {
+            lifetime,
+            handle,
+            role,
+            address_type,
+            address,
+            ..Default::default()
+        };
+    }
+    table
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn native_physical_outcomes_update_dbus_without_legacy_remote_service_or_false_loss_disconnect()
- {
+async fn canonical_startup_loss_resync_and_barrier_preserve_reused_handle_peer() {
     let bus = PrivateBus::start();
     let state = state();
     let expected = slk_protocol::SleControllerSnapshot {
@@ -578,24 +609,9 @@ async fn native_physical_outcomes_update_dbus_without_legacy_remote_service_or_f
     let server = server(&bus, state.clone()).await;
     let client = client(&bus).await;
     let address = [1, 2, 3, 4, 5, 6];
-    let mut event = slk_protocol::SleControllerEvent {
-        profile: 1,
-        generation: 7,
-        seq: 1,
-        event_code: 0x15,
-        payload_len: 11,
-        ..Default::default()
-    };
-    event.payload[..11].copy_from_slice(&[0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6]);
-    dispatch_native(Ok(event), &state, &server, expected).await;
-    let path = state
-        .lock()
-        .await
-        .devices
-        .get(&address)
-        .unwrap()
-        .object_path
-        .clone();
+    let original = native_table(10, 1, &[(1, 0, 0, 0, address)]);
+    reconcile_native(&state, &server, expected, 0, Ok(original)).await;
+    let path = state.lock().await.devices[&address].object_path.clone();
     let device = zbus::Proxy::new(
         &client,
         "org.sparklink",
@@ -621,48 +637,137 @@ async fn native_physical_outcomes_update_dbus_without_legacy_remote_service_or_f
     .await
     .unwrap();
     assert!(remote.introspect().await.is_err());
-    let down = slk_protocol::SleControllerEvent {
-        profile: 1,
+    let old_down = slk_protocol::SleControllerEvent {
         generation: 7,
-        seq: 2,
+        profile: 1,
+        seq: 9,
         event_code: 5,
-        payload_len: 4,
-        payload: {
-            let mut p = [0; 288];
-            p[..4].copy_from_slice(&[1, 0, 0, 0x13]);
-            p
-        },
         ..Default::default()
     };
-    dispatch_native(Ok(down), &state, &server, expected).await;
+    dispatch_native_with(Ok(old_down), &state, &server, expected, || async {
+        panic!("barrier-covered event must not query or mutate")
+    })
+    .await;
     assert!(device.get_property::<bool>("Connected").await.unwrap());
-    let mut down = down;
-    down.seq = 3;
-    down.payload[0] = 0;
-    dispatch_native(Ok(down), &state, &server, expected).await;
-    property_eventually(&device, "Connected", false).await;
-    assert!(
-        device
-            .get_property::<bool>("ConnectionKnown")
-            .await
-            .unwrap()
-    );
-    event.seq = 4;
-    dispatch_native(Ok(event), &state, &server, expected).await;
-    property_eventually(&device, "Connected", true).await;
     let lost = slk_protocol::SleControllerEvent {
-        profile: 1,
         generation: 7,
-        seq: 6,
+        profile: 1,
+        seq: 12,
         event_code: 0x1801,
-        lost: 1,
+        lost: 2,
         ..Default::default()
     };
-    dispatch_native(Ok(lost), &state, &server, expected).await;
+    dispatch_native_with(Ok(lost), &state, &server, expected, || async {
+        Err(zbus::fdo::Error::Failed("offline query failure".into()))
+    })
+    .await;
     property_eventually(&device, "ConnectionKnown", false).await;
+    assert_eq!(state.lock().await.native_link_barrier, 10);
+    assert_eq!(state.lock().await.events_lost, 2);
+    let adapter = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk0",
+        "org.sparklink.Adapter",
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        adapter
+            .get_property::<(u64, u64, bool)>("NativeLinkObservation")
+            .await
+            .unwrap(),
+        (10, 1, false)
+    );
+    // A retry obtains a new lifetime with the same handle, after an omitted Down.
+    let replacement = native_table(20, 3, &[(3, 0, 1, 1, address)]);
+    reconcile_native(&state, &server, expected, 12, Ok(replacement)).await;
+    property_eventually(&device, "ConnectionKnown", true).await;
+    property_eventually(&device, "Connected", true).await;
+    let mut stale_down = old_down;
+    stale_down.seq = 19;
+    dispatch_native_with(Ok(stale_down), &state, &server, expected, || async {
+        panic!("old Down must not erase replacement lifetime")
+    })
+    .await;
+    assert_eq!(
+        state.lock().await.native_links.unwrap().links[0],
+        replacement.links[0]
+    );
+    let current = slk_protocol::SleControllerEvent {
+        seq: 21,
+        ..stale_down
+    };
+    dispatch_native_with(Ok(current), &state, &server, expected, || async {
+        Ok(native_table(21, 4, &[]))
+    })
+    .await;
     property_eventually(&device, "Connected", false).await;
-    assert!(!state.lock().await.native_links_known);
-    event.seq = 7;
-    dispatch_native(Ok(event), &state, &server, expected).await;
-    property_eventually(&device, "ConnectionKnown", false).await;
+    property_eventually(&device, "ConnectionKnown", true).await;
+    // Successful loss resync restores Known; author success is never consulted.
+    let lost = slk_protocol::SleControllerEvent {
+        seq: 25,
+        lost: 1,
+        ..lost
+    };
+    dispatch_native_with(Ok(lost), &state, &server, expected, || async {
+        Ok(native_table(30, 5, &[(5, 7, 0, 0, address)]))
+    })
+    .await;
+    property_eventually(&device, "Connected", true).await;
+    assert_eq!(state.lock().await.native_link_barrier, 30);
+    assert_eq!(
+        adapter
+            .get_property::<(u64, u64, bool)>("NativeLinkObservation")
+            .await
+            .unwrap(),
+        (30, 5, true)
+    );
+}
+
+#[tokio::test]
+async fn canonical_state_rejects_identity_rollback_and_ambiguous_address_alias_without_losing_rssi()
+{
+    let state = state();
+    let address = [1; 6];
+    let mut st = state.lock().await;
+    st.controller = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    assert!(!st.native_links_known());
+    st.on_adv_report(address, -45, 0, String::new(), vec![1, 2]);
+    st.apply_native_links(
+        native_table(20, 2, &[(1, 4, 0, 0, address), (2, 5, 1, 1, address)]),
+        0,
+    )
+    .unwrap();
+    assert_eq!(st.device_connection(&address), (false, false));
+    assert_eq!(
+        (
+            st.devices[&address].rssi,
+            st.devices[&address].adv_data.clone()
+        ),
+        (-45, vec![1, 2])
+    );
+    for field in ["generation", "index", "profile", "seq", "revision", "tail"] {
+        let mut bad = native_table(21, 3, &[(3, 6, 0, 0, address)]);
+        match field {
+            "generation" => bad.generation = 8,
+            "index" => bad.dev_index = 1,
+            "profile" => bad.profile = 0,
+            "seq" => bad.event_seq = 19,
+            "revision" => bad.revision = 1,
+            "tail" => bad.links[1].lifetime = 2,
+            _ => unreachable!(),
+        }
+        assert!(st.apply_native_links(bad, 20).is_err(), "{field}");
+        assert_eq!(st.device_connection(&address), (false, false));
+        assert_eq!(st.native_link_barrier, 20);
+    }
+    st.apply_native_links(native_table(22, 3, &[]), 20).unwrap();
+    assert_eq!(st.device_connection(&address), (true, false));
+    st.present = false;
+    assert_eq!(st.device_connection(&address), (false, false));
 }

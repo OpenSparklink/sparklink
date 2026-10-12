@@ -322,7 +322,7 @@ impl AdapterIface {
                     addr_hex,
                     d.name.clone(),
                     d.rssi as i16,
-                    d.connected && d.connection_known,
+                    st.device_connection(&d.addr).1,
                 )
             })
             .collect()
@@ -433,6 +433,16 @@ impl AdapterIface {
     async fn events_lost(&self) -> u64 {
         self.state.lock().await.events_lost
     }
+    /// Daemon observation position; Known is false after any failed refresh.
+    #[zbus(property)]
+    async fn native_link_observation(&self) -> (u64, u64, bool) {
+        let st = self.state.lock().await;
+        (
+            st.native_link_barrier,
+            st.native_link_revision,
+            st.native_links_known(),
+        )
+    }
 
     /// Adapter power state
     #[zbus(property)]
@@ -533,12 +543,7 @@ impl DeviceIface {
 
     #[zbus(property)]
     async fn connection_known(&self) -> bool {
-        self.state
-            .lock()
-            .await
-            .devices
-            .get(&self.addr)
-            .is_some_and(|d| d.connection_known)
+        self.state.lock().await.device_connection(&self.addr).0
     }
 
     #[zbus(property)]
@@ -554,11 +559,7 @@ impl DeviceIface {
     /// Whether the device is currently connected
     #[zbus(property)]
     async fn connected(&self) -> bool {
-        let st = self.state.lock().await;
-        st.devices
-            .get(&self.addr)
-            .map(|d| d.connected && d.connection_known)
-            .unwrap_or(false)
+        self.state.lock().await.device_connection(&self.addr).1
     }
 
     /// Discovery level from advertisement
@@ -609,6 +610,9 @@ impl DeviceIface {
     /// tx_bytes, rx_bytes.
     async fn get_connection_info(&self) -> zbus::fdo::Result<HashMap<String, Value<'static>>> {
         let st = self.state.lock().await;
+        if st.controller.profile != 0 {
+            return Err(zbus::fdo::Error::NotSupported("native connection parameters require a typed current lifetime; legacy conn_info is unsupported".into()));
+        }
         let handle = st
             .devices
             .get(&self.addr)

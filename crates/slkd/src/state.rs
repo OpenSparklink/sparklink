@@ -22,8 +22,6 @@ pub struct DeviceEntry {
     pub discovery_level: u8,
     pub connected: bool,
     pub connection_known: bool,
-    pub peer_address_type: Option<u8>,
-    pub peer_role: Option<u8>,
     pub conn_handle: Option<u16>,
     pub object_path: String,
     pub adv_data: Vec<u8>,
@@ -63,7 +61,9 @@ pub struct AdapterState {
     pub initialization_error: String,
     pub native_reports: VecDeque<NativeReport>,
     pub events_lost: u64,
-    pub native_links_known: bool,
+    pub native_links: Option<slk_protocol::SleLinkSnapshot>,
+    pub native_link_barrier: u64,
+    pub native_link_revision: u64,
     pub config: DaemonConfig,
     pub powered: bool,
     pub discovering: bool,
@@ -96,7 +96,9 @@ impl AdapterState {
             initialization_error: String::new(),
             native_reports: VecDeque::new(),
             events_lost: 0,
-            native_links_known: true,
+            native_links: None,
+            native_link_barrier: 0,
+            native_link_revision: 0,
             config,
             powered: true,
             discovering: false,
@@ -193,8 +195,6 @@ impl AdapterState {
             discovery_level: 0,
             connected: false,
             connection_known: self.controller.profile == 0,
-            peer_address_type: None,
-            peer_role: None,
             conn_handle: None,
             object_path,
             adv_data: Vec::new(),
@@ -256,8 +256,6 @@ impl AdapterState {
                     discovery_level: 0,
                     connected: true,
                     connection_known: true,
-                    peer_address_type: None,
-                    peer_role: None,
                     conn_handle: Some(handle),
                     object_path,
                     adv_data: Vec::new(),
@@ -268,74 +266,76 @@ impl AdapterState {
         }
     }
 
-    /// Native physical event projection. Author operation success is never
-    /// used as a substitute for this stream. Loss/conflicts remain Unknown.
+    /// Native physical state is an exact canonical snapshot, never an event delta
+    /// or an author result. The replay barrier survives failed refreshes.
     pub fn invalidate_native_connections(&mut self) {
-        self.native_links_known = false;
-        for d in self.devices.values_mut() {
-            d.connection_known = false;
-            d.connected = false;
-            d.conn_handle = None;
+        self.native_links = None;
+    }
+    pub fn native_links_known(&self) -> bool {
+        self.present
+            && self
+                .native_links
+                .as_ref()
+                .is_some_and(|table| table.flags == slk_protocol::LINK_SNAPSHOT_KNOWN)
+    }
+    /// Address-only discovery objects are aliases, not a typed connection
+    /// identity. Multiple current lifetimes/types at that address are Unknown.
+    pub fn device_connection(&self, address: &SleAddr) -> (bool, bool) {
+        if self.controller.profile == 0 {
+            return self
+                .devices
+                .get(address)
+                .map(|d| (d.connection_known, d.connected && d.connection_known))
+                .unwrap_or((false, false));
+        }
+        if !self.native_links_known() {
+            return (false, false);
+        }
+        let table = self.native_links.as_ref().expect("known table");
+        let count = table.links[..table.count as usize]
+            .iter()
+            .filter(|link| &link.address == address)
+            .count();
+        if count > 1 {
+            (false, false)
+        } else {
+            (true, count == 1)
         }
     }
-    pub fn native_link(
+    /// Replace the whole observation only if its identity and replay position
+    /// cover the triggering event. Return newly discovered publication paths.
+    pub fn apply_native_links(
         &mut self,
-        outcome: slk_protocol::Ws73LinkOutcome,
-    ) -> Option<(SleAddr, String, bool)> {
-        if !self.native_links_known {
-            return None;
+        table: slk_protocol::SleLinkSnapshot,
+        minimum_seq: u64,
+    ) -> Result<Vec<(SleAddr, String)>, ()> {
+        if !self.present
+            || self.controller.profile != 1
+            || !table.valid_for(self.controller.generation)
+            || table.profile != self.controller.profile
+            || table.dev_index != self.controller.dev_index
+            || table.event_seq < minimum_seq.max(self.native_link_barrier)
+            || table.revision < self.native_link_revision
+        {
+            self.invalidate_native_connections();
+            return Err(());
         }
-        match outcome {
-            slk_protocol::Ws73LinkOutcome::Connected {
-                status: 0,
-                handle,
-                address_type,
-                address,
-                role,
-            } => {
-                let conflict = self.devices.values().any(|d| {
-                    d.connection_known
-                        && d.connected
-                        && ((d.conn_handle == Some(handle) && d.addr != address)
-                            || (d.addr == address
-                                && (d.conn_handle != Some(handle)
-                                    || d.peer_address_type != Some(address_type)
-                                    || d.peer_role != Some(role))))
-                });
-                if conflict {
-                    self.invalidate_native_connections();
-                    return None;
+        self.native_link_barrier = table.event_seq;
+        self.native_link_revision = table.revision;
+        self.native_links = Some(table);
+        let mut new = Vec::new();
+        if table.flags == slk_protocol::LINK_SNAPSHOT_KNOWN {
+            for link in &table.links[..table.count as usize] {
+                if !self.devices.contains_key(&link.address)
+                    && self.on_adv_report(link.address, 0, 0, String::new(), Vec::new())
+                {
+                    let device = self.devices.get_mut(&link.address).expect("new peer");
+                    device.rssi_known = false;
+                    new.push((link.address, device.object_path.clone()));
                 }
-                let new = if self.devices.contains_key(&address) {
-                    false
-                } else {
-                    self.on_adv_report(address, 0, 0, String::new(), Vec::new())
-                };
-                let d = self.devices.get_mut(&address)?;
-                d.connected = true;
-                d.connection_known = true;
-                d.conn_handle = Some(handle);
-                d.peer_address_type = Some(address_type);
-                d.peer_role = Some(role);
-                if new {
-                    d.rssi_known = false;
-                }
-                Some((address, d.object_path.clone(), new))
             }
-            slk_protocol::Ws73LinkOutcome::Disconnected {
-                status: 0, handle, ..
-            } => {
-                let d = self
-                    .devices
-                    .values_mut()
-                    .find(|d| d.connection_known && d.conn_handle == Some(handle))?;
-                d.connected = false;
-                d.connection_known = true;
-                d.conn_handle = None;
-                Some((d.addr, d.object_path.clone(), false))
-            }
-            _ => None,
         }
+        Ok(new)
     }
 
     /// Query connection info from the kernel for a given handle.

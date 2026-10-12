@@ -302,6 +302,12 @@ impl Context {
         println!("  Address:     {address}");
         println!("  Profile:     {profile}");
         if profile == 1 {
+            let (seq, revision, known): (u64, u64, bool) =
+                proxy.get_property("NativeLinkObservation").await?;
+            let lost: u64 = proxy.get_property("EventsLost").await?;
+            println!(
+                "  Native links: event_seq={seq} revision={revision} known={known} lost={lost}"
+            );
             let (version, min, max, power, interval, window): (u32, u32, u32, i32, u32, u32) =
                 proxy.call("GetDiscoveryPolicy", &()).await?;
             println!(

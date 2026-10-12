@@ -63,10 +63,27 @@ impl EventTask {
     ) -> Self {
         let (cancel, mut cancelled) = oneshot::channel();
         let task = tokio::spawn(async move {
+            let mut retry = tokio::time::interval(std::time::Duration::from_secs(1));
+            retry.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+            tokio::select! {
+                biased;
+                _ = &mut cancelled => return,
+                _ = refresh_native(&state, &connection, expected, 0) => {},
+            }
             loop {
                 let event = tokio::select! {
                     biased;
                     _ = &mut cancelled => break,
+                    _ = retry.tick() => {
+                        if !state.lock().await.native_links_known() {
+                            tokio::select! {
+                                biased;
+                                _ = &mut cancelled => break,
+                                _ = refresh_native(&state, &connection, expected, 0) => {},
+                            }
+                        }
+                        continue;
+                    },
                     event = receiver.next_event() => event,
                 };
                 tokio::select! {
@@ -203,16 +220,120 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
     }
 }
 
+async fn reconcile_native(
+    state: &SharedState,
+    connection: &zbus::Connection,
+    expected: slk_protocol::SleControllerSnapshot,
+    minimum_seq: u64,
+    snapshot: zbus::fdo::Result<slk_protocol::SleLinkSnapshot>,
+) {
+    let (new, paths, known, barrier, revision, adapter_path) = {
+        let mut st = state.lock().await;
+        if !st.present || st.controller.generation != expected.generation {
+            return;
+        }
+        let new = match snapshot {
+            Ok(table) => match st.apply_native_links(table, minimum_seq) {
+                Ok(new) => new,
+                Err(()) => {
+                    error!(
+                        generation = expected.generation,
+                        "invalid or stale canonical link snapshot"
+                    );
+                    Vec::new()
+                }
+            },
+            Err(error) => {
+                st.invalidate_native_connections();
+                tracing::warn!(%error, generation=expected.generation, "canonical links unknown; bounded-rate refresh scheduled");
+                Vec::new()
+            }
+        };
+        (
+            new,
+            st.devices
+                .values()
+                .map(|d| d.object_path.clone())
+                .collect::<Vec<_>>(),
+            st.native_links_known(),
+            st.native_link_barrier,
+            st.native_link_revision,
+            st.object_path.clone(),
+        )
+    };
+    for (address, path) in new {
+        if let Err(error) = connection
+            .object_server()
+            .at(path.as_str(), DeviceIface::new(state.clone(), address))
+            .await
+        {
+            error!(%error, "canonical peer publication failed");
+        }
+    }
+    for path in paths {
+        crate::adapters::invalidate_device_properties(
+            connection,
+            &path,
+            &["Connected", "ConnectionKnown"],
+        )
+        .await;
+    }
+    crate::adapters::invalidate_properties(connection, &adapter_path, &["NativeLinkObservation"])
+        .await;
+    tracing::info!(
+        generation = expected.generation,
+        known,
+        barrier,
+        revision,
+        "canonical links reconciled"
+    );
+}
+
+async fn refresh_native(
+    state: &SharedState,
+    connection: &zbus::Connection,
+    expected: slk_protocol::SleControllerSnapshot,
+    minimum_seq: u64,
+) {
+    let snapshot = crate::connection::snapshot(state).await;
+    reconcile_native(state, connection, expected, minimum_seq, snapshot).await;
+}
+
 async fn dispatch_native(
     event: libsparklink::Result<slk_protocol::SleControllerEvent>,
     state: &SharedState,
     connection: &zbus::Connection,
     expected: slk_protocol::SleControllerSnapshot,
 ) {
+    dispatch_native_with(event, state, connection, expected, || {
+        crate::connection::snapshot(state)
+    })
+    .await;
+}
+
+// Query dependency is injectable only by the dedicated offline test caller;
+// production always reads the actual canonical kernel ioctl.
+async fn dispatch_native_with<
+    F: Future<Output = zbus::fdo::Result<slk_protocol::SleLinkSnapshot>>,
+>(
+    event: libsparklink::Result<slk_protocol::SleControllerEvent>,
+    state: &SharedState,
+    connection: &zbus::Connection,
+    expected: slk_protocol::SleControllerSnapshot,
+    query: impl FnOnce() -> F,
+) {
     let event = match event {
         Ok(event) => event,
         Err(error) => {
             error!(%error, index=expected.dev_index, "native event read failed");
+            reconcile_native(
+                state,
+                connection,
+                expected,
+                0,
+                Err(zbus::fdo::Error::Failed(error.to_string())),
+            )
+            .await;
             tokio::time::sleep(std::time::Duration::from_millis(100)).await;
             return;
         }
@@ -224,84 +345,31 @@ async fn dispatch_native(
         error!("native event identity mismatch");
         return;
     }
-    let mut st = state.lock().await;
-    if !st.present {
-        return;
-    }
-    st.events_lost = st.events_lost.saturating_add(event.lost);
-    let lost_paths = if event.lost != 0 {
-        st.invalidate_native_connections();
-        st.devices
-            .values()
-            .map(|d| d.object_path.clone())
-            .collect::<Vec<_>>()
-    } else {
-        Vec::new()
-    };
-    if matches!(event.event_code, 0x15 | 0x1401 | 5 | 0x1405) {
-        let updated = if let Some(outcome) = event.ws73_link_outcome() {
-            st.native_link(outcome)
-        } else {
-            st.invalidate_native_connections();
-            None
-        };
-        let adapter_path = st.object_path.clone();
-        let known = st.native_links_known;
-        let invalid_paths = if !known {
-            st.devices
-                .values()
-                .map(|d| d.object_path.clone())
-                .collect::<Vec<_>>()
-        } else {
-            lost_paths
-        };
-        drop(st);
-        for path in invalid_paths {
-            crate::adapters::invalidate_device_properties(
-                connection,
-                &path,
-                &["Connected", "ConnectionKnown"],
-            )
-            .await;
-        }
-        if let Some((address, path, new)) = updated {
-            if new
-                && let Err(error) = connection
-                    .object_server()
-                    .at(path.as_str(), DeviceIface::new(state.clone(), address))
-                    .await
-            {
-                error!(%error,"native device publication failed");
-            }
-            crate::adapters::invalidate_device_properties(
-                connection,
-                &path,
-                &["Connected", "ConnectionKnown"],
-            )
-            .await;
-        }
-        if event.lost != 0 {
-            crate::adapters::invalidate_properties(connection, &adapter_path, &["EventsLost"])
-                .await;
-        }
-        return;
-    }
-    // Notify loss even on unrelated notifications, without treating it as a
-    // successful disconnection or synthesizing a legacy SSAP/profile event.
-    if !lost_paths.is_empty() {
-        drop(st);
-        for path in &lost_paths {
-            crate::adapters::invalidate_device_properties(
-                connection,
-                path,
-                &["Connected", "ConnectionKnown"],
-            )
-            .await;
-        }
-        st = state.lock().await;
+    let is_link = matches!(event.event_code, 0x15 | 0x1401 | 5 | 0x1405);
+    let (refresh, adapter_path) = {
+        let mut st = state.lock().await;
         if !st.present {
             return;
         }
+        st.events_lost = st.events_lost.saturating_add(event.lost);
+        let refresh = event.lost != 0 || is_link && event.seq > st.native_link_barrier;
+        if refresh {
+            st.invalidate_native_connections();
+        }
+        (refresh, st.object_path.clone())
+    };
+    if refresh {
+        reconcile_native(state, connection, expected, event.seq, query().await).await;
+    }
+    if event.lost != 0 {
+        crate::adapters::invalidate_properties(connection, &adapter_path, &["EventsLost"]).await;
+    }
+    if is_link {
+        return;
+    }
+    let mut st = state.lock().await;
+    if !st.present {
+        return;
     }
     let Some(report) = event.ws73_discovery() else {
         let path = st.object_path.clone();

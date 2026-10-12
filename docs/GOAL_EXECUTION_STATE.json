@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T20:57:04.713556+00:00",
+  "updated_at_utc": "2026-10-12T21:18:52.280480+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
-    "userspace": "758f1fd"
+    "userspace": "22635f823b9de923fe47cefdd714c448de47526b"
   },
   "qualified_source_heads": {
     "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
@@ -43,7 +43,7 @@
     "FV07": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN",
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
-    "DG09": "NOT_QUALIFIED: locked epoch TX/RX/USB source checks and scoped pure Grant/LKMM only; controlled blocked receive/release/owner-death/full directions/security still open"
+    "DG09": "PARTIAL_REAL_SUBGATE: 2roles x release/final management fd/dup, actual blocking syscall/wchan and EACCES wake, old fd after successor denied, peer Ready/lease/scan continuity. No daemon death/SCM_RIGHTS/direction/security/inflight full qualification."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
@@ -116,7 +116,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "Host lease epoch and atomic software-TX/USB guards plus v2 delegation implemented/normal RF requalified; full scoped Grant direction/security/blocked RX/controlled revoke matrix still open"
+      "status": "Epoch software TX/RX/USB checks plus normal path and six real File withdrawal cases qualified; full per-Binding directions/security, daemon death/SCM_RIGHTS/inflight/whole proof still open"
     },
     {
       "id": "WP06",
@@ -279,7 +279,7 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Authorized RX dequeue/PEEK after wake implemented, actual source fixture and scoped LKMM passed, precise normal40/249 VM business and CI9/9 requalified. Controlled blocked RX/whole Grant remains open.",
+  "current_batch": "Six real pre-daemon controlled Managed File Grant cases passed, actual UID1000/caps0 blocked syscall witnesses,16 business rounds, old-fd denial after successor and peer radio/lease isolation. Full original architecture/Grant/security/inflight/recovery exits open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "Original28 scope preserved; latest14 authorized-RX source/proof/normal real/missing gate comments read back exact, all original body hashes unchanged and OPEN",
   "current_implementation_heads": {
@@ -287,7 +287,7 @@
     "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
   },
   "next_resume_tasks": [
-    "Implement dedicated real controlled Grant gate using two independent Managed owners, ordinary passed socket fd, actual /proc syscall+wchan witness of blocking recv, release/last-management-fd/dup, stale fd after successor and peer radio/lease continuity; independent USB corroboration. Then full Binding directions/security and owner-death/fd transfer. Kf103/Ud570 normal40/249 already qualified; do not repeat unchanged normal gates.",
+    "WP05: implement per-Binding Grant direction/security contract and production unsupported checks using qualified Kernel f103; then real daemon owner-death and SCM_RIGHTS/fd-transfer/inflight withdrawal gates, retain existing six File cases. Scope full original S0-S6 unchanged; architecture-first before Engine.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -316,11 +316,12 @@
     "docs/evidence/ws73-authorized-rx-short-repeat-20261013.json",
     "docs/evidence/ws73-authorized-rx-249-boundary-20261013.json",
     "docs/evidence/authorized-rx-offline-20261013.json",
-    "docs/evidence/authorized-rx-formal-20261013/manifest.json"
+    "docs/evidence/authorized-rx-formal-20261013/manifest.json",
+    "docs/evidence/ws73-controlled-grant-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/authorized-rx-issues-20261013.json",
   "latest_evidence_commit": "758f1fd",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: production RX-after-wake authorization and unknown-tail fix, exact source C regression and scoped LKMM, new real40/249 and CI9/9,14 original-scope issue sync"
+  "current_goal_turn_classification": "progress: real ordinary blocked RX/control File withdrawal tool and six independently USB-correlated hardware cases, signed tool/CLI fix, preserving full scope"
 }

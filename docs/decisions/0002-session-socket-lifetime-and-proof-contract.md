@@ -195,3 +195,16 @@ unlink或取得PEEK引用，这一刻线性化RX准入。不持这些锁等待�
 
 本切片准确新VM已通过40短、249八轮/16超限、发现建链断链/dup子门禁，CI9/9；
 实际普通应用使用nonblocking recv，这只保持正常路径，受控blocked RX撤销仍未验收。
+
+## 受控File撤销实机子门禁（Kf1034577ecc1，tool325d377/22635f8）
+
+两只真实SDK111 WS73，VM-only/pre-daemon，独立Managed Files。两种连接角色×
+release/最后management fd/dup六用例：普通UID1000/caps0、继承fd先清理、应用data fd
+自身dup/original EBADF；/proc实际recvfrom45+fd/wchan/TASK_INTERRUPTIBLE两次见证。
+原管理授权撤销后blocked recv EACCES；新lease不续期旧fd，send/recv EACCES、poll ERR/HUP，
+两类拒绝载荷在真实SDU捕获中为零。dup第一次管理fd关闭后另有实际双向往返。
+同行原generation/Ready/Managed租约与真实scan启停保持；物理连接按清理协议实际断开，
+不宣称对端物理连接仍保留。16业务往返、112双端SDU、56真实NOCP计数；无人工故障注入。
+源码Runtime编译Ud570819，验收工具分325d377/22635f8，后者仅修CLI成功状态exit映射。
+历史supervisor exit1留存，前两项设备及独立封存通过；没有重跑未变化设备行为。
+完整Grant仍缺方向/安全、daemon死亡/SCM_RIGHTS、受控在途USB/迟到真实RX及完整VFS证明。

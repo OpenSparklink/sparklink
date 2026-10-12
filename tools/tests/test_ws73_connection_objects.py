@@ -49,6 +49,13 @@ def fixture():
 
 
 class TypedObjectEvidence(unittest.TestCase):
+    def test_real_cli_selected_preamble_is_bound_to_the_same_adapter(self):
+        run,_,_=fixture();entry=run['connection_control']['phases'][0]['typed_objects'][0];v=entry['object'];owner=entry['owner']
+        for field,check in [('info_command',info),('peer_command',peer_info)]:
+            text=run['commands'][entry[field]]['stdout'];check(f"Selected {owner['path']}\n"+text,v)
+            for bad in [f"Selected /org/sparklink/slk9_g9\n"+text,f"Selected {owner['path']}\n"*2+text]:
+                with self.assertRaises(CaptureError):check(bad,v)
+
     def test_complete_original_matrix_and_both_owners_required(self):
         run,capture,proof=fixture();self.assertEqual(len(corroborate(run,capture,proof)),2)
         for field in ['typed_objects','stale_object_rejections']:

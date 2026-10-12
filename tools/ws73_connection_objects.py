@@ -26,13 +26,15 @@ def objects(text,owner):
 
 def info(text,value):
     expected=f"NativeConnectionInfo: generation={value['generation']} lifetime={value['lifetime']} handle={value['handle']} role={value['role']} type={value['address_type']} address={value['address']} known=true connected=true path={value['path']}\n"
-    if text!=expected:raise CaptureError('original GetInfo must match current typed physical identity')
+    selected=value['path'].split('/peer_t',1)[0]
+    if text not in [expected,f'Selected {selected}\n'+expected]:raise CaptureError('original GetInfo must match current typed physical identity')
 
 
 def peer_info(text,value):
     path=value['path'].rsplit('/link_',1)[0]
     expected=f"NativePeerInfo: generation={value['generation']} type={value['address_type']} address={value['address']} known=true connected=true path={path}\nNativePeerConnection: path={value['path']}\n"
-    if text!=expected:raise CaptureError('typed peer must reference its exact current lifetime')
+    selected=value['path'].split('/peer_t',1)[0]
+    if text not in [expected,f'Selected {selected}\n'+expected]:raise CaptureError('typed peer must reference its exact current lifetime')
 
 
 def observe(run,owner,remote):

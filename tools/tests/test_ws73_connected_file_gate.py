@@ -11,11 +11,18 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_connected_file_gate import duplicate_result, verify_records, connection
-from sparklink.structs import SleConnectionResult, SleControllerSnapshot
+from ws73_connected_file_gate import duplicate_result, verify_records, connection, stop
+from sparklink.structs import SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit
 
 
 class ConnectedFileGate(unittest.TestCase):
+    def test_stop_has_no_unrelated_scanning_or_advertising_fields(self):
+        s=SleControllerSnapshot(generation=7)
+        for operation in [2,4]:
+            value=stop(s,104,operation)
+            self.assertEqual(bytes(value),bytes(SleDiscoverySubmit(version=1,profile=1,generation=7,request_id=104,operation=operation)))
+        with self.assertRaises(ValueError):stop(s,104,3)
+
     def test_duplicate_result_matches_canonical_kernel_ioctl(self):
         with tempfile.TemporaryDirectory() as folder:
             source=Path(folder)/'abi.c';binary=Path(folder)/'abi'

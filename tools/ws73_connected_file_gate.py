@@ -38,6 +38,11 @@ def connection(snapshot, peer):
             interval_min=12, interval_max=12, supervision_timeout=508))
 
 
+def stop(snapshot, identifier, operation):
+    if operation not in [2,4]:raise ValueError('typed radio stop only')
+    return SleDiscoverySubmit(version=1,profile=1,generation=snapshot.generation,request_id=identifier,operation=operation)
+
+
 def verify_records(r):
     if (type(r.get('format_version')) is not int or r.get('format_version') != 1 or r.get('status') != 'CONNECTED_FILE_PASS'
             or r.get('case') not in ['release', 'close', 'dup'] or type(r.get('index')) is not int or r.get('index') not in [0, 1]
@@ -53,8 +58,8 @@ def verify_records(r):
     previous=r['start_wall_ns']
     for row,(n,identifier,operation) in zip(r['discovery'],ordered):
         request = announcement(snapshots[n],r['marker']) if operation==1 else standby(snapshots[n],identifier,'advertising' if operation==5 else 'scanning')
-        if n==i and operation==4:
-            request=SleDiscoverySubmit(version=1,profile=1,generation=snapshots[n].generation,request_id=identifier,operation=4)
+        if operation in [2,4]:
+            request=stop(snapshots[n],identifier,operation)
         request.request_id=identifier;request.operation=operation
         if (row['index']!=n or row['input']!=bytes(request).hex()
                 or not previous<=row['start_wall_ns']<row['end_wall_ns']<=r['end_wall_ns']):
@@ -130,7 +135,14 @@ def corroborate(r, capture):
             upper=commands[j+1]['wall_ns']-1 if j+1<len(commands) else row['end_wall_ns']
             params=(bytes(1) if c['opcode']==0xc08 else bytes([int(request.operation==1),0,0,0,0]) if c['opcode']==0xc05
                 else bytes([0,3,len(marker_data(r['marker']))])+marker_data(r['marker']) if c['opcode']==0xc03
-                else bytes([int(request.operation==3 or request.operation==6 and j==1),0]) if c['opcode']==0x1002 else None)
+                else bytes([int(request.operation==3 or request.operation==6 and j==1),0]) if c['opcode']==0x1002
+                else bytes.fromhex('0000010040062003') if c['opcode']==0x1001 else None)
+            if c['opcode']==0xc02:
+                params=bytearray(49);params[2]=2;params[3:6]=(1200).to_bytes(3,'little');params[6:9]=params[3:6]
+                params[9]=7;params[12:18]=bytes(snapshots[n].address);params[25]=127;params[43]=200
+                if request.operation==1:
+                    params[1]=3;params[2]=0;params[34]=1;params[37:39]=(100).to_bytes(2,'little');params[39:41]=params[37:39]
+                params=bytes(params)
             proofs.append(command_reply(capture,r['usb'][n],c['opcode'],c['wall_ns'],upper,params,
                 bytes([value.selected_power&255]).hex() if c['opcode']==0xc02 else ''))
     heard=[e for e in capture['reports'] if belongs(e,i,r['scan_start_wall_ns'],r['scan_end_wall_ns'])
@@ -228,7 +240,7 @@ def run(args):
             if time.monotonic()>deadline:raise TimeoutError('fresh actual random advertisement')
             time.sleep(.002)
         r['scan_match']=matches[0]|dict(elapsed_ms=(time.time_ns()-r['scan_start_wall_ns'])//1_000_000)
-        r['scan_end_wall_ns']=time.time_ns();stop=SleDiscoverySubmit(version=1,profile=1,generation=snapshots[i].generation,request_id=104,operation=4);discover(i,stop)
+        r['scan_end_wall_ns']=time.time_ns();discover(i,stop(snapshots[i],104,4))
         request=connection(snapshots[i],snapshots[p]);r['connection_input']=bytes(request).hex();r['connect_before_wall_ns']=time.time_ns()
         writers[i].submit_connection(request);deadline=time.monotonic()+12
         while True:
@@ -273,7 +285,8 @@ def run(args):
         r['author_result_after_release']=bytes(writers[i].connection_result(snapshots[i].generation,900)).hex() if args.case=='release' else None
         # Intended link loss must not prevent independent peer radio control.
         for identifier,operation in [(104,2),(105,3),(106,4)]:
-            req=standby(snapshots[p],identifier,'scanning');req.operation=operation;discover(p,req)
+            req=standby(snapshots[p],identifier,'scanning') if operation==3 else stop(snapshots[p],identifier,operation)
+            req.operation=operation;discover(p,req)
         writers[p].release_management(leases[p],1)
         r.update(end_wall_ns=time.time_ns(),status='CONNECTED_FILE_PASS');verify_records(r);save()
         print('WS73_TARGET_CONNECTED_FILE_PASS',flush=True)

@@ -190,3 +190,14 @@ DLI RX PB、DTAP PDU 和应用消息各层分别校验尺寸、归属及重组�
 TX满队列/poll唤醒、最后fd关闭/dup、断链与旧lifetime、四设备两组并行。每项都要求
 随机线上 sequence/nonce/载荷，对端应用实际校验与回复、两端原始 USB/HCC/A3 和
 准确完成记账。压力/边界用例未实机运行前，不继承短包或本地 socketpair 的标签。
+
+## 新 socket 的空 USB VM 首次启动失败与修复
+
+c7d5868113c8 完整内核编译通过（无编译器告警，保留一条 make jobserver 告警），
+但空 USB VM 在 sock_register 注册 AF_SPARKLINK 时触发 UBSAN 越界并 panic：
+`net/socket.c` 推导大小的协议族名称表仍止于 PF_MCTP45，新增46被越界索引。
+没有挂入真实 WS73；整个流水线判失败，qemu进程exit0不覆盖guest panic。
+[失败记录](evidence/ws73-channel-registration-boot-failure-20261013.json)保留准确镜像、
+配置与console哈希。21e0600c82ef已签名推送修复：补充注册及lockdep名称，并加编译期
+表长度守卫。修复后的构建、启动与普通用户真实socket验收分别重新核对，不继承旧标签。
+这个可定位的软件启动bug不代表历史WS73自然bulk超时/消失根因已经查明。

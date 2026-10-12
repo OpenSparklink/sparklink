@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "d3039b2ac07424e47974ffe2a97638f9dba33701"
+    "userspace": "d7dca4266d75adf324c3ab402d2a75c6a28bc0c5"
   },
   "qualified_source_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
@@ -44,7 +44,7 @@
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: six File release/final control fd/dup plus two TX-only\u2192RX-only, opposite direction/invalid/protected request rejection;43 pure Grant scoped. Full daemon death/security trust/downgrade/inflight/refinement still open; full D-Bus policy scope is not conferred by the controlled SCM_RIGHTS gate; new controlled broker SCM_RIGHTS six real cases at tools8f19590, 16 real round trips, actual isolation/transfer/fd inode/CLOEXEC/broker close. Actual slkd death/security/inflight remain unqualified.",
-    "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open"
+    "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open"
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
@@ -331,10 +331,10 @@
     "docs/evidence/default-event-isolation-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/scm-rights-issues-20261013.json",
-  "latest_evidence_commit": "pending current evidence commit",
+  "latest_issue_progress_receipt": "docs/evidence/default-event-isolation-issues-20261013.json",
+  "latest_evidence_commit": "d7dca4266d75adf324c3ab402d2a75c6a28bc0c5",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: signed default production Legacy event isolation,199 default/62 experimental regressions,strict clippy,exact U86bfbc8 real40/249 independent seal;isolated fd death client/receiver strict offline-only",
+  "current_goal_turn_classification": "progress: signed default production Legacy event isolation,199 default/62 experimental regressions,strict clippy,exact U86bfbc8 real40/249 independent seal;isolated fd death client/receiver strict offline-only;14 existing issue updates read back with OPEN/original scope preserved",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159"
   ]

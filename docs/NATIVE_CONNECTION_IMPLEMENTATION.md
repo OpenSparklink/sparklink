@@ -289,3 +289,30 @@ codec检查含前缀标记/错误步骤/失败shape。初始fixture未带集合�
 工具验证仅显式接受3或重建4步，重建必须有实际删除/参数/数据/启用回复链、
 次序和实际power；382工具测试通过。完整新内核构建source/config稳定，仍待
 受信模块VM和真实Native连接、删除/重建FD门禁。不能以源码通过关闭整项。
+
+## 新内核真实双向连接通过，connected FD门禁继续开放
+
+VM97使用实际Linux `1305136ce2c83d1180e84c62e96576def26816a4`、服务与冻结
+工具 `fdfd816c8d27ba6235b6d2a214b5dd56350ac2f9`，可协商T广播的两个方向
+Connect/Disconnect均通过，handle0、结果flags7，随机空口数据/地址/RSSI先匹配
+（139/140ms）。每次先真实Remove，再参数/data/enable及成功回复；两个方向
+Create/Disconnect的OUT、Status及双端物理outcome由完整USB捕获复算。
+随后mode3→默认mode0的删除/重建也经真实四步链和power回复核对，RF20+2及
+QMP guest移除/重加通过。普通CLI UID1000/caps0、同slkd/bus，1377包/零丢包、
+taint0、退出0；准备输入全部逐hash重查，parent/guest与独立sealer证明一致。
+[新Native连接证据](evidence/ws73-native-advertising-recreation-connection-20261012.json)，
+SHA256 `3e9b538d5ba518c30684586dc2950ce4bf374b2c0a8a8ad5b4568c8544a0f1b8`。
+
+完整内核/source/config和8exports检查、受信模块空USB NVMe/Btrfs VM37通过；
+服务重新实际编译fdfd。初次服务checksum输入拼错由校验在执行前拒绝，改为
+实际三文件重新计算并与旧合格manifest核对，原失败保留。sealer初次将22条RF
+与包含末尾connection proof的23条guest列表比较失败也保留，之后明确比较
+RF22+完全相同connection proof，没有重跑或改写原捕获。精确源码CI38208556802
+九项成功；参考/VM95失败不覆盖。
+
+该通过仅解决当前可协商模式普通连接路径，不能转移到fixed-T、SSAP、安全、
+connected release/last File/dup/inflight、新删除/重建真实FD边界、物理拔插或
+非人工恢复。下一优先新源下FD/部分初始化与connected撤销/同行隔离门禁，
+再canonical状态和peer/link lifetime、完整S0–S6原scope及旧实现清理。
+默认四设备并行、自然启动/bulk/设备消失根因和非人工恢复仍OPEN。
+正常VM累计97/维护37，所有实验VM-only，部分成果不关闭整项。

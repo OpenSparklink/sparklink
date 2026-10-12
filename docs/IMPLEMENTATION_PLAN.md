@@ -1849,3 +1849,11 @@ SetPublicAddress/scan/data推进typed初始化，随后connected撤销和canonic
 先完成actual set-state/atomic recipe/有限撤销，再真实Native连接及connected
 FD/peer隔离门禁。保留已验证mode0广播扫描，原队列和九例partial当前资格。
 自然RCA/非人工恢复/四设备和S0–S6/28项不因参考对照关闭。
+
+Linux1305136c/fdfd服务工具已在VM97通过真实可协商双向Connect/Disconnect、
+RF22与QMP支持（1377包/零丢包/taint0）；
+[当前Native证据](evidence/ws73-native-advertising-recreation-connection-20261012.json)。
+下一优先新源下删除/重建FD、connected release/lastFD/dup/inflight与peer隔离，
+并复核原partial/queue门禁。fixed-T、canonical重同步/peer lifetime、SSAP安全、
+Profile/PHY/PM/Proxy、默认四设备、物理范围和非人工恢复/RCA及全部S0–S6/28
+仍开放。部分成果不关闭整项，VM-only。

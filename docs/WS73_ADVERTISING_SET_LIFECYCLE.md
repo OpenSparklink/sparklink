@@ -81,3 +81,14 @@ Disconnect的OUT/Status/outcome。成功后才能做connected release/最后fd/d
 参考矩阵之后Native VM96独立完成RF20+2和QMP guest移除/重加：
 1267包/零丢包/taint0、同slkd/bus、普通应用UID1000/caps0；
 无物理拔插或自动恢复资格转移。正常VM累计96、维护36，失败不归零。
+
+## 当前Native接入与实机范围
+
+Linux1305136c已把实际配置/缺失状态、原子有界重建、传输前标记校验及取消
+后的资源清理接到Host，仍保留同配置的三步路径。VM97在真实设备完成可协商
+双向Connect/Disconnect、模式返回默认beacon后的RF22和QMP guest生命周期，
+1377包/零丢包/taint0，实际服务与工具fdfd、同slkd/bus、普通UID1000/caps0。
+[当前证据](evidence/ws73-native-advertising-recreation-connection-20261012.json)。
+Source42Host+2helper/23plan/48management/diagnostic及codec sanitizers通过。
+新删除/重建真实FD与connected撤销、fixed-T、物理范围仍待，不能把模型/源码
+或单次新连接通过作为整项结束；后续改动仍需按具体新输入重新回归。

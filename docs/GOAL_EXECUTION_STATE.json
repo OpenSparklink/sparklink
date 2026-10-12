@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "6d49b12aa6940bf79e37797e71169f84ac1a8fb7",
-    "userspace": "c830f0947e31e0509cc8b303a007cf7ee8e44e59"
+    "userspace": "3f3e5455809a767b62fa1817701174e3bf2922fc"
   },
   "qualified_source_heads": {
     "linux": "6d49b12aa6940bf79e37797e71169f84ac1a8fb7",
@@ -340,13 +340,14 @@
     "docs/evidence/serdev-quarantine-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/backend-retirement-issues-20261013.json",
-  "latest_evidence_commit": "987dcdd2e9c804a6c9cf7d4624ba74d37ba9c6bd",
+  "latest_issue_progress_receipt": "docs/evidence/serdev-quarantine-issues-20261013.json",
+  "latest_evidence_commit": "3f3e5455809a767b62fa1817701174e3bf2922fc",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: authoritative orphan-serdev caller audit corrected prior assumption, production quarantine, transport dead-member/global-mask removal, exact archive/compiled symbols,zero-warning/emptyVM3/new40-249/CI9;full scope retained",
+  "current_goal_turn_classification": "progress: authoritative orphan-serdev caller audit corrected prior assumption, production quarantine, transport dead-member/global-mask removal, exact archive/compiled symbols,zero-warning/emptyVM3/new40-249/CI9;full scope retained;15 existing issues read back OPEN/scope unchanged including K12",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
     "82aa65a77019804e78a95c1706c461e715187314",
-    "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba"
+    "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba",
+    "c830f0947e31e0509cc8b303a007cf7ee8e44e59"
   ]
 }

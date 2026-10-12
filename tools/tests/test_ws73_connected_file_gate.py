@@ -13,11 +13,42 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_connected_file_gate import duplicate_result, verify_records, connection, stop
-from sparklink.structs import SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit
+from ws73_connected_file_gate import duplicate_result, verify_records, connection, stop, ConnectedHoldCoordinator, ConnectedOutcomeCoordinator
+from ws73_diagnostic_hold import PROPERTIES
+from ws73_host_later_hold import SELECTORS
+from sparklink.structs import SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit, SleManagementQuery
 
 
 class ConnectedFileGate(unittest.TestCase):
+    def test_coordinator_targets_selected_real_owner_not_global_first_device(self):
+        for n in [0,1]:
+            for cls in [ConnectedHoldCoordinator,ConnectedOutcomeCoordinator]:
+                coordinator=cls('/evidence',{},n)
+                self.assertEqual(coordinator.path,f'/machine/peripheral/ws73_{n}')
+                self.assertEqual(coordinator.folder,Path('/evidence/connected-file'))
+
+    def test_offline_inflight_cancel_cannot_become_success_or_invent_outcome(self):
+        original=json.loads((Path(__file__).parent/'data/connected_file_record.json').read_text())
+        for phase,state,flags in [('status',2,1),('outcome',3,3)]:
+            r=copy.deepcopy(original);r.update(status='INFLIGHT_FILE_PASS',reply_hold=phase)
+            value=SleConnectionResult.from_buffer_copy(bytes.fromhex(r.pop('connected')));value.state=state;value.flags=flags;value.handle=0
+            r['pending']=bytes(value).hex();value.state=6;value.error=-errno.ECANCELED;r['cancelled']=bytes(value).hex()
+            value.flags=7;value.handle=int.from_bytes(bytes.fromhex(r['up'][0]['params'])[1:3],'little');r['author_result_after_release']=bytes(value).hex()
+            q=SleManagementQuery.from_buffer_copy(bytes.fromhex(r['free']));q.state=2;r['revoking']=bytes(q).hex()
+            r['markers']=[dict(hold_phase=k,wall_ns=t) for k,t in zip(['arm_ready','wait_held','release_ready'],
+                [r['connect_before_wall_ns']-1,(r['connect_before_wall_ns']+r['release_before_wall_ns'])//2,r['release_after_wall_ns']+1])]
+            r['hold_acknowledgements']=[]
+            for n,marker in enumerate(r['markers']):
+                q=dict(zip(PROPERTIES,[n==0,n==1,int(n>0),int(n==2),0,0,False,0]))
+                if phase=='outcome':q.update(dict(zip(SELECTORS,[1,1 if n==0 else 0,0 if n==0 else 1])))
+                r['hold_acknowledgements'].append(dict(stage=['armed','held','released'][n],request=marker,state=q,host_wall_ns=marker['wall_ns']+1))
+            self.assertEqual(len(verify_records(r)),2)
+            for field in ['cancelled','author_result_after_release']:
+                bad=copy.deepcopy(r);v=SleConnectionResult.from_buffer_copy(bytes.fromhex(bad[field]));v.state=4;v.error=0;bad[field]=bytes(v).hex()
+                with self.subTest(phase=phase,field=field),self.assertRaises(ValueError):verify_records(bad)
+            bad=copy.deepcopy(r);bad['hold_acknowledgements'][1]['state']['test-runtime-in-hold-drops']=1
+            with self.assertRaises(ValueError):verify_records(bad)
+
     def test_recorded_uapi_fixture_is_only_offline_verification(self):
         r=json.loads((Path(__file__).parent/'data/connected_file_record.json').read_text())
         self.assertEqual(r['fixture_scope'],'RECORDED_UAPI_UNIT_FIXTURE_NOT_LIVE_ACCEPTANCE')

@@ -16,6 +16,8 @@ from ws73_management_partial import standby
 from ws73_management_setup import decode, setup, query, save_record
 from ws73_resource_file_gate import announcement
 from ws73_capture import CaptureError, discovery, marker_data, command_reply
+from ws73_diagnostic_hold import HoldCoordinator, PROPERTIES, write_marker, corroborate_host_hold
+from ws73_host_later_hold import LaterHostCoordinator, verify_selector_rows, corroborate as corroborate_later_hold
 from sparklink.native import NativeAdapter
 from sparklink.structs import (SleConnectionSubmit, SleConnectionParameters,
     SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit, SleDiscoveryResult)
@@ -43,8 +45,22 @@ def stop(snapshot, identifier, operation):
     return SleDiscoverySubmit(version=1,profile=1,generation=snapshot.generation,request_id=identifier,operation=operation)
 
 
+class ConnectedHoldCoordinator(HoldCoordinator):
+    def __init__(self,share,record,index):
+        super().__init__(share,record)
+        self.folder=Path(share)/'connected-file';self.path=f'/machine/peripheral/ws73_{index}'
+
+
+class ConnectedOutcomeCoordinator(LaterHostCoordinator):
+    def __init__(self,share,record,index):
+        super().__init__(share,record,1)
+        self.folder=Path(share)/'connected-file';self.path=f'/machine/peripheral/ws73_{index}'
+
+
 def verify_records(r):
-    if (type(r.get('format_version')) is not int or r.get('format_version') != 1 or r.get('status') != 'CONNECTED_FILE_PASS'
+    held_reply=r.get('reply_hold')
+    if held_reply not in [None,'status','outcome']:raise ValueError('explicit bounded real reply stage required')
+    if (type(r.get('format_version')) is not int or r.get('format_version') != 1 or r.get('status') != ('INFLIGHT_FILE_PASS' if held_reply else 'CONNECTED_FILE_PASS')
             or r.get('case') not in ['release', 'close', 'dup'] or type(r.get('index')) is not int or r.get('index') not in [0, 1]
             or r.get('daemon_running') is not False or r.get('synthetic_support') is not False
             or r.get('physical_acceptance') is not False or r.get('automatic_recovery_acceptance') is not False):
@@ -71,15 +87,42 @@ def verify_records(r):
         previous=row['end_wall_ns']
     if r['connection_input'] != bytes(connection(snapshots[i], snapshots[p])).hex():
         raise ValueError('exact typed Create input required')
-    value = decode(SleConnectionResult, r['connected'])
-    expected = SleConnectionResult(version=1, profile=1, state=4, operation=1,
-        generation=snapshots[i].generation, request_id=900, handle=value.handle, flags=7, dev_index=i)
+    author_receipt = r['pending'] if held_reply else r['connected']
+    value = decode(SleConnectionResult, author_receipt)
+    expected = SleConnectionResult(version=1, profile=1, state=(2 if held_reply=='status' else 3) if held_reply else 4, operation=1,
+        generation=snapshots[i].generation, request_id=900, handle=0 if held_reply else value.handle,
+        flags=(1 if held_reply=='status' else 3) if held_reply else 7, dev_index=i)
     if bytes(value) != bytes(expected) or value.handle > 65535:
-        raise ValueError('actual successful OUT/Status/outcome author receipt required')
-    if r.get('author_result_after_release') != (r['connected'] if r['case']=='release' else None):
+        raise ValueError('exact author OUT/Status/outcome facts before withdrawal required')
+    final_author = r.get('author_result_after_release')
+    if held_reply:
+        query(r['revoking'],snapshots[i].generation,2)
+        if r['case']=='release':
+            cancelled=SleConnectionResult.from_buffer_copy(bytes(value));cancelled.state=6;cancelled.error=-errno.ECANCELED
+            if r['cancelled']!=bytes(cancelled).hex():raise ValueError('held author must cancel without invented outcome')
+            cancelled.flags=7;cancelled.handle=int.from_bytes(bytes.fromhex(r['up'][i]['params'])[1:3],'little')
+            if final_author!=bytes(cancelled).hex():raise ValueError('late actual outcome must not turn cancelled author into Succeeded')
+        elif r.get('cancelled') is not None or final_author is not None:
+            raise ValueError('destroyed File author is not observable')
+        markers=r['markers']
+        if ([v['hold_phase'] for v in markers]!=['arm_ready','wait_held','release_ready']
+                or len(r['hold_acknowledgements'])!=3
+                or not markers[0]['wall_ns']<r['connect_before_wall_ns']<markers[1]['wall_ns']<r['release_before_wall_ns']
+                or not r['release_after_wall_ns']<markers[2]['wall_ns']<r['end_wall_ns']):
+            raise ValueError('exact causal hold/author withdrawal/delivery handshake required')
+        for n,(ack,marker) in enumerate(zip(r['hold_acknowledgements'],markers)):
+            if ack['stage']!=['armed','held','released'][n] or ack['request']!=marker:
+                raise ValueError('original guest marker and host acknowledgement must agree')
+            if held_reply=='status':
+                values=[n==0,n==1,int(n>0),int(n==2),0,0,False,0]
+                if (ack['state']!=dict(zip(PROPERTIES,values))
+                        or any(type(ack['state'][k]) is not type(v) for k,v in zip(PROPERTIES,values))):
+                    raise ValueError('exact typed original Status hold readbacks required')
+        if held_reply=='outcome':verify_selector_rows(r['hold_acknowledgements'],1)
+    elif final_author != (r['connected'] if r['case']=='release' else None):
         raise ValueError('retained author result is historical; destroyed author is unobservable')
     if r['case'] == 'dup':
-        if r['after_first_result'] != r['connected'] or r['duplicate_fd'] == r['original_fd']:
+        if r['after_first_result'] != author_receipt or r['duplicate_fd'] == r['original_fd']:
             raise ValueError('first duplicate close must preserve same File author result')
         query(r['after_first_management'], snapshots[i].generation, 1)
         if not 100_000_000 <= r['first_close_quiet_end_ns']-r['first_close_wall_ns'] <= 1_000_000_000:
@@ -119,7 +162,7 @@ def verify_records(r):
     return snapshots
 
 
-def corroborate(r, capture):
+def corroborate(r, capture, hold=None, stderr=None, expected=None):
     snapshots = verify_records(r); i=r['index']; p=1-i
     def belongs(row,n,start,end):
         usb=r['usb'][n]
@@ -151,7 +194,7 @@ def corroborate(r, capture):
     links=[]
     for operation,opcode,start,end,key in [(1,0x1401,r['connect_before_wall_ns'],r['connect_after_wall_ns'],'up'),
             (2,0x1403,r['release_before_wall_ns'],r['end_wall_ns'],'down')]:
-        commands=[c for c in capture['commands'] if belongs(c,i,start,end)]
+        commands=[c for c in capture['commands'] if belongs(c,i,start,end) and c['opcode']==opcode]
         # Connected revocation has no radio obligations on this target.
         if len(commands)!=1 or commands[0]['opcode']!=opcode:raise CaptureError('exact actual Create/cleanup Disconnect required')
         command=commands[0]
@@ -163,7 +206,9 @@ def corroborate(r, capture):
         expected_create=bytes(3)+bytes(snapshots[p].address)+bytes([1,1])+struct.pack('<8H',32,32,12,12,0,508,0,0)
         if operation==1 and body!=expected_create:
             raise CaptureError('Create must target actual peer')
-        handle=decode(SleConnectionResult,r['connected']).handle
+        handle=int.from_bytes(bytes.fromhex(r['up'][i]['params'])[1:3],'little')
+        if not r.get('reply_hold') and handle!=decode(SleConnectionResult,r['connected']).handle:
+            raise CaptureError('author result must match actual physical handle')
         if operation==2 and body!=handle.to_bytes(2,'little')+b'\x13':raise CaptureError('exact cleanup handle/reason required')
         outcomes=[]
         for n in [i,p]:
@@ -182,22 +227,56 @@ def corroborate(r, capture):
         raise CaptureError('unrecorded reset, disconnect or peer command in connected File gate')
     if any(r['start_wall_ns']<=e['wall_ns']<=r['end_wall_ns'] for e in capture['failures']):
         raise CaptureError('USB transport failure inside connected File gate')
-    return dict(scope='pre-daemon established link actual File release/last-close/dup; not in-flight or natural recovery',
+    held=None
+    if r.get('reply_hold'):
+        create=links[0];status=create['status'];outcome=create['outcomes'][0]
+        combined=(status['record']==outcome['record'])
+        if r['reply_hold']=='outcome' and combined:raise CaptureError('outcome-only hold requires prior Status in a distinct real USB frame')
+        reply=status if r['reply_hold']=='status' else outcome
+        release_ack=r['hold_acknowledgements'][2]
+        if not release_ack['host_wall_ns']<=reply['wall_ns']<=r['up'][i]['wall_ns']:
+            raise CaptureError('actual original held frame must reach guest after explicit release')
+        held=dict(actual_reply_stage='status-and-outcome' if combined else r['reply_hold'],
+            original_frame_sha256=reply['usb_sha256'],original_frame_bytes=reply['usb_length'])
+        if hold is not None:
+            if r['reply_hold']=='outcome':
+                held['host']=corroborate_later_hold(hold,dict(r,initialization_step=1),[status,outcome],stderr,expected)
+            else:
+                guest=dict(records=r['markers'],host_hold_acknowledgements=r['hold_acknowledgements'])
+                held['host']=corroborate_host_hold(hold,guest,[],stderr,expected,held_reply=reply)
+    elif hold is not None:raise CaptureError('unexpected host hold in completed connection gate')
+    proof=dict(scope='pre-daemon actual Create reply File withdrawal and late-link cleanup; not natural recovery' if r.get('reply_hold') else 'pre-daemon established link actual File release/last-close/dup; not in-flight or natural recovery',
         discovery=proofs,heard=heard,links=links,connected_file_support_acceptance=True,
-        daemon_running_lifecycle_acceptance=False,inflight_acceptance=False,automatic_recovery_acceptance=False)
+        daemon_running_lifecycle_acceptance=False,inflight_acceptance=bool(r.get('reply_hold')),automatic_recovery_acceptance=False)
+    if held is not None:proof['held_reply']=held
+    return proof
 
 
 def run(args):
+    reply_hold=getattr(args,'reply_hold',None)
     if (f'ws73.connected_case={args.case}' not in Path('/proc/cmdline').read_text().split()
             or os.geteuid()!=0 or not Path('/scratch-root-uuid').is_file()
             or Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU'
             or subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode==0):
         raise ValueError('explicit pre-daemon scratch VM required')
+    boot=[v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.connected_reply=')]
+    if boot!=([reply_hold] if reply_hold else []):raise ValueError('explicit matching reply hold boot mode required')
     args.output.mkdir(parents=True,exist_ok=False)
     r=dict(format_version=1,status='STARTING',case=args.case,index=args.index,daemon_running=False,
         synthetic_support=False,physical_acceptance=False,automatic_recovery_acceptance=False,
         start_wall_ns=time.time_ns(),discovery=[],events=[[],[]],marker=secrets.token_hex(16))
+    if reply_hold:r.update(reply_hold=reply_hold,markers=[],hold_acknowledgements=[])
     def save():save_record(args.output,r)
+    def stage(phase,ack):
+        marker=dict(hold_phase=phase,wall_ns=time.time_ns());r['markers'].append(marker);save()
+        write_marker(args.output/f'hold-{phase}.json',marker);deadline=time.monotonic()+6
+        while not (args.output/f'hold-{ack}-ack.json').exists():
+            if time.monotonic()>deadline:raise TimeoutError('actual connection frame hold handshake')
+            time.sleep(.002)
+        import json
+        value=json.loads((args.output/f'hold-{ack}-ack.json').read_text())
+        if value['stage']!=ack or value['request']!=marker:raise ValueError('exact actual frame acknowledgement required')
+        r['hold_acknowledgements'].append(value);save()
     handles=[];alias=None
     try:
         observers=[NativeAdapter(n) for n in [0,1]];handles+=observers
@@ -241,14 +320,21 @@ def run(args):
             time.sleep(.002)
         r['scan_match']=matches[0]|dict(elapsed_ms=(time.time_ns()-r['scan_start_wall_ns'])//1_000_000)
         r['scan_end_wall_ns']=time.time_ns();discover(i,stop(snapshots[i],104,4))
+        if reply_hold:stage('arm_ready','armed')
         request=connection(snapshots[i],snapshots[p]);r['connection_input']=bytes(request).hex();r['connect_before_wall_ns']=time.time_ns()
         writers[i].submit_connection(request);deadline=time.monotonic()+12
-        while True:
-            result=writers[i].connection_result(snapshots[i].generation,900);drain()
-            if result is not None and result.state>=4:break
-            if time.monotonic()>deadline:raise TimeoutError('actual connection')
-            time.sleep(.002)
-        if result.state!=4:raise ValueError('actual Create failed')
+        if reply_hold:
+            stage('wait_held','held');result=writers[i].connection_result(snapshots[i].generation,900);drain()
+            r['pending']=bytes(result).hex();save()
+            if (result.state,result.flags)!=((2,1) if reply_hold=='status' else (3,3)):
+                raise ValueError('unexpected original author stage while real reply held')
+        else:
+            while True:
+                result=writers[i].connection_result(snapshots[i].generation,900);drain()
+                if result is not None and result.state>=4:break
+                if time.monotonic()>deadline:raise TimeoutError('actual connection')
+                time.sleep(.002)
+            if result.state!=4:raise ValueError('actual Create failed')
         def outcomes(key,codes):
             deadline=time.monotonic()+8
             while True:
@@ -256,7 +342,8 @@ def run(args):
                 if all(len(v)==1 for v in values):return [v[0] for v in values]
                 if time.monotonic()>deadline:raise TimeoutError('both actual '+key+' events')
                 time.sleep(.002)
-        r['up']=outcomes('up',[0x15,0x1401]);r['connected']=bytes(result).hex();r['connect_after_wall_ns']=time.time_ns()
+        if not reply_hold:
+            r['up']=outcomes('up',[0x15,0x1401]);r['connected']=bytes(result).hex();r['connect_after_wall_ns']=time.time_ns()
         r['before_snapshots']=[bytes(a.snapshot()).hex() for a in observers]
         r['held']=bytes(observers[i].management_status()).hex();r['peer_before']=bytes(observers[p].management_status()).hex()
         fd=writers[i].fileno();r['original_fd']=fd;r['duplicate_fd']=-1
@@ -271,6 +358,12 @@ def run(args):
         elif args.case=='close':writers[i].close()
         else:os.close(alias);alias=None
         r['release_after_wall_ns']=time.time_ns()
+        if reply_hold:
+            r['revoking']=bytes(observers[i].management_status()).hex()
+            r['cancelled']=bytes(writers[i].connection_result(snapshots[i].generation,900)).hex() if args.case=='release' else None
+            if observers[i].management_status().state!=2:raise ValueError('original reply must retain connection cleanup reservation')
+            save();stage('release_ready','released')
+            r['up']=outcomes('up',[0x15,0x1401]);r['connect_after_wall_ns']=time.time_ns()
         if args.case!='release':
             for key,descriptor in [('original_fd_errno',fd)]+([('duplicate_fd_errno',r['duplicate_fd'])] if args.case=='dup' else []):
                 try:fcntl.fcntl(descriptor,fcntl.F_GETFD)
@@ -288,7 +381,7 @@ def run(args):
             req=standby(snapshots[p],identifier,'scanning') if operation==3 else stop(snapshots[p],identifier,operation)
             req.operation=operation;discover(p,req)
         writers[p].release_management(leases[p],1)
-        r.update(end_wall_ns=time.time_ns(),status='CONNECTED_FILE_PASS');verify_records(r);save()
+        r.update(end_wall_ns=time.time_ns(),status='INFLIGHT_FILE_PASS' if reply_hold else 'CONNECTED_FILE_PASS');verify_records(r);save()
         print('WS73_TARGET_CONNECTED_FILE_PASS',flush=True)
     except BaseException as error:
         r.update(status='FAIL',error=str(error),error_type=type(error).__name__);save();raise
@@ -301,5 +394,6 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--case',choices=['release','close','dup'],required=True)
     parser.add_argument('--index',type=int,choices=[0,1],required=True)
+    parser.add_argument('--reply-hold',choices=['status','outcome'],help='retain actual original Create reply before File withdrawal')
     parser.add_argument('--output',type=Path,required=True)
     run(parser.parse_args())

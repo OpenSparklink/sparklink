@@ -448,6 +448,8 @@ def _run(args):
         raise ValueError('separate real recovery VM for ordinary daemon held cancellation required')
     connected_case=getattr(args,'managed_connected_case',None)
     connected_index=getattr(args,'managed_connected_index',0)
+    connected_reply=getattr(args,'managed_connected_reply',None)
+    if connected_reply and not connected_case:raise ValueError('actual connection reply hold requires explicit File gate')
     if connected_case and (support or not recovery or not setup_gate or passthrough or parallel or diagnostic or active_gate
             or any(getattr(args,k,False) for k in ['managed_partial_case','managed_queue_verify','daemon_hold_case','connection_verify'])):
         raise ValueError('connected File gate requires separate real recovery/Setup VM')
@@ -548,6 +550,7 @@ def _run(args):
     m['live_setup_release_requested']=setup_gate
     m['live_connected_file_case']=connected_case
     m['live_connected_file_index']=connected_index if connected_case else None
+    m['live_connected_reply_hold']=connected_reply
     if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py')
     if queued_gate:
         m['managed_queue_verifier']=file_record(HERE/'ws73_management_queued.py')
@@ -639,6 +642,7 @@ def _run(args):
                      (f' ws73.managed_partial=1 ws73.partial_case={partial_case} ws73.partial_domain={partial_domain}' if partial_gate else '')+
                      (' ws73.managed_recreate=1' if resource_recreation else '')+
                      (f' ws73.connected_case={connected_case} ws73.connected_index={connected_index}' if connected_case else '')+
+                     (f' ws73.connected_reply={connected_reply}' if connected_reply else '')+
                      (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
                      (' ws73.scan_parameter_cleanup=1' if parameter_cleanup else '')+
                      (' ws73.managed_ready_peer=1' if ready_peer else '')+
@@ -671,6 +675,10 @@ def _run(args):
                 channel=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);channel.connect(str(serial));channel.setblocking(False)
                 monitor=lab.Qmp(qmp,output/'qmp.jsonl')
                 hold=None
+                if connected_reply:
+                    from ws73_connected_file_gate import ConnectedHoldCoordinator, ConnectedOutcomeCoordinator
+                    kind=ConnectedHoldCoordinator if connected_reply=='status' else ConnectedOutcomeCoordinator
+                    hold=kind(share,m.setdefault('connected_file_hold',{}),connected_index)
                 if partial_gate:
                     from ws73_management_partial import PartialCoordinator
                     if real_later:
@@ -719,7 +727,7 @@ def _run(args):
                     if hold:
                         if hold.phase == 'arm_ready' and (hold.folder/'hold-arm_ready.json').exists():
                             hold.record['host_identity_at_arm'] = live_runtime_owner(
-                                args.ports[0], process.pid, lab.inventory())
+                                args.ports[connected_index if connected_reply else 0], process.pid, lab.inventory())
                         hold.poll(monitor)
                     if recovery and hotplug_phase==0 and 'WS73_TARGET_RECOVERY_INJECT_READY' in text:
                         host_at_arm = live_runtime_owner(args.ports[0], process.pid, lab.inventory())
@@ -880,8 +888,9 @@ def _run(args):
                 if connected_case:
                     from ws73_connected_file_gate import corroborate as connected_corroborate
                     probe=json.loads((share/'connected-file/run.json').read_text())
-                    if probe['case']!=connected_case or probe['index']!=connected_index:raise ValueError('connected File request mismatch')
-                    m['connected_file_corroboration']=connected_corroborate(probe,capture)
+                    if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply:raise ValueError('connected File request mismatch')
+                    m['connected_file_corroboration']=connected_corroborate(probe,capture,hold.record if connected_reply else None,
+                        (output/'qemu-stderr.log').read_text() if connected_reply else None,hold.record['host_identity_at_arm'] if connected_reply else None)
                     m['live_connected_file']=file_record(share/'connected-file/run.json')
                 if partial_gate:
                     from ws73_management_partial import corroborate as corroborate_partial
@@ -1060,6 +1069,7 @@ def main():
             cmd.add_argument('--managed-ordinary-eviction',action='store_true',help='two SCHED_OTHER ioctl submitters and terminal result eviction under actual held first reply; separate Ready-peer VM gate')
             cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
             cmd.add_argument('--managed-connected-case',choices=['release','close','dup'],help='actual established-link File cleanup before daemon; separate Setup/recovery VM')
+            cmd.add_argument('--managed-connected-reply',choices=['status','outcome'],help='retain actual original Create Status or outcome frame before File withdrawal')
             cmd.add_argument('--managed-connected-index',type=int,choices=[0,1],default=0,help='actual Create caller in established-link File gate')
             cmd.add_argument('--managed-resource-recreate',action='store_true',help='actual changed advertising set removal/creation File cancellation; requires selected advertising Ready-peer partial gate')
             cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')

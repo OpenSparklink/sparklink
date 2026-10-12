@@ -155,7 +155,10 @@ fi
 if grep -q 'ws73.connected_case=' /proc/cmdline; then
     connected_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connected_case=/){sub(/^ws73.connected_case=/,"",$i);print $i}}' /proc/cmdline)
     connected_index=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connected_index=/){sub(/^ws73.connected_index=/,"",$i);print $i}}' /proc/cmdline)
-    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_connected_file_gate.py --case "$connected_case" --index "$connected_index" --output /evidence/connected-file > /evidence/connected-file-supervisor.log 2>&1 || fail 'established connection File gate'
+    connected_reply=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connected_reply=/){sub(/^ws73.connected_reply=/,"",$i);print $i}}' /proc/cmdline)
+    connected_reply_arg=''
+    if [ -n "$connected_reply" ]; then connected_reply_arg="--reply-hold $connected_reply"; fi
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_connected_file_gate.py $connected_reply_arg --case "$connected_case" --index "$connected_index" --output /evidence/connected-file > /evidence/connected-file-supervisor.log 2>&1 || fail 'established connection File gate'
 fi
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     # The runner attaches the first USB owner after capture readiness. Signal

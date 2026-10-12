@@ -21,6 +21,14 @@ impl Context {
 
     pub async fn dispatch(&mut self, args: &[&str]) -> anyhow::Result<()> {
         match args[0] {
+            "channel-peer" | "channel-roundtrip" => {
+                let path = args.get(1).ok_or_else(|| {
+                    anyhow::anyhow!("channel command requires connection object path")
+                })?;
+                let rounds = args.get(2).unwrap_or(&"4").parse()?;
+                self.cmd_channel(path, args[0] == "channel-peer", rounds)
+                    .await
+            }
             "list" => self.cmd_list().await,
             "daemon" => self.cmd_daemon().await,
             "select" => self.cmd_select(args.get(1).copied().unwrap_or("")).await,
@@ -770,6 +778,36 @@ impl Context {
             println!("NativePeerConnection: path={object}");
         }
         Ok(())
+    }
+    async fn cmd_channel(&self, path: &str, responder: bool, rounds: u32) -> anyhow::Result<()> {
+        let selected = self.selected_path().await?;
+        if !path.starts_with(&format!("{selected}/peer_t")) {
+            anyhow::bail!("connection object belongs to another adapter");
+        }
+        let object = zbus::Proxy::new(
+            &self.conn,
+            "org.sparklink",
+            path,
+            "org.sparklink.Connection",
+        )
+        .await?;
+        let info: NativeObjectInfo = object.call("GetInfo", &()).await?;
+        let adapter = self.adapter_proxy().await?;
+        let generation: u64 = adapter.get_property("Generation").await?;
+        let expected = format!(
+            "{selected}/peer_t{:02x}_{}/link_{:016x}",
+            info.4,
+            info.5.replace(':', "").to_lowercase(),
+            info.1
+        );
+        if info.0 != generation || path != expected {
+            anyhow::bail!("immutable channel connection identity mismatch");
+        }
+        if !info.6 || !info.7 {
+            anyhow::bail!("connection is not known/live");
+        }
+        let fd: zbus::zvariant::OwnedFd = object.call("OpenChannel", &()).await?;
+        crate::channel::exercise(fd.into(), responder, rounds)
     }
     async fn cmd_connection_object(&self, path: &str, disconnect: bool) -> anyhow::Result<()> {
         let adapter = self.adapter_proxy().await?;

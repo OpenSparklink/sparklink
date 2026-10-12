@@ -1,3 +1,4 @@
+mod channel;
 mod commands;
 
 use std::process;
@@ -133,6 +134,8 @@ Commands:
   peer-info <path>               Show a typed peer and its connection lifetimes
   connection-info <path>        Show one immutable connection identity
   disconnect-object <path>      Disconnect the exact physical lifetime
+  channel-peer <path> <rounds>  Validate and reply on a native channel socket
+  channel-roundtrip <path> <rounds>  Send random business messages and verify replies
   disconnect <address> [type]    Disconnect an unambiguous current peer
   disconnect-link <addr> <type> <handle> <lifetime> <role>  Disconnect exact link
   services                      List local SSAP services

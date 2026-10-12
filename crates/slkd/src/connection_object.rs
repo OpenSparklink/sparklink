@@ -160,6 +160,42 @@ impl ConnectionIface {
         )
         .await
     }
+    async fn open_channel(&self) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
+        let (index, lease) = {
+            let st = self.state.lock().await;
+            if !st.present
+                || st.controller.generation != self.generation
+                || !st.native_links_known()
+                || !st.native_links.as_ref().is_some_and(|table| {
+                    table.links[..table.count as usize].contains(&self.reference)
+                })
+            {
+                return Err(zbus::fdo::Error::Failed(
+                    "connection lifetime is not current".into(),
+                ));
+            }
+            (
+                st.controller.dev_index,
+                st.native_lease
+                    .clone()
+                    .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?,
+            )
+        };
+        let admission = lease
+            .try_lock_owned()
+            .map_err(|_| zbus::fdo::Error::Failed("management handoff busy".into()))?;
+        if !admission.accepting || admission.token.is_none() {
+            return Err(zbus::fdo::Error::Failed("management unavailable".into()));
+        }
+        let fd = crate::channel::open(
+            index,
+            self.generation,
+            self.reference.lifetime,
+            self.reference.handle,
+        )
+        .map_err(|error| zbus::fdo::Error::Failed(format!("native channel bind: {error}")))?;
+        Ok(fd.into())
+    }
     #[zbus(property)]
     fn generation(&self) -> u64 {
         self.generation

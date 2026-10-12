@@ -1842,3 +1842,10 @@ full-speed、bcdDevice1.00（device3→4）。故障定位应收窄到参考进�
 双端outcome与OUT/Status已核对。本项目Native连接仍未通过，下一以单变量比较
 SetPublicAddress/scan/data推进typed初始化，随后connected撤销和canonical状态。
 自然启动/bulk/消失根因及自动恢复保持OPEN，参考SSAP日志不代替本项目验收。
+
+2026-10-12 Native连接定位进入广播集合生命周期修复：
+[真实因子矩阵及Host接入设计](WS73_ADVERTISING_SET_LIFECYCLE.md)。参考仅参数
+更新的mode0→mode3转换失败，成功Remove+重建恢复；Native95原路径仍失败。
+先完成actual set-state/atomic recipe/有限撤销，再真实Native连接及connected
+FD/peer隔离门禁。保留已验证mode0广播扫描，原队列和九例partial当前资格。
+自然RCA/非人工恢复/四设备和S0–S6/28项不因参考对照关闭。

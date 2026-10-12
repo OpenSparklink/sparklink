@@ -48,11 +48,17 @@ for device in /sys/bus/usb/devices/*; do
         fail 'WS73 present in empty-USB smoke'
     fi
 done
+if [ -x /bin/sparklink-no-ghost-probe ]; then
+    /bin/sparklink-no-ghost-probe || fail 'empty registry/unsupported selector before module'
+fi
 for round in 1 2; do
     insmod /sparklink_ws73_usb.ko || fail "module load $round"
     [ -d /sys/module/sparklink_ws73_usb ] || fail "module missing $round"
     [ -d /sys/bus/usb/drivers/sparklink_ws73_usb ] || fail "USB driver missing $round"
     echo "NATIVE_MODULE_LOAD: $round"
+    if [ -x /bin/sparklink-no-ghost-probe ]; then
+        /bin/sparklink-no-ghost-probe || fail "empty registry/unsupported selector round=$round"
+    fi
     rmmod sparklink_ws73_usb || fail "module unload $round"
     [ ! -d /sys/module/sparklink_ws73_usb ] || fail "module retained $round"
     [ ! -d /sys/bus/usb/drivers/sparklink_ws73_usb ] || fail "USB driver retained $round"

@@ -27,10 +27,12 @@ def save(path, record):
     path.write_text(json.dumps(record, indent=2) + '\n')
 
 
-def verify_console(console, release, root_uuid, exit_code):
+def verify_console(console, release, root_uuid, exit_code, empty_registry=False):
     """Require boot/root/module evidence together; poweroff alone can be failure."""
     text = re.sub(r'\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)', '', console)
     text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text).replace('\r', '')
+    if empty_registry and text.count('SPARKLINK_NO_GHOST_BACKEND_PASS selectors=9 registered=0 snapshot=ENODEV')!=3:
+        raise ValueError('three actual empty-registry/selector checks required')
     if exit_code != 0:
         raise ValueError('QEMU did not exit successfully')
     if re.search(r'NATIVE_MODULE_FAILURE|Kernel panic|Oops:|BUG:|WARNING:|'
@@ -90,6 +92,9 @@ def run(args):
     elf_header(paths['busybox'], {2, 3})
     if 'INTERP' in busybox_headers or 'Requesting program interpreter' in busybox_headers:
         raise ValueError('busybox must be static')
+    if getattr(args,'empty_registry_probe',None):
+        paths['empty-registry-probe']=Path(args.empty_registry_probe).resolve(strict=True)
+        elf_header(paths['empty-registry-probe'],{2,3})
     output = Path(args.output).resolve()
     if ',' in str(output):
         raise ValueError('QEMU drive pathname cannot contain commas')
@@ -134,6 +139,11 @@ def run(args):
         shutil.copy2(paths['busybox'], root / 'bin/busybox')
         for applet in ('sh', 'cat', 'dmesg', 'insmod', 'rmmod', 'mount', 'sync', 'uname', 'poweroff'):
             (root / 'bin' / applet).symlink_to('busybox')
+        if 'empty-registry-probe' in paths:
+            from ws73_target import copy_elf
+            copy_elf(paths['empty-registry-probe'],root/'bin/sparklink-no-ghost-probe',root)
+            (root/'bin/sparklink-no-ghost-probe').chmod(0o755)
+            record['empty_registry_probe']=True
         helper_before = digest(helper)
         shutil.copy2(helper, root / 'sbin/init')
         (root / 'sbin/init').chmod(0o755)
@@ -174,7 +184,7 @@ def run(args):
             if digest(info['path']) != info['sha256']:
                 raise ValueError('snapshotted input changed: ' + name)
         verify_console((output / 'console.log').read_text(errors='replace'), release, root_uuid,
-                       process.returncode)
+                       process.returncode, bool(getattr(args, 'empty_registry_probe', None)))
         record['status'] = 'PASS_ISOLATED_NATIVE_ROOT_SMOKE'
     except (Exception, KeyboardInterrupt) as error:
         record.update(status='FAIL', error=str(error))
@@ -193,6 +203,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for option in ('kernel-manifest', 'kernel', 'initramfs', 'module', 'busybox', 'qemu', 'qemu-data', 'output'):
         parser.add_argument('--' + option, required=True)
+    parser.add_argument('--empty-registry-probe',help='explicit guest-only no phantom Runtime/selector test binary')
     parser.add_argument('--timeout', type=int, default=150)
     args = parser.parse_args()
     if not 30 <= args.timeout <= 600:

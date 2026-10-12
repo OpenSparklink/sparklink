@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T20:39:13.390124+00:00",
+  "updated_at_utc": "2026-10-12T20:41:49.651954+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
-    "userspace": "2a9778651723fbf8f5c6f2d42450401d8331ff07"
+    "userspace": "79ba67a"
   },
   "qualified_source_heads": {
     "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
@@ -281,13 +281,13 @@
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
   "current_batch": "Production lease epoch software-TX/actual USB gates and v2 fd delegation implemented; exact40short/249/dup-last-close baseline requalified, two production Kani pure authority harnesses scoped PASS. Full Grant/architecture remains open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
-  "issue_sync_status": "Original28 adoption/architecture-first blocks preserved; latest13 Runtime Session implementation/offline/scoped-proof/real/missing comments read back with exact body and original issue scope OPEN",
+  "issue_sync_status": "Original28 adoption and architecture-first scope preserved; new14 lease epoch comments read back exact and original issue body hashes OPEN unchanged",
   "current_implementation_heads": {
     "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
     "userspace": "2a9778651723fbf8f5c6f2d42450401d8331ff07"
   },
   "next_resume_tasks": [
-    "WP05: close blocked-RX revocation/admission gap and full Binding Grant direction/security contract; controlled real release/last control fd/daemon death/dup/inflight/successor old-fd rejection with peer isolation using new qualified K3ee1/U2a977 baseline. Do not re-run unchanged normal gates without changes.",
+    "WP05: implement atomic authorized RX dequeue on each wake without Host lock across wait/copy; then full Binding Grant direction/security and controlled real release/last control fd/daemon death/dup/inflight/successor-old-fd rejection with peer isolation. Exact K3ee1/U2a977 normal40/249 gates already qualified; keep full original S0-S6 goal.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -315,8 +315,8 @@
     "docs/evidence/grant-epoch-formal-20261013/manifest.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/native-session-issues-20261013.json",
-  "latest_evidence_commit": "e7532f3b7c8d97b79616692d48e858f3247465a7",
+  "latest_issue_progress_receipt": "docs/evidence/grant-epoch-issues-20261013.json",
+  "latest_evidence_commit": "79ba67a",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
   "current_goal_turn_classification": "progress: production Managed lease epoch and actual atomic queue/USB gates, actual source regressions and new production Kani harnesses"
 }

@@ -1226,3 +1226,13 @@ RF44/QMP重加同slkd/bus不重启，UID1000/caps0、2916包/0drop/taint0；正�
 linked loss与运行中cancel/late-link/revoke→typed discovery/SSAP lifetime消费者→
 迁移回归后删legacy字段→当前源物理与四设备。自然RCA/非人工硬件恢复、整项
 Managed、原28项及全部S0–S6继续OPEN，完整goal active、VM-only。
+
+## 2026-10-12 近期优先级改为真实每通道 socket 数据往返
+
+用户明确要求：完成本轮 Peer/Connection 实机验收后，按最小纵向闭环推进
+WS73 A3/ACB→数据 credit/背压→通道协商/身份→普通用户每通道 socket→
+双设备短 PDU 往返→边界/分片/故障→四设备及用户态 SSAP。
+[最新源码核对、封装差异及验收门禁](DATA_SOCKET_VERTICAL_PLAN_20261012.md)
+取代上文近期“先完成 linked loss/所有取消竞争”的顺序；保留完整 S0–S6。
+控制面必要修复、旧代码整改及自动恢复根因继续推进，相关 issues 不提前关闭。
+Native 数据发送及 A3 RX 当前仍未接通，不将对象或 USB 写成功算作业务数据通过。

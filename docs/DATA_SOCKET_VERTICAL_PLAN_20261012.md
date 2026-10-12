@@ -217,3 +217,24 @@ c7d5868113c8 完整内核编译通过（无编译器告警，保留一条 make j
 USB成功等于对端收到。slctl应用显式请求2秒linger；本地seqpacket回归同时修复
 POLLIN|HUP下完整消息未读取就提前失败的问题。实际对端收包与NOCP仍需重新验收。
 未设置linger的关闭保持丢弃未发送队列语义，dup/断链/耗尽等仍需独立真实矩阵。
+
+## 默认逻辑通道普通用户短 PDU 首轮实机通过
+
+[完整可复算证据](evidence/ws73-ordinary-channel-socket-20261013.json)绑定 Linux
+`4a3dc86ade58`、服务/工具 `4426d9731fad`：两个独立 UID1000/caps0 应用，在双方
+真实连接角色（handle0、lifetime1→3）下共8轮61-byte短消息往返。每轮线上sequence、
+nonce随机，实际对端校验载荷并回复，原端完整校验。只使用默认基础CUTC31/PI241，
+有真实双端CMTC能力/MTU/MPS交换；没有external test module，taint0。
+
+主机对原始pcap重新解码并独立复算，与运行时证明一致：80个A3包重组48条双端SDU
+（业务16次发送各有TX/RX、协商8次发送各有TX/RX），24个真实NOCP计数合计24，
+每controller每phase准确6；1585 capture包、零drop。旧对象、建链/断链、RF22和QMP
+支撑检查同轮通过，slkd/bus未重启。QMP不能替代物理拔插；该证据不继承旧head的
+物理标签。源码CI38278961181终态9/9，418工具回归含对这份记录的独立复算及篡改拒绝。
+
+首次注册panic、首次实机最后reply关闭丢弃的失败记录均保留，之后修复才取得本轮
+资格。linger等待软件TX真实提交，不将USB成功当作对端收到；最终发送依靠实际对端
+应用与USB RX证明成功。关闭/dup/断链/旧fd/耗尽竞争全集仍需后续独立矩阵。
+短消息首个纵向切片已通过，下一主线扩展重复轮次及长度边界，再有界长包、credit
+耗尽/满队列、断链/旧lifetime、四设备两组和用户态SSAP；动态多通道、可选模式、
+安全/Profile、自然故障/非人工自动恢复和完整S0–S6均未完成，整项issues继续开放。

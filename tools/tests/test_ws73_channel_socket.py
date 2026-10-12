@@ -100,3 +100,30 @@ class IndependentUSBProof(unittest.TestCase):
             if kind=='generation':run['channel_socket'][0]['owners'][0]['object']['generation']=9
             with self.subTest(kind=kind),patch('ws73_channel_socket.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):
                 corroborate(run,capture)
+
+
+class SealedRealEvidence(unittest.TestCase):
+    def test_checked_in_default_socket_case_recomputes_with_limited_scope(self):
+        import json
+        from ws73_channel_socket import corroborate
+        from ws73_capture import corroborate_passthrough, reassemble_acb
+        from ws73_connection_control import corroborate as connection
+        from ws73_connection_objects import corroborate as objects
+        path=Path(__file__).resolve().parents[2]/'docs/evidence/ws73-ordinary-channel-socket-20261013.json'
+        evidence=json.loads(path.read_text());case=evidence['cases'][0]
+        run=case['raw_control_record'];capture=case['decoded_capture']
+        self.assertEqual(corroborate(run,capture),case['independently_derived']['channel'])
+        links=connection(run,capture);self.assertEqual(links,case['independently_derived']['connection'])
+        self.assertEqual(objects(run,capture,links),case['independently_derived']['objects'])
+        self.assertEqual(len(corroborate_passthrough(run,capture)),22)
+        self.assertEqual(len(reassemble_acb(capture)),48)
+        self.assertEqual(evidence['actual_data_round_trips'],8)
+        self.assertEqual(case['expected_taint'],0)
+        for field in ['full_goal_complete','long_boundary_credit_exhaustion_acceptance','four_device_data_acceptance',
+                      'automatic_hardware_recovery_acceptance','natural_fault_root_cause_closed',
+                      'all_close_dup_linkdown_races_acceptance','physical_unplug_acceptance','ssap_acceptance']:
+            self.assertIs(evidence[field],False)
+        altered=copy.deepcopy(capture)
+        packet=next(p for p in altered['acb_packets'] if p['direction']=='out' and p['data'].startswith('1f'))
+        packet['data']=packet['data'][:-2]+('00' if packet['data'][-2:]!='00' else '01')
+        with self.assertRaises(CaptureError):corroborate(run,altered)

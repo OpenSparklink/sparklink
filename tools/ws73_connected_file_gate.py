@@ -136,8 +136,10 @@ def verify_records(r):
     for n in [i, p]:
         ready = SleControllerSnapshot.from_buffer_copy(bytes(snapshots[n])); ready.flags = 1
         for key in ['before_snapshots', 'after_snapshots']:
-            if r[key][n] != bytes(ready).hex():
-                raise ValueError('full same-generation Ready metadata required')
+            expected_ready=SleControllerSnapshot.from_buffer_copy(bytes(ready))
+            if held_reply=='status' and n==i and key=='before_snapshots':expected_ready.command_credits=0
+            if r[key][n] != bytes(expected_ready).hex():
+                raise ValueError('exact same-generation Ready metadata and real credit consumption required')
     query(r['peer_before'], snapshots[p].generation, 1)
     if r['peer_after'] != r['peer_before']:
         raise ValueError('peer must retain its independent Managed lease')

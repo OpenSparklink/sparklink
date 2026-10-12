@@ -31,6 +31,8 @@ class ConnectedFileGate(unittest.TestCase):
         original=json.loads((Path(__file__).parent/'data/connected_file_record.json').read_text())
         for phase,state,flags in [('status',2,0),('outcome',3,1)]:
             r=copy.deepcopy(original);r.update(status='INFLIGHT_FILE_PASS',reply_hold=phase)
+            if phase=='status':
+                snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(r['before_snapshots'][0]));snapshot.command_credits=0;r['before_snapshots'][0]=bytes(snapshot).hex()
             value=SleConnectionResult.from_buffer_copy(bytes.fromhex(r.pop('connected')));value.state=state;value.flags=flags;value.handle=0
             r['pending']=bytes(value).hex();value.state=6;value.error=-errno.ECANCELED;r['cancelled']=bytes(value).hex()
             value.flags=7;value.handle=int.from_bytes(bytes.fromhex(r['up'][0]['params'])[1:3],'little');r['author_result_after_release']=bytes(value).hex()

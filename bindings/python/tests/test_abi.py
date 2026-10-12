@@ -35,8 +35,6 @@ STRUCT_NAMES = {
     "SleConnInfo": "sle_conn_info",
     "SleSecInfo": "sle_sec_info",
     "SlePairParams": "sle_pair_params",
-    "SsapSummary": "ssap_summary",
-    "SsapReadWrite": "ssap_read_write",
     "SleDliEvent": "sle_dli_event",
     "SleDliInfo": "sle_dli_info",
     "SlePhyInfo": "sle_phy_info",
@@ -208,8 +206,6 @@ class TestAbiConformance(unittest.TestCase):
             "        .tx_bytes = 0x1122334455667788ULL,\n"
             "        .rx_bytes = 0x8877665544332211ULL,\n"
             "        .handle = 0x1234, .peer_addr = {1, 2, 3, 4, 5, 6},\n"
-            "        .ssap_mtu = 0x3141, .ssap_reliable_mode = 1,\n"
-            "        .ssap_version_major = 2,\n"
             "        .smtc_tx_credits = 0x2345, .smtc_rx_credits = 0x3456,\n"
             "        .dudtc_tx_credits = 0x4567, .dudtc_rx_credits = 0x5678,\n"
             "    };\n"
@@ -271,9 +267,6 @@ class TestAbiConformance(unittest.TestCase):
         self.assertEqual(buffer.info.rx_bytes, 0x8877665544332211)
         self.assertEqual(buffer.info.handle, 0x1234)
         self.assertEqual(list(buffer.info.peer_addr), [1, 2, 3, 4, 5, 6])
-        self.assertEqual(buffer.info.ssap_mtu, 0x3141)
-        self.assertEqual(buffer.info.ssap_reliable_mode, 1)
-        self.assertEqual(buffer.info.ssap_version_major, 2)
         self.assertEqual(buffer.info.smtc_tx_credits, 0x2345)
         self.assertEqual(buffer.info.smtc_rx_credits, 0x3456)
         self.assertEqual(buffer.info.dudtc_tx_credits, 0x4567)

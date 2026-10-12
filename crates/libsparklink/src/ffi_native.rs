@@ -11,6 +11,7 @@ fn errno(error: Error) -> c_int {
         Error::Ioctl(error) => error as c_int,
         Error::OpenDevice(error) => error.raw_os_error().unwrap_or(nix::libc::EIO),
         Error::InvalidParam(_) => nix::libc::EINVAL,
+        Error::NotSupported(_) => nix::libc::EOPNOTSUPP,
         Error::Timeout => nix::libc::ETIMEDOUT,
         Error::DeviceNotFound(_) => nix::libc::ENODEV,
         Error::ConnectionNotFound(_) => nix::libc::ENOENT,

@@ -501,132 +501,6 @@ impl Adapter {
         Ok(())
     }
 
-    // ----- SSAP Service -----
-
-    /// Register all configured services with the controller
-    pub fn ssap_register(&self) -> Result<()> {
-        unsafe { ioctl::sl_ssap_register_svc(self.raw_fd())? };
-        debug!("SSAP services registered");
-        Ok(())
-    }
-
-    /// Get SSAP summary information
-    pub fn ssap_info(&self) -> Result<SsapSummary> {
-        let mut info = unsafe { std::mem::zeroed::<SsapSummary>() };
-        unsafe { ioctl::sl_ssap_info(self.raw_fd(), &mut info)? };
-        Ok(info)
-    }
-
-    /// Read a property value by handle
-    pub fn ssap_read(&self, handle: u16) -> Result<SsapReadWrite> {
-        let mut rw = unsafe { std::mem::zeroed::<SsapReadWrite>() };
-        rw.handle = handle;
-        unsafe { ioctl::sl_ssap_read(self.raw_fd(), &mut rw)? };
-        Ok(rw)
-    }
-
-    /// Write a property value by handle
-    pub fn ssap_write(&self, rw: &SsapReadWrite) -> Result<()> {
-        unsafe { ioctl::sl_ssap_write(self.raw_fd(), rw)? };
-        Ok(())
-    }
-
-    /// Discover local services
-    pub fn ssap_find_svc(&self) -> Result<SsapServiceList> {
-        let mut list = unsafe { std::mem::zeroed::<SsapServiceList>() };
-        unsafe { ioctl::sl_ssap_find_svc(self.raw_fd(), &mut list)? };
-        Ok(list)
-    }
-
-    /// Send a notification/indication on a property handle
-    pub fn ssap_notify(&self, handle: u16) -> Result<()> {
-        unsafe { ioctl::sl_ssap_notify(self.raw_fd(), handle as _)? };
-        Ok(())
-    }
-
-    /// Dequeue a pending notification
-    pub fn ssap_dequeue_ntf(&self) -> Result<SsapNotification> {
-        let mut ntf = unsafe { std::mem::zeroed::<SsapNotification>() };
-        unsafe { ioctl::sl_ssap_dequeue_ntf(self.raw_fd(), &mut ntf)? };
-        Ok(ntf)
-    }
-
-    /// Add a service to the local database
-    pub fn ssap_add_svc(&self, svc: &mut SsapAddService) -> Result<()> {
-        unsafe { ioctl::sl_ssap_add_svc(self.raw_fd(), svc)? };
-        debug!(
-            handle = svc.start_handle,
-            uuid16 = svc.uuid16,
-            "service added"
-        );
-        Ok(())
-    }
-
-    /// Add a property (characteristic) to a service
-    pub fn ssap_add_prop(&self, prop: &mut SsapAddProperty) -> Result<()> {
-        prop.validate_legacy_staging()
-            .map_err(|_| Error::InvalidParam("invalid legacy SSAP property"))?;
-        unsafe { ioctl::sl_ssap_add_prop(self.raw_fd(), prop)? };
-        debug!(handle = prop.handle, uuid16 = prop.uuid16, "property added");
-        Ok(())
-    }
-
-    /// Remove a service by start handle
-    pub fn ssap_remove_svc(&self, start_handle: u16) -> Result<()> {
-        unsafe { ioctl::sl_ssap_remove_svc(self.raw_fd(), start_handle as _)? };
-        debug!(start_handle, "service removed");
-        Ok(())
-    }
-
-    /// Exchange SSAP info with a remote peer (initiate service discovery)
-    pub fn ssap_exchange_info(&self, cmd: &SsapRemoteCmd) -> Result<()> {
-        unsafe { ioctl::sl_ssap_exchange_info(self.raw_fd(), cmd)? };
-        Ok(())
-    }
-
-    /// Discover services on a remote peer
-    pub fn ssap_remote_discover(&self, disc: &mut SsapRemoteDiscover) -> Result<()> {
-        unsafe { ioctl::sl_ssap_remote_discover(self.raw_fd(), disc)? };
-        Ok(())
-    }
-
-    /// Read a property on a remote peer
-    pub fn ssap_remote_read(&self, rw: &mut SsapRemoteReadWrite) -> Result<()> {
-        unsafe { ioctl::sl_ssap_remote_read(self.raw_fd(), rw)? };
-        Ok(())
-    }
-
-    /// Write a property on a remote peer
-    pub fn ssap_remote_write(&self, rw: &SsapRemoteReadWrite) -> Result<()> {
-        unsafe { ioctl::sl_ssap_remote_write(self.raw_fd(), rw)? };
-        Ok(())
-    }
-
-    /// Receive a remote event (notification/indication from peer)
-    pub fn ssap_remote_event(&self) -> Result<SsapNotification> {
-        let mut ntf = unsafe { std::mem::zeroed::<SsapNotification>() };
-        unsafe { ioctl::sl_ssap_remote_event(self.raw_fd(), &mut ntf)? };
-        Ok(ntf)
-    }
-
-    /// Invoke a method on a remote peer's SSAP service
-    pub fn ssap_call_method(&self, rw: &mut SsapRemoteReadWrite) -> Result<()> {
-        unsafe { ioctl::sl_ssap_call_method(self.raw_fd(), rw)? };
-        Ok(())
-    }
-
-    /// Find a remote service by UUID
-    pub fn ssap_find_by_uuid(&self, op: &mut SsapUuidOp) -> Result<()> {
-        unsafe { ioctl::sl_ssap_find_by_uuid(self.raw_fd(), op)? };
-        Ok(())
-    }
-
-    /// Read a remote property by UUID
-    pub fn ssap_read_by_uuid(&self, op: &mut SsapUuidOp) -> Result<()> {
-        unsafe { ioctl::sl_ssap_read_by_uuid(self.raw_fd(), op)? };
-        Ok(())
-    }
-
     // ----- Power Management -----
 
     /// Get power management info
@@ -1309,7 +1183,7 @@ pub(crate) fn decode_event(raw: SleDliEvent) -> Result<Event> {
 }
 
 #[cfg(test)]
-mod ssap_registration_tests {
+mod native_validation_tests {
     use super::*;
 
     #[test]
@@ -1461,41 +1335,6 @@ mod ssap_registration_tests {
         }
         assert!(matches!(
             adapter.diagnostic_result(1, 1),
-            Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
-        ));
-    }
-
-    #[test]
-    fn invalid_property_rejects_before_actual_ioctl() {
-        let adapter = Adapter::open("/dev/null").unwrap();
-        let mut prop = SsapAddProperty::for_legacy_staging(
-            1,
-            SsapOperations::READ | SsapOperations::NOTIFY,
-            b"original",
-        )
-        .unwrap();
-        prop.ops |= 0x40;
-        assert!(matches!(
-            adapter.ssap_add_prop(&mut prop),
-            Err(Error::InvalidParam(_))
-        ));
-        assert_eq!(prop.handle, 0);
-        prop.ops = 9;
-        prop.value_len = 249;
-        assert!(matches!(
-            adapter.ssap_add_prop(&mut prop),
-            Err(Error::InvalidParam(_))
-        ));
-        prop.value_len = 8;
-        prop._reserved[0] = 1;
-        assert!(matches!(
-            adapter.ssap_add_prop(&mut prop),
-            Err(Error::InvalidParam(_))
-        ));
-        prop._reserved = [0; 2];
-        // Valid staging reaches the real syscall and keeps ENOTTY on /dev/null.
-        assert!(matches!(
-            adapter.ssap_add_prop(&mut prop),
             Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
         ));
     }

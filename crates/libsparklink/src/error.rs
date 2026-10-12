@@ -17,6 +17,9 @@ pub enum Error {
     #[error("invalid parameter: {0}")]
     InvalidParam(&'static str),
 
+    #[error("operation not supported: {0}")]
+    NotSupported(&'static str),
+
     #[error("operation timed out")]
     Timeout,
 }

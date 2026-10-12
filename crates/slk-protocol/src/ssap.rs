@@ -2,7 +2,15 @@
 //! This type does not claim a wire Engine or service interoperability.
 use core::{fmt, ops::BitOr};
 
-use crate::SsapAddProperty;
+#[cfg(test)]
+struct SsapAddProperty {
+    uuid16: u16,
+    ops: u8,
+    value_len: u8,
+    value: [u8; 248],
+    handle: u16,
+    _reserved: [u8; 2],
+}
 
 /// Validated 32-bit operation permissions, including descriptor permissions.
 /// Rust helper only; C uses the canonical kernel SL_SSAP_OP_* API.
@@ -71,12 +79,14 @@ impl BitOr for SsapOperations {
     }
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SsapPropertyError {
     Operations(SsapOperationError),
     ValueTooLong(usize),
     NonzeroReserved,
 }
+#[cfg(test)]
 impl fmt::Display for SsapPropertyError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -88,12 +98,15 @@ impl fmt::Display for SsapPropertyError {
         }
     }
 }
+#[cfg(test)]
 impl std::error::Error for SsapPropertyError {}
+#[cfg(test)]
 impl From<SsapOperationError> for SsapPropertyError {
     fn from(value: SsapOperationError) -> Self {
         Self::Operations(value)
     }
 }
+#[cfg(test)]
 impl SsapAddProperty {
     /// Construct local staging input without truncating permissions or data.
     pub fn for_legacy_staging(
@@ -163,6 +176,8 @@ mod tests {
     fn staging_preserves_complete_value_and_rejects_oversize_or_raw_reserved_fields() {
         let ops = SsapOperations::READ | SsapOperations::NOTIFY;
         let mut prop = SsapAddProperty::for_legacy_staging(1, ops, &[0x5a; 248]).unwrap();
+        assert_eq!(prop.uuid16, 1);
+        assert_eq!(prop.handle, 0);
         assert_eq!(prop.ops, 9);
         assert_eq!(prop.value, [0x5a; 248]);
         assert_eq!(prop.value_len, 248);

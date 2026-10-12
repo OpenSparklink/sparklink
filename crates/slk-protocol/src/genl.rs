@@ -29,10 +29,6 @@ pub enum GenlCmd {
     Pair = 16,
     GetSecInfo = 17,
     EncryptOn = 18,
-    SsapRegister = 19,
-    GetSsapInfo = 20,
-    SsapRead = 21,
-    SsapWrite = 22,
     GetPmInfo = 23,
     SetPmState = 24,
     SetPmInterval = 25,
@@ -41,9 +37,6 @@ pub enum GenlCmd {
     GetVersion = 28,
     SetRole = 29,
     GetRole = 30,
-    SsapAddSvc = 31,
-    SsapAddProp = 32,
-    SsapRemoveSvc = 33,
 }
 
 /// Generic Netlink attributes
@@ -81,9 +74,6 @@ pub enum GenlAttr {
     SecMode = 28,
     Encrypted = 29,
     KeyFp = 30,
-    SvcCount = 31,
-    PropCount = 32,
-    PropHandle = 33,
     Mtu = 34,
     PmState = 35,
     ForceActive = 36,

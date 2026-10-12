@@ -15,8 +15,6 @@ from .structs import (
     SlePhyInfo,
     SleScanParams,
     SleSecInfo,
-    SsapReadWrite,
-    SsapSummary,
 )
 
 
@@ -80,12 +78,6 @@ def _get_lib():
     lib.slk_pair.restype = ctypes.c_int
     lib.slk_encrypt_on.argtypes = [ctypes.c_void_p]
     lib.slk_encrypt_on.restype = ctypes.c_int
-    lib.slk_ssap_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SsapSummary)]
-    lib.slk_ssap_info.restype = ctypes.c_int
-    lib.slk_ssap_read.argtypes = [ctypes.c_void_p, ctypes.c_uint16, ctypes.POINTER(SsapReadWrite)]
-    lib.slk_ssap_read.restype = ctypes.c_int
-    lib.slk_ssap_write.argtypes = [ctypes.c_void_p, ctypes.POINTER(SsapReadWrite)]
-    lib.slk_ssap_write.restype = ctypes.c_int
     lib.slk_poll_event.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleDliEvent)]
     lib.slk_poll_event.restype = ctypes.c_int
     lib.slk_device_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SciDevInfo)]
@@ -185,26 +177,6 @@ class Adapter:
 
     def encrypt_on(self):
         self._check(_get_lib().slk_encrypt_on(self._handle), "encrypt_on")
-
-    def ssap_info(self):
-        info = SsapSummary()
-        self._check(_get_lib().slk_ssap_info(self._handle, ctypes.byref(info)), "ssap_info")
-        return info
-
-    def ssap_read(self, handle):
-        rw = SsapReadWrite()
-        self._check(_get_lib().slk_ssap_read(self._handle, ctypes.c_uint16(handle), ctypes.byref(rw)), "ssap_read")
-        return bytes(rw.data[: rw.length])
-
-    def ssap_write(self, handle, data):
-        rw = SsapReadWrite()
-        if len(data) > len(rw.data):
-            raise ValueError("legacy SSAP write exceeds 252 bytes")
-        rw.handle = handle
-        rw.length = len(data)
-        for i, b in enumerate(data):
-            rw.data[i] = b
-        self._check(_get_lib().slk_ssap_write(self._handle, ctypes.byref(rw)), "ssap_write")
 
     def poll_event(self):
         """Poll for a DLI event. Returns SleDliEvent or None."""

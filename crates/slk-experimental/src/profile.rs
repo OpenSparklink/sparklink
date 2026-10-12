@@ -86,71 +86,10 @@ impl ProfileRegistry {
         self.profiles.push(profile);
     }
 
-    /// Register all profile services and characteristics with the adapter's
-    /// SSAP database.  Returns the number of profiles successfully registered.
-    pub fn init_all(&mut self, adapter: &Adapter) -> usize {
-        let mut count = 0;
-        for (idx, profile) in self.profiles.iter_mut().enumerate() {
-            let chars = profile.characteristics();
-            let properties = chars
-                .iter()
-                .map(|ch| {
-                    slk_protocol::SsapAddProperty::for_legacy_staging(
-                        ch.uuid16,
-                        ch.ops,
-                        &ch.initial_value,
-                    )
-                })
-                .collect::<Result<Vec<_>, _>>();
-            let properties = match properties {
-                Ok(properties) => properties,
-                Err(e) => {
-                    tracing::warn!(profile = profile.name(), %e, "invalid legacy property definitions");
-                    continue;
-                }
-            };
-            let mut svc = slk_protocol::SsapAddService {
-                uuid16: profile.uuid16(),
-                primary: 1,
-                _pad: 0,
-                uuid128: [0; 16],
-                start_handle: 0,
-                _reserved: [0; 6],
-            };
-            if let Err(e) = adapter.ssap_add_svc(&mut svc) {
-                tracing::warn!(profile = profile.name(), %e, "failed to add service");
-                continue;
-            }
-
-            let mut handles = HashMap::new();
-            let mut ok = true;
-            for (ch, mut prop) in chars.iter().zip(properties) {
-                if let Err(e) = adapter.ssap_add_prop(&mut prop) {
-                    tracing::warn!(
-                        profile = profile.name(),
-                        uuid = ch.uuid16,
-                        %e,
-                        "failed to add property"
-                    );
-                    ok = false;
-                    break;
-                }
-                handles.insert(ch.uuid16, prop.handle);
-                self.handle_map.insert(prop.handle, idx);
-            }
-
-            if ok {
-                profile.on_registered(&handles);
-                count += 1;
-                tracing::info!(
-                    name = profile.name(),
-                    uuid = format!("0x{:04X}", profile.uuid16()),
-                    chars = chars.len(),
-                    "profile registered"
-                );
-            }
-        }
-        count
+    /// Legacy registration is unsupported; callback lifecycle remains a test model.
+    pub fn init_all(&mut self, _adapter: &Adapter) -> Result<usize, ProfileError> {
+        // No legacy kernel registration and no pretend local publication.
+        Err(ProfileError::NotSupported)
     }
 
     /// Dispatch a read to the owning profile

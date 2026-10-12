@@ -670,7 +670,9 @@ fn experimental_profiles(adapter: &Adapter, profile: u32) -> ProfileRegistry {
         profiles.add(Box::new(BatteryProfile::new(100)));
         profiles.add(Box::new(DeviceInfoProfile::new()));
         profiles.add(Box::new(crate::hid::HidProfile::boot_keyboard()));
-        profiles.init_all(adapter);
+        if let Err(error) = profiles.init_all(adapter) {
+            tracing::warn!(%error, "legacy kernel Profile registration removed");
+        }
     }
     profiles
 }

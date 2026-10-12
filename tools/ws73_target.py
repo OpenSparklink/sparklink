@@ -114,6 +114,7 @@ def prepare(args):
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
+                  LINUX/'tools/testing/selftests/sparklink/ssap_removed_uapi_test.c',
                   LINUX/'include/uapi/linux/sparklink_ioctl.h',
                   HERE/'ws73_bindings_probe.c',HERE/'ws73_bindings_probe.py',
                   LINUX/'tools/testing/selftests/sparklink/ws73-lab.py',
@@ -166,6 +167,14 @@ def prepare(args):
         subprocess.run(compile_setup, check=True)
         manifest['setup_release_probe_compile'] = compile_setup
         programs['setup-release-probe'] = setup_probe
+        removed_probe = output/'ssap-removed-uapi-probe'
+        compile_removed = [os.environ.get('CC','cc'),'-std=c11','-D_POSIX_C_SOURCE=200809L',
+                           '-O2','-Wall','-Wextra','-Werror',
+                           str(LINUX/'tools/testing/selftests/sparklink/ssap_removed_uapi_test.c'),
+                           '-o',str(removed_probe)]
+        subprocess.run(compile_removed, check=True)
+        manifest['ssap_removed_uapi_probe_compile'] = compile_removed
+        programs['ssap-removed-uapi-probe'] = removed_probe
         queued_probe = output/'managed-queue-probe'
         compile_queued = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
                           '-iquote'+str(LINUX/'include/uapi/linux'),str(HERE/'ws73_managed_queue_probe.c'),'-o',str(queued_probe)]

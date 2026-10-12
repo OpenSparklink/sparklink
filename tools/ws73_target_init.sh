@@ -75,6 +75,8 @@ mkdir /evidence/application; chown 1000:1002 /evidence/application; chmod 0700 /
 for n in $(seq 1 100); do [ -c /dev/usbmon1 ] && [ -c /dev/sparklink ] && break; sleep 0.1; done
 [ -c /dev/usbmon1 ] && [ -c /dev/sparklink ] || fail 'built-in usbmon/sparklink nodes'
 chown 0:1000 /dev/sparklink; chmod 0660 /dev/sparklink
+/bin/ssap-removed-uapi-probe > /evidence/ssap-removed-uapi-root.log 2>&1 || fail 'root retired SSAP ioctl rejection'
+/bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c '/bin/ssap-removed-uapi-probe' > /evidence/application/ssap-removed-uapi-ordinary.log 2>&1 || fail 'ordinary retired SSAP ioctl rejection'
 # All archive inodes are root-owned. Ordinary apps cannot alter daemon/fw/code.
 /bin/tcpdump -i usbmon1 -s 0 -U -Z capture -w /evidence/ws73.pcap > /evidence/capture-stdout.txt 2> /evidence/capture-stats.txt & capture=$!
 for n in $(seq 1 100); do

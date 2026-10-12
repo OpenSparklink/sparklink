@@ -81,10 +81,6 @@ typedef struct SleConnInfo {
     uint16_t data_mps;
     uint16_t svc_mtu;
     uint8_t data_mode;
-    uint8_t ssap_info_exchanged;
-    uint16_t ssap_mtu;
-    uint8_t ssap_reliable_mode;
-    uint8_t ssap_version_major;
     uint16_t smtc_tx_credits;
     uint16_t smtc_rx_credits;
     uint16_t dudtc_tx_credits;
@@ -110,27 +106,6 @@ typedef struct SlePairParams {
     uint8_t method;
     uint8_t _reserved[3];
 } SlePairParams;
-
-/**
- * SSAP summary (ioctl 0x51)
- */
-typedef struct SsapSummary {
-    uint16_t service_count;
-    uint16_t property_count;
-    uint16_t total_entries;
-    uint16_t mtu;
-    uint16_t notification_count;
-    uint8_t _reserved[6];
-} SsapSummary;
-
-/**
- * SSAP read/write (ioctl 0x52/0x53)
- */
-typedef struct SsapReadWrite {
-    uint16_t handle;
-    uint16_t length;
-    uint8_t data[252];
-} SsapReadWrite;
 
 /**
  * DLI event (ioctl 0x82)
@@ -616,33 +591,6 @@ int slk_pair(const struct SlkAdapter *adapter, const struct SlePairParams *param
 int slk_encrypt_on(const struct SlkAdapter *adapter);
 
 /**
- * Get SSAP summary.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` and `out` must be valid non-null pointers.
- */
-int slk_ssap_info(const struct SlkAdapter *adapter, struct SsapSummary *out);
-
-/**
- * Read an SSAP property.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` and `out` must be valid non-null pointers.
- */
-int slk_ssap_read(const struct SlkAdapter *adapter, uint16_t handle, struct SsapReadWrite *out);
-
-/**
- * Write an SSAP property.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` and `data` must be valid non-null pointers.
- */
-int slk_ssap_write(const struct SlkAdapter *adapter, const struct SsapReadWrite *data);
-
-/**
  * Poll for a DLI event (non-blocking).
  * Returns 1 if event available (written to `out`), 0 if no event, -1 on error.
  *
@@ -695,52 +643,6 @@ int slk_set_role(const struct SlkAdapter *adapter, uint8_t role);
  * `adapter` must be a valid non-null pointer.
  */
 int slk_get_role(const struct SlkAdapter *adapter);
-
-/**
- * Invoke a method on a remote peer's SSAP service.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- * `input` must point to `input_len` readable bytes.
- * `output` must point to `output_len` writable bytes.
- * On success, `output_len` is updated with the actual output size.
- */
-int slk_ssap_call_method(const struct SlkAdapter *adapter,
-                         uint16_t conn_handle,
-                         uint16_t method_handle,
-                         const uint8_t *input,
-                         uintptr_t input_len,
-                         uint8_t *output,
-                         uintptr_t *output_len);
-
-/**
- * Find a remote service by UUID.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- * Use `uuid16` for 16-bit UUIDs or `uuid128` for 128-bit UUIDs (set uuid16=0).
- * On success, `out_handle` receives the matched service handle.
- */
-int slk_ssap_find_by_uuid(const struct SlkAdapter *adapter,
-                          uint16_t conn_handle,
-                          uint16_t uuid16,
-                          const uint8_t *uuid128,
-                          uint16_t *out_handle);
-
-/**
- * Read a remote property by UUID.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- * `output` must point to `output_len` writable bytes.
- * On success, `output_len` is updated with the actual data size.
- */
-int slk_ssap_read_by_uuid(const struct SlkAdapter *adapter,
-                          uint16_t conn_handle,
-                          uint16_t uuid16,
-                          const uint8_t *uuid128,
-                          uint8_t *output,
-                          uintptr_t *output_len);
 
 /**
  * Bind this fd to one registration, without changing legacy global selection.

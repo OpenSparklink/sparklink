@@ -207,10 +207,6 @@ class SleConnInfo(ctypes.Structure):
         ("data_mps", ctypes.c_uint16),
         ("svc_mtu", ctypes.c_uint16),
         ("data_mode", ctypes.c_uint8),
-        ("ssap_info_exchanged", ctypes.c_uint8),
-        ("ssap_mtu", ctypes.c_uint16),
-        ("ssap_reliable_mode", ctypes.c_uint8),
-        ("ssap_version_major", ctypes.c_uint8),
         ("smtc_tx_credits", ctypes.c_uint16),
         ("smtc_rx_credits", ctypes.c_uint16),
         ("dudtc_tx_credits", ctypes.c_uint16),
@@ -233,25 +229,6 @@ class SlePairParams(ctypes.Structure):
     _fields_ = [
         ("method", ctypes.c_uint8),
         ("_reserved", ctypes.c_uint8 * 3),
-    ]
-
-
-class SsapSummary(ctypes.Structure):
-    _fields_ = [
-        ("service_count", ctypes.c_uint16),
-        ("property_count", ctypes.c_uint16),
-        ("total_entries", ctypes.c_uint16),
-        ("mtu", ctypes.c_uint16),
-        ("notification_count", ctypes.c_uint16),
-        ("_reserved", ctypes.c_uint8 * 6),
-    ]
-
-
-class SsapReadWrite(ctypes.Structure):
-    _fields_ = [
-        ("handle", ctypes.c_uint16),
-        ("length", ctypes.c_uint16),
-        ("data", ctypes.c_uint8 * 252),
     ]
 
 

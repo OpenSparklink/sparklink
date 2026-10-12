@@ -14,8 +14,6 @@ from sparklink.structs import (
     SleScanParams,
     SleSecInfo,
     SciDevInfo,
-    SsapReadWrite,
-    SsapSummary,
 )
 
 __all__ = [
@@ -32,6 +30,4 @@ __all__ = [
     "SleScanParams",
     "SleSecInfo",
     "SciDevInfo",
-    "SsapReadWrite",
-    "SsapSummary",
 ]

@@ -17,7 +17,7 @@
 | 连接管理 | 0x30-0x39 | 10 | 连接/断开/数据收发/MTU/连接列表 |
 | AFH | 0x3A-0x3F | 6 | 信道图设置/获取、RSSI 上报、跳频 |
 | 安全 | 0x40-0x4F | 16 | PSK/配对/加密/Passkey/OOB/SM3/SM4/HMAC 测试 |
-| SSAP 服务 | 0x50-0x5F, 0x6F, 0x72 | 18 | 服务注册/属性读写/远程发现/UUID 查询 |
+| 已删除 SSAP | 0x50-0x5F, 0x6F, 0x72 | 18 个旧编号 | 返回 ENOTTY；不复用 |
 | 功率管理 | 0x60-0x65 | 6 | 状态查询/切换/唤醒间隔/强制活跃 |
 | 同步链路 | 0x66-0x6E | 9 | 单播/组播 CIG/BIG 配置与数据通路 |
 | 事件队列 | 0x70-0x71 | 2 | 事件计数/统计 |
@@ -117,28 +117,16 @@ ENOTTY，暂不复用。控制器由实际 backend 注册/移除。UAPI 尚未�
 | `SEC_INPUT_PASSKEY` | 0x4E | write_ptr | `SlePasskeyInput` |
 | `SEC_SET_PASSWORD` | 0x4F | write_ptr | `SlePasswordParams` |
 
-## SSAP 服务 (0x50-0x5F, 0x6F, 0x72)
+## 已删除的 SSAP 业务接口
 
-| CMD | 序号 | 方向 | 参数类型 |
-|-----|------|------|----------|
-| `SSAP_REGISTER_SVC` | 0x50 | none | — |
-| `SSAP_INFO` | 0x51 | read | `SsapSummary` |
-| `SSAP_READ` | 0x52 | readwrite | `SsapReadWrite` |
-| `SSAP_WRITE` | 0x53 | write_ptr | `SsapReadWrite` |
-| `SSAP_FIND_SVC` | 0x54 | read | `SsapServiceList` |
-| `SSAP_NOTIFY` | 0x55 | write_int | prop_handle |
-| `SSAP_DEQUEUE_NTF` | 0x56 | read | `SsapNotification` |
-| `SSAP_ADD_SVC` | 0x57 | readwrite | `SsapAddService` |
-| `SSAP_ADD_PROP` | 0x58 | readwrite | `SsapAddProperty` |
-| `SSAP_REMOVE_SVC` | 0x59 | write_int | svc_handle |
-| `SSAP_EXCHANGE_INFO` | 0x5A | write_ptr | `SsapRemoteCmd` |
-| `SSAP_REMOTE_DISCOVER` | 0x5B | readwrite | `SsapRemoteDiscover` |
-| `SSAP_REMOTE_READ` | 0x5C | readwrite | `SsapRemoteReadWrite` |
-| `SSAP_REMOTE_WRITE` | 0x5D | write_ptr | `SsapRemoteReadWrite` |
-| `SSAP_REMOTE_EVENT` | 0x5E | read | `SsapNotification` |
-| `SSAP_CALL_METHOD` | 0x5F | readwrite | `SsapRemoteReadWrite` |
-| `SSAP_FIND_BY_UUID` | 0x6F | readwrite | `SsapUuidOp` |
-| `SSAP_READ_BY_UUID` | 0x72 | readwrite | `SsapUuidOp` |
+旧 `0x50–0x5F`、`0x6F`、`0x72` 共18个 ioctl、业务结构及连接信息里的
+SSAP字段已同步删除；C/Rust/Python不再导出它们。未发布UAPI不设兼容期，
+旧完整命令编码返回ENOTTY，不分配数据库、不触发控制器操作。
+
+默认slkd ServiceManager/RemoteService与保留的CLI入口明确返回NotSupported；
+无服务发布、远端读写或通知成功。权限类型 `SsapOperations` 的规范语义及测试
+保留，未来唯一用户态SSAP Engine复用。通用CMTC/TCID、DTAP、credit、socket
+和安全机制仍归内核；socket业务往返不等于SSAP互通资格。
 
 ## 功率管理 (0x60-0x65)
 

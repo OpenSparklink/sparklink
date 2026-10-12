@@ -40,7 +40,7 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleExtAdvInfo, 24);
     check_size!(errors, SleExtAdvEnableParams, 8);
     check_size!(errors, SleConnectParams, 16);
-    check_size!(errors, SleConnInfo, 64);
+    check_size!(errors, SleConnInfo, 56);
     check_size!(errors, SleConnData, 260);
     check_size!(errors, SleInjectConnResp, 12);
     check_size!(errors, SleConnList, 24);
@@ -59,16 +59,6 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleOobData, 64);
     check_size!(errors, SlePasskeyInput, 4);
     check_size!(errors, SlePasswordParams, 36);
-    check_size!(errors, SsapSummary, 16);
-    check_size!(errors, SsapReadWrite, 256);
-    check_size!(errors, SsapServiceEntry, 8);
-    check_size!(errors, SsapServiceList, 124);
-    check_size!(errors, SsapNotification, 256);
-    check_size!(errors, SsapAddService, 28);
-    check_size!(errors, SsapAddProperty, 256);
-    check_size!(errors, SsapRemoteCmd, 4);
-    check_size!(errors, SsapRemoteDiscover, 8);
-    check_size!(errors, SsapRemoteReadWrite, 256);
     check_size!(errors, SlePmInfo, 48);
     check_size!(errors, SlePmStateCmd, 4);
     check_size!(errors, SlePmInterval, 8);
@@ -275,7 +265,7 @@ fn genl_cmd_enum_coverage() {
     use crate::genl::GenlCmd;
     assert_eq!(GenlCmd::Unspec as u8, 0);
     assert_eq!(GenlCmd::GetDevInfo as u8, 1);
-    assert_eq!(GenlCmd::SsapRemoveSvc as u8, 33);
+    assert_eq!(GenlCmd::GetRole as u8, 30);
     // Registration commands 2/3 were removed; remaining wire numbers stay.
     assert_eq!(GenlCmd::StartAdv as u8, 4);
     assert_eq!(std::mem::size_of::<GenlCmd>(), 1);
@@ -289,13 +279,6 @@ fn genl_attr_enum_coverage() {
     assert_eq!(GenlAttr::SvcMtu as u16, 58);
     // Total: 59 attributes (0..=58)
     assert_eq!(std::mem::size_of::<GenlAttr>(), 2);
-}
-
-#[test]
-fn ssap_readwrite_data_capacity() {
-    let rw: SsapReadWrite = unsafe { std::mem::zeroed() };
-    assert_eq!(rw.data.len(), 252);
-    assert_eq!(std::mem::size_of::<SsapReadWrite>(), 256);
 }
 
 #[test]
@@ -361,13 +344,6 @@ fn conn_peer_cap_features_size() {
     assert_eq!(cap.features.len(), 10);
     assert_eq!(cap.features_valid, 0);
     assert_eq!(cap.version_valid, 0);
-}
-
-#[test]
-fn uuid_op_data_capacity() {
-    let op: SsapUuidOp = unsafe { std::mem::zeroed() };
-    assert_eq!(op.data.len(), 232);
-    assert_eq!(op.uuid128.len(), 16);
 }
 
 #[test]

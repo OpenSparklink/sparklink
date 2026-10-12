@@ -796,60 +796,24 @@ fn cmd_sec_reset(adapter: &Adapter) -> libsparklink::Result<()> {
 }
 
 fn cmd_services(adapter: &Adapter) -> libsparklink::Result<()> {
-    let info = adapter.ssap_info()?;
-
-    println!("SSAP Summary:");
-    println!("  Services:       {}", info.service_count);
-    println!("  Properties:     {}", info.property_count);
-    println!("  Total entries:  {}", info.total_entries);
-    println!("  MTU:            {}", info.mtu);
-    println!("  Notifications:  {}", info.notification_count);
-
-    Ok(())
+    let _ = adapter;
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_list_services(adapter: &Adapter) -> libsparklink::Result<()> {
-    let list = adapter.ssap_find_svc()?;
-
-    if list.count == 0 {
-        println!("No services registered");
-        return Ok(());
-    }
-
-    println!("{} service(s):", list.count);
-    for i in 0..list.count as usize {
-        let s = &list.services[i];
-        let kind = if s.primary != 0 {
-            "Primary"
-        } else {
-            "Secondary"
-        };
-        println!(
-            "  [{:#06x}-{:#06x}] UUID={:#06x} {kind}",
-            s.start_handle, s.end_handle, s.uuid16
-        );
-    }
-
-    Ok(())
+    let _ = adapter;
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_read_prop(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()> {
-    let handle = parse_handle(handle_str)?;
-    let rw = adapter.ssap_read(handle)?;
-
-    let data = &rw.data[..rw.length as usize];
-    println!("Property {:#06x} ({} bytes):", handle, rw.length);
-    print!("  ");
-    for b in data {
-        print!("{:02x} ", b);
-    }
-    println!();
-
-    if let Ok(s) = std::str::from_utf8(data) {
-        println!("  UTF-8: \"{s}\"");
-    }
-
-    Ok(())
+    let _ = (adapter, handle_str);
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_write_prop(
@@ -857,51 +821,22 @@ fn cmd_write_prop(
     handle_str: &str,
     value_hex: &str,
 ) -> libsparklink::Result<()> {
-    let handle = parse_handle(handle_str)?;
-    let value = parse_hex_bytes(value_hex)?;
-    if value.len() > 252 {
+    if parse_hex_bytes(value_hex)?.len() > 252 {
         return Err(libsparklink::Error::InvalidParam(
-            "legacy local staging value exceeds 252 bytes",
+            "removed legacy service input limit exceeded",
         ));
     }
-    let len = value.len();
-
-    let mut rw = slk_protocol::SsapReadWrite {
-        handle,
-        length: len as u16,
-        data: [0; 252],
-    };
-    rw.data[..len].copy_from_slice(&value[..len]);
-
-    adapter.ssap_write(&rw)?;
-    println!("Written {} bytes to property {:#06x}", len, handle);
-    Ok(())
+    let _ = (adapter, handle_str, value_hex);
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_remote_discover(adapter: &Adapter, conn_str: &str) -> libsparklink::Result<()> {
-    use slk_protocol::SsapRemoteCmd;
-
-    let conn_handle = parse_handle(conn_str)?;
-
-    // Exchange info first
-    let cmd = SsapRemoteCmd {
-        conn_handle,
-        _reserved: [0; 2],
-    };
-    adapter.ssap_exchange_info(&cmd)?;
-    println!("SSAP info exchanged with connection {:#06x}", conn_handle);
-
-    // Discover all services 0x0001..0xFFFF
-    let mut disc = slk_protocol::SsapRemoteDiscover {
-        conn_handle,
-        start_handle: 0x0001,
-        end_handle: 0xFFFF,
-        count: 0,
-    };
-    adapter.ssap_remote_discover(&mut disc)?;
-    println!("Discovered {} service(s)", disc.count);
-
-    Ok(())
+    let _ = (adapter, conn_str);
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_remote_read(
@@ -909,31 +844,10 @@ fn cmd_remote_read(
     conn_str: &str,
     handle_str: &str,
 ) -> libsparklink::Result<()> {
-    let conn_handle = parse_handle(conn_str)?;
-    let handle = parse_handle(handle_str)?;
-
-    let mut rw = slk_protocol::SsapRemoteReadWrite {
-        conn_handle,
-        handle,
-        length: 0,
-        _pad: [0; 2],
-        data: [0; 248],
-    };
-    adapter.ssap_remote_read(&mut rw)?;
-
-    let data = &rw.data[..rw.length as usize];
-    println!("Remote property {:#06x} ({} bytes):", handle, rw.length);
-    print!("  ");
-    for b in data {
-        print!("{:02x} ", b);
-    }
-    println!();
-
-    if let Ok(s) = std::str::from_utf8(data) {
-        println!("  UTF-8: \"{s}\"");
-    }
-
-    Ok(())
+    let _ = (adapter, conn_str, handle_str);
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_remote_write(
@@ -942,30 +856,15 @@ fn cmd_remote_write(
     handle_str: &str,
     value_hex: &str,
 ) -> libsparklink::Result<()> {
-    let conn_handle = parse_handle(conn_str)?;
-    let handle = parse_handle(handle_str)?;
-    let value = parse_hex_bytes(value_hex)?;
-    if value.len() > 248 {
+    if parse_hex_bytes(value_hex)?.len() > 248 {
         return Err(libsparklink::Error::InvalidParam(
-            "legacy remote value exceeds 248 bytes",
+            "removed legacy service input limit exceeded",
         ));
     }
-    let len = value.len();
-
-    let rw = slk_protocol::SsapRemoteReadWrite {
-        conn_handle,
-        handle,
-        length: len as u16,
-        _pad: [0; 2],
-        data: {
-            let mut d = [0u8; 248];
-            d[..len].copy_from_slice(&value[..len]);
-            d
-        },
-    };
-    adapter.ssap_remote_write(&rw)?;
-    println!("Written {} bytes to remote property {:#06x}", len, handle);
-    Ok(())
+    let _ = (adapter, conn_str, handle_str, value_hex);
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_call_method(
@@ -974,76 +873,32 @@ fn cmd_call_method(
     handle_str: &str,
     input_hex: &str,
 ) -> libsparklink::Result<()> {
-    let conn_handle = parse_handle(conn_str)?;
-    let handle = parse_handle(handle_str)?;
-    let input = parse_hex_bytes(input_hex)?;
-    if input.len() > 248 {
+    if parse_hex_bytes(input_hex)?.len() > 248 {
         return Err(libsparklink::Error::InvalidParam(
-            "legacy method input exceeds 248 bytes",
+            "removed legacy service input limit exceeded",
         ));
     }
-    let len = input.len();
-
-    let mut rw = slk_protocol::SsapRemoteReadWrite {
-        conn_handle,
-        handle,
-        length: len as u16,
-        _pad: [0; 2],
-        data: {
-            let mut d = [0u8; 248];
-            d[..len].copy_from_slice(&input[..len]);
-            d
-        },
-    };
-    adapter.ssap_call_method(&mut rw)?;
-
-    let out_len = (rw.length as usize).min(rw.data.len());
-    let data = &rw.data[..out_len];
-    println!("Method {:#06x} returned {} bytes:", handle, out_len);
-    for chunk in data.chunks(16) {
-        let hex: Vec<String> = chunk.iter().map(|b| format!("{b:02x}")).collect();
-        println!("  {}", hex.join(" "));
-    }
-    Ok(())
+    let _ = (adapter, conn_str, handle_str, input_hex);
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_find_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libsparklink::Result<()> {
-    let conn_handle = parse_handle(conn_str)?;
-    let uuid16 = parse_handle(uuid_str)?;
-
-    let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
-    op.conn_handle = conn_handle;
-    op.uuid16 = uuid16;
-    adapter.ssap_find_by_uuid(&mut op)?;
-    println!("UUID {:#06x} found at handle {:#06x}", uuid16, op.handle);
-    Ok(())
+    let _ = (adapter, conn_str, uuid_str);
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
 fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libsparklink::Result<()> {
-    let conn_handle = parse_handle(conn_str)?;
-    let uuid16 = parse_handle(uuid_str)?;
-
-    let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
-    op.conn_handle = conn_handle;
-    op.uuid16 = uuid16;
-    adapter.ssap_read_by_uuid(&mut op)?;
-
-    let out_len = (op.length as usize).min(op.data.len());
-    let data = &op.data[..out_len];
-    println!(
-        "UUID {:#06x} at handle {:#06x} ({} bytes):",
-        uuid16, op.handle, out_len
-    );
-    for chunk in data.chunks(16) {
-        let hex: Vec<String> = chunk.iter().map(|b| format!("{b:02x}")).collect();
-        println!("  {}", hex.join(" "));
-    }
-    if let Ok(s) = std::str::from_utf8(data) {
-        println!("  UTF-8: \"{s}\"");
-    }
-    Ok(())
+    let _ = (adapter, conn_str, uuid_str);
+    Err(libsparklink::Error::NotSupported(
+        "kernel SSAP API removed; user Engine not implemented",
+    ))
 }
 
+#[cfg(test)]
 fn parse_handle(s: &str) -> libsparklink::Result<u16> {
     let s = s.strip_prefix("0x").unwrap_or(s);
     u16::from_str_radix(s, 16).map_err(|_| libsparklink::Error::InvalidParam("invalid hex handle"))

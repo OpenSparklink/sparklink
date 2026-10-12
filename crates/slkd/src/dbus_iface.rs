@@ -645,7 +645,7 @@ impl DeviceIface {
     /// Query connection info as a property dict.
     ///
     /// Returns key-value pairs: handle, state, data_mtu, data_mps,
-    /// data_mode, ssap_mtu, ssap_reliable_mode, smtc_tx_credits,
+    /// data_mode, smtc_tx_credits,
     /// smtc_rx_credits, dudtc_tx_credits, dudtc_rx_credits,
     /// tx_bytes, rx_bytes.
     async fn get_connection_info(&self) -> zbus::fdo::Result<HashMap<String, Value<'static>>> {
@@ -668,15 +668,6 @@ impl DeviceIface {
         m.insert("data_mps".into(), Value::from(info.data_mps));
         m.insert("data_mode".into(), Value::from(info.data_mode));
         m.insert("svc_mtu".into(), Value::from(info.svc_mtu));
-        m.insert("ssap_mtu".into(), Value::from(info.ssap_mtu));
-        m.insert(
-            "ssap_reliable_mode".into(),
-            Value::from(info.ssap_reliable_mode),
-        );
-        m.insert(
-            "ssap_version_major".into(),
-            Value::from(info.ssap_version_major),
-        );
         m.insert("smtc_tx_credits".into(), Value::from(info.smtc_tx_credits));
         m.insert("smtc_rx_credits".into(), Value::from(info.smtc_rx_credits));
         m.insert(

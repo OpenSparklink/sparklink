@@ -101,51 +101,7 @@ nix::ioctl_write_ptr!(
     super::SlePasswordParams
 );
 
-// ----- SSAP Service (0x50 - 0x5F) -----
-
-nix::ioctl_none!(sl_ssap_register_svc, SL_MAGIC, 0x50);
-nix::ioctl_read!(sl_ssap_info, SL_MAGIC, 0x51, super::SsapSummary);
-nix::ioctl_readwrite!(sl_ssap_read, SL_MAGIC, 0x52, super::SsapReadWrite);
-nix::ioctl_write_ptr!(sl_ssap_write, SL_MAGIC, 0x53, super::SsapReadWrite);
-nix::ioctl_read!(sl_ssap_find_svc, SL_MAGIC, 0x54, super::SsapServiceList);
-nix::ioctl_write_int!(sl_ssap_notify, SL_MAGIC, 0x55);
-nix::ioctl_read!(sl_ssap_dequeue_ntf, SL_MAGIC, 0x56, super::SsapNotification);
-nix::ioctl_readwrite!(sl_ssap_add_svc, SL_MAGIC, 0x57, super::SsapAddService);
-nix::ioctl_readwrite!(sl_ssap_add_prop, SL_MAGIC, 0x58, super::SsapAddProperty);
-nix::ioctl_write_int!(sl_ssap_remove_svc, SL_MAGIC, 0x59);
-nix::ioctl_write_ptr!(sl_ssap_exchange_info, SL_MAGIC, 0x5A, super::SsapRemoteCmd);
-nix::ioctl_readwrite!(
-    sl_ssap_remote_discover,
-    SL_MAGIC,
-    0x5B,
-    super::SsapRemoteDiscover
-);
-nix::ioctl_readwrite!(
-    sl_ssap_remote_read,
-    SL_MAGIC,
-    0x5C,
-    super::SsapRemoteReadWrite
-);
-nix::ioctl_write_ptr!(
-    sl_ssap_remote_write,
-    SL_MAGIC,
-    0x5D,
-    super::SsapRemoteReadWrite
-);
-nix::ioctl_read!(
-    sl_ssap_remote_event,
-    SL_MAGIC,
-    0x5E,
-    super::SsapNotification
-);
-nix::ioctl_readwrite!(
-    sl_ssap_call_method,
-    SL_MAGIC,
-    0x5F,
-    super::SsapRemoteReadWrite
-);
-nix::ioctl_readwrite!(sl_ssap_find_by_uuid, SL_MAGIC, 0x6F, super::SsapUuidOp);
-nix::ioctl_readwrite!(sl_ssap_read_by_uuid, SL_MAGIC, 0x72, super::SsapUuidOp);
+// Removed unpublished kernel SSAP commands; no compatibility fallback.
 
 // ----- Power Management (0x60 - 0x65) -----
 

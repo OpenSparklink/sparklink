@@ -48,7 +48,7 @@ class OperationsConformance(unittest.TestCase):
         subprocess.run(shlex.split(os.environ.get('CC', 'cc')) + ['-std=c11', '-Wall', '-Wextra', '-Werror', str(root/'test.c'), '-o', str(root/'c-test')], check=True)
         cls.c_lines = run([str(root/'c-test')]).splitlines()
         rust = [f'#[expect(dead_code, reason="independent actual ABI declarations for permission tests")] #[path={json.dumps(str(ROOT / "crates/slk-protocol/src/types.rs"))}] mod types;',
-                'pub use types::SsapAddProperty;',
+                '',
                 f'#[path={json.dumps(str(ROOT / "crates/slk-protocol/src/ssap.rs"))}] mod ssap;',
                 'use ssap::*; fn main() {',
                 'let flags = [' + ','.join('SsapOperations::'+n for n in NAMES) + '];',
@@ -56,9 +56,7 @@ class OperationsConformance(unittest.TestCase):
                 'for v in [' + ','.join(str(v)+'u32' for v in VALUES) + '] {',
                 'let ops=SsapOperations::from_bits(v); print!("{} {} {}",v,ops.is_ok() as u8,ops.is_ok_and(|o|o.to_legacy_bits().is_ok()) as u8);',
                 'for flag in flags {print!(" {}",ops.is_ok_and(|o|o.contains(flag)) as u8);} println!(); }',
-                'let mut p=SsapAddProperty::for_legacy_staging(1,SsapOperations::READ,&[0;248]).unwrap(); p.validate_legacy_staging().unwrap();',
-                'p.ops=0x40; assert!(p.validate_legacy_staging().is_err()); p.ops=1; p.value_len=249; assert!(p.validate_legacy_staging().is_err());',
-                'p.value_len=1; p._reserved=[1,0]; assert!(p.validate_legacy_staging().is_err()); }']
+                '}']
         (root/'test.rs').write_text('\n'.join(rust))
         subprocess.run(shlex.split(os.environ.get('RUSTC', 'rustc')) + ['--edition=2024', '-D', 'warnings', str(root/'test.rs'), '-o', str(root/'rust-test')], check=True)
         cls.rust_lines = run([str(root/'rust-test')]).splitlines()
@@ -96,11 +94,7 @@ class OperationsConformance(unittest.TestCase):
         self.assertFalse((Ops.READ | Ops.NOTIFY).contains(Ops.WRITE_WITH_RSP))
 
 
-class LegacyWriteBoundary(unittest.TestCase):
-    def test_oversize_write_cannot_wrap_u16_length_or_reach_ffi(self):
-        adapter = object.__new__(Adapter)
-        adapter._handle = None
-        with patch('sparklink.adapter._get_lib', side_effect=AssertionError('FFI must not be reached')):
-            for size in [253, 65535, 65536]:
-                with self.assertRaises(ValueError):
-                    adapter.ssap_write(1, bytes(size))
+class RemovedLegacyApi(unittest.TestCase):
+    def test_removed_raw_ssap_methods_cannot_load_or_call_ffi(self):
+        for name in ('ssap_info', 'ssap_read', 'ssap_write'):
+            self.assertFalse(hasattr(Adapter, name))

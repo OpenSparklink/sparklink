@@ -86,7 +86,7 @@ slkconfig --adapter 0 scan --duration 5
 slkconfig --adapter 0 connect AA:BB:CC:DD:EE:FF
 slkconfig --adapter 0 security
 
-# 列出 SSAP 服务
+# 旧服务命令当前明确返回 NotSupported（用户态 Engine 待实现）
 slkconfig --adapter 0 services
 ```
 
@@ -132,7 +132,7 @@ slkdump --adapter 0 --generation 7 --write full.snoop
 
 ### libsparklink
 
-高层异步 API。`Adapter` 类型封装了设备管理、扫描、连接、安全配对、SSAP 服务、DLI 事件、PHY 配置等约 50 个方法。基于 tokio `AsyncFd` 实现非阻塞事件轮询。同时提供 C FFI 层 (`ffi.rs`，20 个导出函数) 和自动生成的 `sparklink.h` 头文件。
+高层 API 提供设备观察及管理调用、DLI 事件和 C FFI；能力以当前验收矩阵为准。旧 SSAP Adapter/FFI 业务方法已删除，生成的 `sparklink.h` 与绑定同步。
 
 ### slkd
 
@@ -140,7 +140,7 @@ D-Bus 管理守护进程，使用 zbus 5 在 `org.sparklink` 总线名称下暴�
 
 ### slkconfig
 
-离线配置命令行工具。每设备命令要求 `--adapter`，可用 `--generation` 防止误用重插后的代次；`adapters/controller/management` 提供独立只读观察。原生 WS73 的 `query mac/features/version/buffers` 要求确切 generation、CAP_NET_ADMIN 和独占 Diagnostic lease，不能与 slkd 的 Managed owner 并行。旧 PHY/扫描/连接/配对/SSAP 管理命令仅在 profile 0 迁移路径保留。普通应用控制通过 slctl/slkd。基于 clap 4 的 derive API。
+离线配置命令行工具。每设备命令要求 `--adapter`，可用 `--generation` 防止误用重插后的代次；`adapters/controller/management` 提供独立只读观察。原生 WS73 的 `query mac/features/version/buffers` 要求确切 generation、CAP_NET_ADMIN 和独占 Diagnostic lease，不能与 slkd 的 Managed owner 并行。旧 PHY/扫描/连接/配对命令仍按迁移边界处理；SSAP 命令当前明确不支持。普通应用控制通过 slctl/slkd。基于 clap 4 的 derive API。
 
 ### slctl
 
@@ -193,8 +193,8 @@ with Adapter("/dev/sparklink") as adpt:
 | org.sparklink.Adapter | /org/sparklink/slk0 | 扫描、连接管理 |
 | org.sparklink.Device | /org/sparklink/slk0/dev_* | 设备属性 |
 | org.sparklink.Security | /org/sparklink/slk0/security | 配对、加密 |
-| org.sparklink.ServiceManager | /org/sparklink/slk0/services | SSAP 本地服务 |
-| org.sparklink.RemoteService | /org/sparklink/slk0/conn_* | SSAP 远程服务 |
+| org.sparklink.ServiceManager | /org/sparklink/slk0/services | 当前 NotSupported，用户态 Engine 待接通 |
+| org.sparklink.RemoteService | /org/sparklink/slk0/conn_* | 当前 NotSupported，无远端服务资格 |
 
 ## 打包
 
@@ -233,5 +233,5 @@ GitHub Actions 工作流 (`.github/workflows/ci.yml`) 包含 7 个 job:
 - T/XS 10003-2025 安全规范
 - T/XS 20001-2025 接入层通用要求
 - T/XS 20002-2025 SLE 规范
-- T/XS 50003-2025 SSAP 规范
+- T/XS 50003-2025 SLE 设备测试；SSAP 服务依据 T/XS 20001-2025
 - T/XS 50004-2025 配置传输协议

@@ -248,10 +248,6 @@ pub struct SleConnInfo {
     pub data_mps: u16,
     pub svc_mtu: u16,
     pub data_mode: u8,
-    pub ssap_info_exchanged: u8,
-    pub ssap_mtu: u16,
-    pub ssap_reliable_mode: u8,
-    pub ssap_version_major: u8,
     pub smtc_tx_credits: u16,
     pub smtc_rx_credits: u16,
     pub dudtc_tx_credits: u16,
@@ -435,122 +431,6 @@ pub struct SlePasswordParams {
     pub len: u8,
     pub _reserved: [u8; 3],
     pub data: [u8; 32],
-}
-
-/// SSAP summary (ioctl 0x51)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapSummary {
-    pub service_count: u16,
-    pub property_count: u16,
-    pub total_entries: u16,
-    pub mtu: u16,
-    pub notification_count: u16,
-    pub _reserved: [u8; 6],
-}
-
-/// SSAP read/write (ioctl 0x52/0x53)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapReadWrite {
-    pub handle: u16,
-    pub length: u16,
-    pub data: [u8; 252],
-}
-
-/// SSAP service entry
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapServiceEntry {
-    pub start_handle: u16,
-    pub end_handle: u16,
-    pub uuid16: u16,
-    pub primary: u8,
-    pub _pad: u8,
-}
-
-/// SSAP service list (ioctl 0x54)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapServiceList {
-    pub count: u8,
-    pub _pad: [u8; 3],
-    pub services: [SsapServiceEntry; 15],
-}
-
-/// SSAP notification (ioctl 0x56/0x5E)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapNotification {
-    pub handle: u16,
-    pub indication: u8,
-    pub length: u8,
-    pub data: [u8; 252],
-}
-
-/// SSAP add service (ioctl 0x57)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapAddService {
-    pub uuid16: u16,
-    pub primary: u8,
-    pub _pad: u8,
-    pub uuid128: [u8; 16],
-    pub start_handle: u16,
-    pub _reserved: [u8; 6],
-}
-
-/// SSAP add property (ioctl 0x58)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapAddProperty {
-    pub uuid16: u16,
-    pub ops: u8,
-    pub value_len: u8,
-    pub value: [u8; 248],
-    pub handle: u16,
-    pub _reserved: [u8; 2],
-}
-
-/// SSAP remote command (ioctl 0x5A)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapRemoteCmd {
-    pub conn_handle: u16,
-    pub _reserved: [u8; 2],
-}
-
-/// SSAP remote discover (ioctl 0x5B)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapRemoteDiscover {
-    pub conn_handle: u16,
-    pub start_handle: u16,
-    pub end_handle: u16,
-    pub count: u16,
-}
-
-/// SSAP remote read/write (ioctl 0x5C/0x5D)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapRemoteReadWrite {
-    pub conn_handle: u16,
-    pub handle: u16,
-    pub length: u16,
-    pub _pad: [u8; 2],
-    pub data: [u8; 248],
-}
-
-/// UUID-based SSAP operation (find-by-uuid, read-by-uuid)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SsapUuidOp {
-    pub conn_handle: u16,
-    pub uuid16: u16,
-    pub uuid128: [u8; 16],
-    pub handle: u16,
-    pub length: u16,
-    pub data: [u8; 232],
 }
 
 /// Power management info (ioctl 0x60)

@@ -303,7 +303,7 @@ def active_metadata_bounds(run, active):
             {json_identity(old): active['guest_ack_receipts'][-1]['wall_ns']})
 
 
-def corroborate_recovery(run, capture, diagnostic=None, active=None, partial=None):
+def corroborate_recovery(run, capture, diagnostic=None, active=None, partial=None, connected=None):
     """Real RF after an artificial guest error; never physical/natural-fault acceptance."""
     if (run.get('scope') != 'real WS73 RF with artificial guest transport recovery support'
             or run.get('status') != 'RECOVERY_CONTROL_EVIDENCE_PENDING'
@@ -318,6 +318,16 @@ def corroborate_recovery(run, capture, diagnostic=None, active=None, partial=Non
     if (old['bus'], old['device'], old['address']) != (new['bus'], new['device'], new['address']):
         raise CaptureError('protocol recovery changed USB/radio identity')
     metadata_before, metadata_after, queries = {}, {}, []
+    if connected is not None:
+        if any(v is not None for v in [diagnostic,active,partial]):raise CaptureError('separate connected File gate required')
+        from ws73_connected_file_gate import verify_records, corroborate as connected_wire
+        snapshots=verify_records(connected)
+        for n,identity in enumerate(run['initial']):
+            if (identity['index'],identity['generation'],identity['address'].replace(':','').lower()) != (n,snapshots[n].generation,bytes(snapshots[n].address).hex()):
+                raise CaptureError('connected File registrations differ from RF')
+        if not connected['end_wall_ns']<min(v['observed_wall_ns'] for v in run['initial']):raise CaptureError('connected File gate must precede ordinary RF')
+        metadata_before={json_identity(v):connected['start_wall_ns'] for v in run['initial']}
+        queries=[connected_wire(connected,capture)]
     if partial is not None:
         if diagnostic is not None or active is not None:
             raise CaptureError('partial and other pre-daemon hold gates are separate')
@@ -333,7 +343,7 @@ def corroborate_recovery(run, capture, diagnostic=None, active=None, partial=Non
         from ws73_daemon_hold import corroborate_wire as daemon_wire
         proofs[0]['daemon_held_cancel_wire']=daemon_wire(run['daemon_hold'],capture)
     if queries:
-        key=('partial_ready_peer_activity' if partial.get('active_ready_peer') else 'partial_peer_queries') if partial is not None else 'diagnostic_queries'
+        key='connected_file_activity' if connected is not None else (('partial_ready_peer_activity' if partial.get('active_ready_peer') else 'partial_peer_queries') if partial is not None else 'diagnostic_queries')
         proofs[0][key] = queries
     return proofs
 

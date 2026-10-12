@@ -10,6 +10,13 @@ goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_S
 
 ## 采用后的准确基线与优先级
 
+最新执行阶段：**先完整整改到采用的目标架构，再继续扩展功能。** 当前批次为旧SSAP业务剥离，
+接着统一Session/Ticket/Grant、socket文件契约、Backend注册及事件权威来源/重复路径。
+长度与真实credit的必要现有路径回归/证明并行；新长包、多通道、SSAP/Profile等扩展随后推进。
+不要求所有旧控制面竞争组合先穷尽，保持当前WS73能力。
+[当前SSAP调用审计/三类清单](SSAP_PRODUCTION_SEPARATION_20261013.md)。
+
+
 最新用户调整：当前先完成WP18-SSAP实际调用审计、旧内核业务剥离、调用者拒绝/迁移及三类清单，
 作为WP08新用户态Engine的前置门禁。保留DTAP/CMTC/TCID/credit/socket/Grant/安全机制；
 不恢复不可靠旧wire Engine，不把全部旧控制面整改当作数据开发前置。
@@ -21,7 +28,8 @@ application249/DTAP254八轮、application250/253/254/255十六次EMSGSIZE且捕
 已独立封存；不是其他分层边界、长包或credit耗尽资格。DG02同Binding恢复短包仍补测。
 Kani unsupported/超时仍NOT_PROVEN；NOCP四步风险反例和生产ledger回归保留。
 
-近期：收尾WP01必要worker/期限负向映射（不以控制面竞争全集阻挡数据）→
+采用提案时的纵向依赖仍有效；最新架构整改阶段优先序如上。必要数据门禁依赖为：
+收尾WP01必要worker/期限负向映射（不以控制面竞争全集阻挡数据）→
 WP02同Binding尺寸/各层边界、真实credit/背压/有限队列→WP03提交票据/复用屏障→
 WP04 Session唯一RX→WP05内核可撤销Grant→WP06 socket类型及文件契约→
 所需长包模式、多通道/四设备两组与真实SSAP。WP11自然RCA/有限恢复、WP12事件及

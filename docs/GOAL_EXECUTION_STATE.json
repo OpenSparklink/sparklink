@@ -43,6 +43,7 @@
     "FV07": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN"
   },
   "next_slices": [
+    "Architecture remediation first: WP18 SSAP → WP03/04/05/06 Ticket/Session/Grant/socket contract → WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
     "WP18-SSAP current batch: actual caller audit → remove/isolate old kernel service business → reject unsupported callers and remove unpublished ioctls → strict cross-language + VM WS73 regression; mandatory before WP08 user Engine",
     "WP02/DG02 same-Binding61→249→reject→61; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -240,7 +241,7 @@
       "interface_dependencies": [],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+      "status": "current SSAP separation partially implemented/offline passed; full batch and architecture exit conditions still open"
     }
   ],
   "proof_tasks": [
@@ -271,7 +272,15 @@
   ],
   "full_goal_complete": false,
   "original_issues_open": true,
-  "issue_sync_receipt": ".dev/architecture-proposals/20261013/ISSUE_ADOPTION_PUBLICATION.json",
+  "issue_sync_receipt": "docs/evidence/architecture-adoption-issues-20261013.json",
   "natural_fault_root_cause_closed": false,
-  "non_manual_automatic_recovery_qualified": false
+  "non_manual_automatic_recovery_qualified": false,
+  "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
+  "current_batch": "WP18-SSAP: audit done; Ue49fa39 rejects truncation; Kfbc92f/167f468 remove core DB and production business session/cache/model; remaining unpublished UAPI/callers and exact-revision VM qualification",
+  "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
+  "issue_sync_status": "28 original issues read back OPEN with original body hashes unchanged; later architecture-first steering will be appended",
+  "current_implementation_heads": {
+    "linux": "167f468c00f7",
+    "userspace": "e49fa39"
+  }
 }

@@ -3,7 +3,7 @@
 2026-10-12 用户调整的优先级。保留完整 S0–S6 和现有分层；本节取代此前
 “先穷尽控制面竞争组合，再开始数据面”的近期排序。完整目标及原 issues 均保持开放。
 
-## 起点与证据
+## 历史起点与证据（以下描述绑定当时源码）
 
 核对 Linux `3840ec2ba70ca7fcf033fac5dde23ba020f11412`、用户态
 `24ef21c46ec8d4db6f3f84d95326db5676fc3bd4`。真实运行内核为 `38997dc457be`，
@@ -14,7 +14,7 @@ RF44、2916 个 USB 包及零 capture drop；VM138 的工具解析失败保留�
 源码 CI 38250456167、证据 CI 38251740356 均成功。旧对象拒绝不等于在途撤销，
 空表 subscriber loss 不等于已连接数据流恢复。
 
-当前 Native `send_data` 明确不支持；Native RX 仅接受 A2 事件。
+在上述历史起点，Native `send_data` 明确不支持；Native RX 仅接受 A2 事件。
 WS73 wire codec 尚无 A3 发送入口。旧 worker 的首字节 TCID 猜测及旧连接资源
 不能充当 Native 数据归属或可用 socket 的证明。默认应用未提供已验收的数据通道。
 
@@ -125,3 +125,35 @@ VM145 同源码不加载测试模块，普通 UID1000/caps0 的对象/建链/断
 两端普通应用短 PDU 随机校验/回复 → 边界/长包/耗尽/关闭/断链/旧 lifetime →
 四设备、用户态 SSAP、安全/Profile。完整 S0–S6、Managed、自动恢复和整改 issues
 继续开放，不以这份底层传输证据关闭整项或替代业务验收。
+
+## D3/D4 当前源码：默认逻辑通道初版，实机验收待运行
+
+2026-10-13 重新核对 Linux `c7d5868113c8`、用户态生产 `aa3c3ab5295e`、
+验收工具 `b054181`。已实现 AF_SPARKLINK/SOCK_SEQPACKET 的默认 CUTC31、
+PI241 基础通道；地址独立携带 controller/generation/lifetime/handle 及
+local/remote TCID。其他通道、可选模式和非初始网络命名空间明确返回不支持。
+这只是首个逻辑通道纵向切片，不宣称多通道或动态通道完成。
+
+内核按实际 ACB 查询限制单条消息（当前 SDK111：254−5=249 bytes），TX 最多
+8 条，RX 受 socket 接收缓冲区限制，沿用独立数据 credit/debt。CMTC 交换基础
+模式、MTU/MPS/version；5 秒有限协商期限，协商完成且回复提交后才开放发送。
+slkd 验证现存 Connection 和 Managed lease，以 CAP_NET_ADMIN 绑定 socket 后
+通过 D-Bus 委托 fd；普通应用仅对 fd 收发，无需 sudo 或设备原始写权限。
+关闭丢弃未发送队列；generation/lifetime 失效使旧 socket 报错并唤醒等待者。
+这些行为已有源码实现，但关闭/断链/并发及旧 fd 的新实机标签仍待单独验收。
+
+`slctl channel-peer <connection-path> 4` 与
+`slctl channel-roundtrip <connection-path> 4` 为独立应用。每轮 61-byte 消息包含
+16-byte 随机 nonce、序号和校验载荷；对端校验后修改回复标志，原端核对完整回复。
+VM 工具新增显式 `--channel-socket-verify`，与 external ACB selftest 分开；
+双方 uid1000/caps0、原始应用输出、两端 USB/HCC/A3、CMTC、真实 NOCP 均需独立
+核对才记成功。两次真实连接交换 caller/peer 方向；失败保留，不自动重试掩盖。
+
+实际 C/Rust 对象编译、严格 workspace clippy、195 workspace 测试、19 数据源码
+回归、CMTC/基础帧 ASan/UBSan/LSan 及 415 工具测试通过。完整新内核仍在构建，
+**目前新 socket 尚无实机通过证据**。旧 e344/5d97 的 ACB transport 和 taint0
+控制面/RF 标签仅属于其对应提交。新路径下一步先短 PDU，再长包、253/254/255、
+credit 耗尽、满队列、关闭/断链/旧 lifetime、四设备两组、SSAP、安全/Profile。
+固定 CMTC 请求标识及同 lifetime reopen 的晚回复隔离仍需后续完善；不把所有控制面
+竞争排列设为短 PDU 启动条件。自然故障、非人工自动恢复、旧代码整改和完整 S0–S6
+仍开放，不关闭部分实现所在的整项 issue。

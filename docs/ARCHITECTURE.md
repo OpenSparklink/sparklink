@@ -368,3 +368,8 @@ slkd采用最小能力、受限文件路径及服务sandbox。privileged机制�
 | 私有SDK/固件许可 | 本地使用、事实独立实现、无未经授权分发 | 来源与许可审查 |
 | 模型与代码漂移 | 同批hash、映射、CI变更触发 | 准确源码报告和回归 |
 | 地址族/ABI未发布 | 实验明确、协调、同步迁移 | 类型语义及正式分配/发布决定 |
+
+当前整改实现切片：K464d4d8a9de7以opaque Runtime/Backend保留票据，在驱动准备URB后
+重新验证lifetime/撤销/credit并原子提交；非阻塞提交是明确的Host-lock临界区例外，
+等待/cancel/join在锁外。完整Session/Channel/Grant refs、NOCP屏障和Backend组合仍按
+ADR0002/IMPLEMENTATION_PLAN推进。无消费者RustNetlink副本已移除，实际C bridge保留。

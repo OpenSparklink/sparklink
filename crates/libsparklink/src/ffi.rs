@@ -478,7 +478,10 @@ pub unsafe extern "C" fn slk_ssap_call_method(
     let mut rw: slk_protocol::SsapRemoteReadWrite = unsafe { core::mem::zeroed() };
     rw.conn_handle = conn_handle;
     rw.handle = method_handle;
-    let copy_len = input_len.min(rw.data.len());
+    if input_len > rw.data.len() || (input_len != 0 && input.is_null()) {
+        return -1;
+    }
+    let copy_len = input_len;
     if !input.is_null() && copy_len > 0 {
         unsafe { core::ptr::copy_nonoverlapping(input, rw.data.as_mut_ptr(), copy_len) };
     }

@@ -113,7 +113,12 @@ impl SsapManagerIface {
 
     /// Write a local property value
     async fn write_property(&self, handle: u16, value: Vec<u8>) -> zbus::fdo::Result<()> {
-        let len = value.len().min(252);
+        if value.len() > 252 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "legacy local staging value exceeds 252 bytes; long write is unsupported".into(),
+            ));
+        }
+        let len = value.len();
         let mut rw = slk_protocol::SsapReadWrite {
             handle,
             length: len as u16,
@@ -208,7 +213,12 @@ impl RemoteServiceIface {
 
     /// Write a property on the remote peer
     async fn write(&self, handle: u16, value: Vec<u8>) -> zbus::fdo::Result<()> {
-        let len = value.len().min(248);
+        if value.len() > 248 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "legacy remote value exceeds 248 bytes; long write is unsupported".into(),
+            ));
+        }
+        let len = value.len();
         let rw = slk_protocol::SsapRemoteReadWrite {
             conn_handle: self.conn_handle,
             handle,
@@ -242,11 +252,16 @@ impl RemoteServiceIface {
 
     /// Invoke a method on a remote peer's SSAP service
     async fn call_method(&self, handle: u16, input: Vec<u8>) -> zbus::fdo::Result<Vec<u8>> {
+        if input.len() > 248 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "legacy method input exceeds 248 bytes".into(),
+            ));
+        }
         let st = self.state.lock().await;
         let mut rw: slk_protocol::SsapRemoteReadWrite = unsafe { std::mem::zeroed() };
         rw.conn_handle = self.conn_handle;
         rw.handle = handle;
-        let copy_len = input.len().min(rw.data.len());
+        let copy_len = input.len();
         rw.data[..copy_len].copy_from_slice(&input[..copy_len]);
         rw.length = copy_len as u16;
         st.adapter
@@ -326,6 +341,7 @@ mod validation_tests {
             ProfileRegistry::new(),
         )));
         let service = SsapManagerIface::new(state.clone());
+        let remote = RemoteServiceIface::new(state.clone(), 0);
         let _locked = state.lock().await;
         // The state lock is deliberately held. Incorrect validation order
         // blocks here and fails the deadline, rather than silently succeeding.
@@ -336,6 +352,29 @@ mod validation_tests {
             )
             .await
             .unwrap();
+            assert!(matches!(result, Err(zbus::fdo::Error::InvalidArgs(_))));
+        }
+        for result in [
+            tokio::time::timeout(
+                std::time::Duration::from_secs(1),
+                service.write_property(1, vec![0; 253]),
+            )
+            .await
+            .unwrap(),
+            tokio::time::timeout(
+                std::time::Duration::from_secs(1),
+                remote.write(1, vec![0; 249]),
+            )
+            .await
+            .unwrap(),
+            tokio::time::timeout(
+                std::time::Duration::from_secs(1),
+                remote.call_method(1, vec![0; 249]),
+            )
+            .await
+            .unwrap()
+            .map(|_| ()),
+        ] {
             assert!(matches!(result, Err(zbus::fdo::Error::InvalidArgs(_))));
         }
     }

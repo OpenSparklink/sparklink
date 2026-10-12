@@ -859,7 +859,12 @@ fn cmd_write_prop(
 ) -> libsparklink::Result<()> {
     let handle = parse_handle(handle_str)?;
     let value = parse_hex_bytes(value_hex)?;
-    let len = value.len().min(252);
+    if value.len() > 252 {
+        return Err(libsparklink::Error::InvalidParam(
+            "legacy local staging value exceeds 252 bytes",
+        ));
+    }
+    let len = value.len();
 
     let mut rw = slk_protocol::SsapReadWrite {
         handle,
@@ -940,7 +945,12 @@ fn cmd_remote_write(
     let conn_handle = parse_handle(conn_str)?;
     let handle = parse_handle(handle_str)?;
     let value = parse_hex_bytes(value_hex)?;
-    let len = value.len().min(248);
+    if value.len() > 248 {
+        return Err(libsparklink::Error::InvalidParam(
+            "legacy remote value exceeds 248 bytes",
+        ));
+    }
+    let len = value.len();
 
     let rw = slk_protocol::SsapRemoteReadWrite {
         conn_handle,
@@ -967,7 +977,12 @@ fn cmd_call_method(
     let conn_handle = parse_handle(conn_str)?;
     let handle = parse_handle(handle_str)?;
     let input = parse_hex_bytes(input_hex)?;
-    let len = input.len().min(248);
+    if input.len() > 248 {
+        return Err(libsparklink::Error::InvalidParam(
+            "legacy method input exceeds 248 bytes",
+        ));
+    }
+    let len = input.len();
 
     let mut rw = slk_protocol::SsapRemoteReadWrite {
         conn_handle,
@@ -1208,6 +1223,20 @@ mod tests {
         assert!(parse_hex_bytes("0xA").is_err()); // odd length after prefix
         assert!(parse_hex_bytes("GGXX").is_err()); // invalid hex chars
         assert!(parse_hex_bytes("aéa").is_err()); // even byte count, invalid UTF-8 slice boundary
+    }
+
+    #[test]
+    fn legacy_service_commands_reject_oversize_before_ioctl() {
+        let adapter = Adapter::open("/dev/null").unwrap();
+        for result in [
+            cmd_write_prop(&adapter, "1", &"ab".repeat(253)),
+            cmd_remote_write(&adapter, "1", "1", &"ab".repeat(249)),
+            cmd_call_method(&adapter, "1", "1", &"ab".repeat(249)),
+        ] {
+            // An attempted ioctl on /dev/null would yield an Ioctl error,
+            // not this input validation error.
+            assert!(matches!(result, Err(libsparklink::Error::InvalidParam(_))));
+        }
     }
 
     #[test]

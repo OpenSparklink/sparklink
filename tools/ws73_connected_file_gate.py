@@ -20,7 +20,7 @@ from ws73_diagnostic_hold import HoldCoordinator, PROPERTIES, write_marker, corr
 from ws73_host_later_hold import LaterHostCoordinator, verify_selector_rows, corroborate as corroborate_later_hold
 from sparklink.native import NativeAdapter
 from sparklink.structs import (SleConnectionSubmit, SleConnectionParameters,
-    SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit, SleDiscoveryResult)
+    SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit, SleDiscoveryResult, SleLinkSnapshot)
 
 
 def duplicate_result(fd, generation, identifier):
@@ -157,6 +157,24 @@ def verify_records(r):
                 raise ValueError('original physical peer/type required')
         if r['up'][n]['params'][2:6] != r['down'][n]['params'][2:6]:
             raise ValueError('each controller must retire its own observed handle')
+    if r.get('link_snapshot_gate'):
+        if held_reply:raise ValueError('established snapshot gate must not borrow in-flight timing')
+        for phase,revision,count in [('before',0,0),('up',1,1),('down',2,0)]:
+            for n,raw in enumerate(r['link_snapshots'][phase]):
+                value=decode(SleLinkSnapshot,raw)
+                expected=SleLinkSnapshot(version=1,profile=1,generation=snapshots[n].generation,
+                    event_seq=value.event_seq,revision=revision,flags=1,count=count,dev_index=n)
+                if phase=='up':
+                    body=bytes.fromhex(r['up'][n]['params']);link=expected.links[0]
+                    link.lifetime=1;link.handle=int.from_bytes(body[1:3],'little');link.role=body[3]
+                    link.address_type=body[4];link.address[:]=body[5:11]
+                if bytes(value)!=bytes(expected):raise ValueError('exact canonical table, lifetime, zero tail and observed identity required')
+                if phase!='before' and value.event_seq<r['up' if phase=='up' else 'down'][n]['seq']:
+                    raise ValueError('atomic snapshot replay barrier must cover observed physical event')
+        if r['snapshot_errors']!=[errno.EFAULT,errno.EINVAL,errno.EINVAL,errno.ENODEV]:
+            raise ValueError('actual VFS pointer/reserved/tail/generation rejection required')
+        before,after=[decode(SleLinkSnapshot,v) for v in r['snapshot_error_observations']]
+        if bytes(before)!=bytes(after):raise ValueError('rejected copy/input must not mutate physical table or consume events')
     if not r['start_wall_ns'] < r['release_before_wall_ns'] <= r['release_after_wall_ns'] < r['end_wall_ns']:
         raise ValueError('bounded original release observation interval required')
     if r['end_wall_ns'] - r['start_wall_ns'] > 60_000_000_000:
@@ -259,6 +277,8 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
 
 def run(args):
     reply_hold=getattr(args,'reply_hold',None)
+    snapshot_gate=getattr(args,'link_snapshot',False)
+    if snapshot_gate and reply_hold:raise ValueError('separate established snapshot gate required')
     if (f'ws73.connected_case={args.case}' not in Path('/proc/cmdline').read_text().split()
             or os.geteuid()!=0 or not Path('/scratch-root-uuid').is_file()
             or Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU'
@@ -266,11 +286,14 @@ def run(args):
         raise ValueError('explicit pre-daemon scratch VM required')
     boot=[v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.connected_reply=')]
     if boot!=([reply_hold] if reply_hold else []):raise ValueError('explicit matching reply hold boot mode required')
+    if snapshot_gate != ('ws73.link_snapshot=1' in Path('/proc/cmdline').read_text().split()):
+        raise ValueError('explicit matching link snapshot boot mode required')
     args.output.mkdir(parents=True,exist_ok=False)
     r=dict(format_version=1,status='STARTING',case=args.case,index=args.index,daemon_running=False,
         synthetic_support=False,physical_acceptance=False,automatic_recovery_acceptance=False,
         start_wall_ns=time.time_ns(),discovery=[],events=[[],[]],marker=secrets.token_hex(16))
     if reply_hold:r.update(reply_hold=reply_hold,markers=[],hold_acknowledgements=[])
+    if snapshot_gate:r.update(link_snapshot_gate=True,link_snapshots={})
     def save():save_record(args.output,r)
     def stage(phase,ack):
         marker=dict(hold_phase=phase,wall_ns=time.time_ns());r['markers'].append(marker);save()
@@ -325,6 +348,7 @@ def run(args):
             time.sleep(.002)
         r['scan_match']=matches[0]|dict(elapsed_ms=(time.time_ns()-r['scan_start_wall_ns'])//1_000_000)
         r['scan_end_wall_ns']=time.time_ns();discover(i,stop(snapshots[i],104,4))
+        if snapshot_gate:r['link_snapshots']['before']=[bytes(a.link_snapshot()).hex() for a in observers];save()
         if reply_hold:stage('arm_ready','armed')
         request=connection(snapshots[i],snapshots[p]);r['connection_input']=bytes(request).hex();r['connect_before_wall_ns']=time.time_ns()
         writers[i].submit_connection(request);deadline=time.monotonic()+12
@@ -349,6 +373,7 @@ def run(args):
                 time.sleep(.002)
         if not reply_hold:
             r['up']=outcomes('up',[0x15,0x1401]);r['connected']=bytes(result).hex();r['connect_after_wall_ns']=time.time_ns()
+            if snapshot_gate:r['link_snapshots']['up']=[bytes(a.link_snapshot()).hex() for a in observers];save()
         r['before_snapshots']=[bytes(a.snapshot()).hex() for a in observers]
         r['held']=bytes(observers[i].management_status()).hex();r['peer_before']=bytes(observers[p].management_status()).hex()
         fd=writers[i].fileno();r['original_fd']=fd;r['duplicate_fd']=-1
@@ -380,12 +405,30 @@ def run(args):
             time.sleep(.002)
         r['free']=bytes(value).hex();r['after_snapshots']=[bytes(a.snapshot()).hex() for a in observers]
         r['peer_after']=bytes(observers[p].management_status()).hex();save()
+        if snapshot_gate:r['link_snapshots']['down']=[bytes(a.link_snapshot()).hex() for a in observers];save()
         r['author_result_after_release']=bytes(writers[i].connection_result(snapshots[i].generation,900)).hex() if args.case=='release' else None
         # Intended link loss must not prevent independent peer radio control.
         for identifier,operation in [(104,2),(105,3),(106,4)]:
             req=standby(snapshots[p],identifier,'scanning') if operation==3 else stop(snapshots[p],identifier,operation)
             req.operation=operation;discover(p,req)
         writers[p].release_management(leases[p],1)
+        if snapshot_gate:
+            command=(3<<30)|(ctypes.sizeof(SleLinkSnapshot)<<16)|(ord('S')<<8)|0x9e
+            r['snapshot_error_observations']=[bytes(observers[i].link_snapshot()).hex()];r['snapshot_errors']=[]
+            libc=ctypes.CDLL(None,use_errno=True);libc.ioctl.argtypes=[ctypes.c_int,ctypes.c_ulong,ctypes.c_void_p];libc.ioctl.restype=ctypes.c_int
+            if libc.ioctl(observers[i].fileno(),command,ctypes.c_void_p(1))!=-1:raise ValueError('bad user pointer accepted')
+            r['snapshot_errors'].append(ctypes.get_errno())
+            for kind in ['reserved','tail','generation']:
+                value=SleLinkSnapshot(version=1,generation=snapshots[i].generation)
+                if kind=='reserved':value.reserved[0]=1
+                elif kind=='tail':value.links[15].lifetime=1
+                else:value.generation+=1
+                original=bytes(value);buffer=bytearray(original)
+                try:fcntl.ioctl(observers[i].fileno(),command,buffer,True)
+                except OSError as error:r['snapshot_errors'].append(error.errno)
+                else:raise ValueError('malformed/stale snapshot input accepted')
+                if bytes(buffer)!=original:raise ValueError('failed query modified caller input')
+            r['snapshot_error_observations'].append(bytes(observers[i].link_snapshot()).hex());save()
         r.update(end_wall_ns=time.time_ns(),status='INFLIGHT_FILE_PASS' if reply_hold else 'CONNECTED_FILE_PASS');verify_records(r);save()
         print('WS73_TARGET_CONNECTED_FILE_PASS',flush=True)
     except BaseException as error:
@@ -400,5 +443,6 @@ if __name__=='__main__':
     parser.add_argument('--case',choices=['release','close','dup'],required=True)
     parser.add_argument('--index',type=int,choices=[0,1],required=True)
     parser.add_argument('--reply-hold',choices=['status','outcome'],help='retain actual original Create reply before File withdrawal')
+    parser.add_argument('--link-snapshot',action='store_true',help='actual established physical table/lifetime/barrier and VFS read errors')
     parser.add_argument('--output',type=Path,required=True)
     run(parser.parse_args())

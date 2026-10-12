@@ -141,3 +141,34 @@ class NativeConnectionBindingTests(unittest.TestCase):
         for generation, request_id in [(0, 1), (1, 0)]:
             self.assertEqual(self.lib.slk_connection_result(handle, generation, request_id, ctypes.byref(result)), -errno.EINVAL)
             self.assertEqual(bytes(result), original)
+
+
+class NativeConnectionMethodTests(unittest.TestCase):
+    def setUp(self):
+        import threading
+        self.adapter = object.__new__(NativeAdapter)
+        self.adapter._lock = threading.RLock()
+        self.adapter._handle = _get_native_lib().slk_adapter_open(b"/dev/null")
+        self.adapter.index, self.adapter.generation = 0, 1
+        self.addCleanup(self.adapter.close)
+
+    def test_actual_python_methods_preserve_abi_errors(self):
+        request = SleConnectionSubmit(version=1, generation=1, request_id=1)
+        for call in [lambda: self.adapter.submit_connection(request),
+                     lambda: self.adapter.connection_result(1, 1)]:
+            with self.assertRaises(OSError) as error:
+                call()
+            self.assertEqual(error.exception.errno, errno.ENOTTY)
+
+    def test_methods_reject_wrong_identity_before_call_and_serialize_close(self):
+        for request in [SleConnectionSubmit(generation=2, request_id=1),
+                        SleConnectionSubmit(generation=1)]:
+            with self.assertRaises(ValueError):
+                self.adapter.submit_connection(request)
+        for gen, identifier in [(2,1),(1,0),(0,1)]:
+            with self.assertRaises(ValueError):
+                self.adapter.connection_result(gen, identifier)
+        self.adapter.close()
+        with self.assertRaises(OSError) as error:
+            self.adapter.connection_result(1, 1)
+        self.assertEqual(error.exception.errno, errno.EBADF)

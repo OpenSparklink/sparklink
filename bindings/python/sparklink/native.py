@@ -175,17 +175,18 @@ class NativeAdapter:
         """Typed admission only; operation=3 cancels author, not physical I/O."""
         if not isinstance(request, SleConnectionSubmit):
             raise TypeError("SleConnectionSubmit required")
-        with self._lock:
-            self._require_open()
-            self._check(self._lib.slk_connection_submit(self._handle, ctypes.byref(request)))
+        if request.generation != self.generation or request.request_id == 0:
+            raise ValueError("request must have this generation and a nonzero request id")
+        self._invoke('slk_connection_submit', ctypes.byref(request))
 
     def connection_result(self, generation, request_id):
         """Same-fd bounded result; None means absent/evicted, never success."""
         result = SleConnectionResult()
-        with self._lock:
-            self._require_open()
-            status = self._check(self._lib.slk_connection_result(
-                self._handle, generation, request_id, ctypes.byref(result)))
+        generation = _unsigned(generation, 64, "generation", True)
+        request_id = _unsigned(request_id, 64, "request_id", True)
+        if generation != self.generation:
+            raise ValueError("result must have this generation")
+        status = self._invoke('slk_connection_result', generation, request_id, ctypes.byref(result))
         return result if status == 1 else None
 
     def discovery_result(self, request_id):

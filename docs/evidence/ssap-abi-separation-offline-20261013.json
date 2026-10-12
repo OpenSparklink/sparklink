@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "OFFLINE_PASS_VM_NOT_YET_QUALIFIED",
+  "status": "OFFLINE_PASS_HARDWARE_FOLLOWUP_SEPARATE",
   "kernel_head": "770364dcc15284c081477dea1bab174506821281",
   "userspace_head": "7d8857b78b849f240bb06b1d4a451660cde76605",
   "scope": "unpublished SSAP ABI removal and caller migration; not whole target architecture completion",
@@ -16,7 +16,8 @@
     "connection_tx": "sanitizer PASS outside ptrace sandbox",
     "native_connection": "sanitizer PASS outside ptrace sandbox",
     "four_c_programs": "strict compile only; no host device execution",
-    "retired18_syscalls": "VM_PENDING"
+    "retired18_syscalls": "VM_PENDING",
+    "tooling_tests": 423
   },
   "logs": {
     "ssap-uapi-removal-workspace-tests.log": {
@@ -50,6 +51,10 @@
     "ssap-uapi-final-native-connection-unsandboxed.json": {
       "sha256": "2a7cb10ced589cb48ef156325e44d3beb2af5c18f2d28e6e51105b03ba6e419b",
       "private_path": ".dev/ssap-uapi-final-native-connection-unsandboxed.json"
+    },
+    "ssap-uapi-final-signed-historical.json": {
+      "sha256": "83875f19a60bea305b9eecf920ebeae7a1214eba133ef19b9184111807977c31",
+      "private_path": ".dev/ssap-uapi-final-signed-historical.json"
     }
   },
   "remaining": [
@@ -86,7 +91,7 @@
       "physical_acceptance": false,
       "sources": {
         "legacy_staging.rs": "18ea4e2f197c856cd9ab733b4501f803c605879a437e8007d9cbafa999471bf4",
-        "sparklink_core.rs": "09b8534d088a068e6013ec63484bcdcf336e0a936d88217d8a3d30acb7653053",
+        "sparklink_core.rs": "008b39e6ad401d929d0434a26e83b003dfec51171029d04862862e5d4a370aee",
         "sle_workers.rs": "a80436181c010ab58792b696aa43e4e4fc4b85982391d249fac71f787fd4282b",
         "sle_conn.rs": "7b625a362843ec43283e773d0d8d315ab25b74cd7388c86a0c820b85f052fe70",
         "sle_uapi.rs": "b9beb87c1f98a5583cb094dbfb4649013ae04a41ab6d4e4bfea73c0aeaf30d15",
@@ -151,5 +156,24 @@
         "ws73_connection_codec_test.c": "1f41500443ce81a9c71cfb34d7def2d898a89e5b97d598f28cbcf1575a22e56e"
       }
     }
+  },
+  "source_mapping_note": "Historical audit rerun at the clean signed kernel after whitespace-only router formatting; earlier raw report preserved privately.",
+  "online_ci": {
+    "run_id": 38293197093,
+    "head": "96ac9681d260196ab437a9c33905f00d7fc88459",
+    "conclusion": "success",
+    "jobs_passed": 9
+  },
+  "hardware_followup": {
+    "qualified_source": {
+      "kernel": "770364dcc15284c081477dea1bab174506821281",
+      "userspace": "96ac9681d260196ab437a9c33905f00d7fc88459"
+    },
+    "evidence": [
+      "ws73-ssap-separated-short-repeat-20261013.json",
+      "ws73-ssap-separated-249-boundary-20261013.json"
+    ],
+    "retired_syscalls": "18 commands x2 argument variants, root and ordinary, both VMs ENOTTY",
+    "natural_recovery": false
   }
 }

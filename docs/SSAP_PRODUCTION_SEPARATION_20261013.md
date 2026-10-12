@@ -89,3 +89,14 @@ socket类型/可靠性/关闭契约、Backend与事件权威来源。先整改�
 
 准确实现提交：Linux `770364dcc15284c081477dea1bab174506821281`、用户态 `7d8857b78b849f240bb06b1d4a451660cde76605`。
 离线源码映射：[记录](evidence/ssap-abi-separation-offline-20261013.json)。
+
+## 本批退出门禁：通过，整项 scope 仍开放
+
+准确实机源K770364dcc152/U96ac968（接口代码U7d8857b）：两次VM均验证root/ordinary
+旧18命令×两指针ENOTTY；40短消息（每角色20）、249八轮及16超限拒绝、各RF22、
+真实建链/断链和QMP同行隔离通过。对端随机载荷校验/回复与两端USB/HCC/A3/NOCP
+独立重算，零drop/taint0。不是物理拔插、完整close/dup竞争、自然恢复或SSAP互通资格。
+CI96ac968九项成功；完整kernel build/config/source冻结，历史失败均保留。
+默认生产无旧SSAP业务依赖，未支持明确拒绝、历史测试保留、绑定/文档一致，因此
+此剥离批退出；K6/K17/K19/U3及原完整目标继续开放。接下来先Ticket/Session/Grant/
+socket/Backend/events目标架构整改，随后接通唯一用户态Engine。

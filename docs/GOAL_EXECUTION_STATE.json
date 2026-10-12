@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T18:46:22.734240+00:00",
+  "updated_at_utc": "2026-10-12T18:52:06.954135+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,16 +26,16 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "d3abbdc0c13ac7fc35f9b4bd3132ad14190e7d87",
-    "sparklink": "b3e13a7354f276da7d7562c76d42c2d0ed54fc19"
+    "linux": "770364dcc15284c081477dea1bab174506821281",
+    "userspace": "96ac9681d260196ab437a9c33905f00d7fc88459"
   },
   "qualified_source_heads": {
-    "linux": "d3abbdc0c13ac7fc35f9b4bd3132ad14190e7d87",
-    "userspace": "afb5ee23463e5e0444ea7f1c465f7c059f55c1e2"
+    "linux": "770364dcc15284c081477dea1bab174506821281",
+    "userspace": "96ac9681d260196ab437a9c33905f00d7fc88459"
   },
   "current_qualification": {
-    "DG01": "current revision forty actual peer-validated short round trips, two connection roles",
-    "DG02": "eight application249/DTAP254 round trips and sixteen application oversize rejections; same-Binding short recovery missing",
+    "DG01": "K770364dcc152/U96ac968 forty actual peer-validated short round trips, two roles; RF/connection and QMP peer isolation requalified",
+    "DG02": "Same accurate source eight app249/DTAP254 and sixteen oversize rejections; same-Binding short recovery and layered boundaries still missing",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -44,7 +44,7 @@
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP18-SSAP current batch: actual caller audit \u2192 remove/isolate old kernel service business \u2192 reject unsupported callers and remove unpublished ioctls \u2192 strict cross-language + VM WS73 regression; mandatory before WP08 user Engine",
+    "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
     "WP03 commit tickets/revoke-Down order and reuse barrier; FV05/FV07",
@@ -241,7 +241,7 @@
       "interface_dependencies": [],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "current SSAP separation partially implemented/offline passed; full batch and architecture exit conditions still open"
+      "status": "SSAP separation batch implemented/offline/accurate real VM exit gates PASS; remaining legacy/target architecture and whole WP18 exits open"
     }
   ],
   "proof_tasks": [
@@ -276,19 +276,26 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "WP18-SSAP: old default business/core/session removed; eighteen unpublished ABI commands and Rust/C/Python callers removed, CLI/Profile NotSupported; exact new full VM qualification pending",
+  "current_batch": "WP18-SSAP batch exit gates PASS: default business removed, 18 ABI commands/callers deleted, unsupported facades truthful, historical tests preserved, exact new40short/249/RF/connection plus legacy command rejection VM qualified; whole architecture remains open",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "28 adopted scope/dependency blocks and28 architecture-first steering comments verified OPEN with original body hashes unchanged",
   "current_implementation_heads": {
     "linux": "770364dcc15284c081477dea1bab174506821281",
-    "userspace": "7d8857b78b849f240bb06b1d4a451660cde76605"
+    "userspace": "96ac9681d260196ab437a9c33905f00d7fc88459"
   },
   "next_resume_tasks": [
-    "Finish clean 770364dcc152 kernel and 7d8857b service VM qualification: 18 retired commands ENOTTY privileged/ordinary; RF22/connection/40short/app249 boundaries and peer isolation",
-    "Seal exact source hashes and update existing issues/capabilities; no partial closure",
-    "Remediate target Session unique RX and session/fd lifetime; Ticket/reuse barrier; revocable Grant; socket contract; Backend/event authority",
-    "Keep full S0\u2013S6 and all19WP/10FV/12DG; new user SSAP Engine/features after necessary target architecture remediation; natural recovery remains open"
+    "WP03: audit actual submit/Down/revoke producer lock order, implement referenced commit Ticket and driver USB linearization with finite retirement/reuse barrier; scope FV05/FV07 and VM interleavings",
+    "WP04: move CMTC and negotiation out of fd into ConnectionSession and establish unique bounded RX demultiplexer before opening multiple channels; define same-life reopen/old RX isolation",
+    "WP05/06: kernel revocable Grant epoch; SocketBinding/VFS lifetime and truthful basic DGRAM vs reliable SEQPACKET contract; preserve ordinary delegation path and exact-version real regressions",
+    "WP12/13/18: event/snapshot authority, registered Backend seam/build combinations, remove migrated duplicate/global dead-code dependencies",
+    "Then existing19WP/10FV/12DG data/SSAP/security/Bond/Profile/Proxy/PM/recovery/release expansion; full S0\u2013S6 and all issue exits intact"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
-  "offline_evidence": "docs/evidence/ssap-abi-separation-offline-20261013.json"
+  "offline_evidence": "docs/evidence/ssap-abi-separation-offline-20261013.json",
+  "ssap_separation_batch_complete": true,
+  "target_architecture_remediation_complete": false,
+  "batch_evidence": [
+    "docs/evidence/ws73-ssap-separated-short-repeat-20261013.json",
+    "docs/evidence/ws73-ssap-separated-249-boundary-20261013.json"
+  ]
 }

@@ -110,7 +110,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_channel_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
@@ -216,7 +216,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -486,10 +486,12 @@ def _run(args):
     connected_reply=getattr(args,'managed_connected_reply',None)
     link_snapshot=bool(getattr(args,'managed_link_snapshot',False))
     peer_binding=bool(getattr(args,'managed_peer_binding',False))
+    channel_grant=bool(getattr(args,'managed_channel_grant',False))
+    if channel_grant and (not connected_case or connected_reply or recovery):raise ValueError('channel Grant requires standalone real established File gate without fault injection')
     if peer_binding and (not connected_case or connected_reply):raise ValueError('peer binding requires separate established File gate')
     if link_snapshot and (not connected_case or connected_reply):raise ValueError('link snapshot requires separate established File gate')
     if connected_reply and not connected_case:raise ValueError('actual connection reply hold requires explicit File gate')
-    if connected_case and (support or not recovery or not setup_gate or passthrough or parallel or diagnostic or active_gate
+    if connected_case and (support or (not recovery and not channel_grant) or not setup_gate or passthrough or parallel or diagnostic or active_gate
             or any(getattr(args,k,False) for k in ['managed_partial_case','managed_queue_verify','daemon_hold_case','connection_verify'])):
         raise ValueError('connected File gate requires separate real recovery/Setup VM')
     if connected_index and not connected_case:raise ValueError('connected role requires explicit File gate')
@@ -525,7 +527,7 @@ def _run(args):
     if getattr(args,'managed_queue_confirmed_off',False) and not queued_gate:raise ValueError('confirmed-Off requires explicit Managed queued gate')
     if queued_gate and (support or not recovery or not setup_gate):
         raise ValueError('Managed queued gate requires real recovery VM and Setup attachment gate')
-    if setup_gate and (support or not recovery):
+    if setup_gate and (support or (not recovery and not channel_grant)):
         raise ValueError('Setup release requires explicit real fault-recovery VM mode')
     if active_gate and (support or not recovery or diagnostic or cancellation or deadline_gate or autonomous_gate):
         raise ValueError('active retirement requires separate real fault-recovery VM mode, without explicit-release diagnostic modes')
@@ -599,6 +601,8 @@ def _run(args):
     m['live_connected_reply_hold']=connected_reply
     m['live_link_snapshot_gate']=link_snapshot
     m['live_peer_binding_gate']=peer_binding
+    m['live_channel_grant_gate']=channel_grant
+    if channel_grant:m['channel_grant_verifier']=file_record(HERE/'ws73_channel_grant.py')
     if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py')
     if queued_gate:
         m['managed_queue_verifier']=file_record(HERE/'ws73_management_queued.py')
@@ -698,6 +702,7 @@ def _run(args):
                      (f' ws73.connected_reply={connected_reply}' if connected_reply else '')+
                      (' ws73.link_snapshot=1' if link_snapshot else '')+
                      (' ws73.peer_binding=1' if peer_binding else '')+
+                     (' ws73.channel_grant=1' if channel_grant else '')+
                      (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
                      (' ws73.scan_parameter_cleanup=1' if parameter_cleanup else '')+
                      (' ws73.managed_ready_peer=1' if ready_peer else '')+
@@ -774,7 +779,7 @@ def _run(args):
                         data=channel.recv(65536)
                         if data:
                             log.write(data);log.flush();transcript.extend(data);sys.stdout.buffer.write(data);sys.stdout.buffer.flush()
-                    if not support and not passthrough and not recovery and not parallel and timeout_seal is None and sys.stdin in readable:
+                    if not support and not passthrough and not recovery and not parallel and not channel_grant and timeout_seal is None and sys.stdin in readable:
                         data=os.read(sys.stdin.fileno(),4096)
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
@@ -857,17 +862,24 @@ def _run(args):
                     marker = 'WS73_TARGET_NATIVE_VM_ROOT: ' + package['native_vm']['release'] + ' NVMe/Btrfs signed-module'
                     if text.splitlines().count(marker) != 1 or text.splitlines().count('WS73_TARGET_NATIVE_VM_TAINT: '+('4096' if acb_probe else '0')) != 1:
                         raise ValueError('native module VM root/signature proof missing')
-                    status = (share/'slkd-process-status.txt').read_text()
-                    if (not re.search(r'^Name:\s+slkd$', status, re.M)
+                    status = (share/'slkd-process-status.txt').read_text() if not channel_grant else ''
+                    if not channel_grant and (not re.search(r'^Name:\s+slkd$', status, re.M)
                             or not re.search(r'^Uid:\s+0\s+0\s+0\s+0$', status, re.M)):
                         raise ValueError('native module VM daemon is not root')
                 if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
-                if not support and not passthrough and not recovery and not parallel and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
+                if not support and not passthrough and not recovery and not parallel and not channel_grant and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
                 if passthrough and 'WS73_TARGET_PASSTHROUGH_SUPPORT: PASS' not in text:raise ValueError('QMP passthrough proof missing')
                 if recovery and (hotplug_phase!=1 or 'WS73_TARGET_RECOVERY_SUPPORT: PASS' not in text):
                     raise ValueError('artificial transport recovery proof missing')
                 if parallel and 'WS73_TARGET_PARALLEL_RF: PASS' not in text:raise ValueError('four-device parallel USB proof missing')
-                identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(selected_count)]
+                if channel_grant:
+                    from ws73_connected_file_gate import verify_records as verify_connected
+                    probe=json.loads((share/'connected-file/run.json').read_text())
+                    snapshots=verify_connected(probe)
+                    identities=[dict(probe['usb'][n],index=n,generation=value.generation,
+                        address=':'.join(f'{v:02X}' for v in value.address),path=f'1-{n+1}') for n,value in enumerate(snapshots)]
+                else:
+                    identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(selected_count)]
                 if getattr(args,'hotplug',False) or passthrough:
                     if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
                     pattern=r'^WS73_TARGET_PASSTHROUGH_(REMOVE|READD)_READY$' if passthrough else r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$'
@@ -889,6 +901,9 @@ def _run(args):
                     m['fault_injection']['initial_rom_closes'] = verify_recovery_lifecycle(
                         trace, m['fault_injection']['armed_wall_ns'], [devices[p] for p in args.ports])
                     m['fault_injection']['consumed_marker']=markers[0]
+                if channel_grant:
+                    if text.count('WS73_TARGET_CHANNEL_GRANT_FINISHED')!=1:raise ValueError('standalone Grant finish proof missing')
+                    control={}
                 packets=check_capture_stats((share/'capture-stats.txt').read_text())
                 capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
                 if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
@@ -962,6 +977,7 @@ def _run(args):
                 if connected_case:
                     from ws73_connected_file_gate import corroborate as connected_corroborate
                     probe=json.loads((share/'connected-file/run.json').read_text())
+                    if bool(probe.get('channel_grant'))!=channel_grant:raise ValueError('requested real channel Grant gate mismatch')
                     if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply or bool(probe.get('link_snapshot_gate'))!=link_snapshot or bool(probe.get('peer_binding_gate'))!=peer_binding:raise ValueError('connected File request mismatch')
                     m['connected_file_corroboration']=connected_corroborate(probe,capture,hold.record if connected_reply else None,
                         (output/'qemu-stderr.log').read_text() if connected_reply else None,hold.record['host_identity_at_arm'] if connected_reply else None)
@@ -1046,7 +1062,7 @@ def _run(args):
                     # later qualification must not erase/mutate earlier evidence.
                     from ws73_daemon_removal import verify_sealed_record
                     verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']=('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
@@ -1074,6 +1090,7 @@ def _run(args):
             raise ValueError('ordinary queue verifier changed during run')
         if ready_peer and file_record(HERE/'ws73_management_ready_peer.py')!=m['managed_ready_peer_verifier']:
             raise ValueError('Ready peer verifier changed during run')
+        if channel_grant and file_record(HERE/'ws73_channel_grant.py')!=m['channel_grant_verifier']:raise ValueError('channel Grant verifier changed during run')
         if connected_case and file_record(HERE/'ws73_connected_file_gate.py')!=m['connected_file_verifier']:
             raise ValueError('connected File verifier changed during run')
         if resource_recreation and file_record(HERE/'ws73_resource_file_gate.py')!=m['managed_resource_verifier']:
@@ -1147,6 +1164,7 @@ def main():
             cmd.add_argument('--managed-link-snapshot',action='store_true',help='actual canonical physical table/lifetime/barrier and VFS read errors; established File gate only')
             cmd.add_argument('--managed-peer-binding',action='store_true',help='actual peer/lifetime mismatch rejection without wire commands; established File gate only')
             cmd.add_argument('--managed-connected-reply',choices=['status','outcome'],help='retain actual original Create Status or outcome frame before File withdrawal')
+            cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
             cmd.add_argument('--managed-connected-index',type=int,choices=[0,1],default=0,help='actual Create caller in established-link File gate')
             cmd.add_argument('--managed-resource-recreate',action='store_true',help='actual changed advertising set removal/creation File cancellation; requires selected advertising Ready-peer partial gate')
             cmd.add_argument('--managed-partial-domain',choices=['advertising','scanning'],default='advertising')

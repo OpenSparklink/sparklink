@@ -215,6 +215,9 @@ def verify_records(r):
         raise ValueError('bounded original release observation interval required')
     if r['end_wall_ns'] - r['start_wall_ns'] > 60_000_000_000:
         raise ValueError('finite gate deadline required')
+    if "channel_grant" in r:
+        from ws73_channel_grant import verify
+        verify(r["channel_grant"],r)
     return snapshots
 
 
@@ -311,6 +314,9 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
     proof=dict(scope='pre-daemon actual Create reply File withdrawal and late-link cleanup; not natural recovery' if r.get('reply_hold') else 'pre-daemon established link actual File release/last-close/dup; not in-flight or natural recovery',
         discovery=proofs,heard=heard,links=links,connected_file_support_acceptance=True,
         daemon_running_lifecycle_acceptance=False,inflight_acceptance=bool(r.get('reply_hold')),automatic_recovery_acceptance=False)
+    if 'channel_grant' in r:
+        from ws73_channel_grant import corroborate as grant_corroborate
+        proof['channel_grant']=grant_corroborate(r['channel_grant'],r,capture)
     if held is not None:proof['held_reply']=held
     return proof
 
@@ -319,6 +325,8 @@ def run(args):
     reply_hold=getattr(args,'reply_hold',None)
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
+    channel_gate=getattr(args,'channel_grant',False)
+    if channel_gate and reply_hold:raise ValueError("separate established channel Grant gate required")
     if snapshot_gate and reply_hold:raise ValueError('separate established snapshot gate required')
     if binding_gate and reply_hold:raise ValueError('separate established peer binding gate required')
     if (f'ws73.connected_case={args.case}' not in Path('/proc/cmdline').read_text().split()
@@ -331,6 +339,7 @@ def run(args):
     if snapshot_gate != ('ws73.link_snapshot=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('explicit matching link snapshot boot mode required')
     if binding_gate != ('ws73.peer_binding=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('explicit peer binding boot mode required')
+    if channel_gate != ("ws73.channel_grant=1" in Path("/proc/cmdline").read_text().split()):raise ValueError("explicit channel Grant boot mode required")
     args.output.mkdir(parents=True,exist_ok=False)
     r=dict(format_version=1,status='STARTING',case=args.case,index=args.index,daemon_running=False,
         synthetic_support=False,physical_acceptance=False,automatic_recovery_acceptance=False,
@@ -349,7 +358,7 @@ def run(args):
         value=json.loads((args.output/f'hold-{ack}-ack.json').read_text())
         if value['stage']!=ack or value['request']!=marker:raise ValueError('exact actual frame acknowledgement required')
         r['hold_acknowledgements'].append(value);save()
-    handles=[];alias=None
+    handles=[];alias=None;grant=None
     try:
         observers=[NativeAdapter(n) for n in [0,1]];handles+=observers
         snapshots=[a.snapshot() for a in observers];r['initial_snapshots']=[bytes(s).hex() for s in snapshots]
@@ -431,6 +440,10 @@ def run(args):
                     result=writers[i].connection_result(snapshots[i].generation,901+offset)
                     row.update(author_result=bytes(result).hex() if result is not None else None,end_wall_ns=time.time_ns());save()
                 r['binding_after']=bytes(observers[i].link_snapshot()).hex();save()
+        if channel_gate:
+            from ws73_channel_grant import Gate
+            grant=Gate(observers,snapshots,leases,i,r,save)
+            grant.exchange('before')
         r['before_snapshots']=[bytes(a.snapshot()).hex() for a in observers]
         r['held']=bytes(observers[i].management_status()).hex();r['peer_before']=bytes(observers[p].management_status()).hex()
         fd=writers[i].fileno();r['original_fd']=fd;r['duplicate_fd']=-1
@@ -440,6 +453,8 @@ def run(args):
             r['after_first_result']=bytes(duplicate_result(alias,snapshots[i].generation,900)).hex()
             r['after_first_management']=bytes(observers[i].management_status()).hex()
             if any(e['event'] in [5,0x1405] for events in r['events'] for e in events):raise ValueError('first dup close disconnected actual link')
+        if grant and args.case=='dup':grant.exchange('after_first_control_close')
+        if grant:grant.arm()
         r['release_before_wall_ns']=time.time_ns();save()
         if args.case=='release':writers[i].release_management(leases[i],1)
         elif args.case=='close':writers[i].close()
@@ -464,6 +479,10 @@ def run(args):
         r['peer_after']=bytes(observers[p].management_status()).hex();save()
         if snapshot_gate:r['link_snapshots']['down']=[bytes(a.link_snapshot()).hex() for a in observers];save()
         r['author_result_after_release']=bytes(writers[i].connection_result(snapshots[i].generation,900)).hex() if args.case=='release' else None
+        if grant:
+            grant.withdrawn()
+            grant.successor(observers[i],snapshots[i].generation)
+            grant.close();grant=None
         # Intended link loss must not prevent independent peer radio control.
         for identifier,operation in [(104,2),(105,3),(106,4)]:
             req=standby(snapshots[p],identifier,'scanning') if operation==3 else stop(snapshots[p],identifier,operation)
@@ -491,6 +510,7 @@ def run(args):
     except BaseException as error:
         r.update(status='FAIL',error=str(error),error_type=type(error).__name__);save();raise
     finally:
+        if grant:grant.close()
         if alias is not None:os.close(alias)
         for handle in handles:handle.close()
 
@@ -502,5 +522,6 @@ if __name__=='__main__':
     parser.add_argument('--reply-hold',choices=['status','outcome'],help='retain actual original Create reply before File withdrawal')
     parser.add_argument('--link-snapshot',action='store_true',help='actual established physical table/lifetime/barrier and VFS read errors')
     parser.add_argument('--peer-binding',action='store_true',help='real mismatching peer/lifetime references reject before any wire traffic')
+    parser.add_argument('--channel-grant',action='store_true',help='ordinary duplicated sockets and witnessed blocking RX across actual control withdrawal')
     parser.add_argument('--output',type=Path,required=True)
     run(parser.parse_args())

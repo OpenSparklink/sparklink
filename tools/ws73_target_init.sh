@@ -162,9 +162,23 @@ if grep -q 'ws73.connected_case=' /proc/cmdline; then
     connected_reply=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connected_reply=/){sub(/^ws73.connected_reply=/,"",$i);print $i}}' /proc/cmdline)
     connected_reply_arg=''
     if grep -qw ws73.link_snapshot=1 /proc/cmdline; then connected_reply_arg='--link-snapshot'; fi
+    if grep -qw ws73.channel_grant=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --channel-grant"; fi
     if grep -qw ws73.peer_binding=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --peer-binding"; fi
     if [ -n "$connected_reply" ]; then connected_reply_arg="--reply-hold $connected_reply"; fi
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_connected_file_gate.py $connected_reply_arg --case "$connected_case" --index "$connected_index" --output /evidence/connected-file > /evidence/connected-file-supervisor.log 2>&1 || fail 'established connection File gate'
+fi
+if grep -qw ws73.channel_grant=1 /proc/cmdline; then
+    ! grep -qw ws73.recovery=1 /proc/cmdline || fail 'Grant gate excludes artificial recovery'
+    kill -INT "$capture"; wait "$capture" || fail 'Grant capture sealing'
+    capture=''
+    dmesg > /evidence/kernel.log
+    [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'Grant VM kernel taint'
+    echo 'WS73_TARGET_NATIVE_VM_TAINT: 0'
+    echo 'WS73_TARGET_CHANNEL_GRANT_FINISHED'
+    echo 'WS73_TARGET_FINISHED'
+    sync
+    poweroff -f
+    while :; do sleep 60; done
 fi
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     # The runner attaches the first USB owner after capture readiness. Signal

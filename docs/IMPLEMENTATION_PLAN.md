@@ -1836,3 +1836,9 @@ PM／Proxy、默认四设备并行、自然故障根因和非人工自动恢复�
 full-speed、bcdDevice1.00（device3→4）。故障定位应收窄到参考进程的 libusb
 设备发现、描述符缓存和 wait/open，而不能宣称 QEMU 完全没有重枚举；根因
 尚未查明。原失败状态和所有捕获不改写，日志哈希加入上述对照证据。
+
+2026-10-12参考Host对照新增实证：[VM设备发现环境](WS73_REFERENCE_DISCOVERY_LAB.md)。
+缺udev时旧libusb context保留runtime对象，补udev后同参考二进制完成真实连接；
+双端outcome与OUT/Status已核对。本项目Native连接仍未通过，下一以单变量比较
+SetPublicAddress/scan/data推进typed初始化，随后connected撤销和canonical状态。
+自然启动/bulk/消失根因及自动恢复保持OPEN，参考SSAP日志不代替本项目验收。

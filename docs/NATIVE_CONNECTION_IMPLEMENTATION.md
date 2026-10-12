@@ -248,3 +248,14 @@ PM／Proxy、默认四设备并行、自然故障根因和非人工自动恢复�
 full-speed、bcdDevice1.00（device3→4）。故障定位应收窄到参考进程的 libusb
 设备发现、描述符缓存和 wait/open，而不能宣称 QEMU 完全没有重枚举；根因
 尚未查明。原失败状态和所有捕获不改写，日志哈希加入上述对照证据。
+
+## 参考 VM 的 libusb 发现机制与真实连接对照
+
+[设备发现实验与后续依赖](WS73_REFERENCE_DISCOVERY_LAB.md)：无udev VM26
+直接记录旧 server context 在新boot出现后34次仍返回旧runtime对象，fresh context
+和sysfs都已更新。补齐udev VM27原参考二进制通过启动，真实Create OUT/Status
+和双端成功outcome独立核对，client退出0；719包/零丢包/taint0。参考SSAP日志
+PASS仍只作线索，未声称本项目SSAP完成。此前的VM25 socket权限失败、离线
+脚本syntax失败和旧参考启动失败保留；参考环境原因不关闭自然硬件RCA。
+下一控制变量比对0x0405本机地址设置、扫描参数与广播数据；Create和广播
+参数本体已经与Native旧失败逐字节一致，不再盲目试参数。

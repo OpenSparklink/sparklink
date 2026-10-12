@@ -112,3 +112,17 @@ connectable命令，独立usbmon核对49字节全部字段及成功参数Complet
 negative fixture拒绝mode0或posture0冒充可连接。先VM复测，不延长预算、
 不假造outcome；默认发现路径保持原资格和回归范围。
 两只连接成功是有连接生命周期验收的前置条件；相关issues仍OPEN。
+
+
+VM77（496内核/6517服务与工具）的mode1固定T对照仍失败：397包无丢包，
+49字节参数逐字段符合mode1、role2、posture1/0且真实Complete成功；Create
+OUT和Status成功，10秒内没有任何物理连接outcome。另一只真实STOP成功，
+QEMU退出0。说明仅改广播模式/姿态不足以证明互通。
+[固定T对照失败摘要](evidence/ws73-fixed-t-connection-failure-20261012.json)。
+6517精确CI38194423197为9/9通过，仍不算硬件连接成功。
+
+连接门禁继续加强前置证据：先以真实扫描听到可连接广播的随机marker、完整
+数据、对端地址及RSSI，再获得真实扫描OFF Complete后发Create。离线再核对
+对应RX捕获及scanner STOP。这可区分广播不可见与已可见但连接无结果，
+不将额外等待算作更长Create预算。接下来比对参考Host协商角色、local address
+设置和固件行为。connected release/last-File/dup/in-flight和自动恢复仍未验收。

@@ -6,7 +6,8 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from ws73_capture import CaptureError
+from ws73_capture import CaptureError, marker_data
+from ws73_north_star import parse_match
 from ws73_connection_control import corroborate, result
 
 
@@ -18,7 +19,7 @@ def fixture():
     owners=[dict(bus=1,device=2,generation=1,address='00:01:09:32:54:CD'),
             dict(bus=1,device=4,generation=2,address='00:01:09:32:54:F9')]
     run=dict(commands=[],connection_control=dict(status='CONNECTION_CONTROL_EVIDENCE_PENDING',phases=[]))
-    capture=dict(commands=[],native_events=[],complete=[])
+    capture=dict(commands=[],native_events=[],complete=[],reports=[])
     for n,(caller,peer) in enumerate([owners,owners[::-1]]):
         phase=dict(caller=caller,peer=peer,peer_address_type=0,end_wall_ns=100+n*100)
         run['connection_control']['phases'].append(phase)
@@ -31,6 +32,19 @@ def fixture():
         identity=dict(bus=peer['bus'],device=peer['device'])
         capture['commands'].append(identity|dict(wall_ns=n*100+2,record=n*100+1,opcode=0x0c02,params=body.hex(),completion=dict(wall_ns=n*100+3)))
         capture['complete'].append(identity|dict(wall_ns=n*100+4,record=n*100+2,opcode=0x0c02,status=0,value='14'))
+        phase['marker']=f'{n+1:032x}'
+        phase['scan_command']=len(run['commands'])
+        text=f"NativeDiscoveryMatch: generation={caller['generation']} seq=1 address={peer['address']} RSSI=-50 marker={phase['marker']} data={marker_data(phase['marker']).hex()} kernel_boottime_ns=123 elapsed_ms=1 lost=0\n"
+        phase['scan_match']=parse_match(text)
+        scan_result=f"NativeOperationResult: generation={caller['generation']} request=9 operation=3 state=3 errno=0 status=0x00 opcode=0x1002 step=1/2 power=0 power_valid=0 adv=1 scan=2 profile=1\n"
+        run['commands'].append(dict(stdout=text+scan_result,exit=0,start_wall_ns=n*100+6,end_wall_ns=n*100+8))
+        capture['reports'].append(dict(bus=caller['bus'],device=caller['device'],wall_ns=n*100+7,address=peer['address'],rssi=-50,data=marker_data(phase['marker']).hex()))
+        phase['scan_stop_command']=len(run['commands'])
+        stop_result=f"NativeOperationResult: generation={caller['generation']} request=10 operation=4 state=3 errno=0 status=0x00 opcode=0x1002 step=0/1 power=0 power_valid=0 adv=1 scan=1 profile=1\n"
+        run['commands'].append(dict(stdout=stop_result,exit=0,start_wall_ns=n*100+8,end_wall_ns=n*100+10))
+        identity=dict(bus=caller['bus'],device=caller['device'])
+        capture['commands'].append(identity|dict(wall_ns=n*100+8,record=n*100+3,opcode=0x1002,params='0000',completion=dict(wall_ns=n*100+9)))
+        capture['complete'].append(identity|dict(wall_ns=n*100+9,record=n*100+4,opcode=0x1002,status=0,value=''))
         for operation,opcode,key,event in [(1,0x1401,'connect',0x15),(2,0x1403,'disconnect',5)]:
             start=n*100+operation*10
             phase[key+'_command']=len(run['commands'])
@@ -77,6 +91,11 @@ class ConnectionEvidenceTests(unittest.TestCase):
         for offset in [1,33]:
             bad=copy.deepcopy(capture);body=bytearray.fromhex(bad['commands'][0]['params']);body[offset]=0;bad['commands'][0]['params']=body.hex()
             with self.subTest(offset=offset),self.assertRaises(CaptureError):corroborate(run,bad)
+
+    def test_successful_status_without_captured_connectable_air_report_is_rejected(self):
+        run,capture=fixture()
+        capture['reports'].pop(0)
+        with self.assertRaisesRegex(CaptureError,'independently heard'):corroborate(run,capture)
 
 
 if __name__=='__main__':unittest.main()

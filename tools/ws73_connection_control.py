@@ -8,7 +8,8 @@ import re
 import time
 
 from ws73_capture import CaptureError, command_reply
-from ws73_north_star import parse_result
+from ws73_north_star import parse_result, parse_match
+from ws73_capture import marker_data
 
 
 def result(text, owner, operation):
@@ -41,6 +42,21 @@ def execute(run, a, b):
             phase['advertisement_command'] = len(run.data['commands'])-1
             run.ctl(peer, 'show')
             phase['policy_query_command'] = len(run.data['commands'])-1
+            markers = re.findall(r'^NativeAdvertisementAccepted: request=(\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+)$', advertisement['stdout'], re.M)
+            if len(markers)!=1 or markers[0][2]!=marker_data(markers[0][1]).hex():
+                raise CaptureError('original connectable random marker admission required')
+            phase['marker']=markers[0][1]
+            scan = run.ctl(caller, 'scan', 'on', phase['marker'], peer['address'])
+            phase['scan_command']=len(run.data['commands'])-1
+            parse_result(scan['stdout'],caller,3)
+            match = parse_match(scan['stdout'])
+            if (match['generation']!=caller['generation'] or match['address']!=peer['address']
+                    or match['marker']!=phase['marker'] or match['data']!=markers[0][2]
+                    or match['elapsed_ms']>=10000 or match['lost']):
+                raise CaptureError('connectable announcement must first be heard by the actual caller')
+            phase['scan_match']=match
+            run.stop(caller, 'scan')
+            phase['scan_stop_command']=len(run.data['commands'])-1
             # Type 0 is an explicit candidate, not inferred from discovery's
             # legacy fixed PUBLIC parser. Both raw connection events must
             # corroborate the actual type and peer below.
@@ -107,6 +123,20 @@ def corroborate(run, capture):
         expected[12:18]=bytes.fromhex(peer['address'].replace(':',''))
         expected[25]=power&255; expected[33]=1; expected[43:45]=(200).to_bytes(2,'little')
         advertisement_proof=command_reply(capture,peer,0x0c02,advertisement['start_wall_ns'],advertisement['end_wall_ns'],bytes(expected))
+        scan = run['commands'][phase['scan_command']]
+        parse_result(scan['stdout'],caller,3)
+        match = parse_match(scan['stdout'])
+        if match!=phase['scan_match'] or scan['exit']:
+            raise CaptureError('original fresh connectable scan match required')
+        heard=[e for e in capture['reports'] if (e['bus'],e['device'])==(caller['bus'],caller['device'])
+            and scan['start_wall_ns']<=e['wall_ns']<=scan['end_wall_ns']
+            and e['address']==peer['address'] and e['data']==marker_data(phase['marker']).hex()
+            and e['rssi']==match['rssi']]
+        if not heard: raise CaptureError('connectable peer must be independently heard in captured RX')
+        stop = run['commands'][phase['scan_stop_command']]
+        if stop['exit']: raise CaptureError('actual scanner must stop before Create')
+        parse_result(stop['stdout'],caller,4)
+        stop_proof=command_reply(capture,caller,0x1002,stop['start_wall_ns'],stop['end_wall_ns'],bytes(2),'')
         steps = []
         handles = {}
         for operation, opcode, key, event_ids in [(1,0x1401,'connect',{0x15,0x1401}), (2,0x1403,'disconnect',{5,0x1405})]:
@@ -152,5 +182,6 @@ def corroborate(run, capture):
                     raise CaptureError('peer Down must match its independently observed Up handle')
                 outcomes.append(events[0])
             steps.append(dict(command=commands[0], status=statuses[0], outcomes=outcomes, terminal=terminal))
-        proofs.append(dict(caller=caller, peer=peer, advertisement=advertisement_proof, steps=steps))
+        proofs.append(dict(caller=caller, peer=peer, advertisement=advertisement_proof,
+            connectable_rx=heard, scan_stop=stop_proof, steps=steps))
     return proofs

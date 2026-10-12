@@ -65,3 +65,13 @@ WS73实际C prepare/atomic-submit/completion/finite-wait/kill/join函数及wire 
 十类故障；不是硬件恢复或对端收到资格。Native25、Host49与Managed48调用实际生产
 代码。Host撤销布尔是目前提交屏障，不能冒充SocketBinding的完整Grant epoch。
 已提交/未知debt继续保留；原NOCP四步反例继续开放。真实VM按准确新提交重新验证。
+
+## Runtime Session 与 Binding 迁移
+
+--binding-only直接包含生产sle_channel_state.h的attach/retire/busy/space转换，检查构造和
+合法表示状态归纳不变量；不是另一份实现。retired不可重绑定，busy在退休时保留至完成。
+--session-only是抽象契约：两controller、各两physical lifetime，fd alias0..2，pending/
+running work各0..1，Runtime table与draining owner ref分开。最后fd不重启CMTC，dup
+不提前释放，join后才放owner ref。只检查有限safety，不证明C/Rust/VFS/kref refinement、
+完整generation/Grant/NOCP/硬件或liveness。Session IRQ-save避免Host提交/RX IRQ反转。
+实际Rust session表与C route/submit-consent由selftests编译，依赖明确；真实VM另验收。

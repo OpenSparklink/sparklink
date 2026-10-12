@@ -151,3 +151,17 @@ Host的data撤销在revoke_connections首个Host临界区发布；只有新lease
 验证，也未取得全部controlled VM交错/NOCP复用屏障资格；这两个scope继续开放。
 离线25 Native、10 driver故障、49 Host/12连接与48 Managed测试和限定LKMM不能代替
 本批新版本真实40短/249回归。Session唯一RX/fd分离仍待接通，不放开多通道。
+
+## Runtime-owned Session 切片（K3c8da4fac302）
+
+Runtime拥有16个canonical lifetime/handle索引的C kref sessions。Session持CMTC/原期限、
+唯一ACB消费和解码；Channel持local/remote TCID、PI、MTU/MPS和有界队列/本地关闭；
+socket只持Binding ref。仍只开放基础CUTC31/PI241，不直接放开多socket竞争ACB队列。
+最后VFS file关闭（dup alias不触发）撤销Binding/丢未提交TX和未读RX，Runtime会话不重启。
+无合格close/drain协议前，同life基础CUTC重绑定NotSupported；不声称关闭对端逻辑通道。
+RX16条及socket内存限制；TX八条包含busy skb，linger也含busy，不承诺NOCP/对端收到。
+提交顺序Host→data→schedule→Session；Session访问IRQ-save，提交guard持锁，关闭先发生
+不能新USB提交。不得持Session锁跨Runtime查找、阻塞I/O或cancel_sync。table mutex→Host
+读取最新快照，释放后stop/join；Runtime关gate并join Session后再取native_lifecycle，防止互等。
+动态TCID/关闭协议、Grant epoch/安全、NOCP/旧RX wire屏障及全refinement/KCSAN/lockdep
+继续开放。本批精确新VM资格待取得，不能继承旧版本资格。

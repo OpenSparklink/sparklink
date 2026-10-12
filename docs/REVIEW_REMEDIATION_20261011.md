@@ -1145,3 +1145,14 @@ VM117–130；VM115/116 原失败保留，不升级为通过。
 peer/handle lifetime 为下一优先。旧 mgmt/dev/transport/serdev 实际调用者已复核，
 按三类清单继续迁移后删除，全局 dead_code 未记为清完。自然自动恢复/RCA和
 所有其余S0–S6/28 issues仍OPEN，不因本轮部分成果关闭整项；VM-only继续。
+
+
+## 2026-10-12 Canonical观察连接快照基础已实机验证
+
+[新快照、lifetime与原事件屏障证据](evidence/ws73-atomic-link-snapshot-both-role-20261012.json)
+补齐了从内核读取权威观察连接表的基础，两角色/VFS输入与copy拒绝/dup/同行控制
+及RF44通过；详见[生产调用与限定验收](NATIVE_CONNECTION_IMPLEMENTATION.md)。
+仍未将snapshot接入slkd loss恢复，address-type peer身份及原子lifetime disconnect
+尚待实现，这些与运行中daemon取消/晚到link为下一优先。旧状态调用者接通新路径
+并回归后删除，不把新增API称为整项resync完成。自然自动恢复/RCA、原28项完整
+scope保持OPEN，VM-only和持续小提交不变。

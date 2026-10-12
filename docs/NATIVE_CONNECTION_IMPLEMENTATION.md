@@ -386,3 +386,45 @@ re-export 使用 canonical queue，core／USB 仍消费 dev/transport，serdev �
 自然启动/bulk/重枚举/消失 RCA、非人工恢复、SSAP/安全/Bond/Profile/PHY/PM/Proxy
 与完整S0–S6仍OPEN，原28项issues和两个未合并draft不变。VM-only，本轮无hub切电
 或人工拔插；正常尝试130、维护37，完整goal active。
+
+
+## 2026-10-12 权威观察连接表／lifetime／事件屏障：双角色实机通过
+
+[独立复算证据](evidence/ws73-atomic-link-snapshot-both-role-20261012.json)
+SHA256 `b0daa69c596a9b7b0f049fe71ebba39f6ecb0afbe07eeda32e829cc7f61e6ab8`。
+实际内核为本轮 fault-aware 快照源码（证据记录完整 HEAD），实际服务及冻结工具
+`4dbf59765b4cad5a85ef3a307302d549a247756a`，SDK111。VM131/132交换真实Create角色，
+维护VM38/39只做签名模块空USB加载卸载；VM-only，未安装主机实验内核。
+
+`SL_IOCTL_LINK_SNAPSHOT` 是只读、非消费的同registration接口，C/Rust/Python
+一致的432字节结构。在与physical ingress相同的 Host→gate→event-log 锁顺序下
+复制观察连接表及event_seq屏障；释放所有IRQ锁后copyout。最多16条，每条含
+lifetime、handle、local role、address_type、address，尾部及reserved全零。
+它是已观察物理事实的快照，不是伪造的控制器List Complete，也不是命令作者结果。
+重复相同Up不重分配lifetime；真正Down后handle重用得到新lifetime；冲突、容量或
+计数耗尽、transport fault、procedure uncertainty明确Unknown，不假装已确认空表，
+不清除内部physical cleanup义务。fault Unknown和handle重用当前由实际源码测试
+验证，不声明本轮已做相应实机fault／重用VFS资格。
+
+两例真实读表：Create前Known空表/revision0；两端实际Up后Known一条、lifetime1/
+revision1，完整identity与物理原event一致；dup首次close保持File/Held，最后close
+引发真实Disconnect/两端Down后Known空表/revision2。每次snapshot.event_seq覆盖
+对应原Up/Down seq。坏pointer返回EFAULT，非零reserved／尾表返回EINVAL，旧gen
+返回ENODEV；失败不改caller input，前后完整snapshot一致，不消耗事件或改变状态。
+同行注册、元数据、管理权及真实radio控制保持；每例后普通UID1000/caps0 RF22，
+共44轮、2462包零drop、taint0、QEMU0，RF阶段同slkd/bus。File仍在slkd启动前。
+
+45实际Host+2prepare源码、link源码测试、4完整权限分类覆盖、192 Rust离线、37 Python
+完整ABI（含i386静态布局）/实际shared-lib负向测试、395工具回归通过；最终image/
+modules构建source/config稳定、无compiler warning，八export/ELF和签名空USB通过。
+源码CI38232821945精确HEAD九项成功。首次重编译暴露两个旧FFI wrapper缺少prototype
+的warning，准确声明后重建；C头缺array宏及本地ccache目录不可写的失败、缺测试
+socket/私有dbus路径的环境失败均保留，不将它们记为合格产物或功能失败回填成功。
+
+**这项是canonical snapshot基础，不等于slkd resync或原子peer-disconnect已完成。**
+下一批：slkd在启动/事件丢失时用snapshot恢复并按event_seq拒绝旧link事件回放；
+peer身份含address_type，支持每连接lifetime，不继续混用旧address-only/handle缓存；
+disconnect经内核在admission原子检查generation/peer/lifetime，再接通cancel晚到link
+清理和运行中daemon真实验收。迁移调用者和回归后删重复旧状态实现，未发布UAPI可
+同步修改，无兼容期。自然启动/bulk/重枚举/消失RCA、非人工恢复、四设备及完整
+S0–S6仍OPEN。正常尝试132/维护39；原28issues、两个未合并draft和完整goal保留。

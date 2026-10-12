@@ -35,6 +35,7 @@ def record():
 class DeathReceipt(unittest.TestCase):
     def test_rejects_scope_authentication_cleanup_and_order_mutations(self):
         original=record();verify(original)
+        ended=copy.deepcopy(original);ended['daemon_channel']['blocked_result']['errno']=116;verify(ended)
         for kind in ['no_death','same_owner','order','credentials','wrong_inode','wrong_path','not_reaped','ready_generation','not_free','before_reap','late_wake','peer_writable','duplicate_direction','duplicate_nonce','isolation_claim','recovery_claim']:
             r=copy.deepcopy(original);g=r['daemon_channel']
             if kind=='no_death':r['death']['status']=0

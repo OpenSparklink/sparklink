@@ -100,7 +100,9 @@ class ControlRun(Run):
                 if all(v['flags']==1 and not v['error'] and v['state']==0 and not v['management_flags'] and v['link_flags']==1 and not v['link_count'] for v in rows):break
                 if time.monotonic()>deadline:raise TimeoutError('daemon-owned cleanup did not become Free')
                 time.sleep(.02)
-            gate.withdrawn()
+            blocked=receive(gate.parents[gate.index]);gate.row['blocked_result']=blocked;self.save()
+            if blocked['stage']!='blocked_denied' or blocked['errno'] not in [errno.EACCES,errno.ESTALE]:raise ValueError('actual withdrawal or ended physical lifetime required')
+            gate.denied('after_withdrawal')
             other=1-gate.index;send(gate.parents[other],dict(kind='deny',marker=(b'GRNTDENY'+secrets.token_bytes(32)).hex()))
             gate.row['other_after_death']=receive(gate.parents[other]);self.save()
             (FOLDER/'free.json').write_text(json.dumps(dict(pid=death['pid'],wall_ns=time.time_ns()))+'\n')
@@ -140,7 +142,7 @@ def verify(record):
     if record['bus_before']['pid']!=record['death']['pid'] or record['death']['status']!=137 or record['bus_after']['pid']!=record['successor']['pid'] or record['bus_before']['owner']==record['bus_after']['owner'] or record['death']['pid']==record['successor']['pid']:raise CaptureError('distinct reaped daemon successor required')
     armed=g['armed'];samples=g['blocking_witness'];blocked=g['blocked_result']
     if armed['pid']!=g['workers'][i]['pid'] or armed['fd']!=g['workers'][i]['fd'] or len(samples)!=2 or not armed['wall_ns']<samples[0]['wall_ns']<samples[1]['wall_ns']<record['armed_wall_ns']<=record['death']['before_wall_ns']:raise CaptureError('blocked application must precede SIGKILL')
-    if any(v['syscall']!=45 or v['fd']!=armed['fd'] or v['state']!='S' or v['wchan'] not in ['__skb_wait_for_more_packets','schedule_timeout'] for v in samples) or blocked['errno']!=errno.EACCES or blocked['end_wall_ns']<record['death']['before_wall_ns'] or blocked['end_wall_ns']-blocked['start_wall_ns']>=8_000_000_000:raise CaptureError('finite actual EACCES wake required')
+    if any(v['syscall']!=45 or v['fd']!=armed['fd'] or v['state']!='S' or v['wchan'] not in ['__skb_wait_for_more_packets','schedule_timeout'] for v in samples) or blocked['errno'] not in [errno.EACCES,errno.ESTALE] or blocked['end_wall_ns']<record['death']['before_wall_ns'] or blocked['end_wall_ns']-blocked['start_wall_ns']>=8_000_000_000:raise CaptureError('finite actual EACCES wake required')
     sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'bindings/python'))
     from sparklink.structs import SleControllerSnapshot, SleManagementQuery, SleLinkSnapshot
     rows=record['cleanup_observations'][-1]
@@ -189,7 +191,12 @@ def corroborate(record,capture):
         body=bytes.fromhex(events[0]['params'])
         if len(body)<11 or body[0] or (int.from_bytes(body[1:3],'little'),body[3],body[4],body[5:11].hex())!=(v['handle'],v['role'],v['address_type'],v['address'].replace(':','').lower()):raise CaptureError('actual Up must match retained fd object')
         up.extend(events)
-    return dict(status='REAL_DAEMON_CHANNEL_DEATH_USB_CORROBORATED',business_round_trips=2,legs=legs,original_up=up,actual_daemon_death=True,successor_does_not_renew_old_fd=True,common_owner_both_leases_withdrawn=True,independent_device_business_isolation=False,physical_acceptance=False,automatic_recovery_acceptance=False,full_grant_complete=False)
+    down=[]
+    if g['blocked_result']['errno']==errno.ESTALE:
+        owner=g['owners'][g['index']]['owner'];handle=g['owners'][g['index']]['object']['handle']
+        down=[e for e in capture['native_events'] if e['event'] in [5,0x1405] and (e['bus'],e['device'])==(owner['bus'],owner['device']) and record['death']['before_wall_ns']<=e['wall_ns']<=g['blocked_result']['end_wall_ns'] and len(bytes.fromhex(e['params']))>=4 and bytes.fromhex(e['params'])[0]==0 and int.from_bytes(bytes.fromhex(e['params'])[1:3],'little')==handle]
+        if len(down)!=1:raise CaptureError('ESTALE wake requires actual matching physical Down before wake')
+    return dict(status='REAL_DAEMON_CHANNEL_DEATH_USB_CORROBORATED',first_blocked_errno=g['blocked_result']['errno'],physical_down_before_wake=down,business_round_trips=2,legs=legs,original_up=up,actual_daemon_death=True,successor_does_not_renew_old_fd=True,common_owner_both_leases_withdrawn=True,independent_device_business_isolation=False,physical_acceptance=False,automatic_recovery_acceptance=False,full_grant_complete=False)
 
 
 if __name__=='__main__':

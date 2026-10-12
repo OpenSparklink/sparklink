@@ -2,8 +2,8 @@
 
 日期：2026-10-13。状态：目标架构采用；按下表整改，未实现项不宣称完成。
 用户完整提案已合入canonical ARCHITECTURE/IMPLEMENTATION_PLAN；采用与历史状态调整见
-[采用记录](../ARCHITECTURE_ADOPTION_20261013.json)。当前新K d3abbdc/Uafb5ee2的40轮短消息
-及249字节资格以CURRENT_CAPABILITIES为准，不覆盖下述历史review基线。
+[采用记录](../ARCHITECTURE_ADOPTION_20261013.json)。当前实现Kbf8663/编译用户态Udfb8636的40轮短消息、249边界与八项Grant scope门禁
+以CURRENT_CAPABILITIES为准；后续工具提交独立记录，不覆盖下述历史review基线。
 补充 ADR 0001，不缩减 S0–S6、drivers/net/slkd 分层或历史资格。
 Review 基线为 Linux4a3dc86ade58、用户态8cf052c。随后 ec67348 仅新增长度验收应用/
 工具；40轮资格仍绑定 K4a3dc86ade58、编译应用4426d97、工具c259bae。
@@ -13,22 +13,24 @@ Review 基线为 Linux4a3dc86ade58、用户态8cf052c。随后 ec67348 仅新增
 
 | 对象 | 所有权及失效规则 | 当前差距 |
 |---|---|---|
-| Runtime | controller generation、Backend生命周期、独立命令/data credit、设备故障及票据 | canonical验证到driver提交窗口与复用屏障待整改/证明 |
-| ConnectionSession | 物理connection lifetime、CMTC、能力、通道表、连接级唯一RX分流 | 当前仍由一个socket独占ACB消费；必须迁移，不能直接放开注册限制 |
+| Runtime | controller generation、Backend生命周期、独立命令/data credit、设备故障及票据 | Host锁下准入与driver提交票据已接通；复用/迟到NOCP可信屏障仍待证明 |
+| ConnectionSession | 物理connection lifetime、CMTC、能力、通道表、连接级唯一RX分流 | Runtime持有Session；Session worker唯一消费ACB并分流，当前仅单Channel；多通道仍待实现 |
 | Channel | local/remote TCID、PI、模式、MTU/MPS、独立有界队列、协议关闭 | 目前仅固定CUTC31/PI241基础模式；动态/多通道未支持 |
-| SocketBinding | VFS fd引用、dup/最后关闭、授权范围/失效 | 不能继续由fd析构隐式创建/重建CMTC会话 |
-| slkd | 管理策略、授权、SSAP Engine/数据库、Agent、Bond、Profile | 授权撤销需内核epoch检查，不能只靠daemon属性 |
+| SocketBinding | VFS fd引用、dup/最后关闭、授权范围/失效 | 已与Session分离；dup共享Binding，最后关闭释放本地队列；无可靠通道关闭协议，拒绝同lifetime重绑 |
+| slkd | 管理策略、授权、SSAP Engine/数据库、Agent、Bond、Profile | 内核Grant已核对全身份/方向/Managed epoch；可信安全与管理所有者死亡仍待验收 |
 
 ConnectionSession 独立于应用fd。最后fd关闭释放Binding和其未提交TX，**不隐式关闭
 物理连接或重建CMTC**。共享逻辑通道是否保留、关闭必须由明确的session/channel
 状态决定；需要协议关闭时，实现关闭事务及迟到隔离后才能提供该操作。
-同 lifetime reopen 当前未验收；固定标识1换成递增编号也不足以防止残留业务数据。
+同lifetime基本通道重绑当前明确EOPNOTSUPP，已实机验证拒绝；固定标识1换成递增编号也不足以防止残留业务数据。
 Session需保留协商上下文、接收水位与通道归属，定义重新授权/重新绑定的排空屏障。
 
 授权目标：fd绑定KernelGrant（controller/generation/lifetime/channel + authorization
  epoch），随对应Managed授权撤销失效。撤销阻止新准入/新提交、唤醒等待者；已提交
-物理义务仍保留到真实完成或明确退休屏障。新lease不复活旧fd。现实现没有该epoch，
-不宣称具备此性质；在接通内核grant验证和回归之前保持授权范围整改issue开放。
+物理义务仍保留到真实完成或明确退休屏障。新lease不复活旧fd。Kbf8663已接通
+全身份/方向/epoch检查、Host锁内发布及RX准入，release/最后管理fd/dup/新lease实机门禁通过；
+受控broker的SCM_RIGHTS六例已通过（8f19590工具）；真实daemon死亡、可信安全与在途USB交错
+未验收，整项issue继续开放。
 
 ## socket 四阶段及可靠性契约
 

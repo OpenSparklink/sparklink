@@ -10,15 +10,15 @@ goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_S
 
 ## 采用后的准确基线与优先级
 
-最新执行阶段：**先完整整改到采用的目标架构，再继续扩展功能。** 当前批次为旧SSAP业务剥离，
-接着统一Session/Ticket/Grant、socket文件契约、Backend注册及事件权威来源/重复路径。
+最新执行阶段：**先完整整改到采用的目标架构，再继续扩展功能。** 旧SSAP业务剥离已取得本批退出资格；
+当前统一Session/Ticket/Grant与socket文件契约，接着整改Backend注册及事件权威来源/重复路径。
 长度与真实credit的必要现有路径回归/证明并行；新长包、多通道、SSAP/Profile等扩展随后推进。
 不要求所有旧控制面竞争组合先穷尽，保持当前WS73能力。
 [当前SSAP调用审计/三类清单](SSAP_PRODUCTION_SEPARATION_20261013.md)。
 
 
-最新用户调整：当前先完成WP18-SSAP实际调用审计、旧内核业务剥离、调用者拒绝/迁移及三类清单，
-作为WP08新用户态Engine的前置门禁。保留DTAP/CMTC/TCID/credit/socket/Grant/安全机制；
+采用的近期次序：WP18-SSAP实际调用审计、旧内核业务剥离、调用者拒绝/迁移及三类清单
+作为WP08新用户态Engine的前置门禁；本批剥离门禁已通过，整个WP18未完成。保留DTAP/CMTC/TCID/credit/socket/Grant/安全机制；
 不恢复不可靠旧wire Engine，不把全部旧控制面整改当作数据开发前置。
 
 
@@ -288,6 +288,12 @@ CI 每 PR 跑 fmt/check/clippy/unit/golden/ABI/Python/私有 D-Bus；有适用�
 - 实机：DG09，release/daemon death/安全状态变化/dup/fd传递；另一设备业务不受影响。
 - 退出：内核强制，不只改变D-Bus属性；普通应用仍UID1000/caps0收发。
 
+WP05当前子门禁：工具8f19590/Kbf8663/编译Udfb8636已取得pre-daemon SCM_RIGHTS
+六例准确实机资格（两角色×release/last management fd/dup、16实际往返）。
+应用关闭继承authority后普通身份接收，broker关闭原fd；blocked RX拒绝和successor不续旧fd。
+实际slkd死亡、可信安全/降级和在途USB交错仍缺；不关闭WP05或相关整项issue。
+详见CURRENT_CAPABILITIES唯一资格与公开证据。
+
 ### WP06：Socket语义收敛与迁移（P1，S4）
 
 - 范围：socket UAPI、`sle_channel_socket.c`、slkd/channel、slctl/channel、libsparklink/绑定。
@@ -341,6 +347,15 @@ CI 每 PR 跑 fmt/check/clippy/unit/golden/ABI/Python/私有 D-Bus；有适用�
 
 ### WP12：事件、快照和daemon接任（P1/P2，S2）
 
+最新调用核对：Native订阅已使用ControllerEventReceiver/每注册完整事件日志；
+`adapters.rs`的Legacy分支仍消费EventReceiver/旧DLI ring，`ioctl_legacy_dli_poll`
+仍可破坏性poll后备controller事件。迁移/删除这条生产Legacy分支是本阶段整改，
+不得把现有Native已迁移路径回退到旧ring。现有daemon SIGKILL门禁仅活动广播扫描，
+不能授予“业务fd存活且旧Grant失效”的资格；后续必须跨实际slkd死亡保留应用fd。
+同一slkd拥有两设备时死亡会撤销两lease，不能声称另一lease不受影响；
+要验证设备隔离，应独立管理所有者或采用四设备两组，记录实际所有者拓扑。
+
+
 - 范围：controller_event、snapshot、libsparklink receiver、slkd event_loop和registry、mon/dump。
 - 动作：独立游标、copy后commit、loss/resync水位、移除唤醒；停止旧破坏性poll；接任不盲重放副作用。
 - 依赖：现有Runtime；可与数据主线并行，涉及Session的快照跟随WP04。
@@ -348,6 +363,15 @@ CI 每 PR 跑 fmt/check/clippy/unit/golden/ABI/Python/私有 D-Bus；有适用�
 - 退出：唯一状态来源；旧ring/fallback调用者迁移后删除。
 
 ### WP13：Backend可注册、driver拆分和Virtual（P2，S1/S6）
+
+当前源码审计：`sle_dli.rs::ControllerBackend`仍硬编码None/Uart/Spi/Usb/Serdev/Ws73；
+`sparklink_core.rs::init_subsystem`依configfs构造旧UART/SPI且忽略open错误，
+USB/serdev走`activate_new_device`的Runtime固定槽，尚无目标可注册Backend seam。
+整改不得只改enum名称：须先收敛register/unregister引用与generation、停止/回调屏障，
+迁移真实WS73调用者，再移driver与删除旧configfs假设备构造；
+UART/SPI历史codec/失败语义移selftests，未经真实transport接通的生产配置明确拒绝。
+这些范围未因当前Grant实机通过而完成。
+
 
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。

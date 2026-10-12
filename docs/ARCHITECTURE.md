@@ -14,6 +14,10 @@ CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制�
 及16次超限拒绝、dup保持收发和最后关闭后同life重开拒绝；不授予动态通道/关闭协议、
 长包、多通道、四设备数据、安全、完整Grant或自然自动恢复资格。
 
+Grant由内核强制核对完整scope/方向/Managed epoch；bf8663锁下最终发布已接通。
+受控broker的SCM_RIGHTS交付/撤销六例已通过；实际slkd死亡与可信安全状态仍开放。
+最后数据fd关闭仅释放Binding及本地队列，不重建CMTC；同lifetime基本通道重绑明确拒绝。
+
 ## 目标分层及架构决策
 
 ### 总体结构

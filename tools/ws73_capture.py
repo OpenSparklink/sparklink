@@ -96,6 +96,7 @@ def read_capture(path, targets):
     """
     reports, complete, failures, empty, commands = [], [], [], [], []
     pending = {}
+    native_events = []
     targets = set(tuple(t) for t in targets)
     with Path(path).open('rb') as stream:
         header = stream.read(24)
@@ -180,6 +181,11 @@ def read_capture(path, targets):
                 if (service, queue) != (10, 8):
                     continue
                 identity = identity | {'hcc_offset': slot, 'usb_sha256': hashlib.sha256(raw).hexdigest(), 'usb_length':len(raw)}
+                if len(payload) >= 5 and payload[0] == 0xa2:
+                    event, size = struct.unpack_from('<HH', payload, 1)
+                    if size != len(payload)-5:
+                        raise CaptureError('native event body length mismatch')
+                    native_events.append(identity | dict(event=event, params=payload[5:].hex()))
                 report = discovery(payload)
                 if report is not None:
                     reports.append(identity | report)
@@ -191,7 +197,7 @@ def read_capture(path, targets):
     if pending:
         raise CaptureError('unfinished OUT submission at capture end')
     return {'reports': reports, 'complete': complete, 'commands': commands, 'failures': failures,
-            'empty_bulk_completions':empty, 'packet_count': ordinal}
+            'empty_bulk_completions':empty, 'native_events':native_events, 'packet_count': ordinal}
 
 
 def check_capture_stats(text):

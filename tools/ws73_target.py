@@ -106,7 +106,7 @@ def prepare(args):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
-                  HERE/'ws73_target_control.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -195,7 +195,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_management_partial.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -407,6 +407,10 @@ def _run(args):
     initializer_lifecycle=bool(getattr(args,'initializer_lifecycle',False))
     observer_policy=bool(getattr(args,'observer_policy',False))
     daemon_crash=bool(getattr(args,'daemon_crash',False))
+    connection_verify=bool(getattr(args,'connection_verify',False))
+    if connection_verify and (args.command!='run' or not passthrough or recovery or parallel
+            or any(getattr(args,k,False) for k in ['daemon_crash','observer_policy','initializer_lifecycle','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify','managed_ordinary_eviction','managed_ready_peer','managed_real_later_step'])):
+        raise ValueError('connection verification requires separate real QMP-hotplug VM')
     if daemon_crash and (args.command != 'run' or not passthrough or recovery or parallel
             or any(getattr(args,k,False) for k in ['observer_policy','initializer_lifecycle','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify','managed_ordinary_eviction','managed_ready_peer','managed_real_later_step'])):
         raise ValueError('daemon crash requires separate real QMP-hotplug native VM')
@@ -493,6 +497,7 @@ def _run(args):
         m['scope']='four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
     if parallel:m['parallel_verifier']=file_record(HERE/'ws73_parallel.py')
     m['qmp_guest_hotplug']=passthrough
+    m['connection_verify_requested']=connection_verify
     m['daemon_crash_requested']=daemon_crash
     if daemon_crash:m['daemon_crash_verifier']=file_record(HERE/'ws73_daemon_crash.py')
     m['observer_policy_requested']=observer_policy
@@ -536,6 +541,8 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if connection_verify and 'native_vm' not in package:
+            raise ValueError('connection gate requires actual signed native VM')
         if daemon_crash and 'native_vm' not in package:
             raise ValueError('daemon crash requires qualified native module VM')
         if observer_policy and 'native_vm' not in package:
@@ -594,6 +601,7 @@ def _run(args):
                      (' ws73.initializer_lifecycle=1' if initializer_lifecycle else '')+
                      (' ws73.observer_policy=1' if observer_policy else '')+
                      (' ws73.daemon_crash=1' if daemon_crash else '')+
+                     (' ws73.connection_verify=1' if connection_verify else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
                      (' ws73.diagnostic=1' if diagnostic else '')+
@@ -813,6 +821,11 @@ def _run(args):
                     from ws73_daemon_removal import corroborate as corroborate_removal
                     m['daemon_removal']['corroboration']=corroborate_removal(control['daemon_removal'],hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
                     m['live_daemon_removal']=file_record(share/'application/passthrough-control/run.json')
+                if passthrough and connection_verify != ('connection_control' in control):
+                    raise ValueError('explicit connection request and guest evidence must agree')
+                if connection_verify:
+                    from ws73_connection_control import corroborate as connection_corroborate
+                    m['connection_corroboration']=connection_corroborate(control,capture)
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
                     raise ValueError('explicit daemon crash request and evidence must agree')
                 if daemon_crash:
@@ -1023,6 +1036,7 @@ def main():
             cmd.add_argument('--diagnostic-autonomous-verify',action='store_true',help='queued expiry already counted before first result after a passive800ms window; requires all diagnostic/cancel/deadline/fault-recovery gates')
             cmd.add_argument('--diagnostic-deadline-verify',action='store_true',help='100ms queued expiry with continuous same-ID retries; requires --diagnostic-cancel-verify and real fault-recovery mode')
             cmd.add_argument('--diagnostic-cancel-verify',action='store_true',help='hold one real IN81 to test active/queued cancel and late reply; requires --diagnostic-verify and --fault-recovery')
+            cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')
             modes=cmd.add_mutually_exclusive_group()
             modes.add_argument('--qmp-hotplug',action='store_true',help='real RF with QMP guest-only disconnect/reconnect; never physical unplug or automatic recovery acceptance')
             modes.add_argument('--fault-recovery',action='store_true',help='one opt-in artificial guest bulk IN81 error with real radios; never natural-fault or physical unplug acceptance')

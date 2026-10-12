@@ -79,3 +79,15 @@ Connected/failed-down/Unknown、没有legacy RemoteService、正确属性接口�
 canonical同步、数据路径/SSAP、安全/Bond、PHY/PM/Proxy等原S0–S6范围。
 默认四设备资格仍0；自然RCA和非人工自动恢复未通过，全部原28项继续OPEN。
 全部实验kernel/daemon/device I/O VM-only，不以源码或单项成果关闭整项。
+
+
+## 独立真实连接测试门禁（尚待执行）
+
+`ws73_target.py run --qmp-hotplug --connection-verify` 在普通 uid1000 下先执行
+两端交换角色的显式地址类型0 Create、非消费结果、两端 Device Connected、
+精确handle Disconnect和两端Disconnected；原广告的STOP必须获得真实结果，
+失败不改写为OFF。随后保留原RF20+2回归。parent与guest各自从usbmon复算
+paired OUT、原始CommandStatus、两端真实物理peer/type/handle事件；少任一证据
+不通过。三个negative fixture覆盖丢证据、错误身份/handle/status及重复事件，
+它们不是硬件资格。该门禁不包含connected release/last-File/dup/in-flight或SSAP，
+这些仍是后续独立必需验收。

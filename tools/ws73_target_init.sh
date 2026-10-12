@@ -225,9 +225,11 @@ elif grep -q 'ws73.parallel=1' /proc/cmdline; then
 elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     daemon_remove_arg=''
     if grep -q 'ws73.daemon_remove=1' /proc/cmdline; then daemon_remove_arg='--daemon-cancel-remove'; fi
+    connection_arg=''
+    if grep -q 'ws73.connection_verify=1' /proc/cmdline; then connection_arg='--connection-verify'; fi
     initializer_arg=''
     if grep -q 'ws73.initializer_lifecycle=1' /proc/cmdline; then initializer_arg='--initializer-lifecycle'; fi
-    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg $initializer_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
+    /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg $initializer_arg $connection_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
 else
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py instructions || fail 'physical mapping'
     # The only interactive shell is uid1000; raw capture and slkd remain root.

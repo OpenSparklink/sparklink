@@ -317,6 +317,12 @@ def verify_passthrough():
     packets=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     if packets!=capture['packet_count']:raise ValueError('passthrough capture packet count mismatch')
     proofs=corroborate_passthrough(run,capture)
+    requested_connection = 'ws73.connection_verify=1' in Path('/proc/cmdline').read_text().split()
+    if requested_connection != ('connection_control' in run):
+        raise ValueError('explicit connection request and evidence must agree')
+    if requested_connection:
+        from ws73_connection_control import corroborate as connection_corroborate
+        proofs.append({'connection_control':connection_corroborate(run,capture)})
     if 'daemon_removal' in run:
         from ws73_daemon_removal import corroborate_wire
         proofs.append({'daemon_cancel_removal':corroborate_wire(run['daemon_removal'],capture)})

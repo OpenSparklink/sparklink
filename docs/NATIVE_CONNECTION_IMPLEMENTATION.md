@@ -490,3 +490,68 @@ current-source physical unplug and four-device parallel regression. Natural
 boot/bulk/re-enumeration/disappearance RCA and nonmanual recovery remain open.
 All original28 issue scopes and the unmerged drafts remain open; full S0–S6 goal
 remains active. Existing WS73 RF/lifecycle evidence is retained at its exact source.
+
+## 2026-10-12 Canonical daemon resync and actual subscriber overflow
+
+[Independently recomputed evidence](evidence/ws73-canonical-resync-real-overflow-20261012.json)
+qualifies compiled user source `a4f29fc` (VM136) and source/tools `9af145e`
+(VM137), with the unchanged compiled kernel `38997dc457be` and SDK111 files.
+The source hashes of all compiled crates/policies are identical between the two
+service builds; only the explicit VM supervisor/tools change in the second.
+Both source CI runs passed all nine jobs (`38243438290`, `38244700408`).
+
+The daemon reads a complete canonical table when its native subscriber starts,
+after a current physical link notification, and after a reported event gap.
+It validates registration/index/profile, the triggering event minimum sequence,
+and monotonic revision/replay position before replacing the observation. Link
+notifications at or before the snapshot barrier do not update or re-query the
+connection state. Failed reads remain Unknown and retry once per second in the
+same per-adapter subscriber, with skipped timer backlog and cancellable shutdown.
+No transport reset or command is used to refresh observation.
+
+The previous Native Up/Down delta implementation and its duplicated Device
+handle/role/type fields are deleted. Native Connected/ConnectionKnown and device
+listing derive from the canonical table. RSSI and opaque discovery bytes are
+preserved during connection refresh. The existing address-only discovery object
+is an alias: multiple current typed peers/lifetimes at that address are Unknown,
+not arbitrarily selected. Full typed peer object paths remain to migrate; the
+canonical tuple and explicit Disconnect retain type and lifetime. Native legacy
+GetConnectionInfo is explicitly NotSupported. Legacy-only state/callers remain
+pending their own replacement and regression, not claimed cleaned wholesale.
+
+`NativeLinkObservation` reports daemon event barrier/revision/Known; slctl show
+also prints actual EventsLost. Offline private D-Bus tests cover initial snapshot
+publication, query failure then resync, a reused-handle/new-lifetime snapshot,
+old Down replay suppression, generation/index/profile/revision/sequence/tail
+rejection, ambiguous address aliases and preserved RSSI/data. These are actual
+daemon code with injected ioctl dependencies, not real firmware replay races.
+194 workspace tests, strict clippy and 402 tool tests pass.
+
+VM136 preserves real two-direction canonical peer Disconnect and RF22 through
+QMP removal/readdition. VM137 uses an explicit test supervisor: it SIGSTOPs only
+the guest daemon while actual kernel/radio scanning continues, then SIGCONTs it.
+The application remains UID1000/capabilities0. Both roles produce at least40
+independently captured matching original radio reports after stopping, advancing
+the actual32-event ring beyond capacity. Both actual subscriber lost counters
+increase by8 and Known resumes at the full snapshot barrier. Non-owning observer
+bytes show both registrations Ready/Managed Held and unchanged empty physical
+connection tables throughout the pause. No USB command occurs during either
+pause. This pauses the whole guest daemon, not an isolated per-device actor;
+there is no production pause/injection/mock control.
+
+The supervisor pauses last13.32/12.61 seconds, are bounded by a90-second radio
+progress deadline, and resume the original daemon on ordinary exceptions. Both
+roles subsequently complete real Create/Disconnect, RF22 and QMP replacement;
+slkd and D-Bus remain unchanged. Combined VM136/137: RF44, 2914 captured packets,
+zero drops, taint0, exit0. Normal VM count137; maintenance40. No hub cycle used.
+These are controlled **subscriber** loss/resync tests with Known empty tables.
+Established-link loss reconstruction, real reused-handle/selected-to-OUT races,
+and same-generation read-error retry on real hardware remain unqualified. QMP
+removal observes Unknown and a new generation starts Known; it is not natural
+same-device fault recovery or physical unplug acceptance.
+
+Next dependencies: typed peer object namespace/callers → live established-link
+loss and running-daemon cancellation/late-link/revoke gates → removal of migrated
+legacy state → current-source physical and four-device tests. Keep natural boot,
+bulk, re-enumeration/disappearance RCA and nonmanual hardware recovery open;
+full S0–S6/28 original scopes and both draft PRs are unchanged, goal active.

@@ -1178,3 +1178,26 @@ C符号明确v2；旧v1证据不改写。slkd native Disconnect 的旧 Device ca
 删除重复状态→运行中daemon cancel/晚到link/revoke验收→当前源物理/四设备门禁。
 本批保留首build、LSan沙箱及首CI失败，修复为独立记录。自然自动恢复/RCA、
 整项Managed、所有其余S0–S6与原28issues保持OPEN，不以部分成果关闭整项。
+
+## 2026-10-12 已接通 daemon canonical 重同步并删除 Native 增量投影
+
+[真实事件环溢出与空口证据](evidence/ws73-canonical-resync-real-overflow-20261012.json)
+在 Linux38997、编译服务a4f29fc/9af145e上独立复算通过。Native subscriber 启动、
+link通知、lost后读取完整table，校验身份/单调revision/event_seq及触发事件屏障；
+旧link回放不能覆盖新lifetime。失败保留Unknown，每adapter一秒有界频率刷新，
+不复位硬件。旧Native Up/Down delta与Device中的handle/role/type重复路径已删除；
+连接属性由canonical table派生，RSSI和opaque discovery不被刷新清零。
+
+VM136维持真实双角色连接/断开/RF22；VM137测试监督器仅暂停guest整个slkd，实际
+WS73报告继续推进32-event ring，双角色各至少40条原capture报告，lost均增加8后
+Known自动恢复，同pid/bus未重启。两次暂停13.32/12.61秒，两端观察Ready/Held且
+空连接表不变、期间没有USB命令。后续双角色连接/断开、RF22、QMP重加通过。
+合计RF44/2914包/0drop/taint0，正常137/维护40，无hub切电。194 workspace、
+strict clippy、402 tools与两源CI9/9通过；测试行为只在显式VM工具，不进生产daemon。
+
+此次仅真实空表subscriber loss；不扩大成已建立连接loss恢复、实际handle复用或
+单actor隔离。旧address-only discovery仍是alias：当前typed连接歧义时返回Unknown；
+完整typed peer object namespace仍待迁移。Native legacy GetConnectionInfo明确不支持。
+下一为typed namespace/调用者→真实linked loss与运行中cancel/late-link/revoke→迁移
+回归后删legacy状态→当前源物理与四设备。自然RCA/非人工硬件恢复、整项Managed、
+原28项及其余S0–S6继续OPEN，完整goal active，VM-only。旧源历史证据保留原scope。

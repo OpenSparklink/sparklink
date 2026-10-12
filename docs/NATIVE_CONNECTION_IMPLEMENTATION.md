@@ -556,3 +556,78 @@ loss and running-daemon cancellation/late-link/revoke gates → removal of migra
 legacy state → current-source physical and four-device tests. Keep natural boot,
 bulk, re-enumeration/disappearance RCA and nonmanual hardware recovery open;
 full S0–S6/28 original scopes and both draft PRs are unchanged, goal active.
+
+## 2026-10-12 Typed Peer and immutable Connection objects, real handle reuse
+
+[Independently recomputed evidence](evidence/ws73-typed-peer-lifetime-objects-20261012.json)
+qualifies compiled service/tools `5f86cc5`, production implementation `28bdf6f`,
+unchanged kernel `38997dc457be` and SDK111. Tool commit `5c5df94` first failed
+VM138 because its strict GetInfo verifier omitted the real same-adapter Selected
+preamble. Original correct GetInfo and the failed run remain preserved; `5f86cc5`
+only corrects that parser and rejects foreign/duplicated selection. Compiled crate
+and policy hashes are identical in the failed and successful service builds.
+Both source CI runs (`38249716605`, `38250456167`) passed all nine jobs; this also
+shows why green offline CI alone is not hardware acceptance.
+
+Canonical physical links now publish `org.sparklink.Peer` at
+`<adapter-generation-path>/peer_t<type>_<address>` and `org.sparklink.Connection`
+children at `.../link_<lifetime>`. The typed peer reports its exact type/address
+and associated lifetime paths. Connection generation, address/type, lifetime,
+handle and role are immutable. GetInfo reads Known/Connected together from the
+canonical table; neither an author result nor D-Bus publication metadata is a
+physical state source. Same-lifetime identity changes invalidate the observation.
+Address-only discovery objects remain explicit aliases, not typed identities;
+discovery report address-type inference remains unqualified. No unsupported
+Peer Connect or ambiguous Peer Disconnect capability is advertised.
+
+Known Down retires the connection and peer interfaces. Unknown retains previous
+identities with Known/Connected false, without inventing a successful Down.
+Publication/removal errors retain pending work for per-adapter bounded-rate
+refresh; cancellation/removal includes active and retiring object paths. Parent
+Peer publishes before its Connection children; enumeration exposes a child only
+once both interfaces are published. The metadata maps track publication only.
+Connection SubmitDisconnect uses its immutable complete reference and existing
+credential/lease gate; the kernel checks admission/selection as before. Removed
+objects never redirect to a new connection even if the firmware reuses handle0.
+
+CLI `connection-objects`, `peer-info <path>`, `connection-info <path>` and
+`disconnect-object <path>` are connected to this production path. CLI checks
+selected registration and canonical object identity, allocates the author request
+only after object lookup, then waits for the original kernel result. The normal
+real connection gate now uses object Disconnect rather than manual handle fields.
+Direct canonical connections/reference APIs remain diagnostic consumers and do
+not reintroduce a Device handle cache.
+
+195 workspace tests and strict clippy pass. Actual daemon/private D-Bus dependency
+tests cover same address with type0/type1, independent lifetime children, Unknown
+retention, refusal to rebind an unchanged lifetime, both-interface retirement,
+same-handle replacement and removal rejection. 406 tool tests verify original
+both-owner publications, peer membership, physical Up matching, original receipts,
+stale-refusal scopes and no-wire intervals. Multiple types at one address remain
+source/dependency tests; the actual live firmware type in this batch is0.
+
+VM139/140 independently validate both owners' typed Peer/GetInfo/Connection after
+raw successful Up, exact object-targeted Disconnect and both raw Down outcomes.
+Both real controllers reuse handle0 in the second role phase: lifetime1 objects
+are retired and lifetime3 objects have different paths. Each VM checks two old
+objects after first Down, two while the same-handle replacements are live, and
+two after second Down. Combined12 stale cases/24 original CLI refusals emit no
+USB command on either radio and no submitted author result. This is real handle
+reuse and **removed-object** rejection, not a queued stale invocation or an atomic
+selected-to-OUT race. Original role/type/address/handle and full path receipts
+are independently cross-checked against actual captured outcomes.
+
+VM140 also repeats the explicit whole-guest-daemon pause/real32-event-ring
+subscriber overflow: both roles lose8 records and automatically regain Known
+before object connections continue. Its overflow tables are empty, not an
+established-link loss reconstruction. Both VMs complete RF22/QMP removal/readd
+without restarting slkd/D-Bus, UID1000/caps0, taint0/exit0. Aggregate RF44,
+2916 packets/0drops. Normal attempts140 (includes failed138); maintenance40.
+No hub cycle, host kernel installation or native host test was used.
+
+Next: real established-link subscriber loss/Unknown recovery and running-daemon
+cancel/late-link/revoke; typed discovery identity and SSAP consumers on lifetime
+objects; migrate remaining legacy callers/tests before deleting their fields;
+current-source physical and four-device regression. Keep natural boot/bulk/
+re-enumeration/disappearance RCA and nonmanual hardware recovery open. All28
+original issues, two draft PRs and the complete S0–S6 goal remain unchanged/open.

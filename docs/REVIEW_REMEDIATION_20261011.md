@@ -1202,3 +1202,27 @@ strict clippy、402 tools与两源CI9/9通过；测试行为只在显式VM工具
 下一为typed namespace/调用者→真实linked loss与运行中cancel/late-link/revoke→迁移
 回归后删legacy状态→当前源物理与四设备。自然RCA/非人工硬件恢复、整项Managed、
 原28项及其余S0–S6继续OPEN，完整goal active，VM-only。旧源历史证据保留原scope。
+
+## 2026-10-12 Typed Peer／lifetime Connection 已接通并验证真实 handle 复用
+
+[实际对象／复用／旧对象拒绝证据](evidence/ws73-typed-peer-lifetime-objects-20261012.json)
+使用Linux38997、编译服务/工具5f86cc5，生产实现28bdf6f。Peer按generation/type/
+address区分，Connection子对象再绑定lifetime，固定handle/role；Known/Connected
+只由canonical table派生。Known Down移除接口，Unknown保留原身份且标不确定，
+发布/移除失败按adapter刷新重试。旧对象不再绑定复用handle的新连接。普通CLI及
+真实gate已迁到object Disconnect，直接reference接口保留诊断用途，无旧Device
+handle查找回退。address-only discovery仍是alias；typed discovery解析仍待验收。
+
+195 workspace/strict clippy、406 tools通过；同地址type0/type1为实际daemon/
+private D-Bus依赖测试，真实设备此次type0。VM138为GetInfo工具遗漏合法Selected
+前缀失败，原输出/失败保留；修复仅工具，compiled source hashes完全一致。
+VM139/140两端都真实handle0复用：lifetime1→3，旧路径改变；合计12旧对象案例/
+24原CLI拒绝，期间两只无USB命令/无作者成功。后续双角色Create/Disconnect、
+RF44/QMP重加同slkd/bus不重启，UID1000/caps0、2916包/0drop/taint0；正常140/
+维护40，无hub切电。VM140重复空表订阅溢出，双角色lost8自动Known恢复。
+
+限定：真实removed-object拒绝不等于queued stale invocation或selected-to-OUT
+竞争；真实linked loss、同generation硬件query失败恢复仍未通过。下一顺序为
+linked loss与运行中cancel/late-link/revoke→typed discovery/SSAP lifetime消费者→
+迁移回归后删legacy字段→当前源物理与四设备。自然RCA/非人工硬件恢复、整项
+Managed、原28项及全部S0–S6继续OPEN，完整goal active、VM-only。

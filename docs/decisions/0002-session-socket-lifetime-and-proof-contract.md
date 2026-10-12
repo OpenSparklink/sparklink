@@ -225,3 +225,8 @@ invalid/protected在锁/系统调用前拒绝。当前源码回归与pure CBMC�
 重新验证租约及link identity并实际发布；撤销先发生不返回成功Binding。无阻塞操作在
 这些锁内。既有release仅Binding→Session且不取得Host，借用Grant不取得Binding锁。
 actual publish source fixture覆盖拒绝先发生、成功一次、重绑/退休拒绝；全锁/VFS证明未取得。
+
+IRQ契约修正Kbf8663bb78eb：Binding查找/发布/释放均用IRQ-save，嵌套Binding与Session
+保存独立flags。Host callback内不恢复BH；stock __local_bh_enable_ip要求IRQ enabled，
+且可执行softirq。Kac9144完整249流水线留存但因该契约未修不授予当前资格；修正源码
+actual fixture通过，仍需准确新VM回归与KCSAN/lockdep/完整锁证明。

@@ -1,0 +1,35 @@
+{
+  "status": "CONTROLLED_GRANT_TOOL_SOURCE_AND_SIX_REAL_CASES_PASS_SCOPED",
+  "kernel_head": "f1034577ecc1a7f32ab393fe17586dec173ed759",
+  "compiled_runtime_head": "d5708191c38a6bc86b0dfce2db68d3a443d83b38",
+  "ci": [
+    {
+      "run_id": 38308855450,
+      "head": "325d3774d9d88708de09ed6ddaf030a9b29b4a18",
+      "conclusion": "success",
+      "jobs": 9
+    },
+    {
+      "run_id": 38309367119,
+      "head": "22635f823b9de923fe47cefdd714c448de47526b",
+      "conclusion": "success",
+      "jobs": 9
+    }
+  ],
+  "tooling_tests": 427,
+  "real_evidence": "ws73-controlled-grant-20261013.json",
+  "source_hashes": {
+    "tools/ws73_channel_grant.py": "629361f800cb04be2d4527145d86d6f9bbb95e9bbf228c7950e855dd1d7d3fa7",
+    "tools/ws73_connected_file_gate.py": "034ac9db5a278d1c2180851506e79845b8bb795f6558de3f85092a143723ad7c",
+    "tools/ws73_target.py": "b8467f3388c2d6017bcfa8d0c06238509ff679e02f64981a9489defec70c8531",
+    "tools/ws73_target_init.sh": "eae8d37b45e8ca9ed5f7462e60934658cc5719e74854ef6b34185a2ad9908cbb"
+  },
+  "remaining": [
+    "Per-Binding directions/security/downgrade",
+    "Daemon owner death and SCM_RIGHTS",
+    "Controlled in-flight USB and actual late RX",
+    "Whole VFS/refinement/KCSAN/lockdep and NOCP barriers",
+    "Natural faults/non-manual recovery/full S0-S6"
+  ],
+  "full_goal_complete": false
+}

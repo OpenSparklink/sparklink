@@ -360,8 +360,10 @@ profile0在lease/对象发布前Unsupported；仅显式实验feature/tests保留
 不得把现有Native已迁移路径回退到旧ring。精确Kbf8663/U86bfbc8新VM40短、249八轮/16超限、RF22及建链断链通过，
 不扩为原事件门禁全集或自然恢复。现有daemon SIGKILL门禁仅活动广播扫描，
 不能授予“业务fd存活且旧Grant失效”的资格；后续必须跨实际slkd死亡保留应用fd。f2859a0/d3039b2专用OpenChannel fd客户端/
-内核凭据接收器已实现并严格构建/本地拒绝通过，VM监督、持有业务fd跨SIGKILL/接任
-尚未接通，不得将工具存在计作实机通过。
+内核凭据接收器已实现并严格构建/本地拒绝通过，VM监督tools82aa65a已在两个连接角色取得共同daemon死亡/接任子门禁：
+4实际随机往返，两端USB/HCC封存、blocked首醒按物理Down或Grant先终止；
+Free后/新daemon后双方旧fd严格EACCES。初始顺序断言失败保留，具体契约见ADR0002。
+独立管理所有者/四设备两组同行业务、在途与安全条件仍开放，不关闭整项。
 同一slkd拥有两设备时死亡会撤销两lease，不能声称另一lease不受影响；
 要验证设备隔离，应独立管理所有者或采用四设备两组，记录实际所有者拓扑。
 

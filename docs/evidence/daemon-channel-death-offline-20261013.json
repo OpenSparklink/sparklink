@@ -1,0 +1,26 @@
+{
+  "status": "DAEMON_CHANNEL_DEATH_OFFLINE_GATES_PASS",
+  "kernel_head": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+  "compiled_service_head": "86bfbc81ba001539c3816f72b3efc5a911cf19ee",
+  "lab_tool_head": "82aa65a",
+  "tool_tests": 435,
+  "client_package": "tools/lab/channel_fd_probe",
+  "client_strict_build_and_clippy": "previous exact f2859a0 source unchanged",
+  "sources": {
+    "tools/ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+    "tools/ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+    "tools/ws73_connection_control.py": "8e5228012c197bd99d178a37273a11867a263f2a98cf59d5cf9f6a812f6fc5e7",
+    "tools/ws73_target.py": "8f99691429bba05dcc6c35701a3ae0565c4585889dbe3c70367ba9f86a17d522",
+    "tools/ws73_target_init.sh": "1487fd14b58340c67688e49eb5bb4b03a40c2f31f6aba2d1db49d9f046afaf00",
+    "tools/lab/channel_fd_probe/src/main.rs": "a59a7d827012d922ac977bc9aeb033dde3c5603053360337af388fafe5685100",
+    "tools/lab/channel_fd_probe/Cargo.lock": "8e676693331fd9519329d25612131c348db58fa967a691e2eb7081cd50a76553"
+  },
+  "log_sha256": "2d5c2098e626188fcb9810a6ac54e2a1746f3cf48b7b2c27d3964336c053b4ec",
+  "proof_scope": "actual runner admission plus synthetic receipt mutation for kernel-blocked task, grantor/credentials, cleanup and exact Down-before-ESTALE wire condition; actual AF_UNIX fd rejection tests. No new kernel or whole-lifecycle formal proof.",
+  "new_formal_proof": false,
+  "first_failures_retained": [
+    "pre-VM ee854dc package access failure",
+    "actual9f65ec2 role0 death/Free: ESTALE after peer Down, before own File revoke; prior unrealistic atomic-close expectation failed"
+  ],
+  "whole_goal_complete": false
+}

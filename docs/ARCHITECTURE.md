@@ -15,12 +15,14 @@ CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制�
 长包、多通道、四设备数据、安全、完整Grant或自然自动恢复资格。
 
 Grant由内核强制核对完整scope/方向/Managed epoch；bf8663锁下最终发布已接通。
-受控broker的SCM_RIGHTS交付/撤销六例已通过；实际slkd死亡与可信安全状态仍开放。
+受控broker的SCM_RIGHTS交付/撤销六例已通过；真实共同slkd死亡/接任已取得两角色子门禁；可信安全及独立所有者隔离仍开放。
 最后数据fd关闭仅释放Binding及本地队列，不重建CMTC；同lifetime基本通道重绑明确拒绝。
 
 默认daemon从86bfbc8起拒绝未迁移profile0并只启动canonical事件游标；
 旧事件actor仅test/显式实验构建，内核旧ring和其余调用者仍待迁移。
-专用fd客户端/接收器是测试支撑，实际slkd死亡仍未验收。
+专用fd客户端/接收器及init监督已在VM完成两角色真实共同slkd死亡/接任；
+两lease都撤销、旧fd不续权。首醒按Grant或物理lifetime先终止区分，见ADR0002。
+独立管理所有者/四设备两组同行业务、在途提交与完整生命周期证明仍缺。
 
 ## 目标分层及架构决策
 

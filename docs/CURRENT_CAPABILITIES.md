@@ -28,8 +28,11 @@ Kernel与编译service仍bf8663/dfb8636；这是受控broker交付语义，不�
 当前默认生产资格Kbf8663/U86bfbc8：旧破坏性事件消费者已隔离为实验/test，
 profile0在授权/发布前明确拒绝。新40短、249八轮/16超限、RF22及建链断链/QMP支撑
 完成独立seal（112真实NOCP两包合计），默认workspace199/实验62、严格clippy通过。
-这不等于内核旧事件ring和全部调用者已删除；实际daemon死亡业务fd门禁仍缺。
-专用fd客户端/接收器f2859a0/d3039b2仅离线构建与本地凭据/fd拒绝回归通过，未VM接通。
+这不等于内核旧事件ring和全部调用者已删除；共同daemon死亡业务fd已有下述新子门禁；完整/独立所有者范围仍缺。
+专用客户端/接收器/监督tools82aa65a已VM接通：真实共同slkd SIGKILL/reap、新daemon
+Ready且generation不变；两个连接角色共4随机业务往返、32两端SDU/16真实NOCP/986捕获零丢包。
+首醒[ESTALE,EACCES]：ESTALE有匹配物理Down先于唤醒；双方Free和接任后旧fd均严格EACCES/ERR-HUP。
+首轮启动器失败和首轮死亡的原顺序断言失败保留，不覆盖为PASS。独立所有者同行业务未验收。
 
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
@@ -41,7 +44,7 @@ profile0在授权/发布前明确拒绝。新40短、249八轮/16超限、RF22�
 | Session/Channel/Binding/Grant | K3c8da4fac302 Runtime持Session引用；CMTC/唯一ACB RX分流在Session，Channel独立队列/MTU/MPS；fd仅Binding；同life无协议前拒绝rebind，提交guard撤销检查 | Native/Session28、实际route/consent sanitizer、driver11、strict builds；引用模型只为依赖fixture | 新production Binding CBMC限定通过；2controller×2lifetime Session/fd/work TLC777924状态，仍无C/Rust/VFS refinement | 真实40短/249/16拒绝及每角色普通app dup后收发、last-close rebind拒绝；每端一次CMTC | 动态TCID/关闭协议/合格rebind、Grant epoch/安全、受控在途close/完整VFS/KCSAN/lockdep、NOCP/旧RX wire屏障与多通道 |
 | Lease epoch/v2 Binding | K3ee1 Host单调Managed authority；Session带epoch；软件TX准入/真实USB提交锁下验证，successor拒绝旧代次；其他方向/安全拒绝 | Native33/Host51/Managed54、实际C准入队列与C/Rust v2编码一致、准确CI9/9 | 两个生产pure authority Kani限定通过；无完整Host/VFS/硬件证明 | 准确新40短/249/dup保持路径；不是DG09受控撤销 | blocked RX撤销、完整per-Binding Grant方向/安全、release/last-control-fd/daemon死亡/在途/peer隔离矩阵 |
 | 受控Grant File子门禁 | 独立VM/普通应用kernel阻塞见证及真实收发工具；生产Kf103路径未变 | 新工具427与325d377 CI9/9，receipt/capture负向核对 | 不新增完整Grant/VFS证明，原pure authority/LKMM限定范围保留 | 六实机用例（两角色×release/last management fd/dup）；16业务往返；EACCES wake、旧fd不被新lease续期、同行原Ready/lease/scan保持 | daemon死亡/SCM_RIGHTS、方向/安全授权、在途USB/迟到真实RX及完整引用/恢复矩阵 |
-| Binding scoped/directional Grant | Kernel bf8663唯一fd Grant、完整scope/方向检查、Host锁下发布、IRQ-save；OpenChannelScoped统一broker；protected拒绝 | actual C ctor/permission/admission/publish/TX/RX/poll sanitizer、early broker/D-Bus held-lock拒绝、C/Rust ABI与严格构建、428工具/CI9 | 生产pure ctor/identity/direction CBMC43限定通过；不证明Host/VFS/信任状态 | 新六项File撤销+两方向：TX-only→RX-only实际校验、禁反向EACCES/无载荷，invalid/protected bind拒绝；16往返+2单向，原40/249保持 | S5可信security/降级、实际daemon死亡、受控在途/迟到真实RX、VFS/refinement/KCSAN/lockdep/NOCP/自然恢复 |
+| Binding scoped/directional Grant | Kernel bf8663唯一fd Grant、完整scope/方向检查、Host锁下发布、IRQ-save；OpenChannelScoped统一broker；protected拒绝 | actual C ctor/permission/admission/publish/TX/RX/poll sanitizer、early broker/D-Bus held-lock拒绝、C/Rust ABI与严格构建、428工具/CI9 | 生产pure ctor/identity/direction CBMC43限定通过；不证明Host/VFS/信任状态 | 新六项File撤销+两方向：TX-only→RX-only实际校验、禁反向EACCES/无载荷，invalid/protected bind拒绝；16往返+2单向，原40/249保持 | S5可信security/降级、独立owner死亡同行业务、受控在途/迟到真实RX、VFS/refinement/KCSAN/lockdep/NOCP/自然恢复 |
 | NOCP/复用 | 旧debt保留，未知/过量/不确定Fault，不自动退款 | 生产ledger已重现四步复用风险 | FV07期望反例，不是安全证明；FV02 unsupported/超时NOT_PROVEN | 短40轮实际88完成、249八轮实际24完成，范围限定 | 同/跨life重复/迟到来源、准确性与可信排空屏障；无实机串包断言 |
 | 旧SSAP业务 | K167f468剥离local DB/session/cache；K770364dcc152/U7d8857b删除18旧ioctl/业务字段/绑定，CLI/Profile拒绝；旧模型仅selftests；U56ea3e8默认facade NotSupported | 历史八项和生产依赖审计、Native20、连接边界及删除后用户态196/严格clippy；Python34含全Netlink声明一致性，facade私有D-Bus回归；实验callback回归保留 | 不能宣称已有生产用户Engine | 本批默认生产剥离通过：旧18 ioctl root/ordinary全部ENOTTY，新40短/249/发现建链路径保持；没有真实SSAP资格 | 本批退出条件通过；后续Session/Ticket/Grant/socket/Backend等目标架构整改，再WP08唯一用户Engine；相关整项issues仍开放 |
 | SSAP/安全/Bond/Profile | 用户态目标层；旧Profile已隔离实验crate，Native不注册旧Profile | 部分机制/actor/类型测试，仅各自范围 | FV08/09完整协议证明未取得 | 尚无新真实通道服务/安全安装矩阵资格 | 唯一用户态Engine、真实read/write/notify/indicate、可信安装/Bond/Profile |
@@ -55,6 +58,8 @@ Netlink清理：K2d4817714963删除无消费者Rust副本/global dead_code；C b
 Python契约核对实际C/SDK。U6bb7985拒绝ExtAdv静默截断，实际方法held-lock/ENOTTY回归通过。
 
 证据索引：
+
+* [共同daemon真实死亡/接任两角色](evidence/ws73-daemon-channel-death-20261013.json)、[工具/离线范围](evidence/daemon-channel-death-offline-20261013.json)：Kbf8663/编译U86bfbc8/tools82aa65a；首醒因果不同、Free后授权拒绝一致，不作硬件自然恢复。
 
 * [默认事件隔离40轮](evidence/ws73-default-event-isolated-short-repeat-20261013.json)、[249边界](evidence/ws73-default-event-isolated-249-boundary-20261013.json)、[生产源码/离线](evidence/default-event-isolation-offline-20261013.json)：准确Kbf8663/U86bfbc8；实验事件保留不授予生产能力。
 

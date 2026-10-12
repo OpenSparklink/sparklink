@@ -237,3 +237,22 @@ actual fixture通过，仍需准确新VM回归与KCSAN/lockdep/完整锁证明�
 两种连接角色的TX-only→RX-only实际校验、反向EACCES及无载荷；invalid/protected bind
 各4请求/endpoint明确拒绝。CMTC每端一次不受应用方向限制。43生产pure Grant性质
 限定通过，CI9/9。单向送达不计作业务roundtrip，不宣称可信安全或全Grant退出通过。
+
+
+## 多控制器共同管理所有者退出与首个错误
+
+实际最后管理File关闭逐个发生；不能把一个slkd SIGKILL建模成两控制器授权同时原子撤销。
+`Kbf8663 sle_sessions.rs::session_limits`在注册/故障/已知状态通过后，先检查Grant epoch，
+再检查物理lifetime。因此活跃且已知注册中：授权已撤销返回EACCES；授权尚活跃而连接
+已Down/寿命已不匹配返回ESTALE。已退休注册仍ENODEV，故障按原错误，不由新Grant重置。
+
+实测失败收据（工具9f65ec2的首次death VM）保留：另一个controller先Disconnect，目标Down
+15.288717ms，阻塞recv首醒15.417828ms/ESTALE，双方随后约93.8ms观测Free。原测试错误地
+要求共同管理者退出时首醒一律EACCES，忽略合法的物理Down先行。测试82aa65a改为：
+首醒若ESTALE，必须捕获本controller/handle的成功Down且早于首醒；首醒若EACCES，仍需
+后续规范状态校验。双方观测canonical Ready/Free/空物理表后，每个旧fd发送与接收
+必须严格EACCES、poll ERR/HUP；新slkd接任不重置注册generation，旧fd继续EACCES。
+尚未完整实测通过前仅为契约/门禁接通，不宣称资格；状态见CURRENT_CAPABILITIES。
+
+本门禁两控制器同一个slkd，双方lease撤销是预期。独立管理所有者或四设备两组的另一组
+业务持续验收仍单独开放。受控daemon SIGKILL/接任也不等于自然硬件故障自动恢复。

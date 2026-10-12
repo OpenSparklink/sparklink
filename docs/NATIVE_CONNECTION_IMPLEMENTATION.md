@@ -47,7 +47,7 @@ budget由调用者给出1..10000ms，不在OUT/Status后延长。submit成功仅
 同ID重试被拒绝，须在同fd查询。
 
 10项生产operation/history测试；实际完整Host方法与queue/storage/link依赖
-共23项（8项直接Host、10项operation、5项physical observation），覆盖三证据
+共24项（9项直接Host、10项operation、5项physical observation），覆盖三证据
 顺序、Setup/tag拒绝、未选中撤销、在途取消/迟到handle、期限/首fault/peer
 隔离、错误opcode/peer/reply class和原查询/广播扫描完成规则。实际driver
 codec/prepare/validate完整ASan/UBSan/Leak通过。另有management源码45项、
@@ -65,6 +65,14 @@ python3 tools/testing/selftests/sparklink/run_native_connection_contract.py \
 python3 tools/testing/selftests/sparklink/run_native_connection_host.py \
   --output /absolute/path/new-host-source-receipt.json
 ```
+
+后续首fault修正Linux `ab54908f2add1a2b4de7295a2e22c8038d61cdc0` 在consume typed reply时将矛盾证据
+显式报EPROTO，后续Host超时不能覆盖原作者/诊断错误。实际完整Host及其
+依赖测试为24项；修正后ab549完整构建通过且无warnings，原823构建记录独立保留。
+最新test-only kernel source 6002024d93a7427aa9336f57a2f3da4e7f19ec3f 补充真实混合队列的tag/
+取消/wraparound及完整权限probe。首用户态c06的CI38186122285原8绿/1红，
+严格独立queue测试未调用新增字段/方法；已增加真实场景而非allow(dead_code)。
+原失败保留，新的匹配CI须重新核对，不能沿用旧绿灯。
 
 ## 下一步必须完成
 

@@ -74,6 +74,9 @@ def execute(run, a, b):
                     or match['elapsed_ms']>=10000 or match['lost']):
                 raise CaptureError('connectable announcement must first be heard by the actual caller')
             phase['scan_match']=match
+            if getattr(run.args,'daemon_link_resync',False):
+                from ws73_link_resync import execute as resync_execute
+                resync_execute(run,caller,peer,len(record['phases'])-1)
             run.stop(caller, 'scan')
             phase['scan_stop_command']=len(run.data['commands'])-1
             # Type 0 is an explicit candidate, not inferred from discovery's

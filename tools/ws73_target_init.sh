@@ -243,14 +243,19 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     daemon_remove_arg=''
     if grep -q 'ws73.daemon_remove=1' /proc/cmdline; then daemon_remove_arg='--daemon-cancel-remove'; fi
     connection_arg=''
+    if grep -qw ws73.link_resync=1 /proc/cmdline; then
+        LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_link_resync.py --slkd-pid "$daemon" > /evidence/link-resync-supervisor.log 2>&1 & resync_supervisor=$!
+    fi
     if grep -q 'ws73.connection_verify=1' /proc/cmdline; then
         posture=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connection_advertising=/){sub(/^ws73.connection_advertising=/,"",$i);print $i}}' /proc/cmdline)
         case "$posture" in fixed-t|negotiable-t) ;; *) fail 'explicit connection posture' ;; esac
         connection_arg="--connection-verify --connection-advertising $posture"
+        if grep -qw ws73.link_resync=1 /proc/cmdline; then connection_arg="$connection_arg --daemon-link-resync"; fi
     fi
     initializer_arg=''
     if grep -q 'ws73.initializer_lifecycle=1' /proc/cmdline; then initializer_arg='--initializer-lifecycle'; fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg $initializer_arg $connection_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
+    if grep -qw ws73.link_resync=1 /proc/cmdline; then wait "$resync_supervisor" || fail 'real subscriber overflow supervisor'; fi
 else
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py instructions || fail 'physical mapping'
     # The only interactive shell is uid1000; raw capture and slkd remain root.

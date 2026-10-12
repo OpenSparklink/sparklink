@@ -317,6 +317,11 @@ def verify_passthrough():
     packets=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     if packets!=capture['packet_count']:raise ValueError('passthrough capture packet count mismatch')
     proofs=corroborate_passthrough(run,capture)
+    if ('ws73.link_resync=1' in Path('/proc/cmdline').read_text().split()) != ('link_resync' in run):
+        raise ValueError('explicit subscriber resync request/evidence mismatch')
+    if 'link_resync' in run:
+        from ws73_link_resync import corroborate as resync_corroborate
+        resync_corroborate(run,capture)
     requested_connection = 'ws73.connection_verify=1' in Path('/proc/cmdline').read_text().split()
     if requested_connection != ('connection_control' in run):
         raise ValueError('explicit connection request and evidence must agree')

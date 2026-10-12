@@ -230,3 +230,8 @@ IRQ契约修正Kbf8663bb78eb：Binding查找/发布/释放均用IRQ-save，嵌�
 保存独立flags。Host callback内不恢复BH；stock __local_bh_enable_ip要求IRQ enabled，
 且可执行softirq。Kac9144完整249流水线留存但因该契约未修不授予当前资格；修正源码
 actual fixture通过，仍需准确新VM回归与KCSAN/lockdep/完整锁证明。
+
+最终精确新VM资格Kbf8663/Udfb8636：40短/249八轮与16超限，六项File撤销保持，
+两种连接角色的TX-only→RX-only实际校验、反向EACCES及无载荷；invalid/protected bind
+各4请求/endpoint明确拒绝。CMTC每端一次不受应用方向限制。43生产pure Grant性质
+限定通过，CI9/9。单向送达不计作业务roundtrip，不宣称可信安全或全Grant退出通过。

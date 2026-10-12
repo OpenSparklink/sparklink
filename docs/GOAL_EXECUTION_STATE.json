@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T21:52:12.520000+00:00",
+  "updated_at_utc": "2026-10-12T22:05:33.746191+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,15 +27,15 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "381dc66"
+    "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
   },
   "qualified_source_heads": {
-    "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
-    "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
+    "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+    "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
   },
   "current_qualification": {
-    "DG01": "Kf103/Ud570 new40 actual ordinary peer round trips; existing dup and final-close refusal, RF22/connection/QMP support; nonblocking receive only",
-    "DG02": "Same new source8 app249/16 oversize rejections, independent both-end USB capture",
+    "DG01": "Kbf8663/Udfb8636 exact new40 ordinary peer round trips, both roles, existing lifecycle/RF22/connection/QMP gates preserved",
+    "DG02": "Same new source8 app249 and16 oversize rejections absent capture; remaining same-Binding recovery/other layers/long qualifications open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -43,7 +43,7 @@
     "FV07": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN",
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
-    "DG09": "PARTIAL_REAL_SUBGATE: 2roles x release/final management fd/dup, actual blocking syscall/wchan and EACCES wake, old fd after successor denied, peer Ready/lease/scan continuity. No daemon death/SCM_RIGHTS/direction/security/inflight full qualification."
+    "DG09": "PARTIAL_REAL: six File release/final control fd/dup plus two TX-only\u2192RX-only, opposite direction/invalid/protected request rejection;43 pure Grant scoped. Full SCM_RIGHTS/daemon death/security trust/downgrade/inflight/refinement still open"
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
@@ -116,7 +116,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "Epoch software TX/RX/USB checks plus normal path and six real File withdrawal cases qualified; full per-Binding directions/security, daemon death/SCM_RIGHTS/inflight/whole proof still open"
+      "status": "Canonical Binding scope/directions, epoch gates, actual publication and normal/six File/two direction real subgates qualified; trusted security/downgrade, SCM_RIGHTS/daemon death/inflight/full ownership/proof exits remain open"
     },
     {
       "id": "WP06",
@@ -279,15 +279,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Scoped/directional Binding Grant, Host-locked publication and uniform IRQ-save guards implemented; source/pure tests passed, new exact build and qualification pending. Superseded Kac9144 completed249 evidence excluded for IRQ contract; original f103 qualifications retained.",
+  "current_batch": "Per-Binding immutable scoped/directional Grant, Host-locked final publication and IRQ-save implemented;43 pure CBMC and exact source/CI/real40/249 + six withdrawal/two directional cases qualified. Trusted security/ownership/inflight/full original exits remain open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "Original28 scope preserved;14 six-case controlled File Grant comments read back exact, all original body hashes unchanged and OPEN",
   "current_implementation_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
+    "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
   },
   "next_resume_tasks": [
-    "Finish exact Kbf8663/new user clean build/proof and fresh VM normal40/249, two TX-only/RX-only cases and six File withdrawal requalification. Existing Kac9144 pipeline is terminal and explicitly excluded; no retry based on observation timeout. Then SCM_RIGHTS/daemon death/inflight and S5 trust; full original S0-S6 scope.",
+    "WP05 direct next: SCM_RIGHTS fd transfer and true daemon management-owner death with ordinary retained fd, stale epoch/successor denial and peer isolation; then controlled USB obligations and S5 trusted security. Binding direction/NONE mechanism now qualified; do not wait entire control combinations before WP12/13 event/Backend canonical migration and full original S0-S6.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -295,7 +295,7 @@
     "Then unchanged full S0\u2013S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/Proxy/PM/recovery/release"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
-  "offline_evidence": "docs/evidence/controlled-grant-offline-20261013.json",
+  "offline_evidence": "docs/evidence/binding-grant-offline-20261013.json",
   "ssap_separation_batch_complete": true,
   "target_architecture_remediation_complete": false,
   "batch_evidence": [
@@ -317,11 +317,15 @@
     "docs/evidence/ws73-authorized-rx-249-boundary-20261013.json",
     "docs/evidence/authorized-rx-offline-20261013.json",
     "docs/evidence/authorized-rx-formal-20261013/manifest.json",
-    "docs/evidence/ws73-controlled-grant-20261013.json"
+    "docs/evidence/ws73-controlled-grant-20261013.json",
+    "docs/evidence/ws73-binding-grant-short-repeat-20261013.json",
+    "docs/evidence/ws73-binding-grant-249-boundary-20261013.json",
+    "docs/evidence/ws73-binding-scope-20261013.json",
+    "docs/evidence/binding-grant-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/controlled-grant-issues-20261013.json",
   "latest_evidence_commit": "381dc66",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: production fd Grant identity/direction enforcement, early TX access, scoped broker and actual source/pure proof harnesses"
+  "current_goal_turn_classification": "progress: production canonical fd Grant and IRQ-safe publication, scoped broker/pure proof, precise real normal and8 scope-direction gates, signed pushes"
 }

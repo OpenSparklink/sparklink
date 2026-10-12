@@ -99,3 +99,29 @@ storage / 48 Host 与 ASan/UBSan/LSan codec 检查通过；实际 C/Rust 对象�
 本提交没有提前完成 D1/D2，也不把内部 raw ACB seam 当成每逻辑通道 socket。
 后续首先对新 VM 内核做既有建链/断链/RF 回归，再用独立测试 backend 验证实际
 A3/NOCP；传输探测仍不代替普通用户业务数据验收。自然故障与自动恢复 issues 开放。
+
+## 首个真实 ACB／PB／NOCP 双设备往返已验收，socket 仍待接通
+
+[独立复算原始两端 USB 证据](evidence/ws73-acb-real-pb-transport-20261012.json)
+绑定 Linux `e344e7b34dc6`、服务/工具 `5d9744fda824`。VM144 专用签名 external
+selftest 在双方连接角色下完成 8 轮交替方向随机 nonce/载荷往返，对端实际接收、
+校验并回传。64 个原始 A3 包独立重组为 32 个 SDU，16 个真实 NOCP 完成事件，
+每设备每阶段准确 4 个完成计数；单次 finit_module 和卸载均成功。
+其 taint4096 是明确的 external-test 标志，不作为 taint0 普通生产资格。
+VM145 同源码不加载测试模块，普通 UID1000/caps0 的对象/建链/断链、RF22、QMP
+回归及 taint0 通过；合计 RF44、2914 capture 包、零 drop，slkd/bus 不重启。
+源码 CI9/9、19 严格数据源码及 413 工具回归通过。
+
+失败历史保留：VM142 的 62-byte SDU 实际先收到 28-byte PB-first，full-only RX
+错误拒绝导致接收设备退休；BusyBox 又重试了失败模块初始化。VM143 修复 RX 后
+模块初始化成功，但工具缺 `/bin/rmmod`，整轮仍失败。后续独立重组、单次 syscall、
+显式 BusyBox 卸载修复后才形成 VM144/145 证据。四只主机设备均保留连接，未切 hub。
+即使短 PDU 也需要 DLI RX 重组，这是实机对依赖顺序的修正；TX 的 ACB254/5 查询
+不能当作接收端始终提交完整 SDU 的保证。历史自然启动/bulk/消失根因仍未查明。
+
+这一成果仅完成首个 D1 实机纵向传输并验证基础 D2 记账。发送/接收者为专用内核
+测试后端；CUTC/实验 PI 未建立正式能力/通道协商，尚无普通用户 channel socket。
+下一主线仍为必要 CMTC/能力/local-remote TCID/PI → 有限 TX 队列及 socket →
+两端普通应用短 PDU 随机校验/回复 → 边界/长包/耗尽/关闭/断链/旧 lifetime →
+四设备、用户态 SSAP、安全/Profile。完整 S0–S6、Managed、自动恢复和整改 issues
+继续开放，不以这份底层传输证据关闭整项或替代业务验收。

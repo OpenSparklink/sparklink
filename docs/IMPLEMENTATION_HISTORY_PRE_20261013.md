@@ -1,0 +1,1876 @@
+# 2026-10-13前实施与验收历史归档
+
+**仅历史记录，不是当前实施计划。** 唯一执行入口为[IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md)，
+当前能力以[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)为准。
+以下原始正文按原样保留，旧“当前/下一步”只对应当时提交；失败证据及完整原scope不删除。
+原始正文SHA256：`397a4a815083c1f7c50fcfd893a7a29c0c2c40721221479f03408fb0bdab5cff`。
+
+---
+
+当前S4（2026-10-12）：Linux49699d6f11a5已接通实际revoke/RX工作线程的
+Disconnect、独立作者结果、有限整体预算与真实radio屏障，完整构建/产物验证
+通过；slkd/slctl typed submit/result、显式地址类型和真实物理事件状态消费者
+已接通。188 workspace/严格clippy/365 tools及kernel源码回归通过；**新VM/
+真实连接和撤销矩阵尚未验收**，loss后canonical同步与handle lifetime绑定
+仍缺，已有实机资格保留原D227/服务195的无连接RF22。下一先资格化新镜像
+并保留北极星，再真实连接/断开/release/last-fd/dup/迟到事件、数据/SSAP；
+完整原28项/S0–S6、默认四设备/自然根因/非人工恢复继续OPEN。
+[NATIVE_CONNECTION_IMPLEMENTATION](NATIVE_CONNECTION_IMPLEMENTATION.md)。
+
+当前S4生产接入（2026-10-12）：Linux82318ed9fe3f接通27/3字节codec、
+有界作者operation、typed UAPI/共用TX/异步physical outcome；重复staging
+已删除，新完整内核/modules无warnings构建通过。Rust/C/Python提交查询已
+接通；slkd/slctl连接、真实断开清理、新VM与连接/SSAP仍未验收，明确Faulted
+守卫不计作完整Managed teardown。已有实机资格仍是原D227/服务195无连接
+RF22。继续实现真实清理/消费者/VM互通，全原28项/S0–S6及默认四设备/
+根因/非人工恢复保持开放。详见
+[NATIVE_CONNECTION_IMPLEMENTATION](NATIVE_CONNECTION_IMPLEMENTATION.md)。
+
+下面c8等增量为按提交保留的历史状态；“尚未迁入生产”以本段新823源码状态
+为准，但运行资格不能倒填，原证据及原完整方案仍保留。
+
+当前S4请求/operation依赖实现（2026-10-12）：Linux c8f2485dc3aa 新增
+selftests/connection中的独立27/3字节codec和gen/cookie/peer/handle关联Session。
+8个Rust契约及完整sanitizer通过。Queued/OnWire/Status接受/AwaitingOutcome/
+terminal分开，作者取消保留ECANCELED与真实迟到handle，物理fault独立且
+阻止复用；标准0x1402存在但111固件未实测，不假装取消物理流程。本次尚未
+迁入Host/driver生产或Native UAPI/D-Bus/slctl，没有互通验收；这是S4依赖工作，
+不替代真正主动连接功能。见[NATIVE_CONNECTION_IMPLEMENTATION](NATIVE_CONNECTION_IMPLEMENTATION.md)
+的5项生产接入依赖。原D227内核无连接RF22继续有效，完整原28项/S0–S6仍开放。
+
+当前S4基础修复及原路径实机回归（2026-10-12）：Linux d227b8a37d96完成
+物理连接义务归一化/Host保留与copyout后重检源码修复，35+10源码测试，
+120165 DLI sanitizer checks；新完整内核/八export产物及签名空USB VM通过。
+实际Kernel d227／编译服务和工具195a936在正常VM74完成无连接路径强杀
+接任及真实RF20+2，1293包/零drop/taint0/QEMU0，独立封存SHA599b7273c22c。
+这不证明真实连接事件、live copyout race、连接teardown或SSAP，旧待构建/
+窗口记录是历史，原失败保存。正常74/维护21，四设备9/默认资格0。
+[范围/证据](WS73_NATIVE_LINK_FOUNDATION.md)。下一typedCreate/Disconnect及
+完整异步生命周期接入为主功能，不以基础或额外发现门禁替代原S4互通。
+全部原28项/S0–S6、自然RCA/非人工恢复和原物理/并行范围继续开放。
+
+当前S4修复：Linux d227b8a37d96 在首构建终态后补上acquire copyout后的
+Host/fault/quiet/连接义务复核并持锁commit；实际五路径/counter守卫及原回归
+共35项通过。首444450231937已完整构建，新修复版构建/VM尚待验收。初用户态
+检查CI8绿/1红因三个kernel checkout仍固定4ee而缺新增selftest；已全部固定
+新d227b8a37d96，失败不倒填。下述待修复窗口记录为历史，原S4请求/异步生命周期/
+真实连接/SSAP、全S0–S6/28项仍继续推进。详见WS73_NATIVE_LINK_FOUNDATION。
+
+### 当前S4增量：Native物理链路义务，尚未连接互通（2026-10-12）
+
+Linux444450231937已签名推送，WS73 driver归一化实际连接/断开outcome并与
+完整日志原子进入每Runtime Host。活动/uncertain连接不再可用仅radio Off
+宣布清理/Free，别名留在driver，失败/错误handle/日志loss不清除义务。
+34项实际Host/revoke与10项实际ingress源码测试、120165 DLI sanitizer checks
+通过；均有明确依赖fixture，不是运行内核或RF验收。独立新内核构建仍在运行，
+原已验收镜像保留；进一步发现acquire可睡眠copyout后需要重新核对Host再
+commit的窗口尚待修复，完整atomic admission不通过。详见
+[依赖、已接通调用者与剩余窗口](WS73_NATIVE_LINK_FOUNDATION.md)。
+下一按commit窗口修复/新内核VM回归 → typed27字节连接/3字节断开请求及异步
+生命周期 → 真实双设备连接/SSAP推进，不用源码基础替代原S4功能。完整
+S0–S6/28项、四设备默认并行、自然RCA和非人工恢复仍开放。
+
+### 当前增量：active-radio SIGKILL / 原代次接任（2026-10-12）
+
+生产内核/服务保持已验证版本；工具a2c3b4951aa 在正常VM73完成真实两只
+SIGKILL137、独立non-owning Free/Off/Ready、原两条所需STOP Complete、新PID/
+bus在原generation接任、四项旧初始化凭据拒绝和接任阶段零设备命令，再完成
+同一接任者RF20+2；1293包/零丢包/taint0/QEMU0。VM72错误预期重新初始化
+而整轮FAIL及其原证据保留。正常73/维护20，四设备9/默认资格0。
+见[限定证据与复现](DAEMON_CRASH_HANDOFF.md)。本成果不覆盖在途强杀、
+全权限/Managed、自然根因或非人工自动恢复；所有原28项继续开放。
+下一主功能为S4真实WS73连接/SSAP，结合libws73-usb/完整NearLink Host/
+标准，接通Native per-device异步状态而非旧6字节create或伪成功；事件/result/
+在途强杀门禁及四设备根因/有限恢复并行推进，完整S0–S6范围保留。
+
+# SparkLink / Linux 联合实施方案
+
+当前生产策略 U`09fe426773cf` 已显式分类三个Native只读方法，修复默认observer
+无法完整show的缺口。实际编译服务/工具 U`f572f7890d42` 的独立VM71通过真实
+observer/control角色：16项原初始化/历史与named/unique-owner读、68项observer
+bus拒绝/4项control服务名拒绝、无直接kernel/capture权限、两段零设备命令。
+同slkd/bus真实RF20+2保持，1265包/零drop/taint0/QEMU0。详见
+[Native角色策略与复现](WS73_OBSERVER_POLICY.md)。正常VM71/维护20、四设备9/
+默认资格0；Backend/事件/全部权限并发、强杀接任与S4–S6继续推进，物理/自然
+根因/自动恢复和完整Managed保持开放，下文70/69/68为原封存历史。
+
+当前 production U`0acafc943f94` 已修复业务 RPC 等待交权后跨凭据 admission：
+交权期间立即 busy，用户显式重试。新实际编译服务/工具 U`ac3bbf33e392` 的
+VM70实机门禁通过，原成功回复暂留时六类业务/初始化 RPC 均7.85–8.79ms拒绝、
+原Cancelled历史仍可读、同行继续扫描，交权后真实START/STOP及RF20+2保持。
+1191包/零drop/taint0/QEMU0，原500ms期限不延长；人工 guest bulk 错误只作
+开发支撑。[问题、实机与fd源码复核](DAEMON_ADMISSION_HANDOFF.md)。正常VM70/
+维护20、四设备9/默认资格0；完整Managed/权限事件/默认并行/物理/自然恢复及
+原S0–S6保持开放。下文69/68计数均为原封存历史，不覆盖其失败或资格范围。
+
+当前新增测试工具 U`232c3b3a702b`：真实 VM69 独立通过初始化管理权撤销、
+64 个真实业务终态导致 result 淘汰、旧/新 guest generation 与同行保持扫描；
+同 slkd/bus 保持 RF20+2，1837包/零drop/taint0/QEMU0。实际编译 daemon 仍
+U`7b1bd0464ec9`、内核 K`060011963b5e`，生产源码未变。详见
+[初始化出处与独立生命周期验收](WS73_INITIALIZATION_OFF.md)。正常VM69/维护20，
+四设备9/默认资格0；下一步覆盖私有fd release/最后关闭/dup 与在途回复的组合
+边界，再继续四设备相位/固件根因定位。原四设备失败、完整Managed、物理拔插、
+自然恢复与完整S0–S6保持开放。本段之后的68次计数为上一轮封存历史。
+
+当前源码 K`4ee4af55f38c`／服务和工具 U`7b1bd0464ec9`；实际编译内核 K`060011963b5e`。
+真实初始化 OFF 出处查询已接通，并绑定注册/管理凭据/所属domain。新服务默认
+双设备 RF20+2/guest生命周期通过，保留已验证路径；四设备功率0再现首轮
+超时，原整轮FAIL/0+0保持，但四只失败清理通过：12项真实op5/6出处、4项
+业务后拒绝、4项真实新STOP独立封存。同daemon/UID1000/caps0、837包/零drop、
+QEMU0，失败分支taint未测。详见[初始化出处与限定实机验收](WS73_INITIALIZATION_OFF.md)。
+正常VM68/维护20、四设备尝试9，默认资格仍0。下一优先补齐本 API 的管理撤销、
+release/最后fd/dup/在途与旧generation/eviction范围，再继续相位/固件根因定位；
+完整Managed、默认并行、物理拔插及单只非人工恢复保持开放。
+新服务与四设备核对器 U`66d21f689c9c` 已接通规范化配置/完整参数证明；默认、
+周期1237、功率请求0三例均FAIL，默认资格仍0。功率例额外暴露重复OFF的0x0b
+与新鲜OFF误检查独立domain；后者已修复并离线核对6真实成功/2拒绝，未重跑
+或改写原例。[完整矩阵及初始化OFF证据后续设计](WS73_PARALLEL_POLICY_MATRIX.md)。
+服务 U`d17f3f6f531c` 的策略v3默认真实RF20+2/guest生命周期已封存；
+新服务 U`a9dfe3fcbb80` 接通冻结VM配置，两个独立单变量案例各实际RF20+2：
+仅CD广播周期1237、同行1200；另例仅CD请求功率0、真实Complete选中-2，同行
+默认请求127/选中20。每例同daemon重注册、UID1000/caps0、1265包/零drop、QEMU0。
+这限定验收自定义请求接通及双设备空口，不等于测量射频周期/辐射功率、
+默认四设备或故障恢复。[配置与receipt](WS73_DISCOVERY_POLICY.md)可复现。
+当前物理拔插与默认四设备仍待验收。此前[四设备时序矩阵](WS73_PARALLEL_RF.md)
+封存真实 37 ms 对照 RF40/20 重叠，以及默认 0 ms 两次第三轮超时和核对器失败。
+新增 U`e5de1b7be396` 连续被动扫描实机对照仍超时：真实参数、RF2 和四只
+失败清理独立封存；候选已删除并恢复原 Policy v1，未将其当作生产修复。
+初始化OFF查询及首轮失败清理的上述限定范围已接通；其余管理/生命周期边界
+和四设备相位/固件行为继续定位，已完成单变量失败不反复算作新资格。
+格式v3的[每设备发现策略](WS73_DISCOVERY_POLICY.md)已迁移统一构造路径，
+默认wire参数不变；配置选择与Setup/START接通，默认真实RF22已验收限定范围，
+上述两个自定义双设备案例已独立核对，四设备单变量对照继续开放，不能相互替代。
+默认并行、当前镜像物理拔插、完整 Managed、自然根因/非人工恢复和完整 S0–S6
+仍开放。工具/来源 CI 通过不能替代这些门禁，部分成果不关闭原 issue。
+
+此前 K`f822db7756d7`／编译U`ccb3d34ae1bc` 的限定回归见[分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留。
+
+此前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：
+K`cc4018c4e3a6`/编译U`4a9de6a91617`使用专用QEMU暂留178字节真实回复，
+在途/排队本地ECANCELED、旧槽隔离、新查询自己的回复及46组wire限定通过；
+原20+2/read7/诊断/legacy poll3保持。完整deadline/held close/并发和自然恢复
+仍OPEN，生产路径不变。全部issues和完整S0–S6保持开放。
+
+规划基线：2026-10-09。覆盖 Linux #1–#19、sparklink #1–#7 的全部现有范围；逐项验收仍以各 issue 的原始 checklist 为准。本文件描述目标设计和执行顺序，不能作为功能已经完成的证明。
+
+Linux 主跟踪：[厂商框架与 WS73 #8](https://github.com/OpenSparklink/linux/issues/8)。联合跟踪：[跟踪：Linux 与用户态 SparkLink 全部 issues 的联合实施和验收](https://github.com/OpenSparklink/sparklink/issues/8)。本文中的 `K#n` 指 OpenSparklink/linux，`U#n` 指 OpenSparklink/sparklink。
+
+## 第一北极星与优先交付路径（2026-10-10）
+
+**普通用户通过 slctl 选择两只真实 WS73，让一只广播、另一只发现它；
+交换角色和拔插后仍能重复成功。** 两只独立 Ready，每轮随机标识，
+10 秒内显示匹配数据/地址/RSSI；交换角色连续 20 轮；单设备拔出不影响
+另一只，重插无需重启 slkd；应用无需 sudo，并留存可复现测试和真实空口
+证据。详细定义与阴性对照见 [北极星验收](WS73_DISCOVERY_NORTH_STAR.md)，
+联合里程碑为 [U#10](https://github.com/OpenSparklink/sparklink/issues/10)。
+
+按 **最小每设备 Runtime → WS73 启动/HCC/BSLE → 真实 DLI 查询 →
+广播/扫描 → 内核事件 → 动态 adapter/slctl** 推进 S1–S3 相关纵向路径。
+Virtual 作为开发支撑，不能替代真实双设备验收。之后扩展四设备两组并行。
+完整 S0–S6、原 issue checklist 和 CI/安全门禁均保留；SSAP/配对策略等
+后续完整功能不作为此第一条广播/发现路径的前置依赖。部分成果不关闭整项 issue。
+
+## 当前实施与证据（2026-10-11 重审）
+
+十四项审查的原始基线 Linux `fc0b4d1a44b6` / 用户态 `157ec71c3b9a`；
+后续 Linux `376bb1e8a544`/`c2c4aa4ad0bd` 已约束R01/R02/R05，并完成
+[新VM 20+2轮及人工恢复回归](evidence/ws73-vm-cleanup-regression-20261011.json)；
+后续9f57d1e拒绝无效/被忽略配置策略，34b54fd隔离未接通实验服务并恢复严格
+本地质量基线；[新默认daemon回归](evidence/ws73-vm-config-cleanup-regression-20261011.json)
+复核真实20+2轮与独立USB佐证；[8a9cc28最新实机](evidence/ws73-vm-strict-ci-regression-20261011.json)
+最长775ms，[9个CI作业全部通过](https://github.com/OpenSparklink/sparklink/actions/runs/38077403740)。
+完整安全/其他backend未验收，剩余缺陷、完整R14
+矩阵与所有整项issues仍开放。具体状态以[整改计划](REVIEW_REMEDIATION_20261011.md)及后续
+提交证据为准。历史 image #33–#35/USB 不可见/固定 slk0 等阶段描述不代表现状；
+完整历史失败与协议来源保留在下文及北极星开发记录中。
+
+已验证：每设备 Native WS73 Runtime、HCC/BSLE/DLI、typed discovery、管理租约、
+独立事件与 snoop、动态 adapter/slctl；VM 两只真实 WS73 20+2轮、普通 UID/caps0、
+同 daemon、物理拔插重接。[物理证据](evidence/ws73-vm-physical-20261010.json)
+仍保留 xHCI 警告；[一次人工错误恢复支持](evidence/ws73-vm-artificial-recovery-20261010.json)
+证明单设备有限恢复/幸存者/2轮恢复 RF，不代表自然根因或完整自主恢复验收。
+U10 保持7/8，四设备两组、完整 sandbox、连接/SSAP/安全/Bond/Profile/Proxy 待验。
+
+采用[ADR 0001](decisions/0001-management-channel-service-boundaries.md)：每逻辑
+通道独立 socket fd 是连接阶段最终数据面；管理、事件、诊断和 Proxy 独立。
+SSAP codec/协商/事务/数据库/Profile 在 slkd，内核拥有链路机制与可信状态。
+执行[调用审计三类清单](LEGACY_CLEANUP_20261011.md)，与生命周期/恢复并行；
+先拒绝不可靠能力和恢复严格 CI，再连接 socket、用户态 SSAP/安全/Bond/Profile，
+四设备两组，其他 Native/Proxy。不以语言、行数或 ioctl 数量声称优于 BlueZ；
+[重新核对的竞争分析](BLUEZ_COMPARISON.md)按可重复行为与官方接口证据比较。
+
+2026-10-11再次提供的Bluetooth／BlueZ分析已按最新提交复核，职责/所有权、
+socket/UAPI契约、六步依赖与失败测试门禁均保留；复核对应
+[14项当前状态](REVIEW_REMEDIATION_20261011.md#bluetoothbluez分析再次核对)。
+最新bde171beb2e0/aece3407e1c1对齐SSAP权限及真实调用入口；
+[新镜像实机证据](evidence/ws73-vm-ssap-operations-regression-20261011.json)通过
+真实20+2轮及单对象人工恢复支持，[固定提交CI](https://github.com/OpenSparklink/sparklink/actions/runs/38081123658)
+9作业通过。标准Engine/socket/安全/Profile和自然故障根因仍OPEN，不能据此
+宣称服务互通、完整自主恢复或优于BlueZ。
+
+随后20f431f54af0修复旧read整条copy后消费并删无人调用drain helper；
+[R12调用审计/错误语义](EVENT_COPY_REMEDIATION.md)仍保留旧DLI迁移及完整事件门禁。
+[新镜像20+2](evidence/ws73-vm-event-copy-regression-20261011.json)及
+[固定提交9作业CI](https://github.com/OpenSparklink/sparklink/actions/runs/38082158063)
+通过，最长621ms；不是自然恢复、完整事件或socket/服务验收。下一步继续R09
+真实完成状态提交、旧调用者迁移和WS73自然故障根因；全S0–S6保留。
+
+当前`3a6669114069`/`6c06b8f9ef83`新增专用selftest/VM gate，
+[7类实际read用户copy及真实20+2回归](evidence/ws73-vm-live-event-copy-20261011.json)
+通过；最长622ms、22独立RX/1247 USB零drop。固定提交CI9作业成功，工具测试
+增至146。再次提供的BlueZ分析继续按ADR采用，当前7类read结果不改变socket/
+SSAP/安全分工或S0–S6范围。旧DLI入口/消费者、完整事件/移除、R09状态、自然
+恢复仍OPEN；未发布UAPI可直接同步迁移删除。测试范围继续VM-only。
+
+后续`f16ac912a8ff`/`f1704a2e44dc`清除旧PHY默认状态/提前加密提交并隔离历史
+模型，未接通入口明确不支持，详见[调用审计](LINK_STATE_REMEDIATION.md)。完整
+PHY/每连接认证安装及匹配硬件完成仍待交付，新镜像与实机回归见下文。
+
+[清理后新镜像](evidence/ws73-vm-link-state-cleanup-20261011.json)现已通过7类实际
+read与真实双设备20+2轮，最长622ms，1247 USB零drop；固定提交CI9作业通过。
+自然故障恢复、旧DLI迁移、真实连接/socket及PHY/安全正向能力继续按完整门禁实施，
+不将本批未接通能力的拒绝记录为功能完成。
+
+## 目标架构与所有权
+
+### NearLink Host 参考纳入（2026-10-10）
+
+用户提供 `communication_nearlink_service` 后，增加固定 revision 的 Host 参考
+复核。完整来源表及决定见本地 `docs/NEARLINK_HOST_REFERENCE.md`。
+S0 加入协议差异与来源清单；S1/S2 明确 standard DLI / WS73 / reference profile；
+S4 先交付本地 SSAP V1.2.0，参考中的 1.3 fragment/multiProcessing 扩展需单独
+核验和 feature gate；S5 检查安全方法、lcid 与失败路径；S6 增加独立差分 harness。
+参考的 0x0401=SetEventMask 与本地新版 DLI 冲突，不能机械复用。真实 OpenHarmony
+HAL 依赖外部 HDI，local test 桩模拟回复；未完成参考构建/运行前不报差分 PASS。
+每 controller 所有权、Linux 内核机制 / slkd SSAP 与 policy 分层、WS73 优先级及
+全部原验收 checklist 保持不变，不引入无关联 issue 的音频/测距产品范围。
+
+```mermaid
+flowchart TB
+    App[应用 / slctl / C 与 Python API] --> Daemon[slkd: D-Bus / 产品策略 / SSAP Engine / Profile / Bond]
+    Daemon --> Managed[版本化 Managed control / Security / connection PDU channel]
+    Managed --> Host[每 controller 的 DLI Host / 事务 / dialect / 链路机制]
+    Monitor[slkmon / slkdump] --> Snoop[独立只读 raw snoop]
+    Host --> Snoop
+    Host --> Native[NativeBackend]
+    Host --> Virtual[VirtualBackend]
+    Host --> Proxy[UserspaceProxyBackend]
+    Native --> Bus[drivers/sparklink: USB / WS73 HCC / serdev / SPI]
+    Proxy --> Vendor[slk-vendord: 私有 vendor ABI / fd / framing]
+    Vendor --> Library[可选厂商库 / 开源 fake 库]
+```
+
+| 层 | 拥有的内容 | 接口约束 |
+|---|---|---|
+| `net/sparklink` | 每 controller 的 Host、标准及显式 WS73 dialect、pending、连接/TCID、低层分片/credit、安全机制、PHY 合法性与原子应用 | Backend 只收发完整 DLI wire packet，不决定标准 opcode、SSAP 或 policy；dialect 编解码由 Host 完成 |
+| `drivers/sparklink` | bus match、固件、端点、HCC/BSLE、URB、内部 DliChannel、power/recover | register/unregister + start/send/stop/recover + RX/fault/hangup；硬件差异不进入应用 API |
+| `slkd` | 唯一 Managed writer；启用策略、Agent/trust、持久化 Bond、SSAP codec/session/MTU/数据库、Profile、PHY policy | 每 controller/connection 独立状态；应用写操作通过 D-Bus 授权；不加载厂商库 |
+| `slk-vendord` | 独占 Proxy lease；受控库映射、typed vendor lifecycle、vendor fd、framing | 和 slkd 分进程；厂商 `op(int, void*)` 只存在内部；崩溃只影响对应 controller |
+| 工具 / 绑定 | 独立只读状态和 snoop；普通控制经 slkd | raw Diagnostic 是受权独占模式；不与 Managed writer 并行改硬件 |
+
+源码注册、产品启用、Backend present、Controller Ready 是四个独立事实。安装驱动或库、进程启动、USB runtime 枚举均不表示 Ready。能力和限制包含来源与 known/unknown；未确认不能默认支持。WS73 先支持 USB NativeBackend，闭源厂商路径按独立 Proxy 方案并行推进。
+
+## 标准基线与章节映射
+
+用户提供的本地标准归档已定位为相邻目录 `../sparklink-standards`；其 `00_标准清单.csv` 记录版本和 hash。本方案使用该归档的版本，不宣称它们是联盟当前最新版本。标准正文、测试规范、故事图解分开；故事图解只作辅助。源码现有注释与常量必须重新和正文/表格核对。
+
+| 归档标准 | 重点章节 | 实现与验收归属 |
+|---|---|---|
+| T/XS 00001-2025 V2.0.0 架构 | §6–§9 | 分层/传输通道与功能归属；K#1/#6，U#3 |
+| T/XS 10003-2025 V1.1.0 数据连接接口 | §6–§9；§10 测试；附录 B/C/D | 标准 transport/packet/opcode/event/错误码；K#2/#11/#13/#16/#19 |
+| T/XS 10002-2025 V2.1.1 SLE | §7、§9、§11/§13；加解密示例附录 F | 链路机制与安全/测试向量；K#7/#18/#19，U#5 |
+| T/XS 20001-2025 V1.2.0 设备发现与服务管理 | §6、§7.2–§7.4、UUID 附录 B | 广播/SSAP Engine、权限、协商、事务、Profile；K#2/#6，U#3 |
+| T/XS 20002-2025 V1.1.2 传输与控制规范 | §6–§8 | TCID、传输模式/帧/分片、连接能力与测量；K#6/#17，U#3/#4 |
+| T/XS 40001-2022 V1.0.0 网络安全通用要求 | §6–§9 | 安全/授权/凭据/日志；K#5/#7，U#5/#7 |
+| T/XS 30011-2025 V1.1.0 电量信息管理 | §7、附录 A | 正确 Battery service/attribute/权限；U#3 |
+| T/XS 30004-2025 V1.1.0 HID 数据交互；30013-2025 V1.1.0 HID 应用配置 | 30004 §7–§10/附录 A；30013 §6–§9 | HID+DeviceInfo 服务、描述符/权限、数据路径；U#3 |
+| T/XS 30012-2025 V1.1.0 设备信息管理 | 正文/UUID 表，实施前逐项核对 | HID 的必选服务依赖；U#3 |
+| T/XS 50003-2025 V1.2.0 SLE 设备测试 | §4 的 mandatory/conditional 特性矩阵 | 按实际角色/能力选择测试；K#19 |
+| T/XS 50004-2025 V1.2.0 基础服务层测试 | §6–§11；数据集附录 | discovery/connection/SSAP/data 与异常；K#6/#17/#19，U#3 |
+| T/XS 50005-2025 V1.0.0 电量信息服务测试 | §6–§9；数据集附录 | Battery discovery/read/descriptor/notify/indicate；U#3 |
+
+已核对的设计约束：标准 TCID 是按 peer 独立的一字节标识，local/remote TCID 可不同；WS73 envelope 的 LE16 表示只属于方言适配。默认 SMTC 使用基础模式，可靠 SSAP 需分别协商连接与 SSAP 能力后建立可靠通道。SSAP、底层流/可靠 SDU、USB/HCC/ACB 三层分片独立；默认基础模式不能借任意底层切分替代 SSAP 分片。
+
+SSAP Engine 先 ExchangeInfo，再使用协商 MTU/扩展码/分片/事务号/可靠能力；未协商事务号时，每 peer/channel 的 request-response 与 indication-ack 各自单在途，双向交互按标准 30s 失败门禁；command/notify 不受该等待阻塞。分片 timer、丢片/断链、属性修改的不确定状态按正文错误语义测试。
+
+实验 Battery 已改为星闪 `0x060A/0x1034` 和正确命名权限；描述符/通知/用户态 Engine/真实互通仍须验收。DeviceInfo 的旧 `0x180A` 须重新核对 30012。HID 不能仅靠 callback unit test 宣告符合，需完成应用配置及必选 DeviceInfo 依赖。标准没有规定 SSAP 必须在哪个 OS 层，迁入 slkd 是本项目的明确架构选择。
+
+每条验收增加 `标准号/版本/hash → 章/表/规范用例 id → 角色与 mandatory/conditional 判定 → 实现 → golden/负向测试 → 实机证据`。标准内部疑似勘误单列（例如 DLI §7.2 表 7 的范围与分组规则），结合具体命令表/实际 wire 核对，不盲抄；固件不支持或偏离标准的能力显式报告，不能由 Host 伪造符合性。完整正文 PDF 保持本地归档，不附到公共 issues。
+
+### Controller runtime 与生命周期
+
+每个对象拥有：稳定 controller id、递增 generation、parent device、可引用 Backend handle、descriptor、Host/codec/pending、RX/TX 有界队列与 worker、连接和安全状态、订阅者。注册表只索引可引用对象，不负责切换全局协议状态。相同 peer 地址也按 controller 分区。
+
+生命周期为 `Registered → Starting → Initializing → Ready → Enabled`，另有 `Suspended / Recovering / Fault / Removing / Dead`。Ready 必须包含 Backend channel 可用、初始化通知及 Host 真实查询成功；Enabled 由产品/管理策略决定。停止先禁止提交、使旧 generation 失效，再在锁外停止 Backend、取消/drain worker 和 pending，最后撤销对象。注销返回后不得再访问释放对象。
+
+URB/serdev 原子回调只执行受界限的拷贝/排队与调度；协议解析和可睡眠操作在 per-device worker。全局/registry 锁不覆盖 USB I/O、用户态等待或同步取消。异步结果附 controller/generation，过期结果丢弃并计数。模块/FFI 所有权保证 callback 存活；外部接口最多提供小型版本化 C seam，不承诺稳定 Rust ABI 或任意模块组合。
+
+### Host transaction 与事件
+
+Host 提供 typed 广播、扫描、连接事务，编码完整参数和顺序，处理 Status、Complete 与领域完成事件。发送成功只表示提交成功。命令响应只完成原 requester；状态 fan-out 给所有独立订阅者；raw TX/RX snoop 保留独立队列、序号及 overflow 计数。事件携带 controller、generation、类型和本地 request cookie。
+
+本地 cookie 不会被固件自动回传。无 wire transaction id 时限制在途请求；同 opcode 超时后不能把迟到回复关联给新请求。使用保守排队/隔离或 reset generation，并通过故障注入证明。高流量和慢 snoop 不能阻塞状态更新；每路 overflow 明确可见；poll/epoll 由事件到达唤醒，主路径移除 50ms 补偿轮询。
+
+### UAPI、权限与兼容
+
+以 Linux `include/uapi/linux/sparklink{,_ioctl}.h` 为 ABI 规范来源；新接口包含固定宽度 version/size/flags/reserved、长度/队列上限、controller/generation/sequence。C、Rust、Python 比较同一字段的 size、align、offset、enum 和 ioctl 编号，覆盖成功打开和真实调用；布局测试不只比较复制的常量。结构升级采用新版本/编号或协商，禁止静默改旧布局。
+
+三个 owner 相互独立：slkd Managed writer、slk-vendord BackendProxy owner、用户态 per-connection PDU owner。重复 owner、错误 id/lease/generation、非法状态/长度均拒绝。只读订阅与 owner 分开；Diagnostic raw 需 CAP_NET_ADMIN 并独占，进入前停止 Managed writer 的冲突活动。configfs 仅启动配置；debugfs 仅诊断；genl 与 ioctl 不再形成多个无协调写入口。32/64 位兼容与保留字段纳入 conformance。UAPI 未发布，调用者同步迁移后直接删除旧 API，无旧 ABI 兼容期。
+
+Proxy v1 使用有界 `read/write/poll`，包括 REGISTER、START/STOP/RESET/RECOVER、READY/FAILED/FAULT/HANGUP/UNREGISTER 与完整 packet。fd-close 自动 detach，旧 lease/generation 不能重新注入。READY 是初始化事实声明，Host 仍真实查询验证。先测复制/切换成本，再决定是否引入可协商 mmap ring，不让共享内存成为 v1 前提。
+
+### SSAP、安全与 PHY
+
+内核最终 connection channel 是每逻辑通道独立 socket fd，定位 controller/generation/connection/peer/local+remote TCID，提供完整 SSAP PDU、顺序、bounded queue、断链和安全上下文；不拥有服务数据库。slkd Engine 拥有 codec、MTU、SSAP 分片、协商后事务、超时、remote cache、handle 分配与 Profile callback。Profile request context 包含请求 id、连接、attribute/op/offset/payload/security/deadline；read/write/method/notify/indication+ack 经真实 PDU 路由。属性/描述符的读写、认证、加密和授权分别校验。
+
+内核保留配对时序、密码学、active credential、加密安装和强制机制；slkd 决定方法、MITM、接受/拒绝、Agent/passkey/OOB/PSK 和 trust。没有 owner、拒绝、超时或 owner 崩溃均 fail closed。Bond 采用可恢复的 wrapped credential baseline，按 controller+peer 持久化，原子写入、安全目录、0600、格式版本及敏感缓冲清理；仅有 fingerprint 不合格。opaque token 只在明确 capability 时启用。revoke 同时撤销持久存储、内核/RAL 与可选 token。默认 D-Bus 可读，写入需 root/polkit 或等价授权。
+
+PHY mechanism 校验 runtime capability、法规和参数并报告实际结果；slkd 提供 Fixed/Balanced/Throughput/LowPower 策略、hysteresis、minimum dwell、failure backoff 和公平调度。配置目标与 actual state 分开，未知能力不会触发自动切换。
+
+## 执行顺序与阶段门禁
+
+issue 间的依赖分为“接口契约可协作设计”和“最终验收必须等待”。K#4 与 K#9 不互相等待整项关闭：先共同固定 controller ownership contract，再迁移、联调、分别验收。所有阶段可提前开发 pure codec、fixtures、fake 和文档；不得用 fake 结果替代实机。
+
+| 阶段 | 主要工作与 issue | 退出条件 |
+|---|---|---|
+| **S0：可信基线** | K#1/#5/#13/#19、U#1：修 selftest verdict / ABI 漂移 / 同步 fd 的 Tokio 依赖；清理 fmt/clippy 与严格 CI 基线；冻结源码、toolchain、config；Host/Backend/owner ADR 和 WS73 证据矩阵 | 故意失败不能 PASS；C/Rust/Python conformance 通过；30s 静默事件期间并发 D-Bus 响应和 shutdown 正常；严格质量检查及现有基线失败明确 |
+| **S1：每设备骨架** | K#4/#9/#10/#11/#12：可注册 runtime、descriptor、引用/模块所有权、generation；先实现真实 VirtualBackend，再迁标准 USB | 两 controller 交错同 opcode、inactive RX、不串状态；register 不冒充 Ready；失败/注销无 UAF/睡眠原子上下文；无 USB 的 core+Virtual 可构建 |
+| **S2：公共 Host 与控制面** | K#2/#3/#5；U#2/#6：typed transaction、统一事件/snoop、Managed owner、动态 adapter 对象和枚举快照 | Virtual 和标准 QEMU USB 同一事务通过；迟到/重复/丢失事件与多 reader 负向通过；无锁内 I/O；独立 Enabled/Available/Powered 可观察 |
+| **S3：优先完成 WS73 RF** | K#13/#14/#15/#16：USB/HCC/BSLE、固件/取消、Host dialect、真实版本/buffer、广播扫描建链断链 | G0 boot → G1 SLE/真实 DLI → G2 RF；标准 codec 不受影响；四设备独立 Ready，失败阶段明确；TX/RX capture 可复现 |
+| **S4：真实数据与用户态 SSAP** | K#6/#17；U#3：TCID/ACB/credit、PDU owner、用户态 Engine/Profile、工具/绑定迁移 | G3 两组双向数据、长 PDU/253–255B 边界、真实远端 Profile callback/read/write/notify/indication；daemon crash、满队列、断链有确定结果 |
+| **S5：安全、策略与 Proxy** | K#7/#18 与 U#5；U#4；K#1/#5 与 U#7 独立分支 | G4 实机配对/加密、Bond 重启重连与 revoke；PHY policy replay/实际能力门禁；fake vendor 全生命周期/权限/crash 端到端。真实闭源库未提供时明确未验证 |
+| **S6：收敛与发布** | K#8/#19 及所有剩余 checklist：PM、hotplug/mixed backend、诊断构建、构建/模块组合、迁移删除、文档/包 | G5/G6、所有原验收项对应证据；关闭已满足 issue；支持矩阵区分模拟、实验、硬件验证；总跟踪最后关闭 |
+
+```mermaid
+flowchart LR
+    S0[基线 / 契约] --> S1[Runtime / Virtual / 标准USB]
+    S1 --> S2[Host / 事件 / owner / 多对象]
+    S2 --> S3[WS73 SLE 与 RF]
+    S3 --> S4[TCID / 用户态 SSAP]
+    S4 --> Security[配对 / 加密 / Bond]
+    S2 --> Proxy[Proxy / slk-vendord / fake 库]
+    S2 --> PHY[PHY 策略]
+    Security --> S6[PM / 故障隔离 / 兼容删除 / 发布]
+    Proxy --> S6
+    PHY --> S6
+```
+
+下一批先交付 S0 的可复现修复；WS73 的 HCC/BSLE fixtures 与 S1 runtime 同时推进。WS73 Native 的 RF 闭环优先于完整 opaque vendor 支持。每批保持编译和相关回归可运行，不将全部代码重写为一次不可审查提交。
+
+## 全部 issue 到设计 / 验收的映射
+
+| Issue | 阶段与实现内容 | 完成必须额外看到的证据 |
+|---|---|---|
+| [K#1](https://github.com/OpenSparklink/linux/issues/1) | S0 契约；S1–S2 Host/Backend/DliChannel；S5 Proxy | Virtual、真实 Native、fake OpaqueVendor 使用同一 Host transaction；边界及迁移文档 |
+| [K#2](https://github.com/OpenSparklink/linux/issues/2) | S2 typed adv/scan/connect；S3 实机 | 完整参数/顺序/回滚和 status/complete/domain 关联，实机 trace，无合成成功 |
+| [K#3](https://github.com/OpenSparklink/linux/issues/3) | S2 独立订阅、requester completion、raw snoop | slkd+mon+dump 同时运行，立即唤醒、overflow、慢 reader、重开 |
+| [K#4](https://github.com/OpenSparklink/linux/issues/4) | S1–S2 每 controller 独立 Host/状态/worker | 无 active swap；至少双设备并行、同 opcode 交错、单侧拔出不影响另一侧 |
+| [K#5](https://github.com/OpenSparklink/linux/issues/5) | S0 ABI；S2 owner/权限；S5 Proxy | 非 root 负向测试、raw/Managed 冲突、stale generation、长度/保留字段、跨语言真实调用 |
+| [K#6](https://github.com/OpenSparklink/linux/issues/6) | S4 connection PDU channel 与 SSAP 迁移 | 独占 owner、完整 PDU/安全上下文、重组/flow control、crash；内核旧 DB 退出权威 |
+| [K#7](https://github.com/OpenSparklink/linux/issues/7) | S5 Security request/action/credential | 无 owner/crash/deadline fail closed；wrapped restore/revoke；optional token unsupported 明确 |
+| [K#8](https://github.com/OpenSparklink/linux/issues/8) | S0–S6 Native WS73 总跟踪 | 关联子项及所有真实硬件 gates 完成后关闭 |
+| [K#9](https://github.com/OpenSparklink/linux/issues/9) | S1 register/unregister + Backend handle | 新驱动不改 enum；引用、模块、callback/teardown 竞争和失败回滚 |
+| [K#10](https://github.com/OpenSparklink/linux/issues/10) | S1 生命周期；S6 PM/recover | Ready 门禁、取消/generation、recover timeout、suspend/resume/reset-resume |
+| [K#11](https://github.com/OpenSparklink/linux/issues/11) | S1 descriptor；S3 能力查询 | bus/dialect/identity/caps/limits/quirks 分开；每项证据来源，unknown 不变成默认能力 |
+| [K#12](https://github.com/OpenSparklink/linux/issues/12) | S1/S3 drivers 迁移；S6 build 矩阵 | core 无 USB 依赖；标准 USB/WS73/Virtual 独立选项；已支持的模块组合和卸载 |
+| [K#13](https://github.com/OpenSparklink/linux/issues/13) | S0–S3 wire/source/license 矩阵 | 参考/SDK/本项目 capture 分列；0x0401 冲突、completion 偏移、single-link/254B 逐项核验 |
+| [K#14](https://github.com/OpenSparklink/linux/issues/14) | S3 per-device USB/HCC/scatter/worker | 原子安全、RX 聚合长度/fragment、TX 背压、short/stall/cancel/拔出，不串设备 |
+| [K#15](https://github.com/OpenSparklink/linux/issues/15) | 已有 boot 第一切片；S3 BSLE/SLE | BSP_READY→customize→CUSTOMIZE_RECEIVED→SLE_OPEN→BOOT_FINISH→DLI 查询；warm/cold/missing/corrupt/notify timeout |
+| [K#16](https://github.com/OpenSparklink/linux/issues/16) | S2 Host 通用；S3 WS73 codec | A1/A2 wire golden 和真实 Version/Buffer/adv/scan/connect completion，credit 和 timeout |
+| [K#17](https://github.com/OpenSparklink/linux/issues/17) | S4 TCID/ACB/credit/PDU | TCID 不当作连接 handle；253/254/255 边界、分片/重组、credit 耗尽与恢复；实机双向 |
+| [K#18](https://github.com/OpenSparklink/linux/issues/18) | S5 SMP relay / 加密 mechanism | relay layout/算法来源；双角色真实 pair/encrypt、错 key、revoke、Bond reconnect |
+| [K#19](https://github.com/OpenSparklink/linux/issues/19) | 每批证据；S6 全矩阵 | 严格 verdict、Virtual/标准 USB/WS73 分开；mixed backend、故障/PM/性能/复现与支持范围 |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | S0 独立 receiver/cancel、短锁、同步 fd 分离 | 真实 D-Bus 静默 30s 仍响应；对象 signal 在锁外；并发更新与 shutdown |
+| [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | S2 StateSubscription/SnoopSubscription | 与 K#3 联调，工具不抢事件；移除主路径破坏性 poll/50ms fallback |
+| [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | S4 SSAP Engine/session/DB/Profile；修标准 UUID/权限 | goldens+malformed+MTU/长读写；未协商事务号时单在途；真实 Battery/HID/DeviceInfo PDU；restart/卸载/并行连接 |
+| [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | S5 每连接 PHY policy | telemetry replay 的 hysteresis/dwell/backoff/clamp/rollback/fairness；只广告真能力 |
+| [U#5](https://github.com/OpenSparklink/sparklink/issues/5) | S5 Agent、凭据 store、授权 | accept/reject/timeout/crash；restart 无重新配对重连、损坏 store/revoke/权限负向 |
+| [U#6](https://github.com/OpenSparklink/sparklink/issues/6) | S2 registry/adapterN；S3/S6 多设备 | snapshot+event race、同地址 peer 隔离、disable 不开 channel；四设备对象与重插 generation |
+| [U#7](https://github.com/OpenSparklink/sparklink/issues/7) | S5 backend-client、vendord、fake adapter | root-owned 库映射、ABI/缺库拒绝、epoll partial I/O、owner/stale/corrupt/crash/timeout、隔离与 benchmark |
+
+## WS73 实现细节与协议证据
+
+1. **USB / 固件**：匹配 `ffff:3733` 的目标接口；boot 两端点、runtime 五端点重新验证 address/type。三份 SDK 镜像校验 64B ASCII SHA-256 header 和上限，在任何写入前全部通过。boot READM/CLDO/trim/FILES/QUIT 保持独立可重现；校准和地址来自明确设备配置，禁止把参考测试 MAC/zero ini 当产品默认。firmware 不提交内核，来源与再分发许可另行记录。
+2. **BSLE / HCC**：runtime 尽早启动 bulk/INT RX，避免漏一次性通知；阶段有独立 timeout/cancel，顺序是 BSP_READY、queue10 customize、CUSTOMIZE_RECEIVED、SLE_OPEN、BOOT_FINISH 或实测证明的等效通知、queue8/reset assembly。HCC header/offset64/scatter 与 DLI frame 分层校验，硬件 startup 只在 Native 内部。
+3. **Host dialect**：显式 WS73 profile 的 A1 command / A2 event 长度和 completion payload；`0x0401` 与标准含义冲突只能在 dialect 映射。标准 codec 保留独立 fixtures。Host 查询版本和 buffer，控制命令 credit；参考偏移与 max limit 必须由当前 SDK 固件 trace 确认。
+4. **数据**：A3 envelope 的 flags、seglen、TCID、PDU length 在 Host/data mechanism 层处理，USB/HCC 只运完整 packet。分清 SSAP MTU、ACB frame 限制、低层分片与 controller credit。参考 254B SMTC/单链路是候选限制，不是所有 WS73 的已验证事实。
+5. **安全**：先确认 SMP relay opcode/事件、P-256/CMAC 或固件实际算法、encryption install 参数；复用内核机制和上层 policy。参考 RequestPair/StartPair 被拒绝的结果不直接复制为本项目结论。
+
+每条协议事实记录来源版本、原始 bytes、解释、候选限制、对应 fixture、本项目实测与差异。引用 LGPL 参考时审查实际代码复制和链接义务；内核新 GPL 实现基于协议事实，不能未经审查搬运实现代码。SDK 固件许可未知时仅使用用户本地文件，不增加再分发承诺。
+
+## 开发环境与权限
+
+保留主机编译 + 单层 headless QEMU。无需新增编译 VM 或嵌套虚拟化。普通/诊断构建使用不同 out-of-tree 目录；构建 kernel、userland、打包均不需要 sudo。硬件运行需要执行环境实际暴露 `/dev/kvm`、四个 USB node，并具备读写权限；管理员一次性安装的 WS73 专用 udev rule 继续适用于重新枚举。不要给完整 USB 控制器权限。若环境当前未暴露设备，提权不能代替设备透传；先做 TCG/纯软件测试，结果注明 simulation。
+
+lab 使用独占锁，固定物理端口→guest 端口→controller/generation；每个设备一个 owner。现有 minimal initramfs 用于 boot/DLI，另建包含 daemon、私有 D-Bus、工具和非 root 测试用户的用户态测试镜像。Bond 重启测试使用 guest 专属可持久化磁盘。guest 不默认共享主机文件系统、网络或真实系统盘。
+
+QEMU 释放 USB 后可能需要物理冷重插，当前不能保证全自动恢复。QMP detach 证明 guest teardown，不能代替断电冷启动。保存完整 QMP、前后 inventory、失败阶段和恢复步骤；先稳定逐个启动四设备，再单独修复/验证并发下载问题。
+
+## 测试矩阵与实机 gates
+
+| 层级 | 自动验证内容 | 结果能证明的范围 |
+|---|---|---|
+| Pure codec / 状态机 | 标准/WS73 golden、H4/HCC/ACB 长度和畸形帧、SSAP/SMP vectors、PHY replay | 编解码与状态机；不能证明 USB/RF |
+| VirtualBackend | 同 opcode、重复/延迟/丢失 completion、异步插入、reset generation、register/stop/crash、每设备隔离 | Host/生命周期/故障处理；不能证明 Native 硬件 |
+| ABI / 用户态 | C/Rust/Python conformance、同步成功 open、真实 D-Bus 并发、Agent/store/Profile | 接口、锁、权限和 user engine；fake PDU 单列 |
+| 标准 QEMU USB | 明确指定存在的模型；URB/worker、多控制器、hot-remove、callback teardown | 标准 Native transport；模型缺失不得降级 PASS |
+| fake OpaqueVendor | REGISTER→start→ready→查询→data→reset/recover→unregister；malicious/partial/EAGAIN/crash | Proxy/vendord 边界，不证明未提供的真实闭源库 |
+| 真实 WS73 | G0–G6，含真实 peer 接收 capture | 对应固件/角色/能力的实机行为 |
+| 诊断配置 | lockdep/DEBUG_ATOMIC_SLEEP；可支持的 KASAN/KCSAN/fault injection 分别构建运行 | 并发/内存检查；不假定所有工具和 Rust 配置可同时启用 |
+
+故障注入必须覆盖旧 generation RX、迟到完成、worker 未结束时 unregister、malformed/oversize/queue full、slow reader、owner close/crash、错误 credential、缺 policy owner、USB short/stall/cancel、missing/corrupt firmware 和通知超时。pack 的固件拒绝仅是打包器测试；内核 missing/corrupt 路径使用专用负向镜像证明。
+
+四设备固定 A↔B 与 C↔D 两组，每组交换 initiator/acceptor，不预设一对三星形能力。
+
+| Gate | 实机退出条件 |
+|---|---|
+| **G0 Boot** | 四设备 cold 下载、runtime 枚举；warm/缺固件/损坏/拔出分开记录。已有旧 run 仅提供正向 boot 证据 |
+| **G1 Ready / DLI** | 各自 BSLE/SLE、真实 version/buffer/features；可用能力来自各自查询，失败不标 Ready |
+| **G2 RF** | A 广播、B 扫描建链，C/D 同时 discovery；交换角色；断链原因来自真实事件 |
+| **G3 Data / SSAP** | 两组同时连接，用 controller/connection/seq 标记不同 payload；双向无串包、credit/253–255B/长 PDU；远端 PDU 触发 Profile、读写/通知/确认 |
+| **G4 Security** | 双角色授权配对、实际加密数据、拒绝/timeout/错 key；daemon 与 guest restart 后 Bond 重连、不重新配对；revoke 后不能恢复 |
+| **G5 Isolation / PM** | 保留 C↔D 业务时 reset/拔出 A 或 B，其他对象/订阅/调用持续；suspend/resume/reset-resume 与重复循环 |
+| **G6 Mixed / 性能** | 标准 QEMU controller 与 WS73 同 guest；可选双 guest 各两设备。记录吞吐、RTT、掉包、credit stall/队列、payload/时长；先测基线再设目标 |
+
+CI 每 PR 跑 fmt/check/clippy/unit/golden/ABI/Python/私有 D-Bus；有适用模型的集成 runner 跑 Virtual/标准 USB/Proxy fake；真实硬件 runner 串行执行 lab。任何 required test 未执行、timeout、FAIL、kernel BUG/WARNING 或缺预期用例均不能成为 PASS；不适用项使用明确 SKIP 及原因。先验证测试工具自身的失败判定。
+
+## 迁移与删除条件
+
+迁移期间同一 controller 不能同时拥有两套 Host。新 runtime 接通调用者和回归后删除 legacy；UAPI 未发布，内核/Rust/C/Python/CLI/daemon 同步替换，直接移除旧接口，不承诺旧布局兼容或永久迁移开关。文档列出实际支持组合和迁移门禁。
+
+| 旧路径 | 删除前必须满足 |
+|---|---|
+| Backend enum / 核心 switch helper | Native+Virtual+Proxy 按注册表运行，模块/注销/失败回滚与 mixed backend 通过 |
+| active_dev_id 协议状态交换 | 所有 parser/pending/RPA/conn/security/worker per-controller；双设备/四设备无串扰，inactive 生命周期不丢 |
+| 破坏性 DLI_POLL_EVENT / 50ms fallback | slkd/mon/dump 独立订阅、立即 wakeup、overflow/reopen 通过；旧 client 明确弃用 |
+| 内核 SSAP Engine / 数据库 | user Engine 是唯一权威，真实 Profile/PDU、绑定/CLI兼容、MTU/timeout/crash 通过 |
+| 内核自动配对 / 自动 PHY policy | policy owner 正常和缺失/crash fail closed；真实安全、凭据恢复及 policy replay 通过 |
+| 多入口任意管理写入 | 普通应用经授权 D-Bus；Managed/Diagnostic/Proxy/channel 各自唯一 owner，负向权限和旧工具迁移通过 |
+
+回滚允许切回明确的实验配置或上一版本；不得回滚成虚假 Ready、无权限 raw 控制或旧全局状态和新 Host 同时运行。驱动和 daemon package 的 installed/enabled/present/ready 分开，文档及配置避免以默认启用隐藏失败。
+
+## 证据与 issue 维护
+
+每次运行保存 manifest：case/issue/预期结果、Linux+用户态 commit 和 dirty diff hash、kernel/initramfs/二进制 hash、完整 config、工具/model 版本或 hash、QEMU argv、firmware/hash/校准来源、匿名设备角色与物理→guest→controller/generation 映射、前后 inventory、PASS/FAIL/SKIP 及原因、console/QMP/去敏 snoop/peer capture、统计和恢复步骤。密钥及敏感 credential 不写日志。
+
+每批更新相关 issue：“具体修改 + commit/本地待提交状态 + 实际运行命令及证据 + 剩余 checklist/未验证范围 + 下一依赖”。部分验收勾选须有证据；所有原 checklist 满足才关闭。总跟踪保留开放直到子项和 gates 全部完成。环境阻塞仅标在受影响的硬件验收项，不把整个项目标为无法推进。文档中的历史代码量、测试数量和‘完成’标签不替代最新验收。
+
+### 首批 S0 历史记录（内核待提交；用户态见交付记录）
+
+- 自测 396 处 FAIL 进入计数，95 个 case 共用执行/manifest；失败退出 1、skip 退出 4。runner 校验完整 case、summary、USB 数量、guest/QEMU exit 和 kernel fault，模型缺失明确 SKIP；25 项反向/截断/异常测试通过。
+- 修复 Python ConnInfo 和 Rust/C/Python DliInfo 漂移；真实 cbindgen 0.29.4 生成并 verify；23 项 Python 测试检查 11 个结构/100 字段及 C 写入。kernel 规范布局未变，Cargo.lock 未变。全部 ioctl/结构、32 位和实际设备调用仍待补齐。
+- lab 增加独占锁、build/pack/run manifest、config/artifact/firmware/source hash、完整 QMP 和严格 gate；16 项 synthetic fixture 回归通过，真实本地 SDK pack 成功。旧镜像须重新 build/pack 生成来源绑定，旧 run 不追补 hash。没有在本轮启动 VM。
+- `cargo test --workspace --locked`：118 项通过；`cargo clippy --workspace --locked -- -W clippy::all`：退出 0、有现存警告；`cargo fmt --all -- --check`：失败，作为 S0 基线待清理。测试通过不意味着当前严格 CI 绿色。
+- 上述首批尚未完成的锁/fd 工作已按以下第二批推进；ADR 具体接口、完整标准用例抽取、Virtual/注册框架或任何新增 SLE/RF gate 仍未完成。没有关闭 issue。
+
+### 第二批 S0 历史记录：事件等待与同步 fd
+
+- `Adapter` 改用同步 OwnedFd；C/Python 和 CLI 成功 open 不再需要 Tokio。`EventReceiver` 独占异步 fd；slkd 独立打开并把接收任务从 SharedState 分离，正常 cancel+join 后释放 D-Bus connection，异常 drop 则 abort。
+- 真实私有 session bus 回归稳定复现旧持锁等待使 Name 超时；修复后 30s 无事件期间 Name/GetDliInfo/StartDiscovery/ConnectDevice 均响应，静默后广播事件能更新状态并注册真实 Device object。测试使用 mpsc 事件源和 `/dev/null` 的真实 ioctl 错误，不伪造控制器成功。
+- workspace 124/124 通过；receiver transport drop、无 runtime 同步 Rust/C open、超长/截断事件错误、cancel/join 均覆盖。随后广告 parser 两项严格 clippy 修复的 19 项相关测试、libsparklink 9 项测试及 all-targets `-D warnings` 均通过；cbindgen verify 和所改 Rust 文件格式检查通过。
+- 本机没有 dbus-daemon，已从 Fedora 仓库下载并验证 RPM 签名，仅解包到 `.dev/tools/dbus` 使用 1.16.2；CI 明确安装该测试依赖。日志为 `.dev/s0-event-loop-test.log`，复验/所有权与边界见 `docs/EVENT_RECEIVER.md`。
+- U#1 原短临界区验收仍需处理旧同步 Bond 持久化与 Profile 回调。独立 fan-out/snoop 属于 K#3/U#2，legacy 50ms fallback 未缩短；本批不宣称这些已实现。全仓质量基线仍待清理，issues 保持开放。
+
+
+### S0 用户态交付记录（2026-10-10）
+
+- 签名提交并推送到 `codex/sparklink-ws73`：[格式基线 01536db](https://github.com/OpenSparklink/sparklink/commit/01536db)、[ABI 787ac84](https://github.com/OpenSparklink/sparklink/commit/787ac84)、[事件/Bond/Profile 隔离 dd2074c](https://github.com/OpenSparklink/sparklink/commit/dd2074c)、[输入与工具 lint 7adb796](https://github.com/OpenSparklink/sparklink/commit/7adb796)。这些用户态改动现可从远端检查；内核 boot/lab 修改仍待 QEMU gate 后提交。
+- 代码提交对应的软件复验：`cargo test --workspace --locked` 135/135，Python compiled ABI 23/23，`cargo fmt --all --check` 和六 crate 的 all-targets clippy `-D warnings` 通过，cbindgen verify 通过。测试使用工作区 dbus-daemon 与私有总线；沙箱运行因禁止 Unix socket 返回 EPERM，允许本地 socket 后完整回归通过，未跳过失败项。
+- Bond 存储与旧连接 Profile callback 均以独立服务执行，已接受操作在取消后仍保持顺序，退出 drain 并关闭所有 clone；callback panic 关闭服务。业务状态锁不覆盖存储、回调或 D-Bus object 注册；真实私有 D-Bus 回归验证阻塞期间管理接口响应。
+- 此批覆盖 U#1 六项原验收的本地回归；issue 保持开放，等待审查和合入。U#3 只完成旧连接 callback 隔离，未完成 SSAP Engine。历史批次测试数量与来源记录保留，不以本批结果覆盖旧硬件证据。
+- slkd 现存未接通策略/SSAP/transport 和旧 lint 仍导致严格 CI 失败；未放宽 `RUSTFLAGS=-D warnings`。单控制器 slk0、顺序 dispatcher 背压、legacy destructive ring、缺少可恢复 Bond 凭据及硬件/RF gate 仍需后续阶段实现。
+
+## 原生 WS73 查询推进（2026-10-10，部分成果）
+
+配置候选导出工具已签名提交并推送 `91999ed`，18 项测试通过；实际 SDK INI 导出
+140/4 字节候选并验证归档回读一致。默认 PM `0x215` 与参考 dongle `0x1` 不同，
+board GPIO/功率/校准仍未验证，不部署为已合格配置。
+
+内核工作树接入 per-instance 原生 DLI version/buffer/80-bit features/address 查询，
+完整验证 opcode/status/credit/长度，四项均有效后仅发布元数据，不发布 Ready。
+`0x0406(address_type=0)` 的 WS73 固件支持尚需实机核验；`0x0401` 不按标准
+ReadCmdLen 误发。生产源码合成查询 2,830 项、BSLE 回归 3,198 项、host sanitizers
+与 kselftest 目标通过；image #36 无警告构建。独立双虚拟 Runtime 生命周期 PASS，
+完整标准 DLI QEMU 96 项/19 失败断言，strict FAIL；两条三设备子路径未执行。
+当前清点 WS73=[]，没有真实 DLI/Ready/RF 验收。内核提交门禁保持，全部 issues 开放。
+下一步仍按 native Runtime/async RX/lifecycle → 板级核验/真实查询 → 完整广播扫描
+事务 → 内核事件 → 动态 adapter/slctl 推进，不用 Virtual 替代真实 20 轮。
+详细边界与证据见 [北极星记录](WS73_DISCOVERY_NORTH_STAR.md#原生-ws73-查询与配置候选记录2026-10-10)。
+
+## 原生 WS73 Runtime 推进（2026-10-10，部分成果）
+
+Native C/Rust 注册接口与 WS73 异步 RX 接入每设备 Runtime/Host，显式方言、
+引用保留、SETUP/Ready 分离、精确 generation 注销及错误隔离已进入工作树。
+冻结 image #40 的生产 WS73 driver 合成双设备查询/拔插、畸形 HCC 单设备隔离
+以及标准 DLI 生命周期三项 PASS；78 项 harness 测试 PASS。完整 96 项回归仍有
+21 条失败断言，strict FAIL，内核门禁未通过。实际 WS73=[]，板级候选未合格；
+没有真实 Ready/RF/slkd/slctl 验收，不关闭整项 issue。完整 S0–S6 依赖与原验收保留。
+详细输入、失败记录和边界见 [原生 Runtime 记录](WS73_DISCOVERY_NORTH_STAR.md#原生-ws73-runtime-接入记录2026-10-10部分成果)。
+
+### 首次内核交付与回归门禁（2026-10-10）
+
+[7918bb9757bf](https://github.com/OpenSparklink/linux/commit/7918bb9757bfe3c365521b66d30ffee4f1e3d0c6)
+已签名推送，[Draft PR #20](https://github.com/OpenSparklink/linux/pull/20) 可审阅；未合入 master。
+image #42 的三标准虚拟控制器原清单 96 case/0 FAIL/0 SKIP、strict PASS，三条独立
+Runtime/native fault gate PASS，80 项 harness PASS。修复 typed 失败 peer 归属与
+异步断开条目清理；测试等待真实模型完成并强制完整 kernel log，不忽略错误。
+旧 air-medium 仍有 4 条 WARN/不完整 data 断言，不认定其链路成功。真实硬件、
+Ready、广播/扫描、动态 adapter/slctl、无 sudo 与空口七项仍未完成；所有 issues
+开放。完整方案不收缩，详情与旧失败留存在 [交付记录](WS73_DISCOVERY_NORTH_STAR.md#异步事务清理与首次内核交付2026-10-10)。
+
+### WS73 发现方言准备（2026-10-10，部分成果）
+
+[cef9dc445968](https://github.com/OpenSparklink/linux/commit/cef9dc4459686ab44db89b38f7c8a58ea58bac99)
+迁移 driver-owned 原生命令校验，拒绝 raw 参数截短，并新增独立 WS73 发现
+编码/严格报告 decoder。保留三字节数据头、五/两字节使能、八字节单帧扫描与
+0x180b/23 字节报告头，完整保留厂商字段。原生 Runtime 仍 metadata-only SETUP，
+发现命令不开放；完整广播 builder/事务和完整事件 ABI 尚待实现。image #43
+三 lifecycle gate 与完整标准三控制器 96 case/0 FAIL/0 SKIP PASS；38,293 项
+codec、3,097 项查询、3,198 项 BSLE、sanitizers 和 80 项 harness PASS，旧四条
+air-medium WARN 的局限保留。真实设备清点为空、七项北极星仍未验收，issues
+开放；全部 S0–S6 依赖和原验收不收缩。详见 [发现方言记录](WS73_DISCOVERY_NORTH_STAR.md#ws73-发现方言准备2026-10-10部分成果)。
+
+### 完整原生事件通路（2026-10-10，部分成果）
+
+[ece59f703711](https://github.com/OpenSparklink/linux/commit/ece59f7037110ad7db3e64b653347aa10f902511)
+接齐 WS73 已校验发现报告的每注册完整日志、版本化 cursor ioctl 与每设备 poll。
+保留全部 278 字节参数、profile/id/generation/sequence/boottime；独立读者不竞争，
+覆盖丢失可见，copyout 失败不确认，移除旧 fd HUP/ENODEV。用户态同步完整 ABI、
+严格报告 view 和独立 async receiver，尚未接 slkd/slctl。image #45 四支持 gate
+与完整 96 case/0 FAIL/0 SKIP PASS；91 项 harness、32 位 C ABI、137 项 workspace
+测试及改动 crate strict clippy PASS，全 workspace strict clippy 的 slkd 未使用项
+仍 FAIL。旧 air-medium 警告/弱断言继续保留；真实 WS73=[]，SETUP/metadata-only，
+七项真实验收仍全部未完成，原 issues/S0–S6 保持。接下来继续完整广播/扫描事务。
+详见 [完整事件记录](WS73_DISCOVERY_NORTH_STAR.md#完整原生事件通路2026-10-10部分成果)。
+
+### 完整参数编码与驱动回复规则（2026-10-10，部分成果）
+
+[b7b7708ffaa8](https://github.com/OpenSparklink/linux/commit/b7b7708ffaa821e3baa5e1714d8cdb5c35b9b415)
+实现全部 WS73 49 字节参数编码与无截短的 16/24 位周期转换；成功管理回复
+长度规则归 WS73 driver，在 Host ingress 前检查，保留实际功率与原始错误。
+image #47 六支持 gate 和完整原 96 case/0 FAIL/0 SKIP PASS；47,568 项 codec、
+110,654 项 DLI、91 项 harness 和 sanitizers PASS。两个新 valid-HCC malformed-
+Complete gate 验证单实例 EPROTO 撤销/另一实例继续查询。旧 air-medium 警告
+保留；仍 metadata-only SETUP，下一步分步广播/扫描 Host 事务与动态 adapter/
+slctl。实机清点为空、北极星七项未验收、全部原 issues 与完整 S0–S6 保持。
+详见 [参数与回复记录](WS73_DISCOVERY_NORTH_STAR.md#完整参数编码与驱动回复规则2026-10-10部分成果)。
+
+### 每设备 Host 分步事务基础（2026-10-10，部分成果）
+
+[fee81e705a03](https://github.com/OpenSparklink/linux/commit/fee81e705a031634b6b1d7334bc82e1c97a1dae9) 增加原子整组入队、整组期限、Status/Complete 分离、失败取消
+及 stop 屏障，标准 USB typed 控制接单步骤事务。冻结 image #50 七 gate 与完整
+原 96 case/0 FAIL/0 SKIP PASS，14 项生产模块测试、100 项 harness PASS；旧 #47
+在同一延迟 Complete 模型触发提前发命令断言，是保留的预期负对照。三个旧
+全回归警告及原生完整 recipe/结果接口的边界保留。WS73=[]，仍 SETUP/拒绝 RF，
+动态 adapter/slctl 与七项真实验收均未完成。全部 issues、完整 S0–S6 和后续四
+设备两组目标继续保持。详见 [分步事务记录](WS73_DISCOVERY_NORTH_STAR.md#每设备-host-分步事务基础2026-10-10部分成果)。
+
+### 驱动拥有完整发现事务准备与发送边界（2026-10-10，部分成果）
+
+[edd8cf016f1d](https://github.com/OpenSparklink/linux/commit/edd8cf016f1d6c0610622d4ba049af5e80c6ffa2) 增加 driver-owned typed 准备：完整广播 3/4 步、扫描 2 步与
+独立 stop；整组预检后写输出、不插入 caller 默认。Host tag 在 transfer 前交由
+驱动按操作/位置/数量/schema/enable 校验，raw metadata 白名单保持。image #51
+七支持 gate、450,104 次生产 compiler/codec 检查、sanitizers、100 项 harness、
+原 96-case/0 FAIL/0 SKIP 回归 PASS（1057 OK / 3 旧 WARN）。核心 typed submit
+尚未调用准备或排入原生事务；公开 cookie/result、状态/恢复与 adapter/slctl
+仍待接。WS73=[]，Runtime SETUP/拒绝 RF，七项真实验收和全部 issues/S0–S6
+保持。详见 [准备与发送边界记录](WS73_DISCOVERY_NORTH_STAR.md#驱动拥有完整发现事务准备与发送边界2026-10-10部分成果)。
+
+### 原生 typed 操作提交与结果（2026-10-10，部分成果）
+
+[6b927a4d07f4](https://github.com/OpenSparklink/linux/commit/6b927a4d07f43cfa602f5c6d7c52e1c14af0cabf) 接通完整driver prepare→
+Host→native USB/HCC/DLI事务与版本化submit/result；显式fd/generation/caller id，
+非破坏性64条有界结果，原始status/失败步骤/取消/实际功率可见，stop确认与故障
+状态不提前完成。image #55八gate（含完整native虚拟事务/错误/超时/重插）、原96-case
+回归、14+7生产Rust、450105次codec与sanitizers、110harness、32/64ABI、139workspace
+及改动crate strict clippy PASS，旧3条WARN保留。新用户态Adapter接口尚未接slkd/slctl，
+WS73=[]、仍SETUP，真正Ready/自主终止/七项真实验收待完成。完整S0–S6与原issues保持。
+详见 [原生操作记录](WS73_DISCOVERY_NORTH_STAR.md#原生-typed-操作提交与结果2026-10-10部分成果)。
+
+### Host Ready 与 slctl 原生广播/扫描（2026-10-10，部分成果）
+
+每设备 snapshot/双停止 Complete 决定 Host Ready，动态代次 adapter 和独立
+事件/control fd 已接 slkd。基本 WS73 policy v1 与 slctl random advertise、
+passive scan、新 report 精确匹配/10秒界限、caller id 非破坏结果与显式 stop
+已接通。软件门禁用真实 uid1000 slkd/slctl，经 synthetic USB/HCC/DLI 进行
+20轮角色交换、同 PID 拔插后2轮及 TX-off 负向；这不构成真实空口验收。
+本机 WS73=[]；七项真实北极星、四设备两组、全部原 issues 和 S0–S6 保持。
+详见 [原生 CLI 闭环记录](WS73_DISCOVERY_NORTH_STAR.md#slctl-原生广播扫描闭环2026-10-10部分成果)。
+
+### 物理控制记录与原始 RX 佐证（2026-10-10，部分成果）
+
+新增普通用户 `ws73_north_star.py run/verify`：真实物理端口/原生metadata/Ready
+匹配、slctl随机20轮交换、人工拔插同PID/start_ticks/bus owner后2轮及TX-off；
+独立全长usbmon pcap佐证实际RX字节、成功Complete、启动/重插查询和零drop
+统计。`slctl daemon`核对总线实际owner/PID/UID。CONTROL_PASS仍pending，
+RX_CORROBORATED仍须实际来源与固件/板级/部署审查，不自动算七项通过。
+36工具测试/12000生产C聚合一致性/137harness/145workspace/CLI strict clippy
+和实际uid1000合成CLI门禁PASS；96-case完整回归1057 OK/0 FAIL/0 SKIP/3旧WARN。
+WS73=[]，未运行真实闭环；全部原issues、四设备两组和完整S0–S6继续保留。
+见[物理验收操作](WS73_PHYSICAL_TEST.md)。
+
+### 生产 D-Bus 授权（2026-10-10，部分成果）
+
+默认逐项只读、sparklink 组控制、root 拥有服务；敏感/副作用读取、属性写入、
+未来方法、接口省略和 unique-owner 不能绕过授权。公开属性不得包含秘密。
+真实 guest UID1001 观察/16条拒绝、UID1000 补充组授权/capability=0、root
+daemon 同 PID/owner 的合成20轮+重插2轮/TX-off 门禁通过；原会话门禁保持。
+145harness/145workspace/36工具与改动crate strict clippy PASS，原96-case
+1054 OK/0 FAIL/0 SKIP/3旧WARN；首轮过大调试镜像失败保留，最终输入/源码未变。
+这是 D-Bus 集成证据；内核唯一writer/Diagnostic/raw权限、真实WS73空口、四设备
+与完整S0–S6继续待验，所有原issues保持OPEN。见[策略与测试边界](DBUS_AUTHORIZATION.md)。
+
+### 内核调用时权限与无副作用观察（2026-10-10，部分成果）
+
+135个唯一声明ioctl显式分类：34观察、2fd选择、99需CAP_NET_ADMIN；权限在
+参数复制/电源同步/命令提交前检查，包含raw、远端读、破坏性读取及口令。
+configfs五写入口与genl五mutation bridge同样校验，观察不应用全局电源模式。
+实际继承fd后uid1001/补充组uid1000/uid0无capability各99+5+5拒绝且观察可用、
+状态/提交不变；root daemon管理、普通应用合成20轮+同owner/PID重插2轮通过。
+默认开发session gate也使用root daemon，普通应用不直接持有管理capability。
+
+168harness、八条既有native/standard/fault/event/recipe及两daemon集成门禁
+PASS；完整原96-case 1056 OK/0 FAIL/0 SKIP/3旧WARN。保持事件内容断言，
+独立观察fd等待实际seq40，修正把命令Complete当报告burst结束的测试竞态。
+构建缺rust-src导致功能关闭的错误配置及失败保留；合格#60镜像冻结，runner
+检查必需配置并验证拒绝路径。lease独占/撤销恢复/Proxy/PDU/canonical迁移、
+真实WS73、四设备及完整S0–S6仍待验；全部原issues继续OPEN。
+
+
+### 原生 WS73 的文件 ownership 与撤销（2026-10-10，部分成果）
+
+三个固定布局入口提供 Managed/Diagnostic acquire/release/query，文件描述
+绑定 generation 与单调 token。slkd 每设备初始化、typed discovery、旧管理
+统一控制 fd，观察订阅独立；原生 unowned genl bridge 返回 EPERM。关闭或
+release 撤销 queued intent，但保留 active wire reply，以 driver-prepared
+停止 recipe 确认 Off 后才允许后继。失败/缺失 Complete 保留 Fault/Unknown、
+首次错误及 raw reply status/opcode；成功清理同代次可换 owner，不确定故障
+目前通过重插新代次恢复。profile0、Proxy/PDU/Security、自动原地恢复和其余
+canonical 迁移继续待做。可复现命令见[ownership 契约](MANAGEMENT_OWNERSHIP.md)。
+实机北极星七项、四设备两组与完整S0–S6保持；合成验证不替代真实固件/RF。
+
+
+当前最终验证：181harness、146workspace及protocol/library/slctl strict-clippy
+PASS；九条native/standard/事件/故障/ownership与生产/默认session两daemon
+门禁全部PASS。真实syscall新增六项schema拒绝、owner fd降权传递、dup最后关闭、
+两个实际停止确认、失败停止原始status=253/opcode=0x0c05、超过原deadline首次
+errno稳定、pending wire回复缺失时取消/timeout、重插代次隔离。普通slctl合成
+20轮交换+同PID/owner重插2轮/TX-off保持通过。完整原96-case 1056 OK/0 FAIL/
+0 SKIP/3旧WARN；两控制器初轮严格SKIP(2)保留，完整使用三控制器配置通过。
+合格#64镜像/配置/对象、最终source/input guards与日志保留于
+`.dev/management-final-evidence.json`。原完整slkd strict-clippy旧问题仍待处理。
+实际主机完整USB拓扑仍WS73=[]，未做实机控制/RF；七项及全部整项issues保持OPEN。
+
+
+### daemon 显式撤销与同代次接任（2026-10-10，部分成果）
+
+每设备保存 native lease；对象撤销/部分发布失败显式 RELEASE，不等在途 RPC
+共享的控制 fd 最后关闭。释放后按每设备独立 QUERY 观察清理，最多6秒；
+不跨 ioctl/等待持有目录或 SharedState 锁。ENODEV 结束旧 registration，
+Fault/timeout 记录原错误，不伪造 Off/恢复；SIGTERM 与 SIGINT 共用正常清理。
+
+新增实际 root slkd + uid1000 slctl + 原生 USB 合成模型门禁：20轮换向、同
+daemon 重插2轮及 TX-off 之后保持广播/扫描运行，SIGTERM 后独立 C observer
+确认两个 Free/Off/Ready、隐藏 owner token；daemon 在 fd 仍保留时确认释放。
+新 PID/新 D-Bus owner 不经 USB 重插接管原 generation，SIGINT 再次清理。
+生产策略/内核凭据降权矩阵一起验证，复现参数及边界见
+[ownership 契约](MANAGEMENT_OWNERSHIP.md)。198 harness、146 workspace 与原
+完整96-case回归通过（0 FAIL/0 SKIP，3既有WARN）；首次阶段顺序判定错误
+记录保留；早期接任记录发现缺失sort导致一项列表比较无效，最终改用
+BusyBox并让判定器拒绝shell依赖缺失，早期PASS不计入最终证据。daemon故障/强制终止、profile0/Proxy/PDU/Security
+及完整后续矩阵仍待做。主机真实 WS73 仍未枚举；实机七项、四设备两组与
+全部原S0–S6/整项issues仍开放，合成成功不算真实空口验收。
+
+
+### slkconfig 显式绑定与原生 Diagnostic（2026-10-10，部分成果）
+
+每设备CLI必须明确adapter，原生四种白名单查询还必须给出实际generation并
+取得独占Diagnostic。只读controller/management不拿lease、不消费raw；普通
+uid1000/CapEff=0观察成功，但raw查询EPERM。Managed冲突EBUSY，缺参数、
+旧代次与原生legacy reset均不增加命令/改变snapshot。普通应用经slctl/slkd。
+
+旧raw回复无sequence，工具不伪造关联：独占后清历史、检查quiet、一次一条
+查询；成功Status不算完成，等待Complete并验证6/10/5/6字节返回。零opcode
+credit通知只作非查询投影处理，credits归Host。失败/timeout仍release，未
+完成清理不打印成功。两设备八次实际查询、未读Status/Complete旧对清理与
+同代次daemon接任在生产/session合成门禁通过。209harness/148workspace、
+slkconfig严格clippy及原96-case 1058 OK/0 FAIL/0 SKIP/3旧WARN通过。早期
+Status、历史回复与credit数量假设的失败记录保留；runtime内核仍合格#64。
+
+见[ownership/复现与兼容边界](MANAGEMENT_OWNERSHIP.md)。旧profile0管理仅
+保留迁移入口；全部工具独立snoop、C/Python owner、完整Backend与故障矩阵
+尚待做。实机七项、四设备两组及完整S0–S6/全部整项issues继续开放，合成
+查询不算真实WS73固件/RF验收。
+
+
+### WS73根因定位与无需人工拔插的恢复（2026-10-10追加）
+
+用户追加的[自动恢复方案及原生/QEMU矩阵](WS73_RECOVERY.md)纳入S1/S2生命周期、
+S3 WS73与S6故障门禁，并作为第一北极星第八项验收。依赖顺序为实际故障
+证据/SDK与libws73方言核对 → 每设备退役/诊断 → 有限预算与安全恢复前置条件
+→ 同slkd动态恢复 → 原生/QEMU单只/多只对照 → 真实双端复验 → 四只两组。
+未经根因证明不盲目重发不确定命令，不通过人工重插、全hub reset或合成
+QMP重加关闭issue。原S0–S6和全部整项验收不缩减。当前自动恢复尚未实现验收。
+
+### 每设备暖启动与真实初始20轮（kernel90，部分验收）
+
+固件基线采用用户指定libws73-usb combined-1.10.111，制作方式保持
+`cat ws73.bin wifi_cali.bin btc_cali.bin > combined-<版本>.bin`，各段64字节
+hash头保留。暖启动不上传固件，不能仅凭准备目录将旧设备标成111。
+
+已实现一次有界暖启动采纳：仅初始BSP_READY超时、尚未发布Runtime时，
+每probe最多一次；先最多64包/1000ms排空旧输入，再发送SDK action30 CLOSE，
+等待新type4/message3关闭ACK，重新PM/customize、OPEN29/BOOT_FINISH及四项
+DLI查询。各阶段有截止时间和独立失败日志，`warm_recovery`导出attempts/
+limit/cause/result/start。旧BOOT、OPEN ACK及排空前CLOSE不能代替新关闭回执，
+panic/断开/超限均失败；不重置hub、不detach、不主动操作其他owner。
+这是启动恢复切片，不是持久端口预算、运行期故障恢复或设备消失根因闭环。
+
+真实111暖设备已验证关闭/重新启动/四项查询及广播配置/OFF成功。扫描初始
+OFF返回原始0b；补参数1001成功Complete后OFF仍0b，否定仅缺参数假设。
+新typed operation6 SCAN_INITIALIZE_OFF执行**被动参数 → ON → OFF**，三个
+成功Complete后才确认OFF/Ready；短暂开启接收，无主动scan request。只接受
+active=0/duplicates=0，必须先有广播OFF且无并行广播/扫描事务。中间ON在
+发送时使扫描状态未知，取消/迟到ON不能建立Ready，失败最终OFF仍保持未知；
+含enable的旧recipe不能在被替代后发送。operation5仍不启用广播。
+
+真实`.dev/ws73-real-scan-probe`两只独立Ready、20轮交换角色成功，但物理
+拔出1-2.1.4后幸存1-2.1.3的registration由slk1_g2变为slk0_g3，判FAIL。
+等待人工操作超过会话时限，capture无最终丢包统计，不能冒充完整证据。
+slkd日志保留两次退役和重新注册；QEMU/内核/USB供电归因尚未完成。
+
+独立重跑`.dev/ws73-real-initial20`：1-2.1.1当轮冷上传111，1-2.1.3保留110，
+地址分别00:01:09:32:54:CD和00:01:09:30:CE:85；两个不同Runtime generation
+均Ready。普通UID1000、全部capabilities=0，通过slctl交换角色20轮，随机标识
+均不同，数据/地址/RSSI匹配，成功Scan Complete后298–615ms内观测。封存
+1161 USB packets、zero kernel drops；独立执行生产corroborator原20轮块，
+逐轮匹配实际TX/Complete/完整RX/所有权/时间/marker/四元信息查询，输出
+`.dev/physical-initial20-evidence.json` INITIAL_20_RX_CORROBORATED。已验证2秒
+TX-off负例。此轮有意不执行物理拔出，完整脚本在EOF及重复idle扫描OFF处
+保留FAIL，不伪造replacement、cleanup或整体PASS。板级功率仍NOT_ASSERTED。
+
+北极星只确认第1/2/3/6项（独立Ready、新数据10秒内、20轮角色交换、普通应用），
+**4/8部分验收**；拔出隔离、同slkd重插、完整可复现验收包和自动恢复未完成。
+所有整项issues/PR草稿及S0–S6保持OPEN，四设备两组尚待扩展。
+
+kernel90验证：6078 BSLE/451067 discovery/115776既有DLI checks，11生产operation
+和15 Host plan tests；19库/64slkd tests，96工具tests，282内核脚本tests通过。
+四条WS73 discovery/management及标准Runtime/recipes回归PASS。clippy退出0，
+42既有slkd warnings保留。此前kernel85/87合成20+2 receipts独立保存，不能
+倒填成kernel90完整测试。新增idle-OFF=0b模型用于暴露管理清理前置条件。
+
+测试工具清理可重新读取同一generation、同一request的已成功OFF及当前OFF
+状态，确认无中间on/off，再保留其原始OFF命令关联；无需重复发送已idle的
+OFF。不把新0b改成功，错误/未知/旧代次均拒绝；真实旧失败记录保持。管理
+lease撤销及C/Python writer在此固件语义下的门禁继续独立验证。
+
+最新idle模型门禁：kernel90合成普通用户20+2轮、同slkd/bus与热重加控制阶段
+通过，独立复核2427 packets/191TX/179empty及4条保留OFF查询关联；整体
+`.dev/scan-probe-idle-support` **FAIL**，因为随后C binding writer对已经OFF的
+扫描器再次发送OFF，被模型返回0b。该失败未隐藏，管理撤销/绑定writer正确
+前置条件继续作为依赖处理；不以此宣称完整C/Python writer或发布矩阵通过。
+
+
+### 管理释放保留已确认 OFF（kernel92，合成门禁通过）
+
+管理撤销曾对两个射频域都发送 STOP；扫描已经 OFF 时真实111和严格模型返回
+原始0b，不能改成成功。现在仅内部撤销的一步 STOP、匹配本次租约撤销 cookie、
+同一 owner 已确认 OFF，才保留该状态。决定发生在前一个线上的请求消耗之后；
+未知/ON、取消的 enable、公有请求和多步 recipe 仍走正常调度。保留 OFF 不发送
+USB OUT，不伪造 Complete、credits、时钟或公有请求结果；另一个域仍须成功停止。
+故障或超时不能绕过，两个域均完成后才允许后继管理租约。
+
+C binding writer 先真实配置并开启扫描，再验证公有 STOP；随后重新开启扫描，
+在广播已 OFF、扫描 ON 时释放管理租约。USB 抓包要求实际扫描 OFF 成功，释放
+窗口内无重复广播 OFF，同 generation 回到 Ready。management 原生门禁也使用
+被动扫描初始化，并启用 idle-scan-stop=0b 模型；失败/取消/超时负例保留。
+
+冻结 kernel92 和56源文件、QEMU及6编译输入后，`.dev/retained-off-support`
+完整 SUPPORT_PASS：普通用户20+2轮、合成拔插、同 slkd/bus、暖启动、empty bulk
+与 C/Python 绑定均通过；2557 USB packets、zero capture drops、192 empty
+completions，22条独立控制抓包关联。12条 Runtime gates 全部 PASS；16 Host-plan、
+11 operation、96用户工具、282内核脚本 tests 通过。旧 kernel90 整体失败证据保留。
+
+这是合成开发门禁的修复；真实20轮证据仍是先前 kernel90 的111/110混合版本。
+北极星仍4/8，物理拔出导致幸存 generation 改变的根因、物理重插、不依赖人工
+拔插的恢复、原生主机与QEMU对照、四设备两组及完整S0–S6仍开放。本次主机
+只枚举到1-2.1.1/.2/.3；.4仍未出现，不能把用户已插回解释为枚举恢复成功。
+
+
+### 三层生命周期诊断与 kernel92 实机初始阶段
+
+开发 runner 为真实 passthrough 自动记录 `host-inventory.jsonl`：初始、变化和
+结束时的全部 WS73（包括未选择的设备）及 wall/monotonic 时间。QEMU 开启十个
+显式白名单事件和时间戳，记录 open/close、端口 attach/detach、接口 claim/release、
+传输完成状态/长度及 reset；不记录 payload，不改变 USB 权限或恢复行为。
+日志写入独立文件并纳入 manifest SHA256；缺少事件则拒绝启动诊断测试。
+guest console 使用 loglevel6，以保留异常结束时的生命周期线索。98工具测试通过。
+
+旧隔离失败抓包显示：拔出侧在13:10:33.225190 UTC出现IN -71，幸存侧在
+13:10:35.018964 UTC出现IN -108，随后以新generation注册。该观察将问题缩小到
+USB/内核生命周期，但不能据此断言主机、QEMU或驱动的触发根因；原生主机对照
+与受控单owner故障注入仍是下一依赖。
+
+kernel92真实初始20轮再次逐轮独立复核：UID1000/capabilities0，111/110保留固件，
+299–616ms匹配新数据、地址与RSSI；1019USB包、zero drops，两只最终
+STOP_CONFIRMED。capture SHA256
+`a23c4d502ca60ca5d1adace7f476f79118a050117180a9982be3d7b6e5d287d8`。
+本地 `.dev/physical-retained-off-initial20-evidence.json` 仅证明初始阶段；未执行
+物理拔插，完整control在确认拔出时EOF，整体environment也保留FAIL，不能升格
+为完整北极星通过。北极星仍4/8；设备.4仍缺失、根因与自动恢复issues继续开放。
+
+
+### 真实 RF / QMP 单 owner 断开对照（kernel92）
+
+新增可复现命令：在当前源码准备的隔离环境执行
+`ws73_target.py run --prepared <目录> --output <新目录> --ports <端口A> <端口B> --qmp-hotplug`。
+两只均是真实 WS73，普通 UID1000/capabilities0 使用 slctl；主机物理连接保持，
+仅 QMP 移除并在同固定 guest 端口重新加入 owner0。记录独立 scope、
+`hotplug_method=QMP_DEVICE_DEL_ADD` 和 `physical_acceptance=false`。
+独立抓包验证器拒绝把该结果作为物理拔插验收，即使只改 scope/status。
+合成负例分别验证方法边界与 USB 描述符边界；本次校验器曾期待旧错误文本而
+使整体合成 FAIL，日志保留，修复后重跑全套，不修改失败 receipt。
+
+最终冻结工具实机 PASSTHROUGH_SUPPORT_PASS：20初始+2重接轮，每轮新随机
+标识、数据、地址、RSSI及实际成功 Complete 逐条 USB 关联，308–613ms。
+1295包、zero drops，同 slkd PID97/start_ticks76及同 D-Bus owner；幸存
+设备 generation2 不变，被移除的 generation1 失效，重接 generation3。
+2秒 TX-off 负例与两只最终 STOP_CONFIRMED 通过。主机三只始终保留原 USB
+地址，未选中的1-2.1.2保持无driver接管。QMP恰好执行初始两次add、一只del、
+同属性一次add；guest-reset/guest-resets-all/host-reset/kernel-driver-detach均false，
+时间戳 trace 无 usb_host_reset。
+
+capture SHA256 `ecccbc19a3333c94cb51728db69f9dcfb58d03e669d92ee4f2aef4b7f4b44c7d`；本地`.dev/passthrough-control-evidence.json`。
+100工具/282内核脚本 tests 通过，既有 kernel92 的12条 Runtime gates不倒填
+成新内核构建；最终严格合成门禁也完整 SUPPORT_PASS：2557包、zero drops、
+192 empty completions、22条独立控制证明及 C/Python 绑定、same daemon/bus通过。
+实机固件仍111/110保留版本，board NOT_ASSERTED。
+
+结论范围：静止射频域下 QMP guest 退出可单 owner 隔离，未复现旧物理拔出时
+幸存设备 IN -108 / generation 改变。**并未定位该物理根因，也不是设备消失后
+自主恢复。** 北极星仍4/8，物理隔离/重插、完整物理复现包、原生主机对照、
+有限自动恢复和四设备两组及完整S0–S6继续开放；.4端口仍缺失。
+
+### 配置拒绝与未接通模块隔离（2026-10-11）
+
+9f57d1e已修复R06启动前配置/策略拒绝，10项配置/CLI实际进程回归通过。
+[实验边界](EXPERIMENTAL_CODE_BOUNDARY.md)将旧Profile/HID/transport独立保存；
+默认daemon不自动注册旧内建服务，旧注册与同actor仅显式experimental feature，
+Native路径不变。严格default/all-target/all-feature check/clippy通过，
+workspace all-features160项/零失败/零ignored；默认release和新默认daemon真实20+2轮
+通过，工具141/ABI29通过；远端完整CI独立核对。完整SSAP/安全策略/Profile互通
+不因此验收。首轮工具CI缺相邻kernel helper、远端Rust1.99新lint分别由
+7ad805e固定kernel输入和8a9cc28固定数组解析修复；保留原失败，不跳过测试。
+
+### 连接发送提交边界（2026-10-11）
+
+Linux75b77fc19613删除无消费者TX ring/重复直发，映射实际wire handle、backend
+成功后提交统计，旧USB拒绝短写；可靠/分片未接通时明确拒绝。实际函数11项
+Rust及C USB sanitizer回归、完整image/modules/空USB VM通过；
+[匹配新镜像真实20+2轮](evidence/ws73-vm-connection-tx-regression-20261011.json)
+及[完整9个CI jobs](https://github.com/OpenSparklink/sparklink/actions/runs/38078588074)
+通过。保留旧正向用例和迁移任务，不以fixture发送宣称socket或真实连接完成；
+继续每通道socket/SSAP、安全/Bond、四设备、其他backend和全S0–S6原验收。
+
+[权限基础与迁移门禁](SSAP_OPERATIONS.md)已同步C/Rust/Python；不能以掩码一致宣称SSAP/安全或Profile完成。
+
+### R12 Native query 调用者迁移（整项仍 OPEN）
+
+[诊断结果迁移](DIAGNOSTIC_RESULT_MIGRATION.md)按 fd 作者、精确 generation 和
+Host captured local sequence 查询，不出队/确认共享事件，copyout 失败可重试。
+删除 slkconfig query 的 stale drain 与旧 poll；32槽完成结果有界保留/替换，
+超长失败、超时失败、sequence 用尽拒绝。专用10项实际代码边界测试通过，
+依赖 fixture 不替代实际 ioctl/CAP/退役验收。其余旧 DLI 调用者仍等待迁移，
+先接通回归再删旧实现；部分成果不能关闭完整 R12/K3/U2 或自然恢复 issue。
+
+### R12 当前限定 diagnostic 实机门禁（2026-10-11）
+
+Linux `49cabad043f6` / 编译用户态 `d8c091a4b243` 的
+[诊断迁移记录](DIAGNOSTIC_RESULT_MIGRATION.md#当前限定实机门禁通过完整-issue-仍-open)
+与[新镜像证据](evidence/ws73-vm-diagnostic-live-20261011.json)补齐16个实际
+syscall case、4次实际slkconfig查询和8组独立USB命令/回复。退役Runtime在租约
+检查前返回ENODEV；原fd继承的UID1000/caps0子进程、另一个持自己Diagnostic
+租约的root fd均拒EPERM；只读/部分输出EFAULT后的104字节结果重试保持。
+模拟只在selftests；新测试程序仅在显式隔离VM运行，没有生产成功注入。
+
+7类legacy read及真实20+2轮仍通过，最长606ms、22份RX/1279 USB零drop、
+同slkd与幸存g2不变；9作业CI实际169 Rust/33 Python/155工具/诊断fixture11。
+前两轮测试环境/证明窗口FAIL原记录保留。限定门禁通过不删除仍有调用者的
+旧DLI路径，也不关闭R12/K3/U2：下一步补齐admission copyout可找回/幂等、
+cancel/deadline及剩余消费者迁移，回归后删除重复实现。自然故障根因、完整
+无人工拔插恢复、socket/SSAP/每连接安全/Bond/Profile/Proxy及全S0–S6仍OPEN。
+
+### Native diagnostic admission 身份与取消（开发门禁，实机待复核）
+
+[新提交契约](DIAGNOSTIC_ADMISSION.md)用调用者预先持有的request ID找回copyout
+失败后的admission；保留重试不重发/不续期，淘汰旧ID拒绝ESTALE。取消排队命令
+保持FIFO，在途取消保留真实Host回复槽，超时/取消/Host错误保留本地errno。
+Native旧输出seq-only提交入口不支持，C/Rust/Python、CLI和专用probe同步迁移。
+开发测试通过不引用K49/Ud8旧镜像证明新语义；完整实际取消/迟到回复及剩余DLI
+迁移继续OPEN，当前真实路径须用新镜像独立回归。自然恢复根因和完整S0–S6不缩减。
+
+[当前新入口回归](DIAGNOSTIC_ADMISSION.md#当前新镜像路径回归限定通过)已用Kc89/
+编译Udf9新冻结镜像复核metadata8、结果syscall16、read7和真实20+2，最长620ms，
+同daemon/幸存g2保持；固定源码9作业CI通过。新提交copyout幂等、实际取消/
+迟到回复尚未验收，不能把已有结果copyout门禁当作提交门禁。迁移及完整issue
+继续OPEN，自然恢复根因与S0–S6范围不变。原失败构建/环境记录保留。
+
+
+## 最新限定提交故障验收与 BlueZ 分析复核（2026-10-11）
+
+再次收到的BlueZ分析与已采用文本SHA256相同，ADR 0001和最终每通道socket、
+用户态SSAP/服务/Profile、安全机制/策略边界保持；未发布UAPI可同步替换，
+不保留永久双实现。基线更新为Linux `372d3cbcd557` / 编译用户态 `ee2793301e9a`。
+[限定提交故障证据](evidence/ws73-vm-diagnostic-copyout-20261011.json)证明只读/
+部分输出EFAULT后同ID取回原seq、三次重复完整返回，提交/完成各一次；完整
+窗口实际USB只有一个OUT/成功Complete。结果16/CLI4/wire8/read7和真实20+2
+保持，同slkd/幸存g2不变，最长620ms、1279 USB零drop；9作业CI成功（170
+Rust/34 Python/159工具）。生产Kc89/Udf9未变，本批仅selftest/验证与证据。
+
+实际淘汰旧ID、取消/迟到回复/期限/并发及剩余legacy DLI迁移仍待接通和回归，
+随后删除共享结果/事件和重复UAPI。自然启动/重枚举/消失根因、无人工自主恢复
+及历史xHCI警告继续OPEN；VM-only和北极星7/8不变。按严重程度继续拒绝未支持
+安全/服务能力，生命周期与旧代码清理并行；socket/用户态SSAP/每连接安全/
+Bond/Profile/四设备/其他Native/Proxy及全S0–S6保留全部原验收。
+
+
+## 最新诊断槽淘汰与剩余旧入口审计（2026-10-11）
+
+K78e729c06a5e/编译U2dfd6bd09e7b的[证据](evidence/ws73-vm-diagnostic-eviction-20261011.json)
+补齐第二作者fd的33次真实metadata与旧ID三次ESTALE/旧seq ENOENT；保留ID2
+完整40/104字节不变，100.261ms拒绝窗口零命令/回复、统计不变。33次填充各
+唯一wire且全范围含间隙无额外命令；既有copyout2/result16/CLI4/read7、真实
+20+2最长621ms/1411 USB零drop、同slkd及幸存g2保持。9作业CI日志170 Rust/
+34 Python/165工具；生产Kc89/Udf9未变。这是限定顺序槽替换，不是完整事务验收。
+
+[剩余调用审计](DIAGNOSTIC_RESULT_MIGRATION.md)
+该批K78/U2df审计确认旧DLI_POLL_EVENT先消费后copy（含backend fallback）；后续修复见下文，EventReceiver、
+profile0 C/Python/slkd、--legacy及旧raw selftests需迁移。新诊断结果不自动修复
+旧入口；下一步分别闭合复制失败、统一订阅、实际取消/迟到/期限，再删共享队列
+和重复UAPI。自然启动/重枚举/消失根因、自主恢复、物理xHCI警告、四设备及
+完整socket/SSAP/安全/Bond/Profile/Proxy/S0–S6继续OPEN，VM-only/北极星7/8不变。
+
+
+### R12 旧 poll 消费顺序修复与后续删除
+
+Linux `54621800ee4c`修复共享ring的peek/copy/commit，并在同一ring暂存backend
+fallback事件；复制失败后可重试，未增加生产模拟。实际代码依赖fixture新增6项，
+read_iter原9项保持。详见[修复、锁与溢出边界及实机门禁](EVENT_COPY_REMEDIATION.md#旧-dli-poll-过渡修复k54621800ee4c实机故障门禁待执行)。
+此处仅记录实现与开发测试，新镜像真实WS73回归和legacy ioctl/fallback实机故障
+门禁待执行。先接通独立订阅调用者再删除旧ring/fallback/UAPI，整项R12仍OPEN。
+最终职责及socket/用户态SSAP依赖按ADR0001；自然故障根因、自主恢复、历史
+xHCI warning、四设备和全部S0–S6范围保持，VM-only不变。
+
+
+K54621800ee4c/编译Udc8745986044的[新镜像回归证据](evidence/ws73-vm-legacy-poll-copy-20261011.json)
+现已封存：真实20+2最长621ms、UID1000/caps0、同slkd、read7、result16/copyout2/
+淘汰33及41组诊断wire通过，1411 USB零drop、warning0/taint0；9作业CI成功。
+这一结果更新上文“新镜像回归待执行”，不更新legacy ioctl复制故障/fallback
+资格门禁：它们仍待执行。详细锁、overflow、测试边界与最终删除条件见事件整改。
+
+
+### R12 Native 旧 poll 实际复制故障限定通过
+
+K9b16e634bfd3/编译U1d3a17b688ee的[新镜像证据](evidence/ws73-vm-legacy-poll-live-20261011.json)
+验证真实MAC seed ID5..7/seq5..7，坏地址/只读页/128字节前缀EFAULT后256字节
+原事件重试、成功后EAGAIN及一次提交/完成记账。每项唯一真实OUT/回复，并
+核对整体三项阶段含间隙没有额外命令。Native共享ring之外的backend fallback
+未验收，完整kernel并发/lockdep/移除/所有权及调用者迁移仍开放。详细字节、锁、
+overflow与删除条件见[事件整改](EVENT_COPY_REMEDIATION.md)。
+
+原result16/copyout2/淘汰33（第二作者seq8..40）/CLI4/read7及真实20+2保持，
+最长620ms、同slkd/普通用户、1423 USB零drop、9作业CI成功。保留全部历史
+故障和限定范围；自然根因/自主恢复/物理xHCI warning/四设备/完整sandbox与
+全部S0–S6不因本项通过关闭。下一步实际cancel/late/deadline及独立订阅迁移，
+迁完后删除共享ring/fallback/未发布UAPI，不保留永久双路径。
+
+2026-10-11清理增补：无真实操作且无业务调用者的未发布注册ioctl／Netlink
+声明与包装已同步删除，三身份27次实际ENOTTY与新镜像WS7320+2通过，见
+[证据](evidence/ws73-vm-retired-registration-final-20261011.json)。core总线注册
+迁移仍OPEN；不把两个空接口清理记为完整backend解耦或完整生命周期完成。
+下一步queued deadline／相同request ID不续期门禁；自然故障根因及恢复并行。
+
+
+## 最早原始期限调度生产修复及新镜像回归（整项仍开放）
+
+[本批实际证据](evidence/ws73-vm-deadline-rearm-20261011.json)为K`016aa7ee6813`／
+实际编译U`b6d6bf96101e`。本设备RX立即处理诊断提交/同ID重试，并按author、
+active wire、recipe和revocation最早原期限重新排期；取消仍保留active reservation。
+32项实际源码边界测试和匹配CI九作业通过；真实普通用户WS7320＋2轮最长470ms，
+同slkd、幸存generation保持，人工IN81注入目标重获Ready约10.350秒。
+排队请求静默800.173215ms后统计已计入一次expiry，早于首次RESULT；完整结果及
+此前所有copyout、取消、淘汰、旧注册拒绝和wire门禁保持。USB1431零drop、
+warning0/taint0/traceoverrun0，host四只释放在位；无宿主部署或人工拔插。
+
+这是新生产调度的路径回归，不证明精确100ms或时延上界、active USB超时、held
+cancel/abort/close/drain、完整并发/权限/移除。旧调用者/shared ring/fallback和内核
+全局dead-code清理与生命周期并行；自然故障根因、无人工恢复、历史物理xHCI警告
+仍OPEN。最小socket、用户态SSAP、安全/Bond/Profile及完整S0–S6继续推进，
+北极星7/8、VM-only不变，部分成果不关闭整项 issue。
+
+## 本次 BlueZ 附件复核与新增生命周期风险
+
+最新附件与已采用全文SHA相同，最终分层、每逻辑通道socket、用户态SSAP、
+每连接安全机制/策略、独立Backend owner及完整S0–S6范围保持。未发布UAPI
+迁移后直接删除，无兼容期；立即删除/移入测试/等待替代三类清理与生命周期并行。
+
+新增[早期Managed释放实机失败](evidence/ws73-vm-uninitialized-managed-release-failed-20261011.json)
+显示未配置广播handle0前发送disable，真实Complete status0x1e后-EIO退役。
+[参考Host定义](evidence/ws73-early-managed-release-reference-20261011.json)将其解释
+为未知广播标识，与捕获事实相符；修复和有限自动恢复尚未交付，相关issue继续OPEN。
+优先验证Setup时lease release/fd close、初始化中断/未知无线状态清理，并保证
+不伪造成功、不提交假Off、旧generation拒绝、另一设备不变及slkd无须重启。
+
+独立active期限测试已修正控制台重定向握手；218工具开发测试通过，真实在途
+暂留/退役与原诊断门禁须分别重新执行。七份失败均保留，详见
+[诊断门禁](DIAGNOSTIC_CANCEL_GATES.md)。它们不削弱此前已封存WS73路径，也
+不构成新恢复验收。原生主机对照未执行，VM-only、北极星7/8和未决根因不变。
+
+### 有限恢复预算与组合故障测试的约束
+
+当前driver每端口最多两次retryable恢复、总窗口120000ms，连续Ready60000ms
+后由health worker自动清零预算；暖启动恢复也占本端口预算。测试两个独立故障
+必须观察实际预算重置，不能人为增大limit、重置budget或将exhausted认作成功。
+重复故障在稳定期前达到上限时必须明确Faulted/exhausted、保留首因和诊断；
+另一设备不受影响。未知controller错误/EIO继续fail closed，不因query成功或
+测试初始化绕过推导自动恢复完成。端口预算跨重枚举保留，应用/daemon重启
+不得成为续无限重试的方式。自然启动/消失根因仍需独立证据与实机门禁。
+
+## 新VM在途原期限退役限定通过，完整恢复仍开放
+
+[最新实际证据](evidence/ws73-vm-active-usb-retirement-20261011.json)为
+K`016aa7ee6813`／实际编译U`b68781ef5078`。复用既有slkd初始化两只实际Ready，
+独立初始化进程先终结；随后root Diagnostic提交原500ms MAC，真实成功178字节
+IN81被测试QEMU暂留。guest被动等待QMP/file ack加50ms，全静默窗口无
+result/cancel/stats ioctl；实际Host超时与Runtime退役使payload一次drop，
+零显式/保底释放、零detach/reset/device_del。40/104字节及原seq0请求重试
+ENODEV、日志时间和payload全capture未交付由独立验证器核对；peer完整
+snapshot/generation不变，退役前后两组实际MAC wire成功。
+
+主RF daemon之后才启动，不宣称暂留阶段同daemon。真实20+2最长623ms，
+UID1000/caps0、同PID534/start2859、目标g3→4而peer g2保持。165个真实预算
+样本证明driver按现有60000ms稳定期自动归零，再进行下一独立IN81故障并恢复；
+没有写预算或扩宽生产limit。另一个新VM原完整格式7门禁63记录/50proof/46wire、
+read7/result16/copyout2/legacy poll3/淘汰33/CLI4/三身份旧注册27拒绝及排队
+expiry保持，真实20+2最长619ms，同PID669/start1718。两VM各1345/1431 USB
+零drop、22RX、warning0/taint0/traceoverrun0，host四只释放在位，VM-only。
+[精确源码CI38105931415](https://github.com/OpenSparklink/sparklink/actions/runs/38105931415)
+九作业终结成功；实际170 Rust/34 Python/218工具与32内核期限边界日志核对。
+
+这限定证明实际在途超时触发Runtime关闭并取消暂留回复，不完成显式fd-close/
+drain、全部owner/CAP/并发/removal/32-bit、精确期限上界或自然恢复验收。
+早期Managed release的实际0x1e/EIO生产修复仍OPEN；参考Host“未知广播标识”
+解释不替代固件全根因和安全清理/恢复门禁。七份失败记录不覆盖、不改成成功，
+旧实现调用者迁移/dead-code清理与生命周期并行，最小socket、用户态SSAP、
+每连接安全/Bond/Profile、四设备两组/Native/Proxy/PM/sandbox及完整S0–S6
+继续OPEN，北极星7/8。不关闭整项issue或合并draft。USB/HCC/DLI证据不是
+独立PHY嗅探；原生宿主对照未执行、历史物理xHCI warning仍未闭合。
+
+
+## 本批旧固件门面清理与重新复核
+
+K`f5f83d7eb970`／编译U`8641ec61e804`删除未使用固件路径、
+伪版本loader、恒true success字段和sle_fw全局lint；真实probe加载保留，Native
+WS73 driver未改。[三类清单、调用关系与未决条件](LEGACY_CLEANUP_20261011.md#旧固件门面清理新内核限定回归通过整项仍-open)
+及[两独立新VM证据](evidence/ws73-vm-legacy-firmware-cleanup-20261011.json)已核对。
+新内核/私有模块/签名smoke与每VM真实20+2（469/623ms）、完整原诊断及在途
+原期限/稳定预算通过；UID1000/caps0、各自同RF slkd和peer隔离，USB/HCC/DLI
+不等于独立PHY嗅探。[源码CI38106781023](https://github.com/OpenSparklink/sparklink/actions/runs/38106781023)
+九作业成功，170 Rust/34 Python/218工具/32实际内核期限测试。E0277失败原记录
+保留；修正后编译器warning0，GNU make仍有一次jobserver警告。
+
+下一步先修Setup早期Managed release/fd-close，保留unknown/部分初始化真实清理；
+C通用固件短传输/最终ACK校验需独立修复，不能沿用Native WS73资格。事件独立
+订阅迁移/旧UAPI、socket/SSAP/每连接安全/Bond/Profile/四设备/Native/Proxy/PM/
+sandbox及完整S0–S6仍开放；自然根因、无人工拔插恢复、历史物理xHCI警告未闭合。
+附件分析SHA未变，ADR/分层保持，VM-only/北极星7/8，整项不关闭。
+
+
+### Setup 租约生命周期修复实施记录（后续限定验收见下）
+
+K`f822db7756d7`按[唯一Host状态判据与门禁](MANAGEMENT_SETUP_RELEASE.md)实现未触及
+radio policy的快速release；10项实际源码边界通过，6项两设备实际release/last-fd/
+dup门禁已纳入专用VM工具。Unknown/部分初始化/在途仍需真实cleanup，不假Off/
+Ready。新镜像回归未执行前不更新实机资格；自然恢复/根因和全部S0–S6仍OPEN。
+
+
+### 上批 Setup 释放限定实机复核及完整 issue 集合
+
+K`f822db7756d7`／编译U`ccb3d34ae1bc`已通过[两个新VM的6项实际文件生命周期门禁及20+2](evidence/ws73-vm-setup-release-20261011.json)，
+[完整条件和未决项](MANAGEMENT_SETUP_RELEASE.md#setup-租约释放新镜像限定通过完整生命周期仍-open)明确
+仅未触及policy的Setup可Free，保持Unknown/Setup；partial/unknown cleanup和held
+transport fd-close仍OPEN。原诊断/在途期限/稳定预算、普通UID1000/caps0及peer
+隔离保持；[源码CI38108517103](https://github.com/OpenSparklink/sparklink/actions/runs/38108517103)
+九作业成功，170 Rust/34 Python/228工具/32期限和10管理源码门禁。两次初始失败
+证据保留，GNU make一次jobserver警告未隐藏，不把fixture当硬件或USB当独立PHY。
+
+实际开放集合28项（K19/U9）；补齐近期维护清单漏掉的K11方言/caps/limits/quirks
+及K13来源/协议差异/捕获/许可，各原门禁仍有效，不扩大未知能力或FW运行时资格。
+C通用固件短传输/最终ACK、部分初始化/自然根因/无人工恢复、历史物理xHCI警告、
+完整事件/socket/SSAP/每连接安全/Bond/Profile/四设备/Native/Proxy/PM/sandbox与
+全部S0–S6继续OPEN；VM-only/北极星7/8，部分成果不关闭整项或合并draft。
+
+
+### 上批通用 USB 固件错误传播整改及新镜像回归
+
+K`7f2ba1f81ce0`／编译U`ae542f568e03`修复实际C短写/最终ACK校验及Rust
+loader/probe错误传播，只有ENOENT允许使用已bootstrap固件；上传后重新查询，
+禁止发布旧身份或失败设备。[调用链、三类清单和限制](GENERIC_USB_FIRMWARE_REMEDIATION.md)
+明确Native WS73 driver未改、专用fixture不等于通用固件真实方言资格。
+69个ASan/UBSan/LSan C案例、12个严格Rust实际函数测试通过；首次缺少EPROTO
+完整编译[失败记录](evidence/generic-firmware-kernel-build-failed-20261011.json)保留，
+修正canonical binding后全内核/private modules/签名smoke通过。编译器warning0，
+GNU make一次jobserver警告；一次过早smoke在缺少私有module时退出、未创建VM，
+原日志保留，实际stage终结后才运行通过。
+
+[新镜像两个独立VM证据](evidence/ws73-vm-generic-firmware-boundaries-20261011.json)
+保留各6 Setup release/last-file/dup门禁和整个窗口零DLI，实际在途500ms超时/
+Runtime退役/稳定预算归零，以及另一VM原诊断63记录/50proof/46wire、read7/
+result16/copyout2/poll3/淘汰33/CLI4/旧注册27拒绝及queued原期限。每VM
+UID1000/caps0真实20+2，最长773/622ms，各自同RF slkd及peer不变，USB1345/
+1431、各22RX/零drop，guest warning0/taint0/traceoverrun0，结束四只释放在位。
+[精确源码CI38109661941](https://github.com/OpenSparklink/sparklink/actions/runs/38109661941)
+九作业终结成功，实际170 Rust/34 Python/228工具/32期限/10管理及新增69 C/
+12 Rust固件源码门禁。USB/HCC/DLI不等于独立PHY嗅探；hold期间同daemon未资格。
+
+下一批立即删除实际generic USB register描述符失败“test mode”硬编码端点fallback，
+返回真实错误、实际register fixture和新镜像回归；register本身仅分配URB不提交，
+不能据此虚构bootstrap并发竞态。有真实调用者的loader/backend/parser/全局fallback/
+shared ring等待新路径接通及调用者迁移后删除，未发布UAPI直接弃用。并行推进
+WS73 partial/unknown初始化真实cleanup、held transport last-file-close/drain、
+有限恢复和自然RCA。完整分层/socket/SSAP/每连接安全/Agent/Bond/Profile/四设备
+两组/其他Native/Proxy/PM/sandbox/发布及全部S0–S6保持；最新附件SHA与已采纳决策
+相同。实际开放集合28（K19/U9），原scope不改；VM-only/北极星7/8，自然故障根因、
+无人工拔插恢复、历史物理xHCI warning继续OPEN，不关闭整项、不合并draft。
+
+
+### 当前端点／能力默认值清理与真实在途最后文件关闭
+
+K`c5ec97f50c06`／编译U`ad5e28727229`已删除生产descriptor失败的“test mode”
+端点回退，context私有准备成功后才发布；删除USB/serdev/default/attach未经查询
+的feature、255/8/MTU/MPS/transport/measurement/crypto声明，保留实际身份/固件。
+[调用清单、未知值和门禁范围](USB_DESCRIPTOR_CAPABILITY_CLEANUP.md)明确0不代表
+无限制或已知不支持；完整caps/limit/quirk来源、旧DLI_INFO软件预算与UAPI迁移仍OPEN。
+18个实际C register/unregister sanitizer案例、5个实际Rust info/default/attach测试
+通过；原固件69 C/12 Rust及管理10门禁保持。6个在途close负例测试使工具总数234。
+提取器void支持和测试入口错误、一次错误expected HEAD被快照校验器拒绝的原日志
+均保留；修正后完整内核/private modules/签名smoke通过，编译器原0计数有误、实际1条warning（见下方勘误）；GNU make
+一次jobserver警告。Native WS73 driver/已查询metadata未改。
+
+[新镜像两个独立VM封存](evidence/ws73-vm-descriptor-cleanup-held-close-20261011.json)
+首轮实际Diagnostic MAC回复由QEMU暂留：原fd关闭得到EBADF，dup保有Held100ms；
+最后dup关闭EBADF、observer精确Revoking，原500ms Host deadline触发Runtime退役
+并取消实际IN81，一次abort／零release-reset-detach、无新目标命令或旧回复交付，
+旧generation拒绝、peer不变且两次真实MAC成功。此为already-Off Diagnostic有界
+原期限drain，**不证明close立即abort、Managed部分初始化或完整生命周期**。
+两新VM均各6 Setup release/last-file/dup及完整窗口零DLI；分别保留稳定预算归零
+和完整原诊断63记录/50proof/46wire/read7/result16/copyout2/poll3/淘汰33/CLI4/
+旧注册27拒绝、queued原期限。各UID1000/caps0真实20+2，最长470/774ms，各自
+同RF slkd/peer，USB1345/1431、各22RX/零drop，guest warning0/taint0/traceoverrun0，
+四只结束释放在位。USB/HCC/DLI不是独立PHY；hold期间同daemon未资格。
+[精确源码CI38111118827](https://github.com/OpenSparklink/sparklink/actions/runs/38111118827)
+九作业终结success，170 Rust/34 Python/234工具、32期限/10管理/固件69+12/
+新增descriptor18+info5门禁。
+
+下一步推进Managed部分初始化真实cleanup、不同radio/history/在途阶段的close与
+有限恢复／自然RCA；迁移独立事件消费者后删shared ring/fallback/未发布旧UAPI，
+并接通完整能力来源与显式不支持、drivers-owned backend/parser、最小socket、
+SSAP/每连接安全/Agent/Bond/Profile、四设备两组及Native/Proxy/PM/sandbox/发布。
+完整S0–S6与28项原scope保持，VM-only／北极星7/8，不关闭自然启动/重枚举/消失
+根因、无人工拔插恢复或历史物理xHCI warning，部分成果不关闭整项或合并draft。
+
+
+## Managed 未选择取消的源码阶段记录（专用实机门禁仍待执行）
+
+内核 `f6709397c6d6e33546744c79193b14ba9f573660` 在现有 admission/state/Host 串行化下扩展释放路径：
+仅 Host 无 active/reply/fault/revocation、无已选择 recipe、未初始化且 radio 均
+Unknown，保留的操作仅未执行 Queued 或 ECANCELED、无 opcode/step/status/power/
+完成时间，policy cookies 有对应 operation，队列仅有其带 tag 的 typed 请求时，
+允许直接取消队列和操作、将租约 Free。结果保留 Cancelled/ECANCELED，cookie、
+credit、Unknown/Setup 不变，不发送不存在句柄的 stop，不合成 Complete/Off/Ready。
+原 quiet pristine Setup、已确认 Off 和 Diagnostic 路径保持。
+
+实际 TX `Host::next` 在返回给 transport 前设置 recipe 和 Pending/opcode；
+recipe 不因取消或结果淘汰清空，因此任何已选中、部分初始化、在途、待回复、错误
+或未知历史仍需真实 cleanup/退役。该判据依赖当前 Native raw whitelist 仅查询；
+未跟踪 raw 或独立 legacy recipe 队列不能采用此例外。仍有调用者的 legacy 路径
+等待迁移，未发布 UAPI 无兼容期；专用模拟和依赖 fixtures 留在 selftests。
+
+[源码证据](evidence/managed-unsubmitted-source-20261011.json)编译实际 predicates、
+取消、TX selection、InFlight、core release block，真实 operation/queue/lease 模块
+及实际 opcode/timeout 常量：21 项严格 Rust 门禁通过；原期限/result 开发门禁
+保持。锁、时钟缩放、周围 transport 是依赖 fixtures，不能据此宣称 VFS/RF。
+初次 fixture 缺导入，以及扩展后缺模块层次/generic Result 的编译失败日志保留，
+修正仅 fixture 适配后再运行。生产未增加全局 dead-code suppression 或第二份 dirty
+状态。源码阶段当时新镜像尚待核对；最新镜像回归见当前证据段，专用 Managed pre-selection/partial-wire 实机门禁仍开放。
+
+后续须在新冻结签名 VM 中证明实际 ioctl/last-file/dup、队列选择竞态、完整字节/
+USB 证据、另一设备和同 slkd 隔离；部分初始化各步骤不能借未执行路径逃过真实
+cleanup。保留真实 WS73 普通用户双设备 20+2 回归。已有 Diagnostic 原期限关闭
+证据仅覆盖当时编译版本及 already-Off 模式，不替代这项 Managed 验收。
+自然启动/重枚举/消失根因、无人工拔插的完整恢复、历史物理 xHCI warning、
+完整能力来源/事件迁移/socket/SSAP/安全/Bond/Profile/四设备/Native/Proxy/PM/
+sandbox/发布及 S0–S6、全部 28 项原 scope 仍 OPEN。VM-only、不关闭整项、不合并 draft。
+
+
+## 构建警告计数勘误（原封存保留）
+
+上一批 K`c5ec97f50c06` 的“编译器 warning0”计数错误：原构建日志实际有
+1 条 `MAX_PAYLOAD_LEN` 未使用导入警告，另有 1 条 GNU make jobserver 警告。
+[勘误及原日志/封存哈希](evidence/descriptor-cleanup-build-warning-erratum-20261011.json)
+保留原 JSON 字节，不把错误记录改成成功；文档和 issue 中的原编译器零计数应以
+此勘误为准。原 guest warning/taint、RF/USB/VFS/deadline 证据来自独立实测，
+不与编译器 warning 混同，也不因勘误宣称新源码或新 Managed 分支验收。
+
+K`292f9fec84b6` 已删除导入，新完整构建 compiler warning0、make jobserver warning1。
+离线 build checker 增加终结日志 SHA-256 验证与 diagnostics 分类：编译器 warning、
+make warning、未分类 warning 分别记录，Rust/Clang 汇总行不当作第二条警告。
+未知 producer 不能被宣称为 warning-free，活跃/失败/无哈希/日志篡改拒绝。
+六项新增负例/计数测试及全部 240 工具测试通过。日志计数仍不等于全部 compiler
+输入来源、实机或完整发布资格；自然 RCA、完整恢复和 S0–S6 原验收继续 OPEN。
+
+
+## 当前 Managed 未选择取消源码修复与新镜像 WS73 回归
+
+K`292f9fec84b6`／编译U`d749cbb102c5`的
+[两个新 VM 封存](evidence/ws73-vm-managed-unsubmitted-regression-20261011.json)
+已经通过；新 Managed 取消分支仍只有源码门禁资格，**专用实机 pre-selection、
+partial-wire/unknown 初始化及 Managed held-close 不因以下回归而通过**。
+21 项门禁编译实际 Host predicates/cancel/TX selection/InFlight/core release：
+未选择才本地取消并保留 ECANCELED/Unknown/Setup；已选择证据跨取消/淘汰保留，
+继续真实 cleanup/原期限退役。未跟踪 raw、错误、在途、radio/初始化历史均不放行。
+
+完整新内核/private modules/签名无 USB scratch smoke、冻结显式38输入通过；
+第一次 prepare 因 module-tree 参数层级错误在启动前被拒绝，原 FAIL 保存，按
+staged lib/modules/release 在新目录重做，不篡改记录。Native WS73 driver 未变。
+两新 VM 各 Setup6 零DLI完整窗口、普通UID1000/caps0真实20+2，最长均469ms；
+各自同RF slkd/bus/peer隔离，USB1345/1431、各22RX/零drop、guest warning0/
+taint0/traceoverrun0，host四只结束释放在位。第一 VM保持 Diagnostic already-Off
+最后dup关闭→原500ms期限→一次真实IN81 abort/无reset-release-detach，稳定预算
+归零；第二VM保持完整原诊断63记录/50proof/46wire/read7/result16/copyout2/poll3/
+淘汰33/CLI4/旧注册27拒绝/queued100ms与首次RESULT前被动800ms到期。
+Diagnostic hold发生在主RF daemon之前，不证明hold期间同daemon连续性。
+USB/HCC/DLI不是独立PHY嗅探；完整传递性host-tool输入来源仍未资格。
+
+[精确源码与日志核对CI38113618256](https://github.com/OpenSparklink/sparklink/actions/runs/38113618256)
+九作业终结success，实际170 Rust/34 Python/240工具，32期限/21管理/固件69 C+
+12 Rust/descriptor18 C+info5 Rust。离线计数绑定终结构建日志哈希，不重复计Rust
+summary；本批编译器warning0、GNU make jobserver warning1、未知producer0，
+因此不称整个log warning-free。[上一封存编译计数勘误](evidence/descriptor-cleanup-build-warning-erratum-20261011.json)
+明确旧compiler0错误、实际1条unused import，原JSON保持，guest/RF证据独立。
+
+下一步专用实机使用测试进程的有界调度约束证明真实 Queued/opcode0→关闭/取消，
+完整UAPI/USB证明无OUT，恢复普通调度并验证peer；不能用调度fixture冒充正常
+并发/应用权限。随后暂留真实0c02回复，在实际选中后验证释放/最后fd/dup、迟到
+ACK及partial cleanup，记录实际status/errno，不把0x1e/EIO改成成功或无条件reset。
+生产有限恢复需按实际原因分类、保留原错误与每port预算；自然启动/重枚举/消失
+RCA、无人工拔插完整恢复及历史物理xHCI warning继续OPEN。
+
+三类清单保持：明确测试/默认行为立即删，模拟/注入只在专用测试；有调用者的
+backend/parser/默认路由/shared ring/旧UAPI等待新路径接通和回归后删。UAPI未发布，
+无需兼容期。完整能力来源、独立事件、drivers-owned backend/PM、socket协商/
+背压/所有权、SSAP/每连接安全/Agent/Bond/Profile、四设备两组、Native/Proxy/
+sandbox/发布及全部S0–S6/28项原scope保持，北极星7/8，VM-only，不关闭整项、
+不合并draft；用户已明确要求继续完整goal，部分成果不代表完成。
+
+## 2026-10-11 当前 Managed 实机门禁阻塞与推进顺序
+
+Managed未选择取消、partial初始化release/last-file/dup/在途回复及peer隔离仍是
+第一优先级，专用探针已接入独立VM门禁，但本轮六次完整启动尝试全部在第一只
+设备Setup元数据前失败，未运行任何新增Managed案例。原K292签名内核和编译
+生产Rust路径保持，原真实双设备20+2证据保留；当前设备状态不能重新Ready，
+不得宣称本批实机闭环或恢复通过。
+
+已比较单/双vCPU、两个物理pair、uhubctl短/长off-on（四口确实重新枚举但未证明
+VBUS或SoC冷启动）。独立维护VM无WS73 driver owner时EP02寄存器读setup仍-110，
+未写SoC复位；精确一次guest USB总线reset、EHCI与xHCI对照仍相同。SDK明确
+class/interface request2、四字节DISALLOW_TO_SLEEP=0的请求已真实返回4且有
+抓包，但仍未恢复EP02。不能把PM唤醒、CPU数、virtual hcd或hub切换认作已定位
+根因。保留QEMU/libusb共同路径、设备状态及实际供电等待核对项。一次维护VM
+抓包用户遗漏导致PID1退出panic，已修正；这是未接触设备的fixture失败，独立
+保存，不归为WS73 driver panic。详见[本轮失败证据](evidence/ws73-managed-gate-startup-failures-20261011.json)。
+
+下一步先建立可成功的每设备启动及真实握手诊断，随后执行两设备六项未执行
+队列取消和partial初始化三种释放／两个域／真实在途回复矩阵。失败必须保留
+原status/errno，不通过模拟成功、替换注册、绕过capture或无限重试满足验收。
+不依赖人工拔插、另一只仍可用且slkd不重启的完整自动恢复及自然RCA仍OPEN。
+旧代码三类清理继续并行；UAPI未发布，可迁调用者后直接删除。完整S0–S6、
+所有28项issue原范围、四设备/安全/连接/SSAP/Profile/Proxy/PM/发布矩阵保留。
+
+SDK异步寄存器读对照亦未通过：真实EP02 setup与EP82 IN同时提交，等待期限后
+两笔以原始-ENOENT取消收敛，没有读回值或SoC复位写入。保留其他三只host
+地址不变，但这不是Ready peer运行隔离证据。工具253项本地通过；U81d938f6b7ee
+源码CI38118294865九作业全部success，CI不包含硬件验收。新诊断VM已终结失败：只读failure phase17映射为RECOVERY_WAIT_CLOSE，
+原始-110、tx_sequence0、metadata_valid0、attempts2/limit2/exhausted1。
+只定位到真实SLE_CLOSE回复等待阶段，未查明自然根因。
+
+Uccfa29d7495c进一步严格核对peer完整UAPI字节、清理前／在途／后的查询时间窗
+及完整Revoking→Free观察序列；目标失败时独立采集peer，并保留原错误与失败。
+全部255工具测试本地通过。新Managed实机案例仍为零，当前peer Ready隔离不能
+以host三只仍枚举替代。所有scope、恢复及RCA仍开放。
+
+U44d7fb335c78加入参考实现的36字节HCC队列10选择及聚合重置对照。
+独立维护VM第一笔真实EP01 OUT即-110，未执行第二帧／加载WS73模块／写SoC
+复位；其他三只仅保持host枚举，不冒充Ready peer验收。本轮共六次正常启动
+和七次维护尝试（含一次未接触设备的fixture失败），新增Managed实机案例零。
+全部256工具测试本地通过；Uccfa29d的CI38118785456九作业success。源门禁与
+硬件资格分开；继续优先启动根因→Queued六案例→partial两个域及三种释放
+和真实迟到回复→同daemon双设备RF及四设备。恢复、自然RCA与原整项issues
+保持OPEN，历史已封存WS73闭环路径和证据保留。
+
+## 当前 Managed 门禁：USB 对照补充（2026-10-11）
+
+[新封存证据](evidence/ws73-managed-bootstrap-usb-contrasts-20261011.json)补充八次
+已终结尝试（七次维护、一轮正常门禁），保留此前失败和真实双设备 RF 证据。
+**本批 Queued／partial 实机案例仍为零，当前没有 Ready peer 隔离资格。**
+真实 GET_INTERFACE 不支持时保留 EPIPE；以完整描述符限定的 interface0/alt0
+重设返回零，但后续两笔配置读取 EPROTO，未继续路由或加载模块。
+
+允许所有枚举 reset 的实验触发五次复位并重枚举，已排除为生产策略。
+K a3703a65ea69 的专用 VM 开关默认关闭，单对象最多一次，调用前消费预算，
+源码禁止 close/autoscan 补预算，排斥在途 error/hold 注入。固定归档完整七补丁
+新应用／幂等／所有前缀／漂移拒绝、实际函数依赖计数、ASan/UBSan 和暂停 QMP
+检查通过；新 QEMU 的无 USB scratch-root VM 启动也通过。这些是开发支撑，
+真实重新枚举后预算保持及完整自动恢复尚未验收。
+
+第4只一次复位后实际出现 ROM 两端点、bcdDevice1.00；运行态专用探针判失败。
+随后正常 VM 识别 ROM，但第一条 READM bulk OUT 即 -110，failure phase1=LOADING、
+uploads1、无 metadata；未上传固件，未建立 Setup，未接入另一只。第1只一次
+复位仍在运行态，参考 EP01 路由 OUT 超时。冻结111固件输入不代表当前固件版本
+查询／上传成功，不能从第4只状态变化推断通用恢复或自然根因。
+
+私有 QEMU 对照仅转发一次物理 SET_CONFIGURATION1，实际 libusb 返回0，但
+EP01仍超时。候选没有接入生产，已恢复可变构建源码；精确补丁、二进制、源码、
+抓包和失败均保留供复核。默认 Linux/Rust WS73 路径不变。正常门禁继续使用
+默认禁止 reset/detach 的对象，不使用实验开关冒充 Managed cleanup。
+
+优先顺序保持：真实独立启动／握手→Queued 两只×release／最后fd／dup 六案例
+→partial 广播／扫描×三种释放及真实迟到回复、两个 STOP、Revoking→Free
+→同 slkd 双设备 RF 和故障隔离→四设备两组。另一只必须真实活动且查询通过，
+仅 host 枚举不算隔离；不以整 hub 复位或人工重插满足自动恢复。相关 issues
+及完整 S0–S6 scope 保持开放，部分成果不提前关闭整项。
+
+## Managed 队列实际 fd 支撑与前置条件纠正（2026-10-11）
+
+[独立封存证据](evidence/ws73-managed-queue-support-and-bulk-submit-20261011.json)
+保留首次模拟 USB／实际内核执行的 EBUSY 失败和修正后的六案例支撑通过。
+Unknown Setup 不能同时排入广播配置和含 START 的扫描初始化；内核保护保持。
+当前子门禁只排入合法广播配置／扫描 STOP，逐案例验证两次非法扫描初始化
+EBUSY 且结果 ENOENT。两只模拟 USB 上实际 release／最后 fd／dup 均取消，
+整个区间及间隙零 DLI，Unknown/Setup 与同伴快照保持。这不增加实机通过数，
+`managed_preselection_live_acceptance` 仍 false，不能替代扫描初始化的完整门禁。
+
+部分扫描在途探针改为先于同一租约真实完成广播配置／STOP，保存完整成功结果、
+selected power 和两笔有序成功 USB Complete，再暂停扫描第一步；失败不进入
+扫描。格式2拒绝遗漏／失败／伪造 Off；268 项工具测试通过，新的 partial 前置
+路径当时尚未通过 VM 或实机在途验收；后续模拟结果见下文。广播案例仍从 untouched Setup 开始。
+调用关系复核确认扫描清理可保留前置阶段真实确认的广播 Off，只发送未知扫描
+STOP；验证器要求原成功 STOP 证据与前置至清理期间无额外目标命令。遗漏回复、
+失败 STOP、重复 STOP 或插入 enable 均拒绝。269工具测试通过，真实矩阵仍开放。
+
+实机维护 VM 的 libusb debug 确认 length36 bulk URB 实际提交，然后超时取消并
+回收 -ENOENT/transferred0；这将“未提交到主机”的假设排除于该次 OUT，但不能
+据此判定设备／固件／QEMU 根因或 PHY 传输。读取 parent/hub/target 都 active，
+该区间 suspended-time 增量零，未改主机 PM；完整冷启动及自然 RCA 仍未知。
+
+顺序：先恢复真实独立启动／查询；执行 Unknown Setup 子门禁，再单独在真实
+confirmed advertising Off、无 pending 广播条件下验收扫描初始化排队取消；
+执行 partial 两个域×release／最后 fd／dup 和真实在途回复，核对原期限、两域
+成功 STOP、Revoking→Free、Ready 同伴前／在途／后活动不变；最后复跑同 slkd
+普通用户双设备20+2及四设备两组。整 hub 复位不算独立自动恢复，源测试／CI／
+模拟支撑不算真实验收。自动恢复、RCA、完整清理及原28项 scope 继续 OPEN。
+
+## 第一阶段 partial 模拟执行与下一步（2026-10-11）
+
+[新封存矩阵](evidence/ws73-managed-partial-model-fd-matrix-20261011.json)包含广播／
+扫描各 release、最后 fd、dup 六个模型成功案例及六个独立拒绝案例，使用实际
+内核 fd、完整 UAPI、QMP 与原终结帧 SHA/USB 抓包。只暂停第一个初始化步骤，
+不等于全部步骤或真实 libusb 回复验收。同伴仍 Setup/Diagnostic，三次查询
+一致不等于活动 Ready 隔离。拒绝分支保留 FAIL、0x0b/-EIO 和 Blocked/Faulted。
+Unix socket 过长的启动前失败独立归档，源码／工具／签名镜像 provenance 分开。
+
+依赖顺序仍为真实独立启动／查询，confirmed-Off 后完整扫描初始化队列取消，
+partial 后续步骤及 release／最后 fd／dup 的真实在途回复，再执行活动 Ready
+同伴隔离、同 slkd 普通用户 RF20+2、物理拔插和四设备两组。274工具测试及
+Uf35 CI 九作业仅支撑开发；本矩阵不新增物理验收。S0–S6、旧实现三类清理和
+原28项完整条件保留，自动恢复及未查明根因的 issue 不关闭。
+
+[新增 VM 实机对照](evidence/ws73-clear-halt-route-diagnostic-20261011.json)验证
+EP01/EP81 两次实际 libusb clear-halt 返回零、前后完整配置不变，但首笔36字节
+路由 OUT 仍超时，cancel/reap -ENOENT、transferred0，未进入模块或 Managed。
+本次维护尝试16（正常门禁仍7），新增真实 Managed 仍零。四只保持 host 枚举
+不算 Ready 隔离；冻结私有观察器只记录返回，默认构建已恢复。下一步继续
+定位真实启动／数据传输原因，禁止把控制请求返回零当作成功恢复或弱化状态
+门禁。278工具测试仅源码支撑，恢复、自然 RCA 和全部原验收仍开放。
+
+[寄存器独立通道对照](evidence/ws73-register-read-contrasts-20261011.json)增加两次
+真实 VM 维护尝试：OUT16／IN4 同时挂起，基线与标准 EP02/EP82 清理后均超时，
+取消已回收；清理实际返回0但 host 传输量0。保留 guest 失败 OUT actual16
+与 host transferred0 的区别，不把失败字节数当作成功。当前故障范围也包括
+独立寄存器通道；继续核对设备／固件／host／QEMU 边界，禁止未读成功直接
+写 SoC 或把模型通过算硬件恢复。正常门禁仍7、维护累计18，新真实 Managed
+仍零。283工具测试与 Ud8f CI 九作业仅源码资格；原完整依赖和全部 gates 保留。
+
+[完整扫描初始化队列模拟 fd 矩阵](evidence/ws73-confirmed-off-queue-model-fd-20261011.json)
+新增实际内核六案例支撑。两只先真实执行模型上的广播配置／STOP、扫描
+参数／START／STOP，保存每笔原成功回复及完整 Ready/Off 字节；在有界 FIFO
+区间先排入完整 ScanInitializeOff，再广播配置，遵守无 pending 广播准入条件。
+release／最后fd／dup 取消全初始化，原 Off 保留，369包零丢包且初始化后至
+矩阵结束零目标 DLI。idle STOP 拒绝保持开启，没有改内核 guard 或正式路径。
+冻结 U502、验证器 U55a、镜像 K292／服务 Ud749 分开，286工具测试仅开发资格。
+本批不新增物理尝试或真实 Managed，活动 Ready、普通调度、partial 后续步骤、
+真实启动／自动恢复／自然 RCA 和完整 S0–S6／原28项 scope 继续 OPEN。
+
+[后续帧选择模型支撑](evidence/ws73-later-terminal-model-selector-20261011.json)
+只实现有界0..2原终结帧skip及后续单帧保留。实际模型函数 sanitizer与暂停
+QMP拒绝通过、QEMU已冻结；当时尚无后续步骤采集器／内核fd VM（本批结果见下文）。当时下一步迁移格式
+且保留旧第一步证据，核对每个早期成功回复、具体待回复步骤、原deadline、
+release／最后fd／dup及清理。扫描START后实际STOP成功应与第一步idle拒绝
+区分，禁止将未查明根因或未知radio状态归零。真实Ready／活动peer／RF及
+全部原整项条件不变，部分开发支撑不关闭 issues。
+
+
+## 后续 partial 模拟 fd 矩阵（2026-10-11）
+
+[本批封存证据](evidence/ws73-managed-later-partial-model-fd-20261011.json)包含九个
+成功与三个独立拒绝案例：广告最后STOP、扫描START和扫描最后STOP，各覆盖
+release／最后fd／dup。格式4只允许模拟USB后续step1/2；先前格式3十二案例
+用新验证器全部复核。原500ms期限、完整UAPI Cancelled/-ECANCELED、早期
+成功回复的power／SHA／长度、保留帧、命令窗口及同伴三次查询逐一核对。
+
+扫描START取消后由新STOP确认Off；扫描原最后STOP取消后由其迟到成功回复
+确认Off，无重复STOP，原请求不改为Succeeded。六个扫描案例均开启模型idle
+STOP拒绝。广告最后STOP后仍需清理未知扫描域，三个idle拒绝案例保留原FAIL、
+0x0b/-EIO、RecoveryBlocked/Faulted和Unknown，不伪造Free/Ready。289工具测试
+及源码905b318的九个CI作业通过；签名镜像K292、编译服务Ud749、工具源码与
+新测试QEMU分别封存。正式Linux/Rust WS73路径未改，历史真实RF证据保留。
+
+本批未在真实USB执行实验门禁，只读核对四只仍枚举且有效主机权限正常：前三只
+五端点runtime，第四只两端点ROM，power active。模拟同伴为Setup/Diagnostic，
+尚无活动Ready／真实空口隔离；新增真实Managed通过数仍零。正常实机门禁7、
+维护18的失败历史保留，既有ganged hub重枚举不证明VBUS/SoC冷启动或单设备
+自动恢复。本批模型结果不改变这些资格，相关issues继续OPEN。
+
+下一优先级仍为定位真实bulk超时并恢复两只独立启动／查询，然后执行完整
+Queued及partial实机矩阵，核对活动Ready同行、同slkd普通用户RF20+2及四设备
+两组。仅有新诊断假设时执行受控对照，有限重试和原始失败记录不能被模型
+成功替代。原生Linux对照因VM-only约束仍未执行，自然RCA和每设备自动恢复
+未通过；全部原S0–S6与14项整改范围不缩减。
+
+
+本批[主机只读观察范围补充](evidence/ws73-managed-later-partial-host-scope-20261011.json)
+明确记录调用stock `uhubctl -f -l 1-2.1`读取hub状态，未带action、未切换电源。
+原封存证据“no new physical USB transfer”措辞过宽，限定为没有新增诊断bulk／
+寄存器／固件／实验驱动传输；模型VM没有接host USB。原证据文件保持不变，
+这次主机观察不增加真实Managed、Ready同行、RF或恢复资格。
+
+
+## 真实 EP0 只读 credit 对照（2026-10-11）
+
+[两只实机的完整诊断证据](evidence/ws73-readonly-ep0-credit-20261011.json)封存端口
+1-2.1.2及1-2.1.1的独立VM：SDK class/interface IN request5各一次，均返回原
+四字节00000000，HCC高优先级内存credit=0。每轮65包零丢包，原USB提交/成功
+完成回执、actual usb-host req0xa105/length4及libusb控制回执匹配；零目标bulk
+及class OUT，无复位／hub循环、SoC写入或WS73模块加载。完整runtime配置与
+四只主机枚举、parent/hub/target suspend计数保持。这里只验证控制读取，
+不算活动Ready同行、RF、每设备恢复或本次固件版本查询。
+
+该结果证明本次SDK EP0控制读取可完成，而先前EP01/EP02 bulk仍有明确失败
+证据。原HCC memory-credit零值不能改成默认值，也不能当成DLI command-credit
+或Ready ACK；SDK data流控另外保留USB控制buffer，不能仅据零值认定路由／
+寄存器bulk超时根因、强行开放流控或盲发RESET_BCPU。111文件SHA头静态校验
+通过，但反汇编存在未识别扩展且关键USB路径调用ROM，缺少复位callback/ACK
+证明；不提交SDK、固件或反汇编字节。私有验证器最初把QMP hostport当完整sysfs
+路径，失败日志保留；修正为精确hostbus/hostport后复核原两轮，没有重跑VM或
+改写原结果。
+
+292工具测试与源码0a096ee九个CI作业通过。保持VM-only与历史真实WS73路径，
+正式Linux/Rust行为未改。正常启动门禁仍7，维护尝试增为20；新增真实Managed
+通过数仍零，当前没有双设备Ready／活动同行证据，所有恢复/RCA及原整项保持
+OPEN。下一步需核对供电路径及成功状态基线/ROM分发或HCC资源初始化的可追溯
+证据，再选择受控实机对照。不能靠重复ganged hub重枚举或模型通过代替根因。
+
+## 当前实机门禁：ROM 首包也超时，供电拓扑已确认（2026-10-11）
+
+[ROM 启动原失败与独立抓包核对](evidence/ws73-rom-startup-timeout-20261011.json)：
+第4只两端点 ROM 模式在新隔离 VM 使用正式 K292 驱动，第一笔19字节
+`READM 0x40019380 4 ` OUT 即超时，phase1/-110；77包零丢包，原取消回执-2。
+失败 OUT 的 guest actual19 不代表物理成功；没有寄存器写入、111上传或 Setup。
+第3只未接入，Managed release／最后fd／dup／在途及活动Ready同行均未执行。
+正常启动累计8、维护20，新增真实Managed仍0；本批无hub循环或生产代码变更。
+
+用户确认 hub 无外接电源、WS73 无其他供电线路；该事实不等于测量了 off 时
+VBUS。ROM首包失败也不能仅用运行态HCC memory-credit0解释。现有ganged hub
+整组切电仅是受授权的维护操作，不能作为隔离单只恢复实现或验收。
+
+原boot budget记录uploads1、attempts0/cause0/result0，而boot_error=-110：
+启动路径尚无已验收的有限恢复，预算result也未反映此次错误。整改须明确每阶段
+可安全重试的边界、总期限、原错误记录及重枚举等待；部分固件/寄存器写入不能
+直接重放。先定位共同bulk故障并恢复真实查询，再执行完整Managed和活动同行
+门禁。自然RCA、无人工恢复、四设备及整项issues继续OPEN，历史RF证据保持。
+
+
+## 2026-10-11 冷启动对照、真实队列子门禁与 partial 清理拒绝
+
+[新封存证据](evidence/ws73-managed-cold-real-progress-20261011.json)保留原失败：
+用户报告 hub/WS73 只有 USB 供电，并将上游物理断开至少 30 秒后重接；四只重新进入
+ROM，两只在同一冻结镜像输入上成功上传 1.10.111、真实 DLI 查询。人工冷断电只用于
+对照，不算自动恢复，也未实测 VBUS；先前软件 off/on 未恢复 bulk 的根因继续开放。
+
+真实 Unknown Setup 的合法队列子集六案例、两域完成真实初始化/Off 后完整初始化队列
+六案例分别核对 release、最后 fd 关闭和 dup。受控单 CPU/FIFO 窗口内未选中请求均保持
+Cancelled/-ECANCELED，完整矩阵区间两只零 DLI；这不等于普通调度并发。两次各 20+2
+随机空口轮次由抓包独立核对，应用同 UID1000/caps0、同 slkd，围绕人工 guest IN 错误；
+不用于关闭自然恢复。冷启动第一次原宿主验证误用 ROM 旧地址，原 VM FAIL 不改写；
+另一次 usbfs 所有权检查过严的捕获未封存失败亦保留，已修复精确 live fd/当前地址门禁。
+
+首个真实 partial 广播 release 在原 C02 回复被保留后取消；原 C02 迟到成功及 C05 STOP
+成功，但多余的未初始化 scan STOP1002 返回 0x0b，原目标 Faulted/Unknown、旧请求
+Cancelled/-ECANCELED 保留。另只三次真实 MAC 查询与 Setup/Diagnostic 身份保持，
+仍不是活动 Ready 同伴；剩余五案例当时未执行，不作为通过。
+
+Kbea9fc6527f8 新修复保留每 Runtime 实际选择域的历史，撤销仅执行已选择/已知域；
+跳过 untouched Unknown 只结束该域撤销等待，不制造 Off/Ready。24 项实际 Host 源码、
+19 项严格命令计划及 296 项工具回归通过。U8e20b69 新 `--managed-selected-cleanup`
+只用于实际第一步 partial、显式版本5记录：广播单域清理后 scan Unknown/Setup；扫描
+已有真实广告 Off 前置，仍需扫描真实 STOP。原历史格式3/4、模型和失败证据保留。
+
+新生产镜像尚未取得物理资格。初次复制目录构建因缺工具重新配置后丢失 CONFIG_RUST，
+构建产物资格检查明确拒绝；原日志/配置保留，恢复已验证配置并重建后才可继续。
+下一依赖：匹配镜像/签名模块的空USB启动检查 → 实际 release/last-fd/dup 与在途回复
+→ 活动 Ready 同伴前/中/后真实工作 → 同 daemon RF20+2及拔插 → 四设备两组。
+正常启动 VM 累计12、维护20，不归零历史失败；自动恢复、自然 RCA、完整 Managed
+与原各 issue 整项仍 OPEN。VM-only，无主机实验安装、无生产模拟成功或固件字节发布。
+
+
+## 2026-10-11 真实 partial 新镜像进展与扫描参数清理细化
+
+[不可覆盖的新实机证据](evidence/ws73-managed-selected-domain-real-20261011.json)：
+编译 Kbea9fc6527f8、服务 Uf04e6bba2233、冻结采集器 U0c609d0 的广播 release/last-fd/dup
+三个案例完整 PASS，各有实际保留的原 C02 frame SHA、Cancelled/-ECANCELED、真实 C05
+Off、scan Unknown/Setup、Revoking→Free、三次同行真实查询和同 daemon 普通用户 RF20+2。
+首次新镜像的抓包窗口误计同行查询导致原 VM FAIL，单独独立核对成功、不改写原状态；
+U0c修复窗口后重跑三案例，扫描 release 则保持真实 STOP1002 0x0b/-EIO、Faulted/Unknown
+失败，最后两案例未执行。正常启动 VM 累计17、维护20，整项/活动 Ready 同伴仍未通过。
+
+参考 Host/WS73 接口明确区分 SetScanParam1001 与 EnableScan1002。新 K4ece91aa5c7c
+将同一 Runtime 单调选择历史细分为广告、扫描参数、扫描控制：新 Runtime 仅选择过参数
+时，取消等待原回复并清掉未选择的 START，扫描保持 Unknown；任何扫描控制历史或已知
+扫描状态仍需真实/保留 Off 屏障。不是把0x0b解释为Off，也不将参数配置当扫描已关闭。
+新 U5d29cb7 显式版本6扫描参数门禁检查无额外START/STOP、保留原广告Off和scan Unknown；
+历史格式3/4/5、原失败和模型仍保留。25实际Host源码、19命令计划、299工具测试通过，
+新合格Rust镜像/签名模块空USB VM加载卸载通过；编译器零警告、保留一条make jobserver警告。
+新六案例正在独立冻结镜像上执行，尚不能计作新修复实机通过。后续真实初始化步骤、活动
+Ready同伴、普通调度并发、四设备两组、自然自动恢复/RCA仍按原整项条件OPEN。VM-only。
+
+
+## 2026-10-11 第一初始化步真实六案例通过；活动 Ready 同伴仍是下一门禁
+
+[最新不可覆盖证据](evidence/ws73-managed-scan-parameter-real-20261011.json)以编译内核
+K4ece91aa5c7c、服务/冻结工具U5d29cb7b3aa5完成广告/扫描各 release、最后fd关闭、dup：
+六个原VM均PASS/QEMU0，原在途host成功帧SHA/长度与迟到Complete一致，原请求保持
+Cancelled/-ECANCELED，dup首次close保留lease、最后close触发撤销，Revoking→Free。
+广告只执行C02+C05、未触及scan保持Unknown；扫描先有真实广告Off，持有原1001配置
+回复后取消，零已选START/STOP，scan保持Unknown/Setup。既不推断0x0b为Off，也不制造Ready。
+每例三次同行实际MAC查询与身份保持；各1183/1187包零丢包，taint0、无内核fault。
+每例同slkd/bus、普通UID1000/caps0随机RF20+2及人工guest IN故障支撑由捕获独立核对，
+合计132轮；未使用人工拔插、hub切电或主机实验安装。原构建资格拒绝、抓包验证FAIL和
+两种真实STOP0x0b失败完整保留。正常启动VM累计23、维护20。
+
+**只验收初始化第一步六案例。** Unknown Setup/confirmed-Off未执行队列真实各六案例
+仍是受控单CPU/FIFO支撑；普通调度并发未验收。本批同行仍Setup/Diagnostic，不能把MAC
+查询或后续RF偷换为目标撤销期间活动Ready隔离；后续原广播最后STOP、扫描START/最后STOP
+的物理门禁仍待执行。整项Managed、恢复/RCA及28项原scope继续OPEN，goal active。
+
+下一门禁先用同行真实C02/C05/1001/START/STOP建立独立Ready，再持有同行Managed lease。
+在目标原回复被保留期间让同行真实扫描START成功、保持On跨越目标release/last-fd/dup与
+迟到回复清理；目标Free后核对同行同generation、Ready、owner和On，再STOP及重启扫描。
+以完整命令/Complete窗口和radio状态证明工作持续，无跨设备STOP、换generation或重启daemon。
+随后扩展后续原终结帧、普通调度取消/结果淘汰及四设备两组。25实际Host源码、19命令计划、
+299工具测试与K4ece空USB启动通过；U5d CI38140975482九作业success，最新证据提交CI另核。
+自然启动超时/重枚举/消失RCA和无需人工拔插的每设备恢复仍开放；原生主机对照受VM-only约束未执行。
+
+
+## 2026-10-11 第一初始化步：真实 Ready Managed 扫描同行隔离六案例通过
+
+[独立实机证据](evidence/ws73-managed-ready-peer-real-20261011.json)
+SHA256 `dbc48ecd6f748b75e7d70d61336e87da8337554c2cfd97de5cbca07f91b5e69f`，
+编译内核 K4ece91aa5c7c、服务 U5d29cb7b3aa5、冻结工具 U44bf694f2652。
+广告/扫描第一初始化步 × release/最后 fd 关闭/dup 六个原 VM 都 PASS、QEMU0；
+每例同行先真实五命令初始化 Ready，独立持有 Managed lease，在目标保留原回复期间
+真实 START 并保持扫描 On，跨越目标取消、原迟到回复与 Free。目标 Free 后独立
+ioctl 仍观察到相同 generation/完整 Ready/owner/current On；继而实际 STOP/START/STOP
+成功，才释放同行 lease。查询请求203的 radio 字段由当前 Host 状态填写
+（`sparklink_core.rs::ioctl_discovery_result`），不是复用历史成功结果推断 On。
+每例十四条同行命令与成功 Complete 精确匹配，整个窗口拒绝未记录命令/回复及跨设备 STOP。
+
+目标原 held host 成功 IN 帧 SHA/长度与实际迟到 Complete 一致；原操作始终
+Cancelled/-ECANCELED，dup 首次 close 保留 owner、最后 close 撤销，Revoking→Free。
+广告目标只有 C02+C05；扫描目标先真实广告 Off，再只有原1001参数配置，无未选
+START/STOP，扫描仍 Unknown/Setup，未制造 Off/Ready。
+每例1207/1211包零丢包、taint0、无kernel fault；同slkd/bus、UID1000/caps0
+RF20+2随机标识/数据/地址/RSSI成功，共132轮。人工 guest IN错误是开发支撑，
+不等于自然故障自动恢复；本批无人工拔插、共享hub循环或主机实验安装。
+25实际Host源码、19命令计划、303工具测试通过；U44bf694 CI38143384779九作业success。
+正常启动VM累计29、维护20，历史失败不归零。
+
+只通过**第一实际步骤 partial 六案例的活动 Ready 同行隔离**；整项 Managed 未完成。
+下一优先顺序：confirmed-Off未选择队列取消期间同行保持 Ready/Managed/scanning On，
+两角色 release/最后fd/dup，quiet区间两只零DLI且前后实际启停成功；继续保留
+单CPU/FIFO限制，普通调度并发另验收。随后实际广告最后STOP、扫描START/最后STOP的
+held回复/三fd/Ready同行，需真实原USB帧skip/hold/hash证明，不能用模型Complete替代。
+再当前镜像物理拔插、四设备两组、结果淘汰和自然自动恢复/RCA。
+之前三份证据及原0x0b拒绝、捕获窗口失败、不合格构建仍保留。
+28项原scope、两个draft、自动恢复/自然超时-重枚举-消失RCA和历史xHCI warning继续OPEN；
+原生主机对照受VM-only约束未执行，完整goal active。
+
+
+## 2026-10-11 未选择队列取消：双角色活动 Ready 扫描同行六案例通过
+
+[新独立实机证据](evidence/ws73-managed-ready-queue-real-20261011.json)
+SHA256 `dcb672a9adc8b5e8726ec54d7a6ac42bb8d625a97594605858206fa97c92d38a`。
+编译内核K4ece91aa5c7c、服务U5d29cb7b3aa5、冻结工具U9a3b29c；原VM
+FAULT_RECOVERY_SUPPORT_PASS、QEMU0，探针六案例全成功。
+两只实际五命令初始化Ready；两种目标角色各release、最后fd关闭、dup。
+每例同行先独立持有Managed并以真实CFG/START开始扫描，在目标Queued→Cancelled
+及Free的完整窗口前、FIFO内、窗口后，实际ioctl都保持相同generation/Ready/owner/current On；
+随后真实STOP/START/STOP成功，同行再实际释放为Free。错误token仍EPERM，dup第一次
+close保持owner及Queued，最后close撤销；取消结果opcode0/step0/-ECANCELED，未选择执行。
+
+十条实际bootstrap命令及三十六条同行活动命令/成功Complete逐项核对；六个约350ms
+完整取消窗口两只均零命令/回复/失败；间隔只允许精确记录的同行活动，整个bootstrap
+到最后同行释放区间拒绝多余命令、Complete或失败。FIFO关键段约0.041–0.101ms，
+每例恢复SCHED_OTHER；这是受控单CPU开发支撑，**不等于普通调度并发通过**。
+1307包零丢包、taint0、无kernel fault，同slkd/bus、UID1000/caps0的RF20+2通过。
+306工具测试及严格C编译通过；25实际Host源码、19命令计划保持已有验证。
+正常启动VM累计30、维护20，失败与旧证据不归零。
+
+此前第一实际步骤partial六案例及活动Ready同行隔离、132RF仍有效，原Unknown Setup
+队列子集6、confirmed-Off静默队列6、0x0b拒绝和捕获/构建失败全部保留。
+当前仅通过受控未选择队列及第一实际初始化步骤的fd/同行门禁，**整项Managed仍OPEN**。
+下一优先：真实广告最后STOP、扫描START/最后STOP，分别release/last-fd/dup及Ready
+同行，保留原500ms deadline，需真实host成功USB帧skip/hold/hash证据，不用模型Complete。
+随后普通调度/结果淘汰、当前镜像物理拔插、四设备两组、自然自动恢复/RCA及完整S0–S6。
+VM-only不变；人工guest IN错误仅作开发支撑；上游人工冷断电只是诊断，VBUS未测，
+软件切电未恢复bulk、自然启动超时/重枚举/消失根因仍OPEN；不执行共享hub循环代替单设备恢复。
+28项原完整scope、两个draft未合并、整个goal active。
+
+
+## 2026-10-11 真实后续初始化步骤九案例通过；CI夹具失败保留并修复
+
+[九案例独立实机证据](evidence/ws73-managed-later-real-20261011.json)
+SHA256 `a44921486b773a9b58cb82e8a400d21a2d70ddbcaba8f5327dad46ae28423e5b`。
+编译内核K060011963b5e、服务/冻结工具U7bd441625951、QEMU二进制
+`d53eb3d1b583ff87e26cc7aec1d5f4655867d0e0891bb2beb761172f8ba35ac3`。
+广播原最后STOP、扫描原START、扫描原最后STOP，各release/最后fd关闭/dup，九个
+原VM全PASS/QEMU0。每例前一/两条实际成功host IN81原帧照常交付，随后保留原成功帧；
+所有skip/held帧长度/SHA与对应实际Complete逐项一致，selector预算/armed/held/released
+host/guest原完整读回一致，零bounded release/drop/error，原500ms deadline不变。
+原请求始终Cancelled/-ECANCELED，dup第一次close保留owner、最后close撤销，Revoking→Free。
+广播仅C02/C05，未触碰扫描Unknown/Setup；扫描已有真实广告Off，原START取消后只发
+必要STOP，原最后STOP的迟到成功保留为Off屏障，拒绝重复STOP或假Succeeded。
+同行每例实际五命令Ready，独立Managed并scan On跨越取消、迟到回复和Free，之后
+实际STOP/START/STOP成功；十四条同行命令/Complete完整匹配，无跨设备STOP/未记录交通。
+每例同slkd/bus、UID1000/caps0、真实随机RF20+2成功，共198轮，抓包零丢包、taint0、
+无kernel fault。没有人工拔插、ganged hub重置或主机实验安装。
+
+311工具回归与选择器实际函数ASan/UBSan依赖夹具、完整补丁链、暂停无匹配QMP属性
+检查通过；新Rust/SparkLink/Virtual关闭构建及签名模块空USB VM双加载卸载通过。
+编译器零警告，一条make jobserver警告保留；早期selector夹具编译错误、sandbox LSAN
+限制、私有编译路径/ccache失败和构建记录log描述形状拒绝均保留，不冒充资格通过。
+U7bd CI38147959246原failure也保留：共享runtime-error callback夹具漏加selector字段，
+非实机失败。独立副本完整固定档案链/ASan/UBSan验证修复通过；K53a49a9bbfe4仅补零初始化
+计数字段、不放宽断言，CI改为固定修复HEAD并重新验证，最终结果按精确HEAD另记录。
+
+此前第一步骤partial+Ready同行六案例132RF、未选择队列+Ready同行六案例22RF及旧
+Unknown/confirmed-Off静默队列各六例、原0x0b拒绝/捕获失败均有效且不改写。
+正常启动VM累计39、维护20。当前通过受控队列和所有三个初始化recipe后续步骤的
+三fd/原held帧/活动Ready同行门禁；**整项Managed、普通调度并发/结果淘汰仍OPEN**。
+下一优先为普通调度与结果淘汰、当前资格镜像物理拔插/daemon不中断、四设备两组并行，
+再继续完整S0–S6连接/SSAP/Profile、安全/Bond/PHY、drivers-owned backend/PM、
+Native/Proxy/sandbox/发布验收。原生主机对照受VM-only约束未执行。
+自然启动超时/重枚举/设备消失、软件off/on未恢复bulk、历史xHCI warning的RCA与无需
+人工干预的单设备恢复继续OPEN；人工冷断电只是诊断且VBUS未测，人工guest IN错误仅
+开发支撑。28项原scope及两个draft保持OPEN未合并，完整goal active。
+
+
+## 2026-10-11 普通调度的真实替代队列及结果淘汰六例通过
+
+[独立原始证据](evidence/ws73-managed-ordinary-eviction-real-20261011.json)，
+SHA256 `ecf708552083431d5280d94878379a00790f496679a07b79fe52f930f5a577e3`：广告/扫描各release、最后fd关闭、dup，六个
+实际source runner PASS/QEMU0。两CPU、两个SCHED_OTHER线程，每例实际ioctl
+时间窗重叠43–57对；65个同域合法替代提交耗时0.84–1.23ms。原在途请求先
+Cancelled，再被真实64项终态表淘汰；原ID/首替代ID（扫描再加准备ID）
+在release前/后和迟到回复排空后均ENOENT。其余64项仅最后一个实际Queued，
+释放后全部Cancelled/-ECANCELED，opcode/step/power0，无未选择命令逃逸。
+原提交到取消128–170ms，不延长500ms原期限；dup第一次关闭仍Held，末引用
+关闭Revoking到Free。实际host成功IN81原SHA/长度与原回复一致。
+
+广告只有原C02和必要C05，扫描先实际广告Off、原1001，零未选择START/STOP；
+扫描仍Unknown/Setup，不制造Ready。活动同行跨原held回复/取消/Free保持同
+generation/完整Ready/Managed/current scanning On，每例14条真实命令/
+成功Complete，随后STOP/START/STOP。同RF slkd/bus、UID1000/caps0随机
+RF20+2，共132轮均在10秒内匹配标识、数据、地址、RSSI；零抓包drop、taint0、
+无kernel fault。hold发生在RF daemon前，不能据此宣称daemon并发在途验收。
+
+原扫描initializer替代失败EBUSY及未执行两例保留；修正后先实际核对
+EBUSY/ENOENT无admission，再以合法同域STOP作未选择替代，不放宽生产
+can_initialize_scan。原首批广告冻结Ue18b25aa9c1b，新扫描冻结U542f7ae311ae；
+编译内核K060011963b5e、服务U7bd441625951，生产源码哈希一致，QEMU d53eb3d1b583。
+原prepare错误module-tree父目录参数保留（无VM/USB执行），新独立输出修正。
+316工具回归、25实际Host、19命令计划支撑保持；ABI测试忽略显式路径的
+CI38150415339失败及随后sparse checkout缺头文件的CI38151129591失败保留。
+修正只补 canonical pinned UAPI 依赖，U303b94c50260 CI38151508403九项成功；
+证据HEAD后续CI单独核对。正常VM累计46、维护20，失败不归零。
+
+[原后续步骤九例/198RF](evidence/ws73-managed-later-real-20261011.json)及
+此前静默/活动Ready队列、首步、0x0b拒绝与捕获窗口失败证据保持。
+当前通过限定于普通调度两个提交者的替代/淘汰/释放子集，**整项Managed和
+完整并发/事件/权限/移除仍OPEN**。下一优先为daemon运行中的在途取消与作者
+生命周期、当前资格镜像物理拔插/slkd不中断、四设备两组，然后自然
+启动/消失RCA和有限单设备非人工恢复，以及其余完整S0–S6/28项原验收。
+VM-only不变；人工guest IN错误只是开发支撑，hub切电和人工冷断电不是
+自动恢复验收。未查明根因、历史xHCI warning及恢复事项继续OPEN，部分成果
+不关闭整项、两个draft不合并。
+
+
+## 2026-10-12 新服务的 live slkd 取消与独立实机回归
+
+新增 `cancel-discovery` 通过每设备 Managed release/revoke/drain/reacquire
+取消两项 policies，保留实际原请求 Cancelled、清理失败和固件 STOP0x0b
+拒绝；不产生虚构成功 STOP/Complete。bootstrap/RPC/removal 共用一个
+credential/admission gate，设备忙立即报错，同行独立；非Ready不支持。
+
+[新双案例/44轮实机证据](evidence/ws73-live-daemon-managed-cancel-real-20261012.json)
+（SHA256 `81ed71737254b74704f276fd57c081491095961db4334d9a22cf357fae692192`）
+记录原CLI在线及实际退出，原参数reply暂留/取消/实际排空，零未选择
+目标START/STOP，另一只Ready保持扫描；同slkd/bus、普通UID1000/caps0
+各RF20+2，捕获各1179/零drop、taint0、无kernel fault。实际编译内核
+K060011963b5e，新服务/冻结工具U9cdccd942e21，不能沿用旧U7bd服务资格。
+原STOP0b整例FAIL及未执行下一例独立保留，未转成成功或Off。
+
+320工具、完整Rust170项加新生产admission2项和严格clippy通过；
+[精确源码CI38154578944](https://github.com/OpenSparklink/sparklink/actions/runs/38154578944)
+九项成功。正常VM累计49/维护20，失败不归零。完整限定语义与复现命令见
+[Managed验收](MANAGEMENT_SETUP_RELEASE.md)。人工guest IN错误仍是恢复开发
+支撑，不是自然故障恢复；冷断电对照也不计自动恢复。
+
+下一优先为取消CLI放弃/移除和其他admission/结果/事件/权限并发，当前资格
+镜像物理拔插/slkd不停机、四设备两组，以及自然启动/重枚举/消失RCA与有限
+单设备非人工恢复。完整S0–S6/28项原scope、14项整改与旧代码三类清理保持，
+自动恢复/未查明根因及整项Managed仍OPEN；部分成果不关闭整项，两个draft
+不合并，goal active，VM-only。
+
+
+## 2026-10-12 取消CLI放弃及竞争取消的真实双案例
+
+[独立证据/新44轮RF](evidence/ws73-daemon-cancel-author-real-20261012.json)，
+SHA256 `70b9c6f4be10eee572cdaabd338d1f0cbc687dfd38b7eaa86ba51b29639ab9a1`：
+取消CLI实际被kill/reap，或第二个取消实际busy失败，原host参数reply仍held；
+内核实际Revoking到同generation Managed/owned Held，目标实际扫描START/STOP
+验证业务权限，同行Ready/scanning On保持。只读`management`不返回lease token，
+不消费operation结果，不锁住handoff；完整捕获目标仅原1001+排空后的
+1001/START/STOP，peer三条，无busy请求逃逸、虚构Complete/取消CLI成功。
+新服务/冻结工具Uab1a34b07f1c、内核K060011963b5e；同slkd/bus，普通
+UID1000/caps0，RF20+2各例/共44轮、10秒内随机数据/地址/RSSI匹配，零drop、
+taint0/无kernel fault。322工具/174Rust/严格clippy，精确CI38155998741九项
+成功；原新fixture拒绝及旧STOP0b/EBUSY/超时/warning历史不覆盖。
+
+该批次正常VM累计51、维护20，失败不归零。当时下一取消/移除并发安排采用明确QMP guest
+单对象退役支撑，仍需单独真实物理拔插/四设备两组；自然启动超时/重枚举/
+消失RCA及非人工单设备恢复仍OPEN，不能用guest退役或人工错误替代。
+其余完整RPC/事件/权限/结果并发和S0–S6/28项原scope保持；旧代码三类清理、
+未发布UAPI迁移后删除继续，整项Managed未完成，部分成果不关闭整项。
+VM-only，goal active。复现/字段/限定范围见[Managed验收](MANAGEMENT_SETUP_RELEASE.md)。
+
+
+## 2026-10-12 取消/目标guest移除支撑通过，保留两个失败
+
+[新真实设备证据](evidence/ws73-daemon-cancel-removal-real-20261012.json)，
+SHA256 `9b71ad70680c975c1c10f7d6e0bcceb21e93867915cc0bf0b6ed5cc6534d6859`：原真实1001 reply held、原请求Cancelled，实际Revoking时仅QMP
+退役目标；取消RPC返回ENODEV且无虚构确认，原178字节host缓冲只DROP一次，
+guest没有旧成功Complete/START/STOP。同行保持generation2/Ready/scanning On
+并实际STOP；原端口重加后目标generation1→3，旧选择仍失效，同slkd/bus、
+普通UID1000/caps0 RF20+2通过，1279包/零drop、taint0/无kernel fault。
+
+当前源码K4ee4af55f38c/冻结工具U7bcc7866c368，实际编译K060011963b5e/
+服务Uab1a34b07f1c生产哈希一致。专用QEMU实际回调DROP诊断/四种清理
+ASan/UBSan/LSan、无USB边界和隔离boot smoke通过；329工具测试和
+[精确源码CI38159520269](https://github.com/OpenSparklink/sparklink/actions/runs/38159520269)
+九项success。主机/guest墙钟用原子握手界定，原请求到delete保守上界206.37ms，
+不改变500ms原期限；最终JSON独立重算通过，不能只认console或在线proof。
+
+三次尝试仅一次验收：原跨墙钟FAIL、原在线PASS但最终manifest被重复初始化
+清空而独立拒绝的尝试均原样保留，后者临时结论已撤回。正常VM累计54/维护20。
+这只增加QMP guest生命周期支撑，不关闭物理拔插/四设备/自然RCA/非人工恢复。
+下一当前镜像物理拔插与四设备两组并行、其余RPC/结果/事件/权限并发和完整
+S0–S6/28项继续；14项整改、旧代码三类清理与未发布UAPI迁移后删除保持。
+自动恢复/根因未明与整项ManagedOPEN，部分成果不关闭整项，goal active，
+VM-only。最新冷断电报告不追加冷启动资格，VBUS仍未测。复现与限定范围见
+[Managed验收](MANAGEMENT_SETUP_RELEASE.md)。
+
+## 2026-10-12 当前源码部分初始化／在途 File 矩阵
+
+Linux `46db23ba8beda736908ea61465ca8815fba4d7d6`、实际编译服务与冻结工具
+`cd640655dcd153b8cfd06f6ae27224d34ef7cac1` 的 VM83–91 九例均通过：广播最后
+OFF（step1）、扫描 ON（step1）和扫描最后 OFF（step2），各覆盖显式 release、
+最后 File 关闭、dup 首关／尾关。双 vCPU 普通调度；QEMU 仅暂留一条真实成功
+IN81 帧，不生成回复或 credits。作者取消不会改为成功，旧真实回复排空后按实际
+radio truth 清理；仅广播已配置时仍是 Setup，禁止补造 Ready。
+
+同行保持同 generation 的独立 Ready、Managed Held 和扫描 On，并获得真实
+启停回复。每例随后 RF20+2，共198轮、10815捕获包、零丢包、taint0、QEMU退出0。
+独立复算全部原帧哈希、UAPI 记录、setup／partial／peer／RF 证明及冻结输入。
+普通应用 UID1000/caps0、同 slkd/bus；File探针与调度控制属于 VM 内测试工具。
+[九例证据](evidence/ws73-current-later-partial-file-matrix-20261012.json)。
+这是 discovery 部分初始化和在途真实回复取消的当前源码资格，补齐上一记录的
+对应待验项；不代表连接在途／connected 撤销、完整 Managed 或普通调度下所有
+未选择队列竞争。后续人为 guest IN 错误仅测试支撑，不是自然自动恢复。
+
+参考未改动 `libws73-usb` f4d85d0 的 maintenance VM24 未进入连接：server 的
+芯片 reset 后 guest 等待 boot-mode 重枚举超时，client 未启动。主机只读枚举看到
+目标变成两个端点的 boot 状态，说明不能笼统判为“芯片完全未重枚举”。随后
+当前驱动 VM92 从该状态完成启动、RF20+2 和 QMP guest 移除／重加：1369包，
+零丢包、taint0、退出0、同 slkd/bus。
+[参考失败及 Native 后续启动对照](evidence/ws73-reference-reset-native-boot-contrast-20261012.json)。
+后续运行未再次切 hub 电源；它是受控启动对照，不能宣称服务自动恢复成功。
+
+正常 VM 累计92／维护24。下一定位参考 guest reset/open 与主机重枚举／描述符
+更新边界，再比较真实连接启动和地址／序列；同时推进 canonical 状态重同步、
+peer/link lifetime 与旧实现迁移清理。S0–S6、原28项、SSAP／安全／Profile／PHY／
+PM／Proxy、默认四设备并行、自然故障根因和非人工自动恢复保持开放。
+整项不因这九例关闭；所有实验继续 VM-only，历史失败证据保留。
+
+参考失败的 guest kernel 日志进一步确认：1-2 实际 disconnect 后重新枚举为
+full-speed、bcdDevice1.00（device3→4）。故障定位应收窄到参考进程的 libusb
+设备发现、描述符缓存和 wait/open，而不能宣称 QEMU 完全没有重枚举；根因
+尚未查明。原失败状态和所有捕获不改写，日志哈希加入上述对照证据。
+
+2026-10-12参考Host对照新增实证：[VM设备发现环境](WS73_REFERENCE_DISCOVERY_LAB.md)。
+缺udev时旧libusb context保留runtime对象，补udev后同参考二进制完成真实连接；
+双端outcome与OUT/Status已核对。本项目Native连接仍未通过，下一以单变量比较
+SetPublicAddress/scan/data推进typed初始化，随后connected撤销和canonical状态。
+自然启动/bulk/消失根因及自动恢复保持OPEN，参考SSAP日志不代替本项目验收。
+
+2026-10-12 Native连接定位进入广播集合生命周期修复：
+[真实因子矩阵及Host接入设计](WS73_ADVERTISING_SET_LIFECYCLE.md)。参考仅参数
+更新的mode0→mode3转换失败，成功Remove+重建恢复；Native95原路径仍失败。
+先完成actual set-state/atomic recipe/有限撤销，再真实Native连接及connected
+FD/peer隔离门禁。保留已验证mode0广播扫描，原队列和九例partial当前资格。
+自然RCA/非人工恢复/四设备和S0–S6/28项不因参考对照关闭。
+
+Linux1305136c/fdfd服务工具已在VM97通过真实可协商双向Connect/Disconnect、
+RF22与QMP支持（1377包/零丢包/taint0）；
+[当前Native证据](evidence/ws73-native-advertising-recreation-connection-20261012.json)。
+下一优先新源下删除/重建FD、connected release/lastFD/dup/inflight与peer隔离，
+并复核原partial/queue门禁。fixed-T、canonical重同步/peer lifetime、SSAP安全、
+Profile/PHY/PM/Proxy、默认四设备、物理范围和非人工恢复/RCA及全部S0–S6/28
+仍开放。部分成果不关闭整项，VM-only。
+
+2026-10-12完成130/2e53bee真实删除/创建回复held的release/lastFile/dup六例，
+资源Setup/Ready和同行扫描隔离、RF132独立核对；
+[限定证据](evidence/ws73-resource-file-held-reply-matrix-20261012.json)。
+下一connected真实File/在途清理、daemon运行期边界和当前源原partial回归；
+S0–S6/28及自然RCA、非人工恢复、物理/四设备、canonical/peer lifetime与其余
+生态仍OPEN。修复Python连接方法后也须以真实connected探针复核，不用/dev/null
+或DTO回放替代。所有实验VM-only，部分成果不关闭整项。

@@ -1,0 +1,277 @@
+{
+  "schema": 1,
+  "thread_id": "01a120fe-1165-7c50-9d9f-56e0b8355c3c",
+  "goal_status": "active",
+  "objective_unchanged": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、slk-vendord Proxy 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
+  "budget_unchanged": {
+    "token_budget": null,
+    "remaining_tokens": null,
+    "budgeted": false
+  },
+  "goal_api_objective_edit_available": false,
+  "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
+  "updated_at_utc": "2026-10-12T17:53:21.102886+00:00",
+  "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
+  "capabilities": "docs/CURRENT_CAPABILITIES.md",
+  "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
+  "scope_unchanged": [
+    "S0",
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6"
+  ],
+  "original_issue_count": 28,
+  "hardware_constraint": "VM_ONLY",
+  "current_heads": {
+    "linux": "d3abbdc0c13ac7fc35f9b4bd3132ad14190e7d87",
+    "sparklink": "b3e13a7354f276da7d7562c76d42c2d0ed54fc19"
+  },
+  "qualified_source_heads": {
+    "linux": "d3abbdc0c13ac7fc35f9b4bd3132ad14190e7d87",
+    "userspace": "afb5ee23463e5e0444ea7f1c465f7c059f55c1e2"
+  },
+  "current_qualification": {
+    "DG01": "current revision forty actual peer-validated short round trips, two connection roles",
+    "DG02": "eight application249/DTAP254 round trips and sixteen application oversize rejections; same-Binding short recovery missing",
+    "FV01": "scoped production CBMC 131 properties",
+    "FV03": "two locked LKMM properties and deliberately weak control",
+    "FV04": "bounded abstract contract only, no implementation refinement",
+    "FV02": "NOT_PROVEN_UNSUPPORTED_AND_TIMEOUT",
+    "FV07": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN"
+  },
+  "next_slices": [
+    "WP18-SSAP current batch: actual caller audit → remove/isolate old kernel service business → reject unsupported callers and remove unpublished ioctls → strict cross-language + VM WS73 regression; mandatory before WP08 user Engine",
+    "WP02/DG02 same-Binding61→249→reject→61; DG03 layered boundaries",
+    "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
+    "WP03 commit tickets/revoke-Down order and reuse barrier; FV05/FV07",
+    "WP04 unique Session RX and Binding lifetime; DG07-08/FV06",
+    "WP05 revocable kernel Grant epoch; DG09",
+    "WP06 socket type/file contract; requalify exact revisions",
+    "Required long-PDU modes then WP07 multiple channels/four-device groups; WP08 real SSAP without waiting all four-device gates"
+  ],
+  "parallel_work": [
+    "WP01 remaining worker/deadline negative mappings",
+    "WP11 natural startup/reenumeration/disappearance RCA and non-manual isolation recovery",
+    "WP12 events/snapshot/daemon handoff",
+    "WP18 old-code migration/deletion",
+    "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
+  ],
+  "packages": [
+    {
+      "id": "WP00",
+      "interface_dependencies": [],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    },
+    {
+      "id": "WP01",
+      "interface_dependencies": [
+        "WP00"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    },
+    {
+      "id": "WP02",
+      "interface_dependencies": [
+        "WP01"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    },
+    {
+      "id": "WP03",
+      "interface_dependencies": [
+        "WP00"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    },
+    {
+      "id": "WP04",
+      "interface_dependencies": [
+        "WP01",
+        "WP03"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open"
+    },
+    {
+      "id": "WP05",
+      "interface_dependencies": [
+        "WP03",
+        "WP04"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open"
+    },
+    {
+      "id": "WP06",
+      "interface_dependencies": [
+        "WP01",
+        "WP02",
+        "WP03",
+        "WP04",
+        "WP05"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open"
+    },
+    {
+      "id": "WP07",
+      "interface_dependencies": [
+        "WP02",
+        "WP03",
+        "WP04",
+        "WP05",
+        "WP06"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open"
+    },
+    {
+      "id": "WP08",
+      "interface_dependencies": [
+        "WP02",
+        "WP04",
+        "WP05",
+        "WP06",
+        "WP18"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open",
+      "dependency_condition": "WP18 old SSAP production separation must pass first; no requirement that all old control-plane cleanup completes"
+    },
+    {
+      "id": "WP09",
+      "interface_dependencies": [
+        "WP03",
+        "WP04",
+        "WP05"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open"
+    },
+    {
+      "id": "WP10",
+      "interface_dependencies": [
+        "WP08",
+        "WP09"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open",
+      "dependency_condition": "WP09 applies to authenticated service operations; public applicable services may proceed with WP08"
+    },
+    {
+      "id": "WP11",
+      "interface_dependencies": [],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    },
+    {
+      "id": "WP12",
+      "interface_dependencies": [],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    },
+    {
+      "id": "WP13",
+      "interface_dependencies": [
+        "WP00"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open"
+    },
+    {
+      "id": "WP14",
+      "interface_dependencies": [
+        "WP05",
+        "WP12",
+        "WP13"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open"
+    },
+    {
+      "id": "WP15",
+      "interface_dependencies": [
+        "WP03",
+        "WP04",
+        "WP11"
+      ],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "existing foundations retained; target package exit conditions open"
+    },
+    {
+      "id": "WP16",
+      "interface_dependencies": [],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    },
+    {
+      "id": "WP17",
+      "interface_dependencies": [],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    },
+    {
+      "id": "WP18",
+      "interface_dependencies": [],
+      "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
+      "completion": false,
+      "status": "partial implemented/scoped/hardware slices; full exit conditions open"
+    }
+  ],
+  "proof_tasks": [
+    "FV01",
+    "FV02",
+    "FV03",
+    "FV04",
+    "FV05",
+    "FV06",
+    "FV07",
+    "FV08",
+    "FV09",
+    "FV10"
+  ],
+  "data_gates": [
+    "DG01",
+    "DG02",
+    "DG03",
+    "DG04",
+    "DG05",
+    "DG06",
+    "DG07",
+    "DG08",
+    "DG09",
+    "DG10",
+    "DG11",
+    "DG12"
+  ],
+  "full_goal_complete": false,
+  "original_issues_open": true,
+  "issue_sync_receipt": ".dev/architecture-proposals/20261013/ISSUE_ADOPTION_PUBLICATION.json",
+  "natural_fault_root_cause_closed": false,
+  "non_manual_automatic_recovery_qualified": false
+}

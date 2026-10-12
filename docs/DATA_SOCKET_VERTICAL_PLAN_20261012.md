@@ -1,3 +1,6 @@
+> 本文件为2026-10-12纵向拆分历史参考；现已合入[唯一执行计划](IMPLEMENTATION_PLAN.md)。
+> 后续优先级/工作包/门禁仅维护IMPLEMENTATION_PLAN，当前事实以CURRENT_CAPABILITIES为准。
+
 # 真实 WS73 每逻辑通道 socket：近期实施顺序
 
 2026-10-12 用户调整的优先级。保留完整 S0–S6 和现有分层；本节取代此前

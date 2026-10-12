@@ -230,10 +230,13 @@ def supervise():
             row.update(status='FAIL', error=str(error), error_type=type(error).__name__)
         finally:
             if loaded:
-                removed = subprocess.run(['/bin/rmmod', 'ws73_acb_transport_probe'], capture_output=True, text=True, timeout=10)
-                row['unload'] = dict(exit=removed.returncode, stdout=removed.stdout, stderr=removed.stderr)
-                if removed.returncode:
-                    row.update(status='FAIL', error='selftest module unload failed')
+                try:
+                    removed = subprocess.run(['/bin/busybox', 'rmmod', 'ws73_acb_transport_probe'], capture_output=True, text=True, timeout=10)
+                    row['unload'] = dict(exit=removed.returncode, stdout=removed.stdout, stderr=removed.stderr)
+                    if removed.returncode:
+                        row.update(status='FAIL', error='selftest module unload failed')
+                except BaseException as error:
+                    row.update(status='FAIL', error='selftest unload exception: '+str(error))
             row['end_wall_ns'] = time.time_ns()
             temporary = FOLDER / f'phase-{phase}.tmp'
             temporary.write_text(json.dumps(row, indent=2) + '\n')

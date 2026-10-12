@@ -150,7 +150,7 @@ Host的data撤销在revoke_connections首个Host临界区发布；只有新lease
 （无物理links、清理收敛）满足才重新开放。并未实现每Binding的Grant epoch/方向/安全
 验证，也未取得全部controlled VM交错/NOCP复用屏障资格；这两个scope继续开放。
 离线25 Native、10 driver故障、49 Host/12连接与48 Managed测试和限定LKMM不能代替
-本批新版本真实40短/249回归。Session唯一RX/fd分离仍待接通，不放开多通道。
+对应K464/U854新版本真实40短/249回归。Session迁移后续切片见下节，不放开多通道。
 
 ## Runtime-owned Session 切片（K3c8da4fac302）
 
@@ -164,4 +164,6 @@ RX16条及socket内存限制；TX八条包含busy skb，linger也含busy，不�
 不能新USB提交。不得持Session锁跨Runtime查找、阻塞I/O或cancel_sync。table mutex→Host
 读取最新快照，释放后stop/join；Runtime关gate并join Session后再取native_lifecycle，防止互等。
 动态TCID/关闭协议、Grant epoch/安全、NOCP/旧RX wire屏障及全refinement/KCSAN/lockdep
-继续开放。本批精确新VM资格待取得，不能继承旧版本资格。
+继续开放。K3c8da4fac302/Ud1f9dde已重新取得VM真实40短/249及dup/最后关闭拒绝重开的
+子门禁；两端每端一次CMTC、实际对端校验回复与准确捕获见CURRENT_CAPABILITIES。
+正常业务资格不等于受控在途关闭、完整引用或自然恢复通过。

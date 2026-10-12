@@ -7,11 +7,12 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前实现仍是单socket独占一个连接的ACB消费与CMTC；Session/Channel/Grant/Ticket迁移
-未完成，保留单消费者限制。实验AF/PF_SPARKLINK=46已经接入当前fork；正式分配尚待协调。
-基础实验SEQPACKET不承诺可靠递送，目标基础DGRAM迁移要同步调用者并重新实机验收。
-新K d3abbdc0c13a/U afb5ee2已取得40轮短消息及8轮249-byte业务往返资格；不授予
-长包、同lifetime重开、多通道、四设备数据、安全或自然自动恢复资格。
+当前K3c8da4fac302/Ud1f9dde：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
+实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
+未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
+及16次超限拒绝、dup保持收发和最后关闭后同life重开拒绝；不授予动态通道/关闭协议、
+长包、多通道、四设备数据、安全、完整Grant或自然自动恢复资格。
 
 ## 目标分层及架构决策
 

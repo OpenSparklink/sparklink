@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T20:19:38.835911+00:00",
+  "updated_at_utc": "2026-10-12T20:25:23.811673+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
-    "userspace": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972"
+    "userspace": "e7532f3b7c8d97b79616692d48e858f3247465a7"
   },
   "qualified_source_heads": {
     "linux": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
@@ -280,7 +280,7 @@
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
   "current_batch": "Runtime-owned Session/Channel/Binding migration implemented, offline/production Binding CBMC and bounded abstract TLC passed; exact40short/249 plus ordinary dup/last-close/rebind-rejection and unique CMTC real VM gates passed. Whole target architecture remains open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
-  "issue_sync_status": "28 adopted scope/dependency blocks and28 architecture-first steering comments verified OPEN with original body hashes unchanged",
+  "issue_sync_status": "Original28 adoption/architecture-first blocks preserved; latest13 Runtime Session implementation/offline/scoped-proof/real/missing comments read back with exact body and original issue scope OPEN",
   "current_implementation_heads": {
     "linux": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
     "userspace": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972"
@@ -293,7 +293,7 @@
     "Then unchanged full S0\u2013S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/Proxy/PM/recovery/release"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
-  "offline_evidence": "docs/evidence/ssap-abi-separation-offline-20261013.json",
+  "offline_evidence": "docs/evidence/session-offline-20261013.json",
   "ssap_separation_batch_complete": true,
   "target_architecture_remediation_complete": false,
   "batch_evidence": [
@@ -309,8 +309,8 @@
     "docs/evidence/session-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/native-ticket-issues-20261013.json",
-  "latest_evidence_commit": "aa2c197f1f6d93db428ba1e647c4e8275de406b8",
+  "latest_issue_progress_receipt": "docs/evidence/native-session-issues-20261013.json",
+  "latest_evidence_commit": "e7532f3b7c8d97b79616692d48e858f3247465a7",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
   "current_goal_turn_classification": "progress: production Runtime-owned Session/Channel/Binding split, IRQ-safe actual submit consent, new source tests/scoped proofs and precise real-device requalification"
 }

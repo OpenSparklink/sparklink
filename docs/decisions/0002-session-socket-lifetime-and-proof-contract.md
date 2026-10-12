@@ -82,3 +82,8 @@ credit耗尽/满队列/断链/旧lifetime；不等待全部控制面竞争排列
 准确命令、终态/反例、源码映射及回归。超时、unsupported、未完整展开均为NOT_PROVEN，
 禁止计PASS。优先直接验证生产纯转换，不复制更简单验证实现；反例转成实际回归。
 证明与实机资格独立集中记录，部分成果不关闭整项issue。历史自然故障及自动恢复开放。
+
+已安装工具及当前范围见[验证入口](../../formal/README.md)：直接编译生产转换，
+保留NOCP复用反例和实际ledger回归；Kani unsupported/超时不标PASS。
+安装13项检查仅是工具可用性证据。Ghidra用于SDK111协议核对，Tamarin/ProVerif
+随S5安全/Bond接入；不能把当前有限模型范围扩大为全系统或硬件恢复证明。

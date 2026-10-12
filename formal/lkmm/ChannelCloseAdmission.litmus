@@ -1,0 +1,22 @@
+C ChannelCloseAdmission
+
+(* CLOSED is terminal; final software admission holds the same state_lock. *)
+{ phase=1; }
+P0(int *phase, spinlock_t *state_lock)
+{
+	spin_lock(state_lock);
+	WRITE_ONCE(*phase, 2);
+	spin_unlock(state_lock);
+}
+P1(int *phase, spinlock_t *state_lock)
+{
+	int r0;
+	int r1;
+	spin_lock(state_lock);
+	r0 = READ_ONCE(*phase);
+	spin_unlock(state_lock);
+	spin_lock(state_lock);
+	r1 = READ_ONCE(*phase);
+	spin_unlock(state_lock);
+}
+exists (1:r0=2 /\ 1:r1=1)

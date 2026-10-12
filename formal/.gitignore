@@ -1,0 +1,4 @@
+credit/Cargo.lock
+credit/target/
+**/*_TTrace_*.tla
+**/*_TTrace_*.bin

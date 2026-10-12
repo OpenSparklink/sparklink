@@ -1,0 +1,17 @@
+C ChannelSnapshotWeak
+
+(* Deliberately missing state_lock: READ_ONCE/WRITE_ONCE alone. Sometimes. *)
+{}
+P0(int *mtu, int *phase)
+{
+	WRITE_ONCE(*mtu, 249);
+	WRITE_ONCE(*phase, 1);
+}
+P1(int *mtu, int *phase)
+{
+	int r0;
+	int r1;
+	r0 = READ_ONCE(*phase);
+	r1 = READ_ONCE(*mtu);
+}
+exists (1:r0=1 /\ 1:r1=0)

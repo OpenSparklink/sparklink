@@ -80,7 +80,7 @@
     ],
     "observed_host_boot_two_endpoints": true,
     "guest_library_wait_mode_failed": true,
-    "root_cause": "UNDETERMINED; host target is now boot2 endpoints while guest reference reset/open path timed out; investigate host/guest re-enumeration boundary and descriptor refresh, not connection parameters",
+    "root_cause": "UNDETERMINED; both host boot2 inventory and guest USB disconnect/new full-speed bcdDevice1.00 enumeration are observed, but reference libusb wait_mode/open still fails. Investigate process-context discovery, cached descriptors and device-list freshness; no proof of general QEMU enumeration failure.",
     "native_connection_acceptance": false,
     "reference_connection_acceptance": false,
     "automatic_recovery_acceptance": false,
@@ -121,8 +121,29 @@
         "path": ".dev/reference-contrast-prepared/manifest.json",
         "sha256": "aaed31604184b9b4858aa11b870521958fd0be8ed2248d10d4f89907d30be796",
         "size": 2031
+      },
+      {
+        "path": ".dev/reference-contrast-real/guest-output/kernel.log",
+        "sha256": "8417203959744f71dacbae52087b170fc8ffd50baac7abc93cf679728e17713a",
+        "size": 40552
       }
-    ]
+    ],
+    "guest_kernel_enumeration_log": [
+      "[    3.724005] usb 1-2: new high-speed USB device number 3 using xhci_hcd",
+      "[    3.854492] usb 1-2: New USB device found, idVendor=ffff, idProduct=3733, bcdDevice= 3.18",
+      "[    3.854497] usb 1-2: New USB device strings: Mfr=1, Product=2, SerialNumber=3",
+      "[    3.854499] usb 1-2: Product: 00000000",
+      "[    3.854501] usb 1-2: Manufacturer: 00000000",
+      "[    3.854503] usb 1-2: SerialNumber: >04072<1705:229=0;6516:0",
+      "[    5.170475] usb 1-2: USB disconnect, device number 3",
+      "[    5.387918] usb 1-2: new full-speed USB device number 4 using xhci_hcd",
+      "[    5.541596] usb 1-2: New USB device found, idVendor=ffff, idProduct=3733, bcdDevice= 1.00",
+      "[    5.541603] usb 1-2: New USB device strings: Mfr=1, Product=2, SerialNumber=3",
+      "[    5.541607] usb 1-2: Product: 00000000",
+      "[    5.541611] usb 1-2: Manufacturer: 00000000",
+      "[    5.541613] usb 1-2: SerialNumber: >04072<1705:229=0;6516:0"
+    ],
+    "guest_kernel_reenumeration_observed": true
   },
   "native_vm_attempt": 92,
   "actual_kernel_head": "46db23ba8beda736908ea61465ca8815fba4d7d6",

@@ -243,3 +243,8 @@ radio truth 清理；仅广播已配置时仍是 Setup，禁止补造 Ready。
 peer/link lifetime 与旧实现迁移清理。S0–S6、原28项、SSAP／安全／Profile／PHY／
 PM／Proxy、默认四设备并行、自然故障根因和非人工自动恢复保持开放。
 整项不因这九例关闭；所有实验继续 VM-only，历史失败证据保留。
+
+参考失败的 guest kernel 日志进一步确认：1-2 实际 disconnect 后重新枚举为
+full-speed、bcdDevice1.00（device3→4）。故障定位应收窄到参考进程的 libusb
+设备发现、描述符缓存和 wait/open，而不能宣称 QEMU 完全没有重枚举；根因
+尚未查明。原失败状态和所有捕获不改写，日志哈希加入上述对照证据。

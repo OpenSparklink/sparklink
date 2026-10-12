@@ -1,0 +1,87 @@
+{
+  "status": "CALLERS_AUDITED_NO_PRODUCTION_REMOVAL_THIS_BATCH",
+  "observed_kernel_head": "1305136ce2c83d1180e84c62e96576def26816a4",
+  "updated_wall_ns": 1791792773753527683,
+  "inputs": [
+    {
+      "path": "net/sparklink/sle_host.rs",
+      "sha256": "e2c89c14917f4933e7ee4f3ddf9f219574fabb3f1accc59ed1e2a3d4fe81c6f5"
+    },
+    {
+      "path": "net/sparklink/sle_mgmt.rs",
+      "sha256": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29"
+    },
+    {
+      "path": "net/sparklink/sle_command_queue.rs",
+      "sha256": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c"
+    },
+    {
+      "path": "net/sparklink/sle_transport.rs",
+      "sha256": "6945cb2f40ef4d7668aaf603945b97205cc28e155d8e264f0eb8bc52fadf6b95"
+    },
+    {
+      "path": "net/sparklink/sle_dev.rs",
+      "sha256": "5d6c6a94fcad00b2e7fbb44bbd3a72db95f32100806e90b7b201cd05a70940be"
+    },
+    {
+      "path": "net/sparklink/sle_serdev.rs",
+      "sha256": "fcde74ce2cc265135e868d2b80e0260b0b2adc7c59f00a79449ccabfe617fcf1"
+    },
+    {
+      "path": "net/sparklink/sparklink_core.rs",
+      "sha256": "4f54bd2135d05ba45995c0dc81613a422f00b1ba62e0e504ac0017191271c173"
+    },
+    {
+      "path": "net/sparklink/sle_dli.rs",
+      "sha256": "5a18a50b4f541115bf988626444cea9c705c77e7dc3834934f540b172098e098"
+    },
+    {
+      "path": "net/sparklink/sle_usb.rs",
+      "sha256": "bf289d3f3cb3f5e3ad034c2cea00a4e43f96d3cb4eebe65bd15e81d0f132f108"
+    }
+  ],
+  "immediately_remove_after_compile_gate": [
+    "stale connection-operation staging comment that contradicts actual Native production linkage",
+    "unused individual helpers proven by full caller and selftest audit; do not infer from global dead_code alone"
+  ],
+  "move_to_test": [
+    "old pure UART/SPI framing and injected/model Complete tests; live unimplemented operations already fail unsupported",
+    "global serial parser model tests when real per-runtime transport replacement is connected"
+  ],
+  "wait_for_replacement": [
+    {
+      "path": "sle_mgmt.rs",
+      "live_callers": [
+        "Host imports canonical queue through re-export",
+        "legacy ControllerState owns pending/queue diagnostic state",
+        "legacy ioctl diagnostic and worker completion consumers"
+      ],
+      "next_atomic_migration": "move canonical queue initialization/error adapter and timeout ownership out of legacy mgmt; migrate Host to direct canonical import and source harness, then audit unused old pending helpers",
+      "delete_entire_module_now": false
+    },
+    {
+      "path": "sle_transport.rs / sle_dev.rs",
+      "live_callers": [
+        "core runtime registration and bindings",
+        "Native USB registration and identity",
+        "controller events and snoop identity"
+      ],
+      "next_atomic_migration": "drivers-owned registration/backend lifetime API before removing closed bus/protocol enum and binding table",
+      "delete_entire_module_now": false
+    },
+    {
+      "path": "sle_serdev.rs",
+      "live_callers": [
+        "unconditional parser init in module init",
+        "SleController enum Serdev variant",
+        "C FFI entry points"
+      ],
+      "next_atomic_migration": "real context-aware receive/write or explicit unsupported experimental isolation; remove misleading skeleton support declarations and global parser after caller migration",
+      "delete_entire_module_now": false
+    }
+  ],
+  "global_dead_code_removal_complete": false,
+  "ws73_lifecycle_preservation_required": true,
+  "automatic_recovery_acceptance": false,
+  "full_goal_complete": false
+}

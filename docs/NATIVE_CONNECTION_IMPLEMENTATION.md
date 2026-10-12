@@ -1,11 +1,16 @@
 # Native连接、撤销清理及用户态调用者
 
-2026-10-12，生产内核 `46db23ba8beda736908ea61465ca8815fba4d7d6`。
-完整bzImage/modules构建通过，源码/配置稳定，无warnings；八export/ELF/module
-产物验证通过。新签名空USB VM保留；最新实际88b9服务的真实双设备VM80默认回归通过：
-广播扫描20+2轮、无连接SIGKILL交接、taint0、1293包无丢包。
-[当前独立复算证据](evidence/ws73-native-advertising-modes-default-rf-regression-20261012.json)。
-这是无连接回归，真实连接及有连接撤销清理尚未验收；原VM75/更早证据继续保留。
+2026-10-12，当前实际验收内核 `1305136ce2c83d1180e84c62e96576def26816a4`。
+WS73 negotiable 广播的[真实双向连接／断开](evidence/ws73-native-advertising-recreation-connection-20261012.json)
+以及[已建立连接的 File 六例](evidence/ws73-connected-file-six-case-matrix-20261012.json)
+已分别通过。后者实际服务／工具为 `c255811b7617211093a7e342fbdad65f2efa65cf`，
+File 阶段在 slkd 启动前，不代表运行中 daemon 的完整生命周期或 canonical resync 通过。
+当前在途回复结果按本文后续带源码和证据的记录核对，不能用历史无连接回归代替。
+
+历史内核 `46db23ba8beda736908ea61465ca8815fba4d7d6`、服务88b9的VM80无连接
+广播扫描20+2轮／SIGKILL交接回归保留：taint0、1293包无丢包，
+[历史独立证据](evidence/ws73-native-advertising-modes-default-rf-regression-20261012.json)。
+原VM75及更早的成功和失败记录也继续保留。
 
 ## 生产调用关系
 
@@ -332,3 +337,52 @@ SHA256 `da835edeeb854f091ffac7fe753ed99947570d1cff847681194a31546581b5ad`。
 RF132），资源缺失Setup/重新创建Ready、作者Cancelled与独立Ready peer均
 核对。见[资源File矩阵](WS73_ADVERTISING_SET_LIFECYCLE.md)。两次验证器失败
 保留，connected及运行中daemon fd清理、自然自动恢复不转移资格，下一优先。
+
+
+## 2026-10-12 真实 Create 在途 Status／outcome 的十二例 File 验收
+
+[独立重算完整证据](evidence/ws73-inflight-file-twelve-case-matrix-20261012.json)，
+SHA256 `5ff072aca5136e9e673b156687f314a2a68d0db09c22b5720e63f3396d1714d7`。
+实际编译内核 K1305136ce2c8、服务及冻结工具 U0a980e5d9b73，SDK111；源码
+CI38221333345 精确 HEAD 九项通过，395 工具回归通过。后续文档／证据提交
+不是另一次服务编译，不改写实际源码来源。
+
+VM117–122 保留实际成功 host IN81 的 Create Status 原帧；VM123–128 先交付
+实际 Status 原帧，再保留实际物理 Up 原帧。两种角色各 release／最后 fd／dup。
+本组均由抓包证明 Status 和 Up 位于不同 USB 聚合帧；若以后合并，只能另记
+combined-reply，用完整原帧验证，禁止拆帧制造“仅 Status”或“仅 outcome”。
+全部 QMP skip／hold／release 读回、原帧大小／SHA256 与对应捕获一致，无自动
+bounded release／drop；只保留及交付真实原始 bytes，未生成 DLI 或 credit。
+
+Status 保留时作者 OnWire、presence flags0，实际目标 credit0；outcome 保留时
+作者 AwaitingOutcome、presence flags1、实际 credit1。flags 的掩码1、2、4分别
+表示 Status、outcome、handle 存在；**没有 OUT 标志**，OUT 成功单独用 usbmon
+提交／完成证明。dup 首次关闭保留同一 File 作者结果和 Held，150ms 无 Disconnect；
+最后关闭才撤销。显式 release 的作者变为 Cancelled/-ECANCELED，已销毁的最后
+File 不伪造可查询作者。撤销保持 Revoking，晚到真实 Up 进入物理清理义务，之后
+才发出匹配 handle 的实际 Disconnect；实际 OUT、Status、两端匹配 Down 完成后
+Free／Ready，目标 credit1。显式 release 的最终作者仍 Cancelled，flags7 表示
+实际 Status/outcome/handle 齐备，不能改记 Succeeded。
+
+同行原 generation、完整 Ready 元数据、credit1、独立管理权保持一致；预期的
+对端 Up/Down 不算无关设备重置，之后自己的广播 STOP、扫描 START/STOP 实际
+成功。VM129–130 另做两个旧已建立连接 dup 回归。每例之后普通 UID1000/caps0
+RF22 成功，共308轮、17234包、零drop、taint0、QEMU0；RF阶段 slkd/bus不重启。
+**File 阶段在 slkd 启动前，仍未验收 daemon 跨 File 清理不中断。**
+
+VM115/116 两次原失败保留：前者测试误把 OUT 作为 flags 位，错误期望 flags1；
+后者把动态 command credit 当作不可变 metadata，错误期望保留 Status 时仍为1。
+前者原失败后有 host bounded release，不属于合格帧交付；后者虽观察到晚到连接
+正确清理，整例仍 FAIL。分别修正检查后重新跑十二例及两个回归，不回填旧成功。
+usbmon 和 guest marker 只在 guest 时钟比较；host QMP 时间仅作来源，不能混用。
+
+下一依赖：运行中 slkd 的 Create 撤销／晚到连接归属与清理、canonical loss resync
+及 peer/handle lifetime 原子绑定；然后完成当前源原 partial 矩阵、物理和四设备
+矩阵。旧内核调用迁移继续按[刷新审计](evidence/ws73-legacy-kernel-call-refresh-20261012.json)
+及[三类清理清单](LEGACY_CLEANUP_20261011.md)推进：Native Host 仍经旧 mgmt 的
+re-export 使用 canonical queue，core／USB 仍消费 dev/transport，serdev 仍有
+全局 parser 初始化及 enum／FFI 调用。先迁真实调用者和源码测试，再删重复逻辑；
+不能将整文件删除、global dead_code 或未接通其他总线记作完成。
+自然启动/bulk/重枚举/消失 RCA、非人工恢复、SSAP/安全/Bond/Profile/PHY/PM/Proxy
+与完整S0–S6仍OPEN，原28项issues和两个未合并draft不变。VM-only，本轮无hub切电
+或人工拔插；正常尝试130、维护37，完整goal active。

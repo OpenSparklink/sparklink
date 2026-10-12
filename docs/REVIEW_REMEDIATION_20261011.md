@@ -1132,3 +1132,16 @@ PHY/PM、Native/Proxy 与发布矩阵。旧内核清理继续按[调用审计清
 同步删除，无兼容期限承诺。自然启动/bulk/重枚举/消失 RCA 和无需人工拔插的恢复
 继续 OPEN；VM-only、原28项 scope、两个未合并 draft 和完整 goal 不变。
 正常尝试114、维护37。
+
+
+## 2026-10-12 当前源 Create 在途 File 十二例已通过
+
+当前首优先中的 Status/outcome 保留、双角色 release/最后fd/dup 已由
+[十二例原帧证据](evidence/ws73-inflight-file-twelve-case-matrix-20261012.json)
+及[实现／严格验收边界](NATIVE_CONNECTION_IMPLEMENTATION.md)补齐；另有两个已
+建立连接 dup 回归，共308RF、17234包零丢包、taint0。实际K1305136ce2c8／U0a980e5d9b73，
+VM117–130；VM115/116 原失败保留，不升级为通过。
+仍是 pre-daemon File 范围：运行中 slkd 撤销、晚到 link 归属、canonical resync 和
+peer/handle lifetime 为下一优先。旧 mgmt/dev/transport/serdev 实际调用者已复核，
+按三类清单继续迁移后删除，全局 dead_code 未记为清完。自然自动恢复/RCA和
+所有其余S0–S6/28 issues仍OPEN，不因本轮部分成果关闭整项；VM-only继续。

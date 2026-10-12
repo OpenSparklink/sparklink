@@ -126,3 +126,7 @@ K4b4c6add8189将基础DTAP创建改为SOCK_DGRAM，并明确拒绝SOCK_SEQPACKET
 本地AF_UNIX仅应用回归支撑，实际SO_TYPE/拒绝门禁及WS73回归在准确新VM中验证。
 这只是类型契约迁移，不宣称可靠模式、Session/Grant/Ticket、RX丢包诊断或全部VFS
 竞争已完成。K770364dcc152/U96ac968先前数据证据仍保存，不自动套用本提交。
+
+准确K4b4c6add8189/U59479e0后续VM门禁已通过：root/ordinary DGRAM SO_TYPE、
+SEQPACKET EPROTONOSUPPORT、40短/249八轮/16超限与发现连接路径。旧SSAP拒绝保持。
+因此类型迁移子门禁通过；可靠模式及整个SocketBinding/Session/Grant契约仍未完成。

@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T18:55:35.552310+00:00",
+  "updated_at_utc": "2026-10-12T19:00:30.917262+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,15 +26,15 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "770364dcc15284c081477dea1bab174506821281",
-    "userspace": "96ac9681d260196ab437a9c33905f00d7fc88459"
+    "linux": "4b4c6add8189a446d540e28f9d60841ed4ae8f87",
+    "userspace": "59479e0478dc0789c1afd99bcd39ae86b0359742"
   },
   "qualified_source_heads": {
-    "linux": "770364dcc15284c081477dea1bab174506821281",
-    "userspace": "96ac9681d260196ab437a9c33905f00d7fc88459"
+    "linux": "4b4c6add8189a446d540e28f9d60841ed4ae8f87",
+    "userspace": "59479e0478dc0789c1afd99bcd39ae86b0359742"
   },
   "current_qualification": {
-    "DG01": "K770364dcc152/U96ac968 forty actual peer-validated short round trips, two roles; RF/connection and QMP peer isolation requalified",
+    "DG01": "K4b4c6add8189/U59479e0 basic DGRAM forty actual peer-validated short round trips, both roles; RF/connection and QMP peer isolation requalified",
     "DG02": "Same accurate source eight app249/DTAP254 and sixteen oversize rejections; same-Binding short recovery and layered boundaries still missing",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
@@ -126,7 +126,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "existing foundations retained; target package exit conditions open"
+      "status": "Basic DGRAM type sub-gate passed; complete Ticket/Session/Grant/VFS/socket contract exits still open"
     },
     {
       "id": "WP07",
@@ -276,15 +276,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "WP06 basic socket type remediation: K4b4c6add8189/U03740b1 DGRAM migration implemented/offline passed; exact new VM type/short/249 gates pending. WP18-SSAP separation batch remains qualified at K770/U96.",
+  "current_batch": "WP18-SSAP separation batch PASS; WP06 basic DGRAM type migration implemented/offline/real VM sub-gate PASS at K4b4c6add8189/U59479e0. Whole target Session/Ticket/Grant/socket/Backend architecture remains open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "28 adopted scope/dependency blocks and28 architecture-first steering comments verified OPEN with original body hashes unchanged",
   "current_implementation_heads": {
     "linux": "4b4c6add8189a446d540e28f9d60841ed4ae8f87",
-    "userspace": "03740b146746f39cf104b102f71de9414c034486"
+    "userspace": "59479e0478dc0789c1afd99bcd39ae86b0359742"
   },
   "next_resume_tasks": [
-    "Finish running native-basic-dgram build/pipeline and new exact-source VM root/ordinary SO_TYPE/SEQPACKET rejection, real40short/249 gates; preserve old separation evidence",
+    "Complete actual call audit and remove unconsumed default sle_netlink.rs module/global dead_code mask; canonical C shim and SDK declarations stay. Also reject remaining legacy ExtAdv input clipping, retaining actual caller tests. Do not add a second protocol implementation.",
     "WP03: audit actual submit/Down/revoke producer lock order, implement referenced commit Ticket and driver USB linearization with finite retirement/reuse barrier; scope FV05/FV07 and VM interleavings",
     "WP04: move CMTC and negotiation out of fd into ConnectionSession and establish unique bounded RX demultiplexer before opening multiple channels; define same-life reopen/old RX isolation",
     "WP05/06: kernel revocable Grant epoch; SocketBinding/VFS lifetime and truthful basic DGRAM vs reliable SEQPACKET contract; preserve ordinary delegation path and exact-version real regressions",
@@ -297,6 +297,9 @@
   "target_architecture_remediation_complete": false,
   "batch_evidence": [
     "docs/evidence/ws73-ssap-separated-short-repeat-20261013.json",
-    "docs/evidence/ws73-ssap-separated-249-boundary-20261013.json"
-  ]
+    "docs/evidence/ws73-ssap-separated-249-boundary-20261013.json",
+    "docs/evidence/ws73-basic-dgram-short-repeat-20261013.json",
+    "docs/evidence/ws73-basic-dgram-249-boundary-20261013.json"
+  ],
+  "basic_datagram_type_subgate_complete": true
 }

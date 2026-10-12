@@ -1,6 +1,9 @@
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
 use std::future::Future;
 
-use libsparklink::{Event, EventReceiver, Result};
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
+use libsparklink::EventReceiver;
+use libsparklink::{Event, Result};
 use tokio::sync::oneshot;
 use tokio::task::{JoinError, JoinHandle};
 use tracing::{error, info};
@@ -9,10 +12,12 @@ use crate::dbus_iface::{self, DeviceIface};
 use crate::service;
 use crate::state::SharedState;
 
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
 pub(crate) trait EventSource: Send + 'static {
     fn next_event(&mut self) -> impl Future<Output = Result<Event>> + Send;
 }
 
+#[cfg(any(test, feature = "experimental-legacy-profiles"))]
 impl EventSource for EventReceiver {
     async fn next_event(&mut self) -> Result<Event> {
         EventReceiver::next_event(self).await
@@ -28,6 +33,7 @@ pub(crate) struct EventTask {
 }
 
 impl EventTask {
+    #[cfg(any(test, feature = "experimental-legacy-profiles"))]
     pub(crate) fn start(
         mut receiver: impl EventSource,
         state: SharedState,

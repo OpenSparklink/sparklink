@@ -356,7 +356,12 @@ impl DaemonConfig {
     pub fn validate_for_profile(&self, profile: u32) -> Result<(), ConfigError> {
         self.validate()?;
         match profile {
+            #[cfg(feature = "experimental-legacy-profiles")]
             0 => Ok(()),
+            #[cfg(not(feature = "experimental-legacy-profiles"))]
+            0 => Err(ConfigError::Unsupported(
+                "legacy destructive event backend is experimental; default daemon requires canonical controller events",
+            )),
             1 if self.general.discovery_level == 1 => Ok(()),
             1 => Err(ConfigError::Unsupported(
                 "native WS73 only supports discovery_level=1; configured legacy filter cannot be applied",
@@ -435,7 +440,13 @@ mod tests {
             "[general]\ndiscovery_level=3\nname='TestNode'\n[policy]\nauto_pair=false\nmin_encryption=0",
         ] {
             let c = parse(text).unwrap();
+            #[cfg(feature = "experimental-legacy-profiles")]
             c.validate_for_profile(0).unwrap();
+            #[cfg(not(feature = "experimental-legacy-profiles"))]
+            assert!(matches!(
+                c.validate_for_profile(0),
+                Err(ConfigError::Unsupported(_))
+            ));
             assert!(c.general.auto_enable && !c.policy.auto_pair);
             assert_eq!(c.policy.min_encryption, 0);
         }
@@ -459,7 +470,13 @@ mod tests {
     #[test]
     fn native_does_not_ignore_legacy_filter_or_unknown_profile() {
         let c = parse("[general]\ndiscovery_level=3").unwrap();
+        #[cfg(feature = "experimental-legacy-profiles")]
         c.validate_for_profile(0).unwrap();
+        #[cfg(not(feature = "experimental-legacy-profiles"))]
+        assert!(matches!(
+            c.validate_for_profile(0),
+            Err(ConfigError::Unsupported(_))
+        ));
         assert!(matches!(
             c.validate_for_profile(1),
             Err(ConfigError::Unsupported(_))

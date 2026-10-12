@@ -229,15 +229,19 @@ impl Node {
         })
         .await??;
         enum Subscription {
+            #[cfg(feature = "experimental-legacy-profiles")]
             Legacy(libsparklink::EventReceiver),
             Native(libsparklink::ControllerEventReceiver),
         }
         // Prepare AsyncFd before publishing any D-Bus objects/actors.
+        #[cfg(feature = "experimental-legacy-profiles")]
         let subscription = if snapshot.profile == 0 {
             Subscription::Legacy(receiver.into_event_receiver()?)
         } else {
             Subscription::Native(receiver.into_controller_event_receiver()?)
         };
+        #[cfg(not(feature = "experimental-legacy-profiles"))]
+        let subscription = Subscription::Native(receiver.into_controller_event_receiver()?);
         let (adapter, lease) = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
             let lease =
                 if snapshot.profile != 0 {
@@ -309,6 +313,7 @@ impl Node {
             return Err(error);
         }
         let event = match subscription {
+            #[cfg(feature = "experimental-legacy-profiles")]
             Subscription::Legacy(receiver) => {
                 EventTask::start(receiver, state.clone(), connection.clone())
             }

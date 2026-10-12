@@ -29,6 +29,7 @@ def execute(run, a, b):
     kind = getattr(run.args, 'connection_advertising', 'fixed-t')
     if kind not in ['fixed-t','negotiable-t']: raise ValueError('explicit supported connection advertising posture required')
     record = dict(status='RUNNING', advertising_kind=kind, owners=[a,b], phases=[],
+        advertising_set_lifecycle='remove-recreate-v1',
         release_acceptance=False, last_file_acceptance=False, dup_acceptance=False,
         inflight_acceptance=False, ssap_acceptance=False,
         automatic_recovery_acceptance=False, start_wall_ns=time.time_ns())
@@ -40,7 +41,8 @@ def execute(run, a, b):
             record['phases'].append(phase); run.save()
             run.check(caller); run.check(peer)
             advertisement = run.ctl(peer, 'advertise', 'negotiable' if kind=='negotiable-t' else 'connectable')
-            parse_result(advertisement['stdout'], peer, 1)
+            if not parse_result(advertisement['stdout'], peer, 1, allow_recreate=True)['recreated']:
+                raise CaptureError('fresh beacon-to-connectable gate requires a recreated set')
             phase['advertisement_command'] = len(run.data['commands'])-1
             run.ctl(peer, 'show')
             phase['policy_query_command'] = len(run.data['commands'])-1
@@ -130,6 +132,23 @@ def corroborate(run, capture):
             expected[1]=3;expected[2]=0;expected[33]=0;expected[34]=1
             expected[37:39]=(100).to_bytes(2,'little');expected[39:41]=expected[37:39]
         advertisement_proof=command_reply(capture,peer,0x0c02,advertisement['start_wall_ns'],advertisement['end_wall_ns'],bytes(expected))
+        if record.get('advertising_set_lifecycle') == 'remove-recreate-v1':
+            parsed = parse_result(advertisement['stdout'],peer,1,allow_recreate=True)
+            if not parsed['recreated']:
+                raise CaptureError('current gate requires actual recreated advertisement result')
+            removed = command_reply(capture,peer,0x0c08,advertisement['start_wall_ns'],advertisement['end_wall_ns'],bytes(1),'')
+            if removed['reply']['wall_ns'] > advertisement_proof['command']['wall_ns']:
+                raise CaptureError('recreation parameter preceded real removal Complete')
+            configured_data = command_reply(capture,peer,0x0c03,advertisement['start_wall_ns'],advertisement['end_wall_ns'],
+                bytes([0,3,len(marker_data(phase['marker']))])+marker_data(phase['marker']), '')
+            enabled = command_reply(capture,peer,0x0c05,advertisement['start_wall_ns'],advertisement['end_wall_ns'],b'\x01\0\0\0\0','')
+            if (advertisement_proof['reply']['wall_ns'] > configured_data['command']['wall_ns']
+                    or configured_data['reply']['wall_ns'] > enabled['command']['wall_ns']
+                    or advertisement_proof['reply']['value'] != bytes([parsed['selected_power'] & 255]).hex()):
+                raise CaptureError('recreated data/enable order or actual selected power mismatch')
+            advertisement_proof['preceding_removal'] = removed
+            advertisement_proof['configured_data'] = configured_data
+            advertisement_proof['enabled'] = enabled
         scan = run['commands'][phase['scan_command']]
         parse_result(scan['stdout'],caller,3)
         match = parse_match(scan['stdout'])

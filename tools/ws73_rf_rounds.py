@@ -30,11 +30,18 @@ def corroborate_rounds(run, capture, sequence, pairs):
                 [['advertise','on'],['scan','on',r['marker'],tx['address']],['advertise','off'],['scan','off']]):
             if c['args'] != [run['slctl']['path'],'--adapter',owner['path'],*words] or c['exit'] != 0:
                 raise CaptureError('control command evidence mismatch')
-            parse_result(c['stdout'], owner, op)
+            parsed = parse_result(c['stdout'], owner, op, allow_recreate=op == 1)
             opcodes = {1:[0x0c02,0x0c03,0x0c05],3:[0x1001,0x1002],2:[0x0c05],4:[0x1002]}[op]
+            removals = [x for x in capture['commands'] if (x['bus'],x['device'],x['opcode']) ==
+                (owner['bus'],owner['device'],0x0c08) and c['start_wall_ns'] <= x['wall_ns'] <= c['end_wall_ns']]
+            if len(removals) != int(parsed.get('recreated', False)):
+                raise CaptureError('result recreation and actual removal must agree')
+            if parsed.get('recreated'):
+                opcodes = [0x0c08, *opcodes]
             recipe = []
             for opcode in opcodes:
-                expected = {0x0c03: bytes([0,3,len(marker_data(r['marker']))])+marker_data(r['marker']),
+                expected = {0x0c08: bytes(1),
+                            0x0c03: bytes([0,3,len(marker_data(r['marker']))])+marker_data(r['marker']),
                             0x0c05: bytes([int(op == 1),0,0,0,0]),
                             0x1002: bytes([int(op == 3),0])}.get(opcode)
                 step = command_reply(capture, owner, opcode, c['start_wall_ns'], c['end_wall_ns'],
@@ -50,8 +57,9 @@ def corroborate_rounds(run, capture, sequence, pairs):
                 recipe.append(step)
             radio.extend(recipe)
         accepted = re.findall(r'^NativeAdvertisementAccepted: request=(\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+)$',commands[0]['stdout'],re.M)
-        adv_result = parse_result(commands[0]['stdout'],tx,1)
-        if radio[0]['reply']['value'] != struct.pack('b', adv_result['selected_power']).hex():
+        adv_result = parse_result(commands[0]['stdout'],tx,1,allow_recreate=True)
+        parameter = next(s for s in radio if s['command']['opcode'] == 0x0c02)
+        if parameter['reply']['value'] != struct.pack('b', adv_result['selected_power']).hex():
             raise CaptureError('selected power disagrees with raw parameter Complete')
         if (len(accepted) != 1 or int(accepted[0][0]) != adv_result['request']
                 or accepted[0][1] != r['marker'] or accepted[0][2] != marker_data(r['marker']).hex()

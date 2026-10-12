@@ -93,7 +93,7 @@ def stable(a, b):
     return all(a[k] == b[k] for k in ['port', 'bus', 'device', 'index', 'generation', 'path', 'address', 'version', 'features'])
 
 
-def parse_result(output, identity, operation, *, retained_off=False):
+def parse_result(output, identity, operation, *, retained_off=False, allow_recreate=False):
     pattern = (r'^NativeOperationResult: generation=(\d+) request=(\d+) operation=(\d+) state=(\d+) errno=(-?\d+) status=0x([0-9a-f]{2}) '
                r'opcode=0x([0-9a-f]{4}) step=(\d+)/(\d+) power=(-?\d+) power_valid=(\d+) adv=(\d+) scan=(\d+) profile=(\d+)$')
     rows = re.findall(pattern, output, re.M)
@@ -103,6 +103,9 @@ def parse_result(output, identity, operation, *, retained_off=False):
     expected = {1: ('0c05', 2, 3, 2, 1), 2: ('0c05', 0, 1, 1, 1),
                 3: ('1002', 1, 2, 1, 2), 4: ('1002', 0, 1, 1, 1),
                 5: ('0c05', 1, 2, 1, 1), 6: ('1002', 2, 3, 1, 1)}[operation]
+    recreated = operation == 1 and allow_recreate and int(r[8]) == 4
+    if recreated:
+        expected = ('0c05', 3, 4, 2, 1)
     if retained_off and operation not in [2, 4]:
         raise ValueError('retained OFF requires a stop operation')
     if operation in [2, 4, 5, 6]:
@@ -118,8 +121,11 @@ def parse_result(output, identity, operation, *, retained_off=False):
             or (r[6], int(r[7]), int(r[8]), int(r[11]), int(r[12])) != expected
             or int(r[10]) != int(operation in [1, 5])):
         raise ValueError('unsuccessful or wrong-generation native transaction')
-    return {'request': int(r[1]), 'generation': int(r[0]), 'operation': operation,
-            'selected_power': int(r[9]), 'power_valid': bool(int(r[10]))}
+    result = {'request': int(r[1]), 'generation': int(r[0]), 'operation': operation,
+              'selected_power': int(r[9]), 'power_valid': bool(int(r[10]))}
+    if allow_recreate and operation == 1:
+        result['recreated'] = recreated
+    return result
 
 
 def reports(output, identity):
@@ -352,7 +358,7 @@ class Run:
             watermark = max((r['seq'] for r in before), default=0)
             adv = self.ctl(tx, 'advertise', 'on')
             adv_index = len(self.data['commands'])-1
-            result = parse_result(adv['stdout'], tx, 1)
+            result = parse_result(adv['stdout'], tx, 1, allow_recreate=True)
             accepted = re.findall(r'^NativeAdvertisementAccepted: request=(\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+)$', adv['stdout'], re.M)
             if len(accepted) != 1 or int(accepted[0][0]) != result['request'] or accepted[0][2] != marker_data(accepted[0][1]).hex():
                 raise ValueError('advertisement admission/data/result correlation invalid')

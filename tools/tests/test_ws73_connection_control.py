@@ -110,3 +110,26 @@ class ConnectionEvidenceTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+class AdvertisingRecreationEvidenceTests(unittest.TestCase):
+    def current(self):
+        run, capture = fixture()
+        run['connection_control']['advertising_set_lifecycle'] = 'remove-recreate-v1'
+        for phase in run['connection_control']['phases']:
+            peer = phase['peer']
+            c = run['commands'][phase['advertisement_command']]
+            c['stdout'] = (f"NativeOperationResult: generation={peer['generation']} request=99 operation=1 state=3 errno=0 "
+                           "status=0x00 opcode=0x0c05 step=3/4 power=20 power_valid=1 adv=2 scan=1 profile=1\n")
+        return run, capture
+
+    def test_current_result_needs_actual_removal(self):
+        run, capture = self.current()
+        with self.assertRaises(CaptureError):
+            corroborate(run, capture)
+
+    def test_current_gate_rejects_original_three_step_result(self):
+        run, capture = self.current()
+        c = run['commands'][run['connection_control']['phases'][0]['advertisement_command']]
+        c['stdout'] = c['stdout'].replace('step=3/4', 'step=2/3')
+        with self.assertRaisesRegex(CaptureError, 'recreated'):
+            corroborate(run, capture)

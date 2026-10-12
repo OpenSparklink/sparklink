@@ -337,3 +337,16 @@ class CaptureTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+class RecreatedResultBoundaryTests(unittest.TestCase):
+    def test_recreation_is_explicit_and_bounded(self):
+        from ws73_north_star import parse_result
+        owner = {'generation': 1}
+        text = ('NativeOperationResult: generation=1 request=9 operation=1 state=3 errno=0 '
+                'status=0x00 opcode=0x0c05 step=3/4 power=20 power_valid=1 adv=2 scan=1 profile=1\n')
+        with self.assertRaises(ValueError):
+            parse_result(text, owner, 1)
+        self.assertTrue(parse_result(text, owner, 1, allow_recreate=True)['recreated'])
+        for bad in ['step=2/4', 'step=4/5', 'step=3/5']:
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                parse_result(text.replace('step=3/4', bad), owner, 1, allow_recreate=True)

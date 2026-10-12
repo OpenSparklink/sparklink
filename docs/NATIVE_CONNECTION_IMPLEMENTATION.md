@@ -269,3 +269,23 @@ VM32/33/34/35前置mode0配置后均只有Status、无outcome，去掉OFF或改�
 九例6183包/零丢包，每个非Create命令Complete单独核对；Native VM95仍失败，
 411包，实际46db/cd64065。下一接入每设备Host的实际资源状态、原子重建recipe
 和部分撤销清理，禁止通过改变默认mode0、raw任意写或推测Ready绕过。
+
+## 当前生产接入（待新VM）
+
+Linux签名1305136c将已确认的广播集合参数/缺失状态接到每注册Host；配置改变
+时，在同Host锁和同cookie/原期限内前置真实Remove，再参数/数据/可选scan
+response/启用。最多5步，驱动用内部重建标记独立校验，raw query白名单不变；
+相同参数仍三步。实际匹配Complete且OUT成功后才更新集合状态，取消后的迟到
+回复更新物理事实但不翻作者结果。删除后未重建保持Setup，清理保留真实缺失
+而不发送无效STOP；已选中创建要等原回复，成功后按实际新集合清理。
+广播admission改为Host→gate，与管理提交和物理ingress一致；未结算的旧参数
+不允许新参数recipe根据旧缓存提前决定。新结果power step随前缀平移，旧配置
+不会在租约交接时清空。
+
+42实际Host及依赖+2cleanup helper、23queue/plan、48management、diagnostic
+边界和11connection操作/实际C codec（ASan/UBSan/Leak）通过；451092个discovery
+codec检查含前缀标记/错误步骤/失败shape。初始fixture未带集合事实、4→5界限
+未同步及沙箱LSAN失败均保留，修正后不放宽生产校验或加全局allow(dead_code)。
+工具验证仅显式接受3或重建4步，重建必须有实际删除/参数/数据/启用回复链、
+次序和实际power；382工具测试通过。完整新内核构建source/config稳定，仍待
+受信模块VM和真实Native连接、删除/重建FD门禁。不能以源码通过关闭整项。

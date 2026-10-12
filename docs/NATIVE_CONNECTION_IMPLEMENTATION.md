@@ -509,8 +509,9 @@ connection state. Failed reads remain Unknown and retry once per second in the
 same per-adapter subscriber, with skipped timer backlog and cancellable shutdown.
 No transport reset or command is used to refresh observation.
 
-The previous Native Up/Down delta implementation and its duplicated Device
-handle/role/type fields are deleted. Native Connected/ConnectionKnown and device
+The previous Native Up/Down delta implementation, its native handle writes/lookups
+and the Device role/type fields are deleted. The conn_handle field remains for
+legacy-only callers. Native Connected/ConnectionKnown and device
 listing derive from the canonical table. RSSI and opaque discovery bytes are
 preserved during connection refresh. The existing address-only discovery object
 is an alias: multiple current typed peers/lifetimes at that address are Unknown,

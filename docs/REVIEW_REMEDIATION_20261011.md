@@ -1185,7 +1185,8 @@ C符号明确v2；旧v1证据不改写。slkd native Disconnect 的旧 Device ca
 在 Linux38997、编译服务a4f29fc/9af145e上独立复算通过。Native subscriber 启动、
 link通知、lost后读取完整table，校验身份/单调revision/event_seq及触发事件屏障；
 旧link回放不能覆盖新lifetime。失败保留Unknown，每adapter一秒有界频率刷新，
-不复位硬件。旧Native Up/Down delta与Device中的handle/role/type重复路径已删除；
+不复位硬件。旧Native Up/Down delta、native handle读写路径及Device role/type字段已删除；
+conn_handle字段仍供legacy调用者使用，等待独立迁移回归；
 连接属性由canonical table派生，RSSI和opaque discovery不被刷新清零。
 
 VM136维持真实双角色连接/断开/RF22；VM137测试监督器仅暂停guest整个slkd，实际

@@ -428,3 +428,65 @@ disconnect经内核在admission原子检查generation/peer/lifetime，再接通c
 清理和运行中daemon真实验收。迁移调用者和回归后删重复旧状态实现，未发布UAPI可
 同步修改，无兼容期。自然启动/bulk/重枚举/消失RCA、非人工恢复、四设备及完整
 S0–S6仍OPEN。正常尝试132/维护39；原28issues、两个未合并draft和完整goal保留。
+
+## 2026-10-12 Peer/lifetime-bound Disconnect: qualified admission and selection
+
+[Independently recomputed live evidence](evidence/ws73-peer-lifetime-binding-both-role-20261012.json)
+uses compiled Linux `38997dc457be` and service/tools `d58fe5c76b5f`. Linux
+`3840ec2ba70c` subsequently changes only the offline release fixture's errno
+adapter; production sources are identical. The unpublished submit UAPI is v2,
+128 bytes; the C symbol is `slk_connection_submit_v2`. Result and snapshot
+versions remain v1. Historical 112-byte v1 captures remain historical evidence;
+the adapted current unit fixture is explicitly offline, with an immutable v1 copy.
+
+Disconnect carries generation, handle, lifetime, role, address type and address.
+The kernel checks the exact current observation at admission, and again when
+selecting the queued command. Admission mismatch returns ESTALE without creating
+an author record; selection mismatch fails locally without OUT or credit use.
+Internal File-revocation cleanup retains its existing physically evidenced path.
+This does not promise atomicity across the later selected-command/USB OUT/hardware
+window. Actual queued handle reuse is covered by production Host source tests,
+not a real firmware reuse race in this batch.
+
+slkd no longer resolves native Disconnect through the address-only Device cache.
+It queries the canonical kernel table and rejects unknown or ambiguous peers;
+`disconnect <address> [type]` can select an explicit address type. Native bare
+handle `DisconnectDevice` returns NotSupported. `slctl connections` prints the
+canonical snapshot and full reference; `disconnect-link <address> <type> <handle>
+<lifetime> <role>` submits the explicit tuple and waits for the actual result.
+The Device property projection still has address-only/event-delta state. Its
+startup/loss resync and address-type migration remain open; the new API does not
+claim those are fixed.
+
+Real VM attempts 133/134 each establish a physical link, then submit seven actual
+VFS mismatches on the Managed author fd: lifetime/type/address/role return ESTALE,
+zero lifetime EINVAL, stale generation ENODEV, old version EOPNOTSUPP. All fourteen
+reject without an author result, table change or target/peer wire command. Each
+case also repeats first-dup-close retention, last-close actual Disconnect and
+both physical Down events, independent peer control and RF22. These File gates
+run before slkd and do not prove a running daemon survives File revocation.
+
+VM135 runs ordinary UID1000/capabilities-zero slctl through a running slkd. Both
+roles obtain original `connections` snapshots, submit the exact displayed
+reference, and complete Create/Disconnect with independently captured OUT,
+Status and both peers' physical Up/Down. RF22 and QMP guest removal/readdition
+succeed without restarting slkd or D-Bus. QMP removal is not physical unplug or
+natural automatic recovery. All three VMs have taint0, exit0, 3,839 captured
+packets and zero capture drops; total RF66. Signed empty-USB smoke raises the
+maintenance count to40. No hub power cycle was used in this batch.
+
+Offline checks: 193 Rust workspace tests, strict clippy, 37 Python/C/i386/shared
+library ABI and negative tests, 398 tool tests, 12 production operation tests,
+48 actual Host source tests plus two cleanup-prepare tests, and five portable
+link-observation tests. Preserve the initial kernel build failure (old C size
+assert), sandbox LeakSanitizer/ptrace failure and first CI failure (missing fixture
+ESTALE); corrected checks are separate records. Final CI is recorded in the
+issue progress receipt after independent readback.
+
+Next: canonical startup/loss resync using the snapshot event barrier; typed peer
+identity and deletion of the duplicated native Device event state; running-daemon
+cancel/late-link/revoke gates; actual handle reuse and selected-to-OUT races;
+current-source physical unplug and four-device parallel regression. Natural
+boot/bulk/re-enumeration/disappearance RCA and nonmanual recovery remain open.
+All original28 issue scopes and the unmerged drafts remain open; full S0–S6 goal
+remains active. Existing WS73 RF/lifecycle evidence is retained at its exact source.

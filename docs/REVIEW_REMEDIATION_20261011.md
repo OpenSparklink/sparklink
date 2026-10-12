@@ -1156,3 +1156,25 @@ peer/handle lifetime 为下一优先。旧 mgmt/dev/transport/serdev 实际调�
 尚待实现，这些与运行中daemon取消/晚到link为下一优先。旧状态调用者接通新路径
 并回归后删除，不把新增API称为整项resync完成。自然自动恢复/RCA、原28项完整
 scope保持OPEN，VM-only和持续小提交不变。
+
+## 2026-10-12 Native Disconnect 已迁到 canonical peer/lifetime 引用
+
+[真实双角色 VFS14／普通 slkd／RF66 证据](evidence/ws73-peer-lifetime-binding-both-role-20261012.json)
+覆盖 Linux38997、服务/工具d58fe5：generation/handle/lifetime/role/type/address
+在 admission 与 queued selection 两处检查。未发布 submit UAPI 改为v2/128字节，
+C符号明确v2；旧v1证据不改写。slkd native Disconnect 的旧 Device cache handle
+调用已删除，bare native handle RPC返回NotSupported，新增 canonical connections
+和显式 disconnect-link。正常VM累计135，维护40；捕获3839包/0drop、RF66、taint0。
+
+双角色各七种错误引用由实际VFS拒绝，表不变、无作者结果、两端无命令；随后dup
+最后关闭真实清理及同行RF通过。普通UID1000/caps0应用双角色从原snapshot取得
+引用后真实断开，QMP移除重加和RF22期间slkd/bus不重启。前置File gate尚不证明
+运行中daemon跨File撤销；queued handle reuse目前仅实际Host源码测试，未覆盖
+实际固件句柄复用或selected→OUT竞争。生产语义详见
+[限定验收与迁移边界](NATIVE_CONNECTION_IMPLEMENTATION.md)。
+
+仍等待替代并删除：native Device event-delta/address-only projection。下一依赖顺序
+为snapshot启动/loss resync+event_seq屏障→typed peer identity→迁移调用者与测试后
+删除重复状态→运行中daemon cancel/晚到link/revoke验收→当前源物理/四设备门禁。
+本批保留首build、LSan沙箱及首CI失败，修复为独立记录。自然自动恢复/RCA、
+整项Managed、所有其余S0–S6与原28issues保持OPEN，不以部分成果关闭整项。

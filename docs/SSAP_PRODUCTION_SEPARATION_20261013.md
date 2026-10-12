@@ -5,7 +5,7 @@
 审计前Linux干净，用户态仅本批文档；保留当前新40轮短消息、249八轮与历史失败证据。
 本批先剥离旧业务，再WP08唯一用户态Engine；整个生产架构整改优先于功能扩展。
 
-## 已核对调用链与事实
+## 初次审计的调用链与事实（历史基线）
 
 * `sparklink_core.rs`默认编入`sle_ssap`，每`SparkLinkInner`分配`SsapInner`；
   `ioctl_ssap_local`实现本地服务/属性注册、读写、handle与列表。
@@ -62,3 +62,30 @@ U56ea3e8已剥离默认ServiceManager/RemoteService的全部旧ioctl依赖，明
 historical selftests及callback故障；VM两只真实WS73独立Ready、RF22、两角色建链/断链、
 40短消息及249/超限两端peer校验/USB/HCC/NOCP证据，同行generation/业务保持。
 不是自然故障恢复或独立PHY嗅探资格。根因/非人工恢复及原整项scope仍开放。
+
+## 本批 UAPI 与消费者剥离（实机回归待取得）
+
+18个未发布SSAP ioctl/业务结构、四个连接业务字段、旧Netlink服务命令/属性已删除；
+Rust Adapter及六个C导出、三个Python包装退出，CLI与实验Profile注册明确NotSupported。
+规范32位权限语义保留，旧宽度模型仅测试；默认daemon早已在U56ea3e8退出旧调用。
+11组旧staging/伪wire集成测试和两项SSAP性能测试删除，历史codec/权限/OOM八项及
+callback生命周期测试保留。旧控制工具不再显示或执行SSAP命令。
+
+新增独立VM syscall门禁：冻结18个历史完整编码，以NULL/无效指针分别验证ENOTTY，
+privileged/ordinary各执行一次。编译通过不算门禁通过。生产调用审计同时断言无
+SsapInner/SsapSession/RemoteServiceDb/旧ioctl声明；不会重建兼容实现。
+
+发现并修复独立ABI声明偏移：kernel Rust Netlink缺失版本属性导致后续编号错位。
+保留非SSAP编号、明确退役空洞，直接编译C头、kernel/SDK全枚举核对数值；不宣称
+Netlink runtime互通或事件迁移完成。CI固定匹配提交及三份声明。
+
+离线：workspace196测试、strict all-features clippy，Python34项含32位C布局、真实Rust/C
+声明对照；八项历史selftests；四个C程序严格编译；kernel对象编译。此处不自动沿用
+d3/afb真实设备资格。退出条件仍需干净新提交full image与40短消息/249边界VM证据。
+
+剩余目标架构整改：Session与fd分离及唯一RX、发送Ticket/handle复用屏障、Grant epoch、
+socket类型/可靠性/关闭契约、Backend与事件权威来源。先整改再扩展用户Engine。
+自然故障根因与非人工恢复未闭合，原相关issues继续开放。
+
+准确实现提交：Linux `770364dcc15284c081477dea1bab174506821281`、用户态 `7d8857b78b849f240bb06b1d4a451660cde76605`。
+离线源码映射：[记录](evidence/ssap-abi-separation-offline-20261013.json)。

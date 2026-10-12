@@ -22,7 +22,8 @@ goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_S
 不恢复不可靠旧wire Engine，不把全部旧控制面整改当作数据开发前置。
 
 
-Linuxd3abbdc0c13a干净；用户态afb5ee2编译与测试，后续仅增加准确新证据。
+当前整改实现K770364dcc152/U7d8857b已签名，旧SSAP生产依赖与18 ioctl退出，离线通过；
+精确新VM回归待取得。此前实机资格仅属于Kd3abbdc0c13a/Uafb5ee2，不自动迁移。
 WP01协商原期限/锁快照已实现，FV01/FV03限定通过，新镜像DG01每角色20/共40轮通过。
 application249/DTAP254八轮、application250/253/254/255十六次EMSGSIZE且捕获零载荷
 已独立封存；不是其他分层边界、长包或credit耗尽资格。DG02同Binding恢复短包仍补测。

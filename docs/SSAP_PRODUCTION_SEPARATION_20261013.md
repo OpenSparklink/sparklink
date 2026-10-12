@@ -51,7 +51,9 @@
 Kfbc92f删除core本地DB/广播UUID消费者；K167f468将1008行旧业务module移入selftests，
 删除默认kernel的SsapSession/RemoteServiceDb依赖及消费，保留通用通道机制并拒绝旧未合格动态协商。
 历史/reject10、Native20和连接发送边界通过，Rust对象编译零warning；串行make避免了原jobserver环境warning。
-18个ioctl/连接业务字段的跨语言删除、D-Bus/CLI/实验Profile退出旧依赖、完整新镜像/VM验收仍待实施。
+U56ea3e8已剥离默认ServiceManager/RemoteService的全部旧ioctl依赖，明确NotSupported；
+实际私有D-Bus注册/通知/协商/写错误回归及59项slkd/严格clippy通过。
+18个ioctl/连接业务字段的跨语言删除、SDK/CLI/实验Profile退出旧依赖、完整新镜像/VM验收仍待实施。
 小提交顺序：入口拒绝/截断→core业务退出/test-only→连接元数据与通用通道分离→
 删除未发布UAPI及同步所有调用者/CI pin→严格构建/实际调用→VM真实路径回归。
 任何中间状态不称本批完成、不关闭issues。仅本批退出后再WP08新用户态Engine。

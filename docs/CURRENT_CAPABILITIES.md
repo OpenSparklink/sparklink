@@ -13,7 +13,7 @@
 | application249/DTAP254 | 当前单ACB上限与精确长度拒绝，ec67348后工具/应用接通 | 197 workspace/423工具及严格clippy；准确afb5ee2 CI9/9 | 不能从协商模型推出codec/分片性质 | 新版本8轮249字节及16次application250/253/254/255 EMSGSIZE，拒绝载荷捕获为零 | DG02同Binding短→最大→拒绝→短、其他层253/254/255、长包/PB TX/SAR |
 | Session/Channel/Binding/Grant | 当前仍单socket消费整连接ACB，单消费者限制保留 | 目标所有权/四阶段契约采用 | FV04仅2controller/2generation/queue1/refs0..2抽象契约784状态；没有refinement | 不继承单socket数据资格为多通道资格 | Session唯一RX、CMTC与fd分离、同life reopen、可撤销Grant、Ticket/复用屏障 |
 | NOCP/复用 | 旧debt保留，未知/过量/不确定Fault，不自动退款 | 生产ledger已重现四步复用风险 | FV07期望反例，不是安全证明；FV02 unsupported/超时NOT_PROVEN | 短40轮实际88完成、249八轮实际24完成，范围限定 | 同/跨life重复/迟到来源、准确性与可信排空屏障；无实机串包断言 |
-| 旧SSAP业务 | K167f468默认内核已剥离local DB/session/cache；旧模型仅selftests，未合格动态协商拒绝；Ue49fa39输入超限拒绝，旧facade待迁移 | 历史/reject10、Native20、连接边界及用户态198/严格clippy通过；实验callback回归保留 | 不能宣称已有生产用户Engine | 没有真实SSAP资格；本地staging不是远端发布 | 当前WP18旧ioctl/连接业务字段/绑定/CLI/实验Profile与D-Bus迁移，完整新VM回归；先通过此批再WP08 |
+| 旧SSAP业务 | K167f468默认内核已剥离local DB/session/cache；旧模型仅selftests，未合格动态协商拒绝；Ue49fa39输入超限拒绝，U56ea3e8默认facade退出旧ioctl并NotSupported | 历史/reject10、Native20、连接边界及用户态198/严格clippy；facade私有D-Bus/59项slkd通过；实验callback回归保留 | 不能宣称已有生产用户Engine | 没有真实SSAP资格；本地staging不是远端发布 | 当前WP18旧ioctl/连接业务字段/绑定/CLI/实验Profile迁移，完整新VM回归；先通过此批再WP08 |
 | SSAP/安全/Bond/Profile | 用户态目标层；旧Profile已隔离实验crate，Native不注册旧Profile | 部分机制/actor/类型测试，仅各自范围 | FV08/09完整协议证明未取得 | 尚无新真实通道服务/安全安装矩阵资格 | 唯一用户态Engine、真实read/write/notify/indicate、可信安装/Bond/Profile |
 | Backend/事件/恢复/PM/四设备 | 现有Native及限定事件/生命周期基础保留 | 原完整方案/历史部分初始化和取消测试保留 | FV10及完整工作引用/恢复模型缺 | 历史物理/注入/部分清理仅其准确范围；本轮warm恢复不授予自然恢复 | 可注册seam/构建组合、事件迁移、四设备两组数据、自然RCA/非人工恢复、Proxy/PHY/PM/发布 |
 

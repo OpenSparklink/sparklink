@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T17:53:21.102886+00:00",
+  "updated_at_utc": "2026-10-12T18:21:56.600999+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -276,11 +276,20 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "WP18-SSAP: audit done; Ue49fa39 rejects truncation; Kfbc92f/167f468 remove core DB and production business session/cache/model; remaining unpublished UAPI/callers and exact-revision VM qualification",
+  "current_batch": "WP18-SSAP production core/model separation implemented K167f468; default daemon ioctl dependency removed U56ea3e8 and NotSupported; unpublished UAPI/SDK/CLI/experimental callers and exact new VM qualification remain",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
-  "issue_sync_status": "28 original issues read back OPEN with original body hashes unchanged; later architecture-first steering will be appended",
+  "issue_sync_status": "28 adopted scope/dependency blocks and28 architecture-first steering comments verified OPEN with original body hashes unchanged",
   "current_implementation_heads": {
-    "linux": "167f468c00f7",
-    "userspace": "e49fa39"
-  }
+    "linux": "167f468c00f7930c7581d40c2d81e589fbb979d9",
+    "userspace": "56ea3e8"
+  },
+  "next_resume_tasks": [
+    "Remove18 unpublished SSAP ioctl definitions/structs/router and old connection business fields together with Rust/C/Python ABI/CI pin",
+    "Keep validated SsapOperations permissions; isolate legacy staging width helpers and experimental Profile registration",
+    "Delete old Adapter/FFI/Python calls or explicitly route CLI errors to unsupported user facade; no new wire Engine yet",
+    "Compile/check/clippy/cross-language actual calls, preserve test-only history and callback lifecycle",
+    "Build clean exact-source full VM kernel/service and requalify RF22/connection/40 short/app249 and oversize; preserve d3/afb qualified images",
+    "Continue target Session unique RX/Ticket/Grant/socket/Backend/events architecture remediation before feature expansions"
+  ],
+  "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json"
 }

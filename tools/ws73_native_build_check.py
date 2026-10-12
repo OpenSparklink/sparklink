@@ -17,6 +17,7 @@ REQUIRED = {'RUST': 'y', 'SPARKLINK': 'y', 'SPARKLINK_DRIVERS': 'y',
             'USB_MON': 'y', 'IKCONFIG': 'y', 'IKCONFIG_PROC': 'y'}
 EXPORTS = {'sparklink_native_register', 'sparklink_native_unregister',
            'sparklink_native_health', 'sparklink_native_receive',
+           'sparklink_native_acb_send', 'sparklink_native_acb_take',
            'sparklink_native_event', 'sparklink_native_link_event', 'sparklink_native_snoop_rx',
            'sparklink_native_snoop_tx'}
 

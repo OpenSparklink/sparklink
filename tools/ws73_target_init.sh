@@ -144,7 +144,13 @@ if grep -q 'ws73.managed_partial=1' /proc/cmdline; then
     fi
     partial_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_case=/){sub(/^ws73.partial_case=/,"",$i);print $i}}' /proc/cmdline)
     partial_domain=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_domain=/){sub(/^ws73.partial_domain=/,"",$i);print $i}}' /proc/cmdline)
+    if grep -qw ws73.managed_recreate=1 /proc/cmdline; then
+        resource_step=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.partial_step=/){sub(/^ws73.partial_step=/,"",$i);print $i}}' /proc/cmdline)
+        [ -n "$resource_step" ] || resource_step=0
+        LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_resource_file_gate.py --case "$partial_case" --initialization-step "$resource_step" --output /evidence/managed-partial > /evidence/managed-partial-supervisor.log 2>&1 || fail 'resource File held-reply gate'
+    else
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_partial.py $selected_cleanup_arg --case "$partial_case" --domain "$partial_domain" --output /evidence/managed-partial > /evidence/managed-partial-supervisor.log 2>&1 || fail 'partial Managed held-reply cleanup gate'
+    fi
 fi
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     # The runner attaches the first USB owner after capture readiness. Signal

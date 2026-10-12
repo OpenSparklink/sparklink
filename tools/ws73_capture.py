@@ -345,6 +345,8 @@ def partial_metadata_bounds(run, capture, partial):
     Host held-frame corroboration remains a separate mandatory runner check.
     """
     from ws73_management_partial import verify_records
+    if partial.get('resource_recreation'):
+        from ws73_resource_file_gate import verify_records
     try: snapshots=verify_records(partial)
     except (ValueError,KeyError,TypeError) as error:
         raise CaptureError('canonical successful partial records required') from error

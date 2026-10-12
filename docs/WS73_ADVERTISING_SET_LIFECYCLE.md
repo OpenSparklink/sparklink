@@ -92,3 +92,11 @@ Linux1305136c已把实际配置/缺失状态、原子有界重建、传输前标
 Source42Host+2helper/23plan/48management/diagnostic及codec sanitizers通过。
 新删除/重建真实FD与connected撤销、fixed-T、物理范围仍待，不能把模型/源码
 或单次新连接通过作为整项结束；后续改动仍需按具体新输入重新回归。
+
+新增专用VM参数`--managed-resource-recreate`，与真实selected advertising/
+Ready-peer partial门禁一起选择release/close/dup。第一帧是Remove，或以
+`--managed-real-later-step 1`暂留后续创建回复；不构造DLI/credits。先真实完成
+目标和同行的初始化，取消后只接受实际删除/创建命令，不容许泄露数据/enable
+或缺失集合STOP；终态明确区分删除后Setup和创建后Ready。探针仍在slkd启动
+前执行，只可证明File/peer/资源状态，不能据此宣称服务不停机恢复。
+当前仅384工具检查与离线语法/负面界限通过，新门禁等待冻结VM实测。

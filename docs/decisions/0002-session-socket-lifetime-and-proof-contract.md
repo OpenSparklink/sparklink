@@ -118,3 +118,11 @@ Grant方向/安全要求及epoch由内核强制。显式Managed release、owner�
 Backend register/start/submit/stop/recover/RX/fault采用可引用对象及明确上下文、模块
 pinning和drain回调契约；core不依赖USB=y为目标，当前源码仍待WP13迁移。
 不承诺稳定Rust ABI。迁移调用者和必要回归后直接删除旧未发布UAPI/重复生产路径。
+
+## 基础 socket 类型整改（未发布 ABI）
+
+K4b4c6add8189将基础DTAP创建改为SOCK_DGRAM，并明确拒绝SOCK_SEQPACKET。
+对应broker与应用回归使用datagram；不改变已验证CMTC/ACB编码、队列及链接身份。
+本地AF_UNIX仅应用回归支撑，实际SO_TYPE/拒绝门禁及WS73回归在准确新VM中验证。
+这只是类型契约迁移，不宣称可靠模式、Session/Grant/Ticket、RX丢包诊断或全部VFS
+竞争已完成。K770364dcc152/U96ac968先前数据证据仍保存，不自动套用本提交。

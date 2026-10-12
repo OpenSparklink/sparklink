@@ -1,5 +1,6 @@
 //! Native default-channel fd delegation. The kernel validates the final lifetime
-//! and negotiates CMTC; this broker never synthesizes channel readiness or data.
+//! and negotiates CMTC; basic datagrams do not promise reliable delivery.
+//! This broker never synthesizes channel readiness or data.
 use std::os::fd::{FromRawFd, OwnedFd};
 
 #[repr(C)]
@@ -41,7 +42,7 @@ pub(crate) fn open(
     let raw = unsafe {
         nix::libc::socket(
             46,
-            nix::libc::SOCK_SEQPACKET | nix::libc::SOCK_CLOEXEC | nix::libc::SOCK_NONBLOCK,
+            nix::libc::SOCK_DGRAM | nix::libc::SOCK_CLOEXEC | nix::libc::SOCK_NONBLOCK,
             0,
         )
     };

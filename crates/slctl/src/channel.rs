@@ -37,7 +37,7 @@ fn wait(fd: &OwnedFd, events: i16, deadline: Instant) -> anyhow::Result<()> {
         if p.revents & (nix::libc::POLLERR | nix::libc::POLLNVAL) != 0 {
             anyhow::bail!("channel socket fault/link-down: {}", p.revents);
         }
-        // A closed peer may leave a complete readable seqpacket. Consume it
+        // A closed peer may leave a complete readable datagram. Consume it
         // before treating HUP as EOF; a kernel fault remains an error above.
         if events & nix::libc::POLLIN != 0 && p.revents & nix::libc::POLLIN != 0 {
             return Ok(());
@@ -67,7 +67,7 @@ fn send(fd: &OwnedFd, bytes: &[u8], deadline: Instant) -> anyhow::Result<()> {
             return Ok(());
         }
         if result >= 0 {
-            anyhow::bail!("partial seqpacket send");
+            anyhow::bail!("partial datagram send");
         }
         let error = std::io::Error::last_os_error();
         if error.kind() != std::io::ErrorKind::WouldBlock {
@@ -260,7 +260,7 @@ mod tests {
     use std::os::fd::FromRawFd;
 
     #[test]
-    fn application_validates_and_replies_over_real_local_seqpacket_fds() {
+    fn application_validates_and_replies_over_real_local_datagram_fds() {
         for message_bytes in [61, 249] {
             // Local AF_UNIX is application regression support, never WS73 acceptance.
             let mut raw = [-1; 2];
@@ -268,7 +268,7 @@ mod tests {
             let result = unsafe {
                 nix::libc::socketpair(
                     nix::libc::AF_UNIX,
-                    nix::libc::SOCK_SEQPACKET | nix::libc::SOCK_NONBLOCK | nix::libc::SOCK_CLOEXEC,
+                    nix::libc::SOCK_DGRAM | nix::libc::SOCK_NONBLOCK | nix::libc::SOCK_CLOEXEC,
                     0,
                     raw.as_mut_ptr(),
                 )

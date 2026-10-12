@@ -1,6 +1,9 @@
 # ADR 0002：连接会话、通道、fd 与验证契约
 
 日期：2026-10-13。状态：目标架构采用；按下表整改，未实现项不宣称完成。
+用户完整提案已合入canonical ARCHITECTURE/IMPLEMENTATION_PLAN；采用与历史状态调整见
+[采用记录](../ARCHITECTURE_ADOPTION_20261013.json)。当前新K d3abbdc/Uafb5ee2的40轮短消息
+及249字节资格以CURRENT_CAPABILITIES为准，不覆盖下述历史review基线。
 补充 ADR 0001，不缩减 S0–S6、drivers/net/slkd 分层或历史资格。
 Review 基线为 Linux4a3dc86ade58、用户态8cf052c。随后 ec67348 仅新增长度验收应用/
 工具；40轮资格仍绑定 K4a3dc86ade58、编译应用4426d97、工具c259bae。
@@ -87,3 +90,31 @@ credit耗尽/满队列/断链/旧lifetime；不等待全部控制面竞争排列
 保留NOCP复用反例和实际ledger回归；Kani unsupported/超时不标PASS。
 安装13项检查仅是工具可用性证据。Ghidra用于SDK111协议核对，Tamarin/ProVerif
 随S5安全/Bond接入；不能把当前有限模型范围扩大为全系统或硬件恢复证明。
+
+## 完整提案采用：AD-01–AD-12与提交契约
+
+AD-01三层、AD-09用户态SSAP及AD-11可注册Backend与ADR0001一致；
+AD-02/03 Session与唯一分流、AD-04 socket类型、AD-05 Grant、AD-06 Ticket、
+AD-07三种流控、AD-08不确定物理义务、AD-10证据隔离及AD-12未发布UAPI迁移
+采用本ADR现有契约。完整工作包/依赖只在IMPLEMENTATION_PLAN维护，不创建平行规划。
+
+TxTicket绑定可引用Runtime/Session/Channel、controller/generation/lifetime、
+Grant/epoch、reservation及不可变编码数据。提交前门禁必须与Revoke/Down有实际同步
+线性化关系：撤销先发生则不得新commit，commit先发生则保留物理义务；
+只读atomic标记后再无同步USB写入仍是不安全窗口。入口软件准入不替代driver commit。
+明确未提交、已提交、不确定三个transport结果；不能证明零提交的失败不自动退款。
+不得持registry/state锁跨USB等待、copy或cancel_sync。WP03先记录生产事件顺序表和
+driver落点，FV05与受控VM交错验证同批接入；本ADR不宣称当前同步bulk路径已证明。
+
+NOCP只有handle/count，同lifetime内重复与跨lifetime迟到分别记录硬件假设。
+旧debt保留且未清算禁止复用；清算之后仍需可信排空/复位屏障。软件epoch或固定等待
+不能凭空补wire身份。当前四步反例及实际ledger回归保留，没有固件来源/唯一性和
+复用防护验收时FV07/DG08及相关issues保持开放。反例不是已观察实机串包。
+
+Grant方向/安全要求及epoch由内核强制。显式Managed release、owner死亡、连接失效
+和安全降级按契约撤销；fd传递/dup不扩大权限或续期，新lease不复活旧Binding。
+同lifetime reopen的旧RX、PB/SAR、CMTC和TCID屏障尚缺，未接通前不得宣称支持。
+
+Backend register/start/submit/stop/recover/RX/fault采用可引用对象及明确上下文、模块
+pinning和drain回调契约；core不依赖USB=y为目标，当前源码仍待WP13迁移。
+不承诺稳定Rust ABI。迁移调用者和必要回归后直接删除旧未发布UAPI/重复生产路径。

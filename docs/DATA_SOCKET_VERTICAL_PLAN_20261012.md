@@ -24,8 +24,12 @@ WS73 wire codec 尚无 A3 发送入口。旧 worker 的首字节 TCID 猜测及�
   分段标志及高位属性，随后 LE16 数据长度。OHOS 的 ts 位与标准保留位存在
   差异；首个最小路径使用完整 SDU、保留位零，其他模式在明确支持前拒绝。
 * libws73-usb `f4d85d0` 的 A3 builder 使用 handle 0；其注释称固定 flag，
-  不能据此丢弃连接身份。其内层 `[TCID LE16][length LE16][payload]` 是
-  DTAP 段，不是 connection handle。零 handle 只能用于真实 handle 0 的连接。
+  不能据此丢弃连接身份。参考代码写入的内层 `[TCID LE16][length LE16]`
+  不能解释为标准的 16-bit TCID：T/XS 20002-2025 §6.5.1 实际是 TCID u8、
+  帧类型/O/C/RFU u8、长度 LE16。该 builder 的高字节零仅覆盖基础帧。
+  TCID 0x01–0x1d 省略 PI；CUTC 0x1f 及动态业务通道需要 PI，不能将原始
+  应用载荷直接按 SMTC 格式搬过去。单播线上携带对端 TCID，RX 查本端 TCID。
+  零 handle 只能用于真实 handle 0 的连接，DTAP 标识不等于 connection handle。
 * OHOS `f0872df` 的 DTAP 明确区分 src/local TCID 和 dst/remote TCID，
   CMTC=0x02、SMTC=0x0a、CUTC=0x1f；不能把这些编号一律当作已协商业务通道。
   `NEARLINK_SERVICE_STACK_LOCAL_TEST` 的数据 stub 不属于真实协议证据。
@@ -53,6 +57,10 @@ socket 的 fd 必须绑定已经确认的 controller/generation/lifetime 与通�
 地址结构与权限模型在 D3/D4 实现时核对当前 Rust/C API，不提前宣称 UAPI 稳定。
 每个收发方向显式 local/remote TCID，队列按包数及字节双重限额。
 关闭/断链唤醒等待者，旧 fd 不重绑定新 lifetime；poll 只能反映真实可读或可发送容量。
+0x0009 在线上只有 handle/count，没有 generation/lifetime；软件不能伪称事件携带
+完整身份。旧连接尚有未结清或结果不确定的 outstanding 时，需保留旧记账归属并
+阻止该 handle 的新 lifetime 发送，直到有可靠的清算屏障或 controller generation
+退休；不得把晚到旧完成事件归还给新连接。具体断链清算语义需用 SDK111 实机确认。
 
 最小纵向验收必须由对端应用实际接收随机序号与载荷、校验后回复，并由原端再校验。
 保存两端应用记录及 USB/HCC/数据包证据，提供可复算 decoder 和可复现 VM 命令。

@@ -91,7 +91,7 @@ def verify_records(r):
     value = decode(SleConnectionResult, author_receipt)
     expected = SleConnectionResult(version=1, profile=1, state=(2 if held_reply=='status' else 3) if held_reply else 4, operation=1,
         generation=snapshots[i].generation, request_id=900, handle=0 if held_reply else value.handle,
-        flags=(1 if held_reply=='status' else 3) if held_reply else 7, dev_index=i)
+        flags=(0 if held_reply=='status' else 1) if held_reply else 7, dev_index=i)
     if bytes(value) != bytes(expected) or value.handle > 65535:
         raise ValueError('exact author OUT/Status/outcome facts before withdrawal required')
     final_author = r.get('author_result_after_release')
@@ -233,9 +233,12 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
         combined=(status['record']==outcome['record'])
         if r['reply_hold']=='outcome' and combined:raise CaptureError('outcome-only hold requires prior Status in a distinct real USB frame')
         reply=status if r['reply_hold']=='status' else outcome
-        release_ack=r['hold_acknowledgements'][2]
-        if not release_ack['host_wall_ns']<=reply['wall_ns']<=r['up'][i]['wall_ns']:
+        # usbmon and these markers use the guest clock. QMP host_wall_ns is
+        # host provenance; never compare the two clocks as one timeline.
+        if not r['markers'][2]['wall_ns']<=reply['wall_ns']<=r['up'][i]['wall_ns']:
             raise CaptureError('actual original held frame must reach guest after explicit release')
+        if max(status['wall_ns'],outcome['wall_ns'],create['command']['completion']['wall_ns'])>links[1]['command']['wall_ns']:
+            raise CaptureError('cleanup must follow actual OUT, Status and physical handle evidence')
         held=dict(actual_reply_stage='status-and-outcome' if combined else r['reply_hold'],
             original_frame_sha256=reply['usb_sha256'],original_frame_bytes=reply['usb_length'])
         if hold is not None:
@@ -326,7 +329,7 @@ def run(args):
         if reply_hold:
             stage('wait_held','held');result=writers[i].connection_result(snapshots[i].generation,900);drain()
             r['pending']=bytes(result).hex();save()
-            if (result.state,result.flags)!=((2,1) if reply_hold=='status' else (3,3)):
+            if (result.state,result.flags)!=((2,0) if reply_hold=='status' else (3,1)):
                 raise ValueError('unexpected original author stage while real reply held')
         else:
             while True:

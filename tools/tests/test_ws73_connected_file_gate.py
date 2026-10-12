@@ -29,7 +29,7 @@ class ConnectedFileGate(unittest.TestCase):
 
     def test_offline_inflight_cancel_cannot_become_success_or_invent_outcome(self):
         original=json.loads((Path(__file__).parent/'data/connected_file_record.json').read_text())
-        for phase,state,flags in [('status',2,1),('outcome',3,3)]:
+        for phase,state,flags in [('status',2,0),('outcome',3,1)]:
             r=copy.deepcopy(original);r.update(status='INFLIGHT_FILE_PASS',reply_hold=phase)
             value=SleConnectionResult.from_buffer_copy(bytes.fromhex(r.pop('connected')));value.state=state;value.flags=flags;value.handle=0
             r['pending']=bytes(value).hex();value.state=6;value.error=-errno.ECANCELED;r['cancelled']=bytes(value).hex()

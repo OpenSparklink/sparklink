@@ -18,8 +18,12 @@ pub struct DeviceEntry {
     pub addr: SleAddr,
     pub name: String,
     pub rssi: i8,
+    pub rssi_known: bool,
     pub discovery_level: u8,
     pub connected: bool,
+    pub connection_known: bool,
+    pub peer_address_type: Option<u8>,
+    pub peer_role: Option<u8>,
     pub conn_handle: Option<u16>,
     pub object_path: String,
     pub adv_data: Vec<u8>,
@@ -31,6 +35,7 @@ pub struct DeviceEntry {
 pub(crate) struct NativeManagement {
     pub token: Option<u64>,
     pub accepting: bool,
+    pub connection_id: u64,
     /// Correlation only, never cached radio success. A business admission or
     /// lease withdrawal invalidates its domain before touching the kernel.
     pub initialized_off: [Option<InitializationOff>; 2],
@@ -58,6 +63,7 @@ pub struct AdapterState {
     pub initialization_error: String,
     pub native_reports: VecDeque<NativeReport>,
     pub events_lost: u64,
+    pub native_links_known: bool,
     pub config: DaemonConfig,
     pub powered: bool,
     pub discovering: bool,
@@ -90,6 +96,7 @@ impl AdapterState {
             initialization_error: String::new(),
             native_reports: VecDeque::new(),
             events_lost: 0,
+            native_links_known: true,
             config,
             powered: true,
             discovering: false,
@@ -150,14 +157,6 @@ impl AdapterState {
     /// Disconnect a device by connection handle
     pub fn disconnect_device(&mut self, handle: u16) -> libsparklink::Result<()> {
         self.adapter.disconnect(handle)?;
-        if let Some(dev) = self
-            .devices
-            .values_mut()
-            .find(|d| d.conn_handle == Some(handle))
-        {
-            dev.connected = false;
-            dev.conn_handle = None;
-        }
         Ok(())
     }
 
@@ -190,8 +189,12 @@ impl AdapterState {
             addr,
             name: String::new(),
             rssi: 0,
+            rssi_known: true,
             discovery_level: 0,
             connected: false,
+            connection_known: self.controller.profile == 0,
+            peer_address_type: None,
+            peer_role: None,
             conn_handle: None,
             object_path,
             adv_data: Vec::new(),
@@ -199,6 +202,7 @@ impl AdapterState {
             tx_power: None,
         });
         entry.rssi = rssi;
+        entry.rssi_known = true;
         entry.discovery_level = discovery_level;
         if !name.is_empty() {
             entry.name = name;
@@ -222,12 +226,14 @@ impl AdapterState {
                 .find(|d| d.conn_handle == Some(handle))
             {
                 dev.connected = false;
+                dev.connection_known = true;
                 dev.conn_handle = None;
                 return;
             }
         }
         if let Some(dev) = self.devices.get_mut(&peer_addr) {
             dev.connected = connected;
+            dev.connection_known = true;
             dev.conn_handle = if connected { Some(handle) } else { None };
         } else if connected {
             let object_path = format!(
@@ -246,8 +252,12 @@ impl AdapterState {
                     addr: peer_addr,
                     name: String::new(),
                     rssi: 0,
+                    rssi_known: false,
                     discovery_level: 0,
                     connected: true,
+                    connection_known: true,
+                    peer_address_type: None,
+                    peer_role: None,
                     conn_handle: Some(handle),
                     object_path,
                     adv_data: Vec::new(),
@@ -255,6 +265,76 @@ impl AdapterState {
                     tx_power: None,
                 },
             );
+        }
+    }
+
+    /// Native physical event projection. Author operation success is never
+    /// used as a substitute for this stream. Loss/conflicts remain Unknown.
+    pub fn invalidate_native_connections(&mut self) {
+        self.native_links_known = false;
+        for d in self.devices.values_mut() {
+            d.connection_known = false;
+            d.connected = false;
+            d.conn_handle = None;
+        }
+    }
+    pub fn native_link(
+        &mut self,
+        outcome: slk_protocol::Ws73LinkOutcome,
+    ) -> Option<(SleAddr, String, bool)> {
+        if !self.native_links_known {
+            return None;
+        }
+        match outcome {
+            slk_protocol::Ws73LinkOutcome::Connected {
+                status: 0,
+                handle,
+                address_type,
+                address,
+                role,
+            } => {
+                let conflict = self.devices.values().any(|d| {
+                    d.connection_known
+                        && d.connected
+                        && ((d.conn_handle == Some(handle) && d.addr != address)
+                            || (d.addr == address
+                                && (d.conn_handle != Some(handle)
+                                    || d.peer_address_type != Some(address_type)
+                                    || d.peer_role != Some(role))))
+                });
+                if conflict {
+                    self.invalidate_native_connections();
+                    return None;
+                }
+                let new = if self.devices.contains_key(&address) {
+                    false
+                } else {
+                    self.on_adv_report(address, 0, 0, String::new(), Vec::new())
+                };
+                let d = self.devices.get_mut(&address)?;
+                d.connected = true;
+                d.connection_known = true;
+                d.conn_handle = Some(handle);
+                d.peer_address_type = Some(address_type);
+                d.peer_role = Some(role);
+                if new {
+                    d.rssi_known = false;
+                }
+                Some((address, d.object_path.clone(), new))
+            }
+            slk_protocol::Ws73LinkOutcome::Disconnected {
+                status: 0, handle, ..
+            } => {
+                let d = self
+                    .devices
+                    .values_mut()
+                    .find(|d| d.connection_known && d.conn_handle == Some(handle))?;
+                d.connected = false;
+                d.connection_known = true;
+                d.conn_handle = None;
+                Some((d.addr, d.object_path.clone(), false))
+            }
+            _ => None,
         }
     }
 

@@ -151,16 +151,73 @@ impl AdapterIface {
         self.state.lock().await.radio_scanning
     }
 
+    /// Allocate an ID before admission so clients can recover a lost reply.
+    async fn allocate_connection_request(&self) -> zbus::fdo::Result<u64> {
+        crate::connection::allocate(&self.state).await
+    }
+    async fn submit_connect(
+        &self,
+        request_id: u64,
+        address: &str,
+        address_type: u8,
+    ) -> zbus::fdo::Result<()> {
+        let address =
+            parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        crate::connection::submit(&self.state, request_id, address, address_type, None).await
+    }
+    async fn submit_disconnect(&self, request_id: u64, address: &str) -> zbus::fdo::Result<()> {
+        let address =
+            parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        crate::connection::submit_disconnect(&self.state, request_id, address).await
+    }
+    async fn get_connection_result(
+        &self,
+        request_id: u64,
+    ) -> zbus::fdo::Result<crate::connection::Record> {
+        crate::connection::result(&self.state, request_id).await
+    }
+    async fn connect_device_typed(&self, address: &str, address_type: u8) -> zbus::fdo::Result<()> {
+        let id = crate::connection::allocate(&self.state).await?;
+        self.submit_connect(id, address, address_type).await?;
+        crate::connection::wait(&self.state, id).await
+    }
+    async fn disconnect_address(&self, address: &str) -> zbus::fdo::Result<()> {
+        let address =
+            parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        if self.state.lock().await.controller.profile == 1 {
+            let id = crate::connection::disconnect_address(&self.state, address).await?;
+            return crate::connection::wait(&self.state, id).await;
+        }
+        let mut s = self.state.lock().await;
+        let h = s
+            .devices
+            .get(&address)
+            .and_then(|d| d.conn_handle)
+            .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
+        s.disconnect_device(h)
+            .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))
+    }
+
     /// Connect to a device by address string "AA:BB:CC:DD:EE:FF"
     async fn connect_device(&self, address: &str) -> zbus::fdo::Result<()> {
         let addr = parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
         let mut st = self.state.lock().await;
+        if st.controller.profile == 1 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "WS73 needs an explicit peer address type; use ConnectDeviceTyped".into(),
+            ));
+        }
         st.connect_device(&addr)
             .map_err(|e| zbus::fdo::Error::Failed(format!("connect failed: {e}")))
     }
 
     /// Disconnect a device by connection handle
     async fn disconnect_device(&self, handle: u16) -> zbus::fdo::Result<()> {
+        if self.state.lock().await.controller.profile == 1 {
+            let id = crate::connection::allocate(&self.state).await?;
+            crate::connection::submit(&self.state, id, [0; 6], 0, Some(handle)).await?;
+            return crate::connection::wait(&self.state, id).await;
+        }
         let mut st = self.state.lock().await;
         st.disconnect_device(handle)
             .map_err(|e| zbus::fdo::Error::Failed(format!("disconnect failed: {e}")))
@@ -178,7 +235,12 @@ impl AdapterIface {
                     .map(|b| format!("{b:02X}"))
                     .collect::<Vec<_>>()
                     .join(":");
-                (addr_hex, d.name.clone(), d.rssi as i16, d.connected)
+                (
+                    addr_hex,
+                    d.name.clone(),
+                    d.rssi as i16,
+                    d.connected && d.connection_known,
+                )
             })
             .collect()
     }
@@ -335,12 +397,21 @@ impl DeviceIface {
     /// Connect to this device
     async fn connect(&self) -> zbus::fdo::Result<()> {
         let mut st = self.state.lock().await;
+        if st.controller.profile == 1 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "use adapter ConnectDeviceTyped with explicit address type".into(),
+            ));
+        }
         st.connect_device(&self.addr)
             .map_err(|e| zbus::fdo::Error::Failed(format!("connect failed: {e}")))
     }
 
     /// Disconnect from this device
     async fn disconnect(&self) -> zbus::fdo::Result<()> {
+        if self.state.lock().await.controller.profile == 1 {
+            let id = crate::connection::disconnect_address(&self.state, self.addr).await?;
+            return crate::connection::wait(&self.state, id).await;
+        }
         let mut st = self.state.lock().await;
         let handle = st
             .devices
@@ -377,13 +448,33 @@ impl DeviceIface {
             .unwrap_or(0)
     }
 
+    #[zbus(property)]
+    async fn connection_known(&self) -> bool {
+        self.state
+            .lock()
+            .await
+            .devices
+            .get(&self.addr)
+            .is_some_and(|d| d.connection_known)
+    }
+
+    #[zbus(property)]
+    async fn rssi_known(&self) -> bool {
+        self.state
+            .lock()
+            .await
+            .devices
+            .get(&self.addr)
+            .is_some_and(|d| d.rssi_known)
+    }
+
     /// Whether the device is currently connected
     #[zbus(property)]
     async fn connected(&self) -> bool {
         let st = self.state.lock().await;
         st.devices
             .get(&self.addr)
-            .map(|d| d.connected)
+            .map(|d| d.connected && d.connection_known)
             .unwrap_or(false)
     }
 

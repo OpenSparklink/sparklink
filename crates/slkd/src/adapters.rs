@@ -47,7 +47,7 @@ pub(crate) async fn relinquish(
         Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => return Ok(()),
         Err(error) => return Err(error.into()),
     }
-    let deadline = tokio::time::Instant::now() + Duration::from_secs(6);
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(20);
     loop {
         let fd = adapter.clone();
         let status =
@@ -255,6 +255,7 @@ impl Node {
             Arc::new(Mutex::new(NativeManagement {
                 token: Some(token),
                 accepting: true,
+                connection_id: 0,
                 initialized_off: [None; 2],
             }))
         });
@@ -596,6 +597,17 @@ impl AdapterManager {
 /// Invalidate cached D-Bus properties after changing state outside a setter.
 /// Emit after releasing SharedState so property fetches cannot deadlock.
 pub(crate) async fn invalidate_properties(c: &zbus::Connection, path: &str, names: &[&str]) {
+    invalidate_interface_properties(c, path, "org.sparklink.Adapter", names).await;
+}
+pub(crate) async fn invalidate_device_properties(c: &zbus::Connection, path: &str, names: &[&str]) {
+    invalidate_interface_properties(c, path, "org.sparklink.Device", names).await;
+}
+async fn invalidate_interface_properties(
+    c: &zbus::Connection,
+    path: &str,
+    interface: &str,
+    names: &[&str],
+) {
     let changed: std::collections::HashMap<&str, zbus::zvariant::Value<'_>> = Default::default();
     if let Err(error) = c
         .emit_signal(
@@ -603,11 +615,11 @@ pub(crate) async fn invalidate_properties(c: &zbus::Connection, path: &str, name
             path,
             "org.freedesktop.DBus.Properties",
             "PropertiesChanged",
-            &("org.sparklink.Adapter", changed, names),
+            &(interface, changed, names),
         )
         .await
     {
-        warn!(%error, %path, "adapter property invalidation failed");
+        warn!(%error,%path,%interface,"property invalidation failed");
     }
 }
 

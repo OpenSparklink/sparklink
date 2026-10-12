@@ -1,3 +1,8 @@
+当前生产接入已扩展至Linux49699d6f11a5的真实Disconnect清理调用者和
+slkd/slctl typed连接消费者，构建通过但新VM/连接未验收。本页D227/195 RF22
+仍按原范围保留，不能改称新连接通过，详见
+[当前Native连接实现](NATIVE_CONNECTION_IMPLEMENTATION.md)。
+
 最新源码（2026-10-12）：Linux82318ed9fe3f接通typed连接提交/查询、driver
 27/3字节plan、共用TX及异步outcome关联，完整构建通过；本页RF22仍只资格
 原D227/服务195。真实撤销清理、slkd/slctl及实机连接/SSAP未验收，详见

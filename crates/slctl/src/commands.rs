@@ -47,9 +47,22 @@ impl Context {
             }
             "connect" => {
                 if args.len() < 2 {
-                    anyhow::bail!("usage: connect <address>");
+                    anyhow::bail!("usage: connect <address> [address-type]");
                 }
-                self.cmd_connect(args[1]).await
+                self.cmd_connect(args[1], args.get(2).copied()).await
+            }
+            "connection-result" => {
+                let id: u64 = args
+                    .get(1)
+                    .ok_or_else(|| anyhow::anyhow!("usage: connection-result <request-id>"))?
+                    .parse()?;
+                let proxy = self.adapter_proxy().await?;
+                let r: NativeConnectionRecord = proxy.call("GetConnectionResult", &(id,)).await?;
+                println!(
+                    "NativeConnectionResult: generation={} request={} operation={} state={} errno={} fault={} command_status={} outcome_status={} handle={} flags={}",
+                    r.0, r.1, r.2, r.3, r.4, r.5, r.6, r.7, r.8, r.9
+                );
+                Ok(())
             }
             "disconnect" => {
                 let addr = args.get(1).copied().unwrap_or("");
@@ -584,17 +597,47 @@ impl Context {
         Ok(())
     }
 
-    async fn cmd_connect(&self, address: &str) -> anyhow::Result<()> {
+    async fn cmd_connect(&self, address: &str, address_type: Option<&str>) -> anyhow::Result<()> {
         let proxy = self.adapter_proxy().await?;
-        let _: () = proxy.call("ConnectDevice", &(address,)).await?;
-        println!("Connected to {address}");
+        let profile: u32 = proxy.get_property("Profile").await?;
+        if profile == 1 {
+            let address_type: u8 = address_type
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "usage: connect <address> <address-type>; type is explicit, not inferred"
+                    )
+                })?
+                .parse()?;
+            let id: u64 = proxy.call("AllocateConnectionRequest", &()).await?;
+            println!(
+                "NativeConnectionRequest: request={id} address={address} address_type={address_type}"
+            );
+            let _: () = proxy
+                .call("SubmitConnect", &(id, address, address_type))
+                .await?;
+            wait_connection(&proxy, id).await?;
+        } else {
+            let _: () = proxy.call("ConnectDevice", &(address,)).await?;
+            println!("Connection request accepted for {address}");
+            return Ok(());
+        }
+        println!("Connection procedure completed for {address}");
         Ok(())
     }
-
     async fn cmd_disconnect(&self, address: &str) -> anyhow::Result<()> {
         let proxy = self.adapter_proxy().await?;
-        let _: () = proxy.call("DisconnectDevice", &(address,)).await?;
-        println!("Disconnected {address}");
+        let profile: u32 = proxy.get_property("Profile").await?;
+        if profile == 1 {
+            let id: u64 = proxy.call("AllocateConnectionRequest", &()).await?;
+            println!("NativeDisconnectRequest: request={id} address={address}");
+            let _: () = proxy.call("SubmitDisconnect", &(id, address)).await?;
+            wait_connection(&proxy, id).await?;
+        } else {
+            let _: () = proxy.call("DisconnectAddress", &(address,)).await?;
+            println!("Disconnect request accepted for {address}");
+            return Ok(());
+        }
+        println!("Disconnect procedure completed for {address}");
         Ok(())
     }
 
@@ -617,7 +660,7 @@ impl Context {
 
     async fn cmd_remote_services(&self) -> anyhow::Result<()> {
         println!("Remote service discovery requires an active connection.");
-        println!("Use 'connect <address>' first, then the daemon exposes");
+        println!("Use 'connect <address> <address-type>' first, then the daemon exposes");
         println!(
             "org.sparklink.RemoteService at {}/conn_<handle>",
             self.selected_path().await?
@@ -1202,6 +1245,28 @@ fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
         bytes.push(u8::from_str_radix(&hex[i..i + 2], 16)?);
     }
     Ok(bytes)
+}
+
+type NativeConnectionRecord = (u64, u64, u32, u32, i32, i32, u32, u32, u32, u32);
+async fn wait_connection(proxy: &zbus::Proxy<'_>, id: u64) -> anyhow::Result<()> {
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(16);
+    loop {
+        let r: NativeConnectionRecord = proxy.call("GetConnectionResult", &(id,)).await?;
+        if r.3 >= 4 {
+            println!(
+                "NativeConnectionResult: generation={} request={} operation={} state={} errno={} fault={} command_status={} outcome_status={} handle={} flags={}",
+                r.0, r.1, r.2, r.3, r.4, r.5, r.6, r.7, r.8, r.9
+            );
+            if r.3 == 4 && r.4 == 0 && r.5 == 0 && r.6 == 0 && r.7 == 0 && r.9 & 7 == 7 {
+                return Ok(());
+            }
+            anyhow::bail!("connection procedure did not succeed; original request={id}")
+        }
+        if tokio::time::Instant::now() >= deadline {
+            anyhow::bail!("connection observation timeout; query request={id}")
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+    }
 }
 
 #[cfg(test)]

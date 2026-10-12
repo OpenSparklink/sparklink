@@ -1,3 +1,13 @@
+当前S4（2026-10-12）：Linux49699d6f11a5已接通实际revoke/RX工作线程的
+Disconnect、独立作者结果、有限整体预算与真实radio屏障，完整构建/产物验证
+通过；slkd/slctl typed submit/result、显式地址类型和真实物理事件状态消费者
+已接通。188 workspace/严格clippy/365 tools及kernel源码回归通过；**新VM/
+真实连接和撤销矩阵尚未验收**，loss后canonical同步与handle lifetime绑定
+仍缺，已有实机资格保留原D227/服务195的无连接RF22。下一先资格化新镜像
+并保留北极星，再真实连接/断开/release/last-fd/dup/迟到事件、数据/SSAP；
+完整原28项/S0–S6、默认四设备/自然根因/非人工恢复继续OPEN。
+[NATIVE_CONNECTION_IMPLEMENTATION](NATIVE_CONNECTION_IMPLEMENTATION.md)。
+
 当前S4生产接入（2026-10-12）：Linux82318ed9fe3f接通27/3字节codec、
 有界作者operation、typed UAPI/共用TX/异步physical outcome；重复staging
 已删除，新完整内核/modules无warnings构建通过。Rust/C/Python提交查询已

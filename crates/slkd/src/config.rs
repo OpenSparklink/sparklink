@@ -45,7 +45,90 @@ pub struct Ws73Config {
     #[serde(default)]
     pub defaults: Ws73PolicyConfig,
     #[serde(default)]
+    pub connection: Ws73ConnectionConfig,
+    #[serde(default)]
     pub adapters: Vec<Ws73AdapterConfig>,
+}
+
+/// Explicit WS73 111 candidate policy from the reference Host. This is
+/// configurable application policy, not a hardware capability/RF claim.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct Ws73ConnectionConfig {
+    pub filter: u32,
+    pub own_address_type: u32,
+    pub gt_negotiate: u32,
+    pub frame: u32,
+    pub scan_interval: u32,
+    pub scan_window: u32,
+    pub interval_min: u32,
+    pub interval_max: u32,
+    pub latency: u32,
+    pub supervision_timeout: u32,
+    pub event_min: u32,
+    pub event_max: u32,
+    pub timeout_ms: u32,
+}
+impl Default for Ws73ConnectionConfig {
+    fn default() -> Self {
+        Self {
+            filter: 0,
+            own_address_type: 0,
+            gt_negotiate: 1,
+            frame: 1,
+            scan_interval: 32,
+            scan_window: 32,
+            interval_min: 12,
+            interval_max: 12,
+            latency: 0,
+            supervision_timeout: 508,
+            event_min: 0,
+            event_max: 0,
+            timeout_ms: 10000,
+        }
+    }
+}
+impl Ws73ConnectionConfig {
+    pub fn parameters(&self) -> slk_protocol::SleConnectionParameters {
+        slk_protocol::SleConnectionParameters {
+            filter: self.filter,
+            own_address_type: self.own_address_type,
+            gt_negotiate: self.gt_negotiate,
+            frame: self.frame,
+            scan_interval: self.scan_interval,
+            scan_window: self.scan_window,
+            interval_min: self.interval_min,
+            interval_max: self.interval_max,
+            latency: self.latency,
+            supervision_timeout: self.supervision_timeout,
+            event_min: self.event_min,
+            event_max: self.event_max,
+            ..Default::default()
+        }
+    }
+    fn validate(&self) -> Result<(), ConfigError> {
+        if self.filter > 1
+            || self.own_address_type > 255
+            || self.gt_negotiate > 3
+            || self.frame != 1
+            || self.scan_interval == 0
+            || self.scan_interval > 65535
+            || self.scan_window == 0
+            || self.scan_window > self.scan_interval
+            || self.interval_min == 0
+            || self.interval_min > self.interval_max
+            || self.interval_max > 65535
+            || self.latency > 65535
+            || self.supervision_timeout == 0
+            || self.supervision_timeout > 65535
+            || self.event_min > self.event_max
+            || self.event_max > 65535
+            || !(1..=10000).contains(&self.timeout_ms)
+        {
+            return Err(ConfigError::Invalid("invalid ws73 connection policy"));
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -138,6 +221,7 @@ impl Ws73Config {
     }
 
     fn validate(&self) -> Result<(), ConfigError> {
+        self.connection.validate()?;
         self.defaults.build()?;
         let mut addresses = std::collections::BTreeSet::new();
         for adapter in &self.adapters {

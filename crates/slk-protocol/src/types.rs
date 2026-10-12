@@ -1382,3 +1382,147 @@ pub struct SleConnectionResult {
     pub dev_index: u16,
     pub reserved: [u8; 6],
 }
+
+impl Default for SleControllerEvent {
+    fn default() -> Self {
+        // SAFETY: repr(C) integers and byte arrays accept zero. seq/generation
+        // zero is an invalid observation; decoders reject it until populated.
+        unsafe { std::mem::zeroed() }
+    }
+}
+
+/// WS73 physical facts; command acceptance and author results are separate.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Ws73LinkOutcome {
+    Connected {
+        status: u8,
+        handle: u16,
+        role: u8,
+        address_type: u8,
+        address: SleAddr,
+    },
+    Disconnected {
+        status: u8,
+        handle: u16,
+        reason: u8,
+    },
+}
+impl SleControllerEvent {
+    pub fn ws73_link_outcome(&self) -> Option<Ws73LinkOutcome> {
+        if self.profile != CONTROLLER_EVENT_PROFILE_WS73_HCC
+            || self.flags != 0
+            || self._reserved != 0
+            || self.seq == 0
+            || self.generation == 0
+        {
+            return None;
+        }
+        let body = self.payload.get(..usize::from(self.payload_len))?;
+        match self.event_code {
+            0x15 | 0x1401 if body.len() >= 11 => {
+                let address: SleAddr = body[5..11].try_into().ok()?;
+                if body[0] == 0 && (body[3] > 1 || address == [0; 6] || address == [255; 6]) {
+                    return None;
+                }
+                Some(Ws73LinkOutcome::Connected {
+                    status: body[0],
+                    handle: u16::from_le_bytes([body[1], body[2]]),
+                    role: body[3],
+                    address_type: body[4],
+                    address,
+                })
+            }
+            5 | 0x1405 if body.len() >= 4 => Some(Ws73LinkOutcome::Disconnected {
+                status: body[0],
+                handle: u16::from_le_bytes([body[1], body[2]]),
+                reason: body[3],
+            }),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(test)]
+mod ws73_link_tests {
+    use super::*;
+    fn event(code: u16, body: &[u8]) -> SleControllerEvent {
+        let mut e = SleControllerEvent {
+            profile: 1,
+            generation: 7,
+            seq: 1,
+            event_code: code,
+            payload_len: body.len() as u16,
+            ..Default::default()
+        };
+        e.payload[..body.len()].copy_from_slice(body);
+        e
+    }
+    #[test]
+    fn exact_profile_aliases_handle_bounds_and_original_extensions() {
+        for code in [0x15, 0x1401] {
+            for handle in [0, 65535u16] {
+                let mut body = vec![
+                    0,
+                    handle as u8,
+                    (handle >> 8) as u8,
+                    1,
+                    255,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                ];
+                body.extend_from_slice(&[7; 12]);
+                let e = event(code, &body);
+                let original = e.payload;
+                assert_eq!(
+                    e.ws73_link_outcome(),
+                    Some(Ws73LinkOutcome::Connected {
+                        status: 0,
+                        handle,
+                        role: 1,
+                        address_type: 255,
+                        address: [1, 2, 3, 4, 5, 6]
+                    })
+                );
+                assert_eq!(e.payload, original);
+            }
+        }
+        for code in [5, 0x1405] {
+            assert_eq!(
+                event(code, &[0, 0, 0, 0x13]).ws73_link_outcome(),
+                Some(Ws73LinkOutcome::Disconnected {
+                    status: 0,
+                    handle: 0,
+                    reason: 0x13
+                })
+            );
+        }
+    }
+    #[test]
+    fn malformed_identity_and_success_are_rejected_failure_is_not_fake_disconnect() {
+        for n in 0..11 {
+            assert!(event(0x15, &vec![0; n]).ws73_link_outcome().is_none());
+        }
+        let body = [0, 7, 0, 0, 0, 1, 1, 1, 1, 1, 1];
+        let mut e = event(0x15, &body);
+        e.profile = 0;
+        assert!(e.ws73_link_outcome().is_none());
+        e.profile = 1;
+        e.flags = 1;
+        assert!(e.ws73_link_outcome().is_none());
+        e.flags = 0;
+        e.payload[3] = 2;
+        assert!(e.ws73_link_outcome().is_none());
+        assert_eq!(
+            event(5, &[1, 7, 0, 0x13]).ws73_link_outcome(),
+            Some(Ws73LinkOutcome::Disconnected {
+                status: 1,
+                handle: 7,
+                reason: 0x13
+            })
+        );
+    }
+}

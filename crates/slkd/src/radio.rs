@@ -89,7 +89,7 @@ async fn submit(
     .map_err(failed)
 }
 
-/// Cancel both discovery policies through the kernel's lease revocation. This
+/// Withdraw this controller lease, including connection and discovery cleanup. This
 /// is not a successful STOP command or a fabricated operation result. Queries
 /// retain the original IDs while the actual reply and cleanup drain.
 pub(crate) async fn cancel_policies(state: &SharedState) -> zbus::fdo::Result<u64> {
@@ -416,6 +416,7 @@ mod tests {
         state.native_lease = Some(Arc::new(Mutex::new(NativeManagement {
             token: Some(7),
             accepting: true,
+            connection_id: 0,
             initialized_off: [None; 2],
         })));
         Arc::new(Mutex::new(state))

@@ -229,6 +229,80 @@ async fn dispatch_native(
         return;
     }
     st.events_lost = st.events_lost.saturating_add(event.lost);
+    let lost_paths = if event.lost != 0 {
+        st.invalidate_native_connections();
+        st.devices
+            .values()
+            .map(|d| d.object_path.clone())
+            .collect::<Vec<_>>()
+    } else {
+        Vec::new()
+    };
+    if matches!(event.event_code, 0x15 | 0x1401 | 5 | 0x1405) {
+        let updated = if let Some(outcome) = event.ws73_link_outcome() {
+            st.native_link(outcome)
+        } else {
+            st.invalidate_native_connections();
+            None
+        };
+        let adapter_path = st.object_path.clone();
+        let known = st.native_links_known;
+        let invalid_paths = if !known {
+            st.devices
+                .values()
+                .map(|d| d.object_path.clone())
+                .collect::<Vec<_>>()
+        } else {
+            lost_paths
+        };
+        drop(st);
+        for path in invalid_paths {
+            crate::adapters::invalidate_device_properties(
+                connection,
+                &path,
+                &["Connected", "ConnectionKnown"],
+            )
+            .await;
+        }
+        if let Some((address, path, new)) = updated {
+            if new
+                && let Err(error) = connection
+                    .object_server()
+                    .at(path.as_str(), DeviceIface::new(state.clone(), address))
+                    .await
+            {
+                error!(%error,"native device publication failed");
+            }
+            crate::adapters::invalidate_device_properties(
+                connection,
+                &path,
+                &["Connected", "ConnectionKnown"],
+            )
+            .await;
+        }
+        if event.lost != 0 {
+            crate::adapters::invalidate_properties(connection, &adapter_path, &["EventsLost"])
+                .await;
+        }
+        return;
+    }
+    // Notify loss even on unrelated notifications, without treating it as a
+    // successful disconnection or synthesizing a legacy SSAP/profile event.
+    if !lost_paths.is_empty() {
+        drop(st);
+        for path in &lost_paths {
+            crate::adapters::invalidate_device_properties(
+                connection,
+                path,
+                &["Connected", "ConnectionKnown"],
+            )
+            .await;
+        }
+        st = state.lock().await;
+        if !st.present {
+            return;
+        }
+    }
     let Some(report) = event.ws73_discovery() else {
         let path = st.object_path.clone();
         drop(st);

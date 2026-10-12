@@ -550,3 +550,119 @@ async fn ready_property_cache_observes_host_transition() {
     };
     tokio::join!(bonding.shutdown(), profiles.shutdown());
 }
+
+async fn property_eventually(proxy: &zbus::Proxy<'_>, name: &str, value: bool) {
+    timeout(Duration::from_secs(1), async {
+        loop {
+            if proxy.get_property::<bool>(name).await.unwrap() == value {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(1)).await;
+        }
+    })
+    .await
+    .unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn native_physical_outcomes_update_dbus_without_legacy_remote_service_or_false_loss_disconnect()
+ {
+    let bus = PrivateBus::start();
+    let state = state();
+    let expected = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    state.lock().await.controller = expected;
+    let server = server(&bus, state.clone()).await;
+    let client = client(&bus).await;
+    let address = [1, 2, 3, 4, 5, 6];
+    let mut event = slk_protocol::SleControllerEvent {
+        profile: 1,
+        generation: 7,
+        seq: 1,
+        event_code: 0x15,
+        payload_len: 11,
+        ..Default::default()
+    };
+    event.payload[..11].copy_from_slice(&[0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6]);
+    dispatch_native(Ok(event), &state, &server, expected).await;
+    let path = state
+        .lock()
+        .await
+        .devices
+        .get(&address)
+        .unwrap()
+        .object_path
+        .clone();
+    let device = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        path.as_str(),
+        "org.sparklink.Device",
+    )
+    .await
+    .unwrap();
+    assert!(device.get_property::<bool>("Connected").await.unwrap());
+    assert!(
+        device
+            .get_property::<bool>("ConnectionKnown")
+            .await
+            .unwrap()
+    );
+    assert!(!device.get_property::<bool>("RssiKnown").await.unwrap());
+    let remote = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk0/conn_0000",
+        "org.sparklink.RemoteService",
+    )
+    .await
+    .unwrap();
+    assert!(remote.introspect().await.is_err());
+    let down = slk_protocol::SleControllerEvent {
+        profile: 1,
+        generation: 7,
+        seq: 2,
+        event_code: 5,
+        payload_len: 4,
+        payload: {
+            let mut p = [0; 288];
+            p[..4].copy_from_slice(&[1, 0, 0, 0x13]);
+            p
+        },
+        ..Default::default()
+    };
+    dispatch_native(Ok(down), &state, &server, expected).await;
+    assert!(device.get_property::<bool>("Connected").await.unwrap());
+    let mut down = down;
+    down.seq = 3;
+    down.payload[0] = 0;
+    dispatch_native(Ok(down), &state, &server, expected).await;
+    property_eventually(&device, "Connected", false).await;
+    assert!(
+        device
+            .get_property::<bool>("ConnectionKnown")
+            .await
+            .unwrap()
+    );
+    event.seq = 4;
+    dispatch_native(Ok(event), &state, &server, expected).await;
+    property_eventually(&device, "Connected", true).await;
+    let lost = slk_protocol::SleControllerEvent {
+        profile: 1,
+        generation: 7,
+        seq: 6,
+        event_code: 0x1801,
+        lost: 1,
+        ..Default::default()
+    };
+    dispatch_native(Ok(lost), &state, &server, expected).await;
+    property_eventually(&device, "ConnectionKnown", false).await;
+    property_eventually(&device, "Connected", false).await;
+    assert!(!state.lock().await.native_links_known);
+    event.seq = 7;
+    dispatch_native(Ok(event), &state, &server, expected).await;
+    property_eventually(&device, "ConnectionKnown", false).await;
+}

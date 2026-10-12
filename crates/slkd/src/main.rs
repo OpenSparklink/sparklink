@@ -5,6 +5,7 @@ use slk_experimental::profile;
 mod adapters;
 mod bonding;
 mod config;
+mod connection;
 mod controller;
 mod dbus_iface;
 mod event_loop;

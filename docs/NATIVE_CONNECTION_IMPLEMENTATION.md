@@ -1,6 +1,6 @@
 # Native连接、撤销清理及用户态调用者
 
-2026-10-12，生产内核 `49699d6f11a5c1802508ac748d4a5e7d0b39d1d4`。
+2026-10-12，生产内核 `46db23ba8beda736908ea61465ca8815fba4d7d6`。
 完整bzImage/modules构建通过，源码/配置稳定，无warnings；八export/ELF/module
 产物验证通过。新签名空USB VM保留；最新实际88b9服务的真实双设备VM80默认回归通过：
 广播扫描20+2轮、无连接SIGKILL交接、taint0、1293包无丢包。
@@ -191,3 +191,23 @@ fault或未完成revocation均拒绝新提交。源码33项实际Host及依赖+2
 48项management源码、11项operation及C codec ASan/UBSan/Leak通过；完整新内核
 构建和VM重测尚待，不将修复意图记作实机通过。原FIFO和fixture/include/LSAN
 环境失败保留，未放宽生产条件或关闭检查。
+
+
+VM82已在实际46db内核/cd64065服务与工具上完成上述真实门禁：原Setup六项、
+原发现队列六项以及新Native Create队列六项通过；每组peer有36条真实参数/启停
+命令及匹配Complete。原发现矩阵后的新租约现在可接受Create为Queued。
+显式release读取Cancelled/-ECANCELED，无Status/outcome/handle；last File关闭
+后保持null而非虚构作者结果；dup首关仍Held/Queued，尾关后350ms内Free/Ready/
+Off。外部fd前后ENOENT，peer完整metadata、租约和scanner On保持，且正常
+调度下真实启停成功。所有临界区36.8–63.3微秒，小于50ms；支撑范围仍是特权
+FIFO，不能宣称普通调度/在途/connected验收。
+[旧内核EBUSY失败](evidence/ws73-native-queued-connection-first-admission-failure-20261012.json)，
+[修复后独立复算证据](evidence/ws73-native-queued-connection-file-resume-20261012.json)。
+
+新内核完整构建、source/config稳定、无warnings、八export/ELF/module验证和
+受信模块空USB NVMe/Btrfs VM23通过，taint0。VM82完整1451包无丢包，quiet
+连接窗口及整个扩展阶段均无Create/Disconnect OUT；parent与独立sealer的全部
+queue/setup/peer/RF22证明相同，冻结输入逐hash复核。随后双设备RF20+2通过，
+其中一次人为guest IN错误只是测试支撑：不记自然RCA或非人工自动恢复。
+修复对应具体sticky-revoking缺陷的证据，不关闭任何完整issue。S0–S6/28、
+真正连接与connected revoke、在途回复、canonical/peer lifetime和其余生态仍开放。

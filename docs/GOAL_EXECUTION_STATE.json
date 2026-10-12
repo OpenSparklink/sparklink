@@ -301,5 +301,7 @@
     "docs/evidence/ws73-basic-dgram-short-repeat-20261013.json",
     "docs/evidence/ws73-basic-dgram-249-boundary-20261013.json"
   ],
-  "basic_datagram_type_subgate_complete": true
+  "basic_datagram_type_subgate_complete": true,
+  "latest_issue_progress_receipt": "docs/evidence/basic-dgram-issues-20261013.json",
+  "latest_evidence_commit": "304827e94f99cdd3582d6131e2dfe00c7e7d003e"
 }

@@ -11,7 +11,12 @@ HID 服务，不编入未消费的 transport codec 或 Profile actor。新增未
 cargo build -p slkd --features experimental-legacy-profiles
 ```
 
-它仅恢复旧 profile0 的注册/连接生命周期，Native profile1 仍不注册。此 feature
+86bfbc8起默认daemon在取得lease/发布对象前拒绝profile0，不再构造旧破坏性
+EventReceiver；Native只使用ControllerEventReceiver独立游标。旧事件actor的start入口
+仅cfg(test)或本显式feature编译；有效callback/取消/shutdown回归保留。
+内核旧ring、低层库/监控器调用者尚未全部迁移，不宣称WP12结束。
+
+此feature还恢复旧profile0的实验事件消费者及注册/连接生命周期，Native profile1仍不注册。此feature
 供受控开发，不是合格服务支持。旧 UUID/权限位（R07）、SSAP 请求路由/预算/credit、
 真实服务互通、安全要求仍未闭合。默认不宣称 Profile/HID/transport 可用。
 
@@ -33,6 +38,6 @@ workspace test、clippy、fmt、默认 release、跨语言 ABI、VM 真双设备
 故障恢复/根因及完整发布验收仍开放。历史物理/人工注入证据保留，不用新 fixture
 替代真实 RF 或旧故障。
 
-工具 CI 需加载匹配内核的 lab helper，固定 c2c4aa4ad0bd；通过
+工具 CI 需加载匹配内核的 lab helper，固定bf8663bb78eb（历史c2c4 pin及失败收据保留）；通过
 `SPARKLINK_KERNEL_SOURCE` 指定 checkout 根目录，本地默认仍为相邻 linux。
 首轮新增 CI 暴露了相邻仓库假设导致的两项失败，保留失败记录；修复不跳过测试。

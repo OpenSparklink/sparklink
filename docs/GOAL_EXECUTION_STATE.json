@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T22:20:22.531239+00:00",
+  "updated_at_utc": "2026-10-12T22:34:04.651039+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,15 +27,15 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "9cabe48a5147088b8c9b96c760c7de3ec86ef85c"
+    "userspace": "d3039b2ac07424e47974ffe2a97638f9dba33701"
   },
   "qualified_source_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
+    "userspace": "86bfbc81ba001539c3816f72b3efc5a911cf19ee"
   },
   "current_qualification": {
-    "DG01": "Kbf8663/Udfb8636 exact new40 ordinary peer round trips, both roles, existing lifecycle/RF22/connection/QMP gates preserved",
-    "DG02": "Same new source8 app249 and16 oversize rejections absent capture; remaining same-Binding recovery/other layers/long qualifications open",
+    "DG01": "Kbf8663/U86bfbc8 new40 ordinary actual peer round trips, both roles; canonical Native events retained after default Legacy isolation; RF22/connection/QMP gates preserved",
+    "DG02": "Same exact new source8 app249 and16 oversize rejections absent capture; remaining same-Binding/other layers/long gates open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -43,11 +43,12 @@
     "FV07": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN",
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
-    "DG09": "PARTIAL_REAL: six File release/final control fd/dup plus two TX-only\u2192RX-only, opposite direction/invalid/protected request rejection;43 pure Grant scoped. Full daemon death/security trust/downgrade/inflight/refinement still open; full D-Bus policy scope is not conferred by the controlled SCM_RIGHTS gate; new controlled broker SCM_RIGHTS six real cases at tools8f19590, 16 real round trips, actual isolation/transfer/fd inode/CLOEXEC/broker close. Actual slkd death/security/inflight remain unqualified."
+    "DG09": "PARTIAL_REAL: six File release/final control fd/dup plus two TX-only\u2192RX-only, opposite direction/invalid/protected request rejection;43 pure Grant scoped. Full daemon death/security trust/downgrade/inflight/refinement still open; full D-Bus policy scope is not conferred by the controlled SCM_RIGHTS gate; new controlled broker SCM_RIGHTS six real cases at tools8f19590, 16 real round trips, actual isolation/transfer/fd inode/CLOEXEC/broker close. Actual slkd death/security/inflight remain unqualified.",
+    "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open"
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP05/06 SCM_RIGHTS controlled broker six-case gate PASS. Next retain application data fd across actual slkd death, distinguish common two-device owner withdrawal from independent per-controller owner isolation; then WP12 legacy event and WP13 Backend authority removal. Features after architecture remediation.",
+    "WP05/06 actual slkd death: isolated real OpenChannel client and kernel-credential fd receiver implemented offline, VM supervisor integration/ordinary retained application fd/new daemon not yet connected. No death qualification from existing radio SIGKILL gate. Continue WP12 low-level event migration and WP13 Backend authority before feature expansion.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -324,13 +325,16 @@
     "docs/evidence/ws73-binding-scope-20261013.json",
     "docs/evidence/binding-grant-offline-20261013.json",
     "docs/evidence/ws73-scm-rights-grant-20261013.json",
-    "docs/evidence/scm-rights-offline-20261013.json"
+    "docs/evidence/scm-rights-offline-20261013.json",
+    "docs/evidence/ws73-default-event-isolated-short-repeat-20261013.json",
+    "docs/evidence/ws73-default-event-isolated-249-boundary-20261013.json",
+    "docs/evidence/default-event-isolation-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/scm-rights-issues-20261013.json",
-  "latest_evidence_commit": "9cabe48",
+  "latest_evidence_commit": "pending current evidence commit",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: signed SCM_RIGHTS tooling and explicit native fd wrapper,431 offline tests,six exact VM gates/16 actual round trips independently sealed; current architecture discrepancies audited and synchronized; full goal active;14 existing issue comments read back OPEN with original body/scope unchanged",
+  "current_goal_turn_classification": "progress: signed default production Legacy event isolation,199 default/62 experimental regressions,strict clippy,exact U86bfbc8 real40/249 independent seal;isolated fd death client/receiver strict offline-only",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159"
   ]

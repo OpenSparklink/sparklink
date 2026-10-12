@@ -353,10 +353,15 @@ Kernel/编译service按公开证据固定，禁止宿主直接执行设备gate�
 ### WP12：事件、快照和daemon接任（P1/P2，S2）
 
 最新调用核对：Native订阅已使用ControllerEventReceiver/每注册完整事件日志；
-`adapters.rs`的Legacy分支仍消费EventReceiver/旧DLI ring，`ioctl_legacy_dli_poll`
-仍可破坏性poll后备controller事件。迁移/删除这条生产Legacy分支是本阶段整改，
-不得把现有Native已迁移路径回退到旧ring。现有daemon SIGKILL门禁仅活动广播扫描，
-不能授予“业务fd存活且旧Grant失效”的资格；后续必须跨实际slkd死亡保留应用fd。
+86bfbc8已将`adapters.rs`的Legacy EventReceiver与event actor start从默认生产构建隔离，
+profile0在lease/对象发布前Unsupported；仅显式实验feature/tests保留。
+`ioctl_legacy_dli_poll`及低层库/CLI消费者尚未全部退出，内核旧ring仍可存在。
+继续迁移/删除余下生产调用者是本阶段整改，
+不得把现有Native已迁移路径回退到旧ring。精确Kbf8663/U86bfbc8新VM40短、249八轮/16超限、RF22及建链断链通过，
+不扩为原事件门禁全集或自然恢复。现有daemon SIGKILL门禁仅活动广播扫描，
+不能授予“业务fd存活且旧Grant失效”的资格；后续必须跨实际slkd死亡保留应用fd。f2859a0/d3039b2专用OpenChannel fd客户端/
+内核凭据接收器已实现并严格构建/本地拒绝通过，VM监督、持有业务fd跨SIGKILL/接任
+尚未接通，不得将工具存在计作实机通过。
 同一slkd拥有两设备时死亡会撤销两lease，不能声称另一lease不受影响；
 要验证设备隔离，应独立管理所有者或采用四设备两组，记录实际所有者拓扑。
 
@@ -375,7 +380,9 @@ USB/serdev走`activate_new_device`的Runtime固定槽，尚无目标可注册Bac
 整改不得只改enum名称：须先收敛register/unregister引用与generation、停止/回调屏障，
 迁移真实WS73调用者，再移driver与删除旧configfs假设备构造；
 UART/SPI历史codec/失败语义移selftests，未经真实transport接通的生产配置明确拒绝。
-这些范围未因当前Grant实机通过而完成。
+这些范围未因当前Grant实机通过而完成。默认profile0拒绝是未迁移事件路径的临时
+能力拒绝，不是永久WS73-only目标；WP13统一Backend描述与canonical事件能力后，
+标准/Virtual按相同Runtime契约重新开放并验收，不能用实验旧ring绕过。
 
 
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。

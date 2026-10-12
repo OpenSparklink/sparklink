@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前Kbf8663bb78eb/Udfb8636：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前Kbf8663bb78eb/U86bfbc8：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -17,6 +17,10 @@ CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制�
 Grant由内核强制核对完整scope/方向/Managed epoch；bf8663锁下最终发布已接通。
 受控broker的SCM_RIGHTS交付/撤销六例已通过；实际slkd死亡与可信安全状态仍开放。
 最后数据fd关闭仅释放Binding及本地队列，不重建CMTC；同lifetime基本通道重绑明确拒绝。
+
+默认daemon从86bfbc8起拒绝未迁移profile0并只启动canonical事件游标；
+旧事件actor仅test/显式实验构建，内核旧ring和其余调用者仍待迁移。
+专用fd客户端/接收器是测试支撑，实际slkd死亡仍未验收。
 
 ## 目标分层及架构决策
 

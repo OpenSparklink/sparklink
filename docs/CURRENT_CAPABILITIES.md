@@ -15,7 +15,7 @@
 等待/copy在锁外；actual C函数体sanitizer与限定LKMM通过，新VM40短/249保持回归、CI9/9。
 原40/249资格为nonblocking recv；后续六项File子门禁取得真正blocking recv见证，完整DG09仍缺。
 
-当前Kbf8663bb78eb/Udfb8636：canonical Grant存Binding，全scope/TX/RX、锁下最终发布、
+历史编译资格Kbf8663bb78eb/Udfb8636：canonical Grant存Binding，全scope/TX/RX、锁下最终发布、
 发送前/队列/USB/RX/poll检查及统一IRQ-save接通。新准确40/249、六项撤销和两个方向实机
 门禁通过，CI9/9；protected security明确NotSupported。完整可信安全/daemon死亡/在途仍缺。
 
@@ -25,10 +25,16 @@
 Kernel与编译service仍bf8663/dfb8636；这是受控broker交付语义，不是实际slkd死亡或完整D-Bus授权策略资格。
 首轮69ba2b3接收启动失败保留；没有原子进程errno收据，不新增硬件根因结论。
 
+当前默认生产资格Kbf8663/U86bfbc8：旧破坏性事件消费者已隔离为实验/test，
+profile0在授权/发布前明确拒绝。新40短、249八轮/16超限、RF22及建链断链/QMP支撑
+完成独立seal（112真实NOCP两包合计），默认workspace199/实验62、严格clippy通过。
+这不等于内核旧事件ring和全部调用者已删除；实际daemon死亡业务fd门禁仍缺。
+专用fd客户端/接收器f2859a0/d3039b2仅离线构建与本地凭据/fd拒绝回归通过，未VM接通。
+
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
-| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前Kbf8663bb78eb/Udfb8636两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
-| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新Kbf8663bb78eb/Udfb8636 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
+| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前Kbf8663/U86bfbc8两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
+| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新Kbf8663/U86bfbc8 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
 | 协商原期限/共享状态 | 38926b2完整三步骤与原期限；同锁快照、关闭/最终软件准入 | C编译、ASan/UBSan deadline/terminal selftest、完整新内核/空USB VM | FV01生产CBMC131项；FV03锁LKMM两性质，故意弱对照允许坏结果 | 上述新40轮及下述249路径保持 | 受控回复/credit阻塞期限、worker/VFS引用完整映射、唤醒及VM KCSAN/lockdep |
 | application249/DTAP254 | 当前单ACB上限与精确长度拒绝，ec67348后工具/应用接通 | 196 workspace/423工具及严格clippy；准确dfb8636 CI9/9 | 不能从协商模型推出codec/分片性质 | 新版本8轮249字节及16次application250/253/254/255 EMSGSIZE，拒绝载荷捕获为零 | DG02同Binding短→最大→拒绝→短、其他层253/254/255、长包/PB TX/SAR |
 | 提交票据切片 | K464d4d8a9de7 Runtime/Backend引用、一次commit、Host/data/gate内真正URB提交；Host数据撤销；未queued才回滚，已queued/不确定保留debt | Native25、driver10 sanitizer、Host49/连接12、Managed48；C/Rust严格对象及完整内核 | 精确K464/U854 Host撤销/提交锁序LKMM Never、弱对照Sometimes；credit回滚Kani仍NOT_PROVEN_UNSUPPORTED | 新40短/249八轮/16超限、发现连接路径保持 | controlled VM交错、完整Session/Channel/Grant引用证明、完整callback/VFS及NOCP复用屏障；不能宣布整项Ticket完成 |
@@ -41,7 +47,7 @@ Kernel与编译service仍bf8663/dfb8636；这是受控broker交付语义，不�
 | SSAP/安全/Bond/Profile | 用户态目标层；旧Profile已隔离实验crate，Native不注册旧Profile | 部分机制/actor/类型测试，仅各自范围 | FV08/09完整协议证明未取得 | 尚无新真实通道服务/安全安装矩阵资格 | 唯一用户态Engine、真实read/write/notify/indicate、可信安装/Bond/Profile |
 | Backend/事件/恢复/PM/四设备 | 现有Native及限定事件/生命周期基础保留 | 原完整方案/历史部分初始化和取消测试保留 | FV10及完整工作引用/恢复模型缺 | 历史物理/注入/部分清理仅其准确范围；本轮warm恢复不授予自然恢复 | 可注册seam/构建组合、事件迁移、四设备两组数据、自然RCA/非人工恢复、Proxy/PHY/PM/发布 |
 
-当前实现/资格：Kbf8663bb78eb、编译服务与工具Udfb8636；基础模式为SOCK_DGRAM。两次VM均保留原slkd、
+历史Binding Grant基线：Kbf8663bb78eb、编译服务与工具Udfb8636；基础模式为SOCK_DGRAM。两次VM均保留原slkd、
 同行generation/业务及真实断链/QMP支撑。QMP不是物理拔插，也不是自然恢复。
 本批原期限/credit源码未改；形式化资格仍按原报告逐文件hash核对，未新增整体证明。
 
@@ -49,6 +55,8 @@ Netlink清理：K2d4817714963删除无消费者Rust副本/global dead_code；C b
 Python契约核对实际C/SDK。U6bb7985拒绝ExtAdv静默截断，实际方法held-lock/ENOTTY回归通过。
 
 证据索引：
+
+* [默认事件隔离40轮](evidence/ws73-default-event-isolated-short-repeat-20261013.json)、[249边界](evidence/ws73-default-event-isolated-249-boundary-20261013.json)、[生产源码/离线](evidence/default-event-isolation-offline-20261013.json)：准确Kbf8663/U86bfbc8；实验事件保留不授予生产能力。
 
 * [SCM_RIGHTS六例](evidence/ws73-scm-rights-grant-20261013.json)、[对应离线范围](evidence/scm-rights-offline-20261013.json)：准确8f19590工具/Kbf8663/编译Udfb8636，首次启动失败保留，不扩大为实际daemon死亡。
 

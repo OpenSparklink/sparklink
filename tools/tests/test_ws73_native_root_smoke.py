@@ -69,7 +69,7 @@ class NativeRootEvidence(unittest.TestCase):
 class EmptyRegistryEvidence(unittest.TestCase):
     def test_optional_no_ghost_probe_requires_all_three_actual_checks(self):
         f=NativeRootEvidence()
-        marker='\nSPARKLINK_NO_GHOST_BACKEND_PASS selectors=9 registered=0 snapshot=ENODEV\n'
+        marker='\nSPARKLINK_NO_GHOST_BACKEND_PASS selectors=9 registered=0 select=ENODEV unbound_snapshot=EINVAL\n'
         verify_console(f.evidence()+marker*3,f.release,f.uuid,0,True)
         for count in [0,1,2,4]:
             with self.subTest(count=count),self.assertRaises(ValueError):verify_console(f.evidence()+marker*count,f.release,f.uuid,0,True)

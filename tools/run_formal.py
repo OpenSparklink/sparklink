@@ -31,11 +31,13 @@ def classify(kind, code, output, timed_out=False):
         if code == 0 and properties and all(p["status"] == "SUCCESS" for p in properties) and any(
                 row.get("cProverStatus") == "success" for row in rows):
             return "PROVED_SCOPED"
-    elif kind in ("lkmm", "lkmm-ticket"):
+    elif kind in ("lkmm", "lkmm-ticket", "lkmm-rx"):
         expected = {"ChannelSnapshot": "Never", "ChannelSnapshotWeak": "Sometimes",
                     "ChannelCloseAdmission": "Never"}
         if kind == "lkmm-ticket":
             expected = {"TxCommitWithdrawal": "Never", "TxCommitWithdrawalWeak": "Sometimes"}
+        if kind == "lkmm-rx":
+            expected = {"RxDequeueWithdrawal": "Never", "RxDequeueWithdrawalWeak": "Sometimes"}
         found = dict(re.findall(r"Observation (\w+) (Never|Sometimes|Always)\b", output))
         if code == 0 and found == expected:
             return "PROVED_SCOPED_WITH_WEAK_CONTROL"
@@ -48,7 +50,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent
     kernel = root / "linux"
@@ -58,7 +60,7 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
     sources = [kernel / "net/sparklink" / name for name in (
         "sle_channel_state.h", "sle_channel_socket.c", "sle_data_credit.rs",
         "sle_native.rs", "sle_sessions.rs", "sle_grant.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
-    sources += [kernel / "drivers/sparklink/ws73/usb.c", kernel / "include/linux/sparklink_native.h"]
+    sources += [kernel / "net/core/datagram.c", kernel / "drivers/sparklink/ws73/usb.c", kernel / "include/linux/sparklink_native.h"]
     sources += sorted((repo / "formal").rglob("*.c"))
     sources += sorted((repo / "formal").rglob("*.rs"))
     sources += sorted((repo / "formal").rglob("*.tla"))
@@ -129,6 +131,14 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
         checks = [("grant-" + h, "kani", repo,
                    ["cargo", "kani", "--manifest-path", "formal/grant/Cargo.toml", "--harness", h])
                   for h in ("lease_authority_constructor_and_transition_induction", "revoked_epoch_never_revives_in_successor")]
+    if rx_only:
+        checks = [("rx-dequeue-withdrawal", "lkmm-rx", root,
+                   ["herd7", "-conf", str(kernel / "tools/memory-model/linux-kernel.cfg"),
+                    "-I", str(kernel / "tools/memory-model")] +
+                   [str(repo / "formal/lkmm" / (n + ".litmus")) for n in
+                    ("RxDequeueWithdrawal", "RxDequeueWithdrawalWeak")])]
+    record["rx_only_requested"] = rx_only
+    record["rx_scope"] = "Host lock orders epoch validation and actual RX unlink/PEEK reference against withdrawal; CPU lock abstraction with weak check/drop/dequeue control, not C/Rust/VFS/queue refinement, wait/wakeup, copy completion, firmware or hardware proof"
     record["grant_only_requested"] = grant_only
     record["grant_scope"] = "actual production pure lease constructor and one-step induction over all u64 epoch/representation states; successor never renews revoked epoch; not Managed/Host lock refinement, C socket/VFS, safety/security or hardware proof"
     record["session_only_requested"] = session_only
@@ -177,6 +187,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--rx-only", action="store_true", help="RX admission/withdrawal Host lock LKMM and weak control")
     parser.add_argument("--grant-only", action="store_true", help="actual production lease authority Kani induction only")
     parser.add_argument("--session-only", action="store_true", help="bounded abstract Session/Binding/work lifetime TLC only")
     parser.add_argument("--binding-only", action="store_true", help="actual binding pure-state CBMC only")
@@ -186,4 +197,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only))

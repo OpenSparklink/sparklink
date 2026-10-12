@@ -1,0 +1,23 @@
+C RxDequeueWithdrawalWeak
+
+(* RX admission is the queued skb unlink/PEEK reference, not later user copy.
+   P1 withdraws and observes whether admission already linearized. This is CPU
+   Host-lock abstraction; no VFS/queue-refinement, wakeup or firmware proof. *)
+{}
+P0(int *revoked, int *dequeued, spinlock_t *host_lock)
+{
+    int r0;
+    spin_lock(host_lock);
+    r0 = READ_ONCE(*revoked);
+    spin_unlock(host_lock);
+    if (r0 == 0) WRITE_ONCE(*dequeued, 1);
+}
+P1(int *revoked, int *dequeued, spinlock_t *host_lock)
+{
+    int r1;
+    spin_lock(host_lock);
+    WRITE_ONCE(*revoked, 1);
+    r1 = READ_ONCE(*dequeued);
+    spin_unlock(host_lock);
+}
+exists (0:r0=0 /\ 1:r1=0 /\ dequeued=1)

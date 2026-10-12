@@ -83,3 +83,11 @@ running work各0..1，Runtime table与draining owner ref分开。最后fd不重�
 C socket/VFS、blocked RX撤销、安全降级、NOCP或硬件。实际Host/Session/USB ticket锁下
 准入/提交与旧debt保留由源码回归及VM门禁另验。非零安全要求和非TX|RX组合目前明确拒绝。
 旧完整credit Kani的unsupported状态不因这两个新harness通过而升级。
+
+## RX dequeue 与授权撤销
+
+`--rx-only`检查RX准入/撤销Host锁CPU抽象及故意弱对照。准入点是队列unlink或
+PEEK的skb引用；后续用户复制在锁外，已准入复制可完成。Never/Sometimes不证明
+完整C/Rust/VFS/queue引用、等待唤醒、硬件或自然恢复。actual sl_recvmsg/sl_take在
+selftest直接编译，Host授权、等待/锁/复制是显式依赖；含撤销后到包、零包/PEEK/TRUNC、
+EFAULT/信号/timeout、unknown EAGAIN不得进入无tail等待。VM受控撤销仍单独验收。

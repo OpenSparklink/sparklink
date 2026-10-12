@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T20:41:49.651954+00:00",
+  "updated_at_utc": "2026-10-12T20:48:33.222735+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,7 +26,7 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
+    "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
     "userspace": "79ba67a"
   },
   "qualified_source_heads": {
@@ -279,15 +279,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Production lease epoch software-TX/actual USB gates and v2 fd delegation implemented; exact40short/249/dup-last-close baseline requalified, two production Kani pure authority harnesses scoped PASS. Full Grant/architecture remains open.",
+  "current_batch": "RX admission linearizes at locked unlink/PEEK reference after each wake; actual full recvmsg source fixture passed and LKMM strong/weak scope checked; exact new VM regression pending. Whole S0-S6 unchanged.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "Original28 adoption and architecture-first scope preserved; new14 lease epoch comments read back exact and original issue body hashes OPEN unchanged",
   "current_implementation_heads": {
-    "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
+    "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
     "userspace": "2a9778651723fbf8f5c6f2d42450401d8331ff07"
   },
   "next_resume_tasks": [
-    "WP05: implement atomic authorized RX dequeue on each wake without Host lock across wait/copy; then full Binding Grant direction/security and controlled real release/last control fd/daemon death/dup/inflight/successor-old-fd rejection with peer isolation. Exact K3ee1/U2a977 normal40/249 gates already qualified; keep full original S0-S6 goal.",
+    "Seal exact Kf103/new userspace LKMM and clean VM normal data regression; then implement real controlled release/last owner fd/dup/blocked RX/daemon death gate and complete Binding Grant directions/security, preserving peer radio independence.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -318,5 +318,5 @@
   "latest_issue_progress_receipt": "docs/evidence/grant-epoch-issues-20261013.json",
   "latest_evidence_commit": "79ba67a",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: production Managed lease epoch and actual atomic queue/USB gates, actual source regressions and new production Kani harnesses"
+  "current_goal_turn_classification": "progress: actual authorized RX dequeue/blocked wake path and regressions, bounded lock scope model; no new whole Grant qualification"
 }

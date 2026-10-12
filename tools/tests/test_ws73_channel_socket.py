@@ -142,3 +142,16 @@ class SealedRealEvidence(unittest.TestCase):
         packet=next(p for p in altered['acb_packets'] if p['direction']=='out' and p['data'].startswith('1f'))
         packet['data']=packet['data'][:-2]+('00' if packet['data'][-2:]!='00' else '01')
         with self.assertRaises(CaptureError):corroborate(run,altered)
+
+    def test_checked_in_twenty_round_case_recomputes(self):
+        import json
+        from ws73_channel_socket import corroborate
+        from ws73_capture import reassemble_acb
+        path=Path(__file__).resolve().parents[2]/'docs/evidence/ws73-ordinary-channel-repeat-20261013.json'
+        evidence=json.loads(path.read_text());case=evidence['cases'][0]
+        proof=corroborate(case['raw_control_record'],case['decoded_capture'])
+        self.assertEqual(proof,case['independently_derived']['channel'])
+        self.assertEqual(proof['round_trips'],40)
+        self.assertEqual(len(reassemble_acb(case['decoded_capture'])),176)
+        self.assertEqual(evidence['real_nocp_packet_count'],88)
+        self.assertIs(evidence['full_goal_complete'],False)

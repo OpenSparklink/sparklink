@@ -211,3 +211,35 @@ queue/setup/peer/RF22证明相同，冻结输入逐hash复核。随后双设备R
 其中一次人为guest IN错误只是测试支撑：不记自然RCA或非人工自动恢复。
 修复对应具体sticky-revoking缺陷的证据，不关闭任何完整issue。S0–S6/28、
 真正连接与connected revoke、在途回复、canonical/peer lifetime和其余生态仍开放。
+
+## 2026-10-12 当前源码部分初始化／在途 File 矩阵
+
+Linux `46db23ba8beda736908ea61465ca8815fba4d7d6`、实际编译服务与冻结工具
+`cd640655dcd153b8cfd06f6ae27224d34ef7cac1` 的 VM83–91 九例均通过：广播最后
+OFF（step1）、扫描 ON（step1）和扫描最后 OFF（step2），各覆盖显式 release、
+最后 File 关闭、dup 首关／尾关。双 vCPU 普通调度；QEMU 仅暂留一条真实成功
+IN81 帧，不生成回复或 credits。作者取消不会改为成功，旧真实回复排空后按实际
+radio truth 清理；仅广播已配置时仍是 Setup，禁止补造 Ready。
+
+同行保持同 generation 的独立 Ready、Managed Held 和扫描 On，并获得真实
+启停回复。每例随后 RF20+2，共198轮、10815捕获包、零丢包、taint0、QEMU退出0。
+独立复算全部原帧哈希、UAPI 记录、setup／partial／peer／RF 证明及冻结输入。
+普通应用 UID1000/caps0、同 slkd/bus；File探针与调度控制属于 VM 内测试工具。
+[九例证据](evidence/ws73-current-later-partial-file-matrix-20261012.json)。
+这是 discovery 部分初始化和在途真实回复取消的当前源码资格，补齐上一记录的
+对应待验项；不代表连接在途／connected 撤销、完整 Managed 或普通调度下所有
+未选择队列竞争。后续人为 guest IN 错误仅测试支撑，不是自然自动恢复。
+
+参考未改动 `libws73-usb` f4d85d0 的 maintenance VM24 未进入连接：server 的
+芯片 reset 后 guest 等待 boot-mode 重枚举超时，client 未启动。主机只读枚举看到
+目标变成两个端点的 boot 状态，说明不能笼统判为“芯片完全未重枚举”。随后
+当前驱动 VM92 从该状态完成启动、RF20+2 和 QMP guest 移除／重加：1369包，
+零丢包、taint0、退出0、同 slkd/bus。
+[参考失败及 Native 后续启动对照](evidence/ws73-reference-reset-native-boot-contrast-20261012.json)。
+后续运行未再次切 hub 电源；它是受控启动对照，不能宣称服务自动恢复成功。
+
+正常 VM 累计92／维护24。下一定位参考 guest reset/open 与主机重枚举／描述符
+更新边界，再比较真实连接启动和地址／序列；同时推进 canonical 状态重同步、
+peer/link lifetime 与旧实现迁移清理。S0–S6、原28项、SSAP／安全／Profile／PHY／
+PM／Proxy、默认四设备并行、自然故障根因和非人工自动恢复保持开放。
+整项不因这九例关闭；所有实验继续 VM-only，历史失败证据保留。

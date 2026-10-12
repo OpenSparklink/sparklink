@@ -179,3 +179,15 @@ Connection结果是author-only：显式release仍保留fd，必须读取精确Ca
 前后都须ENOENT。peer在每次临界区前/中/后保持同generation的Ready、Held、
 scanner On，并在正常调度下获得真实START/STOP回复。bootstrap和两组活动
 分别逐帧复算。该项通过也不证明connected或在途回复清理，原issues保持OPEN。
+
+
+VM81（496内核/88b9服务/903e工具）保留旧发现队列六项回归，但新连接第一项
+Create入队返回EBUSY，尚未发生任何连接提交/取消资格；原失败保留。实际Free/
+Ready/Off仍不能重新使用连接，是新租约提交未清除Host旧revoking造成。生产
+修复在Linux46db23b：copyout后仍按Host→gate重检retirement/fault/quiet/physical
+obligations，并仅在已settled的原撤销后清除旧cleanup bookkeeping；不重置credits、
+radio truth、作者history，也不清除未知/在途physical义务。pending旧回复、link、
+fault或未完成revocation均拒绝新提交。源码33项实际Host及依赖+2项worker helper、
+48项management源码、11项operation及C codec ASan/UBSan/Leak通过；完整新内核
+构建和VM重测尚待，不将修复意图记作实机通过。原FIFO和fixture/include/LSAN
+环境失败保留，未放宽生产条件或关闭检查。

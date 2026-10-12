@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "ab9e5ecdf048b7d5a8a580809fc5a9a27211abce",
-    "userspace": "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba"
+    "userspace": "987dcdd2e9c804a6c9cf7d4624ba74d37ba9c6bd"
   },
   "qualified_source_heads": {
     "linux": "ab9e5ecdf048b7d5a8a580809fc5a9a27211abce",
@@ -337,12 +337,13 @@
     "docs/evidence/backend-retirement-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/daemon-channel-death-issues-20261013.json",
-  "latest_evidence_commit": "dfae2124a7a4f1770778a2a7cdd6f57b555633ff",
+  "latest_issue_progress_receipt": "docs/evidence/backend-retirement-issues-20261013.json",
+  "latest_evidence_commit": "987dcdd2e9c804a6c9cf7d4624ba74d37ba9c6bd",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: production fabricated Backend retirement/archival,retained strict decoder/method regressions,source visibility warning fix,actual empty VM3 kernel/configfs checks,exact new40/249/RF/CI9; failed probe contract and private staging typo retained",
+  "current_goal_turn_classification": "progress: production fabricated Backend retirement/archival,retained strict decoder/method regressions,source visibility warning fix,actual empty VM3 kernel/configfs checks,exact new40/249/RF/CI9; failed probe contract and private staging typo retained;14 existing issues updated and read back OPEN/original scope unchanged",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
-    "82aa65a77019804e78a95c1706c461e715187314"
+    "82aa65a77019804e78a95c1706c461e715187314",
+    "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba"
   ]
 }

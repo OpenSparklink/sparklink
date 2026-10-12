@@ -1,0 +1,153 @@
+{
+  "status": "FOURTEEN_EXISTING_BACKEND_RETIREMENT_ISSUE_UPDATES_VERIFIED",
+  "evidence_commit": "987dcdd2e9c804a6c9cf7d4624ba74d37ba9c6bd",
+  "kernel_head": "ab9e5ecdf048b7d5a8a580809fc5a9a27211abce",
+  "userspace_head": "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba",
+  "original_scopes_unchanged": true,
+  "issues_closed": 0,
+  "new_tracking_issues": 0,
+  "goal_status": "active",
+  "comments": [
+    {
+      "repo": "linux",
+      "number": 1,
+      "comment_id": 6134688008,
+      "url": "https://github.com/OpenSparklink/linux/issues/1#issuecomment-6134688008",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "bec3a57dd8f6f3b32dcc82c024cd5db04866db8d6ec398a20f1a170ec3c85604",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 4,
+      "comment_id": 6134688769,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6134688769",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "cee3b8f66cb7d00fbbf8071efecbdcec7d90cfb8006211e5dac19fbc77c88ffd",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 5,
+      "comment_id": 6134689533,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6134689533",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "b939d505ecf8f27a4352fa208c831fc6aa550b59d4ea654112037f9209b8d38d",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 6,
+      "comment_id": 6134690356,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6134690356",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 9,
+      "comment_id": 6134691168,
+      "url": "https://github.com/OpenSparklink/linux/issues/9#issuecomment-6134691168",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "352e6338171e5b1b5c95d4db35dc5ebb9a3701245cdde50c99ce4c4664a2e633",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 10,
+      "comment_id": 6134692140,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6134692140",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "6720885939ce943bc08ecda6811f92ecf305c35a8b6e14829f1d432f2eb4ed18",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 14,
+      "comment_id": 6134693010,
+      "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6134693010",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "comment_id": 6134693894,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6134693894",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "comment_id": 6134694872,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6134694872",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 1,
+      "comment_id": 6134695779,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/1#issuecomment-6134695779",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "f9714474242708d99f5391b3477011b54f17957cd2a2be1c91ed964a4ef08535",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "comment_id": 6134696634,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6134696634",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "8c3d7400ed018e3433172c7aeb35445d1e215204bc21e0078a50075a840a884e",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 5,
+      "comment_id": 6134697427,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6134697427",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "779cb4d8125b4354b7cfeadc43ce183e6c7517017042728c18ed81f9c1fa95f8",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "comment_id": 6134698209,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6134698209",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "df0560c7a43f09ec1f84f7db8003d97c294b823d83c53da75fc517ce115a3b2b",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "comment_id": 6134699070,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6134699070",
+      "body_sha256": "58cfedf180719cd71968aab388274c2a923a03b770e76e58bc1b3aea9674198d",
+      "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "original_scope_unchanged": true,
+      "state": "open"
+    }
+  ],
+  "body": "<!-- fabricated-backend-retirement-progress-20261013-987dcdd -->\n按目标架构整改优先推进，完整S0–S6/原28 issues/19WP/10FV/12DG保持。\n\n签名推送：Kddb58a移除假注册、95f2c81限制实际UART decoder可见性、ab9e5ec修正实际缺设备/无affinity探针；Ucee69fc/8bb1bae空VM门禁、9124bc4精确CI pin；987dcdd封存新源码/VM/RF与canonical文档/goal。\n\n三类调用审计与本批范围：\n1. 立即删除（已实施）：init_subsystem按全局configfs造None/Uart/Spi对象、忽略open错误后注册设备、临时默认ControllerState；ControllerBackend对应变体/factory/dispatch。模块启动无设备/Runtime；只有实际bus注册后建Runtime。旧selector none/0接受，uart/spi/usb及数字选项EOPNOTSUPP、非法值EINVAL，不能制造已选择硬件。连接policy保留在实际driver-created state。\n2. 移入测试（已实施）：原UART/SPI完整源精确保留kernel selftests/retired-transport；原Unsupported方法2回归、实际保留UART parser/历史encoder5回归严格通过。默认SPI模块、UART controller与无消费者encoder退出。UART module级dead_code掩盖移除，暴露7 unreachable-pub后以实际crate可见性修复，不新增抑制。历史codec/模型不作真实UART/SPI/标准SPI互通资格。\n3. 等待替代（仍开放）：剩余USB/serdev/WS73 selector、serdev全局parser、core USB耦合，须统一注册/注销descriptor、引用/模块/generation与stop-callback屏障、Virtual真注册同Runtime、bus移drivers后删除余下enum/active/重复event路径。不能恢复假对象或旧ring来提供暂时不支持的能力。\n\n准确验收：Kab9e5ecdf048b7d5a8a580809fc5a9a27211abce / U9124bc4d0cf54442a7cb9dc2c6413965ad5649ba，新清洁Kernel构建零warning、签名模块load/unload/taint0。空USB VM在load前及两次load后真实检查3次：registered mask0、activeFFFF、缺device select ENODEV、unbound snapshot EINVAL；9输入selector均按契约接受/拒绝并不造Runtime。真实双SDK111 WS73 VM普通用户20轮/role共40短消息（176SDU/88真实NOCP/2225capture）、249八轮与250/253/254/255十六次EMSGSIZE且无payload（48SDU/24NOCP/1809capture），两端USB/HCC/随机对端实际校验回复独立封存、零capture丢包；每包原RF22、建链断链、dup/最后关闭拒绝同life重绑、18旧SSAP ioctl ENOTTY保持。QMP仅支撑，不是物理或自然恢复。准确新pin/source CI38322276411九项SUCCESS；工具436回归通过。\n\n失败保留：第一构建7 visibility warnings非干净资格；第一空VM测试错把unbound snapshot期待为ENODEV，实际需affinity/EINVAL，已补缺device select/active id验证，不改原失败PASS；私有编排错指旧staging，被no-overwrite挡住、未入VM且旧镜像未覆盖，从已核实artifact继续正确路径。\n\n限制：这只完成假注册与模型剥离子批次，不是完整WP13。历史受控Grant/共同daemon死亡/物理证据仍各绑定原精确Kbf/用户态/工具版本，不扩为新K全部竞争资格。完整Backend/seam/Virtual/module/引用/回调、低层旧event调用者、真实credit耗尽/旧NOCP屏障、在途/安全及自然故障RCA/非人工恢复继续开放。目标仍支持标准/Virtual/厂商同Runtime，并非永久WS73-only。整项issues OPEN、goal ACTIVE，不新建总跟踪；保留已验证WS73路径，继续VM-only和签名小提交。\n\n证据：[三类审计/唯一计划](https://github.com/OpenSparklink/sparklink/blob/987dcdd/docs/IMPLEMENTATION_PLAN.md)、[源码/空VM/历史测试/CI](https://github.com/OpenSparklink/sparklink/blob/987dcdd/docs/evidence/backend-retirement-offline-20261013.json)、[新40](https://github.com/OpenSparklink/sparklink/blob/987dcdd/docs/evidence/ws73-retired-backend-short-repeat-20261013.json)、[新249](https://github.com/OpenSparklink/sparklink/blob/987dcdd/docs/evidence/ws73-retired-backend-249-boundary-20261013.json)。\n"
+}

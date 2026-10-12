@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T19:34:00.873588+00:00",
+  "updated_at_utc": "2026-10-12T20:19:38.835911+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,22 +26,23 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "464d4d8a9de7a9f4d02848dcedabea3ea9b56c6e",
-    "userspace": "854f364d163ec23f88f6a7e83c6d84b625d3fb86"
+    "linux": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
+    "userspace": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972"
   },
   "qualified_source_heads": {
-    "linux": "464d4d8a9de7a9f4d02848dcedabea3ea9b56c6e",
-    "userspace": "854f364d163ec23f88f6a7e83c6d84b625d3fb86"
+    "linux": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
+    "userspace": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972"
   },
   "current_qualification": {
-    "DG01": "K464d4d8a9de7/U854f364 forty actual DGRAM peer-validated round trips, both roles; RF22/connection/QMP peer isolation requalified",
-    "DG02": "Same source app249 eight rounds and sixteen oversize rejections; same-Binding and other layered boundaries still missing",
+    "DG01": "K3c8da4fac302/Ud1f9dde40 actual DGRAM peer round trips, both roles; duplicate/original close, last-close/rebind refusal and unique CMTC receipt; RF22/connection/QMP peer isolation",
+    "DG02": "Same source app249 eight rounds,16 oversize rejections; same-Binding short recovery and other layered limits missing",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
     "FV04": "bounded abstract contract only, no implementation refinement",
     "FV02": "New actual rollback harness NOT_PROVEN_UNSUPPORTED despite successful raw solver checks; prior full-ledger scope still unproved",
     "FV07": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN",
-    "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing"
+    "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
+    "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved"
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
@@ -104,7 +105,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "existing foundations retained; target package exit conditions open"
+      "status": "Runtime Session/unique RX/fd split and normal real business/dup/last-close subset pass; full dynamic/rebind/old RX/inflight/ownership matrix still open"
     },
     {
       "id": "WP05",
@@ -277,19 +278,19 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "WP03 actual Runtime/Backend ticket and atomic URB commit slice implemented/offline/limited LKMM/precise40short+249 VM passed; full Ticket/Session/Grant/NOCP/recovery scope remains OPEN. Unconsumed Netlink and ExtAdv clipping cleanup implemented.",
+  "current_batch": "Runtime-owned Session/Channel/Binding migration implemented, offline/production Binding CBMC and bounded abstract TLC passed; exact40short/249 plus ordinary dup/last-close/rebind-rejection and unique CMTC real VM gates passed. Whole target architecture remains open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "28 adopted scope/dependency blocks and28 architecture-first steering comments verified OPEN with original body hashes unchanged",
   "current_implementation_heads": {
-    "linux": "464d4d8a9de7a9f4d02848dcedabea3ea9b56c6e",
-    "userspace": "854f364d163ec23f88f6a7e83c6d84b625d3fb86"
+    "linux": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
+    "userspace": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972"
   },
   "next_resume_tasks": [
-    "WP04: move CMTC/negotiation out of fd into referenced ConnectionSession and establish unique bounded RX demultiplexer before multiple channels; same-life reopen/old RX isolation and finite fault handling; use the now-tested minimal Ticket interface, do not wait for all control-race or NOCP proof combinations",
-    "WP03 remaining: controlled VM submit/Down/revoke/unknown completion interleavings; prove reliable handle-reuse barrier and correct NOCP assumptions; fix Kani unsupported without simplifying production ledger",
-    "WP05/06: actual revocable kernel Grant epoch/direction/security and SocketBinding/VFS lifetime; software admission/commit/NOCP/peer receipt and poll/error/close contracts",
-    "WP12/13/18: authoritative event/snapshot migration, registered Backend/build combinations and remaining duplicated legacy/dead-code consumers",
-    "Then unchanged19WP/10FV/12DG data/SSAP/security/Bond/Profile/Proxy/PM/recovery/release; full S0\u2013S6 and all original issue exits intact"
+    "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
+    "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
+    "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
+    "WP12/13/18: authoritative event/snapshot migration, registered Backend/build combinations and remaining old duplicate/dead-code consumers",
+    "Then unchanged full S0\u2013S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/Proxy/PM/recovery/release"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
   "offline_evidence": "docs/evidence/ssap-abi-separation-offline-20261013.json",
@@ -302,11 +303,14 @@
     "docs/evidence/ws73-basic-dgram-249-boundary-20261013.json",
     "docs/evidence/ws73-ticket-commit-short-repeat-20261013.json",
     "docs/evidence/ws73-ticket-commit-249-boundary-20261013.json",
-    "docs/evidence/native-ticket-offline-20261013.json"
+    "docs/evidence/native-ticket-offline-20261013.json",
+    "docs/evidence/ws73-session-owned-short-repeat-20261013.json",
+    "docs/evidence/ws73-session-owned-249-boundary-20261013.json",
+    "docs/evidence/session-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/native-ticket-issues-20261013.json",
   "latest_evidence_commit": "aa2c197f1f6d93db428ba1e647c4e8275de406b8",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: unused Netlink/input cleanup, actual Runtime/USB ticket code, qualified limited LKMM, unsupported Kani record and precise real WS73 regressions"
+  "current_goal_turn_classification": "progress: production Runtime-owned Session/Channel/Binding split, IRQ-safe actual submit consent, new source tests/scoped proofs and precise real-device requalification"
 }

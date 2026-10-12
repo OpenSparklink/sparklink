@@ -373,3 +373,8 @@ slkd采用最小能力、受限文件路径及服务sandbox。privileged机制�
 重新验证lifetime/撤销/credit并原子提交；非阻塞提交是明确的Host-lock临界区例外，
 等待/cancel/join在锁外。完整Session/Channel/Grant refs、NOCP屏障和Backend组合仍按
 ADR0002/IMPLEMENTATION_PLAN推进。无消费者RustNetlink副本已移除，实际C bridge保留。
+
+Runtime Session迁移切片K3c8da4fac302/Ud1f9dde：Runtime table持session kref，Session唯一
+接收/CMTC，Channel有界独立队列，fd仅Binding。close撤销先赢则不能新USB提交，
+同life无协议前明确拒绝重开；Runtime退休在native_lifecycle之前join Session。
+准确40/249业务与dup/last-close子门禁通过，不授予动态通道、完整Grant/NOCP/恢复资格。

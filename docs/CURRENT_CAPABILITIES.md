@@ -5,6 +5,11 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
+当前开发切片K3ee1a60bf06f已接通Managed lease epoch、Host锁下软件TX准入及USB提交
+检查、v2 socket lease字段；Native33/Host51/Managed54及实际C准入/ABI离线通过。
+尚未取得此源码的新VM资格，以下实机范围仍归K3c8da4fac302/Ud1f9dde；不得继承。
+完整方向/安全、blocked RX撤销/daemon死亡/在途及物理矩阵继续开放。
+
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
 | WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前K3c8da4fac302/Ud1f9dde两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |

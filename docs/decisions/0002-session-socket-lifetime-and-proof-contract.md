@@ -167,3 +167,14 @@ RX16条及socket内存限制；TX八条包含busy skb，linger也含busy，不�
 继续开放。K3c8da4fac302/Ud1f9dde已重新取得VM真实40短/249及dup/最后关闭拒绝重开的
 子门禁；两端每端一次CMTC、实际对端校验回复与准确捕获见CURRENT_CAPABILITIES。
 正常业务资格不等于受控在途关闭、完整引用或自然恢复通过。
+
+## Lease epoch 接通切片（K3ee1a60bf06f，尚待新VM资格）
+
+Host IRQ锁串行化实际LeaseAuthority单调token发布/撤销；Managed acquire在copyout后、
+身份/无links/清理完成核对中发布，revoke在等待process state/preparation之前失效。
+Session记录不可变epoch，bind v2显式带lease；软件TX准入和真正USB ticket提交均在Host下
+检查epoch，再进入Session锁，撤销先赢不准入/提交。已queued和不确定物理义务不退款。
+Session worker退休并唤醒；send/recv/poll也核对代次。successor不续期旧Session/Binding。
+当前仅TX|RX/security0，其他组合NotSupported；不宣称已实现完整方向授权或安全降级。
+阻塞接收撤销交错、daemon死亡/最后control fd、fd传递/dup、真实隔离和完整
+Grant矩阵仍待验证。Kani仅生产pure转换归纳，不证明完整VFS/Host实现或硬件。

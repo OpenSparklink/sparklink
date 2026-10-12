@@ -48,7 +48,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent
     kernel = root / "linux"
@@ -57,7 +57,7 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
     smoke = Path("/opt/opensparklink-verification-tools-20261013/system-smoke-tests.json")
     sources = [kernel / "net/sparklink" / name for name in (
         "sle_channel_state.h", "sle_channel_socket.c", "sle_data_credit.rs",
-        "sle_native.rs", "sle_sessions.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
+        "sle_native.rs", "sle_sessions.rs", "sle_grant.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
     sources += [kernel / "drivers/sparklink/ws73/usb.c", kernel / "include/linux/sparklink_native.h"]
     sources += sorted((repo / "formal").rglob("*.c"))
     sources += sorted((repo / "formal").rglob("*.rs"))
@@ -66,7 +66,7 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
     sources += sorted((repo / "formal").rglob("*.litmus"))
     sources += [kernel / "tools/memory-model" / name for name in
                 ("linux-kernel.cfg", "linux-kernel.cat", "linux-kernel.bell", "linux-kernel.def")]
-    sources += [repo / "formal/README.md", repo / "formal/credit/Cargo.toml", Path(__file__).resolve()]
+    sources += [repo / "formal/README.md", repo / "formal/credit/Cargo.toml", repo / "formal/grant/Cargo.toml", Path(__file__).resolve()]
     record = {"schema": 1, "status": "RUNNING", "hardware_acceptance": False,
               "installation_is_implementation_proof": False,
               "installation_smoke_sha256": sha(smoke),
@@ -125,6 +125,12 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
         checks = [("session-lifetime", "tlc", repo / "formal/lifecycle",
                    ["tlc", "-workers", "1", "-metadir", str(output / "tlc-session"),
                     "-config", "ConnectionSession.cfg", "ConnectionSession.tla"])]
+    if grant_only:
+        checks = [("grant-" + h, "kani", repo,
+                   ["cargo", "kani", "--manifest-path", "formal/grant/Cargo.toml", "--harness", h])
+                  for h in ("lease_authority_constructor_and_transition_induction", "revoked_epoch_never_revives_in_successor")]
+    record["grant_only_requested"] = grant_only
+    record["grant_scope"] = "actual production pure lease constructor and one-step induction over all u64 epoch/representation states; successor never renews revoked epoch; not Managed/Host lock refinement, C socket/VFS, safety/security or hardware proof"
     record["session_only_requested"] = session_only
     record["session_scope"] = "abstract contract only: two controllers/two lifetimes, fd aliases0..2 and pending/running work0..1 each; last close does not restart CMTC, joined references before free; not C/Rust/VFS refinement, lost wakeups, Grant/NOCP/hardware proof"
     record["binding_only_requested"] = binding_only
@@ -171,6 +177,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--grant-only", action="store_true", help="actual production lease authority Kani induction only")
     parser.add_argument("--session-only", action="store_true", help="bounded abstract Session/Binding/work lifetime TLC only")
     parser.add_argument("--binding-only", action="store_true", help="actual binding pure-state CBMC only")
     parser.add_argument("--credit-rollback-only", action="store_true", help="only the new actual ledger rollback harness")
@@ -179,4 +186,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only))

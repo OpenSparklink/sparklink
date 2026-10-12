@@ -187,11 +187,15 @@ impl ConnectionIface {
         if !admission.accepting || admission.token.is_none() {
             return Err(zbus::fdo::Error::Failed("management unavailable".into()));
         }
+        let token = admission
+            .token
+            .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?;
         let fd = crate::channel::open(
             index,
             self.generation,
             self.reference.lifetime,
             self.reference.handle,
+            token,
         )
         .map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {

@@ -11,32 +11,39 @@ struct Address {
     flags: u16,
     generation: u64,
     lifetime: u64,
+    lease: u64,
     handle: u16,
     local_tcid: u8,
     remote_tcid: u8,
     pi: u8,
     reserved: [u8; 3],
+    directions: u32,
+    security: u32,
 }
-const _: () = assert!(std::mem::size_of::<Address>() == 32);
+const _: () = assert!(std::mem::size_of::<Address>() == 48);
 
 pub(crate) fn open(
     controller: u16,
     generation: u64,
     lifetime: u64,
     handle: u16,
+    lease: u64,
 ) -> std::io::Result<OwnedFd> {
     let address = Address {
         family: 46,
         controller,
-        version: 1,
+        version: 2,
         flags: 0,
         generation,
         lifetime,
+        lease,
         handle,
         local_tcid: 31,
         remote_tcid: 31,
         pi: 241,
         reserved: [0; 3],
+        directions: 3,
+        security: 0,
     };
     // SAFETY: scalar syscall arguments; successful socket returns an owned fd.
     let raw = unsafe {

@@ -75,3 +75,11 @@ running work各0..1，Runtime table与draining owner ref分开。最后fd不重�
 不提前释放，join后才放owner ref。只检查有限safety，不证明C/Rust/VFS/kref refinement、
 完整generation/Grant/NOCP/硬件或liveness。Session IRQ-save避免Host提交/RX IRQ反转。
 实际Rust session表与C route/submit-consent由selftests编译，依赖明确；真实VM另验收。
+
+## Managed lease authority
+
+`--grant-only`直接编译生产`sle_grant.rs`，检查构造和所有合法u64状态的一步归纳、
+撤销后successor不能复活旧epoch。仅pure authority性质；不证明Host锁/Managed复制提交、
+C socket/VFS、blocked RX撤销、安全降级、NOCP或硬件。实际Host/Session/USB ticket锁下
+准入/提交与旧debt保留由源码回归及VM门禁另验。非零安全要求和非TX|RX组合目前明确拒绝。
+旧完整credit Kani的unsupported状态不因这两个新harness通过而升级。

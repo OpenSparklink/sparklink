@@ -229,6 +229,48 @@ for slot in $(seq 0 $last_slot); do
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready "$slot" || fail "independent Ready slot=$slot"
     echo "WS73_TARGET_READY: slot=$slot"
 done
+if grep -qw ws73.channel_daemon_crash=1 /proc/cmdline; then
+    cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'original daemon credentials'
+    death_index=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_daemon_index=/){sub(/^ws73.channel_daemon_index=/,"",$i);print $i}}' /proc/cmdline)
+    LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_channel_daemon_crash.py --slkd-pid "$daemon" --index "$death_index" > /evidence/channel-daemon-supervisor.log 2>&1 & death_supervisor=$!
+    ticks=0
+    while [ ! -f /evidence/channel-daemon-crash/armed.json ]; do
+        kill -0 "$death_supervisor" || fail 'daemon fd supervisor exited before armed'
+        ticks=$((ticks+1)); [ "$ticks" -lt 900 ] || fail 'daemon fd armed deadline'
+        sleep 0.1
+    done
+    before_death=$(/bin/python3 -c 'import time;print(time.time_ns())')
+    old_daemon=$daemon
+    kill -KILL "$daemon" || fail 'actual daemon fd SIGKILL'
+    wait "$daemon"; death_status=$?
+    [ "$death_status" = 137 ] || fail 'actual daemon fd reap'
+    daemon=''
+    /bin/python3 -c 'import json,sys,time,os;p="/evidence/channel-daemon-crash/death.json";open(p+".tmp","w").write(json.dumps(dict(pid=int(sys.argv[1]),status=int(sys.argv[2]),before_wall_ns=int(sys.argv[3]),reaped_wall_ns=time.time_ns())));os.replace(p+".tmp",p)' "$old_daemon" "$death_status" "$before_death" || fail 'actual death receipt'
+    ticks=0
+    while [ ! -f /evidence/channel-daemon-crash/free.json ]; do
+        kill -0 "$death_supervisor" || fail 'daemon fd supervisor exited before Free'
+        ticks=$((ticks+1)); [ "$ticks" -lt 150 ] || fail 'daemon fd cleanup deadline'
+        sleep 0.1
+    done
+    /bin/slkd $config_args --storage "$storage" -n > /evidence/slkd-successor.log 2>&1 & daemon=$!
+    for slot in 0 1; do
+        /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready "$slot" || fail 'daemon fd successor Ready'
+    done
+    /bin/python3 -c 'import json,sys,time,os;p="/evidence/channel-daemon-crash/successor.json";open(p+".tmp","w").write(json.dumps(dict(pid=int(sys.argv[1]),wall_ns=time.time_ns())));os.replace(p+".tmp",p)' "$daemon" || fail 'actual successor receipt'
+    wait "$death_supervisor" || fail 'daemon fd supervisor'
+    kill -TERM "$daemon"; wait "$daemon"; daemon=''
+    kill -INT "$capture"; wait "$capture" || fail 'daemon fd capture seal'
+    capture=''
+    dmesg > /evidence/kernel.log
+    [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'daemon fd VM taint'
+    echo 'WS73_TARGET_NATIVE_VM_TAINT: 0'
+    cat /evidence/channel-daemon-supervisor.log
+    echo 'WS73_TARGET_DAEMON_CHANNEL_FINISHED'
+    echo 'WS73_TARGET_FINISHED'
+    sync
+    poweroff -f
+    while :; do sleep 60; done
+fi
 if grep -q 'ws73.daemon_crash=1' /proc/cmdline; then
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py daemon-crash before "$daemon" || fail 'active crash preparation'
     old_daemon=$daemon

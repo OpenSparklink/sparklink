@@ -105,7 +105,7 @@ def prepare(args):
                   HERE/'ws73_vm_native_root.py',
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
-                  HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
+                  HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
                   HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
@@ -125,6 +125,9 @@ def prepare(args):
         if getattr(args, 'acb_probe_module', None) is not None:
             if not module_profile: raise ValueError('ACB selftest module requires native VM profile')
             inputs.append(args.acb_probe_module)
+        if getattr(args,'native_channel_fd_probe',None) is not None:
+            if not module_profile:raise ValueError('daemon fd client requires native VM profile')
+            inputs.append(args.native_channel_fd_probe)
         manifest['inputs'] = [file_record(p) for p in inputs]
         source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
         source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates','bindings/python/sparklink'],cwd=USERSPACE,text=True).splitlines()
@@ -216,7 +219,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -241,6 +244,12 @@ def prepare(args):
             if getattr(args, 'acb_probe_module', None) is not None:
                 from ws73_acb_transport_probe import stage_module
                 stage_module(args.acb_probe_module, root, manifest)
+        if getattr(args,'native_channel_fd_probe',None) is not None:
+            probe=args.native_channel_fd_probe.resolve(strict=True)
+            before=file_record(probe);copy_elf(probe,root/'bin/ws73-channel-fd-probe',root)
+            (root/'bin/ws73-channel-fd-probe').chmod(0o755)
+            if file_record(probe)!=before:raise ValueError('fd client changed during staging')
+            manifest['native_channel_fd_probe']=before
         manifest['guest_files'] = [file_record(p) for p in sorted(root.rglob('*')) if p.is_file() and not p.is_symlink()]
         archive = output/'initramfs.cpio.gz'
         if module_profile:
@@ -430,6 +439,8 @@ def _run(args):
     parallel=bool(getattr(args,'parallel_pairs',False))
     initializer_lifecycle=bool(getattr(args,'initializer_lifecycle',False))
     observer_policy=bool(getattr(args,'observer_policy',False))
+    channel_death=bool(getattr(args,'channel_daemon_crash',False))
+    channel_death_index=getattr(args,'channel_daemon_index',0)
     daemon_crash=bool(getattr(args,'daemon_crash',False))
     connection_verify=bool(getattr(args,'connection_verify',False))
     acb_probe=bool(getattr(args,'acb_transport_probe',False))
@@ -567,6 +578,11 @@ def _run(args):
     m['channel_socket_boundaries_requested']=channel_boundaries
     m['ordinary_channel_socket_acceptance']=False
     m['connection_advertising_requested']=connection_advertising if connection_verify else None
+    if channel_death:
+        if args.command!='run' or 'native_vm' not in package or 'native_channel_fd_probe' not in package or passthrough or recovery or parallel or connection_verify or daemon_crash or channel_grant or setup_gate or any(getattr(args,k,False) for k in ['observer_policy','initializer_lifecycle','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','managed_partial_case','managed_queue_verify']):raise ValueError('dedicated actual daemon-channel death native VM required')
+    m['channel_daemon_crash_requested']=channel_death
+    m['channel_daemon_index']=channel_death_index
+    if channel_death:m['channel_daemon_verifier']=file_record(HERE/'ws73_channel_daemon_crash.py')
     m['daemon_crash_requested']=daemon_crash
     if daemon_crash:m['daemon_crash_verifier']=file_record(HERE/'ws73_daemon_crash.py')
     m['observer_policy_requested']=observer_policy
@@ -708,6 +724,7 @@ def _run(args):
                      (f' ws73.connected_reply={connected_reply}' if connected_reply else '')+
                      (' ws73.link_snapshot=1' if link_snapshot else '')+
                      (' ws73.peer_binding=1' if peer_binding else '')+
+                     (' ws73.channel_daemon_crash=1 ws73.channel_daemon_index='+str(channel_death_index) if channel_death else '')+
                      (' ws73.channel_grant=1' if channel_grant else '')+
                      (' ws73.channel_scm_rights=1' if channel_scm_rights else '')+
                      (' ws73.channel_directions=1' if channel_directions else '')+
@@ -787,7 +804,7 @@ def _run(args):
                         data=channel.recv(65536)
                         if data:
                             log.write(data);log.flush();transcript.extend(data);sys.stdout.buffer.write(data);sys.stdout.buffer.flush()
-                    if not support and not passthrough and not recovery and not parallel and not channel_grant and timeout_seal is None and sys.stdin in readable:
+                    if not support and not passthrough and not recovery and not parallel and not channel_grant and not channel_death and timeout_seal is None and sys.stdin in readable:
                         data=os.read(sys.stdin.fileno(),4096)
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
@@ -874,6 +891,20 @@ def _run(args):
                     if not channel_grant and (not re.search(r'^Name:\s+slkd$', status, re.M)
                             or not re.search(r'^Uid:\s+0\s+0\s+0\s+0$', status, re.M)):
                         raise ValueError('native module VM daemon is not root')
+                if channel_death:
+                    from ws73_channel_daemon_crash import corroborate as death_corroborate
+                    record=json.loads((share/'channel-daemon-crash/control/run.json').read_text())
+                    if text.count('WS73_TARGET_DAEMON_CHANNEL_PASS')!=1 or text.count('WS73_TARGET_DAEMON_CHANNEL_FINISHED')!=1 or record['daemon_channel']['index']!=channel_death_index:raise ValueError('explicit completed daemon fd death gate required')
+                    identities=record['initial'];packets=check_capture_stats((share/'capture-stats.txt').read_text())
+                    capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
+                    if packets!=capture['packet_count']:raise ValueError('sealed capture count mismatch')
+                    if record['fd_probe']['sha256']!=package['native_channel_fd_probe']['sha256']:raise ValueError('actual fd probe differs from staged client')
+                    m['channel_daemon_corroboration']=death_corroborate(record,capture)
+                    m['capture_packets']=packets;m['guest_identities']=identities
+                    if file_record(HERE/'ws73_channel_daemon_crash.py')!=m['channel_daemon_verifier']:raise ValueError('daemon verifier changed during run')
+                    m['status']='REAL_DAEMON_CHANNEL_DEATH_PASS'
+                    print(m['status'],output/'manifest.json')
+                    return 0
                 if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
                 if not support and not passthrough and not recovery and not parallel and not channel_grant and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
                 if passthrough and 'WS73_TARGET_PASSTHROUGH_SUPPORT: PASS' not in text:raise ValueError('QMP passthrough proof missing')
@@ -1153,6 +1184,7 @@ def main():
     for name in native_vm.OPTIONS:
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
+    pack.add_argument('--native-channel-fd-probe',type=Path,help='explicit isolated real D-Bus fd client binary; native VM only')
     pack.add_argument('--acb-probe-module',type=Path,help='explicit signed external selftest; never ordinary socket qualification')
     pack.add_argument('--native-discovery-config', type=Path,
                       help='freeze a private slkd TOML config in the native VM; checked by staged slkd, no RF qualification')
@@ -1164,6 +1196,8 @@ def main():
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
+            cmd.add_argument('--channel-daemon-crash',action='store_true',help='actual slkd SIGKILL with ordinary retained business fd, successor and no USB reset')
+            cmd.add_argument('--channel-daemon-index',type=int,choices=[0,1],default=0)
             cmd.add_argument('--daemon-crash',action='store_true',help='actual active-radio SIGKILL/last-File cleanup and successor before native RF22; separate --qmp-hotplug mode')
             cmd.add_argument('--observer-policy',action='store_true',help='actual default observer/control read and denial roles before/after native RF22; separate --qmp-hotplug mode')
             cmd.add_argument('--initializer-lifecycle',action='store_true',help='real initializer withdrawal, eviction and guest-generation gate; separate native --qmp-hotplug mode')

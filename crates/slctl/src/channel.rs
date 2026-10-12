@@ -105,15 +105,15 @@ fn receive(fd: &OwnedFd, deadline: Instant) -> anyhow::Result<Vec<u8>> {
     }
 }
 
-fn validate(bytes: &[u8], sequence: u32, reply: bool) -> anyhow::Result<()> {
-    if bytes.len() != 61
+fn validate(bytes: &[u8], sequence: u32, reply: bool, message_bytes: usize) -> anyhow::Result<()> {
+    if bytes.len() != message_bytes
         || &bytes[..8] != b"SLKSOCK1"
         || bytes[24..28] != sequence.to_le_bytes()
         || bytes[28] != u8::from(reply)
     {
         anyhow::bail!("peer application message header/sequence mismatch");
     }
-    for i in 0..32 {
+    for i in 0..message_bytes - 29 {
         if bytes[29 + i] != bytes[8 + i % 16] ^ (sequence as u8).wrapping_add(i as u8) {
             anyhow::bail!("peer application payload validation failed");
         }
@@ -121,9 +121,52 @@ fn validate(bytes: &[u8], sequence: u32, reply: bool) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Result<()> {
+fn reject_boundaries(fd: &OwnedFd) -> anyhow::Result<()> {
+    wait(
+        fd,
+        nix::libc::POLLOUT,
+        Instant::now() + Duration::from_secs(10),
+    )?;
+    for length in [250usize, 253, 254, 255] {
+        let mut bytes = vec![0u8; length];
+        std::fs::File::open("/dev/urandom")?.read_exact(&mut bytes)?;
+        bytes[..8].copy_from_slice(b"SLKBOUND");
+        // SAFETY: the complete immutable buffer and socket live for this call.
+        let result = unsafe {
+            nix::libc::send(
+                fd.as_raw_fd(),
+                bytes.as_ptr().cast(),
+                bytes.len(),
+                nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
+            )
+        };
+        let error = std::io::Error::last_os_error();
+        if result != -1 || error.raw_os_error() != Some(nix::libc::EMSGSIZE) {
+            anyhow::bail!(
+                "oversized basic-channel message was not rejected with EMSGSIZE: result={result} error={error}"
+            );
+        }
+        println!(
+            "NativeChannelRejected: length={length} errno={} bytes={}",
+            nix::libc::EMSGSIZE,
+            hex(&bytes)
+        );
+    }
+    Ok(())
+}
+
+pub(crate) fn exercise(
+    fd: OwnedFd,
+    responder: bool,
+    rounds: u32,
+    message_bytes: usize,
+    boundaries: bool,
+) -> anyhow::Result<()> {
     if !(1..=20).contains(&rounds) {
         anyhow::bail!("rounds must be 1..20");
+    }
+    if !(29..=249).contains(&message_bytes) {
+        anyhow::bail!("message size must be 29..249 for the current basic channel");
     }
     let linger = nix::libc::linger {
         l_onoff: 1,
@@ -147,6 +190,10 @@ pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Res
         "NativeChannelOpened: role={} rounds={rounds}",
         if responder { "peer" } else { "initiator" }
     );
+    println!("NativeChannelMessageSize: bytes={message_bytes}");
+    if boundaries {
+        reject_boundaries(&fd)?;
+    }
     let mut nonces = std::collections::BTreeSet::new();
     let mut wire_sequences = std::collections::BTreeSet::new();
     for sequence in 0..rounds {
@@ -154,11 +201,11 @@ pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Res
         let deadline = started + Duration::from_secs(10);
         if responder {
             let mut frame = receive(&fd, deadline)?;
-            if frame.len() != 61 {
+            if frame.len() != message_bytes {
                 anyhow::bail!("peer application message length mismatch");
             }
             let wire_sequence = u32::from_le_bytes(frame[24..28].try_into()?);
-            validate(&frame, wire_sequence, false)?;
+            validate(&frame, wire_sequence, false, message_bytes)?;
             if !wire_sequences.insert(wire_sequence) {
                 anyhow::bail!("duplicate wire sequence");
             }
@@ -176,14 +223,14 @@ pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Res
                 hex(&frame)
             );
         } else {
-            let mut frame = vec![0u8; 61];
+            let mut frame = vec![0u8; message_bytes];
             frame[..8].copy_from_slice(b"SLKSOCK1");
             std::fs::File::open("/dev/urandom")?.read_exact(&mut frame[8..28])?;
             let wire_sequence = u32::from_le_bytes(frame[24..28].try_into()?);
             if !wire_sequences.insert(wire_sequence) || !nonces.insert(frame[8..24].to_vec()) {
                 anyhow::bail!("random source repeated nonce or sequence");
             }
-            for i in 0..32 {
+            for i in 0..message_bytes - 29 {
                 frame[29 + i] = frame[8 + i % 16] ^ (wire_sequence as u8).wrapping_add(i as u8);
             }
             println!(
@@ -192,7 +239,7 @@ pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Res
             );
             send(&fd, &frame, deadline)?;
             let received = receive(&fd, deadline)?;
-            validate(&received, wire_sequence, true)?;
+            validate(&received, wire_sequence, true, message_bytes)?;
             frame[28] = 1;
             if received != frame {
                 anyhow::bail!("actual peer reply differs from original random payload");
@@ -214,24 +261,26 @@ mod tests {
 
     #[test]
     fn application_validates_and_replies_over_real_local_seqpacket_fds() {
-        // Local AF_UNIX is application regression support, never WS73 acceptance.
-        let mut raw = [-1; 2];
-        // SAFETY: writable two-element array; success transfers two owned fds.
-        let result = unsafe {
-            nix::libc::socketpair(
-                nix::libc::AF_UNIX,
-                nix::libc::SOCK_SEQPACKET | nix::libc::SOCK_NONBLOCK | nix::libc::SOCK_CLOEXEC,
-                0,
-                raw.as_mut_ptr(),
-            )
-        };
-        assert_eq!(result, 0, "{}", std::io::Error::last_os_error());
-        // SAFETY: distinct descriptors freshly returned by socketpair.
-        let (initiator, peer) =
-            unsafe { (OwnedFd::from_raw_fd(raw[0]), OwnedFd::from_raw_fd(raw[1])) };
-        let task = std::thread::spawn(move || exercise(peer, true, 4));
-        exercise(initiator, false, 4).unwrap();
-        task.join().unwrap().unwrap();
+        for message_bytes in [61, 249] {
+            // Local AF_UNIX is application regression support, never WS73 acceptance.
+            let mut raw = [-1; 2];
+            // SAFETY: writable two-element array; success transfers two owned fds.
+            let result = unsafe {
+                nix::libc::socketpair(
+                    nix::libc::AF_UNIX,
+                    nix::libc::SOCK_SEQPACKET | nix::libc::SOCK_NONBLOCK | nix::libc::SOCK_CLOEXEC,
+                    0,
+                    raw.as_mut_ptr(),
+                )
+            };
+            assert_eq!(result, 0, "{}", std::io::Error::last_os_error());
+            // SAFETY: distinct descriptors freshly returned by socketpair.
+            let (initiator, peer) =
+                unsafe { (OwnedFd::from_raw_fd(raw[0]), OwnedFd::from_raw_fd(raw[1])) };
+            let task = std::thread::spawn(move || exercise(peer, true, 4, message_bytes, false));
+            exercise(initiator, false, 4, message_bytes, false).unwrap();
+            task.join().unwrap().unwrap();
+        }
     }
 
     #[test]
@@ -242,11 +291,11 @@ mod tests {
         for i in 0..32 {
             message[29 + i] = 7 ^ i as u8;
         }
-        validate(&message, 0, false).unwrap();
-        assert!(validate(&message, 1, false).is_err());
-        assert!(validate(&message, 0, true).is_err());
+        validate(&message, 0, false, 61).unwrap();
+        assert!(validate(&message, 1, false, 61).is_err());
+        assert!(validate(&message, 0, true, 61).is_err());
         message[40] ^= 1;
-        assert!(validate(&message, 0, false).is_err());
-        assert!(validate(&message[..60], 0, false).is_err());
+        assert!(validate(&message, 0, false, 61).is_err());
+        assert!(validate(&message[..60], 0, false, 61).is_err());
     }
 }

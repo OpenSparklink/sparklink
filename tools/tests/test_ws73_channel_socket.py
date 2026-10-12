@@ -9,17 +9,23 @@ from ws73_channel_socket import application_frames
 from ws73_capture import CaptureError
 
 
-def fixture(rounds=4):
+def fixture(rounds=4,message_bytes=61,boundaries=False):
     credentials=dict(uids=[1000]*4,capabilities=dict(CapEff='0',CapPrm='0',CapAmb='0'))
     apps=[dict(role=role,exit=0,credentials=copy.deepcopy(credentials),stdout=f'NativeChannelOpened: role={role} rounds={rounds}\n') for role in ['initiator','peer']]
     for i in range(rounds):
         nonce=bytes([i+1])*16
         sequence=0x12345678+i*17
-        body=b'SLKSOCK1'+nonce+sequence.to_bytes(4,'little')+bytes(1)+bytes(nonce[j%16]^((sequence+j)&255) for j in range(32))
+        body=b'SLKSOCK1'+nonce+sequence.to_bytes(4,'little')+bytes(1)+bytes(nonce[j%16]^((sequence+j)&255) for j in range(message_bytes-29))
         reply=bytearray(body);reply[28]=1
         apps[0]['stdout']+=f'NativeChannelSent: sequence={i} bytes={body.hex()}\nNativeChannelRoundTrip: sequence={i} elapsed_ms=10 bytes={reply.hex()}\n'
         apps[1]['stdout']+=f'NativeChannelReceived: sequence={i} bytes={body.hex()}\nNativeChannelReply: sequence={i} bytes={reply.hex()}\n'
-    return dict(rounds=rounds,applications=apps)
+    for role,app in enumerate(apps):
+        if message_bytes!=61:app['stdout']+=f'NativeChannelMessageSize: bytes={message_bytes}\n'
+        if boundaries:
+            for i,length in enumerate([250,253,254,255]):
+                body=b'SLKBOUND'+bytes([role*16+i+1])*(length-8)
+                app['stdout']+=f'NativeChannelRejected: length={length} errno=90 bytes={body.hex()}\n'
+    return dict(rounds=rounds,message_bytes=message_bytes,boundary_check=boundaries,applications=apps)
 
 
 class ApplicationProof(unittest.TestCase):
@@ -28,6 +34,19 @@ class ApplicationProof(unittest.TestCase):
         for count in [0,21,-1,True,'20',None]:
             row=fixture();row['rounds']=count
             with self.subTest(count=count),self.assertRaises(CaptureError):application_frames(row)
+
+    def test_maximum_message_and_original_boundary_rejections(self):
+        from ws73_channel_socket import rejected_frames
+        row=fixture(message_bytes=249,boundaries=True)
+        self.assertEqual(len(application_frames(row)[0][0]),249)
+        self.assertEqual(len(rejected_frames(row)),8)
+        for kind in ['missing','errno','size','unexpected']:
+            changed=copy.deepcopy(row)
+            if kind=='missing':changed['applications'][0]['stdout']=changed['applications'][0]['stdout'].replace('NativeChannelRejected:','Missing:')
+            if kind=='errno':changed['applications'][0]['stdout']=changed['applications'][0]['stdout'].replace('errno=90','errno=11')
+            if kind=='size':changed['applications'][0]['stdout']=changed['applications'][0]['stdout'].replace('length=250','length=251')
+            if kind=='unexpected':changed['boundary_check']=False
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(changed)
 
     def test_original_two_application_messages(self):
         sent,replies=application_frames(fixture())
@@ -55,11 +74,11 @@ class ApplicationProof(unittest.TestCase):
 
 
 class IndependentUSBProof(unittest.TestCase):
-    def fixture(self,rounds=4):
+    def fixture(self,rounds=4,boundaries=False):
         from ws73_channel_socket import application_frames
         phases=[];sdus=[];events=[]
         for n in range(2):
-            row=fixture(rounds);row.update(phase=n,status='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING',start_wall_ns=n*100+1,end_wall_ns=n*100+90)
+            row=fixture(rounds,boundaries=boundaries);row.update(phase=n,status='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING',start_wall_ns=n*100+1,end_wall_ns=n*100+90)
             owners=[dict(owner=dict(bus=1,device=2+i,index=i,generation=i+1),object=dict(generation=i+1,lifetime=1+n*2,handle=0)) for i in range(2)]
             if n:owners.reverse()
             row['owners']=owners
@@ -86,6 +105,16 @@ class IndependentUSBProof(unittest.TestCase):
                 leg(sender,receiver,bytes.fromhex('0200100002010c00e20000000000f900f9000101'))
                 events.append(dict(bus=1,device=sender['owner']['device'],event=9,params=(b'\0\0'+bytes([rounds+2])).hex(),wall_ns=n*100+30))
         return dict(channel_socket=phases),dict(native_events=events),sdus
+
+    def test_boundary_rejections_require_no_matching_usb_data(self):
+        from unittest.mock import patch
+        from ws73_channel_socket import corroborate,rejected_frames
+        run,capture,sdus=self.fixture(boundaries=True)
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            self.assertEqual(corroborate(run,capture)['application_boundary_rejections'],16)
+            raw=rejected_frames(run['channel_socket'][0])[0]
+            sdus.append(dict(bus=1,device=2,handle=0,direction='out',wall_ns=20,data=raw.hex()))
+            with self.assertRaises(CaptureError):corroborate(run,capture)
 
     def test_twenty_rounds_require_twenty_two_real_completions_per_endpoint(self):
         from unittest.mock import patch

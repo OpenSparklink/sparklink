@@ -26,7 +26,16 @@ impl Context {
                     anyhow::anyhow!("channel command requires connection object path")
                 })?;
                 let rounds = args.get(2).unwrap_or(&"4").parse()?;
-                self.cmd_channel(path, args[0] == "channel-peer", rounds)
+                let bytes = args.get(3).unwrap_or(&"61").parse()?;
+                let boundaries = match args.get(4) {
+                    None => false,
+                    Some(&"boundaries") => true,
+                    _ => anyhow::bail!("optional channel mode must be boundaries"),
+                };
+                if args.len() > 5 {
+                    anyhow::bail!("too many channel arguments");
+                }
+                self.cmd_channel(path, args[0] == "channel-peer", rounds, bytes, boundaries)
                     .await
             }
             "list" => self.cmd_list().await,
@@ -779,7 +788,14 @@ impl Context {
         }
         Ok(())
     }
-    async fn cmd_channel(&self, path: &str, responder: bool, rounds: u32) -> anyhow::Result<()> {
+    async fn cmd_channel(
+        &self,
+        path: &str,
+        responder: bool,
+        rounds: u32,
+        bytes: usize,
+        boundaries: bool,
+    ) -> anyhow::Result<()> {
         let selected = self.selected_path().await?;
         if !path.starts_with(&format!("{selected}/peer_t")) {
             anyhow::bail!("connection object belongs to another adapter");
@@ -807,7 +823,7 @@ impl Context {
             anyhow::bail!("connection is not known/live");
         }
         let fd: zbus::zvariant::OwnedFd = object.call("OpenChannel", &()).await?;
-        crate::channel::exercise(fd.into(), responder, rounds)
+        crate::channel::exercise(fd.into(), responder, rounds, bytes, boundaries)
     }
     async fn cmd_connection_object(&self, path: &str, disconnect: bool) -> anyhow::Result<()> {
         let adapter = self.adapter_proxy().await?;

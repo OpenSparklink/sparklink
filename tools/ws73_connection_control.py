@@ -43,13 +43,14 @@ def execute(run, a, b):
     kind = getattr(run.args, 'connection_advertising', 'fixed-t')
     if kind not in ['fixed-t','negotiable-t']: raise ValueError('explicit supported connection advertising posture required')
     record = dict(status='RUNNING', advertising_kind=kind, owners=[a,b], phases=[],
-        peer_lifetime_binding='v2-admission-selection',
+        peer_lifetime_binding='v2-admission-selection',connection_objects='generation-type-lifetime-v1',
         advertising_set_lifecycle='remove-recreate-v1',
         release_acceptance=False, last_file_acceptance=False, dup_acceptance=False,
         inflight_acceptance=False, ssap_acceptance=False,
         automatic_recovery_acceptance=False, start_wall_ns=time.time_ns())
     run.data['connection_control'] = record
     run.save()
+    previous_objects=[]
     try:
         for caller, peer in [(a,b), (b,a)]:
             phase = dict(caller=caller, peer=peer, start_wall_ns=time.time_ns())
@@ -99,11 +100,16 @@ def execute(run, a, b):
             row=run.ctl(caller,'connections')
             phase['links_command']=len(run.data['commands'])-1
             phase['reference']=link_reference(row['stdout'],caller,peer,phase['connect']['handle'])
-            reference=phase['reference']
+            from ws73_connection_objects import observe, reject_old
+            phase['typed_objects']=[observe(run,owner,remote) for owner,remote in [(caller,peer),(peer,caller)]]
+            phase['stale_object_rejections']=[]
+            for old in previous_objects:
+                phase['stale_object_rejections'].append(reject_old(run,old,'while-reused-handle-live'));run.save()
+            selected=next(entry['object'] for entry in phase['typed_objects'] if entry['owner']==caller)
+            if any(selected[key]!=phase['reference'][key] for key in ['lifetime','handle','role','address_type','address']):raise CaptureError('object differs from original canonical reference')
             phase['disconnect_command'] = len(run.data['commands'])
             row = run.command([str(run.args.slctl), '--adapter', caller['path'],
-                'disconnect-link',reference['address'],str(reference['address_type']),str(reference['handle']),
-                str(reference['lifetime']),str(reference['role'])], 18, collection='commands')
+                'disconnect-object',selected['path']], 18, collection='commands')
             phase['disconnect'] = result(row['stdout'], caller, 2)
             if row['exit'] or phase['disconnect']['handle'] != phase['connect']['handle']:
                 raise CaptureError('exact established handle must disconnect')
@@ -115,6 +121,9 @@ def execute(run, a, b):
                     if time.monotonic() >= deadline:
                         raise CaptureError('both real Down events must reach Device properties')
                     time.sleep(.01)
+            for entry in phase['typed_objects']:
+                phase['stale_object_rejections'].append(reject_old(run,entry,'after-down'));run.save()
+            previous_objects=phase['typed_objects']
             # Require the original advertisement's actual STOP. If firmware
             # has independently stopped it and rejects STOP, preserve that
             # failure; no local connected/disconnected state means radio OFF.
@@ -144,14 +153,18 @@ def corroborate(run, capture):
             links=run['commands'][phase['links_command']]
             reference=link_reference(links['stdout'],caller,peer,phase['connect']['handle'])
             disconnect=run['commands'][phase['disconnect_command']]
-            expected=['disconnect-link',reference['address'],str(reference['address_type']),str(reference['handle']),str(reference['lifetime']),str(reference['role'])]
-            if (links['exit'] or links['args'][-1]!='connections' or reference!=phase['reference']
-                    or disconnect['args'][-6:]!=expected
-                    or not run['commands'][phase['connect_command']]['end_wall_ns']<=links['start_wall_ns']<=links['end_wall_ns']<=disconnect['start_wall_ns']):
-                raise CaptureError('original canonical snapshot must precede exact bound Disconnect')
-            receipts=re.findall(r'^NativeDisconnectReference: request=(\d+) address=([0-9A-F:]{17}) type=(\d+) handle=(\d+) lifetime=(\d+) role=(\d+)$',disconnect['stdout'],re.M)
-            if receipts!=[(str(phase['disconnect']['request']),reference['address'],str(reference['address_type']),str(reference['handle']),str(reference['lifetime']),str(reference['role']))]:
-                raise CaptureError('original public Disconnect reference receipt required')
+            if record.get('connection_objects'):
+                if links['exit'] or links['args'][-1]!='connections' or reference!=phase['reference'] or not run['commands'][phase['connect_command']]['end_wall_ns']<=links['start_wall_ns']<=links['end_wall_ns']<=disconnect['start_wall_ns']:
+                    raise CaptureError('original canonical snapshot must precede object Disconnect')
+            else:
+                expected=['disconnect-link',reference['address'],str(reference['address_type']),str(reference['handle']),str(reference['lifetime']),str(reference['role'])]
+                if (links['exit'] or links['args'][-1]!='connections' or reference!=phase['reference']
+                        or disconnect['args'][-6:]!=expected
+                        or not run['commands'][phase['connect_command']]['end_wall_ns']<=links['start_wall_ns']<=links['end_wall_ns']<=disconnect['start_wall_ns']):
+                    raise CaptureError('original canonical snapshot must precede exact bound Disconnect')
+                receipts=re.findall(r'^NativeDisconnectReference: request=(\d+) address=([0-9A-F:]{17}) type=(\d+) handle=(\d+) lifetime=(\d+) role=(\d+)$',disconnect['stdout'],re.M)
+                if receipts!=[(str(phase['disconnect']['request']),reference['address'],str(reference['address_type']),str(reference['handle']),str(reference['lifetime']),str(reference['role']))]:
+                    raise CaptureError('original public Disconnect reference receipt required')
         advertisement = run['commands'][phase['advertisement_command']]
         query = run['commands'][phase['policy_query_command']]
         policies = re.findall(r'^  Radio policy: version=(\d+) adv_slots=(\d+)\.\.(\d+) tx_power_dbm=(-?\d+) scan_slots=(\d+)/(\d+)$', query['stdout'], re.M)

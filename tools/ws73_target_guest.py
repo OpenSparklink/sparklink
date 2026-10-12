@@ -327,7 +327,11 @@ def verify_passthrough():
         raise ValueError('explicit connection request and evidence must agree')
     if requested_connection:
         from ws73_connection_control import corroborate as connection_corroborate
-        proofs.append({'connection_control':connection_corroborate(run,capture)})
+        connections=connection_corroborate(run,capture)
+        proofs.append({'connection_control':connections})
+        if run['connection_control'].get('connection_objects'):
+            from ws73_connection_objects import corroborate as object_corroborate
+            object_corroborate(run,capture,connections)
     if 'daemon_removal' in run:
         from ws73_daemon_removal import corroborate_wire
         proofs.append({'daemon_cancel_removal':corroborate_wire(run['daemon_removal'],capture)})

@@ -100,3 +100,32 @@ Ready-peer partial门禁一起选择release/close/dup。第一帧是Remove，或
 或缺失集合STOP；终态明确区分删除后Setup和创建后Ready。探针仍在slkd启动
 前执行，只可证明File/peer/资源状态，不能据此宣称服务不停机恢复。
 当前仅384工具检查与离线语法/负面界限通过，新门禁等待冻结VM实测。
+
+## 真实资源File矩阵通过（范围限定）
+
+VM102–107使用Linux1305136c、实际服务与冻结工具2e53bee，六例分别覆盖
+Remove成功回复held和随后Configure成功回复held，各执行release、最后File、
+dup首关/尾关。首次删除后未创建是Free/Setup；真实创建回复排空后Free/Ready，
+作者结果全部保持Cancelled/-125且无假power/成功，缺失资源没有STOP、取消
+recipe没有data/enable逃逸。同行同generation Ready/Managed scanner On跨越
+目标释放并获得真实START/STOP回复。
+
+[六例独立证据](evidence/ws73-resource-file-held-reply-matrix-20261012.json)，
+SHA256 `5b9296376f648577d1fc8d86b9711e34e95bd6f38c1898ec0fa103461821944c`：
+7302包/零丢包/taint0/退出0；host hold/skip的原始帧哈希、guest与host身份、完整
+命令与匹配回复、UAPI原记录、Setup/peer及各RF22全部独立重算，并核对冻结
+输入。六例后RF132普通应用UID1000/caps0、每VM同slkd/bus；但FD探针本身在
+slkd启动前，不得声称服务跨整个fd清理不重启、connected撤销或自然恢复。
+人为guest IN错误仍是开发支撑，物理拔插/默认四设备未由本矩阵替代。
+
+VM100初次误写Revoking mode1/Setup flags0，VM101把QMP host地址用于guest
+usbmon而被父验证器拒绝；原失败、捕获与日志均保留。分别修正为规范mode0/
+原Setup flags2，以及单独记录guest1:2、只用host身份证明held-frame来源。
+离线回放DTO不是实机资格，不改写失败。新的386/387工具负面回归通过，实际
+source2e53bee精确CI38214187273九项成功。Python连接方法的不存在成员调用也
+已修正为序列化native invoker，实际共享库/dev/null errno/关闭边界10项通过；
+这条绑定修复仍待后续connected Python probe的真实使用验收。
+
+正常测试尝试107/维护37，整项不关闭。下一connected release/lastFD/dup/
+inflight与peer隔离、运行中daemon边界、当前源原partial矩阵，以及canonical
+重同步/peer lifetime；自然RCA/非人工恢复及完整S0–S6/28保持OPEN，VM-only。

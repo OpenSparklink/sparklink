@@ -1857,3 +1857,11 @@ RF22与QMP支持（1377包/零丢包/taint0）；
 并复核原partial/queue门禁。fixed-T、canonical重同步/peer lifetime、SSAP安全、
 Profile/PHY/PM/Proxy、默认四设备、物理范围和非人工恢复/RCA及全部S0–S6/28
 仍开放。部分成果不关闭整项，VM-only。
+
+2026-10-12完成130/2e53bee真实删除/创建回复held的release/lastFile/dup六例，
+资源Setup/Ready和同行扫描隔离、RF132独立核对；
+[限定证据](evidence/ws73-resource-file-held-reply-matrix-20261012.json)。
+下一connected真实File/在途清理、daemon运行期边界和当前源原partial回归；
+S0–S6/28及自然RCA、非人工恢复、物理/四设备、canonical/peer lifetime与其余
+生态仍OPEN。修复Python连接方法后也须以真实connected探针复核，不用/dev/null
+或DTO回放替代。所有实验VM-only，部分成果不关闭整项。

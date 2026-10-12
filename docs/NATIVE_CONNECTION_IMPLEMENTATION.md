@@ -327,3 +327,8 @@ SHA256 `da835edeeb854f091ffac7fe753ed99947570d1cff847681194a31546581b5ad`。
 特权FIFO支撑及人工guest IN错误的限定不变，不证明connected/inflight/自然
 恢复。prelaunch尝试98参数缩写歧义在VM/USB前拒绝，原log保留，99使用完整
 参数；累计97→98→99不回退。新删除/重建真实FD与原partial当前源回归仍待。
+
+删除/创建实际回复held的File矩阵现已独立通过六例（VM102–107，7302包、
+RF132），资源缺失Setup/重新创建Ready、作者Cancelled与独立Ready peer均
+核对。见[资源File矩阵](WS73_ADVERTISING_SET_LIFECYCLE.md)。两次验证器失败
+保留，connected及运行中daemon fd清理、自然自动恢复不转移资格，下一优先。

@@ -90,15 +90,55 @@ def hcc_command(data):
 
 
 def acb(payload):
-    """Exact full-SDU A3; DTAP content stays opaque at the controller seam."""
+    """Exact A3 fragment; PB/priority never form part of the connection handle."""
     if not payload or payload[0] != 0xa3:
         return None
     if len(payload) < 5:
         raise CaptureError('short A3 header')
     handle, length = struct.unpack_from('<HH', payload, 1)
-    if handle & 0xf000 or not 0 < length <= 2047 or length != len(payload) - 5:
-        raise CaptureError('unsupported or malformed full-SDU A3')
-    return dict(handle=handle, data=payload[5:].hex())
+    if handle & 0x4000 or not 0 < length <= 2047 or length != len(payload) - 5:
+        raise CaptureError('unsupported or malformed A3')
+    return dict(handle=handle & 0x0fff, boundary=(handle >> 12) & 3, data=payload[5:].hex())
+
+
+def reassemble_acb(capture):
+    """Independent ordered USB fragment proof, bounded by size/time and link events."""
+    partial, sdus = {}, []
+    timeline = [(p['record'], p.get('hcc_offset', 0), 'data', p) for p in capture['acb_packets']]
+    timeline += [(e['record'], e.get('hcc_offset', 0), 'link', e) for e in capture['native_events']
+                 if e['event'] in {5, 0x15, 0x1401, 0x1405}]
+    for _, _, kind, packet in sorted(timeline, key=lambda row: row[:2]):
+        device = (packet['bus'], packet['device'])
+        if kind == 'link':
+            body = bytes.fromhex(packet['params'])
+            if body and body[0] == 0:
+                partial = {key: value for key, value in partial.items() if key[:2] != device}
+            continue
+        boundary = packet.get('boundary', 0)
+        key = device + (packet['handle'],)
+        if packet['direction'] == 'out' or boundary == 0:
+            if boundary:
+                raise CaptureError('TX fragment mode is not qualified')
+            partial.pop(key, None)
+            sdus.append(packet | dict(fragments=[packet]))
+        elif boundary == 1:
+            if key in partial:
+                raise CaptureError('unfinished A3 replaced by another first fragment')
+            partial[key] = [packet]
+        else:
+            if key not in partial or packet['wall_ns'] - partial[key][0]['wall_ns'] >= 5_000_000_000:
+                raise CaptureError('orphan or expired A3 continuation')
+            pieces = partial[key]
+            pieces.append(packet)
+            data = b''.join(bytes.fromhex(p['data']) for p in pieces)
+            if len(data) > 2047:
+                raise CaptureError('A3 reassembled SDU exceeds host bound')
+            if boundary == 3:
+                sdus.append(packet | dict(data=data.hex(), fragments=pieces))
+                del partial[key]
+    if partial:
+        raise CaptureError('incomplete A3 at sealed capture end')
+    return sdus
 
 
 def hcc_acb(data):

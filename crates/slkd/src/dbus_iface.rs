@@ -185,11 +185,79 @@ impl AdapterIface {
             parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
         crate::connection::submit_disconnect(&self.state, request_id, address).await
     }
+    async fn submit_disconnect_typed(
+        &self,
+        request_id: u64,
+        address: &str,
+        address_type: u8,
+    ) -> zbus::fdo::Result<()> {
+        let address =
+            parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        crate::connection::submit_disconnect_typed(
+            &self.state,
+            request_id,
+            address,
+            Some(address_type),
+        )
+        .await
+    }
     async fn get_connection_result(
         &self,
         request_id: u64,
     ) -> zbus::fdo::Result<crate::connection::Record> {
         crate::connection::result(&self.state, request_id).await
+    }
+    async fn submit_disconnect_reference(
+        &self,
+        request_id: u64,
+        address: &str,
+        address_type: u8,
+        handle: u16,
+        lifetime: u64,
+        role: u8,
+    ) -> zbus::fdo::Result<()> {
+        let address =
+            parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        let reference = slk_protocol::SleLinkInfo {
+            lifetime,
+            handle,
+            role,
+            address_type,
+            address,
+            reserved: [0; 6],
+        };
+        crate::connection::submit(
+            &self.state,
+            request_id,
+            address,
+            address_type,
+            Some(reference),
+        )
+        .await
+    }
+    /// Check flags/error before treating an empty vector as an empty table.
+    async fn get_native_connections(&self) -> zbus::fdo::Result<crate::connection::SnapshotRecord> {
+        let table = crate::connection::snapshot(&self.state).await?;
+        let links = table.links[..table.count as usize]
+            .iter()
+            .map(|link| {
+                (
+                    link.lifetime,
+                    link.handle,
+                    link.role,
+                    link.address_type,
+                    format_addr(&link.address),
+                )
+            })
+            .collect();
+        Ok((
+            table.generation,
+            table.event_seq,
+            table.revision,
+            table.flags,
+            table.error,
+            links,
+        ))
     }
     async fn connect_device_typed(&self, address: &str, address_type: u8) -> zbus::fdo::Result<()> {
         let id = crate::connection::allocate(&self.state).await?;
@@ -229,9 +297,9 @@ impl AdapterIface {
     /// Disconnect a device by connection handle
     async fn disconnect_device(&self, handle: u16) -> zbus::fdo::Result<()> {
         if self.state.lock().await.controller.profile == 1 {
-            let id = crate::connection::allocate(&self.state).await?;
-            crate::connection::submit(&self.state, id, [0; 6], 0, Some(handle)).await?;
-            return crate::connection::wait(&self.state, id).await;
+            return Err(zbus::fdo::Error::NotSupported(
+                "native disconnect requires a peer and physical lifetime, not a bare handle".into(),
+            ));
         }
         let mut st = self.state.lock().await;
         st.disconnect_device(handle)

@@ -135,9 +135,9 @@ class NativeConnectionBindingTests(unittest.TestCase):
         self.assertTrue(handle)
         self.addCleanup(self.lib.slk_adapter_free, handle)
         request = SleConnectionSubmit(version=1, generation=1, request_id=1)
-        self.assertEqual(self.lib.slk_connection_submit(None, ctypes.byref(request)), -errno.EINVAL)
-        self.assertEqual(self.lib.slk_connection_submit(handle, None), -errno.EINVAL)
-        self.assertEqual(self.lib.slk_connection_submit(handle, ctypes.byref(request)), -errno.ENOTTY)
+        self.assertEqual(self.lib.slk_connection_submit_v2(None, ctypes.byref(request)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_connection_submit_v2(handle, None), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_connection_submit_v2(handle, ctypes.byref(request)), -errno.ENOTTY)
         result = SleConnectionResult(request_id=99)
         original = bytes(result)
         for generation, request_id in [(0, 1), (1, 0)]:

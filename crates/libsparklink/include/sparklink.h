@@ -488,6 +488,10 @@ typedef struct SPARKLINK_ALIGN(8) SleConnectionSubmit {
     uint32_t reserved;
     struct SleConnectionParameters parameters;
     uint32_t reserved_tail;
+    uint64_t expected_lifetime;
+    SleAddr expected_address;
+    uint8_t expected_address_type;
+    uint8_t expected_role;
 } SleConnectionSubmit;
 
 typedef struct SPARKLINK_ALIGN(8) SleConnectionResult {
@@ -892,8 +896,8 @@ int slk_diagnostic_submit(const struct SlkAdapter *adapter, struct SleDiagnostic
  * # Safety
  * Pointers must be valid, aligned and nonoverlapping; request is readable.
  */
-int slk_connection_submit(const struct SlkAdapter *adapter,
-                          const struct SleConnectionSubmit *request);
+int slk_connection_submit_v2(const struct SlkAdapter *adapter,
+                             const struct SleConnectionSubmit *request);
 
 /**
  * Query this same fd's operation: 1 record, 0 absent/evicted or -errno.

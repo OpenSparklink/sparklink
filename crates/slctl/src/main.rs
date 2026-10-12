@@ -128,7 +128,9 @@ Commands:
   info <address>                Show device details
   pair <address>                Pair with device
   connect <address>             Connect to device
-  disconnect [address]          Disconnect
+  connections                   Show canonical native links and lifetimes
+  disconnect <address> [type]    Disconnect an unambiguous current peer
+  disconnect-link <addr> <type> <handle> <lifetime> <role>  Disconnect exact link
   services                      List local SSAP services
   remote-services               List remote services
   read <handle>                 Read property value

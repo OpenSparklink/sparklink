@@ -41,7 +41,7 @@ def _get_native_lib():
         "slk_management_acquire": [handle, u64, u32, ctypes.POINTER(u64)],
         "slk_management_query": [handle, u64, ctypes.POINTER(SleManagementQuery)],
         "slk_management_release": [handle, u64, u64, u32],
-        "slk_connection_submit": [handle, ctypes.POINTER(SleConnectionSubmit)],
+        "slk_connection_submit_v2": [handle, ctypes.POINTER(SleConnectionSubmit)],
         "slk_connection_result": [handle, u64, u64, ctypes.POINTER(SleConnectionResult)],
         "slk_discovery_submit": [handle, ctypes.POINTER(SleDiscoverySubmit)],
         "slk_discovery_timing": [handle, u64, u64, ctypes.POINTER(SleDiscoveryTiming)],
@@ -185,7 +185,7 @@ class NativeAdapter:
             raise TypeError("SleConnectionSubmit required")
         if request.generation != self.generation or request.request_id == 0:
             raise ValueError("request must have this generation and a nonzero request id")
-        self._invoke('slk_connection_submit', ctypes.byref(request))
+        self._invoke('slk_connection_submit_v2', ctypes.byref(request))
 
     def connection_result(self, generation, request_id):
         """Same-fd bounded result; None means absent/evicted, never success."""

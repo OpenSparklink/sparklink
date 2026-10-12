@@ -359,6 +359,8 @@ class SleConnectionSubmit(ctypes.Structure):
         ("timeout_ms", ctypes.c_uint32), ("handle", ctypes.c_uint32),
         ("reason", ctypes.c_uint32), ("reserved", ctypes.c_uint32),
         ("parameters", SleConnectionParameters), ("reserved_tail", ctypes.c_uint32),
+        ("expected_lifetime", ctypes.c_uint64), ("expected_address", ctypes.c_uint8 * 6),
+        ("expected_address_type", ctypes.c_uint8), ("expected_role", ctypes.c_uint8),
     ]
 
 

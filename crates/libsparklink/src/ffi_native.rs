@@ -355,7 +355,7 @@ pub unsafe extern "C" fn slk_diagnostic_submit(
 /// # Safety
 /// Pointers must be valid, aligned and nonoverlapping; request is readable.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_connection_submit(
+pub unsafe extern "C" fn slk_connection_submit_v2(
     adapter: *const SlkAdapter,
     request: *const SleConnectionSubmit,
 ) -> c_int {

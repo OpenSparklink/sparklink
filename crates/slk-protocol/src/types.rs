@@ -1363,6 +1363,10 @@ pub struct SleConnectionSubmit {
     pub reserved: u32,
     pub parameters: SleConnectionParameters,
     pub reserved_tail: u32,
+    pub expected_lifetime: u64,
+    pub expected_address: SleAddr,
+    pub expected_address_type: u8,
+    pub expected_role: u8,
 }
 #[repr(C, align(8))]
 #[derive(Clone, Copy, Debug, Default)]

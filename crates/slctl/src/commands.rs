@@ -1,6 +1,7 @@
 use zbus::Connection;
 
 type NativeReportRecord = (u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
+type NativeLinksRecord = (u64, u64, u64, u32, i32, Vec<(u64, u16, u8, u8, String)>);
 
 pub struct Context {
     conn: Connection,
@@ -66,7 +67,32 @@ impl Context {
             }
             "disconnect" => {
                 let addr = args.get(1).copied().unwrap_or("");
-                self.cmd_disconnect(addr).await
+                self.cmd_disconnect(addr, args.get(2).copied()).await
+            }
+            "connections" => self.cmd_connections().await,
+            "disconnect-link" => {
+                if args.len() != 6 {
+                    anyhow::bail!(
+                        "usage: disconnect-link <address> <type> <handle> <lifetime> <role>"
+                    );
+                }
+                let address = parse_peer_address(args[1])?;
+                let kind: u8 = args[2].parse()?;
+                let handle: u16 = args[3].parse()?;
+                let lifetime: u64 = args[4].parse()?;
+                let role: u8 = args[5].parse()?;
+                let proxy = self.adapter_proxy().await?;
+                let id: u64 = proxy.call("AllocateConnectionRequest", &()).await?;
+                println!(
+                    "NativeDisconnectReference: request={id} address={address} type={kind} handle={handle} lifetime={lifetime} role={role}"
+                );
+                let _: () = proxy
+                    .call(
+                        "SubmitDisconnectReference",
+                        &(id, address, kind, handle, lifetime, role),
+                    )
+                    .await?;
+                wait_connection(&proxy, id).await
             }
             "services" => self.cmd_services().await,
             "remote-services" => self.cmd_remote_services().await,
@@ -635,13 +661,24 @@ impl Context {
         println!("Connection procedure completed for {address}");
         Ok(())
     }
-    async fn cmd_disconnect(&self, address: &str) -> anyhow::Result<()> {
+    async fn cmd_disconnect(
+        &self,
+        address: &str,
+        address_type: Option<&str>,
+    ) -> anyhow::Result<()> {
         let proxy = self.adapter_proxy().await?;
         let profile: u32 = proxy.get_property("Profile").await?;
         if profile == 1 {
             let id: u64 = proxy.call("AllocateConnectionRequest", &()).await?;
             println!("NativeDisconnectRequest: request={id} address={address}");
-            let _: () = proxy.call("SubmitDisconnect", &(id, address)).await?;
+            if let Some(kind) = address_type {
+                let kind: u8 = kind.parse()?;
+                let _: () = proxy
+                    .call("SubmitDisconnectTyped", &(id, address, kind))
+                    .await?;
+            } else {
+                let _: () = proxy.call("SubmitDisconnect", &(id, address)).await?;
+            }
             wait_connection(&proxy, id).await?;
         } else {
             let _: () = proxy.call("DisconnectAddress", &(address,)).await?;
@@ -649,6 +686,23 @@ impl Context {
             return Ok(());
         }
         println!("Disconnect procedure completed for {address}");
+        Ok(())
+    }
+    async fn cmd_connections(&self) -> anyhow::Result<()> {
+        let proxy = self.adapter_proxy().await?;
+        let (generation, seq, revision, flags, error, links): NativeLinksRecord =
+            proxy.call("GetNativeConnections", &()).await?;
+        println!(
+            "NativeLinksSnapshot: generation={generation} event_seq={seq} revision={revision} flags={flags} errno={error}"
+        );
+        if flags != 1 || error != 0 {
+            anyhow::bail!("physical connection table unknown");
+        }
+        for (lifetime, handle, role, kind, address) in links {
+            println!(
+                "NativeLink: lifetime={lifetime} handle={handle} role={role} type={kind} address={address}"
+            );
+        }
         Ok(())
     }
 

@@ -2,12 +2,15 @@
 //! admission retains the same per-device credential gate used by discovery.
 use crate::state::SharedState;
 use libsparklink::Adapter;
-use slk_protocol::{SleConnectionResult, SleConnectionSubmit};
+use slk_protocol::{
+    LINK_SNAPSHOT_KNOWN, SleConnectionResult, SleConnectionSubmit, SleLinkInfo, SleLinkSnapshot,
+};
 use std::{sync::Arc, time::Duration};
 fn failed(e: impl std::fmt::Display) -> zbus::fdo::Error {
     zbus::fdo::Error::Failed(e.to_string())
 }
 pub(crate) type Record = (u64, u64, u32, u32, i32, i32, u32, u32, u32, u32);
+pub(crate) type SnapshotRecord = (u64, u64, u64, u32, i32, Vec<(u64, u16, u8, u8, String)>);
 async fn selected(state: &SharedState) -> zbus::fdo::Result<(Arc<Adapter>, u64)> {
     let s = state.lock().await;
     if !s.present {
@@ -47,7 +50,7 @@ pub(crate) async fn submit(
     id: u64,
     address: [u8; 6],
     address_type: u8,
-    handle: Option<u16>,
+    reference: Option<SleLinkInfo>,
 ) -> zbus::fdo::Result<()> {
     if id == 0 {
         return Err(zbus::fdo::Error::InvalidArgs(
@@ -80,17 +83,21 @@ pub(crate) async fn submit(
             return Err(libsparklink::Error::InvalidParam("Ready WS73 required"));
         }
         let mut request = SleConnectionSubmit {
-            version: 1,
+            version: 2,
             profile: snapshot.profile,
             generation,
             request_id: id,
             timeout_ms: policy.timeout_ms,
             ..Default::default()
         };
-        if let Some(handle) = handle {
+        if let Some(reference) = reference {
             request.operation = 2;
-            request.handle = u32::from(handle);
+            request.handle = u32::from(reference.handle);
             request.reason = 0x13;
+            request.expected_lifetime = reference.lifetime;
+            request.expected_address = reference.address;
+            request.expected_address_type = reference.address_type;
+            request.expected_role = reference.role;
         } else {
             request.operation = 1;
             request.parameters = policy.parameters();
@@ -130,20 +137,54 @@ fn record(r: SleConnectionResult) -> Record {
         r.flags,
     )
 }
+pub(crate) async fn snapshot(state: &SharedState) -> zbus::fdo::Result<SleLinkSnapshot> {
+    let (fd, generation) = selected(state).await?;
+    tokio::task::spawn_blocking(move || fd.native_link_snapshot(generation))
+        .await
+        .map_err(failed)?
+        .map_err(failed)
+}
 pub(crate) async fn submit_disconnect(
     state: &SharedState,
     id: u64,
     address: [u8; 6],
 ) -> zbus::fdo::Result<()> {
-    let handle = {
-        let s = state.lock().await;
-        s.devices
-            .get(&address)
-            .filter(|d| d.connection_known && d.connected)
-            .and_then(|d| d.conn_handle)
-            .ok_or_else(|| failed("no known physical connection for this address"))?
-    };
-    submit(state, id, address, 0, Some(handle)).await
+    submit_disconnect_typed(state, id, address, None).await
+}
+pub(crate) fn peer_reference(
+    snapshot: &SleLinkSnapshot,
+    address: [u8; 6],
+    address_type: Option<u8>,
+) -> zbus::fdo::Result<SleLinkInfo> {
+    if !snapshot.valid_for(snapshot.generation) || snapshot.flags != LINK_SNAPSHOT_KNOWN {
+        return Err(failed("physical connection table unknown"));
+    }
+    let mut matching = snapshot.links[..snapshot.count as usize]
+        .iter()
+        .filter(|link| {
+            link.address == address && address_type.is_none_or(|kind| kind == link.address_type)
+        });
+    let reference = *matching
+        .next()
+        .ok_or_else(|| failed("no known physical connection for this peer"))?;
+    if matching.next().is_some() {
+        return Err(zbus::fdo::Error::InvalidArgs(
+            "ambiguous peer; select an explicit address type and connection lifetime".into(),
+        ));
+    }
+    Ok(reference)
+}
+pub(crate) async fn submit_disconnect_typed(
+    state: &SharedState,
+    id: u64,
+    address: [u8; 6],
+    address_type: Option<u8>,
+) -> zbus::fdo::Result<()> {
+    let table = snapshot(state).await?;
+    let reference = peer_reference(&table, address, address_type)?;
+    // Snapshot may become stale before submission; the kernel checks this
+    // exact lifetime again at admission and queue selection. No cache fallback.
+    submit(state, id, address, reference.address_type, Some(reference)).await
 }
 pub(crate) async fn disconnect_address(
     state: &SharedState,
@@ -186,6 +227,47 @@ mod tests {
         state::{AdapterState, NativeManagement},
     };
     use tokio::sync::Mutex;
+    #[test]
+    fn canonical_peer_selection_preserves_type_and_rejects_ambiguity() {
+        let mut table = SleLinkSnapshot {
+            version: 1,
+            generation: 7,
+            profile: 1,
+            flags: 1,
+            revision: 2,
+            count: 2,
+            ..Default::default()
+        };
+        table.links[0] = SleLinkInfo {
+            lifetime: 1,
+            handle: 7,
+            role: 0,
+            address_type: 0,
+            address: [1; 6],
+            reserved: [0; 6],
+        };
+        table.links[1] = SleLinkInfo {
+            lifetime: 2,
+            handle: 8,
+            address_type: 1,
+            ..table.links[0]
+        };
+        assert!(peer_reference(&table, [1; 6], None).is_err());
+        assert_eq!(peer_reference(&table, [1; 6], Some(0)).unwrap().lifetime, 1);
+        assert_eq!(peer_reference(&table, [1; 6], Some(1)).unwrap().lifetime, 2);
+        table.links[1].address_type = 0;
+        assert!(peer_reference(&table, [1; 6], Some(0)).is_err());
+        table.flags = 0;
+        table.error = -117;
+        table.count = 0;
+        table.links = [SleLinkInfo::default(); 16];
+        assert!(
+            peer_reference(&table, [1; 6], Some(0))
+                .unwrap_err()
+                .to_string()
+                .contains("unknown")
+        );
+    }
     fn state() -> SharedState {
         let fd = Arc::new(Adapter::open("/dev/null").unwrap());
         let mut s = AdapterState::new(
@@ -235,7 +317,7 @@ mod tests {
                 .await
                 .unwrap_err()
                 .to_string()
-                .contains("no known physical")
+                .contains("ENOTTY")
         );
     }
 }

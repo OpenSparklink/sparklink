@@ -27,7 +27,7 @@ def verify(record, snapshots):
                 or not 340_000_000<=v['end_wall_ns']-v['start_wall_ns']<=5_000_000_000
                 or v['scheduler_restored'] is not True):
             raise ValueError('exact bounded real fd lifecycle/peer identity required')
-        expected_input=SleConnectionSubmit(version=1,profile=1,operation=1,generation=gen,request_id=11+kind,timeout_ms=10000,
+        expected_input=SleConnectionSubmit(version=2,profile=1,operation=1,generation=gen,request_id=11+kind,timeout_ms=10000,
             parameters=SleConnectionParameters(peer_address=snapshots[peer].address,gt_negotiate=1,frame=1,scan_interval=32,scan_window=32,interval_min=12,interval_max=12,supervision_timeout=508))
         if v['input']!=bytes(expected_input).hex():raise ValueError('full actual typed Create input required')
         queued=SleConnectionResult(version=1,profile=1,state=1,operation=1,generation=gen,request_id=11+kind,dev_index=index)

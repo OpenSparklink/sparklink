@@ -19,7 +19,7 @@ def fixture():
         v.update(connection_case=True,case_index=n+6,privacy_before_errno=errno.ENOENT,privacy_after_errno=errno.ENOENT)
         index=v['index'];peer=v['peer_index'];gen=v['generation'];kind=n%3
         ps=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(r['initial_snapshots'][peer]))
-        submit=SleConnectionSubmit(version=1,profile=1,operation=1,generation=gen,request_id=11+kind,timeout_ms=10000,
+        submit=SleConnectionSubmit(version=2,profile=1,operation=1,generation=gen,request_id=11+kind,timeout_ms=10000,
             parameters=SleConnectionParameters(peer_address=ps.address,gt_negotiate=1,frame=1,scan_interval=32,scan_window=32,interval_min=12,interval_max=12,supervision_timeout=508))
         queued=SleConnectionResult(version=1,profile=1,state=1,operation=1,generation=gen,request_id=11+kind,dev_index=index)
         cancelled=SleConnectionResult.from_buffer_copy(bytes(queued));cancelled.state=6;cancelled.error=-errno.ECANCELED

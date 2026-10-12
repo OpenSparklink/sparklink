@@ -33,7 +33,7 @@ def duplicate_result(fd, generation, identifier):
 
 
 def connection(snapshot, peer):
-    return SleConnectionSubmit(version=1, profile=1, operation=1,
+    return SleConnectionSubmit(version=2, profile=1, operation=1,
         generation=snapshot.generation, request_id=900, timeout_ms=10000,
         parameters=SleConnectionParameters(peer_address=peer.address,
             gt_negotiate=1, frame=1, scan_interval=32, scan_window=32,
@@ -43,6 +43,25 @@ def connection(snapshot, peer):
 def stop(snapshot, identifier, operation):
     if operation not in [2,4]:raise ValueError('typed radio stop only')
     return SleDiscoverySubmit(version=1,profile=1,generation=snapshot.generation,request_id=identifier,operation=operation)
+
+
+def bound_disconnect(snapshot,link,identifier):
+    request=SleConnectionSubmit(version=2,profile=1,operation=2,generation=snapshot.generation,
+        request_id=identifier,timeout_ms=10000,handle=link.handle,reason=0x13,
+        expected_lifetime=link.lifetime,expected_address_type=link.address_type,expected_role=link.role)
+    request.expected_address[:]=link.address
+    return request
+
+
+def mutate_reference(request,mutation):
+    if mutation=='lifetime':request.expected_lifetime+=1
+    elif mutation=='type':request.expected_address_type^=1
+    elif mutation=='address':request.expected_address[5]^=1
+    elif mutation=='role':request.expected_role^=1
+    elif mutation=='zero':request.expected_lifetime=0
+    elif mutation=='generation':request.generation+=1
+    elif mutation=='version':request.version=1
+    else:raise ValueError('bounded known reference mutation required')
 
 
 class ConnectedHoldCoordinator(HoldCoordinator):
@@ -175,6 +194,23 @@ def verify_records(r):
             raise ValueError('actual VFS pointer/reserved/tail/generation rejection required')
         before,after=[decode(SleLinkSnapshot,v) for v in r['snapshot_error_observations']]
         if bytes(before)!=bytes(after):raise ValueError('rejected copy/input must not mutate physical table or consume events')
+    if r.get('peer_binding_gate'):
+        table=decode(SleLinkSnapshot,r['binding_before'])
+        if table.flags!=1 or table.count!=1 or table.revision!=1 or table.generation!=snapshots[i].generation:
+            raise ValueError('actual established canonical reference required')
+        link=table.links[0];body=bytes.fromhex(r['up'][i]['params'])
+        if (link.lifetime!=1 or link.handle!=int.from_bytes(body[1:3],'little')
+                or link.role!=body[3] or link.address_type!=body[4] or bytes(link.address)!=body[5:11]):
+            raise ValueError('actual physical peer/lifetime required before mismatch tests')
+        expected=[('lifetime',errno.ESTALE),('type',errno.ESTALE),('address',errno.ESTALE),('role',errno.ESTALE),
+            ('zero',errno.EINVAL),('generation',errno.ENODEV),('version',errno.EOPNOTSUPP)]
+        if [(v['mutation'],v['errno']) for v in r['binding_rejections']]!=expected:
+            raise ValueError('all actual VFS peer/reference/version rejections required')
+        for offset,row in enumerate(r['binding_rejections']):
+            value=bound_disconnect(snapshots[i],link,901+offset);mutate_reference(value,row['mutation'])
+            if row['input']!=bytes(value).hex() or row['author_result'] is not None:
+                raise ValueError('rejected reference must not admit a procedure or fabricate result')
+        if r['binding_after']!=r['binding_before']:raise ValueError('failed reference must preserve current physical table')
     if not r['start_wall_ns'] < r['release_before_wall_ns'] <= r['release_after_wall_ns'] < r['end_wall_ns']:
         raise ValueError('bounded original release observation interval required')
     if r['end_wall_ns'] - r['start_wall_ns'] > 60_000_000_000:
@@ -247,6 +283,10 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
         raise CaptureError('unrecorded reset, disconnect or peer command in connected File gate')
     if any(r['start_wall_ns']<=e['wall_ns']<=r['end_wall_ns'] for e in capture['failures']):
         raise CaptureError('USB transport failure inside connected File gate')
+    if r.get('peer_binding_gate'):
+        for row in r['binding_rejections']:
+            if any(belongs(c,n,row['start_wall_ns'],row['end_wall_ns']) for c in capture['commands'] for n in [0,1]):
+                raise CaptureError('rejected binding must emit no target or peer wire command')
     held=None
     if r.get('reply_hold'):
         create=links[0];status=create['status'];outcome=create['outcomes'][0]
@@ -278,7 +318,9 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
 def run(args):
     reply_hold=getattr(args,'reply_hold',None)
     snapshot_gate=getattr(args,'link_snapshot',False)
+    binding_gate=getattr(args,'peer_binding',False)
     if snapshot_gate and reply_hold:raise ValueError('separate established snapshot gate required')
+    if binding_gate and reply_hold:raise ValueError('separate established peer binding gate required')
     if (f'ws73.connected_case={args.case}' not in Path('/proc/cmdline').read_text().split()
             or os.geteuid()!=0 or not Path('/scratch-root-uuid').is_file()
             or Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU'
@@ -288,12 +330,14 @@ def run(args):
     if boot!=([reply_hold] if reply_hold else []):raise ValueError('explicit matching reply hold boot mode required')
     if snapshot_gate != ('ws73.link_snapshot=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('explicit matching link snapshot boot mode required')
+    if binding_gate != ('ws73.peer_binding=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('explicit peer binding boot mode required')
     args.output.mkdir(parents=True,exist_ok=False)
     r=dict(format_version=1,status='STARTING',case=args.case,index=args.index,daemon_running=False,
         synthetic_support=False,physical_acceptance=False,automatic_recovery_acceptance=False,
         start_wall_ns=time.time_ns(),discovery=[],events=[[],[]],marker=secrets.token_hex(16))
     if reply_hold:r.update(reply_hold=reply_hold,markers=[],hold_acknowledgements=[])
     if snapshot_gate:r.update(link_snapshot_gate=True,link_snapshots={})
+    if binding_gate:r.update(peer_binding_gate=True,binding_rejections=[])
     def save():save_record(args.output,r)
     def stage(phase,ack):
         marker=dict(hold_phase=phase,wall_ns=time.time_ns());r['markers'].append(marker);save()
@@ -374,6 +418,19 @@ def run(args):
         if not reply_hold:
             r['up']=outcomes('up',[0x15,0x1401]);r['connected']=bytes(result).hex();r['connect_after_wall_ns']=time.time_ns()
             if snapshot_gate:r['link_snapshots']['up']=[bytes(a.link_snapshot()).hex() for a in observers];save()
+            if binding_gate:
+                table=observers[i].link_snapshot();r['binding_before']=bytes(table).hex();save()
+                if table.flags!=1 or table.count!=1:raise ValueError('one actual established physical link required')
+                command=(1<<30)|(ctypes.sizeof(SleConnectionSubmit)<<16)|(ord('S')<<8)|0x9c
+                for offset,mutation in enumerate(['lifetime','type','address','role','zero','generation','version']):
+                    value=bound_disconnect(snapshots[i],table.links[0],901+offset);mutate_reference(value,mutation)
+                    row=dict(mutation=mutation,input=bytes(value).hex(),start_wall_ns=time.time_ns());r['binding_rejections'].append(row);save()
+                    try:fcntl.ioctl(writers[i].fileno(),command,bytearray(bytes(value)),True)
+                    except OSError as error:row['errno']=error.errno
+                    else:raise ValueError('mismatching/old reference accepted')
+                    result=writers[i].connection_result(snapshots[i].generation,901+offset)
+                    row.update(author_result=bytes(result).hex() if result is not None else None,end_wall_ns=time.time_ns());save()
+                r['binding_after']=bytes(observers[i].link_snapshot()).hex();save()
         r['before_snapshots']=[bytes(a.snapshot()).hex() for a in observers]
         r['held']=bytes(observers[i].management_status()).hex();r['peer_before']=bytes(observers[p].management_status()).hex()
         fd=writers[i].fileno();r['original_fd']=fd;r['duplicate_fd']=-1
@@ -444,5 +501,6 @@ if __name__=='__main__':
     parser.add_argument('--index',type=int,choices=[0,1],required=True)
     parser.add_argument('--reply-hold',choices=['status','outcome'],help='retain actual original Create reply before File withdrawal')
     parser.add_argument('--link-snapshot',action='store_true',help='actual established physical table/lifetime/barrier and VFS read errors')
+    parser.add_argument('--peer-binding',action='store_true',help='real mismatching peer/lifetime references reject before any wire traffic')
     parser.add_argument('--output',type=Path,required=True)
     run(parser.parse_args())

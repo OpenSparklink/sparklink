@@ -13,13 +13,27 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_connected_file_gate import duplicate_result, verify_records, connection, stop, ConnectedHoldCoordinator, ConnectedOutcomeCoordinator
+from ws73_connected_file_gate import duplicate_result, verify_records, connection, stop, bound_disconnect, mutate_reference, ConnectedHoldCoordinator, ConnectedOutcomeCoordinator
 from ws73_diagnostic_hold import PROPERTIES
 from ws73_host_later_hold import SELECTORS
-from sparklink.structs import SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit, SleManagementQuery
+from sparklink.structs import SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit, SleManagementQuery, SleLinkInfo, SleConnectionSubmit
 
 
 class ConnectedFileGate(unittest.TestCase):
+    def test_disconnect_reference_uses_full_v2_tuple_and_bounded_mutations(self):
+        snapshot=SleControllerSnapshot(generation=7)
+        link=SleLinkInfo(lifetime=3,handle=12,role=1,address_type=0)
+        link.address[:]=bytes.fromhex('0001093254f9')
+        value=bound_disconnect(snapshot,link,901)
+        self.assertEqual(ctypes.sizeof(value),128)
+        self.assertEqual((value.version,value.operation,value.generation,value.handle,value.expected_lifetime,value.expected_role,value.expected_address_type),(2,2,7,12,3,1,0))
+        self.assertEqual(bytes(value.expected_address),bytes(link.address))
+        self.assertEqual(bytes(value.parameters),bytes(ctypes.sizeof(value.parameters)))
+        for mutation in ['lifetime','type','address','role','zero','generation','version']:
+            changed=SleConnectionSubmit.from_buffer_copy(bytes(value));mutate_reference(changed,mutation)
+            self.assertNotEqual(bytes(changed),bytes(value))
+        with self.assertRaises(ValueError):mutate_reference(value,'success')
+
     def test_coordinator_targets_selected_real_owner_not_global_first_device(self):
         for n in [0,1]:
             for cls in [ConnectedHoldCoordinator,ConnectedOutcomeCoordinator]:
@@ -53,7 +67,7 @@ class ConnectedFileGate(unittest.TestCase):
 
     def test_recorded_uapi_fixture_is_only_offline_verification(self):
         r=json.loads((Path(__file__).parent/'data/connected_file_record.json').read_text())
-        self.assertEqual(r['fixture_scope'],'RECORDED_UAPI_UNIT_FIXTURE_NOT_LIVE_ACCEPTANCE')
+        self.assertEqual(r['fixture_scope'],'ADAPTED_V2_UAPI_UNIT_FIXTURE_NOT_LIVE_ACCEPTANCE')
         self.assertEqual(len(verify_records(r)),2)
         changes=[('connected','00'*64),('peer_after','00'*48),('free','00'*48),
             ('author_result_after_release',None),('case','dup'),('scan_match',dict(r['scan_match'],elapsed_ms=10000)),
@@ -105,7 +119,7 @@ class ConnectedFileGate(unittest.TestCase):
     def test_real_typed_create_is_not_test_key_or_event_injection(self):
         a=SleControllerSnapshot(generation=7);b=SleControllerSnapshot(generation=8)
         b.address[:]=bytes.fromhex('0001093254f9');request=connection(a,b)
-        self.assertEqual((request.version,request.profile,request.operation,request.generation,request.request_id,request.timeout_ms),(1,1,1,7,900,10000))
+        self.assertEqual((request.version,request.profile,request.operation,request.generation,request.request_id,request.timeout_ms),(2,1,1,7,900,10000))
         self.assertEqual(bytes(request.parameters.peer_address),bytes(b.address))
         self.assertEqual((request.parameters.gt_negotiate,request.parameters.frame),(1,1))
         self.assertEqual(ctypes.sizeof(SleConnectionResult),64)

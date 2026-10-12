@@ -102,7 +102,7 @@ static void connection_cases(int observe[2],uint64_t generations[2]) {
   query(observe[target],gen,SLE_MANAGEMENT_FREE);
   CHECK(!ioctl(writer,SL_IOCTL_MANAGEMENT_ACQUIRE,&lease)&&lease.lease);
   if(kind==2){duplicate=dup(writer);CHECK(duplicate>=0);}
-  struct sle_connection_submit input={.version=1,.profile=1,.operation=SLE_CONNECTION_CREATE,.generation=gen,.request_id=id,.timeout_ms=10000,
+  struct sle_connection_submit input={.version=2,.profile=1,.operation=SLE_CONNECTION_CREATE,.generation=gen,.request_id=id,.timeout_ms=10000,
    .parameters={.gt_negotiate=1,.frame=1,.scan_interval=32,.scan_window=32,.interval_min=12,.interval_max=12,.supervision_timeout=508}};
   memcpy(input.parameters.peer_address,pb.address,6);
   struct sched_param rt={.sched_priority=1},normal={0};

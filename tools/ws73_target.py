@@ -450,6 +450,8 @@ def _run(args):
     connected_index=getattr(args,'managed_connected_index',0)
     connected_reply=getattr(args,'managed_connected_reply',None)
     link_snapshot=bool(getattr(args,'managed_link_snapshot',False))
+    peer_binding=bool(getattr(args,'managed_peer_binding',False))
+    if peer_binding and (not connected_case or connected_reply):raise ValueError('peer binding requires separate established File gate')
     if link_snapshot and (not connected_case or connected_reply):raise ValueError('link snapshot requires separate established File gate')
     if connected_reply and not connected_case:raise ValueError('actual connection reply hold requires explicit File gate')
     if connected_case and (support or not recovery or not setup_gate or passthrough or parallel or diagnostic or active_gate
@@ -554,6 +556,7 @@ def _run(args):
     m['live_connected_file_index']=connected_index if connected_case else None
     m['live_connected_reply_hold']=connected_reply
     m['live_link_snapshot_gate']=link_snapshot
+    m['live_peer_binding_gate']=peer_binding
     if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py')
     if queued_gate:
         m['managed_queue_verifier']=file_record(HERE/'ws73_management_queued.py')
@@ -647,6 +650,7 @@ def _run(args):
                      (f' ws73.connected_case={connected_case} ws73.connected_index={connected_index}' if connected_case else '')+
                      (f' ws73.connected_reply={connected_reply}' if connected_reply else '')+
                      (' ws73.link_snapshot=1' if link_snapshot else '')+
+                     (' ws73.peer_binding=1' if peer_binding else '')+
                      (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
                      (' ws73.scan_parameter_cleanup=1' if parameter_cleanup else '')+
                      (' ws73.managed_ready_peer=1' if ready_peer else '')+
@@ -892,7 +896,7 @@ def _run(args):
                 if connected_case:
                     from ws73_connected_file_gate import corroborate as connected_corroborate
                     probe=json.loads((share/'connected-file/run.json').read_text())
-                    if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply or bool(probe.get('link_snapshot_gate'))!=link_snapshot:raise ValueError('connected File request mismatch')
+                    if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply or bool(probe.get('link_snapshot_gate'))!=link_snapshot or bool(probe.get('peer_binding_gate'))!=peer_binding:raise ValueError('connected File request mismatch')
                     m['connected_file_corroboration']=connected_corroborate(probe,capture,hold.record if connected_reply else None,
                         (output/'qemu-stderr.log').read_text() if connected_reply else None,hold.record['host_identity_at_arm'] if connected_reply else None)
                     m['live_connected_file']=file_record(share/'connected-file/run.json')
@@ -1074,6 +1078,7 @@ def main():
             cmd.add_argument('--managed-partial-case',choices=['release','close','dup'],help='one actual first-step held-reply cleanup case; requires separate Setup/recovery VM')
             cmd.add_argument('--managed-connected-case',choices=['release','close','dup'],help='actual established-link File cleanup before daemon; separate Setup/recovery VM')
             cmd.add_argument('--managed-link-snapshot',action='store_true',help='actual canonical physical table/lifetime/barrier and VFS read errors; established File gate only')
+            cmd.add_argument('--managed-peer-binding',action='store_true',help='actual peer/lifetime mismatch rejection without wire commands; established File gate only')
             cmd.add_argument('--managed-connected-reply',choices=['status','outcome'],help='retain actual original Create Status or outcome frame before File withdrawal')
             cmd.add_argument('--managed-connected-index',type=int,choices=[0,1],default=0,help='actual Create caller in established-link File gate')
             cmd.add_argument('--managed-resource-recreate',action='store_true',help='actual changed advertising set removal/creation File cancellation; requires selected advertising Ready-peer partial gate')

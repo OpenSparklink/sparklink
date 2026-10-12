@@ -8,7 +8,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ws73_capture import CaptureError, marker_data
 from ws73_north_star import parse_match
-from ws73_connection_control import corroborate, result
+from ws73_connection_control import corroborate, result, link_reference
 
 
 def terminal(owner, operation, handle=0):
@@ -62,6 +62,34 @@ def fixture():
 
 
 class ConnectionEvidenceTests(unittest.TestCase):
+    def test_canonical_reference_rejects_unknown_ambiguous_stale_and_wrong_peer(self):
+        owner=dict(generation=7);peer=dict(address='00:01:09:32:54:F9')
+        header='NativeLinksSnapshot: generation=7 event_seq=9 revision=3 flags=1 errno=0\n'
+        row='NativeLink: lifetime=3 handle=12 role=1 type=0 address=00:01:09:32:54:F9\n'
+        self.assertEqual(link_reference(header+row,owner,peer,12),dict(lifetime=3,handle=12,role=1,address_type=0,address=peer['address']))
+        for bad in [header,header+row*2,header*2+row,(header+row).replace('flags=1','flags=0'),
+                (header+row).replace('generation=7','generation=8'),(header+row).replace('lifetime=3','lifetime=4'),
+                (header+row).replace('type=0','type=1'),(header+row).replace('role=1','role=2'),
+                (header+row).replace('54:F9','54:CD'),(header+row).replace('handle=12','handle=13')]:
+            with self.subTest(text=bad),self.assertRaises(CaptureError):link_reference(bad,owner,peer,12)
+
+    def test_reference_evidence_must_bind_original_cli_and_raw_up(self):
+        run,capture=fixture();run['connection_control']['peer_lifetime_binding']='v2-admission-selection'
+        for phase in run['connection_control']['phases']:
+            caller,peer=phase['caller'],phase['peer'];start=run['commands'][phase['connect_command']]['end_wall_ns']
+            phase['links_command']=len(run['commands'])
+            text=f"NativeLinksSnapshot: generation={caller['generation']} event_seq=2 revision=1 flags=1 errno=0\nNativeLink: lifetime=1 handle=0 role=0 type=0 address={peer['address']}\n"
+            run['commands'].append(dict(args=['slctl','connections'],stdout=text,exit=0,start_wall_ns=start,end_wall_ns=start+1))
+            phase['reference']=link_reference(text,caller,peer,0)
+            row=run['commands'][phase['disconnect_command']]
+            row['args']=['slctl','disconnect-link',peer['address'],'0','0','1','0']
+            row['stdout']=f"NativeDisconnectReference: request=2 address={peer['address']} type=0 handle=0 lifetime=1 role=0\n"+row['stdout']
+        self.assertEqual(len(corroborate(run,capture)),2)
+        phase=run['connection_control']['phases'][0]
+        for key,value in [('args',['slctl','disconnect',phase['peer']['address']]),('stdout',terminal(phase['caller'],2))]:
+            bad=copy.deepcopy(run);bad['commands'][phase['disconnect_command']][key]=value
+            with self.subTest(field=key),self.assertRaises(CaptureError):corroborate(bad,capture)
+
     def test_both_roles_need_three_evidences_and_both_physical_peers(self):
         run,capture=fixture()
         self.assertEqual(len(corroborate(run,capture)),2)

@@ -24,11 +24,26 @@ def result(text, owner, operation):
     return dict(zip(['generation','request','operation','state','error','fault','command_status','outcome_status','handle','flags'], values))
 
 
+def link_reference(text, owner, peer, handle):
+    headers=re.findall(r'^NativeLinksSnapshot: generation=(\d+) event_seq=(\d+) revision=(\d+) flags=(\d+) errno=(-?\d+)$',text,re.M)
+    rows=re.findall(r'^NativeLink: lifetime=(\d+) handle=(\d+) role=(\d+) type=(\d+) address=([0-9A-F:]{17})$',text,re.M)
+    if len(headers)!=1 or text.count('NativeLinksSnapshot:')!=1 or len(rows)!=text.count('NativeLink:'):
+        raise CaptureError('one original canonical link snapshot required')
+    generation,seq,revision,flags,error=map(int,headers[0])
+    if generation!=owner['generation'] or flags!=1 or error or not revision or not seq or len(rows)!=1:
+        raise CaptureError('one known current physical link required')
+    lifetime,current,role,kind=map(int,rows[0][:4]);address=rows[0][4]
+    if not lifetime or lifetime>revision or current!=handle or role>1 or kind!=0 or address!=peer['address']:
+        raise CaptureError('canonical reference must match actual connected peer')
+    return dict(lifetime=lifetime,handle=current,role=role,address_type=kind,address=address)
+
+
 def execute(run, a, b):
     """Run once, before ordinary RF rounds, and retain every failed command."""
     kind = getattr(run.args, 'connection_advertising', 'fixed-t')
     if kind not in ['fixed-t','negotiable-t']: raise ValueError('explicit supported connection advertising posture required')
     record = dict(status='RUNNING', advertising_kind=kind, owners=[a,b], phases=[],
+        peer_lifetime_binding='v2-admission-selection',
         advertising_set_lifecycle='remove-recreate-v1',
         release_acceptance=False, last_file_acceptance=False, dup_acceptance=False,
         inflight_acceptance=False, ssap_acceptance=False,
@@ -78,9 +93,14 @@ def execute(run, a, b):
                     if time.monotonic() >= deadline:
                         raise CaptureError('both real physical connections must reach Device properties')
                     time.sleep(.01)
+            row=run.ctl(caller,'connections')
+            phase['links_command']=len(run.data['commands'])-1
+            phase['reference']=link_reference(row['stdout'],caller,peer,phase['connect']['handle'])
+            reference=phase['reference']
             phase['disconnect_command'] = len(run.data['commands'])
             row = run.command([str(run.args.slctl), '--adapter', caller['path'],
-                'disconnect', peer['address']], 18, collection='commands')
+                'disconnect-link',reference['address'],str(reference['address_type']),str(reference['handle']),
+                str(reference['lifetime']),str(reference['role'])], 18, collection='commands')
             phase['disconnect'] = result(row['stdout'], caller, 2)
             if row['exit'] or phase['disconnect']['handle'] != phase['connect']['handle']:
                 raise CaptureError('exact established handle must disconnect')
@@ -115,6 +135,20 @@ def corroborate(run, capture):
     proofs = []
     for phase in record['phases']:
         caller, peer = phase['caller'], phase['peer']
+        reference=None
+        if record.get('peer_lifetime_binding'):
+            if record['peer_lifetime_binding']!='v2-admission-selection':raise CaptureError('explicit reference binding scope required')
+            links=run['commands'][phase['links_command']]
+            reference=link_reference(links['stdout'],caller,peer,phase['connect']['handle'])
+            disconnect=run['commands'][phase['disconnect_command']]
+            expected=['disconnect-link',reference['address'],str(reference['address_type']),str(reference['handle']),str(reference['lifetime']),str(reference['role'])]
+            if (links['exit'] or links['args'][-1]!='connections' or reference!=phase['reference']
+                    or disconnect['args'][-6:]!=expected
+                    or not run['commands'][phase['connect_command']]['end_wall_ns']<=links['start_wall_ns']<=links['end_wall_ns']<=disconnect['start_wall_ns']):
+                raise CaptureError('original canonical snapshot must precede exact bound Disconnect')
+            receipts=re.findall(r'^NativeDisconnectReference: request=(\d+) address=([0-9A-F:]{17}) type=(\d+) handle=(\d+) lifetime=(\d+) role=(\d+)$',disconnect['stdout'],re.M)
+            if receipts!=[(str(phase['disconnect']['request']),reference['address'],str(reference['address_type']),str(reference['handle']),str(reference['lifetime']),str(reference['role']))]:
+                raise CaptureError('original public Disconnect reference receipt required')
         advertisement = run['commands'][phase['advertisement_command']]
         query = run['commands'][phase['policy_query_command']]
         policies = re.findall(r'^  Radio policy: version=(\d+) adv_slots=(\d+)\.\.(\d+) tx_power_dbm=(-?\d+) scan_slots=(\d+)/(\d+)$', query['stdout'], re.M)
@@ -201,6 +235,8 @@ def corroborate(run, capture):
                     raise CaptureError('caller outcome handle disagrees with result')
                 if operation==1 and (body[3]>1 or body[4]!=0 or body[5:11]!=bytes.fromhex(remote['address'].replace(':',''))):
                     raise CaptureError('raw physical peer/role/type mismatch')
+                if operation==1 and owner==caller and reference is not None and (body[3]!=reference['role'] or body[4]!=reference['address_type']):
+                    raise CaptureError('canonical reference must match actual physical Up role/type')
                 identity=(owner['bus'],owner['device'])
                 handle=int.from_bytes(body[1:3],'little')
                 if operation==1: handles[identity]=handle

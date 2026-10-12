@@ -220,3 +220,8 @@ securityNONE是现有未加密语义，ENCRYPTED/AUTHENTICATED定义但未接可
 NotSupported；不安装测试密钥或宣布Encrypted。S5接可信状态后再实现满足要求及降级。
 slkd OpenChannel保留双向/NONE行为，新OpenChannelScoped(directions,security)统一路径；
 invalid/protected在锁/系统调用前拒绝。当前源码回归与pure CBMC限定通过，新真实资格待验。
+
+最终发布修复Kac9144e60012：分配/查找后在Host/data/gate→Binding→Session锁序下
+重新验证租约及link identity并实际发布；撤销先发生不返回成功Binding。无阻塞操作在
+这些锁内。既有release仅Binding→Session且不取得Host，借用Grant不取得Binding锁。
+actual publish source fixture覆盖拒绝先发生、成功一次、重绑/退休拒绝；全锁/VFS证明未取得。

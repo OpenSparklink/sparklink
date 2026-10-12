@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T21:42:39.637931+00:00",
+  "updated_at_utc": "2026-10-12T21:47:08.714960+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,7 +26,7 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "aab814ac176bff685db6bbe5f70514f10454fe32",
+    "linux": "ac9144e60012a632004b9bc53d19fa9888fabf96",
     "userspace": "381dc66"
   },
   "qualified_source_heads": {
@@ -279,15 +279,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Canonical immutable per-Binding scoped/directional Grant implemented; early TX, queue/USB/RX/poll checks, unified scoped broker and explicit protected rejection. Pure/source tests scoped pass; precise new VM qualification pending, previous evidence retained.",
+  "current_batch": "Immutable Binding scoped/directional Grant and Host-locked final publication implemented; scoped broker and pure/source tests passed, final exact full kernel build and real qualification pending.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "Original28 scope preserved;14 six-case controlled File Grant comments read back exact, all original body hashes unchanged and OPEN",
   "current_implementation_heads": {
-    "linux": "aab814ac176bff685db6bbe5f70514f10454fe32",
+    "linux": "ac9144e60012a632004b9bc53d19fa9888fabf96",
     "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
   },
   "next_resume_tasks": [
-    "Seal exact Kaab814/current user scope proof, full kernel and new VM normal40/249 plus two actual TX-only\u2192RX-only cases and six File withdrawal regressions. Then SCM_RIGHTS/daemon ownership death/inflight and S5 trusted security, with whole S0-S6 intact.",
+    "Finish exact Kac9144/new userspace scope proof, full kernel and normal40/249 + two TX-only\u2192RX-only cases + six File withdrawal requalification. Then SCM_RIGHTS/daemon ownership death/inflight and S5 trusted security; full S0-S6 intact.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",

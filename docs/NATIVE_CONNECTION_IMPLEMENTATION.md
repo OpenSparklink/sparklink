@@ -162,3 +162,20 @@ VM80确认本提交实际88b9服务保留默认北极星RF20+2和无连接SIGKIL
 不算物理拔插或自动恢复。该通过与三次真实连接失败分别记录；连接/connected
 release/last-File/dup/in-flight及原28项仍OPEN。下一同时补未执行连接队列的
 真实VFS取消门禁：该项不需要先建立物理link，也不能以源码测试替代。
+
+
+## 真实未执行连接队列门禁（待VM）
+
+`--managed-queue-connections`扩展现有confirmed-Off/Ready-peer队列门禁：保留
+原六项发现队列回归，再在两只设备交换target/peer各执行release、最后File关闭、
+dup第一/最后关闭，共六项真实Create取消。单vCPU、特权FIFO临界区小于50ms
+保证不会被TX worker选中；Queued结果与完整usbmon排除Create/Disconnect OUT。
+这不是普通调度并发验收，也不制造credits、状态或控制器回复。
+
+Connection结果是author-only：显式release仍保留fd，必须读取精确Cancelled/
+-ECANCELED且无Status/outcome/handle。最后File关闭后作者结果不可读取，
+记录null，依据350ms后实际Free/Ready/Off和无OUT确认队列清理；不伪造作者
+观察。dup第一次关闭仍Held且同一请求Queued，最后关闭才清理；外部观察fd
+前后都须ENOENT。peer在每次临界区前/中/后保持同generation的Ready、Held、
+scanner On，并在正常调度下获得真实START/STOP回复。bootstrap和两组活动
+分别逐帧复算。该项通过也不证明connected或在途回复清理，原issues保持OPEN。

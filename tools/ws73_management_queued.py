@@ -54,13 +54,15 @@ def verify_records(record):
     synthetic = record.get('synthetic_support', False)
     confirmed=record.get('confirmed_off',False)
     ready_peer=record.get('ready_peer',False)
+    connections=record.get('connection_queue',False)
+    if type(connections) is not bool or connections and not ready_peer:raise ValueError('native connection queue requires explicit Ready peer')
     if type(ready_peer) is not bool or ready_peer and (confirmed is not True or synthetic is not False):raise ValueError('Ready peer requires real confirmed-Off queued gate')
     if type(confirmed) is not bool:raise ValueError('exact confirmed-Off scope required')
     if type(synthetic) is not bool:
         raise ValueError('exact synthetic evidence scope required')
     prefix='QUEUED_CONFIRMED_OFF_INITIALIZE_RELEASE' if confirmed else 'QUEUED_UNKNOWN_SETUP_RELEASE'
     expected_status=prefix+('_SYNTHETIC_SUPPORT_PASS' if synthetic else '_LIVE_PASS')
-    if (type(record.get('format_version')) is not int or record.get('format_version') != (4 if ready_peer else 3 if confirmed else 2)
+    if (type(record.get('format_version')) is not int or record.get('format_version') != (5 if connections else 4 if ready_peer else 3 if confirmed else 2)
             or record.get('status') != expected_status
             or type(record.get('probe_exit')) is not int or record.get('probe_exit') != 0 or record.get('daemon_running') is not False
             or record.get('physical_acceptance') is not False or record.get('automatic_fault_recovery_acceptance') is not False):
@@ -168,6 +170,11 @@ def verify_records(record):
     if ready_peer:
         from ws73_management_queue_ready_peer import verify as verify_ready_peer
         verify_ready_peer(record,identities)
+    if connections:
+        from ws73_connection_queued import verify as verify_connections
+        verify_connections(record,identities)
+    elif any(record.get(k) for k in ['connection_cases','connection_peer_activities','connection_peer_releases']):
+        raise ValueError('unexpected connection queue evidence')
     return identities
 
 
@@ -205,7 +212,11 @@ def corroborate(record, capture):
     if ready_peer:
         from ws73_management_queue_ready_peer import corroborate as corroborate_ready_peer
         peer_proof=corroborate_ready_peer(record,snapshots,capture,bootstrap)
-    return {'ready_peer_activity':peer_proof,'bootstrap':bootstrap,'confirmed_off':record.get('confirmed_off',False),'scope': 'six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices' ,
+    connection_proof=None
+    if record.get('connection_queue',False):
+        from ws73_connection_queued import corroborate as corroborate_connections
+        connection_proof=corroborate_connections(record,snapshots,capture)
+    return {'connection_queue':connection_proof,'ready_peer_activity':peer_proof,'bootstrap':bootstrap,'confirmed_off':record.get('confirmed_off',False),'scope': 'six actual queued two-domain cancellations; one vCPU and privileged bounded FIFO support; whole interval and both devices' ,
             'cases': 6, 'commands': 0, 'completions': 0, 'failures': 0,
             'start_wall_ns': start, 'end_wall_ns': end,
             'synthetic_support': record.get('synthetic_support', False),
@@ -229,6 +240,9 @@ def run(args):
     synthetic = bool(getattr(args, 'synthetic_support', False))
     confirmed=bool(getattr(args,'confirmed_off',False))
     ready_peer=bool(getattr(args,'ready_peer',False))
+    connections=bool(getattr(args,'connections',False))
+    if connections!=('ws73.managed_queue_connections=1' in Path('/proc/cmdline').read_text().split()) or connections and (not ready_peer or not confirmed or synthetic):
+        raise ValueError('explicit real connection queue boot/probe mode required')
     cmdline = Path('/proc/cmdline').read_text().split()
     if ready_peer!=('ws73.managed_queue_ready_peer=1' in cmdline) or ready_peer and (not confirmed or synthetic):raise ValueError('matching real confirmed-Off Ready peer boot mode required')
     if confirmed!=('ws73.managed_queue_confirmed_off=1' in cmdline):raise ValueError('explicit matching confirmed-Off boot mode required')
@@ -240,7 +254,7 @@ def run(args):
     if 'ws73.managed_queue=1' not in Path('/proc/cmdline').read_text().split() or subprocess.run(['/bin/pidof','slkd'],capture_output=True).returncode == 0:
         raise ValueError('explicit VM mode before daemon startup required')
     folder = args.output; folder.mkdir(parents=True, exist_ok=False)
-    record = {'format_version': 4 if ready_peer else 3 if confirmed else 2,'confirmed_off':confirmed,'bootstrap':[], 'status': 'RUNNING', 'daemon_running': False,
+    record = {'format_version': 5 if connections else 4 if ready_peer else 3 if confirmed else 2,'confirmed_off':confirmed,'bootstrap':[], 'status': 'RUNNING', 'daemon_running': False,
               'synthetic_support': synthetic,
               'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
               'initial_snapshots': [], 'cases': []}
@@ -271,15 +285,21 @@ def run(args):
         command = [str(args.probe), *[str(a.generation) for a in adapters]]
         if confirmed:command.append('--confirmed-off')
         if ready_peer:command.append('--ready-peer')
+        if connections:command.append('--connection')
         with (folder/'probe.jsonl').open('w') as out, (folder/'probe-stderr.txt').open('w') as err:
             p = subprocess.run(command, stdout=out, stderr=err, timeout=15)
         record['probe_exit'] = p.returncode
+        if connections:record['connection_queue']=True
         lines=[json.loads(line) for line in (folder/'probe.jsonl').read_text().splitlines()]
         record['bootstrap']=[v for v in lines if v.get('bootstrap') is True]
-        record['cases']=[v for v in lines if not any(v.get(k) is True for k in ['bootstrap','peer_activity','peer_release'])]
+        record['cases']=[v for v in lines if not any(v.get(k) is True for k in ['bootstrap','peer_activity','peer_release','connection_case','connection_peer_activity','connection_peer_release'])]
         if ready_peer:
             record['peer_activities']=[v for v in lines if v.get('peer_activity') is True]
             record['peer_releases']=[v for v in lines if v.get('peer_release') is True]
+        if connections:
+            record['connection_cases']=[v for v in lines if v.get('connection_case') is True]
+            record['connection_peer_activities']=[v for v in lines if v.get('connection_peer_activity') is True]
+            record['connection_peer_releases']=[v for v in lines if v.get('connection_peer_release') is True]
         if p.returncode:
             raise ValueError('real release/last-file-close probe failed')
         record['status']=('QUEUED_CONFIRMED_OFF_INITIALIZE_RELEASE' if confirmed else 'QUEUED_UNKNOWN_SETUP_RELEASE')+('_SYNTHETIC_SUPPORT_PASS' if synthetic else '_LIVE_PASS')
@@ -297,6 +317,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--probe', type=Path, default=Path('/bin/managed-queue-probe'))
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--connections',action='store_true',help='real native author-only queued Create release/close/dup extension, requires confirmed-Off Ready peer')
     parser.add_argument('--ready-peer',action='store_true',help='real Ready Managed scanner On across every queued cancellation')
     parser.add_argument('--confirmed-off',action='store_true',help='actual complete bootstraps before full scan initializer queue cancellation')
     parser.add_argument('--synthetic-support', action='store_true',

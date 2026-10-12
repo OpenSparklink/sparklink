@@ -96,6 +96,7 @@ for n in $(seq 1 100); do [ -S /run/slkbus ] && break; sleep 0.1; done
 confirmed_off_arg=''
 if grep -q 'ws73.managed_queue_confirmed_off=1' /proc/cmdline; then confirmed_off_arg='--confirmed-off'; fi
 if grep -q 'ws73.managed_queue_ready_peer=1' /proc/cmdline; then confirmed_off_arg="$confirmed_off_arg --ready-peer"; fi
+if grep -q 'ws73.managed_queue_connections=1' /proc/cmdline; then confirmed_off_arg="$confirmed_off_arg --connections"; fi
 if grep -Eq 'ws73.managed_(queue|partial)_support=1' /proc/cmdline; then
     [ -f /scratch-root-uuid ] || fail 'synthetic queue scratch root'
     [ "$(cat /sys/class/dmi/id/sys_vendor)" = QEMU ] || fail 'synthetic queue QEMU VM'

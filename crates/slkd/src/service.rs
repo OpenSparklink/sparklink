@@ -2,14 +2,12 @@ use zbus::interface;
 
 use crate::state::SharedState;
 
-/// D-Bus interface for SSAP service management at adapter level
-pub struct SsapManagerIface {
-    state: SharedState,
-}
+/// Unsupported legacy facade; no kernel staging or production user Engine.
+pub struct SsapManagerIface {}
 
 impl SsapManagerIface {
-    pub fn new(state: SharedState) -> Self {
-        Self { state }
+    pub fn new(_state: SharedState) -> Self {
+        Self {}
     }
 }
 
@@ -17,152 +15,101 @@ impl SsapManagerIface {
 impl SsapManagerIface {
     /// Get SSAP summary (service and property counts, MTU)
     async fn get_info(&self) -> zbus::fdo::Result<SsapInfo> {
-        let st = self.state.lock().await;
-        let summary = st
-            .adapter
-            .ssap_info()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_info: {e}")))?;
-        Ok(SsapInfo {
-            service_count: summary.service_count,
-            property_count: summary.property_count,
-            total_entries: summary.total_entries,
-            mtu: summary.mtu,
-            notification_count: summary.notification_count,
-        })
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
-    /// Register all configured services with the controller
+    /// Reject registration until the unique userspace Engine is connected.
     async fn register_services(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_register()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_register: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
-    /// Add a service to the local database
-    /// Returns the assigned start handle
+    /// Unsupported until a userspace service database exists
     async fn add_service(&self, uuid16: u16, primary: bool) -> zbus::fdo::Result<u16> {
-        let mut svc = slk_protocol::SsapAddService {
-            uuid16,
-            primary: primary as u8,
-            _pad: 0,
-            uuid128: [0; 16],
-            start_handle: 0,
-            _reserved: [0; 6],
-        };
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_add_svc(&mut svc)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_add_svc: {e}")))?;
-        Ok(svc.start_handle)
+        let _ = (uuid16, primary);
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Add a property (characteristic) to a service
-    /// Local staging only: READ=01, WRITE_NO_RSP=02, WRITE_WITH_RSP=04,
+    /// Historical permissions: READ=01, WRITE_NO_RSP=02, WRITE_WITH_RSP=04,
     /// NOTIFY=08, INDICATE=10, BROADCAST=20; reserved bits are rejected.
-    /// Returns the assigned handle
     async fn add_property(&self, uuid16: u16, ops: u8, value: Vec<u8>) -> zbus::fdo::Result<u16> {
-        let ops = slk_protocol::SsapOperations::from_bits(u32::from(ops))
+        slk_protocol::SsapOperations::from_bits(u32::from(ops))
             .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
-        let mut prop = slk_protocol::SsapAddProperty::for_legacy_staging(uuid16, ops, &value)
-            .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_add_prop(&mut prop)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_add_prop: {e}")))?;
-        Ok(prop.handle)
+        if value.len() > 248 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "legacy property input exceeds 248 bytes".into(),
+            ));
+        }
+        let _ = (uuid16, ops, value);
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Remove a service by its start handle
     async fn remove_service(&self, start_handle: u16) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_remove_svc(start_handle)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remove_svc: {e}")))
+        let _ = start_handle;
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// List local services
     async fn list_services(&self) -> zbus::fdo::Result<Vec<ServiceEntry>> {
-        let st = self.state.lock().await;
-        let list = st
-            .adapter
-            .ssap_find_svc()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_find_svc: {e}")))?;
-        let mut out = Vec::with_capacity(list.count as usize);
-        for i in 0..list.count as usize {
-            let s = &list.services[i];
-            out.push(ServiceEntry {
-                start_handle: s.start_handle,
-                end_handle: s.end_handle,
-                uuid16: s.uuid16,
-                primary: s.primary != 0,
-            });
-        }
-        Ok(out)
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Read a local property value
     async fn read_property(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
-        let st = self.state.lock().await;
-        let rw = st
-            .adapter
-            .ssap_read(handle)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_read: {e}")))?;
-        Ok(rw.data[..rw.length as usize].to_vec())
+        let _ = handle;
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Write a local property value
     async fn write_property(&self, handle: u16, value: Vec<u8>) -> zbus::fdo::Result<()> {
         if value.len() > 252 {
             return Err(zbus::fdo::Error::InvalidArgs(
-                "legacy local staging value exceeds 252 bytes; long write is unsupported".into(),
+                "legacy service input exceeds 252 bytes; long write is unsupported".into(),
             ));
         }
-        let len = value.len();
-        let mut rw = slk_protocol::SsapReadWrite {
-            handle,
-            length: len as u16,
-            data: [0; 252],
-        };
-        rw.data[..len].copy_from_slice(&value[..len]);
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_write(&rw)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_write: {e}")))
+        let _ = (handle, value);
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
-    /// Send notification on a property handle
+    /// Unsupported notification, never reports local enqueue as delivery
     async fn notify(&self, handle: u16) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_notify(handle)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_notify: {e}")))
+        let _ = handle;
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Dequeue a pending notification
     async fn dequeue_notification(&self) -> zbus::fdo::Result<NotificationData> {
-        let st = self.state.lock().await;
-        let ntf = st
-            .adapter
-            .ssap_dequeue_ntf()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_dequeue_ntf: {e}")))?;
-        Ok(NotificationData {
-            handle: ntf.handle,
-            indication: ntf.indication != 0,
-            data: ntf.data[..ntf.length as usize].to_vec(),
-        })
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 }
 
 /// D-Bus interface for remote service operations on a specific connection
-pub struct RemoteServiceIface {
-    state: SharedState,
-    conn_handle: u16,
-}
+pub struct RemoteServiceIface {}
 
 impl RemoteServiceIface {
-    pub fn new(state: SharedState, conn_handle: u16) -> Self {
-        Self { state, conn_handle }
+    pub fn new(_state: SharedState, _conn_handle: u16) -> Self {
+        Self {}
     }
 }
 
@@ -170,130 +117,74 @@ impl RemoteServiceIface {
 impl RemoteServiceIface {
     /// Exchange SSAP info with the remote peer (initiate service discovery handshake)
     async fn exchange_info(&self) -> zbus::fdo::Result<()> {
-        let cmd = slk_protocol::SsapRemoteCmd {
-            conn_handle: self.conn_handle,
-            _reserved: [0; 2],
-        };
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_exchange_info(&cmd)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_exchange_info: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Discover services on the remote peer
     async fn discover(&self, start_handle: u16, end_handle: u16) -> zbus::fdo::Result<u16> {
-        let mut disc = slk_protocol::SsapRemoteDiscover {
-            conn_handle: self.conn_handle,
-            start_handle,
-            end_handle,
-            count: 0,
-        };
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_remote_discover(&mut disc)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remote_discover: {e}")))?;
-        Ok(disc.count)
+        let _ = (start_handle, end_handle);
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Read a property from the remote peer
     async fn read(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
-        let mut rw = slk_protocol::SsapRemoteReadWrite {
-            conn_handle: self.conn_handle,
-            handle,
-            length: 0,
-            _pad: [0; 2],
-            data: [0; 248],
-        };
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_remote_read(&mut rw)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remote_read: {e}")))?;
-        Ok(rw.data[..rw.length as usize].to_vec())
+        let _ = handle;
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Write a property on the remote peer
     async fn write(&self, handle: u16, value: Vec<u8>) -> zbus::fdo::Result<()> {
         if value.len() > 248 {
             return Err(zbus::fdo::Error::InvalidArgs(
-                "legacy remote value exceeds 248 bytes; long write is unsupported".into(),
+                "legacy service input exceeds 248 bytes; long write is unsupported".into(),
             ));
         }
-        let len = value.len();
-        let rw = slk_protocol::SsapRemoteReadWrite {
-            conn_handle: self.conn_handle,
-            handle,
-            length: len as u16,
-            _pad: [0; 2],
-            data: {
-                let mut d = [0u8; 248];
-                d[..len].copy_from_slice(&value[..len]);
-                d
-            },
-        };
-        let st = self.state.lock().await;
-        st.adapter
-            .ssap_remote_write(&rw)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remote_write: {e}")))
+        let _ = (handle, value);
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Receive a remote notification/indication event
     async fn receive_event(&self) -> zbus::fdo::Result<NotificationData> {
-        let st = self.state.lock().await;
-        let ntf = st
-            .adapter
-            .ssap_remote_event()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_remote_event: {e}")))?;
-        Ok(NotificationData {
-            handle: ntf.handle,
-            indication: ntf.indication != 0,
-            data: ntf.data[..ntf.length as usize].to_vec(),
-        })
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Invoke a method on a remote peer's SSAP service
     async fn call_method(&self, handle: u16, input: Vec<u8>) -> zbus::fdo::Result<Vec<u8>> {
         if input.len() > 248 {
             return Err(zbus::fdo::Error::InvalidArgs(
-                "legacy method input exceeds 248 bytes".into(),
+                "legacy service input exceeds 248 bytes; long write is unsupported".into(),
             ));
         }
-        let st = self.state.lock().await;
-        let mut rw: slk_protocol::SsapRemoteReadWrite = unsafe { std::mem::zeroed() };
-        rw.conn_handle = self.conn_handle;
-        rw.handle = handle;
-        let copy_len = input.len();
-        rw.data[..copy_len].copy_from_slice(&input[..copy_len]);
-        rw.length = copy_len as u16;
-        st.adapter
-            .ssap_call_method(&mut rw)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_call_method: {e}")))?;
-        let out_len = rw.length as usize;
-        Ok(rw.data[..out_len.min(rw.data.len())].to_vec())
+        let _ = (handle, input);
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Find a remote service by UUID (16-bit)
     async fn find_by_uuid(&self, uuid16: u16) -> zbus::fdo::Result<u16> {
-        let st = self.state.lock().await;
-        let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
-        op.conn_handle = self.conn_handle;
-        op.uuid16 = uuid16;
-        st.adapter
-            .ssap_find_by_uuid(&mut op)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_find_by_uuid: {e}")))?;
-        Ok(op.handle)
+        let _ = uuid16;
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 
     /// Read a remote property by UUID (16-bit)
     async fn read_by_uuid(&self, uuid16: u16) -> zbus::fdo::Result<Vec<u8>> {
-        let st = self.state.lock().await;
-        let mut op: slk_protocol::SsapUuidOp = unsafe { std::mem::zeroed() };
-        op.conn_handle = self.conn_handle;
-        op.uuid16 = uuid16;
-        st.adapter
-            .ssap_read_by_uuid(&mut op)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("ssap_read_by_uuid: {e}")))?;
-        let out_len = (op.length as usize).min(op.data.len());
-        Ok(op.data[..out_len].to_vec())
+        let _ = uuid16;
+        Err(zbus::fdo::Error::NotSupported(
+            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+        ))
     }
 }
 
@@ -331,6 +222,75 @@ mod validation_tests {
     use slk_experimental::profile::ProfileRegistry;
     use std::sync::Arc;
     use tokio::sync::Mutex;
+
+    #[tokio::test]
+    async fn actual_private_bus_service_calls_are_not_supported() {
+        use std::process::Stdio;
+        use tokio::io::{AsyncBufReadExt, BufReader};
+
+        let executable =
+            std::env::var_os("SPARKLINK_TEST_DBUS_DAEMON").unwrap_or_else(|| "dbus-daemon".into());
+        let mut bus = tokio::process::Command::new(executable)
+            .args(["--session", "--nofork", "--print-address=1"])
+            .stdout(Stdio::piped())
+            .kill_on_drop(true)
+            .spawn()
+            .unwrap();
+        let mut address = String::new();
+        tokio::time::timeout(
+            std::time::Duration::from_secs(3),
+            BufReader::new(bus.stdout.take().unwrap()).read_line(&mut address),
+        )
+        .await
+        .unwrap()
+        .unwrap();
+        let server = zbus::connection::Builder::address(address.trim())
+            .unwrap()
+            .name("org.sparklink.SsapRemovalTest")
+            .unwrap()
+            .serve_at("/org/sparklink/services", SsapManagerIface {})
+            .unwrap()
+            .serve_at("/org/sparklink/remote", RemoteServiceIface {})
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let client = zbus::connection::Builder::address(address.trim())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let local = zbus::Proxy::new(
+            &client,
+            "org.sparklink.SsapRemovalTest",
+            "/org/sparklink/services",
+            "org.sparklink.ServiceManager",
+        )
+        .await
+        .unwrap();
+        let remote = zbus::Proxy::new(
+            &client,
+            "org.sparklink.SsapRemovalTest",
+            "/org/sparklink/remote",
+            "org.sparklink.RemoteService",
+        )
+        .await
+        .unwrap();
+        for result in [
+            local.call::<_, _, ()>("RegisterServices", &()).await,
+            local.call::<_, _, ()>("Notify", &(1u16,)).await,
+            remote.call::<_, _, ()>("ExchangeInfo", &()).await,
+            remote
+                .call::<_, _, ()>("Write", &(1u16, vec![1u8, 2]))
+                .await,
+        ] {
+            assert!(matches!(result, Err(zbus::Error::MethodError(name, _, _))
+                if name.as_str() == "org.freedesktop.DBus.Error.NotSupported"));
+        }
+        drop((local, remote, client, server));
+        bus.kill().await.unwrap();
+        bus.wait().await.unwrap();
+    }
 
     #[tokio::test]
     async fn actual_service_method_rejects_invalid_input_before_state_lock_or_ioctl() {

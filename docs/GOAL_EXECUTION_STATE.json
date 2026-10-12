@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "82aa65a"
+    "userspace": "dfae2124a7a4f1770778a2a7cdd6f57b555633ff"
   },
   "qualified_source_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
@@ -333,11 +333,12 @@
     "docs/evidence/daemon-channel-death-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/default-event-isolation-issues-20261013.json",
-  "latest_evidence_commit": "d7dca4266d75adf324c3ab402d2a75c6a28bc0c5",
+  "latest_issue_progress_receipt": "docs/evidence/daemon-channel-death-issues-20261013.json",
+  "latest_evidence_commit": "dfae2124a7a4f1770778a2a7cdd6f57b555633ff",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: actual daemon death supervisor/client/receiver integration,signed corrections,435 offline gates,two-role exact real SIGKILL/Free/successor/old-fd denial with independent wire seal; initial two failures retained",
+  "current_goal_turn_classification": "progress: actual daemon death supervisor/client/receiver integration,signed corrections,435 offline gates,two-role exact real SIGKILL/Free/successor/old-fd denial with independent wire seal; initial two failures retained; exact toolsCI9 success and14 existing issue readbacks OPEN/original scope unchanged",
   "qualified_tool_source_heads": [
-    "8f1959069f45c4bd4420f4ac0a106ba52fee0159"
+    "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
+    "82aa65a77019804e78a95c1706c461e715187314"
   ]
 }

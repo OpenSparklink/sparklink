@@ -430,6 +430,13 @@ class SerialTimeoutSeal:
         return b''
 
 
+def validate_channel_death_mode(args, package):
+    incompatible=any(isinstance(v,bool) and v and k!='channel_daemon_crash' for k,v in vars(args).items())
+    selectors=any(getattr(args,k,None) for k in ['daemon_hold_case','managed_partial_case','managed_connected_case','managed_connected_reply','managed_real_later_step'])
+    if args.command!='run' or 'native_vm' not in package or 'native_channel_fd_probe' not in package or incompatible or selectors or getattr(args,'channel_daemon_index',0) not in [0,1]:
+        raise ValueError('dedicated actual daemon-channel death native VM required')
+
+
 def _run(args):
     ordinary_identity()
     output=args.output.resolve()
@@ -578,8 +585,6 @@ def _run(args):
     m['channel_socket_boundaries_requested']=channel_boundaries
     m['ordinary_channel_socket_acceptance']=False
     m['connection_advertising_requested']=connection_advertising if connection_verify else None
-    if channel_death:
-        if args.command!='run' or 'native_vm' not in package or 'native_channel_fd_probe' not in package or passthrough or recovery or parallel or connection_verify or daemon_crash or channel_grant or setup_gate or any(getattr(args,k,False) for k in ['observer_policy','initializer_lifecycle','hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','diagnostic_cancel_verify','diagnostic_deadline_verify','diagnostic_autonomous_verify','active_deadline_verify','active_close_verify','managed_partial_case','managed_queue_verify']):raise ValueError('dedicated actual daemon-channel death native VM required')
     m['channel_daemon_crash_requested']=channel_death
     m['channel_daemon_index']=channel_death_index
     if channel_death:m['channel_daemon_verifier']=file_record(HERE/'ws73_channel_daemon_crash.py')
@@ -639,6 +644,7 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if channel_death:validate_channel_death_mode(args,package)
         if acb_probe and 'acb_probe_module' not in package:raise ValueError('frozen signed ACB selftest module missing')
         if connection_verify and 'native_vm' not in package:
             raise ValueError('connection gate requires actual signed native VM')

@@ -428,6 +428,34 @@ impl Node {
                     .collect::<Vec<_>>(),
             )
         };
+        let connection_paths = {
+            let st = self.state.lock().await;
+            st.native_connection_objects
+                .values()
+                .map(|entry| entry.path.clone())
+                .chain(st.retiring_connection_objects.iter().cloned())
+                .collect::<Vec<_>>()
+        };
+        for path in connection_paths {
+            let _ = connection
+                .object_server()
+                .remove::<crate::connection_object::ConnectionIface, _>(path.as_str())
+                .await;
+        }
+        let peer_paths = {
+            let st = self.state.lock().await;
+            st.native_peer_objects
+                .values()
+                .map(|entry| entry.path.clone())
+                .chain(st.retiring_peer_objects.iter().cloned())
+                .collect::<Vec<_>>()
+        };
+        for path in peer_paths {
+            let _ = connection
+                .object_server()
+                .remove::<crate::connection_object::PeerIface, _>(path.as_str())
+                .await;
+        }
         for path in device_paths {
             let _ = connection
                 .object_server()
@@ -601,6 +629,16 @@ pub(crate) async fn invalidate_properties(c: &zbus::Connection, path: &str, name
 }
 pub(crate) async fn invalidate_device_properties(c: &zbus::Connection, path: &str, names: &[&str]) {
     invalidate_interface_properties(c, path, "org.sparklink.Device", names).await;
+}
+pub(crate) async fn invalidate_connection_properties(
+    c: &zbus::Connection,
+    path: &str,
+    names: &[&str],
+) {
+    invalidate_interface_properties(c, path, "org.sparklink.Connection", names).await;
+}
+pub(crate) async fn invalidate_peer_properties(c: &zbus::Connection, path: &str, names: &[&str]) {
+    invalidate_interface_properties(c, path, "org.sparklink.Peer", names).await;
 }
 async fn invalidate_interface_properties(
     c: &zbus::Connection,

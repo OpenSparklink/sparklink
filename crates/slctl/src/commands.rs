@@ -2,6 +2,9 @@ use zbus::Connection;
 
 type NativeReportRecord = (u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
 type NativeLinksRecord = (u64, u64, u64, u32, i32, Vec<(u64, u16, u8, u8, String)>);
+type NativeObjectsRecord = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8, String)>);
+type NativeObjectInfo = (u64, u64, u16, u8, u8, String, bool, bool);
+type NativePeerInfo = (u64, u8, String, bool, bool, Vec<String>);
 
 pub struct Context {
     conn: Connection,
@@ -70,6 +73,20 @@ impl Context {
                 self.cmd_disconnect(addr, args.get(2).copied()).await
             }
             "connections" => self.cmd_connections().await,
+            "connection-objects" => self.cmd_connection_objects().await,
+            "peer-info" => {
+                if args.len() != 2 {
+                    anyhow::bail!("usage: peer-info <typed-peer-path>");
+                }
+                self.cmd_peer_info(args[1]).await
+            }
+            "connection-info" | "disconnect-object" => {
+                if args.len() != 2 {
+                    anyhow::bail!("usage: {} <connection-object-path>", args[0]);
+                }
+                self.cmd_connection_object(args[1], args[0] == "disconnect-object")
+                    .await
+            }
             "disconnect-link" => {
                 if args.len() != 6 {
                     anyhow::bail!(
@@ -710,6 +727,85 @@ impl Context {
             );
         }
         Ok(())
+    }
+    async fn cmd_connection_objects(&self) -> anyhow::Result<()> {
+        let proxy = self.adapter_proxy().await?;
+        let (generation, seq, revision, known, objects): NativeObjectsRecord =
+            proxy.call("GetNativeConnectionObjects", &()).await?;
+        println!(
+            "NativeConnectionObjects: generation={generation} event_seq={seq} revision={revision} known={known}"
+        );
+        if !known {
+            anyhow::bail!("physical connection observation unknown");
+        }
+        for (path, lifetime, handle, role, kind, address) in objects {
+            println!(
+                "NativeConnectionObject: generation={generation} lifetime={lifetime} handle={handle} role={role} type={kind} address={address} path={path}"
+            );
+        }
+        Ok(())
+    }
+    async fn cmd_peer_info(&self, path: &str) -> anyhow::Result<()> {
+        let adapter = self.adapter_proxy().await?;
+        let selected = self.selected_path().await?;
+        if !path.starts_with(&format!("{selected}/peer_t")) {
+            anyhow::bail!("peer does not belong to the selected adapter");
+        }
+        let peer =
+            zbus::Proxy::new(&self.conn, "org.sparklink", path, "org.sparklink.Peer").await?;
+        let (generation, kind, address, known, connected, objects): NativePeerInfo =
+            peer.call("GetInfo", &()).await?;
+        let selected_generation: u64 = adapter.get_property("Generation").await?;
+        let expected = format!(
+            "{selected}/peer_t{kind:02x}_{}",
+            address.replace(':', "").to_lowercase()
+        );
+        if generation != selected_generation || path != expected {
+            anyhow::bail!("typed peer identity mismatch");
+        }
+        println!(
+            "NativePeerInfo: generation={generation} type={kind} address={address} known={known} connected={connected} path={path}"
+        );
+        for object in objects {
+            println!("NativePeerConnection: path={object}");
+        }
+        Ok(())
+    }
+    async fn cmd_connection_object(&self, path: &str, disconnect: bool) -> anyhow::Result<()> {
+        let adapter = self.adapter_proxy().await?;
+        let selected = self.selected_path().await?;
+        if !path.starts_with(&format!("{selected}/peer_t")) {
+            anyhow::bail!("connection object does not belong to the selected adapter");
+        }
+        let object = zbus::Proxy::new(
+            &self.conn,
+            "org.sparklink",
+            path,
+            "org.sparklink.Connection",
+        )
+        .await?;
+        let (generation, lifetime, handle, role, kind, address, known, connected): NativeObjectInfo = object.call("GetInfo", &()).await?;
+        let selected_generation: u64 = adapter.get_property("Generation").await?;
+        let expected = format!(
+            "{selected}/peer_t{kind:02x}_{}/link_{lifetime:016x}",
+            address.replace(':', "").to_lowercase()
+        );
+        if generation != selected_generation || path != expected {
+            anyhow::bail!("connection object identity mismatch");
+        }
+        if disconnect {
+            let id: u64 = adapter.call("AllocateConnectionRequest", &()).await?;
+            println!(
+                "NativeDisconnectObject: request={id} generation={generation} lifetime={lifetime} handle={handle} role={role} type={kind} address={address} path={path}"
+            );
+            let _: () = object.call("SubmitDisconnect", &(id,)).await?;
+            wait_connection(&adapter, id).await
+        } else {
+            println!(
+                "NativeConnectionInfo: generation={generation} lifetime={lifetime} handle={handle} role={role} type={kind} address={address} known={known} connected={connected} path={path}"
+            );
+            Ok(())
+        }
     }
 
     async fn cmd_services(&self) -> anyhow::Result<()> {

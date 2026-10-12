@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -64,6 +64,12 @@ pub struct AdapterState {
     pub native_links: Option<slk_protocol::SleLinkSnapshot>,
     pub native_link_barrier: u64,
     pub native_link_revision: u64,
+    /// D-Bus publication metadata only. Physical state remains native_links.
+    pub(crate) native_connection_objects: BTreeMap<u64, crate::connection_object::Registration>,
+    pub(crate) retiring_connection_objects: BTreeSet<String>,
+    pub(crate) native_peer_objects:
+        BTreeMap<(u8, SleAddr), crate::connection_object::PeerRegistration>,
+    pub(crate) retiring_peer_objects: BTreeSet<String>,
     pub config: DaemonConfig,
     pub powered: bool,
     pub discovering: bool,
@@ -99,6 +105,10 @@ impl AdapterState {
             native_links: None,
             native_link_barrier: 0,
             native_link_revision: 0,
+            native_connection_objects: BTreeMap::new(),
+            retiring_connection_objects: BTreeSet::new(),
+            native_peer_objects: BTreeMap::new(),
+            retiring_peer_objects: BTreeSet::new(),
             config,
             powered: true,
             discovering: false,
@@ -316,6 +326,13 @@ impl AdapterState {
             || table.dev_index != self.controller.dev_index
             || table.event_seq < minimum_seq.max(self.native_link_barrier)
             || table.revision < self.native_link_revision
+            || table.links[..table.count.min(16) as usize]
+                .iter()
+                .any(|link| {
+                    self.native_connection_objects
+                        .get(&link.lifetime)
+                        .is_some_and(|old| old.reference != *link)
+                })
         {
             self.invalidate_native_connections();
             return Err(());
@@ -336,6 +353,95 @@ impl AdapterState {
             }
         }
         Ok(new)
+    }
+
+    /// Reconcile bounded publication metadata from the canonical table.
+    /// Unknown retains prior identities without declaring them connected.
+    pub(crate) fn connection_publications(
+        &mut self,
+    ) -> (Vec<crate::connection_object::Registration>, Vec<String>) {
+        let mut retired = Vec::new();
+        if self.native_links_known() {
+            let table = self.native_links.expect("known table");
+            self.native_connection_objects.retain(|lifetime, entry| {
+                let keep = table.links[..table.count as usize]
+                    .iter()
+                    .any(|link| &link.lifetime == lifetime);
+                if !keep {
+                    retired.push(entry.path.clone());
+                }
+                keep
+            });
+            for link in &table.links[..table.count as usize] {
+                self.native_connection_objects
+                    .entry(link.lifetime)
+                    .or_insert_with(|| crate::connection_object::Registration {
+                        reference: *link,
+                        path: crate::connection_object::path(&self.object_path, *link),
+                        published: false,
+                    });
+            }
+        }
+        self.retiring_connection_objects.extend(retired);
+        (
+            self.native_connection_objects
+                .values()
+                .filter(|entry| !entry.published)
+                .cloned()
+                .collect(),
+            self.retiring_connection_objects.iter().cloned().collect(),
+        )
+    }
+
+    pub(crate) fn connection_publication_pending(&self) -> bool {
+        !self.retiring_connection_objects.is_empty()
+            || self
+                .native_connection_objects
+                .values()
+                .any(|entry| !entry.published)
+            || !self.retiring_peer_objects.is_empty()
+            || self
+                .native_peer_objects
+                .values()
+                .any(|entry| !entry.published)
+    }
+    pub(crate) fn peer_publications(
+        &mut self,
+    ) -> (Vec<crate::connection_object::PeerRegistration>, Vec<String>) {
+        if self.native_links_known() {
+            let table = self.native_links.expect("known table");
+            self.native_peer_objects.retain(|key, entry| {
+                let keep = table.links[..table.count as usize]
+                    .iter()
+                    .any(|link| (link.address_type, link.address) == *key);
+                if !keep {
+                    self.retiring_peer_objects.insert(entry.path.clone());
+                }
+                keep
+            });
+            for link in &table.links[..table.count as usize] {
+                self.native_peer_objects
+                    .entry((link.address_type, link.address))
+                    .or_insert_with(|| crate::connection_object::PeerRegistration {
+                        address_type: link.address_type,
+                        address: link.address,
+                        path: crate::connection_object::peer_path(
+                            &self.object_path,
+                            link.address_type,
+                            link.address,
+                        ),
+                        published: false,
+                    });
+            }
+        }
+        (
+            self.native_peer_objects
+                .values()
+                .filter(|entry| !entry.published)
+                .cloned()
+                .collect(),
+            self.retiring_peer_objects.iter().cloned().collect(),
+        )
     }
 
     /// Query connection info from the kernel for a given handle.

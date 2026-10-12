@@ -259,6 +259,46 @@ impl AdapterIface {
             links,
         ))
     }
+    /// Typed physical objects published from the current daemon observation.
+    async fn get_native_connection_objects(
+        &self,
+    ) -> zbus::fdo::Result<crate::connection_object::Objects> {
+        let st = self.state.lock().await;
+        if st.controller.profile != 1 {
+            return Err(zbus::fdo::Error::NotSupported(
+                "typed physical objects require Native".into(),
+            ));
+        }
+        let objects = st
+            .native_connection_objects
+            .values()
+            .filter(|entry| {
+                entry.published
+                    && st
+                        .native_peer_objects
+                        .get(&(entry.reference.address_type, entry.reference.address))
+                        .is_some_and(|peer| peer.published)
+            })
+            .map(|entry| {
+                let link = entry.reference;
+                (
+                    entry.path.clone(),
+                    link.lifetime,
+                    link.handle,
+                    link.role,
+                    link.address_type,
+                    format_addr(&link.address),
+                )
+            })
+            .collect();
+        Ok((
+            st.controller.generation,
+            st.native_link_barrier,
+            st.native_link_revision,
+            st.native_links_known(),
+            objects,
+        ))
+    }
     async fn connect_device_typed(&self, address: &str, address_type: u8) -> zbus::fdo::Result<()> {
         let id = crate::connection::allocate(&self.state).await?;
         self.submit_connect(id, address, address_type).await?;

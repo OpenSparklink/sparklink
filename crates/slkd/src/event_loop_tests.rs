@@ -771,3 +771,132 @@ async fn canonical_state_rejects_identity_rollback_and_ambiguous_address_alias_w
     st.present = false;
     assert_eq!(st.device_connection(&address), (false, false));
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn typed_connection_objects_separate_types_retire_lifetimes_and_preserve_unknown() {
+    let bus = PrivateBus::start();
+    let state = state();
+    let expected = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    state.lock().await.controller = expected;
+    let server = server(&bus, state.clone()).await;
+    let client = client(&bus).await;
+    let address = [1; 6];
+    let table = native_table(10, 2, &[(1, 7, 0, 0, address), (2, 8, 1, 1, address)]);
+    reconcile_native(&state, &server, expected, 0, Ok(table)).await;
+    let paths = state
+        .lock()
+        .await
+        .native_connection_objects
+        .values()
+        .map(|entry| entry.path.clone())
+        .collect::<Vec<_>>();
+    assert_ne!(paths[0], paths[1]);
+    assert!(paths[0].contains("/peer_t00_"));
+    assert!(paths[1].contains("/peer_t01_"));
+    assert_eq!(
+        state.lock().await.device_connection(&address),
+        (false, false)
+    );
+    let mut objects = Vec::new();
+    let mut peers = Vec::new();
+    for (n, path) in paths.iter().enumerate() {
+        let proxy = zbus::Proxy::new(
+            &client,
+            "org.sparklink",
+            path.as_str(),
+            "org.sparklink.Connection",
+        )
+        .await
+        .unwrap();
+        let info: crate::connection_object::Info = proxy.call("GetInfo", &()).await.unwrap();
+        assert_eq!(
+            (info.0, info.1, info.2, info.3, info.4, info.6, info.7),
+            (7, n as u64 + 1, 7 + n as u16, n as u8, n as u8, true, true)
+        );
+        objects.push(proxy);
+        let peer_path = path.rsplit_once("/link_").unwrap().0;
+        let peer = zbus::Proxy::new(&client, "org.sparklink", peer_path, "org.sparklink.Peer")
+            .await
+            .unwrap();
+        let info: crate::connection_object::PeerInfo = peer.call("GetInfo", &()).await.unwrap();
+        assert_eq!(
+            (info.0, info.1, info.3, info.4, info.5),
+            (7, n as u8, true, true, vec![path.clone()])
+        );
+        peers.push(peer);
+    }
+    reconcile_native(
+        &state,
+        &server,
+        expected,
+        11,
+        Err(zbus::fdo::Error::Failed("offline read failure".into())),
+    )
+    .await;
+    for proxy in &objects {
+        let info: crate::connection_object::Info = proxy.call("GetInfo", &()).await.unwrap();
+        assert!(!info.6 && !info.7);
+    }
+    for peer in &peers {
+        let info: crate::connection_object::PeerInfo = peer.call("GetInfo", &()).await.unwrap();
+        assert!(!info.3 && !info.4);
+    }
+    assert_eq!(state.lock().await.native_connection_objects.len(), 2);
+    // An unchanged lifetime may never rebind its immutable role/handle/type.
+    let changed = native_table(12, 2, &[(1, 9, 1, 0, address), (2, 8, 1, 1, address)]);
+    reconcile_native(&state, &server, expected, 12, Ok(changed)).await;
+    assert!(!state.lock().await.native_links_known());
+    let info: crate::connection_object::Info = objects[0].call("GetInfo", &()).await.unwrap();
+    assert_eq!((info.2, info.3, info.4), (7, 0, 0));
+    reconcile_native(&state, &server, expected, 13, Ok(native_table(13, 3, &[]))).await;
+    for proxy in &objects {
+        assert!(proxy.introspect().await.is_err());
+        assert!(
+            proxy
+                .call::<_, _, ()>("SubmitDisconnect", &(99u64,))
+                .await
+                .is_err()
+        );
+    }
+    assert!(state.lock().await.native_connection_objects.is_empty());
+    assert!(state.lock().await.retiring_connection_objects.is_empty());
+    for peer in &peers {
+        assert!(
+            peer.call::<_, _, crate::connection_object::PeerInfo>("GetInfo", &())
+                .await
+                .is_err()
+        );
+    }
+    assert!(state.lock().await.native_peer_objects.is_empty());
+    assert!(state.lock().await.retiring_peer_objects.is_empty());
+    let reused = native_table(14, 4, &[(4, 7, 0, 0, address)]);
+    reconcile_native(&state, &server, expected, 14, Ok(reused)).await;
+    let current = state.lock().await.native_connection_objects[&4]
+        .path
+        .clone();
+    assert!(!paths.contains(&current));
+    assert!(objects[0].introspect().await.is_err());
+    let replacement = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        current.as_str(),
+        "org.sparklink.Connection",
+    )
+    .await
+    .unwrap();
+    let info: crate::connection_object::Info = replacement.call("GetInfo", &()).await.unwrap();
+    assert_eq!((info.1, info.2, info.6, info.7), (4, 7, true, true));
+    state.lock().await.present = false;
+    let info: crate::connection_object::Info = replacement.call("GetInfo", &()).await.unwrap();
+    assert!(!info.6 && !info.7);
+    assert!(
+        replacement
+            .call::<_, _, ()>("SubmitDisconnect", &(100u64,))
+            .await
+            .is_err()
+    );
+}

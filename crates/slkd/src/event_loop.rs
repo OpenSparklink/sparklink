@@ -75,7 +75,11 @@ impl EventTask {
                     biased;
                     _ = &mut cancelled => break,
                     _ = retry.tick() => {
-                        if !state.lock().await.native_links_known() {
+                        let retry_needed = {
+                            let st = state.lock().await;
+                            !st.native_links_known() || st.connection_publication_pending()
+                        };
+                        if retry_needed {
                             tokio::select! {
                                 biased;
                                 _ = &mut cancelled => break,
@@ -227,7 +231,20 @@ async fn reconcile_native(
     minimum_seq: u64,
     snapshot: zbus::fdo::Result<slk_protocol::SleLinkSnapshot>,
 ) {
-    let (new, paths, known, barrier, revision, adapter_path) = {
+    let (
+        new,
+        paths,
+        known,
+        barrier,
+        revision,
+        adapter_path,
+        publications,
+        retired,
+        connection_paths,
+        peer_publications,
+        retired_peers,
+        peer_paths,
+    ) = {
         let mut st = state.lock().await;
         if !st.present || st.controller.generation != expected.generation {
             return;
@@ -249,6 +266,18 @@ async fn reconcile_native(
                 Vec::new()
             }
         };
+        let (publications, retired) = st.connection_publications();
+        let (peer_publications, retired_peers) = st.peer_publications();
+        let peer_paths = st
+            .native_peer_objects
+            .values()
+            .map(|entry| entry.path.clone())
+            .collect::<Vec<_>>();
+        let connection_paths = st
+            .native_connection_objects
+            .values()
+            .map(|entry| entry.path.clone())
+            .collect::<Vec<_>>();
         (
             new,
             st.devices
@@ -259,8 +288,97 @@ async fn reconcile_native(
             st.native_link_barrier,
             st.native_link_revision,
             st.object_path.clone(),
+            publications,
+            retired,
+            connection_paths,
+            peer_publications,
+            retired_peers,
+            peer_paths,
         )
     };
+    for path in retired {
+        match connection
+            .object_server()
+            .remove::<crate::connection_object::ConnectionIface, _>(path.as_str())
+            .await
+        {
+            Ok(_) | Err(zbus::Error::InterfaceNotFound) => {
+                state.lock().await.retiring_connection_objects.remove(&path);
+            }
+            Err(error) => {
+                error!(%error, %path, "retired connection object removal failed; will retry")
+            }
+        }
+    }
+    for path in retired_peers {
+        match connection
+            .object_server()
+            .remove::<crate::connection_object::PeerIface, _>(path.as_str())
+            .await
+        {
+            Ok(_) | Err(zbus::Error::InterfaceNotFound) => {
+                state.lock().await.retiring_peer_objects.remove(&path);
+            }
+            Err(error) => error!(%error, %path, "retired typed peer removal failed; will retry"),
+        }
+    }
+    for entry in peer_publications {
+        match connection
+            .object_server()
+            .at(
+                entry.path.as_str(),
+                crate::connection_object::PeerIface::new(
+                    state.clone(),
+                    expected.generation,
+                    entry.address_type,
+                    entry.address,
+                ),
+            )
+            .await
+        {
+            Ok(_) => {
+                if let Some(current) = state
+                    .lock()
+                    .await
+                    .native_peer_objects
+                    .get_mut(&(entry.address_type, entry.address))
+                {
+                    current.published = true;
+                }
+            }
+            Err(error) => {
+                error!(%error,path=%entry.path,"typed peer publication failed; will retry")
+            }
+        }
+    }
+    for entry in publications {
+        match connection
+            .object_server()
+            .at(
+                entry.path.as_str(),
+                crate::connection_object::ConnectionIface::new(
+                    state.clone(),
+                    expected.generation,
+                    entry.reference,
+                ),
+            )
+            .await
+        {
+            Ok(_) => {
+                let mut st = state.lock().await;
+                if let Some(current) = st
+                    .native_connection_objects
+                    .get_mut(&entry.reference.lifetime)
+                    && current.reference == entry.reference
+                {
+                    current.published = true;
+                }
+            }
+            Err(error) => {
+                error!(%error, path=%entry.path, "typed connection publication failed; refresh will retry")
+            }
+        }
+    }
     for (address, path) in new {
         if let Err(error) = connection
             .object_server()
@@ -272,6 +390,22 @@ async fn reconcile_native(
     }
     for path in paths {
         crate::adapters::invalidate_device_properties(
+            connection,
+            &path,
+            &["Connected", "ConnectionKnown"],
+        )
+        .await;
+    }
+    for path in connection_paths {
+        crate::adapters::invalidate_connection_properties(
+            connection,
+            &path,
+            &["Connected", "ConnectionKnown"],
+        )
+        .await;
+    }
+    for path in peer_paths {
+        crate::adapters::invalidate_peer_properties(
             connection,
             &path,
             &["Connected", "ConnectionKnown"],

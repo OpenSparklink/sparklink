@@ -6,6 +6,7 @@ mod adapters;
 mod bonding;
 mod config;
 mod connection;
+mod connection_object;
 mod controller;
 mod dbus_iface;
 mod event_loop;

@@ -5,11 +5,13 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'bindings/python'))
 from sparklink.structs import SleControllerSnapshot, SleManagementQuery, SleLinkSnapshot
 from test_ws73_channel_grant import fixture
-from ws73_channel_daemon_crash import verify
+from ws73_channel_daemon_crash import verify, corroborate
+from ws73_connection_control import result
 
 
 def record():
@@ -33,6 +35,28 @@ def record():
 
 
 class DeathReceipt(unittest.TestCase):
+    def test_lifetime_first_wake_requires_matching_down_before_wake(self):
+        r=record();g=r['daemon_channel'];g['blocked_result']['errno']=116
+        caller=g['owners'][0]['owner']
+        text='NativeConnectionResult: generation=7 request=1 operation=1 state=4 errno=0 fault=0 command_status=0 outcome_status=0 handle=0 flags=7\n'
+        r['commands']=[dict(stdout=text,exit=0,start_wall_ns=10)]
+        r['connection_control']=dict(phases=[dict(connect_command=0,caller=caller,connect=result(text,caller,1))])
+        events=[];sdus=[]
+        for n,entry in enumerate(g['owners']):
+            o,v=entry['owner'],entry['object']
+            events.append(dict(event=0x15,bus=1,device=n+2,wall_ns=12,params=(b'\0'+bytes(2)+bytes([n,0])+bytes.fromhex(v['address'].replace(':',''))).hex()))
+        for b in g['business']:
+            b['start_wall_ns']=20
+            for n,a in enumerate(b['applications']):
+                for key,direction in [('sent','out'),('received','in')]:
+                    payload=bytes.fromhex(a[key]);sdus.append(dict(bus=1,device=n+2,handle=0,direction=direction,data=(b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload).hex(),wall_ns=25))
+        # Two independent business payloads; exact matches do not overlap.
+        down=dict(event=5,bus=1,device=2,wall_ns=104,params='00000013')
+        with patch('ws73_channel_daemon_crash.reassemble_acb',return_value=sdus):
+            self.assertEqual(corroborate(r,dict(native_events=events+[down]))['first_blocked_errno'],116)
+            for tail in [[],[dict(down,wall_ns=106)],[dict(down,device=3)],[dict(down,params='00010013')],[down,down]]:
+                with self.subTest(tail=tail),self.assertRaises(ValueError):corroborate(r,dict(native_events=events+tail))
+
     def test_rejects_scope_authentication_cleanup_and_order_mutations(self):
         original=record();verify(original)
         ended=copy.deepcopy(original);ended['daemon_channel']['blocked_result']['errno']=116;verify(ended)

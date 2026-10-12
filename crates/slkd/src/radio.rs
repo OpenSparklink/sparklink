@@ -168,14 +168,14 @@ pub(crate) async fn advertise(
     state: &SharedState,
     id: u64,
     marker: Vec<u8>,
-    connectable: bool,
+    role: Option<libsparklink::Ws73ConnectableRole>,
 ) -> zbus::fdo::Result<Vec<u8>> {
     let marker: [u8; 16] = marker
         .try_into()
         .map_err(|_| zbus::fdo::Error::InvalidArgs("marker must be exactly 16 bytes".into()))?;
     submit(state, move |snapshot, policy| {
-        if connectable {
-            policy.connectable_advertisement(&snapshot, id, &marker)
+        if let Some(role) = role {
+            policy.connectable_advertisement(&snapshot, id, &marker, role)
         } else {
             policy.advertisement(&snapshot, id, &marker)
         }

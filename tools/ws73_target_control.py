@@ -126,6 +126,7 @@ def main():
     parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')
     parser.add_argument('--initializer-lifecycle',action='store_true',help='actual initializer withdrawal, eviction and guest-generation gate; excludes private File close/dup')
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
+    parser.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t')
     args=parser.parse_args()
     if args.daemon_cancel_remove and not args.passthrough:
         parser.error('held cancellation/removal requires real passthrough mode')
@@ -133,6 +134,8 @@ def main():
         parser.error('initializer lifecycle requires separate real passthrough mode')
     if args.connection_verify and (not args.passthrough or args.daemon_cancel_remove or args.initializer_lifecycle):
         parser.error('connection gate requires separate real passthrough mode')
+    if args.connection_advertising!='fixed-t' and not args.connection_verify:
+        parser.error('connection advertising contrast requires explicit connection gate')
     args.ports=['1-1','1-2'];args.artifact=['qmp_control='+str(Path(__file__).resolve())]
     if args.daemon_cancel_remove:
         args.artifact.append('daemon_removal='+str(Path(__file__).with_name('ws73_daemon_removal.py').resolve()))

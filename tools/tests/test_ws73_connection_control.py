@@ -97,5 +97,16 @@ class ConnectionEvidenceTests(unittest.TestCase):
         capture['reports'].pop(0)
         with self.assertRaisesRegex(CaptureError,'independently heard'):corroborate(run,capture)
 
+    def test_negotiable_record_requires_its_distinct_actual_wire_posture(self):
+        run,capture=fixture();run['connection_control']['advertising_kind']='negotiable-t'
+        for phase in run['connection_control']['phases']:
+            run['commands'][phase['advertisement_command']]['args'][-1]='negotiable'
+        with self.assertRaises(CaptureError):corroborate(run,capture)
+        for command in capture['commands']:
+            if command['opcode']==0x0c02:
+                body=bytearray.fromhex(command['params']);body[1]=3;body[2]=0;body[33]=0;body[34]=1
+                body[37:39]=(100).to_bytes(2,'little');body[39:41]=body[37:39];command['params']=body.hex()
+        self.assertEqual(len(corroborate(run,capture)),2)
+
 
 if __name__=='__main__':unittest.main()

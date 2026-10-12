@@ -5,6 +5,13 @@ use slk_protocol::*;
 
 pub const WS73_DISCOVERY_POLICY_VERSION: u32 = 3;
 
+/// Explicit T-side announcement posture; no role negotiation success inferred.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Ws73ConnectableRole {
+    FixedTerminal,
+    NegotiableTerminal,
+}
+
 /// Validated host policy for one registration. Private fields prevent bypassing
 /// the SDK's interval/window/power ranges; the driver owns wire encoding and
 /// the controller still decides actual support through its Complete result.
@@ -135,19 +142,30 @@ impl Ws73DiscoveryPolicy {
         Ok(request)
     }
 
-    /// Explicit fixed-T, connectable/non-scannable announcement. The default
-    /// beacon remains nonconnectable. WS73 mode1 and request posture1/0 are
-    /// independent protocol facts; accepting this command does not establish
-    /// a link or prove firmware interoperability.
+    /// Explicit fixed or negotiable T announcement. The default beacon remains
+    /// nonconnectable. The reference's fixed mode1/posture1/0 and negotiable
+    /// mode3/posture0/1 are distinct policies; admission establishes no link.
     pub fn connectable_advertisement(
         &self,
         snapshot: &SleControllerSnapshot,
         request_id: u64,
         marker: &[u8; 16],
+        role: Ws73ConnectableRole,
     ) -> Result<SleDiscoverySubmit> {
         let mut request = self.advertisement(snapshot, request_id, marker)?;
-        request.advertising.mode = 1;
-        request.advertising.request_notification = 1;
+        match role {
+            Ws73ConnectableRole::FixedTerminal => {
+                request.advertising.mode = 1;
+                request.advertising.request_notification = 1;
+            }
+            Ws73ConnectableRole::NegotiableTerminal => {
+                request.advertising.mode = 3;
+                request.advertising.gt_role = 0;
+                request.advertising.max_requests = 1;
+                request.advertising.conn_interval_min = 100;
+                request.advertising.conn_interval_max = 100;
+            }
+        }
         Ok(request)
     }
 }
@@ -261,12 +279,52 @@ pub fn ws73_discovery_stop(
 mod tests {
     use super::*;
     #[test]
+    fn negotiable_terminal_is_explicit_and_keeps_the_default_beacon() {
+        let policy = Ws73DiscoveryPolicy::default();
+        let request = policy
+            .connectable_advertisement(
+                &snapshot(),
+                8,
+                &[1; 16],
+                Ws73ConnectableRole::NegotiableTerminal,
+            )
+            .unwrap();
+        let p = request.advertising;
+        assert_eq!(
+            (p.mode, p.gt_role, p.request_notification, p.max_requests),
+            (3, 0, 0, 1)
+        );
+        assert_eq!(
+            (
+                p.conn_interval_min,
+                p.conn_interval_max,
+                p.supervision_timeout
+            ),
+            (100, 100, 200)
+        );
+        assert_eq!(p.own_address, snapshot().address);
+        assert_eq!(request.data_len, ws73_marker_data(&[1; 16]).len() as u32);
+        assert_eq!(
+            policy
+                .advertisement(&snapshot(), 9, &[1; 16])
+                .unwrap()
+                .advertising
+                .mode,
+            0
+        );
+    }
+    #[test]
     fn explicit_connectable_policy_keeps_default_beacon_and_identity_guards() {
         let policy = Ws73DiscoveryPolicy::new(1237, 1301, -20, 1703, 997).unwrap();
         let identity = snapshot();
         let beacon = policy.advertisement(&identity, 11, &[0xab; 16]).unwrap();
         let mut connection = policy
-            .connectable_advertisement(&identity, 11, &[0xab; 16])
+            .connectable_advertisement(
+                &identity,
+                11,
+                &[0xab; 16],
+                Ws73ConnectableRole::FixedTerminal,
+            )
             .unwrap();
         assert_eq!(
             (
@@ -306,13 +364,23 @@ mod tests {
         ] {
             assert!(
                 policy
-                    .connectable_advertisement(&invalid, 11, &[0; 16])
+                    .connectable_advertisement(
+                        &invalid,
+                        11,
+                        &[0; 16],
+                        Ws73ConnectableRole::FixedTerminal
+                    )
                     .is_err()
             );
         }
         assert!(
             policy
-                .connectable_advertisement(&identity, 0, &[0; 16])
+                .connectable_advertisement(
+                    &identity,
+                    0,
+                    &[0; 16],
+                    Ws73ConnectableRole::FixedTerminal
+                )
                 .is_err()
         );
         assert_eq!(policy.standby(&identity, 12).unwrap().advertising.mode, 0);

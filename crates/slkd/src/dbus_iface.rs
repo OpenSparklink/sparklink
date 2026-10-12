@@ -95,16 +95,22 @@ impl AdapterIface {
         request_id: u64,
         marker: Vec<u8>,
     ) -> zbus::fdo::Result<Vec<u8>> {
-        crate::radio::advertise(&self.state, request_id, marker, false).await
+        crate::radio::advertise(&self.state, request_id, marker, None).await
     }
 
-    /// Explicit fixed-T connectable announcement; no link success inferred.
+    /// Explicit fixed or negotiable T announcement; no link success inferred.
     async fn submit_connectable_advertising(
         &self,
         request_id: u64,
         marker: Vec<u8>,
+        negotiable: bool,
     ) -> zbus::fdo::Result<Vec<u8>> {
-        crate::radio::advertise(&self.state, request_id, marker, true).await
+        let role = if negotiable {
+            libsparklink::Ws73ConnectableRole::NegotiableTerminal
+        } else {
+            libsparklink::Ws73ConnectableRole::FixedTerminal
+        };
+        crate::radio::advertise(&self.state, request_id, marker, Some(role)).await
     }
     async fn submit_scanning(&self, request_id: u64) -> zbus::fdo::Result<()> {
         crate::radio::scan(&self.state, request_id).await

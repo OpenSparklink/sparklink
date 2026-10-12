@@ -183,5 +183,6 @@ mod tests {
 }
 mod ws73_discovery;
 pub use ws73_discovery::{
-    WS73_DISCOVERY_POLICY_VERSION, Ws73DiscoveryPolicy, ws73_discovery_stop, ws73_marker_data,
+    WS73_DISCOVERY_POLICY_VERSION, Ws73ConnectableRole, Ws73DiscoveryPolicy, ws73_discovery_stop,
+    ws73_marker_data,
 };

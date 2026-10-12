@@ -126,3 +126,22 @@ QEMU退出0。说明仅改广播模式/姿态不足以证明互通。
 对应RX捕获及scanner STOP。这可区分广播不可见与已可见但连接无结果，
 不将额外等待算作更长Create预算。接下来比对参考Host协商角色、local address
 设置和固件行为。connected release/last-File/dup/in-flight和自动恢复仍未验收。
+
+
+VM78（496内核/6517服务/8066工具）进一步证明固定T可连接广播空口可见：
+随机标识/data/address/RSSI-14在140ms匹配，usbmon真实RX与scanner OFF独立
+复算，Create确在OFF之后；仍仅Status成功，10秒内无连接结果。411包/丢包0、
+QEMU退出0。所有已捕获IN的HCC槽检查也只见Complete、discovery和Status，
+没有被当前service/queue过滤掉的连接事件；这不证明未提交读取的端点无数据。
+[空口可见后的失败](evidence/ws73-fixed-t-air-visible-connection-failure-20261012.json)。
+
+新增显式`advertise negotiable [marker]`对照参考minimal_server的mode3/role0/
+posture0/1、proposal100/100，使用同一typed recipe，默认beacon保持mode0。
+同一未发布SubmitConnectableAdvertising接口现在显式带negotiable布尔选择，
+slctl与daemon同步修改；公开C/UAPI布局未改。新的Rust角色枚举只有FixedTerminal
+和NegotiableTerminal，其他能力没有模拟成功分支。
+
+VM门禁的`--connection-advertising fixed-t|negotiable-t`必须与connection-verify
+一起显式选择，parent/guest/捕获49字节必须相符。默认仍固定T；可协商对照
+不复用固定T的通过声明。190项完整Rust回归、371项工具测试、严格clippy与
+公开C头核对通过；这是源码检查，可协商真实连接仍待VM验收。

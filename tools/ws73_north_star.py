@@ -296,7 +296,7 @@ class Run:
         operation = 2 if domain == 'advertise' else 4
         prefix = [str(self.args.slctl.resolve()), '--adapter', identity['path'], domain]
         previous = next(((i, c) for i, c in reversed(list(enumerate(self.data['commands'])))
-                         if c['args'][:4] == prefix and c['args'][4:5] in [['on'], ['connectable'], ['off']]), None)
+                         if c['args'][:4] == prefix and c['args'][4:5] in [['on'], ['connectable'], ['negotiable'], ['off']]), None)
         if previous is None:
             # Keep the actual op5/6 result. This is not a successful new STOP;
             # absent/evicted provenance cannot be replaced by local idle state.

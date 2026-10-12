@@ -26,7 +26,9 @@ def result(text, owner, operation):
 
 def execute(run, a, b):
     """Run once, before ordinary RF rounds, and retain every failed command."""
-    record = dict(status='RUNNING', owners=[a,b], phases=[],
+    kind = getattr(run.args, 'connection_advertising', 'fixed-t')
+    if kind not in ['fixed-t','negotiable-t']: raise ValueError('explicit supported connection advertising posture required')
+    record = dict(status='RUNNING', advertising_kind=kind, owners=[a,b], phases=[],
         release_acceptance=False, last_file_acceptance=False, dup_acceptance=False,
         inflight_acceptance=False, ssap_acceptance=False,
         automatic_recovery_acceptance=False, start_wall_ns=time.time_ns())
@@ -37,7 +39,7 @@ def execute(run, a, b):
             phase = dict(caller=caller, peer=peer, start_wall_ns=time.time_ns())
             record['phases'].append(phase); run.save()
             run.check(caller); run.check(peer)
-            advertisement = run.ctl(peer, 'advertise', 'connectable')
+            advertisement = run.ctl(peer, 'advertise', 'negotiable' if kind=='negotiable-t' else 'connectable')
             parse_result(advertisement['stdout'], peer, 1)
             phase['advertisement_command'] = len(run.data['commands'])-1
             run.ctl(peer, 'show')
@@ -106,13 +108,15 @@ def corroborate(run, capture):
     record = run['connection_control']
     if record['status'] != 'CONNECTION_CONTROL_EVIDENCE_PENDING' or len(record['phases']) != 2:
         raise CaptureError('both original role-exchange connection phases required')
+    kind = record.get('advertising_kind','fixed-t')
+    if kind not in ['fixed-t','negotiable-t']: raise CaptureError('explicit recorded advertising posture required')
     proofs = []
     for phase in record['phases']:
         caller, peer = phase['caller'], phase['peer']
         advertisement = run['commands'][phase['advertisement_command']]
         query = run['commands'][phase['policy_query_command']]
         policies = re.findall(r'^  Radio policy: version=(\d+) adv_slots=(\d+)\.\.(\d+) tx_power_dbm=(-?\d+) scan_slots=(\d+)/(\d+)$', query['stdout'], re.M)
-        if (advertisement['exit'] or advertisement['args'][-2:] != ['advertise','connectable']
+        if (advertisement['exit'] or advertisement['args'][-2:] != ['advertise','negotiable' if kind=='negotiable-t' else 'connectable']
                 or query['exit'] or query['args'][-1] != 'show' or len(policies)!=1
                 or int(policies[0][0])!=3):
             raise CaptureError('explicit connectable request and policy readback required')
@@ -122,6 +126,9 @@ def corroborate(run, capture):
         expected[6:9]=maximum.to_bytes(3,'little'); expected[9]=7
         expected[12:18]=bytes.fromhex(peer['address'].replace(':',''))
         expected[25]=power&255; expected[33]=1; expected[43:45]=(200).to_bytes(2,'little')
+        if kind=='negotiable-t':
+            expected[1]=3;expected[2]=0;expected[33]=0;expected[34]=1
+            expected[37:39]=(100).to_bytes(2,'little');expected[39:41]=expected[37:39]
         advertisement_proof=command_reply(capture,peer,0x0c02,advertisement['start_wall_ns'],advertisement['end_wall_ns'],bytes(expected))
         scan = run['commands'][phase['scan_command']]
         parse_result(scan['stdout'],caller,3)

@@ -226,7 +226,11 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     daemon_remove_arg=''
     if grep -q 'ws73.daemon_remove=1' /proc/cmdline; then daemon_remove_arg='--daemon-cancel-remove'; fi
     connection_arg=''
-    if grep -q 'ws73.connection_verify=1' /proc/cmdline; then connection_arg='--connection-verify'; fi
+    if grep -q 'ws73.connection_verify=1' /proc/cmdline; then
+        posture=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connection_advertising=/){sub(/^ws73.connection_advertising=/,"",$i);print $i}}' /proc/cmdline)
+        case "$posture" in fixed-t|negotiable-t) ;; *) fail 'explicit connection posture' ;; esac
+        connection_arg="--connection-verify --connection-advertising $posture"
+    fi
     initializer_arg=''
     if grep -q 'ws73.initializer_lifecycle=1' /proc/cmdline; then initializer_arg='--initializer-lifecycle'; fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg $initializer_arg $connection_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'

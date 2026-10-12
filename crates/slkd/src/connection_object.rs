@@ -193,7 +193,15 @@ impl ConnectionIface {
             self.reference.lifetime,
             self.reference.handle,
         )
-        .map_err(|error| zbus::fdo::Error::Failed(format!("native channel bind: {error}")))?;
+        .map_err(|error| {
+            if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
+                zbus::fdo::Error::NotSupported(
+                    "channel mode or same-lifetime rebinding is not supported".into(),
+                )
+            } else {
+                zbus::fdo::Error::Failed(format!("native channel bind: {error}"))
+            }
+        })?;
         Ok(fd.into())
     }
     #[zbus(property)]

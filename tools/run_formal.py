@@ -48,7 +48,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent
     kernel = root / "linux"
@@ -57,7 +57,7 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
     smoke = Path("/opt/opensparklink-verification-tools-20261013/system-smoke-tests.json")
     sources = [kernel / "net/sparklink" / name for name in (
         "sle_channel_state.h", "sle_channel_socket.c", "sle_data_credit.rs",
-        "sle_native.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
+        "sle_native.rs", "sle_sessions.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
     sources += [kernel / "drivers/sparklink/ws73/usb.c", kernel / "include/linux/sparklink_native.h"]
     sources += sorted((repo / "formal").rglob("*.c"))
     sources += sorted((repo / "formal").rglob("*.rs"))
@@ -117,6 +117,18 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
         h = "rejected_atomic_submission_restores_exact_prior_ledger"
         checks = [("credit-" + h, "kani", repo,
                    ["cargo", "kani", "--manifest-path", "formal/credit/Cargo.toml", "--harness", h])]
+    if binding_only:
+        checks = [("binding-state", "cbmc", root,
+                   ["cbmc", str(repo / "formal/channel/binding_cbmc.c"), "--bounds-check", "--pointer-check",
+                    "--signed-overflow-check", "--unsigned-overflow-check", "--unwind", "20", "--unwinding-assertions", "--json-ui"])]
+    if session_only:
+        checks = [("session-lifetime", "tlc", repo / "formal/lifecycle",
+                   ["tlc", "-workers", "1", "-metadir", str(output / "tlc-session"),
+                    "-config", "ConnectionSession.cfg", "ConnectionSession.tla"])]
+    record["session_only_requested"] = session_only
+    record["session_scope"] = "abstract contract only: two controllers/two lifetimes, fd aliases0..2 and pending/running work0..1 each; last close does not restart CMTC, joined references before free; not C/Rust/VFS refinement, lost wakeups, Grant/NOCP/hardware proof"
+    record["binding_only_requested"] = binding_only
+    record["binding_scope"] = "actual binding initialization/representation/retire/busy/queue-space helpers; not C session work/VFS/kref refinement or hardware"
     record["credit_rollback_only_requested"] = credit_rollback_only
     record["ticket_only_requested"] = ticket_only
     record["ticket_scope"] = "Host-locked validation/atomic submit vs Host withdrawal CPU order, with a weak check-drop-submit control; not C/Rust refinement, HCD internals, callback UAF, Grant epoch or NOCP reuse barrier"
@@ -159,10 +171,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--session-only", action="store_true", help="bounded abstract Session/Binding/work lifetime TLC only")
+    parser.add_argument("--binding-only", action="store_true", help="actual binding pure-state CBMC only")
     parser.add_argument("--credit-rollback-only", action="store_true", help="only the new actual ledger rollback harness")
     parser.add_argument("--ticket-only", action="store_true", help="scope this run to submission/withdrawal LKMM and weak control")
     parser.add_argument("--budget-seconds", type=int, default=600)
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only))

@@ -168,6 +168,12 @@ pub(crate) fn exercise(
     if !(29..=249).contains(&message_bytes) {
         anyhow::bail!("message size must be 29..249 for the current basic channel");
     }
+    // Exercise the shared open-file description: dropping one descriptor
+    // must not retire the Binding while its duplicate is still used.
+    let duplicate = fd.try_clone()?;
+    drop(fd);
+    let fd = duplicate;
+    println!("NativeChannelDup: original_closed=1 duplicate_live=1");
     let linger = nix::libc::linger {
         l_onoff: 1,
         l_linger: 2,

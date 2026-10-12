@@ -823,7 +823,22 @@ impl Context {
             anyhow::bail!("connection is not known/live");
         }
         let fd: zbus::zvariant::OwnedFd = object.call("OpenChannel", &()).await?;
-        crate::channel::exercise(fd.into(), responder, rounds, bytes, boundaries)
+        crate::channel::exercise(fd.into(), responder, rounds, bytes, boundaries)?;
+        // Last-close must not silently recreate the connection CMTC session.
+        // Basic CUTC has no qualified close/rebind barrier in this lifetime.
+        let reopened: zbus::Result<zbus::zvariant::OwnedFd> = object.call("OpenChannel", &()).await;
+        match reopened {
+            Err(zbus::Error::MethodError(name, _, _))
+                if name.as_str() == "org.freedesktop.DBus.Error.NotSupported" =>
+            {
+                println!("NativeChannelLastClose: same_lifetime_reopen=NotSupported");
+                Ok(())
+            }
+            Err(error) => Err(error.into()),
+            Ok(_) => {
+                anyhow::bail!("same-lifetime CUTC unexpectedly rebound without a protocol barrier")
+            }
+        }
     }
     async fn cmd_connection_object(&self, path: &str, disconnect: bool) -> anyhow::Result<()> {
         let adapter = self.adapter_proxy().await?;

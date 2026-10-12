@@ -44,6 +44,10 @@ def execute(run, phase):
             app['stdout'],app['stderr']=[Path(p).read_text() for p in app['output_files']]
             app.update(exit=proc.returncode,end_wall_ns=time.time_ns());run.save()
             if proc.returncode:raise CaptureError('actual socket application failed: '+app['stderr'])
+        for app in row['applications']:
+            if app['stdout'].count('NativeChannelDup: original_closed=1 duplicate_live=1') != 1 or app['stdout'].count('NativeChannelLastClose: same_lifetime_reopen=NotSupported') != 1:
+                raise CaptureError('actual duplicate/last-close/reopen rejection receipts required')
+        row['session_binding_lifecycle'] = 'DUP_ALIVE_LAST_CLOSE_REBIND_UNSUPPORTED'
         application_frames(row)
         row['status']='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING'
     except BaseException as error:

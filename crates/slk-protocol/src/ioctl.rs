@@ -350,3 +350,4 @@ nix::ioctl_readwrite!(
     0x9d,
     super::SleConnectionResult
 );
+nix::ioctl_readwrite!(sl_link_snapshot, SL_MAGIC, 0x9e, super::SleLinkSnapshot);

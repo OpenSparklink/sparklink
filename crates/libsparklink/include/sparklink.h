@@ -16,6 +16,13 @@
  */
 #define SNOOP_PAYLOAD_MAX 320
 
+/**
+ * C header constants, checked against the canonical protocol declaration.
+ */
+#define LINK_SNAPSHOT_MAX 16
+
+#define LINK_SNAPSHOT_KNOWN 1
+
 #define WS73_DISCOVERY_POLICY_VERSION 3
 
 /**
@@ -218,6 +225,29 @@ typedef struct SPARKLINK_ALIGN(8) SleControllerSnapshot {
     int32_t error;
     uint8_t reserved[4];
 } SleControllerSnapshot;
+
+typedef struct SPARKLINK_ALIGN(8) SleLinkInfo {
+    uint64_t lifetime;
+    uint16_t handle;
+    uint8_t role;
+    uint8_t address_type;
+    SleAddr address;
+    uint8_t reserved[6];
+} SleLinkInfo;
+
+typedef struct SPARKLINK_ALIGN(8) SleLinkSnapshot {
+    uint64_t generation;
+    uint64_t event_seq;
+    uint64_t revision;
+    uint32_t version;
+    uint32_t profile;
+    uint32_t flags;
+    uint32_t count;
+    int32_t error;
+    uint16_t dev_index;
+    uint8_t reserved[2];
+    struct SleLinkInfo links[LINK_SNAPSHOT_MAX];
+} SleLinkSnapshot;
 
 typedef struct SPARKLINK_ALIGN(8) SleManagementQuery {
     uint64_t generation;
@@ -741,6 +771,16 @@ int slk_device_mask(const struct SlkAdapter *adapter, uint16_t *out);
 int slk_controller_snapshot(const struct SlkAdapter *adapter,
                             uint64_t generation,
                             struct SleControllerSnapshot *out);
+
+/**
+ * Observe physical links and an atomic replay barrier, without consuming events.
+ * Unknown is returned explicitly in flags/error; it is never an empty success.
+ * # Safety
+ * Non-null pointers are valid, aligned, nonoverlapping; out is writable.
+ */
+int slk_link_snapshot(const struct SlkAdapter *adapter,
+                      uint64_t generation,
+                      struct SleLinkSnapshot *out);
 
 /**
  * Acquire Managed(1) or Diagnostic(2) on this exact generation/fd. Kernel

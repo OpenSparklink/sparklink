@@ -862,6 +862,27 @@ impl Adapter {
         Ok(())
     }
 
+    /// Read observed physical links and the atomic event replay barrier for
+    /// this registration. It does not consume events or require a writer lease.
+    pub fn native_link_snapshot(&self, generation: u64) -> Result<SleLinkSnapshot> {
+        if generation == 0 {
+            return Err(crate::Error::InvalidParam(
+                "link generation must be nonzero",
+            ));
+        }
+        let mut snapshot = SleLinkSnapshot {
+            version: 1,
+            generation,
+            ..Default::default()
+        };
+        // SAFETY: writable initialized padding-free ABI storage.
+        unsafe { ioctl::sl_link_snapshot(self.raw_fd(), &mut snapshot)? };
+        if !snapshot.valid_for(generation) {
+            return Err(crate::Error::InvalidParam("malformed native link snapshot"));
+        }
+        Ok(snapshot)
+    }
+
     /// Author-only bounded result. None is absent/evicted, never success.
     /// This is available after local cancellation, release and owner fault.
     pub fn native_connection_result(

@@ -20,8 +20,13 @@ pub use slk_protocol as protocol;
 pub const CONTROLLER_EVENT_PAYLOAD_MAX: usize = 288;
 /// C header array bound, checked against the canonical protocol declaration.
 pub const SNOOP_PAYLOAD_MAX: usize = 320;
+/// C header constants, checked against the canonical protocol declaration.
+pub const LINK_SNAPSHOT_MAX: usize = 16;
+pub const LINK_SNAPSHOT_KNOWN: u32 = 1;
 const _: () = assert!(CONTROLLER_EVENT_PAYLOAD_MAX == slk_protocol::CONTROLLER_EVENT_PAYLOAD_MAX);
 const _: () = assert!(SNOOP_PAYLOAD_MAX == slk_protocol::SNOOP_PAYLOAD_MAX);
+const _: () = assert!(LINK_SNAPSHOT_MAX == slk_protocol::LINK_SNAPSHOT_MAX);
+const _: () = assert!(LINK_SNAPSHOT_KNOWN == slk_protocol::LINK_SNAPSHOT_KNOWN);
 
 pub type Result<T> = std::result::Result<T, Error>;
 

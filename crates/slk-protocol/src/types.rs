@@ -1383,6 +1383,75 @@ pub struct SleConnectionResult {
     pub reserved: [u8; 6],
 }
 
+pub const LINK_SNAPSHOT_KNOWN: u32 = 1;
+pub const LINK_SNAPSHOT_MAX: usize = 16;
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct SleLinkInfo {
+    pub lifetime: u64,
+    pub handle: u16,
+    pub role: u8,
+    pub address_type: u8,
+    pub address: SleAddr,
+    pub reserved: [u8; 6],
+}
+#[repr(C, align(8))]
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SleLinkSnapshot {
+    pub generation: u64,
+    pub event_seq: u64,
+    pub revision: u64,
+    pub version: u32,
+    pub profile: u32,
+    pub flags: u32,
+    pub count: u32,
+    pub error: i32,
+    pub dev_index: u16,
+    pub reserved: [u8; 2],
+    pub links: [SleLinkInfo; LINK_SNAPSHOT_MAX],
+}
+impl SleLinkSnapshot {
+    /// Validate a complete bounded reply before publishing any peer state.
+    /// Unknown has an error and an empty *representation*, not an empty link set.
+    pub fn valid_for(&self, generation: u64) -> bool {
+        if self.version != 1
+            || generation == 0
+            || self.generation != generation
+            || self.profile == 0
+            || self.reserved != [0; 2]
+            || self.count as usize > LINK_SNAPSHOT_MAX
+        {
+            return false;
+        }
+        if self.flags == 0 {
+            return self.error < 0
+                && self.count == 0
+                && self.links.iter().all(|v| *v == SleLinkInfo::default());
+        }
+        if self.flags != LINK_SNAPSHOT_KNOWN || self.error != 0 {
+            return false;
+        }
+        let count = self.count as usize;
+        for (i, link) in self.links[..count].iter().enumerate() {
+            if link.lifetime == 0
+                || link.lifetime > self.revision
+                || link.role > 1
+                || link.address == [0; 6]
+                || link.address == [255; 6]
+                || link.reserved != [0; 6]
+                || self.links[..i]
+                    .iter()
+                    .any(|old| old.handle == link.handle || old.lifetime == link.lifetime)
+            {
+                return false;
+            }
+        }
+        self.links[count..]
+            .iter()
+            .all(|v| *v == SleLinkInfo::default())
+    }
+}
+
 impl Default for SleControllerEvent {
     fn default() -> Self {
         // SAFETY: repr(C) integers and byte arrays accept zero. seq/generation
@@ -1524,5 +1593,86 @@ mod ws73_link_tests {
                 reason: 0x13
             })
         );
+    }
+}
+
+#[cfg(test)]
+mod link_snapshot_tests {
+    use super::*;
+    #[test]
+    fn malformed_or_unknown_table_never_becomes_empty_known_state() {
+        let mut s = SleLinkSnapshot {
+            version: 1,
+            generation: 7,
+            profile: 1,
+            flags: LINK_SNAPSHOT_KNOWN,
+            ..Default::default()
+        };
+        assert!(s.valid_for(7));
+        assert!(!s.valid_for(8));
+        s.flags = 0;
+        assert!(!s.valid_for(7));
+        s.error = -117;
+        assert!(s.valid_for(7));
+        s.count = 1;
+        assert!(!s.valid_for(7));
+        s.count = 0;
+        s.links[15].lifetime = 1;
+        assert!(!s.valid_for(7));
+    }
+    #[test]
+    fn complete_lifetime_and_identity_checked_before_any_peer_publication() {
+        let mut s = SleLinkSnapshot {
+            version: 1,
+            generation: 7,
+            profile: 1,
+            flags: LINK_SNAPSHOT_KNOWN,
+            revision: 3,
+            count: 1,
+            ..Default::default()
+        };
+        s.links[0] = SleLinkInfo {
+            lifetime: 3,
+            handle: 0,
+            role: 1,
+            address_type: 0,
+            address: [1; 6],
+            reserved: [0; 6],
+        };
+        assert!(s.valid_for(7));
+        for bad in [
+            SleLinkInfo {
+                lifetime: 0,
+                ..s.links[0]
+            },
+            SleLinkInfo {
+                lifetime: 4,
+                ..s.links[0]
+            },
+            SleLinkInfo {
+                role: 2,
+                ..s.links[0]
+            },
+            SleLinkInfo {
+                address: [0; 6],
+                ..s.links[0]
+            },
+            SleLinkInfo {
+                reserved: [1; 6],
+                ..s.links[0]
+            },
+        ] {
+            let mut t = s;
+            t.links[0] = bad;
+            assert!(!t.valid_for(7));
+        }
+        s.count = 2;
+        s.links[1] = s.links[0];
+        assert!(!s.valid_for(7));
+        s.links[1].handle = 1;
+        s.links[1].lifetime = 2;
+        assert!(s.valid_for(7));
+        s.links[15].lifetime = 1;
+        assert!(!s.valid_for(7));
     }
 }

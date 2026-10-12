@@ -84,6 +84,28 @@ pub unsafe extern "C" fn slk_controller_snapshot(
     }
 }
 
+/// Observe physical links and an atomic replay barrier, without consuming events.
+/// Unknown is returned explicitly in flags/error; it is never an empty success.
+/// # Safety
+/// Non-null pointers are valid, aligned, nonoverlapping; out is writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_link_snapshot(
+    adapter: *const SlkAdapter,
+    generation: u64,
+    out: *mut SleLinkSnapshot,
+) -> c_int {
+    let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter.inner.native_link_snapshot(generation) {
+        Ok(value) => {
+            *out = value;
+            0
+        }
+        Err(error) => errno(error),
+    }
+}
+
 /// Acquire Managed(1) or Diagnostic(2) on this exact generation/fd. Kernel
 /// CAP_NET_ADMIN and ownership checks apply; a lease alone grants no authority.
 /// # Safety

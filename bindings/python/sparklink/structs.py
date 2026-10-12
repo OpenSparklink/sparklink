@@ -373,3 +373,19 @@ class SleConnectionResult(ctypes.Structure):
         ("handle", ctypes.c_uint32), ("flags", ctypes.c_uint32),
         ("dev_index", ctypes.c_uint16), ("reserved", ctypes.c_uint8 * 6),
     ]
+
+
+class SleLinkInfo(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [("lifetime", ctypes.c_uint64), ("handle", ctypes.c_uint16),
+        ("role", ctypes.c_uint8), ("address_type", ctypes.c_uint8),
+        ("address", ctypes.c_uint8 * 6), ("reserved", ctypes.c_uint8 * 6)]
+
+
+class SleLinkSnapshot(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [("generation", ctypes.c_uint64), ("event_seq", ctypes.c_uint64),
+        ("revision", ctypes.c_uint64), ("version", ctypes.c_uint32),
+        ("profile", ctypes.c_uint32), ("flags", ctypes.c_uint32), ("count", ctypes.c_uint32),
+        ("error", ctypes.c_int32), ("dev_index", ctypes.c_uint16), ("reserved", ctypes.c_uint8 * 2),
+        ("links", SleLinkInfo * 16)]

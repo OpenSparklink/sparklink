@@ -13,6 +13,7 @@ from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
+    SleLinkSnapshot,
 )
 
 _native_library = None
@@ -36,6 +37,7 @@ def _get_native_lib():
         "slk_adapter_fd": [handle],
         "slk_device_mask": [handle, ctypes.POINTER(ctypes.c_uint16)],
         "slk_controller_snapshot": [handle, u64, ctypes.POINTER(SleControllerSnapshot)],
+        "slk_link_snapshot": [handle, u64, ctypes.POINTER(SleLinkSnapshot)],
         "slk_management_acquire": [handle, u64, u32, ctypes.POINTER(u64)],
         "slk_management_query": [handle, u64, ctypes.POINTER(SleManagementQuery)],
         "slk_management_release": [handle, u64, u64, u32],
@@ -149,6 +151,12 @@ class NativeAdapter:
     def management_status(self):
         result = SleManagementQuery()
         self._invoke('slk_management_query', self.generation, ctypes.byref(result))
+        return result
+
+    def link_snapshot(self):
+        """Observed physical table with an atomic event replay barrier."""
+        result = SleLinkSnapshot()
+        self._invoke('slk_link_snapshot', self.generation, ctypes.byref(result))
         return result
 
     def acquire_management(self, mode):

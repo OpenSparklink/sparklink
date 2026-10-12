@@ -14,6 +14,7 @@ from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
+    SleLinkSnapshot,
 )
 
 
@@ -40,6 +41,7 @@ class NativeBindingTests(unittest.TestCase):
         for name, args, value in [
             ("slk_device_mask", [], ctypes.c_uint16(0xABCD)),
             ("slk_controller_snapshot", [1], SleControllerSnapshot(generation=99)),
+            ("slk_link_snapshot", [1], SleLinkSnapshot(generation=99)),
             ("slk_management_query", [1], SleManagementQuery(lease=99)),
             ("slk_management_acquire", [1, 1], ctypes.c_uint64(99)),
             ("slk_connection_result", [1, 1], SleConnectionResult(request_id=99)),

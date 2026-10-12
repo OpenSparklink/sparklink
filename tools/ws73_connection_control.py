@@ -110,6 +110,9 @@ def execute(run, a, b):
             if getattr(run.args, 'acb_transport_probe', False):
                 from ws73_acb_transport_probe import execute as acb_execute
                 acb_execute(run, phase)
+            if getattr(run.args, 'channel_socket_verify', False):
+                from ws73_channel_socket import execute as channel_execute
+                channel_execute(run, phase)
             phase['disconnect_command'] = len(run.data['commands'])
             row = run.command([str(run.args.slctl), '--adapter', caller['path'],
                 'disconnect-object',selected['path']], 18, collection='commands')

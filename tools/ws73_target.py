@@ -106,7 +106,7 @@ def prepare(args):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
-                  HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -198,7 +198,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -415,7 +415,9 @@ def _run(args):
     daemon_crash=bool(getattr(args,'daemon_crash',False))
     connection_verify=bool(getattr(args,'connection_verify',False))
     acb_probe=bool(getattr(args,'acb_transport_probe',False))
+    channel_socket=bool(getattr(args,'channel_socket_verify',False))
     link_resync=bool(getattr(args,'daemon_link_resync',False))
+    if channel_socket and (not connection_verify or acb_probe or link_resync):raise ValueError('ordinary channel socket requires a separate real connection gate without test module')
     if acb_probe and (not connection_verify or link_resync):raise ValueError('ACB selftest requires separate explicit connection gate')
     if link_resync and not connection_verify:raise ValueError('link resync requires explicit ordinary native connection gate')
     connection_advertising=getattr(args,'connection_advertising','fixed-t')
@@ -530,6 +532,7 @@ def _run(args):
     m['connection_verify_requested']=connection_verify
     m['live_daemon_link_resync']=link_resync
     m['acb_transport_selftest_requested']=acb_probe
+    m['channel_socket_verification_requested']=channel_socket
     m['ordinary_channel_socket_acceptance']=False
     m['connection_advertising_requested']=connection_advertising if connection_verify else None
     m['daemon_crash_requested']=daemon_crash
@@ -648,6 +651,7 @@ def _run(args):
                      (f' ws73.connection_verify=1 ws73.connection_advertising={connection_advertising}' if connection_verify else '')+
                      (' ws73.link_resync=1' if link_resync else '')+
                      (' ws73.acb_probe=1' if acb_probe else '')+
+                     (' ws73.channel_socket=1' if channel_socket else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
                      (' ws73.diagnostic=1' if diagnostic else '')+
@@ -896,6 +900,11 @@ def _run(args):
                     from ws73_acb_transport_probe import corroborate as acb_corroborate
                     m['acb_transport_selftest_corroboration']=acb_corroborate(control,capture,(share/'kernel.log').read_text())
                     m['expected_external_selftest_taint']=4096
+                if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
+                if channel_socket:
+                    from ws73_channel_socket import corroborate as channel_corroborate
+                    m['channel_socket_corroboration']=channel_corroborate(control,capture)
+                    m['ordinary_channel_socket_acceptance']=True
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
                     raise ValueError('explicit daemon crash request and evidence must agree')
                 if daemon_crash:
@@ -1129,6 +1138,7 @@ def main():
             cmd.add_argument('--diagnostic-deadline-verify',action='store_true',help='100ms queued expiry with continuous same-ID retries; requires --diagnostic-cancel-verify and real fault-recovery mode')
             cmd.add_argument('--diagnostic-cancel-verify',action='store_true',help='hold one real IN81 to test active/queued cancel and late reply; requires --diagnostic-verify and --fault-recovery')
             cmd.add_argument('--daemon-link-resync',action='store_true',help='actual VM subscriber pause, real event ring overflow and canonical resync; requires connection verification')
+            cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')
             cmd.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t',help='explicit announcement contrast for --connection-verify')

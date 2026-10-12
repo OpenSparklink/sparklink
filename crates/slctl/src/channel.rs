@@ -34,7 +34,15 @@ fn wait(fd: &OwnedFd, events: i16, deadline: Instant) -> anyhow::Result<()> {
             }
             return Err(error.into());
         }
-        if p.revents & (nix::libc::POLLERR | nix::libc::POLLHUP | nix::libc::POLLNVAL) != 0 {
+        if p.revents & (nix::libc::POLLERR | nix::libc::POLLNVAL) != 0 {
+            anyhow::bail!("channel socket fault/link-down: {}", p.revents);
+        }
+        // A closed peer may leave a complete readable seqpacket. Consume it
+        // before treating HUP as EOF; a kernel fault remains an error above.
+        if events & nix::libc::POLLIN != 0 && p.revents & nix::libc::POLLIN != 0 {
+            return Ok(());
+        }
+        if p.revents & nix::libc::POLLHUP != 0 {
             anyhow::bail!("channel socket fault/link-down: {}", p.revents);
         }
         if p.revents & events != 0 {
@@ -116,6 +124,24 @@ fn validate(bytes: &[u8], sequence: u32, reply: bool) -> anyhow::Result<()> {
 pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Result<()> {
     if !(1..=20).contains(&rounds) {
         anyhow::bail!("rounds must be 1..20");
+    }
+    let linger = nix::libc::linger {
+        l_onoff: 1,
+        l_linger: 2,
+    };
+    // SAFETY: complete initialized option and live owned socket. This finite
+    // close wait drains queued TX; only actual opposite RX proves delivery.
+    if unsafe {
+        nix::libc::setsockopt(
+            fd.as_raw_fd(),
+            nix::libc::SOL_SOCKET,
+            nix::libc::SO_LINGER,
+            (&linger as *const nix::libc::linger).cast(),
+            std::mem::size_of_val(&linger) as nix::libc::socklen_t,
+        )
+    } != 0
+    {
+        return Err(std::io::Error::last_os_error().into());
     }
     println!(
         "NativeChannelOpened: role={} rounds={rounds}",

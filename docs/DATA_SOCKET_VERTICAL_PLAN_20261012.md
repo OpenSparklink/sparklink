@@ -201,3 +201,19 @@ c7d5868113c8 完整内核编译通过（无编译器告警，保留一条 make j
 配置与console哈希。21e0600c82ef已签名推送修复：补充注册及lockdep名称，并加编译期
 表长度守卫。修复后的构建、启动与普通用户真实socket验收分别重新核对，不继承旧标签。
 这个可定位的软件启动bug不代表历史WS73自然bulk超时/消失根因已经查明。
+
+## 首次普通用户 socket 实机：3轮通过，最后关闭丢包，整轮失败
+
+21e0600c82ef/28a0d47 的真实两只 WS73 独立 Ready、双方 handle0/lifetime1，
+两个 uid1000/caps0 应用完成 CMTC 能力交换与前三轮随机线上序号/nonce/载荷往返。
+第4轮对端确实接收并校验请求，send返回后立即关闭；软件TX中的最后回复被清理。
+原端十秒超时，整轮判FAIL，未进行角色交换或后续RF/QMP资格。
+[独立失败记录](evidence/ws73-channel-last-reply-close-failure-20261013.json)保留
+527包/零drop的capture及应用记录哈希。22条两端SDU记录覆盖CMTC和已提交数据；
+发送方实际NOCP6，对端5，最后回复无USB TX/对端RX，不能用应用send日志冒充成功。
+
+4a3dc86ade58已签名推送显式SO_LINGER支持：最后fd关闭允许真实worker在有界时间内
+提交已准入TX（上限5秒），超时或故障仍丢弃未发送部分；不清除在途debt，也不宣称
+USB成功等于对端收到。slctl应用显式请求2秒linger；本地seqpacket回归同时修复
+POLLIN|HUP下完整消息未读取就提前失败的问题。实际对端收包与NOCP仍需重新验收。
+未设置linger的关闭保持丢弃未发送队列语义，dup/断链/耗尽等仍需独立真实矩阵。

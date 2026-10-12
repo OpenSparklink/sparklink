@@ -28,7 +28,10 @@ pub(crate) fn open(
     lifetime: u64,
     handle: u16,
     lease: u64,
+    directions: u32,
+    security: u32,
 ) -> std::io::Result<OwnedFd> {
+    validate(directions, security)?;
     let address = Address {
         family: 46,
         controller,
@@ -42,8 +45,8 @@ pub(crate) fn open(
         remote_tcid: 31,
         pi: 241,
         reserved: [0; 3],
-        directions: 3,
-        security: 0,
+        directions,
+        security,
     };
     // SAFETY: scalar syscall arguments; successful socket returns an owned fd.
     let raw = unsafe {
@@ -70,4 +73,40 @@ pub(crate) fn open(
         return Err(std::io::Error::last_os_error());
     }
     Ok(fd)
+}
+
+/// Same unpublished TX/RX bits as kernel UAPI. Protected requirements remain
+/// unsupported until a real trusted controller security state is available.
+pub(crate) fn validate(directions: u32, security: u32) -> std::io::Result<()> {
+    if directions == 0 || directions & !3 != 0 {
+        return Err(std::io::Error::from_raw_os_error(nix::libc::EINVAL));
+    }
+    if security != 0 {
+        return Err(std::io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP));
+    }
+    Ok(())
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn scoped_requests_reject_before_socket_creation() {
+        for directions in [0, 4, 7, u32::MAX] {
+            assert_eq!(
+                open(0, 1, 1, 0, 1, directions, 0)
+                    .unwrap_err()
+                    .raw_os_error(),
+                Some(nix::libc::EINVAL)
+            );
+        }
+        for security in [1, 2, u32::MAX] {
+            assert_eq!(
+                open(0, 1, 1, 0, 1, 3, security).unwrap_err().raw_os_error(),
+                Some(nix::libc::EOPNOTSUPP)
+            );
+        }
+        for directions in [1, 2, 3] {
+            validate(directions, 0).unwrap();
+        }
+    }
 }

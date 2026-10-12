@@ -130,37 +130,19 @@ impl ConnectionIface {
     }
 }
 
-#[interface(name = "org.sparklink.Connection")]
 impl ConnectionIface {
-    async fn get_info(&self) -> Info {
-        let (known, connected) = self.observation().await;
-        (
-            self.generation,
-            self.reference.lifetime,
-            self.reference.handle,
-            self.reference.role,
-            self.reference.address_type,
-            crate::dbus_iface::format_addr(&self.reference.address),
-            known,
-            connected,
-        )
-    }
-    async fn submit_disconnect(&self, request_id: u64) -> zbus::fdo::Result<()> {
-        if self.state.lock().await.controller.generation != self.generation {
-            return Err(zbus::fdo::Error::Failed(
-                "retired connection registration".into(),
-            ));
-        }
-        crate::connection::submit(
-            &self.state,
-            request_id,
-            self.reference.address,
-            self.reference.address_type,
-            Some(self.reference),
-        )
-        .await
-    }
-    async fn open_channel(&self) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
+    async fn open_authorized_channel(
+        &self,
+        directions: u32,
+        security: u32,
+    ) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
+        crate::channel::validate(directions, security).map_err(|error| {
+            if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
+                zbus::fdo::Error::NotSupported("protected channel security is not supported".into())
+            } else {
+                zbus::fdo::Error::InvalidArgs("invalid channel authorization directions".into())
+            }
+        })?;
         let (index, lease) = {
             let st = self.state.lock().await;
             if !st.present
@@ -196,6 +178,8 @@ impl ConnectionIface {
             self.reference.lifetime,
             self.reference.handle,
             token,
+            directions,
+            security,
         )
         .map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
@@ -207,6 +191,48 @@ impl ConnectionIface {
             }
         })?;
         Ok(fd.into())
+    }
+}
+
+#[interface(name = "org.sparklink.Connection")]
+impl ConnectionIface {
+    async fn get_info(&self) -> Info {
+        let (known, connected) = self.observation().await;
+        (
+            self.generation,
+            self.reference.lifetime,
+            self.reference.handle,
+            self.reference.role,
+            self.reference.address_type,
+            crate::dbus_iface::format_addr(&self.reference.address),
+            known,
+            connected,
+        )
+    }
+    async fn submit_disconnect(&self, request_id: u64) -> zbus::fdo::Result<()> {
+        if self.state.lock().await.controller.generation != self.generation {
+            return Err(zbus::fdo::Error::Failed(
+                "retired connection registration".into(),
+            ));
+        }
+        crate::connection::submit(
+            &self.state,
+            request_id,
+            self.reference.address,
+            self.reference.address_type,
+            Some(self.reference),
+        )
+        .await
+    }
+    async fn open_channel(&self) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
+        self.open_authorized_channel(3, 0).await
+    }
+    async fn open_channel_scoped(
+        &self,
+        directions: u32,
+        security: u32,
+    ) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
+        self.open_authorized_channel(directions, security).await
     }
     #[zbus(property)]
     fn generation(&self) -> u64 {
@@ -239,5 +265,45 @@ impl ConnectionIface {
     #[zbus(property)]
     async fn connected(&self) -> bool {
         self.observation().await.1
+    }
+}
+
+#[cfg(test)]
+mod grant_tests {
+    use super::*;
+    use std::sync::Arc;
+    use tokio::sync::Mutex;
+
+    #[tokio::test]
+    async fn actual_scoped_handler_rejects_before_held_business_state() {
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            Arc::new(libsparklink::Adapter::open("/dev/null").unwrap()),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(
+                std::path::Path::new("/tmp"),
+                "grant-policy-rejection",
+            ),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let interface = ConnectionIface::new(state.clone(), 7, SleLinkInfo::default());
+        let _held = state.lock().await;
+        for directions in [0, 4, u32::MAX] {
+            let result = tokio::time::timeout(
+                std::time::Duration::from_millis(100),
+                interface.open_channel_scoped(directions, 0),
+            )
+            .await
+            .unwrap();
+            assert!(matches!(result, Err(zbus::fdo::Error::InvalidArgs(_))));
+        }
+        for security in [1, 2, u32::MAX] {
+            let result = tokio::time::timeout(
+                std::time::Duration::from_millis(100),
+                interface.open_channel_scoped(3, security),
+            )
+            .await
+            .unwrap();
+            assert!(matches!(result, Err(zbus::fdo::Error::NotSupported(_))));
+        }
     }
 }

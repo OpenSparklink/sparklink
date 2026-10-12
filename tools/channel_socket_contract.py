@@ -41,7 +41,7 @@ int main(void) {
     rust = structure + '''
 fn main() {
  let controller=19;let generation=0x123456789abcdef0;let lifetime=0xfedcba9876543210;
- let lease=0x456789abcdef0123;let handle=123;
+ let lease=0x456789abcdef0123;let handle=123;let directions=3;let security=0;
 ''' + initializer + '''
  assert_eq!(core::mem::size_of_val(&address),48);
  // All layout bytes are explicit fields; C/Rust compare includes reserved zeros.

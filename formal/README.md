@@ -91,3 +91,11 @@ PEEK的skb引用；后续用户复制在锁外，已准入复制可完成。Neve
 完整C/Rust/VFS/queue引用、等待唤醒、硬件或自然恢复。actual sl_recvmsg/sl_take在
 selftest直接编译，Host授权、等待/锁/复制是显式依赖；含撤销后到包、零包/PEEK/TRUNC、
 EFAULT/信号/timeout、unknown EAGAIN不得进入无tail等待。VM受控撤销仍单独验收。
+
+## Immutable SocketBinding Grant
+
+`--fd-grant-only`直接包含生产`sle_channel_grant.h`，任意u64/u32 scope/掩码验证
+未mint状态拒绝、constructor接受范围及失败不改变旧值、全身份一致与TX/RX方向约束。
+protected security目前不能mint。范围仅pure predicate/constructor；不是Host epoch、
+C/VFS/kref refinement或可信安全状态/降级证明。实际C sl_permits/sl_tx_access、准入、
+USB consent、RX分流/取包/poll由source selftest编译。真实方向与原数据保持验收独立。

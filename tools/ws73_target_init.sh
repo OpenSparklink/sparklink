@@ -162,6 +162,7 @@ if grep -q 'ws73.connected_case=' /proc/cmdline; then
     connected_reply=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connected_reply=/){sub(/^ws73.connected_reply=/,"",$i);print $i}}' /proc/cmdline)
     connected_reply_arg=''
     if grep -qw ws73.link_snapshot=1 /proc/cmdline; then connected_reply_arg='--link-snapshot'; fi
+    if grep -qw ws73.channel_directions=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --channel-directions"; fi
     if grep -qw ws73.channel_grant=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --channel-grant"; fi
     if grep -qw ws73.peer_binding=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --peer-binding"; fi
     if [ -n "$connected_reply" ]; then connected_reply_arg="--reply-hold $connected_reply"; fi

@@ -15,6 +15,10 @@
 等待/copy在锁外；actual C函数体sanitizer与限定LKMM通过，新VM40短/249保持回归、CI9/9。
 原40/249资格为nonblocking recv；新下述六项File子门禁取得真正blocking recv见证，完整DG09仍缺。
 
+开发切片Kaab814ac176b：canonical Grant存Binding，全scope/TX/RX检查接通；RX-only
+发送先拒绝，不触碰用户payload。scoped broker入口统一；protected security仍NotSupported。
+实际C/ABI/broker拒绝测试和pure CBMC限定通过，尚待准确新源码VM回归，不能继承旧资格。
+
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
 | WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前Kf1034577ecc1/Ud570819两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |

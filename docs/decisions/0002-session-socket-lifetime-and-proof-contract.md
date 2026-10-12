@@ -208,3 +208,15 @@ release/最后management fd/dup六用例：普通UID1000/caps0、继承fd先清�
 源码Runtime编译Ud570819，验收工具分325d377/22635f8，后者仅修CLI成功状态exit映射。
 历史supervisor exit1留存，前两项设备及独立封存通过；没有重跑未变化设备行为。
 完整Grant仍缺方向/安全、daemon死亡/SCM_RIGHTS、受控在途USB/迟到真实RX及完整VFS证明。
+
+## Binding Grant 所有权与方向切片（Kaab814ac176b，新实机待验）
+
+Grant存在SocketBinding，scope含controller/generation/lifetime/epoch/handle及local/
+remote TCID/PI；bind发布后不可变。Channel持sock引用并在Session锁下借用同一Grant，
+不复制策略。每次软件TX准入/实际USB提交、RX路由/取包与poll按方向和全scope核对。
+RX-only发送在分配/复制用户内存和等待协商前拒绝；最终队列与USB仍重新验证。
+TX-only/RX-only或两者有效；零/未知位EINVAL。Session CMTC不借应用TX/RX权限。
+securityNONE是现有未加密语义，ENCRYPTED/AUTHENTICATED定义但未接可信状态前明确
+NotSupported；不安装测试密钥或宣布Encrypted。S5接可信状态后再实现满足要求及降级。
+slkd OpenChannel保留双向/NONE行为，新OpenChannelScoped(directions,security)统一路径；
+invalid/protected在锁/系统调用前拒绝。当前源码回归与pure CBMC限定通过，新真实资格待验。

@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T21:22:48.422560+00:00",
+  "updated_at_utc": "2026-10-12T21:42:39.637931+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,7 +26,7 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
+    "linux": "aab814ac176bff685db6bbe5f70514f10454fe32",
     "userspace": "381dc66"
   },
   "qualified_source_heads": {
@@ -279,15 +279,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Six real pre-daemon controlled Managed File Grant cases passed, actual UID1000/caps0 blocked syscall witnesses,16 business rounds, old-fd denial after successor and peer radio/lease isolation. Full original architecture/Grant/security/inflight/recovery exits open.",
+  "current_batch": "Canonical immutable per-Binding scoped/directional Grant implemented; early TX, queue/USB/RX/poll checks, unified scoped broker and explicit protected rejection. Pure/source tests scoped pass; precise new VM qualification pending, previous evidence retained.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "Original28 scope preserved;14 six-case controlled File Grant comments read back exact, all original body hashes unchanged and OPEN",
   "current_implementation_heads": {
-    "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
+    "linux": "aab814ac176bff685db6bbe5f70514f10454fe32",
     "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
   },
   "next_resume_tasks": [
-    "WP05: implement per-Binding Grant direction/security contract and production unsupported checks using qualified Kernel f103; then real daemon owner-death and SCM_RIGHTS/fd-transfer/inflight withdrawal gates, retain existing six File cases. Scope full original S0-S6 unchanged; architecture-first before Engine.",
+    "Seal exact Kaab814/current user scope proof, full kernel and new VM normal40/249 plus two actual TX-only\u2192RX-only cases and six File withdrawal regressions. Then SCM_RIGHTS/daemon ownership death/inflight and S5 trusted security, with whole S0-S6 intact.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -323,5 +323,5 @@
   "latest_issue_progress_receipt": "docs/evidence/controlled-grant-issues-20261013.json",
   "latest_evidence_commit": "381dc66",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: real ordinary blocked RX/control File withdrawal tool and six independently USB-correlated hardware cases, signed tool/CLI fix, preserving full scope"
+  "current_goal_turn_classification": "progress: production fd Grant identity/direction enforcement, early TX access, scoped broker and actual source/pure proof harnesses"
 }

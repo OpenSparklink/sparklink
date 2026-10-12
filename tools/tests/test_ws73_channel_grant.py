@@ -78,3 +78,33 @@ class GrantWireProof(unittest.TestCase):
         for changed in [sdus[:-1],sdus+[sdus[0]],sdus+[dict(sdus[0],data=row['after_successor']['marker'])]]:
             with patch('ws73_channel_grant.reassemble_acb',return_value=changed),self.assertRaises(CaptureError):
                 corroborate(row,outer,{})
+
+class DirectionalGrantProof(unittest.TestCase):
+    def test_directional_scope_requires_opposite_action_and_bind_denial(self):
+        from unittest.mock import patch
+        from ws73_channel_grant import corroborate
+        from ws73_capture import CaptureError
+        row,outer=fixture();row['directional']=True
+        for key in ['armed','blocking_witness','blocked_result']:row.pop(key)
+        row['bind_rejections']=[]
+        for n,owner in enumerate(row['owners']):
+            address=Address.from_buffer_copy(bytes.fromhex(owner['address']));address.directions=1 if n==0 else 2;owner['address']=bytes(address).hex()
+            for directions,security,error in [(0,0,22),(4,0,22),(3,1,95),(3,2,95)]:
+                bad=Address.from_buffer_copy(bytes(address));bad.directions=directions;bad.security=security
+                row['bind_rejections'].append(dict(controller=n,input=bytes(bad).hex(),errno=error))
+        row['business']=row['business'][:1];business=row['business'][0];business.update(start_wall_ns=10,end_wall_ns=19)
+        payload=business['payload'];business['applications']=[dict(stage='oneway',initiator=n==0,sent=payload if n==0 else None,received=payload if n==1 else None,direction_errno=13,denied_marker=(b'SCPDENY1'+bytes([n])*32).hex()) for n in range(2)]
+        outer['usb']=[dict(bus=1,device=2+n) for n in range(2)]
+        frame=(b'\x1f\0'+(62).to_bytes(2,'little')+b'\xf1'+bytes.fromhex(payload)).hex()
+        sdus=[dict(bus=1,device=2+n,handle=0,direction='out' if n==0 else 'in',data=frame,wall_ns=15) for n in range(2)]
+        verify(row,outer)
+        with patch('ws73_channel_grant.reassemble_acb',return_value=sdus):
+            proof=corroborate(row,outer,{});self.assertEqual(proof['one_way_deliveries'],1);self.assertEqual(proof['business_round_trips'],0);self.assertFalse(proof['blocked_rx_acceptance'])
+        for kind in ['direction','denied','bind','missing','marker']:
+            changed=copy.deepcopy(row);packets=copy.deepcopy(sdus)
+            if kind=='direction':address=Address.from_buffer_copy(bytes.fromhex(changed['owners'][0]['address']));address.directions=3;changed['owners'][0]['address']=bytes(address).hex()
+            elif kind=='denied':changed['business'][0]['applications'][1]['direction_errno']=11
+            elif kind=='bind':changed['bind_rejections'][0]['errno']=95
+            elif kind=='missing':packets.pop()
+            else:packets.append(dict(sdus[0],data=business['applications'][1]['denied_marker']))
+            with self.subTest(kind=kind),patch('ws73_channel_grant.reassemble_acb',return_value=packets),self.assertRaises((ValueError,CaptureError)):corroborate(changed,outer,{})

@@ -326,6 +326,8 @@ def run(args):
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
+    directional=getattr(args,'channel_directions',False)
+    if directional and not channel_gate:raise ValueError('directional scope requires real channel Grant gate')
     if channel_gate and reply_hold:raise ValueError("separate established channel Grant gate required")
     if snapshot_gate and reply_hold:raise ValueError('separate established snapshot gate required')
     if binding_gate and reply_hold:raise ValueError('separate established peer binding gate required')
@@ -340,6 +342,7 @@ def run(args):
         raise ValueError('explicit matching link snapshot boot mode required')
     if binding_gate != ('ws73.peer_binding=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('explicit peer binding boot mode required')
     if channel_gate != ("ws73.channel_grant=1" in Path("/proc/cmdline").read_text().split()):raise ValueError("explicit channel Grant boot mode required")
+    if directional != ('ws73.channel_directions=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('explicit directional Grant boot mode required')
     args.output.mkdir(parents=True,exist_ok=False)
     r=dict(format_version=1,status='STARTING',case=args.case,index=args.index,daemon_running=False,
         synthetic_support=False,physical_acceptance=False,automatic_recovery_acceptance=False,
@@ -442,7 +445,7 @@ def run(args):
                 r['binding_after']=bytes(observers[i].link_snapshot()).hex();save()
         if channel_gate:
             from ws73_channel_grant import Gate
-            grant=Gate(observers,snapshots,leases,i,r,save)
+            grant=Gate(observers,snapshots,leases,i,r,save,directional)
             grant.exchange('before')
         r['before_snapshots']=[bytes(a.snapshot()).hex() for a in observers]
         r['held']=bytes(observers[i].management_status()).hex();r['peer_before']=bytes(observers[p].management_status()).hex()
@@ -454,7 +457,7 @@ def run(args):
             r['after_first_management']=bytes(observers[i].management_status()).hex()
             if any(e['event'] in [5,0x1405] for events in r['events'] for e in events):raise ValueError('first dup close disconnected actual link')
         if grant and args.case=='dup':grant.exchange('after_first_control_close')
-        if grant:grant.arm()
+        if grant and not directional:grant.arm()
         r['release_before_wall_ns']=time.time_ns();save()
         if args.case=='release':writers[i].release_management(leases[i],1)
         elif args.case=='close':writers[i].close()
@@ -522,6 +525,7 @@ if __name__=='__main__':
     parser.add_argument('--reply-hold',choices=['status','outcome'],help='retain actual original Create reply before File withdrawal')
     parser.add_argument('--link-snapshot',action='store_true',help='actual established physical table/lifetime/barrier and VFS read errors')
     parser.add_argument('--peer-binding',action='store_true',help='real mismatching peer/lifetime references reject before any wire traffic')
+    parser.add_argument('--channel-directions',action='store_true',help='real TX-only to RX-only scope, forbidden actions and protected request rejection')
     parser.add_argument('--channel-grant',action='store_true',help='ordinary duplicated sockets and witnessed blocking RX across actual control withdrawal')
     parser.add_argument('--output',type=Path,required=True)
     run(parser.parse_args())

@@ -96,6 +96,25 @@ def worker(data, control):
                     sent=bytearray(arrived);sent[28]=1
                     if data.send(sent,socket.MSG_NOSIGNAL)!=len(sent):raise ValueError('partial application reply')
                 send(control,dict(stage='business',initiator=command['initiator'],sent=sent.hex(),received=arrived.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
+            elif kind=='oneway':
+                payload=bytes.fromhex(command['payload']);start=time.time_ns();marker=b'SCPDENY1'+secrets.token_bytes(32)
+                if command['initiator']:
+                    poll=select.poll();poll.register(data,select.POLLOUT);events=poll.poll(8000)
+                    if len(events)!=1 or not events[0][1]&select.POLLOUT or events[0][1]&(select.POLLERR|select.POLLHUP):raise ValueError('TX-only Ready')
+                    try:data.recv(249,socket.MSG_DONTWAIT)
+                    except OSError as error:denied=error.errno
+                    else:raise ValueError('TX-only receive succeeded')
+                    if data.send(payload,socket.MSG_NOSIGNAL)!=len(payload):raise ValueError('partial directional send')
+                    sent=payload.hex();arrived=None
+                else:
+                    poll=select.poll();poll.register(data,select.POLLOUT)
+                    if any(flags&select.POLLOUT for _,flags in poll.poll(0)):raise ValueError('RX-only advertised writable')
+                    try:data.send(marker,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL)
+                    except OSError as error:denied=error.errno
+                    else:raise ValueError('RX-only send succeeded')
+                    arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False);arrived=arrived.hex();sent=None
+                if denied!=errno.EACCES:raise ValueError('exact forbidden direction EACCES required')
+                send(control,dict(stage='oneway',initiator=command['initiator'],sent=sent,received=arrived,direction_errno=denied,denied_marker=marker.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
             elif kind=='block':
                 send(control,dict(stage='armed',pid=os.getpid(),fd=data.fileno(),wall_ns=time.time_ns()))
                 start=time.time_ns()
@@ -120,20 +139,29 @@ def worker(data, control):
 
 
 class Gate:
-    def __init__(self, observers, snapshots, leases, index, record, save):
+    def __init__(self, observers, snapshots, leases, index, record, save, directional=False):
+        self.directional=directional
         self.index=index;self.record=record;self.save=save;self.children=[];self.parents=[]
         self.row=dict(status='STARTING',index=index,owners=[],workers=[],business=[],start_wall_ns=time.time_ns())
+        if directional:self.row.update(directional=True,bind_rejections=[])
         record['channel_grant']=self.row;save();channels=[];pairs=[]
         libc=ctypes.CDLL(None,use_errno=True);libc.bind.argtypes=[ctypes.c_int,ctypes.c_void_p,ctypes.c_uint];libc.bind.restype=ctypes.c_int
         try:
             for n,observer in enumerate(observers):
                 table=observer.link_snapshot()
                 if table.flags!=1 or table.count!=1:raise ValueError('one actual physical link per controller')
-                link=table.links[0];address=Address(family=46,controller=n,version=2,generation=snapshots[n].generation,lifetime=link.lifetime,lease=leases[n],handle=link.handle,local_tcid=31,remote_tcid=31,pi=241,directions=3)
+                link=table.links[0];address=Address(family=46,controller=n,version=2,generation=snapshots[n].generation,lifetime=link.lifetime,lease=leases[n],handle=link.handle,local_tcid=31,remote_tcid=31,pi=241,directions=(1 if n==index else 2) if directional else 3)
                 data=socket.socket(46,socket.SOCK_DGRAM|socket.SOCK_CLOEXEC,0)
                 channels.append(data)
                 data.setsockopt(socket.SOL_SOCKET,socket.SO_RCVTIMEO,struct.pack('ll',8,0))
                 data.setsockopt(socket.SOL_SOCKET,socket.SO_SNDTIMEO,struct.pack('ll',8,0))
+                if directional:
+                    for directions,security,expected in [(0,0,errno.EINVAL),(4,0,errno.EINVAL),(3,1,errno.EOPNOTSUPP),(3,2,errno.EOPNOTSUPP)]:
+                        bad=Address.from_buffer_copy(bytes(address));bad.directions=directions;bad.security=security
+                        with socket.socket(46,socket.SOCK_DGRAM|socket.SOCK_CLOEXEC,0) as rejected:
+                            ret=libc.bind(rejected.fileno(),ctypes.byref(bad),ctypes.sizeof(bad));actual=ctypes.get_errno()
+                        if ret!=-1 or actual!=expected:raise ValueError('unsupported/invalid scoped bind did not reject')
+                        self.row['bind_rejections'].append(dict(controller=n,input=bytes(bad).hex(),errno=actual,wall_ns=time.time_ns()));save()
                 if libc.bind(data.fileno(),ctypes.byref(address),ctypes.sizeof(address)):
                     error=ctypes.get_errno();raise OSError(error,os.strerror(error))
                 self.row['owners'].append(dict(index=n,generation=snapshots[n].generation,lifetime=link.lifetime,handle=link.handle,lease=leases[n],address=bytes(address).hex()))
@@ -157,12 +185,12 @@ class Gate:
 
     def exchange(self, label):
         rows=[]
-        for initiator in [self.index,1-self.index]:
+        for initiator in ([self.index] if self.directional else [self.index,1-self.index]):
             payload=message();start=time.time_ns()
-            for n,parent in enumerate(self.parents):send(parent,dict(kind='business',initiator=n==initiator,payload=payload.hex()))
+            for n,parent in enumerate(self.parents):send(parent,dict(kind='oneway' if self.directional else 'business',initiator=n==initiator,payload=payload.hex()))
             receipts=[receive(parent) for parent in self.parents]
             for n,value in enumerate(receipts):
-                if value['stage']!='business' or value['initiator']!=(n==initiator):raise ValueError('actual business worker receipt required')
+                if value['stage']!=('oneway' if self.directional else 'business') or value['initiator']!=(n==initiator):raise ValueError('actual business worker receipt required')
             row=dict(label=label,initiator=initiator,payload=payload.hex(),applications=receipts,start_wall_ns=start,end_wall_ns=time.time_ns());rows.append(row)
             self.row['business'].append(row);self.save()
         return rows
@@ -186,6 +214,8 @@ class Gate:
         self.row[label]=value;self.save()
 
     def withdrawn(self):
+        if self.directional:
+            self.denied('after_withdrawal');return
         value=receive(self.parents[self.index]);self.row['blocked_result']=value;self.save()
         if value['stage']!='blocked_denied' or value['errno']!=errno.EACCES:raise ValueError('actual blocked RX must wake with EACCES')
         self.denied('after_withdrawal')
@@ -228,21 +258,23 @@ def verify(row, outer):
         if (owner['index']!=n or owner['lease']!=outer['leases'][n] or owner['generation']<=0 or owner['lifetime']<=0
                 or (address.family,address.controller,address.version,address.flags)!=(46,n,2,0)
                 or (address.generation,address.lifetime,address.lease,address.handle)!=(owner['generation'],owner['lifetime'],owner['lease'],owner['handle'])
-                or (address.local_tcid,address.remote_tcid,address.pi,address.directions,address.security)!=(31,31,241,3,0) or any(address.reserved)):
+                or (address.local_tcid,address.remote_tcid,address.pi,address.directions,address.security)!=(31,31,241,(1 if n==i else 2) if row.get('directional',False) else 3,0) or any(address.reserved)):
             raise ValueError('exact original v2 socket identity/lease required')
     for n,worker_row in enumerate(row['workers']):
         if worker_row['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker_row['credentials']['caps'].values()) or worker_row['original']==worker_row['fd'] or worker_row['original_errno']!=errno.EBADF or worker_row['pid']<=0:raise ValueError('actual ordinary duplicated socket required')
-    samples=row['blocking_witness'];armed=row['armed'];result=row['blocked_result']
-    if armed['pid']!=row['workers'][i]['pid'] or armed['fd']!=row['workers'][i]['fd']:raise ValueError('original ordinary worker must be the blocked process')
-    if len(samples)!=2 or any(v['syscall']!=45 or v['fd']!=armed['fd'] or v['state']!='S' or v['wchan'] not in ['__skb_wait_for_more_packets','schedule_timeout'] for v in samples):raise ValueError('two actual blocked syscall witnesses required')
-    if not armed['wall_ns']<samples[0]['wall_ns']<samples[1]['wall_ns']<outer['release_before_wall_ns']<=outer['release_after_wall_ns']<row['end_wall_ns']:raise ValueError('blocked before original authority withdrawal required')
-    if result['stage']!='blocked_denied' or result['errno']!=errno.EACCES or result['end_wall_ns']<outer['release_before_wall_ns'] or result['end_wall_ns']-result['start_wall_ns']>=8_000_000_000:raise ValueError('actual finite blocked RX withdrawal error required')
+    if not row.get('directional',False):
+        samples=row['blocking_witness'];armed=row['armed'];result=row['blocked_result']
+        if armed['pid']!=row['workers'][i]['pid'] or armed['fd']!=row['workers'][i]['fd']:raise ValueError('original ordinary worker must be the blocked process')
+        if len(samples)!=2 or any(v['syscall']!=45 or v['fd']!=armed['fd'] or v['state']!='S' or v['wchan'] not in ['__skb_wait_for_more_packets','schedule_timeout'] for v in samples):raise ValueError('two actual blocked syscall witnesses required')
+        if not armed['wall_ns']<samples[0]['wall_ns']<samples[1]['wall_ns']<outer['release_before_wall_ns']<=outer['release_after_wall_ns']<row['end_wall_ns']:raise ValueError('blocked before original authority withdrawal required')
+        if result['stage']!='blocked_denied' or result['errno']!=errno.EACCES or result['end_wall_ns']<outer['release_before_wall_ns'] or result['end_wall_ns']-result['start_wall_ns']>=8_000_000_000:raise ValueError('actual finite blocked RX withdrawal error required')
     successor=row['successor']
     if successor['generation']!=row['owners'][i]['generation'] or successor['lease']<=row['owners'][i]['lease']:raise ValueError('same registration strictly new lease required')
     for key in ['after_withdrawal','after_successor']:
         value=row[key]
         if value['errors']!={'send':errno.EACCES,'recv':errno.EACCES} or value['poll']!=select.POLLERR|select.POLLHUP or not bytes.fromhex(value['marker']).startswith(b'GRNTDENY'):raise ValueError('actual old-fd denial required')
-    expected=['before']*2+(['after_first_control_close']*2 if outer['case']=='dup' else [])
+    multiplier=1 if row.get('directional',False) else 2
+    expected=['before']*multiplier+(['after_first_control_close']*multiplier if outer['case']=='dup' else [])
     if [v['label'] for v in row['business']]!=expected:raise ValueError('complete actual business around duplicate control close required')
     nonces=set()
     for value in row['business']:
@@ -251,7 +283,12 @@ def verify(row, outer):
         nonces.add(payload[8:24]);validate(payload,payload,False)
         if len(value['applications'])!=2:raise ValueError('two actual business application receipts required')
         for n,app in enumerate(value['applications']):
-            initiator=n==value['initiator'];validate(bytes.fromhex(app['sent']),payload,not initiator);validate(bytes.fromhex(app['received']),payload,initiator)
+            initiator=n==value['initiator']
+            if row.get('directional',False):
+                if app['stage']!='oneway' or app['direction_errno']!=errno.EACCES or (app['sent'] is None)!= (not initiator) or (app['received'] is None)!=initiator:raise ValueError('actual one-way and denied opposite direction required')
+                validate(bytes.fromhex(app['sent'] if initiator else app['received']),payload,False)
+                continue
+            validate(bytes.fromhex(app['sent']),payload,not initiator);validate(bytes.fromhex(app['received']),payload,initiator)
     return row
 
 
@@ -261,6 +298,7 @@ def corroborate(row, outer, capture):
         for n,application in enumerate(business['applications']):
             owner=outer['usb'][n];identity=row['owners'][n]
             for key,direction in [('sent','out'),('received','in')]:
+                if application[key] is None:continue
                 payload=bytes.fromhex(application[key]);frame=b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload
                 matches=[p for p in sdus if (p['bus'],p['device'])==(owner['bus'],owner['device']) and p['handle']==identity['handle'] and p['direction']==direction and p['data']==frame.hex() and business['start_wall_ns']<=p['wall_ns']<=business['end_wall_ns']]
                 if len(matches)!=1:raise CaptureError('one actual application USB TX/opposite RX per business leg required')
@@ -268,4 +306,17 @@ def corroborate(row, outer, capture):
     for key in ['after_withdrawal','after_successor']:
         marker=row[key]['marker']
         if any(marker in p['data'] for p in sdus):raise CaptureError('withdrawn application marker reached wire')
-    return dict(status='REAL_BLOCKED_RX_GRANT_USB_CORROBORATED',scope='pre-daemon two real devices/independent Managed Files; ordinary socket dup, witnessed blocked RX, control release/final close/dup, successor old-fd denial; peer radio continuity in outer gate',business_round_trips=len(row['business']),legs=legs,blocked_rx_acceptance=True,daemon_death_acceptance=False,inflight_usb_acceptance=False,natural_recovery_acceptance=False,full_grant_complete=False)
+    if row.get('directional',False):
+        for business in row['business']:
+            for application in business['applications']:
+                if any(application['denied_marker'] in p['data'] for p in sdus):raise CaptureError('forbidden direction marker reached wire')
+        if len(row['bind_rejections'])!=8:raise CaptureError('all invalid/protected bind requests required')
+        for n in range(2):
+            values=row['bind_rejections'][n*4:n*4+4]
+            if [(Address.from_buffer_copy(bytes.fromhex(v['input'])).directions,Address.from_buffer_copy(bytes.fromhex(v['input'])).security,v['errno']) for v in values]!=[(0,0,22),(4,0,22),(3,1,95),(3,2,95)]:raise CaptureError('exact invalid/protected request errors')
+    proof=dict(status='REAL_DIRECTIONAL_GRANT_USB_CORROBORATED' if row.get('directional',False) else 'REAL_BLOCKED_RX_GRANT_USB_CORROBORATED' ,scope='pre-daemon two real devices/independent Managed Files; ordinary socket dup, witnessed blocked RX, control release/final close/dup, successor old-fd denial; peer radio continuity in outer gate',business_round_trips=0 if row.get('directional',False) else len(row['business']),legs=legs,blocked_rx_acceptance=not row.get('directional',False),daemon_death_acceptance=False,inflight_usb_acceptance=False,natural_recovery_acceptance=False,full_grant_complete=False)
+
+    if row.get('directional',False):
+        proof['one_way_deliveries']=len(row['business'])
+        proof['scope']='pre-daemon two real devices/independent Managed Files; UID1000/caps0 TX-only to RX-only actual one-way validation, forbidden direction EACCES, protected/invalid bind rejection, revoked/successor stale-fd denial; no business round-trip or blocked RX claim'
+    return proof

@@ -379,3 +379,8 @@ Runtime Session迁移切片K3c8da4fac302/Ud1f9dde：Runtime table持session kref
 接收/CMTC，Channel有界独立队列，fd仅Binding。close撤销先赢则不能新USB提交，
 同life无协议前明确拒绝重开；Runtime退休在native_lifecycle之前join Session。
 准确40/249业务与dup/last-close子门禁通过，不授予动态通道、完整Grant/NOCP/恢复资格。
+
+Managed lease epoch切片K3ee1a60bf06f/U2a97786：Host持pure authority；Session保留不可变
+lease token。Managed发布/撤销、软件TX准入和实际USB提交同Host锁排序；已提交债务不退款。
+socket v2同步broker，未支持方向/安全组合明确拒绝。新真实正常业务保持资格通过；完整
+KernelGrant scope/security/blocked RX/VFS与受控撤销矩阵继续按WP05，不宣称整体架构完成。

@@ -5,10 +5,11 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
-当前开发切片K3ee1a60bf06f已接通Managed lease epoch、Host锁下软件TX准入及USB提交
-检查、v2 socket lease字段；Native33/Host51/Managed54及实际C准入/ABI离线通过。
-尚未取得此源码的新VM资格，以下实机范围仍归K3c8da4fac302/Ud1f9dde；不得继承。
-完整方向/安全、blocked RX撤销/daemon死亡/在途及物理矩阵继续开放。
+当前源码资格K3ee1a60bf06f/U2a97786：Managed lease epoch、Host锁下软件TX准入和USB提交
+检查、socket v2 lease字段已接通；Native33/Host51/Managed54及实际C准入/ABI离线通过。
+两只真实WS73在VM取得新40短/8轮249/16超限及dup/最后关闭拒绝重开子门禁，CI9/9。
+这是正常业务保持资格；完整方向/安全、blocked RX撤销、daemon死亡和在途/物理矩阵仍缺。
+旧Session表中资格保留其原准确源码，不扩大到新的Grant撤销验收。
 
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
@@ -23,7 +24,7 @@
 | SSAP/安全/Bond/Profile | 用户态目标层；旧Profile已隔离实验crate，Native不注册旧Profile | 部分机制/actor/类型测试，仅各自范围 | FV08/09完整协议证明未取得 | 尚无新真实通道服务/安全安装矩阵资格 | 唯一用户态Engine、真实read/write/notify/indicate、可信安装/Bond/Profile |
 | Backend/事件/恢复/PM/四设备 | 现有Native及限定事件/生命周期基础保留 | 原完整方案/历史部分初始化和取消测试保留 | FV10及完整工作引用/恢复模型缺 | 历史物理/注入/部分清理仅其准确范围；本轮warm恢复不授予自然恢复 | 可注册seam/构建组合、事件迁移、四设备两组数据、自然RCA/非人工恢复、Proxy/PHY/PM/发布 |
 
-当前实现/资格：K3c8da4fac302、编译服务与工具Ud1f9dde；基础模式为SOCK_DGRAM。两次VM均保留原slkd、
+当前实现/资格：K3ee1a60bf06f、编译服务与工具U2a97786；基础模式为SOCK_DGRAM。两次VM均保留原slkd、
 同行generation/业务及真实断链/QMP支撑。QMP不是物理拔插，也不是自然恢复。
 本批原期限/credit源码未改；形式化资格仍按原报告逐文件hash核对，未新增整体证明。
 
@@ -31,6 +32,9 @@ Netlink清理：K2d4817714963删除无消费者Rust副本/global dead_code；C b
 Python契约核对实际C/SDK。U6bb7985拒绝ExtAdv静默截断，实际方法held-lock/ENOTTY回归通过。
 
 证据索引：
+
+* [当前lease epoch 40轮](evidence/ws73-grant-epoch-short-repeat-20261013.json)、[249/超限](evidence/ws73-grant-epoch-249-boundary-20261013.json)：准确K3ee1/U2a977，正常路径保持；不是DG09受控撤销通过。
+* [Grant离线映射](evidence/grant-epoch-offline-20261013.json)、[生产pure authority Kani](evidence/grant-epoch-formal-20261013/manifest.json)：两个harness限定通过，完整Host/VFS/硬件未证明。
 
 * [当前Runtime Session 40轮](evidence/ws73-session-owned-short-repeat-20261013.json)、[249/超限](evidence/ws73-session-owned-249-boundary-20261013.json)：K3c8da4fac302/Ud1f9dde，原始dup/last-close拒绝收据与两端CMTC/数据/NOCP对应，零drop/taint0。
 * [当前Session源码回归](evidence/session-offline-20261013.json)、[限定形式化](evidence/session-formal-20261013/manifest.json)：Binding实际生产转换与TLC抽象契约分开；不扩成全实现证明。

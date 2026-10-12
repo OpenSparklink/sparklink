@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T20:33:55.778827+00:00",
+  "updated_at_utc": "2026-10-12T20:39:13.390124+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,22 +27,23 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
-    "userspace": "e7532f3b7c8d97b79616692d48e858f3247465a7"
+    "userspace": "2a9778651723fbf8f5c6f2d42450401d8331ff07"
   },
   "qualified_source_heads": {
-    "linux": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
-    "userspace": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972"
+    "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
+    "userspace": "2a9778651723fbf8f5c6f2d42450401d8331ff07"
   },
   "current_qualification": {
-    "DG01": "K3c8da4fac302/Ud1f9dde40 actual DGRAM peer round trips, both roles; duplicate/original close, last-close/rebind refusal and unique CMTC receipt; RF22/connection/QMP peer isolation",
-    "DG02": "Same source app249 eight rounds,16 oversize rejections; same-Binding short recovery and other layered limits missing",
+    "DG01": "K3ee1a60bf06f/U2a97786 new40 actual ordinary DGRAM peer round trips, both roles; dup/last-close refusal and unique CMTC; RF22/real connect/disconnect/QMP support",
+    "DG02": "Same new source app249 eight rounds and16 oversize rejections; same-Binding recovery/other-layer/long qualification still missing",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
     "FV04": "bounded abstract contract only, no implementation refinement",
     "FV02": "New actual rollback harness NOT_PROVEN_UNSUPPORTED despite successful raw solver checks; prior full-ledger scope still unproved",
     "FV07": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN",
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
-    "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved"
+    "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
+    "DG09": "NOT_QUALIFIED: epoch softwareTX/USB checks actual source tests and pure Kani scoped PASS only; controlled revoke/owner death/blocked RX/peer isolation matrix still open"
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
@@ -115,7 +116,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "existing foundations retained; target package exit conditions open"
+      "status": "Host lease epoch and atomic software-TX/USB guards plus v2 delegation implemented/normal RF requalified; full scoped Grant direction/security/blocked RX/controlled revoke matrix still open"
     },
     {
       "id": "WP06",
@@ -278,15 +279,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "WP05 production Host lease authority/epoch, atomic software TX admission and USB commit, unpublished socket v2 migrated; offline scoped tests passed; exact new VM qualification pending, prior Session baseline retained",
+  "current_batch": "Production lease epoch software-TX/actual USB gates and v2 fd delegation implemented; exact40short/249/dup-last-close baseline requalified, two production Kani pure authority harnesses scoped PASS. Full Grant/architecture remains open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "Original28 adoption/architecture-first blocks preserved; latest13 Runtime Session implementation/offline/scoped-proof/real/missing comments read back with exact body and original issue scope OPEN",
   "current_implementation_heads": {
     "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
-    "userspace": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972"
+    "userspace": "2a9778651723fbf8f5c6f2d42450401d8331ff07"
   },
   "next_resume_tasks": [
-    "Finish exact K3ee1a60bf06f/new userspace clean kernel+VM regression and seal source proof; then controlled release/last owner fd/daemon death/blocked RX/dup/new lease old-fd rejection, peer isolation. No inherited hardware qualification.",
+    "WP05: close blocked-RX revocation/admission gap and full Binding Grant direction/security contract; controlled real release/last control fd/daemon death/dup/inflight/successor old-fd rejection with peer isolation using new qualified K3ee1/U2a977 baseline. Do not re-run unchanged normal gates without changes.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -294,7 +295,7 @@
     "Then unchanged full S0\u2013S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/Proxy/PM/recovery/release"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
-  "offline_evidence": "docs/evidence/session-offline-20261013.json",
+  "offline_evidence": "docs/evidence/grant-epoch-offline-20261013.json",
   "ssap_separation_batch_complete": true,
   "target_architecture_remediation_complete": false,
   "batch_evidence": [
@@ -307,7 +308,11 @@
     "docs/evidence/native-ticket-offline-20261013.json",
     "docs/evidence/ws73-session-owned-short-repeat-20261013.json",
     "docs/evidence/ws73-session-owned-249-boundary-20261013.json",
-    "docs/evidence/session-offline-20261013.json"
+    "docs/evidence/session-offline-20261013.json",
+    "docs/evidence/ws73-grant-epoch-short-repeat-20261013.json",
+    "docs/evidence/ws73-grant-epoch-249-boundary-20261013.json",
+    "docs/evidence/grant-epoch-offline-20261013.json",
+    "docs/evidence/grant-epoch-formal-20261013/manifest.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/native-session-issues-20261013.json",

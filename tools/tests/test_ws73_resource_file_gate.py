@@ -47,3 +47,10 @@ class CanonicalResourceRecordTests(unittest.TestCase):
                                       ('final_snapshot',SleControllerSnapshot,'flags',0)]:
             changed=copy.deepcopy(self.record);raw=decode(kind,changed[key]);setattr(raw,field,value);changed[key]=bytes(raw).hex()
             with self.subTest(key=key,value=value),self.assertRaises(ValueError):verify_records(changed)
+
+    def test_host_usb_address_cannot_replace_guest_registration(self):
+        import copy
+        for usb in [dict(port='1-1',bus=1,device=120),dict(port='1-2',bus=1,device=2),
+                    dict(port='1-1',bus=True,device=2)]:
+            r=copy.deepcopy(self.record);r['target_usb']=usb
+            with self.subTest(usb=usb),self.assertRaises(ValueError):verify_records(r)

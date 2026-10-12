@@ -46,6 +46,10 @@ def verify_records(r):
     if len(snapshots) != 2 or snapshots[0].generation == snapshots[1].generation:
         raise ValueError('distinct initial controller registrations required')
     target = snapshots[0]
+    usb = r['target_usb']
+    if (usb.get('port') != '1-1' or type(usb.get('bus')) is not int or usb['bus'] != 1
+            or type(usb.get('device')) is not int or usb['device'] != 2):
+        raise ValueError('actual selected guest USB registration required; not QMP host address')
     if r['input'] != bytes(announcement(target,r['marker'])).hex():
         raise ValueError('exact changed announcement request required')
     if r['target_ready'] != ready_bytes(target):
@@ -93,7 +97,7 @@ def verify_records(r):
 
 def corroborate(r, hold, capture, stderr, expected):
     snapshots = verify_records(r)
-    owner = dict(bus=expected['bus'],device=expected['address'])
+    owner = dict(bus=r['target_usb']['bus'],device=r['target_usb']['device'])
     preparation = []
     for row in r['preparation']:
         value = decode(SleDiscoveryResult,row['result'])
@@ -171,6 +175,8 @@ def run(args):
         snapshots=[x.snapshot() for x in observers]
         for i,snapshot in enumerate(snapshots):setup(bytes(snapshot).hex(),i)
         r['initial_snapshots']=[bytes(x).hex() for x in snapshots]
+        usb = Path('/sys/bus/usb/devices/1-1')
+        r['target_usb'] = dict(port='1-1',bus=int((usb/'busnum').read_text()),device=int((usb/'devnum').read_text()))
         target=NativeAdapter(0,snapshots[0].generation);peer=NativeAdapter(1,snapshots[1].generation);handles += [target,peer]
         peer_lease=peer.acquire_management(1);ready_peer=ReadyPeer(peer,observers[1],snapshots[1],r,save)
         ready_peer.phase(1);r['peer_management_before']=bytes(observers[1].management_status()).hex()

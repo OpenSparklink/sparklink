@@ -292,7 +292,12 @@ WP05当前子门禁：工具8f19590/Kbf8663/编译Udfb8636已取得pre-daemon SC
 六例准确实机资格（两角色×release/last management fd/dup、16实际往返）。
 应用关闭继承authority后普通身份接收，broker关闭原fd；blocked RX拒绝和successor不续旧fd。
 实际slkd死亡、可信安全/降级和在途USB交错仍缺；不关闭WP05或相关整项issue。
-详见CURRENT_CAPABILITIES唯一资格与公开证据。
+详见CURRENT_CAPABILITIES唯一资格与公开证据。复现复用签名VM prepared manifest，
+执行`tools/ws73_target.py run --setup-release-verify --managed-channel-grant
+--managed-channel-scm-rights --managed-connected-case release|close|dup
+--managed-connected-index 0|1`，同时明确`--prepared`/新`--output`及两真实`--ports`；
+六个独立VM终态与两端capture seal均需通过。prepared工具hash必须匹配8f19590，
+Kernel/编译service按公开证据固定，禁止宿主直接执行设备gate。
 
 ### WP06：Socket语义收敛与迁移（P1，S4）
 

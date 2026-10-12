@@ -1,0 +1,152 @@
+{
+  "status": "FOURTEEN_EXISTING_ISSUES_UPDATED_AND_READ_BACK",
+  "evidence_commit": "9cabe48a5147088b8c9b96c760c7de3ec86ef85c",
+  "tool_commit": "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
+  "original_scopes_unchanged": true,
+  "issues_closed": 0,
+  "new_tracking_issues": 0,
+  "goal_status": "active",
+  "comments": [
+    {
+      "repo": "linux",
+      "number": 1,
+      "comment_id": 6133690496,
+      "url": "https://github.com/OpenSparklink/linux/issues/1#issuecomment-6133690496",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "bec3a57dd8f6f3b32dcc82c024cd5db04866db8d6ec398a20f1a170ec3c85604",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 4,
+      "comment_id": 6133691791,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6133691791",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "cee3b8f66cb7d00fbbf8071efecbdcec7d90cfb8006211e5dac19fbc77c88ffd",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 5,
+      "comment_id": 6133693158,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6133693158",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "b939d505ecf8f27a4352fa208c831fc6aa550b59d4ea654112037f9209b8d38d",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 6,
+      "comment_id": 6133694320,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6133694320",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 9,
+      "comment_id": 6133695457,
+      "url": "https://github.com/OpenSparklink/linux/issues/9#issuecomment-6133695457",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "352e6338171e5b1b5c95d4db35dc5ebb9a3701245cdde50c99ce4c4664a2e633",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 10,
+      "comment_id": 6133696932,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6133696932",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "6720885939ce943bc08ecda6811f92ecf305c35a8b6e14829f1d432f2eb4ed18",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 14,
+      "comment_id": 6133698134,
+      "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6133698134",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "comment_id": 6133699271,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6133699271",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "comment_id": 6133700535,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6133700535",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 1,
+      "comment_id": 6133701712,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/1#issuecomment-6133701712",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "f9714474242708d99f5391b3477011b54f17957cd2a2be1c91ed964a4ef08535",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "comment_id": 6133703117,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6133703117",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "8c3d7400ed018e3433172c7aeb35445d1e215204bc21e0078a50075a840a884e",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 5,
+      "comment_id": 6133704625,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6133704625",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "779cb4d8125b4354b7cfeadc43ce183e6c7517017042728c18ed81f9c1fa95f8",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "comment_id": 6133706186,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6133706186",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "df0560c7a43f09ec1f84f7db8003d97c294b823d83c53da75fc517ce115a3b2b",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "comment_id": 6133707952,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6133707952",
+      "body_sha256": "9dc1001c96dadae466ce4d0f59444072ad51279e333656984f30d2cda5136f72",
+      "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "original_scope_unchanged": true,
+      "state": "open"
+    }
+  ],
+  "body": "<!-- scm-rights-architecture-progress-20261013-9cabe48 -->\n本批按“先整改完整目标架构、再扩展能力”推进，完整 S0–S6/WP00–18/FV01–10/DG01–12 与原 issue scope 保持。\n\n签名推送：工具69ba2b3、修复8f19590，证据/现有canonical文档9cabe48。Kernel仍bf8663bb78eb780a7363128574fd42b7e018f9a5，编译service仍dfb8636d4aa95fa24693b8d7e59730759032f34c；原40轮短消息/249边界、广播扫描和建链断链资格保留。\n\n- 已实现：现有真实通道Grant门禁新增SCM_RIGHTS交付。普通应用先关闭全部继承设备/管理fd、降UID1000/caps0，再接收数据fd；核对同socket inode、CLOEXEC、broker原fd关闭、应用dup/original EBADF。未另造wire Engine。\n- 离线通过：431工具回归；真实本地Unix fd交付及多fd/截断/身份错误拒绝后无泄漏。离线不作空口资格。\n- 形式化：本批未修改Kernel生产状态转换，不新增证明；原Grant CBMC43仅pure scope，完整VFS/refinement、credit unsupported/NOCP复用风险仍开放。\n- 实机通过：tools8f19590的六个VM-only案例（两连接角色×release/最后管理fd关闭/dup），16随机序号载荷实际业务往返、两端应用校验/回复；112两端重组SDU、56真实NOCP完成计数、3110捕获零丢包。blocking RX撤销后EACCES，old fd不被same-generation新lease续期，同行原generation/Ready/管理lease及真实扫描保持。无QMP/切电/注入恢复。\n- 范围限制：这是pre-daemon受控broker的SCM_RIGHTS语义，不是实际slkd死亡或完整D-Bus授权策略验收。共享连接断链仍发生，不宣称同行物理连接保持；真正跨独立连接的同行业务隔离待四设备/独立管理所有者。\n- 失败保留：首轮69ba2b3接收启动失败，没有原子进程errno收据；8f19590采用显式native socket family/type并补启动错误记录后六例通过，不新增硬件RCA结论。\n\n后续目标架构整改：跨真实slkd死亡保留业务fd验证撤销（不可用helper死亡替代）；收敛Legacy EventReceiver/破坏性DLI poll旧路径；替换硬编码ControllerBackend、旧configfs UART/SPI构造及忽略open失败，完成可注册Backend引用/generation/停止与回调屏障后删除旧实现。Native独立游标与已验证WS73路径保留。实际daemon死亡、可信security/降级、在途USB/迟到RX、自然故障根因和非人工恢复仍未闭合。人工拔插/切电/QMP不作为自然恢复。相关整项issues保持OPEN，goal ACTIVE。\n\n现有canonical规划/ADR/能力矩阵/goal状态已同步，未新建总跟踪或平行方案。\n\n证据：[六例精确实机收据](https://github.com/OpenSparklink/sparklink/blob/9cabe48/docs/evidence/ws73-scm-rights-grant-20261013.json)、[离线范围](https://github.com/OpenSparklink/sparklink/blob/9cabe48/docs/evidence/scm-rights-offline-20261013.json)、[唯一实施计划](https://github.com/OpenSparklink/sparklink/blob/9cabe48/docs/IMPLEMENTATION_PLAN.md)。\n"
+}

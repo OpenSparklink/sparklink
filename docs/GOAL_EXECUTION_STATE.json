@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T22:05:33.746191+00:00",
+  "updated_at_utc": "2026-10-12T22:08:18.186145+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
+    "userspace": "888b3e9"
   },
   "qualified_source_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
@@ -281,7 +281,7 @@
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
   "current_batch": "Per-Binding immutable scoped/directional Grant, Host-locked final publication and IRQ-save implemented;43 pure CBMC and exact source/CI/real40/249 + six withdrawal/two directional cases qualified. Trusted security/ownership/inflight/full original exits remain open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
-  "issue_sync_status": "Original28 scope preserved;14 six-case controlled File Grant comments read back exact, all original body hashes unchanged and OPEN",
+  "issue_sync_status": "Original28 scope preserved;14 canonical scoped Binding Grant/pure proof/new real normal+8-case comments read back exact; original body hashes and OPEN unchanged",
   "current_implementation_heads": {
     "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
     "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
@@ -324,8 +324,8 @@
     "docs/evidence/binding-grant-offline-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/controlled-grant-issues-20261013.json",
-  "latest_evidence_commit": "381dc66",
+  "latest_issue_progress_receipt": "docs/evidence/binding-scope-issues-20261013.json",
+  "latest_evidence_commit": "888b3e9",
   "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
   "current_goal_turn_classification": "progress: production canonical fd Grant and IRQ-safe publication, scoped broker/pure proof, precise real normal and8 scope-direction gates, signed pushes"
 }

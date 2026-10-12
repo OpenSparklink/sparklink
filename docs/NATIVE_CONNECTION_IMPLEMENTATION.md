@@ -81,7 +81,7 @@ canonical同步、数据路径/SSAP、安全/Bond、PHY/PM/Proxy等原S0–S6范
 全部实验kernel/daemon/device I/O VM-only，不以源码或单项成果关闭整项。
 
 
-## 独立真实连接测试门禁（尚待执行）
+## 独立真实连接测试门禁（首轮失败）
 
 `ws73_target.py run --qmp-hotplug --connection-verify` 在普通 uid1000 下先执行
 两端交换角色的显式地址类型0 Create、非消费结果、两端 Device Connected、
@@ -91,3 +91,17 @@ paired OUT、原始CommandStatus、两端真实物理peer/type/handle事件；�
 不通过。三个negative fixture覆盖丢证据、错误身份/handle/status及重复事件，
 它们不是硬件资格。该门禁不包含connected release/last-File/dup/in-flight或SSAP，
 这些仍是后续独立必需验收。
+
+
+VM76（实际496内核/5f6服务/f41工具）首轮失败：397包无丢包，Create真实OUT
+成功，`0x0001`的`01140100`确认成功CommandStatus，10秒内没有任何连接outcome。
+作者为Faulted/-ETIMEDOUT，`flags=1`表示Status字段存在；不是OUT标志。
+另一只同generation的真实广告STOP仍获得匹配OUT/Complete，但这只是一项隔离
+观察，不能替代完整release/last-File/dup/in-flight验收。
+[失败捕获及复算摘要](evidence/ws73-native-connection-first-failure-20261012.json)。
+
+当前广播49字节中posture[33]/[34]为0/0。参考libws73-usb说明固定T为1/0、
+可协商角色为0/1；它是下一对照变量，尚未证明本次失败根因。应新增显式可配置
+候选姿态，仅在独立配置/VM验证，不修改已资格通过的默认发现路径；还须核对
+固件111的协商/拒绝/连接超时行为，不延长预算掩盖缺失结果，不假造outcome。
+两只连接成功是有连接生命周期验收的前置条件；相关issues仍OPEN。

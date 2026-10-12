@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前K3ee1a60bf06f/U2a97786：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前Kf1034577ecc1/Ud570819：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -384,3 +384,7 @@ Managed lease epoch切片K3ee1a60bf06f/U2a97786：Host持pure authority；Sessio
 lease token。Managed发布/撤销、软件TX准入和实际USB提交同Host锁排序；已提交债务不退款。
 socket v2同步broker，未支持方向/安全组合明确拒绝。新真实正常业务保持资格通过；完整
 KernelGrant scope/security/blocked RX/VFS与受控撤销矩阵继续按WP05，不宣称整体架构完成。
+
+RX切片Kf1034577ecc1/Ud570819：取包/PEEK引用在Host授权及Session/RX锁下线性化，
+每次唤醒重新验证；copy/wait在锁外，已准入copy可完成。新40/249路径保持验收通过，
+受控阻塞recv/release/last-management-fd/dup/owner-death及完整Grant仍按WP05继续。

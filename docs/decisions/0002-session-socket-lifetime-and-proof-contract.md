@@ -183,7 +183,7 @@ Grant矩阵仍待验证。Kani仅生产pure转换归纳，不证明完整VFS/Hos
 RF22/建链断链及QMP支撑，精确U2a977 CI9/9。仅正常路径；前述受控撤销/blocked RX、
 owner死亡、方向/安全和全Grant退出条件仍开放，不能以正常业务成功代替。
 
-## RX准入切片（Kf1034577ecc1，新VM待验）
+## RX准入切片（Kf1034577ecc1/Ud570819）
 
 阻塞recv每次正常唤醒都调用Host代次门禁，在Host→data→gate→Session→RX锁下
 unlink或取得PEEK引用，这一刻线性化RX准入。不持这些锁等待或复制用户内存。
@@ -192,3 +192,6 @@ unlink或取得PEEK引用，这一刻线性化RX准入。不持这些锁等待�
 正常DGRAM零包、PEEK/TRUNC、EFAULT、信号与有限timeout保持；不支持OOB/ERRQUEUE等
 未定义接收模式。只读PEEK_OFF未接通，不承诺。Actual函数体回归和LKMM锁抽象
 不替代真实release/last-control-fd/owner死亡/dup/同行隔离和完整VFS引用资格。
+
+本切片准确新VM已通过40短、249八轮/16超限、发现建链断链/dup子门禁，CI9/9；
+实际普通应用使用nonblocking recv，这只保持正常路径，受控blocked RX撤销仍未验收。

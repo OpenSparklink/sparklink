@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T20:48:33.222735+00:00",
+  "updated_at_utc": "2026-10-12T20:55:20.583285+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,15 +27,15 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
-    "userspace": "79ba67a"
+    "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
   },
   "qualified_source_heads": {
-    "linux": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
-    "userspace": "2a9778651723fbf8f5c6f2d42450401d8331ff07"
+    "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
+    "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
   },
   "current_qualification": {
-    "DG01": "K3ee1a60bf06f/U2a97786 new40 actual ordinary DGRAM peer round trips, both roles; dup/last-close refusal and unique CMTC; RF22/real connect/disconnect/QMP support",
-    "DG02": "Same new source app249 eight rounds and16 oversize rejections; same-Binding recovery/other-layer/long qualification still missing",
+    "DG01": "Kf103/Ud570 new40 actual ordinary peer round trips; existing dup and final-close refusal, RF22/connection/QMP support; nonblocking receive only",
+    "DG02": "Same new source8 app249/16 oversize rejections, independent both-end USB capture",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -43,7 +43,7 @@
     "FV07": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN",
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
-    "DG09": "NOT_QUALIFIED: epoch softwareTX/USB checks actual source tests and pure Kani scoped PASS only; controlled revoke/owner death/blocked RX/peer isolation matrix still open"
+    "DG09": "NOT_QUALIFIED: locked epoch TX/RX/USB source checks and scoped pure Grant/LKMM only; controlled blocked receive/release/owner-death/full directions/security still open"
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
@@ -279,15 +279,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "RX admission linearizes at locked unlink/PEEK reference after each wake; actual full recvmsg source fixture passed and LKMM strong/weak scope checked; exact new VM regression pending. Whole S0-S6 unchanged.",
+  "current_batch": "Authorized RX dequeue/PEEK after wake implemented, actual source fixture and scoped LKMM passed, precise normal40/249 VM business and CI9/9 requalified. Controlled blocked RX/whole Grant remains open.",
   "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
   "issue_sync_status": "Original28 adoption and architecture-first scope preserved; new14 lease epoch comments read back exact and original issue body hashes OPEN unchanged",
   "current_implementation_heads": {
     "linux": "f1034577ecc1a7f32ab393fe17586dec173ed759",
-    "userspace": "2a9778651723fbf8f5c6f2d42450401d8331ff07"
+    "userspace": "d5708191c38a6bc86b0dfce2db68d3a443d83b38"
   },
   "next_resume_tasks": [
-    "Seal exact Kf103/new userspace LKMM and clean VM normal data regression; then implement real controlled release/last owner fd/dup/blocked RX/daemon death gate and complete Binding Grant directions/security, preserving peer radio independence.",
+    "Implement dedicated real controlled Grant gate using two independent Managed owners, ordinary passed socket fd, actual /proc syscall+wchan witness of blocking recv, release/last-management-fd/dup, stale fd after successor and peer radio/lease continuity; independent USB corroboration. Then full Binding directions/security and owner-death/fd transfer. Kf103/Ud570 normal40/249 already qualified; do not repeat unchanged normal gates.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -295,7 +295,7 @@
     "Then unchanged full S0\u2013S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/Proxy/PM/recovery/release"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
-  "offline_evidence": "docs/evidence/grant-epoch-offline-20261013.json",
+  "offline_evidence": "docs/evidence/authorized-rx-offline-20261013.json",
   "ssap_separation_batch_complete": true,
   "target_architecture_remediation_complete": false,
   "batch_evidence": [
@@ -312,7 +312,11 @@
     "docs/evidence/ws73-grant-epoch-short-repeat-20261013.json",
     "docs/evidence/ws73-grant-epoch-249-boundary-20261013.json",
     "docs/evidence/grant-epoch-offline-20261013.json",
-    "docs/evidence/grant-epoch-formal-20261013/manifest.json"
+    "docs/evidence/grant-epoch-formal-20261013/manifest.json",
+    "docs/evidence/ws73-authorized-rx-short-repeat-20261013.json",
+    "docs/evidence/ws73-authorized-rx-249-boundary-20261013.json",
+    "docs/evidence/authorized-rx-offline-20261013.json",
+    "docs/evidence/authorized-rx-formal-20261013/manifest.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/grant-epoch-issues-20261013.json",

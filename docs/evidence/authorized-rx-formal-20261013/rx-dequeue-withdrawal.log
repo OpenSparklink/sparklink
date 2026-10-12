@@ -1,0 +1,25 @@
+Test RxDequeueWithdrawal Allowed
+States 2
+0:r0=0; 1:r1=1; [dequeued]=1;
+0:r0=1; 1:r1=0; [dequeued]=0;
+No
+Witnesses
+Positive: 0 Negative: 2
+Condition exists (0:r0=0 /\ 1:r1=0 /\ [dequeued]=1)
+Observation RxDequeueWithdrawal Never 0 2
+Time RxDequeueWithdrawal 0.00
+Hash=202e0e07a0a3162de8e975357a8e3c25
+
+Test RxDequeueWithdrawalWeak Allowed
+States 3
+0:r0=0; 1:r1=0; [dequeued]=1;
+0:r0=0; 1:r1=1; [dequeued]=1;
+0:r0=1; 1:r1=0; [dequeued]=0;
+Ok
+Witnesses
+Positive: 1 Negative: 2
+Condition exists (0:r0=0 /\ 1:r1=0 /\ [dequeued]=1)
+Observation RxDequeueWithdrawalWeak Sometimes 1 2
+Time RxDequeueWithdrawalWeak 0.00
+Hash=ea3e0955371a332ce82b5fabfa3314a9
+

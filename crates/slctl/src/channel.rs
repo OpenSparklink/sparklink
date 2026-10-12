@@ -169,3 +169,47 @@ pub(crate) fn exercise(fd: OwnedFd, responder: bool, rounds: u32) -> anyhow::Res
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::os::fd::FromRawFd;
+
+    #[test]
+    fn application_validates_and_replies_over_real_local_seqpacket_fds() {
+        // Local AF_UNIX is application regression support, never WS73 acceptance.
+        let mut raw = [-1; 2];
+        // SAFETY: writable two-element array; success transfers two owned fds.
+        let result = unsafe {
+            nix::libc::socketpair(
+                nix::libc::AF_UNIX,
+                nix::libc::SOCK_SEQPACKET | nix::libc::SOCK_NONBLOCK | nix::libc::SOCK_CLOEXEC,
+                0,
+                raw.as_mut_ptr(),
+            )
+        };
+        assert_eq!(result, 0, "{}", std::io::Error::last_os_error());
+        // SAFETY: distinct descriptors freshly returned by socketpair.
+        let (initiator, peer) =
+            unsafe { (OwnedFd::from_raw_fd(raw[0]), OwnedFd::from_raw_fd(raw[1])) };
+        let task = std::thread::spawn(move || exercise(peer, true, 4));
+        exercise(initiator, false, 4).unwrap();
+        task.join().unwrap().unwrap();
+    }
+
+    #[test]
+    fn peer_rejects_corrupt_payload_wrong_sequence_and_reply_direction() {
+        let mut message = vec![0u8; 61];
+        message[..8].copy_from_slice(b"SLKSOCK1");
+        message[8..24].fill(7);
+        for i in 0..32 {
+            message[29 + i] = 7 ^ i as u8;
+        }
+        validate(&message, 0, false).unwrap();
+        assert!(validate(&message, 1, false).is_err());
+        assert!(validate(&message, 0, true).is_err());
+        message[40] ^= 1;
+        assert!(validate(&message, 0, false).is_err());
+        assert!(validate(&message[..60], 0, false).is_err());
+    }
+}

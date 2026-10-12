@@ -15,6 +15,11 @@ fd, CLOEXEC and inode; reject truncated ancillary data and close rejected fds.
 The supervisor must reap this client before interpreting a daemon last-File
 close, so no helper-held references contaminate the result.
 
-Current scope: source and strict offline build only. VM staging, receiver,
+The receiver primitive is `tools/ws73_daemon_channel_fd.py`; it checks kernel
+SCM_CREDENTIALS, exact metadata, fd identity, CLOEXEC and actual socket family/type.
+Local ancillary/truncation rejection tests exercise real Unix fd passing without
+claiming Sparklink behavior.
+
+Current scope: client strict build and receiver local regression only. VM staging,
 actual slkd death, retained application fd, successor and USB/RF qualification
 are not yet connected. This tool cannot count as a passed daemon-death gate.

@@ -2,10 +2,10 @@
 
 2026-10-12，生产内核 `49699d6f11a5c1802508ac748d4a5e7d0b39d1d4`。
 完整bzImage/modules构建通过，源码/配置稳定，无warnings；八export/ELF/module
-产物验证通过。新签名空USB VM与实际5f6服务的真实双设备VM75回归通过：
-广播扫描20+2轮、无连接SIGKILL交接、taint0、1397包无丢包。
-[独立复算证据](evidence/ws73-native-connection-cleanup-rf-regression-20261012.json)。
-这是无连接回归，真实连接及有连接撤销清理尚未验收；原D227/195证据继续保留。
+产物验证通过。新签名空USB VM保留；最新实际88b9服务的真实双设备VM80默认回归通过：
+广播扫描20+2轮、无连接SIGKILL交接、taint0、1293包无丢包。
+[当前独立复算证据](evidence/ws73-native-advertising-modes-default-rf-regression-20261012.json)。
+这是无连接回归，真实连接及有连接撤销清理尚未验收；原VM75/更早证据继续保留。
 
 ## 生产调用关系
 
@@ -145,3 +145,20 @@ VM门禁的`--connection-advertising fixed-t|negotiable-t`必须与connection-ve
 一起显式选择，parent/guest/捕获49字节必须相符。默认仍固定T；可协商对照
 不复用固定T的通过声明。190项完整Rust回归、371项工具测试、严格clippy与
 公开C头核对通过；这是源码检查，可协商真实连接仍待VM验收。
+
+
+VM79可协商T对照也失败：mode3/role0/posture0/1/proposal100全字段和参数Complete
+确认，随机广播/RSSI-13在140ms内匹配，真实scanner OFF后Create仅OUT/Status
+成功，10秒无outcome；411包/0丢包/退出0。
+[可协商T失败证据](evidence/ws73-negotiable-t-air-visible-connection-failure-20261012.json)。
+下一做参考Host VM对照，检查完整启动、local address设置和连接序列，而非继续
+改变未解释参数。原f4d85d0参考仓库保持clean，已在私有目录构建/哈希其两个
+minimal示例及静态库；只编译，未在主机执行或触及USB。SDK代码没有合入生产。
+Meson导入路径、只读ccache、staged header路径和共享/静态产物记录误判均保留。
+
+VM80确认本提交实际88b9服务保留默认北极星RF20+2和无连接SIGKILL交接：
+1293包无丢包、taint0、退出0；两条真实停止回复、非拥有者Free/Off/Ready，
+后继服务四次initializer拒绝且该阶段没有新device command。guest-only退役
+不算物理拔插或自动恢复。该通过与三次真实连接失败分别记录；连接/connected
+release/last-File/dup/in-flight及原28项仍OPEN。下一同时补未执行连接队列的
+真实VFS取消门禁：该项不需要先建立物理link，也不能以源码测试替代。

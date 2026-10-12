@@ -1097,3 +1097,38 @@ Native/Proxy/sandbox/发布验收。原生主机对照受VM-only约束未执行�
 自然启动超时/重枚举/设备消失、软件off/on未恢复bulk、历史xHCI warning的RCA与无需
 人工干预的单设备恢复继续OPEN；人工冷断电只是诊断且VBUS未测，人工guest IN错误仅
 开发支撑。28项原scope及两个draft保持OPEN未合并，完整goal active。
+
+## 2026-10-12 当前源真实已建立连接的 File 六例通过
+
+[独立重算证据](evidence/ws73-connected-file-six-case-matrix-20261012.json)
+SHA256 `837900525cc78eda3090276c77a89ba1b2c3d800553308fdf655dab2a06e9ce5`。
+实际内核 `1305136ce2c83d1180e84c62e96576def26816a4`，实际服务及冻结工具
+`c255811b7617211093a7e342fbdad65f2efa65cf`；后续离线测试路径和证据提交
+不能替代这个实际编译来源。VM109–114 两种角色分别 release、最后 fd 关闭、dup。
+每例先初始化两只独立 Ready，扫描匹配新的随机广播数据、地址和 RSSI，然后真实
+Create 的 OUT、Status 及两端物理 Up 成功。撤销时实际发出 handle 对应的 Disconnect，
+两端收到匹配的物理 Down，目标回到 Free/Ready。dup 首次关闭保留同一个 File 的
+作者查询和 Held，150ms 内没有 Disconnect；最后关闭才执行连接清理。完成连接的
+历史作者结果不改成虚构 Cancelled，最后 File 销毁后不冒充可查询作者。
+
+同行保留原 generation、完整 Ready 元数据和独立管理权，目标清理后成功执行
+自己的广播 STOP、扫描 START/STOP。每例之后 UID1000/caps0 的 RF20+2 通过，
+共132轮、7386抓包、零丢包、taint0、QEMU退出0，后续 RF 内 slkd/bus 不重启。
+**File 阶段在 slkd 启动前进行，不能宣称 slkd 跨 File 清理不中断。**
+本轮六例不暂停在途 Status/outcome，也不替代物理拔插、自然故障或非人工恢复验收。
+
+VM108 原失败保留：真实 Create/release 观察到成功，但测试脚本将扫描配置带入
+广播 STOP，内核正确拒绝 EINVAL，整例未通过。修正后重新跑完整六例。
+CI38217600018 和 CI38217926644 的离线测试路径失败也保留；仅修正测试对
+`SPARKLINK_KERNEL_SOURCE` 的读取后，CI38218222317 精确源码九项成功。
+记录 UAPI 的离线夹具及变异拒绝测试不计作真实设备验收，当前393工具回归通过。
+
+后续依赖顺序：真实 Create 在途 Status/物理 outcome 下的三种 File 撤销和同行隔离；
+运行中 slkd 的连接生命周期/事件一致性；canonical loss resync 和 peer/handle lifetime；
+当前源原初始化后续步骤矩阵、物理和四设备并行；继续完整 SSAP、安全/Bond、Profile、
+PHY/PM、Native/Proxy 与发布矩阵。旧内核清理继续按[调用审计清单](LEGACY_CLEANUP_20261011.md)
+并行推进：处理仍编入核心的旧 mgmt/dev/transport/serdev 及其全局 dead_code 抑制，
+不因函数存在宣称能力，不删除尚未迁移的调用者或有价值故障证据。未发布 UAPI 可
+同步删除，无兼容期限承诺。自然启动/bulk/重枚举/消失 RCA 和无需人工拔插的恢复
+继续 OPEN；VM-only、原28项 scope、两个未合并 draft 和完整 goal 不变。
+正常尝试114、维护37。

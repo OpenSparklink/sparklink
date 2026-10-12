@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Offline File-gate ABI/authorization checks; no device or RF acceptance."""
 import ctypes
+import copy
 import errno
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -16,6 +18,20 @@ from sparklink.structs import SleConnectionResult, SleControllerSnapshot, SleDis
 
 
 class ConnectedFileGate(unittest.TestCase):
+    def test_recorded_uapi_fixture_is_only_offline_verification(self):
+        r=json.loads((Path(__file__).parent/'data/connected_file_record.json').read_text())
+        self.assertEqual(r['fixture_scope'],'RECORDED_UAPI_UNIT_FIXTURE_NOT_LIVE_ACCEPTANCE')
+        self.assertEqual(len(verify_records(r)),2)
+        changes=[('connected','00'*64),('peer_after','00'*48),('free','00'*48),
+            ('author_result_after_release',None),('case','dup'),('scan_match',dict(r['scan_match'],elapsed_ms=10000)),
+            ('discovery',r['discovery'][:-1]),('after_snapshots',r['initial_snapshots'])]
+        for key,value in changes:
+            bad=copy.deepcopy(r);bad[key]=value
+            with self.subTest(key=key),self.assertRaises((ValueError,KeyError)):verify_records(bad)
+        for key in ['up','down']:
+            bad=copy.deepcopy(r);bad[key][0]['lost']=1
+            with self.subTest(key=key),self.assertRaises(ValueError):verify_records(bad)
+
     def test_stop_has_no_unrelated_scanning_or_advertising_fields(self):
         s=SleControllerSnapshot(generation=7)
         for operation in [2,4]:

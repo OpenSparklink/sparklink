@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前Kab9e5ecdf048/U9124bc4：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前K6d49b12aa694/Uc830f09：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -25,8 +25,10 @@ Grant由内核强制核对完整scope/方向/Managed epoch；bf8663锁下最终�
 独立管理所有者/四设备两组同行业务、在途提交与完整生命周期证明仍缺。
 
 模块初始化现为空注册表；旧configfs假UART/SPI/None构造、忽略open错误注册及对应
-selector arms已退出。实际bus注册后才创建Runtime；历史模型移selftests，serdev使用的
-UART decoder保留且无全局dead_code掩盖。实际空USB门禁与新40/249通过。
+selector arms已退出。实际bus注册后才创建Runtime；历史模型移selftests。后续调用审计证明旧serdev无实际driver入口，其Rust/C/ctx/parser
+及最后消费者退出后的UART decoder全部隔离selftests；默认无serdev回调/全局parser符号。
+H4/SPI无provider descriptor不再登记，transport全局dead_code掩盖移除、死成员删除。
+实际空USB门禁与新40/249通过；不宣称新的每设备serdev实现。
 剩余三bus selector/per-device parser/module与callback引用仍待WP13，未完成整项Backend架构。
 
 ## 目标分层及架构决策

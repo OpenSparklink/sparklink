@@ -34,17 +34,24 @@ Ready且generation不变；两个连接角色共4随机业务往返、32两端SD
 首醒[ESTALE,EACCES]：ESTALE有匹配物理Down先于唤醒；双方Free和接任后旧fd均严格EACCES/ERR-HUP。
 首轮启动器失败和首轮死亡的原顺序断言失败保留，不覆盖为PASS。独立所有者同行业务未验收。
 
-当前精确正常路径Kab9e5ec/U9124bc4：删除模块启动假UART/SPI/None注册和忽略open失败，
+历史精确正常路径Kab9e5ec/U9124bc4：删除模块启动假UART/SPI/None注册和忽略open失败，
 Runtime仅由实际bus注册创建；原模型隔离selftests、UART decoder保留/无模块级掩盖。
 空USB VM三次实际检查：注册mask0/activeFFFF，缺设备select ENODEV，unbound snapshot EINVAL，
 9 selector输入明确拒绝/接受而不造设备；签名load/unload/taint0、清洁零warning、CI9通过。
 新40短/249八轮/16超限、RF22/建链断链/dup/同life重开拒绝通过。
 历史共同daemon死亡与受控Grant证据仍绑定各自Kbf8663/用户态/工具版本，不扩大到新K全部竞争门禁。
 
+当前精确正常路径K6d49b12/Uc830f09：旧serdev审计为未接通骨架（无bus driver注册），
+core/FFI/全局parser/Serdev分派退出默认生产，最后消费者离开后的decoder移tests；
+没有provider的H4/SPI descriptor与transport死成员删除，无全局dead_code掩盖。
+四历史源与ab9e5ec逐字节一致，decoder/encoder5、方法2、生产USB+历史info回归保留，
+vmlinux旧serdev符号不存在。清洁构建零warning、空USB三次实际门禁、CI9，
+新40短/249八轮/16超限及原RF22/建链断链/fd生命周期通过。新serdev provider和Backend seam仍缺。
+
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
-| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前Kab9e5ec/U9124bc4两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
-| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新Kab9e5ec/U9124bc4 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
+| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前K6d49b12/Uc830f09两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
+| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新K6d49b12/Uc830f09 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
 | 协商原期限/共享状态 | 38926b2完整三步骤与原期限；同锁快照、关闭/最终软件准入 | C编译、ASan/UBSan deadline/terminal selftest、完整新内核/空USB VM | FV01生产CBMC131项；FV03锁LKMM两性质，故意弱对照允许坏结果 | 上述新40轮及下述249路径保持 | 受控回复/credit阻塞期限、worker/VFS引用完整映射、唤醒及VM KCSAN/lockdep |
 | application249/DTAP254 | 当前单ACB上限与精确长度拒绝，ec67348后工具/应用接通 | 196 workspace/423工具及严格clippy；准确dfb8636 CI9/9 | 不能从协商模型推出codec/分片性质 | 新版本8轮249字节及16次application250/253/254/255 EMSGSIZE，拒绝载荷捕获为零 | DG02同Binding短→最大→拒绝→短、其他层253/254/255、长包/PB TX/SAR |
 | 提交票据切片 | K464d4d8a9de7 Runtime/Backend引用、一次commit、Host/data/gate内真正URB提交；Host数据撤销；未queued才回滚，已queued/不确定保留debt | Native25、driver10 sanitizer、Host49/连接12、Managed48；C/Rust严格对象及完整内核 | 精确K464/U854 Host撤销/提交锁序LKMM Never、弱对照Sometimes；credit回滚Kani仍NOT_PROVEN_UNSUPPORTED | 新40短/249八轮/16超限、发现连接路径保持 | controlled VM交错、完整Session/Channel/Grant引用证明、完整callback/VFS及NOCP复用屏障；不能宣布整项Ticket完成 |
@@ -65,6 +72,8 @@ Netlink清理：K2d4817714963删除无消费者Rust副本/global dead_code；C b
 Python契约核对实际C/SDK。U6bb7985拒绝ExtAdv静默截断，实际方法held-lock/ENOTTY回归通过。
 
 证据索引：
+
+* [serdev骨架隔离新40](evidence/ws73-serdev-quarantined-short-repeat-20261013.json)、[新249](evidence/ws73-serdev-quarantined-249-boundary-20261013.json)、[调用审计/编译符号/精确历史源/离线/空VM/CI](evidence/serdev-quarantine-offline-20261013.json)：K6d49b12/Uc830f09，真实每设备serdev/Backend seam未取得资格。
 
 * [退休假Backend新40轮](evidence/ws73-retired-backend-short-repeat-20261013.json)、[新249/超限](evidence/ws73-retired-backend-249-boundary-20261013.json)、[源码/空VM/历史codec/CI](evidence/backend-retirement-offline-20261013.json)：准确Kab9e5ec/U9124bc4；整个可注册seam/serdev隔离/模块引用仍未完成。
 

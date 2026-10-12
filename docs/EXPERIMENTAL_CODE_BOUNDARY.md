@@ -41,3 +41,9 @@ workspace test、clippy、fmt、默认 release、跨语言 ABI、VM 真双设备
 工具 CI 需加载匹配内核的 lab helper，固定bf8663bb78eb（历史c2c4 pin及失败收据保留）；通过
 `SPARKLINK_KERNEL_SOURCE` 指定 checkout 根目录，本地默认仍为相邻 linux。
 首轮新增 CI 暴露了相邻仓库假设导致的两项失败，保留失败记录；修复不跳过测试。
+
+
+K6d49b12起旧内核serdev Rust/C骨架和其UART decoder只保存在kernel selftests，
+无真实bus调用者、ignored ctx/global parser、失败后defaults不得进入默认core。
+原H4/SPI无provider descriptor不再登记；并未提供新serdev支持。新的标准/Virtual/
+厂商provider仍遵循同Backend Runtime/generation/module/callback契约，S0–S6保留。

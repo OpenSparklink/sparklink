@@ -397,6 +397,26 @@ Free后/新daemon后双方旧fd严格EACCES。初始顺序断言失败保留，�
 原失败保留。未以静态审计或历史codec通过宣布整个WP13/相关issue完成。
 
 
+新的调用审计更正（K6030e0/6d49b12；原ab9e5ec）：旧serdev并非已接通的bus driver。
+没有serdev_device_driver/probe/remove注册入口，rust_ctx/alloc链没有调用者；全局parser丢弃ctx，
+RX可能睡眠分配、命令表无引用屏障、初始化失败仍继续。因此不在默认core里修补这个孤立模型。
+
+- **立即删除，已实施**：core/Makefile的serdev FFI链接和parser初始化，Serdev enum/factory/
+  activation，以及没有provider的H4/SPI登记。去掉transport全局dead_code后删除真正无消费者
+  的ID、速率/result类型、注销/绑定helper和不可能dispatch arm。编译后二进制确认无旧callback/
+  parser/命令表符号，不把注册descriptor当作已支持的hardware。
+- **移入测试，已实施**：serdev Rust/C完整骨架、最后消费者退出后的UART decoder、旧transport
+  framework按ab9e5ec精确归档；原USB生产metadata/注册、隔离serdev info、decoder/encoder/
+  不支持硬件方法回归保留，严格构建。旧GFP_KERNEL/ctx/失败后defaults问题仅历史参考，不能复用到生产。
+- **等待替代，仍开放**：实际USB/WS73 selector/注册与core USB耦合；真正serdev/Virtual必须提供
+  common Backend register/start/submit/stop/RX/fault，per-registration bounded ingress/parser、
+  禁止atomic callback睡眠分配、generation/module引用及stop/drain屏障。不能以全局legacy parser
+  或无调用者的“未来接口”冒充新架构，也不缩成永久USB/WS73-only支持目标。
+
+新K6d49b12/Uc830f09构建零warning、空USB三次实际门禁、准确新40/249八轮/16超限、
+原RF22/建链断链/fd生命周期VM回归通过，CI9；旧controlled Grant/death仍绑定其原提交。
+本批是孤立骨架剥离，整个Backend seam/Virtual和原K4/K9/K10/K12/K19/U1/U6/U8 scope仍开放。
+
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。
 - 依赖：先固定接口，不等K4/K9整个issue互相关闭；避免与当前WS73关键整改同时大范围移动。

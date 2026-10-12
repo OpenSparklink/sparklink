@@ -19,3 +19,7 @@
 失败证据保留：[注册panic](evidence/ws73-channel-registration-boot-failure-20261013.json)、
 [最后回复关闭丢弃](evidence/ws73-channel-last-reply-close-failure-20261013.json)。
 [40轮证据](evidence/ws73-ordinary-channel-repeat-20261013.json)。整项issues均不因局部资格关闭。
+
+新增[形式化范围报告](evidence/formal-20261013/manifest.json)绑定Linuxd3abbdc0c13a、
+用户态40c7fba的干净源码，并附原始输出；Kani未证明及NOCP反例保持显式状态。
+生产ledger的反例回归不改变硬件结论，新内核d3abbdc的真实数据资格仍待取得。

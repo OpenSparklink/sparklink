@@ -1,0 +1,14 @@
+{
+  "status": "NOT_PROVEN_TIMEOUT_AND_UNSUPPORTED",
+  "budget_seconds": 600,
+  "observed_elapsed_seconds": 661.8299999999999,
+  "terminated_pids": [
+    428653,
+    428725
+  ],
+  "partial_output": ".dev/native-credit-kani-all.log",
+  "scope": "earlier unbounded five-harness invocation stopped after finite budget; no PASS",
+  "partial_output_sha256": "494934d4304e8bd4f7df22b3c1870897f1a365800151f814faca79a14a091ae3",
+  "partial_output_public": false,
+  "reason": "large incomplete diagnostic output retained privately; no proof claimed"
+}

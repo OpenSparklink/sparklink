@@ -1,0 +1,39 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 114 and seed 1786264614105962677 with 1 worker on 16 cores with 1820MB heap and 64MB offheap memory [pid: 441970] (Linux 7.2.8-200.fc44.x86_64 amd64, Red Hat, Inc. 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lifecycle/NOCPReuse.tla
+Parsing file /tmp/Naturals.tla
+Semantic processing of module Naturals
+Semantic processing of module NOCPReuse
+Starting... (2026-10-13 01:39:36)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-10-13 01:39:36.
+Error: Invariant NoWrongRefill is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ debt = 1
+/\ oldDuplicate = FALSE
+/\ stage = 0
+/\ lifetime = 1
+
+State 2: <OldComplete line 6, col 16 to line 7, col 50 of module NOCPReuse>
+/\ debt = 0
+/\ oldDuplicate = TRUE
+/\ stage = 1
+/\ lifetime = 1
+
+State 3: <Reuse line 8, col 10 to line 9, col 48 of module NOCPReuse>
+/\ debt = 1
+/\ oldDuplicate = TRUE
+/\ stage = 2
+/\ lifetime = 2
+
+State 4: <Duplicate line 10, col 14 to line 11, col 52 of module NOCPReuse>
+/\ debt = 0
+/\ oldDuplicate = TRUE
+/\ stage = 3
+/\ lifetime = 2
+
+4 states generated, 4 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 4.
+The average outdegree of the complete state graph is 1 (minimum is 1, the maximum 1 and the 95th percentile is 1).
+Finished in 00s at (2026-10-13 01:39:36)

@@ -416,6 +416,8 @@ def _run(args):
     connection_verify=bool(getattr(args,'connection_verify',False))
     acb_probe=bool(getattr(args,'acb_transport_probe',False))
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
+    channel_rounds=getattr(args,'channel_socket_rounds',4)
+    if type(channel_rounds) is not int or not 1<=channel_rounds<=20 or (channel_rounds!=4 and not channel_socket):raise ValueError('bounded socket rounds require explicit socket gate')
     link_resync=bool(getattr(args,'daemon_link_resync',False))
     if channel_socket and (not connection_verify or acb_probe or link_resync):raise ValueError('ordinary channel socket requires a separate real connection gate without test module')
     if acb_probe and (not connection_verify or link_resync):raise ValueError('ACB selftest requires separate explicit connection gate')
@@ -533,6 +535,7 @@ def _run(args):
     m['live_daemon_link_resync']=link_resync
     m['acb_transport_selftest_requested']=acb_probe
     m['channel_socket_verification_requested']=channel_socket
+    m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
     m['ordinary_channel_socket_acceptance']=False
     m['connection_advertising_requested']=connection_advertising if connection_verify else None
     m['daemon_crash_requested']=daemon_crash
@@ -651,7 +654,7 @@ def _run(args):
                      (f' ws73.connection_verify=1 ws73.connection_advertising={connection_advertising}' if connection_verify else '')+
                      (' ws73.link_resync=1' if link_resync else '')+
                      (' ws73.acb_probe=1' if acb_probe else '')+
-                     (' ws73.channel_socket=1' if channel_socket else '')+
+                     (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds}' if channel_socket else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
                      (' ws73.diagnostic=1' if diagnostic else '')+
@@ -903,6 +906,7 @@ def _run(args):
                 if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
                 if channel_socket:
                     from ws73_channel_socket import corroborate as channel_corroborate
+                    if any(row['rounds']!=channel_rounds for row in control['channel_socket']):raise ValueError('socket round count differs from explicit request')
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
                     m['ordinary_channel_socket_acceptance']=True
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
@@ -1138,6 +1142,7 @@ def main():
             cmd.add_argument('--diagnostic-deadline-verify',action='store_true',help='100ms queued expiry with continuous same-ID retries; requires --diagnostic-cancel-verify and real fault-recovery mode')
             cmd.add_argument('--diagnostic-cancel-verify',action='store_true',help='hold one real IN81 to test active/queued cancel and late reply; requires --diagnostic-verify and --fault-recovery')
             cmd.add_argument('--daemon-link-resync',action='store_true',help='actual VM subscriber pause, real event ring overflow and canonical resync; requires connection verification')
+            cmd.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4,help='bounded application rounds per connection role')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')

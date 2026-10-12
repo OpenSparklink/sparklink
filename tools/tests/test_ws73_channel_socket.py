@@ -9,20 +9,26 @@ from ws73_channel_socket import application_frames
 from ws73_capture import CaptureError
 
 
-def fixture():
+def fixture(rounds=4):
     credentials=dict(uids=[1000]*4,capabilities=dict(CapEff='0',CapPrm='0',CapAmb='0'))
-    apps=[dict(role=role,exit=0,credentials=copy.deepcopy(credentials),stdout=f'NativeChannelOpened: role={role} rounds=4\n') for role in ['initiator','peer']]
-    for i in range(4):
+    apps=[dict(role=role,exit=0,credentials=copy.deepcopy(credentials),stdout=f'NativeChannelOpened: role={role} rounds={rounds}\n') for role in ['initiator','peer']]
+    for i in range(rounds):
         nonce=bytes([i+1])*16
         sequence=0x12345678+i*17
         body=b'SLKSOCK1'+nonce+sequence.to_bytes(4,'little')+bytes(1)+bytes(nonce[j%16]^((sequence+j)&255) for j in range(32))
         reply=bytearray(body);reply[28]=1
         apps[0]['stdout']+=f'NativeChannelSent: sequence={i} bytes={body.hex()}\nNativeChannelRoundTrip: sequence={i} elapsed_ms=10 bytes={reply.hex()}\n'
         apps[1]['stdout']+=f'NativeChannelReceived: sequence={i} bytes={body.hex()}\nNativeChannelReply: sequence={i} bytes={reply.hex()}\n'
-    return dict(rounds=4,applications=apps)
+    return dict(rounds=rounds,applications=apps)
 
 
 class ApplicationProof(unittest.TestCase):
+    def test_twenty_bounded_rounds_and_invalid_record_counts(self):
+        self.assertEqual(len(application_frames(fixture(20))[0]),20)
+        for count in [0,21,-1,True,'20',None]:
+            row=fixture();row['rounds']=count
+            with self.subTest(count=count),self.assertRaises(CaptureError):application_frames(row)
+
     def test_original_two_application_messages(self):
         sent,replies=application_frames(fixture())
         self.assertEqual(len(sent),4);self.assertEqual(sent[0][28],0);self.assertEqual(replies[0][28],1)
@@ -49,19 +55,19 @@ class ApplicationProof(unittest.TestCase):
 
 
 class IndependentUSBProof(unittest.TestCase):
-    def fixture(self):
+    def fixture(self,rounds=4):
         from ws73_channel_socket import application_frames
         phases=[];sdus=[];events=[]
         for n in range(2):
-            row=fixture();row.update(phase=n,status='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING',start_wall_ns=n*100+1,end_wall_ns=n*100+90)
+            row=fixture(rounds);row.update(phase=n,status='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING',start_wall_ns=n*100+1,end_wall_ns=n*100+90)
             owners=[dict(owner=dict(bus=1,device=2+i,index=i,generation=i+1),object=dict(generation=i+1,lifetime=1+n*2,handle=0)) for i in range(2)]
             if n:owners.reverse()
             row['owners']=owners
             # Distinct nonce in second phase, regenerate all matching receipts.
             if n:
                 for app in row['applications']:
-                    for i in range(4):
-                        old=bytes([i+1])*16;new=bytes([i+11])*16
+                    for i in range(rounds):
+                        old=bytes([i+1])*16;new=bytes([i+127])*16
                         old_sequence=0x12345678+i*17;new_sequence=0xabcdef12+i*17
                         for reply in [0,1]:
                             a=b'SLKSOCK1'+old+old_sequence.to_bytes(4,'little')+bytes([reply])+bytes(old[j%16]^((old_sequence+j)&255) for j in range(32))
@@ -78,8 +84,17 @@ class IndependentUSBProof(unittest.TestCase):
             for sender,receiver in [owners,owners[::-1]]:
                 leg(sender,receiver,bytes.fromhex('0200080001010400e2000000'))
                 leg(sender,receiver,bytes.fromhex('0200100002010c00e20000000000f900f9000101'))
-                events.append(dict(bus=1,device=sender['owner']['device'],event=9,params='000006',wall_ns=n*100+30))
+                events.append(dict(bus=1,device=sender['owner']['device'],event=9,params=(b'\0\0'+bytes([rounds+2])).hex(),wall_ns=n*100+30))
         return dict(channel_socket=phases),dict(native_events=events),sdus
+
+    def test_twenty_rounds_require_twenty_two_real_completions_per_endpoint(self):
+        from unittest.mock import patch
+        from ws73_channel_socket import corroborate
+        run,capture,sdus=self.fixture(20)
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            self.assertEqual(corroborate(run,capture)['round_trips'],40)
+            capture['native_events'][0]['params']='000015'
+            with self.assertRaises(CaptureError):corroborate(run,capture)
 
     def test_both_usb_ends_capabilities_and_actual_credit(self):
         from unittest.mock import patch

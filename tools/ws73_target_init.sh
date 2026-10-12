@@ -253,7 +253,10 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         posture=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connection_advertising=/){sub(/^ws73.connection_advertising=/,"",$i);print $i}}' /proc/cmdline)
         case "$posture" in fixed-t|negotiable-t) ;; *) fail 'explicit connection posture' ;; esac
         connection_arg="--connection-verify --connection-advertising $posture"
-        if grep -qw ws73.channel_socket=1 /proc/cmdline; then connection_arg="$connection_arg --channel-socket-verify"; fi
+        if grep -qw ws73.channel_socket=1 /proc/cmdline; then
+            channel_rounds=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_rounds=/){sub(/^ws73.channel_rounds=/,"",$i);print $i}}' /proc/cmdline)
+            connection_arg="$connection_arg --channel-socket-verify --channel-socket-rounds ${channel_rounds:-4}"
+        fi
         if grep -qw ws73.acb_probe=1 /proc/cmdline; then connection_arg="$connection_arg --acb-transport-probe"; fi
         if grep -qw ws73.link_resync=1 /proc/cmdline; then connection_arg="$connection_arg --daemon-link-resync"; fi
     fi

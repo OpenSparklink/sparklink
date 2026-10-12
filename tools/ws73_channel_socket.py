@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Two ordinary applications; independent two-end USB/CMTC/NOCP proof."""
+from contextlib import ExitStack
 from pathlib import Path
 import re
 import subprocess
@@ -18,9 +19,9 @@ def credentials(pid):
 
 def execute(run, phase):
     row = dict(phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
-               rounds=4, status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+               rounds=getattr(run.args,'channel_socket_rounds',4), status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     run.data.setdefault('channel_socket', []).append(row); run.save()
-    processes=[]
+    processes=[];files=ExitStack()
     try:
         # Both binds must occur during the same live connection. Never synthesize RX.
         for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
@@ -28,12 +29,16 @@ def execute(run, phase):
                   'channel-peer' if role=='peer' else 'channel-roundtrip',entry['object']['path'],str(row['rounds'])]
             app=dict(role=role,args=args,start_wall_ns=time.time_ns())
             row['applications'].append(app);run.save()
-            proc=subprocess.Popen(args,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
+            stderr=run.output/f'channel-{row["phase"]}-{role}.stderr'
+            app['output_files']=[str(stdout),str(stderr)]
+            proc=subprocess.Popen(args,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
             processes.append((proc,app));app['pid']=proc.pid
             app['credentials']=credentials(proc.pid);run.save()
-        deadline=time.monotonic()+45
+        deadline=time.monotonic()+row['rounds']*10+5
         for proc,app in processes:
-            app['stdout'],app['stderr']=proc.communicate(timeout=max(.001,deadline-time.monotonic()))
+            proc.wait(timeout=max(.001,deadline-time.monotonic()))
+            app['stdout'],app['stderr']=[Path(p).read_text() for p in app['output_files']]
             app.update(exit=proc.returncode,end_wall_ns=time.time_ns());run.save()
             if proc.returncode:raise CaptureError('actual socket application failed: '+app['stderr'])
         application_frames(row)
@@ -44,24 +49,28 @@ def execute(run, phase):
         for proc,app in processes:
             if proc.poll() is None:proc.kill()
             if 'exit' not in app:
-                app['stdout'],app['stderr']=proc.communicate();app.update(exit=proc.returncode,end_wall_ns=time.time_ns())
+                proc.wait()
+                app['stdout'],app['stderr']=[Path(p).read_text() for p in app['output_files']];app.update(exit=proc.returncode,end_wall_ns=time.time_ns())
+        files.close()
         row['end_wall_ns']=time.time_ns();run.save()
 
 
 def application_frames(row):
+    rounds=row['rounds']
+    if type(rounds) is not int or not 1<=rounds<=20:raise CaptureError('finite original round count required')
     apps={a['role']:a for a in row['applications']}
-    if set(apps)!={'peer','initiator'} or len(row['applications'])!=2 or row['rounds']!=4:
-        raise CaptureError('two original application processes and four rounds required')
+    if set(apps)!={'peer','initiator'} or len(row['applications'])!=2:
+        raise CaptureError('two original application processes and bounded rounds required')
     for role,a in apps.items():
         if a['exit'] or a['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in a['credentials']['capabilities'].values()):
             raise CaptureError('successful ordinary applications required')
-        if re.findall(r'^NativeChannelOpened: role=(\w+) rounds=(\d+)$',a['stdout'],re.M)!=[(role,'4')]:
+        if re.findall(r'^NativeChannelOpened: role=(\w+) rounds=(\d+)$',a['stdout'],re.M)!=[(role,str(rounds))]:
             raise CaptureError('one original socket opening per application required')
     def rows(role,marker,elapsed=False):
         pattern=rf'^{marker}: sequence=(\d+) '+(r'elapsed_ms=(\d+) ' if elapsed else '')+r'bytes=([0-9a-f]+)$'
         values=re.findall(pattern,apps[role]['stdout'],re.M)
-        if len(values)!=4 or apps[role]['stdout'].count(marker+':')!=4:raise CaptureError('all original application receipts required')
-        if [int(v[0]) for v in values]!=list(range(4)):raise CaptureError('ordered unique sequence required')
+        if len(values)!=rounds or apps[role]['stdout'].count(marker+':')!=rounds:raise CaptureError('all original application receipts required')
+        if [int(v[0]) for v in values]!=list(range(rounds)):raise CaptureError('ordered unique sequence required')
         if elapsed and any(int(v[1])>=10000 for v in values):raise CaptureError('ten second round trip deadline')
         return [bytes.fromhex(v[-1]) for v in values]
     sent=rows('initiator','NativeChannelSent');received=rows('peer','NativeChannelReceived')
@@ -109,7 +118,7 @@ def corroborate(run,capture):
             for sender,receiver,payload in [(owners[0],owners[1],data),(owners[1],owners[0],reply)]:
                 frame=b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload
                 legs.append(dict(sequence=sequence,tx=matched(sender,'out',frame),rx=matched(receiver,'in',frame)))
-        # Each endpoint sends one capability request, one response, four business PDUs.
+        # Each endpoint sends one capability request, one response, the recorded number of business PDUs.
         capabilities=[]
         for sender,receiver in [owners,owners[::-1]]:
             query=bytes.fromhex('0200080001010400e2000000')
@@ -120,8 +129,8 @@ def corroborate(run,capture):
             completed=[e for e in capture['native_events'] if e['event']==9 and (e['bus'],e['device'])==(owner['bus'],owner['device'])
                        and row['start_wall_ns']<=e['wall_ns']<=row['end_wall_ns']]
             if any(len(bytes.fromhex(e['params']))!=3 or int.from_bytes(bytes.fromhex(e['params'])[:2],'little')!=obj['handle'] for e in completed):raise CaptureError('exact actual completion handle required')
-            if sum(bytes.fromhex(e['params'])[2] for e in completed)!=6:raise CaptureError('six actual completed packets per controller required')
+            if sum(bytes.fromhex(e['params'])[2] for e in completed)!=row['rounds']+2:raise CaptureError('exact actual completed packet count per controller required')
         proofs.append(dict(phase=n,owners=owners,capabilities=capabilities,legs=legs))
-    return dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8,proofs=proofs,
+    return dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows),proofs=proofs,
                 scope='uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; 61-byte peer-validated payload; both USB/HCC/A3 ends and NOCP',
                 long_pdu_acceptance=False,credit_exhaustion_acceptance=False,four_device_acceptance=False)

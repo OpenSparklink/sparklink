@@ -2,8 +2,10 @@
 
 2026-10-12，生产内核 `49699d6f11a5c1802508ac748d4a5e7d0b39d1d4`。
 完整bzImage/modules构建通过，源码/配置稳定，无warnings；八export/ELF/module
-产物验证通过。新VM和真实连接尚未验收。当前已有实机资格仍为原D227内核/
-编译服务195的VM74无连接RF20+2，不能扩大到本版本。
+产物验证通过。新签名空USB VM与实际5f6服务的真实双设备VM75回归通过：
+广播扫描20+2轮、无连接SIGKILL交接、taint0、1397包无丢包。
+[独立复算证据](evidence/ws73-native-connection-cleanup-rf-regression-20261012.json)。
+这是无连接回归，真实连接及有连接撤销清理尚未验收；原D227/195证据继续保留。
 
 ## 生产调用关系
 
@@ -72,8 +74,8 @@ Connected/failed-down/Unknown、没有legacy RemoteService、正确属性接口�
 有界缓存更新。原Default构造缺项、sandbox socket限制、错误Device信号接口/
 即时缓存假设、helper布局lint等原失败保留，未放宽生产检查。
 
-必须继续新签名VM空USB/真实双设备、原RF20/角色交换/物理隔离、真实连接/
-断开与release/最后fd/dup/在途回复。还缺handle lifetime/peer原子绑定、loss后
+当前新签名VM空USB和真实双设备无连接RF20+2已回归；必须继续本版本
+物理隔离、真实连接/断开与release/最后fd/dup/在途回复。还缺handle lifetime/peer原子绑定、loss后
 canonical同步、数据路径/SSAP、安全/Bond、PHY/PM/Proxy等原S0–S6范围。
 默认四设备资格仍0；自然RCA和非人工自动恢复未通过，全部原28项继续OPEN。
 全部实验kernel/daemon/device I/O VM-only，不以源码或单项成果关闭整项。

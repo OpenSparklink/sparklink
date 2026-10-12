@@ -29,3 +29,21 @@ class ResourceGateBounds(unittest.TestCase):
             record.update(changes)
             with self.subTest(changes=changes), self.assertRaises((ValueError,KeyError)):
                 verify_records(record)
+
+class CanonicalResourceRecordTests(unittest.TestCase):
+    def setUp(self):
+        import json
+        self.record=json.loads((Path(__file__).parent/'data/resource_file_remove_record.json').read_text())
+
+    def test_recorded_removed_set_uses_revoking_mode_zero_and_setup_flags(self):
+        verify_records(self.record)  # DTO only; original VM100 was not accepted.
+
+    def test_wrong_revoking_mode_and_fake_ready_are_rejected(self):
+        import copy
+        from ws73_management_setup import decode
+        from sparklink.structs import SleManagementQuery,SleControllerSnapshot
+        for key,kind,field,value in [('revoking',SleManagementQuery,'mode',1),
+                                      ('final_snapshot',SleControllerSnapshot,'flags',1),
+                                      ('final_snapshot',SleControllerSnapshot,'flags',0)]:
+            changed=copy.deepcopy(self.record);raw=decode(kind,changed[key]);setattr(raw,field,value);changed[key]=bytes(raw).hex()
+            with self.subTest(key=key,value=value),self.assertRaises(ValueError):verify_records(changed)

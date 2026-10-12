@@ -74,11 +74,11 @@ def verify_records(r):
             raise ValueError('cancelled author must retain exact selected step and no fake success/power')
     for key,state in [('before_management',1),('revoking',2),('final_management',0)]:
         actual = decode(SleManagementQuery,r[key])
-        expected = SleManagementQuery(version=1,generation=target.generation,state=state,mode=1 if state else 0)
+        expected = SleManagementQuery(version=1,generation=target.generation,state=state,mode=1 if state==1 else 0)
         if bytes(actual) != bytes(expected):
             raise ValueError('exact Held/Revoking/Free observer truth required')
     final = SleControllerSnapshot.from_buffer_copy(bytes(target))
-    final.flags = int(step == 1)
+    final.flags = 1 if step == 1 else target.flags
     if r['final_snapshot'] != bytes(final).hex():
         raise ValueError('deleted set alone is Setup; acknowledged creation may restore Ready')
     if r['case'] == 'dup' and r['after_first_management'] != r['before_management']:

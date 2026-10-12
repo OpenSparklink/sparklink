@@ -47,3 +47,21 @@ Session/Channel/Binding 的 dup/关闭/worker 引用模型、等待者唤醒 lit
 以及 VM KCSAN/lockdep。与 249/250、各层253/254/255、长包/PB/SAR、credit
 耗尽/满队列/断链矩阵并行。恢复自然故障根因、非人工自动恢复及未完成整项 issues
 保持开放；历史40轮资格、首次启动panic和最后回复关闭丢弃证据均保留。
+
+## 实际 ACB 提交点整改的限定验证
+
+`--ticket-only`检查TxCommitWithdrawal与故意弱对照：实际目标为Host锁内身份验证、
+credit预留与一次prepared atomic submit；Down、data撤销和fault在Host下发布，
+controller退休由同次提交仍持有的scheduling gate阻挡。Never/Sometimes只证明
+CPU锁序抽象；不证明C/Rust refinement、HCD内部、callback UAF、Grant epoch或NOCP复用。
+
+`--credit-rollback-only`直接选择生产DataCredits的新增Kani harness：合法初态中reserve
+成功、锁内已准备submit返回非零（从未queued）后，unsubmitted恢复准确原ledger。
+假设是实际数据锁期间不发生其他ledger转换及LinuxURB未入队契约；没有假设NOCP
+可靠、唯一或及时。工具unsupported/超时仍NOT_PROVEN，不用离线测试改标证明。
+
+WS73实际C prepare/atomic-submit/completion/finite-wait/kill/join函数及wire codec
+由`run_native_ticket_driver.py`以明确USB/锁/时钟依赖注入编译，ASan/UBSan/LSan覆盖
+十类故障；不是硬件恢复或对端收到资格。Native25、Host49与Managed48调用实际生产
+代码。Host撤销布尔是目前提交屏障，不能冒充SocketBinding的完整Grant epoch。
+已提交/未知debt继续保留；原NOCP四步反例继续开放。真实VM按准确新提交重新验证。

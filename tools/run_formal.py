@@ -31,9 +31,11 @@ def classify(kind, code, output, timed_out=False):
         if code == 0 and properties and all(p["status"] == "SUCCESS" for p in properties) and any(
                 row.get("cProverStatus") == "success" for row in rows):
             return "PROVED_SCOPED"
-    elif kind == "lkmm":
+    elif kind in ("lkmm", "lkmm-ticket"):
         expected = {"ChannelSnapshot": "Never", "ChannelSnapshotWeak": "Sometimes",
                     "ChannelCloseAdmission": "Never"}
+        if kind == "lkmm-ticket":
+            expected = {"TxCommitWithdrawal": "Never", "TxCommitWithdrawalWeak": "Sometimes"}
         found = dict(re.findall(r"Observation (\w+) (Never|Sometimes|Always)\b", output))
         if code == 0 and found == expected:
             return "PROVED_SCOPED_WITH_WEAK_CONTROL"
@@ -46,7 +48,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def run(output, credit_all, budget):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent
     kernel = root / "linux"
@@ -55,7 +57,8 @@ def run(output, credit_all, budget):
     smoke = Path("/opt/opensparklink-verification-tools-20261013/system-smoke-tests.json")
     sources = [kernel / "net/sparklink" / name for name in (
         "sle_channel_state.h", "sle_channel_socket.c", "sle_data_credit.rs",
-        "sle_native.rs", "sle_native_data.rs", "sle_command_queue.rs")]
+        "sle_native.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
+    sources += [kernel / "drivers/sparklink/ws73/usb.c", kernel / "include/linux/sparklink_native.h"]
     sources += sorted((repo / "formal").rglob("*.c"))
     sources += sorted((repo / "formal").rglob("*.rs"))
     sources += sorted((repo / "formal").rglob("*.tla"))
@@ -100,9 +103,23 @@ def run(output, credit_all, budget):
         harnesses += ["reservation_preserves_invariant_and_old_debt",
                       "arbitrary_completion_preserves_invariant_and_exact_accounting",
                       "uncertain_transport_never_refunds_or_refills",
-                      "separate_controllers_do_not_share_ledger_mutations"]
+                      "separate_controllers_do_not_share_ledger_mutations",
+                      "rejected_atomic_submission_restores_exact_prior_ledger"]
     checks += [("credit-" + h, "kani", repo,
                 ["cargo", "kani", "--manifest-path", "formal/credit/Cargo.toml", "--harness", h]) for h in harnesses]
+    ticket_check = ("ticket-submit-withdrawal", "lkmm-ticket", root,
+                    ["herd7", "-conf", str(kernel / "tools/memory-model/linux-kernel.cfg"),
+                     "-I", str(kernel / "tools/memory-model")] +
+                    [str(repo / "formal/lkmm" / (n + ".litmus")) for n in
+                     ("TxCommitWithdrawal", "TxCommitWithdrawalWeak")])
+    checks = [ticket_check] if ticket_only else checks + [ticket_check]
+    if credit_rollback_only:
+        h = "rejected_atomic_submission_restores_exact_prior_ledger"
+        checks = [("credit-" + h, "kani", repo,
+                   ["cargo", "kani", "--manifest-path", "formal/credit/Cargo.toml", "--harness", h])]
+    record["credit_rollback_only_requested"] = credit_rollback_only
+    record["ticket_only_requested"] = ticket_only
+    record["ticket_scope"] = "Host-locked validation/atomic submit vs Host withdrawal CPU order, with a weak check-drop-submit control; not C/Rust refinement, HCD internals, callback UAF, Grant epoch or NOCP reuse barrier"
     manifest = output / "manifest.json"
     for name, kind, cwd, command in checks:
         log = output / (name + ".log")
@@ -142,8 +159,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--credit-rollback-only", action="store_true", help="only the new actual ledger rollback harness")
+    parser.add_argument("--ticket-only", action="store_true", help="scope this run to submission/withdrawal LKMM and weak control")
     parser.add_argument("--budget-seconds", type=int, default=600)
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only))

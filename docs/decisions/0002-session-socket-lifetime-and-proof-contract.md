@@ -130,3 +130,24 @@ K4b4c6add8189将基础DTAP创建改为SOCK_DGRAM，并明确拒绝SOCK_SEQPACKET
 准确K4b4c6add8189/U59479e0后续VM门禁已通过：root/ordinary DGRAM SO_TYPE、
 SEQPACKET EPROTONOSUPPORT、40短/249八轮/16超限与发现连接路径。旧SSAP拒绝保持。
 因此类型迁移子门禁通过；可靠模式及整个SocketBinding/Session/Grant契约仍未完成。
+
+## ACB 实际提交点切片（K464d4d8a9de7）
+
+Runtime/Backend引用随NativeTxTicket跨驱动准备、原子提交及等待完成保留；内核opaque
+票据只在同一process线程的blocking callback存续，driver不得保存或异步重用票据。
+调用顺序：driver tx_lock→ticket Host→data→scheduling gate；重新核对代次所属owner、
+connection lifetime、data撤销与实际credit，驱动只在此段执行prepared
+usb_submit_urb(GFP_ATOMIC)。等待、kill、callback join在Host/data/gate之外。失败未入队
+才在同一锁内回滚本次预留；队列成功不退款，完成错误/超时不凭空清理物理义务。
+Down/Host撤销先发布则拒绝提交；提交先线性化则保留在途义务。IRQ completion只更新
+C transfer并complete，不重入Host。这是对原通用IRQ-lock约束的明确非阻塞提交例外；
+禁止sleeping allocation、decode、wait或protocol callback进入此critical section。
+
+LinuxURB API的非零submit返回未queued，零返回queued，与最终完成分开。
+依据本仓库Documentation/driver-api/usb/URB.rst及[Linux USB URB文档](https://www.kernel.org/doc/html/latest/driver-api/usb/URB.html)。
+
+Host的data撤销在revoke_connections首个Host临界区发布；只有新lease的resume条件
+（无物理links、清理收敛）满足才重新开放。并未实现每Binding的Grant epoch/方向/安全
+验证，也未取得全部controlled VM交错/NOCP复用屏障资格；这两个scope继续开放。
+离线25 Native、10 driver故障、49 Host/12连接与48 Managed测试和限定LKMM不能代替
+本批新版本真实40短/249回归。Session唯一RX/fd分离仍待接通，不放开多通道。

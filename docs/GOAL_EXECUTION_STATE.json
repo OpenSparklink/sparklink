@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-12T23:55:03.457941+00:00",
+  "updated_at_utc": "2026-10-13T00:20:12.428088+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,16 +26,16 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "6d49b12aa6940bf79e37797e71169f84ac1a8fb7",
-    "userspace": "3f3e5455809a767b62fa1817701174e3bf2922fc"
+    "linux": "5f8e3107515d8c2e887bd93f0166335b316d57f5",
+    "userspace": "bc9967644b60b7b48c0d04a789203a2cfa5d1c8e"
   },
   "qualified_source_heads": {
-    "linux": "6d49b12aa6940bf79e37797e71169f84ac1a8fb7",
-    "userspace": "c830f0947e31e0509cc8b303a007cf7ee8e44e59"
+    "linux": "7e654fde93b9e073db1593891f2b34581ffbf638",
+    "userspace": "67165b635b215a3d56e09f910dca578e3f0b692c"
   },
   "current_qualification": {
-    "DG01": "K6d49b12/Uc830f09 new40 ordinary actual peer round trips after unconnected serdev/transport quarantine; both roles/RF22/connection/fd/QMP support preserved",
-    "DG02": "Same exact new source8 app249 and16 oversize rejections absent capture; required same-Binding/other layers/long modes open",
+    "DG01": "K7e654fde/U67165b6 new40 ordinary actual peer round trips after versioned Backend registration migration; RF22/typed connection/dup-lastclose and QMP support preserved",
+    "DG02": "Same exact new source8 app249 and16 oversize rejections absent capture; same-Binding/layered/long modes still open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -45,11 +45,11 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: unconnected serdev no actual bus driver registration; skeleton/FFI/global parser/selector/H4-SPI unprovided descriptors and unused transport members removed from production, exact historical sources and tests retained; symbols absent. Zero-warning/emptyVM3/new40-249/CI9. Actual common Backend seam and new serdev/Virtual module/callback barriers unimplemented."
+    "WP13": "PARTIAL: actual WS73/open test provider now use versioned copied Backend descriptor/ops, legacy export removed; production validator38 and scoped CBMC221; zero-warning/emptyVM3/new40-249. Standard USB/binding/enum migration, actual Virtual/other bus and full reference/stop callback proof still open. Actual C entry11 rejects before following unsupported ops; prior negative control retained. LatestK5f8e310 test fixtures only, production byte-identical to compiledK7e654fde. Full architecture remains partial."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP13 actual common Backend registration/descriptor/module/generation/stop callback seam for remaining actual USB/WS73; reconnect new serdev/Virtual only with real registered caller and per-device bounded ingress/parser. WP12 low-level event migration in parallel; preserve exact real data regressions; no new unconnected production abstraction or legacy parser restoration.",
+    "WP13 migrate actual standard USB probe/setup/RX/stop to the common Backend ownership path, then remove duplicate binding/enum and split independent driver builds; implement actual Virtual registration and per-device serdev ingress only with real registered caller. WP12 canonical event migration in parallel. Requalify every affected real data path.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -204,7 +204,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "existing foundations retained; target package exit conditions open"
+      "status": "PARTIAL: actual WS73/open test provider now use versioned copied Backend descriptor/ops, legacy export removed; production validator38 and scoped CBMC221; zero-warning/emptyVM3/new40-249. Standard USB/binding/enum migration, actual Virtual/other bus and full reference/stop callback proof still open. Actual C entry11 rejects before following unsupported ops; prior negative control retained. LatestK5f8e310 test fixtures only, production byte-identical to compiledK7e654fde. Full architecture remains partial."
     },
     {
       "id": "WP14",
@@ -290,7 +290,7 @@
     "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
   },
   "next_resume_tasks": [
-    "WP05 direct next: SCM_RIGHTS fd transfer and true daemon management-owner death with ordinary retained fd, stale epoch/successor denial and peer isolation; then controlled USB obligations and S5 trusted security. Binding direction/NONE mechanism now qualified; do not wait entire control combinations before WP12/13 event/Backend canonical migration and full original S0-S6.",
+    "WP13 standard USB common registration/module/context/generation migration and removal of duplicate binding authority, with WP12 remaining kernel event-ring/low-level-client migration. Six SCM_RIGHTS and two actual daemon-death role gates remain historical exact qualifiers, not pending first implementation or full Grant completion.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -349,5 +349,19 @@
     "82aa65a77019804e78a95c1706c461e715187314",
     "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba",
     "c830f0947e31e0509cc8b303a007cf7ee8e44e59"
-  ]
+  ],
+  "backend_descriptor_slice": {
+    "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
+    "compiled_service_tools": "67165b635b215a3d56e09f910dca578e3f0b692c",
+    "ci_pin_tools": "bc9967644b60b7b48c0d04a789203a2cfa5d1c8e",
+    "implemented": "versioned descriptor/actual WS73 and open fixture migration; old entry removed",
+    "offline": "zero warnings; emptyVM3; production validator38/actual entry11; tools436; Native33/connection operation12+Host dependency regression; fixture names migrated",
+    "formal": "production validator CBMC221 PROVED_SCOPED; actual C entry11 plus prior-version ASan negative control; no kernel reference/concurrency proof",
+    "real": "40 short and8 app249 peer round trips;16 oversize rejects;224 SDU/112 NOCP;zero capture drops",
+    "full_package_complete": false,
+    "natural_fault_root_cause_closed": false,
+    "nonmanual_hardware_recovery_accepted": false,
+    "latest_kernel_test_only_head": "5f8e3107515d8c2e887bd93f0166335b316d57f5",
+    "production_identical_to_qualified_kernel": true
+  }
 }

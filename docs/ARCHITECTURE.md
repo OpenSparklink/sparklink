@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前K6d49b12aa694/Uc830f09：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前正常路径K7e654fde93b9/U67165b6：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -29,7 +29,18 @@ selector arms已退出。实际bus注册后才创建Runtime；历史模型移sel
 及最后消费者退出后的UART decoder全部隔离selftests；默认无serdev回调/全局parser符号。
 H4/SPI无provider descriptor不再登记，transport全局dead_code掩盖移除、死成员删除。
 实际空USB门禁与新40/249通过；不宣称新的每设备serdev实现。
-剩余三bus selector/per-device parser/module与callback引用仍待WP13，未完成整项Backend架构。
+剩余标准USB/Native静态分派、标准USB重复binding表、其他bus每设备parser/module与callback屏障仍待WP13，未完成整项Backend架构。
+
+Common Backend 注册首批已落地于 K1c720574d72f：WS73 与显式 open 测试 provider
+调用版本化 `sparklink_backend_register`；旧 `sparklink_native_register` 不再导出。
+描述符和 ops 在调用期间有效且不可变，core 先复制并验证，再分配/持模块与 context 引用；
+能力必须匹配真实回调，未知版本、方言、bus 与能力位明确拒绝，不产生 Runtime。
+注册仍为 Setup；既有 generation、Host、ticket、credit、close/join 契约保留。
+该内部接口不承诺兼容期，TEST 标签不表示已实现 VirtualBackend。标准 USB 尚未迁移；
+K7e654fde93b9进一步先拒绝未知布局，再复制尾部/跟随ops；实际C拒绝11项通过，
+前版负对照检出越界指针访问，仅主机纯fixture失败。K5f8e310仅迁移两项测试fixture，
+生产源与K7e654fde逐字节一致，实机证据仍注明编译K7e654fde。
+此批不授予其他 bus、模块卸载竞争或完整注册/停止回调证明资格。
 
 ## 目标分层及架构决策
 

@@ -417,6 +417,17 @@ RX可能睡眠分配、命令表无引用屏障、初始化失败仍继续。因
 原RF22/建链断链/fd生命周期VM回归通过，CI9；旧controlled Grant/death仍绑定其原提交。
 本批是孤立骨架剥离，整个Backend seam/Virtual和原K4/K9/K10/K12/K19/U1/U6/U8 scope仍开放。
 
+注册契约第一批：K1c720574d72f 已把生产WS73和显式open fixture迁至
+版本/size/bus/能力描述符；旧register符号删除，静态variant改名Native。
+原引用与generation/closejoin路径复用，没有另造生产模拟后端。
+38项生产validator回归、CBMC221性质限定通过；准确VM资格见CURRENT_CAPABILITIES。
+证明仅覆盖准入，不覆盖模块/context引用、Runtime发布、注销/回调竞争或其他硬件。
+K7e654fde另修版本/size在尾部复制及ops跟随前拒绝；实际入口11项sanitizer和前版负对照
+已记录。K5f8e310仅迁测试fixture并取得Native33/连接operation12+Host回归，
+不改变生产代码；当前实机编译K7e654fde/U67165b6独立40/249通过，准确CI另记录。
+下一批按实际标准USB probe→注册→setup→RX→stop调用链迁移，
+之后删除重复binding/selector并完成独立Backend构建/真实Virtual；WP12事件迁移并行。
+
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。
 - 依赖：先固定接口，不等K4/K9整个issue互相关闭；避免与当前WS73关键整改同时大范围移动。

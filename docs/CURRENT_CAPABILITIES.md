@@ -5,10 +5,23 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
+当前正常路径 **K7e654fde93b9 / 编译service与工具U67165b6**：生产WS73和显式open
+fixture迁至版本化common Backend注册描述符，旧注册导出删除，Native取代WS73专用variant。
+清洁内核零warning、空VM三次检查、生产validator38项、实际C入口11项及clang ASan/UBSan通过；
+CBMC221性质限定通过（仅9项语义断言及内存/算术安全，不证明引用/并发/硬件）。
+测试provider实际module编译为前版K1c720574资格；本版未执行该provider生命周期注入。
+两只真实WS73在VM取得40轮61-byte、8轮249-byte对端实际校验/回复，16次超限拒绝
+且标识不在空口证据；两轮共224两端SDU/112真实NOCP、捕获零drop、taint0。
+RF22/建链断链、dup/最后关闭与QMP支撑保持；QMP不算物理拔插或自然恢复。
+Uea77931/67165b6新pin CI检出两项测试fixture名称漂移，原失败保留；
+K5f8e310只迁测试fixture、生产源与编译K7e654fde一致，Ubc99676 CI目前8项成功（含生产C准入/拒绝及实际Rust回归），release仍排队；结果独立记录，
+不将测试修正HEAD或远程CI与编译service HEAD混用。标准USB/重复binding、真正Virtual、
+其他bus及完整module/context/generation/close-callback证明仍缺；全WP13保持开放。
+
 历史资格K3ee1a60bf06f/U2a97786：Managed lease epoch、Host锁下软件TX准入和USB提交
 检查、socket v2 lease字段已接通；Native33/Host51/Managed54及实际C准入/ABI离线通过。
 两只真实WS73在VM取得新40短/8轮249/16超限及dup/最后关闭拒绝重开子门禁，CI9/9。
-这是该历史提交的正常业务保持资格；后续scope/blocked RX资格见当前Kbf8663行，不能混用提交。
+这是该历史提交的正常业务保持资格；后续scope/blocked RX资格见历史Kbf8663行，不能混用提交。
 旧Session表中资格保留其原准确源码，不扩大到新的Grant撤销验收。
 
 历史资格Kf1034577ecc1/Ud570819：RX每次正常唤醒后在Host授权锁下取包/PEEK引用，
@@ -25,7 +38,7 @@
 Kernel与编译service仍bf8663/dfb8636；这是受控broker交付语义，不是实际slkd死亡或完整D-Bus授权策略资格。
 首轮69ba2b3接收启动失败保留；没有原子进程errno收据，不新增硬件根因结论。
 
-当前默认生产资格Kbf8663/U86bfbc8：旧破坏性事件消费者已隔离为实验/test，
+历史默认生产资格Kbf8663/U86bfbc8：旧破坏性事件消费者已隔离为实验/test，
 profile0在授权/发布前明确拒绝。新40短、249八轮/16超限、RF22及建链断链/QMP支撑
 完成独立seal（112真实NOCP两包合计），默认workspace199/实验62、严格clippy通过。
 这不等于内核旧事件ring和全部调用者已删除；共同daemon死亡业务fd已有下述新子门禁；完整/独立所有者范围仍缺。
@@ -41,7 +54,7 @@ Runtime仅由实际bus注册创建；原模型隔离selftests、UART decoder保�
 新40短/249八轮/16超限、RF22/建链断链/dup/同life重开拒绝通过。
 历史共同daemon死亡与受控Grant证据仍绑定各自Kbf8663/用户态/工具版本，不扩大到新K全部竞争门禁。
 
-当前精确正常路径K6d49b12/Uc830f09：旧serdev审计为未接通骨架（无bus driver注册），
+历史精确正常路径K6d49b12/Uc830f09：旧serdev审计为未接通骨架（无bus driver注册），
 core/FFI/全局parser/Serdev分派退出默认生产，最后消费者离开后的decoder移tests；
 没有provider的H4/SPI descriptor与transport死成员删除，无全局dead_code掩盖。
 四历史源与ab9e5ec逐字节一致，decoder/encoder5、方法2、生产USB+历史info回归保留，
@@ -50,8 +63,9 @@ vmlinux旧serdev符号不存在。清洁构建零warning、空USB三次实际门
 
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
-| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前K6d49b12/Uc830f09两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
-| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新K6d49b12/Uc830f09 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
+| common Backend注册首批 | WS73/open测试provider实际迁移V1描述符；旧入口删除；标准USB未迁 | validator38、实际C拒绝11/sanitizer、Native33/连接operation12+Host、零warning/空VM3；fixture-only修正 | CBMC221限定准入，合法不变内核指针假设；不证明引用/并发/硬件 | 编译K7e654fde/U67165b6独立40短/8长度往返、16拒绝 | 标准USB/重复binding、真正Virtual/serdev、module/get-put/stopjoin全矩阵 |
+| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前K7e654fde/U67165b6两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
+| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新K7e654fde/U67165b6 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
 | 协商原期限/共享状态 | 38926b2完整三步骤与原期限；同锁快照、关闭/最终软件准入 | C编译、ASan/UBSan deadline/terminal selftest、完整新内核/空USB VM | FV01生产CBMC131项；FV03锁LKMM两性质，故意弱对照允许坏结果 | 上述新40轮及下述249路径保持 | 受控回复/credit阻塞期限、worker/VFS引用完整映射、唤醒及VM KCSAN/lockdep |
 | application249/DTAP254 | 当前单ACB上限与精确长度拒绝，ec67348后工具/应用接通 | 196 workspace/423工具及严格clippy；准确dfb8636 CI9/9 | 不能从协商模型推出codec/分片性质 | 新版本8轮249字节及16次application250/253/254/255 EMSGSIZE，拒绝载荷捕获为零 | DG02同Binding短→最大→拒绝→短、其他层253/254/255、长包/PB TX/SAR |
 | 提交票据切片 | K464d4d8a9de7 Runtime/Backend引用、一次commit、Host/data/gate内真正URB提交；Host数据撤销；未queued才回滚，已queued/不确定保留debt | Native25、driver10 sanitizer、Host49/连接12、Managed48；C/Rust严格对象及完整内核 | 精确K464/U854 Host撤销/提交锁序LKMM Never、弱对照Sometimes；credit回滚Kani仍NOT_PROVEN_UNSUPPORTED | 新40短/249八轮/16超限、发现连接路径保持 | controlled VM交错、完整Session/Channel/Grant引用证明、完整callback/VFS及NOCP复用屏障；不能宣布整项Ticket完成 |
@@ -119,3 +133,22 @@ K4b4c6add8189/U59479e0基础DGRAM已通过root/ordinary SO_TYPE及SEQPACKET拒�
 实验AF/PF46已实现，正式协调未完成。SDK111镜像/配置来源与本轮冷/暖/实际上传分别记录，warm tuple不证明本轮上传。
 实验驱动与真实I/O保持VM-only。全部原28项issues及goal保持开放/active，自然启动/重枚举/消失根因和
 非人工自动恢复未闭合。人工拔插、hub切电、QMP、注入、模型及USB写成功均不替代业务/自然恢复资格。
+
+Backend注册首批准确证据：
+
+- [生产准入/构建/空VM](evidence/backend-descriptor-offline-20261013.json)
+- [生产验证函数限定证明](evidence/backend-descriptor-formal-20261013.json)
+- [真实40轮](evidence/ws73-backend-descriptor-short-repeat-20261013.json)
+- [真实249/超限](evidence/ws73-backend-descriptor-249-boundary-20261013.json)
+
+历史封存资格保持各自准确提交；本批不重新授予旧Grant/daemon死亡门禁的新版本资格。
+自然故障根因、非人工自动恢复、在途/复用和整项issues继续开放。
+
+布局访问顺序修正后的当前证据：
+
+- [准确构建/空VM/实际C与Rust回归](evidence/backend-layout-guard-offline-20261013.json)
+- [生产准入限定证明与负对照](evidence/backend-layout-guard-formal-20261013.json)
+- [准确编译版本40轮](evidence/ws73-backend-layout-guard-short-repeat-20261013.json)
+- [准确编译版本249/超限](evidence/ws73-backend-layout-guard-249-boundary-20261013.json)
+
+首批K1c720574证据是历史切片；当前K7e654fde已有独立实机回归。

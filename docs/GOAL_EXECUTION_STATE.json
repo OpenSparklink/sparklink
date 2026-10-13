@@ -281,7 +281,7 @@
   ],
   "full_goal_complete": false,
   "original_issues_open": true,
-  "issue_sync_receipt": "docs/evidence/registration-daemon-issues-20261013.json",
+  "issue_sync_receipt": "docs/evidence/backend-command-port-issues-20261013.json",
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
@@ -385,11 +385,12 @@
     "docs/evidence/backend-command-port-offline-20261013.json",
     "docs/evidence/ws73-backend-command-port-fault-isolation-20261013.json",
     "docs/evidence/ws73-backend-command-port-short-repeat-20261013.json",
-    "docs/evidence/ws73-backend-command-port-249-boundary-20261013.json"
+    "docs/evidence/ws73-backend-command-port-249-boundary-20261013.json",
+    "docs/evidence/backend-command-port-issues-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/registration-daemon-issues-20261013.json",
-  "latest_evidence_commit": "d89ad74d9dee8a732bd13d4205c2cdd791b9046f",
+  "latest_issue_progress_receipt": "docs/evidence/backend-command-port-issues-20261013.json",
+  "latest_evidence_commit": "7e84f6e614f954fed4a3a39759008ec9624843cd",
   "previous_goal_turn_classification": "progress: common actual Core reserve/install/cancel/retire consumers, owned candidate allocation/destruction outside registry and final exact publish, old pending unregister counterexample; actual10/pending15/other source/443/clean build/emptyVM/CI9, exact finiteTLC16453+weak7, new real40-249; full architecture/recovery unqualified.",
   "current_goal_turn_classification": "progress: Kernel actual retained submission interface across both providers, no standard locked TX, full version5 and failure invalidation/no guessing Ready, obsolete wrappers removed, actual5+18/other regression/clean build/emptyVM/CI9 and newreal8+40/249. Not full generic Backend, standard physical, IRQ/callback/formal or natural recovery qualification.",
   "qualified_tool_source_heads": [
@@ -667,6 +668,13 @@
     "full_standard_capabilities": false,
     "formal_scope_enlarged": false,
     "whole_package_complete": false,
-    "natural_recovery_acceptance": false
+    "natural_recovery_acceptance": false,
+    "issue_updates": {
+      "count": 16,
+      "readback_verified": true,
+      "original_scopes_open_unchanged": true,
+      "receipt": "docs/evidence/backend-command-port-issues-20261013.json",
+      "whole_package_closed": false
+    }
   }
 }

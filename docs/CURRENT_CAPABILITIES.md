@@ -32,6 +32,8 @@ WS73，独立两端USB/HCC/A3/NOCP及应用随机载荷校验/回复；normal224
 RF22/连接双端Down/dup/最后关闭同life拒绝、default observer/control Fault/移除/newgen/oldpath保持。
 QMP/受控缺文件仅支撑，非物理/自然/非人工恢复；不授予标准USB物理、ROM、partial-open/URB/module/PM资格。
 
+[16项现有issues回读](evidence/backend-command-port-issues-20261013.json)确认原scope/OPEN不变。
+
 下一批主线保持完整标准Backend迁移：真实buffer/features/command能力查询及metadata有效字段→
 标准provider版本化common descriptor/ops/get-put/RX/open-close/Host dialect→迁调用者删static Usb分派→
 core USB=n/m与真正Virtual/module/IRQ/PM；WP12事件/旧ring和旧dead_code清理并行。

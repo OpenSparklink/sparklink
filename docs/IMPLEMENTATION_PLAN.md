@@ -17,12 +17,29 @@ goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_S
 [当前SSAP调用审计/三类清单](SSAP_PRODUCTION_SEPARATION_20261013.md)。
 
 
+## 本批架构整改验收：单设备早期失败隔离
+
+K`308e5398dccc83a27ca3bd92f0611b93cf2d7bbe` / 编译service U`420cc1266347a00fbd3afbb0a9eae1ab06119aa9` / 工具 U`c07120f4f4ab3b1d11553d2c04c42e0fa9b096d0`：
+三只真实SDK111 WS73在VM中完成受控缺custom文件的真实ENOENT，Core保留pending phase/error且无Runtime/Ready；
+UID1000/caps0拒绝选择故障身份。另两只保持身份并交换角色完成4轮随机业务对端校验/回复；
+恢复原文件、只移除/重加guest故障设备后pending计数清零、同槽新generation，恢复设备与健康设备再完成4轮。
+slkd PID/start ticks不变，独立两端USB/HCC/A3/NOCP和1223包零丢失、taint0核对。
+[原始记录、独立证明及四次整轮失败](evidence/ws73-early-bootstrap-fault-isolation-20261013.json)完整保留；
+失败依次为tail启动竞态、stats缺adapter、快照schema不一致、漏封存daemon凭据，未重写为PASS。
+这是pre-metadata受控失败/精确取消子门禁，未覆盖ROM上传、URB部分open/回调/module/IRQ生命周期；
+QMP重接不等于自然或非人工恢复。没有扩大形式化范围，也不替代原40短/249资格。
+
+下一批接通Core权威只读pending诊断与跨语言调用者、slkd动态pending/fault对象，随后标准provider
+operations/RX/stop、移除static Usb/core USB=n/m/真正Virtual及统一事件迁移。
+仍需完整callback/module/IRQ/PM、自然故障根因与非人工恢复；WP13/WP18及原issues继续开放。
+整体架构整改完成后再扩展长包、多通道、四设备数据与唯一用户态SSAP Engine；原S0–S6范围保持。
+
 采用的近期次序：WP18-SSAP实际调用审计、旧内核业务剥离、调用者拒绝/迁移及三类清单
 作为WP08新用户态Engine的前置门禁；本批剥离门禁已通过，整个WP18未完成。保留DTAP/CMTC/TCID/credit/socket/Grant/安全机制；
 不恢复不可靠旧wire Engine，不把全部旧控制面整改当作数据开发前置。
 
 
-当前整改实现K770364dcc152/U7d8857b已签名，旧SSAP生产依赖与18 ioctl退出，离线通过；
+SSAP剥离历史整改切片K770364dcc152/U7d8857b已签名，旧SSAP生产依赖与18 ioctl退出，离线通过；
 精确K770364dcc152/U96ac968新VM：40短消息、249八轮/16超限、RF22与建链断链
 均通过，历史18命令root/ordinary全部ENOTTY。WP18-SSAP本批退出条件通过；
 整个目标架构、WP18和相关原issues仍开放。此前Kd3/afb证据完整保留。

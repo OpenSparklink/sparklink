@@ -5,6 +5,23 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
+## 本批架构整改验收：单设备早期失败隔离
+
+K`308e5398dccc83a27ca3bd92f0611b93cf2d7bbe` / 编译service U`420cc1266347a00fbd3afbb0a9eae1ab06119aa9` / 工具 U`c07120f4f4ab3b1d11553d2c04c42e0fa9b096d0`：
+三只真实SDK111 WS73在VM中完成受控缺custom文件的真实ENOENT，Core保留pending phase/error且无Runtime/Ready；
+UID1000/caps0拒绝选择故障身份。另两只保持身份并交换角色完成4轮随机业务对端校验/回复；
+恢复原文件、只移除/重加guest故障设备后pending计数清零、同槽新generation，恢复设备与健康设备再完成4轮。
+slkd PID/start ticks不变，独立两端USB/HCC/A3/NOCP和1223包零丢失、taint0核对。
+[原始记录、独立证明及四次整轮失败](evidence/ws73-early-bootstrap-fault-isolation-20261013.json)完整保留；
+失败依次为tail启动竞态、stats缺adapter、快照schema不一致、漏封存daemon凭据，未重写为PASS。
+这是pre-metadata受控失败/精确取消子门禁，未覆盖ROM上传、URB部分open/回调/module/IRQ生命周期；
+QMP重接不等于自然或非人工恢复。没有扩大形式化范围，也不替代原40短/249资格。
+
+下一批接通Core权威只读pending诊断与跨语言调用者、slkd动态pending/fault对象，随后标准provider
+operations/RX/stop、移除static Usb/core USB=n/m/真正Virtual及统一事件迁移。
+仍需完整callback/module/IRQ/PM、自然故障根因与非人工恢复；WP13/WP18及原issues继续开放。
+整体架构整改完成后再扩展长包、多通道、四设备数据与唯一用户态SSAP Engine；原S0–S6范围保持。
+
 历史正常路径 **K7e654fde93b9 / 编译service与工具U67165b6**：生产WS73和显式open
 fixture迁至版本化common Backend注册描述符，旧注册导出删除，Native取代WS73专用variant。
 清洁内核零warning、空VM三次检查、生产validator38项、实际C入口11项及clang ASan/UBSan通过；
@@ -129,7 +146,8 @@ Native33/ingress9/bus4、工具444、清洁内核零warning/空VM三次/准确CI
 capture零drop/taint0，RF22/连接/dup/最后关闭/QMP保持。
 旧有限安装TLC模型按准确新hash重核，scope不扩大到新增C/driver/profile/diagnostic/recovery。
 原allocator Kani仍NOT_PROVEN_UNSUPPORTED；模型与normal-path不替代callbacks/module/IRQ。
-动态daemon pending/fault adapter、新公开诊断绑定、ROM/自然冷启动、实际失败及partial-init/同行隔离、
+受控pre-metadata缺custom失败/精确取消/新gen及同行真实业务限定资格见本页本批门禁。
+动态daemon pending/fault adapter、新公开诊断绑定、ROM/自然冷启动、部分open/URB/callback/module/IRQ、
 标准方言/bus构建/真正Virtual/PM及自然根因/非人工恢复继续缺，整项issues保持开放。
 
 

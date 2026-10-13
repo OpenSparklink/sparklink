@@ -358,3 +358,12 @@ producer与旧Runtime后cancel。诊断回调只更新已有代际，不能隐�
 有界retry才新建预留。Pending sysfs从Core查询；phase为profile定义的raw诊断，不是Ready。
 普通用户runtime接口已观察8条未查询pending并同代际Ready；没有ROM/失败/callback资格。
 动态slkd pending/fault对象和公开诊断接口待接，不能因sysfs可读宣称全用户管理流程完成。
+
+## 受控早期失败隔离的实施门禁（2026-10-13）
+
+K308e5398/编译serviceU420cc12/工具Uc07120f的三实设备VM：缺custom文件产生真实ENOENT、
+Core pending phase/error而非Ready；ordinary故障选择拒绝，同行故障期间4往返；target-only
+QMP移除后pending取消、新generation重新Ready、恢复后4往返且slkd未重启。
+见[限定证据](../evidence/ws73-early-bootstrap-fault-isolation-20261013.json)。
+这只覆盖pre-metadata失败；不证明已打开URB/部分Runtime、module/IRQ/callback清理或自然恢复。
+动态pending/fault对象必须取Core权威诊断，不能自行推断Ready或以sysfs投影冒充全管理链路。

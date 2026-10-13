@@ -642,7 +642,7 @@
   "tool_ci": {
     "head": "bc9967644b60b7b48c0d04a789203a2cfa5d1c8e",
     "run_id": 38326575960,
-    "status": "EIGHT_JOBS_SUCCESS_RELEASE_QUEUED",
+    "status": "NINE_JOBS_SUCCESS",
     "kernel_pin": "5f8e3107515d8c2e887bd93f0166335b316d57f5",
     "jobs": [
       {
@@ -687,8 +687,8 @@
       },
       {
         "name": "release build",
-        "status": "queued",
-        "conclusion": ""
+        "status": "completed",
+        "conclusion": "success"
       }
     ]
   },

@@ -14,7 +14,7 @@ CBMC221性质限定通过（仅9项语义断言及内存/算术安全，不证�
 且标识不在空口证据；两轮共224两端SDU/112真实NOCP、捕获零drop、taint0。
 RF22/建链断链、dup/最后关闭与QMP支撑保持；QMP不算物理拔插或自然恢复。
 Uea77931/67165b6新pin CI检出两项测试fixture名称漂移，原失败保留；
-K5f8e310只迁测试fixture、生产源与编译K7e654fde一致，Ubc99676 CI目前8项成功（含生产C准入/拒绝及实际Rust回归），release仍排队；结果独立记录，
+K5f8e310只迁测试fixture、生产源与编译K7e654fde一致，Ubc99676 CI九项全部成功（含生产C准入/拒绝、实际Rust回归、release）；结果独立记录，
 不将测试修正HEAD或远程CI与编译service HEAD混用。标准USB/重复binding、真正Virtual、
 其他bus及完整module/context/generation/close-callback证明仍缺；全WP13保持开放。
 

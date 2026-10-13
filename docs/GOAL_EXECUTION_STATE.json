@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T00:20:12.428088+00:00",
+  "updated_at_utc": "2026-10-13T00:22:58.193353+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "5f8e3107515d8c2e887bd93f0166335b316d57f5",
-    "userspace": "bc9967644b60b7b48c0d04a789203a2cfa5d1c8e"
+    "userspace": "68c8f0f7914e31b148c36468bde4a2f87a8cda48"
   },
   "qualified_source_heads": {
     "linux": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -362,6 +362,14 @@
     "natural_fault_root_cause_closed": false,
     "nonmanual_hardware_recovery_accepted": false,
     "latest_kernel_test_only_head": "5f8e3107515d8c2e887bd93f0166335b316d57f5",
-    "production_identical_to_qualified_kernel": true
-  }
+    "production_identical_to_qualified_kernel": true,
+    "ci_result": {
+      "head": "bc9967644b60b7b48c0d04a789203a2cfa5d1c8e",
+      "run_id": 38326575960,
+      "jobs": 9,
+      "status": "success",
+      "kernel_pin": "5f8e3107515d8c2e887bd93f0166335b316d57f5"
+    }
+  },
+  "heads_observed_before_receipt_commit": true
 }

@@ -298,3 +298,4 @@ Backend来源本批证据：
 - [actual安装/退休、旧pending失败见证、构建/CI](evidence/backend-install-offline-20261013.json)
 - [准确抽象模型与弱反例](evidence/backend-install-formal-20261013/manifest.json)
 - [新40](evidence/ws73-backend-install-short-repeat-20261013.json)、[249/超限](evidence/ws73-backend-install-249-boundary-20261013.json)
+- [16项issue原scope/OPEN读回回执](evidence/backend-install-issues-20261013.json)：有限模型/源码和正常实机切片不关闭整项。

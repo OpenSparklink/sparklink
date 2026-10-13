@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T03:12:54.673750+00:00",
+  "updated_at_utc": "2026-10-13T03:18:41.316960+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -280,13 +280,13 @@
   ],
   "full_goal_complete": false,
   "original_issues_open": true,
-  "issue_sync_receipt": "docs/evidence/backend-bus-issues-20261013.json",
+  "issue_sync_receipt": "docs/evidence/backend-install-issues-20261013.json",
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
   "current_batch": "WP13 actual common Core reservation/owned candidate construction outside registry/final exact publication/cancel/retire; Native pending unregister gap removed. Exact scoped actual10/pending15/formal bounded model+weak control/CI9/new40-249. Early C bootstrap reservation/fault visibility remains open.",
   "current_audit": "docs/evidence/backend-install-offline-20261013.json",
-  "issue_sync_status": "Common Backend install comments pending; all prior scopes OPEN retained",
+  "issue_sync_status": "16 existing related issues exact comment-body readback; all OPEN, original scopes/bodies unchanged",
   "current_implementation_heads": {
     "linux": "e5d1e3311261150df0ac000c2162ee2707a4968a",
     "userspace": "e7275d27c0c765d1bc3c4e48789df0edc8a3e467"
@@ -357,11 +357,12 @@
     "docs/evidence/backend-install-offline-20261013.json",
     "docs/evidence/backend-install-formal-20261013/manifest.json",
     "docs/evidence/ws73-backend-install-short-repeat-20261013.json",
-    "docs/evidence/ws73-backend-install-249-boundary-20261013.json"
+    "docs/evidence/ws73-backend-install-249-boundary-20261013.json",
+    "docs/evidence/backend-install-issues-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/backend-bus-issues-20261013.json",
-  "latest_evidence_commit": "7044558fd8d482c7cd45406f2d8f40ca96a144ba",
+  "latest_issue_progress_receipt": "docs/evidence/backend-install-issues-20261013.json",
+  "latest_evidence_commit": "5e7dcb5f98de39bb3b336b24a539193507453840",
   "previous_goal_turn_classification": "progress: copied validated provider bus into retained C context and verified before Rust Runtime publication, fixed info/name and C/Rust/Python enums; prior actual info source failure witness, C11+2/Rust4/Native33/Core13/ingress9 and strict199/35/440/CI9/clean build/emptyVM/new real40-249. Full architecture/module/recovery unqualified.",
   "current_goal_turn_classification": "progress: common actual Core reserve/install/cancel/retire consumers, owned candidate allocation/destruction outside registry and final exact publish, old pending unregister counterexample; actual10/pending15/other source/443/clean build/emptyVM/CI9, exact finiteTLC16453+weak7, new real40-249; full architecture/recovery unqualified.",
   "qualified_tool_source_heads": [
@@ -518,6 +519,13 @@
     "formal": "Abstract16453 states+weak7 counterexample; no C/Rust/IRQ/module/callback/liveness refinement; prior allocator unproved",
     "real": "40 short,8 app249,16 rejects,224 SDUs/112NOCP; RF22/connection/dup/lastclose/QMP; no new real partial-init/early reservation or natural recovery gate",
     "early_bootstrap_registered": false,
-    "package_complete": false
+    "package_complete": false,
+    "issue_updates": {
+      "count": 16,
+      "readback_verified": true,
+      "original_scopes_open_unchanged": true,
+      "receipt": "docs/evidence/backend-install-issues-20261013.json",
+      "whole_package_closed": false
+    }
   }
 }

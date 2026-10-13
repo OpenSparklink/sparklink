@@ -22,13 +22,14 @@ EXPORTS = {'sparklink_backend_register', 'sparklink_native_unregister',
            'sparklink_native_snoop_tx'}
 
 
-def configuration(text):
+def configuration(text, allow_virtual_module=False):
     values = dict(re.findall(r'^CONFIG_([A-Z0-9_]+)=(.*)$', text, re.M))
     for name, value in REQUIRED.items():
         if values.get(name, 'n') != value:
             raise ValueError('native lab requires CONFIG_'+name+'='+value)
-    if values.get('SPARKLINK_VIRTUAL', 'n') != 'n':
-        raise ValueError('native lab must not include the virtual controller')
+    virtual = values.get('SPARKLINK_VIRTUAL', 'n')
+    if virtual != 'n' and not (allow_virtual_module and virtual == 'm'):
+        raise ValueError('virtual backend must be disabled or explicitly allowed as a separate test module')
     return values
 
 
@@ -124,7 +125,7 @@ def collect(args):
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=source, text=True).strip()
     if head != args.source_head or subprocess.check_output(['git', 'status', '--porcelain'], cwd=source, text=True):
         raise ValueError('expected clean kernel source HEAD required')
-    config = configuration((build/'.config').read_text())
+    config = configuration((build/'.config').read_text(), getattr(args, 'allow_virtual_module', False))
     release = release_name((build/'include/config/kernel.release').read_text())
     record = json.loads(args.build_record.read_text())
     completed_build(record, head, file_record(build/'.config')['sha256'])
@@ -194,4 +195,6 @@ if __name__ == '__main__':
     parser.add_argument('--source-head', required=True)
     parser.add_argument('--build-record', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True, help='new private snapshot directory')
+    parser.add_argument('--allow-virtual-module', action='store_true',
+                        help='allow a separately loaded optional test module; built-in Virtual remains rejected')
     collect(parser.parse_args())

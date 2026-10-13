@@ -10,6 +10,15 @@ from ws73_native_build_check import EXPORTS, REQUIRED, boot_image, build_diagnos
 
 
 class NativeBuildCheck(unittest.TestCase):
+    def test_virtual_module_requires_explicit_opt_in_and_never_builtin(self):
+        text = ''.join('CONFIG_'+name+'='+value+'\n' for name, value in REQUIRED.items())
+        modular = text+'CONFIG_SPARKLINK_VIRTUAL=m\n'
+        with self.assertRaises(ValueError):
+            configuration(modular)
+        self.assertEqual(configuration(modular, True)['SPARKLINK_VIRTUAL'], 'm')
+        with self.assertRaises(ValueError):
+            configuration(text+'CONFIG_SPARKLINK_VIRTUAL=y\n', True)
+
     def test_live_failed_or_changed_build_cannot_be_accepted(self):
         good={'status':'BUILD_PASSED','build_exit':0,'source_head':'head','normalized_config_sha256':'config',
               'source_unchanged':True,'config_unchanged':True}

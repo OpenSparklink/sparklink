@@ -51,15 +51,16 @@ def ordinary_attributes(interface):
 def ordinary_core_snapshot(index,generation):
     # Uses the installed Python -> actual C cdylib -> Rust -> kernel ioctl.
     # Opens an unbound observation fd; never selects/acquires management.
-    command=('import sys,json;sys.path[:0]=['+repr(str(TOOLS))+',"/usr/share/sparklink/python"];from ws73_north_star import ordinary_identity;from sparklink import registration_snapshot;d={"credentials":ordinary_identity()};'
+    command=('import sys,json,os;os.environ["LIBSPARKLINK_PATH"]="/usr/lib/libsparklink.so";sys.path[:0]=['+repr(str(TOOLS))+',"/usr/share/sparklink/python"];from ws73_north_star import ordinary_identity;from sparklink import registration_snapshot;d={"credentials":ordinary_identity()};'
              +'\ntry:\n s=registration_snapshot('+str(index)+','+str(generation)+');d["snapshot"]={n:getattr(s,n) for n in ["version","dev_index","generation","state","profile","bus","phase","error","reserved_byte"]};d["snapshot"]["reserved"]=list(s.reserved)'
-             +'\nexcept OSError as e:d["errno"]=e.errno\nprint(json.dumps(d))')
+             +'\nexcept OSError as e:d["errno"]=e.errno;d["error"]=str(e)\nprint(json.dumps(d))')
     r=application('/bin/python3','-c',command,capture_output=True,timeout=10)
     if r.returncode:raise ValueError('ordinary Core binding query failed: '+r.stderr)
     d=json.loads(r.stdout);d['wall_ns']=time.time_ns();d['command']=r.args;return d
 
 
 def validate_core_snapshot(sample,index,generation,state):
+    if 'snapshot' not in sample:raise ValueError('actual Core binding observation missing: '+str(sample.get('error',sample.get('errno'))))
     c=sample['credentials'];s=sample['snapshot']
     if c['uids']!=[1000]*4 or any(int(c[k],16) for k in ['cap_eff','cap_prm','cap_amb']):raise ValueError('Core query must be ordinary')
     if s != dict(version=1,dev_index=index,generation=generation,state=state,profile=1,bus=4,phase=3 if state==2 else 0,error=-2 if state==2 else 0,reserved_byte=0,reserved=[0]*8):raise ValueError('exact canonical Core registration fields required')

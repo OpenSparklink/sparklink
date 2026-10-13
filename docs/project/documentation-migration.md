@@ -114,3 +114,11 @@ how-to 与资格边界 explanation，历史连接汇编增加醒目的历史入�
 D0 基础设施、D1 首页导航具备门禁；D2–D4 内容拆分继续进行；D5 首次真实
 设备执行教程、D6 离线图形与正式发布仍未完成。外链 HTTP429 未核实记录保留。
 最新锁定安装、严格构建和浏览器结果另记第四批报告，未执行前不标 PASS。
+
+第四批准确签名提交 `45f62ea9a56b`：全新 locked Python3.12 文档环境安装、
+无缓存严格 HTML、91／10 清单及内部页面／anchor／资源／公开路径检查通过。
+Firefox 实际导航、中英文搜索、代码块、表格、Mermaid、390px布局及新增页面通过；
+桌面任务页与窄屏参考截图已查看。[独立 CI 与 HTML artifact](https://github.com/OpenSparklink/sparklink/actions/runs/38476729256)
+成功，artifact 保留14天，本批没有发布。外链未重跑，历史71项429仍未核实。
+[准确第四批结果与未决](../evidence/diataxis-documentation-fourth-batch-20261014.json)。
+U#8／K#19／U#3 更新已回读，均OPEN；完整 goal 保持active，不改原始目标或预算。

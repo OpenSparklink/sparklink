@@ -826,7 +826,7 @@
     "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
   ],
   "documentation_workstream": {
-    "status": "partial; infrastructure/navigation gated; snoop content split; full migration remains open",
+    "status": "partial; infrastructure/navigation gated; fourth content batch gated; full migration remains open",
     "independent_of_protocol_critical_path": true,
     "branch": "codex/sparklink-ws73",
     "source_baseline": {
@@ -988,7 +988,7 @@
     },
     "documents_current": 91,
     "fourth_batch": {
-      "status": "content_split_implemented_validation_pending",
+      "status": "scoped_offline_browser_ci_pass",
       "scope": [
         "business roundtrip evidence how-to",
         "qualification boundaries explanation",
@@ -996,7 +996,44 @@
       ],
       "independent_of_protocol_critical_path": true,
       "hardware_qualification_unchanged": true,
-      "closure_allowed": false
+      "closure_allowed": false,
+      "tested_documentation_commit": "45f62ea9a56b44104f92eeb98fef6f386ddc41fe",
+      "evidence": "docs/evidence/diataxis-documentation-fourth-batch-20261014.json",
+      "ci": {
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38476729256",
+        "conclusion": "success",
+        "head": "45f62ea9a56b44104f92eeb98fef6f386ddc41fe",
+        "artifact_id": 11855150075,
+        "artifact_name": "sparklink-documentation",
+        "retention_days": 14,
+        "publishing": false
+      },
+      "issue_updates": [
+        {
+          "repo": "sparklink",
+          "issue": 8,
+          "state": "OPEN",
+          "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156397584",
+          "comment_id": 6156397584,
+          "body_sha256": "38b217d718e331053f12b7b1bed31e93f31d2aa961c0ac35daf00c2cb0fbd64e"
+        },
+        {
+          "repo": "linux",
+          "issue": 19,
+          "state": "OPEN",
+          "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156398612",
+          "comment_id": 6156398612,
+          "body_sha256": "38b217d718e331053f12b7b1bed31e93f31d2aa961c0ac35daf00c2cb0fbd64e"
+        },
+        {
+          "repo": "sparklink",
+          "issue": 3,
+          "state": "OPEN",
+          "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6156399468",
+          "comment_id": 6156399468,
+          "body_sha256": "38b217d718e331053f12b7b1bed31e93f31d2aa961c0ac35daf00c2cb0fbd64e"
+        }
+      ]
     }
   },
   "latest_standard_diagnostic_batch": {

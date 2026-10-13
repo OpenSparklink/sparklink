@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "status": "partial_documentation_workstream",
+  "review_baseline": {
+    "userspace": "99692b58e29e8d6725853d5748599a8d8b48df94",
+    "linux": "ce258f23e840a45cb8030a79c09277dd880aa9e3",
+    "both_clean": true
+  },
+  "tested_documentation_commit": "45f62ea9a56b44104f92eeb98fef6f386ddc41fe",
+  "runtime_sources_modified": false,
+  "hardware_qualification_unchanged": true,
+  "vm_only_unchanged": true,
+  "canonical_paths_preserved": true,
+  "infrastructure": "existing locked uv/Sphinx/MyST infrastructure independently rechecked; side branch not blindly inherited",
+  "scope": [
+    "business evidence how-to",
+    "qualification explanation",
+    "historical connection pointers",
+    "91 document dispositions"
+  ],
+  "offline": {
+    "fresh_python_environment": true,
+    "clean_working_tree_at_build": true,
+    "python": "3.12",
+    "locked": true,
+    "strict_html": true,
+    "internal_links_assets_public_paths": true,
+    "documents": 91,
+    "kernel_documents": 10,
+    "audit_report_sha256": "2f0d90eef9b4370f8adea2e8e34b936d6945a02b8eccc5fc2468ad92f480bea4",
+    "uv_lock_sha256": "d144a4d428ce84b31e28cfa7c3cd164734d9296b4d6abc575dfded9ba8b5bcb2"
+  },
+  "browser": {
+    "scope": "Firefox headless actual HTTP /sparklink/ navigation, JS search, DOM and screenshots; not hardware qualification",
+    "screenshots": [
+      {
+        "file": "desktop-home.png",
+        "sha256": "8a4d859636be9851dffc71d0ce6f4cf189db486ff6143d3c2170e1c25ca3b497"
+      },
+      {
+        "file": "reference-table.png",
+        "sha256": "a0de1cabc5d6087812c766f3ea3582692c2b5026e3854c7a6570d9decf389a8f"
+      },
+      {
+        "file": "tutorial-code.png",
+        "sha256": "26233b67b3f43188e983a328de5bf587f060a874ffda023b773664560474c33e"
+      },
+      {
+        "file": "search-results.png",
+        "sha256": "80ee290bd5bbbfad6bc92bb2dba6a6cdb3ae0a9aabafa44dc36f7036f373c67b"
+      },
+      {
+        "file": "chinese-search-results.png",
+        "sha256": "0aed0eda1a8f34e51a6e2e9562f73071873ce538171c64623bf08a1735241f10"
+      },
+      {
+        "file": "mobile-home.png",
+        "sha256": "55a5cb1725d4acee6e97d20cbc0ec5e6bd998ca1d28c9b08bc39ef1a391191b9"
+      },
+      {
+        "file": "mobile-reference.png",
+        "sha256": "270df5be50b3109fdd87da6baed689a9e5d7685e8da12cfee6cee312a049edb4"
+      },
+      {
+        "file": "architecture-diagram.png",
+        "sha256": "719c0714a7767be98897ccffe2ee551b947fb5240b765fca2959fc550b2b5a0c"
+      },
+      {
+        "file": "business-evidence-task.png",
+        "sha256": "bdaf37c2daba0291e54878842b52b5db52600c3937f621eb8d8536a2aced6ce0"
+      },
+      {
+        "file": "qualification-explanation.png",
+        "sha256": "5982ed0551a75a86db2f986760737cf22af9a248cad4e10481dfd6eab458d2d4"
+      }
+    ],
+    "document_title": "SparkLink · 45f62ea9a56b",
+    "home_tasks": true,
+    "navigation": true,
+    "table": true,
+    "code_block": true,
+    "javascript_search": true,
+    "chinese_search": true,
+    "mobile_no_page_overflow": true,
+    "mobile_table_container": true,
+    "mermaid_rendered": true,
+    "business_evidence_navigation": true,
+    "qualification_explanation": true,
+    "browser": {
+      "ready": false,
+      "message": "Session already started"
+    },
+    "status": "PASS",
+    "visual_review": [
+      "business-evidence-task.png",
+      "mobile-reference.png"
+    ],
+    "screenshots_publicly_uploaded": false
+  },
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38476729256",
+    "conclusion": "success",
+    "head": "45f62ea9a56b44104f92eeb98fef6f386ddc41fe",
+    "artifact_id": 11855150075,
+    "artifact_name": "sparklink-documentation",
+    "retention_days": 14,
+    "publishing": false
+  },
+  "external_links": {
+    "status": "not_rerun_this_batch; prior 71 HTTP429 still unverified",
+    "previous_report": "diataxis-documentation-third-batch-20261014.json"
+  },
+  "remaining": [
+    "complete API fields/error/permission audit",
+    "remaining mixed-source extraction",
+    "qualified first hardware execution tutorial",
+    "offline Mermaid assets/license",
+    "external link verification",
+    "formal publishing"
+  ],
+  "issue_updates": [
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156397584",
+      "comment_id": 6156397584,
+      "body_sha256": "38b217d718e331053f12b7b1bed31e93f31d2aa961c0ac35daf00c2cb0fbd64e"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156398612",
+      "comment_id": 6156398612,
+      "body_sha256": "38b217d718e331053f12b7b1bed31e93f31d2aa961c0ac35daf00c2cb0fbd64e"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6156399468",
+      "comment_id": 6156399468,
+      "body_sha256": "38b217d718e331053f12b7b1bed31e93f31d2aa961c0ac35daf00c2cb0fbd64e"
+    }
+  ],
+  "closure_allowed": false
+}

@@ -688,8 +688,10 @@ pub struct SleMgmtStats {
 #[repr(C)]
 pub struct SleSubsysStats {
     pub dev_count: u16,
-    pub proto_count: u8,
-    pub binding_count: u8,
+    /// Reserved identities without an installed Runtime, including retirement.
+    pub pending_count: u8,
+    /// Installed Runtime objects, including Setup/faulted; not a Ready count.
+    pub runtime_count: u8,
     pub active_connections: u16,
     pub mgmt_pending: u16,
     pub total_conn_created: u32,

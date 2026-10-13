@@ -560,8 +560,8 @@ fn cmd_stats(adapter: &Adapter) -> libsparklink::Result<()> {
 
     println!("Subsystem Statistics:");
     println!("  Devices:          {}", stats.dev_count);
-    println!("  Protocols:        {}", stats.proto_count);
-    println!("  Bindings:         {}", stats.binding_count);
+    println!("  Reserved only:    {}", stats.pending_count);
+    println!("  Runtimes:         {}", stats.runtime_count);
     println!("  Active conns:     {}", stats.active_connections);
     println!("  Mgmt pending:     {}", stats.mgmt_pending);
     println!("  Conns created:    {}", stats.total_conn_created);

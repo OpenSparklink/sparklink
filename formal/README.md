@@ -136,9 +136,13 @@ python3 ../linux/tools/testing/selftests/sparklink/run_runtime_ingress.py
 LKMM映射生产 `publish_runtime` 的schedule_gate→routes嵌套，以及invalidate先关闭gate
 后 exact-owner unpublish。单一有效identity、初始无route、一次发布/退休；弱对照刻意释放
 gate后才发布，应产生反例。模型不是Rust Arc、IRQ嵌套、复用、workqueue、callback或硬件
-证明。生产函数8项回归用std Mutex/Arc/queue/Host依赖fixture和显式rank/反序释放检查，保留各自明确边界。
+证明。生产函数9项回归用std Mutex/Arc/queue/Host依赖fixture和显式rank/反序释放检查，保留各自明确边界。
 
 共同RX与软件命令入口统一采用Host→gate（RX随后取ingress），与数据提交
 Host→data→gate一致。实际函数fixture检查队列准入/保留回复/退休拒绝以及
 schedule/kick发生时已无锁；前版RX函数rank负对照应检出gate→Host反转。
 这不是实际内核lockdep/KCSAN证明，也未观察到实机死锁；相应VM调试内核门禁仍开放。
+
+周期health observer也按Host→gate采样。生产9项回归包含实际Native health函数
+（只归一化extern签名/模块路径），Setup/Ready/radio/fault/retired/旧generation/同行
+均检查；Host观察方法仍为依赖fixture，不能作为真实故障根因或IRQ/lockdep证明。

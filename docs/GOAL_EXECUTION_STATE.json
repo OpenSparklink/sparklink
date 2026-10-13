@@ -1310,7 +1310,7 @@
     ]
   },
   "security_state_retirement": {
-    "status": "implemented/offline tests passed; corrected VM build running; real qualification pending",
+    "status": "implemented/offline/scoped exact-source VM real data pass; security mechanism and full scopes incomplete",
     "kernel_commits": [
       "f3ef1d52778c3f2170c1bde8c0a1bd94b25fe73d",
       "6f2f712980295cef424884884059ed07655c40c2"
@@ -1322,13 +1322,116 @@
       "Daemon Bond actor; no trusted key qualification"
     ],
     "remaining": [
-      "Corrected warning-free VM build",
-      "Actual passive root/ordinary refusal matrix and Virtual regression",
-      "Exact-source dual real WS73 discovery/connection/40-round short messages/249 boundaries/peer isolation",
-      "Remove remaining unreleased old facade/declarations after consumer migration",
-      "Per-connection authentication/real controller key installation and daemon policy/Bond qualification"
+      "Remove remaining default selection/debugfs/legacy observation routes",
+      "Finish unpublished legacy facades/declarations and unused crypto Kconfig dependencies",
+      "Per-session authenticated security/controller install/Agent/Bond gates",
+      "Continue unique userspace SSAP after target architecture cleanup; data expansion/formal tasks remain parallel"
     ],
     "hardware_qualification_transferred": false,
-    "closure_allowed": false
+    "closure_allowed": false,
+    "userspace": "4b949027d171795d14af60a9edb82d63d4dacab0",
+    "progress": "docs/evidence/security-state-retirement-progress-20261014.json",
+    "completed_gates": [
+      "Warning-free corrected committed VM kernel build",
+      "Actual Virtual root/ordinary 304 refusal checks and unchanged buffers",
+      "Actual private D-Bus method/property refusal; C/Python errno/no output mutation",
+      "Exact-source real dual WS73 discovery/connection/40 short roundtrips",
+      "8 real 249-byte roundtrips;16 boundary rejections without USB submit",
+      "Controlled early-bootstrap fault peer isolation; no natural recovery qualification"
+    ],
+    "issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 7,
+        "state": "OPEN",
+        "id": 6154038671,
+        "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6154038671",
+        "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 18,
+        "state": "OPEN",
+        "id": 6154039480,
+        "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6154039480",
+        "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 5,
+        "state": "OPEN",
+        "id": 6154040318,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6154040318",
+        "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "id": 6154041272,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6154041272",
+        "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "id": 6154042256,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6154042256",
+        "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+        "readback_exact": true
+      }
+    ],
+    "terminal_issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 7,
+        "state": "OPEN",
+        "comment_id": 6154181472,
+        "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6154181472",
+        "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 18,
+        "state": "OPEN",
+        "comment_id": 6154182413,
+        "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6154182413",
+        "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 5,
+        "state": "OPEN",
+        "comment_id": 6154183370,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6154183370",
+        "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "comment_id": 6154184314,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6154184314",
+        "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "comment_id": 6154185302,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6154185302",
+        "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+        "readback_exact": true
+      }
+    ]
   }
 }

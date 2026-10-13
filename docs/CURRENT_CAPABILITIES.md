@@ -1,8 +1,13 @@
 # 当前能力与资格
 
-当前开发切片（尚未实机资格）：K6f2f71298029 已剥离旧 controller 安全/RPA模型；
-SDK与daemon明确拒绝，crypto源码/历史测试保留。新镜像真实路径回归待完成；
-下列历史通过仅适用于其明确源码，不迁移到此切片。见[当前整改](IMPLEMENTATION_PLAN.md)。
+当前准确路径资格：K `6f2f71298029`／service+runner U `4b949027d171` 已重新完成
+Virtual、真实双设备发现／连接、交换连接角色40轮普通用户短消息与8轮249字节
+往返、16次250/253/254/255边界拒绝及受控失败同行隔离。新安全／RPA模型剥离
+后未恢复旧wire engine；SDK／D-Bus明确拒绝，crypto源码与历史测试保留。
+正常两批224 ACB SDU／112 NOCP、kernel capture drops=0、VM taint=0；NOCP
+不替代对端校验和回复。相关恢复、每连接可信安全/Bond及其他整项scope继续开放。
+[准确提交、首次失败与限定门禁](evidence/security-state-retirement-progress-20261014.json)。
+
 
 **唯一当前资格入口。** [ARCHITECTURE](ARCHITECTURE.md)与ADR定义目标/契约，
 [IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md)是唯一执行入口；

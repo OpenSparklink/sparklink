@@ -413,3 +413,11 @@ Binding Grant切片Kbf8663/Udfb8636：Scope/方向/安全要求唯一存fd Bindi
 持有socket的同一Grant；真正发布在Host门禁下，所有Binding锁IRQ-save。新40/249及
 六撤销/两个方向资格通过；S5信任与降级、SCM_RIGHTS/daemon死亡/在途/Backend事件迁移
 保持完整原计划，不能宣布全架构完成。
+
+## 旧安全模型的实施边界
+
+默认Runtime已不再保存controller级SecurityInner／RpaManager，也不驱动旧自动
+配对响应。目标仍是每连接身份和确认安装的内核安全机制，daemon负责Agent／
+策略／Bond；本地数据库、用户态自报或crypto函数成功均不能发布可信Encrypted。
+内核crypto机制源码保留，未接通时不编入默认Runtime对象；历史模型仅供selftests。
+当前实现、准确资格和未决只查能力与实施入口，不在本架构维护第二份资格矩阵。

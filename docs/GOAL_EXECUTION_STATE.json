@@ -1436,7 +1436,7 @@
   },
   "default_affinity_retirement": {
     "status": "implemented; offline source tests/strict userspace in progress; exact new VM qualification pending",
-    "kernel": "5f0c2a5203870c2492e80122bca28b78132efdf2",
+    "kernel": "dd11fa38a33817d555fc74305244d88118b50c22",
     "audit": "docs/evidence/default-affinity-retirement-audit-20261014.json",
     "changed": [
       "remove global default controller routing",
@@ -1460,6 +1460,7 @@
     "vm_only": true,
     "closure_allowed": false,
     "first_failure": "Kc2dd pin initializer rejected fallible CString; record retained; corrected committed build required",
-    "vm_observer_policy": "Virtual-only group1000 mode0660 for independent ordinary observer opens; injection driver root-only; no host changes"
+    "vm_observer_policy": "Virtual-only group1000 mode0660 for independent ordinary observer opens; injection driver root-only; no host changes",
+    "virtual_first_failure": "root explicit-affinity test expected ENODEV instead of existing missing-selection EINVAL; no hardware touched; production contract unchanged; test corrected with stage diagnostics; new output rerun required"
   }
 }

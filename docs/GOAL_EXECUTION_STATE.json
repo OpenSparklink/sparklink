@@ -1436,7 +1436,7 @@
   },
   "default_affinity_retirement": {
     "status": "implemented; offline source tests/strict userspace in progress; exact new VM qualification pending",
-    "kernel": "902f01dc9ea57c4ff5103a30c8539b12f0ffeb5f",
+    "kernel": "5f0c2a5203870c2492e80122bca28b78132efdf2",
     "audit": "docs/evidence/default-affinity-retirement-audit-20261014.json",
     "changed": [
       "remove global default controller routing",
@@ -1459,6 +1459,7 @@
     "scope_unchanged": true,
     "vm_only": true,
     "closure_allowed": false,
-    "first_failure": "Kc2dd pin initializer rejected fallible CString; record retained; corrected committed build required"
+    "first_failure": "Kc2dd pin initializer rejected fallible CString; record retained; corrected committed build required",
+    "vm_observer_policy": "Virtual-only group1000 mode0660 for independent ordinary observer opens; injection driver root-only; no host changes"
   }
 }

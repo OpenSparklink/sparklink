@@ -28,7 +28,7 @@
 | RAL/RPA | 0xB0-0xB7 | 8 | 地址解析列表与可解析私有地址管理 |
 | 测距 | 0xC0-0xC3 | 4 | 能力查询/链路参数/动作/使能 |
 
-旧0x82 DLI_POLL_EVENT及Raw256类型已删除，返回ENOTTY、不复用；Rust/C/Python旧poll、50ms receiver与monitor --legacy同步删除。独立ControllerEvent、作者私有DiagnosticResult和CAP限制snoop为当前入口。
+旧read(2) 44字节队列、0x70 EVENT_COUNT／0x71 EVENT_STATS及统计类型已删除；完整事件用ControllerEventGet，状态水位用LinkSnapshot.event_seq。旧0x82 DLI_POLL_EVENT及Raw256类型已删除，返回ENOTTY、不复用；Rust/C/Python旧poll、50ms receiver与monitor --legacy同步删除。独立ControllerEvent、作者私有DiagnosticResult和CAP限制snoop为当前入口。
 
 ## 设备管理 (0x03-0x08)
 
@@ -159,8 +159,6 @@ SSAP字段已同步删除；C/Rust/Python不再导出它们。未发布UAPI不�
 
 | CMD | 序号 | 方向 | 参数类型 |
 |-----|------|------|----------|
-| `EVENT_COUNT` | 0x70 | none | — (返回值) |
-| `EVENT_STATS` | 0x71 | read | `SleEventStats` |
 
 ## DLI 控制器 (0x80-0x87)
 

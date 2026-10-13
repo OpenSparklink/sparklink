@@ -8,6 +8,32 @@
 当前五维资格只在[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)维护，
 goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_STATE.json)。
 
+## 当前子门禁：完整事件替代旧 read／队列统计
+
+精确编译内核 `e78b88f050aa`／service `bf7a189a4a52`。
+[三类调用审计](evidence/read-retirement-audit-20261014.json)和
+[当前源码、实际VFS门禁与未决](evidence/read-retirement-progress-20261014.json)：默认read(2)明确Unsupported，
+删除44字节SleWireEvent／EventQueue／BroadcastRing／全局序号及per-fd旧poll队列，0x70/71及SDK统计类型删除。
+ADV/RAW_ADV/CONN_RESP/CONN_DATA生产ioctl注入明确拒绝，旧源码及copy/overflow/actor价值测试隔离保存。
+原9read-copy和6poll-copy仅历史资格；旧live supervisor明确拒绝，不恢复旧ABI。
+
+Native完整ControllerEvent、私有DiagnosticResult和独立CAP snoop保留。
+D-Bus／slctl events改为实际LinkSnapshot注册gen/index/event_seq水位，锁外syscall；水位不是投递ACK或pending/delivered统计。
+被动uid1000 Cprobe在两个连接角色／两设备的正常两批执行8次，**32实际guarded-page部分copy故障**，
+观测真实改写前缀、EFAULT readiness保留、完全重试、独立reader重放；旧read/stats拒绝且buffer不变。
+真实新slctl events八份回执匹配对应设备。新empty模块／Virtual Core/Host两轮42查询通过。
+
+准确新实机 [40短消息](evidence/read-retirement-real-short-20261014.json)、
+[8次249／16边界拒绝](evidence/read-retirement-real-boundary-20261014.json)、
+[受控启动失败同行8](evidence/read-retirement-fault-real-20261014.json)通过；随机序号／数据实际对端校验回复，
+正常224 ACB SDU／112 NOCP、零kernel capture drops／taint0。原首次panic/最后回复关闭/旧prepare失败保留。
+CI0174 pin Ke78九项通过。未升级完整形式化、并发overflow或自然恢复资格。
+
+**WP12／完整目标仍OPEN**：旧normalized state/genl调用者／通知权威迁移、canonical loss/resync/拓扑/快照/owner-death全集、
+完整IRQ/module/PM/callback、标准typed/data真硬件及mixed real/Virtual仍缺。自然RCA／非人工恢复继续开放。
+所有原S0–S6／19WP／10FV／12DG及真实WS73纵向路径保留，P4 UserHost仍只规划；不关闭整项issue。
+
+
 ## 当前子门禁：删除破坏性 DLI poll 与重复队列
 
 编译内核 `96f18513c0a1`／service `bf117ad6254f`。

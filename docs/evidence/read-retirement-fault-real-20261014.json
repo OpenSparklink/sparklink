@@ -1,0 +1,32 @@
+{
+  "status": "REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS",
+  "kernel": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
+  "service": "bf7a189a4a52a8a7645b00bec2de287a2a4df86c",
+  "manifest": {
+    "workspace_relative_path": ".dev/native-read-retirement-fault-real/manifest.json",
+    "sha256": "49d9bbc4c8d06e8291a0f1f6975db4989e36737242dbaa16e4b4c81384174d44",
+    "public_raw_material": false
+  },
+  "pcap": {
+    "workspace_relative_path": ".dev/native-read-retirement-fault-real/guest-output/ws73.pcap",
+    "sha256": "8d6c72f5333e714fe8e0c48d35fb862b5775de97d1ca82c7f8604ccb41555eaa",
+    "public_raw_material": false
+  },
+  "console": {
+    "workspace_relative_path": ".dev/native-read-retirement-fault-real/console.log",
+    "sha256": "bbbec390dc0090209ab5a792374c871c76631e1acb5b0ab3ada6df760317d948",
+    "public_raw_material": false
+  },
+  "capture_stats": {
+    "workspace_relative_path": ".dev/native-read-retirement-fault-real/guest-output/capture-stats.txt",
+    "sha256": "7362df86505bcc6bf21bdc9a91dbb9ed208a72b43d83e2a06e06830d03a775a5",
+    "public_raw_material": false
+  },
+  "scope": "actual hardware in VM; QMP/injection not natural recovery or new manual physical qualification",
+  "peer_round_trips": [
+    4,
+    4
+  ],
+  "kernel_capture_drops": 0,
+  "taint": 0
+}

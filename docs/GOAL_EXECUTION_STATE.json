@@ -26,17 +26,17 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "46f3b77f2662351c8b75c19b1abdcde776b85198",
-    "userspace": "389a6738ff871aae525c75e7773dc2d62ca87512",
-    "observation": "K46f only updates authorization selftest against compiled K96f; Runtime drivers/net/include unchanged. Accurate actual image/service qualification stays K96f/Ubf117. Latest user CI pin14b24 and metadata are not new hardware qualification."
+    "linux": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
+    "userspace": "0174b8a99f347e78e94adc145750a43a448deb0b",
+    "observation": "Exact actual Kernel Ke78/service Ubf7 qualification; user current code changes after service are CI pin only; metadata is not qualification transfer."
   },
   "qualified_source_heads": {
-    "linux": "96f18513c0a17f30c9fc2be5a28da2c36aafe710",
-    "userspace": "bf117ad6254feb16e07e71fc4f605128dde6b09c"
+    "linux": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
+    "userspace": "bf7a189a4a52a8a7645b00bec2de287a2a4df86c"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exact K96f/Ubf117:40 ordinary role-exchange RT and discovery/connection/object/Down/dup/lastclose/controlled QMP; injected fault peer8. No natural recovery/new manual physical qualification.",
-    "DG02": "PARTIAL_REAL same exact sources:8 app249 RT/16 250,253,254,255 EMSGSIZE;224 normal SDU/112 NOCP,0 capture drops/taint. Full long/fragment/real credit/backpressure/multichannel open.",
+    "DG01": "PARTIAL_REAL exactKe78/Ubf7:40 ordinary role-exchange RT,RF22/connection/Peer/Down/dup/lastclose/controlledQMP and actual event copy/watermark gates; injected fault peer8. Not natural recovery/new physical qualification.",
+    "DG02": "PARTIAL_REAL exactsame sources:8app249/16original250,253,254,255 reject;224normalSDUs/112NOCP,zero kernelcapture drops/taint. Long/credit/backpressure/multichannel open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -45,14 +45,14 @@
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
-    "WP12": "PARTIAL: destructive DLI poll/raw public type and duplicate ring removed with default Rust/C/Python/CLI/daemon consumers. Legacy codecs/copy/actor isolated; current ControllerEvent/private Diagnostic/snoop retained. Exact K96f/Ubf117 real40/249+fault8; remaining read/state/genl, canonical loss/resync/topology/ownership still open.",
+    "WP12": "PARTIAL: old read/BroadcastRing/EventQueue/globalseq/old stats and synthetic ioctl injection removed; full Native log/snoop/private result retained. Actual watermark D-Bus/CLI and32 guarded current ioctl-copy faults/independent retry/replay passed with exactKe78/Ubf7 40/249/fault8. Old normalized state/genl and canonical loss/topology/ownership still open.",
     "WP13": "PARTIAL: actual per-File query/fault Virtual on common Core/Host passed empty-USB VM; release and management-fd dup/last-close/inflight/queue/peer gates. Exact K1ed/U231 real40 short+8 app249/16 rejects+faultpeer8. Mixed real/Virtual, entered callback, standard typed/ticketed data, canonical events/IRQ/PM and natural RCA still open.",
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
     "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope.",
     "FV_REGISTRATION_SDK": "Actual SDK validator after new tuple alias rechecked full ABI/u16/u64 Kani83+weak generation witness; scope unchanged, no Core/daemon/producer/lifetime/authority refinement."
   },
   "next_slices": [
-    "Continue WP12: remaining legacy read/BroadcastRing and duplicate state/genl callers, canonical loss/resync/topology/ownership with concrete replacement. Preserve existing Host/ControllerEvent/DLI results/snoop and actual sockets. Relevant gates only, not full race matrix before data.",
+    "Finish target architecture state ownership: audit/replace remaining legacy normalized connection/radio/power/security and genl callers/notifications; canonical loss/resync/topology with real ownership gates. Keep exact Native WS73 data/log/Host paths; only relevant proof subset, no entire control-race prerequisite for data.",
     "Architecture remediation before feature expansion: dedicated real Virtual provider; WP12 canonical events and old ring/duplicate consumer removal; preserve current WS73 paths.",
     "Finish standard typed policy/Session-ticketed ACB/canonical ingress and module/IRQ/PM/callback join; scoped formal and exact VM regressions.",
     "Ticket/Session/Grant/socket inflight/NOCP reuse/real credit/backpressure, partial-init and natural fault RCA/nonmanual recovery in parallel.",
@@ -1028,5 +1028,10 @@
       }
     ],
     "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38422422438"
+  },
+  "latest_read_retirement_batch": {
+    "evidence": "docs/evidence/read-retirement-progress-20261014.json",
+    "scope": "partial",
+    "close_any_issue": false
   }
 }

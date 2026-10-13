@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "status": "PARTIAL_CANONICAL_EVENT_READ_MIGRATION_WITH_ACTUAL_VFS_AND_WS73_REGRESSION",
+  "recorded_at_utc": "2026-10-13T16:33:18.450895+00:00",
+  "compiled_kernel": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
+  "compiled_service": "bf7a189a4a52a8a7645b00bec2de287a2a4df86c",
+  "audit": "docs/evidence/read-retirement-audit-20261014.json",
+  "deleted_default": [
+    "SleWireEvent44/EventQueue/BroadcastRing/global sequence/ring codec",
+    "per-File legacy queue/poll wakeup and read consumption",
+    "EVENT_COUNT/STATS ioctl0x70/0x71 and public type/SDK methods/D-Bus old stats tuple",
+    "production ADV/RAW_ADV/CONN_RESP/CONN_DATA ioctl injection bodies; privileged calls explicitly Unsupported",
+    "old shadow connection timeout event publication"
+  ],
+  "replacement": [
+    "existing complete per-registration ControllerEventGet with caller cursor and copy-success readiness commit",
+    "existing independent CAP-enforced snoop and private Host diagnostic result",
+    "GetControllerEventPosition uses actual NativeLinkSnapshot event_seq/generation/index, lock released before blocking syscall; watermark is not ACK/pending/delivered count"
+  ],
+  "test_only_retained": [
+    "exact K46f read/event/queue/codec source and9 copy/overflow/fanout cases",
+    "six historical K4ea raw poll copy cases",
+    "private old C ABI only selftests; old live read-copy supervisor archived and clearly NotSupported before USB"
+  ],
+  "actual_current_vfs": {
+    "ordinary_uid": 1000,
+    "normal_probe_invocations": 8,
+    "partial_faults": 32,
+    "prefixes": [
+      32,
+      48,
+      96,
+      240
+    ],
+    "checks": [
+      "actual changed prefix observed, not merely pre-validation",
+      "EFAULT does not advance fd readiness cursor",
+      "successful full retry exact record",
+      "second reader replay same record",
+      "read(2) EOPNOTSUPP and old counts/stats ENOTTY with untouched user buffer",
+      "actual new slctl events D-Bus signature and matching index/generation on both devices and both connection roles"
+    ],
+    "not_proved": [
+      "concurrent overflow during copy",
+      "kernel lockdep/KCSAN/all scheduling races",
+      "full loss/resync/snapshot topology/owner-death"
+    ],
+    "source_sha256": "7f27c64fcd3bad323c2b6e19f4acaab39e216a59675196e5769c8bd922c8b28d",
+    "source_path": "linux/tools/testing/selftests/sparklink/controller_event_copy_test.c"
+  },
+  "offline": {
+    "strict_default_all_features": "check/clippy -D warnings and complete Rust tests passed",
+    "historical_copy": {
+      "status": "EVENT_RECORD_COPY_BOUNDARY_PASS",
+      "rust_tests": 15,
+      "historical_read_iter_tests": 9,
+      "historical_legacy_dli_poll_tests": 6,
+      "retired_poll_sources": {
+        "wire.rs": "8f275c7f55cf69ae3c790a55c30e9fd2fbb1acf8873d82014b606a06b473bafa",
+        "ring.rs": "cae9a9780232a47db9ca553edda06ad9019f486735cc657dbd6c65aca9a7f100",
+        "handler.rs": "4d7cb06b448def3df45ab446c7c5c574d64e649c2c827bf41dd78393b5254ae0",
+        "codec.rs": "2bee60a4b64319e54175c8f57cb1385dde30406c4bbfe2fd77f9219ce92a2e19"
+      },
+      "scope": "archived K46f read/queue and K4ea legacy DLI declaration/ring/poll; archived cases are not production qualification; copy/lock/controller-codec dependencies are fixtures",
+      "live_vfs_fault_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sparklink_core.rs": "542ec14ec65fdcc2d00d6fe0934f073e993acdd3da4c7c950e871c13a20fc9d8",
+        "sle_uapi.rs": "432029a69db63801974464b4760a053cd566992277159b14c4d533e55d04ee3e"
+      },
+      "remaining": [
+        "Canonical event snapshot/loss/ownership gates",
+        "Removal wakeup, actual kernel concurrency/locks and complete event ownership gates"
+      ]
+    },
+    "diagnostic": {
+      "status": "DIAGNOSTIC_RESULT_BOUNDARY_PASS",
+      "rust_tests": 50,
+      "result_tests": 14,
+      "admission_tests": 14,
+      "host_deadline_tests": 6,
+      "connection_dependency_tests": 11,
+      "link_dependency_tests": 5,
+      "scope": "actual pending/queue modules, submit/result handlers and Host enqueue/cancel bodies; clock/lease/lock/usercopy/allocation dependencies are fixtures",
+      "live_vfs_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_uapi.rs": "573f0ab9fbc1cba2d00ce0b6bda71c14fc55f5da85d94b33d52165452fdea270",
+        "sparklink_core.rs": "34a03de00594cd3b9e9eff7b6e37650409fb0f061ae17840acd8e6c3f9fda6e4",
+        "sle_host.rs": "e607769a6f9cbd7c0f8f277c8066f7323dc6eed2bce8136a5ac639ec8f97af82",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_workers.rs": "7c5e87a1f4898487b0ca2d539123245df31c045be6b1f98aa096e9666acad173",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e"
+      },
+      "remaining": [
+        "Actual ioctl owner/CAP/usercopy/removal gates in qualified VM",
+        "Legacy DLI event callers and shared projection removal",
+        "Live idempotent admission/cancel/deadline syscall and on-wire late reply gates"
+      ]
+    },
+    "release": {
+      "status": "MANAGEMENT_RELEASE_SOURCE_BOUNDARIES_PASS",
+      "rust_tests": 55,
+      "scope": "actual Host predicates/TX selection/InFlight/domain revocation and core fast-release block; source queue/operation/lease modules and opcode/timeout constants; locks, clock scaling, dependency error adapters and surrounding transport dependencies are fixtures",
+      "live_ioctl_acceptance": false,
+      "fd_close_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_host.rs": "e607769a6f9cbd7c0f8f277c8066f7323dc6eed2bce8136a5ac639ec8f97af82",
+        "sparklink_core.rs": "34a03de00594cd3b9e9eff7b6e37650409fb0f061ae17840acd8e6c3f9fda6e4",
+        "sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_dli.rs": "8591815a771b848940ebc5c58f01bbf1636f2b1add6cd66b1879fb730b12f965",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd"
+      }
+    },
+    "tools": 459,
+    "kernel_object": "warning-free after orphan attributes/import/constant cleanup; first6 warnings retained, no suppression added"
+  },
+  "build": {
+    "workspace_relative_path": ".dev/native-read-retirement-build-record.json",
+    "sha256": "f659f39e90e08406939995eaf4e7e808d7121fbd1d1e99d026c7ec546f364b57",
+    "public_raw_material": false
+  },
+  "config_sha256": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7",
+  "vm": {
+    "manifest": {
+      "workspace_relative_path": ".dev/native-read-retirement-virtual-vm/manifest.json",
+      "sha256": "6ced72006668d11f9f25786cdfbce077de630d541b27d5bb33fb740f365c4218",
+      "public_raw_material": false
+    },
+    "console": {
+      "workspace_relative_path": ".dev/native-read-retirement-virtual-vm/console.log",
+      "sha256": "c50dfdf69a9dd4bbee7db703819ab59fb372132c919bca26d11534d7809d0967",
+      "public_raw_material": false
+    },
+    "module_rounds": 2,
+    "queries": 42,
+    "scope": "optional Virtual + actual Core/Host lifecycle with removed read/stats negative gates; no RF or recovery proof"
+  },
+  "real": {
+    "fault-real": "docs/evidence/read-retirement-fault-real-20261014.json",
+    "real-short": "docs/evidence/read-retirement-real-short-20261014.json",
+    "real-boundary": "docs/evidence/read-retirement-real-boundary-20261014.json"
+  },
+  "normal_total": {
+    "short_rt": 40,
+    "app249_rt": 8,
+    "boundary_rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "peer_fault_rt": 8,
+    "capture_drops": 0,
+    "taint": 0
+  },
+  "ci": {
+    "run": 38430794496,
+    "user_head": "0174b8a99f347e78e94adc145750a43a448deb0b",
+    "kernel_pin": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
+    "jobs": 9,
+    "conclusion": "success"
+  },
+  "still_open": [
+    "legacy normalized connection/radio/power/security state and genl call/notification ownership audit",
+    "full canonical loss/resync/topology/snapshot/owner-death and IRQ/module/PM/callback proofs",
+    "standard typed/data true hardware and mixed real/Virtual",
+    "full real credit/backpressure/long/multichannel/four-device/unique user SSAP/security",
+    "natural timeout/reenumeration/disappearance RCA and nonmanual recovery"
+  ],
+  "not_claimed": "No full architecture completion, no comprehensive formal proof, no natural recovery. NOCP is not peer received; actual peer payload/sequence verification/reply independently checked.",
+  "goal": "original complete S0-S6 active; no whole issue closed; UserHost P4 unchanged"
+}

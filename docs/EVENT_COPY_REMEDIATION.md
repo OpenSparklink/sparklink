@@ -1,4 +1,6 @@
-# 旧事件 read 的消费提交与迁移门禁
+# 历史记录：旧事件 read 的消费提交与迁移门禁
+
+当前默认read/44字节队列和旧统计ABI已删除；本页原read门禁及旧命令仅按原始源码版本阅读。新完整ControllerEvent实际guarded-copy门禁见[当前资格](CURRENT_CAPABILITIES.md)，不得转授旧PASS。
 
 当前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：
 K`cc4018c4e3a6`/编译U`4a9de6a91617`使用专用QEMU暂留178字节真实回复，

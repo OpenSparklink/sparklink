@@ -27,8 +27,8 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
-    "userspace": "5a985078756eb1d323b59e968db328d0aad3c7c9",
-    "observation": "Code/limited formal+CI current; final build and new VM/real qualification pending, historical qualified_source_heads retained."
+    "userspace": "8a89ee4b650fe94d879332b742535683962aabc3",
+    "observation": "Latest doc-only commit recorded; runtime and qualifications unchanged from prior code. Linux pending diagnostic work preserved."
   },
   "qualified_source_heads": {
     "linux": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
@@ -867,6 +867,43 @@
       "OpenSparklink/linux#19",
       "OpenSparklink/sparklink#3"
     ],
-    "closure_allowed": false
+    "closure_allowed": false,
+    "evidence": "docs/evidence/diataxis-documentation-first-batch-20261013.json",
+    "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38402594511",
+    "external_links": {
+      "working": 223,
+      "http429_unverified": 56,
+      "other_failures": 0,
+      "status": "not_fully_verified"
+    },
+    "issue_updates": [
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6146312924",
+        "comment_id": 6146312924,
+        "body_sha256": "997e2d935b354ba605ad090f307c12de30741305aaca8a78d5b82c74d0a39ab3",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6146313680",
+        "comment_id": 6146313680,
+        "body_sha256": "997e2d935b354ba605ad090f307c12de30741305aaca8a78d5b82c74d0a39ab3",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6146314960",
+        "comment_id": 6146314960,
+        "body_sha256": "997e2d935b354ba605ad090f307c12de30741305aaca8a78d5b82c74d0a39ab3",
+        "readback_exact": true
+      }
+    ]
   }
 }

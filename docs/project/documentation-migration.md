@@ -54,3 +54,10 @@ HTML 内部页面／anchor／静态资源和公开输出路径检查通过；这
 
 下一批：接入可用浏览器完成实际验收；逐字段 API／错误／权限参考；从准确重新验收的 VM 镜像提炼首次真实 WS73 操作教程；其余混合文档逐篇提取；最后独立审查 Pages 子路径、版本和离线图形。
 不关闭 U#8／K#19 或 SSAP 整项任务，不改变任何功能资格。
+
+## 第一批可审查结果
+
+[准确提交的门禁与范围](../evidence/diataxis-documentation-first-batch-20261013.json)记录签名提交8a89ee4、锁文件／构建配置 hash 和未决项。
+[文档 CI及下载 HTML artifact](https://github.com/OpenSparklink/sparklink/actions/runs/38402594511) 已成功，artifact 保留14天；它是构建产物，不是正式站点发布。
+准确提交外链隔离重跑：223项有效，56项HTTP429未核实，无其他失败；退出1，不记为全量PASS。较早重叠写入的损坏JSON报告已弃用。
+U#8／K#19／U#3 更新已逐字回读，均OPEN。

@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T11:23:10.025063+00:00",
+  "updated_at_utc": "2026-10-13T12:05:08.975265+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -52,7 +52,7 @@
     "FV_REGISTRATION_SDK": "Actual SDK validator after new tuple alias rechecked full ABI/u16/u64 Kani83+weak generation witness; scope unchanged, no Core/daemon/producer/lifetime/authority refinement."
   },
   "next_slices": [
-    "Finish currently running Virtual image/modules build, then independently audit exact clean K883 and actual isolated VM/WS73 gates; never restart while existing handle32813 is live.",
+    "Finish current restored-config kernel build (live handle44756), then exact-source isolated Virtual/WS73 gates; first invalid compiler-probe config failed empty VM and is retained, no new-source real acceptance yet. UserHost WP14 planning only, P4, no interruption/prerequisite.",
     "Architecture remediation before feature expansion: dedicated real Virtual provider; WP12 canonical events and old ring/duplicate consumer removal; preserve current WS73 paths.",
     "Finish standard typed policy/Session-ticketed ACB/canonical ingress and module/IRQ/PM/callback join; scoped formal and exact VM regressions.",
     "Ticket/Session/Grant/socket inflight/NOCP reuse/real credit/backpressure, partial-init and natural fault RCA/nonmanual recovery in parallel.",
@@ -208,13 +208,16 @@
     {
       "id": "WP14",
       "interface_dependencies": [
+        "WP03",
         "WP05",
+        "WP11",
         "WP12",
         "WP13"
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "existing foundations retained; target package exit conditions open"
+      "status": "DEFERRED_PLANNING_ONLY: optional exclusive UserHost + separate vendor Host adaptation replaces fixed vendord/native Proxy; not implemented/proven/VM accepted; not a current WS73/lifecycle/SSAP prerequisite.",
+      "priority": "P4"
     },
     {
       "id": "WP15",
@@ -750,9 +753,9 @@
       "jobs": 9,
       "conclusion": "success"
     },
-    "vm": "NOT_YET_RUN_ON_FINAL_IMAGE",
+    "vm": "FAIL_FIRST_CONFIG_BOOT; no controller test ran, restored-config VM pending",
     "real_ws73": "New-source regression pending; retain accurate historical Kae5/U967 40-short/249/fault qualification, do not transfer it to new source.",
-    "build": "RUNNING_FULL_IMAGE_MODULES; initial script anchored K1d1, later test-runner-only K883 changed HEAD. After terminal capture, independently rebuild/audit clean K883 before qualification.",
+    "build": "First K883 build used invalid compiler-probe configuration; empty-root VM FAILED before devices/services. Restored known-qualified config with only Virtual=m change; v2 build live44756. Final VM/real gates pending.",
     "failures_preserved": {
       "initial_integration": "ccache default path read-only; fixed workspace CCACHE_DIR, no code failure",
       "initial_tool_tests": "SO_PASSCRED denied in sandbox; rerun private IPC tests authorized outside sandbox456 pass",
@@ -775,6 +778,41 @@
       "original_scopes_open_unchanged": true,
       "receipt": "docs/evidence/virtual-provider-issues-20261013.json",
       "whole_package_closed": false
-    }
-  }
+    },
+    "active_build_handle": 44756
+  },
+  "effective_task_scope": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、可选UserHost接管及厂商Host适配（P4延期） 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
+  "goal_api_scope_amendment_record": "Existing active goal API objective is immutable; user-authorized WP14 adjustment is authoritative in canonical plan/ADR0003 and this effective scope. No duplicate goal, completion or budget change.",
+  "userhost_planning": {
+    "priority": "P4 low, deferred, planning-only this round",
+    "decision": "docs/decisions/0003-optional-exclusive-user-host.md",
+    "audit": "docs/evidence/userhost-planning-audit-20261013.json",
+    "implemented": false,
+    "formal_proven": false,
+    "vm_real_accepted": false,
+    "not_prerequisite_for": [
+      "Current WS73 data loop",
+      "Lifecycle remediation",
+      "Native userspace SSAP",
+      "WP02-WP08"
+    ],
+    "preserved_requirements": [
+      "permissions/LSM/library ABI/path",
+      "per-controller isolation",
+      "finite resources/partial/EAGAIN/fault/crash/stale",
+      "benchmark/real evidence"
+    ],
+    "future_scope": [
+      "mutually exclusive Native/UserHost",
+      "shared DeviceRuntime vs NativeHostRuntime",
+      "typed bounded packet socket/lease",
+      "idle-only switching/verified hardware barriers",
+      "new Native generation/reinit/no inherited link-credit-key",
+      "SDK packet compatibility and slctl/slkd adaptation separately audited"
+    ],
+    "code_changed_or_deleted": false
+  },
+  "deferred_work": [
+    "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
+  ]
 }

@@ -1,7 +1,8 @@
 # SparkLink 架构
 
 Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-management-channel-service-boundaries.md)
-与[ADR0002](decisions/0002-session-socket-lifetime-and-proof-contract.md)定义决策和接口契约；
+、[ADR0002](decisions/0002-session-socket-lifetime-and-proof-contract.md)与
+[ADR0003](decisions/0003-optional-exclusive-user-host.md)定义决策和接口契约；
 [IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md)是唯一执行/依赖/门禁入口，
 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)是唯一当前资格入口。
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
@@ -184,16 +185,18 @@ flowchart TB
     Core[net/sparklink：Runtime、Host、Session、Channel、credit、安全机制]
     Driver[drivers/sparklink：总线、固件、HCC/BSLE、URB、硬件恢复]
     Hw[真实 WS73 / 后续硬件]
-    Vendor[可选 slk-vendord]
+    User[可选用户态 Host：低优先级]
+    Device[共享设备层：驱动引用、所有权、传输预算]
     Observe[独立事件 / snoop / slkmon / slkdump]
     App -->|管理与服务 API| Daemon
     Daemon -->|管理事务与状态订阅| Core
     Daemon -->|授权并交付 fd| App
     App <-->|业务消息| Sock
     Sock <--> Core
-    Core <--> Driver
+    Core <-->|仅 Native 模式| Device
+    Device <--> Driver
     Driver <--> Hw
-    Vendor <-->|受控 Backend Proxy| Core
+    User <-->|仅 UserHost 模式：独占有类型 controller 包| Device
     Core --> Observe
 ```
 
@@ -202,10 +205,11 @@ flowchart TB
 | 层 | 唯一所有者 | 禁止跨越 |
 |---|---|---|
 | drivers | 总线匹配、端点、固件、板配置、传输 framing、设备 I/O、电源和硬件恢复 | 应用策略、SSAP 数据库、Profile callback |
-| net | Runtime、DLI 标准／厂商方言、命令事务、连接与通道、流控、安全机制、可信状态 | 用户服务数据库和厂商私有库 |
+| net（Native模式） | NativeHostRuntime、DLI方言、命令事务、连接/DTAP、协议credit、安全机制、可信状态 | 用户服务数据库和厂商私有库 |
+| 共享设备层（目标，待分离） | 驱动/硬件generation、互斥所有权、传输资源/提交gate、权限与故障 | UserHost时继续处理原生协议credit或伪造Ready |
 | slkd | Managed 策略、授权、SSAP Engine、Agent、trust、Bond store、Profile | USB/HCC 直接操作、伪造内核安全状态 |
 | 应用 | 业务协议和 UI；使用授权 fd 或服务 API | raw DLI、隐式全局 adapter、私有 transport |
-| vendord | 独立厂商库进程、受控 Backend adapter | 加载进 slkd、绕过 Host 能力／生命周期校验 |
+| UserHost（未来可选） | 用户态独占DLI/credit/连接/DTAP/SSAP/协议安全；厂商Host适配另核对 | 伪装Native Backend、把自报状态变为原生可信状态或默认承诺SDK兼容 |
 | 观察工具 | 独立订阅和诊断 | 抢占协议 RX、隐式修改硬件 |
 
 ### 采用的关键决策
@@ -222,11 +226,24 @@ flowchart TB
 | AD-08 | 不确定结果保留物理义务 | 不伪取消、不退款、不静默重试有副作用动作 |
 | AD-09 | SSAP 唯一生产 Engine 在用户态 | 删除内核重复数据库／协议路径，易于服务和 Profile 演进 |
 | AD-10 | 证明、开发测试、实机资格独立 | 明确假设，避免模型替代硬件 |
-| AD-11 | core 不依赖 USB=y，driver 可注册 | 后续 transport、Virtual、Proxy 使用同一契约 |
+| AD-11 | core 不依赖 USB=y，driver 可注册 | Native/Virtual driver共同注册；UserHost独占包接口另行分离 |
 | AD-12 | 未发布 UAPI 同步替换 | 不引入长期双实现和无意义兼容负担 |
 
-AD-01–AD-12已采用并映射ADR0001/0002；不新建重复决定，目标实现状态以能力入口为准。
+| AD-13 | 可选UserHost与Native互斥；停用后接管，真实状态屏障后返Native | WP14低优先级规划替代固定vendord代理；本轮不实现 |
 
+AD-01–AD-13已采用并映射ADR0001/0002/0003；不新建重复决定，目标实现状态以能力入口为准。
+
+
+### 可选UserHost：当前只规划（AD-13 / WP14，P4）
+
+Native主线保持：内核Host拥有DLI/协议credit/connection/DTAP/security机制，slkd用户态SSAP/Profile/策略，
+应用用每逻辑通道socket。UserHost拥有完整协议Host，内核仅保留共享设备/固件/USB/HCC/BSLE、
+传输预算和访问强制；两模式互斥，其他controller不中断，不复用Native Backend来代理用户Host。
+当前未实现DeviceRuntime分离/UserHost UAPI/slk-vendord/厂商Host adapter；代码中的D-Bus Proxy不算它们。
+首版先停用，拒绝连接/在途/未结清发送；socket对象与租约/epoch持权、dup/fork/SCM及最后引用分别处理，
+撤权/join/实际控制器状态屏障后才返Native新身份并重初始化，不继承credit/link/key，也不把自报状态当Ready。
+[唯一契约及未来门禁](decisions/0003-optional-exclusive-user-host.md)记录细节和未决ABI评审项；
+[源码审计](evidence/userhost-planning-audit-20261013.json)区分存在代码与未来任务。WP14不成为当前主线前置。
 
 ## 对象、身份与引用
 
@@ -234,14 +251,16 @@ AD-01–AD-12已采用并映射ADR0001/0002；不新建重复决定，目标实�
 
 ```text
 ControllerSlot（接入定位、跨重枚举恢复预算）
-  └─ Runtime(generation)
-       ├─ BackendRef / Descriptor / Host / CommandQueue / CreditLedger
-       ├─ StateSubscriptions / SnoopSubscriptions
-       └─ ConnectionSession(lifetime, handle)
-            ├─ CMTC / 能力 / SecurityContext / 唯一 RX 分流
-            └─ Channel(local_tcid, remote_tcid, mode, incarnation)
-                 └─ SocketBinding(grant, authorization_epoch)
-                      └─ VFS file 引用：原 fd、dup、传递后的 fd
+  └─ 共享DeviceRuntime（目标：驱动引用、hardware generation、owner/epoch、传输限额）
+       ├─ UserHostBinding（未来、与Native互斥：socket引用/接管租约）
+       └─ NativeHostRuntime(generation)（当前仍与设备层结合，未来分离）
+            ├─ BackendRef / Descriptor / Host / CommandQueue / CreditLedger
+            ├─ StateSubscriptions / SnoopSubscriptions
+            └─ ConnectionSession(lifetime, handle)
+                 ├─ CMTC / 能力 / SecurityContext / 唯一 RX 分流
+                 └─ Channel(local_tcid, remote_tcid, mode, incarnation)
+                      └─ SocketBinding(grant, authorization_epoch)
+                           └─ VFS file 引用：原 fd、dup、传递后的 fd
 ```
 
 | 对象 | 资源及失效规则 |
@@ -348,7 +367,7 @@ DLI PB、DTAP SAR、SSAP分片是不同层：每层记录长度/片数/字节预
 
 ### 权威接口
 
-管理API、数据socket、观察订阅、Diagnostic、BackendProxy分离。genl/ioctl等若保留多个前端，仅转发到同一内部权威状态和事务，不各自写状态。
+管理API、数据socket、观察订阅、Diagnostic、未来UserHost接管分离。genl/ioctl等若保留多个前端，仅转发到同一内部权威状态和事务，不各自写状态。
 
 UAPI采用固定宽度、对齐、version/length/flags/reserved和可验证上限。修改同步C、Rust、Python绑定、CLI、D-Bus和CI pin。ioctl结构大小影响编号；size字段不能修复旧编号静默变化。
 

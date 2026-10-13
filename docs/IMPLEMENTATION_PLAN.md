@@ -428,7 +428,7 @@ SSAP Engine 先 ExchangeInfo，再使用协商 MTU/扩展码/分片/事务号/�
 | **S2：公共 Host 与控制面** | K#2/#3/#5；U#2/#6：typed transaction、统一事件/snoop、Managed owner、动态 adapter 对象和枚举快照 | Virtual 和标准 QEMU USB 同一事务通过；迟到/重复/丢失事件与多 reader 负向通过；无锁内 I/O；独立 Enabled/Available/Powered 可观察 |
 | **S3：优先完成 WS73 RF** | K#13/#14/#15/#16：USB/HCC/BSLE、固件/取消、Host dialect、真实版本/buffer、广播扫描建链断链 | G0 boot → G1 SLE/真实 DLI → G2 RF；标准 codec 不受影响；四设备独立 Ready，失败阶段明确；TX/RX capture 可复现 |
 | **S4：真实数据与用户态 SSAP** | K#6/#17；U#3：TCID/ACB/credit、PDU owner、用户态 Engine/Profile、工具/绑定迁移 | G3 两组双向数据、长 PDU/253–255B 边界、真实远端 Profile callback/read/write/notify/indication；daemon crash、满队列、断链有确定结果 |
-| **S5：安全、策略与 Proxy** | K#7/#18 与 U#5；U#4；K#1/#5 与 U#7 独立分支 | G4 实机配对/加密、Bond 重启重连与 revoke；PHY policy replay/实际能力门禁；fake vendor 全生命周期/权限/crash 端到端。真实闭源库未提供时明确未验证 |
+| **S5：安全、策略及延期UserHost** | K#7/#18 与 U#5；U#4；K#1/#5 与 U#7 独立分支 | G4 实机配对/加密、Bond 重启重连与 revoke；PHY policy replay/实际能力门禁；未来UserHost所有权/权限/切换/crash及适配端到端（P4非前置）。真实闭源库未提供时明确未验证 |
 | **S6：收敛与发布** | K#8/#19 及所有剩余 checklist：PM、hotplug/mixed backend、诊断构建、构建/模块组合、迁移删除、文档/包 | G5/G6、所有原验收项对应证据；关闭已满足 issue；支持矩阵区分模拟、实验、硬件验证；总跟踪最后关闭 |
 
 
@@ -471,7 +471,7 @@ registry只索引可引用对象。锁序、worker/timer引用和cancel路径进
 | FV07 | NOCP复用 | TLC | 显式展示危险反例，验证屏障模型 | 同/跨lifetime重复语义 |
 | FV08 | wire/PB/SAR | CBMC/Kani | checked长度/偏移、归属、预算、失败无提交 | input/unwind/模式范围 |
 | FV09 | 配对/Bond | Tamarin/ProVerif | 认证、保密、重放、peer/lifetime绑定 | primitives和endpoint假设 |
-| FV10 | 恢复/PM/Proxy | TLC | 有限收敛、旧gen不复活、崩溃隔离 | 无法要求永久故障必Ready |
+| FV10 | 恢复/PM/未来UserHost | TLC | 有限收敛、旧gen不复活、崩溃隔离 | 无法要求永久故障必Ready |
 
 ### 证明方法
 
@@ -544,7 +544,7 @@ DG01–12细化S4；不能取代原G0–G6、NS1或自然恢复条件。
 | **G5 Isolation / PM** | 保留 C↔D 业务时 reset/拔出 A 或 B，其他对象/订阅/调用持续；suspend/resume/reset-resume 与重复循环 |
 | **G6 Mixed / 性能** | 标准 QEMU controller 与 WS73 同 guest；可选双 guest 各两设备。记录吞吐、RTT、掉包、credit stall/队列、payload/时长；先测基线再设目标 |
 
-CI 每 PR 跑 fmt/check/clippy/unit/golden/ABI/Python/私有 D-Bus；有适用模型的集成 runner 跑 Virtual/标准 USB/Proxy fake；真实硬件 runner 串行执行 lab。任何 required test 未执行、timeout、FAIL、kernel BUG/WARNING 或缺预期用例均不能成为 PASS；不适用项使用明确 SKIP 及原因。先验证测试工具自身的失败判定。
+CI 每 PR 跑 fmt/check/clippy/unit/golden/ABI/Python/私有 D-Bus；有适用模型的集成 runner 跑 Virtual/标准 USB/未来UserHost test adapter（后者当前不实施）；真实硬件 runner 串行执行 lab。任何 required test 未执行、timeout、FAIL、kernel BUG/WARNING 或缺预期用例均不能成为 PASS；不适用项使用明确 SKIP 及原因。先验证测试工具自身的失败判定。
 
 
 ## 工作包：落到实现、依赖与退出条件
@@ -909,13 +909,37 @@ slkd；受控failure/QMP仍不当自然恢复。接动态pending/fault对象及�
 - 测试：core USB=n/m、明确支持的driver组合；Virtual热插拔和模块unload；真WS73回归。
 - 退出：删除enum/active swap/内置重复Virtual调用路径；没有模型不降级PASS。
 
-### WP14：厂商Proxy（P3，S5）
+### WP14：可选独占UserHost及厂商Host适配（P4，S5/S6，延期；本轮只规划）
 
-- 范围：BackendProxy UAPI、backend-client、独立vendord。
-- 动作：有界read/write/poll、lease/generation、root-owned库配置、malformed/partial/EAGAIN/crash；高层私有API只映射真能力。
-- 依赖：WP13注册seam、WP05权限和WP12事件；不抢占近期WS73数据目标。
-- 测试：fake adapter全链，但真实私有库单列未验证；接口复制开销测量后再考虑ring。
-- 退出：崩溃只退役该Backend，无伪标准Complete；真实库未知不宣传支持。
+[ADR0003](decisions/0003-optional-exclusive-user-host.md)取代固定BackendProxy/slk-vendord架构。
+审计K88372a9b7cbc/Ub967674：无vendord服务、Proxy/UserHost UAPI或Host adapter实现；共同Native
+Backend及D-Bus代理不是它们。此次范围调整不表示U#7/K#1/#5或其他原issue完成，不删已有代码。
+
+- 接口包：共享设备层与NativeHostRuntime分离，UserHost独占有类型/方向/长度界限的controller包。
+  内核保留驱动/FW/USB/HCC/BSLE、传输限额与权限；用户Host独占DLI、协议credit、connection、
+  DTAP、SSAP及协议安全。不是Native Backend，不消费Native事件/credit或自报原生Ready/link/security。
+- 所有权包：停用后接管；连接/在途事务/准入或未结清发送/work引用未清理时拒绝，不做热迁移。
+  每controller独占，socket对象+必要lease/epoch，dup/fork/SCM载体排队引用/最终释放与进程死亡/
+  管理撤权明确区分；实际提交重新核对。monitor仅复制；接管授权不等普通业务Channel Grant。
+- 屏障包：撤权→停提交/原生命令事件DTAPcredit处理→join/清理→已验证控制器状态屏障；不确定留
+  Fault/Quarantined，不能Ready。返Native重新初始化/新生命周期，不继承link/TCID/credit/key。
+  软件epoch不证明固件回复/NOCP排空；reset、state clear及key erase逐型号固件单独验证。
+- 适配包：逐SDK审计包send/receive/callback、USB/fd所有权和各协议层职责，不能假定所有vendor库
+  都能接入。可选隔离Host进程，不固定vendord框架。slctl/slkd/SSAP/Bond兼容另任务、默认无承诺。
+  保留可信库映射、ABI/symbol/hash/许可证/架构libc校验、LSM/service account/systemd隔离、缺库、
+  partial/EAGAIN/坏包/预算/卡死/hangup/crash/restart/stale/permission及benchmark门禁；不伪Complete。
+- 依赖：WP03身份/submit生命周期、WP05权限、WP11真实清理/状态屏障、WP12模式观察、WP13共享设备
+  与driver引用。只要求将来使用的最小接口，不等待整项互关；**WP14不是当前WS73、生命周期整改、
+  WP02–08数据/SSAP、安全或Native发布主线的前置依赖**。本轮不实现接口、模型、适配或实机矩阵。
+- 未来形式化：纳入FV04/05/06/10及codec/安全适用范围，所有权FSM/双owner/旧gen与epoch/切换失败/
+  fd最终ref/取消/cleanup/提交与回调。TLC+实际pure代码Kani/CBMC+LKMM及KCSAN/lockdep；记录hash、
+  映射/假设/边界/反例/工具版本，禁止把reset/drain/lease清理当未验证强假设。当前全部未证明。
+- 未来VM-only门禁：双真实WS73隔离、Idle接管、活动/inflight/debt拒绝、旧提交与在途回复、失败屏障、
+  dup/fork/SCM/最后引用/进程死亡/lease revoke、单只拔插/新generation/Native重初始化；另一只持续
+  随机双向业务校验。UserHost↔Native/所选Host业务与两端USB/HCC/controller包证据，随后四设备；
+  不以日志/USB写/用户自报状态或fake库替代真实空口及厂商适配资格。对应既有DG增加mode维度。
+- 退出：整个接口/所有权/资源/故障/证明与适用实机门禁满足，所选Host适配及兼容范围单独结论；
+  无真实SDK/私有库时明确未验证或有依据的不兼容。规划重写、fake adapter或部分门禁不关闭整项。
 
 ### WP15：PHY和PM（P2/P3，S5/S6）
 
@@ -972,7 +996,7 @@ flowchart LR
     A --> R[WP11 恢复/RCA 并行]
     A --> V[WP12 事件 并行]
     A --> X[WP13 Backend]
-    X --> Y[WP14 Proxy]
+    X -. 延期非主线前置 .-> Y[WP14 UserHost]
     R --> Z[WP15 PHY/PM]
 ```
 
@@ -987,7 +1011,7 @@ flowchart LR
 5. WP04 K3c8da4fac302/Ud1f9dde Runtime Session/唯一RX与fd分离已接通，真实40/249及dup/last-close/rebind拒绝子门禁通过；继续旧RX/在途关闭、动态TCID/关闭协议与完整引用资格。以此推进WP05可撤销Grant，其他控制组合与自然RCA并行。
 6. WP05 K3ee1a60bf06f接通Host lease epoch、软件TX准入和USB提交、v2绑定；精确U2a977的新VM40短/249保持回归与离线限定证明通过，Kf1034577ecc1/Ud570819授权RX取包新40短/249与actual C/限定LKMM通过，release/last-management-fd/dup两角色六实机子门禁已通过，Kbf8663/Udfb8636 Binding canonical scope/方向、最终发布与IRQ-save通过新40/249及六撤销/两方向门禁；protected明确拒绝，直接继续SCM_RIGHTS/daemon owner-death、S5可信安全与在途隔离，方向/安全仍缺。WP06文件语义并行。
 7. 根据实际能力扩展长包/模式，然后WP07多通道和四设备；WP08最小真实SSAP在其必要接口就绪后并行推进。
-8. WP09/10完成安全、Bond和标准Profile，WP13/14/15完成其他Backend/Proxy/PM。
+8. WP09/10完成安全、Bond和标准Profile，WP13/14/15完成其他NativeBackend/PM；WP14 UserHost低优先级独立延期。
 
 WP11自然恢复、WP12事件和WP18清理在每批保持独立子任务和证据，不用长期控制面排列阻塞步骤3–7。
 
@@ -1019,14 +1043,14 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 | S2 | Host、事务、管理、事件、动态对象 | WP01/05/12/16 |
 | S3 | WS73启动、发现、建链与根因恢复 | WP00/11/13/17 |
 | S4 | 数据通道、credit、边界、多设备、SSAP/Profile | WP01–08/10/16 |
-| S5 | 安全/Bond、PHY策略、厂商Proxy | WP09/14/15 |
+| S5 | 安全/Bond、PHY策略及可选延期UserHost | WP09/14/15 |
 | S6 | PM、完整运行、构建/部署、清理和发布 | WP11–18 |
 
 ### Linux issues
 
 | Issue | 原范围 | 工作包与补充验收 |
 |---|---|---|
-| [K#1](https://github.com/OpenSparklink/linux/issues/1) | Host/Backend/Channel seam | WP03/04/13/14；同契约Virtual/Native/Proxy |
+| [K#1](https://github.com/OpenSparklink/linux/issues/1) | Host/Backend/Channel seam | WP03/04/13/14；Native/Virtual共同Host；UserHost独占共享设备并自有Host |
 | [K#2](https://github.com/OpenSparklink/linux/issues/2) | typed发现与连接事务 | WP00/11/12；完整参数、真实事件、取消 |
 | [K#3](https://github.com/OpenSparklink/linux/issues/3) | 事件/结果/snoop | WP12/16；独立订阅、loss/resync、copy提交 |
 | [K#4](https://github.com/OpenSparklink/linux/issues/4) | per-controller状态 | WP01/03/04/07/13；无global swap、同行隔离 |
@@ -1056,7 +1080,7 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | PHY policy | WP15；策略replay与真实actual能力 |
 | [U#5](https://github.com/OpenSparklink/sparklink/issues/5) | Agent/Bond/授权 | WP05/09/16；撤销、crash、持久化安全 |
 | [U#6](https://github.com/OpenSparklink/sparklink/issues/6) | 动态多设备对象 | WP04/07/11/12；generation、快照、同地址和重插 |
-| [U#7](https://github.com/OpenSparklink/sparklink/issues/7) | vendord/私有adapter | WP13/14/16；隔离、坏帧、崩溃和真实性范围 |
+| [U#7](https://github.com/OpenSparklink/sparklink/issues/7) | 可选UserHost/厂商Host适配 | WP13/14/16；隔离、坏帧、崩溃和真实性范围 |
 | [U#8](https://github.com/OpenSparklink/sparklink/issues/8) | 联合实施总跟踪 | 全部S0–S6及适用验收；不是仅工具issue |
 | [U#10](https://github.com/OpenSparklink/sparklink/issues/10) | 第一北极星 | NS1原全部条件；自然恢复条件未满足时继续开放 |
 
@@ -1067,11 +1091,11 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 
 | Issue | 阶段与实现内容 | 完成必须额外看到的证据 |
 |---|---|---|
-| [K#1](https://github.com/OpenSparklink/linux/issues/1) | S0 契约；S1–S2 Host/Backend/DliChannel；S5 Proxy | Virtual、真实 Native、fake OpaqueVendor 使用同一 Host transaction；边界及迁移文档 |
+| [K#1](https://github.com/OpenSparklink/linux/issues/1) | S0 契约；S1–S2 Host/Backend/DliChannel；S5延期UserHost | Virtual、真实Native使用Native/Virtual使用同一Host；UserHost独占切换/边界另验收 |
 | [K#2](https://github.com/OpenSparklink/linux/issues/2) | S2 typed adv/scan/connect；S3 实机 | 完整参数/顺序/回滚和 status/complete/domain 关联，实机 trace，无合成成功 |
 | [K#3](https://github.com/OpenSparklink/linux/issues/3) | S2 独立订阅、requester completion、raw snoop | slkd+mon+dump 同时运行，立即唤醒、overflow、慢 reader、重开 |
 | [K#4](https://github.com/OpenSparklink/linux/issues/4) | S1–S2 每 controller 独立 Host/状态/worker | 无 active swap；至少双设备并行、同 opcode 交错、单侧拔出不影响另一侧 |
-| [K#5](https://github.com/OpenSparklink/linux/issues/5) | S0 ABI；S2 owner/权限；S5 Proxy | 非 root 负向测试、raw/Managed 冲突、stale generation、长度/保留字段、跨语言真实调用 |
+| [K#5](https://github.com/OpenSparklink/linux/issues/5) | S0 ABI；S2 owner/权限；S5延期UserHost | 非 root 负向测试、raw/Managed 冲突、stale generation、长度/保留字段、跨语言真实调用 |
 | [K#6](https://github.com/OpenSparklink/linux/issues/6) | S4 connection PDU channel 与 SSAP 迁移 | 独占 owner、完整 PDU/安全上下文、重组/flow control、crash；内核旧 DB 退出权威 |
 | [K#7](https://github.com/OpenSparklink/linux/issues/7) | S5 Security request/action/credential | 无 owner/crash/deadline fail closed；wrapped restore/revoke；optional token unsupported 明确 |
 | [K#8](https://github.com/OpenSparklink/linux/issues/8) | S0–S6 Native WS73 总跟踪 | 关联子项及所有真实硬件 gates 完成后关闭 |
@@ -1092,7 +1116,7 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | S5 每连接 PHY policy | telemetry replay 的 hysteresis/dwell/backoff/clamp/rollback/fairness；只广告真能力 |
 | [U#5](https://github.com/OpenSparklink/sparklink/issues/5) | S5 Agent、凭据 store、授权 | accept/reject/timeout/crash；restart 无重新配对重连、损坏 store/revoke/权限负向 |
 | [U#6](https://github.com/OpenSparklink/sparklink/issues/6) | S2 registry/adapterN；S3/S6 多设备 | snapshot+event race、同地址 peer 隔离、disable 不开 channel；四设备对象与重插 generation |
-| [U#7](https://github.com/OpenSparklink/sparklink/issues/7) | S5 backend-client、vendord、fake adapter | root-owned 库映射、ABI/缺库拒绝、epoll partial I/O、owner/stale/corrupt/crash/timeout、隔离与 benchmark |
+| [U#7](https://github.com/OpenSparklink/sparklink/issues/7) | S5/S6延期UserHost及所选Host adapter | 保留库映射/ABI/缺库/partial/owner/stale/corrupt/crash/timeout/隔离/benchmark；增互斥模式及真实屏障，适配兼容独立 |
 
 
 ## 提交、issues和验收治理

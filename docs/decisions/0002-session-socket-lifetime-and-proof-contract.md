@@ -450,3 +450,10 @@ close置live=false并在无driver mutex时cancel_delayed_work_sync，已捕获�
 delivered计数只是callback尝试，submitted计数只是driver尝试，不等于Host结果/数据完成/对端收到。
 控制参数有限，排队槽1；不带connection/data caps，不伪装WS73固件或物理恢复。
 此实现复用Core生命周期；源码模型/fixture不证明真实工作队列/module引用，按独立VM矩阵核对。
+
+### 低优先级UserHost范围调整（只规划）
+
+[ADR0003](0003-optional-exclusive-user-host.md)定义未来互斥Host模式，WP14独立延期；本ADR现有Native
+Session/Channel/Binding、Grant、ticket和资格继续有效。未来UserHost socket是controller所有权对象，
+不是普通Channel socket或Native Backend；接管Grant独立、fd别名/SCM引用与lease revoke明确区分，
+返Native必须真实状态屏障/新身份/重初始化，不继承connection/credit/key。本轮无UserHost实现或证明。

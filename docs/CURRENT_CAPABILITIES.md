@@ -5,6 +5,14 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
+## 可选UserHost及厂商Host适配：只采纳延期规划
+
+[ADR0003](decisions/0003-optional-exclusive-user-host.md) / [准确源码审计](evidence/userhost-planning-audit-20261013.json)。
+K88372a9b7cbc/Ub967674无slk-vendord、Proxy/UserHost接口或Host adapter实现。仅规划WP14，P4低优先级，
+不成为当前真实WS73/生命周期/用户态SSAP主线前置。本轮未实现、未建UserHost模型、未证明、未实机验收；
+保留有价值的权限/隔离/故障/库ABI门禁，新增socket所有权与切换屏障门槛。范围调整不表示issue完成。
+Native现有资格、历史失败证据和自然恢复开放条件均不变化；不删除代码、不承诺厂商API或slctl/slkd兼容。
+
 ## 当前架构整改：Virtual 占位模块替换为显式测试 Backend（VM 尚待验收）
 
 K`88372a9b7cbcea7fcbca4f34cc9d5707488be46e` / U`5a985078756eb1d323b59e968db328d0aad3c7c9`：
@@ -519,7 +527,7 @@ vmlinux旧serdev符号不存在。清洁构建零warning、空USB三次实际门
 | NOCP/复用 | 旧debt保留，未知/过量/不确定Fault，不自动退款 | 生产ledger已重现四步复用风险 | FV07期望反例，不是安全证明；FV02 unsupported/超时NOT_PROVEN | 短40轮实际88完成、249八轮实际24完成，范围限定 | 同/跨life重复/迟到来源、准确性与可信排空屏障；无实机串包断言 |
 | 旧SSAP业务 | K167f468剥离local DB/session/cache；K770364dcc152/U7d8857b删除18旧ioctl/业务字段/绑定，CLI/Profile拒绝；旧模型仅selftests；U56ea3e8默认facade NotSupported | 历史八项和生产依赖审计、Native20、连接边界及删除后用户态196/严格clippy；Python34含全Netlink声明一致性，facade私有D-Bus回归；实验callback回归保留 | 不能宣称已有生产用户Engine | 本批默认生产剥离通过：旧18 ioctl root/ordinary全部ENOTTY，新40短/249/发现建链路径保持；没有真实SSAP资格 | 本批退出条件通过；后续Session/Ticket/Grant/socket/Backend等目标架构整改，再WP08唯一用户Engine；相关整项issues仍开放 |
 | SSAP/安全/Bond/Profile | 用户态目标层；旧Profile已隔离实验crate，Native不注册旧Profile | 部分机制/actor/类型测试，仅各自范围 | FV08/09完整协议证明未取得 | 尚无新真实通道服务/安全安装矩阵资格 | 唯一用户态Engine、真实read/write/notify/indicate、可信安装/Bond/Profile |
-| Backend/事件/恢复/PM/四设备 | 现有Native及限定事件/生命周期基础保留 | 原完整方案/历史部分初始化和取消测试保留 | FV10及完整工作引用/恢复模型缺 | 历史物理/注入/部分清理仅其准确范围；本轮warm恢复不授予自然恢复 | 可注册seam/构建组合、事件迁移、四设备两组数据、自然RCA/非人工恢复、Proxy/PHY/PM/发布 |
+| Backend/事件/恢复/PM/四设备 | 现有Native及限定事件/生命周期基础保留 | 原完整方案/历史部分初始化和取消测试保留 | FV10及完整工作引用/恢复模型缺 | 历史物理/注入/部分清理仅其准确范围；本轮warm恢复不授予自然恢复 | 可注册seam/构建组合、事件迁移、四设备两组数据、自然RCA/非人工恢复、未来可选UserHost/PHY/PM/发布 |
 
 历史Binding Grant基线：Kbf8663bb78eb、编译服务与工具Udfb8636；基础模式为SOCK_DGRAM。两次VM均保留原slkd、
 同行generation/业务及真实断链/QMP支撑。QMP不是物理拔插，也不是自然恢复。

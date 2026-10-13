@@ -1,3 +1,5 @@
+2026-10-13增补：[ADR0003](0003-optional-exclusive-user-host.md)取代固定vendord/Native Host Proxy分支，采用低优先级可选独占UserHost；本轮只规划。原Native分层与资格保留。
+
 2026-10-13增补：[ADR0002](0002-session-socket-lifetime-and-proof-contract.md)明确Session/Channel/Binding所有权、授权及实验socket可靠性限制；其明确契约取代本文件的类型候选描述。
 
 # ADR 0001：管理、连接 socket 与应用服务分层
@@ -15,7 +17,7 @@
 | drivers/sparklink | 总线匹配、固件、端点、HCC/BSLE、传输、设备电源与硬件恢复 |
 | net/sparklink | 每设备 Runtime、DLI Host/方言、命令事务、连接/TCID、流控、安全机制与可信状态 |
 | slkd | 唯一 Managed 管理者；启用/连接策略、Agent、trust、Bond 持久化、SSAP Engine/数据库、Profile |
-| slk-vendord | 独立进程、Backend owner；厂商私有 ABI 限于内部，不加载到 slkd |
+| UserHost（未来可选，ADR0003） | 独占controller协议Host；厂商Host适配及隔离进程另核对，不伪装Native Backend |
 | 应用/工具 | 普通管理经授权 D-Bus/高层 API；数据使用授权通道；观察与诊断独立 |
 
 内核拥有配对时序、密码学、有效凭据、加密安装及安全强制；slkd 决定认证方法、
@@ -47,7 +49,7 @@ credit 实现。[L2CAP 接口语义](https://github.com/bluez/bluez/wiki/L2CAP)�
 - 身份：controller id + generation；连接只属于该 controller 实例。
 - 事务：本地 request id；接受、执行和最终完成分开；截止时间、取消明确。
 - 事件：独立订阅、sequence/丢失计数、移除唤醒；结果只完成原请求者。
-- 所有权：Managed、Backend Proxy、Connection PDU owner 分别管理。
+- 所有权：Native Managed、未来UserHost接管、Connection PDU owner 分别管理。
 - 权限：owner/token/generation/实际调用权限独立校验；诊断与冲突管理互斥。
 - 能力：已知支持、已知不支持、未知分开，附来源；未知不能默认成功。
 - ABI：固定宽度/对齐/version/length/flags/reserved；结构升级连同 ioctl 编号规则
@@ -63,7 +65,7 @@ C/Rust/Python conformance 覆盖布局、编号、枚举、权限、错误和实
 先修复确定性缺陷、拒绝不支持能力并恢复严格 CI；WS73 生命周期/自然故障根因
 及有限恢复同时推进。随后冻结连接契约，实现最小 socket 开发门禁及真实双设备
 数据闭环；再接通用户态 SSAP、每连接安全、可恢复 Bond、Profile，扩展四设备
-两组并行，最后其他 Native backend 和厂商 Proxy 逐项验收。
+两组并行，最后其他Native backend/PM逐项验收；UserHost及厂商Host适配低优先级独立延期。
 
 socket 门禁覆盖消息边界、超长拒绝、持续发送/背压、取消/关闭、断链、迟到回调、
 旧 generation、权限、多设备隔离、内存预算；按适用性运行 lockdep/KASAN/KCSAN。

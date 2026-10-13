@@ -1,5 +1,10 @@
 # Native diagnostic result ownership（部分迁移）
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 结果所有权迁移、槽淘汰和复制故障记录。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-11。遵循 ADR 0001 的结果只交付原请求者、观察与管理分离要求。
 最新限定实测 Linux `78e729c06a5e` / 编译用户态 `2dfd6bd09e7b`；
 下文保留各历史批次基线，未发布 UAPI 无兼容期限。

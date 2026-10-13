@@ -1,5 +1,10 @@
 # Native metadata 诊断请求身份、截止时间与取消
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 诊断 request_id、原始期限、作者取消及复制准入契约。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](reference/interfaces.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-11，Linux `c89e961b80a2b99922ddd0715590c01edfe39c88`；未发布UAPI同步迁移，不保留Native双提交入口。
 两类限定提交copyout幂等性已实际验证；取消/迟到回复等完整门禁仍开放，见文末。
 此前K49/Ud8的实机证据继续保留，只证明那个冻结版本。

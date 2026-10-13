@@ -1,5 +1,10 @@
 # 第一北极星：普通用户的双真实 WS73 广播与发现
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 广播发现北极星原验收和逐轮源码/实机记录。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](how-to/capture-and-check-discovery.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 用户确定于 2026-10-10。完整联合方案与全部原 issues 保留；本目标决定
 第一条优先交付路径，不替代 SSAP、安全、Vendor Proxy 等后续验收。
 

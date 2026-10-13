@@ -5,6 +5,11 @@
 
 # Native连接、撤销清理及用户态调用者
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 连接/撤销/对象迁移和逐批控制、数据门禁。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](how-to/check-business-roundtrip.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-12，当前实际验收内核 `1305136ce2c83d1180e84c62e96576def26816a4`。
 WS73 negotiable 广播的[真实双向连接／断开](evidence/ws73-native-advertising-recreation-connection-20261012.json)
 以及[已建立连接的 File 六例](evidence/ws73-connected-file-six-case-matrix-20261012.json)

@@ -1,5 +1,10 @@
 # WS73 广播集合生命周期：连接失败对照与接入要求
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 广播集合清理、连接失败及实际 Complete 对照。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-12，实际内核46db、服务/工具cd64065的Native VM95再次失败：随机
 可连接广播已被真实扫描匹配，Create OUT与Status成功，10秒无outcome；411包、
 零丢包、QEMU退出0。不能沿用参考Host成功来宣称Native连接通过。

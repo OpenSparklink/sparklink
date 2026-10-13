@@ -1,5 +1,10 @@
 # WS73 board configuration export
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** SDK 板级配置导出、候选与真实资格的区别。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](how-to/export-board-inputs.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 The native Linux driver consumes two raw runtime configuration files alongside
 the three SDK boot images: `bsle_custom.bin` (140 bytes) and `pm_config.bin`
 (4 bytes). These runtime files do not have the boot images' ASCII SHA-256 header.

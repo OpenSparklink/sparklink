@@ -826,7 +826,7 @@
     "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
   ],
   "documentation_workstream": {
-    "status": "partial; infrastructure/navigation gated; fourth content batch gated; full migration remains open",
+    "status": "partial; uppercase source audit and content corrections implemented, validation pending",
     "independent_of_protocol_critical_path": true,
     "branch": "codex/sparklink-ws73",
     "source_baseline": {
@@ -1034,6 +1034,22 @@
           "body_sha256": "38b217d718e331053f12b7b1bed31e93f31d2aa961c0ac35daf00c2cb0fbd64e"
         }
       ]
+    },
+    "uppercase_documents_batch": {
+      "baseline_userspace": "ac64b3566f330557a025f1994b0a6f49a22b3bd3",
+      "baseline_linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+      "documents": 46,
+      "topics": 11,
+      "guide": "docs/project/uppercase-document-guide.md",
+      "implemented": [
+        "per-source scope and preferred entry",
+        "retired misleading legacy API table with immutable original",
+        "current SSAP permission reference",
+        "VM-only notice on historical native deployment"
+      ],
+      "validation": "pending exact documentation commit",
+      "source_dirty_preserved": "SSAP actor and tools; not hardware qualified",
+      "closure_allowed": false
     }
   },
   "latest_standard_diagnostic_batch": {

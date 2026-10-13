@@ -1,5 +1,10 @@
 # 系统 D-Bus 观察与控制权限
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 观察与控制权限、服务名保护及历史权限回归。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](reference/interfaces.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 生产部署使用 `data/dbus/sparklink.conf` 与系统总线。普通应用经 slctl 调用
 slkd，不需要 sudo、setid 或 capability；管理员在安装阶段部署规则、创建
 `sparklink` 组并将获准控制设备的用户加入组。新登录会话取得组成员资格后，

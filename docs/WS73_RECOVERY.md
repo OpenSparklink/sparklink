@@ -1,5 +1,10 @@
 # WS73 根因定位与每设备自动恢复
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 启动超时/消失的 RCA、有限恢复设计及失败证据。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](IMPLEMENTATION_PLAN.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 最新[四设备时序矩阵](WS73_PARALLEL_RF.md)在同一冻结 VM 镜像上完成 37 ms
 对照 RF40，并重现默认 0 ms 的第三轮发现超时。失败时真实同行 abort 和四只
 STOP 已核对，不能将测试清理当作生产自动恢复。自然启动/消失根因、有限

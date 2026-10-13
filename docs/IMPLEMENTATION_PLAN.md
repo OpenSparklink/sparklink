@@ -5,6 +5,17 @@
 
 # SparkLink / Linux 联合实施方案
 
+## 独立文档整改：大写原文归纳
+
+46份根目录大写Markdown已逐篇按主题补范围和阅读去向；旧API表退休、SSAP权限
+参考拆出、主机部署旧步骤明确历史。见[归纳清单](project/uppercase-document-guide.md)。
+本批不改变S0–S6、协议资格或开发依赖；剩余混合内容继续拆分，门禁另记。
+
+
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：唯一权威入口。** 完整 S0–S6、工作包依赖和未完成门禁。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](project/index.md)。
+
 ## 当前主线：通道能力查询接通，下一步唯一SMTC/SSAP Engine
 
 K31769ea4b8c0／服务和工具U82a06cd：内核在Runtime授权及Session锁下产生一致

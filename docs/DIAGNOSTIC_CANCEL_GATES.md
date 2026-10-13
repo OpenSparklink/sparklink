@@ -1,5 +1,10 @@
 # Native diagnostic 取消、迟到回复与期限门禁
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 取消/迟到/期限/关闭的分批 VM 门禁。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 日期：2026-10-11。整项 K2/K3/K19、U1/U2/U8/U10 保持 OPEN。
 本工作落实 ADR0001 的事务关联要求；WS73 discovery、S0–S6 与 VM-only 保持。
 用户再次提供的 BlueZ 分析 SHA256 为

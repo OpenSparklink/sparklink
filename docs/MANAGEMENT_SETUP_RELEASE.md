@@ -1,5 +1,10 @@
 # Setup 与 Managed 租约释放及 radio 清理
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** release/dup/最后关闭、初始化与在途物理义务的逐批验收。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 最新[四设备时序矩阵](WS73_PARALLEL_RF.md)保留默认并行超时和前一核对器 FAIL；
 修复 retained OFF 的所属 domain 判定及有时限的同行 abort 后，默认失败重跑
 在真实设备上完成四只 STOP、worker 回收、无强杀。它只认证此测试清理子集，

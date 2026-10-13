@@ -1,5 +1,10 @@
 # 2026-10-11 复核与当前整改计划
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 14 项审查的整改历程和后续追加验证。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](IMPLEMENTATION_PLAN.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 最新源码复核与新镜像回归（K`f822db7756d7`／编译U`ccb3d34ae1bc`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
 此前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：

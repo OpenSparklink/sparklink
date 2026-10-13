@@ -1,5 +1,10 @@
 # 端点、能力默认值与在途文件关闭门禁
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 端点/能力默认值与在途文件关闭回归。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 这批整改保持完整 [S0–S6](IMPLEMENTATION_PLAN.md)、
 [Linux／BlueZ 分层](BLUEZ_RECONCILIATION_20261011.md)及真实 WS73 北极星。
 只在 VM 内运行内核、模块和设备测试；不修改宿主部署。

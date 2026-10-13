@@ -36,6 +36,11 @@ checkout全部固定到d227b8a37d96，不跳过新门禁。Native连接/SSAP仍�
 
 # S4 原生物理连接生命周期基础：当前范围
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** S4 连接生命周期初期范围与当时尚缺条件。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-12，本轮主功能为真实 Native WS73连接/SSAP。当前先接通 driver RX 到
 每 registration Host 的物理链路义务，避免尚未实现的连接清理被广播/扫描 Off
 冒充。主动连接、断开、SSAP和安全尚未接通，不能将本基础或单元测试算互通。

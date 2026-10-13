@@ -1,5 +1,10 @@
 # 四只 WS73、两组并行空口回归
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 四只两组发现的操作与失败策略记录；不是业务数据资格。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](how-to/capture-and-check-discovery.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 这是双设备北极星之后的独立扩展门禁。已完成明确标记的 37 ms 真实对照：
 每组 RF20、20 轮实际重叠，工件独立重算通过。默认 0 ms 两次在第三轮超时，
 完整默认门禁仍未通过，自动恢复和完整子系统验收继续开放。

@@ -1,6 +1,15 @@
 # WS73 原生 Linux 构建与产物检查
 
-原生矩阵使用实际启动在主机上的项目内核。当前实机主机为 Fedora
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 实验内核产物、空 USB VM 与旧主机部署设计。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](how-to/prepare-vm-gate.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
+**当前执行约束：VM-only。** 本文主机安装、引导及 native 对照部分仅为历史方案，
+本轮不得据此安装/启动宿主实验内核或部署服务。当前操作入口为
+[隔离 VM 准备](how-to/prepare-vm-gate.md)。
+
+历史背景：原生矩阵使用实际启动在主机上的项目内核。当前实机主机为 Fedora
 7.2.8-200.fc44.x86_64，项目 fork 基线为7.0.0-rc6；原生实验镜像和全部模块
 已独立构建及私有暂存，尚未安装或在主机启动。真实 USB 透传到 KVM 的结果按 QEMU
 路径记录。原生单只、双只、四只、故障隔离和无需人工拔插恢复继续开放。

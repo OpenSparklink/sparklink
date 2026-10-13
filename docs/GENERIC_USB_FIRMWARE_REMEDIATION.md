@@ -1,5 +1,10 @@
 # 通用 USB 固件路径整改
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 通用 USB 固件路径和复制/边界整改。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 这是旧 `net/sparklink/sle_usb*` 后端的确定性错误校验整改，不是 Native WS73
 固件方言资格，也不是自然启动超时、重枚举或设备消失根因的结论。
 Native WS73 的启动、HCC/BSLE 和固件仍由 `drivers/sparklink/ws73` 拥有。

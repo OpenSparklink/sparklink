@@ -1,5 +1,10 @@
 # 双真实 WS73：控制记录与原始接收证据
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 双端控制记录和原始接收核对步骤。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](how-to/capture-and-check-discovery.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 第一北极星与原七项条件见 [验收定义](WS73_DISCOVERY_NORTH_STAR.md)。本工具把
 控制运行与 USB/HCC/DLI 接收佐证分成两份记录：`CONTROL_PASS_EVIDENCE_PENDING`
 只表示普通用户的控制流程完成；`RX_CORROBORATED` 表示抓包与控制记录一致。

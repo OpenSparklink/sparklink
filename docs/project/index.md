@@ -8,6 +8,7 @@
 ../CURRENT_CAPABILITIES
 ../IMPLEMENTATION_PLAN
 documentation-migration
+uppercase-document-guide
 ```
 
 架构、唯一实施计划、唯一当前资格和历史证据保持各自职责。

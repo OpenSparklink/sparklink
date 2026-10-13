@@ -4,6 +4,10 @@
 
 # 当前能力与资格
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：唯一权威入口。** 按准确源码区分实现、离线、限定证明和实机资格。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](evidence/index.md)。
+
 ## 最新通道快照资格（精确源码）
 
 K `31769ea4b8c006f999f4fbe0da68f7291ef71935`／编译服务与冻结工具

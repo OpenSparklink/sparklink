@@ -1,5 +1,10 @@
 # 2026-10-13前实施与验收历史归档
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 2026-10-13 前旧计划和验收汇编。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](IMPLEMENTATION_PLAN.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 **仅历史记录，不是当前实施计划。** 唯一执行入口为[IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md)，
 当前能力以[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)为准。
 以下原始正文按原样保留，旧“当前/下一步”只对应当时提交；失败证据及完整原scope不删除。

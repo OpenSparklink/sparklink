@@ -1,5 +1,10 @@
 # WS73 active-radio SIGKILL 与原 generation 接任
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** SIGKILL、最后 File 和原代次接任的限定证据。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-12，限定实机门禁通过。生产内核和 daemon 未为此修改；新增的是
 独立 VM 监督、记录与离线核验。完整 Managed、在途回复强杀、自然故障根因、
 每设备非人工自动恢复和 S0–S6 尚未完成。

@@ -1,5 +1,10 @@
 # Bluetooth／BlueZ 分析：本次复核与实施门禁
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 竞争分析的复核、限定验收及待补条件。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](ARCHITECTURE.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 用户再次提供的分析与已采用文本相同，SHA256 为
 `f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a`。
 最新源码复核与实际新镜像为 Linux `f822db7756d7`、编译用户态 `ccb3d34ae1bc`；

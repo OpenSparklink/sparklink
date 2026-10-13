@@ -31,3 +31,5 @@ evidence/index
 
 项目计划、资格矩阵和历史故障记录有独立入口，不冒充教程或当前 API 承诺。
 
+
+[按主题查找46份大写原文与阅读去向](project/uppercase-document-guide.md)。

@@ -1,5 +1,10 @@
 # 原生 WS73 独立 DLI snoop
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 独立 DLI snoop 的契约和历次验证。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](reference/controller-snoop.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 本页保留迁移来源、历史门禁和原路径。当前读者请使用[VM 抓取指南](how-to/capture-controller-snoop.md)及[源码核对的契约](reference/controller-snoop.md)；历史 PASS 不代表当前镜像。
 
 `slkmon` 和 `slkdump` 默认使用每设备独立记录，而不是读取 Host 的命令回复队列。

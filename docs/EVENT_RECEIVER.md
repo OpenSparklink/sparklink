@@ -1,5 +1,10 @@
 # 历史记录：Event receiver 与管理 fd
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 已删除旧 EventReceiver 管理 fd 的无硬件测试。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](reference/controller-events.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 本页保留旧 actor／callback 隔离的历史依据。当前默认及实验 daemon 不再使用旧 EventReceiver、50ms fallback 或 DLI poll；SSAP 旧生产业务已剥离，动态 adapter 与 Native 完整事件路径见 [当前资格](CURRENT_CAPABILITIES.md)。以下旧时态与命令不是当前能力承诺。
 
 `Adapter::open()` 只持有同步 `OwnedFd`，C/Python 和同步 CLI 不需要 Tokio

@@ -1,5 +1,10 @@
 # PHY／加密状态的旧实现清理与开放条件
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 旧 PHY/安全状态清理和重新开放门禁。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](reference/interfaces.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-11；Linux `f16ac912a8ff`、可见性修正 `f1704a2e44dc`。R09限定整改，
 K7/K16/U4与完整安全/PHY验收仍OPEN。未发布UAPI无兼容期，最终调用者迁移后删除。
 

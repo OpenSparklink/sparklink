@@ -1,5 +1,10 @@
 # 隔离 WS73 开发客体
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 隔离客体准备和旧开发门禁。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](how-to/prepare-vm-gate.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 `tools/ws73_target.py` 创建本机 KVM 客体：运行选定内核、原生 WS73 驱动、系统
 D-Bus 及项目生产权限策略、slkd、普通 uid1000 slctl、Python 实机验收工具和
 tcpdump。它不安装主机内核/服务、不修改主机权限、不解绑主机驱动，也不需要

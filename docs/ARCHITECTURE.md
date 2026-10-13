@@ -1,5 +1,9 @@
 # SparkLink 架构
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：唯一权威入口。** 目标分层、状态所有权和架构约束。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](explanation/index.md)。
+
 Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-management-channel-service-boundaries.md)
 、[ADR0002](decisions/0002-session-socket-lifetime-and-proof-contract.md)与
 [ADR0003](decisions/0003-optional-exclusive-user-host.md)定义决策和接口契约；

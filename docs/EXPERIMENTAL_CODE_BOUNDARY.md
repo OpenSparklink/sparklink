@@ -1,5 +1,10 @@
 # 旧 Profile/HID/transport 的实验边界
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 实验 Profile/HID/transport 的编译隔离和回调测试边界。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](reference/interfaces.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-11 清理 R14，保留 S0–S6。默认 slkd 不再自动注册旧 Battery、DeviceInfo、
 HID 服务，不编入未消费的 transport codec 或 Profile actor。新增未发布
 `slk-experimental` crate 保存旧模型、codec、注册实现及原测试，没有默认 daemon

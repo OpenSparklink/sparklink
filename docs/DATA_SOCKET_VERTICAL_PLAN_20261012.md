@@ -3,6 +3,11 @@
 
 # 真实 WS73 每逻辑通道 socket：近期实施顺序
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 短消息主线起点、封装对照和最初依赖；后续唯一计划接管。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](IMPLEMENTATION_PLAN.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 2026-10-12 用户调整的优先级。保留完整 S0–S6 和现有分层；本节取代此前
 “先穷尽控制面竞争组合，再开始数据面”的近期排序。完整目标及原 issues 均保持开放。
 

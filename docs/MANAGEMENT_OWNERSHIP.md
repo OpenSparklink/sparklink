@@ -4,6 +4,11 @@
 
 # 原生 WS73 管理 ownership v1
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 每设备 lease、File 身份、撤销状态及迁移记录。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](ARCHITECTURE.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 每个原生 WS73 registration 只接受一个 Managed 或 Diagnostic 控制 fd。
 普通应用继续通过授权 D-Bus 使用 slkd；slkd 在发布 adapter 前取得 Managed
 lease，初始化、广播/扫描和旧管理方法共用同一个每设备 fd。事件订阅使用

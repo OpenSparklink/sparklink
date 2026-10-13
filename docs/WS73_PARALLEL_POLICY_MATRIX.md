@@ -1,5 +1,10 @@
 # 四设备策略单变量矩阵（2026-10-12）
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 功率/扫描窗口单变量矩阵及清理失败。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 三项均为失败，不能关闭默认并行、自动恢复或未明根因 issue。实际服务与
 核对工具源码U66d21f689c9c、实际内核K060011963b5e，四口顺序固定为主机
 1-2.1.1/CD、1-2.1.2/D1:AC、1-2.1.3/CE:85、1-2.1.4/F9；guest两组为

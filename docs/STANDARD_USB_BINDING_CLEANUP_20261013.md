@@ -1,5 +1,10 @@
 # 标准USB wire与默认实验代码整改审计
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 标准 USB provider/驱动归属及默认实验依赖迁移。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](ARCHITECTURE.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 Canonical所有权/计划/资格仍为ARCHITECTURE、ADR0002、IMPLEMENTATION_PLAN、CURRENT_CAPABILITIES。
 本清单是对应调用审计，不是另一个执行计划。审计基线K1d6b3195484f；整改K6db8a530f9c6，VM工具U2484932。
 

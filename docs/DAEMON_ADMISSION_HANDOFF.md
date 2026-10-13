@@ -1,5 +1,10 @@
 # WS73 daemon 交权期间的业务 admission
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** daemon 交权准入与另一只设备隔离的限定证据。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 生产修复 U0acafc943f94，真实门禁与本轮实际编译服务 Uac3bbf33e392；内核
 K060011963b5e/current K4ee4af55f38c，固件仍 combined-1.10.111。实验只在 VM。
 

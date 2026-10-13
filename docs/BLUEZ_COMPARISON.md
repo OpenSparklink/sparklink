@@ -1,5 +1,10 @@
 # Linux Bluetooth / BlueZ 与 SparkLink：设计依据和验证边界
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** Bluetooth/BlueZ 职责借鉴；夹有旧源码回归摘要。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](ARCHITECTURE.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
 用户这次提供的分析与已采用文本相同（SHA256

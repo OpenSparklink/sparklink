@@ -1,5 +1,10 @@
 # WP18：旧SSAP生产剥离调用审计
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** WP18 调用审计、三类剥离清单和已完成子门禁。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](IMPLEMENTATION_PLAN.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 当前整改记录，执行依赖只维护IMPLEMENTATION_PLAN；不是第二套规划。
 审计源码：Linuxd3abbdc0c13a、用户态6bd9260（应用源码与afb5ee2相同）。
 审计前Linux干净，用户态仅本批文档；保留当前新40轮短消息、249八轮与历史失败证据。

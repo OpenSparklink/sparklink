@@ -1,5 +1,10 @@
 # OpenHarmony NearLink Host 参考与设计调整
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** OHOS、SDK111 与 libws73 的封装及固件对照。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](ARCHITECTURE.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 用户提供的本地参考：`../communication_nearlink_service`。核验基线为
 `f0872dfaac33ffa99b80b352f6c05fba2df6414e`，origin 为
 `https://gitcode.com/openharmony/communication_nearlink_service.git`；检查时工作树无修改。

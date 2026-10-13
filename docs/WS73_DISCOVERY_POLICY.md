@@ -1,5 +1,10 @@
 # 每设备 WS73 发现策略
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：混合资料：有效语义与历史记录。** 每设备策略配置、范围校验及连续窗口失败对照。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](reference/interfaces.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 最新生产 U7b1bd0464ec9 的默认真实RF22保持通过；四设备功率0首轮仍超时，
 初始化出处与失败清理的限定实机范围通过。策略与硬件状态仍分别查询，出处
 不改写为新STOP，详见[初始化OFF边界与receipt](WS73_INITIALIZATION_OFF.md)。

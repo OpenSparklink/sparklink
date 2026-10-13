@@ -1,5 +1,10 @@
 # 旧 SSAP 生产路径限制与 Engine 迁移
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 旧不可靠 wire Engine 停用及当时限定 RF 回归。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](SSAP_PRODUCTION_SEPARATION_20261013.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 日期：2026-10-11。Linux 4d8a0d61673d77c5fd104d219346e0a2d3e23ef2；属于 R04/R08 的能力限制与旧代码清理，
 不是标准 SSAP、完整连接或服务互通验收。R07 跨语言权限及 Profile 修复仍开放。
 

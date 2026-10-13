@@ -1,5 +1,10 @@
 # WS73 初始化 OFF 出处与失败清理
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 初始化 OFF 出处、失败清理和独立 owner 实测。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 初始化请求已经由真实设备执行，但原 slkd 丢弃了 op5/6 的请求 ID；首轮失败
 时，对业务尚未开启的扫描重复发 OFF，111 固件可能返回原生 0x0b。出处查询
 用于读取仍有效的初始化结果，不能把 0x0b 转成成功或伪造新 STOP 的 Complete。

@@ -1,5 +1,10 @@
 # SparkLink 协议栈全面审计报告
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 早期规模和接口覆盖审计；数量不等于能力。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](CURRENT_CAPABILITIES.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 ## 1. 代码规模统计
 
 | 组件 | 文件数 | 代码行数 | 语言 |

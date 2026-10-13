@@ -1,5 +1,10 @@
 # 历史记录：旧事件 read 的消费提交与迁移门禁
 
+<!-- documentation-scope: 20261014 -->
+> **阅读范围：历史审计／验收资料。** 已删除事件 read/poll 的复制提交整改证据。
+> [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](reference/controller-events.md)。
+> 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md) 为准。
+
 当前默认read/44字节队列和旧统计ABI已删除；本页原read门禁及旧命令仅按原始源码版本阅读。新完整ControllerEvent实际guarded-copy门禁见[当前资格](CURRENT_CAPABILITIES.md)，不得转授旧PASS。
 
 当前限定取消/迟到实机门禁见[实际记录与未决条件](DIAGNOSTIC_CANCEL_GATES.md)：

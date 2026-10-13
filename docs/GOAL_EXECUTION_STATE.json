@@ -35,8 +35,8 @@
     "userspace": "231f61e03d801b22517dc7df9e7f45d16a364749"
   },
   "current_qualification": {
-    "DG01": "Ka368/U168c new40 ordinary role exchange RT, RF22/connection/Down/dup/lastclose/QMP pluscontrolled fault8RT.",
-    "DG02": "Same exact sources8 app249/16 overlimit rejects, normal224SDUs/112 actualNOCP; layered/long/fullcredit/backpressure open.",
+    "DG01": "PARTIAL_REAL exact compiledK1ed/U231: actual40 ordinary uid1000 role exchange RT, RF22/connection/typed Peer/Down/dup/lastclose and controlled QMP hotplug; controlled early fault peer8 RT. Not new manual physical or natural recovery qualification.",
+    "DG02": "PARTIAL_REAL same exact K1ed/U231:8 app249 RT and16 original250/253/254/255 EMSGSIZE rejects; actual normal224 SDUs/112 NOCP, zero kernel capture drops/taint0. Full layers/long/reassembly/credit exhaustion/backpressure open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -909,6 +909,62 @@
   "latest_standard_diagnostic_batch": {
     "evidence": "docs/evidence/standard-diagnostic-progress-20261013.json",
     "scope": "partial; standard true hardware/typed-data/full formal and recovery not achieved",
-    "issues_stay_open": true
+    "issues_stay_open": true,
+    "issue_publication": [
+      {
+        "repo": "linux",
+        "issue": 5,
+        "comment_id": 6147236598,
+        "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6147236598",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+      },
+      {
+        "repo": "linux",
+        "issue": 9,
+        "comment_id": 6147237373,
+        "url": "https://github.com/OpenSparklink/linux/issues/9#issuecomment-6147237373",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+      },
+      {
+        "repo": "linux",
+        "issue": 10,
+        "comment_id": 6147238329,
+        "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6147238329",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "comment_id": 6147239060,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6147239060",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+      },
+      {
+        "repo": "linux",
+        "issue": 8,
+        "comment_id": 6147240124,
+        "url": "https://github.com/OpenSparklink/linux/issues/8#issuecomment-6147240124",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "comment_id": 6147240967,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6147240967",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+      }
+    ]
   }
 }

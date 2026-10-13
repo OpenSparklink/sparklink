@@ -169,5 +169,68 @@
     "long PDU/multichannel/four-device business/unique userspace SSAP",
     "remaining legacy/UAPI cleanup"
   ],
-  "close_any_issue": false
+  "close_any_issue": false,
+  "issue_publication": [
+    {
+      "repo": "linux",
+      "issue": 5,
+      "comment_id": 6147236598,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6147236598",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "linux",
+      "issue": 9,
+      "comment_id": 6147237373,
+      "url": "https://github.com/OpenSparklink/linux/issues/9#issuecomment-6147237373",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "linux",
+      "issue": 10,
+      "comment_id": 6147238329,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6147238329",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "comment_id": 6147239060,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6147239060",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "linux",
+      "issue": 8,
+      "comment_id": 6147240124,
+      "url": "https://github.com/OpenSparklink/linux/issues/8#issuecomment-6147240124",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "comment_id": 6147240967,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6147240967",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    }
+  ],
+  "independent_capture_recount": {
+    "normal_short_acb_sdus": 176,
+    "normal_short_nocp_count": 88,
+    "normal_boundary_acb_sdus": 48,
+    "normal_boundary_nocp_count": 24,
+    "method": "read_capture selected physical USB identities then reassemble_acb; sums224/112; application match independent of completion count"
+  }
 }

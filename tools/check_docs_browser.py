@@ -74,7 +74,15 @@ async def main():
   await asyncio.sleep(1)
   result['mermaid_rendered']=diagrams
   result['screenshots'].append(await shot('architecture-diagram'))
-  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','navigation','table','code_block','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered']) else 'PARTIAL'
+  await nav('how-to/index.html')
+  await js("Array.from(document.links).find(a=>a.href.endsWith('how-to/check-business-roundtrip.html')).click();true")
+  await asyncio.sleep(.5)
+  result['business_evidence_navigation']=await js("location.pathname.endsWith('/how-to/check-business-roundtrip.html') && document.body.innerText.includes('NativeChannelRoundTrip') && document.body.innerText.includes('失败处理')")
+  result['screenshots'].append(await shot('business-evidence-task'))
+  await nav('explanation/qualification-boundaries.html')
+  result['qualification_explanation']=await js("document.body.innerText.includes('NOCP') && Array.from(document.links).some(a=>a.href.endsWith('/CURRENT_CAPABILITIES.html'))")
+  result['screenshots'].append(await shot('qualification-explanation'))
+  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','navigation','table','code_block','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation']) else 'PARTIAL'
   (OUT/'report.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['screenshots','browser']},indent=2))
   await call('session.end',{})
   if result['status']!='PASS':raise SystemExit(1)

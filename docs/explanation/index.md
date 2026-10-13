@@ -6,6 +6,7 @@
 :maxdepth: 1
 
 documentation-model
+qualification-boundaries
 ../ARCHITECTURE
 ```
 

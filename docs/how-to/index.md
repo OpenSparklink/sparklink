@@ -12,8 +12,9 @@ export-board-inputs
 prepare-vm-gate
 capture-and-check-discovery
 capture-controller-snoop
+check-business-roundtrip
 ```
 
-上述旧操作页仍包含部分历史记录，后续按
+原始混合文档仍保留历史记录；新任务页逐篇提取操作契约，后续按
 [迁移计划](../project/documentation-migration.md) 拆出纯步骤和历史证据。
 

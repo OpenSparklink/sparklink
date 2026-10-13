@@ -980,7 +980,24 @@
         "body_sha256": "ceed19a4fdac307cc5c988aaea16a3a77c7f610a4f07cc1287289e5cd6e3aad9",
         "readback_exact": true
       }
-    ]
+    ],
+    "latest_review_baseline": {
+      "userspace": "99692b58e29e8d6725853d5748599a8d8b48df94",
+      "linux": "ce258f23e840a45cb8030a79c09277dd880aa9e3",
+      "both_clean": true
+    },
+    "documents_current": 91,
+    "fourth_batch": {
+      "status": "content_split_implemented_validation_pending",
+      "scope": [
+        "business roundtrip evidence how-to",
+        "qualification boundaries explanation",
+        "historical connection navigation"
+      ],
+      "independent_of_protocol_critical_path": true,
+      "hardware_qualification_unchanged": true,
+      "closure_allowed": false
+    }
   },
   "latest_standard_diagnostic_batch": {
     "evidence": "docs/evidence/standard-diagnostic-progress-20261013.json",

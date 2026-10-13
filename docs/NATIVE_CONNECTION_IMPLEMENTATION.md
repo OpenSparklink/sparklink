@@ -1,3 +1,8 @@
+> 历史实施与逐轮证据汇编，绑定各节准确提交，不是当前使用指南。
+> 当前资格见 [CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)；
+> 新读者按 [业务往返证据核对](how-to/check-business-roundtrip.md)与
+> [证据边界解释](explanation/qualification-boundaries.md)阅读。原始记录保留。
+
 # Native连接、撤销清理及用户态调用者
 
 2026-10-12，当前实际验收内核 `1305136ce2c83d1180e84c62e96576def26816a4`。

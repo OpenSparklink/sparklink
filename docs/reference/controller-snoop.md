@@ -1,7 +1,7 @@
 # Controller snoop 契约
 
-源码核对：Linux `5582a10c5ec8` 的 `sparklink_core.rs::ioctl_snoop_get`、
-`sle_snoop.rs` 与用户态 `ca72b4915854` 的 `types.rs`、`snoop.rs`、slkmon。
+当前源码核对：Linux `53a110816ebf` 的 `sparklink_core.rs::ioctl_snoop_get`、
+`sle_snoop.rs` 与用户态 `eb92d16f4d9f` 的 `types.rs`、`snoop.rs`、slkmon。
 本页描述当前源码，不增加实机资格，也不构成已发布 ABI。
 [操作步骤](../how-to/capture-controller-snoop.md)与[当前资格](../CURRENT_CAPABILITIES.md)分别维护。
 
@@ -34,7 +34,7 @@ BSLE 握手、其他 queue 或非法 HCC aggregate。TX_RESULT 在阻塞 transpo
 | 32 | record (376 bytes) | 请求内容不用于选取，返回下一可保留记录 |
 
 **历史限制及整改**：K5582当时未拒绝query flags/reserved；K580b51已在订阅/输出前
-明确EINVAL。新镜像门禁待完成，不能把源码修正直接当实机资格。
+明确EINVAL。准确新镜像已在Virtual验证这项拒绝，并完成合法WS73路径回归；不把软件/Virtual检查当标准物理资格。
 
 | Record offset | 字段 | 含义 |
 |---|---|---|

@@ -1659,14 +1659,15 @@
     "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38471587159"
   },
   "standard_snoop_migration": {
-    "status": "implemented/offline passed; exact new VM build/real regression pending",
+    "status": "implemented/offline/scoped Virtual and exact WS73 VM pass; corrected test-only CI pending",
     "kernel": "53a110816ebfbf8a40f5880604111c55f59d26de",
     "audit": "docs/evidence/standard-snoop-migration-audit-20261014.json",
     "scope": "privileged independent standard transport observation only; no Ready/private result consumption/new RF claim",
     "next_gates": [
-      "warning-free clean kernel/config30860427",
-      "actual Virtual two independent readers/format/CAP/input rejection/Diagnostic/peer",
-      "exact new dual WS73 discovery/connection40short+249 boundary/peer isolation"
+      "corrected all-job CI",
+      "standard public event/state/loss-resync and actual hardware still open",
+      "unique SSAP/data expansion and remaining old facade migration",
+      "fullS0-S6/security/PM/IRQ/callback/natural RCA/non-human recovery"
     ],
     "remaining": [
       "standard full canonical event/state/loss-resync and real hardware",
@@ -1675,6 +1676,14 @@
     ],
     "closure_allowed": false,
     "vm_only": true,
-    "first_build_warning": "standard USB misleading indentation; explicit braces corrected; warning retained, clean build required"
+    "first_build_warning": "standard USB misleading indentation; explicit braces corrected; warning retained, clean build required",
+    "progress": "docs/evidence/standard-snoop-migration-progress-20261014.json",
+    "service_and_runner": "eb92d16f4d9f1759c80f09fc24d2e0d64cb6c10b",
+    "test_only_kernel_head": "ce258f23e840a45cb8030a79c09277dd880aa9e3",
+    "completed": [
+      "warning-free clean K53a110 build/config unchanged",
+      "actual Virtual2 readers raw bytes/CAP/input fields/private query/peer",
+      "exact dual real WS73 discovery/connection40short +8x249 +16boundary/no drop/taint0"
+    ]
   }
 }

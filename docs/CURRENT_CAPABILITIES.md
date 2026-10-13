@@ -1,9 +1,14 @@
 # 当前能力与资格
 
-新开发切片K580b51的标准snoop观察迁移待新镜像资格；标准物理/RF/公共事件
-支持未新增。以下Kdfc641/U78fd真实通过保留其准确范围，不继承为当前HEAD PASS。
+当前准确资格：K `53a110816ebf`／service+runner U `eb92d16f4d9f`，配置30860427。
+Virtual标准profile0/format2双reader/CAP/非法字段/私有result/peer查询两轮通过；
+这是专用测试总线证据，未新增标准物理/RF/Ready/公共事件资格。WS73 profile1格式
+保持，真实双设备发现-建链40短消息+8轮249往返、16超限拒绝与受控同行隔离通过。
+两端224 ACB SDU/112 NOCP、capture drops=0、VM taint=0；对端校验回复独立证明。
+[准确门禁与首次失败](evidence/standard-snoop-migration-progress-20261014.json)。
+新test-only Kce258不改Runtime；完整CI待核对，原harness失败保留。
 
-当前准确新配置资格：K `dfc641ae112d`／编译service+runner U `78fd3f14f5fb`，
+上一批准确新配置记录：K `dfc641ae112d`／编译service+runner U `78fd3f14f5fb`，
 配置30860427（明确删除SLE/DEBUGFS两行，其他driver/compiler/hardening不变）。
 完成空注册no-ghost、Virtual83拒绝/File隔离与五旧节点ENOENT、真实双WS73发现
 建链/交换角色40短消息+8轮249往返/16次250/253/254/255拒绝、受控同行隔离。

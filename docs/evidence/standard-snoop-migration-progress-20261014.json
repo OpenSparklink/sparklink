@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "status": "implemented/offline and scoped actual Virtual + exact dual real WS73 pass; corrected CI pending",
+  "kernel": "53a110816ebfbf8a40f5880604111c55f59d26de",
+  "service_and_runner": "eb92d16f4d9f1759c80f09fc24d2e0d64cb6c10b",
+  "source_audit": "docs/evidence/standard-snoop-migration-audit-20261014.json",
+  "config_sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+  "build": {
+    "workspace_relative_path": ".dev/native-standard-snoop-v2-migration-build-record.json",
+    "sha256": "f8292f4ccde04fc5c93f2070bb1331ef6e4c5cd4acaafc3009a7f6c51a4c2d7e",
+    "availability": "workspace-private original, not site upload"
+  },
+  "pipeline": {
+    "workspace_relative_path": ".dev/standard-snoop-migration-pipeline.json",
+    "sha256": "bf79c770a9adac602ffa92779c74f4ca620de4d7777c7d5ced070a005336b3c8",
+    "availability": "workspace-private original, not site upload"
+  },
+  "vm": {
+    "manifest": {
+      "workspace_relative_path": ".dev/native-standard-snoop-migration-virtual-vm/manifest.json",
+      "sha256": "ba084c94e2b6767ce503aaa16d6300d44d820283c618d221f855ed949b751266",
+      "availability": "workspace-private original, not site upload"
+    },
+    "standard_snoop_results": [
+      "VIRTUAL_STANDARD_SNOOP_PASS: readers=2 exact_tx_rx=1 independent=1 flags_reserved=EINVAL inherited_CAP=EPERM peer_query=1 no_rf=1",
+      "VIRTUAL_STANDARD_SNOOP_PASS: readers=2 exact_tx_rx=1 independent=1 flags_reserved=EINVAL inherited_CAP=EPERM peer_query=1 no_rf=1"
+    ],
+    "queries": [
+      "VIRTUAL_RUNTIME_PASS: query=23 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1",
+      "VIRTUAL_RUNTIME_PASS: query=23 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1"
+    ],
+    "module_rounds": 2,
+    "scope": "actual standard TEST-bus query/trace/private result/File/CAP; no standard physical USB/RF/canonical Ready",
+    "old_refusals": [
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=83 unchanged=83 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=83 unchanged=83 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=83 unchanged=83 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=83 unchanged=83 mixed_stats=ENOTTY"
+    ],
+    "syscall_checks": 332,
+    "buffers_unchanged": 332
+  },
+  "real_reports": [
+    "docs/evidence/standard-snoop-migration-real-short-20261014.json",
+    "docs/evidence/standard-snoop-migration-real-boundary-20261014.json",
+    "docs/evidence/standard-snoop-migration-fault-real-20261014.json"
+  ],
+  "normal_total": {
+    "round_trips": 48,
+    "boundary_rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "ordinary_legacy_refusal_checks": 664,
+    "capture_drops": 0,
+    "taint": 0
+  },
+  "offline": {
+    "userspace": {
+      "workspace_relative_path": ".dev/standard-snoop-userspace-tests.log",
+      "sha256": "e7242951ecee2b8dee96d2a3d9852f2e1b2d4ebab61054111b7181d835c3d49a",
+      "availability": "workspace-private original, not site upload"
+    },
+    "clippy": {
+      "workspace_relative_path": ".dev/standard-snoop-clippy.log",
+      "sha256": "96a40474d21e46427a67853dab890e6015b0f51343b75949535253bb813a242e",
+      "availability": "workspace-private original, not site upload"
+    },
+    "abi35": {
+      "workspace_relative_path": ".dev/standard-snoop-abi.log",
+      "sha256": "74674075aa7197a2e76fe19bc0cf61893d78a178d50f2c554dab33c3fa46ae8d",
+      "availability": "workspace-private original, not site upload"
+    },
+    "tools460": {
+      "workspace_relative_path": ".dev/standard-snoop-tools.log",
+      "sha256": "7b90c722bf2e72f9f7b80f78abaf29805cfd4500ca77bd1beedd627dc384bde0",
+      "availability": "workspace-private original, not site upload"
+    },
+    "ingress": {
+      "workspace_relative_path": ".dev/standard-snoop-ingress.log",
+      "sha256": "3b9c5914029144eef17aa448b798f426618b91b146acb8a9f3e8d38a3705a783",
+      "availability": "workspace-private original, not site upload"
+    },
+    "diagnostic": {
+      "workspace_relative_path": ".dev/standard-snoop-diagnostic.log",
+      "sha256": "750a88ffd579fd4c70907ede5c8963b13ab2d59204d5647bddb8488fe2d80665",
+      "availability": "workspace-private original, not site upload"
+    },
+    "usb_binding9rust25c": {
+      "workspace_relative_path": ".dev/standard-snoop-binding-final.json",
+      "sha256": "10fa25d5abc55476793416957aefe42a92cfaf28810a7d8a9410a409817863d7",
+      "availability": "workspace-private original, not site upload"
+    },
+    "binding_scope": "actual function statements with parent-module/decode/ingress/observation dependency fixtures; not physical/IRQ/whole lifetime proof",
+    "docs": {
+      "workspace_relative_path": ".dev/standard-snoop-docs.log",
+      "sha256": "4abc8e6159a62d51480e72746282365b8d6795a3583b06aa3eed29287f870a55",
+      "availability": "workspace-private original, not site upload"
+    },
+    "formal": "no new proof claimed; model/fixture tests not full implementation refinement"
+  },
+  "failures_retained": [
+    {
+      "workspace_relative_path": ".dev/native-standard-snoop-migration-kernel-build.log",
+      "sha256": "a7befb4b9356fa6b37cf5ef85b46c1ac4e2753cc00da3f10622e341fbcb47b5b",
+      "availability": "workspace-private original, not site upload"
+    },
+    {
+      "workspace_relative_path": ".dev/standard-snoop-ci-failure.log",
+      "sha256": "9fc94362c5db023fe65744954a544167efe293bfded10fd5d3104bf15f861090",
+      "availability": "workspace-private original, not site upload"
+    },
+    {
+      "workspace_relative_path": ".dev/standard-snoop-binding-preview.log",
+      "sha256": "c9d21dae7e3c5d7fec4aff17960c01bd4b70b54f66b10275221d389192272df8",
+      "availability": "workspace-private original, not site upload"
+    }
+  ],
+  "ci": {
+    "original_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38474730196",
+    "original_status": "failure in old receiver dependency harness",
+    "test_only_kernel": "ce258f23e840a45cb8030a79c09277dd880aa9e3",
+    "status": "corrected source fixture passed; exact all-job CI pending",
+    "runtime_code_changed": false
+  },
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_id": 6156129176,
+      "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6156129176",
+      "body_sha256": "cb8e10c13addcb87a3e41cdc3f05257a84de8a603053f6bb1510c36caff6ac90",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 11,
+      "state": "OPEN",
+      "comment_id": 6156129905,
+      "url": "https://github.com/OpenSparklink/linux/issues/11#issuecomment-6156129905",
+      "body_sha256": "cb8e10c13addcb87a3e41cdc3f05257a84de8a603053f6bb1510c36caff6ac90",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 16,
+      "state": "OPEN",
+      "comment_id": 6156130728,
+      "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6156130728",
+      "body_sha256": "cb8e10c13addcb87a3e41cdc3f05257a84de8a603053f6bb1510c36caff6ac90",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6156131469,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156131469",
+      "body_sha256": "cb8e10c13addcb87a3e41cdc3f05257a84de8a603053f6bb1510c36caff6ac90",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 2,
+      "state": "OPEN",
+      "comment_id": 6156132214,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/2#issuecomment-6156132214",
+      "body_sha256": "cb8e10c13addcb87a3e41cdc3f05257a84de8a603053f6bb1510c36caff6ac90",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6156133126,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156133126",
+      "body_sha256": "cb8e10c13addcb87a3e41cdc3f05257a84de8a603053f6bb1510c36caff6ac90",
+      "readback_exact": true
+    }
+  ],
+  "still_open": [
+    "standard canonical public event/state/loss-resync and actual standard hardware",
+    "old unpublished facades/full standard event-result migration",
+    "unique userspace SSAP/long/credit/multichannel/four-device data",
+    "full IRQ/callback/ownership/refinement/security/Bond/PHY/PM",
+    "natural timeout/reenumeration/disappearance RCA and non-human recovery/S6"
+  ],
+  "vm_only": true,
+  "natural_recovery_qualified": false,
+  "whole_issue_closed": false,
+  "goal_complete": false,
+  "boundaries": "raw privilege does not consume author replies or publish Ready; TX_RESULT/NOCP not peer receipt; QMP/injection not natural recovery"
+}

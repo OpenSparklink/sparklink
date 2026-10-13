@@ -1,6 +1,6 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前切片：标准独立snoop迁移（准确镜像门禁待完成）
+## 当前切片：标准独立snoop迁移，Virtual与准确WS73回归通过
 
 K580b51f9142f把标准DLI四字节头event/command接入已有CAP限制的每registration
 snoop日志，profile0/format2与WS73 profile1/format1区分，record ABI大小不变。
@@ -13,8 +13,10 @@ SDK/C/Python同record，monitor/dump按profile格式解析，不增加第二套�
 新增实际Virtual门禁：两独立reader字节相同但各自cursor；真实标准query及私有
 Diagnostic结果完成；非零query字段输出不变；继承fd失CAP读取/poll拒绝；同行
 查询保持可用。Virtual是专用测试后端，不当标准物理/RF证据。完整标准公共事件
-frontend、canonical状态/loss/resync和实际标准硬件仍待完成。准确新WS73发现/
-连接/短数据/249边界/同行回归待完成，不迁移Kdfc641/U78fd资格为新镜像PASS。
+frontend、canonical状态/loss/resync和实际标准硬件仍待完成。准确K53a110/Ueb92的双reader/CAP/flags/private-result/peer真实Virtual门禁
+以及WS73发现/连接40短消息、8轮249数据/16超限拒绝、受控同行回归已重新通过。
+[准确源码、失败、raw证据和未决](evidence/standard-snoop-migration-progress-20261014.json)。
+原CI旧依赖harness失败保留，test-only Kce258迁移9Rust/25C通过，新CI待复核。
 原S0–S6、VM-only、UserHostP4及恢复/SSAP等完整未决保持；不把控制竞争全集
 重新设为数据面前置，下一步接通唯一用户态SSAP并继续剩余界面迁移。
 

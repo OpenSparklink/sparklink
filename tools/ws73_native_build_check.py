@@ -154,6 +154,10 @@ def collect(args):
              'modules.builtin.modinfo', 'drivers/sparklink/sparklink_ws73_usb.ko']
     if (build/'drivers/sparklink/sparklink_standard_usb.ko').is_file():
         files.append('drivers/sparklink/sparklink_standard_usb.ko')
+    if 'CONFIG_SPARKLINK_VIRTUAL=m\n' in (build/'.config').read_text():
+        if ordered.count('drivers/sparklink/sparklink_virtual.o') != 1:
+            raise ValueError('configured Virtual module is not in modules.order')
+        files.append('drivers/sparklink/sparklink_virtual.ko')
     inputs = {name: file_record(build/name) for name in files}
     inputs['vmlinux'] = file_record(build/'vmlinux')
     # A complete build and exact artifact identities are prerequisites, not RF,

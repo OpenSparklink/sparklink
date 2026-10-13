@@ -49,7 +49,7 @@ class OperationsConformance(unittest.TestCase):
         cls.c_lines = run([str(root/'c-test')]).splitlines()
         rust = [f'#[expect(dead_code, reason="independent actual ABI declarations for permission tests")] #[path={json.dumps(str(ROOT / "crates/slk-protocol/src/types.rs"))}] mod types;',
                 '',
-                f'#[path={json.dumps(str(ROOT / "crates/slk-protocol/src/ssap.rs"))}] mod ssap;',
+                f'#[path={json.dumps(str(ROOT / "crates/slk-protocol/src/ssap.rs"))}] pub mod ssap;',
                 'use ssap::*; fn main() {',
                 'let flags = [' + ','.join('SsapOperations::'+n for n in NAMES) + '];',
                 'for flag in flags {print!("{} ",flag.bits());} println!();',

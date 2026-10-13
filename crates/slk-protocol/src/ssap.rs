@@ -1,5 +1,6 @@
 //! T/XS 20001-2025 V1.2.0 table 32 operation indicator semantics.
 //! This type does not claim a wire Engine or service interoperability.
+#[path = "ssap/exchange.rs"]
 pub mod exchange;
 
 use core::{fmt, ops::BitOr};

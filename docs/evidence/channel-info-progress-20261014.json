@@ -161,5 +161,52 @@
     "real ExchangeInfo before bounded service database/read/write/notify/indicate",
     "retain long/credit/queue/close/old lifetime/four-device gates and formal work in parallel",
     "verify actual 32-bit compat syscall, full concurrent snapshot/revoke/copy and lifecycle matrix"
+  ],
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 6,
+      "state": "OPEN",
+      "comment_id": 6157351854,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6157351854",
+      "readback_exact": true,
+      "body_sha256": "911a7bb31af6120180f567ddcfafdf9bbe5acc98bc3ac872949253743f39c1c1"
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "state": "OPEN",
+      "comment_id": 6157352484,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6157352484",
+      "readback_exact": true,
+      "body_sha256": "911a7bb31af6120180f567ddcfafdf9bbe5acc98bc3ac872949253743f39c1c1"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6157353105,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6157353105",
+      "readback_exact": true,
+      "body_sha256": "911a7bb31af6120180f567ddcfafdf9bbe5acc98bc3ac872949253743f39c1c1"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_id": 6157353891,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6157353891",
+      "readback_exact": true,
+      "body_sha256": "911a7bb31af6120180f567ddcfafdf9bbe5acc98bc3ac872949253743f39c1c1"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6157354583,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6157354583",
+      "readback_exact": true,
+      "body_sha256": "911a7bb31af6120180f567ddcfafdf9bbe5acc98bc3ac872949253743f39c1c1"
+    }
   ]
 }

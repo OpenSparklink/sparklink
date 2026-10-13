@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前正常路径K5a49caef5a6e/编译与工具U5e4d68b：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前正常路径K06c901906b7e/编译与工具U0960ed9：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -83,6 +83,19 @@ C实际注册/资源18项与metadata7、Core13、firmware67C/12Rust、TX11、Nat
 未新增context形式化证明，旧allocator两harness仍NOT_PROVEN_UNSUPPORTED。
 common Backend标准USB注册、静态Usb分派删除、bus构建拆分、真正Virtual、模块/回调/IRQ/PM及
 标准USB物理设备门禁仍缺；自然故障根因和非人工恢复继续开放，QMP只作测试支撑。
+
+当前正常路径 **K06c901906b7e / 编译service及运行工具U0960ed9**：
+删除无消费者Rust SleUrbCtx/同步bulk包装、对应C OUT/sync函数和无注册身份回调；
+实际RX alloc/submit/kill/join仅C内部使用，保留不可变注册id/generation的RX入口、持引用context、
+controller/固件/probe/PM调用者。USB模块级dead_code/unreachable_pub掩盖移除；
+无消费者编码器/async header parser及常量从生产删除，原始codec片段隔离selftests，
+三项历史截断/掩码见证不等于支持行为，实际live event parser四项边界独立回归。
+实际资源18C/metadata7、Core13、firmware67C/12Rust、TX11、Native33/ingress9均通过；
+清洁准确源码构建零warning、链接旧全局符号不存在、空VM三次、工具440、准确CI9通过。
+新普通用户两角色40短、8轮249对端校验/回复、16超限拒绝无捕获数据；
+224两端SDU/112真实NOCP，捕获零drop/taint0，RF22/连接/dup/最后关闭/QMP支撑保留。
+未新增形式化证明，原allocator两harness仍NOT_PROVEN_UNSUPPORTED，IRQ/module/callback未证明。
+标准USB完整common Backend/无USB构建/真正Virtual/PM/物理门禁及自然根因/非人工恢复仍开放。
 
 ## 目标分层及架构决策
 

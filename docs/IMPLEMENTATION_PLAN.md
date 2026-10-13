@@ -481,6 +481,30 @@ common Backend标准USB注册、静态Usb分派删除、bus构建拆分、真正
 近期先完整整改目标所有权、事件和构建边界，再继续用户态SSAP及数据扩展；
 保留完整S0–S6/19WP/10FV/12DG与已有实机路径，不以控制面竞争全集作为数据开发前置。
 
+当前正常路径 **K06c901906b7e / 编译service及运行工具U0960ed9**：
+删除无消费者Rust SleUrbCtx/同步bulk包装、对应C OUT/sync函数和无注册身份回调；
+实际RX alloc/submit/kill/join仅C内部使用，保留不可变注册id/generation的RX入口、持引用context、
+controller/固件/probe/PM调用者。USB模块级dead_code/unreachable_pub掩盖移除；
+无消费者编码器/async header parser及常量从生产删除，原始codec片段隔离selftests，
+三项历史截断/掩码见证不等于支持行为，实际live event parser四项边界独立回归。
+实际资源18C/metadata7、Core13、firmware67C/12Rust、TX11、Native33/ingress9均通过；
+清洁准确源码构建零warning、链接旧全局符号不存在、空VM三次、工具440、准确CI9通过。
+新普通用户两角色40短、8轮249对端校验/回复、16超限拒绝无捕获数据；
+224两端SDU/112真实NOCP，捕获零drop/taint0，RF22/连接/dup/最后关闭/QMP支撑保留。
+未新增形式化证明，原allocator两harness仍NOT_PROVEN_UNSUPPORTED，IRQ/module/callback未证明。
+标准USB完整common Backend/无USB构建/真正Virtual/PM/物理门禁及自然根因/非人工恢复仍开放。
+
+本批三类清单：
+
+- **立即删除，已实施**：无消费者Rust URB/sync包装、C OUT/sync helper、opaque callback fallback；模块级dead_code/unreachable_pub及过时table注释。实际C RX helper改为本地符号。
+- **移入测试，已实施**：无消费者的编码器/async header parser，保持K5a49caef原始片段，三项截断/掩码历史见证；live event parser四项独立测试，有效资源/固件/数据回归和历史失败不删除。
+- **等待替代**：标准USB完整common Backend、static Usb和core USB=y耦合、真实Virtual/其他bus；其他模块dead_code及旧event ring调用者继续审计，非本批完成。
+
+实际接入约束：descriptor支持TEST但C→Rust未传bus，NativeController.info仍硬编码USB；
+先修正保留来源，再统一reserve/install/drop，提供真实标准方言的validate/send/RX/open/close，
+不能只放宽profile1校验。随后删Usb enum和bus构建耦合，以core USB=n/m、provider模块生命周期
+及WS73准确新实机回归为门禁；自然故障/非人工恢复仍开放。
+
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。
 - 依赖：先固定接口，不等K4/K9整个issue互相关闭；避免与当前WS73关键整改同时大范围移动。

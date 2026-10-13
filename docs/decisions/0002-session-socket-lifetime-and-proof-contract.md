@@ -310,3 +310,14 @@ io_lock串行实际操作和关准入/URB join，退休后旧引用只能失败�
 本批不宣称URB回调、module unload、IRQ、PM或无USB构建已证明；保持common Backend迁移门禁。
 18项C依赖fixture和受控I/O/退休交错、新准确40/249业务回归仅各自范围；
 原panic/最后回复丢失/1112ms Down失败及未证明Kani报告继续保留。
+
+## 旧USB包装退出与Backend来源（2026-10-13）
+
+实际C context是唯一USB资源所有者；没有调用者的Rust低层URB/sync API、C OUT/sync
+及无注册身份回调删除。Live注册RX继续携带不可变id/generation；旧codec从默认内核
+隔离，历史截断/掩码见证不得成为生产功能、长包支持或标准认证。USB模块级死代码掩盖退出。
+
+Backend descriptor的bus是验证后的来源，必须传至保留的transport/Runtime metadata；
+TEST不能因NativeController.info硬编码而报告物理USB。当前注册链遗失bus，下一批整改。
+不能只放宽profile校验：标准USB先统一pending reservation/install/失败清理与RX引用，再
+实际接入common Backend，删除静态分派并拆bus构建。完整module/callback/IRQ仍需门禁。

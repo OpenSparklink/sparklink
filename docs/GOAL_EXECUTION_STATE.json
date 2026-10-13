@@ -826,7 +826,7 @@
     "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
   ],
   "documentation_workstream": {
-    "status": "partial; infrastructure/navigation gated; content migration incomplete",
+    "status": "partial; infrastructure/navigation gated; snoop content split; full migration remains open",
     "independent_of_protocol_critical_path": true,
     "branch": "codex/sparklink-ws73",
     "source_baseline": {
@@ -872,10 +872,13 @@
     "evidence": "docs/evidence/diataxis-documentation-first-batch-20261013.json",
     "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38435025292",
     "external_links": {
-      "working": 248,
-      "http429_unverified": 60,
-      "other_failures": 0,
-      "status": "not_fully_verified"
+      "status": "not_fully_verified",
+      "working": 253,
+      "http429_unverified": 71,
+      "other_network_failures": 0,
+      "exit_code": 1,
+      "report_sha256": "21ce2a2b888ecda82aadb4e0dbf169ea4183fa05f16c6654b9e2a084ba32ea13",
+      "initial_sandbox_dns_failure_retained": true
     },
     "issue_updates": [
       {
@@ -908,11 +911,11 @@
     ],
     "side_draft_branch": "codex/diataxis-docs (historical reference; not active canonical plan)",
     "latest_review": {
-      "userspace": "311556185275db5268b466ebf2d3311e58e6b0e2",
-      "linux_documentation": "3d8a8aa06cdfc303d3fd49565a5bcf6617578965",
+      "userspace": "0cbe7a82315203a019afcc785900b8b75a8a66ea",
+      "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
       "runtime_qualification_changed": false
     },
-    "mapped_documents": 87,
+    "mapped_documents": 89,
     "kernel_documents": 10,
     "batch2_evidence": "docs/evidence/diataxis-documentation-second-batch-20261014.json",
     "second_batch_issue_updates": [
@@ -944,7 +947,40 @@
         "body_sha256": "6fdf4f7833701f9b1f5711f050e0a342697ec5cf5ae0b4b23540f35470e31e2a"
       }
     ],
-    "latest_plan_ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38436280842"
+    "latest_plan_ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38436280842",
+    "third_batch_evidence": "docs/evidence/diataxis-documentation-third-batch-20261014.json",
+    "third_batch_ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38456545050",
+    "next_documentation_tasks": [
+      "API complete fields/errors/permissions across languages",
+      "Remaining mixed source extraction",
+      "Qualified first WS73 execution tutorial",
+      "Offline Mermaid assets and license",
+      "External link verification",
+      "Formal publishing with subpath/version review"
+    ],
+    "source_gap": {
+      "snoop_query_flags_reserved": "kernel lacks explicit nonzero rejection; Rust reader requires zero; document actual limitation; no runtime fix in docs task"
+    },
+    "third_batch_issue_updates": [
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "comment_id": 6153719994,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6153719994",
+        "body_sha256": "ceed19a4fdac307cc5c988aaea16a3a77c7f610a4f07cc1287289e5cd6e3aad9",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "comment_id": 6153720984,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6153720984",
+        "body_sha256": "ceed19a4fdac307cc5c988aaea16a3a77c7f610a4f07cc1287289e5cd6e3aad9",
+        "readback_exact": true
+      }
+    ]
   },
   "latest_standard_diagnostic_batch": {
     "evidence": "docs/evidence/standard-diagnostic-progress-20261013.json",

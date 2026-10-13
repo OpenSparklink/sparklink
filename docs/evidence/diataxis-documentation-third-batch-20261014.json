@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "status": "partial_documentation_workstream",
+  "review_baseline": {
+    "userspace": "ca72b4915854e15deeb78d5a7ad6e0d69f94fa86",
+    "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
+    "both_clean": true
+  },
+  "tested_documentation_commit": "0cbe7a82315203a019afcc785900b8b75a8a66ea",
+  "side_draft": "codex/diataxis-docs reference only; existing mainline infrastructure independently rechecked",
+  "runtime_sources_modified": false,
+  "hardware_qualification_unchanged": true,
+  "vm_only_unchanged": true,
+  "canonical_paths_preserved": [
+    "docs/ARCHITECTURE.md",
+    "docs/IMPLEMENTATION_PLAN.md",
+    "docs/CURRENT_CAPABILITIES.md",
+    "docs/GOAL_EXECUTION_STATE.json",
+    "docs/decisions/"
+  ],
+  "scope": [
+    "Snoop how-to and source-checked field/error reference",
+    "Original URLs retained; mixed original has migration pointers",
+    "Inventory placeholders refined; baseline hashes retained, current hashes in CI artifact",
+    "Historical browser-status contradiction and C/Python claim corrected"
+  ],
+  "offline": {
+    "fresh_python_environment": true,
+    "clean_checkout": true,
+    "locked": true,
+    "strict_html": true,
+    "internal_links_assets_public_paths": true,
+    "documents": 89,
+    "kernel_documents": 10,
+    "audit_report_sha256": "33769e50653fc10d20b37aae565729def40584a2f44994740079e6e73f0e16ec"
+  },
+  "browser": {
+    "scope": "Firefox headless actual HTTP /sparklink/ navigation, JS search, DOM and screenshots; not hardware qualification",
+    "screenshots": [
+      {
+        "file": "desktop-home.png",
+        "sha256": "eaf8513559701e430b84317389d4f994ef95ecca99f9f812e32005a919b6e0c5"
+      },
+      {
+        "file": "reference-table.png",
+        "sha256": "f5de5a61016155ceb5d9384350aaaa8cbcc9dbc800113a2a684e03d15b836437"
+      },
+      {
+        "file": "tutorial-code.png",
+        "sha256": "dfe884b1d58d10c1e7253c9c0faa70b6ca2071b191e923efbe4707e38f77b706"
+      },
+      {
+        "file": "search-results.png",
+        "sha256": "47ac2832715249c1dc9385c3049c56972a4dcb852122547dc9bba9e5ec06d967"
+      },
+      {
+        "file": "chinese-search-results.png",
+        "sha256": "71895fe640f85bb245a24083fa2311bd326d964a9dd10ae3d682f52235a9350f"
+      },
+      {
+        "file": "mobile-home.png",
+        "sha256": "0cf26d0fd7f932db52700e26eaed41642ce452d722636395b5d349e334d64627"
+      },
+      {
+        "file": "mobile-reference.png",
+        "sha256": "428903a64c99dc67faba4f4884b895abe03e37bcce1754299e0c70af549764bb"
+      },
+      {
+        "file": "architecture-diagram.png",
+        "sha256": "a6f7ecfb01d22921e5a8cead4ad029bd4fc6b52c5a83fb7439750d94a584fb84"
+      },
+      {
+        "file": "snoop-reference.png",
+        "sha256": "7c62b38e738f4a281dc019cd6bb8c59b6bed5206e1d49f404b8cb51d53f8311b"
+      },
+      {
+        "file": "snoop-task.png",
+        "sha256": "8acf7ccd8ea3bee047f388ca017ee9a9669e68b90b53f773d78c8ccc110aa4da"
+      }
+    ],
+    "document_title": "SparkLink · 0cbe7a823152",
+    "home_tasks": true,
+    "navigation": true,
+    "table": true,
+    "code_block": true,
+    "javascript_search": true,
+    "chinese_search": true,
+    "mobile_no_page_overflow": true,
+    "mobile_table_container": true,
+    "mermaid_rendered": true,
+    "snoop_reference": true,
+    "snoop_task": true,
+    "browser": {
+      "ready": false,
+      "message": "Session already started"
+    },
+    "status": "PASS",
+    "screenshots_publicly_uploaded": false,
+    "visual_review": [
+      "snoop-reference.png",
+      "mobile-reference.png"
+    ]
+  },
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38456545050",
+    "conclusion": "success",
+    "artifact_id": 11843800823,
+    "artifact_name": "sparklink-documentation",
+    "retention_days": 14,
+    "publishing": false
+  },
+  "external_links": {
+    "status": "not_fully_verified",
+    "working": 253,
+    "http429_unverified": 71,
+    "other_network_failures": 0,
+    "exit_code": 1,
+    "report_sha256": "21ce2a2b888ecda82aadb4e0dbf169ea4183fa05f16c6654b9e2a084ba32ea13",
+    "initial_sandbox_dns_failure_retained": true
+  },
+  "source_gap": {
+    "snoop_query_flags_reserved": "kernel lacks explicit nonzero rejection; Rust reader requires zero; document actual limitation; no runtime fix in docs task"
+  },
+  "remaining": [
+    "API complete fields/errors/permissions across languages",
+    "Remaining mixed source extraction",
+    "Qualified first WS73 execution tutorial",
+    "Offline Mermaid assets and license",
+    "External link verification",
+    "Formal publishing with subpath/version review"
+  ],
+  "closure_allowed": false,
+  "kernel_document_current_hashes": {
+    "Documentation/networking/sparklink-connection-tx.rst": "a838365a662daa60f9427e531ce5350aebefad52b918732bc9bbaf6d7e6b2826",
+    "Documentation/networking/sparklink-event-copy.rst": "71a4ebd57dc3dc04ea2b67758928b4224f11e028afe48975f97ce1c6d798d9c0",
+    "Documentation/networking/sparklink-implementation.rst": "76ae34eec65e278c4450914c7b1ac34ade711dda948be409a2fc171c70b92d48",
+    "Documentation/networking/sparklink-link-state.rst": "c61434d8479c49ee7a0cf94ceb010cd08ebcb2e8bd4a64d817530a9433c3919b",
+    "Documentation/networking/sparklink-ssap-containment.rst": "4e1cb648a7b86cb3c7b894ff4bb42df047aa805658b9eabb3589c6e6399acf32",
+    "Documentation/networking/sparklink.rst": "a7184c9270efc829d6c54be47aef11b25aca579def7cd0be37bdf328a172222e",
+    "Documentation/networking/ws73-development.rst": "c4202efe4e2473651684bca92f470fb331b3785331286cbf0dda4e4ae62830f7",
+    "tools/testing/selftests/sparklink/qemu-sle-dli/README.md": "e0d9b295fac41d9e92640447fdb1fc1e83a0aa0d57ec9fd220d1900e037ec880",
+    "tools/testing/selftests/sparklink/retired-serdev/README.md": "cefacc0929eb072a0f762a7a3d94c844fb2b4608332d4313d3c7884874a00e1d",
+    "tools/testing/selftests/sparklink/retired-transport/README.md": "533095656db4023ac3eb5cee8b8194427d39ee917fc8bb02b2994c19324c31c9"
+  },
+  "issue_updates": [
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6153719994,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6153719994",
+      "body_sha256": "ceed19a4fdac307cc5c988aaea16a3a77c7f610a4f07cc1287289e5cd6e3aad9",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6153720984,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6153720984",
+      "body_sha256": "ceed19a4fdac307cc5c988aaea16a3a77c7f610a4f07cc1287289e5cd6e3aad9",
+      "readback_exact": true
+    }
+  ],
+  "external_issue_updates": [
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6153734347",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6153735029",
+      "readback_exact": true
+    }
+  ]
+}

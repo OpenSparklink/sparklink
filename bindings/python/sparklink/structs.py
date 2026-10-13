@@ -379,3 +379,16 @@ class SleLinkSnapshot(ctypes.Structure):
         ("profile", ctypes.c_uint32), ("flags", ctypes.c_uint32), ("count", ctypes.c_uint32),
         ("error", ctypes.c_int32), ("dev_index", ctypes.c_uint16), ("reserved", ctypes.c_uint8 * 2),
         ("links", SleLinkInfo * 16)]
+
+
+class SleChannelInfo(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [
+        ("version", ctypes.c_uint16), ("size", ctypes.c_uint16),
+        ("controller", ctypes.c_uint16), ("handle", ctypes.c_uint16),
+        ("generation", ctypes.c_uint64), ("lifetime", ctypes.c_uint64),
+        ("mtu", ctypes.c_uint16), ("mps", ctypes.c_uint16),
+        ("local_tcid", ctypes.c_uint8), ("remote_tcid", ctypes.c_uint8),
+        ("pi", ctypes.c_uint8), ("mode", ctypes.c_uint8),
+        ("directions", ctypes.c_uint32), ("reserved", ctypes.c_uint32),
+    ]

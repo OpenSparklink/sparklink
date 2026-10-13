@@ -13,7 +13,7 @@ from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-    SleLinkSnapshot, SleRegistrationSnapshot,
+    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo,
 )
 
 _native_library = None
@@ -33,6 +33,7 @@ def _get_native_lib():
     handle = ctypes.c_void_p
     u64, u32 = ctypes.c_uint64, ctypes.c_uint32
     signatures = {
+        "slk_channel_info": [ctypes.c_int, ctypes.POINTER(SleChannelInfo)],
         "slk_adapter_select": [handle, ctypes.c_uint16],
         "slk_adapter_fd": [handle],
         "slk_device_mask": [handle, ctypes.POINTER(ctypes.c_uint16)],
@@ -268,3 +269,20 @@ class NativeAdapter:
         with self._lock:
             present = self._invoke('slk_snoop', ctypes.byref(self._snoop))
             return type(self._snoop.record).from_buffer_copy(self._snoop.record) if present else None
+
+
+def channel_info(fd):
+    """Snapshot of a delegated channel fd, not NativeAdapter's control fd.
+
+    No lease acquisition, traffic consumption or permission escalation.
+    Metadata is coherent at admission; it does not promise future connectivity.
+    """
+    if type(fd) is not int or not -(1 << 31) <= fd < (1 << 31):
+        raise ValueError("channel fd must be a signed 32-bit integer")
+    if ctypes.sizeof(SleChannelInfo) != 40 or ctypes.alignment(SleChannelInfo) != 8:
+        raise RuntimeError("channel snapshot requires exact 40-byte/8-aligned ABI")
+    value = SleChannelInfo()
+    result = _get_native_lib().slk_channel_info(fd, ctypes.byref(value))
+    if result < 0:
+        raise OSError(-result, "channel capability query")
+    return value

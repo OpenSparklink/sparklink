@@ -419,3 +419,23 @@ pub unsafe extern "C" fn slk_connection_result(
         Err(error) => errno(error),
     }
 }
+
+/// Read actual capabilities of a delegated logical-channel socket.
+/// Returns 0 or negative errno; output remains unchanged on error.
+/// # Safety
+/// `output` is null or points to a live, aligned, writable SleChannelInfo.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_channel_info(fd: c_int, output: *mut SleChannelInfo) -> c_int {
+    if output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    match slk_protocol::channel::query(fd) {
+        Ok(info) => {
+            unsafe {
+                output.write(info);
+            }
+            0
+        }
+        Err(error) => -error.raw_os_error().unwrap_or(nix::libc::EPROTO),
+    }
+}

@@ -155,19 +155,70 @@ fn reject_boundaries(fd: &OwnedFd) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub(crate) fn exercise(
-    fd: OwnedFd,
-    responder: bool,
-    rounds: u32,
-    message_bytes: usize,
-    boundaries: bool,
-) -> anyhow::Result<()> {
+fn info_copy_retry(fd: &OwnedFd, expected: slk_protocol::SleChannelInfo) -> anyhow::Result<()> {
+    let page = unsafe { nix::libc::sysconf(nix::libc::_SC_PAGESIZE) };
+    if !(4096..=1048576).contains(&page) {
+        anyhow::bail!("unsupported guard page size");
+    }
+    struct Mapping(*mut nix::libc::c_void, usize);
+    impl Drop for Mapping {
+        fn drop(&mut self) {
+            unsafe {
+                nix::libc::munmap(self.0, self.1);
+            }
+        }
+    }
+    // SAFETY: fresh private mapping, no hardware/service operation.
+    let raw = unsafe {
+        nix::libc::mmap(
+            std::ptr::null_mut(),
+            page as usize * 2,
+            nix::libc::PROT_READ | nix::libc::PROT_WRITE,
+            nix::libc::MAP_PRIVATE | nix::libc::MAP_ANONYMOUS,
+            -1,
+            0,
+        )
+    };
+    if raw == nix::libc::MAP_FAILED {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let mapping = Mapping(raw, page as usize * 2);
+    let protected = unsafe { raw.cast::<u8>().add(page as usize) };
+    if unsafe { nix::libc::mprotect(protected.cast(), page as usize, nix::libc::PROT_NONE) } != 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let target = unsafe { protected.sub(16) };
+    unsafe {
+        target.write_bytes(0xa5, 16);
+    }
+    // No Rust reference is created across the guard; the kernel must EFAULT.
+    let result = unsafe { slk_protocol::channel::sl_channel_info(fd.as_raw_fd(), target.cast()) };
+    if result != Err(nix::errno::Errno::EFAULT) {
+        anyhow::bail!("channel snapshot guard did not EFAULT: {result:?}");
+    }
+    let prefix = unsafe { std::slice::from_raw_parts(target, 16) };
+    let changed = prefix.iter().filter(|&&byte| byte != 0xa5).count();
+    if changed == 0 {
+        anyhow::bail!("no partial channel snapshot copy observed");
+    }
+    if slk_protocol::channel::query(fd.as_raw_fd())? != expected {
+        anyhow::bail!("channel snapshot changed after copy fault");
+    }
+    println!("NativeChannelInfoCopy: partial={changed} retry=1 unchanged=1");
+    drop(mapping);
+    Ok(())
+}
+
+fn validate_exercise(rounds: u32, message_bytes: usize) -> anyhow::Result<()> {
     if !(1..=20).contains(&rounds) {
         anyhow::bail!("rounds must be 1..20");
     }
     if !(29..=249).contains(&message_bytes) {
         anyhow::bail!("message size must be 29..249 for the current basic channel");
     }
+    Ok(())
+}
+fn prepare_application_fd(fd: OwnedFd) -> anyhow::Result<OwnedFd> {
     // Exercise the shared open-file description: dropping one descriptor
     // must not retire the Binding while its duplicate is still used.
     let duplicate = fd.try_clone()?;
@@ -192,6 +243,60 @@ pub(crate) fn exercise(
     {
         return Err(std::io::Error::last_os_error().into());
     }
+    Ok(fd)
+}
+
+pub(crate) fn exercise(
+    fd: OwnedFd,
+    responder: bool,
+    rounds: u32,
+    message_bytes: usize,
+    boundaries: bool,
+) -> anyhow::Result<()> {
+    validate_exercise(rounds, message_bytes)?;
+    let fd = prepare_application_fd(fd)?;
+    wait(
+        &fd,
+        nix::libc::POLLOUT,
+        Instant::now() + Duration::from_secs(10),
+    )?;
+    let info = slk_protocol::channel::query(fd.as_raw_fd())?;
+    if info.local_tcid != 31
+        || info.remote_tcid != 31
+        || info.pi != 241
+        || info.directions != 3
+        || usize::from(info.mtu) < message_bytes
+    {
+        anyhow::bail!("actual channel capabilities do not permit this business exercise");
+    }
+    println!(
+        "NativeChannelInfo: index={} generation={} lifetime={} handle={} local={} remote={} pi={} mtu={} mps={} mode={} directions={}",
+        info.controller,
+        info.generation,
+        info.lifetime,
+        info.handle,
+        info.local_tcid,
+        info.remote_tcid,
+        info.pi,
+        info.mtu,
+        info.mps,
+        info.mode,
+        info.directions
+    );
+    info_copy_retry(&fd, info)?;
+    exercise_messages(fd, responder, rounds, message_bytes, boundaries)
+}
+
+// Application algorithm reused by a dedicated AF_UNIX regression. It does not
+// claim Native admission/capabilities; the production entry always checks them.
+fn exercise_messages(
+    fd: OwnedFd,
+    responder: bool,
+    rounds: u32,
+    message_bytes: usize,
+    boundaries: bool,
+) -> anyhow::Result<()> {
+    validate_exercise(rounds, message_bytes)?;
     println!(
         "NativeChannelOpened: role={} rounds={rounds}",
         if responder { "peer" } else { "initiator" }
@@ -283,8 +388,17 @@ mod tests {
             // SAFETY: distinct descriptors freshly returned by socketpair.
             let (initiator, peer) =
                 unsafe { (OwnedFd::from_raw_fd(raw[0]), OwnedFd::from_raw_fd(raw[1])) };
-            let task = std::thread::spawn(move || exercise(peer, true, 4, message_bytes, false));
-            exercise(initiator, false, 4, message_bytes, false).unwrap();
+            let task = std::thread::spawn(move || {
+                exercise_messages(prepare_application_fd(peer)?, true, 4, message_bytes, false)
+            });
+            exercise_messages(
+                prepare_application_fd(initiator).unwrap(),
+                false,
+                4,
+                message_bytes,
+                false,
+            )
+            .unwrap();
             task.join().unwrap().unwrap();
         }
     }

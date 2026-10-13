@@ -9,12 +9,12 @@ from pathlib import Path
 import unittest
 
 from sparklink import NativeAdapter, registration_snapshot
-from sparklink.native import _get_native_lib
+from sparklink.native import _get_native_lib, channel_info
 from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-    SleLinkSnapshot, SleRegistrationSnapshot,
+    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo,
 )
 
 
@@ -27,6 +27,18 @@ class NativeBindingTests(unittest.TestCase):
         self.handle = self.lib.slk_adapter_open(b"/dev/null")
         self.assertTrue(self.handle)
         self.addCleanup(self.lib.slk_adapter_free, self.handle)
+
+    def test_channel_info_errors_preserve_output_and_errno(self):
+        out = SleChannelInfo(generation=99, reserved=123)
+        before = bytes(out)
+        self.assertEqual(self.lib.slk_channel_info(-1, ctypes.byref(out)), -errno.EBADF)
+        self.assertEqual(bytes(out), before)
+        self.assertEqual(self.lib.slk_channel_info(-1, None), -errno.EINVAL)
+        with self.assertRaises(OSError) as caught:
+            channel_info(-1)
+        self.assertEqual(caught.exception.errno, errno.EBADF)
+        with self.assertRaises(ValueError):
+            channel_info(True)
 
     def test_registration_probe_rejects_invalid_index_and_closes_on_error(self):
         before = len(list(Path('/proc/self/fd').iterdir()))

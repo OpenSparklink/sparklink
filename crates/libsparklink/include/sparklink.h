@@ -514,6 +514,23 @@ typedef struct SPARKLINK_ALIGN(8) SleConnectionResult {
     uint8_t reserved[6];
 } SleConnectionResult;
 
+typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
+    uint16_t version;
+    uint16_t size;
+    uint16_t controller;
+    uint16_t handle;
+    uint64_t generation;
+    uint64_t lifetime;
+    uint16_t mtu;
+    uint16_t mps;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t mode;
+    uint32_t directions;
+    uint32_t reserved;
+} SleChannelInfo;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -841,6 +858,14 @@ int slk_connection_result(const struct SlkAdapter *adapter,
                           uint64_t generation,
                           uint64_t request_id,
                           struct SleConnectionResult *out);
+
+/**
+ * Read actual capabilities of a delegated logical-channel socket.
+ * Returns 0 or negative errno; output remains unchanged on error.
+ * # Safety
+ * `output` is null or points to a live, aligned, writable SleChannelInfo.
+ */
+int slk_channel_info(int fd, struct SleChannelInfo *output);
 
 #ifdef __cplusplus
 }  // extern "C"

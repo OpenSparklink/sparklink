@@ -48,6 +48,17 @@ class ApplicationProof(unittest.TestCase):
             if kind=='unexpected':changed['boundary_check']=False
             with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(changed)
 
+    def test_required_actual_capabilities_reject_wrong_identity_and_missing_copy(self):
+        row=fixture();row['channel_info_required']=True
+        row['owners']=[dict(owner=dict(index=3,generation=7),object=dict(lifetime=9,handle=0)),dict(owner=dict(index=4,generation=8),object=dict(lifetime=10,handle=1))]
+        for app,entry in zip(row['applications'],row['owners']):
+            owner,obj=entry['owner'],entry['object']
+            app['stdout']+=f"NativeChannelInfo: index={owner['index']} generation={owner['generation']} lifetime={obj['lifetime']} handle={obj['handle']} local=31 remote=31 pi=241 mtu=249 mps=249 mode=0 directions=3\nNativeChannelInfoCopy: partial=16 retry=1 unchanged=1\n"
+        application_frames(row)
+        for old,new in [('generation=7','generation=70'),('lifetime=9','lifetime=90'),('pi=241','pi=240'),('mtu=249','mtu=1'),('retry=1','retry=0'),('partial=16','partial=0')]:
+            bad=copy.deepcopy(row);bad['applications'][0]['stdout']=bad['applications'][0]['stdout'].replace(old,new)
+            with self.subTest(old=old),self.assertRaises(CaptureError):application_frames(bad)
+
     def test_original_two_application_messages(self):
         sent,replies=application_frames(fixture())
         self.assertEqual(len(sent),4);self.assertEqual(sent[0][28],0);self.assertEqual(replies[0][28],1)

@@ -610,6 +610,8 @@ def _run(args):
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
     m['channel_socket_boundaries_requested']=channel_boundaries
     m['ordinary_channel_socket_acceptance']=False
+    m['channel_info_verification_requested']=channel_socket
+    m['ordinary_channel_info_acceptance']=False
     m['connection_advertising_requested']=connection_advertising if connection_verify else None
     m['channel_daemon_crash_requested']=channel_death
     m['channel_daemon_index']=channel_death_index
@@ -1042,7 +1044,9 @@ def _run(args):
                     from ws73_channel_socket import corroborate as channel_corroborate
                     if any(row.get('message_bytes',61)!=channel_bytes or row.get('boundary_check',False)!=channel_boundaries for row in control['channel_socket']):raise ValueError('socket message size or boundary request differs from actual gate')
                     if any(row['rounds']!=channel_rounds for row in control['channel_socket']):raise ValueError('socket round count differs from explicit request')
+                    if not all(row.get('channel_info_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires original capability receipts')
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
+                    m['ordinary_channel_info_acceptance']=True
                     m['ordinary_channel_socket_acceptance']=True
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
                     raise ValueError('explicit daemon crash request and evidence must agree')

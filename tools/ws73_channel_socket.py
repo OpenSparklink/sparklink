@@ -20,7 +20,7 @@ def credentials(pid):
 def execute(run, phase):
     row = dict(phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
-               boundary_check=getattr(run.args,'channel_socket_boundaries',False), status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+               boundary_check=getattr(run.args,'channel_socket_boundaries',False), channel_info_required=True, status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     run.data.setdefault('channel_socket', []).append(row); run.save()
     processes=[];files=ExitStack()
     try:
@@ -119,6 +119,25 @@ def rejected_frames(row):
     return result
 
 
+def channel_info_receipts(row):
+    if not row.get('channel_info_required', False):
+        return []  # Historical records never gain this qualification.
+    owners = row['owners']; result = []
+    for app in row['applications']:
+        entry = owners[0 if app['role'] == 'initiator' else 1]
+        expected = (entry['owner']['index'], entry['owner']['generation'],
+                    entry['object']['lifetime'], entry['object']['handle'], 31, 31, 241)
+        values = re.findall(r'^NativeChannelInfo: index=(\d+) generation=(\d+) lifetime=(\d+) handle=(\d+) local=(\d+) remote=(\d+) pi=(\d+) mtu=(\d+) mps=(\d+) mode=(\d+) directions=(\d+)$', app['stdout'], re.M)
+        copies = re.findall(r'^NativeChannelInfoCopy: partial=(\d+) retry=1 unchanged=1$',app['stdout'],re.M)
+        if len(values) != 1 or len(copies) != 1 or not 1 <= int(copies[0]) <= 16:
+            raise CaptureError('original channel capability and guarded copy receipts required')
+        fields = tuple(map(int, values[0]))
+        if fields[:7] != expected or fields[-2:] != (0, 3) or min(fields[7:9]) < row.get('message_bytes',61):
+            raise CaptureError('channel capabilities disagree with original owner/lifetime/mode/budget')
+        result.append(dict(role=app['role'], fields=fields, partial_copy_bytes=int(copies[0])))
+    return result
+
+
 def application_frames(row):
     rounds=row['rounds'];message_bytes=row.get('message_bytes',61)
     if type(message_bytes) is not int or not 29<=message_bytes<=249:raise CaptureError('supported basic channel message size required')
@@ -134,6 +153,7 @@ def application_frames(row):
         declared=re.findall(r'^NativeChannelMessageSize: bytes=(\d+)$',a['stdout'],re.M)
         if declared and declared!=[str(message_bytes)] or (message_bytes!=61 and not declared):raise CaptureError('original application message size must match request')
     rejected_frames(row)
+    channel_info_receipts(row)
     def rows(role,marker,elapsed=False):
         pattern=rf'^{marker}: sequence=(\d+) '+(r'elapsed_ms=(\d+) ' if elapsed else '')+r'bytes=([0-9a-f]+)$'
         values=re.findall(pattern,apps[role]['stdout'],re.M)
@@ -201,7 +221,9 @@ def corroborate(run,capture):
                        and row['start_wall_ns']<=e['wall_ns']<=row['end_wall_ns']]
             if any(len(bytes.fromhex(e['params']))!=3 or int.from_bytes(bytes.fromhex(e['params'])[:2],'little')!=obj['handle'] for e in completed):raise CaptureError('exact actual completion handle required')
             if sum(bytes.fromhex(e['params'])[2] for e in completed)!=row['rounds']+2:raise CaptureError('exact actual completed packet count per controller required')
-        proofs.append(dict(phase=n,owners=owners,capabilities=capabilities,legs=legs))
+        entry = dict(phase=n,owners=owners,capabilities=capabilities,legs=legs)
+        if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)
+        proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
                 long_pdu_acceptance=False,credit_exhaustion_acceptance=False,four_device_acceptance=False)

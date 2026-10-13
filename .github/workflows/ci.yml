@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 6fe9696a04da6527b994c792cac91ac25b07155e
+          ref: 31769ea4b8c006f999f4fbe0da68f7291ef71935
           path: .kernel-uapi
           sparse-checkout: |
             include/uapi/linux/sparklink_ioctl.h
@@ -139,7 +139,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 6fe9696a04da6527b994c792cac91ac25b07155e
+          ref: 31769ea4b8c006f999f4fbe0da68f7291ef71935
           path: .kernel-tools
           # Raw worker ioctls also compile against the canonical pinned UAPI.
           sparse-checkout: |
@@ -163,7 +163,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 6fe9696a04da6527b994c792cac91ac25b07155e
+          ref: 31769ea4b8c006f999f4fbe0da68f7291ef71935
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -176,6 +176,7 @@ jobs:
             tools/testing/selftests/sparklink
             include/uapi/linux/sparklink_ioctl.h
             include/uapi/linux/sparklink.h
+            include/uapi/linux/sparklink_socket.h
       - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-python@v5
         with:

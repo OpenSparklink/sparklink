@@ -29,6 +29,7 @@ RUST_TYPES = WORKSPACE / "crates/slk-protocol/src/types.rs"
 # These are name mappings only. Fields, sizes, alignments and offsets come from
 # the actual declarations/compiler output, never from a second ABI definition.
 STRUCT_NAMES = {
+    "SleChannelInfo": "sparklink_channel_info",
     "SciDevInfo": "sci_dev_info",
     "SleScanParams": "sle_scan_params",
     "SleConnectParams": "sle_connect_params",
@@ -116,9 +117,12 @@ class TestAbiConformance(unittest.TestCase):
                 f"canonical kernel UAPI not found: {KERNEL_HEADER}; set "
                 "SPARKLINK_KERNEL_UAPI to include/uapi/linux/sparklink_ioctl.h"
             )
-        cls.kernel_source = KERNEL_HEADER.read_text()
+        cls.socket_header = KERNEL_HEADER.with_name("sparklink_socket.h")
+        cls.kernel_source = KERNEL_HEADER.read_text() + cls.socket_header.read_text()
         cls.public_source = PUBLIC_HEADER.read_text()
-        cls.rust_source = RUST_TYPES.read_text()
+        channel_source = (RUST_TYPES.parent / "channel.rs").read_text()
+        channel_type = re.search(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct SleChannelInfo \{[^}]+\}", channel_source)[0]
+        cls.rust_source = RUST_TYPES.read_text() + channel_source
         cls.fields = {
             name: c_fields(cls.kernel_source, kernel_name)
             for name, kernel_name in STRUCT_NAMES.items()
@@ -130,6 +134,7 @@ class TestAbiConformance(unittest.TestCase):
         c_source = [
             "#include <stddef.h>", "#include <stdio.h>",
             f"#include {json.dumps(str(KERNEL_HEADER))}",
+            f"#include {json.dumps(str(cls.socket_header))}",
             f"#include {json.dumps(str(PUBLIC_HEADER))}",
             "int main(void) {",
         ]
@@ -154,6 +159,7 @@ class TestAbiConformance(unittest.TestCase):
         rust_source = [
             "#![allow(dead_code)]",
             f"#[path = {json.dumps(str(RUST_TYPES))}] mod types;",
+            channel_type,
             "use types::*;",
             "use std::mem::{align_of, offset_of, size_of, size_of_val};",
             "fn main() {",
@@ -181,6 +187,7 @@ class TestAbiConformance(unittest.TestCase):
         # requiring a 32-bit libc/runtime. Native UAPI keeps explicit align(8).
         assertions = ["#include <stddef.h>",
                       f"#include {json.dumps(str(KERNEL_HEADER))}",
+            f"#include {json.dumps(str(cls.socket_header))}",
                       f"#include {json.dumps(str(PUBLIC_HEADER))}"]
         for name, kernel_name in STRUCT_NAMES.items():
             kernel = "struct " + kernel_name

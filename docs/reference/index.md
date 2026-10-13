@@ -9,6 +9,7 @@
 interfaces
 controller-events
 documentation-build
+controller-snoop
 ```
 
 `API.md` 包含迁移中的旧接口清单；使用前必须核对源码、明确拒绝行为和

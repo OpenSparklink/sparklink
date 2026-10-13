@@ -1,5 +1,7 @@
 # 原生 WS73 独立 DLI snoop
 
+本页保留迁移来源、历史门禁和原路径。当前读者请使用[VM 抓取指南](how-to/capture-controller-snoop.md)及[源码核对的契约](reference/controller-snoop.md)；历史 PASS 不代表当前镜像。
+
 `slkmon` 和 `slkdump` 默认使用每设备独立记录，而不是读取 Host 的命令回复队列。
 先用 `slkconfig adapters` 查询 index/generation，再显式选择两者：
 
@@ -13,12 +15,12 @@ slkmon --adapter 1 --generation 8 --filter 0x180b
 raw 诊断权限；普通用户通过 slctl/slkd 广播与扫描无需 sudo。工具不拿 Managed
 或 Diagnostic lease、不发命令、不清历史回复、不切换全局 adapter。两个工具可与
 slkd 并行观察同一 registration，各自使用 cursor；reader 的读取不消费任何其他
-reader 的记录。C/Python snoop 绑定尚未提供。
+reader 的记录。C/Python Native snoop 绑定已存在，调用范围见下文；不据绑定存在增加实机资格。
 
 当前只支持 WS73 profile 1。旧内核返回 ENOTTY 时工具报错，无破坏性 fallback。
 必须使用单独 fd：同一 fd 已使用 ControllerEventGet 时，SnoopGet 返回 EBUSY，
 反向也同样拒绝。DEV_SELECT 重置该 fd 的观察模式。generation=0、未来 cursor、
-flags/reserved 非零拒绝；旧 generation 返回 ENODEV。EAGAIN 表示暂时没有记录；
+调用者 flags/reserved 必须为零；当前内核未显式拒绝非零（见新契约）；旧 generation 返回 ENODEV。EAGAIN 表示暂时没有记录；
 库先激活 snoop 模式再注册 AsyncFd，通过内核 waitqueue/epoll 等待，不使用定时轮询。
 拔出唤醒旧 fd，poll 返回 ERR|HUP，下一查询 ENODEV；工具以错误结束。重插必须
 重新查询并选择新 generation，旧 observer 不会转向复用 index 的新设备。

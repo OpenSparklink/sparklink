@@ -7,6 +7,7 @@ import json
 import re
 import tomllib
 import subprocess
+import hashlib
 from html.parser import HTMLParser
 from urllib.parse import urlsplit, unquote
 
@@ -33,6 +34,8 @@ DOCS = ROOT / 'docs'
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--html', type=Path)
+    parser.add_argument('--report', type=Path,
+                        help='Write current source hashes and dispositions; baseline hashes remain unchanged.')
     args = parser.parse_args()
     inventory = tomllib.loads((DOCS / 'documentation-map.toml').read_text())
     errors = []
@@ -126,6 +129,24 @@ def main():
     if errors:
         print('\n'.join(errors))
         return 1
+    if args.report:
+        current = [{**item, 'current_sha256': hashlib.sha256(
+                    (ROOT / item['path']).read_bytes()).hexdigest()}
+                   for item in items]
+        report = {
+            'schema_version': 1,
+            'source_revision': subprocess.check_output(
+                ['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+            'working_tree_changes': subprocess.check_output(
+                ['git', 'status', '--porcelain'], cwd=ROOT, text=True).splitlines(),
+            'inventory_baseline': inventory['baseline'],
+            'scope': 'Documentation inventory and optional local HTML integrity only; not browser or hardware qualification.',
+            'html_checked': args.html is not None,
+            'documents': current,
+            'kernel_documents': entries,
+        }
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     print(f'Documentation inventory PASS: {len(items)} documents (originals and reader pages); explicit dispositions; canonical sources retained.')
     return 0
 

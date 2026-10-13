@@ -11,6 +11,7 @@ run-offline-checks
 export-board-inputs
 prepare-vm-gate
 capture-and-check-discovery
+capture-controller-snoop
 ```
 
 上述旧操作页仍包含部分历史记录，后续按

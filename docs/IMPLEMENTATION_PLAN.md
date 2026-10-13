@@ -130,7 +130,9 @@ U#8／K#19 及所有未完成事项保持开放；部分导航或构建通过不
 独立 clean checkout locked 构建与实际 Firefox 导航／搜索／图形／移动布局通过。
 初始搜索 JS 失败及整改保留；外链60项429仍未核实。内容拆分未全部完成，
 首次真实设备执行教程与发布延期；不影响 S0–S6 依赖或硬件资格。
-详见[文档附页第二批](project/documentation-migration.md)。
+详见[文档工作附页](project/documentation-migration.md)。
+第三批按最新 U ca72b4915854／K 5582a10c5ec8 复核，拆分 snoop 操作与字段／错误契约，
+修正历史验证冲突与 bindings 声明；独立文档工作不更改 S0–S6 依赖、代码或资格。
 
 ## 采用后的准确基线与优先级
 

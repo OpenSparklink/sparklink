@@ -14,6 +14,7 @@
 | 外部链接 | `make docs-linkcheck`；独立、需要网络 |
 | CI | 构建并上传 HTML artifact；没有自动发布或部署步骤 |
 | 文档清单 | `docs/documentation-map.toml` |
+| 当前审计快照 | `docs/_build/documentation-audit.json`，包含当前源码 hash、dirty 状态及逐篇处置；与 HTML 一起作为 CI artifact |
 
 根目录 Python 项目只管理文档工具，不构建或安装 SparkLink Python 绑定。
 文档构建不会执行示例中的 WS73 操作或固件部署。

@@ -80,7 +80,7 @@ docs:
 	$(DOCS_RUN) python tools/check_docs.py
 	rm -rf docs/_build/html
 	$(DOCS_RUN) sphinx-build -E -d docs/_build/doctrees/html $(SPHINX_FLAGS) -b html docs docs/_build/html
-	$(DOCS_RUN) python tools/check_docs.py --html docs/_build/html
+	$(DOCS_RUN) python tools/check_docs.py --html docs/_build/html --report docs/_build/documentation-audit.json
 
 docs-live:
 	$(DOCS_RUN) python tools/check_docs.py

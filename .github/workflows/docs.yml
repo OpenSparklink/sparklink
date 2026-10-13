@@ -53,7 +53,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: sparklink-documentation
-          path: docs/_build/html
+          path: |
+            docs/_build/html
+            docs/_build/documentation-audit.json
           if-no-files-found: error
           retention-days: 14
 

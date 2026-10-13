@@ -62,7 +62,8 @@ impl Adapter {
     /// Own native management on this open file description. Clones of an Arc
     /// share this owner; separately opened observation fds do not. CAP_NET_ADMIN
     /// is checked on acquisition and every protected call. Kernel copyout faults
-    /// do not acquire an invisible lease. Legacy profile 0 is not migrated yet.
+    /// do not acquire an invisible lease. Standard profile 0 supports Diagnostic
+    /// queries; Managed radio recipes remain unsupported.
     pub fn acquire_management(&self, generation: u64, mode: u32) -> Result<u64> {
         let mut request = SleManagementRequest {
             version: MANAGEMENT_VERSION,

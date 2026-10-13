@@ -1099,6 +1099,8 @@ pub const MANAGEMENT_FAULTED: u32 = 3;
 
 pub const SNOOP_VERSION: u32 = 1;
 pub const SNOOP_PAYLOAD_MAX: usize = 320;
+pub const SNOOP_FORMAT_WS73_DLI: u8 = 1;
+pub const SNOOP_FORMAT_STANDARD_DLI: u8 = 2;
 pub const SNOOP_TRUNCATED: u16 = 1;
 #[repr(C, align(8))]
 #[derive(Clone, Copy, Debug)]

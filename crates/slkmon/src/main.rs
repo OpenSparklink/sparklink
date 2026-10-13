@@ -60,8 +60,8 @@ async fn capture_native(cli: &Cli) -> anyhow::Result<()> {
     adapter.select_device(cli.adapter)?;
     let snapshot = adapter.controller_snapshot(cli.generation)?;
     anyhow::ensure!(
-        snapshot.profile == 1,
-        "native snoop currently requires WS73 profile 1"
+        matches!(snapshot.profile, 0 | 1),
+        "snoop requires registered standard or WS73 profile"
     );
     let mut receiver = adapter.into_snoop_receiver(cli.generation)?;
     let mut output = cli

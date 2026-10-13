@@ -1,5 +1,8 @@
 # 当前能力与资格
 
+新开发切片K580b51的标准snoop观察迁移待新镜像资格；标准物理/RF/公共事件
+支持未新增。以下Kdfc641/U78fd真实通过保留其准确范围，不继承为当前HEAD PASS。
+
 当前准确新配置资格：K `dfc641ae112d`／编译service+runner U `78fd3f14f5fb`，
 配置30860427（明确删除SLE/DEBUGFS两行，其他driver/compiler/hardening不变）。
 完成空注册no-ghost、Virtual83拒绝/File隔离与五旧节点ENOENT、真实双WS73发现

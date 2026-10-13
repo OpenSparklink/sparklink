@@ -34,8 +34,7 @@ fn validate(record: &SleSnoopRecord, cursor: &SnoopCursor, index: u16) -> Result
         || record.generation != cursor.generation
         || record.generation == 0
         || record.dev_index != index
-        || record.profile != 1
-        || record.format != 1
+        || !matches!((record.profile, record.format), (1, 1) | (0, 2))
         || record.timestamp_ns == 0
         || !matches!(record.direction, 1 | 2)
         || record.status > 0
@@ -153,14 +152,17 @@ pub fn write_snoop_record(out: &mut impl Write, r: &SleSnoopRecord) -> std::io::
     out.write_all(&r.payload)
 }
 
-/// Raw WS73 A1 opcode or A2 event code. Other slot types remain opaque.
+/// Standard LE16 opcode/event or WS73 A1/A2 code; other formats remain opaque.
 pub fn snoop_packet_code(r: &SleSnoopRecord) -> Option<u16> {
-    if r.captured_length >= 3 && matches!(r.payload[0], 0xa1 | 0xa2) {
-        Some(u16::from_le_bytes([r.payload[1], r.payload[2]]))
-    } else {
-        None
+    match (r.profile, r.format) {
+        (0, 2) if r.captured_length >= 4 => Some(u16::from_le_bytes([r.payload[0], r.payload[1]])),
+        (1, 1) if r.captured_length >= 3 && matches!(r.payload[0], 0xa1 | 0xa2) => {
+            Some(u16::from_le_bytes([r.payload[1], r.payload[2]]))
+        }
+        _ => None,
     }
 }
+
 pub fn describe_snoop(r: &SleSnoopRecord) -> String {
     let data: String = r.payload[..r.captured_length as usize]
         .iter()
@@ -261,6 +263,31 @@ mod tests {
         };
         assert!(validate(&r, &c, 0).is_ok());
         r.flags = 0;
+        assert!(validate(&r, &c, 0).is_err());
+    }
+    #[test]
+    fn standard_header_is_distinct_and_mismatched_profile_is_rejected() {
+        let mut r: SleSnoopRecord = unsafe { std::mem::zeroed() };
+        r.seq = 1;
+        r.generation = 7;
+        r.timestamp_ns = 1;
+        r.profile = 0;
+        r.format = 2;
+        r.direction = 2;
+        r.original_length = 4;
+        r.captured_length = 4;
+        r.payload[..4].copy_from_slice(&[2, 4, 0, 0]);
+        let c = SnoopCursor {
+            generation: 7,
+            after_seq: 0,
+        };
+        assert!(validate(&r, &c, 0).is_ok());
+        assert_eq!(snoop_packet_code(&r), Some(0x0402));
+        r.format = 1;
+        assert!(validate(&r, &c, 0).is_err());
+        assert_eq!(snoop_packet_code(&r), None);
+        r.profile = 1;
+        r.format = 2;
         assert!(validate(&r, &c, 0).is_err());
     }
 }

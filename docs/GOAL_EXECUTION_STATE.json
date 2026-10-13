@@ -1657,5 +1657,24 @@
       }
     ],
     "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38471587159"
+  },
+  "standard_snoop_migration": {
+    "status": "implemented/offline passed; exact new VM build/real regression pending",
+    "kernel": "53a110816ebfbf8a40f5880604111c55f59d26de",
+    "audit": "docs/evidence/standard-snoop-migration-audit-20261014.json",
+    "scope": "privileged independent standard transport observation only; no Ready/private result consumption/new RF claim",
+    "next_gates": [
+      "warning-free clean kernel/config30860427",
+      "actual Virtual two independent readers/format/CAP/input rejection/Diagnostic/peer",
+      "exact new dual WS73 discovery/connection40short+249 boundary/peer isolation"
+    ],
+    "remaining": [
+      "standard full canonical event/state/loss-resync and real hardware",
+      "unique userspace SSAP and data expansion",
+      "completeS0-S6/security/PM/RCA/non-human recovery"
+    ],
+    "closure_allowed": false,
+    "vm_only": true,
+    "first_build_warning": "standard USB misleading indentation; explicit braces corrected; warning retained, clean build required"
   }
 }

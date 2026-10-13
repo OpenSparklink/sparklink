@@ -7,7 +7,7 @@
 
 ## 选择、权限和等待
 
-每 fd 显式选择 controller，并提交非零 generation；仅 profile 1 WS73。
+每 fd 显式选择 controller，并提交非零 generation；接受profile 1 WS73及profile 0标准DLI；必须匹配新源码，旧记录只属于其准确提交。
 每次 ioctl 和 poll 要求 CAP_NET_ADMIN。此权限与 Managed／Diagnostic lease
 及普通应用通道授权分开。两个 reader 使用独立 cursor，互不消费记录。
 同一 fd 的 ControllerEvent 与 snoop 模式互斥；重新 DEV_SELECT 重置观察模式。
@@ -33,15 +33,14 @@ BSLE 握手、其他 queue 或非法 HCC aggregate。TX_RESULT 在阻塞 transpo
 | 24 | reserved (u64) | 调用者置零 |
 | 32 | record (376 bytes) | 请求内容不用于选取，返回下一可保留记录 |
 
-**源码限制**：当前内核 `ioctl_snoop_get` 未显式拒绝 query flags／reserved 非零；
-Rust reader 返回校验要求零。调用者必须置零，不能把旧文档的“内核拒绝”当已实现能力。
-这一缺口记录为后续接口整改，本批不改运行代码。
+**历史限制及整改**：K5582当时未拒绝query flags/reserved；K580b51已在订阅/输出前
+明确EINVAL。新镜像门禁待完成，不能把源码修正直接当实机资格。
 
 | Record offset | 字段 | 含义 |
 |---|---|---|
 | 0／8／16／24 | seq／generation／timestamp_ns／lost (u64) | `lost=seq-after_seq-1`，明确 ring 覆盖缺口 |
 | 32／36／40 | profile (u32)／original_length (u32)／status (i32) | 实际包长度与 transport 结果 |
-| 44／46／47 | dev_index (u16)／direction (u8)／format (u8) | direction 1 RX、2 TX_RESULT；format 1 WS73 DLI |
+| 44／46／47 | dev_index (u16)／direction (u8)／format (u8) | direction 1 RX、2 TX_RESULT；format 1 WS73 DLI，2标准DLI |
 | 48／50／52 | captured_length (u16)／flags (u16)／reserved (u32) | flags bit0 TRUNCATED；reserved=0 |
 | 56 | payload[320] | captured_length 后补零 |
 
@@ -64,3 +63,8 @@ u32 payload_max=320；每条 376 字节，不能直接将 native query 内存写
 C `slk_snoop` 返回 1／0／负 errno，Python `NativeAdapter.poll_snoop()` 返回独立
 record／None／OSError；C/Python 类型与错误完整覆盖仍按参考迁移计划继续审计。
 不提供旧共享 DLI poll 或 `--legacy` fallback。
+
+标准profile0/format2的command/event头为LE16 opcode/event + LE16参数长度，再接
+参数，无WS73 A1/A2标识。RX是已注册标准interrupt event packet（非法schema亦
+可抓取），不覆盖bulk data/启动包。TX记录匹配实际EP0四字节command编码。
+Virtual记录有相同格式，但明确测试总线，不是标准USB物理资格。

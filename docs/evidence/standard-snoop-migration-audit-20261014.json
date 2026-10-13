@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "kernel": "94d84d39b6d2a3452287d67c2afd871989d202c5",
+    "userspace": "ed1c3a980beaf785afd31379093b2c60d817261c"
+  },
+  "scope": "standard privileged independent observation migration; query-only standard Host/author result ledger remains real; no standard radio/data/Ready qualification",
+  "implemented": [
+    "standard event packet before schema parse copied to bounded per-owner snoop",
+    "standard command transport return copied with actual four-byte standard DLI header",
+    "Virtual testing backend exercises same standard ingress path",
+    "profile0/format2 distinct from unchanged profile1/format1 WS73",
+    "reject nonzero snoop flags/reserved before subscription/mutation"
+  ],
+  "preserved": [
+    "private author DiagnosticResult and standard CmdPending ledger/deadlines/cancel",
+    "Native WS73 Frame/Host/Session/data paths",
+    "CAP_NET_ADMIN each snoop call/poll; independent File/generation/cursors"
+  ],
+  "remaining": [
+    "standard complete public event frontend/canonical snapshots",
+    "full loss/resync/IRQ/callback refinements and actual standard physical device",
+    "unique SSAP and all S0-S6/security/recovery scopes"
+  ],
+  "whole_issue_closed": false,
+  "hardware_qualified": false
+}

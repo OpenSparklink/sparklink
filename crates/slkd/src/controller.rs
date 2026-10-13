@@ -47,22 +47,23 @@ impl ControllerIface {
         })
     }
 
-    /// Get event queue statistics
-    async fn get_event_stats(&self) -> zbus::fdo::Result<EventStats> {
-        let st = self.state.lock().await;
-        let s = st.adapter.event_stats().map_err(map_err)?;
-        Ok(EventStats {
-            pending: s.pending,
-            total_enqueued: s.total_enqueued,
-            total_dropped: s.total_dropped,
-            total_delivered: s.total_delivered,
-        })
-    }
-
-    /// Get pending event count
-    async fn event_count(&self) -> zbus::fdo::Result<i32> {
-        let st = self.state.lock().await;
-        st.adapter.event_count().map_err(map_err)
+    /// Registration-local event watermark, not queue depth or delivery ACK.
+    async fn get_controller_event_position(&self) -> zbus::fdo::Result<(u16, u64, u64)> {
+        let (adapter, generation) = {
+            let state = self.state.lock().await;
+            (state.adapter.clone(), state.controller.generation)
+        };
+        if generation == 0 {
+            return Err(zbus::fdo::Error::NotSupported(
+                "no native controller identity".into(),
+            ));
+        }
+        let snapshot =
+            tokio::task::spawn_blocking(move || adapter.native_link_snapshot(generation))
+                .await
+                .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
+                .map_err(map_err)?;
+        Ok((snapshot.dev_index, snapshot.generation, snapshot.event_seq))
     }
 
     // ----- PHY -----
@@ -514,14 +515,6 @@ pub struct SubsysStats {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, zbus::zvariant::Type)]
-pub struct EventStats {
-    pub pending: u32,
-    pub total_enqueued: u64,
-    pub total_dropped: u64,
-    pub total_delivered: u64,
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, zbus::zvariant::Type)]
 pub struct PhyInfo {
     pub mcs_index: u8,
     pub bandwidth_mhz: u8,
@@ -611,20 +604,6 @@ mod tests {
         };
         assert_eq!(stats.dev_count, 1);
         assert_eq!(stats.power_state, 0);
-    }
-
-    #[test]
-    fn event_stats_serialization() {
-        let stats = EventStats {
-            pending: 3,
-            total_enqueued: 100,
-            total_dropped: 2,
-            total_delivered: 98,
-        };
-        assert_eq!(
-            stats.total_enqueued - stats.total_dropped,
-            stats.total_delivered
-        );
     }
 
     #[test]

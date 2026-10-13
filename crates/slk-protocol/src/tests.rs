@@ -67,7 +67,6 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleSyncCreateCmd, 20);
     check_size!(errors, SleSyncDatapathCmd, 8);
     check_size!(errors, SleSyncLinkInfo, 24);
-    check_size!(errors, SleEventStats, 32);
     check_size!(errors, SleDliInfo, 64);
     check_size!(errors, SleDliCmd, 248);
     check_size!(errors, SleControllerEvent, 336);
@@ -346,15 +345,6 @@ fn dli_cmd_params_capacity() {
     assert_eq!(cmd.params.len(), 240);
     assert_eq!(cmd.opcode, 0);
     assert_eq!(cmd.seq, 0);
-}
-
-#[test]
-fn event_stats_zeroed() {
-    let stats: SleEventStats = unsafe { std::mem::zeroed() };
-    assert_eq!(stats.pending, 0);
-    assert_eq!(stats.total_enqueued, 0);
-    assert_eq!(stats.total_dropped, 0);
-    assert_eq!(stats.total_delivered, 0);
 }
 
 #[test]

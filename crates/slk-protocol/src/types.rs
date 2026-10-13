@@ -549,17 +549,6 @@ pub struct SleSyncLinkInfo {
     pub _pad2: [u8; 3],
 }
 
-/// Event stats (ioctl 0x71)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SleEventStats {
-    pub pending: u32,
-    pub _pad: u32,
-    pub total_enqueued: u64,
-    pub total_dropped: u64,
-    pub total_delivered: u64,
-}
-
 /// DLI controller info (ioctl 0x80)
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]

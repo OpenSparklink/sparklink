@@ -147,9 +147,6 @@ nix::ioctl_readwrite!(sl_sync_info, SL_MAGIC, 0x6E, super::SleSyncLinkInfo);
 
 // ----- Event Queue (0x70 - 0x71) -----
 
-nix::ioctl_none!(sl_event_count, SL_MAGIC, 0x70);
-nix::ioctl_read!(sl_event_stats, SL_MAGIC, 0x71, super::SleEventStats);
-
 // ----- DLI Controller (0x80 - 0x86) -----
 
 nix::ioctl_read!(sl_dli_info, SL_MAGIC, 0x80, super::SleDliInfo);

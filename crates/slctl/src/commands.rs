@@ -1391,16 +1391,14 @@ impl Context {
 
     async fn cmd_events(&self) -> anyhow::Result<()> {
         let proxy = self.controller_proxy().await?;
-        let count: i32 = proxy.call("EventCount", &()).await?;
-        let stats: (u64, u64, u64, u64, u64, u64) = proxy.call("GetEventStats", &()).await?;
-        println!("Event Queue:");
-        println!("  Pending:      {count}");
-        println!("  ConnState:    {}", stats.0);
-        println!("  AdvReport:    {}", stats.1);
-        println!("  DataRecv:     {}", stats.2);
-        println!("  SecChanged:   {}", stats.3);
-        println!("  PwrChanged:   {}", stats.4);
-        println!("  HwError:      {}", stats.5);
+        let (index, generation, sequence): (u16, u64, u64) =
+            proxy.call("GetControllerEventPosition", &()).await?;
+        println!(
+            "ControllerEventPosition: index={index} generation={generation} sequence={sequence}"
+        );
+        println!(
+            "Registration-local watermark; independent readers report loss. This is not a delivery acknowledgement."
+        );
         Ok(())
     }
 

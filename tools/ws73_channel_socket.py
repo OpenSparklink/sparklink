@@ -49,6 +49,23 @@ def execute(run, phase):
                 raise CaptureError('actual duplicate/last-close/reopen rejection receipts required')
         row['session_binding_lifecycle'] = 'DUP_ALIVE_LAST_CLOSE_REBIND_UNSUPPORTED'
         application_frames(row)
+        # Passive VFS checks use current full records; old read/stats never
+        # re-enter the producer. Older packages have no such test artifact and
+        # retain their original qualification, not a new copy-gate receipt.
+        probe = Path(run.args.slctl).parent/'controller-event-copy-probe'
+        if probe.is_file():
+            for entry in row['owners']:
+                owner = entry['owner']
+                position = run.command([str(run.args.slctl),'--adapter',owner['path'],'events'],
+                                       10, collection='controller_event_positions')
+                expected = rf'^ControllerEventPosition: index={owner["index"]} generation={owner["generation"]} sequence=(\d+)$'
+                if position['exit'] or len(re.findall(expected,position['stdout'],re.M)) != 1:
+                    raise CaptureError('actual canonical event-position interface failed')
+                receipt = run.command([str(probe),str(owner['index']),str(owner['generation'])],
+                                      10, collection='controller_event_copy')
+                expected = f'CONTROLLER_EVENT_COPY_PASS: uid=1000 index={owner["index"]} generation={owner["generation"]} partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2'
+                if receipt['exit'] or receipt['stdout'].strip() != expected:
+                    raise CaptureError('actual ControllerEvent copy/alias/replay gate failed')
         row['status']='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING'
     except BaseException as error:
         row.update(status='FAIL',error=str(error),error_type=type(error).__name__);raise

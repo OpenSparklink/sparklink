@@ -112,6 +112,7 @@ def prepare(args):
                   HERE/'ws73_diagnostic_probe.py',
                   HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_channel_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
+                  LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
                   LINUX/'tools/testing/selftests/sparklink/ssap_removed_uapi_test.c',
@@ -158,6 +159,12 @@ def prepare(args):
         subprocess.run(compile_probe, check=True)
         manifest['event_copy_probe_compile'] = compile_probe
         programs['event-copy-probe'] = probe
+        current_probe = output/'controller-event-copy-probe'
+        current_compile = [os.environ.get('CC','cc'),'-std=gnu11','-O2','-Wall','-Wextra','-Werror',
+                           str(LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c'),'-o',str(current_probe)]
+        subprocess.run(current_compile, check=True)
+        manifest['controller_event_copy_compile'] = current_compile
+        programs['controller-event-copy-probe'] = current_probe
         diagnostic_probe = output/'diagnostic-result-probe'
         compile_diagnostic = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
                               str(LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c'),
@@ -671,8 +678,8 @@ def _run(args):
             raise ValueError('current four-device gate requires frozen policy expectation')
         if 'policy_expectation' in package:
             m['policy_expectation'] = package['policy_expectation']
-        if event_copy and 'event_copy_probe_compile' not in package:
-            raise ValueError('prepared VM does not contain the frozen live copy probe')
+        if event_copy:
+            raise ValueError('legacy read-copy live gate is retired; canonical ControllerEvent copy gate is separate')
         if event_copy and 'native_vm' not in package:
             raise ValueError('live copy gate requires the qualified scratch-root VM profile')
         if setup_gate and ('setup_release_probe_compile' not in package or 'native_vm' not in package):

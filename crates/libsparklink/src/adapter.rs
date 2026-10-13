@@ -624,21 +624,6 @@ impl Adapter {
         Ok(info)
     }
 
-    // ----- Event Queue -----
-
-    /// Get pending event count
-    pub fn event_count(&self) -> Result<i32> {
-        let ret = unsafe { ioctl::sl_event_count(self.raw_fd())? };
-        Ok(ret)
-    }
-
-    /// Get event queue statistics
-    pub fn event_stats(&self) -> Result<SleEventStats> {
-        let mut stats = unsafe { std::mem::zeroed::<SleEventStats>() };
-        unsafe { ioctl::sl_event_stats(self.raw_fd(), &mut stats)? };
-        Ok(stats)
-    }
-
     // ----- DLI -----
 
     /// Get DLI controller info

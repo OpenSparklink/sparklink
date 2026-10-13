@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T00:59:57.666439+00:00",
+  "updated_at_utc": "2026-10-13T01:42:16.225137+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,16 +26,16 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "7de1d13164124b7da8aaedbd12b38faebdee22f4",
-    "userspace": "6f3a331e98a9bf6e5ec0075dbb8cc8158057cee4"
+    "linux": "b619aecf261f39e11f5ebabd63eb79a524c07447",
+    "userspace": "552fc62c15024efe282562d9602b09343b21f86e"
   },
   "qualified_source_heads": {
-    "linux": "7de1d13164124b7da8aaedbd12b38faebdee22f4",
-    "userspace": "ed815bcc3c08c07ec9e76206a10ab58776433936"
+    "linux": "b619aecf261f39e11f5ebabd63eb79a524c07447",
+    "userspace": "7e64b8953114299f74abd8081fa862ceba1fe71d"
   },
   "current_qualification": {
-    "DG01": "K7de1d131/Ued815bc new40 ordinary peer round trips after core ingress/Host-gate migration; actual RF22/typed connection/dup-lastclose/QMP support retained",
-    "DG02": "Same exact source8 app249 and16 oversize rejections absent capture; layered/long/same-Binding matrices still open",
+    "DG01": "Kb619aecf/compiledU7e64b89/tools552fc62 fresh40 ordinary real peer round trips with RF/typed connect-Down properties/dup-lastclose/QMP support. First same source run40 data subgate but wholeFAIL peer physical Down1112ms vs old1s; retained.",
+    "DG02": "Same exact source8 app249 and16 oversize rejects absent capture; long/layered/same-Binding gates open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -45,11 +45,12 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: WS73 versioned Backend and common core Runtime ingress wired; Native/Session/workers no USB route import; gate publish/Arc unpublish/no worker republish/per-controller decode, Host-before-gate RX/command. Exact new40/249/CI9/offline8+33/437; standard USB actual Backend/resource/module/probe/stop/PM and binding/enum/driver builds, true Virtual, IRQ/refinement/reclamation still open. Final health observer Host-gate auditK7de1d131/Ued815bc actual9/fresh40-249/CI9. Source-only no explicit gate->Host candidates, not complete indirect-lock or IRQ proof."
+    "WP13": "PARTIAL: versioned WS73/Core ingress, standard USB now pending unknown metadata/no false setup/transport-open, exact identity across probe/detach/PM, partial open cleanup and no state across I/O, proto/binding deleted/canonical stats. Actual13/bootstrap/metadata7/Native33/ingress9/440/CI9/fresh40-249 pass. Full standard USB C context/module/Backend/enum/bus build/Virtual/IRQ/callback/PM/physical remain open.",
+    "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP13 migrate actual standard USB probe/C resource table/bootstrap/query/Runtime/RX/quiesce/unregister/PM into common Backend module/context/generation ownership; remove duplicate binding/protocol registry/static enum and split bus builds. Core ingress foundation now wired; no repeated plan-only or orphan abstraction. Audit and quarantine unconsumed Rust URB wrappers/global dead_code while preserving actual C URB and codec tests. WP12 old event ring/low-level consumers in parallel.",
+    "WP13 actual standard USB C resource/context/module/generation lifetime to common Backend registration/start/RX/stop/PM; remove remaining static Usb variant and split bus builds. Protocol/binding authority now deleted; pending/partial-open core already wired, no repeat implementation. Audit/quarantine unconsumed Rust URB wrappers/global mask while retaining actual C and codec tests. WP12 event consumers parallel.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -204,7 +205,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "PARTIAL: WS73 versioned Backend and common core Runtime ingress wired; Native/Session/workers no USB route import; gate publish/Arc unpublish/no worker republish/per-controller decode, Host-before-gate RX/command. Exact new40/249/CI9/offline8+33/437; standard USB actual Backend/resource/module/probe/stop/PM and binding/enum/driver builds, true Virtual, IRQ/refinement/reclamation still open. Final health observer Host-gate auditK7de1d131/Ued815bc actual9/fresh40-249/CI9. Source-only no explicit gate->Host candidates, not complete indirect-lock or IRQ proof."
+      "status": "PARTIAL: versioned WS73/Core ingress, standard USB now pending unknown metadata/no false setup/transport-open, exact identity across probe/detach/PM, partial open cleanup and no state across I/O, proto/binding deleted/canonical stats. Actual13/bootstrap/metadata7/Native33/ingress9/440/CI9/fresh40-249 pass. Full standard USB C context/module/Backend/enum/bus build/Virtual/IRQ/callback/PM/physical remain open."
     },
     {
       "id": "WP14",
@@ -290,7 +291,7 @@
     "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
   },
   "next_resume_tasks": [
-    "WP13 migrate actual standard USB probe/C resource table/bootstrap/query/Runtime/RX/quiesce/unregister/PM into common Backend module/context/generation ownership; remove duplicate binding/protocol registry/static enum and split bus builds. Core ingress foundation now wired; no repeated plan-only or orphan abstraction. Audit and quarantine unconsumed Rust URB wrappers/global dead_code while preserving actual C URB and codec tests. WP12 old event ring/low-level consumers in parallel.",
+    "WP13 actual standard USB C resource/context/module/generation lifetime to common Backend registration/start/RX/stop/PM; remove remaining static Usb variant and split bus builds. Protocol/binding authority now deleted; pending/partial-open core already wired, no repeat implementation. Audit/quarantine unconsumed Rust URB wrappers/global mask while retaining actual C and codec tests. WP12 event consumers parallel.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -397,5 +398,18 @@
       "receipt": "docs/evidence/core-ingress-issues-20261013.json",
       "whole_package_closed": false
     }
+  },
+  "qualified_run_tools_head": "552fc62c15024efe282562d9602b09343b21f86e",
+  "usb_pending_slice": {
+    "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
+    "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
+    "run_tools": "552fc62c15024efe282562d9602b09343b21f86e",
+    "implemented": "pending-only unknown metadata/exact identity; no duplicate protocol/binding; shared open-close/adoption barrier, no state across I/O, partial/retired open cleanup; no foreign cleanup on C register failure; canonical unpublished36byte stats fields",
+    "offline": "actual13/bootstrap/metadata7/Native33/ingress9/zero warnings/emptyVM3/tool440/CI9",
+    "formal": "both actual allocator harnesses NOT_PROVEN_UNSUPPORTED",
+    "real": "first wholeFAIL retained with independently validated40 data and peer Down1112ms; fresh40 short +8 app249/16 rejects under shared original5s observation and each realDown/property receipt",
+    "package_complete": false,
+    "natural_root_cause_closed": false,
+    "nonmanual_recovery_accepted": false
   }
 }

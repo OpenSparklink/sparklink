@@ -446,6 +446,19 @@ RX与两个命令producer统一Host→gate，旧RX actual-body rank负对照检�
 及显式let gate→Host语法审计记录。准确K7de1d131/Ued815bc取得新40短/249八轮/
 16拒绝和CI9；旧80a362ff资格保留历史。实际lockdep/KCSAN、间接锁及回收门禁仍缺。
 
+标准USB pending/open本批Kb619aecf：删生成MAC/预先setup_complete、proto/binding表；
+reserve只保留未知metadata的id/gen，Driver携带精确identity；C注册失败不清理外部owner。
+detach标UNREGISTERING并保留index至join后，listener open与close共生命周期屏障，
+无state锁跨I/O，部分失败/退休成功openjoin，transport_open仅实际adopt后发布。
+未发布stats同步kernel/SDK/CLI为pending_count/runtime_count，36-byte未改、非Ready数。
+保留完全相同历史transport/projection与有效codec/firmware测试，删除生产module依赖。
+actual13注册/open+bootstrap/metadata/Native33/ingress9、零warning/空VM3/CI9通过。
+生产allocator两harness均NOT_PROVEN_UNSUPPORTED，不从raw solver成功授予资格。
+首轮40数据子门禁完成但peer Down1112ms超旧1s门禁全轮FAIL；新单5s预算+真实Down
+证据关联下，新40/249八轮/16拒绝通过（编译U7e64b89、工具U552fc62，必须分开）。
+下一批仍迁实际C表/driver context/module/generation/RX/stop/PM至common Backend，
+删除静态Usb分派/拆分bus构建；无USB core/真正Virtual/profile0/标准USB物理未通过。
+
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。
 - 依赖：先固定接口，不等K4/K9整个issue互相关闭；避免与当前WS73关键整改同时大范围移动。

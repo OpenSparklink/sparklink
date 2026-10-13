@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前正常路径K7de1d1316412/Ued815bc：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前正常路径Kb619aecf261f/编译U7e64b89/工具U552fc62：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -55,6 +55,20 @@ callback回收或完整USB独立构建通过。标准USBprobe/FFI/enum/binding�
 覆盖Setup/Ready/radio/fault/retired/旧generation和同行。显式let gate→Host语法
 扫描无剩余候选（不是完整间接锁证明），本版独立40短/249八轮/16拒绝与CI9通过。
 历史80a362ff/f4c65fb证据保留，不把旧成功直接改授新提交。
+
+标准USB注册整改Kb619aecf：先reserve pending id/generation，未知MAC/版本/能力为零，
+不再生成地址或提前setup_complete。删除独立协议/binding表，Root统计从registry和
+Runtime表派生；未发布36-byte stats同步改名pending_count/runtime_count，两者非Ready。
+成功C注册后才允许失败清理；精确generation detach先标退休、join后释放index，
+重复/迟到detach不清除别的owner。USBlistener open与close共用Backend生命周期屏障，
+状态锁不跨I/O；两listener成功且gate仍活跃后才发布transport_open。
+生产13项注册/allocator/detach/open依赖回归与bootstrap/metadata回归通过；两个直接
+生产allocator Kani harness有unsupported警告，均未证明。实际模块/callback/IRQ未闭合。
+首轮真实40数据子门禁完成，但peer USB Down1112ms越过原1s观察使全轮FAIL，证据保留。
+工具552fc62使用两端共享、不可刷新的5s诊断预算并逐端对应真实Down/propertyfalse；
+不是协议时限保证或生产提前置false。本版新40/249/16拒绝和CI9通过，QMP仅支撑。
+标准USB仍是旧C资源表/静态Usb分派，尚未完整迁common Backend或从core拆独立driver；
+profile0默认daemon继续不支持，无标准USB物理资格，不恢复不可靠旧SSAP。
 
 ## 目标分层及架构决策
 

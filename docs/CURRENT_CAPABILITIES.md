@@ -30,7 +30,7 @@ LKMM route单identity限定Never，弱对照Sometimes；前版RX rank反例检�
 标准USB完整Backend迁移、无USB core构建、真正Virtual/多通道/SSAP/自然恢复仍缺。
 历史Grant/daemon死亡资格按原准确提交保留，不改授为此新HEAD。
 
-当前正常路径 **K7de1d1316412 / 编译service与工具Ued815bc**：
+历史正常路径 **K7de1d1316412 / 编译service与工具Ued815bc**：
 包含共同入口和RX/命令Host→gate整改，最后只读health同序、不修改Ready/credit。
 生产actual9项（rank/Host等依赖fixture）和显式锁位语法扫描记录；零warning/
 空VM3/工具437/准确CI9通过。无剩余显式gate→Host候选不是间接锁/IRQ或回收证明。
@@ -38,6 +38,20 @@ LKMM route单identity限定Never，弱对照Sometimes；前版RX rank反例检�
 224两端SDU/112真实NOCP、零capture drop/taint0，RF22/建链断链/dup/最后关闭/QMP保留。
 LKMM单identity范围不扩大；本VM仍未启用lockdep/KCSAN。标准USB/真正Virtual、
 完整callback/module/IRQ/refinement、自然根因和非人工恢复继续未完成，整项issues开放。
+
+当前正常路径 **Kb619aecf261f / 编译serviceU7e64b89 / 运行工具U552fc62**：
+标准USB pending identity/open两阶段整改与重复proto/binding删除已实现，未知地址/
+能力零、无预先setup完成；精确identity清理不跨设备，失败C注册不动别人的资源。
+listener open状态锁不跨I/O，失败/退休清理，transport-open仅实际adopt后发布。
+stats字段从canonical表派生，pending_count包含无Runtime退休identity，runtime_count
+包含Setup/fault、都不是Ready。内核/Rust/CLI同步，36-byte布局不变，接口未发布。
+实际13函数依赖/metadata7/bootstrap/Native33/ingress9、工具440、零warning/空VM3、
+准确552fc62 CI9通过。生成生产allocator初态/转换两Kani harness均unsupported未证明；
+Std USB callback/module/IRQ/PM/实际硬件及无USB core构建仍缺。
+首轮实际40数据子门禁完成，但对端Down在1112ms才上USB、旧1s观察先到期，全轮FAIL
+保留。新单5s不可刷新观察+逐端物理Down/propertyfalse关联下重新取得40短、8轮249
+对端实际校验回复及16超限拒绝无数据证据，224两端SDU/112NOCP、零drop/taint0。
+RF22/建链断链/dup/最后关闭/QMP支撑保留；5s非协议保证，QMP非自然恢复。
 
 历史资格K3ee1a60bf06f/U2a97786：Managed lease epoch、Host锁下软件TX准入和USB提交
 检查、socket v2 lease字段已接通；Native33/Host51/Managed54及实际C准入/ABI离线通过。
@@ -85,8 +99,8 @@ vmlinux旧serdev符号不存在。清洁构建零warning、空USB三次实际门
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
 | common Backend注册首批 | WS73/open测试provider实际迁移V1描述符；旧入口删除；标准USB未迁 | validator38、实际C拒绝11/sanitizer、Native33/连接operation12+Host、零warning/空VM3；fixture-only修正 | CBMC221限定准入，合法不变内核指针假设；不证明引用/并发/硬件 | 编译K7e654fde/U67165b6独立40短/8长度往返、16拒绝 | 标准USB/重复binding、真正Virtual/serdev、module/get-put/stopjoin全矩阵 |
-| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前K7de1d131/Ued815bc两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
-| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新K7de1d131/Ued815bc DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
+| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前Kb619aecf/编译U7e64b89/工具U552fc62两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
+| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新Kb619aecf/编译U7e64b89/工具U552fc62 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
 | 协商原期限/共享状态 | 38926b2完整三步骤与原期限；同锁快照、关闭/最终软件准入 | C编译、ASan/UBSan deadline/terminal selftest、完整新内核/空USB VM | FV01生产CBMC131项；FV03锁LKMM两性质，故意弱对照允许坏结果 | 上述新40轮及下述249路径保持 | 受控回复/credit阻塞期限、worker/VFS引用完整映射、唤醒及VM KCSAN/lockdep |
 | application249/DTAP254 | 当前单ACB上限与精确长度拒绝，ec67348后工具/应用接通 | 196 workspace/423工具及严格clippy；准确dfb8636 CI9/9 | 不能从协商模型推出codec/分片性质 | 新版本8轮249字节及16次application250/253/254/255 EMSGSIZE，拒绝载荷捕获为零 | DG02同Binding短→最大→拒绝→短、其他层253/254/255、长包/PB TX/SAR |
 | 提交票据切片 | K464d4d8a9de7 Runtime/Backend引用、一次commit、Host/data/gate内真正URB提交；Host数据撤销；未queued才回滚，已queued/不确定保留debt | Native25、driver10 sanitizer、Host49/连接12、Managed48；C/Rust严格对象及完整内核 | 精确K464/U854 Host撤销/提交锁序LKMM Never、弱对照Sometimes；credit回滚Kani仍NOT_PROVEN_UNSUPPORTED | 新40短/249八轮/16超限、发现连接路径保持 | controlled VM交错、完整Session/Channel/Grant引用证明、完整callback/VFS及NOCP复用屏障；不能宣布整项Ticket完成 |
@@ -187,3 +201,11 @@ Backend注册首批准确证据：
 - [限定模型与锁位审计](evidence/core-ingress-observer-formal-20261013.json)
 - [准确40轮](evidence/ws73-core-ingress-observer-short-repeat-20261013.json)
 - [准确249/超限](evidence/ws73-core-ingress-observer-249-boundary-20261013.json)
+
+USB pending本批证据：
+
+- [实际注册/open与接口/CI](evidence/usb-pending-offline-20261013.json)
+- [生产allocator未证明报告](evidence/usb-pending-formal-20261013.json)
+- [首轮完整失败与1112ms真实Down](evidence/usb-pending-first-down-failure-20261013.json)
+- [新准确40轮](evidence/ws73-usb-pending-short-repeat-20261013.json)
+- [新准确249/超限](evidence/ws73-usb-pending-249-boundary-20261013.json)

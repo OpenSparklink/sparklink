@@ -284,3 +284,19 @@ gate→routes（发布），查找释放routes后再走Host等路径，不逆向
 最后watchdog观察者也遵守Host→gate，不能因“只读”逆序；仍不得发布Ready/credit或
 产生恢复成功。实际health函数归一化仅extern签名/模块路径，依赖Host方法为fixture；
 9项回归和显式锁位置语法审计不是完整IRQ/lockdep/KCSAN或自然根因证明。
+
+## 标准USB pending与open整改（2026-10-13）
+
+reserve身份不等于metadata/open/Ready；未知地址为零，不能使用生成MAC或由registry
+构造器调用setup_complete。全局协议/binding重复表删除，counts从identity和Runtime
+派生。pending_count包含退休中无Runtime的保留identity；runtime_count包含Setup/fault，
+都不等于Ready数。接口未发布，同步kernel/Rust/CLI并删除旧名，36-byte布局未改。
+
+实际USBopen在共同Backend生命周期mutex下，复制只借用该reservation的transport
+值后释放state锁，再进行listener I/O。部分失败join第一listener；退休胜出则close两者
+且不发布open，generation identity保持至所有清理后释放。失败C注册不能unregister
+别人的表项。完整C表资源/module引用、并发PM/callback/IRQ/真实标准USB仍须后续门禁。
+
+双端Down异步：不能由本端Disconnect成功推断对端属性立即false。验收使用单一原始
+5s观察预算和逐端真实USB Down/propertyfalse证据，限时不刷新；不是标准保证。
+第一次1112ms peer Down超过旧1s期限，全轮FAIL保留，40数据子门禁与整轮资格分开。

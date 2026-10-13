@@ -119,8 +119,11 @@
     "original_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38474730196",
     "original_status": "failure in old receiver dependency harness",
     "test_only_kernel": "ce258f23e840a45cb8030a79c09277dd880aa9e3",
-    "status": "corrected source fixture passed; exact all-job CI pending",
-    "runtime_code_changed": false
+    "status": "exact corrected CI all9 success; production qualification remains K53a110/Ueb92",
+    "runtime_code_changed": false,
+    "corrected_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38475991043",
+    "corrected_userspace_head": "99692b58e29e8d6725853d5748599a8d8b48df94",
+    "jobs_success": 9
   },
   "issue_updates": [
     {
@@ -189,5 +192,61 @@
   "natural_recovery_qualified": false,
   "whole_issue_closed": false,
   "goal_complete": false,
-  "boundaries": "raw privilege does not consume author replies or publish Ready; TX_RESULT/NOCP not peer receipt; QMP/injection not natural recovery"
+  "boundaries": "raw privilege does not consume author replies or publish Ready; TX_RESULT/NOCP not peer receipt; QMP/injection not natural recovery",
+  "terminal_issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_id": 6156279081,
+      "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6156279081",
+      "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 11,
+      "state": "OPEN",
+      "comment_id": 6156280108,
+      "url": "https://github.com/OpenSparklink/linux/issues/11#issuecomment-6156280108",
+      "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 16,
+      "state": "OPEN",
+      "comment_id": 6156281075,
+      "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6156281075",
+      "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6156282032,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156282032",
+      "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 2,
+      "state": "OPEN",
+      "comment_id": 6156282901,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/2#issuecomment-6156282901",
+      "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6156283824,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156283824",
+      "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+      "readback_exact": true
+    }
+  ]
 }

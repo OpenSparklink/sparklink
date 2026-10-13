@@ -1,3 +1,8 @@
+> 最新实现切片：用户态 ExchangeInfo codec 与生产源码 Kani harness；
+> 仅离线能力，未接通 SSAP 通道或 Engine。两 harness 求解完成但含 unsupported，
+> 形式化门禁记为未证明。[准确范围](evidence/ssap-exchange-codec-progress-20261014.json)。
+> 下一步接通实际 SSAP 通道与唯一用户态 Engine，不将 PI241 业务数据冒充 SSAP。
+
 # SparkLink / Linux 联合实施方案
 
 ## 当前切片：标准独立snoop迁移，Virtual与准确WS73回归通过
@@ -16,7 +21,7 @@ Diagnostic结果完成；非零query字段输出不变；继承fd失CAP读取/po
 frontend、canonical状态/loss/resync和实际标准硬件仍待完成。准确K53a110/Ueb92的双reader/CAP/flags/private-result/peer真实Virtual门禁
 以及WS73发现/连接40短消息、8轮249数据/16超限拒绝、受控同行回归已重新通过。
 [准确源码、失败、raw证据和未决](evidence/standard-snoop-migration-progress-20261014.json)。
-原CI旧依赖harness失败保留，test-only Kce258迁移9Rust/25C通过，新CI待复核。
+原CI旧依赖harness失败保留，test-only Kce258迁移9Rust/25C通过，准确U99692 CI38475991043九项成功，仍不证明标准真实硬件。
 原S0–S6、VM-only、UserHostP4及恢复/SSAP等完整未决保持；不把控制竞争全集
 重新设为数据面前置，下一步接通唯一用户态SSAP并继续剩余界面迁移。
 

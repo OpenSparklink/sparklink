@@ -182,3 +182,16 @@ modeled, and C/Rust refinement is not proved. Actual production function tests i
 `run_backend_install.py` cover constructor failure, retire/reuse, competing publish,
 subsystem removal and out-of-registry destructor; these remain dependency regressions.
 The weak trace corresponds to the actual stale-generation/reuse regression.
+
+## 用户态 SSAP ExchangeInfo codec
+
+`cargo kani --manifest-path formal/ssap_exchange/Cargo.toml` 直接包含生产
+`crates/slk-protocol/src/ssap/exchange.rs`，不维护验证副本。符号输入覆盖原始长度
+0–11、完整u16 MTU、任意 typed 字段与输出容量0–11，unwind16。两个 harness
+求解完成，但 Kani0.68.0 输出 caller_location／foreign-function unsupported，
+按项目门禁记为**未证明**，不得只摘取 SUCCESSFUL。无并发／传输／协商成功证明，
+不构成 SSAP 实机互通。[准确源码与报告](../docs/evidence/ssap-exchange-codec-progress-20261014.json)。
+
+可复现 fail-closed 入口：`python3 formal/ssap_exchange/check.py --output "$NEW_REPORT_DIR"`。
+它只运行离线Kani，在新目录保存原log与hash；timeout、unsupported、未完整展开或
+源码检查期间变化均退出非零。本次实际返回1／NOT_PROVEN，不能把该退出记录为工具门禁PASS。

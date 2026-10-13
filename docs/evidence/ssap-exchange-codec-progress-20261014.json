@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "status": "IMPLEMENTED_OFFLINE; FORMAL_GATE_NOT_PROVEN",
+  "source_commit": "ada667db9225ba2a3fade659df07bf026ac50ee8",
+  "kernel_unchanged": "ce258f23e840a45cb8030a79c09277dd880aa9e3",
+  "sources": {
+    "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+    "formal/ssap_exchange/src/lib.rs": "e800bb43f15ac89cff90d323ef0b107ff467704f2b9eb9167f86c8e863af82bd",
+    "formal/ssap_exchange/Cargo.toml": "790ce4c3a74e8f34434bc11a454bdb9771fd77d59a248099eaff1db4bc78eef2",
+    "formal/ssap_exchange/Cargo.lock": "cd0e939484d5cc8219d740cfab43fe072a118ddff9b398f7e1cbe75990804f5c",
+    "crates/slk-protocol/src/ssap.rs": "738ce4c5e4904e5a7540b52cac6076fbd4a8913a6f76ac1740769a7c9f40a768",
+    "formal/ssap_exchange/check.py": "812877874d070d64a5367200b7ab4fe4a0284b19614a4661b4a1fe01b4a564d3"
+  },
+  "production_mapping": "formal harness includes the actual exchange.rs verbatim via path; no verification copy",
+  "reference": {
+    "standard": "T/XS 20001-2025 section 7.4.4.3, tables 52/53",
+    "local_extraction_sha256": "385211bd66f1d2cd3442fd00453799ebd9e1a0106f0f670769a062a1796133f5",
+    "standard_availability": "restricted local material; not uploaded",
+    "ohos_source": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "ohos_difference": "fixed six-byte packed struct and lower-MTU clamping do not implement all conditional fields; reference only, no code copied",
+    "legacy_engine": "archived only, not restored"
+  },
+  "implemented": [
+    "ExchangeInfo request/response conditional fields",
+    "LE16 MTU and major/minor version ordering",
+    "extension capabilities and transaction capacity validation",
+    "exact length and caller-provided default channel MTU",
+    "output unchanged on encode error, tail untouched on success",
+    "no allocation or transport operation"
+  ],
+  "offline": {
+    "protocol_tests": 69,
+    "workspace_clippy_all_targets_all_features_D_warnings": "PASS",
+    "C_header_generation_unchanged": "PASS",
+    "workspace_test": "PASS; offline workspace all-features including private D-Bus",
+    "strict_documentation": "PASS; 91 user / 10 kernel dispositions",
+    "C_Rust_Python_contract_tests": 35,
+    "actual_cdylib_rebuilt": true
+  },
+  "formal": {
+    "tool": "Kani 0.68.0 / CBMC 6.11.0",
+    "command": "cargo kani --manifest-path formal/ssap_exchange/Cargo.toml",
+    "harnesses": 2,
+    "solver_result": "2 complete, 0 failures",
+    "accepted_proof": false,
+    "policy_status": "NOT_PROVEN because unsupported diagnostics remain",
+    "unsupported": [
+      "caller_location",
+      "foreign function",
+      "same_allocation diagnostic"
+    ],
+    "unwind": 16,
+    "properties": [
+      "arbitrary 0..11-byte decode and canonical encode/decode, MTU full u16 domain, no panic/overflow or tail mutation",
+      "arbitrary typed input fields, MTU full u16 domain, output capacity 0..11; encode failure preserves original output; success roundtrips"
+    ],
+    "assumptions": [
+      "valid Rust slice references and serialized calls; no concurrent engine or transport modeled",
+      "raw decode symbolic length <=11; ExchangeInfo encoded maximum10, longer length is outside this bounded proof",
+      "caller passes actual channel default MTU; no proof of firmware value or negotiation state"
+    ],
+    "counterexamples": "no failing property reported; unsupported warnings retained, no formal PASS",
+    "unsupported_policy_reference": "https://model-checking.github.io/kani/rust-feature-support.html",
+    "fail_closed_gate": {
+      "entry": "python3 formal/ssap_exchange/check.py --output \"$NEW_REPORT_DIR\"",
+      "actual_exit_code": 1,
+      "status": "NOT_PROVEN",
+      "accepted_proof": false,
+      "log_sha256": "fd0cafb7c21ae4c330709cfad8e0c5969a6d0c65fea06925a168d7d81efc245b",
+      "report_sha256": "ccf26414197ed1d2430c85f1e29c35914e75a1f8aae74a8c762023c52a6e29f6",
+      "proof_scope_unchanged": true
+    }
+  },
+  "logs": {
+    "ssap-exchange-kani.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-kani.log",
+      "sha256": "4c1394f6fb306f76d3d84dffcb77a81d6d8f074883eb7248474fee1799566c7b",
+      "availability": "workspace-private original, not uploaded"
+    },
+    "ssap-exchange-kani-full-inputs.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-kani-full-inputs.log",
+      "sha256": "484d9477c625f4a75c11813777ad6165cbd03ecd4b9c45cc2e70fabbc72d631a",
+      "availability": "workspace-private original, not uploaded"
+    },
+    "ssap-exchange-kani-final.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-kani-final.log",
+      "sha256": "233795e351a4e8a35915b826e8219dec8d9115d5dcf742fd823465d422002cef",
+      "availability": "workspace-private original, not uploaded"
+    },
+    "ssap-exchange-protocol-tests.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-protocol-tests.log",
+      "sha256": "223d20c664233effd19f6648d7f41da8d8963129c83c62297d68a2a609bdb437",
+      "availability": "workspace-private original, not uploaded"
+    },
+    "ssap-exchange-clippy.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-clippy.log",
+      "sha256": "ab83abf8ac47ec579feabb1522b3c8e46b44c59cd5c75e187292fd7ad4d51b78",
+      "availability": "workspace-private original, not uploaded"
+    },
+    "ssap-exchange-cbindgen.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-cbindgen.log",
+      "sha256": "a9211eb1bfa2b5719945b9395647e7b191f56b62166a7dc02aefe6f7c9327cb8",
+      "availability": "workspace-private original, not uploaded"
+    },
+    "ssap-exchange-workspace-tests.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-workspace-tests.log",
+      "sha256": "fa4505686a0c3c8753678806fde13e3813e4415a04580d1bec524c128732492b",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "ssap-exchange-ci-terminal-failure.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-ci-terminal-failure.log",
+      "sha256": "6b3b28ba5feea51d8911971560b99575db65934165ca26c6d820bd9548127014",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "ssap-exchange-abi-first-local.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-abi-first-local.log",
+      "sha256": "568703f789c6dc51bfeb63164cf4a565459f024b14efb7d4240bbe430791a274",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "ssap-exchange-abi-corrected.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-abi-corrected.log",
+      "sha256": "6d42fa68876568e9d2b8c75eabe88c4831b5eddace99c41e265886ca6ea57508",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "ssap-exchange-abi-all.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-abi-all.log",
+      "sha256": "d2c7526dd88bc9b5bc713736bd685ccf9248c3a7de75c692df375280c9f673ec",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "ssap-exchange-clippy-corrected.log": {
+      "workspace_relative_path": ".dev/ssap-exchange-clippy-corrected.log",
+      "sha256": "549e4dadfdd2f8c45c2ab3a1fe883524df31d051df5dfe559f34b92aa719e324",
+      "availability": "workspace-private original; not uploaded"
+    }
+  },
+  "runtime_behavior_changed": false,
+  "hardware_qualification_unchanged": true,
+  "not_implemented": [
+    "SSAP-capable Session channel demux/SMTC or reliable PI",
+    "daemon Engine transport actor and original deadline state machine",
+    "service database/discovery/read/write/notify/indicate/Profile",
+    "trusted security or Bond",
+    "real SSAP interoperability"
+  ],
+  "next": [
+    "establish actual SSAP channel routing before transport binding; do not reuse PI241 as SSAP",
+    "connect single userspace Engine with generation/lifetime/original deadline",
+    "bounded service database with canonical SsapOperations",
+    "real two-device read/write/notify/indicate and data regression"
+  ],
+  "scope_closed": false,
+  "corrected_source_commit": "a8644bdac2b98c475e8e5a138599b488e31cc3b7",
+  "failures_retained": [
+    {
+      "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38477573954",
+      "reason": "direct path import resolves nested exchange module differently; local exact failure reproduced",
+      "correction": "explicit module child path; public imported module matches real crate, strict warnings retained"
+    }
+  ],
+  "ci": {
+    "corrected_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38477998760",
+    "head": "a8644bdac2b98c475e8e5a138599b488e31cc3b7",
+    "status": "success",
+    "jobs_success": 9,
+    "per_job_readback": true
+  },
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 6,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6156533776",
+      "readback_exact": true,
+      "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6156534590",
+      "readback_exact": true,
+      "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156535280",
+      "readback_exact": true,
+      "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6156536262",
+      "readback_exact": true,
+      "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156537030",
+      "readback_exact": true,
+      "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+    }
+  ],
+  "next_interface_audit": {
+    "kernel": "ce258f23e840a45cb8030a79c09277dd880aa9e3",
+    "facts": [
+      "sle_channel_socket.c sl_bind rejects all except local/remote CUTC31 and PI241",
+      "Session has one channel binding/queue; do not simply relax bind guard",
+      "DTAP frame codec already handles fixed TCID <=0x1d with no PI",
+      "T/XS20002-2025 section6.3.5: SLE SMTC TCID0x0a belongs to default bearer lifecycle"
+    ],
+    "required_change": "add bounded Session-owned channel table and unique RX demux, retain CUTC qualification, then broker actual SMTC for daemon Engine; no fabricated capability"
+  },
+  "terminal_issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 6,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6156533776",
+      "readback_exact": true,
+      "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+      "terminal_update_readback": true
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6156534590",
+      "readback_exact": true,
+      "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+      "terminal_update_readback": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156535280",
+      "readback_exact": true,
+      "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+      "terminal_update_readback": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6156536262",
+      "readback_exact": true,
+      "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+      "terminal_update_readback": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156537030",
+      "readback_exact": true,
+      "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+      "terminal_update_readback": true
+    }
+  ]
+}

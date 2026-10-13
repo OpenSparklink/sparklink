@@ -315,8 +315,8 @@
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "latest_evidence_commit": "69ff7fb54e6996dad3bbbf2372795d5ded67cfde",
-  "previous_goal_turn_classification": "progress: software PM/global policy removed and exact actual K43/U1ded regression",
-  "current_goal_turn_classification": "progress: retired legacy conn/adv models and second RX; migrated old stats consumer after real test failure; exact corrected K558/Ucd77 RF/data gates passed",
+  "previous_goal_turn_classification": "progress: signed fourth documentation batch and exact browser/CI/issue readbacks",
+  "current_goal_turn_classification": "progress: actual userspace SSAP ExchangeInfo codec and production-code bounded harnesses; formal unsupported remains unproved",
   "qualified_tool_source_heads": {
     "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
     "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
@@ -1738,6 +1738,175 @@
       "warning-free clean K53a110 build/config unchanged",
       "actual Virtual2 readers raw bytes/CAP/input fields/private query/peer",
       "exact dual real WS73 discovery/connection40short +8x249 +16boundary/no drop/taint0"
+    ],
+    "ci_corrected_all9": "https://github.com/OpenSparklink/sparklink/actions/runs/38475991043",
+    "terminal_issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 3,
+        "state": "OPEN",
+        "comment_id": 6156279081,
+        "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6156279081",
+        "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 11,
+        "state": "OPEN",
+        "comment_id": 6156280108,
+        "url": "https://github.com/OpenSparklink/linux/issues/11#issuecomment-6156280108",
+        "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 16,
+        "state": "OPEN",
+        "comment_id": 6156281075,
+        "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6156281075",
+        "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "comment_id": 6156282032,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156282032",
+        "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 2,
+        "state": "OPEN",
+        "comment_id": 6156282901,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/2#issuecomment-6156282901",
+        "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "comment_id": 6156283824,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156283824",
+        "body_sha256": "44983690c134ad25d74b6cad8450591f485e4b8c8c4c0846260c9590c255206d",
+        "readback_exact": true
+      }
+    ]
+  },
+  "userspace_ssap_exchange_slice": {
+    "status": "IMPLEMENTED_OFFLINE; FORMAL_GATE_NOT_PROVEN",
+    "source_commit": "ada667db9225ba2a3fade659df07bf026ac50ee8",
+    "evidence": "docs/evidence/ssap-exchange-codec-progress-20261014.json",
+    "default_daemon_services": "NotSupported until true channel and Engine transport",
+    "next": [
+      "establish actual SSAP channel routing before transport binding; do not reuse PI241 as SSAP",
+      "connect single userspace Engine with generation/lifetime/original deadline",
+      "bounded service database with canonical SsapOperations",
+      "real two-device read/write/notify/indicate and data regression"
+    ],
+    "hardware_qualification_unchanged": true,
+    "complete_scope": false,
+    "corrected_source_commit": "a8644bdac2b98c475e8e5a138599b488e31cc3b7",
+    "issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 6,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6156533776",
+        "readback_exact": true,
+        "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6156534590",
+        "readback_exact": true,
+        "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156535280",
+        "readback_exact": true,
+        "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6156536262",
+        "readback_exact": true,
+        "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156537030",
+        "readback_exact": true,
+        "body_sha256": "5bae38ff4a48a116c8cc193027ef08dbf078645ba041dcac7ce07a83690ca5d0"
+      }
+    ],
+    "ci": {
+      "corrected_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38477998760",
+      "head": "a8644bdac2b98c475e8e5a138599b488e31cc3b7",
+      "status": "success",
+      "jobs_success": 9,
+      "per_job_readback": true
+    },
+    "formal_accepted_proof": false,
+    "terminal_issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 6,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6156533776",
+        "readback_exact": true,
+        "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+        "terminal_update_readback": true
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6156534590",
+        "readback_exact": true,
+        "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+        "terminal_update_readback": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156535280",
+        "readback_exact": true,
+        "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+        "terminal_update_readback": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6156536262",
+        "readback_exact": true,
+        "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+        "terminal_update_readback": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156537030",
+        "readback_exact": true,
+        "body_sha256": "81b1d2028b3466921811c950405276b7989bb577c19ae87dd9b0a80a83c1ae53",
+        "terminal_update_readback": true
+      }
     ]
   }
 }

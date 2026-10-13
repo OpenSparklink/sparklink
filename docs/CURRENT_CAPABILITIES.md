@@ -1,3 +1,7 @@
+> 用户态 SSAP 最新增量：ExchangeInfo 严格 codec 已实现，离线协议／严格构建通过；
+> 当前仍没有已接通的 SSAP Engine 或实机服务资格。Kani 有 unsupported，未证明。
+> 本批不改以下准确 WS73 源码资格。[范围与剩余](evidence/ssap-exchange-codec-progress-20261014.json)。
+
 # 当前能力与资格
 
 当前准确资格：K `53a110816ebf`／service+runner U `eb92d16f4d9f`，配置30860427。

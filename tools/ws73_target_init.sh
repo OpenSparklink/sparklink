@@ -223,6 +223,25 @@ fi
 if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline && ! grep -q 'ws73.setup_release=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
 fi
+if grep -qw ws73.early_bootstrap_fault=1 /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_early_fault.py coordinate --slkd-pid "$daemon" < /dev/console > /evidence/early-bootstrap-supervisor.log 2>&1 & early=$!
+    # Preserve serial handshakes while retaining full original output.
+    /bin/busybox tail -f /evidence/early-bootstrap-supervisor.log & early_tail=$!
+    wait "$early"; early_exit=$?
+    kill "$early_tail" 2>/dev/null
+    [ "$early_exit" = 0 ] || fail 'actual early bootstrap fault/peer business'
+    kill -TERM "$daemon"; wait "$daemon"
+    kill -INT "$capture"; wait "$capture" || fail 'capture final flush'
+    chown 0:1000 /evidence/ws73.pcap /evidence/capture-stats.txt; chmod 0640 /evidence/ws73.pcap /evidence/capture-stats.txt
+    dmesg > /evidence/kernel.log
+    echo 0 > /sys/kernel/tracing/tracing_on
+    cat /sys/kernel/tracing/trace > /evidence/xhci-trace.log
+    [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'final VM kernel taint'
+    echo 'WS73_TARGET_NATIVE_VM_TAINT: 0'
+    echo 'WS73_TARGET_FINISHED'
+    sync; poweroff -f
+    while :; do sleep 60; done
+fi
 last_slot=1
 if grep -q 'ws73.parallel=1' /proc/cmdline; then last_slot=3; fi
 for slot in $(seq 0 $last_slot); do

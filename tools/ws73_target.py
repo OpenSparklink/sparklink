@@ -107,7 +107,7 @@ def prepare(args):
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
                   HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
-                  HERE/'ws73_target_recovery.py',
+                  HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
                   HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_channel_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
@@ -219,7 +219,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -444,6 +444,9 @@ def _run(args):
     passthrough=bool(getattr(args,'qmp_hotplug',False))
     recovery=bool(getattr(args,'fault_recovery',False))
     parallel=bool(getattr(args,'parallel_pairs',False))
+    early_fault=bool(getattr(args,'early_bootstrap_fault',False))
+    if early_fault and (support or passthrough or recovery or parallel or any(getattr(args,n,False) for n in ['connection_verify','channel_socket_verify','diagnostic_verify','managed_partial_case','managed_connected_case','channel_daemon_crash'])):
+        raise ValueError('early bootstrap fault requires separate native three-device VM')
     initializer_lifecycle=bool(getattr(args,'initializer_lifecycle',False))
     observer_policy=bool(getattr(args,'observer_policy',False))
     channel_death=bool(getattr(args,'channel_daemon_crash',False))
@@ -479,7 +482,7 @@ def _run(args):
         raise ValueError('initializer lifecycle requires separate real QMP-hotplug native VM')
     if parallel and (support or passthrough or recovery or any(getattr(args,k,False) for k in ['hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify'])):
         raise ValueError('four-device parallel RF requires separate real VM without other gates')
-    selected_count=4 if parallel else 2
+    selected_count=3 if early_fault else 4 if parallel else 2
     parallel_offset=getattr(args,'parallel_start_offset_ms',0)
     if type(parallel_offset) is not int or not 0 <= parallel_offset <= 125 or (parallel_offset and not parallel):
         raise ValueError('bounded parallel start offset requires explicit four-device diagnostic gate')
@@ -570,6 +573,8 @@ def _run(args):
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
     m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py')]
+    m['early_bootstrap_fault_requested']=early_fault
+    if early_fault:m['early_bootstrap_verifier']=file_record(HERE/'ws73_early_fault.py')
     m['four_device_parallel_rf']=parallel
     m['parallel_start_offset_ms']=parallel_offset
     if parallel:
@@ -644,6 +649,7 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if early_fault and 'native_vm' not in package:raise ValueError('early bootstrap fault requires signed native VM')
         if channel_death:validate_channel_death_mode(args,package)
         if acb_probe and 'acb_probe_module' not in package:raise ValueError('frozen signed ACB selftest module missing')
         if connection_verify and 'native_vm' not in package:
@@ -712,6 +718,7 @@ def _run(args):
                      (' ws73.channel_boundaries=1' if channel_boundaries else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
                      (' ws73.recovery=1' if recovery else '')+
+                     (' ws73.early_bootstrap_fault=1' if early_fault else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
                      (' ws73.diagnostic=1' if diagnostic else '')+
                      (' ws73.diagnostic_cancel=1' if cancellation else '')+
@@ -795,7 +802,7 @@ def _run(args):
                     if time.monotonic()>deadline:
                         if timeout_seal is not None:
                             raise ValueError('environment timeout; graceful capture sealing deadline exceeded')
-                        if support or passthrough or recovery or parallel:
+                        if support or passthrough or recovery or parallel or early_fault:
                             raise ValueError('environment timeout; preserve partial console/capture')
                         timeout_seal=SerialTimeoutSeal(transcript)
                         m['graceful_timeout']={'reason':'ENVIRONMENT_TIMEOUT','state':timeout_seal.phase,
@@ -804,13 +811,13 @@ def _run(args):
                         if timeout_seal.initial_input:channel.sendall(timeout_seal.initial_input)
                         deadline=time.monotonic()+30
                         write_json(output/'manifest.json',m)
-                    readers=[channel]+([] if support or passthrough or recovery or parallel or timeout_seal is not None else [sys.stdin])
+                    readers=[channel]+([] if support or passthrough or recovery or parallel or early_fault or timeout_seal is not None else [sys.stdin])
                     readable,_,_=select.select(readers,[],[],0.1)
                     if channel in readable:
                         data=channel.recv(65536)
                         if data:
                             log.write(data);log.flush();transcript.extend(data);sys.stdout.buffer.write(data);sys.stdout.buffer.flush()
-                    if not support and not passthrough and not recovery and not parallel and not channel_grant and not channel_death and timeout_seal is None and sys.stdin in readable:
+                    if not support and not passthrough and not recovery and not parallel and not channel_grant and not channel_death and not early_fault and timeout_seal is None and sys.stdin in readable:
                         data=os.read(sys.stdin.fileno(),4096)
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
@@ -857,6 +864,13 @@ def _run(args):
                             monitor.execute('device_add',props)
                             if daemon_remove:hold.after_readd(props)
                             channel.sendall((acknowledgement+'-readd\n').encode());hotplug_phase=2
+                    if early_fault:
+                        if hotplug_phase==0 and 'WS73_TARGET_EARLY_FAULT_REMOVE_READY' in text:
+                            monitor.execute('device_del',{'id':'ws73_2'});monitor.wait_deleted('ws73_2')
+                            channel.sendall(b'early-fault-remove\n');hotplug_phase=1
+                        if hotplug_phase==1 and 'WS73_TARGET_EARLY_FAULT_READD_READY' in text:
+                            monitor.execute('device_add',usb_properties(args.ports[2],2))
+                            channel.sendall(b'early-fault-readd\n');hotplug_phase=2
                     peer_metadata = False
                     if setup_gate and active == 1:
                         from ws73_management_setup import metadata_ready
@@ -875,6 +889,7 @@ def _run(args):
                         timeline.observe(current)
                         for index,port in enumerate(args.ports[:active]):
                             if passthrough and hotplug_phase==1 and index==0:continue
+                            if early_fault and hotplug_phase==1 and index==2:continue
                             watcher.poll(index,port,current.get(port),process.pid,monitor)
                 # Drain bytes already delivered when QEMU powers down.
                 channel.setblocking(True);channel.settimeout(1)
@@ -897,6 +912,20 @@ def _run(args):
                     if not channel_grant and (not re.search(r'^Name:\s+slkd$', status, re.M)
                             or not re.search(r'^Uid:\s+0\s+0\s+0\s+0$', status, re.M)):
                         raise ValueError('native module VM daemon is not root')
+                if early_fault:
+                    from ws73_early_fault import corroborate as early_corroborate
+                    record=json.loads((share/'early-bootstrap-fault/run.json').read_text())
+                    if hotplug_phase!=2 or text.count('WS73_TARGET_EARLY_FAULT_PASS')!=1:raise ValueError('complete controlled target-only fault/remove/readd gate required')
+                    identities=[*record['healthy_before'],record['failed_usb'],record['replacement']]
+                    packets=check_capture_stats((share/'capture-stats.txt').read_text())
+                    capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
+                    if packets!=capture['packet_count']:raise ValueError('sealed capture count mismatch')
+                    if file_record(HERE/'ws73_early_fault.py')!=m['early_bootstrap_verifier']:raise ValueError('early fault verifier changed')
+                    m['early_bootstrap_corroboration']=early_corroborate(record,capture,share)
+                    m['capture_packets']=packets;m['guest_identities']=identities
+                    m['status']='REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS'
+                    print(m['status'],output/'manifest.json')
+                    return 0
                 if channel_death:
                     from ws73_channel_daemon_crash import corroborate as death_corroborate
                     record=json.loads((share/'channel-daemon-crash/control/run.json').read_text())
@@ -1169,7 +1198,7 @@ def _run(args):
             m['vm_disk_after'] = file_record(output/'root.btrfs')
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
-    return 0 if m['status'] in ['REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
+    return 0 if m['status'] in ['REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
 
 
 def run(args):
@@ -1201,6 +1230,7 @@ def main():
             cmd.add_argument('--ports',nargs='+',required=True)
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')
+            cmd.add_argument('--early-bootstrap-fault',action='store_true',help='separate native three-real-device missing-custom fault, ordinary Core diagnostics and peer business; controlled QMP retry only')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--channel-daemon-crash',action='store_true',help='actual slkd SIGKILL with ordinary retained business fd, successor and no USB reset')
             cmd.add_argument('--channel-daemon-index',type=int,choices=[0,1],default=0)

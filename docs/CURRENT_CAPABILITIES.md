@@ -30,6 +30,9 @@ WS73、UID1000/caps0经Python→C→Rust→kernel读实际ENOENT Fault及CLI相�
 224两端SDU/112真实NOCP、零drop/taint0；RF22/连接双端Down/dup/最后关闭拒绝同life重开保持。
 QMP仅支撑，不是物理拔插或自然自动恢复；未新增ROM/部分open/URB/module/IRQ/PM资格。
 
+[16项现有issues回读](evidence/registration-diagnostic-issues-20261013.json)确认原scope/OPEN保持。
+形式化CLI仅后续7baad48加强退出码，重跑相同SDK正/弱证明及unsupported模拟输出exit1；未改变硬件资格。
+
 下一批先把同一Core快照接到slkd动态pending/fault对象及slctl普通用户流程，完成过渡/移除/复用与
 同行数据回归；随后标准Backend真实ops/RX/stop、static Usb删除、USB=n/m/真正Virtual与WP12事件
 迁移。旧dead_code/重复模块整改、自然RCA/有限恢复并行，整个目标架构整改后再扩展多通道、长包、

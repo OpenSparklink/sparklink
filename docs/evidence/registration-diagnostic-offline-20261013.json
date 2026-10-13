@@ -3,7 +3,7 @@
   "kernel_head": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
   "compiled_service_head": "71ef24db2bd5c019491fdcc7ab6104216456b5b9",
   "run_tools_head": "ff5ab352b52b4c285bea7f4b689954ac31cfaa7d",
-  "formal_tool_head": "a4d2c45fea2a6ca68a40ef6a56d88c5746f605f0",
+  "formal_tool_head": "7baad4854dcbe0715fb85153af6299bb96162189",
   "implemented": "Core locked index/generation registration observation before Runtime affinity; Pending/Fault/Installed/Retiring with raw pending phase/error, no claimed Ready/metadata; normal SDK C/Python/CLI bindings. Dynamic daemon objects not yet implemented.",
   "core_actual": {
     "status": "ACTUAL_COMMON_BACKEND_INSTALL_PASS",
@@ -692,5 +692,12 @@
   "failures_preserved": "Initial fixture omitted reserved-byte assertion; authorization fixture missed new ioctl; SDK test loop initial state error; socket sandbox EPERM and ccache outside workspace denied; corrected/retried originals retained. First real ABI harness had library-path failure; not natural device recovery.",
   "full_architecture_complete": false,
   "natural_root_cause_closed": false,
-  "automatic_recovery_acceptance": false
+  "automatic_recovery_acceptance": false,
+  "proof_cli_negative": {
+    "status": "CLI_UNSUPPORTED_FAIL_CLOSED_PASS",
+    "command_exit": 1,
+    "proof_status": "NOT_PROVEN_UNSUPPORTED",
+    "scope": "Explicit fake cargo output success+unsupported; actual CLI rejects, not a solver or hardware qualification",
+    "stdout": "NOT_PROVEN_UNSUPPORTED /home/sanchuanhehe/Documents/opensparklink/.dev/registration-proof-negative-1vnn9nj4/proof/manifest.json\n"
+  }
 }

@@ -1,6 +1,6 @@
 Kani Rust Verifier 0.68.0 (cargo plugin)
 CBMC 6.11.0
-   Compiling sparklink-registration-validator-proof v0.0.0 (/home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-validator-sealed-weak)
+   Compiling sparklink-registration-validator-proof v0.0.0 (/home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-validator-cli-final-weak)
 warning: use of an unstable feature
  --> <crate attribute>:1:12
   |
@@ -13,7 +13,7 @@ warning: use of an unstable feature
 Checking harness accepted_observation_preserves_identity_and_diagnostics...
 CBMC 6.11.0 (cbmc-6.11.0)
 CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
-Reading GOTO program from file /home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-validator-sealed-weak/target/kani/x86_64-unknown-linux-gnu/debug/build/sparklink-registration-validator-proof/5061eda0fee308f5/out/sparklink_registration_validator_proof-5061eda0fee308f5__RNvCskAYc7ajIytM_38sparklink_registration_validator_proof55accepted_observation_preserves_identity_and_diagnostics.out
+Reading GOTO program from file /home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-validator-cli-final-weak/target/kani/x86_64-unknown-linux-gnu/debug/build/sparklink-registration-validator-proof/5061eda0fee308f5/out/sparklink_registration_validator_proof-5061eda0fee308f5__RNvCskAYc7ajIytM_38sparklink_registration_validator_proof55accepted_observation_preserves_identity_and_diagnostics.out
 Generating GOTO Program
 Adding CPROVER library (x86_64)
 Removal of function pointers and virtual functions
@@ -37,46 +37,46 @@ Unwinding loop memcmp.0 iteration 6 file <builtin-library-memcmp> line 25 functi
 Unwinding loop memcmp.0 iteration 7 file <builtin-library-memcmp> line 25 function memcmp thread 0
 Unwinding loop memcmp.0 iteration 8 file <builtin-library-memcmp> line 25 function memcmp thread 0
 aborting path on assume(false) at file src/lib.rs line 57 column 18 function accepted_observation_preserves_identity_and_diagnostics thread 0
-Runtime Symex: 0.0233369s
+Runtime Symex: 0.0229928s
 size of program expression: 2108 steps
 slicing removed 1004 assignments
 Generated 273 VCC(s), 17 remaining after simplification
-Runtime Postprocess Equation: 0.000153163s
+Runtime Postprocess Equation: 0.00015233s
 Passing problem to propositional reduction
 converting SSA
-Runtime Convert SSA: 0.0014915s
+Runtime Convert SSA: 0.00147291s
 Running propositional reduction
 Post-processing
-Runtime Post-process: 3.868e-06s
+Runtime Post-process: 3.677e-06s
 Solving with CaDiCaL 3.0.0
 2034 variables, 4508 clauses
 SAT checker: instance is SATISFIABLE
-Runtime Solver: 0.000107576s
-Runtime decision procedure: 0.00166292s
+Runtime Solver: 0.000105902s
+Runtime decision procedure: 0.00164067s
 Running propositional reduction
 Solving with CaDiCaL 3.0.0
 2035 variables, 4509 clauses
 SAT checker: instance is SATISFIABLE
-Runtime Solver: 5.9794e-05s
-Runtime decision procedure: 8.385e-05s
+Runtime Solver: 6.8541e-05s
+Runtime decision procedure: 9.4671e-05s
 Running propositional reduction
 Solving with CaDiCaL 3.0.0
 2036 variables, 4510 clauses
 SAT checker: instance is SATISFIABLE
-Runtime Solver: 0.000192939s
-Runtime decision procedure: 0.000214018s
+Runtime Solver: 0.000182969s
+Runtime decision procedure: 0.000203558s
 Running propositional reduction
 Solving with CaDiCaL 3.0.0
 2037 variables, 4511 clauses
 SAT checker: instance is SATISFIABLE
-Runtime Solver: 0.000655321s
-Runtime decision procedure: 0.000677293s
+Runtime Solver: 0.000665801s
+Runtime decision procedure: 0.000687593s
 Running propositional reduction
 Solving with CaDiCaL 3.0.0
 2038 variables, 4512 clauses
 SAT checker: instance is UNSATISFIABLE
-Runtime Solver: 0.000546463s
-Runtime decision procedure: 0.000562264s
+Runtime Solver: 0.000521626s
+Runtime decision procedure: 0.000537406s
 
 RESULTS:
 Check 1: memcmp.precondition.1
@@ -501,7 +501,7 @@ Failed Checks: assertion failed: generation == 0 || s.generation == generation
  File: "src/lib.rs", line 50, in accepted_observation_preserves_identity_and_diagnostics
 
 VERIFICATION:- FAILED
-Verification Time: 0.11924194s
+Verification Time: 0.1149461s
 
 Manual Harness Summary:
 Verification failed for - accepted_observation_preserves_identity_and_diagnostics

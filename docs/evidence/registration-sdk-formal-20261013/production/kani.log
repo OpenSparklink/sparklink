@@ -1,6 +1,6 @@
 Kani Rust Verifier 0.68.0 (cargo plugin)
 CBMC 6.11.0
-   Compiling sparklink-registration-validator-proof v0.0.0 (/home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-validator-sealed)
+   Compiling sparklink-registration-validator-proof v0.0.0 (/home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-validator-cli-final)
 warning: use of an unstable feature
  --> <crate attribute>:1:12
   |
@@ -13,7 +13,7 @@ warning: use of an unstable feature
 Checking harness accepted_observation_preserves_identity_and_diagnostics...
 CBMC 6.11.0 (cbmc-6.11.0)
 CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
-Reading GOTO program from file /home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-validator-sealed/target/kani/x86_64-unknown-linux-gnu/debug/build/sparklink-registration-validator-proof/5061eda0fee308f5/out/sparklink_registration_validator_proof-5061eda0fee308f5__RNvCskAYc7ajIytM_38sparklink_registration_validator_proof55accepted_observation_preserves_identity_and_diagnostics.out
+Reading GOTO program from file /home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-validator-cli-final/target/kani/x86_64-unknown-linux-gnu/debug/build/sparklink-registration-validator-proof/5061eda0fee308f5/out/sparklink_registration_validator_proof-5061eda0fee308f5__RNvCskAYc7ajIytM_38sparklink_registration_validator_proof55accepted_observation_preserves_identity_and_diagnostics.out
 Generating GOTO Program
 Adding CPROVER library (x86_64)
 Removal of function pointers and virtual functions
@@ -37,40 +37,40 @@ Unwinding loop memcmp.0 iteration 6 file <builtin-library-memcmp> line 25 functi
 Unwinding loop memcmp.0 iteration 7 file <builtin-library-memcmp> line 25 function memcmp thread 0
 Unwinding loop memcmp.0 iteration 8 file <builtin-library-memcmp> line 25 function memcmp thread 0
 aborting path on assume(false) at file src/lib.rs line 57 column 18 function accepted_observation_preserves_identity_and_diagnostics thread 0
-Runtime Symex: 0.0248755s
+Runtime Symex: 0.0228388s
 size of program expression: 2147 steps
 slicing removed 1035 assignments
 Generated 279 VCC(s), 17 remaining after simplification
-Runtime Postprocess Equation: 0.000172088s
+Runtime Postprocess Equation: 0.000152962s
 Passing problem to propositional reduction
 converting SSA
-Runtime Convert SSA: 0.00159948s
+Runtime Convert SSA: 0.00162655s
 Running propositional reduction
 Post-processing
-Runtime Post-process: 3.697e-06s
+Runtime Post-process: 3.798e-06s
 Solving with CaDiCaL 3.0.0
 2114 variables, 4966 clauses
 SAT checker: instance is SATISFIABLE
-Runtime Solver: 0.000128205s
-Runtime decision procedure: 0.00179111s
+Runtime Solver: 0.00018846s
+Runtime decision procedure: 0.00187961s
 Running propositional reduction
 Solving with CaDiCaL 3.0.0
 2115 variables, 4967 clauses
 SAT checker: instance is SATISFIABLE
-Runtime Solver: 0.000213959s
-Runtime decision procedure: 0.000238225s
+Runtime Solver: 0.000202928s
+Runtime decision procedure: 0.000227715s
 Running propositional reduction
 Solving with CaDiCaL 3.0.0
 2116 variables, 4968 clauses
 SAT checker: instance is SATISFIABLE
-Runtime Solver: 0.0011183s
-Runtime decision procedure: 0.00114022s
+Runtime Solver: 0.00110839s
+Runtime decision procedure: 0.00113048s
 Running propositional reduction
 Solving with CaDiCaL 3.0.0
 2117 variables, 4969 clauses
 SAT checker: instance is UNSATISFIABLE
-Runtime Solver: 0.000407248s
-Runtime decision procedure: 0.000423779s
+Runtime Solver: 0.000395645s
+Runtime decision procedure: 0.000411766s
 
 RESULTS:
 Check 1: memcmp.precondition.1
@@ -523,7 +523,7 @@ SUMMARY:
  ** 0 of 89 failed
 
 VERIFICATION:- SUCCESSFUL
-Verification Time: 0.10999848s
+Verification Time: 0.108081885s
 
 Manual Harness Summary:
 Complete - 1 successfully verified harnesses, 0 failures, 1 total.

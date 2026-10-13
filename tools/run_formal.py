@@ -50,7 +50,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent
     kernel = root / "linux"
@@ -61,6 +61,7 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
         "sle_channel_state.h", "sle_channel_grant.h", "sle_channel_socket.c", "sle_data_credit.rs",
         "sle_native.rs", "sle_sessions.rs", "sle_grant.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
     sources += [kernel / "net/core/datagram.c", kernel / "drivers/sparklink/ws73/usb.c", kernel / "include/linux/sparklink_native.h"]
+    sources += [kernel / "include/linux/sparklink_backend.h", kernel / "tools/testing/selftests/sparklink/sparklink_backend_test.c"]
     sources += sorted((repo / "formal").rglob("*.c"))
     sources += sorted((repo / "formal").rglob("*.rs"))
     sources += sorted((repo / "formal").rglob("*.tla"))
@@ -141,6 +142,13 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
         checks = [("fd-grant-scope", "cbmc", root,
                    ["cbmc", str(repo / "formal/channel/grant_cbmc.c"), "--bounds-check", "--pointer-check",
                     "--signed-overflow-check", "--unsigned-overflow-check", "--unwind", "2", "--unwinding-assertions", "--json-ui"])]
+    if backend_only:
+        checks = [("backend-descriptor", "cbmc", root,
+                   ["cbmc", str(repo / "formal/backend/descriptor_cbmc.c"), "-I", str(kernel / "include"),
+                    "--function", "proof", "--bounds-check", "--pointer-check", "--signed-overflow-check",
+                    "--unsigned-overflow-check", "--unwind", "2", "--unwinding-assertions", "--json-ui"])]
+    record["backend_only_requested"] = backend_only
+    record["backend_scope"] = "actual production descriptor validator over arbitrary u32 version/size/bus/capabilities/profile, u16 lengths/u8 counts and callback presence; live immutable provider-owned pointers assumed; no callback execution, module/context references, registration allocation/publication/retirement, concurrency or hardware proof"
     record["fd_grant_only_requested"] = fd_grant_only
     record["fd_grant_scope"] = "actual production pure constructor and identity/direction predicate over arbitrary u64/u32 scopes and masks; zero/unminted and unsupported protected requests deny; not Host epoch, C socket/VFS/kref, trust/security-state/downgrade or hardware refinement"
     record["rx_only_requested"] = rx_only
@@ -193,6 +201,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--backend-only", action="store_true", help="actual production Backend descriptor admission CBMC only")
     parser.add_argument("--fd-grant-only", action="store_true", help="actual immutable fd grant constructor/identity/direction CBMC")
     parser.add_argument("--rx-only", action="store_true", help="RX admission/withdrawal Host lock LKMM and weak control")
     parser.add_argument("--grant-only", action="store_true", help="actual production lease authority Kani induction only")
@@ -204,4 +213,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only))

@@ -59,7 +59,9 @@ class NativeBuildCheck(unittest.TestCase):
         for invalid in [text.replace('vmlinux','foreign'),text.replace('EXPORT_SYMBOL_GPL','EXPORT_SYMBOL'),
                         '\n'.join(line for line in lines if 'sparklink_native_health ' not in line),'\n'.join(line for line in lines if 'sparklink_native_link_event ' not in line),
                         '\n'.join(line for line in lines if 'sparklink_native_acb_send ' not in line),
-                        '\n'.join(line for line in lines if 'sparklink_native_acb_take ' not in line),text+'\n'+lines[0]]:
+                        '\n'.join(line for line in lines if 'sparklink_native_acb_take ' not in line),text+'\n'+lines[0],
+                        text+'\n0x0 sparklink_native_register vmlinux EXPORT_SYMBOL_GPL',
+                        text.replace('sparklink_backend_register', 'sparklink_native_register')]:
             with self.assertRaises(ValueError): native_exports(invalid)
 
 

@@ -99,3 +99,18 @@ EFAULT/信号/timeout、unknown EAGAIN不得进入无tail等待。VM受控撤销
 protected security目前不能mint。范围仅pure predicate/constructor；不是Host epoch、
 C/VFS/kref refinement或可信安全状态/降级证明。实际C sl_permits/sl_tx_access、准入、
 USB consent、RX分流/取包/poll由source selftest编译。真实方向与原数据保持验收独立。
+
+Backend 注册整改的独立门禁：
+
+```sh
+python3 tools/run_formal.py --backend-only --budget-seconds 60 --output ../.dev/formal-backend-NEW
+```
+
+`formal/backend/descriptor_cbmc.c`直接包含生产 `sparklink_backend_validate`，
+使用真实内部类型。任意 u32 版本/大小/bus/能力/方言、u16 缓冲长度、u8 数量
+及每个回调的存在/缺失均进入状态空间；指针只允许 NULL 或有效且调用期间不变的
+provider 对象。验证接受时版本/能力与回调、有限缓冲一致及明确拒绝。
+它不执行 provider callback，不证明模块/上下文引用、分配、Runtime 发布/退休、
+并发或硬件行为。TEST bus 只是显式测试 provider 标签，不代表已实现 VirtualBackend。
+38 项实际验证函数回归在 Linux selftests 的 `sparklink_backend_test.c`；
+工具报告不继承真实 WS73 数据资格。

@@ -15,7 +15,7 @@ REQUIRED = {'RUST': 'y', 'SPARKLINK': 'y', 'SPARKLINK_DRIVERS': 'y',
             'SPARKLINK_GENL': 'y', 'SPARKLINK_SLE': 'y', 'SPARKLINK_DEBUGFS': 'y',
             'SPARKLINK_WS73_USB': 'm', 'USB': 'y', 'USB_XHCI_PCI': 'y',
             'USB_MON': 'y', 'IKCONFIG': 'y', 'IKCONFIG_PROC': 'y'}
-EXPORTS = {'sparklink_native_register', 'sparklink_native_unregister',
+EXPORTS = {'sparklink_backend_register', 'sparklink_native_unregister',
            'sparklink_native_health', 'sparklink_native_receive',
            'sparklink_native_acb_send', 'sparklink_native_acb_take',
            'sparklink_native_event', 'sparklink_native_link_event', 'sparklink_native_snoop_rx',
@@ -58,6 +58,8 @@ def boot_image(path):
 
 def native_exports(text):
     rows = [line.split() for line in text.splitlines() if line.strip()]
+    if any(len(r) >= 2 and r[1] == 'sparklink_native_register' for r in rows):
+        raise ValueError('retired native registration export must be absent')
     for name in EXPORTS:
         matches = [r for r in rows if len(r) >= 4 and r[1] == name]
         if len(matches) != 1 or matches[0][2:4] != ['vmlinux', 'EXPORT_SYMBOL_GPL']:

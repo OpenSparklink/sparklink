@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T13:04:22.175268+00:00",
+  "updated_at_utc": "2026-10-13T13:48:02.769931+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,13 +26,13 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
-    "userspace": "8a89ee4b650fe94d879332b742535683962aabc3",
-    "observation": "Latest doc-only commit recorded; runtime and qualifications unchanged from prior code. Linux pending diagnostic work preserved."
+    "linux": "4ea441ee2e3a475c629f767e8228de83c88841ae",
+    "userspace": "860f04f96dc3e87a35743b8e05e1cdeb914330de",
+    "observation": "K4ea is guest-selftests only; compiled/actual qualified K1ed/U231 retained. U860 changes CI pin only. New full image qualification not asserted."
   },
   "qualified_source_heads": {
-    "linux": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
-    "userspace": "967ad220271009498319f3bb71d93fbfb9c63e83"
+    "linux": "1ed6963f0f7f34d616a42f276efc93faa41def38",
+    "userspace": "231f61e03d801b22517dc7df9e7f45d16a364749"
   },
   "current_qualification": {
     "DG01": "Ka368/U168c new40 ordinary role exchange RT, RF22/connection/Down/dup/lastclose/QMP pluscontrolled fault8RT.",
@@ -46,13 +46,13 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: common provider + actual standard USB transport/probe moved drivers, Core protocol only and no USB=y dependency; exact current build matrix/offline/limited formal/emptyVM2 modules/CI9/real40+249+fault8 receipts. Genuine Virtual, canonical events, standard typed-data, complete IRQ/module/PM/refcount/lifetime/natural recovery still missing.",
+    "WP13": "PARTIAL: actual per-File query/fault Virtual on common Core/Host passed empty-USB VM; release and management-fd dup/last-close/inflight/queue/peer gates. Exact K1ed/U231 real40 short+8 app249/16 rejects+faultpeer8. Mixed real/Virtual, entered callback, standard typed/ticketed data, canonical events/IRQ/PM and natural RCA still open.",
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
     "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope.",
     "FV_REGISTRATION_SDK": "Actual SDK validator after new tuple alias rechecked full ABI/u16/u64 Kani83+weak generation witness; scope unchanged, no Core/daemon/producer/lifetime/authority refinement."
   },
   "next_slices": [
-    "Audit and fix standard/query Diagnostic admission versus Native profile1-only Managed policy after actual Virtual VM EOPNOTSUPP. Preserve errors; then exact VM and WS73 gates. No active build/pipeline. UserHost WP14 stays planning-only/P4.",
+    "Complete target architecture: WP12 canonical events/unique consumption and legacy state/read migration; standard typed/session-ticketed data and transport lifetime. Preserve query-only Virtual actual gates and exact K1ed/U231 real qualification; no full race matrix prerequisite for data.",
     "Architecture remediation before feature expansion: dedicated real Virtual provider; WP12 canonical events and old ring/duplicate consumer removal; preserve current WS73 paths.",
     "Finish standard typed policy/Session-ticketed ACB/canonical ingress and module/IRQ/PM/callback join; scoped formal and exact VM regressions.",
     "Ticket/Session/Grant/socket inflight/NOCP reuse/real credit/backpressure, partial-init and natural fault RCA/nonmanual recovery in parallel.",
@@ -905,5 +905,10 @@
         "readback_exact": true
       }
     ]
+  },
+  "latest_standard_diagnostic_batch": {
+    "evidence": "docs/evidence/standard-diagnostic-progress-20261013.json",
+    "scope": "partial; standard true hardware/typed-data/full formal and recovery not achieved",
+    "issues_stay_open": true
   }
 }

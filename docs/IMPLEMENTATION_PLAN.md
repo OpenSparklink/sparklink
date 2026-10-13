@@ -8,6 +8,29 @@
 当前五维资格只在[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)维护，
 goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_STATE.json)。
 
+## 当前子门禁：标准 Diagnostic 统一与真实 Virtual 生命周期
+
+生产内核 `1ed6963f0f7f`／service `231f61e03d80`：标准 profile0 查询统一到独占版本化 Diagnostic，
+固定方言参数由内核提供，保留在途回复和原期限，撤销未执行队列；标准 Managed／typed／data 仍明确不支持。
+旧 raw admission 生产函数已删除，旧编码／SDK wrapper 明确拒绝，最终 UAPI／绑定删除仍待迁移。
+
+[准确源码、构建与限定范围](evidence/standard-diagnostic-progress-20261013.json)：配置37e9不变，完整构建、
+空 USB WS73／standard 模块 VM、实际 Virtual Core/Host VM 两轮通过。追加仅 selftest 的 K4ea441验证管理 fd 的
+*dup 保留租约、最后引用关闭撤销、两条排队取消及一条在途回复、同行查询隔离*；编译镜像仍为K1ed，不转授重建K4ea资格。
+两轮42查询；Setup不伪装Ready。已进入callback的确定性join、完整IRQ/module/PM及mixed real/Virtual仍缺。
+
+准确 K1ed/U231 的真实 WS73 VM： [40短消息](evidence/standard-diagnostic-real-short-20261013.json)、
+[8次249字节／16超限拒绝](evidence/standard-diagnostic-real-boundary-20261013.json)、
+[受控启动失败同行8业务](evidence/standard-diagnostic-fault-real-20261013.json) 通过。
+普通uid1000/caps0，对端随机序号／载荷实际校验回复，交换连接角色，两端USB/HCC/A3与NOCP佐证；
+正常两批224个ACB SDU／112个NOCP完成、零capture kernel drops／taint0。NOCP不代替对端收到。
+QMP和注入重试不是自然恢复／物理拔插验收，原人工及首次panic/最后回复关闭失败证据保留。
+
+CI pin K1ed 的U860f04f九项通过；离线函数50诊断／55撤销及连接边界回归不冒充VFS／空口／形式化实现证明。
+标准真USB硬件、完整控制/数据Virtual、canonical事件、标准ticketed数据、旧接口最终删除及自然RCA仍开放；
+部分子门禁通过不关闭WP13、K#3/K#8/K#19/U#8或完整S0–S6。
+
+
 ## 独立文档整改（WP17／WP18 附属，不阻塞真实 WS73）
 
 采用 Diátaxis 的读者任务导航，原 ARCHITECTURE／本文件／CURRENT_CAPABILITIES／ADR／GOAL_EXECUTION_STATE 路径与权威性保留。
@@ -29,7 +52,7 @@ U#8／K#19 及所有未完成事项保持开放；部分导航或构建通过不
 [当前SSAP调用审计/三类清单](SSAP_PRODUCTION_SEPARATION_20261013.md)。
 
 
-## 当前架构整改：Virtual 占位模块替换为显式测试 Backend（VM 尚待验收）
+## 历史基线：K883 Virtual VM 失败及待验条件
 
 K`88372a9b7cbcea7fcbca4f34cc9d5707488be46e` / U`5a985078756eb1d323b59e968db328d0aad3c7c9`：
 旧仅日志Rust模块删除，专用可选C测试驱动已实现；默认关闭、root-only控制设备每个File注册独立TEST-bus

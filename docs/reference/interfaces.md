@@ -16,11 +16,11 @@
 
 ## 本批源码核对的状态（未发布 ABI）
 
-核对用户态 `670674736ac90` 和 Linux 已提交 `88372a9b7cbc`。内核另有未提交诊断整改，未视为该基线的已实现或实机资格。
+核对用户态 `670674736ac90` 和 Linux 已提交 `88372a9b7cbc`。之后的 K1ed/U231 诊断修复及 VM 门禁另见当前资格；本表不转授旧基线资格。
 
 | 范围 | 当前状态与限制 | 源码定位 |
 |---|---|---|
-| Native 管理／诊断 | 版本化请求，controller generation／所有权检查；新标准 Diagnostic 修复尚未提交验收 | `slk-protocol/src/ioctl.rs`、内核 `sparklink_core.rs` |
+| Native 管理／诊断 | 版本化请求，controller generation／所有权检查；K1ed 已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-protocol/src/ioctl.rs`、内核 `sparklink_core.rs` |
 | Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/dbus_iface.rs`、`libsparklink` Native API、内核 socket |
 | D-Bus ServiceManager／RemoteService | 正常业务明确 NotSupported；非法参数可先 InvalidArgs；不表示服务已远端发布 | `slkd/src/service.rs` |
 | 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-protocol/src/ioctl.rs`、内核 UAPI |

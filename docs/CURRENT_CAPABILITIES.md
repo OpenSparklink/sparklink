@@ -40,6 +40,7 @@ RF/建链断链/dup/最后关闭同life拒绝及动态fault/observer/newgen/oldp
 已完成共同注册与static Usb删除不重复实现。Ticket/Session/Grant/socket剩余在途/lifetime/NOCP/真实背压和
 自然RCA并行；整体目标架构整改完成后再扩展长包、多通道/四设备和唯一用户SSAP。
 完整S0–S6/19WP/10FV/12DG保留，整个Backend/架构/自然恢复及原整项issues仍OPEN。
+[十二项相关issues回读](evidence/common-standard-provider-issues-20261013.json)原scope保持，实际全部28项仍开放。
 
 ## 历史子门禁：纠正标准USB binding，隔离未合格实验wire
 

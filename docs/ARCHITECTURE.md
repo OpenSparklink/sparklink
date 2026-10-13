@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前正常路径K7e654fde93b9/U67165b6：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前正常路径K80a362ff3355/Uf4c65fb：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -41,6 +41,15 @@ K7e654fde93b9进一步先拒绝未知布局，再复制尾部/跟随ops；实际
 前版负对照检出越界指针访问，仅主机纯fixture失败。K5f8e310仅迁移两项测试fixture，
 生产源与K7e654fde逐字节一致，实机证据仍注明编译K7e654fde。
 此批不授予其他 bus、模块卸载竞争或完整注册/停止回调证明资格。
+
+共同入口整改K3b72c7fe/80a362ff：`sle_ingress`归Runtime，持exact owner Arc与generation，
+Native/Session/worker不再导入USB模块来查找、入队或消费Runtime。发布持退休gate并拒绝
+占用槽覆盖，unpublish只移除相同Arc；worker不再重新发布。解码丢包计数归各Runtime。
+RX和Native/USB命令准入统一Host→gate（RX再取ingress），反序释放IRQ guard后调度；
+旧gate→Host反转由前版实际函数rank负对照检出，未观察到实机死锁或自然根因。
+锁模型仅单identity/有效引用/一次发布退休；实际函数8项是std锁/Arc/Host依赖回归。
+准确80a362ff/f4c65fb VM40短/249八轮/16超限与CI9保持；不宣称IRQ/lockdep/KCSAN、
+callback回收或完整USB独立构建通过。标准USBprobe/FFI/enum/binding下一批迁移。
 
 ## 目标分层及架构决策
 

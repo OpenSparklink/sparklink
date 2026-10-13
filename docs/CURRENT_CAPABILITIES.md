@@ -5,7 +5,7 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
-当前正常路径 **K7e654fde93b9 / 编译service与工具U67165b6**：生产WS73和显式open
+历史正常路径 **K7e654fde93b9 / 编译service与工具U67165b6**：生产WS73和显式open
 fixture迁至版本化common Backend注册描述符，旧注册导出删除，Native取代WS73专用variant。
 清洁内核零warning、空VM三次检查、生产validator38项、实际C入口11项及clang ASan/UBSan通过；
 CBMC221性质限定通过（仅9项语义断言及内存/算术安全，不证明引用/并发/硬件）。
@@ -17,6 +17,18 @@ Uea77931/67165b6新pin CI检出两项测试fixture名称漂移，原失败保留
 K5f8e310只迁测试fixture、生产源与编译K7e654fde一致，Ubc99676 CI九项全部成功（含生产C准入/拒绝、实际Rust回归、release）；结果独立记录，
 不将测试修正HEAD或远程CI与编译service HEAD混用。标准USB/重复binding、真正Virtual、
 其他bus及完整module/context/generation/close-callback证明仍缺；全WP13保持开放。
+
+当前正常路径 **K80a362ff3355 / 编译service与工具Uf4c65fb**：
+共同RX路由/Host入队和worker从USB分离，实际Native、Session、USB调用者迁移；
+退休gate保护发布、占用槽不覆盖、精确Arc撤销、worker不重发，decode统计归各设备。
+RX与软件命令准入Host→gate，反序解锁后schedule/kick；源回归8项（stdrank依赖）、
+Native33/link迁移/工具437、零warning/空VM3、准确CI9通过。
+LKMM route单identity限定Never，弱对照Sometimes；前版RX rank反例检出gate→Host。
+不是实际deadlock/自然根因，不证明IRQ/Arc/回调/workqueue；本VM配置无lockdep/KCSAN。
+两次VM保留普通用户40轮61-byte及8轮249-byte对端实际校验回复、16超限拒绝无上空口；
+224两端SDU/112真实NOCP，捕获零drop、taint0；RF22/建链断链/dup/最后关闭/QMP支撑。
+标准USB完整Backend迁移、无USB core构建、真正Virtual/多通道/SSAP/自然恢复仍缺。
+历史Grant/daemon死亡资格按原准确提交保留，不改授为此新HEAD。
 
 历史资格K3ee1a60bf06f/U2a97786：Managed lease epoch、Host锁下软件TX准入和USB提交
 检查、socket v2 lease字段已接通；Native33/Host51/Managed54及实际C准入/ABI离线通过。
@@ -64,8 +76,8 @@ vmlinux旧serdev符号不存在。清洁构建零warning、空USB三次实际门
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
 | common Backend注册首批 | WS73/open测试provider实际迁移V1描述符；旧入口删除；标准USB未迁 | validator38、实际C拒绝11/sanitizer、Native33/连接operation12+Host、零warning/空VM3；fixture-only修正 | CBMC221限定准入，合法不变内核指针假设；不证明引用/并发/硬件 | 编译K7e654fde/U67165b6独立40短/8长度往返、16拒绝 | 标准USB/重复binding、真正Virtual/serdev、module/get-put/stopjoin全矩阵 |
-| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前K7e654fde/U67165b6两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
-| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新K7e654fde/U67165b6 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
+| WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前K80a362ff/Uf4c65fb两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
+| 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、CIdfb8636九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新K80a362ff/Uf4c65fb DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |
 | 协商原期限/共享状态 | 38926b2完整三步骤与原期限；同锁快照、关闭/最终软件准入 | C编译、ASan/UBSan deadline/terminal selftest、完整新内核/空USB VM | FV01生产CBMC131项；FV03锁LKMM两性质，故意弱对照允许坏结果 | 上述新40轮及下述249路径保持 | 受控回复/credit阻塞期限、worker/VFS引用完整映射、唤醒及VM KCSAN/lockdep |
 | application249/DTAP254 | 当前单ACB上限与精确长度拒绝，ec67348后工具/应用接通 | 196 workspace/423工具及严格clippy；准确dfb8636 CI9/9 | 不能从协商模型推出codec/分片性质 | 新版本8轮249字节及16次application250/253/254/255 EMSGSIZE，拒绝载荷捕获为零 | DG02同Binding短→最大→拒绝→短、其他层253/254/255、长包/PB TX/SAR |
 | 提交票据切片 | K464d4d8a9de7 Runtime/Backend引用、一次commit、Host/data/gate内真正URB提交；Host数据撤销；未queued才回滚，已queued/不确定保留debt | Native25、driver10 sanitizer、Host49/连接12、Managed48；C/Rust严格对象及完整内核 | 精确K464/U854 Host撤销/提交锁序LKMM Never、弱对照Sometimes；credit回滚Kani仍NOT_PROVEN_UNSUPPORTED | 新40短/249八轮/16超限、发现连接路径保持 | controlled VM交错、完整Session/Channel/Grant引用证明、完整callback/VFS及NOCP复用屏障；不能宣布整项Ticket完成 |
@@ -152,3 +164,10 @@ Backend注册首批准确证据：
 - [准确编译版本249/超限](evidence/ws73-backend-layout-guard-249-boundary-20261013.json)
 
 首批K1c720574证据是历史切片；当前K7e654fde已有独立实机回归。
+
+共同入口当前证据：
+
+- [准确构建/实际函数回归/CI](evidence/core-ingress-offline-20261013.json)
+- [限定LKMM/rank反例与源码映射](evidence/core-ingress-formal-20261013.json)
+- [真实40轮](evidence/ws73-core-ingress-short-repeat-20261013.json)
+- [真实249/超限](evidence/ws73-core-ingress-249-boundary-20261013.json)

@@ -267,3 +267,16 @@ actual fixture通过，仍需准确新VM回归与KCSAN/lockdep/完整锁证明�
 标准 USB 后续必须迁同一所有权路径再删除重复 enum/binding/FFI；不得恢复孤立 serdev。
 生产验证函数 CBMC 仅覆盖静态准入，合法且调用期间不变的内核指针是假设，
 不从限定证明推导 get/put、注销竞态、callback join、NOCP 或自然恢复通过。
+
+## Runtime 共同入口与锁序整改（2026-10-13）
+
+IRQ-safe route是已安装Runtime的持引用入口，不是bus状态或Ready来源；所有注册路径
+经 `sle_ingress` 发布，首次提交RX前发布，关闭gate后精确移除。拒绝未清理槽覆盖，
+拒绝退休后再发布，相同Arc发布幂等；单凭同identity的另一个对象不能撤销该route。
+不由worker重复publish，不把decode丢包跨设备清零。
+
+统一顺序：Host→data→gate（数据）；Host→gate→ingress（事件）；Host→gate（命令）；
+gate→routes（发布），查找释放routes后再走Host等路径，不逆向嵌套。所有嵌套IRQ guards
+反序释放，schedule/kick在解锁后执行。生产8函数依赖回归与rank负对照、LKMM锁抽象
+各自限定；实际IRQ保存/恢复、内核lockdep/KCSAN、Arc/workqueue/callback回收仍需VM门禁。
+标准USB还需迁注册/独立资源/模块所有权、probe/setup/RX/stop与PM，未提前完成整项WP13。

@@ -428,6 +428,20 @@ K7e654fde另修版本/size在尾部复制及ops跟随前拒绝；实际入口11�
 下一批按实际标准USB probe→注册→setup→RX→stop调用链迁移，
 之后删除重复binding/selector并完成独立Backend构建/真实Virtual；WP12事件迁移并行。
 
+共同Runtime ingress本批已落地K3b72c7fe/80a362ff（准确service/tools Uf4c65fb）：
+迁实际route/Host ingress/worker/Session调用者至sle_ingress，删除USB内重复实现，
+发布持gate/精确Arc撤销/worker不再publish/per-Runtime decode统计。
+RX与两个命令producer统一Host→gate，旧RX actual-body rank负对照检出反转。
+实际函数8项/Native33/link publisher、限定LKMM Never+weakSometimes、零warning/
+空VM3/准确40短/249八轮及16拒绝/CI9通过。无lockdep/KCSAN或完整callback证明。
+
+三类清单：立即删除已完成USB的通用route函数和global decode计数及worker重复发布；
+移入测试保留前版RX函数的rank反例和现有真实故障证据（不在生产）；等待替代为
+标准USB真实probe→C表→bootstrap/query→Runtime→RX→quiesce/unregister/PM，
+以及重复binding/协议表/静态enum、未消费SleUrbCtx Rust wrappers/global dead_code mask。
+后者调用审计为仅sle_usb内部声明/实现，须保留C实际URB调用者和有效codec测试再剥离；
+不能机械删除实际USB或恢复未经迁移profile0支持。
+
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。
 - 依赖：先固定接口，不等K4/K9整个issue互相关闭；避免与当前WS73关键整改同时大范围移动。

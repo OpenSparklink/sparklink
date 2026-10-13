@@ -681,8 +681,8 @@ def _run(args):
             raise ValueError('Managed queue gate requires frozen probe and scratch-root VM')
         if active_gate and 'native_vm' not in package:
             raise ValueError('active retirement requires qualified scratch-root VM')
-        if diagnostic and ('diagnostic_probe_compile' not in package or 'native_vm' not in package):
-            raise ValueError('live diagnostic gate requires frozen probe and qualified scratch-root VM')
+        if diagnostic:
+            raise ValueError('legacy poll-dependent live diagnostic matrix is retired; current Native queries remain available')
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
         timeline.observe(devices, 'initial')
         if not support:

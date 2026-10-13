@@ -13,6 +13,7 @@ UID1000/caps0拒绝选择故障身份。另两只保持身份并交换角色完�
 恢复原文件、只移除/重加guest故障设备后pending计数清零、同槽新generation，恢复设备与健康设备再完成4轮。
 slkd PID/start ticks不变，独立两端USB/HCC/A3/NOCP和1223包零丢失、taint0核对。
 [原始记录、独立证明及四次整轮失败](evidence/ws73-early-bootstrap-fault-isolation-20261013.json)完整保留；
+[16项现有issues回读](evidence/early-bootstrap-fault-issues-20261013.json)已确认原scope/OPEN不变。
 失败依次为tail启动竞态、stats缺adapter、快照schema不一致、漏封存daemon凭据，未重写为PASS。
 这是pre-metadata受控失败/精确取消子门禁，未覆盖ROM上传、URB部分open/回调/module/IRQ生命周期；
 QMP重接不等于自然或非人工恢复。没有扩大形式化范围，也不替代原40短/249资格。

@@ -6,10 +6,21 @@ import sys
 import tempfile
 import unittest
 sys.path.insert(0, str(Path(__file__).parents[1]))
-from ws73_native_build_check import EXPORTS, REQUIRED, boot_image, build_diagnostics, checked_build_diagnostics, completed_build, configuration, elf_header, native_exports, release_name
+from ws73_native_build_check import EXPORTS, REQUIRED, boot_image, build_diagnostics, checked_build_diagnostics, completed_build, configuration, elf_header, native_exports, release_name, virtual_configuration_baseline
 
 
 class NativeBuildCheck(unittest.TestCase):
+    def test_virtual_opt_in_cannot_hide_compiler_probe_configuration_drift(self):
+        baseline = ('CONFIG_INIT_STACK_ALL_ZERO=y\nCONFIG_STACKPROTECTOR_STRONG=y\n'
+                    '# CONFIG_SPARKLINK_VIRTUAL is not set\n')
+        current = baseline.replace('# CONFIG_SPARKLINK_VIRTUAL is not set', 'CONFIG_SPARKLINK_VIRTUAL=m')
+        virtual_configuration_baseline(current, baseline)
+        for invalid in [current.replace('CONFIG_INIT_STACK_ALL_ZERO=y', 'CONFIG_INIT_STACK_NONE=y'),
+                        current.replace('CONFIG_STACKPROTECTOR_STRONG=y\n', ''),
+                        current.replace('CONFIG_SPARKLINK_VIRTUAL=m', 'CONFIG_SPARKLINK_VIRTUAL=y')]:
+            with self.assertRaises(ValueError):
+                virtual_configuration_baseline(invalid, baseline)
+
     def test_virtual_module_requires_explicit_opt_in_and_never_builtin(self):
         text = ''.join('CONFIG_'+name+'='+value+'\n' for name, value in REQUIRED.items())
         modular = text+'CONFIG_SPARKLINK_VIRTUAL=m\n'

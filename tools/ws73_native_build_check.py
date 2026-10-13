@@ -33,6 +33,14 @@ def configuration(text, allow_virtual_module=False):
     return values
 
 
+def virtual_configuration_baseline(text, baseline):
+    """An optional test module must not silently change compiler/hardening config."""
+    expected, count = re.subn(r'^# CONFIG_SPARKLINK_VIRTUAL is not set$',
+                             'CONFIG_SPARKLINK_VIRTUAL=m', baseline, flags=re.M)
+    if count != 1 or text != expected:
+        raise ValueError('Virtual lab configuration must differ from its baseline only by the optional module')
+
+
 def release_name(text):
     release = text.strip()
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._+\-]{0,127}', release):
@@ -126,6 +134,11 @@ def collect(args):
     if head != args.source_head or subprocess.check_output(['git', 'status', '--porcelain'], cwd=source, text=True):
         raise ValueError('expected clean kernel source HEAD required')
     config = configuration((build/'.config').read_text(), getattr(args, 'allow_virtual_module', False))
+    baseline = getattr(args, 'baseline_config', None)
+    if getattr(args, 'allow_virtual_module', False):
+        if baseline is None:
+            raise ValueError('explicit Virtual test module requires --baseline-config')
+        virtual_configuration_baseline((build/'.config').read_text(), baseline.read_text())
     release = release_name((build/'include/config/kernel.release').read_text())
     record = json.loads(args.build_record.read_text())
     completed_build(record, head, file_record(build/'.config')['sha256'])
@@ -184,6 +197,8 @@ def collect(args):
                          'Snapshot is not a complete boot/install bundle; other modules/dependencies are not staged.',
                          'Source HEAD/config agreement does not independently prove all compiler input provenance.',
                          'Boot, qualified board/firmware and native single/multi-device recovery remain required.']}
+    if baseline is not None:
+        result['virtual_configuration_baseline'] = file_record(baseline)
     (output/'manifest.json').write_text(json.dumps(result, indent=2)+'\n')
     print(result['status']+': '+release+'; native_acceptance=false')
 
@@ -197,4 +212,6 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=Path, required=True, help='new private snapshot directory')
     parser.add_argument('--allow-virtual-module', action='store_true',
                         help='allow a separately loaded optional test module; built-in Virtual remains rejected')
+    parser.add_argument('--baseline-config', type=Path,
+                        help='required with Virtual opt-in: original configuration with Virtual disabled')
     collect(parser.parse_args())

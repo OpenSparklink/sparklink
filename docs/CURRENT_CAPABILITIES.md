@@ -231,3 +231,4 @@ USB context本批证据：
 - [资源引用、受控交错、构建与CI](evidence/usb-context-offline-20261013.json)
 - [准确新40轮](evidence/ws73-usb-context-short-repeat-20261013.json)
 - [准确新249与超限](evidence/ws73-usb-context-249-boundary-20261013.json)
+- [15项现有issue读回回执](evidence/usb-context-issues-20261013.json)：原scope保持，全部OPEN，未关闭整项。

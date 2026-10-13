@@ -1,9 +1,17 @@
 # 当前能力与资格
 
-最新开发 K654216743b68 的measurement/config清理尚待新镜像实机门禁；
-配置变为30860427且有两行显式迁移，不能沿用下列旧37e9配置资格为新镜像PASS。
+当前准确新配置资格：K `dfc641ae112d`／编译service+runner U `78fd3f14f5fb`，
+配置30860427（明确删除SLE/DEBUGFS两行，其他driver/compiler/hardening不变）。
+完成空注册no-ghost、Virtual83拒绝/File隔离与五旧节点ENOENT、真实双WS73发现
+建链/交换角色40短消息+8轮249往返/16次250/253/254/255拒绝、受控同行隔离。
+正常两批224 ACB SDU/112 NOCP、capture drops=0、VM taint=0；对端校验回复独立核对。
+旧measurement明确拒绝，实际命令Host唯一运行队列；驱动初始credit直传Host。
+标准Diagnostic账本/自主超时取消保留；none/0 selector与五个旧全局配置已删除。
+[准确资格与首次失败](evidence/measurement-config-retirement-progress-20261014.json)。
+以下Kdd11/Uc692与37e9配置为历史资格；新test-only K94d84不改运行代码，
+其完整CI待核对，不继承旧绿色检查。自然恢复/安全/SSAP及其他scope继续开放。
 
-当前准确路径资格：K `dd11fa38a338`／编译service+runner U `c6927630cbb1` 已
+上一批准确路径记录：K `dd11fa38a338`／编译service+runner U `c6927630cbb1` 已
 在VM重新完成显式File/dup/独立File隔离、Virtual及真实双WS73发现-建链、40轮
 普通用户短消息与8轮249字节往返、16次250/253/254/255超限拒绝和受控同行隔离。
 正常两批224 ACB SDU／112 NOCP、capture drops=0、VM taint=0；对端实际校验与

@@ -1,6 +1,6 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前切片：measurement 与无消费者配置收尾（新镜像资格待完成）
+## 当前切片：measurement/config与单一命令Host，准确新配置实机通过
 
 K654216743b68（重复TX清理K157346df6998）删除固定measurement能力投影及不经过Native事务的直接旧命令，
 四入口在权限之后/context与copy之前Unsupported；SDK/D-Bus相同明确拒绝。
@@ -16,8 +16,11 @@ crypto，机制源码继续留在内核，未来每连接安全机制独立接�
 
 资格VM配置已显式核对只移除SLE/DEBUGFS两行，从37e9ce68变为30860427；
 driver/compiler/hardening等其他选项未变化，Virtual仍是独立可选测试模块。
-构建、空注册/Virtual、双真实发现/连接/40短消息/249边界/同行隔离的新镜像门禁
-待完成，不继承Kdd11/Uc692的旧PASS，不把配置检查当实现或硬件证明。
+准确 Kdfc641ae112d/service+runner U78fd3f14f5fb 的构建、空注册/Virtual、
+双真实发现/连接40短消息、8轮249字节/16超限拒绝、受控同行隔离已重新通过。
+新配置与旧资格严格分开。初始credit来自驱动metadata直传Host，不用默认常量。
+[准确新配置门禁、失败与未决](evidence/measurement-config-retirement-progress-20261014.json)。
+准确源码CI原1项旧选项测试失败保留，test-only K94d84修正四检查通过，完整CI待重核。
 完整S0–S6、VM-only、UserHost P4/文档独立范围、自然RCA/非人工恢复开放条件保持。
 下一步收敛未发布旧facade及标准事件/result，接通唯一用户态SSAP，数据扩展与
 形式化并行；不以控制竞争全集为数据面前置。

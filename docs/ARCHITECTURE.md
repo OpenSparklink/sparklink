@@ -431,3 +431,12 @@ File显式绑定精确registration Arc；-1仅清该File和观察订阅，dup/fo
 DEV_GET_ACTIVE仅报告绑定id或0xffff，不描述Ready。普通观察权限与协议控制、
 raw snoop/diagnostic权限独立。无生产者的可写debug计数不能充当状态权威。
 标准Diagnostic账本仍有真实取消/超时消费者，Native不采用其无关零计数推导静默。
+
+## 配置与命令状态的单一消费者
+
+Core configfs仅软件版本，不能用全局参数或none/0的无动作成功来驱动控制器。
+参数由身份化Native请求提供；WS73板级启动/PM文件归具体驱动。Linux DEBUG_FS
+控制debugfs，不设置无实际编译消费者的SparkLink子开关。安全机制接通时自己
+拥有必要crypto依赖，Core不因未来用途强制算法。命令运行队列与credit归CommandHost；
+驱动报告的初始credit是显式构造输入，不能替换为默认常量或平行运行状态。
+标准Diagnostic作者事务/取消/超时账本有真实消费者，按迁移门禁继续保留。

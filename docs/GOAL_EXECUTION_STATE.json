@@ -1539,7 +1539,7 @@
     ]
   },
   "measurement_config_retirement": {
-    "status": "implemented/offline tests passed; accurate new-config VM build/gates pending",
+    "status": "implemented/offline/scoped exact-source new-config real VM pass; corrected test-only CI pending",
     "kernel": "dfc641ae112d872b154e75bbb3ec1ef51399ea3c",
     "audit": "docs/evidence/measurement-config-retirement-audit-20261014.json",
     "config_adjustment": {
@@ -1557,10 +1557,10 @@
       "Native Runtime/Session/Channel/socket and prior source-scoped real qualification"
     ],
     "next_gates": [
-      "clean new config build",
-      "empty registry no-ghost old nodes absent",
-      "actual Virtual83 refusal/ordinary File gates",
-      "exact new-config dual real discovery/connection40short +249 boundary/peer isolation"
+      "Corrected exact-source CI all jobs",
+      "Finish unpublished legacy facade and standard result/event migration",
+      "Unique userspace SSAP and long/credit/channel/four-device data work",
+      "FullS0-S6 formal/security/PM/natural RCA/non-human recovery/release"
     ],
     "closure_allowed": false,
     "vm_only": true,
@@ -1571,6 +1571,17 @@
       "initial unused queue length warning",
       "dormant TX cleanup compile exposed driver seed assignment; corrected explicit input",
       "bootstrap regression19 passed then old18 count verifier rejected; exact count corrected"
+    ],
+    "service_and_runner": "78fd3f14f5fb177dc2b728675160044e41036bfa",
+    "progress": "docs/evidence/measurement-config-retirement-progress-20261014.json",
+    "test_only_kernel_head": "94d84d39b6d2a3452287d67c2afd871989d202c5",
+    "completed_gates": [
+      "warning-free Kdfc641/config30860427 source/config unchanged",
+      "empty USB no-ghost 5 paths absent x3 each WS/standard module",
+      "actual Virtual83 refusals/File/dup/ordinary observer + absent5 config nodes",
+      "real dual discovery/connection40short +8x249 +16 boundary rejection",
+      "controlled partial-init peer isolation; no natural recovery qualification",
+      "driver initial credit forward regression19; real Host queue/standard author ledger retained"
     ]
   }
 }

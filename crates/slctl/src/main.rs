@@ -110,6 +110,8 @@ fn print_help() {
 
 const COMMAND_HELP: &str = "\
 Commands:
+  registrations                 Observe live Core registrations including early faults
+  registration <path>           Read exact Core lifecycle (Installed is not Ready)
   daemon                        Show the bus-authenticated slkd owner/PID/UID
   list                          List adapters
   select <path>                 Select a live adapter registration

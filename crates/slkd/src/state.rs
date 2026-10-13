@@ -475,6 +475,16 @@ pub struct AdapterRegistration {
 }
 pub type AdapterDirectory = Arc<Mutex<BTreeMap<String, AdapterRegistration>>>;
 
+/// Published registration topology only. State/availability comes from Core
+/// on every read; this unselected fd has no management lease or radio resources.
+#[derive(Clone)]
+pub struct RegistrationObserver {
+    pub adapter: Arc<Adapter>,
+    pub index: u16,
+    pub generation: u64,
+}
+pub type RegistrationDirectory = Arc<Mutex<BTreeMap<String, RegistrationObserver>>>;
+
 /// Drain experimental callbacks and Bond I/O without holding adapter state.
 pub async fn shutdown_services(state: &SharedState) {
     let bonding = state.lock().await.bonding.clone();

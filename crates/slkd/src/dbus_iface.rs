@@ -2,16 +2,20 @@ use std::collections::HashMap;
 use zbus::interface;
 use zbus::zvariant::Value;
 
-use crate::state::{AdapterDirectory, SharedState};
+use crate::state::{AdapterDirectory, RegistrationDirectory, SharedState};
 
 /// Root D-Bus object at /org/sparklink
 pub struct Root {
     adapters: AdapterDirectory,
+    registrations: RegistrationDirectory,
 }
 
 impl Root {
-    pub fn new(adapters: AdapterDirectory) -> Self {
-        Self { adapters }
+    pub fn new(adapters: AdapterDirectory, registrations: RegistrationDirectory) -> Self {
+        Self {
+            adapters,
+            registrations,
+        }
     }
 }
 
@@ -20,6 +24,32 @@ impl Root {
     /// Get the daemon version
     fn version(&self) -> &str {
         env!("CARGO_PKG_VERSION")
+    }
+
+    /// Published observations, including pre-Runtime faults. Revalidate exact
+    /// Core identity; the directory never supplies cached availability or Ready.
+    async fn list_registrations(&self) -> zbus::fdo::Result<Vec<String>> {
+        let entries = self.registrations.lock().await.clone();
+        tokio::task::spawn_blocking(move || {
+            let mut paths = Vec::new();
+            for (path, entry) in entries {
+                match entry
+                    .adapter
+                    .registration_snapshot(entry.index, entry.generation)
+                {
+                    Ok(_) => paths.push(path),
+                    Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => {}
+                    Err(error) => {
+                        return Err(zbus::fdo::Error::Failed(format!(
+                            "Core registration observation failed for {path}: {error}"
+                        )));
+                    }
+                }
+            }
+            Ok(paths)
+        })
+        .await
+        .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
     }
 
     /// List registrations still live in the kernel, even before the background

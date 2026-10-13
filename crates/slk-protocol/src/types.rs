@@ -1067,6 +1067,9 @@ pub const REGISTRATION_PENDING: u32 = 1;
 pub const REGISTRATION_FAULT: u32 = 2;
 pub const REGISTRATION_INSTALLED: u32 = 3;
 pub const REGISTRATION_RETIRING: u32 = 4;
+/// Atomic Core observation over D-Bus: generation, version, state, profile,
+/// raw pending phase/error, index, bus. Contains no Host Ready or capabilities.
+pub type RegistrationSnapshotRecord = (u64, u32, u32, u32, u32, i32, u16, u8);
 impl SleRegistrationSnapshot {
     pub fn valid_for(&self, index: u16, generation: u64) -> bool {
         self.version == REGISTRATION_VERSION

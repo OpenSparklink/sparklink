@@ -39,6 +39,8 @@ impl Context {
                     .await
             }
             "list" => self.cmd_list().await,
+            "registrations" if args.len() == 1 => self.cmd_registrations().await,
+            "registration" if args.len() == 2 => self.cmd_registration(args[1]).await,
             "daemon" => self.cmd_daemon().await,
             "select" => self.cmd_select(args.get(1).copied().unwrap_or("")).await,
             "reports" => self.cmd_reports().await,
@@ -316,6 +318,63 @@ impl Context {
                 println!("  {a}");
             }
         }
+        Ok(())
+    }
+
+    async fn cmd_registrations(&self) -> anyhow::Result<()> {
+        let paths: Vec<String> = self
+            .manager_proxy()
+            .await?
+            .call("ListRegistrations", &())
+            .await?;
+        for path in paths {
+            self.cmd_registration(&path).await?;
+        }
+        Ok(())
+    }
+    async fn cmd_registration(&self, path: &str) -> anyhow::Result<()> {
+        let path = if path.starts_with('/') {
+            path.to_owned()
+        } else {
+            format!("/org/sparklink/{path}")
+        };
+        let proxy = zbus::Proxy::new(
+            &self.conn,
+            "org.sparklink",
+            path.as_str(),
+            "org.sparklink.Registration",
+        )
+        .await?;
+        let (generation,version,state,profile,phase,error,index,bus): slk_protocol::RegistrationSnapshotRecord = proxy.call("GetSnapshot", &()).await?;
+        let snapshot = slk_protocol::SleRegistrationSnapshot {
+            generation,
+            version,
+            state,
+            profile,
+            phase,
+            error,
+            dev_index: index,
+            bus,
+            ..Default::default()
+        };
+        anyhow::ensure!(
+            snapshot.valid_for(index, generation),
+            "invalid registration observation"
+        );
+        anyhow::ensure!(
+            path == format!("/org/sparklink/slk{index}_g{generation}"),
+            "registration path/identity mismatch"
+        );
+        let name = match state {
+            slk_protocol::REGISTRATION_PENDING => "Pending",
+            slk_protocol::REGISTRATION_FAULT => "Fault",
+            slk_protocol::REGISTRATION_INSTALLED => "Installed",
+            slk_protocol::REGISTRATION_RETIRING => "Retiring",
+            _ => unreachable!(),
+        };
+        println!(
+            "Registration {path}: index={index} generation={generation} state={name} profile={profile} bus={bus} phase={phase} error={error}"
+        );
         Ok(())
     }
 

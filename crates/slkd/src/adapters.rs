@@ -5,6 +5,7 @@
 use crate::profile::ProfileRegistry;
 #[cfg(feature = "experimental-legacy-profiles")]
 use crate::profile::{BatteryProfile, DeviceInfoProfile};
+use crate::registration::RegistrationNode;
 use crate::{
     bonding::BondingStore,
     config::DaemonConfig,
@@ -16,7 +17,7 @@ use crate::{
     service::{RemoteServiceIface, SsapManagerIface},
     state::{
         AdapterDirectory, AdapterRegistration, AdapterState, InitializationOff, NativeLease,
-        NativeManagement, SharedState,
+        NativeManagement, RegistrationDirectory, SharedState,
     },
 };
 use libsparklink::Adapter;
@@ -98,6 +99,28 @@ async fn open_selected(path: String, id: u16) -> anyhow::Result<(Adapter, SleCon
         Ok((adapter, snapshot))
     })
     .await?
+}
+
+async fn observe_registration(
+    device: &str,
+    observer: &mut Option<Arc<Adapter>>,
+    id: u16,
+) -> anyhow::Result<Option<slk_protocol::SleRegistrationSnapshot>> {
+    if observer.is_none() {
+        let device = device.to_owned();
+        *observer = Some(Arc::new(
+            tokio::task::spawn_blocking(move || Adapter::open(device)).await??,
+        ));
+    }
+    let fd = observer.as_ref().unwrap().clone();
+    match tokio::task::spawn_blocking(move || fd.registration_snapshot(id, 0)).await? {
+        Ok(snapshot) => Ok(Some(snapshot)),
+        Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => Ok(None),
+        Err(error) => {
+            *observer = None;
+            Err(error.into())
+        }
+    }
 }
 
 /// One request id allocator per selected initialization fd. Separate nodes never
@@ -534,6 +557,7 @@ impl AdapterManager {
         storage: String,
         connection: zbus::Connection,
         directory: AdapterDirectory,
+        registrations: RegistrationDirectory,
     ) -> Self {
         let (cancel, cancelled) = watch::channel(false);
         let mut workers = Vec::new();
@@ -581,27 +605,57 @@ impl AdapterManager {
             }
         }));
         for id in 0..16 {
-            let (device, config, storage, connection, directory, mut cancelled) = (
+            let (device, config, storage, connection, directory, registrations, mut cancelled) = (
                 device.clone(),
                 config.clone(),
                 storage.clone(),
                 connection.clone(),
                 directory.clone(),
+                registrations.clone(),
                 cancelled.clone(),
             );
             let mut registered = registered.clone();
             workers.push(tokio::spawn(async move {
                 let mut node: Option<Node> = None;
+                let mut observer: Option<Arc<Adapter>> = None;
+                let mut registration: Option<RegistrationNode> = None;
                 loop {
                     if *cancelled.borrow() { break; }
                     let currently_registered = *registered.borrow() & (1 << id) != 0;
+                    let observed = if currently_registered || registration.is_some() {
+                        observe_registration(&device, &mut observer, id).await
+                    } else { Ok(None) };
+                    let observed = match observed {
+                        Ok(snapshot) => {
+                            if registration.as_ref().is_some_and(|n| snapshot.as_ref().is_none_or(|s| s.generation != n.generation())) {
+                                registration.take().unwrap().remove(&connection, &registrations).await;
+                            }
+                            if let Some(snapshot) = snapshot {
+                                if let Some(current) = registration.as_mut() {
+                                    if let Err(error) = current.update(&connection, snapshot).await { warn!(%error, index=id, "registration notification failed"); }
+                                } else {
+                                    match RegistrationNode::create(&connection, &registrations, observer.as_ref().unwrap().clone(), snapshot).await {
+                                        Ok(current) => registration = Some(current),
+                                        Err(error) => warn!(%error, index=id, "registration publication failed"),
+                                    }
+                                }
+                            }
+                            snapshot
+                        }
+                        Err(error) => {
+                            // An uncertain query is not an observed removal.
+                            warn!(%error, index=id, "Core registration observation unavailable");
+                            None
+                        }
+                    };
                     if let Some(current) = &node {
                         if let Err(error) = current.refresh().await {
                             warn!(%error, index=id, "adapter snapshot unavailable; removing registration");
                             node.take().unwrap().remove(&connection, &directory).await;
                         }
-                    } else if currently_registered
-                        && let Ok((adapter, snapshot)) = open_selected(device.clone(), id).await {
+                    } else if let Some(observed) = observed.filter(|s| s.state == slk_protocol::REGISTRATION_INSTALLED)
+                        && let Ok((adapter, snapshot)) = open_selected(device.clone(), id).await
+                        && snapshot.generation == observed.generation {
                         match Node::create(&device, adapter, snapshot, config.clone(), &storage, &connection, &directory).await {
                             Ok(ready) => node = Some(ready),
                             Err(error) => warn!(%error, index=id, "adapter registration failed"),
@@ -614,6 +668,7 @@ impl AdapterManager {
                     }
                 }
                 if let Some(node) = node { node.remove(&connection, &directory).await; }
+                if let Some(registration) = registration { registration.remove(&connection, &registrations).await; }
             }));
         }
         Self { cancel, workers }

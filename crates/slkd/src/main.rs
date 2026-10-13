@@ -15,6 +15,7 @@ mod extadv;
 #[cfg(any(test, feature = "experimental-legacy-profiles"))]
 mod profile_runtime;
 mod radio;
+mod registration;
 mod security;
 mod service;
 mod state;
@@ -29,7 +30,7 @@ use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitEx
 use crate::adapters::AdapterManager;
 use crate::config::DaemonConfig;
 use crate::dbus_iface::Root;
-use crate::state::AdapterDirectory;
+use crate::state::{AdapterDirectory, RegistrationDirectory};
 
 #[derive(Parser)]
 #[command(name = "slkd", about = "SparkLink daemon")]
@@ -97,6 +98,7 @@ async fn main() -> anyhow::Result<()> {
     // Validate before publishing D-Bus objects or acquiring controller authority.
 
     let directory: AdapterDirectory = Arc::new(Mutex::new(Default::default()));
+    let registrations: RegistrationDirectory = Arc::new(Mutex::new(Default::default()));
     let builder = if cli.session {
         zbus::connection::Builder::session()?
     } else {
@@ -104,7 +106,10 @@ async fn main() -> anyhow::Result<()> {
     };
     let connection = builder
         .name("org.sparklink")?
-        .serve_at("/org/sparklink", Root::new(directory.clone()))?
+        .serve_at(
+            "/org/sparklink",
+            Root::new(directory.clone(), registrations.clone()),
+        )?
         .build()
         .await?;
     let manager = AdapterManager::start(
@@ -113,6 +118,7 @@ async fn main() -> anyhow::Result<()> {
         cli.storage,
         connection.clone(),
         directory,
+        registrations,
     );
     info!("D-Bus service registered; watching controller registrations");
     let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;

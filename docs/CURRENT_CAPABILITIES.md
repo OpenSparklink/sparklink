@@ -274,3 +274,4 @@ Backend来源本批证据：
 - [实际C/Rust来源、旧失败见证、跨语言/构建/CI](evidence/backend-bus-offline-20261013.json)
 - [准确新40](evidence/ws73-backend-bus-short-repeat-20261013.json)、[249/超限](evidence/ws73-backend-bus-249-boundary-20261013.json)
 - [下一批统一注册实际调用审计](evidence/backend-bus-next-registration-audit-20261013.json)：bus遗失已修；标准USB先reserve、WS73查询后register的早期故障/清理差异继续整改。
+- [16项现有issue读回回执](evidence/backend-bus-issues-20261013.json)：含K#11总线/方言scope，全部OPEN，原body不变，未关闭整项。

@@ -2,7 +2,8 @@ mod adapter;
 mod error;
 mod event;
 pub mod ffi;
-mod receiver;
+#[cfg(test)]
+mod retired_event;
 mod snoop;
 pub use snoop::{
     SnoopCursor, SnoopReceiver, create_snoop_capture, describe_snoop, snoop_packet_code,
@@ -12,7 +13,6 @@ pub use snoop::{
 pub use adapter::{Adapter, DEFAULT_DEV_PATH};
 pub use error::Error;
 pub use event::Event;
-pub use receiver::EventReceiver;
 mod controller_events;
 pub use controller_events::{ControllerEventCursor, ControllerEventReceiver};
 pub use slk_protocol as protocol;
@@ -110,7 +110,7 @@ mod tests {
         assert!(dbg.contains("DataReceived"));
         assert!(dbg.contains("handle: 1"));
 
-        let raw_evt: slk_protocol::SleDliEvent = unsafe { std::mem::zeroed() };
+        let raw_evt: crate::retired_event::SleDliEvent = unsafe { std::mem::zeroed() };
         let ev = Event::RawDli(raw_evt);
         assert!(format!("{ev:?}").contains("RawDli"));
     }
@@ -158,7 +158,7 @@ mod tests {
         assert!(adapter.as_fd().as_raw_fd() >= 0);
         assert!(matches!(adapter.device_count(), Err(Error::Ioctl(_))));
         assert!(matches!(
-            adapter.into_event_receiver(),
+            adapter.into_controller_event_receiver(),
             Err(Error::InvalidParam(_))
         ));
         let path = b"/dev/null\0";
@@ -171,10 +171,10 @@ mod tests {
     #[test]
     fn malformed_event_lengths_are_errors() {
         use slk_protocol::*;
-        let mut event: SleDliEvent = unsafe { std::mem::zeroed() };
+        let mut event: crate::retired_event::SleDliEvent = unsafe { std::mem::zeroed() };
         event.event_type = EVT_DATA_RECV;
         event.data_len = u16::MAX;
-        assert!(adapter::decode_event(event).is_err());
+        assert!(crate::retired_event::decode_event(event).is_err());
         for (event_type, length) in [
             (EVT_ADV_REPORT, 1),
             (EVT_HW_ERROR, 0),
@@ -182,7 +182,7 @@ mod tests {
         ] {
             event.event_type = event_type;
             event.data_len = length;
-            assert!(adapter::decode_event(event).is_err());
+            assert!(crate::retired_event::decode_event(event).is_err());
         }
     }
 }

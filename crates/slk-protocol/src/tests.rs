@@ -69,7 +69,6 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleSyncLinkInfo, 24);
     check_size!(errors, SleEventStats, 32);
     check_size!(errors, SleDliInfo, 64);
-    check_size!(errors, SleDliEvent, 256);
     check_size!(errors, SleDliCmd, 248);
     check_size!(errors, SleControllerEvent, 336);
     check_size!(errors, SleControllerEventQuery, 360);
@@ -198,14 +197,6 @@ fn struct_field_offsets() {
     assert_eq!(offset_of!(SleConnInfo, tx_bytes), 0);
     assert_eq!(offset_of!(SleConnInfo, rx_bytes), 8);
     assert_eq!(offset_of!(SleConnInfo, handle), 16);
-
-    // SleDliEvent
-    assert_eq!(offset_of!(SleDliEvent, event_type), 0);
-    assert_eq!(offset_of!(SleDliEvent, status), 1);
-    assert_eq!(offset_of!(SleDliEvent, handle), 2);
-    assert_eq!(offset_of!(SleDliEvent, opcode), 4);
-    assert_eq!(offset_of!(SleDliEvent, data_len), 6);
-    assert_eq!(offset_of!(SleDliEvent, data), 8);
 }
 
 #[test]
@@ -280,13 +271,6 @@ fn genl_attr_enum_coverage() {
     assert_eq!(GenlAttr::SvcMtu as u16, 58);
     // Total: 59 attributes (0..=58)
     assert_eq!(std::mem::size_of::<GenlAttr>(), 2);
-}
-
-#[test]
-fn dli_event_data_capacity() {
-    let ev: SleDliEvent = unsafe { std::mem::zeroed() };
-    assert_eq!(ev.data.len(), 240);
-    assert_eq!(std::mem::size_of::<SleDliEvent>(), 256);
 }
 
 #[test]

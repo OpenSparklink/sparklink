@@ -35,7 +35,6 @@ STRUCT_NAMES = {
     "SleConnInfo": "sle_conn_info",
     "SleSecInfo": "sle_sec_info",
     "SlePairParams": "sle_pair_params",
-    "SleDliEvent": "sle_dli_event",
     "SleDliInfo": "sle_dli_info",
     "SlePhyInfo": "sle_phy_info",
     "SleControllerSnapshot": "sle_controller_snapshot",

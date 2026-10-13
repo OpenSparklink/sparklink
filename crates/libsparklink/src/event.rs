@@ -1,4 +1,4 @@
-use slk_protocol::{SleAddr, SleConnInfo, SleDliEvent};
+use slk_protocol::{SleAddr, SleConnInfo};
 
 /// Events received from the kernel SparkLink subsystem
 #[derive(Debug)]
@@ -36,7 +36,8 @@ pub enum Event {
     HwError { code: u8 },
 
     /// Raw DLI event (for unhandled event types)
-    RawDli(SleDliEvent),
+    #[cfg(test)]
+    RawDli(crate::retired_event::SleDliEvent),
 
     /// Connection info update (polled)
     ConnInfoUpdate(SleConnInfo),

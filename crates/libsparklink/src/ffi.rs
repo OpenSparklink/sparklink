@@ -238,33 +238,6 @@ pub unsafe extern "C" fn slk_encrypt_on(adapter: *const SlkAdapter) -> c_int {
     }
 }
 
-/// Poll for a DLI event (non-blocking).
-/// Returns 1 if event available (written to `out`), 0 if no event, -1 on error.
-///
-/// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_poll_event(
-    adapter: *const SlkAdapter,
-    out: *mut slk_protocol::SleDliEvent,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
-    }
-    match adapter.inner.poll_event() {
-        Ok(Some(event)) => {
-            unsafe { *out = event };
-            1
-        }
-        Ok(None) => 0,
-        Err(_) => -1,
-    }
-}
-
 /// Get device info.
 /// Returns 0 on success, -1 on error.
 ///

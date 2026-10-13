@@ -132,20 +132,6 @@ typedef struct SlePairParams {
 } SlePairParams;
 
 /**
- * DLI event (ioctl 0x82)
- */
-typedef struct SleDliEvent {
-    uint8_t event_type;
-    uint8_t status;
-    uint16_t handle;
-    uint16_t opcode;
-    uint16_t data_len;
-    uint8_t data[240];
-    SleAddr addr;
-    uint8_t _pad[2];
-} SleDliEvent;
-
-/**
  * Device information (ioctl 0x04)
  */
 typedef struct SciDevInfo {
@@ -631,15 +617,6 @@ int slk_pair(const struct SlkAdapter *adapter, const struct SlePairParams *param
  * `adapter` must be a valid non-null pointer.
  */
 int slk_encrypt_on(const struct SlkAdapter *adapter);
-
-/**
- * Poll for a DLI event (non-blocking).
- * Returns 1 if event available (written to `out`), 0 if no event, -1 on error.
- *
- * # Safety
- * `adapter` and `out` must be valid non-null pointers.
- */
-int slk_poll_event(const struct SlkAdapter *adapter, struct SleDliEvent *out);
 
 /**
  * Get device info.

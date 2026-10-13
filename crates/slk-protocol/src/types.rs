@@ -580,20 +580,6 @@ pub struct SleDliInfo {
     pub _reserved: [u8; 4],
 }
 
-/// DLI event (ioctl 0x82)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SleDliEvent {
-    pub event_type: u8,
-    pub status: u8,
-    pub handle: u16,
-    pub opcode: u16,
-    pub data_len: u16,
-    pub data: [u8; 240],
-    pub addr: SleAddr,
-    pub _pad: [u8; 2],
-}
-
 /// Supported native controller event ABI version.
 pub const CONTROLLER_EVENT_VERSION: u32 = 1;
 pub const CONTROLLER_EVENT_PAYLOAD_MAX: usize = 288;

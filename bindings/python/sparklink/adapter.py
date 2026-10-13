@@ -9,7 +9,6 @@ from .structs import (
     SciDevInfo,
     SleConnInfo,
     SleConnectParams,
-    SleDliEvent,
     SleDliInfo,
     SlePairParams,
     SlePhyInfo,
@@ -78,8 +77,6 @@ def _get_lib():
     lib.slk_pair.restype = ctypes.c_int
     lib.slk_encrypt_on.argtypes = [ctypes.c_void_p]
     lib.slk_encrypt_on.restype = ctypes.c_int
-    lib.slk_poll_event.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleDliEvent)]
-    lib.slk_poll_event.restype = ctypes.c_int
     lib.slk_device_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SciDevInfo)]
     lib.slk_device_info.restype = ctypes.c_int
     lib.slk_dli_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(SleDliInfo)]
@@ -177,16 +174,6 @@ class Adapter:
 
     def encrypt_on(self):
         self._check(_get_lib().slk_encrypt_on(self._handle), "encrypt_on")
-
-    def poll_event(self):
-        """Poll for a DLI event. Returns SleDliEvent or None."""
-        ev = SleDliEvent()
-        ret = _get_lib().slk_poll_event(self._handle, ctypes.byref(ev))
-        if ret == 1:
-            return ev
-        if ret == 0:
-            return None
-        raise SparkLinkError("poll_event failed")
 
     def dli_info(self):
         info = SleDliInfo()

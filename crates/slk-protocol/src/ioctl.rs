@@ -154,7 +154,6 @@ nix::ioctl_read!(sl_event_stats, SL_MAGIC, 0x71, super::SleEventStats);
 
 nix::ioctl_read!(sl_dli_info, SL_MAGIC, 0x80, super::SleDliInfo);
 nix::ioctl_none!(sl_usb_dev_count, SL_MAGIC, 0x81);
-nix::ioctl_read!(sl_dli_poll_event, SL_MAGIC, 0x82, super::SleDliEvent);
 nix::ioctl_none!(sl_dli_reset, SL_MAGIC, 0x83);
 nix::ioctl_readwrite!(sl_dli_send_cmd, SL_MAGIC, 0x84, super::SleDliCmd);
 nix::ioctl_read!(sl_mgmt_stats, SL_MAGIC, 0x85, super::SleMgmtStats);

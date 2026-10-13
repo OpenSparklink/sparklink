@@ -642,48 +642,10 @@ fn cmd_connections(adapter: &Adapter) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_scan(adapter: &Adapter, duration: u64) -> libsparklink::Result<()> {
-    use slk_protocol::SleScanParams;
-
-    let params = SleScanParams {
-        dev_index: adapter.device_info()?.index,
-        window_ms: 100,
-        interval_ms: 200,
-        filter_discovery_level: 0,
-        _reserved: [0; 9],
-    };
-    adapter.start_scan(&params)?;
-    println!("Scanning for {duration} seconds...\n");
-
-    let start = std::time::Instant::now();
-    let mut count = 0u32;
-
-    while start.elapsed().as_secs() < duration {
-        match adapter.poll_event()? {
-            Some(event) => {
-                let name_end = event
-                    .data
-                    .iter()
-                    .position(|&b| b == 0)
-                    .unwrap_or(event.data_len as usize);
-                let name = std::str::from_utf8(&event.data[..name_end]).unwrap_or("");
-                count += 1;
-                println!(
-                    "  [{count}] {} RSSI={:>4} Level={} Name=\"{name}\"",
-                    fmt_addr(&event.addr),
-                    event.status as i8,
-                    event.data[name_end.saturating_add(1).min(event.data.len() - 1)],
-                );
-            }
-            None => {
-                std::thread::sleep(std::time::Duration::from_millis(10));
-            }
-        }
-    }
-
-    adapter.stop_scan()?;
-    println!("\nScan complete: {count} report(s)");
-    Ok(())
+fn cmd_scan(_adapter: &Adapter, _duration: u64) -> libsparklink::Result<()> {
+    Err(libsparklink::Error::InvalidParam(
+        "legacy scan is removed; use slctl Native discovery",
+    ))
 }
 
 fn cmd_connect(adapter: &Adapter, address: &str) -> libsparklink::Result<()> {

@@ -256,19 +256,6 @@ class SlePairParams(ctypes.Structure):
     ]
 
 
-class SleDliEvent(ctypes.Structure):
-    _fields_ = [
-        ("event_type", ctypes.c_uint8),
-        ("status", ctypes.c_uint8),
-        ("handle", ctypes.c_uint16),
-        ("opcode", ctypes.c_uint16),
-        ("data_len", ctypes.c_uint16),
-        ("data", ctypes.c_uint8 * 240),
-        ("addr", SleAddr),
-        ("_pad", ctypes.c_uint8 * 2),
-    ]
-
-
 class SciDevInfo(ctypes.Structure):
     _fields_ = [
         ("index", ctypes.c_uint16),

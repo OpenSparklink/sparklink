@@ -99,6 +99,7 @@ fn accepted_observation_preserves_identity_and_diagnostics() {
     record['counterexample_mapping']='SDK registration_tests::core_observation_requires_exact_identity_and_consistent_diagnostics, generation=7/index=2 rejects expected generation=8; hypothetical weak validator, not a Core or hardware fault'
     (output/'manifest.json').write_text(json.dumps(record,indent=2)+'\n')
     print(record['status'],output/'manifest.json')
+    return 0 if record['status'] in ('PROVED_SCOPED','EXPECTED_COUNTEREXAMPLE_WEAK_VALIDATOR') else 1
 
 
 if __name__ == '__main__':
@@ -108,4 +109,4 @@ if __name__ == '__main__':
     p.add_argument('--weak-control',action='store_true',help='deliberately remove expected-generation guard from the extracted validator; never a production proof')
     a=p.parse_args()
     if not 1<=a.budget_seconds<=60:p.error('budget must be 1..60 seconds')
-    run(a.output.resolve(),a.budget_seconds,a.weak_control)
+    raise SystemExit(run(a.output.resolve(),a.budget_seconds,a.weak_control))

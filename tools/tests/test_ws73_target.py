@@ -225,6 +225,12 @@ class TargetEnvironment(unittest.TestCase):
         self.assertEqual(healthy_native_runtime(base+'100')[2],'1')
         for status in ['0','01','ff','101']:
             with self.subTest(status=status),self.assertRaises(ValueError):healthy_native_runtime(base+status)
+    def test_adopted_pending_identity_matches_healthy_runtime(self):
+        base='id=0 generation=3 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100'
+        tail=' reserved=0 pending_id=0 pending_generation=3 core_pending_ret=-2 core_phase=0 core_error=0'
+        self.assertEqual(healthy_native_runtime(base+tail)[2],'3')
+        for bad in [tail.replace('reserved=0','reserved=1'),tail.replace('pending_id=0','pending_id=1'),tail.replace('pending_generation=3','pending_generation=2'),tail.replace('core_error=0','core_error=-5')]:
+            with self.subTest(bad=bad),self.assertRaises(ValueError):healthy_native_runtime(base+bad)
     def test_broken_or_retired_native_runtime_is_not_ready(self):
         good='id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100'
         for value in [good.replace('broken=0','broken=1'),good.replace('streaming=1','streaming=0'),good.replace('generation=1','generation=0'),good.replace('id=0','id=16')]:

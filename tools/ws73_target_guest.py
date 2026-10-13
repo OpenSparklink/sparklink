@@ -27,6 +27,8 @@ def ready(slot):
     port=f'1-{slot+1}'
     deadline=time.monotonic()+90
     last=None
+    pending_observations=[]
+    pending_seen=set()
     while time.monotonic()<deadline:
         root=Path('/sys/bus/usb/devices')/port
         interfaces=list(root.glob(port+':*')) if root.exists() else []
@@ -35,6 +37,17 @@ def ready(slot):
             try:
                 state=(p/'native_runtime').read_text().strip()
                 progress['native_runtime']=state
+                early=re.fullmatch(r'id=-1 generation=\d+ streaming=0 broken=\d+ unsupported=\d+ last_event=[0-9a-fA-F]{4} controller_error=[0-9a-fA-F]+ reserved=1 pending_id=(\d+) pending_generation=(\d+) core_pending_ret=0 core_phase=(\d+) core_error=(-?\d+)',state)
+                if early and state not in pending_seen:
+                    # Read actual sysfs as the ordinary test user, not a root
+                    # projection. Sampling is evidence only, not a Ready gate.
+                    command=("import sys,json;from pathlib import Path;sys.path.insert(0,"+repr(str(Path(__file__).resolve().parent))+");from ws73_north_star import ordinary_identity;print(json.dumps({'credentials':ordinary_identity(),'runtime':Path("+repr(str(p/'native_runtime'))+").read_text().strip(),'metadata_valid':Path("+repr(str(p/'metadata_valid'))+").read_text().strip()}))")
+                    sampled=application('/bin/python3','-c',command,capture_output=True,timeout=10)
+                    if sampled.returncode==0:
+                        sample=json.loads(sampled.stdout)
+                        sample.update(port=port,time_ns=time.time_ns())
+                        pending_observations.append(sample);pending_seen.add(state)
+                        (EVIDENCE/f'pending-observations-{slot}.json').write_text(json.dumps(pending_observations,indent=2)+'\n')
                 progress['boot_stage']=(p/'boot_stage').read_text().strip()
                 progress['boot_error']=int((p/'boot_error').read_text().strip())
                 diagnostics=p/'failure_diagnostics'

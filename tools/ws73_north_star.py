@@ -46,9 +46,11 @@ def healthy_native_runtime(value):
     # usb.c initializes 0x100 to mean no controller error byte was observed.
     # An actual 0x000a event (even with byte 0) faults the transport; never
     # invent a successful error event or accept one as healthy.
-    m = re.fullmatch(r'id=(\d+) generation=(\d+) streaming=1 broken=0 unsupported=(\d+) last_event=([0-9a-fA-F]{4}) controller_error=100', value)
+    m = re.fullmatch(r'id=(\d+) generation=(\d+) streaming=1 broken=0 unsupported=(\d+) last_event=([0-9a-fA-F]{4}) controller_error=100(?: reserved=0 pending_id=(\d+) pending_generation=(\d+) core_pending_ret=-2 core_phase=0 core_error=0)?', value)
     if m is None or not 0 <= int(m[1]) < 16 or not 0 < int(m[2]) < 1 << 64:
         raise ValueError('healthy native runtime with no controller error event required')
+    if m[5] is not None and (m[5] != m[1] or m[6] != m[2]):
+        raise ValueError('adopted reservation must match native identity')
     return m
 
 

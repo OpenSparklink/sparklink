@@ -13,12 +13,14 @@ import tempfile
 def run(kernel, compiler):
     kernel = Path(kernel).resolve(strict=True)
     source = (kernel / 'net/sparklink/sle_native_ffi.c').read_text()
-    start = source.index('int sparklink_backend_register(')
+    start = source.index('static int sparklink_backend_register_identity(')
     body = source[start:source.index('EXPORT_SYMBOL_GPL(sparklink_backend_register);', start)]
     start = source.index('struct sparklink_native_transport {')
     transport = source[start:source.index('};', start) + 2]
     start = source.index('u32 sparklink_native_transport_bus(')
     getter = source[start:source.index('\nvoid sparklink_native_transport_get', start)]
+    start = source.index('int sparklink_backend_register_reserved(')
+    reserved_body = source[start:source.index('EXPORT_SYMBOL_GPL(sparklink_backend_register_reserved);',start)]
     fixture = r'''
 #include <stddef.h>
 #include <stdlib.h>
@@ -27,6 +29,7 @@ def run(kernel, compiler):
 typedef unsigned int refcount_t;
 static unsigned int allocations, modules, contexts, rust_calls;
 static struct sparklink_native_transport *accepted;
+static struct sparklink_native_identity copied_reservation;
 #define kmalloc_obj(object) dependency_alloc(sizeof(object))
 #define kfree free
 static void *dependency_alloc(size_t n) { ++allocations; return malloc(n); }
@@ -36,8 +39,8 @@ static void refcount_set(refcount_t *r, unsigned int n) { *r=n; }
     fixture += transport
     fixture += r'''
 static int sparklink_native_register_rust(const struct sparklink_native_info *i,
- struct sparklink_native_transport *t, struct sparklink_native_identity *out)
-{ (void)i; (void)out; ++rust_calls; accepted=t; return 0; }
+ struct sparklink_native_transport *t, const struct sparklink_native_identity *reserved, struct sparklink_native_identity *out)
+{ (void)i; (void)out; if(reserved) copied_reservation=*reserved; ++rust_calls; accepted=t; return 0; }
 static void retain(void *c) { (void)c; ++contexts; }
 static int open_backend(void *c, u16 i, u64 g) { (void)c; (void)i; (void)g; return 0; }
 static int command(void *c, u16 o, const u8 *p, size_t n)
@@ -45,6 +48,7 @@ static int command(void *c, u16 o, const u8 *p, size_t n)
 '''
     fixture += getter
     fixture += body
+    fixture += reserved_body
     fixture += r'''
 int main(void) {
  struct sparklink_native_ops ops = { .get=retain,.put=retain,.open=open_backend,
@@ -67,6 +71,14 @@ int main(void) {
  d=valid;d.capabilities=SPARKLINK_BACKEND_ACB;CHECK(&d,&out,-EINVAL);
  ops.get=NULL;CHECK(&valid,&out,-EINVAL);
  ops.get=retain;
+ {
+  struct sparklink_native_identity bad={.id=0,.generation=0};
+  if(sparklink_backend_register_reserved(&valid,NULL,&out)!=-EINVAL) return 4;
+  if(sparklink_backend_register_reserved(&valid,&bad,&out)!=-EINVAL) return 5;
+  bad.id=16;bad.generation=1;
+  if(sparklink_backend_register_reserved(&valid,&bad,&out)!=-EINVAL) return 6;
+  if(allocations||modules||contexts||rust_calls) return 7;
+ }
  for (unsigned int bus=SPARKLINK_BACKEND_USB;bus<=SPARKLINK_BACKEND_TEST;++bus) {
   d=valid;d.bus=bus;allocations=modules=contexts=rust_calls=0;accepted=NULL;
   if(sparklink_backend_register(&d,&out)!=0 || !accepted ||
@@ -76,6 +88,12 @@ int main(void) {
   d.bus=99;
   if(sparklink_native_transport_bus(accepted)!=bus) return 3;
   free(accepted); accepted=NULL;
+ }
+ {
+  struct sparklink_native_identity id={.id=3,.generation=7};
+  allocations=modules=contexts=rust_calls=0;
+  if(sparklink_backend_register_reserved(&valid,&id,&out)!=0 || copied_reservation.id!=3 || copied_reservation.generation!=7) return 8;
+  free(accepted);accepted=NULL;
  }
  printf("ACTUAL_BACKEND_REGISTRATION_REJECT_PASS tests=%u bus_copy_cases=2\n",tests);
  return 0;
@@ -90,7 +108,8 @@ int main(void) {
                         '-fsanitize=address,undefined', '-fno-omit-frame-pointer',
                         '-I', str(kernel / 'include'), str(c), '-o', str(executable)], check=True)
         result = subprocess.check_output([str(executable)], text=True)
-    print(json.dumps({'status': 'ACTUAL_BACKEND_REGISTRATION_REJECT_PASS', 'tests': 11, 'bus_copy_cases': 2,
+    print(json.dumps({'status': 'ACTUAL_BACKEND_REGISTRATION_REJECT_PASS', 'tests': 11, 'bus_copy_cases': 2, 'reserved_rejection_cases': 3, 'reserved_copy_cases': 1,
+                      'reserved_body_sha256': hashlib.sha256(reserved_body.encode()).hexdigest(),
                       'bus_getter_sha256': hashlib.sha256(getter.encode()).hexdigest(),
                       'actual_function_sha256': hashlib.sha256(body.encode()).hexdigest(),
                       'production_file_sha256': hashlib.sha256(source.encode()).hexdigest(),

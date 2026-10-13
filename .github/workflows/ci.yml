@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 1c720574d72f0ef264a4340eca10e75fbde983bd
+          ref: 7e654fde93b9e073db1593891f2b34581ffbf638
           path: .kernel-uapi
           sparse-checkout: |
             include/uapi/linux/sparklink_ioctl.h
@@ -139,7 +139,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 1c720574d72f0ef264a4340eca10e75fbde983bd
+          ref: 7e654fde93b9e073db1593891f2b34581ffbf638
           path: .kernel-tools
           # Raw worker ioctls also compile against the canonical pinned UAPI.
           sparse-checkout: |
@@ -158,8 +158,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          path: .registration-contract
+          sparse-checkout: tools/backend_registration_contract.py
+      - uses: actions/checkout@v4
+        with:
           repository: OpenSparklink/linux
-          ref: 1c720574d72f0ef264a4340eca10e75fbde983bd
+          ref: 7e654fde93b9e073db1593891f2b34581ffbf638
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -182,6 +186,8 @@ jobs:
           /tmp/sparklink-backend-test
       - name: Install compiler and sanitizer runtimes
         run: sudo apt-get update && sudo apt-get install -y clang
+      - name: Check actual registration rejects before following ops
+        run: python .registration-contract/tools/backend_registration_contract.py --kernel .kernel-containment
       - name: Execute actual source failure boundaries (not RF or crypto vectors)
         working-directory: .kernel-containment
         env:

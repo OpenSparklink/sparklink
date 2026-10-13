@@ -114,3 +114,14 @@ provider 对象。验证接受时版本/能力与回调、有限缓冲一致及�
 并发或硬件行为。TEST bus 只是显式测试 provider 标签，不代表已实现 VirtualBackend。
 38 项实际验证函数回归在 Linux selftests 的 `sparklink_backend_test.c`；
 工具报告不继承真实 WS73 数据资格。
+
+注册入口的内存访问顺序由实际C函数回归补充：
+
+```sh
+python3 tools/backend_registration_contract.py --kernel ../linux
+```
+
+直接抽取生产 `sparklink_backend_register` 函数与transport结构，采用clang
+ASan/UBSan，11个拒绝用例使用不可访问ops哨兵验证未知布局/bus/方言/能力不跟随指针，
+拒绝不改变identity、不分配、不持引用或执行回调。分配/module/Rust调用为依赖fixture，
+不能作为真实内核引用或并发退出证明。版本不符先拒绝，避免复制不同布局的尾部。

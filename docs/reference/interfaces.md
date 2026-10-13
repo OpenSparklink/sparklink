@@ -16,12 +16,12 @@
 
 ## 本批源码核对的状态（未发布 ABI）
 
-核对用户态 `670674736ac90` 和 Linux 已提交 `88372a9b7cbc`。之后的 K1ed/U231 诊断修复及 VM 门禁另见当前资格；本表不转授旧基线资格。
+本轮核对用户态 `dc040002555c` 与 Linux `e78b88f050aa`；仅描述源码可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。
 
 | 范围 | 当前状态与限制 | 源码定位 |
 |---|---|---|
-| Native 管理／诊断 | 版本化请求，controller generation／所有权检查；K1ed 已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-protocol/src/ioctl.rs`、内核 `sparklink_core.rs` |
-| Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/dbus_iface.rs`、`libsparklink` Native API、内核 socket |
+| Native 管理／诊断 | 版本化请求，controller generation／所有权检查；已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-protocol/src/ioctl.rs`、内核 `sparklink_core.rs` |
+| Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`libsparklink` Native API、内核 socket |
 | D-Bus ServiceManager／RemoteService | 正常业务明确 NotSupported；非法参数可先 InvalidArgs；不表示服务已远端发布 | `slkd/src/service.rs` |
 | 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-protocol/src/ioctl.rs`、内核 UAPI |
 | 旧 property／write facade | property 超 248、write 超 252 字节拒绝；这是遗留输入校验，不是新 Engine MTU 承诺 | `slkd/src/service.rs` |
@@ -34,3 +34,5 @@ C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声�
 旧0x82 DLI poll、Raw256类型、Rust EventReceiver/poll/next_event、C slk_poll_event及Python旧Adapter.poll_event已删除，无兼容期。Python NativeAdapter.poll_event是现有非消费ControllerEvent路径，名称相似但契约不同；monitor的--legacy不再接受。详见当前资格与三类审计。
 
 旧read(2)／44字节队列及0x70/0x71统计接口已删除。当前ControllerEventGet按每注册游标提供完整记录，失败copy不推进readiness；snoop保留独立权限。slctl events／D-Bus GetControllerEventPosition返回(index,generation,sequence)，来自实际LinkSnapshot.event_seq，不能解释为pending、delivered、ACK或完整resync屏障。
+
+[Controller 事件字段、错误及删除入口](controller-events.md) 给出本批逐接口核对；完整 API 迁移仍未完成。

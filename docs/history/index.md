@@ -8,6 +8,7 @@
 :maxdepth: 1
 
 records
+kernel-records
 ```
 
 自然故障根因未查明、非人工自动恢复尚未通过的事项继续开放。

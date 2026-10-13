@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'docs/**'
+      - '**/*.md'
       - 'README.md'
       - 'pyproject.toml'
       - 'uv.lock'
@@ -13,6 +14,7 @@ on:
   pull_request:
     paths:
       - 'docs/**'
+      - '**/*.md'
       - 'README.md'
       - 'pyproject.toml'
       - 'uv.lock'

@@ -7,6 +7,7 @@
 :maxdepth: 1
 
 interfaces
+controller-events
 documentation-build
 ```
 

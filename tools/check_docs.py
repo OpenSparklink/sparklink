@@ -3,8 +3,10 @@
 from collections import Counter
 from pathlib import Path
 import argparse
+import json
 import re
 import tomllib
+import subprocess
 from html.parser import HTMLParser
 from urllib.parse import urlsplit, unquote
 
@@ -45,10 +47,37 @@ def main():
             errors.append(f"incomplete disposition: {item['path']}")
         if not (ROOT / item['path']).is_file():
             errors.append(f"missing original: {item['path']}")
-    legacy = {str(p.relative_to(ROOT)) for p in DOCS.glob('*.md') if p.name != 'index.md'}
-    legacy.update(str(p.relative_to(ROOT)) for p in (DOCS / 'decisions').glob('*.md') if p.name != 'index.md')
-    for path in legacy - set(paths):
-        errors.append(f'unmapped original: {path}')
+    tracked = set(subprocess.check_output(
+        ['git', 'ls-files', '*.md'], cwd=ROOT, text=True).splitlines())
+    # Include new untracked docs while preparing a reviewable commit. Generated
+    # HTML, caches and external worktrees are not repository documentation.
+    tracked.update(str(p.relative_to(ROOT)) for p in DOCS.rglob('*.md')
+                   if '_build' not in p.parts)
+    for path in sorted(tracked - set(paths)):
+        errors.append(f'unmapped document: {path}')
+    kernel_map = json.loads((DOCS / 'kernel-documentation-map.json').read_text())
+    fields = {'repo', 'path', 'reader', 'purpose', 'section', 'validity',
+              'applicable_version', 'authority', 'disposition',
+              'source_sha256', 'original_url'}
+    entries = kernel_map['documents']
+    if len({x['path'] for x in entries}) != len(entries):
+        errors.append('duplicate kernel disposition')
+    for item in entries:
+        if not fields.issubset(item) or not all(item[k] for k in fields):
+            errors.append('incomplete kernel disposition')
+    # The downloaded user repository builds independently. When the sibling
+    # kernel is present, also reject silently omitted kernel documentation.
+    kernel = ROOT.parent / 'linux'
+    if (kernel / '.git').exists():
+        kernel_sources = subprocess.check_output(
+            ['git', 'ls-files', 'Documentation/*',
+             'tools/testing/selftests/sparklink/*.md'], cwd=kernel,
+            text=True).splitlines()
+        scoped = {p for p in kernel_sources
+                  if ('sparklink' in p or 'ws73' in p)
+                  and p.endswith(('.rst', '.md'))}
+        for path in sorted(scoped - {x['path'] for x in entries}):
+            errors.append(f'unmapped kernel document: {path}')
     canonical = {x['path'] for x in items if x['status'] == 'canonical'}
     if canonical != {'docs/ARCHITECTURE.md', 'docs/IMPLEMENTATION_PLAN.md', 'docs/CURRENT_CAPABILITIES.md'}:
         errors.append('canonical architecture/plan/capabilities changed')
@@ -66,7 +95,7 @@ def main():
                     errors.append(f'{page}: invalid navigation {line}')
                 owners[str(target.relative_to(ROOT))] += 1
     for item in items:
-        if item['publication'] == 'html' and owners[item['path']] != 1:
+        if item['publication'] == 'html' and item['path'] != 'docs/index.md' and owners[item['path']] != 1:
             errors.append(f"expected one canonical navigation home: {item['path']}")
     if args.html:
         html_root = args.html.resolve()
@@ -97,7 +126,7 @@ def main():
     if errors:
         print('\n'.join(errors))
         return 1
-    print(f'Documentation inventory PASS: {len(items)} original documents; explicit dispositions; canonical sources retained.')
+    print(f'Documentation inventory PASS: {len(items)} documents (originals and reader pages); explicit dispositions; canonical sources retained.')
     return 0
 
 

@@ -891,6 +891,8 @@ impl Adapter {
     }
 
     /// Send a DLI command
+    /// Retired raw admission; current kernels reject this entry.
+    /// Use versioned Diagnostic submit/result with explicit ownership.
     pub fn dli_send_cmd(&self, cmd: &mut SleDliCmd) -> Result<()> {
         unsafe { ioctl::sl_dli_send_cmd(self.raw_fd(), cmd)? };
         Ok(())
@@ -1111,7 +1113,7 @@ fn validate_diagnostic_submit(value: &SleDiagnosticSubmit) -> Result<()> {
         || value.reserved != 0
         || !(1..=5000).contains(&value.timeout_ms)
         || !matches!(value.action, 1 | 2)
-        || !matches!(value.opcode, 0x0402 | 0x0403 | 0x0404 | 0x0406)
+        || !matches!(value.opcode, 0x0401..=0x0404 | 0x0406)
     {
         return Err(Error::InvalidParam(
             "invalid Native metadata diagnostic request",
@@ -1261,8 +1263,12 @@ mod native_validation_tests {
             ));
             assert_eq!(value, bad);
         }
-        for action in [1, 2] {
-            let original = SleDiagnosticSubmit { action, ..good };
+        for (action, opcode) in [(1, 0x0401), (1, 0x0404), (2, 0x0406)] {
+            let original = SleDiagnosticSubmit {
+                action,
+                opcode,
+                ..good
+            };
             let mut value = original;
             assert!(matches!(
                 adapter.diagnostic_submit(&mut value),

@@ -285,7 +285,7 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         _ => {}
     }
     anyhow::ensure!(
-        snapshot.profile == 0 || cli.command.native_observation(),
+        cli.command.native_observation(),
         "legacy management command is unsupported on this native controller; use slctl for discovery or query for exclusive diagnostics"
     );
     let result = match cli.command {
@@ -411,8 +411,8 @@ fn cmd_native_query(
     use slk_protocol::*;
     use std::time::{Duration, Instant};
     anyhow::ensure!(
-        profile == 1,
-        "native diagnostic query currently requires WS73 profile 1"
+        matches!(profile, 0 | 1),
+        "diagnostic query requires a registered standard or WS73 profile"
     );
     let lease = adapter.acquire_management(generation, MANAGEMENT_DIAGNOSTIC)?;
     let result = (|| -> anyhow::Result<_> {

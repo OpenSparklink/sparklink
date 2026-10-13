@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前正常路径Kb619aecf261f/编译U7e64b89/工具U552fc62：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前正常路径K5a49caef5a6e/编译与工具U5e4d68b：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -67,8 +67,22 @@ Runtime表派生；未发布36-byte stats同步改名pending_count/runtime_count
 首轮真实40数据子门禁完成，但peer USB Down1112ms越过原1s观察使全轮FAIL，证据保留。
 工具552fc62使用两端共享、不可刷新的5s诊断预算并逐端对应真实Down/propertyfalse；
 不是协议时限保证或生产提前置false。本版新40/249/16拒绝和CI9通过，QMP仅支撑。
-标准USB仍是旧C资源表/静态Usb分派，尚未完整迁common Backend或从core拆独立driver；
+标准USB全局C资源表已删除，实际调用者持每probe引用context；静态Usb分派仍在，
+尚未完整迁common Backend或从core拆独立driver；
 profile0默认daemon继续不支持，无标准USB物理资格，不恢复不可靠旧SSAP。
+
+标准USB资源所有权本批 **K5a49caef5a6e / 编译service与运行工具U5e4d68b**：
+删除全局C资源表；每次probe私有分配context，持有USB interface/device引用及不可变id/generation，
+Rust UsbDevice通过get/put、Clone/Drop持引用，所有实际FFI/固件/PM调用者传context。
+同一io_lock串行I/O与退休，退休关准入并kill/join URB，最终put释放资源；旧context不因index复用
+指向新设备。固件内部使用已加锁入口，避免递归取锁；命令超限明确拒绝，不静默截断。
+C实际注册/资源18项与metadata7、Core13、firmware67C/12Rust、TX11、Native33/ingress9依赖回归，
+含受控I/O/退休交错及同行独立context；不是内核refcount/IRQ/module/callback的完整证明。
+清洁构建零warning、空VM三次、工具440、准确CI9通过。新40轮短消息、8轮249及16超限拒绝，
+对端应用真实校验/回复；224两端SDU/112NOCP，捕获零drop、taint0，RF22/连接/dup/最后关闭保持。
+未新增context形式化证明，旧allocator两harness仍NOT_PROVEN_UNSUPPORTED。
+common Backend标准USB注册、静态Usb分派删除、bus构建拆分、真正Virtual、模块/回调/IRQ/PM及
+标准USB物理设备门禁仍缺；自然故障根因和非人工恢复继续开放，QMP只作测试支撑。
 
 ## 目标分层及架构决策
 

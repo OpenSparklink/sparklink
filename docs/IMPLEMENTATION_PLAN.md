@@ -456,8 +456,30 @@ actual13注册/open+bootstrap/metadata/Native33/ingress9、零warning/空VM3/CI9
 生产allocator两harness均NOT_PROVEN_UNSUPPORTED，不从raw solver成功授予资格。
 首轮40数据子门禁完成但peer Down1112ms超旧1s门禁全轮FAIL；新单5s预算+真实Down
 证据关联下，新40/249八轮/16拒绝通过（编译U7e64b89、工具U552fc62，必须分开）。
-下一批仍迁实际C表/driver context/module/generation/RX/stop/PM至common Backend，
+上一批待迁C表已由本批私有context替代（见下）；继续common Backend注册与module/callback屏障，
 删除静态Usb分派/拆分bus构建；无USB core/真正Virtual/profile0/标准USB物理未通过。
+
+标准USB资源所有权本批 **K5a49caef5a6e / 编译service与运行工具U5e4d68b**：
+删除全局C资源表；每次probe私有分配context，持有USB interface/device引用及不可变id/generation，
+Rust UsbDevice通过get/put、Clone/Drop持引用，所有实际FFI/固件/PM调用者传context。
+同一io_lock串行I/O与退休，退休关准入并kill/join URB，最终put释放资源；旧context不因index复用
+指向新设备。固件内部使用已加锁入口，避免递归取锁；命令超限明确拒绝，不静默截断。
+C实际注册/资源18项与metadata7、Core13、firmware67C/12Rust、TX11、Native33/ingress9依赖回归，
+含受控I/O/退休交错及同行独立context；不是内核refcount/IRQ/module/callback的完整证明。
+清洁构建零warning、空VM三次、工具440、准确CI9通过。新40轮短消息、8轮249及16超限拒绝，
+对端应用真实校验/回复；224两端SDU/112NOCP，捕获零drop、taint0，RF22/连接/dup/最后关闭保持。
+未新增context形式化证明，旧allocator两harness仍NOT_PROVEN_UNSUPPORTED。
+common Backend标准USB注册、静态Usb分派删除、bus构建拆分、真正Virtual、模块/回调/IRQ/PM及
+标准USB物理设备门禁仍缺；自然故障根因和非人工恢复继续开放，QMP只作测试支撑。
+
+本批三类清单：
+
+- **立即删除，已实施**：全局C资源表和按index查资源；Rust可复制借用资源handle；命令长度静默截断。实际生产调用者全部传持引用context。
+- **移入测试，保留**：实际C分配/get-put/退休及交错依赖fixture、历史codec/firmware及已有实机失败证据；未把USB依赖fixture编入生产。
+- **等待替代**：标准USB完整common Backend adapter/注册、静态Usb分派与core bus耦合、module/IRQ/callback/PM门禁；未消费Rust SleUrbCtx/sync wrappers及模块级dead_code须按调用审计剥离，C实际RX URB helpers不能机械删除。
+
+近期先完整整改目标所有权、事件和构建边界，再继续用户态SSAP及数据扩展；
+保留完整S0–S6/19WP/10FV/12DG与已有实机路径，不以控制面竞争全集作为数据开发前置。
 
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。

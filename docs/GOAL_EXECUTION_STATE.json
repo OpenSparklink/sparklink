@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T01:46:15.508288+00:00",
+  "updated_at_utc": "2026-10-13T02:12:31.280311+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,16 +26,16 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "b619aecf261f39e11f5ebabd63eb79a524c07447",
-    "userspace": "8107d7032062a1709e503e63881372e9b7a07c42"
+    "linux": "5a49caef5a6e8742d978fd66aa685b5b6472c68b",
+    "userspace": "5e4d68b289373f1984dc964d213d9e8e9e5303a1"
   },
   "qualified_source_heads": {
-    "linux": "b619aecf261f39e11f5ebabd63eb79a524c07447",
-    "userspace": "7e64b8953114299f74abd8081fa862ceba1fe71d"
+    "linux": "5a49caef5a6e8742d978fd66aa685b5b6472c68b",
+    "userspace": "5e4d68b289373f1984dc964d213d9e8e9e5303a1"
   },
   "current_qualification": {
-    "DG01": "Kb619aecf/compiledU7e64b89/tools552fc62 fresh40 ordinary real peer round trips with RF/typed connect-Down properties/dup-lastclose/QMP support. First same source run40 data subgate but wholeFAIL peer physical Down1112ms vs old1s; retained.",
-    "DG02": "Same exact source8 app249 and16 oversize rejects absent capture; long/layered/same-Binding gates open",
+    "DG01": "K5a49caef/compiled and toolsU5e4d68b fresh ordinary real40 short peer round trips; RF22/connect/Down/dup/lastclose/QMP support; exact independent two-end evidence.",
+    "DG02": "Same sources8 app249 and16 oversize rejections absent data capture; other layered/long/same-Binding gates open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -45,12 +45,12 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: versioned WS73/Core ingress, standard USB now pending unknown metadata/no false setup/transport-open, exact identity across probe/detach/PM, partial open cleanup and no state across I/O, proto/binding deleted/canonical stats. Actual13/bootstrap/metadata7/Native33/ingress9/440/CI9/fresh40-249 pass. Full standard USB C context/module/Backend/enum/bus build/Virtual/IRQ/callback/PM/physical remain open.",
+    "WP13": "PARTIAL: private C per-probe refcount context, retained USB refs, Rust owning Clone/Drop, immutable identity, context-based actual operations and serialized I/O/retire; actual fixtures/CI/clean build/new real40-249 pass. Common standard USB Backend/module/enum/bus split/Virtual/IRQ/callback/PM/physical unqualified.",
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP13 actual standard USB C resource/context/module/generation lifetime to common Backend registration/start/RX/stop/PM; remove remaining static Usb variant and split bus builds. Protocol/binding authority now deleted; pending/partial-open core already wired, no repeat implementation. Audit/quarantine unconsumed Rust URB wrappers/global mask while retaining actual C and codec tests. WP12 event consumers parallel.",
+    "WP13 wire actual retained standard USB context into common Backend register/start/RX/stop, module references and callback barriers; remove static Usb enum and split bus builds with core USB=n/m. Audit/remove unused Rust URB/sync wrappers and module dead_code while retaining actual C RX helpers and tests. True Virtual and WP12 authoritative event migration remain required.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -283,15 +283,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Per-Binding immutable scoped/directional Grant, Host-locked final publication and IRQ-save implemented;43 pure CBMC and exact source/CI/real40/249 + six withdrawal/two directional cases qualified. Trusted security/ownership/inflight/full original exits remain open.",
-  "current_audit": "docs/SSAP_PRODUCTION_SEPARATION_20261013.md",
-  "issue_sync_status": "Original28 scope preserved;14 canonical scoped Binding Grant/pure proof/new real normal+8-case comments read back exact; original body hashes and OPEN unchanged",
+  "current_batch": "WP13 retained standard USB probe context and actual callers, global C resource table removed; accurate clean build/CI/offline/fresh real40/249 qualified only; complete target architecture remediation remains first.",
+  "current_audit": "docs/evidence/usb-context-offline-20261013.json",
+  "issue_sync_status": "USB context publication pending; prior issue scopes OPEN preserved",
   "current_implementation_heads": {
-    "linux": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
-    "userspace": "dfb8636d4aa95fa24693b8d7e59730759032f34c"
+    "linux": "5a49caef5a6e8742d978fd66aa685b5b6472c68b",
+    "userspace": "5e4d68b289373f1984dc964d213d9e8e9e5303a1"
   },
   "next_resume_tasks": [
-    "WP13 actual standard USB C resource/context/module/generation lifetime to common Backend registration/start/RX/stop/PM; remove remaining static Usb variant and split bus builds. Protocol/binding authority now deleted; pending/partial-open core already wired, no repeat implementation. Audit/quarantine unconsumed Rust URB wrappers/global mask while retaining actual C and codec tests. WP12 event consumers parallel.",
+    "WP13 wire actual retained standard USB context into common Backend register/start/RX/stop, module references and callback barriers; remove static Usb enum and split bus builds with core USB=n/m. Audit/remove unused Rust URB/sync wrappers and module dead_code while retaining actual C RX helpers and tests. True Virtual and WP12 authoritative event migration remain required.",
     "WP05: implement per-Binding revocable kernel Grant epoch/direction/security; Management release/owner death and successor must not revive old fd; use Session/Ticket commit arbitration",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -299,7 +299,7 @@
     "Then unchanged full S0\u2013S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/Proxy/PM/recovery/release"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
-  "offline_evidence": "docs/evidence/binding-grant-offline-20261013.json",
+  "offline_evidence": "docs/evidence/usb-context-offline-20261013.json",
   "ssap_separation_batch_complete": true,
   "target_architecture_remediation_complete": false,
   "batch_evidence": [
@@ -338,18 +338,22 @@
     "docs/evidence/backend-retirement-offline-20261013.json",
     "docs/evidence/ws73-serdev-quarantined-short-repeat-20261013.json",
     "docs/evidence/ws73-serdev-quarantined-249-boundary-20261013.json",
-    "docs/evidence/serdev-quarantine-offline-20261013.json"
+    "docs/evidence/serdev-quarantine-offline-20261013.json",
+    "docs/evidence/usb-context-offline-20261013.json",
+    "docs/evidence/ws73-usb-context-short-repeat-20261013.json",
+    "docs/evidence/ws73-usb-context-249-boundary-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/serdev-quarantine-issues-20261013.json",
   "latest_evidence_commit": "3f3e5455809a767b62fa1817701174e3bf2922fc",
-  "previous_goal_turn_classification": "progress: SSAP separation and DGRAM migration",
-  "current_goal_turn_classification": "progress: authoritative orphan-serdev caller audit corrected prior assumption, production quarantine, transport dead-member/global-mask removal, exact archive/compiled symbols,zero-warning/emptyVM3/new40-249/CI9;full scope retained;15 existing issues read back OPEN/scope unchanged including K12",
+  "previous_goal_turn_classification": "progress: authoritative orphan-serdev caller audit corrected prior assumption, production quarantine, transport dead-member/global-mask removal, exact archive/compiled symbols,zero-warning/emptyVM3/new40-249/CI9;full scope retained;15 existing issues read back OPEN/scope unchanged including K12",
+  "current_goal_turn_classification": "progress: removed global C USB resource lookup; actual callers retain probe allocation with immutable identity, get/put and I/O-retire serialization; scoped fixtures18C/metadata7/core13/firmware67C12Rust/Native33/ingress9/tool440/CI9/clean build/emptyVM3/new real40-249. No full context/module/callback proof or target architecture completion.",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
     "82aa65a77019804e78a95c1706c461e715187314",
     "9124bc4d0cf54442a7cb9dc2c6413965ad5649ba",
-    "c830f0947e31e0509cc8b303a007cf7ee8e44e59"
+    "c830f0947e31e0509cc8b303a007cf7ee8e44e59",
+    "5e4d68b289373f1984dc964d213d9e8e9e5303a1"
   ],
   "backend_descriptor_slice": {
     "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -399,7 +403,7 @@
       "whole_package_closed": false
     }
   },
-  "qualified_run_tools_head": "552fc62c15024efe282562d9602b09343b21f86e",
+  "qualified_run_tools_head": "5e4d68b289373f1984dc964d213d9e8e9e5303a1",
   "usb_pending_slice": {
     "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
     "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
@@ -418,5 +422,19 @@
       "receipt": "docs/evidence/usb-pending-issues-20261013.json",
       "whole_package_closed": false
     }
+  },
+  "previous_usb_pending_source_heads": {
+    "linux": "b619aecf261f39e11f5ebabd63eb79a524c07447",
+    "userspace": "7e64b8953114299f74abd8081fa862ceba1fe71d"
+  },
+  "usb_context_slice": {
+    "kernel": "5a49caef5a6e8742d978fd66aa685b5b6472c68b",
+    "compiled_service": "5e4d68b289373f1984dc964d213d9e8e9e5303a1",
+    "run_tools": "5e4d68b289373f1984dc964d213d9e8e9e5303a1",
+    "implemented": "Per-probe retained C/USB references, immutable identity and actual owning Rust callers; global table deleted; serialized retirement and exact length rejection.",
+    "offline": "Scoped actual source dependencies, controlled context I/O/retire, clean build/emptyVM/tool440/CI9 PASS",
+    "formal": "No new context proof; previous allocator NOT_PROVEN_UNSUPPORTED",
+    "real": "40 short,8 app249,16 rejects,224 two-end SDUs/112 NOCP; RF22/connection/dup/lastclose/QMP support; taint0",
+    "whole_package_complete": false
   }
 }

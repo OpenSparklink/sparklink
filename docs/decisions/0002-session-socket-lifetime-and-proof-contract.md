@@ -292,7 +292,7 @@ reserve身份不等于metadata/open/Ready；未知地址为零，不能使用生
 派生。pending_count包含退休中无Runtime的保留identity；runtime_count包含Setup/fault，
 都不等于Ready数。接口未发布，同步kernel/Rust/CLI并删除旧名，36-byte布局未改。
 
-实际USBopen在共同Backend生命周期mutex下，复制只借用该reservation的transport
+实际USBopen在共同Backend生命周期mutex下，克隆该reservation的持引用transport
 值后释放state锁，再进行listener I/O。部分失败join第一listener；退休胜出则close两者
 且不发布open，generation identity保持至所有清理后释放。失败C注册不能unregister
 别人的表项。完整C表资源/module引用、并发PM/callback/IRQ/真实标准USB仍须后续门禁。
@@ -300,3 +300,13 @@ reserve身份不等于metadata/open/Ready；未知地址为零，不能使用生
 双端Down异步：不能由本端Disconnect成功推断对端属性立即false。验收使用单一原始
 5s观察预算和逐端真实USB Down/propertyfalse证据，限时不刷新；不是标准保证。
 第一次1112ms peer Down超过旧1s期限，全轮FAIL保留，40数据子门禁与整轮资格分开。
+
+## 标准USB引用context决策（2026-10-13）
+
+资源属于probe allocation，registry只索引身份。不可变id/generation不作为资源lookup key；
+持引用UsbDevice贯穿Runtime/controller/固件/PM，Clone获取引用，Drop释放。退休与释放分开：
+io_lock串行实际操作和关准入/URB join，退休后旧引用只能失败，最终put释放USB引用与allocation。
+内部locked固件入口避免递归锁。调用者必须全程持引用，API限定process context。
+本批不宣称URB回调、module unload、IRQ、PM或无USB构建已证明；保持common Backend迁移门禁。
+18项C依赖fixture和受控I/O/退休交错、新准确40/249业务回归仅各自范围；
+原panic/最后回复丢失/1112ms Down失败及未证明Kani报告继续保留。

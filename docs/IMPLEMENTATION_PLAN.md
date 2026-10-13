@@ -8,6 +8,18 @@
 当前五维资格只在[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)维护，
 goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_STATE.json)。
 
+## 独立文档整改（WP17／WP18 附属，不阻塞真实 WS73）
+
+采用 Diátaxis 的读者任务导航，原 ARCHITECTURE／本文件／CURRENT_CAPABILITIES／ADR／GOAL_EXECUTION_STATE 路径与权威性保留。
+独立 root docs dependency group + uv.lock；Python 3.12 CI、严格 Sphinx/MyST/Furo HTML、artifact 与单独外链检查。
+最新清单覆盖基线 64 份 Markdown，原始版本／hash／处置完整；历史报告及受限 SDK／标准／抓包不整体进入站点。
+
+[文档工作附页](project/documentation-migration.md) 记录 D0–D6。基础设施、导航、README 和第一批内容拆分已落实；
+严格 HTML／干净锁定环境／内部资源检查通过，浏览器实测仍缺，外链限流不算 PASS。
+API 全字段／错误矩阵、其余混合页、首次真实硬件操作教程、离线 Mermaid 和正式发布仍待完成。
+文档不改协议架构、源码功能、准确实机资格、原验收和 VM-only，也不成为当前整改／数据面／用户态 SSAP 的前置依赖。
+U#8／K#19 及所有未完成事项保持开放；部分导航或构建通过不关闭整项工作。
+
 ## 采用后的准确基线与优先级
 
 最新执行阶段：**先完整整改到采用的目标架构，再继续扩展功能。** 旧SSAP业务剥离已取得本批退出资格；

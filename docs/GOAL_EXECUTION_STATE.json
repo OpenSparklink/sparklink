@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T12:23:04.199571+00:00",
+  "updated_at_utc": "2026-10-13T13:04:22.175268+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -824,5 +824,49 @@
   },
   "deferred_work": [
     "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
-  ]
+  ],
+  "documentation_workstream": {
+    "status": "partial",
+    "independent_of_protocol_critical_path": true,
+    "branch": "codex/diataxis-docs",
+    "source_baseline": {
+      "userspace": "670674736ac90ec0f89ca0330849e22b1bc8f81b",
+      "linux": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
+      "linux_dirty_changes": "preserved; not documentation work or qualified"
+    },
+    "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
+    "task_detail": "docs/project/documentation-migration.md",
+    "inventory": "docs/documentation-map.toml",
+    "original_documents": 64,
+    "implemented": [
+      "docs-only uv lock and CI",
+      "Diataxis task navigation",
+      "README corrected",
+      "three how-to guides",
+      "interface status source audit",
+      "architecture history separated with original version retained",
+      "real WS73 evidence-reading tutorial"
+    ],
+    "offline_passed": [
+      "fresh locked Python 3.12 environment",
+      "nitpicky warnings-as-errors HTML",
+      "internal page anchor resource audit",
+      "public path and evidence exclusion audit"
+    ],
+    "unverified": [
+      "browser UI/search/diagram/mobile: no available CUA browser",
+      "complete API field/error audit",
+      "remaining mixed-source extraction",
+      "qualified first hardware execution tutorial",
+      "offline Mermaid assets/license",
+      "formal publishing"
+    ],
+    "hardware_qualification_unchanged": true,
+    "issues": [
+      "OpenSparklink/sparklink#8",
+      "OpenSparklink/linux#19",
+      "OpenSparklink/sparklink#3"
+    ],
+    "closure_allowed": false
+  }
 }

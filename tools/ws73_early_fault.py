@@ -72,6 +72,28 @@ def validate_core_absent(sample):
     if sample.get('errno')!=errno.ENODEV or 'snapshot' in sample:raise ValueError('old Core registration must be absent')
 
 
+def ordinary_bus_registration(index,generation,user):
+    path=f'/org/sparklink/slk{index}_g{generation}'
+    command=('import sys,json,subprocess,time,os;sys.path.insert(0,'+repr(str(TOOLS))+');from ws73_north_star import ordinary_identity;d={"credentials":ordinary_identity(),"kernel_access":(os.access("/dev/sparklink",os.R_OK) or os.access("/dev/sparklink",os.W_OK)),"commands":[]};'
+             +'\nfor args in [["/bin/slctl","registration",'+repr(path)+'],["/bin/slctl","registrations"]]:\n started=time.time_ns();r=subprocess.run(args,text=True,capture_output=True,timeout=10);d["commands"].append({"args":args,"exit":r.returncode,"stdout":r.stdout,"stderr":r.stderr,"start_wall_ns":started,"end_wall_ns":time.time_ns()})\nprint(json.dumps(d))')
+    r=application('/bin/python3','-c',command,user=user,capture_output=True,timeout=25)
+    if r.returncode:raise ValueError('actual ordinary D-Bus probe failed: '+r.stderr)
+    d=json.loads(r.stdout);d['user']=user;return d
+
+
+def validate_bus_registration(sample,index,generation,state):
+    c=sample['credentials'];uid={'ws73':1000,'observer':1001}[sample['user']]
+    if c['uids']!=[uid]*4 or any(int(c[k],16) for k in ['cap_eff','cap_prm','cap_amb']):raise ValueError('actual ordinary bus credentials required')
+    if uid==1001 and sample['kernel_access']:raise ValueError('default observer must lack direct kernel access')
+    path=f'/org/sparklink/slk{index}_g{generation}';rows=sample['commands'];direct,listing=rows
+    if direct['args']!=['/bin/slctl','registration',path] or listing['args']!=['/bin/slctl','registrations']:raise ValueError('actual registration CLI arguments required')
+    if state is None:
+        if direct['exit']==0 or listing['exit'] or path in listing['stdout']:raise ValueError('old daemon identity must be rejected/absent')
+    else:
+        expected=f'Registration {path}: index={index} generation={generation} state={state} profile=1 bus=4 phase={3 if state=="Fault" else 0} error={-2 if state=="Fault" else 0}\n'
+        if direct['exit'] or listing['exit'] or direct['stdout']!=expected or expected not in listing['stdout']:raise ValueError('actual exact Core-backed D-Bus observation required')
+
+
 def validate_fault(sample):
     c=sample['credentials'];a=sample['attributes']
     if c['uids'] != [1000]*4 or any(int(c[k],16) for k in ['cap_eff','cap_prm','cap_amb']):raise ValueError('ordinary read credentials required')
@@ -121,6 +143,16 @@ def coordinate(pid):
         if last is None:raise ValueError('target failed-init observation deadline; no simulated success')
         interface,sample,fault=last;d.update(failed=sample,fault_identity=fault,failed_usb=dict(bus=int(Path('/sys/bus/usb/devices/1-3/busnum').read_text()),device=int(Path('/sys/bus/usb/devices/1-3/devnum').read_text())))
         d['core_fault']=ordinary_core_snapshot(fault['id'],fault['generation']);validate_core_snapshot(d['core_fault'],fault['id'],fault['generation'],2)
+        # Daemon publication is asynchronous, but the original bound is finite.
+        deadline=time.monotonic()+10
+        while True:
+            bus=[ordinary_bus_registration(fault['id'],fault['generation'],u) for u in ['ws73','observer']]
+            try:
+                for row in bus:validate_bus_registration(row,fault['id'],fault['generation'],'Fault')
+                d['bus_fault']=bus;break
+            except ValueError:
+                if time.monotonic()>deadline:d['bus_fault']=bus;save(d);raise
+                time.sleep(.1)
         cli=application('/bin/slkconfig','--adapter',str(fault['id']),'--generation',str(fault['generation']),'registration',capture_output=True,timeout=10)
         d['core_fault_cli']=dict(exit=cli.returncode,stdout=cli.stdout,stderr=cli.stderr)
         expected=f'Registration: index={fault["id"]} generation={fault["generation"]} state=2 profile=1 bus=4 phase=3 error=-2\n'
@@ -144,6 +176,8 @@ def coordinate(pid):
         d['stats_after_remove']=stats()
         if d['stats_after_remove']['fields']!={'Devices':2,'Reserved only':0,'Runtimes':2}:raise ValueError('pending cancellation must converge without clearing peers')
         d['core_cancelled']=ordinary_core_snapshot(fault['id'],fault['generation']);validate_core_absent(d['core_cancelled'])
+        d['bus_cancelled']=[ordinary_bus_registration(fault['id'],fault['generation'],u) for u in ['ws73','observer']]
+        for row in d['bus_cancelled']:validate_bus_registration(row,fault['id'],fault['generation'],None)
         save(d);print('WS73_TARGET_EARLY_FAULT_READD_READY',flush=True)
         if input().strip()!='early-fault-readd':raise ValueError('explicit guest-only readd acknowledgement required')
         ready(2);new=registration('1-3');d['replacement']=new
@@ -151,6 +185,10 @@ def coordinate(pid):
         d['core_replacement']=ordinary_core_snapshot(new['index'],new['generation']);validate_core_snapshot(d['core_replacement'],new['index'],new['generation'],3)
         d['core_stale']=ordinary_core_snapshot(fault['id'],fault['generation'])
         validate_core_absent(d['core_stale'])
+        d['bus_replacement']=[ordinary_bus_registration(new['index'],new['generation'],u) for u in ['ws73','observer']]
+        for row in d['bus_replacement']:validate_bus_registration(row,new['index'],new['generation'],'Installed')
+        d['bus_stale']=[ordinary_bus_registration(fault['id'],fault['generation'],u) for u in ['ws73','observer']]
+        for row in d['bus_stale']:validate_bus_registration(row,fault['id'],fault['generation'],None)
         d['healthy_after']=[registration(p) for p in ['1-1','1-2']]
         if any(not stable(a,b) for a,b in zip(d['healthy_before'],d['healthy_after'])):raise ValueError('peer identity changed during fault/retry')
         exchange_record(d,'after_retry',['1-1','1-3'],pid)
@@ -171,6 +209,10 @@ def corroborate(record,capture,guest_root=None):
     validate_core_snapshot(record['core_fault'],fault['id'],fault['generation'],2)
     new=record['replacement'];validate_core_snapshot(record['core_replacement'],new['index'],new['generation'],3)
     validate_core_absent(record['core_cancelled']);validate_core_absent(record['core_stale'])
+    for label,index,generation,state in [('bus_fault',fault['id'],fault['generation'],'Fault'),('bus_cancelled',fault['id'],fault['generation'],None),('bus_replacement',new['index'],new['generation'],'Installed'),('bus_stale',fault['id'],fault['generation'],None)]:
+        rows=record[label]
+        if [r['user'] for r in rows]!=['ws73','observer']:raise ValueError('both default observer and control application bus receipts required')
+        for row in rows:validate_bus_registration(row,index,generation,state)
     cli=record['core_fault_cli']
     if cli['exit'] or cli['stdout']!=f'Registration: index={fault["id"]} generation={fault["generation"]} state=2 profile=1 bus=4 phase=3 error=-2\n':raise ValueError('actual CLI fault observation required')
     if validate_fault(record['failed_after_business'])!=fault or record['fault_identity']!=fault:raise ValueError('same failed Core identity across actual peer business required')

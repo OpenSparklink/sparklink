@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_early_fault import validate_fault, validate_core_snapshot, validate_core_absent
+from ws73_early_fault import validate_fault, validate_core_snapshot, validate_core_absent, validate_bus_registration
 
 
 class EarlyBootstrapFault(unittest.TestCase):
@@ -17,6 +17,22 @@ class EarlyBootstrapFault(unittest.TestCase):
         absent={'credentials':c,'errno':19};validate_core_absent(absent)
         for value in [{'credentials':c,'errno':0},{'credentials':c,'errno':19,'snapshot':{}},{'credentials':dict(c,uids=[0]*4),'errno':19}]:
             with self.assertRaises(ValueError):validate_core_absent(value)
+
+    def test_bus_proof_requires_exact_live_generation_and_default_observer_policy(self):
+        path='/org/sparklink/slk2_g3'
+        text=f'Registration {path}: index=2 generation=3 state=Fault profile=1 bus=4 phase=3 error=-2\n'
+        sample={'user':'observer','credentials':dict(self.sample()['credentials'],uids=[1001]*4),'kernel_access':False,'commands':[{'args':['/bin/slctl','registration',path],'exit':0,'stdout':text},{'args':['/bin/slctl','registrations'],'exit':0,'stdout':text}]}
+        validate_bus_registration(sample,2,3,'Fault')
+        for mutation in ['root','kernel','wrong-generation','missing-listing']:
+            bad=copy.deepcopy(sample)
+            if mutation=='root':bad['credentials']['uids']=[0]*4
+            if mutation=='kernel':bad['kernel_access']=True
+            if mutation=='wrong-generation':bad['commands'][0]['stdout']=text.replace('generation=3','generation=4')
+            if mutation=='missing-listing':bad['commands'][1]['stdout']=''
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):validate_bus_registration(bad,2,3,'Fault')
+        gone=copy.deepcopy(sample);gone['commands'][0]['exit']=1;gone['commands'][1]['stdout']=''
+        validate_bus_registration(gone,2,3,None)
+        with self.assertRaises(ValueError):validate_bus_registration(sample,2,3,None)
 
     def sample(self):
         return {'credentials':{'uids':[1000]*4,'cap_eff':'0','cap_prm':'0','cap_amb':'0'},'attributes':{'native_runtime':'id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=2 pending_generation=3 core_pending_ret=0 core_phase=3 core_error=-2','metadata_valid':'0','boot_stage':'failed','boot_error':'-2'}}

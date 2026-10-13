@@ -8,6 +8,17 @@
 当前五维资格只在[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)维护，
 goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_STATE.json)。
 
+## 近期整改：重复连接／发现模型已退休，继续安全／地址与观察路由迁移
+
+按[调用审计](evidence/protocol-state-retirement-audit-20261014.json)退休旧连接、发现、角色、AFH/sync/PDU模型
+及第二接收分流，实际Native Host／Session／Channel路径保留；删除混合统计并迁移CLI与故障门禁消费者。
+准确源码、首次失败及实机范围只从[当前资格](CURRENT_CAPABILITIES.md)和
+[本批证据](evidence/protocol-state-retirement-progress-20261014.json)进入。
+下一批逐项核对SecurityInner／RPA、default_selection/debugfs/诊断观察及未发布旧入口，
+保留真正密码／授权机制与有价值测试，迁移或拒绝后删除错误状态来源。
+canonical loss/拓扑／owner-death、完整callback与生命周期、真实credit/NOCP和数据纵向门禁并行；
+不先穷尽控制竞争，不缩小原S0–S6或提前关闭整项。
+
 ## 近期整改：软件 PM 与旧统计展示剥离后，继续统一剩余状态
 
 本批按[审计](evidence/power-model-retirement-audit-20261014.json)移除默认软件PM、

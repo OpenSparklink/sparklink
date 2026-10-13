@@ -173,7 +173,7 @@ K43e55d59fe95已移除软件PM模型；以下旧入口仅保留待删除的未�
 | `DLI_RESET` | 0x83 | none | — |
 | `DLI_SEND_CMD` | 0x84 | readwrite | `SleDliCmd` |
 | `MGMT_STATS` | 0x85 | read | `SleMgmtStats` |
-| `SUBSYS_STATS` | 0x86 | read | `SleSubsysStats`（遗留混合来源；power=255未知，transitions不可用；不作Native权威） |
+| 旧 `SUBSYS_STATS` | 0x86 | 已删除 | 原36字节编码ENOTTY，声明/SDK移除 |
 | `CONTROLLER_EVENT_GET` | 0x87 | readwrite | `SleControllerEventQuery` (360 bytes) |
 
 `CONTROLLER_EVENT_GET` version 1 是独立的完整原生事件通路，当前接入已校验的
@@ -533,3 +533,12 @@ U1dedbad3d41e：`org.sparklink.Controller.GetLinkSummary`返回
 `slctl stats`使用该方法，旧`GetStats`和模型DTO已删除，无兼容承诺。
 GetPmInfo／PmSetState／PmForceActive明确NotSupported；非法状态InvalidArgs。
 完整接口边界与准确实机范围见[当前资格](CURRENT_CAPABILITIES.md)。
+
+## 旧连接／发现／角色模型退休（K5582／Ucd77，未发布接口）
+
+旧conn/adv/scan/扩展广播/AFH/sync/全局角色及无身份pair共53入口权限检查后明确EOPNOTSUPP，
+保护操作普通用户仍EPERM，用户buffer不变；没有staging成功或第二数据RX队列。
+DevInfo旧state为255未知，真实Ready从ControllerSnapshot取得；旧DLIInfo不再声称固定adv sets能力。
+configfs max_connections/adv_interval_ms/scan_window_ms等旧默认值已无Native消费者，明确不支持。
+当前操作使用typed discovery/connection、已知LinkSnapshot与授权每通道socket；实际CMTC/TCID/credit机制仍在内核。
+新Core注册清单检查是逐行实际观测，非原子多设备snapshot；历史模型与旧CRC/TX回归仅专用测试。

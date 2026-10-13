@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T18:32:33.210780+00:00",
+  "updated_at_utc": "2026-10-13T19:23:55.999316+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,17 +26,17 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "43e55d59fe9559b08da9404da7051272a84a3acc",
-    "userspace": "1dedbad3d41eff5d66e6fffbc8b5291e0b785187",
-    "observation": "Exact K43/U1ded physical/Virtual qualification; later docs metadata is not qualification transfer."
+    "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
+    "userspace": "cd77ed935740f52187a51f014fc1f5212bd8617f",
+    "observation": "Exact K558/Ucd77 real and Virtual qualification; later docs metadata is not qualification transfer."
   },
   "qualified_source_heads": {
-    "linux": "43e55d59fe9559b08da9404da7051272a84a3acc",
-    "userspace": "1dedbad3d41eff5d66e6fffbc8b5291e0b785187"
+    "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
+    "userspace": "cd77ed935740f52187a51f014fc1f5212bd8617f"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exactK43/U1ded:40 short/RF22/typedconn/Peer/Down/dup/lastclose/QMP; injected fault peer8; actual link-summary/event/legacy netlink negative receipts. Not natural recovery/new manual physical qualification.",
-    "DG02": "PARTIAL_REAL exactK43/U1ded:8app249/16 original250,253,254,255 rejects;224SDUs/112NOCP/zero kernel drops/taint0. Long/credit exhaustion/backpressure/multichannel open.",
+    "DG01": "PARTIAL_REAL exactK558/Ucd77:40short/RF22/connection/Peer/Down/dup/lastclose/QMP; injectedfaultpeer8; actual legacy53/event/currentlink summary gates. Not natural recovery or new manual physical qualification.",
+    "DG02": "PARTIAL_REAL exactK558/Ucd77:8app249/16 original250,253,254,255 reject;224SDUs/112NOCP/zero kernel drops/taint0. Long/credit exhaustion/backpressure/multichannel open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -45,14 +45,14 @@
     "FV05": "Host commit/withdrawal LKMM only Never plus weakSometimes; full interleaving/refinement/callback proof missing",
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
-    "WP12": "PARTIAL: read/poll/genl projections and software power/global policy removed. Actual K43/U1ded snapshots/RF/data/currentcopy gates passed. Remaining conn/adv/security/RPA/local_role/mixedstats/defaultioctl-debugfs and canonical topology/loss/owner-death/lifecycle open.",
-    "WP13": "PARTIAL: actual K43 Virtual42queries/management fd/cancel/dup/inflight/peer and root/ordinary PM/configfs refusal passed; kernel unchanged across U1ded real40/249/fault8. Mixed real/Virtual, entered callback join, standard typed/ticketed real hardware, full IRQ/module/PM/NOCP/lifetime and natural RCA open.",
+    "WP12": "PARTIAL: read/poll/genl/power plus duplicate conn/adv/localrole/AFH/sync/PDU models and second RX removed. Actual Virtual212 and real424 old-entry checks and exact K558/Ucd77 gates passed. Security/RPA/defaultselection/debugfs/diagnostic observation, full canonical loss/topology/owner-death and lifecycle remain.",
+    "WP13": "PARTIAL: actual K558 Virtual42queries/lifecycle/PM/genl/53-entry refusal passed; exact Ucd77 real40/249/fault8 preserved. Mixed real/Virtual, entered callback join, standard typed/ticketed real hardware and complete IRQ/module/PM/NOCP/lifetime and natural RCA open.",
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
     "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope.",
     "FV_REGISTRATION_SDK": "Actual SDK validator after new tuple alias rechecked full ABI/u16/u64 Kani83+weak generation witness; scope unchanged, no Core/daemon/producer/lifetime/authority refinement."
   },
   "next_slices": [
-    "Audit/migrate remaining normalized conn/adv/security/RPA/local_role and ioctl/debugfs default selection/mixed kernel stats. Preserve K43/U1ded real Native paths, reject unimplemented mechanisms, then delete duplicate state. Per-controller actual PM/PHY/security and full callback/lifecycle/NOCP/canonical loss remain; only related gates precede data and unique userSSAP.",
+    "Audit/replace SecurityInner/RPA and remaining default-selection/debugfs/legacy diagnostic observations and unpublished old facades; keep real crypto/Grant/lifetime/Host mechanisms. Preserve K558/Ucd77 Native data and only change-related gates; complete topology/loss/owner-death, callback/IRQ/PM, standard/mixed and true data/SSAP scopes open.",
     "Architecture remediation before feature expansion: dedicated real Virtual provider; WP12 canonical events and old ring/duplicate consumer removal; preserve current WS73 paths.",
     "Finish standard typed policy/Session-ticketed ACB/canonical ingress and module/IRQ/PM/callback join; scoped formal and exact VM regressions.",
     "Ticket/Session/Grant/socket inflight/NOCP reuse/real credit/backpressure, partial-init and natural fault RCA/nonmanual recovery in parallel.",
@@ -194,7 +194,7 @@
       "interface_dependencies": [],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "PARTIAL: read/poll/genl projections and software power/global policy removed. Actual K43/U1ded snapshots/RF/data/currentcopy gates passed. Remaining conn/adv/security/RPA/local_role/mixedstats/defaultioctl-debugfs and canonical topology/loss/owner-death/lifecycle open."
+      "status": "PARTIAL: read/poll/genl/power plus duplicate conn/adv/localrole/AFH/sync/PDU models and second RX removed. Actual Virtual212 and real424 old-entry checks and exact K558/Ucd77 gates passed. Security/RPA/defaultselection/debugfs/diagnostic observation, full canonical loss/topology/owner-death and lifecycle remain."
     },
     {
       "id": "WP13",
@@ -203,7 +203,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "PARTIAL: common Backend/CommandPort and driver/Core split, standard query Diagnostic and dedicated File-based Virtual provider implemented; actual K7c/Uffc Virtual42queries/10genl receipts and physical40/249/fault8 passed. Entered callback join, mixed real/Virtual, standard actual hardware typed/ticketed data and complete IRQ/module/PM/NOCP/lifetime remain open. Installed!=Ready; no natural recovery qualification."
+      "status": "PARTIAL: actual K558 Virtual42queries/lifecycle/PM/genl/53-entry refusal passed; exact Ucd77 real40/249/fault8 preserved. Mixed real/Virtual, entered callback join, standard typed/ticketed real hardware and complete IRQ/module/PM/NOCP/lifetime and natural RCA open."
     },
     {
       "id": "WP14",
@@ -284,15 +284,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Retire software PM/global cross-controller policy, use actual link summary with Unknown refusal; full target-state migration still partial",
-  "current_audit": "docs/evidence/power-model-retirement-audit-20261014.json",
+  "current_batch": "Remove duplicate conn/adv/AFH/sync/PDU/local-role models and RX projections; delete mixedstats and migrate actual consumers; full target migration still partial",
+  "current_audit": "docs/evidence/protocol-state-retirement-audit-20261014.json",
   "issue_sync_status": "12 related comments exact readbacks, original scopes unchanged; all actual28 OPEN verified",
   "current_implementation_heads": {
     "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
     "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
   },
   "next_resume_tasks": [
-    "Audit/migrate remaining normalized conn/adv/security/RPA/local_role and ioctl/debugfs default selection/mixed kernel stats. Preserve K43/U1ded real Native paths, reject unimplemented mechanisms, then delete duplicate state. Per-controller actual PM/PHY/security and full callback/lifecycle/NOCP/canonical loss remain; only related gates precede data and unique userSSAP.",
+    "Audit/replace SecurityInner/RPA and remaining default-selection/debugfs/legacy diagnostic observations and unpublished old facades; keep real crypto/Grant/lifetime/Host mechanisms. Preserve K558/Ucd77 Native data and only change-related gates; complete topology/loss/owner-death, callback/IRQ/PM, standard/mixed and true data/SSAP scopes open.",
     "WP05 remaining trusted-security Grant installation, independent-owner business isolation and controlled in-flight arbitration/refinement; preserve existing epoch/direction/release/last-management-fd/dup/SCM_RIGHTS/common-daemon-death exact qualification. Do not repeat implemented epoch/direction or silently broaden historical proof.",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -315,8 +315,8 @@
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "latest_evidence_commit": "50826fb6d227ea9ca252441d91d8675d79eb53bb",
-  "previous_goal_turn_classification": "progress: genl retirement and exact actual K7c/Uffc qualification signed/pushed",
-  "current_goal_turn_classification": "progress: production power-model/global-policy removal; actual Virtual rejection and exact corrected user-summary/WS73 gates passed",
+  "previous_goal_turn_classification": "progress: software PM/global policy removed and exact actual K43/U1ded regression",
+  "current_goal_turn_classification": "progress: retired legacy conn/adv models and second RX; migrated old stats consumer after real test failure; exact corrected K558/Ucd77 RF/data gates passed",
   "qualified_tool_source_heads": {
     "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
     "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
@@ -369,7 +369,7 @@
       "whole_package_closed": false
     }
   },
-  "qualified_run_tools_head": "1dedbad3d41eff5d66e6fffbc8b5291e0b785187",
+  "qualified_run_tools_head": "cd77ed935740f52187a51f014fc1f5212bd8617f",
   "usb_pending_slice": {
     "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
     "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
@@ -1200,5 +1200,12 @@
         "readback_exact": true
       }
     ]
+  },
+  "latest_protocol_state_retirement_batch": {
+    "kernel": "5582a10c5ec8af89da302e946e30446e04a01041",
+    "service_and_runner": "cd77ed935740f52187a51f014fc1f5212bd8617f",
+    "evidence": "docs/evidence/protocol-state-retirement-progress-20261014.json",
+    "first_real_failure": "old mixed-stat parser, preserved at .dev/native-protocol-state-retirement-fault-real",
+    "scope_complete": false
   }
 }

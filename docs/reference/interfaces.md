@@ -45,3 +45,7 @@ PM与统计核对K `43e55d59fe95`／U `1dedbad3d41e`：默认软件PM与全局�
 PM ioctl／configfs不支持，D-Bus PM明确NotSupported。`slctl stats`改为实际
 GetLinkSummary，Unknown失败；旧混合内核统计尚待迁移，不能当Native状态权威。
 [准确子门禁与未决](../evidence/power-retirement-progress-20261014.json)。
+
+K `5582a10c5ec8`／U `cd77ed935740`：旧连接／发现／角色／AFH/sync模型不编入默认内核，
+53旧入口明确拒绝，混合SubsysStats删除。角色按实际connection查询；两CLI统计使用已知LinkSnapshot。
+[准确消费者迁移、失败与范围](../evidence/protocol-state-retirement-progress-20261014.json)。

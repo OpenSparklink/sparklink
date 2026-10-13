@@ -5,6 +5,41 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
+## 当前子门禁：退休重复连接／发现状态与第二套数据分流
+
+准确编译 K `5582a10c5ec8`／service+runner U `cd77ed935740`。
+[三类调用审计](evidence/protocol-state-retirement-audit-20261014.json)、
+[源码／实际门禁／首次失败／未决](evidence/protocol-state-retirement-progress-20261014.json)：
+默认Runtime删除ConnManager／AdvScanInner／全局local_role，四个旧conn/adv/phy/pdu模块100%移入专用历史测试；
+删除Host向模型复制的字段、worker连接／发现／DTAP／同步模型分支、第二数据队列消费者、inline drain。
+实际Native Host／Session唯一RX、CMTC/TCID/DTAP、credit/ticket/socket/Grant与真正driver codecs保留。
+53个无合格机制的旧入口在权限检查后EOPNOTSUPP，不更新buffer，不伪造Complete或本地staging成功。
+
+旧混合SubsysStats(36-byte0x86)删除、C/Rust声明与SDK调用者同步移除，旧编码ENOTTY，无兼容期。
+slkd ConnCount与两CLI统计来自已知LinkSnapshot，未知不当空表；全局Role D-Bus明确NotSupported，
+角色从实际connection查询。旧DevInfo state=Unknown255，旧DLIInfo max_adv_sets不可用，不再声称固定8个。
+无消费者的configfs max/adv/scan默认值明确不支持，不影响Native每controller参数。
+
+严格all-features／35跨语言／460工具／准确CI九项通过；实际源码ingress9、Host连接51、撤销55与诊断边界保持。
+历史TX11／SSAP8／PHY及原codec语义保留，不升级为当前数据资格。首个对象10警告与旧fixture/注释依赖失败保留，
+清理后对象无警告、完整稳定配置构建通过；不存在新增全局lint忽略。
+实际Virtual两轮42查询与原管理fd/取消/dup/在途/同行门禁保持；212次53旧入口拒绝且buffer不变
+（root106 Unsupported，ordinary16 observe Unsupported/90 protected denied），4次旧统计ENOTTY；原PM/Netlink拒绝保持。
+这些不是完整callback/IRQ/PM/实现形式化证明。
+
+首次实机流水线两只同行Ready，但故障脚本仍解析已删统计，退出失败；原证据保留。
+修正后从真实Core-backed D-Bus注册行核对identity/state并等待受控清单稳定两次，非原子多设备快照，未恢复旧API。
+准确新实机 [40短消息](evidence/protocol-state-retirement-real-short-20261014.json)、
+[8次249／16超限拒绝](evidence/protocol-state-retirement-real-boundary-20261014.json)、
+[受控故障同行8](evidence/protocol-state-retirement-fault-real-20261014.json)通过。
+随机序号／载荷对端实际校验回复；正常224 ACB SDU／112 NOCP、capture drops0／taint0，
+8份实际旧入口拒绝（424系统调用）及已知链路摘要，32完整事件copy故障／重试保持。NOCP不是对端收到。
+
+仍缺：SecurityInner/RPA/剩余默认选择及debugfs/旧诊断统计路由、其余未发布旧接口最终删除或接通；
+完整canonical loss/resync/拓扑/owner-death和callback/IRQ/module/PM、标准typed/data真硬件／mixed real/Virtual；
+真实PM/PHY/安全/Bond、长包/credit耗尽背压/多通道/四设备／唯一用户SSAP/S5–S6。
+自然RCA／非人工恢复仍OPEN，人工/hub/QMP/注入不替代；整项目标不关闭，UserHost仍P4规划。
+
 ## 当前子门禁：删除软件 PM 模型与跨设备全局策略
 
 准确编译 K `43e55d59fe95`／service+runner U `1dedbad3d41e`。

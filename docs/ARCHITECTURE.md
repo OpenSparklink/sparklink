@@ -206,6 +206,8 @@ DLI PB、DTAP SAR、SSAP分片是不同层：每层记录长度/片数/字节预
 ### 权威接口
 
 管理API、数据socket、观察订阅、Diagnostic、未来UserHost接管分离。
+当前Native Host／ConnectionSession／Channel承担连接和数据权威；旧ConnManager/AdvScanInner/
+全局角色、模型AFH/sync/PDU和第二RX分流不再编入默认内核。未支持能力不能通过本地模型报告成功。
 PM决策按controller归slkd；驱动保留真实电源/板级机制。默认内核不保存PowerInner估计模型，
 未接通硬件PM必须拒绝，不能用configfs全局模式限制其他controller或发布可信PM状态。genl/ioctl等若保留多个前端，仅转发到同一内部权威状态和事务，不各自写状态。
 

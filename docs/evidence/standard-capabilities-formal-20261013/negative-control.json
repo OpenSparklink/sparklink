@@ -1,0 +1,29 @@
+{
+  "status": "EXPECTED_COUNTEREXAMPLE",
+  "production_proof": false,
+  "failed_property": {
+    "property": "main.assertion.2",
+    "description": "assertion !d.metadata_valid",
+    "sourceLocation": {
+      "comment": "assertion !d.metadata_valid",
+      "file": "/home/sanchuanhehe/Documents/opensparklink/.dev/standard-capabilities-production-weak/actual.c",
+      "function": "main",
+      "line": "122",
+      "pragma": [
+        "checked:bounds-check",
+        "checked:pointer-check",
+        "checked:div-by-zero-check",
+        "checked:signed-overflow-check",
+        "checked:unsigned-overflow-check",
+        "checked:undefined-shift-check",
+        "checked:pointer-primitive-check"
+      ],
+      "propertyClass": "assertion",
+      "propertyId": "main.assertion.2",
+      "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+    },
+    "status": "FAILURE"
+  },
+  "mapping": "Actual44 sanitizer regression: failed query makes getter ENODATA and leaves output unchanged",
+  "original_solver": "weak/solver.json"
+}

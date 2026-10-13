@@ -397,3 +397,12 @@ transport成功不能代替controller Complete或偿还data debt。标准路径�
 标准version5只有全部匹配成功Reset/version/MAC后提交，失败重查invalidates；immutable Rust info不
 再获取USB I/O锁，Installed/identity不是Ready。buffer/features等未查询内容不宣称FULL_METADATA。
 准确K0fdbcf9/Ubda960d新WS73故障8/40短/249通过；标准descriptor/能力查询及物理资格继续开放。
+
+### 标准 Backend 能力观察的实现范围（K1f23fc2197ad）
+
+标准bootstrap在同一I/O锁下原子提交实际0401/0402/0403/0404/0406结果，失败关闭观察有效性；
+WS73厂商方言单独保留。C snapshot有查询来源，不等于应用policy、Host Ready或注册迁移。
+生产Rust消费者/共同profile0/标准RX与open-close仍待接通，不能把未消费能力宣称已支持。
+六查询状态转换的CBMC218仅在明确的顺序依赖边界内；[报告与反例](../evidence/standard-capabilities-formal-20261013/production/report.json)。
+[真实WS73回归](../evidence/ws73-standard-capabilities-short-repeat-20261013.json)保持既有分层，
+不扩大标准硬件、并发lifetime或自然恢复资格。

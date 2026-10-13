@@ -1,0 +1,51 @@
+{
+  "status": "MODEL_CHECKED_SCOPED",
+  "exit": 0,
+  "timed_out": false,
+  "warnings": [],
+  "weak_invalidation": false,
+  "properties": 218,
+  "failed": [],
+  "tool": "6.11.0 (cbmc-6.11.0)",
+  "source_head": "1f23fc2197ad43b18d187b235d231583147cc7d1",
+  "source_sha256": "549ba7f42aa7b0aef2a9fa18b8a7ac1f0a57fa91193bab464f90f8017f01a3a0",
+  "header_sha256": "2c887f4f72426ca1bc1e3c22e1e2314d0026ebef8d07de4e02181eb32b9ec6da",
+  "harness_sha256": "14c52813c6fef51cacd997c1cff3bcc4652df6dfa56e295ebf3502cf671fdb6d",
+  "scope": "Actual standard bootstrap and strict validator; all first18 response bytes, reported length and dependency return unrestricted; 6 sequential queries/unwind19. Coherent commit/failure invalidation, buffer schema, version/features/address provenance, bounded call count.",
+  "assumptions": [
+    "active retained context with io_lock held by caller",
+    "synchronous response dependency provides initialized first18 bytes in64-byte localbuffer",
+    "no concurrency/USB/module/refcount/firmware/Ready/lifetime proof"
+  ],
+  "physical_acceptance": false,
+  "source_mapping": [
+    "sle_usb_validate_init_reply",
+    "sle_usb_dev_init_controller_locked"
+  ],
+  "bounds": {
+    "commands": 6,
+    "relevant_bytes_per_response": 18,
+    "lengths_and_dependency_returns": "all signed int32",
+    "unwind": 19
+  },
+  "implementation_regression": "actual44 sanitizer cases, ENODATA/no-output-overwrite after failed query",
+  "source_paths": [
+    "/home/sanchuanhehe/Documents/opensparklink/linux/net/sparklink/sle_usb_ffi.c",
+    "/home/sanchuanhehe/Documents/opensparklink/linux/include/linux/sparklink_usb.h"
+  ],
+  "tool_source_sha256": "9207020051b19bf21065182f86d1100b9cf9bfd857c51432ddcbd0510145417f",
+  "command": [
+    "cbmc",
+    "/home/sanchuanhehe/Documents/opensparklink/.dev/standard-capabilities-production-proof/actual.c",
+    "--bounds-check",
+    "--pointer-check",
+    "--signed-overflow-check",
+    "--unsigned-overflow-check",
+    "--unwind",
+    "19",
+    "--unwinding-assertions",
+    "--json-ui"
+  ],
+  "original_budget_seconds": 60,
+  "production_proof": true
+}

@@ -5,7 +5,38 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
-## 本批架构整改：共同保留提交接口与标准metadata
+## 当前架构整改：标准 Backend 的真实能力查询基础
+
+K`1f23fc2197ad43b18d187b235d231583147cc7d1` / VM编译service和工具U`afc491db`：
+标准初始化现在真实查询0401指令最大长度、0402 ACB/ICB长度及个数、0403完整80-bit特性，
+0404完整版本和带地址类型参数的0406。只在六个匹配Complete全部成功后提交metadata；
+保留上一阶段command credit准入，失败重新查询使观察失效，getter不覆盖失败输出。
+范围值/成对零buffer/无效地址均验证。WS73 SDK111的0406零参数方言保持在自己的driver。
+
+[准确源码/构建/离线](evidence/standard-capabilities-offline-20261013.json)：实际查询/回滚/getter44，
+C固件及参数编码74/Rust12，context18/metadata7、保留port5、Core18、pending/open15、ingress9、Native33；
+清洁准确内核编译和空VM三次通过。
+[实际C限定CBMC](evidence/standard-capabilities-formal-20261013/production/report.json)218属性，
+原函数只提升static linkage，六次顺序查询、每回复相关18字节/长度/返回值任意，unwind19。
+调用者持锁且context存续是明确假设；不证明USB、并发、callback、module、lifetime或Ready。
+[破坏失效处理反例](evidence/standard-capabilities-formal-20261013/negative-control.json)映射失败查询
+ENODATA/输出不变的实际回归。超时/unsupported/未展开/弱实现均不得PASS；工具命令与hash随报告保存。
+
+[新故障/同行8往返](evidence/ws73-standard-capabilities-fault-isolation-20261013.json)、
+[新40短](evidence/ws73-standard-capabilities-short-repeat-20261013.json)、
+[新249与16拒绝](evidence/ws73-standard-capabilities-249-boundary-20261013.json)均VM-only真实SDK111、
+普通用户随机业务对端校验回复，两端USB/HCC/A3证据；normal224 SDUs/112真实NOCP，零capture drop/taint0。
+发现/建链断链/dup/最后关闭同life拒绝路径保留；故障对象控制及默认observer、同行和slkd隔离保持。
+受控缺文件/QMP不是自然、物理或非人工恢复，不授予标准USB物理资格。
+
+**未完成：** 新C capabilities snapshot尚无生产Rust消费者，FULL_METADATA未发布；
+下一批冻结真实metadata到provider，再接版本化共同descriptor/profile0 Host/RX/open-close/get-put，
+迁移调用者后删除static Usb及core USB耦合。真正Virtual、USB=n/m、module/IRQ/PM和WP12事件/旧ring整改随后；
+Ticket/Session/Grant/socket剩余lifetime/在途/NOCP/背压门禁并行。整体目标架构完成后才扩展长包、
+多通道/四设备和唯一用户态SSAP Engine。完整S0–S6/19WP/10FV/12DG保留，整项issues不关闭。
+自然RCA和非人工自动恢复仍未通过。
+
+## 历史子门禁：共同保留提交接口与标准metadata
 
 K`0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef` / 编译service及工具U`bda960d`：
 CommandPort提供独立保留的provider上下文，Native/标准USB同一TX worker在释放Runtime state后

@@ -1034,22 +1034,14 @@ impl Context {
 
     async fn cmd_stats(&self) -> anyhow::Result<()> {
         let proxy = self.controller_proxy().await?;
-        let stats: (u16, u16, u32, u32, u32, u32, u8) = proxy.call("GetStats", &()).await?;
-        println!("Subsystem Statistics:");
-        println!("  Devices:         {}", stats.0);
-        println!("  Connections:     {}", stats.1);
-        println!("  Total Created:   {}", stats.2);
-        println!("  Mgmt Submitted:  {}", stats.3);
-        println!("  Mgmt Timeouts:   {}", stats.4);
-        println!("  CRC Errors:      {}", stats.5);
-        let pm_label = match stats.6 {
-            0 => "Active",
-            1 => "Sniff",
-            2 => "Idle",
-            3 => "Suspended",
-            _ => "Unknown",
-        };
-        println!("  Power State:     {pm_label}");
+        let stats: (u16, u64, u64, u64, u32) = proxy.call("GetLinkSummary", &()).await?;
+        println!(
+            "ControllerLinkSummary: index={} generation={} revision={} event_sequence={} connections={}",
+            stats.0, stats.1, stats.2, stats.3, stats.4
+        );
+        println!(
+            "Confirmed physical links at this snapshot; not logical channels, queue depth, PM, or delivery ACK."
+        );
         Ok(())
     }
 

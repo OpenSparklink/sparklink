@@ -63,6 +63,11 @@ def execute(run, phase):
                 expected = rf'^ControllerEventPosition: index={owner["index"]} generation={owner["generation"]} sequence=(\d+)$'
                 if position['exit'] or len(re.findall(expected,position['stdout'],re.M)) != 1:
                     raise CaptureError('actual canonical event-position interface failed')
+                summary = run.command([str(run.args.slctl),'--adapter',owner['path'],'stats'],
+                                      10,collection='controller_link_summaries')
+                pattern = rf'^ControllerLinkSummary: index={owner["index"]} generation={owner["generation"]} revision=([1-9]\d*) event_sequence=([1-9]\d*) connections=1$'
+                if summary['exit'] or len(re.findall(pattern,summary['stdout'],re.M)) != 1:
+                    raise CaptureError('actual validated physical link summary failed')
                 receipt = run.command([str(probe),str(owner['index']),str(owner['generation'])],
                                       10, collection='controller_event_copy')
                 expected = f'CONTROLLER_EVENT_COPY_PASS: uid=1000 index={owner["index"]} generation={owner["generation"]} partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2'

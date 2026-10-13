@@ -32,19 +32,30 @@ impl ControllerIface {
 
     // ----- Subsystem Stats -----
 
-    /// Get subsystem statistics
-    async fn get_stats(&self) -> zbus::fdo::Result<SubsysStats> {
-        let st = self.state.lock().await;
-        let s = st.adapter.subsys_stats().map_err(map_err)?;
-        Ok(SubsysStats {
-            dev_count: s.dev_count,
-            active_connections: s.active_connections,
-            total_conn_created: s.total_conn_created,
-            total_mgmt_submitted: s.total_mgmt_submitted,
-            total_mgmt_timeouts: s.total_mgmt_timeouts,
-            crc_errors: s.crc_errors,
-            power_state: s.power_state,
-        })
+    /// One validated physical-link snapshot; not PM or historical counters.
+    async fn get_link_summary(&self) -> zbus::fdo::Result<(u16, u64, u64, u64, u32)> {
+        let (adapter, generation) = {
+            let state = self.state.lock().await;
+            (state.adapter.clone(), state.controller.generation)
+        };
+        if generation == 0 {
+            return Err(zbus::fdo::Error::NotSupported(
+                "no native controller identity".into(),
+            ));
+        }
+        let snapshot =
+            tokio::task::spawn_blocking(move || adapter.native_link_snapshot(generation))
+                .await
+                .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
+                .map_err(map_err)?;
+        // Adapter validation rejects unknown/error/stale layouts before success.
+        Ok((
+            snapshot.dev_index,
+            snapshot.generation,
+            snapshot.revision,
+            snapshot.event_seq,
+            snapshot.count,
+        ))
     }
 
     /// Registration-local event watermark, not queue depth or delivery ACK.
@@ -147,32 +158,28 @@ impl ControllerIface {
 
     // ----- Power Management -----
 
-    /// Get power management info
+    /// Unsupported until a real per-controller PM transaction is connected.
     async fn get_pm_info(&self) -> zbus::fdo::Result<PmInfo> {
-        let st = self.state.lock().await;
-        let p = st.adapter.pm_info().map_err(map_err)?;
-        Ok(PmInfo {
-            state: p.state,
-            force_active: p.force_active != 0,
-            current_interval: p.current_interval,
-            transitions: p.transitions,
-        })
+        Err(zbus::fdo::Error::NotSupported(
+            "hardware PM is not implemented".into(),
+        ))
     }
 
-    /// Set target power state (0=Active, 1=Sniff, 2=Idle, 3=Suspended)
     async fn pm_set_state(&self, target: u8) -> zbus::fdo::Result<()> {
-        let cmd = slk_protocol::SlePmStateCmd {
-            target_state: target,
-            _reserved: [0; 3],
-        };
-        let st = self.state.lock().await;
-        st.adapter.pm_set_state(&cmd).map_err(map_err)
+        if target > 3 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "power state must be 0..3".into(),
+            ));
+        }
+        Err(zbus::fdo::Error::NotSupported(
+            "hardware PM is not implemented".into(),
+        ))
     }
 
-    /// Force active power state
-    async fn pm_force_active(&self, enable: bool) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.pm_force_active(enable).map_err(map_err)
+    async fn pm_force_active(&self, _enable: bool) -> zbus::fdo::Result<()> {
+        Err(zbus::fdo::Error::NotSupported(
+            "hardware PM is not implemented".into(),
+        ))
     }
 
     // ----- AFH -----
@@ -504,17 +511,6 @@ fn map_err(e: libsparklink::Error) -> zbus::fdo::Error {
 // ----- D-Bus return types -----
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, zbus::zvariant::Type)]
-pub struct SubsysStats {
-    pub dev_count: u16,
-    pub active_connections: u16,
-    pub total_conn_created: u32,
-    pub total_mgmt_submitted: u32,
-    pub total_mgmt_timeouts: u32,
-    pub crc_errors: u32,
-    pub power_state: u8,
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, zbus::zvariant::Type)]
 pub struct PhyInfo {
     pub mcs_index: u8,
     pub bandwidth_mhz: u8,
@@ -590,21 +586,6 @@ pub struct PeerVersion {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn subsys_stats_default_values() {
-        let stats = SubsysStats {
-            dev_count: 1,
-            active_connections: 0,
-            total_conn_created: 10,
-            total_mgmt_submitted: 5,
-            total_mgmt_timeouts: 0,
-            crc_errors: 0,
-            power_state: 0,
-        };
-        assert_eq!(stats.dev_count, 1);
-        assert_eq!(stats.power_state, 0);
-    }
 
     #[test]
     fn phy_info_fields() {

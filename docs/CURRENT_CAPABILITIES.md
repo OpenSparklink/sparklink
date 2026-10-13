@@ -5,6 +5,31 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
+## 当前子门禁：删除破坏性 DLI poll 与重复队列
+
+编译内核 `96f18513c0a1`／service `bf117ad6254f`。
+[三类调用审计](evidence/event-poll-retirement-audit-20261013.json)和
+[准确源码、门禁、失败与未决](evidence/event-poll-retirement-progress-20261013.json)：删除旧0x82 ioctl／Raw256公开类型、
+重复DLI队列及其producer、空backend poll钩子，同步删除Rust/C/Python poll、EventReceiver/50ms fallback、
+monitor --legacy 和旧scan wire path。所有daemon构建均拒绝未接通的标准typed管理；实验feature不能复活旧订阅。
+Native ControllerEvent、私有DiagnosticResult和CAP限制的独立snoop保留。
+
+历史copy/codec/actor回归隔离到selftests／cfg(test)，旧类型仅私有测试头。
+旧poll依赖的live诊断matrix明确拒绝；它不是新矩阵通过。原失败、反例和旧资格保留版本，不转授当前镜像。
+首次准备在旧probe C编译失败，未接USB，已保留并修正测试依赖；不恢复生产接口。
+
+当前源码严格Rust、35跨语言ABI、459离线工具、9实际read-copy＋6历史copy边界通过；
+稳定配置完整镜像、空WS73/standard模块及真实Virtual Core/Host两轮42查询通过，旧编码ENOTTY且不改用户buffer。
+新真实WS73 VM [40短消息](evidence/event-retirement-real-short-20261013.json)、
+[8次249／16超限拒绝](evidence/event-retirement-real-boundary-20261013.json)、
+[受控失败同行8](evidence/event-retirement-fault-real-20261013.json)通过，uid1000/caps0、随机数据双端校验回复。
+正常224 ACB SDU／112 NOCP、零kernel capture drops／taint0；NOCP不代替对端收到。
+
+**WP12仍未完成**：旧read/BroadcastRing、normalized state/genl镜像及loss/resync/拓扑/owner-death全门禁仍待迁移，
+完整IRQ/PM/module/callback和混合真实/Virtual、标准真硬件typed/data仍缺。自然RCA/非人工恢复继续OPEN；
+QMP、注入及hub切电不替代自然恢复。完整S0–S6、实际data路径和P4 UserHost不变，不关闭整项issue。
+
+
 ## 当前子门禁：标准 Diagnostic 统一与真实 Virtual 生命周期
 
 生产内核 `1ed6963f0f7f`／service `231f61e03d80`：标准 profile0 查询统一到独占版本化 Diagnostic，

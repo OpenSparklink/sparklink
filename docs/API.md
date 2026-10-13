@@ -7,7 +7,7 @@
 存在不表示设备支持。当前 Native 契约见[管理所有权](MANAGEMENT_OWNERSHIP.md)、
 [WS73 门禁](WS73_DISCOVERY_NORTH_STAR.md)和[诊断提交](DIAGNOSTIC_ADMISSION.md)。
 
-## 旧接口编号概览（等待调用迁移）
+## 旧接口编号概览（部分已删除；不可作为能力数量）
 
 | 分类 | 序号范围 | 数量 | 功能 |
 |------|----------|------|------|
@@ -27,6 +27,8 @@
 | 角色 | 0xA0-0xA1 | 2 | T/G 角色读写 |
 | RAL/RPA | 0xB0-0xB7 | 8 | 地址解析列表与可解析私有地址管理 |
 | 测距 | 0xC0-0xC3 | 4 | 能力查询/链路参数/动作/使能 |
+
+旧0x82 DLI_POLL_EVENT及Raw256类型已删除，返回ENOTTY、不复用；Rust/C/Python旧poll、50ms receiver与monitor --legacy同步删除。独立ControllerEvent、作者私有DiagnosticResult和CAP限制snoop为当前入口。
 
 ## 设备管理 (0x03-0x08)
 
@@ -166,7 +168,6 @@ SSAP字段已同步删除；C/Rust/Python不再导出它们。未发布UAPI不�
 |-----|------|------|----------|
 | `DLI_INFO` | 0x80 | read | `SleDliInfo` |
 | `USB_DEV_COUNT` | 0x81 | none | — (返回值) |
-| `DLI_POLL_EVENT` | 0x82 | read | `SleDliEvent` |
 | `DLI_RESET` | 0x83 | none | — |
 | `DLI_SEND_CMD` | 0x84 | readwrite | `SleDliCmd` |
 | `MGMT_STATS` | 0x85 | read | `SleMgmtStats` |

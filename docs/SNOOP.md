@@ -23,11 +23,9 @@ flags/reserved 非零拒绝；旧 generation 返回 ENODEV。EAGAIN 表示暂时
 拔出唤醒旧 fd，poll 返回 ERR|HUP，下一查询 ENODEV；工具以错误结束。重插必须
 重新查询并选择新 generation，旧 observer 不会转向复用 index 的新设备。
 
-兼容 `--legacy` 仅允许确切 generation 的 profile 0；它仍使用旧消费型队列，
-不具有原生 snoop 的独立观察、唤醒、文件格式或完整错误处理保证。原生 `--filter`
-接受十六位十六进制 WS73 A1 opcode 或 A2 event code（如扫描报告 `0x180b`），
-旧模式为八位 event type。过滤与 `--count` 在用户态生效。原生记录总是显示完整
-已捕获前缀的 hex；`-X`/`--hexascii`/`--raw` 是旧模式的渲染选项。
+旧 `--legacy` 和旧渲染参数已删除；不再消费共享 DLI poll。Native `--filter`
+接受十六位 WS73 A1 opcode／A2 event code，过滤与 `--count` 在用户态生效。
+记录保留完整已捕获前缀的 hex。原始历史来源仍可按固定提交阅读。
 
 ## 记录来源与限制
 

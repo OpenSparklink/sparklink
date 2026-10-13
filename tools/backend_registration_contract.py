@@ -64,7 +64,7 @@ int main(void) {
  d=valid;d.version=0;d.ops=(void *)1;CHECK(&d,&out,-EOPNOTSUPP);
  d=valid;d.size=sizeof(d)-1;d.ops=(void *)1;CHECK(&d,&out,-EOPNOTSUPP);
  d=valid;d.bus=0;d.ops=(void *)1;CHECK(&d,&out,-EOPNOTSUPP);
- d=valid;d.info.profile=0;d.ops=(void *)1;CHECK(&d,&out,-EOPNOTSUPP);
+ d=valid;d.info.profile=2;d.ops=(void *)1;CHECK(&d,&out,-EOPNOTSUPP);
  d=valid;d.capabilities=8;d.ops=(void *)1;CHECK(&d,&out,-EOPNOTSUPP);
  d=valid;d.ops=NULL;CHECK(&d,&out,-EINVAL);
  d=valid;d.context=NULL;CHECK(&d,&out,-EINVAL);
@@ -95,6 +95,11 @@ int main(void) {
   if(sparklink_backend_register_reserved(&valid,&id,&out)!=0 || copied_reservation.id!=3 || copied_reservation.generation!=7) return 8;
   free(accepted);accepted=NULL;
  }
+ {
+  d=valid;d.info.profile=SPARKLINK_NATIVE_STANDARD_DLI;allocations=modules=contexts=rust_calls=0;accepted=NULL;
+  if(sparklink_backend_register(&d,&out)!=0||!accepted||allocations!=1||modules!=1||contexts!=1||rust_calls!=1) return 9;
+  free(accepted);accepted=NULL;
+ }
  printf("ACTUAL_BACKEND_REGISTRATION_REJECT_PASS tests=%u bus_copy_cases=2\n",tests);
  return 0;
 }
@@ -108,7 +113,7 @@ int main(void) {
                         '-fsanitize=address,undefined', '-fno-omit-frame-pointer',
                         '-I', str(kernel / 'include'), str(c), '-o', str(executable)], check=True)
         result = subprocess.check_output([str(executable)], text=True)
-    print(json.dumps({'status': 'ACTUAL_BACKEND_REGISTRATION_REJECT_PASS', 'tests': 11, 'bus_copy_cases': 2, 'reserved_rejection_cases': 3, 'reserved_copy_cases': 1,
+    print(json.dumps({'status': 'ACTUAL_BACKEND_REGISTRATION_REJECT_PASS', 'tests': 11, 'bus_copy_cases': 2, 'reserved_rejection_cases': 3, 'reserved_copy_cases': 1, 'standard_profile_copy_cases': 1,
                       'reserved_body_sha256': hashlib.sha256(reserved_body.encode()).hexdigest(),
                       'bus_getter_sha256': hashlib.sha256(getter.encode()).hexdigest(),
                       'actual_function_sha256': hashlib.sha256(body.encode()).hexdigest(),

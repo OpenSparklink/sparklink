@@ -1,9 +1,16 @@
 # 当前能力与资格
 
-最新开发切片 Kc2dd941e5784 正在做新镜像回归：显式File身份与旧观察迁移。
-尚未新增实机资格；以下K6f2f/U4b949通过范围保留，不自动适用于当前HEAD。
+当前准确路径资格：K `dd11fa38a338`／编译service+runner U `c6927630cbb1` 已
+在VM重新完成显式File/dup/独立File隔离、Virtual及真实双WS73发现-建链、40轮
+普通用户短消息与8轮249字节往返、16次250/253/254/255超限拒绝和受控同行隔离。
+正常两批224 ACB SDU／112 NOCP、capture drops=0、VM taint=0；对端实际校验与
+回复独立核对，NOCP不代替业务收到。316次Virtual／632次普通真实设备旧入口
+拒绝及buffer保持；没有全局default controller。自然故障/非人工恢复、完整
+标准结果事件迁移、长包/多通道/四设备及SSAP/security仍开放。
+[准确门禁与首轮失败](evidence/default-affinity-retirement-progress-20261014.json)。
+以下K6f2f/U4b949记录是此前准确资格，保留历史范围，不代表后续未提交变更。
 
-当前准确路径资格：K `6f2f71298029`／service+runner U `4b949027d171` 已重新完成
+上一批准确路径记录：K `6f2f71298029`／service+runner U `4b949027d171` 已重新完成
 Virtual、真实双设备发现／连接、交换连接角色40轮普通用户短消息与8轮249字节
 往返、16次250/253/254/255边界拒绝及受控失败同行隔离。新安全／RPA模型剥离
 后未恢复旧wire engine；SDK／D-Bus明确拒绝，crypto源码与历史测试保留。

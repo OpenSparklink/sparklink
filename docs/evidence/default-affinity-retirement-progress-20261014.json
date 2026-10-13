@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "status": "IMPLEMENTED_OFFLINE_AND_SCOPED_REAL_VM_PASS; whole scopes incomplete",
+  "kernel": "dd11fa38a33817d555fc74305244d88118b50c22",
+  "service_and_runner": "c6927630cbb11c5f78aaa6428ee745d4bc7e1bd4",
+  "source_audit": "docs/evidence/default-affinity-retirement-audit-20261014.json",
+  "build": {
+    "workspace_relative_path": ".dev/native-default-affinity-v4-retirement-build-record.json",
+    "sha256": "feed869460d6bdf5363e050bb7fe8f77438b29b3d1fa14974d56900ac903d0ff",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "pipeline": {
+    "workspace_relative_path": ".dev/default-affinity-v2-retirement-pipeline.json",
+    "sha256": "e81eca14a7c62623798e369beebd34520d101741e85af679071f0862a031696c",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "vm": {
+    "manifest": {
+      "workspace_relative_path": ".dev/native-default-affinity-v2-retirement-virtual-vm/manifest.json",
+      "sha256": "c24608726f6c6ed027778141d33907720a508617da031bffb3c9ab93b3b0b3d0",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "module_rounds": 2,
+    "queries": [
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1",
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1"
+    ],
+    "refusals": [
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=79 unchanged=79 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=79 unchanged=79 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=79 unchanged=79 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=79 unchanged=79 mixed_stats=ENOTTY"
+    ],
+    "actual_checks_per_call": "unselected Snapshot EINVAL/unchanged; no implicit active id; poll ERR; dup clears shared File; independent selected File unchanged; rebind; invalid -2 does not change binding; closing one fd retains alias",
+    "syscall_checks": 316,
+    "root_eopnotsupp": 158,
+    "ordinary_observe_eopnotsupp": 32,
+    "ordinary_protected_eperm": 126,
+    "buffers_unchanged": 316,
+    "mixed_stats_enotty": 4,
+    "permission_scope": "Virtual VM group1000 mode0660 observer only; injection control root-only; host unchanged",
+    "scope": "actual VFS/Runtime/workqueue/module/refusal subset; standard real transaction counter/cancel/deadline gates retained; not comprehensive IRQ or security/PM"
+  },
+  "real_reports": [
+    "docs/evidence/default-affinity-retirement-real-short-20261014.json",
+    "docs/evidence/default-affinity-retirement-real-boundary-20261014.json",
+    "docs/evidence/default-affinity-retirement-fault-real-20261014.json"
+  ],
+  "normal_total": {
+    "round_trips": 48,
+    "boundary_rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "ordinary_refusal_and_affinity_receipts": 8,
+    "ordinary_refusal_syscall_checks": 632,
+    "capture_drops": 0,
+    "taint": 0
+  },
+  "offline": {
+    "backend_install18": {
+      "workspace_relative_path": ".dev/default-affinity-backend-install-corrected.log",
+      "sha256": "a04f719a57f7b47dd542a080d20a5dde91a5bf9da4ae65944d439e23f96e3b17",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "runtime_ingress9": {
+      "workspace_relative_path": ".dev/default-affinity-runtime-ingress.log",
+      "sha256": "993cd04f92bceacbc16bce4a8fa52c73feee0fabd42fe15bd90711c967b39d57",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "diagnostic": {
+      "workspace_relative_path": ".dev/default-affinity-diagnostic.log",
+      "sha256": "867f04c8a6ce4fb3e965747ac41ccab1e05e5ed7ceed9970037a69c1c4f23a81",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "managed": {
+      "workspace_relative_path": ".dev/default-affinity-management.log",
+      "sha256": "3a46b99424761c94b28fbb0e269ddc21c2eacbe5c994cb01664a2e2c88254d7e",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "rust_tests": {
+      "workspace_relative_path": ".dev/default-affinity-userspace-corrected-tests.log",
+      "sha256": "ef361691caca6c9b91e7550ee97ac9fb4c87172435a9562843bcbc1e823fcf49",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "final_dbus": {
+      "workspace_relative_path": ".dev/default-affinity-dbus-final.log",
+      "sha256": "a1f8f97be5c995d56927cb56f29e7a5b15f4247e08e4f31ae33aa13530b9e344",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "clippy": {
+      "workspace_relative_path": ".dev/default-affinity-clippy-final.log",
+      "sha256": "396441248e360f6e8556e1927d1cdb8edeb141610919e77606fed7a6d8cf9605",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "python_abi35": {
+      "workspace_relative_path": ".dev/default-affinity-python-abi.log",
+      "sha256": "d6e78e92a430f9be028fb59ec5abe54bef252f0b633d21ddfc5c9c42fad2add2",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "tools460": {
+      "workspace_relative_path": ".dev/default-affinity-tools-all.log",
+      "sha256": "b82eb310ae011588d0caa38d9cbe9d1e4f75e0d891e7a567e294b405acfd2668",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "actual_python_c_ffi": {
+      "status": "ACTUAL_PYTHON_C_LEGACY_DLI_REFUSAL_PASS",
+      "scope": "actual Python/C/Rust shared library and /dev/null; no hardware qualification",
+      "output_unchanged": true,
+      "library_sha256": "bc1a048a7ca12d50448a3c55c5cbe6c8471d08eeaf6a9f66e826bca271850b8c"
+    },
+    "docs": {
+      "workspace_relative_path": ".dev/default-affinity-docs.log",
+      "sha256": "e09e5aeb7242f760a0d78825dc0754c2ee6c4c041b198d629472fe16e6bbda0e",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "formal": "no new proof claimed; prior bounded abstractions do not prove new whole implementation"
+  },
+  "failures_retained": [
+    {
+      "workspace_relative_path": ".dev/native-default-affinity-retirement-kernel-build.log",
+      "sha256": "cc2e4b25b3641086339947996fba5f40c31a04297a9a0afdfe9931fded8fa63a",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/default-affinity-backend-install-final.log",
+      "sha256": "4b67ecf3bf9b4f0733a7c2ad722e884119e041b453d56bc903f13a3d6e003e48",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/default-affinity-userspace-tests.log",
+      "sha256": "ec8f7542c04d321b69ca0639ea6eba1e5e0fd795161996c741196bc24f8e1912",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/native-default-affinity-retirement-virtual-vm/console.log",
+      "sha256": "5a0cb0d60fd9f871218215b81073b1c25814e06c725c9704dfa36c42c086fed6",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/default-affinity-retirement-pipeline.json",
+      "sha256": "775ac020cdccf8dcb2819b724580ce67e8e2316ae74a79422f48a91ea9d60339",
+      "availability": "workspace-private original; not uploaded to public site"
+    }
+  ],
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38464254688",
+    "head": "c6927630cbb11c5f78aaa6428ee745d4bc7e1bd4",
+    "kernel_pin": "dd11fa38a33817d555fc74305244d88118b50c22",
+    "jobs_success": 9
+  },
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_id": 6154643659,
+      "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6154643659",
+      "body_sha256": "a63b51aefec7c4ce0a7c61b241b4cdf72ee5cba9f5100f13f374463910f03b29",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 4,
+      "state": "OPEN",
+      "comment_id": 6154644859,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6154644859",
+      "body_sha256": "a63b51aefec7c4ce0a7c61b241b4cdf72ee5cba9f5100f13f374463910f03b29",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "state": "OPEN",
+      "comment_id": 6154645798,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6154645798",
+      "body_sha256": "a63b51aefec7c4ce0a7c61b241b4cdf72ee5cba9f5100f13f374463910f03b29",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 10,
+      "state": "OPEN",
+      "comment_id": 6154646921,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6154646921",
+      "body_sha256": "a63b51aefec7c4ce0a7c61b241b4cdf72ee5cba9f5100f13f374463910f03b29",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6154648036,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6154648036",
+      "body_sha256": "a63b51aefec7c4ce0a7c61b241b4cdf72ee5cba9f5100f13f374463910f03b29",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 6,
+      "state": "OPEN",
+      "comment_id": 6154649120,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6154649120",
+      "body_sha256": "a63b51aefec7c4ce0a7c61b241b4cdf72ee5cba9f5100f13f374463910f03b29",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6154650402,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6154650402",
+      "body_sha256": "a63b51aefec7c4ce0a7c61b241b4cdf72ee5cba9f5100f13f374463910f03b29",
+      "readback_exact": true
+    }
+  ],
+  "still_open": [
+    "remaining unpublished legacy facades/declarations and unconnected measurement/module/crypto configuration cleanup",
+    "standard Diagnostic author ledger/result/event full migration and loss/resync/owner-death scopes",
+    "per-session trusted security/Bond/PHY/PM and full IRQ/callback/kernel refinement",
+    "long packets/credit exhaustion/backpressure/multichannel/four devices/unique userspace SSAP",
+    "natural startup timeout/reenumeration/disappearance RCA and non-human automatic recovery"
+  ],
+  "vm_only": true,
+  "natural_recovery_qualified": false,
+  "whole_issue_closed": false,
+  "goal_complete": false,
+  "no_transfer": "QMP/injection/manual intervention is not natural recovery; NOCP is not peer receipt; model/source/hardware assumptions stay explicit",
+  "terminal_issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_id": 6154871326,
+      "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6154871326",
+      "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 4,
+      "state": "OPEN",
+      "comment_id": 6154872317,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6154872317",
+      "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "state": "OPEN",
+      "comment_id": 6154873166,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6154873166",
+      "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 10,
+      "state": "OPEN",
+      "comment_id": 6154874038,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6154874038",
+      "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6154874971,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6154874971",
+      "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 6,
+      "state": "OPEN",
+      "comment_id": 6154875828,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6154875828",
+      "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6154877001,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6154877001",
+      "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+      "readback_exact": true
+    }
+  ]
+}

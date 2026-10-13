@@ -421,3 +421,13 @@ Binding Grant切片Kbf8663/Udfb8636：Scope/方向/安全要求唯一存fd Bindi
 策略／Bond；本地数据库、用户态自报或crypto函数成功均不能发布可信Encrypted。
 内核crypto机制源码保留，未接通时不编入默认Runtime对象；历史模型仅供selftests。
 当前实现、准确资格和未决只查能力与实施入口，不在本架构维护第二份资格矩阵。
+
+## 显式 File 观察与所有权
+
+注册表只管理controller identity/owner，不能决定某个应用默认使用谁。字符设备
+File显式绑定精确registration Arc；-1仅清该File和观察订阅，dup/fork/fd传递共享
+此File状态。活跃Managed/Diagnostic lease禁止重绑，先终结取消/物理清理义务。
+未选Snapshot为EINVAL、退休或不匹配generation为ENODEV；旧绑定不追随复用index。
+DEV_GET_ACTIVE仅报告绑定id或0xffff，不描述Ready。普通观察权限与协议控制、
+raw snoop/diagnostic权限独立。无生产者的可写debug计数不能充当状态权威。
+标准Diagnostic账本仍有真实取消/超时消费者，Native不采用其无关零计数推导静默。

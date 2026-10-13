@@ -1435,7 +1435,7 @@
     ]
   },
   "default_affinity_retirement": {
-    "status": "implemented; offline source tests/strict userspace in progress; exact new VM qualification pending",
+    "status": "implemented/offline/scoped exact-source real VM pass; remaining whole scopes open",
     "kernel": "dd11fa38a33817d555fc74305244d88118b50c22",
     "audit": "docs/evidence/default-affinity-retirement-audit-20261014.json",
     "changed": [
@@ -1451,16 +1451,91 @@
       "K6f2f/U4b949 historical exact real qualification"
     ],
     "next_gates": [
-      "Strict clean committed VM build",
-      "Actual VFS unselected/dup/clear/rebind/last reference/independent File isolation",
-      "Actual Virtual and root/ordinary79 refusal matrix",
-      "Exact real dual discovery/connection40 short +249 boundaries/controlled peer isolation"
+      "Finish remaining unpublished old facades/measurement/unconnected module/config cleanup",
+      "Complete standard event/result migration without weakening autonomous expiry/cancel obligations",
+      "Continue unique userspace SSAP and long PDU/credit/multi-channel/four-device data work",
+      "Keep full S0-S6 formal/hardware/security/PM/natural recovery scopes open"
     ],
     "scope_unchanged": true,
     "vm_only": true,
     "closure_allowed": false,
     "first_failure": "Kc2dd pin initializer rejected fallible CString; record retained; corrected committed build required",
     "vm_observer_policy": "Virtual-only group1000 mode0660 for independent ordinary observer opens; injection driver root-only; no host changes",
-    "virtual_first_failure": "root explicit-affinity test expected ENODEV instead of existing missing-selection EINVAL; no hardware touched; production contract unchanged; test corrected with stage diagnostics; new output rerun required"
+    "virtual_first_failure": "root explicit-affinity test expected ENODEV instead of existing missing-selection EINVAL; no hardware touched; production contract unchanged; test corrected with stage diagnostics; new output rerun required",
+    "service_and_runner": "c6927630cbb11c5f78aaa6428ee745d4bc7e1bd4",
+    "progress": "docs/evidence/default-affinity-retirement-progress-20261014.json",
+    "completed_gates": [
+      "Clean corrected Kdd11 build source/config unchanged",
+      "Actual Virtual two module rounds root/ordinary79 refusals + explicit File/dup/unselected/independent-file checks",
+      "Actual standard Diagnostic counter/cancel/expiry regression retained",
+      "Real dual WS73 discovery/connection40 short +8x249 roundtrips;16 boundary rejections",
+      "Controlled early fault peer isolation; no natural recovery claim",
+      "Nine exact-source CI jobs success; cross-language output/errno and strict docs"
+    ],
+    "terminal_issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 3,
+        "state": "OPEN",
+        "comment_id": 6154871326,
+        "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6154871326",
+        "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 4,
+        "state": "OPEN",
+        "comment_id": 6154872317,
+        "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6154872317",
+        "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 5,
+        "state": "OPEN",
+        "comment_id": 6154873166,
+        "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6154873166",
+        "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 10,
+        "state": "OPEN",
+        "comment_id": 6154874038,
+        "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6154874038",
+        "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "comment_id": 6154874971,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6154874971",
+        "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 6,
+        "state": "OPEN",
+        "comment_id": 6154875828,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6154875828",
+        "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "comment_id": 6154877001,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6154877001",
+        "body_sha256": "29af91e2798a1e14aa4d57536c064abc533017eabac8cde3756411c9bd0f59e9",
+        "readback_exact": true
+      }
+    ]
   }
 }

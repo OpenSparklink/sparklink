@@ -1,6 +1,6 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前切片：显式 File affinity 与旧观察迁移（修正镜像实机回归待完成）
+## 当前切片：显式 File affinity 与旧观察迁移，准确新源码回归通过
 
 K `c2dd941e5784`（pin初始化修正 `902f01dc9ea5`）删除 active_dev_id/default_selection 与全局 DEV_SWITCH；
 未选择File不能访问controller，DEV_SELECT(-1)只清本File，dup/fork共享绑定，
@@ -10,12 +10,13 @@ K `c2dd941e5784`（pin初始化修正 `902f01dc9ea5`）删除 active_dev_id/defa
 及MGMT_STATS自主超时/取消回归保留，Native profile1拒绝这项旧投影。
 CLI Controller/dli/query不再把旧queue统计当Native静默或metadata，SDK/D-Bus
 旧aggregate明确NotSupported；没有重建重复观察状态。
-[三类审计与保留理由](evidence/default-affinity-retirement-audit-20261014.json)。
+[三类审计与保留理由](evidence/default-affinity-retirement-audit-20261014.json)、
+[准确源码门禁/失败/未决](evidence/default-affinity-retirement-progress-20261014.json)。
 
 新增实际VFS门禁：未选拒绝与buffer保持、dup清绑定/重绑/关闭一个引用后存续、
-另一个File不受影响；79旧入口含global switch与不可靠reset拒绝。准确新源码的
-Virtual及真实发现/建链/短数据/已取得边界/同行隔离仍待完成。旧K6f2f/U4b949
-资格保留但不迁移到新镜像；不关闭完整scope、自然RCA或非人工恢复事项。
+另一个File不受影响；79旧入口含global switch与不可靠reset拒绝。准确 Kdd11fa38a338／service+runner Uc6927630cbb1 的
+Virtual及真实发现/建链40轮短数据、8轮249数据/16超限拒绝、受控同行隔离
+已重新通过。首轮初始化与Virtual错误预期失败保留，旧资格不迁移；不关闭完整scope、自然RCA或非人工恢复事项。
 完整S0–S6、VM-only、UserHost P4和独立文档工作不变。下一步继续剩余未发布
 旧facade、无消费者模块/配置迁移，随后接通唯一用户态SSAP，不等待控制竞争全集。
 

@@ -27,7 +27,8 @@ standard-DLI query Runtime，dup共享，最后关闭精确退休generation并jo
 限定通过，弱unsupported守卫反例映射实际穷举拒绝测试。不证明Host credit、worker/cancel/join/IRQ/引用/lifetime。
 [Virtual File有限抽象模型](evidence/virtual-file-model-20261013/report.json)32513状态、弱join反例；
 依赖VFS/工作队列/精确ingress契约，不是实现证明，已进入callback的确定性join实测仍缺。
-全量镜像/模块构建正在执行；准确新提交的VM生命周期与真实WS73回归尚未通过，不能沿用旧资格。
+修正配置K883清洁构建及空USB WS73/standard模块VM通过；Virtual实际VM在Diagnostic acquire返回EOPNOTSUPP失败。
+[最新门禁及失败](evidence/virtual-provider-vm-progress-20261013.json)：新VM生命周期及真实WS73回归尚未通过，不能沿用旧资格。
 测试运行器已提供query/两controller/dup/最后关闭pending取消/旧gen/复用/drop/fail/迟到回复与模块reload门禁。
 
 下一步先完成当前构建及这些VM门禁，再推进mixed real/Virtual、运行中callback join、Virtual控制/数据模拟与

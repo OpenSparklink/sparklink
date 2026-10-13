@@ -4,6 +4,18 @@
 
 # 当前能力与资格
 
+## 最新Session通道分流资格（限定范围）
+
+准确内核 `6fe9696a04da6527b994c792cac91ac25b07155e`，编译服务/冻结工具
+`f0cd461778209aa2ae30e8de8779b690ee122f70`。两个固定槽源码已接通，实际生产
+分流/授权回归与key map有限CBMC通过；不是全部队列/并发生命周期证明。
+VM中原CUTC发现/连接/交换角色40短消息、8轮249/16超限拒绝、受控同行通过；
+正常224 ACB SDU/112 NOCP，capture drops0、taint0，对端应用实际校验与回复。
+新SMTC10/PI0尚无真实通道/SSAP互通资格；动态/可靠/同lifetime重绑仍不支持。
+[本批源身份、回归、限定假设与失败](evidence/session-fixed-channel-progress-20261014.json)。
+受控故障/QMP不替代自然恢复；首次panic等历史失败保留，完整issues继续开放。
+
+
 当前准确资格：K `53a110816ebf`／service+runner U `eb92d16f4d9f`，配置30860427。
 Virtual标准profile0/format2双reader/CAP/非法字段/私有result/peer查询两轮通过；
 这是专用测试总线证据，未新增标准物理/RF/Ready/公共事件资格。WS73 profile1格式

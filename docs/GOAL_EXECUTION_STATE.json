@@ -315,8 +315,8 @@
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "latest_evidence_commit": "69ff7fb54e6996dad3bbbf2372795d5ded67cfde",
-  "previous_goal_turn_classification": "progress: signed fourth documentation batch and exact browser/CI/issue readbacks",
-  "current_goal_turn_classification": "progress: actual userspace SSAP ExchangeInfo codec and production-code bounded harnesses; formal unsupported remains unproved",
+  "previous_goal_turn_classification": "progress: actual SSAP ExchangeInfo codec, exact all9 CI and fail-closed unproved Kani gate",
+  "current_goal_turn_classification": "progress: bounded Session fixed-channel routing and exact CUTC hardware regression",
   "qualified_tool_source_heads": {
     "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
     "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
@@ -1908,5 +1908,28 @@
         "terminal_update_readback": true
       }
     ]
+  },
+  "session_fixed_channel_slice": {
+    "status": "IMPLEMENTED_TWO_FIXED_CHANNELS; OFFLINE_SCOPED_PASS; REAL_CUTC_REGRESSION_PASS; SMTC_RF_MISSING",
+    "kernel": "6fe9696a04da6527b994c792cac91ac25b07155e",
+    "service_and_runner": "f0cd461778209aa2ae30e8de8779b690ee122f70",
+    "evidence": "docs/evidence/session-fixed-channel-progress-20261014.json",
+    "next": [
+      "get coherent actual channel MTU/MPS for the daemon Engine",
+      "bind true SMTC to single lifetime-scoped daemon actor; real ExchangeInfo",
+      "bounded SSAP database/read/write/notification/indication",
+      "dynamic channels, long/credit/queue/close/lifetime/four-device gates"
+    ],
+    "ci": {
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38479661397",
+      "head": "f0cd461778209aa2ae30e8de8779b690ee122f70",
+      "status": "success",
+      "jobs_success": 9,
+      "per_job_readback": true
+    },
+    "physical_smtc_qualified": false,
+    "natural_recovery_qualified": false,
+    "full_goal_scope_unchanged": true,
+    "whole_issue_closed": false
   }
 }

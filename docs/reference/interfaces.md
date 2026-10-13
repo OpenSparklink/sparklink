@@ -68,3 +68,9 @@ configfs仅软件version；max_connections/adv_interval_ms/scan_window_ms/power_
 controller_type删除，旧路径ENOENT，不保留none/0无动作成功。SPARKLINK_SLE与
 SPARKLINK_DEBUGFS无效选项删除；用实际SPARKLINK/驱动及Linux DEBUG_FS配置。
 WS73实际板级pm_config.bin不是旧全局power_mode，仍由驱动加载验证。
+
+K6fe9696a04da 的未发布 socket v2 地址大小仍48字节。底层CAP_NET_ADMIN bind
+支持两固定key：local/remote TCID31与PI241，或local/remote TCID10与PI0；
+CMTC不交应用fd。每槽仅一个绑定，最后关闭只退休该槽；同连接lifetime重绑
+EOPNOTSUPP，无热迁移。默认slkd的普通应用OpenChannel仍只授CUTC，服务SMTC
+保留给唯一Engine，尚未取得实机SSAP资格。字段/模式不存在公开兼容承诺。

@@ -5,6 +5,18 @@
 
 # SparkLink / Linux 联合实施方案
 
+## 当前主线：Session固定通道表接通，唯一SSAP Engine继续推进
+
+K6fe9696a04da／服务与工具Uf0cd461：一个Session worker统一消费/解码ACB，
+CUTC31/PI241与SMTC10/PI0各有有限队列、fd/Grant与关闭退休；共享真实credit与
+提交票据，采用有限轮转。旧CUTC准确源码实机回归通过，SMTC互通仍未验收。
+[实现、有限证明、准确实机与失败](evidence/session-fixed-channel-progress-20261014.json)。
+下一依赖是提供一致的实际通道能力快照、绑定唯一slkd SMTC actor并完成真实
+ExchangeInfo，再接有界数据库与读写/通知/指示。动态通道、可靠模式、同lifetime
+重绑以及全生命周期证明仍缺；不等待全部控制面竞争才推进数据纵向门禁。
+完整S0–S6、19WP/10FV/12DG、VM-only、自然RCA/非人工恢复与UserHostP4保持。
+
+
 ## 当前切片：标准独立snoop迁移，Virtual与准确WS73回归通过
 
 K580b51f9142f把标准DLI四字节头event/command接入已有CAP限制的每registration

@@ -280,3 +280,7 @@ gate→routes（发布），查找释放routes后再走Host等路径，不逆向
 反序释放，schedule/kick在解锁后执行。生产8函数依赖回归与rank负对照、LKMM锁抽象
 各自限定；实际IRQ保存/恢复、内核lockdep/KCSAN、Arc/workqueue/callback回收仍需VM门禁。
 标准USB还需迁注册/独立资源/模块所有权、probe/setup/RX/stop与PM，未提前完成整项WP13。
+
+最后watchdog观察者也遵守Host→gate，不能因“只读”逆序；仍不得发布Ready/credit或
+产生恢复成功。实际health函数归一化仅extern签名/模块路径，依赖Host方法为fixture；
+9项回归和显式锁位置语法审计不是完整IRQ/lockdep/KCSAN或自然根因证明。

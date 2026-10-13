@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前正常路径K80a362ff3355/Uf4c65fb：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前正常路径K7de1d1316412/Ued815bc：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -50,6 +50,11 @@ RX和Native/USB命令准入统一Host→gate（RX再取ingress），反序释放
 锁模型仅单identity/有效引用/一次发布退休；实际函数8项是std锁/Arc/Host依赖回归。
 准确80a362ff/f4c65fb VM40短/249八轮/16超限与CI9保持；不宣称IRQ/lockdep/KCSAN、
 callback回收或完整USB独立构建通过。标准USBprobe/FFI/enum/binding下一批迁移。
+
+最后观察者审计K7de1d1316412：health也改为Host→gate，保持只读；生产函数9项
+覆盖Setup/Ready/radio/fault/retired/旧generation和同行。显式let gate→Host语法
+扫描无剩余候选（不是完整间接锁证明），本版独立40短/249八轮/16拒绝与CI9通过。
+历史80a362ff/f4c65fb证据保留，不把旧成功直接改授新提交。
 
 ## 目标分层及架构决策
 

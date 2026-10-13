@@ -432,7 +432,7 @@ K7e654fde另修版本/size在尾部复制及ops跟随前拒绝；实际入口11�
 迁实际route/Host ingress/worker/Session调用者至sle_ingress，删除USB内重复实现，
 发布持gate/精确Arc撤销/worker不再publish/per-Runtime decode统计。
 RX与两个命令producer统一Host→gate，旧RX actual-body rank负对照检出反转。
-实际函数8项/Native33/link publisher、限定LKMM Never+weakSometimes、零warning/
+实际函数9项（含只读health）/Native33/link publisher、限定LKMM Never+weakSometimes、零warning/
 空VM3/准确40短/249八轮及16拒绝/CI9通过。无lockdep/KCSAN或完整callback证明。
 
 三类清单：立即删除已完成USB的通用route函数和global decode计数及worker重复发布；
@@ -441,6 +441,10 @@ RX与两个命令producer统一Host→gate，旧RX actual-body rank负对照检�
 以及重复binding/协议表/静态enum、未消费SleUrbCtx Rust wrappers/global dead_code mask。
 后者调用审计为仅sle_usb内部声明/实现，须保留C实际URB调用者和有效codec测试再剥离；
 不能机械删除实际USB或恢复未经迁移profile0支持。
+
+最后观察者K7de1d1316412同样Host→gate；直接抽取的health函数9项依赖回归
+及显式let gate→Host语法审计记录。准确K7de1d131/Ued815bc取得新40短/249八轮/
+16拒绝和CI9；旧80a362ff资格保留历史。实际lockdep/KCSAN、间接锁及回收门禁仍缺。
 
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。

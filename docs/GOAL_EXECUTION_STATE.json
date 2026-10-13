@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T00:45:21.552459+00:00",
+  "updated_at_utc": "2026-10-13T00:56:59.294093+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,15 +26,15 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "80a362ff3355199933d17242bdbe9cf007c970cc",
-    "userspace": "f4c65fbd3f9d8f9e2f7afdbce4cf78ad24ed6336"
+    "linux": "7de1d13164124b7da8aaedbd12b38faebdee22f4",
+    "userspace": "ed815bcc3c08c07ec9e76206a10ab58776433936"
   },
   "qualified_source_heads": {
-    "linux": "80a362ff3355199933d17242bdbe9cf007c970cc",
-    "userspace": "f4c65fbd3f9d8f9e2f7afdbce4cf78ad24ed6336"
+    "linux": "7de1d13164124b7da8aaedbd12b38faebdee22f4",
+    "userspace": "ed815bcc3c08c07ec9e76206a10ab58776433936"
   },
   "current_qualification": {
-    "DG01": "K80a362ff/Uf4c65fb new40 ordinary peer round trips after core ingress/Host-gate migration; actual RF22/typed connection/dup-lastclose/QMP support retained",
+    "DG01": "K7de1d131/Ued815bc new40 ordinary peer round trips after core ingress/Host-gate migration; actual RF22/typed connection/dup-lastclose/QMP support retained",
     "DG02": "Same exact source8 app249 and16 oversize rejections absent capture; layered/long/same-Binding matrices still open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
@@ -45,7 +45,7 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: WS73 versioned Backend and common core Runtime ingress wired; Native/Session/workers no USB route import; gate publish/Arc unpublish/no worker republish/per-controller decode, Host-before-gate RX/command. Exact new40/249/CI9/offline8+33/437; standard USB actual Backend/resource/module/probe/stop/PM and binding/enum/driver builds, true Virtual, IRQ/refinement/reclamation still open."
+    "WP13": "PARTIAL: WS73 versioned Backend and common core Runtime ingress wired; Native/Session/workers no USB route import; gate publish/Arc unpublish/no worker republish/per-controller decode, Host-before-gate RX/command. Exact new40/249/CI9/offline8+33/437; standard USB actual Backend/resource/module/probe/stop/PM and binding/enum/driver builds, true Virtual, IRQ/refinement/reclamation still open. Final health observer Host-gate auditK7de1d131/Ued815bc actual9/fresh40-249/CI9. Source-only no explicit gate->Host candidates, not complete indirect-lock or IRQ proof."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
@@ -204,7 +204,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "PARTIAL: WS73 versioned Backend and common core Runtime ingress wired; Native/Session/workers no USB route import; gate publish/Arc unpublish/no worker republish/per-controller decode, Host-before-gate RX/command. Exact new40/249/CI9/offline8+33/437; standard USB actual Backend/resource/module/probe/stop/PM and binding/enum/driver builds, true Virtual, IRQ/refinement/reclamation still open."
+      "status": "PARTIAL: WS73 versioned Backend and common core Runtime ingress wired; Native/Session/workers no USB route import; gate publish/Arc unpublish/no worker republish/per-controller decode, Host-before-gate RX/command. Exact new40/249/CI9/offline8+33/437; standard USB actual Backend/resource/module/probe/stop/PM and binding/enum/driver builds, true Virtual, IRQ/refinement/reclamation still open. Final health observer Host-gate auditK7de1d131/Ued815bc actual9/fresh40-249/CI9. Source-only no explicit gate->Host candidates, not complete indirect-lock or IRQ proof."
     },
     {
       "id": "WP14",
@@ -379,14 +379,16 @@
   },
   "heads_observed_before_receipt_commit": true,
   "core_ingress_slice": {
-    "kernel": "80a362ff3355199933d17242bdbe9cf007c970cc",
-    "compiled_service_tools": "f4c65fbd3f9d8f9e2f7afdbce4cf78ad24ed6336",
+    "kernel": "7de1d13164124b7da8aaedbd12b38faebdee22f4",
+    "compiled_service_tools": "ed815bcc3c08c07ec9e76206a10ab58776433936",
     "implemented": "core bus-independent exact ingress routes/Host admission; retired publish refused; exact Arc revoke; no worker republish; per-Runtime decode; Host-before-gate RX and command",
-    "offline": "zero warnings/emptyVM3/actual8 with rank checks/Native33/link publisher/tools437/CI9",
+    "offline": "zero warnings/emptyVM3/actual9 with ranked Host-gate and health/Native33/link publisher/tools437/CI9",
     "formal": "single-identity route LKMM Never plus weakSometimes; prior RX actual-body rank counterexample; no kernel IRQ/lockdep/KCSAN/Arc/workqueue/callback proof",
     "real": "40 short and8 app249 round trips;16 oversize markers absent capture;224 SDU/112 NOCP/zero drop/taint0",
     "package_complete": false,
     "natural_root_cause_closed": false,
-    "nonmanual_recovery_accepted": false
+    "nonmanual_recovery_accepted": false,
+    "health_observer_ordered": true,
+    "explicit_gate_host_audit": "no remaining candidates; syntactic only, not full indirect/IRQ proof"
   }
 }

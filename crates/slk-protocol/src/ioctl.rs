@@ -10,6 +10,12 @@ nix::ioctl_write_int!(sl_dev_switch, SL_MAGIC, 0x05);
 nix::ioctl_read!(sl_dev_list, SL_MAGIC, 0x06, u16);
 nix::ioctl_write_ptr!(sl_dev_select, SL_MAGIC, 0x07, i16);
 nix::ioctl_read!(sl_dev_get_active, SL_MAGIC, 0x08, u16);
+nix::ioctl_readwrite!(
+    sl_registration_snapshot,
+    SL_MAGIC,
+    0x9f,
+    super::SleRegistrationSnapshot
+);
 
 // ----- Advertising (0x10 - 0x1B) -----
 

@@ -39,6 +39,7 @@ STRUCT_NAMES = {
     "SleDliInfo": "sle_dli_info",
     "SlePhyInfo": "sle_phy_info",
     "SleControllerSnapshot": "sle_controller_snapshot",
+    "SleRegistrationSnapshot": "sle_registration_snapshot",
     "SleManagementQuery": "sle_management_query",
     "SleControllerEvent": "sle_controller_event",
     "SleControllerEventQuery": "sle_controller_event_query",

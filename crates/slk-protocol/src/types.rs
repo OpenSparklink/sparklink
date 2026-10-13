@@ -1045,6 +1045,49 @@ pub const CONTROLLER_SETUP: u32 = 2;
 pub const CONTROLLER_FAULT: u32 = 4;
 pub const CONTROLLER_FULL_METADATA: u32 = 1;
 
+/// Core registration observation, independent of selected fd/Host Ready.
+/// Installed is not Ready; phase/error are raw provider diagnostics for pending
+/// registrations only. Removal may follow the atomic observation immediately.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C, align(8))]
+pub struct SleRegistrationSnapshot {
+    pub generation: u64,
+    pub version: u32,
+    pub state: u32,
+    pub profile: u32,
+    pub phase: u32,
+    pub error: i32,
+    pub dev_index: u16,
+    pub bus: u8,
+    pub reserved_byte: u8,
+    pub reserved: [u8; 8],
+}
+pub const REGISTRATION_VERSION: u32 = 1;
+pub const REGISTRATION_PENDING: u32 = 1;
+pub const REGISTRATION_FAULT: u32 = 2;
+pub const REGISTRATION_INSTALLED: u32 = 3;
+pub const REGISTRATION_RETIRING: u32 = 4;
+impl SleRegistrationSnapshot {
+    pub fn valid_for(&self, index: u16, generation: u64) -> bool {
+        self.version == REGISTRATION_VERSION
+            && self.generation != 0
+            && (generation == 0 || self.generation == generation)
+            && index < 16
+            && self.dev_index == index
+            && self.bus <= 6
+            && self.reserved_byte == 0
+            && self.reserved == [0; 8]
+            && match self.state {
+                REGISTRATION_PENDING => self.error == 0,
+                REGISTRATION_FAULT => self.error < 0,
+                REGISTRATION_INSTALLED | REGISTRATION_RETIRING => {
+                    self.phase == 0 && self.error == 0
+                }
+                _ => false,
+            }
+    }
+}
+
 /// D-Bus operation record: generation, request id, operation, state, errno,
 /// raw status, opcode, step, count, actual selected power, power valid,
 /// confirmed adv state, confirmed scan state, profile. This is not a C ABI.
@@ -1562,5 +1605,45 @@ mod link_snapshot_tests {
         assert!(s.valid_for(7));
         s.links[15].lifetime = 1;
         assert!(!s.valid_for(7));
+    }
+}
+
+#[cfg(test)]
+mod registration_tests {
+    use super::*;
+    #[test]
+    fn core_observation_requires_exact_identity_and_consistent_diagnostics() {
+        let mut s = SleRegistrationSnapshot {
+            version: REGISTRATION_VERSION,
+            generation: 7,
+            dev_index: 2,
+            state: REGISTRATION_PENDING,
+            bus: 4,
+            ..Default::default()
+        };
+        assert!(s.valid_for(2, 0));
+        assert!(s.valid_for(2, 7));
+        assert!(!s.valid_for(2, 8));
+        assert!(!s.valid_for(3, 7));
+        assert!(!s.valid_for(16, 7));
+        s.state = REGISTRATION_FAULT;
+        assert!(!s.valid_for(2, 7));
+        s.error = -2;
+        s.phase = 3;
+        assert!(s.valid_for(2, 7));
+        for state in [REGISTRATION_INSTALLED, REGISTRATION_RETIRING] {
+            s.phase = 3;
+            s.error = -2;
+            s.state = state;
+            assert!(!s.valid_for(2, 7));
+            s.phase = 0;
+            s.error = 0;
+            assert!(s.valid_for(2, 7));
+            s.reserved_byte = 1;
+            assert!(!s.valid_for(2, 7));
+            s.reserved_byte = 0;
+        }
+        s.generation = 0;
+        assert!(!s.valid_for(2, 0));
     }
 }

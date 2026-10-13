@@ -8,13 +8,13 @@ import errno
 from pathlib import Path
 import unittest
 
-from sparklink import NativeAdapter
+from sparklink import NativeAdapter, registration_snapshot
 from sparklink.native import _get_native_lib
 from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-    SleLinkSnapshot,
+    SleLinkSnapshot, SleRegistrationSnapshot,
 )
 
 
@@ -27,6 +27,20 @@ class NativeBindingTests(unittest.TestCase):
         self.handle = self.lib.slk_adapter_open(b"/dev/null")
         self.assertTrue(self.handle)
         self.addCleanup(self.lib.slk_adapter_free, self.handle)
+
+    def test_registration_probe_rejects_invalid_index_and_closes_on_error(self):
+        before = len(list(Path('/proc/self/fd').iterdir()))
+        for _ in range(3):
+            with self.assertRaises(OSError) as caught:
+                registration_snapshot(0, 1, '/dev/null')
+            self.assertEqual(caught.exception.errno, errno.ENOTTY)
+        self.assertEqual(len(list(Path('/proc/self/fd').iterdir())), before)
+        with self.assertRaises(ValueError):
+            registration_snapshot(16, 1, '/dev/null')
+        out = SleRegistrationSnapshot(generation=99)
+        self.assertEqual(self.lib.slk_registration_snapshot(self.handle, 16, 1, ctypes.byref(out)), -errno.EINVAL)
+        self.assertEqual(out.generation, 99)
+        self.assertEqual(self.lib.slk_registration_snapshot(None, 0, 1, ctypes.byref(out)), -errno.EINVAL)
 
     def test_borrowed_fd_is_live_and_new_api_preserves_errno(self):
         fd = self.lib.slk_adapter_fd(self.handle)
@@ -41,6 +55,7 @@ class NativeBindingTests(unittest.TestCase):
         for name, args, value in [
             ("slk_device_mask", [], ctypes.c_uint16(0xABCD)),
             ("slk_controller_snapshot", [1], SleControllerSnapshot(generation=99)),
+            ("slk_registration_snapshot", [0, 1], SleRegistrationSnapshot(generation=99)),
             ("slk_link_snapshot", [1], SleLinkSnapshot(generation=99)),
             ("slk_management_query", [1], SleManagementQuery(lease=99)),
             ("slk_management_acquire", [1, 1], ctypes.c_uint64(99)),

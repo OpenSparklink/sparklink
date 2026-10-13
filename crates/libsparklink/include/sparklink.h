@@ -225,6 +225,24 @@ typedef struct SPARKLINK_ALIGN(8) SleControllerSnapshot {
     uint8_t reserved[4];
 } SleControllerSnapshot;
 
+/**
+ * Core registration observation, independent of selected fd/Host Ready.
+ * Installed is not Ready; phase/error are raw provider diagnostics for pending
+ * registrations only. Removal may follow the atomic observation immediately.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleRegistrationSnapshot {
+    uint64_t generation;
+    uint32_t version;
+    uint32_t state;
+    uint32_t profile;
+    uint32_t phase;
+    int32_t error;
+    uint16_t dev_index;
+    uint8_t bus;
+    uint8_t reserved_byte;
+    uint8_t reserved[8];
+} SleRegistrationSnapshot;
+
 typedef struct SPARKLINK_ALIGN(8) SleLinkInfo {
     uint64_t lifetime;
     uint16_t handle;
@@ -701,6 +719,17 @@ int slk_device_mask(const struct SlkAdapter *adapter, uint16_t *out);
 int slk_controller_snapshot(const struct SlkAdapter *adapter,
                             uint64_t generation,
                             struct SleControllerSnapshot *out);
+
+/**
+ * Core registration observation without fd selection or management authority.
+ * Installed is not Host Ready; index/generation names the atomic observation.
+ * # Safety
+ * Non-null pointers are valid, aligned, nonoverlapping; out is writable.
+ */
+int slk_registration_snapshot(const struct SlkAdapter *adapter,
+                              uint16_t index,
+                              uint64_t generation,
+                              struct SleRegistrationSnapshot *out);
 
 /**
  * Observe physical links and an atomic replay barrier, without consuming events.

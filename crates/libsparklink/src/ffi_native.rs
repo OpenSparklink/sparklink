@@ -85,6 +85,29 @@ pub unsafe extern "C" fn slk_controller_snapshot(
     }
 }
 
+/// Core registration observation without fd selection or management authority.
+/// Installed is not Host Ready; index/generation names the atomic observation.
+/// # Safety
+/// Non-null pointers are valid, aligned, nonoverlapping; out is writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_registration_snapshot(
+    adapter: *const SlkAdapter,
+    index: u16,
+    generation: u64,
+    out: *mut SleRegistrationSnapshot,
+) -> c_int {
+    let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter.inner.registration_snapshot(index, generation) {
+        Ok(value) => {
+            *out = value;
+            0
+        }
+        Err(error) => errno(error),
+    }
+}
+
 /// Observe physical links and an atomic replay barrier, without consuming events.
 /// Unknown is returned explicitly in flags/error; it is never an empty success.
 /// # Safety

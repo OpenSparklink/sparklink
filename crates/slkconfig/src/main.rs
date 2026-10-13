@@ -24,6 +24,8 @@ struct Cli {
 enum Command {
     /// List registered controllers and their generations without acquiring ownership
     Adapters,
+    /// Observe Core registration before Runtime binding; no management lease
+    Registration,
     /// Observe the selected controller and its command queue
     Controller,
     /// Observe native management ownership (does not acquire a lease)
@@ -212,8 +214,17 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         );
         let mut adapter = Adapter::open(&cli.device)?;
         for index in adapter.device_indices()? {
+            let registration = match adapter.registration_snapshot(index, 0) {
+                Ok(value) => value,
+                Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => continue,
+                Err(error) => return Err(error.into()),
+            };
+            print_registration(&registration);
+            if registration.state != slk_protocol::REGISTRATION_INSTALLED {
+                continue;
+            }
             adapter.select_device(index)?;
-            let snapshot = adapter.controller_snapshot(0)?;
+            let snapshot = adapter.controller_snapshot(registration.generation)?;
             print_controller(&snapshot);
         }
         return Ok(());
@@ -223,6 +234,11 @@ fn run(cli: Cli) -> anyhow::Result<()> {
     })?;
     anyhow::ensure!(index < 16, "adapter index must be 0..15");
     anyhow::ensure!(cli.generation != Some(0), "generation must be nonzero");
+    if matches!(cli.command, Command::Registration) {
+        let adapter = Adapter::open(&cli.device)?;
+        print_registration(&adapter.registration_snapshot(index, cli.generation.unwrap_or(0))?);
+        return Ok(());
+    }
     if matches!(cli.command, Command::Query { .. }) {
         anyhow::ensure!(
             cli.generation.is_some(),
@@ -273,7 +289,11 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         "legacy management command is unsupported on this native controller; use slctl for discovery or query for exclusive diagnostics"
     );
     let result = match cli.command {
-        Command::Adapters | Command::Controller | Command::Management | Command::Query { .. } => {
+        Command::Adapters
+        | Command::Registration
+        | Command::Controller
+        | Command::Management
+        | Command::Query { .. } => {
             unreachable!()
         }
         Command::Info => cmd_info(&adapter),
@@ -313,6 +333,13 @@ fn run(cli: Cli) -> anyhow::Result<()> {
 
     result?;
     Ok(())
+}
+
+fn print_registration(s: &slk_protocol::SleRegistrationSnapshot) {
+    println!(
+        "Registration: index={} generation={} state={} profile={} bus={} phase={} error={}",
+        s.dev_index, s.generation, s.state, s.profile, s.bus, s.phase, s.error
+    );
 }
 
 fn print_controller(s: &slk_protocol::SleControllerSnapshot) {

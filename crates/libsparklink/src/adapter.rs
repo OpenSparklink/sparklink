@@ -153,6 +153,32 @@ impl Adapter {
         Ok((0..16).filter(|i| mask & (1 << i) != 0).collect())
     }
 
+    /// Observe Core registration without affinity or a management lease.
+    /// generation=0 probes the named index; a nonzero value requires that exact
+    /// registration. Installed does not assert Host Ready or controller metadata.
+    pub fn registration_snapshot(
+        &self,
+        index: u16,
+        generation: u64,
+    ) -> Result<SleRegistrationSnapshot> {
+        if index >= 16 {
+            return Err(Error::InvalidParam("registration index must be 0..15"));
+        }
+        let mut out = SleRegistrationSnapshot {
+            version: REGISTRATION_VERSION,
+            dev_index: index,
+            generation,
+            ..Default::default()
+        };
+        unsafe { ioctl::sl_registration_snapshot(self.raw_fd(), &mut out)? };
+        if !out.valid_for(index, generation) {
+            return Err(Error::InvalidParam(
+                "invalid registration snapshot response",
+            ));
+        }
+        Ok(out)
+    }
+
     /// Query only this selected registration. generation=0 probes its identity;
     /// a nonzero generation fails if the selected registration changed.
     pub fn controller_snapshot(&self, generation: u64) -> Result<SleControllerSnapshot> {

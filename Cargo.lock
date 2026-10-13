@@ -998,6 +998,7 @@ dependencies = [
  "anyhow",
  "clap",
  "libsparklink",
+ "nix 0.30.1",
  "slk-protocol",
 ]
 

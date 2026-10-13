@@ -13,3 +13,4 @@ anyhow = "1"
 slk-protocol = { workspace = true }
 libsparklink = { workspace = true }
 clap = { workspace = true }
+nix = { workspace = true }

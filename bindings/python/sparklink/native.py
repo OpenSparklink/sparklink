@@ -13,7 +13,7 @@ from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-    SleLinkSnapshot,
+    SleLinkSnapshot, SleRegistrationSnapshot,
 )
 
 _native_library = None
@@ -25,7 +25,7 @@ def _get_native_lib():
     if _native_library is lib:
         return lib
     if any(ctypes.alignment(t) != 8 for t in (
-        SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
+        SleControllerSnapshot, SleRegistrationSnapshot, SleManagementQuery, SleDiscoverySubmit,
         SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
         SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     )):
@@ -36,6 +36,7 @@ def _get_native_lib():
         "slk_adapter_select": [handle, ctypes.c_uint16],
         "slk_adapter_fd": [handle],
         "slk_device_mask": [handle, ctypes.POINTER(ctypes.c_uint16)],
+        "slk_registration_snapshot": [handle, ctypes.c_uint16, u64, ctypes.POINTER(SleRegistrationSnapshot)],
         "slk_controller_snapshot": [handle, u64, ctypes.POINTER(SleControllerSnapshot)],
         "slk_link_snapshot": [handle, u64, ctypes.POINTER(SleLinkSnapshot)],
         "slk_management_acquire": [handle, u64, u32, ctypes.POINTER(u64)],
@@ -66,6 +67,29 @@ def _unsigned(value, bits, name, nonzero=False):
     if not isinstance(value, int) or not (int(nonzero) <= value < 1 << bits):
         raise ValueError(f"{name} must fit unsigned {bits} bits" + (" and be nonzero" if nonzero else ""))
     return value
+
+
+def registration_snapshot(index, generation=0, dev_path="/dev/sparklink"):
+    """Observe Core pending/fault/installed/retiring without selecting a Runtime.
+
+    Installed is not Host Ready. A nonzero generation requires that exact
+    registration; observation does not keep the device present or grant authority.
+    """
+    index = _unsigned(index, 4, "index")
+    generation = _unsigned(generation, 64, "generation")
+    lib = _get_native_lib()
+    path = dev_path.encode('utf-8') if isinstance(dev_path, str) else dev_path
+    handle = lib.slk_adapter_open(path)
+    if not handle:
+        raise SparkLinkError(f'Failed to open adapter: {dev_path}')
+    try:
+        result = SleRegistrationSnapshot()
+        code = lib.slk_registration_snapshot(handle, index, generation, ctypes.byref(result))
+        if code < 0:
+            raise OSError(-code, f"registration snapshot: {os.strerror(-code)}")
+        return result
+    finally:
+        lib.slk_adapter_free(handle)
 
 
 class NativeAdapter:

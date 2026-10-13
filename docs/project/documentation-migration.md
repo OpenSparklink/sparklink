@@ -131,3 +131,11 @@ U#8／K#19／U#3 更新已回读，均OPEN；完整 goal 保持active，不改�
 消费者明确退休；原生主机部署内容明确历史和VM-only。权威路径不迁移。
 清单覆盖93份用户态Markdown及10份内核材料，原始hash不重写。
 内容仍为分批整改，未完成所有混合资料拆分；不改变硬件资格，不关闭整项issue。
+
+第五批准确签名文档提交 `1d09c09369ce`：干净临时checkout的locked Python3.12
+安装、严格HTML与清单/内部链接/资源通过；最初archive缺Git HEAD导致报告失败，
+补准确提交元数据后重跑通过，失败日志保留。Firefox新增主题导航、权限搜索、
+表格、代码、Mermaid与390px布局通过，截图已查看。
+[独立CI及HTML artifact](https://github.com/OpenSparklink/sparklink/actions/runs/38487251357)
+成功；无正式发布。[范围和未决](../evidence/diataxis-documentation-uppercase-batch-20261014.json)。
+开发dirty文件hash保持一致，无运行代码变更，不要求重复硬件资格。

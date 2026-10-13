@@ -54,3 +54,11 @@ class EarlyBootstrapFault(unittest.TestCase):
         for name in ['cap_eff','cap_prm','cap_amb']:
             row=self.sample();row['credentials'][name]='1'
             with self.subTest(name=name),self.assertRaises(ValueError):validate_fault(row)
+
+class CoreRegistrationCountContract(unittest.TestCase):
+    def test_current_count_parser_separates_pending_from_installed(self):
+        from ws73_early_fault import registration_counts
+        rows = "\n".join(f"Registration /org/sparklink/slk{i}_g{i+1}: index={i} generation={i+1} state={state} profile=1 bus=4 phase=0 error=0" for i,state in enumerate(['Installed','Fault','Installed']))
+        self.assertEqual(registration_counts(rows), {'Devices':3,'Reserved only':1,'Runtimes':2})
+        with self.assertRaises(ValueError):registration_counts(rows+'\n'+rows.splitlines()[0])
+        with self.assertRaises(ValueError):registration_counts(rows.replace('slk0_g1','slk0_g9'))

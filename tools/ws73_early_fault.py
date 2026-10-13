@@ -102,12 +102,34 @@ def validate_fault(sample):
     return {'id':int(match[1]),'generation':int(match[2]),'phase':int(match[3])}
 
 
-def stats():
-    peer=json.loads((EVIDENCE/'ready-0.json').read_text())
-    r=application('/bin/slkconfig','--adapter',str(peer['index']),'--generation',str(peer['generation']),'stats',capture_output=True,timeout=10)
-    if r.returncode:raise ValueError('ordinary stats failed: '+r.stderr)
-    fields={name:int(re.search(r'^  '+name+r':\s+(\d+)$',r.stdout,re.M)[1]) for name in ['Devices','Reserved only','Runtimes']}
-    return dict(fields=fields,stdout=r.stdout,wall_ns=time.time_ns())
+def registration_counts(stdout):
+    pattern=r'^Registration (/org/sparklink/slk(\d+)_g(\d+)): index=(\d+) generation=(\d+) state=(Pending|Fault|Installed|Retiring) profile=(\d+) bus=(\d+) phase=(\d+) error=(-?\d+)$'
+    rows=[]
+    for line in stdout.splitlines():
+        if not line.startswith('Registration '):continue
+        m=re.fullmatch(pattern,line)
+        if not m or m[2]!=m[4] or m[3]!=m[5] or int(m[3])==0:
+            raise ValueError('malformed Core registration row')
+        rows.append(dict(path=m[1],index=int(m[4]),generation=int(m[5]),state=m[6]))
+    if not rows or len({r['index'] for r in rows})!=len(rows) or any(r['state']=='Retiring' for r in rows):
+        raise ValueError('registration inventory empty/duplicate/not settled')
+    return dict(Devices=len(rows), **{'Reserved only':sum(r['state'] in ('Pending','Fault') for r in rows),
+                                    'Runtimes':sum(r['state']=='Installed' for r in rows)})
+
+
+def stats(expected):
+    # Per-registration samples are not an atomic multi-device snapshot. This
+    # controlled gate waits for the exact inventory to stabilize twice.
+    deadline=time.monotonic()+10;previous=None
+    while time.monotonic()<deadline:
+        r=application('/bin/slctl','registrations',capture_output=True,timeout=10)
+        if r.returncode:raise ValueError('ordinary registration inventory failed: '+r.stderr)
+        fields=registration_counts(r.stdout)
+        if fields==expected and previous==r.stdout:
+            return dict(fields=fields,stdout=r.stdout,wall_ns=time.time_ns(),
+                        source='actual Core-backed D-Bus registrations; stable twice, not atomic aggregate')
+        previous=r.stdout;time.sleep(.1)
+    raise ValueError('registration inventory did not settle to expected pending/installed counts')
 
 
 def exchange_record(d,label,ports,pid):
@@ -160,7 +182,7 @@ def coordinate(pid):
         d['failed_selection']=application('/bin/slctl','--adapter',f'/org/sparklink/slk{fault["id"]}_g{fault["generation"]}','show',capture_output=True,timeout=10).__dict__
         # CompletedProcess contains only serializable command/exit/streams.
         if d['failed_selection']['returncode']==0:raise ValueError('failed pending identity selectable as Ready')
-        d['stats_failed']=stats()
+        d['stats_failed']=stats({'Devices':3,'Reserved only':1,'Runtimes':2})
         if d['stats_failed']['fields']!={'Devices':3,'Reserved only':1,'Runtimes':2}:raise ValueError('exact two Runtime plus one pending fault expected')
         save(d);exchange_record(d,'during_fault',['1-1','1-2'],pid)
         d['failed_after_business']=ordinary_attributes(interface)
@@ -173,7 +195,7 @@ def coordinate(pid):
         while Path('/sys/bus/usb/devices/1-3').exists():
             if time.monotonic()>deadline:raise ValueError('target guest removal deadline')
             time.sleep(.05)
-        d['stats_after_remove']=stats()
+        d['stats_after_remove']=stats({'Devices':2,'Reserved only':0,'Runtimes':2})
         if d['stats_after_remove']['fields']!={'Devices':2,'Reserved only':0,'Runtimes':2}:raise ValueError('pending cancellation must converge without clearing peers')
         d['core_cancelled']=ordinary_core_snapshot(fault['id'],fault['generation']);validate_core_absent(d['core_cancelled'])
         d['bus_cancelled']=[ordinary_bus_registration(fault['id'],fault['generation'],u) for u in ['ws73','observer']]

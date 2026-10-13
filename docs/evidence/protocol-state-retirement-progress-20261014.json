@@ -162,5 +162,70 @@
   ],
   "not_claimed": "No full goal completion, real unsupported features, comprehensive formal proof or natural recovery. NOCP is not peer receipt. Test/IRQ/firmware assumptions remain explicit.",
   "goal": "fullS0-S6 active; UserHost P4 planning only; no whole issue closed",
-  "actual_taint_check": "Both normal current consoles explicitly contain WS73_TARGET_NATIVE_VM_TAINT: 0"
+  "actual_taint_check": "Both normal current consoles explicitly contain WS73_TARGET_NATIVE_VM_TAINT: 0",
+  "issues": [
+    {
+      "repo": "linux",
+      "issue": 2,
+      "id": 6153446854,
+      "url": "https://github.com/OpenSparklink/linux/issues/2#issuecomment-6153446854",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 3,
+      "id": 6153447803,
+      "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6153447803",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 4,
+      "id": 6153448760,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6153448760",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "id": 6153449677,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6153449677",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "id": 6153450693,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6153450693",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "id": 6153451527,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6153451527",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "id": 6153452541,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6153452541",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    }
+  ]
 }

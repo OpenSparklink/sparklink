@@ -314,7 +314,7 @@
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
-  "latest_evidence_commit": "50826fb6d227ea9ca252441d91d8675d79eb53bb",
+  "latest_evidence_commit": "69ff7fb54e6996dad3bbbf2372795d5ded67cfde",
   "previous_goal_turn_classification": "progress: software PM/global policy removed and exact actual K43/U1ded regression",
   "current_goal_turn_classification": "progress: retired legacy conn/adv models and second RX; migrated old stats consumer after real test failure; exact corrected K558/Ucd77 RF/data gates passed",
   "qualified_tool_source_heads": {
@@ -1206,6 +1206,71 @@
     "service_and_runner": "cd77ed935740f52187a51f014fc1f5212bd8617f",
     "evidence": "docs/evidence/protocol-state-retirement-progress-20261014.json",
     "first_real_failure": "old mixed-stat parser, preserved at .dev/native-protocol-state-retirement-fault-real",
-    "scope_complete": false
+    "scope_complete": false,
+    "issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 2,
+        "id": 6153446854,
+        "url": "https://github.com/OpenSparklink/linux/issues/2#issuecomment-6153446854",
+        "state": "OPEN",
+        "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 3,
+        "id": 6153447803,
+        "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6153447803",
+        "state": "OPEN",
+        "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 4,
+        "id": 6153448760,
+        "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6153448760",
+        "state": "OPEN",
+        "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 5,
+        "id": 6153449677,
+        "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6153449677",
+        "state": "OPEN",
+        "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "id": 6153450693,
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6153450693",
+        "state": "OPEN",
+        "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "id": 6153451527,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6153451527",
+        "state": "OPEN",
+        "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "id": 6153452541,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6153452541",
+        "state": "OPEN",
+        "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+        "readback_exact": true
+      }
+    ]
   }
 }

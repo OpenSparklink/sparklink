@@ -324,3 +324,4 @@ Backend来源本批证据：
 - [普通用户8条真实pending→同代际Ready](evidence/backend-early-pending-observation-20261013.json)
 - [原有限安装模型重核](evidence/backend-early-formal-20261013/manifest.json)
 - [新40](evidence/ws73-backend-early-short-repeat-20261013.json)、[249/超限](evidence/ws73-backend-early-249-boundary-20261013.json)
+- [本批16项issue读回回执](evidence/backend-early-issues-20261013.json)：原scope保留/全部OPEN；early normal-path/模型不关闭整项。

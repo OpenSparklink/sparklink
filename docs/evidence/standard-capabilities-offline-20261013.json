@@ -734,7 +734,61 @@
     "ws73-standard-capabilities-249-boundary-20261013.json"
   ],
   "source_ci": {
-    "status": "PENDING_NEW_PIN"
+    "status": "SUCCESS_9_JOBS",
+    "head": "9a262dd6411d7b7a790b41e107301b1101a01581",
+    "kernel_pin": "1f23fc2197ad43b18d187b235d231583147cc7d1",
+    "run_id": 38359369607,
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607",
+    "jobs": [
+      {
+        "name": "cargo check",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115169652968"
+      },
+      {
+        "name": "rustfmt",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115169652995"
+      },
+      {
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115169653000"
+      },
+      {
+        "name": "Python bindings and kernel ABI conformance",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115169653066"
+      },
+      {
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115169653090"
+      },
+      {
+        "name": "C header generation",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115169770109"
+      },
+      {
+        "name": "clippy",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115169770153"
+      },
+      {
+        "name": "cargo test",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115169770221"
+      },
+      {
+        "name": "release build",
+        "conclusion": "success",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38359369607/job/115170203103"
+      }
+    ],
+    "log_sha256": "85f5226c77eef597750330a43aa4950cb4f9cdee3791f53efc75f05c969edae4",
+    "runtime_service_tools_qualified_head": "afc491db600673341e2bc63085ed565d1ec6cb11",
+    "not_a_hardware_or_formal_proof": true
   },
   "remaining": [
     "queried capability C snapshot has no production Rust consumer yet",

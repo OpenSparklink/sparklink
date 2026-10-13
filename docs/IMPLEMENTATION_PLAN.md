@@ -27,7 +27,8 @@ K`1f23fc2197ad43b18d187b235d231583147cc7d1` / VM编译service和工具U`afc491db
 
 [准确源码/构建/离线](evidence/standard-capabilities-offline-20261013.json)：实际查询/回滚/getter44，
 C固件及参数编码74/Rust12，context18/metadata7、保留port5、Core18、pending/open15、ingress9、Native33；
-清洁准确内核编译和空VM三次通过。
+清洁准确内核编译和空VM三次通过；工具454通过，
+[新准确CI九项](evidence/standard-capabilities-ci-20261013.json)通过（U9a262dd/pin K1f23）。
 [实际C限定CBMC](evidence/standard-capabilities-formal-20261013/production/report.json)218属性，
 原函数只提升static linkage，六次顺序查询、每回复相关18字节/长度/返回值任意，unwind19。
 调用者持锁且context存续是明确假设；不证明USB、并发、callback、module、lifetime或Ready。
@@ -47,6 +48,7 @@ ENODATA/输出不变的实际回归。超时/unsupported/未展开/弱实现均�
 Ticket/Session/Grant/socket剩余lifetime/在途/NOCP/背压门禁并行。整体目标架构完成后才扩展长包、
 多通道/四设备和唯一用户态SSAP Engine。完整S0–S6/19WP/10FV/12DG保留，整项issues不关闭。
 自然RCA和非人工自动恢复仍未通过。
+[八项相关issues回读](evidence/standard-capabilities-issues-20261013.json)确认原scope和OPEN不变。
 
 ## 历史子门禁：共同保留提交接口与标准metadata
 

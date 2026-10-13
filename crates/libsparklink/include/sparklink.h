@@ -25,6 +25,30 @@
 
 #define WS73_DISCOVERY_POLICY_VERSION 3
 
+enum BusType
+#if defined(__cplusplus) || __STDC_VERSION__ >= 202311L
+  : uint8_t
+#endif // defined(__cplusplus) || __STDC_VERSION__ >= 202311L
+ {
+    BusType_Virtual = 0,
+    BusType_Uart = 1,
+    BusType_Spi = 2,
+    BusType_Sdio = 3,
+    BusType_Usb = 4,
+    BusType_Mmio = 5,
+    /**
+     * Explicit test provider, distinct from physical USB and VirtualBackend.
+     */
+    BusType_Test = 6,
+};
+#ifndef __cplusplus
+#if __STDC_VERSION__ >= 202311L
+typedef enum BusType BusType;
+#else
+typedef uint8_t BusType;
+#endif // __STDC_VERSION__ >= 202311L
+#endif // __cplusplus
+
 /**
  * Opaque adapter handle for C consumers
  */

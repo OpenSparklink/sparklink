@@ -12,7 +12,7 @@ after_includes = "#define SPARKLINK_ALIGN(n) __attribute__((aligned(n)))"
 aligned_n = "SPARKLINK_ALIGN"
 
 [export]
-include = ["SlkAdapter", "CONTROLLER_EVENT_PAYLOAD_MAX", "SNOOP_PAYLOAD_MAX", "LINK_SNAPSHOT_MAX", "LINK_SNAPSHOT_KNOWN"]
+include = ["BusType", "SlkAdapter", "CONTROLLER_EVENT_PAYLOAD_MAX", "SNOOP_PAYLOAD_MAX", "LINK_SNAPSHOT_MAX", "LINK_SNAPSHOT_KNOWN"]
 
 [export.rename]
 "SlkAdapter" = "SlkAdapter"
@@ -20,3 +20,6 @@ include = ["SlkAdapter", "CONTROLLER_EVENT_PAYLOAD_MAX", "SNOOP_PAYLOAD_MAX", "L
 [parse]
 parse_deps = true
 include = ["slk-protocol"]
+
+[enum]
+prefix_with_name = true

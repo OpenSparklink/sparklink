@@ -17,6 +17,8 @@ def run(kernel, compiler):
     body = source[start:source.index('EXPORT_SYMBOL_GPL(sparklink_backend_register);', start)]
     start = source.index('struct sparklink_native_transport {')
     transport = source[start:source.index('};', start) + 2]
+    start = source.index('u32 sparklink_native_transport_bus(')
+    getter = source[start:source.index('\nvoid sparklink_native_transport_get', start)]
     fixture = r'''
 #include <stddef.h>
 #include <stdlib.h>
@@ -24,6 +26,7 @@ def run(kernel, compiler):
 #include <linux/sparklink_backend.h>
 typedef unsigned int refcount_t;
 static unsigned int allocations, modules, contexts, rust_calls;
+static struct sparklink_native_transport *accepted;
 #define kmalloc_obj(object) dependency_alloc(sizeof(object))
 #define kfree free
 static void *dependency_alloc(size_t n) { ++allocations; return malloc(n); }
@@ -34,12 +37,13 @@ static void refcount_set(refcount_t *r, unsigned int n) { *r=n; }
     fixture += r'''
 static int sparklink_native_register_rust(const struct sparklink_native_info *i,
  struct sparklink_native_transport *t, struct sparklink_native_identity *out)
-{ (void)i; (void)out; ++rust_calls; free(t); return -EOPNOTSUPP; }
+{ (void)i; (void)out; ++rust_calls; accepted=t; return 0; }
 static void retain(void *c) { (void)c; ++contexts; }
 static int open_backend(void *c, u16 i, u64 g) { (void)c; (void)i; (void)g; return 0; }
 static int command(void *c, u16 o, const u8 *p, size_t n)
 { (void)c; (void)o; (void)p; (void)n; return 0; }
 '''
+    fixture += getter
     fixture += body
     fixture += r'''
 int main(void) {
@@ -62,7 +66,18 @@ int main(void) {
  d=valid;d.context=NULL;CHECK(&d,&out,-EINVAL);
  d=valid;d.capabilities=SPARKLINK_BACKEND_ACB;CHECK(&d,&out,-EINVAL);
  ops.get=NULL;CHECK(&valid,&out,-EINVAL);
- printf("ACTUAL_BACKEND_REGISTRATION_REJECT_PASS tests=%u no_alloc_ref_callback_publish\n",tests);
+ ops.get=retain;
+ for (unsigned int bus=SPARKLINK_BACKEND_USB;bus<=SPARKLINK_BACKEND_TEST;++bus) {
+  d=valid;d.bus=bus;allocations=modules=contexts=rust_calls=0;accepted=NULL;
+  if(sparklink_backend_register(&d,&out)!=0 || !accepted ||
+     allocations!=1 || modules!=1 || contexts!=1 || rust_calls!=1 ||
+     sparklink_native_transport_bus(accepted)!=bus) return 2;
+  /* Source descriptor is gone/mutable after registration; provenance is copied. */
+  d.bus=99;
+  if(sparklink_native_transport_bus(accepted)!=bus) return 3;
+  free(accepted); accepted=NULL;
+ }
+ printf("ACTUAL_BACKEND_REGISTRATION_REJECT_PASS tests=%u bus_copy_cases=2\n",tests);
  return 0;
 }
 '''
@@ -75,11 +90,12 @@ int main(void) {
                         '-fsanitize=address,undefined', '-fno-omit-frame-pointer',
                         '-I', str(kernel / 'include'), str(c), '-o', str(executable)], check=True)
         result = subprocess.check_output([str(executable)], text=True)
-    print(json.dumps({'status': 'ACTUAL_BACKEND_REGISTRATION_REJECT_PASS', 'tests': 11,
+    print(json.dumps({'status': 'ACTUAL_BACKEND_REGISTRATION_REJECT_PASS', 'tests': 11, 'bus_copy_cases': 2,
+                      'bus_getter_sha256': hashlib.sha256(getter.encode()).hexdigest(),
                       'actual_function_sha256': hashlib.sha256(body.encode()).hexdigest(),
                       'production_file_sha256': hashlib.sha256(source.encode()).hexdigest(),
                       'result': result.strip(), 'hardware_acceptance': False,
-                      'scope': 'actual C entry body; dependency allocation/module/Rust callback fixtures; invalid ops sentinel must not be followed for unsupported layout/bus/dialect/caps; no kernel reference or concurrent lifetime proof'}))
+                      'scope': 'actual C entry body; dependency allocation/module/Rust callback fixtures; invalid ops sentinel must not be followed for unsupported layout/bus/dialect/caps; positive USB/TEST provenance copied before dependency Rust registration and retained after descriptor mutation; no kernel reference or concurrent lifetime proof'}))
 
 
 if __name__ == '__main__':

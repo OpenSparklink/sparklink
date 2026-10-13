@@ -70,6 +70,8 @@ pub enum BusType {
     Sdio = 3,
     Usb = 4,
     Mmio = 5,
+    /// Explicit test provider, distinct from physical USB and VirtualBackend.
+    Test = 6,
 }
 
 // ----- DLI Packet Type Indicators -----

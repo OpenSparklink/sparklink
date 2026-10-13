@@ -251,13 +251,14 @@ fn enum_variants_complete() {
     assert_eq!(DiscoveryLevel::PairedOnly as u8, 3);
     assert_eq!(DiscoveryLevel::Designated as u8, 4);
 
-    // BusType: 6 variants 0..=5
+    // BusType: physical, virtual and explicit test provenance
     assert_eq!(BusType::Virtual as u8, 0);
     assert_eq!(BusType::Uart as u8, 1);
     assert_eq!(BusType::Spi as u8, 2);
     assert_eq!(BusType::Sdio as u8, 3);
     assert_eq!(BusType::Usb as u8, 4);
     assert_eq!(BusType::Mmio as u8, 5);
+    assert_eq!(BusType::Test as u8, 6);
 }
 
 #[test]

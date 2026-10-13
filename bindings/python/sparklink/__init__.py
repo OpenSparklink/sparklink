@@ -4,6 +4,7 @@ from sparklink.adapter import Adapter
 from sparklink.native import NativeAdapter
 from sparklink.ssap import SsapOperations
 from sparklink.structs import (
+    BusType,
     SleAddr,
     SleConnInfo,
     SleConnectParams,
@@ -20,6 +21,7 @@ __all__ = [
     "Adapter",
     "NativeAdapter",
     "SsapOperations",
+    "BusType",
     "SleAddr",
     "SleConnInfo",
     "SleConnectParams",

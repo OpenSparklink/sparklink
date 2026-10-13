@@ -5,6 +5,19 @@ SleAddr is a raw 6-byte array (typedef uint8_t SleAddr[6] in C).
 """
 
 import ctypes
+from enum import IntEnum
+
+
+class BusType(IntEnum):
+    """Provider provenance; Test never denotes qualified physical hardware."""
+    Virtual = 0
+    Uart = 1
+    Spi = 2
+    Sdio = 3
+    Usb = 4
+    Mmio = 5
+    Test = 6
+
 
 # SleAddr: typedef uint8_t SleAddr[6]
 SleAddr = ctypes.c_uint8 * 6

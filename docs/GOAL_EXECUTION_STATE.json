@@ -284,8 +284,8 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Architecture first: common provider/staticUsb migration done slice; move physical USB transport/registration to drivers, coreUSB n-m, genuineVirtual/canonical events and full lifecycle/PM matrix next. Full S0-S6 unchanged.",
-  "current_audit": "docs/evidence/backend-early-offline-20261013.json",
+  "current_batch": "Partial canonical-state migration: retire unscoped genl controller control/status/notifications; actual Virtual and physical qualification passed, remaining state and whole goal open",
+  "current_audit": "docs/evidence/genl-retirement-audit-20261014.json",
   "issue_sync_status": "12 related comments exact readbacks, original scopes unchanged; all actual28 OPEN verified",
   "current_implementation_heads": {
     "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
@@ -314,7 +314,7 @@
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
-  "latest_evidence_commit": "f1a60f2a6879c847afcf88e718af3dcc1426bcf7",
+  "latest_evidence_commit": "219544389299bbde6a944455971e2a11dfb5466a",
   "previous_goal_turn_classification": "progress: Diataxis infrastructure/navigation/content slice, actual browser fixes and evidence committed/pushed",
   "current_goal_turn_classification": "progress: retired unscoped genl production control/state/event paths; exact Virtual and real WS73 qualification and signed pushes",
   "qualified_tool_source_heads": {
@@ -1080,6 +1080,62 @@
     "compiled_kernel": "7c6d530ffe2e94bb44b55e0ba9712f61093a7f3e",
     "compiled_service": "ffc0945dfdacf57b98a962938272019854a28b0b",
     "scope": "partial canonical state migration; no whole issue closed",
-    "remaining": "normalized state/ioctl/debugfs caller audit; complete loss/topology/owner-death and callback scopes; true long/multichannel/four/SSAP; natural RCA/automatic recovery"
+    "remaining": "normalized state/ioctl/debugfs caller audit; complete loss/topology/owner-death and callback scopes; true long/multichannel/four/SSAP; natural RCA/automatic recovery",
+    "issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 3,
+        "id": 6151623502,
+        "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6151623502",
+        "state": "OPEN",
+        "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 4,
+        "id": 6151624589,
+        "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6151624589",
+        "state": "OPEN",
+        "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 5,
+        "id": 6151625872,
+        "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6151625872",
+        "state": "OPEN",
+        "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+        "readback_exact": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "id": 6151626851,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6151626851",
+        "state": "OPEN",
+        "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 2,
+        "id": 6151627820,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/2#issuecomment-6151627820",
+        "state": "OPEN",
+        "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+        "readback_exact": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "id": 6151628960,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6151628960",
+        "state": "OPEN",
+        "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+        "readback_exact": true
+      }
+    ]
   }
 }

@@ -125,3 +125,15 @@ python3 tools/backend_registration_contract.py --kernel ../linux
 ASan/UBSan，11个拒绝用例使用不可访问ops哨兵验证未知布局/bus/方言/能力不跟随指针，
 拒绝不改变identity、不分配、不持引用或执行回调。分配/module/Rust调用为依赖fixture，
 不能作为真实内核引用或并发退出证明。版本不符先拒绝，避免复制不同布局的尾部。
+
+Runtime 共同入口与退休顺序的改动门禁：
+
+```sh
+python3 tools/run_formal.py --ingress-only --budget-seconds 60 --output ../.dev/formal-ingress-NEW
+python3 ../linux/tools/testing/selftests/sparklink/run_runtime_ingress.py
+```
+
+LKMM映射生产 `publish_runtime` 的schedule_gate→routes嵌套，以及invalidate先关闭gate
+后 exact-owner unpublish。单一有效identity、初始无route、一次发布/退休；弱对照刻意释放
+gate后才发布，应产生反例。模型不是Rust Arc、IRQ嵌套、复用、workqueue、callback或硬件
+证明。生产函数6项回归用std Mutex/Arc/queue依赖fixture，保留各自明确边界。

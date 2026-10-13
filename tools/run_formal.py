@@ -31,13 +31,15 @@ def classify(kind, code, output, timed_out=False):
         if code == 0 and properties and all(p["status"] == "SUCCESS" for p in properties) and any(
                 row.get("cProverStatus") == "success" for row in rows):
             return "PROVED_SCOPED"
-    elif kind in ("lkmm", "lkmm-ticket", "lkmm-rx"):
+    elif kind in ("lkmm", "lkmm-ticket", "lkmm-rx", "lkmm-ingress"):
         expected = {"ChannelSnapshot": "Never", "ChannelSnapshotWeak": "Sometimes",
                     "ChannelCloseAdmission": "Never"}
         if kind == "lkmm-ticket":
             expected = {"TxCommitWithdrawal": "Never", "TxCommitWithdrawalWeak": "Sometimes"}
         if kind == "lkmm-rx":
             expected = {"RxDequeueWithdrawal": "Never", "RxDequeueWithdrawalWeak": "Sometimes"}
+        if kind == "lkmm-ingress":
+            expected = {"RuntimeRouteRetirement": "Never", "RuntimeRouteRetirementWeak": "Sometimes"}
         found = dict(re.findall(r"Observation (\w+) (Never|Sometimes|Always)\b", output))
         if code == 0 and found == expected:
             return "PROVED_SCOPED_WITH_WEAK_CONTROL"
@@ -50,7 +52,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False, ingress_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent
     kernel = root / "linux"
@@ -61,6 +63,7 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
         "sle_channel_state.h", "sle_channel_grant.h", "sle_channel_socket.c", "sle_data_credit.rs",
         "sle_native.rs", "sle_sessions.rs", "sle_grant.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
     sources += [kernel / "net/core/datagram.c", kernel / "drivers/sparklink/ws73/usb.c", kernel / "include/linux/sparklink_native.h"]
+    sources += [kernel / "net/sparklink/sle_ingress.rs", kernel / "net/sparklink/sle_workers.rs"]
     sources += [kernel / "include/linux/sparklink_backend.h", kernel / "tools/testing/selftests/sparklink/sparklink_backend_test.c"]
     sources += sorted((repo / "formal").rglob("*.c"))
     sources += sorted((repo / "formal").rglob("*.rs"))
@@ -147,6 +150,14 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
                    ["cbmc", str(repo / "formal/backend/descriptor_cbmc.c"), "-I", str(kernel / "include"),
                     "--function", "proof", "--bounds-check", "--pointer-check", "--signed-overflow-check",
                     "--unsigned-overflow-check", "--unwind", "2", "--unwinding-assertions", "--json-ui"])]
+    if ingress_only:
+        checks = [("runtime-route-retirement", "lkmm-ingress", root,
+                   ["herd7", "-conf", str(kernel / "tools/memory-model/linux-kernel.cfg"),
+                    "-I", str(kernel / "tools/memory-model")] +
+                   [str(repo / "formal/lkmm" / (n + ".litmus")) for n in
+                    ("RuntimeRouteRetirement", "RuntimeRouteRetirementWeak")])]
+    record["ingress_only_requested"] = ingress_only
+    record["ingress_scope"] = "single live identity, initially absent route, one publish and one retire; schedule_gate held through routes publication and closed before exact unpublication. CPU spinlock abstraction plus check/drop/publish weak control; no Arc/kref, IRQ nesting, registry reuse, callbacks, workqueue, Host, memory reclamation or hardware refinement"
     record["backend_only_requested"] = backend_only
     record["backend_scope"] = "actual production descriptor validator over arbitrary u32 version/size/bus/capabilities/profile, u16 lengths/u8 counts and callback presence; live immutable provider-owned pointers assumed; no callback execution, module/context references, registration allocation/publication/retirement, concurrency or hardware proof"
     record["fd_grant_only_requested"] = fd_grant_only
@@ -201,6 +212,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--ingress-only", action="store_true", help="Runtime route publication/retirement LKMM and weak control only")
     parser.add_argument("--backend-only", action="store_true", help="actual production Backend descriptor admission CBMC only")
     parser.add_argument("--fd-grant-only", action="store_true", help="actual immutable fd grant constructor/identity/direction CBMC")
     parser.add_argument("--rx-only", action="store_true", help="RX admission/withdrawal Host lock LKMM and weak control")
@@ -213,4 +225,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only, args.ingress_only))

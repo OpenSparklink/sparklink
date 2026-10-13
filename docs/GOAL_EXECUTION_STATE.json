@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T00:56:59.294093+00:00",
+  "updated_at_utc": "2026-10-13T00:59:57.666439+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "7de1d13164124b7da8aaedbd12b38faebdee22f4",
-    "userspace": "ed815bcc3c08c07ec9e76206a10ab58776433936"
+    "userspace": "6f3a331e98a9bf6e5ec0075dbb8cc8158057cee4"
   },
   "qualified_source_heads": {
     "linux": "7de1d13164124b7da8aaedbd12b38faebdee22f4",
@@ -389,6 +389,13 @@
     "natural_root_cause_closed": false,
     "nonmanual_recovery_accepted": false,
     "health_observer_ordered": true,
-    "explicit_gate_host_audit": "no remaining candidates; syntactic only, not full indirect/IRQ proof"
+    "explicit_gate_host_audit": "no remaining candidates; syntactic only, not full indirect/IRQ proof",
+    "issue_updates": {
+      "count": 15,
+      "readback_verified": true,
+      "original_scopes_open_unchanged": true,
+      "receipt": "docs/evidence/core-ingress-issues-20261013.json",
+      "whole_package_closed": false
+    }
   }
 }

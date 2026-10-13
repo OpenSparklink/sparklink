@@ -57,7 +57,8 @@ def validate_fault(sample):
 
 
 def stats():
-    r=application('/bin/slkconfig','stats',capture_output=True,timeout=10)
+    peer=json.loads((EVIDENCE/'ready-0.json').read_text())
+    r=application('/bin/slkconfig','--adapter',str(peer['index']),'--generation',str(peer['generation']),'stats',capture_output=True,timeout=10)
     if r.returncode:raise ValueError('ordinary stats failed: '+r.stderr)
     fields={name:int(re.search(r'^  '+name+r':\s+(\d+)$',r.stdout,re.M)[1]) for name in ['Devices','Reserved only','Runtimes']}
     return dict(fields=fields,stdout=r.stdout,wall_ns=time.time_ns())

@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T01:42:16.225137+00:00",
+  "updated_at_utc": "2026-10-13T01:46:15.508288+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "b619aecf261f39e11f5ebabd63eb79a524c07447",
-    "userspace": "552fc62c15024efe282562d9602b09343b21f86e"
+    "userspace": "8107d7032062a1709e503e63881372e9b7a07c42"
   },
   "qualified_source_heads": {
     "linux": "b619aecf261f39e11f5ebabd63eb79a524c07447",
@@ -410,6 +410,13 @@
     "real": "first wholeFAIL retained with independently validated40 data and peer Down1112ms; fresh40 short +8 app249/16 rejects under shared original5s observation and each realDown/property receipt",
     "package_complete": false,
     "natural_root_cause_closed": false,
-    "nonmanual_recovery_accepted": false
+    "nonmanual_recovery_accepted": false,
+    "issue_updates": {
+      "count": 15,
+      "readback_verified": true,
+      "original_scopes_open_unchanged": true,
+      "receipt": "docs/evidence/usb-pending-issues-20261013.json",
+      "whole_package_closed": false
+    }
   }
 }

@@ -17,100 +17,77 @@ impl SecurityIface {
 impl SecurityIface {
     /// Get current security state
     async fn get_info(&self) -> zbus::fdo::Result<SecurityInfo> {
-        let st = self.state.lock().await;
-        let info = st
-            .adapter
-            .sec_info()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("sec_info failed: {e}")))?;
-        Ok(SecurityInfo {
-            state: sec_state_label(info.state),
-            method: pair_method_label(info.method),
-            mode: info.mode,
-            encrypted: info.enc_enabled != 0,
-        })
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// Set Pre-Shared Key (16 bytes hex string)
     async fn set_psk(&self, psk_hex: &str) -> zbus::fdo::Result<()> {
-        let psk =
-            parse_hex_key(psk_hex, 16).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
-        let mut params = slk_protocol::SlePskParams { psk: [0; 16] };
-        params.psk.copy_from_slice(&psk);
-        let st = self.state.lock().await;
-        st.adapter
-            .set_psk(&params)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("set_psk failed: {e}")))
+        parse_hex_key(psk_hex, 16).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// Initiate pairing with the given method
     /// method: "just_works", "psk", "none"
     async fn pair(&self, method: &str) -> zbus::fdo::Result<()> {
-        let m = match method {
-            "just_works" => slk_protocol::PairMethod::JustWorks as u8,
-            "psk" => slk_protocol::PairMethod::Psk as u8,
-            "none" | "" => slk_protocol::PairMethod::None as u8,
-            _ => {
-                return Err(zbus::fdo::Error::InvalidArgs(
-                    "method must be 'just_works', 'psk', or 'none'".into(),
-                ));
-            }
-        };
-        let params = slk_protocol::SlePairParams {
-            method: m,
-            _reserved: [0; 3],
-        };
-        let st = self.state.lock().await;
-        st.adapter
-            .pair(&params)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("pair failed: {e}")))
+        if !matches!(method, "just_works" | "psk" | "none" | "") {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "method must be 'just_works', 'psk', or 'none'".into(),
+            ));
+        }
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
-    /// Enable encryption on the active connection
+    /// Unsupported until a lifetime-bound key installation mechanism is connected
     async fn encrypt(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter
-            .encrypt_on()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("encrypt_on failed: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// Get the passkey displayed by the controller (for numeric comparison)
     async fn get_passkey(&self) -> zbus::fdo::Result<u32> {
-        let st = self.state.lock().await;
-        st.adapter
-            .get_passkey()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("get_passkey failed: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// Confirm passkey match (user accepted numeric comparison)
     async fn confirm_passkey(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter
-            .confirm_passkey()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("confirm_passkey failed: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// Reject passkey match (user rejected)
     async fn reject_passkey(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter
-            .reject_passkey()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("reject_passkey failed: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// Input a passkey (user-entered 6-digit code)
     async fn input_passkey(&self, passkey: u32) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter
-            .input_passkey(passkey)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("input_passkey failed: {e}")))
+        if passkey > 999_999 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "passkey must be 0..999999".into(),
+            ));
+        }
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// Reset security state
     async fn reset(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter
-            .sec_reset()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("sec_reset failed: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// List bonded device addresses
@@ -150,22 +127,18 @@ impl SecurityIface {
 
     /// Current security state as property
     #[zbus(property)]
-    async fn encrypted(&self) -> bool {
-        let st = self.state.lock().await;
-        st.adapter
-            .sec_info()
-            .map(|info| info.enc_enabled != 0)
-            .unwrap_or(false)
+    async fn encrypted(&self) -> zbus::fdo::Result<bool> {
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 
     /// Current pairing state as property
     #[zbus(property)]
-    async fn paired(&self) -> bool {
-        let st = self.state.lock().await;
-        st.adapter
-            .sec_info()
-            .map(|info| info.state >= slk_protocol::SecState::Paired as u8)
-            .unwrap_or(false)
+    async fn paired(&self) -> zbus::fdo::Result<bool> {
+        Err(zbus::fdo::Error::NotSupported(
+            "per-connection authenticated security is not implemented".into(),
+        ))
     }
 }
 
@@ -176,25 +149,6 @@ pub struct SecurityInfo {
     pub method: String,
     pub mode: u8,
     pub encrypted: bool,
-}
-
-fn sec_state_label(state: u8) -> String {
-    match state {
-        0 => "none".into(),
-        1 => "pairing".into(),
-        2 => "paired".into(),
-        3 => "encrypted".into(),
-        _ => format!("unknown({state})"),
-    }
-}
-
-fn pair_method_label(method: u8) -> String {
-    match method {
-        0 => "none".into(),
-        1 => "just_works".into(),
-        2 => "psk".into(),
-        _ => format!("unknown({method})"),
-    }
 }
 
 fn parse_hex_key(hex: &str, expected_len: usize) -> Result<Vec<u8>, &'static str> {

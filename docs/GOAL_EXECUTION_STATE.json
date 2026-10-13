@@ -1308,5 +1308,27 @@
         "readback_exact": true
       }
     ]
+  },
+  "security_state_retirement": {
+    "status": "implemented/offline tests passed; corrected VM build running; real qualification pending",
+    "kernel_commits": [
+      "f3ef1d52778c3f2170c1bde8c0a1bd94b25fe73d",
+      "6f2f712980295cef424884884059ed07655c40c2"
+    ],
+    "audit": "docs/evidence/security-state-retirement-audit-20261014.json",
+    "preserved": [
+      "Native Host/Session/Grant/socket/data credit and actual WS73 codecs",
+      "Kernel crypto mechanism source and historical regression",
+      "Daemon Bond actor; no trusted key qualification"
+    ],
+    "remaining": [
+      "Corrected warning-free VM build",
+      "Actual passive root/ordinary refusal matrix and Virtual regression",
+      "Exact-source dual real WS73 discovery/connection/40-round short messages/249 boundaries/peer isolation",
+      "Remove remaining unreleased old facade/declarations after consumer migration",
+      "Per-connection authentication/real controller key installation and daemon policy/Bond qualification"
+    ],
+    "hardware_qualification_transferred": false,
+    "closure_allowed": false
   }
 }

@@ -68,7 +68,7 @@ def execute(run, phase):
                     legacy_probe = Path('/bin/protocol-state-probe')
                 if legacy_probe.is_file():
                     refused = run.command([str(legacy_probe),str(owner['index'])],10,collection='protocol_state_refusals')
-                    expected_refusal = 'PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=53 unchanged=53 mixed_stats=ENOTTY'
+                    expected_refusal = 'PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=76 unchanged=76 mixed_stats=ENOTTY'
                     if refused['exit'] or refused['stdout'].strip()!=expected_refusal:
                         raise CaptureError('actual retired protocol-state rejection failed')
                 summary = run.command([str(run.args.slctl),'--adapter',owner['path'],'stats'],

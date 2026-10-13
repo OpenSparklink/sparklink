@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
+    "userspace": "fb15d023ecba82be3bf1efb12e52187d07819130"
+  },
+  "source_hashes": {
+    "sparklink_core.rs": "df7dd53e1a3ea887a3788a8ad5aacf6256b28590a4e4b542f00588241c331cae",
+    "sle_security.rs": "ec5eba9f887316a76ac4a9c4904ba2b4bdf4cc18e1bfd2acbdce5902746ec9f4",
+    "sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+    "sle_workers.rs": "7325cf25793b0f240f87460d1c23ff7c389488d475f37b650dcd90288190f138",
+    "sle_crypto_ffi.c": "a2b13603d1fd8503b991edcd6d6a70ec8409b851ba48e9a4e1a41c09d82dfbf7"
+  },
+  "immediate_delete": [
+    {
+      "item": "ControllerState SecurityInner/RpaManager/rpa_tick_accum",
+      "callers": "core SEC/RAL/RPA ioctls; worker pairing branches",
+      "actual_function": "local state and address table; no qualified installed link security",
+      "replacement": "explicit unsupported; future lifetime-bound per-connection mechanism",
+      "issues": [
+        "K#7",
+        "K#18",
+        "U#5"
+      ],
+      "regression": "permission-before-rejection; no buffer mutation; actual data gates"
+    },
+    {
+      "item": "worker automatic legacy pairing response branches",
+      "actual_function": "legacy SecurityInner callbacks already reject; unused response code",
+      "replacement": "no legacy responder; real security unimplemented",
+      "issues": [
+        "K#3",
+        "K#7",
+        "K#18"
+      ],
+      "regression": "no paired/encrypted state publication; native events retained"
+    }
+  ],
+  "move_to_tests": [
+    {
+      "item": "exact sle_security.rs model",
+      "actual_function": "historical permissions/failure/CTR and RAL semantic regression",
+      "destination": "tools/testing/selftests/sparklink/retired-security-state",
+      "regression": "historical Rust model tests plus unchanged crypto wrapper/C fault tests; not real security qualification"
+    }
+  ],
+  "await_replacement": [
+    {
+      "item": "SEC/RAL/RPA unreleased declarations and SDK/C/Python/CLI facades",
+      "callers": "Rust SDK now refuses locally; C security returns -EOPNOTSUPP; Python surfaces OSError(EOPNOTSUPP); CLI propagates NotSupported; D-Bus refuses before adapter",
+      "replacement": "new per-session authenticated mechanism and daemon policy; no compatibility promise",
+      "condition": "remove facade/declarations after all consumers migrated; no successful local staging"
+    },
+    {
+      "item": "kernel crypto source/FFI mechanisms",
+      "actual_function": "SM3/SM4/kernel ECDH wrappers, no remaining Native runtime consumer",
+      "replacement": "source retained in net/sparklink; no default object/module dependency until actual security mechanism connects",
+      "condition": "vectors, failure/zeroization and true per-connection installation gates"
+    }
+  ],
+  "preserved": [
+    "Native Host/Runtime/Session/Grant/socket/DTAP/credit",
+    "actual DLI/event codecs",
+    "kernel crypto mechanism source",
+    "daemon Bond storage actor and regression; storage is not trust qualification"
+  ],
+  "physical_acceptance": false,
+  "closure_allowed": false
+}

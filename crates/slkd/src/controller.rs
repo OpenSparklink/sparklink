@@ -333,12 +333,9 @@ impl ControllerIface {
                 "peer_id=6 bytes, IRKs=16 bytes".into(),
             ));
         }
-        let mut params: slk_protocol::SleRalAddParams = unsafe { std::mem::zeroed() };
-        params.peer_id.copy_from_slice(&peer_id);
-        params.peer_irk.copy_from_slice(&peer_irk);
-        params.local_irk.copy_from_slice(&local_irk);
-        let st = self.state.lock().await;
-        st.adapter.ral_add(&params).map_err(map_err)
+        Err(zbus::fdo::Error::NotSupported(
+            "controller privacy/RAL mechanism is not implemented".into(),
+        ))
     }
 
     /// Remove an entry from the RAL
@@ -348,34 +345,37 @@ impl ControllerIface {
                 "peer_id must be 6 bytes".into(),
             ));
         }
-        let mut params: slk_protocol::SleRalRemoveParams = unsafe { std::mem::zeroed() };
-        params.peer_id.copy_from_slice(&peer_id);
-        let st = self.state.lock().await;
-        st.adapter.ral_remove(&params).map_err(map_err)
+        Err(zbus::fdo::Error::NotSupported(
+            "controller privacy/RAL mechanism is not implemented".into(),
+        ))
     }
 
     /// Clear all RAL entries
     async fn ral_clear(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.ral_clear().map_err(map_err)
+        Err(zbus::fdo::Error::NotSupported(
+            "controller privacy/RAL mechanism is not implemented".into(),
+        ))
     }
 
     /// Get current RAL size
     async fn ral_size(&self) -> zbus::fdo::Result<u8> {
-        let st = self.state.lock().await;
-        st.adapter.ral_size().map_err(map_err)
+        Err(zbus::fdo::Error::NotSupported(
+            "controller privacy/RAL mechanism is not implemented".into(),
+        ))
     }
 
     /// Enable or disable RPA resolution
-    async fn rpa_enable(&self, enable: bool) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.rpa_enable(enable).map_err(map_err)
+    async fn rpa_enable(&self, _enable: bool) -> zbus::fdo::Result<()> {
+        Err(zbus::fdo::Error::NotSupported(
+            "controller privacy/RAL mechanism is not implemented".into(),
+        ))
     }
 
     /// Set RPA refresh timeout in seconds
-    async fn rpa_set_timeout(&self, timeout_secs: u16) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.rpa_set_timeout(timeout_secs).map_err(map_err)
+    async fn rpa_set_timeout(&self, _timeout_secs: u16) -> zbus::fdo::Result<()> {
+        Err(zbus::fdo::Error::NotSupported(
+            "controller privacy/RAL mechanism is not implemented".into(),
+        ))
     }
 
     /// Read the peer RPA for a given identity address
@@ -383,11 +383,9 @@ impl ControllerIface {
         if id.len() != 6 {
             return Err(zbus::fdo::Error::InvalidArgs("id must be 6 bytes".into()));
         }
-        let mut params: slk_protocol::SleRalQueryParams = unsafe { std::mem::zeroed() };
-        params.id.copy_from_slice(&id);
-        let st = self.state.lock().await;
-        st.adapter.ral_read_peer_rpa(&mut params).map_err(map_err)?;
-        Ok(params.rpa.to_vec())
+        Err(zbus::fdo::Error::NotSupported(
+            "controller privacy/RAL mechanism is not implemented".into(),
+        ))
     }
 
     /// Read the local RPA for a given identity address
@@ -395,13 +393,9 @@ impl ControllerIface {
         if id.len() != 6 {
             return Err(zbus::fdo::Error::InvalidArgs("id must be 6 bytes".into()));
         }
-        let mut params: slk_protocol::SleRalQueryParams = unsafe { std::mem::zeroed() };
-        params.id.copy_from_slice(&id);
-        let st = self.state.lock().await;
-        st.adapter
-            .ral_read_local_rpa(&mut params)
-            .map_err(map_err)?;
-        Ok(params.rpa.to_vec())
+        Err(zbus::fdo::Error::NotSupported(
+            "controller privacy/RAL mechanism is not implemented".into(),
+        ))
     }
 
     // ----- Measurement -----

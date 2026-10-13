@@ -1,6 +1,7 @@
 """High-level Adapter wrapper around libsparklink C FFI."""
 
 import ctypes
+import errno
 import ctypes.util
 import os
 from pathlib import Path
@@ -130,6 +131,8 @@ class Adapter:
         self.close()
 
     def _check(self, ret, msg="operation failed"):
+        if ret == -errno.EOPNOTSUPP:
+            raise OSError(errno.EOPNOTSUPP, msg)
         if ret < 0:
             raise SparkLinkError(msg)
         return ret

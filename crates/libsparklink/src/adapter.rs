@@ -429,72 +429,80 @@ impl Adapter {
     // ----- Security -----
 
     /// Initiate pairing
-    pub fn pair(&self, params: &SlePairParams) -> Result<()> {
-        unsafe { ioctl::sl_sec_pair(self.raw_fd(), params)? };
-        Ok(())
+    pub fn pair(&self, _params: &SlePairParams) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Get security info
     pub fn sec_info(&self) -> Result<SleSecInfo> {
-        let mut info = unsafe { std::mem::zeroed::<SleSecInfo>() };
-        unsafe { ioctl::sl_sec_info(self.raw_fd(), &mut info)? };
-        Ok(info)
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Enable encryption
     pub fn encrypt_on(&self) -> Result<()> {
-        unsafe { ioctl::sl_sec_encrypt_on(self.raw_fd())? };
-        Ok(())
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Set PSK (Pre-Shared Key)
-    pub fn set_psk(&self, psk: &SlePskParams) -> Result<()> {
-        unsafe { ioctl::sl_sec_set_psk(self.raw_fd(), psk)? };
-        Ok(())
+    pub fn set_psk(&self, _psk: &SlePskParams) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Get passkey displayed by the controller
     pub fn get_passkey(&self) -> Result<u32> {
-        let mut passkey: u32 = 0;
-        unsafe { ioctl::sl_sec_get_passkey(self.raw_fd(), &mut passkey)? };
-        Ok(passkey)
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Confirm passkey match (numeric comparison)
     pub fn confirm_passkey(&self) -> Result<()> {
-        unsafe { ioctl::sl_sec_confirm_passkey(self.raw_fd())? };
-        Ok(())
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Reject passkey match
     pub fn reject_passkey(&self) -> Result<()> {
-        unsafe { ioctl::sl_sec_reject_passkey(self.raw_fd())? };
-        Ok(())
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Input passkey from user
-    pub fn input_passkey(&self, passkey: u32) -> Result<()> {
-        let input = SlePasskeyInput { passkey };
-        unsafe { ioctl::sl_sec_input_passkey(self.raw_fd(), &input)? };
-        Ok(())
+    pub fn input_passkey(&self, _passkey: u32) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Set OOB data for pairing
-    pub fn set_oob(&self, data: &SleOobData) -> Result<()> {
-        unsafe { ioctl::sl_sec_set_oob(self.raw_fd(), data)? };
-        Ok(())
+    pub fn set_oob(&self, _data: &SleOobData) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Set password for pairing
-    pub fn set_password(&self, params: &SlePasswordParams) -> Result<()> {
-        unsafe { ioctl::sl_sec_set_password(self.raw_fd(), params)? };
-        Ok(())
+    pub fn set_password(&self, _params: &SlePasswordParams) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Reset security state
     pub fn sec_reset(&self) -> Result<()> {
-        unsafe { ioctl::sl_sec_reset(self.raw_fd())? };
-        Ok(())
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Run SM3 hash test
@@ -976,52 +984,59 @@ impl Adapter {
     // ----- RAL / RPA -----
 
     /// Add an entry to the Resolving Address List
-    pub fn ral_add(&self, params: &SleRalAddParams) -> Result<()> {
-        unsafe { ioctl::sl_ral_add(self.raw_fd(), params)? };
-        Ok(())
+    pub fn ral_add(&self, _params: &SleRalAddParams) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Remove an entry from the RAL
-    pub fn ral_remove(&self, params: &SleRalRemoveParams) -> Result<()> {
-        unsafe { ioctl::sl_ral_remove(self.raw_fd(), params)? };
-        Ok(())
+    pub fn ral_remove(&self, _params: &SleRalRemoveParams) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Clear all RAL entries
     pub fn ral_clear(&self) -> Result<()> {
-        unsafe { ioctl::sl_ral_clear(self.raw_fd())? };
-        Ok(())
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Get the current RAL size
     pub fn ral_size(&self) -> Result<u8> {
-        let mut size: u8 = 0;
-        unsafe { ioctl::sl_ral_size(self.raw_fd(), &mut size)? };
-        Ok(size)
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Read the peer RPA for a given identity
-    pub fn ral_read_peer_rpa(&self, params: &mut SleRalQueryParams) -> Result<()> {
-        unsafe { ioctl::sl_ral_read_peer_rpa(self.raw_fd(), params)? };
-        Ok(())
+    pub fn ral_read_peer_rpa(&self, _params: &mut SleRalQueryParams) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Read the local RPA for a given identity
-    pub fn ral_read_local_rpa(&self, params: &mut SleRalQueryParams) -> Result<()> {
-        unsafe { ioctl::sl_ral_read_local_rpa(self.raw_fd(), params)? };
-        Ok(())
+    pub fn ral_read_local_rpa(&self, _params: &mut SleRalQueryParams) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Enable or disable RPA resolution
-    pub fn rpa_enable(&self, enable: bool) -> Result<()> {
-        unsafe { ioctl::sl_rpa_enable(self.raw_fd(), enable as _)? };
-        Ok(())
+    pub fn rpa_enable(&self, _enable: bool) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     /// Set RPA refresh timeout in seconds
-    pub fn rpa_set_timeout(&self, timeout_secs: u16) -> Result<()> {
-        unsafe { ioctl::sl_rpa_set_timeout(self.raw_fd(), timeout_secs as _)? };
-        Ok(())
+    pub fn rpa_set_timeout(&self, _timeout_secs: u16) -> Result<()> {
+        Err(Error::NotSupported(
+            "legacy controller security/privacy model retired; per-connection mechanism unavailable",
+        ))
     }
 
     // ----- Measurement -----

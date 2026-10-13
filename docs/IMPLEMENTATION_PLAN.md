@@ -1,3 +1,20 @@
+## 当前整改批次：安全／隐私模型退休（实机回归待完成）
+
+K `f3ef1d52778c` 已移除 ControllerState 的 SecurityInner/RpaManager 与旧 worker
+自动配对响应；修正构建重复属性为 K `6f2f71298029`。crypto 机制源码保留在内核，
+无默认 Runtime 消费者，暂不编入默认对象。精确旧模型移入 selftests，历史7项与
+真实 crypto wrapper/C CTR 故障依赖测试不构成配对或可信密钥资格。
+SDK/D-Bus/C/Python 旧安全／隐私 facade 迁移为明确 unsupported；Encrypted/Paired
+未知不伪装为 false。保留 daemon Bond 存储 actor，但它不是可信凭据已安装的证明。
+76项旧入口（Observe15/Protected61）准备在VM核对权限、拒绝及缓冲区不变。
+[三类审计](evidence/security-state-retirement-audit-20261014.json)。
+
+首轮内核构建警告与 sandbox LeakSanitizer 环境失败保留。准确修正镜像的
+Virtual、双设备发现/连接/40轮短数据/249边界/同行隔离回归仍待执行；不得继承
+K5582/Ucd77资格为新代码通过。K#7/#18、U#5、恢复及所有未完scope保持开放。
+完整 S0–S6、VM-only、UserHost P4与独立文档工作不变。下一步观察默认选择与旧
+接口调用迁移，再接通唯一用户态SSAP；不以控制面竞争全集阻塞数据纵向工作。
+
 # SparkLink / Linux 联合实施方案
 
 **唯一执行计划。** 完整S0–S6及原28项issues验收范围保持；工作包不是新issue或缩小scope。

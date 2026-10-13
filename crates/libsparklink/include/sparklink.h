@@ -592,8 +592,8 @@ int slk_disconnect(const struct SlkAdapter *adapter, uint16_t handle);
 int slk_conn_info(const struct SlkAdapter *adapter, uint16_t handle, struct SleConnInfo *out);
 
 /**
- * Get security info.
- * Returns 0 on success, -1 on error.
+ * Unavailable controller-global security snapshot.
+ * Returns -EOPNOTSUPP for valid pointers without changing output; -1 for invalid pointers.
  *
  * # Safety
  * `adapter` and `out` must be valid non-null pointers.
@@ -601,8 +601,8 @@ int slk_conn_info(const struct SlkAdapter *adapter, uint16_t handle, struct SleC
 int slk_sec_info(const struct SlkAdapter *adapter, struct SleSecInfo *out);
 
 /**
- * Initiate pairing.
- * Returns 0 on success, -1 on error.
+ * Unavailable legacy pairing facade.
+ * Returns -EOPNOTSUPP for a valid request, -1 for invalid pointers.
  *
  * # Safety
  * `adapter` and `params` must be valid non-null pointers.
@@ -610,8 +610,8 @@ int slk_sec_info(const struct SlkAdapter *adapter, struct SleSecInfo *out);
 int slk_pair(const struct SlkAdapter *adapter, const struct SlePairParams *params);
 
 /**
- * Enable encryption.
- * Returns 0 on success, -1 on error.
+ * Unavailable legacy encryption facade.
+ * Returns -EOPNOTSUPP for a valid handle, -1 for an invalid pointer.
  *
  * # Safety
  * `adapter` must be a valid non-null pointer.

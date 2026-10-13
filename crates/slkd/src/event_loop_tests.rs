@@ -900,3 +900,134 @@ async fn typed_connection_objects_separate_types_retire_lifetimes_and_preserve_u
             .is_err()
     );
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
+    let bus = PrivateBus::start();
+    let state = state(); // /dev/null: reaching the old ioctl would fail differently.
+    let _server = server(&bus, state).await;
+    let client = client(&bus).await;
+    let security = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk0/security",
+        "org.sparklink.Security",
+    )
+    .await
+    .unwrap();
+    let controller = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk0/controller",
+        "org.sparklink.Controller",
+    )
+    .await
+    .unwrap();
+    fn error_name<T: std::fmt::Debug>(result: zbus::Result<T>, expected: &str) {
+        match result.unwrap_err() {
+            zbus::Error::MethodError(name, _, _) => assert_eq!(name.as_str(), expected),
+            zbus::Error::FDO(error) => match *error {
+                zbus::fdo::Error::NotSupported(_) => {
+                    assert_eq!(expected, "org.freedesktop.DBus.Error.NotSupported")
+                }
+                zbus::fdo::Error::InvalidArgs(_) => {
+                    assert_eq!(expected, "org.freedesktop.DBus.Error.InvalidArgs")
+                }
+                other => panic!("unexpected property error: {other}"),
+            },
+            other => panic!("unexpected D-Bus error: {other}"),
+        }
+    }
+    let unsupported = "org.freedesktop.DBus.Error.NotSupported";
+    for method in ["Encrypt", "ConfirmPasskey", "RejectPasskey", "Reset"] {
+        error_name(security.call::<_, _, ()>(method, &()).await, unsupported);
+    }
+    error_name(
+        security
+            .call::<_, _, crate::security::SecurityInfo>("GetInfo", &())
+            .await,
+        unsupported,
+    );
+    error_name(
+        security.call::<_, _, u32>("GetPasskey", &()).await,
+        unsupported,
+    );
+    error_name(
+        security
+            .call::<_, _, ()>("SetPsk", &("a1".repeat(16),))
+            .await,
+        unsupported,
+    );
+    error_name(
+        security.call::<_, _, ()>("Pair", &("psk",)).await,
+        unsupported,
+    );
+    error_name(
+        security
+            .call::<_, _, ()>("InputPasskey", &(123456u32,))
+            .await,
+        unsupported,
+    );
+    for property in ["Encrypted", "Paired"] {
+        error_name(security.get_property::<bool>(property).await, unsupported);
+    }
+    error_name(
+        controller.call::<_, _, ()>("RalClear", &()).await,
+        unsupported,
+    );
+    error_name(
+        controller.call::<_, _, u8>("RalSize", &()).await,
+        unsupported,
+    );
+    error_name(
+        controller.call::<_, _, ()>("RpaEnable", &(true,)).await,
+        unsupported,
+    );
+    error_name(
+        controller
+            .call::<_, _, ()>("RpaSetTimeout", &(30u16,))
+            .await,
+        unsupported,
+    );
+    error_name(
+        controller
+            .call::<_, _, ()>("RalAdd", &(vec![1u8; 6], vec![2u8; 16], vec![3u8; 16]))
+            .await,
+        unsupported,
+    );
+    error_name(
+        controller
+            .call::<_, _, ()>("RalRemove", &(vec![1u8; 6],))
+            .await,
+        unsupported,
+    );
+    for method in ["RalReadPeerRpa", "RalReadLocalRpa"] {
+        error_name(
+            controller
+                .call::<_, _, Vec<u8>>(method, &(vec![1u8; 6],))
+                .await,
+            unsupported,
+        );
+    }
+    let invalid = "org.freedesktop.DBus.Error.InvalidArgs";
+    error_name(
+        security
+            .call::<_, _, ()>("InputPasskey", &(1_000_000u32,))
+            .await,
+        invalid,
+    );
+    error_name(
+        security.call::<_, _, ()>("SetPsk", &("bad",)).await,
+        invalid,
+    );
+    error_name(
+        security.call::<_, _, ()>("Pair", &("invalid",)).await,
+        invalid,
+    );
+    error_name(
+        controller
+            .call::<_, _, ()>("RalRemove", &(vec![1u8; 5],))
+            .await,
+        invalid,
+    );
+}

@@ -1,5 +1,9 @@
 # 当前能力与资格
 
+当前开发切片（尚未实机资格）：K6f2f71298029 已剥离旧 controller 安全/RPA模型；
+SDK与daemon明确拒绝，crypto源码/历史测试保留。新镜像真实路径回归待完成；
+下列历史通过仅适用于其明确源码，不迁移到此切片。见[当前整改](IMPLEMENTATION_PLAN.md)。
+
 **唯一当前资格入口。** [ARCHITECTURE](ARCHITECTURE.md)与ADR定义目标/契约，
 [IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md)是唯一执行入口；
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。

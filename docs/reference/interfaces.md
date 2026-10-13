@@ -49,3 +49,8 @@ GetLinkSummary，Unknown失败；旧混合内核统计尚待迁移，不能当Na
 K `5582a10c5ec8`／U `cd77ed935740`：旧连接／发现／角色／AFH/sync模型不编入默认内核，
 53旧入口明确拒绝，混合SubsysStats删除。角色按实际connection查询；两CLI统计使用已知LinkSnapshot。
 [准确消费者迁移、失败与范围](../evidence/protocol-state-retirement-progress-20261014.json)。
+
+K6f2f71298029 的默认Runtime不再包含旧安全/RPA模型。新版SDK拒绝旧安全/隐私
+facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合法RAL/RPA
+输入亦NotSupported，非法输入可InvalidArgs。C旧安全入口返回-EOPNOTSUPP且不改
+输出，Python映射OSError(EOPNOTSUPP)。真实每连接安全、Agent与Bond重连仍未实现。

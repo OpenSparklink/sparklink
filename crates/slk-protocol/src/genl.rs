@@ -1,102 +1,21 @@
-/// Generic Netlink family name
+/// Optional registry-only Generic Netlink; no controller or event transport.
 pub const GENL_FAMILY_NAME: &str = "sparklink";
+pub const GENL_VERSION: u8 = 2;
 
-/// Generic Netlink version
-pub const GENL_VERSION: u8 = 1;
-
-/// Multicast group name
-pub const GENL_MCAST_EVENTS: &str = "events";
-
-/// Generic Netlink commands
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum GenlCmd {
     Unspec = 0,
-    GetDevInfo = 1,
-    // Removed unpublished registration commands 2/3; not reused.
-    StartAdv = 4,
-    StopAdv = 5,
-    StartScan = 6,
-    StopScan = 7,
-    InjectAdv = 8,
-    Connect = 9,
-    Disconnect = 10,
-    GetConnInfo = 11,
-    ConnSend = 12,
-    ConnRecv = 13,
-    GetConnList = 14,
-    SetPsk = 15,
-    Pair = 16,
-    GetSecInfo = 17,
-    EncryptOn = 18,
-    GetPmInfo = 23,
-    SetPmState = 24,
-    SetPmInterval = 25,
-    Event = 26,
-    GetDliInfo = 27,
+    GetRegistryCount = 1,
+    // Removed unpublished numbers are not reused.
     GetVersion = 28,
-    SetRole = 29,
-    GetRole = 30,
 }
 
-/// Generic Netlink attributes
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u16)]
 pub enum GenlAttr {
     Unspec = 0,
-    DevIndex = 1,
-    DevState = 2,
-    DevName = 3,
-    DevBus = 4,
     DevCount = 5,
     ProtoVersion = 6,
     GenlVersion = 7,
-    Addr = 8,
-    PeerAddr = 9,
-    Handle = 10,
-    ConnState = 11,
-    GtRole = 12,
-    Bandwidth = 13,
-    McsIndex = 14,
-    TxBytes = 15,
-    RxBytes = 16,
-    Timeout10ms = 17,
-    DiscoveryLevel = 18,
-    IntervalMs = 19,
-    WindowMs = 20,
-    Rssi = 21,
-    ScanResults = 22,
-    Data = 23,
-    DataLen = 24,
-    Psk = 25,
-    PairMethod = 26,
-    SecState = 27,
-    SecMode = 28,
-    Encrypted = 29,
-    KeyFp = 30,
-    Mtu = 34,
-    PmState = 35,
-    ForceActive = 36,
-    PowerPct = 37,
-    PmIntervalMin = 38,
-    PmIntervalMax = 39,
-    PmLatency = 40,
-    EventType = 41,
-    EventPayload = 42,
-    EventPending = 43,
-    EventTotal = 44,
-    EventDropped = 45,
-    DliBus = 46,
-    DliFwVer = 47,
-    DliFeatures = 48,
-    DliMaxConn = 49,
-    DliMaxMtu = 50,
-    DliMaxMps = 51,
-    DliTransportModes = 52,
-    DliMeasurementCap = 53,
-    DliSecurityCap = 54,
-    DataMtu = 55,
-    DataMps = 56,
-    DataMode = 57,
-    SvcMtu = 58,
 }

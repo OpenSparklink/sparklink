@@ -148,8 +148,7 @@ fn sle_addr_is_six_bytes() {
 #[test]
 fn genl_constants() {
     assert_eq!(GENL_FAMILY_NAME, "sparklink");
-    assert_eq!(GENL_VERSION, 1);
-    assert_eq!(GENL_MCAST_EVENTS, "events");
+    assert_eq!(GENL_VERSION, 2);
 }
 
 // ---- Phase 8: additional coverage ----
@@ -255,10 +254,9 @@ fn enum_variants_complete() {
 fn genl_cmd_enum_coverage() {
     use crate::genl::GenlCmd;
     assert_eq!(GenlCmd::Unspec as u8, 0);
-    assert_eq!(GenlCmd::GetDevInfo as u8, 1);
-    assert_eq!(GenlCmd::GetRole as u8, 30);
+    assert_eq!(GenlCmd::GetRegistryCount as u8, 1);
+    assert_eq!(GenlCmd::GetVersion as u8, 28);
     // Registration commands 2/3 were removed; remaining wire numbers stay.
-    assert_eq!(GenlCmd::StartAdv as u8, 4);
     assert_eq!(std::mem::size_of::<GenlCmd>(), 1);
 }
 
@@ -266,8 +264,8 @@ fn genl_cmd_enum_coverage() {
 fn genl_attr_enum_coverage() {
     use crate::genl::GenlAttr;
     assert_eq!(GenlAttr::Unspec as u16, 0);
-    assert_eq!(GenlAttr::DevIndex as u16, 1);
-    assert_eq!(GenlAttr::SvcMtu as u16, 58);
+    assert_eq!(GenlAttr::DevCount as u16, 5);
+    assert_eq!(GenlAttr::GenlVersion as u16, 7);
     // Total: 59 attributes (0..=58)
     assert_eq!(std::mem::size_of::<GenlAttr>(), 2);
 }

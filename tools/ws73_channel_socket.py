@@ -68,6 +68,14 @@ def execute(run, phase):
                 expected = f'CONTROLLER_EVENT_COPY_PASS: uid=1000 index={owner["index"]} generation={owner["generation"]} partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2'
                 if receipt['exit'] or receipt['stdout'].strip() != expected:
                     raise CaptureError('actual ControllerEvent copy/alias/replay gate failed')
+        registry_probe = Path(run.args.slctl).parent/'genl-registry-probe'
+        if not registry_probe.is_file() and Path('/scratch-root-uuid').is_file():
+            registry_probe = Path('/bin/genl-registry-probe')
+        if registry_probe.is_file():
+            receipt = run.command([str(registry_probe)],10,collection='genl_registry')
+            expected = r'^GENL_REGISTRY_PASS: uid=1000 count=\d+ version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1$'
+            if receipt['exit'] or not re.fullmatch(expected,receipt['stdout'].strip()):
+                raise CaptureError('actual registry-only netlink/retired mutation gate failed')
         row['status']='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING'
     except BaseException as error:
         row.update(status='FAIL',error=str(error),error_type=type(error).__name__);raise

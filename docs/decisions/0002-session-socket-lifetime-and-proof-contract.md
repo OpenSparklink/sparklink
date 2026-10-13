@@ -431,4 +431,13 @@ boot-ROM/FW必须由已匹配厂商driver实现；不存在可假定的通用F81
 同一生命周期。static UsbController/enum bus branch/Core USB install-open已移除，snapshot/command/data消费者
 经共同provider；standard0只query，buffers不冒充typed/data支持，未接通能力明确拒绝。
 [准确实现和限定资格](../evidence/common-standard-provider-offline-20261013.json)不授予指针/refcount/module/IRQ/
-真实standard或完整recovery证明。实际transport和driver注册仍在net，下一步移drivers并验证USB=n/m与专用Virtual。
+真实standard或完整recovery证明。该历史版本transport/注册仍在net；后续Kae5b24535a89已迁移drivers，见下节。
+
+### Driver/Core 构建边界落地（Kae5b24535a89）
+
+USB context、EP0、URB、probe/disconnect归drivers；Core标准DLI codec仅处理带identity/generation/lane的
+协议入口，共同Backend管理Runtime。标准模块在任何设备I/O前reserve，任何退出先按精确身份unregister/join
+再释放驱动context；不能把Core退休交给对象析构猜测。PM未资格时-EBUSY，standard typed/data明确不支持。
+Core取消USB=y构建依赖；[最终配置/产物](../evidence/standard-driver-move-build-matrix-20261013.json)为构建限定验收，
+[空USB模块VM](../evidence/standard-driver-move-module-smoke-20261013.json)不证明物理/IRQ/PM/自然恢复。
+剩余真正Virtual、统一事件及完整生命周期继续按原WP12/13推进，feature扩展后置。

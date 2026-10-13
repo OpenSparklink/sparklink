@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T09:38:32.303519+00:00",
+  "updated_at_utc": "2026-10-13T10:43:55.942436+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,13 +26,13 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
-    "userspace": "f1a60f2a6879c847afcf88e718af3dcc1426bcf7",
-    "observation": "before receipt commit; compiled VM source exactU168c870"
+    "linux": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
+    "userspace": "967ad220271009498319f3bb71d93fbfb9c63e83",
+    "observation": "exact code/VM tools before docs receipt commit"
   },
   "qualified_source_heads": {
-    "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
-    "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
+    "linux": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
+    "userspace": "967ad220271009498319f3bb71d93fbfb9c63e83"
   },
   "current_qualification": {
     "DG01": "Ka368/U168c new40 ordinary role exchange RT, RF22/connection/Down/dup/lastclose/QMP pluscontrolled fault8RT.",
@@ -46,22 +46,16 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: common standard0/WS73_1 provider descriptor/ops/retained context/install/open-close and consumers; staticUsb/CoreUSB dedicated install-open removed. actualadapter14/descriptor40/entry11+standardcase/port2/projection5/Core18/Native33 and scopeddescriptor242+metadata314+writer116, accuratebuild/emptyVM/CI9/newVMfault8+40+249. Transport in net/USB build coupling, Virtual/standardtyped-data/events/moduleIRQPM/full lifetime/natural recovery open.",
+    "WP13": "PARTIAL: common provider + actual standard USB transport/probe moved drivers, Core protocol only and no USB=y dependency; exact current build matrix/offline/limited formal/emptyVM2 modules/CI9/real40+249+fault8 receipts. Genuine Virtual, canonical events, standard typed-data, complete IRQ/module/PM/refcount/lifetime/natural recovery still missing.",
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
     "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope.",
     "FV_REGISTRATION_SDK": "Actual SDK validator after new tuple alias rechecked full ABI/u16/u64 Kani83+weak generation witness; scope unchanged, no Core/daemon/producer/lifetime/authority refinement."
   },
   "next_slices": [
-    "Architecture remediation first: WP18 SSAP → WP03/04/05/06 Ticket/Session/Grant/socket contract → WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP13 next: move actual USB transport/driver registration to drivers and make Core independent of USB build with USB=n/m gates; dedicated genuineVirtual provider. Then standard typed policy/Session-ticketed ACB/canonical RX and WP12 authoritative events/legacy ring/duplicate connection consumers, moduleIRQPM/full stopjoin and lifecycle/NOCP/backpressure. Common stdquery0/WS73_1 descriptor/ops/install/open-close and staticUsb deletion are done; do not duplicate or restore old FW/data/recipes. Keep exactWS73 and full S0-S6; no standard physical/natural recovery qualification.",
-    "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
-    "WP02/DG02 same-Binding61→249→reject→61; DG03 layered boundaries",
-    "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
-    "WP03 commit tickets/revoke-Down order and reuse barrier; FV05/FV07",
-    "WP04 unique Session RX and Binding lifetime; DG07-08/FV06",
-    "WP05 revocable kernel Grant epoch; DG09",
-    "WP06 socket type/file contract; requalify exact revisions",
-    "Required long-PDU modes then WP07 multiple channels/four-device groups; WP08 real SSAP without waiting all four-device gates"
+    "Architecture remediation before feature expansion: dedicated real Virtual provider; WP12 canonical events and old ring/duplicate consumer removal; preserve current WS73 paths.",
+    "Finish standard typed policy/Session-ticketed ACB/canonical ingress and module/IRQ/PM/callback join; scoped formal and exact VM regressions.",
+    "Ticket/Session/Grant/socket inflight/NOCP reuse/real credit/backpressure, partial-init and natural fault RCA/nonmanual recovery in parallel.",
+    "After whole target architecture remediation: long PDUs/multichannel/four devices/sole userspace SSAP; retain full S0–S6/19WP/10FV/12DG/all original28 scope."
   ],
   "parallel_work": [
     "WP01 remaining worker/deadline negative mappings",
@@ -700,5 +694,21 @@
       "original_scopes_open_unchanged": true,
       "receipt": "docs/evidence/common-standard-provider-issues-20261013.json"
     }
+  },
+  "standard_driver_move_slice": {
+    "kernel": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
+    "compiled_service_tools": "967ad220271009498319f3bb71d93fbfb9c63e83",
+    "transport_moved_to_drivers": true,
+    "core_usb_dependency_removed": true,
+    "build_matrix": "docs/evidence/standard-driver-move-build-matrix-20261013.json",
+    "offline": "docs/evidence/standard-driver-move-offline-20261013.json",
+    "formal": "docs/evidence/standard-driver-move-formal-20261013",
+    "module_vm": "docs/evidence/standard-driver-move-module-smoke-20261013.json",
+    "real": "40 short/8 app249/16 rejects; normal224 SDUs/112 actualNOCP; controlled fault8; no natural recovery",
+    "genuine_virtual": false,
+    "whole_package_complete": false,
+    "natural_recovery_acceptance": false,
+    "core_usb_build_independent": true,
+    "build_matrix_scope": "Core=y with USB=n/USB_SUPPORT=n and USB=m, full image/modules; no boot/hardware matrix acceptance"
   }
 }

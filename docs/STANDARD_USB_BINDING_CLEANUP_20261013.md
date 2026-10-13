@@ -29,3 +29,12 @@ cleanup和Native data port消费者统一。static UsbController、ControllerBac
 当前C provider14/descriptor40/common projection5/Core18等实际源码回归，准确WS73新40/249/fault8保持。
 等待替代清单收敛为transport/driver注册移drivers及USB=n/m、genuineVirtual、标准typed/ticketed data/canonical
 事件、旧ring/连接消费者、moduleIRQPM与完整lifetime/自然恢复；不能以本批迁移关闭整项。
+
+## 驱动归属迁移已实施（Kae5b24535a89）
+
+立即删除：net/sle_usb.rs生产注册、net/sle_usb_ffi.c transport位置、USB=y依赖、死Core USB包装与常量。
+移入测试：旧Core注册/wrappers位于selftests/retired-usb-registration，仅历史回归。
+替代：drivers/standard_usb.c实际USB驱动，net/sle_standard_dli.rs协议入口；共同provider/Runtime精确身份不变。
+等待替代：standard typed/Session-ticketed data与canonical事件、真正Virtual、完整module/IRQ/PM/自然恢复。
+旧USB_DEV_COUNT明确Unsupported；未发布旧UAPI完整删除仍待调用者迁移，不设兼容期。
+[准确新证据](evidence/standard-driver-move-offline-20261013.json)与CURRENT_CAPABILITIES集中维护资格。

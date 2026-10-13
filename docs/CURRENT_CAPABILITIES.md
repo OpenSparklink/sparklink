@@ -5,7 +5,41 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
-## 当前架构整改：共同标准provider注册与静态USB路径删除
+## 当前架构整改：驱动归 drivers，Core 不依赖 USB
+
+准确源码 K`ae5b24535a898fb05b9c4f08aa0e7e2004911072` / VM service及工具
+U`967ad220271009498319f3bb71d93fbfb9c63e83`。实际 EP0/interrupt/context/URB 和 USB 注册已移入
+`drivers/sparklink/standard_usb.c`，独立 `SPARKLINK_STANDARD_USB` 模块；Core 只保留
+`sle_standard_dli` 协议解码及带身份入口，不包含 USB driver/objects，不再要求 USB=y。
+probe在I/O前精确reserve，失败与disconnect先退休该身份再释放USB；PM明确-EBUSY。
+旧Core注册/wrappers仅selftests历史；旧USB_DEV_COUNT明确Unsupported，用ListRegistrations观察。
+标准profile0仍query-only，未接通typed/data/PM不授予能力；WS73路径保留。
+
+[离线及准确构建](evidence/standard-driver-move-offline-20261013.json)：实际driver6、adapter14、
+binding25/8、metadata44/context19、Core18/Native33等源码回归；工具456、[CI九项](evidence/standard-driver-move-ci-20261013.json)
+通过。依赖fixture不证明完整Core/IRQ/module/refcount/lifetime。初次六项warning修正后准确build零compiler warning。
+[模块VM门禁](evidence/standard-driver-move-module-smoke-20261013.json)：标准与WS73各一个空USB VM，
+各两轮load/unload、三次空注册表检查；不是三次VM启动，不授予物理标准或PM资格。
+[USB构建组合](evidence/standard-driver-move-build-matrix-20261013.json)：Core=y/USB=n及USB=m全量产物核对和独立增量退出码0，
+首个USB=n被Kconfig重新select的配置失败保留，不计成功。
+
+[metadata314](evidence/standard-driver-move-formal-20261013/metadata/report.json)、
+[writer116](evidence/standard-driver-move-formal-20261013/writer/report.json)在准确源码限定重核；
+锁/USB依赖模型、memcpy范围假设保持，不扩大为并发/module/URB/引用/lifetime/credit/物理证明。
+[真实40短](evidence/ws73-standard-driver-move-short-repeat-20261013.json)、
+[249边界](evidence/ws73-standard-driver-move-249-boundary-20261013.json)、
+[故障同行8往返](evidence/ws73-standard-driver-move-fault-isolation-20261013.json)通过：VM-only普通用户、
+两角色随机对端校验回复，40短/8次249/16拒绝，双端USB/HCC/A3、normal224 SDUs/112 NOCP、零drop/taint0。
+RF/建链断链/dup/最后关闭同life拒绝、dynamic observer/newgen/旧path拒绝/同slkd及同行保持。
+NOCP/USB成功不替代业务收到；缺文件/QMP不替代自然恢复。
+
+下一批按架构整改推进：专用真正Virtual provider（当前仅placeholder）、WP12统一事件及旧ring/重复连接
+消费者、标准typed policy/Session-ticketed ACB/canonical ingress、module/IRQ/PM/回调join与完整生命周期。
+Ticket/Session/Grant/socket在途、NOCP复用屏障、真实credit/背压和自然RCA并行；已完成的驱动迁移不重复实现。
+整体目标架构整改后再扩展长包、多通道/四设备和唯一用户态SSAP。
+完整S0–S6、19WP/10FV/12DG及原28项scope保持；所有未完成整项保持OPEN，未取得自然恢复或完整部分初始化资格。
+
+## 历史子门禁：共同标准provider注册与静态USB路径删除
 
 K`a368cf5f178416d44c1ffe83536f22c074eebf5f` / VM编译service和工具U`168c8709`：
 标准C adapter把同一锁下查询metadata及不可变reservation交共同descriptor/ops；standard0仅query caps0，

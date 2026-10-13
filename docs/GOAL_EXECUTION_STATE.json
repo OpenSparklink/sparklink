@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T05:38:04.329791+00:00",
+  "updated_at_utc": "2026-10-13T06:26:26.610702+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,16 +26,16 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
-    "userspace": "1cccf5d79b254b96f8d94803bfaeae5046e6795e"
+    "linux": "0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef",
+    "userspace": "bda960d71a8cacf5682bc8ed5a72188a1a3d4591"
   },
   "qualified_source_heads": {
-    "linux": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
-    "userspace": "1cccf5d79b254b96f8d94803bfaeae5046e6795e"
+    "linux": "0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef",
+    "userspace": "bda960d71a8cacf5682bc8ed5a72188a1a3d4591"
   },
   "current_qualification": {
-    "DG01": "K9c/U1cccf5d exact new40 ordinary peer business,RF22/connection/Down/dup/lastclose/QMP support; separate real fault/daemon objects/observer+control8RT.",
-    "DG02": "Same K9c/U1cccf5d new8 app249/16 rejected absent wire data;224normal SDUs/112NOCP; other layer/long/credit gates open.",
+    "DG01": "K0fdbcf9/compiledtoolsUbda960d new40 ordinary peer round trips plusRF22/connection/Down/dup/lastclose/QMP; separate realfault/dynamicobserver8RT.",
+    "DG02": "Same sources8 app249 and16 rejects absent captured payload,normal224 two-end SDUs/112NOCP. Other layers/long/credit exhaustion open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -45,14 +45,14 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: Core ABI/SDK/CLI plus dynamic Registration/Manager/slctl/default observer. Actual private-bus cache/ENOTTY/removal/reuse,201/36/451/CI9/strict; real Fault/remove/newgen/oldpath observer+control and8 business, new40/249 PASS. No all-Pending transitions, standard provider/bus/Virtual/module/IRQ/PM/event or natural recovery qualification.",
+    "WP13": "PARTIAL: common retained CommandPort Native/standard USB, no Runtime lock across TX, unsupported typed obligations reject; transactional full standard version5/immutable info, installed!=Ready. Actual5/18/resources18+7/Core18/pending15/ingress9/FW67+12/Native33/ticket/clean build/emptyVM/CI9, newreal fault8+40/249 PASS. Static Usb/profile0 descriptor/real capabilities/standard RX-close/coreUSB/Virtual/module/IRQ/PM/event and natural recovery incomplete.",
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
     "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope.",
     "FV_REGISTRATION_SDK": "Actual SDK validator after new tuple alias rechecked full ABI/u16/u64 Kani83+weak generation witness; scope unchanged, no Core/daemon/producer/lifetime/authority refinement."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP13 next: standard USB provider real ops/RX/stop and queried metadata through common versioned Backend; audit remaining Usb/Native dispatch, profile0 validator/Host dialect/worker/close and source ownership before migration. Preserve WS73/dynamic Registration/Core ABI; delete static Usb only after callers/tests migrated. Then core USB=n/m, genuine Virtual, module/IRQ/PM and WP12 canonical events. Pending/Fault frontend now implemented and real Fault/remove/reuse/default observer8RT+new40/249 qualified; do not duplicate it. All-Pending/ROM/partial-open/natural recovery still open.",
+    "WP13 next: standard real buffer/features/command capability metadata, versioned common provider descriptor/profile0 Host dialect/RX/open-close/get-put, actual source/VM standard model tests. Do not fabricate metadata/Ready or silently drop typed tags. Migrate callers and delete static Usb only after provider replacement verified; then core USB=n/m, genuine Virtual, module/IRQ/PM and WP12 canonical events/legacy ring. Retained CommandPort/unlocked TX/full5-byte standard version and WS73/dynamicfrontend qualification are implemented, do not duplicate. Whole standard physical/RCA/recovery/partial-open still open.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -207,7 +207,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "PARTIAL: Core ABI/SDK/CLI plus dynamic Registration/Manager/slctl/default observer. Actual private-bus cache/ENOTTY/removal/reuse,201/36/451/CI9/strict; real Fault/remove/newgen/oldpath observer+control and8 business, new40/249 PASS. No all-Pending transitions, standard provider/bus/Virtual/module/IRQ/PM/event or natural recovery qualification."
+      "status": "PARTIAL: common retained CommandPort Native/standard USB, no Runtime lock across TX, unsupported typed obligations reject; transactional full standard version5/immutable info, installed!=Ready. Actual5/18/resources18+7/Core18/pending15/ingress9/FW67+12/Native33/ticket/clean build/emptyVM/CI9, newreal fault8+40/249 PASS. Static Usb/profile0 descriptor/real capabilities/standard RX-close/coreUSB/Virtual/module/IRQ/PM/event and natural recovery incomplete."
     },
     {
       "id": "WP14",
@@ -285,15 +285,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Architecture first: dynamic Core registration read-only daemon/slctl lifecycle, exact observer/control Fault/remove/reuse and peer business qualified. Next common standard provider/static Usb/bus/coreUSB isolation and event authority. Complete S0\u2013S6 scope unchanged.",
+  "current_batch": "Architecture first: fix standard locked TX and truncated metadata as common Backend foundation; retained ports/transactional version5/immutable info implemented, exactWS73 fault8+40/249 kept. Next full standard capability/descriptor/RX-close/static Usb/coreUSB migration. Original complete S0\u2013S6 remains.",
   "current_audit": "docs/evidence/backend-early-offline-20261013.json",
   "issue_sync_status": "16 related existing issues exact comment readback; all OPEN, original bodies/scopes unchanged",
   "current_implementation_heads": {
-    "linux": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
-    "userspace": "1cccf5d79b254b96f8d94803bfaeae5046e6795e"
+    "linux": "0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef",
+    "userspace": "bda960d71a8cacf5682bc8ed5a72188a1a3d4591"
   },
   "next_resume_tasks": [
-    "WP13 next: standard USB provider real ops/RX/stop and queried metadata through common versioned Backend; audit remaining Usb/Native dispatch, profile0 validator/Host dialect/worker/close and source ownership before migration. Preserve WS73/dynamic Registration/Core ABI; delete static Usb only after callers/tests migrated. Then core USB=n/m, genuine Virtual, module/IRQ/PM and WP12 canonical events. Pending/Fault frontend now implemented and real Fault/remove/reuse/default observer8RT+new40/249 qualified; do not duplicate it. All-Pending/ROM/partial-open/natural recovery still open.",
+    "WP13 next: standard real buffer/features/command capability metadata, versioned common provider descriptor/profile0 Host dialect/RX/open-close/get-put, actual source/VM standard model tests. Do not fabricate metadata/Ready or silently drop typed tags. Migrate callers and delete static Usb only after provider replacement verified; then core USB=n/m, genuine Virtual, module/IRQ/PM and WP12 canonical events/legacy ring. Retained CommandPort/unlocked TX/full5-byte standard version and WS73/dynamicfrontend qualification are implemented, do not duplicate. Whole standard physical/RCA/recovery/partial-open still open.",
     "WP05 remaining trusted-security Grant installation, independent-owner business isolation and controlled in-flight arbitration/refinement; preserve existing epoch/direction/release/last-management-fd/dup/SCM_RIGHTS/common-daemon-death exact qualification. Do not repeat implemented epoch/direction or silently broaden historical proof.",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -381,13 +381,17 @@
     "docs/evidence/ws73-registration-daemon-fault-isolation-20261013.json",
     "docs/evidence/ws73-registration-daemon-short-repeat-20261013.json",
     "docs/evidence/ws73-registration-daemon-249-boundary-20261013.json",
-    "docs/evidence/registration-daemon-issues-20261013.json"
+    "docs/evidence/registration-daemon-issues-20261013.json",
+    "docs/evidence/backend-command-port-offline-20261013.json",
+    "docs/evidence/ws73-backend-command-port-fault-isolation-20261013.json",
+    "docs/evidence/ws73-backend-command-port-short-repeat-20261013.json",
+    "docs/evidence/ws73-backend-command-port-249-boundary-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/registration-daemon-issues-20261013.json",
   "latest_evidence_commit": "d89ad74d9dee8a732bd13d4205c2cdd791b9046f",
   "previous_goal_turn_classification": "progress: common actual Core reserve/install/cancel/retire consumers, owned candidate allocation/destruction outside registry and final exact publish, old pending unregister counterexample; actual10/pending15/other source/443/clean build/emptyVM/CI9, exact finiteTLC16453+weak7, new real40-249; full architecture/recovery unqualified.",
-  "current_goal_turn_classification": "progress: real dynamic Core registration objects and default observer/slctl, private-bus cache rejection/removal/reuse,201/36/451/CI9/strict, SDK83 recheck, real fault8+new40/249. Full standard Backend/bus/event/module/IRQ/PM/natural recovery still incomplete.",
+  "current_goal_turn_classification": "progress: Kernel actual retained submission interface across both providers, no standard locked TX, full version5 and failure invalidation/no guessing Ready, obsolete wrappers removed, actual5+18/other regression/clean build/emptyVM/CI9 and newreal8+40/249. Not full generic Backend, standard physical, IRQ/callback/formal or natural recovery qualification.",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
     "82aa65a77019804e78a95c1706c461e715187314",
@@ -400,7 +404,8 @@
     "420cc1266347a00fbd3afbb0a9eae1ab06119aa9",
     "c07120f4f4ab3b1d11553d2c04c42e0fa9b096d0",
     "ff5ab352b52b4c285bea7f4b689954ac31cfaa7d",
-    "1cccf5d79b254b96f8d94803bfaeae5046e6795e"
+    "1cccf5d79b254b96f8d94803bfaeae5046e6795e",
+    "bda960d71a8cacf5682bc8ed5a72188a1a3d4591"
   ],
   "backend_descriptor_slice": {
     "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -450,7 +455,7 @@
       "whole_package_closed": false
     }
   },
-  "qualified_run_tools_head": "1cccf5d79b254b96f8d94803bfaeae5046e6795e",
+  "qualified_run_tools_head": "bda960d71a8cacf5682bc8ed5a72188a1a3d4591",
   "usb_pending_slice": {
     "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
     "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
@@ -651,5 +656,17 @@
       "receipt": "docs/evidence/registration-daemon-issues-20261013.json",
       "whole_package_closed": false
     }
+  },
+  "backend_command_port_slice": {
+    "kernel": "0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef",
+    "compiled_service_tools": "bda960d71a8cacf5682bc8ed5a72188a1a3d4591",
+    "offline": "docs/evidence/backend-command-port-offline-20261013.json",
+    "real": "docs/evidence/ws73-backend-command-port-fault-isolation-20261013.json",
+    "standard_descriptor_migrated": false,
+    "static_usb_removed": false,
+    "full_standard_capabilities": false,
+    "formal_scope_enlarged": false,
+    "whole_package_complete": false,
+    "natural_recovery_acceptance": false
   }
 }

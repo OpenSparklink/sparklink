@@ -7,7 +7,12 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-最新正常路径K9c0e616c/编译及工具U1cccf5d：动态Registration观察对象接通，Core直接核对
+最新正常路径K0fdbcf9/编译及工具Ubda960d：共同保留CommandPort释放Runtime状态锁后提交，
+标准查询version5冻结，未知metadata不宣称Host Ready；[实际范围](evidence/backend-command-port-offline-20261013.json)。
+新故障对象8业务/40短/249回归保持；仍有static Usb、标准descriptor/能力/RX/close/core USB依赖，
+不是完整Backend或回调/自然恢复资格。
+
+历史正常路径K9c0e616c/编译及工具U1cccf5d：动态Registration观察对象接通，Core直接核对
 GetSnapshot和列表；pending无Runtime/Managed，Installed不宣称Ready。通知/目录只管拓扑，
 不供权威状态。[准确实机与限制](evidence/registration-daemon-offline-20261013.json)。
 普通控制及default observer的真实Fault/移除/复用+8业务、新40/249均通过；未覆盖所有Pending过渡。

@@ -387,3 +387,13 @@ Registration.GetSnapshot和Manager.ListRegistrations直接查Core；held fd/缓�
 SnapshotChanged按250ms观察变化提示，不保证全部中间状态；调用者重新GetSnapshot，不把通知当权威。
 实机U1cccf5d已覆盖default observer/control Fault、删除、同槽新gen、旧path拒绝及同行8业务和新40/249。
 不授予自然恢复、完整事件拓扑或Core/daemon lifetime形式化refinement资格。
+
+## Provider提交句柄与metadata边界（2026-10-13）
+
+CommandPort是当前worker独占的保留句柄，保留provider context/module（Native引用或USB私有context），
+只借不可变请求字节；取得句柄不I/O，Runtime/Host/IRQ锁不跨阻塞submit。失败交回原owner的Host，
+transport成功不能代替controller Complete或偿还data debt。标准路径不能无声丢弃typed connection或
+厂商multi-step义务；缺实施的tag明确不支持。此切片未删除static bus分派，也非完整module/IRQ证明。
+标准version5只有全部匹配成功Reset/version/MAC后提交，失败重查invalidates；immutable Rust info不
+再获取USB I/O锁，Installed/identity不是Ready。buffer/features等未查询内容不宣称FULL_METADATA。
+准确K0fdbcf9/Ubda960d新WS73故障8/40短/249通过；标准descriptor/能力查询及物理资格继续开放。

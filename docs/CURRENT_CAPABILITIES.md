@@ -5,7 +5,40 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
-## 本批架构整改：动态注册生命周期
+## 本批架构整改：共同保留提交接口与标准metadata
+
+K`0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef` / 编译service及工具U`bda960d`：
+CommandPort提供独立保留的provider上下文，Native/标准USB同一TX worker在释放Runtime state后
+才阻塞传输；不持Host/IRQ锁、不按复用index重新找资源。Transport成功不支付controller/data debt，
+不代表Complete或对端收到。Native typed tag原样传递，标准provider未接的connection/multi-step/
+recreate/standby明确不支持，单步ON/OFF精确核对参数；旧send/send_command_transport包装删除。
+
+标准Reset/version/MAC真实查询后完整保留5-byte version，failed requery关闭metadata有效性，getter
+未知/退休明确失败且不覆盖输出；完整tuple冻结到Rust，info不再在Runtime锁内等待USB I/O锁。
+controller snapshot不再丢第五字节，identity/install不再推断Host Ready；features/buffers仍未完整查询，
+FULL_METADATA不伪造。仍有ControllerBackend::Usb/profile0 descriptor拒绝和core USB耦合，不能称完整Backend迁移。
+
+[准确源码/离线/限制](evidence/backend-command-port-offline-20261013.json)：实际port5、
+bootstrap/strict reply/getter18、C资源18/Rustmetadata7、Core18/pending/open15、ingress9、firmware67C/12Rust、
+Native33/actual ticket/C发送回归通过，准确清洁build/空VM三次/CI9通过。make j1 jobserver提示保留，
+零compiler warning；fixtures仅替代allocator/USB/锁/response依赖，worker释放顺序仅源码检查。
+没有新增形式化资格，不证明workqueue/IRQ/callback/module或跨语言lifetime refinement。
+Fixture路径/type/static提取及sandbox LSan失败保留，修正后重核；没有归因硬件故障。
+
+[新故障对象/普通双用户+8业务](evidence/ws73-backend-command-port-fault-isolation-20261013.json)、
+[新40短](evidence/ws73-backend-command-port-short-repeat-20261013.json)、
+[新249/16超限](evidence/ws73-backend-command-port-249-boundary-20261013.json)：VM-only真实SDK111
+WS73，独立两端USB/HCC/A3/NOCP及应用随机载荷校验/回复；normal224 SDUs/112NOCP、零drop/taint0，
+RF22/连接双端Down/dup/最后关闭同life拒绝、default observer/control Fault/移除/newgen/oldpath保持。
+QMP/受控缺文件仅支撑，非物理/自然/非人工恢复；不授予标准USB物理、ROM、partial-open/URB/module/PM资格。
+
+下一批主线保持完整标准Backend迁移：真实buffer/features/command能力查询及metadata有效字段→
+标准provider版本化common descriptor/ops/get-put/RX/open-close/Host dialect→迁调用者删static Usb分派→
+core USB=n/m与真正Virtual/module/IRQ/PM；WP12事件/旧ring和旧dead_code清理并行。
+保留WS73路径，整体架构整改后扩展长包/多通道/四设备和唯一用户SSAP Engine；
+自然RCA/有限恢复仍未闭合，整个WP13/原issues和完整S0–S6不缩小、不关闭。
+
+## 历史切片：动态注册生命周期
 
 K`9c0e616c8d36` / 编译service及实机工具U`1cccf5d79b254b96f8d94803bfaeae5046e6795e`：
 新增generation-bound `org.sparklink.Registration` 与Manager.ListRegistrations；

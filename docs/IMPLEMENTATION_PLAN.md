@@ -52,6 +52,7 @@ core USB耦合→USB=n/m、真正Virtual/module/IRQ/PM；WP12事件/旧ring及�
 lifetime/在途/NOCP/真实背压门禁并行。已完成的query/snapshot消费者不重复实现。
 整体目标架构完成后再扩展长包、多通道/四设备和唯一用户SSAP Engine；自然RCA/非人工恢复、
 整项issues及完整S0–S6/19WP/10FV/12DG仍开放。
+[八项相关issues回读](evidence/standard-snapshot-issues-20261013.json)确认原scope不变；实际全部28项仍OPEN。
 
 ## 历史子门禁：标准 Backend 的真实能力查询基础
 

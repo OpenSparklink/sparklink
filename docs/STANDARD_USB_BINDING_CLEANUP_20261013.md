@@ -20,3 +20,12 @@ Metadata/buffer支持不代表SSAP MTU/可靠mode/security policy或Ready；prof
 普通应用对端随机校验回复及USB/HCC/A3，而非USB写成功/日志/广播替代业务。
 标准binding错误不作为WS73自然启动/重枚举/消失RCA，受控缺文件/QMP/manual/hub切电不算自然恢复。
 完整S0–S6及原scope保持，部分成果不关闭整项。
+
+## 后续调用者迁移已实施（Ka368cf5f1784）
+
+standard经C provider ops/共同descriptor及精确reserved身份接入；Core安装/open-close、snapshot、query、
+cleanup和Native data port消费者统一。static UsbController、ControllerBackend::Usb/new_usb和Core USB
+独立安装/open删除；有价值旧info/open regression仅selftests/retired-usb-registration。
+当前C provider14/descriptor40/common projection5/Core18等实际源码回归，准确WS73新40/249/fault8保持。
+等待替代清单收敛为transport/driver注册移drivers及USB=n/m、genuineVirtual、标准typed/ticketed data/canonical
+事件、旧ring/连接消费者、moduleIRQPM与完整lifetime/自然恢复；不能以本批迁移关闭整项。

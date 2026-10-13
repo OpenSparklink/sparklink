@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T08:26:30.393744+00:00",
+  "updated_at_utc": "2026-10-13T09:38:32.303519+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,17 +26,17 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "6db8a530f9c69df1fe09060dd3f09220a55ea946",
-    "userspace": "484bc8aec62f8e9420df2845330d5bae2ca1e162",
-    "observation": "before receipt commit; compiled VM service/tools exactU2484932"
+    "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+    "userspace": "168c8709cdbe0230d1a601750285a144f1610a17",
+    "observation": "before evidence commit; accurate compiled VM source"
   },
   "qualified_source_heads": {
-    "linux": "6db8a530f9c69df1fe09060dd3f09220a55ea946",
-    "userspace": "24849321435d962b3a0e0d1bc4a4c866613c45f8"
+    "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+    "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
   },
   "current_qualification": {
-    "DG01": "K6db8a530f9c6/U2484932 new40 ordinary role-exchange RT plusRF22/connection/Down/dup/lastclose/QMP; separate controlled fault/dynamic observer8RT.",
-    "DG02": "Same exact sources8 app249+16 overlimit rejects, normal224 SDUs/112 actualNOCP. Long/layered/fullcredit/backpressure open.",
+    "DG01": "Ka368/U168c new40 ordinary role exchange RT, RF22/connection/Down/dup/lastclose/QMP pluscontrolled fault8RT.",
+    "DG02": "Same exact sources8 app249/16 overlimit rejects, normal224SDUs/112 actualNOCP; layered/long/fullcredit/backpressure open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -46,14 +46,14 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: corrected standardEP0/interrupt/four-byte implicit types/descriptor targets; retired genericFW/unqualifiedData/mutations, actual25/8/metadata44/context19/info11, scopedC314+116/counterexamples, exactbuild/CI9/newVMfault8+40+249. Common stdprovider/profile0/Host/typed/ticketedData/staticUsb/coreUSB/Virtual/events/full lifecycle/recovery open.",
+    "WP13": "PARTIAL: common standard0/WS73_1 provider descriptor/ops/retained context/install/open-close and consumers; staticUsb/CoreUSB dedicated install-open removed. actualadapter14/descriptor40/entry11+standardcase/port2/projection5/Core18/Native33 and scopeddescriptor242+metadata314+writer116, accuratebuild/emptyVM/CI9/newVMfault8+40+249. Transport in net/USB build coupling, Virtual/standardtyped-data/events/moduleIRQPM/full lifetime/natural recovery open.",
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
     "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope.",
     "FV_REGISTRATION_SDK": "Actual SDK validator after new tuple alias rechecked full ABI/u16/u64 Kani83+weak generation witness; scope unchanged, no Core/daemon/producer/lifetime/authority refinement."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP → WP03/04/05/06 Ticket/Session/Grant/socket contract → WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP13 next: common standard profile0 descriptor/Host/provider retained ops/RX-open-close/get-put, query/typed policy and ticketed standard data; migrate actual callers and delete static Usb/core USB coupling after replacement gates. Standard EP0/interrupt/implicit-lane target framing now corrected; do not reintroduce generic invented FW or handle-only data/single-bool mutation. Metadata consumers done. Then genuine Virtual/USB n-m/moduleIRQPM and WP12 events/legacy. Maintain actualWS73, no standard physical/natural recovery qualification.",
+    "WP13 next: move actual USB transport/driver registration to drivers and make Core independent of USB build with USB=n/m gates; dedicated genuineVirtual provider. Then standard typed policy/Session-ticketed ACB/canonical RX and WP12 authoritative events/legacy ring/duplicate connection consumers, moduleIRQPM/full stopjoin and lifecycle/NOCP/backpressure. Common stdquery0/WS73_1 descriptor/ops/install/open-close and staticUsb deletion are done; do not duplicate or restore old FW/data/recipes. Keep exactWS73 and full S0-S6; no standard physical/natural recovery qualification.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61→249→reject→61; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -286,15 +286,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Architecture first: standard EP0/interrupt binding and old experimental FW/data isolation completed slice; common standard provider/profile0/Host/RX-close/static Usb/core USB migration next. Original full S0–S6 unchanged.",
+  "current_batch": "Architecture first: common provider/staticUsb migration done slice; move physical USB transport/registration to drivers, coreUSB n-m, genuineVirtual/canonical events and full lifecycle/PM matrix next. Full S0-S6 unchanged.",
   "current_audit": "docs/evidence/backend-early-offline-20261013.json",
   "issue_sync_status": "12 related comments exact readback; original scopes unchanged; all actual28 OPEN verified",
   "current_implementation_heads": {
-    "linux": "6db8a530f9c69df1fe09060dd3f09220a55ea946",
-    "userspace": "24849321435d962b3a0e0d1bc4a4c866613c45f8"
+    "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+    "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
   },
   "next_resume_tasks": [
-    "WP13 next: common standard profile0 descriptor/Host/provider retained ops/RX-open-close/get-put, query/typed policy and ticketed standard data; migrate actual callers and delete static Usb/core USB coupling after replacement gates. Standard EP0/interrupt/implicit-lane target framing now corrected; do not reintroduce generic invented FW or handle-only data/single-bool mutation. Metadata consumers done. Then genuine Virtual/USB n-m/moduleIRQPM and WP12 events/legacy. Maintain actualWS73, no standard physical/natural recovery qualification.",
+    "WP13 next: move actual USB transport/driver registration to drivers and make Core independent of USB build with USB=n/m gates; dedicated genuineVirtual provider. Then standard typed policy/Session-ticketed ACB/canonical RX and WP12 authoritative events/legacy ring/duplicate connection consumers, moduleIRQPM/full stopjoin and lifecycle/NOCP/backpressure. Common stdquery0/WS73_1 descriptor/ops/install/open-close and staticUsb deletion are done; do not duplicate or restore old FW/data/recipes. Keep exactWS73 and full S0-S6; no standard physical/natural recovery qualification.",
     "WP05 remaining trusted-security Grant installation, independent-owner business isolation and controlled in-flight arbitration/refinement; preserve existing epoch/direction/release/last-management-fd/dup/SCM_RIGHTS/common-daemon-death exact qualification. Do not repeat implemented epoch/direction or silently broaden historical proof.",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -306,22 +306,21 @@
   "ssap_separation_batch_complete": true,
   "target_architecture_remediation_complete": false,
   "batch_evidence": [
-    "docs/evidence/standard-binding-offline-20261013.json",
-    "docs/evidence/standard-binding-formal-20261013",
-    "docs/evidence/standard-binding-ci-20261013.json",
-    "docs/evidence/ws73-standard-binding-fault-isolation-20261013.json",
-    "docs/evidence/ws73-standard-binding-short-repeat-20261013.json",
-    "docs/evidence/ws73-standard-binding-249-boundary-20261013.json",
-    "docs/evidence/standard-binding-issues-20261013.json"
+    "docs/evidence/common-standard-provider-offline-20261013.json",
+    "docs/evidence/common-standard-provider-formal-20261013",
+    "docs/evidence/common-standard-provider-ci-20261013.json",
+    "docs/evidence/ws73-common-standard-provider-v2-fault-isolation-20261013.json",
+    "docs/evidence/ws73-common-standard-provider-v2-short-repeat-20261013.json",
+    "docs/evidence/ws73-common-standard-provider-v2-249-boundary-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/standard-binding-issues-20261013.json",
   "latest_evidence_commit": "484bc8aec62f8e9420df2845330d5bae2ca1e162",
-  "previous_goal_turn_classification": "MEANINGFUL_ARCHITECTURE_PROGRESS: one atomic metadata production consumer and replaced getters removed, actual C44/Rust11, limitedCBMC314+weak witness, full build failure fixed and preserved, exact newVM fault8+40+249 andCI9",
-  "current_goal_turn_classification": "MEANINGFUL_ARCHITECTURE_PROGRESS: discovered/fixed actual standard transport binding; retired default invented FW and unqualified handle data/mutations, source tests and full build; scoped metadata314/writer116+counterexamples; exactVMfault8+40+249 andCI9",
+  "previous_goal_turn_classification": "MEANINGFUL_ARCHITECTURE_PROGRESS: discovered/fixed actual standard transport binding; retired default invented FW and unqualified handle data/mutations, source tests and full build; scoped metadata314/writer116+counterexamples; exactVMfault8+40+249 andCI9",
+  "current_goal_turn_classification": "MEANINGFUL_ARCHITECTURE_PROGRESS: standard common descriptor/ops/runtime lifecycle and all provider consumers migrated; staticUsb and CoreUSB install/open deleted; scoped descriptor242/counterexample and exact newVMfault8+40+249/build/CI9",
   "qualified_tool_source_heads": {
-    "linux": "6db8a530f9c69df1fe09060dd3f09220a55ea946",
-    "userspace": "24849321435d962b3a0e0d1bc4a4c866613c45f8"
+    "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+    "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
   },
   "backend_descriptor_slice": {
     "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -617,13 +616,13 @@
     "ci": "docs/evidence/standard-capabilities-ci-20261013.json"
   },
   "previous_batch_evidence": [
-    "docs/evidence/standard-snapshot-offline-20261013.json",
-    "docs/evidence/standard-snapshot-formal-20261013/production/report.json",
-    "docs/evidence/standard-snapshot-ci-20261013.json",
-    "docs/evidence/ws73-standard-snapshot-v2-fault-isolation-20261013.json",
-    "docs/evidence/ws73-standard-snapshot-v2-short-repeat-20261013.json",
-    "docs/evidence/ws73-standard-snapshot-v2-249-boundary-20261013.json",
-    "docs/evidence/standard-snapshot-issues-20261013.json"
+    "docs/evidence/standard-binding-offline-20261013.json",
+    "docs/evidence/standard-binding-formal-20261013",
+    "docs/evidence/standard-binding-ci-20261013.json",
+    "docs/evidence/ws73-standard-binding-fault-isolation-20261013.json",
+    "docs/evidence/ws73-standard-binding-short-repeat-20261013.json",
+    "docs/evidence/ws73-standard-binding-249-boundary-20261013.json",
+    "docs/evidence/standard-binding-issues-20261013.json"
   ],
   "standard_snapshot_slice": {
     "kernel": "1d6b3195484fa7ee63b675e5345dfc263850e44c",
@@ -674,5 +673,25 @@
       "original_scopes_open_unchanged": true,
       "receipt": "docs/evidence/standard-binding-issues-20261013.json"
     }
+  },
+  "common_standard_provider_slice": {
+    "kernel": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+    "compiled_service_tools": "168c8709cdbe0230d1a601750285a144f1610a17",
+    "standard_descriptor_migrated": true,
+    "static_usb_removed": true,
+    "core_usb_build_independent": false,
+    "transport_moved_to_drivers": false,
+    "genuine_virtual": false,
+    "standard_typed_data_supported": false,
+    "offline": "docs/evidence/common-standard-provider-offline-20261013.json",
+    "formal": "docs/evidence/common-standard-provider-formal-20261013",
+    "ci": "docs/evidence/common-standard-provider-ci-20261013.json",
+    "real": [
+      "docs/evidence/ws73-common-standard-provider-v2-fault-isolation-20261013.json",
+      "docs/evidence/ws73-common-standard-provider-v2-short-repeat-20261013.json",
+      "docs/evidence/ws73-common-standard-provider-v2-249-boundary-20261013.json"
+    ],
+    "whole_package_complete": false,
+    "natural_recovery_acceptance": false
   }
 }

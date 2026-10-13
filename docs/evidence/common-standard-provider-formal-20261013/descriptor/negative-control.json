@@ -1,0 +1,32 @@
+{
+  "status": "EXPECTED_COUNTEREXAMPLE",
+  "production_proof": false,
+  "mutation": "remove standard-profile unqualified-capability guard from copied production header",
+  "failed": [
+    {
+      "property": "proof.assertion.4",
+      "description": "standard query profile has no unqualified typed or data capability",
+      "sourceLocation": {
+        "comment": "standard query profile has no unqualified typed or data capability",
+        "file": "/home/sanchuanhehe/Documents/opensparklink/.dev/common-standard-provider-descriptor-proof/weak.c",
+        "function": "proof",
+        "line": "43",
+        "pragma": [
+          "checked:bounds-check",
+          "checked:pointer-check",
+          "checked:div-by-zero-check",
+          "checked:signed-overflow-check",
+          "checked:undefined-shift-check",
+          "checked:pointer-primitive-check"
+        ],
+        "propertyClass": "assertion",
+        "propertyId": "proof.assertion.4",
+        "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+      },
+      "status": "FAILURE"
+    }
+  ],
+  "weak_header_sha256": "9555d3734bbd1ab59b028583a9bfc966d1d26805787d7338e68666b14041db8e",
+  "regression": "actual descriptor test standard0+ACB flag rejects EOPNOTSUPP",
+  "trace": "weak-solver.json.gz"
+}

@@ -17,7 +17,43 @@ goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_S
 [当前SSAP调用审计/三类清单](SSAP_PRODUCTION_SEPARATION_20261013.md)。
 
 
-## 当前架构整改：纠正标准USB binding，隔离未合格实验wire
+## 当前架构整改：共同标准provider注册与静态USB路径删除
+
+K`a368cf5f178416d44c1ffe83536f22c074eebf5f` / VM编译service和工具U`168c8709`：
+标准C adapter把同一锁下查询metadata及不可变reservation交共同descriptor/ops；standard0仅query caps0，
+WS73_1保留已有typed/data路径。get/put保留同一C allocation，open精确核对id/generation并处理partial-open；
+共同Runtime安装/open-adoption/close/命令port和RX身份路由接通，注册/install不宣布Ready。
+Native provider metadata区分standard/WS73/Test标签，standard不把hardware buffers冒充软件PDU/模式能力。
+Native callback异常正返回值明确EIO。**已删除** UsbController、ControllerBackend::Usb/new_usb、
+Core sle_switch_controller_usb/open_usb_runtime；所有运行时消费者经同一provider，不是仅改enum名称。
+
+[实际源码/离线/构建](evidence/common-standard-provider-offline-20261013.json)：actual adapter14、
+生产descriptor40、C entry拒绝11+standard正向case、共同port2/projection5、Core18/pending9/Native33、
+Host全源码与cleanup callback、binding25/8、metadata44、context19通过；历史static info11/open6等仅retired。
+旧测试中的Unsupported backend variant已改为真正provider callback拒绝，默认生产无额外模拟provider。
+初次integration未使用导入warning和fixture迁移错误保留、修正后准确清洁build零compiler warning/空VM三次。
+[准确CI九项](evidence/common-standard-provider-ci-20261013.json)U168c/pin Ka368通过。
+
+[descriptor242及capability弱guard反例](evidence/common-standard-provider-formal-20261013/descriptor/report.json)：
+直接验证生产pure validator，任意ABI字段/callback有无，假设provider-owned内核对象指针有效。
+standard0不得宣告未接通typed/data caps；删guard产生counterexample，对应实际standard+ACB flag拒绝回归。
+metadata314/writer116按准确源码限定重核；copy/USB/锁等依赖假设保持，不证明Runtime/IRQ/module/URB/引用/
+并发/lifetime/Host credit/Ready或物理。模型结果不扩大实际adapter依赖fixture的范围。
+
+[新fault同行8业务](evidence/ws73-common-standard-provider-v2-fault-isolation-20261013.json)、
+[新40短](evidence/ws73-common-standard-provider-v2-short-repeat-20261013.json)、
+[新249与16拒绝](evidence/ws73-common-standard-provider-v2-249-boundary-20261013.json)：VM-only真实WS73、
+普通用户，两角色随机对端校验回复及双端USB/HCC/A3；normal224 SDUs/112真实NOCP、capture零drop/taint0。
+RF/建链断链/dup/最后关闭同life拒绝及动态fault/observer/newgen/oldpath/同行/同slkd保持。
+受控缺文件/QMP仅开发支撑，不是标准USB物理、完整partial-open/引用或自然自动恢复资格。
+
+下一批：将实际USB transport/driver registration移drivers并验证core USB=n/m，专用真正Virtual provider，
+标准typed policy/Session-ticketed ACB/canonical RX事件、WP12旧ring/重复连接消费者与module/IRQ/PM矩阵。
+已完成共同注册与static Usb删除不重复实现。Ticket/Session/Grant/socket剩余在途/lifetime/NOCP/真实背压和
+自然RCA并行；整体目标架构整改完成后再扩展长包、多通道/四设备和唯一用户SSAP。
+完整S0–S6/19WP/10FV/12DG保留，整个Backend/架构/自然恢复及原整项issues仍OPEN。
+
+## 历史子门禁：纠正标准USB binding，隔离未合格实验wire
 
 K`6db8a530f9c69df1fe09060dd3f09220a55ea946` / VM编译service和工具U`2484932`：
 调用审计查明旧标准路径把UART标识A1和指令放bulk、从bulk读Complete，不符合用户提供的

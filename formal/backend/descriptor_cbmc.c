@@ -39,7 +39,8 @@ void proof(void)
  if(!result) {
   __CPROVER_assert(d.version==1 && d.size==sizeof(d),"accepted version and exact size");
   __CPROVER_assert(d.bus==1 || d.bus==2,"accepted implemented provenance only");
-  __CPROVER_assert(d.info.profile==1 && !(d.capabilities & ~7U),"accepted dialect and capability bits");
+  __CPROVER_assert(d.info.profile<=1 && !(d.capabilities & ~7U),"accepted dialect and capability bits");
+  __CPROVER_assert(d.info.profile!=0 || d.capabilities==0,"standard query profile has no unqualified typed or data capability");
   __CPROVER_assert(d.ops && d.context && ops.get && ops.put && ops.open && ops.close && ops.validate_command && ops.send_command,"accepted required callbacks");
   __CPROVER_assert(!!ops.prepare_discovery==!!ops.validate_discovery_step && !!ops.prepare_connection==!!ops.validate_connection,"paired typed callbacks");
   __CPROVER_assert(!!(d.capabilities&1)==!!ops.prepare_discovery && !!(d.capabilities&2)==!!ops.prepare_connection && !!(d.capabilities&4)==!!ops.send_acb,"capability matches operations");

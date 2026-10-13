@@ -424,3 +424,11 @@ boot-ROM/FW必须由已匹配厂商driver实现；不存在可假定的通用F81
 这项审计调整标准Backend迁移前的依赖，保留所有S0–S6/标准后端最终目标及已验证WS73，
 [调用者/删除/等待替代](../STANDARD_USB_BINDING_CLEANUP_20261013.md)与[实际证据/假设](../evidence/standard-binding-offline-20261013.json)
 集中记录。限定模型/WS73回归不能替代标准USB物理与自然恢复资格。
+
+### 共同provider实现迁移（Ka368cf5f1784）
+
+标准和WS73在共同versioned descriptor/ops中分开dialect及software capabilities，保留上下文/安装/open-close
+同一生命周期。static UsbController/enum bus branch/Core USB install-open已移除，snapshot/command/data消费者
+经共同provider；standard0只query，buffers不冒充typed/data支持，未接通能力明确拒绝。
+[准确实现和限定资格](../evidence/common-standard-provider-offline-20261013.json)不授予指针/refcount/module/IRQ/
+真实standard或完整recovery证明。实际transport和driver注册仍在net，下一步移drivers并验证USB=n/m与专用Virtual。

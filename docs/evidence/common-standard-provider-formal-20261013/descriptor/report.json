@@ -1,0 +1,26 @@
+{
+  "status": "MODEL_CHECKED_SCOPED",
+  "properties": 242,
+  "source_head": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+  "header_sha256": "7ae0a3252ab435baaeb5b8531c6eac7e40f6ca0eabd4c27b98733c04ccc7d902",
+  "harness_sha256": "66974fa229c2693b486090250db043946203022046a28381d97f0367b36c42cf",
+  "tool": "6.11.0 (cbmc-6.11.0)",
+  "command": [
+    "cbmc",
+    "/home/sanchuanhehe/Documents/opensparklink/.dev/common-standard-provider-descriptor-proof/actual.c",
+    "-I",
+    "/home/sanchuanhehe/Documents/opensparklink/linux/include",
+    "--function",
+    "proof",
+    "--bounds-check",
+    "--pointer-check",
+    "--signed-overflow-check",
+    "--unsigned-overflow-check",
+    "--unwind",
+    "8",
+    "--unwinding-assertions",
+    "--json-ui"
+  ],
+  "scope": "Actual pure descriptor validator: arbitrary version/size/bus/profile/caps/buffers and callback presence; valid provider-owned pointer objects assumed; standard0 only cap0, WS73_1 retains typed capabilities. No allocator/refcount/module/IRQ/Runtime/Host/URB/lifetime or physical proof.",
+  "physical_acceptance": false
+}

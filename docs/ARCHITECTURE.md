@@ -7,11 +7,12 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-最新准确VM路径K6db8a530f9c6/U2484932保持fault同行8业务、40短及249/16拒绝。
-标准USB指令EP0/四字节头、事件interrupt和显式lane已纠正；默认发明的通用FW与裸handle数据移除/拒绝。
-厂商boot-ROM/FW属于driver，WS73独立HCC路径保留。[审计/替代](STANDARD_USB_BINDING_CLEANUP_20261013.md)。
-这是必要的binding整改，未完成common profile0注册/typed policy/ticketed ACB、static Usb/coreUSB和事件/Virtual迁移。
-先完整目标架构整改再扩展能力，不扩大标准物理、自然恢复或完整生命周期资格。
+最新准确VM路径Ka368cf5f1784/U168c8709保留fault同行8业务、40短及249/16拒绝。
+标准provider经同一descriptor/ops/保留上下文/Runtime安装-open-close接通，static UsbController及Core USB
+独立安装/open删除，所有消费者使用共同provider。standard0仅query、typed/data仍待接通；install不是Ready。
+[实际范围/限定模型/失败](evidence/common-standard-provider-offline-20261013.json)。
+transport/driver registration移drivers、core USB=n/m、真正Virtual、canonical事件、module/IRQ/PM和完整
+lifetime/恢复仍未完成；目标架构整改先于功能扩展。
 
 历史正常路径K9c0e616c/编译及工具U1cccf5d：动态Registration观察对象接通，Core直接核对
 GetSnapshot和列表；pending无Runtime/Managed，Installed不宣称Ready。通知/目录只管拓扑，

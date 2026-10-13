@@ -1,0 +1,370 @@
+{
+  "status": "COMMON_STANDARD_PROVIDER_MIGRATION_SCOPED_PASS",
+  "kernel_head": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+  "compiled_service_tools_head": "168c8709cdbe0230d1a601750285a144f1610a17",
+  "implemented": [
+    "standard C adapter registers queried metadata+exact reservation through common descriptor",
+    "standard0 only query caps0, WS73_1 typed paths retained",
+    "shared retained transport/install/open/close/adoption/ingress barriers",
+    "static UsbController/Usb enum branch/Core USB install-open removed",
+    "consumer migration, historical static tests isolated"
+  ],
+  "offline": {
+    "common-provider-run_native_connection_contract.json": {
+      "status": "NATIVE_CONNECTION_PRODUCTION_SOURCE_CONTRACT_PASS",
+      "scope": "actual production operation storage and WS7327/3-byte driver codec; actual Host caller dependency tests; not running kernel or RF proof",
+      "rust_tests": 12,
+      "actual_host_tests": 51,
+      "actual_host_sources": {
+        "sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sle_workers.rs": "c6b89e5fb611b10fc409c65168291b753a6efcb3bcff5665c8353553b4192ca9",
+        "sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd"
+      },
+      "codec_sanitizers": [
+        "address",
+        "undefined",
+        "leak"
+      ],
+      "production_connection_admission": false,
+      "connection_rf_acceptance": false,
+      "ssap_acceptance": false,
+      "automatic_recovery_acceptance": false,
+      "sources": {
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+        "connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+        "sparklink_connection.h": "206ba287da537704bef03233f598e3607c6180493d009a66b6460dfaf129047b",
+        "ws73_connection_codec_test.c": "1f41500443ce81a9c71cfb34d7def2d898a89e5b97d598f28cbcf1575a22e56e"
+      }
+    },
+    "common-provider-run_diagnostic_result.json": {
+      "status": "DIAGNOSTIC_RESULT_BOUNDARY_PASS",
+      "rust_tests": 48,
+      "result_tests": 14,
+      "admission_tests": 12,
+      "host_deadline_tests": 6,
+      "connection_dependency_tests": 11,
+      "link_dependency_tests": 5,
+      "scope": "actual pending/queue modules, submit/result handlers and Host enqueue/cancel bodies; clock/lease/lock/usercopy/allocation dependencies are fixtures",
+      "live_vfs_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_uapi.rs": "e332156977f30b6476d920d82d90315eeaab9c129211283241bfdd042675c283",
+        "sparklink_core.rs": "54d5b08ef0c0bb1657740251852e1e8448c6bfd30bacab3bd7dccc06c18df8a5",
+        "sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_workers.rs": "c6b89e5fb611b10fc409c65168291b753a6efcb3bcff5665c8353553b4192ca9",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e"
+      },
+      "remaining": [
+        "Actual ioctl owner/CAP/usercopy/removal gates in qualified VM",
+        "Legacy DLI event callers and shared projection removal",
+        "Live idempotent admission/cancel/deadline syscall and on-wire late reply gates"
+      ]
+    },
+    "common-provider-run_session_dispatch.json": {
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "scope": "actual single-consumer route/local TCID+PI/finite RX, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+      "physical_acceptance": false,
+      "whole_session_proof": false,
+      "bodies_sha256": "ad7e9fec0e915ab26c98fd5be9d89e9b229b8aae0679941a330db8c192e2d855",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "43ac04c57d70916fc3377e6a444fe3ccd08d11ff375ee9e71b3d778778873188",
+        "net/sparklink/sle_channel_state.h": "3cf939ce87b914f9cee06391029a73f8cc2b1b0cf4a793293354ad4d11221612",
+        "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+        "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+        "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+        "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "a1697db692f98bcec854fcf32de9fe8648ef0425fa2c22ad2085f2baea522dd5"
+      }
+    },
+    "common-provider-run_management_release.json": {
+      "status": "MANAGEMENT_RELEASE_SOURCE_BOUNDARIES_PASS",
+      "rust_tests": 54,
+      "scope": "actual Host predicates/TX selection/InFlight/domain revocation and core fast-release block; source queue/operation/lease modules and opcode/timeout constants; locks, clock scaling, dependency error adapters and surrounding transport dependencies are fixtures",
+      "live_ioctl_acceptance": false,
+      "fd_close_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "sparklink_core.rs": "54d5b08ef0c0bb1657740251852e1e8448c6bfd30bacab3bd7dccc06c18df8a5",
+        "sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd"
+      }
+    },
+    "common-provider-run_usb_codec_isolation.json": {
+      "status": "LIVE_USB_PARSER_AND_HISTORICAL_CODEC_WITNESSES_PASS",
+      "live_parser_tests": 4,
+      "historical_witnesses": 3,
+      "sources": {
+        "sle_usb.rs": "0aa7b655d866f8541ad7fadbfd49511815772be39524b46af362b33d547d2fe6",
+        "legacy_usb_codec.rs": "63e83bdd63f9e7589b1ee29d97525dc8d3234bcdcfb40f84c6229d04c6ffc7cb"
+      },
+      "scope": "Actual live parse_event_packet/structure; allocation/errno dependencies are fixtures. Historical encoder/header witnesses record retired behavior, not production functionality or standard conformance.",
+      "historical_truncation_supported": false,
+      "physical_acceptance": false,
+      "live_callback_lifetime_proven": false
+    },
+    "common-provider-host.json": {
+      "status": "NATIVE_CONNECTION_ACTUAL_HOST_SOURCE_PASS",
+      "tests": 51,
+      "cleanup_prepare_tests": 2,
+      "scope": "actual Host/queue/operation/link source; clock/errno/allocation/wire-event dependencies are fixtures; not VFS, running kernel or RF",
+      "live_kernel_acceptance": false,
+      "connection_rf_acceptance": false,
+      "automatic_recovery_acceptance": false,
+      "sources": {
+        "sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sle_workers.rs": "c6b89e5fb611b10fc409c65168291b753a6efcb3bcff5665c8353553b4192ca9",
+        "sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd"
+      }
+    },
+    "common-provider-run_usb_bootstrap_metadata.json": {
+      "status": "ACTUAL_USB_BOOTSTRAP_TUPLE_PASS",
+      "cases": 44,
+      "header_sha256": "764ac209980fe55f322a416d84df0196000a188e533e2f34f2c15a6b54ece5bd",
+      "source_sha256": "05c24ae0d15d43fd7ded67b97832a74ab8738f34b026c55f3b81662e7b06595c",
+      "scope": "Actual standard bootstrap, strict reply validator and locked tuple getter; synchronous response/USB/context dependencies are controlled fixtures. Fifth version byte preserved; failed requery invalidates observations, no partial commit/output overwrite. Actual command/buffer/features validation and coherent locked snapshot getter, standard 0406 address-type query. Not hardware, common provider migration or Ready proof.",
+      "physical_acceptance": false
+    },
+    "common-provider-run_runtime_ingress.json": {
+      "status": "ACTUAL_RUNTIME_INGRESS_PASS",
+      "tests": 9,
+      "scope": "production route/queue functions and identity; std Mutex/Arc with ranked guard checks, Host admission/receive and event/queue dependency fixtures; not kernel IRQ/workqueue/module/Host or hardware refinement",
+      "sources": {
+        "net/sparklink/sle_ingress.rs": "c372709252f304fc03d1725a1c03c3e52681c776ba0632698ee57a66fa82d00f",
+        "net/sparklink/sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1",
+        "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+        "tools/testing/selftests/sparklink/ingress/fixture.rs": "e6c828bb79a36cc9c1e0195a596014df374b0b3e25bdefd993812dcd48ee4beb"
+      },
+      "actual_function_sha256": "1cf0e540c1fb6e648ca2ee717fc4d0a782285bc7416934cc1bac1047275c5b77",
+      "hardware_acceptance": false
+    },
+    "common-provider-binding.json": {
+      "status": "ACTUAL_STANDARD_USB_BINDING_PASS",
+      "cases": 25,
+      "rust_tests": 8,
+      "rust_sha256": "0aa7b655d866f8541ad7fadbfd49511815772be39524b46af362b33d547d2fe6",
+      "source_sha256": "05c24ae0d15d43fd7ded67b97832a74ab8738f34b026c55f3b81662e7b06595c",
+      "scope": "Actual EP0 writer/control setup/four-byte framing/interrupt bootstrap read/unsupported data stub, and Rust prepare/endpoint lane callback; decoder/ingress ownership are controlled fixture dependencies, not protocol/lifetime proof; USB, allocation and retained active context dependencies controlled. Includes u16 wLength boundary and uncertain/short transfers. No hardware, class discovery, async listener, lifetime, Ready or firmware proof.",
+      "physical_acceptance": false
+    },
+    "common-provider-adapter.json": {
+      "status": "ACTUAL_COMMON_STANDARD_PROVIDER_PASS",
+      "cases": 14,
+      "source_sha256": "05c24ae0d15d43fd7ded67b97832a74ab8738f34b026c55f3b81662e7b06595c",
+      "header_sha256": "764ac209980fe55f322a416d84df0196000a188e533e2f34f2c15a6b54ece5bd",
+      "scope": "Actual standard provider adapter including ops table, metadata descriptor/borrowed identity, query validation, retained get/put and exact open/partial-failure close. Primitive locks/getter/USB/register dependencies controlled; no real Core/URB/module/refcount/IRQ/lifetime or physical standard qualification.",
+      "physical_acceptance": false
+    },
+    "common-provider-context.json": {
+      "status": "GENERIC_USB_DESCRIPTOR_CAPABILITY_SOURCE_BOUNDARIES_PASS",
+      "c_cases": 19,
+      "rust_tests": 11,
+      "scope": "actual C register/unregister and pending reservation/default types; retired static USB constructor/info/snapshot and archived attach/serdev history; current registered projection tested by run_backend_bus;  descriptor lookup/allocation/URB/types/firmware getters are dependency fixtures",
+      "physical_acceptance": false,
+      "generic_dialect_acceptance": false,
+      "full_capability_provenance_contract": false,
+      "natural_fault_root_cause_closed": false,
+      "sources": {
+        "sle_usb_ffi.c": "05c24ae0d15d43fd7ded67b97832a74ab8738f34b026c55f3b81662e7b06595c",
+        "sle_usb.rs": "0aa7b655d866f8541ad7fadbfd49511815772be39524b46af362b33d547d2fe6",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sparklink_core.rs": "54d5b08ef0c0bb1657740251852e1e8448c6bfd30bacab3bd7dccc06c18df8a5"
+      },
+      "archived_attach_sha256": "2225b51f8cec3f5f33c31f053b10d8321bd81fbbe5bb41486ae681e471451626",
+      "archived_serdev_info_sha256": "12e851cef7fbda7b92409752f36690d3c2d1d579a50cd1bff3eed3c98fd80ad7"
+    },
+    "common-provider-pending.json": {
+      "status": "ACTUAL_USB_PENDING_RESERVATION_PASS",
+      "tests": 15,
+      "pending_allocator_tests": 9,
+      "retired_static_open_adoption_tests": 6,
+      "sources": {
+        "sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sparklink_core.rs": "54d5b08ef0c0bb1657740251852e1e8448c6bfd30bacab3bd7dccc06c18df8a5",
+        "sle_usb.rs": "0aa7b655d866f8541ad7fadbfd49511815772be39524b46af362b33d547d2fe6",
+        "sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1"
+      },
+      "scope": "actual constructor/pending allocator/generation/get/unregister/common reservation/cancel and Native wrapper/exact two-phase detach and retired static USB listener/open adoption history; current lifecycle is common Native/provider open; logging/Mutex/info types/stats dependencies, not concurrent registry or callbacks/kernel/physical USB qualification",
+      "hardware_acceptance": false
+    },
+    "common-provider-install.json": {
+      "status": "ACTUAL_COMMON_BACKEND_INSTALL_PASS",
+      "tests": 18,
+      "sources": {
+        "sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sparklink_core.rs": "54d5b08ef0c0bb1657740251852e1e8448c6bfd30bacab3bd7dccc06c18df8a5",
+        "sle_uapi.rs": "e332156977f30b6476d920d82d90315eeaab9c129211283241bfdd042675c283"
+      },
+      "scope": "Actual reserve/profile/borrowed validation/pending error/query/install/cancel/retire and registry functions; std Mutex/Arc and instrumented Runtime constructor/destructor dependencies. Controlled retire/reuse/competing-install/subsystem-removal windows, not real kernel concurrency, IRQ, allocation/callback or physical qualification.",
+      "kernel_lifetime_proven": false,
+      "physical_acceptance": false,
+      "early_ws73_bootstrap_registered": false
+    },
+    "common-provider-data.json": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 33,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "real_data_acceptance": false,
+      "socket_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "net/sparklink/sle_sessions.rs": "d9ae47d27ba4fb9ab81d6c20cdc7fb5d36d48578593364068dd23b4154c7fdb1",
+        "net/sparklink/sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "9587636e7f3df438578222b479db3f2d23c47276027293d99a3bd4759055b3de"
+      }
+    },
+    "common-provider-port.json": {
+      "status": "ACTUAL_RETAINED_COMMAND_PORT_PASS",
+      "tests": 2,
+      "sources": {
+        "sle_backend.rs": "751072b684206c563a7bf69c6aef783dad2c396406ad81a4f22421176ebc4784",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1",
+        "sle_usb.rs": "0aa7b655d866f8541ad7fadbfd49511815772be39524b46af362b33d547d2fe6",
+        "sle_workers.rs": "c6b89e5fb611b10fc409c65168291b753a6efcb3bcff5665c8353553b4192ca9"
+      },
+      "scope": "Actual selector and provider impls, allocator/std Arc/USB transport dependencies; KBox allocation adapted only to fallible Box fixture. Static worker release-before-submit order check, not actual workqueue/lockdep/IRQ/module/callback or USB proof.",
+      "physical_acceptance": false
+    },
+    "common-provider-bus.json": {
+      "status": "ACTUAL_BACKEND_BUS_PROJECTION_PASS",
+      "tests": 5,
+      "sources": {
+        "sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1"
+      },
+      "scope": "Actual production bus enum/conversion and NativeController.info; transport/errno/controller type dependencies are fixtures. Not registration lifetime/IRQ/module/Virtual or physical qualification.",
+      "physical_acceptance": false,
+      "whole_backend_complete": false
+    }
+  },
+  "build": {
+    "status": "BUILD_PASSED",
+    "source_head": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-common-standard-provider-v2-kernel-build.log",
+      "sha256": "e8e658f8cfaad7011db6f711f1174aec3319f2dcbc6d5003f787a900f86fdd9a"
+    }
+  },
+  "registration_contract": {
+    "status": "ACTUAL_BACKEND_REGISTRATION_REJECT_PASS",
+    "tests": 11,
+    "bus_copy_cases": 2,
+    "reserved_rejection_cases": 3,
+    "reserved_copy_cases": 1,
+    "standard_profile_copy_cases": 1,
+    "reserved_body_sha256": "5440dde77ba3bf0c1f632fbcf0d677f25888eb0cf8aa5e783e812ba6d180fa31",
+    "bus_getter_sha256": "59dc6538ade732ba7a55695a9b77c50f398528640b52418bfae3602b9f039f04",
+    "actual_function_sha256": "ba611e9cd78160a07b4a2623a897585049f4b85ab1ef1a55729ad7c9fc04ab4d",
+    "production_file_sha256": "13eb3d8e5de6a10077a37aeac5aca0a00f0ca4ef68a5fff4ca009d7f1aabd1ed",
+    "result": "ACTUAL_BACKEND_REGISTRATION_REJECT_PASS tests=11 bus_copy_cases=2",
+    "hardware_acceptance": false,
+    "scope": "actual C entry body; dependency allocation/module/Rust callback fixtures; invalid ops sentinel must not be followed for unsupported layout/bus/dialect/caps; positive USB/TEST provenance copied before dependency Rust registration and retained after descriptor mutation; no kernel reference or concurrent lifetime proof"
+  },
+  "ci": "common-standard-provider-ci-20261013.json",
+  "formal": "common-standard-provider-formal-20261013",
+  "real": [
+    "ws73-common-standard-provider-v2-fault-isolation-20261013.json",
+    "ws73-common-standard-provider-v2-short-repeat-20261013.json",
+    "ws73-common-standard-provider-v2-249-boundary-20261013.json"
+  ],
+  "remaining": [
+    "move USB transport/registration from net to drivers and coreUSB n-m",
+    "standard typed policy/ticketed ACB/canonical events and genuineVirtual/physical gates",
+    "full module/IRQ/PM/refcount/open-stopjoin tests",
+    "legacy events/connection consumers and lifecycle/NOCP/credit/recovery matrix"
+  ],
+  "failures_preserved": [
+    "initial dirty integration unused SleOpcode warning corrected",
+    "cleanup fixture removed variant adapted to actual callback Unsupported",
+    "fixture include/static linkage and dependency method errors corrected without allow(dead_code)",
+    "initial negative header false literal parse attempt NOT_PROVEN; corrected0 constant before witness",
+    "all prior compiler/panic/lastclose/hardware evidence retained"
+  ],
+  "private_seals": [
+    {
+      "path": ".dev/native-common-standard-provider-v2-build-record.json",
+      "sha256": "225ff1a8342df343bafc8467eb9085db9cac699a632d86144dc13dfbf81037f2"
+    },
+    {
+      "path": ".dev/native-common-standard-provider-v2-kernel-build.log",
+      "sha256": "e8e658f8cfaad7011db6f711f1174aec3319f2dcbc6d5003f787a900f86fdd9a"
+    },
+    {
+      "path": ".dev/common-standard-provider-v2-pipeline.json",
+      "sha256": "ea4928ce12c224ca3413f81f2823a2677f9b1f2684cb02e2f0d5f3e1b73f5b21"
+    },
+    {
+      "path": ".dev/native-common-standard-provider-v2-artifacts/manifest.json",
+      "sha256": "f2b7b5a487aa1d567b7381023e7d16aa2b36839f250ba8dad079f96ad901de28"
+    },
+    {
+      "path": ".dev/native-common-standard-provider-v2-root-smoke/manifest.json",
+      "sha256": "f96ce70bdf085b97f7009ef139a22a29311f15c838ef6bee3952cc77994c263d"
+    },
+    {
+      "path": ".dev/common-standard-provider-integration-build.log",
+      "sha256": "19e36c590a812e7747e7a78230a6230ee43040884ed22107c61e171360aaba4b"
+    }
+  ],
+  "standard_physical_acceptance": false,
+  "whole_backend_complete": false,
+  "full_architecture_complete": false,
+  "natural_fault_root_cause_closed": false,
+  "automatic_recovery_acceptance": false
+}

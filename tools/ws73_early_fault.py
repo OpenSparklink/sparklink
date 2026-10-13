@@ -48,6 +48,29 @@ def ordinary_attributes(interface):
     data=json.loads(result.stdout);data['wall_ns']=time.time_ns();return data
 
 
+def ordinary_core_snapshot(index,generation):
+    # Uses the installed Python -> actual C cdylib -> Rust -> kernel ioctl.
+    # Opens an unbound observation fd; never selects/acquires management.
+    command=('import sys,json;sys.path[:0]=['+repr(str(TOOLS))+',"/usr/share/sparklink/python"];from ws73_north_star import ordinary_identity;from sparklink import registration_snapshot;d={"credentials":ordinary_identity()};'
+             +'\ntry:\n s=registration_snapshot('+str(index)+','+str(generation)+');d["snapshot"]={n:getattr(s,n) for n in ["version","dev_index","generation","state","profile","bus","phase","error","reserved_byte"]};d["snapshot"]["reserved"]=list(s.reserved)'
+             +'\nexcept OSError as e:d["errno"]=e.errno\nprint(json.dumps(d))')
+    r=application('/bin/python3','-c',command,capture_output=True,timeout=10)
+    if r.returncode:raise ValueError('ordinary Core binding query failed: '+r.stderr)
+    d=json.loads(r.stdout);d['wall_ns']=time.time_ns();d['command']=r.args;return d
+
+
+def validate_core_snapshot(sample,index,generation,state):
+    c=sample['credentials'];s=sample['snapshot']
+    if c['uids']!=[1000]*4 or any(int(c[k],16) for k in ['cap_eff','cap_prm','cap_amb']):raise ValueError('Core query must be ordinary')
+    if s != dict(version=1,dev_index=index,generation=generation,state=state,profile=1,bus=4,phase=3 if state==2 else 0,error=-2 if state==2 else 0,reserved_byte=0,reserved=[0]*8):raise ValueError('exact canonical Core registration fields required')
+
+
+def validate_core_absent(sample):
+    c=sample['credentials']
+    if c['uids']!=[1000]*4 or any(int(c[k],16) for k in ['cap_eff','cap_prm','cap_amb']):raise ValueError('old Core query must be ordinary')
+    if sample.get('errno')!=errno.ENODEV or 'snapshot' in sample:raise ValueError('old Core registration must be absent')
+
+
 def validate_fault(sample):
     c=sample['credentials'];a=sample['attributes']
     if c['uids'] != [1000]*4 or any(int(c[k],16) for k in ['cap_eff','cap_prm','cap_amb']):raise ValueError('ordinary read credentials required')
@@ -96,6 +119,11 @@ def coordinate(pid):
             time.sleep(.1)
         if last is None:raise ValueError('target failed-init observation deadline; no simulated success')
         interface,sample,fault=last;d.update(failed=sample,fault_identity=fault,failed_usb=dict(bus=int(Path('/sys/bus/usb/devices/1-3/busnum').read_text()),device=int(Path('/sys/bus/usb/devices/1-3/devnum').read_text())))
+        d['core_fault']=ordinary_core_snapshot(fault['id'],fault['generation']);validate_core_snapshot(d['core_fault'],fault['id'],fault['generation'],2)
+        cli=application('/bin/slkconfig','--adapter',str(fault['id']),'--generation',str(fault['generation']),'registration',capture_output=True,timeout=10)
+        d['core_fault_cli']=dict(exit=cli.returncode,stdout=cli.stdout,stderr=cli.stderr)
+        expected=f'Registration: index={fault["id"]} generation={fault["generation"]} state=2 profile=1 bus=4 phase=3 error=-2\n'
+        if cli.returncode or cli.stdout!=expected:raise ValueError('ordinary CLI must expose exact real Core fault')
         d['failed_selection']=application('/bin/slctl','--adapter',f'/org/sparklink/slk{fault["id"]}_g{fault["generation"]}','show',capture_output=True,timeout=10).__dict__
         # CompletedProcess contains only serializable command/exit/streams.
         if d['failed_selection']['returncode']==0:raise ValueError('failed pending identity selectable as Ready')
@@ -114,10 +142,14 @@ def coordinate(pid):
             time.sleep(.05)
         d['stats_after_remove']=stats()
         if d['stats_after_remove']['fields']!={'Devices':2,'Reserved only':0,'Runtimes':2}:raise ValueError('pending cancellation must converge without clearing peers')
+        d['core_cancelled']=ordinary_core_snapshot(fault['id'],fault['generation']);validate_core_absent(d['core_cancelled'])
         save(d);print('WS73_TARGET_EARLY_FAULT_READD_READY',flush=True)
         if input().strip()!='early-fault-readd':raise ValueError('explicit guest-only readd acknowledgement required')
         ready(2);new=registration('1-3');d['replacement']=new
         if new['generation']<=fault['generation']:raise ValueError('retry requires a new generation')
+        d['core_replacement']=ordinary_core_snapshot(new['index'],new['generation']);validate_core_snapshot(d['core_replacement'],new['index'],new['generation'],3)
+        d['core_stale']=ordinary_core_snapshot(fault['id'],fault['generation'])
+        validate_core_absent(d['core_stale'])
         d['healthy_after']=[registration(p) for p in ['1-1','1-2']]
         if any(not stable(a,b) for a,b in zip(d['healthy_before'],d['healthy_after'])):raise ValueError('peer identity changed during fault/retry')
         exchange_record(d,'after_retry',['1-1','1-3'],pid)
@@ -135,6 +167,11 @@ def corroborate(record,capture,guest_root=None):
     from ws73_channel_socket import corroborate as channel_proof
     if record['status']!='REAL_EARLY_BOOTSTRAP_FAULT_EVIDENCE_PENDING' or record['daemon_before']!=record['daemon_after']:raise ValueError('completed unchanged daemon gate required')
     fault=validate_fault(record['failed'])
+    validate_core_snapshot(record['core_fault'],fault['id'],fault['generation'],2)
+    new=record['replacement'];validate_core_snapshot(record['core_replacement'],new['index'],new['generation'],3)
+    validate_core_absent(record['core_cancelled']);validate_core_absent(record['core_stale'])
+    cli=record['core_fault_cli']
+    if cli['exit'] or cli['stdout']!=f'Registration: index={fault["id"]} generation={fault["generation"]} state=2 profile=1 bus=4 phase=3 error=-2\n':raise ValueError('actual CLI fault observation required')
     if validate_fault(record['failed_after_business'])!=fault or record['fault_identity']!=fault:raise ValueError('same failed Core identity across actual peer business required')
     if record['failed_selection']['returncode']==0:raise ValueError('failed identity must be refused')
     if record['stats_failed']['fields']!={'Devices':3,'Reserved only':1,'Runtimes':2} or record['stats_after_remove']['fields']!={'Devices':2,'Reserved only':0,'Runtimes':2}:raise ValueError('exact failure and joined cancellation counts required')

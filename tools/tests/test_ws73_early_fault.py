@@ -3,10 +3,21 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_early_fault import validate_fault
+from ws73_early_fault import validate_fault, validate_core_snapshot, validate_core_absent
 
 
 class EarlyBootstrapFault(unittest.TestCase):
+    def test_core_binding_proof_requires_real_fault_fields_and_ordinary_absence(self):
+        c=self.sample()['credentials']
+        s={'credentials':c,'snapshot':dict(version=1,dev_index=2,generation=3,state=2,profile=1,bus=4,phase=3,error=-2,reserved_byte=0,reserved=[0]*8)}
+        validate_core_snapshot(s,2,3,2)
+        for field,value in [('generation',4),('state',3),('bus',6),('phase',0),('error',0),('reserved_byte',1)]:
+            bad=copy.deepcopy(s);bad['snapshot'][field]=value
+            with self.subTest(field=field),self.assertRaises(ValueError):validate_core_snapshot(bad,2,3,2)
+        absent={'credentials':c,'errno':19};validate_core_absent(absent)
+        for value in [{'credentials':c,'errno':0},{'credentials':c,'errno':19,'snapshot':{}},{'credentials':dict(c,uids=[0]*4),'errno':19}]:
+            with self.assertRaises(ValueError):validate_core_absent(value)
+
     def sample(self):
         return {'credentials':{'uids':[1000]*4,'cap_eff':'0','cap_prm':'0','cap_amb':'0'},'attributes':{'native_runtime':'id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=2 pending_generation=3 core_pending_ret=0 core_phase=3 core_error=-2','metadata_valid':'0','boot_stage':'failed','boot_error':'-2'}}
 

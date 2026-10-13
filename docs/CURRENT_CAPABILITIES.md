@@ -5,6 +5,30 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
+## 当前子门禁：退休无身份的 Netlink controller 投影
+
+准确编译 K `7c6d530ffe2e`／service+runner U `ffc0945dfdac`。
+[三类调用审计](evidence/genl-retirement-audit-20261014.json)与
+[源码／实际门禁／限定范围](evidence/genl-retirement-progress-20261014.json)：
+删除默认选中设备的 Netlink role／connection／PM／DLI 导出、广播／扫描／角色控制，
+以及缺 generation/lifetime 的简化 multicast。未发布命令与属性同步移出 UAPI／SDK，
+旧源和有价值测试隔离；v2 只保留注册数量和软件版本查询，不接收属性，数量不是 Ready。
+Controller 操作、完整事件、诊断与数据继续走已接通的 Native 权威路径。
+
+严格 default/all-features、35跨语言、459工具与准确CI九项通过。稳定配置完整构建；
+空 WS73/standard 模块与实际 Virtual VM 两轮42查询通过；10份实际 Netlink 回执包含
+UID0／UID1000、退休与复用、31个旧命令全部EOPNOTSUPP、额外属性EINVAL、无multicast。
+
+新实机 [40短消息](evidence/genl-retirement-real-short-20261014.json)、
+[8次249／16超限拒绝](evidence/genl-retirement-real-boundary-20261014.json)、
+[受控故障同行8](evidence/genl-retirement-fault-real-20261014.json)通过。
+普通应用随机序号／载荷对端校验并回复；正常224 ACB SDU／112 NOCP，零capture drops／taint0，
+32实际完整事件copy故障／重试保持；4份普通用户Netlink拒绝回执。NOCP不是对端收到。
+
+仍缺：其余normalized state及旧ioctl/debugfs默认路由、完整canonical loss/resync/拓扑／owner-death，
+完整callback/IRQ/module/PM和mixed real/Virtual、标准真硬件typed/data、长包／多通道／四设备／用户SSAP。
+自然RCA与非人工恢复继续OPEN，QMP／注入／人工／hub切电不替代。WP12及完整S0–S6不关闭，UserHost仍P4规划。
+
 ## 当前子门禁：完整事件替代旧 read／队列统计
 
 精确编译内核 `e78b88f050aa`／service `bf7a189a4a52`。
@@ -609,7 +633,7 @@ vmlinux旧serdev符号不存在。清洁构建零warning、空USB三次实际门
 同行generation/业务及真实断链/QMP支撑。QMP不是物理拔插，也不是自然恢复。
 本批原期限/credit源码未改；形式化资格仍按原报告逐文件hash核对，未新增整体证明。
 
-Netlink清理：K2d4817714963删除无消费者Rust副本/global dead_code；C bridge及UAPI/SDK保留，
+历史Netlink切片：K2d4817714963删除无消费者Rust副本/global dead_code；本批K7c/Uffc已删除旧controller bridge与声明，v2只保留registry查询，
 Python契约核对实际C/SDK。U6bb7985拒绝ExtAdv静默截断，实际方法held-lock/ENOTTY回归通过。
 
 证据索引：

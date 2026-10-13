@@ -388,7 +388,8 @@ slkd采用最小能力、受限文件路径及服务sandbox。privileged机制�
 当前整改实现切片：K464d4d8a9de7以opaque Runtime/Backend保留票据，在驱动准备URB后
 重新验证lifetime/撤销/credit并原子提交；非阻塞提交是明确的Host-lock临界区例外，
 等待/cancel/join在锁外。完整Session/Channel/Grant refs、NOCP屏障和Backend组合仍按
-ADR0002/IMPLEMENTATION_PLAN推进。无消费者RustNetlink副本已移除，实际C bridge保留。
+ADR0002/IMPLEMENTATION_PLAN推进。无消费者RustNetlink副本已移除；K7c6d530ffe2e的C前端仅保留registry数量／软件版本。
+旧默认controller控制、状态与简化通知已删除，未来保留的多个前端仍必须共享同一权威事务。
 
 Runtime Session迁移切片K3c8da4fac302/Ud1f9dde：Runtime table持session kref，Session唯一
 接收/CMTC，Channel有界独立队列，fd仅Binding。close撤销先赢则不能新USB提交，

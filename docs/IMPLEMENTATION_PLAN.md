@@ -8,6 +8,17 @@
 当前五维资格只在[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)维护，
 goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_STATE.json)。
 
+## 近期整改：Netlink 默认设备投影已剥离，继续统一状态来源
+
+本批按[调用审计](evidence/genl-retirement-audit-20261014.json)删除无生命周期身份的
+旧 Netlink 控制／状态／通知，仅保留真实 registry 数量／软件版本。准确 K7c/Uffc 的
+实际 Virtual 与真实 WS73 子门禁见[当前资格](CURRENT_CAPABILITIES.md)和
+[本批证据](evidence/genl-retirement-progress-20261014.json)，不在本页复制资格矩阵。
+下一批逐项审计剩余 normalized connection/radio/power/security 及 ioctl/debugfs
+默认选择：迁移真正调用者，未支持能力明确拒绝，再删重复状态。canonical loss/resync、
+拓扑／owner-death、实际 callback join 和自然恢复并行；不把全部控制面组合设为数据前置。
+WP12仍部分完成；Session/Channel/Grant/Host分层、真实data路径、完整S0–S6和P4 UserHost保留。
+
 ## 当前子门禁：完整事件替代旧 read／队列统计
 
 精确编译内核 `e78b88f050aa`／service `bf7a189a4a52`。
@@ -89,7 +100,7 @@ CI pin K1ed 的U860f04f九项通过；离线函数50诊断／55撤销及连接�
 最新清单覆盖基线 64 份 Markdown，原始版本／hash／处置完整；历史报告及受限 SDK／标准／抓包不整体进入站点。
 
 [文档工作附页](project/documentation-migration.md) 记录 D0–D6。基础设施、导航、README 和第一批内容拆分已落实；
-严格 HTML／干净锁定环境／内部资源检查通过，浏览器实测仍缺，外链限流不算 PASS。
+严格 HTML／干净锁定环境／内部资源检查通过；第二批已有准确提交浏览器实测，外链限流不算 PASS。
 API 全字段／错误矩阵、其余混合页、首次真实硬件操作教程、离线 Mermaid 和正式发布仍待完成。
 文档不改协议架构、源码功能、准确实机资格、原验收和 VM-only，也不成为当前整改／数据面／用户态 SSAP 的前置依赖。
 U#8／K#19 及所有未完成事项保持开放；部分导航或构建通过不关闭整项工作。

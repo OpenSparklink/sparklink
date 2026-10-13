@@ -323,8 +323,10 @@ pub struct SleConnInfo {
 ### Generic Netlink
 
 - Family: `"sparklink"`
-- GenlCmd: 32 variants (0..=33, removed 2/3)
-- GenlAttr: 59 variants (0..=58)
+- 未发布 v2：仅 `GetRegistryCount`（注册数量，不是 Ready）和 `GetVersion`（软件版本）。
+- 请求不接受属性；返回 `DevCount`、`ProtoVersion`、`GenlVersion`。
+- 旧 controller 控制／状态／事件及 multicast 已删除，无兼容期；旧命令返回 EOPNOTSUPP。
+- 设备操作使用带 controller/generation/lifetime 的 Native API；完整事件与 snoop 独立。
 
 ## libsparklink
 

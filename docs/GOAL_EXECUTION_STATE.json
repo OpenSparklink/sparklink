@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T04:30:52.628188+00:00",
+  "updated_at_utc": "2026-10-13T05:01:32.818050+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,16 +26,16 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "308e5398dccc83a27ca3bd92f0611b93cf2d7bbe",
-    "userspace": "c07120f4f4ab3b1d11553d2c04c42e0fa9b096d0"
+    "linux": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
+    "userspace": "a4d2c45fea2a6ca68a40ef6a56d88c5746f605f0"
   },
   "qualified_source_heads": {
-    "linux": "308e5398dccc83a27ca3bd92f0611b93cf2d7bbe",
-    "userspace": "420cc1266347a00fbd3afbb0a9eae1ab06119aa9"
+    "linux": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
+    "userspace": "71ef24db2bd5c019491fdcc7ab6104216456b5b9"
   },
   "current_qualification": {
-    "DG01": "K308e5398 compiled/toolsU420cc12 fresh ordinary role-exchanged40 real short peer round trips plusRF22/connection/Down/dup/QMP; early pending separate scoped real observations.",
-    "DG02": "Same sources8 app249 and16 oversize rejects absent data; other layered/long/same-Binding gates open.",
+    "DG01": "K9c0e616c compiledU71ef24d toolsUff5ab35: new ordinary role-exchanged40 actual random peer round trips; RF22/connection/Down/dup/lastclose/QMP support. Separate controlled Core ABI fault/cancel/reuse8 RT.",
+    "DG02": "Same K9c/U71/toolsff:8 app249,16 oversize rejects absent captured data;224normal two-end SDUs/112NOCP; other layer/long/credit gates open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -45,13 +45,14 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: prior early Core/adoption and normal40/249 remain; new K308/serviceU420/toolsUc071 three-device controlled real pre-metadata ENOENT, pending/noReady, exact cancel/newgen,8 actual peer round trips, unchanged peers/slkd PASS. No dynamic diagnostics/ROM/partial-open callback/module/IRQ/standard/bus/Virtual/PM/natural recovery qualification.",
+    "WP13": "PARTIAL: Core read-only registration snapshot,40-byte ABI/SDK/CLI, actual18/ABI36/workspace200/tools450/CI9/clean build/emptyVM; ordinary fault/cancel/reuse8 RT plusnormal40/249 PASS. Dynamic daemon pending/fault objects, standard/bus/Virtual/module/IRQ/PM/event migration and natural recovery open.",
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
-    "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope."
+    "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope.",
+    "FV_REGISTRATION_SDK": "Actual SDK valid_for copied verbatim: full raw ABI/u16/u64 inputs, no assumptions, Kani83checks PROVED_SCOPED and weak expected-generation assertion failure. Not Core producer/locking/generation lifetime/authority/callback or hardware proof."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP13 next: canonical versioned read-only Core registration/pending diagnostic snapshot (exact generation, no fabrication of Ready/capabilities), Rust/C/Python/CLI and slkd dynamic pending/fault lifecycle; ordinary failure diagnostic/refusal and transition/remove/reuse regression, peer data preserved. Then real standard provider ops/RX/stop, static Usb removal/core USB=n/m/real Virtual/module/IRQ/PM and WP12 event authority. Controlled pre-metadata fault isolation now passed; partial-open/ROM/natural recovery still open.",
+    "WP13 next: wire the implemented Core registration snapshot into dynamic slkd pending/fault objects and ordinary slctl lifecycle. Preserve zero unknown metadata and Installed!=Ready; exact generation transitions/removal/reuse, direct Core revalidation and no pending Managed acquisition. Real3-device fault/ordinary objects, peer business and new40/249 regressions. Then standard provider real ops/RX/stop, static Usb removal, USB=n/m/real Virtual/module/IRQ/PM and WP12 canonical events. Existing Core ABI/SDK/CLI and fault/cancel/reuse gates are implemented; do not duplicate them.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -206,7 +207,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "PARTIAL: prior early Core/adoption and normal40/249 remain; new K308/serviceU420/toolsUc071 three-device controlled real pre-metadata ENOENT, pending/noReady, exact cancel/newgen,8 actual peer round trips, unchanged peers/slkd PASS. No dynamic diagnostics/ROM/partial-open callback/module/IRQ/standard/bus/Virtual/PM/natural recovery qualification."
+      "status": "PARTIAL: Core read-only registration snapshot,40-byte ABI/SDK/CLI, actual18/ABI36/workspace200/tools450/CI9/clean build/emptyVM; ordinary fault/cancel/reuse8 RT plusnormal40/249 PASS. Dynamic daemon pending/fault objects, standard/bus/Virtual/module/IRQ/PM/event migration and natural recovery open."
     },
     {
       "id": "WP14",
@@ -284,15 +285,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Architecture first: real controlled pre-metadata fault/noReady, peer business, cancel/newgen/reconnect and same daemon gate sealed; next Core diagnostic ABI/dynamic daemon, standard provider/bus/event authority. Whole S0\u2013S6 unchanged, partial outcomes never close whole issues.",
+  "current_batch": "Architecture first: implemented unbound Core registration observation/SDK/CLI; new real fault/cancel/reuse8 RT and40/249 baseline. Next dynamic daemon pending/fault lifecycle, standard Backend/bus and event authority; full S0\u2013S6 unchanged.",
   "current_audit": "docs/evidence/backend-early-offline-20261013.json",
   "issue_sync_status": "16 related existing issues exact comment readback; all OPEN, original bodies/scopes unchanged",
   "current_implementation_heads": {
-    "linux": "308e5398dccc83a27ca3bd92f0611b93cf2d7bbe",
-    "userspace": "420cc1266347a00fbd3afbb0a9eae1ab06119aa9"
+    "linux": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
+    "userspace": "71ef24db2bd5c019491fdcc7ab6104216456b5b9"
   },
   "next_resume_tasks": [
-    "WP13 next: canonical versioned read-only Core registration/pending diagnostic snapshot (exact generation, no fabrication of Ready/capabilities), Rust/C/Python/CLI and slkd dynamic pending/fault lifecycle; ordinary failure diagnostic/refusal and transition/remove/reuse regression, peer data preserved. Then real standard provider ops/RX/stop, static Usb removal/core USB=n/m/real Virtual/module/IRQ/PM and WP12 event authority. Controlled pre-metadata fault isolation now passed; partial-open/ROM/natural recovery still open.",
+    "WP13 next: wire the implemented Core registration snapshot into dynamic slkd pending/fault objects and ordinary slctl lifecycle. Preserve zero unknown metadata and Installed!=Ready; exact generation transitions/removal/reuse, direct Core revalidation and no pending Managed acquisition. Real3-device fault/ordinary objects, peer business and new40/249 regressions. Then standard provider real ops/RX/stop, static Usb removal, USB=n/m/real Virtual/module/IRQ/PM and WP12 canonical events. Existing Core ABI/SDK/CLI and fault/cancel/reuse gates are implemented; do not duplicate them.",
     "WP05 remaining trusted-security Grant installation, independent-owner business isolation and controlled in-flight arbitration/refinement; preserve existing epoch/direction/release/last-management-fd/dup/SCM_RIGHTS/common-daemon-death exact qualification. Do not repeat implemented epoch/direction or silently broaden historical proof.",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -366,13 +367,19 @@
     "docs/evidence/ws73-backend-early-249-boundary-20261013.json",
     "docs/evidence/backend-early-issues-20261013.json",
     "docs/evidence/ws73-early-bootstrap-fault-isolation-20261013.json",
-    "docs/evidence/early-bootstrap-fault-issues-20261013.json"
+    "docs/evidence/early-bootstrap-fault-issues-20261013.json",
+    "docs/evidence/registration-diagnostic-offline-20261013.json",
+    "docs/evidence/registration-sdk-formal-20261013/production/index.json",
+    "docs/evidence/registration-sdk-formal-20261013/weak-control/index.json",
+    "docs/evidence/ws73-registration-diagnostic-fault-isolation-20261013.json",
+    "docs/evidence/ws73-backend-diagnostic-short-repeat-20261013.json",
+    "docs/evidence/ws73-backend-diagnostic-249-boundary-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/early-bootstrap-fault-issues-20261013.json",
   "latest_evidence_commit": "808a2e5fea13045ee1f9f2424d4504b4ae12d3dc",
   "previous_goal_turn_classification": "progress: common actual Core reserve/install/cancel/retire consumers, owned candidate allocation/destruction outside registry and final exact publish, old pending unregister counterexample; actual10/pending15/other source/443/clean build/emptyVM/CI9, exact finiteTLC16453+weak7, new real40-249; full architecture/recovery unqualified.",
-  "current_goal_turn_classification": "progress:8 real data round trips around actual missing-custom ENOENT, exact cancel/new generation and unchanged daemon/peers; tool447 offline. Four whole harness failures preserved. No new formal proof/natural RCA/automatic recovery/full architecture.",
+  "current_goal_turn_classification": "progress: actual Core registration ABI+Rust/C/Python/CLI, SDK scopedKani83+weakcounterexample,actual18/ABI36/workspace200/tools450/CI9/clean build/emptyVM, real Core ordinaryfault/cancel/reuse8RT+new40/249. Loader/test/sandbox failures retained; dynamic daemon/full architecture/natural recovery incomplete.",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
     "82aa65a77019804e78a95c1706c461e715187314",
@@ -383,7 +390,8 @@
     "4d14b354d04bb6b0737c496e35a056b61f59bec9",
     "e7275d27c0c765d1bc3c4e48789df0edc8a3e467",
     "420cc1266347a00fbd3afbb0a9eae1ab06119aa9",
-    "c07120f4f4ab3b1d11553d2c04c42e0fa9b096d0"
+    "c07120f4f4ab3b1d11553d2c04c42e0fa9b096d0",
+    "ff5ab352b52b4c285bea7f4b689954ac31cfaa7d"
   ],
   "backend_descriptor_slice": {
     "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -433,7 +441,7 @@
       "whole_package_closed": false
     }
   },
-  "qualified_run_tools_head": "420cc1266347a00fbd3afbb0a9eae1ab06119aa9",
+  "qualified_run_tools_head": "ff5ab352b52b4c285bea7f4b689954ac31cfaa7d",
   "usb_pending_slice": {
     "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
     "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
@@ -588,5 +596,16 @@
       "receipt": "docs/evidence/early-bootstrap-fault-issues-20261013.json",
       "whole_package_closed": false
     }
+  },
+  "registration_diagnostic_slice": {
+    "kernel": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
+    "compiled_service": "71ef24db2bd5c019491fdcc7ab6104216456b5b9",
+    "run_tools": "ff5ab352b52b4c285bea7f4b689954ac31cfaa7d",
+    "offline": "docs/evidence/registration-diagnostic-offline-20261013.json",
+    "formal": "docs/evidence/registration-sdk-formal-20261013/production/index.json",
+    "real_fault": "docs/evidence/ws73-registration-diagnostic-fault-isolation-20261013.json",
+    "dynamic_daemon_objects": false,
+    "whole_package_complete": false,
+    "natural_recovery_acceptance": false
   }
 }

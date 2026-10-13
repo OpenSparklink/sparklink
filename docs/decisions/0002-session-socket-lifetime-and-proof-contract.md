@@ -367,3 +367,13 @@ QMP移除后pending取消、新generation重新Ready、恢复后4往返且slkd�
 见[限定证据](../evidence/ws73-early-bootstrap-fault-isolation-20261013.json)。
 这只覆盖pre-metadata失败；不证明已打开URB/部分Runtime、module/IRQ/callback清理或自然恢复。
 动态pending/fault对象必须取Core权威诊断，不能自行推断Ready或以sysfs投影冒充全管理链路。
+
+## 注册观察与Runtime Ready分离（2026-10-13）
+
+Core registration snapshot无需fd affinity/lease，输入version1/index/可选精确generation，其余零；
+输出Pending/Fault/Installed/Retiring、来源bus/profile和pending raw phase/error。40-byte/align8，
+copy_to_user前释放Core锁；输出generation命名该次观察，设备可能随后移除，不授予存续或管理权。
+Installed不等于Host Ready，也不暴露猜测能力；Retiring不等于Free。已安装控制器的Host故障仍来自
+controller snapshot。SDK拒绝错id/gen、未知state/bus、reserved和矛盾诊断。
+K9c0e616c/U71ef24d/工具Uff5ab35的ordinary真实fault/cancel/reuse及8业务往返已通过；
+动态daemon对象未完成。SDK pure validator Kani限定83checks及弱gen对照不证明Core/授权/硬件。

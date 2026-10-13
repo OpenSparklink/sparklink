@@ -5,7 +5,37 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
-## 本批架构整改验收：单设备早期失败隔离
+## 本批架构整改：Core权威注册诊断
+
+K`9c0e616c8d36` / 编译service U`71ef24d` / 实机工具 U`ff5ab35`：40-byte/align8未发布
+registration snapshot接通Core、Rust/C/Python和CLI。无需Runtime选择或lease，按index/gen在Core锁下
+观察Pending/Fault/Installed/Retiring；phase/error仅pending，Installed不是Ready，Retiring不是Free。
+控制器查询能力与Host Ready仍取独立controller snapshot；没有从sysfs或daemon缓存推断成功。
+普通用户可执行 `slkconfig --adapter N --generation G registration`；adapters可显示pending/fault。
+
+[离线/准确源码与限制](evidence/registration-diagnostic-offline-20261013.json)：actualCore18/authorization4、
+workspace200、Python36（含C/Rust/Python/32-bit ABI）、工具450、strict default/all-features clippy；
+清洁内核/空VM通过，零compiler warning，但一条make jobserver降为j1提示保留。SDK/工具准确CI9通过。
+[SDK实际纯predicate Kani](evidence/registration-sdk-formal-20261013/production/index.json)83checks限定通过；
+所有ABI字段/full u16/u64，无assume；[弱gen guard](evidence/registration-sdk-formal-20261013/weak-control/index.json)
+失败一条expected-generation性质，映射现有SDK gen7/expected8回归。不是Core producer/锁/生命周期/授权/硬件证明。
+原allocator Kani unsupported与NOCP假设继续开放；不将工具安装或模型通过代替实机。
+
+[新真实Core ABI故障门禁](evidence/ws73-registration-diagnostic-fault-isolation-20261013.json)：三真实SDK111
+WS73、UID1000/caps0经Python→C→Rust→kernel读实际ENOENT Fault及CLI相同诊断；不绑定Runtime，
+取消后和同槽新gen复用后旧gen都ENODEV；故障期间及恢复后共8对端实际校验/回复，同行与同slkd保持。
+首次SDK装载路径失败的整轮原证据保留，没有归因为内核/自然故障。
+另独立[新40短](evidence/ws73-backend-diagnostic-short-repeat-20261013.json)、
+[新249/16超限](evidence/ws73-backend-diagnostic-249-boundary-20261013.json)：随机载荷真实对端校验回复、
+224两端SDU/112真实NOCP、零drop/taint0；RF22/连接双端Down/dup/最后关闭拒绝同life重开保持。
+QMP仅支撑，不是物理拔插或自然自动恢复；未新增ROM/部分open/URB/module/IRQ/PM资格。
+
+下一批先把同一Core快照接到slkd动态pending/fault对象及slctl普通用户流程，完成过渡/移除/复用与
+同行数据回归；随后标准Backend真实ops/RX/stop、static Usb删除、USB=n/m/真正Virtual与WP12事件
+迁移。旧dead_code/重复模块整改、自然RCA/有限恢复并行，整个目标架构整改后再扩展多通道、长包、
+四设备两组与唯一用户SSAP Engine；完整S0–S6与原issues范围保持，整项保持OPEN。
+
+## 历史切片：单设备早期失败隔离（工具c07120f）
 
 K`308e5398dccc83a27ca3bd92f0611b93cf2d7bbe` / 编译service U`420cc1266347a00fbd3afbb0a9eae1ab06119aa9` / 工具 U`c07120f4f4ab3b1d11553d2c04c42e0fa9b096d0`：
 三只真实SDK111 WS73在VM中完成受控缺custom文件的真实ENOENT，Core保留pending phase/error且无Runtime/Ready；
@@ -133,7 +163,7 @@ WS73仍查询后才register Core；bootstrap前pending/故障可见性、实机p
 static Usb/bus拆分、真正Virtual、module/IRQ/callback/PM及自然根因/非人工恢复继续未完成。
 
 
-当前正常路径 **K308e5398dccc / 编译service及运行工具U420cc12**：
+历史正常路径 **K308e5398dccc / 编译service及运行工具U420cc12**：
 C provider早期reserve/register_reserved/cancel及pending status/query接Canonical Core；保存未知能力、
 明确bus/profile，查询后精确代际与来源验证，成功沿用reservation generation安装Runtime。
 WS73 probe在启动work前预留，断开先join所有producer再cancel；Core保存pending phase/error，

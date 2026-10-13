@@ -7,11 +7,16 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
+最新正常路径K9c0e616c/编译serviceU71ef24d/工具Uff5ab35保持40短/249资格。
+Core注册诊断已通过未绑定的40-byte快照接通SDK/CLI；Pending/Fault、Installed和Retiring与
+Host Ready分开，Core锁下原子观察按generation命名；[准确源码与证据](evidence/registration-diagnostic-offline-20261013.json)。
+动态daemon pending/fault对象仍未接通，标准Backend/事件与完整callback/PM整改仍开放。
+
 受控早期失败隔离已在K308e5398/编译serviceU420cc12/工具Uc07120f取得限定实机资格：
 Core pending故障不发布Ready、精确取消/新gen重新接入、同行与恢复后共8真实业务往返、同slkd。
 [证据与限制](evidence/ws73-early-bootstrap-fault-isolation-20261013.json)：不是自然恢复或完整部分初始化/回调证明，动态诊断/标准Backend/事件迁移仍待整改。
 
-当前正常路径K308e5398dccc/编译与工具U420cc12：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+历史正常路径K308e5398dccc/编译与工具U420cc12：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte

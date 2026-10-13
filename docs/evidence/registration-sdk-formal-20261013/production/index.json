@@ -1,0 +1,12 @@
+{
+  "production_source_head": "ff5ab352b52b4c285bea7f4b689954ac31cfaa7d",
+  "formal_tool_commit": "a4d2c45fea2a6ca68a40ef6a56d88c5746f605f0",
+  "scope": "Actual production SDK valid_for predicate only. Not Core producer/mutex/lifetime/availability/Ready, wire parser, C/Python wrapper, authorization, callback or hardware proof",
+  "status": "PROVED_SCOPED",
+  "state_space": "All bit patterns of every ABI field, full u16 index and u64 generation; no assumptions or unwinding loops",
+  "property_checks": 83,
+  "source_sha256": "f39c4c53f9b19b6854016ef7953a5d19fbcc02ca545b9cbddc9a4b3476452b5a",
+  "result": "manifest.json",
+  "log": "kani.log",
+  "no_kernel_or_hardware_proof": true
+}

@@ -17,7 +17,26 @@ goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_S
 [当前SSAP调用审计/三类清单](SSAP_PRODUCTION_SEPARATION_20261013.md)。
 
 
-## 当前架构整改：驱动归 drivers，Core 不依赖 USB
+## 当前架构整改：Virtual 占位模块替换为显式测试 Backend（VM 尚待验收）
+
+K`88372a9b7cbcea7fcbca4f34cc9d5707488be46e` / U`5a985078756eb1d323b59e968db328d0aad3c7c9`：
+旧仅日志Rust模块删除，专用可选C测试驱动已实现；默认关闭、root-only控制设备每个File注册独立TEST-bus
+standard-DLI query Runtime，dup共享，最后关闭精确退休generation并join有限reply worker。
+共同Backend/Host/credit/超时及带身份标准ingress复用；有限delay/drop/fail注入仅测试模块。
+有界一个排队reply槽及正在执行的callback；不宣告Ready/RF/连接/data，daemon不自动生成回复。
+
+[实际范围和未决门禁](evidence/virtual-provider-progress-20261013.json)：实际codec65819项ASan/UBSan检查、
+工具456、准确CI38388711225九项成功；[直接生产codec100性质](evidence/virtual-provider-formal-20261013/production/report.json)
+限定通过，弱unsupported守卫反例映射实际穷举拒绝测试。不证明Host credit、worker/cancel/join/IRQ/引用/lifetime。
+全量镜像/模块构建正在执行；准确新提交的VM生命周期与真实WS73回归尚未通过，不能沿用旧资格。
+测试运行器已提供query/两controller/dup/最后关闭pending取消/旧gen/复用/drop/fail/迟到回复与模块reload门禁。
+
+下一步先完成当前构建及这些VM门禁，再推进mixed real/Virtual、运行中callback join、Virtual控制/数据模拟与
+WP12统一事件/旧ring/重复消费者；标准typed/ticketed及完整module/IRQ/PM/lifetime/自然RCA并行。
+旧Kae5/U967真实WS73资格及证据保留，当前未把新source记作实机通过。
+完整S0–S6/19WP/10FV/12DG与原28项scope保持，整体架构先整改再功能扩展；未完成整项保持OPEN。
+
+## 前批已验收：驱动归 drivers，Core 不依赖 USB
 
 准确源码 K`ae5b24535a898fb05b9c4f08aa0e7e2004911072` / VM service及工具
 U`967ad220271009498319f3bb71d93fbfb9c63e83`。实际 EP0/interrupt/context/URB 和 USB 注册已移入

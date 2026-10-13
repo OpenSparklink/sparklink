@@ -1,0 +1,45 @@
+{
+  "kernel_head": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
+  "userspace_tools_head": "5a985078756eb1d323b59e968db328d0aad3c7c9",
+  "code_implemented": true,
+  "implemented": "Optional driver-owned per-control-File TEST-bus standard query Runtime; common reserve/install/open/Host/identity ingress; dup shared, last-close exact retire and cancel_delayed_work_sync; bounded delayed/drop/fail controls. No default synthetic behavior or RF/data/Ready claim.",
+  "offline": {
+    "actual_codec_checks": 65819,
+    "sanitizers": "ASan/UBSan",
+    "tool_tests": 456,
+    "tool_tests_log_sha256": "aa4a2bcabd34bf3becb3eb986dbd46781085f309626cc50ecb4042fe58ccea8a",
+    "integration_module_compile": "pass without compiler warnings; dirty integration only, not final qualified image"
+  },
+  "formal": {
+    "status": "MODEL_CHECKED_SCOPED",
+    "properties": 100,
+    "production": "virtual-provider-formal-20261013/production/report.json",
+    "weak": "virtual-provider-formal-20261013/weak-unsupported-guard/report.json",
+    "scope": "Direct production test codec only; no credit/Runtime/worker/IRQ/refcount/callback/lifetime proof"
+  },
+  "ci": {
+    "run_id": 38388711225,
+    "head": "5a985078756eb1d323b59e968db328d0aad3c7c9",
+    "jobs": 9,
+    "conclusion": "success"
+  },
+  "vm": "NOT_YET_RUN_ON_FINAL_IMAGE",
+  "real_ws73": "New-source regression pending; retain accurate historical Kae5/U967 40-short/249/fault qualification, do not transfer it to new source.",
+  "build": "RUNNING_FULL_IMAGE_MODULES; initial script anchored K1d1, later test-runner-only K883 changed HEAD. After terminal capture, independently rebuild/audit clean K883 before qualification.",
+  "failures_preserved": {
+    "initial_integration": "ccache default path read-only; fixed workspace CCACHE_DIR, no code failure",
+    "initial_tool_tests": "SO_PASSCRED denied in sandbox; rerun private IPC tests authorized outside sandbox456 pass",
+    "paths": ".dev/virtual-integration-build.log; .dev/virtual-provider-user-tool-tests.log"
+  },
+  "pending_gates": [
+    "Accurate committed kernel full build and module/input hashes",
+    "Actual isolated VM query/dup/final-close/retire/reuse/drop/fail/late reply/multiple controller isolation/module reload; test written, not yet passed",
+    "Exact new-source real WS73 discovery/connection/40 short/249/controlled-fault-peer regression",
+    "Mixed real/Virtual, worker-already-entered join, module/IRQ/PM/refcount/lifetime formal/controlled races",
+    "Virtual discovery/connection/data emulation and common Host comparisons; standard typed/ticketed/canonical route and WP12 event migration",
+    "Natural failure RCA and nonmanual recovery, other original S0-S6 conditions"
+  ],
+  "whole_package_complete": false,
+  "natural_recovery_acceptance": false,
+  "hardware_constraint": "VM_ONLY"
+}

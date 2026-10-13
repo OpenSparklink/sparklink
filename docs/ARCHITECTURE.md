@@ -7,6 +7,11 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
+当前Virtual代码K88372a9b7cbc以可选TEST-bus per-File query/fault driver取代日志placeholder；
+通过共同Backend/Host注册及精确身份ingress。普通默认生产路径不含模拟行为。
+[源码/限定证明/准确未决门禁](evidence/virtual-provider-progress-20261013.json)：最终VM验收仍缺，
+不把代码存在当作完整Virtual或真实设备资格；统一事件/完整callback/IRQ/PM与自然恢复仍开放。
+
 最新准确VM路径Kae5b24535a89/U967ad220保留fault同行8业务、40短及249/16拒绝。
 标准和WS73的实际USB transport/driver归drivers，Core只管协议/Runtime/身份入口；标准独立模块，
 Core取消USB=y依赖。精确注册/失败清理与PM拒绝不等于完整callback/IRQ/module/PM证明。

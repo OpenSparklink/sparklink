@@ -441,3 +441,12 @@ USB context、EP0、URB、probe/disconnect归drivers；Core标准DLI codec仅处
 Core取消USB=y构建依赖；[最终配置/产物](../evidence/standard-driver-move-build-matrix-20261013.json)为构建限定验收，
 [空USB模块VM](../evidence/standard-driver-move-module-smoke-20261013.json)不证明物理/IRQ/PM/自然恢复。
 剩余真正Virtual、统一事件及完整生命周期继续按原WP12/13推进，feature扩展后置。
+
+### Virtual 控制 File 与物理 Runtime（K88372a9b7cbc，VM 尚待验收）
+
+可选测试设备每次open创建一个common TEST-bus/query Runtime；dup共享控制File，最后close作为测试设备
+detach，先Core精确unregister/invalidate/join，再put控制File引用。普通SparkLink fd不拥有测试设备。
+close置live=false并在无driver mutex时cancel_delayed_work_sync，已捕获的callback保留原identity；
+delivered计数只是callback尝试，submitted计数只是driver尝试，不等于Host结果/数据完成/对端收到。
+控制参数有限，排队槽1；不带connection/data caps，不伪装WS73固件或物理恢复。
+此实现复用Core生命周期；源码模型/fixture不证明真实工作队列/module引用，按独立VM矩阵核对。

@@ -53,6 +53,8 @@ def execute(run, phase):
         # re-enter the producer. Older packages have no such test artifact and
         # retain their original qualification, not a new copy-gate receipt.
         probe = Path(run.args.slctl).parent/'controller-event-copy-probe'
+        if not probe.is_file() and Path('/scratch-root-uuid').is_file():
+            probe = Path('/bin/controller-event-copy-probe')
         if probe.is_file():
             for entry in row['owners']:
                 owner = entry['owner']

@@ -45,6 +45,8 @@ def classify(kind, code, output, timed_out=False):
             return "PROVED_SCOPED_WITH_WEAK_CONTROL"
     elif kind == "tlc" and code == 0 and "Model checking completed. No error has been found." in output:
         return "MODEL_CHECKED_SCOPED"
+    elif kind == "counterexample-install" and code == 12 and "Invariant LiveMetadataCurrent is violated." in output:
+        return "EXPECTED_COUNTEREXAMPLE_WEAK_GUARD"
     elif kind == "counterexample" and code == 12 and "Invariant NoWrongRefill is violated." in output:
         return "EXPECTED_COUNTEREXAMPLE_RISK_OPEN"
     elif kind == "kani" and code == 0 and "VERIFICATION:- SUCCESSFUL" in output and "0 failures, 1 total" in output:
@@ -52,7 +54,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False, ingress_only=False, usb_registry_only=False):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False, ingress_only=False, usb_registry_only=False, backend_install_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent
     kernel = root / "linux"
@@ -168,6 +170,25 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
     record["ingress_only_requested"] = ingress_only
     record["ingress_scope"] = "single live identity, initially absent route, one publish and one retire; schedule_gate held through routes publication and closed before exact unpublication. CPU spinlock abstraction plus check/drop/publish weak control; no Arc/kref, IRQ nesting, registry reuse, callbacks, workqueue, Host, memory reclamation or hardware refinement"
     record["backend_only_requested"] = backend_only
+    if backend_install_only:
+        checks = [
+            ("backend-install", "tlc", repo / "formal/lifecycle",
+             ["tlc", "-workers", "1", "-metadir", str(output / "tlc-install"),
+              "-config", "BackendInstall.cfg", "BackendInstall.tla"]),
+            ("backend-install-weak", "counterexample-install", repo / "formal/lifecycle",
+             ["tlc", "-workers", "1", "-metadir", str(output / "tlc-install-weak"),
+              "-config", "BackendInstallWeak.cfg", "BackendInstall.tla"]),
+        ]
+    record["backend_install_only_requested"] = backend_install_only
+    record["backend_install_scope"] = "Abstract bounded registry publication safety:2 slots/2 candidates/global3 generations; atomic registry actions, nondeterministic allocation failure/retire/reuse/competing publication; no fairness/liveness, allocator/refcount/module/IRQ/callback/metadata-query/physical proof or implementation refinement. FinishRetire is an abstract joined-cleanup boundary, not a proof cleanup actually joins."
+    record["backend_install_mapping"] = {
+        "Reserve": "reserve_backend_identity -> SleDevRegistry.register_pending",
+        "Snapshot/Construct/FailConstruction": "install_backend_runtime owned RuntimeRegistration then ControllerRuntime.new outside registry",
+        "Publish/Reject": "install_backend_runtime final exact identity/retiring/occupied-slot guards before mutation",
+        "Cancel": "cancel_backend_reservation exact generation, no Runtime, not retiring",
+        "BeginRetire/FinishRetire": "sle_detach_device mark/take -> invalidate -> exact final unregister",
+        "regression": "run_backend_install.py actual10 controlled constructor/destructor dependencies; weak model stale-generation trace maps to reuse_during_construction_preserves_new_generation",
+    }
     record["backend_scope"] = "actual production descriptor validator over arbitrary u32 version/size/bus/capabilities/profile, u16 lengths/u8 counts and callback presence; live immutable provider-owned pointers assumed; no callback execution, module/context references, registration allocation/publication/retirement, concurrency or hardware proof"
     record["fd_grant_only_requested"] = fd_grant_only
     record["fd_grant_scope"] = "actual production pure constructor and identity/direction predicate over arbitrary u64/u32 scopes and masks; zero/unminted and unsupported protected requests deny; not Host epoch, C socket/VFS/kref, trust/security-state/downgrade or hardware refinement"
@@ -221,6 +242,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--backend-install-only", action="store_true", help="bounded abstract Backend reservation/publication TLC and weak generation control")
     parser.add_argument("--usb-registry-only", action="store_true", help="actual generated production pending allocator Kani only")
     parser.add_argument("--ingress-only", action="store_true", help="Runtime route publication/retirement LKMM and weak control only")
     parser.add_argument("--backend-only", action="store_true", help="actual production Backend descriptor admission CBMC only")
@@ -235,4 +257,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only, args.ingress_only, args.usb_registry_only))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only, args.ingress_only, args.usb_registry_only, args.backend_install_only))

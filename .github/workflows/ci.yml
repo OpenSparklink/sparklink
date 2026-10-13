@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: c44b74509c418d43f6dfc8557bec4288de79b22c
+          ref: e5d1e3311261150df0ac000c2162ee2707a4968a
           path: .kernel-uapi
           sparse-checkout: |
             include/uapi/linux/sparklink_ioctl.h
@@ -139,7 +139,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: c44b74509c418d43f6dfc8557bec4288de79b22c
+          ref: e5d1e3311261150df0ac000c2162ee2707a4968a
           path: .kernel-tools
           # Raw worker ioctls also compile against the canonical pinned UAPI.
           sparse-checkout: |
@@ -163,7 +163,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: c44b74509c418d43f6dfc8557bec4288de79b22c
+          ref: e5d1e3311261150df0ac000c2162ee2707a4968a
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -216,6 +216,7 @@ jobs:
           python tools/testing/selftests/sparklink/run_usb_discovery.py
           python tools/testing/selftests/sparklink/run_usb_codec_isolation.py
           python tools/testing/selftests/sparklink/run_backend_bus.py
+          python tools/testing/selftests/sparklink/run_backend_install.py
       - name: Check complete ioctl authorization and queue contracts
         working-directory: .kernel-containment
         run: |

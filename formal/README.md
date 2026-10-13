@@ -161,3 +161,24 @@ u64 next generation>=2的一步转换；slot与bitmap一致，既有generation�
 失败闭合、占用槽不变、新槽只有SETUP。实际registry并发、两阶段撤销、listener/callback
 和真实硬件不在证明范围。unsupported警告即未证明，成功raw solver也不覆盖该状态。
 13项实际production-body回归保留Ready/open准入、错误清理和精确detach等独立范围。
+
+## Common Backend reservation/publication
+
+`--backend-install-only` checks an abstract finite model: two slots, two candidate
+builders, three globally increasing generations. Snapshot, construction success/failure,
+retirement, reuse, competing installation and reservation cancellation may interleave.
+Registry actions are atomic; no fairness/liveness is claimed, terminal states are
+allowed and deadlock checking is intentionally off. `LiveMetadataCurrent` checks
+that published metadata belongs to the current reserved generation. A deliberately
+weak final generation guard must produce its stale-publication counterexample.
+
+Mapping: `reserve_backend_identity/register_pending` → Reserve;
+`install_backend_runtime` snapshot and out-of-registry constructor → Snapshot/Construct;
+final identity/retiring/slot checks → Publish/Reject; `cancel_backend_reservation` →
+Cancel; `sle_detach_device` → BeginRetire/FinishRetire. FinishRetire abstracts a
+completed join; it does not prove C callbacks or references are joined. No allocator,
+module/IRQ/VFS/callback, actual metadata-query/Ready, credit or physical behavior is
+modeled, and C/Rust refinement is not proved. Actual production function tests in
+`run_backend_install.py` cover constructor failure, retire/reuse, competing publish,
+subsystem removal and out-of-registry destructor; these remain dependency regressions.
+The weak trace corresponds to the actual stale-generation/reuse regression.

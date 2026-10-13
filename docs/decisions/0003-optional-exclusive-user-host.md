@@ -43,6 +43,8 @@ Command/Event/ACB及其他已支持包的合法方向、PB/长度/分片边界�
 copy/非阻塞/poll/有限队列/错误。未知包或未接通能力明确拒绝；具体ABI/socket channel编号
 本轮不冻结。内核保证物理传输 framing/资源边界，UserHost解释协议并独占消费回复。
 monitor只复制流量，不能抢包、提交或影响Host credit；monitor丢包独立计数。
+UserHost期间Native Managed、Diagnostic/raw命令及应用Channel不能继续控制该controller；
+设备层紧急停用/恢复必须先撤销UserHost并走清理屏障，不能在背后reset再让其沿用旧credit。
 
 ## 接管与退出状态机（未来实施契约）
 

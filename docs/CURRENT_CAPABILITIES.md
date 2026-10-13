@@ -12,6 +12,7 @@ K88372a9b7cbc/Ub967674无slk-vendord、Proxy/UserHost接口或Host adapter实现
 不成为当前真实WS73/生命周期/用户态SSAP主线前置。本轮未实现、未建UserHost模型、未证明、未实机验收；
 保留有价值的权限/隔离/故障/库ABI门禁，新增socket所有权与切换屏障门槛。范围调整不表示issue完成。
 Native现有资格、历史失败证据和自然恢复开放条件均不变化；不删除代码、不承诺厂商API或slctl/slkd兼容。
+[14项现有issues范围同步](evidence/userhost-issues-scope-20261013.json)已回读；原生范围/历史保留，均OPEN。
 
 ## 当前架构整改：Virtual 占位模块替换为显式测试 Backend（VM 尚待验收）
 

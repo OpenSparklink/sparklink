@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T12:05:08.975265+00:00",
+  "updated_at_utc": "2026-10-13T12:16:26.096347+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -810,7 +810,15 @@
       "new Native generation/reinit/no inherited link-credit-key",
       "SDK packet compatibility and slctl/slkd adaptation separately audited"
     ],
-    "code_changed_or_deleted": false
+    "code_changed_or_deleted": false,
+    "issue_updates": {
+      "count": 14,
+      "readback_verified": true,
+      "receipt": "docs/evidence/userhost-issues-scope-20261013.json",
+      "vendor_scope_adjusted_as_authorized": true,
+      "native_scope_history_preserved": true,
+      "issues_open": true
+    }
   },
   "deferred_work": [
     "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."

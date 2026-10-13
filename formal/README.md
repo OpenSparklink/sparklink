@@ -146,3 +146,18 @@ schedule/kick发生时已无锁；前版RX函数rank负对照应检出gate→Hos
 周期health observer也按Host→gate采样。生产9项回归包含实际Native health函数
 （只归一化extern签名/模块路径），Setup/Ready/radio/fault/retired/旧generation/同行
 均检查；Host观察方法仍为依赖fixture，不能作为真实故障根因或IRQ/lockdep证明。
+
+标准USB pending allocator门禁：
+
+```sh
+python3 tools/run_formal.py --usb-registry-only --budget-seconds 60 --output ../.dev/formal-usb-registry-NEW
+python3 ../linux/tools/testing/selftests/sparklink/run_usb_registration.py
+```
+
+Kani crate的build.rs/generate.py直接抽取生产SleDev构造器、register_pending和registry
+初始化，保持状态转换体；仅info/stats/log为依赖类型/无状态fixture。初态与任意u16 bitmap、
+u64 next generation>=2的一步转换；slot与bitmap一致，既有generation设next-1是
+允许旧generation重复的宽松状态集合，不证明既有全局唯一性。cap满/generation溢出
+失败闭合、占用槽不变、新槽只有SETUP。实际registry并发、两阶段撤销、listener/callback
+和真实硬件不在证明范围。unsupported警告即未证明，成功raw solver也不覆盖该状态。
+13项实际production-body回归保留Ready/open准入、错误清理和精确detach等独立范围。

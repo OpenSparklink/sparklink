@@ -52,7 +52,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False, ingress_only=False):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False, ingress_only=False, usb_registry_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent
     kernel = root / "linux"
@@ -63,6 +63,8 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
         "sle_channel_state.h", "sle_channel_grant.h", "sle_channel_socket.c", "sle_data_credit.rs",
         "sle_native.rs", "sle_sessions.rs", "sle_grant.rs", "sle_native_data.rs", "sle_command_queue.rs", "sle_host.rs", "sle_irq_lock.rs", "sle_native_ffi.c", "sle_native_ffi.h")]
     sources += [kernel / "net/core/datagram.c", kernel / "drivers/sparklink/ws73/usb.c", kernel / "include/linux/sparklink_native.h"]
+    sources += [kernel / "net/sparklink/sle_dev.rs", kernel / "net/sparklink/sle_dli.rs", kernel / "net/sparklink/sparklink_core.rs"]
+    sources += [repo / "formal/usb_registry/Cargo.toml", repo / "formal/usb_registry/generate.py"]
     sources += [kernel / "net/sparklink/sle_ingress.rs", kernel / "net/sparklink/sle_workers.rs"]
     sources += [kernel / "include/linux/sparklink_backend.h", kernel / "tools/testing/selftests/sparklink/sparklink_backend_test.c"]
     sources += sorted((repo / "formal").rglob("*.c"))
@@ -156,6 +158,13 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
                     "-I", str(kernel / "tools/memory-model")] +
                    [str(repo / "formal/lkmm" / (n + ".litmus")) for n in
                     ("RuntimeRouteRetirement", "RuntimeRouteRetirementWeak")])]
+    if usb_registry_only:
+        checks = [("usb-registry-" + h, "kani", repo,
+                   ["cargo", "kani", "--manifest-path", "formal/usb_registry/Cargo.toml", "--harness", h])
+                  for h in ("initial_registry_is_empty_and_pending_registration_never_claims_up",
+                            "allocator_preserves_occupied_slots_and_fails_closed_at_capacity_or_generation_limit")]
+    record["usb_registry_only_requested"] = usb_registry_only
+    record["usb_registry_scope"] = "actual production constructor/pending allocator/new registry; generated directly at build, info/stats/logger dependencies. Initial state plus arbitrary u16 allocation bitmap/u64 next generation>=2 with allocated-slot representation consistent and prior generation=next-1; existing generations may coincide (relaxed reachable-state set). Covers fresh pending-only allocation/capacity/overflow/occupied preservation, not uniqueness of preexisting generations, registry concurrent ownership, detach, open/Ready, callbacks, credits or hardware. Unsupported warnings remain NOT_PROVEN even with successful raw solver output."
     record["ingress_only_requested"] = ingress_only
     record["ingress_scope"] = "single live identity, initially absent route, one publish and one retire; schedule_gate held through routes publication and closed before exact unpublication. CPU spinlock abstraction plus check/drop/publish weak control; no Arc/kref, IRQ nesting, registry reuse, callbacks, workqueue, Host, memory reclamation or hardware refinement"
     record["backend_only_requested"] = backend_only
@@ -212,6 +221,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--usb-registry-only", action="store_true", help="actual generated production pending allocator Kani only")
     parser.add_argument("--ingress-only", action="store_true", help="Runtime route publication/retirement LKMM and weak control only")
     parser.add_argument("--backend-only", action="store_true", help="actual production Backend descriptor admission CBMC only")
     parser.add_argument("--fd-grant-only", action="store_true", help="actual immutable fd grant constructor/identity/direction CBMC")
@@ -225,4 +235,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only, args.ingress_only))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only, args.ingress_only, args.usb_registry_only))

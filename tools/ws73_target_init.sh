@@ -232,6 +232,7 @@ if grep -qw ws73.early_bootstrap_fault=1 /proc/cmdline; then
     ) 2>&1 | /bin/busybox tee /evidence/early-bootstrap-supervisor.log
     early_exit=$(cat /evidence/early-bootstrap-exit.txt)
     [ "$early_exit" = 0 ] || fail 'actual early bootstrap fault/peer business'
+    cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'early fault daemon credentials'
     kill -TERM "$daemon"; wait "$daemon"
     kill -INT "$capture"; wait "$capture" || fail 'capture final flush'
     chown 0:1000 /evidence/ws73.pcap /evidence/capture-stats.txt; chmod 0640 /evidence/ws73.pcap /evidence/capture-stats.txt

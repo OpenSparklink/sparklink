@@ -60,3 +60,23 @@ make docs-linkcheck
 按照仓库提交规范保留 Signed-off-by 与 Assisted-by。文档构建通过仅说明文档
 门禁通过，不升级功能、形式化证明或真实设备验收资格。
 
+
+## 独立浏览器门禁
+
+严格构建不验证浏览器 JavaScript。需要 Firefox；此门禁是可选的文档 UI 检查，
+不在 `make docs` 中启动浏览器、服务或硬件。先以 localhost 提供 HTML，
+在独立 Firefox profile 启动 `--headless --no-remote --remote-debugging-port 9239`，
+然后执行（输出目录必须是新目录）：
+
+```sh
+uv run --locked --only-group docs python tools/check_docs_browser.py \
+  --websocket ws://127.0.0.1:9239/session \
+  --base-url http://127.0.0.1:8769/sparklink/ \
+  --output /tmp/sparklink-docs-ui-new
+```
+
+准备预览时，让服务器根下的 `sparklink/` 指向构建 HTML；这同时验证项目站点子路径。
+不要连接现有浏览器 profile。完成后停止预览服务器和独立 Firefox。
+门禁覆盖点击导航、完整接口词及中文搜索、代码块、表格、Mermaid、390 像素宽布局，
+保存 JSON 和截图。查看截图后再记录视觉结论。搜索按词匹配，不承诺前缀自动补全。
+Mermaid 仍需要已声明的 CDN 网络；失败必须记录，不能用 DOM 容器存在代替图形成功。

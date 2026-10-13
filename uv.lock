@@ -501,6 +501,7 @@ docs = [
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
     { name = "sphinxcontrib-mermaid" },
+    { name = "websockets" },
 ]
 
 [package.metadata]
@@ -513,6 +514,7 @@ docs = [
     { name = "sphinx", specifier = ">=8.2,<10" },
     { name = "sphinx-autobuild", specifier = ">=2025,<2027" },
     { name = "sphinxcontrib-mermaid", specifier = ">=2,<3" },
+    { name = "websockets", specifier = ">=17,<18" },
 ]
 
 [[package]]

@@ -13,6 +13,7 @@ docs = [
     "sphinxcontrib-mermaid>=2,<3",
     "sphinx-autobuild>=2025,<2027",
     "jieba>=0.42.1,<0.43",
+    "websockets>=17,<18",
 ]
 
 [tool.uv]

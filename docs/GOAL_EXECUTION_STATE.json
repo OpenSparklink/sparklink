@@ -826,9 +826,9 @@
     "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
   ],
   "documentation_workstream": {
-    "status": "partial",
+    "status": "partial; infrastructure/navigation gated; content migration incomplete",
     "independent_of_protocol_critical_path": true,
-    "branch": "codex/diataxis-docs",
+    "branch": "codex/sparklink-ws73",
     "source_baseline": {
       "userspace": "670674736ac90ec0f89ca0330849e22b1bc8f81b",
       "linux": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
@@ -851,10 +851,11 @@
       "fresh locked Python 3.12 environment",
       "nitpicky warnings-as-errors HTML",
       "internal page anchor resource audit",
-      "public path and evidence exclusion audit"
+      "public path and evidence exclusion audit",
+      "second-batch isolated clean checkout locked build",
+      "Firefox actual /sparklink/ navigation, full-token and Chinese search, code/table/Mermaid/390px layout"
     ],
     "unverified": [
-      "browser UI/search/diagram/mobile: no available CUA browser",
       "complete API field/error audit",
       "remaining mixed-source extraction",
       "qualified first hardware execution tutorial",
@@ -869,10 +870,10 @@
     ],
     "closure_allowed": false,
     "evidence": "docs/evidence/diataxis-documentation-first-batch-20261013.json",
-    "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38402594511",
+    "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38435025292",
     "external_links": {
-      "working": 223,
-      "http429_unverified": 56,
+      "working": 248,
+      "http429_unverified": 60,
       "other_failures": 0,
       "status": "not_fully_verified"
     },
@@ -904,7 +905,16 @@
         "body_sha256": "997e2d935b354ba605ad090f307c12de30741305aaca8a78d5b82c74d0a39ab3",
         "readback_exact": true
       }
-    ]
+    ],
+    "side_draft_branch": "codex/diataxis-docs (historical reference; not active canonical plan)",
+    "latest_review": {
+      "userspace": "311556185275db5268b466ebf2d3311e58e6b0e2",
+      "linux_documentation": "3d8a8aa06cdfc303d3fd49565a5bcf6617578965",
+      "runtime_qualification_changed": false
+    },
+    "mapped_documents": 87,
+    "kernel_documents": 10,
+    "batch2_evidence": "docs/evidence/diataxis-documentation-second-batch-20261014.json"
   },
   "latest_standard_diagnostic_batch": {
     "evidence": "docs/evidence/standard-diagnostic-progress-20261013.json",

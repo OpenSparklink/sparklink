@@ -2,8 +2,8 @@
 
 ## 本批边界
 
-基线为用户态提交 `670674736ac90ec0f89ca0330849e22b1bc8f81b`。
-在独立文档分支调整入口、添加 uv/Sphinx/MyST 和严格 CI；不修改驱动、daemon、
+第一批审计基线为用户态提交 `670674736ac90ec0f89ca0330849e22b1bc8f81b`，不代表当前 HEAD。第二批从干净 U `dc040002555c`／K `e78b88f050aa` 重审。
+当前在活跃开发分支以独立文档提交调整入口、添加 uv/Sphinx/MyST 和严格 CI；不修改驱动、daemon、
 UAPI 或资格事实；同步现有 issues 与 goal 的关联执行记录，不部署主机服务，不发布网站。
 
 现有 Markdown 的 GitHub 路径保持稳定。四类目录提供读者入口，原文件仍是
@@ -61,3 +61,26 @@ HTML 内部页面／anchor／静态资源和公开输出路径检查通过；这
 [文档 CI及下载 HTML artifact](https://github.com/OpenSparklink/sparklink/actions/runs/38402594511) 已成功，artifact 保留14天；它是构建产物，不是正式站点发布。
 准确提交外链隔离重跑：223项有效，56项HTTP429未核实，无其他失败；退出1，不记为全量PASS。较早重叠写入的损坏JSON报告已弃用。
 U#8／K#19／U#3 更新已逐字回读，均OPEN。
+
+## 第二批：当前接口与真实浏览器整改
+
+保留第一批 64 份原文去向，本轮登记全部 87 份用户态 Markdown（包含新读者页），
+以及单独 10 份内核 SparkLink／WS73 资料。检查器覆盖新嵌套页面；缺清单即失败。
+内核旧总览替换为实际分层／接口入口，原始 2400 余行混合材料保留固定提交原文；
+旧 read、SSAP containment 和早期 VM 说明明确为历史，不提升旧 PASS。
+新的 ControllerEvent 参考按当前源码拆出字段、错误、已删入口和证明范围；
+没有创建第二套架构、计划或资格矩阵，也没有移动活跃文件。
+
+准确 U `311556185275` 已在全新 Python3.12 环境与独立干净 checkout 完成 locked 安装、
+严格 HTML、内部链接／资源／公开路径门禁，独立 CI 成功并提供 HTML artifact。
+Firefox 无头 BiDi 实际点击导航、英文完整接口词／中文搜索、代码块、表格、
+Mermaid 和 390px 布局通过；截图经过查看。初次搜索 JS 异常和窄屏表格问题已保留，
+修复局部构造器映射、锁定 jieba 和横向滚动表格。仅 DOM 检查不算视觉验收。
+
+可复现浏览器工具为 `tools/check_docs_browser.py`，仅访问 localhost 文档预览，
+与 `make docs`、设备操作和服务安装独立。Mermaid 仍依赖已声明的 CDN。
+本轮外链独立检查 248 有效、60 HTTP429 未核实、其他失败0、退出1，非全量 PASS。
+[第二批范围、准确提交与失败记录](../evidence/diataxis-documentation-second-batch-20261014.json)。
+
+状态：基础设施／导航已具备门禁；内容拆分仅部分完成。完整 API 字段、其余混合
+原文、首次实机执行教程、离线图形和正式发布继续开放。整个文档任务不关闭。

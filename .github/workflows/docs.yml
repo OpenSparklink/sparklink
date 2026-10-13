@@ -10,6 +10,7 @@ on:
       - 'uv.lock'
       - 'Makefile'
       - 'tools/check_docs.py'
+      - 'tools/check_docs_browser.py'
       - '.github/workflows/docs.yml'
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - 'uv.lock'
       - 'Makefile'
       - 'tools/check_docs.py'
+      - 'tools/check_docs_browser.py'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
     inputs:

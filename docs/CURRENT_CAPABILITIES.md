@@ -46,6 +46,7 @@ memcpy仅抽象为读写范围断言，**不证明payload字节复制**；USB/LE
 迁调用者后删static Usb/core USB依赖；标准ticketed ACB/typed policy、真正Virtual、USB=n/m/moduleIRQPM及
 WP12事件/旧ring并行。Ticket/Session/Grant/socket剩余在途/lifetime/NOCP/背压和自然RCA继续；
 整体目标架构完成后才扩展长包、多通道/四设备和唯一用户SSAP。完整S0–S6/19WP/10FV/12DG不变，整项OPEN。
+[十二项相关issues回读](evidence/standard-binding-issues-20261013.json)原scope不变，实际全部28项仍开放。
 
 ## 历史子门禁：单一不可变标准metadata生产消费者
 

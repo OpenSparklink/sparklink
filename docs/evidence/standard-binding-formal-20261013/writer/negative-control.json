@@ -8,12 +8,13 @@
       "description": "assertion __CPROVER_r_ok(src,n)",
       "sourceLocation": {
         "comment": "assertion __CPROVER_r_ok(src,n)",
-        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "file": "/home/sanchuanhehe/Documents/opensparklink/.dev/standard-binding-final-writer-weak/actual.c",
         "function": "bounded_copy",
         "line": "18",
         "pragma": [
           "checked:bounds-check",
           "checked:pointer-check",
+          "checked:memory-leak-check",
           "checked:div-by-zero-check",
           "checked:signed-overflow-check",
           "checked:unsigned-overflow-check",
@@ -31,12 +32,13 @@
       "description": "assertion n>=4&&n<=65535",
       "sourceLocation": {
         "comment": "assertion n>=4&&n<=65535",
-        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "file": "/home/sanchuanhehe/Documents/opensparklink/.dev/standard-binding-final-writer-weak/actual.c",
         "function": "kmalloc",
         "line": "14",
         "pragma": [
           "checked:bounds-check",
           "checked:pointer-check",
+          "checked:memory-leak-check",
           "checked:div-by-zero-check",
           "checked:signed-overflow-check",
           "checked:unsigned-overflow-check",
@@ -54,12 +56,13 @@
       "description": "assertion context.active&&context.udev&&controls==1&&expected_length>=0&&expected_length<=65531&&(expected_length==0||p)&&usb_result==4+expected_length",
       "sourceLocation": {
         "comment": "assertion context.active&&context.udev&&controls==1&&expected_length>=0&&expected_length<=65531&&(expected_length==0||p)&&usb_result==4+expected_length",
-        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "file": "/home/sanchuanhehe/Documents/opensparklink/.dev/standard-binding-final-writer-weak/actual.c",
         "function": "main",
         "line": "57",
         "pragma": [
           "checked:bounds-check",
           "checked:pointer-check",
+          "checked:memory-leak-check",
           "checked:div-by-zero-check",
           "checked:signed-overflow-check",
           "checked:unsigned-overflow-check",
@@ -77,12 +80,13 @@
       "description": "assertion ret==-EMSGSIZE&&!controls&&!allocs",
       "sourceLocation": {
         "comment": "assertion ret==-EMSGSIZE&&!controls&&!allocs",
-        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "file": "/home/sanchuanhehe/Documents/opensparklink/.dev/standard-binding-final-writer-weak/actual.c",
         "function": "main",
         "line": "60",
         "pragma": [
           "checked:bounds-check",
           "checked:pointer-check",
+          "checked:memory-leak-check",
           "checked:div-by-zero-check",
           "checked:signed-overflow-check",
           "checked:unsigned-overflow-check",
@@ -100,12 +104,13 @@
       "description": "assertion expected_length>=0&&expected_length<=65531&&size==expected_length+4&&__CPROVER_r_ok(raw,size)",
       "sourceLocation": {
         "comment": "assertion expected_length>=0&&expected_length<=65531&&size==expected_length+4&&__CPROVER_r_ok(raw,size)",
-        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "file": "/home/sanchuanhehe/Documents/opensparklink/.dev/standard-binding-final-writer-weak/actual.c",
         "function": "usb_control_msg",
         "line": "22",
         "pragma": [
           "checked:bounds-check",
           "checked:pointer-check",
+          "checked:memory-leak-check",
           "checked:div-by-zero-check",
           "checked:signed-overflow-check",
           "checked:unsigned-overflow-check",
@@ -119,7 +124,9 @@
       "status": "FAILURE"
     }
   ],
-  "weak_sha256": "58a18214ac30a15f088f882b1beac11f434fa447bf048a3c26bca2795d3c1e09",
+  "weak_sha256": "38361e0b84f7af4cc200700a6d1f975cafe02a4f22470beabbbfe0afa09d5a74",
   "source_mapping": "sle_usb_write_command_locked length guard / actualC25 pre-submit 65532,65535 rejection regression",
-  "original_solver": "weak/solver.json.gz"
+  "original_solver": "weak/solver.json.gz",
+  "previous_private_attempt_preserved": ".dev/standard-binding-writer-cbmc/weak-solver.json",
+  "receipt_correction": "Reproducible public runner indents dependency C template; use its exact source and trace, not the earlier semantically equivalent private template hash."
 }

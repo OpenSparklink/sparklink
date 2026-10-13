@@ -557,6 +557,34 @@ Boot/Setup/fault必须有真实阶段/诊断、有限超时和精确generation�
 随后接标准provider真实operations/RX/stop，移除static Usb、core USB=n/m及模块门禁；
 自然故障根因/非人工恢复与WP12事件迁移继续并行。有限模型不是全控制面前置或硬件替代。
 
+当前正常路径 **K308e5398dccc / 编译service及运行工具U420cc12**：
+C provider早期reserve/register_reserved/cancel及pending status/query接Canonical Core；保存未知能力、
+明确bus/profile，查询后精确代际与来源验证，成功沿用reservation generation安装Runtime。
+WS73 probe在启动work前预留，断开先join所有producer再cancel；Core保存pending phase/error，
+sysfs读取Core诊断。诊断回调不能分配或复活已取消代际；显式已join故障/有界重试才可新预留。
+失败open可退休旧预留，后续故障记录用新identity；不声明旧generation保活或自然恢复成功。
+actual Core14/pending-open15/driver10及C入口11拒绝+2bus/3reserved拒绝/1复制、资源/固件/
+Native33/ingress9/bus4、工具444、清洁内核零warning/空VM三次/准确CI9通过；依赖fixtures非回收证明。
+新普通用户两设备两轮共8条runtime接口bootstrap观测：metadata_valid0、streaming0、Nativeid=-1
+时Core pending query成功，UID1000/caps0读取，后续Ready沿用同id/gen；未覆盖ROM冷启动上传。
+新40短/8 app249对端实际校验回复、16超限拒绝无捕获数据，224两端SDU/112NOCP，
+capture零drop/taint0，RF22/连接/dup/最后关闭/QMP保持。
+旧有限安装TLC模型按准确新hash重核，scope不扩大到新增C/driver/profile/diagnostic/recovery。
+原allocator Kani仍NOT_PROVEN_UNSUPPORTED；模型与normal-path不替代callbacks/module/IRQ。
+动态daemon pending/fault adapter、新公开诊断绑定、ROM/自然冷启动、实际失败及partial-init/同行隔离、
+标准方言/bus构建/真正Virtual/PM及自然根因/非人工恢复继续缺，整项issues保持开放。
+
+本批三类清单：
+
+- **立即删除/替代，已实施**：WS73查询后另分配Core身份改为early reservation同gen adoption；静默无Core pending阶段改为Core诊断/sysfs；诊断自身触发预留/复活已禁止。
+- **移入或保留测试**：actual Core14/driver10/C注册与reserved边界、pending15、ordinary pending采样/格式验证；旧panic/丢回复/Down/预留缺口及其他历史证据全部保留。
+- **等待替代**：slkd动态pending/fault adapter及公开诊断ABI、真正ROM/failed bootstrap/partial init/同行隔离实机门禁、标准provider/common Backend/bus/Virtual、旧事件与其余掩盖。
+
+下一批以真实故障纵向门禁完善early lifecycle：受控单设备缺固件或partial-init失败，Core pending
+error由实际失败产生、不可选Ready，确认另一只保持业务；join/cancel及新generation重试无需重启
+slkd；受控failure/QMP仍不当自然恢复。接动态pending/fault对象及跨语言只读诊断契约，然后继续
+标准provider operations/RX/stop/static Usb/bus拆分/Virtual。S0–S6/全部工作包与数据面保持。
+
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。
 - 依赖：先固定接口，不等K4/K9整个issue互相关闭；避免与当前WS73关键整改同时大范围移动。

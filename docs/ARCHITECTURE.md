@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前正常路径Ke5d1e3311261/编译与工具Ue7275d2：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前正常路径K308e5398dccc/编译与工具U420cc12：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -126,6 +126,23 @@ FinishRetire抽象已join边界不证明join真实完成。原allocator Kani仍N
 capture零drop/taint0，RF22/连接/dup/最后关闭/QMP支撑保持。
 WS73仍查询后才register Core；bootstrap前pending/故障可见性、实机partial-init失败、标准方言、
 static Usb/bus拆分、真正Virtual、module/IRQ/callback/PM及自然根因/非人工恢复继续未完成。
+
+当前正常路径 **K308e5398dccc / 编译service及运行工具U420cc12**：
+C provider早期reserve/register_reserved/cancel及pending status/query接Canonical Core；保存未知能力、
+明确bus/profile，查询后精确代际与来源验证，成功沿用reservation generation安装Runtime。
+WS73 probe在启动work前预留，断开先join所有producer再cancel；Core保存pending phase/error，
+sysfs读取Core诊断。诊断回调不能分配或复活已取消代际；显式已join故障/有界重试才可新预留。
+失败open可退休旧预留，后续故障记录用新identity；不声明旧generation保活或自然恢复成功。
+actual Core14/pending-open15/driver10及C入口11拒绝+2bus/3reserved拒绝/1复制、资源/固件/
+Native33/ingress9/bus4、工具444、清洁内核零warning/空VM三次/准确CI9通过；依赖fixtures非回收证明。
+新普通用户两设备两轮共8条runtime接口bootstrap观测：metadata_valid0、streaming0、Nativeid=-1
+时Core pending query成功，UID1000/caps0读取，后续Ready沿用同id/gen；未覆盖ROM冷启动上传。
+新40短/8 app249对端实际校验回复、16超限拒绝无捕获数据，224两端SDU/112NOCP，
+capture零drop/taint0，RF22/连接/dup/最后关闭/QMP保持。
+旧有限安装TLC模型按准确新hash重核，scope不扩大到新增C/driver/profile/diagnostic/recovery。
+原allocator Kani仍NOT_PROVEN_UNSUPPORTED；模型与normal-path不替代callbacks/module/IRQ。
+动态daemon pending/fault adapter、新公开诊断绑定、ROM/自然冷启动、实际失败及partial-init/同行隔离、
+标准方言/bus构建/真正Virtual/PM及自然根因/非人工恢复继续缺，整项issues保持开放。
 
 ## 目标分层及架构决策
 

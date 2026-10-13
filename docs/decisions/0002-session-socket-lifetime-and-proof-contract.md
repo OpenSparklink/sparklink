@@ -346,3 +346,15 @@ Native unregister复用相同detach，不由“没有Runtime”推断身份已�
 candidates/3 generations，无fairness/liveness/allocator/refcount/module/IRQ/callback
 或C/Rust refinement。Retire finish抽象join边界仍要求实机证明；弱gen反例转actual复用回归。
 WS73 early bootstrap Core reservation/fault可见性仍缺，不能由这批共同Core入口宣称接通。
+
+## Provider早期预留与诊断（2026-10-13）
+
+C provider reserve已连接同一Core allocator。未知地址/能力不填充；pending profile/bus属于
+预留来源，实际查询后register_reserved校验精确id/gen/bus/profile，不能覆盖其他或retiring owner。
+Preinstall失败仍由caller持预留；若open失败已退休，则新故障记录要新identity，不能复活旧代际。
+
+WS73 probe先reserve后work；backend_lock仅保护元数据，不跨firmware/USB/open。断开先join
+producer与旧Runtime后cancel。诊断回调只更新已有代际，不能隐式reserve；显式已join fault或
+有界retry才新建预留。Pending sysfs从Core查询；phase为profile定义的raw诊断，不是Ready。
+普通用户runtime接口已观察8条未查询pending并同代际Ready；没有ROM/失败/callback资格。
+动态slkd pending/fault对象和公开诊断接口待接，不能因sysfs可读宣称全用户管理流程完成。

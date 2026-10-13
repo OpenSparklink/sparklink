@@ -224,11 +224,13 @@ if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadlin
     echo 'WS73_TARGET_CAPTURE_READY'
 fi
 if grep -qw ws73.early_bootstrap_fault=1 /proc/cmdline; then
-    /bin/python3 /usr/share/sparklink/tools/ws73_early_fault.py coordinate --slkd-pid "$daemon" < /dev/console > /evidence/early-bootstrap-supervisor.log 2>&1 & early=$!
-    # Preserve serial handshakes while retaining full original output.
-    /bin/busybox tail -f /evidence/early-bootstrap-supervisor.log & early_tail=$!
-    wait "$early"; early_exit=$?
-    kill "$early_tail" 2>/dev/null
+    # Foreground tee drains each marker once and preserves Python's own exit;
+    # no asynchronous tail startup/final-flush race can lose a QMP handshake.
+    (
+        /bin/python3 /usr/share/sparklink/tools/ws73_early_fault.py coordinate --slkd-pid "$daemon" < /dev/console
+        echo "$?" > /evidence/early-bootstrap-exit.txt
+    ) 2>&1 | /bin/busybox tee /evidence/early-bootstrap-supervisor.log
+    early_exit=$(cat /evidence/early-bootstrap-exit.txt)
     [ "$early_exit" = 0 ] || fail 'actual early bootstrap fault/peer business'
     kill -TERM "$daemon"; wait "$daemon"
     kill -INT "$capture"; wait "$capture" || fail 'capture final flush'

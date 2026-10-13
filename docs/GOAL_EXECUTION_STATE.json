@@ -1540,7 +1540,7 @@
   },
   "measurement_config_retirement": {
     "status": "implemented/offline tests passed; accurate new-config VM build/gates pending",
-    "kernel": "157346df699884de1fe3bc1186ac46a0af9b98f9",
+    "kernel": "dfc641ae112d872b154e75bbb3ec1ef51399ea3c",
     "audit": "docs/evidence/measurement-config-retirement-audit-20261014.json",
     "config_adjustment": {
       "old": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7",
@@ -1565,6 +1565,12 @@
     "closure_allowed": false,
     "vm_only": true,
     "goal_scope_unchanged": true,
-    "dormant_tx_cleanup": "actual CommandHost queue and standard author ledger retained; unproduced ControllerState queue/credits/always-false fallback removed after warning/caller audit"
+    "dormant_tx_cleanup": "actual CommandHost queue and standard author ledger retained; unproduced ControllerState queue/credits/always-false fallback removed after warning/caller audit",
+    "initial_credit_contract": "real driver metadata forwarded once to Host constructor; no default constant or mutable Runtime credit duplicate",
+    "first_failures_retained": [
+      "initial unused queue length warning",
+      "dormant TX cleanup compile exposed driver seed assignment; corrected explicit input",
+      "bootstrap regression19 passed then old18 count verifier rejected; exact count corrected"
+    ]
   }
 }

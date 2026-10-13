@@ -69,5 +69,6 @@
     "root-only optional Virtual test backend"
   ],
   "whole_issue_closed": false,
-  "hardware_qualified": false
+  "hardware_qualified": false,
+  "initial_credit_clarification": "Driver metadata.command_credits was a real one-time construction seed. It is retained as explicit install/Runtime->Host input, not replaced with constant 1; no mutable duplicate ledger."
 }

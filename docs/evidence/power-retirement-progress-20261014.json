@@ -132,5 +132,61 @@
   ],
   "not_claimed": "No full goal completion, real PM operation, comprehensive formal proof or natural recovery. NOCP is not peer receipt. Artificial/QMP/manual/hub interventions not natural recovery.",
   "goal": "fullS0-S6 active; UserHost P4 planning only; no whole issue closed",
-  "actual_taint_check": "Both corrected-source normal consoles explicitly contain WS73_TARGET_NATIVE_VM_TAINT: 0"
+  "actual_taint_check": "Both corrected-source normal consoles explicitly contain WS73_TARGET_NATIVE_VM_TAINT: 0",
+  "issues": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "id": 6152506600,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6152506600",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "id": 6152507739,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6152507739",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 10,
+      "id": 6152508835,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6152508835",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "id": 6152510034,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6152510034",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 4,
+      "id": 6152511077,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/4#issuecomment-6152511077",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "id": 6152512033,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6152512033",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    }
+  ]
 }

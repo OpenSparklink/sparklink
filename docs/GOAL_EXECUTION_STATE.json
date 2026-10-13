@@ -970,6 +970,63 @@
   "latest_event_retirement_batch": {
     "evidence": "docs/evidence/event-poll-retirement-progress-20261013.json",
     "scope": "partial",
-    "closure_allowed": false
+    "closure_allowed": false,
+    "issues": [
+      {
+        "repo": "linux",
+        "issue": 3,
+        "comment_id": 6149122487,
+        "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6149122487",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+      },
+      {
+        "repo": "linux",
+        "issue": 5,
+        "comment_id": 6149123111,
+        "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6149123111",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+      },
+      {
+        "repo": "linux",
+        "issue": 4,
+        "comment_id": 6149123906,
+        "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6149123906",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "comment_id": 6149124576,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6149124576",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 2,
+        "comment_id": 6149125428,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/2#issuecomment-6149125428",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "comment_id": 6149126215,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6149126215",
+        "state": "OPEN",
+        "readback_exact": true,
+        "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+      }
+    ],
+    "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38422422438"
   }
 }

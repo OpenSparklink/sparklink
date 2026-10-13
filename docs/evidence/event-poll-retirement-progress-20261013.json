@@ -122,5 +122,69 @@
     "other_jobs_success": 8
   },
   "post_regression_test_commit": "46f3b77f2662351c8b75c19b1abdcde776b85198",
-  "post_regression_runtime_diff": "EMPTY drivers/net/include against compiled K96f; selftest authorization list only"
+  "post_regression_runtime_diff": "EMPTY drivers/net/include against compiled K96f; selftest authorization list only",
+  "issues": [
+    {
+      "repo": "linux",
+      "issue": 3,
+      "comment_id": 6149122487,
+      "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6149122487",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "comment_id": 6149123111,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6149123111",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+    },
+    {
+      "repo": "linux",
+      "issue": 4,
+      "comment_id": 6149123906,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6149123906",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "comment_id": 6149124576,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6149124576",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 2,
+      "comment_id": 6149125428,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/2#issuecomment-6149125428",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "comment_id": 6149126215,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6149126215",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "7b3aaad06b40d7e4805af2783d4f5257239de8400d948ff56ca6aff309955947"
+    }
+  ],
+  "ci_final": {
+    "run": 38422422438,
+    "source_head": "759e419da74dde71afbf2e9aeda19914b01fa465",
+    "kernel_pin": "46f3b77f2662",
+    "jobs": 9,
+    "conclusion": "success",
+    "scope": "offline CI; compiled/real qualification remains K96f/Ubf117"
+  }
 }

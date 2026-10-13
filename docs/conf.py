@@ -1,0 +1,96 @@
+"""SparkLink documentation: Markdown sources remain authoritative."""
+project = "SparkLink"
+author = "OpenSparklink contributors"
+copyright = "OpenSparklink contributors"
+release = "development"
+language = "zh_CN"
+extensions = ["myst_parser", "sphinxcontrib.mermaid"]
+source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
+root_doc = "index"
+exclude_patterns = ["_build", "_extensions", "evidence/**"]
+nitpicky = True
+show_warning_types = True
+myst_heading_anchors = 6
+myst_enable_extensions = ["colon_fence", "deflist", "fieldlist"]
+myst_fence_as_directive = ["mermaid"]
+html_theme = "furo"
+html_title = "SparkLink 文档"
+html_static_path = ["_static"]
+html_css_files = ["sparklink.css"]
+html_theme_options = {
+    "light_css_variables": {"color-brand-primary": "#176344", "color-brand-content": "#176344"},
+    "dark_css_variables": {"color-brand-primary": "#75cda6", "color-brand-content": "#75cda6"},
+}
+html_show_sourcelink = True
+html_last_updated_fmt = None
+# HTML builds do not fetch remote references. Mermaid rendering currently uses a
+# pinned upstream JS asset at viewing time; see reference/documentation-build.md.
+mermaid_version = "11.12.1"
+mermaid_include_elk = False
+mermaid_include_zenuml = False
+linkcheck_anchors = False
+linkcheck_timeout = 15
+linkcheck_retries = 1
+linkcheck_workers = 5
+
+
+# Only curated reader pages plus original canonical sources are published.
+# Other originals keep their GitHub URLs; they are not silently recommended.
+from pathlib import Path
+import os
+import re
+import subprocess
+import tomllib
+from urllib.parse import urlsplit
+
+_docs = Path(__file__).parent
+_inventory = tomllib.loads((_docs / 'documentation-map.toml').read_text())
+exclude_patterns = ['_build', '_extensions', 'evidence/**']
+exclude_patterns.remove('evidence/**')
+exclude_patterns += ['evidence/' + p.name for p in (_docs / 'evidence').iterdir() if p.name != 'index.md']
+exclude_patterns += [x['path'][5:] for x in _inventory['documents']
+                     if x['path'].startswith('docs/') and x['publication'] != 'html']
+_source_revision = os.environ.get('SPARKLINK_DOCS_REVISION') or subprocess.check_output(
+    ['git', 'rev-parse', 'HEAD'], cwd=_docs, text=True).strip()
+release = _source_revision[:12] + ' (development; qualification is separate)'
+html_title = 'SparkLink · ' + _source_revision[:12]
+# No raw reST/Markdown download exposing workstation paths; repository originals
+# remain linked at their immutable revision.
+html_copy_source = False
+html_show_sourcelink = False
+_published = {x['path'] for x in _inventory['documents'] if x['publication'] == 'html'}
+_published |= {'docs/' + str(p.relative_to(_docs)) for section in
+               ['tutorials', 'how-to', 'reference', 'explanation', 'project', 'history']
+               for p in (_docs / section).glob('*.md')}
+_published |= {'docs/index.md', 'docs/decisions/index.md', 'docs/evidence/index.md'}
+
+
+def _public_source(app, docname, source):
+    def link(match):
+        label, target = match.groups()
+        if urlsplit(target).scheme or target.startswith('#'):
+            return match.group(0)
+        path, sep, anchor = target.partition('#')
+        absolute = (_docs / docname).parent / path
+        absolute = absolute.resolve()
+        root = _docs.parent.resolve()
+        if absolute.is_relative_to(root):
+            relative = str(absolute.relative_to(root))
+            if relative in _published:
+                return match.group(0)
+            if not absolute.is_file():
+                return f'{label} (unavailable source; not published)'
+            return f'[{label}](https://github.com/OpenSparklink/sparklink/blob/{_source_revision}/{relative}{sep}{anchor})'
+        # Workspace-private materials are unavailable, not fabricated URLs.
+        return f'{label} (workspace-private source; not published)'
+    source[0] = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', link, source[0])
+    source[0] = re.sub(r'/opt/opensparklink-verification-tools[^\s`]+', '$VERIFICATION_TOOLS', source[0])
+    source[0] = re.sub(r'/home/[^/\s`]+/(?:Documents/opensparklink/)?', '$WORKSPACE/', source[0])
+
+
+def setup(app):
+    app.connect('source-read', _public_source)
+    return {'parallel_read_safe': True, 'parallel_write_safe': True}
+
+# Bounded independent network check; rate limits remain visible failures.
+linkcheck_rate_limit_timeout = 30

@@ -1,0 +1,5 @@
+/* Local fonts only; diagrams and wide API tables must remain readable. */
+body { font-family: system-ui, -apple-system, "Noto Sans CJK SC", sans-serif; }
+article table { font-size: .92em; }
+.mermaid { overflow-x: auto; }
+

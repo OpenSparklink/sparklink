@@ -12,8 +12,11 @@ STATEDIR ?= /var/lib/sparklink
 CARGO ?= cargo
 CARGO_FLAGS ?= --release --workspace
 INSTALL ?= install
+UV ?= uv
+DOCS_RUN = $(UV) run --locked --only-group docs
+SPHINX_FLAGS = -n -W --keep-going
 
-.PHONY: all build check test install uninstall clean
+.PHONY: all build check test install uninstall clean docs docs-live docs-linkcheck
 
 all: build
 
@@ -71,3 +74,17 @@ uninstall:
 
 clean:
 	$(CARGO) clean
+
+# Documentation has its own locked Python environment and no hardware access.
+docs:
+	$(DOCS_RUN) python tools/check_docs.py
+	rm -rf docs/_build/html
+	$(DOCS_RUN) sphinx-build -E -d docs/_build/doctrees/html $(SPHINX_FLAGS) -b html docs docs/_build/html
+	$(DOCS_RUN) python tools/check_docs.py --html docs/_build/html
+
+docs-live:
+	$(DOCS_RUN) python tools/check_docs.py
+	$(DOCS_RUN) sphinx-autobuild -d docs/_build/doctrees/live $(SPHINX_FLAGS) --host 127.0.0.1 docs docs/_build/html
+
+docs-linkcheck:
+	$(DOCS_RUN) sphinx-build -d docs/_build/doctrees/linkcheck $(SPHINX_FLAGS) -b linkcheck docs docs/_build/linkcheck

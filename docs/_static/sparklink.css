@@ -3,3 +3,10 @@ body { font-family: system-ui, -apple-system, "Noto Sans CJK SC", sans-serif; }
 article table { font-size: .92em; }
 .mermaid { overflow-x: auto; }
 
+
+/* A narrow viewport scrolls a useful table instead of stacking every CJK glyph. */
+article .table-wrapper { overflow-x: auto; }
+@media (max-width: 48rem) {
+  article table { min-width: 42rem; }
+  article th { white-space: nowrap; }
+}

@@ -89,6 +89,16 @@ def _public_source(app, docname, source):
 
 
 def setup(app):
+    # Sphinx 9.1 SearchChinese uses english-stemmer.js, while the emitted
+    # constructor name comes from language_name (ChineseStemmer does not
+    # exist). Keep its Chinese tokenizer and Python English stemming intact;
+    # name the actual JS constructor. Scoped to this documentation build.
+    from sphinx.search.zh import SearchChinese
+
+    class ChineseSearchCompatible(SearchChinese):
+        language_name = 'English'
+
+    app.add_search_language(ChineseSearchCompatible)
     app.connect('source-read', _public_source)
     return {'parallel_read_safe': True, 'parallel_write_safe': True}
 

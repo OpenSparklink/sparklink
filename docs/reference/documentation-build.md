@@ -25,3 +25,9 @@ HTML 构建本身不下载该 JS。完全离线浏览和 PDF 图形导出尚未�
 旧文档路径在过渡期保持稳定。重新编排的是读者入口，尚未完成的内容拆分
 明确记录在[迁移计划](../project/documentation-migration.md)。
 
+
+中文搜索使用锁定的 jieba 分词。Sphinx 9.1 的中文搜索器实际使用 EnglishStemmer，
+本站以局部注册修正其错误的 JavaScript 构造器名称，保留原中文索引规则。
+升级 Sphinx 后必须重新检查中文和接口名称搜索，不能仅以 HTML 构建成功判断搜索可用。
+官方配置与依赖约定见 [Sphinx 配置](https://www.sphinx-doc.org/en/master/usage/configuration.html)
+及 [uv dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/)。

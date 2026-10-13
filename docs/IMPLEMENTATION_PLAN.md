@@ -1,3 +1,5 @@
+# SparkLink / Linux 联合实施方案
+
 ## 当前整改批次：安全／隐私模型退休（实机回归待完成）
 
 K `f3ef1d52778c` 已移除 ControllerState 的 SecurityInner/RpaManager 与旧 worker
@@ -15,7 +17,6 @@ K5582/Ucd77资格为新代码通过。K#7/#18、U#5、恢复及所有未完scope
 完整 S0–S6、VM-only、UserHost P4与独立文档工作不变。下一步观察默认选择与旧
 接口调用迁移，再接通唯一用户态SSAP；不以控制面竞争全集阻塞数据纵向工作。
 
-# SparkLink / Linux 联合实施方案
 
 **唯一执行计划。** 完整S0–S6及原28项issues验收范围保持；工作包不是新issue或缩小scope。
 采用2026-10-13用户提案并核对最新源码/证据/在线issues，调整记录见

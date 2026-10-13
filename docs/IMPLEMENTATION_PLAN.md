@@ -35,6 +35,7 @@ standard-DLI query Runtime，dup共享，最后关闭精确退休generation并jo
 WP12统一事件/旧ring/重复消费者；标准typed/ticketed及完整module/IRQ/PM/lifetime/自然RCA并行。
 旧Kae5/U967真实WS73资格及证据保留，当前未把新source记作实机通过。
 完整S0–S6/19WP/10FV/12DG与原28项scope保持，整体架构先整改再功能扩展；未完成整项保持OPEN。
+[本批十二项issues回读](evidence/virtual-provider-issues-20261013.json)，原scope保持，当前原28项全部OPEN。
 
 ## 前批已验收：驱动归 drivers，Core 不依赖 USB
 

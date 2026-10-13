@@ -33,6 +33,12 @@
       "actual_function": "no source/build condition consumes SLE toggle; crypto sources have no default consumer",
       "replacement": "global Linux DEBUG_FS still governs debugfs; Native requires actual SPARKLINK + registered driver; future security mechanism owns crypto dependencies",
       "regression": "explicit config delta/source identity; preserve hardware/driver/module/hardening options"
+    },
+    {
+      "item": "ControllerState duplicate command queue/credits and always-false worker fallback",
+      "actual_function": "no producer for state.cmd_queue; all registered providers use CommandHost; event fallback is a no-op",
+      "replacement": "single actual CommandHost queue/credit owner; retain standard CmdPending author ledger and actual Host queue",
+      "regression": "actual queue/Host/Diagnostic/cancel/deadline and full new kernel VM/real gates"
     }
   ],
   "move_to_tests": [
@@ -50,6 +56,10 @@
     {
       "item": "kernel crypto mechanism source",
       "condition": "retain in net; reconnect only with per-session authenticated mechanism and its Kconfig/proof/hardware gates"
+    },
+    {
+      "item": "CmdRequestQueue.len test inspection",
+      "condition": "cfg(test) only; actual queue state and transitions unchanged; no global allow(dead_code)"
     }
   ],
   "preserved": [

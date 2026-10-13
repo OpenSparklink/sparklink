@@ -2,13 +2,16 @@
 
 ## 当前切片：measurement 与无消费者配置收尾（新镜像资格待完成）
 
-K654216743b68删除固定measurement能力投影及不经过Native事务的直接旧命令，
+K654216743b68（重复TX清理K157346df6998）删除固定measurement能力投影及不经过Native事务的直接旧命令，
 四入口在权限之后/context与copy之前Unsupported；SDK/D-Bus相同明确拒绝。
 configfs只保留软件version，五个旧全局配置节点删除（包括none/0假成功selector）；
 no-ghost/Virtual/mixed C回归改为实际ENOENT及注册表不变，精确旧源码保留历史。
 SPARKLINK_SLE/DEBUGFS无编译消费者的选项删除；Linux DEBUG_FS仍控制debugfs，
 实际WS73驱动与板级bsle_custom.bin/pm_config.bin保留。Core不再select无消费者
 crypto，机制源码继续留在内核，未来每连接安全机制独立接通其依赖。
+全量重编译暴露了历史queue len无消费者警告；进一步审计确认ControllerState的
+重复queue无入队者、worker fallback永不成立，已移除副本/credits/no-op事件路径，
+实际CommandHost队列与标准CmdPending作者账本保留；len检查仅cfg(test)，不压警告。
 [三类审计](evidence/measurement-config-retirement-audit-20261014.json)。
 
 资格VM配置已显式核对只移除SLE/DEBUGFS两行，从37e9ce68变为30860427；

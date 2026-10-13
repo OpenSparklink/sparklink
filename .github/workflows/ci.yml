@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 9c0e616c8d36853afadf32a403fb3bb2a0458679
+          ref: 0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef
           path: .kernel-uapi
           sparse-checkout: |
             include/uapi/linux/sparklink_ioctl.h
@@ -139,7 +139,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 9c0e616c8d36853afadf32a403fb3bb2a0458679
+          ref: 0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef
           path: .kernel-tools
           # Raw worker ioctls also compile against the canonical pinned UAPI.
           sparse-checkout: |
@@ -163,7 +163,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 9c0e616c8d36853afadf32a403fb3bb2a0458679
+          ref: 0fdbcf9a477cb17cbe5bd757c5ed7a964c8055ef
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -214,6 +214,8 @@ jobs:
           python tools/testing/selftests/sparklink/run_link_observation.py
           python tools/testing/selftests/sparklink/run_usb_firmware.py
           python tools/testing/selftests/sparklink/run_usb_discovery.py
+          python tools/testing/selftests/sparklink/run_backend_command_port.py
+          python tools/testing/selftests/sparklink/run_usb_bootstrap_metadata.py
           python tools/testing/selftests/sparklink/run_usb_codec_isolation.py
           python tools/testing/selftests/sparklink/run_backend_bus.py
           python tools/testing/selftests/sparklink/run_backend_install.py

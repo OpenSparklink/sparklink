@@ -5,6 +5,17 @@
 
 # SparkLink / Linux 联合实施方案
 
+## 当前主线：通道能力查询接通，下一步唯一SMTC/SSAP Engine
+
+K31769ea4b8c0／服务和工具U82a06cd：内核在Runtime授权及Session锁下产生一致
+MTU/MPS/身份/通道键快照，锁外copy，无lease泄漏或数据/credit消费。跨语言与
+真实普通用户getter/copy重试门禁通过，完整范围只见资格和证据。
+下一步绑定唯一slkd SMTC actor并先取得真实ExchangeInfo，随后有界服务数据库
+与读写/通知/指示；不把控制竞争全集重新作为数据面前置。
+完整S0–S6、VM-only、恢复开放条件与UserHostP4不变。
+[源码、失败、假设与剩余](evidence/channel-info-progress-20261014.json)。
+
+
 ## 当前主线：Session固定通道表接通，唯一SSAP Engine继续推进
 
 K6fe9696a04da／服务与工具Uf0cd461：一个Session worker统一消费/解码ACB，

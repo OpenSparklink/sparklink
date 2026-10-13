@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "status": "IMPLEMENTED_OFFLINE_AND_REAL_CUTC_SNAPSHOT_PASS; SMTC_AND_FULL_SSAP_MISSING",
+  "kernel": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+  "service_and_runner": "82a06cd051c935a089caffb947bada841bebd40d",
+  "sources": {
+    "linux/net/sparklink/sle_channel_socket.c": "dc94a6bf305fe68729f0ef648be576dc552f3bcf48bd83f9e35af891de5111b7",
+    "linux/include/uapi/linux/sparklink_socket.h": "0bc1acc8b31fcce8787d1e234435266742b5228976534499ab224a86e827f40e",
+    "sparklink/crates/slk-protocol/src/channel.rs": "9aa567963ff4fc8144bb2b2c4085315cc793d74f4c77bcceb041c77b6f624b47",
+    "sparklink/crates/libsparklink/src/ffi_native.rs": "3b1808bbd65c43071708e20e4e74659d6f456c33694653826ccdd3b28f8658f4",
+    "sparklink/crates/slctl/src/channel.rs": "1941b165e23931a682ce2d2a0d9b0d25aedc90b091d107a7f23c721175a66b97",
+    "sparklink/bindings/python/sparklink/native.py": "89412cac189ba93b9eccf454b5f8371d2e08f459616b1444c9ca345c34293238",
+    "sparklink/tools/ws73_channel_socket.py": "bae9f367b812f323d7cc4a6ca56a90a526fb6ff305fd7ffe3455d1863667b19c",
+    "sparklink/formal/lkmm/ChannelSnapshot.litmus": "98a37a51162236eaca6c8eaf547040fe9ab45eb0404465a1ceb8aa682b5c49bf",
+    "sparklink/formal/lkmm/ChannelSnapshotWeak.litmus": "487ab9985149e8f961f028492a63122318b7b11a4949f27e6cd11ecd7ffb1d38"
+  },
+  "implemented": [
+    "fixed 40-byte/8-aligned channel snapshot ioctl with native/compat entry",
+    "Runtime admission plus Session lock; actual MTU/MPS/key/identity/directions; no lease or trusted security",
+    "query is read-only, no credit/transaction/RX mutation; copy outside locks",
+    "Rust/C/Python bindings; C error output unchanged; explicit Python alignment check",
+    "CLI queries actual delegated fd and performs real guarded-copy retry; parser binds receipt to original owner/lifetime",
+    "historical evidence shape retained; new runner explicitly requires capability receipts"
+  ],
+  "offline": {
+    "workspace_all_features": "PASS",
+    "workspace_clippy_all_targets_all_features_D_warnings": "PASS",
+    "protocol_tests": 70,
+    "C_Rust_Python_contract_tests": 36,
+    "C_32bit_layout": "PASS; no 32-bit runtime claim",
+    "tool_tests": 461,
+    "actual_dispatch": {
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "scope": "actual single-consumer two-slot route/local TCID+PI/independent finite RX and TX, retired-slot/peer isolation, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+      "physical_acceptance": false,
+      "whole_session_proof": false,
+      "bodies_sha256": "aa40e20bc785024905af9a7c75d1ab0e6b6ea03bc197493fb168c103c3f6783c",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "dc94a6bf305fe68729f0ef648be576dc552f3bcf48bd83f9e35af891de5111b7",
+        "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+        "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+        "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+        "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+        "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+        "include/uapi/linux/sparklink_socket.h": "0bc1acc8b31fcce8787d1e234435266742b5228976534499ab224a86e827f40e",
+        "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "c3c9cb915756b53761273668aae7bf92fdcd360346f7900da9d08f1b93c8f186"
+      }
+    },
+    "address_v2_unchanged": {
+      "status": "ACTUAL_C_RUST_SOCKET_V2_LAYOUT_PASS",
+      "size": 48,
+      "scope": "actual broker struct/initializer and C UAPI; no kernel admission/VFS/RF proof",
+      "sources": {
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/crates/slkd/src/channel.rs": "f9bff6f4793fb87f123d1adb6e84e9119b50b6d03497db73318ffc4206d363b3",
+        "/home/sanchuanhehe/Documents/opensparklink/linux/include/uapi/linux/sparklink_socket.h": "0bc1acc8b31fcce8787d1e234435266742b5228976534499ab224a86e827f40e"
+      }
+    }
+  },
+  "build": {
+    "status": "PASS",
+    "zero_warnings": true,
+    "config_sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+    "config_unchanged": true,
+    "record": {
+      "workspace_relative_path": ".dev/native-channel-info-build-record.json",
+      "sha256": "3b24f59db53262c6466d19f803001343826fb03109cd66e2569c89a6ddb699ae",
+      "availability": "workspace-private original; not uploaded"
+    }
+  },
+  "real_reports": {
+    "real-short": "channel-info-real-short-20261014.json",
+    "real-boundary": "channel-info-real-boundary-20261014.json",
+    "fault-real": "channel-info-fault-real-20261014.json"
+  },
+  "normal_total": {
+    "round_trips": 48,
+    "application_rejections": 16,
+    "channel_info_queries": 8,
+    "guarded_copy_EFAULT": 8,
+    "partial_bytes_each": 16,
+    "retry_unchanged": 8,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "kernel_drops": 0,
+    "taint": 0,
+    "actual_peer_validated": true,
+    "native_64bit": true,
+    "compat_32bit_runtime": false
+  },
+  "memory_model": {
+    "tool": "7.58, Rev: exported",
+    "status": "MODEL_CHECKED_SCOPED",
+    "strong": "Never 0/2",
+    "weak_control": "Sometimes 1/3",
+    "source_mapping": [
+      "sl_progress_event writes phase/MTU under Session.lock",
+      "sl_read_info tests OPEN and reads capabilities under the same Session.lock",
+      "the private stack snapshot is copied to user after locks released"
+    ],
+    "assumptions": [
+      "abstract phase Boolean and one MTU cell, serialized shared spinlock semantics under LKMM",
+      "models publication only, not Runtime permission/lifetime/UAF/USB or all snapshot fields"
+    ],
+    "regression": "actual getter/body sanitizers plus 8 real syscall partial-copy retries",
+    "logs": [
+      {
+        "workspace_relative_path": ".dev/channel-info-lkmm-strong-v2.log",
+        "sha256": "3c003cbed7c83d9cbb0094225b3bf724fc7ab8a2ada1552f66d905efa0677a7f",
+        "availability": "workspace-private original; not uploaded"
+      },
+      {
+        "workspace_relative_path": ".dev/channel-info-lkmm-weak-v2.log",
+        "sha256": "050a8d7747ae2caa3a7c28d966cfe138fc6a7d547c84a83a4f3f4982287cfe90",
+        "availability": "workspace-private original; not uploaded"
+      }
+    ],
+    "first_failure": [
+      {
+        "workspace_relative_path": ".dev/channel-info-lkmm-strong.log",
+        "sha256": "5726c87fb5172eb69b940ef463bbd7da115eff682b32c95df22ada41a5408689",
+        "availability": "workspace-private original; not uploaded"
+      },
+      {
+        "workspace_relative_path": ".dev/channel-info-lkmm-weak.log",
+        "sha256": "5726c87fb5172eb69b940ef463bbd7da115eff682b32c95df22ada41a5408689",
+        "availability": "workspace-private original; not uploaded"
+      }
+    ]
+  },
+  "failures_retained": {
+    "channel-info-workspace-tests.log": {
+      "workspace_relative_path": ".dev/channel-info-workspace-tests.log",
+      "sha256": "12c24dbb544946249b98280eaff10e4c482b18c1d957dcdb0cdeadf60f43cb51",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "channel-info-evidence-tests.log": {
+      "workspace_relative_path": ".dev/channel-info-evidence-tests.log",
+      "sha256": "29a329df3b849881b8161be46964018b657243efa8aca6e1ce235ddb57e94ea6",
+      "availability": "workspace-private original; not uploaded"
+    }
+  },
+  "failure_corrections": [
+    "AF_UNIX application algorithm regression calls shared message routine, not Native wrapper; production never falls back to fake capabilities",
+    "capability evidence field is attached only for new explicitly requested records; old sealed exact reports unchanged"
+  ],
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38483234059",
+    "head": "82a06cd051c935a089caffb947bada841bebd40d",
+    "jobs_success": 9,
+    "status": "success",
+    "per_job_readback": true
+  },
+  "new_smtc_rf_qualified": false,
+  "whole_lifetime_formally_proved": false,
+  "natural_recovery_qualified": false,
+  "vm_only": true,
+  "goal_complete": false,
+  "whole_issue_closed": false,
+  "next": [
+    "bind unique slkd lifetime-scoped SMTC actor to actual capabilities",
+    "real ExchangeInfo before bounded service database/read/write/notify/indicate",
+    "retain long/credit/queue/close/old lifetime/four-device gates and formal work in parallel",
+    "verify actual 32-bit compat syscall, full concurrent snapshot/revoke/copy and lifecycle matrix"
+  ]
+}

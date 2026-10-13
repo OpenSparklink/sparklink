@@ -74,3 +74,11 @@ K6fe9696a04da 的未发布 socket v2 地址大小仍48字节。底层CAP_NET_ADM
 CMTC不交应用fd。每槽仅一个绑定，最后关闭只退休该槽；同连接lifetime重绑
 EOPNOTSUPP，无热迁移。默认slkd的普通应用OpenChannel仍只授CUTC，服务SMTC
 保留给唯一Engine，尚未取得实机SSAP资格。字段/模式不存在公开兼容承诺。
+
+通道socket只读 `SPARKLINK_CHANNEL_INFO`（S/e0）：固定40字节、8对齐，
+version1/size40，返回controller/handle/generation/lifetime、实际有效MTU/MPS、
+local/remote TCID/PI/basic mode/directions，reserved0，无lease/security承诺。
+未bound/关闭ENOTCONN，协商前EAGAIN，撤权/旧身份按Runtime拒绝，copy故障EFAULT
+不改变通道或消费队列。快照仅在授权准入点一致，不保证返回后的连接存续。
+C `slk_channel_info`错误不改输出；Python `native.channel_info(fd)`用于delegated
+socket，不是NativeAdapter的控制fd。32位仅C布局已验，真实compat调用仍待验收。

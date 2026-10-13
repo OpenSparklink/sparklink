@@ -4,6 +4,18 @@
 
 # 当前能力与资格
 
+## 最新通道快照资格（精确源码）
+
+K `31769ea4b8c006f999f4fbe0da68f7291ef71935`／编译服务与冻结工具
+U `82a06cd051c935a089caffb947bada841bebd40d`。36跨语言/32位C布局、461工具、
+严格工作区及9项CI通过；实际函数sanitizer与限定LKMM锁发布/去锁对照通过。
+VM中8个普通用户fd查询匹配原owner/lifetime/key与MTU/MPS；8次真实partial copy
+各改写16字节后EFAULT，重试一致。发现/连接40短消息、8轮249/16超限拒绝及
+受控同行通过，正常224 ACB/112 NOCP、capture drops0/taint0，对端实际校验回复。
+新SMTC/SSAP和32位compat真实系统调用仍未验收；模型不证明全部快照/权限/UAF。
+[源码、失败、假设与剩余](evidence/channel-info-progress-20261014.json)。
+
+
 ## 最新Session通道分流资格（限定范围）
 
 准确内核 `6fe9696a04da6527b994c792cac91ac25b07155e`，编译服务/冻结工具

@@ -251,11 +251,6 @@ fn run(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
         Command::Controller => {
             print_controller(&snapshot);
-            let stats = adapter.mgmt_stats()?;
-            println!(
-                "ManagementQueue: pending={} submitted={} resolved={} timeouts={}",
-                stats.pending, stats.total_submitted, stats.total_resolved, stats.total_timeouts
-            );
             return Ok(());
         }
         Command::Management => {
@@ -418,10 +413,8 @@ fn cmd_native_query(
     let result = (|| -> anyhow::Result<_> {
         // Result ownership and captured Host sequence establish provenance;
         // observation does not steal data from any controller subscription.
-        anyhow::ensure!(
-            adapter.mgmt_stats()?.pending == 0,
-            "diagnostic command queue is not quiet"
-        );
+        // Exclusive Diagnostic lease and Host admission own the transaction;
+        // a legacy private queue counter cannot prove Native quiescence.
         let (opcode, _) = query.wire();
         let mut cmd = SleDiagnosticSubmit {
             version: 1,
@@ -511,26 +504,7 @@ fn cmd_info(adapter: &Adapter) -> libsparklink::Result<()> {
 }
 
 fn cmd_dli(adapter: &Adapter) -> libsparklink::Result<()> {
-    let info = adapter.dli_info()?;
-    let name_end = info
-        .name
-        .iter()
-        .position(|&b| b == 0)
-        .unwrap_or(info.name.len());
-    let name = std::str::from_utf8(&info.name[..name_end]).unwrap_or("<invalid>");
-
-    println!("DLI Controller: {name}");
-    println!("  Bus:              {}", info.bus);
-    println!("  Firmware:         {:#010x}", info.firmware_version);
-    println!("  Features:         {:#010x}", info.features);
-    println!("  Max connections:  {}", info.max_connections);
-    println!("  Max ADV sets:     {}", info.max_adv_sets);
-    println!("  Max MTU:          {}", info.max_mtu);
-    println!("  Max MPS:          {}", info.max_mps);
-    println!("  Transport modes:  {:#04x}", info.transport_modes);
-    println!("  Security cap:     {:#04x}", info.security_cap);
-    println!("  Measurement cap:  {:#04x}", info.measurement_cap);
-
+    print_controller(&adapter.controller_snapshot(0)?);
     Ok(())
 }
 

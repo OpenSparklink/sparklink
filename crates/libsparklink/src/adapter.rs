@@ -129,15 +129,15 @@ impl Adapter {
         Ok(())
     }
 
-    /// Get device info for the active device
+    /// Get device info for this explicitly selected registration
     pub fn device_info(&self) -> Result<SciDevInfo> {
         let mut info = unsafe { std::mem::zeroed::<SciDevInfo>() };
         unsafe { ioctl::sl_dev_info(self.raw_fd(), &mut info)? };
         Ok(info)
     }
 
-    /// Bind this fd to one registration. Unlike switch_device this does not
-    /// change the global legacy selection. Replug invalidates the binding.
+    /// Bind this File to one exact registration. There is no implicit default.
+    /// dup/fork share the binding; replug invalidates it.
     pub fn select_device(&mut self, index: u16) -> Result<()> {
         let index_i16 = i16::try_from(index)
             .map_err(|_| Error::InvalidParam("device index exceeds signed affinity range"))?;
@@ -203,21 +203,6 @@ impl Adapter {
             return Err(Error::InvalidParam("invalid controller snapshot response"));
         }
         Ok(snapshot)
-    }
-
-    /// Switch active device by index
-    pub fn switch_device(&mut self, index: u16) -> Result<()> {
-        unsafe { ioctl::sl_dev_switch(self.raw_fd(), index as _)? };
-        self.dev_index = index;
-        debug!(index, "switched active device");
-        Ok(())
-    }
-
-    /// Get the active device index
-    pub fn active_device(&self) -> Result<u16> {
-        let mut index: u16 = 0;
-        unsafe { ioctl::sl_dev_get_active(self.raw_fd(), &mut index)? };
-        Ok(index)
     }
 
     // ----- Advertising -----
@@ -636,9 +621,9 @@ impl Adapter {
 
     /// Get DLI controller info
     pub fn dli_info(&self) -> Result<SleDliInfo> {
-        let mut info = unsafe { std::mem::zeroed::<SleDliInfo>() };
-        unsafe { ioctl::sl_dli_info(self.raw_fd(), &mut info)? };
-        Ok(info)
+        Err(Error::NotSupported(
+            "legacy aggregate retired; use selected Native snapshot/result",
+        ))
     }
 
     /// Native metadata-only idempotent admission/cancel. Caller supplies an ID
@@ -858,8 +843,9 @@ impl Adapter {
 
     /// Reset the DLI controller
     pub fn dli_reset(&self) -> Result<()> {
-        unsafe { ioctl::sl_dli_reset(self.raw_fd())? };
-        Ok(())
+        Err(Error::NotSupported(
+            "legacy reset cannot maintain Native generation/lifetimes; use Runtime recovery",
+        ))
     }
 
     /// Send a DLI command
@@ -878,9 +864,9 @@ impl Adapter {
 
     /// Get management queue statistics
     pub fn mgmt_stats(&self) -> Result<SleMgmtStats> {
-        let mut stats = unsafe { std::mem::zeroed::<SleMgmtStats>() };
-        unsafe { ioctl::sl_mgmt_stats(self.raw_fd(), &mut stats)? };
-        Ok(stats)
+        Err(Error::NotSupported(
+            "legacy aggregate retired; use selected Native snapshot/result",
+        ))
     }
 
     // ----- PHY -----

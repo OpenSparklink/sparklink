@@ -628,8 +628,8 @@ int slk_encrypt_on(const struct SlkAdapter *adapter);
 int slk_device_info(const struct SlkAdapter *adapter, struct SciDevInfo *out);
 
 /**
- * Get DLI controller info.
- * Returns 0 on success, -1 on error.
+ * Unavailable legacy DLI aggregate; use selected controller snapshot.
+ * Returns -EOPNOTSUPP without changing output; -1 for invalid pointers.
  *
  * # Safety
  * `adapter` and `out` must be valid non-null pointers.
@@ -664,7 +664,7 @@ int slk_set_role(const struct SlkAdapter *adapter, uint8_t role);
 int slk_get_role(const struct SlkAdapter *adapter);
 
 /**
- * Bind this fd to one registration, without changing legacy global selection.
+ * Bind this File to one registration. There is no implicit global selection.
  * Returns 0 or negative errno. Replug invalidates this fd; open a new handle.
  * # Safety
  * `adapter` is null or a live, exclusively borrowed adapter handle.

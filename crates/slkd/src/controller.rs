@@ -288,17 +288,9 @@ impl ControllerIface {
 
     /// Get DLI controller info
     async fn get_dli_info(&self) -> zbus::fdo::Result<DliInfo> {
-        let st = self.state.lock().await;
-        let d = st.adapter.dli_info().map_err(map_err)?;
-        let name_end = d.name.iter().position(|&b| b == 0).unwrap_or(d.name.len());
-        Ok(DliInfo {
-            bus: d.bus,
-            firmware_version: d.firmware_version,
-            max_connections: d.max_connections,
-            max_adv_sets: d.max_adv_sets,
-            max_mtu: d.max_mtu,
-            name: String::from_utf8_lossy(&d.name[..name_end]).into_owned(),
-        })
+        Err(zbus::fdo::Error::NotSupported(
+            "use selected Native ControllerSnapshot or author DiagnosticResult".into(),
+        ))
     }
 
     /// Reset the DLI controller
@@ -309,14 +301,9 @@ impl ControllerIface {
 
     /// Get management queue statistics
     async fn get_mgmt_stats(&self) -> zbus::fdo::Result<MgmtStats> {
-        let st = self.state.lock().await;
-        let s = st.adapter.mgmt_stats().map_err(map_err)?;
-        Ok(MgmtStats {
-            pending: s.pending,
-            total_submitted: s.total_submitted,
-            total_resolved: s.total_resolved,
-            total_timeouts: s.total_timeouts,
-        })
+        Err(zbus::fdo::Error::NotSupported(
+            "use selected Native ControllerSnapshot or author DiagnosticResult".into(),
+        ))
     }
 
     // ----- RAL / RPA -----

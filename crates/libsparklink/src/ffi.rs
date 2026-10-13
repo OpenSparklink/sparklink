@@ -267,8 +267,8 @@ pub unsafe extern "C" fn slk_device_info(
     }
 }
 
-/// Get DLI controller info.
-/// Returns 0 on success, -1 on error.
+/// Unavailable legacy DLI aggregate; use selected controller snapshot.
+/// Returns -EOPNOTSUPP without changing output; -1 for invalid pointers.
 ///
 /// # Safety
 /// `adapter` and `out` must be valid non-null pointers.
@@ -289,6 +289,7 @@ pub unsafe extern "C" fn slk_dli_info(
             unsafe { *out = info };
             0
         }
+        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
         Err(_) => -1,
     }
 }

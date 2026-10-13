@@ -228,10 +228,17 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
         );
         // /dev/null is intentionally not a fake successful controller. A real
         // method error proves the handler ran; a timeout or transport error does not.
-        for result in [info.map(|r| r.map(|_| ())), scan, connect] {
+        for (result, expected) in [
+            (
+                info.map(|r| r.map(|_| ())),
+                "org.freedesktop.DBus.Error.NotSupported",
+            ),
+            (scan, "org.freedesktop.DBus.Error.Failed"),
+            (connect, "org.freedesktop.DBus.Error.Failed"),
+        ] {
             match result.unwrap().unwrap_err() {
                 zbus::Error::MethodError(name, _, _) => {
-                    assert_eq!(name.as_str(), "org.freedesktop.DBus.Error.Failed")
+                    assert_eq!(name.as_str(), expected)
                 }
                 error => panic!("unexpected D-Bus error: {error}"),
             }
@@ -971,6 +978,18 @@ async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
     for property in ["Encrypted", "Paired"] {
         error_name(security.get_property::<bool>(property).await, unsupported);
     }
+    error_name(
+        controller
+            .call::<_, _, crate::controller::DliInfo>("GetDliInfo", &())
+            .await,
+        unsupported,
+    );
+    error_name(
+        controller
+            .call::<_, _, crate::controller::MgmtStats>("GetMgmtStats", &())
+            .await,
+        unsupported,
+    );
     error_name(
         controller.call::<_, _, ()>("RalClear", &()).await,
         unsupported,

@@ -54,3 +54,10 @@ K6f2f71298029 的默认Runtime不再包含旧安全/RPA模型。新版SDK拒绝�
 facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合法RAL/RPA
 输入亦NotSupported，非法输入可InvalidArgs。C旧安全入口返回-EOPNOTSUPP且不改
 输出，Python映射OSError(EOPNOTSUPP)。真实每连接安全、Agent与Bond重连仍未实现。
+
+Kc2dd941e5784：不存在全局active/default controller。DEV_SELECT非负绑定精确
+registration，-1清此File及观察模式；dup/fork/fd传递共享File，拥有lease则EBUSY。
+DEV_GET_ACTIVE仅报告本File绑定id（可已退休），无绑定为0xffff；它不报告Ready。
+旧DEV_SWITCH、DLI_INFO、DLI_RESET明确拒绝。MGMT_STATS仅保留实际标准profile0
+事务统计，Native profile1不支持；CLI query的准入由Diagnostic lease与Host负责，
+不从旧queue数值推导静默。完整新源码实机资格见能力入口，未完成项保持开放。

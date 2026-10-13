@@ -18,7 +18,7 @@ fn errno(error: Error) -> c_int {
     }
 }
 
-/// Bind this fd to one registration, without changing legacy global selection.
+/// Bind this File to one registration. There is no implicit global selection.
 /// Returns 0 or negative errno. Replug invalidates this fd; open a new handle.
 /// # Safety
 /// `adapter` is null or a live, exclusively borrowed adapter handle.

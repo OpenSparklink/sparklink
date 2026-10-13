@@ -1433,5 +1433,32 @@
         "readback_exact": true
       }
     ]
+  },
+  "default_affinity_retirement": {
+    "status": "implemented; offline source tests/strict userspace in progress; exact new VM qualification pending",
+    "kernel": "902f01dc9ea57c4ff5103a30c8539b12f0ffeb5f",
+    "audit": "docs/evidence/default-affinity-retirement-audit-20261014.json",
+    "changed": [
+      "remove global default controller routing",
+      "per-File selection/clear with shared dup semantics and lease rebind refusal",
+      "remove writable counters without producers",
+      "retire legacy global switch/DLI aggregate/direct reset",
+      "Native consumers do not use old queue aggregate"
+    ],
+    "retained": [
+      "standard Diagnostic actual transaction ledger and autonomous-expiry/cancel regression",
+      "Native Runtime/Host/Session/Grant/socket/credit",
+      "K6f2f/U4b949 historical exact real qualification"
+    ],
+    "next_gates": [
+      "Strict clean committed VM build",
+      "Actual VFS unselected/dup/clear/rebind/last reference/independent File isolation",
+      "Actual Virtual and root/ordinary79 refusal matrix",
+      "Exact real dual discovery/connection40 short +249 boundaries/controlled peer isolation"
+    ],
+    "scope_unchanged": true,
+    "vm_only": true,
+    "closure_allowed": false,
+    "first_failure": "Kc2dd pin initializer rejected fallible CString; record retained; corrected committed build required"
   }
 }

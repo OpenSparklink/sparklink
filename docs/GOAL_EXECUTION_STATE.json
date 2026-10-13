@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T00:22:58.193353+00:00",
+  "updated_at_utc": "2026-10-13T00:25:15.385315+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -27,7 +27,7 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "5f8e3107515d8c2e887bd93f0166335b316d57f5",
-    "userspace": "68c8f0f7914e31b148c36468bde4a2f87a8cda48"
+    "userspace": "3b91261b49353ebd7c47afbdbe367beafba189ba"
   },
   "qualified_source_heads": {
     "linux": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -369,6 +369,12 @@
       "jobs": 9,
       "status": "success",
       "kernel_pin": "5f8e3107515d8c2e887bd93f0166335b316d57f5"
+    },
+    "issue_updates": {
+      "count": 15,
+      "verified": "body readback, CI9 refreshed, original scope OPEN unchanged",
+      "receipt": "docs/evidence/backend-layout-guard-issues-20261013.json",
+      "whole_package_closed": false
     }
   },
   "heads_observed_before_receipt_commit": true

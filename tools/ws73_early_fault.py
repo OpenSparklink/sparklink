@@ -10,7 +10,7 @@ import re
 import subprocess
 import time
 from types import SimpleNamespace
-from ws73_north_star import Run, daemon_identity, ordinary_identity, stable
+from ws73_north_star import Run, daemon_identity, ordinary_identity, registration, stable
 from ws73_target_guest import application, ready, EVIDENCE, TOOLS
 
 FIRMWARE=Path('/lib/firmware/sparklink/ws73/bsle_custom.bin')
@@ -78,7 +78,7 @@ def coordinate(pid):
     try:
         ready(0);print('WS73_TARGET_READY: slot=0',flush=True)
         ready(1)
-        d['healthy_before']=[json.loads((EVIDENCE/f'ready-{n}.json').read_text()) for n in [0,1]]
+        d['healthy_before']=[registration(p) for p in ['1-1','1-2']]
         if BACKUP.exists() or not FIRMWARE.is_file():raise ValueError('exact single guest fixture file required')
         d['firmware_sha256']=hashlib.sha256(FIRMWARE.read_bytes()).hexdigest()
         FIRMWARE.rename(BACKUP);d['removed_wall_ns']=time.time_ns();save(d)
@@ -116,9 +116,9 @@ def coordinate(pid):
         if d['stats_after_remove']['fields']!={'Devices':2,'Reserved only':0,'Runtimes':2}:raise ValueError('pending cancellation must converge without clearing peers')
         save(d);print('WS73_TARGET_EARLY_FAULT_READD_READY',flush=True)
         if input().strip()!='early-fault-readd':raise ValueError('explicit guest-only readd acknowledgement required')
-        ready(2);new=json.loads((EVIDENCE/'ready-2.json').read_text());d['replacement']=new
+        ready(2);new=registration('1-3');d['replacement']=new
         if new['generation']<=fault['generation']:raise ValueError('retry requires a new generation')
-        d['healthy_after']=[__import__('ws73_north_star').registration(p) for p in ['1-1','1-2']]
+        d['healthy_after']=[registration(p) for p in ['1-1','1-2']]
         if any(not stable(a,b) for a,b in zip(d['healthy_before'],d['healthy_after'])):raise ValueError('peer identity changed during fault/retry')
         exchange_record(d,'after_retry',['1-1','1-3'],pid)
         d.update(daemon_after=daemon_identity(pid),status='REAL_EARLY_BOOTSTRAP_FAULT_EVIDENCE_PENDING',finished_wall_ns=time.time_ns())

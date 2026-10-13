@@ -530,6 +530,33 @@ TEST provider实际VM注册、标准方言、统一早期reserve/install/fault�
 标准方言validate/send/RX/open/close未实现前不放宽profile1；接通后删除static Usb、拆bus，
 core USB=n/m与module/callback及新实机回归为门禁。自然RCA/非人工恢复与WP12事件继续并行。
 
+当前正常路径 **Ke5d1e3311261 / 编译service及运行工具Ue7275d2**：
+Native与标准USB实际调用者共用reserve_backend_identity、install_backend_runtime及cancel/retire。
+拥有值形式registration snapshot，Runtime分配/候选析构移出registry mutex；发布前再次核对
+精确generation、退休和slot占用，失败不覆盖他人Runtime/选择/硬件metadata。Native注销复用
+common detach，预留但无Runtime也释放精确identity；重复安装入口/无消费者identity helper删除。
+actual10受控构造/析构、pending/open15、资源18C/metadata7、firmware67C/12Rust、Native33/
+ingress9/bus4、工具443、清洁内核零warning/空VM三次/准确CI9通过；是依赖回归，不是内核回收证明。
+旧Native注销在无Runtime预留状态留下slot，actual旧函数8通过/1预期失败见证保留，未声称实机可达。
+TLC两slot/两候选/三全局generation的抽象safety模型16453状态检查完；弱最终gen校验有7步反例，
+映射actual复用回归。Live仅表示安装，非Ready；无fairness/liveness、C/Rust refinement或callback证明，
+FinishRetire抽象已join边界不证明join真实完成。原allocator Kani仍NOT_PROVEN_UNSUPPORTED。
+新普通用户40短+8 app249对端实际校验回复、16超限拒绝无数据证据，224两端SDU/112NOCP，
+capture零drop/taint0，RF22/连接/dup/最后关闭/QMP支撑保持。
+WS73仍查询后才register Core；bootstrap前pending/故障可见性、实机partial-init失败、标准方言、
+static Usb/bus拆分、真正Virtual、module/IRQ/callback/PM及自然根因/非人工恢复继续未完成。
+
+本批三类清单：
+
+- **立即删除，已实施**：独立Native退休与allocator/installer重复逻辑、SubsystemShared重复安装入口、无消费者registration_identity。两实际消费者共用Core入口。
+- **移入测试/保留**：actual旧Native pending提前返回的失败见证（仅fixture状态，非自然实机根因）、共同安装10受控interleave与析构、pending/open15及资源/固件/真实数据历史；TLC弱gen反例映射actual复用回归。
+- **等待替代**：WS73在bootstrap前Core reservation/early fault/partial init资源纳入生命周期，统一C注册API；标准方言/静态分派/bus构建/真正Virtual及事件消费者/其余掩盖。
+
+下一批在现有共同Core入口上接C provider早期reservation与取消，不另造allocator/Runtime表；
+Boot/Setup/fault必须有真实阶段/诊断、有限超时和精确generation清理，未知能力不Ready。
+随后接标准provider真实operations/RX/stop，移除static Usb、core USB=n/m及模块门禁；
+自然故障根因/非人工恢复与WP12事件迁移继续并行。有限模型不是全控制面前置或硬件替代。
+
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。
 - 依赖：先固定接口，不等K4/K9整个issue互相关闭；避免与当前WS73关键整改同时大范围移动。

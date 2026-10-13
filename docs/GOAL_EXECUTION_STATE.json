@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T02:48:09.086637+00:00",
+  "updated_at_utc": "2026-10-13T03:12:54.673750+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -26,16 +26,16 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "c44b74509c418d43f6dfc8557bec4288de79b22c",
-    "userspace": "4d14b354d04bb6b0737c496e35a056b61f59bec9"
+    "linux": "e5d1e3311261150df0ac000c2162ee2707a4968a",
+    "userspace": "e7275d27c0c765d1bc3c4e48789df0edc8a3e467"
   },
   "qualified_source_heads": {
-    "linux": "c44b74509c418d43f6dfc8557bec4288de79b22c",
-    "userspace": "4d14b354d04bb6b0737c496e35a056b61f59bec9"
+    "linux": "e5d1e3311261150df0ac000c2162ee2707a4968a",
+    "userspace": "e7275d27c0c765d1bc3c4e48789df0edc8a3e467"
   },
   "current_qualification": {
-    "DG01": "Kc44b7450 compiled/toolsU4d14b35 fresh ordinary two real WS73 role-exchanged40 short round trips, RF22/connection/Down/dup/lastclose/QMP support; independently verified two-end data.",
-    "DG02": "Same sources8 app249/16 oversize rejects absent captured data; other layered/long/same-Binding gates remain open.",
+    "DG01": "Ke5d1e331 compiled/toolsUe7275d2 fresh ordinary real40 short peer round trips, role exchange/RF22/connection/Down/dup/lastclose/QMP; exact independent two-end evidence.",
+    "DG02": "Same source8 app249/16 rejects absent data evidence; layered/long/same-Binding gates still open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -45,12 +45,13 @@
     "FV06": "Actual production Binding CBMC scoped; abstract Session2controller/2lifetime/alias0..2/work refs checked777924 states; C/Rust/VFS/kref refinement still unproved",
     "DG09": "PARTIAL_REAL: previous six File/two direction/six SCM_RIGHTS gates retained; new tools82aa65a actual common slkd SIGKILL/reap and successor in two connection roles,4 actual peer round trips. First ESTALE requires matching captured Down before wake; after canonical Free and successor both old fds remain EACCES/ERR-HUP. Independent owner business isolation/security/inflight/refinement still open.",
     "WP12": "PARTIAL: default Legacy EventReceiver/start isolated; profile0 Unsupported before lease/publication. Kernel ring/low-level clients, full loss/resync/owner-death topology still open; exact production CI9 success and normal40/249 RF qualification, full event migration still open",
-    "WP13": "PARTIAL: bus loss fixed in retained C/Rust registration; Test provenance explicit across info/snapshots/bindings. Source C11 reject+2 copy/Rust4/4-language/Native33/ingress9/Core13/199-35-440/clean build/emptyVM/CI9/new40-249 PASS. Uniform early reservation/fault/install/retire and genuine standard dialect/enum/bus builds/Virtual/module/IRQ/PM/natural recovery remain open.",
-    "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings."
+    "WP13": "PARTIAL: Native/standard actual callers share Core reserve/install/cancel/retire; snapshot/candidate outside registry, final gen/retiring/slot guards, failure drop outside lock. Scoped10/pending15/resources/Native33/ingress9/bus4/443/clean build/emptyVM/CI9/model16453+weak7/new40-249. Early WS73 bootstrap Core pending/fault/real partial-init, C API/standard dialect/enum/bus/Virtual/module/IRQ/PM/recovery open.",
+    "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
+    "FV_BACKEND_INSTALL": "MODEL_CHECKED_SCOPED: abstract2slots/2candidates/global3gen16453 states, weak final-gen guard7step counterexample mapped actual reuse test; no refinement/liveness/module/IRQ/callback/physical proof."
   },
   "next_slices": [
     "Architecture remediation first: WP18 SSAP \u2192 WP03/04/05/06 Ticket/Session/Grant/socket contract \u2192 WP12/13 event/Backend authority and legacy removal; preserve and regress current data paths, expand features afterwards",
-    "WP13 unify actual standard USB pre-bootstrap reservation and WS73 post-query registration into one reserve/install/retire and partial-init/fault-visible lifecycle; retain truthful query metadata/Ready and exact generation cleanup. Implement standard dialect operations before admission relaxation; then remove static Usb and split core USB=n/m. True Virtual, module/callback/IRQ/PM and WP12 event consumers remain required.",
+    "WP13 wire C providers/WS73 early bootstrap reservation/cancel and Core fault visibility into existing common reserve/install/retire, not duplicate tables; preserve true queried metadata/Ready and bounded generation cleanup. Validate real partial initialization and peer isolation in VM. Then genuine standard dialect operations/registered Backend, remove static Usb and split core USB=n/m; Virtual/module/IRQ/PM and WP12 events remain required.",
     "WP18-SSAP separation batch PASS at K770364dcc152/U96ac968; related whole issues remain open. Continue target ownership/Backend/event remediation before WP08 user Engine",
     "WP02/DG02 same-Binding61\u2192249\u2192reject\u219261; DG03 layered boundaries",
     "WP02/DG05-06 actual credit exhaustion/backpressure/finite queues; FV02/FV08",
@@ -205,7 +206,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "PARTIAL: bus loss fixed in retained C/Rust registration; Test provenance explicit across info/snapshots/bindings. Source C11 reject+2 copy/Rust4/4-language/Native33/ingress9/Core13/199-35-440/clean build/emptyVM/CI9/new40-249 PASS. Uniform early reservation/fault/install/retire and genuine standard dialect/enum/bus builds/Virtual/module/IRQ/PM/natural recovery remain open."
+      "status": "PARTIAL: Native/standard actual callers share Core reserve/install/cancel/retire; snapshot/candidate outside registry, final gen/retiring/slot guards, failure drop outside lock. Scoped10/pending15/resources/Native33/ingress9/bus4/443/clean build/emptyVM/CI9/model16453+weak7/new40-249. Early WS73 bootstrap Core pending/fault/real partial-init, C API/standard dialect/enum/bus/Virtual/module/IRQ/PM/recovery open."
     },
     {
       "id": "WP14",
@@ -283,15 +284,15 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "WP13 descriptor bus retained/validated before Runtime installation; Test6 info/name distinct from USB4/Virtual0, all language enums aligned. Source and negative fixture/offline/CI/new real40-249 qualified only; complete target architecture still first.",
-  "current_audit": "docs/evidence/backend-bus-next-registration-audit-20261013.json",
-  "issue_sync_status": "16 related existing issues read back exact body hash, including K11 bus/dialect scope; all OPEN and original bodies/scopes unchanged",
+  "current_batch": "WP13 actual common Core reservation/owned candidate construction outside registry/final exact publication/cancel/retire; Native pending unregister gap removed. Exact scoped actual10/pending15/formal bounded model+weak control/CI9/new40-249. Early C bootstrap reservation/fault visibility remains open.",
+  "current_audit": "docs/evidence/backend-install-offline-20261013.json",
+  "issue_sync_status": "Common Backend install comments pending; all prior scopes OPEN retained",
   "current_implementation_heads": {
-    "linux": "c44b74509c418d43f6dfc8557bec4288de79b22c",
-    "userspace": "4d14b354d04bb6b0737c496e35a056b61f59bec9"
+    "linux": "e5d1e3311261150df0ac000c2162ee2707a4968a",
+    "userspace": "e7275d27c0c765d1bc3c4e48789df0edc8a3e467"
   },
   "next_resume_tasks": [
-    "WP13 unify actual standard USB pre-bootstrap reservation and WS73 post-query registration into one reserve/install/retire and partial-init/fault-visible lifecycle; retain truthful query metadata/Ready and exact generation cleanup. Implement standard dialect operations before admission relaxation; then remove static Usb and split core USB=n/m. True Virtual, module/callback/IRQ/PM and WP12 event consumers remain required.",
+    "WP13 wire C providers/WS73 early bootstrap reservation/cancel and Core fault visibility into existing common reserve/install/retire, not duplicate tables; preserve true queried metadata/Ready and bounded generation cleanup. Validate real partial initialization and peer isolation in VM. Then genuine standard dialect operations/registered Backend, remove static Usb and split core USB=n/m; Virtual/module/IRQ/PM and WP12 events remain required.",
     "WP05 remaining trusted-security Grant installation, independent-owner business isolation and controlled in-flight arbitration/refinement; preserve existing epoch/direction/release/last-management-fd/dup/SCM_RIGHTS/common-daemon-death exact qualification. Do not repeat implemented epoch/direction or silently broaden historical proof.",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
@@ -299,7 +300,7 @@
     "Then unchanged full S0\u2013S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/Proxy/PM/recovery/release"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
-  "offline_evidence": "docs/evidence/backend-bus-offline-20261013.json",
+  "offline_evidence": "docs/evidence/backend-install-offline-20261013.json",
   "ssap_separation_batch_complete": true,
   "target_architecture_remediation_complete": false,
   "batch_evidence": [
@@ -352,13 +353,17 @@
     "docs/evidence/backend-bus-next-registration-audit-20261013.json",
     "docs/evidence/ws73-backend-bus-short-repeat-20261013.json",
     "docs/evidence/ws73-backend-bus-249-boundary-20261013.json",
-    "docs/evidence/backend-bus-issues-20261013.json"
+    "docs/evidence/backend-bus-issues-20261013.json",
+    "docs/evidence/backend-install-offline-20261013.json",
+    "docs/evidence/backend-install-formal-20261013/manifest.json",
+    "docs/evidence/ws73-backend-install-short-repeat-20261013.json",
+    "docs/evidence/ws73-backend-install-249-boundary-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/backend-bus-issues-20261013.json",
   "latest_evidence_commit": "7044558fd8d482c7cd45406f2d8f40ca96a144ba",
-  "previous_goal_turn_classification": "progress: authoritative caller audit, deleted unused Rust/C USB API and fallback, isolated exact codec, removed USB module dead mask, actual regression plus clean build/linked symbols/emptyVM3/CI9/new real40-249; next descriptor bus provenance loss identified. Whole architecture/recovery unqualified.",
-  "current_goal_turn_classification": "progress: copied validated provider bus into retained C context and verified before Rust Runtime publication, fixed info/name and C/Rust/Python enums; prior actual info source failure witness, C11+2/Rust4/Native33/Core13/ingress9 and strict199/35/440/CI9/clean build/emptyVM/new real40-249. Full architecture/module/recovery unqualified.",
+  "previous_goal_turn_classification": "progress: copied validated provider bus into retained C context and verified before Rust Runtime publication, fixed info/name and C/Rust/Python enums; prior actual info source failure witness, C11+2/Rust4/Native33/Core13/ingress9 and strict199/35/440/CI9/clean build/emptyVM/new real40-249. Full architecture/module/recovery unqualified.",
+  "current_goal_turn_classification": "progress: common actual Core reserve/install/cancel/retire consumers, owned candidate allocation/destruction outside registry and final exact publish, old pending unregister counterexample; actual10/pending15/other source/443/clean build/emptyVM/CI9, exact finiteTLC16453+weak7, new real40-249; full architecture/recovery unqualified.",
   "qualified_tool_source_heads": [
     "8f1959069f45c4bd4420f4ac0a106ba52fee0159",
     "82aa65a77019804e78a95c1706c461e715187314",
@@ -366,7 +371,8 @@
     "c830f0947e31e0509cc8b303a007cf7ee8e44e59",
     "5e4d68b289373f1984dc964d213d9e8e9e5303a1",
     "0960ed917a32073e226f8ff5bd2ac92b4c1fbd7d",
-    "4d14b354d04bb6b0737c496e35a056b61f59bec9"
+    "4d14b354d04bb6b0737c496e35a056b61f59bec9",
+    "e7275d27c0c765d1bc3c4e48789df0edc8a3e467"
   ],
   "backend_descriptor_slice": {
     "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -416,7 +422,7 @@
       "whole_package_closed": false
     }
   },
-  "qualified_run_tools_head": "4d14b354d04bb6b0737c496e35a056b61f59bec9",
+  "qualified_run_tools_head": "e7275d27c0c765d1bc3c4e48789df0edc8a3e467",
   "usb_pending_slice": {
     "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
     "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
@@ -498,5 +504,20 @@
       "receipt": "docs/evidence/backend-bus-issues-20261013.json",
       "whole_package_closed": false
     }
+  },
+  "previous_backend_bus_source_heads": {
+    "linux": "c44b74509c418d43f6dfc8557bec4288de79b22c",
+    "userspace": "4d14b354d04bb6b0737c496e35a056b61f59bec9"
+  },
+  "backend_install_slice": {
+    "kernel": "e5d1e3311261150df0ac000c2162ee2707a4968a",
+    "compiled_service": "e7275d27c0c765d1bc3c4e48789df0edc8a3e467",
+    "run_tools": "e7275d27c0c765d1bc3c4e48789df0edc8a3e467",
+    "implemented": "Common Core actual allocator/install/cancel/retire, snapshot and candidate outside lock; duplicate installer removed; Native no-Runtime pending retirement gap fixed",
+    "offline": "actual10/pending-open15/resources18C/metadata7/firmware67C12Rust/Native33/ingress9/bus4/tools443/zero warnings/emptyVM3/CI9",
+    "formal": "Abstract16453 states+weak7 counterexample; no C/Rust/IRQ/module/callback/liveness refinement; prior allocator unproved",
+    "real": "40 short,8 app249,16 rejects,224 SDUs/112NOCP; RF22/connection/dup/lastclose/QMP; no new real partial-init/early reservation or natural recovery gate",
+    "early_bootstrap_registered": false,
+    "package_complete": false
   }
 }

@@ -7,7 +7,7 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-当前正常路径Kc44b74509c41/编译与工具U4d14b35：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
+当前正常路径Ke5d1e3311261/编译与工具Ue7275d2：Runtime拥有ConnectionSession，Session唯一消费ACB并处理
 CMTC，Channel独立有界队列，socket只持Binding；单基础通道限制继续保留。
 实验AF/PF_SPARKLINK=46已经接入当前fork，正式分配尚待协调。基础模式SOCK_DGRAM；
 未取得可靠模式资格的SOCK_SEQPACKET明确拒绝。新准确版本取得40轮短消息、8轮249-byte
@@ -110,6 +110,22 @@ Native33/ingress9/Core13、workspace199/Python35/工具440、strict default/all-
 本批未新增形式化证明，原allocator仍NOT_PROVEN_UNSUPPORTED，依赖fixture不证明module/IRQ。
 TEST provider实际VM注册、标准方言、统一早期reserve/install/fault生命周期、bus构建/真正Virtual
 及自然根因/非人工恢复仍缺；本批来源修正不等于完整Backend迁移。
+
+当前正常路径 **Ke5d1e3311261 / 编译service及运行工具Ue7275d2**：
+Native与标准USB实际调用者共用reserve_backend_identity、install_backend_runtime及cancel/retire。
+拥有值形式registration snapshot，Runtime分配/候选析构移出registry mutex；发布前再次核对
+精确generation、退休和slot占用，失败不覆盖他人Runtime/选择/硬件metadata。Native注销复用
+common detach，预留但无Runtime也释放精确identity；重复安装入口/无消费者identity helper删除。
+actual10受控构造/析构、pending/open15、资源18C/metadata7、firmware67C/12Rust、Native33/
+ingress9/bus4、工具443、清洁内核零warning/空VM三次/准确CI9通过；是依赖回归，不是内核回收证明。
+旧Native注销在无Runtime预留状态留下slot，actual旧函数8通过/1预期失败见证保留，未声称实机可达。
+TLC两slot/两候选/三全局generation的抽象safety模型16453状态检查完；弱最终gen校验有7步反例，
+映射actual复用回归。Live仅表示安装，非Ready；无fairness/liveness、C/Rust refinement或callback证明，
+FinishRetire抽象已join边界不证明join真实完成。原allocator Kani仍NOT_PROVEN_UNSUPPORTED。
+新普通用户40短+8 app249对端实际校验回复、16超限拒绝无数据证据，224两端SDU/112NOCP，
+capture零drop/taint0，RF22/连接/dup/最后关闭/QMP支撑保持。
+WS73仍查询后才register Core；bootstrap前pending/故障可见性、实机partial-init失败、标准方言、
+static Usb/bus拆分、真正Virtual、module/IRQ/callback/PM及自然根因/非人工恢复继续未完成。
 
 ## 目标分层及架构决策
 

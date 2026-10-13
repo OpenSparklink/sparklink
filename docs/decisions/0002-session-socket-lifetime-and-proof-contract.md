@@ -333,3 +333,16 @@ C/Rust源回归与跨语言实际编译限定其范围，原源码TEST→USB失�
 失败资源与fault可见性，保持真实查询后能力和Ready，不由descriptor或open成功推断Ready。
 先接通统一reserve/install/retire及真实标准方言operations，再删除静态Usb和拆bus；
 module/IRQ/callback/PM、真正Virtual、自然根因/非人工恢复继续要求独立门禁。
+
+## 共同Core预留、安装与退休（2026-10-13）
+
+实际Native/标准USB共享reserve/install/cancel/retire。Registry只保护身份与发布；
+拥有值snapshot离锁后分配Runtime，最终精确generation/退休/slot recheck才发布及更新
+queried metadata/selection；失败候选在registry guard退出后析构，driver put不在该锁内。
+取消只清无Runtime、未退休的精确reservation，不能删除已有或draining owner。
+Native unregister复用相同detach，不由“没有Runtime”推断身份已释放。
+
+有限TLC只检查抽象安装metadata属于当前generation，Live不是Host Ready；2 slots/2
+candidates/3 generations，无fairness/liveness/allocator/refcount/module/IRQ/callback
+或C/Rust refinement。Retire finish抽象join边界仍要求实机证明；弱gen反例转actual复用回归。
+WS73 early bootstrap Core reservation/fault可见性仍缺，不能由这批共同Core入口宣称接通。

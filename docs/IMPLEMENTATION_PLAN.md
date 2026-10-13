@@ -20,7 +20,7 @@ driver/compiler/hardening等其他选项未变化，Virtual仍是独立可选测
 双真实发现/连接40短消息、8轮249字节/16超限拒绝、受控同行隔离已重新通过。
 新配置与旧资格严格分开。初始credit来自驱动metadata直传Host，不用默认常量。
 [准确新配置门禁、失败与未决](evidence/measurement-config-retirement-progress-20261014.json)。
-准确源码CI原1项旧选项测试失败保留，test-only K94d84修正四检查通过，完整CI待重核。
+准确源码CI原1项旧选项测试失败保留，test-only K94d84修正四检查通过，完整U45bb87/K94d84 CI九项已逐job成功回读；运行源码与实机仍精确绑定Kdfc641/U78fd。
 完整S0–S6、VM-only、UserHost P4/文档独立范围、自然RCA/非人工恢复开放条件保持。
 下一步收敛未发布旧facade及标准事件/result，接通唯一用户态SSAP，数据扩展与
 形式化并行；不以控制竞争全集为数据面前置。

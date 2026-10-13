@@ -9,7 +9,7 @@
 标准Diagnostic账本/自主超时取消保留；none/0 selector与五个旧全局配置已删除。
 [准确资格与首次失败](evidence/measurement-config-retirement-progress-20261014.json)。
 以下Kdd11/Uc692与37e9配置为历史资格；新test-only K94d84不改运行代码，
-其完整CI待核对，不继承旧绿色检查。自然恢复/安全/SSAP及其他scope继续开放。
+其U45bb87/K94d84 CI九项已成功，不继承或覆盖原失败。自然恢复/安全/SSAP及其他scope继续开放。
 
 上一批准确路径记录：K `dd11fa38a338`／编译service+runner U `c6927630cbb1` 已
 在VM重新完成显式File/dup/独立File隔离、Virtual及真实双WS73发现-建链、40轮

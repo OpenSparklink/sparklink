@@ -38,6 +38,67 @@ def link_reference(text, owner, peer, handle):
     return dict(lifetime=lifetime,handle=current,role=role,address_type=kind,address=address)
 
 
+DOWN_OBSERVATION_BUDGET_SECONDS = 5
+
+
+def await_down_properties(run, phase, caller, peer):
+    """One original diagnostic deadline for both asynchronous physical ends.
+
+    This is not a protocol/hardware latency guarantee. Capture corroboration
+    must independently find each real Down before its false-property receipt.
+    """
+    started = time.time_ns()
+    deadline = time.monotonic() + DOWN_OBSERVATION_BUDGET_SECONDS
+    observation = dict(version=1, budget_seconds=DOWN_OBSERVATION_BUDGET_SECONDS,
+                       start_wall_ns=started, receipts=[])
+    phase['down_property_observation'] = observation
+    run.save()
+    for owner, remote in [(caller, peer), (peer, caller)]:
+        while True:
+            if time.monotonic() >= deadline:
+                raise CaptureError('both real Down events must reach Device properties within shared budget')
+            row = run.ctl(owner, 'info', remote['address'])
+            if '  Connected: false\n' in row['stdout']:
+                if time.monotonic() >= deadline:
+                    raise CaptureError('Down property receipt exceeded original shared budget')
+                observation['receipts'].append(dict(owner=owner, remote_address=remote['address'],
+                                                     command=len(run.data['commands'])-1))
+                run.save()
+                break
+            time.sleep(.01)
+    observation['end_wall_ns'] = time.time_ns()
+    run.save()
+
+
+def corroborate_down_property(run, phase, owner, event):
+    observation = phase.get('down_property_observation')
+    if observation is None:
+        return None  # historical format, not the new bounded sub-gate
+    if (observation.get('version') != 1 or observation.get('budget_seconds') != 5
+            or len(observation.get('receipts', [])) != 2):
+        raise CaptureError('complete shared Down observation receipt required')
+    start = observation['start_wall_ns']
+    limit = start + DOWN_OBSERVATION_BUDGET_SECONDS * 1_000_000_000
+    if not start <= observation.get('end_wall_ns', limit+1) <= limit:
+        raise CaptureError('Down observation exceeded original deadline')
+    receipts = [v for v in observation['receipts'] if v['owner'] == owner]
+    if len(receipts) != 1:
+        raise CaptureError('one exact Down property owner required')
+    receipt = receipts[0]
+    index = receipt['command']
+    if type(index) is not int or not 0 <= index < len(run['commands']):
+        raise CaptureError('Down property command index invalid')
+    row = run['commands'][index]
+    if (row['exit'] or row['args'][-2:] != ['info', receipt['remote_address']]
+            or row['args'][-3] != owner['path']
+            or '  Connected: false\n' not in row['stdout']
+            or not start <= row['start_wall_ns'] <= row['end_wall_ns'] <= limit
+            or event['wall_ns'] > row['end_wall_ns']):
+        raise CaptureError('actual physical Down must precede bounded false-property receipt')
+    return dict(command=index, physical_down_wall_ns=event['wall_ns'],
+                property_end_wall_ns=row['end_wall_ns'], deadline_wall_ns=limit)
+
+
 def execute(run, a, b):
     """Run once, before ordinary RF rounds, and retain every failed command."""
     kind = getattr(run.args, 'connection_advertising', 'fixed-t')
@@ -124,14 +185,7 @@ def execute(run, a, b):
             phase['disconnect'] = result(row['stdout'], caller, 2)
             if row['exit'] or phase['disconnect']['handle'] != phase['connect']['handle']:
                 raise CaptureError('exact established handle must disconnect')
-            for owner, remote in [(caller,peer), (peer,caller)]:
-                deadline = time.monotonic()+1
-                while True:
-                    row = run.ctl(owner, 'info', remote['address'])
-                    if '  Connected: false\n' in row['stdout']: break
-                    if time.monotonic() >= deadline:
-                        raise CaptureError('both real Down events must reach Device properties')
-                    time.sleep(.01)
+            await_down_properties(run, phase, caller, peer)
             for entry in phase['typed_objects']:
                 phase['stale_object_rejections'].append(reject_old(run,entry,'after-down'));run.save()
             previous_objects=phase['typed_objects']
@@ -255,6 +309,8 @@ def corroborate(run, capture):
                     and (e['bus'],e['device'])==(owner['bus'],owner['device'])
                     and start<=e['wall_ns']<=phase['end_wall_ns']]
                 if len(events)!=1: raise CaptureError('one matching raw physical outcome on each controller required')
+                if operation == 2:
+                    corroborate_down_property(run, phase, owner, events[0])
                 body=bytes.fromhex(events[0]['params'])
                 if len(body)<(11 if operation==1 else 4) or body[0]:
                     raise CaptureError('successful bounded physical outcome required')

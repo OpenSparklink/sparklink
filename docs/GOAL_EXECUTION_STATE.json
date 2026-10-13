@@ -615,6 +615,13 @@
       "receipt": "docs/evidence/registration-diagnostic-issues-20261013.json",
       "whole_package_closed": false
     },
-    "formal_tool": "7baad4854dcbe0715fb85153af6299bb96162189"
+    "formal_tool": "7baad4854dcbe0715fb85153af6299bb96162189",
+    "formal_tool_ci": {
+      "head": "7baad4854dcbe0715fb85153af6299bb96162189",
+      "run_id": 38349826114,
+      "jobs": 9,
+      "status": "success",
+      "scope": "Offline only; no hardware qualification change"
+    }
   }
 }

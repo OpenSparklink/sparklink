@@ -699,5 +699,12 @@
     "proof_status": "NOT_PROVEN_UNSUPPORTED",
     "scope": "Explicit fake cargo output success+unsupported; actual CLI rejects, not a solver or hardware qualification",
     "stdout": "NOT_PROVEN_UNSUPPORTED /home/sanchuanhehe/Documents/opensparklink/.dev/registration-proof-negative-1vnn9nj4/proof/manifest.json\n"
+  },
+  "formal_tool_ci": {
+    "head": "7baad4854dcbe0715fb85153af6299bb96162189",
+    "run_id": 38349826114,
+    "jobs": 9,
+    "status": "success",
+    "scope": "Offline only; no hardware qualification change"
   }
 }

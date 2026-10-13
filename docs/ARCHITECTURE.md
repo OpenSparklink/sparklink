@@ -205,7 +205,9 @@ DLI PB、DTAP SAR、SSAP分片是不同层：每层记录长度/片数/字节预
 
 ### 权威接口
 
-管理API、数据socket、观察订阅、Diagnostic、未来UserHost接管分离。genl/ioctl等若保留多个前端，仅转发到同一内部权威状态和事务，不各自写状态。
+管理API、数据socket、观察订阅、Diagnostic、未来UserHost接管分离。
+PM决策按controller归slkd；驱动保留真实电源/板级机制。默认内核不保存PowerInner估计模型，
+未接通硬件PM必须拒绝，不能用configfs全局模式限制其他controller或发布可信PM状态。genl/ioctl等若保留多个前端，仅转发到同一内部权威状态和事务，不各自写状态。
 
 UAPI采用固定宽度、对齐、version/length/flags/reserved和可验证上限。修改同步C、Rust、Python绑定、CLI、D-Bus和CI pin。ioctl结构大小影响编号；size字段不能修复旧编号静默变化。
 

@@ -5,6 +5,39 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
+## 当前子门禁：删除软件 PM 模型与跨设备全局策略
+
+准确编译 K `43e55d59fe95`／service+runner U `1dedbad3d41e`。
+[三类审计](evidence/power-model-retirement-audit-20261014.json)、
+[源码／门禁／初次失败／未决](evidence/power-retirement-progress-20261014.json)：
+PowerInner／默认sle_power及软件状态、估计和计数已移入专用历史测试；6项PM ioctl
+明确拒绝，先执行权限检查。configfs power_mode 的show/root store不支持，普通写入仍拒绝；
+删除全局原子状态、Native提交门禁和保护操作中的模型同步，不再用一个开关影响所有controller。
+真实驱动 pm_config.bin、USB资源和初始化机制保留；没有获得真实PM资格。
+旧混合内核SubsysStats待最终迁移，其中power=Unknown255，transitions不可用而非测得零。
+
+默认slkd PM方法明确NotSupported，非法参数InvalidArgs；旧GetStats及其模型DTO移除。
+slctl stats／GetLinkSummary从实际身份绑定LinkSnapshot取得index/generation/revision/event_seq/count，
+daemon锁外syscall；格式有效的Unknown仍必须失败，已知空表可成功；不是Ready、逻辑通道数、PM或ACK。
+U6c的首轮正向实机证据保留，但其缺少Unknown守卫，未转授修正后资格。
+
+严格all-features／35跨语言／459工具及准确CI九项通过；直接生产摘要函数Unknown/已知空表测试通过，
+3个原始历史模型测试保留。首次pin初始化编译失败保留，修正后完整稳定配置构建通过。
+空模块／实际Virtual两轮42查询、原管理fd／取消／dup／在途／同行门禁保持；
+24个PM实际ioctl拒绝且buffer不变（root12 unsupported、ordinary2 observe unsupported/10 protected denied），
+4个全局策略show/store Unsupported；这些不是硬件PM或完整callback证明。
+
+修正后新实机 [40短消息](evidence/power-retirement-real-short-20261014.json)、
+[8次249／16超限拒绝](evidence/power-retirement-real-boundary-20261014.json)、
+[受控故障同行8](evidence/power-retirement-fault-real-20261014.json)通过。
+真实随机序号／载荷由对端校验回复，正常224 ACB SDU／112 NOCP、zero capture drops／taint0，
+8份新链路摘要和32实际完整事件copy故障／重试／独立重放。NOCP不是对端收到。
+
+仍缺：conn/adv/security/RPA/local_role及ioctl/debugfs默认路由、混合旧统计最终迁移；
+真实每设备PM／PHY／安全机制和策略、完整canonical loss/拓扑/owner-death及callback/IRQ/module/PM；
+长包/credit耗尽/背压/多通道/四设备/唯一用户SSAP/S5–S6。自然RCA／非人工恢复继续OPEN；
+QMP、注入、人工和hub干预不能替代自然恢复。完整目标与UserHost P4规划不变。
+
 ## 当前子门禁：退休无身份的 Netlink controller 投影
 
 准确编译 K `7c6d530ffe2e`／service+runner U `ffc0945dfdac`。

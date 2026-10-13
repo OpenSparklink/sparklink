@@ -8,6 +8,16 @@
 当前五维资格只在[CURRENT_CAPABILITIES](CURRENT_CAPABILITIES.md)维护，
 goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_STATE.json)。
 
+## 近期整改：软件 PM 与旧统计展示剥离后，继续统一剩余状态
+
+本批按[审计](evidence/power-model-retirement-audit-20261014.json)移除默认软件PM、
+跨controller全局策略与旧daemon统计展示。Native链路摘要取得准确源码回归；
+完整门禁和限制只从[当前资格](CURRENT_CAPABILITIES.md)与
+[证据](evidence/power-retirement-progress-20261014.json)进入。
+剩余conn/adv/security/RPA/local_role、旧ioctl/debugfs默认选择及混合内核统计继续逐项迁移：
+先接真正消费者或明确拒绝，再删重复状态。每设备实际PM机制／slkd策略另有正向硬件门禁，
+不能以模型删除、权限拒绝或Virtual通过宣称完成。原S0–S6、纵向data/用户SSAP、自然RCA及非人工恢复范围保留。
+
 ## 近期整改：Netlink 默认设备投影已剥离，继续统一状态来源
 
 本批按[调用审计](evidence/genl-retirement-audit-20261014.json)删除无生命周期身份的

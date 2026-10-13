@@ -130,7 +130,11 @@ SSAP字段已同步删除；C/Rust/Python不再导出它们。未发布UAPI不�
 保留，未来唯一用户态SSAP Engine复用。通用CMTC/TCID、DTAP、credit、socket
 和安全机制仍归内核；socket业务往返不等于SSAP互通资格。
 
-## 功率管理 (0x60-0x65)
+## 电源管理 (0x60-0x65)：当前明确不支持
+
+K43e55d59fe95已移除软件PM模型；以下旧入口仅保留待删除的未发布声明，
+通过权限检查后返回EOPNOTSUPP，不读写用户buffer。普通用户对保护操作仍EPERM。
+驱动板级PM初始化不等于这些动态PM能力。
 
 | CMD | 序号 | 方向 | 参数类型 |
 |-----|------|------|----------|
@@ -169,7 +173,7 @@ SSAP字段已同步删除；C/Rust/Python不再导出它们。未发布UAPI不�
 | `DLI_RESET` | 0x83 | none | — |
 | `DLI_SEND_CMD` | 0x84 | readwrite | `SleDliCmd` |
 | `MGMT_STATS` | 0x85 | read | `SleMgmtStats` |
-| `SUBSYS_STATS` | 0x86 | read | `SleSubsysStats` |
+| `SUBSYS_STATS` | 0x86 | read | `SleSubsysStats`（遗留混合来源；power=255未知，transitions不可用；不作Native权威） |
 | `CONTROLLER_EVENT_GET` | 0x87 | readwrite | `SleControllerEventQuery` (360 bytes) |
 
 `CONTROLLER_EVENT_GET` version 1 是独立的完整原生事件通路，当前接入已校验的
@@ -520,3 +524,12 @@ with Adapter("/dev/sparklink") as adpt:
 | `SlePhyParams` | `SlePhyParams` | 4 |
 | `SleDeviceStats` | `SleDeviceStats` | 48 |
 | `SlkEvent` | — (FFI only) | 268 |
+
+## 当前 Controller 链路摘要与 PM D-Bus
+
+U1dedbad3d41e：`org.sparklink.Controller.GetLinkSummary`返回
+`(index:u16,generation:u64,revision:u64,event_seq:u64,count:u32)`，
+源于实际LinkSnapshot；Unknown／error明确Failed，不把合法未知表示当空表。
+`slctl stats`使用该方法，旧`GetStats`和模型DTO已删除，无兼容承诺。
+GetPmInfo／PmSetState／PmForceActive明确NotSupported；非法状态InvalidArgs。
+完整接口边界与准确实机范围见[当前资格](CURRENT_CAPABILITIES.md)。

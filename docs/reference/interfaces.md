@@ -40,3 +40,8 @@ C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声�
 Netlink v2 核对 K `7c6d530ffe2e`／U `ffc0945dfdac`：仅注册数量和软件版本，
 无 controller 控制或事件 multicast，请求多余属性返回 EINVAL。旧命令 EOPNOTSUPP。
 它不报告 Ready、连接或固件能力；详见[实际迁移证据](../evidence/genl-retirement-progress-20261014.json)。
+
+PM与统计核对K `43e55d59fe95`／U `1dedbad3d41e`：默认软件PM与全局模式删除；
+PM ioctl／configfs不支持，D-Bus PM明确NotSupported。`slctl stats`改为实际
+GetLinkSummary，Unknown失败；旧混合内核统计尚待迁移，不能当Native状态权威。
+[准确子门禁与未决](../evidence/power-retirement-progress-20261014.json)。

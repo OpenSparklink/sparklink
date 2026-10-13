@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T02:25:12.952062+00:00",
+  "updated_at_utc": "2026-10-13T02:28:30.279099+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -279,13 +279,13 @@
   ],
   "full_goal_complete": false,
   "original_issues_open": true,
-  "issue_sync_receipt": "docs/evidence/usb-context-issues-20261013.json",
+  "issue_sync_receipt": "docs/evidence/usb-isolation-issues-20261013.json",
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
   "current_batch": "WP13/18 unused USB wrappers/duplicate codec/callback fallback removed, module dead-code mask removed, actual registered C RX helpers private; exact source offline/CI/clean build/new40-249 retained. Full target architecture remediation still first.",
   "current_audit": "docs/evidence/usb-isolation-next-backend-audit-20261013.json",
-  "issue_sync_status": "Current USB isolation comments pending; all previous scopes preserved OPEN",
+  "issue_sync_status": "15 related existing issues read back exact body hash; all OPEN and original bodies/scopes unchanged",
   "current_implementation_heads": {
     "linux": "06c901906b7e6ecc91a904f3c7aea66b10b6b5be",
     "userspace": "0960ed917a32073e226f8ff5bd2ac92b4c1fbd7d"
@@ -346,11 +346,12 @@
     "docs/evidence/usb-isolation-offline-20261013.json",
     "docs/evidence/usb-isolation-next-backend-audit-20261013.json",
     "docs/evidence/ws73-usb-isolation-short-repeat-20261013.json",
-    "docs/evidence/ws73-usb-isolation-249-boundary-20261013.json"
+    "docs/evidence/ws73-usb-isolation-249-boundary-20261013.json",
+    "docs/evidence/usb-isolation-issues-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/usb-context-issues-20261013.json",
-  "latest_evidence_commit": "0ce306ce2f6b611ada4f0380e02f33650b36cb03",
+  "latest_issue_progress_receipt": "docs/evidence/usb-isolation-issues-20261013.json",
+  "latest_evidence_commit": "8b448950710808f4d6af2027254361336796473c",
   "previous_goal_turn_classification": "progress: removed global C USB resource lookup; actual callers retain probe allocation with immutable identity, get/put and I/O-retire serialization; scoped fixtures18C/metadata7/core13/firmware67C12Rust/Native33/ingress9/tool440/CI9/clean build/emptyVM3/new real40-249. No full context/module/callback proof or target architecture completion.",
   "current_goal_turn_classification": "progress: authoritative caller audit, deleted unused Rust/C USB API and fallback, isolated exact codec, removed USB module dead mask, actual regression plus clean build/linked symbols/emptyVM3/CI9/new real40-249; next descriptor bus provenance loss identified. Whole architecture/recovery unqualified.",
   "qualified_tool_source_heads": [
@@ -462,6 +463,13 @@
     "offline": "resources/firmware/open/TX/Native/ingress plus live parser4/historic3, clean build/emptyVM3/symbols/tool440/CI9",
     "formal": "No new proof; prior allocator NOT_PROVEN_UNSUPPORTED retained",
     "real": "40 short,8 app249,16 rejects,224 SDUs/112 NOCP, RF22/connection/dup/lastclose/QMP; no physical or recovery qualification",
-    "package_complete": false
+    "package_complete": false,
+    "issue_updates": {
+      "count": 15,
+      "readback_verified": true,
+      "original_scopes_open_unchanged": true,
+      "receipt": "docs/evidence/usb-isolation-issues-20261013.json",
+      "whole_package_closed": false
+    }
   }
 }

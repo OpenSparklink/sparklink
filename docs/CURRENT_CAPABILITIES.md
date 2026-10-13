@@ -252,3 +252,4 @@ USB旧包装/codec隔离本批证据：
 - [清理、live parser、历史codec、源码/构建/符号/CI](evidence/usb-isolation-offline-20261013.json)
 - [新准确40](evidence/ws73-usb-isolation-short-repeat-20261013.json)、[249与超限](evidence/ws73-usb-isolation-249-boundary-20261013.json)
 - [下一批Backend实际接入审计](evidence/usb-isolation-next-backend-audit-20261013.json)：descriptor bus未传至Rust（TEST当前硬编码USB）须修正；profile0尚不能注册，先统一reservation/install再删enum和拆bus。
+- [本批15项issue读回回执](evidence/usb-isolation-issues-20261013.json)：原scope保留、全部OPEN，局部清理/实机通过不关闭整项。

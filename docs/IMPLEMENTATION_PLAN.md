@@ -505,6 +505,31 @@ controller/固件/probe/PM调用者。USB模块级dead_code/unreachable_pub掩�
 不能只放宽profile1校验。随后删Usb enum和bus构建耦合，以core USB=n/m、provider模块生命周期
 及WS73准确新实机回归为门禁；自然故障/非人工恢复仍开放。
 
+当前正常路径 **Kc44b74509c41 / 编译service及运行工具U4d14b35**：
+common Backend验证后的bus复制进持引用C transport，独立于wire profile；Rust安装Runtime前
+检查并映射internal USB1/TEST2至public USB4/TEST6，未知来源拒绝。TEST名称sparklink-test，
+不冒充物理USB/WS73或合格VirtualBackend。registry/SciDevInfo/DLI info/snapshot使用此info来源。
+未发布UAPI/SDK结构尺寸和旧值不变；内核/Rust/生成C enum/Python同步Test=6，跨语言实际编译核对。
+C实际注册原11拒绝+2来源复制（原descriptor修改后值不变）及Rust4转换/投影通过；
+旧K06c90190 info在依赖fixture下将TEST返回USB，3通过/1预期失败见证保留，不称实机串标签。
+Native33/ingress9/Core13、workspace199/Python35/工具440、strict default/all-features clippy，
+清洁内核零warning/空VM三次/准确CI9通过。新普通用户40短+8 app249对端实际校验回复、
+16超限拒绝无捕获数据，224两端SDU/112真实NOCP，capture零drop/taint0，RF22/连接/dup保持。
+本批未新增形式化证明，原allocator仍NOT_PROVEN_UNSUPPORTED，依赖fixture不证明module/IRQ。
+TEST provider实际VM注册、标准方言、统一早期reserve/install/fault生命周期、bus构建/真正Virtual
+及自然根因/非人工恢复仍缺；本批来源修正不等于完整Backend迁移。
+
+本批三类清单：
+
+- **立即删除，已实施**：Native info固定USB来源，TEST误用WS73名称；C注册遗失descriptor bus已修正为持引用immutable字段。
+- **移入测试/保留**：旧info实际错误投影的预期失败见证（仅source fixture）、actual C拒绝/来源复制、Rust转换/投影、四语言bus对照及全部历史失败/当前数据回归。
+- **等待替代**：双注册路径与早期bootstrap fault/资源所有权差异、static Usb、core USB=y、真正Virtual/其他bus及旧事件消费者/其他模块掩盖。
+
+下一批先统一实际reserve/install/retire与partial init清理：标准USB先pending，WS73查询后才register，
+须让早期设备故障和资源属于同一生命周期，同时保持真实metadata查询与Ready终态。
+标准方言validate/send/RX/open/close未实现前不放宽profile1；接通后删除static Usb、拆bus，
+core USB=n/m与module/callback及新实机回归为门禁。自然RCA/非人工恢复与WP12事件继续并行。
+
 - 范围：core注册、Backend seam、USB/serdev/parser、drivers Kconfig/Makefile、Virtual。
 - 动作：引用/模块/回调契约；bus迁driver；core不依赖USB=y；Virtual真正注册同Runtime；parser每设备。
 - 依赖：先固定接口，不等K4/K9整个issue互相关闭；避免与当前WS73关键整改同时大范围移动。

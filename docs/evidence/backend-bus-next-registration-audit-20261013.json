@@ -1,0 +1,35 @@
+{
+  "kernel": "c44b74509c418d43f6dfc8557bec4288de79b22c",
+  "completed": "Validated descriptor provenance now copied into retained C transport, checked before Rust Runtime publication; Test public bus6/name isolated from physical USB4 and Virtual0.",
+  "remaining": [
+    {
+      "path": "net/sparklink/sparklink_core.rs:723",
+      "fact": "Standard USB reserves pending identity before resource/bootstrap; its install path and Native register remain separate",
+      "next": "Introduce one reservation/install/retire ownership path with exact identity and partial initialization cleanup; migrate both actual callers, preserve pending/open failure gates"
+    },
+    {
+      "path": "net/sparklink/sle_native.rs",
+      "fact": "Common descriptor/runtime admission still restricts profile1 and checked queried address/buffer metadata",
+      "next": "Implement standard dialect operations and unknown-to-queried metadata phases before relaxing validation; registration must not imply Ready"
+    },
+    {
+      "path": "drivers/sparklink/ws73/usb.c:1071",
+      "fact": "WS73 registers Core after bootstrap metadata is queried; driver bootstrap resources/fault lifecycle still separate",
+      "next": "Account for early bootstrap reservation/fault visibility when unifying lifecycle; retain genuine SDK111 query provenance and bounded cancel/recovery"
+    },
+    {
+      "path": "net/sparklink/sle_dli.rs:1188",
+      "fact": "Static Usb/Native dispatch remains",
+      "next": "Migrate actual standard provider operations/RX/lifecycle to common registered Backend then delete variant"
+    },
+    {
+      "path": "net/sparklink/Kconfig",
+      "fact": "Core depends on USB=y and embeds standard USB implementation",
+      "next": "Split provider build and prove core USB=n/m plus actual module/callback gates; true Virtual registration still required"
+    }
+  ],
+  "standard_usb_physical_qualified": false,
+  "module_irq_lifetime_proven": false,
+  "natural_recovery_qualified": false,
+  "full_backend_complete": false
+}

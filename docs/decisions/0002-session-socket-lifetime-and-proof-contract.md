@@ -321,3 +321,15 @@ Backend descriptor的bus是验证后的来源，必须传至保留的transport/R
 TEST不能因NativeController.info硬编码而报告物理USB。当前注册链遗失bus，下一批整改。
 不能只放宽profile校验：标准USB先统一pending reservation/install/失败清理与RX引用，再
 实际接入common Backend，删除静态分派并拆bus构建。完整module/callback/IRQ仍需门禁。
+
+## 已接通的Backend来源与后续注册（2026-10-13）
+
+Kc44b74509c41将验证后的descriptor bus复制到持引用transport，get/register回调之前完成；
+Rust读取持引用immutable字段并在Runtime发布前验证，未知值拒绝。internal IDs不是公开bus值，
+不得直接cast。USB4保持，TEST6明确非物理/非真正Virtual，name与info一致；结构布局不变。
+C/Rust源回归与跨语言实际编译限定其范围，原源码TEST→USB失败见证不当作实机故障。
+
+标准USB在bootstrap前reserve而WS73查询后register；统一生命周期必须包含早期pending身份、
+失败资源与fault可见性，保持真实查询后能力和Ready，不由descriptor或open成功推断Ready。
+先接通统一reserve/install/retire及真实标准方言operations，再删除静态Usb和拆bus；
+module/IRQ/callback/PM、真正Virtual、自然根因/非人工恢复继续要求独立门禁。

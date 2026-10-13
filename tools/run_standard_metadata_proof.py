@@ -13,7 +13,7 @@ def verdict(exit_code, complete, results, warnings, timed_out, weak):
 def run(args):
     kernel=args.kernel_source.resolve();sys.path.insert(0,str(kernel/'tools/testing/selftests/sparklink'))
     from run_connection_tx import function
-    source=kernel/'net/sparklink/sle_usb_ffi.c';header=kernel/'include/linux/sparklink_usb.h';s=source.read_text();h=header.read_text()
+    source=kernel/'drivers/sparklink/standard_usb.c';header=kernel/'include/linux/sparklink_usb.h';s=source.read_text();h=header.read_text()
     out=args.output.resolve();out.mkdir(exist_ok=False)
     start=h.index('struct sle_usb_capabilities {');struct=h[start:h.index('};',start)+2];start=h.index('struct sle_usb_metadata {');struct+='\n'+h[start:h.index('};',start)+2]
     constants='\n'.join(re.search(r'(?m)^#define '+n+r' .+$',s).group() for n in ['SLE_OP_RESET','SLE_OP_READ_LOCAL_VERSION','SLE_OP_READ_CMD_LENGTH','SLE_OP_READ_BUFFER','SLE_OP_READ_FEATURES','SLE_OP_READ_MAC_ADDR','SLE_EVT_CMD_COMPLETE'])

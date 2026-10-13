@@ -84,10 +84,10 @@ def run(args):
     for field in ('name', 'vermagic', 'signer', 'sig_hashalgo', 'depends'):
         module_info[field] = subprocess.check_output(
             ['modinfo', '-F', field, str(paths['module'])], text=True).strip()
-    if (module_info['name'] != 'sparklink_ws73_usb'
+    if (module_info['name'] != getattr(args,'module_name','sparklink_ws73_usb')
             or module_info['vermagic'].split()[0] != release
             or not module_info['signer'] or module_info['depends']):
-        raise ValueError('requires matching signed WS73 module with no dependencies')
+        raise ValueError('requires matching signed requested module with no dependencies')
     busybox_headers = subprocess.check_output(['readelf', '-l', str(paths['busybox'])], text=True)
     elf_header(paths['busybox'], {2, 3})
     if 'INTERP' in busybox_headers or 'Requesting program interpreter' in busybox_headers:
@@ -151,6 +151,7 @@ def run(args):
         if record['helper_sha256'] != helper_before or digest(helper) != helper_before:
             raise ValueError('module init helper changed during snapshot')
         shutil.copy2(paths['module'], root / 'sparklink_ws73_usb.ko')
+        (root / 'expected-module-name').write_text(getattr(args,'module_name','sparklink_ws73_usb')+'\n')
         (root / 'expected-release').write_text(release + '\n')
         (root / 'etc/os-release').write_text('ID=sparklink-smoke\nNAME="SparkLink isolated smoke root"\n')
         root_uuid = str(uuid.uuid4())
@@ -203,6 +204,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for option in ('kernel-manifest', 'kernel', 'initramfs', 'module', 'busybox', 'qemu', 'qemu-data', 'output'):
         parser.add_argument('--' + option, required=True)
+    parser.add_argument('--module-name',choices=('sparklink_ws73_usb','sparklink_standard_usb'),default='sparklink_ws73_usb')
     parser.add_argument('--empty-registry-probe',help='explicit guest-only no phantom Runtime/selector test binary')
     parser.add_argument('--timeout', type=int, default=150)
     args = parser.parse_args()

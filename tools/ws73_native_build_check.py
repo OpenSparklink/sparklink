@@ -152,6 +152,8 @@ def collect(args):
     files = ['.config', 'include/config/kernel.release', 'arch/x86/boot/bzImage',
              'System.map', 'Module.symvers', 'modules.order', 'modules.builtin',
              'modules.builtin.modinfo', 'drivers/sparklink/sparklink_ws73_usb.ko']
+    if (build/'drivers/sparklink/sparklink_standard_usb.ko').is_file():
+        files.append('drivers/sparklink/sparklink_standard_usb.ko')
     inputs = {name: file_record(build/name) for name in files}
     inputs['vmlinux'] = file_record(build/'vmlinux')
     # A complete build and exact artifact identities are prerequisites, not RF,

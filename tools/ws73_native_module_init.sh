@@ -34,11 +34,14 @@ if [ -f /scratch-root-uuid ]; then
     done < /proc/mounts
     [ "$root_seen" = yes ] || fail 'scratch root mount missing'
 fi
+module_name=sparklink_ws73_usb
+if [ -f /expected-module-name ]; then module_name=$(cat /expected-module-name) || fail "module name"; fi
+case "$module_name" in sparklink_ws73_usb|sparklink_standard_usb) ;; *) fail "unsupported module name" ;; esac
 release=$(cat /expected-release) || fail 'expected release'
 [ "$(uname -r)" = "$release" ] || fail 'booted release mismatch'
 echo "NATIVE_MODULE_RELEASE: $release"
 [ -c /dev/sparklink ] || fail 'built-in SparkLink control node'
-[ ! -d /sys/module/sparklink_ws73_usb ] || fail 'WS73 unexpectedly built-in or already loaded'
+[ ! -d /sys/module/$module_name ] || fail 'WS73 unexpectedly built-in or already loaded'
 echo "NATIVE_MODULE_TAINT_BEFORE: $(cat /proc/sys/kernel/tainted)"
 # The caller supplies no USB device to this guest. Reject an unexpected WS73
 # before any module can bind and upload firmware to it.
@@ -53,15 +56,15 @@ if [ -x /bin/sparklink-no-ghost-probe ]; then
 fi
 for round in 1 2; do
     insmod /sparklink_ws73_usb.ko || fail "module load $round"
-    [ -d /sys/module/sparklink_ws73_usb ] || fail "module missing $round"
-    [ -d /sys/bus/usb/drivers/sparklink_ws73_usb ] || fail "USB driver missing $round"
+    [ -d /sys/module/$module_name ] || fail "module missing $round"
+    [ -d /sys/bus/usb/drivers/$module_name ] || fail "USB driver missing $round"
     echo "NATIVE_MODULE_LOAD: $round"
     if [ -x /bin/sparklink-no-ghost-probe ]; then
         /bin/sparklink-no-ghost-probe || fail "empty registry/unsupported selector round=$round"
     fi
-    rmmod sparklink_ws73_usb || fail "module unload $round"
-    [ ! -d /sys/module/sparklink_ws73_usb ] || fail "module retained $round"
-    [ ! -d /sys/bus/usb/drivers/sparklink_ws73_usb ] || fail "USB driver retained $round"
+    rmmod "$module_name" || fail "module unload $round"
+    [ ! -d /sys/module/$module_name ] || fail "module retained $round"
+    [ ! -d /sys/bus/usb/drivers/$module_name ] || fail "USB driver retained $round"
     echo "NATIVE_MODULE_UNLOAD: $round"
 done
 echo "NATIVE_MODULE_TAINT_AFTER: $(cat /proc/sys/kernel/tainted)"

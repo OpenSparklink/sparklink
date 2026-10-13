@@ -14,7 +14,7 @@ def verdict(exit_code, timed_out, report, stderr, weak):
 
 def run(args):
     kernel=args.kernel_source.resolve();sys.path.insert(0,str(kernel/'tools/testing/selftests/sparklink'));from run_connection_tx import function
-    source=kernel/'net/sparklink/sle_usb_ffi.c';s=source.read_text();actual=function(s.replace('static int sle_usb_write_command_locked','int sle_usb_write_command_locked'),'sle_usb_write_command_locked');out=args.output.resolve();out.mkdir(exist_ok=False)
+    source=kernel/'drivers/sparklink/standard_usb.c';s=source.read_text();actual=function(s.replace('static int sle_usb_write_command_locked','int sle_usb_write_command_locked'),'sle_usb_write_command_locked');out=args.output.resolve();out.mkdir(exist_ok=False)
     fixture='''#include <stdbool.h>
     #include <stdint.h>
     #include <stddef.h>

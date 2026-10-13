@@ -48,14 +48,7 @@ impl ControllerIface {
                 .await
                 .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
                 .map_err(map_err)?;
-        // Adapter validation rejects unknown/error/stale layouts before success.
-        Ok((
-            snapshot.dev_index,
-            snapshot.generation,
-            snapshot.revision,
-            snapshot.event_seq,
-            snapshot.count,
-        ))
+        known_link_summary(&snapshot)
     }
 
     /// Registration-local event watermark, not queue depth or delivery ACK.
@@ -504,6 +497,26 @@ impl ControllerIface {
     }
 }
 
+/// The SDK accepts a well-formed Unknown representation; it is not an empty
+/// physical-link set and must not become a successful summary.
+fn known_link_summary(
+    snapshot: &slk_protocol::SleLinkSnapshot,
+) -> zbus::fdo::Result<(u16, u64, u64, u64, u32)> {
+    if snapshot.flags != slk_protocol::LINK_SNAPSHOT_KNOWN || snapshot.error != 0 {
+        return Err(zbus::fdo::Error::Failed(format!(
+            "physical link state is unknown (error={})",
+            snapshot.error
+        )));
+    }
+    Ok((
+        snapshot.dev_index,
+        snapshot.generation,
+        snapshot.revision,
+        snapshot.event_seq,
+        snapshot.count,
+    ))
+}
+
 fn map_err(e: libsparklink::Error) -> zbus::fdo::Error {
     zbus::fdo::Error::Failed(e.to_string())
 }
@@ -586,6 +599,38 @@ pub struct PeerVersion {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn actual_summary_refuses_valid_unknown_representation() {
+        let snapshot = slk_protocol::SleLinkSnapshot {
+            version: 1,
+            generation: 9,
+            profile: 1,
+            error: -5,
+            ..Default::default()
+        };
+        assert!(snapshot.valid_for(9));
+        assert!(matches!(
+            known_link_summary(&snapshot),
+            Err(zbus::fdo::Error::Failed(_))
+        ));
+    }
+
+    #[test]
+    fn actual_summary_accepts_observed_known_empty_set() {
+        let snapshot = slk_protocol::SleLinkSnapshot {
+            version: 1,
+            generation: 9,
+            profile: 1,
+            flags: slk_protocol::LINK_SNAPSHOT_KNOWN,
+            dev_index: 2,
+            revision: 7,
+            event_seq: 11,
+            ..Default::default()
+        };
+        assert!(snapshot.valid_for(9));
+        assert_eq!(known_link_summary(&snapshot).unwrap(), (2, 9, 7, 11, 0));
+    }
 
     #[test]
     fn phy_info_fields() {

@@ -50,6 +50,7 @@ NOCP/USB成功不替代业务收到；缺文件/QMP不替代自然恢复。
 Ticket/Session/Grant/socket在途、NOCP复用屏障、真实credit/背压和自然RCA并行；已完成的驱动迁移不重复实现。
 整体目标架构整改后再扩展长包、多通道/四设备和唯一用户态SSAP。
 完整S0–S6、19WP/10FV/12DG及原28项scope保持；所有未完成整项保持OPEN，未取得自然恢复或完整部分初始化资格。
+[本批十二项issues回读](evidence/standard-driver-move-issues-20261013.json)，原scope不变；原28项全部开放。
 
 ## 历史子门禁：共同标准provider注册与静态USB路径删除
 

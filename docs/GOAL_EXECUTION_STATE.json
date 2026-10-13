@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T10:43:55.942436+00:00",
+  "updated_at_utc": "2026-10-13T10:52:44.089329+00:00",
   "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
   "capabilities": "docs/CURRENT_CAPABILITIES.md",
   "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
@@ -709,6 +709,13 @@
     "whole_package_complete": false,
     "natural_recovery_acceptance": false,
     "core_usb_build_independent": true,
-    "build_matrix_scope": "Core=y with USB=n/USB_SUPPORT=n and USB=m, full image/modules; no boot/hardware matrix acceptance"
+    "build_matrix_scope": "Core=y with USB=n/USB_SUPPORT=n and USB=m, full image/modules; no boot/hardware matrix acceptance",
+    "issue_updates": {
+      "count": 12,
+      "readback_verified": true,
+      "original_scopes_open_unchanged": true,
+      "receipt": "docs/evidence/standard-driver-move-issues-20261013.json",
+      "whole_package_closed": false
+    }
   }
 }

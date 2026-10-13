@@ -736,7 +736,13 @@
       "properties": 100,
       "production": "virtual-provider-formal-20261013/production/report.json",
       "weak": "virtual-provider-formal-20261013/weak-unsupported-guard/report.json",
-      "scope": "Direct production test codec only; no credit/Runtime/worker/IRQ/refcount/callback/lifetime proof"
+      "scope": "Direct production test codec only; no credit/Runtime/worker/IRQ/refcount/callback/lifetime proof",
+      "file_lifecycle_model": {
+        "report": "docs/evidence/virtual-file-model-20261013/report.json",
+        "distinct_states": 32513,
+        "status": "MODEL_CHECKED_ABSTRACT_SCOPED",
+        "actual_running_callback_join_missing": true
+      }
     },
     "ci": {
       "run_id": 38388711225,

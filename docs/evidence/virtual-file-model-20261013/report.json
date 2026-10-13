@@ -1,0 +1,30 @@
+{
+  "status": "MODEL_CHECKED_ABSTRACT_SCOPED",
+  "kernel_head": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
+  "sources": {
+    "linux/drivers/sparklink/virtual.c": "4500a5c3a2b58c3be1a4243b1e7ff8852b431fc36ddd68c1edf37a5bdf5602d7",
+    "sparklink/formal/lifecycle/virtual-file/README.md": "e80d585c26e69c8f01f21b570a6fbbc613f78fb8e8e942afc792fd5d0036b739",
+    "sparklink/formal/lifecycle/virtual-file/VirtualFile.cfg": "6e8795b840c3d3db6dc9ade01051208f54b37cfda9117a0a0dc74a24464db473",
+    "sparklink/formal/lifecycle/virtual-file/VirtualFile.tla": "7be50fb3aae204af5e42531e3e328d91b187650f3e1f608d5e2c80a8bf8d5857",
+    "sparklink/formal/lifecycle/virtual-file/VirtualFileWeak.cfg": "b912989a0e096e96d1d5217eaf780a57d229dc6808336416192b6bf30e6ac5c1"
+  },
+  "tool": "TLC2 2.19, rev5a47802, Java25.0.4.1",
+  "states_generated": 129155,
+  "distinct_states": 32513,
+  "positive_exit": 0,
+  "weak_exit": 12,
+  "weak_invariant": "WorkHasContext",
+  "bounds": {
+    "slots": 2,
+    "global_generation_max": 4,
+    "aliases_max": 2,
+    "queued_slot": 1,
+    "running_callback": 1
+  },
+  "assumptions": "Successful Core install atomic; VFS last-release; workqueue non-reentrancy and sync-cancel join; exact-generation and closed-gate ingress. Mapping/limits in formal/lifecycle/virtual-file/README.md",
+  "scope": "Abstract safety only; no C/Rust/VFS/workqueue/IRQ/module/refcount/Host/credit/liveness/physical refinement proof.",
+  "failed_initial_run": "Exit255: sandbox local RMI listener denied; not proven. Retained production.log.",
+  "missing_implementation_gate": "Deterministically already-entered callback join; pending work VM test not yet run on final image. Weak counterexample maps this required test, not a confirmed kernel bug.",
+  "physical_acceptance": false,
+  "whole_package_complete": false
+}

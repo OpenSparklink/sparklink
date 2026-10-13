@@ -377,3 +377,13 @@ Installed不等于Host Ready，也不暴露猜测能力；Retiring不等于Free�
 controller snapshot。SDK拒绝错id/gen、未知state/bus、reserved和矛盾诊断。
 K9c0e616c/U71ef24d/工具Uff5ab35的ordinary真实fault/cancel/reuse及8业务往返已通过；
 动态daemon对象未完成。SDK pure validator Kani限定83checks及弱gen对照不证明Core/授权/硬件。
+
+## 注册对象与Adapter分层（2026-10-13）
+
+RegistrationDirectory只是已发布拓扑及不可变index/gen/观察fd，无业务状态/管理lease。
+Registration.GetSnapshot和Manager.ListRegistrations直接查Core；held fd/缓存/迟到通知不保活旧身份。
+同路径可以在安装后增加Adapter接口；Pending/Fault不能因观察对象存在而创建Runtime/获取Managed。
+每设备worker独立处理发布与移除，仅Core Installed并再次matching gen才创建Adapter；未知查询不当作删除。
+SnapshotChanged按250ms观察变化提示，不保证全部中间状态；调用者重新GetSnapshot，不把通知当权威。
+实机U1cccf5d已覆盖default observer/control Fault、删除、同槽新gen、旧path拒绝及同行8业务和新40/249。
+不授予自然恢复、完整事件拓扑或Core/daemon lifetime形式化refinement资格。

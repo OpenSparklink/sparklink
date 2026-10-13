@@ -1,0 +1,508 @@
+Kani Rust Verifier 0.68.0 (cargo plugin)
+CBMC 6.11.0
+   Compiling sparklink-registration-validator-proof v0.0.0 (/home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-daemon-sdk-exact-weak)
+warning: use of an unstable feature
+ --> <crate attribute>:1:12
+  |
+1 | #![feature(register_tool)]
+  |            ^^^^^^^^^^^^^
+  |
+  = note: requested on the command line with `--force-warn unstable-features`
+
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+Checking harness accepted_observation_preserves_identity_and_diagnostics...
+CBMC 6.11.0 (cbmc-6.11.0)
+CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/sanchuanhehe/Documents/opensparklink/.dev/formal-registration-daemon-sdk-exact-weak/target/kani/x86_64-unknown-linux-gnu/debug/build/sparklink-registration-validator-proof/5061eda0fee308f5/out/sparklink_registration_validator_proof-5061eda0fee308f5__RNvCskAYc7ajIytM_38sparklink_registration_validator_proof55accepted_observation_preserves_identity_and_diagnostics.out
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Running with 16 object bits, 48 offset bits (user-specified)
+Starting Bounded Model Checking
+Unwinding loop memcmp.0 iteration 1 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 2 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 3 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 4 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 5 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 6 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 7 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 8 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 1 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 2 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 3 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 4 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 5 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 6 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 7 file <builtin-library-memcmp> line 25 function memcmp thread 0
+Unwinding loop memcmp.0 iteration 8 file <builtin-library-memcmp> line 25 function memcmp thread 0
+aborting path on assume(false) at file src/lib.rs line 57 column 18 function accepted_observation_preserves_identity_and_diagnostics thread 0
+Runtime Symex: 0.0247058s
+size of program expression: 2108 steps
+slicing removed 1004 assignments
+Generated 273 VCC(s), 17 remaining after simplification
+Runtime Postprocess Equation: 0.000302808s
+Passing problem to propositional reduction
+converting SSA
+Runtime Convert SSA: 0.00171202s
+Running propositional reduction
+Post-processing
+Runtime Post-process: 4.158e-06s
+Solving with CaDiCaL 3.0.0
+2034 variables, 4508 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 0.000125119s
+Runtime decision procedure: 0.00190558s
+Running propositional reduction
+Solving with CaDiCaL 3.0.0
+2035 variables, 4509 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 7.0274e-05s
+Runtime decision procedure: 0.000103768s
+Running propositional reduction
+Solving with CaDiCaL 3.0.0
+2036 variables, 4510 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 0.000232754s
+Runtime decision procedure: 0.000259134s
+Running propositional reduction
+Solving with CaDiCaL 3.0.0
+2037 variables, 4511 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 0.000681341s
+Runtime decision procedure: 0.000705427s
+Running propositional reduction
+Solving with CaDiCaL 3.0.0
+2038 variables, 4512 clauses
+SAT checker: instance is UNSATISFIABLE
+Runtime Solver: 0.000563556s
+Runtime decision procedure: 0.000582232s
+
+RESULTS:
+Check 1: memcmp.precondition.1
+	 - Status: SUCCESS
+	 - Description: "memcmp region 1 readable"
+	 - Location: <builtin-library-memcmp>:19 in function memcmp
+
+Check 2: memcmp.precondition.2
+	 - Status: SUCCESS
+	 - Description: "memcpy region 2 readable"
+	 - Location: <builtin-library-memcmp>:21 in function memcmp
+
+Check 3: accepted_observation_preserves_identity_and_diagnostics.assertion.1
+	 - Status: SUCCESS
+	 - Description: "assertion failed: index < 16 && s.dev_index == index"
+	 - Location: src/lib.rs:48:9 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 4: accepted_observation_preserves_identity_and_diagnostics.assertion.2
+	 - Status: SUCCESS
+	 - Description: "assertion failed: s.generation != 0"
+	 - Location: src/lib.rs:49:9 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 5: accepted_observation_preserves_identity_and_diagnostics.assertion.3
+	 - Status: FAILURE
+	 - Description: "assertion failed: generation == 0 || s.generation == generation"
+	 - Location: src/lib.rs:50:9 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 6: accepted_observation_preserves_identity_and_diagnostics.assertion.4
+	 - Status: SUCCESS
+	 - Description: "assertion failed: s.version == 1 && s.bus <= 6"
+	 - Location: src/lib.rs:51:9 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 7: accepted_observation_preserves_identity_and_diagnostics.assertion.5
+	 - Status: SUCCESS
+	 - Description: "assertion failed: s.reserved_byte == 0 && s.reserved == [0; 8]"
+	 - Location: src/lib.rs:52:9 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 8: accepted_observation_preserves_identity_and_diagnostics.assertion.6
+	 - Status: SUCCESS
+	 - Description: "unknown registration state accepted"
+	 - Location: src/lib.rs:57:18 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 9: accepted_observation_preserves_identity_and_diagnostics.assertion.7
+	 - Status: SUCCESS
+	 - Description: "assertion failed: s.phase == 0 && s.error == 0"
+	 - Location: src/lib.rs:56:24 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 10: accepted_observation_preserves_identity_and_diagnostics.assertion.8
+	 - Status: SUCCESS
+	 - Description: "assertion failed: s.error < 0"
+	 - Location: src/lib.rs:55:20 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 11: accepted_observation_preserves_identity_and_diagnostics.assertion.9
+	 - Status: SUCCESS
+	 - Description: "assertion failed: s.error == 0"
+	 - Location: src/lib.rs:54:20 in function accepted_observation_preserves_identity_and_diagnostics
+
+Check 12: SleRegistrationSnapshot::valid_for.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:23:9 in function SleRegistrationSnapshot::valid_for
+
+Check 13: SleRegistrationSnapshot::valid_for.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:23:9 in function SleRegistrationSnapshot::valid_for
+
+Check 14: SleRegistrationSnapshot::valid_for.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:23:9 in function SleRegistrationSnapshot::valid_for
+
+Check 15: SleRegistrationSnapshot::valid_for.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:23:9 in function SleRegistrationSnapshot::valid_for
+
+Check 16: SleRegistrationSnapshot::valid_for.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:23:9 in function SleRegistrationSnapshot::valid_for
+
+Check 17: SleRegistrationSnapshot::valid_for.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:23:9 in function SleRegistrationSnapshot::valid_for
+
+Check 18: SleRegistrationSnapshot::valid_for.pointer_dereference.7
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:24:16 in function SleRegistrationSnapshot::valid_for
+
+Check 19: SleRegistrationSnapshot::valid_for.pointer_dereference.8
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:24:16 in function SleRegistrationSnapshot::valid_for
+
+Check 20: SleRegistrationSnapshot::valid_for.pointer_dereference.9
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:24:16 in function SleRegistrationSnapshot::valid_for
+
+Check 21: SleRegistrationSnapshot::valid_for.pointer_dereference.10
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:24:16 in function SleRegistrationSnapshot::valid_for
+
+Check 22: SleRegistrationSnapshot::valid_for.pointer_dereference.11
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:24:16 in function SleRegistrationSnapshot::valid_for
+
+Check 23: SleRegistrationSnapshot::valid_for.pointer_dereference.12
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:24:16 in function SleRegistrationSnapshot::valid_for
+
+Check 24: SleRegistrationSnapshot::valid_for.pointer_dereference.13
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:27:16 in function SleRegistrationSnapshot::valid_for
+
+Check 25: SleRegistrationSnapshot::valid_for.pointer_dereference.14
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:27:16 in function SleRegistrationSnapshot::valid_for
+
+Check 26: SleRegistrationSnapshot::valid_for.pointer_dereference.15
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:27:16 in function SleRegistrationSnapshot::valid_for
+
+Check 27: SleRegistrationSnapshot::valid_for.pointer_dereference.16
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:27:16 in function SleRegistrationSnapshot::valid_for
+
+Check 28: SleRegistrationSnapshot::valid_for.pointer_dereference.17
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:27:16 in function SleRegistrationSnapshot::valid_for
+
+Check 29: SleRegistrationSnapshot::valid_for.pointer_dereference.18
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:27:16 in function SleRegistrationSnapshot::valid_for
+
+Check 30: SleRegistrationSnapshot::valid_for.pointer_dereference.19
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:28:16 in function SleRegistrationSnapshot::valid_for
+
+Check 31: SleRegistrationSnapshot::valid_for.pointer_dereference.20
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:28:16 in function SleRegistrationSnapshot::valid_for
+
+Check 32: SleRegistrationSnapshot::valid_for.pointer_dereference.21
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:28:16 in function SleRegistrationSnapshot::valid_for
+
+Check 33: SleRegistrationSnapshot::valid_for.pointer_dereference.22
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:28:16 in function SleRegistrationSnapshot::valid_for
+
+Check 34: SleRegistrationSnapshot::valid_for.pointer_dereference.23
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:28:16 in function SleRegistrationSnapshot::valid_for
+
+Check 35: SleRegistrationSnapshot::valid_for.pointer_dereference.24
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:28:16 in function SleRegistrationSnapshot::valid_for
+
+Check 36: SleRegistrationSnapshot::valid_for.pointer_dereference.25
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:29:16 in function SleRegistrationSnapshot::valid_for
+
+Check 37: SleRegistrationSnapshot::valid_for.pointer_dereference.26
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:29:16 in function SleRegistrationSnapshot::valid_for
+
+Check 38: SleRegistrationSnapshot::valid_for.pointer_dereference.27
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:29:16 in function SleRegistrationSnapshot::valid_for
+
+Check 39: SleRegistrationSnapshot::valid_for.pointer_dereference.28
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:29:16 in function SleRegistrationSnapshot::valid_for
+
+Check 40: SleRegistrationSnapshot::valid_for.pointer_dereference.29
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:29:16 in function SleRegistrationSnapshot::valid_for
+
+Check 41: SleRegistrationSnapshot::valid_for.pointer_dereference.30
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:29:16 in function SleRegistrationSnapshot::valid_for
+
+Check 42: SleRegistrationSnapshot::valid_for.pointer_dereference.31
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:31:16 in function SleRegistrationSnapshot::valid_for
+
+Check 43: SleRegistrationSnapshot::valid_for.pointer_dereference.32
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:31:16 in function SleRegistrationSnapshot::valid_for
+
+Check 44: SleRegistrationSnapshot::valid_for.pointer_dereference.33
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:31:16 in function SleRegistrationSnapshot::valid_for
+
+Check 45: SleRegistrationSnapshot::valid_for.pointer_dereference.34
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:31:16 in function SleRegistrationSnapshot::valid_for
+
+Check 46: SleRegistrationSnapshot::valid_for.pointer_dereference.35
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:31:16 in function SleRegistrationSnapshot::valid_for
+
+Check 47: SleRegistrationSnapshot::valid_for.pointer_dereference.36
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:31:16 in function SleRegistrationSnapshot::valid_for
+
+Check 48: SleRegistrationSnapshot::valid_for.pointer_dereference.37
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:35:21 in function SleRegistrationSnapshot::valid_for
+
+Check 49: SleRegistrationSnapshot::valid_for.pointer_dereference.38
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:35:21 in function SleRegistrationSnapshot::valid_for
+
+Check 50: SleRegistrationSnapshot::valid_for.pointer_dereference.39
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:35:21 in function SleRegistrationSnapshot::valid_for
+
+Check 51: SleRegistrationSnapshot::valid_for.pointer_dereference.40
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:35:21 in function SleRegistrationSnapshot::valid_for
+
+Check 52: SleRegistrationSnapshot::valid_for.pointer_dereference.41
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:35:21 in function SleRegistrationSnapshot::valid_for
+
+Check 53: SleRegistrationSnapshot::valid_for.pointer_dereference.42
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:35:21 in function SleRegistrationSnapshot::valid_for
+
+Check 54: SleRegistrationSnapshot::valid_for.pointer_dereference.43
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:35:40 in function SleRegistrationSnapshot::valid_for
+
+Check 55: SleRegistrationSnapshot::valid_for.pointer_dereference.44
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:35:40 in function SleRegistrationSnapshot::valid_for
+
+Check 56: SleRegistrationSnapshot::valid_for.pointer_dereference.45
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:35:40 in function SleRegistrationSnapshot::valid_for
+
+Check 57: SleRegistrationSnapshot::valid_for.pointer_dereference.46
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:35:40 in function SleRegistrationSnapshot::valid_for
+
+Check 58: SleRegistrationSnapshot::valid_for.pointer_dereference.47
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:35:40 in function SleRegistrationSnapshot::valid_for
+
+Check 59: SleRegistrationSnapshot::valid_for.pointer_dereference.48
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:35:40 in function SleRegistrationSnapshot::valid_for
+
+Check 60: SleRegistrationSnapshot::valid_for.pointer_dereference.49
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:33:39 in function SleRegistrationSnapshot::valid_for
+
+Check 61: SleRegistrationSnapshot::valid_for.pointer_dereference.50
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:33:39 in function SleRegistrationSnapshot::valid_for
+
+Check 62: SleRegistrationSnapshot::valid_for.pointer_dereference.51
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:33:39 in function SleRegistrationSnapshot::valid_for
+
+Check 63: SleRegistrationSnapshot::valid_for.pointer_dereference.52
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:33:39 in function SleRegistrationSnapshot::valid_for
+
+Check 64: SleRegistrationSnapshot::valid_for.pointer_dereference.53
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:33:39 in function SleRegistrationSnapshot::valid_for
+
+Check 65: SleRegistrationSnapshot::valid_for.pointer_dereference.54
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:33:39 in function SleRegistrationSnapshot::valid_for
+
+Check 66: SleRegistrationSnapshot::valid_for.pointer_dereference.55
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/lib.rs:32:41 in function SleRegistrationSnapshot::valid_for
+
+Check 67: SleRegistrationSnapshot::valid_for.pointer_dereference.56
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/lib.rs:32:41 in function SleRegistrationSnapshot::valid_for
+
+Check 68: SleRegistrationSnapshot::valid_for.pointer_dereference.57
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/lib.rs:32:41 in function SleRegistrationSnapshot::valid_for
+
+Check 69: SleRegistrationSnapshot::valid_for.pointer_dereference.58
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/lib.rs:32:41 in function SleRegistrationSnapshot::valid_for
+
+Check 70: SleRegistrationSnapshot::valid_for.pointer_dereference.59
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/lib.rs:32:41 in function SleRegistrationSnapshot::valid_for
+
+Check 71: SleRegistrationSnapshot::valid_for.pointer_dereference.60
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/lib.rs:32:41 in function SleRegistrationSnapshot::valid_for
+
+Check 72: memcmp.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 73: memcmp.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 74: memcmp.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 75: memcmp.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 76: memcmp.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 77: memcmp.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 78: memcmp.pointer_dereference.7
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 79: memcmp.pointer_dereference.8
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 80: memcmp.pointer_dereference.9
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 81: memcmp.pointer_dereference.10
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 82: memcmp.pointer_dereference.11
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+Check 83: memcmp.pointer_dereference.12
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: <builtin-library-memcmp>:27 in function memcmp
+
+
+SUMMARY:
+ ** 1 of 83 failed
+Failed Checks: assertion failed: generation == 0 || s.generation == generation
+ File: "src/lib.rs", line 50, in accepted_observation_preserves_identity_and_diagnostics
+
+VERIFICATION:- FAILED
+Verification Time: 0.116847835s
+
+Manual Harness Summary:
+Verification failed for - accepted_observation_preserves_identity_and_diagnostics
+Complete - 0 successfully verified harnesses, 1 failures, 1 total.

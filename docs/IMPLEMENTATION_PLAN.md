@@ -17,7 +17,38 @@ goal的剩余工作/依赖持久记录见[GOAL_EXECUTION_STATE](GOAL_EXECUTION_S
 [当前SSAP调用审计/三类清单](SSAP_PRODUCTION_SEPARATION_20261013.md)。
 
 
-## 本批架构整改：Core权威注册诊断
+## 本批架构整改：动态注册生命周期
+
+K`9c0e616c8d36` / 编译service及实机工具U`1cccf5d79b254b96f8d94803bfaeae5046e6795e`：
+新增generation-bound `org.sparklink.Registration` 与Manager.ListRegistrations；
+每次GetSnapshot/列表都核对实际Core，不以拓扑目录或notification cache宣布可用/Ready。
+Pending/Fault只发布只读观察对象，不创建Adapter/不获取Managed；仅Installed且再次匹配gen才启动Adapter。
+Installed不是Ready，Retiring不是Free；GetSnapshot只给一份Core原子观察，之后仍可移除。
+250ms轮询及SnapshotChanged是提示，不承诺捕获所有中间状态或完整事件拓扑。
+普通用户：`slctl registrations` / `slctl registration /org/sparklink/slkN_gG`；业务选择继续只允许Adapter。
+
+[源码/离线](evidence/registration-daemon-offline-20261013.json)：workspace201、Python36、工具451、
+strict default/all-features clippy、准确CI9通过。实际private D-Bus配/dev/null ENOTTY证明缓存不能假成功、
+无Ready/AcquireManagement接口、删除/复用不把旧path转给新身份；不是模拟控制器成功。
+新SDK tuple别名后[实际predicate Kani重核](evidence/registration-daemon-sdk-formal-20261013/production/index.json)
+83checks限定通过及weak-gen反例；仅SDK纯函数，未新增Core/daemon/refinement/lifetime/授权证明。
+首个测试借用错误及clippy失败日志保留；未伪装为实机故障。
+
+[三真实设备动态对象门禁](evidence/ws73-registration-daemon-fault-isolation-20261013.json)：
+UID1000控制用户、UID1001/caps0且无直接kernel access的default observer均从actual slctl/D-Bus
+读取精确Core ENOENT Fault；移除后旧对象直接调用拒绝、列表不包含；新gen Installed、旧gen仍拒绝。
+fault期间及恢复后共8随机业务对端实际校验/回复，同行identity及slkd PID/start ticks保持。
+实机本批覆盖Fault→移除→新gen Installed，不授予短暂Pending采样或所有中间过渡资格。
+独立[新40短](evidence/ws73-registration-daemon-short-repeat-20261013.json)、
+[新249/16超限](evidence/ws73-registration-daemon-249-boundary-20261013.json)：224两端SDU/112NOCP、
+capture零drop/taint0，RF22/连接双端Down/dup/最后关闭同life重开拒绝保持；QMP仅支撑。
+
+下一批：将标准USB迁入同一可注册Backend的真实ops/RX/stop及来源/metadata/生命周期，删除static Usb分派；
+随后core USB=n/m、真正Virtual/module/IRQ/PM和WP12统一事件/旧ring迁移；旧dead_code/重复实现与
+自然RCA/有限恢复并行。整体架构整改后扩展长包、多通道/四设备及唯一用户SSAP Engine。
+ROM/部分open/URB/callback和自然/非人工恢复仍未通过，整项issues与完整S0–S6保持OPEN/active。
+
+## 历史切片：Core权威注册诊断
 
 K`9c0e616c8d36` / 编译service U`71ef24d` / 实机工具 U`ff5ab35`：40-byte/align8未发布
 registration snapshot接通Core、Rust/C/Python和CLI。无需Runtime选择或lease，按index/gen在Core锁下

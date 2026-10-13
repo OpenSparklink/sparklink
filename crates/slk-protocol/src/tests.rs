@@ -72,7 +72,6 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleControllerEvent, 336);
     check_size!(errors, SleControllerEventQuery, 360);
     check_size!(errors, SleMgmtStats, 16);
-    check_size!(errors, SleSubsysStats, 36);
     check_size!(errors, SlePhyInfo, 24);
     check_size!(errors, SlePhyMcsCmd, 4);
     check_size!(errors, SlePhyTxPowerCmd, 4);

@@ -63,6 +63,14 @@ def execute(run, phase):
                 expected = rf'^ControllerEventPosition: index={owner["index"]} generation={owner["generation"]} sequence=(\d+)$'
                 if position['exit'] or len(re.findall(expected,position['stdout'],re.M)) != 1:
                     raise CaptureError('actual canonical event-position interface failed')
+                legacy_probe = Path(run.args.slctl).parent/'protocol-state-probe'
+                if not legacy_probe.is_file() and Path('/scratch-root-uuid').is_file():
+                    legacy_probe = Path('/bin/protocol-state-probe')
+                if legacy_probe.is_file():
+                    refused = run.command([str(legacy_probe),str(owner['index'])],10,collection='protocol_state_refusals')
+                    expected_refusal = 'PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=53 unchanged=53 mixed_stats=ENOTTY'
+                    if refused['exit'] or refused['stdout'].strip()!=expected_refusal:
+                        raise CaptureError('actual retired protocol-state rejection failed')
                 summary = run.command([str(run.args.slctl),'--adapter',owner['path'],'stats'],
                                       10,collection='controller_link_summaries')
                 pattern = rf'^ControllerLinkSummary: index={owner["index"]} generation={owner["generation"]} revision=([1-9]\d*) event_sequence=([1-9]\d*) connections=1$'

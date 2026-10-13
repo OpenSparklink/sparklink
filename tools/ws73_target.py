@@ -114,6 +114,7 @@ def prepare(args):
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/genl_registry_test.c',
+                  LINUX/'tools/testing/selftests/sparklink/protocol_state_unsupported_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
                   LINUX/'tools/testing/selftests/sparklink/ssap_removed_uapi_test.c',
@@ -172,6 +173,12 @@ def prepare(args):
         subprocess.run(registry_compile, check=True)
         manifest['genl_registry_compile'] = registry_compile
         programs['genl-registry-probe'] = registry_probe
+        legacy_probe = output/'protocol-state-probe'
+        legacy_compile = [os.environ.get('CC','cc'),'-std=gnu11','-O2','-Wall','-Wextra','-Werror',
+                          str(LINUX/'tools/testing/selftests/sparklink/protocol_state_unsupported_test.c'),'-o',str(legacy_probe)]
+        subprocess.run(legacy_compile,check=True)
+        manifest['protocol_state_compile'] = legacy_compile
+        programs['protocol-state-probe'] = legacy_probe
         diagnostic_probe = output/'diagnostic-result-probe'
         compile_diagnostic = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
                               str(LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c'),

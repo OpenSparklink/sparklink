@@ -18,16 +18,19 @@ impl ControllerIface {
 impl ControllerIface {
     // ----- Role -----
 
-    /// Get the current device role (0 = G-node, 1 = T-node)
+    /// No controller-global role exists; connection roles are in Native links.
     async fn get_role(&self) -> zbus::fdo::Result<u8> {
-        let st = self.state.lock().await;
-        st.adapter.get_role().map_err(map_err)
+        Err(zbus::fdo::Error::NotSupported(
+            "query role on the selected Native connection".into(),
+        ))
     }
-
-    /// Set the device role
     async fn set_role(&self, role: u8) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.set_role(role).map_err(map_err)
+        if role > 1 {
+            return Err(zbus::fdo::Error::InvalidArgs("role must be 0..1".into()));
+        }
+        Err(zbus::fdo::Error::NotSupported(
+            "controller-global role mutation is not implemented".into(),
+        ))
     }
 
     // ----- Subsystem Stats -----
@@ -486,8 +489,8 @@ impl ControllerIface {
 
     /// Get active connection count
     async fn conn_count(&self) -> zbus::fdo::Result<i32> {
-        let st = self.state.lock().await;
-        st.adapter.conn_count().map_err(map_err)
+        let summary = self.get_link_summary().await?;
+        Ok(summary.4 as i32)
     }
 
     /// Get USB DLI device count

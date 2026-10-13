@@ -943,15 +943,6 @@ impl Adapter {
         Ok(role)
     }
 
-    // ----- Subsystem Stats -----
-
-    /// Get subsystem statistics
-    pub fn subsys_stats(&self) -> Result<SleSubsysStats> {
-        let mut stats = unsafe { std::mem::zeroed::<SleSubsysStats>() };
-        unsafe { ioctl::sl_subsys_stats(self.raw_fd(), &mut stats)? };
-        Ok(stats)
-    }
-
     // ----- Capability / Connection Update -----
 
     /// Read peer features

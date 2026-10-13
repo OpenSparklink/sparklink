@@ -583,22 +583,17 @@ fn cmd_reset(adapter: &Adapter) -> libsparklink::Result<()> {
 }
 
 fn cmd_stats(adapter: &Adapter) -> libsparklink::Result<()> {
-    let stats = adapter.subsys_stats()?;
-
-    println!("Subsystem Statistics:");
-    println!("  Devices:          {}", stats.dev_count);
-    println!("  Reserved only:    {}", stats.pending_count);
-    println!("  Runtimes:         {}", stats.runtime_count);
-    println!("  Active conns:     {}", stats.active_connections);
-    println!("  Mgmt pending:     {}", stats.mgmt_pending);
-    println!("  Conns created:    {}", stats.total_conn_created);
-    println!("  Conns completed:  {}", stats.total_conn_completed);
-    println!("  Mgmt submitted:   {}", stats.total_mgmt_submitted);
-    println!("  Mgmt timeouts:    {}", stats.total_mgmt_timeouts);
-    println!("  Power state:      {}", stats.power_state);
-    println!("  Power transitions:{}", stats.power_transitions);
-    println!("  CRC errors:       {}", stats.crc_errors);
-
+    let identity = adapter.controller_snapshot(0)?;
+    let links = adapter.native_link_snapshot(identity.generation)?;
+    if links.flags != slk_protocol::LINK_SNAPSHOT_KNOWN || links.error != 0 {
+        return Err(libsparklink::Error::InvalidParam(
+            "physical link state is unknown",
+        ));
+    }
+    println!(
+        "ControllerLinkSummary: index={} generation={} revision={} event_sequence={} connections={}",
+        links.dev_index, links.generation, links.revision, links.event_seq, links.count
+    );
     Ok(())
 }
 

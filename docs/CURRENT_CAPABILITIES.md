@@ -5,7 +5,43 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
-## 当前架构整改：标准 Backend 的真实能力查询基础
+## 当前架构整改：单一不可变标准metadata生产消费者
+
+K`1d6b3195484fa7ee63b675e5345dfc263850e44c` / VM编译service和工具U`8a7666e`：
+C以一个io_lock快照返回查询的version/address/command credit/command最大长度/ACB/ICB/features；
+Rust构造器读取一次、核对原bootstrap身份/版本/credit，冻结到provider，不在Runtime锁下重新取USB锁。
+info保留80-bit features；controller snapshot保留完整版本、地址及buffer并标记queried metadata。
+live Host credit/Ready/error由Host提供，getter和fill_snapshot不覆盖它们；buffer不推断SSAP MTU/MPS、
+DTAP可靠模式、连接数或security policy。旧get_version/get_capabilities接口及调用者删除，UAPI未发布无兼容期。
+
+[准确源码/离线/构建](evidence/standard-snapshot-offline-20261013.json)：实际C44，context18+实际Rust
+构造器/info/snapshot11，固件74C/12Rust、Core18/pending-open15、port5、ingress9、Native33通过；
+C/Rust metadata30-byte/align2及offset18/23/29核对。完整清洁准确内核编译、空VM三次通过。
+初版K8e884ef构建因EPROTO不在kernel Rust prelude失败，K1d6b用bindings构造errno修正；失败原记录保留，
+不能用离线fixture/模型通过覆盖内核编译失败。
+[准确CI九项](evidence/standard-snapshot-ci-20261013.json)U8a7666e/pin K1d6b通过并核对44/74/11及工具454日志。
+
+[实际C限定CBMC314](evidence/standard-snapshot-formal-20261013/production/report.json)：原bootstrap/validator
+及combined getter，只提升static linkage，六次顺序查询、相关18-byte任意/length-return任意、unwind19，
+getter的mutex是抽象依赖；验证成功一致快照、错误不覆盖输出、失效与有限查询。不证明USB/并发/LKMM/
+callback/refcount/module/lifetime/Ready。[弱失效反例](evidence/standard-snapshot-formal-20261013/negative-control.json)
+映射实际失败查询ENODATA/输出不变回归；弱源码仍NOT_PROVEN。原solver/反例以gzip保存并记录原始hash，
+可用生产提取工具重现；超时/unsupported/未展开不得PASS。
+
+[新受控故障与同行8往返](evidence/ws73-standard-snapshot-v2-fault-isolation-20261013.json)、
+[新40短](evidence/ws73-standard-snapshot-v2-short-repeat-20261013.json)、
+[新249与16拒绝](evidence/ws73-standard-snapshot-v2-249-boundary-20261013.json)：VM-only真实SDK111 WS73、
+普通用户、两角色随机载荷对端校验回复和双端USB/HCC/A3证据；normal224 SDUs/112真实NOCP，零drop/taint0。
+发现/建链断链/dup/最后关闭同life拒绝、动态fault/observer/移除/新gen/oldpath、同行与同slkd保持。
+受控缺文件/QMP仅测试支撑，非自然/物理/非人工恢复，不授予标准USB物理资格。
+
+下一批：标准profile0共同descriptor/Host与provider ops/RX/open-close/get-put→迁调用者删static Usb及
+core USB耦合→USB=n/m、真正Virtual/module/IRQ/PM；WP12事件/旧ring及剩余Ticket/Session/Grant/socket
+lifetime/在途/NOCP/真实背压门禁并行。已完成的query/snapshot消费者不重复实现。
+整体目标架构完成后再扩展长包、多通道/四设备和唯一用户SSAP Engine；自然RCA/非人工恢复、
+整项issues及完整S0–S6/19WP/10FV/12DG仍开放。
+
+## 历史子门禁：标准 Backend 的真实能力查询基础
 
 K`1f23fc2197ad43b18d187b235d231583147cc7d1` / VM编译service和工具U`afc491db`：
 标准初始化现在真实查询0401指令最大长度、0402 ACB/ICB长度及个数、0403完整80-bit特性，

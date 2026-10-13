@@ -7,10 +7,11 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](decisions/0001-m
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
 目标描述不表示代码已接通；最新事实与调整见[采用记录](ARCHITECTURE_ADOPTION_20261013.json)。
 
-最新准确VM路径K1f23fc2197ad/编译与工具Uafc491db保持故障同行8业务、40短及249/16拒绝。
-标准Backend能力查询现在原子提交真实command/buffers/features元数据；[准确实现/证明范围](evidence/standard-capabilities-offline-20261013.json)。
-C snapshot仍待Rust消费者及共同provider/profile0注册迁移，static Usb/core USB/事件整改仍开放；
-仅身份查询/安装不能宣布Ready。完整架构整改先于功能扩展，不因本批证据宣布架构完成。
+最新准确VM路径K1d6b3195484f/编译及工具U8a7666e保持故障同行8业务、40短及249/16拒绝。
+标准查询metadata现在以一个C锁下快照冻结到生产Rust/provider/info/controller snapshot；
+两个旧getter删除，查询能力与Host Ready及上层policy分开。[实现/失败/限定证明](evidence/standard-snapshot-offline-20261013.json)。
+仍需common profile0/provider/Host/RX/open-close、static Usb/coreUSB/事件/真正Virtual与生命周期整改；
+整体架构整改优先，不能以本批生产消费者接通宣布完整Backend或目标完成。
 
 历史正常路径K9c0e616c/编译及工具U1cccf5d：动态Registration观察对象接通，Core直接核对
 GetSnapshot和列表；pending无Runtime/Managed，Installed不宣称Ready。通知/目录只管拓扑，

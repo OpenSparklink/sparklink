@@ -406,3 +406,11 @@ WS73厂商方言单独保留。C snapshot有查询来源，不等于应用policy
 六查询状态转换的CBMC218仅在明确的顺序依赖边界内；[报告与反例](../evidence/standard-capabilities-formal-20261013/production/report.json)。
 [真实WS73回归](../evidence/ws73-standard-capabilities-short-repeat-20261013.json)保持既有分层，
 不扩大标准硬件、并发lifetime或自然恢复资格。
+
+### 标准metadata消费者迁移（K1d6b3195484f）
+
+完整查询观察以30-byte内部C/Rust快照一次冻结，constructor核对bootstrap身份/版本/credit；
+get_version/get_capabilities被唯一get_metadata替代并删除。info/controller snapshot消费真实features/buffer，
+不推断SSAP/DTAP/security policy或覆盖Host live credit/Ready/error；不等于standard common注册完成。
+[限定C证明和初版构建失败](../evidence/standard-snapshot-offline-20261013.json)保留，
+[准确实机回归](../evidence/ws73-standard-snapshot-v2-short-repeat-20261013.json)只授予原WS73范围。

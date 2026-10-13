@@ -281,7 +281,7 @@
   ],
   "full_goal_complete": false,
   "original_issues_open": true,
-  "issue_sync_receipt": "docs/evidence/registration-diagnostic-issues-20261013.json",
+  "issue_sync_receipt": "docs/evidence/registration-daemon-issues-20261013.json",
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
@@ -380,11 +380,12 @@
     "docs/evidence/registration-daemon-sdk-formal-20261013/weak-control/index.json",
     "docs/evidence/ws73-registration-daemon-fault-isolation-20261013.json",
     "docs/evidence/ws73-registration-daemon-short-repeat-20261013.json",
-    "docs/evidence/ws73-registration-daemon-249-boundary-20261013.json"
+    "docs/evidence/ws73-registration-daemon-249-boundary-20261013.json",
+    "docs/evidence/registration-daemon-issues-20261013.json"
   ],
   "basic_datagram_type_subgate_complete": true,
-  "latest_issue_progress_receipt": "docs/evidence/registration-diagnostic-issues-20261013.json",
-  "latest_evidence_commit": "d09e2141e7a6125f40748e1935bc4a1b1ee45b37",
+  "latest_issue_progress_receipt": "docs/evidence/registration-daemon-issues-20261013.json",
+  "latest_evidence_commit": "d89ad74d9dee8a732bd13d4205c2cdd791b9046f",
   "previous_goal_turn_classification": "progress: common actual Core reserve/install/cancel/retire consumers, owned candidate allocation/destruction outside registry and final exact publish, old pending unregister counterexample; actual10/pending15/other source/443/clean build/emptyVM/CI9, exact finiteTLC16453+weak7, new real40-249; full architecture/recovery unqualified.",
   "current_goal_turn_classification": "progress: real dynamic Core registration objects and default observer/slctl, private-bus cache rejection/removal/reuse,201/36/451/CI9/strict, SDK83 recheck, real fault8+new40/249. Full standard Backend/bus/event/module/IRQ/PM/natural recovery still incomplete.",
   "qualified_tool_source_heads": [
@@ -642,6 +643,13 @@
     "real": "docs/evidence/ws73-registration-daemon-fault-isolation-20261013.json",
     "formal": "docs/evidence/registration-daemon-sdk-formal-20261013/production/index.json",
     "whole_package_complete": false,
-    "natural_recovery_acceptance": false
+    "natural_recovery_acceptance": false,
+    "issue_updates": {
+      "count": 16,
+      "readback_verified": true,
+      "original_scopes_open_unchanged": true,
+      "receipt": "docs/evidence/registration-daemon-issues-20261013.json",
+      "whole_package_closed": false
+    }
   }
 }

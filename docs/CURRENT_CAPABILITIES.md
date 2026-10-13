@@ -31,6 +31,8 @@ fault期间及恢复后共8随机业务对端实际校验/回复，同行identit
 [新249/16超限](evidence/ws73-registration-daemon-249-boundary-20261013.json)：224两端SDU/112NOCP、
 capture零drop/taint0，RF22/连接双端Down/dup/最后关闭同life重开拒绝保持；QMP仅支撑。
 
+[16项现有issues回读](evidence/registration-daemon-issues-20261013.json)确认原scope/OPEN保持。
+
 下一批：将标准USB迁入同一可注册Backend的真实ops/RX/stop及来源/metadata/生命周期，删除static Usb分派；
 随后core USB=n/m、真正Virtual/module/IRQ/PM和WP12统一事件/旧ring迁移；旧dead_code/重复实现与
 自然RCA/有限恢复并行。整体架构整改后扩展长包、多通道/四设备及唯一用户SSAP Engine。

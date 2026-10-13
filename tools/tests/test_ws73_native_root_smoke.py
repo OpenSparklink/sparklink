@@ -67,6 +67,11 @@ class NativeRootEvidence(unittest.TestCase):
         verify_console(prefix + self.evidence(), self.release, self.uuid, 0)
 
 class EmptyRegistryEvidence(unittest.TestCase):
+    def test_boot_failure_precedes_absent_controller_probe_diagnostic(self):
+        with self.assertRaisesRegex(ValueError, 'boot/module failure'):
+            verify_console('Boot has failed.\nreboot: Power down', '7.0.0-test+',
+                           'de4a8c36-18f7-48a2-a942-93b9b98d4e96', 0, True)
+
     def test_optional_no_ghost_probe_requires_all_three_actual_checks(self):
         f=NativeRootEvidence()
         marker='\nSPARKLINK_NO_GHOST_BACKEND_PASS selectors=9 registered=0 select=ENODEV unbound_snapshot=EINVAL\n'

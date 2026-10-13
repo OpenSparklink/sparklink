@@ -31,13 +31,13 @@ def verify_console(console, release, root_uuid, exit_code, empty_registry=False)
     """Require boot/root/module evidence together; poweroff alone can be failure."""
     text = re.sub(r'\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)', '', console)
     text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text).replace('\r', '')
-    if empty_registry and text.count('SPARKLINK_NO_GHOST_BACKEND_PASS selectors=9 registered=0 select=ENODEV unbound_snapshot=EINVAL')!=3:
-        raise ValueError('three actual empty-registry/selector checks required')
     if exit_code != 0:
         raise ValueError('QEMU did not exit successfully')
     if re.search(r'NATIVE_MODULE_FAILURE|Kernel panic|Oops:|BUG:|WARNING:|'
                  r'module verification failed|Boot has failed|Unable to mount root', text):
         raise ValueError('boot/module failure or kernel warning in console')
+    if empty_registry and text.count('SPARKLINK_NO_GHOST_BACKEND_PASS selectors=9 registered=0 select=ENODEV unbound_snapshot=EINVAL')!=3:
+        raise ValueError('three actual empty-registry/selector checks required')
     markers = [
         'NATIVE_ROOT_MOUNT: /dev/nvme0n1 btrfs',
         'NATIVE_MODULE_RELEASE: ' + release,

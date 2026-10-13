@@ -1537,5 +1537,33 @@
         "readback_exact": true
       }
     ]
+  },
+  "measurement_config_retirement": {
+    "status": "implemented/offline tests passed; accurate new-config VM build/gates pending",
+    "kernel": "654216743b68c7aa6d6f6dec0c360628277ef1cd",
+    "audit": "docs/evidence/measurement-config-retirement-audit-20261014.json",
+    "config_adjustment": {
+      "old": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7",
+      "new": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "removed": [
+        "SPARKLINK_SLE",
+        "SPARKLINK_DEBUGFS"
+      ],
+      "other_options_unchanged": true
+    },
+    "preserved": [
+      "WS73 firmware/bsle/board PM file in driver",
+      "standard Diagnostic expiry/cancel/author/credit",
+      "Native Runtime/Session/Channel/socket and prior source-scoped real qualification"
+    ],
+    "next_gates": [
+      "clean new config build",
+      "empty registry no-ghost old nodes absent",
+      "actual Virtual83 refusal/ordinary File gates",
+      "exact new-config dual real discovery/connection40short +249 boundary/peer isolation"
+    ],
+    "closure_allowed": false,
+    "vm_only": true,
+    "goal_scope_unchanged": true
   }
 }

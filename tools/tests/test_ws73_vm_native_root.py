@@ -24,7 +24,7 @@ class NativeVMProfile(unittest.TestCase):
             enabled(SimpleNamespace(native_discovery_config=Path('/private.conf')))
 
     def test_module_guest_cannot_use_builtin_driver_or_omit_export_modules(self):
-        symbols = ['RUST', 'SPARKLINK', 'SPARKLINK_SLE', 'SPARKLINK_WS73_USB',
+        symbols = ['RUST', 'SPARKLINK', 'SPARKLINK_WS73_USB',
                    'USB_MON', 'NET_9P', 'NET_9P_VIRTIO', '9P_FS', 'VIRTIO_PCI']
         modules = ['SPARKLINK_WS73_USB', 'NET_9P', 'NET_9P_VIRTIO', '9P_FS']
         lines = [f"CONFIG_{name}={'m' if name in modules else 'y'}" for name in symbols]

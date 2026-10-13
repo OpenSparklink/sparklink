@@ -389,55 +389,42 @@ impl ControllerIface {
 
     /// Read measurement capability
     async fn meas_read_cap(&self) -> zbus::fdo::Result<MeasCap> {
-        let st = self.state.lock().await;
-        let c = st.adapter.meas_read_cap().map_err(map_err)?;
-        Ok(MeasCap {
-            meas_types: c.meas_types,
-            max_instances: c.max_instances,
-            antenna_count: c.antenna_count,
-        })
+        Err(zbus::fdo::Error::NotSupported(
+            "typed measurement capability/control has not been implemented or qualified".into(),
+        ))
     }
 
     /// Enable or disable measurement
-    async fn meas_enable(&self, enable: bool) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.meas_enable(enable).map_err(map_err)
+    async fn meas_enable(&self, _enable: bool) -> zbus::fdo::Result<()> {
+        Err(zbus::fdo::Error::NotSupported(
+            "typed measurement capability/control has not been implemented or qualified".into(),
+        ))
     }
 
     /// Set measurement link parameter
     async fn meas_set_link_param(
         &self,
-        handle: u16,
-        meas_type: u8,
-        config_index: u8,
-        interval: u16,
-        duration: u16,
+        _handle: u16,
+        _meas_type: u8,
+        _config_index: u8,
+        _interval: u16,
+        _duration: u16,
     ) -> zbus::fdo::Result<()> {
-        let param = slk_protocol::SleMeasLinkParam {
-            handle,
-            meas_type,
-            config_index,
-            interval,
-            duration,
-        };
-        let st = self.state.lock().await;
-        st.adapter.meas_set_link_param(&param).map_err(map_err)
+        Err(zbus::fdo::Error::NotSupported(
+            "typed measurement capability/control has not been implemented or qualified".into(),
+        ))
     }
 
     /// Execute a measurement action (start/stop/report)
     async fn meas_action(
         &self,
-        handle: u16,
-        action: u8,
-        config_index: u8,
+        _handle: u16,
+        _action: u8,
+        _config_index: u8,
     ) -> zbus::fdo::Result<()> {
-        let act = slk_protocol::SleMeasAction {
-            handle,
-            action,
-            config_index,
-        };
-        let st = self.state.lock().await;
-        st.adapter.meas_action(&act).map_err(map_err)
+        Err(zbus::fdo::Error::NotSupported(
+            "typed measurement capability/control has not been implemented or qualified".into(),
+        ))
     }
 
     // ----- Sync Link -----

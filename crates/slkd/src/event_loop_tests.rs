@@ -1028,6 +1028,28 @@ async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
             unsupported,
         );
     }
+    error_name(
+        controller
+            .call::<_, _, crate::controller::MeasCap>("MeasReadCap", &())
+            .await,
+        unsupported,
+    );
+    error_name(
+        controller.call::<_, _, ()>("MeasEnable", &(true,)).await,
+        unsupported,
+    );
+    error_name(
+        controller
+            .call::<_, _, ()>("MeasSetLinkParam", &(1u16, 0u8, 0u8, 10u16, 20u16))
+            .await,
+        unsupported,
+    );
+    error_name(
+        controller
+            .call::<_, _, ()>("MeasAction", &(1u16, 0u8, 0u8))
+            .await,
+        unsupported,
+    );
     let invalid = "org.freedesktop.DBus.Error.InvalidArgs";
     error_name(
         security

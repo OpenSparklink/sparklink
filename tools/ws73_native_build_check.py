@@ -12,7 +12,7 @@ import subprocess
 
 
 REQUIRED = {'RUST': 'y', 'SPARKLINK': 'y', 'SPARKLINK_DRIVERS': 'y',
-            'SPARKLINK_GENL': 'y', 'SPARKLINK_SLE': 'y', 'SPARKLINK_DEBUGFS': 'y',
+            'SPARKLINK_GENL': 'y', 'DEBUG_FS': 'y',
             'SPARKLINK_WS73_USB': 'm', 'USB': 'y', 'USB_XHCI_PCI': 'y',
             'USB_MON': 'y', 'IKCONFIG': 'y', 'IKCONFIG_PROC': 'y'}
 EXPORTS = {'sparklink_backend_register', 'sparklink_native_unregister',

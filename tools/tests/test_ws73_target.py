@@ -263,7 +263,7 @@ class TargetEnvironment(unittest.TestCase):
             with self.subTest(name=name),self.assertRaises(ValueError):usb_properties(name,0)
     def test_requires_capture_and_export_before_launch(self):
         with tempfile.TemporaryDirectory() as d:
-            p=Path(d)/'config';p.write_text('CONFIG_RUST=y\nCONFIG_SPARKLINK=y\nCONFIG_SPARKLINK_SLE=y\nCONFIG_SPARKLINK_WS73_USB=y\n')
+            p=Path(d)/'config';p.write_text('CONFIG_RUST=y\nCONFIG_SPARKLINK=y\nCONFIG_SPARKLINK_WS73_USB=y\n')
             with self.assertRaisesRegex(ValueError,'USB_MON'):config_required(p)
     def test_board_inputs_are_explicit_raw_exact_sizes(self):
         with tempfile.TemporaryDirectory() as d:

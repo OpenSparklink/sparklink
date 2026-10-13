@@ -1029,27 +1029,30 @@ impl Adapter {
 
     /// Read measurement capability
     pub fn meas_read_cap(&self) -> Result<SleMeasCap> {
-        let mut cap = unsafe { std::mem::zeroed::<SleMeasCap>() };
-        unsafe { ioctl::sl_meas_read_cap(self.raw_fd(), &mut cap)? };
-        Ok(cap)
+        Err(Error::NotSupported(
+            "typed measurement capability/control unavailable",
+        ))
     }
 
     /// Set measurement link parameter
-    pub fn meas_set_link_param(&self, param: &SleMeasLinkParam) -> Result<()> {
-        unsafe { ioctl::sl_meas_set_link_param(self.raw_fd(), param)? };
-        Ok(())
+    pub fn meas_set_link_param(&self, _param: &SleMeasLinkParam) -> Result<()> {
+        Err(Error::NotSupported(
+            "typed measurement capability/control unavailable",
+        ))
     }
 
     /// Execute a measurement action
-    pub fn meas_action(&self, action: &SleMeasAction) -> Result<()> {
-        unsafe { ioctl::sl_meas_action(self.raw_fd(), action)? };
-        Ok(())
+    pub fn meas_action(&self, _action: &SleMeasAction) -> Result<()> {
+        Err(Error::NotSupported(
+            "typed measurement capability/control unavailable",
+        ))
     }
 
     /// Enable or disable measurement
-    pub fn meas_enable(&self, enable: bool) -> Result<()> {
-        unsafe { ioctl::sl_meas_enable(self.raw_fd(), enable as _)? };
-        Ok(())
+    pub fn meas_enable(&self, _enable: bool) -> Result<()> {
+        Err(Error::NotSupported(
+            "typed measurement capability/control unavailable",
+        ))
     }
 
     // ----- Internal helpers -----

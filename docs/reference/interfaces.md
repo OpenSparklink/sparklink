@@ -61,3 +61,10 @@ DEV_GET_ACTIVE仅报告本File绑定id（可已退休），无绑定为0xffff；
 旧DEV_SWITCH、DLI_INFO、DLI_RESET明确拒绝。MGMT_STATS仅保留实际标准profile0
 事务统计，Native profile1不支持；CLI query的准入由Diagnostic lease与Host负责，
 不从旧queue数值推导静默。完整新源码实机资格见能力入口，未完成项保持开放。
+
+K654216743b68：MEAS_READ_CAP/SET_LINK_PARAM/ACTION/ENABLE没有合格的Native
+机制，明确EOPNOTSUPP（Protected入口普通无CAP先EPERM），SDK/D-Bus也拒绝。
+configfs仅软件version；max_connections/adv_interval_ms/scan_window_ms/power_mode/
+controller_type删除，旧路径ENOENT，不保留none/0无动作成功。SPARKLINK_SLE与
+SPARKLINK_DEBUGFS无效选项删除；用实际SPARKLINK/驱动及Linux DEBUG_FS配置。
+WS73实际板级pm_config.bin不是旧全局power_mode，仍由驱动加载验证。

@@ -36,7 +36,7 @@ def verify_console(console, release, root_uuid, exit_code, empty_registry=False)
     if re.search(r'NATIVE_MODULE_FAILURE|Kernel panic|Oops:|BUG:|WARNING:|'
                  r'module verification failed|Boot has failed|Unable to mount root', text):
         raise ValueError('boot/module failure or kernel warning in console')
-    if empty_registry and text.count('SPARKLINK_NO_GHOST_BACKEND_PASS selectors=9 registered=0 select=ENODEV unbound_snapshot=EINVAL')!=3:
+    if empty_registry and text.count('SPARKLINK_NO_GHOST_BACKEND_PASS removed_attrs=5 registered=0 select=ENODEV unbound_snapshot=EINVAL')!=3:
         raise ValueError('three actual empty-registry/selector checks required')
     markers = [
         'NATIVE_ROOT_MOUNT: /dev/nvme0n1 btrfs',

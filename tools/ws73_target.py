@@ -57,7 +57,7 @@ def write_json(path, data):
 
 def config_required(path, module_profile=False):
     lines = path.read_text().splitlines()
-    for name in ['RUST', 'SPARKLINK', 'SPARKLINK_SLE', 'SPARKLINK_WS73_USB',
+    for name in ['RUST', 'SPARKLINK', 'SPARKLINK_WS73_USB',
                  'USB_MON', 'NET_9P', 'NET_9P_VIRTIO', '9P_FS', 'VIRTIO_PCI']:
         value = 'm' if module_profile and name in ['SPARKLINK_WS73_USB', 'NET_9P', 'NET_9P_VIRTIO', '9P_FS'] else 'y'
         if f'CONFIG_{name}={value}' not in lines:

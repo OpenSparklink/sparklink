@@ -1,5 +1,25 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前切片：measurement 与无消费者配置收尾（新镜像资格待完成）
+
+K654216743b68删除固定measurement能力投影及不经过Native事务的直接旧命令，
+四入口在权限之后/context与copy之前Unsupported；SDK/D-Bus相同明确拒绝。
+configfs只保留软件version，五个旧全局配置节点删除（包括none/0假成功selector）；
+no-ghost/Virtual/mixed C回归改为实际ENOENT及注册表不变，精确旧源码保留历史。
+SPARKLINK_SLE/DEBUGFS无编译消费者的选项删除；Linux DEBUG_FS仍控制debugfs，
+实际WS73驱动与板级bsle_custom.bin/pm_config.bin保留。Core不再select无消费者
+crypto，机制源码继续留在内核，未来每连接安全机制独立接通其依赖。
+[三类审计](evidence/measurement-config-retirement-audit-20261014.json)。
+
+资格VM配置已显式核对只移除SLE/DEBUGFS两行，从37e9ce68变为30860427；
+driver/compiler/hardening等其他选项未变化，Virtual仍是独立可选测试模块。
+构建、空注册/Virtual、双真实发现/连接/40短消息/249边界/同行隔离的新镜像门禁
+待完成，不继承Kdd11/Uc692的旧PASS，不把配置检查当实现或硬件证明。
+完整S0–S6、VM-only、UserHost P4/文档独立范围、自然RCA/非人工恢复开放条件保持。
+下一步收敛未发布旧facade及标准事件/result，接通唯一用户态SSAP，数据扩展与
+形式化并行；不以控制竞争全集为数据面前置。
+
+
 ## 当前切片：显式 File affinity 与旧观察迁移，准确新源码回归通过
 
 K `c2dd941e5784`（pin初始化修正 `902f01dc9ea5`）删除 active_dev_id/default_selection 与全局 DEV_SWITCH；

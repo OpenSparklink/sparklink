@@ -1,0 +1,22 @@
+# 标准USB wire与默认实验代码整改审计
+
+Canonical所有权/计划/资格仍为ARCHITECTURE、ADR0002、IMPLEMENTATION_PLAN、CURRENT_CAPABILITIES。
+本清单是对应调用审计，不是另一个执行计划。审计基线K1d6b3195484f；整改K6db8a530f9c6，VM工具U2484932。
+
+| 类别 | 生产调用者与原功能 | 本批处理/替代 | issues与回归条件 |
+|---|---|---|---|
+| 立即删除 | sle_usb::prepare_usb_controller → sle_fw::load_usb_firmware → C download，自动对sle_usb_v1.bin发F810/F811/A5 | net/sle_fw模块/C下载/FFI删除；standard只查询已经运行的DLI；WS73 FW由drivers/sparklink/ws73按SDK111实现 | K#1/#9/#10/#12/#19；实际prepare不请求通用FW、完整build、真实WS73保持 |
+| 立即纠正 | UsbController.send_command_transport和bootstrap C sync，A1+bulk指令、bulk读reply | 共同C EP0 writer四字节头、interrupt query、device/interface provenance、wLength边界 | K#9/#11/#12/#19；actual25C+8Rust、context19、双端实机保持；standard物理仍缺 |
+| 立即拒绝 | Std UsbController.submit单bool typed mutation；ControllerBackend.validate_command此前默许 | 未接通recipe/connection返回Unsupported，raw只准核对的queries，在准入及submit检查 | K#5/#9/#11；port5不会发未经资格mutation，未来common标准typed policy后接通 |
+| 立即拒绝 | old sle_usb_dev_send_data(handle-only)和A3-magic RX生成DataReceived | TX Unsupported，bulk/unknown lane拒绝；不再交旧连接队列 | K#6/#17/#19；无fake data/Complete，WS73票据业务40/249不受影响；未来standard Session/ticket/credit/PB接通 |
+| 移入测试 | 旧固件bounds/timeout/alloc/return，以及旧C数据短传输边界 | selftests/retired-usb-firmware、retired-usb-registration/handle_only_data.c；历史74C/12Rust和数据边界保留，明确非生产wire | K#17/#19/U#3；CI历史回归保留，不增加能力资格 |
+| 等待替代 | static ControllerBackend::Usb、core USB注册/open与旧事件/连接消费者 | 接common标准descriptor/Host/provider retained ops/RX-open-close后迁调用者并删重复，移transport到drivers；新typed/data资格逐项取得 | K#1/#3/#6/#9/#12/#17/#19/U#1/#2/#3/#8；genuineVirtual、USB=n/m/module/IRQ/PM、准确回归，不只改enum名称 |
+
+本地标准参考：T/XS10003-2025 §6.2.1/6.2.2.1/6.2.2.2/6.2.3/6.2.6/7.2/7.3；未上传标准全文。
+EP最大packet不是整个DLI event/URB预算，event上限65535参数+4头；control wLength包含4头。
+Metadata/buffer支持不代表SSAP MTU/可靠mode/security policy或Ready；profile0默认daemon仍不宣称支持。
+
+[实施/模型假设/历史与新实机](evidence/standard-binding-offline-20261013.json)。仅VM中真实设备I/O，
+普通应用对端随机校验回复及USB/HCC/A3，而非USB写成功/日志/广播替代业务。
+标准binding错误不作为WS73自然启动/重枚举/消失RCA，受控缺文件/QMP/manual/hub切电不算自然恢复。
+完整S0–S6及原scope保持，部分成果不关闭整项。

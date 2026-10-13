@@ -414,3 +414,13 @@ get_version/get_capabilities被唯一get_metadata替代并删除。info/controll
 不推断SSAP/DTAP/security policy或覆盖Host live credit/Ready/error；不等于standard common注册完成。
 [限定C证明和初版构建失败](../evidence/standard-snapshot-offline-20261013.json)保留，
 [准确实机回归](../evidence/ws73-standard-snapshot-v2-short-repeat-20261013.json)只授予原WS73范围。
+
+### 标准USB transport与厂商FW边界复核（K6db8a530f9c6）
+
+按本地T/XS10003-2025 §6.2/§7，USB command为EP0四字节DLI头，event为interrupt；UART/H4 marker
+不能复用于此binding，bulk属于ACB。单/多功能recipient从descriptor归属选择，四字节头占用u16 wLength。
+boot-ROM/FW必须由已匹配厂商driver实现；不存在可假定的通用F810/F811/A5协议。
+默认旧FW删除，历史仅selftests；无Session/ticket/credit归属的标准裸handle TX/RX和未接通typed recipe明确不支持。
+这项审计调整标准Backend迁移前的依赖，保留所有S0–S6/标准后端最终目标及已验证WS73，
+[调用者/删除/等待替代](../STANDARD_USB_BINDING_CLEANUP_20261013.md)与[实际证据/假设](../evidence/standard-binding-offline-20261013.json)
+集中记录。限定模型/WS73回归不能替代标准USB物理与自然恢复资格。

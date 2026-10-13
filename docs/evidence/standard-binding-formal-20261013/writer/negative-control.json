@@ -1,0 +1,125 @@
+{
+  "status": "EXPECTED_COUNTEREXAMPLE",
+  "production_proof": false,
+  "mutation": "raise parameter guard65531 to65535: ignore u16 USB wLength including4-byte header",
+  "failed": [
+    {
+      "property": "bounded_copy.assertion.1",
+      "description": "assertion __CPROVER_r_ok(src,n)",
+      "sourceLocation": {
+        "comment": "assertion __CPROVER_r_ok(src,n)",
+        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "function": "bounded_copy",
+        "line": "18",
+        "pragma": [
+          "checked:bounds-check",
+          "checked:pointer-check",
+          "checked:div-by-zero-check",
+          "checked:signed-overflow-check",
+          "checked:unsigned-overflow-check",
+          "checked:undefined-shift-check",
+          "checked:pointer-primitive-check"
+        ],
+        "propertyClass": "assertion",
+        "propertyId": "bounded_copy.assertion.1",
+        "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+      },
+      "status": "FAILURE"
+    },
+    {
+      "property": "kmalloc.assertion.1",
+      "description": "assertion n>=4&&n<=65535",
+      "sourceLocation": {
+        "comment": "assertion n>=4&&n<=65535",
+        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "function": "kmalloc",
+        "line": "14",
+        "pragma": [
+          "checked:bounds-check",
+          "checked:pointer-check",
+          "checked:div-by-zero-check",
+          "checked:signed-overflow-check",
+          "checked:unsigned-overflow-check",
+          "checked:undefined-shift-check",
+          "checked:pointer-primitive-check"
+        ],
+        "propertyClass": "assertion",
+        "propertyId": "kmalloc.assertion.1",
+        "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+      },
+      "status": "FAILURE"
+    },
+    {
+      "property": "main.assertion.2",
+      "description": "assertion context.active&&context.udev&&controls==1&&expected_length>=0&&expected_length<=65531&&(expected_length==0||p)&&usb_result==4+expected_length",
+      "sourceLocation": {
+        "comment": "assertion context.active&&context.udev&&controls==1&&expected_length>=0&&expected_length<=65531&&(expected_length==0||p)&&usb_result==4+expected_length",
+        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "function": "main",
+        "line": "57",
+        "pragma": [
+          "checked:bounds-check",
+          "checked:pointer-check",
+          "checked:div-by-zero-check",
+          "checked:signed-overflow-check",
+          "checked:unsigned-overflow-check",
+          "checked:undefined-shift-check",
+          "checked:pointer-primitive-check"
+        ],
+        "propertyClass": "assertion",
+        "propertyId": "main.assertion.2",
+        "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+      },
+      "status": "FAILURE"
+    },
+    {
+      "property": "main.assertion.5",
+      "description": "assertion ret==-EMSGSIZE&&!controls&&!allocs",
+      "sourceLocation": {
+        "comment": "assertion ret==-EMSGSIZE&&!controls&&!allocs",
+        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "function": "main",
+        "line": "60",
+        "pragma": [
+          "checked:bounds-check",
+          "checked:pointer-check",
+          "checked:div-by-zero-check",
+          "checked:signed-overflow-check",
+          "checked:unsigned-overflow-check",
+          "checked:undefined-shift-check",
+          "checked:pointer-primitive-check"
+        ],
+        "propertyClass": "assertion",
+        "propertyId": "main.assertion.5",
+        "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+      },
+      "status": "FAILURE"
+    },
+    {
+      "property": "usb_control_msg.assertion.2",
+      "description": "assertion expected_length>=0&&expected_length<=65531&&size==expected_length+4&&__CPROVER_r_ok(raw,size)",
+      "sourceLocation": {
+        "comment": "assertion expected_length>=0&&expected_length<=65531&&size==expected_length+4&&__CPROVER_r_ok(raw,size)",
+        "file": ".dev/standard-binding-writer-cbmc/weak.c",
+        "function": "usb_control_msg",
+        "line": "22",
+        "pragma": [
+          "checked:bounds-check",
+          "checked:pointer-check",
+          "checked:div-by-zero-check",
+          "checked:signed-overflow-check",
+          "checked:unsigned-overflow-check",
+          "checked:undefined-shift-check",
+          "checked:pointer-primitive-check"
+        ],
+        "propertyClass": "assertion",
+        "propertyId": "usb_control_msg.assertion.2",
+        "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+      },
+      "status": "FAILURE"
+    }
+  ],
+  "weak_sha256": "58a18214ac30a15f088f882b1beac11f434fa447bf048a3c26bca2795d3c1e09",
+  "source_mapping": "sle_usb_write_command_locked length guard / actualC25 pre-submit 65532,65535 rejection regression",
+  "original_solver": "weak/solver.json.gz"
+}

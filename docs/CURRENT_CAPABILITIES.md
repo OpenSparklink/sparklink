@@ -5,7 +5,49 @@
 [采用记录](ARCHITECTURE_ADOPTION_20261013.json)记录用户提案、在线scope及调整。
 五个维度独立；源码、离线、模型、实机均不替代其他维度，不用一个“完成”字段。
 
-## 当前架构整改：单一不可变标准metadata生产消费者
+## 当前架构整改：纠正标准USB binding，隔离未合格实验wire
+
+K`6db8a530f9c69df1fe09060dd3f09220a55ea946` / VM编译service和工具U`2484932`：
+调用审计查明旧标准路径把UART标识A1和指令放bulk、从bulk读Complete，不符合用户提供的
+T/XS10003-2025 §6.2/§7.2–7.3。已改为EP0四字节DLI头、class request0/value0，按descriptor选择
+device20/index0或interface21/实际接口号；bootstrap回复取interrupt。设备及接口class ID均匹配。
+USB wLength包含四字节头，参数65531可编码、65532及以上拒绝；这是transport bound，不冒充设备能力。
+RX endpoint lane显式归属，事件URB预算65539（u16参数+header），不把maxPacketSize当完整event上限。
+标准裸handle数据没有Session/lifetime/credit/PB所有权，TX明确Unsupported、bulk RX拒绝；
+未接通标准typed mutation/recipe/connection拒绝，raw只准明确核对的query schema。
+**这不是缩减最终标准后端目标：** standard typed policy和ticketed ACB仍按WP13/原issues继续接通。
+
+默认net/sparklink/sle_fw.rs、假定F810/F811/A5通用下载及其C FFI删除；boot-ROM/FW归厂商driver。
+历史74C/12Rust及旧C数据边界迁selftests/retired-*，不再称生产wire或标准firmware资格。
+WS73 SDK111/HCC/BSLE/固件/真实ACB保持其独立driver路径，不能把标准binding错误当作WS73自然故障根因。
+[三类清理/调用者/替代](STANDARD_USB_BINDING_CLEANUP_20261013.md)。
+
+[准确实现/离线/构建](evidence/standard-binding-offline-20261013.json)：actual writer25/Rust prepare+lane8、
+metadata44、context19/info11、port5/pending-open15/ingress9；完整清洁内核/空VM三次通过。
+[准确CI九项](evidence/standard-binding-ci-20261013.json)U2484932/pin K6db通过并核对新binding和retired日志；
+新proof classifier后工具456通过。decode/USB/allocator/registry替换是fixture依赖，不是物理或并发验证。
+
+[actual metadata314](evidence/standard-binding-formal-20261013/metadata/production/report.json)限定范围重核；
+[actual writer116](evidence/standard-binding-formal-20261013/writer/production/report.json)检验全int32参数长度/
+USB return/timeout、u16 opcode/index/u8 target、NULL/active/alloc失败；valid source object65531。
+memcpy仅抽象为读写范围断言，**不证明payload字节复制**；USB/LE primitive也是依赖模型，
+不证明硬件、并发/IRQ/URB/module/引用/Host credit/Complete/Ready。
+[忽略四字节头的反例](evidence/standard-binding-formal-20261013/writer/negative-control.json)映射实际65532/65535
+预提交拒绝；弱模型均NOT_PROVEN，超时/unsupported/未展开不得PASS。solver/trace gzip保留原始hash。
+
+[新fault同行8业务](evidence/ws73-standard-binding-fault-isolation-20261013.json)、
+[新40短](evidence/ws73-standard-binding-short-repeat-20261013.json)、
+[新249与16拒绝](evidence/ws73-standard-binding-249-boundary-20261013.json)：VM-only真实WS73，普通用户
+两角色随机业务对端校验回复及双端USB/HCC/A3佐证；normal224 SDUs/112真实NOCP、capture零drop/taint0。
+发现/建链断链/dup/最后关闭同life拒绝、dynamic fault/observer/旧path/newgen、同行与同slkd保持。
+受控缺文件/QMP仅开发支撑，非物理/自然/非人工恢复；没有标准DLI物理资格。
+
+下一批仍是common standard profile0 descriptor/Host/provider retained ops/RX-open-close/get-put，
+迁调用者后删static Usb/core USB依赖；标准ticketed ACB/typed policy、真正Virtual、USB=n/m/moduleIRQPM及
+WP12事件/旧ring并行。Ticket/Session/Grant/socket剩余在途/lifetime/NOCP/背压和自然RCA继续；
+整体目标架构完成后才扩展长包、多通道/四设备和唯一用户SSAP。完整S0–S6/19WP/10FV/12DG不变，整项OPEN。
+
+## 历史子门禁：单一不可变标准metadata生产消费者
 
 K`1d6b3195484fa7ee63b675e5345dfc263850e44c` / VM编译service和工具U`8a7666e`：
 C以一个io_lock快照返回查询的version/address/command credit/command最大长度/ACB/ICB/features；
@@ -368,6 +410,7 @@ vmlinux旧serdev符号不存在。清洁构建零warning、空USB三次实际门
 
 | 范围 | 已实现 | 离线通过 | 形式化限定通过 | 实机通过 | 仍缺失 |
 |---|---|---|---|---|---|
+| 当前standard USB binding/旧wire | K6db EP0/interrupt/显式lane、固定target归属；默认通用FW删除；无归属标准data/typed mutation拒绝 | actual25C/8Rust+metadata44+context19/info11，完整build/空VM/CI9；历史firmware74/12仅retired | actualmetadata314+writer116限定；copy仅范围模型，不证明payload/USB/并发/引用/Ready | K6db/U248 WS73 fault8+40短+249八/16拒绝；不授予standard物理 | common标准provider/profile0/typed policy/ticketed data、static Usb/coreUSB/事件/Virtual/moduleIRQPM及自然恢复仍缺 |
 | common Backend注册首批 | WS73/open测试provider实际迁移V1描述符；旧入口删除；标准USB未迁 | validator38、实际C拒绝11/sanitizer、Native33/连接operation12+Host、零warning/空VM3；fixture-only修正 | CBMC221限定准入，合法不变内核指针假设；不证明引用/并发/硬件 | 编译K7e654fde/U67165b6独立40短/8长度往返、16拒绝 | 标准USB/重复binding、真正Virtual/serdev、module/get-put/stopjoin全矩阵 |
 | WS73发现/连接 | Native真实事务、动态adapter、typed Peer/Connection | 对应准确提交的生产源码/codec/ABI回归 | 不继承数据模型资格 | 当前K308e5398/编译与工具U420cc12两次RF22、真实建链/断链与QMP支撑，历史物理证据保留 | 原NS1自然恢复、当前数据路径物理拔插/全部连接竞争 |
 | 默认CUTC31/PI241 socket | A3/ACB、运行时254/5查询、独立命令/data credit、旧debt、有界TX与普通fd委托 | 当前33项Native/Runtime Session/epoch生产源码回归（USB/锁/注册依赖fixture）、准确U420cc12 CI九项成功 | Credit守恒Kani仍未证明；不证明NOCP物理归属 | 新K308e5398/编译与工具U420cc12 DGRAM每角色20/共40轮61-byte实际对端往返，dup/最后关闭子门禁 | credit耗尽/满队列、完整票据/复用屏障、旧lifetime全矩阵 |

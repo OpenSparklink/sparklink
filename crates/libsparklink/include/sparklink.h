@@ -531,6 +531,32 @@ typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
     uint32_t reserved;
 } SleChannelInfo;
 
+/**
+ * Read-only coherent software queue and native controller reservation state.
+ * Peak includes rolled-back reservations; it does not mean USB or peer delivery.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleChannelTxStatus {
+    uint16_t version;
+    uint16_t size;
+    uint16_t controller;
+    uint16_t handle;
+    uint64_t generation;
+    uint64_t lifetime;
+    uint16_t packet_maximum;
+    uint16_t capacity;
+    uint16_t outstanding;
+    uint16_t connection_debt;
+    uint16_t peak_reserved;
+    uint16_t queued;
+    uint16_t queue_limit;
+    uint16_t busy;
+    uint32_t active_pdu_bytes;
+    uint32_t active_pdu_offset;
+    uint32_t flags;
+    uint32_t reserved;
+    uint64_t pool_exhaustions;
+} SleChannelTxStatus;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -866,6 +892,14 @@ int slk_connection_result(const struct SlkAdapter *adapter,
  * `output` is null or points to a live, aligned, writable SleChannelInfo.
  */
 int slk_channel_info(int fd, struct SleChannelInfo *output);
+
+/**
+ * Coherent read-only queue and reservation observation of an authorized fd.
+ * Returns0 or negative errno; output unchanged on error. No credit mutation.
+ * # Safety
+ * output is null or a live aligned writable SleChannelTxStatus object.
+ */
+int slk_channel_tx_status(int fd, struct SleChannelTxStatus *output);
 
 #ifdef __cplusplus
 }  // extern "C"

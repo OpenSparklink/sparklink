@@ -14,7 +14,7 @@ from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo,
+    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus,
 )
 
 
@@ -39,6 +39,13 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(caught.exception.errno, errno.EBADF)
         with self.assertRaises(ValueError):
             channel_info(True)
+
+    def test_tx_status_denies_bad_fd_without_overwriting(self):
+        out=SleChannelTxStatus(generation=99,reserved=44)
+        before=bytes(out)
+        self.assertEqual(self.lib.slk_channel_tx_status(-1,ctypes.byref(out)),-errno.EBADF)
+        self.assertEqual(bytes(out),before)
+        self.assertEqual(self.lib.slk_channel_tx_status(-1,None),-errno.EINVAL)
 
     def test_registration_probe_rejects_invalid_index_and_closes_on_error(self):
         before = len(list(Path('/proc/self/fd').iterdir()))

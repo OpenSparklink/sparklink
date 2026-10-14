@@ -1057,6 +1057,8 @@ def _run(args):
                     if any(row['rounds']!=channel_rounds for row in control['channel_socket']):raise ValueError('socket round count differs from explicit request')
                     if not all(row.get('channel_info_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires original capability receipts')
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
+                    if not all(row.get('tx_status_required') is True for row in control['channel_socket']):raise ValueError('current gate requires actual TX-budget snapshots')
+                    m['ordinary_channel_tx_status_acceptance']=True
                     m['ordinary_channel_info_acceptance']=True
                     if not all(row.get('ssap_exchange_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires real SMTC ExchangeInfo')
                     m['ssap_exchange_info_acceptance']=True

@@ -30,6 +30,7 @@ RUST_TYPES = WORKSPACE / "crates/slk-protocol/src/types.rs"
 # the actual declarations/compiler output, never from a second ABI definition.
 STRUCT_NAMES = {
     "SleChannelInfo": "sparklink_channel_info",
+    "SleChannelTxStatus": "sparklink_channel_tx_status",
     "SciDevInfo": "sci_dev_info",
     "SleScanParams": "sle_scan_params",
     "SleConnectParams": "sle_connect_params",
@@ -121,7 +122,7 @@ class TestAbiConformance(unittest.TestCase):
         cls.kernel_source = KERNEL_HEADER.read_text() + cls.socket_header.read_text()
         cls.public_source = PUBLIC_HEADER.read_text()
         channel_source = (RUST_TYPES.parent / "channel.rs").read_text()
-        channel_type = re.search(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct SleChannelInfo \{[^}]+\}", channel_source)[0]
+        channel_type = "\n".join(re.findall(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct SleChannel(?:Info|TxStatus) \{[^}]+\}", channel_source))
         cls.rust_source = RUST_TYPES.read_text() + channel_source
         cls.fields = {
             name: c_fields(cls.kernel_source, kernel_name)

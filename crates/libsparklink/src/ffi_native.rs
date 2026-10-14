@@ -439,3 +439,24 @@ pub unsafe extern "C" fn slk_channel_info(fd: c_int, output: *mut SleChannelInfo
         Err(error) => -error.raw_os_error().unwrap_or(nix::libc::EPROTO),
     }
 }
+
+/// Coherent read-only queue and reservation observation of an authorized fd.
+/// Returns0 or negative errno; output unchanged on error. No credit mutation.
+/// # Safety
+/// output is null or a live aligned writable SleChannelTxStatus object.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_channel_tx_status(
+    fd: c_int,
+    output: *mut SleChannelTxStatus,
+) -> c_int {
+    if output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    match slk_protocol::channel::query_tx_status(fd) {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error.raw_os_error().unwrap_or(nix::libc::EPROTO),
+    }
+}

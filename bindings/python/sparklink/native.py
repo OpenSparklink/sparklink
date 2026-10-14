@@ -13,7 +13,7 @@ from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo,
+    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus,
 )
 
 _native_library = None
@@ -34,6 +34,7 @@ def _get_native_lib():
     u64, u32 = ctypes.c_uint64, ctypes.c_uint32
     signatures = {
         "slk_channel_info": [ctypes.c_int, ctypes.POINTER(SleChannelInfo)],
+        "slk_channel_tx_status": [ctypes.c_int, ctypes.POINTER(SleChannelTxStatus)],
         "slk_adapter_select": [handle, ctypes.c_uint16],
         "slk_adapter_fd": [handle],
         "slk_device_mask": [handle, ctypes.POINTER(ctypes.c_uint16)],
@@ -285,4 +286,17 @@ def channel_info(fd):
     result = _get_native_lib().slk_channel_info(fd, ctypes.byref(value))
     if result < 0:
         raise OSError(-result, "channel capability query")
+    return value
+
+
+def channel_tx_status(fd):
+    """No lease or payload; reservations/queue do not mean USB/peer completion."""
+    if type(fd) is not int or not -(1 << 31) <= fd < (1 << 31):
+        raise ValueError("channel fd must be a signed 32-bit integer")
+    if ctypes.sizeof(SleChannelTxStatus) != 64 or ctypes.alignment(SleChannelTxStatus) != 8:
+        raise RuntimeError("TX snapshot requires exact64-byte/8-aligned ABI")
+    value=SleChannelTxStatus()
+    result=_get_native_lib().slk_channel_tx_status(fd,ctypes.byref(value))
+    if result < 0:
+        raise OSError(-result,"channel TX observation")
     return value

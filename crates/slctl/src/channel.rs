@@ -12,6 +12,34 @@ pub(crate) enum Mode {
     Burst,
 }
 
+fn tx_status(
+    fd: &OwnedFd,
+    stage: &str,
+    sequence: usize,
+) -> anyhow::Result<slk_protocol::channel::SleChannelTxStatus> {
+    let s = slk_protocol::channel::query_tx_status(fd.as_raw_fd())?;
+    println!(
+        "NativeTxStatus: stage={stage} sequence={sequence} index={} generation={} lifetime={} handle={} maximum={} capacity={} outstanding={} debt={} peak={} queued={} limit={} busy={} bytes={} offset={} flags={} blocks={}",
+        s.controller,
+        s.generation,
+        s.lifetime,
+        s.handle,
+        s.packet_maximum,
+        s.capacity,
+        s.outstanding,
+        s.connection_debt,
+        s.peak_reserved,
+        s.queued,
+        s.queue_limit,
+        s.busy,
+        s.active_pdu_bytes,
+        s.active_pdu_offset,
+        s.flags,
+        s.pool_exhaustions
+    );
+    Ok(s)
+}
+
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
@@ -293,11 +321,12 @@ pub(crate) fn exercise(
         info.directions
     );
     info_copy_retry(&fd, info)?;
+    tx_status(&fd, "ready", 0)?;
     if mode == Mode::PrefixClose {
         exercise_prefix_close(fd, message_bytes)
     } else {
         if mode == Mode::Burst {
-            exercise_burst(fd, rounds, message_bytes)
+            exercise_burst(fd, rounds, message_bytes, true)
         } else {
             exercise_messages(
                 fd,
@@ -312,7 +341,12 @@ pub(crate) fn exercise(
 
 // Burst is application software-admission pressure, not a claim that the
 // controller packet-credit pool ran out. Only opposite receipts prove delivery.
-fn exercise_burst(fd: OwnedFd, rounds: u32, message_bytes: usize) -> anyhow::Result<()> {
+fn exercise_burst(
+    fd: OwnedFd,
+    rounds: u32,
+    message_bytes: usize,
+    observe_native: bool,
+) -> anyhow::Result<()> {
     if rounds != 16 || message_bytes != 2042 {
         anyhow::bail!("burst requires16 messages of2042 bytes");
     }
@@ -385,6 +419,9 @@ fn exercise_burst(fd: OwnedFd, rounds: u32, message_bytes: usize) -> anyhow::Res
                 "NativeBurstBlocked: sequence={index} poll_writable={}",
                 u8::from(writable)
             );
+            if observe_native {
+                tx_status(&fd, "blocked", index)?;
+            }
             wait(&fd, nix::libc::POLLOUT, deadline)?;
         }
     }
@@ -405,6 +442,9 @@ fn exercise_burst(fd: OwnedFd, rounds: u32, message_bytes: usize) -> anyhow::Res
             started.elapsed().as_millis(),
             hex(&received)
         );
+    }
+    if observe_native {
+        tx_status(&fd, "replied", rounds as usize)?;
     }
     println!("NativeBurstPressure: eagain={blocked} not_writable={not_writable} replies={rounds}");
     Ok(())
@@ -615,7 +655,7 @@ mod tests {
             std::thread::sleep(Duration::from_millis(100));
             exercise_messages(peer, true, 16, 2042, false)
         });
-        exercise_burst(source, 16, 2042).unwrap();
+        exercise_burst(source, 16, 2042, false).unwrap();
         task.join().unwrap().unwrap();
     }
 

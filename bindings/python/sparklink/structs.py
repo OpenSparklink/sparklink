@@ -392,3 +392,17 @@ class SleChannelInfo(ctypes.Structure):
         ("pi", ctypes.c_uint8), ("mode", ctypes.c_uint8),
         ("directions", ctypes.c_uint32), ("reserved", ctypes.c_uint32),
     ]
+
+
+class SleChannelTxStatus(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [("version", ctypes.c_uint16), ("size", ctypes.c_uint16),
+        ("controller", ctypes.c_uint16), ("handle", ctypes.c_uint16),
+        ("generation", ctypes.c_uint64), ("lifetime", ctypes.c_uint64),
+        ("packet_maximum", ctypes.c_uint16), ("capacity", ctypes.c_uint16),
+        ("outstanding", ctypes.c_uint16), ("connection_debt", ctypes.c_uint16),
+        ("peak_reserved", ctypes.c_uint16), ("queued", ctypes.c_uint16),
+        ("queue_limit", ctypes.c_uint16), ("busy", ctypes.c_uint16),
+        ("active_pdu_bytes", ctypes.c_uint32), ("active_pdu_offset", ctypes.c_uint32),
+        ("flags", ctypes.c_uint32), ("reserved", ctypes.c_uint32),
+        ("pool_exhaustions", ctypes.c_uint64)]

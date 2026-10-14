@@ -20,7 +20,7 @@ def credentials(pid):
 def execute(run, phase):
     row = dict(phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
-               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     run.data.setdefault('channel_socket', []).append(row); run.save()
     processes=[];files=ExitStack()
     try:
@@ -171,6 +171,7 @@ def application_frames(row):
     rejected_frames(row)
     channel_info_receipts(row)
     burst_pressure_receipts(row)
+    tx_status_receipts(row)
     def rows(role,marker,elapsed=False):
         pattern=rf'^{marker}: sequence=(\d+) '+(r'elapsed_ms=(\d+) ' if elapsed else '')+r'bytes=([0-9a-f]+)$'
         values=re.findall(pattern,apps[role]['stdout'],re.M)
@@ -194,6 +195,31 @@ def application_frames(row):
         if received[i]!=data or reply[i]!=expected or returned[i]!=expected:
             raise CaptureError('actual peer validation and exact reply required')
     return sent,reply
+
+
+def tx_status_receipts(row):
+    samples=[]
+    if not row.get('tx_status_required',False):return samples # historical never upgrades
+    fields=['sequence','index','generation','lifetime','handle','maximum','capacity','outstanding','debt','peak','queued','limit','busy','bytes','offset','flags','blocks']
+    pattern=r'^NativeTxStatus: stage=(ready|blocked|replied) '+r' '.join(name+r'=(\d+)' for name in fields)+r'$'
+    for app in row['applications']:
+        values=re.findall(pattern,app['stdout'],re.M)
+        if not values or len(values)!=app['stdout'].count('NativeTxStatus:'):
+            raise CaptureError('original actual TX-status receipts required')
+        owner=row['owners'][0 if app['role']=='initiator' else 1]
+        last_peak=last_blocks=0
+        for value in values:
+            sample=dict(zip(fields,map(int,value[1:])));sample.update(stage=value[0],role=app['role'])
+            if (sample['index'],sample['generation'],sample['lifetime'],sample['handle'])!=(owner['owner']['index'],owner['owner']['generation'],owner['object']['lifetime'],owner['object']['handle']):
+                raise CaptureError('TX status immutable identity mismatch')
+            if sample['maximum']!=254 or sample['capacity']!=5 or sample['limit']!=8 or sample['busy']>1 or sample['queued']+sample['busy']>8 or not 0<=sample['debt']<=sample['outstanding']<=sample['peak']<=5:
+                raise CaptureError('native TX status budget invariant mismatch')
+            if sample['flags']&~3 or not 0<=sample['offset']<=sample['bytes']<=2047 or (sample['flags']&1==0 and any(sample[k] for k in ['bytes','offset','flags','busy'])) or (sample['flags']&1 and (not sample['bytes'] or sample['busy']!=1)):
+                raise CaptureError('native TX status operation invariant mismatch')
+            if sample['peak']<last_peak or sample['blocks']<last_blocks:raise CaptureError('controller counters cannot decrease within generation')
+            last_peak=sample['peak'];last_blocks=sample['blocks'];samples.append(sample)
+        if [v[0] for v in values].count('ready')!=1:raise CaptureError('one actual ready TX status per fd required')
+    return samples
 
 
 def burst_pressure_receipts(row):
@@ -229,6 +255,7 @@ def prefix_application_frames(row):
         if app['exit'] or app['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in app['credentials']['capabilities'].values()):
             raise CaptureError('successful ordinary prefix applications required')
     channel_info_receipts(row)
+    tx_status_receipts(row)
     def single(app, pattern):
         values=re.findall(pattern,app['stdout'],re.M)
         if len(values)!=1:raise CaptureError('one original prefix receipt required')
@@ -346,6 +373,7 @@ def corroborate(run,capture):
                     ssap_legs.append(dict(tx=matched(owner,'out',frame,True),rx=matched(receiver,'in',frame,True)))
                 ssap.append(dict(receipt=source,wire=ssap_legs))
         entry = dict(phase=n,owners=owners,capabilities=capabilities,legs=legs)
+        if row.get('tx_status_required',False):entry['tx_status']=tx_status_receipts(row)
         if row.get('burst',False):entry['burst_pressure']=burst_pressure_receipts(row)
         if prefix:entry['prefix_close']={k:v for k,v in prefix.items() if k!='dropped'}|dict(dropped_marker=prefix['dropped'].hex(),other_channel_after_close=True)
         if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)

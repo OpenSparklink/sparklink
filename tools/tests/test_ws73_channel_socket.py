@@ -84,6 +84,23 @@ class ApplicationProof(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(row)
 
 
+class TxStatusObservationProof(unittest.TestCase):
+    def row(self):
+        row=fixture();row['tx_status_required']=True
+        row['owners']=[dict(owner=dict(index=0,generation=1),object=dict(lifetime=3,handle=0)),dict(owner=dict(index=1,generation=2),object=dict(lifetime=4,handle=0))]
+        for app in row['applications']:
+            n=0 if app['role']=='initiator' else 1
+            app['stdout']+=f'NativeTxStatus: stage=ready sequence=0 index={n} generation={n+1} lifetime={n+3} handle=0 maximum=254 capacity=5 outstanding=0 debt=0 peak=1 queued=0 limit=8 busy=0 bytes=0 offset=0 flags=0 blocks=0\n'
+        return row
+    def test_actual_identity_and_separate_budget_invariants(self):
+        from ws73_channel_socket import tx_status_receipts
+        row=self.row();self.assertEqual(len(tx_status_receipts(row)),2)
+        for old,new in [('capacity=5','capacity=6'),('outstanding=0','outstanding=6'),('queued=0','queued=9'),('generation=1','generation=10'),('flags=0','flags=2'),('NativeTxStatus:','Other:')]:
+            changed=copy.deepcopy(row)
+            for app in changed['applications']:app['stdout']=app['stdout'].replace(old,new)
+            with self.subTest(old=old),self.assertRaises(CaptureError):tx_status_receipts(changed)
+
+
 class BurstPressureProof(unittest.TestCase):
     def pressure(self):
         row=fixture(rounds=16,message_bytes=2042)

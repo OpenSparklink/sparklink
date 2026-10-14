@@ -120,3 +120,139 @@ mod tests {
         );
     }
 }
+
+/// Read-only coherent software queue and native controller reservation state.
+/// Peak includes rolled-back reservations; it does not mean USB or peer delivery.
+#[repr(C, align(8))]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct SleChannelTxStatus {
+    pub version: u16,
+    pub size: u16,
+    pub controller: u16,
+    pub handle: u16,
+    pub generation: u64,
+    pub lifetime: u64,
+    pub packet_maximum: u16,
+    pub capacity: u16,
+    pub outstanding: u16,
+    pub connection_debt: u16,
+    pub peak_reserved: u16,
+    pub queued: u16,
+    pub queue_limit: u16,
+    pub busy: u16,
+    pub active_pdu_bytes: u32,
+    pub active_pdu_offset: u32,
+    pub flags: u32,
+    pub reserved: u32,
+    pub pool_exhaustions: u64,
+}
+const _: () = assert!(std::mem::size_of::<SleChannelTxStatus>() == 64);
+nix::ioctl_read!(sl_channel_tx_status, b'S', 0xe1, SleChannelTxStatus);
+
+/// cbindgen:ignore
+impl SleChannelTxStatus {
+    pub fn validate(&self) -> io::Result<()> {
+        if self.version != 1
+            || self.size != 64
+            || self.generation == 0
+            || self.lifetime == 0
+            || self.packet_maximum == 0
+            || self.packet_maximum > 2047
+            || self.capacity == 0
+            || self.capacity > 255
+            || self.outstanding > self.capacity
+            || self.connection_debt > self.outstanding
+            || self.peak_reserved < self.outstanding
+            || self.peak_reserved > self.capacity
+            || self.queue_limit != 8
+            || self.busy > 1
+            || u32::from(self.queued) + u32::from(self.busy) > u32::from(self.queue_limit)
+            || self.flags & !3 != 0
+            || self.reserved != 0
+            || self.active_pdu_bytes > 2047
+            || self.active_pdu_offset > self.active_pdu_bytes
+            || (self.flags & 1 == 0
+                && (self.active_pdu_bytes != 0
+                    || self.active_pdu_offset != 0
+                    || self.flags & 2 != 0
+                    || self.busy != 0))
+            || (self.flags & 1 != 0 && (self.active_pdu_bytes == 0 || self.busy != 1))
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "invalid channel TX snapshot",
+            ));
+        }
+        Ok(())
+    }
+}
+pub fn query_tx_status(fd: RawFd) -> io::Result<SleChannelTxStatus> {
+    let mut value = SleChannelTxStatus::default();
+    // SAFETY: initialized complete output object lives through synchronous ioctl.
+    unsafe { sl_channel_tx_status(fd, &mut value) }
+        .map_err(|e| io::Error::from_raw_os_error(e as i32))?;
+    value.validate()?;
+    Ok(value)
+}
+#[cfg(test)]
+mod tx_status_tests {
+    use super::*;
+    #[test]
+    fn malformed_budget_or_queue_cannot_be_used_as_status() {
+        let value = SleChannelTxStatus {
+            version: 1,
+            size: 64,
+            generation: 1,
+            lifetime: 2,
+            packet_maximum: 254,
+            capacity: 5,
+            peak_reserved: 3,
+            outstanding: 2,
+            connection_debt: 1,
+            queue_limit: 8,
+            ..Default::default()
+        };
+        value.validate().unwrap();
+        for bad in [
+            SleChannelTxStatus { size: 63, ..value },
+            SleChannelTxStatus {
+                outstanding: 6,
+                ..value
+            },
+            SleChannelTxStatus {
+                connection_debt: 3,
+                ..value
+            },
+            SleChannelTxStatus {
+                peak_reserved: 1,
+                ..value
+            },
+            SleChannelTxStatus {
+                queued: u16::MAX,
+                busy: 1,
+                ..value
+            },
+            SleChannelTxStatus { flags: 2, ..value },
+            SleChannelTxStatus { busy: 1, ..value },
+            SleChannelTxStatus {
+                reserved: 1,
+                ..value
+            },
+        ] {
+            assert!(bad.validate().is_err());
+        }
+        SleChannelTxStatus {
+            flags: 3,
+            busy: 1,
+            active_pdu_bytes: 2047,
+            active_pdu_offset: 254,
+            ..value
+        }
+        .validate()
+        .unwrap();
+        assert_eq!(
+            query_tx_status(-1).unwrap_err().raw_os_error(),
+            Some(nix::libc::EBADF)
+        );
+    }
+}

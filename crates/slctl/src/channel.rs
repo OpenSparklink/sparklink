@@ -651,6 +651,24 @@ mod tests {
             },
             0
         );
+        // This send-first exercise retains all16 replies until admission is
+        // finished. Bound the reverse-direction local budget explicitly: a
+        // smaller host default can otherwise deadlock the two finite queues.
+        // Source remains4096 bytes so genuine forward EAGAIN is still required.
+        let reply_budget: nix::libc::c_int = 128 * 1024;
+        // SAFETY: initialized option and this test's live peer descriptor.
+        assert_eq!(
+            unsafe {
+                nix::libc::setsockopt(
+                    peer.as_raw_fd(),
+                    nix::libc::SOL_SOCKET,
+                    nix::libc::SO_SNDBUF,
+                    (&reply_budget as *const nix::libc::c_int).cast(),
+                    std::mem::size_of_val(&reply_budget) as nix::libc::socklen_t,
+                )
+            },
+            0
+        );
         let task = std::thread::spawn(move || {
             std::thread::sleep(Duration::from_millis(100));
             exercise_messages(peer, true, 16, 2042, false)

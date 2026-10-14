@@ -13,6 +13,8 @@ getter/copy与受控同行门禁保持；正常VM drops0/taint0，准确CI九项
 首次Ub8f6479因启动表达式双锁导致连接18秒超时，失败保留；Ub5cc6f5修正单锁
 快照并取得上述准确资格。自然RCA/非人工恢复仍OPEN。
 
+后续U8438594仅收紧注册mask0x05，WRITE_NO_RSP等声明NotSupported；
+生产数据库及D-Bus拒绝离线通过，未新增镜像资格，不转授上述Ub5实测。
 严格构建、465工具、36跨语言与C头一致；新codec Kani含unsupported，仍未证明，
 仅0..16字节范围也不覆盖32字节实测值。actor/数据库并发、基础无TID迟到重复
 隔离、长包、通知指示、完整服务、安全/Profile/四设备数据仍缺。

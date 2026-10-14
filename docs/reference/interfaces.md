@@ -87,3 +87,7 @@ ServiceManager新增明确本地 RegisterLocalService/ListLocalServices/ReadLoca
 Connection新增ReadSsapValue/WriteSsapValue经真实SMTC，写要求peer校验回复。
 旧未接通facade仍NotSupported。数据库配置不是远端发布；原始门禁及安全/失败
 语义见准确资格和证据，不转授为完整服务支持。
+
+后续U8438594收紧本地注册：仅READ/WRITE_WITH_RSP（mask0x05）接通，
+WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享权限类型
+仍保留标准完整语义。此拒绝只有生产数据库/实际D-Bus离线门禁，不转授Ub5实机资格。

@@ -28,7 +28,7 @@ UAPI 尚未发布，已删除入口无兼容期；不可通过旧接口 fallback
 按[接口参考](reference/interfaces.md)查找，不能因 Rust 类型还存在就推断可用。
 新 ControllerEvent、DiagnosticResult 和通道能力查询分别有自己的身份及授权契约。
 
-旧 SSAP 本地 staging 不是远端服务发布。默认 ServiceManager/RemoteService 的
+旧 SSAP 本地 staging 不是远端服务发布。旧 ServiceManager/RemoteService facade 的
 未接通业务返回 NotSupported，非法输入可先 InvalidArgs；250/253/254/255 等
 业务长度资格也不能转授为 SSAP 长写支持。
 

@@ -2162,6 +2162,49 @@
       "notify/indicate/subscriptions",
       "original deadline/cleanup/lifetime formal and actual queue/credit negative gates parallel"
     ],
-    "closure_allowed": false
+    "closure_allowed": false,
+    "issue_updates": [
+      {
+        "repo": "linux",
+        "issue": 6,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6158239127",
+        "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
+        "verified_readback": true
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6158239607",
+        "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
+        "verified_readback": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6158240171",
+        "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
+        "verified_readback": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6158240818",
+        "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
+        "verified_readback": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6158241476",
+        "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
+        "verified_readback": true
+      }
+    ],
+    "post_qualification_guard": "8438594: unsupported no-response write registration refused offline; RF qualifications remainb5cc6f5"
   }
 }

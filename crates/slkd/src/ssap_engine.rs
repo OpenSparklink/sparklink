@@ -21,6 +21,10 @@ use tokio::{
     time::Instant,
 };
 
+pub(crate) type Discovery = (
+    Vec<slk_protocol::ssap::discovery::Entry>,
+    Vec<(Vec<u8>, Vec<u8>)>,
+);
 pub(crate) type Info = (
     u16,
     u64,
@@ -103,6 +107,100 @@ pub(crate) struct Observer {
     queries: mpsc::Sender<Query>,
 }
 impl Observer {
+    async fn request(&self, bytes: Vec<u8>, deadline: Instant) -> Result<Vec<u8>, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::Value {
+                bytes,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "SSAP request queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "SSAP discovery original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during discovery".to_string())?
+    }
+    pub(crate) async fn discover(
+        self,
+        uuid: Option<Vec<u8>>,
+        kind: slk_protocol::ssap::discovery::FindKind,
+    ) -> Result<Discovery, String> {
+        use slk_protocol::ssap::discovery::{EntryClass, FindKind, FindRequest, decode_page};
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let info = Observer {
+            state: self.state.clone(),
+            queries: self.queries.clone(),
+        }
+        .info()
+        .await?;
+        let mut entries = Vec::new();
+        let mut trace = Vec::new();
+        let mut ranges = vec![(kind, 1u16, 65535u16)];
+        let hierarchy = uuid.is_none() && kind == FindKind::Primary;
+        while let Some((kind, mut start, end)) = ranges.pop() {
+            loop {
+                if Instant::now() >= deadline || trace.len() >= 96 {
+                    return Err("bounded discovery deadline/pages exceeded".into());
+                }
+                let request = FindRequest {
+                    kind,
+                    class: EntryClass::Mixed,
+                    start,
+                    end,
+                    uuid: uuid.as_deref(),
+                };
+                let mut bytes = vec![0; 22];
+                let n = request
+                    .encode(info.5, &mut bytes)
+                    .map_err(|e| format!("find request: {e:?}"))?;
+                bytes.truncate(n);
+                let raw = self.request(bytes.clone(), deadline).await?;
+                trace.push((bytes, raw.clone()));
+                if let Ok(ValuePdu::Error {
+                    request: op,
+                    handle,
+                    error,
+                }) = ValuePdu::decode(info.5, &raw)
+                {
+                    if op != request.opcode() {
+                        return Err("find error opcode mismatch".into());
+                    }
+                    if error == 11 && handle == start {
+                        break;
+                    }
+                    return Err(format!("peer find error {error}"));
+                }
+                let page = decode_page(request, info.5, &raw)
+                    .map_err(|e| format!("find response: {e:?}"))?;
+                if entries.len() + page.len() > 80 {
+                    return Err("remote database entry budget".into());
+                }
+                let next = if kind == FindKind::Primary {
+                    page.last().unwrap().end
+                } else {
+                    page.last().unwrap().handle
+                };
+                if hierarchy && kind == FindKind::Primary {
+                    for service in &page {
+                        if service.members & 2 != 0 {
+                            ranges.push((FindKind::Properties, service.handle, service.end));
+                        }
+                    }
+                }
+                entries.extend(page);
+                if next == 65535 || next >= end {
+                    break;
+                }
+                start = next + 1;
+            }
+        }
+        entries.sort_by_key(|e| e.handle);
+        if entries.windows(2).any(|v| v[0].handle == v[1].handle) {
+            return Err("duplicate remote handle".into());
+        }
+        Ok((entries, trace))
+    }
     pub(crate) async fn value(
         self,
         handle: u16,
@@ -405,20 +503,30 @@ async fn exchange_loop(
                     if size == 0 || size > usize::from(capabilities.mtu) { return Err(io::Error::other("invalid SSAP PDU length")); }
                     let raw = &buffer[..size];
                     if !initial_done && Instant::now() >= original_deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "late SSAP reply")); }
-                    if matches!(raw[0],8|13) {
-                        if !initial_done {return Err(io::Error::other("SSAP value before initial exchange"));}
+                    if matches!(raw[0],4|6|8|13) {
                         if pending.len()>=8 {return Err(io::Error::other("SSAP response queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
-                        let response=match ValuePdu::decode(negotiated,raw) {
+                        let response=if matches!(raw[0],4|6) {
+                            match slk_protocol::ssap::discovery::FindRequest::decode(negotiated,raw) {
+                                Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.find(request,negotiated).map_err(io::Error::other)?,
+                                Err(error)=>{let mut out=vec![0;6];let handle=if matches!(error,slk_protocol::ssap::discovery::FindError::Handle)&&raw.len()>=4{u16::from_le_bytes([raw[2],raw[3]])}else{0};ValuePdu::Error{request:raw[0],handle,error:match error{slk_protocol::ssap::discovery::FindError::Handle=>4,slk_protocol::ssap::discovery::FindError::Unsupported=>2,_=>1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("find error codec"))?;out}
+                            }
+                        }else{match ValuePdu::decode(negotiated,raw) {
                             Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.answer(request,negotiated).map_err(io::Error::other)?,
                             Err(e)=> {let mut out=vec![0;6];ValuePdu::Error{request:raw[0],handle:0,error:if raw.get(1).is_some_and(|v|v&3!=3){16}else if matches!(e,slk_protocol::ssap::value::ValueError::Unsupported){2}else{1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("error response exceeds MTU"))?;out},
-                        };
+                        }};
                         pending.push_back(Pending{bytes:response,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse});
-                    } else if matches!(raw[0],1|9|14) {
+                    } else if matches!(raw[0],1|5|7|9|14) {
                         let Some(ClientRequest{bytes:request,deadline,admitted,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
                         if !admitted || Instant::now()>=deadline {return Err(io::Error::other("SSAP reply before submit or after original deadline"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
+                        if matches!(request[0],4|6) {
+                            let request=slk_protocol::ssap::discovery::FindRequest::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local find request"))?;
+                            if raw[0]==1 {match ValuePdu::decode(negotiated,raw) {Ok(ValuePdu::Error{request:op,..}) if op==request.opcode()=>{},_=>return Err(io::Error::other("invalid find error response"))}}
+                            else {slk_protocol::ssap::discovery::decode_page(request,negotiated,raw).map_err(|_|io::Error::other("invalid find response"))?;}
+                            let _=reply.send(Ok(raw.to_vec()));continue;
+                        }
                         let parsed=ValuePdu::decode(negotiated,raw).map_err(|_|io::Error::other("invalid value response"))?;
                         let result=match (ValuePdu::decode(capabilities.mtu,&request).map_err(|_|io::Error::other("invalid local request"))?,parsed) {
                             (ValuePdu::Read{..},ValuePdu::ReadValue(value))=>Ok(value.to_vec()),

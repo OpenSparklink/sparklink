@@ -214,7 +214,12 @@ def corroborate(run,capture):
                 if len(found)!=1:raise CaptureError('one exact SSAP value USB leg in original command interval required')
                 result=found.pop(0);sdus.remove(result);return result
             ssap_values,ssap_credit=ssap_value_corroborate(row,value_matched)
-            if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in (8,9,13,14) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
+            ssap_discovery=[]
+            if row.get('ssap_discovery_required',False):
+                from ws73_ssap_discovery import corroborate as discovery_corroborate
+                ssap_discovery,discovery_credit=discovery_corroborate(row,value_matched)
+                for key in ssap_credit:ssap_credit[key]+=discovery_credit[key]
+            if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in ((1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False) else (8,9,13,14)) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
         legs=[]
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
             if data[8:24] in all_nonces:raise CaptureError('random nonce reused across direction phases')
@@ -259,6 +264,7 @@ def corroborate(run,capture):
         if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)
         if row.get("ssap_exchange_required",False): entry["ssap_exchange"] = ssap
         if row.get("ssap_value_required",False): entry["ssap_values"] = ssap_values
+        if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",

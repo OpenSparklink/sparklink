@@ -1,5 +1,7 @@
 //! One immutable registration/type/address/lifetime identity per physical link.
 //! Properties are canonical observation, never an author operation result.
+type SsapEntry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
+type SsapDiscovery = (Vec<SsapEntry>, Vec<(Vec<u8>, Vec<u8>)>);
 use crate::state::SharedState;
 use slk_protocol::SleLinkInfo;
 use zbus::interface;
@@ -110,6 +112,7 @@ pub(crate) struct ConnectionIface {
     generation: u64,
     reference: SleLinkInfo,
     ssap: tokio::sync::Mutex<Option<crate::ssap_engine::Engine>>,
+    remote_services: tokio::sync::Mutex<Option<Vec<slk_protocol::ssap::discovery::Entry>>>,
 }
 impl ConnectionIface {
     pub(crate) fn new(state: SharedState, generation: u64, reference: SleLinkInfo) -> Self {
@@ -118,6 +121,7 @@ impl ConnectionIface {
             generation,
             reference,
             ssap: tokio::sync::Mutex::new(None),
+            remote_services: tokio::sync::Mutex::new(None),
         }
     }
     async fn observation(&self) -> (bool, bool) {
@@ -311,6 +315,95 @@ impl ConnectionIface {
             Some(self.reference),
         )
         .await
+    }
+    async fn discover_ssap(&self, uuid: Vec<u8>, kind: u8) -> zbus::fdo::Result<SsapDiscovery> {
+        let kind = match kind {
+            0 => slk_protocol::ssap::discovery::FindKind::Structure,
+            1 => slk_protocol::ssap::discovery::FindKind::Primary,
+            3 => slk_protocol::ssap::discovery::FindKind::Properties,
+            _ => {
+                return Err(zbus::fdo::Error::NotSupported(
+                    "find kind not supported".into(),
+                ));
+            }
+        };
+        if !uuid.is_empty() && !matches!(uuid.len(), 2 | 16) {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "UUID must be2/16bytes".into(),
+            ));
+        }
+        let (known, current) = self.observation().await;
+        if !known || !current {
+            return Err(zbus::fdo::Error::Failed(
+                "connection lifetime is not current".into(),
+            ));
+        }
+        self.start_ssap().await?;
+        let actor = self.ssap.lock().await;
+        let observer = actor
+            .as_ref()
+            .ok_or_else(|| zbus::fdo::Error::Failed("actor unavailable".into()))?
+            .observer();
+        drop(actor);
+        let complete = uuid.is_empty() && kind == slk_protocol::ssap::discovery::FindKind::Primary;
+        if complete {
+            *self.remote_services.lock().await = None;
+        }
+        let (entries, trace) = observer
+            .discover(if uuid.is_empty() { None } else { Some(uuid) }, kind)
+            .await
+            .map_err(zbus::fdo::Error::Failed)?;
+        let (known, current) = self.observation().await;
+        if !known || !current {
+            return Err(zbus::fdo::Error::Failed(
+                "connection retired during discovery".into(),
+            ));
+        }
+        if complete {
+            *self.remote_services.lock().await = Some(entries.clone());
+        }
+        Ok((
+            entries
+                .into_iter()
+                .map(|e| {
+                    (
+                        e.category,
+                        e.handle,
+                        e.end,
+                        e.uuid,
+                        e.operations,
+                        e.descriptors,
+                        e.members,
+                    )
+                })
+                .collect(),
+            trace,
+        ))
+    }
+    /// Advisory metadata for this exact lifetime, never a security/availability grant.
+    async fn get_cached_ssap(&self) -> zbus::fdo::Result<Vec<SsapEntry>> {
+        let _ = self.get_ssap_info().await?;
+        self.remote_services
+            .lock()
+            .await
+            .as_ref()
+            .ok_or_else(|| zbus::fdo::Error::Failed("remote cache unknown".into()))
+            .map(|entries| {
+                entries
+                    .iter()
+                    .map(|e| {
+                        (
+                            e.category,
+                            e.handle,
+                            e.end,
+                            e.uuid.clone(),
+                            e.operations,
+                            e.descriptors.clone(),
+                            e.members,
+                        )
+                    })
+                    .collect()
+            })
     }
     async fn read_ssap_value(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
         self.synchronous_ssap_value(handle, None).await

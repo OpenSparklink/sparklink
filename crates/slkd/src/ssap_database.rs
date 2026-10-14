@@ -1,5 +1,6 @@
 //! Bounded adapter-local service data. Handles are never reused within this
 //! registration. Local insertion is not remote discovery/publication success.
+use slk_protocol::ssap::discovery::{Entry, FindKind, FindRequest, encode_page};
 use slk_protocol::{SsapOperations, ssap::value::ValuePdu};
 use std::collections::BTreeMap;
 
@@ -23,7 +24,7 @@ pub(crate) struct Database {
 impl Default for Database {
     fn default() -> Self {
         Self {
-            next: 1,
+            next: 16,
             bytes: 0,
             services: BTreeMap::new(),
         }
@@ -118,6 +119,64 @@ impl Database {
         self.bytes -= s.properties.values().map(|p| p.value.len()).sum::<usize>();
         Ok(())
     }
+    pub(crate) fn find(&self, request: FindRequest<'_>, mtu: u16) -> Result<Vec<u8>, String> {
+        let mut entries = Vec::new();
+        for (start, service) in &self.services {
+            let matched = request.uuid.is_none_or(|uuid| uuid == service.uuid);
+            if matches!(request.kind, FindKind::Primary | FindKind::Structure)
+                && matched
+                && *start >= request.start
+                && *start <= request.end
+                && request.accepts(&service.uuid)
+            {
+                entries.push(Entry {
+                    category: if service.uuid.len() == 16 { 8 } else { 0 },
+                    handle: *start,
+                    end: service.end,
+                    uuid: service.uuid.clone(),
+                    operations: 0,
+                    descriptors: vec![],
+                    members: 2,
+                });
+            }
+            if matches!(request.kind, FindKind::Properties | FindKind::Structure) {
+                for (handle, property) in &service.properties {
+                    let included = matched
+                        || (request.kind == FindKind::Properties
+                            && request.uuid.is_some_and(|uuid| uuid == property.uuid));
+                    if included
+                        && *handle >= request.start
+                        && *handle <= request.end
+                        && request.accepts(&property.uuid)
+                    {
+                        entries.push(Entry {
+                            category: if property.uuid.len() == 16 { 10 } else { 2 },
+                            handle: *handle,
+                            end: *handle,
+                            uuid: property.uuid.clone(),
+                            operations: property.operations.bits(),
+                            descriptors: vec![],
+                            members: 0,
+                        });
+                    }
+                }
+            }
+        }
+        if entries.is_empty() {
+            let mut out = vec![0; 6];
+            ValuePdu::Error {
+                request: request.opcode(),
+                handle: request.start,
+                error: 11,
+            }
+            .encode(mtu, &mut out)
+            .map_err(|e| format!("find error codec: {e:?}"))?;
+            return Ok(out);
+        }
+        encode_page(request, mtu, &entries)
+            .map(|v| v.0)
+            .map_err(|e| format!("find page codec: {e:?}"))
+    }
     fn property(&self, handle: u16) -> Option<&Property> {
         self.services
             .values()
@@ -199,6 +258,40 @@ impl Database {
 mod tests {
     use super::*;
     #[test]
+    fn discovery_uses_real_local_metadata_and_reserved_handle_floor() {
+        use slk_protocol::ssap::discovery::{EntryClass, decode_page};
+        let mut d = Database::default();
+        let (start, end, handles) = d
+            .register(vec![9; 16], vec![(vec![7; 16], 5, vec![1])])
+            .unwrap();
+        assert_eq!((start, end, handles[0]), (16, 17, 17));
+        for (kind, uuid, expected) in [
+            (FindKind::Primary, None, 1),
+            (FindKind::Properties, Some(&[9u8; 16][..]), 1),
+            (FindKind::Properties, Some(&[7u8; 16][..]), 1),
+            (FindKind::Structure, Some(&[9u8; 16][..]), 2),
+        ] {
+            let r = FindRequest {
+                kind,
+                class: EntryClass::Mixed,
+                start: 1,
+                end: 65535,
+                uuid,
+            };
+            let raw = d.find(r, 249).unwrap();
+            let page = decode_page(r, 249, &raw).unwrap();
+            assert_eq!(page.len(), expected);
+        }
+        let r = FindRequest {
+            kind: FindKind::Primary,
+            class: EntryClass::Mixed,
+            start: 18,
+            end: 65535,
+            uuid: None,
+        };
+        assert_eq!(d.find(r, 249).unwrap(), [1, 0, 4, 18, 0, 11]);
+    }
+    #[test]
     fn permissions_budget_and_nonreuse_are_production_state() {
         let mut d = Database::default();
         let (start, _, hs) = d
@@ -227,7 +320,7 @@ mod tests {
                 249
             )
             .unwrap(),
-            [14, 3, 2, 0, 0, 7, 8]
+            [14, 3, 17, 0, 0, 7, 8]
         );
         assert_eq!(d.local_read(h).unwrap(), [7, 8]);
         assert_eq!(
@@ -257,7 +350,7 @@ mod tests {
                 249
             )
             .unwrap(),
-            [14, 7, 1, 4, 0, 7]
+            [14, 7, 1, 19, 0, 7]
         );
         assert_eq!(d.local_read(hs[0]).unwrap(), [4]);
         let before = (d.next, d.bytes, d.list());

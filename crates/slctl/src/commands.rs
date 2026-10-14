@@ -21,6 +21,63 @@ impl Context {
 
     pub async fn dispatch(&mut self, args: &[&str]) -> anyhow::Result<()> {
         match args[0] {
+            "ssap-discover" => {
+                if args.len() != 2 && args.len() != 4 {
+                    anyhow::bail!(
+                        "ssap-discover requires path [structure|service|property uuid-hex]"
+                    );
+                }
+                let kind = if args.len() == 2 {
+                    1u8
+                } else {
+                    match args[2] {
+                        "structure" => 0,
+                        "service" => 1,
+                        "property" => 3,
+                        _ => anyhow::bail!("unknown discovery kind"),
+                    }
+                };
+                let uuid = if args.len() == 4 {
+                    parse_hex_bytes(args[3])?
+                } else {
+                    Vec::new()
+                };
+                let object = self.ssap_proxy(args[1]).await?;
+                type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
+                type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);
+                let (entries, trace): Discovery =
+                    object.call("DiscoverSsap", &(uuid, kind)).await?;
+                for (category, handle, end, uuid, operations, descriptors, members) in &entries {
+                    println!(
+                        "SsapRemoteEntry: category={category} handle={handle} end={end} uuid={} operations={operations} descriptors={} members={members}",
+                        hex_bytes(uuid),
+                        hex_bytes(descriptors)
+                    );
+                }
+                if args.len() == 2 {
+                    let cached: Vec<Entry> = object.call("GetCachedSsap", &()).await?;
+                    if cached != entries {
+                        anyhow::bail!("lifetime remote cache differs from actual discovery");
+                    }
+                }
+                println!(
+                    "SsapRemoteDiscovery: path={} kind={} entries={} requests={} responses={}",
+                    args[1],
+                    kind,
+                    entries.len(),
+                    trace
+                        .iter()
+                        .map(|(req, _)| hex_bytes(req))
+                        .collect::<Vec<_>>()
+                        .join("|"),
+                    trace
+                        .iter()
+                        .map(|(_, rsp)| hex_bytes(rsp))
+                        .collect::<Vec<_>>()
+                        .join("|")
+                );
+                Ok(())
+            }
             "ssap-register" if args.len() == 5 => {
                 let path = format!("{}/services", self.selected_path().await?);
                 let object = zbus::Proxy::new(

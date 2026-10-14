@@ -16,13 +16,15 @@ def execute(run,row):
         registered=command(owner,['ssap-register',service.hex(),property_uuid.hex(),'5',value.hex()])
         matches=re.findall(r'^SsapLocalService: start=(\d+) end=(\d+) properties=(\d+)$',registered['stdout'],re.M)
         if len(matches)!=1:raise CaptureError('one actual local database registration required')
-        start,end,handle=map(int,matches[0]);local.append(dict(owner=owner,start=start,handle=handle,value=value,registration=registered))
+        start,end,handle=map(int,matches[0]);local.append(dict(owner=owner,start=start,handle=handle,value=value,registration=registered,service_uuid=service.hex(),property_uuid=property_uuid.hex()))
     try:
+        from ws73_ssap_discovery import execute as discover
+        discover(run,row,command,local)
         for sequence in range(4):
             for sender,target in [(0,1),(1,0)]:
                 source=owners[sender];destination=owners[target];prop=local[target]
                 payload=sequence.to_bytes(4,'little')+secrets.token_bytes(28)
-                item=dict(sequence=sequence,sender=sender,target=target,handle=prop['handle'],before=prop['value'].hex(),value=payload.hex(),start_wall_ns=time.time_ns())
+                item=dict(sequence=sequence,sender=sender,target=target,handle=prop['discovered_handle'],before=prop['value'].hex(),value=payload.hex(),start_wall_ns=time.time_ns())
                 item['read_before']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])])
                 item['write']=command(source,['ssap-write',source['object']['path'],str(prop['handle']),payload.hex()])
                 item['local_check']=command(destination,['ssap-local-read',str(prop['handle'])])
@@ -35,7 +37,7 @@ def execute(run,row):
                 if f"SsapLocalValue: handle={prop['handle']} value={payload.hex()}" not in item['local_check']['stdout'].splitlines():raise CaptureError('opposite application local database validation failed')
                 prop['value']=payload
     finally:
-        row['ssap_local_registrations']=[dict(owner=p['owner'],start=p['start'],handle=p['handle'],registration=p['registration']) for p in local]
+        row['ssap_local_registrations']=[dict(owner=p['owner'],start=p['start'],handle=p['handle'],registration=p['registration'],service_uuid=p['service_uuid'],property_uuid=p['property_uuid']) for p in local]
         for p in local:command(p['owner'],['ssap-remove',str(p['start'])])
         run.save()
 

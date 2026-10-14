@@ -28,6 +28,8 @@ def execute(run, phase):
             receipt=run.command([str(run.args.slctl),'--adapter',entry['owner']['path'],'ssap-info',entry['object']['path']],10,collection='ssap_exchange')
             if receipt['exit']: raise CaptureError('actual SMTC ExchangeInfo failed')
             row['ssap_receipts'].append(receipt);run.save()
+        from ws73_ssap_value import execute as ssap_value_execute
+        ssap_value_execute(run,row)
         # Both binds must occur during the same live connection. Never synthesize RX.
         for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
             args=[str(run.args.slctl),'--adapter',entry['owner']['path'],
@@ -203,6 +205,16 @@ def corroborate(run,capture):
                    and (row.get('session_start_wall_ns',row['start_wall_ns']) if session else row['start_wall_ns'])<=p['wall_ns']<=row['end_wall_ns']]
             if len(found)!=1:raise CaptureError('one exact USB TX/opposite RX per message required')
             return found[0]
+        ssap_values=[];ssap_credit={0:0,1:0}
+        if row.get('ssap_value_required',False):
+            from ws73_ssap_value import corroborate as ssap_value_corroborate
+            def value_matched(entry,direction,payload,item):
+                owner,obj=entry['owner'],entry['object']
+                found=[p for p in sdus if (p['bus'],p['device'])==(owner['bus'],owner['device']) and p['handle']==obj['handle'] and p['direction']==direction and p['data']==payload.hex() and item['start_wall_ns']<=p['wall_ns']<=item['end_wall_ns']]
+                if len(found)!=1:raise CaptureError('one exact SSAP value USB leg in original command interval required')
+                result=found.pop(0);sdus.remove(result);return result
+            ssap_values,ssap_credit=ssap_value_corroborate(row,value_matched)
+            if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in (8,9,13,14) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
         legs=[]
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
             if data[8:24] in all_nonces:raise CaptureError('random nonce reused across direction phases')
@@ -224,7 +236,7 @@ def corroborate(run,capture):
             completed=[e for e in capture['native_events'] if e['event']==9 and (e['bus'],e['device'])==(owner['bus'],owner['device'])
                        and row.get('session_start_wall_ns',row['start_wall_ns'])<=e['wall_ns']<=row['end_wall_ns']]
             if any(len(bytes.fromhex(e['params']))!=3 or int.from_bytes(bytes.fromhex(e['params'])[:2],'little')!=obj['handle'] for e in completed):raise CaptureError('exact actual completion handle required')
-            if sum(bytes.fromhex(e['params'])[2] for e in completed)!=row['rounds']+(4 if row.get('ssap_exchange_required',False) else 2):raise CaptureError('exact actual completed packet count per controller required')
+            if sum(bytes.fromhex(e['params'])[2] for e in completed)!=row['rounds']+(4 if row.get('ssap_exchange_required',False) else 2)+ssap_credit[owners.index(sender)]:raise CaptureError('exact actual completed packet count per controller required')
         ssap=[]
         if row.get('ssap_exchange_required',False):
             if len(row.get('ssap_receipts',[]))!=2:raise CaptureError('both original daemon SSAP receipts required')
@@ -246,6 +258,7 @@ def corroborate(run,capture):
         entry = dict(phase=n,owners=owners,capabilities=capabilities,legs=legs)
         if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)
         if row.get("ssap_exchange_required",False): entry["ssap_exchange"] = ssap
+        if row.get("ssap_value_required",False): entry["ssap_values"] = ssap_values
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",

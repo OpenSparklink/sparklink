@@ -214,6 +214,36 @@ impl ConnectionIface {
             .await
             .map(Into::into)
     }
+    async fn synchronous_ssap_value(
+        &self,
+        handle: u16,
+        value: Option<Vec<u8>>,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        let (known, current) = self.observation().await;
+        if !known || !current {
+            return Err(zbus::fdo::Error::Failed(
+                "connection lifetime is not current".into(),
+            ));
+        }
+        self.start_ssap().await?;
+        let actor = self.ssap.lock().await;
+        let observer = actor
+            .as_ref()
+            .ok_or_else(|| zbus::fdo::Error::Failed("SSAP actor unavailable".into()))?
+            .observer();
+        drop(actor);
+        let result = observer
+            .value(handle, value)
+            .await
+            .map_err(zbus::fdo::Error::Failed)?;
+        let (known, current) = self.observation().await;
+        if !known || !current {
+            return Err(zbus::fdo::Error::Failed(
+                "connection retired during SSAP operation".into(),
+            ));
+        }
+        Ok(result)
+    }
     pub(crate) async fn start_ssap(&self) -> zbus::fdo::Result<()> {
         let mut actor = self.ssap.lock().await;
         if actor.is_some() {
@@ -229,6 +259,7 @@ impl ConnectionIface {
                     self.reference.lifetime,
                     self.reference.handle,
                 ),
+                self.state.lock().await.ssap_database.clone(),
             )
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?,
         );
@@ -270,6 +301,12 @@ impl ConnectionIface {
             Some(self.reference),
         )
         .await
+    }
+    async fn read_ssap_value(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
+        self.synchronous_ssap_value(handle, None).await
+    }
+    async fn write_ssap_value(&self, handle: u16, value: Vec<u8>) -> zbus::fdo::Result<Vec<u8>> {
+        self.synchronous_ssap_value(handle, Some(value)).await
     }
     async fn get_ssap_info(&self) -> zbus::fdo::Result<crate::ssap_engine::Info> {
         if self.observation().await != (true, true) {

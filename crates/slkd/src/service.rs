@@ -2,17 +2,88 @@ use zbus::interface;
 
 use crate::state::SharedState;
 
-/// Unsupported legacy facade; no kernel staging or production user Engine.
-pub struct SsapManagerIface {}
+/// Explicit local database APIs; legacy facade stays unsupported and no kernel staging.
+pub struct SsapManagerIface {
+    state: SharedState,
+}
 
 impl SsapManagerIface {
-    pub fn new(_state: SharedState) -> Self {
-        Self {}
+    pub fn new(state: SharedState) -> Self {
+        Self { state }
     }
 }
 
 #[interface(name = "org.sparklink.ServiceManager")]
 impl SsapManagerIface {
+    /// Adapter-local only; no remote service-discovery/publication receipt.
+    async fn register_local_service(
+        &self,
+        uuid: Vec<u8>,
+        properties: Vec<crate::ssap_database::PropertyDefinition>,
+    ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
+        for (_, ops, _) in &properties {
+            let validated = slk_protocol::SsapOperations::from_bits(*ops)
+                .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+            if validated.bits() & !7 != 0 {
+                return Err(zbus::fdo::Error::NotSupported(
+                    "descriptor/notify/indicate permissions not connected".into(),
+                ));
+            }
+        }
+        let st = self.state.lock().await;
+        if !st.present {
+            return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+        }
+        let lease = st
+            .native_lease
+            .clone()
+            .ok_or_else(|| zbus::fdo::Error::NotSupported("Native management required".into()))?;
+        let database = st.ssap_database.clone();
+        drop(st);
+        let lease = lease.lock().await;
+        if !lease.accepting || lease.token.is_none() {
+            return Err(zbus::fdo::Error::Failed("management revoked".into()));
+        }
+        database
+            .lock()
+            .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
+            .register(uuid, properties)
+            .map_err(zbus::fdo::Error::InvalidArgs)
+    }
+    async fn list_local_services(
+        &self,
+    ) -> zbus::fdo::Result<Vec<crate::ssap_database::LocalService>> {
+        let st = self.state.lock().await;
+        if !st.present {
+            return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+        }
+        st.ssap_database
+            .lock()
+            .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))
+            .map(|d| d.list())
+    }
+    async fn remove_local_service(&self, start: u16) -> zbus::fdo::Result<()> {
+        let st = self.state.lock().await;
+        if !st.present {
+            return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+        }
+        st.ssap_database
+            .lock()
+            .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
+            .remove(start)
+            .map_err(zbus::fdo::Error::InvalidArgs)
+    }
+    async fn read_local_value(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
+        let st = self.state.lock().await;
+        if !st.present {
+            return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+        }
+        st.ssap_database
+            .lock()
+            .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
+            .local_read(handle)
+            .map_err(zbus::fdo::Error::InvalidArgs)
+    }
     /// Get SSAP summary (service and property counts, MTU)
     async fn get_info(&self) -> zbus::fdo::Result<SsapInfo> {
         Err(zbus::fdo::Error::NotSupported(
@@ -248,7 +319,15 @@ mod validation_tests {
             .unwrap()
             .name("org.sparklink.SsapRemovalTest")
             .unwrap()
-            .serve_at("/org/sparklink/services", SsapManagerIface {})
+            .serve_at(
+                "/org/sparklink/services",
+                SsapManagerIface::new(Arc::new(Mutex::new(AdapterState::new(
+                    Adapter::open("/dev/null").unwrap(),
+                    DaemonConfig::default(),
+                    BondingStore::new(&std::env::temp_dir(), "unused-ssap-bus-test"),
+                    ProfileRegistry::new(),
+                )))),
+            )
             .unwrap()
             .serve_at("/org/sparklink/remote", RemoteServiceIface {})
             .unwrap()

@@ -1,8 +1,12 @@
-//! Single lifetime-scoped SMTC owner. Initial ExchangeInfo only; no service DB,
-//! synthetic replies, security projection, reliable mode or long-PDU claim.
+//! Single lifetime-scoped SMTC owner: initial ExchangeInfo and bounded base
+//! single-value requests. No synthetic replies, security projection, reliable
+//! mode, fragmentation or complete service-discovery claim.
 use slk_protocol::{
     SleChannelInfo,
-    ssap::exchange::{ExchangeInfo, ExchangeKind},
+    ssap::{
+        exchange::{ExchangeInfo, ExchangeKind},
+        value::ValuePdu,
+    },
 };
 use std::{
     collections::VecDeque,
@@ -35,20 +39,33 @@ enum Status {
     Negotiated(Info),
     Failed(String),
 }
+enum Query {
+    Info(oneshot::Sender<Result<Info, String>>),
+    Value {
+        bytes: Vec<u8>,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<Vec<u8>, String>>,
+    },
+}
+type Store = std::sync::Arc<std::sync::Mutex<crate::ssap_database::Database>>;
 pub(crate) struct Engine {
     state: watch::Receiver<Status>,
-    queries: mpsc::Sender<oneshot::Sender<Result<Info, String>>>,
+    queries: mpsc::Sender<Query>,
     stop: Option<oneshot::Sender<()>>,
     task: Option<JoinHandle<()>>,
 }
 impl Engine {
-    pub(crate) fn start(fd: OwnedFd, expected: (u16, u64, u64, u16)) -> io::Result<Self> {
+    pub(crate) fn start(
+        fd: OwnedFd,
+        expected: (u16, u64, u64, u16),
+        database: Store,
+    ) -> io::Result<Self> {
         let fd = AsyncFd::new(fd)?;
         let (state_tx, state) = watch::channel(Status::Starting);
         let (stop, stopped) = oneshot::channel();
         let (queries, incoming) = mpsc::channel(8);
         let task = tokio::spawn(async move {
-            if let Err(error) = run(fd, stopped, incoming, expected, &state_tx).await {
+            if let Err(error) = run(fd, stopped, incoming, expected, &state_tx, database).await {
                 state_tx.send_replace(Status::Failed(error.to_string()));
             } else {
                 state_tx.send_replace(Status::Failed("SSAP actor stopped".into()));
@@ -83,9 +100,47 @@ impl Engine {
 }
 pub(crate) struct Observer {
     state: watch::Receiver<Status>,
-    queries: mpsc::Sender<oneshot::Sender<Result<Info, String>>>,
+    queries: mpsc::Sender<Query>,
 }
 impl Observer {
+    pub(crate) async fn value(
+        self,
+        handle: u16,
+        value: Option<Vec<u8>>,
+    ) -> Result<Vec<u8>, String> {
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let queries = self.queries.clone();
+        let info = self.info().await?;
+        let mut bytes = vec![0; usize::from(info.5)];
+        let pdu = match &value {
+            Some(value) => ValuePdu::Write {
+                handle,
+                data_type: 0,
+                value,
+                verify: true,
+            },
+            None => ValuePdu::Read {
+                handle,
+                data_type: 0,
+            },
+        };
+        let len = pdu
+            .encode(info.5, &mut bytes)
+            .map_err(|e| format!("value codec: {e:?}"))?;
+        bytes.truncate(len);
+        let (reply, result) = oneshot::channel();
+        queries
+            .try_send(Query::Value {
+                bytes,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "SSAP request queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "SSAP value original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during value operation".to_string())?
+    }
     pub(crate) async fn info(mut self) -> Result<Info, String> {
         tokio::time::timeout(Duration::from_secs(5), async {
             loop {
@@ -102,7 +157,7 @@ impl Observer {
             }
             let (send, reply) = oneshot::channel();
             self.queries
-                .try_send(send)
+                .try_send(Query::Info(send))
                 .map_err(|_| "SSAP query queue unavailable/full".to_string())?;
             reply
                 .await
@@ -128,6 +183,14 @@ enum Purpose {
     Request,
     Response,
     Error,
+    Client,
+    ValueResponse,
+}
+struct ClientRequest {
+    bytes: Vec<u8>,
+    deadline: Instant,
+    admitted: bool,
+    reply: oneshot::Sender<Result<Vec<u8>, String>>,
 }
 struct Pending {
     bytes: Vec<u8>,
@@ -185,9 +248,10 @@ fn receive(fd: &OwnedFd, bytes: &mut [u8]) -> io::Result<usize> {
 async fn run(
     fd: AsyncFd<OwnedFd>,
     mut stopped: oneshot::Receiver<()>,
-    incoming: mpsc::Receiver<oneshot::Sender<Result<Info, String>>>,
+    incoming: mpsc::Receiver<Query>,
     expected: (u16, u64, u64, u16),
     state: &watch::Sender<Status>,
+    database: Store,
 ) -> io::Result<()> {
     let original_deadline = Instant::now() + Duration::from_secs(5);
     let capabilities = loop {
@@ -229,6 +293,7 @@ async fn run(
         &mut stopped,
         incoming,
         state,
+        database,
     )
     .await
 }
@@ -237,8 +302,9 @@ async fn exchange_loop(
     capabilities: SleChannelInfo,
     original_deadline: Instant,
     stopped: &mut oneshot::Receiver<()>,
-    mut incoming: mpsc::Receiver<oneshot::Sender<Result<Info, String>>>,
+    mut incoming: mpsc::Receiver<Query>,
     state: &watch::Sender<Status>,
+    database: Store,
 ) -> io::Result<()> {
     let request = encode(ExchangeKind::Request, capabilities.mtu)?;
     let response = encode(ExchangeKind::Response, capabilities.mtu)?;
@@ -252,6 +318,7 @@ async fn exchange_loop(
     let mut peer_reply: Option<(ExchangeInfo, Vec<u8>)> = None;
     let mut peer_request = Vec::new();
     let mut response_admitted = Vec::new();
+    let mut client: Option<ClientRequest> = None;
     let mut buffer = [0; 2042];
     loop {
         let response_owed = pending
@@ -279,7 +346,11 @@ async fn exchange_loop(
         } else {
             state.send_replace(Status::Starting);
         }
-        let debt_deadline = pending.iter().map(|p| p.deadline).min();
+        let debt_deadline = pending
+            .iter()
+            .map(|p| p.deadline)
+            .chain(client.as_ref().map(|v| v.deadline))
+            .min();
         let tick = debt_deadline.unwrap_or_else(|| Instant::now() + Duration::from_secs(1));
         let deadline = if initial_done {
             tick
@@ -289,13 +360,20 @@ async fn exchange_loop(
         tokio::select! {
             _ = &mut *stopped => return Ok(()),
             _ = tokio::time::sleep_until(deadline) => {
-                if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) {
+                if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.deadline) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP obligation deadline"));
                 }
                 slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
             }
             query = incoming.recv() => {
-                let Some(reply)=query else { return Ok(()); };
+                let Some(query)=query else { return Ok(()); };
+                if let Query::Value{bytes,deadline,reply}=query {
+                    if client.is_some() || pending.len()>=8 || !initial_done || Instant::now()>=deadline {let _=reply.send(Err("SSAP busy/not-ready/expired".into()));continue;}
+                    slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
+                    if bytes.len()>usize::from(capabilities.mtu) {let _=reply.send(Err("SSAP request exceeds channel".into()));continue;}
+                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client});client=Some(ClientRequest{bytes,deadline,admitted:false,reply});continue;
+                }
+                let Query::Info(reply)=query else {unreachable!()};
                 let result=match state.borrow().clone() {
                     Status::Negotiated(info) => slk_protocol::channel::query(fd.get_ref().as_raw_fd()).map_err(|e|e.to_string()).and_then(|current| {
                         if current != capabilities { Err("SMTC capability/lifetime changed".into()) } else { Ok(info) }
@@ -315,7 +393,8 @@ async fn exchange_loop(
                     match packet.purpose {
                         Purpose::Request => request_admitted = true,
                         Purpose::Response => response_admitted = packet.bytes,
-                        Purpose::Error => {}
+                        Purpose::Error | Purpose::ValueResponse => {},
+                        Purpose::Client => {if let Some(client)=&mut client {client.admitted=true;}}
                     }
                 }
             }
@@ -326,7 +405,30 @@ async fn exchange_loop(
                     if size == 0 || size > usize::from(capabilities.mtu) { return Err(io::Error::other("invalid SSAP PDU length")); }
                     let raw = &buffer[..size];
                     if !initial_done && Instant::now() >= original_deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "late SSAP reply")); }
-                    if raw[0] == 2 || raw[0] == 3 {
+                    if matches!(raw[0],8|13) {
+                        if !initial_done {return Err(io::Error::other("SSAP value before initial exchange"));}
+                        if pending.len()>=8 {return Err(io::Error::other("SSAP response queue full"));}
+                        let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
+                        slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
+                        let response=match ValuePdu::decode(negotiated,raw) {
+                            Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.answer(request,negotiated).map_err(io::Error::other)?,
+                            Err(e)=> {let mut out=vec![0;6];ValuePdu::Error{request:raw[0],handle:0,error:if raw.get(1).is_some_and(|v|v&3!=3){16}else if matches!(e,slk_protocol::ssap::value::ValueError::Unsupported){2}else{1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("error response exceeds MTU"))?;out},
+                        };
+                        pending.push_back(Pending{bytes:response,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse});
+                    } else if matches!(raw[0],1|9|14) {
+                        let Some(ClientRequest{bytes:request,deadline,admitted,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        if !admitted || Instant::now()>=deadline {return Err(io::Error::other("SSAP reply before submit or after original deadline"));}
+                        let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
+                        let parsed=ValuePdu::decode(negotiated,raw).map_err(|_|io::Error::other("invalid value response"))?;
+                        let result=match (ValuePdu::decode(capabilities.mtu,&request).map_err(|_|io::Error::other("invalid local request"))?,parsed) {
+                            (ValuePdu::Read{..},ValuePdu::ReadValue(value))=>Ok(value.to_vec()),
+                            (ValuePdu::Read{..},ValuePdu::ReadError(error))=>Err(format!("peer read error {error}")),
+                            (ValuePdu::Write{handle,data_type,value,verify:true},ValuePdu::WrittenValue{handle:h,data_type:t,value:v}) if (handle,data_type,value)==(h,t,v)=>Ok(v.to_vec()),
+                            (ValuePdu::Write{handle,..},ValuePdu::WriteError{handle:h,error}) if handle==h=>Err(format!("peer write error {error}")),
+                            (ValuePdu::Read{..},ValuePdu::Error{request:8,error,..})|(ValuePdu::Write{..},ValuePdu::Error{request:13,error,..})=>Err(format!("peer protocol error {error}")),
+                            _=>return Err(io::Error::other("SSAP response does not match original operation")),
+                        };let _=reply.send(result);
+                    } else if raw[0] == 2 || raw[0] == 3 {
                         let info = match ExchangeInfo::decode(capabilities.mtu,raw) {
                             Ok(info)=>info,
                             Err(_) if raw[0]==2 => {
@@ -419,6 +521,9 @@ mod tests {
                 &mut done0,
                 in0,
                 &s0,
+                std::sync::Arc::new(std::sync::Mutex::new(
+                    crate::ssap_database::Database::default(),
+                )),
             )
             .await
         });
@@ -430,6 +535,9 @@ mod tests {
                 &mut done1,
                 in1,
                 &s1,
+                std::sync::Arc::new(std::sync::Mutex::new(
+                    crate::ssap_database::Database::default(),
+                )),
             )
             .await
         });
@@ -464,6 +572,9 @@ mod tests {
             &mut done,
             incoming,
             &tx,
+            std::sync::Arc::new(std::sync::Mutex::new(
+                crate::ssap_database::Database::default(),
+            )),
         )
         .await
         .unwrap_err();

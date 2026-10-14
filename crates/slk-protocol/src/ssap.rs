@@ -2,6 +2,8 @@
 //! This type does not claim a wire Engine or service interoperability.
 #[path = "ssap/exchange.rs"]
 pub mod exchange;
+#[path = "ssap/value.rs"]
+pub mod value;
 
 use core::{fmt, ops::BitOr};
 

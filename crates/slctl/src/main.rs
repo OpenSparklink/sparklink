@@ -136,6 +136,11 @@ Commands:
   peer-info <path>               Show a typed peer and its connection lifetimes
   connection-info <path>        Show one immutable connection identity
   disconnect-object <path>      Disconnect the exact physical lifetime
+  ssap-register <service-hex> <property-hex> <ops> <value-hex> Configure local database only
+  ssap-remove <start-handle>                 Remove local service (handles not reused)
+  ssap-local-read <handle>                   Inspect local database, not peer receipt
+  ssap-read <path> <handle>                  Read actual peer value on SMTC
+  ssap-write <path> <handle> <value-hex>      Write with peer verification and reply
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   channel-peer <path> [rounds] [bytes] [boundaries]  Validate and reply on a native channel socket
   channel-roundtrip <path> [rounds] [bytes] [boundaries]  Send random business messages and verify replies

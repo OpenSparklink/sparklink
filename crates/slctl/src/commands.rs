@@ -21,6 +21,95 @@ impl Context {
 
     pub async fn dispatch(&mut self, args: &[&str]) -> anyhow::Result<()> {
         match args[0] {
+            "ssap-register" if args.len() == 5 => {
+                let path = format!("{}/services", self.selected_path().await?);
+                let object = zbus::Proxy::new(
+                    &self.conn,
+                    "org.sparklink",
+                    path,
+                    "org.sparklink.ServiceManager",
+                )
+                .await?;
+                let service = parse_hex_bytes(args[1])?;
+                let property = parse_hex_bytes(args[2])?;
+                let ops: u32 = args[3].parse()?;
+                let value = parse_hex_bytes(args[4])?;
+                let registered: (u16, u16, Vec<u16>) = object
+                    .call(
+                        "RegisterLocalService",
+                        &(service, vec![(property, ops, value)]),
+                    )
+                    .await?;
+                println!(
+                    "SsapLocalService: start={} end={} properties={}",
+                    registered.0,
+                    registered.1,
+                    registered
+                        .2
+                        .iter()
+                        .map(u16::to_string)
+                        .collect::<Vec<_>>()
+                        .join(",")
+                );
+                Ok(())
+            }
+            "ssap-remove" if args.len() == 2 => {
+                let path = format!("{}/services", self.selected_path().await?);
+                let object = zbus::Proxy::new(
+                    &self.conn,
+                    "org.sparklink",
+                    path,
+                    "org.sparklink.ServiceManager",
+                )
+                .await?;
+                let handle: u16 = args[1].parse()?;
+                let _: () = object.call("RemoveLocalService", &(handle,)).await?;
+                println!("SsapLocalRemoved: start={handle}");
+                Ok(())
+            }
+            "ssap-local-read" if args.len() == 2 => {
+                let path = format!("{}/services", self.selected_path().await?);
+                let object = zbus::Proxy::new(
+                    &self.conn,
+                    "org.sparklink",
+                    path,
+                    "org.sparklink.ServiceManager",
+                )
+                .await?;
+                let handle: u16 = args[1].parse()?;
+                let value: Vec<u8> = object.call("ReadLocalValue", &(handle,)).await?;
+                println!(
+                    "SsapLocalValue: handle={handle} value={}",
+                    hex_bytes(&value)
+                );
+                Ok(())
+            }
+            "ssap-read" | "ssap-write" => {
+                if (args[0] == "ssap-read" && args.len() != 3)
+                    || (args[0] == "ssap-write" && args.len() != 4)
+                {
+                    anyhow::bail!(
+                        "SSAP value requires connection path, handle and write hex value"
+                    );
+                }
+                let object = self.ssap_proxy(args[1]).await?;
+                let handle: u16 = args[2].parse()?;
+                let value: Vec<u8> = if args[0] == "ssap-read" {
+                    object.call("ReadSsapValue", &(handle,)).await?
+                } else {
+                    object
+                        .call("WriteSsapValue", &(handle, parse_hex_bytes(args[3])?))
+                        .await?
+                };
+                println!(
+                    "SsapPeerValue: operation={} path={} handle={} value={}",
+                    args[0],
+                    args[1],
+                    handle,
+                    hex_bytes(&value)
+                );
+                Ok(())
+            }
             "ssap-info" => {
                 if args.len() != 2 {
                     anyhow::bail!("ssap-info requires one immutable connection path");
@@ -853,7 +942,7 @@ impl Context {
         }
         Ok(())
     }
-    async fn cmd_ssap_info(&self, path: &str) -> anyhow::Result<()> {
+    async fn ssap_proxy(&self, path: &str) -> anyhow::Result<zbus::Proxy<'_>> {
         let selected = self.selected_path().await?;
         if !path.starts_with(&format!("{selected}/peer_t")) {
             anyhow::bail!("SSAP connection belongs to another adapter");
@@ -861,7 +950,7 @@ impl Context {
         let object = zbus::Proxy::new(
             &self.conn,
             "org.sparklink",
-            path,
+            path.to_owned(),
             "org.sparklink.Connection",
         )
         .await?;
@@ -877,6 +966,11 @@ impl Context {
         if path != expected || generation != identity.0 || !identity.6 || !identity.7 {
             anyhow::bail!("SSAP lifetime unknown/retired");
         }
+        Ok(object)
+    }
+    async fn cmd_ssap_info(&self, path: &str) -> anyhow::Result<()> {
+        let object = self.ssap_proxy(path).await?;
+        let identity: NativeObjectInfo = object.call("GetInfo", &()).await?;
         type SsapInfo = (
             u16,
             u64,

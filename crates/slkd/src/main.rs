@@ -18,6 +18,7 @@ mod radio;
 mod registration;
 mod security;
 mod service;
+mod ssap_database;
 mod ssap_engine;
 mod state;
 

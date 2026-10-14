@@ -24,9 +24,9 @@ impl SsapManagerIface {
         for (_, ops, _) in &properties {
             let validated = slk_protocol::SsapOperations::from_bits(*ops)
                 .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
-            if validated.bits() & !7 != 0 {
+            if validated.bits() & !5 != 0 {
                 return Err(zbus::fdo::Error::NotSupported(
-                    "descriptor/notify/indicate permissions not connected".into(),
+                    "WRITE_NO_RSP/descriptor/notify/indicate permissions not connected".into(),
                 ));
             }
         }
@@ -382,6 +382,17 @@ mod validation_tests {
         let service = SsapManagerIface::new(state.clone());
         let remote = RemoteServiceIface::new(state.clone(), 0);
         let _locked = state.lock().await;
+        let unsupported = tokio::time::timeout(
+            std::time::Duration::from_secs(1),
+            service.register_local_service(vec![1, 0], vec![(vec![2, 0], 2, vec![])]),
+        )
+        .await
+        .unwrap();
+        assert!(matches!(
+            unsupported,
+            Err(zbus::fdo::Error::NotSupported(_))
+        ));
+
         // The state lock is deliberately held. Incorrect validation order
         // blocks here and fails the deadline, rather than silently succeeding.
         for (ops, value) in [(0x49, vec![]), (9, vec![0; 249])] {

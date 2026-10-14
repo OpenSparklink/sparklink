@@ -48,8 +48,10 @@ impl Database {
         let mut added = 0;
         for (uuid, ops, value) in &definitions {
             let ops = SsapOperations::from_bits(*ops).map_err(|e| e.to_string())?;
-            if !uuid_valid(uuid) || ops.bits() & !7 != 0 {
-                return Err("only value read/write permissions currently supported".into());
+            if !uuid_valid(uuid) || ops.bits() & !5 != 0 {
+                return Err(
+                    "only value READ/WRITE_WITH_RSP permissions currently supported".into(),
+                );
             }
             if value.len() > 2042 {
                 return Err("local value exceeds bounded database limit".into());
@@ -259,6 +261,14 @@ mod tests {
         );
         assert_eq!(d.local_read(hs[0]).unwrap(), [4]);
         let before = (d.next, d.bytes, d.list());
+        for ops in [2, 3, 6, 7] {
+            assert!(
+                d.register(vec![1, 0], vec![(vec![2, 0], ops, vec![])])
+                    .is_err()
+            );
+            assert_eq!((d.next, d.bytes, d.list()), before);
+        }
+
         assert!(
             d.register(vec![1, 0], vec![(vec![2, 0], 8, vec![])])
                 .is_err()

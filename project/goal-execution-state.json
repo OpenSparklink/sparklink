@@ -2359,6 +2359,54 @@
       "Allocation-free production codec state verification; preserve existing failing attempt",
       "Credit/queue/cancel/retirement models and actual interleavings parallel"
     ],
-    "closure_allowed": false
+    "closure_allowed": false,
+    "issue_updates": [
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 6,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6159002428",
+        "body_sha256": "80fe39b9aeddf17696a50111637d4b6ba74ca4c8ff76b434ad203571efcd8d80",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 17,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6159003188",
+        "body_sha256": "80fe39b9aeddf17696a50111637d4b6ba74ca4c8ff76b434ad203571efcd8d80",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 19,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6159003774",
+        "body_sha256": "80fe39b9aeddf17696a50111637d4b6ba74ca4c8ff76b434ad203571efcd8d80",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 3,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6159004462",
+        "body_sha256": "80fe39b9aeddf17696a50111637d4b6ba74ca4c8ff76b434ad203571efcd8d80",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 8,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6159005024",
+        "body_sha256": "80fe39b9aeddf17696a50111637d4b6ba74ca4c8ff76b434ad203571efcd8d80",
+        "readback": true,
+        "state": "open"
+      }
+    ],
+    "execution_receipts": {
+      "pipeline": "SSAP_READ_UUID_REAL_PIPELINE_TERMINAL_PASS; all5 steps and3 real VMs passed",
+      "formal": "NOT_PROVEN; Kani process exit1 after reported memory exhaustion",
+      "abi": "36 passed in isolated-cache rerun; original failure/metadata correction retained",
+      "ci": "8 passed; actual ABI job was live and waiting for pinned kernel fetch at last observation"
+    }
   }
 }

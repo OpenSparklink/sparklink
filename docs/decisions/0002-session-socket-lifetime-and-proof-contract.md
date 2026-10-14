@@ -476,3 +476,17 @@ FD授权的新准入与begun operation分开。operation复制的Grant仅描述�
 实际C consent检查、worker sanitizer与VM fd退出/其他SMTC业务门禁分别记录，
 不由模型通过推断完整VFS/refinement/硬件行为。基础DGRAM没有可靠业务交付承诺，
 既有NOCP重复/晚到反例、全部S0–S6、共享应用完整权限/恢复条件继续开放。
+
+
+## 发送预算快照的同步与权限
+
+只读TX状态在Runtime Host/data/gate锁及随后Session锁下取得，含精确身份、
+全池／connection debt及该Channel队列／游标。游标提交后的推进同样持Session锁；
+不采用仅READ_ONCE／WRITE_ONCE的无依据发布。copy_to_user在锁外，失败不消费。
+当前grant／Binding或协商不合格不能返回有效诊断；成功不续租、不准入业务、不改变credit。
+
+峰值只计reservation，包含明确未提交回滚；actual池满计数与软件EAGAIN分开。
+ACB完成仍由真实NOCP计账，不因查询或fd关闭清债。不向另一个Channel泄露PDU长度，
+不发布新可信安全资格。实际C/Rust检查、scalar consent证明及VM观察分别记录；
+此设计未证明完整锁实现、引用、内存序、USBcallback、NOCP真实性或长期调度。
+原逐层交付、Managed撤权、begun物理义务及复用屏障退出条件保持。

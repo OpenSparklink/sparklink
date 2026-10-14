@@ -126,3 +126,37 @@ router，满槽没有承诺无丢包。NTF不产生回复；IND只有活接收�
 过期、不匹配或不支持事件ACK0。ACK1不是CLI处理成功；确认发送仍受原物理期限。
 多条同handle实例、分包和事件投递未支持；malformed packet当前失败SSAP actor。
 真实正向更新/TX/CCC/security尚未验收。仅原路径回归与能力拒绝有实机证据。
+
+
+## Delegated channel TX status（未发布 v1）
+
+源码契约：K `49467d4df595`／U `d74421c210ee`，不由接口存在推导实机资格。
+`SPARKLINK_CHANNEL_TX_STATUS` 为只读 ioctl，固定64字节，native／compat布局一致。
+Rust `query_tx_status(fd)`、C `slk_channel_tx_status` 与Python
+`native.channel_tx_status(fd)`复用同一结构；不消费RX、不申请credit、不提交USB。
+
+| 字段 | 含义与范围 |
+|---|---|
+| version／size | 1／64；未知或畸形返回值由SDK拒绝 |
+| controller／generation／lifetime／handle | 该fd当前精确身份；不是可复用的裸handle资格 |
+| packet_maximum／capacity | 当前Runtime已知的控制器ACB包长及包数上限；不是应用MTU |
+| outstanding／connection_debt | 控制器全池保留债务／该物理连接债务；连接债务包含其各逻辑通道 |
+| peak_reserved／pool_exhaustions | generation内饱和峰值／实际池满拒绝数；峰值包含明确未提交后回滚的reservation，不等于USB接受数 |
+| queued／queue_limit／busy | 本逻辑通道软件排队／8项预算／在途项0或1；queued+busy不超过8 |
+| active_pdu_bytes／active_pdu_offset／flags | 仅本通道的Session在途PDU；ACTIVE=1、BEGUN=2，offset为已提交前缀，不表示对端处理 |
+| reserved | 0 |
+
+Runtime依次持有Host／data／gate锁，回调再取得Session锁，以同一快照核对授权、
+身份、协商及预算；游标修改也由Session锁保护。用户copy在解锁后进行，成功快照
+不保证未来连通性。管理撤权／断链可随即发生，快照不能替代实际提交时的票据检查。
+不返回lease、载荷或另一通道的在途长度。
+
+未知ioctl为ENOTTY，未绑定／已退休不具备有效连接，协商未完成EAGAIN，授权失效
+由Runtime及Binding拒绝，用户copy失败EFAULT；Runtime未知／fault不能生成有效预算。
+具体错误优先级随精确入口核对；C／Python保留实际errno。EFAULT重试不改变credit
+或队列；C输出对象在失败时保留原值。
+
+POLLOUT只表达软件准入；software EAGAIN不是packet-credit耗尽。峰值小于capacity且
+pool_exhaustions为0时不得宣称真实池满。NOCP归还不等于对端协议接收或应用处理。
+实机资格仅见[唯一当前能力](../../project/current-capabilities.md)；同generation单调计数
+也不能证明晚到／重复NOCP准确归属或handle复用屏障。

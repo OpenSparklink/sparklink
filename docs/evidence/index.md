@@ -63,3 +63,6 @@
 
 [真实软件队列背压、136应用往返及硬件credit未验收范围](software-backpressure-20261015.json)
 将EAGAIN/poll/恢复准入、USB/NOCP和对端应用分开，不能把软件队列满提升为硬件池耗尽。
+
+[只读TX预算、真实池满/NOCP恢复和准确新镜像回归](tx-budget-observation-20261015.json)
+把新补充资格与旧manifest/software pressure分开；不授予完整credit、复用、安全或自然恢复。

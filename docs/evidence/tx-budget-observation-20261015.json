@@ -1,0 +1,729 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "REAL_COHERENT_TX_BUDGET_OBSERVATION_AND_APPLICATION_DELIVERY_PASS",
+  "kernel_head": "49467d4df595f8988a7ad6310b53932f37d68283",
+  "compiled_userspace_head": "d74421c210eeb1b706dbd90f3500442e28a214dc",
+  "vm_only": true,
+  "host_driver_installed": false,
+  "behavior": "Authorized coherent64-byte TX status, software queue/PDU/credit ownership observation during actual sends, no budget mutation",
+  "scope": "Coherent read-only Runtime/Session TX budget observation with exact identity, actual software pressure and peer delivery. Supplemental real two-role burst pool depletion/resumption qualified, not full credit or NOCP safety.",
+  "real_runs": [
+    {
+      "gate": "real-short",
+      "manifest_sha256": "f4438a19e7e58833d313bc19649624f44622c046a1e85ddf29cc54f67960168a",
+      "private_folder": "native-credit-snapshot-real-short",
+      "raw_artifacts_public": false,
+      "round_trips": 40,
+      "application_bytes": [
+        61
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 1,
+        "pool_exhaustions": 0,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-boundary",
+      "manifest_sha256": "2639d4b47e377b481443c1fb76aade1df58f018af9fac7e0b397e68ab231d863",
+      "private_folder": "native-credit-snapshot-real-boundary",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        249
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 16,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 1,
+        "pool_exhaustions": 0,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-long",
+      "manifest_sha256": "c55d15335fdcbcc3e40346aba1acfb728f3a74e6ca2146803f6f1cfecd5705de",
+      "private_folder": "native-credit-snapshot-real-long",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        2042
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 16,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 5,
+        "pool_exhaustions": 13,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-prefix-close",
+      "manifest_sha256": "3b947f26e0f0718971fec1ff27fe8a621c8589bbad6bfa4004d0f81958074c49",
+      "private_folder": "native-credit-snapshot-real-prefix-close",
+      "raw_artifacts_public": false,
+      "round_trips": 0,
+      "application_bytes": [
+        2042
+      ],
+      "prefix_close_phases": 2,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "prefix_timing": [
+        {
+          "phase": 0,
+          "exit_to_last_ms": 59.407515,
+          "other_channel_after_close": true
+        },
+        {
+          "phase": 1,
+          "exit_to_last_ms": 64.658584,
+          "other_channel_after_close": true
+        }
+      ],
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 5,
+        "pool_exhaustions": 3,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-burst",
+      "manifest_sha256": "5b128091abd95f770728b6c0f3f6ce12c26a3342d6a45ed29723f699e97d26d7",
+      "private_folder": "native-credit-snapshot-real-burst",
+      "raw_artifacts_public": false,
+      "round_trips": 32,
+      "application_bytes": [
+        2042
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "pressure": [
+        {
+          "eagain": 8,
+          "poll_not_writable": 8,
+          "resumed_sequences": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "replies": 16,
+          "scope": "Software finite queue pressure; not controller packet-credit depletion"
+        },
+        {
+          "eagain": 8,
+          "poll_not_writable": 8,
+          "resumed_sequences": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "replies": 16,
+          "scope": "Software finite queue pressure; not controller packet-credit depletion"
+        }
+      ],
+      "physical_usb_fragments_per_pdu": [
+        9
+      ],
+      "tx_budget_observation": {
+        "samples": 22,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 5,
+        "pool_exhaustions": 217,
+        "observed_outstanding": 5,
+        "observed_queued": 8,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-length248",
+      "manifest_sha256": "02eebad8412f3781c464172289768843aaa511e896b5efd5ff3e2a249340715f",
+      "private_folder": "native-credit-snapshot-length248",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        248
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 1,
+        "pool_exhaustions": 0,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-length250",
+      "manifest_sha256": "1d754e54253b5706126348f7ecce7702b04a41a4e2f6475deed49ea6a36f3843",
+      "private_folder": "native-credit-snapshot-length250",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        250
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 2,
+        "pool_exhaustions": 0,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-length253",
+      "manifest_sha256": "9543820525acaf2dea7e3b8645e227feb4deae36b0e85385fe3efddb15657ac3",
+      "private_folder": "native-credit-snapshot-length253",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        253
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 2,
+        "pool_exhaustions": 0,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-length254",
+      "manifest_sha256": "69fdcc40a0c0fb7d2af46a4717f22cf15ce61593507209cc1ca45cf4d314b84c",
+      "private_folder": "native-credit-snapshot-length254",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        254
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 2,
+        "pool_exhaustions": 0,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-length255",
+      "manifest_sha256": "bbd9c1b407b57b3295680e1c5e9ff45d0fb6cde727cd39d1a2af306705eb637c",
+      "private_folder": "native-credit-snapshot-length255",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        255
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 2,
+        "pool_exhaustions": 0,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    },
+    {
+      "gate": "real-length1024",
+      "manifest_sha256": "5dfea6587b06966133284b4c60b121490576eaddf6b7d6a5d3070e4ffc0be8ae",
+      "private_folder": "native-credit-snapshot-length1024",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        1024
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "tx_budget_observation": {
+        "samples": 4,
+        "packet_maximum": [
+          254
+        ],
+        "capacity": [
+          5
+        ],
+        "peak_reserved": 4,
+        "pool_exhaustions": 0,
+        "observed_outstanding": 0,
+        "observed_queued": 0,
+        "observed_busy": 0
+      }
+    }
+  ],
+  "total_application_round_trips": 136,
+  "burst_application_round_trips": 32,
+  "source_application_round_trips_from_closed_fd": 0,
+  "regressions": "All original104 peer-validated app rounds on exact494/d744 selected61/248/249/250/253/254/255/1024/2042 lengths and32 oversize;2 strict final-fd phases plus original SSAP;32 new burst app rounds separately",
+  "offline": {
+    "strict_clippy": true,
+    "tool_tests": 482,
+    "local_fd_test": "Actual AF_UNIX bounded send-buffer pressure and16 peer-validated replies; app control flow only, never WS73 credit/RF",
+    "kernel_proof": "Actual494 C consent311 scalar checks re-run; no whole lock/reference/credit/C-Rust combination proof",
+    "tool_log_sha256": "e0761f0568c46fdf5e30c9a993bf23b0a69bad66fe90dcd22a9f8bc26342b3ce",
+    "clippy_log_sha256": "310b1af4dd41e868457e184b3efcce9cb131e0cd6bc40f374e79fa2b2fd08b2c",
+    "cli_log_sha256": "921c4eba05ec8ce50a5fbc8b1b77eee8b15661db3ca68f64b2f39969bee0048f",
+    "python_abi_tests": 37,
+    "python_abi_log_sha256": "e57681a2892ff0a78f858d5b2000139ffcd6c8ba51c7bd1b684293331a71ff76",
+    "failed_sandbox_tools_log_sha256": "bb8ce2eb07fdb094abcc2ab3c34ee057bf425fbbb0f570dc5b35483db8587cf3"
+  },
+  "hardware_credit_depletion": true,
+  "full_goal_complete": false,
+  "natural_recovery_qualified": false,
+  "original_issues_closed": false,
+  "remaining": [
+    "Broader controller-credit/late-duplicate NOCP/reuse/inflight revocation matrix; observed burst depletion is scoped, not whole ledger safety",
+    "Managed revoke/down/original deadline during begun PDU, complete C/Rust/credit/Grant composition",
+    "Full dup/fork/SCM_RIGHTS/linger, dynamic channels and four-device business",
+    "Actual SMP peer delivery/key/Agent/encryption/Bond/Profile and original S0-S6",
+    "Natural fault RCA/non-human recovery, partial initialization/events/cleanup; UserHost P4 only planning"
+  ],
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "reference_difference": "Reference global credit adds count/default1 and clamps pool; native exact debt/lifetime and malformed/excess failure deliberately preserved",
+    "firmware_combined111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3"
+  },
+  "raw_artifact_availability": "Private workspace only; public summaries/hashes cannot substitute independently obtaining original pcap/console/stats",
+  "tx_budget_observation": {
+    "samples": 62,
+    "peak_reserved": 5,
+    "pool_exhaustions": 217,
+    "observed_outstanding": 5,
+    "observed_queue": 8,
+    "stage_counts": {
+      "ready": 44,
+      "blocked": 16,
+      "replied": 2
+    },
+    "note": "Generation-local reservation peak includes known-never-submitted rollback. Snapshot proves only observed state, not unobserved hardware depletion or NOCP reliability."
+  },
+  "formal_consent": {
+    "kernel_tree_clean": true,
+    "userspace_tree_clean": true,
+    "status": "SCALAR_CONSENT_PASS",
+    "exit": 0,
+    "kernel_head": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "userspace_head": "f2f0eb21100028383ffa61c47d75389e383d4f86",
+    "sources": {
+      "net/sparklink/sle_channel_socket.c": "06ed8c433faef79701938c440badeac46beaa2f0a959d95ab9291c99506ab562",
+      "formal/channel/pdu_submit_cbmc.c": "2a7ddafa795aa3509c5860993e789bce2d0885df51ce352c2e2897ee318fe168",
+      "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+      "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+      "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1"
+    },
+    "production_functions": [
+      "sl_sk",
+      "sl_permits",
+      "sl_session_submit"
+    ],
+    "production_bodies_sha256": "53e8c281222dd5925f9710183cc68f74324e6d4547941edbc23f0a62a51240f8",
+    "generated_harness_sha256": "cc2682c4cf6075f3b4b89ebec3b0e910e6569dce0861e3210022643e93c8ceb1",
+    "version": "6.11.0 (cbmc-6.11.0)",
+    "checks": [
+      [
+        "0",
+        "311"
+      ]
+    ],
+    "log_sha256": "658c35784fbe9b2fd078b64b3a3cd0e18ebd38c2fc959d5aff4645092cdf3f65",
+    "scope": "Actual structures/functions, two channel slots, arbitrary scalar identities/grants/phase, current/foreign valid packet objects, started/retired, arbitrary expiry and USB result; exact first-submit authorization and frozen begun operation consent; no sequence unwind",
+    "assumptions": [
+      "Objects valid and retained for call; no concurrent mutation inside this serialized consent region",
+      "Spinlock, kernel sock/work/kref layouts and clock arithmetic are dependencies; expiry explores both outcomes",
+      "Native Runtime still holds Host/data/gate and rechecks epoch/lifetime before this callback; not proved by this harness"
+    ],
+    "trusted_base": [
+      "CBMC frontend/solver and C semantics"
+    ],
+    "not_proved": [
+      "Whole worker/reference/close/credit composition or C/Rust refinement",
+      "Runtime grant revocation, USB callbacks/HCD lifetime and NOCP hardware accuracy",
+      "Real hardware delivery, complete VFS dup/SCM_RIGHTS matrix or long-term liveness"
+    ],
+    "real_acceptance": false
+  },
+  "production_native_regression": {
+    "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+    "tests": 41,
+    "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+    "real_data_acceptance": false,
+    "socket_acceptance": false,
+    "sources": {
+      "net/sparklink/sle_native.rs": "29448f55954b0b3bd3bf2e302aeed60bca992040a81371af56c6657b3efafdfb",
+      "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+      "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+      "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+      "net/sparklink/sle_host.rs": "76b10d44191623785a6e23d5fa7fb214ecf4f096391f340a9b0768d02575b1dd",
+      "net/sparklink/sle_sessions.rs": "f76090c45f4f977b34eb93e2cbc51465640b44d044e96909613d46ecaf5102ca",
+      "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+      "tools/testing/selftests/sparklink/native-data/fixture.rs": "260ecada96d875ec5242902ace9b092d7ba78f78288baca06de233ef604757ff"
+    }
+  },
+  "production_session_regression": {
+    "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+    "scope": "actual single-consumer two-slot route/local TCID+PI/independent finite RX and TX, retired-slot/peer isolation, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths, actual Session-owned physical TX/first-submit linearization/fd detach and original-deadline worker; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+    "physical_acceptance": false,
+    "whole_session_proof": false,
+    "bodies_sha256": "806941aa523de6ff419d2eacc18e227008e8eda6893a3a04bfaaa01607a78b9a",
+    "sources": {
+      "net/sparklink/sle_channel_socket.c": "06ed8c433faef79701938c440badeac46beaa2f0a959d95ab9291c99506ab562",
+      "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+      "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+      "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+      "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+      "include/linux/sparklink_channel.h": "faefeb9e9460a26486780d45859c22520034dc07c6d147f7358c25e3bdf577b1",
+      "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+      "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1",
+      "include/uapi/linux/sparklink_socket.h": "d908636542bac5636ac1fc7fa0268576b932252069cabe145fb7c037674f5fdb",
+      "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "c322212d43cfd7c8ab702cd044e31cbbf423b89270cdecf35fec2cb313907463"
+    }
+  },
+  "kernel_build_record": {
+    "status": "BUILD_PASSED",
+    "source_head": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "scope": "exact committed experimental VM kernel, no host installation",
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "normalized_config_sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+    "raw_report_sha256": "9dc2255dc85f6719ebbdcf64f6c98a9c85569e1e34a8a18699bcacf43402f4ea"
+  },
+  "failures_preserved": [
+    {
+      "kind": "CI wrong ABI checkout and local bounded reverse-queue deadlock",
+      "status": "FAIL",
+      "log_sha256": "4097ba08e3a63496f757865c04561b53522ff9048954a37f2c8db13973f638a9",
+      "fix": "f2f0eb21100028383ffa61c47d75389e383d4f86",
+      "scope": "CI pin and test-only reply budget, production binary remains d744"
+    },
+    {
+      "kind": "sandbox denied AF_UNIX socket / missing private dbus command",
+      "status": "FAILED_ENVIRONMENT",
+      "logs": [
+        "29d384044df670b9ef6c5bbac0eda5d3f1a32c048f72c24874911fe194eacc2f",
+        "80e912a86009da664fd701ac5234ae6a58096c35c33866f9d4b8d0c4fd723203"
+      ],
+      "resolution": "Authorized local software tests with private dbus-daemon; no host service or driver install"
+    }
+  ],
+  "supplemental_credit_qualification": {
+    "status": "REAL_BURST_POOL_DEPLETION_AND_NOCP_RESUMPTION_SCOPED_PASS",
+    "source": {
+      "kernel_head": "49467d4df595f8988a7ad6310b53932f37d68283",
+      "userspace_head": "d74421c210eeb1b706dbd90f3500442e28a214dc"
+    },
+    "phases": [
+      {
+        "phase": 0,
+        "source_pool_refusals_delta": 29,
+        "source_full_samples": 6,
+        "endpoints": [
+          {
+            "controller": 0,
+            "generation": 1,
+            "lifetime": 1,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 103,
+            "resume_interval_count": 102,
+            "first_three_resume_intervals": [
+              {
+                "full_record": 1460,
+                "nocp_record": 1466,
+                "resumed_submit_record": 1482
+              },
+              {
+                "full_record": 1532,
+                "nocp_record": 1538,
+                "resumed_submit_record": 1562
+              },
+              {
+                "full_record": 1562,
+                "nocp_record": 1574,
+                "resumed_submit_record": 1592
+              }
+            ]
+          },
+          {
+            "controller": 1,
+            "generation": 2,
+            "lifetime": 1,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 128,
+            "resume_interval_count": 127,
+            "first_three_resume_intervals": [
+              {
+                "full_record": 1634,
+                "nocp_record": 1646,
+                "resumed_submit_record": 1658
+              },
+              {
+                "full_record": 1658,
+                "nocp_record": 1716,
+                "resumed_submit_record": 1740
+              },
+              {
+                "full_record": 1740,
+                "nocp_record": 1786,
+                "resumed_submit_record": 1798
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 1,
+        "source_pool_refusals_delta": 30,
+        "source_full_samples": 6,
+        "endpoints": [
+          {
+            "controller": 1,
+            "generation": 2,
+            "lifetime": 3,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 111,
+            "resume_interval_count": 110,
+            "first_three_resume_intervals": [
+              {
+                "full_record": 8704,
+                "nocp_record": 8708,
+                "resumed_submit_record": 8722
+              },
+              {
+                "full_record": 8774,
+                "nocp_record": 8780,
+                "resumed_submit_record": 8802
+              },
+              {
+                "full_record": 8802,
+                "nocp_record": 8820,
+                "resumed_submit_record": 8832
+              }
+            ]
+          },
+          {
+            "controller": 0,
+            "generation": 1,
+            "lifetime": 3,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 129,
+            "resume_interval_count": 128,
+            "first_three_resume_intervals": [
+              {
+                "full_record": 8870,
+                "nocp_record": 8882,
+                "resumed_submit_record": 8900
+              },
+              {
+                "full_record": 8900,
+                "nocp_record": 8952,
+                "resumed_submit_record": 8976
+              },
+              {
+                "full_record": 8976,
+                "nocp_record": 9024,
+                "resumed_submit_record": 9032
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "application_round_trips": 32,
+    "assumptions": [
+      "PCAP USB submission/NOCP observed ordering; original link interval starts drained",
+      "NOCP accuracy is firmware/hardware trust, not proven by a matching count",
+      "No duplicate/late NOCP or handle-reuse barrier qualified",
+      "USB completion is not credit return; only NOCP changes reconstructed debt"
+    ],
+    "inputs": {
+      "manifest.json": "5b128091abd95f770728b6c0f3f6ce12c26a3342d6a45ed29723f699e97d26d7",
+      "run.json": "35cb8fdc421a261a801e54c22439ab638c7bfe3583d36ad5819809eaa39466b3",
+      "ws73.pcap": "36360263738f9902d87a26c03192bb3f2f0917edd071f2f37fa81c089fcc029a"
+    },
+    "scope": "Two real controllers, exchanged roles, fixed channels and SDK111 profile. Supplemental evidence; original manifest remains unchanged.",
+    "natural_recovery_qualified": false,
+    "whole_credit_proof": false,
+    "raw_report_sha256": "7d74e7823b99320d9d0d374ffd668c052659281090ac1ac628160fae13824212",
+    "checker_head": "d19483b8ceb98c0980aa07979069ea7ff479c946",
+    "checker_source_sha256": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58"
+  },
+  "sealed_manifest_scope": "Original manifest credit_exhaustion_acceptance=false stays immutable; newer offline supplemental checker on original pcap+run validates a separate scoped gate. No rewrite or inherited upgrade.",
+  "ci": {
+    "checker_ci_run": 38633819249,
+    "checker_docs_run": 38633819514,
+    "failed_d744_run": 38632047888,
+    "fixed_test_ci_run": 38632942682,
+    "fixed_test_docs_run": 38632943055,
+    "external_linkcheck": "SKIPPED not PASS"
+  }
+}

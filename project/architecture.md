@@ -488,3 +488,17 @@ Core configfs仅软件版本，不能用全局参数或none/0的无动作成功�
 拥有必要crypto依赖，Core不因未来用途强制算法。命令运行队列与credit归CommandHost；
 驱动报告的初始credit是显式构造输入，不能替换为默认常量或平行运行状态。
 标准Diagnostic作者事务/取消/超时账本有真实消费者，按迁移门禁继续保留。
+
+
+## 只读发送预算与交付阶段
+
+当前Native接口以同一Host/data/gate→Session锁序观察controller generation、物理
+connection debt、Channel有限软件队列与Session持有的该Channel在途PDU。
+诊断不会归还credit、改变状态或申请权限；它不取代实际USB提交票据及原期限检查。
+软件准入／USB提交／控制器完成／对端协议接收／对端应用处理仍分开表达。
+
+generation内峰值包括已知未提交后回滚的reservation，pool满拒绝只在实际ledger
+容量耗尽时计数。POLLOUT不是硬件credit资格，快照不是后续连通承诺。每通道只
+报告本通道队列和在途长度；控制器总债务与物理连接债务有明确不同作用域。
+源码契约见[接口参考](../docs/reference/interfaces.md)，准确当前实机范围仍只维护于
+[当前能力](current-capabilities.md)。完整S0–S6与真实credit/撤权/复用/自然恢复门禁保持。

@@ -72,3 +72,32 @@ Root/kernel capture drops和taint仍需检查。
 software_backpressure_acceptance为true不能覆盖credit_exhaustion_acceptance为false；
 前者是有限软件队列，后者需另外观察真实controller budget、债务及实际完成的恢复。
 没有该证据时保留未验收，不能将credit补满/模拟完成事件当作测试通过。
+
+
+## 核对TX预算采样
+
+现代runner要求`tx_status_required`并调用`tx_status_receipts`核对ready、burst blocked
+及replied阶段的实际ioctl记录。先核对采样的controller／generation／lifetime／handle
+与该阶段ChannelInfo，再检查connection debt≤outstanding≤peak≤capacity、queued+busy≤8，
+以及该通道的active bytes／offset／flags。blocked时可同时出现软件队列满与硬件预算
+仍有余量；replied时debt为0也是实际完成已经到达的合法观察。
+
+对同一generation核对饱和peak／exhaustion单调性；跨重枚举不能比较计数。每个采样
+只是瞬时快照，peak还包含回滚reservation。要验收硬件credit耗尽及完成后恢复，仍
+必须核对真实提交／NOCP时间线和对端应用回复，不能只凭peak=capacity或日志数量。
+旧封存记录没有此字段时保持历史范围，不补造采样，不将历史PASS升级为新门禁。
+逐字段契约见[接口参考](../reference/interfaces.md)。
+
+
+池满补充核对只读运行：
+
+```sh
+python3 tools/ws73_credit_observation.py --run-folder SAVED_VM_RUN --output NEW_REPORT.json
+```
+
+输入目录须包含原manifest、`guest-output/ws73.pcap`及原应用run JSON；输出必须是
+新文件。核对器先复用现有两端应用／身份／USB核对，再要求两个角色的新池满拒绝、
+满池快照、两端USB减NOCP债务始终不超容量且末尾归零，以及满→NOCP→再提交。
+协商及SSAP包也纳入区间账，不把总包数描述成纯业务条数。旧manifest保持原范围；
+补充报告记录其hash及限定假设。此检查仍不能证明NOCP硬件真实性、重复晚到、
+复用屏障或自然恢复。

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "thread_id": "01a120fe-1165-7c50-9d9f-56e0b8355c3c",
-  "goal_status": "active",
+  "goal_status": "blocked",
   "objective_unchanged": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、slk-vendord Proxy 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
   "budget_unchanged": {
     "token_budget": null,
@@ -9,7 +9,7 @@
     "budgeted": false
   },
   "goal_api_objective_edit_available": false,
-  "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
+  "sync_method": "canonical plan and persistent execution record updated; goal API objective/status resume unavailable",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -609,59 +609,64 @@
     ]
   },
   "current_batch_exit": {
-    "production": "existing404 bounded TX/Session/Grant reused, no fake hardware behavior",
-    "offline": "actual local fd burst algorithm/strictCLI/475 tooling checks",
-    "real": "136 peer-validated app rounds,32 refusals,2 strict lastfd phases; software EAGAIN/poll recovery in bothroles",
-    "remaining": "true controller credit/full hardware queues, revoke/down/deadline/composite proof, multi-channel/four-device and allS0-S6 remaining"
+    "production": "coherent authorized TX status, actual ledger/PDU cursor synchronization",
+    "offline": "Native41, Session sanitizer, cross-language37/tools482, strict kernel/CI",
+    "formal": "actual494 consent311 scalar only; credit Kani unsupported remains unproven",
+    "real": "136 app rounds,32 oversize,2 strict fd exit; pool5 with fresh source refusals29/30 and both endpoint USB/NOCP resumption",
+    "remaining": "SMP peer delivery, approve/install/encrypt; revoke/down/deadline/late-NOCP/reuse/combined proof; dynamic channels/four-device/SSAP and all original scope"
   },
-  "updated_at_utc": "2026-10-14T20:03:46.975074+00:00",
+  "updated_at_utc": "2026-10-14T20:42:45.041854+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
     "scope": "Retained prior progress/qualified identities; not live current state"
   },
   "current_heads": {
-    "linux": "40474895224799879cf63d74b85b17932121f726",
-    "userspace_observed_before_document_commit": "89f30157b6f23428a02354853cd1bd2f43a6e629"
+    "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "userspace_observed_before_document_commit": "d19483b8ceb98c0980aa07979069ea7ff479c946"
   },
   "qualified_source_heads": {
-    "linux": "40474895224799879cf63d74b85b17932121f726",
-    "userspace": "89f30157b6f23428a02354853cd1bd2f43a6e629",
-    "scope": "136 actual app round trips including32 burst,16 EAGAIN/poll withdrawals and resumed sequences across2roles;32 refusals; strict fd exit retained; no hardware credit depletion",
-    "evidence": "docs/evidence/software-backpressure-20261015.json"
+    "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "userspace": "d74421c210eeb1b706dbd90f3500442e28a214dc",
+    "scope": "136 actual app rounds,32 refusals,2 strict fd exit phases; scoped two-role pool depletion/NOCP resumption, not full credit/reuse safety",
+    "evidence": "docs/evidence/tx-budget-observation-20261015.json"
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "behavior": "Actual ordinary16-message burst at finite software queue, poll withdrawal/resumed admission and opposite application replies",
-    "status": "REAL_SOFTWARE_QUEUE_BACKPRESSURE_AND_APPLICATION_DELIVERY_PASS",
-    "evidence": "docs/evidence/software-backpressure-20261015.json"
+    "behavior": "Authorized coherent64-byte TX status, software queue/PDU/credit ownership observation during actual sends, no budget mutation",
+    "status": "REAL_COHERENT_TX_BUDGET_OBSERVATION_AND_APPLICATION_DELIVERY_PASS",
+    "evidence": "docs/evidence/tx-budget-observation-20261015.json"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exact404/89 original104 data lengths plus32 burst app rounds",
-    "DG02": "PARTIAL_REAL exact404/89 all previously attained length points and32 refusals rerun",
+    "DG01": "PARTIAL_REAL exact494/d744 original104 plus32burst app round trips",
+    "DG02": "PARTIAL_REAL exact494/d744 all attained length points and32refusals",
     "FV_SECURITY_RELAY": "HISTORICAL scoped actual Host/codec checks retained in relay-index investigation; no new d926 SMP real qualification; Kani unsupported not proved",
     "S5": "Approved pairing/installation/encrypted application reply missing",
     "recovery": "Natural RCA and nonhuman recovery remain open",
     "FV_CODEC": "HISTORICAL exact2030 driver bounded800 checks preserved, not relabeled as fresh d926 result; new cursor proof separately recorded",
     "FV_DLI_CURSOR": "SCALAR_TRANSITIONS_PASS exact production header,48 checks, all unsigned inputs; no worker/USB/NOCP proof",
-    "DG03": "PARTIAL_REAL software queue pressure/poll recovery and longPDU; true hardware credit, revoke/down/deadline and full fragment matrix remain missing",
-    "FV_PDU_CONSENT": "SCALAR_CONSENT_PASS actual404 functions sl_sk/sl_permits/sl_session_submit,311 checks; lock/ref/Runtime/USB composition excluded"
+    "DG03": "PARTIAL_REAL bounded PB/lengths/software queue plus scoped hardware pool observation; full lifecycle/fragment matrix missing",
+    "FV_PDU_CONSENT": "SCALAR_CONSENT_PASS actual494 functions sl_sk/sl_permits/sl_session_submit,311 checks; locks/references/Runtime/USB and query-composition excluded",
+    "DG05": "PARTIAL_REAL SDK111 two-role pool5 depletion/fresh refusals29/30, actual USB/NOCP resumption and peer replies; broader reuse/revoke/duplicate-NOCP matrix missing"
   },
   "next_resume_tasks": [
-    "Deliver actual controller data-credit/budget observations and real depletion/refill gates, bounded scheduling and Managed revoke/down/original deadline during begun PDU. Software queue pressure is now qualified; no hardware claim inferred. Compose actual Rust ledger/tickets/C Session/Grant and validate old NOCP/reuse/peer isolation.",
-    "Resolve actual111 SMP relay forwarding; raw Complete alone still insufficient, candidateSDK1ff and147 peer delivery failed. No fake capability or alternate Engine.",
+    "Finish real SDK111 SMP relay peer delivery using existing Session/credit/tickets/RX; retain failed147/1ff evidence. In parallel controlled VM begun-PDU revoke/down/deadline and actual ledger/Grant/ticket combination; burst depletion now has a scoped observation, not whole NOCP correctness.",
+    "Map and validate firmware relay dialect against specified NearLink Host, SDK111 and libws73 without assuming SDK table matches actual firmware. Approved pairing/key install/encrypted app reply still missing.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
-  "issue_sync_receipt": "docs/evidence/software-backpressure-20261015.json",
+  "issue_sync_status": "PENDING_CURRENT_BATCH_READBACK",
+  "issue_sync_receipt": "docs/evidence/tx-budget-observation-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
     "reason": "404 Session physical owner, actual311-check C consent and strict fd exit plus original104 real regressions"
   },
   "current_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "Signed actual burst/queue pressure tool,136 real peer app round trips, original boundaries and closing gate retained; controller credit not inferred"
-  }
+    "reason": "Signed coherent production TX status; real pool5/new refusals and USB/NOCP resume with136 peer app rounds; no full credit/security/recovery claim"
+  },
+  "execution_status": "continuing under explicit authorization in this turn",
+  "goal_api_status_observed": "blocked",
+  "goal_api_update_limitation": "get_goal reports blocked; available update_goal cannot resume/edit objective. No duplicate created or incomplete goal completed. Work in this turn continues under explicit user authorization; original scope and budget retained."
 }

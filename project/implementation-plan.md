@@ -6,26 +6,24 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-1. 本批交付真实软件队列pressure子门禁：内核保持K `404748952247`，编译U
-   `89f30157b6f2`；原104轮全部已取得长度点和32拒绝重新回归，32额外burst往返。
-   两种连接角色都8次EAGAIN/POLLOUT收回及对应恢复，actual peer验证/回复和两端
-   USB/HCC/每片NOCP核对；严格fd退出/真实SSAP/发现建链路径保持。
-   [准确本批证据与限制](../docs/evidence/software-backpressure-20261015.json)。
-2. 软件队列EAGAIN/poll通过不能替代真实controller credit耗尽。下一批建立实际
-   Runtime data budget/debt观察，核对命令/data credit独立、USB提交不还、实际完成
-   才还；通过真实发送与有界调度观察压力，任何受控RX/调度交错单独标记，不能模拟
-   NOCP或强制补满。维护原budget与期限、同行隔离，测试必须有真正对端应用收到。
-3. 并行在begun PDU期间验证Managed撤权/disconnect/原期限与最终USB屏障，组合
-   Runtime ledger/ticket/C Session owner/Grant。NoCP晚到/重复/handle复用继续待证。
-   生产C consent311检查不是锁/引用/Runtime/HCD/refinement或长期liveness证明。
-4. 继续唯一Session分流/真实credit→多通道→四设备两组→唯一用户态SSAP更新，
-   不等待控制竞争全集。安全relay实际111转发/Agent/key安装/加密/Bond/Profile并行；
-   SDK表项不等于固件ABI，历史147/1ff peer失败不因数据通过变为成功。
-5. Kani credit仍NOT_PROVEN：保留caller_location/foreign-function诊断与原超时。
-   下一步按实际crate/生产panic路径与安装smoke比较工具/编译环境，直接验证生产转换；
-   不屏蔽警告或用简化ledger/始终成功桩换PASS。状态空间边界及全16slot原性质保持。
-6. 全S0–S6、19WP、10FV、12DG及原issue scope保持；自然RCA/非人工恢复、部分
-   初始化清理、事件迁移、旧代码整改继续并行。UserHost P4仅规划，不作前置。
+1. 本批只读预算接通并取得准确K494/Ud744真实回归：原104轮及32拒绝、32额外
+   burst往返、两角色严格fd退出和原SSAP保持。软件队列EAGAIN/poll与controller
+   pool满分别观察；源端新池满拒绝29/30，实际NOCP后恢复USB提交，末尾debt0。
+   [准确补充证据](../docs/evidence/tx-budget-observation-20261015.json)不改写旧manifest。
+2. 下一纵向链路优先继续实际111安全relay的正向对端交付：已有Session/typed发送/
+   命令credit/ticket/真实Complete/RX归属直接复用，定位147/1ff对端缺包，不另造Engine。
+   安全退出条件仍要求真正对端0014及实际批准/可信安装，不能由Complete或本批数据成功替代。
+3. 数据面并行推进begun PDU期间Managed撤权/disconnect/原期限与最终USB屏障，
+   组合实际ledger/ticket/C Session/Grant，再动态通道及四设备两组业务、唯一用户态
+   SSAP更新。当前burst pool满恢复不覆盖全部NOCP复用或撤权矩阵，不等待控制竞争全集。
+4. 本批门禁包括实际Native41/Session sanitizer、跨语言布局37、482工具检查、严格
+   构建，以及准确新VM业务/长度/fd退出。C consent311直接源码标量检查排除锁/引用/
+   Runtime/HCD/refinement；预算查询本身由实际回归覆盖，未宣称形式化完整证明。
+5. Kani credit保持NOT_PROVEN，保留caller_location/foreign-function诊断及旧超时。
+   下一步检查实际crate/生产panic路径与安装smoke的工具环境；禁止屏蔽警告、简化
+   ledger或始终成功桩换PASS。NOCP真值/重复晚到/USBcallback排空/firmware清除显式待证。
+6. 全S0–S6、19WP、10FV、12DG及原scope/预算保持；自然RCA/非人工恢复、部分
+   初始化/事件迁移/旧代码整改并行；UserHost P4规划。局部通过不关闭整项。
 
 ## 连续目标与不变约束
 

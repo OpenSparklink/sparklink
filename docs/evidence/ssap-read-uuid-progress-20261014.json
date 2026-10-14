@@ -76,5 +76,13 @@
     "Natural RCA and nonmanual recovery"
   ],
   "vm_only": true,
-  "closure_allowed": false
+  "closure_allowed": false,
+  "abi_regression": {
+    "initial": "32 ran with setUpClass error: read-only default ccache; this was not PASS",
+    "initial_log_sha256": "dfaca27d0f24ebb61fdddd501df227884d0173647cd0ca16568767c4a967c316",
+    "rerun": "36 passed; workspace ccache; actual C/Rust/Python plus sanitizer",
+    "rerun_exit": 0,
+    "rerun_log_sha256": "aa30aef50d0427b5714172279858a2c614d0d05a4d68165137f7e9a707cff110",
+    "correction": "Initial public metadata prematurely said ABI passed before inspecting per-command failure; rerun result replaces that unsupported claim, failed evidence preserved."
+  }
 }

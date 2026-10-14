@@ -615,7 +615,7 @@
     "real": "104 original app round trips,32 refusal and2 source exit before final USB/actual peer validation/after-close SMTC phases",
     "remaining": "true credit/full queue, managed revoke/down/deadline and composition/reuse; fullS0-S6 and natural recovery open"
   },
-  "updated_at_utc": "2026-10-14T19:21:26.762855+00:00",
+  "updated_at_utc": "2026-10-14T19:28:08.238755+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -636,7 +636,8 @@
   "current_batch": {
     "behavior": "Session owns only begun bounded physical PDU after fd withdrawal; Runtime revocation unchanged",
     "status": "BEGUN_PDU_FINAL_FD_CLOSE_ISOLATION_REAL_PASS",
-    "evidence": "docs/evidence/pdu-owner-close-20261015.json"
+    "evidence": "docs/evidence/pdu-owner-close-20261015.json",
+    "ci": "447/404 pin code and docs completed successfully; runtime remains404/compiled995"
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact404/995 original40 short and104 full selected data lengths",
@@ -656,7 +657,7 @@
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "PENDING_PDU_OWNER_READBACK",
+  "issue_sync_status": "ALL9_OPEN_SCOPE_UNCHANGED_READBACK",
   "issue_sync_receipt": "docs/evidence/pdu-owner-close-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",

@@ -358,5 +358,108 @@
   ],
   "full_goal_complete": false,
   "original_issues_closed": false,
-  "natural_recovery_qualified": false
+  "natural_recovery_qualified": false,
+  "issue_sync": {
+    "status": "ALL9_OPEN_SCOPE_UNCHANGED_READBACK",
+    "receipts": [
+      {
+        "repo": "linux",
+        "issue": 4,
+        "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6176499457",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+        "comment_sha256": "094636e53e796f57022803683a022a54b65cfc5869f9a245c09835bc9d551e45"
+      },
+      {
+        "repo": "linux",
+        "issue": 6,
+        "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6176500551",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+        "comment_sha256": "25a393e27d4a51d88896775a8803bf2be5a15b8cb4ec13e33e4f4c92dc1a4643"
+      },
+      {
+        "repo": "linux",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/linux/issues/8#issuecomment-6176501775",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "4f21d2d59b7c708fd549ebb6720237e037b939f97d628531f4659bbd247b4b93",
+        "comment_sha256": "8003b533063e0fcba6ba76720b8f7fa45b801d03d3421bfdf12de1180d2398e8"
+      },
+      {
+        "repo": "linux",
+        "issue": 14,
+        "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6176503052",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+        "comment_sha256": "c8451e0b94df9920cc847e256fd63457036f003d1e0b83f7c04ce41bae7210bf"
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6176504221",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+        "comment_sha256": "336dd2f42dc7807be0a993380aa4e29f4b2f338c498033d127a178d83705f864"
+      },
+      {
+        "repo": "linux",
+        "issue": 18,
+        "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6176505332",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "5c2dbee1928dff3ce3caecac72d05f6c37a8509549022002c7911376ed40132b",
+        "comment_sha256": "1bf8823d557a320a38d27f23795d81ebbc4ca91aa866954d7030933a2830338c"
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6176506950",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+        "comment_sha256": "bb58d1d8c10efa1d6a73a57972424e79b262cf91bc913c6becb93b9b9e7ddaba"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6176508302",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41",
+        "comment_sha256": "fdcbd0681260e70a8f2a184c67708bd607578792e5786bac80ac0629ed2e044a"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6176509494",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+        "comment_sha256": "bd0e40e9a95f12207e7d18e2d43f7dd8edf3d0dce6eb4889ed5376597b5bc3bc"
+      }
+    ]
+  },
+  "ci": {
+    "source_head": "447e1f0a60096042e3042c0d2287c441a1dc406d",
+    "kernel_pin": "40474895224799879cf63d74b85b17932121f726",
+    "code_run": 38621299296,
+    "documentation_run": 38621299285,
+    "status": "SUCCESS",
+    "scope": "actual service code995 and closing tools447; CI does not replace live hardware evidence"
+  }
 }

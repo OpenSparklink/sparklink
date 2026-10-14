@@ -163,7 +163,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: fa54a00f9a187c8bc3099680e6fd5fc380162370
+          ref: 08ac32631e163c45ab1dd924f6b27962106a91e8
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink

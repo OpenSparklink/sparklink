@@ -163,7 +163,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: b73a3dd02ce1f2232d68fd6fbbd5ccabd1f92c02
+          ref: 7de50814c263b1b4416616e081b6878905c6c1b6
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -190,6 +190,11 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y clang
       - name: Check actual registration rejects before following ops
         run: python .registration-contract/tools/backend_registration_contract.py --kernel .kernel-containment
+      - name: Check actual WS73 DLI and security envelopes (synthetic only)
+        working-directory: .kernel-containment
+        run: |
+          clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined tools/testing/selftests/sparklink/ws73_dli_test.c drivers/sparklink/ws73/wire.c drivers/sparklink/ws73/dli.c -o /tmp/ws73-dli-test
+          /tmp/ws73-dli-test
       - name: Execute actual source failure boundaries (not RF or crypto vectors)
         working-directory: .kernel-containment
         env:

@@ -1,6 +1,24 @@
 # 当前能力与资格
 
-## 最新用户态SSAP单值读写资格（精确源码）
+## 最新SSAP发现／生命周期缓存资格（精确源码）
+
+K31769ea4b8c0／编译服务与冻结工具U `7d87d183bd1c2b745430dbeca75c1a7909225d31`。
+唯一actor接分层首要服务/属性、UUID及结构查询，原期限分页，有界80条目/96次
+交换；连接lifetime缓存仅元数据建议，不表示安全、可用性或peer数据库原子快照。
+
+四个lifetime阶段共32次双方向发现：分层/cache、service UUID、property UUID、
+structure UUID；客户端从实际发现取handle，再32随机写/64读取，两端USB和
+对端本地检查一致。保持40短消息、8轮249/16超限拒绝、getter/copy及受控同行；
+正常VM drops0/taint0，三VM正常退出。468工具、36 ABI、严格workspace与九CI通过。
+
+复核修正普通服务handle从16分配（1..15为管理保留），以及双角色等待自身信息
+回复时仍按default MTU响应请求。旧Ub5实机流量保留，不能升级为完整标准服务资格。
+本轮未证明新codec/cache/并发；先前Kani unsupported仍未证明。实机只涵盖
+每端一个custom service/property；混合/真实MTU分页/动态DB变更与异构Host未验收。
+[准确源码、标准调整、证据与缺失](evidence/ssap-discovery-progress-20261014.json)。
+
+
+## 前一批SSAP单值读写资格（当时源码）
 
 K31769ea4b8c0／编译服务及冻结工具U `b5cc6f5ebd3fb199fe13d5c30917bbe173ed831d`。
 唯一SMTC actor接真实单值READ/WRITE与校验回复；本地数据库按registration隔离，

@@ -1,6 +1,19 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前主线：真实SSAP单值读写通过，继续完整服务路径
+## 当前主线：真实发现handle与读写接通，继续基础信令和通知
+
+K31769／U7d87d18：唯一actor的分层/UUID/结构发现和lifetime建议缓存真实通过，
+从发现取handle做原读写，不恢复旧kernel SSAP。修正服务保留handle范围与
+双角色协商期请求响应。完整范围和缺失见[准确证据](evidence/ssap-discovery-progress-20261014.json)。
+
+WP08下一批：ReadByUUID基础信令；通知/指示/订阅与应用callback生命周期。
+混合UUID/实际多页/数据库动态变更、原期限/取消/关闭/旧life与credit/满队列
+实测/形式化并行，随后SSAP长包/事务与动态通道/四设备、安全/Profile。
+不等待控制竞争全集。完整S0–S6、19WP/10FV/12DG、VM-only、UserHost P4及
+自然RCA/非人工恢复开放条件保持；缓存不是完整resync，不关闭整项issues。
+
+
+## 前一批：基础单值读写（历史增量）
 
 K31769／Ub5cc6f5：唯一actor上有界数据库、真实基础单值读/校验写、原期限、
 显式本地配置及对端应用核对接通；32写/64读与原业务/边界/受控同行取得准确

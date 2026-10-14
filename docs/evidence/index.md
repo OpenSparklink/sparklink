@@ -16,3 +16,6 @@
 
 [真实基础SSAP读写、原失败与限定范围](ssap-values-progress-20261014.json)
 区分本地配置、peer应用检查/空口读回与未证明模型；不代表完整服务发现或安全。
+
+[服务发现、缓存与从发现取handle的准确实机报告](ssap-discovery-progress-20261014.json)
+明确保留handle范围修正及未证明/未验收部分，不等于完整SSAP标准互通。

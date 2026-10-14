@@ -27,7 +27,7 @@
 | 旧 property／write facade | property 超 248、write 超 252 字节拒绝；这是遗留输入校验，不是新 Engine MTU 承诺 | `slkd/src/service.rs` |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |
-| 新用户态 SSAP Engine | Ub5cc6f5唯一actor初始信息与已知handle单值读写取得双端资格；结构/UUID发现、长写、通知仍缺 | 唯一实施计划 WP08、准确能力入口 |
+| 新用户态 SSAP Engine | Ub5cc6f5唯一actor初始信息与已知handle单值读写取得双端资格；U7d87d18接分层/UUID/结构发现；长写、通知仍缺 | 唯一实施计划 WP08、准确能力入口 |
 
 C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声明推导硬件支持。本表是状态查找参考，完整资格仍仅维护于能力入口；逐字段自动生成 API 及全错误矩阵尚待下一批。
 
@@ -91,3 +91,8 @@ Connection新增ReadSsapValue/WriteSsapValue经真实SMTC，写要求peer校验�
 后续U8438594收紧本地注册：仅READ/WRITE_WITH_RSP（mask0x05）接通，
 WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享权限类型
 仍保留标准完整语义。此拒绝只有生产数据库/实际D-Bus离线门禁，不转授Ub5实机资格。
+
+Connection新增DiscoverSsap(uuid,kind)/GetCachedSsap，按实际SMTC响应产生元数据，
+未知缓存失败；无参UUID+primary模式取得primary/property建议缓存，完整服务
+数据库快照、方法/事件/引用生命周期与ServiceChanged一致性尚无承诺。
+普通服务从handle16分配，保留旧流量证据但不转授旧范围为标准合格。

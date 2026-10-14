@@ -315,12 +315,12 @@
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "latest_evidence_commit": "69ff7fb54e6996dad3bbbf2372795d5ded67cfde",
-  "previous_goal_turn_classification": "progress: exact initial SMTC actor and RF qualification",
-  "current_goal_turn_classification": "progress: actual SSAP base values implemented; startup lock regression fixed; new5-step VM pipeline passed",
+  "previous_goal_turn_classification": "progress: actual base SSAP values, startup deadlock correction and exact RF evidence",
+  "current_goal_turn_classification": "progress: actual hierarchy/UUID/structure discovery and cache, discovered-handle data, exact5-step VM pipeline PASS",
   "qualified_tool_source_heads": {
     "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
-    "userspace": "b5cc6f5ebd3fb199fe13d5c30917bbe173ed831d",
-    "scope": "base SSAP single values and existing business/boundary/controlled fault only; not full S0-S6"
+    "userspace": "7d87d183bd1c2b745430dbeca75c1a7909225d31",
+    "scope": "limited base discovery/cache and current single values/old gates only, not full S0-S6"
   },
   "backend_descriptor_slice": {
     "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -370,7 +370,7 @@
       "whole_package_closed": false
     }
   },
-  "qualified_run_tools_head": "b5cc6f5ebd3fb199fe13d5c30917bbe173ed831d",
+  "qualified_run_tools_head": "7d87d183bd1c2b745430dbeca75c1a7909225d31",
   "usb_pending_slice": {
     "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
     "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
@@ -2221,5 +2221,18 @@
       }
     ],
     "post_qualification_guard": "8438594: unsupported no-response write registration refused offline; RF qualifications remainb5cc6f5"
+  },
+  "userspace_ssap_discovery_slice": {
+    "kernel_head": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "userspace_head": "7d87d183bd1c2b745430dbeca75c1a7909225d31",
+    "status": "implemented/offline/limited RF passed; new formal and extended matrices missing",
+    "evidence": "docs/evidence/ssap-discovery-progress-20261014.json",
+    "formal": "not proved; prior unsupported stays NOT_PROVEN",
+    "next": [
+      "ReadByUUID base signal",
+      "notify/indicate/subscription callbacks",
+      "mixed/pagination/DB-change and lifetime/credit/queue actual and formal gates parallel"
+    ],
+    "closure_allowed": false
   }
 }

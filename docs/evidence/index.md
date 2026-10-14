@@ -47,6 +47,8 @@
 [ControllerData 独立预算、实际函数回归及新准确 VM 原路径保持](controller-data-boundary-20261014.json)
 保留 KVM 沙箱启动失败与 Kani unsupported；未新增安全或自然恢复资格。
 
-[当前生产relay接线及原路径实机回归](relay-production-20261014.json)：新relay正向门禁与旧业务防退化分开。
+[当前生产relay接线及原路径实机回归](relay-production-20261014.json)：匹配真实Complete后对端仍缺包，失败与原业务防退化分开。
 
 [BlueZ官方来源、应用资源与权限契约审查](bluez-contract-review-20261014.json)：架构决策不当作已验收。
+
+[19项现有issue原scope/OPEN读回回执](relay-contract-issues-20261014.json)。

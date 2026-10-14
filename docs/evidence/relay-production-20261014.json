@@ -146,9 +146,9 @@
   ],
   "nonregression": {
     "vm_only": true,
-    "kernel": "9806e333a07230567fe79b76810b184bdf7a0988",
-    "service": "a0f93e7b6bedd99d35b61904daa803a56593aa58",
-    "status": "RELAY_PRODUCTION_REAL_PIPELINE_TERMINAL_PASS",
+    "kernel": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
+    "service": "c590576bcc61755f2493cbac57f017ec23ec3379",
+    "status": "RELAY_ECHO_REAL_PIPELINE_TERMINAL_PASS",
     "short_rounds": 40,
     "application_249_rounds": 8,
     "oversize_no_submit": {
@@ -161,10 +161,15 @@
       "count": 16
     },
     "scope": "Original discovery/link/socket/SSAP paths; not new SMP or apps-only qualification",
-    "pipeline_record_sha256": "b3c7073b4ab584ace9f2f03efccab86ca827f80f2476a0a0386ccc36cbfca92e"
+    "pipeline_record_sha256": "2da206da9cca3d06fa71833f0cbf8580a03c380dacd6c93634e76c36596e2c32",
+    "previous_runtime": {
+      "linux": "9806e333a07230567fe79b76810b184bdf7a0988",
+      "userspace": "a0f93e7b6bedd99d35b61904daa803a56593aa58",
+      "scope": "Preserved old accurate baseline and new branch EPROTO counterexample"
+    }
   },
   "new_relay_hardware": {
-    "status": "FAILED_NEW_BRANCH_FIX_AWAITING_REGRESSION",
+    "status": "FAILED_PEER_DELIVERY_AFTER_REAL_COMPLETE",
     "first_reference_attempt": "Actual warm-reset boot-mode re-enumeration timeout before SMP; exit0 is not PASS",
     "fixture_failures": [
       "fixed generation assumption",
@@ -175,6 +180,135 @@
     "failure_capture": {
       "native": "14d29a6187c8dd4d80402de6893c106550ba65de282ebfc1592b516377367e96",
       "oracle": "160a83338dabd60100f3b67c6e59b74973e05a5ee0ad99d413a333ec865a7ba4"
+    },
+    "result": "K8cb44/Uc590 sees real0134, sends0147 and receives exact1812Complete00004701 without EPROTO/Runtime retirement; peer capture has no0014 and app times out. Complete is not RF/application delivery.",
+    "failure_capture_latest": {
+      "native": "978f3b680d085d9c0b35b3b42205ee98ed8af22140de39d1859249d361769541",
+      "oracle": "e82a94203a7c043be904e7ab4e69d2ed69693aacc0d699026ff731068e51df0a"
+    },
+    "public_reproduction": {
+      "status": "REAL_PEER_DELIVERY_FAIL",
+      "expected_exit": 1,
+      "vm_exits": [
+        0,
+        0
+      ],
+      "runtime_kernel": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
+      "compiled_service": "c590576bcc61755f2493cbac57f017ec23ec3379",
+      "test_inputs": {
+        "ws73_security_relay_reference.py": "7891c558bbeaa276080c1099f6d28d3de00146bc142133e4087119355d855cae",
+        "security_relay_oracle.c": "82e336c353c2f90eefae4f3117ab044c06f6ce658014a0b22ab8d0d415aa7b9b",
+        "security_relay_reference_warm.patch": "fb26b36dd321c53d67b6c4b59a79f5795636b401bf378ab2848abadaec2a1ebc",
+        "ws73_usb_sle_fd.c": "5034189e2215ec35f01e40f4e93b330ab359bd7df3558c7974e7ac76d1b9a979",
+        "oracle": "c9462ef79adf16d32d19171b2c67e25cb058254b90d574fab64bdc610e9f130a"
+      },
+      "relay": {
+        "native": {
+          "capture_sha256": "8c9d860e94bb55846c3d7dea55ad3707c2c9dadc51956c8d9fa8e7753d9ae564",
+          "packet_count": 563,
+          "commands": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752950500000,
+              "urb": 18446620105412762432,
+              "record": 550,
+              "file_offset": 68564,
+              "usb_sha256": "36c6d808a587ec382e95e936fe2508dad3eaa981150f0dd99dfc09f4cb6f5126",
+              "opcode": 6162,
+              "params": "000047010102",
+              "sequence": 24,
+              "completion": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791993752950649000,
+                "urb": 18446620105412762432,
+                "record": 551,
+                "file_offset": 68772
+              }
+            }
+          ],
+          "complete": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752950839000,
+              "urb": 18446620105412765568,
+              "record": 552,
+              "file_offset": 68852,
+              "hcc_offset": 92,
+              "usb_sha256": "82dc3b1ab7650ea8bf065fd9ca5987a27210f4960fec252df74655ae25ecdad4",
+              "usb_length": 178,
+              "opcode": 6162,
+              "status": 0,
+              "value": "00004701"
+            }
+          ],
+          "received": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752950409000,
+              "urb": 18446620105412765568,
+              "record": 548,
+              "file_offset": 68226,
+              "hcc_offset": 92,
+              "usb_sha256": "c74f6c1c9b9e6c731982317ca1cd064d99a78ffc8dcc45b2688b0d0f436d0fc9",
+              "usb_length": 178,
+              "event": 20,
+              "params": "000034010a03000510000202020200"
+            }
+          ]
+        },
+        "oracle": {
+          "capture_sha256": "10ebf8e33c15a32e08571250fd29dba5f79394eefc7af0f988862fb4963b1c48",
+          "packet_count": 305,
+          "commands": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752535013000,
+              "urb": 18446619504602691648,
+              "record": 298,
+              "file_offset": 34222,
+              "usb_sha256": "21e04457adeb6d3e3257f0c0dab3ead5184c4de2a0d5b3b62ec27f017106d9ad",
+              "opcode": 6162,
+              "params": "000034010a03000510000202020200",
+              "sequence": 13,
+              "completion": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791993752535161000,
+                "urb": 18446619504602691648,
+                "record": 299,
+                "file_offset": 34430
+              }
+            }
+          ],
+          "complete": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752535384000,
+              "urb": 18446619504602692800,
+              "record": 300,
+              "file_offset": 34510,
+              "hcc_offset": 92,
+              "usb_sha256": "30822f735bc6113220529bfd663c3b49323a27e4f42fbc2fe80a94c8029950fa",
+              "usb_length": 178,
+              "opcode": 6162,
+              "status": 0,
+              "value": "00003401"
+            }
+          ],
+          "received": []
+        }
+      },
+      "survivor_scope": "same generation Ready and actual scan start/stop; not independent business or natural recovery qualification",
+      "result": "Real two-way CMTC also does not produce peer0014; no proven firmware cause yet",
+      "source": "tools/ws73_security_relay_reference.py",
+      "guide": "docs/how-to/diagnose-security-relay.md",
+      "raw_materials": "Private capture/VM disks kept locally; packet offsets and hashes published, no SDK/firmware copies"
     }
   },
   "proof_strength": {
@@ -190,6 +324,7 @@
     "scheduling"
   ],
   "remaining": [
+    "SDK111 control-data peer delivery RCA: failure0147 accepted/echoed but absent at peer even after CMTC; do not add unsafe capability success or new parallel Engine",
     "New real relay peer receipt and matching Complete",
     "approved pairing/Agent/key installation/encrypted application reply",
     "apps-only permission gate/shared scan leases",
@@ -207,7 +342,7 @@
       "recipe": 23,
       "actual_C_sanitizer": "WS73_NATIVE_DLI_TEST: PASS (533191 checks, 0 failures; synthetic IO only)"
     },
-    "rf": "PENDING",
+    "rf": "OLD_DATA_PATH_NONREGRESSION_PASS_NEW_RELAY_DELIVERY_FAIL",
     "formal": {
       "current": {
         "status": "BOUNDED_PASS",
@@ -318,6 +453,13 @@
         "relay-echo-old-cbmc-committed.cbmc.log": "92c96936da5150e41e93a6327c4115f5f6f106daf93fa930f1058f7db35173f2"
       },
       "limitations": "Only production C validator; no Host lock/refinement/firmware/hardware or lifetime reuse proof"
+    },
+    "source_hashes": {
+      "drivers/sparklink/ws73/dli.c": "ba8d272a3ce5a24dde0004790d29b0a3e791ad9fb513474dde22b71a4a937279",
+      "net/sparklink/sle_host.rs": "76b10d44191623785a6e23d5fa7fb214ecf4f096391f340a9b0768d02575b1dd",
+      "net/sparklink/sle_security_relay.rs": "3f470e7aa4a239659282e7cc17e69b8b06d35d88db1eb5337f04754fad365b7d",
+      "net/sparklink/sle_security_relay_state.rs": "017d7d8e223cc1153b533876da53b53d6ef7d7cc4fe3a613962fbe4551848c92"
     }
-  }
+  },
+  "issue_sync": "docs/evidence/relay-contract-issues-20261014.json"
 }

@@ -7,21 +7,19 @@
 
 ## 准确源码与范围
 
-新生产修复 K `aa3f8ff12d8d` 正在编译/实机复验，不能继承下述旧资格。
-真实SDK111 `1812 Complete`返回handle/index四字节；此前空返回假设已被实机反例否定，
-失败抓包保留，修复匹配冻结票据后才接受grant/终态。回显不证明lifetime复用屏障。
-
-最新运行代码 K `9806e333a07230567fe79b76810b184bdf7a0988`、编译服务
-U `a0f93e7b6bedd99d35b61904daa803a56593aa58` 已在 VM 内回归。
-后续 K `c11672ead650be359f8fde4a18bd87dc91bca378` 仅修诊断/recipe测试依赖，用户态 CI pin
-和文档改动不重新标记已编译二进制。实际生产源码 hash 见[本批证据](../docs/evidence/relay-production-20261014.json)。
+当前回归镜像 K `8cb44f8d3a9aaf4988756360e663890b0d6d6f57`、编译服务
+U `c590576bcc61755f2493cbac57f017ec23ec3379` 已在 VM 内通过原业务矩阵。
+新SMP对照确认真实0014请求、typed1812提交及handle/index匹配Complete，已消除先前
+EPROTO/Runtime退休。但对端未捕获预期0014、应用超时，**新relay交付门禁仍失败**，
+未取得配对/加密资格。失败和旧K9806反例保留于[本批证据](../docs/evidence/relay-production-20261014.json)。
+后续文档/CI/test改动不重新标记已编译二进制；回显也不证明lifetime复用屏障。
 
 | 能力 | 已实现 | 离线/形式化范围 | 实机资格及仍缺 |
 |---|---|---|---|
 | WS73 广播扫描、建链断链 | 默认 Native 路径 | 实际入口/Host 回归 | 本批原路径回归保持；完整隔离/自然恢复仍未闭合 |
 | 普通用户业务 socket | 基础 DGRAM、固定两通道、Session 唯一分流、Grant/Binding | 实际有限队列/credit/授权的限定检查，不是完整内核证明 | 本批角色交换共40轮短消息、8轮249字节、16次250/253/254/255超限无提交；不是长包/可靠业务交付资格 |
 | 用户态 SSAP | 唯一 actor，ExchangeInfo、单值读写、发现、UUID | 实际 codec/预算/生命周期限定检查 | 本批原读取/写入/发现/UUID路径保持；正向CCC/通知/指示、安全及Profile仍缺 |
-| 安全 relay | 唯一物理Session子对象、typed1812、命令credit/实际票据、真实Complete关联、0014冻结观察lifetime；默认拒绝未批准配对 | 实际Host66/relay9/data38/release56/diagnostic54与C sanitizer通过；Complete C parser CBMC0..265有界598检查通过、旧提交反例保留，Kani unsupported仍未证明 | 新relay测试暴露Complete长度误判并退休Runtime；K `aa3f8ff12d8d`已修，尚待新镜像复验；未实现授权配对、默认crypto/可信安装/Bond或加密业务 |
+| 安全 relay | 唯一物理Session子对象、typed1812、命令credit/实际票据、真实Complete关联、0014冻结观察lifetime；默认拒绝未批准配对 | 实际Host66/relay9/data38/release56/diagnostic54与C sanitizer通过；Complete C parser CBMC0..265有界598检查通过、旧提交反例保留，Kani unsupported仍未证明 | 真实Complete回显误判已修且新镜像原路径通过；新relay对端交付仍失败；未实现授权配对、默认crypto/可信安装/Bond或加密业务 |
 | 应用权限与扫描 | controller scan RPC显式管理语义；可选sparklink-apps仅领取通道fd | XML白名单/实际调用迁移与严格daemon测试 | apps-only身份尚未实机验收；共享扫描租约/完整按应用策略仍缺，控制组caps0回归不能代替 |
 | 设备与daemon生命周期 | per-controller Runtime、epoch撤销、有限工作/期限；单进程daemon | 当前限定模型和实际取消/清理回归 | actor不是进程隔离；不默认承诺socket跨daemon崩溃存活；组合交错仍缺 |
 | 长包/真实credit压力/多通道/四设备业务 | 部分基础已接，不能据此称完成 | 本批相关实际转换继续验证 | 完整DG03–12及相应S4/S5门禁继续开放 |

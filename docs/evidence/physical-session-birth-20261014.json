@@ -1,0 +1,215 @@
+{
+  "schema": 1,
+  "status": "SCOPED_IMPLEMENTATION_AND_VM_REGRESSION_PASS",
+  "kernel_head": "03d1170a960c916741c4a814fb08bd18efe698b6",
+  "compiled_userspace_head": "539d075d85608a00cbac40fb3d04abae33fdb623",
+  "ci_userspace_head": "86e3eab24d02069eb8cac955fa1489424c1114d6",
+  "vm_only": true,
+  "reference_review": {
+    "nearlink_host": {
+      "head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+      "clean": true,
+      "source_sha256": {
+        "services/stack/src/cp/bsl/sle/sm/src/sm.c": "fe2aafd8b12303f127d818206bbacbb67cd8d033ef464d062a6bdddd1a1c55f6"
+      },
+      "comparison": "SmFindOrCreateSLink transfers ownership to a map independently of application fd; SmFindSLinkByLcid resolves via CM address. Reuse the ownership principle, not address-only identity or trusted-state assumptions. Native keeps controller/generation/lifetime/handle/active Managed epoch checks."
+    },
+    "libws73_usb": {
+      "head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+      "clean": true
+    }
+  },
+  "sources": {
+    "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+    "net/sparklink/sle_sessions.rs": "60eb079226523984104fc9602ce55f1aaa238cda3f298bfb2306bc6c3ea32342",
+    "net/sparklink/sle_channel_socket.c": "97e7cd599e9660e5cd6c8259c5f3feed81df129dd3266d8df24a3cae79a0d65a"
+  },
+  "implemented": [
+    "Canonical Runtime reconciler creates the existing physical Session table owner before application binding when a real link and active Managed epoch admit data; allocation/adoption rechecks identity and authorization.",
+    "Application binding acquires the same Session reference. CMTC stays UNBOUND without a binding; first authorized binding starts the existing original deadline, later bindings do not refresh it.",
+    "Old/revoked sessions retire through existing stop/join barriers; no new public ABI, security protocol, simulated success or duplicate Session implementation."
+  ],
+  "offline": {
+    "native_data": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 34,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "real_data_acceptance": false,
+      "socket_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_native.rs": "c2bf9e8720fae41a5e2495391d4a95b9d644c1488d126c3aa53e772ff110278b",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "936988d9e501353aaac5e71ddebdd69e52ab54203e99db6e689caba1c2284e67",
+        "net/sparklink/sle_sessions.rs": "60eb079226523984104fc9602ce55f1aaa238cda3f298bfb2306bc6c3ea32342",
+        "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "e65bf5806cff8d0fb96a8288fe9687d9070a5b51b66f1ace4b777923d0054b07"
+      }
+    },
+    "session_dispatch": {
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "scope": "actual single-consumer two-slot route/local TCID+PI/independent finite RX and TX, retired-slot/peer isolation, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+      "physical_acceptance": false,
+      "whole_session_proof": false,
+      "bodies_sha256": "5faa0b5766cad16aa6b3e700bd4b84caa6e2007077c01d8198d991e5e0238204",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "97e7cd599e9660e5cd6c8259c5f3feed81df129dd3266d8df24a3cae79a0d65a",
+        "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+        "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+        "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+        "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+        "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+        "include/uapi/linux/sparklink_socket.h": "0bc1acc8b31fcce8787d1e234435266742b5228976534499ab224a86e827f40e",
+        "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "5f1561f412d259e070b7ddac843b43ceb11b66518fa4f0f5b65791ac0c446df7"
+      }
+    },
+    "grant": {
+      "tests": 2,
+      "status": "STRICT_UNIT_PASS",
+      "scope": "Actual grant pure state transitions, not concurrent kernel or revocation proof"
+    }
+  },
+  "build": {
+    "status": "BUILD_PASSED",
+    "record_sha256": "788d889dcfdf630bb93d1bab208b1ebef5502c0a88210db917ebbd3d7006d95f",
+    "scope": "Clean exact kernel/config build; no host install"
+  },
+  "ci": {
+    "head": "86e3eab24d02069eb8cac955fa1489424c1114d6",
+    "kernel_pin": "03d1170a960c916741c4a814fb08bd18efe698b6",
+    "runs": [
+      {
+        "database_id": 38519278580,
+        "name": "CI",
+        "conclusion": "success"
+      },
+      {
+        "database_id": 38519278577,
+        "name": "Documentation",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "real_vm": {
+    "fault-real": {
+      "status": "REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS",
+      "qemu_exit": 0,
+      "kernel_taint": 0,
+      "capture_packets": 4541,
+      "channel": {},
+      "manifest_sha256": "5c3e4253b1f6ff66c21d12d662735367fb67905d7bd79922bd0f6c63c1d450e7",
+      "usb_capture_sha256": "73985ab1fccd52722337233edf6a53899631cc2fe5fed25a8eeb45110b90af24"
+    },
+    "real-short": {
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "qemu_exit": 0,
+      "kernel_taint": 0,
+      "capture_packets": 3881,
+      "channel": {
+        "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+        "round_trips": 40,
+        "scope": "uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; 61-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
+        "long_pdu_acceptance": false,
+        "credit_exhaustion_acceptance": false,
+        "four_device_acceptance": false
+      },
+      "manifest_sha256": "035acf1f9f2f6f0d5ef82c8b0eb80c81c06c40aeac9cc948d52d657a18031420",
+      "usb_capture_sha256": "4c46824fde00f3bda9152d7bc0ed64c52e44d589a74c980a83b84a995f857b80",
+      "application_identity": {
+        "uids": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "cap_eff": "0000000000000000",
+        "cap_prm": "0000000000000000",
+        "cap_amb": "0000000000000000",
+        "groups": [
+          1000,
+          1002
+        ]
+      },
+      "discovery_rounds": 22,
+      "hotplug_method": "QMP_DEVICE_DEL_ADD",
+      "physical_unplug_acceptance": false,
+      "capture_drops": 0,
+      "ssap_corroboration_counts": {
+        "ssap_values": 16,
+        "ssap_discovery": 16,
+        "ssap_local_update_rejection": 4
+      }
+    },
+    "real-boundary": {
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "qemu_exit": 0,
+      "kernel_taint": 0,
+      "capture_packets": 3465,
+      "channel": {
+        "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+        "round_trips": 8,
+        "scope": "uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; 249-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
+        "long_pdu_acceptance": false,
+        "credit_exhaustion_acceptance": false,
+        "four_device_acceptance": false,
+        "application_boundary_rejections": 16,
+        "application_message_bytes": 249,
+        "dtap_pdu_bytes": 254
+      },
+      "manifest_sha256": "662ec1cbb1cf77393e22263d595b78469230869d2910ecc65f966ea46dfd1180",
+      "usb_capture_sha256": "8ab58a9a7668d29de7dbf121dbb2c20eed054f0dcd2fa1e7dc0ab899e188f569",
+      "application_identity": {
+        "uids": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "cap_eff": "0000000000000000",
+        "cap_prm": "0000000000000000",
+        "cap_amb": "0000000000000000",
+        "groups": [
+          1000,
+          1002
+        ]
+      },
+      "discovery_rounds": 22,
+      "hotplug_method": "QMP_DEVICE_DEL_ADD",
+      "physical_unplug_acceptance": false,
+      "capture_drops": 0,
+      "ssap_corroboration_counts": {
+        "ssap_values": 16,
+        "ssap_discovery": 16,
+        "ssap_local_update_rejection": 4
+      }
+    }
+  },
+  "preserved_failures": [
+    {
+      "file": "physical-session-birth-data-final.log",
+      "sha256": "ffcc46f3a0df23892aebd690851fa6d306db4060c9d36303f1a93521ea21ceac",
+      "scope": "Offline fixture compilation failure preserved; corrected before qualification, not hardware failure"
+    },
+    {
+      "file": "physical-session-birth-dispatch-first.log",
+      "sha256": "30872ff50baf5d1f79f2d7a3e1a6e7245facbf5248a24da55ac085f0da2a199f",
+      "scope": "Offline fixture compilation failure preserved; corrected before qualification, not hardware failure"
+    }
+  ],
+  "not_qualified": [
+    "Native security relay/crypto/pairing/Agent/Bond/trusted encryption is not enabled by this change.",
+    "Whole lifetime/generation/Grant/memory-order proofs, concurrent allocation pressure, IRQ/callback/PM, independent Session authorization and reauthorization remain incomplete.",
+    "Positive notification/indication/CCC, long PDU/fragments, credit exhaustion, multiple dynamic channels and four-device parallel business are not qualified by these runs.",
+    "QMP detach/add and injected missing BSLE are controlled isolation tests, not physical unplug or natural non-manual recovery.",
+    "Natural startup timeout, reenumeration/disappearance root cause and autonomous recovery remain open. No whole issue is closed."
+  ],
+  "raw_evidence_availability": "Raw VM logs, manifests, application receipts and USB captures remain in the local development artifact store; not publicly downloadable. Hashes identify evidence but do not make it reproducible from the public summary alone.",
+  "documentation": {
+    "strict_html": "PASS",
+    "inventory_documents": 98,
+    "command": "make docs (uv --locked, nitpicky, warnings-as-errors)",
+    "log_sha256": "70b9d201d4d48561568bcfda00f85c7a14fabfa94bb69888721d2529ca328178",
+    "runtime_code_changed_by_recording": false
+  }
+}

@@ -227,3 +227,13 @@ f087 DLI_ExecuteCommand 的send失败清理context，和libws73的单relay失败
 只在无物理/故障反证时撤销软件保留，并以最新绝对grant修订号处理credit；
 不能把USB成功或框架返回当真实Complete/peer收到，也不据此宣告硬件已恢复。
 [生产源码和未证明/未验收边界](../../../docs/evidence/ws73-command-unsubmitted-20261014.json)。
+
+### 持续参考指定版本：物理 Session 与应用 fd
+
+按用户再次要求，每批相关实现持续核对指定 `f0872dfaac33` 的源码与 dirty 状态，
+不以“参考过一次”替代后续核对。本批 clean：`SmFindOrCreateSLink` 将对象所有权
+移交 map，`SmFindSLinkByLcid` 经 CM 查地址；Native 采用连接级所有权原则，仍
+以 controller/generation/lifetime/handle/授权识别，不能复制地址查询来证明旧回复隔离。
+K03d 的物理 Session 先于应用 fd，CMTC 首个授权绑定才启动。完整安全状态、
+授权与物理会话解耦及晚到屏障仍缺，不把本批当完整安全接线。
+[源码映射、限定实机与未决](../../../docs/evidence/physical-session-birth-20261014.json)。

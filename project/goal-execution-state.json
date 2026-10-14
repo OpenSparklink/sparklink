@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-14T05:17:01.000837+00:00",
+  "updated_at_utc": "2026-10-14T06:04:33.848600+00:00",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -26,19 +26,19 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "cd2e8c381db53d176d512bdc5177ae70c575baeb",
-    "userspace": "f51c877d7cf85d017cbe4073b60f05079135f6f4",
-    "observation": "Latest test/CI snapshot; actual newRF K577/U6f9. Laterkernel cfgtest only; no branch-specific real or whole formal qualification."
+    "linux": "03d1170a960c916741c4a814fb08bd18efe698b6",
+    "userspace": "86e3eab24d02069eb8cac955fa1489424c1114d6",
+    "observation": "Runtime exact K03d; service compiled U539d; U86e only CI pin. Documentation updates do not relabel runtime qualification."
   },
   "qualified_source_heads": {
-    "linux": "5778837aa5589364112c36b3bc0963f10840c205",
-    "userspace": "6f905f9d84258e317ab31f404786141c5f3146a6",
-    "scope": "VM40short/8x249/16oversize no-submit, discovery/link/SSAP preserved, controlled init isolation; unsubmitted rejection branch offline only",
-    "evidence": "docs/evidence/ws73-command-unsubmitted-20261014.json"
+    "linux": "03d1170a960c916741c4a814fb08bd18efe698b6",
+    "userspace": "539d075d85608a00cbac40fb3d04abae33fdb623",
+    "scope": "VM40 short/8 app249/16 oversize no-submit; original discovery/link/SSAP retained; controlled QMP/initialization isolation only",
+    "evidence": "docs/evidence/physical-session-birth-20261014.json"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exactK577/U6f9:40short business/22randomizeddiscovery/link/QMP and original SSAP read/write/discovery/UUID/refusal; not positive security/update/physical/natural recovery or never-queued branch real proof",
-    "DG02": "PARTIAL_REAL exactK577/U6f9:8app249/16oversize no-submit250,253,254,255/UID1000/taint0/zero normal capture drops; long/credit pressure/multichannel open",
+    "DG01": "PARTIAL_REAL exact K03d/U539d:40 short business and original discovery/link/SSAP; no new positive security/update or natural recovery",
+    "DG02": "PARTIAL_REAL exact K03d/U539d:8 app249/16 oversize no-submit; long/credit pressure/multichannel/four-device remain open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -56,7 +56,7 @@
     "FV_SECURITY_RELAY": "NOT_PROVEN_UNSUPPORTED; actual isolated pure Rust twoharness8steps/twoqueued/oneactive/0..3payloads/u64counter, raw752+914 zero failures but Kani panic/pointer warnings; no Host/Grant/FD/wire/barrier refinement."
   },
   "next_slices": [
-    "Proceed from existing command ticket and known-unqueued classification to sole physicalConnectionSession securityRelay/canonical Grant epoch/typed1812 and RX0014-000e-0011 including265byte envelope; no second engine. Watchdog/internal-cleanup/real rejection-branch gaps remain open in parallel, not a requirement to finish all control races before data/security integration.",
+    "Use the now-born unique physical Session and existing command tickets to wire the same staged security relay into production; canonical epoch and typed1812/RX265; preserve real data/SSAP paths and parallel bounded-data gates.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
@@ -288,12 +288,12 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Remove duplicate conn/adv/AFH/sync/PDU/local-role models and RX projections; delete mixedstats and migrate actual consumers; full target migration still partial",
+  "current_batch": "Physical Session table ownership before application fd; lazy original CMTC deadline; reference Host rechecked; no security protocol enabled",
   "current_audit": "docs/evidence/protocol-state-retirement-audit-20261014.json",
-  "issue_sync_status": "12 related comments exact readbacks, original scopes unchanged; all actual28 OPEN verified",
+  "issue_sync_status": "Physical Session birth evidence prepared; existing K#6/K#18/U#3/U#8 remain OPEN, readback/push receipts pending",
   "current_implementation_heads": {
-    "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
-    "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
+    "linux": "03d1170a960c916741c4a814fb08bd18efe698b6",
+    "userspace": "539d075d85608a00cbac40fb3d04abae33fdb623"
   },
   "next_resume_tasks": [
     "Audit/replace SecurityInner/RPA and remaining default-selection/debugfs/legacy diagnostic observations and unpublished old facades; keep real crypto/Grant/lifetime/Host mechanisms. Preserve K558/Ucd77 Native data and only change-related gates; complete topology/loss/owner-death, callback/IRQ/PM, standard/mixed and true data/SSAP scopes open.",
@@ -2417,7 +2417,7 @@
     "local_path": "../communication_nearlink_service",
     "selected_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
     "when": "Each relevant transport/Host/lifecycle/SSAP/security/Profile batch; inspect source/dirty state and compare standard, SDK111 and libws73-usb",
-    "latest_review": "docs/evidence/ws73-command-unsubmitted-20261014.json",
+    "latest_review": "docs/evidence/physical-session-birth-20261014.json",
     "not_assumed": "Other Host compatibility or trusted Native state from reference API success"
   },
   "userspace_ssap_update_rx_slice": {
@@ -2827,5 +2827,14 @@
         "body_sha256": "484048365db549d225856b0ec6e1bc66c19a4185a1867144adc46fdf611d1248"
       }
     ]
+  },
+  "physical_session_birth": {
+    "evidence": "docs/evidence/physical-session-birth-20261014.json",
+    "implemented": true,
+    "offline_pass": true,
+    "whole_formal_proof": false,
+    "real_original_path_regression": true,
+    "security_relay_enabled": false,
+    "next": "Wire the existing relay production state transitions into this unique Session and actual command ticket/credit/typed WS73 dialect; no duplicate Engine."
   }
 }

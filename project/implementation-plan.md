@@ -1,5 +1,21 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前进度：物理 Session 先于应用 fd，CMTC 按需启动
+
+K `03d1170a960c` / 编译用户态 `539d075d8560` 的准确 VM 镜像保持普通用户
+双向 40 轮短消息、8 轮 249 字节及 16 次超限拒绝，原发现、建链和 SSAP
+门禁保持。实际 Runtime 在真实连接及有效 Managed epoch 下创建唯一 Session；
+fd 复用同一对象，首个授权绑定才启动 CMTC 原期限，后续 fd 不延长期限。
+34 项实际 Rust 回归、C dispatcher 严格 sanitizer 与 Grant 单元检查通过；
+这些离线测试不等于并发生命周期的完整证明。
+
+继续逐批对照指定 NearLink Host `f0872dfaac33`、SDK111 和 libws73-usb；
+本批核对其 map 所有权及 LCID 查询，保留 Native 的 generation/lifetime/授权
+边界。下一批复用已有 relay 状态转换及命令票据，接通真实安全 Session/typed1812
+与 RX 归属，不另造 wire Engine。原数据矩阵并行推进，不等待控制面竞争全集。
+S0–S6、自然根因与非人工恢复、旧代码整改、VM-only 及 UserHost P4 均不变。
+[准确证据、失败记录与未决范围](../docs/evidence/physical-session-birth-20261014.json)。
+
 ## 当前进度：区分确定未提交，继续实际安全Session接入
 
 K577已完成实际发送结局分类及限定的软件保留回滚，原路径新准确K577/U6f9

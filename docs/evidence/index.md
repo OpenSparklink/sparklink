@@ -40,3 +40,6 @@
 
 [确定未提交分类、绝对credit回滚与新原路径回归](ws73-command-unsubmitted-20261014.json)
 新回滚分支仅离线覆盖，watchdog/内部清理/真实分支/完整证明仍开放。
+
+[物理 Session 出生、按需 CMTC 原期限及准确双设备回归](physical-session-birth-20261014.json)
+保留指定 Host 对照、夹具失败与未决；未新增安全或自然恢复资格。

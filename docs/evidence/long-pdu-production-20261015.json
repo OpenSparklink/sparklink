@@ -523,8 +523,11 @@
     },
     "code": {
       "run": 38615980650,
-      "status": "IN_PROGRESS_AT_READBACK_NOT_PASS",
-      "head": "604f6880b5aa4b082b948d3006a6fb2163925228"
+      "status": "SUCCESS_ALL9_JOBS",
+      "head": "604f6880b5aa4b082b948d3006a6fb2163925228",
+      "previous_readback": "IN_PROGRESS_AT_F7_RECEIPT",
+      "readback_at_utc": "2026-10-14T18:35:52.836575+00:00",
+      "scope": "CI source604/kernel pin d926; does not replace real compiled service fdec"
     }
   }
 }

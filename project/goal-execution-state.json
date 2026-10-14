@@ -642,7 +642,8 @@
       "offline": "Actual production Rust entry/ledger and C Session/USB sanitizer fixtures, strict kernel build, CLI and tools; dependencies and limits explicit",
       "real": "Accurate new image, original paths plus peer-validated PB long messages and negotiated-MTU rejection",
       "remaining": "Real exhaustion/backpressure, close/revoke during prefix, composite refinement, NOCP reuse, multi-channel/four-device, SMP peer delivery/security and natural recovery"
-    }
+    },
+    "ci": "604f688/kernel pin d926: all9 code jobs and docs successful; real compiled service stays fdec"
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact d926/fdec baseline 40 short plus original discovery/link/SSAP",

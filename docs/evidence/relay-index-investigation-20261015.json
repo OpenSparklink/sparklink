@@ -253,5 +253,79 @@
     "Independent long/credit/backpressure/channel/four-device gates continue; control competition not a prerequisite",
     "Natural RCA/nonhuman recovery and old-code/lifecycle work stay open"
   ],
-  "issues_closed": false
+  "issues_closed": false,
+  "issue_readbacks": [
+    {
+      "repo": "linux",
+      "number": 16,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6174624648",
+      "comment_sha256": "fd1c70d026a1c1fb5ee74e4b56c2d54b148a2e552599a361e27461b35f6df2b4"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6174624863",
+      "comment_sha256": "fd1c70d026a1c1fb5ee74e4b56c2d54b148a2e552599a361e27461b35f6df2b4"
+    },
+    {
+      "repo": "linux",
+      "number": 10,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6174624712",
+      "comment_sha256": "fd1c70d026a1c1fb5ee74e4b56c2d54b148a2e552599a361e27461b35f6df2b4"
+    },
+    {
+      "repo": "sparklink",
+      "number": 5,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6174626574",
+      "comment_sha256": "fd1c70d026a1c1fb5ee74e4b56c2d54b148a2e552599a361e27461b35f6df2b4"
+    },
+    {
+      "repo": "linux",
+      "number": 18,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6174626422",
+      "comment_sha256": "fd1c70d026a1c1fb5ee74e4b56c2d54b148a2e552599a361e27461b35f6df2b4"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6174626694",
+      "comment_sha256": "fd1c70d026a1c1fb5ee74e4b56c2d54b148a2e552599a361e27461b35f6df2b4"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6174628150",
+      "comment_sha256": "fd1c70d026a1c1fb5ee74e4b56c2d54b148a2e552599a361e27461b35f6df2b4"
+    }
+  ],
+  "ci_observed": [
+    {
+      "conclusion": "success",
+      "databaseId": 38609252198,
+      "headSha": "849447681204ed16e0f9c590f3e76aff47246b60",
+      "name": "Documentation",
+      "status": "completed"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 38609252274,
+      "headSha": "849447681204ed16e0f9c590f3e76aff47246b60",
+      "name": "CI",
+      "status": "in_progress"
+    }
+  ]
 }

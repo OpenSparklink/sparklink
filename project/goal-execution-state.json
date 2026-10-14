@@ -614,7 +614,7 @@
     "hardware": "new peer checks separate from old 40/249 baseline",
     "remaining": "approved pairing/Agent/install, reuse barriers, hardware NOCP and natural recovery; full S0-S6 open"
   },
-  "updated_at_utc": "2026-10-14T17:41:28.089883+00:00",
+  "updated_at_utc": "2026-10-14T17:47:37.618134+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -644,7 +644,7 @@
     },
     "reproduction": "tools/ws73_security_relay_reference.py",
     "peer_failure_evidence": "docs/evidence/relay-production-20261014.json",
-    "ci": "e408b78 CI and Documentation success; no new relay delivery qualification",
+    "ci": "8494476 Documentation successful; CI still in progress at receipt, not recorded as PASS",
     "latest_code": "Explicitbyte mask and bounded proofs only; no RF inheritance"
   },
   "current_qualification": {
@@ -662,8 +662,8 @@
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
     "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
   ],
-  "issue_sync_status": "19_CONTRACT_UPDATES_AND_7_EXACT_FAILURE_FOLLOWUPS_ALL_OPEN_ORIGINAL_SCOPE_UNCHANGED",
-  "issue_sync_receipt": "docs/evidence/relay-contract-issues-20261014.json",
+  "issue_sync_status": "7_SDK_ARCHIVE_FW_PROOF_AND_FAILURE_UPDATES_READBACK_OPEN_ORIGINAL_SCOPE_UNCHANGED",
+  "issue_sync_receipt": "docs/evidence/relay-index-investigation-20261015.json",
   "previous_goal_turn_classification": "PROGRESS: signed echo/parser fix, actual old-code counterexample, exact data regression, reproducible failed peer gate and issue maintenance",
   "current_goal_turn_classification": "PROGRESS: SDK archive/actual firmware ABI distinction, frozen raw echo field, actual codec800 checks plus conversion counterexamples, new exact data regression and1ff peer failure; unsupported firmware decompile recorded"
 }

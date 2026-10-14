@@ -615,7 +615,7 @@
     "real": "136 app rounds,32 oversize,2 strict fd exit; pool5 with fresh source refusals29/30 and both endpoint USB/NOCP resumption",
     "remaining": "SMP peer delivery, approve/install/encrypt; revoke/down/deadline/late-NOCP/reuse/combined proof; dynamic channels/four-device/SSAP and all original scope"
   },
-  "updated_at_utc": "2026-10-14T20:42:45.041854+00:00",
+  "updated_at_utc": "2026-10-14T20:44:45.936326+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -656,7 +656,7 @@
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "PENDING_CURRENT_BATCH_READBACK",
+  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
   "issue_sync_receipt": "docs/evidence/tx-budget-observation-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",

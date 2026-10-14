@@ -1,5 +1,16 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前安全纵向切片：封装已接，Session／发送待接
+
+K7de/Uaf准确新VM已保持原40短消息、249及超限／SSAP门禁。默认RX安全封装
+及实际函数有界CBMC完成，不将其描述为完整relay或配对。下一步按原分层接通
+lifetime/generation/授权绑定的安全Session、0014/000e/0011归属、1812串行发送与
+真实完成、原期限和取消；随后是角色约束1c03/1c05安装、Agent与真实peer proof。
+继续逐批参考指定NearLink Host f087、SDK111和libws73 f4d，显式记录结构padding、
+方言和错误上下文归属差异。信用、长包、多通道等原数据主线继续，安全全集不是
+其前置条件。原S0–S6、恢复RCA/非人工验收及未决issues保持开放。
+[本批精确证据与未决](../docs/evidence/security-relay-envelopes-20261014.json)。
+
 ## 当前必要安全依赖：真实Host relay与可信安装
 
 K b73a3dd完成内核crypto前置验证，未新增安全/CCC资格；下一步必须接通Native

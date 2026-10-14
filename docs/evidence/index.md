@@ -28,3 +28,6 @@
 
 [安全机制前置、真实内核算法、CBMC反例与限定范围](security-crypto-prerequisites-20261014.json)
 明确未接通Native配对/可信安装，不替代真实双设备安全或自然恢复。
+
+[SDK111安全事件封装、指定Host核对、有界证明及准确新镜像回归](security-relay-envelopes-20261014.json)
+区分默认RX长度检查与尚缺的安全Session／真实发送／可信安装；保留自然恢复未决。

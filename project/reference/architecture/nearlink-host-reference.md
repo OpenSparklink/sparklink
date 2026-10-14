@@ -186,3 +186,18 @@ linkKey/算法与0011安装结果；WS73 lib也使用1812/0014，并记录1C03�
 本批只验证保留crypto机制：K317镜像内Kb73签名probe，无USB，真实内核算法与
 实际C故障模型；不把别的Host“paired”存储、自报算法或USB完成当可信Native
 认证。后续仍按本指定版本核对Agent、实际peer proof、安装、安全等级和Bond。
+
+### SDK111 安全事件封装的实际接入
+
+K `7de50814c263` 的默认 WS73 RX 在 Runtime 入口之前验证 `0014`、`000e`、
+`0011`。再次核对 f087 的 `dli_event_struct.h` 与 `dli_secu_event.c`：参考回调
+按 C `sizeof` 校验并在部分错误路径由 callback context 补写 handle。Native
+采用 SDK111 线格式的显式偏移，原始状态和 handle 保留，不按参考回调补造归属。
+`0014` 为五字节 handle/index/length 头及精确载荷，`000e` 为两字节 handle，
+`0011` 为四字节 status/handle/change；libws73 允许的旧三字节变体未纳入111。
+
+默认 RX 封装检查不等于安全 Session 已接通：仍需 lifetime/授权绑定、原期限、
+1812 真实完成的串行化，以及角色约束的1C03/1C05安装与匹配结果。未知 index
+保持有界原始数据，不从报文 framing 或参考 Host 的成功 API 推导认证。
+实际生产函数的有界模型和准确新镜像回归分别记录于
+[安全封装报告](../../../docs/evidence/security-relay-envelopes-20261014.json)。

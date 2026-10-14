@@ -457,9 +457,10 @@
   "ci": {
     "source_head": "447e1f0a60096042e3042c0d2287c441a1dc406d",
     "kernel_pin": "40474895224799879cf63d74b85b17932121f726",
-    "code_run": 38621299296,
-    "documentation_run": 38621299285,
+    "code_run": 38621299285,
+    "documentation_run": 38621299296,
     "status": "SUCCESS",
-    "scope": "actual service code995 and closing tools447; CI does not replace live hardware evidence"
+    "scope": "actual service code995 and closing tools447; CI does not replace live hardware evidence",
+    "external_linkcheck": "SKIPPED_NOT_PASS"
   }
 }

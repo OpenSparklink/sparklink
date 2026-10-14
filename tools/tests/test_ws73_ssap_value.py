@@ -37,3 +37,24 @@ class ActualValueEvidence(unittest.TestCase):
         with self.assertRaises(CaptureError):corroborate(row,matched)
         row,matched,_=self.fixture();row['ssap_values'][1]['value']=row['ssap_values'][0]['value']
         with self.assertRaises(CaptureError):corroborate(row,matched)
+
+    def uuid_fixture(self):
+        row,matched,wire=self.fixture();row['ssap_read_uuid_required']=True
+        uuid=bytes(range(16));request=b'\x0a\x01\x10\x00\xff\xff\x00'+uuid
+        for r in row['ssap_local_registrations']:r['property_uuid']=uuid.hex()
+        for item in row['ssap_values']:
+            item['property_uuid']=uuid.hex();sender,target=item['sender'],item['target'];stamp=item['start_wall_ns']
+            for name,key in [('uuid_read_before','before'),('uuid_read_after','value')]:
+                value=bytes.fromhex(item[key]);response=b'\x0b\x03\x02\0'+value
+                item[name]=dict(exit=0,stdout=f"SsapUuidValue: path=/adapter{sender}/link handle=2 success=true error=0 value={value.hex()}\nSsapUuidTrace: request={request.hex()} response={response.hex()}\n",start_wall_ns=stamp,end_wall_ns=item['end_wall_ns'])
+                for a,b,p in [(sender,target,request),(target,sender,response)]:
+                    frame=b'\x0a\0'+len(p).to_bytes(2,'little')+p;wire.extend([(a,'out',frame,stamp),(b,'in',frame,stamp)])
+        return row,matched,wire
+    def test_uuid_reads_require_both_real_wire_legs_and_original_receipts(self):
+        row,matched,wire=self.uuid_fixture();proof,credit=corroborate(row,matched);self.assertEqual(credit,{0:40,1:40});self.assertFalse(wire);self.assertTrue(all(len(p['uuid_wire'])==2 for p in proof))
+        for mutation in ['stdout','uuid','wire']:
+            row,matched,wire=self.uuid_fixture()
+            if mutation=='stdout':row['ssap_values'][0]['uuid_read_after']['stdout']='fake success'
+            elif mutation=='uuid':row['ssap_values'][0]['property_uuid']='ff'*16
+            else:wire.pop()
+            with self.assertRaises(CaptureError):corroborate(row,matched)

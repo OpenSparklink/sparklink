@@ -1,5 +1,7 @@
 #[path = "../../../crates/slk-protocol/src/ssap/value.rs"]
 pub mod value;
+#[path = "../../../crates/slk-protocol/src/ssap/read_uuid.rs"]
+pub mod read_uuid;
 #[cfg(kani)]
 mod proofs {
     use super::value::ValuePdu;
@@ -40,6 +42,20 @@ mod proofs {
                     assert!(output[i] == original[i]);
                 }
             }
+        }
+    }
+}
+
+#[cfg(kani)]
+mod uuid_proofs {
+    #[kani::proof]
+    #[kani::unwind(20)]
+    fn actual_uuid_response_roundtrip_and_atomic_refusal() {
+        let raw:[u8;16]=kani::any();let len:usize=kani::any();kani::assume(len<=16);
+        if let Ok(items)=super::read_uuid::decode(16,&raw[..len]) {
+            let mut out=[0xa5;16];let n=super::read_uuid::encode(16,&items,&mut out).unwrap();assert_eq!(&out[..n],&raw[..len]);
+            let capacity:usize=kani::any();kani::assume(capacity<=16);let before=out;
+            if super::read_uuid::encode(16,&items,&mut out[..capacity]).is_err(){assert_eq!(out,before);}
         }
     }
 }

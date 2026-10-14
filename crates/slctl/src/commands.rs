@@ -1,3 +1,4 @@
+type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
 use zbus::Connection;
 
 type NativeReportRecord = (u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
@@ -138,6 +139,33 @@ impl Context {
                 println!(
                     "SsapLocalValue: handle={handle} value={}",
                     hex_bytes(&value)
+                );
+                Ok(())
+            }
+            "ssap-read-uuid" => {
+                if args.len() != 5 {
+                    anyhow::bail!("ssap-read-uuid CONNECTION START END UUID_HEX");
+                }
+                let object = self.ssap_proxy(args[1]).await?;
+                let start: u16 = args[2].parse()?;
+                let end: u16 = args[3].parse()?;
+                let (entries, request, response): UuidValues = object
+                    .call(
+                        "ReadSsapByUuid",
+                        &(start, end, 0u8, parse_hex_bytes(args[4])?),
+                    )
+                    .await?;
+                for (handle, success, error, value) in entries {
+                    println!(
+                        "SsapUuidValue: path={} handle={handle} success={success} error={error} value={}",
+                        args[1],
+                        hex_bytes(&value)
+                    );
+                }
+                println!(
+                    "SsapUuidTrace: request={} response={}",
+                    hex_bytes(&request),
+                    hex_bytes(&response)
                 );
                 Ok(())
             }

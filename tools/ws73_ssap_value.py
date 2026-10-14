@@ -4,7 +4,7 @@ from ws73_channel_socket import CaptureError
 
 
 def execute(run,row):
-    row['ssap_value_required']=True;row['ssap_values']=[]
+    row['ssap_value_required']=True;row['ssap_read_uuid_required']=True;row['ssap_values']=[]
     owners=row['owners'];local=[]
     def command(owner,args):
         receipt=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],*args],10,collection='ssap_values')
@@ -25,10 +25,13 @@ def execute(run,row):
                 source=owners[sender];destination=owners[target];prop=local[target]
                 payload=sequence.to_bytes(4,'little')+secrets.token_bytes(28)
                 item=dict(sequence=sequence,sender=sender,target=target,handle=prop['discovered_handle'],before=prop['value'].hex(),value=payload.hex(),start_wall_ns=time.time_ns())
+                item['property_uuid']=prop['property_uuid']
+                item['uuid_read_before']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
                 item['read_before']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])])
                 item['write']=command(source,['ssap-write',source['object']['path'],str(prop['handle']),payload.hex()])
                 item['local_check']=command(destination,['ssap-local-read',str(prop['handle'])])
                 item['read_after']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])])
+                item['uuid_read_after']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
                 item['end_wall_ns']=time.time_ns();row['ssap_values'].append(item);run.save()
                 def peer_value(record,operation,value):
                     expected=f"SsapPeerValue: operation={operation} path={source['object']['path']} handle={prop['handle']} value={value}"
@@ -70,5 +73,18 @@ def corroborate(row,matched):
             if not item['start_wall_ns']<=window['start_wall_ns']<=window['end_wall_ns']<=item['end_wall_ns']:raise CaptureError('original command interval required')
             wire.append(dict(tx=matched(a,'out',frame(payload),window),rx=matched(b,'in',frame(payload),window)))
             credit[0 if a==owners[0] else 1]+=1
-        proof.append(dict(sequence=item['sequence'],sender=sender,target=target,handle=handle,value=item['value'],wire=wire,receipts={k:item[k] for k in ['read_before','write','local_check','read_after']}))
+        uuid_wire=[]
+        if row.get('ssap_read_uuid_required'):
+            uuid=bytes.fromhex(item['property_uuid'])
+            if len(uuid)!=16 or registered['property_uuid']!=item['property_uuid']:raise CaptureError('original target UUID required')
+            request=b'\x0a\x01\x10\x00\xff\xff\x00'+uuid
+            for name,expected in [('uuid_read_before',before),('uuid_read_after',value)]:
+                c=item[name];response=b'\x0b\x03'+handle.to_bytes(2,'little')+expected
+                line=f"SsapUuidValue: path={source['object']['path']} handle={handle} success=true error=0 value={expected.hex()}"
+                trace=f"SsapUuidTrace: request={request.hex()} response={response.hex()}"
+                if c['exit'] or c['stdout'].splitlines().count(line)!=1 or c['stdout'].splitlines().count(trace)!=1:raise CaptureError('original peer UUID value and raw trace required')
+                if not item['start_wall_ns']<=c['start_wall_ns']<=c['end_wall_ns']<=item['end_wall_ns']:raise CaptureError('UUID request original interval required')
+                uuid_wire.append(dict(request=dict(tx=matched(source,'out',frame(request),c),rx=matched(destination,'in',frame(request),c)),response=dict(tx=matched(destination,'out',frame(response),c),rx=matched(source,'in',frame(response),c))))
+                credit[sender]+=1;credit[target]+=1
+        proof.append(dict(sequence=item['sequence'],sender=sender,target=target,handle=handle,value=item['value'],wire=wire,uuid_wire=uuid_wire,receipts={k:item[k] for k in ['read_before','write','local_check','read_after']}))
     return proof,credit

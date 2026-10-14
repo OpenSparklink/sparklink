@@ -21,6 +21,7 @@ use tokio::{
     time::Instant,
 };
 
+pub(crate) type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
 pub(crate) type Discovery = (
     Vec<slk_protocol::ssap::discovery::Entry>,
     Vec<(Vec<u8>, Vec<u8>)>,
@@ -200,6 +201,42 @@ impl Observer {
             return Err("duplicate remote handle".into());
         }
         Ok((entries, trace))
+    }
+    pub(crate) async fn read_uuid(
+        self,
+        start: u16,
+        end: u16,
+        data_type: u8,
+        uuid: Vec<u8>,
+    ) -> Result<UuidValues, String> {
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let info = Observer {
+            state: self.state.clone(),
+            queries: self.queries.clone(),
+        }
+        .info()
+        .await?;
+        let request = slk_protocol::ssap::read_uuid::Request {
+            start,
+            end,
+            data_type,
+            uuid: &uuid,
+        };
+        let mut bytes = vec![0; 23];
+        let n = request
+            .encode(info.5, &mut bytes)
+            .map_err(|e| format!("read UUID request: {e:?}"))?;
+        bytes.truncate(n);
+        let raw = self.request(bytes.clone(), deadline).await?;
+        let entries = slk_protocol::ssap::read_uuid::decode(info.5, &raw)
+            .map_err(|e| format!("read UUID response: {e:?}"))?
+            .into_iter()
+            .map(|item| match item.value {
+                Ok(v) => (item.handle, true, 0, v.to_vec()),
+                Err(e) => (item.handle, false, e, vec![]),
+            })
+            .collect();
+        Ok((entries, bytes, raw))
     }
     pub(crate) async fn value(
         self,
@@ -503,11 +540,16 @@ async fn exchange_loop(
                     if size == 0 || size > usize::from(capabilities.mtu) { return Err(io::Error::other("invalid SSAP PDU length")); }
                     let raw = &buffer[..size];
                     if !initial_done && Instant::now() >= original_deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "late SSAP reply")); }
-                    if matches!(raw[0],4|6|8|13) {
+                    if matches!(raw[0],4|6|8|10|13) {
                         if pending.len()>=8 {return Err(io::Error::other("SSAP response queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
-                        let response=if matches!(raw[0],4|6) {
+                        let response=if raw[0]==10 {
+                            match slk_protocol::ssap::read_uuid::Request::decode(negotiated,raw) {
+                                Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.read_uuid(request,negotiated).map_err(io::Error::other)?,
+                                Err(_)=>{let mut out=vec![0;6];ValuePdu::Error{request:10,handle:0,error:1}.encode(negotiated,&mut out).map_err(|_|io::Error::other("read UUID error codec"))?;out}
+                            }
+                        }else if matches!(raw[0],4|6) {
                             match slk_protocol::ssap::discovery::FindRequest::decode(negotiated,raw) {
                                 Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.find(request,negotiated).map_err(io::Error::other)?,
                                 Err(error)=>{let mut out=vec![0;6];let handle=if matches!(error,slk_protocol::ssap::discovery::FindError::Handle)&&raw.len()>=4{u16::from_le_bytes([raw[2],raw[3]])}else{0};ValuePdu::Error{request:raw[0],handle,error:match error{slk_protocol::ssap::discovery::FindError::Handle=>4,slk_protocol::ssap::discovery::FindError::Unsupported=>2,_=>1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("find error codec"))?;out}
@@ -517,10 +559,18 @@ async fn exchange_loop(
                             Err(e)=> {let mut out=vec![0;6];ValuePdu::Error{request:raw[0],handle:0,error:if raw.get(1).is_some_and(|v|v&3!=3){16}else if matches!(e,slk_protocol::ssap::value::ValueError::Unsupported){2}else{1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("error response exceeds MTU"))?;out},
                         }};
                         pending.push_back(Pending{bytes:response,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse});
-                    } else if matches!(raw[0],1|5|7|9|14) {
+                    } else if matches!(raw[0],1|5|7|9|11|14) {
                         let Some(ClientRequest{bytes:request,deadline,admitted,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
                         if !admitted || Instant::now()>=deadline {return Err(io::Error::other("SSAP reply before submit or after original deadline"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
+                        if request[0]==10 {
+                            let r=slk_protocol::ssap::read_uuid::Request::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local UUID request"))?;
+                            if let Ok(ValuePdu::ReadError(16))=ValuePdu::decode(negotiated,raw){let _=reply.send(Err("peer requires unsupported SSAP fragmentation".into()));continue;}
+                            if let Ok(ValuePdu::Error{request:10,error,..})=ValuePdu::decode(negotiated,raw){let _=reply.send(Err(format!("peer read UUID protocol error {error}")));continue;}
+                            let entries=slk_protocol::ssap::read_uuid::decode(negotiated,raw).map_err(|_|io::Error::other("invalid read UUID response"))?;
+                            if entries.iter().any(|i|i.handle<r.start || i.handle>r.end) {return Err(io::Error::other("read UUID response outside requested range"));}
+                            let _=reply.send(Ok(raw.to_vec()));continue;
+                        }
                         if matches!(request[0],4|6) {
                             let request=slk_protocol::ssap::discovery::FindRequest::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local find request"))?;
                             if raw[0]==1 {match ValuePdu::decode(negotiated,raw) {Ok(ValuePdu::Error{request:op,..}) if op==request.opcode()=>{},_=>return Err(io::Error::other("invalid find error response"))}}

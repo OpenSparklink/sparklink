@@ -405,6 +405,36 @@ impl ConnectionIface {
                     .collect()
             })
     }
+    async fn read_ssap_by_uuid(
+        &self,
+        start: u16,
+        end: u16,
+        data_type: u8,
+        uuid: Vec<u8>,
+    ) -> zbus::fdo::Result<crate::ssap_engine::UuidValues> {
+        if start == 0 || start > end || !matches!(uuid.len(), 2 | 16) {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "valid range and 2/16-byte UUID required".into(),
+            ));
+        }
+        let _ = self.get_ssap_info().await?;
+        let actor = self.ssap.lock().await;
+        let observer = actor
+            .as_ref()
+            .ok_or_else(|| zbus::fdo::Error::Failed("actor unavailable".into()))?
+            .observer();
+        drop(actor);
+        let result = observer
+            .read_uuid(start, end, data_type, uuid)
+            .await
+            .map_err(zbus::fdo::Error::Failed)?;
+        if self.observation().await != (true, true) {
+            return Err(zbus::fdo::Error::Failed(
+                "retired read UUID lifetime".into(),
+            ));
+        }
+        Ok(result)
+    }
     async fn read_ssap_value(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
         self.synchronous_ssap_value(handle, None).await
     }

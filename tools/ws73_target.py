@@ -1054,6 +1054,8 @@ def _run(args):
                     m['ssap_exchange_info_acceptance']=True
                     if not all(row.get('ssap_value_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP values')
                     m['ssap_value_acceptance']=True
+                    if not all(row.get('ssap_read_uuid_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual ReadByUUID values')
+                    m['ssap_read_uuid_acceptance']=True
                     if not all(row.get('ssap_discovery_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP discovery')
                     m['ssap_discovery_acceptance']=True
                     m['ordinary_channel_socket_acceptance']=True

@@ -177,6 +177,61 @@ impl Database {
             .map(|v| v.0)
             .map_err(|e| format!("find page codec: {e:?}"))
     }
+    pub(crate) fn read_uuid(
+        &self,
+        request: slk_protocol::ssap::read_uuid::Request<'_>,
+        mtu: u16,
+    ) -> Result<Vec<u8>, String> {
+        use slk_protocol::ssap::read_uuid::{Item, encode};
+        let mut items = Vec::new();
+        if request.start == 0 || request.start > request.end {
+            items.push(Item {
+                handle: request.start,
+                value: Err(4),
+            });
+        } else {
+            for service in self.services.values() {
+                for (handle, p) in service.properties.range(request.start..=request.end) {
+                    if p.uuid == request.uuid {
+                        let value = if request.data_type != 0 {
+                            Err(13)
+                        } else if !p.operations.contains(SsapOperations::READ) {
+                            Err(6)
+                        } else {
+                            Ok(p.value.as_slice())
+                        };
+                        items.push(Item {
+                            handle: *handle,
+                            value,
+                        });
+                    }
+                }
+            }
+            if items.is_empty() {
+                items.push(Item {
+                    handle: request.start,
+                    value: Err(11),
+                });
+            }
+        }
+        let mut out = vec![0; usize::from(mtu)];
+        match encode(mtu, &items, &mut out) {
+            Ok(n) => {
+                out.truncate(n);
+                Ok(out)
+            }
+            // The normative no-fragmentation exception uses READ_RSP, not
+            // a truncated ReadByUUID list or a fabricated success.
+            Err(slk_protocol::ssap::value::ValueError::Mtu) => {
+                let n = ValuePdu::ReadError(16)
+                    .encode(mtu, &mut out)
+                    .map_err(|e| format!("read UUID size error: {e:?}"))?;
+                out.truncate(n);
+                Ok(out)
+            }
+            Err(e) => Err(format!("read UUID codec: {e:?}")),
+        }
+    }
     fn property(&self, handle: u16) -> Option<&Property> {
         self.services
             .values()
@@ -290,6 +345,55 @@ mod tests {
             uuid: None,
         };
         assert_eq!(d.find(r, 249).unwrap(), [1, 0, 4, 18, 0, 11]);
+    }
+    #[test]
+    fn uuid_read_matches_ranges_permissions_and_never_truncates() {
+        use slk_protocol::ssap::read_uuid::{Request, decode};
+        let mut d = Database::default();
+        let (_, _, h) = d
+            .register(
+                vec![1, 0],
+                vec![(vec![2, 0], 1, vec![1, 2]), (vec![2, 0], 4, vec![3])],
+            )
+            .unwrap();
+        let r = Request {
+            start: 16,
+            end: 65535,
+            data_type: 0,
+            uuid: &[2, 0],
+        };
+        let raw = d.read_uuid(r, 249).unwrap();
+        let v = decode(249, &raw).unwrap();
+        assert_eq!(v.len(), 2);
+        assert_eq!(v[0].handle, h[0]);
+        assert_eq!(v[0].value, Ok(&[1, 2][..]));
+        assert_eq!(v[1].value, Err(6));
+        assert_eq!(d.read_uuid(r, 9).unwrap(), [9, 11, 16, 0]);
+        assert_eq!(
+            d.read_uuid(Request { start: 0, ..r }, 249).unwrap(),
+            [11, 11, 0, 0, 4, 0]
+        );
+        assert_eq!(
+            d.read_uuid(Request { uuid: &[9, 0], ..r }, 249).unwrap(),
+            [11, 11, 16, 0, 11, 0]
+        );
+        assert_eq!(
+            decode(
+                249,
+                &d.read_uuid(
+                    Request {
+                        start: h[0],
+                        end: h[0],
+                        ..r
+                    },
+                    249
+                )
+                .unwrap()
+            )
+            .unwrap()[0]
+                .value,
+            Ok(&[1, 2][..])
+        );
     }
     #[test]
     fn permissions_budget_and_nonreuse_are_production_state() {

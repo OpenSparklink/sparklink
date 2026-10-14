@@ -20,7 +20,7 @@ def credentials(pid):
 def execute(run, phase):
     row = dict(phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
-               boundary_check=getattr(run.args,'channel_socket_boundaries',False), channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     run.data.setdefault('channel_socket', []).append(row); run.save()
     processes=[];files=ExitStack()
     try:
@@ -29,13 +29,14 @@ def execute(run, phase):
             if receipt['exit']: raise CaptureError('actual SMTC ExchangeInfo failed')
             row['ssap_receipts'].append(receipt);run.save()
         from ws73_ssap_value import execute as ssap_value_execute
-        ssap_value_execute(run,row)
+        if not row['close_prefix']:ssap_value_execute(run,row)
         # Both binds must occur during the same live connection. Never synthesize RX.
         for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
             args=[str(run.args.slctl),'--adapter',entry['owner']['path'],
                   'channel-peer' if role=='peer' else 'channel-roundtrip',entry['object']['path'],str(row['rounds'])]
             if row['message_bytes']!=61 or row['boundary_check']:args.append(str(row['message_bytes']))
             if row['boundary_check']:args.append('boundaries')
+            if row['close_prefix'] and role=='initiator':args.append('prefix-close')
             app=dict(role=role,args=args,start_wall_ns=time.time_ns())
             row['applications'].append(app);run.save()
             stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
@@ -54,7 +55,12 @@ def execute(run, phase):
             if app['stdout'].count('NativeChannelDup: original_closed=1 duplicate_live=1') != 1 or app['stdout'].count('NativeChannelLastClose: same_lifetime_reopen=NotSupported') != 1:
                 raise CaptureError('actual duplicate/last-close/reopen rejection receipts required')
         row['session_binding_lifecycle'] = 'DUP_ALIVE_LAST_CLOSE_REBIND_UNSUPPORTED'
-        application_frames(row)
+        if row['close_prefix']:
+            row['end_wall_ns']=time.time_ns()
+            prefix_application_frames(row)
+            row['after_close_ssap_start_wall_ns']=time.time_ns()
+            ssap_value_execute(run,row) # actual other Channel traffic after fd release
+        else:application_frames(row)
         # Passive VFS checks use current full records; old read/stats never
         # re-enter the producer. Older packages have no such test artifact and
         # retain their original qualification, not a new copy-gate receipt.
@@ -187,13 +193,50 @@ def application_frames(row):
     return sent,reply
 
 
+def prefix_application_frames(row):
+    if row.get('rounds')!=1 or row.get('message_bytes')!=2042 or row.get('boundary_check'):
+        raise CaptureError('prefix-close requires one actual 2042-byte operation')
+    apps={a['role']:a for a in row['applications']}
+    if set(apps)!={'peer','initiator'} or len(row['applications'])!=2:
+        raise CaptureError('two original prefix applications required')
+    for app in apps.values():
+        if app['exit'] or app['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in app['credentials']['capabilities'].values()):
+            raise CaptureError('successful ordinary prefix applications required')
+    channel_info_receipts(row)
+    def single(app, pattern):
+        values=re.findall(pattern,app['stdout'],re.M)
+        if len(values)!=1:raise CaptureError('one original prefix receipt required')
+        return values[0]
+    source=apps['initiator'];peer=apps['peer']
+    payload=bytes.fromhex(single(source,r'^NativePrefixSent: bytes=([0-9a-f]+)$'))
+    dropped=bytes.fromhex(single(source,r'^NativePrefixQueued: bytes=([0-9a-f]+)$'))
+    before,after=map(int,single(source,r'^NativePrefixClosed: start_wall_ns=(\d+) end_wall_ns=(\d+)$'))
+    received=bytes.fromhex(single(peer,r'^NativeChannelReceived: sequence=0 bytes=([0-9a-f]+)$'))
+    reply=bytes.fromhex(single(peer,r'^NativeChannelReply: sequence=0 bytes=([0-9a-f]+)$'))
+    if len(payload)!=2042 or payload[:8]!=b'SLKSOCK1' or payload[28]!=0:
+        raise CaptureError('random full prefix application PDU required')
+    sequence=int.from_bytes(payload[24:28],'little')
+    if any(payload[29+j]!=payload[8+j%16]^((sequence+j)&255) for j in range(2013)):
+        raise CaptureError('prefix payload checksum mismatch')
+    expected=bytearray(payload);expected[28]=1
+    if received!=payload or reply!=expected or len(dropped)!=61 or dropped[:8]!=b'SLKDROP1':
+        raise CaptureError('peer must validate and reply to complete PDU; queued marker distinct')
+    if not row['start_wall_ns']<=before<=after<=row['end_wall_ns'] or after-before>=1_000_000_000:
+        raise CaptureError('bounded actual final fd release timestamps required')
+    if 'NativeChannelRoundTrip:' in source['stdout']:
+        raise CaptureError('closed source cannot claim application round-trip receipt')
+    return [payload],[reply],dict(start_wall_ns=before,end_wall_ns=after,dropped=dropped)
+
+
 def corroborate(run,capture):
     rows=run.get('channel_socket')
     if rows is None or len(rows)!=2:raise CaptureError('two connection direction phases required')
     sdus=reassemble_acb(capture);proofs=[];all_nonces=set();all_sequences=set()
     for n,row in enumerate(rows):
         if row['phase']!=n or row['status']!='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING':raise CaptureError('original successful socket phase required')
-        sent,replies=application_frames(row)
+        prefix=None
+        if row.get('close_prefix',False):sent,replies,prefix=prefix_application_frames(row)
+        else:sent,replies=application_frames(row)
         rejected=rejected_frames(row)
         for raw in rejected:
             if any(raw.hex() in p['data'] and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('rejected message reached USB data path')
@@ -233,6 +276,16 @@ def corroborate(run,capture):
                 frame=b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload
                 legs.append(dict(sequence=sequence,tx=matched(sender,'out',frame),rx=matched(receiver,'in',frame)))
         # Each endpoint sends one capability request, one response, the recorded number of business PDUs.
+        if prefix:
+            pieces=legs[0]['tx']['fragments']
+            if len(pieces)!=9 or not pieces[0]['wall_ns']<prefix['start_wall_ns'] or not prefix['end_wall_ns']<pieces[-1]['wall_ns']:
+                raise CaptureError('actual USB first submit < final close < last submit required')
+            if any(prefix['dropped'].hex() in p['data'] and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):
+                raise CaptureError('never-started queue reached USB after author close')
+            if row.get('after_close_ssap_start_wall_ns',0)<=prefix['end_wall_ns'] or not row.get('ssap_values'):
+                raise CaptureError('other SMTC must perform real app operations after close')
+            if any(item['start_wall_ns']<row['after_close_ssap_start_wall_ns'] for item in row['ssap_values']):
+                raise CaptureError('old SSAP traffic cannot stand in for post-close isolation')
         capabilities=[]
         for sender,receiver in [owners,owners[::-1]]:
             query=bytes.fromhex('0200080001010400e2000000')
@@ -265,16 +318,20 @@ def corroborate(run,capture):
                     ssap_legs.append(dict(tx=matched(owner,'out',frame,True),rx=matched(receiver,'in',frame,True)))
                 ssap.append(dict(receipt=source,wire=ssap_legs))
         entry = dict(phase=n,owners=owners,capabilities=capabilities,legs=legs)
+        if prefix:entry['prefix_close']={k:v for k,v in prefix.items() if k!='dropped'}|dict(dropped_marker=prefix['dropped'].hex(),other_channel_after_close=True)
         if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)
         if row.get("ssap_exchange_required",False): entry["ssap_exchange"] = ssap
         if row.get("ssap_value_required",False): entry["ssap_values"] = ssap_values
         if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         proofs.append(entry)
-    proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows),proofs=proofs,
+    proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows if not row.get('close_prefix',False)),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
-                long_pdu_acceptance=all(row.get('message_bytes',61)>249 for row in rows),credit_exhaustion_acceptance=False,four_device_acceptance=False)
-    if proof['long_pdu_acceptance']:
+                long_pdu_acceptance=all(row.get('message_bytes',61)>249 and not row.get('close_prefix',False) for row in rows),credit_exhaustion_acceptance=False,four_device_acceptance=False)
+    if any(row.get('close_prefix',False) for row in rows):
+        proof['prefix_close_phases']=sum(bool(row.get('close_prefix',False)) for row in rows)
+        proof['physical_prefix_delivery_acceptance']=all(row.get('close_prefix',False) for row in rows)
+    if proof['long_pdu_acceptance'] or proof.get('physical_prefix_delivery_acceptance',False):
         for phase in proofs:
             for leg in phase['legs']:
                 pieces=leg['tx'].get('fragments',[])

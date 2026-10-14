@@ -146,7 +146,7 @@ Commands:
   ssap-write <path> <handle> <value-hex>      Write with peer verification and reply
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   channel-peer <path> [rounds] [bytes] [boundaries]  Validate and reply on a native channel socket
-  channel-roundtrip <path> [rounds] [bytes] [boundaries]  Send random business messages and verify replies
+  channel-roundtrip <path> [rounds] [bytes] [boundaries|prefix-close]  Send random business messages and verify replies
   disconnect <address> [type]    Disconnect an unambiguous current peer
   disconnect-link <addr> <type> <handle> <lifetime> <role>  Disconnect exact link
   services                      List local SSAP services

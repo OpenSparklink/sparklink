@@ -253,6 +253,7 @@ pub(crate) fn exercise(
     rounds: u32,
     message_bytes: usize,
     boundaries: bool,
+    close_prefix: bool,
 ) -> anyhow::Result<()> {
     validate_exercise(rounds, message_bytes)?;
     let fd = prepare_application_fd(fd)?;
@@ -285,7 +286,63 @@ pub(crate) fn exercise(
         info.directions
     );
     info_copy_retry(&fd, info)?;
-    exercise_messages(fd, responder, rounds, message_bytes, boundaries)
+    if close_prefix {
+        exercise_prefix_close(fd, message_bytes)
+    } else {
+        exercise_messages(fd, responder, rounds, message_bytes, boundaries)
+    }
+}
+
+// Dedicated application lifecycle gate. Delay is only scheduling support;
+// the USB evidence verifier must prove first submit < close < final submit.
+fn exercise_prefix_close(fd: OwnedFd, message_bytes: usize) -> anyhow::Result<()> {
+    if message_bytes != 2042 {
+        anyhow::bail!("prefix-close requires a 2042-byte operation");
+    }
+    let linger = nix::libc::linger {
+        l_onoff: 0,
+        l_linger: 0,
+    };
+    // SAFETY: initialized finite socket option; disable the earlier drain wait.
+    if unsafe {
+        nix::libc::setsockopt(
+            fd.as_raw_fd(),
+            nix::libc::SOL_SOCKET,
+            nix::libc::SO_LINGER,
+            (&linger as *const nix::libc::linger).cast(),
+            std::mem::size_of_val(&linger) as nix::libc::socklen_t,
+        )
+    } != 0
+    {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let wall = || {
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|v| v.as_nanos())
+            .map_err(anyhow::Error::from)
+    };
+    let mut frame = vec![0u8; message_bytes];
+    frame[..8].copy_from_slice(b"SLKSOCK1");
+    std::fs::File::open("/dev/urandom")?.read_exact(&mut frame[8..28])?;
+    let wire_sequence = u32::from_le_bytes(frame[24..28].try_into()?);
+    for i in 0..message_bytes - 29 {
+        frame[29 + i] = frame[8 + i % 16] ^ (wire_sequence as u8).wrapping_add(i as u8);
+    }
+    let deadline = Instant::now() + Duration::from_secs(10);
+    send(&fd, &frame, deadline)?;
+    let mut dropped = [0u8; 61];
+    dropped[..8].copy_from_slice(b"SLKDROP1");
+    std::fs::File::open("/dev/urandom")?.read_exact(&mut dropped[8..])?;
+    send(&fd, &dropped, deadline)?;
+    println!("NativePrefixSent: bytes={}", hex(&frame));
+    println!("NativePrefixQueued: bytes={}", hex(&dropped));
+    std::thread::sleep(Duration::from_millis(25));
+    let before = wall()?;
+    drop(fd); // actual final open-file reference, no linger or simulated reply
+    let after = wall()?;
+    println!("NativePrefixClosed: start_wall_ns={before} end_wall_ns={after}");
+    Ok(())
 }
 
 // Application algorithm reused by a dedicated AF_UNIX regression. It does not

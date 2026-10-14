@@ -84,6 +84,30 @@ class ApplicationProof(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(row)
 
 
+class PrefixApplicationProof(unittest.TestCase):
+    def prefix(self):
+        row=fixture(rounds=1,message_bytes=2042)
+        row.update(close_prefix=True,start_wall_ns=1,end_wall_ns=1000)
+        source,peer=next(a for a in row['applications'] if a['role']=='initiator'),next(a for a in row['applications'] if a['role']=='peer')
+        import re
+        payload=re.findall(r'NativeChannelSent: sequence=0 bytes=([0-9a-f]+)',source['stdout'])[0]
+        source['stdout']=f"NativePrefixSent: bytes={payload}\nNativePrefixQueued: bytes={(b'SLKDROP1'+bytes(53)).hex()}\nNativePrefixClosed: start_wall_ns=20 end_wall_ns=21\n"
+        return row
+    def test_original_peer_validation_and_actual_close_required(self):
+        from ws73_channel_socket import prefix_application_frames
+        row=self.prefix();sent,replies,close=prefix_application_frames(row)
+        self.assertEqual(len(sent[0]),2042);self.assertEqual(replies[0][28],1)
+        self.assertEqual(close['start_wall_ns'],20)
+        for kind in ['peer','close','source_receipt','credentials']:
+            changed=copy.deepcopy(row)
+            source=next(a for a in changed['applications'] if a['role']=='initiator');peer=next(a for a in changed['applications'] if a['role']=='peer')
+            if kind=='peer':peer['stdout']=peer['stdout'].replace('NativeChannelReceived','Wrong')
+            if kind=='close':source['stdout']=source['stdout'].replace('end_wall_ns=21','end_wall_ns=19')
+            if kind=='source_receipt':source['stdout']+='NativeChannelRoundTrip: fake\n'
+            if kind=='credentials':source['credentials']['uids']=[0]*4
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):prefix_application_frames(changed)
+
+
 class IndependentUSBProof(unittest.TestCase):
     def fixture(self,rounds=4,boundaries=False,message_bytes=61):
         from ws73_channel_socket import application_frames

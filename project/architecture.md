@@ -201,9 +201,20 @@ command credit、controller ACB credit、peer流控和软件包/字节预算分�
 USB、NOCP、协议 ACK 和本地队列均不等于对端应用处理。
 SSAP/Profile 复用同一通道路径；安全 DLI relay 是控制信令，不另造业务发送路径。
 
-DLI PB、DTAP SAR、SSAP分片是不同层：每层记录长度/片数/字节预算/原期限，
-按实际模式开放。当前实机上限为application249/DTAP254；仅应用250/253/254/255拒绝
-已验证，其他分层边界和长包仍缺。EAGAIN保留游标，不确定已提交不从头重放。
+DLI PB、DTAP SAR、SSAP分片是不同层；DLI PB将一个DTAP PDU拆成控制器包，
+不构成SSAP长写或可靠模式。Session拥有唯一TX分片游标，未完成PDU期间禁止同连接
+其他Channel/CMTC插入；RX仍由Session唯一分流。控制器包上限与协商MTU/MPS分开，
+当前实现预算为DTAP PDU最多2047字节、应用最多2042字节、每通道8个TX项（含busy）。
+每片独立经过现有generation/lifetime/Grant/Binding票据与实际USB准入，每片欠一个
+controller credit；USB完成不归还。EAGAIN保留offset，成功只前进已完成提交的片段，
+软件准入的原始5秒TX期限不随credit等待重置。未知提交失败不退款或从头重放。
+尚无物理前缀的排队超时只退休本Binding并报ETIMEDOUT，不清理其他Channel；
+已提交前缀无法完成时终止本Session，拒绝再接入该lifetime，不假定固件已丢弃前缀；
+需要已有管理断链及后续状态屏障，不能隐式清空物理义务。其他controller不被清理。
+当前前缀中止会影响共享Session的其他Channel，按应用最后关闭隔离尚缺；必须通过
+Session在途义务交接/关闭机制整改，不能把这一保守失败策略作为最终多应用契约。
+这些实现预算不代表当前实机资格；准确提交、分层长度边界与仍缺门禁只见
+[CURRENT_CAPABILITIES](current-capabilities.md)。
 
 完整Ticket/Grant、NOCP假设、socket语义、dup/关闭和同lifetime重开决策以
 [ADR0002](../docs/decisions/0002-session-socket-lifetime-and-proof-contract.md)为准；验证与实机门禁

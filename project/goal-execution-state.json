@@ -609,61 +609,63 @@
     ]
   },
   "current_batch_exit": {
-    "behavior": "ticketed physical Session relay and current RX lifetime, actual peer and Complete evidence",
-    "offline": "actual production transitions and strict builds, bounded queue/credit/cancel combined invariants",
-    "hardware": "new peer checks separate from old 40/249 baseline",
-    "remaining": "approved pairing/Agent/install, reuse barriers, hardware NOCP and natural recovery; full S0-S6 open"
+    "production": "Existing Runtime tickets/data credit and physical Session TX cursor; no parallel Engine",
+    "invariants": "Credit reservation at atomic commit; no prefix replay; exclusive per-connection PDU stream; finite queues; software-admission deadline; queue-only timeout isolated to Binding",
+    "offline": "Actual production Rust entry/ledger and C Session/USB sanitizer fixtures, strict kernel build, CLI and tools; dependencies and limits explicit",
+    "real": "Accurate new image, original paths plus peer-validated PB long messages and negotiated-MTU rejection",
+    "remaining": "Real exhaustion/backpressure, close/revoke during prefix, composite refinement, NOCP reuse, multi-channel/four-device, SMP peer delivery/security and natural recovery"
   },
-  "updated_at_utc": "2026-10-14T17:47:37.618134+00:00",
+  "updated_at_utc": "2026-10-14T18:30:05.073873+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
     "scope": "Retained prior progress/qualified identities; not live current state"
   },
   "current_heads": {
-    "linux": "2030f45716514cbf262b0bc49066cfd5a9f81cce",
-    "userspace": "56cb63e1733a46f12d43706a8a93e39e80c0fd6d",
-    "observation": "Before this evidence commit; own docs only"
+    "linux": "d926b5b09c8e9bdf09394b2d97fd8f9ee0f8bb6b",
+    "userspace_observed_before_document_commit": "fdec8eea6781b0ef93ac5ea5c8b12d195cfcfd13"
   },
   "qualified_source_heads": {
-    "linux": "2d5d5900b8ffba3affacae38c4a0d0a45abbc1c2",
-    "userspace": "3a2cf7effbe1f9db528a6a0410fbf45d7f9612c0",
-    "scope": "40short/8app249/16oversize and original discovery/link/SSAP; both147/1ff peer gate FAIL",
-    "evidence": "docs/evidence/relay-index-investigation-20261015.json"
+    "linux": "d926b5b09c8e9bdf09394b2d97fd8f9ee0f8bb6b",
+    "userspace": "fdec8eea6781b0ef93ac5ea5c8b12d195cfcfd13",
+    "scope": "104 actual app round trips on listed 248..2042 lengths and short baseline,32 oversize refusals; no new SMP qualification",
+    "evidence": "docs/evidence/long-pdu-production-20261015.json"
   },
-  "execution_phase": "ACTUAL_RELAY_COMPLETE_ECHO_FIX_PEER_GATE_WITH_DATA_GATES_PARALLEL",
+  "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "behavior": "Physical Session relay; real echo handle/index; default unsupported pairing only",
-    "status": "RAW_ECHO_FROZEN_SDK_ARCHIVE_DIFFERENCE_PEER_DELIVERY_FAIL",
-    "evidence": "docs/evidence/relay-index-investigation-20261015.json",
+    "behavior": "Connection-wide bounded DLI PB TX cursor, actual per-fragment credit/ticket, queue-admission deadline and isolated unsubmitted timeout",
+    "status": "REAL_BOUNDED_DLI_PB_APPLICATION_DELIVERY_PASS",
+    "evidence": "docs/evidence/long-pdu-production-20261015.json",
     "exit": {
-      "behavior": "ticketed physical Session relay and current RX lifetime, actual peer and Complete evidence",
-      "offline": "actual production transitions and strict builds, bounded queue/credit/cancel combined invariants",
-      "hardware": "new peer checks separate from old 40/249 baseline",
-      "remaining": "approved pairing/Agent/install, reuse barriers, hardware NOCP and natural recovery; full S0-S6 open"
-    },
-    "reproduction": "tools/ws73_security_relay_reference.py",
-    "peer_failure_evidence": "docs/evidence/relay-production-20261014.json",
-    "ci": "8494476 Documentation successful; CI still in progress at receipt, not recorded as PASS",
-    "latest_code": "Explicitbyte mask and bounded proofs only; no RF inheritance"
+      "production": "Existing Runtime tickets/data credit and physical Session TX cursor; no parallel Engine",
+      "invariants": "Credit reservation at atomic commit; no prefix replay; exclusive per-connection PDU stream; finite queues; software-admission deadline; queue-only timeout isolated to Binding",
+      "offline": "Actual production Rust entry/ledger and C Session/USB sanitizer fixtures, strict kernel build, CLI and tools; dependencies and limits explicit",
+      "real": "Accurate new image, original paths plus peer-validated PB long messages and negotiated-MTU rejection",
+      "remaining": "Real exhaustion/backpressure, close/revoke during prefix, composite refinement, NOCP reuse, multi-channel/four-device, SMP peer delivery/security and natural recovery"
+    }
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exactK2d/U3a40short and originalSSAP; relay1ff peerFAIL",
-    "DG02": "PARTIAL_REAL exactK2d/U3a8app249/16oversize; long/credit/channel/four-device still open",
-    "FV_SECURITY_RELAY": "Actual Host67/release56/diagnostic54/recipe23 and sanitizer pass on echo fix; Kani remains unsupported; real new branch not yet passed",
+    "DG01": "PARTIAL_REAL exact d926/fdec baseline 40 short plus original discovery/link/SSAP",
+    "DG02": "PARTIAL_REAL exact d926/fdec app248/249/250/253/254/255/1024/2042;104 total;32 oversize; other DG gates open",
+    "FV_SECURITY_RELAY": "HISTORICAL scoped actual Host/codec checks retained in relay-index investigation; no new d926 SMP real qualification; Kani unsupported not proved",
     "S5": "Approved pairing/installation/encrypted application reply missing",
     "recovery": "Natural RCA and nonhuman recovery remain open",
-    "FV_CODEC": "BOUNDED_PASS actual2030 driver prepare/RX normalization,800 checks, explicit byte mask; initial2 conversion failures retained; no firmware ABI/Host/USB/refinement proof"
+    "FV_CODEC": "HISTORICAL exact2030 driver bounded800 checks preserved, not relabeled as fresh d926 result; new cursor proof separately recorded",
+    "FV_DLI_CURSOR": "SCALAR_TRANSITIONS_PASS exact production header,48 checks, all unsigned inputs; no worker/USB/NOCP proof",
+    "DG03": "PARTIAL_REAL listed bounded long messages; true credit pressure, controlled close/revoke/expiry and full fragmentation matrix missing"
   },
   "next_resume_tasks": [
-    "Resolve actual111 firmware forwarding for typed relay; candidateSDKarchive1ff alsoFAIL and localSDKfirmware differs. Ghidra/LLVM vendorISA/ROM gaps are tool limits, not proof. Reuse physicalSession/raw echo, no fake capability or simplified Engine. Independently continue real length/credit/backpressure gates.",
-    "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
-    "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
-    "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
-    "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
+    "Deliver real credit/backpressure/finite-queue and controlled partial-PDU close/revoke/down gates using actual Session/Runtime tickets; combine debt and cancellation, preserve lifetimes and peer isolation.",
+    "Resolve actual111 SMP relay forwarding; raw Complete alone still insufficient, candidateSDK1ff and147 peer delivery failed. No fake capability or alternate Engine.",
+    "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
+    "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
+    "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "7_SDK_ARCHIVE_FW_PROOF_AND_FAILURE_UPDATES_READBACK_OPEN_ORIGINAL_SCOPE_UNCHANGED",
+  "issue_sync_status": "PENDING_THIS_BATCH_READBACK",
   "issue_sync_receipt": "docs/evidence/relay-index-investigation-20261015.json",
   "previous_goal_turn_classification": "PROGRESS: signed echo/parser fix, actual old-code counterexample, exact data regression, reproducible failed peer gate and issue maintenance",
-  "current_goal_turn_classification": "PROGRESS: SDK archive/actual firmware ABI distinction, frozen raw echo field, actual codec800 checks plus conversion counterexamples, new exact data regression and1ff peer failure; unsupported firmware decompile recorded"
+  "current_goal_turn_classification": {
+    "status": "PROGRESS",
+    "reason": "Signed production fragment path/deadline fix, direct-source48-check proof and new real104-round application qualification; full goal remains active"
+  }
 }

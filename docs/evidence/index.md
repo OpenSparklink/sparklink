@@ -54,3 +54,6 @@
 [19项现有issue原scope/OPEN读回回执](relay-contract-issues-20261014.json)。
 
 [SDK Host表项与实际111固件差异、冻结raw echo及两轮交付失败](relay-index-investigation-20261015.json)：800项限定codec检查不证明固件ABI；vendor ISA/ROM未解码保持未分析。
+
+[真实DLI PB长PDU、准确104轮、生产游标限定证明和未决条件](long-pdu-production-20261015.json)
+保留原编译失败、旧资格及SMP失败；不授予真实credit耗尽、多通道、四设备或自然恢复资格。

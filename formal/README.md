@@ -28,6 +28,7 @@ runner 本身只是记录入口；选中的检查存在 NOT_PROVEN 时退出2，
 | 检查 | 实际范围及源码映射 | 没有证明的范围 |
 |---|---|---|
 | channel/progress_cbmc.c | 直接包含生产 `sle_channel_state.h`，所有 unsigned maximum/MTU、事件、expired 输入；构造及合法表示状态的归纳保持；OPEN 必须三步骤完整，原期限过期则失败，FAILED/CLOSED 不复活。CBMC 6.11.0，unwind20、完整展开断言、边界/指针/有符号及无符号溢出检查 | jiffies 推进、worker 调度公平性、USB、整个 socket/VFS。expired 是实际 `sl_progress_event` 在锁内计算的输入，不假设硬件必回复 |
+| Linux selftests `fragment_cursor_cbmc.c` | 直接包含生产 `sle_fragment_cursor.h`；所有unsigned total/offset/maximum与proposed length。PB选择、严格前进、边界、非法输入不修改输出、deadline保持；无循环或展开截断。准确源码报告见当前能力入口 | Session worker锁/引用/队列调度、deadline时钟推进、Grant与credit组合、USB callback、固件PB及对端应用不由该证明覆盖；另有实际C sanitizer与VM门禁 |
 | credit/src/main.rs | 路径包含实际 `sle_data_credit.rs`，验证 harness 就在生产模块 `cfg(kani)` 内。16 debt slots，任意 u16 maximum/u8 capacity/u16 outstanding/u64 lifetime/12-bit 合法 debt handle，实际 reserve/complete/transport_failed；unwind17。只假设归纳表示不变量，不假设 NOCP 可靠/唯一/及时 | 当前 Kani 编译报告 unsupported，按用户规则记未证明；不得因初始 harness 显示 SUCCESSFUL 改为 PASS。两个 Rust ledger 不共享值的性质不等于整个 Runtime 隔离；命令/data 独立另由生产 Native 回归验证 |
 | lkmm/ChannelSnapshot | 使用当前 Linux `tools/memory-model`，映射 socket `state_lock` 的发布和完整快照；看到 OPEN 时看到相应 MTU。故意无锁的 Weak 应允许坏结果 | 完整 socket 内存安全、所有能力组合、丢失唤醒、USB 票据、VM KCSAN/lockdep。spin_lock_bh 的内存序抽象为 spin_lock，软中断屏蔽本身不在此模型中 |
 | lkmm/ChannelCloseAdmission | 同一锁保护 CLOSED 发布和最终软件准入；先看见 CLOSED 不能又看到 OPEN | 不证明已检查 lifetime 到 USB 提交的窗口；该风险保持开放 |
@@ -195,3 +196,14 @@ The weak trace corresponds to the actual stale-generation/reuse regression.
 可复现 fail-closed 入口：`python3 formal/ssap_exchange/check.py --output "$NEW_REPORT_DIR"`。
 它只运行离线Kani，在新目录保存原log与hash；timeout、unsupported、未完整展开或
 源码检查期间变化均退出非零。本次实际返回1／NOT_PROVEN，不能把该退出记录为工具门禁PASS。
+
+
+生产DLI游标的独立检查（不操作设备）：
+
+```sh
+python3 ../linux/tools/testing/selftests/sparklink/run_fragment_cursor_cbmc.py \
+  --output ../.dev/fragment-cursor-NEW.json
+```
+
+报告绑定Linux HEAD、实际header/harness hash及CBMC版本；失败、未知、warning或超时
+不升级为通过。此标量转换检查与长期执行、Session组合模型及真正credit耗尽分开记录。

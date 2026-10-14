@@ -6,32 +6,31 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-1. 收尾默认生产安全 relay：复用唯一物理 Session、实际 relay 转换、命令 credit、
-   实际提交票据；类型化 1812、真实 Complete、0014 当前 RX lifetime。现有默认
-   PairingNotSupported 生产者已接；真实对端检查/匹配 Complete 门禁仍待验。实机已否定空返回假设，
-   K `2d5d5900b8ff`的冻结raw echo/候选SDK表项分层已接，准确镜像原业务回归通过；
-   新SMP的147和1ff均匹配Complete但对端未收0014，两向CMTC也未消除。
-   SDK本地/us固件与111不同，Ghidra/LLVM对实际FW有vendor-ISA/ROM缺口，均不能
-   当作已查明根因；安排正确ISA/ROM或支持的真实协议交换验证。优先沿
-   SDK111/libws73/OHOS实际发送路径定位，不制造成功能力、不改写为通过。
-   这不是授权配对、密钥安装或加密资格，不另造 Engine。
-2. 本批相关门禁：严格构建、实际 Host/队列/relay/入口/取消回归；发送前撤权不提交、
-   已提交保留物理义务、真实回复只终结一次、原期限和同行隔离。原 40 短消息、
-   249/超限和 SSAP 回归只能证明没有退化，不能替代新 relay 实机证据。
-3. 新链路通过后继续 Agent/角色绑定的安装/真实加密业务，同时推进长度边界、
-   长包、真实 credit 耗尽/背压、有限队列、提交票据、Session 分流、Grant 和 socket
-   契约；再多通道、四设备两组与真实 SSAP 更新。控制竞争全集不是前置。
-4. 组合验证覆盖预留→撤权/断链→提交→晚到回复/NOCP→handle 复用；优先实际生产
-   转换，模型映射锁/引用/身份/线性化点。不确定失败不归还 credit，取消不抹物理
-   义务，旧 lifetime 不获得新资格。模型反例转回归，不用过强假设排除失败。
-5. NOCP 准确性/重复晚到、复用屏障、callback 排空、固件状态清除和调度假设逐项
-   明示；无依据仍待验。unsupported/timeout/展开不完整始终未证明，区别工具限制、
-   缺陷和空间爆炸；有界检查与长期不变量证明分列，仅本批相关性质为门禁。
-6. [ADR0004](../docs/decisions/0004-application-ownership-and-delivery.md)采用应用资源、
-   独立管理权限、五阶段交付和 daemon 故障边界。共享客户端扫描、完整按应用授权
-   仍缺，apps-only fd 正向实机尚未验；这些扩展不新增为本 relay 前置。
-7. 自然故障 RCA/非人工恢复、部分初始化清理、事件迁移、旧代码整改并行。受限标准、
-   SDK、固件和大抓包不复制进公开文档；证据保留准确 hash/范围/假设/失败。
+1. 本批纵向切片已取得新真实行为：K `d926b5b09c8e`／U `fdec8eea6781`，
+   连接级唯一DLI TX游标，每片实际票据/credit，有界队列、软件准入期限与单Binding
+   排队超时清理；104轮真实双端往返、所列长度与32次超限拒绝。
+   [本批退出/源码/证明/实机/失败](../docs/evidence/long-pdu-production-20261015.json)。
+   局部退出不关闭完整DG或issue；模型通过不能替代应用校验与回复。
+2. 下一批沿数据面继续真实credit耗尽/背压/满队列，受控VM交错验证在途分片的
+   Grant撤权、关闭/断链、未提交退款与已提交债务；映射实际锁/引用/身份和提交点。
+   已提交前缀中止目前会终止共享Session，可能影响另一Channel；优先实现明确的
+   Session在途物理义务/最后fd交接，取得按应用关闭隔离，不以此行为作为最终契约。
+   保留原期限及连接级游标，不能以USB完成退款，不以NOCP替代对端业务处理。
+   复用现有Session分流，再多通道与四设备两组；不等待控制竞争全集或安全全部完成。
+3. 安全relay并行收尾：唯一物理Session、实际relay转换、命令credit、typed1812票据、
+   raw Complete和0014观察lifetime保持。历史147/SDK候选1ff均无对端0014，SMP交付
+   仍失败；本地SDK/us与指定111固件hash不同，vendor-ISA/ROM缺口保持工具限制。
+   继续核对SDK111/libws73/OHOS真实路径；不另造Engine、伪Complete或可信安装状态。
+4. 之后沿唯一用户态SSAP继续真实CCC/通知/指示及应用交付，Agent、角色绑定key
+   安装/实际0011和加密业务、Bond/Profile；DLI PB不授予SSAP长写或可靠模式资格。
+5. 组合证明覆盖credit预留→撤权/断链→实际提交→晚到回复/NOCP→handle复用。
+   本批生产游标标量检查48项限定通过，actual Rust入口39及Session/USB sanitizer
+   通过；这些不构成完整worker/信用/撤权/硬件refinement或长期liveness证明。
+   既有NOCP重复复用反例、Kani unsupported和恢复工具限制保留。
+6. 自然RCA/非人工恢复、部分初始化清理、事件迁移、旧代码整改并行。
+   [ADR0004](../docs/decisions/0004-application-ownership-and-delivery.md)的应用资源、
+   管理权限、五阶段交付、daemon故障边界保持；apps-only/shared scan资格仍缺。
+   完整S0–S6/19WP/10FV/12DG及原scope保持，UserHost P4仅规划。
 
 ## 连续目标与不变约束
 

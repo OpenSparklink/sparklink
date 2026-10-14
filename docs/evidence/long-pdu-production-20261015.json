@@ -1,0 +1,423 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "REAL_BOUNDED_DLI_PB_APPLICATION_DELIVERY_PASS",
+  "kernel_head": "d926b5b09c8e9bdf09394b2d97fd8f9ee0f8bb6b",
+  "compiled_userspace_head": "fdec8eea6781b0ef93ac5ea5c8b12d195cfcfd13",
+  "vm_only": true,
+  "host_driver_installed": false,
+  "pipeline_sha256": "47d202b5fe226e317b93dc6aae7ead2262b809a88dc54102658a6f10603325f7",
+  "exit_conditions": {
+    "production": "Existing Runtime tickets/data credit and physical Session TX cursor; no parallel Engine",
+    "invariants": "Credit reservation at atomic commit; no prefix replay; exclusive per-connection PDU stream; finite queues; software-admission deadline; queue-only timeout isolated to Binding",
+    "offline": "Actual production Rust entry/ledger and C Session/USB sanitizer fixtures, strict kernel build, CLI and tools; dependencies and limits explicit",
+    "real": "Accurate new image, original paths plus peer-validated PB long messages and negotiated-MTU rejection",
+    "remaining": "Real exhaustion/backpressure, close/revoke during prefix, composite refinement, NOCP reuse, multi-channel/four-device, SMP peer delivery/security and natural recovery"
+  },
+  "production_sources": {
+    "native": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "source_head": "d926b5b09c8e9bdf09394b2d97fd8f9ee0f8bb6b",
+      "sources": {
+        "net/sparklink/sle_native.rs": "29448f55954b0b3bd3bf2e302aeed60bca992040a81371af56c6657b3efafdfb",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "76b10d44191623785a6e23d5fa7fb214ecf4f096391f340a9b0768d02575b1dd",
+        "net/sparklink/sle_sessions.rs": "60eb079226523984104fc9602ce55f1aaa238cda3f298bfb2306bc6c3ea32342",
+        "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "04ca33244a7050b69bb8d51edf2c857205a0d93259fc5bb0c0932cac1b9c0aa6"
+      },
+      "tests": 39,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "raw_report_sha256": "1b0422b5b3d8543831ffa8316c1e6a2ded8a905fbcc5a354de5fb40b0f86ebc4",
+      "raw_report_public": false
+    },
+    "session": {
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "source_head": "d926b5b09c8e9bdf09394b2d97fd8f9ee0f8bb6b",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "9afc11fff69e7c4ffddb4a4333a54a95089db34d43863c6d88292125476fcd44",
+        "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+        "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+        "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+        "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+        "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+        "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1",
+        "include/uapi/linux/sparklink_socket.h": "0bc1acc8b31fcce8787d1e234435266742b5228976534499ab224a86e827f40e",
+        "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "83ed369a75a7a18b3484d15af802e939702d97185278447c5b4fd3f540bacec4"
+      },
+      "tests": null,
+      "scope": "actual single-consumer two-slot route/local TCID+PI/independent finite RX and TX, retired-slot/peer isolation, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+      "raw_report_sha256": "3ca8f2637b91d74e403a347fdccfc51d0990c6db481550583f9427a674dfd651",
+      "raw_report_public": false
+    },
+    "driver": {
+      "status": "WS73_ACTUAL_TICKET_DRIVER_FAULTS_PASS",
+      "source_head": "d926b5b09c8e9bdf09394b2d97fd8f9ee0f8bb6b",
+      "sources": {
+        "drivers/sparklink/ws73/usb.c": "fa622a938fe7169ee1218e5a80ef91f4e13cff0bb81f94ac614a9e920a41d750",
+        "drivers/sparklink/ws73/wire.c": "d06ce9c48621ac24ba7450b7d3295a01a1a8b4cb66328f83b0acf568ebd2956c",
+        "drivers/sparklink/ws73/wire.h": "605a35601e0ce4fe95bafd8110ca8747e44e8e845510dbb7e0bd331d57b6d0df",
+        "tools/testing/selftests/sparklink/native-ticket/driver_fixture.c": "703cce5227159dc6e18a8b5494e7d9277819e1cdb7bb8b8ea33ace369b13b601"
+      },
+      "tests": null,
+      "scope": "actual C preparation/atomic submit/completion/finite wait/kill/join bodies + wire codec; USB/lock/time are explicit dependencies",
+      "raw_report_sha256": "77496c151221f2c6e173da36cc9e022631ab87b1abf1a4be24dda23c3e92aa73",
+      "raw_report_public": false
+    }
+  },
+  "formal": {
+    "status": "SCALAR_TRANSITIONS_PASS",
+    "exit": 0,
+    "source_head": "d926b5b09c8e9bdf09394b2d97fd8f9ee0f8bb6b",
+    "source_tree_clean": true,
+    "sources": {
+      "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1",
+      "tools/testing/selftests/sparklink/fragment_cursor_cbmc.c": "a2636ea0a073cbf5ab7fd20ef824c475c29920b90fb2a243f9057ca25cca1356"
+    },
+    "command": [
+      "cbmc",
+      "tools/testing/selftests/sparklink/fragment_cursor_cbmc.c",
+      "--bounds-check",
+      "--pointer-check",
+      "--signed-overflow-check",
+      "--unsigned-overflow-check",
+      "--conversion-check",
+      "--unwinding-assertions",
+      "--trace"
+    ],
+    "tool_version": "6.11.0 (cbmc-6.11.0)",
+    "checks": [
+      [
+        "0",
+        "48"
+      ]
+    ],
+    "log_sha256": "c35332c8e9c38b12fc83a99d7e925136cac9a8b36a61581f05282e8c0a25bf97",
+    "timeout_seconds": 120,
+    "scope": "Actual sl_fragment_next/advance, arbitrary unsigned scalar inputs; bounds, exact PB, strictly increasing bounded offset, invalid input atomicity, original deadline preserved; no loops or sequence unwind limit",
+    "assumptions": [
+      "Valid writable C output objects and cursor; serialized worker access outside this proof"
+    ],
+    "trusted_base": [
+      "CBMC C frontend, solver, C integer semantics"
+    ],
+    "not_proved": [
+      "Worker locking/references/Grant cancellation/USB callbacks",
+      "NOCP accuracy/late duplicates/handle reuse",
+      "Firmware PB support and real peer delivery"
+    ],
+    "real_acceptance": false,
+    "published_command_is_path_normalized": true
+  },
+  "real_runs": [
+    {
+      "gate": "real-short",
+      "manifest_sha256": "9e49520a71bc0ca0487b23e7c0cfb9f54538b10e4c2c784743b46904fbeeb247",
+      "private_manifest": "native-long-tx-cursor-v3-real-short/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 40,
+      "application_bytes": [
+        61
+      ],
+      "dtap_pdu_bytes": [
+        66
+      ],
+      "tx_fragments_per_message": [
+        1
+      ],
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 0,
+      "capture_packets": 3881,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "204d710b2b823622675bf6a72b597250dddc42028d4a3fc151440dfc73d1d294",
+      "capture_stats_sha256": "75b32f10f274c9f907f35dcdb46de3fef7b7894513ad4e9601820b2d6d62144c"
+    },
+    {
+      "gate": "real-boundary",
+      "manifest_sha256": "8661f9c5c34472df7da2373bdf88b3a0b2f868b4203a5e99483137ec3d0937d3",
+      "private_manifest": "native-long-tx-cursor-v3-real-boundary/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 8,
+      "application_bytes": [
+        249
+      ],
+      "dtap_pdu_bytes": [
+        254
+      ],
+      "tx_fragments_per_message": [
+        1
+      ],
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 16,
+      "capture_packets": 3465,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "672ad32c0c7fedb72fd77d730b696699d9c1a1ac4618b360144659ddefd4e950",
+      "capture_stats_sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307"
+    },
+    {
+      "gate": "real-long248",
+      "manifest_sha256": "7f208a3ca874c83067029d3dc820003636ba12d34ba850098de666002583afed",
+      "private_manifest": "native-long-tx-cursor-v3-real-long248/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 8,
+      "application_bytes": [
+        248
+      ],
+      "dtap_pdu_bytes": [
+        253
+      ],
+      "tx_fragments_per_message": [
+        1
+      ],
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 0,
+      "capture_packets": 3433,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "026c14b272eed3ae27c7ce572701bc7a7ddc7e7d0fac01dd06b3b5e1decfd7ef",
+      "capture_stats_sha256": "6c30a80c65581a326ca0f080e782c204c342022c4cdc15dd66e6e8c27fe03af3"
+    },
+    {
+      "gate": "real-long250",
+      "manifest_sha256": "7df3a554a4eb78cb7ec75958235a347ca3e668454faf3c07b1fa9cfc09f80438",
+      "private_manifest": "native-long-tx-cursor-v3-real-long250/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 8,
+      "application_bytes": [
+        250
+      ],
+      "dtap_pdu_bytes": [
+        255
+      ],
+      "tx_fragments_per_message": [
+        2
+      ],
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 0,
+      "capture_packets": 3561,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "48c31411e9c1ba0fe3ae8df164e4be03ef441fea13731a9d686f67dad2731ce1",
+      "capture_stats_sha256": "b6aaad7b5fbb2f5ae86473df1cc21e04c724a675c7210fdacdd132e748c2b028"
+    },
+    {
+      "gate": "real-long253",
+      "manifest_sha256": "cc2f91232652fda8c306f5c454123703af0c97a2b44bfdf13fb81d97d258e463",
+      "private_manifest": "native-long-tx-cursor-v3-real-long253/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 8,
+      "application_bytes": [
+        253
+      ],
+      "dtap_pdu_bytes": [
+        258
+      ],
+      "tx_fragments_per_message": [
+        2
+      ],
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 0,
+      "capture_packets": 3561,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "13b94c572e7f4ff5e290c3eeaf0e6407ad8c5a87e787a11fa9b586e73c653e5d",
+      "capture_stats_sha256": "b6aaad7b5fbb2f5ae86473df1cc21e04c724a675c7210fdacdd132e748c2b028"
+    },
+    {
+      "gate": "real-long254",
+      "manifest_sha256": "1994eae6bf72e09de40c1f886924af7e357f8c7a36981f1e2e26a3b8204a4339",
+      "private_manifest": "native-long-tx-cursor-v3-real-long254/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 8,
+      "application_bytes": [
+        254
+      ],
+      "dtap_pdu_bytes": [
+        259
+      ],
+      "tx_fragments_per_message": [
+        2
+      ],
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 0,
+      "capture_packets": 3561,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "6074713e46b3266ec35181ddea5492fcc8051b031a967f7a4d920210a0532fa5",
+      "capture_stats_sha256": "b6aaad7b5fbb2f5ae86473df1cc21e04c724a675c7210fdacdd132e748c2b028"
+    },
+    {
+      "gate": "real-long255",
+      "manifest_sha256": "75b81dd70818679c3d39346d6c6836f8ef39f2de6e8e87e8c7816e41b239d78c",
+      "private_manifest": "native-long-tx-cursor-v3-real-long255/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 8,
+      "application_bytes": [
+        255
+      ],
+      "dtap_pdu_bytes": [
+        260
+      ],
+      "tx_fragments_per_message": [
+        2
+      ],
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 0,
+      "capture_packets": 3561,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "6b7ab90119f942fa788980f139dcd582f55cdea1063242104ef70b8c41603463",
+      "capture_stats_sha256": "b6aaad7b5fbb2f5ae86473df1cc21e04c724a675c7210fdacdd132e748c2b028"
+    },
+    {
+      "gate": "real-long1024",
+      "manifest_sha256": "85c96304bc8c8cef98ae0f71db55967ee239f3fdf9247ecb1fd83d501dff6ba3",
+      "private_manifest": "native-long-tx-cursor-v3-real-long1024/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 8,
+      "application_bytes": [
+        1024
+      ],
+      "dtap_pdu_bytes": [
+        1029
+      ],
+      "tx_fragments_per_message": [
+        5
+      ],
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 0,
+      "capture_packets": 4713,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "615c945378a7cca5574b827b9490b40382af6a190ed5c05f8c1e9d29d1ddc94b",
+      "capture_stats_sha256": "404d6f1c1d858c6ccf8cff537c2ab26a929aa057a51e3a673b42b39eb6cee231"
+    },
+    {
+      "gate": "real-long2042",
+      "manifest_sha256": "4c18e71d869eef2c29579a24bd83e6df1ced8e477e472be95de839a152cef36f",
+      "private_manifest": "native-long-tx-cursor-v3-real-long2042/manifest.json",
+      "raw_artifacts_public": false,
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "round_trips": 8,
+      "application_bytes": [
+        2042
+      ],
+      "dtap_pdu_bytes": [
+        2047
+      ],
+      "tx_fragments_per_message": [
+        9
+      ],
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_rejections": 16,
+      "capture_packets": 6249,
+      "ordinary_uid": 1000,
+      "capabilities": 0,
+      "scope": "Two real WS73, exchanged connection roles, random nonce/sequence/payload independently checked and replied by opposite application; matched both USB/HCC/A3 legs and actual per-fragment NOCP; not PHY sniffer proof",
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "console_sha256": "98fa9bcd2d79295c7665d84513c6520178563527f2b7c409357052828a1cbb4e",
+      "capture_stats_sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d"
+    }
+  ],
+  "baseline_previous_image": {
+    "kernel_head": "b63b470f2f3b86fd4ca1005e9457d71bc9324698",
+    "userspace_head": "fdec8eea6781b0ef93ac5ea5c8b12d195cfcfd13",
+    "status": "LONG_TX_CURSOR_REAL_PIPELINE_TERMINAL_PASS",
+    "scope": "40short/8app249/8app250/8app2042 with PB; superseded by fresh d926 regression, not inherited",
+    "pipeline_sha256": "39a34d20fdd9f2b19419e7c37a84209a789dafb9f72506966372bfa240a67bf1"
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "nearlink_source": "services/stack/src/dli/layer/src/dli_layer.c:DLI_SplitData and interface/dli_layer_stru.h PB enum",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "libws73_difference": "sle73_acb_netbuf builds PB=0 with fixed handle0; not copied as multi-link fragmentation implementation",
+    "combined_111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "sdk_archive_is_not_actual_firmware_abi_proof": true
+  },
+  "failure_records": [
+    {
+      "kind": "Missed internal FFI declaration",
+      "status": "BUILD_FAILED",
+      "raw_log_sha256": "71851312e7faf44121e8b720f97b56f75b1442ea24aaf114c15f6cf182e61eea",
+      "fixed_in": "b63b470f2f3b86fd4ca1005e9457d71bc9324698"
+    },
+    {
+      "kind": "Sandbox socket permission / missing dbus-daemon command",
+      "status": "TEST_FAILED_ENVIRONMENT",
+      "fixed_environment": "Existing private dbus-daemon and allowed software socket tests; no host service installed",
+      "raw_log_sha256": "7b6dfc5e2b496641f79bd1c798cf08ab882e56e31a2b0a9c2372a2815d3dbd1b"
+    }
+  ],
+  "assumptions_and_unproven": [
+    "NOCP hardware accuracy, late/duplicate completion attribution and reuse barrier remain unproven",
+    "Prepared USB atomic callback contract and joined completion remain trusted dependencies of pure proof",
+    "Firmware PB behavior qualified only by listed same-profile peer runs, not all vendor firmware or OHOS interoperability",
+    "Queue-only timeout has isolated Binding cleanup; aborting an already submitted prefix currently fails the shared Session and can affect its other Channel. Final-fd handoff/physical-obligation ownership and controlled VM tests are required before per-application close isolation qualification",
+    "Independent actor is not process fault isolation; apps-only rights and daemon crash promises unchanged",
+    "No approval/key installation, encryption, Bond, positive relay peer delivery or true SSAP long write inferred",
+    "Manual unplug, hub power, QMP and injected fault are not non-manual natural recovery acceptance"
+  ],
+  "artifacts": {
+    "raw_capture_availability": "Private workspace evidence only; no public pcap artifact supplied, published hashes/summaries cannot establish independent reproduction",
+    "firmware_sdk_standards_in_public_site": false
+  },
+  "full_goal_complete": false,
+  "original_issues_closed": false,
+  "natural_fault_root_cause_closed": false,
+  "non_manual_recovery_qualified": false
+}

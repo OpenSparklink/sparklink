@@ -457,3 +457,17 @@ delivered计数只是callback尝试，submitted计数只是driver尝试，不等
 Session/Channel/Binding、Grant、ticket和资格继续有效。未来UserHost socket是controller所有权对象，
 不是普通Channel socket或Native Backend；接管Grant独立、fd别名/SCM引用与lease revoke明确区分，
 返Native必须真实状态屏障/新身份/重初始化，不继承connection/credit/key。本轮无UserHost实现或证明。
+
+
+## DLI PB 的 Session 所有权（2026-10-15）
+
+PB中没有TCID，不能把两个Channel的未完成PDU按片轮流交给同一handle。
+现有Session的唯一worker持有连接级游标，片间继续处理RX，但延后CMTC和其他Channel TX。
+每片复用Runtime实际提交票据和controller包credit；软件准入的原期限不刷新，有限队列包含busy项。
+未提交任何前缀的排队超时只清理本Binding并报告ETIMEDOUT，同连接的其他Channel保持。
+零credit只保留未提交游标，不重放前缀。取消/最后关闭不取消已提交物理债务。
+没有合格部分PDU清除协议时，已提交前缀被中止会终止Session而不是让新PDU替换它。
+前缀中止终止共享Session会影响另一Channel；当前不提供按应用在途关闭隔离资格，
+下一批必须明确Session物理义务与fd交接，不能把该保守策略作为最终多应用契约。
+这不提供可靠DTAP、SSAP分片/长写或NOCP复用屏障资格。实现、有限证明与实机状态分别
+进入唯一能力入口及证据，保留完整原门禁；不把全部控制竞争设为数据面的前置。

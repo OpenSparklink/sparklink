@@ -244,22 +244,32 @@ impl ConnectionIface {
         }
         Ok(result)
     }
+    async fn ssap_context(
+        &self,
+    ) -> (
+        u16,
+        std::sync::Arc<std::sync::Mutex<crate::ssap_database::Database>>,
+    ) {
+        let state = self.state.lock().await;
+        (state.controller.dev_index, state.ssap_database.clone())
+    }
     pub(crate) async fn start_ssap(&self) -> zbus::fdo::Result<()> {
         let mut actor = self.ssap.lock().await;
         if actor.is_some() {
             return Ok(());
         }
         let fd = self.authorized_fd(3, 0, true).await?;
+        let (index, database) = self.ssap_context().await;
         *actor = Some(
             crate::ssap_engine::Engine::start(
                 fd,
                 (
-                    self.state.lock().await.controller.dev_index,
+                    index,
                     self.generation,
                     self.reference.lifetime,
                     self.reference.handle,
                 ),
-                self.state.lock().await.ssap_database.clone(),
+                database,
             )
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?,
         );
@@ -380,6 +390,29 @@ mod grant_tests {
     use std::sync::Arc;
     use tokio::sync::Mutex;
 
+    #[tokio::test]
+    async fn ssap_start_context_releases_one_adapter_guard_before_actor_arguments() {
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            libsparklink::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(
+                std::path::Path::new("/tmp"),
+                "ssap-context-regression",
+            ),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        state.lock().await.controller.dev_index = 17;
+        let iface = ConnectionIface::new(state.clone(), 7, SleLinkInfo::default());
+        let (index, store) =
+            tokio::time::timeout(std::time::Duration::from_millis(100), iface.ssap_context())
+                .await
+                .unwrap();
+        let guard = state
+            .try_lock()
+            .expect("production snapshot must not retain adapter guard");
+        assert_eq!(index, 17);
+        assert!(Arc::ptr_eq(&store, &guard.ssap_database));
+    }
     #[tokio::test]
     async fn actual_scoped_handler_rejects_before_held_business_state() {
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(

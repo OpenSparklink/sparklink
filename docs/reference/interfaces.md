@@ -27,7 +27,7 @@
 | 旧 property／write facade | property 超 248、write 超 252 字节拒绝；这是遗留输入校验，不是新 Engine MTU 承诺 | `slkd/src/service.rs` |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |
-| 新用户态 SSAP Engine | Uceb6114唯一SMTC actor仅初始ExchangeInfo取得真实双端资格；服务/长写/通知仍未接通 | 唯一实施计划 WP08、准确能力入口 |
+| 新用户态 SSAP Engine | Ub5cc6f5唯一actor初始信息与已知handle单值读写取得双端资格；结构/UUID发现、长写、通知仍缺 | 唯一实施计划 WP08、准确能力入口 |
 
 C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声明推导硬件支持。本表是状态查找参考，完整资格仍仅维护于能力入口；逐字段自动生成 API 及全错误矩阵尚待下一批。
 
@@ -82,3 +82,8 @@ local/remote TCID/PI/basic mode/directions，reserved0，无lease/security承诺
 不改变通道或消费队列。快照仅在授权准入点一致，不保证返回后的连接存续。
 C `slk_channel_info`错误不改输出；Python `native.channel_info(fd)`用于delegated
 socket，不是NativeAdapter的控制fd。32位仅C布局已验，真实compat调用仍待验收。
+
+ServiceManager新增明确本地 RegisterLocalService/ListLocalServices/ReadLocalValue/RemoveLocalService；
+Connection新增ReadSsapValue/WriteSsapValue经真实SMTC，写要求peer校验回复。
+旧未接通facade仍NotSupported。数据库配置不是远端发布；原始门禁及安全/失败
+语义见准确资格和证据，不转授为完整服务支持。

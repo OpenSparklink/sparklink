@@ -1,6 +1,21 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前主线：唯一SMTC actor真实ExchangeInfo通过
+## 当前主线：真实SSAP单值读写通过，继续完整服务路径
+
+K31769／Ub5cc6f5：唯一actor上有界数据库、真实基础单值读/校验写、原期限、
+显式本地配置及对端应用核对接通；32写/64读与原业务/边界/受控同行取得准确
+VM门禁。首轮构造参数双状态锁回归已修复，保留失败；不将该软件回归混作
+自然硬件根因。新codec模型unsupported仍未证明，完整actor/数据库也未证明。
+[源码、门禁、假设及缺失](evidence/ssap-values-progress-20261014.json)。
+
+WP08继续：服务结构/UUID发现与真实远端缓存，通知/指示/订阅；随后协商的
+SSAP长包、事务号和分片。actor/数据库原期限、取消/关闭/旧lifetime模型与真实
+credit耗尽/满队列并行；动态多通道/四设备随后接入。未发布接口继续整改，
+C/Python高层SSAP调用者未接通。完整19WP/10FV/12DG、S0–S6、VM-only、
+UserHost P4、自然RCA和非人工恢复开放条件保持，部分成果不关闭整项。
+
+
+## 前一批：唯一SMTC初始ExchangeInfo（历史增量）
 
 K31769／Uceb6114：默认slkd唯一actor接通SMTC10/PI0、实际快照和Grant检查、
 有限队列/原始期限/显式退役；4个连接lifetime的双端初始ExchangeInfo及原

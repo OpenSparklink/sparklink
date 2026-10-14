@@ -1,0 +1,6 @@
+[package]
+name="sparklink-production-ssap-value-proof"
+version="0.0.0"
+edition="2024"
+publish=false
+[workspace]

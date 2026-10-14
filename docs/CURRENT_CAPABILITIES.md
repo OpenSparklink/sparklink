@@ -1,6 +1,25 @@
 # 当前能力与资格
 
-## 最新用户态SMTC／ExchangeInfo资格（精确源码）
+## 最新用户态SSAP单值读写资格（精确源码）
+
+K31769ea4b8c0／编译服务及冻结工具U `b5cc6f5ebd3fb199fe13d5c30917bbe173ed831d`。
+唯一SMTC actor接真实单值READ/WRITE与校验回复；本地数据库按registration隔离，
+有界服务/值/字节预算、无handle复用，复用权限类型。只有明确本地配置和已知
+handle访问，尚未服务发现/远端发布；旧wire/facade不恢复。
+
+4个lifetime阶段中双方各重复4轮，共32随机写入/64空口读取；对端本地应用
+核对实际值，发送端读回及逐命令双端USB一致。40短消息、8轮249/16超限拒绝、
+getter/copy与受控同行门禁保持；正常VM drops0/taint0，准确CI九项通过。
+首次Ub8f6479因启动表达式双锁导致连接18秒超时，失败保留；Ub5cc6f5修正单锁
+快照并取得上述准确资格。自然RCA/非人工恢复仍OPEN。
+
+严格构建、465工具、36跨语言与C头一致；新codec Kani含unsupported，仍未证明，
+仅0..16字节范围也不覆盖32字节实测值。actor/数据库并发、基础无TID迟到重复
+隔离、长包、通知指示、完整服务、安全/Profile/四设备数据仍缺。
+[源码、失败、边界与三个真实报告](evidence/ssap-values-progress-20261014.json)。
+
+
+## 前一批SMTC／ExchangeInfo资格（当时源码）
 
 K `31769ea4b8c006f999f4fbe0da68f7291ef71935`／编译服务和冻结工具
 U `ceb611437a1099806f58cf381913b6aa775438ac`。唯一slkd actor拥有SMTC10/PI0

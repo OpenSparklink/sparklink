@@ -13,3 +13,6 @@
 
 [唯一SMTC actor的源码、限定实机与未证明范围](ssap-actor-progress-20261014.json)
 包含普通用户双端ExchangeInfo及原业务回归；不等于完整SSAP服务或安全资格。
+
+[真实基础SSAP读写、原失败与限定范围](ssap-values-progress-20261014.json)
+区分本地配置、peer应用检查/空口读回与未证明模型；不代表完整服务发现或安全。

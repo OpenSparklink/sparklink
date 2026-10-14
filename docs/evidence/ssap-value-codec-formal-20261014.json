@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "NOT_PROVEN",
+  "accepted_proof": false,
+  "command": [
+    "cargo",
+    "kani",
+    "--manifest-path",
+    "formal/ssap_value/Cargo.toml"
+  ],
+  "scope": "Production ValuePdu base single-value codec only, raw length0..16, arbitrary u16 MTU, capacity0..16, unwind20; no32-byte payload/database/actor/lifetime/RF proof",
+  "sources": {
+    "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+    "formal/ssap_value/src/lib.rs": "fb350d83e99a865105db9bb6bcc973fb8698170392f5a9a50717db6d7e341c43",
+    "formal/ssap_value/Cargo.toml": "f752abe56855869cb57b924c97ea73a9c83ee19149298cd9797e14e40265c502",
+    "formal/ssap_value/Cargo.lock": "0db1ec44a665bde47ea66a74d0f32322c5f4c943c6dc072656f79ab4b47b3170"
+  },
+  "exit_code": 0,
+  "unsupported_diagnostic": true,
+  "complete_harness_summary": true,
+  "source_changed_during_check": false,
+  "log_sha256": "7ccb818c9f5c2bdeba7af7c626991bf223cbcb6033129b91aa3a29853a11cbb6",
+  "tool_versions": {
+    "kani": "0.68.0",
+    "cbmc": "6.11.0"
+  }
+}

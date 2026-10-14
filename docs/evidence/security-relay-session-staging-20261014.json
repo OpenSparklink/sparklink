@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "kernel_staged_source_head": "4002140f908d76ea1a1e4c60f4113a6454bc6b47",
+  "scope": "Staged pure Native security relay TX ownership ledger only; NOT linked into default kernel",
+  "source_mapping": {
+    "net/sparklink/experimental/security_relay.rs": "d79f68088cf13cb446fb1d69062c59f3039074ea70fdec79909ff216f4707942",
+    "tools/testing/selftests/sparklink/security/relay_session.rs": "75258686a213a90946e0a97b71db8c28964bd9fa796506ee39e703d105288a7e",
+    "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "773f04e9185934623502b23e9b850f4969463498f9d19af841982b90ce5c1a8e",
+    "tools/testing/selftests/sparklink/run_security_relay.py": "8ee2404f5fa2a5483ae8371c1a3547bf720d0b4d394ab4e002f75f472e1b90ae"
+  },
+  "implemented": [
+    "immutable controller/generation/physical connection lifetime/handle/Grant epoch snapshot",
+    "two queued PDUs plus one prepared/submitted relay; no truncation up to255 payload bytes",
+    "explicit5byte SDK1111812 parameters; no C struct cast",
+    "pre-submit cancellation prevents submit; in-flight cancellation retains real reply obligation",
+    "original absolute deadline in queue/prepared/submitted/closing; uncertainty retains obligation and reset-required",
+    "successful Status/USB success cannot synthesize Complete or pay protocol command credit",
+    "per-object controller isolation; no trusted security level or crypto result generated"
+  ],
+  "default_kernel_implementation": false,
+  "default_source_unchanged_from": "7de50814c263b1b4416616e081b6878905c6c1b6",
+  "runtime_qualification_unchanged": {
+    "evidence": "security-relay-envelopes-20261014.json",
+    "kernel": "7de50814c263b1b4416616e081b6878905c6c1b6",
+    "compiled_service": "af583eb0db58106a0f5ef9937247edf0e032e6c1",
+    "new_rf_run_for_this_staging": false,
+    "positive_pairing_acceptance": false
+  },
+  "offline": {
+    "status": "PASS",
+    "strict_command": "python3 tools/testing/selftests/sparklink/run_security_relay.py --output REPORT",
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+    "tests": 7,
+    "all_payload_boundaries": [
+      0,
+      256
+    ],
+    "driver_submission": "explicit accepted/never-queued callback fixture, not USB",
+    "log_sha256": "665c2892e35e1f06c73e679a0e7df9d41b87e1a07893526d8aa4196be6af3fbc"
+  },
+  "formal": {
+    "status": "NOT_PROVEN_UNSUPPORTED",
+    "exit": 0,
+    "generated_checks": [
+      752,
+      914
+    ],
+    "command": [
+      "kani",
+      "tools/testing/selftests/sparklink/security/relay_session_kani.rs"
+    ],
+    "log_sha256": "90e65349f42580b4ba2c2f96b2ff08221ed7e43817afdfaf493e8c8439e309b2",
+    "version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0",
+    "runner_exit": 1,
+    "scope": "two local ownership harnesses; no actual Host/locks/FD/crypto/firmware/peer proof",
+    "state_space": {
+      "transition_steps": 8,
+      "queued_capacity": 2,
+      "active_capacity": 1,
+      "transition_payload_bytes": [
+        0,
+        3
+      ],
+      "identity": "fixedcontroller1/generation2/lifetime3/epoch4, mismatchedgeneration3/lifetime4; concrete tests cover each component",
+      "time": "arbitraryu64 at each step, originaldeadline100",
+      "second_harness": "arbitraryu64 cookie, overflow and3byte snapshot",
+      "unwind": 12
+    },
+    "unsupported": "panic caller_location/foreign unwind and unallocated-pointer reasoning guards occur in Rust/std paths; raw guards SUCCESS and solver0fail do not upgrade unsupported to accepted proof",
+    "environment_assumptions": [
+      "current Identity must come from canonical Runtime/Host/Grant checks under real locks, still unconnected",
+      "atomic submit callback is accepted or never-queued; no actual URB/credit tested",
+      "one state object per physical lifetime/attempt; new same-connection attempt/barrier not established",
+      "outer Host must attribute wireopcode to real reserved ticket; wire carries no cookie/gen/lifetime and duplicates/late replies unproved"
+    ],
+    "prior_attempts": [
+      {
+        "name": "unformatted version",
+        "log_sha256": "f5fac399a15da5399e89251168fa52e38458f9d1d64777b7fb68167ac9f179f1",
+        "status": "NOT_PROVEN; raw752/914 zero-failure results retained; private source snapshot retained"
+      }
+    ]
+  },
+  "timeout": {
+    "status": "NOT_PROVEN_TIMEOUT",
+    "timeout": 1,
+    "log_sha256": "b5c9d22f3709962de3853121af813641ce7a772037bc361d47de48acdcb9bb7d",
+    "runner_exit": 1,
+    "process_group": "SIGKILL and communicate/join before return; private tree cleanup; no devices"
+  },
+  "reference_review": {
+    "nearlink_host_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "nearlink_clean": true,
+    "sources": [
+      "services/stack/src/cp/bsl/sle/sm/src/sm.c::SM_RecvControllerDataCbk,SmSendMessage",
+      "services/stack/src/dli/interface/dli_cmd_struct.h::DLI_ControllerData"
+    ],
+    "libws73_head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sources_lib": [
+      "src/sle73/sle73_sm.c::sm_relay,sm_relay_done"
+    ],
+    "differences": [
+      "referenceLCID/address lookup is not a physical lifetime/Grant guarantee",
+      "do not copy referenceglobal contexts or Cpadding",
+      "one real1812 completion before next; local cookie guard does not prove late wire reply barrier"
+    ],
+    "independent_implementation": true
+  },
+  "missing": [
+    "soleConnectionSession/Host ownership and author/Grant epoch validation",
+    "typed1812 driver preparation/actual atomic command ticket/sharedHost credit and completion",
+    "0014/000e/0011 RX attribution,265byte Core relay ingress maximum,late RX isolation",
+    "FD/dup/fork/SCM_RIGHTS/finalclose semantics remain actual SocketBinding responsibility; no new qualification",
+    "controller drain/retire/reset barriers and natural recovery roots",
+    "negotiation/nonces/ECDH/Agent/peer proof/security level/role-bound1c03/1c05",
+    "positive pairing/encrypted business/CCC/notification/indication/Bond real gates"
+  ],
+  "closure_allowed": false,
+  "ci": {
+    "source_head": "9ff5067a8eded2f6143346bc28a669ee650cf5f8",
+    "run_id": 38507453410,
+    "status": "success",
+    "jobs_passed": 9,
+    "documentation_run_id": 38507453430,
+    "documentation_status": "success",
+    "strict_locked_build": "PASS",
+    "formal_or_hardware_acceptance": false
+  }
+}

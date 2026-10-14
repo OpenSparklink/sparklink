@@ -1,5 +1,18 @@
 # 当前能力与资格
 
+## 最新安全 relay 状态转换（实验隔离，未接默认内核）
+
+K `4002140f908d` 新增实际纯逻辑：每物理连接身份与Grant epoch、两项队列／
+单个在途、255字节无截断、提交前撤销及提交后真实回复义务、原期限和不确定
+失败需reset。代码仅在 `net/sparklink/experimental/`，未编入默认内核，不恢复
+旧Engine，不拥有第二份命令credit，也不发布可信安全状态。
+
+7项严格Rust回归通过。Kani原始752／914检查零失败，但有unsupported警告，
+因此结论为 **NOT_PROVEN_UNSUPPORTED**；超时负例返回NOT_PROVEN_TIMEOUT，
+工具组被停止并join，runner退出1。默认运行代码未改变，实机资格仍为下述
+准确K7de/Uaf；不声明新配对、fd/dup、提交屏障或硬件验收。
+[源码映射、假设、失败与接入缺口](../docs/evidence/security-relay-session-staging-20261014.json)。
+
 ## 最新 SDK111 安全封装及原数据路径回归
 
 K `7de50814c263`／编译服务 U `af583eb0db581` 在 VM 内重新通过双向40轮短消息、

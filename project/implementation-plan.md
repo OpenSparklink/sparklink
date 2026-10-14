@@ -1,5 +1,16 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前安全接入：采用已写的 relay 状态转换，完成实际所有权接线
+
+K400新增的实验纯逻辑不是另一套wire Engine；7项严格回归通过，有界工具
+unsupported按未证明保留。下一批直接将同一源码接入现有物理ConnectionSession
+与Host：canonical lifetime/Grant epoch、共享命令槽及credit、driver typed1812、
+原子提交票据、0014/000e/0011归属、265字节Core入口、真实完成与原期限/取消。
+SocketBinding与fd/dup仍独立，禁止每次开fd重建安全Session；同连接重试的晚到
+回复/旧数据屏障仍需定义，不能凭更换cookie解决。接线及相关VM门禁完成后
+退出实验目录，不长期保留两套实现。原数据路径、安全后续和自然恢复scope不变。
+[当前实际源码、未证明及下一批门禁](../docs/evidence/security-relay-session-staging-20261014.json)。
+
 ## 当前安全纵向切片：封装已接，Session／发送待接
 
 K7de/Uaf准确新VM已保持原40短消息、249及超限／SSAP门禁。默认RX安全封装

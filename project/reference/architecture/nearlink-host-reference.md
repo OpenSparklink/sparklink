@@ -201,3 +201,12 @@ K `7de50814c263` 的默认 WS73 RX 在 Runtime 入口之前验证 `0014`、`000e
 保持有界原始数据，不从报文 framing 或参考 Host 的成功 API 推导认证。
 实际生产函数的有界模型和准确新镜像回归分别记录于
 [安全封装报告](../../../docs/evidence/security-relay-envelopes-20261014.json)。
+
+### relay 生命周期接入前的所有权差异
+
+指定f087的 `SM_RecvControllerDataCbk` 经CM按LCID查询当前地址后分发；libws73
+的 `sm_relay` 在真实1812完成之前保留后续PDU。本项目K400实验纯逻辑保留串行
+要求，但以controller/generation/物理lifetime/handle/Grant epoch绑定，未来由
+唯一ConnectionSession持有。地址/handle查表和本地cookie均不能证明旧wire回复
+不会匹配新物理会话；真实Host锁、命令槽、授权及barrier仍未接通。
+[实际逻辑与未证明范围](../../../docs/evidence/security-relay-session-staging-20261014.json)。

@@ -31,3 +31,6 @@
 
 [SDK111安全事件封装、指定Host核对、有界证明及准确新镜像回归](security-relay-envelopes-20261014.json)
 区分默认RX长度检查与尚缺的安全Session／真实发送／可信安装；保留自然恢复未决。
+
+[实验relay每连接状态转换、严格回归及未证明报告](security-relay-session-staging-20261014.json)
+未进入默认Host；unsupported/timeout保持NOT_PROVEN，不升级旧WS73资格。

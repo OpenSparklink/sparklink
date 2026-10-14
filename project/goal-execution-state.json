@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-14T03:23:18.851943+00:00",
+  "updated_at_utc": "2026-10-14T03:43:55.799194+00:00",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -26,9 +26,9 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "7de50814c263b1b4416616e081b6878905c6c1b6",
-    "userspace": "54f238ac5c5fdb2c24b8238a1536b7107846765b",
-    "observation": "Source/CI snapshot before this documentation commit; exact VM service Uaf583, no new production pairing."
+    "linux": "4002140f908d76ea1a1e4c60f4113a6454bc6b47",
+    "userspace": "9ff5067a8eded2f6143346bc28a669ee650cf5f8",
+    "observation": "Staged nondefault relay code/CI snapshot; no new runtime RF qualification. QualifiedK7de/Uaf unchanged."
   },
   "qualified_source_heads": {
     "linux": "7de50814c263b1b4416616e081b6878905c6c1b6",
@@ -52,10 +52,11 @@
     "FV_USB_REGISTRY": "NOT_PROVEN_UNSUPPORTED: actual generated allocator initial plus arbitrary u16 bitmap/u64 gen>=2 consistent slot representation, not concurrency/callback/hardware; successful raw solver does not override warnings.",
     "FV_BACKEND_INSTALL": "Original bounded2slot/2candidate/3gen model rechecked exactK308/U420; MODEL_CHECKED_SCOPED+weak counterexample, no enlarged early profile/C/diagnostic/recovery/callback scope.",
     "FV_REGISTRATION_SDK": "Actual SDK validator after new tuple alias rechecked full ABI/u16/u64 Kani83+weak generation witness; scope unchanged, no Core/daemon/producer/lifetime/authority refinement.",
-    "FV_SECURITY_ENVELOPE": "BOUNDED_PASS actual dli.c0..265-byte allocated nondeterministic packets, CBMC6.11.0/unwind266/602 generated checks; no lifetime/crypto/firmware/RF/security-state proof"
+    "FV_SECURITY_ENVELOPE": "BOUNDED_PASS actual dli.c0..265-byte allocated nondeterministic packets, CBMC6.11.0/unwind266/602 generated checks; no lifetime/crypto/firmware/RF/security-state proof",
+    "FV_SECURITY_RELAY": "NOT_PROVEN_UNSUPPORTED; actual isolated pure Rust twoharness8steps/twoqueued/oneactive/0..3payloads/u64counter, raw752+914 zero failures but Kani panic/pointer warnings; no Host/Grant/FD/wire/barrier refinement."
   },
   "next_slices": [
-    "Implement lifetime/generation/lease-bound Native security relay ownership; typed1812 and command completion/original deadline, opaque0014/000e/0011 dispatch, cancellation retaining physical obligations. Compare exactNearLinkf087/SDK111/libws73f4d each relevant batch.",
+    "Wire existingexperimental security_relay.rs into sole physicalConnectionSession/Host, canonical Runtime/Grant epoch and real shared command reservation/atomic driver submission; typed1812 preparation, RX0014/000e/0011 lifetime attribution including265byte envelope, completion/originaldeadline and cancellation preserving physical obligation. Remove staging only after exact related VM gates; no second implementation.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
@@ -2416,7 +2417,7 @@
     "local_path": "../communication_nearlink_service",
     "selected_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
     "when": "Each relevant transport/Host/lifecycle/SSAP/security/Profile batch; inspect source/dirty state and compare standard, SDK111 and libws73-usb",
-    "latest_review": "docs/evidence/security-relay-envelopes-20261014.json",
+    "latest_review": "docs/evidence/security-relay-session-staging-20261014.json",
     "not_assumed": "Other Host compatibility or trusted Native state from reference API success"
   },
   "userspace_ssap_update_rx_slice": {
@@ -2596,5 +2597,13 @@
         "body_sha256": "6498ad6facb987d79a170428ee191fdeb62974d940e87016f9f0275c53cf909d"
       }
     ]
+  },
+  "security_relay_session_staging": {
+    "evidence": "docs/evidence/security-relay-session-staging-20261014.json",
+    "implemented": "experimental same-source per-lifetime TX relay transitions, fixed2queue/1active, explicit255byte limit, original deadline and physical obligation retention",
+    "default_kernel_implementation": false,
+    "formal": "NOT_PROVEN_UNSUPPORTED; raw752+914 checks0fail, not accepted proof; timeout negative NOT_PROVEN_TIMEOUT exits1",
+    "next": "Use this same source in the sole ConnectionSession/Host; wire canonical Grant/lifetime checks and typed driver/atomic command ticket/real reply. No duplicate new state implementation.",
+    "closure_allowed": false
   }
 }

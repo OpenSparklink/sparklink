@@ -1,0 +1,362 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "BEGUN_PDU_FINAL_FD_CLOSE_ISOLATION_REAL_PASS",
+  "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+  "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+  "closing_tools_head": "447e1f0a60096042e3042c0d2287c441a1dc406d",
+  "production": {
+    "owner": "Existing physical ConnectionSession, at most one bounded PDU; no alternate Engine",
+    "first_submit": "Session lock: actual atomic USB success marks begun; before this final Binding retirement denies submit",
+    "final_fd": "Cancel never-started queue, retire RX/new TX Binding; Session retains only begun original PDU and frozen immutable operation Grant",
+    "continued_submit": "Every fragment still rechecks Native Runtime managed epoch/generation/lifetime, credit and original deadline at actual USB submission",
+    "cleanup": "Worker joined before operation retirement; dropping operation never refunds physical debt; genuine fault/withdrawal still needs cleanup/barrier"
+  },
+  "normal_regression": [
+    {
+      "private_folder": "native-pdu-owner-real-short",
+      "manifest_sha256": "e71bd2c7932a41def2f90aba3eeb1aeeedfda50acc10c49edaddf0247a233450",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 40,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        61
+      ],
+      "controller_fragments": [
+        1
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 0,
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "private_folder": "native-pdu-owner-real-boundary",
+      "manifest_sha256": "e94226279cd1a3ba7264f741eb01b83c73a6b59e0035ed4fafe3ad4f061e07ad",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 8,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        249
+      ],
+      "controller_fragments": [
+        1
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 16,
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "private_folder": "native-pdu-owner-real-long",
+      "manifest_sha256": "d3430c4b4f8ffae660bf701ee9c1b46a00bdabfffb75abdbd0427a48ae77f276",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 8,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        2042
+      ],
+      "controller_fragments": [
+        9
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 16,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "private_folder": "native-pdu-owner-length248",
+      "manifest_sha256": "61778de8d60b877d15d64a75efbbf25c240dd3119ee71e969fd041cc9d1feaae",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 8,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        248
+      ],
+      "controller_fragments": [
+        1
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 0,
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "private_folder": "native-pdu-owner-length250",
+      "manifest_sha256": "9dca16369bcc2f42df8f0659351e37f7b08336692de78f40a56f41d269bfaf02",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 8,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        250
+      ],
+      "controller_fragments": [
+        2
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 0,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "private_folder": "native-pdu-owner-length253",
+      "manifest_sha256": "01a91050ac82f41034981f5b9072d6b77cd221f7f96c84d8c77ab7452e8edcaf",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 8,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        253
+      ],
+      "controller_fragments": [
+        2
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 0,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "private_folder": "native-pdu-owner-length254",
+      "manifest_sha256": "ed311c59a16956c257868e33baf0dc3a9952216a5192b9bb3615730a7fa8e672",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 8,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        254
+      ],
+      "controller_fragments": [
+        2
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 0,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "private_folder": "native-pdu-owner-length255",
+      "manifest_sha256": "0904d7b0895fc719dd9c33d1dd21fdbfe07141091cfc421a99b57ebc6fc90d19",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 8,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        255
+      ],
+      "controller_fragments": [
+        2
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 0,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "private_folder": "native-pdu-owner-length1024",
+      "manifest_sha256": "869f4d83fafc29c7e75f930972d2584e5184e812a95e31e1ed82915f411baa9c",
+      "raw_artifacts_public": false,
+      "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+      "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+      "round_trips": 8,
+      "prefix_close_phases": 0,
+      "app_bytes": [
+        1024
+      ],
+      "controller_fragments": [
+        5
+      ],
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "boundary_refusals": 0,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    }
+  ],
+  "strict_prefix_close": {
+    "private_folder": "native-pdu-owner-final-close-real",
+    "manifest_sha256": "3b76251f52a86c7d3603288584370755595d9212e71c874d29cfeea2f91a0c41",
+    "raw_artifacts_public": false,
+    "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+    "compiled_userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+    "round_trips": 0,
+    "prefix_close_phases": 2,
+    "app_bytes": [
+      2042
+    ],
+    "controller_fragments": [
+      9
+    ],
+    "vm_taint": 0,
+    "capture_kernel_drops": 0,
+    "boundary_refusals": 0,
+    "long_pdu_acceptance": false,
+    "credit_exhaustion_acceptance": false,
+    "four_device_acceptance": false,
+    "scope": "Opposite application validated and replied; source closed and does not claim business round trip; real post-close SMTC service reads/writes/UUID/discovery on same physical Session",
+    "timing": [
+      {
+        "phase": 0,
+        "first_usb_submit_ns": 1792004989511181000,
+        "close_start_ns": 1792004989536026861,
+        "close_return_ns": 1792004989536031319,
+        "source_reaped_ns": 1792004989543839175,
+        "last_usb_submit_ns": 1792004989604176000,
+        "other_channel_after_close": true
+      },
+      {
+        "phase": 1,
+        "first_usb_submit_ns": 1792004993392183000,
+        "close_start_ns": 1792004993410675442,
+        "close_return_ns": 1792004993410681363,
+        "source_reaped_ns": 1792004993419186443,
+        "last_usb_submit_ns": 1792004993485177000,
+        "other_channel_after_close": true
+      }
+    ]
+  },
+  "first_narrower_gate": {
+    "private_folder": "native-pdu-owner-real-prefix-close",
+    "manifest_sha256": "b6579a0d623c22a5fc91cab02f740b8a5a4964f4928245603ea88335f5778f54",
+    "scope": "Local drop timestamp only; stronger source-reap/rebind and last USB ordering supersedes it; no business round trip counted"
+  },
+  "formal": {
+    "kernel_tree_clean": true,
+    "userspace_tree_clean": true,
+    "status": "SCALAR_CONSENT_PASS",
+    "exit": 0,
+    "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+    "userspace_head": "995eac1cce39cbe309fe813491517fa957f54f48",
+    "sources": {
+      "net/sparklink/sle_channel_socket.c": "f8a7a0c505231aa2dd3c5e8d3b871af858b65b3738d602a094785afca1bc1089",
+      "formal/channel/pdu_submit_cbmc.c": "2a7ddafa795aa3509c5860993e789bce2d0885df51ce352c2e2897ee318fe168",
+      "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+      "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+      "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1"
+    },
+    "production_functions": [
+      "sl_sk",
+      "sl_permits",
+      "sl_session_submit"
+    ],
+    "production_bodies_sha256": "53e8c281222dd5925f9710183cc68f74324e6d4547941edbc23f0a62a51240f8",
+    "generated_harness_sha256": "cc2682c4cf6075f3b4b89ebec3b0e910e6569dce0861e3210022643e93c8ceb1",
+    "version": "6.11.0 (cbmc-6.11.0)",
+    "checks": [
+      [
+        "0",
+        "311"
+      ]
+    ],
+    "log_sha256": "ffd3907e61b02047a0010baee4b1bb5a32ab32633cbf3dff2de3dd3097f0773d",
+    "scope": "Actual structures/functions, two channel slots, arbitrary scalar identities/grants/phase, current/foreign valid packet objects, started/retired, arbitrary expiry and USB result; exact first-submit authorization and frozen begun operation consent; no sequence unwind",
+    "assumptions": [
+      "Objects valid and retained for call; no concurrent mutation inside this serialized consent region",
+      "Spinlock, kernel sock/work/kref layouts and clock arithmetic are dependencies; expiry explores both outcomes",
+      "Native Runtime still holds Host/data/gate and rechecks epoch/lifetime before this callback; not proved by this harness"
+    ],
+    "trusted_base": [
+      "CBMC frontend/solver and C semantics"
+    ],
+    "not_proved": [
+      "Whole worker/reference/close/credit composition or C/Rust refinement",
+      "Runtime grant revocation, USB callbacks/HCD lifetime and NOCP hardware accuracy",
+      "Real hardware delivery, complete VFS dup/SCM_RIGHTS matrix or long-term liveness"
+    ],
+    "real_acceptance": false
+  },
+  "offline": {
+    "worker": {
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "f8a7a0c505231aa2dd3c5e8d3b871af858b65b3738d602a094785afca1bc1089",
+        "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+        "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+        "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+        "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+        "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+        "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1",
+        "include/uapi/linux/sparklink_socket.h": "0bc1acc8b31fcce8787d1e234435266742b5228976534499ab224a86e827f40e",
+        "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "8f347677630071ce58f8691e62e865ad090c90f342e2d9a4b4cbd02af844bd78"
+      },
+      "scope": "actual single-consumer two-slot route/local TCID+PI/independent finite RX and TX, retired-slot/peer isolation, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths, actual Session-owned physical TX/first-submit linearization/fd detach and original-deadline worker; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+      "raw_report_sha256": "99319ed44f6794f3ec60c6eba33e6a372e1aac4cbbc48c6b132fbd1bb23939a0",
+      "tests": null
+    },
+    "native": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "sources": {
+        "net/sparklink/sle_native.rs": "29448f55954b0b3bd3bf2e302aeed60bca992040a81371af56c6657b3efafdfb",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "76b10d44191623785a6e23d5fa7fb214ecf4f096391f340a9b0768d02575b1dd",
+        "net/sparklink/sle_sessions.rs": "60eb079226523984104fc9602ce55f1aaa238cda3f298bfb2306bc6c3ea32342",
+        "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "04ca33244a7050b69bb8d51edf2c857205a0d93259fc5bb0c0932cac1b9c0aa6"
+      },
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "raw_report_sha256": "1b0422b5b3d8543831ffa8316c1e6a2ded8a905fbcc5a354de5fb40b0f86ebc4",
+      "tests": 39
+    }
+  },
+  "proof_strength": {
+    "consent": "Actual C structures and sl_sk/sl_permits/sl_session_submit,311 scalar checks; no always-successful submit dependency",
+    "not_proved": [
+      "Native C/Rust consent-credit composition/refinement",
+      "Kernel lock/reference/VFS/USB lifetime, full dup/fork/SCM_RIGHTS/linger matrix",
+      "Hardware NOCP exactness/duplicates/late events/reuse barrier",
+      "Real Managed revoke/down during prefix, credit depletion/full queues, four devices",
+      "Clock arithmetic/scheduling, long-term liveness, natural fault recovery"
+    ]
+  },
+  "artifacts": {
+    "raw": "Private local pcap/console/stats; not uploaded. Hashes/summaries cannot replace independent access.",
+    "firmware_sdk_standards_in_public_site": false
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "nearlink_path": "services/stack/src/dp/dtap/src/dtap_scheduler.c:split/save pending fragments; no vendor fd lifecycle assumption copied",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "combined_111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3"
+  },
+  "remaining": [
+    "Real credit/backpressure/full queue and revoke/down during begun prefix remain next gates",
+    "SMP147/candidate1ff peer delivery failed historically; no new security qualification here",
+    "S5 Agent/key installation/encryption/Bond/Profile and all S0-S6 original remaining scope open",
+    "Natural RCA/non-manual recovery, partial init/events/cleanup remain parallel; UserHost P4 only planned"
+  ],
+  "full_goal_complete": false,
+  "original_issues_closed": false,
+  "natural_recovery_qualified": false
+}

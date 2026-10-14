@@ -202,17 +202,24 @@ USB、NOCP、协议 ACK 和本地队列均不等于对端应用处理。
 SSAP/Profile 复用同一通道路径；安全 DLI relay 是控制信令，不另造业务发送路径。
 
 DLI PB、DTAP SAR、SSAP分片是不同层；DLI PB将一个DTAP PDU拆成控制器包，
-不构成SSAP长写或可靠模式。Session拥有唯一TX分片游标，未完成PDU期间禁止同连接
-其他Channel/CMTC插入；RX仍由Session唯一分流。控制器包上限与协商MTU/MPS分开，
-当前实现预算为DTAP PDU最多2047字节、应用最多2042字节、每通道8个TX项（含busy）。
-每片独立经过现有generation/lifetime/Grant/Binding票据与实际USB准入，每片欠一个
-controller credit；USB完成不归还。EAGAIN保留offset，成功只前进已完成提交的片段，
-软件准入的原始5秒TX期限不随credit等待重置。未知提交失败不退款或从头重放。
-尚无物理前缀的排队超时只退休本Binding并报ETIMEDOUT，不清理其他Channel；
-已提交前缀无法完成时终止本Session，拒绝再接入该lifetime，不假定固件已丢弃前缀；
-需要已有管理断链及后续状态屏障，不能隐式清空物理义务。其他controller不被清理。
-当前前缀中止会影响共享Session的其他Channel，按应用最后关闭隔离尚缺；必须通过
-Session在途义务交接/关闭机制整改，不能把这一保守失败策略作为最终多应用契约。
+不构成SSAP长写或可靠模式。Session拥有唯一TX分片游标，未完成PDU期间禁止同连接其他Channel/CMTC插入；
+RX仍由Session唯一分流。控制器包上限与协商MTU/MPS分开，实现预算为DTAP PDU
+最多2047字节、应用最多2042字节、每通道8个TX项（含持续busy的Session在途项）。
+
+worker在Session锁内取包并冻结该有限operation的Grant。首片实际USB准入仍要求
+Binding活着；成功提交在同一锁内标记begun，是fd取消与物理义务交接的线性化点。
+已经begun的PDU缓冲区在Session持有，不放回fd队列、不引用已释放SocketBinding。
+最后fd关闭取消尚未开始的队列、停止新TX/RX授权，但不抹去已经begun的物理义务；
+有限后续片只完成该原PDU，不能接收新payload或继承新lifetime。
+每片仍经过Runtime在Host/data/gate锁下的原lease epoch、generation/lifetime检查、
+已有credit预留和实际USB票据；管理撤权/断链在实际提交点阻止继续发送，不能通过
+复制operation Grant绕过Runtime。FD退出与管理撤权是不同动作，不扩大fd能力。
+
+每片欠一个controller credit，USB完成和释放operation不归还；EAGAIN保留进度，
+未知失败不从头重放。软件准入的原始5秒期限在最终提交点也检查；没有物理前缀的
+排队超时只退休本Binding并报ETIMEDOUT。真正物理失败、期限届满或撤权时，没有
+合格的部分PDU清除/复用屏障，Session仍需明确失败及管理清理，不发布假Ready。
+这不是无限后台重试或对端处理承诺。关闭后reply的USB到达不等于应用已接收。
 这些实现预算不代表当前实机资格；准确提交、分层长度边界与仍缺门禁只见
 [CURRENT_CAPABILITIES](current-capabilities.md)。
 

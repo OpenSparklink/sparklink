@@ -207,3 +207,20 @@ python3 ../linux/tools/testing/selftests/sparklink/run_fragment_cursor_cbmc.py \
 
 报告绑定Linux HEAD、实际header/harness hash及CBMC版本；失败、未知、warning或超时
 不升级为通过。此标量转换检查与长期执行、Session组合模型及真正credit耗尽分开记录。
+
+
+## Begun PDU 的实际提交授权
+
+```sh
+python3 tools/run_pdu_submit_cbmc.py --output ../.dev/pdu-consent-NEW.json
+```
+
+runner注入实际Linux `sle_channel_socket.c` 的完整结构及`sl_sk`、`sl_permits`、
+`sl_session_submit`函数。两slot、任意标量身份/Grant/phase、current或foreign有效
+buffer、begun/retired、任意期限判定和submit结果；没有始终成功的USB依赖桩。
+检查首提交必须有活Binding、冻结scope一致、过期/不匹配不提交、硬件失败不标begun。
+已begun且scope仍有效时，fd退役不使物理义务消失。报告给出完整hash与工具版本。
+
+这只证明串行C consent，不证明Runtime epoch撤销、C/Rust组合、锁/引用、HCD、
+NOCP准确性或长期执行。锁和时钟判定、有效保留对象是显式受信任边界；必须结合
+实际Native和worker回归及VM时间交错，不能将311检查升级为完整系统证明。

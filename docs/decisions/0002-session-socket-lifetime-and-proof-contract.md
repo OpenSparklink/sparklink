@@ -461,13 +461,18 @@ Session/Channel/Binding、Grant、ticket和资格继续有效。未来UserHost s
 
 ## DLI PB 的 Session 所有权（2026-10-15）
 
-PB中没有TCID，不能把两个Channel的未完成PDU按片轮流交给同一handle。
-现有Session的唯一worker持有连接级游标，片间继续处理RX，但延后CMTC和其他Channel TX。
-每片复用Runtime实际提交票据和controller包credit；软件准入的原期限不刷新，有限队列包含busy项。
-未提交任何前缀的排队超时只清理本Binding并报告ETIMEDOUT，同连接的其他Channel保持。
-零credit只保留未提交游标，不重放前缀。取消/最后关闭不取消已提交物理债务。
-没有合格部分PDU清除协议时，已提交前缀被中止会终止Session而不是让新PDU替换它。
-前缀中止终止共享Session会影响另一Channel；当前不提供按应用在途关闭隔离资格，
-下一批必须明确Session物理义务与fd交接，不能把该保守策略作为最终多应用契约。
-这不提供可靠DTAP、SSAP分片/长写或NOCP复用屏障资格。实现、有限证明与实机状态分别
-进入唯一能力入口及证据，保留完整原门禁；不把全部控制竞争设为数据面的前置。
+PB没有TCID，同连接不能按片交替发送两个Channel的PDU。首片实际USB接受时，
+Session冻结该有限operation的Grant并标记begun；该标记与最后fd退役在同一锁下排序。
+此前作者关闭可取消operation而无物理提交；此后缓冲区与剩余片由Session持有，
+关闭fd只取消其未开始队列，不能清掉已经begun的物理义务，也不能清理另一Channel。
+持续busy项计入原8项预算；后续片不持有SocketBinding裸指针，不添加新业务。
+
+FD授权的新准入与begun operation分开。operation复制的Grant仅描述已批准的原PDU；
+每片仍由Runtime检查原lease epoch/generation/lifetime，管理撤权和断链阻止新的USB
+提交。它不继承新连接资格、不免除管理撤权，也不把USB成功记成NOCP或对端处理。
+软件准入原期限不刷新，且在最终提交回调再检查；不确定失败不退款或重放前缀。
+未开始超时只退休本Binding；真正物理失败或撤权后的部分PDU清除/复用仍待屏障验证。
+
+实际C consent检查、worker sanitizer与VM fd退出/其他SMTC业务门禁分别记录，
+不由模型通过推断完整VFS/refinement/硬件行为。基础DGRAM没有可靠业务交付承诺，
+既有NOCP重复/晚到反例、全部S0–S6、共享应用完整权限/恢复条件继续开放。

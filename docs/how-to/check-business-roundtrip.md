@@ -47,3 +47,16 @@ manifest。记录内核、编译服务、测试工具的完整提交；三者可
 
 [理解证据边界](../explanation/qualification-boundaries.md)、
 [VM 输入准备](prepare-vm-gate.md)、[历史数据面规划](../../history/connections/data-socket-vertical-plan-20261012.md)。
+
+
+## 核对begun PDU最后fd关闭的隔离证据
+
+此子门禁不要求已关闭源应用取得业务回复，不能计为源应用round trip。
+使用对应提交的prefix-close记录，检查首USB提交早于关闭开始，随后真实源进程退出、
+同lifetime重绑被拒绝，末片USB提交晚于协调器回收该进程的时间。
+仅有local drop或固定延时不足以证明最后引用释放。
+
+对端必须校验完整随机2042字节PDU并实际回复；未开始排队marker不得出现在USB。
+检查原物理Session中关闭后的SMTC读写/发现/UUID及两端数据证据，不能用cached
+ExchangeInfo或Ready日志代替同行业务。此结果仍不覆盖Managed撤权、断链、原期限
+到达、真实credit耗尽或完整dup/fork/SCM_RIGHTS/linger组合。

@@ -614,7 +614,7 @@
     "real": "136 peer-validated app rounds,32 refusals,2 strict lastfd phases; software EAGAIN/poll recovery in bothroles",
     "remaining": "true controller credit/full hardware queues, revoke/down/deadline/composite proof, multi-channel/four-device and allS0-S6 remaining"
   },
-  "updated_at_utc": "2026-10-14T20:00:10.651277+00:00",
+  "updated_at_utc": "2026-10-14T20:03:46.975074+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -654,7 +654,7 @@
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "PENDING_SOFTWARE_PRESSURE_READBACK",
+  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
   "issue_sync_receipt": "docs/evidence/software-backpressure-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",

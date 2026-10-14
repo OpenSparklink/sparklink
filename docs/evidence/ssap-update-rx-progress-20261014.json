@@ -108,5 +108,47 @@
   "kernel_documentation_push": {
     "head": "63aee16e1b3fd2125c1994f3256027f7b3c73a60",
     "status": "signed and pushed after prior SSH/network timeouts"
-  }
+  },
+  "issue_updates": [
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 6,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6159375956",
+      "body_sha256": "fae961598022181b16ac75260402ea74bef18d084ef4bf001a9740d5714f8a03",
+      "readback": true,
+      "state": "open"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 17,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6159376602",
+      "body_sha256": "fae961598022181b16ac75260402ea74bef18d084ef4bf001a9740d5714f8a03",
+      "readback": true,
+      "state": "open"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 19,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6159377385",
+      "body_sha256": "fae961598022181b16ac75260402ea74bef18d084ef4bf001a9740d5714f8a03",
+      "readback": true,
+      "state": "open"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 3,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6159378026",
+      "body_sha256": "fae961598022181b16ac75260402ea74bef18d084ef4bf001a9740d5714f8a03",
+      "readback": true,
+      "state": "open"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 8,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6159378574",
+      "body_sha256": "fae961598022181b16ac75260402ea74bef18d084ef4bf001a9740d5714f8a03",
+      "readback": true,
+      "state": "open"
+    }
+  ]
 }

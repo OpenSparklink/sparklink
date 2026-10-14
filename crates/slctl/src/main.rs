@@ -136,6 +136,7 @@ Commands:
   peer-info <path>               Show a typed peer and its connection lifetimes
   connection-info <path>        Show one immutable connection identity
   disconnect-object <path>      Disconnect the exact physical lifetime
+  ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   channel-peer <path> [rounds] [bytes] [boundaries]  Validate and reply on a native channel socket
   channel-roundtrip <path> [rounds] [bytes] [boundaries]  Send random business messages and verify replies
   disconnect <address> [type]    Disconnect an unambiguous current peer

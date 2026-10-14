@@ -20,10 +20,14 @@ def credentials(pid):
 def execute(run, phase):
     row = dict(phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
-               boundary_check=getattr(run.args,'channel_socket_boundaries',False), channel_info_required=True, status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+               boundary_check=getattr(run.args,'channel_socket_boundaries',False), channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     run.data.setdefault('channel_socket', []).append(row); run.save()
     processes=[];files=ExitStack()
     try:
+        for entry in row['owners']:
+            receipt=run.command([str(run.args.slctl),'--adapter',entry['owner']['path'],'ssap-info',entry['object']['path']],10,collection='ssap_exchange')
+            if receipt['exit']: raise CaptureError('actual SMTC ExchangeInfo failed')
+            row['ssap_receipts'].append(receipt);run.save()
         # Both binds must occur during the same live connection. Never synthesize RX.
         for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
             args=[str(run.args.slctl),'--adapter',entry['owner']['path'],
@@ -191,12 +195,12 @@ def corroborate(run,capture):
             if any(raw.hex() in p['data'] and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('rejected message reached USB data path')
         owners=row['owners']
         if len(owners)!=2 or owners[0]['owner']['index']==owners[1]['owner']['index']:raise CaptureError('independent controller identities required')
-        def matched(entry,direction,payload):
+        def matched(entry,direction,payload,session=False):
             owner,obj=entry['owner'],entry['object']
             if owner['generation']!=obj['generation'] or not obj['lifetime']:raise CaptureError('canonical generation/lifetime required')
             found=[p for p in sdus if (p['bus'],p['device'])==(owner['bus'],owner['device'])
                    and p['handle']==obj['handle'] and p['direction']==direction and p['data']==payload.hex()
-                   and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns']]
+                   and (row.get('session_start_wall_ns',row['start_wall_ns']) if session else row['start_wall_ns'])<=p['wall_ns']<=row['end_wall_ns']]
             if len(found)!=1:raise CaptureError('one exact USB TX/opposite RX per message required')
             return found[0]
         legs=[]
@@ -214,15 +218,34 @@ def corroborate(run,capture):
         for sender,receiver in [owners,owners[::-1]]:
             query=bytes.fromhex('0200080001010400e2000000')
             response=bytes.fromhex('0200100002010c00e20000000000f900f9000101')
-            capabilities.append(dict(request_tx=matched(sender,'out',query),request_rx=matched(receiver,'in',query),
-                                     response_tx=matched(sender,'out',response),response_rx=matched(receiver,'in',response)))
+            capabilities.append(dict(request_tx=matched(sender,'out',query,session=row.get('ssap_exchange_required',False)),request_rx=matched(receiver,'in',query,session=row.get('ssap_exchange_required',False)),
+                                     response_tx=matched(sender,'out',response,session=row.get('ssap_exchange_required',False)),response_rx=matched(receiver,'in',response,session=row.get('ssap_exchange_required',False))))
             owner,obj=sender['owner'],sender['object']
             completed=[e for e in capture['native_events'] if e['event']==9 and (e['bus'],e['device'])==(owner['bus'],owner['device'])
-                       and row['start_wall_ns']<=e['wall_ns']<=row['end_wall_ns']]
+                       and row.get('session_start_wall_ns',row['start_wall_ns'])<=e['wall_ns']<=row['end_wall_ns']]
             if any(len(bytes.fromhex(e['params']))!=3 or int.from_bytes(bytes.fromhex(e['params'])[:2],'little')!=obj['handle'] for e in completed):raise CaptureError('exact actual completion handle required')
-            if sum(bytes.fromhex(e['params'])[2] for e in completed)!=row['rounds']+2:raise CaptureError('exact actual completed packet count per controller required')
+            if sum(bytes.fromhex(e['params'])[2] for e in completed)!=row['rounds']+(4 if row.get('ssap_exchange_required',False) else 2):raise CaptureError('exact actual completed packet count per controller required')
+        ssap=[]
+        if row.get('ssap_exchange_required',False):
+            if len(row.get('ssap_receipts',[]))!=2:raise CaptureError('both original daemon SSAP receipts required')
+            for source,owner in zip(row['ssap_receipts'],owners):
+                pattern=r'^SsapExchangeInfo: index=(\d+) generation=(\d+) lifetime=(\d+) handle=(\d+) local_mtu=(\d+) negotiated_mtu=(\d+) request=([0-9a-f]+) peer_reply=([0-9a-f]+) peer_request=([0-9a-f]+) response=([0-9a-f]+)$'
+                fields=re.findall(pattern,source['stdout'],re.M)
+                if source['exit'] or len(fields)!=1:raise CaptureError('one original successful SSAP observation required')
+                value=fields[0];o=owner['owner'];obj=owner['object']
+                if tuple(map(int,value[:4]))!=(o['index'],o['generation'],obj['lifetime'],obj['handle']):raise CaptureError('SSAP owner/lifetime mismatch')
+                mtu=int(value[4]);negotiated=int(value[5]);req,rsp,peer_req,response=map(bytes.fromhex,value[6:])
+                expected_req=bytes([2,3])+mtu.to_bytes(2,'little')+bytes([1,2]);expected_rsp=bytes([3,3])+mtu.to_bytes(2,'little')+bytes([1,2])
+                if (req,rsp,peer_req,response)!=(expected_req,expected_rsp,expected_req,expected_rsp) or negotiated!=mtu:raise CaptureError('exact real basic ExchangeInfo required')
+                receiver=next(e for e in owners if e!=owner)
+                ssap_legs=[]
+                for payload in [req,response]:
+                    frame=bytes([10,0])+len(payload).to_bytes(2,'little')+payload
+                    ssap_legs.append(dict(tx=matched(owner,'out',frame,True),rx=matched(receiver,'in',frame,True)))
+                ssap.append(dict(receipt=source,wire=ssap_legs))
         entry = dict(phase=n,owners=owners,capabilities=capabilities,legs=legs)
         if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)
+        if row.get("ssap_exchange_required",False): entry["ssap_exchange"] = ssap
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",

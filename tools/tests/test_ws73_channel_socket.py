@@ -127,6 +127,30 @@ class IndependentUSBProof(unittest.TestCase):
             sdus.append(dict(bus=1,device=2,handle=0,direction='out',wall_ns=20,data=raw.hex()))
             with self.assertRaises(CaptureError):corroborate(run,capture)
 
+    def test_real_ssap_receipts_require_both_usb_ends_and_additional_credit(self):
+        from unittest.mock import patch
+        from ws73_channel_socket import corroborate
+        run,capture,sdus=self.fixture()
+        for row in run['channel_socket']:
+            row['ssap_exchange_required']=True;row['session_start_wall_ns']=row['start_wall_ns'];row['ssap_receipts']=[]
+            for owner in row['owners']:
+                o,obj=owner['owner'],owner['object'];request='0203f9000102';response='0303f9000102'
+                row['ssap_receipts'].append(dict(exit=0,stdout=f"SsapExchangeInfo: index={o['index']} generation={o['generation']} lifetime={obj['lifetime']} handle={obj['handle']} local_mtu=249 negotiated_mtu=249 request={request} peer_reply={response} peer_request={request} response={response}\n"))
+                receiver=next(e for e in row['owners'] if e!=owner)['owner']
+                for payload in [request,response]:
+                    frame='0a000600'+payload
+                    sdus.extend([dict(bus=o['bus'],device=o['device'],handle=0,direction='out',wall_ns=row['start_wall_ns']+1,data=frame),dict(bus=receiver['bus'],device=receiver['device'],handle=0,direction='in',wall_ns=row['start_wall_ns']+2,data=frame)])
+                event=next(e for e in capture['native_events'] if e['device']==o['device'] and row['start_wall_ns']<=e['wall_ns']<=row['end_wall_ns'])
+                event['params']='000008'
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            proof=corroborate(run,capture);self.assertEqual(len(proof['proofs'][0]['ssap_exchange']),2)
+            self.assertEqual(len(proof['proofs'][0]['legs']),8)
+            self.assertTrue(all('sequence' in leg and leg['tx']['data'].startswith('1f00') for leg in proof['proofs'][0]['legs']))
+            bad=copy.deepcopy(run);bad['channel_socket'][0]['ssap_receipts'][0]['stdout']=bad['channel_socket'][0]['ssap_receipts'][0]['stdout'].replace('peer_reply=0303','peer_reply=0302')
+            with self.assertRaises(CaptureError):corroborate(bad,capture)
+        missing=[p for p in sdus if not (p['data'].startswith('0a') and p['direction']=='in' and p['device']==2)]
+        with patch('ws73_channel_socket.reassemble_acb',return_value=missing),self.assertRaises(CaptureError):corroborate(run,capture)
+
     def test_twenty_rounds_require_twenty_two_real_completions_per_endpoint(self):
         from unittest.mock import patch
         from ws73_channel_socket import corroborate

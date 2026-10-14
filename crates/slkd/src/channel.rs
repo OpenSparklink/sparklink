@@ -32,7 +32,21 @@ pub(crate) fn open(
     security: u32,
 ) -> std::io::Result<OwnedFd> {
     validate(directions, security)?;
-    let address = Address {
+    let address = address(
+        controller, generation, lifetime, handle, lease, directions, security,
+    );
+    open_address(address)
+}
+fn address(
+    controller: u16,
+    generation: u64,
+    lifetime: u64,
+    handle: u16,
+    lease: u64,
+    directions: u32,
+    security: u32,
+) -> Address {
+    Address {
         family: 46,
         controller,
         version: 2,
@@ -47,7 +61,22 @@ pub(crate) fn open(
         reserved: [0; 3],
         directions,
         security,
-    };
+    }
+}
+pub(crate) fn open_service(
+    controller: u16,
+    generation: u64,
+    lifetime: u64,
+    handle: u16,
+    lease: u64,
+) -> std::io::Result<OwnedFd> {
+    let mut address = address(controller, generation, lifetime, handle, lease, 3, 0);
+    address.local_tcid = 10;
+    address.remote_tcid = 10;
+    address.pi = 0;
+    open_address(address)
+}
+fn open_address(address: Address) -> std::io::Result<OwnedFd> {
     // SAFETY: scalar syscall arguments; successful socket returns an owned fd.
     let raw = unsafe {
         nix::libc::socket(

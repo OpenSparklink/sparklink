@@ -21,6 +21,12 @@ impl Context {
 
     pub async fn dispatch(&mut self, args: &[&str]) -> anyhow::Result<()> {
         match args[0] {
+            "ssap-info" => {
+                if args.len() != 2 {
+                    anyhow::bail!("ssap-info requires one immutable connection path");
+                }
+                self.cmd_ssap_info(args[1]).await
+            }
             "channel-peer" | "channel-roundtrip" => {
                 let path = args.get(1).ok_or_else(|| {
                     anyhow::anyhow!("channel command requires connection object path")
@@ -847,6 +853,63 @@ impl Context {
         }
         Ok(())
     }
+    async fn cmd_ssap_info(&self, path: &str) -> anyhow::Result<()> {
+        let selected = self.selected_path().await?;
+        if !path.starts_with(&format!("{selected}/peer_t")) {
+            anyhow::bail!("SSAP connection belongs to another adapter");
+        }
+        let object = zbus::Proxy::new(
+            &self.conn,
+            "org.sparklink",
+            path,
+            "org.sparklink.Connection",
+        )
+        .await?;
+        let identity: NativeObjectInfo = object.call("GetInfo", &()).await?;
+        let expected = format!(
+            "{selected}/peer_t{:02x}_{}/link_{:016x}",
+            identity.4,
+            identity.5.replace(':', "").to_lowercase(),
+            identity.1
+        );
+        let adapter = self.adapter_proxy().await?;
+        let generation: u64 = adapter.get_property("Generation").await?;
+        if path != expected || generation != identity.0 || !identity.6 || !identity.7 {
+            anyhow::bail!("SSAP lifetime unknown/retired");
+        }
+        type SsapInfo = (
+            u16,
+            u64,
+            u64,
+            u16,
+            u16,
+            u16,
+            Vec<u8>,
+            Vec<u8>,
+            Vec<u8>,
+            Vec<u8>,
+        );
+        let info: SsapInfo = object.call("GetSsapInfo", &()).await?;
+        if info.1 != identity.0 || info.2 != identity.1 || info.3 != identity.2 {
+            anyhow::bail!("SSAP reply lifetime mismatch");
+        }
+        let hex = |v: &[u8]| v.iter().map(|b| format!("{b:02x}")).collect::<String>();
+        println!(
+            "SsapExchangeInfo: index={} generation={} lifetime={} handle={} local_mtu={} negotiated_mtu={} request={} peer_reply={} peer_request={} response={}",
+            info.0,
+            info.1,
+            info.2,
+            info.3,
+            info.4,
+            info.5,
+            hex(&info.6),
+            hex(&info.7),
+            hex(&info.8),
+            hex(&info.9)
+        );
+        Ok(())
+    }
+
     async fn cmd_channel(
         &self,
         path: &str,

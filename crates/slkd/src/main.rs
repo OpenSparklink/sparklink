@@ -18,6 +18,7 @@ mod radio;
 mod registration;
 mod security;
 mod service;
+mod ssap_engine;
 mod state;
 
 use std::{path::PathBuf, sync::Arc};

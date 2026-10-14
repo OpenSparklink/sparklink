@@ -445,6 +445,13 @@ impl Node {
                 .collect::<Vec<_>>()
         };
         for path in connection_paths {
+            if let Ok(iface) = connection
+                .object_server()
+                .interface::<_, crate::connection_object::ConnectionIface>(path.as_str())
+                .await
+            {
+                iface.get().await.stop_ssap().await;
+            }
             let _ = connection
                 .object_server()
                 .remove::<crate::connection_object::ConnectionIface, _>(path.as_str())

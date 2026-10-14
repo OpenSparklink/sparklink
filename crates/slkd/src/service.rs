@@ -16,14 +16,14 @@ impl SsapManagerIface {
     /// Get SSAP summary (service and property counts, MTU)
     async fn get_info(&self) -> zbus::fdo::Result<SsapInfo> {
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
     /// Reject registration until the unique userspace Engine is connected.
     async fn register_services(&self) -> zbus::fdo::Result<()> {
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -31,7 +31,7 @@ impl SsapManagerIface {
     async fn add_service(&self, uuid16: u16, primary: bool) -> zbus::fdo::Result<u16> {
         let _ = (uuid16, primary);
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -48,7 +48,7 @@ impl SsapManagerIface {
         }
         let _ = (uuid16, ops, value);
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -56,14 +56,14 @@ impl SsapManagerIface {
     async fn remove_service(&self, start_handle: u16) -> zbus::fdo::Result<()> {
         let _ = start_handle;
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
     /// List local services
     async fn list_services(&self) -> zbus::fdo::Result<Vec<ServiceEntry>> {
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -71,7 +71,7 @@ impl SsapManagerIface {
     async fn read_property(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
         let _ = handle;
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -84,7 +84,7 @@ impl SsapManagerIface {
         }
         let _ = (handle, value);
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -92,14 +92,14 @@ impl SsapManagerIface {
     async fn notify(&self, handle: u16) -> zbus::fdo::Result<()> {
         let _ = handle;
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
     /// Dequeue a pending notification
     async fn dequeue_notification(&self) -> zbus::fdo::Result<NotificationData> {
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 }
@@ -118,7 +118,7 @@ impl RemoteServiceIface {
     /// Exchange SSAP info with the remote peer (initiate service discovery handshake)
     async fn exchange_info(&self) -> zbus::fdo::Result<()> {
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -126,7 +126,7 @@ impl RemoteServiceIface {
     async fn discover(&self, start_handle: u16, end_handle: u16) -> zbus::fdo::Result<u16> {
         let _ = (start_handle, end_handle);
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -134,7 +134,7 @@ impl RemoteServiceIface {
     async fn read(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
         let _ = handle;
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -147,14 +147,14 @@ impl RemoteServiceIface {
         }
         let _ = (handle, value);
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
     /// Receive a remote notification/indication event
     async fn receive_event(&self) -> zbus::fdo::Result<NotificationData> {
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -167,7 +167,7 @@ impl RemoteServiceIface {
         }
         let _ = (handle, input);
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -175,7 +175,7 @@ impl RemoteServiceIface {
     async fn find_by_uuid(&self, uuid16: u16) -> zbus::fdo::Result<u16> {
         let _ = uuid16;
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 
@@ -183,7 +183,7 @@ impl RemoteServiceIface {
     async fn read_by_uuid(&self, uuid16: u16) -> zbus::fdo::Result<Vec<u8>> {
         let _ = uuid16;
         Err(zbus::fdo::Error::NotSupported(
-            "SSAP service Engine is not implemented; kernel staging has been removed".into(),
+            "SSAP service database and operations are not connected; legacy kernel staging is removed".into(),
         ))
     }
 }

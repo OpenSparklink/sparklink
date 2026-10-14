@@ -612,6 +612,7 @@ def _run(args):
     m['ordinary_channel_socket_acceptance']=False
     m['channel_info_verification_requested']=channel_socket
     m['ordinary_channel_info_acceptance']=False
+    m['ssap_exchange_info_acceptance']=False
     m['connection_advertising_requested']=connection_advertising if connection_verify else None
     m['channel_daemon_crash_requested']=channel_death
     m['channel_daemon_index']=channel_death_index
@@ -1047,6 +1048,8 @@ def _run(args):
                     if not all(row.get('channel_info_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires original capability receipts')
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
                     m['ordinary_channel_info_acceptance']=True
+                    if not all(row.get('ssap_exchange_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires real SMTC ExchangeInfo')
+                    m['ssap_exchange_info_acceptance']=True
                     m['ordinary_channel_socket_acceptance']=True
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
                     raise ValueError('explicit daemon crash request and evidence must agree')

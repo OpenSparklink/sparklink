@@ -109,6 +109,7 @@ pub(crate) struct ConnectionIface {
     state: SharedState,
     generation: u64,
     reference: SleLinkInfo,
+    ssap: tokio::sync::Mutex<Option<crate::ssap_engine::Engine>>,
 }
 impl ConnectionIface {
     pub(crate) fn new(state: SharedState, generation: u64, reference: SleLinkInfo) -> Self {
@@ -116,6 +117,7 @@ impl ConnectionIface {
             state,
             generation,
             reference,
+            ssap: tokio::sync::Mutex::new(None),
         }
     }
     async fn observation(&self) -> (bool, bool) {
@@ -131,11 +133,12 @@ impl ConnectionIface {
 }
 
 impl ConnectionIface {
-    async fn open_authorized_channel(
+    async fn authorized_fd(
         &self,
         directions: u32,
         security: u32,
-    ) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
+        service: bool,
+    ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
         crate::channel::validate(directions, security).map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
                 zbus::fdo::Error::NotSupported("protected channel security is not supported".into())
@@ -172,15 +175,25 @@ impl ConnectionIface {
         let token = admission
             .token
             .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?;
-        let fd = crate::channel::open(
-            index,
-            self.generation,
-            self.reference.lifetime,
-            self.reference.handle,
-            token,
-            directions,
-            security,
-        )
+        let fd = if service {
+            crate::channel::open_service(
+                index,
+                self.generation,
+                self.reference.lifetime,
+                self.reference.handle,
+                token,
+            )
+        } else {
+            crate::channel::open(
+                index,
+                self.generation,
+                self.reference.lifetime,
+                self.reference.handle,
+                token,
+                directions,
+                security,
+            )
+        }
         .map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
                 zbus::fdo::Error::NotSupported(
@@ -190,7 +203,41 @@ impl ConnectionIface {
                 zbus::fdo::Error::Failed(format!("native channel bind: {error}"))
             }
         })?;
-        Ok(fd.into())
+        Ok(fd)
+    }
+    async fn open_authorized_channel(
+        &self,
+        directions: u32,
+        security: u32,
+    ) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
+        self.authorized_fd(directions, security, false)
+            .await
+            .map(Into::into)
+    }
+    pub(crate) async fn start_ssap(&self) -> zbus::fdo::Result<()> {
+        let mut actor = self.ssap.lock().await;
+        if actor.is_some() {
+            return Ok(());
+        }
+        let fd = self.authorized_fd(3, 0, true).await?;
+        *actor = Some(
+            crate::ssap_engine::Engine::start(
+                fd,
+                (
+                    self.state.lock().await.controller.dev_index,
+                    self.generation,
+                    self.reference.lifetime,
+                    self.reference.handle,
+                ),
+            )
+            .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?,
+        );
+        Ok(())
+    }
+    pub(crate) async fn stop_ssap(&self) {
+        if let Some(actor) = self.ssap.lock().await.take() {
+            actor.stop().await;
+        }
     }
 }
 
@@ -223,6 +270,28 @@ impl ConnectionIface {
             Some(self.reference),
         )
         .await
+    }
+    async fn get_ssap_info(&self) -> zbus::fdo::Result<crate::ssap_engine::Info> {
+        if self.observation().await != (true, true) {
+            return Err(zbus::fdo::Error::Failed(
+                "retired/unknown SSAP lifetime".into(),
+            ));
+        }
+        self.start_ssap().await?;
+        let observer = self
+            .ssap
+            .lock()
+            .await
+            .as_ref()
+            .ok_or_else(|| zbus::fdo::Error::Failed("SSAP actor absent".into()))?
+            .observer();
+        let info = observer.info().await.map_err(zbus::fdo::Error::Failed)?;
+        if self.observation().await != (true, true) {
+            return Err(zbus::fdo::Error::Failed(
+                "SSAP lifetime retired during exchange".into(),
+            ));
+        }
+        Ok(info)
     }
     async fn open_channel(&self) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
         self.open_authorized_channel(3, 0).await

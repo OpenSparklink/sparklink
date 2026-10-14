@@ -19,7 +19,7 @@ def run(kernel, output=None):
     header = kernel / 'include/uapi/linux/sparklink_socket.h'
     source = rust_path.read_text()
     structure = re.search(r'#\[repr\(C\)\]\nstruct Address \{[^}]+\}', source)[0]
-    initializer = re.search(r'let address = Address \{[^}]+\};', source)[0]
+    initializer = 'let address = ' + re.search(r'^    (Address \{[^}]+\})', source[source.index('fn address('):], re.M)[1] + ';'
     c = r'''#include <stdio.h>
 #include <stddef.h>
 #include <linux/sparklink_socket.h>

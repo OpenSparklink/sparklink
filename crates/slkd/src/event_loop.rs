@@ -294,6 +294,13 @@ async fn reconcile_native(
         )
     };
     for path in retired {
+        if let Ok(iface) = connection
+            .object_server()
+            .interface::<_, crate::connection_object::ConnectionIface>(path.as_str())
+            .await
+        {
+            iface.get().await.stop_ssap().await;
+        }
         match connection
             .object_server()
             .remove::<crate::connection_object::ConnectionIface, _>(path.as_str())
@@ -349,16 +356,17 @@ async fn reconcile_native(
         }
     }
     for entry in publications {
+        let iface = crate::connection_object::ConnectionIface::new(
+            state.clone(),
+            expected.generation,
+            entry.reference,
+        );
+        if let Err(error) = iface.start_ssap().await {
+            error!(%error,path=%entry.path,"SMTC actor binding failed; no SSAP qualification");
+        }
         match connection
             .object_server()
-            .at(
-                entry.path.as_str(),
-                crate::connection_object::ConnectionIface::new(
-                    state.clone(),
-                    expected.generation,
-                    entry.reference,
-                ),
-            )
+            .at(entry.path.as_str(), iface)
             .await
         {
             Ok(_) => {

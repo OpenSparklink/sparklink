@@ -46,7 +46,7 @@ with (build/'sdk111-patch.log').open('wb') as log:
  subprocess.run(['patch','--batch','-p1','-i',str(HERE/'lab/security_relay_reference_sdk111.patch')],cwd=build,stdout=log,stderr=subprocess.STDOUT,check=True)
 oracle=build/'oracle'
 sources=[p for p in (reference/'src').glob('ws73_*.c') if p.name!='ws73_usb_sle_fd.c']+[p for p in (reference/'src/sle73').glob('*.c') if p.name!='sle73_sm.c']+[sm]
-command=['cc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror','-I'+str(reference/'include'),'-I'+str(reference/'src'),'-I'+str(args.usb_include.resolve(strict=True)),str(HERE/'lab/security_relay_oracle.c'),str(fd),*[str(p) for p in sources],str(args.usb_library.resolve(strict=True)),'-lcrypto','-lpthread','-o',str(oracle)]
+command=['cc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror','-I'+str(reference/'include'),'-I'+str(reference/'src'),'-I'+str(reference/'src/sle73'),'-I'+str(args.usb_include.resolve(strict=True)),str(HERE/'lab/security_relay_oracle.c'),str(fd),*[str(p) for p in sources],str(args.usb_library.resolve(strict=True)),'-lcrypto','-lpthread','-o',str(oracle)]
 with (build/'build.log').open('wb') as log:subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,check=True)
 package=json.loads((base/'manifest.json').read_text());processes=[];monitors=[]
 record={'status':'STARTING','vm_only':True,'kernel':package['native_vm']['kernel_head'],'service':package['native_vm']['userspace_head'],'reference':ref_head,'scope':'Actual unsupported-pairing relay only; not paired/encrypted/automatic recovery','vms':{}}

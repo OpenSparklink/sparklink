@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-14T01:20:54.870562+00:00",
+  "updated_at_utc": "2026-10-14T01:39:20.755677+00:00",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -27,13 +27,13 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "63aee16e1b3fd2125c1994f3256027f7b3c73a60",
-    "userspace": "45508f5f7b9a0c3dfee6b4f23ca763602d79416a",
-    "observation": "Documentation-only migration; no hardware qualification transfer."
+    "userspace": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
+    "observation": "Main kernel HEAD is documentation-only; actual RF used isolated K317 and immutable matching artifacts."
   },
   "qualified_source_heads": {
     "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
-    "userspace": "7d87d183bd1c2b745430dbeca75c1a7909225d31",
-    "scope": "See exact SSAP discovery/value/socket evidence; not complete ecosystem qualification."
+    "userspace": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
+    "scope": "ReadByUUID single custom value, prior discovery/socket/length/control gates only; full S0-S6 remains open"
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exactK558/Ucd77:40short/RF22/connection/Peer/Down/dup/lastclose/QMP; injectedfaultpeer8; actual legacy53/event/currentlink summary gates. Not natural recovery or new manual physical qualification.",
@@ -316,12 +316,12 @@
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "latest_evidence_commit": "69ff7fb54e6996dad3bbbf2372795d5ded67cfde",
-  "previous_goal_turn_classification": "progress: actual base SSAP values, startup deadlock correction and exact RF evidence",
-  "current_goal_turn_classification": "progress: actual hierarchy/UUID/structure discovery and cache, discovered-handle data, exact5-step VM pipeline PASS",
+  "previous_goal_turn_classification": "progress: physically relocated all46 uppercase docs, strict build/browser and CI gates, issue/goal synchronization",
+  "current_goal_turn_classification": "progress: implemented ReadByUUID and exact5-step real VM pipeline PASS; bounded production-code Kani attempt failed due resource exhaustion",
   "qualified_tool_source_heads": {
     "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
-    "userspace": "7d87d183bd1c2b745430dbeca75c1a7909225d31",
-    "scope": "limited base discovery/cache and current single values/old gates only, not full S0-S6"
+    "userspace": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
+    "scope": "Exact VM tools and service source; current kernel doc HEAD not qualified by transfer"
   },
   "backend_descriptor_slice": {
     "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -371,7 +371,7 @@
       "whole_package_closed": false
     }
   },
-  "qualified_run_tools_head": "7d87d183bd1c2b745430dbeca75c1a7909225d31",
+  "qualified_run_tools_head": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
   "usb_pending_slice": {
     "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
     "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
@@ -2346,5 +2346,19 @@
       "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
       "userspace": "cd77ed935740f52187a51f014fc1f5212bd8617f"
     }
+  },
+  "userspace_ssap_read_uuid_slice": {
+    "kernel_head": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "userspace_head": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
+    "status": "implemented/offline/limited RF passed; formal NOT_PROVEN",
+    "evidence": "docs/evidence/ssap-read-uuid-progress-20261014.json",
+    "formal": "docs/evidence/ssap-read-uuid-formal-20261014.json",
+    "next": [
+      "Notification/indication/subscription callback lifetimes",
+      "Real multi-match/error/standard UUID/long matrices",
+      "Allocation-free production codec state verification; preserve existing failing attempt",
+      "Credit/queue/cancel/retirement models and actual interleavings parallel"
+    ],
+    "closure_allowed": false
   }
 }

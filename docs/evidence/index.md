@@ -19,3 +19,6 @@
 
 [服务发现、缓存与从发现取handle的准确实机报告](ssap-discovery-progress-20261014.json)
 明确保留handle范围修正及未证明/未验收部分，不等于完整SSAP标准互通。
+
+[ReadByUUID准确64次实机、原业务/边界与未证明报告](ssap-read-uuid-progress-20261014.json)
+保留Kani资源耗尽和unsupported，不提升为完整SSAP资格。

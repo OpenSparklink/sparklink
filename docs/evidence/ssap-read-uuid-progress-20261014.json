@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "source_heads": {
+    "kernel": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "userspace": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd"
+  },
+  "source_mapping": {
+    "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+    "crates/slkd/src/ssap_database.rs": "b159c93e7482dceabf72ec628c4d296407bc68bdebd7405b00eda6858e9f32a5",
+    "crates/slkd/src/ssap_engine.rs": "a183c70b2a5f74fdd03f119931a59bc0b91653fffaeca0cbec44f3fe756b1fce",
+    "crates/slkd/src/connection_object.rs": "8f8e89fe1dcc2d5b4c7ae9307b08c8d1f68cd1e564e6a266c2c1174c01fdf61f",
+    "crates/slctl/src/commands.rs": "bd2f90cb162a49f95a5a63691ccb1cc3b9eab9348cf0981adf158cc57df2e5c4",
+    "tools/ws73_ssap_value.py": "f5f0978b4369a0d9780761513ef7dfeaa0fd01bef6d41fb82aadba2b1cfaeaff",
+    "tools/ws73_target.py": "b3a21f9d0092aa67667d22a7744d44e40a3970b1252447803620f73c99bacc9f",
+    "tools/tests/test_ws73_ssap_value.py": "4e29dc617aa122aa9360747867889b985a467682cc1f45f1409d8bf27d78d571",
+    "formal/ssap_value/src/lib.rs": "4516167dc5cbb9af4b24b0a2b03eb95e4eec4cc0d12a9ddd1fae2a4500a551c5"
+  },
+  "scope": "complete-PDU ReadByUUID in the unique userspace SMTC actor; not full SSAP",
+  "implemented": [
+    "standard tables73/74 request and single/multi response",
+    "server reads actual bounded database with original range, UUID and READ permissions",
+    "per-item errors, ordering/count/RFU/length guards; no value truncation",
+    "no-fragmentation normative READ_RSP error16 exception",
+    "lifetime-scoped D-Bus ReadSsapByUuid and ordinary-user slctl ssap-read-uuid",
+    "real gate requires both-end packets and random before/after values"
+  ],
+  "offline_passed": [
+    "all workspace all-features tests",
+    "strict all-targets/features clippy and fmt",
+    "469 tool tests with actual Unix credentials IPC",
+    "multi matches, permissions, invalid range, not found and MTU atomic refusal unit regressions",
+    "36 actual Python/C/Rust ABI tests and actual channel socket contract"
+  ],
+  "real_counts": {
+    "uuid_reads": 64,
+    "writes": 32,
+    "handle_reads": 64,
+    "discovery_calls": 32
+  },
+  "real_passed": [
+    "4 connection lifetimes; both directions read UUID before and after random peer writes",
+    "40 short socket round trips",
+    "8 249-byte round trips and16 250/253/254/255 refusals with no USB data submit",
+    "discovery/cache, actual channel info/copy and controlled missing-BSLE peer isolation retained",
+    "3 VMs exit0; normal capture drops0 and taint0"
+  ],
+  "formal_status": "NOT_PROVEN: new Kani check ran out of memory; unsupported warnings retained",
+  "formal_report": "docs/evidence/ssap-read-uuid-formal-20261014.json",
+  "evidence": [
+    "docs/evidence/ssap-read-uuid-real-short-20261014.json",
+    "docs/evidence/ssap-read-uuid-real-boundary-20261014.json",
+    "docs/evidence/ssap-read-uuid-fault-real-20261014.json"
+  ],
+  "pipeline_sha256": "e59e4519003d854c36be43f305d64b4a9aec576a8abd39ab828367fdd77bcfef",
+  "kernel_identity": {
+    "qualified_checkout": "isolated exact K317",
+    "latest_documentation_head": "63aee16e1b3fd2125c1994f3256027f7b3c73a60",
+    "reuse": "matching immutable K317 artifact/smoke/module manifests; no relabeling or qualification transfer",
+    "documentation_push": "still pending after SSH timeouts"
+  },
+  "ci_run": 38496262938,
+  "ci_status": "8 jobs passed; Python/kernel ABI job waits on fetching pinned kernel. Local36 ABI and actual contract passed; not overall CI PASS.",
+  "limitations": [
+    "RF matrix: one custom property per endpoint; standard UUID/multi-match/permissions/oversize errors only offline",
+    "Complete-PDU subset; fragmented, long/extended transactions unsupported",
+    "Plain READ/WRITE permissions are not authenticated security",
+    "Other Host/SDK interoperability unverified",
+    "NOCP is not peer application receipt"
+  ],
+  "remaining": [
+    "Notifications/indications/subscriptions/callback lifetime",
+    "Real mixed UUID/multi-match/error/DB-change matrices",
+    "Production codec formal completion and SSAP queue/cancel/close/lifetime/credit models and real interleavings",
+    "Long packets, transactions, dynamic multichannel and four-device pairs",
+    "Security/Agent/Bond/Profile/PM/UserHost planning/full S0-S6",
+    "Natural RCA and nonmanual recovery"
+  ],
+  "vm_only": true,
+  "closure_allowed": false
+}

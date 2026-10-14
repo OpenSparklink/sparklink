@@ -1,6 +1,25 @@
 # 当前能力与资格
 
-## 最新SSAP发现／生命周期缓存资格（精确源码）
+## 最新ReadByUUID实机资格（精确源码）
+
+编译服务与冻结工具U `514cf733aab4d9a3ad650ae4582e6f49df4dfafd`，VM内核为隔离
+K `31769ea4b8c006f999f4fbe0da68f7291ef71935`。K63aee仅文档变更，不把旧镜像
+重新标为其资格。唯一用户态SMTC actor接标准0x0A/0x0B，按真实UUID/range读取
+本地数据库，权限、逐条错误、有限列表和MTU拒绝；不截断、不恢复旧wire Engine。
+
+四个lifetime阶段、两个方向共64次UUID读取（随机写前/写后），32随机写、64句柄
+读取和32发现；两端USB/HCC原包与对端应用检查一致。保留40短消息、8轮249字节
+及16次250/253/254/255拒绝、getter/copy与受控同行隔离。三VM正常退出；正常
+捕获drops0/taint0。469工具、workspace all-features、严格clippy/fmt通过。
+
+实机仅每端一个custom property；标准UUID、多条匹配、权限和超限错误目前只有
+离线回归。分片/长事务、通知/指示、异构Host互通、安全和完整生态尚未验收。
+新增Kani模型直接引用生产codec，16字节边界检查因工具报告内存耗尽退出；
+unsupported警告保留，**未证明**，没有完成的反例，不把模型安装或部分展开算PASS。
+[准确源码、空口证据和缺失](../docs/evidence/ssap-read-uuid-progress-20261014.json)。
+
+
+## 前一批SSAP发现／生命周期缓存资格（当时源码）
 
 K31769ea4b8c0／编译服务与冻结工具U `7d87d183bd1c2b745430dbeca75c1a7909225d31`。
 唯一actor接分层首要服务/属性、UUID及结构查询，原期限分页，有界80条目/96次

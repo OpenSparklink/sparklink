@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "NOT_PROVEN",
+  "accepted_proof": false,
+  "source_head": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
+  "source_mapping": {
+    "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+    "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+    "formal/ssap_value/src/lib.rs": "4516167dc5cbb9af4b24b0a2b03eb95e4eec4cc0d12a9ddd1fae2a4500a551c5",
+    "formal/ssap_value/Cargo.toml": "f752abe56855869cb57b924c97ea73a9c83ee19149298cd9797e14e40265c502"
+  },
+  "command": [
+    "cargo",
+    "kani",
+    "--manifest-path",
+    "formal/ssap_value/Cargo.toml",
+    "--harness",
+    "actual_uuid_response_roundtrip_and_atomic_refusal"
+  ],
+  "properties": [
+    "successful response decode/reencode preserves original bytes",
+    "failed encode leaves output unchanged"
+  ],
+  "boundary": {
+    "raw_length": "0..16",
+    "mtu": 16,
+    "output_capacity": "0..16",
+    "unwind": 20
+  },
+  "assumptions": [
+    "Input backing array16; capacity and length bounded by explicit kani::assume",
+    "No RF, actor, allocation lifecycle, database or full64-item proof"
+  ],
+  "tool_versions": {
+    "kani": "0.68.0",
+    "cbmc": "6.11.0",
+    "solver": "CaDiCaL3.0.0"
+  },
+  "exit_code": 1,
+  "result": "Tool reported out of memory during solve; no completed proof or source counterexample",
+  "unsupported_warnings": [
+    "caller_location",
+    "foreign function"
+  ],
+  "log_sha256": "696d2379bf323b5b2dbb4a80a93e323654cd6525029feb6d19a007ce087ab085",
+  "log_availability": "private workspace log; digest is not a download",
+  "source_changed_during_run": false,
+  "next": [
+    "Optimize production codec representation to isolate actual allocation-free bounded state",
+    "Retry same properties without stubbing production behavior or weakening assumptions",
+    "Convert genuine source counterexamples into regression tests"
+  ]
+}

@@ -96,3 +96,18 @@ Connection新增DiscoverSsap(uuid,kind)/GetCachedSsap，按实际SMTC响应产�
 未知缓存失败；无参UUID+primary模式取得primary/property建议缓存，完整服务
 数据库快照、方法/事件/引用生命周期与ServiceChanged一致性尚无承诺。
 普通服务从handle16分配，保留旧流量证据但不转授旧范围为标准合格。
+
+### ReadByUUID：有限完整PDU模式
+
+U514cf733aab4新增Connection.ReadSsapByUuid(start:u16,end:u16,data_type:u8,uuid:ay)，
+返回逐条(handle,success,error,value)与原始请求/响应。普通用户CLI为
+`slctl --adapter PATH ssap-read-uuid CONNECTION START END UUID_HEX`；数据类型为0。
+UUID须2/16字节，范围非零且start≤end；无效本地参数为InvalidArgs，退休lifetime
+或actor/队列失败为Failed。远端条目错误保留在每条结果，不描述成读成功。
+
+服务器最多64个属性，复用现有READ权限；多条失败/成功混合列表按句柄有序。
+完整响应超过协商MTU时按标准不支持分包规则发READ_RSP错误16，客户端明确失败；
+无分片、无部分成功列表或截断。原事务期限5秒，关闭/退休不能发布旧结果。
+原始trace用于证据，USB提交和NOCP均不代表对端应用收到。
+实机只验每端一个custom property，其他类别与错误矩阵仍待扩大；
+[源码映射和精确范围](../evidence/ssap-read-uuid-progress-20261014.json)。

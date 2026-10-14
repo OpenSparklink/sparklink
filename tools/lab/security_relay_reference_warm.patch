@@ -1,0 +1,30 @@
+--- a/src/ws73_usb_sle_fd.c
++++ b/src/ws73_usb_sle_fd.c
+@@ -785,8 +785,25 @@
+ 
+ 	/* Main core up = radio powered (one-shot BSP_READY notification). */
+ 	rc = ws73_sle_wait_bsp_ready(FD_BSP_MS);
+-	if (rc < 0)
+-		goto fail;
++	if (rc == WS73_ERR_TIMEOUT) {
++		/* TEST-ONLY warm handoff, mirroring the Native bounded CLOSE barrier.
++		 * No fabricated BSLE status or DLI reply. Other errors still fail. */
++		unsigned char discard[20 * 1024];
++		unsigned drained;
++		for (drained = 0; drained < 64; drained++) {
++			rc = ws73_xfer_in(eps->in, discard, sizeof(discard), 20);
++			if (rc == WS73_ERR_TIMEOUT || rc == 0) break;
++			if (rc < 0) goto fail;
++		}
++		if (drained == 64) { rc = WS73_ERR_TIMEOUT; goto fail; }
++		unsigned char close[4] = {30, 0, 0, 0};
++		rc = ws73_xfer_ctrl(0x21, 0, 0, 0, close, sizeof(close), 1000);
++		if (rc != 4) { if (rc >= 0) rc = WS73_ERR_IO; goto fail; }
++		rc = await_bsle(1000, WS73_SLE_TAG_DEV_ACTION_STATUS, 3);
++		if (rc < 0) goto fail;
++		ws73_log(WS73_LOG_ERR, "TEST_WARM_CLOSE_REAL_ACK\n");
++	}
++	if (rc < 0) goto fail;
+ 
+ 	/* Push the BSLE customize/INI and await its ack. */
+ 	ws73_sle_ini_default(ini);

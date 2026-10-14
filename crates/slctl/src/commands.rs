@@ -242,27 +242,28 @@ impl Context {
                 })?;
                 let rounds = args.get(2).unwrap_or(&"4").parse()?;
                 let bytes = args.get(3).unwrap_or(&"61").parse()?;
-                let boundaries = args.get(4) == Some(&"boundaries");
-                let close_prefix = args.get(4) == Some(&"prefix-close");
-                if args.get(4).is_some() && !boundaries && !close_prefix {
-                    anyhow::bail!("optional channel mode must be boundaries or prefix-close");
-                }
-                if close_prefix && (args[0] != "channel-roundtrip" || rounds != 1 || bytes != 2042)
+                let mode = match args.get(4) {
+                    None => crate::channel::Mode::Regular,
+                    Some(&"boundaries") => crate::channel::Mode::Boundaries,
+                    Some(&"prefix-close") => crate::channel::Mode::PrefixClose,
+                    Some(&"burst") => crate::channel::Mode::Burst,
+                    _ => anyhow::bail!("channel mode must be boundaries, prefix-close or burst"),
+                };
+                if mode == crate::channel::Mode::PrefixClose
+                    && (args[0] != "channel-roundtrip" || rounds != 1 || bytes != 2042)
                 {
-                    anyhow::bail!("prefix-close requires one initiator round of 2042 bytes");
+                    anyhow::bail!("prefix-close requires one initiator round of2042 bytes");
+                }
+                if mode == crate::channel::Mode::Burst
+                    && (args[0] != "channel-roundtrip" || rounds != 16 || bytes != 2042)
+                {
+                    anyhow::bail!("burst requires16 initiator messages of2042 bytes");
                 }
                 if args.len() > 5 {
                     anyhow::bail!("too many channel arguments");
                 }
-                self.cmd_channel(
-                    path,
-                    args[0] == "channel-peer",
-                    rounds,
-                    bytes,
-                    boundaries,
-                    close_prefix,
-                )
-                .await
+                self.cmd_channel(path, args[0] == "channel-peer", rounds, bytes, mode)
+                    .await
             }
             "list" => self.cmd_list().await,
             "registrations" if args.len() == 1 => self.cmd_registrations().await,
@@ -1141,8 +1142,7 @@ impl Context {
         responder: bool,
         rounds: u32,
         bytes: usize,
-        boundaries: bool,
-        close_prefix: bool,
+        mode: crate::channel::Mode,
     ) -> anyhow::Result<()> {
         let selected = self.selected_path().await?;
         if !path.starts_with(&format!("{selected}/peer_t")) {
@@ -1171,14 +1171,7 @@ impl Context {
             anyhow::bail!("connection is not known/live");
         }
         let fd: zbus::zvariant::OwnedFd = object.call("OpenChannel", &()).await?;
-        crate::channel::exercise(
-            fd.into(),
-            responder,
-            rounds,
-            bytes,
-            boundaries,
-            close_prefix,
-        )?;
+        crate::channel::exercise(fd.into(), responder, rounds, bytes, mode)?;
         // Last-close must not silently recreate the connection CMTC session.
         // Basic CUTC has no qualified close/rebind barrier in this lifetime.
         let reopened: zbus::Result<zbus::zvariant::OwnedFd> = object.call("OpenChannel", &()).await;

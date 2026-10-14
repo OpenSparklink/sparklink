@@ -479,10 +479,12 @@ def _run(args):
     channel_bytes=getattr(args,'channel_socket_bytes',61)
     channel_boundaries=bool(getattr(args,'channel_socket_boundaries',False))
     channel_close=bool(getattr(args,'channel_socket_close_prefix',False))
+    channel_burst=bool(getattr(args,'channel_socket_burst',False))
     if type(channel_bytes) is not int or not 29<=channel_bytes<=2042 or ((channel_bytes!=61 or channel_boundaries) and not channel_socket):raise ValueError('message size and boundaries require explicit supported socket gate')
     channel_rounds=getattr(args,'channel_socket_rounds',4)
     if type(channel_rounds) is not int or not 1<=channel_rounds<=20 or (channel_rounds!=4 and not channel_socket):raise ValueError('bounded socket rounds require explicit socket gate')
     if channel_close and (not channel_socket or channel_bytes!=2042 or channel_rounds!=1 or channel_boundaries):raise ValueError('prefix-close requires explicit one-round 2042-byte socket gate')
+    if channel_burst and (not channel_socket or channel_bytes!=2042 or channel_rounds!=16 or channel_close or channel_boundaries):raise ValueError('burst requires explicit16-round2042-byte socket gate')
     link_resync=bool(getattr(args,'daemon_link_resync',False))
     if channel_socket and (not connection_verify or acb_probe or link_resync):raise ValueError('ordinary channel socket requires a separate real connection gate without test module')
     if acb_probe and (not connection_verify or link_resync):raise ValueError('ACB selftest requires separate explicit connection gate')
@@ -611,6 +613,7 @@ def _run(args):
     m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
     m['channel_socket_close_prefix_requested']=channel_close
+    m['channel_socket_burst_requested']=channel_burst
     m['channel_socket_boundaries_requested']=channel_boundaries
     m['ordinary_channel_socket_acceptance']=False
     m['channel_info_verification_requested']=channel_socket
@@ -746,6 +749,7 @@ def _run(args):
                      (' ws73.acb_probe=1' if acb_probe else '')+
                      (' ws73.channel_boundaries=1' if channel_boundaries else '')+
                      (' ws73.channel_prefix_close=1' if channel_close else '')+
+                     (' ws73.channel_burst=1' if channel_burst else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.early_bootstrap_fault=1' if early_fault else '')+
@@ -1065,6 +1069,8 @@ def _run(args):
                     if not all(row.get('ssap_discovery_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP discovery')
                     m['ssap_discovery_acceptance']=True
                     if any(row.get('close_prefix',False)!=channel_close for row in control['channel_socket']):raise ValueError('prefix-close request and original evidence disagree')
+                    if any(row.get('burst',False)!=channel_burst for row in control['channel_socket']):raise ValueError('burst request and original evidence disagree')
+                    m['ordinary_software_backpressure_acceptance']=channel_burst
                     m['ordinary_prefix_close_acceptance']=channel_close
                     m['ordinary_channel_socket_acceptance']=not channel_close
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
@@ -1312,6 +1318,7 @@ def main():
             cmd.add_argument('--diagnostic-cancel-verify',action='store_true',help='hold one real IN81 to test active/queued cancel and late reply; requires --diagnostic-verify and --fault-recovery')
             cmd.add_argument('--daemon-link-resync',action='store_true',help='actual VM subscriber pause, real event ring overflow and canonical resync; requires connection verification')
             cmd.add_argument('--channel-socket-bytes',type=int,default=61,help='application message size 29..2042 within the negotiated basic channel')
+            cmd.add_argument('--channel-socket-burst',action='store_true',help='actual16-message software queue EAGAIN/poll recovery and opposite application replies; not hardware credit depletion')
             cmd.add_argument('--channel-socket-close-prefix',action='store_true',help='require captured first USB submit, final fd close, remaining PDU and actual peer/other-channel traffic')
             cmd.add_argument('--channel-socket-boundaries',action='store_true',help='require original EMSGSIZE and no USB traffic for oversized messages')
             cmd.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4,help='bounded application rounds per connection role')

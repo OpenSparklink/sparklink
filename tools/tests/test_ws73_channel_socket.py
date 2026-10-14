@@ -84,6 +84,28 @@ class ApplicationProof(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(row)
 
 
+class BurstPressureProof(unittest.TestCase):
+    def pressure(self):
+        row=fixture(rounds=16,message_bytes=2042)
+        row['burst']=True
+        source=next(a for a in row['applications'] if a['role']=='initiator')
+        source['stdout']+='NativeBurstBlocked: sequence=8 poll_writable=0\nNativeBurstResumed: sequence=8\nNativeBurstPressure: eagain=1 not_writable=1 replies=16\n'
+        return row
+    def test_pressure_requires_full_original_app_receipts_and_resume(self):
+        from ws73_channel_socket import burst_pressure_receipts
+        row=self.pressure();self.assertEqual(len(application_frames(row)[0]),16)
+        self.assertEqual(burst_pressure_receipts(row)['eagain'],1)
+        for kind in ['no_eagain','poll','resume','counts','replies','flag']:
+            changed=copy.deepcopy(row);source=next(a for a in changed['applications'] if a['role']=='initiator')
+            if kind=='no_eagain':source['stdout']=source['stdout'].replace('NativeBurstBlocked','Wrong')
+            if kind=='poll':source['stdout']=source['stdout'].replace('poll_writable=0','poll_writable=1')
+            if kind=='resume':source['stdout']=source['stdout'].replace('NativeBurstResumed: sequence=8','NativeBurstResumed: sequence=9')
+            if kind=='counts':source['stdout']=source['stdout'].replace('eagain=1','eagain=2')
+            if kind=='replies':source['stdout']=source['stdout'].replace('NativeChannelRoundTrip:','LostRoundTrip:')
+            if kind=='flag':changed['burst']=False
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(changed)
+
+
 class PrefixApplicationProof(unittest.TestCase):
     def prefix(self):
         row=fixture(rounds=1,message_bytes=2042)

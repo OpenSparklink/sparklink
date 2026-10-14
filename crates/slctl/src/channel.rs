@@ -4,6 +4,14 @@ use std::io::Read;
 use std::os::fd::{AsRawFd, OwnedFd};
 use std::time::{Duration, Instant};
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum Mode {
+    Regular,
+    Boundaries,
+    PrefixClose,
+    Burst,
+}
+
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
@@ -252,8 +260,7 @@ pub(crate) fn exercise(
     responder: bool,
     rounds: u32,
     message_bytes: usize,
-    boundaries: bool,
-    close_prefix: bool,
+    mode: Mode,
 ) -> anyhow::Result<()> {
     validate_exercise(rounds, message_bytes)?;
     let fd = prepare_application_fd(fd)?;
@@ -286,11 +293,121 @@ pub(crate) fn exercise(
         info.directions
     );
     info_copy_retry(&fd, info)?;
-    if close_prefix {
+    if mode == Mode::PrefixClose {
         exercise_prefix_close(fd, message_bytes)
     } else {
-        exercise_messages(fd, responder, rounds, message_bytes, boundaries)
+        if mode == Mode::Burst {
+            exercise_burst(fd, rounds, message_bytes)
+        } else {
+            exercise_messages(
+                fd,
+                responder,
+                rounds,
+                message_bytes,
+                mode == Mode::Boundaries,
+            )
+        }
     }
+}
+
+// Burst is application software-admission pressure, not a claim that the
+// controller packet-credit pool ran out. Only opposite receipts prove delivery.
+fn exercise_burst(fd: OwnedFd, rounds: u32, message_bytes: usize) -> anyhow::Result<()> {
+    if rounds != 16 || message_bytes != 2042 {
+        anyhow::bail!("burst requires16 messages of2042 bytes");
+    }
+    println!("NativeChannelOpened: role=initiator rounds={rounds}");
+    println!("NativeChannelMessageSize: bytes={message_bytes}");
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let mut frames = Vec::new();
+    let mut nonces = std::collections::BTreeSet::new();
+    let mut sequences = std::collections::BTreeSet::new();
+    for _ in 0..rounds {
+        let mut frame = vec![0u8; message_bytes];
+        frame[..8].copy_from_slice(b"SLKSOCK1");
+        std::fs::File::open("/dev/urandom")?.read_exact(&mut frame[8..28])?;
+        let sequence = u32::from_le_bytes(frame[24..28].try_into()?);
+        if !nonces.insert(frame[8..24].to_vec()) || !sequences.insert(sequence) {
+            anyhow::bail!("burst random identity repeated");
+        }
+        for i in 0..message_bytes - 29 {
+            frame[29 + i] = frame[8 + i % 16] ^ (sequence as u8).wrapping_add(i as u8);
+        }
+        frames.push(frame);
+    }
+    let started = Instant::now();
+    let mut blocked = 0;
+    let mut not_writable = 0;
+    for (index, frame) in frames.iter().enumerate() {
+        let mut stalled = false;
+        loop {
+            // SAFETY: immutable full datagram and valid owned fd.
+            let result = unsafe {
+                nix::libc::send(
+                    fd.as_raw_fd(),
+                    frame.as_ptr().cast(),
+                    frame.len(),
+                    nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
+                )
+            };
+            if result == frame.len() as isize {
+                if stalled {
+                    println!("NativeBurstResumed: sequence={index}");
+                }
+                println!("NativeChannelSent: sequence={index} bytes={}", hex(frame));
+                break;
+            }
+            if result >= 0 {
+                anyhow::bail!("partial burst datagram");
+            }
+            let error = std::io::Error::last_os_error();
+            if error.kind() != std::io::ErrorKind::WouldBlock {
+                return Err(error.into());
+            }
+            blocked += 1;
+            stalled = true;
+            let mut poll = nix::libc::pollfd {
+                fd: fd.as_raw_fd(),
+                events: nix::libc::POLLOUT,
+                revents: 0,
+            };
+            // SAFETY: one live pollfd; zero timeout only observes current state.
+            let result = unsafe { nix::libc::poll(&mut poll, 1, 0) };
+            if result < 0 {
+                return Err(std::io::Error::last_os_error().into());
+            }
+            if poll.revents & (nix::libc::POLLERR | nix::libc::POLLHUP | nix::libc::POLLNVAL) != 0 {
+                anyhow::bail!("burst pressure returned socket failure");
+            }
+            let writable = poll.revents & nix::libc::POLLOUT != 0;
+            not_writable += u32::from(!writable);
+            println!(
+                "NativeBurstBlocked: sequence={index} poll_writable={}",
+                u8::from(writable)
+            );
+            wait(&fd, nix::libc::POLLOUT, deadline)?;
+        }
+    }
+    if blocked == 0 || not_writable == 0 {
+        anyhow::bail!("no actual bounded-queue backpressure observed");
+    }
+    for (index, frame) in frames.iter().enumerate() {
+        let received = receive(&fd, deadline)?;
+        let wire = u32::from_le_bytes(frame[24..28].try_into()?);
+        validate(&received, wire, true, message_bytes)?;
+        let mut expected = frame.clone();
+        expected[28] = 1;
+        if received != expected {
+            anyhow::bail!("burst opposite application reply mismatch");
+        }
+        println!(
+            "NativeChannelRoundTrip: sequence={index} elapsed_ms={} bytes={}",
+            started.elapsed().as_millis(),
+            hex(&received)
+        );
+    }
+    println!("NativeBurstPressure: eagain={blocked} not_writable={not_writable} replies={rounds}");
+    Ok(())
 }
 
 // Dedicated application lifecycle gate. Delay is only scheduling support;
@@ -459,6 +576,47 @@ mod tests {
             .unwrap();
             task.join().unwrap().unwrap();
         }
+    }
+
+    #[test]
+    fn burst_recovers_from_real_local_datagram_backpressure_and_peer_replies() {
+        // AF_UNIX verifies application control flow only, never WS73 credit/RF.
+        let mut raw = [-1; 2];
+        // SAFETY: two writable slots become distinct owned descriptors.
+        assert_eq!(
+            unsafe {
+                nix::libc::socketpair(
+                    nix::libc::AF_UNIX,
+                    nix::libc::SOCK_DGRAM | nix::libc::SOCK_NONBLOCK | nix::libc::SOCK_CLOEXEC,
+                    0,
+                    raw.as_mut_ptr(),
+                )
+            },
+            0
+        );
+        // SAFETY: successful socketpair transferred these fresh descriptors.
+        let (source, peer) =
+            unsafe { (OwnedFd::from_raw_fd(raw[0]), OwnedFd::from_raw_fd(raw[1])) };
+        let budget: nix::libc::c_int = 4096;
+        // SAFETY: initialized integer option on this test-owned local fd.
+        assert_eq!(
+            unsafe {
+                nix::libc::setsockopt(
+                    source.as_raw_fd(),
+                    nix::libc::SOL_SOCKET,
+                    nix::libc::SO_SNDBUF,
+                    (&budget as *const nix::libc::c_int).cast(),
+                    std::mem::size_of_val(&budget) as nix::libc::socklen_t,
+                )
+            },
+            0
+        );
+        let task = std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_millis(100));
+            exercise_messages(peer, true, 16, 2042, false)
+        });
+        exercise_burst(source, 16, 2042).unwrap();
+        task.join().unwrap().unwrap();
     }
 
     #[test]

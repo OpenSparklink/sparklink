@@ -20,7 +20,7 @@ def credentials(pid):
 def execute(run, phase):
     row = dict(phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
-               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     run.data.setdefault('channel_socket', []).append(row); run.save()
     processes=[];files=ExitStack()
     try:
@@ -37,6 +37,7 @@ def execute(run, phase):
             if row['message_bytes']!=61 or row['boundary_check']:args.append(str(row['message_bytes']))
             if row['boundary_check']:args.append('boundaries')
             if row['close_prefix'] and role=='initiator':args.append('prefix-close')
+            if row['burst'] and role=='initiator':args.append('burst')
             app=dict(role=role,args=args,start_wall_ns=time.time_ns())
             row['applications'].append(app);run.save()
             stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
@@ -169,6 +170,7 @@ def application_frames(row):
         if declared and declared!=[str(message_bytes)] or (message_bytes!=61 and not declared):raise CaptureError('original application message size must match request')
     rejected_frames(row)
     channel_info_receipts(row)
+    burst_pressure_receipts(row)
     def rows(role,marker,elapsed=False):
         pattern=rf'^{marker}: sequence=(\d+) '+(r'elapsed_ms=(\d+) ' if elapsed else '')+r'bytes=([0-9a-f]+)$'
         values=re.findall(pattern,apps[role]['stdout'],re.M)
@@ -192,6 +194,29 @@ def application_frames(row):
         if received[i]!=data or reply[i]!=expected or returned[i]!=expected:
             raise CaptureError('actual peer validation and exact reply required')
     return sent,reply
+
+
+def burst_pressure_receipts(row):
+    source=next(a for a in row['applications'] if a['role']=='initiator')
+    blocked=re.findall(r'^NativeBurstBlocked: sequence=(\d+) poll_writable=([01])$',source['stdout'],re.M)
+    resumed=re.findall(r'^NativeBurstResumed: sequence=(\d+)$',source['stdout'],re.M)
+    summary=re.findall(r'^NativeBurstPressure: eagain=(\d+) not_writable=(\d+) replies=(\d+)$',source['stdout'],re.M)
+    if not row.get('burst',False):
+        if blocked or resumed or summary or 'NativeBurst' in source['stdout']:
+            raise CaptureError('pressure receipts require explicit burst gate')
+        return None
+    if row['rounds']!=16 or row['message_bytes']!=2042 or row.get('close_prefix') or row.get('boundary_check'):
+        raise CaptureError('burst requires16 ordinary2042-byte app round trips')
+    if len(summary)!=1 or not blocked or not resumed:
+        raise CaptureError('actual EAGAIN/poll withdrawal/resumed admission required')
+    count,not_writable,replies=map(int,summary[0]);sequences={int(v[0]) for v in blocked}
+    if count!=len(blocked) or not_writable!=sum(v[1]=='0' for v in blocked) or not not_writable or replies!=16:
+        raise CaptureError('pressure counts disagree with original receipts')
+    if {int(v) for v in resumed}!=sequences or len(resumed)!=len(sequences) or any(not 0<=v<16 for v in sequences):
+        raise CaptureError('every stalled admission must resume once within original sequence budget')
+    if source['stdout'].count('NativeBurstBlocked:')!=count or source['stdout'].count('NativeBurstResumed:')!=len(resumed) or source['stdout'].count('NativeBurstPressure:')!=1:
+        raise CaptureError('extra or malformed pressure receipts')
+    return dict(eagain=count,poll_not_writable=not_writable,resumed_sequences=sorted(sequences),replies=16,scope='Software finite queue pressure; not controller packet-credit depletion')
 
 
 def prefix_application_frames(row):
@@ -321,6 +346,7 @@ def corroborate(run,capture):
                     ssap_legs.append(dict(tx=matched(owner,'out',frame,True),rx=matched(receiver,'in',frame,True)))
                 ssap.append(dict(receipt=source,wire=ssap_legs))
         entry = dict(phase=n,owners=owners,capabilities=capabilities,legs=legs)
+        if row.get('burst',False):entry['burst_pressure']=burst_pressure_receipts(row)
         if prefix:entry['prefix_close']={k:v for k,v in prefix.items() if k!='dropped'}|dict(dropped_marker=prefix['dropped'].hex(),other_channel_after_close=True)
         if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)
         if row.get("ssap_exchange_required",False): entry["ssap_exchange"] = ssap
@@ -331,6 +357,10 @@ def corroborate(run,capture):
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows if not row.get('close_prefix',False)),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
                 long_pdu_acceptance=all(row.get('message_bytes',61)>249 and not row.get('close_prefix',False) for row in rows),credit_exhaustion_acceptance=False,four_device_acceptance=False)
+    if any(row.get('burst',False) for row in rows):
+        if not all(row.get('burst',False) for row in rows):raise CaptureError('both connection roles must observe real pressure')
+        proof['software_backpressure_acceptance']=True
+        proof['burst_pressure']=[burst_pressure_receipts(row) for row in rows]
     if any(row.get('close_prefix',False) for row in rows):
         proof['prefix_close_phases']=sum(bool(row.get('close_prefix',False)) for row in rows)
         proof['physical_prefix_delivery_acceptance']=all(row.get('close_prefix',False) for row in rows)

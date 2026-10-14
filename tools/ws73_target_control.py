@@ -127,6 +127,7 @@ def main():
     parser.add_argument('--initializer-lifecycle',action='store_true',help='actual initializer withdrawal, eviction and guest-generation gate; excludes private File close/dup')
     parser.add_argument('--daemon-link-resync',action='store_true')
     parser.add_argument('--channel-socket-bytes',type=int,default=61)
+    parser.add_argument('--channel-socket-burst',action='store_true')
     parser.add_argument('--channel-socket-close-prefix',action='store_true')
     parser.add_argument('--channel-socket-boundaries',action='store_true')
     parser.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4)
@@ -145,6 +146,7 @@ def main():
     if not 29<=args.channel_socket_bytes<=2042 or ((args.channel_socket_bytes!=61 or args.channel_socket_boundaries) and not args.channel_socket_verify):parser.error('message size and boundaries require explicit supported socket gate')
     if args.channel_socket_rounds!=4 and not args.channel_socket_verify:parser.error('round count requires explicit socket gate')
     if args.channel_socket_close_prefix and (not args.channel_socket_verify or args.channel_socket_bytes!=2042 or args.channel_socket_rounds!=1 or args.channel_socket_boundaries):parser.error('prefix-close requires explicit one-round 2042-byte socket gate')
+    if args.channel_socket_burst and (not args.channel_socket_verify or args.channel_socket_bytes!=2042 or args.channel_socket_rounds!=16 or args.channel_socket_close_prefix or args.channel_socket_boundaries):parser.error('burst requires explicit16-round2042-byte socket gate')
     if args.channel_socket_verify and (not args.connection_verify or args.acb_transport_probe or args.daemon_link_resync):parser.error('ordinary socket requires separate connection gate without test module')
     if args.acb_transport_probe and (not args.connection_verify or args.daemon_link_resync):parser.error('ACB probe requires a separate explicit connection gate')
     if args.connection_advertising!='fixed-t' and not args.connection_verify:

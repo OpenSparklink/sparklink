@@ -419,5 +419,112 @@
   "full_goal_complete": false,
   "original_issues_closed": false,
   "natural_fault_root_cause_closed": false,
-  "non_manual_recovery_qualified": false
+  "non_manual_recovery_qualified": false,
+  "issue_sync": {
+    "status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+    "receipts": [
+      {
+        "repo": "linux",
+        "issue": 4,
+        "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6175492963",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+        "comment_sha256": "c024789033e2de20fdc5265f0cf4bcf926ef4f17b051556e200574a1c615162b"
+      },
+      {
+        "repo": "linux",
+        "issue": 6,
+        "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6175494283",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+        "comment_sha256": "6ff73a161235b3a03a93de78a74ba09156ba888703872b8d6d88eff1efc6eba8"
+      },
+      {
+        "repo": "linux",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/linux/issues/8#issuecomment-6175495989",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "4f21d2d59b7c708fd549ebb6720237e037b939f97d628531f4659bbd247b4b93",
+        "comment_sha256": "8a3d857498d34a4577631dbce7e5d4fbca99b1c28683a47d77c8475586c54838"
+      },
+      {
+        "repo": "linux",
+        "issue": 14,
+        "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6175497540",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+        "comment_sha256": "a76394ee185ce292bce25a2b69e25d58b2383865c44a97b18fc0d491a903e785"
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6175499034",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+        "comment_sha256": "16babb5d1a4aa8d60cb9f598f4ac3b083a3c1ca18167fcbe78b925a2a1f5e422"
+      },
+      {
+        "repo": "linux",
+        "issue": 18,
+        "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6175500534",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "5c2dbee1928dff3ce3caecac72d05f6c37a8509549022002c7911376ed40132b",
+        "comment_sha256": "ff3e90eb3b37b0e3c6428870cfc040de7e0e6228c0a6647401daca8a271d4d71"
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6175501775",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+        "comment_sha256": "2d71d3f5fcc00d14460069665b55e95f2f50a33d11adb9e40c0ac288ed494177"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6175503512",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41",
+        "comment_sha256": "0762a61bff7c43605b6c80c83907ff779eda02cb26e25b6a6547f27708a20445"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6175505230",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+        "comment_sha256": "f3e8588b84fd6dc38366196298b28c87ae2518457fc64c8ede1dc51e5098cea2"
+      }
+    ]
+  },
+  "ci": {
+    "docs": {
+      "run": 38615980281,
+      "status": "SUCCESS",
+      "head": "604f6880b5aa4b082b948d3006a6fb2163925228"
+    },
+    "code": {
+      "run": 38615980650,
+      "status": "IN_PROGRESS_AT_READBACK_NOT_PASS",
+      "head": "604f6880b5aa4b082b948d3006a6fb2163925228"
+    }
+  }
 }

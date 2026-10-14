@@ -1,5 +1,22 @@
 # 当前能力与资格
 
+## 最新 WS73 原子命令提交与准确新镜像回归
+
+K `f82d6fcc96dd`／编译服务 U `29d7df72c725` 已在 VM 内通过40轮双向短消息、
+8轮249字节、16次250／253／254／255的EMSGSIZE及无USB提交；原广播扫描、
+建链断链、普通UID1000与SSAP读写／发现／UUID保持通过。三次VM正常退出、
+taint0，正常两次捕获零内核丢包；受控初始化故障及QMP不是自然恢复/物理拔插。
+
+默认WS73命令发送已用实际Host槽／cookie／opcode、原期限、撤销及冻结的
+连接引用，在Host/gate保护下原子提交URB；准备及等待/kill/join在锁外。USB
+成功不归还命令credit、不生成Complete。Standard/Virtual旧命令路径仍待迁移。
+实际Host/提交57项、C命令/ACB各11项、descriptor42项及关联严格回归通过。
+K08ac仅修旧依赖夹具，保留CI失败；不把它或模型升级为新的实机/形式化资格。
+
+每连接安全relay/Grant epoch、1812/0014及可信安装仍未接通；确定未提交拒绝的
+credit回滚与恢复、线上晚到/重复Complete及barrier、完整IRQ/refinement仍缺失。
+[精确源码、实机、失败与未决](../docs/evidence/ws73-command-submit-ticket-20261014.json)。
+
 ## 最新安全 relay 状态转换（实验隔离，未接默认内核）
 
 K `4002140f908d` 新增实际纯逻辑：每物理连接身份与Grant epoch、两项队列／

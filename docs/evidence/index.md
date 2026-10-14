@@ -34,3 +34,6 @@
 
 [实验relay每连接状态转换、严格回归及未证明报告](security-relay-session-staging-20261014.json)
 未进入默认Host；unsupported/timeout保持NOT_PROVEN，不升级旧WS73资格。
+
+[WS73实际命令提交票据、冻结引用与新准确双设备回归](ws73-command-submit-ticket-20261014.json)
+保留旧夹具/CI失败；命令票据不等于安全relay接通、完整并发证明或自然恢复。

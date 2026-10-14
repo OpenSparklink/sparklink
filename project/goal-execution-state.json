@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-14T03:43:55.799194+00:00",
+  "updated_at_utc": "2026-10-14T04:34:50.690214+00:00",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -26,19 +26,19 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "4002140f908d76ea1a1e4c60f4113a6454bc6b47",
-    "userspace": "9ff5067a8eded2f6143346bc28a669ee650cf5f8",
-    "observation": "Staged nondefault relay code/CI snapshot; no new runtime RF qualification. QualifiedK7de/Uaf unchanged."
+    "linux": "08ac32631e163c45ab1dd924f6b27962106a91e8",
+    "userspace": "4d529fd27a43610ca046a5c454506e3a504c3816",
+    "observation": "New exact runtimeKf82 qualified; laterKfa54/K08ac only dependency fixtures. CI pin snapshot before this docs commit."
   },
   "qualified_source_heads": {
-    "linux": "7de50814c263b1b4416616e081b6878905c6c1b6",
-    "userspace": "af583eb0db58106a0f5ef9937247edf0e032e6c1",
-    "scope": "Exact VM40short/8x249,16 oversize no-submit, existing SSAP read/write/discovery/UUID and local update refusals, controlled init isolation; no positive pairing/update RF or natural recovery",
-    "evidence": "docs/evidence/security-relay-envelopes-20261014.json"
+    "linux": "f82d6fcc96dd3c8ebcb64b0ee139b3e8368b38ce",
+    "userspace": "29d7df72c72502441b7265c14c8273252063c960",
+    "scope": "VM40short/8x249/16oversize no-submit; discovery/link/SSAP preserved, controlled init isolation; no security/natural recovery/physical qualification",
+    "evidence": "docs/evidence/ws73-command-submit-ticket-20261014.json"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exactK7de/Uaf:40short business, randomized22discovery rounds/connection/QMP, SSAP complete read/write/discovery/UUID and unsupported local update; no positive security/update or physical/natural recovery",
-    "DG02": "PARTIAL_REAL exactK7de/Uaf:8app249,16EMSGSIZE/no-submit250/253/254/255, two directions; long/credit exhaustion/queue pressure/multichannel remain open",
+    "DG01": "PARTIAL_REAL exactKf82/U29d:40short business,22randomizeddiscovery/link/QMP, existing complete SSAP read/write/discovery/UUID and refusal gates. No positive security/update, physical unplug or natural recovery.",
+    "DG02": "PARTIAL_REAL exactKf82/U29d:8app249,16EMSGSIZE/no-submit250/253/254/255,2directions/zero capture drops/taint0. Long/realcredit exhaustion/queue pressure/multichannel open.",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -56,7 +56,7 @@
     "FV_SECURITY_RELAY": "NOT_PROVEN_UNSUPPORTED; actual isolated pure Rust twoharness8steps/twoqueued/oneactive/0..3payloads/u64counter, raw752+914 zero failures but Kani panic/pointer warnings; no Host/Grant/FD/wire/barrier refinement."
   },
   "next_slices": [
-    "Wire existingexperimental security_relay.rs into sole physicalConnectionSession/Host, canonical Runtime/Grant epoch and real shared command reservation/atomic driver submission; typed1812 preparation, RX0014/000e/0011 lifetime attribution including265byte envelope, completion/originaldeadline and cancellation preserving physical obligation. Remove staging only after exact related VM gates; no second implementation.",
+    "Use the existing WS73 atomic command ticket/Host slot and SAMEexperimental security_relay.rs in sole physicalConnectionSession. Wire canonical Grant epoch, typed1812 driver preparation/RX0014-000e-0011 and265byte Core envelope, real completion/originaldeadline and cancellation. Known-never-submitted rejection credit/recovery stays open; no second engine or raw mutation permission.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
@@ -2417,7 +2417,7 @@
     "local_path": "../communication_nearlink_service",
     "selected_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
     "when": "Each relevant transport/Host/lifecycle/SSAP/security/Profile batch; inspect source/dirty state and compare standard, SDK111 and libws73-usb",
-    "latest_review": "docs/evidence/security-relay-session-staging-20261014.json",
+    "latest_review": "docs/evidence/ws73-command-submit-ticket-20261014.json",
     "not_assumed": "Other Host compatibility or trusted Native state from reference API success"
   },
   "userspace_ssap_update_rx_slice": {
@@ -2649,5 +2649,21 @@
         "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
       }
     ]
+  },
+  "ws73_command_submit_ticket": {
+    "status": "implemented defaultWS73 atomic command queueing with actual Host reservation and frozen link reference; actual body regressions/new exact radio gates passed",
+    "evidence": "docs/evidence/ws73-command-submit-ticket-20261014.json",
+    "legacy_providers": [
+      "StandardUSB",
+      "Virtual"
+    ],
+    "remaining": [
+      "wire staged relay into sole ConnectionSession and canonical Grant epoch",
+      "known-never-submitted credit rollback/recovery policy",
+      "actual firmware late/duplicate Complete and drain/reuse barrier",
+      "IRQ/lockdep/KCSAN/implementation refinement",
+      "security/CCC and natural RCA/nonhuman recovery"
+    ],
+    "closure_allowed": false
   }
 }

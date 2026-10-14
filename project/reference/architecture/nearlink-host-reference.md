@@ -210,3 +210,12 @@ K `7de50814c263` 的默认 WS73 RX 在 Runtime 入口之前验证 `0014`、`000e
 唯一ConnectionSession持有。地址/handle查表和本地cookie均不能证明旧wire回复
 不会匹配新物理会话；真实Host锁、命令槽、授权及barrier仍未接通。
 [实际逻辑与未证明范围](../../../docs/evidence/security-relay-session-staging-20261014.json)。
+
+### 实际命令提交边界与参考DLI manager
+
+本批再次核对f087（clean）`DLI_ExecuteCommand`：它分配manager context、设置
+timeout并在发送失败时清理参数/context；`DLI_SetControllerData`等待1812的真实
+Complete。本项目没有复制其全局manager或把DLI API返回成功当对端收到；Kf82
+默认WS73在实际USB队列入口核对per-Runtime真实Host槽、原期限、撤销及冻结
+lifetime引用，待URB完成后仍等待协议回复。指定libws73的单relay在途约束保留。
+[实际代码与未决归属/恢复](../../../docs/evidence/ws73-command-submit-ticket-20261014.json)。

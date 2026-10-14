@@ -1,5 +1,19 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前接入进度：WS73真实命令提交票据已接通
+
+Kf82/U29d准确新镜像保持40短消息／249与超限／原SSAP门禁。默认WS73已从
+直接bulk写迁移到实际Host/gate原子命令提交；cookie/期限/撤销与最初的连接
+引用在真正USB排队时重查，不将命令选择视作已提交。Standard/Virtual旧发送
+列为等待替代，不宣称具备此保护。两个旧夹具失败保留，修正后严格关联回归通过。
+
+下一批直接复用这条发送路径及已写relay纯逻辑，接入唯一ConnectionSession、
+canonical Grant epoch、typed1812及0014/000e/0011归属（含265字节Core入口）。
+确定未提交的credit回滚/恢复与真实线上重复/晚到屏障另有未决条件；不可靠新
+cookie或本地成功宣告安全。继续数据门禁、安全后续与自然RCA/恢复，不等待
+控制竞争全集，也不关闭原完整scope。
+[当前门禁与未决](../docs/evidence/ws73-command-submit-ticket-20261014.json)。
+
 ## 当前安全接入：采用已写的 relay 状态转换，完成实际所有权接线
 
 K400新增的实验纯逻辑不是另一套wire Engine；7项严格回归通过，有界工具

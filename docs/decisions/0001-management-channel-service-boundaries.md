@@ -4,7 +4,7 @@
 
 # ADR 0001：管理、连接 socket 与应用服务分层
 
-最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](../BLUEZ_RECONCILIATION_20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
+最新源码复核与新镜像回归（K`016aa7ee6813`／编译U`b6d6bf96101e`）见[当前分层、整改与验收边界](../../history/architecture/bluez-reconciliation-20261011.md)；历史源码和证据范围保留，完整 S0–S6／自然恢复仍开放。
 
 日期：2026-10-11。状态：目标架构已采用，分阶段实施；不代表 socket、SSAP、
 安全或完整生态已交付。根据用户提供的 Linux Bluetooth / BlueZ 分析调整原方案，
@@ -75,8 +75,8 @@ socket 门禁覆盖消息边界、超长拒绝、持续发送/背压、取消/�
 传输错误后的有限恢复支持；自然启动超时、重枚举/消失根因及完整无人工恢复仍
 未闭合，U10 保持 7/8。不提前关闭任何完整 issue。
 
-执行清单见[调用审计与清理](../LEGACY_CLEANUP_20261011.md)、
-[14 项整改](../REVIEW_REMEDIATION_20261011.md)、[联合方案](../IMPLEMENTATION_PLAN.md)。
+执行清单见[调用审计与清理](../../history/cleanup/legacy-cleanup-20261011.md)、
+[14 项整改](../../history/cleanup/review-remediation-20261011.md)、[联合方案](../../project/implementation-plan.md)。
 
 
 ## 标准核对与旧 Engine 开放条件
@@ -84,21 +84,21 @@ socket 门禁覆盖消息边界、超长拒绝、持续发送/背压、取消/�
 T/XS 20001-2025表72/75/76规定分片消息控制码；旧内核offset/短包结束格式不符合
 这套格式。先删除不可靠wire Engine并拒绝操作，历史codec只供selftests。标准
 Engine/数据库在slkd接通PDU socket后实施；本地staging不是服务发布。见
-[整改和门禁](../SSAP_LEGACY_CONTAINMENT.md)。不通过修改旧格式的长度界限
+[整改和门禁](../../history/ssap/ssap-legacy-containment.md)。不通过修改旧格式的长度界限
 继续保留第二套生产Engine。
 
 ## 再次核对（2026-10-11）
 
 用户再次提供的分析内容与既有分析一致（文本SHA256
 f8de2edb3e4c6a2cca1442ce06ba59c03407469b7f8631539e974743c993853a）。
-本ADR继续采用，无架构回退。最新权限整改见[契约](../SSAP_OPERATIONS.md)，
-14项最新实现/测试/未决条件见[整改记录](../REVIEW_REMEDIATION_20261011.md)。
+本ADR继续采用，无架构回退。最新权限整改见[契约](../../project/reference/ssap/ssap-operations.md)，
+14项最新实现/测试/未决条件见[整改记录](../../history/cleanup/review-remediation-20261011.md)。
 声明位验证、框架存在和CI成功不证明服务互通或安全强制；实际socket、用户态
 Engine、安全/Bond和自然恢复门禁仍需独立交付。已验证discovery持续回归。
 
 最新已验证基线为K`78e729c06a5e`/编译U`2dfd6bd09e7b`，见
 [诊断淘汰证据](../evidence/ws73-vm-diagnostic-eviction-20261011.json)。后续
-K`54621800ee4c`修复旧poll的复制提交顺序；[6项新开发fixture和未决实机门禁](../EVENT_COPY_REMEDIATION.md)
+K`54621800ee4c`修复旧poll的复制提交顺序；[6项新开发fixture和未决实机门禁](../../history/diagnostics/event-copy-remediation.md)
 明确区分。[新镜像真实20+2/read/诊断回归](../evidence/ws73-vm-legacy-poll-copy-20261011.json)
 已通过。后续K`9b16e634bfd3`/编译U`1d3a17b688ee`的
 [Native ring三类实际复制故障](../evidence/ws73-vm-legacy-poll-live-20261011.json)

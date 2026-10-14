@@ -17,4 +17,4 @@ python3 tools/ws73_north_star.py verify --run "$RUN_JSON" \
 
 失败处理：丢包、时钟或 marker 不匹配、旧 generation、输出目录已存在均须保留失败，重新获得输入后另开目录。USB 写入、snoop status=0、日志或广播内容都不能代替连接后的对端应用收发验收。
 
-[抓包格式与权限原文](../SNOOP.md)、[历史实机核对范围](../WS73_PHYSICAL_TEST.md)；当前 socket 往返资格及长度边界以 [当前资格](../CURRENT_CAPABILITIES.md) 为准。
+[抓包格式与权限原文](../../project/reference/diagnostics/snoop.md)、[历史实机核对范围](../../project/reference/discovery/ws73-physical-test.md)；当前 socket 往返资格及长度边界以 [当前资格](../../project/current-capabilities.md) 为准。

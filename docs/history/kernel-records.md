@@ -2,7 +2,7 @@
 
 内核源码树中的 SparkLink／WS73 文档保持原路径，不复制到用户态站点。
 本批核对 Linux `e78b88f050aa`；以下链接保留整改前的原文身份。
-当前契约以匹配源码和[当前资格](../CURRENT_CAPABILITIES.md)为准，
+当前契约以匹配源码和[当前资格](../../project/current-capabilities.md)为准，
 旧 read、SSAP containment、早期启动与安装步骤均不得作为当前推荐。
 
 | 原文 | 去向／限制 |

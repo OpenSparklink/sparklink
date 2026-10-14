@@ -13,6 +13,6 @@ documentation-build
 controller-snoop
 ```
 
-[API 查找入口](../API.md)已退休旧全量编号表；旧表按固定提交保留。
+[API 查找入口](../../project/reference/management/api.md)已退休旧全量编号表；旧表按固定提交保留。
 接口存在、拒绝行为和实机资格必须分别核对，完整字段参考仍分批补齐。
 

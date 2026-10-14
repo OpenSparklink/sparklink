@@ -2,7 +2,7 @@
 
 日期：2026-10-13。状态：目标架构采用；按下表整改，未实现项不宣称完成。
 用户完整提案已合入canonical ARCHITECTURE/IMPLEMENTATION_PLAN；采用与历史状态调整见
-[采用记录](../ARCHITECTURE_ADOPTION_20261013.json)。当前实现Kbf8663/编译用户态Udfb8636的40轮短消息、249边界与八项Grant scope门禁
+[采用记录](../../history/architecture/architecture-adoption-20261013.json)。当前实现Kbf8663/编译用户态Udfb8636的40轮短消息、249边界与八项Grant scope门禁
 以CURRENT_CAPABILITIES为准；后续工具提交独立记录，不覆盖下述历史review基线。
 补充 ADR 0001，不缩减 S0–S6、drivers/net/slkd 分层或历史资格。
 Review 基线为 Linux4a3dc86ade58、用户态8cf052c。随后 ec67348 仅新增长度验收应用/
@@ -422,7 +422,7 @@ get_version/get_capabilities被唯一get_metadata替代并删除。info/controll
 boot-ROM/FW必须由已匹配厂商driver实现；不存在可假定的通用F810/F811/A5协议。
 默认旧FW删除，历史仅selftests；无Session/ticket/credit归属的标准裸handle TX/RX和未接通typed recipe明确不支持。
 这项审计调整标准Backend迁移前的依赖，保留所有S0–S6/标准后端最终目标及已验证WS73，
-[调用者/删除/等待替代](../STANDARD_USB_BINDING_CLEANUP_20261013.md)与[实际证据/假设](../evidence/standard-binding-offline-20261013.json)
+[调用者/删除/等待替代](../../history/cleanup/standard-usb-binding-cleanup-20261013.md)与[实际证据/假设](../evidence/standard-binding-offline-20261013.json)
 集中记录。限定模型/WS73回归不能替代标准USB物理与自然恢复资格。
 
 ### 共同provider实现迁移（Ka368cf5f1784）

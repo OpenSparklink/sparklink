@@ -3,6 +3,7 @@
 from collections import Counter
 from pathlib import Path
 import argparse
+import os
 import json
 import re
 import tomllib
@@ -54,8 +55,21 @@ def main():
         ['git', 'ls-files', '*.md'], cwd=ROOT, text=True).splitlines())
     # Include new untracked docs while preparing a reviewable commit. Generated
     # HTML, caches and external worktrees are not repository documentation.
-    tracked.update(str(p.relative_to(ROOT)) for p in DOCS.rglob('*.md')
-                   if '_build' not in p.parts)
+    for directory in [DOCS, ROOT / 'project', ROOT / 'history']:
+        tracked.update(str(p.relative_to(ROOT)) for p in directory.rglob('*.md')
+                       if '_build' not in p.parts)
+    path_map = json.loads((DOCS / 'documentation-paths.json').read_text())
+    for old, new in path_map['migrations'].items():
+        if (ROOT / old).exists() or not (ROOT / new).is_file():
+            errors.append(f'physical migration incomplete: {old} -> {new}')
+    if any(p.stem.upper() == p.stem for p in DOCS.glob('*.md')):
+        errors.append('uppercase Markdown remains in docs root')
+    for source, page in path_map['canonical_projections'].items():
+        expected = '```{include} ' + str(Path(os.path.relpath(ROOT/source, (ROOT/page).parent))) + '\n```'
+        if (ROOT/page).read_text().strip() != expected:
+            errors.append(f'canonical projection duplicates or replaces source: {page}')
+
+    tracked = {path for path in tracked if (ROOT/path).is_file()}
     for path in sorted(tracked - set(paths)):
         errors.append(f'unmapped document: {path}')
     kernel_map = json.loads((DOCS / 'kernel-documentation-map.json').read_text())
@@ -82,7 +96,7 @@ def main():
         for path in sorted(scoped - {x['path'] for x in entries}):
             errors.append(f'unmapped kernel document: {path}')
     canonical = {x['path'] for x in items if x['status'] == 'canonical'}
-    if canonical != {'docs/ARCHITECTURE.md', 'docs/IMPLEMENTATION_PLAN.md', 'docs/CURRENT_CAPABILITIES.md'}:
+    if canonical != {'project/architecture.md', 'project/implementation-plan.md', 'project/current-capabilities.md'}:
         errors.append('canonical architecture/plan/capabilities changed')
     owners = Counter()
     for page in DOCS.rglob('*.md'):

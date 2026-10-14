@@ -2,7 +2,7 @@
 
 本页依据用户态 `dc040002555c`（事件实现 `bf7a189a4a52`）与 Linux `e78b88f050aa`。
 描述已实现接口，不转授历史镜像的资格；精确实机范围仍从
-[当前能力](../CURRENT_CAPABILITIES.md) 查找。UAPI 尚未发布。
+[当前能力](../../project/current-capabilities.md) 查找。UAPI 尚未发布。
 
 ## 三种不同用途
 
@@ -44,4 +44,4 @@ Python `NativeAdapter.poll_event` 是现有非消费完整事件接口，名称�
 源码：`crates/slkd/src/controller.rs`、`crates/slk-protocol/src/ioctl.rs`、
 Linux `net/sparklink/sparklink_core.rs` 与 `include/uapi/linux/sparklink.h`。
 [本批准确证据](../evidence/read-retirement-progress-20261014.json) 和
-[历史 read 审计](../EVENT_COPY_REMEDIATION.md) 分开阅读。
+[历史 read 审计](../../history/diagnostics/event-copy-remediation.md) 分开阅读。

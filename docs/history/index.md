@@ -2,7 +2,7 @@
 
 这里保存限定通过、失败、反例、整改和当时的复现步骤。
 旧记录可能使用已经移除的接口，或者描述后来已经变化的能力。
-使用者应先看[当前资格](../CURRENT_CAPABILITIES.md)。
+使用者应先看[当前资格](../../project/current-capabilities.md)。
 
 ```{toctree}
 :maxdepth: 1

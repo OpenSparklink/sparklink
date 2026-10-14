@@ -2,7 +2,7 @@
 
 目标：获得一个绑定明确 controller generation 的私有 `SLKSNP01` 文件。
 本页适用于用户态 `ca72b4915854`／Linux `5582a10c5ec8` 的源码契约；实际资格仅由
-[当前能力](../CURRENT_CAPABILITIES.md)指定，不因执行本页步骤获得新资格。
+[当前能力](../../project/current-capabilities.md)指定，不因执行本页步骤获得新资格。
 
 ## 前置条件
 

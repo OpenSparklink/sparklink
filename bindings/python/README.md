@@ -113,5 +113,5 @@ Current native ctypes layouts require eight-byte alignment. On older 32-bit
 interpreters that cannot represent it, native setup explicitly fails; the legacy
 binding remains usable. i386 C layout compilation does not prove that runtime.
 
-Actual C/Python kernel gates run in [WS73 support guest](../../docs/WS73_TARGET_ENVIRONMENT.md).
+Actual C/Python kernel gates run in [WS73 support guest](../../project/reference/environment/ws73-target-environment.md).
 These are synthetic development evidence, never physical WS73/RF acceptance.

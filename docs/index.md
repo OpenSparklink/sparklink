@@ -1,7 +1,7 @@
 # SparkLink 文档
 
 SparkLink 的 Linux 子系统与用户态工具仍在开发中。阅读使用步骤前，请先查看
-[当前能力与资格](CURRENT_CAPABILITIES.md)：目标架构、代码存在和历史实机通过
+[当前能力与资格](../project/current-capabilities.md)：目标架构、代码存在和历史实机通过
 分别描述不同事实。
 
 文档按 [Diátaxis](https://diataxis.fr/) 的四类读者需求组织：

@@ -3,7 +3,7 @@
 当前源码核对：Linux `53a110816ebf` 的 `sparklink_core.rs::ioctl_snoop_get`、
 `sle_snoop.rs` 与用户态 `eb92d16f4d9f` 的 `types.rs`、`snoop.rs`、slkmon。
 本页描述当前源码，不增加实机资格，也不构成已发布 ABI。
-[操作步骤](../how-to/capture-controller-snoop.md)与[当前资格](../CURRENT_CAPABILITIES.md)分别维护。
+[操作步骤](../how-to/capture-controller-snoop.md)与[当前资格](../../project/current-capabilities.md)分别维护。
 
 ## 选择、权限和等待
 

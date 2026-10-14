@@ -139,3 +139,15 @@ U#8／K#19／U#3 更新已回读，均OPEN；完整 goal 保持active，不改�
 [独立CI及HTML artifact](https://github.com/OpenSparklink/sparklink/actions/runs/38487251357)
 成功；无正式发布。[范围和未决](../evidence/diataxis-documentation-uppercase-batch-20261014.json)。
 开发dirty文件hash保持一致，无运行代码变更，不要求重复硬件资格。
+
+## 第六批：用户要求的物理迁移
+
+用户在第五批后明确要求大写资料不再放docs/。因此修改原“先保留活跃路径”
+安排：46份Markdown迁到顶层project/和history/并改为小写连字符文件名，
+机器执行状态迁project/goal-execution-state.json，架构采用原始JSON归档history。
+三权威文档仍唯一，docs/三个入口仅include读取外部原文并重写相对链接。
+源码/工具/CI导航和内核文档引用同步，清单98份用户态Markdown及10内核资料。
+原始baseline hash、固定旧提交、失败与资格范围保留，迁移不改运行代码。
+旧HTML路径生成重定向；GitHub分支blob删除后无法自动转向，不保留大写stub，
+以旧新路径表和固定旧提交安排兼容。准确构建/浏览器/CI结果另记，未执行前
+不标PASS；完整混合内容拆分/外链/离线图形/正式发布仍OPEN。

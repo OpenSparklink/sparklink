@@ -7,8 +7,8 @@
 | C API | `crates/libsparklink/include/sparklink.h` 与生成配置 | 保持头文件、实际 cdylib 与匹配内核版本一致 |
 | Python | `bindings/python/sparklink/` 与 ABI 检查 | 与文档构建的 Python 项目分开 |
 | CLI | 当前构建的 `slctl --help`、`slkconfig --help` | 原生管理、离线诊断和迁移中的旧命令有不同限制 |
-| 当前资格 | [CURRENT_CAPABILITIES](../CURRENT_CAPABILITIES.md) | 区分源码、离线、模型、实机与未决条件 |
-| 目标设计 | [ARCHITECTURE](../ARCHITECTURE.md) 与 ADR | 不代表接口已接通 |
+| 当前资格 | [CURRENT_CAPABILITIES](../../project/current-capabilities.md) | 区分源码、离线、模型、实机与未决条件 |
+| 目标设计 | [ARCHITECTURE](../../project/architecture.md) 与 ADR | 不代表接口已接通 |
 
 可选 UserHost 目前属于低优先级延期规划。旧 SSAP 业务入口的移除，也不意味着
 新的用户态 SSAP Engine 已完整实现。错误和 NotSupported 行为以当前源码及资格为准。

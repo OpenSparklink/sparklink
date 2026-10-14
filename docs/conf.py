@@ -63,21 +63,36 @@ _published |= {'docs/' + str(p.relative_to(_docs)) for section in
                ['tutorials', 'how-to', 'reference', 'explanation', 'project', 'history']
                for p in (_docs / section).glob('*.md')}
 _published |= {'docs/index.md', 'docs/decisions/index.md', 'docs/evidence/index.md'}
+import json
+_paths = json.loads((_docs / 'documentation-paths.json').read_text())
+_projections = _paths['canonical_projections']
+_projection_sources = {page[5:-3]: original for original, page in _projections.items()}
+
 
 
 def _public_source(app, docname, source):
+    source_file = _docs / (docname + '.md')
+    if docname in _projection_sources:
+        original = _projection_sources[docname]
+        source_file = _docs.parent / original
+        expected = '```{include} ' + os.path.relpath(source_file, (_docs / docname).parent) + '\n```'
+        if source[0].strip() != expected:
+            raise ValueError('canonical projection must contain only its include directive: ' + docname)
+        source[0] = source_file.read_text()
     def link(match):
         label, target = match.groups()
         if urlsplit(target).scheme or target.startswith('#'):
             return match.group(0)
         path, sep, anchor = target.partition('#')
-        absolute = (_docs / docname).parent / path
+        absolute = source_file.parent / path
         absolute = absolute.resolve()
         root = _docs.parent.resolve()
         if absolute.is_relative_to(root):
             relative = str(absolute.relative_to(root))
+            if relative in _projections:
+                relative = _projections[relative]
             if relative in _published:
-                return match.group(0)
+                return '[' + label + '](' + os.path.relpath(root / relative, (_docs / docname).parent) + sep + anchor + ')'
             if not absolute.is_file():
                 return f'{label} (unavailable source; not published)'
             return f'[{label}](https://github.com/OpenSparklink/sparklink/blob/{_source_revision}/{relative}{sep}{anchor})'
@@ -86,6 +101,15 @@ def _public_source(app, docname, source):
     source[0] = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', link, source[0])
     source[0] = re.sub(r'/opt/opensparklink-verification-tools[^\s`]+', '$VERIFICATION_TOOLS', source[0])
     source[0] = re.sub(r'/home/[^/\s`]+/(?:Documents/opensparklink/)?', '$WORKSPACE/', source[0])
+
+
+def _legacy_redirects(app, exception):
+    if exception or app.builder.format != 'html':
+        return
+    import html
+    for old, target in _paths['legacy_html_redirects'].items():
+        destination = Path(app.outdir) / old
+        destination.write_text('<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=' + html.escape(target, quote=True) + '"><title>Document moved</title><a href="' + html.escape(target, quote=True) + '">Document moved</a>')
 
 
 def setup(app):
@@ -100,6 +124,7 @@ def setup(app):
 
     app.add_search_language(ChineseSearchCompatible)
     app.connect('source-read', _public_source)
+    app.connect('build-finished', _legacy_redirects)
     return {'parallel_read_safe': True, 'parallel_write_safe': True}
 
 # Bounded independent network check; rate limits remain visible failures.

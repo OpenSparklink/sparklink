@@ -37,6 +37,6 @@ peer 身份、连接授权和认证/加密条件。安全/Bond 尚未实机合�
 
 保留实际 C/Rust/Python 同源权限回归、保留位、缩窄和超长拒绝；离线一致性
 不等于 SSAP 双端操作或安全证明。旧数据库调用和当时测试范围见
-[权限整改原始记录](../SSAP_OPERATIONS.md)，已删路径见
-[生产剥离审计](../SSAP_PRODUCTION_SEPARATION_20261013.md)。
-当前实机资格仅由[能力入口](../CURRENT_CAPABILITIES.md)维护。
+[权限整改原始记录](../../project/reference/ssap/ssap-operations.md)，已删路径见
+[生产剥离审计](../../history/ssap/ssap-production-separation-20261013.md)。
+当前实机资格仅由[能力入口](../../project/current-capabilities.md)维护。

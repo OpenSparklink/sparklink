@@ -115,7 +115,7 @@ cd ~/Documents/sparklink && cargo test --workspace 2>&1 | grep 'test result'
 
 ## 步骤 5：输出格式
 
-### 标准型输出（写入 `docs/AUDIT.md`）
+### 标准型输出（写入 `history/cleanup/audit.md`）
 
 ```markdown
 ## 审计日期：YYYY-MM-DD

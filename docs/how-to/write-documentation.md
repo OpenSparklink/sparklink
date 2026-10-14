@@ -18,7 +18,7 @@
 Markdown 页面链接使用相对路径和 `.md` 后缀：
 
 ```markdown
-[权限契约](../DBUS_AUTHORIZATION.md)
+[权限契约](../../project/reference/management/dbus-authorization.md)
 ```
 
 目录、提示和代码引用使用 MyST 指令。例如：
@@ -31,7 +31,7 @@ Markdown 页面链接使用相对路径和 `.md` 后缀：
 
 避免手抄结构体大小、命令总数、测试数量或“全部完成”声明。
 API 以源码和匹配的内核 UAPI 为准；资格以
-[当前能力入口](../CURRENT_CAPABILITIES.md) 为准。
+[当前能力入口](../../project/current-capabilities.md) 为准。
 
 ## 验证并预览
 

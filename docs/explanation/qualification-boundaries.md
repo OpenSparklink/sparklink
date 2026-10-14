@@ -16,7 +16,7 @@ controller index 可复用；generation 区分控制器注册。connection handl
 connection lifetime 区分物理连接。逻辑通道使用 local／remote TCID 与 PI，而不是
 把 handle 当作通道编号。历史抓包若没有足够身份，不能归入新连接或新镜像。
 当前 Runtime-owned Session、Channel 和 fd binding 的职责见
-[目标架构](../ARCHITECTURE.md)，设计说明不授予实现资格。
+[目标架构](../../project/architecture.md)，设计说明不授予实现资格。
 
 ## 有限证明与硬件假设
 
@@ -29,5 +29,5 @@ NOCP 在线上只有 handle／count，不能声称硬件携带 generation／life
 
 首次 panic、最后回复关闭丢弃、模型反例和旧限定 PASS 是回归设计的输入。
 它们应保留原始源码身份与失败条件，通过[历史入口](../history/index.md)查阅。
-重新排版不会赋予当前 HEAD 资格；[当前能力入口](../CURRENT_CAPABILITIES.md)
-是唯一资格来源，完整工作及未决条件只在[实施计划](../IMPLEMENTATION_PLAN.md)维护。
+重新排版不会赋予当前 HEAD 资格；[当前能力入口](../../project/current-capabilities.md)
+是唯一资格来源，完整工作及未决条件只在[实施计划](../../project/implementation-plan.md)维护。

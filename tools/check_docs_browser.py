@@ -35,7 +35,7 @@ async def main():
   await call('browsingContext.setViewport',{'context':context,'viewport':{'width':1280,'height':900},'devicePixelRatio':1})
   await nav('index.html')
   result['document_title']=await js('document.title')
-  result['home_tasks']=await js("['tutorials/index.html','how-to/index.html','reference/index.html','explanation/index.html','CURRENT_CAPABILITIES.html'].every(p=>Array.from(document.links).some(a=>a.href.endsWith(p)))")
+  result['home_tasks']=await js("['tutorials/index.html','how-to/index.html','reference/index.html','explanation/index.html','project/current-capabilities.html'].every(p=>Array.from(document.links).some(a=>a.href.endsWith(p)))")
   result['screenshots'].append(await shot('desktop-home'))
   await js("Array.from(document.links).find(a=>a.href.endsWith('reference/controller-events.html')).click();true")
   await asyncio.sleep(.5)
@@ -66,7 +66,7 @@ async def main():
   await nav('reference/controller-events.html');result['mobile_table_container']=await js("Array.from(document.querySelectorAll('table')).every(t=>{let p=t.parentElement;return t.scrollWidth<=window.innerWidth || ['auto','scroll'].includes(getComputedStyle(p).overflowX)})")
   result['screenshots'].append(await shot('mobile-reference'))
   await call('browsingContext.setViewport',{'context':context,'viewport':{'width':1280,'height':900},'devicePixelRatio':1})
-  await nav('ARCHITECTURE.html'); diagrams=False
+  await nav('explanation/architecture.html'); diagrams=False
   for _ in range(20):
    diagrams=await js("Array.from(document.querySelectorAll('.mermaid')).some(m=>{const s=m.querySelector('svg');return s && s.getBoundingClientRect().width>0 && s.getBoundingClientRect().height>0 && s.textContent.length>0})")
    if diagrams:break
@@ -80,9 +80,22 @@ async def main():
   result['business_evidence_navigation']=await js("location.pathname.endsWith('/how-to/check-business-roundtrip.html') && document.body.innerText.includes('NativeChannelRoundTrip') && document.body.innerText.includes('失败处理')")
   result['screenshots'].append(await shot('business-evidence-task'))
   await nav('explanation/qualification-boundaries.html')
-  result['qualification_explanation']=await js("document.body.innerText.includes('NOCP') && Array.from(document.links).some(a=>a.href.endsWith('/CURRENT_CAPABILITIES.html'))")
+  result['qualification_explanation']=await js("document.body.innerText.includes('NOCP') && Array.from(document.links).some(a=>a.href.endsWith('/project/current-capabilities.html'))")
   result['screenshots'].append(await shot('qualification-explanation'))
-  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','navigation','table','code_block','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation']) else 'PARTIAL'
+  await nav('project/uppercase-document-guide.html')
+  result['migration_topic_guide']=await js("document.querySelectorAll('h3').length>=11 && document.body.innerText.includes('46') && document.body.innerText.includes('当前物理位置')")
+  result['screenshots'].append(await shot('migration-topic-guide'))
+  redirects={}
+  for old,new in {'ARCHITECTURE.html':'explanation/architecture.html','IMPLEMENTATION_PLAN.html':'project/implementation-plan.html','CURRENT_CAPABILITIES.html':'project/current-capabilities.html'}.items():
+   await nav(old)
+   for _ in range(10):
+    ok=await js('location.pathname.endsWith('+json.dumps('/'+new)+')')
+    if ok:break
+    await asyncio.sleep(.2)
+   redirects[old]=ok
+  result['legacy_html_redirects']=all(redirects.values())
+  result['redirect_targets']=redirects
+  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','navigation','table','code_block','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','migration_topic_guide','legacy_html_redirects']) else 'PARTIAL'
   (OUT/'report.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['screenshots','browser']},indent=2))
   await call('session.end',{})
   if result['status']!='PASS':raise SystemExit(1)

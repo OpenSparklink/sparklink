@@ -16,4 +16,4 @@ python3 tools/ws73-board-config.py --ini "$SDK_INI" \
 
 失败处理：不要覆盖旧候选。缺字段、重复字段、超范围或 flash 模式须修正输入后在新目录重试；flash 校准及地址不能由 efuse 导出器还原。不要将候选直接刷到主机硬件。后续打包与驱动加载仅在隔离 VM 中进行。
 
-[原始输入依据及历史步骤](../WS73_BOARD_CONFIGURATION.md) 保留；以 [当前资格](../CURRENT_CAPABILITIES.md) 判定实机范围。
+[原始输入依据及历史步骤](../../project/reference/environment/ws73-board-configuration.md) 保留；以 [当前资格](../../project/current-capabilities.md) 判定实机范围。

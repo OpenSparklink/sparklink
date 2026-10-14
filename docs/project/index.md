@@ -5,8 +5,8 @@
 ```{toctree}
 :maxdepth: 1
 
-../CURRENT_CAPABILITIES
-../IMPLEMENTATION_PLAN
+current-capabilities
+implementation-plan
 documentation-migration
 uppercase-document-guide
 ```

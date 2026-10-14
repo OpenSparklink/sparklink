@@ -11,7 +11,7 @@
       "section": "reference",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "322ba8d2bf69bd399545eededcbe4583a2268c0786bff11d42dd9f56611cc8a1",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/Documentation/networking/sparklink-connection-tx.rst"
@@ -24,7 +24,7 @@
       "section": "history",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "01ca9ae1568a781c9db879136a192c6991bfb7145e076a0494d922171c444041",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/Documentation/networking/sparklink-event-copy.rst"
@@ -37,7 +37,7 @@
       "section": "reference",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "9493ac9df2a70ff15a7f91220aad60456f34694614eff5eb189536253b2d3b7c",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/Documentation/networking/sparklink-implementation.rst"
@@ -50,7 +50,7 @@
       "section": "reference",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "c61434d8479c49ee7a0cf94ceb010cd08ebcb2e8bd4a64d817530a9433c3919b",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/Documentation/networking/sparklink-link-state.rst"
@@ -63,7 +63,7 @@
       "section": "reference",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "9eb23cf4e26d028182fdda2aec3a5e13e25d1538e97e792922ebd3cc2a70c17d",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/Documentation/networking/sparklink-ssap-containment.rst"
@@ -76,7 +76,7 @@
       "section": "reference",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "1df62d4f82d0f015a304d848a0449f2d5e60efa7e75614516bf7b8cbcb20b4d5",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/Documentation/networking/sparklink.rst"
@@ -89,7 +89,7 @@
       "section": "reference",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "8b3742057fb34635b3f4499b42c361fc00cffbad5a089127291eb84c78ebbf45",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/Documentation/networking/ws73-development.rst"
@@ -102,7 +102,7 @@
       "section": "reference",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "e0d9b295fac41d9e92640447fdb1fc1e83a0aa0d57ec9fd220d1900e037ec880",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/tools/testing/selftests/sparklink/qemu-sle-dli/README.md"
@@ -115,7 +115,7 @@
       "section": "history",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "cefacc0929eb072a0f762a7a3d94c844fb2b4608332d4313d3c7884874a00e1d",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/tools/testing/selftests/sparklink/retired-serdev/README.md"
@@ -128,7 +128,7 @@
       "section": "history",
       "validity": "混合／历史；本批复核入口，按准确提交查源码，不授予当前资格",
       "applicable_version": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
-      "authority": "sparklink/docs/ARCHITECTURE.md、CURRENT_CAPABILITIES.md 与匹配内核源码",
+      "authority": "sparklink/project/architecture.md、sparklink/project/current-capabilities.md 与匹配内核源码",
       "disposition": "保留原路径；旧步骤标历史；逐篇拆分后再迁移",
       "source_sha256": "533095656db4023ac3eb5cee8b8194427d39ee917fc8bb02b2994c19324c31c9",
       "original_url": "https://github.com/OpenSparklink/linux/blob/e78b88f050aa98f7e8c83ff12c828eb172968d66/tools/testing/selftests/sparklink/retired-transport/README.md"

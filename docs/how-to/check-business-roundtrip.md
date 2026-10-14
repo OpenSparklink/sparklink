@@ -8,7 +8,7 @@
 准备同一次运行的原始 run JSON、两端 USB pcap、capture-stats、VM console 和
 manifest。记录内核、编译服务、测试工具的完整提交；三者可能不同。核对固件／
 校准 hash，但不要把固件、受限标准或大型抓包复制到站点。
-从[当前资格](../CURRENT_CAPABILITIES.md)选择准确运行记录；没有公开原始材料时，
+从[当前资格](../../project/current-capabilities.md)选择准确运行记录；没有公开原始材料时，
 只能审阅其摘要和 hash，不能声称自己复算通过。
 
 ## 操作
@@ -39,4 +39,4 @@ manifest。记录内核、编译服务、测试工具的完整提交；三者可
 人工拔插、hub 切电和 QMP 操作记录为干预，不记作自然恢复。
 
 [理解证据边界](../explanation/qualification-boundaries.md)、
-[VM 输入准备](prepare-vm-gate.md)、[历史数据面规划](../DATA_SOCKET_VERTICAL_PLAN_20261012.md)。
+[VM 输入准备](prepare-vm-gate.md)、[历史数据面规划](../../history/connections/data-socket-vertical-plan-20261012.md)。

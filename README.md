@@ -4,8 +4,8 @@ SparkLink 的 Linux 子系统和 Rust 用户态工具正在开发，提供每控
 已有特定提交在隔离 VM 中完成真实 WS73 广播扫描、连接和普通用户短消息双向往返；这不表示完整生态或当前镜像已经验收。
 
 - [文档：按读者任务导航](docs/index.md)
-- [当前能力、准确提交与限制](docs/CURRENT_CAPABILITIES.md)
-- [目标架构](docs/ARCHITECTURE.md)、[唯一实施计划](docs/IMPLEMENTATION_PLAN.md)
+- [当前能力、准确提交与限制](project/current-capabilities.md)
+- [目标架构](project/architecture.md)、[唯一实施计划](project/implementation-plan.md)
 - [贡献规范](AGENTS.md)
 
 实验驱动和真实 WS73 测试保持 **VM-only**。自然故障根因、非人工自动恢复及未完成的 SSAP、安全和发布事项继续开放。UAPI 尚未发布。

@@ -37,3 +37,6 @@
 
 [WS73实际命令提交票据、冻结引用与新准确双设备回归](ws73-command-submit-ticket-20261014.json)
 保留旧夹具/CI失败；命令票据不等于安全relay接通、完整并发证明或自然恢复。
+
+[确定未提交分类、绝对credit回滚与新原路径回归](ws73-command-unsubmitted-20261014.json)
+新回滚分支仅离线覆盖，watchdog/内部清理/真实分支/完整证明仍开放。

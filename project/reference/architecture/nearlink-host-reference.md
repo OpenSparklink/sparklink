@@ -219,3 +219,11 @@ Complete。本项目没有复制其全局manager或把DLI API返回成功当对�
 默认WS73在实际USB队列入口核对per-Runtime真实Host槽、原期限、撤销及冻结
 lifetime引用，待URB完成后仍等待协议回复。指定libws73的单relay在途约束保留。
 [实际代码与未决归属/恢复](../../../docs/evidence/ws73-command-submit-ticket-20261014.json)。
+
+### 确定未提交与参考send失败清理
+
+f087 DLI_ExecuteCommand 的send失败清理context，和libws73的单relay失败终结，
+均不能直接判定本项目真实USB是否排队。K577由实际ticket/返回类别给出该证据，
+只在无物理/故障反证时撤销软件保留，并以最新绝对grant修订号处理credit；
+不能把USB成功或框架返回当真实Complete/peer收到，也不据此宣告硬件已恢复。
+[生产源码和未证明/未验收边界](../../../docs/evidence/ws73-command-unsubmitted-20261014.json)。

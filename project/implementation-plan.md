@@ -1,5 +1,17 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前进度：区分确定未提交，继续实际安全Session接入
+
+K577已完成实际发送结局分类及限定的软件保留回滚，原路径新准确K577/U6f9
+实机保持。新回滚分支仅离线覆盖；不以普通短消息/边界通过代替该分支实机。
+watchdog先锁故障、内部清理恢复与旧回复/barrier/完整credit证明继续开放。
+
+下一批复用既有实际命令票据与现有relay源码，推进唯一物理ConnectionSession、
+canonical Grant epoch、typed1812及RX归属/265字节入口；并行跟踪上述缺口，
+不将控制竞争全集再次设为数据面或安全纵向接入前置。S0–S6/自然RCA与非人工
+恢复/旧代码整改完整范围不变，未完成整项issues继续OPEN。
+[当前实际范围及未决](../docs/evidence/ws73-command-unsubmitted-20261014.json)。
+
 ## 当前接入进度：WS73真实命令提交票据已接通
 
 Kf82/U29d准确新镜像保持40短消息／249与超限／原SSAP门禁。默认WS73已从

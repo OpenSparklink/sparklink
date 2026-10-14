@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-14T04:34:50.690214+00:00",
+  "updated_at_utc": "2026-10-14T05:17:01.000837+00:00",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -26,19 +26,19 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "08ac32631e163c45ab1dd924f6b27962106a91e8",
-    "userspace": "4d529fd27a43610ca046a5c454506e3a504c3816",
-    "observation": "New exact runtimeKf82 qualified; laterKfa54/K08ac only dependency fixtures. CI pin snapshot before this docs commit."
+    "linux": "cd2e8c381db53d176d512bdc5177ae70c575baeb",
+    "userspace": "f51c877d7cf85d017cbe4073b60f05079135f6f4",
+    "observation": "Latest test/CI snapshot; actual newRF K577/U6f9. Laterkernel cfgtest only; no branch-specific real or whole formal qualification."
   },
   "qualified_source_heads": {
-    "linux": "f82d6fcc96dd3c8ebcb64b0ee139b3e8368b38ce",
-    "userspace": "29d7df72c72502441b7265c14c8273252063c960",
-    "scope": "VM40short/8x249/16oversize no-submit; discovery/link/SSAP preserved, controlled init isolation; no security/natural recovery/physical qualification",
-    "evidence": "docs/evidence/ws73-command-submit-ticket-20261014.json"
+    "linux": "5778837aa5589364112c36b3bc0963f10840c205",
+    "userspace": "6f905f9d84258e317ab31f404786141c5f3146a6",
+    "scope": "VM40short/8x249/16oversize no-submit, discovery/link/SSAP preserved, controlled init isolation; unsubmitted rejection branch offline only",
+    "evidence": "docs/evidence/ws73-command-unsubmitted-20261014.json"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exactKf82/U29d:40short business,22randomizeddiscovery/link/QMP, existing complete SSAP read/write/discovery/UUID and refusal gates. No positive security/update, physical unplug or natural recovery.",
-    "DG02": "PARTIAL_REAL exactKf82/U29d:8app249,16EMSGSIZE/no-submit250/253/254/255,2directions/zero capture drops/taint0. Long/realcredit exhaustion/queue pressure/multichannel open.",
+    "DG01": "PARTIAL_REAL exactK577/U6f9:40short business/22randomizeddiscovery/link/QMP and original SSAP read/write/discovery/UUID/refusal; not positive security/update/physical/natural recovery or never-queued branch real proof",
+    "DG02": "PARTIAL_REAL exactK577/U6f9:8app249/16oversize no-submit250,253,254,255/UID1000/taint0/zero normal capture drops; long/credit pressure/multichannel open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -56,7 +56,7 @@
     "FV_SECURITY_RELAY": "NOT_PROVEN_UNSUPPORTED; actual isolated pure Rust twoharness8steps/twoqueued/oneactive/0..3payloads/u64counter, raw752+914 zero failures but Kani panic/pointer warnings; no Host/Grant/FD/wire/barrier refinement."
   },
   "next_slices": [
-    "Use the existing WS73 atomic command ticket/Host slot and SAMEexperimental security_relay.rs in sole physicalConnectionSession. Wire canonical Grant epoch, typed1812 driver preparation/RX0014-000e-0011 and265byte Core envelope, real completion/originaldeadline and cancellation. Known-never-submitted rejection credit/recovery stays open; no second engine or raw mutation permission.",
+    "Proceed from existing command ticket and known-unqueued classification to sole physicalConnectionSession securityRelay/canonical Grant epoch/typed1812 and RX0014-000e-0011 including265byte envelope; no second engine. Watchdog/internal-cleanup/real rejection-branch gaps remain open in parallel, not a requirement to finish all control races before data/security integration.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
@@ -2417,7 +2417,7 @@
     "local_path": "../communication_nearlink_service",
     "selected_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
     "when": "Each relevant transport/Host/lifecycle/SSAP/security/Profile batch; inspect source/dirty state and compare standard, SDK111 and libws73-usb",
-    "latest_review": "docs/evidence/ws73-command-submit-ticket-20261014.json",
+    "latest_review": "docs/evidence/ws73-command-unsubmitted-20261014.json",
     "not_assumed": "Other Host compatibility or trusted Native state from reference API success"
   },
   "userspace_ssap_update_rx_slice": {
@@ -2743,6 +2743,17 @@
         "state": "OPEN",
         "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
       }
+    ]
+  },
+  "command_never_submitted": {
+    "evidence": "docs/evidence/ws73-command-unsubmitted-20261014.json",
+    "status": "actual default classification and local rollback; actual61source tests/new baseline radio pass; real rejection branch and full watchdog/recovery/formal missing",
+    "closure_allowed": false,
+    "remaining": [
+      "watchdog already-faulted/internal cleanup retry handling",
+      "controlled real never-queued/author cancellation and peer continuity evidence",
+      "whole command/data credit/IRQ/firmware barrier proof",
+      "actual sole ConnectionSession security relay/Grant/1812/RX/crypto/installation"
     ]
   }
 }

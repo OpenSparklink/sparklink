@@ -38,16 +38,19 @@ for port in ports:
 if not os.access('/dev/kvm',os.R_OK|os.W_OK):raise ValueError('ordinary KVM access required')
 # Build a private reference-linked oracle; never modify the source checkout.
 build=out/'oracle-build';build.mkdir()
-fd=build/'src/ws73_usb_sle_fd.c';fd.parent.mkdir();shutil.copy2(reference/'src/ws73_usb_sle_fd.c',fd)
+fd=build/'src/ws73_usb_sle_fd.c';fd.parent.mkdir();(build/'src/sle73').mkdir();shutil.copy2(reference/'src/ws73_usb_sle_fd.c',fd)
 with (build/'patch.log').open('wb') as log:
  subprocess.run(['patch','--batch','-p1','-i',str(HERE/'lab/security_relay_reference_warm.patch')],cwd=build,stdout=log,stderr=subprocess.STDOUT,check=True)
+sm=build/'src/sle73/sle73_sm.c';shutil.copy2(reference/'src/sle73/sle73_sm.c',sm)
+with (build/'sdk111-patch.log').open('wb') as log:
+ subprocess.run(['patch','--batch','-p1','-i',str(HERE/'lab/security_relay_reference_sdk111.patch')],cwd=build,stdout=log,stderr=subprocess.STDOUT,check=True)
 oracle=build/'oracle'
-sources=[p for p in (reference/'src').glob('ws73_*.c') if p.name!='ws73_usb_sle_fd.c']+list((reference/'src/sle73').glob('*.c'))
+sources=[p for p in (reference/'src').glob('ws73_*.c') if p.name!='ws73_usb_sle_fd.c']+[p for p in (reference/'src/sle73').glob('*.c') if p.name!='sle73_sm.c']+[sm]
 command=['cc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror','-I'+str(reference/'include'),'-I'+str(reference/'src'),'-I'+str(args.usb_include.resolve(strict=True)),str(HERE/'lab/security_relay_oracle.c'),str(fd),*[str(p) for p in sources],str(args.usb_library.resolve(strict=True)),'-lcrypto','-lpthread','-o',str(oracle)]
 with (build/'build.log').open('wb') as log:subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,check=True)
 package=json.loads((base/'manifest.json').read_text());processes=[];monitors=[]
 record={'status':'STARTING','vm_only':True,'kernel':package['native_vm']['kernel_head'],'service':package['native_vm']['userspace_head'],'reference':ref_head,'scope':'Actual unsupported-pairing relay only; not paired/encrypted/automatic recovery','vms':{}}
-record['test_inputs']={str(p.name):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__),HERE/'lab/security_relay_oracle.c',HERE/'lab/security_relay_reference_warm.patch',fd,oracle]}
+record['test_inputs']={str(p.name):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__),HERE/'lab/security_relay_oracle.c',HERE/'lab/security_relay_reference_warm.patch',HERE/'lab/security_relay_reference_sdk111.patch',fd,sm,oracle]}
 if not target.usb_host_boundary(package['qemu']['path'])['supported']:raise ValueError('pinned QEMU USB opt-outs required')
 def save():(out/'manifest.json').write_text(json.dumps(record,indent=2)+'\n')
 def wait(path,predicate,proc,seconds):
@@ -153,8 +156,8 @@ echo RELAY_ORACLE_TERMINAL
  if len(info)!=1 or len(peer_handles)!=1:raise ValueError('exact current Session and actual peer request receipt required')
  native_handle=int(info[0][3]);oracle_handle=int(peer_handles[0])
  if not 0<=native_handle<=0xfff or not 0<=oracle_handle<=0xfff:raise ValueError('12bit current handles required')
- expected=native_handle.to_bytes(2,'little').hex()+'47010102'
- peer_expected=oracle_handle.to_bytes(2,'little').hex()+'47010102'
+ expected=native_handle.to_bytes(2,'little').hex()+'ff010102'
+ peer_expected=oracle_handle.to_bytes(2,'little').hex()+'ff010102'
  matching=(len(proof['native']['commands'])==1 and proof['native']['commands'][0]['params']==expected
    and len(proof['native']['complete'])==1 and proof['native']['complete'][0]['status']==0
    and proof['native']['complete'][0]['value']==expected[:8]

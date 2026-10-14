@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-14T01:39:20.755677+00:00",
+  "updated_at_utc": "2026-10-14T02:11:53.763526+00:00",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -27,13 +27,13 @@
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
     "linux": "63aee16e1b3fd2125c1994f3256027f7b3c73a60",
-    "userspace": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
-    "observation": "Main kernel HEAD is documentation-only; actual RF used isolated K317 and immutable matching artifacts."
+    "userspace": "8e92f97e83db6058575228d2edb756f5f6b6985b",
+    "observation": "Runtime/service/tool qualifier U8e/K317; main K63 is docs-only, now pushed. No transfer to later metadata HEAD."
   },
   "qualified_source_heads": {
     "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
-    "userspace": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
-    "scope": "ReadByUUID single custom value, prior discovery/socket/length/control gates only; full S0-S6 remains open"
+    "userspace": "8e92f97e83db6058575228d2edb756f5f6b6985b",
+    "scope": "Existing discovery/value/socket/length/control gates and explicit unsupported update refusal; no positive update RF or remote subscription"
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exactK558/Ucd77:40short/RF22/connection/Peer/Down/dup/lastclose/QMP; injectedfaultpeer8; actual legacy53/event/currentlink summary gates. Not natural recovery or new manual physical qualification.",
@@ -316,12 +316,12 @@
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "latest_evidence_commit": "69ff7fb54e6996dad3bbbf2372795d5ded67cfde",
-  "previous_goal_turn_classification": "progress: physically relocated all46 uppercase docs, strict build/browser and CI gates, issue/goal synchronization",
-  "current_goal_turn_classification": "progress: implemented ReadByUUID and exact5-step real VM pipeline PASS; bounded production-code Kani attempt failed due resource exhaustion",
+  "previous_goal_turn_classification": "progress: actual ReadByUUID and exact radio regression; unsupported/OOM proof attempts and ABI failure preserved",
+  "current_goal_turn_classification": "progress: real default SSAP update RX/call-owned cancellation, bounded ACK proof, reference Host comparison and exact retained RF/unsupported-capability gates",
   "qualified_tool_source_heads": {
     "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
-    "userspace": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
-    "scope": "Exact VM tools and service source; current kernel doc HEAD not qualified by transfer"
+    "userspace": "8e92f97e83db6058575228d2edb756f5f6b6985b",
+    "scope": "Existing discovery/value/socket/length/control gates and explicit unsupported update refusal; no positive update RF or remote subscription"
   },
   "backend_descriptor_slice": {
     "kernel": "7e654fde93b9e073db1593891f2b34581ffbf638",
@@ -371,7 +371,7 @@
       "whole_package_closed": false
     }
   },
-  "qualified_run_tools_head": "514cf733aab4d9a3ad650ae4582e6f49df4dfafd",
+  "qualified_run_tools_head": "8e92f97e83db6058575228d2edb756f5f6b6985b",
   "usb_pending_slice": {
     "kernel": "b619aecf261f39e11f5ebabd63eb79a524c07447",
     "compiled_service": "7e64b8953114299f74abd8081fa862ceba1fe71d",
@@ -1116,7 +1116,7 @@
       ],
       "push_status": {
         "userspace": "45508f5 and 0a6644f signed and pushed",
-        "linux": "63aee16e1b3f signed locally; SSH and bounded 60-second HTTPS pushes timed out; remote readback K317. Push remains pending."
+        "linux": "63aee16e1b3f signed and pushed after network recovered; exact K317 RF qualification unchanged"
       },
       "regular_ci": {
         "run_id": 38495063346,
@@ -2408,5 +2408,24 @@
       "abi": "36 passed in isolated-cache rerun; original failure/metadata correction retained",
       "ci": "8 passed; actual ABI job was live and waiting for pinned kernel fetch at last observation"
     }
+  },
+  "reference_review_policy": {
+    "required_by_user": true,
+    "local_path": "../communication_nearlink_service",
+    "selected_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "when": "Each relevant transport/Host/lifecycle/SSAP/security/Profile batch; inspect source/dirty state and compare standard, SDK111 and libws73-usb",
+    "latest_review": "docs/evidence/ssap-update-rx-progress-20261014.json",
+    "not_assumed": "Other Host compatibility or trusted Native state from reference API success"
+  },
+  "userspace_ssap_update_rx_slice": {
+    "status": "implemented and offline RX/caller tests; bounded ACK proof; old RF and refusal passed; positive update/remote subscribe missing",
+    "evidence": "docs/evidence/ssap-update-rx-progress-20261014.json",
+    "formal": "docs/evidence/ssap-update-rx-ack-formal-20261014.json",
+    "next": [
+      "real security/CCC/TX/ACK ledger and positive peer application RF gates",
+      "continuous subscriber lifetime and bounded loss/backpressure",
+      "full parsing/concurrency models, priorReadUUIDOOM remains NOT_PROVEN"
+    ],
+    "closure_allowed": false
   }
 }

@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "source_heads": {
+    "kernel": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "userspace": "8e92f97e83db6058575228d2edb756f5f6b6985b"
+  },
+  "source_mapping": {
+    "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+    "crates/slkd/src/ssap_engine.rs": "1cd34eb739e423c18eabafdf987874891aecbce3ef9da618cb33f734d4ea4ce8",
+    "crates/slkd/src/connection_object.rs": "c384a7b52298532a6ee7643744f10fa0cbd2777a954a41a6871452aa17ee01f5",
+    "crates/slkd/src/event_loop_tests.rs": "0f9b7052e6c4290cd609cb63fe283a412fade255a2d52d68b2e9fa9cd0315f6e",
+    "crates/slctl/src/commands.rs": "b94afb71de56dd5136fa4cf58df9e6d33287e9cefbc764923de14fd959919b68",
+    "tools/ws73_ssap_value.py": "45f6ca4786e7b87fb8f9bd50a6d14dc56ec2235b2bafbd562db24ff6bbff58d8",
+    "tools/ws73_target.py": "d79789f735d0f451761cfd55f259620790f623459bae42013109256fe1ed1324",
+    "tools/ws73_channel_socket.py": "a0251cc3f57bb27e6695875af96c71689a217538d32f1b1c2bc8c7f825c0bda6",
+    "formal/ssap_value/src/lib.rs": "88525b7e08ef518396cd1930d4098800681438147ad2f0d24a26ea7b0ba9240a"
+  },
+  "scope": "complete-PDU notification/indication receive and one call-owned application slot; not full notification/subscription service",
+  "implemented": [
+    "standard tables78..80 update/ACK codec with bounded64 entries",
+    "one call-owned bounded receive slot and max32 actual discovered handles",
+    "unknown, undesired, event, expired or cancelled input never gets successful ACK",
+    "ACK1 means local queue admission, not app processing; no notification response",
+    "original local receive deadline; pending physical ACK obligations retained after caller cancellation",
+    "D-Bus owner-loss scope installed before owner check and receive future",
+    "known controller/generation/lifetime checks before receive and after completion",
+    "CLI ssap-observe is local observation, not remote subscription"
+  ],
+  "offline_passed": [
+    "workspace all-features tests; 67 slkd and77 protocol tests",
+    "strict all-targets/features clippy and fmt",
+    "470 tooling tests",
+    "36 actual C/Rust/Python ABI tests",
+    "actual incoming_packet/oneshot tests cover accepted, cancelled, unknown, mode, event, expiry and malformed data",
+    "actual private D-Bus caller death drops pending delivery and leaves another bus connection alive"
+  ],
+  "formal_status": "BOUNDED_PASS only for actual ACK flags/atomic encoding, count0..4; no concurrent delivery or full update parser proof",
+  "formal_report": "docs/evidence/ssap-update-rx-ack-formal-20261014.json",
+  "reference_review": {
+    "repo": "communication_nearlink_service",
+    "source_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "origin": "https://gitcode.com/openharmony/communication_nearlink_service.git",
+    "worktree_clean": true,
+    "source_mapping": {
+      "interfaces/inner_api/include/nearlink_ssap_client.h": "06c5e370f2d486f0350525011802d9f825403cdb0010b1cd3753e9156fa3433b",
+      "frameworks/native/nearlink_ssap_client.cpp": "8f55698a91889bd38ef89a03ad16226e9db3e5b54e05cdb7f2ec3c60a8fe0aaf",
+      "services/stack/src/cp/bsl/sle/servm/ssap/src/ssapc_client.c": "2cd6e88a828ecbd78f326cb2c88c728d8eb40fd1e78bca002ee34765fd5204ba",
+      "services/stack/src/cp/bsl/sle/servm/ssap/src/ssaps_server_write.c": "0c349339071bf669d9a250bb9743955adecca361ad759a28eb9ac7fae7c7964b"
+    },
+    "findings": [
+      "SetNotifyProperty/SetNotifyEvent register local interest; descriptor write is separate",
+      "WriteControlCheck uses actual link authentication/encryption and descriptor operation permissions",
+      "ValueInd parses item lengths and queues application notifications before ACK",
+      "Reference ACK builder sets type0; our codec preserves property/event bit according to standard",
+      "Reference dispatch/ACK success is not proof of opposite application processing; local implementation explicitly requires a live call-owned queue"
+    ],
+    "standard_dependency": "T/XS20001 table40 CCC write authentication/authorization needs actual security context; remote configuration/TX remains unsupported here",
+    "copy_status": "Independent implementation; source comparison, no code copied"
+  },
+  "ci": {
+    "run_id": 38498801326,
+    "conclusion": "success",
+    "jobs_passed": 9,
+    "documentation_run": 38498801331,
+    "documentation_conclusion": "success"
+  },
+  "real_counts": {
+    "uuid_reads": 64,
+    "writes": 32,
+    "handle_reads": 64,
+    "discovery_calls": 32,
+    "local_update_refusals": 8
+  },
+  "real_passed": [
+    "existing discovery/cache,64 UUID reads/32 random writes/64 handle reads preserved in4 physical connection lifetimes",
+    "8 ordinary-user actual NotSupported refusals for peers without update capability",
+    "40 short socket round trips;8 249-byte and16 250/253/254/255 no-submit refusals",
+    "controlled missing-BSLE peer isolation;3 VMs exit0; normal captures drops0/taint0"
+  ],
+  "positive_notification_indication_rf_acceptance": false,
+  "remote_subscription_acceptance": false,
+  "evidence": [
+    "docs/evidence/ssap-update-rx-real-short-20261014.json",
+    "docs/evidence/ssap-update-rx-real-boundary-20261014.json",
+    "docs/evidence/ssap-update-rx-fault-real-20261014.json"
+  ],
+  "pipeline_sha256": "d0e4baeb7508414e9d55a1a5d6ef44db13b78a733972a9d2650d4331eb401563",
+  "kernel_identity": "Isolated immutable K317 and matching old artifacts; main K63aee is documentation-only and not qualified by transfer",
+  "limitations": [
+    "positive update receive/ACK has offline tests only; no real notification/indication packet qualification",
+    "single call-owned receive slot, not continuous subscription or multi-app callback router",
+    "base complete packets, unique handles; fragments/repeated-instance/event delivery unsupported",
+    "malformed update currently fails the SSAP actor; diagnostics/recovery and loss reporting need broader work",
+    "remote CCC writes and local notification/indication TX unavailable until real authentication/authorization and security context are connected",
+    "plain value permissions and peer metadata are not authenticated trust",
+    "other Host/SDK interoperability unverified"
+  ],
+  "remaining": [
+    "actual authenticated CCC state per physical lifetime, producer TX completion/ACK ledger and positive two-end application RF gates",
+    "continuous subscriber ownership, bounded queues, explicit loss/backpressure and callback retirement",
+    "long packets/reassembly/transactions and actual mixed/error matrices",
+    "full decoder/async queue/lifetime formal coverage; previous readUUID OOM remains unproved",
+    "four devices/dynamic channels/security/Bond/Profile/PM/UserHost P4/full S0-S6",
+    "natural root causes and nonmanual recovery"
+  ],
+  "vm_only": true,
+  "closure_allowed": false,
+  "kernel_documentation_push": {
+    "head": "63aee16e1b3fd2125c1994f3256027f7b3c73a60",
+    "status": "signed and pushed after prior SSH/network timeouts"
+  }
+}

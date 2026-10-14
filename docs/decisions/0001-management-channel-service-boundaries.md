@@ -125,3 +125,15 @@ cancel/abort/close/drain、完整并发/权限/移除。旧调用者/shared ring
 全局dead-code清理与生命周期并行；自然故障根因、无人工恢复、历史物理xHCI警告
 仍OPEN。最小socket、用户态SSAP、安全/Bond/Profile及完整S0–S6继续推进，
 北极星7/8、VM-only不变，部分成果不关闭整项 issue。
+
+## 用户态SSAP本地接收与远端配置边界（2026-10-14）
+
+参考指定NearLink Host f0872dfaac33，采用本地接收兴趣与远端descriptor write分开
+的职责；目标仍是完整用户态SSAP。普通应用退出撤销其callback登记，已接受的
+物理ACK由Engine继续终结，不由作者取消抹除。确认仅表示接收队列接受。
+
+标准表40的CCC写认证/授权要求形成必要安全依赖，修改的是该成功路径依赖，
+不将整个控制竞争全集或安全全集重新设为普通socket/值读写开发前置。
+未接通CCC/发送端明确不支持；离线callback与限定ACK证明不代替两端真实随机
+通知/指示与业务回复门禁。当前实现、准确实机保持和剩余见
+[本批证据](../evidence/ssap-update-rx-progress-20261014.json)。

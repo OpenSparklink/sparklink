@@ -111,3 +111,18 @@ UUID须2/16字节，范围非零且start≤end；无效本地参数为InvalidArg
 原始trace用于证据，USB提交和NOCP均不代表对端应用收到。
 实机只验每端一个custom property，其他类别与错误矩阵仍待扩大；
 [源码映射和精确范围](../evidence/ssap-read-uuid-progress-20261014.json)。
+
+### 单次本地更新观察（U8e92f97；不是远端订阅）
+
+Connection.ObserveSsapIncoming(handles:aq,modes:y,wait_ms:u)返回(indication:b,raw:ay)。
+1..32个唯一非零handle、modes1通知/2指示/3两者、wait10..10000ms；InvalidArgs拒绝
+非法参数。必须有本lifetime实际发现的property及匹配Notify/Indicate能力，缺少时
+NotSupported。只允许一个call-owned等待者；busy、原期限、caller退出、Actor失败
+或断链为Failed，不静默成功。CLI为`ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]`。
+
+本地兴趣不写CCC。D-Bus owner-loss匹配先于owner检查/等待安装，已知调用者退出
+撤销等待。完整property packet原子交给一个oneshot接收槽；没有持续订阅/多应用
+router，满槽没有承诺无丢包。NTF不产生回复；IND只有活接收槽接受后ACK1，未知、
+过期、不匹配或不支持事件ACK0。ACK1不是CLI处理成功；确认发送仍受原物理期限。
+多条同handle实例、分包和事件投递未支持；malformed packet当前失败SSAP actor。
+真实正向更新/TX/CCC/security尚未验收。仅原路径回归与能力拒绝有实机证据。

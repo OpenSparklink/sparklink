@@ -1,6 +1,26 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前主线：ReadByUUID闭环后，通知／指示与生命周期
+## 当前主线：完整通知／指示／订阅，保持安全依赖真实
+
+U8e92f97接单次本地更新接收、原期限、调用者退出和确认语义；K317隔离VM原
+发现/数据/长度资格保持，未声明更新能力明确拒绝。**未取得正向更新空口或订阅
+资格**，不将本地观察、ACK编码或离线callback测试当完整SSAP。
+[准确本批范围](../docs/evidence/ssap-update-rx-progress-20261014.json)。
+
+每批相关wire/生命周期/SSAP/安全工作持续参考用户指定NearLink Host版本f0872d，
+核对clean/dirty及实际源码hash，再与标准、SDK111和libws73-usb比较，记录差异。
+不能把其他Host运行方式、厂商权限默认值或ACK结果直接当Native资格。
+[参考依据与本批差异](reference/architecture/nearlink-host-reference.md)。
+
+下一步补每connection lifetime的CCC状态、真实认证/授权、生产发送/指示ACK记账，
+连续订阅/多应用callback与有限队列、丢包/背压/撤销；正向双端随机值与应用响应
+实机门禁随后。标准表40使远端CCC成功路径依赖真实安全上下文，未接通前明确
+拒绝；这不阻塞已有普通值读写、边界、数据credit/生命周期与形式化并行。
+ACK限定生产编码已验证，不扩展到完整解析或并发；前一ReadUUID OOM仍未证明。
+S0–S6/19WP/10FV/12DG、VM-only、UserHost P4及自然RCA/自主恢复开放条件不变。
+
+
+## 前一批：ReadByUUID实机闭环
 
 K317／U514cf73：标准基础ReadByUUID接唯一用户态actor并实机通过64次双方向
 写前/后读取，保留发现、建链、业务短包和已取得边界。完整范围见

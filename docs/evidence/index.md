@@ -22,3 +22,6 @@
 
 [ReadByUUID准确64次实机、原业务/边界与未证明报告](ssap-read-uuid-progress-20261014.json)
 保留Kani资源耗尽和unsupported，不提升为完整SSAP资格。
+
+[完整更新接收整改、调用者撤销、参考Host对照与原路径实机保持](ssap-update-rx-progress-20261014.json)
+明确区分正向更新未验收、限定ACK编码证明及真实能力拒绝，未扩大原硬件资格。

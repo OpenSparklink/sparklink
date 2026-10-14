@@ -1,6 +1,28 @@
 # 当前能力与资格
 
-## 最新ReadByUUID实机资格（精确源码）
+## 最新更新接收整改与原路径回归（精确源码）
+
+U `8e92f97e83db6058575228d2edb756f5f6b6985b`／隔离VM K31769ea4b8c0。
+已接完整通知/指示解码、最多64条、32个真实已发现handle的单次本地接收槽，
+D-Bus调用者退出撤销、原期限和lifetime检查。ACK1仅表示接收槽接受；取消/到期、
+未知handle、未选模式和不支持事件返回失败确认，NTF不回复。
+
+**正向通知/指示空口与远端订阅尚未验收。** 新入口ssap-observe是本地观察，
+不写远端CCC；本机peer未声明更新能力，实机8次请求明确NotSupported。已有
+64次UUID读取、32写/64句柄读、32发现、40短消息、249和超限拒绝均保持通过；
+三VM正常退出，正常捕获drops0/taint0。470工具、36ABI、严格workspace及九CI通过。
+
+ACK实际codec在flags0..4、任意MTU、output0..8/unwind12范围通过187检查，
+包括三个unsupported_construct不可达守卫；没有忽略不支持路径。仅限定编码性质，
+不证明Tokio、callback生命周期、完整解析器或64条。旧ReadByUUID内存耗尽仍未证明。
+[准确证据、源码和未决](../docs/evidence/ssap-update-rx-progress-20261014.json)。
+
+本批对照用户指定NearLink Host f0872dfaac33（clean），确认本地通知登记与远端
+描述符写入分开。客户端配置写入需要真实认证/授权；发送端、连续订阅、多应用
+路由、分片/丢包统计/故障恢复与正向双端应用验证继续开放。
+
+
+## 前一批ReadByUUID实机资格（当时源码）
 
 编译服务与冻结工具U `514cf733aab4d9a3ad650ae4582e6f49df4dfafd`，VM内核为隔离
 K `31769ea4b8c006f999f4fbe0da68f7291ef71935`。K63aee仅文档变更，不把旧镜像

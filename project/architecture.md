@@ -250,6 +250,13 @@ ProfileRequest包含controller/generation/lifetime、attribute/op/offset/payload
 
 服务顺序：最小真实发现/读写 → notify → indication/ack → Battery和DeviceInfo → HID及其他Profile。必要可靠模式按所用标准接通；没有模式能力时只开放适用操作或明确不支持。Profile注册不等于服务互通。
 
+本地应用接收登记与远端客户端配置描述符（CCC）写入是不同操作；前者不宣布
+后者成功。CCC状态归物理connection lifetime，断链归初值，不按地址继承旧配置。
+CCC写入的认证/授权由实际内核安全上下文与有效Grant强制，不能由用户态自报。
+应用登记/有限接收队列的取消不抹除已接受指示的物理ACK义务；ACK表示协议接收，
+业务完成需另外由对端应用校验。调用者退出、服务撤销与安全降级有明确终态。
+
+
 
 ## 安全、Bond、PHY和PM
 

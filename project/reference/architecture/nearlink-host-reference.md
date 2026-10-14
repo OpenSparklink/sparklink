@@ -158,3 +158,18 @@ SDK的`plat_pm_board_ws73.c::ws73_board_power_reset_hcc`读取
 
 kernel92 的真实 QMP guest-detach 对照20+2轮已通过，但主机物理连接未掉线，
 不会据此关闭物理根因或自主恢复 issues；详情见 WS73_RECOVERY.md。
+
+## 2026-10-14：更新接收与持续参考要求
+
+按用户再次要求，后续每批相关实现继续核对此指定版本。当前f0872dfaac33工作树
+clean，本批精确文件hash见[源码映射](../../../docs/evidence/ssap-update-rx-progress-20261014.json)。
+
+- native SsapClient::SetNotifyPropertyInner与头文件本地登记说明：登记接收与WriteDescriptor分开。
+- ssaps_server_write.c::SSAPS_WriteControlCheck检查操作权限与实际Sm认证/加密状态，不能替换成用户态标志。
+- ssapc_client.c::SSAPC_ValueIndHandle先解析/分发，SendAck按计数产生ACK；这一结果不证明应用业务校验。
+- 参考ACK构造的type为0；本实现根据标准78–80保留property/event位，并对不接收事件回失败ACK。
+
+当前Native SSAP不因此假定支持参考Host所有分片、权限默认值或互通；本地单次
+接收槽和调用者撤销已接通，真实CCC/security/TX与正向RF仍待补。标准表40要求
+客户端配置写入认证/授权，参考stack可由descriptor权限驱动；该默认配置差异需
+单独核对，不能凭厂商代码降低Native可信状态或声明已经完整兼容。

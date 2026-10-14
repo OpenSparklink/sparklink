@@ -81,5 +81,47 @@
     "natural RCA/nonmanual recovery/full S0-S6"
   ],
   "vm_only": true,
-  "closure_allowed": false
+  "closure_allowed": false,
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 6,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6158613164",
+      "body_sha256": "95b5ae1b8eac5c3f8bd6941e2a6e51de882bb0e87d2a2cb166b0e527258804f7",
+      "verified_readback": true
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6158613715",
+      "body_sha256": "95b5ae1b8eac5c3f8bd6941e2a6e51de882bb0e87d2a2cb166b0e527258804f7",
+      "verified_readback": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6158614398",
+      "body_sha256": "95b5ae1b8eac5c3f8bd6941e2a6e51de882bb0e87d2a2cb166b0e527258804f7",
+      "verified_readback": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6158615029",
+      "body_sha256": "95b5ae1b8eac5c3f8bd6941e2a6e51de882bb0e87d2a2cb166b0e527258804f7",
+      "verified_readback": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6158615659",
+      "body_sha256": "95b5ae1b8eac5c3f8bd6941e2a6e51de882bb0e87d2a2cb166b0e527258804f7",
+      "verified_readback": true
+    }
+  ]
 }

@@ -43,3 +43,6 @@
 
 [物理 Session 出生、按需 CMTC 原期限及准确双设备回归](physical-session-birth-20261014.json)
 保留指定 Host 对照、夹具失败与未决；未新增安全或自然恢复资格。
+
+[ControllerData 独立预算、实际函数回归及新准确 VM 原路径保持](controller-data-boundary-20261014.json)
+保留 KVM 沙箱启动失败与 Kani unsupported；未新增安全或自然恢复资格。

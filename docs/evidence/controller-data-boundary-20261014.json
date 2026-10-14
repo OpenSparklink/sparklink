@@ -1,0 +1,222 @@
+{
+  "schema": 1,
+  "status": "SCOPED_CONTROLLER_DATA_BOUNDARY_IMPLEMENTATION_AND_ORIGINAL_PATH_REGRESSION",
+  "kernel_head": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
+  "runtime_fix_commit": "b144a7af36fcc6ec53a356f6d36bdf1a1711f027",
+  "compiled_userspace_head": "006e424b49449a87a4e204be60f5292adc28f6c4",
+  "vm_only": true,
+  "implemented": [
+    "Common native ControllerData event validates five-byte parameters envelope, exact u8 payload length and 12-bit handle before command-event length cap. Valid maximum255 payload creates265-byte packet and returns explicit EOPNOTSUPP, not EPROTO.",
+    "All other event/reply budgets and raw security rejection remain unchanged; no protocol actor, command/data credit mutation, Complete or trusted state from unsupported input."
+  ],
+  "sources": {
+    "net/sparklink/sle_native.rs": "36f0247762bf44f3a901fcbad059cb0f3a4ec4083a9d57ff41dcbfc41dce1e1e",
+    "drivers/sparklink/ws73/dli.c": "15292384991ee6f530f491dbc1c6d9186cffec575b52d08221ead0a611338075",
+    "drivers/sparklink/ws73/wire.c": "d953b9c6bcd6745e4d5e4f30fb608a7646b9191ee099c62d547e17b72ce6e83a",
+    "net/sparklink/sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d"
+  },
+  "offline": {
+    "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+    "tests": 38,
+    "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+    "real_data_acceptance": false,
+    "socket_acceptance": false,
+    "sources": {
+      "net/sparklink/sle_native.rs": "36f0247762bf44f3a901fcbad059cb0f3a4ec4083a9d57ff41dcbfc41dce1e1e",
+      "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+      "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+      "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+      "net/sparklink/sle_host.rs": "936988d9e501353aaac5e71ddebdd69e52ab54203e99db6e689caba1c2284e67",
+      "net/sparklink/sle_sessions.rs": "60eb079226523984104fc9602ce55f1aaa238cda3f298bfb2306bc6c3ea32342",
+      "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+      "tools/testing/selftests/sparklink/native-data/fixture.rs": "2c6bc28852367a6a9a846e6d50dfeda33cc98c3077c87c9e5a2d341b2e6fded0"
+    }
+  },
+  "formal": {
+    "status": "NOT_PROVEN_UNSUPPORTED",
+    "exit": 0,
+    "timeout": 300,
+    "source_head": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
+    "source_tree_clean": true,
+    "sources": {
+      "net/sparklink/sle_native.rs": "36f0247762bf44f3a901fcbad059cb0f3a4ec4083a9d57ff41dcbfc41dce1e1e",
+      "tools/testing/selftests/sparklink/security/controller_data_kani.rs": "5503b9d734fb072f7fdaad227e4f2ddd465911f1678f51da8f9619b2a0bf7d73"
+    },
+    "body_sha256": "99651632406bfe89f2cb897a0b46d3318de7b0f213430695e3c775a02aa05291",
+    "model_sha256": "8e968c4610e2b22b48f5fe146118358286639a8913f8a3d5d256d47a81a358bb",
+    "log_sha256": "41c653ae9da9b62f474fbf657544bb15e8fd1b805dc141bfd63440eeebba7e54",
+    "version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0",
+    "command": [
+      "kani",
+      "controller_data_kani.rs"
+    ],
+    "generated_checks": [
+      101
+    ],
+    "scope": "Exact production predicate, arbitrary bytes[265], slice length 0..265, unwind270; length/12bit handle/u8 payload consistency and memory safety",
+    "assumptions": [
+      "Rust valid borrowed slice; firmware input modeled as arbitrary bytes, not trusted",
+      "Lengths >265 rejected by predicate before reads but outside this bounded model"
+    ],
+    "rf_acceptance": false,
+    "whole_security_proof": false,
+    "whole_receive_callback_proof": false
+  },
+  "build": {
+    "status": "BUILD_PASSED",
+    "record_sha256": "3a0a985af76a25e787c7bace61426c01d3adf73831b2bc2e9f177805b3fa592f",
+    "source_clean_and_config_unchanged": true
+  },
+  "reference_review": {
+    "nearlink_host": {
+      "head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+      "clean": true,
+      "sources": {
+        "services/stack/src/dli/interface/dli_event_struct.h": "e17d1b62bd55640e1097bcc932a967afce3c2268d0b1782c235f0945173b71a8",
+        "services/stack/src/cp/bsl/sle/sm/src/sm.c": "fe2aafd8b12303f127d818206bbacbb67cd8d033ef464d062a6bdddd1a1c55f6"
+      }
+    },
+    "libws73_usb": {
+      "head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+      "clean": true,
+      "sources": {
+        "src/sle73/sle73_sm.c": "30f8e05c10ddbea028409fd6b7b5df6aac88665cdd40b69de708e892357c89c4",
+        "src/sle73/sle73_priv.h": "3f3b9283b7b218d105cd54bb92be6515a5aff71934310bd3d6175a7bc6c99114"
+      }
+    },
+    "comparison": "f087 ControllerDataEvt handle/index/u8 length + flexible data starts at byte5, independent of C sizeof padding; libws73 f4 serializes same five bytes. Native kernel validator does not copy global Host state or infer trust/peer reception from send success."
+  },
+  "real_vm": {
+    "fault-real": {
+      "status": "REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS",
+      "qemu_exit": 0,
+      "kernel_taint": 0,
+      "capture_packets": 4539,
+      "channel": {},
+      "manifest_sha256": "4de7950e649ee24c8485e8a4de84f09cd719a7cc975e73b0d3073512957aea08",
+      "usb_capture_sha256": "c5461d3b831fe9982acb2221c39ecef7cd4a319b35ac343e81eef88071307e73"
+    },
+    "real-short": {
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "qemu_exit": 0,
+      "kernel_taint": 0,
+      "capture_packets": 3881,
+      "channel": {
+        "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+        "round_trips": 40,
+        "scope": "uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; 61-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
+        "long_pdu_acceptance": false,
+        "credit_exhaustion_acceptance": false,
+        "four_device_acceptance": false
+      },
+      "manifest_sha256": "9214976dae482ccc6efeee260537286465051c16eacebe8a95ddfd9732ca241c",
+      "usb_capture_sha256": "ada37d86c51be2b4db280cb9d081db91c7a029c42d09bdde1516d9418f2bbd34",
+      "application_identity": {
+        "uids": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "cap_eff": "0000000000000000",
+        "cap_prm": "0000000000000000",
+        "cap_amb": "0000000000000000",
+        "groups": [
+          1000,
+          1002
+        ]
+      },
+      "discovery_rounds": 22,
+      "hotplug_method": "QMP_DEVICE_DEL_ADD",
+      "physical_unplug_acceptance": false,
+      "capture_drops": 0,
+      "ssap_corroboration_counts": {
+        "ssap_values": 16,
+        "ssap_discovery": 16,
+        "ssap_local_update_rejection": 4
+      }
+    },
+    "real-boundary": {
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "qemu_exit": 0,
+      "kernel_taint": 0,
+      "capture_packets": 3465,
+      "channel": {
+        "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+        "round_trips": 8,
+        "scope": "uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; 249-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
+        "long_pdu_acceptance": false,
+        "credit_exhaustion_acceptance": false,
+        "four_device_acceptance": false,
+        "application_boundary_rejections": 16,
+        "application_message_bytes": 249,
+        "dtap_pdu_bytes": 254
+      },
+      "manifest_sha256": "2a5cb09347feaf176e421643e9f9198aef91959900ebcf198cac91861ab010e0",
+      "usb_capture_sha256": "74a1753fb52ab47fd4a25195ed392053184005ebc08eb7a975f8b857d7015d68",
+      "application_identity": {
+        "uids": [
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "cap_eff": "0000000000000000",
+        "cap_prm": "0000000000000000",
+        "cap_amb": "0000000000000000",
+        "groups": [
+          1000,
+          1002
+        ]
+      },
+      "discovery_rounds": 22,
+      "hotplug_method": "QMP_DEVICE_DEL_ADD",
+      "physical_unplug_acceptance": false,
+      "capture_drops": 0,
+      "ssap_corroboration_counts": {
+        "ssap_values": 16,
+        "ssap_discovery": 16,
+        "ssap_local_update_rejection": 4
+      }
+    }
+  },
+  "ci": {
+    "userspace_head": "006e424b49449a87a4e204be60f5292adc28f6c4",
+    "kernel_pin": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
+    "runs": [
+      {
+        "database_id": 38521518899,
+        "name": "CI",
+        "conclusion": "success"
+      },
+      {
+        "database_id": 38521517960,
+        "name": "Documentation",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "preserved_failures": {
+    "first_pipeline": "Sandbox could not access /dev/kvm; QEMU never booted a guest. Terminal failure verified before retry outside device-restricted sandbox. Not a WS73 failure or recovery.",
+    "first_pipeline_manifest_sha256": "5448fa80d7b6cd83ca0bad7a26682c385324f3a0e92c682b02ae2d076dda9a21",
+    "first_qemu_console_sha256": "c2d81d9b4e35e8f03095513ccab6ff31ae2b4789b98caba101026b3f7346ae3a",
+    "formal_tool": "Kani exit0 and 101 generated checks do not override reported unsupported caller_location/foreign function. NOT_PROVEN_UNSUPPORTED retained."
+  },
+  "not_qualified": [
+    "The new 0014 maximum event branch is covered offline; no actual paired peer/controller255-byte security PDU was generated on radio. Original-path VM regression does not qualify security relay.",
+    "CommandHost params and WS73 command encoder remain capped at255 parameter bytes, hence cannot yet claim full255-byte relay TX payload + five-byte envelope. Implement typed driver/Host integration; do not silently expand generic limits or truncate.",
+    "Production security Session actor, typed1812 producer/real completion, 0014/000e/0011 lifetime ownership, crypto/pairing/Agent/Bond/trusted installation remain incomplete.",
+    "Formal unsupported remains NOT_PROVEN; predicate checks do not prove the full ingress/locks/Session lifecycle or firmware behavior.",
+    "Long packet/reassembly/credit pressure/multichannel/four-device full business and positive updates/CCC are not added by this batch.",
+    "QMP and missingBSLE injection are controlled isolation only; physical/natural nonmanual recovery/root cause remains open. No whole issue closed."
+  ],
+  "raw_evidence_availability": "Original manifests/application receipts/USB captures and tool logs remain local development artifacts, not publicly downloadable. Hashes identify them but do not provide access.",
+  "combined_firmware_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "documentation": {
+    "strict_html": "PASS",
+    "inventory_documents": 98,
+    "command": "make docs (uv --locked, nitpicky, warnings-as-errors)",
+    "log_sha256": "e34d7342f7bab2fdb7a4fdaafa3184b355a4fb98f53be3658518c4f4149422c7",
+    "runtime_code_changed_by_recording": false
+  }
+}

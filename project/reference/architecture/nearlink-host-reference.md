@@ -237,3 +237,12 @@ f087 DLI_ExecuteCommand 的send失败清理context，和libws73的单relay失败
 K03d 的物理 Session 先于应用 fd，CMTC 首个授权绑定才启动。完整安全状态、
 授权与物理会话解耦及晚到屏障仍缺，不把本批当完整安全接线。
 [源码映射、限定实机与未决](../../../docs/evidence/physical-session-birth-20261014.json)。
+
+### ControllerData 入口独立预算
+
+f087 的 `DLI_ControllerDataEvt` 与 libws73 f4 的 `sm_relay_tx` 再次核对：
+handle/index/u8长度共五字节，不能用 C sizeof padding；RX255载荷共265字节。
+K0d 的 core 将该事件从命令事件260预算中分开，严格长度/handle检查后明确
+不支持。尚无生产安全 actor/真实 relay；Host 和 driver TX 参数仍255上限，
+不把接收预算扩大当发送能力或 Native 信任。
+[源码 hash、未证明与准确原路径回归](../../../docs/evidence/controller-data-boundary-20261014.json)。

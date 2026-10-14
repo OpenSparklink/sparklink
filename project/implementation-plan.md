@@ -1,5 +1,20 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前进度：修正真实 ControllerData 入口边界
+
+K `0d1d31c1cfd7` / 编译用户态 `006e424b4944` 保持准确 VM 普通用户 40 轮短消息、
+8 轮 249 字节及 16 次超限拒绝，原发现、连接及 SSAP 门禁保持。core 对 `0014`
+独立核对五字节 envelope 和 u8 载荷长度，合法 265 字节包明确不支持，不再误报格式错误；
+其他事件预算和安全拒绝不变。38 项实际 Rust 回归通过；Kani 仍有 unsupported，
+限定检查结果记为未证明，不能宣布整个入口或安全 relay 通过。
+
+继续复用既有唯一 Session/命令票据/relay 状态转换，接 typed1812 与真实完成及
+0014/000e/0011 lifetime 归属。当前 Host/driver 命令参数上限 255，RX255 长度检查
+不能延伸为 TX255；需单独核对方言和预算，禁止截断或盲目放宽。指定 NearLink
+Host f087 和 libws73 f4 本批均再次核对 clean/hash。数据矩阵并行；S0–S6、
+自然 RCA/非人工恢复、旧代码整改、VM-only、UserHost P4 保持原范围和开放条件。
+[准确证据和未决](../docs/evidence/controller-data-boundary-20261014.json)。
+
 ## 当前进度：物理 Session 先于应用 fd，CMTC 按需启动
 
 K `03d1170a960c` / 编译用户态 `539d075d8560` 的准确 VM 镜像保持普通用户

@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-14T06:04:33.848600+00:00",
+  "updated_at_utc": "2026-10-14T06:30:02.369164+00:00",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -26,19 +26,19 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "03d1170a960c916741c4a814fb08bd18efe698b6",
-    "userspace": "86e3eab24d02069eb8cac955fa1489424c1114d6",
-    "observation": "Runtime exact K03d; service compiled U539d; U86e only CI pin. Documentation updates do not relabel runtime qualification."
+    "linux": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
+    "userspace": "006e424b49449a87a4e204be60f5292adc28f6c4",
+    "observation": "Clean kernel and compiled service exact identities; later evidence/docs only do not relabel radio binaries"
   },
   "qualified_source_heads": {
-    "linux": "03d1170a960c916741c4a814fb08bd18efe698b6",
-    "userspace": "539d075d85608a00cbac40fb3d04abae33fdb623",
-    "scope": "VM40 short/8 app249/16 oversize no-submit; original discovery/link/SSAP retained; controlled QMP/initialization isolation only",
-    "evidence": "docs/evidence/physical-session-birth-20261014.json"
+    "linux": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
+    "userspace": "006e424b49449a87a4e204be60f5292adc28f6c4",
+    "scope": "VM40short/8app249/16oversize no-submit and original discovery/link/SSAP; new security branch offline only",
+    "evidence": "docs/evidence/controller-data-boundary-20261014.json"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exact K03d/U539d:40 short business and original discovery/link/SSAP; no new positive security/update or natural recovery",
-    "DG02": "PARTIAL_REAL exact K03d/U539d:8 app249/16 oversize no-submit; long/credit pressure/multichannel/four-device remain open",
+    "DG01": "PARTIAL_REAL exactK0d/U006e:40short and original discovery/link/SSAP; no security, positive update or natural recovery qualification",
+    "DG02": "PARTIAL_REAL exactK0d/U006e:8app249/16oversize no-submit; long/credit pressure/multichannel/four-device remain open",
     "FV01": "scoped production CBMC 131 properties",
     "FV03": "two locked LKMM properties and deliberately weak control New single-identity Runtime route gate/retirement LKMM Never plus weakSometimes; ranked actual RX/queue dependencies8 checks. Not IRQ/Arc/kernel lockdep/KCSAN or callback refinement.",
     "FV04": "bounded abstract contract only, no implementation refinement",
@@ -288,12 +288,12 @@
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
-  "current_batch": "Physical Session table ownership before application fd; lazy original CMTC deadline; reference Host rechecked; no security protocol enabled",
+  "current_batch": "Correct actual native 0014 ControllerData budget; valid maximum remains explicitly unsupported; existing Session/ticket preserved",
   "current_audit": "docs/evidence/protocol-state-retirement-audit-20261014.json",
-  "issue_sync_status": "Physical Session birth and continued reference Host audit synchronized; K#6/K#18/U#3/U#8 read back OPEN; original scopes retained",
+  "issue_sync_status": "Current boundary evidence prepared; corresponding existing issues remain OPEN pending receipt",
   "current_implementation_heads": {
-    "linux": "03d1170a960c916741c4a814fb08bd18efe698b6",
-    "userspace": "539d075d85608a00cbac40fb3d04abae33fdb623"
+    "linux": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
+    "userspace": "006e424b49449a87a4e204be60f5292adc28f6c4"
   },
   "next_resume_tasks": [
     "Audit/replace SecurityInner/RPA and remaining default-selection/debugfs/legacy diagnostic observations and unpublished old facades; keep real crypto/Grant/lifetime/Host mechanisms. Preserve K558/Ucd77 Native data and only change-related gates; complete topology/loss/owner-death, callback/IRQ/PM, standard/mixed and true data/SSAP scopes open.",
@@ -2417,7 +2417,7 @@
     "local_path": "../communication_nearlink_service",
     "selected_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
     "when": "Each relevant transport/Host/lifecycle/SSAP/security/Profile batch; inspect source/dirty state and compare standard, SDK111 and libws73-usb",
-    "latest_review": "docs/evidence/physical-session-birth-20261014.json",
+    "latest_review": "docs/evidence/controller-data-boundary-20261014.json",
     "not_assumed": "Other Host compatibility or trusted Native state from reference API success"
   },
   "userspace_ssap_update_rx_slice": {
@@ -2867,5 +2867,15 @@
       }
     ],
     "documentation_commit": "33aada7b25ec2420a0b4f879595154f3a4746d15"
+  },
+  "controller_data_boundary": {
+    "evidence": "docs/evidence/controller-data-boundary-20261014.json",
+    "implemented": true,
+    "offline_pass": true,
+    "formal": "NOT_PROVEN_UNSUPPORTED",
+    "original_path_real_regression": true,
+    "real_security_branch_acceptance": false,
+    "relay_tx_parameter_limit": 255,
+    "security_actor_enabled": false
   }
 }

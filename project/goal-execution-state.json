@@ -10,7 +10,7 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-14T02:11:53.763526+00:00",
+  "updated_at_utc": "2026-10-14T02:54:06.433595+00:00",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -26,9 +26,9 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "63aee16e1b3fd2125c1994f3256027f7b3c73a60",
-    "userspace": "8e92f97e83db6058575228d2edb756f5f6b6985b",
-    "observation": "Runtime/service/tool qualifier U8e/K317; main K63 is docs-only, now pushed. No transfer to later metadata HEAD."
+    "linux": "b73a3dd02ce1f2232d68fd6fbbd5ccabd1f92c02",
+    "userspace": "71f74d02346d5ab84ed4cf05266cc1c65c0eb45f",
+    "observation": "Latest source/CI only; qualified radio remains exactK317/U8e. New retained crypto is not default core runtime."
   },
   "qualified_source_heads": {
     "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
@@ -316,8 +316,8 @@
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "latest_evidence_commit": "69ff7fb54e6996dad3bbbf2372795d5ded67cfde",
-  "previous_goal_turn_classification": "progress: actual ReadByUUID and exact radio regression; unsupported/OOM proof attempts and ABI failure preserved",
-  "current_goal_turn_classification": "progress: real default SSAP update RX/call-owned cancellation, bounded ACK proof, reference Host comparison and exact retained RF/unsupported-capability gates",
+  "previous_goal_turn_classification": "progress: actual SSAP receive/caller cancellation and bounded ACK proof; preserved real data/refusal gates",
+  "current_goal_turn_classification": "progress: necessary crypto output/entropy safeguards, actual signed VM crypto tests and counterexample-derived fault model corrections",
   "qualified_tool_source_heads": {
     "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
     "userspace": "8e92f97e83db6058575228d2edb756f5f6b6985b",
@@ -2414,7 +2414,7 @@
     "local_path": "../communication_nearlink_service",
     "selected_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
     "when": "Each relevant transport/Host/lifecycle/SSAP/security/Profile batch; inspect source/dirty state and compare standard, SDK111 and libws73-usb",
-    "latest_review": "docs/evidence/ssap-update-rx-progress-20261014.json",
+    "latest_review": "docs/evidence/security-crypto-prerequisites-20261014.json",
     "not_assumed": "Other Host compatibility or trusted Native state from reference API success"
   },
   "userspace_ssap_update_rx_slice": {
@@ -2471,5 +2471,17 @@
     ],
     "source_head": "8e92f97e83db6058575228d2edb756f5f6b6985b",
     "kernel_head": "31769ea4b8c006f999f4fbe0da68f7291ef71935"
+  },
+  "security_crypto_prerequisites": {
+    "status": "mechanism/fault-model/actual-kernel-VM passed in explicit scope; Native pairing/auth/install missing",
+    "kernel_head": "b73a3dd02ce1f2232d68fd6fbbd5ccabd1f92c02",
+    "evidence": "docs/evidence/security-crypto-prerequisites-20261014.json",
+    "next": [
+      "Native typed per-lifetime1812/0014 relay and reply/command credit ownership",
+      "fresh key/nonces and peer protocol proof/Agent security level",
+      "real1C03/1C05 installation and0011 before trusted state/Grant/CCC",
+      "Bond/security models and full real two-end application matrix"
+    ],
+    "closure_allowed": false
   }
 }

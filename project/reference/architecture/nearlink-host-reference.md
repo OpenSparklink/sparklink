@@ -173,3 +173,16 @@ clean，本批精确文件hash见[源码映射](../../../docs/evidence/ssap-upda
 接收槽和调用者撤销已接通，真实CCC/security/TX与正向RF仍待补。标准表40要求
 客户端配置写入认证/授权，参考stack可由descriptor权限驱动；该默认配置差异需
 单独核对，不能凭厂商代码降低Native可信状态或声明已经完整兼容。
+
+## 2026-10-14：安全relay和crypto前置核对
+
+再次核对指定f087（clean）和libws73 f4d85d（clean），实际源码hash见
+[安全前置报告](../../../docs/evidence/security-crypto-prerequisites-20261014.json)。
+Host SmSendMessage经DLI_SetControllerData(1812)发送配对opcode，SmEncp使用实际
+linkKey/算法与0011安装结果；WS73 lib也使用1812/0014，并记录1C03的21字节与
+1C05的20字节差异及单个relay在途限制。泛标准1C04 RequestPair不应直接用于该
+方言。C结构padding和CMAC/ECDH endian必须在driver/schema中明确验证。
+
+本批只验证保留crypto机制：K317镜像内Kb73签名probe，无USB，真实内核算法与
+实际C故障模型；不把别的Host“paired”存储、自报算法或USB完成当可信Native
+认证。后续仍按本指定版本核对Agent、实际peer proof、安装、安全等级和Bond。

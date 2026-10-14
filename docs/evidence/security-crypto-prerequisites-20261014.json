@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "kernel_mechanism_source_head": "b73a3dd02ce1f2232d68fd6fbbd5ccabd1f92c02",
+  "source_mapping": {
+    "net/sparklink/sle_crypto_ffi.c": "f96bae652b3590440498ccb0017d4f8234347f10824a7c6d9b9a0a0cb4bb4e5d",
+    "tools/testing/selftests/sparklink/security/crypto_vm_probe.c": "d0bc1327fee69ecb68ca6b74c655a4d047087caa1abb81267dd4bb5826de0306",
+    "tools/testing/selftests/sparklink/security/ecdh_fixture.c": "70da7695981080c1f1283c2c0ace303c4cecd905cd5b8932ecc6435a6cf10997",
+    "tools/testing/selftests/sparklink/run_crypto_mechanism_faults.py": "df73d8b9c6cc501e60b719e75cfe7e825dc25705130c8a39b11eb97bb841f8f9",
+    "tools/testing/selftests/sparklink/run_crypto_vm_probe.py": "bd2419ecd52b666d2ab1c2961af4adde85e4136030bc0d925471921aa5fa9da9"
+  },
+  "scope": "necessary kernel crypto prerequisites for lifetime-bound Native WS73 pairing; no production relay/pairing/authentication/encryption capability",
+  "implemented": [
+    "HA2 AES-CMAC via actual kernel API; max160-byte input, atomic output",
+    "P256 candidate scalar/public generation with one consistent keypair; max8 invalid-scalar attempts",
+    "CRNG readiness false returns EAGAIN instead of weak randomness or indefinite entropy wait",
+    "ECDH shared secret staged until success; temporary key/secret buffers wiped",
+    "dedicated installable offline failure selftest and signed VM-only actual crypto probe"
+  ],
+  "offline_passed": [
+    "verbatim C ECDH bodies under 9 explicit dependency fault modes and allocator failure",
+    "Clang address/undefined sanitizer tests",
+    "old Rust error/permission and actual CTR failure boundaries retained",
+    "W=1 and Werror test module build"
+  ],
+  "formal": {
+    "status": "BOUNDED_PASS",
+    "method": "CBMC6.11.0; actual C functions inserted verbatim in explicit dependency fixture",
+    "checks": 321,
+    "failed": 0,
+    "unwind": 70,
+    "flags": [
+      "unwinding-assertions",
+      "bounds-check",
+      "pointer-check",
+      "signed-overflow-check",
+      "unsigned-overflow-check",
+      "conversion-check"
+    ],
+    "scope": "allocated resource balance, failed output unchanged, finite scalar attempts, buffer/pointer/arithmetic safety in the finite fault harness",
+    "assumptions": [
+      "mock CryptoAPI provider; faults chosen by modes0..8, underlying malloc/calloc may fail nondeterministically",
+      "model source is actual production C bodies, no statements rewritten",
+      "no crypto math, entropy quality, provider scheduling/deadline, zeroization implementation, concurrent lifecycle or protocol proof"
+    ],
+    "command": "CC=clang python3 tools/testing/selftests/sparklink/run_crypto_mechanism_faults.py --cbmc --output REPORT",
+    "log_sha256": "f1fcda8fb06f64fc996ec836ed75e62e7016a43fc778d1817b12029c1369dbf2",
+    "fixture_sha256": "70da7695981080c1f1283c2c0ace303c4cecd905cd5b8932ecc6435a6cf10997",
+    "counterexamples": [
+      {
+        "attempt": "v1",
+        "failed_checks": 11,
+        "cause": "test IS_ERR used signed<0, inaccurate for high kernel addresses",
+        "regression": "correct ERR_PTR range and explicit high-address non-error case"
+      },
+      {
+        "attempt": "v2",
+        "failed_checks": 13,
+        "cause": "legal unsigned ERR_PTR threshold conversion and fixture allocation must-succeed assertions",
+        "regression": "equivalent unsigned constant; handle actual allocator failure and retain all properties"
+      }
+    ],
+    "counterexample_logs": [
+      {
+        "name": "security-crypto-cbmc.log",
+        "sha256": "970571a1adf1640d55a1cbfdcd3d28c2ba2c0e34c91d171ea0904e60f9a80d2e"
+      },
+      {
+        "name": "security-crypto-cbmc-v2.log",
+        "sha256": "1ea426b3f07f27b77d20913dce9ba17c1f107722fbf6693b4bdad9028c9e0cc5"
+      },
+      {
+        "name": "security-crypto-cbmc-v2-counterexample.log",
+        "sha256": "685e93bccc46126543aa8f866ef6a64843fd6d5bfd3d1d3618cd7462f8f00327"
+      }
+    ],
+    "old_ssap_models": "ReadUUID OOM remains NOT_PROVEN; no upgrade from this independent ECDH failure proof"
+  },
+  "actual_kernel_vm": {
+    "probe_source_head": "b73a3dd02ce1f2232d68fd6fbbd5ccabd1f92c02",
+    "boot_kernel_head": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "status": "ACTUAL_KERNEL_CRYPTO_VM_PASS",
+    "qemu_exit": 0,
+    "taint": 4096,
+    "taint_reason": "explicit out-of-tree signed test module; not ordinary WS73 taint0 qualification",
+    "module_sha256": "5bd4637e37c5ca663d905989e588dfecd9b2b77ec93648b7e348a572f4f716de",
+    "console_sha256": "b7318956b4221fed63e89bbc1fc9b364580f2c2079b73e3810390f72e6df4ea5",
+    "manifest_sha256": "ca7801eb5492c074392bcc8dbb21b5341bba405e3251fe764cade5c82a0d95bb",
+    "usb_passthrough": false,
+    "validated": [
+      "RFC4493 AES-CMAC empty and16-byte public vectors",
+      "8 independent random P256 keypair agreements in both directions",
+      "all-zero/off-curve point and zero private scalar rejected with unchanged output",
+      "oversize/null CMAC arguments rejected; temporary arrays wiped"
+    ],
+    "initial_vm_failure": {
+      "probe_head": "d515356faa88c3887d4a0fb1801d68bc49616ab3",
+      "manifest_sha256": "ee6e9b3d166c9aba7f50a716e4182f7a216f8b1c881a3a79a4a5506f88d143f7",
+      "reason": "loglevel6 hid real pr_info verdict; signed module loaded but was not accepted PASS"
+    },
+    "prior_v2_vm": {
+      "probe_head": "5f7aa8c1faf8c23cb1fd7c568d4c32d4e92d4363",
+      "manifest_sha256": "ed1d129436222c3ab4f941db152f6f7a6c5fa95fdb3e9c9c97ef8e3e1bf6c202",
+      "scope": "before non-blocking entropy guard; history only"
+    }
+  },
+  "reference_review": {
+    "communication_nearlink_service": {
+      "head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+      "clean": true,
+      "source_mapping": {
+        "services/stack/src/dli/interface/dli_opcode.h": "9592c5651c16224110c6e04fe0e3574faceabc288eba43e42165809af84d50d0",
+        "services/stack/src/dli/interface/dli_cmd_struct.h": "f800ab7cee4ad2e125c08fbf0b06bd23bcbc2ae34157b597c3ac81b2471e47bd",
+        "services/stack/src/cp/bsl/sle/sm/src/sm.c": "fe2aafd8b12303f127d818206bbacbb67cd8d033ef464d062a6bdddd1a1c55f6",
+        "services/stack/src/cp/bsl/sle/sm/src/sm_encp.c": "ee722fd5d3b22197d4aafcecb16d83a198fe6d0a0b3b6b0aa7d8e9837cf6e897",
+        "services/stack/src/cp/bsl/sle/sm/src/sm_struct.h": "8c58d471448138b6bee805df7ec11c62d2f7a5c74710fd7e36a6e72c769beafa"
+      }
+    },
+    "libws73-usb": {
+      "head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+      "clean": true,
+      "source_mapping": {
+        "src/sle73/sle73_sm.c": "30f8e05c10ddbea028409fd6b7b5df6aac88665cdd40b69de708e892357c89c4",
+        "src/sle73/sle73_connection.c": "7f26c1601842f7fd7e6a2e581e74b4d7dfc698e661da6fcfa6b7d69bce9245e5"
+      }
+    }
+  },
+  "dialect_findings": [
+    "standard T/XS10003 RequestPair1C04 is not WS73 Host dialect DisableEncryption1C04; do not rename generic standard globally or send it to WS73",
+    "specified Host and libWS73 pair by controller-data command1812/event0014; protocol opcodes0133..0147",
+    "SDK111/lib reference initiator encryption1C03 has21 bytes; responder1C05 has20, not same structure",
+    "1812 relays serialize behind real command completion; completion alone is not peer protocol/crypto success",
+    "Host reference C layout/padding and vendor endian/CMAC wrapper must be explicit dialect schema, not generic casts"
+  ],
+  "ci_pin": {
+    "userspace": "71f74d02346d5ab84ed4cf05266cc1c65c0eb45f",
+    "kernel_failure_source": "b73a3dd02ce1f2232d68fd6fbbd5ccabd1f92c02",
+    "scope": "offline failure selftest added; UAPI/kernel hardware artifact pins remainK317"
+  },
+  "remaining": [
+    "typed per-lifetime security relay/command credit/reply tickets and event schemas in Native Host",
+    "real pairing state/algorithm negotiation and peer proof validation with fresh nonce",
+    "Agent authorization and required authenticated security level; JustWorks is not MITM/authenticated peer identity",
+    "actual key installation and matched encryption outcomes before Encrypted/Grant upgrade",
+    "per-peer CCC and positive notification/indication RF with opposite application validation",
+    "security/Bond model and other full S0-S6; natural fault root causes/nonmanual recovery remain OPEN"
+  ],
+  "qualifications_unchanged": {
+    "ws73_kernel": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "ws73_userspace": "8e92f97e83db6058575228d2edb756f5f6b6985b",
+    "reason": "retained crypto not linked into default core; no runtime/UAPI/data path changes. No new hardware-security qualification."
+  },
+  "raw_logs_availability": "private workspace only; hashes are not downloadable artifacts",
+  "vm_only": true,
+  "physical_security_acceptance": false,
+  "closure_allowed": false,
+  "ci": {
+    "userspace_head": "71f74d02346d5ab84ed4cf05266cc1c65c0eb45f",
+    "run_id": 38503161465,
+    "conclusion": "success",
+    "scope": "offline failure boundaries and normal nine-job source/ABI/build checks; no cryptoVM or physical pairing qualification",
+    "documentation_run_id": 38503161975,
+    "documentation_conclusion": "success"
+  }
+}

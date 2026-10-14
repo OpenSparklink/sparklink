@@ -25,3 +25,6 @@
 
 [完整更新接收整改、调用者撤销、参考Host对照与原路径实机保持](ssap-update-rx-progress-20261014.json)
 明确区分正向更新未验收、限定ACK编码证明及真实能力拒绝，未扩大原硬件资格。
+
+[安全机制前置、真实内核算法、CBMC反例与限定范围](security-crypto-prerequisites-20261014.json)
+明确未接通Native配对/可信安装，不替代真实双设备安全或自然恢复。

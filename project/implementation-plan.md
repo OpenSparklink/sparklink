@@ -1,5 +1,19 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前必要安全依赖：真实Host relay与可信安装
+
+K b73a3dd完成内核crypto前置验证，未新增安全/CCC资格；下一步必须接通Native
+per-connection lifetime的1812/0014 relay与命令credit/票据、协议协商与真实peer proof，
+Agent确认/授权及安全等级，再用实际1C03/1C05与匹配0011证明安装后发布Encrypted。
+[限定前置成果与反例](../docs/evidence/security-crypto-prerequisites-20261014.json)。
+
+持续对照指定Host f087及libws73 f4d85d。standard1C04 RequestPair与WS731C04关闭
+加密不同，按driver dialect区分；21/20字节加密参数不共用结构cast；一次1812真实
+完成后才继续relay。算法/字节序/盐值按协商，不恢复固定随机数或测试密钥降级。
+JustWorks不等于MITM认证/可信peer身份，CCC认证/授权依赖不能由自报状态满足。
+不把安全全集或旧控制竞争全集设为已有读写/数据矩阵前置；S0–S6完整范围不变。
+
+
 ## 当前主线：完整通知／指示／订阅，保持安全依赖真实
 
 U8e92f97接单次本地更新接收、原期限、调用者退出和确认语义；K317隔离VM原

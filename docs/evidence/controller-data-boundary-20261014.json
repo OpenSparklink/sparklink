@@ -218,5 +218,39 @@
     "command": "make docs (uv --locked, nitpicky, warnings-as-errors)",
     "log_sha256": "e34d7342f7bab2fdb7a4fdaafa3184b355a4fb98f53be3658518c4f4149422c7",
     "runtime_code_changed_by_recording": false
-  }
+  },
+  "issue_updates": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 16,
+      "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6162417907",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_sha256": "a0537a278b4b908640ce37dbfae4e66317deff94adecac9ea1469313b9ffa81e"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 18,
+      "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6162419221",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_sha256": "a0537a278b4b908640ce37dbfae4e66317deff94adecac9ea1469313b9ffa81e"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6162420847",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_sha256": "a0537a278b4b908640ce37dbfae4e66317deff94adecac9ea1469313b9ffa81e"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6162422269",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_sha256": "a0537a278b4b908640ce37dbfae4e66317deff94adecac9ea1469313b9ffa81e"
+    }
+  ]
 }

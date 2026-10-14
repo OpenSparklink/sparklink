@@ -287,21 +287,22 @@
   "issue_sync_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
-  "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
+  "execution_phase": "NATIVE_SECURITY_RELAY_AND_DATA_GATES_IN_PARALLEL",
   "current_batch": "Correct actual native 0014 ControllerData budget; valid maximum remains explicitly unsupported; existing Session/ticket preserved",
   "current_audit": "docs/evidence/protocol-state-retirement-audit-20261014.json",
-  "issue_sync_status": "Current boundary evidence prepared; corresponding existing issues remain OPEN pending receipt",
+  "issue_sync_status": "ControllerData boundary/reference audit/exact original-path VM regression synchronized; K#16/K#18/K#19/U#8 read back OPEN with original bodies unchanged",
   "current_implementation_heads": {
     "linux": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
     "userspace": "006e424b49449a87a4e204be60f5292adc28f6c4"
   },
   "next_resume_tasks": [
-    "Audit/replace SecurityInner/RPA and remaining default-selection/debugfs/legacy diagnostic observations and unpublished old facades; keep real crypto/Grant/lifetime/Host mechanisms. Preserve K558/Ucd77 Native data and only change-related gates; complete topology/loss/owner-death, callback/IRQ/PM, standard/mixed and true data/SSAP scopes open.",
+    "Next production slice: wire the existing relay state transitions to the same physical Session, canonical grant/lifetime and actual Host command ticket/credit; typed driver1812/real completion and0014/000e/0011 ownership. Keep K0d/U006e exact data/SSAP regression; full RX255 budget is not full TX255 support.",
+    "Parallel cleanup, not a prerequisite requiring all old control combinations: Audit/replace SecurityInner/RPA and remaining default-selection/debugfs/legacy diagnostic observations and unpublished old facades; keep real crypto/Grant/lifetime/Host mechanisms. Preserve K558/Ucd77 Native data and only change-related gates; complete topology/loss/owner-death, callback/IRQ/PM, standard/mixed and true data/SSAP scopes open.",
     "WP05 remaining trusted-security Grant installation, independent-owner business isolation and controlled in-flight arbitration/refinement; preserve existing epoch/direction/release/last-management-fd/dup/SCM_RIGHTS/common-daemon-death exact qualification. Do not repeat implemented epoch/direction or silently broaden historical proof.",
     "WP04/06: controlled real in-flight last-close/dup/linkdown/old lifetime and RX drain barriers, lockdep/KCSAN; keep same-life basic rebind unsupported until qualified close protocol",
     "WP03 parallel: full submit/withdrawal interleavings, NOCP accuracy/duplicate/reuse barrier, real credit exhaustion/backpressure and Kani unsupported fixes",
     "WP12/13/18: authoritative event/snapshot migration, registered Backend/build combinations and remaining old duplicate/dead-code consumers",
-    "Then unchanged full S0–S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/Proxy/PM/recovery/release"
+    "Preserve full full S0–S6/19WP/10FV/12DG data/multi-channel/four-device/SSAP/security/Bond/Profile/optional low-priority UserHost adaptation/PM/recovery/release"
   ],
   "latest_issue_steering_receipt": "docs/evidence/architecture-first-issues-20261013.json",
   "offline_evidence": "docs/evidence/backend-early-offline-20261013.json",
@@ -2876,6 +2877,41 @@
     "original_path_real_regression": true,
     "real_security_branch_acceptance": false,
     "relay_tx_parameter_limit": 255,
-    "security_actor_enabled": false
+    "security_actor_enabled": false,
+    "issue_receipts": [
+      {
+        "repository": "OpenSparklink/linux",
+        "issue": 16,
+        "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6162417907",
+        "state": "OPEN",
+        "original_body_unchanged": true,
+        "readback_sha256": "a0537a278b4b908640ce37dbfae4e66317deff94adecac9ea1469313b9ffa81e"
+      },
+      {
+        "repository": "OpenSparklink/linux",
+        "issue": 18,
+        "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6162419221",
+        "state": "OPEN",
+        "original_body_unchanged": true,
+        "readback_sha256": "a0537a278b4b908640ce37dbfae4e66317deff94adecac9ea1469313b9ffa81e"
+      },
+      {
+        "repository": "OpenSparklink/linux",
+        "issue": 19,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6162420847",
+        "state": "OPEN",
+        "original_body_unchanged": true,
+        "readback_sha256": "a0537a278b4b908640ce37dbfae4e66317deff94adecac9ea1469313b9ffa81e"
+      },
+      {
+        "repository": "OpenSparklink/sparklink",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6162422269",
+        "state": "OPEN",
+        "original_body_unchanged": true,
+        "readback_sha256": "a0537a278b4b908640ce37dbfae4e66317deff94adecac9ea1469313b9ffa81e"
+      }
+    ],
+    "documentation_commit": "0c576d0f357f2ec9140fbf6c435bb70def9fae3e"
   }
 }

@@ -46,7 +46,8 @@ def execute(run, phase):
             processes.append((proc,app));app['pid']=proc.pid
             app['credentials']=credentials(proc.pid);run.save()
         deadline=time.monotonic()+row['rounds']*10+5
-        for proc,app in processes:
+        waiting=sorted(processes,key=lambda item:item[1]['role']!='initiator') if row['close_prefix'] else processes
+        for proc,app in waiting:
             proc.wait(timeout=max(.001,deadline-time.monotonic()))
             app['stdout'],app['stderr']=[Path(p).read_text() for p in app['output_files']]
             app.update(exit=proc.returncode,end_wall_ns=time.time_ns());run.save()
@@ -225,7 +226,9 @@ def prefix_application_frames(row):
         raise CaptureError('bounded actual final fd release timestamps required')
     if 'NativeChannelRoundTrip:' in source['stdout']:
         raise CaptureError('closed source cannot claim application round-trip receipt')
-    return [payload],[reply],dict(start_wall_ns=before,end_wall_ns=after,dropped=dropped)
+    if source.get('end_wall_ns',0)<after or source['stdout'].count('NativeChannelLastClose: same_lifetime_reopen=NotSupported')!=1:
+        raise CaptureError('actual source exit after final close and retired-binding rebind rejection required')
+    return [payload],[reply],dict(start_wall_ns=before,end_wall_ns=after,source_reaped_wall_ns=source['end_wall_ns'],dropped=dropped)
 
 
 def corroborate(run,capture):
@@ -278,8 +281,8 @@ def corroborate(run,capture):
         # Each endpoint sends one capability request, one response, the recorded number of business PDUs.
         if prefix:
             pieces=legs[0]['tx']['fragments']
-            if len(pieces)!=9 or not pieces[0]['wall_ns']<prefix['start_wall_ns'] or not prefix['end_wall_ns']<pieces[-1]['wall_ns']:
-                raise CaptureError('actual USB first submit < final close < last submit required')
+            if len(pieces)!=9 or not pieces[0]['wall_ns']<prefix['start_wall_ns'] or not prefix['source_reaped_wall_ns']<pieces[-1]['wall_ns']:
+                raise CaptureError('actual USB first submit < final fd close < source exit/rebind refusal < last submit required')
             if any(prefix['dropped'].hex() in p['data'] and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):
                 raise CaptureError('never-started queue reached USB after author close')
             if row.get('after_close_ssap_start_wall_ns',0)<=prefix['end_wall_ns'] or not row.get('ssap_values'):

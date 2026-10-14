@@ -91,7 +91,8 @@ class PrefixApplicationProof(unittest.TestCase):
         source,peer=next(a for a in row['applications'] if a['role']=='initiator'),next(a for a in row['applications'] if a['role']=='peer')
         import re
         payload=re.findall(r'NativeChannelSent: sequence=0 bytes=([0-9a-f]+)',source['stdout'])[0]
-        source['stdout']=f"NativePrefixSent: bytes={payload}\nNativePrefixQueued: bytes={(b'SLKDROP1'+bytes(53)).hex()}\nNativePrefixClosed: start_wall_ns=20 end_wall_ns=21\n"
+        source['end_wall_ns']=30
+        source['stdout']=f"NativeChannelLastClose: same_lifetime_reopen=NotSupported\nNativePrefixSent: bytes={payload}\nNativePrefixQueued: bytes={(b'SLKDROP1'+bytes(53)).hex()}\nNativePrefixClosed: start_wall_ns=20 end_wall_ns=21\n"
         return row
     def test_original_peer_validation_and_actual_close_required(self):
         from ws73_channel_socket import prefix_application_frames

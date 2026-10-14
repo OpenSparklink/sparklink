@@ -10,10 +10,10 @@
   },
   "goal_api_objective_edit_available": false,
   "sync_method": "existing active goal linked to canonical IMPLEMENTATION_PLAN and this persistent state; no duplicate goal/status mutation",
-  "updated_at_utc": "2026-10-13T19:23:55.999316+00:00",
-  "canonical_plan": "docs/IMPLEMENTATION_PLAN.md",
-  "capabilities": "docs/CURRENT_CAPABILITIES.md",
-  "adoption": "docs/ARCHITECTURE_ADOPTION_20261013.json",
+  "updated_at_utc": "2026-10-14T01:20:54.870562+00:00",
+  "canonical_plan": "project/implementation-plan.md",
+  "capabilities": "project/current-capabilities.md",
+  "adoption": "history/architecture/architecture-adoption-20261013.json",
   "scope_unchanged": [
     "S0",
     "S1",
@@ -26,13 +26,14 @@
   "original_issue_count": 28,
   "hardware_constraint": "VM_ONLY",
   "current_heads": {
-    "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
-    "userspace": "cd77ed935740f52187a51f014fc1f5212bd8617f",
-    "observation": "Exact K558/Ucd77 real and Virtual qualification; later docs metadata is not qualification transfer."
+    "linux": "63aee16e1b3fd2125c1994f3256027f7b3c73a60",
+    "userspace": "45508f5f7b9a0c3dfee6b4f23ca763602d79416a",
+    "observation": "Documentation-only migration; no hardware qualification transfer."
   },
   "qualified_source_heads": {
-    "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
-    "userspace": "cd77ed935740f52187a51f014fc1f5212bd8617f"
+    "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "userspace": "7d87d183bd1c2b745430dbeca75c1a7909225d31",
+    "scope": "See exact SSAP discovery/value/socket evidence; not complete ecosystem qualification."
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exactK558/Ucd77:40short/RF22/connection/Peer/Down/dup/lastclose/QMP; injectedfaultpeer8; actual legacy53/event/currentlink summary gates. Not natural recovery or new manual physical qualification.",
@@ -827,7 +828,7 @@
     "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
   ],
   "documentation_workstream": {
-    "status": "partial; fifth uppercase content batch gated; remaining mixed content and publishing open",
+    "status": "partial; physical source migration and exact local/browser/documentation-CI gates passed; content extraction and publishing remain open",
     "independent_of_protocol_critical_path": true,
     "branch": "codex/sparklink-ws73",
     "source_baseline": {
@@ -1076,11 +1077,43 @@
       "uppercase_markdown_moved": 46,
       "machine_state_moved": true,
       "path_map": "docs/documentation-paths.json",
-      "status": "implementation pending exact build/browser gates",
+      "status": "physical migration passed; remaining content work open",
       "compatibility": "pinned old GitHub snapshot and generated HTML redirects; old branch blob URLs cannot redirect without retaining files",
       "runtime_qualification_changed": false,
       "closure_allowed": false,
-      "architecture_adoption_record_moved": true
+      "architecture_adoption_record_moved": true,
+      "source_heads": {
+        "userspace": "45508f5f7b9a0c3dfee6b4f23ca763602d79416a",
+        "linux": "63aee16e1b3fd2125c1994f3256027f7b3c73a60"
+      },
+      "evidence": "docs/evidence/diataxis-physical-migration-20261014.json",
+      "next_runtime_build": "Use accurate post-documentation kernel HEAD; do not relabel K317 hardware evidence or reuse stale source-clean manifests.",
+      "issue_updates": [
+        {
+          "repo": "OpenSparklink/sparklink",
+          "issue": 8,
+          "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6158749292",
+          "body_sha256": "24351afa6dd5926b603d8c5191a426b896278f808a268682c22fc4b6c31d95b8",
+          "readback": true,
+          "state": "open"
+        },
+        {
+          "repo": "OpenSparklink/linux",
+          "issue": 19,
+          "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6158749935",
+          "body_sha256": "24351afa6dd5926b603d8c5191a426b896278f808a268682c22fc4b6c31d95b8",
+          "readback": true,
+          "state": "open"
+        },
+        {
+          "repo": "OpenSparklink/sparklink",
+          "issue": 3,
+          "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6158750554",
+          "body_sha256": "24351afa6dd5926b603d8c5191a426b896278f808a268682c22fc4b6c31d95b8",
+          "readback": true,
+          "state": "open"
+        }
+      ]
     }
   },
   "latest_standard_diagnostic_batch": {
@@ -2293,5 +2326,16 @@
     "implementation_plan": "project/implementation-plan.md",
     "capabilities": "project/current-capabilities.md",
     "execution_state": "project/goal-execution-state.json"
+  },
+  "previous_root_snapshot": {
+    "current_heads": {
+      "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
+      "userspace": "cd77ed935740f52187a51f014fc1f5212bd8617f",
+      "observation": "Exact K558/Ucd77 real and Virtual qualification; later docs metadata is not qualification transfer."
+    },
+    "qualified_source_heads": {
+      "linux": "5582a10c5ec8af89da302e946e30446e04a01041",
+      "userspace": "cd77ed935740f52187a51f014fc1f5212bd8617f"
+    }
   }
 }

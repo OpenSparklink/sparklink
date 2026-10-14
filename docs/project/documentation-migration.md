@@ -151,3 +151,10 @@ U#8／K#19／U#3 更新已回读，均OPEN；完整 goal 保持active，不改�
 旧HTML路径生成重定向；GitHub分支blob删除后无法自动转向，不保留大写stub，
 以旧新路径表和固定旧提交安排兼容。准确构建/浏览器/CI结果另记，未执行前
 不标PASS；完整混合内容拆分/外链/离线图形/正式发布仍OPEN。
+
+第六批准确签名提交 U `45508f5f7b9a`／K `63aee16e1b3f` 仅改文档。干净clone的
+locked安装、98／10清单、严格HTML和内部资源检查通过；Firefox主题导航、搜索、
+图表、移动端及三个旧HTML重定向通过，截图已查看。
+[文档CI与下载artifact](https://github.com/OpenSparklink/sparklink/actions/runs/38495063473)成功；
+[准确范围和未决](../evidence/diataxis-physical-migration-20261014.json)。运行源码hash不变，
+实机资格仍绑定K317／U7d87，不重新标记为最新文档HEAD通过。

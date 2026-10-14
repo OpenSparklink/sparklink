@@ -163,7 +163,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: c7c61af6e84e1b3cd76851fdf2a740fabe156a17
+          ref: c11672ead650be359f8fde4a18bd87dc91bca378
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -243,8 +243,7 @@ jobs:
         run: |
           python -m unittest discover -s tools/testing/selftests/sparklink -p test_authorization_contract.py -v
           python -m unittest discover -s tools/testing/selftests/sparklink -p test_daemon_lifecycle.py -v
-          rustc --edition=2021 --test -D warnings tools/testing/selftests/sparklink/sparklink_host_plan_test.rs -o /tmp/host-plan-test
-          /tmp/host-plan-test
+          python3 tools/testing/selftests/sparklink/run_host_plan.py
           clang -std=c11 -O2 -Wall -Wextra -Werror tools/testing/selftests/sparklink/kernel_authorization_test.c -o /tmp/kernel-authorization-probe
       - name: Check pinned QEMU host test boundaries (no live USB or guest execution)
         working-directory: .kernel-containment

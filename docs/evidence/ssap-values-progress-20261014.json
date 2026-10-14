@@ -90,40 +90,55 @@
       "issue": 6,
       "state": "OPEN",
       "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6158239127",
-      "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
-      "verified_readback": true
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
     },
     {
       "repo": "linux",
       "issue": 17,
       "state": "OPEN",
       "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6158239607",
-      "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
-      "verified_readback": true
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
     },
     {
       "repo": "linux",
       "issue": 19,
       "state": "OPEN",
       "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6158240171",
-      "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
-      "verified_readback": true
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
     },
     {
       "repo": "sparklink",
       "issue": 3,
       "state": "OPEN",
       "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6158240818",
-      "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
-      "verified_readback": true
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
     },
     {
       "repo": "sparklink",
       "issue": 8,
       "state": "OPEN",
       "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6158241476",
-      "body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5",
-      "verified_readback": true
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
     }
   ],
   "post_qualification_guard": {

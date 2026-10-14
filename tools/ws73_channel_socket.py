@@ -113,7 +113,9 @@ def rejected_frames(row):
     for app in row['applications']:
         values=re.findall(r'^NativeChannelRejected: length=(\d+) errno=(\d+) bytes=([0-9a-f]+)$',app['stdout'],re.M)
         if row.get('boundary_check',False):
-            if [int(v[0]) for v in values]!=[250,253,254,255] or len(values)!=app['stdout'].count('NativeChannelRejected:'):
+            receipts = channel_info_receipts(row)
+            mtu = next((receipt['fields'][7] for receipt in receipts if receipt['role']==app['role']),249)
+            if [int(v[0]) for v in values]!=[mtu+1,mtu+4,mtu+5,mtu+6] or len(values)!=app['stdout'].count('NativeChannelRejected:'):
                 raise CaptureError('all original length boundary rejection receipts required')
             for length,error,raw in values:
                 data=bytes.fromhex(raw)
@@ -146,7 +148,7 @@ def channel_info_receipts(row):
 
 def application_frames(row):
     rounds=row['rounds'];message_bytes=row.get('message_bytes',61)
-    if type(message_bytes) is not int or not 29<=message_bytes<=249:raise CaptureError('supported basic channel message size required')
+    if type(message_bytes) is not int or not 29<=message_bytes<=2042:raise CaptureError('supported basic channel message size required')
     if type(rounds) is not int or not 1<=rounds<=20:raise CaptureError('finite original round count required')
     apps={a['role']:a for a in row['applications']}
     if set(apps)!={'peer','initiator'} or len(row['applications'])!=2:
@@ -234,14 +236,16 @@ def corroborate(run,capture):
         capabilities=[]
         for sender,receiver in [owners,owners[::-1]]:
             query=bytes.fromhex('0200080001010400e2000000')
-            response=bytes.fromhex('0200100002010c00e20000000000f900f9000101')
+            receipt=next((value for value in channel_info_receipts(row) if value['fields'][0]==sender['owner']['index']),None)
+            mtu=receipt['fields'][7] if receipt else 249
+            response=bytes.fromhex('0200100002010c00e20000000000')+mtu.to_bytes(2,'little')*2+bytes.fromhex('0101')
             capabilities.append(dict(request_tx=matched(sender,'out',query,session=row.get('ssap_exchange_required',False)),request_rx=matched(receiver,'in',query,session=row.get('ssap_exchange_required',False)),
                                      response_tx=matched(sender,'out',response,session=row.get('ssap_exchange_required',False)),response_rx=matched(receiver,'in',response,session=row.get('ssap_exchange_required',False))))
             owner,obj=sender['owner'],sender['object']
             completed=[e for e in capture['native_events'] if e['event']==9 and (e['bus'],e['device'])==(owner['bus'],owner['device'])
                        and row.get('session_start_wall_ns',row['start_wall_ns'])<=e['wall_ns']<=row['end_wall_ns']]
             if any(len(bytes.fromhex(e['params']))!=3 or int.from_bytes(bytes.fromhex(e['params'])[:2],'little')!=obj['handle'] for e in completed):raise CaptureError('exact actual completion handle required')
-            if sum(bytes.fromhex(e['params'])[2] for e in completed)!=row['rounds']+(4 if row.get('ssap_exchange_required',False) else 2)+ssap_credit[owners.index(sender)]:raise CaptureError('exact actual completed packet count per controller required')
+            if sum(bytes.fromhex(e['params'])[2] for e in completed)!=sum(len(leg['tx'].get('fragments',[leg['tx']])) for leg in legs if (leg['tx']['bus'],leg['tx']['device'])==(owner['bus'],owner['device']))+(4 if row.get('ssap_exchange_required',False) else 2)+ssap_credit[owners.index(sender)]:raise CaptureError('exact actual completed packet count per controller required')
         ssap=[]
         if row.get('ssap_exchange_required',False):
             if len(row.get('ssap_receipts',[]))!=2:raise CaptureError('both original daemon SSAP receipts required')
@@ -269,7 +273,15 @@ def corroborate(run,capture):
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
-                long_pdu_acceptance=False,credit_exhaustion_acceptance=False,four_device_acceptance=False)
+                long_pdu_acceptance=all(row.get('message_bytes',61)>249 for row in rows),credit_exhaustion_acceptance=False,four_device_acceptance=False)
+    if proof['long_pdu_acceptance']:
+        for phase in proofs:
+            for leg in phase['legs']:
+                pieces=leg['tx'].get('fragments',[])
+                if len(pieces)<2 or [piece.get('boundary',0) for piece in pieces]!=[1]+[2]*(len(pieces)-2)+[3]:
+                    raise CaptureError('long PDU requires actual ordered first/middle/last TX fragments')
+                if any(not 1<=len(bytes.fromhex(piece['data']))<=254 for piece in pieces):
+                    raise CaptureError('each actual WS73 TX packet must respect the 254-byte controller bound')
     if any(row.get('boundary_check',False) for row in rows):
         proof['application_boundary_rejections']=sum(len(rejected_frames(row)) for row in rows)
         proof['application_message_bytes']=rows[0].get('message_bytes',61)

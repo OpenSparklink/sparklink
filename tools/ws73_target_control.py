@@ -141,7 +141,7 @@ def main():
     if args.connection_verify and (not args.passthrough or args.daemon_cancel_remove or args.initializer_lifecycle):
         parser.error('connection gate requires separate real passthrough mode')
     if args.daemon_link_resync and not args.connection_verify:parser.error('link resync requires explicit connection gate')
-    if not 29<=args.channel_socket_bytes<=249 or ((args.channel_socket_bytes!=61 or args.channel_socket_boundaries) and not args.channel_socket_verify):parser.error('message size and boundaries require explicit supported socket gate')
+    if not 29<=args.channel_socket_bytes<=2042 or ((args.channel_socket_bytes!=61 or args.channel_socket_boundaries) and not args.channel_socket_verify):parser.error('message size and boundaries require explicit supported socket gate')
     if args.channel_socket_rounds!=4 and not args.channel_socket_verify:parser.error('round count requires explicit socket gate')
     if args.channel_socket_verify and (not args.connection_verify or args.acb_transport_probe or args.daemon_link_resync):parser.error('ordinary socket requires separate connection gate without test module')
     if args.acb_transport_probe and (not args.connection_verify or args.daemon_link_resync):parser.error('ACB probe requires a separate explicit connection gate')

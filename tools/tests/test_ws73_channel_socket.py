@@ -85,11 +85,11 @@ class ApplicationProof(unittest.TestCase):
 
 
 class IndependentUSBProof(unittest.TestCase):
-    def fixture(self,rounds=4,boundaries=False):
+    def fixture(self,rounds=4,boundaries=False,message_bytes=61):
         from ws73_channel_socket import application_frames
         phases=[];sdus=[];events=[]
         for n in range(2):
-            row=fixture(rounds,boundaries=boundaries);row.update(phase=n,status='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING',start_wall_ns=n*100+1,end_wall_ns=n*100+90)
+            row=fixture(rounds,message_bytes=message_bytes,boundaries=boundaries);row.update(phase=n,status='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING',start_wall_ns=n*100+1,end_wall_ns=n*100+90)
             owners=[dict(owner=dict(bus=1,device=2+i,index=i,generation=i+1),object=dict(generation=i+1,lifetime=1+n*2,handle=0)) for i in range(2)]
             if n:owners.reverse()
             row['owners']=owners
@@ -100,8 +100,8 @@ class IndependentUSBProof(unittest.TestCase):
                         old=bytes([i+1])*16;new=bytes([i+127])*16
                         old_sequence=0x12345678+i*17;new_sequence=0xabcdef12+i*17
                         for reply in [0,1]:
-                            a=b'SLKSOCK1'+old+old_sequence.to_bytes(4,'little')+bytes([reply])+bytes(old[j%16]^((old_sequence+j)&255) for j in range(32))
-                            b=b'SLKSOCK1'+new+new_sequence.to_bytes(4,'little')+bytes([reply])+bytes(new[j%16]^((new_sequence+j)&255) for j in range(32))
+                            a=b'SLKSOCK1'+old+old_sequence.to_bytes(4,'little')+bytes([reply])+bytes(old[j%16]^((old_sequence+j)&255) for j in range(message_bytes-29))
+                            b=b'SLKSOCK1'+new+new_sequence.to_bytes(4,'little')+bytes([reply])+bytes(new[j%16]^((new_sequence+j)&255) for j in range(message_bytes-29))
                             app['stdout']=app['stdout'].replace(a.hex(),b.hex())
             phases.append(row)
             def leg(sender,receiver,data):
@@ -116,6 +116,26 @@ class IndependentUSBProof(unittest.TestCase):
                 leg(sender,receiver,bytes.fromhex('0200100002010c00e20000000000f900f9000101'))
                 events.append(dict(bus=1,device=sender['owner']['device'],event=9,params=(b'\0\0'+bytes([rounds+2])).hex(),wall_ns=n*100+30))
         return dict(channel_socket=phases),dict(native_events=events),sdus
+
+    def test_long_requires_each_actual_fragment_and_physical_completion_count(self):
+        from unittest.mock import patch
+        from ws73_channel_socket import corroborate
+        run,capture,sdus=self.fixture(message_bytes=2042)
+        for packet in sdus:
+            raw=bytes.fromhex(packet['data'])
+            if packet['direction']=='out' and len(raw)>254:
+                parts=[raw[i:i+254] for i in range(0,len(raw),254)]
+                packet['fragments']=[dict(data=part.hex(),boundary=1 if i==0 else 3 if i==len(parts)-1 else 2) for i,part in enumerate(parts)]
+        for event in capture['native_events']:event['params']='000026' # 4*9 business fragments +2 CMTC
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            self.assertTrue(corroborate(run,capture)['long_pdu_acceptance'])
+        for kind in ['missing_fragment','wrong_pb','wrong_nocp','missing_peer']:
+            packets,events=copy.deepcopy(sdus),copy.deepcopy(capture)
+            if kind=='missing_fragment':packets[0]['fragments']=[]
+            if kind=='wrong_pb':packets[0]['fragments'][0]['boundary']=0
+            if kind=='wrong_nocp':events['native_events'][0]['params']='000025'
+            if kind=='missing_peer':packets.pop(1)
+            with self.subTest(kind=kind),patch('ws73_channel_socket.reassemble_acb',return_value=packets),self.assertRaises(CaptureError):corroborate(run,events)
 
     def test_boundary_rejections_require_no_matching_usb_data(self):
         from unittest.mock import patch

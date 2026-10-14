@@ -79,7 +79,7 @@ fn send(fd: &OwnedFd, bytes: &[u8], deadline: Instant) -> anyhow::Result<()> {
 fn receive(fd: &OwnedFd, deadline: Instant) -> anyhow::Result<Vec<u8>> {
     loop {
         wait(fd, nix::libc::POLLIN, deadline)?;
-        let mut buffer = [0u8; 249];
+        let mut buffer = [0u8; 2042];
         // SAFETY: writable stack buffer and valid owned socket; MSG_TRUNC reveals oversized messages.
         let result = unsafe {
             nix::libc::recv(
@@ -127,7 +127,8 @@ fn reject_boundaries(fd: &OwnedFd) -> anyhow::Result<()> {
         nix::libc::POLLOUT,
         Instant::now() + Duration::from_secs(10),
     )?;
-    for length in [250usize, 253, 254, 255] {
+    let mtu = usize::from(slk_protocol::channel::query(fd.as_raw_fd())?.mtu);
+    for length in [mtu + 1, mtu + 4, mtu + 5, mtu + 6] {
         let mut bytes = vec![0u8; length];
         std::fs::File::open("/dev/urandom")?.read_exact(&mut bytes)?;
         bytes[..8].copy_from_slice(b"SLKBOUND");
@@ -213,8 +214,8 @@ fn validate_exercise(rounds: u32, message_bytes: usize) -> anyhow::Result<()> {
     if !(1..=20).contains(&rounds) {
         anyhow::bail!("rounds must be 1..20");
     }
-    if !(29..=249).contains(&message_bytes) {
-        anyhow::bail!("message size must be 29..249 for the current basic channel");
+    if !(29..=2042).contains(&message_bytes) {
+        anyhow::bail!("message size must be 29..2042 within the negotiated basic channel");
     }
     Ok(())
 }
@@ -372,7 +373,7 @@ mod tests {
 
     #[test]
     fn application_validates_and_replies_over_real_local_datagram_fds() {
-        for message_bytes in [61, 249] {
+        for message_bytes in [61, 249, 250, 253, 254, 255, 1024, 2042] {
             // Local AF_UNIX is application regression support, never WS73 acceptance.
             let mut raw = [-1; 2];
             // SAFETY: writable two-element array; success transfers two owned fds.

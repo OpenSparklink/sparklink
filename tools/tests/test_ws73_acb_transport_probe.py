@@ -124,6 +124,17 @@ class AcbProbeTests(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises(CaptureError):
                 reassemble_acb(dict(acb_packets=f,native_events=events))
 
+    def test_tx_fragments_are_reassembled_separately_from_same_handle_rx(self):
+        def packet(record,boundary,data,direction):
+            return dict(record=record,boundary=boundary,data=data.hex(),bus=1,device=2,
+                        handle=0,direction=direction,wall_ns=record*1000)
+        fragments=[packet(1,1,b'tx-first','out'),packet(2,1,b'rx-first','in'),
+                   packet(3,3,b'tx-last','out'),packet(4,3,b'rx-last','in')]
+        proof=reassemble_acb(dict(acb_packets=fragments,native_events=[]))
+        self.assertEqual([p['data'] for p in proof],[b'tx-firsttx-last'.hex(),b'rx-firstrx-last'.hex()])
+        broken=copy.deepcopy(fragments);broken[2]['boundary']=0
+        with self.assertRaises(CaptureError):reassemble_acb(dict(acb_packets=broken,native_events=[]))
+
     def test_failed_module_init_is_not_retried_by_loader(self):
         library=MagicMock();library.syscall.return_value=-1
         with tempfile.TemporaryDirectory() as folder:

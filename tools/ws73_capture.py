@@ -115,11 +115,10 @@ def reassemble_acb(capture):
                 partial = {key: value for key, value in partial.items() if key[:2] != device}
             continue
         boundary = packet.get('boundary', 0)
-        key = device + (packet['handle'],)
-        if packet['direction'] == 'out' or boundary == 0:
-            if boundary:
-                raise CaptureError('TX fragment mode is not qualified')
-            partial.pop(key, None)
+        key = device + (packet['handle'], packet['direction'])
+        if boundary == 0:
+            if key in partial:
+                raise CaptureError('full A3 interleaves unfinished fragment stream')
             sdus.append(packet | dict(fragments=[packet]))
         elif boundary == 1:
             if key in partial:

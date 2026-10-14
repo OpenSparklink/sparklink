@@ -2482,6 +2482,62 @@
       "real1C03/1C05 installation and0011 before trusted state/Grant/CCC",
       "Bond/security models and full real two-end application matrix"
     ],
-    "closure_allowed": false
+    "closure_allowed": false,
+    "issue_updates": [
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 7,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6159876536",
+        "body_sha256": "be95fb9402bb0d02a4e359a19fd1f0003dd7d147e8ec23a9759f07e3b4e8592e",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 18,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6159877176",
+        "body_sha256": "be95fb9402bb0d02a4e359a19fd1f0003dd7d147e8ec23a9759f07e3b4e8592e",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 19,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6159877897",
+        "body_sha256": "be95fb9402bb0d02a4e359a19fd1f0003dd7d147e8ec23a9759f07e3b4e8592e",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 5,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6159878470",
+        "body_sha256": "be95fb9402bb0d02a4e359a19fd1f0003dd7d147e8ec23a9759f07e3b4e8592e",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 3,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6159879077",
+        "body_sha256": "be95fb9402bb0d02a4e359a19fd1f0003dd7d147e8ec23a9759f07e3b4e8592e",
+        "readback": true,
+        "state": "open"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 8,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6159879664",
+        "body_sha256": "be95fb9402bb0d02a4e359a19fd1f0003dd7d147e8ec23a9759f07e3b4e8592e",
+        "readback": true,
+        "state": "open"
+      }
+    ],
+    "ci": {
+      "run_id": 38503161465,
+      "conclusion": "success",
+      "jobs_passed": 9,
+      "scope": "offline failure tests/source/ABI only"
+    }
   }
 }

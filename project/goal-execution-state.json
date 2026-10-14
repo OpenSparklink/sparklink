@@ -589,7 +589,7 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "Trace actual SDK111/ref/OHOS controller-data transmit after real1812 matching Complete but no peer0014, including real two-way CMTC counterexample. Preserve same production Session/relay/tickets and current data paths; no fabricated capability response or success. Require real peer delivery before relay gate closes.",
+    "Resolve actual111 firmware forwarding for typed relay; candidateSDKarchive1ff alsoFAIL and localSDKfirmware differs. Ghidra/LLVM vendorISA/ROM gaps are tool limits, not proof. Reuse physicalSession/raw echo, no fake capability or simplified Engine. Independently continue real length/credit/backpressure gates.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
@@ -614,29 +614,28 @@
     "hardware": "new peer checks separate from old 40/249 baseline",
     "remaining": "approved pairing/Agent/install, reuse barriers, hardware NOCP and natural recovery; full S0-S6 open"
   },
-  "updated_at_utc": "2026-10-14T16:21:20.062771+00:00",
+  "updated_at_utc": "2026-10-14T17:41:28.089883+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
     "scope": "Retained prior progress/qualified identities; not live current state"
   },
   "current_heads": {
-    "linux": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
-    "userspace": "e408b7886a114f76123202040e9cb6e12040ac36",
-    "dirty": "Receipt/state update only",
-    "observation": "Heads observed before this receipt-only commit; compiled/radio identities are qualified_source_heads and not relabeled"
+    "linux": "2030f45716514cbf262b0bc49066cfd5a9f81cce",
+    "userspace": "56cb63e1733a46f12d43706a8a93e39e80c0fd6d",
+    "observation": "Before this evidence commit; own docs only"
   },
   "qualified_source_heads": {
-    "linux": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
-    "userspace": "c590576bcc61755f2493cbac57f017ec23ec3379",
-    "scope": "40short/8app249/16oversize and original discovery/link/SSAP; new relay peer delivery FAIL despite matched Complete",
-    "evidence": "docs/evidence/relay-production-20261014.json"
+    "linux": "2d5d5900b8ffba3affacae38c4a0d0a45abbc1c2",
+    "userspace": "3a2cf7effbe1f9db528a6a0410fbf45d7f9612c0",
+    "scope": "40short/8app249/16oversize and original discovery/link/SSAP; both147/1ff peer gate FAIL",
+    "evidence": "docs/evidence/relay-index-investigation-20261015.json"
   },
   "execution_phase": "ACTUAL_RELAY_COMPLETE_ECHO_FIX_PEER_GATE_WITH_DATA_GATES_PARALLEL",
   "current_batch": {
     "behavior": "Physical Session relay; real echo handle/index; default unsupported pairing only",
-    "status": "REAL_COMPLETE_MATCHED_PEER_DELIVERY_FAIL_REPRODUCIBLE",
-    "evidence": "docs/evidence/relay-production-20261014.json",
+    "status": "RAW_ECHO_FROZEN_SDK_ARCHIVE_DIFFERENCE_PEER_DELIVERY_FAIL",
+    "evidence": "docs/evidence/relay-index-investigation-20261015.json",
     "exit": {
       "behavior": "ticketed physical Session relay and current RX lifetime, actual peer and Complete evidence",
       "offline": "actual production transitions and strict builds, bounded queue/credit/cancel combined invariants",
@@ -645,23 +644,26 @@
     },
     "reproduction": "tools/ws73_security_relay_reference.py",
     "peer_failure_evidence": "docs/evidence/relay-production-20261014.json",
-    "ci": "e408b78 CI and Documentation success; no new relay delivery qualification"
+    "ci": "e408b78 CI and Documentation success; no new relay delivery qualification",
+    "latest_code": "Explicitbyte mask and bounded proofs only; no RF inheritance"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exactK8cb44/Uc590 original40/SSAP; new relay delivery failed",
-    "DG02": "PARTIAL_REAL exactK8cb44/Uc590 8app249/16oversize; long/credit/multichannel/four-device remain",
+    "DG01": "PARTIAL_REAL exactK2d/U3a40short and originalSSAP; relay1ff peerFAIL",
+    "DG02": "PARTIAL_REAL exactK2d/U3a8app249/16oversize; long/credit/channel/four-device still open",
     "FV_SECURITY_RELAY": "Actual Host67/release56/diagnostic54/recipe23 and sanitizer pass on echo fix; Kani remains unsupported; real new branch not yet passed",
     "S5": "Approved pairing/installation/encrypted application reply missing",
     "recovery": "Natural RCA and nonhuman recovery remain open",
-    "FV_CODEC": "BOUNDED_PASS actual Complete parser arbitrary265bytes/length0..265, CBMC6.11/598 checks; old actualK9806 counterexample4/598; not Host/USB/lifetime/hardware"
+    "FV_CODEC": "BOUNDED_PASS actual2030 driver prepare/RX normalization,800 checks, explicit byte mask; initial2 conversion failures retained; no firmware ABI/Host/USB/refinement proof"
   },
   "next_resume_tasks": [
-    "Trace actual SDK111/ref/OHOS controller-data transmit after real1812 matching Complete but no peer0014, including real two-way CMTC counterexample. Preserve same production Session/relay/tickets and current data paths; no fabricated capability response or success. Require real peer delivery before relay gate closes.",
+    "Resolve actual111 firmware forwarding for typed relay; candidateSDKarchive1ff alsoFAIL and localSDKfirmware differs. Ghidra/LLVM vendorISA/ROM gaps are tool limits, not proof. Reuse physicalSession/raw echo, no fake capability or simplified Engine. Independently continue real length/credit/backpressure gates.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
     "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
   ],
   "issue_sync_status": "19_CONTRACT_UPDATES_AND_7_EXACT_FAILURE_FOLLOWUPS_ALL_OPEN_ORIGINAL_SCOPE_UNCHANGED",
-  "issue_sync_receipt": "docs/evidence/relay-contract-issues-20261014.json"
+  "issue_sync_receipt": "docs/evidence/relay-contract-issues-20261014.json",
+  "previous_goal_turn_classification": "PROGRESS: signed echo/parser fix, actual old-code counterexample, exact data regression, reproducible failed peer gate and issue maintenance",
+  "current_goal_turn_classification": "PROGRESS: SDK archive/actual firmware ABI distinction, frozen raw echo field, actual codec800 checks plus conversion counterexamples, new exact data regression and1ff peer failure; unsupported firmware decompile recorded"
 }

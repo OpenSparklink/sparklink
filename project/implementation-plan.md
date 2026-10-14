@@ -9,8 +9,10 @@
 1. 收尾默认生产安全 relay：复用唯一物理 Session、实际 relay 转换、命令 credit、
    实际提交票据；类型化 1812、真实 Complete、0014 当前 RX lifetime。现有默认
    PairingNotSupported 生产者已接；真实对端检查/匹配 Complete 门禁仍待验。实机已否定空返回假设，
-   K `8cb44f8d3a9a`按真实handle/index回显修复，准确镜像原业务回归通过；
-   新SMP已匹配Complete但对端未收0014，两向CMTC对照也未消除。优先沿
+   K `2d5d5900b8ff`的冻结raw echo/候选SDK表项分层已接，准确镜像原业务回归通过；
+   新SMP的147和1ff均匹配Complete但对端未收0014，两向CMTC也未消除。
+   SDK本地/us固件与111不同，Ghidra/LLVM对实际FW有vendor-ISA/ROM缺口，均不能
+   当作已查明根因；安排正确ISA/ROM或支持的真实协议交换验证。优先沿
    SDK111/libws73/OHOS实际发送路径定位，不制造成功能力、不改写为通过。
    这不是授权配对、密钥安装或加密资格，不另造 Engine。
 2. 本批相关门禁：严格构建、实际 Host/队列/relay/入口/取消回归；发送前撤权不提交、

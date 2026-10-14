@@ -7,8 +7,8 @@ Bond 均未取得资格。仅在隔离 VM 中运行，主机不安装驱动、�
 ## 前置条件与版本
 
 - 已用现有 [VM 环境指南](prepare-vm-gate.md) 制作含签名 WS73 模块、普通用户
-  slctl/slkd、捕获及 SDK111 输入的私有 prepared 镜像。本批运行镜像 K `8cb44f8d3a9a`、
-  编译服务 U `c590576bcc61`；其他提交须重新回归，不能继承本批结果。
+  slctl/slkd、捕获及 SDK111 输入的私有 prepared 镜像。本批运行镜像 K `2d5d5900b8ff`、
+  编译服务 U `3a2cf7effbe1`；其他提交须重新回归，不能继承本批结果。
 - 三只可写且未由主机驱动或其他 VM 占用的真实 WS73：Native 目标、Native 同行及
   reference Host 对端。使用明确 USB 物理端口，不依赖易变 device number。
 - 普通用户可访问 KVM/所选 USB，已固定的 QEMU 支持禁止主机 reset/driver detach
@@ -37,7 +37,9 @@ python3 tools/ws73_security_relay_reference.py \
 工具私下编译 reference-linked 测试应用，不改 reference checkout。对端先由自己的
 VM 原生驱动启动，停 slkd 并在 **guest** 中 unbind，然后参考 Host 独占；测试 warm
 patch 有界排空、发送真实 CLOSE 并要求 `(4,3)` ACK，随后仍要求真实 customize/open
-响应。它不是生产 UserHost 接口，也不是自然恢复验收；ACK 不证明固件全部状态清除。
+响应。另有显式SDK Host表项测试patch，将失败147按档案编码为1ff并解码；
+原始抓包保持wire1ff。本地SDK/us固件与指定111不同，这个候选映射仍未通过交付，
+不能据此称firmware兼容已完成。它不是生产 UserHost 接口，也不是自然恢复验收；ACK 不证明固件全部状态清除。
 
 Native 普通用户 channel 启动原 CMTC 期限；参考库只回答查询，测试应用额外发送真实
 id7 capability 查询。观测到实际通道信息后再调用真实配对请求。第三只保持扫描，
@@ -48,13 +50,13 @@ id7 capability 查询。观测到实际通道信息后再调用真实配对请�
 
 输出 `manifest.json` 必须分别检查：
 
-1. Native 收到当前连接的真实 `0014/0134`；提交 `1812/0147`，载荷 reason `02`。
+1. Native 收到当前连接的真实 `0014/0134`；提交 `1812/01ff`（候选SDK表项；旧147失败保留），载荷 reason `02`。
 2. 实际 USB OUT 与成功 `1812 Complete` 回显的 handle/index 匹配冻结提交。
-3. 对端 `0014/0147` 的精确数据，以及 reference 应用当前 handle 的拒绝结果。
+3. 对端 `0014/01ff` 的精确数据，以及 reference 应用当前 handle 的拒绝结果。
 4. 两端捕获完整、零内核丢包、taint0/无 kernel warning；同行同代际 Ready/扫描启停。
 
 缺对端包或应用结果时返回 `REAL_PEER_DELIVERY_FAIL`/退出1，即使两只 VM 正常退出、
-USB 与 Complete 成功也不能通过。本批这个失败已经实际出现，保留
+USB 与 Complete 成功也不能通过。147和候选1ff都已实际出现这个失败，保留
 [原始身份、反例和限定证据](../evidence/relay-production-20261014.json)。
 即使未来 `REAL_DENIAL_RELAY_PASS`，也只表示默认未批准配对的拒绝 relay，不代表
 批准配对、可信安全或对端业务处理。handle/index 回显没有 generation/lifetime，

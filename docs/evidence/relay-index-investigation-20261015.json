@@ -1,0 +1,257 @@
+{
+  "status": "DRIVER_CANDIDATE_IMPLEMENTED_PEER_DELIVERY_FAIL",
+  "observed_at_utc": "2026-10-14T17:41:28.082534+00:00",
+  "source_heads": {
+    "latest_kernel": "2030f45716514cbf262b0bc49066cfd5a9f81cce",
+    "latest_userspace": "56cb63e1733a46f12d43706a8a93e39e80c0fd6d",
+    "qualified_kernel": "2d5d5900b8ffba3affacae38c4a0d0a45abbc1c2",
+    "compiled_service": "3a2cf7effbe1f9db528a6a0410fbf45d7f9612c0"
+  },
+  "sdk_provenance": {
+    "host_archive_sha256": "2bd6e271477ba7b65a255c3bb00a63f201cc52c3ce05f3213c46fda9ba037750",
+    "object_sha256": "21514dcfd509ac1d051a1fd0a04e6e41a39f0f37c139f1ac1457c6f89ace557d",
+    "table_sha256": "10e19f89188f4b0d28dbdedf6c45d6d8ee311fb02367e9ec309411f86e1e772e",
+    "table_entry26": {
+      "index": 511,
+      "length": 1,
+      "stride": 16,
+      "table_size": 432
+    },
+    "observed_calls": [
+      "gle_sm_cmd_fail_pdu_send -> gle_sm_packet_new(type26) -> gle_tm_controller_data_send -> gle_aa_controller_data_send(1812,5+length)"
+    ],
+    "sdk_us_firmware_sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+    "loaded_111_firmware_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+    "combined_111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "interpretation": "Host archive is supplied SDK evidence, not proof of the exact firmware ABI; local SDK/us firmware differs from specified combined111."
+  },
+  "production_change": {
+    "wire_echo": "Driver returns the actual prepared index; immutable Host clone compares raw Complete before accepting credit/terminal. A canonical147 echo cannot complete the candidate1ff submit.",
+    "rx": "WS-only1ff/one-byte normalization after original raw snoop; never normalizes Complete to an alias",
+    "qualification": "Candidate table mapping unqualified: both147 and1ff attempts get Complete with no peer0014; approved pairing/installation not implemented"
+  },
+  "data_nonregression": {
+    "status": "RELAY_SDK111_INDEX_REAL_PIPELINE_TERMINAL_PASS",
+    "kernel": "2d5d5900b8ffba3affacae38c4a0d0a45abbc1c2",
+    "service": "3a2cf7effbe1f9db528a6a0410fbf45d7f9612c0",
+    "short_rounds": 40,
+    "application_249_rounds": 8,
+    "oversize_no_submit": 16,
+    "scope": "Original discovery/link/SSAP and ordinary socket; no new security qualification",
+    "pipeline_sha256": "0d684961c009eaf1a37ec4a01d62e35e5d596a807a27c44b552b707d73babbf7"
+  },
+  "new_peer_gate": {
+    "status": "REAL_PEER_DELIVERY_FAIL",
+    "kernel": "2d5d5900b8ffba3affacae38c4a0d0a45abbc1c2",
+    "service": "3a2cf7effbe1f9db528a6a0410fbf45d7f9612c0",
+    "vm_exits": [
+      0,
+      0
+    ],
+    "scope": "Actual unsupported-pairing relay only; not paired/encrypted/automatic recovery",
+    "test_inputs": {
+      "ws73_security_relay_reference.py": "f7c2dbde6b0037bd2a08282e943e1ee6c2b8187cfbfe44c8e5d521aab0c2e32e",
+      "security_relay_oracle.c": "82e336c353c2f90eefae4f3117ab044c06f6ce658014a0b22ab8d0d415aa7b9b",
+      "security_relay_reference_warm.patch": "fb26b36dd321c53d67b6c4b59a79f5795636b401bf378ab2848abadaec2a1ebc",
+      "security_relay_reference_sdk111.patch": "edc7749cbbbd982e76bf0a8b26654925a1b60522ab52e7f39f3b2d63be9d1140",
+      "ws73_usb_sle_fd.c": "5034189e2215ec35f01e40f4e93b330ab359bd7df3558c7974e7ac76d1b9a979",
+      "sle73_sm.c": "85c6e8ed505a3235b266de26b73bcb6056ac003aee895a6709872b3ba053be96",
+      "oracle": "3237dcca46b2a60dbef7081754d42bf5fb20df1c05bf89c77f34516bcedf58c7"
+    },
+    "relay": {
+      "native": {
+        "capture_sha256": "1f313480bef0533cbc9a1bb67624148b246cf9e494a5430734c93bc8a8fb5d45",
+        "packet_count": 585,
+        "commands": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791997280961270000,
+            "urb": 18446614545487615104,
+            "record": 572,
+            "file_offset": 72106,
+            "usb_sha256": "b3272da3c4c8942116a1e84a0149fa5c36f24f831e94db85430d56bc417b0415",
+            "opcode": 6162,
+            "params": "0000ff010102",
+            "sequence": 24,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791997280961454000,
+              "urb": 18446614545487615104,
+              "record": 573,
+              "file_offset": 72314
+            }
+          }
+        ],
+        "complete": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791997280961679000,
+            "urb": 18446614545487617216,
+            "record": 574,
+            "file_offset": 72394,
+            "hcc_offset": 92,
+            "usb_sha256": "fac585620a9ce644be25548fb7823607e1918c0073d030a99cc23878e0158d51",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "0000ff01"
+          }
+        ],
+        "received": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791997280961125000,
+            "urb": 18446614545487617216,
+            "record": 570,
+            "file_offset": 71768,
+            "hcc_offset": 92,
+            "usb_sha256": "200d3feebb16da662c718cb0b8db323a9d741c77c3fa6ab34199331cb92c1b2b",
+            "usb_length": 178,
+            "event": 20,
+            "params": "000034010a03000510000202020200"
+          }
+        ]
+      },
+      "oracle": {
+        "capture_sha256": "be9e53816110a74f373f7a26af4008d06f3ac811faa025ecd6b77494aeb73505",
+        "packet_count": 303,
+        "commands": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791997281419523000,
+            "urb": 18446618942027698560,
+            "record": 296,
+            "file_offset": 33884,
+            "usb_sha256": "21e04457adeb6d3e3257f0c0dab3ead5184c4de2a0d5b3b62ec27f017106d9ad",
+            "opcode": 6162,
+            "params": "000034010a03000510000202020200",
+            "sequence": 13,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791997281419701000,
+              "urb": 18446618942027698560,
+              "record": 297,
+              "file_offset": 34092
+            }
+          }
+        ],
+        "complete": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791997281419892000,
+            "urb": 18446618942027699520,
+            "record": 298,
+            "file_offset": 34172,
+            "hcc_offset": 92,
+            "usb_sha256": "82163305d7ad51deea1872af53f885011cb8c661c4e75800e0bea0522d722b65",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401"
+          }
+        ],
+        "received": []
+      }
+    },
+    "survivor": "same generation Ready and actual scan start/stop; not independent business or natural recovery qualification",
+    "reference": "Cleanf4d85d0 plus explicitly retained warm/SDK-index test patches; not unmodified reference qualification"
+  },
+  "formal": {
+    "record": "relay-sdk111-index-cbmc-committed.json",
+    "status": "BOUNDED_PASS",
+    "prior_masked_status": "BOUNDED_PASS",
+    "prior_checks": [
+      [
+        "0",
+        "800"
+      ]
+    ],
+    "source": "Actual driver prepare/normalizer and arbitrary packet/payload/capacity; not alternate codec",
+    "first_counterexample": {
+      "record_sha256": "635d164cfba89cd0ee6d52a353da1110c012c9f8a142d4df5fdbf9edf7548e4f",
+      "log_sha256": "389a59dc45b68faf37303e89b2b751eeea44121978ba4972a0c4ce7dc3a1035c",
+      "cause": "Implicit low-byte serialization conversions; explicitff masks, not suppressed conversion checks"
+    },
+    "scope": "Bounded bytes265,length0..265,handle/index0..65535,payload/capacity0..255; no Host/IRQ/USB/firmware/whole-runtime proof",
+    "exact_record": {
+      "status": "BOUNDED_PASS",
+      "exit": 0,
+      "timeout_seconds": 300,
+      "source_head": "2030f45716514cbf262b0bc49066cfd5a9f81cce",
+      "baseline": null,
+      "validator_sha256": "9768d2f14ab136e106a7ef40b0665f15c00b0f5d8a37c9d1de9e089266ea3f56",
+      "sources": {
+        "drivers/sparklink/ws73/dli.c": "9768d2f14ab136e106a7ef40b0665f15c00b0f5d8a37c9d1de9e089266ea3f56",
+        "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e",
+        "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+        "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+        "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+        "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+        "drivers/sparklink/ws73/wire.h": "3fd8d6da2f1db5fa1387eed0a381d3c183aa249afc5f2d30b48208ab97e56ddb",
+        "tools/testing/selftests/sparklink/security/relay_index_cbmc.c": "b3ab41974fba637dcb7c6e0e5f35ac588f492c9c15989287774445e8981ae415"
+      },
+      "tool_version": "6.11.0 (cbmc-6.11.0)",
+      "command": [
+        "cbmc",
+        "probe.c",
+        "--function",
+        "main",
+        "--unwind",
+        "266",
+        "--unwinding-assertions",
+        "--bounds-check",
+        "--pointer-check",
+        "--signed-overflow-check",
+        "--unsigned-overflow-check",
+        "--conversion-check",
+        "--trace"
+      ],
+      "log_sha256": "32698f2dc7cf32b810f2c1530fbb67a4a4fd92670032638741578693c1d72401",
+      "generated_checks": [
+        [
+          "0",
+          "800"
+        ]
+      ],
+      "scope": "Actual production relay prepare/RX normalization: bytes265/length0..265, handle/index0..65535, payload/capacity0..255; mapping, frozen wire echo, byte preservation and failure atomicity; no second codec",
+      "assumptions": [
+        "Valid allocated C packet object; actual lifetime/generation/locks/USB/firmware outside this harness",
+        "Lengths beyond265 outside this bounded model; packet contents are not trusted"
+      ],
+      "trusted_base": [
+        "CBMC C front-end/solver and C semantics; not a proof of Linux, firmware or hardware"
+      ],
+      "implementation_regression": "Real K9806 VM counterexample plus ws73_dli_test and actual Host echo mismatch tests",
+      "rf_acceptance": false,
+      "whole_security_proof": false
+    },
+    "log_sha256": "32698f2dc7cf32b810f2c1530fbb67a4a4fd92670032638741578693c1d72401"
+  },
+  "firmware_analysis": {
+    "payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5",
+    "loaded_at": 4194304,
+    "candidate_handler": 4302342,
+    "table_entry": "1812,type1,pointer41a606; local rows133..146,type6,41a6a4",
+    "status": "NOT_ANALYZED_VENDOR_ISA_UNSUPPORTED",
+    "ghidra": "12.1.4 defaultRISCV32 reports unresolved constructor and halt_baddata; successful import/exit is not valid decompilation",
+    "llvm": "Partial decoder shows unknown vendor instructions; ROM call targets outside loaded payload",
+    "report_sha256": "14a329ec00f2e5bb72cb58ea45000ca86d45956338efc99cf24e641b3405a5e0",
+    "log_sha256": "b3ef3ba140a51d5c99b7421ec85c6683bfbbc1bcca5533ce5f29df7356369a40",
+    "limits": "Table and selected standard instructions are facts; dispatch/forwarding/root cause remain unproved. No rewriting unknown instructions to create fake success."
+  },
+  "remaining": [
+    "Prove exact111 firmware transmission/peer forwarding, including receiver table/ROM/vendor ISA rather than infer from different SDK archive",
+    "Gate real peer PDU/current-handle application response; no USB/Complete substitute",
+    "Approved Agent/real crypto/install/encrypted business/Bond",
+    "Independent long/credit/backpressure/channel/four-device gates continue; control competition not a prerequisite",
+    "Natural RCA/nonhuman recovery and old-code/lifecycle work stay open"
+  ],
+  "issues_closed": false
+}

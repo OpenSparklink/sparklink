@@ -7,11 +7,15 @@
 
 ## 准确源码与范围
 
-当前回归镜像 K `8cb44f8d3a9aaf4988756360e663890b0d6d6f57`、编译服务
-U `c590576bcc61755f2493cbac57f017ec23ec3379` 已在 VM 内通过原业务矩阵。
-新SMP对照确认真实0014请求、typed1812提交及handle/index匹配Complete，已消除先前
+当前回归镜像 K `2d5d5900b8ffba3affacae38c4a0d0a45abbc1c2`、编译服务
+U `3a2cf7effbe1f9db528a6a0410fbf45d7f9612c0` 已在 VM 内通过原业务矩阵。
+新SMP对照确认真实0014请求、typed1812提交及冻结raw wire index匹配Complete，已消除先前
 EPROTO/Runtime退休。但对端未捕获预期0014、应用超时，**新relay交付门禁仍失败**，
-未取得配对/加密资格。失败和旧K9806反例保留于[本批证据](../docs/evidence/relay-production-20261014.json)。
+未取得配对/加密资格。147和SDK表项1ff均未取得对端交付；本地SDK/us固件与指定111镜像hash不同，
+不能将Host表项当作当前固件ABI证明。最新K `2030f4571651`的显式字节掩码/证明尚
+未重新取得实机资格，不能继承K2d资格。
+[本轮源码/实机失败/有限证明及工具限制](../docs/evidence/relay-index-investigation-20261015.json)。
+失败和旧K9806反例保留于[本批证据](../docs/evidence/relay-production-20261014.json)。
 后续文档/CI/test改动不重新标记已编译二进制；回显也不证明lifetime复用屏障。
 
 | 能力 | 已实现 | 离线/形式化范围 | 实机资格及仍缺 |

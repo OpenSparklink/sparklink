@@ -52,3 +52,5 @@
 [BlueZ官方来源、应用资源与权限契约审查](bluez-contract-review-20261014.json)：架构决策不当作已验收。
 
 [19项现有issue原scope/OPEN读回回执](relay-contract-issues-20261014.json)。
+
+[SDK Host表项与实际111固件差异、冻结raw echo及两轮交付失败](relay-index-investigation-20261015.json)：800项限定codec检查不证明固件ABI；vendor ISA/ROM未解码保持未分析。

@@ -16,3 +16,5 @@ kernel-records
 
 
 [按主题查找46份大写原文与阅读去向](../project/uppercase-document-guide.md)。
+
+[整改前逐批进度与资格的准确历史快照](../../history/architecture/progress-snapshots-20261014.md)。

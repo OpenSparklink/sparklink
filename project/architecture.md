@@ -6,7 +6,8 @@
 
 Canonical：本文件定义目标所有权与分层；[ADR0001](../docs/decisions/0001-management-channel-service-boundaries.md)
 、[ADR0002](../docs/decisions/0002-session-socket-lifetime-and-proof-contract.md)与
-[ADR0003](../docs/decisions/0003-optional-exclusive-user-host.md)定义决策和接口契约；
+[ADR0003](../docs/decisions/0003-optional-exclusive-user-host.md)及
+[ADR0004](../docs/decisions/0004-application-ownership-and-delivery.md)定义决策和接口契约；
 [IMPLEMENTATION_PLAN](implementation-plan.md)是唯一执行/依赖/门禁入口，
 [CURRENT_CAPABILITIES](current-capabilities.md)是唯一当前资格入口。
 2026-10-13采用用户完整提案（hash f6f8e16d856072914cb30989595343e308c7535015cf47e5fcca2ea7cee19133）。
@@ -196,7 +197,9 @@ SDK111 qualification 绑定实际上传的镜像和配置 hash。暖态 version 
 
 Runtime→Session→Channel→Binding是目标TX/RX路径；Session唯一消费并分流CMTC及业务数据。
 command credit、controller ACB credit、peer流控和软件包/字节预算分别记账。
-软件准入、USB提交、NOCP及对端应用校验四阶段分开。
+软件准入、实际 USB 提交、控制器完成、对端协议接收、对端应用处理五阶段分开。
+USB、NOCP、协议 ACK 和本地队列均不等于对端应用处理。
+SSAP/Profile 复用同一通道路径；安全 DLI relay 是控制信令，不另造业务发送路径。
 
 DLI PB、DTAP SAR、SSAP分片是不同层：每层记录长度/片数/字节预算/原期限，
 按实际模式开放。当前实机上限为application249/DTAP254；仅应用250/253/254/255拒绝
@@ -206,6 +209,13 @@ DLI PB、DTAP SAR、SSAP分片是不同层：每层记录长度/片数/字节预
 [ADR0002](../docs/decisions/0002-session-socket-lifetime-and-proof-contract.md)为准；验证与实机门禁
 以IMPLEMENTATION_PLAN为准，避免在本文件维护另一套执行清单。
 ## 管理、事件与用户态
+
+### 应用资源与管理权限
+
+应用释放自己的扫描租约或通道，与管理者停止硬件扫描、停用 controller 或断开
+物理连接分开。共享扫描须明确客户端过滤、授权、取消、结果归属和有界预算；
+一个作者退出/超时不能清理其他作者。当前 manager scan RPC 不代表已实现共享租约。
+内核强制 Grant epoch/lifetime 和管理撤权；本地 Trusted 策略不替代认证或安装结果。
 
 ### 权威接口
 
@@ -226,6 +236,10 @@ OperationResult归原请求者；StateEvent每订阅者独立游标；Snapshot�
 复制失败不提交消费游标，短buffer不交付半记录。快照与后续sequence一致，避免 resync窗口漏事件。移除唤醒，终态结果保留与淘汰有明确预算。
 
 ### slkd运行模型
+
+per-controller actor 不等于独立进程故障域。daemon 崩溃、最终 fd 释放、撤权及
+重启收敛分别定义，不能默认承诺业务 socket 跨 daemon 崩溃存活。
+
 
 每Runtime/Session独立actor或串行协议执行上下文；D-Bus信号和耗时操作在锁外。同步fd避免阻塞Tokio工作线程，异步等待可取消。不存在active adapter全局协议状态交换。
 

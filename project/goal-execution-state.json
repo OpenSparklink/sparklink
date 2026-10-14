@@ -2664,6 +2664,85 @@
       "IRQ/lockdep/KCSAN/implementation refinement",
       "security/CCC and natural RCA/nonhuman recovery"
     ],
-    "closure_allowed": false
+    "closure_allowed": false,
+    "issue_updates": [
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 7,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6161009643",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 9,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/9#issuecomment-6161010367",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 10,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6161011011",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 11,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/11#issuecomment-6161011807",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 14,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6161012452",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 16,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6161013276",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 18,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6161014108",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 19,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6161014803",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 5,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6161015546",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 3,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6161016162",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 8,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6161016870",
+        "state": "OPEN",
+        "body_sha256": "f95e720f6ffbd1996052ea04b25066817e83e56e54eef965d83ae2d4fa8c2b38"
+      }
+    ]
   }
 }

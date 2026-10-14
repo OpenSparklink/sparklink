@@ -104,7 +104,14 @@
       "do not copy referenceglobal contexts or Cpadding",
       "one real1812 completion before next; local cookie guard does not prove late wire reply barrier"
     ],
-    "independent_implementation": true
+    "independent_implementation": true,
+    "source_hashes": {
+      "services/stack/src/cp/bsl/sle/sm/src/sm.c": "fe2aafd8b12303f127d818206bbacbb67cd8d033ef464d062a6bdddd1a1c55f6",
+      "services/stack/src/dli/interface/dli_cmd_struct.h": "f800ab7cee4ad2e125c08fbf0b06bd23bcbc2ae34157b597c3ac81b2471e47bd"
+    },
+    "lib_source_hashes": {
+      "src/sle73/sle73_sm.c": "30f8e05c10ddbea028409fd6b7b5df6aac88665cdd40b69de708e892357c89c4"
+    }
   },
   "missing": [
     "soleConnectionSession/Host ownership and author/Grant epoch validation",
@@ -125,5 +132,49 @@
     "documentation_status": "success",
     "strict_locked_build": "PASS",
     "formal_or_hardware_acceptance": false
-  }
+  },
+  "issue_updates": [
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 7,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6160418600",
+      "state": "OPEN",
+      "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 18,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6160419587",
+      "state": "OPEN",
+      "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 19,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6160420255",
+      "state": "OPEN",
+      "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 5,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6160420892",
+      "state": "OPEN",
+      "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 3,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6160421621",
+      "state": "OPEN",
+      "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 8,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6160422257",
+      "state": "OPEN",
+      "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+    }
+  ]
 }

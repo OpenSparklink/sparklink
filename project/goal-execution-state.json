@@ -2604,6 +2604,50 @@
     "default_kernel_implementation": false,
     "formal": "NOT_PROVEN_UNSUPPORTED; raw752+914 checks0fail, not accepted proof; timeout negative NOT_PROVEN_TIMEOUT exits1",
     "next": "Use this same source in the sole ConnectionSession/Host; wire canonical Grant/lifetime checks and typed driver/atomic command ticket/real reply. No duplicate new state implementation.",
-    "closure_allowed": false
+    "closure_allowed": false,
+    "issue_updates": [
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 7,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6160418600",
+        "state": "OPEN",
+        "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 18,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6160419587",
+        "state": "OPEN",
+        "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "issue": 19,
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6160420255",
+        "state": "OPEN",
+        "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 5,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6160420892",
+        "state": "OPEN",
+        "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 3,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6160421621",
+        "state": "OPEN",
+        "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "issue": 8,
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6160422257",
+        "state": "OPEN",
+        "body_sha256": "16e9a67460f226e7ca5ebf19ae48ec031b1a44ccf1169cf9e1f78a25ec5e9d2e"
+      }
+    ]
   }
 }

@@ -35,4 +35,5 @@ UAPI 尚未发布，已删除入口无兼容期；不可通过旧接口 fallback
 ## 阅读历史与当前开发
 
 [全部大写原文归纳](project/uppercase-document-guide.md)区分权威、混合与历史。
-新的用户态 SSAP actor 仍有未提交开发改动；本页不授予该改动实机或正式 API 资格。
+文档审计基线时 SSAP actor 尚未提交；后续准确实现与资格仅从当前能力入口查找，
+本页不独立授予实机或正式 API 资格。

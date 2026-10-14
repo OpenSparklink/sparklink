@@ -11,7 +11,7 @@
 | 目标设计 | [ARCHITECTURE](../ARCHITECTURE.md) 与 ADR | 不代表接口已接通 |
 
 可选 UserHost 目前属于低优先级延期规划。旧 SSAP 业务入口的移除，也不意味着
-新的用户态 SSAP Engine 已实现。错误和 NotSupported 行为以当前源码及资格为准。
+新的用户态 SSAP Engine 已完整实现。错误和 NotSupported 行为以当前源码及资格为准。
 
 
 ## 本批源码核对的状态（未发布 ABI）
@@ -27,7 +27,7 @@
 | 旧 property／write facade | property 超 248、write 超 252 字节拒绝；这是遗留输入校验，不是新 Engine MTU 承诺 | `slkd/src/service.rs` |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |
-| 新用户态 SSAP Engine | 待接通；不存在的长写／通知能力不得模拟成功 | 唯一实施计划 WP08 |
+| 新用户态 SSAP Engine | Uceb6114唯一SMTC actor仅初始ExchangeInfo取得真实双端资格；服务/长写/通知仍未接通 | 唯一实施计划 WP08、准确能力入口 |
 
 C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声明推导硬件支持。本表是状态查找参考，完整资格仍仅维护于能力入口；逐字段自动生成 API 及全错误矩阵尚待下一批。
 

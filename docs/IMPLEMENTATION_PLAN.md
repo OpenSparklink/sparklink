@@ -1,9 +1,18 @@
-> 最新实现切片：用户态 ExchangeInfo codec 与生产源码 Kani harness；
-> 仅离线能力，未接通 SSAP 通道或 Engine。两 harness 求解完成但含 unsupported，
-> 形式化门禁记为未证明。[准确范围](evidence/ssap-exchange-codec-progress-20261014.json)。
-> 下一步接通实际 SSAP 通道与唯一用户态 Engine，不将 PI241 业务数据冒充 SSAP。
-
 # SparkLink / Linux 联合实施方案
+
+## 当前主线：唯一SMTC actor真实ExchangeInfo通过
+
+K31769／Uceb6114：默认slkd唯一actor接通SMTC10/PI0、实际快照和Grant检查、
+有限队列/原始期限/显式退役；4个连接lifetime的双端初始ExchangeInfo及原
+40短消息/8轮249/16超限拒绝取得准确VM资格。旧服务wire不恢复，服务操作
+仍NotSupported；形式化仅继承原有限范围，actor本批未证明。
+[准确来源、失败、门禁和未决](evidence/ssap-actor-progress-20261014.json)。
+
+下一批WP08：在此唯一actor上接有界用户态服务数据库及真实读写，复用权限
+类型，按对端应用校验/回复验收；随后通知/指示与SSAP MTU/事务/长包。
+与原期限/关闭/lifetime模型、真实credit背压和自然RCA并行，不等待控制面
+竞争全集。保留完整S0–S6、19WP/10FV/12DG、VM-only、UserHost P4及所有整项开放条件。
+
 
 ## 独立文档整改：大写原文归纳
 
@@ -16,7 +25,7 @@
 > **阅读范围：唯一权威入口。** 完整 S0–S6、工作包依赖和未完成门禁。
 > [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](project/index.md)。
 
-## 当前主线：通道能力查询接通，下一步唯一SMTC/SSAP Engine
+## 前一批：通道能力查询与下一步SMTC（历史增量）
 
 K31769ea4b8c0／服务和工具U82a06cd：内核在Runtime授权及Session锁下产生一致
 MTU/MPS/身份/通道键快照，锁外copy，无lease泄漏或数据/credit消费。跨语言与
@@ -27,7 +36,7 @@ MTU/MPS/身份/通道键快照，锁外copy，无lease泄漏或数据/credit消�
 [源码、失败、假设与剩余](evidence/channel-info-progress-20261014.json)。
 
 
-## 当前主线：Session固定通道表接通，唯一SSAP Engine继续推进
+## 前一批：Session固定通道表（历史增量）
 
 K6fe9696a04da／服务与工具Uf0cd461：一个Session worker统一消费/解码ACB，
 CUTC31/PI241与SMTC10/PI0各有有限队列、fd/Grant与关闭退休；共享真实credit与

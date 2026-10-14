@@ -315,8 +315,8 @@
   "basic_datagram_type_subgate_complete": true,
   "latest_issue_progress_receipt": "docs/evidence/common-standard-provider-issues-20261013.json",
   "latest_evidence_commit": "69ff7fb54e6996dad3bbbf2372795d5ded67cfde",
-  "previous_goal_turn_classification": "progress: bounded fixed Session table and exact CUTC hardware qualification",
-  "current_goal_turn_classification": "progress: actual channel snapshot with 8 real copy/retry receipts and exact source regression",
+  "previous_goal_turn_classification": "progress: fifth documentation batch signed, pushed, clean-build/browser/CI and issue evidence",
+  "current_goal_turn_classification": "progress: unique SMTC actor signed and pushed; exact source5-step VM pipeline terminal PASS",
   "qualified_tool_source_heads": {
     "linux": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
     "userspace": "168c8709cdbe0230d1a601750285a144f1610a17"
@@ -2089,5 +2089,18 @@
       }
     ],
     "evidence_commit": "e5fa9ab161ff8875507c8719684df14ab78e860f"
+  },
+  "userspace_ssap_actor_slice": {
+    "kernel_head": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "userspace_head": "ceb611437a1099806f58cf381913b6aa775438ac",
+    "status": "implemented/offline/initial RF passed; full SSAP and actor formal gates missing",
+    "formal": "NOT_PROVEN for actor and prior unsupported codec",
+    "evidence": "docs/evidence/ssap-actor-progress-20261014.json",
+    "next": [
+      "bounded service database and real reads/writes on unique actor",
+      "actor deadline/lifetime/close proof and implementation regression",
+      "real credit/full queue and long-packet gates parallel"
+    ],
+    "closure_allowed": false
   }
 }

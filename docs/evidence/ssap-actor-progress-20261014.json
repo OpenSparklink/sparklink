@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "scope": "unique userspace SMTC owner and initial actual ExchangeInfo; not full SSAP Engine qualification",
+  "source_heads": {
+    "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "userspace": "ceb611437a1099806f58cf381913b6aa775438ac"
+  },
+  "source_mapping": {
+    "crates/slkd/src/ssap_engine.rs": "738e7459a912a26eb80b62ba5a26d767337e69a5de729c7fbe0c41ab753441ad",
+    "crates/slkd/src/connection_object.rs": "58ea03efb1095cbbb23faaa854827e4af6d99140aa26c11f981951667d325d66",
+    "crates/slkd/src/event_loop.rs": "0fea805417238cd24e68cbda19e2de44f028d786cb1d1e9ba2e08e76d60756e5",
+    "crates/slkd/src/adapters.rs": "c095bf5421db3ea9a8d13ba3f7bbeb38114e889c80e552b7883627720a2c5447",
+    "crates/slkd/src/channel.rs": "35ea73e3c55ec7d46087ab5ea6f1eb600d9464c5df99234ae775f0f3b067261c",
+    "crates/slctl/src/commands.rs": "4219336c2d6a4b5084be2b729f9d718955d370a56ce46873c3347e8d8b166318",
+    "tools/ws73_channel_socket.py": "3ff9dae84d836fab95083d136e9e8f09df08e4aae6e53054b4c4c163393fa661",
+    "tools/ws73_target.py": "84d00a16e384859d5c9ff0951f2187ff642a6ab213f3e0fc4afcafa279b72b01",
+    "tools/tests/test_ws73_channel_socket.py": "b3ca16d4fb2c1ccdc2a6b3d2d16267784ea15b22cdb1bae2c514ca5131b9e02f"
+  },
+  "vm_only": true,
+  "implemented": [
+    "one daemon-owned SMTC10/PI0 socket per ConnectionIface lifetime",
+    "actual kernel capability/generation/lifetime/grant checks",
+    "bounded8 response/query queues; original5s obligation deadline",
+    "explicit stop/join on retired object and adapter removal",
+    "no fd delegation or old wire fallback",
+    "live capability check before returning negotiated observation",
+    "unsupported service methods remain explicit NotSupported",
+    "independent SSAP/business USB corroboration"
+  ],
+  "offline_passed": [
+    "strict workspace all targets/features clippy",
+    "cargo fmt",
+    "2 tests of actual transport-loop algorithm using AF_UNIX test dependencies only",
+    "462 tools tests",
+    "actual C/Rust broker address contract",
+    "all9 exact CI jobs"
+  ],
+  "formal_status": {
+    "actor": "NOT_PROVEN; no actor concurrency/lifetime/termination model passed this batch",
+    "codec": "prior Kani reports contain unsupported; NOT_PROVEN remains",
+    "session_key_map": "prior bounded CBMC only; does not prove actor/queue/lifetime",
+    "memory_order": "prior kernel snapshot LKMM scope only; no actor proof"
+  },
+  "real_passed": [
+    "4 lifetime phases with both endpoints exact six-byte ExchangeInfo request/response and original ordinary-user receipts",
+    "40 role-swapped short business roundtrips",
+    "8 249-byte business roundtrips",
+    "16 250/253/254/255-byte EMSGSIZE refusals without data USB submit",
+    "8 actual info queries and actual partial-copy/retry regressions",
+    "controlled early-init fault peer isolation; not natural recovery"
+  ],
+  "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38487763726",
+  "evidence": [
+    "docs/evidence/ssap-actor-real-short-20261014.json",
+    "docs/evidence/ssap-actor-real-boundary-20261014.json",
+    "docs/evidence/ssap-actor-fault-real-20261014.json"
+  ],
+  "pipeline_sha256": "3f860cd5532a5aec80263efbabe416068c38746d542b1d4b92ef895a873567fb",
+  "kernel_artifact_reused": {
+    "artifacts_manifest_sha256": "c3d308ca4773d181c7316e3ee8f92fb6a36cb739aa8fd8435cce7b0d40c008fd",
+    "empty_root_smoke_manifest_sha256": "57e3764f7340e2112162b8bc2e33236f8e6631c18b24151744b639d793be40ba",
+    "previous_pipeline_status": "CHANNEL_INFO_REAL_PIPELINE_TERMINAL_PASS"
+  },
+  "failure_evidence": [
+    {
+      "failure": "sandbox SO_PASSCRED PermissionError",
+      "resolution": "same 462 tests pass with authorized local IPC",
+      "not_hardware_evidence": true
+    },
+    {
+      "failure": "SSAP evidence loop shadowed business legs",
+      "resolution": "separate list and regression verifying preserved8 CUTC legs",
+      "detected_before_qualification": true
+    },
+    {
+      "failure": "new test asserted nonexistent application field",
+      "resolution": "assert actual sequence and CUTC data keys; original failure retained"
+    }
+  ],
+  "remaining": [
+    "bounded user service database/read/write/notify/indicate",
+    "full actor original-deadline/duplicate/error/lifetime/close regression and formal model",
+    "same-lifetime rebind policy remains kernel unsupported",
+    "long packets/reassembly/credit exhaustion/full queues",
+    "multi-channel dynamic negotiation and four-device business pairs",
+    "authenticated security/Agent/Bond/Profile",
+    "natural start/disappearance RCA and nonmanual recovery",
+    "complete original S0-S6 scopes"
+  ],
+  "closure_allowed": false,
+  "qualification_not_implied": [
+    "complete SSAP service",
+    "NOCP proves peer business receipt",
+    "native-host execution",
+    "physical unplug this batch",
+    "natural or autonomous recovery",
+    "complete formal proof"
+  ]
+}

@@ -10,3 +10,6 @@
 
 第五批[大写原文整理的准确源码、构建与浏览器记录](diataxis-documentation-uppercase-batch-20261014.json)
 仅为文档门禁；不更改实机、协议或形式化资格。
+
+[唯一SMTC actor的源码、限定实机与未证明范围](ssap-actor-progress-20261014.json)
+包含普通用户双端ExchangeInfo及原业务回归；不等于完整SSAP服务或安全资格。

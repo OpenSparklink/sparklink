@@ -1,14 +1,26 @@
-> 用户态 SSAP 最新增量：ExchangeInfo 严格 codec 已实现，离线协议／严格构建通过；
-> 当前仍没有已接通的 SSAP Engine 或实机服务资格。Kani 有 unsupported，未证明。
-> 本批不改以下准确 WS73 源码资格。[范围与剩余](evidence/ssap-exchange-codec-progress-20261014.json)。
-
 # 当前能力与资格
+
+## 最新用户态SMTC／ExchangeInfo资格（精确源码）
+
+K `31769ea4b8c006f999f4fbe0da68f7291ef71935`／编译服务和冻结工具
+U `ceb611437a1099806f58cf381913b6aa775438ac`。唯一slkd actor拥有SMTC10/PI0
+真实fd，按实际通道快照/generation/lifetime/Grant验证；有界队列、原期限及
+显式stop/join接通。仅初始ExchangeInfo，不含服务数据库或完整远端业务。
+
+VM中交换连接角色的4个lifetime阶段，双方请求/回复6字节及普通用户收据与双端
+USB匹配；同时40短消息、8轮249、16超限拒绝及实际getter/copy重试通过。
+受控初始化故障的同行验证通过；两个数据VM capture drops0、taint0、正常退出。
+462工具、严格构建及准确CI九项通过。SSAP actor尚未形式化证明；codec原Kani
+unsupported仍未证明。长包、credit耗尽/满队列、多通道/四设备数据、真实服务
+读写通知指示、安全/Profile及自然恢复继续OPEN。
+[准确实现、失败、假设和实机证据](evidence/ssap-actor-progress-20261014.json)。
+
 
 <!-- documentation-scope: 20261014 -->
 > **阅读范围：唯一权威入口。** 按准确源码区分实现、离线、限定证明和实机资格。
 > [主题归纳与去向](project/uppercase-document-guide.md)；[推荐入口](evidence/index.md)。
 
-## 最新通道快照资格（精确源码）
+## 前一批通道快照资格（当时源码）
 
 K `31769ea4b8c006f999f4fbe0da68f7291ef71935`／编译服务与冻结工具
 U `82a06cd051c935a089caffb947bada841bebd40d`。36跨语言/32位C布局、461工具、
@@ -20,7 +32,7 @@ VM中8个普通用户fd查询匹配原owner/lifetime/key与MTU/MPS；8次真实p
 [源码、失败、假设与剩余](evidence/channel-info-progress-20261014.json)。
 
 
-## 最新Session通道分流资格（限定范围）
+## 前一批Session通道分流资格（当时源码）
 
 准确内核 `6fe9696a04da6527b994c792cac91ac25b07155e`，编译服务/冻结工具
 `f0cd461778209aa2ae30e8de8779b690ee122f70`。两个固定槽源码已接通，实际生产

@@ -1116,7 +1116,7 @@
       ],
       "push_status": {
         "userspace": "45508f5 and 0a6644f signed and pushed",
-        "linux": "63aee16e1b3f signed locally; SSH push timed out, HTTPS retry bounded, remote readback still K317. Not yet reported pushed."
+        "linux": "63aee16e1b3f signed locally; SSH and bounded 60-second HTTPS pushes timed out; remote readback K317. Push remains pending."
       },
       "regular_ci": {
         "run_id": 38495063346,

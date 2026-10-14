@@ -6,26 +6,26 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-1. 本批交付Session在途物理PDU所有权：K `404748952247`／编译U `995eac1cce39`，
-   closing tools `447e1f0a6009`。首USB准入与begun标记在Session锁内线性化；
-   fd退役取消未开始队列，保留该原PDU的有限后续片和冻结Grant，不新增payload。
-   104轮原业务/全部已取得长度点重新回归，32次超限拒绝，两角色严格fd退出门禁。
-   [本批准确提交、时间证据和证明边界](../docs/evidence/pdu-owner-close-20261015.json)。
-2. 下一批继续真实credit耗尽/背压/满队列，在begun PDU期间执行Managed撤权、
-   disconnect与原期限，核对实际提交屏障、物理债务、清理、晚到NOCP及另一设备隔离。
-   每片仍经过Runtime epoch/generation/lifetime与credit；复制operation Grant不得绕过。
-   首片前作者关闭不提交，后续fd退出不是管理撤权；真正撤权后不能新USB提交。
-   补实际Native/C consent/worker的组合映射，不以311标量检查或普通fd退出替代组合证明。
-3. 复用现有Session分流，推进真实credit、动态多通道、四设备两组和唯一用户态
-   SSAP CCC/通知/指示/应用交付；不要等待控制竞争全集或全部S5才继续数据面。
-4. 安全relay并行定位真实111转发：历史147与SDK候选1ff无对端0014，根因未闭合；
-   本地SDK/us固件与指定111不同，vendor ISA/ROM仍是工具边界，不伪造配对或可信状态。
-   后续Agent、角色绑定真实key安装/0011、加密业务、Bond/Profile保留完整门禁。
-5. 形式化直接映射生产代码，清楚区分有界/标量、抽象模型、实现refinement和实机。
-   Runtime grant-credit到C consent/USB的组合、NOCP准确性/晚到/重复/复用屏障继续待证明；
-   Kani unsupported不升级PASS。反例和历史失败保留，原材料不可取得时如实标记。
-6. 自然RCA/非人工恢复、部分初始化清理、事件迁移、旧代码整改并行，全部原issues
-   scope保留；完整S0–S6、19WP、10FV、12DG不缩减，UserHost P4仅规划。
+1. 本批交付真实软件队列pressure子门禁：内核保持K `404748952247`，编译U
+   `89f30157b6f2`；原104轮全部已取得长度点和32拒绝重新回归，32额外burst往返。
+   两种连接角色都8次EAGAIN/POLLOUT收回及对应恢复，actual peer验证/回复和两端
+   USB/HCC/每片NOCP核对；严格fd退出/真实SSAP/发现建链路径保持。
+   [准确本批证据与限制](../docs/evidence/software-backpressure-20261015.json)。
+2. 软件队列EAGAIN/poll通过不能替代真实controller credit耗尽。下一批建立实际
+   Runtime data budget/debt观察，核对命令/data credit独立、USB提交不还、实际完成
+   才还；通过真实发送与有界调度观察压力，任何受控RX/调度交错单独标记，不能模拟
+   NOCP或强制补满。维护原budget与期限、同行隔离，测试必须有真正对端应用收到。
+3. 并行在begun PDU期间验证Managed撤权/disconnect/原期限与最终USB屏障，组合
+   Runtime ledger/ticket/C Session owner/Grant。NoCP晚到/重复/handle复用继续待证。
+   生产C consent311检查不是锁/引用/Runtime/HCD/refinement或长期liveness证明。
+4. 继续唯一Session分流/真实credit→多通道→四设备两组→唯一用户态SSAP更新，
+   不等待控制竞争全集。安全relay实际111转发/Agent/key安装/加密/Bond/Profile并行；
+   SDK表项不等于固件ABI，历史147/1ff peer失败不因数据通过变为成功。
+5. Kani credit仍NOT_PROVEN：保留caller_location/foreign-function诊断与原超时。
+   下一步按实际crate/生产panic路径与安装smoke比较工具/编译环境，直接验证生产转换；
+   不屏蔽警告或用简化ledger/始终成功桩换PASS。状态空间边界及全16slot原性质保持。
+6. 全S0–S6、19WP、10FV、12DG及原issue scope保持；自然RCA/非人工恢复、部分
+   初始化清理、事件迁移、旧代码整改继续并行。UserHost P4仅规划，不作前置。
 
 ## 连续目标与不变约束
 

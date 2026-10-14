@@ -609,13 +609,12 @@
     ]
   },
   "current_batch_exit": {
-    "production": "first USB linearization, frozen operation Grant, finite continuation independent of fd; join before retirement",
-    "invariants": "no new author admission, no prefix replay, Runtime epoch/lifetime enforced each fragment, no credit refund on object disposal",
-    "offline": "actual39 Native tests, C worker sanitizer and actual311-check scalar consent",
-    "real": "104 original app round trips,32 refusal and2 source exit before final USB/actual peer validation/after-close SMTC phases",
-    "remaining": "true credit/full queue, managed revoke/down/deadline and composition/reuse; fullS0-S6 and natural recovery open"
+    "production": "existing404 bounded TX/Session/Grant reused, no fake hardware behavior",
+    "offline": "actual local fd burst algorithm/strictCLI/475 tooling checks",
+    "real": "136 peer-validated app rounds,32 refusals,2 strict lastfd phases; software EAGAIN/poll recovery in bothroles",
+    "remaining": "true controller credit/full hardware queues, revoke/down/deadline/composite proof, multi-channel/four-device and allS0-S6 remaining"
   },
-  "updated_at_utc": "2026-10-14T19:28:08.238755+00:00",
+  "updated_at_utc": "2026-10-14T20:00:10.651277+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -623,48 +622,46 @@
   },
   "current_heads": {
     "linux": "40474895224799879cf63d74b85b17932121f726",
-    "userspace_observed_before_document_commit": "447e1f0a60096042e3042c0d2287c441a1dc406d"
+    "userspace_observed_before_document_commit": "89f30157b6f23428a02354853cd1bd2f43a6e629"
   },
   "qualified_source_heads": {
     "linux": "40474895224799879cf63d74b85b17932121f726",
-    "userspace": "995eac1cce39cbe309fe813491517fa957f54f48",
-    "closing_tools": "447e1f0a60096042e3042c0d2287c441a1dc406d",
-    "scope": "104 original app round trips and32 refusals;2 strict begun-PDU source-exit/peer-validated/post-close-SMTC phases (not app round trips)",
-    "evidence": "docs/evidence/pdu-owner-close-20261015.json"
+    "userspace": "89f30157b6f23428a02354853cd1bd2f43a6e629",
+    "scope": "136 actual app round trips including32 burst,16 EAGAIN/poll withdrawals and resumed sequences across2roles;32 refusals; strict fd exit retained; no hardware credit depletion",
+    "evidence": "docs/evidence/software-backpressure-20261015.json"
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "behavior": "Session owns only begun bounded physical PDU after fd withdrawal; Runtime revocation unchanged",
-    "status": "BEGUN_PDU_FINAL_FD_CLOSE_ISOLATION_REAL_PASS",
-    "evidence": "docs/evidence/pdu-owner-close-20261015.json",
-    "ci": "447/404 pin code and docs completed successfully; runtime remains404/compiled995"
+    "behavior": "Actual ordinary16-message burst at finite software queue, poll withdrawal/resumed admission and opposite application replies",
+    "status": "REAL_SOFTWARE_QUEUE_BACKPRESSURE_AND_APPLICATION_DELIVERY_PASS",
+    "evidence": "docs/evidence/software-backpressure-20261015.json"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exact404/995 original40 short and104 full selected data lengths",
-    "DG02": "PARTIAL_REAL all previously qualified248..2042 selected length points and32 refusals rerun404/995",
+    "DG01": "PARTIAL_REAL exact404/89 original104 data lengths plus32 burst app rounds",
+    "DG02": "PARTIAL_REAL exact404/89 all previously attained length points and32 refusals rerun",
     "FV_SECURITY_RELAY": "HISTORICAL scoped actual Host/codec checks retained in relay-index investigation; no new d926 SMP real qualification; Kani unsupported not proved",
     "S5": "Approved pairing/installation/encrypted application reply missing",
     "recovery": "Natural RCA and nonhuman recovery remain open",
     "FV_CODEC": "HISTORICAL exact2030 driver bounded800 checks preserved, not relabeled as fresh d926 result; new cursor proof separately recorded",
     "FV_DLI_CURSOR": "SCALAR_TRANSITIONS_PASS exact production header,48 checks, all unsigned inputs; no worker/USB/NOCP proof",
-    "DG03": "PARTIAL_REAL bounded PB and strict fd-exit subgroup; true credit/full queue, revoke/down and full fragment matrix missing",
+    "DG03": "PARTIAL_REAL software queue pressure/poll recovery and longPDU; true hardware credit, revoke/down/deadline and full fragment matrix remain missing",
     "FV_PDU_CONSENT": "SCALAR_CONSENT_PASS actual404 functions sl_sk/sl_permits/sl_session_submit,311 checks; lock/ref/Runtime/USB composition excluded"
   },
   "next_resume_tasks": [
-    "Deliver true credit/backpressure/full-queue and Managed revoke/disconnect/original-deadline gates during begun PDU; compose actual Runtime ledger/tickets with C Session owner, physical debt and late NOCP; peer isolation; do not wait on all control combinations.",
+    "Deliver actual controller data-credit/budget observations and real depletion/refill gates, bounded scheduling and Managed revoke/down/original deadline during begun PDU. Software queue pressure is now qualified; no hardware claim inferred. Compose actual Rust ledger/tickets/C Session/Grant and validate old NOCP/reuse/peer isolation.",
     "Resolve actual111 SMP relay forwarding; raw Complete alone still insufficient, candidateSDK1ff and147 peer delivery failed. No fake capability or alternate Engine.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "ALL9_OPEN_SCOPE_UNCHANGED_READBACK",
-  "issue_sync_receipt": "docs/evidence/pdu-owner-close-20261015.json",
+  "issue_sync_status": "PENDING_SOFTWARE_PRESSURE_READBACK",
+  "issue_sync_receipt": "docs/evidence/software-backpressure-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "d926/fdec production bounded PB cursor and exact104 real app round trips plus48 scalar checks; not status-only work"
+    "reason": "404 Session physical owner, actual311-check C consent and strict fd exit plus original104 real regressions"
   },
   "current_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "Signed Session PDU ownership, actual311-check consent proof, actual strict fd exit and exact full104 regression; full goal active"
+    "reason": "Signed actual burst/queue pressure tool,136 real peer app round trips, original boundaries and closing gate retained; controller credit not inferred"
   }
 }

@@ -60,3 +60,15 @@ manifest。记录内核、编译服务、测试工具的完整提交；三者可
 检查原物理Session中关闭后的SMTC读写/发现/UUID及两端数据证据，不能用cached
 ExchangeInfo或Ready日志代替同行业务。此结果仍不覆盖Managed撤权、断链、原期限
 到达、真实credit耗尽或完整dup/fork/SCM_RIGHTS/linger组合。
+
+
+## 区分软件队列背压与控制器credit
+
+burst记录必须同时具有原始NativeBurstBlocked、对应NativeBurstResumed与summary，
+至少一次EAGAIN后POLLOUT收回；恢复准入的每条消息仍需四份原始应用记录和两端USB。
+检查两种连接角色各16个2042字节消息的nonce/序号、顺序、载荷和真实回复，不只计日志数量。
+Root/kernel capture drops和taint仍需检查。
+
+software_backpressure_acceptance为true不能覆盖credit_exhaustion_acceptance为false；
+前者是有限软件队列，后者需另外观察真实controller budget、债务及实际完成的恢复。
+没有该证据时保留未验收，不能将credit补满/模拟完成事件当作测试通过。

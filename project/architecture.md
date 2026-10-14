@@ -215,6 +215,11 @@ Binding活着；成功提交在同一锁内标记begun，是fd取消与物理义
 已有credit预留和实际USB票据；管理撤权/断链在实际提交点阻止继续发送，不能通过
 复制operation Grant绕过Runtime。FD退出与管理撤权是不同动作，不扩大fd能力。
 
+软件准入EAGAIN/队列空间与controller packet-credit耗尽是不同观察。
+poll的POLLOUT只承诺当前软件准入机会，不承诺USB提交、控制器完成或对端收到；
+竞争后send仍可能EAGAIN。突发发送可填满含busy的有限8项预算，恢复后须继续
+核对实际对端应用回复。不得把该观察、ref库的pool截断或NOCP日志当作硬件credit门禁。
+
 每片欠一个controller credit，USB完成和释放operation不归还；EAGAIN保留进度，
 未知失败不从头重放。软件准入的原始5秒期限在最终提交点也检查；没有物理前缀的
 排队超时只退休本Binding并报ETIMEDOUT。真正物理失败、期限届满或撤权时，没有

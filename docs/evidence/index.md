@@ -60,3 +60,6 @@
 
 [Session在途PDU与最后fd退出的准确实机/311检查限定报告](pdu-owner-close-20261015.json)
 将对端验证、源进程退出、末片与同行SMTC证据分开；关闭例不冒充源应用往返。
+
+[真实软件队列背压、136应用往返及硬件credit未验收范围](software-backpressure-20261015.json)
+将EAGAIN/poll/恢复准入、USB/NOCP和对端应用分开，不能把软件队列满提升为硬件池耗尽。

@@ -290,7 +290,7 @@
   "execution_phase": "ARCHITECTURE_REMEDIATION_BEFORE_FEATURE_EXPANSION",
   "current_batch": "Physical Session table ownership before application fd; lazy original CMTC deadline; reference Host rechecked; no security protocol enabled",
   "current_audit": "docs/evidence/protocol-state-retirement-audit-20261014.json",
-  "issue_sync_status": "Physical Session birth evidence prepared; existing K#6/K#18/U#3/U#8 remain OPEN, readback/push receipts pending",
+  "issue_sync_status": "Physical Session birth and continued reference Host audit synchronized; K#6/K#18/U#3/U#8 read back OPEN; original scopes retained",
   "current_implementation_heads": {
     "linux": "03d1170a960c916741c4a814fb08bd18efe698b6",
     "userspace": "539d075d85608a00cbac40fb3d04abae33fdb623"
@@ -2835,6 +2835,37 @@
     "whole_formal_proof": false,
     "real_original_path_regression": true,
     "security_relay_enabled": false,
-    "next": "Wire the existing relay production state transitions into this unique Session and actual command ticket/credit/typed WS73 dialect; no duplicate Engine."
+    "next": "Wire the existing relay production state transitions into this unique Session and actual command ticket/credit/typed WS73 dialect; no duplicate Engine.",
+    "issue_receipts": [
+      {
+        "repository": "OpenSparklink/linux",
+        "issue": 6,
+        "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6162059855",
+        "state": "OPEN",
+        "readback_sha256": "2ef0116145ade8b47d420dc73f1f17aaf1c591bb1add781f5b9110f2b33ad8df"
+      },
+      {
+        "repository": "OpenSparklink/linux",
+        "issue": 18,
+        "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6162060608",
+        "state": "OPEN",
+        "readback_sha256": "2ef0116145ade8b47d420dc73f1f17aaf1c591bb1add781f5b9110f2b33ad8df"
+      },
+      {
+        "repository": "OpenSparklink/sparklink",
+        "issue": 3,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6162061353",
+        "state": "OPEN",
+        "readback_sha256": "2ef0116145ade8b47d420dc73f1f17aaf1c591bb1add781f5b9110f2b33ad8df"
+      },
+      {
+        "repository": "OpenSparklink/sparklink",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6162062328",
+        "state": "OPEN",
+        "readback_sha256": "2ef0116145ade8b47d420dc73f1f17aaf1c591bb1add781f5b9110f2b33ad8df"
+      }
+    ],
+    "documentation_commit": "33aada7b25ec2420a0b4f879595154f3a4746d15"
   }
 }

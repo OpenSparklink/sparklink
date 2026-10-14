@@ -264,6 +264,7 @@ def corroborate(run,capture):
         if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)
         if row.get("ssap_exchange_required",False): entry["ssap_exchange"] = ssap
         if row.get("ssap_value_required",False): entry["ssap_values"] = ssap_values
+        if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows),proofs=proofs,

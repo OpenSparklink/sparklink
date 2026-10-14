@@ -140,6 +140,7 @@ Commands:
   ssap-register <service-hex> <property-hex> <ops> <value-hex> Configure local database only
   ssap-remove <start-handle>                 Remove local service (handles not reused)
   ssap-local-read <handle>                   Inspect local database, not peer receipt
+  ssap-observe <path> <handle> [notify|indicate|both] [wait-ms] Observe one actual incoming packet; no remote subscription
   ssap-read-uuid <path> <start> <end> <uuid-hex> Read actual peer values by UUID
   ssap-read <path> <handle>                  Read actual peer value on SMTC
   ssap-write <path> <handle> <value-hex>      Write with peer verification and reply

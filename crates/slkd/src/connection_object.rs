@@ -9,6 +9,39 @@ use zbus::interface;
 pub(crate) type Info = (u64, u64, u16, u8, u8, String, bool, bool);
 pub(crate) type Objects = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8, String)>);
 
+/// Subscribe before checking ownership or polling the receive future. Known
+/// bus-owner loss cancels the call-owned queue; it does not erase queued ACKs.
+pub(crate) async fn caller_scoped<T>(
+    connection: &zbus::Connection,
+    sender: &str,
+    future: impl std::future::Future<Output = zbus::fdo::Result<T>>,
+) -> zbus::fdo::Result<T> {
+    use zbus::export::ordered_stream::OrderedStreamExt;
+    let bus = zbus::fdo::DBusProxy::new(connection)
+        .await
+        .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
+    let mut lost = bus
+        .receive_name_owner_changed_with_args(&[(0, sender), (2, "")])
+        .await
+        .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
+    if !bus
+        .name_has_owner(
+            sender
+                .try_into()
+                .map_err(|e: zbus::names::Error| zbus::fdo::Error::Failed(e.to_string()))?,
+        )
+        .await?
+    {
+        return Err(zbus::fdo::Error::Failed(
+            "SSAP application caller retired".into(),
+        ));
+    }
+    tokio::select! {
+        biased;
+        _=lost.next()=>Err(zbus::fdo::Error::Failed("SSAP application caller disappeared or owner stream closed".into())),
+        result=future=>result,
+    }
+}
 pub(crate) fn path(base: &str, reference: SleLinkInfo) -> String {
     format!(
         "{}/link_{:016x}",
@@ -404,6 +437,75 @@ impl ConnectionIface {
                     })
                     .collect()
             })
+    }
+    /// Call-owned local receive interest. Does not configure peer CCC state.
+    async fn observe_ssap_incoming(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        wait_ms: u32,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<crate::ssap_engine::Incoming> {
+        if handles.is_empty()
+            || handles.len() > 32
+            || handles.contains(&0)
+            || handles
+                .iter()
+                .enumerate()
+                .any(|(i, h)| handles[..i].contains(h))
+            || modes == 0
+            || modes & !3 != 0
+            || !(10..=10000).contains(&wait_ms)
+        {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "1..32 unique handles, modes1..3 and wait10..10000ms required".into(),
+            ));
+        }
+        let _ = self.get_ssap_info().await?;
+        let cache = self.remote_services.lock().await;
+        let entries = cache.as_ref().ok_or_else(|| {
+            zbus::fdo::Error::NotSupported(
+                "actual peer discovery required before local receive interest".into(),
+            )
+        })?;
+        let required = u32::from(modes) << 3;
+        if handles.iter().any(|handle| {
+            !entries.iter().any(|e| {
+                e.handle == *handle && e.category & 7 == 2 && e.operations & required == required
+            })
+        }) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "peer has not advertised requested property update capabilities".into(),
+            ));
+        }
+        drop(cache);
+        let actor = self.ssap.lock().await;
+        let observer = actor
+            .as_ref()
+            .ok_or_else(|| zbus::fdo::Error::Failed("actor unavailable".into()))?
+            .observer();
+        drop(actor);
+        let sender = header
+            .sender()
+            .ok_or_else(|| zbus::fdo::Error::Failed("missing SSAP caller identity".into()))?;
+        let result = caller_scoped(connection, sender.as_str(), async {
+            observer
+                .incoming(
+                    handles,
+                    modes,
+                    std::time::Duration::from_millis(u64::from(wait_ms)),
+                )
+                .await
+                .map_err(zbus::fdo::Error::Failed)
+        })
+        .await?;
+        if self.observation().await != (true, true) {
+            return Err(zbus::fdo::Error::Failed(
+                "retired incoming SSAP lifetime".into(),
+            ));
+        }
+        Ok(result)
     }
     async fn read_ssap_by_uuid(
         &self,

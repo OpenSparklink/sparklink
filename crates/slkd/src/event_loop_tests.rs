@@ -1072,3 +1072,70 @@ async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
         invalid,
     );
 }
+
+#[tokio::test]
+async fn actual_ssap_receive_scope_cancels_on_private_bus_caller_death() {
+    let bus = PrivateBus::start();
+    let server = zbus::connection::Builder::address(bus.address.as_str())
+        .unwrap()
+        .build()
+        .await
+        .unwrap();
+    let caller = zbus::connection::Builder::address(bus.address.as_str())
+        .unwrap()
+        .build()
+        .await
+        .unwrap();
+    let peer = zbus::connection::Builder::address(bus.address.as_str())
+        .unwrap()
+        .build()
+        .await
+        .unwrap();
+    let name = caller.unique_name().unwrap().to_string();
+    let name_for_task = name.clone();
+    let (entered, entry) = oneshot::channel();
+    let (delivery, pending) = oneshot::channel::<()>();
+    let server_task = server.clone();
+    let task = tokio::spawn(async move {
+        crate::connection_object::caller_scoped(&server_task, &name_for_task, async move {
+            let _ = entered.send(());
+            pending
+                .await
+                .map_err(|_| zbus::fdo::Error::Failed("delivery stopped".into()))
+        })
+        .await
+    });
+    timeout(Duration::from_secs(1), entry)
+        .await
+        .unwrap()
+        .unwrap();
+    caller.close().await.unwrap();
+    let result = timeout(Duration::from_secs(1), task)
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(result.is_err());
+    assert!(delivery.is_closed());
+    let proxy = zbus::fdo::DBusProxy::new(&server).await.unwrap();
+    assert!(
+        proxy
+            .name_has_owner(peer.unique_name().unwrap().clone().into())
+            .await
+            .unwrap()
+    );
+    assert!(
+        crate::connection_object::caller_scoped(&server, &name, async { Ok(()) })
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        crate::connection_object::caller_scoped(
+            &server,
+            peer.unique_name().unwrap().as_str(),
+            async { Ok(7) }
+        )
+        .await
+        .unwrap(),
+        7
+    );
+}

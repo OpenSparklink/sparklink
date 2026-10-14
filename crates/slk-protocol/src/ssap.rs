@@ -6,6 +6,8 @@ pub mod discovery;
 pub mod exchange;
 #[path = "ssap/read_uuid.rs"]
 pub mod read_uuid;
+#[path = "ssap/updates.rs"]
+pub mod updates;
 #[path = "ssap/value.rs"]
 pub mod value;
 

@@ -4,7 +4,7 @@ from ws73_channel_socket import CaptureError
 
 
 def execute(run,row):
-    row['ssap_value_required']=True;row['ssap_read_uuid_required']=True;row['ssap_values']=[]
+    row['ssap_value_required']=True;row['ssap_read_uuid_required']=True;row['ssap_update_local_rejection_required']=True;row['ssap_values']=[]
     owners=row['owners'];local=[]
     def command(owner,args):
         receipt=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],*args],10,collection='ssap_values')
@@ -20,6 +20,12 @@ def execute(run,row):
     try:
         from ws73_ssap_discovery import execute as discover
         discover(run,row,command,local)
+        row['unsupported_incoming']=[]
+        for sender,target in [(0,1),(1,0)]:
+            source=owners[sender];prop=local[target]
+            args=[str(run.args.slctl),'--adapter',source['owner']['path'],'ssap-observe',source['object']['path'],str(prop['discovered_handle']),'notify','10']
+            receipt=run.command(args,10,collection='ssap_values');row['unsupported_incoming'].append(dict(sender=sender,target=target,handle=prop['discovered_handle'],receipt=receipt));run.save()
+            if receipt['exit']==0 or 'peer has not advertised requested property update capabilities' not in receipt['stderr']:raise CaptureError('non-notifying actual peer must explicitly reject local receive interest')
         for sequence in range(4):
             for sender,target in [(0,1),(1,0)]:
                 source=owners[sender];destination=owners[target];prop=local[target]
@@ -87,4 +93,11 @@ def corroborate(row,matched):
                 uuid_wire.append(dict(request=dict(tx=matched(source,'out',frame(request),c),rx=matched(destination,'in',frame(request),c)),response=dict(tx=matched(destination,'out',frame(response),c),rx=matched(source,'in',frame(response),c))))
                 credit[sender]+=1;credit[target]+=1
         proof.append(dict(sequence=item['sequence'],sender=sender,target=target,handle=handle,value=item['value'],wire=wire,uuid_wire=uuid_wire,receipts={k:item[k] for k in ['read_before','write','local_check','read_after']}))
+    if row.get('ssap_update_local_rejection_required'):
+        rows=row.get('unsupported_incoming',[])
+        if len(rows)!=2 or {x['sender'] for x in rows}!={0,1}:raise CaptureError('both actual peer local receive rejections required')
+        for item in rows:
+            sender,target=item['sender'],item['target'];r=item['receipt'];source=owners[sender]
+            expected=['ssap-observe',source['object']['path'],str(item['handle']),'notify','10']
+            if target!=1-sender or r['exit']==0 or r['args'][-5:]!=expected or 'peer has not advertised requested property update capabilities' not in r['stderr']:raise CaptureError('actual unsupported local receive receipt required')
     return proof,credit

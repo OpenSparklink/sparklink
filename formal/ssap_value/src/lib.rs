@@ -2,6 +2,8 @@
 pub mod value;
 #[path = "../../../crates/slk-protocol/src/ssap/read_uuid.rs"]
 pub mod read_uuid;
+#[path = "../../../crates/slk-protocol/src/ssap/updates.rs"]
+pub mod updates;
 #[cfg(kani)]
 mod proofs {
     use super::value::ValuePdu;
@@ -56,6 +58,28 @@ mod uuid_proofs {
             let mut out=[0xa5;16];let n=super::read_uuid::encode(16,&items,&mut out).unwrap();assert_eq!(&out[..n],&raw[..len]);
             let capacity:usize=kani::any();kani::assume(capacity<=16);let before=out;
             if super::read_uuid::encode(16,&items,&mut out[..capacity]).is_err(){assert_eq!(out,before);}
+        }
+    }
+}
+
+#[cfg(kani)]
+mod ack_proofs {
+    #[kani::proof]
+    #[kani::unwind(12)]
+    fn actual_ack_flags_and_atomic_refusal() {
+        let flags:[u8;4]=kani::any();let count:usize=kani::any();kani::assume(count<=4);
+        let capacity:usize=kani::any();kani::assume(capacity<=8);
+        let mtu:u16=kani::any();let event:bool=kani::any();let mut out:[u8;8]=kani::any();let before=out;
+        match super::updates::ack(mtu,event,&flags[..count],&mut out[..capacity]) {
+            Ok(n)=>{
+                assert!(n==count+2);assert!(out[0]==17);assert!(out[1]==if event{7}else{3});
+                match super::updates::decode_ack(mtu,&out[..n],event,count) {
+                    Ok(decoded)=>{for i in 0..count {assert!(decoded[i]==flags[i]);assert!(flags[i]<=1);}},
+                    Err(_)=>assert!(false,"encoded ACK must decode"),
+                }
+                for i in n..8 {assert!(out[i]==before[i]);}
+            },
+            Err(_)=>{for i in 0..8 {assert!(out[i]==before[i]);}},
         }
     }
 }

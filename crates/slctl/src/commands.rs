@@ -142,6 +142,41 @@ impl Context {
                 );
                 Ok(())
             }
+            "ssap-observe" => {
+                if !(3..=5).contains(&args.len()) {
+                    anyhow::bail!(
+                        "ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
+                    );
+                }
+                let object = self.ssap_proxy(args[1]).await?;
+                let handle: u16 = args[2].parse()?;
+                let modes: u8 = match args.get(3).copied().unwrap_or("both") {
+                    "notify" => 1,
+                    "indicate" => 2,
+                    "both" => 3,
+                    _ => anyhow::bail!("invalid local receive mode"),
+                };
+                let wait: u32 = args.get(4).copied().unwrap_or("5000").parse()?;
+                let (indication, raw): (bool, Vec<u8>) = object
+                    .call("ObserveSsapIncoming", &(vec![handle], modes, wait))
+                    .await?;
+                let packet = slk_protocol::ssap::updates::Update::decode(65535, &raw)
+                    .map_err(|e| anyhow::anyhow!("incoming codec: {e:?}"))?;
+                if packet.indication != indication {
+                    anyhow::bail!("incoming kind mismatch");
+                }
+                for item in packet.items {
+                    println!(
+                        "SsapIncoming: path={} kind={} handle={} value={} raw={}",
+                        args[1],
+                        if indication { "indicate" } else { "notify" },
+                        item.handle,
+                        hex_bytes(item.value),
+                        hex_bytes(&raw)
+                    );
+                }
+                Ok(())
+            }
             "ssap-read-uuid" => {
                 if args.len() != 5 {
                     anyhow::bail!("ssap-read-uuid CONNECTION START END UUID_HEX");

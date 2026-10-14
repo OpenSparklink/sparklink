@@ -95,8 +95,8 @@ impl AdapterIface {
 
 #[interface(name = "org.sparklink.Adapter")]
 impl AdapterIface {
-    /// Start device discovery (scanning)
-    async fn start_discovery(&self) -> zbus::fdo::Result<()> {
+    /// Manager operation on the physical scanner, not an application scan lease.
+    async fn start_controller_scan(&self) -> zbus::fdo::Result<()> {
         if self.state.lock().await.controller.profile == 1 {
             let id = crate::radio::random_id().await?;
             crate::radio::scan(&self.state, id).await?;
@@ -107,8 +107,8 @@ impl AdapterIface {
             .map_err(|e| zbus::fdo::Error::Failed(format!("scan start failed: {e}")))
     }
 
-    /// Stop device discovery
-    async fn stop_discovery(&self) -> zbus::fdo::Result<()> {
+    /// Manager stop of the physical scanner; not a client session release.
+    async fn stop_controller_scan(&self) -> zbus::fdo::Result<()> {
         if self.state.lock().await.controller.profile == 1 {
             let id = crate::radio::random_id().await?;
             crate::radio::stop(&self.state, id, slk_protocol::DISCOVERY_SCAN_STOP).await?;

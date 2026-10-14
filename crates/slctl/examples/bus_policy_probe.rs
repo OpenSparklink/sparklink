@@ -133,7 +133,7 @@ async fn probe(path: &str, mode: &str, native_phase: Option<&str>) -> anyhow::Re
         )?;
     }
 
-    for method in ["StartDiscovery", "StopDiscovery"] {
+    for method in ["StartControllerScan", "StopControllerScan"] {
         denied(
             method,
             connection
@@ -180,7 +180,13 @@ async fn probe(path: &str, mode: &str, native_phase: Option<&str>) -> anyhow::Re
     denied(
         "interface-less-write",
         connection
-            .call_method(Some(SERVICE), path, None::<&str>, "StartDiscovery", &())
+            .call_method(
+                Some(SERVICE),
+                path,
+                None::<&str>,
+                "StartControllerScan",
+                &(),
+            )
             .await,
     )?;
     denied(

@@ -67,6 +67,22 @@ class ObserverPolicyTests(unittest.TestCase):
         self.assertFalse(any(a.get('send_type')=='method_call' and 'send_interface' not in a for a in allows))
         self.assertIn({'send_destination':'org.sparklink'},[a.attrib for a in default.findall('deny')])
 
+    def test_channel_only_group_has_no_controller_or_service_ownership(self):
+        root=ET.parse(Path(__file__).resolve().parents[2]/'data/dbus/sparklink.conf').getroot()
+        app=root.find("policy[@group='sparklink-apps']")
+        self.assertIsNotNone(app)
+        rules=[a.attrib for a in app.findall('allow')]
+        self.assertEqual(rules,[
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannel'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannelScoped'},
+        ])
+        self.assertFalse(any('own' in r or r.get('send_interface')=='org.sparklink.Adapter' for r in rules))
+        source=(Path(__file__).resolve().parents[2]/'crates/slkd/src/dbus_iface.rs').read_text()
+        self.assertIn('async fn start_controller_scan',source)
+        self.assertIn('async fn stop_controller_scan',source)
+        self.assertNotIn('async fn start_discovery',source)
+        self.assertNotIn('async fn stop_discovery',source)
+
     def test_synthetic_complete_role_fixture_requires_actual_original_wire(self):
         record,run,capture=fixture();p=corroborate(record,run,capture)
         self.assertEqual(len(p['initializer_observations']),16);self.assertEqual(p['observer_bus_denials'],68)

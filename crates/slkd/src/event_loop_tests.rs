@@ -219,7 +219,7 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
             ),
             timeout(
                 Duration::from_secs(2),
-                proxy.call::<_, _, ()>("StartDiscovery", &())
+                proxy.call::<_, _, ()>("StartControllerScan", &())
             ),
             timeout(
                 Duration::from_secs(2),

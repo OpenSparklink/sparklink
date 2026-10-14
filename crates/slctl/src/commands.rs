@@ -889,11 +889,11 @@ impl Context {
         }
         match toggle {
             "on" => {
-                let _: () = proxy.call("StartDiscovery", &()).await?;
+                let _: () = proxy.call("StartControllerScan", &()).await?;
                 println!("Discovery started");
             }
             "off" => {
-                let _: () = proxy.call("StopDiscovery", &()).await?;
+                let _: () = proxy.call("StopControllerScan", &()).await?;
                 println!("Discovery stopped");
             }
             _ => anyhow::bail!("usage: scan on|off"),

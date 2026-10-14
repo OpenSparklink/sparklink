@@ -15,7 +15,7 @@ from ws73_north_star import file_record, daemon_identity, stable
 from ws73_rf_rounds import initializer_recipe
 
 STATUS = 'NATIVE_OBSERVER_POLICY_EVIDENCE_PENDING'
-DENIALS = ['own-service','CancelDiscoveryPolicies','StartDiscovery','StopDiscovery',
+DENIALS = ['own-service','CancelDiscoveryPolicies','StartControllerScan','StopControllerScan',
     'SubmitScanning','SubmitStopScanning','SubmitStopAdvertising','SubmitAdvertising',
     'unique-owner-write','interface-less-write','interface-less-read','Properties.Set',
     'future-method','foreign-interface','RemoteService.Read','DequeueNotification','GetPasskey']

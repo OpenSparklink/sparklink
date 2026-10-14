@@ -351,7 +351,7 @@ pub(crate) async fn random_id() -> zbus::fdo::Result<u64> {
     .map_err(failed)?
     .map_err(failed)
 }
-/// Compatibility StartDiscovery/StopDiscovery methods wait for success;
+/// Explicit controller-management scan methods wait for success;
 /// slctl uses explicit Submit* + GetDiscoveryResult to retain correlation IDs.
 pub(crate) async fn wait(state: &SharedState, id: u64) -> zbus::fdo::Result<()> {
     let deadline = tokio::time::Instant::now() + Duration::from_secs(7);

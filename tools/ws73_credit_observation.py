@@ -87,6 +87,8 @@ def main():
     parser.add_argument('--run-folder', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
+    if args.output.exists():
+        parser.error("output already exists; sealed evidence must not be overwritten")
     root = args.run_folder
     manifest_file = root/'manifest.json'
     run_file = root/'guest-output/application/passthrough-control/run.json'

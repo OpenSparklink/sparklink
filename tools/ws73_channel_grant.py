@@ -158,18 +158,26 @@ def worker(data, control):
                 if denied!=errno.EACCES:raise ValueError('exact forbidden direction EACCES required')
                 send(control,dict(stage='oneway',initiator=command['initiator'],sent=sent,received=arrived,direction_errno=denied,denied_marker=marker.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
             elif kind=='block':
-                prefix=command.get('prefix')
+                prefix=command.get('prefix');admission={}
                 if prefix is not None:
                     prefix=bytes.fromhex(prefix)
                     if len(prefix)!=2042 or prefix[:8]!=b'SLKREV01':raise ValueError('bounded random revocation PDU required')
+                    admission=dict(admission_before_wall_ns=time.time_ns(),admission_before_monotonic_ns=time.monotonic_ns())
                     if data.send(prefix,socket.MSG_NOSIGNAL)!=len(prefix):raise ValueError('partial revoke-prefix admission')
-                send(control,dict(stage='armed',pid=os.getpid(),fd=data.fileno(),wall_ns=time.time_ns(),prefix=prefix.hex() if prefix is not None else None))
-                start=time.time_ns()
+                    admission.update(admission_after_wall_ns=time.time_ns(),admission_after_monotonic_ns=time.monotonic_ns())
+                if command.get('sample_before_block'):
+                    if prefix is None:raise ValueError('TX observation requires bounded original PDU')
+                    from sparklink.native import channel_tx_status
+                    time.sleep(.25)
+                    admission['pre_block_tx_status']=bytes(channel_tx_status(data.fileno())).hex()
+                    admission['pre_block_tx_status_wall_ns']=time.time_ns()
+                send(control,dict(stage='armed',pid=os.getpid(),fd=data.fileno(),wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns(),prefix=prefix.hex() if prefix is not None else None,**admission))
+                start=time.time_ns();start_mono=time.monotonic_ns()
                 try:
                     arrived=data.recv(249)
                     raise ValueError('withdrawn blocking RX returned application bytes/EOF: '+arrived.hex())
                 except OSError as error:
-                    send(control,dict(stage='blocked_denied',errno=error.errno,start_wall_ns=start,end_wall_ns=time.time_ns()))
+                    send(control,dict(stage='blocked_denied',errno=error.errno,start_wall_ns=start,end_wall_ns=time.time_ns(),start_monotonic_ns=start_mono,end_monotonic_ns=time.monotonic_ns()))
             elif kind=='deny':
                 marker=bytes.fromhex(command['marker']);values={}
                 for name,call in [('send',lambda:data.send(marker,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL)),('recv',lambda:data.recv(249,socket.MSG_DONTWAIT))]:
@@ -255,15 +263,16 @@ class Gate:
             self.row['business'].append(row);self.save()
         return rows
 
-    def arm(self):
+    def arm(self, sample_before_block=False):
         request=dict(kind='block')
+        if sample_before_block:request['sample_before_block']=True
         if 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split():
             payload=b'SLKREV01'+secrets.token_bytes(2034)
             request['prefix']=payload.hex();self.row['revoke_prefix']=dict(payload=payload.hex(),admission_before_wall_ns=time.time_ns())
         send(self.parents[self.index],request);value=receive(self.parents[self.index])
         if 'revoke_prefix' in self.row:
             if value.get('prefix')!=request['prefix']:raise ValueError('original worker prefix admission required')
-            self.row['revoke_prefix']['admission_after_wall_ns']=value['wall_ns']
+            self.row['revoke_prefix']['admission_after_wall_ns']=value.get('admission_after_wall_ns',value['wall_ns'])
         if value['stage']!='armed':raise ValueError('blocking worker arm receipt required')
         samples=[];deadline=time.monotonic()+2
         while len(samples)<2:

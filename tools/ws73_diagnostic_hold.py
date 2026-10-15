@@ -92,8 +92,9 @@ class HoldCoordinator:
         self.record['complete'] = self.phase == 'done'
 
 
-def corroborate_host_hold(record, diagnostic, proofs, stderr, expected, *, held_reply=None):
-    if (record.get('method')!='QMP_HOLD_ACTUAL_SUCCESSFUL_IN81' or record.get('complete') is not True
+def corroborate_host_hold(record, diagnostic, proofs, stderr, expected, *, held_reply=None,
+                          expected_method="QMP_HOLD_ACTUAL_SUCCESSFUL_IN81"):
+    if (record.get('method')!=expected_method or record.get('complete') is not True
             or record.get('physical_acceptance') is not False
             or record.get('automatic_fault_recovery_acceptance') is not False
             or record.get('observations')!=diagnostic.get('host_hold_acknowledgements')):

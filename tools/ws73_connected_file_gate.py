@@ -77,6 +77,10 @@ class ConnectedOutcomeCoordinator(LaterHostCoordinator):
 
 
 def verify_records(r):
+    if 'data_deadline' in r:
+        from ws73_channel_deadline import verify
+        verify(r)
+        return [setup(raw,n) for n,raw in enumerate(r['initial_snapshots'])]
     if 'data_link_down' in r:
         from ws73_channel_link_down import verify
         verify(r)
@@ -226,6 +230,9 @@ def verify_records(r):
 
 
 def corroborate(r, capture, hold=None, stderr=None, expected=None):
+    if 'data_deadline' in r:
+        from ws73_channel_deadline import corroborate as deadline_corroborate
+        return deadline_corroborate(r,capture,hold,stderr,expected)
     if 'data_link_down' in r:
         if hold is not None:raise CaptureError('direct Down excludes synthetic hold/recovery')
         from ws73_channel_link_down import corroborate as down_corroborate
@@ -334,9 +341,11 @@ def run(args):
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
+    data_deadline='ws73.channel_deadline=1' in Path('/proc/cmdline').read_text().split()
     link_down='ws73.channel_link_down=1' in Path('/proc/cmdline').read_text().split()
     if link_down and (not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('direct Down requires separate bidirectional begun-PDU release-mode environment')
+    if data_deadline and (link_down or not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate bidirectional begun-PDU original-deadline environment required')
     scm_rights=getattr(args,'channel_scm_rights',False)
     if scm_rights and not channel_gate:raise ValueError('fd transfer requires real channel Grant gate')
     directional=getattr(args,'channel_directions',False)
@@ -461,6 +470,11 @@ def run(args):
             from ws73_channel_grant import Gate
             grant=Gate(observers,snapshots,leases,i,r,save,directional,scm_rights)
             grant.exchange('before')
+            if data_deadline:
+                from ws73_channel_deadline import exercise
+                exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect)
+                grant.close();grant=None
+                return
             if link_down:
                 from ws73_channel_link_down import exercise
                 exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect)

@@ -410,6 +410,8 @@ class SleChannelTxStatus(ctypes.Structure):
 
 SECURITY_CAPABILITY_ONLY = 1
 SECURITY_KEY_AGREEMENT_ONLY = 2
+SECURITY_UNAUTHENTICATED_ENCRYPTION = 3
+SNOOP_REDACTED = 2
 
 
 class SleSecurityNegotiationSubmit(ctypes.Structure):

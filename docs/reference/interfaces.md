@@ -63,7 +63,7 @@ K `41572aaf736d` / 编译用户态 `37666749f579`的受限版本1/profile1接口
 `slk_security_negotiation_submit/result`，Python NativeAdapter提供
 `submit_security_negotiation/security_negotiation`。默认Pair/D-Bus安全入口仍NotSupported。
 
-- 必须显式选择`flags=1`（CAPABILITY_ONLY）或`2`（KEY_AGREEMENT_ONLY），不能组合；
+- 必须显式选择`flags=1`（CAPABILITY_ONLY）、`2`（KEY_AGREEMENT_ONLY）或`3`（UNAUTHENTICATED_ENCRYPTION），不能组合；
   由CAP_NET_ADMIN与原活跃Managed
   File调用；其他File或降权后的同一File返回EPERM。查询同样受保护，不开放原始RX或密钥。
 - generation/lifetime/request_id非零，handle为12位；精确核对role/address/type/epoch。
@@ -71,10 +71,10 @@ K `41572aaf736d` / 编译用户态 `37666749f579`的受限版本1/profile1接口
   profile/角色组合不支持返回EOPNOTSUPP；无效字段/reserved返回EINVAL；失配连接
   返回ESTALE，错误generation返回ENODEV。同lifetime再次启动返回EBUSY。
 - 本批固定offer为`03 00 00 10 00 02 02 02 02 00`，不请求MITM、Bond、OOB或分发。
-  只接受该已知offer，不承诺任意SDK/第三方配对互通或可信身份，不执行实际安装/加密。
-- result state：1批准待收、2进行中、4能力观察完成、5失败、6撤销、7超时、8未认证候选
-  proof完成；flags
-  的1/2/4分别表示实际提交、真实成功Complete、对端能力RX。state4要求flags7。
+  只接受该已知offer，不承诺任意SDK/第三方配对互通或可信身份；模式1/2不执行安装/加密。
+- result state：1批准待收、2进行中、3安装中、4能力观察完成、5失败、6撤销、7超时、8未认证候选
+  proof完成、9控制器报告未认证加密开启；flags
+  的1/2/4分别表示实际提交、真实成功Complete、对端能力RX。state4/8/9要求flags7。
   失败不产生trusted状态；撤权后查询也失去授权。该入口不是事件历史或可靠交付API。
 - 同一物理Session/业务通道持续存在；探测后由管理者显式断链。应用fd析构不隐式
   完成安全协议。`Complete + RX`与业务应用校验/回复、配对、认证、加密、Bond分别表达。
@@ -197,3 +197,17 @@ POLLOUT只表达软件准入；software EAGAIN不是packet-credit耗尽。峰值
 pool_exhaustions为0时不得宣称真实池满。NOCP归还不等于对端协议接收或应用处理。
 实机资格仅见[唯一当前能力](../../project/current-capabilities.md)；同generation单调计数
 也不能证明晚到／重复NOCP准确归属或handle复用屏障。
+
+### 未认证安装接线（新实现，实机资格待验）
+
+K `f5c79a50467b`新增显式管理模式3，仍要求原Managed File/CAP_NET_ADMIN和完整
+身份。复用原Session、credit、原期限与最终票据：G真实1c03（21字节），T仅在真实
+000e后1c05（20字节）。命令接受与0011分别记账；state9只表示同一lifetime的实际
+初次加密事件和原命令接受，不能表示Agent、身份认证、可信Grant、Paired或Bond。
+后续真实关闭/失败/更新事件会使原观察失效，迟到开启不能复活。默认Pair继续拒绝。
+
+Host队列不保存密钥。驱动临时帧在最终提交前通过保留票据填入已验证Session材料，
+真正提交仍重新核对撤权/Down/期限；USB join后清除临时及TX缓冲。SDK111的两种
+安装命令在snoop中置`SNOOP_REDACTED=2`，保留原长度、只捕获真实头部；不可将省略
+参数当作零长度USB包或全零密钥。USB原始抓包含秘密，保持私有，公开证据不输出LTK。
+本节描述接线，不授予新镜像资格；当前准确实机范围仍见唯一资格入口。

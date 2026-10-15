@@ -1102,6 +1102,7 @@ pub const SNOOP_PAYLOAD_MAX: usize = 320;
 pub const SNOOP_FORMAT_WS73_DLI: u8 = 1;
 pub const SNOOP_FORMAT_STANDARD_DLI: u8 = 2;
 pub const SNOOP_TRUNCATED: u16 = 1;
+pub const SNOOP_REDACTED: u16 = 2;
 #[repr(C, align(8))]
 #[derive(Clone, Copy, Debug)]
 pub struct SleSnoopRecord {
@@ -1626,7 +1627,7 @@ pub struct SleSecurityNegotiationSubmit {
     pub reserved: [u8; 2],
 }
 
-/// Local observations only: state4/state8 are not pairing, trust or peer application ACK.
+/// Local observations only: state4/state8/state9 do not prove identity, trust or peer application ACK.
 #[repr(C, align(8))]
 #[derive(Debug, Clone, Copy, Default)]
 pub struct SleSecurityNegotiationResult {
@@ -1650,3 +1651,4 @@ pub struct SleSecurityNegotiationResult {
 pub const SECURITY_CAPABILITY_ONLY: u32 = 1;
 /// Unauthenticated candidate agreement only, no Agent/install/encryption/Bond.
 pub const SECURITY_KEY_AGREEMENT_ONLY: u32 = 2;
+pub const SECURITY_UNAUTHENTICATED_ENCRYPTION: u32 = 3;

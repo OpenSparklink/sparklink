@@ -620,30 +620,28 @@
     ]
   },
   "current_batch_exit": {
-    "production": "SameSession/real fresh candidatecrypto/physicalledger, no secondEngine/trust/raw API",
-    "offline": "Cargo222/crosslanguage38/tools516/actualrelay15/actualHost68/strictclippy/kernel/virtualboot; separate actualcryptoVMa7on1cf",
-    "formal": "Exact415 Tjob revoke/expiry/oldphysicalobligation, queue2/unwind80/70byte input;1110generatedchecks but unsupported NOT_PROVEN, no fullprotocol/locks/crypto proof",
-    "real": "Bothroles9TX/9realComplete/9oppositeRX each;8ordinaryplaintextappRT,29.008/29.465ms underoriginal5s; unauthorized/retry denied, actualDown/peer scan",
-    "old_path_regression": "All11:136appRT/32refusals/2strictfd,SSAP,pool5/newrefusals26and25/NOCPresume. Oldmode1bothroles8additional appRT.",
+    "production": "SameSession/credit/finalticket actual G1c03/Trequest1c05, private latefill/wipe/redactedsnoop; no Engine/Agent/trustedGrant",
+    "offline": "Strictbuild/allcrosslanguage/actualledger18/Host68/driver21/codec533453/redaction/actualcryptoVM; formal remains pending",
+    "real": "New exact image bothroles9relay+roleinstall/acceptance+both0011 then actual ordinary randompeerreply; oldmodes/broadcastscan/link/attainedlength regressions",
     "remaining": [
-      "Agent/method consent and role-bound1c03/1c05 actualinstall/0011 then encryptedpeerapplicationreplies/Bond",
-      "Newrelay exactsubmit/revoke/Down/deadline realinterleavings,late/duplicateComplete/NOCP/reuse/drain/firmwareclear",
-      "Dynamicmultichannel/fourdevice/SSAPCCCnotifyindicate/fullS0-S6; naturalRCA/nonhumanrecovery; no ignoredport2manualaction"
+      "Actual newVM installation and oldpath regression still pending",
+      "Agent/method caller policy, authenticated association, Bond, full security/recovery",
+      "Current new controlled revoke/Down/deadline/reuse combinations and other fullS0-S6 gates"
     ]
   },
-  "updated_at_utc": "2026-10-15T07:02:28.956968+00:00",
+  "updated_at_utc": "2026-10-15T08:01:05.132567+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
     "scope": "Retained prior progress/qualified identities; not live current state"
   },
   "current_heads": {
-    "linux": "8117cb56e2efd4f6495a8336b74ec1122dd42351",
-    "userspace_observed_before_document_commit": "89a6659441efc0294cc1f1baec42e9cacfd419b0",
+    "linux": "f5c79a50467b41f2e055dfea64786ce34730a4a5",
+    "userspace_observed_before_document_commit": "1b9f9ab45586c0dd0e4a57cea776d025d1c31769",
     "qualified_production_kernel": "41572aaf736df897914a9227c81ba92fa0df9002",
     "compiled_userspace": "37666749f57947855ab17382d685d65f165b7d70",
     "executed_vm_tools": "37666749f57947855ab17382d685d65f165b7d70",
-    "scope": "8117 only comments after415;89 only stronger evidence check after376. Real qualification remains frozen415/376."
+    "scope": "Latest install code not yet real-qualified; frozen415/376 remains qualified scope. New fresh build/VM underway."
   },
   "qualified_source_heads": {
     "linux": "41572aaf736df897914a9227c81ba92fa0df9002",
@@ -653,17 +651,14 @@
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "behavior": "Same sole physicalSession/relay/commandcredit/finalticket, actual freshP256/CMAC peerproof134..142 with outsideIRQ/Host/gate crypto and originaldeadline job identity recheck.",
-    "status": "REAL_TWO_ROLE_UNAUTHENTICATED_CANDIDATE_PROOF_SCOPED_PASS",
-    "evidence": "docs/evidence/security-key-agreement-20261015.json",
-    "production_runtime_changed": true,
-    "source_combined_blob_modified": false,
-    "new_security_qualified": false,
-    "candidate_key_agreement_qualified": true,
-    "limited_capabilities_qualified": true,
-    "full_security_qualified": false,
-    "original_restore_verified": false,
-    "ignored_diagnostic_port": "1-2.1.2"
+    "status": "INSTALLATION_MODE3_IMPLEMENTED_REAL_VM_PENDING",
+    "production_kernel": "f5c79a50467b41f2e055dfea64786ce34730a4a5",
+    "behavior": "SameSession metadata-only queue, private material copied by retained driver ticket before separate final atomic commit; real role/request/acceptance/0011 attribution, later off invalidation, no trusted identity",
+    "physical_acceptance": false,
+    "agent_consent": false,
+    "bond": false,
+    "whole_security_qualified": false,
+    "ignored_port": "1-2.1.2"
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact415/376136dataRT plus8candidatebeforeafter and8oldmodebeforeafter; counts separate",
@@ -685,21 +680,21 @@
   },
   "next_resume_tasks": [
     "Ignore port1-2.1.2 by userdirective: no operation/recovery/manualrequest; preservefailedrestore evidence, fourdevice/naturalrecovery scopes remain unqualified. Continue ports1/4.",
-    "Continue soleSession Agent/method policy and existing candidate material to role-bound actual1c03/1c05 install/matching0011, then encrypted opposite applicationcheck/reply; not a secondEngine, no trustedGrant from unauthenticatedproof.",
+    "Finish exact newVM installation/0011/ordinary business bothroles plus oldmode/retaineddata; then same mechanism Agent/method policy, authenticated levels and Bond. No secondEngine or trustedGrant from mode3.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_status": "NEW_INSTALLATION_BATCH_UPDATE_PENDING",
   "issue_sync_receipt": "docs/evidence/security-key-agreement-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "New real production behavior: stock-supported134/135 on sole Session/credit/ticket passed both physical roles,8appRT. Existing full-length/data qualification rerun on exact new image; targeted Kani remains unsupported/unproven. No issue closure or recovery upgrade."
+    "reason": "New real native9message relay candidate proof bothroles; actualfreshP256/CMAC and private material/job-lifetime integration;15 actual tests, limitedKani unsupported keptunproven,8appRT plus136fresh dataRT/32refusals and oldmode8RT. Not waiting on ignoredport2."
   },
   "current_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "New real native9message relay candidate proof bothroles; actualfreshP256/CMAC and private material/job-lifetime integration;15 actual tests, limitedKani unsupported keptunproven,8appRT plus136fresh dataRT/32refusals and oldmode8RT. Not waiting on ignoredport2."
+    "reason": "Same physical Session install metadata/late materialization/final ticket and actual-lifetime000e/0011 wired in308a/f5;18production transitions/68Host/21actual driverfaults/real cryptoVM/redaction checks; new realVM gate pending, no inherited qualification."
   },
   "execution_status": "active; limited134/135 positive achieved on ports1/4, data/SSAP and next security stage continue. Port2restore unavailable is not whole-goal blocker.",
   "goal_api_status_observed": "active",

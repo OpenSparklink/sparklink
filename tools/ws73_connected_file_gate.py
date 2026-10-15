@@ -349,6 +349,7 @@ def run(args):
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
+    encryption='ws73.security_encryption=1' in Path('/proc/cmdline').read_text().split()
     agreement='ws73.security_key_agreement=1' in Path('/proc/cmdline').read_text().split()
     capabilities='ws73.security_capabilities=1' in Path('/proc/cmdline').read_text().split()
     data_deadline='ws73.channel_deadline=1' in Path('/proc/cmdline').read_text().split()
@@ -356,6 +357,7 @@ def run(args):
     if link_down and (not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('direct Down requires separate bidirectional begun-PDU release-mode environment')
     if data_deadline and (link_down or not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate bidirectional begun-PDU original-deadline environment required')
+    if encryption and not agreement:raise ValueError('installation requires same Session candidate proof gate')
     if agreement and not capabilities:raise ValueError('key agreement requires explicit security gate')
     if capabilities and (data_deadline or link_down or not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate limited capability-only bidirectional channel gate required')
     scm_rights=getattr(args,'channel_scm_rights',False)
@@ -484,6 +486,7 @@ def run(args):
             grant.exchange('before')
             if capabilities:
                 r['key_agreement']=agreement
+                if encryption:r['unauthenticated_encryption']=True
                 from ws73_security_capabilities import exercise
                 exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disconnect,discover,standby,stop)
                 grant.close();grant=None

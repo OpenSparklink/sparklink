@@ -23,9 +23,13 @@
 
 #define LINK_SNAPSHOT_KNOWN 1
 
+#define SNOOP_REDACTED 2
+
 #define SECURITY_CAPABILITY_ONLY 1
 
 #define SECURITY_KEY_AGREEMENT_ONLY 2
+
+#define SECURITY_UNAUTHENTICATED_ENCRYPTION 3
 
 #define WS73_DISCOVERY_POLICY_VERSION 3
 
@@ -581,7 +585,7 @@ typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationSubmit {
 } SleSecurityNegotiationSubmit;
 
 /**
- * Local observations only: state4/state8 are not pairing, trust or peer application ACK.
+ * Local observations only: state4/state8/state9 do not prove identity, trust or peer application ACK.
  */
 typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationResult {
     uint64_t generation;
@@ -945,8 +949,9 @@ int slk_channel_info(int fd, struct SleChannelInfo *output);
 int slk_channel_tx_status(int fd, struct SleChannelTxStatus *output);
 
 /**
- * Explicit capability/candidate-proof approval; same live Managed File and admin required.
- * No pairing, encrypted state, keys or peer acknowledgment is promised.
+ * Explicit known no-MITM mechanism approval; same live Managed File and admin required.
+ * Candidate proof or controller encryption observations never promise authenticated
+ * identity, Agent consent, Bond, key export or peer application acknowledgment.
  * # Safety
  * Non-null pointers must be valid, aligned, nonoverlapping for this call.
  */

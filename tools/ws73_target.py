@@ -539,7 +539,8 @@ def _run(args):
     channel_deadline=bool(getattr(args,'managed_channel_deadline',False))
     security_capabilities=bool(getattr(args,'managed_security_capabilities',False))
     security_kind=getattr(args,'managed_security_kind','capabilities')
-    key_agreement=security_kind=='key-agreement'
+    encryption=security_kind=='unauthenticated-encryption'
+    key_agreement=security_kind in ['key-agreement','unauthenticated-encryption']
     if key_agreement and not security_capabilities:raise ValueError('key agreement requires standalone explicit security gate')
     if security_capabilities and (not channel_grant or connected_case!='release' or channel_revoke_prefix or channel_link_down or channel_deadline or channel_scm_rights or link_snapshot or peer_binding or bool(getattr(args,'managed_channel_directions',False))):raise ValueError('limited security capabilities require separate bidirectional ordinary channel gate')
     if channel_deadline and (channel_link_down or connected_case!='release' or not channel_revoke_prefix or channel_scm_rights or link_snapshot or peer_binding):raise ValueError('original deadline requires separate release-mode begun-prefix bidirectional channel gate')
@@ -678,6 +679,7 @@ def _run(args):
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
     m['live_security_capabilities_requested']=security_capabilities
+    m['live_security_unauthenticated_encryption_requested']=encryption
     m['live_security_key_agreement_requested']=key_agreement
     if key_agreement:m['security_key_agreement_verifier']=file_record(HERE/'ws73_key_agreement.py')
     if security_capabilities:m['security_capabilities_verifier']=file_record(HERE/'ws73_security_capabilities.py')
@@ -799,6 +801,7 @@ def _run(args):
                      (' ws73.channel_deadline=1' if channel_deadline else '')+
                      (' ws73.security_capabilities=1' if security_capabilities else '')+
                      (' ws73.security_key_agreement=1' if key_agreement else '')+
+                     (' ws73.security_encryption=1' if encryption else '')+
                      (' ws73.channel_scm_rights=1' if channel_scm_rights else '')+
                      (' ws73.channel_directions=1' if channel_directions else '')+
                      (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
@@ -1138,6 +1141,7 @@ def _run(args):
                     if bool(probe.get('channel_grant',{}).get('revoke_prefix'))!=channel_revoke_prefix:raise ValueError('requested actual revoke-prefix gate mismatch')
                     if bool(probe.get('data_link_down'))!=channel_link_down:raise ValueError('requested direct physical Down gate mismatch')
                     if bool(probe.get('data_deadline'))!=channel_deadline:raise ValueError('requested original PDU deadline gate mismatch')
+                    if bool(probe.get('unauthenticated_encryption',False))!=encryption:raise ValueError('explicit installation gate mismatch')
                     if bool(probe.get('key_agreement',False))!=key_agreement:raise ValueError('requested candidate key agreement gate mismatch')
                     if bool(probe.get('security_capabilities'))!=security_capabilities:raise ValueError('requested limited security capability gate mismatch')
                     if channel_revoke_prefix and file_record(HERE/'ws73_revoke_prefix.py')!=m['revoke_prefix_verifier']:raise ValueError('revoke-prefix verifier changed during run')
@@ -1225,7 +1229,7 @@ def _run(args):
                     # later qualification must not erase/mutate earlier evidence.
                     from ws73_daemon_removal import verify_sealed_record
                     verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']='REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
@@ -1289,7 +1293,7 @@ def _run(args):
             m['vm_disk_after'] = file_record(output/'root.btrfs')
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
-    return 0 if m['status'] in ['REAL_CANDIDATE_KEY_AGREEMENT_PASS','REAL_LIMITED_SECURITY_CAPABILITIES_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
+    return 0 if m['status'] in ['REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS','REAL_CANDIDATE_KEY_AGREEMENT_PASS','REAL_LIMITED_SECURITY_CAPABILITIES_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
 
 
 def run(args):
@@ -1338,7 +1342,7 @@ def main():
             cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
-            cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement'],default='capabilities',help='explicit limited capability or fresh unauthenticated candidate key agreement; not Pair/Encrypted')
+            cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement','unauthenticated-encryption'],default='capabilities',help='explicit capability, candidate proof or unauthenticated encryption mechanism; not Agent/identity/Bond')
             cmd.add_argument('--managed-security-capabilities',action='store_true',help='explicit Managed security negotiation gate; select bounded kind, never Pair/Encrypted')
             cmd.add_argument('--managed-channel-deadline',action='store_true',help='original5s begun-PDU deadline with separate bounded8s real IN81 hold, not recovery')
             cmd.add_argument('--managed-channel-link-down',action='store_true',help='direct physical Disconnect after actual begun PDU while both Managed leases remain held; separate from revoke/deadline/recovery')

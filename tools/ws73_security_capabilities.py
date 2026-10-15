@@ -23,8 +23,8 @@ SUBMIT=(1<<30)|(ctypes.sizeof(Submit)<<16)|(ord('S')<<8)|0xd2
 RESULT=(3<<30)|(ctypes.sizeof(Result)<<16)|(ord('S')<<8)|0xd3
 
 
-def request(snapshot,link,agreement=False):
-    value=Submit(version=1,profile=1,flags=2 if agreement else 1,action=2 if link.role==0 else 1,timeout_ms=5000,generation=snapshot.generation,lifetime=link.lifetime,request_id=1,handle=link.handle,role=link.role,address_type=link.address_type)
+def request(snapshot,link,agreement=False,encryption=False):
+    value=Submit(version=1,profile=1,flags=3 if encryption else 2 if agreement else 1,action=2 if link.role==0 else 1,timeout_ms=5000,generation=snapshot.generation,lifetime=link.lifetime,request_id=1,handle=link.handle,role=link.role,address_type=link.address_type)
     value.address[:]=link.address;return value
 
 
@@ -67,8 +67,8 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
     row=dict(status='STARTING',before_links=[bytes(a.link_snapshot()).hex() for a in observers],before_ready=[bytes(a.snapshot()).hex() for a in observers],management_before=[bytes(a.management_status()).hex() for a in observers],negative=[],start_wall_ns=time.time_ns())
     r['security_capabilities']=row;save();links=[decode(SleLinkSnapshot,v).links[0] for v in row['before_links']]
     if links[i].role!=0 or links[p].role!=1:raise ValueError('actual G Create and T response roles required')
-    agreement=r.get('key_agreement',False);wanted=8 if agreement else 4
-    requests=[request(s,l,agreement) for s,l in zip(snapshots,links)]
+    agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);wanted=9 if encryption else 8 if agreement else 4
+    requests=[request(s,l,agreement,encryption) for s,l in zip(snapshots,links)]
     row['requests']=[bytes(v).hex() for v in requests];row['ordinary_denial']=ordinary_denial(writers[i],requests[i]);save()
     for n in [i,p]:
         good=requests[n]
@@ -118,16 +118,17 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
 
 def verify(r):
     if r.get('format_version')!=1 or r.get('status')!='SECURITY_CAPABILITIES_PASS' or r.get('case')!='release' or r.get('index') not in [0,1] or r.get('daemon_running') is not False or r.get('synthetic_support') is not False:raise ValueError('separate real limited capability gate required')
-    row=r['security_capabilities'];i=r['index'];g=r['channel_grant'];agreement=r.get('key_agreement',False);snapshots=[setup(v,n) for n,v in enumerate(r['initial_snapshots'])]
+    if r.get('unauthenticated_encryption',False) and r.get('key_agreement') is not True:raise ValueError('encryption cannot bypass candidate proof gate')
+    row=r['security_capabilities'];i=r['index'];g=r['channel_grant'];agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);snapshots=[setup(v,n) for n,v in enumerate(r['initial_snapshots'])]
     if row['status']!='REAL_LIMITED_CAPABILITIES_PASS' or len(snapshots)!=2:raise ValueError('two actual controllers required')
     for n in [0,1]:
         before=decode(SleLinkSnapshot,row['before_links'][n]);after=decode(SleLinkSnapshot,row['after_links'][n])
         if before.flags!=1 or before.count!=1 or bytes(before)!=bytes(after) or before.generation!=snapshots[n].generation:raise ValueError('same physical lifetime must survive limited exchange')
         link=before.links[0];req=decode(Submit,row['requests'][n]);owner=g['owners'][n]
-        if (req.version,req.profile,req.flags,req.timeout_ms,req.request_id,req.generation,req.lifetime,req.handle,req.role,req.action,req.address_type)!=(1,1,2 if agreement else 1,5000,1,before.generation,link.lifetime,link.handle,0 if n==i else 1,2 if n==i else 1,link.address_type) or bytes(req.address)!=bytes(link.address) or any(req.reserved):raise ValueError('exact approved physical reference required')
+        if (req.version,req.profile,req.flags,req.timeout_ms,req.request_id,req.generation,req.lifetime,req.handle,req.role,req.action,req.address_type)!=(1,1,3 if encryption else 2 if agreement else 1,5000,1,before.generation,link.lifetime,link.handle,0 if n==i else 1,2 if n==i else 1,link.address_type) or bytes(req.address)!=bytes(link.address) or any(req.reserved):raise ValueError('exact approved physical reference required')
         if (owner['generation'],owner['lifetime'],owner['handle'],owner['lease'])!=(req.generation,req.lifetime,req.handle,r['leases'][n]):raise ValueError('business must use same original Session/lease')
         result=decode(Result,row['results'][n])
-        if (result.version,result.profile,result.generation,result.lifetime,result.handle,result.request_id,result.role,result.state,result.error,result.status,result.flags)!=(1,1,req.generation,req.lifetime,req.handle,1,req.role,8 if agreement else 4,0,0,7) or bytes(result.local_caps)!=OFFER or bytes(result.peer_caps)!=OFFER or any(result.reserved):raise ValueError('real local Complete and peer capability bytes required, never trusted state')
+        if (result.version,result.profile,result.generation,result.lifetime,result.handle,result.request_id,result.role,result.state,result.error,result.status,result.flags)!=(1,1,req.generation,req.lifetime,req.handle,1,req.role,9 if encryption else 8 if agreement else 4,0,0,7) or bytes(result.local_caps)!=OFFER or bytes(result.peer_caps)!=OFFER or any(result.reserved):raise ValueError('real local Complete and peer capability bytes required, never trusted state')
         for key in ['before_ready','after_ready']:
             ready=decode(SleControllerSnapshot,row[key][n])
             if ready.flags!=1 or ready.generation!=req.generation:raise ValueError('original registration Ready must remain')

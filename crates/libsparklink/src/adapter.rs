@@ -773,11 +773,11 @@ impl Adapter {
             || output.lifetime != lifetime
             || output.handle != handle
             || output.request_id != request_id
-            || !matches!(output.state, 1 | 2 | 4 | 5 | 6 | 7 | 8)
+            || !matches!(output.state, 1..=9)
             || output.flags & !7 != 0
             || output.role > 1
             || output.reserved != [0; 4]
-            || (matches!(output.state, 4 | 8)
+            || (matches!(output.state, 4 | 8 | 9)
                 && (output.flags != 7
                     || output.status != 0
                     || output.error != 0

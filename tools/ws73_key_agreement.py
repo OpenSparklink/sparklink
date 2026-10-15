@@ -12,6 +12,7 @@ from ws73_capture import CaptureError
 
 def corroborate(r,capture):
     if r.get('key_agreement') is not True:raise CaptureError('explicit candidate agreement gate required')
+    installation=r.get('unauthenticated_encryption',False)
     row=verify(r);g=r['channel_grant'];i=r['index'];commands={};received={};proof=[]
     for n in [0,1]:
         owner=g['owners'][n];usb=r['usb'][n];same=lambda v:(v['bus'],v['device'])==(usb['bus'],usb['device'])
@@ -33,8 +34,8 @@ def corroborate(r,capture):
             raw=bytes.fromhex(event['params'])
             if raw[:2]!=owner['handle'].to_bytes(2,'little') or raw[2:4]!=index.to_bytes(2,'little'):raise CaptureError('opposite real ingress role/handle/index required')
             received[index]=event
-        if any(same(v) and v['event'] in [0x11,0xe] and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns'] for v in capture['native_events']):raise CaptureError('candidate agreement cannot install/enable encryption')
-        if any(same(v) and v['opcode'] in [0x1c03,0x1c05] and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns'] for v in capture['commands']):raise CaptureError('candidate-only evidence must contain no key install command')
+        if not installation and any(same(v) and v['event'] in [0x11,0xe] and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns'] for v in capture['native_events']):raise CaptureError('candidate agreement cannot install/enable encryption')
+        if not installation and any(same(v) and v['opcode'] in [0x1c03,0x1c05] and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns'] for v in capture['commands']):raise CaptureError('candidate-only evidence must contain no key install command')
         event=row['down'][n];raw=bytes.fromhex(event['params'])
         matches=[v for v in capture['native_events'] if same(v) and v['event']==event['event'] and v['params']==event['params'] and row['cleanup_before_wall_ns']<=v['wall_ns']<=row['cleanup_after_wall_ns']]
         if len(matches)!=1 or event['generation']!=owner['generation'] or event['lost'] or len(raw)!=4 or raw[0] or int.from_bytes(raw[1:3],'little')!=owner['handle']:raise CaptureError('actual same-lifetime cleanup Down required')
@@ -51,4 +52,31 @@ def corroborate(r,capture):
     _,legs=business_evidence(g,r,capture)
     control(capture,r['usb'][i],0x1403,g['owners'][i]['handle'].to_bytes(2,'little')+b'\x13',row['cleanup_before_wall_ns'],row['cleanup_after_wall_ns'],status=True)
     for enabled in [True,False]:control(capture,r['usb'][1-i],0x1002,bytes([enabled,0]),row['cleanup_after_wall_ns'],row['scan_checked_wall_ns'])
+    installs=[]
+    if installation:
+        keys=[];on=[]
+        for n in [0,1]:
+            same=lambda v:(v['bus'],v['device'])==(r['usb'][n]['bus'],r['usb'][n]['device'])
+            expected=0x1c03 if n==i else 0x1c05
+            tx=[v for v in capture['commands'] if same(v) and v['opcode'] in [0x1c03,0x1c05] and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns']]
+            if len(tx)!=1 or tx[0]['opcode']!=expected:raise CaptureError('one role-exact real key install command required')
+            cmd=tx[0];raw=bytes.fromhex(cmd['params']);length=21 if n==i else 20
+            if len(raw)!=length or raw[:2]!=g['owners'][n]['handle'].to_bytes(2,'little') or raw[18:]!=(b'\x01\x01\0' if n==i else b'\x01\x01') or not any(raw[2:18]) or not cmd.get('completion'):raise CaptureError('exact role-specific install schema and real USB completion required')
+            # These actual USB captures contain secrets and remain private. No
+            # key, install params or key-bearing raw event enters public proof.
+            keys.append(raw[2:18])
+            accepted=[v for v in capture['native_events'] if same(v) and v['event']==1 and v['params']==(expected.to_bytes(2,'little')+b'\x01\0').hex() and cmd['wall_ns']<=v['wall_ns']<=row['observed_wall_ns']]
+            accepted += [v for v in capture['complete'] if same(v) and v['opcode']==expected and v['status']==0 and cmd['wall_ns']<=v['wall_ns']<=row['observed_wall_ns']]
+            events=[v for v in capture['native_events'] if same(v) and v['event']==0x11 and cmd['wall_ns']<=v['wall_ns']<=row['observed_wall_ns']]
+            enabled=[v for v in events if v['params']==(b'\0'+raw[:2]+b'\x01').hex()]
+            if not accepted or len(events)!=1 or len(enabled)!=1:raise CaptureError('real command acceptance AND exact initial0011 required')
+            on.append(enabled[0]['wall_ns'])
+            installs.append(dict(controller=n,opcode=expected,handle=g['owners'][n]['handle'],parameter_length=length,key_redacted=True,command_record=cmd['record'],accept_records=[v['record'] for v in accepted],encryption_event=enabled[0]))
+        if keys[0]!=keys[1]:raise CaptureError('both actual controllers must receive the same newly derived candidate')
+        request_events=[v for v in capture['native_events'] if (v['bus'],v['device'])==(r['usb'][1-i]['bus'],r['usb'][1-i]['device']) and v['event']==0xe and row['g_start_before_wall_ns']<=v['wall_ns']<=row['observed_wall_ns']]
+        gcmd=next(v for v in capture['commands'] if v['opcode']==0x1c03 and (v['bus'],v['device'])==(r['usb'][i]['bus'],r['usb'][i]['device']) and row['g_start_before_wall_ns']<=v['wall_ns']<=row['observed_wall_ns'])
+        tcmd=next(v for v in capture['commands'] if v['opcode']==0x1c05 and (v['bus'],v['device'])==(r['usb'][1-i]['bus'],r['usb'][1-i]['device']) and row['g_start_before_wall_ns']<=v['wall_ns']<=row['observed_wall_ns'])
+        if len(request_events)!=1 or request_events[0]['params']!=g['owners'][1-i]['handle'].to_bytes(2,'little').hex() or not received[0x142]['wall_ns']<=gcmd['wall_ns']<=request_events[0]['wall_ns']<=tcmd['wall_ns'] or commands[0x142][1]['wall_ns']>tcmd['wall_ns']:raise CaptureError('proof and real T-key request must precede role installation')
+        if any(b['start_wall_ns']<max(on) for b in g['business'] if b['label']=='after_capabilities'):raise CaptureError('after-encryption business must start after both real encryption events')
+        return dict(status='REAL_UNAUTHENTICATED_LINK_ENCRYPTION_CORROBORATED',controllers=proof,installations=installs,business_legs=legs,business_round_trips=4,scope='Actual9 relay PDUs, role-specific key installation/acceptance, both lifetime-bound controller0011 and actual ordinary opposite application checks/replies. Not Agent consent, authenticated identity, Bond, independent radio cipher attestation, third-party interop or natural recovery. USB captures contain private key material and must remain private.')
     return dict(status='REAL_UNAUTHENTICATED_CANDIDATE_KEY_AGREEMENT_CORROBORATED',controllers=proof,business_legs=legs,business_round_trips=4,public_points=[gp.hex(),tp.hex()],public_nonces=[gn.hex(),tn.hex()],scope='Actual9 typed relay PDUs/realComplete/oppositeRX, kernel candidate proof state8, sameSession ordinary before/after replies. No independent standard/third-party interop, Agent, authenticated identity, install, encryption, Bond or natural recovery qualification.')

@@ -461,8 +461,9 @@ pub unsafe extern "C" fn slk_channel_tx_status(
     }
 }
 
-/// Explicit capability/candidate-proof approval; same live Managed File and admin required.
-/// No pairing, encrypted state, keys or peer acknowledgment is promised.
+/// Explicit known no-MITM mechanism approval; same live Managed File and admin required.
+/// Candidate proof or controller encryption observations never promise authenticated
+/// identity, Agent consent, Bond, key export or peer application acknowledgment.
 /// # Safety
 /// Non-null pointers must be valid, aligned, nonoverlapping for this call.
 #[unsafe(no_mangle)]

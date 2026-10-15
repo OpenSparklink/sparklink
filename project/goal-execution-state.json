@@ -1043,6 +1043,10 @@
       "agent-data11-db6e333": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "security-cli-real2-300a": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
@@ -1050,11 +1054,11 @@
       "id": "explicit-security-cli",
       "production_behavior": "Foreground human slctl Agent and same-author security-request over existing broker/Session/credit/tickets; no auto-approval or new Engine",
       "exit": [
-        "strict locked build and real CLI/private-bus identity/deadline/EOF/watchdog regressions",
-        "fresh exact VM compiled CLI approve/reject, both roles, actual relay/installation and peer application replies",
-        "retained discovery/connect/short/boundary gates; no inheritance of historical85cdf CLI qualification"
+        "CLI production and offline gates passed; exact source bindings in new report",
+        "security-cli-real2-300a scoped real PASS, not full security/deployment",
+        "new-image eleven retained data gates in progress; batch not complete"
       ],
-      "next": "Wire actual CLI VM witness; in-flight revoke/Down/deadline composition and production fuzz/debug VM parallel; multichannel/four-device/SSAP and original S0-S6 unchanged"
+      "next": "Finish separately running eleven retained data gates; then controlled in-flight revoke/Down/original deadline, production fuzz/debug VM and data/multichannel/fourdevice/SSAP in parallel; all original S0-S6 scopes retained"
     }
   },
   "agent_workstream": {

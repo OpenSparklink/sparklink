@@ -32,6 +32,7 @@ credit等保持矩阵单独执行，在完成前不宣称整批退出。不以�
 | Agent策略离线16175：15 private-D-Bus +1生产时钟用例 | `offline` | `PASS` |
 | Agent实机85cdf/db6：六模式交换角色48次应用回复 | `real_device` | `PASS` |
 | 数据保持85cdf/db6：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
+| 正式CLI实机6385/300a：批准拒绝两角色16次对端应用回复 | `real_device` | `PASS` |
 
 保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `85cdf627d70bd239609ab0e74124b787279f139f`；执行工具 `db6e333814cfc2740b51b0d70c6acf52c6dbca9d`。
 

@@ -76,6 +76,17 @@
     "general_ci_status": "failure",
     "log_sha256": "813c69e91eb1221a8784ebf30c887150107a2ff155a9860ce31ee538fc073449",
     "test_only_kernel_fix": "239e0171b6ef0edfdb3db35eb8241308c2f43ea2",
-    "new_ci_status": "pending"
+    "new_ci_status": "pending",
+    "resolved_by": {
+      "userspace_commit": "b0e88bcadc0b40268a184e91212baed8a5324a2c",
+      "general_ci": 38728290114,
+      "general_ci_status": "success",
+      "documentation_runs": [
+        38728290118,
+        38728278465
+      ],
+      "documentation_status": "success",
+      "qualification": "Offline CI only; no full authorization VM or formal PASS"
+    }
   }
 }

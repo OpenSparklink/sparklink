@@ -36,6 +36,16 @@ Grant。原期限内分别记录实际提交、真实Complete和对端0014能力
 只核对已知offer的实验入口不承诺通用互操作，也不替代Agent、方法选择、proof、
 实际安装/加密及Bond门禁。当前代码和限定实机资格只见CURRENT_CAPABILITIES。
 
+原期限采用调用者在Agent/策略等待前设置的CLOCK_MONOTONIC绝对纳秒值，未发布
+SUBMIT同步替换为版本2/64字节，旧56字节入口删除；RESULT/CANCEL仍为版本1。
+Session始终检查该原期限；Host粗粒度tick只安排清理，不充当批准有效期。内核速率
+由实际timer API取得，不能用bindgen的userspace HZ。挂起时间与完整PM取消另行验收。
+
+单请求取消与物理安全状态分离。当前File操作/Managed门序列化ioctl；Agent调用者退出
+不能通过丢弃异步任务而遗失原提交结果/引用。已准入的提交必须被跟踪到可确认取消
+或物理终态；取消只撤回原作者，不能释放全设备租约，也不能把已安装结果伪装成Off。
+本批原期限算术限定形式化与真实等待门禁不是Agent正向接线/完整竞态/安全认证证明。
+
 候选proof扩展复用此ledger及唯一RX归属；Session独占不导出的C密码材料，锁外
 执行真实同步P-256/CMAC，回填以原job票据/身份/epoch/期限重新验证。队列只在前一
 真实Complete清账后推进，特别是T公钥137与确认138。最后proof及所有本地Complete

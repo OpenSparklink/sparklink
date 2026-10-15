@@ -880,7 +880,7 @@
   },
   "in_progress_security_absolute_deadline": {
     "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
-    "status": "EXACT_BUILD_OFFLINE_AND_SCOPED_ARITHMETIC_PASS_VM_PENDING",
+    "status": "SCOPED_REAL_TWO_ROLE_ORIGINAL_DEADLINE_AND_CANCEL_PASS_REMAINDER_RUNNING",
     "submit_version": 2,
     "submit_bytes": 64,
     "clock": "CLOCK_MONOTONIC nanoseconds",
@@ -888,6 +888,17 @@
     "formal_arithmetic": "BOUNDED_PASS100; allu64 now/deadline/jiffies, allu32 maximum_ms, CONFIG_HZ100/250/300/1000",
     "formal_first_attempt": "NOT_PROVEN_TIMEOUT, arbitraryu32 HZ,300seconds; retained",
     "excluded": "clock mapping, Session/Host integration, File/locks/refs/USB/crypto/hardware; prior1766 unsupported not upgraded",
-    "next_exit": "Actual2s policy wait counts toward original5s, terminal timeout not rewritten by cancel, sameSession/lease/Ready and random peer business; new two-role install and data matrix then Agent wiring."
+    "next_exit": "Actual2s policy wait counts toward original5s, terminal timeout not rewritten by cancel, sameSession/lease/Ready and random peer business; new two-role install and data matrix then Agent wiring.",
+    "compiled_userspace": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
+    "tools_commit": "575ba33",
+    "real_scope": "Two role2s pre-admission controlled wait, observed expiry at5031/5030ms from input,2976/2973ms afterarm; no renewed5s. Timeout terminal survivescancel, fresh deadline restartEBUSY, sameSession/lease/Ready and8ordinary random businessRT. Two-role passivecancel alsoPASS. Not Agent.",
+    "full_regression": "RUNNING; does not yet grant remaining installation/data gates",
+    "first_gate_failure": "FAIL retained: expired original request reused for restart probe, ETIMEDOUT beforeEBUSY; fixed575 probe requires fresh valid budget, noRuntimechange"
+  },
+  "plan_progress_archive": {
+    "path": "history/architecture/progress-snapshots-20261014.md",
+    "source_commit": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
+    "original_excerpt_sha256": "2f531066e9ef60b1ae3b905419e8ec2c20e9d111db8a955804333cd751efb6af",
+    "scope": "Historical progress moved out of canonical implementation plan; original S0-S6/WP/FV/DG unchanged"
   }
 }

@@ -1,0 +1,633 @@
+{
+  "schema": 1,
+  "status": "TWO_ROLE_REAL_ORIGINAL_SECURITY_DEADLINE_SCOPED_PASS",
+  "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+  "compiled_userspace": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
+  "prepared_and_executed_tools": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
+  "vm_only": true,
+  "abi": {
+    "submit_version": 2,
+    "submit_bytes": 64,
+    "result_version": 1,
+    "result_bytes": 72,
+    "cancel_version": 1,
+    "cancel_bytes": 32,
+    "old_submit56_removed": true,
+    "clock": "CLOCK_MONOTONIC ns, excludes suspend; fullPM not qualified"
+  },
+  "behavior": "Original caller deadline spans pre-admission waiting and Session/crypto/submit/input. Host tick cleanup timer cannot grant new authorization. Controlled sleep is a test, not an actual Agent.",
+  "runs": [
+    {
+      "index": 0,
+      "status": "REAL_SECURITY_ORIGINAL_DEADLINE_PASS",
+      "g_port": "1-2.1.2",
+      "passive_t_port": "1-2.1.3",
+      "controlled_preapproval_wait_ms": 2000.13132,
+      "timeout_observed_from_input_ms": 5031.487096,
+      "timeout_observed_from_t_arm_ms": 2976.337341,
+      "original_budget_ms": 5000,
+      "same_session_lease_ready": true,
+      "terminal_state_before_and_after_cancel": 7,
+      "terminal_errno": -110,
+      "repeat_cancel_returns": [
+        0,
+        0
+      ],
+      "fresh_deadline_restart_errno": 16,
+      "ordinary_random_peer_replied_round_trips": 4,
+      "business_split": "2 before arm,2 after original expiry and cancel; UID1000/caps0, actual peer verification/reply",
+      "no_security_wire": true,
+      "explicit_later_cleanup_down_scan": true,
+      "kernel_taint0": true,
+      "capture_drops": 0,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index0/manifest.json",
+          "sha256": "f9f1d4d595982f8535e442eb7e87f7bcd556866e4e0b09836fc4e78eefa16765",
+          "bytes": 71824
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index0/qmp.jsonl",
+          "sha256": "4394629b6ac7ca66e944a760089fd289b46547a2808ec4fe3f5c5482730ee664",
+          "bytes": 1032
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index0/guest-output/connected-file/run.json",
+          "sha256": "fef6be544bb6c751a067f8fc1b403519ab0e998620c453a107e9def37d2a31ca",
+          "bytes": 42939
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index0/guest-output/ws73.pcap",
+          "sha256": "ec02242f3ed76d111b052c09d060b995a6c6b9aa1021f786e043fad44d540f44",
+          "bytes": 67352
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index0/guest-output/kernel.log",
+          "sha256": "cf5ad4b6446b07b91d3e951b1fa3ae26ab96dfd86507d8ef6b9458be447f522f",
+          "bytes": 348704
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index0/guest-output/capture-stats.txt",
+          "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "status": "REAL_SECURITY_ORIGINAL_DEADLINE_PASS",
+      "g_port": "1-2.1.3",
+      "passive_t_port": "1-2.1.2",
+      "controlled_preapproval_wait_ms": 2000.127764,
+      "timeout_observed_from_input_ms": 5029.999573,
+      "timeout_observed_from_t_arm_ms": 2973.149743,
+      "original_budget_ms": 5000,
+      "same_session_lease_ready": true,
+      "terminal_state_before_and_after_cancel": 7,
+      "terminal_errno": -110,
+      "repeat_cancel_returns": [
+        0,
+        0
+      ],
+      "fresh_deadline_restart_errno": 16,
+      "ordinary_random_peer_replied_round_trips": 4,
+      "business_split": "2 before arm,2 after original expiry and cancel; UID1000/caps0, actual peer verification/reply",
+      "no_security_wire": true,
+      "explicit_later_cleanup_down_scan": true,
+      "kernel_taint0": true,
+      "capture_drops": 0,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index1/manifest.json",
+          "sha256": "21b33bbef23959602179aa1f78f1a4483f78bbe79d7d72af2ef3fc44f3f654a7",
+          "bytes": 71824
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index1/qmp.jsonl",
+          "sha256": "4394629b6ac7ca66e944a760089fd289b46547a2808ec4fe3f5c5482730ee664",
+          "bytes": 1032
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index1/guest-output/connected-file/run.json",
+          "sha256": "56dcb2333a961519b333f7993102a12ba0ff7b034dba0dab41f97b83851eb8dc",
+          "bytes": 43250
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index1/guest-output/ws73.pcap",
+          "sha256": "2d32bb951b3c914672829c4db88e418065b267917cff306f8a1739c670760aee",
+          "bytes": 67690
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index1/guest-output/kernel.log",
+          "sha256": "b87a5a992bea992070ed30529520773ef8b5d52fc187695ff8795b4b2fa79dfb",
+          "bytes": 349508
+        },
+        {
+          "path": ".dev/native-deadline-v2-original-deadline-index1/guest-output/capture-stats.txt",
+          "sha256": "d0f0217a0b150e0a331ab71d09e1b3171d7ce5a182cfed8b9360992c6df5836f",
+          "bytes": 225
+        }
+      ]
+    }
+  ],
+  "production_sources": [
+    {
+      "path": "linux/include/uapi/linux/sparklink_ioctl.h",
+      "sha256": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+      "bytes": 40217
+    },
+    {
+      "path": "linux/net/sparklink/sle_security_relay.rs",
+      "sha256": "87d56be3e65729c9df99375a386f643d1e9e88aa9645365314e295013b08ca0d",
+      "bytes": 35282
+    },
+    {
+      "path": "linux/net/sparklink/sle_security_relay_state.rs",
+      "sha256": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+      "bytes": 33262
+    },
+    {
+      "path": "linux/net/sparklink/sle_uapi.rs",
+      "sha256": "10058503091ed44debba18ab1e86031fdf37d7900300528c7ec474eb4620f726",
+      "bytes": 81060
+    },
+    {
+      "path": "linux/net/sparklink/sparklink_core.rs",
+      "sha256": "adf1e75b58169c54388dc46497a8ee18442dadfb6f27e29e01cdd5a47022c00a",
+      "bytes": 100054
+    }
+  ],
+  "build": {
+    "record": {
+      "path": ".dev/security-deadline-v1-kernel-build-record.json",
+      "sha256": "f69499e38a383bc049e888f7ca32d8fd7227f739e49ec08eb4541d9e8d26ff85",
+      "bytes": 1276
+    },
+    "status": "BUILD_PASSED",
+    "exact_source_clean": true,
+    "no_usb": "WS73/standard signed-module root-smoke andVirtual PASS, not host/hardware qualification"
+  },
+  "offline": {
+    "actual_production_transition_tests": 31,
+    "native_tests": 44,
+    "host_tests": 68,
+    "cross_language_tests": 39,
+    "cargo_tests": 222,
+    "cargo_suites": 13,
+    "strict_clippy": "PASS",
+    "tools_tests": 522,
+    "logs": [
+      {
+        "path": ".dev/security-deadline-python-fixed.log",
+        "sha256": "6ac61a44b568c95790e8774877593b7e87dffcf592c0878955f9fb833a43a154",
+        "bytes": 138
+      },
+      {
+        "path": ".dev/security-deadline-clippy.log",
+        "sha256": "2363d7f42b7767523bab0f6f6ee32076021ea6c177c47091d87899253c451505",
+        "bytes": 886
+      },
+      {
+        "path": ".dev/security-deadline-cargo.log",
+        "sha256": "07ec4cd01b9a8cf192a9a4b2c19c04fb38d7a2246bd95fbf468797de1ad201dd",
+        "bytes": 18138
+      },
+      {
+        "path": ".dev/security-deadline-restart-probe-tools.log",
+        "sha256": "91c19d209ae58d4c86a0af3cbf469997df2a44fd28c5d3c01bd83179a7a5c81f",
+        "bytes": 657
+      }
+    ]
+  },
+  "arithmetic_formal": {
+    "status": "PRODUCTION_RELAY_SESSION_REGRESSION_PASS",
+    "tests": 31,
+    "default_kernel_implementation": true,
+    "rf_acceptance": false,
+    "source_head": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "source_tree_clean": true,
+    "runner_sha256": "982f7ff31387e44663363ae93675b8ab813921b783397c5bfe1bbbc6bd8932ba",
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+    "sources": {
+      "net/sparklink/sle_security_relay_state.rs": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+      "tools/testing/selftests/sparklink/security/relay_session.rs": "8fcbf6b00744e32233a0c2bf395eda575e5e97dc65fe0a54c88f468c1d4091f2",
+      "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "6a452e76c80a74e0975f7999fb2aac3eb7b41b274fd985b8cf1dd7162dcd9ec6"
+    },
+    "formal": {
+      "status": "BOUNDED_PASS",
+      "exit": 0,
+      "generated_checks": [
+        100
+      ],
+      "command": [
+        "kani",
+        "tools/testing/selftests/sparklink/security/relay_session_kani.rs",
+        "--harness",
+        "absolute_policy_deadline_and_host_timer"
+      ],
+      "log_sha256": "e4d1be38e23c2f8ed71f03f090aef92bd372714693c9639836bb1d2c52e18d93",
+      "version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0"
+    },
+    "proof_scope": {
+      "harness": "absolute_policy_deadline_and_host_timer",
+      "loop_free": true,
+      "production_functions": [
+        "original_deadline",
+        "host_wake_deadline"
+      ],
+      "input_space": "allu64 now/deadline/jiffies and allu32 maximum_ms; timer rates100/250/300/1000",
+      "timer_scope": "x86 CONFIG_HZ choices; current VM CONFIG_HZ=1000. Production rate comes from actual msecs_to_jiffies(1000); not bindgen userspace HZ.",
+      "properties": [
+        "Accepted deadline equals original caller deadline, future and bounded1..5000ms",
+        "Expired or invalid budgets reject; arithmetic never wraps",
+        "Accepted Host wake equals checked ceiling timer conversion plus one tick; no overflow"
+      ],
+      "assumptions": [
+        "Unsigned integer/Rust checked-arithmetic semantics as encoded by Kani/CBMC",
+        "Timer argument matches stated actual kernel CONFIG_HZ; this is not a UAPI argument"
+      ],
+      "excluded": [
+        "Kernel clock sampling/correspondence, suspend, scheduling and Host timer execution",
+        "Session transitions/final USB submission, File/grant authorization and locks/references",
+        "Cryptography, firmware/NOCP/peer behavior, Agent and natural recovery"
+      ]
+    },
+    "regression_status": "PASS"
+  },
+  "installation_composition": {
+    "status": "PRODUCTION_RELAY_SESSION_FORMAL_NOT_PROVEN",
+    "tests": 31,
+    "default_kernel_implementation": true,
+    "rf_acceptance": false,
+    "source_head": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "source_tree_clean": true,
+    "runner_sha256": "982f7ff31387e44663363ae93675b8ab813921b783397c5bfe1bbbc6bd8932ba",
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+    "sources": {
+      "net/sparklink/sle_security_relay_state.rs": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+      "tools/testing/selftests/sparklink/security/relay_session.rs": "8fcbf6b00744e32233a0c2bf395eda575e5e97dc65fe0a54c88f468c1d4091f2",
+      "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "6a452e76c80a74e0975f7999fb2aac3eb7b41b274fd985b8cf1dd7162dcd9ec6"
+    },
+    "formal": {
+      "status": "NOT_PROVEN_UNSUPPORTED",
+      "exit": 0,
+      "generated_checks": [
+        1766
+      ],
+      "command": [
+        "kani",
+        "tools/testing/selftests/sparklink/security/relay_session_kani.rs",
+        "--harness",
+        "installation_submit_cancel_accept_and_event"
+      ],
+      "log_sha256": "7791f51f2c7f2ead84ec65aec008a9fb1ddafe6eee5803f523c647c249ca2228",
+      "version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0"
+    },
+    "proof_scope": {
+      "harness": "installation_submit_cancel_accept_and_event",
+      "queue_depth": 2,
+      "capability_payload_bytes": 10,
+      "capability_exchanges": 1,
+      "capability_terminal_replies": 1,
+      "arbitrary_commit_time_u64": false,
+      "unwind": 80,
+      "property_inventory_by_harness": {
+        "capability_withdraw_deadline_and_submit": [
+          "No callback after prior withdraw/expiry or foreign identity",
+          "Submit failure is nondeterministic; only accepted callback creates obligation",
+          "Withdraw/expiry preserve submitted obligation until matching terminal reply"
+        ],
+        "capability_requires_peer_and_terminal_complete": [
+          "Successful Status alone cannot pay obligation or complete exchange",
+          "Both peer ingress and real Complete required in either order; terminal failure cannot revive"
+        ],
+        "key_agreement_job_cancel_and_physical_obligation": [
+          "G public crypto job cannot be created before T response actually submits",
+          "Withdraw/expiry reject either successful or failed crypto receipt and create no continuation",
+          "Submitted T response obligation remains until its actual matching terminal reply"
+        ],
+        "installation_submit_cancel_accept_and_event": [
+          "Drive actual G capability/public/confirm/nonce/proof transitions before installation; no force-ready model",
+          "Every actual submit and crypto job has failure branches; accepted command and real0011 independently required",
+          "Withdraw/expiry before materialize or final submit prevents callback; cancel after submit retains obligation until matching reply",
+          "Late reply or encryption event cannot revive cancelled/failed Session; post-success off invalidates even beyond original deadline",
+          "Command Status pays only command obligation; pending asynchronous install survives cancel/expiry until actual domain evidence or physical retirement"
+        ]
+      },
+      "assumptions": [
+        "Caller serializes exact production methods under Owner lock",
+        "Host/gate identity is current; driver callback atomically accepts or NEVER queues",
+        "Input reply ticket already resolved by Host; peer ingress identity already frozen"
+      ],
+      "excluded": [
+        "Actual locks/references/IRQ/USB callback drain and Host-to-driver mapping",
+        "Wire Complete uniqueness, late/duplicate handle attribution, firmware state clear/reuse barrier",
+        "Unbounded execution, cryptography, authentication, Agent, actual controller key installation and natural recovery",
+        "Actual C key copy, firmware encryption truth, independent radio cipher attestation, T role installation model and uncertain USB failure combination"
+      ],
+      "role": "G only",
+      "original_deadline": 100,
+      "logical_schedule": "fixed0..28, expiry100 and lateroff101/102; not arbitrary time or kernel clock proof",
+      "wire_inputs": "knownoffer10, ownpub64/encoded70, peerpub64 and16byte confirmation/nonce/proof fixtures",
+      "crypto_jobs": 4,
+      "local_relays": 4,
+      "installation_intents": 1,
+      "crypto_dependency": "success/failure nondeterministic, not valid-point/math proof",
+      "installation_scope": "actual metadata transitions; opaque C key copy and actual driver lock/reference/USB excluded",
+      "request_cancel_scope": "Before materialization/final submit and after actual submit/Status, nondeterministic choice of author withdraw or actual production Session.cancel; cancellation idempotence checked. Original File/request validation and Runtime locking are outside this pure harness."
+    },
+    "regression_status": "PASS"
+  },
+  "first_unbounded_timer_rate_attempt": {
+    "result": "NOT_PROVEN_TIMEOUT",
+    "timeout_seconds": 300,
+    "report": {
+      "path": ".dev/security-absolute-deadline-formal-precommit.json",
+      "sha256": "dbc5ac72e91eaa317ffd3c2df56db085679bc8e1bf5d37e0063e40b3be848c78",
+      "bytes": 2799
+    },
+    "note": "Allu32 HZ symbolic multiplication exceeded tool limit; scoped final harness covers actual x86CONFIG_HZ100/250/300/1000, including current1000. No real-config fault branch excluded."
+  },
+  "first_real_gate_failure": {
+    "status": "FAIL",
+    "folder": ".dev/native-deadline-v1-original-deadline-index0",
+    "manifest": {
+      "path": ".dev/native-deadline-v1-original-deadline-index0/manifest.json",
+      "sha256": "4a5bf43100b669bd7f05abf882e20a94be14b25a578786eb09e00889a9aa6db1",
+      "bytes": 45789
+    },
+    "cause": "Original timeout terminal7/ETIMEDOUT observed; restart probe incorrectly reused expired deadline and gotETIMEDOUT before physical-lifeEBUSY check. No RF PASS granted.575 test-only repair records a fresh valid budget/newid and requiresEBUSY; Runtime unchanged.",
+    "supervisor": {
+      "path": ".dev/native-deadline-v1-original-deadline-index0/guest-output/connected-file-supervisor.log",
+      "sha256": "807dabb26745c74db9b30d9b44bf292fb88890d39c38ffaa505385b0be6c7c96",
+      "bytes": 871
+    }
+  },
+  "remaining_regression": "21-gate supervisor remains RUNNING; two-role originaldeadline/cancel/actualinstall/capability/candidate are complete. Data matrix partial; only explicit completed reports qualify.",
+  "online_ci": {
+    "compiled_commit": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
+    "ci": 38738657022,
+    "ci_status": "SUCCESS",
+    "documentation": [
+      38738657162,
+      38738648371
+    ],
+    "documentation_status": "SUCCESS",
+    "fixed_tools_575": {
+      "commit": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
+      "ci": 38739584893,
+      "documentation": 38739584653,
+      "result": "SUCCESS"
+    }
+  },
+  "reference": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "files": [
+      "services/stack/src/cp/bsl/sle/sm/src/sm_slink.c",
+      "services/stack/src/cp/bsl/sle/sm/src/sm_stm.c",
+      "services/stack/src/cp/bsl/sle/sm/src/sm_nego.c"
+    ],
+    "mapping": "Per-link callbacks distinguish request/auth/encryption; opcode waiting and UAPI waiting have separate timers. Reuse ownership/procedure reference, do not copy resettable per-step timers as our total caller budget; no implementation copied."
+  },
+  "limits": [
+    "Not Agent/method/caller integration or authenticated identity/trustedGrant/Bond qualification.",
+    "No controlled installationStatus/0011/withdraw/Down/finalUSB or actual crypto-cancel interleaving qualification.",
+    "Kani100 is only actual pure arithmetic; old/new composition1766 remains NOT_PROVEN_UNSUPPORTED. No full Linux/runtime/firmware/hardware proof.",
+    "No native-host/four-device/natural fault RCA or nonmanual recovery; manualreplug/QMP/hub actions do not replace those gates.",
+    "Raw captures and keys/device serials remain private; only fingerprints published."
+  ],
+  "completed_limited_mechanism_regression": [
+    {
+      "name": "cancel-pending-index0",
+      "status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+      "business_round_trips": 4,
+      "split": "2 before,2 after observed mechanism/cancel; not all encrypted",
+      "elapsed_from_t_arm_ms": 21.193144,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-cancel-pending-index0/manifest.json",
+          "sha256": "1e7791b3eab7001078a7750df16eca4a4bc21dc5fd0f6bc44245f77ee1e9bd75",
+          "bytes": 71700
+        },
+        {
+          "path": ".dev/native-deadline-v2-cancel-pending-index0/guest-output/connected-file/run.json",
+          "sha256": "daca3ebfe7fc369fa4a38f0bb4748c465caf025fb2b5b2bd0ef02e5e086c900a",
+          "bytes": 42634
+        },
+        {
+          "path": ".dev/native-deadline-v2-cancel-pending-index0/guest-output/ws73.pcap",
+          "sha256": "e6afdd044fc89976d3d788c27cace0caad05c8a18bb3a16faad89274f92eaf3f",
+          "bytes": 67352
+        },
+        {
+          "path": ".dev/native-deadline-v2-cancel-pending-index0/guest-output/capture-stats.txt",
+          "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "name": "cancel-pending-index1",
+      "status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+      "business_round_trips": 4,
+      "split": "2 before,2 after observed mechanism/cancel; not all encrypted",
+      "elapsed_from_t_arm_ms": 20.624783,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-cancel-pending-index1/manifest.json",
+          "sha256": "2a31bea8ded10723db032cd72968d12131cad7214a7a7892358bbb538afebfcf",
+          "bytes": 71700
+        },
+        {
+          "path": ".dev/native-deadline-v2-cancel-pending-index1/guest-output/connected-file/run.json",
+          "sha256": "94bfc0670e7db1843fd47509b1f1cfcc40cb5d3a4f3919092e68e2f82b19b378",
+          "bytes": 42635
+        },
+        {
+          "path": ".dev/native-deadline-v2-cancel-pending-index1/guest-output/ws73.pcap",
+          "sha256": "f180538da74985079bfb569d600abcb982a6eb6f2315323c5f92016c40cdaaae",
+          "bytes": 67352
+        },
+        {
+          "path": ".dev/native-deadline-v2-cancel-pending-index1/guest-output/capture-stats.txt",
+          "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "name": "unauthenticated-encryption-index0",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "business_round_trips": 4,
+      "split": "2 before,2 after observed mechanism/cancel; not all encrypted",
+      "elapsed_from_t_arm_ms": 37.382055,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/manifest.json",
+          "sha256": "3385179d27bf92027eb521a222619e4f603658f918eb8e9b04442102f2cad42b",
+          "bytes": 89563
+        },
+        {
+          "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/guest-output/connected-file/run.json",
+          "sha256": "39bbfa762d7435adc614cfb2cdccbe292f56944e2c278dcd145a882bf435818c",
+          "bytes": 40205
+        },
+        {
+          "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/guest-output/ws73.pcap",
+          "sha256": "7f6212c4dbdaa61096d9d6311b09836598c115c7fb47f3a26333c9277d6092ad",
+          "bytes": 78328
+        },
+        {
+          "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/guest-output/capture-stats.txt",
+          "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "name": "unauthenticated-encryption-index1",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "business_round_trips": 4,
+      "split": "2 before,2 after observed mechanism/cancel; not all encrypted",
+      "elapsed_from_t_arm_ms": 36.242097,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/manifest.json",
+          "sha256": "6f2ed74ad5bf269d0172ecb2e84b2575eada0a2029c0589893a103b320643d51",
+          "bytes": 89563
+        },
+        {
+          "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/guest-output/connected-file/run.json",
+          "sha256": "c84947ed4ba2f2eeea6b40d77619453bacd3994629ab4015860f9f7eb000f81f",
+          "bytes": 40206
+        },
+        {
+          "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/guest-output/ws73.pcap",
+          "sha256": "59aea40e5844b3c45384c1094453b00a8dd0efdeb649d16ccba030db46f6ae2a",
+          "bytes": 78328
+        },
+        {
+          "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/guest-output/capture-stats.txt",
+          "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "name": "capabilities-index0",
+      "status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+      "business_round_trips": 4,
+      "split": "2 before,2 after observed mechanism/cancel; not all encrypted",
+      "elapsed_from_t_arm_ms": 11.76314,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-capabilities-index0/manifest.json",
+          "sha256": "f7b4fe0bc17c4ffa094c0fdbce5ad7722e250b5c9053726fa270bc4a9b60282d",
+          "bytes": 74444
+        },
+        {
+          "path": ".dev/native-deadline-v2-capabilities-index0/guest-output/connected-file/run.json",
+          "sha256": "37c32dbc09e6aa22c21fdfc813fc87372fe95336fbb2edc14bfb5c7bafbe4a10",
+          "bytes": 40168
+        },
+        {
+          "path": ".dev/native-deadline-v2-capabilities-index0/guest-output/ws73.pcap",
+          "sha256": "392c81c03fc057114b997f922af8b66e7a9c42d399399ab3a2957fe78f6cb9be",
+          "bytes": 69280
+        },
+        {
+          "path": ".dev/native-deadline-v2-capabilities-index0/guest-output/capture-stats.txt",
+          "sha256": "ae9ccf23bfe6d2487d907d6b58a828c63e752604deb58faab04f756c211dbb01",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "name": "capabilities-index1",
+      "status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+      "business_round_trips": 4,
+      "split": "2 before,2 after observed mechanism/cancel; not all encrypted",
+      "elapsed_from_t_arm_ms": 12.483037,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-capabilities-index1/manifest.json",
+          "sha256": "bda7dae4b18880654c9a955c04ec7837c3e0ab236b0f98810d1ee3bc7ca0f996",
+          "bytes": 74444
+        },
+        {
+          "path": ".dev/native-deadline-v2-capabilities-index1/guest-output/connected-file/run.json",
+          "sha256": "1cb3761c24ca86a498dcff4eb19950f00c49c0ef77bb7dacc558a81e181e0fa6",
+          "bytes": 40169
+        },
+        {
+          "path": ".dev/native-deadline-v2-capabilities-index1/guest-output/ws73.pcap",
+          "sha256": "749c3742895c2cf65e6f2a2db37994109efc75f324431f7f1dd3e123bba57b35",
+          "bytes": 69280
+        },
+        {
+          "path": ".dev/native-deadline-v2-capabilities-index1/guest-output/capture-stats.txt",
+          "sha256": "ae9ccf23bfe6d2487d907d6b58a828c63e752604deb58faab04f756c211dbb01",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "name": "key-agreement-index0",
+      "status": "REAL_CANDIDATE_KEY_AGREEMENT_PASS",
+      "business_round_trips": 4,
+      "split": "2 before,2 after observed mechanism/cancel; not all encrypted",
+      "elapsed_from_t_arm_ms": 30.451734,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-key-agreement-index0/manifest.json",
+          "sha256": "5587edcbc9e147e798f1f825e33cf006a21a471994f884b311be36d81dbef21c",
+          "bytes": 88172
+        },
+        {
+          "path": ".dev/native-deadline-v2-key-agreement-index0/guest-output/connected-file/run.json",
+          "sha256": "9a178e3bfc2bc32f4f499daf25dfddeaa0b038f5ab29e3434798cc45c5d7a8b2",
+          "bytes": 40167
+        },
+        {
+          "path": ".dev/native-deadline-v2-key-agreement-index0/guest-output/ws73.pcap",
+          "sha256": "d24bd0ee7d8bda4db0399de8690ce155e819a31f6d171f25865054b73bab3beb",
+          "bytes": 76062
+        },
+        {
+          "path": ".dev/native-deadline-v2-key-agreement-index0/guest-output/capture-stats.txt",
+          "sha256": "e34e0021e1e3fd63b85f7e53028390afe417807f2ac926a9f4e13485442e9988",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "name": "key-agreement-index1",
+      "status": "REAL_CANDIDATE_KEY_AGREEMENT_PASS",
+      "business_round_trips": 4,
+      "split": "2 before,2 after observed mechanism/cancel; not all encrypted",
+      "elapsed_from_t_arm_ms": 28.485698,
+      "files": [
+        {
+          "path": ".dev/native-deadline-v2-key-agreement-index1/manifest.json",
+          "sha256": "d8b2dd9cb3f60019f1c944506bbea731796062d72cddab6ab11500d5b7b52c37",
+          "bytes": 88172
+        },
+        {
+          "path": ".dev/native-deadline-v2-key-agreement-index1/guest-output/connected-file/run.json",
+          "sha256": "f364b9df1ee63195dd65a2c8bacd367a29e8f4156f46b172c08daf8910eaf703",
+          "bytes": 40167
+        },
+        {
+          "path": ".dev/native-deadline-v2-key-agreement-index1/guest-output/ws73.pcap",
+          "sha256": "1bf9668b23d5aef9e6a9e2efb34c55ad31713148dc447f88222206b09b268553",
+          "bytes": 76062
+        },
+        {
+          "path": ".dev/native-deadline-v2-key-agreement-index1/guest-output/capture-stats.txt",
+          "sha256": "e34e0021e1e3fd63b85f7e53028390afe417807f2ac926a9f4e13485442e9988",
+          "bytes": 225
+        }
+      ]
+    }
+  ]
+}

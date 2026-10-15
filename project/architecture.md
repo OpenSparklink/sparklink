@@ -340,6 +340,18 @@ controller/generation/lifetime/handle/role/address/epoch；普通通道Grant不�
 该终态仍不表示对端应用处理或可信安装。没有经验证的迟到/复用屏障时，同一物理
 lifetime不得重启交换；更换request ID不能绕过。完整Pair及其Agent策略另行接通。
 
+安全批准期限由调用者在策略/Agent等待前确定，以未发布SUBMIT版本2的
+`deadline_monotonic_ns`传入。Session的准入、密码工作、输入、最终提交票据与查询
+使用同一CLOCK_MONOTONIC纳秒期限；Host的粗粒度tick仅用于清理调度，不能据此
+刷新或延长准入。tick转换取实际内核速率，不取userspace HZ。CLOCK_MONOTONIC
+不包含挂起时间，完整PM暂停/撤销规则仍需单独验收。RESULT/CANCEL仍版本1。
+
+Agent调用者取消与物理状态分别表达：每File操作及Managed授权门当前序列化ioctl，
+取消不能假装已经抹掉先前准入/在途的提交。daemon必须保留原请求与工作引用，观察
+原提交完成再对原请求撤回，并报告策略操作终态与内核物理观察；取消返回不代表Off。
+不能通过drop JoinHandle、释放整个controller租约或改写已成功安装结果来处理单应用退出。
+Agent尚未接线；本段是其必须遵守的契约，不授予功能资格。
+
 无MITM候选密钥协商仍归同一物理Session，不能另建每fd密码Engine。密码材料由
 Session独占；公钥验证、ECDH、CMAC及派生在IRQ/Host/gate锁外执行。执行期间保留
 物理引用，以不可复用job票据绑定原controller/generation/lifetime/epoch和原期限；

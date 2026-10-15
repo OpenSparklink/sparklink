@@ -73,6 +73,28 @@ Connect to a device.
 .TP
 .BI disconnect " [address]"
 Disconnect the current or specified device.
+.SS Explicit Reference Security
+.TP
+.B agent
+Run one foreground, explicit human Agent for the selected controller. Only
+sdk111-no-mitm is supported; there is no automatic approval. Enter approve or
+reject followed by the exact current request id before its original deadline.
+Quit, EOF and Ctrl-C unregister only this Agent, without stopping the controller.
+A pollable terminal or pipe is required; input lines are limited to 512 bytes.
+.TP
+.BI security-request " connection-path [timeout-ms]"
+Allocate, begin and observe one author-owned request on the same bus connection.
+Timeout is 1 through 5000 milliseconds, default 5000, including policy waiting;
+approval never renews it. Start the passive T request before active G, with
+explicit Agents on both controllers. Ctrl-C only attempts this request's cancel.
+Both commands pin the original daemon owner and canonical connection identity.
+These experimental commands require management/Agent permission, not just an
+application channel grant. CLI real-device requalification remains pending.
+.PP
+Success only reports the limited unauthenticated SDK111 reference mechanism,
+not authenticated peer identity, a trusted Grant, Bond or application delivery.
+Rejection, timeout, ownership loss and incomplete native results exit nonzero.
+Legacy Pair/Encrypt do not invoke this workflow.
 .SS SSAP Services
 .TP
 .B services

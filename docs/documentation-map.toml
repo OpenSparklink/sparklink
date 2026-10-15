@@ -1583,3 +1583,17 @@ authority = "准确短消息报告和生产 slctl/channel.rs；资格仅 current
 disposition = "产品学习路径；环境制作/首次发现/建链教程仍缺；不授予新的功能资格"
 source_sha256 = "6276687d97b71e852bab812d49849f144756bf9cd7e42b7fc9e51d36444b04d0"
 publication = "html"
+
+[[documents]]
+path = "docs/how-to/request-reference-security.md"
+title = "在实验 VM 中明确批准或拒绝一次安全请求"
+section = "how-to"
+status = "current-contract-pending-real-replay"
+reader = "有双设备实验 VM 的开发者"
+purpose = "通过正式 CLI 显式批准或拒绝限定安全请求"
+validity = "源码接线；新 CLI 实机回归尚缺，不继承旧见证程序资格"
+applicable_version = "本次未发布 CLI；准确源码随提交记录"
+authority = "crates/slctl/src/security_agent.rs 与 docs/reference/interfaces.md"
+disposition = "仅操作本任务；字段契约链接 reference；不充当从零安装教程"
+source_sha256 = "84a8870dd294b0af4bf60e0148562d95ecaeb5a45abf60ad1856360473655ac4"
+publication = "html"

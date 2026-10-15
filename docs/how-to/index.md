@@ -8,6 +8,12 @@
 [当前能力和限制](../../project/current-capabilities.md)。完整安装、首次发现/建链、
 通用应用与 SSAP 使用指南仍待补齐，不能用下面的测试任务冒充。
 
+```{toctree}
+:maxdepth: 1
+
+request-reference-security
+```
+
 ## 集成和测试
 
 ```{toctree}

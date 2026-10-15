@@ -13,14 +13,14 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "agent-six-modes-and-retained-data",
-    "production_behavior": "Actual explicit SDK111 Agent consent over sole nativeSession/credit/ticket; originalcaller/reference/deadline and bounded cancellation; no policyyes→trustedGrant/Bond",
+    "id": "explicit-security-cli",
+    "production_behavior": "Foreground human slctl Agent and same-author security-request over existing broker/Session/credit/tickets; no auto-approval or new Engine",
     "exit": [
-      "agent-real6-db6e333 scoped PASS (not fullWP09)",
-      "agent-data11-db6e333 scoped PASS (not allDG01-DG12)",
-      "agent-policy-offline-16175 offline PASS; no new formal proof"
+      "strict locked build and real CLI/private-bus identity/deadline/EOF/watchdog regressions",
+      "fresh exact VM compiled CLI approve/reject, both roles, actual relay/installation and peer application replies",
+      "retained discovery/connect/short/boundary gates; no inheritance of historical85cdf CLI qualification"
     ],
-    "next": "production fuzz/debugVM/submit-revoke composition; actual installationfailure/inflight/deployment; dynamicchannels/fourdevices/userSSAP updates parallel; originalS0-S6 unchanged"
+    "next": "Wire actual CLI VM witness; in-flight revoke/Down/deadline composition and production fuzz/debug VM parallel; multichannel/four-device/SSAP and original S0-S6 unchanged"
   },
   "overall_required_records": [
     "deadline-real21",

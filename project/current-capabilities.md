@@ -32,6 +32,13 @@
 预备/guest 工具 `85cdf627d70bd239609ab0e74124b787279f139f`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
+## 正式安全 CLI 增量（待准确新镜像验收）
+
+正式 `slctl agent`/`security-request` 已接线到既有 broker；新增的是显式人工输入和
+原作者等待/撤回，不新增协议 Engine。离线检查与后续实机范围分别记录；目前未取得
+这两个 CLI 的新实机资格，旧85cdf/db6报告仍只覆盖原测试见证程序。
+默认不批准、丢失原daemon停止、EOF只注销Agent；不产生认证身份/可信Grant/Bond。
+
 ## 范围与尚缺条件
 
 当前数据保持镜像 K8cbf53、编译/guest85cdf、Host校验db6e333，

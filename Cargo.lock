@@ -968,6 +968,7 @@ dependencies = [
  "libsparklink",
  "nix 0.30.1",
  "rustyline",
+ "serde",
  "serde_json",
  "slk-protocol",
  "tokio",

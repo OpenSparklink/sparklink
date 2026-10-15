@@ -677,7 +677,7 @@
   "issue_sync_status": "Nine current quality comments exact readback; original scope unchanged and OPEN",
   "issue_sync_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
-  "current_goal_turn_classification": "progress: explicitAgentnewproduction + scoped17realgates (6policy/11data), immutablefailures andsourcebound reports; no fullissueclosure",
+  "current_goal_turn_classification": "progress: explicit production CLI + actual subprocess/privatebus negative contracts; fresh CLI hardware acceptance pending",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1047,23 +1047,23 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "agent-six-modes-and-retained-data",
-      "production_behavior": "Actual explicit SDK111 Agent consent over sole nativeSession/credit/ticket; originalcaller/reference/deadline and bounded cancellation; no policyyes→trustedGrant/Bond",
+      "id": "explicit-security-cli",
+      "production_behavior": "Foreground human slctl Agent and same-author security-request over existing broker/Session/credit/tickets; no auto-approval or new Engine",
       "exit": [
-        "agent-real6-db6e333 scoped PASS (not fullWP09)",
-        "agent-data11-db6e333 scoped PASS (not allDG01-DG12)",
-        "agent-policy-offline-16175 offline PASS; no new formal proof"
+        "strict locked build and real CLI/private-bus identity/deadline/EOF/watchdog regressions",
+        "fresh exact VM compiled CLI approve/reject, both roles, actual relay/installation and peer application replies",
+        "retained discovery/connect/short/boundary gates; no inheritance of historical85cdf CLI qualification"
       ],
-      "next": "production fuzz/debugVM/submit-revoke composition; actual installationfailure/inflight/deployment; dynamicchannels/fourdevices/userSSAP updates parallel; originalS0-S6 unchanged"
+      "next": "Wire actual CLI VM witness; in-flight revoke/Down/deadline composition and production fuzz/debug VM parallel; multichannel/four-device/SSAP and original S0-S6 unchanged"
     }
   },
   "agent_workstream": {
-    "state": "IMPLEMENTED; scoped results in qualification_view and linked records; real matrix in progress",
+    "state": "BROKER scoped real qualification retained; explicit production CLI implemented, new CLI VM gate pending",
     "test_scope": "See agent-policy-offline-16175; fixtures and actual dependencies in structured report",
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
     "real": "Six explicit modes two-role scoped real result in qualification_view/report; full deployment/permissions/authentication/Bond and in-flight composition still missing",
     "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
-    "next": "seal publication/issue receipts; productionfuzz/debugVM/submit-revoke composition andactualinstallfailure/inflight/deployment; dynamicchannels/fourdevices/userSSAP updates parallel",
+    "next": "Seal explicit CLI offline source/results; add exact CLI-driven approve/reject two-role real VM gate, retain data boundaries; inflight composition/fuzz/debug VM and original S0-S6 parallel",
     "offline_record": "agent-policy-offline-16175",
     "first_failures": [
       "preparev1 wrongsmokemanifestdirectory/noVM",

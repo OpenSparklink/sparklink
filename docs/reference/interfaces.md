@@ -76,9 +76,20 @@ Agent 的 `org.sparklink.Agent.AuthorizeReferenceSecurity` 接收一个结构参
 y address_type, s address, s method, t deadline_monotonic_ns)`，返回 `b`。
 原始期限为 CLOCK_MONOTONIC 纳秒，批准后不刷新；调用者、Agent 唯一总线连接、
 注册 epoch 和完整连接引用共同约束请求。重复启动、撤销、原期限、替换 Agent、
-旧身份和退出不能产生新成功。完整字段/错误与可运行 Agent 指南仍待第二批补齐；
-当前可核对生产 `security_policy.rs` 与 VM 专用 `native_security_agent_probe.rs`，
-后者是测试见证程序，不能直接安装为默认自动批准 Agent。
+旧身份和退出不能产生新成功。正式 `slctl agent` 提供前台逐请求人工批准/拒绝，
+`slctl security-request <connection-path> [timeout-ms]` 在同一原作者连接内完成
+分配、启动和查询；Ctrl-C 只尝试原请求取消。默认超时5000ms，范围1–5000ms。
+这两个入口绑定原 daemon 唯一所有者，不自动跟随替换。见
+[实验 VM 操作及退出契约](../how-to/request-reference-security.md)。新 CLI 的实机回归尚缺；
+VM 专用 `native_security_agent_probe.rs` 是独立测试见证，不能安装为默认自动批准 Agent。
+
+观察结构依次为 `t request_id, t generation, t lifetime, u phase, i error,
+t deadline_monotonic_ns, b agent_approved, b native_admitted, u kernel_state,
+i kernel_error, u kernel_flags, y kernel_status, i cleanup_error`。
+phase 1分配、2等Agent、3原生观察、4限定完成、5拒绝、6取消、7到期、8失败、
+9调用者丢失、10Agent丢失；phase≥4为终态，不可据此一律判成功。
+CLI成功要求phase4、error0、批准且准入、kernel_state9、kernel_error0、
+flags含TX/真实Complete/peerRX三位、status0且cleanup_error0；这些仍不等于业务交付。
 
 准确编译用户态 `85cdf627d70b`、内核 `8cbf53e6a088`、执行工具 `db6e333814cf`
 已有批准、拒绝、超时、取消及两类总线 owner-loss 的限定双设备证据，入口见
@@ -257,7 +268,7 @@ Host队列不保存密钥。驱动临时帧在最终提交前通过保留票据�
 匹配内核的 `SL_IOCTL_SECURITY_NEGOTIATION_CANCEL` 使用32字节
 `sle_security_negotiation_cancel`：generation、lifetime、request_id为u64，version为u32，
 handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C头和Python
-布局同步。当前仅底层机制，Agent/D-Bus/CLI尚未接入，准确实机范围见当前资格入口。
+布局同步。现有 Connection broker 和正式 CLI 复用这一个取消机制；新 CLI 实机范围待验收，准确历史范围见当前资格入口。
 
 原Managed File和CAP_NET_ADMIN均必需；普通业务fd不能调用，也不能从observer File
 借用管理权限。取消校验原File/request与当前连接身份，不创建新Session；不释放controller

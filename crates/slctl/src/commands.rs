@@ -22,6 +22,15 @@ impl Context {
 
     pub async fn dispatch(&mut self, args: &[&str]) -> anyhow::Result<()> {
         match args[0] {
+            "agent" if args.len() == 1 => {
+                let controller = self.selected_path().await?;
+                crate::security_agent::run_agent(&self.conn, &controller).await
+            }
+            "security-request" if args.len() == 2 || args.len() == 3 => {
+                let controller = self.selected_path().await?;
+                let timeout_ms = args.get(2).map(|v| v.parse()).transpose()?.unwrap_or(5000);
+                crate::security_agent::request(&self.conn, &controller, args[1], timeout_ms).await
+            }
             "ssap-discover" => {
                 if args.len() != 2 && args.len() != 4 {
                     anyhow::bail!(

@@ -3,44 +3,15 @@
 //! Delayed daemon delivery must not turn pre-scan kernel RX into a fresh match.
 use slk_protocol::{DiscoveryResultRecord, TimedDiscoveryReportRecord};
 use std::{
-    io::{BufRead, BufReader},
-    process::{Child, Command, Stdio},
+    process::Command,
     sync::{Arc, Mutex},
     time::Duration,
 };
 const PATH: &str = "/org/sparklink/slk0_g7";
 const ADDRESS: &str = "02:73:00:00:00:01";
 const MARKER: &str = "01010101010101010101010101010101";
-struct Bus {
-    child: Child,
-    address: String,
-}
-impl Bus {
-    fn start() -> Self {
-        let executable =
-            std::env::var_os("SPARKLINK_TEST_DBUS_DAEMON").unwrap_or_else(|| "dbus-daemon".into());
-        let mut child = Command::new(executable)
-            .args(["--session", "--nofork", "--print-address=1"])
-            .stdout(Stdio::piped())
-            .spawn()
-            .unwrap();
-        let mut address = String::new();
-        BufReader::new(child.stdout.take().unwrap())
-            .read_line(&mut address)
-            .unwrap();
-        assert!(!address.trim().is_empty());
-        Self {
-            child,
-            address: address.trim().into(),
-        }
-    }
-}
-impl Drop for Bus {
-    fn drop(&mut self) {
-        let _ = self.child.kill();
-        let _ = self.child.wait();
-    }
-}
+mod support;
+use support::Bus;
 struct Manager;
 #[zbus::interface(name = "org.sparklink.Manager")]
 impl Manager {

@@ -3343,5 +3343,11 @@
   },
   "issue_closure": false,
   "whole_security_proof": false,
-  "natural_recovery_acceptance": false
+  "natural_recovery_acceptance": false,
+  "formal_scope_clarification": {
+    "both_harnesses": "G-only fixed controller1/generation2/lifetime3/handle0/epoch4, fresh Session deadline100 abstract ticks, exact10-byte offer; not an arbitrary multi-session/role or fullqueue proof",
+    "withdraw": "arbitraryu64 commit time; boolean prewithdraw/expiry, accepted/neverqueued callback and fixed foreignlifetime4; one matching late Complete at102, no wire attribution proof",
+    "completion": "boolean RX/Complete order and success/status1 failure; fixed times1..9, no arbitrarytime or driver failure claim",
+    "bounds": "queue configured2 but these capability harnesses use one command only; no unbounded liveness or trusted state proof"
+  }
 }

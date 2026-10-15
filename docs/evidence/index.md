@@ -9,6 +9,7 @@
 [显式管理批准的受限134/135正向交换与准确新镜像回归](security-capabilities-20261015.json)
 区分实际Complete/peer RX、普通用户业务与尚缺的Agent/认证/安装/加密/Bond；
 直接生产转换Kani存在unsupported，仍未证明，不升级为完整安全资格。
+[本批九项issues读回回执](security-capability-issues-20261015.json)保留原scope和OPEN。
 
 本轮新证据从[当前源码的 read 迁移报告](read-retirement-progress-20261014.json)进入；上述固定旧目录仅代表历史基线，不能用于查找后续新增报告。公开摘要内标明原始抓包的可取得性；未公开材料不伪造下载链接。
 

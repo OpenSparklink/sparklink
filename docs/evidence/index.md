@@ -114,3 +114,5 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 4次安装前、4次控制器报告加密后业务回复；未认证且不授予Agent/Bond或最新dirty资格。
 
 [OpenHarmony参考审计三项现有issue读回回执](openharmony-peripheral-issues-20261015.json)：原scope及OPEN保留。
+
+[两角色安装及后续整改九项issue读回回执](security-installation-issues-20261015.json)：原scope和整项OPEN保持。

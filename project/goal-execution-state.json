@@ -697,7 +697,7 @@
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
   "issue_sync_status": "NEW_INSTALLATION_BATCH_UPDATE_PENDING",
-  "issue_sync_receipt": "docs/evidence/security-key-agreement-issues-20261015.json",
+  "issue_sync_receipt": "docs/evidence/security-installation-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
     "reason": "New real native9message relay candidate proof bothroles; actualfreshP256/CMAC and private material/job-lifetime integration;15 actual tests, limitedKani unsupported keptunproven,8appRT plus136fresh dataRT/32refusals and oldmode8RT. Not waiting on ignoredport2."
@@ -777,7 +777,7 @@
       "scope": "Unauthenticated candidate proof only, no trustedSecurity/Pair/Agent/install/encryption/Bond/standardInterop"
     }
   },
-  "issue_sync_receipt_previous": "docs/evidence/security-capability-issues-20261015.json",
+  "issue_sync_receipt_previous": "docs/evidence/security-key-agreement-issues-20261015.json",
   "additional_reference_review": {
     "source": "docs/evidence/openharmony-peripheral-reference-20261015.json",
     "repository": "https://gitcode.com/openharmony/drivers_peripheral",

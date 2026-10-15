@@ -562,7 +562,7 @@ typedef struct SPARKLINK_ALIGN(8) SleChannelTxStatus {
 } SleChannelTxStatus;
 
 /**
- * Experimental limited capability exchange; no raw RX/TX or trusted result.
+ * Experimental capability/candidate-proof observation; no raw RX/TX or trusted result.
  */
 typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationSubmit {
     uint64_t generation;
@@ -581,7 +581,7 @@ typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationSubmit {
 } SleSecurityNegotiationSubmit;
 
 /**
- * Local observations only: state4 is not pairing, trust or peer application ACK.
+ * Local observations only: state4/state8 are not pairing, trust or peer application ACK.
  */
 typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationResult {
     uint64_t generation;
@@ -945,7 +945,7 @@ int slk_channel_info(int fd, struct SleChannelInfo *output);
 int slk_channel_tx_status(int fd, struct SleChannelTxStatus *output);
 
 /**
- * Explicit capability-only approval; same live Managed File and admin required.
+ * Explicit capability/candidate-proof approval; same live Managed File and admin required.
  * No pairing, encrypted state, keys or peer acknowledgment is promised.
  * # Safety
  * Non-null pointers must be valid, aligned, nonoverlapping for this call.

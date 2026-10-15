@@ -631,7 +631,7 @@
       "Dynamicmultichannel/fourdevice/SSAPCCCnotifyindicate/fullS0-S6; naturalRCA/nonhumanrecovery; no ignoredport2manualaction"
     ]
   },
-  "updated_at_utc": "2026-10-15T06:58:50.971842+00:00",
+  "updated_at_utc": "2026-10-15T07:02:28.956968+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -691,8 +691,8 @@
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "PENDING_NEW_BATCH_UPDATE",
-  "issue_sync_receipt": null,
+  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_receipt": "docs/evidence/security-key-agreement-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
     "reason": "New real production behavior: stock-supported134/135 on sole Session/credit/ticket passed both physical roles,8appRT. Existing full-length/data qualification rerun on exact new image; targeted Kani remains unsupported/unproven. No issue closure or recovery upgrade."

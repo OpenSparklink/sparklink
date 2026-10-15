@@ -28,7 +28,17 @@
     "read_only_replay_commit": "89a6659441efc0294cc1f1baec42e9cacfd419b0",
     "replay_ci": 38693255212,
     "replay_documentation": 38693255263,
-    "conclusion": "success"
+    "conclusion": "success",
+    "documentation7ea5060": {
+      "documentation": [
+        38695843545,
+        38695836593
+      ],
+      "conclusion": "success",
+      "ci": 38695843529,
+      "header_generation": "FAILED_GENERATED_COMMENT_DRIFT",
+      "fixed_by": "following signed header-sync receipt commit"
+    }
   },
   "behavior": [
     "Same sole physical ConnectionSession/relay/command credit/actual final submission ticket; no second Engine. Per-lifetime explicit Managed File/CAP_NET_ADMIN approval, mode2 is separate from original capability-only1.",
@@ -1807,7 +1817,8 @@
     "Prior startup panic, final-reply-close failure, prior CI dependency fixture failure and cross-clock deadline verifier failure remain in historical records.",
     "Current actual-Host fixture initially Option<()> produced drop(Copy) strict failure; fixed only dependency fixture to owned Option<Box<()>>, without production warning suppression.",
     "GCC sanitizer library unavailable; failures retained, checks rerun with installed Clang sanitizer instead of disabling checks.",
-    "Stock111147/1ff descriptor/RX-dispatch gap remains unfixed. Retired continuous-RAM extension failed boot; port2 original restoration remains unverified. No new firmware upload, hub reset or diagnostic derived image in these positive candidate gates."
+    "Stock111147/1ff descriptor/RX-dispatch gap remains unfixed. Retired continuous-RAM extension failed boot; port2 original restoration remains unverified. No new firmware upload, hub reset or diagnostic derived image in these positive candidate gates.",
+    "Documentation7ea5060 changed API docstrings but missed regenerating C header: CI38695843529 C-header job116292278211 Verify header unchanged failed. Regenerated with pinned cbindgen0.29.4; exact three comment-line diffs, no ABI or runtime changes; compiled/real VM qualification remains415/376. Subsequent CI tracked separately, failure not relabeled PASS."
   ],
   "remaining": [
     "Agent consent/method policy and authenticated association; candidate DH proof is unauthenticated and must not satisfy trusted grants.",

@@ -77,3 +77,5 @@
 
 [SDK111包描述/RX分派缺项、真实拒绝交付及原版恢复因果对照](relay-firmware-table-cause-20261015.json)：
 5632字节代码读取与实际USB核对；三行RAM替换正向，原版失败，禁止作为原版修复或牺牲146发布。
+
+[固件表定位本批九项issues回执](relay-table-issues-20261015.json)：原scope保留，整项OPEN。

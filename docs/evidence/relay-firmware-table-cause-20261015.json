@@ -540,7 +540,20 @@
     "both_original_uploads_verified": true,
     "status": "TERMINAL_ORIGINAL111_RESTORED",
     "stock_input_files_modified": false,
-    "source_branches_and_driver_mapping_modified": false
+    "source_branches_and_driver_mapping_modified": false,
+    "survivor_not_uploaded_derivative": {
+      "scope": "Each diagnostic native capture contains seven FILES commands on source boot device(1,3) only; kernel downloads all attributed to guest1-1, no survivor download. Warm survivor RAM identity not independently attested.",
+      "captures": [
+        "txrx111",
+        "txsplit111",
+        "tx3table111"
+      ],
+      "only_boot_device": [
+        1,
+        3
+      ],
+      "files_commands_each": 7
+    }
   },
   "code_reads": [
     {
@@ -671,6 +684,13 @@
       "ci": 38671088413,
       "documentation": 38671088361,
       "conclusion": "success"
+    },
+    "evidence_document_ci": {
+      "head": "79ed6c321d7934676390435090c720ed3a3e7cea",
+      "ci": 38672380569,
+      "documentation": 38672380413,
+      "conclusion": "success",
+      "scope": "Source/evidence document commit, not firmware or RF proof"
     }
   },
   "production_policy": [

@@ -615,7 +615,7 @@
     "real": "5632 fixed ROM code bytes match actual USB; three/four-row RAM variants deliver correct1ff/02 and PairReject; asymmetric missing peer packet descriptor fails; stock restored both and again fails",
     "remaining": "Stock support/reproducible correction preserving146/all entries, reverse security roles, approved pairing/Agent/install/encrypted app; begunDown/deadline and NOCP/reuse composition, naturalRCA/nonhuman recovery and all originalscope"
   },
-  "updated_at_utc": "2026-10-15T02:39:30.362366+00:00",
+  "updated_at_utc": "2026-10-15T02:44:50.432024+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -639,7 +639,14 @@
     "production_runtime_changed": false,
     "stock_blob_modified": false,
     "diagnostic_firmware_shipped": false,
-    "stock_production_security_qualified": false
+    "stock_production_security_qualified": false,
+    "evidence_document_ci": {
+      "head": "79ed6c321d7934676390435090c720ed3a3e7cea",
+      "ci": 38672380569,
+      "documentation": 38672380413,
+      "conclusion": "success",
+      "qualification_scope": "CI only; real/derived/stock source scopes remain separately recorded"
+    }
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact494/d744 original104 plus32burst app round trips",
@@ -662,8 +669,8 @@
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "PENDING_THIS_BATCH_EXISTING_ISSUES",
-  "issue_sync_receipt": "docs/evidence/relay-class-issues-20261015.json",
+  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_receipt": "docs/evidence/relay-table-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
     "reason": "Six real begun-prefix withdrawal subgates plus positive supported-class physical peer delivery; actual firmware upload identity disambiguates warm/search paths. Production denial still fails; no partial closure."

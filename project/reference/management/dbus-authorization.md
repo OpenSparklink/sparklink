@@ -145,3 +145,8 @@ kernel_state是独立物理快照。策略取消不伪造物理Off，完成不�
 
 源码测试使用真实private D-Bus/导出方法和真实`/dev/null` ioctl ENOTTY，Ready/link/lease
 元数据为fixture；这些结果不表示真实WS73安装/系统权限已通过，也没有新的形式化证明。
+
+所有权首先绑定D-Bus唯一连接名。显式关闭该连接、总线丢失与进程最后连接引用
+释放会触发NameOwner丢失；不能把同一witness中关闭连接的用例称为独立进程
+SIGKILL或fork/继承bus fd回归。持有连接引用的子进程/传递行为及管理员撤销的
+部署语义尚需专门验收。回调RPC错误目前归Agent失效，具体错误诊断仍待细分。

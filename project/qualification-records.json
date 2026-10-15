@@ -2,9 +2,10 @@
   "schema_version": 1,
   "baseline": {
     "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
-    "compiled_userspace": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
-    "executed_tools": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
-    "report_commit": "8f13e3b52ee41d12f87a4dc6437c26ec92322754"
+    "compiled_userspace": "85cdf627d70bd239609ab0e74124b787279f139f",
+    "guest_tools": "85cdf627d70bd239609ab0e74124b787279f139f",
+    "executed_tools": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
+    "report_commit": "3776f4724227a8163d4cc08a7a829ef865500d34"
   },
   "access_policy": {
     "private": "工作区相对路径；原机器授权维护者可读取；不公开原始密钥/SDK/固件/捕获。公开CI仅元数据核对。",
@@ -12,14 +13,14 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "agent-policy-production-1",
-    "production_behavior": "每controller显式Agent唯一owner/epoch；原作者/完整reference/原期限；复用现有native submit/cancel/result与原File义务；未分配通用可信身份/Bond",
+    "id": "agent-six-modes-and-retained-data",
+    "production_behavior": "Actual explicit SDK111 Agent consent over sole nativeSession/credit/ticket; originalcaller/reference/deadline and bounded cancellation; no policyyes→trustedGrant/Bond",
     "exit": [
-      "严格locked构建/16项实际privateDBus与ENOTTY失败路径",
-      "准确新镜像两角色真实批准/拒绝/原期限/退出与对端应用回复",
-      "实际system bus/权限部署门禁独立记录；不借private bus升级"
+      "agent-real6-db6e333 scoped PASS (not fullWP09)",
+      "agent-data11-db6e333 scoped PASS (not allDG01-DG12)",
+      "agent-policy-offline-16175 offline PASS; no new formal proof"
     ],
-    "next": "Agent实际VM与双设备门禁；生产fuzz/debugVM/提交撤权组合继续并行"
+    "next": "production fuzz/debugVM/submit-revoke composition; actual installationfailure/inflight/deployment; dynamicchannels/fourdevices/userSSAP updates parallel; originalS0-S6 unchanged"
   },
   "overall_required_records": [
     "deadline-real21",
@@ -27,12 +28,15 @@
     "installation-composition",
     "agent",
     "multichannel-four-device",
-    "natural-recovery"
+    "natural-recovery",
+    "agent-policy-offline-16175",
+    "agent-real6-db6e333",
+    "agent-data11-db6e333"
   ],
   "records": [
     {
       "id": "deadline-real21",
-      "title": "原期限、两角色安全机制及保留数据：21组限定门禁",
+      "title": "历史2d81/575：原期限及21组限定实机门禁",
       "level": "real_device",
       "result": "PASS",
       "contracts": [
@@ -1055,7 +1059,7 @@
     },
     {
       "id": "agent",
-      "title": "Agent生产入口已接线；真实安装/权限资格仍缺",
+      "title": "Agent完整权限部署与在途安装退出矩阵：仍缺",
       "level": "implemented",
       "result": "MISSING",
       "contracts": [
@@ -1066,7 +1070,10 @@
         "不得从其他局部PASS继承资格"
       ],
       "remaining": [
-        "已加入16项private D-Bus/实际ENOTTY离线用例；实际system bus/udev/组/内核权限和两角色WS73批准/拒绝/退出/原期限仍需准确新镜像验收"
+        "已封存六模式两角色有限实机结果，不能替代完整systemd/udev/apps-only/observer/Agent/fd接收者权限部署",
+        "真实安装失败及已在途Status/0011/取消/撤权/Down/晚到/复用组合仍待验证",
+        "通用Agent交互、认证/可信Grant/Bond按WP09原scope继续；回调RPC具体错误诊断仍待细分",
+        "实际独立进程SIGKILL/fork/bus fd继承及管理员撤销；当前real ownerloss由显式bus连接关闭触发"
       ],
       "sources": {},
       "report": null,
@@ -1147,6 +1154,1695 @@
       ],
       "required_gates": [
         "natural-recovery"
+      ]
+    },
+    {
+      "id": "agent-policy-offline-16175",
+      "title": "Agent策略离线16175：15 private-D-Bus +1生产时钟用例",
+      "level": "offline",
+      "result": "PASS",
+      "contracts": [
+        "Agent owner/epoch/caller/reference",
+        "original deadline",
+        "bounded registry",
+        "real ioctl failure propagation"
+      ],
+      "bounds": {
+        "cases": 16,
+        "private_bus_cases": 15,
+        "pure_production_clock_publication": 1,
+        "registration_agents_per_controller": 1,
+        "retained_records": 64,
+        "pending_per_author": 4,
+        "native_io": "actual /dev/null ENOTTY; never successful stub",
+        "actual": "EXTERNAL private bus, exported interfaces, unique names/loss, Tokio task/timer/cancel and real libc syscall errors",
+        "fixtures": [
+          "canonical Ready/link/generation metadata",
+          "Managed lease token and connection identity",
+          "explicit test Agent decisions/delays",
+          "/dev/null replaces actual SparkLink device"
+        ]
+      },
+      "excluded": [
+        "No actual SparkLink kernel concurrency/locks/refs, firmware, USB, credit, crypto or radio proof.",
+        "No actual full system-bus/udev/systemd deployment qualification; private bus checks policy mechanics only.",
+        "No new formal proof; hardware assumptions and installation composition remain unproved.",
+        "Source16175 scope is frozen; later exact real runs bind their own compiled/source/tool identities."
+      ],
+      "remaining": [
+        "actual two-role Agent matrix with independent USB/application replies",
+        "full deployment/permissions and in-flight installation/revoke/Down/reuse composition",
+        "authentication/trusted Grant/Bond/natural recovery"
+      ],
+      "sources": {
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "16175ab14a054e3cff01824beeb5870bc44c979c",
+          "scopes": [
+            "crates/slkd",
+            "crates/libsparklink",
+            "crates/slk-protocol",
+            "crates/slk-experimental",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "d9688629744f1cca2b10513c8093ab1a0ddc3cfcd9cc2deb516fa0888b641e35",
+            "Cargo.toml": "074d922eba4ac31a421942c95ed84e1ac6e778e2a3baaf7260a0929d6c9d1244",
+            "crates/libsparklink/Cargo.toml": "12bf208733281aa2d93669f1b4660fb61ae1d0df4438a773282bc11eb80aaec5",
+            "crates/libsparklink/cbindgen.toml": "c2cd1c996ec9a7bd60dd08340222129c2218560194cbd9f524bf18a32a11bd5b",
+            "crates/libsparklink/include/sparklink.h": "ba0783f6d19fbc6b893f4c5566b6ade041b3fff7aa552b0f80e81c524c23f305",
+            "crates/libsparklink/src/adapter.rs": "508fd057240c72b06dfef35d76ea8f0818a8807028872989072635ad7a000342",
+            "crates/libsparklink/src/controller_events.rs": "cb52719ffe814af8f963936e448209211cab6a26b7eb4945c3e409e0017da356",
+            "crates/libsparklink/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/libsparklink/src/event.rs": "728ff9608818e63c09e0df16b7647cbb21b6e16f4680dd2e408ba7d5da9d52d2",
+            "crates/libsparklink/src/ffi.rs": "9684b5a3454c405528821ae6fcab2fd38bec0c1563e64307618c9d3aac7f8cdc",
+            "crates/libsparklink/src/ffi_native.rs": "8699a129e6bad05ecc37669bc8c69e5031e541f5e1a6544a472050d9cd2f1069",
+            "crates/libsparklink/src/lib.rs": "e9de984c1bd28a7cfc5942dbdfe63fa4f9091326825465d48d4204b5e5188e1c",
+            "crates/libsparklink/src/retired_event.rs": "bf8f5a40f84ef0d08dd0f2e379a37175a72800f17f45209f3c115c0762a84bbf",
+            "crates/libsparklink/src/snoop.rs": "d32180800723109c067eb7a51ad1215a9983f04a8985cd193140b365e4c8fad1",
+            "crates/libsparklink/src/ws73_discovery.rs": "ee0ad25307cec94fed54b95cc5cb5921de1eb496885b7fa374fe88db9240bf91",
+            "crates/slk-experimental/Cargo.toml": "f4f874a9e3d4e9e9e04aa161e3ed6bf2ccfacd46cc0f800f3a6ef15dfc9f157e",
+            "crates/slk-experimental/README.md": "bb9ecebd88fb9b8caddea4a6c2a7203a40dcc3e8f4e46aca970d578f5a258f11",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "578d136b61749d812c1db624f493ca50f4a76bc73a04f5e7615e5a4a00933263",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "c8c68a94e1c268c5bfb80ce0dbb98bc39e16b5d6a7685e68c3ab1f8479ecb3a1",
+            "crates/slk-protocol/src/channel.rs": "e76907f60cb6006de6b01ad49fb4ad6ba42f86a78c35c3f4abd679a666f25204",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/ioctl.rs": "23be963504c1a80af31fe0cb8af9aad719770a39a532dd7914c00edf4c062df6",
+            "crates/slk-protocol/src/lib.rs": "9a4cf882a77f0aef621a519e7928b32d18633dfdf0b1524e93bd4d6fdc0e837b",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "d093c33faa18025bb1aa2f16c9ba888cef6e85131a813d058dd1872cde479225",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "0faff47303886b82e826047d44c64c755599f0bf31975185014e6226ce272343",
+            "crates/slk-protocol/src/types.rs": "0717bb7c3c125c94ae1624e240e1a8e4d9b8a53eb6590a2c8e4403c5c8cbd172",
+            "crates/slkd/Cargo.toml": "a0af013f553fa4a96c2fa82ffa9b3934bfbabc424c2375c3b5df58678f1278ee",
+            "crates/slkd/src/adapters.rs": "c095bf5421db3ea9a8d13ba3f7bbeb38114e889c80e552b7883627720a2c5447",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "35ea73e3c55ec7d46087ab5ea6f1eb600d9464c5df99234ae775f0f3b067261c",
+            "crates/slkd/src/config.rs": "ce93efeead5a25c3b33e03e279feb61d5d099024c9fc84c2099f306f198b1a0c",
+            "crates/slkd/src/connection.rs": "7dc87661087a7c0357fc3159204be332fd760835eae978146f0551b9668698c9",
+            "crates/slkd/src/connection_object.rs": "2acef51138cfd9fbad7ff5fdf550d129bf2a7655fa0508790fe91fd5ece4db07",
+            "crates/slkd/src/controller.rs": "89621843d9dcd8bfce9d61dd070b9edc5ca9c9a6af3ef2b5f7d9e913f2838d62",
+            "crates/slkd/src/dbus_iface.rs": "862a7b76b523bdb9988e4af812a62da5aa19db59a950794ed6e58639ccbc1e12",
+            "crates/slkd/src/event_loop.rs": "09595af3b6016ebf49818be499af8387edaafce783196b6972faefd04c69513d",
+            "crates/slkd/src/event_loop_tests.rs": "d031eb5deceedb6788f350f33bd83c7c5fbe57b3aaddcea5f7c0c753fe034dc3",
+            "crates/slkd/src/extadv.rs": "d80ca3d949a4f3a5974b03b8f43584053c8c3e675c782848fd9a70547a2474cb",
+            "crates/slkd/src/kernel.rs": "fc7dc11c930710f06e1ede116ba40edc5c73b1d77c4ff9509d999d89919c85ae",
+            "crates/slkd/src/main.rs": "d8f38c3d33b4e1c4b7747cfe1f63af0b8d04733346add6230338971ec779af0b",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "60fd41e9830cea2f8a1599f0b5c404b42050816eeb5ffd46d1d1863dfef7cb9f",
+            "crates/slkd/src/registration.rs": "ae2a1e82b49cd4e8cf6194fb020e4c45fc72c307339d9bbce6ab840b4500e4b8",
+            "crates/slkd/src/security.rs": "80acd72f152fc013f77d740461488ba64ebd795ec39defebafe86cb2e92b0256",
+            "crates/slkd/src/security_policy.rs": "ef37b0f7c44b63217c435d5dff970fb27e9c5ef9bee4069c7ba32086188fc8ee",
+            "crates/slkd/src/security_policy_tests.rs": "75387d7376addad22f6ec6a16005ab9fe26f0b85a01b1d1c4eac71f060a24245",
+            "crates/slkd/src/service.rs": "b1d9d23e654cfe6d31bd51489a47fdf91f9b77819fafca241d829e2e6e2145c4",
+            "crates/slkd/src/ssap_database.rs": "b159c93e7482dceabf72ec628c4d296407bc68bdebd7405b00eda6858e9f32a5",
+            "crates/slkd/src/ssap_engine.rs": "1cd34eb739e423c18eabafdf987874891aecbce3ef9da618cb33f734d4ea4ce8",
+            "crates/slkd/src/state.rs": "275aef0b12f4f8a2bdc24c587c44f02ec138ed06b3a03fa4ed1397c09c32b38d",
+            "crates/slkd/tests/config_startup.rs": "ee996e38b047f2fb37a0f57a63466f97c897b81acef56411836373c1011e2a0f"
+          },
+          "manifest_mapping": {
+            "material": "agent-policy-offline-source_mapping",
+            "pointer": [
+              "source_hashes"
+            ]
+          }
+        }
+      },
+      "report": {
+        "material": "agent-policy-offline-report",
+        "scope_pointer": [
+          "excluded"
+        ],
+        "source_pointers": {
+          "compiled_userspace": [
+            "compiled_userspace"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "POLICY_PRODUCTION_OFFLINE_SCOPED_PASS": "PASS"
+        },
+        "gate_rows_pointer": [
+          "cases"
+        ]
+      },
+      "report_commit": "13af39e0857cddd7df5a089faa99394f91e87f39",
+      "artifact_materials": [
+        "agent-policy-offline-test_binary"
+      ],
+      "tool_materials": [
+        "tool-4",
+        "agent-policy-offline-test_log"
+      ],
+      "configuration_materials": [
+        "agent-policy-offline-source_mapping"
+      ],
+      "gates": [
+        {
+          "id": "security_policy::tests::actual_success_publication_is_fail_closed_on_clock_failure_or_expiry",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            0
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::allocated_caller_death_is_active_without_query",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            1
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::reject_has_no_native_admission_and_duplicate_begin_is_rejected",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            2
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::approval_reaches_real_ioctl_failure_never_fake_install_success",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            3
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::allocated_agent_unregistration_is_active_and_old_epoch_cannot_follow_replacement",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            4
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::retire_does_not_touch_peer_registry_and_prevents_resurrection",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            5
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::caller_death_during_callback_never_submits",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            6
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::missing_agent_unknown_method_and_other_owner_are_rejected",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            7
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::agent_death_then_replacement_cannot_revive_old_request",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            8
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::allocation_wait_does_not_renew_original_deadline",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            9
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::pending_author_and_retained_record_budgets_are_enforced_by_production_allocate",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            10
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::allocated_expiry_is_active_without_query_or_begin",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            11
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::duplicate_begin_while_agent_pending_invokes_only_one_callback",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            12
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::stale_identity_and_removed_connection_cannot_admit",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            13
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::cancel_before_late_approval_is_terminal_without_controller_release",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            14
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        },
+        {
+          "id": "security_policy::tests::approval_after_original_deadline_does_not_submit_or_rewrite",
+          "result": "PASS",
+          "reported_status": "ok",
+          "report_pointer": [
+            "cases",
+            15
+          ],
+          "materials": [
+            "agent-policy-offline-test_log",
+            "agent-policy-offline-test_binary"
+          ]
+        }
+      ],
+      "required_gates": [
+        "security_policy::tests::actual_success_publication_is_fail_closed_on_clock_failure_or_expiry",
+        "security_policy::tests::allocated_caller_death_is_active_without_query",
+        "security_policy::tests::reject_has_no_native_admission_and_duplicate_begin_is_rejected",
+        "security_policy::tests::approval_reaches_real_ioctl_failure_never_fake_install_success",
+        "security_policy::tests::allocated_agent_unregistration_is_active_and_old_epoch_cannot_follow_replacement",
+        "security_policy::tests::retire_does_not_touch_peer_registry_and_prevents_resurrection",
+        "security_policy::tests::caller_death_during_callback_never_submits",
+        "security_policy::tests::missing_agent_unknown_method_and_other_owner_are_rejected",
+        "security_policy::tests::agent_death_then_replacement_cannot_revive_old_request",
+        "security_policy::tests::allocation_wait_does_not_renew_original_deadline",
+        "security_policy::tests::pending_author_and_retained_record_budgets_are_enforced_by_production_allocate",
+        "security_policy::tests::allocated_expiry_is_active_without_query_or_begin",
+        "security_policy::tests::duplicate_begin_while_agent_pending_invokes_only_one_callback",
+        "security_policy::tests::stale_identity_and_removed_connection_cannot_admit",
+        "security_policy::tests::cancel_before_late_approval_is_terminal_without_controller_release",
+        "security_policy::tests::approval_after_original_deadline_does_not_submit_or_rewrite"
+      ]
+    },
+    {
+      "id": "agent-real6-db6e333",
+      "title": "Agent实机85cdf/db6：六模式交换角色48次应用回复",
+      "level": "real_device",
+      "result": "PASS",
+      "contracts": [
+        "explicit SDK111 Agent consent",
+        "two physical role native installation",
+        "pre-admission refusal/timeout/cancel/ownerloss",
+        "subsequent actual app replies"
+      ],
+      "bounds": {
+        "modes": 6,
+        "physical_connection_role_phases": 12,
+        "business_round_trips": 48,
+        "actual_approve_relays": 18,
+        "approve_opposite_receipts": 18,
+        "approve_role_installations_and_initial_events": 4,
+        "negative_policy_native_submissions": 0,
+        "rf_rounds": 132
+      },
+      "excluded": [
+        "Only explicit SDK111 no-MITM reference method, two controllers and the named six policy modes; not general authentication/trusted Grant/Bond or third-party interoperability.",
+        "Controller-reported initial encryption and actual peer business are distinct; no independent air-cipher attestation or full key-wipe/reuse proof.",
+        "Negative paths precede native submission; actual in-flight installation/Status/0011/revoke/Down/USB/NOCP composition remains incomplete.",
+        "Isolated guest actual system-type bus, EXTERNAL identity and installed XML/group policy; no full distribution systemd/udev/install/upgrade qualification.",
+        "Caller-exit gate cannot observe the dead caller private terminal; it checks fresh identity admission/cancel, old-query denial, no security wire and actual subsequent app replies.",
+        "Both previous real attempts remain overall failures: path-parser before consent; then valid wire observations but mismatched PASS manifest/exit1. No retroactivePASS.",
+        "Natural startup/reenumeration/disappearance RCA and nonhuman recovery remain open; QMP/manual/hub/injection are not natural recovery.",
+        "No new formal proof; earlier math scope and unsupported composition unchanged. Other fullS0-S6/19WP/10FV/12DG remain open.",
+        "Raw captures/install inputs contain key material; private original machine only, fingerprints/public redacted summaries; no validated public/offsite archive."
+      ],
+      "remaining": [
+        "in-flight install/revoke/Down/reuse and actual failure installation",
+        "full systemd/udev/permission deployment and per-application grants",
+        "authentication/Bond/longterm/fourdevices/natural recovery"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+          "scopes": [
+            "net/sparklink",
+            "drivers/sparklink",
+            "include/uapi/linux/sparklink_ioctl.h"
+          ],
+          "files": {
+            "drivers/sparklink/Kconfig": "a4fe289630742cc56513e14d9baccc395b95891b7f49b03d607e213d2789b7a1",
+            "drivers/sparklink/Makefile": "f208817106ac1d72224079f79b486eda1b914bdddfdc9a68efb83043bbc4bdea",
+            "drivers/sparklink/standard_usb.c": "3a33dd49e91052c501b2d185df192184e5c45ad126c42154dfae7578881f7c67",
+            "drivers/sparklink/virtual.c": "b4c13ebca4cdaa80a77f0b5d6e9e90b6ea4abd16b7fdb8de3cff4d871a8391d9",
+            "drivers/sparklink/virtual.h": "774a29ad1ab3ce7dffe8ffbf396191abd2b8a7f68f7d5b342d98eb9a2f2827ef",
+            "drivers/sparklink/virtual_codec.h": "1cb87ed4fff0aeef6e56b259097499573e90a7b20ab90833ce68b9174a0af6c6",
+            "drivers/sparklink/ws73/bsle.c": "47a3e2ba4e169baa91fa5eaf098cfa77825cf06002c155986175037eee57f310",
+            "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e",
+            "drivers/sparklink/ws73/connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+            "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+            "drivers/sparklink/ws73/discovery.c": "584b8e246ae5accce54ce7647ee4469cb410bf41409c79a01799312d4fdb19ca",
+            "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+            "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+            "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+            "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+            "drivers/sparklink/ws73/usb.c": "02fcb3675dd7bff0cec665b2eb108973276247306c6341a3754d9963f8948e81",
+            "drivers/sparklink/ws73/wire.c": "d06ce9c48621ac24ba7450b7d3295a01a1a8b4cb66328f83b0acf568ebd2956c",
+            "drivers/sparklink/ws73/wire.h": "605a35601e0ce4fe95bafd8110ca8747e44e8e845510dbb7e0bd331d57b6d0df",
+            "include/uapi/linux/sparklink_ioctl.h": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+            "net/sparklink/Kconfig": "352656711a97406f5303dc11b94ce5a5d4f792a6b6adb874814bf890f0a27a18",
+            "net/sparklink/Makefile": "f602d17ad2cebbb1232854b361451c486aed8a433eab2f6241d0820506c2308d",
+            "net/sparklink/experimental/README": "950d51c089ab48be6a7ecc541a5113fe673949a3fb6e2ccba99156265ca4304d",
+            "net/sparklink/sle_authorization.rs": "92b40f2a04e2aafae443ca8b9d6743ceaa3a68ad14867dcabb69b5f0f293d307",
+            "net/sparklink/sle_backend.rs": "65d9fec9abaa64edc2fa06756f67ce7bb1a17d3ff73bb744d95d721388bc734d",
+            "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+            "net/sparklink/sle_channel_socket.c": "06ed8c433faef79701938c440badeac46beaa2f0a959d95ab9291c99506ab562",
+            "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+            "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+            "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+            "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+            "net/sparklink/sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+            "net/sparklink/sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+            "net/sparklink/sle_configfs.rs": "048964fc18927cbd55a470c5c0c6abb865a1214d822ddd839aef8cde36b70b69",
+            "net/sparklink/sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+            "net/sparklink/sle_controller_event.rs": "81423ded2609f8953bf2fc25f44253c83606eeafd88802af0e1685a80d9c21d7",
+            "net/sparklink/sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+            "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c",
+            "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+            "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+            "net/sparklink/sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+            "net/sparklink/sle_dli.rs": "c2935790c9edd1167f037694318dc2d5d1531df0611410a1fa594f3715c8b981",
+            "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1",
+            "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+            "net/sparklink/sle_host.rs": "4eccb8c3c4e4b954778438cd2bf911bcd12faf8a679a6e61e415ffcccd45ed88",
+            "net/sparklink/sle_ingress.rs": "fbc3d68b8ae838e823c72d5923b0e24ac74231e6deae85e2037b72d00edd4978",
+            "net/sparklink/sle_irq_lock.c": "b1f8a8fe4c3cd3697d6c3babd3f4aee0f93f0fb7cf98526f3490767c5d9cd9cf",
+            "net/sparklink/sle_irq_lock.h": "3f9a44812ebdd84d08db0f88834910f370bb92a0ce5760ba9371608a3679cb2d",
+            "net/sparklink/sle_irq_lock.rs": "5b5ca8e8750ea21825a34be4f45dd6eeba63cc43eeeda1e6053f55acbb6476a8",
+            "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+            "net/sparklink/sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+            "net/sparklink/sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+            "net/sparklink/sle_native.rs": "0a2794f2a27d372cfe1debb70f9b2a1895996f91afa25e67eca21dae8f66c1d1",
+            "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+            "net/sparklink/sle_native_ffi.c": "efd51bf377b34d25822cbbbe4763ae99c9e1a8da0e71b9d3a87e9d7734bc836b",
+            "net/sparklink/sle_native_ffi.h": "0b21eb6c9a2cec1a22c75014de4891cc9a55bb6e77a0298269e813bf96489401",
+            "net/sparklink/sle_pair_crypto.c": "0706143298e86df6013549c2a8886b2b1b283fac82aa750d1d16cd29166900fd",
+            "net/sparklink/sle_pair_material.c": "151abb8c59512dc0cebb62b58d291708ba0dee27e2ae2424f4ac147e4599c9fd",
+            "net/sparklink/sle_pair_material.h": "ac4773f0a99b679572b14142d2b5626a420d333d7c8ea9dbbdc71f86da9efbc0",
+            "net/sparklink/sle_pair_material.rs": "9a564388b898be4fc1a0c09c0f353a7159bc24d835480135b67afc11bdf659ed",
+            "net/sparklink/sle_security_relay.h": "93b664edbcdb4c729724fa0c54017c6e02e964b2eb0925e95c702a5bc74b635d",
+            "net/sparklink/sle_security_relay.rs": "87d56be3e65729c9df99375a386f643d1e9e88aa9645365314e295013b08ca0d",
+            "net/sparklink/sle_security_relay_state.rs": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+            "net/sparklink/sle_sessions.rs": "c5597f3d54cd20102cc40d719abea233d976f05e8abd8dfb0dcb3a0aeb75f84e",
+            "net/sparklink/sle_snoop.rs": "d2a7d85f841066d8ea735d990b80281d01135a8488eb9c60778c790600ea8e73",
+            "net/sparklink/sle_standard_dli.rs": "a07c9af73eb2b71554a3e73fd32f06726cbbab48ef807b250a7c88aeac92e606",
+            "net/sparklink/sle_uapi.rs": "10058503091ed44debba18ab1e86031fdf37d7900300528c7ec474eb4620f726",
+            "net/sparklink/sle_workers.rs": "e17239a80bd0174c77482e36e8b2b6a87e139af1fee03f602053e28aed557886",
+            "net/sparklink/sparklink_core.rs": "adf1e75b58169c54388dc46497a8ee18442dadfb6f27e29e01cdd5a47022c00a",
+            "net/sparklink/sparklink_genl.c": "ffe57e94d4f5da25ae5e4548c25f503510b95a31b64c68271412c145975c2d63"
+          }
+        },
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "85cdf627d70bd239609ab0e74124b787279f139f",
+          "scopes": [
+            "crates",
+            "data",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "d9688629744f1cca2b10513c8093ab1a0ddc3cfcd9cc2deb516fa0888b641e35",
+            "Cargo.toml": "074d922eba4ac31a421942c95ed84e1ac6e778e2a3baaf7260a0929d6c9d1244",
+            "crates/libsparklink/Cargo.toml": "12bf208733281aa2d93669f1b4660fb61ae1d0df4438a773282bc11eb80aaec5",
+            "crates/libsparklink/cbindgen.toml": "c2cd1c996ec9a7bd60dd08340222129c2218560194cbd9f524bf18a32a11bd5b",
+            "crates/libsparklink/include/sparklink.h": "ba0783f6d19fbc6b893f4c5566b6ade041b3fff7aa552b0f80e81c524c23f305",
+            "crates/libsparklink/src/adapter.rs": "508fd057240c72b06dfef35d76ea8f0818a8807028872989072635ad7a000342",
+            "crates/libsparklink/src/controller_events.rs": "cb52719ffe814af8f963936e448209211cab6a26b7eb4945c3e409e0017da356",
+            "crates/libsparklink/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/libsparklink/src/event.rs": "728ff9608818e63c09e0df16b7647cbb21b6e16f4680dd2e408ba7d5da9d52d2",
+            "crates/libsparklink/src/ffi.rs": "9684b5a3454c405528821ae6fcab2fd38bec0c1563e64307618c9d3aac7f8cdc",
+            "crates/libsparklink/src/ffi_native.rs": "8699a129e6bad05ecc37669bc8c69e5031e541f5e1a6544a472050d9cd2f1069",
+            "crates/libsparklink/src/lib.rs": "e9de984c1bd28a7cfc5942dbdfe63fa4f9091326825465d48d4204b5e5188e1c",
+            "crates/libsparklink/src/retired_event.rs": "bf8f5a40f84ef0d08dd0f2e379a37175a72800f17f45209f3c115c0762a84bbf",
+            "crates/libsparklink/src/snoop.rs": "d32180800723109c067eb7a51ad1215a9983f04a8985cd193140b365e4c8fad1",
+            "crates/libsparklink/src/ws73_discovery.rs": "ee0ad25307cec94fed54b95cc5cb5921de1eb496885b7fa374fe88db9240bf91",
+            "crates/slctl/Cargo.toml": "a4369dce090184b60f58b0e8a0525e124be6aafa61e1d6515950098cb13959cb",
+            "crates/slctl/examples/bus_policy_probe.rs": "fa344893368710bd6db5a8ea2c19248ff1a931305a54df32598506f60f989585",
+            "crates/slctl/examples/native_security_agent_probe.rs": "d23f9afa2e18e83453be00f2f1f4fd162bde077a0b4addbd9009c2772c246b74",
+            "crates/slctl/src/channel.rs": "01ac2da277f3c96c37902496049ef8d8cb5f0fa33cde97d94d0cbc2357fb44e7",
+            "crates/slctl/src/commands.rs": "8dd3fa5b7b63901af7e8732c2314356380ad1dd8ca4ddd7f062821ea4cf54d91",
+            "crates/slctl/src/main.rs": "722f3465def6283ce96212eb83c6202145b069b206147194e157e53dddf2bbb1",
+            "crates/slctl/tests/scan_freshness.rs": "3ab3d6293c59d4f105ed100f9972f74e745a2c6f1764dcf235f53580a746726e",
+            "crates/slk-experimental/Cargo.toml": "f4f874a9e3d4e9e9e04aa161e3ed6bf2ccfacd46cc0f800f3a6ef15dfc9f157e",
+            "crates/slk-experimental/README.md": "bb9ecebd88fb9b8caddea4a6c2a7203a40dcc3e8f4e46aca970d578f5a258f11",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "578d136b61749d812c1db624f493ca50f4a76bc73a04f5e7615e5a4a00933263",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "c8c68a94e1c268c5bfb80ce0dbb98bc39e16b5d6a7685e68c3ab1f8479ecb3a1",
+            "crates/slk-protocol/src/channel.rs": "e76907f60cb6006de6b01ad49fb4ad6ba42f86a78c35c3f4abd679a666f25204",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/ioctl.rs": "23be963504c1a80af31fe0cb8af9aad719770a39a532dd7914c00edf4c062df6",
+            "crates/slk-protocol/src/lib.rs": "9a4cf882a77f0aef621a519e7928b32d18633dfdf0b1524e93bd4d6fdc0e837b",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "d093c33faa18025bb1aa2f16c9ba888cef6e85131a813d058dd1872cde479225",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "0faff47303886b82e826047d44c64c755599f0bf31975185014e6226ce272343",
+            "crates/slk-protocol/src/types.rs": "0717bb7c3c125c94ae1624e240e1a8e4d9b8a53eb6590a2c8e4403c5c8cbd172",
+            "crates/slkconfig/Cargo.toml": "050fceaff604f8c3827367733f87150be35011e3330d83bbcdeba2c96d4abe54",
+            "crates/slkconfig/src/main.rs": "638f0d579565eee6ab350e39764659e184d81fb3f7eb4ac75ff1bd4c02a4285c",
+            "crates/slkd/Cargo.toml": "a0af013f553fa4a96c2fa82ffa9b3934bfbabc424c2375c3b5df58678f1278ee",
+            "crates/slkd/src/adapters.rs": "c095bf5421db3ea9a8d13ba3f7bbeb38114e889c80e552b7883627720a2c5447",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "35ea73e3c55ec7d46087ab5ea6f1eb600d9464c5df99234ae775f0f3b067261c",
+            "crates/slkd/src/config.rs": "ce93efeead5a25c3b33e03e279feb61d5d099024c9fc84c2099f306f198b1a0c",
+            "crates/slkd/src/connection.rs": "7dc87661087a7c0357fc3159204be332fd760835eae978146f0551b9668698c9",
+            "crates/slkd/src/connection_object.rs": "2acef51138cfd9fbad7ff5fdf550d129bf2a7655fa0508790fe91fd5ece4db07",
+            "crates/slkd/src/controller.rs": "89621843d9dcd8bfce9d61dd070b9edc5ca9c9a6af3ef2b5f7d9e913f2838d62",
+            "crates/slkd/src/dbus_iface.rs": "862a7b76b523bdb9988e4af812a62da5aa19db59a950794ed6e58639ccbc1e12",
+            "crates/slkd/src/event_loop.rs": "09595af3b6016ebf49818be499af8387edaafce783196b6972faefd04c69513d",
+            "crates/slkd/src/event_loop_tests.rs": "d031eb5deceedb6788f350f33bd83c7c5fbe57b3aaddcea5f7c0c753fe034dc3",
+            "crates/slkd/src/extadv.rs": "d80ca3d949a4f3a5974b03b8f43584053c8c3e675c782848fd9a70547a2474cb",
+            "crates/slkd/src/kernel.rs": "fc7dc11c930710f06e1ede116ba40edc5c73b1d77c4ff9509d999d89919c85ae",
+            "crates/slkd/src/main.rs": "d8f38c3d33b4e1c4b7747cfe1f63af0b8d04733346add6230338971ec779af0b",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "60fd41e9830cea2f8a1599f0b5c404b42050816eeb5ffd46d1d1863dfef7cb9f",
+            "crates/slkd/src/registration.rs": "ae2a1e82b49cd4e8cf6194fb020e4c45fc72c307339d9bbce6ab840b4500e4b8",
+            "crates/slkd/src/security.rs": "80acd72f152fc013f77d740461488ba64ebd795ec39defebafe86cb2e92b0256",
+            "crates/slkd/src/security_policy.rs": "ef37b0f7c44b63217c435d5dff970fb27e9c5ef9bee4069c7ba32086188fc8ee",
+            "crates/slkd/src/security_policy_tests.rs": "75387d7376addad22f6ec6a16005ab9fe26f0b85a01b1d1c4eac71f060a24245",
+            "crates/slkd/src/service.rs": "b1d9d23e654cfe6d31bd51489a47fdf91f9b77819fafca241d829e2e6e2145c4",
+            "crates/slkd/src/ssap_database.rs": "b159c93e7482dceabf72ec628c4d296407bc68bdebd7405b00eda6858e9f32a5",
+            "crates/slkd/src/ssap_engine.rs": "1cd34eb739e423c18eabafdf987874891aecbce3ef9da618cb33f734d4ea4ce8",
+            "crates/slkd/src/state.rs": "275aef0b12f4f8a2bdc24c587c44f02ec138ed06b3a03fa4ed1397c09c32b38d",
+            "crates/slkd/tests/config_startup.rs": "ee996e38b047f2fb37a0f57a63466f97c897b81acef56411836373c1011e2a0f",
+            "crates/slkdump/Cargo.toml": "38f9b701c304207ec581c5be5a504b08016e1a3401b06a8dd6eda9cad493672e",
+            "crates/slkdump/src/main.rs": "4a8781eda8d03ca63d00bc0c35133712660b4adc97cf82fa861349fd71f77629",
+            "crates/slkmon/Cargo.toml": "b9fd1c1362473d58b973ea4ae4f1b857e4e165f2a294b2bf888a1ddfbef59753",
+            "crates/slkmon/src/main.rs": "9e9cfb3ca5cdf37122ccc731d53c7a147f12860371efdfc62284715f511abab4",
+            "data/config/main.conf": "0aa64db485af08803e9ffe59fadab48380c6179ebf98b1c2a5e8fd54777b5a59",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "12028a8989c9d3b8473d4ef3011a5ed251123ce1364fb968ba1ccb25c5ca6a00",
+            "data/man/man1/slctl.1": "74e207fdda4e9459c8ea84fefe08ca7f47c6b369ca4bf7f800c9ceef8e4af4c7",
+            "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+            "data/man/man8/slkd.8": "82671ac3f458775aee7c3572a1ec4fd02d48b2402756ce88f9dde16e23c9b8b3",
+            "data/pkgconfig/sparklink.pc": "ca12e4bf8d6c4458c868c5468c3afd6d5a3cc1e5a433eadc35a2f765bbcc765f",
+            "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+            "data/udev/99-sparklink.rules": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6"
+          },
+          "manifest_mapping": {
+            "material": "agent-real6-bundle-manifest",
+            "pointer": [
+              "source_hashes"
+            ]
+          }
+        },
+        "guest_tools": {
+          "repo": "sparklink",
+          "commit": "85cdf627d70bd239609ab0e74124b787279f139f",
+          "scopes": [
+            "tools/ws73_security_agent.py",
+            "tools/ws73_target_control.py",
+            "tools/ws73_connection_control.py",
+            "tools/ws73_channel_socket.py",
+            "crates/slctl/examples/native_security_agent_probe.rs"
+          ],
+          "files": {
+            "crates/slctl/examples/native_security_agent_probe.rs": "d23f9afa2e18e83453be00f2f1f4fd162bde077a0b4addbd9009c2772c246b74",
+            "tools/ws73_channel_socket.py": "06a4f4634a0f5bf21e14e888af908ea71d93fe6fdb906d47436772b45c9c8d0d",
+            "tools/ws73_connection_control.py": "73c072a167eaeaa7ae392c80a6c0be0221381a748e0dd3e55172b8c7bc35450a",
+            "tools/ws73_security_agent.py": "74c1cd33dd6405f9c34af21ca54b43d0a74a07cbc817de856a5d81322b77b3fe",
+            "tools/ws73_target_control.py": "b910e8dbbdbe537acc6aa10ec3495c2bd1246eeaafd68eae493d3de63928b1db"
+          }
+        },
+        "executed_host_tools": {
+          "repo": "sparklink",
+          "commit": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
+          "scopes": [
+            "tools"
+          ],
+          "files": {
+            "tools/backend_registration_contract.py": "d68e1de74a1501fbdbcda4b2af8795e5be1c033c5086be893b10b8419bf69534",
+            "tools/channel_socket_contract.py": "a80972ea54c3a8f45c4b09011fe72f5df37cc44b2ea507ad5d50a2eae91357f2",
+            "tools/check_docs.py": "6f45c3d303e05662611d22356f0fb11bcc9d98a4805cf05427c3b67adfb55e6f",
+            "tools/check_docs_browser.py": "aa57e0237bae6f84832e1738c8fae33f9f138e5f14da68555e2e228061922f80",
+            "tools/check_qualifications.py": "30daf596b623a1dba273ad5356d95b493cf3512c9ca6eb418029d9b7cd00f218",
+            "tools/lab/README.md": "f6176251abb7836a3f98db4f721a24f97e474099c37bb04be35f1425d5af7125",
+            "tools/lab/channel_fd_probe/Cargo.lock": "8e676693331fd9519329d25612131c348db58fa967a691e2eb7081cd50a76553",
+            "tools/lab/channel_fd_probe/Cargo.toml": "fe70d9e8acfc8833f309a5b5cc50ed4cf722d6a45a4d36062f44097854656279",
+            "tools/lab/channel_fd_probe/README.md": "0cab2ccf56845a1d87e47b4c78abfe8b47562e1ce7f8ba9fe7f407795c1b8e46",
+            "tools/lab/channel_fd_probe/src/main.rs": "a59a7d827012d922ac977bc9aeb033dde3c5603053360337af388fafe5685100",
+            "tools/lab/retired-event-poll/legacy_probe_run.py.txt": "cfda74810ff5500e8581abf0d0df9742e3263be00544dbc4791dbb3664768a3a",
+            "tools/lab/retired-power/legacy_cli_stats.rs.txt": "7dc19ade5e6ef1f1eee11130818341cc7670d5cedbf5a480ce281fc53f3ad954",
+            "tools/lab/retired-power/legacy_get_stats.rs.txt": "2d6f966182c7201fb9eca14a8f06fded836c6345b70182014bd6265435ba479d",
+            "tools/lab/retired-power/legacy_pm_methods.rs.txt": "367314acd7c2807a2e53103da5db71ad474029a7ebddea889a92e1f6e32bca73",
+            "tools/lab/retired-power/legacy_slkconfig_stats.rs.txt": "0b7891d2cc924d26820d0dd0e6fada1bd33c98da30a84de4fa8bccfdeb22419d",
+            "tools/lab/retired-power/legacy_stats_type.rs.txt": "d324f8f920ec71f1113d0edc8cb34a8f9883721e179dbb223ccc38d289776f71",
+            "tools/lab/retired-power/legacy_stats_values_test.rs.txt": "f6600302c8709e09f07c21f510989ffcdfd005d0415472aed7fe1ba5101ccb13",
+            "tools/lab/retired-read/legacy_copy_execute.py.txt": "aa029f5d524a70bf4009b11a88bc48d439556862929f81ac9087f5289dba8ee9",
+            "tools/lab/security_relay_oracle.c": "ec21b55941590250c9c18c8fe9a79b0fa5db4324d90d5612d79eea4706bc39cb",
+            "tools/lab/security_relay_reference_sdk111.patch": "edc7749cbbbd982e76bf0a8b26654925a1b60522ab52e7f39f3b2d63be9d1140",
+            "tools/lab/security_relay_reference_warm.patch": "fb26b36dd321c53d67b6c4b59a79f5795636b401bf378ab2848abadaec2a1ebc",
+            "tools/lab/ws73_acb_transport_probe.c": "2e2016b778192648b411c1e1d02e273bbcb45846ebc58f337a14b004ef150b37",
+            "tools/reference/fresh_context.c": "92aefd2b25db3d3a8013db0e47c73a5f2dfc24b30b574a342d41e7736b94f3c1",
+            "tools/reference/libusb_trace.c": "d102ae1020ce0e0df1d5e4ee1c03bc3e587d52ef39e2036485625a91fa8e7803",
+            "tools/retired_dli_event.py": "9670b3c1242ec867ffd64e8a04cd438cc9d62ddbb854110c86fa28aa4693a109",
+            "tools/run_formal.py": "984f240839e798f159a087e242716536704cdc62dc9cb23ef77342f477012547",
+            "tools/run_pdu_submit_cbmc.py": "9158f497309ec51f9792dc99c7acfa2cea7bddf520fbd0325179acecc770e78d",
+            "tools/run_registration_proof.py": "a4203308ad217d9aca473183fb7f36ed20df4a1e59e5a84bcba4ed2ff6efb021",
+            "tools/run_standard_metadata_proof.py": "e2c2170019b9d4c976c5506388404e041c5e26b9e3a0fb793a2fe99aa80bd5d1",
+            "tools/run_standard_usb_writer_proof.py": "c1e448350d2fc7235f87bb6ebbc5b7863100d7511409d4851b07f77b7745c522",
+            "tools/run_virtual_codec_proof.py": "82385b75e30cd0be77a9d13ed5da2f399fda9e6cd0ed235b837da1e6d8243057",
+            "tools/tests/data/connected_file_record.json": "9a1f21ba55b369e639f6e010ab24a9bfe35de40d01bf5ba345cb1d05e6490ec4",
+            "tools/tests/data/connected_file_v1_record.json": "f7eb000c53643b21805d912482d189053c100e3f41deafdf1897c3db5ab0ba82",
+            "tools/tests/data/resource_file_remove_record.json": "c1d3db434bfe4989fdc0801d1d767f09bf9119914786de7e61863b4cc46b1ce5",
+            "tools/tests/test_backend_install_formal_scope.py": "f0bf4a7445f1100bf5816165f99955d8630e53e1631f3a9e613066a8682fbb37",
+            "tools/tests/test_event_copy_probe.py": "06d2de5a579d04916138993f3f051608d0260b6f100ee603edc337b1b46f864a",
+            "tools/tests/test_formal_rx_scope.py": "0222d524faccb4e559809b82d1621ade89bd8d272150feb35d150a297be7728c",
+            "tools/tests/test_qualifications.py": "2ded1e7348e1f504ec2f752216dbf239a57f26df402ec5529f96419bffda10c7",
+            "tools/tests/test_registration_proof.py": "0dd131dd5b81389cdf33721c021b9864843a55922df689b87176499553eeb9c8",
+            "tools/tests/test_standard_metadata_proof.py": "0188c394532866bbaa72c6ef3041556a0695da8652b1bc6d6086a6a875a962cd",
+            "tools/tests/test_standard_usb_writer_proof.py": "76c10020ee086f208084e3610a242dec3c720516a48562f6e043e7b927cedaf6",
+            "tools/tests/test_ws73_acb_transport_probe.py": "2372bf895f65052b8e8058baab692d52127f741fb87f124e0b626c4c820ae611",
+            "tools/tests/test_ws73_active_close.py": "0361c13f07c0f7a051602e7e3ca59aaf2f28241aa15cfe3d8e373a58c30cd28f",
+            "tools/tests/test_ws73_active_deadline.py": "6f610916f507e76546fac7da65400afdf4ef80e9a47d12f02224b869db49a452",
+            "tools/tests/test_ws73_board_config.py": "bf5f69786b82da215853109e082b53fea6c8ec85d60ebc32b3800f12f5eb4db7",
+            "tools/tests/test_ws73_boot_code_evidence.py": "e9d9a36317053ae6039a6b59436d509ed8bbfbd469370e43559d4eace92c8c37",
+            "tools/tests/test_ws73_channel_daemon_crash.py": "ae37be2de198f89f0424f15f325b218c6bbcc570da4a5dadf2183455a76e2586",
+            "tools/tests/test_ws73_channel_deadline.py": "ddfa4e5bb1308ed785bb73262121d9919be641838e803f92a1d7373c7a16d520",
+            "tools/tests/test_ws73_channel_death_mode.py": "d676e229b11d334359f0b756267f45d0294c79f5c5f2d350af4bfc849a653205",
+            "tools/tests/test_ws73_channel_grant.py": "9702bb5a7de7f52d715be725c96159ee1994e1b88d10c11bafe29886afd51ca6",
+            "tools/tests/test_ws73_channel_link_down.py": "fe713784ada78a34c9db142b3a5c2d962377950036bab48d5f6f3996e02aa238",
+            "tools/tests/test_ws73_channel_socket.py": "9f99cdc1bc709f5556171cc73ab0b15837a1974632050c21084e51d442f700a0",
+            "tools/tests/test_ws73_command_failure.py": "581d44cf3d11c3909ce155cac635d07d4f484c9887498010aed3bd43f5ca6301",
+            "tools/tests/test_ws73_connected_file_gate.py": "c6bdacb28bceed065191d2fda59aef886514378d1016fc9c2350b84c291e3bdb",
+            "tools/tests/test_ws73_connection_control.py": "ee6e50c518643b3e728b8414c3dc93073e443d916ea5d91ffaf53586ae54e62b",
+            "tools/tests/test_ws73_connection_objects.py": "703828e815ce5ec680a764ed793bef292dc95c9595316b654058cba70971cada",
+            "tools/tests/test_ws73_connection_queued.py": "a91fc552b1b7a80f319da697e933a1a23eec0f49bd1b4ce162ddbdb7fa4d2439",
+            "tools/tests/test_ws73_credit_observation.py": "cbefbdc04057e9802e2e9ad9ae61d1b647e24928c5eeb3ef3550fefd5464f2c8",
+            "tools/tests/test_ws73_daemon_channel_fd.py": "1caf1ac1e4065e4c219901bb8cb6128efc54f56be600fbc792e24f08ee71fbb2",
+            "tools/tests/test_ws73_daemon_crash.py": "01650d3aad0266f2d53c08be7d4e8046d2f5e7ca119edb3d0b9deef7b340f95f",
+            "tools/tests/test_ws73_daemon_hold.py": "75498594bd65648497776c4639f2e0bf84f8402dfc22cf517d404de60a7952c5",
+            "tools/tests/test_ws73_daemon_removal.py": "59788574570b253fd6e456f21ef43b7592b813b4d102a9e881284f1cfbd10e89",
+            "tools/tests/test_ws73_diagnostic_autonomous.py": "39e34fd0c8de67ed878877e5e5f45267e99290386e8b47eb2142517716376e42",
+            "tools/tests/test_ws73_diagnostic_autonomous_capture.py": "e4e791a026a401df1cf0f6fb0c6933cb1b8ac9da409ebf9eef5e13ea8618ea9e",
+            "tools/tests/test_ws73_diagnostic_cancel.py": "6261ec3f4b1ba3793a6d2e9408b0f08e809862b7674eee6e0538a0cb54be30b5",
+            "tools/tests/test_ws73_diagnostic_cancel_capture.py": "e48e88beb2cfbe0edbb44a66232f69c60c5ea63aa0a472dacb71b46daaabf3d6",
+            "tools/tests/test_ws73_diagnostic_capture.py": "f2a448c6487c2d82ba76f64fe099b52edff96b5600a25f11ef1fc56bd546c4d7",
+            "tools/tests/test_ws73_diagnostic_deadline.py": "c01e6a96d7ceed6c5bbf4329fb088426fdf9ef87368d7c44f4ce578833406658",
+            "tools/tests/test_ws73_diagnostic_deadline_capture.py": "b4f866f535239e486db165b07a56dc51249940a2300740dfc40bfe61b929acb4",
+            "tools/tests/test_ws73_diagnostic_hold.py": "ffcf985958f6178ddbf7d7d64aae89660c8c3059e1539a6712db327bb7006cbd",
+            "tools/tests/test_ws73_diagnostic_probe.py": "dd97984822b9a0fe2c0c6b77a835fb285ef79e98c4c89cb9fec8154e8aed3e4b",
+            "tools/tests/test_ws73_discovery_policy_capture.py": "81c460fe822b87778fa195a4b44f704d2ad835a3a8c7eb984929cde4371726f7",
+            "tools/tests/test_ws73_down_observation.py": "228679274aba283d681e249a722b610dcf995caa2219ec42ac66e2790ff70713",
+            "tools/tests/test_ws73_early_fault.py": "11f641aab5c03b2db631fde964cf705d0f2d03c22915510ceab49cc82ed3475f",
+            "tools/tests/test_ws73_encryption.py": "65d199e58c4d6ff0f0518881eabfae1d10fbfda213c7ae20933dfcc5ac7cf073",
+            "tools/tests/test_ws73_firmware.py": "140a3da1cf4b1deac4f7125457f8ef1a8fd368178c9c206957657e6f5943e4ef",
+            "tools/tests/test_ws73_firmware_upload_evidence.py": "6f36a4efdb82594801f979c6db3b0fe5b19af38492e6f56c8c57f8e52ee33b4a",
+            "tools/tests/test_ws73_host_diagnostics.py": "32d3ddea6a98af5d0f5efabe9c69b7d1bbe7e021c9720037608e7479e5fdf738",
+            "tools/tests/test_ws73_host_later_hold.py": "df92d3eecbc0044c40124f9f0af5dee81821620cfebab2aa41c0e87ab1c6e93d",
+            "tools/tests/test_ws73_initialization_lifecycle.py": "417af3449cdf591aab7e3ff3de17f36fd4424fd2186e6aa1db0aa73f4b4f7c42",
+            "tools/tests/test_ws73_initialization_off.py": "61074836efe06c760149e8cf4f2717664ea0a34395a2bc9c214dcce53cde059f",
+            "tools/tests/test_ws73_key_agreement.py": "51d1dd259838fbfb2574150728bd81864424193015c6ca43fc25f9abe0f58b3c",
+            "tools/tests/test_ws73_link_resync.py": "2cd65eeccff8d41bacbed4b10ad505492b65c24aece802e3ca8c2505f737cb6a",
+            "tools/tests/test_ws73_managed_queue_support.py": "754e449dd6c9ccb13f1e7fc2507938317fcf197ed8d45c39467936a8be730b20",
+            "tools/tests/test_ws73_management_eviction.py": "7902537189dfb10909c4d8bb385aa5945bb1abdd36db53aa6623436716cc6974",
+            "tools/tests/test_ws73_management_partial.py": "66dad831125bc175f25e1c1ecca00ea5032688c626669f94b6fdfc6d192ab03a",
+            "tools/tests/test_ws73_management_queue_ready_peer.py": "3ea4507b1020b4c8d14adcbb336518d186861f0f0ddb50470f951abf86b192ab",
+            "tools/tests/test_ws73_management_queued.py": "7f31cd0128c57e486bd78440eb4179e6d735538c5126c9506ac61289eadc38cb",
+            "tools/tests/test_ws73_management_ready_peer.py": "38ceae8a04468e18e7e248710b82e5e77be0c8e3ca50634ef4d56dd7138245b6",
+            "tools/tests/test_ws73_management_setup.py": "503f8ed5e48bf63499245516a5420ae97508c14331a69a928d4c27b4bd5bac69",
+            "tools/tests/test_ws73_model_hold.py": "128432a42a0b6b64ffef02573ba9cc4d5fa01bd804a156a017e8f1ec9b6dd35f",
+            "tools/tests/test_ws73_native_build_check.py": "d9c59ede4aa1e808a78feb3a5ab7d7ed0062cf45a5c67234feedce2506e3373e",
+            "tools/tests/test_ws73_native_deploy.py": "462392307fbbd3f1052cebc9bc8a8f60f2358cd22ece0174563eaa6db65cc5b6",
+            "tools/tests/test_ws73_native_root_smoke.py": "ac4c84112c95727c7e64f613c7b7478a70de0114e167c7e8cd51c5c6410d75f6",
+            "tools/tests/test_ws73_native_service_bundle.py": "37dc26987f12d4acdd5eb9f76054205af2677fd9a0eabb816c4bb3e6c4d34a33",
+            "tools/tests/test_ws73_north_star.py": "3f25ae4fcbe390f391013f905c8122f6eba2e5175acdbcbdf2f7b1bafeae1cb2",
+            "tools/tests/test_ws73_observer_policy.py": "174b2ba009e67b332d686616a9b7395ca9253f403a7fa0da8ebffcfb084fff7f",
+            "tools/tests/test_ws73_parallel.py": "84ccfd960cab5251117af321c348c2bb0a45f58b601a505a7f284b5a26a7fa81",
+            "tools/tests/test_ws73_qemu_hold_budget.py": "8161b753b30e1f47f09d7e8172c2eb0bddca173d64b63fa62dfbbfaf2f0d7bdc",
+            "tools/tests/test_ws73_recovery_budget_observation.py": "d8c14901a82a322b310199c4c5080f634e1571edae9dbe82c8c126f7704bf14a",
+            "tools/tests/test_ws73_recovery_capture.py": "330b82a97b17799f29939d10f458f662df30c9b7170bc7650617d05c1c1f5b99",
+            "tools/tests/test_ws73_reference_capture.py": "d7501342c65df75bd2e58a99190d72f1153e6e22847734d6aa839e9392dd7f7e",
+            "tools/tests/test_ws73_relay_firmware_extension.py": "c313003bade9d8c429e2d91b04ef60e3ad2a283d67138f93ba4719094e02dc06",
+            "tools/tests/test_ws73_resource_file_gate.py": "3ad41752e10932c584311b3656f4f5ec58d10de53d4dffa20925926e35de855b",
+            "tools/tests/test_ws73_revoke_prefix.py": "ff9f89b811643632af1f6a4fd32be919fec4e80e89bb042eb094a398135bb236",
+            "tools/tests/test_ws73_security_agent.py": "c933b1b7e3db225f3d399bd1a1487ae0a9b7c7884b42634a9c5b8db7ed2e5cf7",
+            "tools/tests/test_ws73_security_cancel.py": "268175eb9787dfa429e44329414dd0c5862dcfa149d5ecc0aa496203095bf2e8",
+            "tools/tests/test_ws73_security_capabilities.py": "2f071544a70e4f3a542e5a0bf448fd0216d8276730a7e1ccfa649249b19e1b47",
+            "tools/tests/test_ws73_ssap_discovery.py": "833c4a82425e6a885fbd222fd35131367c374707d919fa570b399e5a2fe1c9f3",
+            "tools/tests/test_ws73_ssap_value.py": "37449aa9d535beb6f74dfb9c4742c4066f85641238f577a6c0ed7010d3ab3346",
+            "tools/tests/test_ws73_target.py": "eb40a7d00f42538f17486d4b58f5f057e06d3011720d4e513f4673e0bdacf536",
+            "tools/tests/test_ws73_tx_capture.py": "24200d0df36524e9245606a727ba088d53aeabf2175d688abaef055c7b0d2193",
+            "tools/tests/test_ws73_vm_native_root.py": "86d75b386d238919c5ff73ee89696779517196367f558e7138af899267b94adb",
+            "tools/tests/test_ws73_vm_register_reset.py": "3dfdd19d645ad9ee65d12f004cb650613142a0f1b9fc7814815035a74febb035",
+            "tools/ws73-board-config.py": "5dfde390c8041f3d9aa33ff7a4e2854e24b5d7a34d837ceab8a76fcba3f9b138",
+            "tools/ws73_acb_transport_probe.py": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+            "tools/ws73_active_deadline.py": "fff7caf3aeb1a6ca99ac7eb6f3ccdb593b237f38b260a268bd473c3f937665e0",
+            "tools/ws73_bindings_probe.c": "e0e1f33c2b939d95aeffba2acd1f791422d963af3fde35c4408b787ad5403fd3",
+            "tools/ws73_bindings_probe.py": "a8cee9e23dd6680345a7c278b04d84101bfd347ec3b9bc1629e330466c350683",
+            "tools/ws73_boot_code_evidence.py": "0ab7823dc6dafe5f59f385fe2335f9ef95e8d4ed5f8df006a66983aaf6a93be5",
+            "tools/ws73_capture.py": "5cf724d7c67375bc04f45902a6d377d1aa4407dacf6257b21fa43268e3361d5e",
+            "tools/ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+            "tools/ws73_channel_deadline.py": "eee746b38308719e740df4a1f712536cd96bff5620d6889ab37408789f6288e2",
+            "tools/ws73_channel_grant.py": "cda7466bf939bd241c1574362e81ac4158dc183f5491dfe1edb845b4038e790b",
+            "tools/ws73_channel_link_down.py": "89bb10c69141223807302471173c55f1e211d146aa72f585773a59d94a330c03",
+            "tools/ws73_channel_socket.py": "06a4f4634a0f5bf21e14e888af908ea71d93fe6fdb906d47436772b45c9c8d0d",
+            "tools/ws73_connected_file_gate.py": "cce07b828a01bed3c52c9bc7b4a402fe6d65813cb2dc1ec801d8ae1b8625e999",
+            "tools/ws73_connection_control.py": "73c072a167eaeaa7ae392c80a6c0be0221381a748e0dd3e55172b8c7bc35450a",
+            "tools/ws73_connection_objects.py": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+            "tools/ws73_connection_queued.py": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+            "tools/ws73_credit_observation.py": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+            "tools/ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+            "tools/ws73_daemon_crash.py": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+            "tools/ws73_daemon_hold.py": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+            "tools/ws73_daemon_removal.py": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+            "tools/ws73_diagnostic_autonomous.py": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+            "tools/ws73_diagnostic_cancel.py": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+            "tools/ws73_diagnostic_deadline.py": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+            "tools/ws73_diagnostic_hold.py": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+            "tools/ws73_diagnostic_probe.py": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+            "tools/ws73_discovery_policy_capture.py": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+            "tools/ws73_dracut_ldconfig.sh": "b55e4d4e3020fb060b22b4c4f719dbdd9c4cd8888ae3c9dc1bace3f4a694d501",
+            "tools/ws73_early_fault.py": "4e90b25cde9f7ce2f46b63a99ff8e70b4deb1e6448146e6741bda3ba3d23c604",
+            "tools/ws73_event_copy_probe.py": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+            "tools/ws73_firmware.py": "d48f48e2b169631cac1f4919a1f393a010e5aedd363fe19f9113d041964012fc",
+            "tools/ws73_firmware_upload_evidence.py": "ab140aeddc063f3ceb0baa65f2e572c73d9c03709e774b6d16ec5cd438735bde",
+            "tools/ws73_host_diagnostics.py": "1a53382ccdafce3d34bf2dd853303505955779b2e2b89f1fa00d5616f1e7a347",
+            "tools/ws73_host_later_hold.py": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+            "tools/ws73_initialization_lifecycle.py": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+            "tools/ws73_key_agreement.py": "a719758392ab2f66f1abad205420e79d853e8e862bbd5159fd376893eda10cb8",
+            "tools/ws73_link_resync.py": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+            "tools/ws73_managed_queue_probe.c": "1670731a7c5b8a1888ca2c0bc899817a762b03061570ec6a29212b2a855eb7d8",
+            "tools/ws73_managed_queue_support.py": "7c951e9dc3b6bec05c16b8f256f7537c422aceadc7870b5ac74518337944b898",
+            "tools/ws73_management_eviction.py": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+            "tools/ws73_management_partial.py": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+            "tools/ws73_management_queue_ready_peer.py": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+            "tools/ws73_management_queued.py": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+            "tools/ws73_management_ready_peer.py": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+            "tools/ws73_management_setup.py": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+            "tools/ws73_model_hold.py": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+            "tools/ws73_native_boot_bundle.py": "e8509d094443e0ae3b1cbbb2624c00f9f220b1c9666e22b66c990443c40c6de3",
+            "tools/ws73_native_build_check.py": "cb9ee7a0332766bcdd7b3c04d701e70f253877c66acb9b76a44388e1f2846abc",
+            "tools/ws73_native_deploy.py": "e1ee10a4c6d73bcb710d3141c3d3c20a1cc9d154bb3ab9fca2da8795147871f6",
+            "tools/ws73_native_module_init.sh": "640b731e19b122ac185ca4b3d06e047bd48bc1718e3de5da49ce75be207d7c07",
+            "tools/ws73_native_root_smoke.py": "5f16e049d1b894f10c2910e27899b0bde3d43aae2a8231d86fa70bb7c67cbe61",
+            "tools/ws73_native_service_bundle.py": "72627f185c84c8e04e1ce5ae541c72575a35184e55e5cc27e8d5429204eac4ee",
+            "tools/ws73_north_star.py": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+            "tools/ws73_observer_policy.py": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+            "tools/ws73_parallel.py": "14233c71d3a2d7453ba395c89e766c832c37d72dd7aa32a48245265a28da45e0",
+            "tools/ws73_qemu_hold_budget.py": "0e87ae6f55bbc7aab8b0f33822e746cc187beb31e4f66f74802ce4de0a8d01f2",
+            "tools/ws73_reference_capture.py": "1e6893e0992b72586cc0493fc81265f42c2529ff6c11a9f918e52bd84c770935",
+            "tools/ws73_register_reset_init.sh": "826541c4d499b3905db5b9f24a83154024e9a59ae1a62e27c8f4a214dc659ecd",
+            "tools/ws73_relay_firmware_extension.py": "03f2086ace2f90087360580d18435b2ef8f0355ec7de5f194d1438bfa0a75b87",
+            "tools/ws73_resource_file_gate.py": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+            "tools/ws73_revoke_prefix.py": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+            "tools/ws73_rf_rounds.py": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+            "tools/ws73_security_agent.py": "74c1cd33dd6405f9c34af21ca54b43d0a74a07cbc817de856a5d81322b77b3fe",
+            "tools/ws73_security_cancel.py": "8a2f20b241a307e9510dce9a1bd596380690d735e5baead806e38470d676a2ca",
+            "tools/ws73_security_capabilities.py": "0380d18f3082bee53bede21c41257cdfcc31ed6f6716251d5ea9749c794d9100",
+            "tools/ws73_security_relay_reference.py": "b14d0ab2a481d492e199a2139a742639dfadc01535f0ec046cf707d12c79d290",
+            "tools/ws73_ssap_discovery.py": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+            "tools/ws73_ssap_value.py": "45f6ca4786e7b87fb8f9bd50a6d14dc56ec2235b2bafbd562db24ff6bbff58d8",
+            "tools/ws73_target.py": "8a1e15f9673835dc784c420616fe80914e6545084cc4bf887524e79952213509",
+            "tools/ws73_target_control.py": "b910e8dbbdbe537acc6aa10ec3495c2bd1246eeaafd68eae493d3de63928b1db",
+            "tools/ws73_target_guest.py": "c122ecc2d31018e601bc30c3cd9375661eee1bb079f6914947f80f48fa035d30",
+            "tools/ws73_target_init.sh": "248cead2aa3a5971dd516dca872caeb714994729150a493faa36192ddc0a20e5",
+            "tools/ws73_target_recovery.py": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+            "tools/ws73_vm_native_root.py": "a805611862274dd7ed7a4b47d62e34cf423d524096d3136d15d9e40a594ea058",
+            "tools/ws73_vm_register_reset.py": "99e759dc2ff4d0171fd002102c925c1a68ba865ead419d7da4cc4b9f4b1f5d70"
+          }
+        }
+      },
+      "report": {
+        "material": "agent-real6-report",
+        "scope_pointer": [
+          "limits"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "kernel"
+          ],
+          "compiled_userspace": [
+            "compiled_userspace"
+          ],
+          "guest_tools": [
+            "guest_tools"
+          ],
+          "executed_host_tools": [
+            "executed_host_tools"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "ALL6_AGENT_MODES_TWO_ROLE_REAL_SCOPED_PASS": "PASS"
+        },
+        "gate_rows_pointer": [
+          "runs"
+        ]
+      },
+      "report_commit": "13af39e0857cddd7df5a089faa99394f91e87f39",
+      "artifact_materials": [
+        "agent-real6-bundle-manifest",
+        "agent-real6-prepared-bzImage",
+        "agent-real6-prepared-kernel.config",
+        "agent-real6-prepared-initramfs.cpio.gz",
+        "agent-real6-prepared-root.btrfs",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkd",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slctl",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkconfig",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkmon",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkdump",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-liblibsparklink.so",
+        "agent-real6-bundle-usr-share-dbus-1-system-services-org.sparklink.service",
+        "agent-real6-bundle-usr-lib-sysusers.d-opensparklink-native-lab.conf",
+        "kernel-artifact-manifest"
+      ],
+      "tool_materials": [
+        "agent-real6-prepared-manifest",
+        "agent-real6-qemu"
+      ],
+      "configuration_materials": [
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-ws73.bin",
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-wifi_cali.bin",
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-btc_cali.bin",
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-bsle_custom.bin",
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-pm_config.bin",
+        "agent-real6-bundle-etc-sparklink-main.conf",
+        "agent-real6-bundle-etc-dbus-1-system.d-sparklink-native-lab.conf",
+        "agent-real6-bundle-etc-udev-rules.d-99-sparklink-native-lab.rules",
+        "agent-real6-bundle-etc-systemd-system-opensparklink-native-lab.service"
+      ],
+      "gates": [
+        {
+          "id": "approve",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            0
+          ],
+          "materials": [
+            "agent-real6-supervisor",
+            "agent-real6-approve-manifest",
+            "agent-real6-approve-capture",
+            "agent-real6-approve-capture_stats",
+            "agent-real6-approve-control",
+            "agent-real6-approve-kernel_log"
+          ]
+        },
+        {
+          "id": "reject",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            1
+          ],
+          "materials": [
+            "agent-real6-supervisor",
+            "agent-real6-reject-manifest",
+            "agent-real6-reject-capture",
+            "agent-real6-reject-capture_stats",
+            "agent-real6-reject-control",
+            "agent-real6-reject-kernel_log"
+          ]
+        },
+        {
+          "id": "timeout",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            2
+          ],
+          "materials": [
+            "agent-real6-supervisor",
+            "agent-real6-timeout-manifest",
+            "agent-real6-timeout-capture",
+            "agent-real6-timeout-capture_stats",
+            "agent-real6-timeout-control",
+            "agent-real6-timeout-kernel_log"
+          ]
+        },
+        {
+          "id": "cancel",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            3
+          ],
+          "materials": [
+            "agent-real6-supervisor",
+            "agent-real6-cancel-manifest",
+            "agent-real6-cancel-capture",
+            "agent-real6-cancel-capture_stats",
+            "agent-real6-cancel-control",
+            "agent-real6-cancel-kernel_log"
+          ]
+        },
+        {
+          "id": "agent-exit",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            4
+          ],
+          "materials": [
+            "agent-real6-supervisor",
+            "agent-real6-agent-exit-manifest",
+            "agent-real6-agent-exit-capture",
+            "agent-real6-agent-exit-capture_stats",
+            "agent-real6-agent-exit-control",
+            "agent-real6-agent-exit-kernel_log"
+          ]
+        },
+        {
+          "id": "caller-exit",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            5
+          ],
+          "materials": [
+            "agent-real6-supervisor",
+            "agent-real6-caller-exit-manifest",
+            "agent-real6-caller-exit-capture",
+            "agent-real6-caller-exit-capture_stats",
+            "agent-real6-caller-exit-control",
+            "agent-real6-caller-exit-kernel_log"
+          ]
+        }
+      ],
+      "required_gates": [
+        "approve",
+        "reject",
+        "timeout",
+        "cancel",
+        "agent-exit",
+        "caller-exit"
+      ]
+    },
+    {
+      "id": "agent-data11-db6e333",
+      "title": "数据保持85cdf/db6：11门禁136回复/32拒绝/2严格fd",
+      "level": "real_device",
+      "result": "PASS",
+      "contracts": [
+        "retained ordinary two-role data",
+        "application/layer lengths and PB fragmentation",
+        "software backpressure and lastfd",
+        "scoped actual controller pool observation"
+      ],
+      "bounds": {
+        "business_round_trips": 136,
+        "boundary_rejections": 32,
+        "strict_prefix_close_phases": 2
+      },
+      "excluded": [
+        "Only exact listed11 data gates on basic fixed channels; not complete DG01-DG12 or all original NS1/physical/hardware requirements.",
+        "Private raw captures remain original machine only; hashes and explicit access, no asserted public/offsite archive.",
+        "Original manifests keep credit_exhaustion_acceptance=false. Separate pool observations show actual exhaustion/NOCP resumption for this run, not hardware NOCP truth, late/duplicate/reuse barrier or complete ledger proof.",
+        "Current fixture/function/formal results are separate; no new formal proof or KASAN/KCSAN/lockdep/fault-injection/KCOV qualification.",
+        "Prefix-close unfinished PDUs contribute zero app round trips; two strict phases are separate from136 peer-checked replies.",
+        "Dynamic multi-channel/reopen, four devices two-group business, full socket/Grant/revoke/Down/failure matrices and SSAP CCC/notify/indicate remain incomplete.",
+        "Agent sixmode positive/negative scope is a separate report; not general authentication/trustedGrant/Bond/third-party interop or fullsystemd/udev/deployment.",
+        "Natural startup/reenumeration/disappearance RCA and nonhuman recovery remain OPEN. QMP/manual/hub/injection are not natural recovery."
+      ],
+      "remaining": [
+        "fullDG01-DG12, dynamicchannels/fourdevices/SSAPupdates",
+        "late/duplicateNOCP/reuse, fullsocket/Grant/inflightfault combinations",
+        "authentication/Bond/deployment/naturalrecovery"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+          "scopes": [
+            "net/sparklink",
+            "drivers/sparklink",
+            "include/uapi/linux/sparklink_ioctl.h"
+          ],
+          "files": {
+            "drivers/sparklink/Kconfig": "a4fe289630742cc56513e14d9baccc395b95891b7f49b03d607e213d2789b7a1",
+            "drivers/sparklink/Makefile": "f208817106ac1d72224079f79b486eda1b914bdddfdc9a68efb83043bbc4bdea",
+            "drivers/sparklink/standard_usb.c": "3a33dd49e91052c501b2d185df192184e5c45ad126c42154dfae7578881f7c67",
+            "drivers/sparklink/virtual.c": "b4c13ebca4cdaa80a77f0b5d6e9e90b6ea4abd16b7fdb8de3cff4d871a8391d9",
+            "drivers/sparklink/virtual.h": "774a29ad1ab3ce7dffe8ffbf396191abd2b8a7f68f7d5b342d98eb9a2f2827ef",
+            "drivers/sparklink/virtual_codec.h": "1cb87ed4fff0aeef6e56b259097499573e90a7b20ab90833ce68b9174a0af6c6",
+            "drivers/sparklink/ws73/bsle.c": "47a3e2ba4e169baa91fa5eaf098cfa77825cf06002c155986175037eee57f310",
+            "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e",
+            "drivers/sparklink/ws73/connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+            "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+            "drivers/sparklink/ws73/discovery.c": "584b8e246ae5accce54ce7647ee4469cb410bf41409c79a01799312d4fdb19ca",
+            "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+            "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+            "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+            "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+            "drivers/sparklink/ws73/usb.c": "02fcb3675dd7bff0cec665b2eb108973276247306c6341a3754d9963f8948e81",
+            "drivers/sparklink/ws73/wire.c": "d06ce9c48621ac24ba7450b7d3295a01a1a8b4cb66328f83b0acf568ebd2956c",
+            "drivers/sparklink/ws73/wire.h": "605a35601e0ce4fe95bafd8110ca8747e44e8e845510dbb7e0bd331d57b6d0df",
+            "include/uapi/linux/sparklink_ioctl.h": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+            "net/sparklink/Kconfig": "352656711a97406f5303dc11b94ce5a5d4f792a6b6adb874814bf890f0a27a18",
+            "net/sparklink/Makefile": "f602d17ad2cebbb1232854b361451c486aed8a433eab2f6241d0820506c2308d",
+            "net/sparklink/experimental/README": "950d51c089ab48be6a7ecc541a5113fe673949a3fb6e2ccba99156265ca4304d",
+            "net/sparklink/sle_authorization.rs": "92b40f2a04e2aafae443ca8b9d6743ceaa3a68ad14867dcabb69b5f0f293d307",
+            "net/sparklink/sle_backend.rs": "65d9fec9abaa64edc2fa06756f67ce7bb1a17d3ff73bb744d95d721388bc734d",
+            "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+            "net/sparklink/sle_channel_socket.c": "06ed8c433faef79701938c440badeac46beaa2f0a959d95ab9291c99506ab562",
+            "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+            "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+            "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+            "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+            "net/sparklink/sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+            "net/sparklink/sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+            "net/sparklink/sle_configfs.rs": "048964fc18927cbd55a470c5c0c6abb865a1214d822ddd839aef8cde36b70b69",
+            "net/sparklink/sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+            "net/sparklink/sle_controller_event.rs": "81423ded2609f8953bf2fc25f44253c83606eeafd88802af0e1685a80d9c21d7",
+            "net/sparklink/sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+            "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c",
+            "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+            "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+            "net/sparklink/sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+            "net/sparklink/sle_dli.rs": "c2935790c9edd1167f037694318dc2d5d1531df0611410a1fa594f3715c8b981",
+            "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1",
+            "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+            "net/sparklink/sle_host.rs": "4eccb8c3c4e4b954778438cd2bf911bcd12faf8a679a6e61e415ffcccd45ed88",
+            "net/sparklink/sle_ingress.rs": "fbc3d68b8ae838e823c72d5923b0e24ac74231e6deae85e2037b72d00edd4978",
+            "net/sparklink/sle_irq_lock.c": "b1f8a8fe4c3cd3697d6c3babd3f4aee0f93f0fb7cf98526f3490767c5d9cd9cf",
+            "net/sparklink/sle_irq_lock.h": "3f9a44812ebdd84d08db0f88834910f370bb92a0ce5760ba9371608a3679cb2d",
+            "net/sparklink/sle_irq_lock.rs": "5b5ca8e8750ea21825a34be4f45dd6eeba63cc43eeeda1e6053f55acbb6476a8",
+            "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+            "net/sparklink/sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+            "net/sparklink/sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+            "net/sparklink/sle_native.rs": "0a2794f2a27d372cfe1debb70f9b2a1895996f91afa25e67eca21dae8f66c1d1",
+            "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+            "net/sparklink/sle_native_ffi.c": "efd51bf377b34d25822cbbbe4763ae99c9e1a8da0e71b9d3a87e9d7734bc836b",
+            "net/sparklink/sle_native_ffi.h": "0b21eb6c9a2cec1a22c75014de4891cc9a55bb6e77a0298269e813bf96489401",
+            "net/sparklink/sle_pair_crypto.c": "0706143298e86df6013549c2a8886b2b1b283fac82aa750d1d16cd29166900fd",
+            "net/sparklink/sle_pair_material.c": "151abb8c59512dc0cebb62b58d291708ba0dee27e2ae2424f4ac147e4599c9fd",
+            "net/sparklink/sle_pair_material.h": "ac4773f0a99b679572b14142d2b5626a420d333d7c8ea9dbbdc71f86da9efbc0",
+            "net/sparklink/sle_pair_material.rs": "9a564388b898be4fc1a0c09c0f353a7159bc24d835480135b67afc11bdf659ed",
+            "net/sparklink/sle_security_relay.h": "93b664edbcdb4c729724fa0c54017c6e02e964b2eb0925e95c702a5bc74b635d",
+            "net/sparklink/sle_security_relay.rs": "87d56be3e65729c9df99375a386f643d1e9e88aa9645365314e295013b08ca0d",
+            "net/sparklink/sle_security_relay_state.rs": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+            "net/sparklink/sle_sessions.rs": "c5597f3d54cd20102cc40d719abea233d976f05e8abd8dfb0dcb3a0aeb75f84e",
+            "net/sparklink/sle_snoop.rs": "d2a7d85f841066d8ea735d990b80281d01135a8488eb9c60778c790600ea8e73",
+            "net/sparklink/sle_standard_dli.rs": "a07c9af73eb2b71554a3e73fd32f06726cbbab48ef807b250a7c88aeac92e606",
+            "net/sparklink/sle_uapi.rs": "10058503091ed44debba18ab1e86031fdf37d7900300528c7ec474eb4620f726",
+            "net/sparklink/sle_workers.rs": "e17239a80bd0174c77482e36e8b2b6a87e139af1fee03f602053e28aed557886",
+            "net/sparklink/sparklink_core.rs": "adf1e75b58169c54388dc46497a8ee18442dadfb6f27e29e01cdd5a47022c00a",
+            "net/sparklink/sparklink_genl.c": "ffe57e94d4f5da25ae5e4548c25f503510b95a31b64c68271412c145975c2d63"
+          }
+        },
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "85cdf627d70bd239609ab0e74124b787279f139f",
+          "scopes": [
+            "crates",
+            "data",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "d9688629744f1cca2b10513c8093ab1a0ddc3cfcd9cc2deb516fa0888b641e35",
+            "Cargo.toml": "074d922eba4ac31a421942c95ed84e1ac6e778e2a3baaf7260a0929d6c9d1244",
+            "crates/libsparklink/Cargo.toml": "12bf208733281aa2d93669f1b4660fb61ae1d0df4438a773282bc11eb80aaec5",
+            "crates/libsparklink/cbindgen.toml": "c2cd1c996ec9a7bd60dd08340222129c2218560194cbd9f524bf18a32a11bd5b",
+            "crates/libsparklink/include/sparklink.h": "ba0783f6d19fbc6b893f4c5566b6ade041b3fff7aa552b0f80e81c524c23f305",
+            "crates/libsparklink/src/adapter.rs": "508fd057240c72b06dfef35d76ea8f0818a8807028872989072635ad7a000342",
+            "crates/libsparklink/src/controller_events.rs": "cb52719ffe814af8f963936e448209211cab6a26b7eb4945c3e409e0017da356",
+            "crates/libsparklink/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/libsparklink/src/event.rs": "728ff9608818e63c09e0df16b7647cbb21b6e16f4680dd2e408ba7d5da9d52d2",
+            "crates/libsparklink/src/ffi.rs": "9684b5a3454c405528821ae6fcab2fd38bec0c1563e64307618c9d3aac7f8cdc",
+            "crates/libsparklink/src/ffi_native.rs": "8699a129e6bad05ecc37669bc8c69e5031e541f5e1a6544a472050d9cd2f1069",
+            "crates/libsparklink/src/lib.rs": "e9de984c1bd28a7cfc5942dbdfe63fa4f9091326825465d48d4204b5e5188e1c",
+            "crates/libsparklink/src/retired_event.rs": "bf8f5a40f84ef0d08dd0f2e379a37175a72800f17f45209f3c115c0762a84bbf",
+            "crates/libsparklink/src/snoop.rs": "d32180800723109c067eb7a51ad1215a9983f04a8985cd193140b365e4c8fad1",
+            "crates/libsparklink/src/ws73_discovery.rs": "ee0ad25307cec94fed54b95cc5cb5921de1eb496885b7fa374fe88db9240bf91",
+            "crates/slctl/Cargo.toml": "a4369dce090184b60f58b0e8a0525e124be6aafa61e1d6515950098cb13959cb",
+            "crates/slctl/examples/bus_policy_probe.rs": "fa344893368710bd6db5a8ea2c19248ff1a931305a54df32598506f60f989585",
+            "crates/slctl/examples/native_security_agent_probe.rs": "d23f9afa2e18e83453be00f2f1f4fd162bde077a0b4addbd9009c2772c246b74",
+            "crates/slctl/src/channel.rs": "01ac2da277f3c96c37902496049ef8d8cb5f0fa33cde97d94d0cbc2357fb44e7",
+            "crates/slctl/src/commands.rs": "8dd3fa5b7b63901af7e8732c2314356380ad1dd8ca4ddd7f062821ea4cf54d91",
+            "crates/slctl/src/main.rs": "722f3465def6283ce96212eb83c6202145b069b206147194e157e53dddf2bbb1",
+            "crates/slctl/tests/scan_freshness.rs": "3ab3d6293c59d4f105ed100f9972f74e745a2c6f1764dcf235f53580a746726e",
+            "crates/slk-experimental/Cargo.toml": "f4f874a9e3d4e9e9e04aa161e3ed6bf2ccfacd46cc0f800f3a6ef15dfc9f157e",
+            "crates/slk-experimental/README.md": "bb9ecebd88fb9b8caddea4a6c2a7203a40dcc3e8f4e46aca970d578f5a258f11",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "578d136b61749d812c1db624f493ca50f4a76bc73a04f5e7615e5a4a00933263",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "c8c68a94e1c268c5bfb80ce0dbb98bc39e16b5d6a7685e68c3ab1f8479ecb3a1",
+            "crates/slk-protocol/src/channel.rs": "e76907f60cb6006de6b01ad49fb4ad6ba42f86a78c35c3f4abd679a666f25204",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/ioctl.rs": "23be963504c1a80af31fe0cb8af9aad719770a39a532dd7914c00edf4c062df6",
+            "crates/slk-protocol/src/lib.rs": "9a4cf882a77f0aef621a519e7928b32d18633dfdf0b1524e93bd4d6fdc0e837b",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "d093c33faa18025bb1aa2f16c9ba888cef6e85131a813d058dd1872cde479225",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "0faff47303886b82e826047d44c64c755599f0bf31975185014e6226ce272343",
+            "crates/slk-protocol/src/types.rs": "0717bb7c3c125c94ae1624e240e1a8e4d9b8a53eb6590a2c8e4403c5c8cbd172",
+            "crates/slkconfig/Cargo.toml": "050fceaff604f8c3827367733f87150be35011e3330d83bbcdeba2c96d4abe54",
+            "crates/slkconfig/src/main.rs": "638f0d579565eee6ab350e39764659e184d81fb3f7eb4ac75ff1bd4c02a4285c",
+            "crates/slkd/Cargo.toml": "a0af013f553fa4a96c2fa82ffa9b3934bfbabc424c2375c3b5df58678f1278ee",
+            "crates/slkd/src/adapters.rs": "c095bf5421db3ea9a8d13ba3f7bbeb38114e889c80e552b7883627720a2c5447",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "35ea73e3c55ec7d46087ab5ea6f1eb600d9464c5df99234ae775f0f3b067261c",
+            "crates/slkd/src/config.rs": "ce93efeead5a25c3b33e03e279feb61d5d099024c9fc84c2099f306f198b1a0c",
+            "crates/slkd/src/connection.rs": "7dc87661087a7c0357fc3159204be332fd760835eae978146f0551b9668698c9",
+            "crates/slkd/src/connection_object.rs": "2acef51138cfd9fbad7ff5fdf550d129bf2a7655fa0508790fe91fd5ece4db07",
+            "crates/slkd/src/controller.rs": "89621843d9dcd8bfce9d61dd070b9edc5ca9c9a6af3ef2b5f7d9e913f2838d62",
+            "crates/slkd/src/dbus_iface.rs": "862a7b76b523bdb9988e4af812a62da5aa19db59a950794ed6e58639ccbc1e12",
+            "crates/slkd/src/event_loop.rs": "09595af3b6016ebf49818be499af8387edaafce783196b6972faefd04c69513d",
+            "crates/slkd/src/event_loop_tests.rs": "d031eb5deceedb6788f350f33bd83c7c5fbe57b3aaddcea5f7c0c753fe034dc3",
+            "crates/slkd/src/extadv.rs": "d80ca3d949a4f3a5974b03b8f43584053c8c3e675c782848fd9a70547a2474cb",
+            "crates/slkd/src/kernel.rs": "fc7dc11c930710f06e1ede116ba40edc5c73b1d77c4ff9509d999d89919c85ae",
+            "crates/slkd/src/main.rs": "d8f38c3d33b4e1c4b7747cfe1f63af0b8d04733346add6230338971ec779af0b",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "60fd41e9830cea2f8a1599f0b5c404b42050816eeb5ffd46d1d1863dfef7cb9f",
+            "crates/slkd/src/registration.rs": "ae2a1e82b49cd4e8cf6194fb020e4c45fc72c307339d9bbce6ab840b4500e4b8",
+            "crates/slkd/src/security.rs": "80acd72f152fc013f77d740461488ba64ebd795ec39defebafe86cb2e92b0256",
+            "crates/slkd/src/security_policy.rs": "ef37b0f7c44b63217c435d5dff970fb27e9c5ef9bee4069c7ba32086188fc8ee",
+            "crates/slkd/src/security_policy_tests.rs": "75387d7376addad22f6ec6a16005ab9fe26f0b85a01b1d1c4eac71f060a24245",
+            "crates/slkd/src/service.rs": "b1d9d23e654cfe6d31bd51489a47fdf91f9b77819fafca241d829e2e6e2145c4",
+            "crates/slkd/src/ssap_database.rs": "b159c93e7482dceabf72ec628c4d296407bc68bdebd7405b00eda6858e9f32a5",
+            "crates/slkd/src/ssap_engine.rs": "1cd34eb739e423c18eabafdf987874891aecbce3ef9da618cb33f734d4ea4ce8",
+            "crates/slkd/src/state.rs": "275aef0b12f4f8a2bdc24c587c44f02ec138ed06b3a03fa4ed1397c09c32b38d",
+            "crates/slkd/tests/config_startup.rs": "ee996e38b047f2fb37a0f57a63466f97c897b81acef56411836373c1011e2a0f",
+            "crates/slkdump/Cargo.toml": "38f9b701c304207ec581c5be5a504b08016e1a3401b06a8dd6eda9cad493672e",
+            "crates/slkdump/src/main.rs": "4a8781eda8d03ca63d00bc0c35133712660b4adc97cf82fa861349fd71f77629",
+            "crates/slkmon/Cargo.toml": "b9fd1c1362473d58b973ea4ae4f1b857e4e165f2a294b2bf888a1ddfbef59753",
+            "crates/slkmon/src/main.rs": "9e9cfb3ca5cdf37122ccc731d53c7a147f12860371efdfc62284715f511abab4",
+            "data/config/main.conf": "0aa64db485af08803e9ffe59fadab48380c6179ebf98b1c2a5e8fd54777b5a59",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "12028a8989c9d3b8473d4ef3011a5ed251123ce1364fb968ba1ccb25c5ca6a00",
+            "data/man/man1/slctl.1": "74e207fdda4e9459c8ea84fefe08ca7f47c6b369ca4bf7f800c9ceef8e4af4c7",
+            "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+            "data/man/man8/slkd.8": "82671ac3f458775aee7c3572a1ec4fd02d48b2402756ce88f9dde16e23c9b8b3",
+            "data/pkgconfig/sparklink.pc": "ca12e4bf8d6c4458c868c5468c3afd6d5a3cc1e5a433eadc35a2f765bbcc765f",
+            "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+            "data/udev/99-sparklink.rules": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6"
+          },
+          "manifest_mapping": {
+            "material": "agent-real6-bundle-manifest",
+            "pointer": [
+              "source_hashes"
+            ]
+          }
+        },
+        "guest_tools": {
+          "repo": "sparklink",
+          "commit": "85cdf627d70bd239609ab0e74124b787279f139f",
+          "scopes": [
+            "tools/ws73_security_agent.py",
+            "tools/ws73_target_control.py",
+            "tools/ws73_connection_control.py",
+            "tools/ws73_channel_socket.py",
+            "crates/slctl/examples/native_security_agent_probe.rs"
+          ],
+          "files": {
+            "crates/slctl/examples/native_security_agent_probe.rs": "d23f9afa2e18e83453be00f2f1f4fd162bde077a0b4addbd9009c2772c246b74",
+            "tools/ws73_channel_socket.py": "06a4f4634a0f5bf21e14e888af908ea71d93fe6fdb906d47436772b45c9c8d0d",
+            "tools/ws73_connection_control.py": "73c072a167eaeaa7ae392c80a6c0be0221381a748e0dd3e55172b8c7bc35450a",
+            "tools/ws73_security_agent.py": "74c1cd33dd6405f9c34af21ca54b43d0a74a07cbc817de856a5d81322b77b3fe",
+            "tools/ws73_target_control.py": "b910e8dbbdbe537acc6aa10ec3495c2bd1246eeaafd68eae493d3de63928b1db"
+          }
+        },
+        "executed_tools": {
+          "repo": "sparklink",
+          "commit": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
+          "scopes": [
+            "tools"
+          ],
+          "files": {
+            "tools/backend_registration_contract.py": "d68e1de74a1501fbdbcda4b2af8795e5be1c033c5086be893b10b8419bf69534",
+            "tools/channel_socket_contract.py": "a80972ea54c3a8f45c4b09011fe72f5df37cc44b2ea507ad5d50a2eae91357f2",
+            "tools/check_docs.py": "6f45c3d303e05662611d22356f0fb11bcc9d98a4805cf05427c3b67adfb55e6f",
+            "tools/check_docs_browser.py": "aa57e0237bae6f84832e1738c8fae33f9f138e5f14da68555e2e228061922f80",
+            "tools/check_qualifications.py": "30daf596b623a1dba273ad5356d95b493cf3512c9ca6eb418029d9b7cd00f218",
+            "tools/lab/README.md": "f6176251abb7836a3f98db4f721a24f97e474099c37bb04be35f1425d5af7125",
+            "tools/lab/channel_fd_probe/Cargo.lock": "8e676693331fd9519329d25612131c348db58fa967a691e2eb7081cd50a76553",
+            "tools/lab/channel_fd_probe/Cargo.toml": "fe70d9e8acfc8833f309a5b5cc50ed4cf722d6a45a4d36062f44097854656279",
+            "tools/lab/channel_fd_probe/README.md": "0cab2ccf56845a1d87e47b4c78abfe8b47562e1ce7f8ba9fe7f407795c1b8e46",
+            "tools/lab/channel_fd_probe/src/main.rs": "a59a7d827012d922ac977bc9aeb033dde3c5603053360337af388fafe5685100",
+            "tools/lab/retired-event-poll/legacy_probe_run.py.txt": "cfda74810ff5500e8581abf0d0df9742e3263be00544dbc4791dbb3664768a3a",
+            "tools/lab/retired-power/legacy_cli_stats.rs.txt": "7dc19ade5e6ef1f1eee11130818341cc7670d5cedbf5a480ce281fc53f3ad954",
+            "tools/lab/retired-power/legacy_get_stats.rs.txt": "2d6f966182c7201fb9eca14a8f06fded836c6345b70182014bd6265435ba479d",
+            "tools/lab/retired-power/legacy_pm_methods.rs.txt": "367314acd7c2807a2e53103da5db71ad474029a7ebddea889a92e1f6e32bca73",
+            "tools/lab/retired-power/legacy_slkconfig_stats.rs.txt": "0b7891d2cc924d26820d0dd0e6fada1bd33c98da30a84de4fa8bccfdeb22419d",
+            "tools/lab/retired-power/legacy_stats_type.rs.txt": "d324f8f920ec71f1113d0edc8cb34a8f9883721e179dbb223ccc38d289776f71",
+            "tools/lab/retired-power/legacy_stats_values_test.rs.txt": "f6600302c8709e09f07c21f510989ffcdfd005d0415472aed7fe1ba5101ccb13",
+            "tools/lab/retired-read/legacy_copy_execute.py.txt": "aa029f5d524a70bf4009b11a88bc48d439556862929f81ac9087f5289dba8ee9",
+            "tools/lab/security_relay_oracle.c": "ec21b55941590250c9c18c8fe9a79b0fa5db4324d90d5612d79eea4706bc39cb",
+            "tools/lab/security_relay_reference_sdk111.patch": "edc7749cbbbd982e76bf0a8b26654925a1b60522ab52e7f39f3b2d63be9d1140",
+            "tools/lab/security_relay_reference_warm.patch": "fb26b36dd321c53d67b6c4b59a79f5795636b401bf378ab2848abadaec2a1ebc",
+            "tools/lab/ws73_acb_transport_probe.c": "2e2016b778192648b411c1e1d02e273bbcb45846ebc58f337a14b004ef150b37",
+            "tools/reference/fresh_context.c": "92aefd2b25db3d3a8013db0e47c73a5f2dfc24b30b574a342d41e7736b94f3c1",
+            "tools/reference/libusb_trace.c": "d102ae1020ce0e0df1d5e4ee1c03bc3e587d52ef39e2036485625a91fa8e7803",
+            "tools/retired_dli_event.py": "9670b3c1242ec867ffd64e8a04cd438cc9d62ddbb854110c86fa28aa4693a109",
+            "tools/run_formal.py": "984f240839e798f159a087e242716536704cdc62dc9cb23ef77342f477012547",
+            "tools/run_pdu_submit_cbmc.py": "9158f497309ec51f9792dc99c7acfa2cea7bddf520fbd0325179acecc770e78d",
+            "tools/run_registration_proof.py": "a4203308ad217d9aca473183fb7f36ed20df4a1e59e5a84bcba4ed2ff6efb021",
+            "tools/run_standard_metadata_proof.py": "e2c2170019b9d4c976c5506388404e041c5e26b9e3a0fb793a2fe99aa80bd5d1",
+            "tools/run_standard_usb_writer_proof.py": "c1e448350d2fc7235f87bb6ebbc5b7863100d7511409d4851b07f77b7745c522",
+            "tools/run_virtual_codec_proof.py": "82385b75e30cd0be77a9d13ed5da2f399fda9e6cd0ed235b837da1e6d8243057",
+            "tools/tests/data/connected_file_record.json": "9a1f21ba55b369e639f6e010ab24a9bfe35de40d01bf5ba345cb1d05e6490ec4",
+            "tools/tests/data/connected_file_v1_record.json": "f7eb000c53643b21805d912482d189053c100e3f41deafdf1897c3db5ab0ba82",
+            "tools/tests/data/resource_file_remove_record.json": "c1d3db434bfe4989fdc0801d1d767f09bf9119914786de7e61863b4cc46b1ce5",
+            "tools/tests/test_backend_install_formal_scope.py": "f0bf4a7445f1100bf5816165f99955d8630e53e1631f3a9e613066a8682fbb37",
+            "tools/tests/test_event_copy_probe.py": "06d2de5a579d04916138993f3f051608d0260b6f100ee603edc337b1b46f864a",
+            "tools/tests/test_formal_rx_scope.py": "0222d524faccb4e559809b82d1621ade89bd8d272150feb35d150a297be7728c",
+            "tools/tests/test_qualifications.py": "2ded1e7348e1f504ec2f752216dbf239a57f26df402ec5529f96419bffda10c7",
+            "tools/tests/test_registration_proof.py": "0dd131dd5b81389cdf33721c021b9864843a55922df689b87176499553eeb9c8",
+            "tools/tests/test_standard_metadata_proof.py": "0188c394532866bbaa72c6ef3041556a0695da8652b1bc6d6086a6a875a962cd",
+            "tools/tests/test_standard_usb_writer_proof.py": "76c10020ee086f208084e3610a242dec3c720516a48562f6e043e7b927cedaf6",
+            "tools/tests/test_ws73_acb_transport_probe.py": "2372bf895f65052b8e8058baab692d52127f741fb87f124e0b626c4c820ae611",
+            "tools/tests/test_ws73_active_close.py": "0361c13f07c0f7a051602e7e3ca59aaf2f28241aa15cfe3d8e373a58c30cd28f",
+            "tools/tests/test_ws73_active_deadline.py": "6f610916f507e76546fac7da65400afdf4ef80e9a47d12f02224b869db49a452",
+            "tools/tests/test_ws73_board_config.py": "bf5f69786b82da215853109e082b53fea6c8ec85d60ebc32b3800f12f5eb4db7",
+            "tools/tests/test_ws73_boot_code_evidence.py": "e9d9a36317053ae6039a6b59436d509ed8bbfbd469370e43559d4eace92c8c37",
+            "tools/tests/test_ws73_channel_daemon_crash.py": "ae37be2de198f89f0424f15f325b218c6bbcc570da4a5dadf2183455a76e2586",
+            "tools/tests/test_ws73_channel_deadline.py": "ddfa4e5bb1308ed785bb73262121d9919be641838e803f92a1d7373c7a16d520",
+            "tools/tests/test_ws73_channel_death_mode.py": "d676e229b11d334359f0b756267f45d0294c79f5c5f2d350af4bfc849a653205",
+            "tools/tests/test_ws73_channel_grant.py": "9702bb5a7de7f52d715be725c96159ee1994e1b88d10c11bafe29886afd51ca6",
+            "tools/tests/test_ws73_channel_link_down.py": "fe713784ada78a34c9db142b3a5c2d962377950036bab48d5f6f3996e02aa238",
+            "tools/tests/test_ws73_channel_socket.py": "9f99cdc1bc709f5556171cc73ab0b15837a1974632050c21084e51d442f700a0",
+            "tools/tests/test_ws73_command_failure.py": "581d44cf3d11c3909ce155cac635d07d4f484c9887498010aed3bd43f5ca6301",
+            "tools/tests/test_ws73_connected_file_gate.py": "c6bdacb28bceed065191d2fda59aef886514378d1016fc9c2350b84c291e3bdb",
+            "tools/tests/test_ws73_connection_control.py": "ee6e50c518643b3e728b8414c3dc93073e443d916ea5d91ffaf53586ae54e62b",
+            "tools/tests/test_ws73_connection_objects.py": "703828e815ce5ec680a764ed793bef292dc95c9595316b654058cba70971cada",
+            "tools/tests/test_ws73_connection_queued.py": "a91fc552b1b7a80f319da697e933a1a23eec0f49bd1b4ce162ddbdb7fa4d2439",
+            "tools/tests/test_ws73_credit_observation.py": "cbefbdc04057e9802e2e9ad9ae61d1b647e24928c5eeb3ef3550fefd5464f2c8",
+            "tools/tests/test_ws73_daemon_channel_fd.py": "1caf1ac1e4065e4c219901bb8cb6128efc54f56be600fbc792e24f08ee71fbb2",
+            "tools/tests/test_ws73_daemon_crash.py": "01650d3aad0266f2d53c08be7d4e8046d2f5e7ca119edb3d0b9deef7b340f95f",
+            "tools/tests/test_ws73_daemon_hold.py": "75498594bd65648497776c4639f2e0bf84f8402dfc22cf517d404de60a7952c5",
+            "tools/tests/test_ws73_daemon_removal.py": "59788574570b253fd6e456f21ef43b7592b813b4d102a9e881284f1cfbd10e89",
+            "tools/tests/test_ws73_diagnostic_autonomous.py": "39e34fd0c8de67ed878877e5e5f45267e99290386e8b47eb2142517716376e42",
+            "tools/tests/test_ws73_diagnostic_autonomous_capture.py": "e4e791a026a401df1cf0f6fb0c6933cb1b8ac9da409ebf9eef5e13ea8618ea9e",
+            "tools/tests/test_ws73_diagnostic_cancel.py": "6261ec3f4b1ba3793a6d2e9408b0f08e809862b7674eee6e0538a0cb54be30b5",
+            "tools/tests/test_ws73_diagnostic_cancel_capture.py": "e48e88beb2cfbe0edbb44a66232f69c60c5ea63aa0a472dacb71b46daaabf3d6",
+            "tools/tests/test_ws73_diagnostic_capture.py": "f2a448c6487c2d82ba76f64fe099b52edff96b5600a25f11ef1fc56bd546c4d7",
+            "tools/tests/test_ws73_diagnostic_deadline.py": "c01e6a96d7ceed6c5bbf4329fb088426fdf9ef87368d7c44f4ce578833406658",
+            "tools/tests/test_ws73_diagnostic_deadline_capture.py": "b4f866f535239e486db165b07a56dc51249940a2300740dfc40bfe61b929acb4",
+            "tools/tests/test_ws73_diagnostic_hold.py": "ffcf985958f6178ddbf7d7d64aae89660c8c3059e1539a6712db327bb7006cbd",
+            "tools/tests/test_ws73_diagnostic_probe.py": "dd97984822b9a0fe2c0c6b77a835fb285ef79e98c4c89cb9fec8154e8aed3e4b",
+            "tools/tests/test_ws73_discovery_policy_capture.py": "81c460fe822b87778fa195a4b44f704d2ad835a3a8c7eb984929cde4371726f7",
+            "tools/tests/test_ws73_down_observation.py": "228679274aba283d681e249a722b610dcf995caa2219ec42ac66e2790ff70713",
+            "tools/tests/test_ws73_early_fault.py": "11f641aab5c03b2db631fde964cf705d0f2d03c22915510ceab49cc82ed3475f",
+            "tools/tests/test_ws73_encryption.py": "65d199e58c4d6ff0f0518881eabfae1d10fbfda213c7ae20933dfcc5ac7cf073",
+            "tools/tests/test_ws73_firmware.py": "140a3da1cf4b1deac4f7125457f8ef1a8fd368178c9c206957657e6f5943e4ef",
+            "tools/tests/test_ws73_firmware_upload_evidence.py": "6f36a4efdb82594801f979c6db3b0fe5b19af38492e6f56c8c57f8e52ee33b4a",
+            "tools/tests/test_ws73_host_diagnostics.py": "32d3ddea6a98af5d0f5efabe9c69b7d1bbe7e021c9720037608e7479e5fdf738",
+            "tools/tests/test_ws73_host_later_hold.py": "df92d3eecbc0044c40124f9f0af5dee81821620cfebab2aa41c0e87ab1c6e93d",
+            "tools/tests/test_ws73_initialization_lifecycle.py": "417af3449cdf591aab7e3ff3de17f36fd4424fd2186e6aa1db0aa73f4b4f7c42",
+            "tools/tests/test_ws73_initialization_off.py": "61074836efe06c760149e8cf4f2717664ea0a34395a2bc9c214dcce53cde059f",
+            "tools/tests/test_ws73_key_agreement.py": "51d1dd259838fbfb2574150728bd81864424193015c6ca43fc25f9abe0f58b3c",
+            "tools/tests/test_ws73_link_resync.py": "2cd65eeccff8d41bacbed4b10ad505492b65c24aece802e3ca8c2505f737cb6a",
+            "tools/tests/test_ws73_managed_queue_support.py": "754e449dd6c9ccb13f1e7fc2507938317fcf197ed8d45c39467936a8be730b20",
+            "tools/tests/test_ws73_management_eviction.py": "7902537189dfb10909c4d8bb385aa5945bb1abdd36db53aa6623436716cc6974",
+            "tools/tests/test_ws73_management_partial.py": "66dad831125bc175f25e1c1ecca00ea5032688c626669f94b6fdfc6d192ab03a",
+            "tools/tests/test_ws73_management_queue_ready_peer.py": "3ea4507b1020b4c8d14adcbb336518d186861f0f0ddb50470f951abf86b192ab",
+            "tools/tests/test_ws73_management_queued.py": "7f31cd0128c57e486bd78440eb4179e6d735538c5126c9506ac61289eadc38cb",
+            "tools/tests/test_ws73_management_ready_peer.py": "38ceae8a04468e18e7e248710b82e5e77be0c8e3ca50634ef4d56dd7138245b6",
+            "tools/tests/test_ws73_management_setup.py": "503f8ed5e48bf63499245516a5420ae97508c14331a69a928d4c27b4bd5bac69",
+            "tools/tests/test_ws73_model_hold.py": "128432a42a0b6b64ffef02573ba9cc4d5fa01bd804a156a017e8f1ec9b6dd35f",
+            "tools/tests/test_ws73_native_build_check.py": "d9c59ede4aa1e808a78feb3a5ab7d7ed0062cf45a5c67234feedce2506e3373e",
+            "tools/tests/test_ws73_native_deploy.py": "462392307fbbd3f1052cebc9bc8a8f60f2358cd22ece0174563eaa6db65cc5b6",
+            "tools/tests/test_ws73_native_root_smoke.py": "ac4c84112c95727c7e64f613c7b7478a70de0114e167c7e8cd51c5c6410d75f6",
+            "tools/tests/test_ws73_native_service_bundle.py": "37dc26987f12d4acdd5eb9f76054205af2677fd9a0eabb816c4bb3e6c4d34a33",
+            "tools/tests/test_ws73_north_star.py": "3f25ae4fcbe390f391013f905c8122f6eba2e5175acdbcbdf2f7b1bafeae1cb2",
+            "tools/tests/test_ws73_observer_policy.py": "174b2ba009e67b332d686616a9b7395ca9253f403a7fa0da8ebffcfb084fff7f",
+            "tools/tests/test_ws73_parallel.py": "84ccfd960cab5251117af321c348c2bb0a45f58b601a505a7f284b5a26a7fa81",
+            "tools/tests/test_ws73_qemu_hold_budget.py": "8161b753b30e1f47f09d7e8172c2eb0bddca173d64b63fa62dfbbfaf2f0d7bdc",
+            "tools/tests/test_ws73_recovery_budget_observation.py": "d8c14901a82a322b310199c4c5080f634e1571edae9dbe82c8c126f7704bf14a",
+            "tools/tests/test_ws73_recovery_capture.py": "330b82a97b17799f29939d10f458f662df30c9b7170bc7650617d05c1c1f5b99",
+            "tools/tests/test_ws73_reference_capture.py": "d7501342c65df75bd2e58a99190d72f1153e6e22847734d6aa839e9392dd7f7e",
+            "tools/tests/test_ws73_relay_firmware_extension.py": "c313003bade9d8c429e2d91b04ef60e3ad2a283d67138f93ba4719094e02dc06",
+            "tools/tests/test_ws73_resource_file_gate.py": "3ad41752e10932c584311b3656f4f5ec58d10de53d4dffa20925926e35de855b",
+            "tools/tests/test_ws73_revoke_prefix.py": "ff9f89b811643632af1f6a4fd32be919fec4e80e89bb042eb094a398135bb236",
+            "tools/tests/test_ws73_security_agent.py": "c933b1b7e3db225f3d399bd1a1487ae0a9b7c7884b42634a9c5b8db7ed2e5cf7",
+            "tools/tests/test_ws73_security_cancel.py": "268175eb9787dfa429e44329414dd0c5862dcfa149d5ecc0aa496203095bf2e8",
+            "tools/tests/test_ws73_security_capabilities.py": "2f071544a70e4f3a542e5a0bf448fd0216d8276730a7e1ccfa649249b19e1b47",
+            "tools/tests/test_ws73_ssap_discovery.py": "833c4a82425e6a885fbd222fd35131367c374707d919fa570b399e5a2fe1c9f3",
+            "tools/tests/test_ws73_ssap_value.py": "37449aa9d535beb6f74dfb9c4742c4066f85641238f577a6c0ed7010d3ab3346",
+            "tools/tests/test_ws73_target.py": "eb40a7d00f42538f17486d4b58f5f057e06d3011720d4e513f4673e0bdacf536",
+            "tools/tests/test_ws73_tx_capture.py": "24200d0df36524e9245606a727ba088d53aeabf2175d688abaef055c7b0d2193",
+            "tools/tests/test_ws73_vm_native_root.py": "86d75b386d238919c5ff73ee89696779517196367f558e7138af899267b94adb",
+            "tools/tests/test_ws73_vm_register_reset.py": "3dfdd19d645ad9ee65d12f004cb650613142a0f1b9fc7814815035a74febb035",
+            "tools/ws73-board-config.py": "5dfde390c8041f3d9aa33ff7a4e2854e24b5d7a34d837ceab8a76fcba3f9b138",
+            "tools/ws73_acb_transport_probe.py": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+            "tools/ws73_active_deadline.py": "fff7caf3aeb1a6ca99ac7eb6f3ccdb593b237f38b260a268bd473c3f937665e0",
+            "tools/ws73_bindings_probe.c": "e0e1f33c2b939d95aeffba2acd1f791422d963af3fde35c4408b787ad5403fd3",
+            "tools/ws73_bindings_probe.py": "a8cee9e23dd6680345a7c278b04d84101bfd347ec3b9bc1629e330466c350683",
+            "tools/ws73_boot_code_evidence.py": "0ab7823dc6dafe5f59f385fe2335f9ef95e8d4ed5f8df006a66983aaf6a93be5",
+            "tools/ws73_capture.py": "5cf724d7c67375bc04f45902a6d377d1aa4407dacf6257b21fa43268e3361d5e",
+            "tools/ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+            "tools/ws73_channel_deadline.py": "eee746b38308719e740df4a1f712536cd96bff5620d6889ab37408789f6288e2",
+            "tools/ws73_channel_grant.py": "cda7466bf939bd241c1574362e81ac4158dc183f5491dfe1edb845b4038e790b",
+            "tools/ws73_channel_link_down.py": "89bb10c69141223807302471173c55f1e211d146aa72f585773a59d94a330c03",
+            "tools/ws73_channel_socket.py": "06a4f4634a0f5bf21e14e888af908ea71d93fe6fdb906d47436772b45c9c8d0d",
+            "tools/ws73_connected_file_gate.py": "cce07b828a01bed3c52c9bc7b4a402fe6d65813cb2dc1ec801d8ae1b8625e999",
+            "tools/ws73_connection_control.py": "73c072a167eaeaa7ae392c80a6c0be0221381a748e0dd3e55172b8c7bc35450a",
+            "tools/ws73_connection_objects.py": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+            "tools/ws73_connection_queued.py": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+            "tools/ws73_credit_observation.py": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+            "tools/ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+            "tools/ws73_daemon_crash.py": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+            "tools/ws73_daemon_hold.py": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+            "tools/ws73_daemon_removal.py": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+            "tools/ws73_diagnostic_autonomous.py": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+            "tools/ws73_diagnostic_cancel.py": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+            "tools/ws73_diagnostic_deadline.py": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+            "tools/ws73_diagnostic_hold.py": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+            "tools/ws73_diagnostic_probe.py": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+            "tools/ws73_discovery_policy_capture.py": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+            "tools/ws73_dracut_ldconfig.sh": "b55e4d4e3020fb060b22b4c4f719dbdd9c4cd8888ae3c9dc1bace3f4a694d501",
+            "tools/ws73_early_fault.py": "4e90b25cde9f7ce2f46b63a99ff8e70b4deb1e6448146e6741bda3ba3d23c604",
+            "tools/ws73_event_copy_probe.py": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+            "tools/ws73_firmware.py": "d48f48e2b169631cac1f4919a1f393a010e5aedd363fe19f9113d041964012fc",
+            "tools/ws73_firmware_upload_evidence.py": "ab140aeddc063f3ceb0baa65f2e572c73d9c03709e774b6d16ec5cd438735bde",
+            "tools/ws73_host_diagnostics.py": "1a53382ccdafce3d34bf2dd853303505955779b2e2b89f1fa00d5616f1e7a347",
+            "tools/ws73_host_later_hold.py": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+            "tools/ws73_initialization_lifecycle.py": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+            "tools/ws73_key_agreement.py": "a719758392ab2f66f1abad205420e79d853e8e862bbd5159fd376893eda10cb8",
+            "tools/ws73_link_resync.py": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+            "tools/ws73_managed_queue_probe.c": "1670731a7c5b8a1888ca2c0bc899817a762b03061570ec6a29212b2a855eb7d8",
+            "tools/ws73_managed_queue_support.py": "7c951e9dc3b6bec05c16b8f256f7537c422aceadc7870b5ac74518337944b898",
+            "tools/ws73_management_eviction.py": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+            "tools/ws73_management_partial.py": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+            "tools/ws73_management_queue_ready_peer.py": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+            "tools/ws73_management_queued.py": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+            "tools/ws73_management_ready_peer.py": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+            "tools/ws73_management_setup.py": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+            "tools/ws73_model_hold.py": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+            "tools/ws73_native_boot_bundle.py": "e8509d094443e0ae3b1cbbb2624c00f9f220b1c9666e22b66c990443c40c6de3",
+            "tools/ws73_native_build_check.py": "cb9ee7a0332766bcdd7b3c04d701e70f253877c66acb9b76a44388e1f2846abc",
+            "tools/ws73_native_deploy.py": "e1ee10a4c6d73bcb710d3141c3d3c20a1cc9d154bb3ab9fca2da8795147871f6",
+            "tools/ws73_native_module_init.sh": "640b731e19b122ac185ca4b3d06e047bd48bc1718e3de5da49ce75be207d7c07",
+            "tools/ws73_native_root_smoke.py": "5f16e049d1b894f10c2910e27899b0bde3d43aae2a8231d86fa70bb7c67cbe61",
+            "tools/ws73_native_service_bundle.py": "72627f185c84c8e04e1ce5ae541c72575a35184e55e5cc27e8d5429204eac4ee",
+            "tools/ws73_north_star.py": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+            "tools/ws73_observer_policy.py": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+            "tools/ws73_parallel.py": "14233c71d3a2d7453ba395c89e766c832c37d72dd7aa32a48245265a28da45e0",
+            "tools/ws73_qemu_hold_budget.py": "0e87ae6f55bbc7aab8b0f33822e746cc187beb31e4f66f74802ce4de0a8d01f2",
+            "tools/ws73_reference_capture.py": "1e6893e0992b72586cc0493fc81265f42c2529ff6c11a9f918e52bd84c770935",
+            "tools/ws73_register_reset_init.sh": "826541c4d499b3905db5b9f24a83154024e9a59ae1a62e27c8f4a214dc659ecd",
+            "tools/ws73_relay_firmware_extension.py": "03f2086ace2f90087360580d18435b2ef8f0355ec7de5f194d1438bfa0a75b87",
+            "tools/ws73_resource_file_gate.py": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+            "tools/ws73_revoke_prefix.py": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+            "tools/ws73_rf_rounds.py": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+            "tools/ws73_security_agent.py": "74c1cd33dd6405f9c34af21ca54b43d0a74a07cbc817de856a5d81322b77b3fe",
+            "tools/ws73_security_cancel.py": "8a2f20b241a307e9510dce9a1bd596380690d735e5baead806e38470d676a2ca",
+            "tools/ws73_security_capabilities.py": "0380d18f3082bee53bede21c41257cdfcc31ed6f6716251d5ea9749c794d9100",
+            "tools/ws73_security_relay_reference.py": "b14d0ab2a481d492e199a2139a742639dfadc01535f0ec046cf707d12c79d290",
+            "tools/ws73_ssap_discovery.py": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+            "tools/ws73_ssap_value.py": "45f6ca4786e7b87fb8f9bd50a6d14dc56ec2235b2bafbd562db24ff6bbff58d8",
+            "tools/ws73_target.py": "8a1e15f9673835dc784c420616fe80914e6545084cc4bf887524e79952213509",
+            "tools/ws73_target_control.py": "b910e8dbbdbe537acc6aa10ec3495c2bd1246eeaafd68eae493d3de63928b1db",
+            "tools/ws73_target_guest.py": "c122ecc2d31018e601bc30c3cd9375661eee1bb079f6914947f80f48fa035d30",
+            "tools/ws73_target_init.sh": "248cead2aa3a5971dd516dca872caeb714994729150a493faa36192ddc0a20e5",
+            "tools/ws73_target_recovery.py": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+            "tools/ws73_vm_native_root.py": "a805611862274dd7ed7a4b47d62e34cf423d524096d3136d15d9e40a594ea058",
+            "tools/ws73_vm_register_reset.py": "99e759dc2ff4d0171fd002102c925c1a68ba865ead419d7da4cc4b9f4b1f5d70"
+          }
+        }
+      },
+      "report": {
+        "material": "agent-data11-report",
+        "scope_pointer": [
+          "limits"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "kernel"
+          ],
+          "compiled_userspace": [
+            "compiled_userspace"
+          ],
+          "guest_tools": [
+            "guest_tools"
+          ],
+          "executed_tools": [
+            "executed_tools"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "ALL11_RETAINED_DATA_GATES_PASS": "PASS"
+        },
+        "gate_rows_pointer": [
+          "runs"
+        ]
+      },
+      "report_commit": "3776f4724227a8163d4cc08a7a829ef865500d34",
+      "artifact_materials": [
+        "agent-real6-bundle-manifest",
+        "agent-real6-prepared-bzImage",
+        "agent-real6-prepared-kernel.config",
+        "agent-real6-prepared-initramfs.cpio.gz",
+        "agent-real6-prepared-root.btrfs",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkd",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slctl",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkconfig",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkmon",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkdump",
+        "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-liblibsparklink.so",
+        "agent-real6-bundle-usr-share-dbus-1-system-services-org.sparklink.service",
+        "agent-real6-bundle-usr-lib-sysusers.d-opensparklink-native-lab.conf",
+        "kernel-artifact-manifest"
+      ],
+      "tool_materials": [
+        "agent-real6-prepared-manifest",
+        "agent-real6-qemu",
+        "agent-data11-pool-observation"
+      ],
+      "configuration_materials": [
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-ws73.bin",
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-wifi_cali.bin",
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-btc_cali.bin",
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-bsle_custom.bin",
+        "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-pm_config.bin",
+        "agent-real6-bundle-etc-sparklink-main.conf",
+        "agent-real6-bundle-etc-dbus-1-system.d-sparklink-native-lab.conf",
+        "agent-real6-bundle-etc-udev-rules.d-99-sparklink-native-lab.rules",
+        "agent-real6-bundle-etc-systemd-system-opensparklink-native-lab.service"
+      ],
+      "gates": [
+        {
+          "id": "short",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            0
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-short-manifest",
+            "agent-data11-short-capture",
+            "agent-data11-short-capture_stats",
+            "agent-data11-short-control",
+            "agent-data11-short-kernel_log"
+          ]
+        },
+        {
+          "id": "boundary",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            1
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-boundary-manifest",
+            "agent-data11-boundary-capture",
+            "agent-data11-boundary-capture_stats",
+            "agent-data11-boundary-control",
+            "agent-data11-boundary-kernel_log"
+          ]
+        },
+        {
+          "id": "long",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            2
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-long-manifest",
+            "agent-data11-long-capture",
+            "agent-data11-long-capture_stats",
+            "agent-data11-long-control",
+            "agent-data11-long-kernel_log"
+          ]
+        },
+        {
+          "id": "length248",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            3
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-length248-manifest",
+            "agent-data11-length248-capture",
+            "agent-data11-length248-capture_stats",
+            "agent-data11-length248-control",
+            "agent-data11-length248-kernel_log"
+          ]
+        },
+        {
+          "id": "length250",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            4
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-length250-manifest",
+            "agent-data11-length250-capture",
+            "agent-data11-length250-capture_stats",
+            "agent-data11-length250-control",
+            "agent-data11-length250-kernel_log"
+          ]
+        },
+        {
+          "id": "length253",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            5
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-length253-manifest",
+            "agent-data11-length253-capture",
+            "agent-data11-length253-capture_stats",
+            "agent-data11-length253-control",
+            "agent-data11-length253-kernel_log"
+          ]
+        },
+        {
+          "id": "length254",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            6
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-length254-manifest",
+            "agent-data11-length254-capture",
+            "agent-data11-length254-capture_stats",
+            "agent-data11-length254-control",
+            "agent-data11-length254-kernel_log"
+          ]
+        },
+        {
+          "id": "length255",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            7
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-length255-manifest",
+            "agent-data11-length255-capture",
+            "agent-data11-length255-capture_stats",
+            "agent-data11-length255-control",
+            "agent-data11-length255-kernel_log"
+          ]
+        },
+        {
+          "id": "length1024",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            8
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-length1024-manifest",
+            "agent-data11-length1024-capture",
+            "agent-data11-length1024-capture_stats",
+            "agent-data11-length1024-control",
+            "agent-data11-length1024-kernel_log"
+          ]
+        },
+        {
+          "id": "prefix-close",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            9
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-prefix-close-manifest",
+            "agent-data11-prefix-close-capture",
+            "agent-data11-prefix-close-capture_stats",
+            "agent-data11-prefix-close-control",
+            "agent-data11-prefix-close-kernel_log"
+          ]
+        },
+        {
+          "id": "burst",
+          "result": "PASS",
+          "reported_status": "SCOPED_REAL_PASS",
+          "report_pointer": [
+            "runs",
+            10
+          ],
+          "materials": [
+            "agent-data11-supervisor",
+            "agent-data11-burst-manifest",
+            "agent-data11-burst-capture",
+            "agent-data11-burst-capture_stats",
+            "agent-data11-burst-control",
+            "agent-data11-burst-kernel_log"
+          ]
+        }
+      ],
+      "required_gates": [
+        "short",
+        "boundary",
+        "long",
+        "length248",
+        "length250",
+        "length253",
+        "length254",
+        "length255",
+        "length1024",
+        "prefix-close",
+        "burst"
       ]
     }
   ],
@@ -2818,7 +4514,1271 @@
       "bytes": 1056986,
       "access": "private",
       "format": "bytes"
+    },
+    "agent-policy-offline-report": {
+      "base": "repo",
+      "path": "docs/evidence/agent-policy-offline-20261015.json",
+      "sha256": "3421e2d3a8bbd1610f591ceabd6246833ddb56d987a2016db6695bdabdfa2669",
+      "bytes": 5632,
+      "access": "public",
+      "format": "json"
+    },
+    "agent-policy-offline-test_log": {
+      "base": "workspace",
+      "path": ".dev/security-agent-policy-exact16175-tests.log",
+      "sha256": "59273a6bdadcb222bd94cb49fb3be3fc5c4b46409c1f39ccaee55d9421bcb483",
+      "bytes": 2095,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-policy-offline-test_binary": {
+      "base": "workspace",
+      "path": ".dev/agent-policy-offline-16175/slkd-tests",
+      "sha256": "a4b9f3e27fd27effc002301337373a337f35fbc64c4c02a7c2eb3f0a9ac05e58",
+      "bytes": 135445080,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-policy-offline-source_mapping": {
+      "base": "workspace",
+      "path": ".dev/agent-policy-offline-16175/source-mapping.json",
+      "sha256": "f0d2c0d70e6210b8e0c8fddc708bc7c815632b0378619f570da3f6f93736f3c1",
+      "bytes": 6939,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-supervisor": {
+      "base": "workspace",
+      "path": ".dev/security-agent-policy-real-matrix-v1.json",
+      "sha256": "764a5a26aea55157cf85c237a16315f6907b68b1184d48539d12e962d1f28ef5",
+      "bytes": 7701,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "ALL6_AGENT_MODES_TWO_ROLE_REAL_SCOPED_PASS"
+        }
+      ]
+    },
+    "agent-real6-bundle-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/manifest.json",
+      "sha256": "14dd8d5ae76746527451f51f999c2cf7d2f84891bfeb617d338c367fb290e2fb",
+      "bytes": 22402,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "userspace_head"
+          ],
+          "equals": "85cdf627d70bd239609ab0e74124b787279f139f"
+        },
+        {
+          "pointer": [
+            "kernel_head"
+          ],
+          "equals": "8cbf53e6a088899229d398b0673a82e8e5aed9ff"
+        }
+      ]
+    },
+    "agent-real6-prepared-bzImage": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-prepared/bzImage",
+      "sha256": "127c72a6ca64d53996f10e9770c33992390f136bdb166755c7d0137b732c3d47",
+      "bytes": 15736832,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-prepared-kernel.config": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-prepared/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-prepared-initramfs.cpio.gz": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-prepared/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-prepared-root.btrfs": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-prepared/root.btrfs",
+      "sha256": "e592b542cbd8df989c555e98c06009b37cc7687602c9a648c540eb2f9e16eae4",
+      "bytes": 1073741824,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkd": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/libexec/opensparklink/native-lab/85cdf627d70b/slkd",
+      "sha256": "6a12f45bf1d6a7213da3183da1bdc89a0800f811f654242ed88978434f401190",
+      "bytes": 10460056,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slctl": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/libexec/opensparklink/native-lab/85cdf627d70b/slctl",
+      "sha256": "1a4ac0bdab6070eed89e3d3746a11c6a5de31c5dbe9f578b3db97741706c6b38",
+      "bytes": 7118832,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkconfig": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/libexec/opensparklink/native-lab/85cdf627d70b/slkconfig",
+      "sha256": "30c61e6f4618ed6a10c805148d7899cf49b61da9a52f3ae289a9d75801567ee5",
+      "bytes": 1403944,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkmon": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/libexec/opensparklink/native-lab/85cdf627d70b/slkmon",
+      "sha256": "97fe53afb9c220d9d9edb763cf8bd02f37937d088668004574941b8beebb53ac",
+      "bytes": 1662136,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-slkdump": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/libexec/opensparklink/native-lab/85cdf627d70b/slkdump",
+      "sha256": "a7c4dc30fedbfe4c364dab82f61f28613860bce2db096a9a8cbbd7cc3fa6bfb7",
+      "bytes": 1662008,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-libexec-opensparklink-native-lab-85cdf627d70b-liblibsparklink.so": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/libexec/opensparklink/native-lab/85cdf627d70b/liblibsparklink.so",
+      "sha256": "75a8c71a4ff6aa1dd552eb8acbb02c6620f4a3c475ce4ac891678686db31f553",
+      "bytes": 545400,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-ws73.bin": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-wifi_cali.bin": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-btc_cali.bin": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-bsle_custom.bin": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-lib-firmware-sparklink-ws73-pm_config.bin": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-etc-sparklink-main.conf": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/etc/sparklink/main.conf",
+      "sha256": "0aa64db485af08803e9ffe59fadab48380c6179ebf98b1c2a5e8fd54777b5a59",
+      "bytes": 1507,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-etc-dbus-1-system.d-sparklink-native-lab.conf": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "12028a8989c9d3b8473d4ef3011a5ed251123ce1364fb968ba1ccb25c5ca6a00",
+      "bytes": 8090,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-etc-udev-rules.d-99-sparklink-native-lab.rules": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-etc-systemd-system-opensparklink-native-lab.service": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "ceb711f6a5100164d46c172e9523964a642ac06553aac890c7ce76cfdab3e843",
+      "bytes": 507,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-share-dbus-1-system-services-org.sparklink.service": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "6a4d484a02e1b98da01b6cd5aeeebeb5867c8b9b6cad1d4b804793d482ca0c43",
+      "bytes": 154,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-bundle-usr-lib-sysusers.d-opensparklink-native-lab.conf": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-service-bundle/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-prepared-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-prepared/manifest.json",
+      "sha256": "20fc6d44a2c981c0017eeb59ef53aaeac75f8d486740694a408b62aed194c583",
+      "bytes": 256082,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-qemu": {
+      "base": "workspace",
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-approve-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-approve/manifest.json",
+      "sha256": "dbc6d7138e50915ee853f05714cfdfcc5de529694cbc5988b3e25da3a5758fd6",
+      "bytes": 1221448,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+        },
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-real6-approve-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-approve/guest-output/ws73.pcap",
+      "sha256": "6cbc7472d75285ab06b0cb9eb392253e77b584031c11b9b153372ca69f34e9b6",
+      "bytes": 534660,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-approve-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-approve/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-approve-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-approve/guest-output/application/passthrough-control/run.json",
+      "sha256": "4695dda7d8fd8f1f886b6583e9df66da7148455514bee070f1b0b29a8088be0e",
+      "bytes": 695923,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-approve-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-approve/guest-output/kernel.log",
+      "sha256": "9e55c1a149caed1ffc8531c118c542daeb3d21836c8d7562008771102f6fd69c",
+      "bytes": 49158,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-reject-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-reject/manifest.json",
+      "sha256": "0492abd0e76be01fc6795f484e6c628d5fc6ebe34d9d7956bcd2dd0eff1550d1",
+      "bytes": 1175989,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+        },
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-real6-reject-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-reject/guest-output/ws73.pcap",
+      "sha256": "2f986dbca733447868b3a7f7730cbf9ac9e97293b45c8605aa9bfc00c633fc2f",
+      "bytes": 489724,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-reject-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-reject/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-reject-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-reject/guest-output/application/passthrough-control/run.json",
+      "sha256": "47bc39bd1f0f8e8293fcc4e02330baf1dbf8441bc51b5b89e58e4a29824c946d",
+      "bytes": 696007,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-reject-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-reject/guest-output/kernel.log",
+      "sha256": "1e4c56d4adfd1201bce47e68a9376eaadd3c5442178d0cd6a54b8ef23c0abb0b",
+      "bytes": 49282,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-timeout-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-timeout/manifest.json",
+      "sha256": "e9bdd0dee636bc4a2c97a8fad8c76168902c8c2db9d90bd4025e521baf5c425e",
+      "bytes": 1176033,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+        },
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-real6-timeout-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-timeout/guest-output/ws73.pcap",
+      "sha256": "4f5470c743e19dddf00923805201e5dd05a30483480bc9f1b23c7c09812876a9",
+      "bytes": 489724,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-timeout-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-timeout/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-timeout-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-timeout/guest-output/application/passthrough-control/run.json",
+      "sha256": "0d7754bd367ddf37138fdf0280a1a93018c7d36558b96b38452b8dd687487695",
+      "bytes": 696031,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-timeout-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-timeout/guest-output/kernel.log",
+      "sha256": "2a06f2c9e00c197761e3fae58faa7cca0de12e42a6e3b177aef24fb7c714615d",
+      "bytes": 49173,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-cancel-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-cancel/manifest.json",
+      "sha256": "6cf2e96bbfa8c21e0056147590e19990c8ce0ea3b625149f9d7a669230cc636c",
+      "bytes": 1175989,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+        },
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-real6-cancel-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-cancel/guest-output/ws73.pcap",
+      "sha256": "f8a0a8a472561326ccd78d97d34bfd0738589f9c371ade36fc877154478dae82",
+      "bytes": 489724,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-cancel-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-cancel/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-cancel-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-cancel/guest-output/application/passthrough-control/run.json",
+      "sha256": "f39e098c34dff8cbe24b7ffd2f0ee094b53fa331b5504e35e1e002f250b928fd",
+      "bytes": 696186,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-cancel-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-cancel/guest-output/kernel.log",
+      "sha256": "e1e31c349149540a13ab550059b407f555cef59566d002abedaf0acb77ea86f8",
+      "bytes": 49210,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-agent-exit-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-agent-exit/manifest.json",
+      "sha256": "6911f1d90e7d082fbc108243dc7f917e4b057a0ff940d286a73334f373195b29",
+      "bytes": 1176165,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+        },
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-real6-agent-exit-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-agent-exit/guest-output/ws73.pcap",
+      "sha256": "555fd11433ce36ba706659d1b6fb57b1cfa52710b862be3fd69b5ff028482c99",
+      "bytes": 489724,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-agent-exit-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-agent-exit/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-agent-exit-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-agent-exit/guest-output/application/passthrough-control/run.json",
+      "sha256": "7c8fab53dc37f1d2604371edb7f2b7f748fd271ebab3c89ab3891951b25d8670",
+      "bytes": 696232,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-agent-exit-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-agent-exit/guest-output/kernel.log",
+      "sha256": "19c367c07cb4330992a11c0c074484d50b39e11fee11c395c9188f9269dcdc9f",
+      "bytes": 49179,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-caller-exit-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-caller-exit/manifest.json",
+      "sha256": "c2b9d69a5b0c8bb8cfd93f82e5000db0967118de2851aed7b6690b6c3e67efb7",
+      "bytes": 1176209,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+        },
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-real6-caller-exit-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-caller-exit/guest-output/ws73.pcap",
+      "sha256": "05276f2f70d58e90936bab74ca029b7cca9dfa29ca56eee4bd648b290f036e11",
+      "bytes": 489724,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-caller-exit-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-caller-exit/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-caller-exit-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-caller-exit/guest-output/application/passthrough-control/run.json",
+      "sha256": "82b687d0bb491c053b0bf76604a4a5bcfc064cd55822cf78322f49815b0bcba8",
+      "bytes": 693949,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-caller-exit-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v3-caller-exit/guest-output/kernel.log",
+      "sha256": "24705d24812c00bd05b97a1fd8dfad7a9155add14ace9e5d491053a8e08de5ae",
+      "bytes": 49128,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-real6-failure-before-agent": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v1-approve/manifest.json",
+      "sha256": "ec8112bc76fc3f8a6b762a017984f181b206d5ba36f66364fa04d3f75be24af7",
+      "bytes": 45524,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-failure-exit-contract": {
+      "base": "workspace",
+      "path": ".dev/native-agent-policy-v2-approve/manifest.json",
+      "sha256": "bc35899d19355d74eae57027082d6c5f2ca429f1aed2605a79fdf650532c1063",
+      "bytes": 1221421,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-real6-report": {
+      "base": "repo",
+      "path": "docs/evidence/agent-policy-real-matrix-20261015.json",
+      "sha256": "4e86bc4de00c4fdb24de22b061a517d1159a8695198b68a7b79ccc2db68e5245",
+      "bytes": 28364,
+      "access": "public",
+      "format": "json"
+    },
+    "agent-data11-supervisor": {
+      "base": "workspace",
+      "path": ".dev/security-agent-retained-v1.json",
+      "sha256": "97538c52572860b3b1724accf7fccfec0ef7ce9c6c73088439e20d7b85ae529e",
+      "bytes": 12649,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "ALL11_RETAINED_DATA_GATES_PASS"
+        }
+      ]
+    },
+    "agent-data11-short-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-short/manifest.json",
+      "sha256": "8c8043a1079fd5299d7cff43a49f034b61b0a31d1e7a2061c53c20ad8a55ac6c",
+      "bytes": 1457531,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-short-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-short/guest-output/ws73.pcap",
+      "sha256": "8941cc414a8b49dbb1e7dc8490f3e114e4900ef6d29be75ed2aef7cd32e1c99b",
+      "bytes": 595388,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-short-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-short/guest-output/capture-stats.txt",
+      "sha256": "75b32f10f274c9f907f35dcdb46de3fef7b7894513ad4e9601820b2d6d62144c",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-short-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-short/guest-output/application/passthrough-control/run.json",
+      "sha256": "c7002b5e3f79dacc24409f664ec30e40514fcb4e9f0be8591cce1124a9da2fd3",
+      "bytes": 684999,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-short-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-short/guest-output/kernel.log",
+      "sha256": "f62a27b5538eda34a42d052ede04e4dc84e06911e8f584fe8b67a8c55b47205c",
+      "bytes": 49066,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-boundary-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-boundary/manifest.json",
+      "sha256": "09e7bc25d8bf6dceaae66e84bcc810d8f77b2e929e3fdc6870c44e445c84ed2a",
+      "bytes": 1263321,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-boundary-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-boundary/guest-output/ws73.pcap",
+      "sha256": "8ff3581970278f7794e58174a219f412e976a8b643e518bad2d65a85a08fd0a3",
+      "bytes": 530588,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-boundary-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-boundary/guest-output/capture-stats.txt",
+      "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-boundary-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-boundary/guest-output/application/passthrough-control/run.json",
+      "sha256": "90b493fd3cfc3e25c9e336f188f6f4592f6b81fd3800f1f24f83868ce1663010",
+      "bytes": 742257,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-boundary-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-boundary/guest-output/kernel.log",
+      "sha256": "5509fb0aaa841c3a3b7b8f069d02d28b3e1a4de4d53d3135476f1b0ce7057349",
+      "bytes": 49244,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-long-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-long/manifest.json",
+      "sha256": "d04b5273c0f26abc95ce7c74267090b9e0ca87f7817fafce825c8b801966dd04",
+      "bytes": 2243221,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-long-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-long/guest-output/ws73.pcap",
+      "sha256": "2d597d3b7eb2d3329bb2508487a77a7dd6ead92beea3bfc99ef486e2776bb0c1",
+      "bytes": 1016972,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-long-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-long/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-long-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-long/guest-output/application/passthrough-control/run.json",
+      "sha256": "9348a8dbc3a46ad334d8bea687f8cd7c6a4df344bf0945052b009b66fa96f270",
+      "bytes": 856956,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-long-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-long/guest-output/kernel.log",
+      "sha256": "2472d1c203f173871eb973c479e186998f4216d744ac343cec479fd482227365",
+      "bytes": 49295,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length248-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length248/manifest.json",
+      "sha256": "a3057bec84019c1b2fba1627755572c9ff6fd002eb9e1868fd9e6ffb00794ed1",
+      "bytes": 1253964,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-length248-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length248/guest-output/ws73.pcap",
+      "sha256": "25991ee21c1e517e455da7bbc51d5f4b791fa6a6c3be0d6a5433fa7a82c9e789",
+      "bytes": 525164,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length248-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length248/guest-output/capture-stats.txt",
+      "sha256": "6c30a80c65581a326ca0f080e782c204c342022c4cdc15dd66e6e8c27fe03af3",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length248-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length248/guest-output/application/passthrough-control/run.json",
+      "sha256": "73c6c1fbc5a189f327fa4389259e990e10d6247a84dfc8d040c15f4a70a78860",
+      "bytes": 675682,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-length248-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length248/guest-output/kernel.log",
+      "sha256": "fe03c2f06c867225cf05530c21dd6d9ff552386116b65d3f04b36213ce2cd780",
+      "bytes": 49156,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length250-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length250/manifest.json",
+      "sha256": "625ff111f84c8675d99d801e25715620af1f667edcf42613d5cffd7687b32648",
+      "bytes": 1285225,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-length250-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length250/guest-output/ws73.pcap",
+      "sha256": "273d099051d5d89c762ed3132d1cae5b621d53d277d39d19563bc9d43da20e90",
+      "bytes": 546012,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length250-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length250/guest-output/capture-stats.txt",
+      "sha256": "b6aaad7b5fbb2f5ae86473df1cc21e04c724a675c7210fdacdd132e748c2b028",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length250-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length250/guest-output/application/passthrough-control/run.json",
+      "sha256": "0a801416f57989c0862c0152aac1af879076b2e0df6fba6268bc038a17304427",
+      "bytes": 675856,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-length250-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length250/guest-output/kernel.log",
+      "sha256": "8ef8723b277cb114679d03e45d14e17d4bf2d7713e6d34c3247315a0b152563c",
+      "bytes": 49066,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length253-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length253/manifest.json",
+      "sha256": "3ea2c8e887110c55aadc47991749f147a0fc4b4085e0892aae7273430485e7ee",
+      "bytes": 1285611,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-length253-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length253/guest-output/ws73.pcap",
+      "sha256": "063da356578001394c1f5da410e6f6ed809ea2213eba8eb69f05cf728fad9fbb",
+      "bytes": 546012,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length253-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length253/guest-output/capture-stats.txt",
+      "sha256": "b6aaad7b5fbb2f5ae86473df1cc21e04c724a675c7210fdacdd132e748c2b028",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length253-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length253/guest-output/application/passthrough-control/run.json",
+      "sha256": "e289757a5a900e59ed9e309b549335751d40d04f2682671f185c3940e648bb8f",
+      "bytes": 676057,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-length253-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length253/guest-output/kernel.log",
+      "sha256": "9d92a549a1504d63d03a97a3398652265d6e2d1d4e2a3e32be5f67fad7666a6e",
+      "bytes": 49066,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length254-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length254/manifest.json",
+      "sha256": "e6eaa0aee473f66df5bda0e8dbd4b90d135bcc291cb9bee9af7c3ed4153d7043",
+      "bytes": 1285739,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-length254-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length254/guest-output/ws73.pcap",
+      "sha256": "0394b4377bef9d53bd595548b32b156c23740fa4a5a7d913b20737fa0d0d8fe0",
+      "bytes": 546012,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length254-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length254/guest-output/capture-stats.txt",
+      "sha256": "b6aaad7b5fbb2f5ae86473df1cc21e04c724a675c7210fdacdd132e748c2b028",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length254-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length254/guest-output/application/passthrough-control/run.json",
+      "sha256": "76d598a5d5e5bf807b32ed8ef5d467df7e07e49f1aa525c29e0d086592fa1e0a",
+      "bytes": 676092,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-length254-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length254/guest-output/kernel.log",
+      "sha256": "eb04b6f5ff04ad1ef57d021a5b4f561dcb87377b174697f63d1bf8cdd541e79d",
+      "bytes": 49151,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length255-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length255/manifest.json",
+      "sha256": "244c49819a076fe14ac3c1e83968404eac79b3296f2829aba53a73c1c30a4d3a",
+      "bytes": 1285867,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-length255-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length255/guest-output/ws73.pcap",
+      "sha256": "6618b593c282b46321c3c716042c98f5ba41d740710964a592d4e7c579cbe95a",
+      "bytes": 546012,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length255-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length255/guest-output/capture-stats.txt",
+      "sha256": "b6aaad7b5fbb2f5ae86473df1cc21e04c724a675c7210fdacdd132e748c2b028",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length255-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length255/guest-output/application/passthrough-control/run.json",
+      "sha256": "b8885b306a14347d5285601c428da0b4ec37a822a594b5a1d19b0b5ffd7041ac",
+      "bytes": 676203,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-length255-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length255/guest-output/kernel.log",
+      "sha256": "f6c5959544f9c7c1a58d26585ae686261c65f20f42273dfec3372f9b894b5a67",
+      "bytes": 49192,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length1024-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length1024/manifest.json",
+      "sha256": "e1a4a4718c569212bed5bebb9d486e395cc698097fc9e138f87532c03d1de36f",
+      "bytes": 1696637,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-length1024-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length1024/guest-output/ws73.pcap",
+      "sha256": "f7ca370ddf87cfe4fcb9f8160010f1c2c307bf13808948631606be397fb49639",
+      "bytes": 747852,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length1024-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length1024/guest-output/capture-stats.txt",
+      "sha256": "404d6f1c1d858c6ccf8cff537c2ab26a929aa057a51e3a673b42b39eb6cee231",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-length1024-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length1024/guest-output/application/passthrough-control/run.json",
+      "sha256": "605f08ea0541a2d42f3b10e3b34c8f1bfc3841c9a1820a5511d66d8b61b0ba9e",
+      "bytes": 725448,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-length1024-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-length1024/guest-output/kernel.log",
+      "sha256": "d7a25231b73c53ee097bfb333c11b3c3333352c662e4d8adcf1e5920850c553a",
+      "bytes": 49068,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-prefix-close-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-prefix-close/manifest.json",
+      "sha256": "80c2913cfab1525529732a549c49362aa4ad83f016233cbe6065e77a894f0c7a",
+      "bytes": 1390574,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-prefix-close-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-prefix-close/guest-output/ws73.pcap",
+      "sha256": "ca556c31c336a44f7003c4cc1f5d5bdf1e2ed146336d2c1da2095e258d7a0b3a",
+      "bytes": 601724,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-prefix-close-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-prefix-close/guest-output/capture-stats.txt",
+      "sha256": "622487706bd6eada56ad08028918784ad065554ccd58971c41a038001d36caf6",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-prefix-close-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-prefix-close/guest-output/application/passthrough-control/run.json",
+      "sha256": "6675009f54669de97d29013f92792fea283fa414ef117aab7f2acbc17bccffd9",
+      "bytes": 683680,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-prefix-close-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-prefix-close/guest-output/kernel.log",
+      "sha256": "f50c4f7c154e1f7581b257f64cad34650416e65640e8ca01492885cfd62395be",
+      "bytes": 49124,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-burst-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-burst/manifest.json",
+      "sha256": "2027097f0c587b9e5d0240fb059cdcbb5a936f0bd207e1b967bca51f6464986b",
+      "bytes": 5677573,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "agent-data11-burst-capture": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-burst/guest-output/ws73.pcap",
+      "sha256": "e7b0b8b5d29e8acdee69b06bf71682cd72bc44c16ce372b277846968a5eb2744",
+      "bytes": 2678302,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-burst-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-burst/guest-output/capture-stats.txt",
+      "sha256": "9fa3a29f5f0e032387effb6269a08dddc05cdd7be7dd6892dfca64dbec379ba8",
+      "bytes": 229,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-burst-control": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-burst/guest-output/application/passthrough-control/run.json",
+      "sha256": "6d46f12d5ff26064cb8a28b99c1ef75ed7b284e577cda086f9a13d0b0d93c2df",
+      "bytes": 1195407,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-burst-kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-agent-retained-v1-burst/guest-output/kernel.log",
+      "sha256": "4c2caf512addf9b107247571f4688c919e5d3e9ecef23f2ac09d0f5f25e5481c",
+      "bytes": 49349,
+      "access": "private",
+      "format": "bytes"
+    },
+    "agent-data11-pool-observation": {
+      "base": "workspace",
+      "path": ".dev/security-agent-retained-pool.json",
+      "sha256": "8f4e92512776891dcaffde60292904cdc42bb3b0f1ce85e589b5fc6a2496ba5b",
+      "bytes": 69985,
+      "access": "private",
+      "format": "json"
+    },
+    "agent-data11-report": {
+      "base": "repo",
+      "path": "docs/evidence/agent-policy-retained-data-20261015.json",
+      "sha256": "9f44281657617ed5d426304c1dd0e98f31c9783c4cc504cb48406055b35926f3",
+      "bytes": 31341,
+      "access": "public",
+      "format": "json"
     }
   },
-  "baseline_record": "deadline-real21"
+  "baseline_record": "agent-data11-db6e333"
 }

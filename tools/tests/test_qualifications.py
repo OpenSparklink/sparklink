@@ -41,6 +41,12 @@ class QualificationTests(unittest.TestCase):
                       artifact_materials=['artifact'], tool_materials=['artifact'], configuration_materials=[],
                       gates=[dict(id='gate', result='PASS', materials=['report.json', 'artifact'])],
                       required_gates=['gate'])
+        # Publication and production compilation intentionally have distinct commits.
+        subprocess.run(['git', '-C', str(self.repo), 'add', 'report.json', 'artifact'], check=True)
+        subprocess.run(['git', '-C', str(self.repo), '-c', 'user.name=Fixture', '-c',
+                        'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false',
+                        'commit', '-qm', 'publish report'], check=True)
+        record['report_commit'] = q.git(self.repo, 'rev-parse', 'HEAD').decode().strip()
         self.data = dict(schema_version=1, materials=materials, records=[record], overall_required_records=['one'])
 
     def run_check(self, **kwargs):
@@ -53,6 +59,12 @@ class QualificationTests(unittest.TestCase):
         path = self.repo / 'report.json'
         path.write_text(json.dumps(self.report))
         self.data['materials']['report.json'].update(sha256=q.sha(path), bytes=path.stat().st_size)
+        subprocess.run(['git', '-C', str(self.repo), 'add', 'report.json'], check=True)
+        subprocess.run(['git', '-C', str(self.repo), '-c', 'user.name=Fixture', '-c',
+                        'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false',
+                        'commit', '-qm', 'changed report'], check=True)
+        self.data['records'][0]['report_commit'] = q.git(self.repo, 'rev-parse', 'HEAD').decode().strip()
+
 
     def test_positive_retained_bytes_is_not_replay(self):
         result = self.run_check(require_current=True)
@@ -194,6 +206,16 @@ class QualificationTests(unittest.TestCase):
 
     def test_missing_source_material_object_is_not_a_worktree_fallback(self):
         self.data['materials']['artifact']['source_commit'] = 'f' * 40
+        self.rejected()
+
+    def test_report_revision_cannot_be_replaced_with_compiled_source(self):
+        self.data['records'][0]['report_commit'] = self.report['source']
+        self.rejected()
+
+    def test_publication_identity_is_separate_and_checked(self):
+        self.assertNotEqual(self.data['records'][0]['report_commit'], self.report['source'])
+        self.assertFalse(self.run_check()['errors'])
+        self.data['records'][0]['report_commit'] = None
         self.rejected()
 
     def test_unknown_schema(self):

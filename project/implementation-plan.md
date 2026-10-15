@@ -16,29 +16,38 @@
 
 | 契约（仅所列范围） | 证据层级 | 记录结果 |
 |---|---|---|
-| 原期限、两角色安全机制及保留数据：21组限定门禁 | `real_device` | `PASS` |
+| 历史2d81/575：原期限及21组限定实机门禁 | `real_device` | `PASS` |
 | 生产原期限算术：四种HZ、100检查 | `formal_bounded` | `PASS` |
 | 生产安装/取消组合：unsupported，1766检查不是证明 | `formal_bounded` | `UNPROVED` |
-| Agent生产入口已接线；真实安装/权限资格仍缺 | `implemented` | `MISSING` |
+| Agent完整权限部署与在途安装退出矩阵：仍缺 | `implemented` | `MISSING` |
 | 动态多通道/四真实设备两组：仍缺 | `implemented` | `MISSING` |
 | 自然故障根因与非人工恢复：仍缺 | `implemented` | `MISSING` |
+| Agent策略离线16175：15 private-D-Bus +1生产时钟用例 | `offline` | `PASS` |
+| Agent实机85cdf/db6：六模式交换角色48次应用回复 | `real_device` | `PASS` |
+| 数据保持85cdf/db6：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7`；执行工具 `575ba337c05b09b6c3e96f4182ffcf7ffb6b466c`。
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `85cdf627d70bd239609ab0e74124b787279f139f`；执行工具 `db6e333814cfc2740b51b0d70c6acf52c6dbca9d`。
 
-**当前工作树：NOT_REVALIDATED；完整范围：INCOMPLETE。** Agent 接线不继承旧实机资格。
+**当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
+预备/guest 工具 `85cdf627d70bd239609ab0e74124b787279f139f`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
-Agent入口已接线并通过16项private D-Bus/实际ENOTTY失败回归；新镜像实机仍缺。
-本批继续验证：注册绑定每controller的唯一bus owner与注册epoch，单连接
+Agent入口已接线；离线资格见结构化记录。六模式两角色真实48次业务子门禁已封存
+（准确K8cbf/编译及guest85cdf/Hostdb6e333），普通系统型guest bus+生产XML；
+完整systemd/udev部署、在途安装组合与认证/Bond仍缺，不能由局部通过关闭WP09。
+本批六模式及11保持子门禁已封存；完整WP09仍缺部署/真实安装失败/在途组合。
+以下是已接通行为与继续保持的契约：注册绑定每controller的唯一bus owner与注册epoch，单连接
 请求绑定generation/lifetime/完整reference、原作者和原期限；只开放明确支持的
 无MITM参考方法，未知方法/拒绝/缺Agent不得自动降级。批准前后复核调用者与Agent
 存活/当前epoch，保留原native提交引用与结果，用单请求取消收敛退出/超时；
 不能drop任务后遗失在途物理义务或释放整个controller租约。策略操作结果和
 物理安装/加密观察分开；Agent同意不宣称MITM身份、可信Grant或Bond。
-退出需真实批准/拒绝/原期限/调用者退出、两角色及普通用户双端业务证据。
+所列真实批准/拒绝/原期限/退出与两角色业务子门禁已通过；不能代替在途安装/
+故障、完整权限部署、认证及Bond。下一批按相关不变量进入生产fuzz/调试VM/组合，
+数据多通道/四设备及唯一SSAP正向更新并行，不追加控制面全集前置。
 
 仅将本批相关不变量设为门禁。在途Status/0011/撤权/Down/复用组合继续并行，
 不再追加控制面竞争全集为数据前置。长包/credit、动态多通道、四设备两组和
@@ -232,8 +241,8 @@ K8cbf53/Ueaea706；Agent五文件 dirty 接线保留，未继承旧资格。完�
 
 | 批次 | 本批行为与相关不变量 | 离线与 VM/实机退出 | 归属及现有 issues |
 |---|---|---|---|
-| Q1 资格一致性（当前） | 记录契约→源码→编译 artifact→工具→配置/固件→必需门禁→结果/范围；生成能力/计划/goal摘要；保留历史 | 自动拒绝旧源码、缺 artifact、错 hash、scope错配、缺门禁和非PASS聚合；local核对原件；metadata不升级实机。工具/文档不改数据路径，无本批新增RF资格 | WP00/17/18；K#19、U#8 |
-| Q2 Agent（当前主线并行） | 复用唯一Session/credit/票据；批准非信任；作者和Agent epoch/原期限/实际安装各自关联 | approve/reject/未知/缺Agent/Agent与caller退出/晚到/重复/原期限/安装失败；private bus只作集成，实际system bus+udev/组/内核授权VM及两角色真实业务正向 | WP05/09/16/17；K#4/#7/#18、U#5/#6/#8 |
+| Q1 资格一致性（首批已实现） | 记录契约→源码→编译 artifact→工具→配置/固件→必需门禁→结果/范围；生成能力/计划/goal摘要；保留历史 | 自动拒绝旧源码、缺 artifact、错 hash、scope错配、缺门禁和非PASS聚合；local核对原件；metadata不升级实机。工具/文档不改数据路径，无本批新增RF资格 | WP00/17/18；K#19、U#8 |
+| Q2 Agent（六模式子集通过，其余开放） | 复用唯一Session/credit/票据；批准非信任；作者和Agent epoch/原期限/实际安装各自关联 | approve/reject/未知/缺Agent/Agent与caller退出/晚到/重复/原期限/安装失败；private bus只作集成，实际system bus+udev/组/内核授权VM及两角色真实业务正向 | WP05/09/16/17；K#4/#7/#18、U#5/#6/#8 |
 | Q3 fuzz/调试/组合（并行） | 生产 parser/transition；预算/identity/credit/唯一终态；不确定失败保留义务 | 固定corpus短探索、状态序列、适用syzkaller；独立debug VM确认插桩+实际路径；reserve→revoke/Down/deadline→submit→lateComplete/NOCP→reuse | WP03–06/09/11/17；K#4/#6/#9/#10/#14/#16/#17/#18/#19 |
 | Q4 数据扩展 | Session唯一RX/通道预算/公平性；SSAP复用socket | DG03–12随长包/多通道/四设备/SSAP交付扩展，随机对端实际校验回复；故障另一组仍业务 | WP02–08/10/17；K#6/#17/#19、U#3/#8 |
 | Q5 部署/长期/发布 | 路径/ABI/组/权限一致、配置保留；资源收敛；真实恢复单独统计 | 干净VM安装/升级/回滚/卸载、外部C/Python、system bus实际调用；长期四设备、自然故障；供应链/支持矩阵/发布汇总 | WP11/13/15/16/17；K#9/#10/#12/#14/#15/#19、U#1/#2/#6/#8 |

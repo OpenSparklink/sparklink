@@ -4,7 +4,7 @@
 
 当前纳入机器检查的[版本化资格记录](../../project/qualification-records.json)关联准确编译/执行/报告身份、
 原件hash和必需门禁；[当前资格页](../../project/current-capabilities.md)生成摘要。
-本批覆盖21组及期限相关证明，其他历史报告未迁移不等于丢失或已校验。
+当前已纳入范围以记录/生成摘要为准；其他历史报告未迁移不等于丢失或已校验。
 公开metadata检查不是私有原件核对，本机原件核对不是重放或新镜像资格。
 
 [资格一致性首批实测与边界](qualification-provenance-batch1-20261015.json)记录20负对照、542工具、
@@ -15,6 +15,19 @@
 
 [资格一致性首批收尾及准确CI](qualification-quality-status-20261015.json)记录23负对照与
 保留的来源/范围；没有新增运行或实机资格。
+
+[Agent生产策略离线范围](agent-policy-offline-20261015.json)记录准确16175源码、
+15项实际private D-Bus/ENOTTY加1项生产时钟发布用例；未替代真实WS73或部署资格。
+
+[真实Agent六模式、两角色48次业务及失败保留](agent-policy-real-matrix-20261015.json)
+明确编译85cdf/guest85cdf/执行Hostdb6e333；批准/策略终态/物理安装/应用回复分别记录。
+[NameOwner退出用例边界](agent-policy-owner-loss-boundary-20261015.json)区分实际连接关闭和独立进程死亡。
+
+[Agent新镜像11组数据保持及池满观察](agent-policy-retained-data-20261015.json)
+绑定准确85cdf/db6，136次应用回复/32拒绝/2严格fd；不继承旧scope或升级完整credit证明。
+
+[本批准确提交、17实机门禁、失败与仍缺范围](agent-policy-batch-summary-20261016.json)
+区分编译、guest工具、Host校验和报告发布身份；未增加形式化或完整恢复资格。
 
 ## 历史报告（各自准确镜像，不代表当前HEAD）
 

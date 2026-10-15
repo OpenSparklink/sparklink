@@ -364,6 +364,16 @@ Encrypted/Bond或满足要求可信安全级别的Grant。
 
 算法基于匹配标准与实际固件支持，不猜测；算法向量、协议证明和实机安装独立。
 
+### Agent策略所有权
+
+每controller的Agent注册绑定唯一bus连接名及注册epoch；请求另绑定原作者、完整
+connection reference、request id和批准前的原期限。批准只决定是否准入已有内核
+机制，不产生原生Ready、认证、可信Grant或Bond。原native任务持有原File/lease，
+失联/撤回也先收敛已开始的提交，再取消原请求，不以整个controller撤权代替。
+唯一bus owner的生命周期与PID不同；连接关闭、进程最后引用释放、fork/继承及
+管理撤权分别验收。具体接口见[权限参考](reference/management/dbus-authorization.md)，
+当前限定资格仅由能力入口给出。
+
 ### Bond
 
 保存可恢复的受保护凭据，fingerprint不是凭据。版本化、原子更新、0600或等价严格权限、密钥保护和敏感缓冲清理；明确KEK/保护机制的威胁边界，不把普通文件编码称为加密保护。

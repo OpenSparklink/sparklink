@@ -111,6 +111,18 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
             errors.append(f'{ident}: missing report material')
         if binding and binding['material'] in materials and materials[binding['material']]['format'] != 'json':
             errors.append(f'{ident}: report must be parsed JSON')
+        if binding and record['result'] in ('PASS', 'UNPROVED'):
+            revision = record.get('report_commit')
+            material = materials.get(binding['material'], {})
+            if not isinstance(revision, str) or not re.fullmatch(r'[a-f0-9]{40}', revision) or material.get('base') != 'repo':
+                errors.append(f'{ident}: missing exact public report revision')
+            else:
+                try:
+                    published = git(repo, 'show', f'{revision}:{material["path"]}')
+                    if hashlib.sha256(published).hexdigest() != material['sha256'] or len(published) != material['bytes']:
+                        errors.append(f'{ident}: report publication hash/size mismatch')
+                except subprocess.CalledProcessError:
+                    errors.append(f'{ident}: report absent at publication revision')
         if binding:
             report = documents.get(binding['material'])
             if report is not None:
@@ -218,11 +230,13 @@ def render(data):
         lines.append(f'| {record["title"]} | `{record["level"]}` | `{record["result"]}` |')
     lines += ['', '保留镜像：K `' + data['baseline']['kernel'] + '`；编译 U `' + data['baseline']['compiled_userspace'] +
               '`；执行工具 `' + data['baseline']['executed_tools'] + '`。', '',
-              '**当前工作树：NOT_REVALIDATED；完整范围：INCOMPLETE。** Agent 接线不继承旧实机资格。',
+              '**当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。',
               '公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。',
               '本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见',
               '[资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。',
               '<!-- qualification-summary:end -->']
+    if 'guest_tools' in data['baseline']:
+        lines.insert(-1, '预备/guest 工具 `' + data['baseline']['guest_tools'] + '`；上列执行工具为 Host 校验工具，分别记录。')
     return '\n'.join(lines)
 
 

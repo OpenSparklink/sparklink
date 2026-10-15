@@ -658,7 +658,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-15",
+  "updated_at_utc": "2026-10-15T15:54:15.951826+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -666,8 +666,8 @@
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "next_resume_tasks": [
-    "Q1 implemented and signed; e270 quality/docsCI passed, exactoverallCI observed separately. Continue Q2 productionAgent/wire real acceptance and Q3 productionfuzz/debugVM/composition in parallel.",
-    "Agent broker now wired and16privateDBus/ENOTTY tests passed; freezeaccuratecompilednewbundle and add actualtwo-deviceapprove/reject/caller/Agentloss/originaldeadlinebusiness gates, not anotherEngine.",
+    "Sixmode session40198 and11data session75561 both terminalexit0. Reports13af39e/3776f47 bind compiled85cdf/guest85cdf/Hostdb6e333/kernel8cbf. No hardwareVM live in this batch; never inherit this scope to modified images.",
+    "Advance production fuzz on actual codecs/transitions and separate debugVM/submit-revoke composition, plus actual installfailure/inflight and deployment permissions; data/dynamicchannels/fourdevices/SSAP updates remain parallel.",
     "Implement actual per-controller Agent/method/caller binding over existing Session, original deadline and single-request cancel. Positive/reject/caller-loss real two-role business. No more control-race universality prerequisites; data/SSAP/multichannel/four-device parallel.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
@@ -677,7 +677,7 @@
   "issue_sync_status": "Nine current quality comments exact readback; original scope unchanged and OPEN",
   "issue_sync_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
-  "current_goal_turn_classification": "progress: production Agent broker and16actual privateDBus/ENOTTY tests, original allocation deadline/active caller-loss cleanup, strict workspace238/13 andclippy; actualVM next",
+  "current_goal_turn_classification": "progress: explicitAgentnewproduction + scoped17realgates (6policy/11data), immutablefailures andsourcebound reports; no fullissueclosure",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -975,7 +975,7 @@
       "multichannel/four-device/SSAP gates",
       "clean-VM install/upgrade/uninstall + soak/recovery/release"
     ],
-    "state": "BATCH1_SCOPED_IMPLEMENTATION_AND_LOCAL_CHECKS_PASS; exact7a9ac12_CI_PASS; later quality batches PLANNED_NOT_RUN",
+    "state": "Q1 implemented/sourcebound; Q2sixmodeand11data scopedrecords nowsealed; Q3fuzz/debugVM/composition andQ5deployment/soak/release stilloutstanding",
     "issue_scope_unchanged": true,
     "results": {
       "negative_controls": 23,
@@ -983,22 +983,27 @@
       "strict_docs_documents": 104,
       "local_materials": 154,
       "current_tree": "EXPECTED_NOT_QUALIFIED_AGENT_DIRTY",
-      "real_device_rerun": "NOT_RUN_TOOLING_ONLY",
       "formal_new_proof": "NONE",
-      "tools_tests_scope": "542 at92c75ca; atomic followup21; schema guards23 targeted local; no automatic upgrade of runtime qualification"
+      "tools_tests_scope": "542 at92c75ca; atomic followup21; schema guards23 targeted local; no automatic upgrade of runtime qualification",
+      "Q1_real_device_rerun": "NOT_RUN_TOOLING_ONLY"
     },
     "implementation_commit": "92c75cab77ee5949ea636dee6b897b413f801fae",
     "issue_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
-    "status_evidence": "docs/evidence/qualification-quality-status-20261015.json"
+    "status_evidence": "docs/evidence/qualification-quality-status-20261015.json",
+    "Q2_real_records": [
+      "agent-real6-db6e333",
+      "agent-data11-db6e333"
+    ]
   },
   "qualification_view": {
     "registry": "project/qualification-records.json",
     "schema_version": 1,
     "baseline": {
       "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
-      "compiled_userspace": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
-      "executed_tools": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
-      "report_commit": "8f13e3b52ee41d12f87a4dc6437c26ec92322754"
+      "compiled_userspace": "85cdf627d70bd239609ab0e74124b787279f139f",
+      "guest_tools": "85cdf627d70bd239609ab0e74124b787279f139f",
+      "executed_tools": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
+      "report_commit": "3776f4724227a8163d4cc08a7a829ef865500d34"
     },
     "current_tree_qualification": "NOT_REVALIDATED",
     "private_evidence_in_ci": "METADATA_ONLY_NOT_REVERIFIED",
@@ -1026,26 +1031,50 @@
       "natural-recovery": {
         "level": "implemented",
         "result": "MISSING"
+      },
+      "agent-policy-offline-16175": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "agent-real6-db6e333": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "agent-data11-db6e333": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "agent-policy-production-1",
-      "production_behavior": "每controller显式Agent唯一owner/epoch；原作者/完整reference/原期限；复用现有native submit/cancel/result与原File义务；未分配通用可信身份/Bond",
+      "id": "agent-six-modes-and-retained-data",
+      "production_behavior": "Actual explicit SDK111 Agent consent over sole nativeSession/credit/ticket; originalcaller/reference/deadline and bounded cancellation; no policyyes→trustedGrant/Bond",
       "exit": [
-        "严格locked构建/16项实际privateDBus与ENOTTY失败路径",
-        "准确新镜像两角色真实批准/拒绝/原期限/退出与对端应用回复",
-        "实际system bus/权限部署门禁独立记录；不借private bus升级"
+        "agent-real6-db6e333 scoped PASS (not fullWP09)",
+        "agent-data11-db6e333 scoped PASS (not allDG01-DG12)",
+        "agent-policy-offline-16175 offline PASS; no new formal proof"
       ],
-      "next": "Agent实际VM与双设备门禁；生产fuzz/debugVM/提交撤权组合继续并行"
+      "next": "production fuzz/debugVM/submit-revoke composition; actual installationfailure/inflight/deployment; dynamicchannels/fourdevices/userSSAP updates parallel; originalS0-S6 unchanged"
     }
   },
   "agent_workstream": {
-    "state": "PRODUCTION_WIRING_OFFLINE_PASS_REAL_NOT_RUN",
-    "test_scope": "16actualprivateDBus+real/dev/null ENOTTY; canonical link/Ready/lease are fixtures; no successfulkernel/crypto/USB stub",
+    "state": "IMPLEMENTED; scoped results in qualification_view and linked records; real matrix in progress",
+    "test_scope": "See agent-policy-offline-16175; fixtures and actual dependencies in structured report",
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
-    "real": "NOT_RUN exactnewsource; actualsystembus/udev/permissions andtwo-rolepeerbusiness pending",
+    "real": "Six explicit modes two-role scoped real result in qualification_view/report; full deployment/permissions/authentication/Bond and in-flight composition still missing",
     "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
-    "next": "compile cleannewbundle and actualAgentcallback VM gate, retain old paths; fuzz/debugVM/composition parallel"
+    "next": "seal publication/issue receipts; productionfuzz/debugVM/submit-revoke composition andactualinstallfailure/inflight/deployment; dynamicchannels/fourdevices/userSSAP updates parallel",
+    "offline_record": "agent-policy-offline-16175",
+    "first_failures": [
+      "preparev1 wrongsmokemanifestdirectory/noVM",
+      "actualv1 obsoleteprobe objectpath beforeAgent",
+      "actualv2 realwire/app observations but supervisor1 and PASSmanifest mismatch; overallFAIL retained"
+    ],
+    "real_record": "agent-real6-db6e333",
+    "real_records": [
+      "agent-real6-db6e333",
+      "agent-data11-db6e333"
+    ],
+    "retained_data_record": "agent-data11-db6e333"
   }
 }

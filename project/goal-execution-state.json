@@ -912,7 +912,8 @@
       "boundary_rejections": 32,
       "strict_prefix_close_phases": 2
     },
-    "credit_observation": "docs/evidence/security-deadline-credit-observation-20261015.json"
+    "credit_observation": "docs/evidence/security-deadline-credit-observation-20261015.json",
+    "issue_receipts": "docs/evidence/security-absolute-deadline-issues-20261015.json"
   },
   "plan_progress_archive": {
     "path": "history/architecture/progress-snapshots-20261014.md",

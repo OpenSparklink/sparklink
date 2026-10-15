@@ -147,3 +147,6 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [新期限镜像的实际pool5耗尽及NOCP后恢复补充观察](security-deadline-credit-observation-20261015.json)：
 源端新增拒绝29/30、双端峰值5/最终debt0、32次对端业务回复；不升级NOCP准确性/复用或完整credit证明。
+
+[原期限及21组保持八项issues准确读回回执](security-absolute-deadline-issues-20261015.json)：
+原body/checklist及OPEN保持，部分成果不关闭整项。

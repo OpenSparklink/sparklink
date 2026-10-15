@@ -16,13 +16,13 @@ use crate::profile::ProfileRegistry;
 use crate::security::SecurityIface;
 use crate::state::AdapterState;
 
-struct PrivateBus {
+pub(crate) struct PrivateBus {
     child: Child,
-    address: String,
+    pub(crate) address: String,
 }
 
 impl PrivateBus {
-    fn start() -> Self {
+    pub(crate) fn start() -> Self {
         let executable =
             std::env::var_os("SPARKLINK_TEST_DBUS_DAEMON").unwrap_or_else(|| "dbus-daemon".into());
         let child = Command::new(executable)

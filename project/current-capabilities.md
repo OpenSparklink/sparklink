@@ -12,7 +12,7 @@
 | 原期限、两角色安全机制及保留数据：21组限定门禁 | `real_device` | `PASS` |
 | 生产原期限算术：四种HZ、100检查 | `formal_bounded` | `PASS` |
 | 生产安装/取消组合：unsupported，1766检查不是证明 | `formal_bounded` | `UNPROVED` |
-| Agent/method/调用者：dirty 接线未验收 | `implemented` | `MISSING` |
+| Agent生产入口已接线；真实安装/权限资格仍缺 | `implemented` | `MISSING` |
 | 动态多通道/四真实设备两组：仍缺 | `implemented` | `MISSING` |
 | 自然故障根因与非人工恢复：仍缺 | `implemented` | `MISSING` |
 
@@ -37,7 +37,9 @@ ExchangeInfo/单值读写/发现/UUID 子资格。真实 SDK111 的未认证安�
 只覆盖所列固定通道/固件的实际观察；NOCP 真值、重复/迟到、旧 debt 与 handle 复用
 屏障仍未证明。较早 Managed/断链/原期限受控交错继续绑定各自旧镜像；不继承到新镜像。
 
-Agent 生产接线尚在工作树中，未提交、未取得新离线/实机资格；动态多通道、四设备
+Agent 生产入口已接通原生 submit/cancel/result，16项实际private D-Bus及ENOTTY失败路径、
+locked全工作区238测试/13 suites和严格clippy通过；真实新镜像与部署权限尚未验收。
+这不授予认证、安装成功或Bond；此前旧镜像资格不继承。动态多通道、四设备
 两组业务、SSAP 正向 CCC/通知/指示、认证身份、可信 Grant、Bond 仍不合格。
 普通应用组的真实 system-bus/udev/内核授权验收仍缺；控制组 UID1000/caps0 不替代。
 默认 Pair 等未支持入口明确拒绝。批准、控制器完成、协议 ACK 都不表示应用已处理。
@@ -49,7 +51,7 @@ Agent 生产接线尚在工作树中，未提交、未取得新离线/实机资�
 
 ## 工程资格与证据访问
 
-本轮只增加资格完整性检查、文档和计划，不新增协议资格。现有提取生产函数的
+资格工具批次未新增协议资格；后续Agent接线仍缺新镜像实机验收。现有提取生产函数的
 fixture 检查不包含真实锁、分配器、引用、USB 或内核调度；当前资格配置有 UBSAN，
 尚未取得 KASAN/KCSAN/lockdep/故障注入/KCOV 新调试 VM 资格。
 [形式化范围与未证明项](../docs/evidence/security-absolute-deadline-20261015.json)
@@ -58,7 +60,7 @@ fixture 检查不包含真实锁、分配器、引用、USB 或内核调度；�
 原材料可能含密钥，公开站点只提供摘要与指纹；没有公开下载或异地保留保证。
 本机读取权限、保留位置和重放边界见结构化记录的 `access_policy`。
 `python3 tools/check_qualifications.py --mode local` 核对原件；
-`--require-current` 还检查声明范围内的源码，当前 Agent 改动应拒绝继承旧资格。
+`--require-current` 还检查声明范围内的源码，新的 Agent 源码应拒绝继承旧编译镜像资格。
 本地核对成功不是实机重放；缺失原件或 hash 不符时不能授予当前 PASS。
 
 ## CI 与历史
@@ -73,7 +75,7 @@ fixture 检查不包含真实锁、分配器、引用、USB 或内核调度；�
 [文档CI](https://github.com/OpenSparklink/sparklink/actions/runs/38750325402)和
 [资格元数据CI](https://github.com/OpenSparklink/sparklink/actions/runs/38750325375)均成功。
 后续报告格式拒绝检查使专项负对照达23项本地通过；各结果只适用其记录的工具源码，
-均不覆盖Agent dirty或增加运行资格。
+均不覆盖后续Agent新源码或增加运行资格。
 [九个issues准确读回](../docs/evidence/qualification-quality-issues-20261015.json)
 保留原scope及OPEN。后续提交不能继承这条CI观察为已运行。
 两仓库 master 的经典分支保护 API 返回 Branch not protected，rulesets 列表为空；

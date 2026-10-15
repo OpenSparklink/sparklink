@@ -7,7 +7,7 @@
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
 近期主线仍为 WP09 的 Agent/method/调用者绑定，复用唯一物理 Session、credit 和
-提交票据。准确旧镜像的原期限及21组门禁已封存，dirty Agent 代码未继承其资格。
+提交票据。准确旧镜像的原期限及21组门禁已封存，Agent 新源码未继承其资格。
 并行质量整改先消除当前状态矛盾，然后随 Agent、数据与 SSAP 扩展门禁，不等待
 控制面竞争全集；本批不改协议实现或重跑无关硬件。
 
@@ -19,7 +19,7 @@
 | 原期限、两角色安全机制及保留数据：21组限定门禁 | `real_device` | `PASS` |
 | 生产原期限算术：四种HZ、100检查 | `formal_bounded` | `PASS` |
 | 生产安装/取消组合：unsupported，1766检查不是证明 | `formal_bounded` | `UNPROVED` |
-| Agent/method/调用者：dirty 接线未验收 | `implemented` | `MISSING` |
+| Agent生产入口已接线；真实安装/权限资格仍缺 | `implemented` | `MISSING` |
 | 动态多通道/四真实设备两组：仍缺 | `implemented` | `MISSING` |
 | 自然故障根因与非人工恢复：仍缺 | `implemented` | `MISSING` |
 
@@ -31,7 +31,8 @@
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
 <!-- qualification-summary:end -->
 
-下一批直接接Agent：注册绑定每controller的唯一bus owner与注册epoch，单连接
+Agent入口已接线并通过16项private D-Bus/实际ENOTTY失败回归；新镜像实机仍缺。
+本批继续验证：注册绑定每controller的唯一bus owner与注册epoch，单连接
 请求绑定generation/lifetime/完整reference、原作者和原期限；只开放明确支持的
 无MITM参考方法，未知方法/拒绝/缺Agent不得自动降级。批准前后复核调用者与Agent
 存活/当前epoch，保留原native提交引用与结果，用单请求取消收敛退出/超时；
@@ -981,7 +982,7 @@ WP04–06接通后运行DG07–10，再DG11–12。自然故障RCA与非人工�
 - WP14：厂商完整 Host 接入只记录待核对 HDI/有类型包接口；维持 P4 规划，不实现或
   默认承诺兼容，不阻塞当前 WS73 数据、生命周期和用户态 SSAP。
 
-本次仅修改文档/来源记录；保留当前内核 dirty Session 所有权整改，后续准确提交需
+该次参考审查仅修改文档/来源记录；当时保留内核 dirty Session 所有权整改，后续准确提交需
 重新构建并在 VM 取得真实两角色回归，不继承旧镜像资格。相关 issues 整项保持开放。
 
 ### 当前取消/Agent纵向链路及设备条件

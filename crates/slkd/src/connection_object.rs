@@ -334,6 +334,71 @@ impl ConnectionIface {
             connected,
         )
     }
+    /// Allocate the caller-bound ID and ORIGINAL deadline before Agent waiting.
+    async fn allocate_reference_security(
+        &self,
+        timeout_ms: u32,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<u64> {
+        crate::security_policy::allocate(
+            &self.state,
+            connection,
+            self.generation,
+            self.reference,
+            &crate::security_policy::sender(&header)?,
+            timeout_ms,
+        )
+        .await
+    }
+    /// Admission only. Query the original ID; this does not claim encryption.
+    async fn begin_reference_security(
+        &self,
+        request_id: u64,
+        method: &str,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        crate::security_policy::begin(
+            &self.state,
+            connection,
+            &crate::security_policy::sender(&header)?,
+            self.generation,
+            self.reference,
+            request_id,
+            method,
+        )
+        .await
+    }
+    async fn get_reference_security_result(
+        &self,
+        request_id: u64,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<crate::security_policy::Observation> {
+        crate::security_policy::observation(
+            &self.state,
+            &crate::security_policy::sender(&header)?,
+            self.generation,
+            self.reference,
+            request_id,
+        )
+        .await
+    }
+    /// True means withdrawal requested. It is not a hardware acknowledgement.
+    async fn cancel_reference_security(
+        &self,
+        request_id: u64,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<bool> {
+        crate::security_policy::cancel(
+            &self.state,
+            &crate::security_policy::sender(&header)?,
+            self.generation,
+            self.reference,
+            request_id,
+        )
+        .await
+    }
     async fn submit_disconnect(&self, request_id: u64) -> zbus::fdo::Result<()> {
         if self.state.lock().await.controller.generation != self.generation {
             return Err(zbus::fdo::Error::Failed(

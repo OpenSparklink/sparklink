@@ -587,4 +587,4 @@ async fn pairing_record(
 
 #[cfg(test)]
 #[path = "event_loop_tests.rs"]
-mod tests;
+pub(crate) mod tests;

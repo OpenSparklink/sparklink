@@ -109,3 +109,39 @@ slkconfig/raw/破坏性DLI旧工具直接管理设备需要管理员权限，它
 及其余 canonical 接口仍待迁移。详见[ownership 契约与测试](management-ownership.md)。
 原生路径的结果不能推及全部 Backend 或自动原地恢复；K#5/U#6和真实
 北极星继续保持开放。
+
+## 显式 SDK111 参考方法 Agent（生产接线，实机资格单列）
+
+新增入口在 `org.sparklink.Security` 与原生 `org.sparklink.Connection`，均不在观察者
+或 `sparklink-apps` 白名单；当前仅管理组/root可调用。private bus测试不替代实际
+system-bus/udev/组/内核部署资格。已有 Pair/GetInfo 等未实现的通用安全入口仍拒绝。
+默认 daemon 不注册 Agent、不自动批准或选择方法。
+
+| 接口/方法 | 参数与结果 | 契约 |
+|---|---|---|
+| Security.RegisterAgent | object path、`sdk111-no-mitm` | 每controller一个唯一bus owner/epoch；其他方法拒绝，无降级 |
+| Security.UnregisterAgent | 原object path | 仅原owner；撤销其epoch，不能由其他管理客户端替换 |
+| Connection.AllocateReferenceSecurity | timeout_ms 1..5000 → request_id | 原作者/完整connection reference，原CLOCK_MONOTONIC期限含选择、锁等待及批准；未Begin也主动过期/处理作者与Agent退出 |
+| Connection.BeginReferenceSecurity | 原request_id、明确method | 只表示监督任务准入；单次Begin；调用者丢失不遗失已开始native提交 |
+| Connection.GetReferenceSecurityResult | 原request_id → Observation | 同作者、generation及完整lifetime/handle/role/type/address；不是全局安全属性 |
+| Connection.CancelReferenceSecurity | 原request_id → bool | true仅表示请求撤回；不是USB屏障或物理义务已完成；不释放整个controller lease |
+
+Agent导出 `org.sparklink.Agent.AuthorizeReferenceSecurity`，输入为一个struct，依次为：
+`(connection_path, request_id, generation, lifetime, handle, role, address_type,
+address, method, deadline_monotonic_ns)`；返回bool。目标为原Agent唯一owner及path，
+回调结果不能跨注册epoch或连接复用。未知方法/缺Agent/拒绝/退出/超时不安装新资格。
+
+Observation包含请求身份、phase/error、原期限、agent_approved、native_admitted、
+kernel_state/error/flags/status及cleanup_error。phase：1已分配、2等待Agent、3native
+准入/观察、4参考操作完成、5拒绝、6取消、7过期、8失败、9作者丢失、10 Agent丢失。
+只发布一次终态；时钟失败不能发布成功。native_admitted仅为ioctl接受，不等USB提交；
+kernel_state是独立物理快照。策略取消不伪造物理Off，完成不表示认证、可信Grant或Bond。
+
+原native任务保留File/lease引用，提交任务即使遇到撤销也先join，再对原request执行
+类型化CANCEL/RESULT；不重新取得lease、不按handle创建新Session、不清掉在途credit。
+已提交的不确定物理结果与策略结果分别保留。终态记录有限64条，作者最多4项未终结，
+同physical lifetime不重入；过期与调用者退出不依赖再次查询。旧记录可被淘汰，查询
+返回UnknownObject；不能将淘汰描述为控制器义务已清理。
+
+源码测试使用真实private D-Bus/导出方法和真实`/dev/null` ioctl ENOTTY，Ready/link/lease
+元数据为fixture；这些结果不表示真实WS73安装/系统权限已通过，也没有新的形式化证明。

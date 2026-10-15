@@ -17,6 +17,7 @@ mod profile_runtime;
 mod radio;
 mod registration;
 mod security;
+mod security_policy;
 mod service;
 mod ssap_database;
 mod ssap_engine;

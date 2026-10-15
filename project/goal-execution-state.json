@@ -666,8 +666,8 @@
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "next_resume_tasks": [
-    "Quality first batch: versioned qualification registry + generated canonical views + fail-closed metadata/local verification and negative controls; Agent dirty code preserved and NOT_REVALIDATED. Then Agent real gates, production fuzz/debug VM/composed revoke-submit proof in parallel.",
-    "Exact8cbf/compiled2d81/fixed575 original5s with2s preapproval wait, retainedtimeout/freshretryEBUSY and all21 related real gates PASS. No Agent/whole-security/wholeformal/naturalrecovery completion.",
+    "Q1 implemented and signed; e270 quality/docsCI passed, exactoverallCI observed separately. Continue Q2 productionAgent/wire real acceptance and Q3 productionfuzz/debugVM/composition in parallel.",
+    "Agent broker now wired and16privateDBus/ENOTTY tests passed; freezeaccuratecompilednewbundle and add actualtwo-deviceapprove/reject/caller/Agentloss/originaldeadlinebusiness gates, not anotherEngine.",
     "Implement actual per-controller Agent/method/caller binding over existing Session, original deadline and single-request cancel. Positive/reject/caller-loss real two-role business. No more control-race universality prerequisites; data/SSAP/multichannel/four-device parallel.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
@@ -676,14 +676,8 @@
   ],
   "issue_sync_status": "Nine current quality comments exact readback; original scope unchanged and OPEN",
   "issue_sync_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
-  "previous_goal_turn_classification": {
-    "status": "PROGRESS",
-    "reason": "New real native9message relay candidate proof bothroles; actualfreshP256/CMAC and private material/job-lifetime integration;15 actual tests, limitedKani unsupported keptunproven,8appRT plus136fresh dataRT/32refusals and oldmode8RT. Not waiting on ignoredport2."
-  },
-  "current_goal_turn_classification": {
-    "status": "PROGRESS",
-    "reason": "Same physical Session install metadata/late materialization/final ticket and actual-lifetime000e/0011 wired in308a/f5;18production transitions/68Host/21actual driverfaults/real cryptoVM/redaction checks; new realVM gate pending, no inherited qualification."
-  },
+  "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
+  "current_goal_turn_classification": "progress: production Agent broker and16actual privateDBus/ENOTTY tests, original allocation deadline/active caller-loss cleanup, strict workspace238/13 andclippy; actualVM next",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1036,14 +1030,22 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "quality-provenance-1",
-      "production_behavior": "资格记录/生成摘要/ fail-closed 检查，不改驱动或Agent代码",
+      "id": "agent-policy-production-1",
+      "production_behavior": "每controller显式Agent唯一owner/epoch；原作者/完整reference/原期限；复用现有native submit/cancel/result与原File义务；未分配通用可信身份/Bond",
       "exit": [
-        "canonical摘要/goal由唯一记录生成",
-        "旧源码/缺artifact/范围/必需非PASS负对照",
-        "公开元数据与私有材料验证分离"
+        "严格locked构建/16项实际privateDBus与ENOTTY失败路径",
+        "准确新镜像两角色真实批准/拒绝/原期限/退出与对端应用回复",
+        "实际system bus/权限部署门禁独立记录；不借private bus升级"
       ],
-      "next": "Agent实际权限/批准拒绝和退出门禁；生产fuzz/调试VM/提交撤权组合并行"
+      "next": "Agent实际VM与双设备门禁；生产fuzz/debugVM/提交撤权组合继续并行"
     }
+  },
+  "agent_workstream": {
+    "state": "PRODUCTION_WIRING_OFFLINE_PASS_REAL_NOT_RUN",
+    "test_scope": "16actualprivateDBus+real/dev/null ENOTTY; canonical link/Ready/lease are fixtures; no successfulkernel/crypto/USB stub",
+    "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
+    "real": "NOT_RUN exactnewsource; actualsystembus/udev/permissions andtwo-rolepeerbusiness pending",
+    "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
+    "next": "compile cleannewbundle and actualAgentcallback VM gate, retain old paths; fuzz/debugVM/composition parallel"
   }
 }

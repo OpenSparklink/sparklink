@@ -15,6 +15,38 @@ impl SecurityIface {
 
 #[interface(name = "org.sparklink.Security")]
 impl SecurityIface {
+    /// Register one explicit Agent for this controller. The system bus policy
+    /// requires controller administration, not ordinary channel enrollment.
+    async fn register_agent(
+        &self,
+        path: zbus::zvariant::OwnedObjectPath,
+        method: &str,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        crate::security_policy::register(
+            &self.state,
+            connection,
+            crate::security_policy::sender(&header)?,
+            path,
+            method,
+        )
+        .await
+    }
+
+    async fn unregister_agent(
+        &self,
+        path: zbus::zvariant::OwnedObjectPath,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        crate::security_policy::unregister(
+            &self.state,
+            &crate::security_policy::sender(&header)?,
+            path,
+        )
+        .await
+    }
+
     /// Get current security state
     async fn get_info(&self) -> zbus::fdo::Result<SecurityInfo> {
         Err(zbus::fdo::Error::NotSupported(

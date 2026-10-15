@@ -49,6 +49,7 @@ pub(crate) type NativeLease = Arc<Mutex<NativeManagement>>;
 
 /// Shared adapter state accessible from D-Bus + event loop.
 pub struct AdapterState {
+    pub(crate) security_policy: crate::security_policy::Shared,
     pub(crate) ssap_database: Arc<std::sync::Mutex<crate::ssap_database::Database>>,
     pub adapter: Arc<Adapter>,
     pub native_control: Option<Arc<Adapter>>,
@@ -91,6 +92,7 @@ impl AdapterState {
         let adapter = adapter.into();
         let name = config.general.name.clone();
         Self {
+            security_policy: Arc::new(Mutex::new(crate::security_policy::Registry::default())),
             adapter,
             ssap_database: Arc::new(std::sync::Mutex::new(
                 crate::ssap_database::Database::default(),
@@ -491,6 +493,7 @@ pub type RegistrationDirectory = Arc<Mutex<BTreeMap<String, RegistrationObserver
 
 /// Drain experimental callbacks and Bond I/O without holding adapter state.
 pub async fn shutdown_services(state: &SharedState) {
+    crate::security_policy::retire(state).await;
     let bonding = state.lock().await.bonding.clone();
     #[cfg(any(test, feature = "experimental-legacy-profiles"))]
     {

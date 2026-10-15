@@ -14,9 +14,9 @@
 [准确身份、限定范围及私有捕获hash](../docs/evidence/security-installation-20261015.json)。
 这是未认证安装子资格，不是Agent批准、认证身份、可信Grant、Bond或独立空口密码证明。
 
-当前近期收尾：K `337eab0b6e6f`补命令Status后仍保留异步安装义务；dirty整改将
+当前近期收尾：K `337eab0b6e6f`补命令Status后仍保留异步安装义务；新 K `eff62088fe57` 将
 Session原epoch物理所有权保留至真实Down，停止作者工作但不因撤权替换物理对象。
-保留在开发代码，先审查/签名小提交和严格构建，再取得准确新镜像两角色安装、旧15组
+上述整改已签名推送并完成准确提交内核构建，接着取得新镜像两角色安装、旧15组
 及相关撤权/Down/原期限交错。44项实际Native/data函数及337的23项纯转换只是限定
 离线通过；Kani1681检查存在unsupported，仍未证明，更不覆盖dirty引用/锁/USB。
 

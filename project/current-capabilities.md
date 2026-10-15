@@ -37,9 +37,9 @@ Agent批准、可信身份/Grant或Bond；默认Pair/D-Bus仍NotSupported。未�
 原始含密钥USB捕获仅私有保存，不复制到公开站点。
 
 **后续实现尚未实机验收**：K `337eab0b6e6f`补异步安装义务，不能因命令Status
-已接受或作者取消就清除物理待完成状态；当前未提交 Session 所有权整改保留旧epoch
+已接受或作者取消就清除物理待完成状态；新 K `eff62088fe57` 的 Session 所有权整改保留旧epoch
 物理对象至真实Down，并拒绝新lease替换。44项实际Native/data函数测试限定通过，
-不覆盖真实锁/引用/USB。必须签名新提交、构建新镜像并重跑两角色真实安装/原数据。
+不覆盖真实锁/引用/USB。新提交已签名推送且严格内核构建通过，仍须重跑两角色真实安装/原数据。
 337的23项生产纯转换通过；Kani生成1681检查、工具退出0，但unsupported仍为
 **NOT_PROVEN_UNSUPPORTED**，不记形式化PASS，不覆盖上述dirty集成或硬件屏障。
 自然恢复、原147/1ff缺项、Agent/Bond及完整安全资格继续开放。

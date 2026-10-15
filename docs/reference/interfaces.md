@@ -57,11 +57,19 @@ facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合�
 
 ### 实验性安全协商观察（未发布 ABI）
 
-K `41572aaf736d` / 编译用户态 `37666749f579`的受限版本1/profile1接口：
-`SL_IOCTL_SECURITY_NEGOTIATION_SUBMIT`（`0xd2`，56字节）及
-`SL_IOCTL_SECURITY_NEGOTIATION_RESULT`（`0xd3`，72字节）。C导出
-`slk_security_negotiation_submit/result`，Python NativeAdapter提供
-`submit_security_negotiation/security_negotiation`。默认Pair/D-Bus安全入口仍NotSupported。
+当前未发布接口以源码为准：`SL_IOCTL_SECURITY_NEGOTIATION_SUBMIT`（`0xd2`）为
+**版本2、64字节**，携带原始`deadline_monotonic_ns`（CLOCK_MONOTONIC纳秒）。
+`RESULT`（`0xd3`、72字节）和`CANCEL`（`0xd4`、32字节）仍为版本1。
+旧56字节SUBMIT删除，不设兼容期；三种接口不能混用版本或布局。
+C导出`slk_security_negotiation_submit/result/cancel`与Python NativeAdapter同步。
+这是底层机制；Agent和默认Pair/D-Bus安全入口尚未接线，实机范围见唯一当前资格入口。
+
+原始绝对期限必须在策略/Agent等待前设置，不能在批准后刷新。`timeout_ms`为
+1–5000ms剩余预算上界，实际期限仍是原始纳秒值；过期返回ETIMEDOUT，超过上界
+返回EINVAL。Session的prepare/crypto/input/最终提交及查询使用同一单调时钟。
+Host的jiffies仅安排清理，不延长准入；转换使用实际内核tick速率。CLOCK_MONOTONIC
+不计系统挂起时间；完整PM取消/恢复仍待实现，不能据此承诺挂起期间继续安全过程。
+当前新ABI/时钟改动不能继承旧56字节镜像资格。
 
 - 必须显式选择`flags=1`（CAPABILITY_ONLY）、`2`（KEY_AGREEMENT_ONLY）或`3`（UNAUTHENTICATED_ENCRYPTION），不能组合；
   由CAP_NET_ADMIN与原活跃Managed

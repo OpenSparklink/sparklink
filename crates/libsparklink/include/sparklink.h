@@ -572,6 +572,10 @@ typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationSubmit {
     uint64_t generation;
     uint64_t lifetime;
     uint64_t request_id;
+    /**
+     * Original CLOCK_MONOTONIC deadline, set before policy/Agent waiting.
+     */
+    uint64_t deadline_monotonic_ns;
     uint32_t version;
     uint32_t profile;
     uint32_t action;

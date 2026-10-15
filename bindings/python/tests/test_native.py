@@ -30,7 +30,7 @@ class NativeBindingTests(unittest.TestCase):
         self.addCleanup(self.lib.slk_adapter_free, self.handle)
 
     def test_limited_security_submit_is_real_ioctl_not_local_success(self):
-        request=SleSecurityNegotiationSubmit(version=1,profile=1,flags=1,action=2,generation=1,lifetime=1,request_id=1,timeout_ms=5000)
+        request=SleSecurityNegotiationSubmit(version=2,deadline_monotonic_ns=1,profile=1,flags=1,action=2,generation=1,lifetime=1,request_id=1,timeout_ms=5000)
         before=bytes(request)
         self.assertEqual(self.lib.slk_security_negotiation_submit(self.handle,ctypes.byref(request)),-errno.ENOTTY)
         self.assertEqual(bytes(request),before)
@@ -209,7 +209,7 @@ class NativeConnectionMethodTests(unittest.TestCase):
 
     def test_actual_python_methods_preserve_abi_errors(self):
         request = SleConnectionSubmit(version=1, generation=1, request_id=1)
-        limited=SleSecurityNegotiationSubmit(version=1,profile=1,flags=1,action=2,generation=1,lifetime=1,request_id=1,timeout_ms=5000)
+        limited=SleSecurityNegotiationSubmit(version=2,deadline_monotonic_ns=1,profile=1,flags=1,action=2,generation=1,lifetime=1,request_id=1,timeout_ms=5000)
         for call in [lambda:self.adapter.submit_security_negotiation(limited),
                      lambda:self.adapter.security_negotiation(1,0,1),
                      lambda: self.adapter.submit_connection(request),

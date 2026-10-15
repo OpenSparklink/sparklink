@@ -1615,6 +1615,8 @@ pub struct SleSecurityNegotiationSubmit {
     pub generation: u64,
     pub lifetime: u64,
     pub request_id: u64,
+    /// Original CLOCK_MONOTONIC deadline, set before policy/Agent waiting.
+    pub deadline_monotonic_ns: u64,
     pub version: u32,
     pub profile: u32,
     pub action: u32,

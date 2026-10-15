@@ -417,7 +417,7 @@ SNOOP_REDACTED = 2
 class SleSecurityNegotiationSubmit(ctypes.Structure):
     """Explicit limited exchange approval; no raw relay or trusted security."""
     _align_ = 8
-    _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),("request_id",ctypes.c_uint64),
+    _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),("request_id",ctypes.c_uint64),("deadline_monotonic_ns",ctypes.c_uint64),
         ("version",ctypes.c_uint32),("profile",ctypes.c_uint32),("action",ctypes.c_uint32),("flags",ctypes.c_uint32),("timeout_ms",ctypes.c_uint32),
         ("handle",ctypes.c_uint16),("role",ctypes.c_uint8),("address_type",ctypes.c_uint8),("address",ctypes.c_uint8*6),("reserved",ctypes.c_uint8*2)]
 

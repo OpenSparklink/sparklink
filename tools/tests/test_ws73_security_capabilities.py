@@ -16,10 +16,11 @@ def fixture():
     r,c=down_fixture();old=r.pop('data_link_down');r.update(status='SECURITY_CAPABILITIES_PASS',end_wall_ns=500);g=r['channel_grant'];g.pop('revoke_prefix');g.pop('armed');g.pop('blocking_witness')
     row=dict(status='REAL_LIMITED_CAPABILITIES_PASS',start_wall_ns=160,g_start_before_wall_ns=180,t_arm_before_monotonic_ns=170,observed_monotonic_ns=260,observed_wall_ns=250,cleanup_before_wall_ns=350,cleanup_after_wall_ns=370,scan_checked_wall_ns=410,before_links=old['links_before'],after_links=old['links_before'],before_ready=old['ready_before'],after_ready=old['ready_before'],management_before=old['management_before'],management_after=old['management_before'],management_cleaned=old['management_cleaned'],requests=[],results=[],negative=[],down=old['down'],cleanup_result=old['result'])
     r['security_capabilities']=row
+    row.update(request_before_monotonic_ns=160,request_after_monotonic_ns=170)
     row['ordinary_denial']=dict(credentials=copy.deepcopy(g['workers'][0]['credentials']),submit_errno=errno.EPERM,result_errno=errno.EPERM)
-    expected={'generation':errno.ENODEV,'lifetime':errno.ESTALE,'address':errno.ESTALE,'role':errno.ESTALE,'profile':errno.EOPNOTSUPP,'flags':errno.EINVAL,'reserved':errno.EINVAL,'nonowner_submit':errno.EPERM,'nonowner_result':errno.EPERM,'same_lifetime_restart':errno.EBUSY}
+    expected={'generation':errno.ENODEV,'lifetime':errno.ESTALE,'address':errno.ESTALE,'role':errno.ESTALE,'profile':errno.EOPNOTSUPP,'flags':errno.EINVAL,'reserved':errno.EINVAL,'nonowner_submit':errno.EPERM,'nonowner_result':errno.EPERM,'same_lifetime_restart':errno.EBUSY,'version':errno.EOPNOTSUPP,'deadline_expired':errno.ETIMEDOUT,'deadline_future':errno.EINVAL}
     for n in [0,1]:
-        s=setup(r['initial_snapshots'][n],n);l=decode(SleLinkSnapshot,row['before_links'][n]).links[0];req=request(s,l);row['requests'].append(bytes(req).hex())
+        s=setup(r['initial_snapshots'][n],n);l=decode(SleLinkSnapshot,row['before_links'][n]).links[0];req=request(s,l,deadline_ns=5_000_000_160);row['requests'].append(bytes(req).hex())
         out=Result(version=1,profile=1,generation=req.generation,lifetime=req.lifetime,request_id=1,handle=req.handle,role=req.role,state=4,flags=7);out.local_caps[:]=OFFER;out.peer_caps[:]=OFFER;row['results'].append(bytes(out).hex())
         if n==1:out.state=1;out.flags=0;out.peer_caps[:]=bytes(10);row['t_armed']=bytes(out).hex()
         row['negative'] += [dict(index=n,kind=k,errno=e) for k,e in expected.items()]

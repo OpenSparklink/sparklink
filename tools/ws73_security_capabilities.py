@@ -23,8 +23,8 @@ SUBMIT=(1<<30)|(ctypes.sizeof(Submit)<<16)|(ord('S')<<8)|0xd2
 RESULT=(3<<30)|(ctypes.sizeof(Result)<<16)|(ord('S')<<8)|0xd3
 
 
-def request(snapshot,link,agreement=False,encryption=False):
-    value=Submit(version=1,profile=1,flags=3 if encryption else 2 if agreement else 1,action=2 if link.role==0 else 1,timeout_ms=5000,generation=snapshot.generation,lifetime=link.lifetime,request_id=1,handle=link.handle,role=link.role,address_type=link.address_type)
+def request(snapshot,link,agreement=False,encryption=False,deadline_ns=None):
+    value=Submit(version=2,deadline_monotonic_ns=time.monotonic_ns()+5_000_000_000 if deadline_ns is None else deadline_ns,profile=1,flags=3 if encryption else 2 if agreement else 1,action=2 if link.role==0 else 1,timeout_ms=5000,generation=snapshot.generation,lifetime=link.lifetime,request_id=1,handle=link.handle,role=link.role,address_type=link.address_type)
     value.address[:]=link.address;return value
 
 
@@ -71,11 +71,13 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
     r['security_capabilities']=row;save();links=[decode(SleLinkSnapshot,v).links[0] for v in row['before_links']]
     if links[i].role!=0 or links[p].role!=1:raise ValueError('actual G Create and T response roles required')
     agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);cancel_pending=r.get('security_cancel_pending',False);wanted=9 if encryption else 8 if agreement else 4
+    row['request_before_monotonic_ns']=time.monotonic_ns()
     requests=[request(s,l,agreement,encryption or cancel_pending) for s,l in zip(snapshots,links)]
+    row['request_after_monotonic_ns']=time.monotonic_ns()
     row['requests']=[bytes(v).hex() for v in requests];row['ordinary_denial']=ordinary_denial(writers[i],requests[i],cancel_pending);save()
     for n in [i,p]:
         good=requests[n]
-        for kind,want in [('generation',errno.ENODEV),('lifetime',errno.ESTALE),('address',errno.ESTALE),('role',errno.ESTALE),('profile',errno.EOPNOTSUPP),('flags',errno.EINVAL),('reserved',errno.EINVAL)]:
+        for kind,want in [('generation',errno.ENODEV),('lifetime',errno.ESTALE),('address',errno.ESTALE),('role',errno.ESTALE),('profile',errno.EOPNOTSUPP),('flags',errno.EINVAL),('reserved',errno.EINVAL),('version',errno.EOPNOTSUPP),('deadline_expired',errno.ETIMEDOUT),('deadline_future',errno.EINVAL)]:
             bad=Submit.from_buffer_copy(bytes(good))
             if kind=='generation':bad.generation+=1
             elif kind=='lifetime':bad.lifetime+=1
@@ -83,17 +85,22 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
             elif kind=='role':bad.role^=1;bad.action=2 if bad.role==0 else 1
             elif kind=='profile':bad.profile=0
             elif kind=='flags':bad.flags=0
-            else:bad.reserved[0]=1
+            elif kind=='reserved':bad.reserved[0]=1
+            elif kind=='version':bad.version=1
+            elif kind=='deadline_expired':bad.deadline_monotonic_ns=0
+            elif kind=='deadline_future':bad.deadline_monotonic_ns=(1<<64)-1
             actual=denied(writers[n].fileno(),SUBMIT,bad)
             row['negative'].append(dict(index=n,kind=kind,input=bytes(bad).hex(),errno=actual));save()
             if actual!=want:raise ValueError('exact kernel limited-security negative errno '+kind)
         for command,value in [(SUBMIT,good),(RESULT,Result(version=1,generation=good.generation,lifetime=good.lifetime,handle=good.handle,request_id=1))]:
             actual=denied(observers[n].fileno(),command,value);row['negative'].append(dict(index=n,kind='nonowner_submit' if command==SUBMIT else 'nonowner_result',errno=actual));save()
             if actual!=errno.EPERM:raise ValueError('same-controller admin observer is not the Managed author')
+    if r.get('security_original_deadline',False):
+        row['policy_wait_start_ns']=time.monotonic_ns();time.sleep(2);row['policy_wait_end_ns']=time.monotonic_ns()
     row['t_arm_before_wall_ns']=time.time_ns();row['t_arm_before_monotonic_ns']=time.monotonic_ns();writers[p].submit_security_negotiation(requests[p]);row['t_armed']=bytes(writers[p].security_negotiation(links[p].lifetime,links[p].handle,1)).hex();save()
     if cancel_pending:
         from ws73_security_cancel import exercise as cancel_passive
-        cancel_passive(row,save,writers,observers,requests,links,p)
+        cancel_passive(row,save,writers,observers,requests,links,p,r.get('security_original_deadline',False))
     else:
         row['g_start_before_wall_ns']=time.time_ns();writers[i].submit_security_negotiation(requests[i]);deadline=time.monotonic()+5
         while True:
@@ -120,21 +127,27 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
         req=standby(snapshots[p],identifier,'scanning') if op==3 else stop(snapshots[p],identifier,op);req.operation=op;discover(p,req)
     row['scan_checked_wall_ns']=time.time_ns()
     for n in [i,p]:writers[n].release_management(leases[n],1)
-    row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers];row['end_wall_ns']=time.time_ns();row['status']='REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_LIMITED_CAPABILITIES_PASS';r.update(status='SECURITY_CANCEL_PENDING_PASS' if cancel_pending else 'SECURITY_CAPABILITIES_PASS',end_wall_ns=row['end_wall_ns']);verify(r);save();print('WS73_TARGET_'+r['status'],flush=True)
+    row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers];row['end_wall_ns']=time.time_ns();row['status']='REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if r.get('security_original_deadline',False) else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_LIMITED_CAPABILITIES_PASS';r.update(status='SECURITY_ORIGINAL_DEADLINE_PASS' if r.get('security_original_deadline',False) else 'SECURITY_CANCEL_PENDING_PASS' if cancel_pending else 'SECURITY_CAPABILITIES_PASS',end_wall_ns=row['end_wall_ns']);verify(r);save();print('WS73_TARGET_'+r['status'],flush=True)
 
 
 def verify(r):
     cancel_pending=r.get('security_cancel_pending',False)
+    original_deadline=r.get('security_original_deadline',False)
+    if original_deadline and not cancel_pending:raise ValueError('original security deadline requires passive approval gate')
     if cancel_pending and (r.get('key_agreement',False) or r.get('unauthenticated_encryption',False)):raise ValueError('separate passive cancellation gate required')
-    if r.get('format_version')!=1 or r.get('status')!=('SECURITY_CANCEL_PENDING_PASS' if cancel_pending else 'SECURITY_CAPABILITIES_PASS') or r.get('case')!='release' or r.get('index') not in [0,1] or r.get('daemon_running') is not False or r.get('synthetic_support') is not False:raise ValueError('separate real limited capability gate required')
+    if r.get('format_version')!=1 or r.get('status')!=('SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'SECURITY_CANCEL_PENDING_PASS' if cancel_pending else 'SECURITY_CAPABILITIES_PASS') or r.get('case')!='release' or r.get('index') not in [0,1] or r.get('daemon_running') is not False or r.get('synthetic_support') is not False:raise ValueError('separate real limited capability gate required')
     if r.get('unauthenticated_encryption',False) and r.get('key_agreement') is not True:raise ValueError('encryption cannot bypass candidate proof gate')
     row=r['security_capabilities'];i=r['index'];g=r['channel_grant'];agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);snapshots=[setup(v,n) for n,v in enumerate(r['initial_snapshots'])]
-    if row['status']!=('REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_LIMITED_CAPABILITIES_PASS') or len(snapshots)!=2:raise ValueError('two actual controllers required')
+    if row['status']!=('REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_LIMITED_CAPABILITIES_PASS') or len(snapshots)!=2:raise ValueError('two actual controllers required')
     for n in [0,1]:
         before=decode(SleLinkSnapshot,row['before_links'][n]);after=decode(SleLinkSnapshot,row['after_links'][n])
         if before.flags!=1 or before.count!=1 or bytes(before)!=bytes(after) or before.generation!=snapshots[n].generation:raise ValueError('same physical lifetime must survive limited exchange')
         link=before.links[0];req=decode(Submit,row['requests'][n]);owner=g['owners'][n]
-        if (req.version,req.profile,req.flags,req.timeout_ms,req.request_id,req.generation,req.lifetime,req.handle,req.role,req.action,req.address_type)!=(1,1,3 if encryption or cancel_pending else 2 if agreement else 1,5000,1,before.generation,link.lifetime,link.handle,0 if n==i else 1,2 if n==i else 1,link.address_type) or bytes(req.address)!=bytes(link.address) or any(req.reserved):raise ValueError('exact approved physical reference required')
+        if (req.version,req.profile,req.flags,req.timeout_ms,req.request_id,req.generation,req.lifetime,req.handle,req.role,req.action,req.address_type)!=(2,1,3 if encryption or cancel_pending else 2 if agreement else 1,5000,1,before.generation,link.lifetime,link.handle,0 if n==i else 1,2 if n==i else 1,link.address_type) or bytes(req.address)!=bytes(link.address) or any(req.reserved):raise ValueError('exact approved physical reference required')
+        if not row['request_before_monotonic_ns']+5_000_000_000<=req.deadline_monotonic_ns<=row['request_after_monotonic_ns']+5_000_000_000:raise ValueError('actual original absolute deadline must survive all waiting/crypto/submit steps')
+        if original_deadline:
+            if not row['request_after_monotonic_ns']<=row['policy_wait_start_ns']<row['policy_wait_end_ns']<=row['t_arm_before_monotonic_ns'] or row['policy_wait_end_ns']-row['policy_wait_start_ns']<2_000_000_000 or not req.deadline_monotonic_ns<=row['observed_monotonic_ns']<row['t_arm_before_monotonic_ns']+4_000_000_000:raise ValueError('expiry after original deadline but before a refreshed post-policy5s deadline required')
+        elif row['observed_monotonic_ns']>=req.deadline_monotonic_ns:raise ValueError('original nanosecond deadline exceeded')
         if (owner['generation'],owner['lifetime'],owner['handle'],owner['lease'])!=(req.generation,req.lifetime,req.handle,r['leases'][n]):raise ValueError('business must use same original Session/lease')
         if not cancel_pending:
             result=decode(Result,row['results'][n])
@@ -144,7 +157,7 @@ def verify(r):
             if ready.flags!=1 or ready.generation!=req.generation:raise ValueError('original registration Ready must remain')
         if row['management_before'][n]!=row['management_after'][n]:raise ValueError('limited exchange must retain original author')
         query(row['management_after'][n],req.generation,1);query(row['management_cleaned'][n],req.generation,0)
-        expected={'generation':errno.ENODEV,'lifetime':errno.ESTALE,'address':errno.ESTALE,'role':errno.ESTALE,'profile':errno.EOPNOTSUPP,'flags':errno.EINVAL,'reserved':errno.EINVAL,'nonowner_submit':errno.EPERM,'nonowner_result':errno.EPERM,'same_lifetime_restart':errno.EBUSY}
+        expected={'generation':errno.ENODEV,'lifetime':errno.ESTALE,'address':errno.ESTALE,'role':errno.ESTALE,'profile':errno.EOPNOTSUPP,'flags':errno.EINVAL,'reserved':errno.EINVAL,'nonowner_submit':errno.EPERM,'nonowner_result':errno.EPERM,'same_lifetime_restart':errno.EBUSY,'version':errno.EOPNOTSUPP,'deadline_expired':errno.ETIMEDOUT,'deadline_future':errno.EINVAL}
         if cancel_pending and n==i:expected.pop('same_lifetime_restart')
         negatives=[v for v in row['negative'] if v['index']==n]
         if len(negatives)!=len(expected) or {v['kind']:v['errno'] for v in negatives}!=expected:raise ValueError('complete exact kernel authority/reference/restart denials required')
@@ -164,7 +177,7 @@ def verify(r):
     if (cleanup.version,cleanup.profile,cleanup.state,cleanup.operation,cleanup.generation,cleanup.request_id,cleanup.handle,cleanup.flags)!=(1,1,4,2,owner['generation'],950,owner['handle'],7) or any([cleanup.error,cleanup.fault_error,cleanup.command_status,cleanup.outcome_status,*cleanup.reserved]):raise ValueError('real successful physical cleanup required')
     if cancel_pending:
         from ws73_security_cancel import verify as verify_cancel
-        verify_cancel(row,[decode(Submit,v) for v in row['requests']],1-i)
+        verify_cancel(row,[decode(Submit,v) for v in row['requests']],1-i,original_deadline)
     return row
 
 

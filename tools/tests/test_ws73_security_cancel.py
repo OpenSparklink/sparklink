@@ -38,6 +38,23 @@ def fixture():
 
 
 class PassiveCancellation(unittest.TestCase):
+    def test_original_deadline_expires_before_a_refreshed_post_policy_budget(self):
+        r,c=fixture();r.update(security_original_deadline=True,status='SECURITY_ORIGINAL_DEADLINE_PASS')
+        row=r['security_capabilities'];row.update(status='REAL_SECURITY_ORIGINAL_DEADLINE_PASS',policy_wait_start_ns=170,policy_wait_end_ns=2_000_000_170,t_arm_before_monotonic_ns=2_000_000_171,observed_monotonic_ns=5_000_000_180)
+        out=decode(Result,row['results'][1]);out.state=7;out.error=-errno.ETIMEDOUT
+        row['results'][1]=bytes(out).hex();row['cancel'].update(expired_before_cancel=bytes(out).hex(),observations=[bytes(out).hex()]*2)
+        self.assertEqual(corroborate(r,c)['status'],'REAL_SECURITY_ORIGINAL_DEADLINE_CORROBORATED')
+        for kind in ['not_expired','reset_budget','no_policy_wait','cancel_overwrites_timeout']:
+            with self.subTest(kind=kind):
+                import copy
+                bad=copy.deepcopy(r);value=bad['security_capabilities']
+                if kind=='not_expired':value['observed_monotonic_ns']=4_000_000_000
+                elif kind=='reset_budget':
+                    request_value=decode(Submit,value['requests'][1]);request_value.deadline_monotonic_ns+=2_000_000_000;value['requests'][1]=bytes(request_value).hex()
+                elif kind=='no_policy_wait':value['policy_wait_end_ns']=171
+                else:value['cancel']['expired_before_cancel']=value['t_armed']
+                with self.assertRaises(ValueError):verify(bad)
+
     def test_same_session_local_cancel_with_actual_business_and_later_cleanup(self):
         r,c=fixture();verify(r);proof=corroborate(r,c)
         self.assertEqual(proof['business_round_trips'],4)

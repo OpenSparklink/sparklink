@@ -20,7 +20,7 @@ def request(submit):
                   request_id=submit.request_id, handle=submit.handle)
 
 
-def exercise(row, save, writers, observers, requests, links, passive):
+def exercise(row, save, writers, observers, requests, links, passive, original_deadline=False):
     from ws73_security_capabilities import denied, RESULT, Result
     value = request(requests[passive])
     row['cancel'] = dict(input=bytes(value).hex(), negative=[], returns=[])
@@ -40,6 +40,12 @@ def exercise(row, save, writers, observers, requests, links, passive):
         save()
         if actual != expected or bytes(observed).hex() != row['t_armed']:
             raise ValueError('bad cancellation must not mutate the passive author: ' + kind)
+    if original_deadline:
+        remaining=(requests[passive].deadline_monotonic_ns-time.monotonic_ns())/1_000_000_000
+        time.sleep(max(0,remaining)+0.02)
+        expired=writers[passive].security_negotiation(value.lifetime,value.handle,1)
+        evidence['expired_before_cancel']=bytes(expired).hex()
+        save()
     evidence['before_wall_ns'] = time.time_ns()
     for _ in range(2):
         writers[passive].cancel_security_negotiation(value)
@@ -55,7 +61,7 @@ def exercise(row, save, writers, observers, requests, links, passive):
     row['results'][passive] = bytes(observed).hex()
 
 
-def verify(row, requests, passive):
+def verify(row, requests, passive, original_deadline=False):
     from ws73_management_setup import decode
     from ws73_security_capabilities import Result, OFFER
     evidence = row['cancel']
@@ -80,7 +86,8 @@ def verify(row, requests, passive):
     if evidence['observations'] != [row['results'][passive]] * 2:
         raise ValueError('one terminal observation retained across repeated cancellation')
     out = decode(Result, row['results'][passive]);req = requests[passive]
-    if (out.version,out.profile,out.generation,out.lifetime,out.request_id,out.handle,out.role,out.state,out.flags,out.status,out.error) != (1,1,req.generation,req.lifetime,1,req.handle,1,6,0,0,-errno.ECANCELED) or bytes(out.local_caps) != OFFER or any(out.peer_caps) or any(out.reserved):
+    if original_deadline and evidence.get('expired_before_cancel')!=row['results'][passive]:raise ValueError('deadline terminal must exist before cancelling it')
+    if (out.version,out.profile,out.generation,out.lifetime,out.request_id,out.handle,out.role,out.state,out.flags,out.status,out.error) != (1,1,req.generation,req.lifetime,1,req.handle,1,7 if original_deadline else 6,0,0,-errno.ETIMEDOUT if original_deadline else -errno.ECANCELED) or bytes(out.local_caps) != OFFER or any(out.peer_caps) or any(out.reserved):
         raise ValueError('exact cancelled original passive request required')
     if row['results'][1-passive] is not None or not row['t_arm_before_wall_ns'] <= evidence['before_wall_ns'] <= row['observed_wall_ns']:
         raise ValueError('no peer approval or time reversal')
@@ -104,6 +111,6 @@ def corroborate(r, capture):
             raise CaptureError('actual later cleanup Down required on both sides')
     control(capture,r['usb'][i],0x1403,g['owners'][i]['handle'].to_bytes(2,'little')+b'\x13',row['cleanup_before_wall_ns'],row['cleanup_after_wall_ns'],status=True)
     for enabled in [True,False]: control(capture,r['usb'][1-i],0x1002,bytes([enabled,0]),row['cleanup_after_wall_ns'],row['scan_checked_wall_ns'])
-    return dict(status='REAL_PASSIVE_AUTHOR_CANCEL_CORROBORATED', business_legs=legs,
+    return dict(status='REAL_SECURITY_ORIGINAL_DEADLINE_CORROBORATED' if r.get('security_original_deadline',False) else 'REAL_PASSIVE_AUTHOR_CANCEL_CORROBORATED', business_legs=legs,
         business_round_trips=4, in_flight_installation_qualified=False,
         scope='Same physical Session/lease retained; ordinary random peer-checked business before/after one passive request cancellation. No Agent, wire cancellation, post-submit race, authentication, Bond or automatic recovery qualification.')

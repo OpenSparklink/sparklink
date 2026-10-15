@@ -26,11 +26,11 @@
   "hardware_constraint": {
     "affected_port": "1-2.1.2",
     "original_restore_verified": false,
-    "user_response": "Physical replug reported, user then clarified port2/3 may be reversed",
+    "user_response": "Again replugged port2or3; observed only port2 USB device85->88, then VM2/3 Ready and4shortRT PASS",
     "ignored_for_current_operations": true,
     "do_not_operate_or_request_manual_action": true,
     "manual_request_pending": false,
-    "current_available_scope": "Port2 guest descriptor-32 before firmware/Ready. Port3/1 exact45/37 four short business RT scoped PASS. Manual operation port unknown (2 or3); no natural recovery/four-device qualification. Existingeff/2cd full15+6 evidence retained.",
+    "current_available_scope": "Port2/3 Ready and bounded4RT after further manual replug; exact45/37 fixed227 all17 safety/data gates PASS. Historical descriptor/RAM failures retained, no natural recovery/RCA/firmware execution attestation or four-device waiver.",
     "four_device_gate": "Incomplete, not waived",
     "natural_recovery_acceptance": false,
     "previous_directive": "User originally requested ignoreport2. One bounded requalification after ambiguous reported replug failed; no further port2 hardware operation/manual request, continue usable3/1.",
@@ -57,7 +57,21 @@
       "round_trips": 4,
       "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
       "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231"
-    }
+    },
+    "port2_second_vm_check": {
+      "status": "REAL_SHORT_BUSINESS_SCOPED_PASS",
+      "round_trips": 4,
+      "ports": [
+        "1-2.1.2",
+        "1-2.1.3"
+      ],
+      "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "natural_recovery": false
+    },
+    "vm_ready_and_business_verified_after_manual_action": true,
+    "firmware_readback_execution_attestation": false,
+    "second_replug_evidence": "docs/evidence/port2-replug-preserved-regression-20261015.json"
   },
   "packages": [
     {
@@ -708,7 +722,7 @@
     "LATEST_SECURITY_PASSIVE_CANCEL": "SCOPED_REAL_PASS exact45/37 tools227; two roles8ordinary random businessRT, samelease/lifetime/Ready, no securitywire; in-flight/Agent missing"
   },
   "next_resume_tasks": [
-    "Port2 descriptor failure unresolved; manual replug attribution2/3 unknown. Port3/1 bounded45/37 real short4RT PASS; both role passive author cancel PASS exact45/37 tools227. No recovery/four-device waiver.",
+    "Record port2 second manual-replug usability and exact45/37 all17 regression; no natural recovery waiver. New8cbf absolute security deadline ABI v2 exact VM gates next, then Agent/method/caller; preserve full scope.",
     "Agent/method/caller integration uses existing per-request cancel and sole Session; real positive/reject/caller-loss business. Controlled in-flight Status/0011/revoke/Down/original-deadline remains open, not prerequisite to all data work.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
@@ -826,7 +840,7 @@
   },
   "in_progress_security_author_cancel": {
     "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
-    "status": "SIGNED_COMMITTED_EXACT_CLEAN_BUILD_AND_OFFLINE_PASS_REAL_VM_PENDING",
+    "status": "SCOPED_REAL_PASSIVE_AUTHOR_CANCEL_PASS",
     "abi_bytes": 32,
     "same_session": true,
     "whole_controller_lease_release": false,
@@ -863,5 +877,17 @@
       "result": "SUCCESS"
     },
     "passive_cancel_issue_receipt": "docs/evidence/security-passive-cancel-issues-20261015.json"
+  },
+  "in_progress_security_absolute_deadline": {
+    "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "status": "EXACT_BUILD_OFFLINE_AND_SCOPED_ARITHMETIC_PASS_VM_PENDING",
+    "submit_version": 2,
+    "submit_bytes": 64,
+    "clock": "CLOCK_MONOTONIC nanoseconds",
+    "agent_connected": false,
+    "formal_arithmetic": "BOUNDED_PASS100; allu64 now/deadline/jiffies, allu32 maximum_ms, CONFIG_HZ100/250/300/1000",
+    "formal_first_attempt": "NOT_PROVEN_TIMEOUT, arbitraryu32 HZ,300seconds; retained",
+    "excluded": "clock mapping, Session/Host integration, File/locks/refs/USB/crypto/hardware; prior1766 unsupported not upgraded",
+    "next_exit": "Actual2s policy wait counts toward original5s, terminal timeout not rewritten by cancel, sameSession/lease/Ready and random peer business; new two-role install and data matrix then Agent wiring."
   }
 }

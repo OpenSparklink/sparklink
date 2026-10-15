@@ -135,3 +135,6 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [被动作者取消及端口核对七项现有issues读回回执](security-passive-cancel-issues-20261015.json)：
 原body/checklist与OPEN保持，实机子资格与在途/Agent/自然恢复缺口分别记录。
+
+[再次人工重插后的端口2/3及准确45/37十七组保持回归](port2-replug-preserved-regression-20261015.json)：
+端口2/3可用，24次安全机制前后、136次数据应用校验回复；旧56字节资格不授予新绝对期限ABI，非自然恢复。

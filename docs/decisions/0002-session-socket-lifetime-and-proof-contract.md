@@ -36,6 +36,13 @@ Grant。原期限内分别记录实际提交、真实Complete和对端0014能力
 只核对已知offer的实验入口不承诺通用互操作，也不替代Agent、方法选择、proof、
 实际安装/加密及Bond门禁。当前代码和限定实机资格只见CURRENT_CAPABILITIES。
 
+候选proof扩展复用此ledger及唯一RX归属；Session独占不导出的C密码材料，锁外
+执行真实同步P-256/CMAC，回填以原job票据/身份/epoch/期限重新验证。队列只在前一
+真实Complete清账后推进，特别是T公钥137与确认138。最后proof及所有本地Complete
+排空才可发布未认证候选观察终态8；它不授予可信身份/加密资格。取消丢弃密码结果
+并清零材料，仍保留在途命令。primitive向量、限定转换、完整协议证明与实机各自
+记录；共享同一实现的两端通过不能自动升级为标准或第三方互通。
+
 授权目标：fd绑定KernelGrant（controller/generation/lifetime/channel + authorization
  epoch），随对应Managed授权撤销失效。撤销阻止新准入/新提交、唤醒等待者；已提交
 物理义务仍保留到真实完成或明确退休屏障。新lease不复活旧fd。Kbf8663已接通

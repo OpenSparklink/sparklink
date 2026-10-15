@@ -1607,7 +1607,7 @@ mod registration_tests {
     }
 }
 
-/// Experimental limited capability exchange; no raw RX/TX or trusted result.
+/// Experimental capability/candidate-proof observation; no raw RX/TX or trusted result.
 #[repr(C, align(8))]
 #[derive(Debug, Clone, Copy, Default)]
 pub struct SleSecurityNegotiationSubmit {
@@ -1626,7 +1626,7 @@ pub struct SleSecurityNegotiationSubmit {
     pub reserved: [u8; 2],
 }
 
-/// Local observations only: state4 is not pairing, trust or peer application ACK.
+/// Local observations only: state4/state8 are not pairing, trust or peer application ACK.
 #[repr(C, align(8))]
 #[derive(Debug, Clone, Copy, Default)]
 pub struct SleSecurityNegotiationResult {

@@ -183,7 +183,7 @@ class NativeAdapter:
         return result
 
     def submit_security_negotiation(self, request):
-        """Explicit capability-only approval; no pairing/encryption promise."""
+        """Explicit capability/candidate-proof approval; no pairing/encryption promise."""
         if not isinstance(request,SleSecurityNegotiationSubmit):
             raise TypeError("SleSecurityNegotiationSubmit required")
         if request.generation!=self.generation or not request.lifetime or not request.request_id:raise ValueError("exact nonzero selected generation/lifetime/request required")

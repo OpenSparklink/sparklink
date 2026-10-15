@@ -6,6 +6,10 @@
 
 当前仍开放的自然恢复根因及非人工恢复门禁不会因文档构建通过而关闭。
 
+[鲜活候选密钥proof九消息双角色交付、准确新镜像业务回归](security-key-agreement-20261015.json)
+记录K415/U376、两端USB坐标、原期限、实际内核密码向量和未证明Kani范围。
+state8不是Agent/认证/安装/加密/Bond；旧模式和数据回归分别计数。
+
 [显式管理批准的受限134/135正向交换与准确新镜像回归](security-capabilities-20261015.json)
 区分实际Complete/peer RX、普通用户业务与尚缺的Agent/认证/安装/加密/Bond；
 直接生产转换Kani存在unsupported，仍未证明，不升级为完整安全资格。

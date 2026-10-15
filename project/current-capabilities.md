@@ -14,51 +14,64 @@
 [准确失败、退役与恢复缺口](../docs/evidence/relay-extension-boot-failure-20261015.json)。
 
 受影响端口`1-2.1.2`的原版111恢复尚未验证；host缓存USB节点不代表枚举/Ready。
-当前hub直接访问权限不足、`sudo -n`要求密码，已请求恢复先前配置的权限或单只冷断电。
-用户暂时无法操作硬件，不再重复请求；没有待答的人工步骤。继续第1/4只VM测试，
-第2只及四设备完整门禁不豁免。其他设备不自动推定Ready，没有安装宿主实验内核。
+用户现已明确要求忽略该端口：当前不操作、不恢复、不请求人工处理第2只，
+保留原失败及恢复未验证记录。继续第1/4只VM测试；四设备完整门禁仍未通过，未被豁免。其他设备不自动推定Ready，没有安装宿主实验内核。
 运行态BSS/栈/池边界算术不能证明boot下载器工作区安全，连续填充方案不再重试。
 原始combined111文件与生产Runtime未改；以下历史准确镜像的资格保留，不升级为本次失败镜像资格。
 
-## 当前受限安全能力交换（2026-10-15）
+## 当前未认证候选密钥 proof 与业务回归（2026-10-15）
 
-生产改动 K `1cf095fd1650a974b523a807ad9d69623ebb0a78`，编译用户态
-U `02ac5ed5a76cf7981d83df23107d6ba2b9790270`，封存VM工具
-`1ee2f4e1b72e2a83c43902e726b777fd35048087`：同一物理Session、relay转换、
-命令credit及实际票据已接通显式管理批准的capability-only探测。
+准确实测生产内核 K `41572aaf736df897914a9227c81ba92fa0df9002`，编译用户态与
+封存guest工具 U `37666749f57947855ab17382d685d65f165b7d70`。K `8117cb56e2ef`
+只改注释；外层只读证据检查器 `89a6659441ef`新增禁止实际安装/加密的核对，并重放
+原捕获，不能将后续HEAD重新标成实测镜像。
 
-**实机限定通过**：第1/4只交换G/T角色，共两轮真实134→135；各端真实1812提交、
-匹配Complete及对端0014能力字节全部核对，本地观察分别在原5秒期限内12.829/11.647ms
-完成。每轮前后4次UID1000/caps0随机业务往返，共8次，保持原Session/租约/Ready，
-显式清理Down与同行扫描成功。错误身份、非作者File、普通用户继承Managed File及
-同lifetime重启均明确拒绝。没有改blob、注入RX或自动批准后续配对。
+**已实现**：同一物理Session、relay转换、命令credit及最终提交票据上，显式模式2
+复用原Managed File/CAP_NET_ADMIN/身份/epoch校验。真实CSPRNG生成鲜活P256与nonce，
+执行真实点检查、ECDH、CMAC及peer proof；密码工作在IRQ/Host/gate锁外，回填重新
+核对job/身份/原期限。取消、断链或到期不能通过迟到密码结果创建提交，也不消除
+已提交物理义务。材料不导出，无测试密钥降级；默认Pair/D-Bus仍NotSupported。
 
-**资格边界**：固定已知offer、仅G发起134/T回应135；两只Native互测不是标准/第三方
-互通。state4仅表示本地Complete与peer能力RX，不是Agent批准、Paired、认证、实际
-安装、Encrypted或Bond。默认Pair API仍NotSupported，原版147/1ff缺项未修复。
-这是原版111支持类型的正向证据，不覆盖第2只失败恢复或固件执行认证。
+**实机限定通过**：第1/4只交换G/T角色，两轮各9条134..142消息，逐条核对真实1812、
+匹配Complete及对端0014 RX。G发134/136/139/141，T发135/137/138/13a/142；T137真实
+Complete后才发送138。两端state8仅在peer proof验证和本地实际Complete清账后发布；
+原5秒总期限内29.008/29.465ms完成。观察到两轮四公钥、四nonce各不相同。
+每轮前后4次UID1000/caps0随机应用校验与回复，共8次，保持Session/租约/Ready，
+显式双端Down及同行真实扫描成功。非法身份/字段、其他File、降权继承原File及同
+lifetime重启均拒绝。这是独立Managed实验，未运行slkd，不声称daemon崩溃存活。
 
-**离线/形式化**：实际relay13项、完整Cargo222项、跨语言38项、工具514项通过。
-两项Kani直接使用生产转换，但caller_location/foreign function警告使结果保持
-NOT_PROVEN_UNSUPPORTED，即使996/945项生成检查未报失败。实际Host依赖fixture
-缺少EOPNOTSUPP导致首轮CI失败，已在仅selftests提交`602f26d7eba4`修复；不改上述
-实机生产源码。修复pin后的严格CI及文档CI已通过。
+**资格边界**：已知固定offer、无MITM/无Bond/无入口方法；state8是**未认证候选**，
+不是Agent批准、Paired、可信身份、实际安装、Encrypted或Bond。两只相同Native实现
+互测不能证明标准/第三方互通。没有1c03/1c05、LTK请求或加密成功事件，前后业务为
+明文；原版147/1ff缺项仍未修复。当前不修改原版111，不进行派生固件或hub操作。
 
-**新镜像防退化通过**：全部11组回归重新取得136次随机业务往返、32次超限拒绝、
-两角色严格最后fd退出，以及真实发现/连接/SSAP ExchangeInfo、值读写、UUID与发现。
-应用长度61、248、249、250、253、254、255、1024、2042均重新通过；32条burst
-业务由对端实际校验回复。两角色均实际耗尽pool5、新池满拒绝增量26/25，NOCP后
-继续提交，最终债务归零；每角色每端206个真实提交/NOCP。各轮内核抓包丢失0、
-taint0。以上136次与能力交换前后8次分别记账，不将未完成PDU算作应用往返。
-[准确源码、两端USB坐标、限定证明及未决](../docs/evidence/security-capabilities-20261015.json)。
-不把旧K494撤权/Down/期限证据自动继承为新relay的在途竞争资格；新路径的受控
-交错、迟到/重复Complete、handle复用、Agent及实际安全安装仍需继续验收。
+**离线与形式化分开**：实际relay15、Host68、Cargo222、跨语言38、工具516及严格
+clippy/内核构建通过。实际内核密码VM另验证P256/CMAC及独立OpenSSL toy派生/proof
+向量（a7c源码/1cf启动内核、无USB、专用测试模块taint4096）；它不是实机配对或标准
+向量。新Kani直接验证准确415生产转换的T侧job撤销/到期与旧物理义务；1110项生成
+检查无失败，但工具unsupported使结果仍为**NOT_PROVEN_UNSUPPORTED**。仅queue2、
+unwind80、一个70字节公钥输入，排除密码数学、真实锁/引用/USB排空及完整九消息协议。
+不把历史Kani/CBMC标量证明升级为当前完整协议证明。
+
+**原路径新镜像回归通过**：11组共136次真实随机业务往返、32次超限拒绝、两角色严格
+最后fd退出；实际发现/连接/SSAP ExchangeInfo、单值读写、UUID及发现保持。应用长度
+61、248、249、250、253、254、255、1024、2042重新通过；含32条2042字节burst。
+两角色真实pool5耗尽、新拒绝增量26/25、NOCP后继续提交，最终债务归零，每角色每端
+206次提交/NOCP。旧模式1也在同一新镜像交换角色重新通过134/135与另8次前后业务。
+136、模式2的8次及模式1的8次分别记账，未完成PDU不算交付。所有物理捕获丢失0、
+VM taint0。[准确源码、USB坐标、范围及未决](../docs/evidence/security-key-agreement-20261015.json)。
+
+下一安全子门禁为同一机制的Agent/method策略、角色绑定实际1c03/1c05安装与0011，
+再以加密后对端应用校验回复验收；不能由候选proof自动获得可信Grant。新relay受控
+撤权/Down/原期限与实际提交交错仍缺，不继承旧K494资格。动态通道、四设备及唯一
+用户态SSAP通知/指示继续并行，不等待控制面竞争全集。
+历史K1cf/U02ac受限能力交换保留[原准确报告](../docs/evidence/security-capabilities-20261015.json)。
 
 ## 保留的先前子资格（准确旧镜像）
 
 以下先前生产内核为 K `49467d4df595f8988a7ad6310b53932f37d68283`；编译服务
 U `e2a0139ff3ccbccb51f5a8606deda5a0d43688c3`，公开冷加载核对工具为
-`86e8cd81f4d18b4a26fcfca8d06832c38927f6e8`。本批无生产Runtime变更。
+`86e8cd81f4d18b4a26fcfca8d06832c38927f6e8`。该历史子资格不自动升级为当前415镜像。
 
 - **实机限定通过**：Managed release／最后控制File关闭／dup最终引用释放，各两侧
   共六组。在2042字节业务PDU实际已提交6片、1524字节后撤权，返回后无新USB提交；
@@ -126,14 +139,14 @@ CBMC311标量检查直接映射本批C consent函数，排除锁/引用/Runtime/
 
 ## 当前能力矩阵
 
-K1cf/U02ac的新回归见上；旧撤权/Down/期限资格继续绑定各自K494/Ue2a证据。
+K415/U376的新回归见上；旧撤权/Down/期限资格继续绑定各自K494/Ue2a证据。
 
 | 能力 | 已实现 | 离线/形式化范围 | 实机资格及仍缺 |
 |---|---|---|---|
 | WS73 广播扫描、建链断链 | 默认 Native 路径 | 实际入口/Host 回归 | 本批原路径回归保持；完整隔离/自然恢复仍未闭合 |
-| 普通用户业务 socket | 基础DGRAM、固定两通道、Session在途PDU/唯一分流、有限8项TX预算 | 实际Native/worker/consent限定检查；本批38跨语言/514工具检查，完整组合仍缺 | 新K1cf/U02ac取得136轮/32超限、真实软件队列及controller池满恢复、严格fd退出；完整生命周期仍缺 |
+| 普通用户业务 socket | 基础DGRAM、固定两通道、Session在途PDU/唯一分流、有限8项TX预算 | 实际Native/worker/consent限定检查；本批38跨语言/516工具检查，完整组合仍缺 | 新K415/U376取得136轮/32超限、真实软件队列及controller池满恢复、严格fd退出；完整生命周期仍缺 |
 | 用户态 SSAP | 唯一actor，ExchangeInfo、单值读写、发现、UUID | 实际codec/预算/生命周期限定检查 | 新镜像原路径保持；底层DLI PB不等于SSAP长写/分片；正向CCC/通知/指示、安全及Profile仍缺 |
-| 安全 relay | 唯一物理Session/typed1812/命令credit/票据；受保护capability-only及真实Complete/RX观察，默认Pair不支持 | 13项实际转换/跨语言通过；新增两项Kani unsupported仍未证明 | K1cf/U02ac两角色134/135及8次前后应用往返通过；原版147/1ff仍缺项；Agent、配对proof、可信安装/加密/Bond及完整竞争仍缺 |
+| 安全 relay | 唯一物理Session/typed1812/命令credit/票据；受保护capability/candidate-proof及真实Complete/RX观察，默认Pair不支持 | 15项实际转换/跨语言通过；新job Kani unsupported仍未证明 | K415/U376两角色134..142及8次前后明文应用往返通过；旧模式另8次；原版147/1ff仍缺项；Agent、可信安装/加密/Bond及完整竞争仍缺 |
 | 应用权限与扫描 | controller scan RPC显式管理语义；可选sparklink-apps仅领取通道fd | XML白名单/实际调用迁移与严格daemon测试 | apps-only身份尚未实机验收；共享扫描租约/完整按应用策略仍缺，控制组caps0回归不能代替 |
 | 设备与daemon生命周期 | per-controller Runtime、epoch撤销、有限工作/期限；单进程daemon | 当前限定模型和实际取消/清理回归 | 六组begun撤权子门禁通过；actor不是进程隔离；不承诺跨daemon崩溃存活；完整组合仍缺 |
 | 长包/真实credit压力/多通道/四设备业务 | 有界PB、Session持有begun operation、8项包含busy、原期限 | 游标/consent限定证明保持；software与controller credit分别表达 | 所列长度及真实软件背压通过；两角色burst硬件池满恢复已取得；撤权/Down/期限、重复晚到NOCP/复用、动态多通道/四设备及完整DG03–12开放 |

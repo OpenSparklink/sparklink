@@ -6,15 +6,18 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-本批有限退出：K1cf/U02ac中复用唯一物理Session/relay/命令credit/票据，取得两角色
-真实134/135及交换前后普通用户业务；不提供raw relay，不宣布配对或可信安装。
-该正向子门禁已取得；原路径11组在准确新镜像重新通过136次业务/32次超限拒绝、
-两角色严格最后fd退出、真实SSAP及pool5耗尽/NOCP恢复。新池满拒绝增量26/25，
-不复用旧计数。[准确证据与未决](../docs/evidence/security-capabilities-20261015.json)。两项新增Kani
-直接映射生产转换，但工具unsupported仍未证明；不把它或全部控制竞争设为继续
-数据面/SSAP前置。下一条安全纵向链路是在同一机制中接入实际Agent授权、鲜活
-密码材料、peer proof、角色绑定安装及加密后的对端应用回复，逐项验收，禁止测试
-降级或将有限能力交换扩大为完整Pair。默认未支持入口继续NotSupported。
+本批有限退出已取得：K415/U376复用唯一物理Session/relay/命令credit/最终票据，
+原期限内两角色真实134..142、鲜活密码材料和未认证peer proof；原路径11组136次
+业务/32次超限拒绝、严格fd退出及真实SSAP/pool5恢复重新通过。旧capability-only模式
+也重新通过。[准确证据及剩余条件](../docs/evidence/security-key-agreement-20261015.json)。
+这是未认证候选proof，不是Pair/Agent/实际安装/Encrypted/Bond。实际密码VM向量、
+实际生产转换测试和形式化强度分别记录；新Kani1110生成检查存在unsupported，仍未证明。
+
+下一有限退出：同一Session接Agent/method授权与策略，角色绑定真实1c03/1c05安装、
+匹配0011，再取得加密后的普通用户对端校验回复。复用既有材料、credit、票据和relay，
+不新增Engine，不允许候选proof满足可信Grant。相关撤权/Down/原期限组合与实际提交
+门禁并行；动态多通道、四设备两组、SSAP CCC/通知/指示继续纵向推进，不等待全部
+控制面竞争或完整S5。默认未支持入口继续NotSupported。
 
 旧K494/Ud744和Ue2a的准确证据保留如下，不因新实现自动继承：
 
@@ -28,8 +31,8 @@
    两端已恢复原版并核对实际上传，原版仍失败。这个牺牲146的诊断不是生产修复。
    随后保留44/60所有旧表项的连续扩展方案在boot下载失败，尚未执行新Runtime；
    [失败与公开输出入口退役](../docs/evidence/relay-extension-boot-failure-20261015.json)保留，
-   端口1-2.1.2原版恢复未验证。先前已授权的hub操作当前权限不可用，等待权限恢复
-   或单只冷断电时继续其他工作；不得把此设备条件变成整个goal阻塞。
+   端口1-2.1.2原版恢复未验证。用户现明确要求忽略该端口；当前不操作、不恢复、不请求人工处理，
+   保留历史失败，不豁免四设备或自然恢复门禁；不得把该条件变成整个goal阻塞。
    不再重试连续填充镜像。分段加载或启动初始化修正须先明确下载器工作区/加载边界、
    段身份和可复现恢复，再作独立固件版本的实际回归，默认不改原blob。
    安全正向链路继续沿原版支持的13X消息、唯一Session/credit/ticket、实际Agent批准、
@@ -48,7 +51,7 @@
    上述撤权/直接Down/期限的限定门禁已经取得，不再追加全部控制竞争作为前置。
    唯一安全机制的首个真实协商子门禁现由K1cf/U02ac接通：SDK111支持13X、同一
    物理Session/relay转换/命令credit/提交票据、显式管理批准和完整身份/epoch。
-   后续继续实际Agent/proof/密钥安装/加密与peer业务。默认未批准
+   候选proof现已在K415/U376实测；后续继续Agent/实际密钥安装/加密与peer业务。默认未批准
    继续拒绝，不能以capability协商冒充配对或认证，不新增另一Engine。
    原期限/撤权/Down到最终提交、late/duplicate NOCP与handle复用继续按本次性质组合
    建模/实测，不阻塞动态通道、四设备两组、唯一用户态SSAP通知/指示/ACK纵向开发。

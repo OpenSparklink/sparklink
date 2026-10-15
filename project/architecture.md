@@ -331,6 +331,16 @@ controller/generation/lifetime/handle/role/address/epoch；普通通道Grant不�
 该终态仍不表示对端应用处理或可信安装。没有经验证的迟到/复用屏障时，同一物理
 lifetime不得重启交换；更换request ID不能绕过。完整Pair及其Agent策略另行接通。
 
+无MITM候选密钥协商仍归同一物理Session，不能另建每fd密码Engine。密码材料由
+Session独占；公钥验证、ECDH、CMAC及派生在IRQ/Host/gate锁外执行。执行期间保留
+物理引用，以不可复用job票据绑定原controller/generation/lifetime/epoch和原期限；
+回填再次核对Host/gate/Session，实际提交仍经原最终票据。撤权/到期后，无论密码
+运算成功或失败都不得创建新提交，也不抹去已有物理义务。错误或丢弃的材料清零；
+只读观察不得导出私钥、共享secret或候选LTK。
+无MITM协议的DH proof不是身份认证；候选派生、peer proof、真实安装、加密事件及
+应用业务回复分别表达。未完成Agent/安装的实验入口不得设置Paired/Authenticated/
+Encrypted/Bond或满足要求可信安全级别的Grant。
+
 算法基于匹配标准与实际固件支持，不猜测；算法向量、协议证明和实机安装独立。
 
 ### Bond

@@ -461,7 +461,7 @@ pub unsafe extern "C" fn slk_channel_tx_status(
     }
 }
 
-/// Explicit capability-only approval; same live Managed File and admin required.
+/// Explicit capability/candidate-proof approval; same live Managed File and admin required.
 /// No pairing, encrypted state, keys or peer acknowledgment is promised.
 /// # Safety
 /// Non-null pointers must be valid, aligned, nonoverlapping for this call.

@@ -55,29 +55,41 @@ facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合�
 输入亦NotSupported，非法输入可InvalidArgs。C旧安全入口返回-EOPNOTSUPP且不改
 输出，Python映射OSError(EOPNOTSUPP)。真实每连接安全、Agent与Bond重连仍未实现。
 
-### 实验性安全能力观察（未发布 ABI）
+### 实验性安全协商观察（未发布 ABI）
 
-K `1cf095fd1650` / 编译用户态 `02ac5ed5a76c`增加受限版本1/profile1接口：
-`SLE_SECURITY_NEGOTIATION_SUBMIT`（`0xd2`，56字节）及
-`SLE_SECURITY_NEGOTIATION_RESULT`（`0xd3`，72字节）。C导出
+K `41572aaf736d` / 编译用户态 `37666749f579`的受限版本1/profile1接口：
+`SL_IOCTL_SECURITY_NEGOTIATION_SUBMIT`（`0xd2`，56字节）及
+`SL_IOCTL_SECURITY_NEGOTIATION_RESULT`（`0xd3`，72字节）。C导出
 `slk_security_negotiation_submit/result`，Python NativeAdapter提供
 `submit_security_negotiation/security_negotiation`。默认Pair/D-Bus安全入口仍NotSupported。
 
-- 必须显式`flags=SLE_SECURITY_CAPABILITY_ONLY=1`，由CAP_NET_ADMIN与原活跃Managed
+- 必须显式选择`flags=1`（CAPABILITY_ONLY）或`2`（KEY_AGREEMENT_ONLY），不能组合；
+  由CAP_NET_ADMIN与原活跃Managed
   File调用；其他File或降权后的同一File返回EPERM。查询同样受保护，不开放原始RX或密钥。
 - generation/lifetime/request_id非零，handle为12位；精确核对role/address/type/epoch。
   timeout为1–5000ms原始总期限。仅G action2发起134、T action1先批准并回应135。
   profile/角色组合不支持返回EOPNOTSUPP；无效字段/reserved返回EINVAL；失配连接
   返回ESTALE，错误generation返回ENODEV。同lifetime再次启动返回EBUSY。
 - 本批固定offer为`03 00 00 10 00 02 02 02 02 00`，不请求MITM、Bond、OOB或分发。
-  只接受该已知offer，不承诺任意SDK/第三方配对互通，不执行后续认证或安装。
-- result state：1批准待收、2进行中、4本地观察完成、5失败、6撤销、7超时；flags
+  只接受该已知offer，不承诺任意SDK/第三方配对互通或可信身份，不执行实际安装/加密。
+- result state：1批准待收、2进行中、4能力观察完成、5失败、6撤销、7超时、8未认证候选
+  proof完成；flags
   的1/2/4分别表示实际提交、真实成功Complete、对端能力RX。state4要求flags7。
   失败不产生trusted状态；撤权后查询也失去授权。该入口不是事件历史或可靠交付API。
 - 同一物理Session/业务通道持续存在；探测后由管理者显式断链。应用fd析构不隐式
   完成安全协议。`Complete + RX`与业务应用校验/回复、配对、认证、加密、Bond分别表达。
 
 准确资格及未证明范围见[唯一资格入口](../../project/current-capabilities.md)。
+
+`flags=SECURITY_KEY_AGREEMENT_ONLY=2`（内核名带`SLE_`前缀）仅执行已知offer的
+无入口/无MITM/无Bond候选协商，复用同一Session与原1–5000ms期限。
+真实134/135后继续136/137、公钥确认/随机数及141/142 proof；state8表示内核验证
+peer proof且本地relay实际Complete已排空，flags仍仅为提交/Complete/能力RX观察。
+它不代表Agent已同意、远端身份认证、密钥安装、Encrypted或Bond；默认Pair/D-Bus
+安全入口不因此开放。私钥/共享secret/LTK无读取或注入API。同lifetime仍拒绝重启。
+C/Rust/Python的两种模式常量有实际编译契约检查；必须使用相应新库，旧库不能把
+未知state8当作成功。普通业务Grant不授予协商批准权，完整身份和Managed授权检查不变。
+历史K1cf/U02ac仅具有模式1；历史资格不自动升级为当前模式2。
 
 Kc2dd941e5784：不存在全局active/default controller。DEV_SELECT非负绑定精确
 registration，-1清此File及观察模式；dup/fork/fd传递共享File，拥有lease则EBUSY。
@@ -97,7 +109,8 @@ K6fe9696a04da 的未发布 socket v2 地址大小仍48字节。底层CAP_NET_ADM
 支持两固定key：local/remote TCID31与PI241，或local/remote TCID10与PI0；
 CMTC不交应用fd。每槽仅一个绑定，最后关闭只退休该槽；同连接lifetime重绑
 EOPNOTSUPP，无热迁移。默认slkd的普通应用OpenChannel仍只授CUTC，服务SMTC
-保留给唯一Engine，尚未取得实机SSAP资格。字段/模式不存在公开兼容承诺。
+保留给唯一Engine；当时尚未取得的SSAP资格以当前能力入口重新核对。
+字段/模式不存在公开兼容承诺。
 
 通道socket只读 `SPARKLINK_CHANNEL_INFO`（S/e0）：固定40字节、8对齐，
 version1/size40，返回controller/handle/generation/lifetime、实际有效MTU/MPS、

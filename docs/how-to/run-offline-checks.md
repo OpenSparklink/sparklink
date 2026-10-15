@@ -5,14 +5,14 @@
 
 ## 用户态检查
 
-准备当前 Rust stable 工具链；完整用户态测试还需要 `dbus-daemon`。
+使用当前保留资格构建的 Rust 1.96.1 工具链（其他版本作为独立前向兼容检查）；完整用户态测试还需要 `dbus-daemon`。
 以下命令创建私有测试总线，不部署系统服务：
 
 ```sh
-cargo fmt --all -- --check
-cargo check --workspace --all-targets --all-features
-cargo test --workspace --all-features
-cargo clippy --workspace --all-targets --all-features -- -D warnings
+cargo +1.96.1 fmt --all -- --check
+cargo +1.96.1 check --locked --workspace --all-targets --all-features
+cargo +1.96.1 test --locked --workspace --all-features
+cargo +1.96.1 clippy --locked --workspace --all-targets --all-features -- -D warnings
 ```
 
 内核 ABI 和部分工具测试需要匹配的 Linux 源码或 CI 中的固定 UAPI 提交；

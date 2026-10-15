@@ -42,8 +42,13 @@ async def main():
   result['navigation']=await js("location.pathname.endsWith('/reference/controller-events.html') && document.body.innerText.includes('GetControllerEventPosition')")
   result['table']=await js("document.querySelectorAll('table').length>=2")
   result['screenshots'].append(await shot('reference-table'))
-  await nav('tutorials/build-documentation.html');result['code_block']=await js("Array.from(document.querySelectorAll('pre')).some(p=>p.textContent.includes('uv sync --locked --only-group docs'))")
+  await nav('how-to/build-documentation.html');result['code_block']=await js("Array.from(document.querySelectorAll('pre')).some(p=>p.textContent.includes('uv sync --locked --only-group docs'))")
   result['screenshots'].append(await shot('tutorial-code'))
+  await nav('tutorials/index.html')
+  await js("Array.from(document.links).find(a=>a.href.endsWith('tutorials/first-ws73-message.html')).click();true")
+  await asyncio.sleep(.5)
+  result['product_tutorial_navigation']=await js("location.pathname.endsWith('/tutorials/first-ws73-message.html') && document.body.innerText.includes('channel-peer') && document.body.innerText.includes('channel-roundtrip') && document.body.innerText.includes('受限教程草案')")
+  result['screenshots'].append(await shot('product-tutorial'))
   await nav('search.html?q=ControllerEventGet')
   found=False
   for _ in range(20):
@@ -95,7 +100,7 @@ async def main():
    redirects[old]=ok
   result['legacy_html_redirects']=all(redirects.values())
   result['redirect_targets']=redirects
-  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','navigation','table','code_block','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','migration_topic_guide','legacy_html_redirects']) else 'PARTIAL'
+  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','navigation','table','code_block','product_tutorial_navigation','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','migration_topic_guide','legacy_html_redirects']) else 'PARTIAL'
   (OUT/'report.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['screenshots','browser']},indent=2))
   await call('session.end',{})
   if result['status']!='PASS':raise SystemExit(1)

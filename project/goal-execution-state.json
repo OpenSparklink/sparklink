@@ -1103,7 +1103,10 @@
     "issues": [
       "OpenSparklink/linux#19",
       "OpenSparklink/sparklink#8"
-    ]
+    ],
+    "content_priority": "Product reader tasks first; contributor build guide and evidence audits are not product tutorials",
+    "classification_audit": "docs/evidence/documentation-content-review-20261016.json",
+    "tutorial_status": "Limited prepared-VM short-message draft uses qualified source commands; whole authored flow and from-zero VM/discovery/connection not replayed or complete"
   },
   "agent_issue_receipt": "docs/evidence/agent-policy-issues-20261016.json"
 }

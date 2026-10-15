@@ -49,7 +49,11 @@
     "docs/USB_DESCRIPTOR_CAPABILITY_CLEANUP.md": "history/cleanup/usb-descriptor-capability-cleanup.md",
     "docs/IMPLEMENTATION_HISTORY_PRE_20261013.md": "history/plans/implementation-history-pre-20261013.md",
     "docs/GOAL_EXECUTION_STATE.json": "project/goal-execution-state.json",
-    "docs/ARCHITECTURE_ADOPTION_20261013.json": "history/architecture/architecture-adoption-20261013.json"
+    "docs/ARCHITECTURE_ADOPTION_20261013.json": "history/architecture/architecture-adoption-20261013.json",
+    "docs/tutorials/build-documentation.md": "docs/how-to/build-documentation.md",
+    "docs/tutorials/read-real-ws73-result.md": "docs/how-to/check-business-roundtrip.md",
+    "docs/how-to/prepare-vm-gate.md": "docs/reference/vm-gate-inputs.md",
+    "docs/how-to/diagnose-security-relay.md": "docs/history/relay-reference-diagnostic.md"
   },
   "canonical_projections": {
     "project/architecture.md": "docs/explanation/architecture.md",
@@ -59,6 +63,88 @@
   "legacy_html_redirects": {
     "ARCHITECTURE.html": "explanation/architecture.html",
     "IMPLEMENTATION_PLAN.html": "project/implementation-plan.html",
-    "CURRENT_CAPABILITIES.html": "project/current-capabilities.html"
-  }
+    "CURRENT_CAPABILITIES.html": "project/current-capabilities.html",
+    "tutorials/build-documentation.html": "../how-to/build-documentation.html",
+    "tutorials/read-real-ws73-result.html": "../how-to/check-business-roundtrip.html",
+    "how-to/prepare-vm-gate.html": "../reference/vm-gate-inputs.html",
+    "how-to/diagnose-security-relay.html": "../history/relay-reference-diagnostic.html"
+  },
+  "content_reclassifications_20261016": [
+    {
+      "original": "docs/tutorials/build-documentation.md",
+      "destination": "docs/how-to/build-documentation.md",
+      "reviewed_source_commit": "278ff966e434ec6d51f769632da89da05851ad00",
+      "original_inventory": {
+        "path": "docs/tutorials/build-documentation.md",
+        "title": "构建并浏览第一份文档",
+        "section": "tutorials",
+        "status": "reader-page",
+        "reader": "初学者",
+        "purpose": "构建并浏览第一份文档",
+        "validity": "当前导航／读者任务；历史资格以原始源码身份为准",
+        "applicable_version": "dc040002555c17cba3594f2857b3d441409d70d6",
+        "authority": "所链接原文件、实际源码及 project/current-capabilities.md",
+        "disposition": "原路径保留；已编排读者任务，不复制架构／实施计划／资格",
+        "source_sha256": "6cfdba619ec955a3bfd8aec5201379ff05fbb3ab386739b8cd4e0abc752cac0a",
+        "publication": "html"
+      }
+    },
+    {
+      "original": "docs/tutorials/read-real-ws73-result.md",
+      "destination": "docs/how-to/check-business-roundtrip.md",
+      "reviewed_source_commit": "278ff966e434ec6d51f769632da89da05851ad00",
+      "original_inventory": {
+        "path": "docs/tutorials/read-real-ws73-result.md",
+        "title": "读懂一次真实双 WS73 闭环",
+        "section": "tutorials",
+        "status": "reader-page",
+        "reader": "初学者",
+        "purpose": "读懂一次真实双 WS73 闭环",
+        "validity": "当前导航／读者任务；历史资格以原始源码身份为准",
+        "applicable_version": "dc040002555c17cba3594f2857b3d441409d70d6",
+        "authority": "所链接原文件、实际源码及 project/current-capabilities.md",
+        "disposition": "原路径保留；已编排读者任务，不复制架构／实施计划／资格",
+        "source_sha256": "8dead6e9301c42524ca8fd5b55c170f837a899d23376941082f21f2f2ce9ac19",
+        "publication": "html"
+      }
+    },
+    {
+      "original": "docs/how-to/prepare-vm-gate.md",
+      "destination": "docs/reference/vm-gate-inputs.md",
+      "reviewed_source_commit": "278ff966e434ec6d51f769632da89da05851ad00",
+      "original_inventory": {
+        "path": "docs/how-to/prepare-vm-gate.md",
+        "title": "为 WS73 回归准备隔离 VM",
+        "section": "how-to",
+        "status": "reader-page",
+        "reader": "执行具体任务的开发者",
+        "purpose": "为 WS73 回归准备隔离 VM",
+        "validity": "当前导航／读者任务；历史资格以原始源码身份为准",
+        "applicable_version": "dc040002555c17cba3594f2857b3d441409d70d6",
+        "authority": "所链接原文件、实际源码及 project/current-capabilities.md",
+        "disposition": "原路径保留；已编排读者任务，不复制架构／实施计划／资格",
+        "source_sha256": "c844df5ae34523f538b40fccc4b0be75eaf5bcd2aec289993d1d14f8e0887a03",
+        "publication": "html"
+      }
+    },
+    {
+      "original": "docs/how-to/diagnose-security-relay.md",
+      "destination": "docs/history/relay-reference-diagnostic.md",
+      "reviewed_source_commit": "278ff966e434ec6d51f769632da89da05851ad00",
+      "original_inventory": {
+        "path": "docs/how-to/diagnose-security-relay.md",
+        "title": "定位真实 WS73 安全 relay 交付失败",
+        "section": "how-to",
+        "status": "current",
+        "reader": "维护者",
+        "purpose": "复现并区分真实Complete与对端交付失败",
+        "validity": "诊断；不是配对资格",
+        "applicable_version": "K8cb44/Uc590及工具输入hash",
+        "authority": "project/current-capabilities.md及实际测试源码",
+        "disposition": "VM-only独立任务；不复制受限输入",
+        "source_sha256": "584ec6099f5d338de56ac860a97612cb22ddd8c5643e8a5a21f6e946e31f7bf9",
+        "publication": "html"
+      }
+    }
+  ]
 }

@@ -2,7 +2,7 @@
 
 <!-- documentation-scope: 20261014 -->
 > **阅读范围：混合资料：有效语义与历史记录。** 隔离客体准备和旧开发门禁。
-> [主题归纳与去向](../../../docs/project/uppercase-document-guide.md)；[推荐入口](../../../docs/how-to/prepare-vm-gate.md)。
+> [主题归纳与去向](../../../docs/project/uppercase-document-guide.md)；[推荐入口](../../../docs/reference/vm-gate-inputs.md)。
 > 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](../../current-capabilities.md) 为准。
 
 `tools/ws73_target.py` 创建本机 KVM 客体：运行选定内核、原生 WS73 驱动、系统

@@ -7,7 +7,6 @@
 
 current-capabilities
 implementation-plan
-documentation-migration
 uppercase-document-guide
 ```
 

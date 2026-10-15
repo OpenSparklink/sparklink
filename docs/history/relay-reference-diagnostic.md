@@ -1,12 +1,16 @@
-# 定位真实 WS73 安全 relay 交付失败
+# 历史实验：SDK111 relay 与 reference Host 对照
 
-这是维护者诊断，不是已通过的配对教程。当前能力见
-[唯一资格入口](../../project/current-capabilities.md)；批准配对、可信安装、加密业务和
-Bond 均未取得资格。仅在隔离 VM 中运行，主机不安装驱动、服务或修改权限。
+这是 K2d5d/U3a2c 的固定版本故障实验与当时操作记录，供维护者复核历史失败，
+**不是当前推荐的安全使用指南**，也不是初学者教程。下文命令和“本批”只指当时版本。
+当前已新增显式 Agent 与 SDK111 无 MITM 限定安装/业务子门禁，见
+[唯一资格入口](../../project/current-capabilities.md)和
+[准确 Agent 报告](../evidence/agent-policy-real-matrix-20261015.json)。
+这不等于通用 Pair、身份认证、可信 Grant 或 Bond。旧失败/限制原样保留，不追记 PASS。
+所有实验仍 VM-only，不允许根据历史步骤安装宿主实验驱动或扩大权限。
 
 ## 前置条件与版本
 
-- 已用现有 [VM 环境指南](prepare-vm-gate.md) 制作含签名 WS73 模块、普通用户
+- 已用现有 [VM 环境指南](../reference/vm-gate-inputs.md) 制作含签名 WS73 模块、普通用户
   slctl/slkd、捕获及 SDK111 输入的私有 prepared 镜像。本批运行镜像 K `2d5d5900b8ff`、
   编译服务 U `3a2cf7effbe1`；其他提交须重新回归，不能继承本批结果。
 - 三只可写且未由主机驱动或其他 VM 占用的真实 WS73：Native 目标、Native 同行及

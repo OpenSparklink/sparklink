@@ -2,7 +2,7 @@
 
 <!-- documentation-scope: 20261014 -->
 > **阅读范围：混合资料：有效语义与历史记录。** 参考 Host 的 guest 发现对照与故障追踪。
-> [主题归纳与去向](../../../docs/project/uppercase-document-guide.md)；[推荐入口](../../../docs/how-to/prepare-vm-gate.md)。
+> [主题归纳与去向](../../../docs/project/uppercase-document-guide.md)；[推荐入口](../../../docs/reference/vm-gate-inputs.md)。
 > 原文中的源码、失败、PASS 与命令仅适用于其记录版本；当前资格以 [CURRENT_CAPABILITIES](../../current-capabilities.md) 为准。
 
 本对照只运行在隔离 VM。原 `libws73-usb` f4d85d0 源码和 server/client

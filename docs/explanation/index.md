@@ -5,9 +5,9 @@
 ```{toctree}
 :maxdepth: 1
 
-documentation-model
-qualification-boundaries
 architecture
+qualification-boundaries
+documentation-model
 openharmony-dli-reference
 ```
 

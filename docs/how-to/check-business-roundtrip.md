@@ -46,7 +46,7 @@ manifest。记录内核、编译服务、测试工具的完整提交；三者可
 人工拔插、hub 切电和 QMP 操作记录为干预，不记作自然恢复。
 
 [理解证据边界](../explanation/qualification-boundaries.md)、
-[VM 输入准备](prepare-vm-gate.md)、[历史数据面规划](../../history/connections/data-socket-vertical-plan-20261012.md)。
+[VM 输入准备](../reference/vm-gate-inputs.md)、[历史数据面规划](../../history/connections/data-socket-vertical-plan-20261012.md)。
 
 
 ## 核对begun PDU最后fd关闭的隔离证据
@@ -101,3 +101,11 @@ python3 tools/ws73_credit_observation.py --run-folder SAVED_VM_RUN --output NEW_
 协商及SSAP包也纳入区间账，不把总包数描述成纯业务条数。旧manifest保持原范围；
 补充报告记录其hash及限定假设。此检查仍不能证明NOCP硬件真实性、重复晚到、
 复用屏障或自然恢复。
+
+## 找到准确的历史练习材料
+
+旧“读懂闭环”页属于测试人员核对证据的任务，不是操作设备的初学者教程。
+原 Kae5b/U967 的 [40 轮短消息报告](../evidence/ws73-standard-driver-move-short-repeat-20261013.json)
+和 [249 字节报告](../evidence/ws73-standard-driver-move-249-boundary-20261013.json)
+在此直接保留入口，不要求从不断更新的当前资格页反查。原始材料不可取得时只能
+审阅摘要与 hash，不能声称复算或重现。本页也不等于首次设备操作教程。

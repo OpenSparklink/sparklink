@@ -74,9 +74,9 @@
 | 原文件 | 类型 | 内容摘要／处理 | 推荐入口 |
 |---|---|---|---|
 | [WS73_BOARD_CONFIGURATION](../../project/reference/environment/ws73-board-configuration.md) | 混合 | SDK 板级配置导出、候选与真实资格的区别 | [阅读入口](../how-to/export-board-inputs.md) |
-| [WS73_TARGET_ENVIRONMENT](../../project/reference/environment/ws73-target-environment.md) | 混合 | 隔离客体准备和旧开发门禁 | [阅读入口](../how-to/prepare-vm-gate.md) |
-| [WS73_NATIVE_LAB](../../history/environment/ws73-native-lab.md) | 历史 | 实验内核产物、空 USB VM 与旧主机部署设计 | [阅读入口](../how-to/prepare-vm-gate.md) |
-| [WS73_REFERENCE_DISCOVERY_LAB](../../project/reference/environment/ws73-reference-discovery-lab.md) | 混合 | 参考 Host 的 guest 发现对照与故障追踪 | [阅读入口](../how-to/prepare-vm-gate.md) |
+| [WS73_TARGET_ENVIRONMENT](../../project/reference/environment/ws73-target-environment.md) | 混合 | 隔离客体准备和旧开发门禁 | [阅读入口](../reference/vm-gate-inputs.md) |
+| [WS73_NATIVE_LAB](../../history/environment/ws73-native-lab.md) | 历史 | 实验内核产物、空 USB VM 与旧主机部署设计 | [阅读入口](../reference/vm-gate-inputs.md) |
+| [WS73_REFERENCE_DISCOVERY_LAB](../../project/reference/environment/ws73-reference-discovery-lab.md) | 混合 | 参考 Host 的 guest 发现对照与故障追踪 | [阅读入口](../reference/vm-gate-inputs.md) |
 
 ### 广播、发现与并行空口
 

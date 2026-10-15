@@ -1,21 +1,33 @@
 # 操作指南
 
-从已经明确的任务出发。实机操作必须在隔离 VM 内进行，且使用当前资格入口中
-匹配的源码和产物；历史记录不能替代当前镜像的验收。
+按你的任务选择；本页区分设备使用、集成测试与项目贡献。实机和实验驱动始终 VM-only。
+
+## 使用设备或编写应用
+
+先看[实验 VM 中的双设备消息教程](../tutorials/first-ws73-message.md)与
+[当前能力和限制](../../project/current-capabilities.md)。完整安装、首次发现/建链、
+通用应用与 SSAP 使用指南仍待补齐，不能用下面的测试任务冒充。
+
+## 集成和测试
 
 ```{toctree}
 :maxdepth: 1
 
-write-documentation
-run-offline-checks
 export-board-inputs
-prepare-vm-gate
-capture-and-check-discovery
 capture-controller-snoop
+capture-and-check-discovery
 check-business-roundtrip
-diagnose-security-relay
 ```
 
-原始混合文档仍保留历史记录；新任务页逐篇提取操作契约，后续按
-[迁移计划](../project/documentation-migration.md) 拆出纯步骤和历史证据。
+[VM 输入契约](../reference/vm-gate-inputs.md)是参考，不能代替从源码制作 VM 的指南。
+[旧 relay reference 实验](../history/relay-reference-diagnostic.md)仅用于历史复核。
 
+## 贡献项目
+
+```{toctree}
+:maxdepth: 1
+
+build-documentation
+write-documentation
+run-offline-checks
+```

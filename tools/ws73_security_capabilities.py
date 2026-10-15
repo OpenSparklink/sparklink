@@ -34,7 +34,7 @@ def denied(fd,command,value):
     raise ValueError('unauthorized/invalid limited security request succeeded')
 
 
-def ordinary_denial(writer,req):
+def ordinary_denial(writer,req,cancel_pending=False):
     rd,wr=os.pipe2(os.O_CLOEXEC);pid=os.fork()
     if pid==0:
         try:
@@ -46,6 +46,9 @@ def ordinary_denial(writer,req):
                         if e.errno!=errno.EBADF:raise
             os.setgroups([]);os.setgid(1002);os.setuid(1000)
             out=dict(credentials=credentials(),submit_errno=denied(writer.fileno(),SUBMIT,req),result_errno=denied(writer.fileno(),RESULT,Result(version=1,generation=req.generation,lifetime=req.lifetime,handle=req.handle,request_id=1)))
+            if cancel_pending:
+                from ws73_security_cancel import CANCEL,request as cancel_request
+                out['cancel_errno']=denied(writer.fileno(),CANCEL,cancel_request(req))
             os.write(wr,json.dumps(out).encode());os._exit(0)
         except BaseException:os._exit(1)
     os.close(wr);reaped=False
@@ -67,9 +70,9 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
     row=dict(status='STARTING',before_links=[bytes(a.link_snapshot()).hex() for a in observers],before_ready=[bytes(a.snapshot()).hex() for a in observers],management_before=[bytes(a.management_status()).hex() for a in observers],negative=[],start_wall_ns=time.time_ns())
     r['security_capabilities']=row;save();links=[decode(SleLinkSnapshot,v).links[0] for v in row['before_links']]
     if links[i].role!=0 or links[p].role!=1:raise ValueError('actual G Create and T response roles required')
-    agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);wanted=9 if encryption else 8 if agreement else 4
-    requests=[request(s,l,agreement,encryption) for s,l in zip(snapshots,links)]
-    row['requests']=[bytes(v).hex() for v in requests];row['ordinary_denial']=ordinary_denial(writers[i],requests[i]);save()
+    agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);cancel_pending=r.get('security_cancel_pending',False);wanted=9 if encryption else 8 if agreement else 4
+    requests=[request(s,l,agreement,encryption or cancel_pending) for s,l in zip(snapshots,links)]
+    row['requests']=[bytes(v).hex() for v in requests];row['ordinary_denial']=ordinary_denial(writers[i],requests[i],cancel_pending);save()
     for n in [i,p]:
         good=requests[n]
         for kind,want in [('generation',errno.ENODEV),('lifetime',errno.ESTALE),('address',errno.ESTALE),('role',errno.ESTALE),('profile',errno.EOPNOTSUPP),('flags',errno.EINVAL),('reserved',errno.EINVAL)]:
@@ -88,15 +91,19 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
             actual=denied(observers[n].fileno(),command,value);row['negative'].append(dict(index=n,kind='nonowner_submit' if command==SUBMIT else 'nonowner_result',errno=actual));save()
             if actual!=errno.EPERM:raise ValueError('same-controller admin observer is not the Managed author')
     row['t_arm_before_wall_ns']=time.time_ns();row['t_arm_before_monotonic_ns']=time.monotonic_ns();writers[p].submit_security_negotiation(requests[p]);row['t_armed']=bytes(writers[p].security_negotiation(links[p].lifetime,links[p].handle,1)).hex();save()
-    row['g_start_before_wall_ns']=time.time_ns();writers[i].submit_security_negotiation(requests[i]);deadline=time.monotonic()+5
-    while True:
-        values=[a.security_negotiation(l.lifetime,l.handle,1) for a,l in zip(writers,links)]
-        row['results']=[bytes(v).hex() for v in values];save()
-        if all(v.state==wanted for v in values):break
-        if any(v.state in [5,6,7] for v in values) or time.monotonic()>deadline:raise ValueError('actual limited security negotiation did not finish: '+str([(v.state,v.error,v.flags) for v in values]))
-        time.sleep(.005)
+    if cancel_pending:
+        from ws73_security_cancel import exercise as cancel_passive
+        cancel_passive(row,save,writers,observers,requests,links,p)
+    else:
+        row['g_start_before_wall_ns']=time.time_ns();writers[i].submit_security_negotiation(requests[i]);deadline=time.monotonic()+5
+        while True:
+            values=[a.security_negotiation(l.lifetime,l.handle,1) for a,l in zip(writers,links)]
+            row['results']=[bytes(v).hex() for v in values];save()
+            if all(v.state==wanted for v in values):break
+            if any(v.state in [5,6,7] for v in values) or time.monotonic()>deadline:raise ValueError('actual limited security negotiation did not finish: '+str([(v.state,v.error,v.flags) for v in values]))
+            time.sleep(.005)
     row['observed_wall_ns']=time.time_ns();row['observed_monotonic_ns']=time.monotonic_ns()
-    for n in [i,p]:
+    for n in ([p] if cancel_pending else [i,p]):
         again=Submit.from_buffer_copy(bytes(requests[n]));again.request_id=2
         row['negative'].append(dict(index=n,kind='same_lifetime_restart',errno=denied(writers[n].fileno(),SUBMIT,again)))
         if row['negative'][-1]['errno']!=errno.EBUSY:raise ValueError('same-life security restart lacks a proven barrier')
@@ -113,28 +120,32 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
         req=standby(snapshots[p],identifier,'scanning') if op==3 else stop(snapshots[p],identifier,op);req.operation=op;discover(p,req)
     row['scan_checked_wall_ns']=time.time_ns()
     for n in [i,p]:writers[n].release_management(leases[n],1)
-    row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers];row['end_wall_ns']=time.time_ns();row['status']='REAL_LIMITED_CAPABILITIES_PASS';r.update(status='SECURITY_CAPABILITIES_PASS',end_wall_ns=row['end_wall_ns']);verify(r);save();print('WS73_TARGET_SECURITY_CAPABILITIES_PASS',flush=True)
+    row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers];row['end_wall_ns']=time.time_ns();row['status']='REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_LIMITED_CAPABILITIES_PASS';r.update(status='SECURITY_CANCEL_PENDING_PASS' if cancel_pending else 'SECURITY_CAPABILITIES_PASS',end_wall_ns=row['end_wall_ns']);verify(r);save();print('WS73_TARGET_'+r['status'],flush=True)
 
 
 def verify(r):
-    if r.get('format_version')!=1 or r.get('status')!='SECURITY_CAPABILITIES_PASS' or r.get('case')!='release' or r.get('index') not in [0,1] or r.get('daemon_running') is not False or r.get('synthetic_support') is not False:raise ValueError('separate real limited capability gate required')
+    cancel_pending=r.get('security_cancel_pending',False)
+    if cancel_pending and (r.get('key_agreement',False) or r.get('unauthenticated_encryption',False)):raise ValueError('separate passive cancellation gate required')
+    if r.get('format_version')!=1 or r.get('status')!=('SECURITY_CANCEL_PENDING_PASS' if cancel_pending else 'SECURITY_CAPABILITIES_PASS') or r.get('case')!='release' or r.get('index') not in [0,1] or r.get('daemon_running') is not False or r.get('synthetic_support') is not False:raise ValueError('separate real limited capability gate required')
     if r.get('unauthenticated_encryption',False) and r.get('key_agreement') is not True:raise ValueError('encryption cannot bypass candidate proof gate')
     row=r['security_capabilities'];i=r['index'];g=r['channel_grant'];agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);snapshots=[setup(v,n) for n,v in enumerate(r['initial_snapshots'])]
-    if row['status']!='REAL_LIMITED_CAPABILITIES_PASS' or len(snapshots)!=2:raise ValueError('two actual controllers required')
+    if row['status']!=('REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_LIMITED_CAPABILITIES_PASS') or len(snapshots)!=2:raise ValueError('two actual controllers required')
     for n in [0,1]:
         before=decode(SleLinkSnapshot,row['before_links'][n]);after=decode(SleLinkSnapshot,row['after_links'][n])
         if before.flags!=1 or before.count!=1 or bytes(before)!=bytes(after) or before.generation!=snapshots[n].generation:raise ValueError('same physical lifetime must survive limited exchange')
         link=before.links[0];req=decode(Submit,row['requests'][n]);owner=g['owners'][n]
-        if (req.version,req.profile,req.flags,req.timeout_ms,req.request_id,req.generation,req.lifetime,req.handle,req.role,req.action,req.address_type)!=(1,1,3 if encryption else 2 if agreement else 1,5000,1,before.generation,link.lifetime,link.handle,0 if n==i else 1,2 if n==i else 1,link.address_type) or bytes(req.address)!=bytes(link.address) or any(req.reserved):raise ValueError('exact approved physical reference required')
+        if (req.version,req.profile,req.flags,req.timeout_ms,req.request_id,req.generation,req.lifetime,req.handle,req.role,req.action,req.address_type)!=(1,1,3 if encryption or cancel_pending else 2 if agreement else 1,5000,1,before.generation,link.lifetime,link.handle,0 if n==i else 1,2 if n==i else 1,link.address_type) or bytes(req.address)!=bytes(link.address) or any(req.reserved):raise ValueError('exact approved physical reference required')
         if (owner['generation'],owner['lifetime'],owner['handle'],owner['lease'])!=(req.generation,req.lifetime,req.handle,r['leases'][n]):raise ValueError('business must use same original Session/lease')
-        result=decode(Result,row['results'][n])
-        if (result.version,result.profile,result.generation,result.lifetime,result.handle,result.request_id,result.role,result.state,result.error,result.status,result.flags)!=(1,1,req.generation,req.lifetime,req.handle,1,req.role,9 if encryption else 8 if agreement else 4,0,0,7) or bytes(result.local_caps)!=OFFER or bytes(result.peer_caps)!=OFFER or any(result.reserved):raise ValueError('real local Complete and peer capability bytes required, never trusted state')
+        if not cancel_pending:
+            result=decode(Result,row['results'][n])
+            if (result.version,result.profile,result.generation,result.lifetime,result.handle,result.request_id,result.role,result.state,result.error,result.status,result.flags)!=(1,1,req.generation,req.lifetime,req.handle,1,req.role,9 if encryption else 8 if agreement else 4,0,0,7) or bytes(result.local_caps)!=OFFER or bytes(result.peer_caps)!=OFFER or any(result.reserved):raise ValueError('real local Complete and peer capability bytes required, never trusted state')
         for key in ['before_ready','after_ready']:
             ready=decode(SleControllerSnapshot,row[key][n])
             if ready.flags!=1 or ready.generation!=req.generation:raise ValueError('original registration Ready must remain')
         if row['management_before'][n]!=row['management_after'][n]:raise ValueError('limited exchange must retain original author')
         query(row['management_after'][n],req.generation,1);query(row['management_cleaned'][n],req.generation,0)
         expected={'generation':errno.ENODEV,'lifetime':errno.ESTALE,'address':errno.ESTALE,'role':errno.ESTALE,'profile':errno.EOPNOTSUPP,'flags':errno.EINVAL,'reserved':errno.EINVAL,'nonowner_submit':errno.EPERM,'nonowner_result':errno.EPERM,'same_lifetime_restart':errno.EBUSY}
+        if cancel_pending and n==i:expected.pop('same_lifetime_restart')
         negatives=[v for v in row['negative'] if v['index']==n]
         if len(negatives)!=len(expected) or {v['kind']:v['errno'] for v in negatives}!=expected:raise ValueError('complete exact kernel authority/reference/restart denials required')
         worker=g['workers'][n]
@@ -151,10 +162,16 @@ def verify(r):
     if len(row['down'])!=2 or any(e['event'] not in [5,0x1405] for e in row['down']):raise ValueError('both actual cleanup Down events required')
     cleanup=decode(SleConnectionResult,row['cleanup_result']);owner=g['owners'][i]
     if (cleanup.version,cleanup.profile,cleanup.state,cleanup.operation,cleanup.generation,cleanup.request_id,cleanup.handle,cleanup.flags)!=(1,1,4,2,owner['generation'],950,owner['handle'],7) or any([cleanup.error,cleanup.fault_error,cleanup.command_status,cleanup.outcome_status,*cleanup.reserved]):raise ValueError('real successful physical cleanup required')
+    if cancel_pending:
+        from ws73_security_cancel import verify as verify_cancel
+        verify_cancel(row,[decode(Submit,v) for v in row['requests']],1-i)
     return row
 
 
 def corroborate(r,capture):
+    if r.get('security_cancel_pending',False):
+        from ws73_security_cancel import corroborate as cancel_corroborate
+        return cancel_corroborate(r,capture)
     if r.get('key_agreement',False):
         from ws73_key_agreement import corroborate as agreement_corroborate
         return agreement_corroborate(r,capture)

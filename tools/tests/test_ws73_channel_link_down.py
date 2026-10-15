@@ -72,7 +72,7 @@ class DirectLinkDown(unittest.TestCase):
         self.assertFalse(p['handle_reuse_qualified'])
 
     def test_revoke_is_not_physical_down_and_old_epoch_cannot_change(self):
-        for kind in ['lease','generation','lifetime','privileged','success','direction','witness','blocked_error','result_operation']:
+        for kind in ['lease','generation','lifetime','privileged','success','direction','witness','blocked_error','event_kind','event_count','result_operation']:
             r,_=fixture();d=r['data_link_down']
             if kind=='lease':d['management_after'][0]=d['management_cleaned'][0]
             elif kind=='generation':d['ready_after'][0]=d['ready_after'][1]
@@ -83,6 +83,8 @@ class DirectLinkDown(unittest.TestCase):
                 a=Address.from_buffer_copy(bytes.fromhex(r['channel_grant']['owners'][0]['address']));a.directions=1;r['channel_grant']['owners'][0]['address']=bytes(a).hex()
             elif kind=='witness':r['channel_grant']['blocking_witness'][0]['syscall']=0
             elif kind=='blocked_error':d['blocked_result']['errno']=errno.EACCES
+            elif kind=='event_kind':d['down'][0]['event']=0x14
+            elif kind=='event_count':d['down'].pop()
             else:
                 result=decode(SleConnectionResult,d['result']);result.operation=1;d['result']=bytes(result).hex()
             with self.subTest(kind=kind),self.assertRaises(ValueError):verify(r)

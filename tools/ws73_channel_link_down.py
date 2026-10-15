@@ -60,7 +60,7 @@ def verify(r):
         raise ValueError('explicit pre-daemon real direct-Down gate required')
     row=r['data_link_down'];g=r['channel_grant'];i=r['index']
     snapshots=[setup(raw,n) for n,raw in enumerate(r['initial_snapshots'])]
-    if len(snapshots)!=2 or row['status']!='ACTUAL_LINK_DOWN_PASS':raise ValueError('two original controllers required')
+    if len(snapshots)!=2 or row['status']!='ACTUAL_LINK_DOWN_PASS' or len(row['down'])!=2 or any(e['event'] not in [5,0x1405] for e in row['down']):raise ValueError('two original controllers and physical Down events required')
     for n in [0,1]:
         for key in ['management_before','management_after']:query(row[key][n],snapshots[n].generation,1)
         if row['management_after'][n]!=row['management_before'][n]:raise ValueError('Disconnect must retain both original Managed leases')
@@ -99,7 +99,7 @@ def verify(r):
 
 def corroborate(r,capture):
     row=verify(r);g=r['channel_grant'];i=r['index'];sdus,legs=business_evidence(g,r,capture)
-    usb=r['usb'][i];owner=g['owners'][i];same=lambda v,n: (v['bus'],v['device'])==(r['usb'][n]['bus'],r['usb'][n]['device'])
+    owner=g['owners'][i];same=lambda v,n: (v['bus'],v['device'])==(r['usb'][n]['bus'],r['usb'][n]['device'])
     commands=[c for c in capture['commands'] if same(c,i) and c['opcode']==0x1403 and row['submit_before_wall_ns']<=c['wall_ns']<=row['checks_after_wall_ns']]
     if len(commands)!=1 or commands[0]['params']!=(owner['handle'].to_bytes(2,'little')+b'\x13').hex() or not commands[0].get('completion'):raise CaptureError('one actual exact Disconnect USB submission required')
     statuses=[e for e in capture['native_events'] if same(e,i) and e['event']==1 and bytes.fromhex(e['params'])[:2]==b'\x03\x14' and commands[0]['wall_ns']<=e['wall_ns']<=row['checks_after_wall_ns']]

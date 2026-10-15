@@ -112,7 +112,8 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
     row['observed_wall_ns']=time.time_ns();row['observed_monotonic_ns']=time.monotonic_ns()
     for n in ([p] if cancel_pending else [i,p]):
         again=Submit.from_buffer_copy(bytes(requests[n]));again.request_id=2
-        row['negative'].append(dict(index=n,kind='same_lifetime_restart',errno=denied(writers[n].fileno(),SUBMIT,again)))
+        retry_before=time.monotonic_ns();again.deadline_monotonic_ns=retry_before+5_000_000_000
+        row['negative'].append(dict(index=n,kind='same_lifetime_restart',input=bytes(again).hex(),before_monotonic_ns=retry_before,errno=denied(writers[n].fileno(),SUBMIT,again)))
         if row['negative'][-1]['errno']!=errno.EBUSY:raise ValueError('same-life security restart lacks a proven barrier')
     grant.exchange('after_capabilities');row['after_links']=[bytes(a.link_snapshot()).hex() for a in observers];row['after_ready']=[bytes(a.snapshot()).hex() for a in observers];row['management_after']=[bytes(a.management_status()).hex() for a in observers];save()
     cleanup=bound_disconnect(snapshots[i],links[i],950);row['cleanup_input']=bytes(cleanup).hex();row['cleanup_before_wall_ns']=time.time_ns();writers[i].submit_connection(cleanup);row['down']=outcomes('down',[5,0x1405]);row['cleanup_after_wall_ns']=time.time_ns()
@@ -161,6 +162,9 @@ def verify(r):
         if cancel_pending and n==i:expected.pop('same_lifetime_restart')
         negatives=[v for v in row['negative'] if v['index']==n]
         if len(negatives)!=len(expected) or {v['kind']:v['errno'] for v in negatives}!=expected:raise ValueError('complete exact kernel authority/reference/restart denials required')
+        if original_deadline and n!=i:
+            retry=next(v for v in negatives if v['kind']=='same_lifetime_restart');attempt=decode(Submit,retry['input']);expected=Submit.from_buffer_copy(bytes(req));expected.request_id=2;expected.deadline_monotonic_ns=retry['before_monotonic_ns']+5_000_000_000
+            if retry['before_monotonic_ns']<row['observed_monotonic_ns'] or bytes(attempt)!=bytes(expected):raise ValueError('same-life restart must be tested with a fresh valid input budget')
         worker=g['workers'][n]
         if worker['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker['credentials']['caps'].values()) or worker['original_errno']!=errno.EBADF:raise ValueError('ordinary business application required')
     armed=decode(Result,row['t_armed']);t_req=decode(Submit,row['requests'][1-i])

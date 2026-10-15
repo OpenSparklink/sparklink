@@ -43,8 +43,9 @@ class PassiveCancellation(unittest.TestCase):
         row=r['security_capabilities'];row.update(status='REAL_SECURITY_ORIGINAL_DEADLINE_PASS',policy_wait_start_ns=170,policy_wait_end_ns=2_000_000_170,t_arm_before_monotonic_ns=2_000_000_171,observed_monotonic_ns=5_000_000_180)
         out=decode(Result,row['results'][1]);out.state=7;out.error=-errno.ETIMEDOUT
         row['results'][1]=bytes(out).hex();row['cancel'].update(expired_before_cancel=bytes(out).hex(),observations=[bytes(out).hex()]*2)
+        retry=next(v for v in row['negative'] if v['kind']=='same_lifetime_restart');fresh=decode(Submit,row['requests'][1]);fresh.request_id=2;fresh.deadline_monotonic_ns=row['observed_monotonic_ns']+5_000_000_000;retry.update(input=bytes(fresh).hex(),before_monotonic_ns=row['observed_monotonic_ns'])
         self.assertEqual(corroborate(r,c)['status'],'REAL_SECURITY_ORIGINAL_DEADLINE_CORROBORATED')
-        for kind in ['not_expired','reset_budget','no_policy_wait','cancel_overwrites_timeout']:
+        for kind in ['not_expired','reset_budget','no_policy_wait','cancel_overwrites_timeout','expired_restart_input']:
             with self.subTest(kind=kind):
                 import copy
                 bad=copy.deepcopy(r);value=bad['security_capabilities']
@@ -52,6 +53,8 @@ class PassiveCancellation(unittest.TestCase):
                 elif kind=='reset_budget':
                     request_value=decode(Submit,value['requests'][1]);request_value.deadline_monotonic_ns+=2_000_000_000;value['requests'][1]=bytes(request_value).hex()
                 elif kind=='no_policy_wait':value['policy_wait_end_ns']=171
+                elif kind=='expired_restart_input':
+                    item=next(v for v in value['negative'] if v['kind']=='same_lifetime_restart');item['input']=value['requests'][1]
                 else:value['cancel']['expired_before_cancel']=value['t_armed']
                 with self.assertRaises(ValueError):verify(bad)
 

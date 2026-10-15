@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-2.0-only
-"""Build an isolated SDK111 RAM table diagnostic, never a default firmware fix.
+"""Audit the retired contiguous SDK111 RAM table plan; emit no firmware.
 
 The original 44 packet and 60 dispatch entries are copied intact. Reserve the
 last 4 KiB of the firmware's RAM pool for extended copies, instead of placing
 them in BSS or sacrificing type146. Reduced pool capacity and all hardware
-effects need independent qualification. No USB, flash, install or SDK mutation.
+effects need independent qualification. The actual contiguous upload timed out
+before completing and subsequent enumeration failed. Downloader workspace
+exclusion is not established: generating this image is deliberately disabled.
+No USB, flash, install or SDK mutation.
 """
 import argparse
 import hashlib
@@ -28,7 +31,7 @@ def digest(data):
 
 
 def _extend_payload(original):
-    """Actual transformation, separately testable without redistributing SDK."""
+    """Historical failed transformation, retained only for regression/audit."""
     if len(original) != PAYLOAD_SIZE:
         raise ValueError('exact original111 payload size required')
     checks = [
@@ -77,7 +80,7 @@ def _extend_payload(original):
     if any(a != b and n not in allowed for n,(a,b) in enumerate(zip(original,result))):
         raise ValueError('unexpected original payload mutation')
     return bytes(result), dict(
-        status='VM_DIAGNOSTIC_EXTENSION_NOT_RELEASED',
+        status='RETIRED_CONTIGUOUS_PLAN_BOOT_FAILURE',
         packet_table=dict(address=packet_address, old_count=44, new_count=45, old_rows_sha256=digest(packet_rows)),
         dispatch_table=dict(address=dispatch_address, old_count=60, new_count=61, old_rows_sha256=digest(dispatch_rows)),
         original_entries_preserved=True, type146_preserved=True,
@@ -86,11 +89,11 @@ def _extend_payload(original):
                          used_table_bytes=end-RESERVED),
         patches=changes,
         scope='Table byte preservation only; reduced RAM pool, placement and runtime behavior need VM hardware regression. Not stock111, approved security or natural recovery qualification.',
-        production_default_changed=False, hardware_qualified=False,
+        production_default_changed=False, hardware_qualified=False, safe_to_upload=False,
     )
 
 
-def extend(image):
+def plan(image):
     if digest(image) != STOCK_SHA256:
         raise ValueError('only pinned original ws73.bin accepted')
     if image[:64] != digest(image[64:]).encode():
@@ -100,22 +103,21 @@ def extend(image):
     report.update(source_image_sha256=digest(image),source_payload_sha256=digest(image[64:]),
                   output_image_sha256=digest(output),output_payload_sha256=digest(payload),
                   output_payload_bytes=len(payload))
-    return output, report
+    report['retirement_reason'] = ('Actual contiguous VM boot upload timed out before completing; '
+                                   'subsequent USB enumeration failed. Downloader workspace exclusion '
+                                   'is unproved. No firmware output is permitted.')
+    return report
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--source',type=Path,required=True)
-    p.add_argument('--output',type=Path,required=True)
     p.add_argument('--report',type=Path,required=True)
-    p.add_argument('--vm-diagnostic',action='store_true',help='explicitly acknowledge unqualified RAM/pool diagnostic')
+    p.add_argument('--vm-diagnostic',action='store_true',help='audit retired VM-only plan, never produce an upload image')
     a=p.parse_args()
     if not a.vm_diagnostic: p.error('--vm-diagnostic required; never auto-patch default firmware')
-    if a.output.exists() or a.report.exists() or a.output.resolve() == a.report.resolve():
-        p.error('fresh distinct output/report paths required')
-    image,report=extend(a.source.read_bytes())
-    with a.output.open('xb') as f: f.write(image)
-    a.output.chmod(0o600)
+    if a.report.exists(): p.error('fresh report path required')
+    report=plan(a.source.read_bytes())
     with a.report.open('x') as f: json.dump(report,f,indent=2);f.write('\n')
     print(report['status'])
 

@@ -4,6 +4,7 @@ from pathlib import Path
 import struct
 import sys
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import ws73_relay_firmware_extension as extension
@@ -32,7 +33,7 @@ class RelayFirmwareExtension(unittest.TestCase):
         self.assertEqual(new[0x1c1d6:0x1c1dc],bytes.fromhex('46010a1f0100'))
         self.assertEqual(new[0x1cf2c:0x1cf34],bytes.fromhex('46010600a4a64100'))
 
-    def test_extension_excludes_bss_stack_and_reduces_pool_explicitly(self):
+    def test_runtime_layout_arithmetic_is_not_boot_upload_safety(self):
         b,r=extension._extend_payload(self.payload())
         self.assertEqual(r['reservation']['bytes'],4096)
         self.assertEqual(r['reservation']['original_pool_bytes']-r['reservation']['new_pool_bytes'],4096)
@@ -43,6 +44,7 @@ class RelayFirmwareExtension(unittest.TestCase):
         self.assertEqual(b[0x5700:0x5754],self.payload()[0x5700:0x5754])
         self.assertFalse(r['hardware_qualified'])
         self.assertFalse(r['production_default_changed'])
+        self.assertFalse(r['safe_to_upload'])
 
     def test_exact_new_type_and_only_declared_old_bytes_change(self):
         old=self.payload();new,r=extension._extend_payload(old)
@@ -67,4 +69,14 @@ class RelayFirmwareExtension(unittest.TestCase):
     def test_public_entry_rejects_synthetic_or_unknown_firmware(self):
         # Internal structural tests do not bypass the public pinned-image guard.
         payload=self.payload()
-        with self.assertRaisesRegex(ValueError,'pinned original'): extension.extend(extension.digest(payload).encode()+payload)
+        with self.assertRaisesRegex(ValueError,'pinned original'): extension.plan(extension.digest(payload).encode()+payload)
+
+    def test_public_audit_returns_no_image_and_retains_real_failure(self):
+        payload=self.payload();image=extension.digest(payload).encode()+payload
+        with patch.object(extension,'STOCK_SHA256',extension.digest(image)):
+            report=extension.plan(image)
+        self.assertIsInstance(report,dict)
+        self.assertEqual(report['status'],'RETIRED_CONTIGUOUS_PLAN_BOOT_FAILURE')
+        self.assertFalse(report['safe_to_upload'])
+        self.assertFalse(report['hardware_qualified'])
+        self.assertIn('enumeration failed',report['retirement_reason'])

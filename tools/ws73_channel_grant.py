@@ -158,7 +158,12 @@ def worker(data, control):
                 if denied!=errno.EACCES:raise ValueError('exact forbidden direction EACCES required')
                 send(control,dict(stage='oneway',initiator=command['initiator'],sent=sent,received=arrived,direction_errno=denied,denied_marker=marker.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
             elif kind=='block':
-                send(control,dict(stage='armed',pid=os.getpid(),fd=data.fileno(),wall_ns=time.time_ns()))
+                prefix=command.get('prefix')
+                if prefix is not None:
+                    prefix=bytes.fromhex(prefix)
+                    if len(prefix)!=2042 or prefix[:8]!=b'SLKREV01':raise ValueError('bounded random revocation PDU required')
+                    if data.send(prefix,socket.MSG_NOSIGNAL)!=len(prefix):raise ValueError('partial revoke-prefix admission')
+                send(control,dict(stage='armed',pid=os.getpid(),fd=data.fileno(),wall_ns=time.time_ns(),prefix=prefix.hex() if prefix is not None else None))
                 start=time.time_ns()
                 try:
                     arrived=data.recv(249)
@@ -251,7 +256,14 @@ class Gate:
         return rows
 
     def arm(self):
-        send(self.parents[self.index],dict(kind='block'));value=receive(self.parents[self.index])
+        request=dict(kind='block')
+        if 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split():
+            payload=b'SLKREV01'+secrets.token_bytes(2034)
+            request['prefix']=payload.hex();self.row['revoke_prefix']=dict(payload=payload.hex(),admission_before_wall_ns=time.time_ns())
+        send(self.parents[self.index],request);value=receive(self.parents[self.index])
+        if 'revoke_prefix' in self.row:
+            if value.get('prefix')!=request['prefix']:raise ValueError('original worker prefix admission required')
+            self.row['revoke_prefix']['admission_after_wall_ns']=value['wall_ns']
         if value['stage']!='armed':raise ValueError('blocking worker arm receipt required')
         samples=[];deadline=time.monotonic()+2
         while len(samples)<2:
@@ -379,4 +391,7 @@ def corroborate(row, outer, capture):
         proof['one_way_deliveries']=len(row['business'])
         proof['scope']='pre-daemon two real devices/independent Managed Files; UID1000/caps0 TX-only to RX-only actual one-way validation, forbidden direction EACCES, protected/invalid bind rejection, revoked/successor stale-fd denial; no business round-trip or blocked RX claim'
     if row.get('scm_rights',False):proof['scm_rights_acceptance']=True
+    if row.get('revoke_prefix'):
+        from ws73_revoke_prefix import corroborate as prefix_corroborate
+        proof['begun_revoke']=prefix_corroborate(row,outer,capture)
     return proof

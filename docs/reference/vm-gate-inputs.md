@@ -28,3 +28,16 @@ VM-only，主机不安装实验内核、驱动或服务。普通应用业务权�
 
 当前缺口是“如何生成全部前置产物”的完整、干净环境重放指南；不能用本表或 --help
 宣称该指南已经完成。首次业务实验也必须先由集成人员提供匹配且已经建链的 VM。
+
+## 正式安全 CLI 子门禁输入
+
+`ws73_target.py run --security-agent cli-approve|cli-reject` 选择新门禁（尚待实机验收）。
+它要求独立双设备 connection/socket 模式、当前 prepared 工具和 `/bin/slctl`，
+不能复用不含正式 Agent/请求入口的旧镜像。`cli-approve`/`cli-reject` 只存在于
+VM 测试协调器；协调器读取真实 CLI 提示后通过 stdin 给出显式测试回答，正式
+CLI 本身没有自动批准功能。每端分别启动 Agent 和原作者请求，共四个实际进程。
+
+原 stdout/stderr、退出码、原凭据、路径、提示、回答、期限与终态均保留；监督器
+异常、缺失/截断记录、丢失对端 RX 或安装事件不能通过。既有独立 USB/relay/
+安装和对端业务校验继续必需；无 MITM/可信身份/Bond/自然恢复资格。
+原六种测试专用 Agent 模式保持单独范围，不将新 CLI 模式当作它们的重放。

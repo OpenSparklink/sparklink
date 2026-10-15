@@ -9,13 +9,16 @@ import time
 from ws73_capture import CaptureError
 from ws73_security_capabilities import OFFER
 
-MODES=('approve','reject','timeout','cancel','agent-exit','caller-exit')
+MODES=('approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject')
 
 def execute(run,phase):
     mode=run.args.security_agent
     if mode not in MODES:raise CaptureError('explicit Agent mode required')
     row=dict(mode=mode,status='RUNNING',start_wall_ns=time.time_ns(),physical_acceptance=False)
     run.data.setdefault('security_agent',[]).append(row);run.save()
+    if mode.startswith('cli-'):
+        from ws73_security_cli import execute as cli_execute
+        return cli_execute(run,phase,row)
     paths=[v['object']['path'] for v in phase['typed_objects']]
     command=['/bin/ws73-security-agent-probe','--connections',*paths,'--mode',mode]
     if mode=='timeout':command+=['--timeout-ms','500','--approval-delay-ms','800']
@@ -27,6 +30,9 @@ def execute(run,phase):
     row['end_wall_ns']=time.time_ns();row['status']='PENDING_USB_AND_APPLICATION_CORROBORATION';run.save()
 
 def witness(row,phase,daemon):
+    if row.get('mode','').startswith('cli-'):
+        from ws73_security_cli import witness as cli_witness
+        return cli_witness(row,phase,daemon)
     if row['status']!='PENDING_USB_AND_APPLICATION_CORROBORATION' or row['mode'] not in MODES:raise CaptureError('complete explicit Agent witness required')
     if [json.loads(line) for line in row['command']['stdout'].splitlines()] != row['events']:raise CaptureError('sealed Agent transcript mismatch')
     if row['command']['exit']!=0 or not row['events']:raise CaptureError('Agent process did not finish')
@@ -73,12 +79,13 @@ def witness(row,phase,daemon):
 
 def wire(row,phase,capture):
     low,high=row['start_wall_ns'],row['end_wall_ns']
+    approved=row['mode'] in ['approve','cli-approve']
     received={};sent={};completed={};installs=[];keys=[];install_commands={}
     for entry in phase['typed_objects']:
         owner=entry['owner'];obj=entry['object'];role=obj['role'];handle=obj['handle'].to_bytes(2,'little')
         same=lambda v:(v['bus'],v['device'])==(owner['bus'],owner['device']) and low<=v['wall_ns']<=high
         commands=[v for v in capture['commands'] if same(v) and v['opcode'] in [0x1812,0x1c03,0x1c05]]
-        if row['mode']!='approve':
+        if not approved:
             if commands or any(same(v) and v['event'] in [0xe,0x11,0x14] for v in capture['native_events']):raise CaptureError('negative Agent policy must have no security wire activity')
             continue
         indices=[0x134,0x136,0x139,0x141] if role==0 else [0x135,0x137,0x138,0x13a,0x142]
@@ -110,7 +117,7 @@ def wire(row,phase,capture):
         if not accepted or len(on)!=1 or len([v for v in capture['native_events'] if same(v) and v['event']==0x11])!=1:raise CaptureError('actual acceptance AND exact initial encryption event required')
         install_commands[role]=cmd
         installs.append(dict(role=role,opcode=opcode,key_redacted=True,command_record=cmd['record'],event_record=on[0]['record'],wall_ns=on[0]['wall_ns']))
-    if row['mode']=='approve':
+    if approved:
         if len(keys)!=2 or keys[0]!=keys[1]:raise CaptureError('actual same derived material at both controllers required')
         for index,(cmd,payload) in sent.items():
             event=received[index];raw=bytes.fromhex(event['params'])

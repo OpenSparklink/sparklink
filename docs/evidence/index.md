@@ -109,3 +109,8 @@ K494/Ue2a、VM工具2d6c250；4次前置应用往返与零次未完成PDU交付�
 
 [OpenHarmony drivers_peripheral 固定版本参考审计](openharmony-peripheral-reference-20261015.json)：
 DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现或实机资格。
+
+[准确f5/3eb两角色真实安装与15组保持回归](security-installation-20261015.json)：
+4次安装前、4次控制器报告加密后业务回复；未认证且不授予Agent/Bond或最新dirty资格。
+
+[OpenHarmony参考审计三项现有issue读回回执](openharmony-peripheral-issues-20261015.json)：原scope及OPEN保留。

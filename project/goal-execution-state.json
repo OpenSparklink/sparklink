@@ -30,7 +30,7 @@
     "ignored_for_current_operations": true,
     "do_not_operate_or_request_manual_action": true,
     "manual_request_pending": false,
-    "current_available_scope": "Use ports1/4; exact415/376 candidate proof and all11 data gates passed. Keep historical port2 failure; not a current restoration target.",
+    "current_available_scope": "Use ports1/4. Exact f5/3eb two-role unauthenticated installation and all15 old-mode/data gates passed; later337/dirty changes need fresh exact qualification. Port2 ignored and four-device gate remains incomplete.",
     "four_device_gate": "Incomplete, not waived",
     "natural_recovery_acceptance": false
   },
@@ -651,10 +651,20 @@
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "status": "INSTALLATION_MODE3_IMPLEMENTED_REAL_VM_PENDING",
-    "production_kernel": "f5c79a50467b41f2e055dfea64786ce34730a4a5",
-    "behavior": "SameSession metadata-only queue, private material copied by retained driver ticket before separate final atomic commit; real role/request/acceptance/0011 attribution, later off invalidation, no trusted identity",
-    "physical_acceptance": false,
+    "status": "EXACT_F5_INSTALLATION_REAL_PASS_SUBSEQUENT_LIFECYCLE_CHANGES_PENDING",
+    "qualified_kernel": "f5c79a50467b41f2e055dfea64786ce34730a4a5",
+    "compiled_userspace": "3eb3c459c68686479a95b6942dbe5a736a2c3a9b",
+    "executed_vm_tools": "3eb3c459c68686479a95b6942dbe5a736a2c3a9b",
+    "evidence": "docs/evidence/security-installation-20261015.json",
+    "physical_acceptance": "Two-role unauthenticated installation only, 4 before/4 after controller-reported encryption business RT; full security not qualified",
+    "new_kernel_head": "337eab0b6e6f939d353c505fcd8c7dcfd813db0d",
+    "dirty_preserved": [
+      "net/sparklink/sle_native.rs",
+      "net/sparklink/sle_security_relay.rs",
+      "net/sparklink/sle_sessions.rs",
+      "tools/testing/selftests/sparklink/native-data/fixture.rs"
+    ],
+    "next_exit": "Commit Session retention; exact new build + two-role installation + original15 gates, targeted revoke/Down/original-deadline interleavings; then Agent/method policy without secondEngine",
     "agent_consent": false,
     "bond": false,
     "whole_security_qualified": false,
@@ -680,7 +690,7 @@
   },
   "next_resume_tasks": [
     "Ignore port1-2.1.2 by userdirective: no operation/recovery/manualrequest; preservefailedrestore evidence, fourdevice/naturalrecovery scopes remain unqualified. Continue ports1/4.",
-    "Finish exact newVM installation/0011/ordinary business bothroles plus oldmode/retaineddata; then same mechanism Agent/method policy, authenticated levels and Bond. No secondEngine or trustedGrant from mode3.",
+    "Commit Session retention; exact new build + two-role installation + original15 gates, targeted revoke/Down/original-deadline interleavings; then Agent/method policy without secondEngine",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
@@ -792,6 +802,7 @@
       "net/sparklink/sle_security_relay.rs",
       "net/sparklink/sle_sessions.rs",
       "tools/testing/selftests/sparklink/native-data/fixture.rs"
-    ]
+    ],
+    "issue_receipt": "docs/evidence/openharmony-peripheral-issues-20261015.json"
   }
 }

@@ -6,25 +6,24 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-本批有限退出已取得：K415/U376复用唯一物理Session/relay/命令credit/最终票据，
-原期限内两角色真实134..142、鲜活密码材料和未认证peer proof；原路径11组136次
-业务/32次超限拒绝、严格fd退出及真实SSAP/pool5恢复重新通过。旧capability-only模式
-也重新通过。[准确证据及剩余条件](../docs/evidence/security-key-agreement-20261015.json)。
-这是未认证候选proof，不是Pair/Agent/实际安装/Encrypted/Bond。实际密码VM向量、
-实际生产转换测试和形式化强度分别记录；新Kani1110生成检查存在unsupported，仍未证明。
+本批有限实机退出已取得：准确 K `f5c79a50467b` / 编译及封存工具 U `3eb3c459c686`，
+复用唯一物理Session/relay/命令credit/最终票据，交换角色通过真实1c03/000e/1c05、
+各自命令接受与0011、每轮9条relay/Complete/对端0014。原5秒内约37.4/35.9ms；
+8次普通用户随机应用回复中4次安装前、4次控制器报告初始加密后。15组旧模式/数据
+回归通过，其中11组136次业务、32次超限拒绝和两角色严格最后fd。
+[准确身份、限定范围及私有捕获hash](../docs/evidence/security-installation-20261015.json)。
+这是未认证安装子资格，不是Agent批准、认证身份、可信Grant、Bond或独立空口密码证明。
 
-当前实现进度：Kf5已接管理模式3的真实安装机制，正在新镜像VM验收。为使Agent最终
-能够调用唯一内核机制，本批先补齐角色安装、命令接受/0011、秘密材料晚填与清除；
-这不是以管理员实验替代Agent。新模式不开放默认Pair，不产生可信身份或Bond资格。
-实际安装、两端加密事件、随后普通用户随机业务回复及旧模式/数据回归为本批实机退出；
-源码准确匹配且通过后再接Agent/method策略，完整原S5范围保持。撤权/Down/原期限
-交错、动态通道与SSAP并行，未把控制面全集设为前置。
+当前近期收尾：K `337eab0b6e6f`补命令Status后仍保留异步安装义务；dirty整改将
+Session原epoch物理所有权保留至真实Down，停止作者工作但不因撤权替换物理对象。
+保留在开发代码，先审查/签名小提交和严格构建，再取得准确新镜像两角色安装、旧15组
+及相关撤权/Down/原期限交错。44项实际Native/data函数及337的23项纯转换只是限定
+离线通过；Kani1681检查存在unsupported，仍未证明，更不覆盖dirty引用/锁/USB。
 
-下一有限退出：同一Session接Agent/method授权与策略，角色绑定真实1c03/1c05安装、
-匹配0011，再取得加密后的普通用户对端校验回复。复用既有材料、credit、票据和relay，
-不新增Engine，不允许候选proof满足可信Grant。相关撤权/Down/原期限组合与实际提交
-门禁并行；动态多通道、四设备两组、SSAP CCC/通知/指示继续纵向推进，不等待全部
-控制面竞争或完整S5。默认未支持入口继续NotSupported。
+下一有限退出：沿用唯一机制接Agent/method授权与策略，保留角色安装与加密后对端
+业务回复门禁，随后推进认证级别/Bond/重连。命令接受不能替代0011，控制器报告不能
+替代对端应用处理。不等待控制面竞争全集；长包/credit、动态通道、四设备两组和真实
+SSAP通知/指示继续并行。完整原S5及S0–S6均保持；默认未支持入口继续NotSupported。
 
 旧K494/Ud744和Ue2a的准确证据保留如下，不因新实现自动继承：
 

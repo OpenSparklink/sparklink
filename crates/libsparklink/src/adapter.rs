@@ -736,6 +736,60 @@ impl Adapter {
         Ok(())
     }
 
+    /// Explicit experimental capability-only approval, not Pair or encryption.
+    /// Requires the current Managed File, exact physical reference and admin.
+    /// One exchange per lifetime; client disconnects after this limited probe.
+    pub fn submit_native_security_negotiation(
+        &self,
+        request: &SleSecurityNegotiationSubmit,
+    ) -> Result<()> {
+        // SAFETY: borrowed initialized integer-only ABI for this syscall.
+        unsafe { ioctl::sl_security_negotiation_submit(self.raw_fd(), request)? };
+        Ok(())
+    }
+
+    /// Read local real Complete/peer RX observations, never trusted security.
+    /// Query requires the original live Managed File; revoke/Down invalidates it.
+    pub fn native_security_negotiation(
+        &self,
+        generation: u64,
+        lifetime: u64,
+        handle: u16,
+        request_id: u64,
+    ) -> Result<SleSecurityNegotiationResult> {
+        let mut output = SleSecurityNegotiationResult {
+            version: 1,
+            generation,
+            lifetime,
+            handle,
+            request_id,
+            ..Default::default()
+        };
+        // SAFETY: initialized writable padding-free repr(C) ABI.
+        unsafe { ioctl::sl_security_negotiation_result(self.raw_fd(), &mut output)? };
+        if output.version != 1
+            || output.profile != 1
+            || output.generation != generation
+            || output.lifetime != lifetime
+            || output.handle != handle
+            || output.request_id != request_id
+            || !matches!(output.state, 1 | 2 | 4 | 5 | 6 | 7)
+            || output.flags & !7 != 0
+            || output.role > 1
+            || output.reserved != [0; 4]
+            || (output.state == 4
+                && (output.flags != 7
+                    || output.status != 0
+                    || output.error != 0
+                    || output.peer_caps != output.local_caps))
+        {
+            return Err(crate::Error::InvalidParam(
+                "malformed limited security observation",
+            ));
+        }
+        Ok(output)
+    }
+
     /// Read observed physical links and the atomic event replay barrier for
     /// this registration. It does not consume events or require a writer lease.
     pub fn native_link_snapshot(&self, generation: u64) -> Result<SleLinkSnapshot> {

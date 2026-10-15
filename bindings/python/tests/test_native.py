@@ -15,6 +15,7 @@ from sparklink.structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult,
 )
 
 
@@ -27,6 +28,14 @@ class NativeBindingTests(unittest.TestCase):
         self.handle = self.lib.slk_adapter_open(b"/dev/null")
         self.assertTrue(self.handle)
         self.addCleanup(self.lib.slk_adapter_free, self.handle)
+
+    def test_limited_security_submit_is_real_ioctl_not_local_success(self):
+        request=SleSecurityNegotiationSubmit(version=1,profile=1,flags=1,action=2,generation=1,lifetime=1,request_id=1,timeout_ms=5000)
+        before=bytes(request)
+        self.assertEqual(self.lib.slk_security_negotiation_submit(self.handle,ctypes.byref(request)),-errno.ENOTTY)
+        self.assertEqual(bytes(request),before)
+        self.assertEqual(self.lib.slk_security_negotiation_submit(None,ctypes.byref(request)),-errno.EINVAL)
+        self.assertEqual(self.lib.slk_security_negotiation_submit(self.handle,None),-errno.EINVAL)
 
     def test_channel_info_errors_preserve_output_and_errno(self):
         out = SleChannelInfo(generation=99, reserved=123)
@@ -76,6 +85,7 @@ class NativeBindingTests(unittest.TestCase):
             ("slk_controller_snapshot", [1], SleControllerSnapshot(generation=99)),
             ("slk_registration_snapshot", [0, 1], SleRegistrationSnapshot(generation=99)),
             ("slk_link_snapshot", [1], SleLinkSnapshot(generation=99)),
+            ("slk_security_negotiation_result", [1,1,0,1], SleSecurityNegotiationResult(generation=99)),
             ("slk_management_query", [1], SleManagementQuery(lease=99)),
             ("slk_management_acquire", [1, 1], ctypes.c_uint64(99)),
             ("slk_connection_result", [1, 1], SleConnectionResult(request_id=99)),
@@ -183,6 +193,7 @@ class NativeConnectionMethodTests(unittest.TestCase):
     def setUp(self):
         import threading
         self.adapter = object.__new__(NativeAdapter)
+        self.adapter._handle = None
         self.adapter._lock = threading.RLock()
         self.adapter._handle = _get_native_lib().slk_adapter_open(b"/dev/null")
         self.adapter.index, self.adapter.generation = 0, 1
@@ -190,7 +201,10 @@ class NativeConnectionMethodTests(unittest.TestCase):
 
     def test_actual_python_methods_preserve_abi_errors(self):
         request = SleConnectionSubmit(version=1, generation=1, request_id=1)
-        for call in [lambda: self.adapter.submit_connection(request),
+        limited=SleSecurityNegotiationSubmit(version=1,profile=1,flags=1,action=2,generation=1,lifetime=1,request_id=1,timeout_ms=5000)
+        for call in [lambda:self.adapter.submit_security_negotiation(limited),
+                     lambda:self.adapter.security_negotiation(1,0,1),
+                     lambda: self.adapter.submit_connection(request),
                      lambda: self.adapter.connection_result(1, 1)]:
             with self.assertRaises(OSError) as error:
                 call()

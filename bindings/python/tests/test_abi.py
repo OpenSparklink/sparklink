@@ -58,6 +58,8 @@ STRUCT_NAMES = {
     "SleConnectionResult": "sle_connection_result",
     "SleLinkInfo": "sle_link_info",
     "SleLinkSnapshot": "sle_link_snapshot",
+    "SleSecurityNegotiationSubmit": "sle_security_negotiation_submit",
+    "SleSecurityNegotiationResult": "sle_security_negotiation_result",
 }
 
 

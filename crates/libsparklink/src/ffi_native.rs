@@ -460,3 +460,49 @@ pub unsafe extern "C" fn slk_channel_tx_status(
         Err(error) => -error.raw_os_error().unwrap_or(nix::libc::EPROTO),
     }
 }
+
+/// Explicit capability-only approval; same live Managed File and admin required.
+/// No pairing, encrypted state, keys or peer acknowledgment is promised.
+/// # Safety
+/// Non-null pointers must be valid, aligned, nonoverlapping for this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_security_negotiation_submit(
+    adapter: *const SlkAdapter,
+    request: *const SleSecurityNegotiationSubmit,
+) -> c_int {
+    let (Some(adapter), Some(request)) = (unsafe { adapter.as_ref() }, unsafe { request.as_ref() })
+    else {
+        return -nix::libc::EINVAL;
+    };
+    adapter
+        .inner
+        .submit_native_security_negotiation(request)
+        .map_or_else(errno, |()| 0)
+}
+
+/// Local capability exchange observations, never trusted pairing/encryption.
+/// # Safety
+/// Non-null pointers must be valid, aligned, nonoverlapping; output writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_security_negotiation_result(
+    adapter: *const SlkAdapter,
+    generation: u64,
+    lifetime: u64,
+    handle: u16,
+    request_id: u64,
+    out: *mut SleSecurityNegotiationResult,
+) -> c_int {
+    let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter
+        .inner
+        .native_security_negotiation(generation, lifetime, handle, request_id)
+    {
+        Ok(value) => {
+            *out = value;
+            0
+        }
+        Err(error) => errno(error),
+    }
+}

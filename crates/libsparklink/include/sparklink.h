@@ -557,6 +557,45 @@ typedef struct SPARKLINK_ALIGN(8) SleChannelTxStatus {
     uint64_t pool_exhaustions;
 } SleChannelTxStatus;
 
+/**
+ * Experimental limited capability exchange; no raw RX/TX or trusted result.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationSubmit {
+    uint64_t generation;
+    uint64_t lifetime;
+    uint64_t request_id;
+    uint32_t version;
+    uint32_t profile;
+    uint32_t action;
+    uint32_t flags;
+    uint32_t timeout_ms;
+    uint16_t handle;
+    uint8_t role;
+    uint8_t address_type;
+    uint8_t address[6];
+    uint8_t reserved[2];
+} SleSecurityNegotiationSubmit;
+
+/**
+ * Local observations only: state4 is not pairing, trust or peer application ACK.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationResult {
+    uint64_t generation;
+    uint64_t lifetime;
+    uint64_t request_id;
+    uint32_t version;
+    uint32_t profile;
+    uint32_t state;
+    int32_t error;
+    uint32_t flags;
+    uint16_t handle;
+    uint8_t role;
+    uint8_t status;
+    uint8_t local_caps[10];
+    uint8_t peer_caps[10];
+    uint8_t reserved[4];
+} SleSecurityNegotiationResult;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -900,6 +939,27 @@ int slk_channel_info(int fd, struct SleChannelInfo *output);
  * output is null or a live aligned writable SleChannelTxStatus object.
  */
 int slk_channel_tx_status(int fd, struct SleChannelTxStatus *output);
+
+/**
+ * Explicit capability-only approval; same live Managed File and admin required.
+ * No pairing, encrypted state, keys or peer acknowledgment is promised.
+ * # Safety
+ * Non-null pointers must be valid, aligned, nonoverlapping for this call.
+ */
+int slk_security_negotiation_submit(const struct SlkAdapter *adapter,
+                                    const struct SleSecurityNegotiationSubmit *request);
+
+/**
+ * Local capability exchange observations, never trusted pairing/encryption.
+ * # Safety
+ * Non-null pointers must be valid, aligned, nonoverlapping; output writable.
+ */
+int slk_security_negotiation_result(const struct SlkAdapter *adapter,
+                                    uint64_t generation,
+                                    uint64_t lifetime,
+                                    uint16_t handle,
+                                    uint64_t request_id,
+                                    struct SleSecurityNegotiationResult *out);
 
 #ifdef __cplusplus
 }  // extern "C"

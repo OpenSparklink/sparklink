@@ -1606,3 +1606,45 @@ mod registration_tests {
         assert!(!s.valid_for(2, 0));
     }
 }
+
+/// Experimental limited capability exchange; no raw RX/TX or trusted result.
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default)]
+pub struct SleSecurityNegotiationSubmit {
+    pub generation: u64,
+    pub lifetime: u64,
+    pub request_id: u64,
+    pub version: u32,
+    pub profile: u32,
+    pub action: u32,
+    pub flags: u32,
+    pub timeout_ms: u32,
+    pub handle: u16,
+    pub role: u8,
+    pub address_type: u8,
+    pub address: [u8; 6],
+    pub reserved: [u8; 2],
+}
+
+/// Local observations only: state4 is not pairing, trust or peer application ACK.
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default)]
+pub struct SleSecurityNegotiationResult {
+    pub generation: u64,
+    pub lifetime: u64,
+    pub request_id: u64,
+    pub version: u32,
+    pub profile: u32,
+    pub state: u32,
+    pub error: i32,
+    pub flags: u32,
+    pub handle: u16,
+    pub role: u8,
+    pub status: u8,
+    pub local_caps: [u8; 10],
+    pub peer_caps: [u8; 10],
+    pub reserved: [u8; 4],
+}
+
+/// Explicit opt-in to the limited exchange; never a trusted-security flag.
+pub const SECURITY_CAPABILITY_ONLY: u32 = 1;

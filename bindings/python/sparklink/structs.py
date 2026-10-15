@@ -406,3 +406,19 @@ class SleChannelTxStatus(ctypes.Structure):
         ("active_pdu_bytes", ctypes.c_uint32), ("active_pdu_offset", ctypes.c_uint32),
         ("flags", ctypes.c_uint32), ("reserved", ctypes.c_uint32),
         ("pool_exhaustions", ctypes.c_uint64)]
+
+
+class SleSecurityNegotiationSubmit(ctypes.Structure):
+    """Explicit limited exchange approval; no raw relay or trusted security."""
+    _align_ = 8
+    _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),("request_id",ctypes.c_uint64),
+        ("version",ctypes.c_uint32),("profile",ctypes.c_uint32),("action",ctypes.c_uint32),("flags",ctypes.c_uint32),("timeout_ms",ctypes.c_uint32),
+        ("handle",ctypes.c_uint16),("role",ctypes.c_uint8),("address_type",ctypes.c_uint8),("address",ctypes.c_uint8*6),("reserved",ctypes.c_uint8*2)]
+
+
+class SleSecurityNegotiationResult(ctypes.Structure):
+    """Local observations only; state4 is neither Pair nor Encrypted."""
+    _align_ = 8
+    _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),("request_id",ctypes.c_uint64),
+        ("version",ctypes.c_uint32),("profile",ctypes.c_uint32),("state",ctypes.c_uint32),("error",ctypes.c_int32),("flags",ctypes.c_uint32),
+        ("handle",ctypes.c_uint16),("role",ctypes.c_uint8),("status",ctypes.c_uint8),("local_caps",ctypes.c_uint8*10),("peer_caps",ctypes.c_uint8*10),("reserved",ctypes.c_uint8*4)]

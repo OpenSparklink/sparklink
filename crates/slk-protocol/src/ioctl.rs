@@ -308,3 +308,17 @@ nix::ioctl_readwrite!(
     super::SleConnectionResult
 );
 nix::ioctl_readwrite!(sl_link_snapshot, SL_MAGIC, 0x9e, super::SleLinkSnapshot);
+
+// Experimental capability-only procedure; same Managed File and CAP_NET_ADMIN.
+nix::ioctl_write_ptr!(
+    sl_security_negotiation_submit,
+    SL_MAGIC,
+    0xd2,
+    super::SleSecurityNegotiationSubmit
+);
+nix::ioctl_readwrite!(
+    sl_security_negotiation_result,
+    SL_MAGIC,
+    0xd3,
+    super::SleSecurityNegotiationResult
+);

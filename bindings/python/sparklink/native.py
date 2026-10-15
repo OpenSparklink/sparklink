@@ -14,6 +14,7 @@ from .structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult,
 )
 
 _native_library = None
@@ -41,6 +42,8 @@ def _get_native_lib():
         "slk_registration_snapshot": [handle, ctypes.c_uint16, u64, ctypes.POINTER(SleRegistrationSnapshot)],
         "slk_controller_snapshot": [handle, u64, ctypes.POINTER(SleControllerSnapshot)],
         "slk_link_snapshot": [handle, u64, ctypes.POINTER(SleLinkSnapshot)],
+        "slk_security_negotiation_submit": [handle, ctypes.POINTER(SleSecurityNegotiationSubmit)],
+        "slk_security_negotiation_result": [handle,u64,u64,ctypes.c_uint16,u64,ctypes.POINTER(SleSecurityNegotiationResult)],
         "slk_management_acquire": [handle, u64, u32, ctypes.POINTER(u64)],
         "slk_management_query": [handle, u64, ctypes.POINTER(SleManagementQuery)],
         "slk_management_release": [handle, u64, u64, u32],
@@ -177,6 +180,22 @@ class NativeAdapter:
     def management_status(self):
         result = SleManagementQuery()
         self._invoke('slk_management_query', self.generation, ctypes.byref(result))
+        return result
+
+    def submit_security_negotiation(self, request):
+        """Explicit capability-only approval; no pairing/encryption promise."""
+        if not isinstance(request,SleSecurityNegotiationSubmit):
+            raise TypeError("SleSecurityNegotiationSubmit required")
+        if request.generation!=self.generation or not request.lifetime or not request.request_id:raise ValueError("exact nonzero selected generation/lifetime/request required")
+        self._invoke('slk_security_negotiation_submit',ctypes.byref(request))
+
+    def security_negotiation(self, lifetime, handle, request_id):
+        """Original Managed File observes local Complete/peer RX only."""
+        for value,maximum in [(lifetime,(1<<64)-1),(request_id,(1<<64)-1)]:
+            if type(value) is not int or not 0<value<=maximum:raise ValueError("nonzero uint64 identity required")
+        if type(handle) is not int or not 0<=handle<=0x0fff:raise ValueError("12bit handle required")
+        result=SleSecurityNegotiationResult()
+        self._invoke('slk_security_negotiation_result',self.generation,lifetime,handle,request_id,ctypes.byref(result))
         return result
 
     def link_snapshot(self):

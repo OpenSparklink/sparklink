@@ -9,23 +9,10 @@ import re
 import tomllib
 import subprocess
 import hashlib
-from html.parser import HTMLParser
-from urllib.parse import urlsplit, unquote
 
 
-class HtmlLinks(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.links = []
-        self.ids = set()
-
-    def handle_starttag(self, tag, attrs):
-        data = dict(attrs)
-        if "id" in data:
-            self.ids.add(data["id"])
-        for attr in ("href", "src"):
-            if attr in data:
-                self.links.append(data[attr])
+from docs_integrity import audit_html, source_target
+from urllib.parse import urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,8 +38,25 @@ def main():
             errors.append(f"incomplete disposition: {item['path']}")
         if not (ROOT / item['path']).is_file():
             errors.append(f"missing original: {item['path']}")
+    # HTML originals are checked by the actual Sphinx hook. Also check active
+    # source-only pages explicitly reviewed in this batch; historical originals
+    # retain their old links as evidence, not current recommendations.
+    published = {x['path'] for x in items if x['publication'] == 'html'}
+    for item in items:
+        if not item.get('reviewed_source_commit') or not item['path'].endswith('.md'):
+            continue
+        page = ROOT / item['path']
+        for target in re.findall(r'\[[^\]]+\]\(([^)]+)\)', page.read_text()):
+            if urlsplit(target).scheme or target.startswith('#'):
+                continue
+            try:
+                absolute = source_target(ROOT, page, target)
+                relative = str(absolute.relative_to(ROOT))
+                source_target(ROOT, page, target, check_anchor=relative not in published)
+            except ValueError as exc:
+                errors.append(str(exc))
     tracked = set(subprocess.check_output(
-        ['git', 'ls-files', '*.md'], cwd=ROOT, text=True).splitlines())
+        ['git', 'ls-files'], cwd=ROOT, text=True).splitlines())
     # Include new untracked docs while preparing a reviewable commit. Generated
     # HTML, caches and external worktrees are not repository documentation.
     for directory in [DOCS, ROOT / 'project', ROOT / 'history']:
@@ -69,7 +73,9 @@ def main():
         if (ROOT/page).read_text().strip() != expected:
             errors.append(f'canonical projection duplicates or replaces source: {page}')
 
-    tracked = {path for path in tracked if (ROOT/path).is_file()}
+    tracked = {path for path in tracked if (ROOT/path).is_file() and (
+        Path(path).suffix in {'.md', '.rst'} or Path(path).name == 'README'
+        or path.startswith(('data/man/', 'data/config/')))}
     for path in sorted(tracked - set(paths)):
         errors.append(f'unmapped document: {path}')
     kernel_map = json.loads((DOCS / 'kernel-documentation-map.json').read_text())
@@ -87,12 +93,12 @@ def main():
     kernel = ROOT.parent / 'linux'
     if (kernel / '.git').exists():
         kernel_sources = subprocess.check_output(
-            ['git', 'ls-files', 'Documentation/*',
-             'tools/testing/selftests/sparklink/*.md'], cwd=kernel,
+            ['git', 'ls-files', 'Documentation/*', 'net/sparklink/*',
+             'tools/testing/selftests/sparklink/*'], cwd=kernel,
             text=True).splitlines()
         scoped = {p for p in kernel_sources
                   if ('sparklink' in p or 'ws73' in p)
-                  and p.endswith(('.rst', '.md'))}
+                  and (p.endswith(('.rst', '.md')) or Path(p).name == 'README')}
         for path in sorted(scoped - {x['path'] for x in entries}):
             errors.append(f'unmapped kernel document: {path}')
     canonical = {x['path'] for x in items if x['status'] == 'canonical'}
@@ -115,31 +121,12 @@ def main():
         if item['publication'] == 'html' and item['path'] != 'docs/index.md' and owners[item['path']] != 1:
             errors.append(f"expected one canonical navigation home: {item['path']}")
     if args.html:
-        html_root = args.html.resolve()
-        parsed = {}
-        for page in html_root.rglob('*.html'):
-            parser = HtmlLinks()
-            parser.feed(page.read_text())
-            parsed[page] = parser
-        for page, parser in parsed.items():
-            for link in parser.links:
-                url = urlsplit(link)
-                if url.scheme or url.netloc:
-                    continue
-                target = (page.parent / unquote(url.path)).resolve() if url.path else page
-                if target.is_dir():
-                    target /= 'index.html'
-                if not target.is_relative_to(html_root) or not target.is_file():
-                    errors.append(f'broken local resource: {page.name}: {link}')
-                elif url.fragment and target in parsed and unquote(url.fragment) not in parsed[target].ids:
-                    errors.append(f'broken local anchor: {page.name}: {link}')
-        for page in parsed:
-            if re.search(r'/home/[^\s<]+|file://', page.read_text()):
-                errors.append(f'private path in public HTML: {page.name}')
-        if (args.html / 'evidence').exists():
-            extra = [p for p in (args.html / 'evidence').rglob('*') if p.is_file() and p.suffix not in {'.html'}]
-            if extra:
-                errors.append('raw evidence copied to public site')
+        expected = {x['path'][5:].rsplit('.', 1)[0] + '.html' for x in items
+                    if x['publication'] == 'html' and x['path'].startswith('docs/')}
+        expected.update({'index.html', 'search.html'})
+        revision = os.environ.get('SPARKLINK_DOCS_REVISION') or subprocess.check_output(
+            ['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+        errors.extend(audit_html(args.html, expected, revision))
     if errors:
         print('\n'.join(errors))
         return 1

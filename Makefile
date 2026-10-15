@@ -77,6 +77,8 @@ clean:
 
 # Documentation has its own locked Python environment and no hardware access.
 docs:
+	PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p test_docs_integrity.py -v
+	python3 tools/check_doc_examples.py
 	python3 tools/check_qualifications.py
 	$(DOCS_RUN) python tools/check_docs.py
 	rm -rf docs/_build/html

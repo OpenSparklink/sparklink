@@ -32,3 +32,19 @@ HTML 构建本身不下载该 JS。完全离线浏览和 PDF 图形导出尚未�
 升级 Sphinx 后必须重新检查中文和接口名称搜索，不能仅以 HTML 构建成功判断搜索可用。
 官方配置与依赖约定见 [Sphinx 配置](https://www.sphinx-doc.org/en/master/usage/configuration.html)
 及 [uv dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/)。
+
+## DQ1 检查边界与失败处理
+
+`make docs` 先执行文档检查负对照、Python 示例静态契约，再核对资格摘要、清单、
+严格 HTML 与内部链接/资源。示例检查解析实际 Adapter/NativeAdapter 方法，不导入
+动态库或执行设备操作；不声称参数语义、权限、运行或完整跨语言 ABI 已验收。
+
+源码相对链接不存在或逃出仓库会使构建失败；私有材料须以明确的来源/hash/访问/
+重放说明表达，不能自动替换成 unavailable 掩盖断链。源码链接不是内容验收。
+HTML 根目录、首页、搜索及全部预期发布页必须存在且非空，构建输出中的
+`documentation-build.json` 绑定准确文档 revision 与页面 hash；`--html` 对缺页、
+被替换页面、坏 anchor、资源或不符版本失败。它不是签名来源证明或浏览器检查。
+
+若审计失败，保留日志及原输出，修复源文件/清单/链接后重新执行完整构建；不要
+手改生成 HTML、关闭 warnings-as-errors 或复用旧构建冒充当前。外链网络失败、
+浏览器与使用流程重放继续独立记录，完整任务见唯一计划 DQ1–DQ5。

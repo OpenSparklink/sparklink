@@ -40,10 +40,13 @@ from pathlib import Path
 import os
 import re
 import subprocess
+import sys
 import tomllib
 from urllib.parse import urlsplit
 
 _docs = Path(__file__).parent
+sys.path.insert(0, str(_docs.parent / 'tools'))
+from docs_integrity import source_target, html_stamp
 _inventory = tomllib.loads((_docs / 'documentation-map.toml').read_text())
 exclude_patterns = ['_build', '_extensions', 'evidence/**']
 exclude_patterns.remove('evidence/**')
@@ -84,20 +87,17 @@ def _public_source(app, docname, source):
         if urlsplit(target).scheme or target.startswith('#'):
             return match.group(0)
         path, sep, anchor = target.partition('#')
-        absolute = source_file.parent / path
-        absolute = absolute.resolve()
         root = _docs.parent.resolve()
+        absolute = source_target(root, source_file, target)
         if absolute.is_relative_to(root):
             relative = str(absolute.relative_to(root))
             if relative in _projections:
                 relative = _projections[relative]
             if relative in _published:
                 return '[' + label + '](' + os.path.relpath(root / relative, (_docs / docname).parent) + sep + anchor + ')'
-            if not absolute.is_file():
-                return f'{label} (unavailable source; not published)'
+            source_target(root, source_file, target, check_anchor=True)
             return f'[{label}](https://github.com/OpenSparklink/sparklink/blob/{_source_revision}/{relative}{sep}{anchor})'
-        # Workspace-private materials are unavailable, not fabricated URLs.
-        return f'{label} (workspace-private source; not published)'
+        raise ValueError('unresolved repository source: ' + target)
     source[0] = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', link, source[0])
     source[0] = re.sub(r'/opt/opensparklink-verification-tools[^\s`]+', '$VERIFICATION_TOOLS', source[0])
     source[0] = re.sub(r'/home/[^/\s`]+/(?:Documents/opensparklink/)?', '$WORKSPACE/', source[0])
@@ -110,6 +110,8 @@ def _legacy_redirects(app, exception):
     for old, target in _paths['legacy_html_redirects'].items():
         destination = Path(app.outdir) / old
         destination.write_text('<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=' + html.escape(target, quote=True) + '"><title>Document moved</title><a href="' + html.escape(target, quote=True) + '">Document moved</a>')
+    (Path(app.outdir) / 'documentation-build.json').write_text(
+        json.dumps(html_stamp(Path(app.outdir), _source_revision), indent=2) + '\n')
 
 
 def setup(app):

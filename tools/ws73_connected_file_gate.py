@@ -77,6 +77,10 @@ class ConnectedOutcomeCoordinator(LaterHostCoordinator):
 
 
 def verify_records(r):
+    if 'security_capabilities' in r:
+        from ws73_security_capabilities import verify
+        verify(r)
+        return [setup(raw,n) for n,raw in enumerate(r['initial_snapshots'])]
     if 'data_deadline' in r:
         from ws73_channel_deadline import verify
         verify(r)
@@ -230,6 +234,10 @@ def verify_records(r):
 
 
 def corroborate(r, capture, hold=None, stderr=None, expected=None):
+    if 'security_capabilities' in r:
+        if hold is not None:raise CaptureError('limited capability gate excludes reply hold/recovery')
+        from ws73_security_capabilities import corroborate as capability_corroborate
+        return capability_corroborate(r,capture)
     if 'data_deadline' in r:
         from ws73_channel_deadline import corroborate as deadline_corroborate
         return deadline_corroborate(r,capture,hold,stderr,expected)
@@ -341,11 +349,13 @@ def run(args):
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
+    capabilities='ws73.security_capabilities=1' in Path('/proc/cmdline').read_text().split()
     data_deadline='ws73.channel_deadline=1' in Path('/proc/cmdline').read_text().split()
     link_down='ws73.channel_link_down=1' in Path('/proc/cmdline').read_text().split()
     if link_down and (not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('direct Down requires separate bidirectional begun-PDU release-mode environment')
     if data_deadline and (link_down or not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate bidirectional begun-PDU original-deadline environment required')
+    if capabilities and (data_deadline or link_down or not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate limited capability-only bidirectional channel gate required')
     scm_rights=getattr(args,'channel_scm_rights',False)
     if scm_rights and not channel_gate:raise ValueError('fd transfer requires real channel Grant gate')
     directional=getattr(args,'channel_directions',False)
@@ -470,6 +480,11 @@ def run(args):
             from ws73_channel_grant import Gate
             grant=Gate(observers,snapshots,leases,i,r,save,directional,scm_rights)
             grant.exchange('before')
+            if capabilities:
+                from ws73_security_capabilities import exercise
+                exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disconnect,discover,standby,stop)
+                grant.close();grant=None
+                return
             if data_deadline:
                 from ws73_channel_deadline import exercise
                 exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect)

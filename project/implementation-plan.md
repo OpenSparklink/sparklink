@@ -6,24 +6,29 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-1. 本批只读预算接通并取得准确K494/Ud744真实回归：原104轮及32拒绝、32额外
-   burst往返、两角色严格fd退出和原SSAP保持。软件队列EAGAIN/poll与controller
-   pool满分别观察；源端新池满拒绝29/30，实际NOCP后恢复USB提交，末尾debt0。
-   [准确补充证据](../docs/evidence/tx-budget-observation-20261015.json)不改写旧manifest。
-2. 下一纵向链路优先继续实际111安全relay的正向对端交付：已有Session/typed发送/
-   命令credit/ticket/真实Complete/RX归属直接复用，定位147/1ff对端缺包，不另造Engine。
-   安全退出条件仍要求真正对端0014及实际批准/可信安装，不能由Complete或本批数据成功替代。
-3. 数据面并行推进begun PDU期间Managed撤权/disconnect/原期限与最终USB屏障，
-   组合实际ledger/ticket/C Session/Grant，再动态通道及四设备两组业务、唯一用户态
-   SSAP更新。当前burst pool满恢复不覆盖全部NOCP复用或撤权矩阵，不等待控制竞争全集。
-4. 本批门禁包括实际Native41/Session sanitizer、跨语言布局37、482工具检查、严格
-   构建，以及准确新VM业务/长度/fd退出。C consent311直接源码标量检查排除锁/引用/
-   Runtime/HCD/refinement；预算查询本身由实际回归覆盖，未宣称形式化完整证明。
-5. Kani credit保持NOT_PROVEN，保留caller_location/foreign-function诊断及旧超时。
-   下一步检查实际crate/生产panic路径与安装smoke的工具环境；禁止屏蔽警告、简化
-   ledger或始终成功桩换PASS。NOCP真值/重复晚到/USBcallback排空/firmware清除显式待证。
-6. 全S0–S6、19WP、10FV、12DG及原scope/预算保持；自然RCA/非人工恢复、部分
-   初始化/事件迁移/旧代码整改并行；UserHost P4规划。局部通过不关闭整项。
+1. 保留K494/Ud744的136轮/32拒绝/两角色严格fd与真实pool5恢复资格；新增
+   K494/Ue2a六组begun-PDU Managed release/最后控制File/dup撤权子门禁、16次
+   撤权前业务往返。[六组证据](../docs/evidence/managed-prefix-withdrawal-20261015.json)
+   不补发未完成PDU，不将撤权后同行扫描说成独立业务交付，不升级完整Grant。
+2. 安全主线优先定位**类型相关的实际111转发边界**。两端原版实际冷上传已排除
+   warm/staged路径混淆；生产1ff、canonical147及单纯接收表替换仍缺对端事件。
+   隔离133控制取得真实对端应用字节校验，保留同一Session/credit/ticket链，禁止把
+   错误类型映射合入生产或另造Engine。[完整正反证据](../docs/evidence/relay-class-boundary-20261015.json)。
+   下一有限退出：取得固件TX/ROM路径或真实空口的区分证据，再验证生产拒绝消息的
+   对端0014/拒绝callback；批准/安装/加密业务分别验收，不再盲目重复相同147/1ff矩阵。
+3. 数据面并行推进begun期间disconnect/原期限/最终USB屏障，复用实际ledger/ticket/
+   C Session/Grant与六组新回归。模型映射实现锁/身份/引用，原始deadline不刷新；
+   late/duplicate NOCP与handle复用尚未证明，按本次性质设置门禁，不等待控制竞争全集。
+   随后动态通道、四设备两组、唯一用户态SSAP通知/指示/ACK与真实应用交付继续推进。
+4. 本批工具491检查及准确VM正反证据通过限定门禁；诊断265实际codec Clang sanitizer
+   533352项IO检查不等于形式化证明或固件ABI。原C consent311仍排除锁/引用/Runtime/
+   HCD/NOCP；Kani unsupported/timeout/展开不全继续NOT_PROVEN，不抑制警告换PASS。
+5. 严格区分staged文件、实际USB上传、执行、控制器Complete、peer协议和应用处理。
+   固件身份以实际上传核对；仍不构成执行认证。SDK archive表、OHOS及lib版本分别记录，
+   不由任一推定固件支持。下一ROM/ISA分析保留工具缺口，不能将错误反汇编当证明。
+6. 完整S0–S6、19WP、10FV、12DG、预算及原scope不变；goal当前API为active。
+   自然RCA/非人工恢复、部分初始化/事件迁移/旧代码整改持续并行；UserHost P4规划，
+   不把诊断reset/QMP/注入/hub切电算自然恢复。局部通过不关闭整项。
 
 ## 连续目标与不变约束
 

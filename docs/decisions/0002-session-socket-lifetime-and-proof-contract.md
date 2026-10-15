@@ -2,8 +2,8 @@
 
 日期：2026-10-13。状态：目标架构采用；按下表整改，未实现项不宣称完成。
 用户完整提案已合入canonical ARCHITECTURE/IMPLEMENTATION_PLAN；采用与历史状态调整见
-[采用记录](../../history/architecture/architecture-adoption-20261013.json)。当前实现Kbf8663/编译用户态Udfb8636的40轮短消息、249边界与八项Grant scope门禁
-以CURRENT_CAPABILITIES为准；后续工具提交独立记录，不覆盖下述历史review基线。
+[采用记录](../../history/architecture/architecture-adoption-20261013.json)。当前准确实现与实机资格
+以CURRENT_CAPABILITIES为准（下文旧hash只标历史审查）；后续工具提交独立记录，不覆盖下述历史review基线。
 补充 ADR 0001，不缩减 S0–S6、drivers/net/slkd 分层或历史资格。
 Review 基线为 Linux4a3dc86ade58、用户态8cf052c。随后 ec67348 仅新增长度验收应用/
 工具；40轮资格仍绑定 K4a3dc86ade58、编译应用4426d97、工具c259bae。
@@ -14,8 +14,8 @@ Review 基线为 Linux4a3dc86ade58、用户态8cf052c。随后 ec67348 仅新增
 | 对象 | 所有权及失效规则 | 当前差距 |
 |---|---|---|
 | Runtime | controller generation、Backend生命周期、独立命令/data credit、设备故障及票据 | Host锁下准入与driver提交票据已接通；复用/迟到NOCP可信屏障仍待证明 |
-| ConnectionSession | 物理connection lifetime、CMTC、能力、通道表、连接级唯一RX分流 | Runtime持有Session；Session worker唯一消费ACB并分流，当前仅单Channel；多通道仍待实现 |
-| Channel | local/remote TCID、PI、模式、MTU/MPS、独立有界队列、协议关闭 | 目前仅固定CUTC31/PI241基础模式；动态/多通道未支持 |
+| ConnectionSession | 物理connection lifetime、CMTC、能力、通道表、连接级唯一RX分流 | Runtime持有Session；Session worker唯一消费ACB并分流，当前固定通道范围见CURRENT_CAPABILITIES；动态多通道仍待实现 |
+| Channel | local/remote TCID、PI、模式、MTU/MPS、独立有界队列、协议关闭 | 当前固定TCID/PI基础模式；动态协商/多通道完整验收未支持 |
 | SocketBinding | VFS fd引用、dup/最后关闭、授权范围/失效 | 已与Session分离；dup共享Binding，最后关闭释放本地队列；无可靠通道关闭协议，拒绝同lifetime重绑 |
 | slkd | 管理策略、授权、SSAP Engine/数据库、Agent、Bond、Profile | 内核Grant已核对全身份/方向/Managed epoch；可信安全与管理所有者死亡仍待验收 |
 

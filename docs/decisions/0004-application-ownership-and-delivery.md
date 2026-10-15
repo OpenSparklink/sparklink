@@ -49,6 +49,18 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
    其崩溃会释放管理 fd，当前 epoch 撤销作用于相应 Binding，不能承诺所有业务 fd
    跨 daemon 崩溃存活。重启以 kernel 注册/实际 snapshot 收敛，不复活旧授权。
 
+## Managed File 与业务 Binding 的撤权边界
+
+控制File的release或最终引用释放撤销所属Managed epoch；dup的第一次close不能
+释放仍有引用的租约。这不同于业务Binding最终close只释放本地未提交队列，亦不同于
+声称关闭已经发送的物理义务。已开始PDU可能留下无末片前缀，必须保留原credit债务与
+真实完成归属，不能模拟补齐或按应用退出退款。新lease不得恢复旧fd。
+
+证据只能在其实际观察精度内表达：release syscall前后区间、返回后无新USB提交、
+迟到NOCP及等待者终态可以验证子门禁；完整提交线性化、引用/复用与原期限组合仍需
+实际实现与模型对应。同行租约/Ready/扫描保留不等于另一独立业务连接存活。
+限定通过和未完成范围见唯一CURRENT_CAPABILITIES，不在本ADR累积逐轮资格。
+
 ## 改动相关门禁与剩余依赖
 
 | 门禁 | 实现/离线与形式化 | 实机及退出条件 |

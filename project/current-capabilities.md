@@ -5,9 +5,35 @@
 反例保留于[历史快照](../history/architecture/progress-snapshots-20261014.md)和
 [证据索引](../docs/evidence/index.md)，不能继承为新镜像 PASS。
 
+## 新增限定资格（2026-10-15）
+
+生产内核仍为 K `49467d4df595f8988a7ad6310b53932f37d68283`；本批编译服务
+U `e2a0139ff3ccbccb51f5a8606deda5a0d43688c3`，公开冷加载核对工具为
+`86e8cd81f4d18b4a26fcfca8d06832c38927f6e8`。本批无生产Runtime变更。
+
+- **实机限定通过**：Managed release／最后控制File关闭／dup最终引用释放，各两侧
+  共六组。在2042字节业务PDU实际已提交6片、1524字节后撤权，返回后无新USB提交；
+  每组观察2条迟到NOCP、阻塞者EACCES/ERR/HUP、新lease不复活旧fd，同行租约、Ready
+  与实际扫描保留。撤权前共16次真实随机业务往返；六个未完成PDU各为**零次**业务往返。
+  [六组准确证据与限制](../docs/evidence/managed-prefix-withdrawal-20261015.json)。
+- **安全生产交付仍失败**：两端均在捕获中逐字节核对实际上传原版111后，`1ff/02`
+  有真实Complete，无对端0014。canonical147及接收表替换也未修复。
+  独立诊断内核 `0b4b311336c45f82741fc323d339761545dd2132` 的支持类型133则
+  经同一Session/credit/票据到达对端并被应用校验；真实SM随后拒绝错误协议消息。
+  这是物理类型对照，**不是拒绝语义、批准配对或安全成功**；诊断映射未合并。
+  [正反对照、失败与固件字节身份](../docs/evidence/relay-class-boundary-20261015.json)。
+- **离线与形式化分开**：491工具检查通过；诊断265的实际codec在Clang sanitizer下
+  533352项synthetic IO检查通过。无新增完整安全证明；原consent311仍只限标量，
+  Kani unsupported/timeout及旧NOCP复用反例保持未证明。
+
+撤权时间仅由syscall前后区间限定，不宣称精确观察内核线性化瞬间；未覆盖所有在途提交、
+原期限、断链竞态、重复NOCP或handle复用。同行扫描不等于另一独立业务链路仍通信。
+完整Grant、S5、安全恢复及整项issues继续开放。下面136轮资格仍绑定原U d744，不能
+因工具提交或本批16轮自动升级为U e2a的全部长度/压力资格。
+
 ## 准确源码与范围
 
-本批准确镜像 K `49467d4df595f8988a7ad6310b53932f37d68283`／编译服务 U `d74421c210eeb1b706dbd90f3500442e28a214dc`。
+原长度/压力资格镜像 K `49467d4df595f8988a7ad6310b53932f37d68283`／编译服务 U `d74421c210eeb1b706dbd90f3500442e28a214dc`。
 原104轮全部已取得长度点及32超限拒绝重新回归，另32轮2042字节burst，共136轮
 真实对端随机序号/载荷校验与回复；严格fd退出两角色及真实SSAP/发现/连接保持。
 [准确源码、只读预算、两端时间线与限定门禁](../docs/evidence/tx-budget-observation-20261015.json)。
@@ -35,9 +61,9 @@ CBMC311标量检查直接映射本批C consent函数，排除锁/引用/Runtime/
 | WS73 广播扫描、建链断链 | 默认 Native 路径 | 实际入口/Host 回归 | 本批原路径回归保持；完整隔离/自然恢复仍未闭合 |
 | 普通用户业务 socket | 基础DGRAM、固定两通道、Session在途PDU/唯一分流、有限8项TX预算 | 实际Native/worker/consent限定检查；跨语言预算与482工具测试，完整组合仍缺 | 本批136轮/32超限、真实软件队列及controller池满恢复、严格fd退出保持；当前两角色burst池满/NOCP恢复子门禁；完整生命周期仍缺 |
 | 用户态 SSAP | 唯一actor，ExchangeInfo、单值读写、发现、UUID | 实际codec/预算/生命周期限定检查 | 新镜像原路径保持；底层DLI PB不等于SSAP长写/分片；正向CCC/通知/指示、安全及Profile仍缺 |
-| 安全 relay | 唯一物理Session子对象、typed1812、命令credit/票据、真实Complete关联、0014观察lifetime；默认拒绝未批准配对 | 原实际Host/codec回归与限定CBMC保留，Kani unsupported仍未证明 | 历史147/1ff对端交付失败；本批无新SMP资格，授权配对、可信安装/Bond和加密业务缺失 |
+| 安全 relay | 唯一物理Session子对象、typed1812、命令credit/票据、真实Complete关联、0014观察lifetime；默认拒绝未批准配对 | 原实际Host/codec回归与限定CBMC保留，Kani unsupported仍未证明 | 原版111两端冷上传后1ff仍失败；仅隔离133物理类型对照正向，不授予SMP资格，授权配对、可信安装/Bond和加密业务缺失 |
 | 应用权限与扫描 | controller scan RPC显式管理语义；可选sparklink-apps仅领取通道fd | XML白名单/实际调用迁移与严格daemon测试 | apps-only身份尚未实机验收；共享扫描租约/完整按应用策略仍缺，控制组caps0回归不能代替 |
-| 设备与daemon生命周期 | per-controller Runtime、epoch撤销、有限工作/期限；单进程daemon | 当前限定模型和实际取消/清理回归 | actor不是进程隔离；不默认承诺socket跨daemon崩溃存活；组合交错仍缺 |
+| 设备与daemon生命周期 | per-controller Runtime、epoch撤销、有限工作/期限；单进程daemon | 当前限定模型和实际取消/清理回归 | 六组begun撤权子门禁通过；actor不是进程隔离；不承诺跨daemon崩溃存活；完整组合仍缺 |
 | 长包/真实credit压力/多通道/四设备业务 | 有界PB、Session持有begun operation、8项包含busy、原期限 | 游标/consent限定证明保持；software与controller credit分别表达 | 所列长度及真实软件背压通过；两角色burst硬件池满恢复已取得；撤权/Down/期限、重复晚到NOCP/复用、动态多通道/四设备及完整DG03–12开放 |
 | 安全/恢复/PM/发布/UserHost | UserHost仅低优先级规划；实验代码不是生产能力 | 安装工具通过或模型通过不等于实现证明 | 原S0–S6全部未完成条件保持；自然RCA、非人工恢复及整项issues继续开放 |
 

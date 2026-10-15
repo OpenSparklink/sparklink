@@ -66,3 +66,9 @@
 
 [只读TX预算、真实池满/NOCP恢复和准确新镜像回归](tx-budget-observation-20261015.json)
 把新补充资格与旧manifest/software pressure分开；不授予完整credit、复用、安全或自然恢复。
+
+[六组真实begun-PDU Managed撤权、dup及同行隔离子门禁](managed-prefix-withdrawal-20261015.json)
+区分控制File与业务fd、16次撤权前往返和零次未完成PDU交付；完整原期限/断链/复用仍缺。
+
+[原版111两端实际上传、安全类型转发正反对照](relay-class-boundary-20261015.json)
+隔离133真实peer应用字节校验不等于生产拒绝语义；生产1ff/147缺包及未查明根因继续开放。

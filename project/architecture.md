@@ -161,6 +161,14 @@ Ready、Enabled、Available、Powered 不互相替代。Controller 元数据有�
 Managed release、最后 fd、dup、在途回复、设备移除和 daemon crash 与这份初始化事实日志组合验收，保持活动 Ready 同行不变。
 
 
+### 固件身份与分阶段转发证据
+
+配置中选择某固件、文件已staging、实际USB上传、固件执行及可信认证是不同事实。
+暖启动跳过下载或搜索路径差异不能靠文件名推断；诊断需核对实际成功上传字节与
+声明hash，但这仍不是执行认证。generation隔离不能替代固件身份或wire支持证明。
+同一Session/credit/票据下的支持类型正向对照，只能缩小失败边界；控制器Complete
+不能替代对端事件，错误类型消息不能因到达对端就发布为正确的安全协议成功。
+
 ## Backend、固件与协议差异
 
 ### 注册接口目标

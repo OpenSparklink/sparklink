@@ -345,6 +345,12 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             if grep -qw ws73.channel_prefix_close=1 /proc/cmdline; then connection_arg="$connection_arg --channel-socket-close-prefix"; fi
             if grep -qw ws73.channel_boundaries=1 /proc/cmdline; then connection_arg="$connection_arg --channel-socket-boundaries"; fi
         fi
+        for word in $(cat /proc/cmdline); do
+            case "$word" in
+                ws73.security_agent=approve|ws73.security_agent=reject|ws73.security_agent=timeout|ws73.security_agent=cancel|ws73.security_agent=agent-exit|ws73.security_agent=caller-exit)
+                    connection_arg="$connection_arg --security-agent=${word#*=}" ;;
+            esac
+        done
         if grep -qw ws73.acb_probe=1 /proc/cmdline; then connection_arg="$connection_arg --acb-transport-probe"; fi
         if grep -qw ws73.link_resync=1 /proc/cmdline; then connection_arg="$connection_arg --daemon-link-resync"; fi
     fi

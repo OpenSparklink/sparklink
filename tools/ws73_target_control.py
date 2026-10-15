@@ -126,6 +126,7 @@ def main():
     parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')
     parser.add_argument('--initializer-lifecycle',action='store_true',help='actual initializer withdrawal, eviction and guest-generation gate; excludes private File close/dup')
     parser.add_argument('--daemon-link-resync',action='store_true')
+    parser.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit'])
     parser.add_argument('--channel-socket-bytes',type=int,default=61)
     parser.add_argument('--channel-socket-burst',action='store_true')
     parser.add_argument('--channel-socket-close-prefix',action='store_true')
@@ -136,6 +137,7 @@ def main():
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
     parser.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t')
     args=parser.parse_args()
+    if args.security_agent and (not args.connection_verify or not args.channel_socket_verify):parser.error('Agent requires explicit connection/socket gate')
     if args.daemon_cancel_remove and not args.passthrough:
         parser.error('held cancellation/removal requires real passthrough mode')
     if args.initializer_lifecycle and (not args.passthrough or args.daemon_cancel_remove):

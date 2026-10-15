@@ -106,7 +106,7 @@ def prepare(args):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',
-                  HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_agent.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -137,9 +137,9 @@ def prepare(args):
         manifest['userspace_sources'] = [file_record(USERSPACE/p) for p in sorted(set(source_files))]
         manifest['userspace_head'] = subprocess.check_output(['git','rev-parse','HEAD'],cwd=USERSPACE,text=True).strip()
         with (output/'build.log').open('w') as log:
-            subprocess.run(['cargo','build','--offline','-p','libsparklink','--lib'],cwd=USERSPACE,
+            subprocess.run(['cargo','build','--offline','--locked','-p','libsparklink','--lib'],cwd=USERSPACE,
                            stdout=log,stderr=subprocess.STDOUT,check=True)
-            subprocess.run(['cargo','build','--offline','-p','slkd','-p','slctl','-p','slkconfig',
+            subprocess.run(['cargo','build','--offline','--locked','-p','slkd','-p','slctl','-p','slkconfig',
                             '-p','slkmon','-p','slkdump','--bins','--examples'],cwd=USERSPACE,
                            stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror',
@@ -216,6 +216,7 @@ def prepare(args):
         programs['managed-queue-probe'] = queued_probe
         programs.update({name:USERSPACE/'target/debug'/name for name in ['slkd','slctl','slkconfig','slkmon','slkdump']})
         programs['bus-policy-probe'] = USERSPACE/'target/debug/examples/bus_policy_probe'
+        programs['ws73-security-agent-probe'] = USERSPACE/'target/debug/examples/native_security_agent_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
         shared_library=USERSPACE/'target/debug/liblibsparklink.so'
         manifest['unstripped_programs'] = [file_record(p) for p in [*programs.values(),shared_library]]
@@ -226,6 +227,7 @@ def prepare(args):
         copy_elf(shared_library,root/'usr/lib/liblibsparklink.so',root)
         (root/'usr/lib/libsparklink.so').symlink_to('liblibsparklink.so')
         subprocess.run(['strip','--strip-debug',str(root/'usr/lib/liblibsparklink.so')],check=True)
+        manifest['native_security_agent_probe']=file_record(root/'bin/ws73-security-agent-probe')
         shutil.copytree(USERSPACE/'bindings/python/sparklink',root/'usr/share/sparklink/python/sparklink',
                         ignore=shutil.ignore_patterns('__pycache__'))
         python = args.python.resolve()
@@ -240,7 +242,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_security_agent.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -475,6 +477,7 @@ def _run(args):
     daemon_crash=bool(getattr(args,'daemon_crash',False))
     connection_verify=bool(getattr(args,'connection_verify',False))
     acb_probe=bool(getattr(args,'acb_transport_probe',False))
+    agent_mode=getattr(args,'security_agent',None)
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
     channel_bytes=getattr(args,'channel_socket_bytes',61)
     channel_boundaries=bool(getattr(args,'channel_socket_boundaries',False))
@@ -489,6 +492,10 @@ def _run(args):
     if channel_socket and (not connection_verify or acb_probe or link_resync):raise ValueError('ordinary channel socket requires a separate real connection gate without test module')
     if acb_probe and (not connection_verify or link_resync):raise ValueError('ACB selftest requires separate explicit connection gate')
     if link_resync and not connection_verify:raise ValueError('link resync requires explicit ordinary native connection gate')
+    if agent_mode is not None:
+        from ws73_security_agent import MODES
+        if agent_mode not in MODES or not channel_socket or not connection_verify or not passthrough or any(getattr(args,k,False) for k in ['channel_socket_close_prefix','managed_security_capabilities','managed_channel_grant']):
+            raise ValueError('Agent gate requires separate ordinary native two-device connection/socket run with staged real Agent witness')
     connection_advertising=getattr(args,'connection_advertising','fixed-t')
     if connection_advertising!='fixed-t' and not connection_verify:
         raise ValueError('connection advertising contrast requires connection verification')
@@ -624,6 +631,8 @@ def _run(args):
     m['connection_verify_requested']=connection_verify
     m['live_daemon_link_resync']=link_resync
     m['acb_transport_selftest_requested']=acb_probe
+    m['live_security_agent_requested']=agent_mode
+    if agent_mode:m['security_agent_verifier']=file_record(HERE/'ws73_security_agent.py')
     m['channel_socket_verification_requested']=channel_socket
     m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
@@ -710,6 +719,7 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if agent_mode and ('native_vm' not in package or 'native_security_agent_probe' not in package):raise ValueError('Agent requires native VM and staged real witness')
         if early_fault and 'native_vm' not in package:raise ValueError('early bootstrap fault requires signed native VM')
         if channel_death:validate_channel_death_mode(args,package)
         if acb_probe and 'acb_probe_module' not in package:raise ValueError('frozen signed ACB selftest module missing')
@@ -780,6 +790,7 @@ def _run(args):
                      (' ws73.channel_prefix_close=1' if channel_close else '')+
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
+                     (f' ws73.security_agent={agent_mode}' if agent_mode else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.early_bootstrap_fault=1' if early_fault else '')+
                      (' ws73.event_copy=1' if event_copy else '')+
@@ -1085,6 +1096,11 @@ def _run(args):
                     if link_resync:
                         from ws73_link_resync import corroborate as resync_corroborate
                         m['link_resync_corroboration']=resync_corroborate(control,capture)
+                if bool(agent_mode) != ('security_agent' in control):raise ValueError('Agent request/evidence mismatch')
+                if agent_mode:
+                    from ws73_security_agent import corroborate as agent_corroborate
+                    if any(v['mode']!=agent_mode for v in control['security_agent']):raise ValueError('explicit Agent mode mismatch')
+                    m['security_agent_corroboration']=agent_corroborate(control,capture)
                 if acb_probe != ('acb_transport_probe' in control):raise ValueError('explicit ACB probe request/evidence mismatch')
                 if acb_probe:
                     from ws73_acb_transport_probe import corroborate as acb_corroborate
@@ -1239,11 +1255,13 @@ def _run(args):
                     # later qualification must not erase/mutate earlier evidence.
                     from ws73_daemon_removal import verify_sealed_record
                     verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']='REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
                     m['error']='environment timeout; capture sealed; physical control not accepted'
+        if agent_mode and file_record(HERE/'ws73_security_agent.py')!=m['security_agent_verifier']:
+            raise ValueError('Agent verifier changed during run')
         if parallel and file_record(HERE/'ws73_parallel.py')!=m['parallel_verifier']:
             raise ValueError('parallel verifier changed during run')
         prepared(args.prepared.resolve())
@@ -1339,6 +1357,7 @@ def main():
             cmd.add_argument('--early-bootstrap-fault',action='store_true',help='separate native three-real-device missing-custom fault, ordinary Core diagnostics and peer business; controlled QMP retry only')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--channel-daemon-crash',action='store_true',help='actual slkd SIGKILL with ordinary retained business fd, successor and no USB reset')
+            cmd.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit'],help='actual ordinary Agent policy plus current native relay and peer application evidence; requires separate connection/socket gate')
             cmd.add_argument('--channel-daemon-index',type=int,choices=[0,1],default=0)
             cmd.add_argument('--daemon-crash',action='store_true',help='actual active-radio SIGKILL/last-File cleanup and successor before native RF22; separate --qmp-hotplug mode')
             cmd.add_argument('--observer-policy',action='store_true',help='actual default observer/control read and denial roles before/after native RF22; separate --qmp-hotplug mode')

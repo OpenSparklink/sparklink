@@ -26,13 +26,22 @@
   "hardware_constraint": {
     "affected_port": "1-2.1.2",
     "original_restore_verified": false,
-    "user_response": "Ignore this port (2026-10-15)",
-    "ignored_for_current_operations": true,
-    "do_not_operate_or_request_manual_action": true,
+    "user_response": "Port2 physically replugged,2026-10-15",
+    "ignored_for_current_operations": false,
+    "do_not_operate_or_request_manual_action": false,
     "manual_request_pending": false,
-    "current_available_scope": "Use ports1/4. Exacteff620/2cd two-role installation +15 retained gates +6 related Managed prefix withdrawal PASS. Port2 ignored, four-device and natural recovery incomplete.",
+    "current_available_scope": "Ports1/4 exacteff620/2cd qualified; port2 re-enumerated after user replug, Ready/original111 and business unverified, bounded VM requalification next; four-device/natural recovery remain incomplete.",
     "four_device_gate": "Incomplete, not waived",
-    "natural_recovery_acceptance": false
+    "natural_recovery_acceptance": false,
+    "previous_directive": "Ignore port2 after failed RAM restore; superseded for bounded VM requalification by user physical replug update",
+    "bounded_vm_qualification_only": true,
+    "enumeration_observed": {
+      "port": "1-2.1.2",
+      "vid": "ffff",
+      "pid": "3733",
+      "bus": 1,
+      "device": 85
+    }
   },
   "packages": [
     {
@@ -661,7 +670,7 @@
     "bond": false,
     "whole_security_qualified": false,
     "next_exit": "One-request author cancellation then Agent/method/caller integration on sole Session, original deadline and physical debt retained; positive/reject/owner-loss real VM application replies. Data gates remain parallel.",
-    "ignored_port": "1-2.1.2"
+    "excluded_port_in_qualified_runs": "1-2.1.2"
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact415/376136dataRT plus8candidatebeforeafter and8oldmodebeforeafter; counts separate",
@@ -682,7 +691,7 @@
     "FV_SECURITY_KEY_AGREEMENT": "NOT_PROVEN_UNSUPPORTED exact415 actualTjob/withdraw/expiry/physicalobligation queue2/unwind80,1110generatedchecks; no fullprotocol/locks/crypto proof"
   },
   "next_resume_tasks": [
-    "Ignore port1-2.1.2 by userdirective: no operation/recovery/manualrequest; preservefailedrestore evidence, fourdevice/naturalrecovery scopes remain unqualified. Continue ports1/4.",
+    "Port2 user physically replugged and ffff:3733 re-enumerated; bounded VM original111/Ready/business requalification, not automatic recovery. Preserve original failed restore evidence; no four-device waiver.",
     "One-request author cancellation then Agent/method/caller integration on sole Session, original deadline and physical debt retained; positive/reject/owner-loss real VM application replies. Data gates remain parallel.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
@@ -814,6 +823,15 @@
     "new_physical_acceptance": false,
     "agent_connected": false,
     "next_exit": "Exact clean build and real passive-author cancellation with same links/lease/business/peer preserved, then Agent/method/caller wiring using this ioctl; controlled in-flight Status/event/deadline remains open.",
-    "evidence": "docs/evidence/security-author-cancel-20261015.json"
+    "evidence": "docs/evidence/security-author-cancel-20261015.json",
+    "bindings_commit": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+    "no_usb_vm": "WS73/standard signed-module root smoke +Virtual PASS; not physical",
+    "issue_receipt": "docs/evidence/security-author-cancel-issues-20261015.json",
+    "kernel_test_commit": "239e0171b6ef0edfdb3db35eb8241308c2f43ea2",
+    "ci_failure": {
+      "commit": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "run": 38724159043,
+      "cause": "Protected guest matrix omitted CANCEL; additionally stale102/35 verdict totals differed from actual source. Test-only239e017 fixes exact membership and derives actual totals;4 contract/79 verdict tests +C compile pass. New CI pending."
+    }
   }
 }

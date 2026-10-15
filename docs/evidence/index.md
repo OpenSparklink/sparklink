@@ -124,3 +124,5 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [类型化单安全作者请求取消：生产实现、离线检查与实机缺口](security-author-cancel-20261015.json)：
 准确45c049构建，28纯转换/39跨语言；1766检查unsupported未证明，不继承eff620实机资格。
+
+[单请求取消六项现有issues读回回执](security-author-cancel-issues-20261015.json)：保留原scope/OPEN，取消实机和Agent仍缺。

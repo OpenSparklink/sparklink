@@ -34,6 +34,7 @@ def corroborate(r,capture):
             if raw[:2]!=owner['handle'].to_bytes(2,'little') or raw[2:4]!=index.to_bytes(2,'little'):raise CaptureError('opposite real ingress role/handle/index required')
             received[index]=event
         if any(same(v) and v['event'] in [0x11,0xe] and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns'] for v in capture['native_events']):raise CaptureError('candidate agreement cannot install/enable encryption')
+        if any(same(v) and v['opcode'] in [0x1c03,0x1c05] and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns'] for v in capture['commands']):raise CaptureError('candidate-only evidence must contain no key install command')
         event=row['down'][n];raw=bytes.fromhex(event['params'])
         matches=[v for v in capture['native_events'] if same(v) and v['event']==event['event'] and v['params']==event['params'] and row['cleanup_before_wall_ns']<=v['wall_ns']<=row['cleanup_after_wall_ns']]
         if len(matches)!=1 or event['generation']!=owner['generation'] or event['lost'] or len(raw)!=4 or raw[0] or int.from_bytes(raw[1:3],'little')!=owner['handle']:raise CaptureError('actual same-lifetime cleanup Down required')

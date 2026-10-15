@@ -66,7 +66,7 @@ class LimitedCapabilities(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises(ValueError):verify(r)
 
     def test_usb_complete_alone_or_wrong_reply_is_not_delivery(self):
-        for kind in ['missing_rx','wrong_rx','missing_out','failed_complete','wrong_echo','causality','scan','business']:
+        for kind in ['missing_rx','wrong_rx','missing_out','failed_complete','wrong_echo','causality','scan','install','business']:
             r,c=fixture()
             if kind=='missing_rx':c['native_events'].pop(0)
             elif kind=='wrong_rx':c['native_events'][0]['params']='000035010a'+bytes(10).hex()
@@ -75,5 +75,6 @@ class LimitedCapabilities(unittest.TestCase):
             elif kind=='wrong_echo':c['complete'][0]['value']='01003401'
             elif kind=='causality':c['native_events'][0]['wall_ns']=190
             elif kind=='scan':c['complete'][-1]['status']=1
+            elif kind=='install':c['commands'].append(dict(**r['usb'][0],opcode=0x1c05,params='',wall_ns=240))
             else:c['acb_packets'].pop(0)
             with self.subTest(kind=kind),self.assertRaises(ValueError):corroborate(r,c)

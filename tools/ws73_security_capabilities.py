@@ -168,6 +168,7 @@ def corroborate(r,capture):
         incoming=[v for v in capture['native_events'] if same(v) and v['event']==0x14 and row['g_start_before_wall_ns']<=v['wall_ns']<=row['observed_wall_ns']]
         if len(incoming)!=1 or incoming[0]['params']!=body(rx_index).hex():raise CaptureError('opposite real received 0014 bytes required, local Complete insufficient')
         if any(v['event'] in [0x11,0xe] and same(v) and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns'] for v in capture['native_events']):raise CaptureError('limited exchange must not install/enable encryption')
+        if any(v['opcode'] in [0x1c03,0x1c05] and same(v) and row['start_wall_ns']<=v['wall_ns']<=row['cleanup_before_wall_ns'] for v in capture['commands']):raise CaptureError('capability-only evidence must contain no key install command')
         proof.append(dict(command=commands[0],complete=replies[0],peer_rx=incoming[0]))
         event=row['down'][n];matches=[v for v in capture['native_events'] if same(v) and v['event']==event['event'] and v['params']==event['params'] and row['cleanup_before_wall_ns']<=v['wall_ns']<=row['cleanup_after_wall_ns']]
         raw=bytes.fromhex(event['params'])

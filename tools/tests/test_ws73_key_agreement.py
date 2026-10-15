@@ -31,7 +31,7 @@ class KeyAgreementEvidence(unittest.TestCase):
         self.assertEqual([len(v['relays']) for v in p['controllers']],[4,5]);self.assertEqual(p['business_round_trips'],4)
 
     def test_no_local_success_complete_or_caps_upgrade_to_candidate_proof(self):
-        for kind in ['state4','flag1','missing_rx','wrong_proof','missing_complete','bad_complete','bad_echo','duplicate','early_confirm','encryption','business']:
+        for kind in ['state4','flag1','missing_rx','wrong_proof','missing_complete','bad_complete','bad_echo','duplicate','early_confirm','encryption','install','business']:
             r,c=fixture();row=r['security_capabilities']
             if kind=='state4':v=decode(Result,row['results'][0]);v.state=4;row['results'][0]=bytes(v).hex()
             elif kind=='flag1':v=decode(Submit,row['requests'][0]);v.flags=1;row['requests'][0]=bytes(v).hex()
@@ -43,5 +43,6 @@ class KeyAgreementEvidence(unittest.TestCase):
             elif kind=='duplicate':c['commands'].append(c['commands'][-1].copy())
             elif kind=='early_confirm':next(v for v in c['complete'] if v['opcode']==0x1812 and v['value']=='00003701')['wall_ns']=220
             elif kind=='encryption':c['native_events'].append(dict(**r['usb'][0],event=0x11,params='',wall_ns=240))
+            elif kind=='install':c['commands'].append(dict(**r['usb'][0],opcode=0x1c03,params='',wall_ns=240))
             else:c['acb_packets'].pop()
             with self.subTest(kind=kind),self.assertRaises(ValueError):corroborate(r,c)

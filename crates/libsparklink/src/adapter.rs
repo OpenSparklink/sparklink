@@ -736,7 +736,7 @@ impl Adapter {
         Ok(())
     }
 
-    /// Explicit experimental capability-only approval, not Pair or encryption.
+    /// Explicit experimental capability/candidate agreement, not Pair/encryption.
     /// Requires the current Managed File, exact physical reference and admin.
     /// One exchange per lifetime; client disconnects after this limited probe.
     pub fn submit_native_security_negotiation(
@@ -773,11 +773,11 @@ impl Adapter {
             || output.lifetime != lifetime
             || output.handle != handle
             || output.request_id != request_id
-            || !matches!(output.state, 1 | 2 | 4 | 5 | 6 | 7)
+            || !matches!(output.state, 1 | 2 | 4 | 5 | 6 | 7 | 8)
             || output.flags & !7 != 0
             || output.role > 1
             || output.reserved != [0; 4]
-            || (output.state == 4
+            || (matches!(output.state, 4 | 8)
                 && (output.flags != 7
                     || output.status != 0
                     || output.error != 0

@@ -1648,3 +1648,5 @@ pub struct SleSecurityNegotiationResult {
 
 /// Explicit opt-in to the limited exchange; never a trusted-security flag.
 pub const SECURITY_CAPABILITY_ONLY: u32 = 1;
+/// Unauthenticated candidate agreement only, no Agent/install/encryption/Bond.
+pub const SECURITY_KEY_AGREEMENT_ONLY: u32 = 2;

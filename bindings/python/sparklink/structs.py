@@ -408,6 +408,10 @@ class SleChannelTxStatus(ctypes.Structure):
         ("pool_exhaustions", ctypes.c_uint64)]
 
 
+SECURITY_CAPABILITY_ONLY = 1
+SECURITY_KEY_AGREEMENT_ONLY = 2
+
+
 class SleSecurityNegotiationSubmit(ctypes.Structure):
     """Explicit limited exchange approval; no raw relay or trusted security."""
     _align_ = 8
@@ -417,7 +421,7 @@ class SleSecurityNegotiationSubmit(ctypes.Structure):
 
 
 class SleSecurityNegotiationResult(ctypes.Structure):
-    """Local observations only; state4 is neither Pair nor Encrypted."""
+    """Local observations only; state4/8 are neither Pair nor Encrypted."""
     _align_ = 8
     _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),("request_id",ctypes.c_uint64),
         ("version",ctypes.c_uint32),("profile",ctypes.c_uint32),("state",ctypes.c_uint32),("error",ctypes.c_int32),("flags",ctypes.c_uint32),

@@ -141,6 +141,8 @@ class TestAbiConformance(unittest.TestCase):
             f"#include {json.dumps(str(PUBLIC_HEADER))}",
             "int main(void) {",
         ]
+        for name in ['SECURITY_CAPABILITY_ONLY','SECURITY_KEY_AGREEMENT_ONLY']:
+            c_source.insert(-1,f'_Static_assert({name} == SLE_{name} && {name} == {getattr(structs,name)}, "security mode contract");')
         for name, kernel_name in STRUCT_NAMES.items():
             for kind, c_type in (("kernel", "struct " + kernel_name), ("public", name)):
                 c_source.append(
@@ -167,6 +169,8 @@ class TestAbiConformance(unittest.TestCase):
             "use std::mem::{align_of, offset_of, size_of, size_of_val};",
             "fn main() {",
         ]
+        for name in ['SECURITY_CAPABILITY_ONLY','SECURITY_KEY_AGREEMENT_ONLY']:
+            rust_source.insert(-1,f'const _: () = assert!({name} == {getattr(structs,name)});')
         for name in STRUCT_NAMES:
             rust_source.extend([
                 f'println!("rust {name} STRUCT {{}} {{}}", size_of::<{name}>(), align_of::<{name}>());',

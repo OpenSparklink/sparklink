@@ -23,10 +23,14 @@ pub const SNOOP_PAYLOAD_MAX: usize = 320;
 /// C header constants, checked against the canonical protocol declaration.
 pub const LINK_SNAPSHOT_MAX: usize = 16;
 pub const LINK_SNAPSHOT_KNOWN: u32 = 1;
+pub const SECURITY_CAPABILITY_ONLY: u32 = 1;
+pub const SECURITY_KEY_AGREEMENT_ONLY: u32 = 2;
 const _: () = assert!(CONTROLLER_EVENT_PAYLOAD_MAX == slk_protocol::CONTROLLER_EVENT_PAYLOAD_MAX);
 const _: () = assert!(SNOOP_PAYLOAD_MAX == slk_protocol::SNOOP_PAYLOAD_MAX);
 const _: () = assert!(LINK_SNAPSHOT_MAX == slk_protocol::LINK_SNAPSHOT_MAX);
 const _: () = assert!(LINK_SNAPSHOT_KNOWN == slk_protocol::LINK_SNAPSHOT_KNOWN);
+const _: () = assert!(SECURITY_CAPABILITY_ONLY == slk_protocol::SECURITY_CAPABILITY_ONLY);
+const _: () = assert!(SECURITY_KEY_AGREEMENT_ONLY == slk_protocol::SECURITY_KEY_AGREEMENT_ONLY);
 
 pub type Result<T> = std::result::Result<T, Error>;
 

@@ -116,3 +116,6 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 [OpenHarmony参考审计三项现有issue读回回执](openharmony-peripheral-issues-20261015.json)：原scope及OPEN保留。
 
 [两角色安装及后续整改九项issue读回回执](security-installation-issues-20261015.json)：原scope和整项OPEN保持。
+
+[eff620物理Session撤权保留、两角色安装、15组保持及6组Managed回归](session-owner-retention-20261015.json)：
+准确2cd编译/封存工具；旧引用丢失离线反例与限定Kani未证明分列，不授予Agent/Bond或自然恢复。

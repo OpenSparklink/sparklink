@@ -531,3 +531,17 @@ SDK111 与 `libws73-usb@f4d85d0`。请求返回、传输写入、控制器完成
 不替代 per-controller 引用、generation/lifetime/epoch 与真实排空屏障。
 [差异、许可证与源码身份](../explanation/openharmony-dli-reference.md)纳入原决策，
 不复制框架、不新增 Engine、不改变 Native/UserHost 所有权；未来厂商 Host 适配仍延期。
+
+## 作者撤销与物理Session引用（2026-10-15）
+
+Session注册表按物理lifetime/handle保持唯一所有者，授权epoch是该对象的不可继承
+准入条件；撤权停止作者/数据工作但不抹掉对象和异步安装义务。事件处理先取得表中
+已有对象的独立kref，再核对Host/gate/实际物理身份与原epoch；不因晚到000e/0011
+分配Session或授权后继lease。stop/join在表/Host/gate锁外执行。真实Down/注册退休
+与作者取消不同；完整USB排空和硬件复用屏障仍需单独证明/验收。
+
+Agent接线必须区分调用者的安全请求与controller Managed所有权：一个调用者消失或
+取消不能通过释放整个租约清理其他应用。下批以类型化单请求取消接同一Session状态
+转换；请求取消不声称物理加密过程已撤回，命令Status不能消除待0011的物理义务。
+原期限覆盖Agent等待及后续工作；明确批准只代表方法策略，不变成认证身份或Bond。
+此段定义目标契约，不声明尚未接通的Agent/单请求取消已实现。

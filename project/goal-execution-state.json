@@ -30,7 +30,7 @@
     "ignored_for_current_operations": true,
     "do_not_operate_or_request_manual_action": true,
     "manual_request_pending": false,
-    "current_available_scope": "Use ports1/4. Exact f5/3eb two-role unauthenticated installation and all15 old-mode/data gates passed; later337/dirty changes need fresh exact qualification. Port2 ignored and four-device gate remains incomplete.",
+    "current_available_scope": "Use ports1/4. Exacteff620/2cd two-role installation +15 retained gates +6 related Managed prefix withdrawal PASS. Port2 ignored, four-device and natural recovery incomplete.",
     "four_device_gate": "Incomplete, not waived",
     "natural_recovery_acceptance": false
   },
@@ -651,20 +651,17 @@
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "status": "EFF620_SESSION_OWNER_COMMITTED_BUILD_PASSED_REAL_VM_PENDING",
-    "qualified_kernel": "f5c79a50467b41f2e055dfea64786ce34730a4a5",
-    "compiled_userspace": "3eb3c459c68686479a95b6942dbe5a736a2c3a9b",
-    "executed_vm_tools": "3eb3c459c68686479a95b6942dbe5a736a2c3a9b",
-    "evidence": "docs/evidence/security-installation-20261015.json",
-    "physical_acceptance": "Two-role unauthenticated installation only, 4 before/4 after controller-reported encryption business RT; full security not qualified",
-    "new_kernel_head": "eff62088fe572f417fbd87e4a32b8305b658b4b5",
-    "dirty_preserved": [],
-    "next_exit": "Stage exacteff620 VM and run both installation roles plus old15 gates; targeted cancellation/Down/original-deadline receipts. Then Agent/method policy, not another Engine.",
+    "status": "EFF620_TWO_ROLE_INSTALL_15_RETAINED_AND6_MANAGED_REAL_PASS_AGENT_NEXT",
+    "qualified_kernel": "eff62088fe572f417fbd87e4a32b8305b658b4b5",
+    "compiled_userspace": "2cd55722d483b3a651d5351d2adf58ffc8b09618",
+    "executed_vm_tools": "2cd55722d483b3a651d5351d2adf58ffc8b09618",
+    "evidence": "docs/evidence/session-owner-retention-20261015.json",
+    "physical_acceptance": "Scoped unauthenticated installation plus retained data/Managed regression only",
     "agent_consent": false,
     "bond": false,
     "whole_security_qualified": false,
-    "ignored_port": "1-2.1.2",
-    "new_runtime_build": "PASS exact clean source; no inherited RF qualification"
+    "next_exit": "One-request author cancellation then Agent/method/caller integration on sole Session, original deadline and physical debt retained; positive/reject/owner-loss real VM application replies. Data gates remain parallel.",
+    "ignored_port": "1-2.1.2"
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact415/376136dataRT plus8candidatebeforeafter and8oldmodebeforeafter; counts separate",
@@ -686,7 +683,7 @@
   },
   "next_resume_tasks": [
     "Ignore port1-2.1.2 by userdirective: no operation/recovery/manualrequest; preservefailedrestore evidence, fourdevice/naturalrecovery scopes remain unqualified. Continue ports1/4.",
-    "Stage exacteff620 VM and run both installation roles plus old15 gates; targeted cancellation/Down/original-deadline receipts. Then Agent/method policy, not another Engine.",
+    "One-request author cancellation then Agent/method/caller integration on sole Session, original deadline and physical debt retained; positive/reject/owner-loss real VM application replies. Data gates remain parallel.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
@@ -702,7 +699,7 @@
     "status": "PROGRESS",
     "reason": "Same physical Session install metadata/late materialization/final ticket and actual-lifetime000e/0011 wired in308a/f5;18production transitions/68Host/21actual driverfaults/real cryptoVM/redaction checks; new realVM gate pending, no inherited qualification."
   },
-  "execution_status": "active; limited134/135 positive achieved on ports1/4, data/SSAP and next security stage continue. Port2restore unavailable is not whole-goal blocker.",
+  "execution_status": "active; exacteff620 installation/data/related Managed gates passed, Agent/caller operation ownership next; full original S0-S6 remains open",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "current_qualified_subsets": {

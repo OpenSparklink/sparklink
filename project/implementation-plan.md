@@ -6,24 +6,24 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-本批有限实机退出已取得：准确 K `f5c79a50467b` / 编译及封存工具 U `3eb3c459c686`，
-复用唯一物理Session/relay/命令credit/最终票据，交换角色通过真实1c03/000e/1c05、
-各自命令接受与0011、每轮9条relay/Complete/对端0014。原5秒内约37.4/35.9ms；
-8次普通用户随机应用回复中4次安装前、4次控制器报告初始加密后。15组旧模式/数据
-回归通过，其中11组136次业务、32次超限拒绝和两角色严格最后fd。
-[准确身份、限定范围及私有捕获hash](../docs/evidence/security-installation-20261015.json)。
-这是未认证安装子资格，不是Agent批准、认证身份、可信Grant、Bond或独立空口密码证明。
+本批有限退出已取得：准确 K `eff62088fe57` / 编译与封存工具 U `2cd55722d483`，
+唯一物理Session撤权保留、后继epoch拒绝、000e/0011只结算旧义务；准确严格构建、
+无设备/Virtual VM及CI通过。实机两角色安装各9条relay/Complete/peer RX、真实角色
+命令接受与0011；8次应用回复中4次安装前、4次控制器报告加密后。另15组保持回归、
+136次业务/32拒绝/严格fd及真实pool5恢复，6组Managed release/最后fd/dup同行隔离
+均通过。[准确提交及完整限定](../docs/evidence/session-owner-retention-20261015.json)。
 
-当前近期收尾：K `337eab0b6e6f`补命令Status后仍保留异步安装义务；新 K `eff62088fe57` 将
-Session原epoch物理所有权保留至真实Down，停止作者工作但不因撤权替换物理对象。
-上述整改已签名推送并完成准确提交内核构建，接着取得新镜像两角色安装、旧15组
-及相关撤权/Down/原期限交错。44项实际Native/data函数及337的23项纯转换只是限定
-离线通过；Kani1681检查存在unsupported，仍未证明，更不覆盖dirty引用/锁/USB。
+这不是Agent批准、认证身份/可信Grant、Bond或独立空口密码证明。44项实际Native、
+68项Host和23项生产纯转换的限定通过与实机分列；旧f5丢表引用反例仅离线复现。
+原337的Kani1681检查仍unsupported，生产纯源码hash未变不等于eff620集成已证明。
+6组Managed数据前缀撤权不是安全安装Status/0011的受控交错，后者仍并行补齐。
 
-下一有限退出：沿用唯一机制接Agent/method授权与策略，保留角色安装与加密后对端
-业务回复门禁，随后推进认证级别/Bond/重连。命令接受不能替代0011，控制器报告不能
-替代对端应用处理。不等待控制面竞争全集；长包/credit、动态通道、四设备两组和真实
-SSAP通知/指示继续并行。完整原S5及S0–S6均保持；默认未支持入口继续NotSupported。
+下一有限退出沿用唯一机制接Agent/method/调用者策略：先补全身份绑定的单请求
+取消，禁止用整个Managed租约撤销来取消一个应用；保留物理Session和已提交义务，
+原期限覆盖Agent等待及内核工作。接线取得真实批准/拒绝、原期限、调用者退出与
+双设备应用回复证据，再推进认证级别/Bond/重连。只设置本批相关门禁，不等待全部
+控制面竞争；长包/credit、动态通道、四设备两组和SSAP通知/指示继续并行。
+完整原S0–S6与默认未支持入口NotSupported保持。
 
 旧K494/Ud744和Ue2a的准确证据保留如下，不因新实现自动继承：
 

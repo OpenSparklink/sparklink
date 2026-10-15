@@ -845,7 +845,7 @@ applicable_version = "670674736ac90ec0f89ca0330849e22b1bc8f81b"
 authority = "docs/decisions/0001-management-channel-service-boundaries.md"
 disposition = "保留原路径，作为唯一权威来源构建"
 source_sha256 = "e117784d410c482cebe100d9139ce34a1aa9b61f24c56d8f0cf6c413a4472d51"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/decisions/0002-session-socket-lifetime-and-proof-contract.md"
@@ -859,7 +859,7 @@ applicable_version = "670674736ac90ec0f89ca0330849e22b1bc8f81b"
 authority = "docs/decisions/0002-session-socket-lifetime-and-proof-contract.md"
 disposition = "保留原路径，作为唯一权威来源构建"
 source_sha256 = "d33061e61e250b1fe0fa67f697877e2f63bdd7a1c3116aaf2f2737b72c808f9a"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/decisions/0003-optional-exclusive-user-host.md"
@@ -873,7 +873,7 @@ applicable_version = "670674736ac90ec0f89ca0330849e22b1bc8f81b"
 authority = "docs/decisions/0003-optional-exclusive-user-host.md"
 disposition = "保留原路径，作为唯一权威来源构建"
 source_sha256 = "62eb9b0639e90fcdbdde492f7fc335aa4824268643f4f8916905c8dfc4bf8e14"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "formal/README.md"
@@ -957,7 +957,7 @@ applicable_version = "dc040002555c17cba3594f2857b3d441409d70d6"
 authority = "所链接原文件、实际源码及 project/current-capabilities.md"
 disposition = "原路径保留；已编排读者任务，不复制架构／实施计划／资格"
 source_sha256 = "3d650dfc990bbdc162b72c525546b86d581ca8572ea3f0066a31ad76cd937876"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/evidence/index.md"
@@ -971,7 +971,7 @@ applicable_version = "dc040002555c17cba3594f2857b3d441409d70d6"
 authority = "所链接原文件、实际源码及 project/current-capabilities.md"
 disposition = "原路径保留；已编排读者任务，不复制架构／实施计划／资格"
 source_sha256 = "f92d0f06bcbc20111dba01d7381c909a1c0f56bb086acbdc363f4b5f6994b9a4"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/explanation/documentation-model.md"
@@ -1013,7 +1013,7 @@ applicable_version = "dc040002555c17cba3594f2857b3d441409d70d6"
 authority = "所链接原文件、实际源码及 project/current-capabilities.md"
 disposition = "原路径保留；已编排读者任务，不复制架构／实施计划／资格"
 source_sha256 = "9270463d12d0d0f5500157d8da97a7b11b6bff132e716334a90850c06f05ebbc"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/history/records.md"
@@ -1027,7 +1027,7 @@ applicable_version = "dc040002555c17cba3594f2857b3d441409d70d6"
 authority = "所链接原文件、实际源码及 project/current-capabilities.md"
 disposition = "原路径保留；已编排读者任务，不复制架构／实施计划／资格"
 source_sha256 = "ea0cf6f5871ad2baccccf177de10d0f525caf9062dbdb9911a5393366c13adc6"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/how-to/capture-and-check-discovery.md"
@@ -1139,7 +1139,7 @@ applicable_version = "dc040002555c17cba3594f2857b3d441409d70d6"
 authority = "所链接原文件、实际源码及 project/current-capabilities.md"
 disposition = "原路径保留；已编排读者任务，不复制架构／实施计划／资格"
 source_sha256 = "f5b448dbd469d392a38bd4a04c77688dcd08a360fa425a1f8b528ac1a1b718e2"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/project/index.md"
@@ -1153,7 +1153,7 @@ applicable_version = "dc040002555c17cba3594f2857b3d441409d70d6"
 authority = "所链接原文件、实际源码及 project/current-capabilities.md"
 disposition = "原路径保留；已编排读者任务，不复制架构／实施计划／资格"
 source_sha256 = "953c066fa064e4c4f81b34bd7f6d3300c5cb8d3ba97ab286ff85115955b06273"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/reference/controller-events.md"
@@ -1252,7 +1252,7 @@ applicable_version = "dc040002555c17cba3594f2857b3d441409d70d6"
 authority = "原文准确提交及 CURRENT_CAPABILITIES.md"
 disposition = "原路径保留；索引不复制内核正文"
 source_sha256 = "3a5dee02941c3b49f3c6f1c64cc5ef02d9062a0b38c9289a40bd7245dd74bf8c"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/how-to/capture-controller-snoop.md"
@@ -1323,7 +1323,7 @@ applicable_version = "ac64b3566f330557a025f1994b0a6f49a22b3bd3"
 authority = "project/current-capabilities.md 与准确源码"
 disposition = "独立读者页面；不复制权威计划或资格"
 source_sha256 = "619da22fcc9c65b46a862e3ab4deb2db19b053ee22d88a2cd17486f5ae010015"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/reference/ssap-permissions.md"
@@ -1366,7 +1366,7 @@ applicable_version = "a629b1616bcd377fb9901a164c1b85af12e3b43b"
 authority = "project/implementation-plan.md"
 disposition = "仅include指令；Sphinx读取并渲染唯一源"
 source_sha256 = "1ec67203f9be6c768eef6593ea7fbbff70f4a413a2e04e20d4f21a202ca5ada6"
-publication = "html"
+publication = "source-link"
 projection_source = "project/implementation-plan.md"
 
 [[documents]]
@@ -1381,7 +1381,7 @@ applicable_version = "a629b1616bcd377fb9901a164c1b85af12e3b43b"
 authority = "project/current-capabilities.md"
 disposition = "仅include指令；Sphinx读取并渲染唯一源"
 source_sha256 = "2fc1b0c37f81513fb28bfdab82c32444898a1a9445cfaa3a729f1e516a06c042"
-publication = "html"
+publication = "source-link"
 projection_source = "project/current-capabilities.md"
 
 [[documents]]
@@ -1424,7 +1424,7 @@ applicable_version = "0610519c66a9a3684689d508da772c4a1689c26f"
 authority = "docs/decisions/0004-application-ownership-and-delivery.md"
 disposition = "唯一入口；历史通过对应准确提交"
 source_sha256 = "3004129253e7d8f939c0fb7ac5ba2d7dd7e6b0ac360d7d5d753f522a7d1d6f68"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "history/architecture/progress-snapshots-20261014.md"
@@ -1452,7 +1452,7 @@ applicable_version = "278ff966e434ec6d51f769632da89da05851ad00; classification r
 authority = "project/current-capabilities.md及实际测试源码"
 disposition = "按实际读者任务改写并迁移至 docs/history/relay-reference-diagnostic.md；旧 HTML 跳转，原始处置见 documentation-paths.json"
 source_sha256 = "584ec6099f5d338de56ac860a97612cb22ddd8c5643e8a5a21f6e946e31f7bf9"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = "docs/explanation/openharmony-dli-reference.md"
@@ -1494,7 +1494,7 @@ applicable_version = "K8cbf53/Ueaea706审查边界；后续按准确记录"
 authority = "project/architecture.md及project/qualification-records.json"
 disposition = "ADR保留理由；唯一计划安排后续批次"
 source_sha256 = "b2408b2fe78ce4cbb54f3571cca391f5bbca7ca55b0441055c445911e475da54"
-publication = "html"
+publication = "source-link"
 
 [[documents]]
 path = ".github/PULL_REQUEST_TEMPLATE.md"

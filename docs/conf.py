@@ -46,7 +46,7 @@ from urllib.parse import urlsplit
 
 _docs = Path(__file__).parent
 sys.path.insert(0, str(_docs.parent / 'tools'))
-from docs_integrity import source_target, html_stamp
+from docs_integrity import source_target, html_stamp, reader_source
 _inventory = tomllib.loads((_docs / 'documentation-map.toml').read_text())
 exclude_patterns = ['_build', '_extensions', 'evidence/**']
 exclude_patterns.remove('evidence/**')
@@ -62,10 +62,8 @@ html_title = 'SparkLink · ' + _source_revision[:12]
 html_copy_source = False
 html_show_sourcelink = False
 _published = {x['path'] for x in _inventory['documents'] if x['publication'] == 'html'}
-_published |= {'docs/' + str(p.relative_to(_docs)) for section in
-               ['tutorials', 'how-to', 'reference', 'explanation', 'project', 'history']
-               for p in (_docs / section).glob('*.md')}
-_published |= {'docs/index.md', 'docs/decisions/index.md', 'docs/evidence/index.md'}
+if any(not reader_source(p) for p in _published):
+    raise ValueError('Only the four reader categories and the home page may be built')
 import json
 _paths = json.loads((_docs / 'documentation-paths.json').read_text())
 _projections = _paths['canonical_projections']
@@ -91,7 +89,7 @@ def _public_source(app, docname, source):
         absolute = source_target(root, source_file, target)
         if absolute.is_relative_to(root):
             relative = str(absolute.relative_to(root))
-            if relative in _projections:
+            if relative in _projections and _projections[relative] in _published:
                 relative = _projections[relative]
             if relative in _published:
                 return '[' + label + '](' + os.path.relpath(root / relative, (_docs / docname).parent) + sep + anchor + ')'
@@ -109,6 +107,13 @@ def _legacy_redirects(app, exception):
     import html
     for old, target in _paths['legacy_html_redirects'].items():
         destination = Path(app.outdir) / old
+        # The current user-visible site is strictly four categories. Preserve
+        # repository URL mappings, but emit only redirects within that scope.
+        if not reader_source('docs/' + old[:-5] + '.md'):
+            continue
+        resolved = (destination.parent / target).resolve()
+        if not resolved.is_relative_to(Path(app.outdir).resolve()) or not resolved.is_file():
+            continue
         destination.write_text('<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=' + html.escape(target, quote=True) + '"><title>Document moved</title><a href="' + html.escape(target, quote=True) + '">Document moved</a>')
     (Path(app.outdir) / 'documentation-build.json').write_text(
         json.dumps(html_stamp(Path(app.outdir), _source_revision), indent=2) + '\n')

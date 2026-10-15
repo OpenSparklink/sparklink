@@ -11,7 +11,7 @@ import subprocess
 import hashlib
 
 
-from docs_integrity import audit_html, source_target
+from docs_integrity import audit_html, source_target, reader_source
 from urllib.parse import urlsplit
 
 
@@ -38,6 +38,8 @@ def main():
             errors.append(f"incomplete disposition: {item['path']}")
         if not (ROOT / item['path']).is_file():
             errors.append(f"missing original: {item['path']}")
+        if item['publication'] == 'html' and not reader_source(item['path']):
+            errors.append(f"only four reader categories may be published: {item['path']}")
     # HTML originals are checked by the actual Sphinx hook. Also check active
     # source-only pages explicitly reviewed in this batch; historical originals
     # retain their old links as evidence, not current recommendations.

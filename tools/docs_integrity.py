@@ -11,6 +11,15 @@ from pathlib import Path
 import re
 from urllib.parse import unquote, urlsplit
 
+READER_SECTIONS = frozenset({'tutorials', 'how-to', 'reference', 'explanation'})
+ROOT_HTML = frozenset({'index.html', 'search.html', 'genindex.html'})
+
+
+def reader_source(path):
+    path = Path(path)
+    return str(path) == 'docs/index.md' or (
+        len(path.parts) > 2 and path.parts[0] == 'docs' and path.parts[1] in READER_SECTIONS)
+
 
 class HtmlLinks(HTMLParser):
     def __init__(self):
@@ -85,6 +94,9 @@ def audit_html(html_root, expected_pages, revision):
         elif not page.read_text().strip() or '<html' not in page.read_text().lower():
             errors.append(f'empty or incomplete HTML page: {relative}')
     for page in html_root.rglob('*.html'):
+        relative = page.relative_to(html_root)
+        if str(relative) not in ROOT_HTML and relative.parts[0] not in READER_SECTIONS:
+            errors.append(f'non-reader HTML must not be built: {relative}')
         content = page.read_text()
         if not content.strip():
             errors.append(f'empty HTML page: {page.name}')

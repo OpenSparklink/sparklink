@@ -25,13 +25,7 @@ tutorials/index
 how-to/index
 reference/index
 explanation/index
-project/index
-history/index
-decisions/index
-evidence/index
 ```
 
-项目计划、资格矩阵和历史故障记录有独立入口，不冒充教程或当前 API 承诺。
-
-
-[按主题查找46份大写原文与阅读去向](project/uppercase-document-guide.md)。
+项目计划、资格矩阵、ADR、审计、历史与证据只保留仓库源码入口，不构建为本站页面。
+首页与上述四类是唯一公开 HTML 内容，搜索/索引和静态资源仅服务这些页面。

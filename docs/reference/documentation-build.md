@@ -48,3 +48,12 @@ HTML 根目录、首页、搜索及全部预期发布页必须存在且非空，
 若审计失败，保留日志及原输出，修复源文件/清单/链接后重新执行完整构建；不要
 手改生成 HTML、关闭 warnings-as-errors 或复用旧构建冒充当前。外链网络失败、
 浏览器与使用流程重放继续独立记录，完整任务见唯一计划 DQ1–DQ5。
+
+## 站点发布范围
+
+按用户要求，HTML 仅构建首页和 tutorials／how-to／reference／explanation 四类。
+project、history、decisions、evidence 原文保留仓库、清单和源码链接，**不构建**，
+也不进入站点搜索。架构解释通过既有 include-only 入口读取唯一 architecture，
+不复制正文；计划与资格链接指向准确提交中的 canonical 源文件。
+检查器拒绝四类之外的 HTML。旧 URL 仅当旧路径和目标均在四类内时生成跳转；
+排除的旧页面不生成跳转 HTML，路径映射和原始处置仍在仓库保留。

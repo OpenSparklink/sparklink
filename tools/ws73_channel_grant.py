@@ -363,8 +363,9 @@ def verify(row, outer):
     return row
 
 
-def corroborate(row, outer, capture):
-    verify(row,outer);sdus=reassemble_acb(capture);legs=[]
+def business_evidence(row, outer, capture):
+    """Shared actual application TX/opposite RX evidence, independent of closure."""
+    sdus=reassemble_acb(capture);legs=[]
     for business in row['business']:
         for n,application in enumerate(business['applications']):
             owner=outer['usb'][n];identity=row['owners'][n]
@@ -374,6 +375,11 @@ def corroborate(row, outer, capture):
                 matches=[p for p in sdus if (p['bus'],p['device'])==(owner['bus'],owner['device']) and p['handle']==identity['handle'] and p['direction']==direction and p['data']==frame.hex() and business['start_wall_ns']<=p['wall_ns']<=business['end_wall_ns']]
                 if len(matches)!=1:raise CaptureError('one actual application USB TX/opposite RX per business leg required')
                 legs.append(matches[0])
+    return sdus,legs
+
+
+def corroborate(row, outer, capture):
+    verify(row,outer);sdus,legs=business_evidence(row,outer,capture)
     for key in ['after_withdrawal','after_successor']:
         marker=row[key]['marker']
         if any(marker in p['data'] for p in sdus):raise CaptureError('withdrawn application marker reached wire')

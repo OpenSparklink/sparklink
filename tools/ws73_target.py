@@ -110,7 +110,7 @@ def prepare(args):
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/genl_registry_test.c',
@@ -240,7 +240,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_link_down.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -535,6 +535,8 @@ def _run(args):
     channel_grant=bool(getattr(args,'managed_channel_grant',False))
     channel_scm_rights=bool(getattr(args,'managed_channel_scm_rights',False))
     channel_revoke_prefix=bool(getattr(args,'managed_channel_revoke_prefix',False))
+    channel_link_down=bool(getattr(args,'managed_channel_link_down',False))
+    if channel_link_down and (connected_case!='release' or not channel_revoke_prefix or bool(getattr(args,'managed_channel_scm_rights',False)) or link_snapshot or peer_binding):raise ValueError('direct Down requires separate release-mode begun-prefix bidirectional channel gate')
     if channel_revoke_prefix and (not channel_grant or bool(getattr(args,'managed_channel_directions',False))):raise ValueError('revoke-prefix requires standalone bidirectional Managed channel gate')
     if channel_scm_rights and not channel_grant:raise ValueError('fd transfer requires standalone channel Grant')
     channel_directions=bool(getattr(args,'managed_channel_directions',False))
@@ -668,6 +670,8 @@ def _run(args):
     m['live_channel_grant_gate']=channel_grant
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
+    m['live_channel_link_down_requested']=channel_link_down
+    if channel_link_down:m['channel_link_down_verifier']=file_record(HERE/'ws73_channel_link_down.py')
     if channel_revoke_prefix:m['revoke_prefix_verifier']=file_record(HERE/'ws73_revoke_prefix.py')
     m['live_channel_directions_gate']=channel_directions
     if channel_grant:m['channel_grant_verifier']=file_record(HERE/'ws73_channel_grant.py')
@@ -778,6 +782,7 @@ def _run(args):
                      (' ws73.channel_daemon_crash=1 ws73.channel_daemon_index='+str(channel_death_index) if channel_death else '')+
                      (' ws73.channel_grant=1' if channel_grant else '')+
                      (' ws73.channel_revoke_prefix=1' if channel_revoke_prefix else '')+
+                     (' ws73.channel_link_down=1' if channel_link_down else '')+
                      (' ws73.channel_scm_rights=1' if channel_scm_rights else '')+
                      (' ws73.channel_directions=1' if channel_directions else '')+
                      (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
@@ -1112,6 +1117,7 @@ def _run(args):
                     if bool(probe.get('channel_grant',{}).get('scm_rights',False))!=channel_scm_rights:raise ValueError('requested SCM_RIGHTS Grant gate mismatch')
                     if bool(probe.get('channel_grant'))!=channel_grant:raise ValueError('requested real channel Grant gate mismatch')
                     if bool(probe.get('channel_grant',{}).get('revoke_prefix'))!=channel_revoke_prefix:raise ValueError('requested actual revoke-prefix gate mismatch')
+                    if bool(probe.get('data_link_down'))!=channel_link_down:raise ValueError('requested direct physical Down gate mismatch')
                     if channel_revoke_prefix and file_record(HERE/'ws73_revoke_prefix.py')!=m['revoke_prefix_verifier']:raise ValueError('revoke-prefix verifier changed during run')
                     if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply or bool(probe.get('link_snapshot_gate'))!=link_snapshot or bool(probe.get('peer_binding_gate'))!=peer_binding:raise ValueError('connected File request mismatch')
                     m['connected_file_corroboration']=connected_corroborate(probe,capture,hold.record if connected_reply else None,
@@ -1197,7 +1203,7 @@ def _run(args):
                     # later qualification must not erase/mutate earlier evidence.
                     from ws73_daemon_removal import verify_sealed_record
                     verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']='REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
@@ -1226,6 +1232,7 @@ def _run(args):
         if ready_peer and file_record(HERE/'ws73_management_ready_peer.py')!=m['managed_ready_peer_verifier']:
             raise ValueError('Ready peer verifier changed during run')
         if channel_grant and file_record(HERE/'ws73_channel_grant.py')!=m['channel_grant_verifier']:raise ValueError('channel Grant verifier changed during run')
+        if channel_link_down and file_record(HERE/'ws73_channel_link_down.py')!=m['channel_link_down_verifier']:raise ValueError('direct Down verifier changed during run')
         if connected_case and file_record(HERE/'ws73_connected_file_gate.py')!=m['connected_file_verifier']:
             raise ValueError('connected File verifier changed during run')
         if resource_recreation and file_record(HERE/'ws73_resource_file_gate.py')!=m['managed_resource_verifier']:
@@ -1257,7 +1264,7 @@ def _run(args):
             m['vm_disk_after'] = file_record(output/'root.btrfs')
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
-    return 0 if m['status'] in ['REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
+    return 0 if m['status'] in ['REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
 
 
 def run(args):
@@ -1306,6 +1313,7 @@ def main():
             cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
+            cmd.add_argument('--managed-channel-link-down',action='store_true',help='direct physical Disconnect after actual begun PDU while both Managed leases remain held; separate from revoke/deadline/recovery')
             cmd.add_argument('--managed-channel-revoke-prefix',action='store_true',help='actual partial2042-byte USB PDU across per-controller Managed withdrawal, never natural recovery')
             cmd.add_argument('--managed-connected-index',type=int,choices=[0,1],default=0,help='actual Create caller in established-link File gate')
             cmd.add_argument('--managed-resource-recreate',action='store_true',help='actual changed advertising set removal/creation File cancellation; requires selected advertising Ready-peer partial gate')

@@ -77,6 +77,10 @@ class ConnectedOutcomeCoordinator(LaterHostCoordinator):
 
 
 def verify_records(r):
+    if 'data_link_down' in r:
+        from ws73_channel_link_down import verify
+        verify(r)
+        return [setup(raw,n) for n,raw in enumerate(r['initial_snapshots'])]
     held_reply=r.get('reply_hold')
     if held_reply not in [None,'status','outcome']:raise ValueError('explicit bounded real reply stage required')
     if (type(r.get('format_version')) is not int or r.get('format_version') != 1 or r.get('status') != ('INFLIGHT_FILE_PASS' if held_reply else 'CONNECTED_FILE_PASS')
@@ -222,6 +226,10 @@ def verify_records(r):
 
 
 def corroborate(r, capture, hold=None, stderr=None, expected=None):
+    if 'data_link_down' in r:
+        if hold is not None:raise CaptureError('direct Down excludes synthetic hold/recovery')
+        from ws73_channel_link_down import corroborate as down_corroborate
+        return down_corroborate(r,capture)
     snapshots = verify_records(r); i=r['index']; p=1-i
     def belongs(row,n,start,end):
         usb=r['usb'][n]
@@ -326,6 +334,9 @@ def run(args):
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
+    link_down='ws73.channel_link_down=1' in Path('/proc/cmdline').read_text().split()
+    if link_down and (not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):
+        raise ValueError('direct Down requires separate bidirectional begun-PDU release-mode environment')
     scm_rights=getattr(args,'channel_scm_rights',False)
     if scm_rights and not channel_gate:raise ValueError('fd transfer requires real channel Grant gate')
     directional=getattr(args,'channel_directions',False)
@@ -450,6 +461,11 @@ def run(args):
             from ws73_channel_grant import Gate
             grant=Gate(observers,snapshots,leases,i,r,save,directional,scm_rights)
             grant.exchange('before')
+            if link_down:
+                from ws73_channel_link_down import exercise
+                exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect)
+                grant.close();grant=None
+                return
         r['before_snapshots']=[bytes(a.snapshot()).hex() for a in observers]
         r['held']=bytes(observers[i].management_status()).hex();r['peer_before']=bytes(observers[p].management_status()).hex()
         fd=writers[i].fileno();r['original_fd']=fd;r['duplicate_fd']=-1

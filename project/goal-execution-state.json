@@ -28,7 +28,7 @@
     "original_restore_verified": false,
     "user_response": "User temporarily cannot operate hardware (2026-10-15)",
     "manual_request_pending": false,
-    "current_available_scope": "Ports1-2.1.1 and1-2.1.4 completed directDown/originaldeadline VM gates; continue sole13X security/data/SSAP. No new manual action requested.",
+    "current_available_scope": "Ports1/4 passed limited134/135 two roles and8before/after appRT; continue new-image length/data/SSAP. Port2restore remains unverified; no repeated manual action requested.",
     "four_device_gate": "Incomplete pending safe availability, not waived",
     "natural_recovery_acceptance": false
   },
@@ -597,7 +597,7 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "Prioritize sole security mechanism positive stock-supported13X flow with explicit Agent approval, role-bound actual install/encryption and peer business. Existing Session/credit/tickets must be reused, no test key/nonces or synthetic success. Stock refusal/future corrected firmware and all S5 gates remain open.",
+    "Use sole physical Session/relay/command credit/ticket to extend from limited134/135 observation to actual Agent consent/method policy, fresh cryptographic material, real peer proof and role-bound install/encryption plus opposite application reply. No second Engine; limited API does not claim pairing.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
@@ -618,75 +618,89 @@
     ]
   },
   "current_batch_exit": {
-    "production": "Unchanged494/e2a Session/credit/tickets; separate test fixture8s leaves default2s untouched",
-    "offline": "511 tests, real guarded QEMU baseline reproduced by public patch chain, fresh8s binary boot smoke, both captures replayed exactly",
-    "formal": "No new wholeproof;311scalar exclusions and Kaniunsupported/timeout remain",
-    "real": "Two source roles each five1270byte fragments/fullpool5, ETIMEDOUT at5.006/5.009s originaladmission; actualunchangedreply/fiveNOCP afterexpiry, oldfdENOTCONN/poll24, bothHeld leases/Ready and actualcleanupDown/peer scan.4prehold businessRT,0partialPDU delivery",
-    "remaining": "Sole supported13X security consent/relay positive then Agent/install/encrypted app; postfailure ledger readback/fullcredit/submit/reuse combinations, multichannel/fourWS73/SSAP; port2restore and fullS0-S6"
+    "production": "Sole physical Session/relay/command credit/ticket; explicit limited134/135 only, no raw API/trust/second Engine",
+    "offline": "Cargo222/Python38/tools514/relay13/actualHost68, strict kernel and fresh isolated boot",
+    "formal": "Direct exact-production capability cancellation/expiry/submit and RX/Complete harnesses; NOT_PROVEN_UNSUPPORTED (caller_location,foreign function), not PASS",
+    "real": "Two source roles, actual134/135 TX/Complete/oppositeRX,8ordinary appRT before/after; original leases/Ready/links retained, realDown/peer scan, unauthorized and same-life retry denied",
+    "old_path_regression": "ALL11_REAL_REGRESSION_GATES_PASS:136appRT/32refusals/2strictfd phases, existingSSAP, scopedpool5/newrefusals26and25/NOCPresume,0drops/taint",
+    "remaining": [
+      "Agent/method policy and fresh cryptographic material/peer proof, actual role-specific1c03/1c05 installation and0011, encrypted peer application replies and Bond",
+      "Native134/135 peer acceptance is local observation; no protocol/app ACK reliability claim",
+      "Original111147/1ff missing descriptors not fixed; derived table diagnostic remains historical",
+      "Managed revocation/Down/originaldeadline at actual new relay submit boundary and late/duplicate Complete/reuse barrier need controlled VM interleavings",
+      "NOCP accuracy/duplicate/late handling, callback drain, old lifetime/handle reuse and firmware clear barriers remain hardware assumptions",
+      "Dynamic multi-channel/four-device two-group data, SSAP CCC/notification/indication and remaining fullS0-S6",
+      "Port1-2.1.2 original restore unverified; user temporarily cannot operate hardware, no repeated manual request. Natural RCA/nonmanual recovery not qualified"
+    ]
   },
-  "updated_at_utc": "2026-10-15T04:27:17.315761+00:00",
+  "updated_at_utc": "2026-10-15T05:22:45.286006+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
     "scope": "Retained prior progress/qualified identities; not live current state"
   },
   "current_heads": {
-    "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
-    "userspace_observed_before_document_commit": "eb4dffa7153a9228c66dc94d92c8d63cd225b409"
+    "linux": "c272157cbc58da335c6fc71e8b940de02efb62f4",
+    "userspace_observed_before_document_commit": "db17df075803caaf7c0ebec254aaf2b19e72b76c",
+    "qualified_production_kernel": "1cf095fd1650a974b523a807ad9d69623ebb0a78",
+    "compiled_userspace": "02ac5ed5a76cf7981d83df23107d6ba2b9790270",
+    "executed_vm_tools": "1ee2f4e1b72e2a83c43902e726b777fd35048087"
   },
   "qualified_source_heads": {
-    "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
-    "userspace": "d74421c210eeb1b706dbd90f3500442e28a214dc",
-    "scope": "136 actual app rounds,32 refusals,2 strict fd exit phases; scoped two-role pool depletion/NOCP resumption, not full credit/reuse safety",
-    "evidence": "docs/evidence/tx-budget-observation-20261015.json"
+    "linux": "1cf095fd1650a974b523a807ad9d69623ebb0a78",
+    "userspace": "02ac5ed5a76cf7981d83df23107d6ba2b9790270",
+    "scope": "136 ordinary applicationRT/32boundary refusals/2strictfd phases, actualpool5/newrefusals26and25/NOCPresumption;8additional appRT around limited134/135. Not full lifecycle/reuse/security.",
+    "evidence": "docs/evidence/security-capabilities-20261015.json"
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "behavior": "Two-role original5s begun-PDU deadline with actual successfulIN81 delayed, fullpool5, finiteordinaryRX, explicitreply release and failedSession rejection",
-    "status": "REAL_TWO_ROLE_ORIGINAL5S_PDU_DEADLINE_SCOPED_PASS",
-    "evidence": "docs/evidence/original-pdu-deadline-20261015.json",
-    "production_runtime_changed": false,
+    "behavior": "Explicit CAPABILITY_ONLY approval bound to original Managed File/CAP_NET_ADMIN/physical Session identity/epoch. Same relay, command credit and final submit ticket; actual typed134/135 and real Complete/RX, no new Engine.",
+    "status": "REAL_TWO_ROLE_LIMITED134_135_PASS",
+    "evidence": "docs/evidence/security-capabilities-20261015.json",
+    "production_runtime_changed": true,
     "source_combined_blob_modified": false,
     "new_security_qualified": false,
-    "affected_diagnostic_port": "1-2.1.2",
-    "original_restore_verified": false
+    "limited_capabilities_qualified": true,
+    "original_restore_verified": false,
+    "affected_diagnostic_port": "1-2.1.2"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exact494/d744 original104 plus32burst app round trips",
-    "DG02": "PARTIAL_REAL exact494/d744 all attained length points and32refusals",
+    "DG01": "PARTIAL_REAL exact1cf/02ac/tool1ee original104 plus32burst applicationRT;8additional before/after limitedcapability exchange",
+    "DG02": "PARTIAL_REAL exact1cf/02ac/tool1ee all attained applicationlengths/32oversize refusals/2strictfd exit phases; broadmatrix remains open",
     "FV_SECURITY_RELAY": "Actual494/e2a Session path correctly delivers1ff/02 to reference PairReject ONLY with isolated packet/RX-table derivative. Official ISA/ROM trace and variants causally support stock111 descriptor omission. Original images restored at that historical diagnostic boundary; stock stillFAIL. Later port2 extension failed and its current original restore is NOT_VERIFIED. No approved/native-native/security or complete formal proof.",
-    "S5": "Approved pairing/installation/encrypted application reply missing",
+    "S5": "PARTIAL_REAL capability-only134/135 K1cf/U02ac/tool1ee both roles; no Agent/pairing/proof/install/encrypted business/Bond qualification",
     "recovery": "Natural RCA and nonhuman recovery remain open",
     "FV_CODEC": "HISTORICAL exact2030 driver bounded800 checks preserved, not relabeled as fresh d926 result; new cursor proof separately recorded",
     "FV_DLI_CURSOR": "SCALAR_TRANSITIONS_PASS exact production header,48 checks, all unsigned inputs; no worker/USB/NOCP proof",
     "DG03": "PARTIAL_REAL bounded PB/lengths/software queue plus scoped hardware pool observation; full lifecycle/fragment matrix missing",
     "FV_PDU_CONSENT": "SCALAR_CONSENT_PASS actual494 functions sl_sk/sl_permits/sl_session_submit,311 checks; locks/references/Runtime/USB and query-composition excluded",
-    "DG05": "PARTIAL_REAL SDK111 two-role pool5 depletion/fresh refusals29/30, actual USB/NOCP resumption and peer replies; broader reuse/revoke/duplicate-NOCP matrix missing",
+    "DG05": "PARTIAL_REAL exact1cf/02ac two-role pool5, actualnewrefusals26/25,206USB/NOCP perend/phase and32peer-replied messages; no duplicate/late/reuse fullproof",
     "DG_WITHDRAWAL": "PARTIAL_REAL actual494/e2a release/lastManagedFile/dup x both indices;6 fragments1524bytes begun,2lateNOCP each; no submit after syscall-return; original-deadline/full linearization/reuse unproven",
     "FW_TABLE_EXTENSION": "FAILED actual boot upload after5 completed32768-byte OUTs, fifthACKmissing. New Runtime not qualified, generator retired. Original port1-2.1.2restore NOT_VERIFIED; no stock or safety upgrade.",
     "DG_LINK_DOWN": "PARTIAL_REAL K494/compiledUe2a/VMtools2d6c250 two source roles, bothHeld leases and two realDown, oldESTALE/poll24 and peer Ready/scan; not precisebarrier/originaldeadline/reuse/natural or independentbusiness",
-    "DG_ORIGINAL_DEADLINE": "PARTIAL_REAL 494/e2a/eb4dffa two source roles, actualpool5/prefix1270, original5sETIMEDOUT not8srecvtimeout, unchangedrealreply release/fiveNOCP and failedfd retained. No directpostfailuredebtview or broadrecovery/security/reuse proof."
+    "DG_ORIGINAL_DEADLINE": "PARTIAL_REAL 494/e2a/eb4dffa two source roles, actualpool5/prefix1270, original5sETIMEDOUT not8srecvtimeout, unchangedrealreply release/fiveNOCP and failedfd retained. No directpostfailuredebtview or broadrecovery/security/reuse proof.",
+    "FV_SECURITY_CAPABILITIES": "NOT_PROVEN_UNSUPPORTED: two exact production harnesses atc272; generated996/945 nonfailure checks do not upgrade unsupported constructs"
   },
   "next_resume_tasks": [
     "User temporarily cannot operate hardware; port1-2.1.2 original restore remains unverified. Do not repeat manual-operation requests without a changed condition. Continue available ports1/4 and offline implementation; original4-device/recovery scope not waived. If safe previously authorized power access actually becomes available, verify isolation/originalupload/Ready and keep it separate from natural recovery.",
-    "Original5s data PDU deadline and directDown now scopedpassed both roles; do not add all control-race combinations as predecessor. Prioritize actual stock-supported13X negotiation under explicit Managed approval in sole physicalSession/relay/commandcredit/ticket, then actualAgent/keyinstall/encryption/peerbusiness. Fullsubmit/debt/reuse combinations remain parallel.",
+    "Use sole physical Session/relay/command credit/ticket to extend from limited134/135 observation to actual Agent consent/method policy, fresh cryptographic material, real peer proof and role-bound install/encryption plus opposite application reply. No second Engine; limited API does not claim pairing.",
     "Prioritize sole security mechanism positive stock-supported13X flow with explicit Agent approval, role-bound actual install/encryption and peer business. Existing Session/credit/tickets must be reused, no test key/nonces or synthetic success. Stock refusal/future corrected firmware and all S5 gates remain open.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_status": "PENDING_CURRENT_BATCH_READBACK",
   "issue_sync_receipt": "docs/evidence/original-pdu-deadline-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "Added real partial-PDU directDisconnect gate, two source roles on ports1/4 passed at production494/e2a and VMtools2d6c250. Both actualDown, retained leases, stale ordinaryfd and peer scan verified;4 preDown app round trips,0partialPDU delivery. Stock relay/deadline/full barriers and port2restore remain open."
+    "reason": "Separate pinned8s realIN81 fixture built and boot-proved, original5s PDU deadline passed both roles at494/e2a/eb4dffa with actualpool5, five1270byte fragments, real delayedNOCP and no oldSession revival; first cross-clock verifier failure retained/fixed and repeated with new guest receipts.511 offline tests, no broad/security/recovery claim."
   },
   "current_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "Separate pinned8s realIN81 fixture built and boot-proved, original5s PDU deadline passed both roles at494/e2a/eb4dffa with actualpool5, five1270byte fragments, real delayedNOCP and no oldSession revival; first cross-clock verifier failure retained/fixed and repeated with new guest receipts.511 offline tests, no broad/security/recovery claim."
+    "reason": "New real production behavior: stock-supported134/135 on sole Session/credit/ticket passed both physical roles,8appRT. Existing full-length/data qualification rerun on exact new image; targeted Kani remains unsupported/unproven. No issue closure or recovery upgrade."
   },
-  "execution_status": "active; user hardware action temporarily unavailable for port2, continue sole13X security/data/SSAP on verified ports1/4; full4-device/recovery requirements remain open",
+  "execution_status": "active; limited134/135 positive achieved on ports1/4, data/SSAP and next security stage continue. Port2restore unavailable is not whole-goal blocker.",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "current_qualified_subsets": {
@@ -729,6 +743,19 @@
       "executed_tools": "eb4dffa",
       "evidence": "docs/evidence/original-pdu-deadline-20261015.json",
       "scope": "two roles/fullpool5/original5s/no oldSessionrevival;4prehold appRT, not fullcredit/submit/reuse/security/recovery"
+    },
+    "limited_security_capabilities": {
+      "linux": "1cf095fd1650a974b523a807ad9d69623ebb0a78",
+      "compiled_userspace": "02ac5ed5a76cf7981d83df23107d6ba2b9790270",
+      "executed_vm_tools": "1ee2f4e1b72e2a83c43902e726b777fd35048087",
+      "evidence": "docs/evidence/security-capabilities-20261015.json",
+      "scope": "Local unauthenticated capability observation only. Not Agent consent, pairing, peer proof, trusted installation, encryption, Bond, standard interoperability or natural recovery."
+    },
+    "new_image_retained_data": {
+      "linux": "1cf095fd1650a974b523a807ad9d69623ebb0a78",
+      "userspace": "02ac5ed5a76cf7981d83df23107d6ba2b9790270",
+      "scope": "136 ordinary applicationRT/32boundary refusals/2strictfd phases, actualpool5/newrefusals26and25/NOCPresumption;8additional appRT around limited134/135. Not full lifecycle/reuse/security.",
+      "evidence": "docs/evidence/security-capabilities-20261015.json"
     }
   }
 }

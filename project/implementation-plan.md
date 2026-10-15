@@ -6,6 +6,18 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
+本批有限退出：K1cf/U02ac中复用唯一物理Session/relay/命令credit/票据，取得两角色
+真实134/135及交换前后普通用户业务；不提供raw relay，不宣布配对或可信安装。
+该正向子门禁已取得；原路径11组在准确新镜像重新通过136次业务/32次超限拒绝、
+两角色严格最后fd退出、真实SSAP及pool5耗尽/NOCP恢复。新池满拒绝增量26/25，
+不复用旧计数。[准确证据与未决](../docs/evidence/security-capabilities-20261015.json)。两项新增Kani
+直接映射生产转换，但工具unsupported仍未证明；不把它或全部控制竞争设为继续
+数据面/SSAP前置。下一条安全纵向链路是在同一机制中接入实际Agent授权、鲜活
+密码材料、peer proof、角色绑定安装及加密后的对端应用回复，逐项验收，禁止测试
+降级或将有限能力交换扩大为完整Pair。默认未支持入口继续NotSupported。
+
+旧K494/Ud744和Ue2a的准确证据保留如下，不因新实现自动继承：
+
 1. 保留K494/Ud744的136轮/32拒绝/两角色严格fd与真实pool5恢复资格；新增
    K494/Ue2a六组begun-PDU Managed release/最后控制File/dup撤权子门禁、16次
    撤权前业务往返。[六组证据](../docs/evidence/managed-prefix-withdrawal-20261015.json)
@@ -34,9 +46,9 @@
    保留；跨时钟用guest确认收据，原2秒夹具未改。失败后Binding查询拒绝，不能把
    USB/NOCP计数代替失败后ledger读回或完整守恒/复用证明。
    上述撤权/直接Down/期限的限定门禁已经取得，不再追加全部控制竞争作为前置。
-   近期下一条纵向链路回到唯一安全机制：沿SDK111支持13X，在同一物理Session、
-   relay转换/命令credit/提交票据中接入显式管理批准与严格角色/当前epoch/lifetime；
-   首先取得真实协商消息对端接收，随后实际密钥安装/加密与peer业务。默认未批准
+   唯一安全机制的首个真实协商子门禁现由K1cf/U02ac接通：SDK111支持13X、同一
+   物理Session/relay转换/命令credit/提交票据、显式管理批准和完整身份/epoch。
+   后续继续实际Agent/proof/密钥安装/加密与peer业务。默认未批准
    继续拒绝，不能以capability协商冒充配对或认证，不新增另一Engine。
    原期限/撤权/Down到最终提交、late/duplicate NOCP与handle复用继续按本次性质组合
    建模/实测，不阻塞动态通道、四设备两组、唯一用户态SSAP通知/指示/ACK纵向开发。

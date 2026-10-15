@@ -146,6 +146,36 @@ fn unsupported(result: zbus::Result<zbus::Message>) -> anyhow::Result<()> {
         other => bail!("expected explicit NotSupported, got {other:?}"),
     }
 }
+fn controller_path(path: &str) -> anyhow::Result<&str> {
+    let (controller, peer) = path
+        .split_once("/peer_t")
+        .context("canonical peer parent")?;
+    let (peer, lifetime) = peer
+        .split_once("/link_")
+        .context("canonical lifetime child")?;
+    let (kind, address) = peer.split_once('_').context("typed peer address")?;
+    let (index, generation) = controller
+        .strip_prefix("/org/sparklink/slk")
+        .context("controller prefix")?
+        .split_once("_g")
+        .context("controller generation")?;
+    ensure!(
+        !index.is_empty()
+            && index.bytes().all(|b| b.is_ascii_digit())
+            && index.parse::<u16>().is_ok()
+            && generation.parse::<u64>().is_ok_and(|n| n > 0)
+            && kind.len() == 2
+            && address.len() == 12
+            && lifetime.len() == 16
+            && [kind, address, lifetime]
+                .iter()
+                .all(|s| s.bytes().all(|b| b.is_ascii_hexdigit()))
+            && u64::from_str_radix(lifetime, 16).is_ok_and(|n| n > 0),
+        "canonical connection identity required"
+    );
+    Ok(controller)
+}
+
 async fn execute(args: Args) -> anyhow::Result<()> {
     ensure!(
         args.connections.len() == 2 && args.connections[0] != args.connections[1],
@@ -227,11 +257,11 @@ async fn execute(args: Args) -> anyhow::Result<()> {
             info.0 > 0 && info.1 > 0 && info.6 && info.7 && info.3 <= 1,
             "canonical known connected reference required"
         );
-        let controller = path
-            .split("/connection_")
-            .next()
-            .context("connection parent")?;
-        ensure!(controller != path, "canonical connection path required");
+        let controller = controller_path(path)?;
+        ensure!(
+            controller.ends_with(&format!("_g{}", info.0)),
+            "controller generation mismatch"
+        );
         let security_path = format!("{controller}/security");
         unsupported(
             link(&requester, path)
@@ -468,4 +498,35 @@ async fn execute(args: Args) -> anyhow::Result<()> {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tokio::time::timeout(Duration::from_secs(15), execute(Args::parse())).await?
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn captured_peer_lifetime_shape_resolves_its_controller() {
+        // Shape from the first real failure; peer identity sanitized.
+        assert_eq!(
+            controller_path("/org/sparklink/slk0_g1/peer_t00_010203040506/link_0000000000000001")
+                .unwrap(),
+            "/org/sparklink/slk0_g1"
+        );
+        assert_eq!(
+            controller_path("/org/sparklink/slk12_g23/peer_t01_112233445566/link_0000000000000013")
+                .unwrap(),
+            "/org/sparklink/slk12_g23"
+        );
+    }
+    #[test]
+    fn old_alias_and_malformed_identity_cannot_select_another_controller() {
+        for path in [
+            "/org/sparklink/slk0_g1/connection_1",
+            "/org/sparklink/slk0_g0/peer_t00_010203040506/link_0000000000000001",
+            "/org/sparklink/slk0_g1/peer_t00_010203040506/link_0000000000000000",
+            "/org/sparklink/slk0_g1/peer_t00_010203040506/link_0000000000000001/other",
+            "/org/sparklink/slk0_g1/peer_t00_010203040506/link_bad",
+        ] {
+            assert!(controller_path(path).is_err(), "accepted{path}");
+        }
+    }
 }

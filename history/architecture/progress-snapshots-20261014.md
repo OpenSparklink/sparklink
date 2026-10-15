@@ -83,4 +83,3 @@
 6. 完整S0–S6、19WP、10FV、12DG、预算及原scope不变；goal当前API为active。
    自然RCA/非人工恢复、部分初始化/事件迁移/旧代码整改持续并行；UserHost P4规划，
    不把诊断reset/QMP/注入/hub切电算自然恢复。局部通过不关闭整项。
-

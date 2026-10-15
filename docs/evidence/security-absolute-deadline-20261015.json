@@ -363,7 +363,7 @@
       "bytes": 871
     }
   },
-  "remaining_regression": "21-gate supervisor remains RUNNING; two-role originaldeadline/cancel/actualinstall/capability/candidate are complete. Data matrix partial; only explicit completed reports qualify.",
+  "remaining_regression": "ALL21_REAL_DEADLINE_AND_REGRESSION_GATES_PASS; see separate accurate full matrix. Agent/in-flight hardware combinations/naturalrecovery remain open.",
   "online_ci": {
     "compiled_commit": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
     "ci": 38738657022,
@@ -629,5 +629,6 @@
         }
       ]
     }
-  ]
+  ],
+  "full_regression": "security-absolute-deadline-regression-20261015.json"
 }

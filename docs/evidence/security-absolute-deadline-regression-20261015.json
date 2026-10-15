@@ -1,0 +1,558 @@
+{
+  "schema": 1,
+  "status": "ALL21_REAL_DEADLINE_AND_REGRESSION_GATES_PASS",
+  "runtime_kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+  "compiled_userspace": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
+  "prepared_and_executed_tools": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
+  "vm_only": true,
+  "ports": [
+    "1-2.1.2",
+    "1-2.1.3"
+  ],
+  "firmware": "original111 frozen selection; no experimentalRAM derivative",
+  "supervisor": {
+    "path": ".dev/security-deadline-v2-real-regression.json",
+    "sha256": "40386be235b58699a3943003001bc94840cae9f6948b2c7ff6dc49297ba00150",
+    "bytes": 18103
+  },
+  "runs": [
+    {
+      "name": "original-deadline-index0",
+      "status": "REAL_SECURITY_ORIGINAL_DEADLINE_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-original-deadline-index0/manifest.json",
+        "sha256": "f9f1d4d595982f8535e442eb7e87f7bcd556866e4e0b09836fc4e78eefa16765",
+        "bytes": 71824
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-original-deadline-index0/guest-output/ws73.pcap",
+        "sha256": "ec02242f3ed76d111b052c09d060b995a6c6b9aa1021f786e043fad44d540f44",
+        "bytes": 67352
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-original-deadline-index0/guest-output/capture-stats.txt",
+        "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_SECURITY_ORIGINAL_DEADLINE_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "original-deadline-index1",
+      "status": "REAL_SECURITY_ORIGINAL_DEADLINE_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-original-deadline-index1/manifest.json",
+        "sha256": "21b33bbef23959602179aa1f78f1a4483f78bbe79d7d72af2ef3fc44f3f654a7",
+        "bytes": 71824
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-original-deadline-index1/guest-output/ws73.pcap",
+        "sha256": "2d32bb951b3c914672829c4db88e418065b267917cff306f8a1739c670760aee",
+        "bytes": 67690
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-original-deadline-index1/guest-output/capture-stats.txt",
+        "sha256": "d0f0217a0b150e0a331ab71d09e1b3171d7ce5a182cfed8b9360992c6df5836f",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_SECURITY_ORIGINAL_DEADLINE_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "cancel-pending-index0",
+      "status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-cancel-pending-index0/manifest.json",
+        "sha256": "1e7791b3eab7001078a7750df16eca4a4bc21dc5fd0f6bc44245f77ee1e9bd75",
+        "bytes": 71700
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-cancel-pending-index0/guest-output/ws73.pcap",
+        "sha256": "e6afdd044fc89976d3d788c27cace0caad05c8a18bb3a16faad89274f92eaf3f",
+        "bytes": 67352
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-cancel-pending-index0/guest-output/capture-stats.txt",
+        "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_PASSIVE_AUTHOR_CANCEL_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "cancel-pending-index1",
+      "status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-cancel-pending-index1/manifest.json",
+        "sha256": "2a31bea8ded10723db032cd72968d12131cad7214a7a7892358bbb538afebfcf",
+        "bytes": 71700
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-cancel-pending-index1/guest-output/ws73.pcap",
+        "sha256": "f180538da74985079bfb569d600abcb982a6eb6f2315323c5f92016c40cdaaae",
+        "bytes": 67352
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-cancel-pending-index1/guest-output/capture-stats.txt",
+        "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_PASSIVE_AUTHOR_CANCEL_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "unauthenticated-encryption-index0",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/manifest.json",
+        "sha256": "3385179d27bf92027eb521a222619e4f603658f918eb8e9b04442102f2cad42b",
+        "bytes": 89563
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/guest-output/ws73.pcap",
+        "sha256": "7f6212c4dbdaa61096d9d6311b09836598c115c7fb47f3a26333c9277d6092ad",
+        "bytes": 78328
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/guest-output/capture-stats.txt",
+        "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "unauthenticated-encryption-index1",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/manifest.json",
+        "sha256": "6f2ed74ad5bf269d0172ecb2e84b2575eada0a2029c0589893a103b320643d51",
+        "bytes": 89563
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/guest-output/ws73.pcap",
+        "sha256": "59aea40e5844b3c45384c1094453b00a8dd0efdeb649d16ccba030db46f6ae2a",
+        "bytes": 78328
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/guest-output/capture-stats.txt",
+        "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "capabilities-index0",
+      "status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-capabilities-index0/manifest.json",
+        "sha256": "f7b4fe0bc17c4ffa094c0fdbce5ad7722e250b5c9053726fa270bc4a9b60282d",
+        "bytes": 74444
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-capabilities-index0/guest-output/ws73.pcap",
+        "sha256": "392c81c03fc057114b997f922af8b66e7a9c42d399399ab3a2957fe78f6cb9be",
+        "bytes": 69280
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-capabilities-index0/guest-output/capture-stats.txt",
+        "sha256": "ae9ccf23bfe6d2487d907d6b58a828c63e752604deb58faab04f756c211dbb01",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_APPROVED_LIMITED134_135_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "capabilities-index1",
+      "status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-capabilities-index1/manifest.json",
+        "sha256": "bda7dae4b18880654c9a955c04ec7837c3e0ab236b0f98810d1ee3bc7ca0f996",
+        "bytes": 74444
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-capabilities-index1/guest-output/ws73.pcap",
+        "sha256": "749c3742895c2cf65e6f2a2db37994109efc75f324431f7f1dd3e123bba57b35",
+        "bytes": 69280
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-capabilities-index1/guest-output/capture-stats.txt",
+        "sha256": "ae9ccf23bfe6d2487d907d6b58a828c63e752604deb58faab04f756c211dbb01",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_APPROVED_LIMITED134_135_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "key-agreement-index0",
+      "status": "REAL_CANDIDATE_KEY_AGREEMENT_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-key-agreement-index0/manifest.json",
+        "sha256": "5587edcbc9e147e798f1f825e33cf006a21a471994f884b311be36d81dbef21c",
+        "bytes": 88172
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-key-agreement-index0/guest-output/ws73.pcap",
+        "sha256": "d24bd0ee7d8bda4db0399de8690ce155e819a31f6d171f25865054b73bab3beb",
+        "bytes": 76062
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-key-agreement-index0/guest-output/capture-stats.txt",
+        "sha256": "e34e0021e1e3fd63b85f7e53028390afe417807f2ac926a9f4e13485442e9988",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_UNAUTHENTICATED_CANDIDATE_KEY_AGREEMENT_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "key-agreement-index1",
+      "status": "REAL_CANDIDATE_KEY_AGREEMENT_PASS",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-key-agreement-index1/manifest.json",
+        "sha256": "d8b2dd9cb3f60019f1c944506bbea731796062d72cddab6ab11500d5b7b52c37",
+        "bytes": 88172
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-key-agreement-index1/guest-output/ws73.pcap",
+        "sha256": "1bf9668b23d5aef9e6a9e2efb34c55ad31713148dc447f88222206b09b268553",
+        "bytes": 76062
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-key-agreement-index1/guest-output/capture-stats.txt",
+        "sha256": "e34e0021e1e3fd63b85f7e53028390afe417807f2ac926a9f4e13485442e9988",
+        "bytes": 225
+      },
+      "capture_drops": 0,
+      "business_round_trips": 4,
+      "before_after_split": "2 before,2 after the observed mechanism; not all encrypted",
+      "strict_proof_status": "REAL_UNAUTHENTICATED_CANDIDATE_KEY_AGREEMENT_CORROBORATED",
+      "kernel_taint0": true
+    },
+    {
+      "name": "short",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-short/manifest.json",
+        "sha256": "c5a3dd712a1e94235f0b59fc486b53cec2463f689a852d0bb47b90a44c3e972e",
+        "bytes": 1457278
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-short/guest-output/ws73.pcap",
+        "sha256": "c00f0ab5441fc54a5fa94a07a26a39bc910663b0f89bba734d78a5c97c22d64c",
+        "bytes": 602486
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-short/guest-output/capture-stats.txt",
+        "sha256": "897db1b84b26fe9447cb0da9c6e3ff361be260530359e3446870affb6b5cb8ba",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 40,
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "requested_payload_bytes": 61
+    },
+    {
+      "name": "boundary",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-boundary/manifest.json",
+        "sha256": "49373092fac168a32fd909f8589feee2031a77a7bacc071d7c8393205e933480",
+        "bytes": 1263068
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-boundary/guest-output/ws73.pcap",
+        "sha256": "c2dbdba256c8f284b3578c846604e948cbbfafc5cff80c25bb5685b67f13d3a4",
+        "bytes": 538024
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-boundary/guest-output/capture-stats.txt",
+        "sha256": "bbab514b7677b48c1c3d5c75db1cfc1490d9a0985ed821eb17fba1a546ff126a",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 8,
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "application_boundary_rejections": 16,
+      "requested_payload_bytes": 249
+    },
+    {
+      "name": "long",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-long/manifest.json",
+        "sha256": "5280b47c62e9aeffc551c120d2495b555e8cef3a757b2a855f0097d0b952de90",
+        "bytes": 2242968
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-long/guest-output/ws73.pcap",
+        "sha256": "14496fdb7f1387c629467c2356143c4f92c93fe4c5934be113c7daba06c3ec98",
+        "bytes": 1024408
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-long/guest-output/capture-stats.txt",
+        "sha256": "2a89c3e9ce99a47b6e4d11428506560de43537d6e2d10bf1fb4b23da5311e403",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 8,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "application_boundary_rejections": 16,
+      "requested_payload_bytes": 2042
+    },
+    {
+      "name": "length248",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-length248/manifest.json",
+        "sha256": "a6d884ae5354b43df7c065399a1280c92a302be4ef5750f4006b0ba6dde8c83a",
+        "bytes": 1253711
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-length248/guest-output/ws73.pcap",
+        "sha256": "03ea055fd488c3831f8c697050f62af8a9de182ee85430db6475c51569bf0abc",
+        "bytes": 530910
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-length248/guest-output/capture-stats.txt",
+        "sha256": "dafba62216e907909e65b222c6b87eefbdd323c7cdf48b1ac9b6ee8113a09f53",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 8,
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "requested_payload_bytes": 248
+    },
+    {
+      "name": "length250",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-length250/manifest.json",
+        "sha256": "ffd75fd4aaa13b34f022b32e155101c35bc7d2e2419b7a2de94cdec9aea46bf8",
+        "bytes": 1284974
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-length250/guest-output/ws73.pcap",
+        "sha256": "69ff54f322cbfd9def2774e19132af2d8f529e0046490f17b01907df97d15858",
+        "bytes": 550744
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-length250/guest-output/capture-stats.txt",
+        "sha256": "be69b26fd198fc6697403ed908dc7aa8078839c9df5ce68535775c5e228f6e91",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 8,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "requested_payload_bytes": 250
+    },
+    {
+      "name": "length253",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-length253/manifest.json",
+        "sha256": "e63dfc8a45f70c8b97ba885b60d9bb97385b7a48e6d10bbcbac52fea18eba155",
+        "bytes": 1285358
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-length253/guest-output/ws73.pcap",
+        "sha256": "e7f3f65180ee0f7ebf9b84908891fe7ea12dad231dbe77e2620ab43dc8a7722d",
+        "bytes": 551420
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-length253/guest-output/capture-stats.txt",
+        "sha256": "1faacb9e1001cc5c2aa7beca07b3d6407c1a4bbcf79520f3f09f406d8d43f5a3",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 8,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "requested_payload_bytes": 253
+    },
+    {
+      "name": "length254",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-length254/manifest.json",
+        "sha256": "ebb70d03971f523793922cee501ce09968f6892c9facb1da8953fd1c7b6c2bae",
+        "bytes": 1285486
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-length254/guest-output/ws73.pcap",
+        "sha256": "220ea0020e7c92da67baa9f91ba18ae17231fb7cd8f044c9d1d4c2223368369a",
+        "bytes": 549392
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-length254/guest-output/capture-stats.txt",
+        "sha256": "243bda32c0ca735d75ccd450d53689f0a8146bcd8f86105ba98026275715792a",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 8,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "requested_payload_bytes": 254
+    },
+    {
+      "name": "length255",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-length255/manifest.json",
+        "sha256": "a5a2899708b97d654620b3af330a61ae81b9b3e74109e0e99e58e3bce9975311",
+        "bytes": 1285614
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-length255/guest-output/ws73.pcap",
+        "sha256": "3e08d83076fe9c7fa954713b2de7016b6dbc1dd25bd7c88fb3256c4617a2765e",
+        "bytes": 552434
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-length255/guest-output/capture-stats.txt",
+        "sha256": "e83a40ef064f50c9a7636025f757cb4f4c31b04c97c4da1fcaf64bdfb686e863",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 8,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "requested_payload_bytes": 255
+    },
+    {
+      "name": "length1024",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-length1024/manifest.json",
+        "sha256": "672f6d481bdb76a81d96cc87a3c50b2a7c220409fb7126494521ee4f025b8cde",
+        "bytes": 1696384
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-length1024/guest-output/ws73.pcap",
+        "sha256": "08c28f997a08b4a1aa82aa403c2945a2cf825da2d66023a881677b5073577669",
+        "bytes": 755626
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-length1024/guest-output/capture-stats.txt",
+        "sha256": "ca9c82b83f1ff4e18f49d7c30d40ee8d9cb7da1723848805b2a656e1688e7f4c",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 8,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "requested_payload_bytes": 1024
+    },
+    {
+      "name": "prefix-close",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-prefix-close/manifest.json",
+        "sha256": "7deaf64268af091999e11a684d7d02418f91a95a36442620676b28af014568b3",
+        "bytes": 1390319
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-prefix-close/guest-output/ws73.pcap",
+        "sha256": "e3896a418bbc804be70f2992ea4406ed00bd69e161cd3ac65eef6c2cc147582e",
+        "bytes": 609160
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-prefix-close/guest-output/capture-stats.txt",
+        "sha256": "8e0afad18173810380b3a044b1e9e8480dcf5de7ea0e5e66d91d493f33cadda2",
+        "bytes": 227
+      },
+      "capture_drops": 0,
+      "round_trips": 0,
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "prefix_close_phases": 2,
+      "physical_prefix_delivery_acceptance": true,
+      "requested_payload_bytes": 2042
+    },
+    {
+      "name": "burst",
+      "status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+      "manifest": {
+        "path": ".dev/native-deadline-v2-regression-burst/manifest.json",
+        "sha256": "e5f71e32491e98c30c9a4479fc1d2fe379063c1a23d1d22603cf978591808d47",
+        "bytes": 5677324
+      },
+      "capture": {
+        "path": ".dev/native-deadline-v2-regression-burst/guest-output/ws73.pcap",
+        "sha256": "1bbf792fba53f433ab0ee9023feab75a7e99f5356b768390c8a3d362ac6e7eab",
+        "bytes": 2688442
+      },
+      "capture_stats": {
+        "path": ".dev/native-deadline-v2-regression-burst/guest-output/capture-stats.txt",
+        "sha256": "8fb758ee0ca5e1b8fe5f693b3523c0302b42ff057053c0dcca8ec59883e03cab",
+        "bytes": 229
+      },
+      "capture_drops": 0,
+      "round_trips": 32,
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "software_backpressure_acceptance": true,
+      "requested_payload_bytes": 2042
+    }
+  ],
+  "totals": {
+    "mechanism_business_round_trips": 40,
+    "data_business_round_trips": 136,
+    "boundary_rejections": 32,
+    "strict_prefix_close_phases": 2
+  },
+  "original_deadline_evidence": "security-absolute-deadline-20261015.json",
+  "old_abi_manual_replug_comparison": "port2-replug-preserved-regression-20261015.json",
+  "limits": [
+    "This21-gate matrix does not include Agent/method/caller integration, authenticated identity/trustedGrant/Bond or third-party interoperability.",
+    "Mechanism results are separate: capability, candidate proof, controller-reported unauthenticated encryption, passive cancellation and original expiry; do not label all business encrypted.",
+    "No controlled installationStatus/0011/revoke/Down/finalUSB combination or completeFile/lock/refcount/formal proof.",
+    "Original capture manifests keep credit_exhaustion_acceptance=false; actual pool observations, if obtained, are separate and do not prove hardwareNOCPtruth/late/duplicate/reuse.",
+    "The retained first real gate failed due to an expired restart input; 575 test-only fix and exact rerun do not erase it.",
+    "Raw captures may contain key material; remain private, publish fingerprints only.",
+    "Manualreplug/QMP/hubreset/injection are not natural recovery acceptance. RCA/nonhuman recovery, four-device and all originalS0-S6 scopes remain OPEN."
+  ],
+  "supplemental_credit_observation": "security-deadline-credit-observation-20261015.json"
+}

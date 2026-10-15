@@ -703,27 +703,38 @@
     "excluded_port_in_qualified_runs": "1-2.1.2"
   },
   "current_qualification": {
-    "DG01": "PARTIAL_REAL exact415/376136dataRT plus8candidatebeforeafter and8oldmodebeforeafter; counts separate",
-    "DG02": "PARTIAL_REAL exact415/376 allattainedlengths/32refusals/2strictfd; broadmatrix open",
-    "FV_SECURITY_RELAY": "Actual494/e2a Session path correctly delivers1ff/02 to reference PairReject ONLY with isolated packet/RX-table derivative. Official ISA/ROM trace and variants causally support stock111 descriptor omission. Original images restored at that historical diagnostic boundary; stock stillFAIL. Later port2 extension failed and its current original restore is NOT_VERIFIED. No approved/native-native/security or complete formal proof.",
-    "S5": "PARTIAL_REAL unauthenticatedcandidateproof134..142 bothroles415/376; NOT Agent/trustedIdentity/install/encryptedBusiness/Bond",
+    "DG01": "SCOPED_REAL_PASS exact8cbf53/compiled2d81/tools575, ports2/3, basic fixed channel,20eachrole40short random peer-checked RT; not wholeNS1/naturalrecovery",
+    "DG02": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3, default249 and32oversize refusals; negotiatedlong250 separately qualified, remaining modes open",
+    "FV_SECURITY_RELAY": "Current13X soleSession/credit/ticket positive physical path retained; stock111147/1ff descriptor omission and old isolatedRAM causality remain historical. Port2 manual replug nowReady/business, no naturalRCA/recovery or executionattestation/fullformal proof.",
+    "S5": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3, explicit noMITM13X proof+realroleinstallation/0011/business, passivecancel and originaldeadline; NOT Agent/authenticatedIdentity/trustedGrant/Bond",
     "recovery": "Natural RCA and nonhuman recovery remain open",
     "FV_CODEC": "HISTORICAL exact2030 driver bounded800 checks preserved, not relabeled as fresh d926 result; new cursor proof separately recorded",
     "FV_DLI_CURSOR": "SCALAR_TRANSITIONS_PASS exact production header,48 checks, all unsigned inputs; no worker/USB/NOCP proof",
-    "DG03": "PARTIAL_REAL bounded PB/lengths/software queue plus scoped hardware pool observation; full lifecycle/fragment matrix missing",
+    "DG03": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3, explicit253/254/255 application lengths and captured layers; malformed/reassembly/mode matrix incomplete",
     "FV_PDU_CONSENT": "SCALAR_CONSENT_PASS actual494 functions sl_sk/sl_permits/sl_session_submit,311 checks; locks/references/Runtime/USB and query-composition excluded",
-    "DG05": "PARTIAL_REAL exact415/376 two-role pool5, newrefusals26/25,206USB/NOCP perend/phase;32peerrepliedburst; no duplicate/late/reusefullproof",
+    "DG05": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3, actualpool5, newsource blocks29/30,206USB/NOCP eachend/role, finaldebt0,32peerrepliedburst; late/duplicate/reuse unproved",
     "DG_WITHDRAWAL": "PARTIAL_REAL actual494/e2a release/lastManagedFile/dup x both indices;6 fragments1524bytes begun,2lateNOCP each; no submit after syscall-return; original-deadline/full linearization/reuse unproven",
-    "FW_TABLE_EXTENSION": "FAILED actual boot upload after5 completed32768-byte OUTs, fifthACKmissing. New Runtime not qualified, generator retired. Original port1-2.1.2restore NOT_VERIFIED; no stock or safety upgrade.",
+    "FW_TABLE_EXTENSION": "FAILED historical contiguousRAM bootupload after5OUTs/missingACK; generatorretired. Port2 later manualreplug Ready/business restored as experimental condition only, not extension safety or natural recovery.",
     "DG_LINK_DOWN": "PARTIAL_REAL K494/compiledUe2a/VMtools2d6c250 two source roles, bothHeld leases and two realDown, oldESTALE/poll24 and peer Ready/scan; not precisebarrier/originaldeadline/reuse/natural or independentbusiness",
     "DG_ORIGINAL_DEADLINE": "PARTIAL_REAL 494/e2a/eb4dffa two source roles, actualpool5/prefix1270, original5sETIMEDOUT not8srecvtimeout, unchangedrealreply release/fiveNOCP and failedfd retained. No directpostfailuredebtview or broadrecovery/security/reuse proof.",
     "FV_SECURITY_CAPABILITIES": "NOT_PROVEN_UNSUPPORTED: two exact production harnesses atc272; generated996/945 nonfailure checks do not upgrade unsupported constructs",
     "FV_SECURITY_KEY_AGREEMENT": "NOT_PROVEN_UNSUPPORTED exact415 actualTjob/withdraw/expiry/physicalobligation queue2/unwind80,1110generatedchecks; no fullprotocol/locks/crypto proof",
-    "LATEST_SECURITY_PASSIVE_CANCEL": "SCOPED_REAL_PASS exact45/37 tools227; two roles8ordinary random businessRT, samelease/lifetime/Ready, no securitywire; in-flight/Agent missing"
+    "LATEST_SECURITY_PASSIVE_CANCEL": "SCOPED_REAL_PASS exact8cbf53/compiled2d81/tools575, ports2/3, two roles8ordinary RT, sameSession/lease/Ready, no securitywire; in-flight/Agent missing",
+    "DG04": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3, real1024/2042 fragmentation and2strict lastfdprefix phases; failure/reassembly matrix incomplete",
+    "DG06": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3, finite software burst queue EAGAIN/poll and actual business; broad memory/fault isolation matrix missing",
+    "DG07": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3,2strict lastfdprefix phases plus immutable oldeff6Managedwithdrawal evidence; fullclose/dup/linger/inflightmatrix remains open",
+    "DG08": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3, known canonical connection objects/reusedhandle stale refs; physicalwire reuse/lateRX/NOCP barriers unproved",
+    "DG09": "PARTIAL_REAL oldeff620/2cd6Managedprefixwithdrawals retained; new security passivecancel is distinct, no full newGrant lifecycle proof",
+    "DG10": "MISSING dynamic multi-channel/reopen qualification; sole fixed Session demux retained, no relaxing socket registration restriction",
+    "DG11": "MISSING four-real-device two-group business/fault isolation; two-device and historical RF4 cannot substitute",
+    "DG12": "PARTIAL_REAL exact8cbf53/compiled2d81/tools575, ports2/3, actual existing SSAP ExchangeInfo/read/write/discovery/UUID gates retained; daemon notify/indicate/CCC/application delivery stillmissing",
+    "LATEST_SECURITY_ORIGINAL_DEADLINE": "SCOPED_REAL_PASS exact8cbf53/compiled2d81/tools575, ports2/3,2s preadmission wait counted in original5s, timeout after5031/5030ms not refreshed, cancel keeps timeout, freshbudgetrestartEBUSY,8ordinaryRT; not actualAgent",
+    "FV_SECURITY_DEADLINE_ARITHMETIC": "BOUNDED_PASS actual8cbf production original_deadline/host_wake_deadline,100checks, allu64times/jiffies andallu32maxbudget; x86HZ100/250/300/1000. No clocks/locks/USB proof; initialarbitraryHZ timeout retained.",
+    "FV_SECURITY_INSTALLATION_COMPOSITION": "NOT_PROVEN_UNSUPPORTED actual8cbf production,1766checks,31concrete regressions, Gfixed0..28 expiry100 jobfailure+actualcancel; no upgrade from arithmetic or RF PASS"
   },
   "next_resume_tasks": [
-    "Record port2 second manual-replug usability and exact45/37 all17 regression; no natural recovery waiver. New8cbf absolute security deadline ABI v2 exact VM gates next, then Agent/method/caller; preserve full scope.",
-    "Agent/method/caller integration uses existing per-request cancel and sole Session; real positive/reject/caller-loss business. Controlled in-flight Status/0011/revoke/Down/original-deadline remains open, not prerequisite to all data work.",
+    "Exact8cbf/compiled2d81/fixed575 original5s with2s preapproval wait, retainedtimeout/freshretryEBUSY and all21 related real gates PASS. No Agent/whole-security/wholeformal/naturalrecovery completion.",
+    "Implement actual per-controller Agent/method/caller binding over existing Session, original deadline and single-request cancel. Positive/reject/caller-loss real two-role business. No more control-race universality prerequisites; data/SSAP/multichannel/four-device parallel.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
@@ -880,7 +891,7 @@
   },
   "in_progress_security_absolute_deadline": {
     "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
-    "status": "SCOPED_REAL_TWO_ROLE_ORIGINAL_DEADLINE_AND_CANCEL_PASS_REMAINDER_RUNNING",
+    "status": "SCOPED_REAL_ORIGINAL_DEADLINE_AND_ALL21_RELATED_REGRESSION_PASS_AGENT_PENDING",
     "submit_version": 2,
     "submit_bytes": 64,
     "clock": "CLOCK_MONOTONIC nanoseconds",
@@ -888,17 +899,50 @@
     "formal_arithmetic": "BOUNDED_PASS100; allu64 now/deadline/jiffies, allu32 maximum_ms, CONFIG_HZ100/250/300/1000",
     "formal_first_attempt": "NOT_PROVEN_TIMEOUT, arbitraryu32 HZ,300seconds; retained",
     "excluded": "clock mapping, Session/Host integration, File/locks/refs/USB/crypto/hardware; prior1766 unsupported not upgraded",
-    "next_exit": "Actual2s policy wait counts toward original5s, terminal timeout not rewritten by cancel, sameSession/lease/Ready and random peer business; new two-role install and data matrix then Agent wiring.",
+    "next_exit": "Implement actual per-controller Agent/method/caller binding over existing Session, original deadline and single-request cancel. Positive/reject/caller-loss real two-role business. No more control-race universality prerequisites; data/SSAP/multichannel/four-device parallel.",
     "compiled_userspace": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
     "tools_commit": "575ba33",
     "real_scope": "Two role2s pre-admission controlled wait, observed expiry at5031/5030ms from input,2976/2973ms afterarm; no renewed5s. Timeout terminal survivescancel, fresh deadline restartEBUSY, sameSession/lease/Ready and8ordinary random businessRT. Two-role passivecancel alsoPASS. Not Agent.",
-    "full_regression": "RUNNING; does not yet grant remaining installation/data gates",
-    "first_gate_failure": "FAIL retained: expired original request reused for restart probe, ETIMEDOUT beforeEBUSY; fixed575 probe requires fresh valid budget, noRuntimechange"
+    "full_regression": "ALL21_REAL_DEADLINE_AND_REGRESSION_GATES_PASS",
+    "first_gate_failure": "FAIL retained: expired original request reused for restart probe, ETIMEDOUT beforeEBUSY; fixed575 probe requires fresh valid budget, noRuntimechange",
+    "full_regression_evidence": "docs/evidence/security-absolute-deadline-regression-20261015.json",
+    "business_totals": {
+      "mechanism_business_round_trips": 40,
+      "data_business_round_trips": 136,
+      "boundary_rejections": 32,
+      "strict_prefix_close_phases": 2
+    },
+    "credit_observation": "docs/evidence/security-deadline-credit-observation-20261015.json"
   },
   "plan_progress_archive": {
     "path": "history/architecture/progress-snapshots-20261014.md",
     "source_commit": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
     "original_excerpt_sha256": "2f531066e9ef60b1ae3b905419e8ec2c20e9d111db8a955804333cd751efb6af",
     "scope": "Historical progress moved out of canonical implementation plan; original S0-S6/WP/FV/DG unchanged"
-  }
+  },
+  "qualification_history": [
+    {
+      "source_commit": "11f23ae45e02a572af8e75974f5b5987ee05064e",
+      "reason": "Historical qualification identities retained; latest exact8cbf/2d81/575 qualifications below do not relabel old evidence.",
+      "entries": {
+        "DG01": "PARTIAL_REAL exact415/376136dataRT plus8candidatebeforeafter and8oldmodebeforeafter; counts separate",
+        "DG02": "PARTIAL_REAL exact415/376 allattainedlengths/32refusals/2strictfd; broadmatrix open",
+        "FV_SECURITY_RELAY": "Actual494/e2a Session path correctly delivers1ff/02 to reference PairReject ONLY with isolated packet/RX-table derivative. Official ISA/ROM trace and variants causally support stock111 descriptor omission. Original images restored at that historical diagnostic boundary; stock stillFAIL. Later port2 extension failed and its current original restore is NOT_VERIFIED. No approved/native-native/security or complete formal proof.",
+        "S5": "PARTIAL_REAL unauthenticatedcandidateproof134..142 bothroles415/376; NOT Agent/trustedIdentity/install/encryptedBusiness/Bond",
+        "recovery": "Natural RCA and nonhuman recovery remain open",
+        "FV_CODEC": "HISTORICAL exact2030 driver bounded800 checks preserved, not relabeled as fresh d926 result; new cursor proof separately recorded",
+        "FV_DLI_CURSOR": "SCALAR_TRANSITIONS_PASS exact production header,48 checks, all unsigned inputs; no worker/USB/NOCP proof",
+        "DG03": "PARTIAL_REAL bounded PB/lengths/software queue plus scoped hardware pool observation; full lifecycle/fragment matrix missing",
+        "FV_PDU_CONSENT": "SCALAR_CONSENT_PASS actual494 functions sl_sk/sl_permits/sl_session_submit,311 checks; locks/references/Runtime/USB and query-composition excluded",
+        "DG05": "PARTIAL_REAL exact415/376 two-role pool5, newrefusals26/25,206USB/NOCP perend/phase;32peerrepliedburst; no duplicate/late/reusefullproof",
+        "DG_WITHDRAWAL": "PARTIAL_REAL actual494/e2a release/lastManagedFile/dup x both indices;6 fragments1524bytes begun,2lateNOCP each; no submit after syscall-return; original-deadline/full linearization/reuse unproven",
+        "FW_TABLE_EXTENSION": "FAILED actual boot upload after5 completed32768-byte OUTs, fifthACKmissing. New Runtime not qualified, generator retired. Original port1-2.1.2restore NOT_VERIFIED; no stock or safety upgrade.",
+        "DG_LINK_DOWN": "PARTIAL_REAL K494/compiledUe2a/VMtools2d6c250 two source roles, bothHeld leases and two realDown, oldESTALE/poll24 and peer Ready/scan; not precisebarrier/originaldeadline/reuse/natural or independentbusiness",
+        "DG_ORIGINAL_DEADLINE": "PARTIAL_REAL 494/e2a/eb4dffa two source roles, actualpool5/prefix1270, original5sETIMEDOUT not8srecvtimeout, unchangedrealreply release/fiveNOCP and failedfd retained. No directpostfailuredebtview or broadrecovery/security/reuse proof.",
+        "FV_SECURITY_CAPABILITIES": "NOT_PROVEN_UNSUPPORTED: two exact production harnesses atc272; generated996/945 nonfailure checks do not upgrade unsupported constructs",
+        "FV_SECURITY_KEY_AGREEMENT": "NOT_PROVEN_UNSUPPORTED exact415 actualTjob/withdraw/expiry/physicalobligation queue2/unwind80,1110generatedchecks; no fullprotocol/locks/crypto proof",
+        "LATEST_SECURITY_PASSIVE_CANCEL": "SCOPED_REAL_PASS exact45/37 tools227; two roles8ordinary random businessRT, samelease/lifetime/Ready, no securitywire; in-flight/Agent missing"
+      }
+    }
+  ]
 }

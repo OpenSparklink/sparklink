@@ -141,3 +141,9 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [准确8cbf/2d81的原安全期限、生产算术限定验证与两角色实机](security-absolute-deadline-20261015.json)：
 受控等待2秒计入原5秒，超时不被取消改写、新期限重试仍拒绝；首次探针失败及任意HZ超时保留，安装组合仍未证明。
+
+[准确8cbf/2d81/575原期限及21组真实保持矩阵](security-absolute-deadline-regression-20261015.json)：
+10安全机制分项40次、11数据门禁136次对端业务回复/32超限/两严格最后fd；非Agent/完整安全或自然恢复资格。
+
+[新期限镜像的实际pool5耗尽及NOCP后恢复补充观察](security-deadline-credit-observation-20261015.json)：
+源端新增拒绝29/30、双端峰值5/最终debt0、32次对端业务回复；不升级NOCP准确性/复用或完整credit证明。

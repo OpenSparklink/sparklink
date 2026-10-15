@@ -68,7 +68,12 @@ fixture 检查不包含真实锁、分配器、引用、USB 或内核调度；�
 [Documentation 38749648275](https://github.com/OpenSparklink/sparklink/actions/runs/38749648275)、
 [Qualification integrity 38749648556](https://github.com/OpenSparklink/sparklink/actions/runs/38749648556)
 全部成功；新质量 job 只核对公开元数据，不是实机重放。
-监督器原子失败保护的后续改动专项21项本地通过，等待其准确提交CI；不覆盖Agent dirty。
+监督器原子失败保护提交 `7a9ac120c5b6` 的
+[综合CI](https://github.com/OpenSparklink/sparklink/actions/runs/38750325434)、
+[文档CI](https://github.com/OpenSparklink/sparklink/actions/runs/38750325402)和
+[资格元数据CI](https://github.com/OpenSparklink/sparklink/actions/runs/38750325375)均成功。
+后续报告格式拒绝检查使专项负对照达23项本地通过；各结果只适用其记录的工具源码，
+均不覆盖Agent dirty或增加运行资格。
 [九个issues准确读回](../docs/evidence/qualification-quality-issues-20261015.json)
 保留原scope及OPEN。后续提交不能继承这条CI观察为已运行。
 两仓库 master 的经典分支保护 API 返回 Branch not protected，rulesets 列表为空；

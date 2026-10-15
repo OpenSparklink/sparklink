@@ -62,7 +62,7 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
         if path.is_absolute() or '..' in path.parts or not re.fullmatch(r'[a-f0-9]{64}', item['sha256']):
             errors.append(f'{ident}: unsafe path or invalid hash')
             continue
-        if item['base'] not in ('repo', 'workspace') or item['access'] not in ('public', 'private'):
+        if item['base'] not in ('repo', 'workspace') or item['access'] not in ('public', 'private') or item['format'] not in ('json', 'bytes'):
             errors.append(f'{ident}: invalid location/access')
             continue
         if item['access'] == 'private' and mode == 'metadata':
@@ -93,6 +93,8 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
         binding = record.get('report')
         if binding and binding['material'] not in materials:
             errors.append(f'{ident}: missing report material')
+        if binding and binding['material'] in materials and materials[binding['material']]['format'] != 'json':
+            errors.append(f'{ident}: report must be parsed JSON')
         if binding:
             report = documents.get(binding['material'])
             if report is not None:
@@ -139,6 +141,8 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
                 errors.append(f'{ident}/{role}: missing exact source')
                 continue
             mapping = source.get('manifest_mapping')
+            if mapping and (mapping['material'] not in materials or materials[mapping['material']]['format'] != 'json'):
+                errors.append(f'{ident}/{role}: source mapping requires JSON manifest')
             if mapping and (manifest := documents.get(mapping['material'])) is not None:
                 if select(manifest, mapping['pointer']) != source['files']:
                     errors.append(f'{ident}/{role}: build manifest/source mapping mismatch')

@@ -174,6 +174,14 @@ class QualificationTests(unittest.TestCase):
         self.assertFalse(result['completed'])
         self.assertTrue(result['errors'])
 
+    def test_unknown_format_is_not_silently_opaque(self):
+        self.data['materials']['report.json']['format'] = 'typo'
+        self.rejected()
+
+    def test_report_cannot_disable_binding_checks_as_bytes(self):
+        self.data['materials']['report.json']['format'] = 'bytes'
+        self.rejected()
+
     def test_unknown_schema(self):
         self.data['schema_version'] = 2
         self.rejected()

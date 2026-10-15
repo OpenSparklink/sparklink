@@ -981,20 +981,21 @@
       "multichannel/four-device/SSAP gates",
       "clean-VM install/upgrade/uninstall + soak/recovery/release"
     ],
-    "state": "BATCH1_COMMITTED_CI_PASS; atomic-supervisor followup LOCAL_PASS_CI_PENDING; later batches PLANNED_NOT_RUN",
+    "state": "BATCH1_SCOPED_IMPLEMENTATION_AND_LOCAL_CHECKS_PASS; exact7a9ac12_CI_PASS; later quality batches PLANNED_NOT_RUN",
     "issue_scope_unchanged": true,
     "results": {
-      "negative_controls": 21,
+      "negative_controls": 23,
       "tools_tests": 542,
       "strict_docs_documents": 104,
       "local_materials": 154,
       "current_tree": "EXPECTED_NOT_QUALIFIED_AGENT_DIRTY",
       "real_device_rerun": "NOT_RUN_TOOLING_ONLY",
       "formal_new_proof": "NONE",
-      "tools_tests_scope": "542 at92c75ca; atomic-followup targeted21"
+      "tools_tests_scope": "542 at92c75ca; atomic followup21; schema guards23 targeted local; no automatic upgrade of runtime qualification"
     },
     "implementation_commit": "92c75cab77ee5949ea636dee6b897b413f801fae",
-    "issue_receipt": "docs/evidence/qualification-quality-issues-20261015.json"
+    "issue_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
+    "status_evidence": "docs/evidence/qualification-quality-status-20261015.json"
   },
   "qualification_view": {
     "registry": "project/qualification-records.json",

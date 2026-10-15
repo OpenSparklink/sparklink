@@ -13,6 +13,13 @@
 [监督器原子失败保护及准确CI](qualification-supervisor-atomic-20261015.json)和
 [九项issues读回](qualification-quality-issues-20261015.json)保留本批限定范围。
 
+[资格一致性首批收尾及准确CI](qualification-quality-status-20261015.json)记录23负对照与
+保留的来源/范围；没有新增运行或实机资格。
+
+## 历史报告（各自准确镜像，不代表当前HEAD）
+
+以下“本批/新镜像/当前”等原报告用语均以对应报告的源码身份为准；不得据此授予当前工作树资格。
+
 [版本固定的证据目录](https://github.com/OpenSparklink/sparklink/tree/670674736ac90ec0f89ca0330849e22b1bc8f81b/docs/evidence) 保留报告、失败和反例。站点不复制整个目录、SDK、固件或标准材料。报告中的工作区原始抓包可能未公开；文件名或 hash 不能替代可下载 artifact。无法取得原始材料时，只能审查已公开摘要，不能声称已重现。
 
 当前仍开放的自然恢复根因及非人工恢复门禁不会因文档构建通过而关闭。
@@ -27,7 +34,7 @@ state8不是Agent/认证/安装/加密/Bond；旧模式和数据回归分别计�
 直接生产转换Kani存在unsupported，仍未证明，不升级为完整安全资格。
 [本批九项issues读回回执](security-capability-issues-20261015.json)保留原scope和OPEN。
 
-本轮新证据从[当前源码的 read 迁移报告](read-retirement-progress-20261014.json)进入；上述固定旧目录仅代表历史基线，不能用于查找后续新增报告。公开摘要内标明原始抓包的可取得性；未公开材料不伪造下载链接。
+早期迁移证据从[当时源码的 read 迁移报告](read-retirement-progress-20261014.json)进入；上述固定旧目录仅代表历史基线，不能用于查找后续新增报告。公开摘要内标明原始抓包的可取得性；未公开材料不伪造下载链接。
 
 第五批[大写原文整理的准确源码、构建与浏览器记录](diataxis-documentation-uppercase-batch-20261014.json)
 仅为文档门禁；不更改实机、协议或形式化资格。

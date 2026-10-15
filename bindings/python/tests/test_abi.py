@@ -60,6 +60,7 @@ STRUCT_NAMES = {
     "SleLinkSnapshot": "sle_link_snapshot",
     "SleSecurityNegotiationSubmit": "sle_security_negotiation_submit",
     "SleSecurityNegotiationResult": "sle_security_negotiation_result",
+    "SleSecurityNegotiationCancel": "sle_security_negotiation_cancel",
 }
 
 

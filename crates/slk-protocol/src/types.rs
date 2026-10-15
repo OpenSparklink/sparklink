@@ -1652,3 +1652,16 @@ pub const SECURITY_CAPABILITY_ONLY: u32 = 1;
 /// Unauthenticated candidate agreement only, no Agent/install/encryption/Bond.
 pub const SECURITY_KEY_AGREEMENT_ONLY: u32 = 2;
 pub const SECURITY_UNAUTHENTICATED_ENCRYPTION: u32 = 3;
+
+/// Withdraw one original Managed File request; not controller release or wire cancellation.
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default)]
+pub struct SleSecurityNegotiationCancel {
+    pub generation: u64,
+    pub lifetime: u64,
+    pub request_id: u64,
+    pub version: u32,
+    pub handle: u16,
+    pub reserved: u16,
+}
+const _: () = assert!(core::mem::size_of::<SleSecurityNegotiationCancel>() == 32);

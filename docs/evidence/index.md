@@ -119,3 +119,8 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [eff620物理Session撤权保留、两角色安装、15组保持及6组Managed回归](session-owner-retention-20261015.json)：
 准确2cd编译/封存工具；旧引用丢失离线反例与限定Kani未证明分列，不授予Agent/Bond或自然恢复。
+
+[eff620安装/生命周期回归九项issues准确读回回执](session-owner-issues-20261015.json)：整项OPEN，原scope不变。
+
+[类型化单安全作者请求取消：生产实现、离线检查与实机缺口](security-author-cancel-20261015.json)：
+准确45c049构建，28纯转换/39跨语言；1766检查unsupported未证明，不继承eff620实机资格。

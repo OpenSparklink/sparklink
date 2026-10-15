@@ -14,7 +14,7 @@ from .structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus,
-    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel,
 )
 
 _native_library = None
@@ -29,6 +29,7 @@ def _get_native_lib():
         SleControllerSnapshot, SleRegistrationSnapshot, SleManagementQuery, SleDiscoverySubmit,
         SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
         SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
+        SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel,
     )):
         raise OSError("native UAPI requires ctypes with 8-byte structure alignment")
     handle = ctypes.c_void_p
@@ -43,6 +44,7 @@ def _get_native_lib():
         "slk_controller_snapshot": [handle, u64, ctypes.POINTER(SleControllerSnapshot)],
         "slk_link_snapshot": [handle, u64, ctypes.POINTER(SleLinkSnapshot)],
         "slk_security_negotiation_submit": [handle, ctypes.POINTER(SleSecurityNegotiationSubmit)],
+        "slk_security_negotiation_cancel": [handle, ctypes.POINTER(SleSecurityNegotiationCancel)],
         "slk_security_negotiation_result": [handle,u64,u64,ctypes.c_uint16,u64,ctypes.POINTER(SleSecurityNegotiationResult)],
         "slk_management_acquire": [handle, u64, u32, ctypes.POINTER(u64)],
         "slk_management_query": [handle, u64, ctypes.POINTER(SleManagementQuery)],
@@ -188,6 +190,14 @@ class NativeAdapter:
             raise TypeError("SleSecurityNegotiationSubmit required")
         if request.generation!=self.generation or not request.lifetime or not request.request_id:raise ValueError("exact nonzero selected generation/lifetime/request required")
         self._invoke('slk_security_negotiation_submit',ctypes.byref(request))
+
+    def cancel_security_negotiation(self, request):
+        """Local request withdrawal, never release/disconnect or physical success."""
+        if not isinstance(request, SleSecurityNegotiationCancel):
+            raise TypeError("SleSecurityNegotiationCancel required")
+        if request.generation != self.generation or not request.lifetime or not request.request_id:
+            raise ValueError("exact nonzero selected generation/lifetime/request required")
+        self._invoke('slk_security_negotiation_cancel', ctypes.byref(request))
 
     def security_negotiation(self, lifetime, handle, request_id):
         """Original Managed File observes local Complete/peer RX only."""

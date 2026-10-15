@@ -322,3 +322,11 @@ nix::ioctl_readwrite!(
     0xd3,
     super::SleSecurityNegotiationResult
 );
+
+// Local author withdrawal, original Managed File and CAP_NET_ADMIN required.
+nix::ioctl_write_ptr!(
+    sl_security_negotiation_cancel,
+    SL_MAGIC,
+    0xd4,
+    super::SleSecurityNegotiationCancel
+);

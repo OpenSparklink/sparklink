@@ -211,3 +211,21 @@ Host队列不保存密钥。驱动临时帧在最终提交前通过保留票据�
 安装命令在snoop中置`SNOOP_REDACTED=2`，保留原长度、只捕获真实头部；不可将省略
 参数当作零长度USB包或全零密钥。USB原始抓包含秘密，保持私有，公开证据不输出LTK。
 本节描述接线，不授予新镜像资格；当前准确实机范围仍见唯一资格入口。
+
+## 单个安全作者请求取消（未发布 ABI）
+
+匹配内核的 `SL_IOCTL_SECURITY_NEGOTIATION_CANCEL` 使用32字节
+`sle_security_negotiation_cancel`：generation、lifetime、request_id为u64，version为u32，
+handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C头和Python
+布局同步。当前仅底层机制，Agent/D-Bus/CLI尚未接入，准确实机范围见当前资格入口。
+
+原Managed File和CAP_NET_ADMIN均必需；普通业务fd不能调用，也不能从observer File
+借用管理权限。取消校验原File/request与当前连接身份，不创建新Session；不释放controller
+租约、不主动断开物理连接或清理其他通道，停止待提交作者工作。返回0是本地取消准入/处理成功，
+不是wire取消、Complete、credit退款、已断链或已关闭加密；已提交物理义务继续保留。
+终态请求幂等返回且不改写原结果，尤其state9不会被伪装成Off。原期限已过时保留到期
+终态；通过原RESULT入口观察操作结果，取消不自动增加同lifetime重启资格。
+
+无效字段/reserved返回EINVAL，版本不支持EOPNOTSUPP，错误generation返回ENODEV，
+失配物理lifetime返回ESTALE；非原Managed File/无CAP返回EPERM，无原请求返回ENOENT。
+撤权、设备移除及注册退休按原权限/生命周期错误返回；不要把失败当作物理过程已撤回。

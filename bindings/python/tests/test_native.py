@@ -15,7 +15,7 @@ from sparklink.structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus,
-    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel,
 )
 
 
@@ -36,6 +36,14 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(bytes(request),before)
         self.assertEqual(self.lib.slk_security_negotiation_submit(None,ctypes.byref(request)),-errno.EINVAL)
         self.assertEqual(self.lib.slk_security_negotiation_submit(self.handle,None),-errno.EINVAL)
+
+    def test_security_cancel_is_original_file_ioctl_and_never_local_success(self):
+        request = SleSecurityNegotiationCancel(version=1, generation=1, lifetime=1, request_id=1)
+        before = bytes(request)
+        self.assertEqual(self.lib.slk_security_negotiation_cancel(self.handle, ctypes.byref(request)), -errno.ENOTTY)
+        self.assertEqual(bytes(request), before)
+        self.assertEqual(self.lib.slk_security_negotiation_cancel(None, ctypes.byref(request)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_security_negotiation_cancel(self.handle, None), -errno.EINVAL)
 
     def test_channel_info_errors_preserve_output_and_errno(self):
         out = SleChannelInfo(generation=99, reserved=123)

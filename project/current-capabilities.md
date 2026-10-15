@@ -56,6 +56,16 @@ NotSupported，独立Managed实测未运行daemon。接下来为Agent补单请�
 Down/实际提交组合仍需受控VM验证。动态通道、四设备和真实SSAP通知/指示并行，
 自然根因/非人工恢复、原147/1ff缺项及第2只原版恢复未验证继续开放。
 
+## 后续单请求取消机制（尚无新实机资格）
+
+新 K `45c049f32964` 接通32字节类型化取消，原Managed File/request/连接身份校验，
+复用Session纯转换并锁外清除私有材料；不释放controller租约或消除提交义务，终态
+结果不改写。Rust/C/Python绑定同步，28生产转换、39跨语言、44Native/68Host、
+Cargo222/13 suites、严格clippy、预提交及准确干净提交内核构建通过；VM门禁继续。
+1766项Kani生成检查仍NOT_PROVEN_UNSUPPORTED，不能记PASS；新增Handler的实际
+File授权、锁/引用和USB组合未证明。当前实机资格仍是上方eff620/2cd，Agent、D-Bus
+和CLI接线仍缺；新入口不继承旧镜像资格。
+
 ## 历史准确镜像入口
 
 K `41572aaf736d` / U `37666749f579` 的候选proof与旧模式/136次数据资格保留

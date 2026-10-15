@@ -604,6 +604,18 @@ typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationResult {
     uint8_t reserved[4];
 } SleSecurityNegotiationResult;
 
+/**
+ * Withdraw one original Managed File request; not controller release or wire cancellation.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationCancel {
+    uint64_t generation;
+    uint64_t lifetime;
+    uint64_t request_id;
+    uint32_t version;
+    uint16_t handle;
+    uint16_t reserved;
+} SleSecurityNegotiationCancel;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -969,6 +981,16 @@ int slk_security_negotiation_result(const struct SlkAdapter *adapter,
                                     uint16_t handle,
                                     uint64_t request_id,
                                     struct SleSecurityNegotiationResult *out);
+
+/**
+ * Withdraw one author request on the original Managed File. Does not release
+ * controller ownership, disconnect, erase physical debt or disable encryption.
+ * Terminal requests stay unchanged. Returns 0 or negative errno.
+ * # Safety
+ * Non-null pointers must be valid, aligned and nonoverlapping for this call.
+ */
+int slk_security_negotiation_cancel(const struct SlkAdapter *adapter,
+                                    const struct SleSecurityNegotiationCancel *request);
 
 #ifdef __cplusplus
 }  // extern "C"

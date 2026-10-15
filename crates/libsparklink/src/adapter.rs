@@ -736,7 +736,7 @@ impl Adapter {
         Ok(())
     }
 
-    /// Explicit experimental capability/candidate agreement, not Pair/encryption.
+    /// Explicit capability/candidate/controller-encryption procedure, not authentication or Bond.
     /// Requires the current Managed File, exact physical reference and admin.
     /// One exchange per lifetime; client disconnects after this limited probe.
     pub fn submit_native_security_negotiation(
@@ -745,6 +745,18 @@ impl Adapter {
     ) -> Result<()> {
         // SAFETY: borrowed initialized integer-only ABI for this syscall.
         unsafe { ioctl::sl_security_negotiation_submit(self.raw_fd(), request)? };
+        Ok(())
+    }
+
+    /// Withdraw only this original File/request. Success means local author
+    /// cancellation; installed encryption, controller ownership and in-flight
+    /// physical obligations are not undone. Terminal results stay unchanged.
+    pub fn cancel_native_security_negotiation(
+        &self,
+        request: &SleSecurityNegotiationCancel,
+    ) -> Result<()> {
+        // SAFETY: initialized padding-free repr(C) request, borrowed for ioctl.
+        unsafe { ioctl::sl_security_negotiation_cancel(self.raw_fd(), request)? };
         Ok(())
     }
 

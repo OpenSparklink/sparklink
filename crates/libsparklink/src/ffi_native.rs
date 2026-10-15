@@ -507,3 +507,23 @@ pub unsafe extern "C" fn slk_security_negotiation_result(
         Err(error) => errno(error),
     }
 }
+
+/// Withdraw one author request on the original Managed File. Does not release
+/// controller ownership, disconnect, erase physical debt or disable encryption.
+/// Terminal requests stay unchanged. Returns 0 or negative errno.
+/// # Safety
+/// Non-null pointers must be valid, aligned and nonoverlapping for this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_security_negotiation_cancel(
+    adapter: *const SlkAdapter,
+    request: *const SleSecurityNegotiationCancel,
+) -> c_int {
+    let (Some(adapter), Some(request)) = (unsafe { adapter.as_ref() }, unsafe { request.as_ref() })
+    else {
+        return -nix::libc::EINVAL;
+    };
+    adapter
+        .inner
+        .cancel_native_security_negotiation(request)
+        .map_or_else(errno, |()| 0)
+}

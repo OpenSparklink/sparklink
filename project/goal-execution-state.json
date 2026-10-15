@@ -690,7 +690,7 @@
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
   "issue_sync_status": "NEW_INSTALLATION_BATCH_UPDATE_PENDING",
-  "issue_sync_receipt": "docs/evidence/security-installation-issues-20261015.json",
+  "issue_sync_receipt": "docs/evidence/session-owner-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
     "reason": "New real native9message relay candidate proof bothroles; actualfreshP256/CMAC and private material/job-lifetime integration;15 actual tests, limitedKani unsupported keptunproven,8appRT plus136fresh dataRT/32refusals and oldmode8RT. Not waiting on ignoredport2."
@@ -770,7 +770,7 @@
       "scope": "Unauthenticated candidate proof only, no trustedSecurity/Pair/Agent/install/encryption/Bond/standardInterop"
     }
   },
-  "issue_sync_receipt_previous": "docs/evidence/security-key-agreement-issues-20261015.json",
+  "issue_sync_receipt_previous": "docs/evidence/security-installation-issues-20261015.json",
   "additional_reference_review": {
     "source": "docs/evidence/openharmony-peripheral-reference-20261015.json",
     "repository": "https://gitcode.com/openharmony/drivers_peripheral",
@@ -797,5 +797,23 @@
       "tools/testing/selftests/sparklink/native-data/fixture.rs"
     ],
     "issue_receipt": "docs/evidence/openharmony-peripheral-issues-20261015.json"
+  },
+  "in_progress_security_author_cancel": {
+    "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+    "status": "SIGNED_COMMITTED_EXACT_CLEAN_BUILD_AND_OFFLINE_PASS_REAL_VM_PENDING",
+    "abi_bytes": 32,
+    "same_session": true,
+    "whole_controller_lease_release": false,
+    "production_transition_tests": 28,
+    "cross_language_tests": 39,
+    "cargo_tests": 222,
+    "cargo_suites": 13,
+    "clippy": "PASS",
+    "formal_status": "NOT_PROVEN_UNSUPPORTED",
+    "generated_checks": 1766,
+    "new_physical_acceptance": false,
+    "agent_connected": false,
+    "next_exit": "Exact clean build and real passive-author cancellation with same links/lease/business/peer preserved, then Agent/method/caller wiring using this ioctl; controlled in-flight Status/event/deadline remains open.",
+    "evidence": "docs/evidence/security-author-cancel-20261015.json"
   }
 }

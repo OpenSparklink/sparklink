@@ -30,7 +30,7 @@ async def main():
   async def click(selector):
    await js("(()=>{const e=document.querySelector("+json.dumps(selector)+");if(!e)throw new Error('missing click target');e.scrollIntoView({block:'center'});return true})()")
    await asyncio.sleep(.2)
-   coordinates=json.loads(await js("(()=>{const e=document.querySelector("+json.dumps(selector)+");if(!e)throw new Error('missing click target');e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect();if(r.width<=0||r.height<=0)throw new Error('hidden click target');const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);if(!hit||!e.contains(hit))throw new Error('obscured click target');return JSON.stringify({x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)})})()"))
+   coordinates=json.loads(await js("(()=>{const e=document.querySelector("+json.dumps(selector)+");if(!e)throw new Error('missing click target');const r=e.getBoundingClientRect();if(r.width<=0||r.height<=0)throw new Error('hidden click target');const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);if(!hit||!e.contains(hit))throw new Error('obscured click target');return JSON.stringify({x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)})})()"))
    await call('input.performActions',{'context':context,'actions':[{'type':'pointer','id':'docs-pointer','parameters':{'pointerType':'mouse'},'actions':[{'type':'pointerMove','origin':'viewport',**coordinates},{'type':'pointerDown','button':0},{'type':'pointerUp','button':0}]}]})
   async def nav(path):await call('browsingContext.navigate',{'context':context,'url':args.base_url.rstrip('/')+'/'+path,'wait':'complete'})
   async def shot(name):
@@ -51,11 +51,11 @@ async def main():
   await click('.theme-change-button[data-mode="dark"]')
   await asyncio.sleep(.2)
   result['dark_mode']=await js("document.documentElement.dataset.theme==='dark'")
-  await click('h1')
+  await click('.bd-article h1')
   result['screenshots'].append(await shot('book-dark-reference'))
   await click('.theme-switch-button')
   await click('.theme-change-button[data-mode="light"]')
-  await click('h1')
+  await click('.bd-article h1')
 
   result['screenshots'].append(await shot('reference-table'))
   await nav('how-to/build-documentation.html');result['code_block']=await js("Array.from(document.querySelectorAll('pre')).some(p=>p.textContent.includes('uv sync --locked --only-group docs'))")

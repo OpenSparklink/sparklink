@@ -8,10 +8,12 @@ Neither mode independently re-decodes RF captures or proves build reproducibilit
 import argparse
 import hashlib
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = {'PASS', 'FAIL', 'UNPROVED', 'MISSING', 'SKIP'}
@@ -232,6 +234,23 @@ def sync_views(data, repo, write=False):
     return errors
 
 
+def write_report(path, value):
+    """Replace atomically; an interrupted run must not retain a success verdict."""
+    with tempfile.NamedTemporaryFile(mode='w', dir=path.parent, delete=False) as stream:
+        temporary = Path(stream.name)
+        try:
+            stream.write(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+            stream.flush()
+            os.fsync(stream.fileno())
+        except BaseException:
+            temporary.unlink(missing_ok=True)
+            raise
+    try:
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode', choices=['metadata', 'local'], default='metadata')
@@ -239,6 +258,9 @@ def main():
     parser.add_argument('--write-views', action='store_true')
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
+    if args.output:
+        write_report(args.output, {'verification': 'RUNNING_NOT_QUALIFIED',
+                                   'completed': False, 'errors': ['checker has not completed']})
     try:
         data = json.loads((ROOT / 'project/qualification-records.json').read_text())
         result = validate(data, mode=args.mode, require_current=args.require_current)
@@ -248,9 +270,10 @@ def main():
         result = {'errors': [f'invalid qualification data: {exc}'], 'verification': 'INVALID'}
     if result['errors']:
         result['verification'] = 'INVALID'
+    result['completed'] = True
     output = json.dumps(result, ensure_ascii=False, indent=2) + '\n'
     if args.output:
-        args.output.write_text(output)
+        write_report(args.output, result)
     print(output, end='')
     raise SystemExit(bool(result['errors']))
 

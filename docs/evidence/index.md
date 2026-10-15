@@ -10,6 +10,9 @@
 [资格一致性首批实测与边界](qualification-provenance-batch1-20261015.json)记录20负对照、542工具、
 104文档严格构建及154原件核对；不增加Agent或其他协议实机资格。
 
+[监督器原子失败保护及准确CI](qualification-supervisor-atomic-20261015.json)和
+[九项issues读回](qualification-quality-issues-20261015.json)保留本批限定范围。
+
 [版本固定的证据目录](https://github.com/OpenSparklink/sparklink/tree/670674736ac90ec0f89ca0330849e22b1bc8f81b/docs/evidence) 保留报告、失败和反例。站点不复制整个目录、SDK、固件或标准材料。报告中的工作区原始抓包可能未公开；文件名或 hash 不能替代可下载 artifact。无法取得原始材料时，只能审查已公开摘要，不能声称已重现。
 
 当前仍开放的自然恢复根因及非人工恢复门禁不会因文档构建通过而关闭。

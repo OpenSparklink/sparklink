@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "baseline_implementation_commit": "92c75cab77ee5949ea636dee6b897b413f801fae",
+  "status": "ATOMIC_SUPERVISOR_LOCAL_PASS_CI_PENDING",
+  "new_behavior": "After argument parsing and before reading/validating records, atomically replace output with incomplete nonqualifying sentinel; unhandled checker failure cannot retain previous success. Complete result also atomically replaces output.",
+  "regression": {
+    "targeted_negative_controls": 21,
+    "log": {
+      "path": ".dev/quality-provenance-atomic-negative.log",
+      "sha256": "0ca1cc8eccfda8dbb316b5912de8296630c3e49dbe2d3900a59a8350407509f1",
+      "bytes": 120,
+      "access": "private original machine"
+    },
+    "local_material_check": {
+      "path": ".dev/quality-provenance-atomic-local.json",
+      "sha256": "2d184cd31561a27ab5d4ede64b57d53741652457cbe0bd9ab3b12b5a53219aae",
+      "bytes": 230,
+      "access": "private original machine"
+    },
+    "prior_all_tools": "542 at92c75ca; no claim new fullsuite543 run",
+    "postcommit_strict_docs": {
+      "path": ".dev/quality-provenance-postcommit-docs.log",
+      "sha256": "7b50894e6f9b82597d52459d4d3b41ad760d7a1f9eae4be2cdef884a016da022",
+      "bytes": 11501,
+      "access": "private original machine"
+    }
+  },
+  "tool_sources": {
+    "tools/check_qualifications.py": "5dcce80fd2574c436288c0aaef5a457d53962c7d6b7620b7809107779c3c64aa",
+    "tools/tests/test_qualifications.py": "43f426a1bbbc47be0ada1a4a4b6e869e4acfe05468755db6f175ab9e1214fe20"
+  },
+  "online_ci": {
+    "source": "92c75cab77ee5949ea636dee6b897b413f801fae",
+    "overall": {
+      "id": 38749647782,
+      "conclusion": "success",
+      "jobs": 9
+    },
+    "docs": {
+      "id": 38749648275,
+      "conclusion": "success"
+    },
+    "qualification_metadata": {
+      "id": 38749648556,
+      "conclusion": "success",
+      "log": {
+        "path": ".dev/quality-ci-92c75ca-metadata.log",
+        "sha256": "d31a9dfa3024a6cd79ce57b5868324e922d1ec9c078551ead5b5fa2c9ebcb373",
+        "bytes": 61648,
+        "access": "private original machine"
+      },
+      "not_reverified_private_materials": true
+    }
+  },
+  "issue_receipt": "qualification-quality-issues-20261015.json",
+  "scope": [
+    "No protocol production change, new RF test or new formal proof.",
+    "Initial21 real gates remain K8cbf53/compiled2d81/tools575 only; Agent dirty still NOT_REVALIDATED.",
+    "Q2 Agent, Q3 production fuzz/debugVM/composed verification and later deployment/soak remain not run.",
+    "Runtime/firmware/real hardware/system-bus permissions not certified by this tooling batch.",
+    "Full S0-S6/19WP/10FV/12DG originalscope and natural RCA/nonhuman recovery remain OPEN; VM-only."
+  ]
+}

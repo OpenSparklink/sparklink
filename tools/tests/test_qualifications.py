@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import check_qualifications as q
 
@@ -159,6 +160,19 @@ class QualificationTests(unittest.TestCase):
         for path in ['/etc/shadow', '../artifact']:
             self.data['materials']['artifact']['path'] = path
             self.rejected()
+
+    def test_checker_crash_replaces_old_success_with_incomplete(self):
+        output = self.repo / 'verdict.json'
+        output.write_text(json.dumps({'verification': 'OLD_SUCCESS', 'completed': True}))
+        # Crash in the actual CLI supervisor after its sentinel is published.
+        with patch('sys.argv', ['check_qualifications', '--output', str(output)]):
+            with patch.object(q, 'validate', side_effect=RuntimeError('injected supervisor crash')):
+                with self.assertRaises(RuntimeError):
+                    q.main()
+        result = json.loads(output.read_text())
+        self.assertEqual(result['verification'], 'RUNNING_NOT_QUALIFIED')
+        self.assertFalse(result['completed'])
+        self.assertTrue(result['errors'])
 
     def test_unknown_schema(self):
         self.data['schema_version'] = 2

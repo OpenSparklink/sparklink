@@ -28,6 +28,7 @@ def fixture():
     for j,(phase,when) in enumerate([('armed',600_000_000),('held',1_330_000_000),('released',6_300_000_000)]):
         values=[[True,False,0,0,0,0,False,0],[False,True,1,0,0,0,False,0],[False,False,1,1,0,0,False,0]][j]
         d['acks'].append(dict(stage=phase,host_wall_ns=when,request=d['markers'][j],state=dict(zip(PROPERTIES,values))))
+    d['ack_receipts']=[dict(stage=phase,wall_ns=when,monotonic_ns=when) for phase,when in [('armed',610_000_000),('held',1_340_000_000),('released',6_400_000_000)]]
     c['acb_packets'].pop();wire=b'\x1f\0\xfb\x07\xf1'+bytes.fromhex(g['revoke_prefix']['payload'])
     for n in range(5):c['acb_packets'].append(dict(**r['usb'][0],handle=0,direction='out',data=wire[n*254:(n+1)*254].hex(),boundary=1 if n==0 else 2,wall_ns=1_002_000_000+n*10_000_000,completion={'record':50+n*2},record=49+n*2))
     c['commands'][0]['wall_ns']=6_610_000_000;c['native_events'][0]['wall_ns']=6_620_000_000
@@ -47,8 +48,15 @@ class OriginalDeadline(unittest.TestCase):
         self.assertEqual(v['submitted_bytes'],1270)
         self.assertEqual(v['partial_pdu_application_round_trips'],0)
 
+    def test_host_and_guest_wall_offsets_do_not_change_causality(self):
+        for offset in [-500_000_000,10_000_000_000]:
+            r,c,h,s,e=fixture()
+            for ack in r['data_deadline']['acks']:ack['host_wall_ns']+=offset
+            # Handshakes and same-clock ordering still required.
+            verify(r);corroborate(r,c,h,s,e)
+
     def test_wrong_clock_credit_lifetime_or_revoke_is_not_timeout(self):
-        for kind in ['early','refreshed','recv_timeout','revoke','debt','prefix','lifetime','lease','revived','autobound']:
+        for kind in ['early','refreshed','recv_timeout','revoke','debt','prefix','lifetime','lease','revived','guest_receipt','autobound']:
             r,c,h,s,e=fixture();d=r['data_deadline'];a=r['channel_grant']['armed']
             if kind in ['early','refreshed']:d['blocked_result']['end_monotonic_ns']=4_000_000_000 if kind=='early' else 7_000_000_000
             elif kind in ['recv_timeout','revoke']:d['blocked_result']['errno']=errno.EAGAIN if kind=='recv_timeout' else errno.EACCES
@@ -56,6 +64,7 @@ class OriginalDeadline(unittest.TestCase):
                 tx=SleChannelTxStatus.from_buffer_copy(bytes.fromhex(a['pre_block_tx_status']));setattr(tx,{'debt':'connection_debt','prefix':'active_pdu_offset','lifetime':'lifetime'}[kind],0);a['pre_block_tx_status']=bytes(tx).hex()
             elif kind=='lease':d['management_at_timeout'][0]=d['management_cleaned'][0]
             elif kind=='revived':d['old_fd_after_release']['errors']['send']=0
+            elif kind=='guest_receipt':d['ack_receipts'][2]['wall_ns']=6_900_000_000
             else:d['acks'][2]['state']['test-runtime-in-bounded-releases']=1
             with self.subTest(kind=kind),self.assertRaises(ValueError):verify(r)
 

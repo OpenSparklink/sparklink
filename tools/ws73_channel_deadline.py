@@ -33,7 +33,7 @@ class DeadlineCoordinator(HoldCoordinator):
 
 def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect):
     i=r['index'];p=1-i;folder=Path('/evidence/channel-deadline');folder.mkdir(exist_ok=False)
-    row=dict(status='STARTING',markers=[],acks=[],management_before=[bytes(a.management_status()).hex() for a in observers],links_before=[bytes(a.link_snapshot()).hex() for a in observers],ready_before=[bytes(a.snapshot()).hex() for a in observers])
+    row=dict(status='STARTING',markers=[],acks=[],ack_receipts=[],management_before=[bytes(a.management_status()).hex() for a in observers],links_before=[bytes(a.link_snapshot()).hex() for a in observers],ready_before=[bytes(a.snapshot()).hex() for a in observers])
     r['data_deadline']=row;save()
     def stage(phase,ack):
         marker=dict(hold_phase=phase,wall_ns=time.time_ns());write_marker(folder/f'hold-{phase}.json',marker);row['markers'].append(marker);save();limit=time.monotonic()+3
@@ -41,7 +41,7 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,s
         while not path.exists():
             if time.monotonic()>limit:raise TimeoutError('real IN81 hold acknowledgment '+ack)
             time.sleep(.005)
-        value=json.loads(path.read_text());row['acks'].append(value);save()
+        value=json.loads(path.read_text());row['acks'].append(value);row['ack_receipts'].append(dict(stage=ack,wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns()));save()
     # Allow previous real business completions to drain before arming once.
     time.sleep(.15);stage('arm_ready','armed');grant.arm(sample_before_block=True);stage('wait_held','held')
     row['blocked_result']=receive(grant.parents[i]);row['timeout_observed_wall_ns']=time.time_ns();save()
@@ -67,7 +67,11 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,s
         request=standby(snapshots[p],identifier,'scanning') if op==3 else stop(snapshots[p],identifier,op);request.operation=op;discover(p,request)
     row['scan_checked_wall_ns']=time.time_ns()
     for n in [i,p]:writers[n].release_management(leases[n],1)
-    row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers];row['status']='ACTUAL_ORIGINAL_DEADLINE_PASS';r.update(status='DATA_DEADLINE_PASS',end_wall_ns=time.time_ns());verify(r);save();print('WS73_TARGET_DATA_DEADLINE_PASS',flush=True)
+    row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers];row['status']='ACTUAL_ORIGINAL_DEADLINE_PASS';r.update(status='DATA_DEADLINE_PASS',end_wall_ns=time.time_ns())
+    try:verify(r)
+    except Exception:
+        row['status']='VALIDATION_FAILED';r['status']='FAIL';save();raise
+    save();print('WS73_TARGET_DATA_DEADLINE_PASS',flush=True)
 
 
 def verify(r):
@@ -97,11 +101,16 @@ def verify(r):
     if not 4_900_000_000<=lower<=upper<=5_500_000_000 or result['start_monotonic_ns']<armed['admission_after_monotonic_ns']:raise ValueError('finite original5s admission deadline required, not 8s recv timeout or refreshed retry deadline')
     for key in ['old_fd_before_release','old_fd_after_release']:
         if d[key]['errors']!={'send':errno.ENOTCONN,'recv':errno.ENOTCONN} or d[key]['poll']!=select.POLLERR|select.POLLHUP:raise ValueError('failed Session must reject old fd before and after real delayed reply')
-    if len(d['acks'])!=3 or len(d['markers'])!=3 or [v['stage'] for v in d['acks']]!=['armed','held','released']:raise ValueError('real hold/release handshake required')
+    if len(d['acks'])!=3 or len(d['markers'])!=3 or len(d['ack_receipts'])!=3 or [v['stage'] for v in d['acks']]!=['armed','held','released']:raise ValueError('real hold/release handshake required')
     for j,a in enumerate(d['acks']):
         expected=dict(zip(PROPERTIES,[[True,False,0,0,0,0,False,0],[False,True,1,0,0,0,False,0],[False,False,1,1,0,0,False,0]][j]))
-        if a['request']!=d['markers'][j] or a['state']!=expected or a['host_wall_ns']<a['request']['wall_ns']:raise ValueError('exact real hold states, no bounded release/drop/error required')
-    if not d['acks'][1]['host_wall_ns']<result['end_wall_ns']<=d['timeout_observed_wall_ns']<d['markers'][2]['wall_ns']<=d['acks'][2]['host_wall_ns']<d['post_release_checked_wall_ns']<d['cleanup_before_wall_ns']:raise ValueError('timeout must happen while actual original reply still held')
+        receipt=d['ack_receipts'][j]
+        if a['request']!=d['markers'][j] or a['state']!=expected or receipt['stage']!=a['stage'] or receipt['wall_ns']<a['request']['wall_ns']:raise ValueError('exact real hold states and guest receipts, no bounded release/drop/error required')
+    # Host and guest wall clocks have independent offsets. Use the guest's
+    # actual ack-file receipt to connect causal stages; never compare clocks.
+    receipts=d['ack_receipts']
+    if not receipts[0]['wall_ns']<=armed['admission_before_wall_ns']<=armed['admission_after_wall_ns']<d['markers'][1]['wall_ns']<=receipts[1]['wall_ns']<result['end_wall_ns']<=d['timeout_observed_wall_ns']<d['markers'][2]['wall_ns']<=receipts[2]['wall_ns']<d['post_release_checked_wall_ns']<d['cleanup_before_wall_ns'] or not receipts[0]['monotonic_ns']<receipts[1]['monotonic_ns']<receipts[2]['monotonic_ns']:raise ValueError('guest receipts must show original timeout while real reply held')
+    if not d['acks'][0]['host_wall_ns']<d['acks'][1]['host_wall_ns']<d['acks'][2]['host_wall_ns']:raise ValueError('host observations must be ordered on their own clock')
     request=decode(SleConnectionSubmit,d['cleanup_disconnect_input']);link=decode(SleLinkSnapshot,d['links_at_timeout'][i]).links[0]
     if (request.version,request.operation,request.generation,request.request_id,request.handle,request.reason,request.expected_lifetime)!=(2,2,owner['generation'],950,owner['handle'],0x13,owner['lifetime']) or bytes(request.expected_address)!=bytes(link.address) or request.expected_role!=link.role or request.expected_address_type!=link.address_type:raise ValueError('exact lifetime-bound cleanup input required')
     cleanup=decode(SleConnectionResult,d['cleanup_result'])

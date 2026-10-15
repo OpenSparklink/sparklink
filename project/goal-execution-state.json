@@ -767,5 +767,31 @@
       "scope": "Unauthenticated candidate proof only, no trustedSecurity/Pair/Agent/install/encryption/Bond/standardInterop"
     }
   },
-  "issue_sync_receipt_previous": "docs/evidence/security-capability-issues-20261015.json"
+  "issue_sync_receipt_previous": "docs/evidence/security-capability-issues-20261015.json",
+  "additional_reference_review": {
+    "source": "docs/evidence/openharmony-peripheral-reference-20261015.json",
+    "repository": "https://gitcode.com/openharmony/drivers_peripheral",
+    "commit": "879984db5c71d6922e37a529ea467dcadcd46958",
+    "status": "READ_ONLY_REVIEW_COMPLETE",
+    "companion_host_retained": true,
+    "mapped_packages": [
+      "WP01",
+      "WP02",
+      "WP03",
+      "WP05",
+      "WP09",
+      "WP11",
+      "WP14",
+      "WP16"
+    ],
+    "runtime_implementation_changed": false,
+    "new_hardware_qualification": false,
+    "priority": "Supplement current work; UserHost stays P4, no new prerequisite",
+    "linux_dirty_preserved": [
+      "net/sparklink/sle_native.rs",
+      "net/sparklink/sle_security_relay.rs",
+      "net/sparklink/sle_sessions.rs",
+      "tools/testing/selftests/sparklink/native-data/fixture.rs"
+    ]
+  }
 }

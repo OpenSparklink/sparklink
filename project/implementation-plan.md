@@ -885,3 +885,21 @@ WP04–06接通后运行DG07–10，再DG11–12。自然故障RCA与非人工�
 保留历史定位，旧HTML入口生成重定向，GitHub旧分支blob无法自动转向。
 [准确迁移门禁](../docs/evidence/diataxis-physical-migration-20261014.json)通过，混合资料拆分、
 外链和正式发布继续开放。不改S0–S6依赖、目标预算、VM-only或实机资格。
+
+## OpenHarmony peripheral 参考接入（2026-10-15）
+
+[固定版本审计](../docs/evidence/openharmony-peripheral-reference-20261015.json)已经完成
+只读源码核对，不表示功能实现或验收。继续使用既有 Host/SDK111/libws73 参考，
+本批不改变 S0–S6、19 工作包、10 类形式化及 12 数据门禁：
+
+- WP02/WP11、K#13/K#14：核对 H4 type 与 DLI 四字节头、两字节长度、callback 去 type
+  以及 WS73 USB/HCC/BSLE 的实际边界；不直接照搬字节流到 USB，不改变生产方言。
+- WP01/WP03/WP05/WP16：把异步初始化、部分初始化清理、客户端死亡、watcher 停止/join
+  作为对照检查点；坚持每设备、原期限、有限队列和物理义务，不引入无期限同步等待。
+- WP09：继续收尾现有真实安全安装/撤权/断链/原期限链路，不另造 Engine；本参考没有
+  提供 SDK111 安全 relay 空口支持或 NOCP 归属的新证据。
+- WP14：厂商完整 Host 接入只记录待核对 HDI/有类型包接口；维持 P4 规划，不实现或
+  默认承诺兼容，不阻塞当前 WS73 数据、生命周期和用户态 SSAP。
+
+本次仅修改文档/来源记录；保留当前内核 dirty Session 所有权整改，后续准确提交需
+重新构建并在 VM 取得真实两角色回归，不继承旧镜像资格。相关 issues 整项保持开放。

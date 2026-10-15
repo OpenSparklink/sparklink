@@ -8,6 +8,7 @@
 documentation-model
 qualification-boundaries
 architecture
+openharmony-dli-reference
 ```
 
 架构页和 ADR 描述目标与约束。实现及最新镜像资格分别由项目计划和当前资格页

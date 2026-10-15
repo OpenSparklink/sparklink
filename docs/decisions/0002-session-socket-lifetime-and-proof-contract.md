@@ -521,3 +521,13 @@ ACB完成仍由真实NOCP计账，不因查询或fd关闭清债。不向另一�
 或文件格式上限替代。表项保留检查只证明相应字节关系，不证明下载、执行或恢复。
 实际失败方案必须撤回生成/部署入口并保留反例；设备恢复未验证时明确记录，
 不能继承此前原版恢复或Ready。该条件不阻塞其他controller和独立数据面工作。
+
+## OpenHarmony DLI/HAL 参考补充（2026-10-15）
+
+采用固定 `drivers_peripheral@879984db5c71` 作为 transport/厂商接口及 callback/关闭
+语义的辅助参考；Host 协议继续核对既有 `communication_nearlink_service@f0872df`、
+SDK111 与 `libws73-usb@f4d85d0`。请求返回、传输写入、控制器完成和对端应用处理仍
+分别记账，不从 HDI 初始化或 onboard=true 推导原生 Ready。进程单例和 weak_ptr
+不替代 per-controller 引用、generation/lifetime/epoch 与真实排空屏障。
+[差异、许可证与源码身份](../explanation/openharmony-dli-reference.md)纳入原决策，
+不复制框架、不新增 Engine、不改变 Native/UserHost 所有权；未来厂商 Host 适配仍延期。

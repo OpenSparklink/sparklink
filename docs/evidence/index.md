@@ -106,3 +106,6 @@ K494/Ue2a、VM工具2d6c250；4次前置应用往返与零次未完成PDU交付�
 不授予完整debt/复用、安全或自然恢复资格。
 
 [本批原期限九项issues准确读回回执](original-pdu-deadline-issues-20261015.json)：原scope保持，整项OPEN。
+
+[OpenHarmony drivers_peripheral 固定版本参考审计](openharmony-peripheral-reference-20261015.json)：
+DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现或实机资格。

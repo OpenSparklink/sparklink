@@ -169,3 +169,11 @@ K415/U376的新回归见上；旧撤权/Down/期限资格继续绑定各自K494/
 [BlueZ官方来源、当前调用审查与剩余门禁](../docs/evidence/bluez-contract-review-20261014.json)。
 本项目取舍采用[ADR0004](../docs/decisions/0004-application-ownership-and-delivery.md)，
 不把它描述为BlueZ缺陷，也不宣称已优于BlueZ。
+
+## 新增源码参考的资格边界（2026-10-15）
+
+`drivers_peripheral@879984db5c71` 的 NearLink DLI/HAL 已完成
+[只读版本/许可证/调用边界审计](../docs/evidence/openharmony-peripheral-reference-20261015.json)。
+它补充既有 NearLink Host/SDK111/libws73 参考，不改变运行代码或 WS73 资格；
+HDI 初始化返回、onboard 状态和 transport 写入均不能替代 Ready、真实 Complete、
+安装结果或对端应用校验回复。厂商 Host/UserHost 适配仍为低优先级规划，未实现。

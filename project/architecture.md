@@ -88,6 +88,15 @@ Native主线保持：内核Host拥有DLI/协议credit/connection/DTAP/security�
 [唯一契约及未来门禁](../docs/decisions/0003-optional-exclusive-user-host.md)记录细节和未决ABI评审项；
 [源码审计](../docs/evidence/userhost-planning-audit-20261013.json)区分存在代码与未来任务。WP14不成为当前主线前置。
 
+## 固定版本参考的使用边界
+
+除既有 NearLink Host、SDK111 与 libws73-usb 外，纳入 OpenHarmony
+`drivers_peripheral` 的 NearLink DLI/HAL（本地 `879984db5c71`）。它补充包边界、
+初始化回调、厂商入口和关闭/死亡清理的参考；不替代 Native Session/credit/最终票据，
+不推导每设备隔离或真实交付资格。所读文件为 Apache-2.0，本批无实现复制。
+[来源与映射](../docs/explanation/openharmony-dli-reference.md)记录实际差异；
+厂商完整 Host 适配仍属可选 WP14/P4，不成为当前数据、安全或用户态 SSAP 前置。
+
 ## 对象、身份与引用
 
 ### 对象树

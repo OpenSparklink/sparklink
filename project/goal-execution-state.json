@@ -1123,6 +1123,13 @@
       ],
       "canonical_sources_unchanged": true,
       "other_pages_must_not_be_built": true
+    },
+    "theme": {
+      "name": "sphinx_book_theme",
+      "locked_version": "1.4.0",
+      "intent": "GitBook-like chapter navigation, page TOC, search and responsive reading",
+      "reason": "User explicitly requests theme change; replaces earlier Furo choice, same uv/Sphinx/MyST infrastructure",
+      "status": "implementation and fresh exact-build/browser gates in progress; no deployment or functional qualification claimed"
     }
   },
   "agent_issue_receipt": "docs/evidence/agent-policy-issues-20261016.json"

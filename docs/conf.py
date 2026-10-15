@@ -4,7 +4,7 @@ author = "OpenSparklink contributors"
 copyright = "OpenSparklink contributors"
 release = "development"
 language = "zh_CN"
-extensions = ["myst_parser", "sphinxcontrib.mermaid"]
+extensions = ["myst_parser", "sphinxcontrib.mermaid", "sphinx_copybutton"]
 source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
 root_doc = "index"
 exclude_patterns = ["_build", "_extensions", "evidence/**"]
@@ -13,13 +13,19 @@ show_warning_types = True
 myst_heading_anchors = 6
 myst_enable_extensions = ["colon_fence", "deflist", "fieldlist"]
 myst_fence_as_directive = ["mermaid"]
-html_theme = "furo"
+html_theme = "sphinx_book_theme"
 html_title = "SparkLink 文档"
 html_static_path = ["_static"]
 html_css_files = ["sparklink.css"]
 html_theme_options = {
-    "light_css_variables": {"color-brand-primary": "#176344", "color-brand-content": "#176344"},
-    "dark_css_variables": {"color-brand-primary": "#75cda6", "color-brand-content": "#75cda6"},
+    "show_navbar_depth": 2,
+    "show_toc_level": 2,
+    "toc_title": "本页内容",
+    "navigation_with_keys": False,
+    "home_page_in_toc": False,
+    "use_download_button": False,
+    "use_fullscreen_button": False,
+    "logo": {"text": "SparkLink"},
 }
 html_show_sourcelink = True
 html_last_updated_fmt = None
@@ -57,6 +63,7 @@ _source_revision = os.environ.get('SPARKLINK_DOCS_REVISION') or subprocess.check
     ['git', 'rev-parse', 'HEAD'], cwd=_docs, text=True).strip()
 release = _source_revision[:12] + ' (development; qualification is separate)'
 html_title = 'SparkLink · ' + _source_revision[:12]
+html_theme_options['logo'] = {'text': 'SparkLink · ' + _source_revision[:8]}
 # No raw reST/Markdown download exposing workstation paths; repository originals
 # remain linked at their immutable revision.
 html_copy_source = False
@@ -105,6 +112,29 @@ def _legacy_redirects(app, exception):
     if exception or app.builder.format != 'html':
         return
     import html
+    # Book Theme 1.4 / PyData 0.20 also ship two Jinja macro inputs inside
+    # their static directories. Sphinx copies them verbatim, but the browser
+    # never requests them. Do not publish raw build templates as HTML pages.
+    for name in ('webpack-macros.html', 'sbt-webpack-macros.html'):
+        template = Path(app.outdir) / '_static' / name
+        if template.is_file():
+            content = template.read_text()
+            if '{% macro ' not in content or 'pathto(' not in content:
+                raise ValueError('unexpected theme template content: ' + name)
+            template.unlink()
+    # Preserve the redistributed themes' own license texts alongside assets.
+    from importlib.metadata import distribution
+    import shutil
+    licenses = Path(app.outdir) / '_static' / 'licenses'
+    licenses.mkdir(exist_ok=True)
+    for name in ('sphinx-book-theme', 'pydata-sphinx-theme'):
+        dist = distribution(name)
+        entries = [p for p in dist.files or [] if '.dist-info/licenses/' in str(p)
+                   and p.name in ('LICENSE', 'LICENSE.txt', 'LICENSE.md')]
+        if not entries:
+            raise ValueError('missing installed theme license: ' + name)
+        for entry in entries:
+            shutil.copyfile(dist.locate_file(entry), licenses / (name + '-' + entry.name))
     for old, target in _paths['legacy_html_redirects'].items():
         destination = Path(app.outdir) / old
         # The current user-visible site is strictly four categories. Preserve

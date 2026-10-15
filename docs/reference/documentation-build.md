@@ -7,7 +7,7 @@
 | Python | 3.12–3.14；CI 使用 3.12 |
 | 源格式 | MyST Markdown；Sphinx 也接受 reStructuredText |
 | 构建入口 | `docs/conf.py` 和 `docs/index.md` |
-| 主题／语言 | Furo／简体中文；原有英文内容保留 |
+| 主题／语言 | Sphinx Book Theme／简体中文；原有英文内容保留 |
 | 构建结果 | `docs/_build/html/`，不提交到 Git |
 | 严格门禁 | 清单检查 + `sphinx-build -n -W --keep-going` |
 | 本地预览 | `make docs-live`；只监听 127.0.0.1 |
@@ -57,3 +57,8 @@ project、history、decisions、evidence 原文保留仓库、清单和源码链
 不复制正文；计划与资格链接指向准确提交中的 canonical 源文件。
 检查器拒绝四类之外的 HTML。旧 URL 仅当旧路径和目标均在四类内时生成跳转；
 排除的旧页面不生成跳转 HTML，路径映射和原始处置仍在仓库保留。
+
+阅读主题采用 [Sphinx Book Theme](https://sphinx-book-theme.readthedocs.io/en/stable/)，
+提供类似 GitBook 的章节导航与页内目录；不依赖 GitBook 托管或帐号。主题及依赖
+由 uv.lock 固定，CSS/JS 随 HTML 构建输出。Mermaid 的 CDN 依赖仍单独保留；
+主题变更须重查搜索、代码复制、宽表格、夜间/移动布局与 `/sparklink/` 子路径。

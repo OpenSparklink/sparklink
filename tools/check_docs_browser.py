@@ -27,6 +27,9 @@ async def main():
    value=await call('script.evaluate',{'expression':expression,'target':{'context':context},'awaitPromise':True})
    if value['type']!='success':raise RuntimeError(value)
    return value['result'].get('value')
+  async def click(selector):
+   coordinates=json.loads(await js("(()=>{const e=document.querySelector("+json.dumps(selector)+");if(!e)throw new Error('missing click target');e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect();return JSON.stringify({x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)})})()"))
+   await call('input.performActions',{'context':context,'actions':[{'type':'pointer','id':'docs-pointer','parameters':{'pointerType':'mouse'},'actions':[{'type':'pointerMove','origin':'viewport',**coordinates},{'type':'pointerDown','button':0},{'type':'pointerUp','button':0}]}]})
   async def nav(path):await call('browsingContext.navigate',{'context':context,'url':args.base_url.rstrip('/')+'/'+path,'wait':'complete'})
   async def shot(name):
    await asyncio.sleep(.5)  # Capture after layout/paint, not only DOM insertion.
@@ -41,8 +44,27 @@ async def main():
   await asyncio.sleep(.5)
   result['navigation']=await js("location.pathname.endsWith('/reference/controller-events.html') && document.body.innerText.includes('GetControllerEventPosition')")
   result['table']=await js("document.querySelectorAll('table').length>=2")
+  result['book_sidebars']=await js("document.querySelector('.bd-sidebar-primary').getBoundingClientRect().width>0 && document.querySelector('.bd-sidebar-secondary').getBoundingClientRect().width>0 && document.body.innerText.includes('本页内容')")
+  await click('.theme-switch-button')
+  await click('.theme-change-button[data-mode="dark"]')
+  await asyncio.sleep(.2)
+  result['dark_mode']=await js("document.documentElement.dataset.theme==='dark'")
+  result['screenshots'].append(await shot('book-dark-reference'))
+  await click('.theme-switch-button')
+  await click('.theme-change-button[data-mode="light"]')
+
   result['screenshots'].append(await shot('reference-table'))
   await nav('how-to/build-documentation.html');result['code_block']=await js("Array.from(document.querySelectorAll('pre')).some(p=>p.textContent.includes('uv sync --locked --only-group docs'))")
+  await asyncio.sleep(.3)
+  expected_copy=await js("(()=>{const b=document.querySelector('button.copybtn');return document.querySelector(b.dataset.clipboardTarget).textContent.replace(/\\n$/, '')})()")
+  await click('button.copybtn')
+  await asyncio.sleep(.1)
+  copy_success=await js("document.querySelector('button.copybtn').classList.contains('success')")
+  await js("(()=>{const t=document.createElement('textarea');t.id='docs-test-paste';t.style.position='fixed';t.style.top='4px';document.body.append(t);t.focus();return true})()")
+  await call('input.performActions',{'context':context,'actions':[{'type':'key','id':'docs-keyboard','actions':[{'type':'keyDown','value':'\ue009'},{'type':'keyDown','value':'v'},{'type':'keyUp','value':'v'},{'type':'keyUp','value':'\ue009'}]}]})
+  pasted=await js("document.getElementById('docs-test-paste').value")
+  result['code_copy_paste']=copy_success and pasted==expected_copy and bool(pasted)
+  await js("document.getElementById('docs-test-paste').remove();true")
   result['screenshots'].append(await shot('tutorial-code'))
   await nav('tutorials/index.html')
   await js("Array.from(document.links).find(a=>a.href.endsWith('tutorials/first-ws73-message.html')).click();true")
@@ -68,6 +90,11 @@ async def main():
   await call('browsingContext.setViewport',{'context':context,'viewport':{'width':390,'height':844},'devicePixelRatio':1})
   await nav('index.html');result['mobile_no_page_overflow']=await js('document.documentElement.scrollWidth <= window.innerWidth')
   result['screenshots'].append(await shot('mobile-home'))
+  await click('.pst-navbar-icon.sidebar-toggle.primary-toggle')
+  result['mobile_navigation']=await js("document.getElementById('pst-primary-sidebar-modal').open && document.querySelector('.bd-sidebar-primary a[href$=\"reference/index.html\"]')!==null")
+  result['screenshots'].append(await shot('book-mobile-navigation'))
+  await nav('index.html')
+
   await nav('reference/controller-events.html');result['mobile_table_container']=await js("Array.from(document.querySelectorAll('table')).every(t=>{let p=t.parentElement;return t.scrollWidth<=window.innerWidth || ['auto','scroll'].includes(getComputedStyle(p).overflowX)})")
   result['screenshots'].append(await shot('mobile-reference'))
   await call('browsingContext.setViewport',{'context':context,'viewport':{'width':1280,'height':900},'devicePixelRatio':1})
@@ -100,7 +127,7 @@ async def main():
    redirects[old]=ok
   result['legacy_html_redirects']=all(redirects.values())
   result['redirect_targets']=redirects
-  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','navigation','table','code_block','product_tutorial_navigation','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','source_only_pages_excluded','legacy_html_redirects']) else 'PARTIAL'
+  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','navigation','table','book_sidebars','dark_mode','code_copy_paste','mobile_navigation','code_block','product_tutorial_navigation','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','source_only_pages_excluded','legacy_html_redirects']) else 'PARTIAL'
   (OUT/'report.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['screenshots','browser']},indent=2))
   await call('session.end',{})
   if result['status']!='PASS':raise SystemExit(1)

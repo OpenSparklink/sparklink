@@ -1,0 +1,2765 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "compiled_userspace": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
+    "executed_tools": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
+    "report_commit": "8f13e3b52ee41d12f87a4dc6437c26ec92322754"
+  },
+  "access_policy": {
+    "private": "工作区相对路径；原机器授权维护者可读取；不公开原始密钥/SDK/固件/捕获。公开CI仅元数据核对。",
+    "retention": "本机.dev原路径及公开摘要hash；尚无已验证的异地保留/下载保证。原件缺失或不符时local核对失败，不显示当前PASS。",
+    "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
+  },
+  "batch": {
+    "id": "quality-provenance-1",
+    "production_behavior": "资格记录/生成摘要/ fail-closed 检查，不改驱动或Agent代码",
+    "exit": [
+      "canonical摘要/goal由唯一记录生成",
+      "旧源码/缺artifact/范围/必需非PASS负对照",
+      "公开元数据与私有材料验证分离"
+    ],
+    "next": "Agent实际权限/批准拒绝和退出门禁；生产fuzz/调试VM/提交撤权组合并行"
+  },
+  "overall_required_records": [
+    "deadline-real21",
+    "deadline-arithmetic",
+    "installation-composition",
+    "agent",
+    "multichannel-four-device",
+    "natural-recovery"
+  ],
+  "records": [
+    {
+      "id": "deadline-real21",
+      "title": "原期限、两角色安全机制及保留数据：21组限定门禁",
+      "level": "real_device",
+      "result": "PASS",
+      "contracts": [
+        "original-deadline",
+        "passive-cancel",
+        "unauthenticated-installation",
+        "retained-data-boundaries"
+      ],
+      "bounds": "VM-only，ports2/3；10机制/40业务往返、11数据/136往返、32超限、2严格最后fd；非完整S5或DG。",
+      "excluded": [
+        "This21-gate matrix does not include Agent/method/caller integration, authenticated identity/trustedGrant/Bond or third-party interoperability.",
+        "Mechanism results are separate: capability, candidate proof, controller-reported unauthenticated encryption, passive cancellation and original expiry; do not label all business encrypted.",
+        "No controlled installationStatus/0011/revoke/Down/finalUSB combination or completeFile/lock/refcount/formal proof.",
+        "Original capture manifests keep credit_exhaustion_acceptance=false; actual pool observations, if obtained, are separate and do not prove hardwareNOCPtruth/late/duplicate/reuse.",
+        "The retained first real gate failed due to an expired restart input; 575 test-only fix and exact rerun do not erase it.",
+        "Raw captures may contain key material; remain private, publish fingerprints only.",
+        "Manualreplug/QMP/hubreset/injection are not natural recovery acceptance. RCA/nonhuman recovery, four-device and all originalS0-S6 scopes remain OPEN."
+      ],
+      "remaining": [
+        "Agent实际部署/真实批准拒绝和退出",
+        "在途安装/撤权/断链/复用完整组合",
+        "多通道/四设备/SSAP通知指示/自然恢复"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+          "scopes": [
+            "net/sparklink",
+            "drivers/sparklink",
+            "include/uapi/linux/sparklink_ioctl.h"
+          ],
+          "files": {
+            "drivers/sparklink/Kconfig": "a4fe289630742cc56513e14d9baccc395b95891b7f49b03d607e213d2789b7a1",
+            "drivers/sparklink/Makefile": "f208817106ac1d72224079f79b486eda1b914bdddfdc9a68efb83043bbc4bdea",
+            "drivers/sparklink/standard_usb.c": "3a33dd49e91052c501b2d185df192184e5c45ad126c42154dfae7578881f7c67",
+            "drivers/sparklink/virtual.c": "b4c13ebca4cdaa80a77f0b5d6e9e90b6ea4abd16b7fdb8de3cff4d871a8391d9",
+            "drivers/sparklink/virtual.h": "774a29ad1ab3ce7dffe8ffbf396191abd2b8a7f68f7d5b342d98eb9a2f2827ef",
+            "drivers/sparklink/virtual_codec.h": "1cb87ed4fff0aeef6e56b259097499573e90a7b20ab90833ce68b9174a0af6c6",
+            "drivers/sparklink/ws73/bsle.c": "47a3e2ba4e169baa91fa5eaf098cfa77825cf06002c155986175037eee57f310",
+            "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e",
+            "drivers/sparklink/ws73/connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+            "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+            "drivers/sparklink/ws73/discovery.c": "584b8e246ae5accce54ce7647ee4469cb410bf41409c79a01799312d4fdb19ca",
+            "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+            "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+            "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+            "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+            "drivers/sparklink/ws73/usb.c": "02fcb3675dd7bff0cec665b2eb108973276247306c6341a3754d9963f8948e81",
+            "drivers/sparklink/ws73/wire.c": "d06ce9c48621ac24ba7450b7d3295a01a1a8b4cb66328f83b0acf568ebd2956c",
+            "drivers/sparklink/ws73/wire.h": "605a35601e0ce4fe95bafd8110ca8747e44e8e845510dbb7e0bd331d57b6d0df",
+            "include/uapi/linux/sparklink_ioctl.h": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+            "net/sparklink/Kconfig": "352656711a97406f5303dc11b94ce5a5d4f792a6b6adb874814bf890f0a27a18",
+            "net/sparklink/Makefile": "f602d17ad2cebbb1232854b361451c486aed8a433eab2f6241d0820506c2308d",
+            "net/sparklink/experimental/README": "950d51c089ab48be6a7ecc541a5113fe673949a3fb6e2ccba99156265ca4304d",
+            "net/sparklink/sle_authorization.rs": "92b40f2a04e2aafae443ca8b9d6743ceaa3a68ad14867dcabb69b5f0f293d307",
+            "net/sparklink/sle_backend.rs": "65d9fec9abaa64edc2fa06756f67ce7bb1a17d3ff73bb744d95d721388bc734d",
+            "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+            "net/sparklink/sle_channel_socket.c": "06ed8c433faef79701938c440badeac46beaa2f0a959d95ab9291c99506ab562",
+            "net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+            "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+            "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+            "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+            "net/sparklink/sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+            "net/sparklink/sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+            "net/sparklink/sle_configfs.rs": "048964fc18927cbd55a470c5c0c6abb865a1214d822ddd839aef8cde36b70b69",
+            "net/sparklink/sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+            "net/sparklink/sle_controller_event.rs": "81423ded2609f8953bf2fc25f44253c83606eeafd88802af0e1685a80d9c21d7",
+            "net/sparklink/sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+            "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c",
+            "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+            "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+            "net/sparklink/sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+            "net/sparklink/sle_dli.rs": "c2935790c9edd1167f037694318dc2d5d1531df0611410a1fa594f3715c8b981",
+            "net/sparklink/sle_fragment_cursor.h": "1af6fb2acbf5ccee3a4ec6353a5ca7ffc6d15365e2eda98affe48d77d3268dd1",
+            "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+            "net/sparklink/sle_host.rs": "4eccb8c3c4e4b954778438cd2bf911bcd12faf8a679a6e61e415ffcccd45ed88",
+            "net/sparklink/sle_ingress.rs": "fbc3d68b8ae838e823c72d5923b0e24ac74231e6deae85e2037b72d00edd4978",
+            "net/sparklink/sle_irq_lock.c": "b1f8a8fe4c3cd3697d6c3babd3f4aee0f93f0fb7cf98526f3490767c5d9cd9cf",
+            "net/sparklink/sle_irq_lock.h": "3f9a44812ebdd84d08db0f88834910f370bb92a0ce5760ba9371608a3679cb2d",
+            "net/sparklink/sle_irq_lock.rs": "5b5ca8e8750ea21825a34be4f45dd6eeba63cc43eeeda1e6053f55acbb6476a8",
+            "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+            "net/sparklink/sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+            "net/sparklink/sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+            "net/sparklink/sle_native.rs": "0a2794f2a27d372cfe1debb70f9b2a1895996f91afa25e67eca21dae8f66c1d1",
+            "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+            "net/sparklink/sle_native_ffi.c": "efd51bf377b34d25822cbbbe4763ae99c9e1a8da0e71b9d3a87e9d7734bc836b",
+            "net/sparklink/sle_native_ffi.h": "0b21eb6c9a2cec1a22c75014de4891cc9a55bb6e77a0298269e813bf96489401",
+            "net/sparklink/sle_pair_crypto.c": "0706143298e86df6013549c2a8886b2b1b283fac82aa750d1d16cd29166900fd",
+            "net/sparklink/sle_pair_material.c": "151abb8c59512dc0cebb62b58d291708ba0dee27e2ae2424f4ac147e4599c9fd",
+            "net/sparklink/sle_pair_material.h": "ac4773f0a99b679572b14142d2b5626a420d333d7c8ea9dbbdc71f86da9efbc0",
+            "net/sparklink/sle_pair_material.rs": "9a564388b898be4fc1a0c09c0f353a7159bc24d835480135b67afc11bdf659ed",
+            "net/sparklink/sle_security_relay.h": "93b664edbcdb4c729724fa0c54017c6e02e964b2eb0925e95c702a5bc74b635d",
+            "net/sparklink/sle_security_relay.rs": "87d56be3e65729c9df99375a386f643d1e9e88aa9645365314e295013b08ca0d",
+            "net/sparklink/sle_security_relay_state.rs": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+            "net/sparklink/sle_sessions.rs": "c5597f3d54cd20102cc40d719abea233d976f05e8abd8dfb0dcb3a0aeb75f84e",
+            "net/sparklink/sle_snoop.rs": "d2a7d85f841066d8ea735d990b80281d01135a8488eb9c60778c790600ea8e73",
+            "net/sparklink/sle_standard_dli.rs": "a07c9af73eb2b71554a3e73fd32f06726cbbab48ef807b250a7c88aeac92e606",
+            "net/sparklink/sle_uapi.rs": "10058503091ed44debba18ab1e86031fdf37d7900300528c7ec474eb4620f726",
+            "net/sparklink/sle_workers.rs": "e17239a80bd0174c77482e36e8b2b6a87e139af1fee03f602053e28aed557886",
+            "net/sparklink/sparklink_core.rs": "adf1e75b58169c54388dc46497a8ee18442dadfb6f27e29e01cdd5a47022c00a",
+            "net/sparklink/sparklink_genl.c": "ffe57e94d4f5da25ae5e4548c25f503510b95a31b64c68271412c145975c2d63"
+          }
+        },
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7",
+          "scopes": [
+            "crates",
+            "data",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "d9688629744f1cca2b10513c8093ab1a0ddc3cfcd9cc2deb516fa0888b641e35",
+            "Cargo.toml": "074d922eba4ac31a421942c95ed84e1ac6e778e2a3baaf7260a0929d6c9d1244",
+            "crates/libsparklink/Cargo.toml": "12bf208733281aa2d93669f1b4660fb61ae1d0df4438a773282bc11eb80aaec5",
+            "crates/libsparklink/cbindgen.toml": "c2cd1c996ec9a7bd60dd08340222129c2218560194cbd9f524bf18a32a11bd5b",
+            "crates/libsparklink/include/sparklink.h": "ba0783f6d19fbc6b893f4c5566b6ade041b3fff7aa552b0f80e81c524c23f305",
+            "crates/libsparklink/src/adapter.rs": "508fd057240c72b06dfef35d76ea8f0818a8807028872989072635ad7a000342",
+            "crates/libsparklink/src/controller_events.rs": "cb52719ffe814af8f963936e448209211cab6a26b7eb4945c3e409e0017da356",
+            "crates/libsparklink/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/libsparklink/src/event.rs": "728ff9608818e63c09e0df16b7647cbb21b6e16f4680dd2e408ba7d5da9d52d2",
+            "crates/libsparklink/src/ffi.rs": "9684b5a3454c405528821ae6fcab2fd38bec0c1563e64307618c9d3aac7f8cdc",
+            "crates/libsparklink/src/ffi_native.rs": "8699a129e6bad05ecc37669bc8c69e5031e541f5e1a6544a472050d9cd2f1069",
+            "crates/libsparklink/src/lib.rs": "e9de984c1bd28a7cfc5942dbdfe63fa4f9091326825465d48d4204b5e5188e1c",
+            "crates/libsparklink/src/retired_event.rs": "bf8f5a40f84ef0d08dd0f2e379a37175a72800f17f45209f3c115c0762a84bbf",
+            "crates/libsparklink/src/snoop.rs": "d32180800723109c067eb7a51ad1215a9983f04a8985cd193140b365e4c8fad1",
+            "crates/libsparklink/src/ws73_discovery.rs": "ee0ad25307cec94fed54b95cc5cb5921de1eb496885b7fa374fe88db9240bf91",
+            "crates/slctl/Cargo.toml": "a4369dce090184b60f58b0e8a0525e124be6aafa61e1d6515950098cb13959cb",
+            "crates/slctl/examples/bus_policy_probe.rs": "fa344893368710bd6db5a8ea2c19248ff1a931305a54df32598506f60f989585",
+            "crates/slctl/src/channel.rs": "01ac2da277f3c96c37902496049ef8d8cb5f0fa33cde97d94d0cbc2357fb44e7",
+            "crates/slctl/src/commands.rs": "8dd3fa5b7b63901af7e8732c2314356380ad1dd8ca4ddd7f062821ea4cf54d91",
+            "crates/slctl/src/main.rs": "722f3465def6283ce96212eb83c6202145b069b206147194e157e53dddf2bbb1",
+            "crates/slctl/tests/scan_freshness.rs": "3ab3d6293c59d4f105ed100f9972f74e745a2c6f1764dcf235f53580a746726e",
+            "crates/slk-experimental/Cargo.toml": "f4f874a9e3d4e9e9e04aa161e3ed6bf2ccfacd46cc0f800f3a6ef15dfc9f157e",
+            "crates/slk-experimental/README.md": "bb9ecebd88fb9b8caddea4a6c2a7203a40dcc3e8f4e46aca970d578f5a258f11",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "578d136b61749d812c1db624f493ca50f4a76bc73a04f5e7615e5a4a00933263",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "c8c68a94e1c268c5bfb80ce0dbb98bc39e16b5d6a7685e68c3ab1f8479ecb3a1",
+            "crates/slk-protocol/src/channel.rs": "e76907f60cb6006de6b01ad49fb4ad6ba42f86a78c35c3f4abd679a666f25204",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/ioctl.rs": "23be963504c1a80af31fe0cb8af9aad719770a39a532dd7914c00edf4c062df6",
+            "crates/slk-protocol/src/lib.rs": "9a4cf882a77f0aef621a519e7928b32d18633dfdf0b1524e93bd4d6fdc0e837b",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "d093c33faa18025bb1aa2f16c9ba888cef6e85131a813d058dd1872cde479225",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "0faff47303886b82e826047d44c64c755599f0bf31975185014e6226ce272343",
+            "crates/slk-protocol/src/types.rs": "0717bb7c3c125c94ae1624e240e1a8e4d9b8a53eb6590a2c8e4403c5c8cbd172",
+            "crates/slkconfig/Cargo.toml": "050fceaff604f8c3827367733f87150be35011e3330d83bbcdeba2c96d4abe54",
+            "crates/slkconfig/src/main.rs": "638f0d579565eee6ab350e39764659e184d81fb3f7eb4ac75ff1bd4c02a4285c",
+            "crates/slkd/Cargo.toml": "a0af013f553fa4a96c2fa82ffa9b3934bfbabc424c2375c3b5df58678f1278ee",
+            "crates/slkd/src/adapters.rs": "c095bf5421db3ea9a8d13ba3f7bbeb38114e889c80e552b7883627720a2c5447",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "35ea73e3c55ec7d46087ab5ea6f1eb600d9464c5df99234ae775f0f3b067261c",
+            "crates/slkd/src/config.rs": "ce93efeead5a25c3b33e03e279feb61d5d099024c9fc84c2099f306f198b1a0c",
+            "crates/slkd/src/connection.rs": "7dc87661087a7c0357fc3159204be332fd760835eae978146f0551b9668698c9",
+            "crates/slkd/src/connection_object.rs": "c384a7b52298532a6ee7643744f10fa0cbd2777a954a41a6871452aa17ee01f5",
+            "crates/slkd/src/controller.rs": "89621843d9dcd8bfce9d61dd070b9edc5ca9c9a6af3ef2b5f7d9e913f2838d62",
+            "crates/slkd/src/dbus_iface.rs": "862a7b76b523bdb9988e4af812a62da5aa19db59a950794ed6e58639ccbc1e12",
+            "crates/slkd/src/event_loop.rs": "0fea805417238cd24e68cbda19e2de44f028d786cb1d1e9ba2e08e76d60756e5",
+            "crates/slkd/src/event_loop_tests.rs": "ec365d1629c2b5a9817c53afa9e4605db2faec02235accd8deb30d4a307f4baa",
+            "crates/slkd/src/extadv.rs": "d80ca3d949a4f3a5974b03b8f43584053c8c3e675c782848fd9a70547a2474cb",
+            "crates/slkd/src/kernel.rs": "fc7dc11c930710f06e1ede116ba40edc5c73b1d77c4ff9509d999d89919c85ae",
+            "crates/slkd/src/main.rs": "ba5d79581c1b8147c874551f4d5fe73852a6b12b1a3f2907c125db1f8677c304",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "60fd41e9830cea2f8a1599f0b5c404b42050816eeb5ffd46d1d1863dfef7cb9f",
+            "crates/slkd/src/registration.rs": "ae2a1e82b49cd4e8cf6194fb020e4c45fc72c307339d9bbce6ab840b4500e4b8",
+            "crates/slkd/src/security.rs": "30a2cf912af466ce778b246af39c0f4d72345faebf4ec5a294771366615f8c07",
+            "crates/slkd/src/service.rs": "b1d9d23e654cfe6d31bd51489a47fdf91f9b77819fafca241d829e2e6e2145c4",
+            "crates/slkd/src/ssap_database.rs": "b159c93e7482dceabf72ec628c4d296407bc68bdebd7405b00eda6858e9f32a5",
+            "crates/slkd/src/ssap_engine.rs": "1cd34eb739e423c18eabafdf987874891aecbce3ef9da618cb33f734d4ea4ce8",
+            "crates/slkd/src/state.rs": "7d9a79c4ee4cc22c0f7bcdc032af4d82cd58cb602057b84832392dca21f29e0b",
+            "crates/slkd/tests/config_startup.rs": "ee996e38b047f2fb37a0f57a63466f97c897b81acef56411836373c1011e2a0f",
+            "crates/slkdump/Cargo.toml": "38f9b701c304207ec581c5be5a504b08016e1a3401b06a8dd6eda9cad493672e",
+            "crates/slkdump/src/main.rs": "4a8781eda8d03ca63d00bc0c35133712660b4adc97cf82fa861349fd71f77629",
+            "crates/slkmon/Cargo.toml": "b9fd1c1362473d58b973ea4ae4f1b857e4e165f2a294b2bf888a1ddfbef59753",
+            "crates/slkmon/src/main.rs": "9e9cfb3ca5cdf37122ccc731d53c7a147f12860371efdfc62284715f511abab4",
+            "data/config/main.conf": "0aa64db485af08803e9ffe59fadab48380c6179ebf98b1c2a5e8fd54777b5a59",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "12028a8989c9d3b8473d4ef3011a5ed251123ce1364fb968ba1ccb25c5ca6a00",
+            "data/man/man1/slctl.1": "74e207fdda4e9459c8ea84fefe08ca7f47c6b369ca4bf7f800c9ceef8e4af4c7",
+            "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+            "data/man/man8/slkd.8": "82671ac3f458775aee7c3572a1ec4fd02d48b2402756ce88f9dde16e23c9b8b3",
+            "data/pkgconfig/sparklink.pc": "ca12e4bf8d6c4458c868c5468c3afd6d5a3cc1e5a433eadc35a2f765bbcc765f",
+            "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+            "data/udev/99-sparklink.rules": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6"
+          },
+          "manifest_mapping": {
+            "material": "bundle-manifest",
+            "pointer": [
+              "source_hashes"
+            ]
+          }
+        },
+        "executed_tools": {
+          "repo": "sparklink",
+          "commit": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c",
+          "scopes": [
+            "tools/ws73_target.py",
+            "tools/ws73_target_init.sh",
+            "tools/ws73_vm_native_root.py",
+            "tools/ws73_discovery_policy_capture.py",
+            "tools/ws73_managed_queue_support.py",
+            "tools/ws73_model_hold.py",
+            "tools/ws73_channel_daemon_crash.py",
+            "tools/ws73_daemon_channel_fd.py",
+            "tools/ws73_target_guest.py",
+            "tools/ws73_north_star.py",
+            "tools/ws73_capture.py",
+            "tools/ws73_rf_rounds.py",
+            "tools/ws73_parallel.py",
+            "tools/ws73_target_control.py",
+            "tools/ws73_connection_control.py",
+            "tools/ws73_connection_objects.py",
+            "tools/ws73_link_resync.py",
+            "tools/ws73_acb_transport_probe.py",
+            "tools/ws73_channel_socket.py",
+            "tools/ws73_ssap_value.py",
+            "tools/ws73_ssap_discovery.py",
+            "tools/ws73_initialization_lifecycle.py",
+            "tools/ws73_observer_policy.py",
+            "tools/ws73_daemon_crash.py",
+            "tools/ws73_target_recovery.py",
+            "tools/ws73_early_fault.py",
+            "tools/ws73_event_copy_probe.py",
+            "tools/ws73_diagnostic_probe.py",
+            "tools/ws73_diagnostic_cancel.py",
+            "tools/ws73_diagnostic_hold.py",
+            "tools/ws73_diagnostic_deadline.py",
+            "tools/ws73_diagnostic_autonomous.py",
+            "tools/ws73_active_deadline.py",
+            "tools/ws73_management_setup.py",
+            "tools/ws73_management_queued.py",
+            "tools/ws73_management_queue_ready_peer.py",
+            "tools/ws73_connection_queued.py",
+            "tools/ws73_managed_queue_probe.c",
+            "tools/ws73_management_partial.py",
+            "tools/ws73_resource_file_gate.py",
+            "tools/ws73_connected_file_gate.py",
+            "tools/ws73_channel_grant.py",
+            "tools/ws73_revoke_prefix.py",
+            "tools/ws73_channel_link_down.py",
+            "tools/ws73_channel_deadline.py",
+            "tools/ws73_security_capabilities.py",
+            "tools/ws73_security_cancel.py",
+            "tools/ws73_key_agreement.py",
+            "tools/ws73_management_ready_peer.py",
+            "tools/ws73_host_later_hold.py",
+            "tools/ws73_management_eviction.py",
+            "tools/ws73_daemon_hold.py",
+            "tools/ws73_daemon_removal.py",
+            "tools/ws73_vm_register_reset.py",
+            "tools/ws73_register_reset_init.sh",
+            "tools/ws73_bindings_probe.c",
+            "tools/ws73_bindings_probe.py"
+          ],
+          "files": {
+            "tools/ws73_acb_transport_probe.py": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+            "tools/ws73_active_deadline.py": "fff7caf3aeb1a6ca99ac7eb6f3ccdb593b237f38b260a268bd473c3f937665e0",
+            "tools/ws73_bindings_probe.c": "e0e1f33c2b939d95aeffba2acd1f791422d963af3fde35c4408b787ad5403fd3",
+            "tools/ws73_bindings_probe.py": "a8cee9e23dd6680345a7c278b04d84101bfd347ec3b9bc1629e330466c350683",
+            "tools/ws73_capture.py": "5cf724d7c67375bc04f45902a6d377d1aa4407dacf6257b21fa43268e3361d5e",
+            "tools/ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+            "tools/ws73_channel_deadline.py": "eee746b38308719e740df4a1f712536cd96bff5620d6889ab37408789f6288e2",
+            "tools/ws73_channel_grant.py": "cda7466bf939bd241c1574362e81ac4158dc183f5491dfe1edb845b4038e790b",
+            "tools/ws73_channel_link_down.py": "89bb10c69141223807302471173c55f1e211d146aa72f585773a59d94a330c03",
+            "tools/ws73_channel_socket.py": "06a4f4634a0f5bf21e14e888af908ea71d93fe6fdb906d47436772b45c9c8d0d",
+            "tools/ws73_connected_file_gate.py": "cce07b828a01bed3c52c9bc7b4a402fe6d65813cb2dc1ec801d8ae1b8625e999",
+            "tools/ws73_connection_control.py": "48ea66781fff14a78e6ccf8ad9cf6b39b6a0e0f8b1dc1e7166623f256d224229",
+            "tools/ws73_connection_objects.py": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+            "tools/ws73_connection_queued.py": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+            "tools/ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+            "tools/ws73_daemon_crash.py": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+            "tools/ws73_daemon_hold.py": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+            "tools/ws73_daemon_removal.py": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+            "tools/ws73_diagnostic_autonomous.py": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+            "tools/ws73_diagnostic_cancel.py": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+            "tools/ws73_diagnostic_deadline.py": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+            "tools/ws73_diagnostic_hold.py": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+            "tools/ws73_diagnostic_probe.py": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+            "tools/ws73_discovery_policy_capture.py": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+            "tools/ws73_early_fault.py": "4e90b25cde9f7ce2f46b63a99ff8e70b4deb1e6448146e6741bda3ba3d23c604",
+            "tools/ws73_event_copy_probe.py": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+            "tools/ws73_host_later_hold.py": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+            "tools/ws73_initialization_lifecycle.py": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+            "tools/ws73_key_agreement.py": "a719758392ab2f66f1abad205420e79d853e8e862bbd5159fd376893eda10cb8",
+            "tools/ws73_link_resync.py": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+            "tools/ws73_managed_queue_probe.c": "1670731a7c5b8a1888ca2c0bc899817a762b03061570ec6a29212b2a855eb7d8",
+            "tools/ws73_managed_queue_support.py": "7c951e9dc3b6bec05c16b8f256f7537c422aceadc7870b5ac74518337944b898",
+            "tools/ws73_management_eviction.py": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+            "tools/ws73_management_partial.py": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+            "tools/ws73_management_queue_ready_peer.py": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+            "tools/ws73_management_queued.py": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+            "tools/ws73_management_ready_peer.py": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+            "tools/ws73_management_setup.py": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+            "tools/ws73_model_hold.py": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+            "tools/ws73_north_star.py": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+            "tools/ws73_observer_policy.py": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+            "tools/ws73_parallel.py": "14233c71d3a2d7453ba395c89e766c832c37d72dd7aa32a48245265a28da45e0",
+            "tools/ws73_register_reset_init.sh": "826541c4d499b3905db5b9f24a83154024e9a59ae1a62e27c8f4a214dc659ecd",
+            "tools/ws73_resource_file_gate.py": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+            "tools/ws73_revoke_prefix.py": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+            "tools/ws73_rf_rounds.py": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+            "tools/ws73_security_cancel.py": "8a2f20b241a307e9510dce9a1bd596380690d735e5baead806e38470d676a2ca",
+            "tools/ws73_security_capabilities.py": "0380d18f3082bee53bede21c41257cdfcc31ed6f6716251d5ea9749c794d9100",
+            "tools/ws73_ssap_discovery.py": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+            "tools/ws73_ssap_value.py": "45f6ca4786e7b87fb8f9bd50a6d14dc56ec2235b2bafbd562db24ff6bbff58d8",
+            "tools/ws73_target.py": "aa21e52232ba4407655c7990ec8e6acbfed1439efe522146ea89c1c6d2f724b5",
+            "tools/ws73_target_control.py": "53aa56bd783f626e8bfca6412847ec8597e89fcee5a3af452feae546b91a97df",
+            "tools/ws73_target_guest.py": "c122ecc2d31018e601bc30c3cd9375661eee1bb079f6914947f80f48fa035d30",
+            "tools/ws73_target_init.sh": "c6936af119ab23509e53f4c91d6936019833d19e1b22db7b17fdca3236a086a9",
+            "tools/ws73_target_recovery.py": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+            "tools/ws73_vm_native_root.py": "a805611862274dd7ed7a4b47d62e34cf423d524096d3136d15d9e40a594ea058",
+            "tools/ws73_vm_register_reset.py": "99e759dc2ff4d0171fd002102c925c1a68ba865ead419d7da4cc4b9f4b1f5d70"
+          }
+        }
+      },
+      "report": {
+        "material": "real-matrix",
+        "scope_pointer": [
+          "limits"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "runtime_kernel"
+          ],
+          "compiled_userspace": [
+            "compiled_userspace"
+          ],
+          "executed_tools": [
+            "prepared_and_executed_tools"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "ALL21_REAL_DEADLINE_AND_REGRESSION_GATES_PASS": "PASS"
+        },
+        "gate_rows_pointer": [
+          "runs"
+        ]
+      },
+      "report_commit": "8f13e3b52ee41d12f87a4dc6437c26ec92322754",
+      "artifact_materials": [
+        "kernel-build-record",
+        "kernel-artifact-manifest",
+        "bundle-manifest",
+        "vm-bzImage",
+        "vm-kernel.config",
+        "vm-initramfs.cpio.gz",
+        "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slkd",
+        "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slctl",
+        "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slkconfig",
+        "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slkmon",
+        "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slkdump",
+        "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-liblibsparklink.so",
+        "bundle-usr-share-dbus-1-system-services-org.sparklink.service",
+        "bundle-usr-lib-sysusers.d-opensparklink-native-lab.conf"
+      ],
+      "tool_materials": [
+        "prepared-manifest",
+        "tool-2",
+        "tool-3",
+        "tool-4",
+        "tool-8",
+        "tool-9",
+        "tool-10",
+        "tool-11",
+        "tool-12",
+        "tool-13",
+        "tool-14",
+        "tool-15",
+        "tool-16",
+        "tool-17",
+        "tool-18",
+        "tool-19",
+        "tool-20",
+        "tool-21",
+        "tool-22",
+        "tool-23",
+        "tool-24",
+        "tool-25",
+        "tool-26",
+        "tool-27",
+        "tool-28",
+        "tool-29",
+        "tool-30",
+        "tool-31",
+        "tool-32",
+        "tool-33",
+        "tool-34",
+        "tool-35",
+        "tool-36",
+        "tool-37",
+        "tool-38",
+        "tool-39",
+        "tool-40",
+        "tool-41",
+        "tool-42",
+        "tool-43",
+        "tool-44",
+        "tool-45",
+        "tool-46",
+        "tool-47",
+        "tool-48",
+        "tool-49",
+        "tool-50",
+        "tool-51",
+        "tool-52",
+        "tool-53",
+        "tool-54",
+        "tool-55",
+        "tool-56",
+        "tool-57",
+        "tool-58",
+        "tool-59",
+        "tool-60",
+        "tool-61",
+        "tool-62",
+        "tool-72",
+        "tool-73"
+      ],
+      "configuration_materials": [
+        "config",
+        "bundle-usr-lib-firmware-sparklink-ws73-ws73.bin",
+        "bundle-usr-lib-firmware-sparklink-ws73-wifi_cali.bin",
+        "bundle-usr-lib-firmware-sparklink-ws73-btc_cali.bin",
+        "bundle-usr-lib-firmware-sparklink-ws73-bsle_custom.bin",
+        "bundle-usr-lib-firmware-sparklink-ws73-pm_config.bin",
+        "bundle-etc-sparklink-main.conf",
+        "bundle-etc-dbus-1-system.d-sparklink-native-lab.conf",
+        "bundle-etc-udev-rules.d-99-sparklink-native-lab.rules",
+        "bundle-etc-systemd-system-opensparklink-native-lab.service",
+        "combined111"
+      ],
+      "gates": [
+        {
+          "id": "original-deadline-index0",
+          "result": "PASS",
+          "reported_status": "REAL_SECURITY_ORIGINAL_DEADLINE_PASS",
+          "report_pointer": [
+            "runs",
+            0
+          ],
+          "materials": [
+            "supervisor",
+            "gate-original-deadline-index0-manifest",
+            "gate-original-deadline-index0-capture",
+            "gate-original-deadline-index0-capture_stats"
+          ]
+        },
+        {
+          "id": "original-deadline-index1",
+          "result": "PASS",
+          "reported_status": "REAL_SECURITY_ORIGINAL_DEADLINE_PASS",
+          "report_pointer": [
+            "runs",
+            1
+          ],
+          "materials": [
+            "supervisor",
+            "gate-original-deadline-index1-manifest",
+            "gate-original-deadline-index1-capture",
+            "gate-original-deadline-index1-capture_stats"
+          ]
+        },
+        {
+          "id": "cancel-pending-index0",
+          "result": "PASS",
+          "reported_status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+          "report_pointer": [
+            "runs",
+            2
+          ],
+          "materials": [
+            "supervisor",
+            "gate-cancel-pending-index0-manifest",
+            "gate-cancel-pending-index0-capture",
+            "gate-cancel-pending-index0-capture_stats"
+          ]
+        },
+        {
+          "id": "cancel-pending-index1",
+          "result": "PASS",
+          "reported_status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+          "report_pointer": [
+            "runs",
+            3
+          ],
+          "materials": [
+            "supervisor",
+            "gate-cancel-pending-index1-manifest",
+            "gate-cancel-pending-index1-capture",
+            "gate-cancel-pending-index1-capture_stats"
+          ]
+        },
+        {
+          "id": "unauthenticated-encryption-index0",
+          "result": "PASS",
+          "reported_status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+          "report_pointer": [
+            "runs",
+            4
+          ],
+          "materials": [
+            "supervisor",
+            "gate-unauthenticated-encryption-index0-manifest",
+            "gate-unauthenticated-encryption-index0-capture",
+            "gate-unauthenticated-encryption-index0-capture_stats"
+          ]
+        },
+        {
+          "id": "unauthenticated-encryption-index1",
+          "result": "PASS",
+          "reported_status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+          "report_pointer": [
+            "runs",
+            5
+          ],
+          "materials": [
+            "supervisor",
+            "gate-unauthenticated-encryption-index1-manifest",
+            "gate-unauthenticated-encryption-index1-capture",
+            "gate-unauthenticated-encryption-index1-capture_stats"
+          ]
+        },
+        {
+          "id": "capabilities-index0",
+          "result": "PASS",
+          "reported_status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+          "report_pointer": [
+            "runs",
+            6
+          ],
+          "materials": [
+            "supervisor",
+            "gate-capabilities-index0-manifest",
+            "gate-capabilities-index0-capture",
+            "gate-capabilities-index0-capture_stats"
+          ]
+        },
+        {
+          "id": "capabilities-index1",
+          "result": "PASS",
+          "reported_status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+          "report_pointer": [
+            "runs",
+            7
+          ],
+          "materials": [
+            "supervisor",
+            "gate-capabilities-index1-manifest",
+            "gate-capabilities-index1-capture",
+            "gate-capabilities-index1-capture_stats"
+          ]
+        },
+        {
+          "id": "key-agreement-index0",
+          "result": "PASS",
+          "reported_status": "REAL_CANDIDATE_KEY_AGREEMENT_PASS",
+          "report_pointer": [
+            "runs",
+            8
+          ],
+          "materials": [
+            "supervisor",
+            "gate-key-agreement-index0-manifest",
+            "gate-key-agreement-index0-capture",
+            "gate-key-agreement-index0-capture_stats"
+          ]
+        },
+        {
+          "id": "key-agreement-index1",
+          "result": "PASS",
+          "reported_status": "REAL_CANDIDATE_KEY_AGREEMENT_PASS",
+          "report_pointer": [
+            "runs",
+            9
+          ],
+          "materials": [
+            "supervisor",
+            "gate-key-agreement-index1-manifest",
+            "gate-key-agreement-index1-capture",
+            "gate-key-agreement-index1-capture_stats"
+          ]
+        },
+        {
+          "id": "short",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            10
+          ],
+          "materials": [
+            "supervisor",
+            "gate-short-manifest",
+            "gate-short-capture",
+            "gate-short-capture_stats"
+          ]
+        },
+        {
+          "id": "boundary",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            11
+          ],
+          "materials": [
+            "supervisor",
+            "gate-boundary-manifest",
+            "gate-boundary-capture",
+            "gate-boundary-capture_stats"
+          ]
+        },
+        {
+          "id": "long",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            12
+          ],
+          "materials": [
+            "supervisor",
+            "gate-long-manifest",
+            "gate-long-capture",
+            "gate-long-capture_stats"
+          ]
+        },
+        {
+          "id": "length248",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            13
+          ],
+          "materials": [
+            "supervisor",
+            "gate-length248-manifest",
+            "gate-length248-capture",
+            "gate-length248-capture_stats"
+          ]
+        },
+        {
+          "id": "length250",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            14
+          ],
+          "materials": [
+            "supervisor",
+            "gate-length250-manifest",
+            "gate-length250-capture",
+            "gate-length250-capture_stats"
+          ]
+        },
+        {
+          "id": "length253",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            15
+          ],
+          "materials": [
+            "supervisor",
+            "gate-length253-manifest",
+            "gate-length253-capture",
+            "gate-length253-capture_stats"
+          ]
+        },
+        {
+          "id": "length254",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            16
+          ],
+          "materials": [
+            "supervisor",
+            "gate-length254-manifest",
+            "gate-length254-capture",
+            "gate-length254-capture_stats"
+          ]
+        },
+        {
+          "id": "length255",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            17
+          ],
+          "materials": [
+            "supervisor",
+            "gate-length255-manifest",
+            "gate-length255-capture",
+            "gate-length255-capture_stats"
+          ]
+        },
+        {
+          "id": "length1024",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            18
+          ],
+          "materials": [
+            "supervisor",
+            "gate-length1024-manifest",
+            "gate-length1024-capture",
+            "gate-length1024-capture_stats"
+          ]
+        },
+        {
+          "id": "prefix-close",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            19
+          ],
+          "materials": [
+            "supervisor",
+            "gate-prefix-close-manifest",
+            "gate-prefix-close-capture",
+            "gate-prefix-close-capture_stats"
+          ]
+        },
+        {
+          "id": "burst",
+          "result": "PASS",
+          "reported_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+          "report_pointer": [
+            "runs",
+            20
+          ],
+          "materials": [
+            "supervisor",
+            "gate-burst-manifest",
+            "gate-burst-capture",
+            "gate-burst-capture_stats"
+          ]
+        }
+      ],
+      "required_gates": [
+        "original-deadline-index0",
+        "original-deadline-index1",
+        "cancel-pending-index0",
+        "cancel-pending-index1",
+        "unauthenticated-encryption-index0",
+        "unauthenticated-encryption-index1",
+        "capabilities-index0",
+        "capabilities-index1",
+        "key-agreement-index0",
+        "key-agreement-index1",
+        "short",
+        "boundary",
+        "long",
+        "length248",
+        "length250",
+        "length253",
+        "length254",
+        "length255",
+        "length1024",
+        "prefix-close",
+        "burst"
+      ]
+    },
+    {
+      "id": "deadline-arithmetic",
+      "title": "生产原期限算术：四种HZ、100检查",
+      "level": "formal_bounded",
+      "result": "PASS",
+      "contracts": [
+        "absolute_policy_deadline_and_host_timer"
+      ],
+      "bounds": {
+        "harness": "absolute_policy_deadline_and_host_timer",
+        "loop_free": true,
+        "production_functions": [
+          "original_deadline",
+          "host_wake_deadline"
+        ],
+        "input_space": "allu64 now/deadline/jiffies and allu32 maximum_ms; timer rates100/250/300/1000",
+        "timer_scope": "x86 CONFIG_HZ choices; current VM CONFIG_HZ=1000. Production rate comes from actual msecs_to_jiffies(1000); not bindgen userspace HZ.",
+        "properties": [
+          "Accepted deadline equals original caller deadline, future and bounded1..5000ms",
+          "Expired or invalid budgets reject; arithmetic never wraps",
+          "Accepted Host wake equals checked ceiling timer conversion plus one tick; no overflow"
+        ],
+        "assumptions": [
+          "Unsigned integer/Rust checked-arithmetic semantics as encoded by Kani/CBMC",
+          "Timer argument matches stated actual kernel CONFIG_HZ; this is not a UAPI argument"
+        ],
+        "excluded": [
+          "Kernel clock sampling/correspondence, suspend, scheduling and Host timer execution",
+          "Session transitions/final USB submission, File/grant authorization and locks/references",
+          "Cryptography, firmware/NOCP/peer behavior, Agent and natural recovery"
+        ]
+      },
+      "excluded": [
+        "Kernel clock sampling/correspondence, suspend, scheduling and Host timer execution",
+        "Session transitions/final USB submission, File/grant authorization and locks/references",
+        "Cryptography, firmware/NOCP/peer behavior, Agent and natural recovery"
+      ],
+      "remaining": [
+        "NOT implementation refinement; actual VM concurrency mapping remains",
+        "Arbitrary-HZ timeout retained; install unsupported remains unproved"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+          "scopes": [
+            "net/sparklink/sle_security_relay_state.rs",
+            "tools/testing/selftests/sparklink/security/relay_session.rs",
+            "tools/testing/selftests/sparklink/security/relay_session_kani.rs"
+          ],
+          "files": {
+            "net/sparklink/sle_security_relay_state.rs": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+            "tools/testing/selftests/sparklink/security/relay_session.rs": "8fcbf6b00744e32233a0c2bf395eda575e5e97dc65fe0a54c88f468c1d4091f2",
+            "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "6a452e76c80a74e0975f7999fb2aac3eb7b41b274fd985b8cf1dd7162dcd9ec6"
+          }
+        }
+      },
+      "report": {
+        "material": "deadline-evidence",
+        "scope_pointer": [
+          "arithmetic_formal",
+          "proof_scope",
+          "excluded"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "kernel"
+          ]
+        },
+        "verdict_pointer": [
+          "arithmetic_formal",
+          "formal",
+          "status"
+        ],
+        "verdict_results": {
+          "BOUNDED_PASS": "PASS",
+          "NOT_PROVEN_UNSUPPORTED": "UNPROVED"
+        }
+      },
+      "report_commit": "11f23ae45e02a572af8e75974f5b5987ee05064e",
+      "artifact_materials": [
+        "deadline-evidence"
+      ],
+      "tool_materials": [
+        "deadline-arithmetic-log"
+      ],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "absolute_policy_deadline_and_host_timer",
+          "result": "PASS",
+          "materials": [
+            "deadline-evidence",
+            "deadline-arithmetic-log"
+          ]
+        }
+      ],
+      "required_gates": [
+        "absolute_policy_deadline_and_host_timer"
+      ]
+    },
+    {
+      "id": "installation-composition",
+      "title": "生产安装/取消组合：unsupported，1766检查不是证明",
+      "level": "formal_bounded",
+      "result": "UNPROVED",
+      "contracts": [
+        "installation_submit_cancel_accept_and_event"
+      ],
+      "bounds": {
+        "harness": "installation_submit_cancel_accept_and_event",
+        "queue_depth": 2,
+        "capability_payload_bytes": 10,
+        "capability_exchanges": 1,
+        "capability_terminal_replies": 1,
+        "arbitrary_commit_time_u64": false,
+        "unwind": 80,
+        "property_inventory_by_harness": {
+          "capability_withdraw_deadline_and_submit": [
+            "No callback after prior withdraw/expiry or foreign identity",
+            "Submit failure is nondeterministic; only accepted callback creates obligation",
+            "Withdraw/expiry preserve submitted obligation until matching terminal reply"
+          ],
+          "capability_requires_peer_and_terminal_complete": [
+            "Successful Status alone cannot pay obligation or complete exchange",
+            "Both peer ingress and real Complete required in either order; terminal failure cannot revive"
+          ],
+          "key_agreement_job_cancel_and_physical_obligation": [
+            "G public crypto job cannot be created before T response actually submits",
+            "Withdraw/expiry reject either successful or failed crypto receipt and create no continuation",
+            "Submitted T response obligation remains until its actual matching terminal reply"
+          ],
+          "installation_submit_cancel_accept_and_event": [
+            "Drive actual G capability/public/confirm/nonce/proof transitions before installation; no force-ready model",
+            "Every actual submit and crypto job has failure branches; accepted command and real0011 independently required",
+            "Withdraw/expiry before materialize or final submit prevents callback; cancel after submit retains obligation until matching reply",
+            "Late reply or encryption event cannot revive cancelled/failed Session; post-success off invalidates even beyond original deadline",
+            "Command Status pays only command obligation; pending asynchronous install survives cancel/expiry until actual domain evidence or physical retirement"
+          ]
+        },
+        "assumptions": [
+          "Caller serializes exact production methods under Owner lock",
+          "Host/gate identity is current; driver callback atomically accepts or NEVER queues",
+          "Input reply ticket already resolved by Host; peer ingress identity already frozen"
+        ],
+        "excluded": [
+          "Actual locks/references/IRQ/USB callback drain and Host-to-driver mapping",
+          "Wire Complete uniqueness, late/duplicate handle attribution, firmware state clear/reuse barrier",
+          "Unbounded execution, cryptography, authentication, Agent, actual controller key installation and natural recovery",
+          "Actual C key copy, firmware encryption truth, independent radio cipher attestation, T role installation model and uncertain USB failure combination"
+        ],
+        "role": "G only",
+        "original_deadline": 100,
+        "logical_schedule": "fixed0..28, expiry100 and lateroff101/102; not arbitrary time or kernel clock proof",
+        "wire_inputs": "knownoffer10, ownpub64/encoded70, peerpub64 and16byte confirmation/nonce/proof fixtures",
+        "crypto_jobs": 4,
+        "local_relays": 4,
+        "installation_intents": 1,
+        "crypto_dependency": "success/failure nondeterministic, not valid-point/math proof",
+        "installation_scope": "actual metadata transitions; opaque C key copy and actual driver lock/reference/USB excluded",
+        "request_cancel_scope": "Before materialization/final submit and after actual submit/Status, nondeterministic choice of author withdraw or actual production Session.cancel; cancellation idempotence checked. Original File/request validation and Runtime locking are outside this pure harness."
+      },
+      "excluded": [
+        "Actual locks/references/IRQ/USB callback drain and Host-to-driver mapping",
+        "Wire Complete uniqueness, late/duplicate handle attribution, firmware state clear/reuse barrier",
+        "Unbounded execution, cryptography, authentication, Agent, actual controller key installation and natural recovery",
+        "Actual C key copy, firmware encryption truth, independent radio cipher attestation, T role installation model and uncertain USB failure combination"
+      ],
+      "remaining": [
+        "NOT implementation refinement; actual VM concurrency mapping remains",
+        "Arbitrary-HZ timeout retained; install unsupported remains unproved"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+          "scopes": [
+            "net/sparklink/sle_security_relay_state.rs",
+            "tools/testing/selftests/sparklink/security/relay_session.rs",
+            "tools/testing/selftests/sparklink/security/relay_session_kani.rs"
+          ],
+          "files": {
+            "net/sparklink/sle_security_relay_state.rs": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+            "tools/testing/selftests/sparklink/security/relay_session.rs": "8fcbf6b00744e32233a0c2bf395eda575e5e97dc65fe0a54c88f468c1d4091f2",
+            "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "6a452e76c80a74e0975f7999fb2aac3eb7b41b274fd985b8cf1dd7162dcd9ec6"
+          }
+        }
+      },
+      "report": {
+        "material": "deadline-evidence",
+        "scope_pointer": [
+          "installation_composition",
+          "proof_scope",
+          "excluded"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "kernel"
+          ]
+        },
+        "verdict_pointer": [
+          "installation_composition",
+          "formal",
+          "status"
+        ],
+        "verdict_results": {
+          "BOUNDED_PASS": "PASS",
+          "NOT_PROVEN_UNSUPPORTED": "UNPROVED"
+        }
+      },
+      "report_commit": "11f23ae45e02a572af8e75974f5b5987ee05064e",
+      "artifact_materials": [
+        "deadline-evidence"
+      ],
+      "tool_materials": [
+        "installation-composition-log"
+      ],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "installation_submit_cancel_accept_and_event",
+          "result": "UNPROVED",
+          "materials": [
+            "deadline-evidence",
+            "installation-composition-log"
+          ]
+        }
+      ],
+      "required_gates": [
+        "installation_submit_cancel_accept_and_event"
+      ]
+    },
+    {
+      "id": "agent",
+      "title": "Agent/method/调用者：dirty 接线未验收",
+      "level": "implemented",
+      "result": "MISSING",
+      "contracts": [
+        "agent"
+      ],
+      "bounds": "未授予本项资格；不阻塞无关纵向链路",
+      "excluded": [
+        "不得从其他局部PASS继承资格"
+      ],
+      "remaining": [
+        "生产接线待测试提交；实际system bus权限及双角色批准/拒绝/退出/原期限/安装失败"
+      ],
+      "sources": {},
+      "report": null,
+      "report_commit": null,
+      "artifact_materials": [],
+      "tool_materials": [],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "agent",
+          "result": "MISSING",
+          "materials": []
+        }
+      ],
+      "required_gates": [
+        "agent"
+      ]
+    },
+    {
+      "id": "multichannel-four-device",
+      "title": "动态多通道/四真实设备两组：仍缺",
+      "level": "implemented",
+      "result": "MISSING",
+      "contracts": [
+        "multichannel-four-device"
+      ],
+      "bounds": "未授予本项资格；不阻塞无关纵向链路",
+      "excluded": [
+        "不得从其他局部PASS继承资格"
+      ],
+      "remaining": [
+        "唯一分流、独立预算、公平性、一组故障另一组实际业务回复"
+      ],
+      "sources": {},
+      "report": null,
+      "report_commit": null,
+      "artifact_materials": [],
+      "tool_materials": [],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "multichannel-four-device",
+          "result": "MISSING",
+          "materials": []
+        }
+      ],
+      "required_gates": [
+        "multichannel-four-device"
+      ]
+    },
+    {
+      "id": "natural-recovery",
+      "title": "自然故障根因与非人工恢复：仍缺",
+      "level": "implemented",
+      "result": "MISSING",
+      "contracts": [
+        "natural-recovery"
+      ],
+      "bounds": "未授予本项资格；不阻塞无关纵向链路",
+      "excluded": [
+        "不得从其他局部PASS继承资格"
+      ],
+      "remaining": [
+        "有限重试/清理/自然故障恢复；人工、hub、QMP和注入不代替"
+      ],
+      "sources": {},
+      "report": null,
+      "report_commit": null,
+      "artifact_materials": [],
+      "tool_materials": [],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "natural-recovery",
+          "result": "MISSING",
+          "materials": []
+        }
+      ],
+      "required_gates": [
+        "natural-recovery"
+      ]
+    }
+  ],
+  "materials": {
+    "real-matrix": {
+      "base": "repo",
+      "path": "docs/evidence/security-absolute-deadline-regression-20261015.json",
+      "sha256": "89905d82b4e1364c34b507e0be825d49ee3f5d04e913a50920b355e299e244b0",
+      "bytes": 23650,
+      "access": "public",
+      "format": "json"
+    },
+    "deadline-evidence": {
+      "base": "repo",
+      "path": "docs/evidence/security-absolute-deadline-20261015.json",
+      "sha256": "f88f7337ae227b412238728a389bb0e1d96537c9407d923181089e70385f27ed",
+      "bytes": 28130,
+      "access": "public",
+      "format": "json"
+    },
+    "supervisor": {
+      "base": "workspace",
+      "path": ".dev/security-deadline-v2-real-regression.json",
+      "sha256": "40386be235b58699a3943003001bc94840cae9f6948b2c7ff6dc49297ba00150",
+      "bytes": 18103,
+      "access": "private",
+      "format": "json"
+    },
+    "kernel-build-record": {
+      "base": "workspace",
+      "path": ".dev/security-deadline-v1-kernel-build-record.json",
+      "sha256": "f69499e38a383bc049e888f7ca32d8fd7227f739e49ec08eb4541d9e8d26ff85",
+      "bytes": 1276,
+      "access": "private",
+      "format": "json"
+    },
+    "kernel-artifact-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-artifacts/manifest.json",
+      "sha256": "f14987b150524b88caa0dee89d5bb8d861a8b4429929fb58eabc7839f4cb7858",
+      "bytes": 228981,
+      "access": "private",
+      "format": "json"
+    },
+    "bundle-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/manifest.json",
+      "sha256": "75215a9285c010fb12d2af0ebe7ff189a6967f6c49e2ce5e715799d1e69ffbaf",
+      "bytes": 22043,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "userspace_head"
+          ],
+          "equals": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7"
+        },
+        {
+          "pointer": [
+            "kernel_head"
+          ],
+          "equals": "8cbf53e6a088899229d398b0673a82e8e5aed9ff"
+        }
+      ]
+    },
+    "vm-bzImage": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-prepared/bzImage",
+      "sha256": "127c72a6ca64d53996f10e9770c33992390f136bdb166755c7d0137b732c3d47",
+      "bytes": 15736832,
+      "access": "private",
+      "format": "bytes"
+    },
+    "vm-kernel.config": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-prepared/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "format": "bytes"
+    },
+    "vm-initramfs.cpio.gz": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-prepared/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "format": "bytes"
+    },
+    "config": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-prepared/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slkd": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/libexec/opensparklink/native-lab/2d81b3e6348b/slkd",
+      "sha256": "bf9070247669ffa2687359e79ce4eb543363e820d53ed5d3b829689d3a7fb4e4",
+      "bytes": 9784288,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slctl": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/libexec/opensparklink/native-lab/2d81b3e6348b/slctl",
+      "sha256": "1a884857b6af18e35312b1c65b3d4e6ab81da70e445a1b0785abc990f4656f4f",
+      "bytes": 7116792,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slkconfig": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/libexec/opensparklink/native-lab/2d81b3e6348b/slkconfig",
+      "sha256": "af296a04f37ccea9013bb47c6950fdf2444d35813be069cc5b536f6b202b12c2",
+      "bytes": 1402400,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slkmon": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/libexec/opensparklink/native-lab/2d81b3e6348b/slkmon",
+      "sha256": "abf755352b40de2cd4727ae9834adfe79e3d967843e846aab3e5ed362aae2b10",
+      "bytes": 1660368,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-slkdump": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/libexec/opensparklink/native-lab/2d81b3e6348b/slkdump",
+      "sha256": "6b37e69118a24e720b4d679cecf3728accbcda5d31dde26a95dbb6acde410c82",
+      "bytes": 1660208,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-libexec-opensparklink-native-lab-2d81b3e6348b-liblibsparklink.so": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/libexec/opensparklink/native-lab/2d81b3e6348b/liblibsparklink.so",
+      "sha256": "0f7245eea4f2ac605b9518b761fa873aa8de587ddd71ad3f51bfeab5498e3e9c",
+      "bytes": 545144,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-lib-firmware-sparklink-ws73-ws73.bin": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-lib-firmware-sparklink-ws73-wifi_cali.bin": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-lib-firmware-sparklink-ws73-btc_cali.bin": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-lib-firmware-sparklink-ws73-bsle_custom.bin": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-lib-firmware-sparklink-ws73-pm_config.bin": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-etc-sparklink-main.conf": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/etc/sparklink/main.conf",
+      "sha256": "0aa64db485af08803e9ffe59fadab48380c6179ebf98b1c2a5e8fd54777b5a59",
+      "bytes": 1507,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-etc-dbus-1-system.d-sparklink-native-lab.conf": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "12028a8989c9d3b8473d4ef3011a5ed251123ce1364fb968ba1ccb25c5ca6a00",
+      "bytes": 8090,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-etc-udev-rules.d-99-sparklink-native-lab.rules": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-etc-systemd-system-opensparklink-native-lab.service": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "061ab2de68be9c5ea42635ec050c94054eae9672364baf8171484b012e53defc",
+      "bytes": 507,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-share-dbus-1-system-services-org.sparklink.service": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "dc44d418405005ffdc16c0b6552ec3c4833b37dfdb38abdbe00d66efaf1f32f8",
+      "bytes": 154,
+      "access": "private",
+      "format": "bytes"
+    },
+    "bundle-usr-lib-sysusers.d-opensparklink-native-lab.conf": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v1-service-bundle/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "format": "bytes"
+    },
+    "combined111": {
+      "base": "workspace",
+      "path": "libws73-usb/blobs/fw/combined-1.10.111.bin",
+      "sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+      "bytes": 173388,
+      "access": "private",
+      "format": "bytes"
+    },
+    "prepared-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-prepared/manifest.json",
+      "sha256": "783adc1fb07af4dc0e60cf5917e0eb0bd9c04ab420d37c80c9b5b43f401dec51",
+      "bytes": 250667,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "userspace_head"
+          ],
+          "equals": "575ba337c05b09b6c3e96f4182ffcf7ffb6b466c"
+        },
+        {
+          "pointer": [
+            "native_vm",
+            "kernel_head"
+          ],
+          "equals": "8cbf53e6a088899229d398b0673a82e8e5aed9ff"
+        },
+        {
+          "pointer": [
+            "guest_files",
+            82,
+            "sha256"
+          ],
+          "equals": "0f7245eea4f2ac605b9518b761fa873aa8de587ddd71ad3f51bfeab5498e3e9c"
+        },
+        {
+          "pointer": [
+            "guest_files",
+            726,
+            "sha256"
+          ],
+          "equals": "0f7245eea4f2ac605b9518b761fa873aa8de587ddd71ad3f51bfeab5498e3e9c"
+        },
+        {
+          "pointer": [
+            "guest_files",
+            727,
+            "sha256"
+          ],
+          "equals": "1a884857b6af18e35312b1c65b3d4e6ab81da70e445a1b0785abc990f4656f4f"
+        },
+        {
+          "pointer": [
+            "guest_files",
+            728,
+            "sha256"
+          ],
+          "equals": "af296a04f37ccea9013bb47c6950fdf2444d35813be069cc5b536f6b202b12c2"
+        },
+        {
+          "pointer": [
+            "guest_files",
+            729,
+            "sha256"
+          ],
+          "equals": "bf9070247669ffa2687359e79ce4eb543363e820d53ed5d3b829689d3a7fb4e4"
+        },
+        {
+          "pointer": [
+            "guest_files",
+            730,
+            "sha256"
+          ],
+          "equals": "6b37e69118a24e720b4d679cecf3728accbcda5d31dde26a95dbb6acde410c82"
+        },
+        {
+          "pointer": [
+            "guest_files",
+            731,
+            "sha256"
+          ],
+          "equals": "abf755352b40de2cd4727ae9834adfe79e3d967843e846aab3e5ed362aae2b10"
+        }
+      ]
+    },
+    "tool-2": {
+      "base": "workspace",
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "format": "bytes"
+    },
+    "tool-3": {
+      "base": "workspace",
+      "path": ".dev/tools/qemu-deps/root/usr/bin/busybox",
+      "sha256": "98d9040015eb17931e17b45e00b5f49f2451326372d5107a3a280f1cb3aaf3fc",
+      "bytes": 1440888,
+      "access": "private",
+      "format": "bytes"
+    },
+    "tool-4": {
+      "base": "workspace",
+      "path": ".dev/tools/dbus/usr/bin/dbus-daemon",
+      "sha256": "cbb05276d0a322ddbfd71e58c135625117dfab72967ad743c60fdaf10970545e",
+      "bytes": 228064,
+      "access": "private",
+      "format": "bytes"
+    },
+    "tool-8": {
+      "base": "repo",
+      "path": "tools/ws73_target.py",
+      "sha256": "aa21e52232ba4407655c7990ec8e6acbfed1439efe522146ea89c1c6d2f724b5",
+      "bytes": 121594,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-9": {
+      "base": "repo",
+      "path": "tools/ws73_target_init.sh",
+      "sha256": "c6936af119ab23509e53f4c91d6936019833d19e1b22db7b17fdca3236a086a9",
+      "bytes": 28336,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-10": {
+      "base": "repo",
+      "path": "tools/ws73_vm_native_root.py",
+      "sha256": "a805611862274dd7ed7a4b47d62e34cf423d524096d3136d15d9e40a594ea058",
+      "bytes": 14715,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-11": {
+      "base": "repo",
+      "path": "tools/ws73_discovery_policy_capture.py",
+      "sha256": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+      "bytes": 5586,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-12": {
+      "base": "repo",
+      "path": "tools/ws73_managed_queue_support.py",
+      "sha256": "7c951e9dc3b6bec05c16b8f256f7537c422aceadc7870b5ac74518337944b898",
+      "bytes": 15500,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-13": {
+      "base": "repo",
+      "path": "tools/ws73_model_hold.py",
+      "sha256": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+      "bytes": 7325,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-14": {
+      "base": "repo",
+      "path": "tools/ws73_channel_daemon_crash.py",
+      "sha256": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+      "bytes": 17077,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-15": {
+      "base": "repo",
+      "path": "tools/ws73_daemon_channel_fd.py",
+      "sha256": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+      "bytes": 3430,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-16": {
+      "base": "repo",
+      "path": "tools/ws73_target_guest.py",
+      "sha256": "c122ecc2d31018e601bc30c3cd9375661eee1bb079f6914947f80f48fa035d30",
+      "bytes": 30008,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-17": {
+      "base": "repo",
+      "path": "tools/ws73_north_star.py",
+      "sha256": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+      "bytes": 32042,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-18": {
+      "base": "repo",
+      "path": "tools/ws73_capture.py",
+      "sha256": "5cf724d7c67375bc04f45902a6d377d1aa4407dacf6257b21fa43268e3361d5e",
+      "bytes": 42025,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-19": {
+      "base": "repo",
+      "path": "tools/ws73_rf_rounds.py",
+      "sha256": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+      "bytes": 14088,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-20": {
+      "base": "repo",
+      "path": "tools/ws73_parallel.py",
+      "sha256": "14233c71d3a2d7453ba395c89e766c832c37d72dd7aa32a48245265a28da45e0",
+      "bytes": 25591,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-21": {
+      "base": "repo",
+      "path": "tools/ws73_target_control.py",
+      "sha256": "53aa56bd783f626e8bfca6412847ec8597e89fcee5a3af452feae546b91a97df",
+      "bytes": 8792,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-22": {
+      "base": "repo",
+      "path": "tools/ws73_connection_control.py",
+      "sha256": "48ea66781fff14a78e6ccf8ad9cf6b39b6a0e0f8b1dc1e7166623f256d224229",
+      "bytes": 22813,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-23": {
+      "base": "repo",
+      "path": "tools/ws73_connection_objects.py",
+      "sha256": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+      "bytes": 10469,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-24": {
+      "base": "repo",
+      "path": "tools/ws73_link_resync.py",
+      "sha256": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+      "bytes": 11109,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-25": {
+      "base": "repo",
+      "path": "tools/ws73_acb_transport_probe.py",
+      "sha256": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+      "bytes": 14227,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-26": {
+      "base": "repo",
+      "path": "tools/ws73_channel_socket.py",
+      "sha256": "06a4f4634a0f5bf21e14e888af908ea71d93fe6fdb906d47436772b45c9c8d0d",
+      "bytes": 32629,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-27": {
+      "base": "repo",
+      "path": "tools/ws73_ssap_value.py",
+      "sha256": "45f6ca4786e7b87fb8f9bd50a6d14dc56ec2235b2bafbd562db24ff6bbff58d8",
+      "bytes": 9915,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-28": {
+      "base": "repo",
+      "path": "tools/ws73_ssap_discovery.py",
+      "sha256": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+      "bytes": 4981,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-29": {
+      "base": "repo",
+      "path": "tools/ws73_initialization_lifecycle.py",
+      "sha256": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+      "bytes": 18450,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-30": {
+      "base": "repo",
+      "path": "tools/ws73_observer_policy.py",
+      "sha256": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+      "bytes": 11020,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-31": {
+      "base": "repo",
+      "path": "tools/ws73_daemon_crash.py",
+      "sha256": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+      "bytes": 16497,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-32": {
+      "base": "repo",
+      "path": "tools/ws73_target_recovery.py",
+      "sha256": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+      "bytes": 9737,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-33": {
+      "base": "repo",
+      "path": "tools/ws73_early_fault.py",
+      "sha256": "4e90b25cde9f7ce2f46b63a99ff8e70b4deb1e6448146e6741bda3ba3d23c604",
+      "bytes": 20582,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-34": {
+      "base": "repo",
+      "path": "tools/ws73_event_copy_probe.py",
+      "sha256": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+      "bytes": 3060,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-35": {
+      "base": "repo",
+      "path": "tools/ws73_diagnostic_probe.py",
+      "sha256": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+      "bytes": 18546,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-36": {
+      "base": "repo",
+      "path": "tools/ws73_diagnostic_cancel.py",
+      "sha256": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+      "bytes": 6214,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-37": {
+      "base": "repo",
+      "path": "tools/ws73_diagnostic_hold.py",
+      "sha256": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+      "bytes": 7715,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-38": {
+      "base": "repo",
+      "path": "tools/ws73_diagnostic_deadline.py",
+      "sha256": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+      "bytes": 3240,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-39": {
+      "base": "repo",
+      "path": "tools/ws73_diagnostic_autonomous.py",
+      "sha256": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+      "bytes": 2596,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-40": {
+      "base": "repo",
+      "path": "tools/ws73_active_deadline.py",
+      "sha256": "fff7caf3aeb1a6ca99ac7eb6f3ccdb593b237f38b260a268bd473c3f937665e0",
+      "bytes": 30142,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-41": {
+      "base": "repo",
+      "path": "tools/ws73_management_setup.py",
+      "sha256": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+      "bytes": 9310,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-42": {
+      "base": "repo",
+      "path": "tools/ws73_management_queued.py",
+      "sha256": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+      "bytes": 22997,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-43": {
+      "base": "repo",
+      "path": "tools/ws73_management_queue_ready_peer.py",
+      "sha256": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+      "bytes": 5048,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-44": {
+      "base": "repo",
+      "path": "tools/ws73_connection_queued.py",
+      "sha256": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+      "bytes": 7951,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-45": {
+      "base": "repo",
+      "path": "tools/ws73_managed_queue_probe.c",
+      "sha256": "1670731a7c5b8a1888ca2c0bc899817a762b03061570ec6a29212b2a855eb7d8",
+      "bytes": 23162,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-46": {
+      "base": "repo",
+      "path": "tools/ws73_management_partial.py",
+      "sha256": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+      "bytes": 38405,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-47": {
+      "base": "repo",
+      "path": "tools/ws73_resource_file_gate.py",
+      "sha256": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+      "bytes": 15752,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-48": {
+      "base": "repo",
+      "path": "tools/ws73_connected_file_gate.py",
+      "sha256": "cce07b828a01bed3c52c9bc7b4a402fe6d65813cb2dc1ec801d8ae1b8625e999",
+      "bytes": 43268,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-49": {
+      "base": "repo",
+      "path": "tools/ws73_channel_grant.py",
+      "sha256": "cda7466bf939bd241c1574362e81ac4158dc183f5491dfe1edb845b4038e790b",
+      "bytes": 29257,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-50": {
+      "base": "repo",
+      "path": "tools/ws73_revoke_prefix.py",
+      "sha256": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+      "bytes": 2552,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-51": {
+      "base": "repo",
+      "path": "tools/ws73_channel_link_down.py",
+      "sha256": "89bb10c69141223807302471173c55f1e211d146aa72f585773a59d94a330c03",
+      "bytes": 12500,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-52": {
+      "base": "repo",
+      "path": "tools/ws73_channel_deadline.py",
+      "sha256": "eee746b38308719e740df4a1f712536cd96bff5620d6889ab37408789f6288e2",
+      "bytes": 17389,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-53": {
+      "base": "repo",
+      "path": "tools/ws73_security_capabilities.py",
+      "sha256": "0380d18f3082bee53bede21c41257cdfcc31ed6f6716251d5ea9749c794d9100",
+      "bytes": 21482,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-54": {
+      "base": "repo",
+      "path": "tools/ws73_security_cancel.py",
+      "sha256": "8a2f20b241a307e9510dce9a1bd596380690d735e5baead806e38470d676a2ca",
+      "bytes": 7680,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-55": {
+      "base": "repo",
+      "path": "tools/ws73_key_agreement.py",
+      "sha256": "a719758392ab2f66f1abad205420e79d853e8e862bbd5159fd376893eda10cb8",
+      "bytes": 9886,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-56": {
+      "base": "repo",
+      "path": "tools/ws73_management_ready_peer.py",
+      "sha256": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+      "bytes": 9186,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-57": {
+      "base": "repo",
+      "path": "tools/ws73_host_later_hold.py",
+      "sha256": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+      "bytes": 6555,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-58": {
+      "base": "repo",
+      "path": "tools/ws73_management_eviction.py",
+      "sha256": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+      "bytes": 16000,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-59": {
+      "base": "repo",
+      "path": "tools/ws73_daemon_hold.py",
+      "sha256": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+      "bytes": 28764,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-60": {
+      "base": "repo",
+      "path": "tools/ws73_daemon_removal.py",
+      "sha256": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+      "bytes": 21965,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-61": {
+      "base": "repo",
+      "path": "tools/ws73_vm_register_reset.py",
+      "sha256": "99e759dc2ff4d0171fd002102c925c1a68ba865ead419d7da4cc4b9f4b1f5d70",
+      "bytes": 24371,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-62": {
+      "base": "repo",
+      "path": "tools/ws73_register_reset_init.sh",
+      "sha256": "826541c4d499b3905db5b9f24a83154024e9a59ae1a62e27c8f4a214dc659ecd",
+      "bytes": 2897,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-72": {
+      "base": "repo",
+      "path": "tools/ws73_bindings_probe.c",
+      "sha256": "e0e1f33c2b939d95aeffba2acd1f791422d963af3fde35c4408b787ad5403fd3",
+      "bytes": 10270,
+      "access": "public",
+      "format": "bytes"
+    },
+    "tool-73": {
+      "base": "repo",
+      "path": "tools/ws73_bindings_probe.py",
+      "sha256": "a8cee9e23dd6680345a7c278b04d84101bfd347ec3b9bc1629e330466c350683",
+      "bytes": 6262,
+      "access": "public",
+      "format": "bytes"
+    },
+    "gate-original-deadline-index0-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-original-deadline-index0/manifest.json",
+      "sha256": "f9f1d4d595982f8535e442eb7e87f7bcd556866e4e0b09836fc4e78eefa16765",
+      "bytes": 71824,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_SECURITY_ORIGINAL_DEADLINE_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-original-deadline-index0-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-original-deadline-index0/guest-output/ws73.pcap",
+      "sha256": "ec02242f3ed76d111b052c09d060b995a6c6b9aa1021f786e043fad44d540f44",
+      "bytes": 67352,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-original-deadline-index0-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-original-deadline-index0/guest-output/capture-stats.txt",
+      "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-original-deadline-index1-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-original-deadline-index1/manifest.json",
+      "sha256": "21b33bbef23959602179aa1f78f1a4483f78bbe79d7d72af2ef3fc44f3f654a7",
+      "bytes": 71824,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_SECURITY_ORIGINAL_DEADLINE_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-original-deadline-index1-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-original-deadline-index1/guest-output/ws73.pcap",
+      "sha256": "2d32bb951b3c914672829c4db88e418065b267917cff306f8a1739c670760aee",
+      "bytes": 67690,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-original-deadline-index1-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-original-deadline-index1/guest-output/capture-stats.txt",
+      "sha256": "d0f0217a0b150e0a331ab71d09e1b3171d7ce5a182cfed8b9360992c6df5836f",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-cancel-pending-index0-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-cancel-pending-index0/manifest.json",
+      "sha256": "1e7791b3eab7001078a7750df16eca4a4bc21dc5fd0f6bc44245f77ee1e9bd75",
+      "bytes": 71700,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_PASSIVE_AUTHOR_CANCEL_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-cancel-pending-index0-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-cancel-pending-index0/guest-output/ws73.pcap",
+      "sha256": "e6afdd044fc89976d3d788c27cace0caad05c8a18bb3a16faad89274f92eaf3f",
+      "bytes": 67352,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-cancel-pending-index0-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-cancel-pending-index0/guest-output/capture-stats.txt",
+      "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-cancel-pending-index1-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-cancel-pending-index1/manifest.json",
+      "sha256": "2a31bea8ded10723db032cd72968d12131cad7214a7a7892358bbb538afebfcf",
+      "bytes": 71700,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_PASSIVE_AUTHOR_CANCEL_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-cancel-pending-index1-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-cancel-pending-index1/guest-output/ws73.pcap",
+      "sha256": "f180538da74985079bfb569d600abcb982a6eb6f2315323c5f92016c40cdaaae",
+      "bytes": 67352,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-cancel-pending-index1-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-cancel-pending-index1/guest-output/capture-stats.txt",
+      "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-unauthenticated-encryption-index0-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/manifest.json",
+      "sha256": "3385179d27bf92027eb521a222619e4f603658f918eb8e9b04442102f2cad42b",
+      "bytes": 89563,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-unauthenticated-encryption-index0-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/guest-output/ws73.pcap",
+      "sha256": "7f6212c4dbdaa61096d9d6311b09836598c115c7fb47f3a26333c9277d6092ad",
+      "bytes": 78328,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-unauthenticated-encryption-index0-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-unauthenticated-encryption-index0/guest-output/capture-stats.txt",
+      "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-unauthenticated-encryption-index1-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/manifest.json",
+      "sha256": "6f2ed74ad5bf269d0172ecb2e84b2575eada0a2029c0589893a103b320643d51",
+      "bytes": 89563,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-unauthenticated-encryption-index1-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/guest-output/ws73.pcap",
+      "sha256": "59aea40e5844b3c45384c1094453b00a8dd0efdeb649d16ccba030db46f6ae2a",
+      "bytes": 78328,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-unauthenticated-encryption-index1-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-unauthenticated-encryption-index1/guest-output/capture-stats.txt",
+      "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-capabilities-index0-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-capabilities-index0/manifest.json",
+      "sha256": "f7b4fe0bc17c4ffa094c0fdbce5ad7722e250b5c9053726fa270bc4a9b60282d",
+      "bytes": 74444,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-capabilities-index0-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-capabilities-index0/guest-output/ws73.pcap",
+      "sha256": "392c81c03fc057114b997f922af8b66e7a9c42d399399ab3a2957fe78f6cb9be",
+      "bytes": 69280,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-capabilities-index0-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-capabilities-index0/guest-output/capture-stats.txt",
+      "sha256": "ae9ccf23bfe6d2487d907d6b58a828c63e752604deb58faab04f756c211dbb01",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-capabilities-index1-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-capabilities-index1/manifest.json",
+      "sha256": "bda7dae4b18880654c9a955c04ec7837c3e0ab236b0f98810d1ee3bc7ca0f996",
+      "bytes": 74444,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-capabilities-index1-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-capabilities-index1/guest-output/ws73.pcap",
+      "sha256": "749c3742895c2cf65e6f2a2db37994109efc75f324431f7f1dd3e123bba57b35",
+      "bytes": 69280,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-capabilities-index1-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-capabilities-index1/guest-output/capture-stats.txt",
+      "sha256": "ae9ccf23bfe6d2487d907d6b58a828c63e752604deb58faab04f756c211dbb01",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-key-agreement-index0-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-key-agreement-index0/manifest.json",
+      "sha256": "5587edcbc9e147e798f1f825e33cf006a21a471994f884b311be36d81dbef21c",
+      "bytes": 88172,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_CANDIDATE_KEY_AGREEMENT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-key-agreement-index0-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-key-agreement-index0/guest-output/ws73.pcap",
+      "sha256": "d24bd0ee7d8bda4db0399de8690ce155e819a31f6d171f25865054b73bab3beb",
+      "bytes": 76062,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-key-agreement-index0-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-key-agreement-index0/guest-output/capture-stats.txt",
+      "sha256": "e34e0021e1e3fd63b85f7e53028390afe417807f2ac926a9f4e13485442e9988",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-key-agreement-index1-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-key-agreement-index1/manifest.json",
+      "sha256": "d8b2dd9cb3f60019f1c944506bbea731796062d72cddab6ab11500d5b7b52c37",
+      "bytes": 88172,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "REAL_CANDIDATE_KEY_AGREEMENT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-key-agreement-index1-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-key-agreement-index1/guest-output/ws73.pcap",
+      "sha256": "1bf9668b23d5aef9e6a9e2efb34c55ad31713148dc447f88222206b09b268553",
+      "bytes": 76062,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-key-agreement-index1-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-key-agreement-index1/guest-output/capture-stats.txt",
+      "sha256": "e34e0021e1e3fd63b85f7e53028390afe417807f2ac926a9f4e13485442e9988",
+      "bytes": 225,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-short-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-short/manifest.json",
+      "sha256": "c5a3dd712a1e94235f0b59fc486b53cec2463f689a852d0bb47b90a44c3e972e",
+      "bytes": 1457278,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-short-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-short/guest-output/ws73.pcap",
+      "sha256": "c00f0ab5441fc54a5fa94a07a26a39bc910663b0f89bba734d78a5c97c22d64c",
+      "bytes": 602486,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-short-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-short/guest-output/capture-stats.txt",
+      "sha256": "897db1b84b26fe9447cb0da9c6e3ff361be260530359e3446870affb6b5cb8ba",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-boundary-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-boundary/manifest.json",
+      "sha256": "49373092fac168a32fd909f8589feee2031a77a7bacc071d7c8393205e933480",
+      "bytes": 1263068,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-boundary-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-boundary/guest-output/ws73.pcap",
+      "sha256": "c2dbdba256c8f284b3578c846604e948cbbfafc5cff80c25bb5685b67f13d3a4",
+      "bytes": 538024,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-boundary-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-boundary/guest-output/capture-stats.txt",
+      "sha256": "bbab514b7677b48c1c3d5c75db1cfc1490d9a0985ed821eb17fba1a546ff126a",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-long-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-long/manifest.json",
+      "sha256": "5280b47c62e9aeffc551c120d2495b555e8cef3a757b2a855f0097d0b952de90",
+      "bytes": 2242968,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-long-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-long/guest-output/ws73.pcap",
+      "sha256": "14496fdb7f1387c629467c2356143c4f92c93fe4c5934be113c7daba06c3ec98",
+      "bytes": 1024408,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-long-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-long/guest-output/capture-stats.txt",
+      "sha256": "2a89c3e9ce99a47b6e4d11428506560de43537d6e2d10bf1fb4b23da5311e403",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length248-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length248/manifest.json",
+      "sha256": "a6d884ae5354b43df7c065399a1280c92a302be4ef5750f4006b0ba6dde8c83a",
+      "bytes": 1253711,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-length248-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length248/guest-output/ws73.pcap",
+      "sha256": "03ea055fd488c3831f8c697050f62af8a9de182ee85430db6475c51569bf0abc",
+      "bytes": 530910,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length248-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length248/guest-output/capture-stats.txt",
+      "sha256": "dafba62216e907909e65b222c6b87eefbdd323c7cdf48b1ac9b6ee8113a09f53",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length250-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length250/manifest.json",
+      "sha256": "ffd75fd4aaa13b34f022b32e155101c35bc7d2e2419b7a2de94cdec9aea46bf8",
+      "bytes": 1284974,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-length250-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length250/guest-output/ws73.pcap",
+      "sha256": "69ff54f322cbfd9def2774e19132af2d8f529e0046490f17b01907df97d15858",
+      "bytes": 550744,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length250-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length250/guest-output/capture-stats.txt",
+      "sha256": "be69b26fd198fc6697403ed908dc7aa8078839c9df5ce68535775c5e228f6e91",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length253-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length253/manifest.json",
+      "sha256": "e63dfc8a45f70c8b97ba885b60d9bb97385b7a48e6d10bbcbac52fea18eba155",
+      "bytes": 1285358,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-length253-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length253/guest-output/ws73.pcap",
+      "sha256": "e7f3f65180ee0f7ebf9b84908891fe7ea12dad231dbe77e2620ab43dc8a7722d",
+      "bytes": 551420,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length253-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length253/guest-output/capture-stats.txt",
+      "sha256": "1faacb9e1001cc5c2aa7beca07b3d6407c1a4bbcf79520f3f09f406d8d43f5a3",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length254-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length254/manifest.json",
+      "sha256": "ebb70d03971f523793922cee501ce09968f6892c9facb1da8953fd1c7b6c2bae",
+      "bytes": 1285486,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-length254-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length254/guest-output/ws73.pcap",
+      "sha256": "220ea0020e7c92da67baa9f91ba18ae17231fb7cd8f044c9d1d4c2223368369a",
+      "bytes": 549392,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length254-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length254/guest-output/capture-stats.txt",
+      "sha256": "243bda32c0ca735d75ccd450d53689f0a8146bcd8f86105ba98026275715792a",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length255-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length255/manifest.json",
+      "sha256": "a5a2899708b97d654620b3af330a61ae81b9b3e74109e0e99e58e3bce9975311",
+      "bytes": 1285614,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-length255-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length255/guest-output/ws73.pcap",
+      "sha256": "3e08d83076fe9c7fa954713b2de7016b6dbc1dd25bd7c88fb3256c4617a2765e",
+      "bytes": 552434,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length255-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length255/guest-output/capture-stats.txt",
+      "sha256": "e83a40ef064f50c9a7636025f757cb4f4c31b04c97c4da1fcaf64bdfb686e863",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length1024-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length1024/manifest.json",
+      "sha256": "672f6d481bdb76a81d96cc87a3c50b2a7c220409fb7126494521ee4f025b8cde",
+      "bytes": 1696384,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-length1024-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length1024/guest-output/ws73.pcap",
+      "sha256": "08c28f997a08b4a1aa82aa403c2945a2cf825da2d66023a881677b5073577669",
+      "bytes": 755626,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-length1024-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-length1024/guest-output/capture-stats.txt",
+      "sha256": "ca9c82b83f1ff4e18f49d7c30d40ee8d9cb7da1723848805b2a656e1688e7f4c",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-prefix-close-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-prefix-close/manifest.json",
+      "sha256": "7deaf64268af091999e11a684d7d02418f91a95a36442620676b28af014568b3",
+      "bytes": 1390319,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-prefix-close-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-prefix-close/guest-output/ws73.pcap",
+      "sha256": "e3896a418bbc804be70f2992ea4406ed00bd69e161cd3ac65eef6c2cc147582e",
+      "bytes": 609160,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-prefix-close-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-prefix-close/guest-output/capture-stats.txt",
+      "sha256": "8e0afad18173810380b3a044b1e9e8480dcf5de7ea0e5e66d91d493f33cadda2",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-burst-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-burst/manifest.json",
+      "sha256": "e5f71e32491e98c30c9a4479fc1d2fe379063c1a23d1d22603cf978591808d47",
+      "bytes": 5677324,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "PASSTHROUGH_SUPPORT_PASS"
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "gate-burst-capture": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-burst/guest-output/ws73.pcap",
+      "sha256": "1bbf792fba53f433ab0ee9023feab75a7e99f5356b768390c8a3d362ac6e7eab",
+      "bytes": 2688442,
+      "access": "private",
+      "format": "bytes"
+    },
+    "gate-burst-capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-deadline-v2-regression-burst/guest-output/capture-stats.txt",
+      "sha256": "8fb758ee0ca5e1b8fe5f693b3523c0302b42ff057053c0dcca8ec59883e03cab",
+      "bytes": 229,
+      "access": "private",
+      "format": "bytes"
+    },
+    "deadline-arithmetic-log": {
+      "base": "workspace",
+      "path": ".dev/security-absolute-deadline-formal-final.kani.log",
+      "sha256": "e4d1be38e23c2f8ed71f03f090aef92bd372714693c9639836bb1d2c52e18d93",
+      "bytes": 52310,
+      "access": "private",
+      "format": "bytes"
+    },
+    "installation-composition-log": {
+      "base": "workspace",
+      "path": ".dev/security-deadline-install-composition-final.kani.log",
+      "sha256": "7791f51f2c7f2ead84ec65aec008a9fb1ddafe6eee5803f523c647c249ca2228",
+      "bytes": 1056986,
+      "access": "private",
+      "format": "bytes"
+    }
+  },
+  "baseline_record": "deadline-real21"
+}

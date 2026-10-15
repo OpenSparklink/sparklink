@@ -480,6 +480,18 @@ slkd采用最小能力、受限文件路径及服务sandbox。privileged机制�
 | R14 | dead code、严格CI与错误完成声明 | WP00/WP16/WP17/WP18；真实verdict与能力入口 |
 
 
+## 质量工程与资格所有权
+
+采用[ADR0005](../docs/decisions/0005-qualification-and-quality-gates.md)。资格的源码、
+artifact、执行工具、固件/配置和必需门禁由版本化记录关联，当前摘要生成或校验；
+历史/失败不重命名为当前资格。metadata、原件完整性核对、实际重放和实现证明
+分别表达。受限材料不可取得、映射过期、缺必需项时不能授予当前 PASS。
+
+分层测试复用生产入口和已有 Virtual/QEMU/WS73；fixture 明示，生产字节/状态 fuzz
+与 VM 接口 fuzz、独立调试镜像、组合性质验证并行。普通应用/管理/Agent权限与
+应用实际交付必须在对应 VM 环境验收。质量基础设施不成为所有数据交付的新前置，
+不改变 drivers/net/slkd 的协议所有权、原期限或完整 S0–S6 退出范围。
+
 ## 风险、假设与开放问题
 
 | 风险 | 应对 | 关闭条件 |

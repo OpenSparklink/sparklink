@@ -2,6 +2,14 @@
 
 当前资格只从 [CURRENT_CAPABILITIES](../../project/current-capabilities.md) 进入。每项报告按其源码 hash、假设和边界阅读，工具安装通过、限定模型通过、USB 写入和对端业务往返是不同事实。
 
+当前纳入机器检查的[版本化资格记录](../../project/qualification-records.json)关联准确编译/执行/报告身份、
+原件hash和必需门禁；[当前资格页](../../project/current-capabilities.md)生成摘要。
+本批覆盖21组及期限相关证明，其他历史报告未迁移不等于丢失或已校验。
+公开metadata检查不是私有原件核对，本机原件核对不是重放或新镜像资格。
+
+[资格一致性首批实测与边界](qualification-provenance-batch1-20261015.json)记录20负对照、542工具、
+104文档严格构建及154原件核对；不增加Agent或其他协议实机资格。
+
 [版本固定的证据目录](https://github.com/OpenSparklink/sparklink/tree/670674736ac90ec0f89ca0330849e22b1bc8f81b/docs/evidence) 保留报告、失败和反例。站点不复制整个目录、SDK、固件或标准材料。报告中的工作区原始抓包可能未公开；文件名或 hash 不能替代可下载 artifact。无法取得原始材料时，只能审查已公开摘要，不能声称已重现。
 
 当前仍开放的自然恢复根因及非人工恢复门禁不会因文档构建通过而关闭。

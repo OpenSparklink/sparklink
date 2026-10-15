@@ -77,6 +77,7 @@ clean:
 
 # Documentation has its own locked Python environment and no hardware access.
 docs:
+	python3 tools/check_qualifications.py
 	$(DOCS_RUN) python tools/check_docs.py
 	rm -rf docs/_build/html
 	$(DOCS_RUN) sphinx-build -E -d docs/_build/doctrees/html $(SPHINX_FLAGS) -b html docs docs/_build/html

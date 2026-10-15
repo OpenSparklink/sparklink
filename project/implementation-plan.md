@@ -6,14 +6,30 @@
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-近期主线为WP09：复用唯一物理Session/credit/最终票据，完成Agent、方法选择和
-调用者绑定。单请求取消及原期限的准确子资格见CURRENT_CAPABILITIES；新期限
-镜像的安装/长度保持矩阵仍在运行，只按封存的完成项记资格。
+近期主线仍为 WP09 的 Agent/method/调用者绑定，复用唯一物理 Session、credit 和
+提交票据。准确旧镜像的原期限及21组门禁已封存，dirty Agent 代码未继承其资格。
+并行质量整改先消除当前状态矛盾，然后随 Agent、数据与 SSAP 扩展门禁，不等待
+控制面竞争全集；本批不改协议实现或重跑无关硬件。
 
-本批有限退出：未发布SUBMIT版本2的原绝对期限跨越受控等待/密码/提交，超时终态
-不被取消改写；新request/有效新期限不能绕过同lifetime屏障；同Session/租约/Ready、
-普通用户随机对端校验回复及相关数据回归保持。直接验证生产期限函数，算术限定
-证明与实际Kernel/Host/USB映射分列，安装组合unsupported不升级为PASS。
+<!-- qualification-summary:start -->
+以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
+
+| 契约（仅所列范围） | 证据层级 | 记录结果 |
+|---|---|---|
+| 原期限、两角色安全机制及保留数据：21组限定门禁 | `real_device` | `PASS` |
+| 生产原期限算术：四种HZ、100检查 | `formal_bounded` | `PASS` |
+| 生产安装/取消组合：unsupported，1766检查不是证明 | `formal_bounded` | `UNPROVED` |
+| Agent/method/调用者：dirty 接线未验收 | `implemented` | `MISSING` |
+| 动态多通道/四真实设备两组：仍缺 | `implemented` | `MISSING` |
+| 自然故障根因与非人工恢复：仍缺 | `implemented` | `MISSING` |
+
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7`；执行工具 `575ba337c05b09b6c3e96f4182ffcf7ffb6b466c`。
+
+**当前工作树：NOT_REVALIDATED；完整范围：INCOMPLETE。** Agent 接线不继承旧实机资格。
+公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
+本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
+[资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
+<!-- qualification-summary:end -->
 
 下一批直接接Agent：注册绑定每controller的唯一bus owner与注册epoch，单连接
 请求绑定generation/lifetime/完整reference、原作者和原期限；只开放明确支持的
@@ -203,6 +219,108 @@ USB/HCC抓包不称独立PHY嗅探。真正对端应用收包是业务空口行�
 
 按实际支持分别配置lockdep/DEBUG_ATOMIC_SLEEP、KASAN、KCSAN、UBSAN、故障注入。不要假定所有Rust和sanitizer组合可同时运行。使用独立VM镜像并绑定config/hash。
 
+
+## 测试与质量工程整改（2026-10-15 纳入；不新增工作包）
+
+采用 [ADR0005](../docs/decisions/0005-qualification-and-quality-gates.md)，审查基线
+K8cbf53/Ueaea706；Agent五文件 dirty 接线保留，未继承旧资格。完整 S0–S6、19 WP、
+10 FV、12 DG 和原 issues scope 保持。以下是现有 WP 的增补门禁，不是平行路线图。
+文档采用与工具安装不计实现完成，未列出执行报告的门禁均为计划/未运行。
+
+### 有限批次及依赖
+
+| 批次 | 本批行为与相关不变量 | 离线与 VM/实机退出 | 归属及现有 issues |
+|---|---|---|---|
+| Q1 资格一致性（当前） | 记录契约→源码→编译 artifact→工具→配置/固件→必需门禁→结果/范围；生成能力/计划/goal摘要；保留历史 | 自动拒绝旧源码、缺 artifact、错 hash、scope错配、缺门禁和非PASS聚合；local核对原件；metadata不升级实机。工具/文档不改数据路径，无本批新增RF资格 | WP00/17/18；K#19、U#8 |
+| Q2 Agent（当前主线并行） | 复用唯一Session/credit/票据；批准非信任；作者和Agent epoch/原期限/实际安装各自关联 | approve/reject/未知/缺Agent/Agent与caller退出/晚到/重复/原期限/安装失败；private bus只作集成，实际system bus+udev/组/内核授权VM及两角色真实业务正向 | WP05/09/16/17；K#4/#7/#18、U#5/#6/#8 |
+| Q3 fuzz/调试/组合（并行） | 生产 parser/transition；预算/identity/credit/唯一终态；不确定失败保留义务 | 固定corpus短探索、状态序列、适用syzkaller；独立debug VM确认插桩+实际路径；reserve→revoke/Down/deadline→submit→lateComplete/NOCP→reuse | WP03–06/09/11/17；K#4/#6/#9/#10/#14/#16/#17/#18/#19 |
+| Q4 数据扩展 | Session唯一RX/通道预算/公平性；SSAP复用socket | DG03–12随长包/多通道/四设备/SSAP交付扩展，随机对端实际校验回复；故障另一组仍业务 | WP02–08/10/17；K#6/#17/#19、U#3/#8 |
+| Q5 部署/长期/发布 | 路径/ABI/组/权限一致、配置保留；资源收敛；真实恢复单独统计 | 干净VM安装/升级/回滚/卸载、外部C/Python、system bus实际调用；长期四设备、自然故障；供应链/支持矩阵/发布汇总 | WP11/13/15/16/17；K#9/#10/#12/#14/#15/#19、U#1/#2/#6/#8 |
+
+Q1通过就进入Q2及Q3，不把Q3全部组合或Q5作为Agent/数据面前置。
+每批先固定生产行为、相关不变量、离线/VM门禁、退出及剩余条件；新增风险另排批次。
+
+### 分层测试清单（先映射已有入口，再补缺项）
+
+逐项登记被测生产入口、真实依赖/fixture、输入及状态空间边界、oracle、覆盖/未覆盖
+契约、环境与准确命令、源码/配置 hash；提取函数 fixture 不称真实锁/引用并发通过。
+现有入口包括内核 `tools/testing/selftests/sparklink`、用户态 Cargo/私有 D-Bus、
+`tools/tests`、Virtual/QEMU 及冻结 WS73 runner。完整逐测试登记仍待Q3，不能把此表
+称为所有现有测试已分类完成。
+
+| 层 | 复用入口与必须补充的场景 |
+|---|---|
+| USB/HCC/BSLE/DLI | 生产codec及已有capture checker；截断、长度、拆粘包、重复/非法类型、乱序启动；错误后合法帧仍处理 |
+| Backend/Runtime | 注册/退休selftests与Virtual；alloc失败、旧generation、模块ref、stop/drain、部分初始化 |
+| Command/Managed | 实际Host/Managed函数与QEMU；同opcode、Status/Complete顺序、cancel/timeout晚回复、清理失败、唯一终态 |
+| Credit/Ticket | 实际CreditLedger与提交入口；reserve撤权/Down、确定未提交/不确定失败、旧debt/重复迟到NOCP/复用 |
+| Session/Channel | 生产CMTC/DTAP；TCID/PI错投、协商/分片、残留、有限队列与公平性 |
+| Socket/Grant | 真实syscall/内核授权；blocking/nonblocking、poll/epoll/丢唤醒、零长、PEEK/TRUNC/短缓冲/EFAULT/信号/原期限、dup/fork/SCM_RIGHTS/exec/最终ref、shutdown/linger支持或拒绝、旧fd/新lease/重连不复权 |
+| slkd/D-Bus | 实际部署权限、多作者/慢客户端、Agent生命周期/原期限、daemon死亡/接任；actor不等于进程故障域，不默认业务跨daemon死亡存活 |
+| SSAP/Profile | 唯一用户态Engine；事务/CCC、notify/indicate、ACK时点、满队列、接收者/callback退出、写入结果不确定；应用处理由真实回复证明 |
+| Security/Bond | 生产向量/错误proof/key/重放、安装失败/等级；原子替换/持久顺序/权限/满盘/损坏/kill/迁移/撤销。旧元数据不能直接变可信凭据 |
+| Recovery/PM | 自然与注入分列、有限重试/枚举/休眠、同行实际业务、长期对象/fd/worker/timer/URB/队列收敛 |
+
+### 三类 fuzz 与调试 VM
+
+Q3先接正在使用的 DLI/relay envelope、ACB/CMTC/DTAP、SSAP codec 及 Session/Grant/credit
+生产转换：Rust cargo-fuzz/libFuzzer、C生产源或正式接口加sanitizer，不另造简化Engine。
+字节fuzz检查界限/溢出/循环/过量分配/失败原子性/错误后恢复；序列fuzz先建有效
+状态再插取消/撤权/Down/超时/晚回复/重开/复用，每步查身份/预算/终态/副作用。
+syzkaller描述socket/ioctl/订阅/fd与有效种子，只在专用VM执行。FFI调用者指针契约
+与内核坏用户地址分开；实际捕获语料先去密钥/身份/受限材料。
+
+PR固定corpus重放和短探索；独立定时长探索，保存seed/序列/源码hash/覆盖与最小
+失败样本；确认缺陷转固定回归，所有失败保留。无崩溃只代表探索范围，不称证明。
+任何畸形USB/固件输入先离线/Virtual，真实WS73只跑受控门禁。
+
+分开构建 KASAN/UBSAN、KCSAN/PROVE_LOCKING/DEBUG_ATOMIC_SLEEP、FAULT_INJECTION/
+泄漏、KCOV/syzkaller 镜像；先核对内核/Rust/工具链支持及插桩范围。当前保留镜像
+有UBSAN，不因日志parser能识别其他报告而声称其他检测已运行。每镜像绑定config、
+source、toolchain、boot完整日志与用例表；确认目标路径运行和用例完成，无报告
+不单独算PASS。不放宽原协议期限；优先Agent/relay/socket/Managed/Backend退休/在途清理。
+
+### 组合证明与测试设施可信度
+
+保留FV01–10。优先实际 CreditLedger/有限队列/codec/Grant/Session/取消转换的Kani或
+CBMC；TLC映射对象/锁/ref/identity/线性化点（不是已证明refinement），LKMM发布/
+关闭准入/等待唤醒加真实VM并发；安全Bond随S5使用Tamarin/ProVerif并列原语/随机数/
+端点假设。组合覆盖 reserve→revoke/Down/deadline→实际submit→lateComplete/NOCP→reuse：
+撤销票据无新提交；作者取消/关闭不抹在途义务；确定未提交与不确定失败不同记账；
+旧generation/lifetime不获资格；最多一终态；无可靠屏障旧完成不结算新连接；命令、
+controller data、peer credit及软件预算独立；callback/worker/ref未收敛不得Free。
+
+每报告保存源码hash/性质/边界/假设/工具版/原结果/反例/回归；直接生产逻辑，不用
+永远成功桩或无意义边界排除真实失败。NOCP准确性/重复晚到、callback排空、固件
+清除/复用屏障、调度公平性显式待验证。未证明区分缺陷、工具限制、状态空间爆炸，
+分别安排修实现/替代工具或拆分组合与加不变量；timeout/unsupported/展开不足/缺性质
+持续UNPROVED。反例转生产回归及适用VM交错，局部有界检查不升级长期不变式。
+
+监督器/parser/schema/聚合逻辑也需负对照：缺用例/截断日志/crash/timeout/SKIP/捕获丢包/
+身份不符、少一端捕获、旧manifest、payload/hash/source篡改必须拒绝；监督器crash
+不得留下合格状态。改预期说明契约变化，不能为输出放宽断言。尽量独立校验捕获，
+标准向量与固定NearLink Host/SDK111/libws73差分解释封装差异，参考实现不是标准裁判。
+
+### CI、安装与长期质量的剩余门禁
+
+复用Cargo.lock/uv.lock/bundle，统一Cargo --locked；固定资格toolchain，浮动stable
+独立兼容；缓存/vendor离线另验。default与all-features分测；按已声明范围测built-in/
+module、USB/后端组合/compat，不虚报不支持平台。按影响触发及统一结果汇总，现有
+release job产物仅构建artifact，不宣称所有发布门禁通过。固定Actions SHA、最小
+token权限、实际核实rulesets/required checks及硬件runner隔离；本批只核对不自动改
+仓库治理。补漏洞/许可证/来源/私密材料、适用SBOM及构建来源；签名不代审查或来源证明。
+
+WP16重新核对并修 Makefile默认/usr/local与固定/usr/sbin、Debian实际liblibsparklink.so、
+头文件/pkg-config及.pc安装、SONAME/SDK升级、uninstall误删配置、组/udev/状态目录/
+服务启动一致性，清旧URL/占位/能力及配置链接。干净VM真实构建安装/启动/普通调用、
+外部C/Python、升级回滚卸载，检查管理员配置与状态保留；不能以DESTDIR静态演练代替。
+不在宿主安装实验内核或真实驱动测试。
+
+长期基线记录硬件/VM/负载/范围，吞吐/尾延迟、CPU/内存/内核对象/fd/worker/timer/URB/
+队列峰值，慢消费者/持续广播/并发/满队列的预算公平性，多轮连接/服务/daemon重启
+收敛，四设备两组一组故障另一组真实随机校验回复。所有尝试失败计入，自然故障
+与注入分列；manual/hub/QMP不算非人工恢复；单daemon死亡按实际所有权影响解释。
+不以总体行覆盖率为唯一门槛，跟踪高风险转换/错误分支/关键拒绝的负对照有效性。
 
 ## 原全生态硬件G0–G6范围（继续保留）
 

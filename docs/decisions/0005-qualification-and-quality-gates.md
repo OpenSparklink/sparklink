@@ -1,0 +1,66 @@
+# ADR 0005：资格记录、分层测试与质量门禁
+
+状态：采用（2026-10-15）；本次采用不表示下列测试、证明或发布门禁已完成。
+
+## 问题与决定
+
+审查基线 K8cbf53/Ueaea706 存在保留实机资格与旧“当前”字段并列、文档 CI 无法
+检测语义冲突的问题。Agent dirty 接线保留。采用最小版本化
+`project/qualification-records.json`，把契约、生产源码范围及 hash、编译产物、执行
+工具、配置/固件、必需门禁、结果、限定范围与剩余条件连起来。
+编译提交、执行工具提交与公开报告提交分开；文档提交不重命名旧镜像。
+
+能力页、计划中的资格摘要及 goal 的 `qualification_view` 由该记录生成/校验。
+废止独立维护的 current_heads/current_batch/current_batch_exit 等资格字段，原值存入
+机器历史，旧能力页原文归历史。架构、唯一计划、能力页仍是各自 canonical 入口。
+记录迁移为增量：本批封存21组与两项期限相关证明，其他历史报告不因此丢失或升级。
+
+层级分别为 implemented/offline/formal_bounded/virtual_integration/real_device；
+PASS/FAIL/UNPROVED/MISSING/SKIP 分开。某个必需项非 PASS 则整组不能 PASS。
+unsupported、timeout、未展开/缺性质不得靠退出0、计数或其他局部 PASS 升级。
+`INCOMPLETE` 的完整目标不会因保留21组或算术100检查通过变为完成。
+
+## 材料与信任边界
+
+公开 CI 的 metadata 模式检查公开报告、scope、门禁身份、生成摘要和可取得的
+源码映射；缺私有材料或兄弟仓库只得到 METADATA_ONLY_NOT_REVERIFIED，不能
+授予当前实机 PASS。本地 local 模式核对全部原件的大小/hash/记录断言；缺失或
+不符失败。`--require-current` 另核对声明源码范围的 tracked/untracked 字节，
+范围变更即拒绝继承；保留旧资格仍只适用于旧源码。
+
+完整性检查不是独立 RF 重解码、构建可复现性证明、实现 refinement 或重新执行。
+它信任冻结报告及其已记录身份；范围外变化、编译器、Linux、库、固件和硬件
+不因此被证明。后续每批新增能力必须登记自己的生产入口、fixture、边界、oracle、
+环境、命令及源码/配置 hash，不能只加一个字符串 PASS。
+
+含密钥捕获、固件和受限材料不入站点。记录相对保留路径、指纹、访问条件和重放
+入口；当前无已验证异地保留保证。原件丢失时保留历史陈述，同时撤销可核对性，
+不得声称当前 PASS。失败/反例/所有尝试保留，重跑不覆盖失败。
+
+## 测试和实现的关系
+
+复用真实生产入口及 Virtual/QEMU/selftests/private D-Bus/WS73，不另造协议 Engine。
+提取函数测试显式列出锁/分配器/引用/USB/时钟 fixture，不升级为内核并发资格。
+字节 fuzz、状态序列 fuzz、syzkaller 接口 fuzz 分层；真实恶意 USB/固件输入先在
+离线/虚拟后端。每步查身份、credit、预算、终态及副作用，不只检查不崩溃；FFI
+指针调用者 UB 不与内核 EFAULT 契约混淆。固定语料与长探索分别记录。
+
+KASAN/UBSAN、KCSAN/lockdep、故障注入/泄漏、KCOV 分镜像，在 VM 中验证实际
+插桩范围与路径执行；无报告不单独构成通过，不通过延长期限补偿调试开销。
+组合性质直接映射生产转换、锁、引用与线性化点；NOCP真值/晚到重复、callback
+排空、固件清除、调度公平性是待验证假设，不默认成立。
+
+策略批准不等于认证/Bond；软件准入、USB提交、控制器完成、对端协议接收、应用
+处理分别表达。system bus/组/udev/内核强制权限必须在真实 VM 部署验证，不能用
+XML 或 private session bus 替代。一个 daemon 的 actor 不提供进程故障隔离。
+
+## 实施约束与后果
+
+只将当批改动相关性质作为门禁，质量工作随 Agent/数据/SSAP/多通道/四设备并行。
+完整 S0–S6/19WP/10FV/12DG、旧路径、VM-only 不变，UserHost P4；不追加控制面竞争
+全集前置条件。安装、供应链和长期运行依照唯一实施计划，构建 artifact 不默认
+是合格发布。自然RCA和非人工恢复继续开放，人工/hub/QMP/注入不代替。
+
+第一批退出：生成摘要一致、原材料核对与当前源码资格分开、故意旧源码/缺产物/
+范围错配/必需失败或未证明均被检测。后续 schema 变更需显式版本迁移及负对照；
+证明/模型和工具自身的 parser/verdict 也必须回归。

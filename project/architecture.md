@@ -322,6 +322,15 @@ CCC写入的认证/授权由实际内核安全上下文与有效Grant强制，�
 
 每连接安全状态只由真实协议与安装结果提交。无owner、拒绝、proof缺失/错误、超时、非法key、FFI失败或崩溃均fail closed。失败不提交密钥、计数或Encrypted。禁止测试密钥降级和固定nonce。
 
+能力交换是独立的未认证观察阶段，不能发布为Paired、Authenticated、Encrypted、Bond
+或Agent已批准。受限实验入口要求CAP_NET_ADMIN及原Managed File，绑定完整
+controller/generation/lifetime/handle/role/address/epoch；普通通道Grant不授予该权力。
+它复用物理Session的唯一relay、命令credit及实际提交票据，不提供raw发送/注入RX。
+原始期限覆盖批准、排队、提交、真实Complete和peer RX。撤权阻止新提交，但保留
+在途物理义务；Complete与peer能力字节都观察到，才可报告本地能力交换终态。
+该终态仍不表示对端应用处理或可信安装。没有经验证的迟到/复用屏障时，同一物理
+lifetime不得重启交换；更换request ID不能绕过。完整Pair及其Agent策略另行接通。
+
 算法基于匹配标准与实际固件支持，不猜测；算法向量、协议证明和实机安装独立。
 
 ### Bond

@@ -55,6 +55,30 @@ facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合�
 输入亦NotSupported，非法输入可InvalidArgs。C旧安全入口返回-EOPNOTSUPP且不改
 输出，Python映射OSError(EOPNOTSUPP)。真实每连接安全、Agent与Bond重连仍未实现。
 
+### 实验性安全能力观察（未发布 ABI）
+
+K `1cf095fd1650` / 编译用户态 `02ac5ed5a76c`增加受限版本1/profile1接口：
+`SLE_SECURITY_NEGOTIATION_SUBMIT`（`0xd2`，56字节）及
+`SLE_SECURITY_NEGOTIATION_RESULT`（`0xd3`，72字节）。C导出
+`slk_security_negotiation_submit/result`，Python NativeAdapter提供
+`submit_security_negotiation/security_negotiation`。默认Pair/D-Bus安全入口仍NotSupported。
+
+- 必须显式`flags=SLE_SECURITY_CAPABILITY_ONLY=1`，由CAP_NET_ADMIN与原活跃Managed
+  File调用；其他File或降权后的同一File返回EPERM。查询同样受保护，不开放原始RX或密钥。
+- generation/lifetime/request_id非零，handle为12位；精确核对role/address/type/epoch。
+  timeout为1–5000ms原始总期限。仅G action2发起134、T action1先批准并回应135。
+  profile/角色组合不支持返回EOPNOTSUPP；无效字段/reserved返回EINVAL；失配连接
+  返回ESTALE，错误generation返回ENODEV。同lifetime再次启动返回EBUSY。
+- 本批固定offer为`03 00 00 10 00 02 02 02 02 00`，不请求MITM、Bond、OOB或分发。
+  只接受该已知offer，不承诺任意SDK/第三方配对互通，不执行后续认证或安装。
+- result state：1批准待收、2进行中、4本地观察完成、5失败、6撤销、7超时；flags
+  的1/2/4分别表示实际提交、真实成功Complete、对端能力RX。state4要求flags7。
+  失败不产生trusted状态；撤权后查询也失去授权。该入口不是事件历史或可靠交付API。
+- 同一物理Session/业务通道持续存在；探测后由管理者显式断链。应用fd析构不隐式
+  完成安全协议。`Complete + RX`与业务应用校验/回复、配对、认证、加密、Bond分别表达。
+
+准确资格及未证明范围见[唯一资格入口](../../project/current-capabilities.md)。
+
 Kc2dd941e5784：不存在全局active/default controller。DEV_SELECT非负绑定精确
 registration，-1清此File及观察模式；dup/fork/fd传递共享File，拥有lease则EBUSY。
 DEV_GET_ACTIVE仅报告本File绑定id（可已退休），无绑定为0xffff；它不报告Ready。

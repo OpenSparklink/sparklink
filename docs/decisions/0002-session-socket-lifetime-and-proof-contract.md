@@ -25,6 +25,17 @@ ConnectionSession 独立于应用fd。最后fd关闭释放Binding和其未提交
 同lifetime基本通道重绑当前明确EOPNOTSUPP，已实机验证拒绝；固定标识1换成递增编号也不足以防止残留业务数据。
 Session需保留协商上下文、接收水位与通道归属，定义重新授权/重新绑定的排空屏障。
 
+### 安全能力交换沿用同一物理 Session
+
+受限capability-only入口不是另一Engine，也不授予可信安全状态。管理批准必须由
+内核验证原Managed File、CAP_NET_ADMIN及全连接身份/epoch，不能借用普通业务
+Grant。原期限内分别记录实际提交、真实Complete和对端0014能力字节；只有后二者
+均成立才发布本地观察完成。Status0、USB成功或本地批准均不足以替代它们。
+授权取消/期限到期保留已提交义务，迟到回复不得复活终态。首版每物理lifetime仅一次，
+拒绝同lifetime新request ID重启，直至实现并验证wire迟到/排空屏障。
+只核对已知offer的实验入口不承诺通用互操作，也不替代Agent、方法选择、proof、
+实际安装/加密及Bond门禁。当前代码和限定实机资格只见CURRENT_CAPABILITIES。
+
 授权目标：fd绑定KernelGrant（controller/generation/lifetime/channel + authorization
  epoch），随对应Managed授权撤销失效。撤销阻止新准入/新提交、唤醒等待者；已提交
 物理义务仍保留到真实完成或明确退休屏障。新lease不复活旧fd。Kbf8663已接通

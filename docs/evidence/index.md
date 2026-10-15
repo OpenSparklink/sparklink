@@ -125,10 +125,13 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 [类型化单安全作者请求取消：生产实现、离线检查与实机缺口](security-author-cancel-20261015.json)：
 准确45c049构建，28纯转换/39跨语言；1766检查unsupported未证明，不继承eff620实机资格。
 
-[单请求取消六项现有issues读回回执](security-author-cancel-issues-20261015.json)：保留原scope/OPEN，取消实机和Agent仍缺。
+[单请求取消六项现有issues读回回执](security-author-cancel-issues-20261015.json)：保留原scope/OPEN；这是37提交时的历史回执，当时取消实机和Agent仍缺。
 
 [第2/3口物理操作归属未确认后的VM路径核对](port-requalification-20261015.json)：
 端口2描述符失败；另轮端口3/1准确45/37四次短业务限定通过，不记自然恢复。
 
 [准确45/37、227工具的两角色真实被动作者取消](security-passive-cancel-20261015.json)：
 同Session/租约/Ready、八次普通用户随机业务回复，无安全wire提交；在途安装与Agent仍缺。
+
+[被动作者取消及端口核对七项现有issues读回回执](security-passive-cancel-issues-20261015.json)：
+原body/checklist与OPEN保持，实机子资格与在途/Agent/自然恢复缺口分别记录。

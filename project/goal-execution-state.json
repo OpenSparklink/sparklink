@@ -861,6 +861,7 @@
       "ci": 38729575220,
       "documentation": 38729575509,
       "result": "SUCCESS"
-    }
+    },
+    "passive_cancel_issue_receipt": "docs/evidence/security-passive-cancel-issues-20261015.json"
   }
 }

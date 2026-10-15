@@ -1000,10 +1000,10 @@
     "schema_version": 1,
     "baseline": {
       "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
-      "compiled_userspace": "85cdf627d70bd239609ab0e74124b787279f139f",
-      "guest_tools": "85cdf627d70bd239609ab0e74124b787279f139f",
-      "executed_tools": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
-      "report_commit": "3776f4724227a8163d4cc08a7a829ef865500d34"
+      "compiled_userspace": "6385e43081bfcbeabee1ac4f18b9d0917c7a6057",
+      "guest_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
+      "executed_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
+      "report_commit": "e9f3e47bf939cc249222db15d2e2eb6211fa3b05"
     },
     "current_tree_qualification": "NOT_REVALIDATED",
     "private_evidence_in_ci": "METADATA_ONLY_NOT_REVERIFIED",
@@ -1047,18 +1047,22 @@
       "security-cli-real2-300a": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "security-cli-data11-300a": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "explicit-security-cli",
-      "production_behavior": "Foreground human slctl Agent and same-author security-request over existing broker/Session/credit/tickets; no auto-approval or new Engine",
+      "id": "production-parser-fuzz-and-inflight-composition",
+      "production_behavior": "Next parallel Q3: actual production wire/DLI byte fuzz+sanitizer, preserve Session/credit/author lifetime; compose revoke/Down/original-deadline with final submission. No new Engine or relaxed CCC security",
       "exit": [
-        "CLI production and offline gates passed; exact source bindings in new report",
-        "security-cli-real2-300a scoped real PASS, not full security/deployment",
-        "new-image eleven retained data gates in progress; batch not complete"
+        "previous explicit CLI2 scoped real PASS at compiled6385/tools300a",
+        "previous new-image data11 scoped real PASS:136 replies/32 oversize/2 strictfd",
+        "new Q3 relevant production functions, bounded corpus+negative controls, exact source/tool/config mapping; not a full implementation proof"
       ],
-      "next": "Finish separately running eleven retained data gates; then controlled in-flight revoke/Down/original deadline, production fuzz/debug VM and data/multichannel/fourdevice/SSAP in parallel; all original S0-S6 scopes retained"
+      "next": "Add first direct C production codec fuzz/ASAN/UBSAN gate; in-flight model/debugVM and dynamic channels/fourdevices parallel; protected SSAP CCC requires minimum authenticated security+authorization. Full S0-S6 unchanged"
     }
   },
   "agent_workstream": {

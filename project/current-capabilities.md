@@ -23,14 +23,15 @@
 | Agent实机85cdf/db6：六模式交换角色48次应用回复 | `real_device` | `PASS` |
 | 数据保持85cdf/db6：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
 | 正式CLI实机6385/300a：批准拒绝两角色16次对端应用回复 | `real_device` | `PASS` |
+| CLI镜像6385/300a数据保持：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `85cdf627d70bd239609ab0e74124b787279f139f`；执行工具 `db6e333814cfc2740b51b0d70c6acf52c6dbca9d`。
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `6385e43081bfcbeabee1ac4f18b9d0917c7a6057`；执行工具 `300a39b9e496f09119769c03a0a77360263a8c1e`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `85cdf627d70bd239609ab0e74124b787279f139f`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `300a39b9e496f09119769c03a0a77360263a8c1e`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 ## 正式安全 CLI 增量（双模式限定实机通过）

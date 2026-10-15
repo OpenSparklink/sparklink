@@ -1084,7 +1084,7 @@
       "userspace": "8121ba0fc03810185120e4136481aa9bc418aba7",
       "initial_worktrees": "clean"
     },
-    "current_batch": "DQ1 misleading references and fail-closed integrity",
+    "current_batch": "DQ1 scoped checks and book theme passed; content and usage workflows remain incomplete",
     "exit": [
       "source-audited man/Python/Agent/config corrections",
       "man/config/extensionless kernel README inventory",
@@ -1095,7 +1095,8 @@
       "DQ2 interface completeness and coverage mapping",
       "DQ3 full source-to-VM and user workflows",
       "DQ4 kernel RST/kernel-doc/Safety/sysfs/MAINTAINERS",
-      "DQ5 browser exact-build, external links, man shared source and milestone replay"
+      "DQ5 browser exact-build, external links, man shared source and milestone replay",
+      "Natural recovery and all original scope remain open; documentation is not a prerequisite to main delivery"
     ],
     "runtime_qualification_changed": false,
     "keep_goal_active": true,
@@ -1129,8 +1130,10 @@
       "locked_version": "1.4.0",
       "intent": "GitBook-like chapter navigation, page TOC, search and responsive reading",
       "reason": "User explicitly requests theme change; replaces earlier Furo choice, same uv/Sphinx/MyST infrastructure",
-      "status": "implementation and fresh exact-build/browser gates in progress; no deployment or functional qualification claimed"
-    }
+      "status": "18 real browser checks passed at exact4a581c5; failures preserved; no Pages deployment or functional qualification"
+    },
+    "status_evidence": "docs/evidence/documentation-dq1-and-theme-20261016.json",
+    "tested_documentation_source": "4a581c5fd829c4041561f21becfd2892fb2649db"
   },
   "agent_issue_receipt": "docs/evidence/agent-policy-issues-20261016.json"
 }

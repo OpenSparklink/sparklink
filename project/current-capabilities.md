@@ -4,8 +4,9 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
-文档 DQ1 正在修正误导与检查漏报，范围见唯一计划；其静态、HTML、浏览器或外链
-结果均不授予协议/安装/恢复资格。现有 Agent 与数据报告仍绑定各自准确编译和执行身份。
+文档 DQ1 的误导修正、严格构建和准确4a581c5书式主题UI已取得[限定结果](../docs/evidence/documentation-dq1-and-theme-20261016.json)，
+完整内容/使用链仍缺，外链限流未核实；HTML仅四类。文档结果不授予协议/安装/恢复资格，
+现有Agent与数据报告仍绑定各自准确编译和执行身份。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。

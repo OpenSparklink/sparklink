@@ -181,3 +181,6 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [原期限及21组保持八项issues准确读回回执](security-absolute-deadline-issues-20261015.json)：
 原body/checklist及OPEN保持，部分成果不关闭整项。
+
+[文档DQ1与书式主题：准确源码、UI、失败和剩余](documentation-dq1-and-theme-20261016.json)。
+该目录只保留仓库来源，不构建为用户站点；分类审阅不表示全部内容完成。

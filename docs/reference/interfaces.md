@@ -80,7 +80,7 @@ y address_type, s address, s method, t deadline_monotonic_ns)`，返回 `b`。
 `slctl security-request <connection-path> [timeout-ms]` 在同一原作者连接内完成
 分配、启动和查询；Ctrl-C 只尝试原请求取消。默认超时5000ms，范围1–5000ms。
 这两个入口绑定原 daemon 唯一所有者，不自动跟随替换。见
-[实验 VM 操作及退出契约](../how-to/request-reference-security.md)。新 CLI 的实机回归尚缺；
+[实验 VM 操作及退出契约](../how-to/request-reference-security.md)。新 CLI 的双模式限定实机范围仅见当前资格；
 VM 专用 `native_security_agent_probe.rs` 是独立测试见证，不能安装为默认自动批准 Agent。
 
 观察结构依次为 `t request_id, t generation, t lifetime, u phase, i error,

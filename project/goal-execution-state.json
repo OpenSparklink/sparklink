@@ -677,7 +677,7 @@
   "issue_sync_status": "Nine current quality comments exact readback; original scope unchanged and OPEN",
   "issue_sync_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
-  "current_goal_turn_classification": "progress: explicit production CLI + actual subprocess/privatebus negative contracts; fresh CLI hardware acceptance pending",
+  "current_goal_turn_classification": "progress: production explicit CLI shipped + two-mode/two-role real relay/install and16 peer application replies; first collector failure retained; data retention running; no full issue closed",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1058,12 +1058,12 @@
     }
   },
   "agent_workstream": {
-    "state": "BROKER scoped real qualification retained; explicit production CLI implemented, new CLI VM gate pending",
+    "state": "BROKER historical qualification retained; production CLI scoped real two-mode/two-role PASS at compiled6385/guest+Host300a; fresh retained data matrix in progress",
     "test_scope": "See agent-policy-offline-16175; fixtures and actual dependencies in structured report",
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
     "real": "Six explicit modes two-role scoped real result in qualification_view/report; full deployment/permissions/authentication/Bond and in-flight composition still missing",
     "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
-    "next": "Actual CLI VM coordinator implemented with fail-closed transcript/USB/peer checks; compile fresh exact source and run cli-approve/cli-reject two-role gate, retain boundaries. No new hardware qualification yet; original S0-S6 and parallel in-flight/fuzz/debug/data/SSAP retained",
+    "next": "Complete the separate new-image 11 data retention gates; controlled in-flight revoke/Down/original deadline and production fuzz/debug VM; data/multichannel/four-device/SSAP remain parallel",
     "offline_record": "agent-policy-offline-16175",
     "first_failures": [
       "preparev1 wrongsmokemanifestdirectory/noVM",
@@ -1075,7 +1075,8 @@
       "agent-real6-db6e333",
       "agent-data11-db6e333"
     ],
-    "retained_data_record": "agent-data11-db6e333"
+    "retained_data_record": "agent-data11-db6e333",
+    "cli_real_report": "docs/evidence/security-cli-real-progress-20261016.json"
   },
   "documentation_remediation": {
     "scope": "DQ1–DQ5 in canonical implementation plan; parallel to protocol work, no new goal or gate on all documentation",

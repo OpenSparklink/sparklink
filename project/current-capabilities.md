@@ -32,11 +32,14 @@
 预备/guest 工具 `85cdf627d70bd239609ab0e74124b787279f139f`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
-## 正式安全 CLI 增量（待准确新镜像验收）
+## 正式安全 CLI 增量（双模式限定实机通过）
 
 正式 `slctl agent`/`security-request` 已接线到既有 broker；新增的是显式人工输入和
-原作者等待/撤回，不新增协议 Engine。离线检查与后续实机范围分别记录；目前未取得
-这两个 CLI 的新实机资格，旧85cdf/db6报告仍只覆盖原测试见证程序。
+原作者等待/撤回，不新增协议 Engine。编译用户态6385、guest/Host工具300a已取得
+[双模式实机子门禁](../docs/evidence/security-cli-real-progress-20261016.json)：批准/拒绝各交换
+连接角色、合计16次真实应用往返；批准组18条真实relay及对端RX、4次角色安装/0011，
+拒绝组无安全提交且后续业务成功。输入由VM测试协调器逐提示写入，非默认自动批准。
+新镜像11项长度/长包/credit等保持矩阵仍单独执行；旧85cdf/db6资格保留原身份。
 默认不批准、丢失原daemon停止、EOF只注销Agent；不产生认证身份/可信Grant/Bond。
 
 ## 范围与尚缺条件

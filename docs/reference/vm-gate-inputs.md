@@ -31,7 +31,7 @@ VM-only，主机不安装实验内核、驱动或服务。普通应用业务权�
 
 ## 正式安全 CLI 子门禁输入
 
-`ws73_target.py run --security-agent cli-approve|cli-reject` 选择新门禁（尚待实机验收）。
+`ws73_target.py run --security-agent cli-approve|cli-reject` 选择正式CLI子门禁；准确编译/工具和限定结果见[当前资格](../../project/current-capabilities.md)。
 它要求独立双设备 connection/socket 模式、当前 prepared 工具和已封存的版本化 CLI artifact，
 实际路径及 SHA-256 必须与 prepared manifest 相符；`/bin/slctl` 软链解析后指向
 `/usr/libexec/opensparklink/native-lab/<源码前缀>/slctl`，不能写死软链文本。

@@ -1,0 +1,466 @@
+{
+  "format_version": 1,
+  "recorded_at_utc": "2026-10-15T03:57:25.231027+00:00",
+  "status": "REAL_TWO_ROLE_BEGUN_LINK_DOWN_SCOPED_PASS",
+  "sources": {
+    "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+    "executed_vm_tools": "2d6c250ec42bc01d6a85cd2c4a5ab3339fdf53ae",
+    "offline_replay_tools": "bd84733082d9aa1f3ae19bc4b1c73b58b0219673"
+  },
+  "behavior": "Existing physical Session/data credit/submit-ticket path: both leases held, a partial2042-byte PDU, direct bound Disconnect, two real Down events, blocked ordinary RX termination, old lifetime send/recv ESTALE and poll ERR/HUP, unchanged peer lease/Ready and real scan start/stop. No production runtime change.",
+  "firmware": {
+    "combined_sdk111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "staged_original_ws73_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+    "fresh_actual_firmware_upload_qualified": false,
+    "scope": "Warm attached radios1/4; current gate does not attest firmware execution or restore port2. Earlier actual original upload evidence stays separately pinned."
+  },
+  "runs": [
+    {
+      "source_index": 0,
+      "host_ports": [
+        "1-2.1.1",
+        "1-2.1.4"
+      ],
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "capture_packets": 619,
+      "capture_kernel_drops": 0,
+      "kernel_taint": 0,
+      "submitted_fragments": 7,
+      "submitted_bytes": 1778,
+      "admitted_application_bytes": 2042,
+      "business_round_trips_before_down": 2,
+      "partial_pdu_application_round_trips": 0,
+      "both_managed_leases_preserved": true,
+      "initial_identities": [
+        {
+          "bus": 1,
+          "device": 2,
+          "index": 0,
+          "generation": 1,
+          "address": "00:01:09:32:54:CD",
+          "path": "1-1"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "index": 1,
+          "generation": 2,
+          "address": "00:01:09:32:54:F9",
+          "path": "1-2"
+        }
+      ],
+      "owners": [
+        {
+          "index": 0,
+          "generation": 1,
+          "lifetime": 1,
+          "handle": 0,
+          "lease": 4,
+          "address": "2e0000000200000001000000000000000100000000000000040000000000000000001f1ff10000000300000000000000"
+        },
+        {
+          "index": 1,
+          "generation": 2,
+          "lifetime": 1,
+          "handle": 0,
+          "lease": 4,
+          "address": "2e0001000200000002000000000000000100000000000000040000000000000000001f1ff10000000300000000000000"
+        }
+      ],
+      "down": [
+        {
+          "event": 5,
+          "params": "00000011",
+          "generation": 1,
+          "seq": 3,
+          "lost": 0,
+          "wall_ns": 1792036424795233533
+        },
+        {
+          "event": 5,
+          "params": "00000013",
+          "generation": 2,
+          "seq": 2,
+          "lost": 0,
+          "wall_ns": 1792036424795245706
+        }
+      ],
+      "blocked_rx_errno": 116,
+      "old_fd": {
+        "stage": "denied",
+        "errors": {
+          "send": 116,
+          "recv": 116
+        },
+        "poll": 24,
+        "wall_ns": 1792036424795408523
+      },
+      "disconnect_result": {
+        "state": 4,
+        "operation": 2,
+        "generation": 1,
+        "request_id": 950,
+        "handle": 0,
+        "flags": 7,
+        "error": 0,
+        "command_status": 0,
+        "outcome_status": 0
+      },
+      "management_before": [
+        "010000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+        "020000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000"
+      ],
+      "management_after": [
+        "010000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+        "020000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000"
+      ],
+      "scan_checked_wall_ns": 1792036424833955684,
+      "artifacts": [
+        {
+          "private_artifact": ".dev/native-linkdown-index0/manifest.json",
+          "sha256": "6f31771264dae28baed63dcbb05bf587882fb3a0642eb6dcbc219fcb93aa020c",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-linkdown-index0/guest-output/connected-file/run.json",
+          "sha256": "21835ef437e723ad559677eaa4d5fcd59f440ebf2a56165c857b38d0e1232049",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-linkdown-index0/guest-output/ws73.pcap",
+          "sha256": "c46fc438e7d578cd63a797104af446c9ef3ee2554530a11cfbca85ee31ff7697",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-linkdown-index0/guest-output/kernel.log",
+          "sha256": "30bf31b93d5be0bdb60683762d25aa5608a8402b1731607e538fdd956c98825f",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-linkdown-index0/guest-output/capture-stats.txt",
+          "sha256": "0daf901fd24315e990c1611f2d069a55a7010c3a74c3b4b2beb4b61a1c9d62b0",
+          "publicly_downloadable": false
+        }
+      ],
+      "business_legs": [
+        {
+          "direction": "out",
+          "bus": 1,
+          "device": 2,
+          "handle": 0,
+          "record": 442,
+          "wall_ns": 1792036424635343000,
+          "data_sha256": "940abe172825d21ad922add526565c861f03f9d9f2b7bba6b600825db0eb2562"
+        },
+        {
+          "direction": "in",
+          "bus": 1,
+          "device": 2,
+          "handle": 0,
+          "record": 458,
+          "wall_ns": 1792036424664643000,
+          "data_sha256": "3f46391e03f8ea25b803dc01f845e28d1c6046f90790b57c14090d73ee506b8f"
+        },
+        {
+          "direction": "out",
+          "bus": 1,
+          "device": 3,
+          "handle": 0,
+          "record": 452,
+          "wall_ns": 1792036424657345000,
+          "data_sha256": "3f46391e03f8ea25b803dc01f845e28d1c6046f90790b57c14090d73ee506b8f"
+        },
+        {
+          "direction": "in",
+          "bus": 1,
+          "device": 3,
+          "handle": 0,
+          "record": 450,
+          "wall_ns": 1792036424640695000,
+          "data_sha256": "940abe172825d21ad922add526565c861f03f9d9f2b7bba6b600825db0eb2562"
+        },
+        {
+          "direction": "out",
+          "bus": 1,
+          "device": 2,
+          "handle": 0,
+          "record": 472,
+          "wall_ns": 1792036424703339000,
+          "data_sha256": "a225687b1bc9266bdbea1364ae2a6e9643a6ce9b6bda9684274108e4da899237"
+        },
+        {
+          "direction": "in",
+          "bus": 1,
+          "device": 2,
+          "handle": 0,
+          "record": 468,
+          "wall_ns": 1792036424688636000,
+          "data_sha256": "600d70e5ca05fec2e0751bb9552e490b492d2a8d6fcd3d87d181fa863a284f26"
+        },
+        {
+          "direction": "out",
+          "bus": 1,
+          "device": 3,
+          "handle": 0,
+          "record": 462,
+          "wall_ns": 1792036424680299000,
+          "data_sha256": "600d70e5ca05fec2e0751bb9552e490b492d2a8d6fcd3d87d181fa863a284f26"
+        },
+        {
+          "direction": "in",
+          "bus": 1,
+          "device": 3,
+          "handle": 0,
+          "record": 480,
+          "wall_ns": 1792036424708117000,
+          "data_sha256": "a225687b1bc9266bdbea1364ae2a6e9643a6ce9b6bda9684274108e4da899237"
+        }
+      ]
+    },
+    {
+      "source_index": 1,
+      "host_ports": [
+        "1-2.1.1",
+        "1-2.1.4"
+      ],
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "capture_packets": 613,
+      "capture_kernel_drops": 0,
+      "kernel_taint": 0,
+      "submitted_fragments": 6,
+      "submitted_bytes": 1524,
+      "admitted_application_bytes": 2042,
+      "business_round_trips_before_down": 2,
+      "partial_pdu_application_round_trips": 0,
+      "both_managed_leases_preserved": true,
+      "initial_identities": [
+        {
+          "bus": 1,
+          "device": 2,
+          "index": 0,
+          "generation": 1,
+          "address": "00:01:09:32:54:CD",
+          "path": "1-1"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "index": 1,
+          "generation": 2,
+          "address": "00:01:09:32:54:F9",
+          "path": "1-2"
+        }
+      ],
+      "owners": [
+        {
+          "index": 0,
+          "generation": 1,
+          "lifetime": 1,
+          "handle": 0,
+          "lease": 4,
+          "address": "2e0000000200000001000000000000000100000000000000040000000000000000001f1ff10000000300000000000000"
+        },
+        {
+          "index": 1,
+          "generation": 2,
+          "lifetime": 1,
+          "handle": 0,
+          "lease": 4,
+          "address": "2e0001000200000002000000000000000100000000000000040000000000000000001f1ff10000000300000000000000"
+        }
+      ],
+      "down": [
+        {
+          "event": 5,
+          "params": "00000013",
+          "generation": 1,
+          "seq": 2,
+          "lost": 0,
+          "wall_ns": 1792036486625871200
+        },
+        {
+          "event": 5,
+          "params": "00000011",
+          "generation": 2,
+          "seq": 3,
+          "lost": 0,
+          "wall_ns": 1792036486625879135
+        }
+      ],
+      "blocked_rx_errno": 116,
+      "old_fd": {
+        "stage": "denied",
+        "errors": {
+          "send": 116,
+          "recv": 116
+        },
+        "poll": 24,
+        "wall_ns": 1792036486626094220
+      },
+      "disconnect_result": {
+        "state": 4,
+        "operation": 2,
+        "generation": 2,
+        "request_id": 950,
+        "handle": 0,
+        "flags": 7,
+        "error": 0,
+        "command_status": 0,
+        "outcome_status": 0
+      },
+      "management_before": [
+        "010000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+        "020000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000"
+      ],
+      "management_after": [
+        "010000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000",
+        "020000000000000000000000000000000100000001000000010000000000000000000000000000000000000000000000"
+      ],
+      "scan_checked_wall_ns": 1792036486665349256,
+      "artifacts": [
+        {
+          "private_artifact": ".dev/native-linkdown-index1/manifest.json",
+          "sha256": "d0ee0298795190400a98f3ed1a783d1ed8804ac51db208c067ba8cb6c18dd30c",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-linkdown-index1/guest-output/connected-file/run.json",
+          "sha256": "6b91eeba8b4354d5a638d1ee8d161ea809c9d1400b35116ea081834f216ddce7",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-linkdown-index1/guest-output/ws73.pcap",
+          "sha256": "2fdbdf9d6f315983fb4304797e7b6fda2634caaaee6dd4b7c9abab2da452969f",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-linkdown-index1/guest-output/kernel.log",
+          "sha256": "14e349527411d2148db5150dbd9d38eee34699422d2221051d55f447e84af1a4",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-linkdown-index1/guest-output/capture-stats.txt",
+          "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+          "publicly_downloadable": false
+        }
+      ],
+      "business_legs": [
+        {
+          "direction": "out",
+          "bus": 1,
+          "device": 2,
+          "handle": 0,
+          "record": 452,
+          "wall_ns": 1792036486492193000,
+          "data_sha256": "4d5b529f679d990b3d1183114efd45cb69df5933d3a4ab3d3eb42f1188563a12"
+        },
+        {
+          "direction": "in",
+          "bus": 1,
+          "device": 2,
+          "handle": 0,
+          "record": 448,
+          "wall_ns": 1792036486473469000,
+          "data_sha256": "247d94fb41fdfb2beef47abda9cfc66816ef327cf3a3fc07730e139071ec7e9b"
+        },
+        {
+          "direction": "out",
+          "bus": 1,
+          "device": 3,
+          "handle": 0,
+          "record": 442,
+          "wall_ns": 1792036486469258000,
+          "data_sha256": "247d94fb41fdfb2beef47abda9cfc66816ef327cf3a3fc07730e139071ec7e9b"
+        },
+        {
+          "direction": "in",
+          "bus": 1,
+          "device": 3,
+          "handle": 0,
+          "record": 458,
+          "wall_ns": 1792036486500435000,
+          "data_sha256": "4d5b529f679d990b3d1183114efd45cb69df5933d3a4ab3d3eb42f1188563a12"
+        },
+        {
+          "direction": "out",
+          "bus": 1,
+          "device": 2,
+          "handle": 0,
+          "record": 462,
+          "wall_ns": 1792036486514197000,
+          "data_sha256": "f346583109cb3b9d2bce92eae405418beb9a9bc5922c9568225c23522f86c004"
+        },
+        {
+          "direction": "in",
+          "bus": 1,
+          "device": 2,
+          "handle": 0,
+          "record": 478,
+          "wall_ns": 1792036486542408000,
+          "data_sha256": "ea1e6f1852fbee1c823d54eec9f94a009818a3a25d453cf4d166c073265e3a2c"
+        },
+        {
+          "direction": "out",
+          "bus": 1,
+          "device": 3,
+          "handle": 0,
+          "record": 472,
+          "wall_ns": 1792036486536216000,
+          "data_sha256": "ea1e6f1852fbee1c823d54eec9f94a009818a3a25d453cf4d166c073265e3a2c"
+        },
+        {
+          "direction": "in",
+          "bus": 1,
+          "device": 3,
+          "handle": 0,
+          "record": 468,
+          "wall_ns": 1792036486521446000,
+          "data_sha256": "f346583109cb3b9d2bce92eae405418beb9a9bc5922c9568225c23522f86c004"
+        }
+      ]
+    }
+  ],
+  "total_business_round_trips_before_down": 4,
+  "new_security_pairing_qualification": false,
+  "original_deadline_qualified": false,
+  "full_submit_linearization_qualified": false,
+  "handle_reuse_qualified": false,
+  "natural_recovery_qualified": false,
+  "independent_peer_business_link_qualified": false,
+  "formal": {
+    "new_proof": false,
+    "scope": "505 offline tool tests plus targeted negative replay are not a model or kernel proof. Prior consent311 excludes locks/refs/Runtime/HCD/NOCP; Kani unsupported/timeout remain NOT_PROVEN."
+  },
+  "remaining": [
+    "Original5s data deadline with a begun prefix and withheld real completion; no timer refresh or invented refunds",
+    "Relay original5s deadline/revoke/Down/lateComplete, actual lock/ticket mapping and peer proof",
+    "Stock111 1ff descriptor/dispatch omission still prevents production refusal delivery; prior RAM three-row positive is diagnostic only",
+    "Approved Agent/security/actual install/encrypted peer application reply still missing",
+    "NOCP duplicates/late behavior, original debt preservation and safe handle reuse barrier remain unproven",
+    "Four-device two independent business links, completeGrant/SSAP/S0-S6 remain open",
+    "Port1-2.1.2 original restoration unverified; natural recovery separate, no hub/manual/QMP as natural acceptance"
+  ],
+  "replay": {
+    "pythonpath": [
+      "sparklink/tools",
+      "sparklink/bindings/python"
+    ],
+    "call": "ws73_channel_link_down.corroborate(json.loads(run_json), ws73_capture.read_capture(pcap, [(1,2),(1,3)]))",
+    "preparation": "Fresh native-linkdown-prepared freezes original494 bzImage/config/signed modules and e2a service bundle; shared diagnostic build dir not used",
+    "run_arguments": [
+      "--ports",
+      "1-2.1.1",
+      "1-2.1.4",
+      "--setup-release-verify",
+      "--managed-connected-case",
+      "release",
+      "--managed-channel-grant",
+      "--managed-channel-revoke-prefix",
+      "--managed-channel-link-down",
+      "--managed-connected-index",
+      "0 or1"
+    ],
+    "scope": "Raw captures/private artifacts not publicly hosted; public summary/hash alone cannot reproduce hardware."
+  }
+}

@@ -24,11 +24,17 @@
    角色绑定安装和加密业务推进；原版拒绝、反向角色、修正版与所有原S5门禁仍开放。
    不让固件拒绝缺项或控制竞争全集阻挡数据/SSAP纵向开发，也不另造Engine。
 
-3. 数据面并行推进begun期间disconnect/原期限/最终USB屏障，复用实际ledger/ticket/
-   C Session/Grant与六组新回归。模型映射实现锁/身份/引用，原始deadline不刷新；
+3. 数据面已取得两角色begun期间直接disconnect子门禁，保持双方租约，真实双端Down、
+   旧fd ESTALE/ERR/HUP和对端实际扫描；4次前置应用往返，未完成PDU零交付。
+   [证据](../docs/evidence/begun-link-down-20261015.json)绑定K494/Ue2a/工具2d6c250，
+   不继承原Ud744全部长度资格。接着核对原5秒准入期限。现有QMP实际IN81 hold会在2秒自动放行，
+   不能直接当作5秒超时证据；先单独固定有界长hold测试夹具与源码/hash，再
+   复核begun前缀、真实credit耗尽后无新提交、超时终态、迟到完成与另一设备；
+   受控延迟不算自然恢复，不刷新期限，不替代安全正向主线。复用实际ledger/ticket/
+   C Session/Grant与六组撤权及本批两组Down回归。模型映射实现锁/身份/引用，原始deadline不刷新；
    late/duplicate NOCP与handle复用尚未证明，按本次性质设置门禁，不等待控制竞争全集。
    随后动态通道、四设备两组、唯一用户态SSAP通知/指示/ACK与真实应用交付继续推进。
-4. 本批工具502检查及准确VM正反证据通过限定门禁；诊断265实际codec Clang sanitizer
+4. 本批工具505检查、Down类型负向与两份封存重放，及准确VM正反证据通过限定门禁；诊断265实际codec Clang sanitizer
    533352项IO检查不等于形式化证明或固件ABI。原C consent311仍排除锁/引用/Runtime/
    HCD/NOCP；Kani unsupported/timeout/展开不全继续NOT_PROVEN，不抑制警告换PASS。
 5. 严格区分staged文件、实际USB上传、执行、控制器Complete、peer协议和应用处理。

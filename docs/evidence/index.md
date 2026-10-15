@@ -84,3 +84,7 @@
 运行态布局检查不能证明下载器工作区；502离线检查不等于该镜像实机通过。
 
 [连续扩展失败本批九项issues读回回执](relay-extension-failure-issues-20261015.json)：原scope与OPEN保持。
+
+[两角色真实begun-PDU直接断链、保持双租约及旧lifetime拒绝](begun-link-down-20261015.json)：
+K494/Ue2a、VM工具2d6c250；4次前置应用往返与零次未完成PDU交付分开，
+不授予原期限、完整提交屏障、NOCP复用、原版relay或自然恢复资格。

@@ -227,6 +227,9 @@ Binding活着；成功提交在同一锁内标记begun，是fd取消与物理义
 每片仍经过Runtime在Host/data/gate锁下的原lease epoch、generation/lifetime检查、
 已有credit预留和实际USB票据；管理撤权/断链在实际提交点阻止继续发送，不能通过
 复制operation Grant绕过Runtime。FD退出与管理撤权是不同动作，不扩大fd能力。
+物理Disconnect可以在Managed租约仍有效时终结连接；双方Down应使旧lifetime的
+Binding失效，不得隐式撤销另一controller租约。观察到Down之后无USB提交只是在该
+观察精度下的证据，不能替代最终提交点与Down处理的锁序证明。
 
 软件准入EAGAIN/队列空间与controller packet-credit耗尽是不同观察。
 poll的POLLOUT只承诺当前软件准入机会，不承诺USB提交、控制器完成或对端收到；

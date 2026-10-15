@@ -1133,7 +1133,9 @@
       "status": "18 real browser checks passed at exact4a581c5; failures preserved; no Pages deployment or functional qualification"
     },
     "status_evidence": "docs/evidence/documentation-dq1-and-theme-20261016.json",
-    "tested_documentation_source": "4a581c5fd829c4041561f21becfd2892fb2649db"
+    "tested_documentation_source": "4a581c5fd829c4041561f21becfd2892fb2649db",
+    "issue_receipt": "docs/evidence/documentation-dq1-issues-20261016.json",
+    "report_publication_commit": "d97c3cc42a63d4ee394393cdb63f7ae957002cd7"
   },
   "agent_issue_receipt": "docs/evidence/agent-policy-issues-20261016.json"
 }

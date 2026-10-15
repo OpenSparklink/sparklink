@@ -20,23 +20,25 @@ def successful_out(path):
     pending = {}; result = []
     with Path(path).open('rb') as stream:
         h = stream.read(24)
-        if len(h) != 24 or h[:4] != b'\xd4\xc3\xb2\xa1' or struct.unpack_from('<I', h, 20)[0] != 220:
+        if len(h) != 24 or h[:4] != b'\xd4\xc3\xb2\xa1' or struct.unpack_from('<I', h, 20)[0] != 220 or struct.unpack_from('<HH',h,4)!=(2,4):
             raise CaptureError('classic little-endian USB mmapped pcap required')
         snaplen = struct.unpack_from('<I', h, 16)[0]
         ordinal = 0
         while header := stream.read(16):
             if len(header) != 16: raise CaptureError('truncated record')
-            _, _, size, original = struct.unpack('<IIII', header)
-            if not 64 <= size <= original or size > snaplen: raise CaptureError('bad captured size')
+            psec, fraction, size, original = struct.unpack('<IIII', header)
+            if not 0<=fraction<1000000 or not 64 <= size <= original or size > snaplen: raise CaptureError('bad captured size')
             p = stream.read(size); ordinal += 1
             if len(p) != size: raise CaptureError('truncated USB data')
             urb, kind, transfer, ep, device, bus, _, flag, sec, usec, status, length, cap = struct.unpack_from('<QBBBBHBBqiiII', p)
             if transfer != 3 or ep != 1 or kind not in b'SCE': continue
+            if sec<0 or not 0<=usec<1000000 or abs((sec*1000000000+usec*1000)-(psec*1000000000+fraction*1000))>1000000:
+                raise CaptureError('USB/pcap timestamps disagree')
             key = bus, device, urb
             if kind == ord('S'):
                 if key in pending or flag or cap != length or size != original or size != 64+cap:
                     raise CaptureError('missing/duplicate/truncated OUT submission')
-                pending[key] = dict(bus=bus,device=device,record=ordinal,raw=p[64:])
+                pending[key] = dict(bus=bus,device=device,record=ordinal,raw=p[64:],wall_ns=sec*1000000000+usec*1000)
             else:
                 if key not in pending: raise CaptureError('completion without submit')
                 row = pending.pop(key)

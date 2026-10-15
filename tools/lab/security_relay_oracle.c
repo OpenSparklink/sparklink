@@ -11,6 +11,19 @@
 static sle73_addr_t peer;
 static int requested, done, failed, connecting, linked, cap_requested;
 static uint16_t connection_handle;
+#ifdef WS73_RELAY_DIAGNOSTIC_CONTROL
+/* Observation only: real frame bytes; do not manufacture a protocol reply. */
+void relay_control_receive(unsigned conn, unsigned idx,
+                           const unsigned char *pdu, unsigned n) {
+  if (conn != connection_handle || idx != 0x133 || n != 1 || pdu[0] != 2) {
+    failed = 1;
+    printf("RELAY_CONTROL_RX_MISMATCH\n");
+    return;
+  }
+  printf("RELAY_CONTROL_RX_MATCH handle=%u index=0133 bytes=02\n", conn);
+}
+#endif
+
 static void paired(uint16_t h, const sle73_addr_t *a, sle73_errcode_t status) {
   if (h != connection_handle || memcmp(a->addr, peer.addr, 6) || !requested ||
       done) {
@@ -45,6 +58,18 @@ static void found(sle73_seek_result_t *r) {
     failed = 1;
 }
 int main(int argc, char **argv) {
+  if (argc == 2 && !strcmp(argv[1], "--reset-only")) {
+    /* Dedicated scratch guest's sole attached owner, not an arbitrary dongle. */
+    if (access("/scratch-root-uuid", F_OK) != 0)
+      return 32;
+    setvbuf(stdout, NULL, _IOLBF, 0);
+    if (ws73_usb_init() < 0 || ws73_usb_open_path("1-1") < 0)
+      return 30;
+    int rc = ws73_usb_reset_device();
+    printf("CONTROLLED_RESET_RESULT rc=%d\n", rc);
+    ws73_usb_close();
+    return rc < 0 ? 31 : 0;
+  }
   unsigned a[6], b[6];
   struct ws73_usb_sle *ch = NULL;
   if (argc != 3 ||

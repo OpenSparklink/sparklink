@@ -2,7 +2,9 @@
 """Synthetic transformation tests, not redistributable SDK or hardware proof."""
 from pathlib import Path
 import struct
+import subprocess
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -80,3 +82,15 @@ class RelayFirmwareExtension(unittest.TestCase):
         self.assertFalse(report['safe_to_upload'])
         self.assertFalse(report['hardware_qualified'])
         self.assertIn('enumeration failed',report['retirement_reason'])
+
+    def test_retired_cli_cannot_write_an_upload_image(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);source=root/'source.bin';source.write_bytes(b'not SDK')
+            output=root/'unsafe.bin';report=root/'report.json'
+            result=subprocess.run([sys.executable,extension.__file__,'--source',str(source),
+                                   '--output',str(output),'--report',str(report),'--vm-diagnostic'],
+                                  capture_output=True,text=True)
+            self.assertEqual(result.returncode,2)
+            self.assertIn('unrecognized arguments: --output',result.stderr)
+            self.assertFalse(output.exists())
+            self.assertFalse(report.exists())

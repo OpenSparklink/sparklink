@@ -589,7 +589,7 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "Resolve stock firmware support boundary or reproducible separate correction preservingALL old entries (diagnostic replacement146 MUST NOT ship), exact firmware/source hashes and actual reverse-role/original-path regression; continue sole mechanism Agent/approval/role-bound trusted install/encrypted application reply. Stock refusal and wholeK18 remainOPEN.",
+    "Prioritize sole security mechanism positive stock-supported13X flow with explicit Agent approval, role-bound actual install/encryption and peer business. Existing Session/credit/tickets must be reused, no test key/nonces or synthetic success. Stock refusal/future corrected firmware and all S5 gates remain open.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
@@ -605,17 +605,18 @@
       "handle reuse barrier",
       "USB callback drain",
       "firmware state clearing",
-      "scheduling"
+      "scheduling",
+      "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
   "current_batch_exit": {
-    "production": "No kernel/daemon runtime or original input firmware changes, no new Engine",
-    "offline": "495 actual tools tests, new strict READM request/response/dump identity negative tests",
-    "formal": "No new security proof; old consent311 scalar only; Kani unsupported/timeout unproven",
-    "real": "5632 fixed ROM code bytes match actual USB; three/four-row RAM variants deliver correct1ff/02 and PairReject; asymmetric missing peer packet descriptor fails; stock restored both and again fails",
-    "remaining": "Stock support/reproducible correction preserving146/all entries, reverse security roles, approved pairing/Agent/install/encrypted app; begunDown/deadline and NOCP/reuse composition, naturalRCA/nonhuman recovery and all originalscope"
+    "production": "No default runtime/firmware changes; unsafe contiguous generation entry retired",
+    "offline": "502 tool checks including original-row preservation, explicit failure audit, rejection of old output argument; no RF/proof inference",
+    "formal": "No new boot/firmware/whole security proof; original limitedconsent311 and Kaniunsupported/timeout unchanged",
+    "real": "Extra2560 fixed code bytes verified, but new imageboot timeout at fifth data transfer. Initial original Ready not relabeled as new Ready. Original restore failed enumeration and remains unverified.",
+    "remaining": "Restore affected device, establish safe segmented/bootstrap boundaries before firmware retry; stock13X Agent/approval/install/encrypted business; begunDown/deadline/NOCP reuse, all originalS0-S6"
   },
-  "updated_at_utc": "2026-10-15T02:44:50.432024+00:00",
+  "updated_at_utc": "2026-10-15T03:24:31.016284+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -623,7 +624,7 @@
   },
   "current_heads": {
     "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
-    "userspace_observed_before_document_commit": "3e3e97366851b9dd5390d07e7ba1c56758de82cb"
+    "userspace_observed_before_document_commit": "91a5bfb792e6ccdb347137c7e06bf7eb4e336e17"
   },
   "qualified_source_heads": {
     "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
@@ -633,20 +634,14 @@
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "behavior": "Read-only actual boot-code USB corroborator; firmware packet descriptor and event dispatch causal diagnosis using unchanged production Session/credit/tickets",
-    "status": "DERIVED_REAL_REFUSAL_DELIVERED_STOCK_FIRMWARE_RESTORED_AND_STILL_FAILS",
-    "evidence": "docs/evidence/relay-firmware-table-cause-20261015.json",
+    "behavior": "Investigated boot/runtime memory boundaries; table-preserving contiguous diagnostic failed before full upload; retired image generation, audit-only public CLI",
+    "status": "RETIRED_CONTIGUOUS_BOOT_FAILURE_RESTORE_UNVERIFIED",
+    "evidence": "docs/evidence/relay-extension-boot-failure-20261015.json",
     "production_runtime_changed": false,
-    "stock_blob_modified": false,
-    "diagnostic_firmware_shipped": false,
-    "stock_production_security_qualified": false,
-    "evidence_document_ci": {
-      "head": "79ed6c321d7934676390435090c720ed3a3e7cea",
-      "ci": 38672380569,
-      "documentation": 38672380413,
-      "conclusion": "success",
-      "qualification_scope": "CI only; real/derived/stock source scopes remain separately recorded"
-    }
+    "source_combined_blob_modified": false,
+    "new_firmware_hardware_qualified": false,
+    "affected_port": "1-2.1.2",
+    "original_restore_verified": false
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact494/d744 original104 plus32burst app round trips",
@@ -659,27 +654,29 @@
     "DG03": "PARTIAL_REAL bounded PB/lengths/software queue plus scoped hardware pool observation; full lifecycle/fragment matrix missing",
     "FV_PDU_CONSENT": "SCALAR_CONSENT_PASS actual494 functions sl_sk/sl_permits/sl_session_submit,311 checks; locks/references/Runtime/USB and query-composition excluded",
     "DG05": "PARTIAL_REAL SDK111 two-role pool5 depletion/fresh refusals29/30, actual USB/NOCP resumption and peer replies; broader reuse/revoke/duplicate-NOCP matrix missing",
-    "DG_WITHDRAWAL": "PARTIAL_REAL actual494/e2a release/lastManagedFile/dup x both indices;6 fragments1524bytes begun,2lateNOCP each; no submit after syscall-return; original-deadline/full linearization/reuse unproven"
+    "DG_WITHDRAWAL": "PARTIAL_REAL actual494/e2a release/lastManagedFile/dup x both indices;6 fragments1524bytes begun,2lateNOCP each; no submit after syscall-return; original-deadline/full linearization/reuse unproven",
+    "FW_TABLE_EXTENSION": "FAILED actual boot upload after5 completed32768-byte OUTs, fifthACKmissing. New Runtime not qualified, generator retired. Original port1-2.1.2restore NOT_VERIFIED; no stock or safety upgrade."
   },
   "next_resume_tasks": [
-    "Resolve stock firmware support boundary or reproducible separate correction preservingALL old entries (diagnostic replacement146 MUST NOT ship), exact firmware/source hashes and actual reverse-role/original-path regression; continue sole mechanism Agent/approval/role-bound trusted install/encrypted application reply. Stock refusal and wholeK18 remainOPEN.",
-    "In parallel extend six actual begun Managed withdrawal subgates to physicalDown/original-deadline and reserve/revoke/submit/lateNOCP/reuse composition, using production implementation and explicit timestamp/lock assumptions. Do not make all control races prerequisites for data/SSAP.",
-    "Map and validate firmware relay dialect against specified NearLink Host, SDK111 and libws73 without assuming SDK table matches actual firmware. Approved pairing/key install/encrypted app reply still missing.",
+    "Recheck pending user power-access/cold-reset response and affected port1-2.1.2. Verify original actual upload/Ready before reuse; never count hub/manual/reset as natural recovery. Continue other work while unavailable.",
+    "Continue controlled begun physicalDown and original-deadline on available radios using existing Session/credit/ticket/Grant and ordinary workers; actual USB/prefix/error/unchanged peer lease evidence, no all-races prerequisite.",
+    "Prioritize sole security mechanism positive stock-supported13X flow with explicit Agent approval, role-bound actual install/encryption and peer business. Existing Session/credit/tickets must be reused, no test key/nonces or synthetic success. Stock refusal/future corrected firmware and all S5 gates remain open.",
+    "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_status": "PENDING_THIS_BATCH_EXISTING_ISSUES",
   "issue_sync_receipt": "docs/evidence/relay-table-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "Six real begun-prefix withdrawal subgates plus positive supported-class physical peer delivery; actual firmware upload identity disambiguates warm/search paths. Production denial still fails; no partial closure."
+    "reason": "Official ISA tool resolves critical decode gap;5632 actual code bytes verified; stock descriptor omission causally narrowed by asymmetric variants, real correct1ff/02 peer PairReject delivered under isolated derivative; both original images restored and failure reproduced. No stock production/security/recovery completion."
   },
   "current_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "Official ISA tool resolves critical decode gap;5632 actual code bytes verified; stock descriptor omission causally narrowed by asymmetric variants, real correct1ff/02 peer PairReject delivered under isolated derivative; both original images restored and failure reproduced. No stock production/security/recovery completion."
+    "reason": "Implemented pinned table-preserving diagnostic plan and identified actual boot-download failure; retired firmware output, retained counterexample/502 regressions and precise unverified restore. Extra2560 ROM bytes mapped; independent work remains available, no goal blocker claim."
   },
-  "execution_status": "active authorized implementation; production relay unresolved, diagnostic positive class control and six withdrawal subsets recorded",
+  "execution_status": "active; continuing independent work, diagnostic port1-2.1.2 original restore awaits previously authorized power access or cold reset",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "current_qualified_subsets": {

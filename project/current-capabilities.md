@@ -5,6 +5,20 @@
 反例保留于[历史快照](../history/architecture/progress-snapshots-20261014.md)和
 [证据索引](../docs/evidence/index.md)，不能继承为新镜像 PASS。
 
+## 当前实验失败与设备状态（2026-10-15）
+
+保留全部旧表项的连续RAM镜像实验**未通过boot下载**：前5段USB OUT完成后，
+地址`0x420000`的32KiB数据未收到boot ACK，后续枚举失败。它没有完成整镜像上传，
+没有新Ready或relay资格。公开工具已在`91a5bfb792e6ccdb347137c7e06bf7eb4e336e17`
+撤回固件输出入口，仅生成退役审计报告，`safe_to_upload=false`。
+[准确失败、退役与恢复缺口](../docs/evidence/relay-extension-boot-failure-20261015.json)。
+
+受影响端口`1-2.1.2`的原版111恢复尚未验证；host缓存USB节点不代表枚举/Ready。
+当前hub直接访问权限不足、`sudo -n`要求密码，已请求恢复先前配置的权限或单只冷断电。
+此请求只恢复诊断设备，不记自然恢复；其他设备也不自动推定Ready。没有安装宿主实验内核。
+运行态BSS/栈/池边界算术不能证明boot下载器工作区安全，连续填充方案不再重试。
+原始combined111文件与生产Runtime未改；以下历史准确镜像的资格保留，不升级为本次失败镜像资格。
+
 ## 新增限定资格（2026-10-15）
 
 生产内核仍为 K `49467d4df595f8988a7ad6310b53932f37d68283`；本批编译服务
@@ -25,7 +39,7 @@ U `e2a0139ff3ccbccb51f5a8606deda5a0d43688c3`，公开冷加载核对工具为
   **这不是原版111修复或批准配对资格**：实验刻意替换现有146，不能发布或自动改blob；
   仅Native responder/reference initiator角色。原版支持边界、保留全部旧能力的修正、
   Agent/批准/可信安装/加密/Bond及反向角色仍缺。此前隔离133对照保留为历史证据。
-- **离线与形式化分开**：495工具检查通过（新只读READM核对工具3e3e973）；诊断265的实际codec在Clang sanitizer下
+- **离线与形式化分开**：本轮502工具检查通过（包含失败方案退役CLI负向回归）；只读READM核对工具3e3e973的历史结果保留；诊断265的实际codec在Clang sanitizer下
   533352项synthetic IO检查通过。无新增完整安全证明；原consent311仍只限标量，
   Kani unsupported/timeout及旧NOCP复用反例保持未证明。
 

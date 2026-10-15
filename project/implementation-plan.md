@@ -1076,3 +1076,17 @@ WP08的现有codec、唯一Engine和接收准入继续复用；CPCD状态归该S
 不能新增“实验无认证CCC”绕过标准。该依赖只约束这条受保护操作，不要求全部
 Bond、控制面竞争、形式化或恢复完成，也不阻塞多通道/四设备/其他公开SSAP数据。
 并行Q3先接实际生产C parser的有界fuzz与sanitizer，模型和调试VM继续分开验收。
+
+### Q3 第一批生产 codec fuzz 的退出边界
+
+直接编译WS73 `wire.c`/`dli.c`；禁止维护简化parser。固定公开格式语料重放，
+短有界libFuzzer探索，真实ASAN/UBSAN/LSan与LLVM函数计数，完整终态/来源/语料/
+失败hash以及监督器负对照必需；固定输入覆盖253/254/255/2047和20KiB预算。
+C指针仅传合法对象，坏用户地址仍由VM syscall门禁验证。输入观察callback的正常与
+ECANCELED分支可见，不模拟成功USB/固件/协议。未运行目标、缺检测/输出、超时、
+工具限制、源码变化不能登记通过；无发现不称证明。原始失败和前序报告保留。
+
+独立CI按准确内核提交固定pin，PR短探索和定时较长探索，固定种子并上传语料/coverage/
+失败；Clang18与本机Clang22环境分开，不作合格发布artifact。尚未实际执行的CI状态
+保持未验收。后续扩展DLI/ACB/CMTC/DTAP/SSAP及Session/Grant/credit序列、syzkaller
+和独立debug VM，不能从本pureC切片继承内核KASAN/KCSAN/锁/引用/USB或硬件资格。

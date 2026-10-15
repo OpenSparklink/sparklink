@@ -1086,7 +1086,7 @@
     "retained_data_record": "agent-data11-db6e333",
     "cli_real_report": "docs/evidence/security-cli-real-progress-20261016.json",
     "cli_issues_receipt": "docs/evidence/security-cli-issues-20261016.json",
-    "current_validation": "CLI scoped real2 and separately completed retained11 at compiled6385/guest+Host300a; no whole issue or S5/data matrix complete",
+    "current_validation": "CLI2 and data11 scoped real qualification sealed; no active hardware VM; whole security/data/recovery incomplete",
     "cli_retained_report": "docs/evidence/security-cli-retained-data-20261016.json"
   },
   "documentation_remediation": {
@@ -1159,6 +1159,21 @@
       "Agent approval as identity",
       "no-MITM encryption as authentication",
       "global address/handle-based CCC reuse"
+    ]
+  },
+  "codec_fuzz_workstream": {
+    "status": "BOUNDED_OFFLINE_NO_FINDING; CI_CONFIGURED_PENDING_EXECUTION",
+    "kernel_test_source": "ddea575bff556d3884375603edd9003b1cc5ffc4",
+    "report": "docs/evidence/ws73-production-codec-fuzz-20261016.json",
+    "runs": 20000,
+    "fixed_executions": 19,
+    "supervisor_negative_controls": 5,
+    "proof": false,
+    "physical_acceptance": false,
+    "next": "CI actual run/source binding; production sequence fuzz and submission-revoke-Down-deadline composition/debugVM alongside dynamic channels/fourdevices/protected SSAP",
+    "kept_failures": [
+      "sandbox ptrace/LSan tool failure",
+      "99b command stage metadata then corrected exact ddea run"
     ]
   }
 }

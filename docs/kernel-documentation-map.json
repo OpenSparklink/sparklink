@@ -275,6 +275,19 @@
       "disposition": "保留原路径；DQ4 按现行或历史语义补审",
       "source_sha256": "4d6bd5a3c7782ca516ed2bee4d5a1f289d7fe5cdae4c777ef47c5de1655efa7b",
       "original_url": "https://github.com/OpenSparklink/linux/blob/8cbf53e6a088899229d398b0673a82e8e5aed9ff/tools/testing/selftests/sparklink/ssap/README"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "path": "tools/testing/selftests/sparklink/fuzz/README",
+      "reader": "维护者和质量工程开发者",
+      "purpose": "离线直接生产C codec的固定语料和有界sanitizer fuzz",
+      "section": "how-to",
+      "validity": "独立离线操作；不是内核并发/USB/实机或形式化资格",
+      "applicable_version": "ddea575bff556d3884375603edd9003b1cc5ffc4",
+      "authority": "生产wire.c/dli.c及run_ws73_codec_fuzz.py",
+      "disposition": "保留内核自测原路径，网站仅链接固定源码；不构建kernel/project/history额外页面",
+      "source_sha256": "8676aaa0a93de61ad4ed8ffb8220de1c06f15628db6fedfd52e5141147e9a692",
+      "original_url": "https://github.com/OpenSparklink/linux/blob/ddea575bff556d3884375603edd9003b1cc5ffc4/tools/testing/selftests/sparklink/fuzz/README"
     }
   ],
   "scope": "Tracked SparkLink/WS73 kernel documentation and selftest READMEs, not all upstream Linux documentation. No source copies in Sphinx site.",

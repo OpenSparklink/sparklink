@@ -86,3 +86,13 @@ anchor 与准确 source revision 的构建清单；检查和示例负对照随�
 重放或硬件资格。man/配置/README 也纳入清单，原始 hash 和历史适用版本不批量重写。
 文档与相应开发批次同批完成；全部文档整改不成为数据面前置。DQ1–DQ5 唯一安排在
 实施计划，沿用 K#19/U#8，保留完整原始 scope。
+
+## 有界生产 codec fuzz 的证据强度
+
+pureC gate直接链接生产文件，观察callback/合法指针、真实libc分配和工具为显式依赖；
+不使用另一个parser或假成功transport。固定/扩展corpus、种子、二进制、完整日志和
+LLVM目标执行计数分别保留。sanitizer符号存在不够，实际路径必须执行；DONE文本和
+退出码单独都不够，截断、masked失败、LSan环境失败、缺覆盖/源码变更均不能通过。
+有界无发现只属于offline探索结果，不是长期不变量证明、kernel sanitizer、SSAP/
+credit生命周期或实机资格。Clang版本/环境与改动来源单列，前序探索和反例不覆盖。
+跨仓库CI pin必须随codec/harness评审更新；定时任务仅覆盖其准确pin，不暗称最新HEAD。

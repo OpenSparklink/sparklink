@@ -132,3 +132,10 @@ Host工具 `db6e333814cf` 的[CI](https://github.com/OpenSparklink/sparklink/act
 保留原始状态，不再混入当前矩阵；[证据索引](../docs/evidence/index.md)
 保留其他旧资格、失败与反例。UserHost 仍仅 P4 规划；完整 S0–S6、19 WP、10 FV、
 12 DG、原 issues 和自然恢复退出条件均不变。
+
+## 生产 C codec 有界探索（非证明）
+
+Linux ddea575bff55 的离线[准确结果](../docs/evidence/ws73-production-codec-fuzz-20261016.json)：
+固定语料19次执行加20,000次有界探索无发现，ASAN/UBSAN/LSan及六个目标生产函数实际执行
+已核对；5项监督器负对照单列。沙箱LSan工具失败及前序报告保留。未新增形式化、
+内核sanitizer/并发/USB/恢复资格；独立CI配置已接入，尚待真实运行，不能据此宣称CI通过。

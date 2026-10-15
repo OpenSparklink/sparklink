@@ -72,3 +72,5 @@
 
 [原版111两端实际上传、安全类型转发正反对照](relay-class-boundary-20261015.json)
 隔离133真实peer应用字节校验不等于生产拒绝语义；生产1ff/147缺包及未查明根因继续开放。
+
+[本批九项issues读回回执](relay-class-issues-20261015.json)：整项OPEN，原scope未改。

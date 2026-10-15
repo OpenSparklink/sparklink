@@ -615,7 +615,7 @@
     "real": "Six begun-prefix withdrawal subsets,16 prewithdraw app round trips; supported133 peer actual bytes checked, two-end original upload verified; production1ff still no peer",
     "remaining": "production refusal delivery/root, approve/install/encrypt; disconnect/original-deadline/NOCP-reuse combination; four-device/SSAP/all original scope"
   },
-  "updated_at_utc": "2026-10-15T02:03:21.863094+00:00",
+  "updated_at_utc": "2026-10-15T02:06:55.608248+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -640,7 +640,14 @@
       "docs/evidence/relay-class-boundary-20261015.json"
     ],
     "production_runtime_changed": false,
-    "production_diagnostic_mapping_merged": false
+    "production_diagnostic_mapping_merged": false,
+    "tool_ci": {
+      "head": "86e8cd81f4d18b4a26fcfca8d06832c38927f6e8",
+      "ci": 38667996315,
+      "documentation": 38667996330,
+      "conclusion": "success",
+      "scope": "tool commit; later documentation commit CI independently checked"
+    }
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact494/d744 original104 plus32burst app round trips",
@@ -663,8 +670,8 @@
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "PENDING_THIS_BATCH_EXISTING_ISSUES",
-  "issue_sync_receipt": "docs/evidence/tx-budget-observation-20261015.json",
+  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_receipt": "docs/evidence/relay-class-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
     "reason": "404 Session physical owner, actual311-check C consent and strict fd exit plus original104 real regressions"

@@ -68,15 +68,31 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
         if item['access'] == 'private' and mode == 'metadata':
             unavailable.append(ident)
             continue
-        location = (repo if item['base'] == 'repo' else workspace) / path
-        if not location.is_file():
-            errors.append(f'{ident}: missing material')
-            continue
-        if sha(location) != item['sha256'] or location.stat().st_size != item['bytes']:
-            errors.append(f'{ident}: hash/size mismatch')
-            continue
+        revision = item.get('source_commit')
+        if revision is not None:
+            if item['base'] != 'repo' or not re.fullmatch(r'[a-f0-9]{40}', revision):
+                errors.append(f'{ident}: invalid source material revision')
+                continue
+            try:
+                blob = git(repo, 'show', f'{revision}:{path.as_posix()}')
+            except subprocess.CalledProcessError:
+                errors.append(f'{ident}: missing retained source object')
+                continue
+            if hashlib.sha256(blob).hexdigest() != item['sha256'] or len(blob) != item['bytes']:
+                errors.append(f'{ident}: retained source hash/size mismatch')
+                continue
+            content = blob if item['format'] == 'json' else None
+        else:
+            location = (repo if item['base'] == 'repo' else workspace) / path
+            if not location.is_file():
+                errors.append(f'{ident}: missing material')
+                continue
+            if sha(location) != item['sha256'] or location.stat().st_size != item['bytes']:
+                errors.append(f'{ident}: hash/size mismatch')
+                continue
+            content = location.read_bytes() if item['format'] == 'json' else None
         if item['format'] == 'json':
-            documents[ident] = json.loads(location.read_text())
+            documents[ident] = json.loads(content)
             for assertion in item.get('assertions', []):
                 if select(documents[ident], assertion['pointer']) != assertion['equals']:
                     errors.append(f'{ident}: assertion mismatch {assertion["pointer"]}')

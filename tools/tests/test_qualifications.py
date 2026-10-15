@@ -182,6 +182,20 @@ class QualificationTests(unittest.TestCase):
         self.data['materials']['report.json']['format'] = 'bytes'
         self.rejected()
 
+    def test_retained_source_material_is_pinned_not_current_worktree(self):
+        source = self.data['records'][0]['sources']['production']
+        path = self.repo / 'production.rs'
+        self.data['materials']['source'] = dict(base='repo', path='production.rs',
+            source_commit=source['commit'], access='public', format='bytes',
+            sha256=q.sha(path), bytes=path.stat().st_size)
+        path.write_text('new development must not rewrite old retained qualification')
+        self.assertFalse(self.run_check()['errors'])
+        self.assertTrue(self.run_check(require_current=True)['errors'])
+
+    def test_missing_source_material_object_is_not_a_worktree_fallback(self):
+        self.data['materials']['artifact']['source_commit'] = 'f' * 40
+        self.rejected()
+
     def test_unknown_schema(self):
         self.data['schema_version'] = 2
         self.rejected()

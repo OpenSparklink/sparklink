@@ -1067,7 +1067,7 @@
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
     "real": "Six explicit modes two-role scoped real result in qualification_view/report; full deployment/permissions/authentication/Bond and in-flight composition still missing",
     "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
-    "next": "Complete the separate new-image 11 data retention gates; controlled in-flight revoke/Down/original deadline and production fuzz/debug VM; data/multichannel/four-device/SSAP remain parallel",
+    "next": "production C parser bounded fuzz/sanitizer and controlled in-flight revoke/Down/original-deadline composition; actual multi-channel/fourdevices parallel; CCC requires minimal authenticated security+authorization, no no-MITM bypass",
     "offline_record": "agent-policy-offline-16175",
     "first_failures": [
       "preparev1 wrongsmokemanifestdirectory/noVM",
@@ -1082,7 +1082,8 @@
     "retained_data_record": "agent-data11-db6e333",
     "cli_real_report": "docs/evidence/security-cli-real-progress-20261016.json",
     "cli_issues_receipt": "docs/evidence/security-cli-issues-20261016.json",
-    "current_validation": "CLI two-mode/two-role source-bound real PASS; separate retained11 supervisor running, never inferred PASS from record or CI"
+    "current_validation": "CLI scoped real2 and separately completed retained11 at compiled6385/guest+Host300a; no whole issue or S5/data matrix complete",
+    "cli_retained_report": "docs/evidence/security-cli-retained-data-20261016.json"
   },
   "documentation_remediation": {
     "scope": "DQ1–DQ5 in canonical implementation plan; parallel to protocol work, no new goal or gate on all documentation",
@@ -1144,5 +1145,16 @@
     "issue_receipt": "docs/evidence/documentation-dq1-issues-20261016.json",
     "report_publication_commit": "d97c3cc42a63d4ee394393cdb63f7ae957002cd7"
   },
-  "agent_issue_receipt": "docs/evidence/agent-policy-issues-20261016.json"
+  "agent_issue_receipt": "docs/evidence/agent-policy-issues-20261016.json",
+  "ssap_update_dependency": {
+    "standard": "T/XS20001-2025 section7.2.5.2/table40",
+    "reference_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "status": "missing_minimal_authenticated_security_and_authorization_for_CPCD_write",
+    "scope": "only protected CCC/update path; not all Bond/control races/proofs or prerequisite to other data/multichannel/fourdevices",
+    "forbidden_shortcuts": [
+      "Agent approval as identity",
+      "no-MITM encryption as authentication",
+      "global address/handle-based CCC reuse"
+    ]
+  }
 }

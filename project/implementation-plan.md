@@ -15,8 +15,9 @@
 当前增量先接通正式 `slctl agent` 与 `security-request`：无自动批准、原唯一 daemon、
 完整连接引用、原期限及每请求取消。CLI/私有总线检查与旧 broker 实机报告分别记录，
 不能继承85cdf镜像资格。新准确编译6385/工具300a的实际CLI批准/拒绝、两角色relay/
-安装及16次对端业务回复子门禁已封存，首次路径假设失败仍保留；11项长度/长包/
-credit等保持矩阵单独执行，在完成前不宣称整批退出。不以全控制面组合阻塞数据/多通道/四设备/SSAP。
+安装及16次对端业务回复子门禁已封存，首次路径假设失败仍保留；同编译6385/工具300a的
+11项长度/长包/credit等保持矩阵已完整收束并封存，136次业务回复/32超限/两次严格fd。
+本CLI切片退出，不等于WP09、全部数据门禁或整项issue完成。不以全控制面组合阻塞数据/多通道/四设备/SSAP。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -1059,3 +1060,18 @@ Agent/method/caller策略、批准原期限和单请求撤销，再取得正向/
 
 文档DQ1/主题的[准确限定结果](../docs/evidence/documentation-dq1-and-theme-20261016.json)已封存；
 DQ2–DQ5、混合内容拆分与整篇用户流程重放继续开放，不是主线功能前置。
+
+## 2026-10-16 核对：SSAP 更新的必要安全边界
+
+标准T/XS20001-2025 §7.2.5.2/表40要求客户端配置描述符写入具备认证和授权；
+配置按客户端独立，断链重置。固定参考Host f0872df 的ssap_type.h、ssapc_app.c/
+ssapc_cache.h、ssaps_server.c/write.c可核对type2、LE16两位配置、每对端副本和
+request/indication分开的在途责任；其按地址缓存/默认值不能直接充当本项目的
+controller generation/connection lifetime边界。不会照搬参考实现当标准裁判。
+
+WP08的现有codec、唯一Engine和接收准入继续复用；CPCD状态归该Session，指示
+单在途及ACK账本独立于request/reply。接通真实配置/通知/指示前，先满足相应最小
+已认证安全及本地授权检查。已通过的sdk111-no-mitm/Agent批准/初始加密不满足此门槛，
+不能新增“实验无认证CCC”绕过标准。该依赖只约束这条受保护操作，不要求全部
+Bond、控制面竞争、形式化或恢复完成，也不阻塞多通道/四设备/其他公开SSAP数据。
+并行Q3先接实际生产C parser的有界fuzz与sanitizer，模型和调试VM继续分开验收。

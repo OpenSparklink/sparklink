@@ -40,8 +40,15 @@
 [双模式实机子门禁](../docs/evidence/security-cli-real-progress-20261016.json)：批准/拒绝各交换
 连接角色、合计16次真实应用往返；批准组18条真实relay及对端RX、4次角色安装/0011，
 拒绝组无安全提交且后续业务成功。输入由VM测试协调器逐提示写入，非默认自动批准。
-新镜像11项长度/长包/credit等保持矩阵仍单独执行；旧85cdf/db6资格保留原身份。
+新镜像[11项数据保持矩阵](../docs/evidence/security-cli-retained-data-20261016.json)亦已限定通过：
+136次往返、32次超限拒绝、两次严格最后fd；burst另见实际pool耗尽/NOCP恢复观察，
+source新拒绝计数30/26。原manifest的credit_exhaustion_acceptance=false保持，
+不升级为硬件NOCP可信/重复迟到/复用证明。旧85cdf/db6资格保留原身份。
 默认不批准、丢失原daemon停止、EOF只注销Agent；不产生认证身份/可信Grant/Bond。
+
+通知订阅仍缺最小安全前置：T/XS20001表40的CPCD写入要求认证及授权；
+已验证的未认证SDK111机制、Agent策略批准或本地Trusted不能满足。当前继续拒绝，
+不能为了通知演示放开不安全CCC。此依赖不阻塞其他数据/多通道工作。
 
 ## 范围与尚缺条件
 

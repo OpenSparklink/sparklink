@@ -280,3 +280,11 @@ handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C�
 无效字段/reserved返回EINVAL，版本不支持EOPNOTSUPP，错误generation返回ENODEV，
 失配物理lifetime返回ESTALE；非原Managed File/无CAP返回EPERM，无原请求返回ENOENT。
 撤权、设备移除及注册退休按原权限/生命周期错误返回；不要把失败当作物理过程已撤回。
+
+## 客户端配置与 SSAP 更新的当前限制
+
+`ObserveSsapIncoming` 是本地限时接收兴趣，既不是远端CPCD写入，也不保证应用处理。
+远端配置、生产通知发送与指示确认账本仍未接通。标准T/XS20001-2025表40对CPCD
+写入要求认证和授权；`sdk111-no-mitm`和Agent同意均不足以满足，当前拒绝保持。
+只读写公开值的历史资格不能升级成通知订阅、安全或Profile资格。配置须由唯一
+ConnectionSession按物理lifetime独立持有，不按可复用handle或地址继承。

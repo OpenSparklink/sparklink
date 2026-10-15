@@ -74,3 +74,6 @@
 隔离133真实peer应用字节校验不等于生产拒绝语义；生产1ff/147缺包及未查明根因继续开放。
 
 [本批九项issues读回回执](relay-class-issues-20261015.json)：整项OPEN，原scope未改。
+
+[SDK111包描述/RX分派缺项、真实拒绝交付及原版恢复因果对照](relay-firmware-table-cause-20261015.json)：
+5632字节代码读取与实际USB核对；三行RAM替换正向，原版失败，禁止作为原版修复或牺牲146发布。

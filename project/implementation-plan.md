@@ -10,22 +10,25 @@
    K494/Ue2a六组begun-PDU Managed release/最后控制File/dup撤权子门禁、16次
    撤权前业务往返。[六组证据](../docs/evidence/managed-prefix-withdrawal-20261015.json)
    不补发未完成PDU，不将撤权后同行扫描说成独立业务交付，不升级完整Grant。
-2. 安全主线优先定位**类型相关的实际111转发边界**。两端原版实际冷上传已排除
-   warm/staged路径混淆；生产1ff、canonical147及单纯接收表替换仍缺对端事件。
-   隔离133控制取得真实对端应用字节校验，保留同一Session/credit/ticket链，禁止把
-   错误类型映射合入生产或另造Engine。[完整正反证据](../docs/evidence/relay-class-boundary-20261015.json)。
-   下一有限退出：取得固件TX/ROM路径或真实空口的区分证据，再验证生产拒绝消息的
-   对端0014/拒绝callback；批准/安装/加密业务分别验收，不再盲目重复相同147/1ff矩阵。
+2. 安全主线本批取得[实际固件表缺项因果证据](../docs/evidence/relay-firmware-table-cause-20261015.json)：
+   原版111缺147/1ff包描述与RX分派；补双方包描述和接收端分派的三行RAM对照，
+   同一生产Session/credit/ticket完成真实拒绝交付，少接收端包描述则失败。
+   两端已恢复原版并核对实际上传，原版仍失败。这个牺牲146的诊断不是生产修复。
+   下一有限退出：明确固件支持边界；若作独立修正，保留全部既有表项/能力、固定来源
+   与hash、实际双角色及原路径回归后再赋予该修正版资格，默认不自动改原blob。
+   同时接通现有唯一机制的Agent/批准/角色绑定安装/加密真实业务，拒绝、超时与原版
+   固件缺陷继续开放，不能以诊断版交付关闭整项，也不另造Engine或阻挡数据面。
+
 3. 数据面并行推进begun期间disconnect/原期限/最终USB屏障，复用实际ledger/ticket/
    C Session/Grant与六组新回归。模型映射实现锁/身份/引用，原始deadline不刷新；
    late/duplicate NOCP与handle复用尚未证明，按本次性质设置门禁，不等待控制竞争全集。
    随后动态通道、四设备两组、唯一用户态SSAP通知/指示/ACK与真实应用交付继续推进。
-4. 本批工具491检查及准确VM正反证据通过限定门禁；诊断265实际codec Clang sanitizer
+4. 本批工具495检查及准确VM正反证据通过限定门禁；诊断265实际codec Clang sanitizer
    533352项IO检查不等于形式化证明或固件ABI。原C consent311仍排除锁/引用/Runtime/
    HCD/NOCP；Kani unsupported/timeout/展开不全继续NOT_PROVEN，不抑制警告换PASS。
 5. 严格区分staged文件、实际USB上传、执行、控制器Complete、peer协议和应用处理。
    固件身份以实际上传核对；仍不构成执行认证。SDK archive表、OHOS及lib版本分别记录，
-   不由任一推定固件支持。下一ROM/ISA分析保留工具缺口，不能将错误反汇编当证明。
+   不由任一推定固件支持。本批已用固定官方vendor工具解码关键路径；通用Ghidra坏指令输出仍保留为未反编译，不能当证明。
 6. 完整S0–S6、19WP、10FV、12DG、预算及原scope不变；goal当前API为active。
    自然RCA/非人工恢复、部分初始化/事件迁移/旧代码整改持续并行；UserHost P4规划，
    不把诊断reset/QMP/注入/hub切电算自然恢复。局部通过不关闭整项。

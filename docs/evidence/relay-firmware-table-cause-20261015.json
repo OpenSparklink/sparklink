@@ -1,0 +1,693 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-10-15T02:38:07.458674+00:00",
+  "status": "STOCK111_DESCRIPTOR_OMISSION_CAUSALLY_SUPPORTED_DERIVED_REFUSAL_DELIVERED_STOCK_RESTORED",
+  "vm_only": true,
+  "kernel_production": "49467d4df595f8988a7ad6310b53932f37d68283",
+  "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+  "evidence_tool_commit": "3e3e97366851b9dd5390d07e7ba1c56758de82cb",
+  "production_runtime_changed": false,
+  "existing_path": "physical ConnectionSession security subobject -> typed1812 -> actual Host command credit/ticket -> driver; no new Engine or production mapping",
+  "stock_image_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+  "stock_payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5",
+  "stock_denial_delivery_qualified": false,
+  "derived_only_denial_delivery": true,
+  "root_cause_scope": {
+    "finding": "Pinned111 packet descriptor table has44 entries, includes133-146 but no147/1ff. Separate RX event dispatch also lacks147/1ff. Replacing test-not-exercised146 entries permits exact1ff/02 real peer delivery.",
+    "runtime_path": [
+      "RAM1812 handler0x41a606 packs index/length/body and queues message0xb0006; Complete is constructed separately",
+      "RAM message table0x41c0a0 maps0xb0006 to ROM0x14db30",
+      "ROM0x14db30 looks up packet index via0x14c124; bit0 of descriptor byte4 selects a queue when state byte285 is nonzero",
+      "ROM0x14c124 calls RAM0x400be0 ->0x41790a, which returns44 rows at0x41c0d4; lookup stride6",
+      "RX event rows133-146 point to common0x41a6a4; this is a separate table from packet descriptors"
+    ],
+    "causal_evidence": "Both packet tables plus receiver dispatch (three changed rows) deliver; same native TX-only + receiver-dispatch-only configuration fails without receiver packet descriptor. Four-row variant also delivers. Stock before/after variants fail with exact original bytes loaded.",
+    "not_claimed": [
+      "Each of the three changes individually necessary: not all subsets tested",
+      "All firmware/ROM behavior formally proved",
+      "Actual over-air packet capture or PHY sniffer",
+      "Stock111 production repair",
+      "All security methods, key install, encryption, Bond or natural recovery"
+    ]
+  },
+  "positive_three_rows": {
+    "artifact": "tx3table111",
+    "manifest_sha256": "9db830e8ca4ad44761f3b425a153d6c4fcd55d9f3f14ea354442845262654a5a",
+    "status": "REAL_DENIAL_RELAY_PASS",
+    "kernel": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+    "exits": [
+      0,
+      0
+    ],
+    "firmware": {
+      "native": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "name": "ws73.bin",
+            "image_sha256": "7f698924fcb71ee06b386749a43300248f5c36f8dd8628c1284199d117835d7d",
+            "payload_sha256": "3b6963aaaac6c6cec0ead088747a649a967860ec7404082a7e78b0e31c89b4d0"
+          },
+          {
+            "name": "wifi_cali.bin",
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229"
+          },
+          {
+            "name": "btc_cali.bin",
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6"
+          }
+        ]
+      },
+      "oracle": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "name": "ws73.bin",
+            "image_sha256": "2a936fe26164b0ea4c719e31e93809eda1a7fc5daa65612c49adf3ba66970941",
+            "payload_sha256": "c6d443062ffd852ddfa836ee65b1912b04c711d71249a9cc8b1bae9268527a09"
+          },
+          {
+            "name": "wifi_cali.bin",
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229"
+          },
+          {
+            "name": "btc_cali.bin",
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6"
+          }
+        ]
+      }
+    },
+    "captures": {
+      "native": {
+        "sha256": "6a7829fd9d2d8e65d993e2abb185d13e615174622dd1c265260188d481ff2204",
+        "packets": 915,
+        "commands": [
+          {
+            "opcode": 6162,
+            "params": "0000ff010102",
+            "record": 902,
+            "sequence": 24
+          }
+        ],
+        "complete": [
+          {
+            "opcode": 6162,
+            "status": 0,
+            "value": "0000ff01",
+            "record": 904
+          }
+        ],
+        "received": [
+          {
+            "event": 20,
+            "params": "000034010a03000510000202020200",
+            "record": 900
+          }
+        ]
+      },
+      "oracle": {
+        "sha256": "5b3ea9e7e57e52f5607c328af971faec522bdc36c430e5bd43070057de495ad3",
+        "packets": 595,
+        "commands": [
+          {
+            "opcode": 6162,
+            "params": "000034010a03000510000202020200",
+            "record": 586,
+            "sequence": 13
+          }
+        ],
+        "complete": [
+          {
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401",
+            "record": 588
+          }
+        ],
+        "received": [
+          {
+            "event": 20,
+            "params": "0000ff010102",
+            "record": 590
+          }
+        ]
+      }
+    },
+    "derived_tables": {
+      "native": {
+        "original_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+        "derived_sha256": "7f698924fcb71ee06b386749a43300248f5c36f8dd8628c1284199d117835d7d",
+        "payload_sha256": "3b6963aaaac6c6cec0ead088747a649a967860ec7404082a7e78b0e31c89b4d0",
+        "tx_row": "ff01041f0100",
+        "rx_row": "46010600a4a64100",
+        "scope": "Both endpoints packet descriptor; only oracle RX dispatch. Test sacrifices146 and is NOT production firmware."
+      },
+      "oracle": {
+        "original_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+        "derived_sha256": "2a936fe26164b0ea4c719e31e93809eda1a7fc5daa65612c49adf3ba66970941",
+        "payload_sha256": "c6d443062ffd852ddfa836ee65b1912b04c711d71249a9cc8b1bae9268527a09",
+        "tx_row": "ff01041f0100",
+        "rx_row": "ff010600a4a64100",
+        "scope": "Both endpoints packet descriptor; only oracle RX dispatch. Test sacrifices146 and is NOT production firmware."
+      }
+    },
+    "stock_firmware_qualified": false,
+    "approved_pairing_qualified": false,
+    "peer_application": {
+      "log_sha256": "b1b5671f84f4cb4d78d103119c2acaf67ec448128b1f919a39134c05c1d6cce9",
+      "callback": "PAIR_RESULT handle=0 status=2147508239",
+      "terminal": "RELAY_ORACLE_PASS requested=1 done=1",
+      "scope": "Reference actual PairReject callback plus captured exact1ff/02 peer event, not approved pairing/business/key installation"
+    }
+  },
+  "positive_four_rows": {
+    "artifact": "txrx111",
+    "manifest_sha256": "a611b3c6a195f08e0e5ff07ea3b02231592c8ce3edabfbff154fafaf3077e989",
+    "status": "REAL_DENIAL_RELAY_PASS",
+    "kernel": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+    "exits": [
+      0,
+      0
+    ],
+    "firmware": {
+      "native": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "name": "ws73.bin",
+            "image_sha256": "2a936fe26164b0ea4c719e31e93809eda1a7fc5daa65612c49adf3ba66970941",
+            "payload_sha256": "c6d443062ffd852ddfa836ee65b1912b04c711d71249a9cc8b1bae9268527a09"
+          },
+          {
+            "name": "wifi_cali.bin",
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229"
+          },
+          {
+            "name": "btc_cali.bin",
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6"
+          }
+        ]
+      },
+      "oracle": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "name": "ws73.bin",
+            "image_sha256": "2a936fe26164b0ea4c719e31e93809eda1a7fc5daa65612c49adf3ba66970941",
+            "payload_sha256": "c6d443062ffd852ddfa836ee65b1912b04c711d71249a9cc8b1bae9268527a09"
+          },
+          {
+            "name": "wifi_cali.bin",
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229"
+          },
+          {
+            "name": "btc_cali.bin",
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6"
+          }
+        ]
+      }
+    },
+    "captures": {
+      "native": {
+        "sha256": "9a1a7fb871f1a0d9c1032255e370ccc0132050f0a1e39b65ca3d5a6e12f1b0d1",
+        "packets": 899,
+        "commands": [
+          {
+            "opcode": 6162,
+            "params": "0000ff010102",
+            "record": 886,
+            "sequence": 24
+          }
+        ],
+        "complete": [
+          {
+            "opcode": 6162,
+            "status": 0,
+            "value": "0000ff01",
+            "record": 888
+          }
+        ],
+        "received": [
+          {
+            "event": 20,
+            "params": "000034010a03000510000202020200",
+            "record": 884
+          }
+        ]
+      },
+      "oracle": {
+        "sha256": "a63afb60d9a07bef02627c0c6297cd1ebe90ac2a54249ae35e425e92c8df4d49",
+        "packets": 593,
+        "commands": [
+          {
+            "opcode": 6162,
+            "params": "000034010a03000510000202020200",
+            "record": 584,
+            "sequence": 13
+          }
+        ],
+        "complete": [
+          {
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401",
+            "record": 586
+          }
+        ],
+        "received": [
+          {
+            "event": 20,
+            "params": "0000ff010102",
+            "record": 588
+          }
+        ]
+      }
+    },
+    "derived_tables": {
+      "native": {
+        "original_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+        "derived_sha256": "2a936fe26164b0ea4c719e31e93809eda1a7fc5daa65612c49adf3ba66970941",
+        "payload_sha256": "c6d443062ffd852ddfa836ee65b1912b04c711d71249a9cc8b1bae9268527a09",
+        "tx_row": "ff01041f0100",
+        "rx_row": "ff010600a4a64100",
+        "scope": "Replace unused146 TX descriptor and RX dispatch by1ff length4/flag1; RAM diagnostic only, NOT unmodifiedSDK111 qualification"
+      },
+      "oracle": {
+        "original_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+        "derived_sha256": "2a936fe26164b0ea4c719e31e93809eda1a7fc5daa65612c49adf3ba66970941",
+        "payload_sha256": "c6d443062ffd852ddfa836ee65b1912b04c711d71249a9cc8b1bae9268527a09",
+        "tx_row": "ff01041f0100",
+        "rx_row": "ff010600a4a64100",
+        "scope": "Replace unused146 TX descriptor and RX dispatch by1ff length4/flag1; RAM diagnostic only, NOT unmodifiedSDK111 qualification"
+      }
+    },
+    "stock_firmware_qualified": false,
+    "approved_pairing_qualified": false,
+    "peer_application": {
+      "log_sha256": "213eadbda5b8d17f4f42568af20ee9ebf51184bbd556367a9ca7a7bafbb4b725",
+      "callback": "PAIR_RESULT handle=0 status=2147508239",
+      "terminal": "RELAY_ORACLE_PASS requested=1 done=1",
+      "scope": "Reference actual PairReject callback plus captured exact1ff/02 peer event, not approved pairing/business/key installation"
+    }
+  },
+  "negative_missing_peer_descriptor": {
+    "artifact": "txsplit111",
+    "manifest_sha256": "4681341e87383b41a43978043ab86b678639eb2c0b0023cc8e5cd50f080eaaab",
+    "status": "REAL_PEER_DELIVERY_FAIL",
+    "kernel": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+    "exits": [
+      0,
+      0
+    ],
+    "firmware": {
+      "native": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "name": "ws73.bin",
+            "image_sha256": "7f698924fcb71ee06b386749a43300248f5c36f8dd8628c1284199d117835d7d",
+            "payload_sha256": "3b6963aaaac6c6cec0ead088747a649a967860ec7404082a7e78b0e31c89b4d0"
+          },
+          {
+            "name": "wifi_cali.bin",
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229"
+          },
+          {
+            "name": "btc_cali.bin",
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6"
+          }
+        ]
+      },
+      "oracle": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "name": "ws73.bin",
+            "image_sha256": "23a131d59861c661a03425f45604c56c8b6fed68368bcb14e0bc96df44164088",
+            "payload_sha256": "f0a5a705bb515e5537fb3acd16c8f7ec3a796fa7c60edc65d0dc45484b386f5f"
+          },
+          {
+            "name": "wifi_cali.bin",
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229"
+          },
+          {
+            "name": "btc_cali.bin",
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6"
+          }
+        ]
+      }
+    },
+    "captures": {
+      "native": {
+        "sha256": "481b042838ce8ce5287ef6d112590757bcf67870acc05835c579182b25b004ea",
+        "packets": 897,
+        "commands": [
+          {
+            "opcode": 6162,
+            "params": "0000ff010102",
+            "record": 884,
+            "sequence": 24
+          }
+        ],
+        "complete": [
+          {
+            "opcode": 6162,
+            "status": 0,
+            "value": "0000ff01",
+            "record": 886
+          }
+        ],
+        "received": [
+          {
+            "event": 20,
+            "params": "000034010a03000510000202020200",
+            "record": 882
+          }
+        ]
+      },
+      "oracle": {
+        "sha256": "7c27476545ccb20d33bcfc9db207c8f58fddef9ca86607a57aba5c4da43eec8e",
+        "packets": 593,
+        "commands": [
+          {
+            "opcode": 6162,
+            "params": "000034010a03000510000202020200",
+            "record": 586,
+            "sequence": 13
+          }
+        ],
+        "complete": [
+          {
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401",
+            "record": 588
+          }
+        ],
+        "received": []
+      }
+    },
+    "derived_tables": {
+      "native": {
+        "original_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+        "derived_sha256": "7f698924fcb71ee06b386749a43300248f5c36f8dd8628c1284199d117835d7d",
+        "payload_sha256": "3b6963aaaac6c6cec0ead088747a649a967860ec7404082a7e78b0e31c89b4d0",
+        "tx_row": "ff01041f0100",
+        "rx_row": "46010600a4a64100",
+        "scope": "Asymmetric isolation: native TX descriptor only, oracle RX dispatch only; NOT unmodifiedSDK111 qualification"
+      },
+      "oracle": {
+        "original_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+        "derived_sha256": "23a131d59861c661a03425f45604c56c8b6fed68368bcb14e0bc96df44164088",
+        "payload_sha256": "f0a5a705bb515e5537fb3acd16c8f7ec3a796fa7c60edc65d0dc45484b386f5f",
+        "tx_row": "46010a1f0100",
+        "rx_row": "ff010600a4a64100",
+        "scope": "Asymmetric isolation: native TX descriptor only, oracle RX dispatch only; NOT unmodifiedSDK111 qualification"
+      }
+    },
+    "stock_firmware_qualified": false,
+    "approved_pairing_qualified": false
+  },
+  "stock_restoration_negative": {
+    "artifact": "r1ff-post-3table",
+    "manifest_sha256": "17f69813c07b5314fe431958bc6449b0d1f3e663ec4444397310f325243fa55a",
+    "status": "REAL_PEER_DELIVERY_FAIL",
+    "kernel": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+    "exits": [
+      0,
+      0
+    ],
+    "firmware": {
+      "native": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "name": "ws73.bin",
+            "image_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+            "payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5"
+          },
+          {
+            "name": "wifi_cali.bin",
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229"
+          },
+          {
+            "name": "btc_cali.bin",
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6"
+          }
+        ]
+      },
+      "oracle": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "name": "ws73.bin",
+            "image_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+            "payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5"
+          },
+          {
+            "name": "wifi_cali.bin",
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229"
+          },
+          {
+            "name": "btc_cali.bin",
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6"
+          }
+        ]
+      }
+    },
+    "captures": {
+      "native": {
+        "sha256": "e41ad951d36c65a83e3c761a42a287221b20843a4bad99fb1370efab261f22ec",
+        "packets": 899,
+        "commands": [
+          {
+            "opcode": 6162,
+            "params": "0000ff010102",
+            "record": 886,
+            "sequence": 24
+          }
+        ],
+        "complete": [
+          {
+            "opcode": 6162,
+            "status": 0,
+            "value": "0000ff01",
+            "record": 888
+          }
+        ],
+        "received": [
+          {
+            "event": 20,
+            "params": "000034010a03000510000202020200",
+            "record": 884
+          }
+        ]
+      },
+      "oracle": {
+        "sha256": "014379fec953072b479281bc1b9bf1b85f658855888f0a3a092b5c0982c299d4",
+        "packets": 593,
+        "commands": [
+          {
+            "opcode": 6162,
+            "params": "000034010a03000510000202020200",
+            "record": 586,
+            "sequence": 13
+          }
+        ],
+        "complete": [
+          {
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401",
+            "record": 588
+          }
+        ],
+        "received": []
+      }
+    },
+    "derived_tables": {},
+    "stock_firmware_qualified": false,
+    "approved_pairing_qualified": false
+  },
+  "earlier_rx_only_negative": {
+    "artifact": "relay-494-111-rx-table-1ff-upload-verified",
+    "report": "relay-class-boundary-20261015.json",
+    "scope": "Only receiver event dispatch patch insufficient"
+  },
+  "stock_restoration": {
+    "sequence_artifact": "tx3table-sequence.json",
+    "sequence_sha256": "82eb84d4a23845c8c4473a747f85248c4117b13969822019ce77a92f191dfaae",
+    "both_original_uploads_verified": true,
+    "status": "TERMINAL_ORIGINAL111_RESTORED",
+    "stock_input_files_modified": false,
+    "source_branches_and_driver_mapping_modified": false
+  },
+  "code_reads": [
+    {
+      "artifact": "code111-one",
+      "manifest_sha256": "c0ddf3ca3eb21b9ec5b3555eb96b036f54a2b8467346732f4b9bb85959b1e620",
+      "proof_sha256": "8da6ada10b91b48b406f31e1727d7bf049b18eeee716e75a5659ccaf413976b9",
+      "dump_sha256": "dc7a97b7f0ffcd32847db07e1e3f250af35bf7fad6d892126104ae055f44293e",
+      "capture_sha256": "90fb2c352040b034e8ad94be661c0f9444350854a41615769de6af4983850f60",
+      "bytes": 1280,
+      "words": 320,
+      "windows": [
+        {
+          "address": 1394432,
+          "bytes": 768
+        },
+        {
+          "address": 1121024,
+          "bytes": 512
+        }
+      ],
+      "restored_original_upload": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3"
+    },
+    {
+      "artifact": "code111-tx",
+      "manifest_sha256": "f00fa1234aabe76c5ebf3d571ffedc1b9ec7d0463111659504330747d8175540",
+      "proof_sha256": "9f1ad334c9409f3b344d3bcc28102a67bf7d255a53e99a2cb387242b1383538f",
+      "dump_sha256": "ee286b54ad6bedb73de4085023692fc4bbe2e58712091ec6b541bfb2764d3d77",
+      "capture_sha256": "80527035213d54e49abe2edf22a02ed1a9eb7d5cc41461a0bbb60c9e353fa689",
+      "bytes": 2048,
+      "words": 512,
+      "windows": [
+        {
+          "address": 1366272,
+          "bytes": 2048
+        }
+      ],
+      "restored_original_upload": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3"
+    },
+    {
+      "artifact": "code111-class",
+      "manifest_sha256": "247b83d869f4b28bbd4e9f920e98711a95c906ca018e82c773da2cce638af578",
+      "proof_sha256": "019af6b437b381d147892988aaf6d8da4f41280e78fa320fc5b9c4b966fff201",
+      "dump_sha256": "b783c5a781d6f949e02b59bad0e6f474982aebb9012ec0d393de5fe1a990b757",
+      "capture_sha256": "e634b743c421fe589f7a775df275b4ce486712613c430212f92a0673d0af53d1",
+      "bytes": 2304,
+      "words": 576,
+      "windows": [
+        {
+          "address": 1359872,
+          "bytes": 2048
+        },
+        {
+          "address": 1366016,
+          "bytes": 256
+        }
+      ],
+      "restored_original_upload": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3"
+    }
+  ],
+  "code_read_total_bytes": 5632,
+  "analysis_tools": {
+    "repo": "openharmony/device_soc_hisilicon",
+    "head": "7c1e2d5b35c090009bbe195f09337701c60af032",
+    "scope": "Local read-only analysis tools only; no SDK/runtime code imported or published",
+    "files": [
+      {
+        "name": "riscv32-linux-musl-objdump",
+        "bytes": 1887904,
+        "source": "https://raw.githubusercontent.com/openharmony/device_soc_hisilicon/7c1e2d5b35c090009bbe195f09337701c60af032/ws63v100/sdk/tools/bin/compiler/riscv/cc_riscv32_musl_100/cc_riscv32_musl/bin/riscv32-linux-musl-objdump",
+        "git_blob_sha1": "0c8075682c6df77af3b8adb067a3d938148390a6",
+        "sha256": "069f3ac5274a410bc7244a91f906e602b3593c8aa16172e50f5f6078067ea059"
+      },
+      {
+        "name": "riscv32-linux-musl-objcopy",
+        "bytes": 1213440,
+        "source": "https://raw.githubusercontent.com/openharmony/device_soc_hisilicon/7c1e2d5b35c090009bbe195f09337701c60af032/ws63v100/sdk/tools/bin/compiler/riscv/cc_riscv32_musl_100/cc_riscv32_musl/bin/riscv32-linux-musl-objcopy",
+        "git_blob_sha1": "ddebabd8d5e460e1f9a30c5b26f7ea8ce743e619",
+        "sha256": "b24b2caa0c028d770482a5b6929a9c564f4a0919cf4cb1665c79f40dff088ff8"
+      }
+    ]
+  },
+  "analysis_tool_version": "GNU objdump build ver102.010 2024-04-2, binutils2.38",
+  "decode_status": "Critical listed RAM/ROM paths decoded with official vendor tool, including push/popret/l.li/bnei/orshf; generic LLVM/Ghidra invalid-instruction outputs retained and not treated as decompilation. Not complete formal semantics/refinement.",
+  "private_analysis_sha256": {
+    "hisi-ram-relay.asm": "67d24bbe0f52b995c324b6fe6fe2242f98c40f5a097a49e6e510a1c63c0f2b6c",
+    "hisi-rom-relay.asm": "df083a65ff151216090a490bc9771b1ec8fb0f7eaba309cd232b11ea3c738f5b",
+    "hisi-rom-copy.asm": "9189d051b0af098b85a7408b7304ea47780fdfb8f6ba55a8f2057f77f7cd24d8",
+    "hisi-rom-tx-handler.asm": "fd98ee0260f7c3c162a0d04bf202c23c33b6c62475e42942eab85462d41cdc3b",
+    "hisi-rom-class-lookup.asm": "86ac7d02c8cc7d5a820839463bfb7ccaf1a2617c3009b4475837073125a94e4c"
+  },
+  "failure_evidence": [
+    {
+      "artifact": "rom-code111",
+      "status": "NOT_EXERCISED_SANDBOX_USB_ACCESS",
+      "scope": "No device test started"
+    },
+    {
+      "artifact": "rom-code111-v2",
+      "status": "NOT_EXERCISED_TEST_PREPARATION",
+      "reason": "rmmod command absent; fixed by using existing BusyBox applet"
+    },
+    {
+      "artifact": "rom-code111-v3",
+      "status": "REAL_SURVIVOR_WARM_BSLE_TIMEOUT",
+      "port": "1-2.1.3",
+      "phase": 15,
+      "errno": -110,
+      "source_other_controller_ready_generation": 3,
+      "kernel_log_sha256": "63a3bd9e0f3cb4e457cb4cd6b3443da0ecc69400e3841ba4727013b4b8443e5b",
+      "scope": "Natural warm/BSLE start and bounded protocol retries still failed before code read; no natural recovery PASS. Not an isolated-peer business proof."
+    }
+  ],
+  "verification": {
+    "offline_tool_tests": 495,
+    "offline_log_sha256": "a46c576a8908cf42f717634e265754cc145e776d4123d2b2f0446264eae9f68c",
+    "strict_docs": {
+      "status": "PASS",
+      "inventory": 101,
+      "log_sha256": "d29a37c965d0ed6c218b248da0c0cd2e4eb813920acfaa48ca4d632f2069dd12",
+      "scope": "Locked strict HTML and internal resources; not external linkcheck or hardware"
+    },
+    "new_formal_security_proof": false,
+    "retained_scalar_consent": "311 actual494 checks, excluding locks/references/Runtime/HCD/NOCP",
+    "credit_kani": "NOT_PROVEN: unsupported/timeout retained",
+    "trust_boundary": "Private sealed capture and helper/source snapshots; parser proves file equals captured USB bytes, not authenticated controller execution or firmware correctness",
+    "tool_ci": {
+      "head": "3e3e97366851b9dd5390d07e7ba1c56758de82cb",
+      "ci": 38671088413,
+      "documentation": 38671088361,
+      "conclusion": "success"
+    }
+  },
+  "production_policy": [
+    "Do not ship current replacement: it removes146 and is diagnostic only. Do not silently alter supplied combined111 or default firmware.",
+    "Require firmware-supported truthful compatibility decision or a separate reproducible correction preserving all original protocol entries, provenance and regression before production support.",
+    "Continue existing Session/credit/tickets for authorized mechanisms; actual approved pairing/Agent/role-bound installation/encrypted application reply remain separate gates."
+  ],
+  "remaining": [
+    "Production stock111 refusal remains undelivered; firmware support/release resolution pending",
+    "Begun physicalDown/original-deadline controlled gates and full reserve/revoke/submit/lateNOCP/reuse composition",
+    "Natural startup/reenumeration/disappearance RCA and nonhuman recovery",
+    "All original S0-S6,19WP,10FV,12DG, multi-channel/four-device/SSAP/security/Bond/Profile/release scope"
+  ],
+  "raw_artifacts_public": false,
+  "raw_artifact_availability": "Private named artifacts only; hashes not independently downloadable raw captures. No firmware/SDK/ROM dumps or disassembly redistributed.",
+  "issue_closure_allowed": false,
+  "goal_complete": false,
+  "role_scope": "Native responder / reference Host initiator only; reversed security roles and native-native approved pairing not qualified",
+  "diagnostic_entry_removal": "Existing146 is deliberately replaced for this test. Not dead code; no claim146 is unnecessary for production or full S5."
+}

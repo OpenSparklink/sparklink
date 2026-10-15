@@ -589,7 +589,7 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "Prioritize class-specific SDK111 firmware TX/ROM/air discrimination; original1ff and canonical147 fail even verified original cold upload; supported133 physical control positive only on isolated diagnostic branch. Reuse Session/credit/tickets, never merge wrong133 as denial. Actual production peer0014 and correct callback remain exit.",
+    "Resolve stock firmware support boundary or reproducible separate correction preservingALL old entries (diagnostic replacement146 MUST NOT ship), exact firmware/source hashes and actual reverse-role/original-path regression; continue sole mechanism Agent/approval/role-bound trusted install/encrypted application reply. Stock refusal and wholeK18 remainOPEN.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
     "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
@@ -609,13 +609,13 @@
     ]
   },
   "current_batch_exit": {
-    "production": "Reuse Session/credit/tickets unchanged; no wrong133 production mapping",
-    "offline": "491 actual tool checks, diagnostic265 codec Clang sanitizer533352 checks",
-    "formal": "No new whole proof; actual494 consent311 scalar retained; Kani unsupported/timeout unproven",
-    "real": "Six begun-prefix withdrawal subsets,16 prewithdraw app round trips; supported133 peer actual bytes checked, two-end original upload verified; production1ff still no peer",
-    "remaining": "production refusal delivery/root, approve/install/encrypt; disconnect/original-deadline/NOCP-reuse combination; four-device/SSAP/all original scope"
+    "production": "No kernel/daemon runtime or original input firmware changes, no new Engine",
+    "offline": "495 actual tools tests, new strict READM request/response/dump identity negative tests",
+    "formal": "No new security proof; old consent311 scalar only; Kani unsupported/timeout unproven",
+    "real": "5632 fixed ROM code bytes match actual USB; three/four-row RAM variants deliver correct1ff/02 and PairReject; asymmetric missing peer packet descriptor fails; stock restored both and again fails",
+    "remaining": "Stock support/reproducible correction preserving146/all entries, reverse security roles, approved pairing/Agent/install/encrypted app; begunDown/deadline and NOCP/reuse composition, naturalRCA/nonhuman recovery and all originalscope"
   },
-  "updated_at_utc": "2026-10-15T02:06:55.608248+00:00",
+  "updated_at_utc": "2026-10-15T02:39:30.362366+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -623,7 +623,7 @@
   },
   "current_heads": {
     "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
-    "userspace_observed_before_document_commit": "86e8cd81f4d18b4a26fcfca8d06832c38927f6e8"
+    "userspace_observed_before_document_commit": "3e3e97366851b9dd5390d07e7ba1c56758de82cb"
   },
   "qualified_source_heads": {
     "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
@@ -633,26 +633,18 @@
   },
   "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
   "current_batch": {
-    "behavior": "Reproducible actual-original111 two-end upload identity; class-specific physical relay positive/negative control; six actual begun-PDU Managed withdrawal subgates",
-    "status": "SCOPED_REAL_WITHDRAWAL_AND_SUPPORTED_CLASS_CONTROL_PASS_PRODUCTION_DENIAL_FAIL",
-    "evidence": [
-      "docs/evidence/managed-prefix-withdrawal-20261015.json",
-      "docs/evidence/relay-class-boundary-20261015.json"
-    ],
+    "behavior": "Read-only actual boot-code USB corroborator; firmware packet descriptor and event dispatch causal diagnosis using unchanged production Session/credit/tickets",
+    "status": "DERIVED_REAL_REFUSAL_DELIVERED_STOCK_FIRMWARE_RESTORED_AND_STILL_FAILS",
+    "evidence": "docs/evidence/relay-firmware-table-cause-20261015.json",
     "production_runtime_changed": false,
-    "production_diagnostic_mapping_merged": false,
-    "tool_ci": {
-      "head": "86e8cd81f4d18b4a26fcfca8d06832c38927f6e8",
-      "ci": 38667996315,
-      "documentation": 38667996330,
-      "conclusion": "success",
-      "scope": "tool commit; later documentation commit CI independently checked"
-    }
+    "stock_blob_modified": false,
+    "diagnostic_firmware_shipped": false,
+    "stock_production_security_qualified": false
   },
   "current_qualification": {
     "DG01": "PARTIAL_REAL exact494/d744 original104 plus32burst app round trips",
     "DG02": "PARTIAL_REAL exact494/d744 all attained length points and32refusals",
-    "FV_SECURITY_RELAY": "Actual production494/e2a1ff missingpeer after BOTH original111 verified uploads; isolated0b4/e2a133 actualpeer application byte check positive but NOT denial/security qualification",
+    "FV_SECURITY_RELAY": "Actual494/e2a Session path correctly delivers1ff/02 to reference PairReject ONLY with isolated packet/RX-table derivative. Official ISA/ROM trace and variants causally support stock111 descriptor omission. Both original images restored; stock stillFAIL. No approved/native-native/security or complete formal proof.",
     "S5": "Approved pairing/installation/encrypted application reply missing",
     "recovery": "Natural RCA and nonhuman recovery remain open",
     "FV_CODEC": "HISTORICAL exact2030 driver bounded800 checks preserved, not relabeled as fresh d926 result; new cursor proof separately recorded",
@@ -663,22 +655,22 @@
     "DG_WITHDRAWAL": "PARTIAL_REAL actual494/e2a release/lastManagedFile/dup x both indices;6 fragments1524bytes begun,2lateNOCP each; no submit after syscall-return; original-deadline/full linearization/reuse unproven"
   },
   "next_resume_tasks": [
-    "Prioritize class-specific SDK111 firmware TX/ROM/air discrimination; original1ff and canonical147 fail even verified original cold upload; supported133 physical control positive only on isolated diagnostic branch. Reuse Session/credit/tickets, never merge wrong133 as denial. Actual production peer0014 and correct callback remain exit.",
+    "Resolve stock firmware support boundary or reproducible separate correction preservingALL old entries (diagnostic replacement146 MUST NOT ship), exact firmware/source hashes and actual reverse-role/original-path regression; continue sole mechanism Agent/approval/role-bound trusted install/encrypted application reply. Stock refusal and wholeK18 remainOPEN.",
     "In parallel extend six actual begun Managed withdrawal subgates to physicalDown/original-deadline and reserve/revoke/submit/lateNOCP/reuse composition, using production implementation and explicit timestamp/lock assumptions. Do not make all control races prerequisites for data/SSAP.",
     "Map and validate firmware relay dialect against specified NearLink Host, SDK111 and libws73 without assuming SDK table matches actual firmware. Approved pairing/key install/encrypted app reply still missing.",
     "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_status": "PENDING_THIS_BATCH_EXISTING_ISSUES",
   "issue_sync_receipt": "docs/evidence/relay-class-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "404 Session physical owner, actual311-check C consent and strict fd exit plus original104 real regressions"
+    "reason": "Six real begun-prefix withdrawal subgates plus positive supported-class physical peer delivery; actual firmware upload identity disambiguates warm/search paths. Production denial still fails; no partial closure."
   },
   "current_goal_turn_classification": {
     "status": "PROGRESS",
-    "reason": "Six real begun-prefix withdrawal subgates plus positive supported-class physical peer delivery; actual firmware upload identity disambiguates warm/search paths. Production denial still fails; no partial closure."
+    "reason": "Official ISA tool resolves critical decode gap;5632 actual code bytes verified; stock descriptor omission causally narrowed by asymmetric variants, real correct1ff/02 peer PairReject delivered under isolated derivative; both original images restored and failure reproduced. No stock production/security/recovery completion."
   },
   "execution_status": "active authorized implementation; production relay unresolved, diagnostic positive class control and six withdrawal subsets recorded",
   "goal_api_status_observed": "active",
@@ -699,6 +691,14 @@
       "linux": "0b4b311336c45f82741fc323d339761545dd2132",
       "evidence": "docs/evidence/relay-class-boundary-20261015.json",
       "security_qualification": false
+    },
+    "derived_refusal_not_stock": {
+      "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
+      "compiled_userspace": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+      "evidence": "docs/evidence/relay-firmware-table-cause-20261015.json",
+      "role": "NativeT/referenceG only",
+      "approved_security_qualification": false,
+      "stock_firmware_restored": true
     }
   }
 }

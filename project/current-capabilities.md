@@ -16,13 +16,16 @@ U `e2a0139ff3ccbccb51f5a8606deda5a0d43688c3`，公开冷加载核对工具为
   每组观察2条迟到NOCP、阻塞者EACCES/ERR/HUP、新lease不复活旧fd，同行租约、Ready
   与实际扫描保留。撤权前共16次真实随机业务往返；六个未完成PDU各为**零次**业务往返。
   [六组准确证据与限制](../docs/evidence/managed-prefix-withdrawal-20261015.json)。
-- **安全生产交付仍失败**：两端均在捕获中逐字节核对实际上传原版111后，`1ff/02`
-  有真实Complete，无对端0014。canonical147及接收表替换也未修复。
-  独立诊断内核 `0b4b311336c45f82741fc323d339761545dd2132` 的支持类型133则
-  经同一Session/credit/票据到达对端并被应用校验；真实SM随后拒绝错误协议消息。
-  这是物理类型对照，**不是拒绝语义、批准配对或安全成功**；诊断映射未合并。
-  [正反对照、失败与固件字节身份](../docs/evidence/relay-class-boundary-20261015.json)。
-- **离线与形式化分开**：491工具检查通过；诊断265的实际codec在Clang sanitizer下
+- **固件缺项因果证据已取得，原版交付仍失败**：官方vendor objdump与5632字节实际
+  boot代码读取核对，定位原版111的44项包描述表及另一张RX分派表均缺147/1ff。
+  在独立RAM固件实验中，双方包描述及接收端分派共三行替换后，现有生产K494/Ue2a
+  Session/credit/ticket发出的真实`1ff/02`到达对端，参考Host返回真实PAIR_REJECT；
+  缺接收端包描述的区分组合仍失败。两次正向组合后均恢复原版，逐字节核对两端实际
+  上传；原版再次缺包。[因果对照、源码映射及恢复](../docs/evidence/relay-firmware-table-cause-20261015.json)。
+  **这不是原版111修复或批准配对资格**：实验刻意替换现有146，不能发布或自动改blob；
+  仅Native responder/reference initiator角色。原版支持边界、保留全部旧能力的修正、
+  Agent/批准/可信安装/加密/Bond及反向角色仍缺。此前隔离133对照保留为历史证据。
+- **离线与形式化分开**：495工具检查通过（新只读READM核对工具3e3e973）；诊断265的实际codec在Clang sanitizer下
   533352项synthetic IO检查通过。无新增完整安全证明；原consent311仍只限标量，
   Kani unsupported/timeout及旧NOCP复用反例保持未证明。
 
@@ -61,7 +64,7 @@ CBMC311标量检查直接映射本批C consent函数，排除锁/引用/Runtime/
 | WS73 广播扫描、建链断链 | 默认 Native 路径 | 实际入口/Host 回归 | 本批原路径回归保持；完整隔离/自然恢复仍未闭合 |
 | 普通用户业务 socket | 基础DGRAM、固定两通道、Session在途PDU/唯一分流、有限8项TX预算 | 实际Native/worker/consent限定检查；跨语言预算与482工具测试，完整组合仍缺 | 本批136轮/32超限、真实软件队列及controller池满恢复、严格fd退出保持；当前两角色burst池满/NOCP恢复子门禁；完整生命周期仍缺 |
 | 用户态 SSAP | 唯一actor，ExchangeInfo、单值读写、发现、UUID | 实际codec/预算/生命周期限定检查 | 新镜像原路径保持；底层DLI PB不等于SSAP长写/分片；正向CCC/通知/指示、安全及Profile仍缺 |
-| 安全 relay | 唯一物理Session子对象、typed1812、命令credit/票据、真实Complete关联、0014观察lifetime；默认拒绝未批准配对 | 原实际Host/codec回归与限定CBMC保留，Kani unsupported仍未证明 | 原版111两端冷上传后1ff仍失败；仅隔离133物理类型对照正向，不授予SMP资格，授权配对、可信安装/Bond和加密业务缺失 |
+| 安全 relay | 唯一物理Session子对象、typed1812、命令credit/票据、真实Complete关联、0014观察lifetime；默认拒绝未批准配对 | 原实际Host/codec回归与限定CBMC保留，Kani unsupported仍未证明 | 原版111仍缺包；三行RAM诊断替换下真实拒绝到达peer，已恢复原版；无生产修复/批准配对资格，授权配对、可信安装/Bond和加密业务缺失 |
 | 应用权限与扫描 | controller scan RPC显式管理语义；可选sparklink-apps仅领取通道fd | XML白名单/实际调用迁移与严格daemon测试 | apps-only身份尚未实机验收；共享扫描租约/完整按应用策略仍缺，控制组caps0回归不能代替 |
 | 设备与daemon生命周期 | per-controller Runtime、epoch撤销、有限工作/期限；单进程daemon | 当前限定模型和实际取消/清理回归 | 六组begun撤权子门禁通过；actor不是进程隔离；不承诺跨daemon崩溃存活；完整组合仍缺 |
 | 长包/真实credit压力/多通道/四设备业务 | 有界PB、Session持有begun operation、8项包含busy、原期限 | 游标/consent限定证明保持；software与controller credit分别表达 | 所列长度及真实软件背压通过；两角色burst硬件池满恢复已取得；撤权/Down/期限、重复晚到NOCP/复用、动态多通道/四设备及完整DG03–12开放 |

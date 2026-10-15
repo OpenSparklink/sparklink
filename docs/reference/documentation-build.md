@@ -62,3 +62,9 @@ project、history、decisions、evidence 原文保留仓库、清单和源码链
 提供类似 GitBook 的章节导航与页内目录；不依赖 GitBook 托管或帐号。主题及依赖
 由 uv.lock 固定，CSS/JS 随 HTML 构建输出。Mermaid 的 CDN 依赖仍单独保留；
 主题变更须重查搜索、代码复制、宽表格、夜间/移动布局与 `/sparklink/` 子路径。
+
+Book Theme 1.4.0／PyData 0.20.0 的组合会保留隐藏的父导航和重复 toggle；
+本站通过标准 `layout.html` 模板扩展只保留 Book 阅读控件，保留父主题 scroll-spy
+所需的空几何锚点。浏览器门禁要求唯一 toggle、真实移动菜单和实际复制/粘贴；
+升级主题时重新核对模板与行为。两个未渲染的上游 webpack Jinja 模板不随产物发布，
+其余主题资源仍受完整性检查；两主题 LICENSE 随 `_static/licenses/` 分发。

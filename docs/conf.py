@@ -16,6 +16,7 @@ myst_fence_as_directive = ["mermaid"]
 html_theme = "sphinx_book_theme"
 html_title = "SparkLink 文档"
 html_static_path = ["_static"]
+templates_path = ["_templates"]
 html_css_files = ["sparklink.css"]
 html_theme_options = {
     "show_navbar_depth": 2,

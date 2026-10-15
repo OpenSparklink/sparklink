@@ -20,6 +20,7 @@ html[data-theme="dark"] {
   --pst-color-surface: #162033;
   --pst-color-border: #334155;
 }
+#pst-header[hidden] { display: none; }
 body { font-family: var(--pst-font-family-base); }
 .bd-sidebar-primary {
   background: var(--pst-color-surface);

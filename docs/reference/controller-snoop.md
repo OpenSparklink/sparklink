@@ -41,8 +41,16 @@ BSLE 握手、其他 queue 或非法 HCC aggregate。TX_RESULT 在阻塞 transpo
 | 0／8／16／24 | seq／generation／timestamp_ns／lost (u64) | `lost=seq-after_seq-1`，明确 ring 覆盖缺口 |
 | 32／36／40 | profile (u32)／original_length (u32)／status (i32) | 实际包长度与 transport 结果 |
 | 44／46／47 | dev_index (u16)／direction (u8)／format (u8) | direction 1 RX、2 TX_RESULT；format 1 WS73 DLI，2标准DLI |
-| 48／50／52 | captured_length (u16)／flags (u16)／reserved (u32) | flags bit0 TRUNCATED；reserved=0 |
+| 48／50／52 | captured_length (u16)／flags (u16)／reserved (u32) | flags bit0 TRUNCATED、bit1 REDACTED（见下）；reserved=0 |
 | 56 | payload[320] | captured_length 后补零 |
+
+`TRUNCATED=1` 表示原长度超过 320 字节捕获预算。`REDACTED=2` 表示
+WS73 TX opcode `0x1c03`／`0x1c05` 的安装参数被内核主动遮蔽：仅保留
+5 字节 A1 命令头，`original_length` 仍为实际命令长度，payload 剩余字节为零。
+两标志可同时存在；短于 original_length 的记录不能一律解释为抓包丢失。
+密钥不可从记录恢复，也不能用遮蔽后的 payload 校验安装密钥是否正确。
+核对源码：Linux `8cbf53e6a088` 的 `sle_snoop.rs::SnoopLog::tx`、`sle_uapi.rs`；
+这项字段说明不授予新的捕获或安全资格。
 
 文件逐字段 little-endian 编码，头部 16 字节：ASCII `SLKSNP01`、u32 version=1、
 u32 payload_max=320；每条 376 字节，不能直接将 native query 内存写成文件。

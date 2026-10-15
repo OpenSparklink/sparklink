@@ -16,13 +16,13 @@
 
 ## 本批源码核对的状态（未发布 ABI）
 
-本轮核对用户态 `dc040002555c` 与 Linux `e78b88f050aa`；仅描述源码可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。
+当前接口说明复核用户态 `8121ba0fc038` 与 Linux `8cbf53e6a088`；仅描述源码可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。
 
 | 范围 | 当前状态与限制 | 源码定位 |
 |---|---|---|
 | Native 管理／诊断 | 版本化请求，controller generation／所有权检查；已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-protocol/src/ioctl.rs`、内核 `sparklink_core.rs` |
 | Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`libsparklink` Native API、内核 socket |
-| D-Bus ServiceManager／RemoteService | 正常业务明确 NotSupported；非法参数可先 InvalidArgs；不表示服务已远端发布 | `slkd/src/service.rs` |
+| D-Bus ServiceManager／RemoteService | 新 RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；旧 facade 与 RemoteService 仍 NotSupported；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
 | 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-protocol/src/ioctl.rs`、内核 UAPI |
 | 旧 property／write facade | property 超 248、write 超 252 字节拒绝；这是遗留输入校验，不是新 Engine MTU 承诺 | `slkd/src/service.rs` |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
@@ -53,16 +53,48 @@ K `5582a10c5ec8`／U `cd77ed935740`：旧连接／发现／角色／AFH/sync模�
 K6f2f71298029 的默认Runtime不再包含旧安全/RPA模型。新版SDK拒绝旧安全/隐私
 facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合法RAL/RPA
 输入亦NotSupported，非法输入可InvalidArgs。C旧安全入口返回-EOPNOTSUPP且不改
-输出，Python映射OSError(EOPNOTSUPP)。真实每连接安全、Agent与Bond重连仍未实现。
+输出，Python映射OSError(EOPNOTSUPP)。旧 facade 的拒绝不代表新 per-Connection 安全流程缺失；现行流程如下，Bond 重连仍缺失。
 
-### 实验性安全协商观察（未发布 ABI）
+### 显式 Agent 与 SDK111 限定流程
+
+`org.sparklink.Security` 位于 `/org/sparklink/slk{index}_g{generation}/security`。
+`RegisterAgent(o path, s method)` 绑定该 controller 的一个 Agent 唯一总线所有者；
+仅接受 `sdk111-no-mitm`。`UnregisterAgent(o path)` 撤销原注册，普通通道权限
+不授予 controller 管理或 Agent 注册权。默认不自动批准。
+
+`org.sparklink.Connection` 的原生命周期对象提供：
+
+| 方法 | 输入 → 输出 | 成功的含义 |
+|---|---|---|
+| AllocateReferenceSecurity | `u timeout_ms` → `t request_id` | 分配原调用者专属请求；1–5000ms 原始期限从分配开始 |
+| BeginReferenceSecurity | `t request_id, s method` → 无 | 开始异步策略流程；不是控制器成功 |
+| GetReferenceSecurityResult | `t request_id` → 观察结构 | 策略终态和原生状态分别返回，不读取密钥 |
+| CancelReferenceSecurity | `t request_id` → `b` | 请求撤销；不是硬件排空确认 |
+
+Agent 的 `org.sparklink.Agent.AuthorizeReferenceSecurity` 接收一个结构参数：
+`(s connection_path, t request_id, t generation, t lifetime, q handle, y role,
+y address_type, s address, s method, t deadline_monotonic_ns)`，返回 `b`。
+原始期限为 CLOCK_MONOTONIC 纳秒，批准后不刷新；调用者、Agent 唯一总线连接、
+注册 epoch 和完整连接引用共同约束请求。重复启动、撤销、原期限、替换 Agent、
+旧身份和退出不能产生新成功。完整字段/错误与可运行 Agent 指南仍待第二批补齐；
+当前可核对生产 `security_policy.rs` 与 VM 专用 `native_security_agent_probe.rs`，
+后者是测试见证程序，不能直接安装为默认自动批准 Agent。
+
+准确编译用户态 `85cdf627d70b`、内核 `8cbf53e6a088`、执行工具 `db6e333814cf`
+已有批准、拒绝、超时、取消及两类总线 owner-loss 的限定双设备证据，入口见
+[当前资格](../../project/current-capabilities.md)。owner-loss 用显式关闭总线连接，
+并不覆盖 SIGKILL／进程死亡／fd 继承。批准只代表策略允许；真实 Complete、对端
+relay RX、安装及未认证加密状态分别观察；不意味着身份认证、可信 Grant、Pair、
+Bond、第三方互通或完整安全证明。未执行的新组合不能继承这些资格。
+
+### 底层安全协商 ABI（未发布）
 
 当前未发布接口以源码为准：`SL_IOCTL_SECURITY_NEGOTIATION_SUBMIT`（`0xd2`）为
 **版本2、64字节**，携带原始`deadline_monotonic_ns`（CLOCK_MONOTONIC纳秒）。
 `RESULT`（`0xd3`、72字节）和`CANCEL`（`0xd4`、32字节）仍为版本1。
 旧56字节SUBMIT删除，不设兼容期；三种接口不能混用版本或布局。
 C导出`slk_security_negotiation_submit/result/cancel`与Python NativeAdapter同步。
-这是底层机制；Agent和默认Pair/D-Bus安全入口尚未接线，实机范围见唯一当前资格入口。
+这是底层机制；显式 Agent 与 Connection 的 SDK111 限定流程已接线。旧 Pair／Encrypt facade 仍 NotSupported，不能用它启动新流程。实机范围见唯一当前资格入口。
 
 原始绝对期限必须在策略/Agent等待前设置，不能在批准后刷新。`timeout_ms`为
 1–5000ms剩余预算上界，实际期限仍是原始纳秒值；过期返回ETIMEDOUT，超过上界

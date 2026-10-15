@@ -1076,5 +1076,34 @@
       "agent-data11-db6e333"
     ],
     "retained_data_record": "agent-data11-db6e333"
-  }
+  },
+  "documentation_remediation": {
+    "scope": "DQ1–DQ5 in canonical implementation plan; parallel to protocol work, no new goal or gate on all documentation",
+    "baseline": {
+      "linux": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+      "userspace": "8121ba0fc03810185120e4136481aa9bc418aba7",
+      "initial_worktrees": "clean"
+    },
+    "current_batch": "DQ1 misleading references and fail-closed integrity",
+    "exit": [
+      "source-audited man/Python/Agent/config corrections",
+      "man/config/extensionless kernel README inventory",
+      "real checker negative controls and static examples",
+      "strict HTML and expected-page/resource/revision checks"
+    ],
+    "remaining": [
+      "DQ2 interface completeness and coverage mapping",
+      "DQ3 full source-to-VM and user workflows",
+      "DQ4 kernel RST/kernel-doc/Safety/sysfs/MAINTAINERS",
+      "DQ5 browser exact-build, external links, man shared source and milestone replay"
+    ],
+    "runtime_qualification_changed": false,
+    "keep_goal_active": true,
+    "continuous_rules": "AGENTS.md and .github/PULL_REQUEST_TEMPLATE.md",
+    "issues": [
+      "OpenSparklink/linux#19",
+      "OpenSparklink/sparklink#8"
+    ]
+  },
+  "agent_issue_receipt": "docs/evidence/agent-policy-issues-20261016.json"
 }

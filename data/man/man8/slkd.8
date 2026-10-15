@@ -1,177 +1,162 @@
-.TH SLKD 8 "2025-04-05" "SparkLink" "System Manager's Manual"
+.TH SLKD 8 "2026-10-16" "SparkLink development" "System Manager's Manual"
 .SH NAME
-slkd \- SparkLink wireless daemon
+slkd \- per-controller SparkLink management and application service daemon
 .SH SYNOPSIS
 .B slkd
-.RB [ \-c
-.IR config ]
-.RB [ \-d
-.IR device ]
+.RB [ \-c " " path ]
+.RB [ \-d " " path ]
 .RB [ \-n ]
+.RB [ \-\-storage " " directory ]
+.RB [ \-\-session ]
+.br
+.B slkd \-\-config
+.I path
+.B \-\-check-config
+.RB [ \-\-dump-ws73-policies ]
+.SH SCOPE
+This manual describes unreleased userspace source 8121ba0fc038 and matching
+Linux 8cbf53e6a088. Interfaces may change without compatibility retention.
+Current qualification is recorded separately in
+.I project/current-capabilities.md
+and its structured provenance records. An exposed method name is not a
+hardware capability. All experimental drivers and real WS73 operations must
+run inside the prepared VM; building documentation does not operate devices.
 .SH DESCRIPTION
 .B slkd
-is the central management daemon for SparkLink wireless devices. It
-communicates with the kernel SparkLink subsystem through the character device,
-exposes a D\-Bus system bus interface for applications and CLI tools, manages
-device discovery, connections, security, and SSAP services.
+watches controller registrations through
+.I /dev/sparklink
+and publishes the system-bus name
+.BR org.sparklink .
+Each controller has its own generation-bound state and management ownership.
+Installed, Ready, connected, channel-negotiated, policy-approved,
+controller-reported encryption and authenticated identity are distinct states.
+Replugging or reconnecting does not restore an old object's authority.
 .PP
-On startup the daemon opens the kernel device, loads bonding data from
-.IR /var/lib/sparklink/ ,
-connects to the system D\-Bus, and enters the event loop.
+Native applications receive authorized logical-channel socket fds through
+Connection objects. SSAP uses the unique userspace Engine on that channel;
+the removed kernel SSAP database and wire facade are not fallback paths.
+Transport submission or NOCP is not proof of peer application processing.
 .SH OPTIONS
 .TP
-.BI \-c " path" "\fR,\fP \-\-config " path
-Explicit path must be readable and valid; any error aborts startup. With no
-option, the implicit default is:
-.IR /etc/sparklink/main.conf .
-See
-.BR sparklink.conf (5).
+.BI \-c " path" ", \-\-config " path
+Explicit TOML configuration. A missing, unreadable, invalid or unsupported
+explicit configuration aborts startup before bus registration or management.
+Only a missing implicit /etc/sparklink/main.conf permits built-in defaults.
 .TP
-.BI \-d " path" "\fR,\fP \-\-device " path
-Kernel character device path. Default:
-.IR /dev/sparklink .
+.B \-\-check-config
+Requires --config. Validate with the production parser and exit before
+D-Bus or controller startup. Success validates host policy, not firmware support.
 .TP
-.BR \-n ", " \-\-nodetach
-Run in foreground, do not daemonize. Useful for debugging and systemd
-.BR Type=simple .
-.SH D\-BUS INTERFACE
-.B slkd
-registers the well\-known name
-.B org.sparklink
-on the system bus and serves the following object paths:
-.SS /org/sparklink (org.sparklink.Manager)
+.B \-\-dump-ws73-policies
+Requires --check-config. Print normalized WS73 policy diagnostics.
 .TP
-.B Version() \-> s
-Return the daemon version string.
+.BI \-d " path" ", \-\-device " path
+Kernel character device; default /dev/sparklink.
 .TP
-.B ListAdapters() \-> as
-Return object paths of available adapters.
-.SS /org/sparklink/slk0 (org.sparklink.Adapter)
+.BI \-\-storage " directory"
+Metadata store root; default /var/lib/sparklink. Legacy metadata is not a
+trusted key store, native Bond implementation or authenticated credential.
 .TP
-.B StartDiscovery()
-Begin scanning for nearby devices.
+.B \-\-session
+Use a session bus for isolated tests. Does not reproduce deployed system-bus
+policy or grant kernel permissions.
 .TP
-.B StopDiscovery()
-Stop scanning.
-.TP
-.B ConnectDevice(s addr)
-Initiate a connection to the device with the given hex address.
-.TP
-.B GetDevices() \-> a(ssqb)
-Return a list of discovered devices. Each entry contains the address, name,
-RSSI, and connected flag.
+.B \-n, \-\-nodetach
+Accepted foreground option. The current daemon has no detach/fork path.
+.SH OBJECTS AND INTERFACES
+The root /org/sparklink exposes org.sparklink.Manager:
+Version() returns s; ListRegistrations() and ListAdapters() return as.
+Registration observation and Ready adapters are not interchangeable.
 .PP
-Properties:
-.BR Powered " (b),"
-.BR Discovering " (b),"
-.BR Name " (s)."
-.SS /org/sparklink/slk0/dev_{ADDR} (org.sparklink.Device)
-.TP
-.B Connect()
-Connect to this device.
-.TP
-.B Disconnect()
-Disconnect this device.
+Adapter paths are /org/sparklink/slk{index}_g{generation}, not stable
+/adapterN or /slk0 aliases. Obtain actual paths from the manager.
+org.sparklink.Adapter provides generation-bound observation, discovery
+requests/results and connection enumeration. Management requests are
+asynchronous; admission does not indicate radio completion.
 .PP
-Properties:
-.BR Address " (s),"
-.BR Name " (s),"
-.BR Rssi " (n),"
-.BR Connected " (b),"
-.BR DiscoveryLevel " (y)."
-.SS /org/sparklink/slk0/security (org.sparklink.Security)
-.TP
-.B GetInfo() \-> (ssyb)
-Return current security state, method, mode and encryption flag.
-.TP
-.B SetPsk(s hex)
-Set a 16\-byte Pre\-Shared Key in hex.
-.TP
-.B Pair(s method)
-Start pairing. Method: "just_works", "psk", or "none".
-.TP
-.B Encrypt()
-Enable encryption on the active connection.
-.TP
-.B GetPasskey() \-> u
-Return the displayed passkey for numeric comparison.
-.TP
-.B ConfirmPasskey() / RejectPasskey()
-Accept or reject the passkey.
-.TP
-.B InputPasskey(u passkey)
-Enter a 6\-digit passkey.
-.TP
-.B ListBonded() \-> as
-Return addresses of all bonded devices.
-.TP
-.B RemoveBond(s addr)
-Remove bonding information for the given device.
-.TP
-.B Reset()
-Reset security state.
+Canonical peers are below /peer_t{type}_{address}; physical Connection
+objects append /link_{lifetime}. org.sparklink.Connection.GetInfo() returns
+(ttqyy sbb) as one structure (spaces shown only for readability): generation,
+lifetime, handle, role, address type, address, known, connected.
+OpenChannel() and OpenChannelScoped() return a D-Bus Unix fd (h), subject to
+native identity, grant, scope and mode checks. Closing one's channel does not
+mean stopping the controller. Old fd, handle or address cannot select a new lifetime.
+.SS Explicit limited security
+org.sparklink.Security is at the adapter's /security child.
+RegisterAgent(o path, s method) and UnregisterAgent(o path) manage one explicit
+Agent unique bus owner for that controller. The only current method is
+sdk111-no-mitm; default policy does not approve automatically.
 .PP
-Properties:
-.BR Encrypted " (b),"
-.BR Paired " (b)."
-.SS /org/sparklink/slk0/services (org.sparklink.ServiceManager)
-.TP
-.B RegisterServices(s json)
-Register local SSAP services described in JSON.
-.TP
-.B AddService(q uuid, y type)
-Add a single SSAP service.
-.TP
-.B AddProperty(q svc_handle, q uuid, y perms, ay data)
-Add a property to a service.
-.TP
-.B ReadProperty(q handle) \-> ay
-Read a property value.
-.TP
-.B WriteProperty(q handle, ay data)
-Write a property value.
-.TP
-.B Notify(q handle, ay data)
-Send a notification on a property.
-.SS /org/sparklink/slk0/extadv (org.sparklink.ExtAdv)
-.TP
-.B Configure(y type, q interval, y txpower)
-Configure an extended advertising instance.
-.TP
-.B SetData(y handle, ay data)
-Set advertising data.
-.TP
-.B Enable(y handle) / Disable(y handle) / Remove(y handle)
-Control advertising instances.
-.TP
-.B GetInfo(y handle) \-> (yyqy)
-Get advertising instance information.
-.SS /org/sparklink/slk0/controller (org.sparklink.Controller)
-Provides low\-level controller access: role management, PHY/MCS configuration,
-power management, AFH, connection statistics, DLI, measurement, sync link
-control, resolving address list, and subsystem statistics. Approximately 40
-methods; consult
-.BR slctl (1)
-for the corresponding CLI commands.
+On org.sparklink.Connection, AllocateReferenceSecurity(u timeout_ms) returns
+a caller-bound t request_id. The original 1-5000 ms CLOCK_MONOTONIC deadline
+starts at allocation, before Agent waiting. BeginReferenceSecurity(t id,
+s method) starts the asynchronous operation. GetReferenceSecurityResult(t id)
+returns separate policy/native observations. CancelReferenceSecurity(t id)
+returns a withdrawal-request boolean, not hardware cleanup acknowledgement.
+.PP
+The Agent implements org.sparklink.Agent.AuthorizeReferenceSecurity with one
+structure argument (stttqyy sst), containing connection path, request id,
+generation, lifetime, handle, role, address type, address, method and original
+deadline in monotonic nanoseconds, and returns b. Spaces are not part of the
+D-Bus signature. Policy approval does not authenticate the peer or install a Bond.
+.PP
+SDK111-specific unauthenticated key agreement/installation has narrowly
+qualified two-device evidence. Generic Pair(s), Encrypt(), GetInfo(), SetPsk(s),
+passkey methods, Reset(), and Encrypted/Paired properties remain NotSupported;
+invalid arguments may be rejected first. ListBonded()/RemoveBond(s) operate
+legacy local metadata only and do not establish or revoke real trusted keys.
+.SS Local service data and remote SSAP
+org.sparklink.ServiceManager is at /services.
+RegisterLocalService(ay uuid, a(ayuay) properties) returns (qqaq): service
+start, end and property handles. UUIDs are nonzero 2 or 16-byte values;
+properties contain UUID, operations and initial value. Current operations
+are READ=1 and WRITE_WITH_RSP=4. Limits are 16 services, 64 properties,
+2042 bytes per value and 8192 aggregate value bytes per registration.
+ListLocalServices() returns a(qqaya(qayu)); RemoveLocalService(q start) and
+ReadLocalValue(q handle) operate the local database. Local registration
+success is not remote service-discovery or publication success.
+.PP
+The old RegisterServices(), AddService(q,b), AddProperty(q,y,ay),
+ReadProperty(q), WriteProperty(q,ay), Notify(q) and other legacy facade
+methods remain NotSupported (InvalidArgs may precede it). In particular,
+RegisterServices takes no JSON argument and Notify takes no value argument.
+The old org.sparklink.RemoteService facade is unsupported. Actual limited
+remote exchange/discovery/read/write uses the Connection SSAP actor.
+Notification/indication, long write and full Profile delivery are not promised.
+.SS Remaining interfaces
+Controller and ExtAdv names do not imply support for legacy PHY, RPA,
+measurement, PM or extended-advertising controls. Unsupported methods fail
+explicitly. See the website's interface reference and current qualification;
+the complete field/error reference remains under documentation remediation.
+.SH PERMISSIONS AND FAILURES
+System-bus policy distinguishes ordinary applications (sparklink-apps),
+controller administration (sparklink), observation and Agent operations.
+The policy file and native kernel authorization both apply; access to a bus
+method does not grant CAP_NET_ADMIN or controller ownership. A received fd
+retains its scope and revocation rules, not the sender's general privileges.
+.PP
+AccessDenied, InvalidArgs, NotSupported and Failed have distinct meanings.
+A stale generation/lifetime, missing Agent, expired original deadline,
+revocation, queue exhaustion or disconnect is not silent success.
+Do not retry with a new identity or renewed deadline as if it were the same request.
 .SH FILES
 .TP
 .I /etc/sparklink/main.conf
-Daemon configuration file. See
-.BR sparklink.conf (5).
+Configuration; see sparklink.conf(5) and the single WS73 policy reference.
 .TP
 .I /dev/sparklink
-Kernel driver character device.
+Native kernel interface; permissions and experimental VM setup are required.
 .TP
 .I /var/lib/sparklink/
-Persistent bonding data directory.
-.TP
-.I /var/run/dbus/system_bus_socket
-D\-Bus system bus socket.
+Legacy metadata by default; no native trusted Bond persistence qualification.
 .SH SIGNALS
-.TP
-.B SIGINT, SIGTERM
-Graceful shutdown.
+SIGINT and SIGTERM request manager shutdown and per-controller cleanup.
+Daemon restart does not promise survival of all application sockets.
+.SH INSTALLATION LIMITS
+Experimental bundles and generic installation are different paths. The generic
+Makefile/service prefix mismatch, upgrade/rollback and uninstall preservation
+remain tracked; this manual does not certify a clean-distribution deployment.
 .SH SEE ALSO
 .BR slctl (1),
 .BR sparklink.conf (5),
-.BR dbus\-daemon (1)
+.BR dbus-daemon (1)

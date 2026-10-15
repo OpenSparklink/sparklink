@@ -38,6 +38,15 @@ with
 .B scan on
 or
 .BR "advertise on" .
+.SH SUPPORT BOUNDARY
+This unreleased CLI retains legacy command spellings. Pair/security, legacy
+services/remote-services/read/write, PHY setters, RAL/RPA, sync, measurement,
+PM and extended-advertising commands are not qualified Native capabilities
+and may explicitly fail NotSupported. Their descriptions below name the
+historical operation, not an implementation promise. Current SSAP operations
+use the distinct ssap-* commands and canonical Connection objects. Consult
+project/current-capabilities.md for exact source/artifact qualifications.
+All experimental driver and real WS73 operations remain VM-only.
 .SH COMMANDS
 .SS Discovery and Connection
 .TP
@@ -57,7 +66,7 @@ List discovered devices.
 Show detailed information for a device.
 .TP
 .BI pair " address"
-Pair with a device.
+Legacy pairing facade; currently NotSupported.
 .TP
 .BI connect " address"
 Connect to a device.
@@ -67,16 +76,16 @@ Disconnect the current or specified device.
 .SS SSAP Services
 .TP
 .B services
-List local SSAP services and properties.
+Legacy facade; currently NotSupported. Use the distinct local SSAP API.
 .TP
 .B remote\-services
-List remote SSAP services from a connected peer.
+Legacy facade; currently NotSupported. Remote SSAP uses a Connection actor.
 .TP
 .BI read " handle"
-Read a service property by handle.
+Legacy facade; currently NotSupported.
 .TP
 .BI write " handle hex_data"
-Write data to a service property.
+Legacy facade; currently NotSupported.
 .SS PHY and Radio Control
 .TP
 .BI role " [g|t]"
@@ -172,10 +181,10 @@ Show power management status.
 Show data\-link indicator information.
 .TP
 .B stats
-Show controller statistics.
+Show the native LinkSnapshot summary; not mixed legacy subsystem counters.
 .TP
 .B events
-Show event statistics.
+Show the selected registration event position; not delivered/ACK/pending counts.
 .TP
 .B mgmt
 Show management statistics.

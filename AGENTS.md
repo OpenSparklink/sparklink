@@ -11,15 +11,14 @@ SparkLink (星闪) 无线通信协议的用户态基础设施，对标 BlueZ 的
 ## 构建
 
 ```bash
-cd ~/Documents/opensparklink/sparklink && cargo check
-cargo build
-cargo clippy -- -W clippy::all
-cargo test
+cargo +1.96.1 check --locked --workspace
+cargo +1.96.1 build --locked --workspace
+cargo +1.96.1 clippy --locked --workspace --all-targets -- -D warnings
+cargo +1.96.1 test --locked --workspace
 ```
 
-- Edition: 2024
-- MSRV: 跟随 Rust stable 最新版
-- Workspace 根: `~/Documents/opensparklink/sparklink/`
+资格工具链按具体 artifact 记录固定（当前保留镜像为 Rust 1.96.1）；浮动 stable
+仅用于单独的前向兼容检查，不能替代资格构建。根 Cargo.lock 与文档 uv.lock 分开。
 
 ## Crate 结构
 
@@ -73,7 +72,7 @@ unsafe { ioctl::sl_stop_adv(self.raw_fd())? };
 ### D-Bus 接口规范
 
 - 总线名称: `org.sparklink`
-- 对象路径: `/org/sparklink`, `/org/sparklink/adapter<N>`
+- 对象路径: `/org/sparklink`, `/org/sparklink/slk{index}_g{generation}`；Peer/Connection 按完整 lifetime 路径，不使用旧 adapterN 别名
 - 接口: `org.sparklink.Manager`, `org.sparklink.Adapter`, `org.sparklink.Device`, `org.sparklink.Security`, `org.sparklink.ServiceManager`, `org.sparklink.RemoteService`
 
 ### Commit 规范
@@ -86,7 +85,7 @@ unsafe { ioctl::sl_stop_adv(self.raw_fd())? };
 <详细说明>
 
 Signed-off-by: sanchuanhehe <wyihe5220@gmail.com>
-Assisted-by: GitHub Copilot <copilot@github.com>
+Assisted-by: <实际使用的助手及邮箱>
 ```
 
 type 取值:
@@ -122,7 +121,7 @@ Trailer 要求:
 │   ├── config/main.conf
 │   ├── dbus/ (org.sparklink.service, sparklink.conf)
 │   └── systemd/sparklink.service
-└── userspace-infrastructure-plan.md
+└── project/implementation-plan.md (唯一实施计划)
 ```
 
 ## 内核侧对应关系
@@ -131,18 +130,30 @@ Trailer 要求:
 - `/dev/sparklink` chardev (版本化 Native 管理/事件/诊断及待迁移旧 ioctl)
 - Generic Netlink `sparklink` 定义（接通与验收按具体调用路径核对）
 - debugfs `/sys/kernel/debug/sparklink/`
-- configfs (设备固件/名称)
+- configfs 旧配置消费者已退休；不能据目录或旧声明承诺固件/名称控制能力
 
 用户态通过 `slk-protocol` crate 的 ioctl 包装与内核交互。
 
 ## 实施与验收状态
 
-文件、API 和独立测试的存在不表示功能完成。原“七阶段全部完成”记录已移除；
-当前每设备 Native WS73 广播扫描/物理拔插已有 VM 真实设备证据，自动恢复根因、
-连接、SSAP、安全/Bond、Profile/HID、PHY/PM、Proxy 和完整发布验收仍开放。
-按 [当前复核与整改计划](history/cleanup/review-remediation-20261011.md) 和两仓库 issues
-维护能力状态。清理旧实现/死代码属于当前整改，先迁移调用者和有效测试再删除。
-UAPI 尚未发布，可同步修改或移除，无需保留旧接口兼容期。
+当前资格仅维护于 [能力入口](project/current-capabilities.md)及其结构化记录；
+目标架构与待办分别见 [架构](project/architecture.md)和[唯一计划](project/implementation-plan.md)。
+历史通过不升级新 HEAD。部分真实发现/连接/数据/SSAP/限定 Agent 门禁已封存，
+整项恢复、安全/Bond、多通道、四设备、部署与发布仍开放。UAPI 未发布，无兼容期。
+
+## 文档随开发维护
+
+每批先注明生产行为、读者任务、受影响契约和文档退出条件；本批相关门禁通过后
+继续下一条纵向链路，不等所有控制面或文档补齐。持续采用 Diátaxis：教程教会操作，
+how-to 解决任务，reference 写准确契约，explanation 解释理由；计划/资格/ADR/历史独立。
+接口变更同步签名、错误、权限、期限/退出、绑定、CLI、man 和示例；配置同步单位、
+默认/范围、覆盖/加载/升级；状态/所有权同步参考和必要 ADR。修复补回归与排错，
+测试补边界/准确证据，安装补升级/卸载；删除旧代码同步移除旧推荐，保留历史失败。
+实现与文档在同一可 review 批次提交；内部变更无文档影响须在 PR 说明理由。
+执行 `make docs`（包含静态示例和负对照），另记未执行的浏览器、外链和操作重放。
+不能将静态/HTML 通过当作内容完整或功能资格。里程碑抽查读者全流程、man/网站、
+版本/搜索/历史提示并重放适用教程；未具备条件就记缺口，不编造可用步骤。
+仅按本批影响触发检查，文档不是 WS73 主线前置；所有真实设备和实验驱动保持 VM-only。
 
 ## 注意事项
 

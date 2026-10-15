@@ -23,7 +23,15 @@
     "S6"
   ],
   "original_issue_count": 28,
-  "hardware_constraint": "VM_ONLY",
+  "hardware_constraint": {
+    "affected_port": "1-2.1.2",
+    "original_restore_verified": false,
+    "user_response": "User temporarily cannot operate hardware (2026-10-15)",
+    "manual_request_pending": false,
+    "current_available_scope": "Ports1-2.1.1 and1-2.1.4 completed directDown/originaldeadline VM gates; continue sole13X security/data/SSAP. No new manual action requested.",
+    "four_device_gate": "Incomplete pending safe availability, not waived",
+    "natural_recovery_acceptance": false
+  },
   "packages": [
     {
       "id": "WP00",
@@ -616,7 +624,7 @@
     "real": "Two source roles each five1270byte fragments/fullpool5, ETIMEDOUT at5.006/5.009s originaladmission; actualunchangedreply/fiveNOCP afterexpiry, oldfdENOTCONN/poll24, bothHeld leases/Ready and actualcleanupDown/peer scan.4prehold businessRT,0partialPDU delivery",
     "remaining": "Sole supported13X security consent/relay positive then Agent/install/encrypted app; postfailure ledger readback/fullcredit/submit/reuse combinations, multichannel/fourWS73/SSAP; port2restore and fullS0-S6"
   },
-  "updated_at_utc": "2026-10-15T04:23:11.788378+00:00",
+  "updated_at_utc": "2026-10-15T04:27:17.315761+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -660,7 +668,7 @@
     "DG_ORIGINAL_DEADLINE": "PARTIAL_REAL 494/e2a/eb4dffa two source roles, actualpool5/prefix1270, original5sETIMEDOUT not8srecvtimeout, unchangedrealreply release/fiveNOCP and failedfd retained. No directpostfailuredebtview or broadrecovery/security/reuse proof."
   },
   "next_resume_tasks": [
-    "Recheck pending user power-access/cold-reset response and affected port1-2.1.2. Verify original actual upload/Ready before reuse; never count hub/manual/reset as natural recovery. Continue other work while unavailable.",
+    "User temporarily cannot operate hardware; port1-2.1.2 original restore remains unverified. Do not repeat manual-operation requests without a changed condition. Continue available ports1/4 and offline implementation; original4-device/recovery scope not waived. If safe previously authorized power access actually becomes available, verify isolation/originalupload/Ready and keep it separate from natural recovery.",
     "Original5s data PDU deadline and directDown now scopedpassed both roles; do not add all control-race combinations as predecessor. Prioritize actual stock-supported13X negotiation under explicit Managed approval in sole physicalSession/relay/commandcredit/ticket, then actualAgent/keyinstall/encryption/peerbusiness. Fullsubmit/debt/reuse combinations remain parallel.",
     "Prioritize sole security mechanism positive stock-supported13X flow with explicit Agent approval, role-bound actual install/encryption and peer business. Existing Session/credit/tickets must be reused, no test key/nonces or synthetic success. Stock refusal/future corrected firmware and all S5 gates remain open.",
     "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
@@ -668,8 +676,8 @@
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "PENDING_CURRENT_ORIGINAL_DEADLINE_BATCH",
-  "issue_sync_receipt": "docs/evidence/begun-link-down-issues-20261015.json",
+  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_receipt": "docs/evidence/original-pdu-deadline-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
     "reason": "Added real partial-PDU directDisconnect gate, two source roles on ports1/4 passed at production494/e2a and VMtools2d6c250. Both actualDown, retained leases, stale ordinaryfd and peer scan verified;4 preDown app round trips,0partialPDU delivery. Stock relay/deadline/full barriers and port2restore remain open."
@@ -678,7 +686,7 @@
     "status": "PROGRESS",
     "reason": "Separate pinned8s realIN81 fixture built and boot-proved, original5s PDU deadline passed both roles at494/e2a/eb4dffa with actualpool5, five1270byte fragments, real delayedNOCP and no oldSession revival; first cross-clock verifier failure retained/fixed and repeated with new guest receipts.511 offline tests, no broad/security/recovery claim."
   },
-  "execution_status": "active; controlled originaldeadline and directDown subgates completed, continue sole supported13X security vertical plus data/SSAP; port2restore pending previously authorized power access/cold reset",
+  "execution_status": "active; user hardware action temporarily unavailable for port2, continue sole13X security/data/SSAP on verified ports1/4; full4-device/recovery requirements remain open",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "current_qualified_subsets": {

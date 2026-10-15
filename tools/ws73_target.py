@@ -1321,8 +1321,31 @@ def _run(args):
         if (output/'root.btrfs').is_file():
             m['vm_disk_after'] = file_record(output/'root.btrfs')
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
+    code=run_exit_code(m)
+    m['supervisor_exit']=code
+    if code and m['status']!='FAIL':
+        m['status']='FAIL';m['error']='terminal success status lacks required corroborated exit contract'
+    write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
-    return 0 if m['status'] in ['REAL_SECURITY_ORIGINAL_DEADLINE_PASS','REAL_PASSIVE_AUTHOR_CANCEL_PASS','REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS','REAL_CANDIDATE_KEY_AGREEMENT_PASS','REAL_LIMITED_SECURITY_CAPABILITIES_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
+    return code
+
+
+def run_exit_code(record):
+    if record.get('status') == 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS':
+        proof = record.get('security_agent_corroboration', {})
+        business = record.get('channel_socket_corroboration', {})
+        phases = proof.get('phases', [])
+        mode = record.get('live_security_agent_requested')
+        valid = (mode in ['approve','reject','timeout','cancel','agent-exit','caller-exit']
+                 and proof.get('status') == 'REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS'
+                 and len(phases) == 2 and all(p.get('mode') == mode for p in phases)
+                 and record.get('ordinary_channel_socket_acceptance') is True
+                 and business.get('status') == 'ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
+                 and business.get('round_trips') == proof.get('business_round_trips')
+                 and type(business.get('round_trips')) is int and business['round_trips'] > 0
+                 and record.get('qemu_exit') == 0)
+        return 0 if valid else 1
+    return 0 if record.get('status') in ['REAL_SECURITY_ORIGINAL_DEADLINE_PASS','REAL_PASSIVE_AUTHOR_CANCEL_PASS','REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS','REAL_CANDIDATE_KEY_AGREEMENT_PASS','REAL_LIMITED_SECURITY_CAPABILITIES_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
 
 
 def run(args):

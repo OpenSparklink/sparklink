@@ -5,6 +5,7 @@ No daemon, kernel, USB or actual application delivery qualification here.
 import json
 import unittest
 from ws73_capture import CaptureError
+from ws73_target import run_exit_code
 from ws73_security_agent import wire,witness
 from ws73_security_capabilities import OFFER
 
@@ -46,6 +47,17 @@ def fixture(mode='approve'):
 
 
 class AgentEvidenceTests(unittest.TestCase):
+    def test_new_success_status_requires_both_proofs_and_zero_supervisor_exit(self):
+        record=dict(status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS', live_security_agent_requested='approve',
+            security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=[dict(mode='approve'),dict(mode='approve')],business_round_trips=8),
+            channel_socket_corroboration=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8),ordinary_channel_socket_acceptance=True,qemu_exit=0)
+        self.assertEqual(run_exit_code(record),0)
+        for key in ['security_agent_corroboration','channel_socket_corroboration','qemu_exit','ordinary_channel_socket_acceptance','live_security_agent_requested']:
+            wrong=dict(record);wrong.pop(key)
+            self.assertEqual(run_exit_code(wrong),1,key)
+        wrong=dict(record, qemu_exit=1);self.assertEqual(run_exit_code(wrong),1)
+        wrong=dict(record, status='FAIL');self.assertEqual(run_exit_code(wrong),1)
+
     def test_exact_explicit_synthetic_witness_is_not_hardware_qualification(self):
         row,phase,daemon,capture=fixture()
         witness(row,phase,daemon)

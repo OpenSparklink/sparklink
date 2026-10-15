@@ -90,3 +90,7 @@ K494/Ue2a、VM工具2d6c250；4次前置应用往返与零次未完成PDU交付�
 不授予原期限、完整提交屏障、NOCP复用、原版relay或自然恢复资格。
 
 [真实断链本批九项issues读回回执](begun-link-down-issues-20261015.json)：原scope保持，整项OPEN。
+
+[两角色原5秒PDU期限、真实pool5/延期NOCP与首轮时钟反例](original-pdu-deadline-20261015.json)：
+独立有界8秒夹具、K494/Ue2a/工具eb4dffa；4次前置业务和零次未完成PDU交付分开，
+不授予完整debt/复用、安全或自然恢复资格。

@@ -241,6 +241,9 @@ poll的POLLOUT只承诺当前软件准入机会，不承诺USB提交、控制器
 排队超时只退休本Binding并报ETIMEDOUT。真正物理失败、期限届满或撤权时，没有
 合格的部分PDU清除/复用屏障，Session仍需明确失败及管理清理，不发布假Ready。
 这不是无限后台重试或对端处理承诺。关闭后reply的USB到达不等于应用已接收。
+VM受控延迟的因果关系须由请求、实际QMP状态和guest收到确认组成；宿主与guest
+墙钟有独立偏移，不能直接排序。原期限使用生产准入时钟及同一guest单调时钟核对；
+测试夹具的延迟上界与socket等待超时均不能替代该原期限。
 这些实现预算不代表当前实机资格；准确提交、分层长度边界与仍缺门禁只见
 [CURRENT_CAPABILITIES](current-capabilities.md)。
 

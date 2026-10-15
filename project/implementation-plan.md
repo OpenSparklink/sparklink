@@ -27,14 +27,20 @@
 3. 数据面已取得两角色begun期间直接disconnect子门禁，保持双方租约，真实双端Down、
    旧fd ESTALE/ERR/HUP和对端实际扫描；4次前置应用往返，未完成PDU零交付。
    [证据](../docs/evidence/begun-link-down-20261015.json)绑定K494/Ue2a/工具2d6c250，
-   不继承原Ud744全部长度资格。接着核对原5秒准入期限。现有QMP实际IN81 hold会在2秒自动放行，
-   不能直接当作5秒超时证据；先单独固定有界长hold测试夹具与源码/hash，再
-   复核begun前缀、真实credit耗尽后无新提交、超时终态、迟到完成与另一设备；
-   受控延迟不算自然恢复，不刷新期限，不替代安全正向主线。复用实际ledger/ticket/
-   C Session/Grant与六组撤权及本批两组Down回归。模型映射实现锁/身份/引用，原始deadline不刷新；
-   late/duplicate NOCP与handle复用尚未证明，按本次性质设置门禁，不等待控制竞争全集。
-   随后动态通道、四设备两组、唯一用户态SSAP通知/指示/ACK与真实应用交付继续推进。
-4. 本批工具505检查、Down类型负向与两份封存重放，及准确VM正反证据通过限定门禁；诊断265实际codec Clang sanitizer
+   不继承原Ud744全部长度资格。本批再取得两角色原5秒PDU期限子门禁：独立8秒
+   QEMU夹具实际hold成功IN81，真实pool5/1270字节前缀，原准入后5.006/5.009秒
+   ETIMEDOUT、原回复释放/五条NOCP后旧fd仍失败，实际Down清理/peer扫描保持。
+   [准确证据及首轮时钟验证失败](../docs/evidence/original-pdu-deadline-20261015.json)
+   保留；跨时钟用guest确认收据，原2秒夹具未改。失败后Binding查询拒绝，不能把
+   USB/NOCP计数代替失败后ledger读回或完整守恒/复用证明。
+   上述撤权/直接Down/期限的限定门禁已经取得，不再追加全部控制竞争作为前置。
+   近期下一条纵向链路回到唯一安全机制：沿SDK111支持13X，在同一物理Session、
+   relay转换/命令credit/提交票据中接入显式管理批准与严格角色/当前epoch/lifetime；
+   首先取得真实协商消息对端接收，随后实际密钥安装/加密与peer业务。默认未批准
+   继续拒绝，不能以capability协商冒充配对或认证，不新增另一Engine。
+   原期限/撤权/Down到最终提交、late/duplicate NOCP与handle复用继续按本次性质组合
+   建模/实测，不阻塞动态通道、四设备两组、唯一用户态SSAP通知/指示/ACK纵向开发。
+4. 本批工具511检查、跨时钟反例与两份新期限捕获封存重放，及准确VM正反证据通过限定门禁；诊断265实际codec Clang sanitizer
    533352项IO检查不等于形式化证明或固件ABI。原C consent311仍排除锁/引用/Runtime/
    HCD/NOCP；Kani unsupported/timeout/展开不全继续NOT_PROVEN，不抑制警告换PASS。
 5. 严格区分staged文件、实际USB上传、执行、控制器Complete、peer协议和应用处理。

@@ -6,6 +6,7 @@ peer relay RX, installation and application delivery are checked separately.
 """
 from pathlib import Path
 import json
+import hashlib
 import os
 import re
 import selectors
@@ -38,8 +39,23 @@ def prompt_fields(line, obj):
         raise CaptureError('actual CLI prompt must match original physical reference')
     return dict(request_id=int(p[0]), deadline_monotonic_ns=int(p[9]), path=p[1])
 
+def validate_binary(binary, root=None, guest_files=None):
+    if (not re.fullmatch(r'/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}/slctl', binary['path'])
+            or not re.fullmatch(r'[0-9a-f]{64}', binary['sha256'])):
+        raise CaptureError('versioned staged CLI identity required')
+    if root is not None:
+        expected = Path(root) / binary['path'].lstrip('/')
+        matches = [v for v in guest_files if Path(v['path']) == expected]
+        if len(matches) != 1 or matches[0]['sha256'] != binary['sha256'] or hashlib.sha256(expected.read_bytes()).hexdigest() != binary['sha256']:
+            raise CaptureError('CLI differs from the sealed prepared artifact')
+
+
 def execute(run, phase, row):
-    if str(run.args.slctl) != '/bin/slctl': raise CaptureError('sealed staged production CLI path required')
+    binary = dict(run.data['slctl'])
+    validate_binary(binary)
+    if str(run.args.slctl) != binary['path'] or hashlib.sha256(Path(binary['path']).read_bytes()).hexdigest() != binary['sha256']:
+        raise CaptureError('actual staged CLI identity changed')
+    row['cli_binary'] = binary
     entries = sorted(phase['typed_objects'], key=lambda e: -e['object']['role'])
     if [e['object']['role'] for e in entries] != [1, 0]:
         raise CaptureError('passive T before active G required')
@@ -117,7 +133,7 @@ def execute(run, phase, row):
         row['end_wall_ns'] = time.time_ns()
         row['status'] = 'PENDING_USB_AND_APPLICATION_CORROBORATION'
         run.save()
-        witness(row, phase, run.data['bus_before'])
+        witness(row, phase, run.data['bus_before'], binary)
     finally:
         # Reap every subprocess on failure too; cleanup is never a positive verdict.
         for p, record, _ in live.values():
@@ -133,7 +149,9 @@ def execute(run, phase, row):
                 stream.close()
         selector.close(); run.save()
 
-def witness(row, phase, daemon):
+def witness(row, phase, daemon, binary):
+    validate_binary(binary)
+    if row['cli_binary'] != binary: raise CaptureError('different CLI artifact identity')
     if row['status'] != 'PENDING_USB_AND_APPLICATION_CORROBORATION' or row['mode'] not in ['cli-approve', 'cli-reject']:
         raise CaptureError('actual CLI evidence pending independent proof required')
     records = row['cli_processes']
@@ -146,7 +164,7 @@ def witness(row, phase, daemon):
         agent, request = pair['agent'][0], pair['request'][0]
         for record in [agent, request]:
             credentials(record['process_status'])
-            if (record['args'][0] != '/bin/slctl' or record['controller'] != owner['path'] or not row['start_wall_ns'] <= record['start_wall_ns'] <= record['end_wall_ns'] <= row['end_wall_ns']
+            if (record['args'][0] != binary['path'] or record['controller'] != owner['path'] or not row['start_wall_ns'] <= record['start_wall_ns'] <= record['end_wall_ns'] <= row['end_wall_ns']
                     or record['args'] != [record['args'][0], '--adapter', owner['path']] + (['agent'] if record['kind']=='agent' else ['security-request',obj['path'],'5000'])):
                 raise CaptureError('CLI source/arguments/time/reference mismatch')
         ready = [l for l in agent['stdout'].splitlines() if l.startswith('AgentReady:')]

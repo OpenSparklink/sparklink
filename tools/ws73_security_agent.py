@@ -29,10 +29,10 @@ def execute(run,phase):
     row['events']=[json.loads(line) for line in result['stdout'].splitlines()]
     row['end_wall_ns']=time.time_ns();row['status']='PENDING_USB_AND_APPLICATION_CORROBORATION';run.save()
 
-def witness(row,phase,daemon):
+def witness(row,phase,daemon,binary=None):
     if row.get('mode','').startswith('cli-'):
         from ws73_security_cli import witness as cli_witness
-        return cli_witness(row,phase,daemon)
+        return cli_witness(row,phase,daemon,binary)
     if row['status']!='PENDING_USB_AND_APPLICATION_CORROBORATION' or row['mode'] not in MODES:raise CaptureError('complete explicit Agent witness required')
     if [json.loads(line) for line in row['command']['stdout'].splitlines()] != row['events']:raise CaptureError('sealed Agent transcript mismatch')
     if row['command']['exit']!=0 or not row['events']:raise CaptureError('Agent process did not finish')
@@ -142,7 +142,7 @@ def corroborate(control,capture):
     if len(rows)!=2 or len(phases)!=2:raise CaptureError('both exchanged connection roles required')
     result=[]
     for row,phase,business in zip(rows,phases,control['channel_socket'],strict=True):
-        witness(row,phase,control['bus_before'])
+        witness(row,phase,control['bus_before'],control.get('slctl'))
         proof=wire(row,phase,capture)
         if business['session_start_wall_ns']!=phase['start_wall_ns'] or business['start_wall_ns']<row['end_wall_ns'] or business.get('close_prefix'):raise CaptureError('same physical Session ordinary application delivery must follow Agent procedure')
         result.append(dict(mode=row['mode'],wire=proof,application_phase=business['phase']))

@@ -1101,6 +1101,9 @@ def _run(args):
                 if agent_mode:
                     from ws73_security_agent import corroborate as agent_corroborate
                     if any(v['mode']!=agent_mode for v in control['security_agent']):raise ValueError('explicit Agent mode mismatch')
+                    if agent_mode.startswith('cli-'):
+                        from ws73_security_cli import validate_binary
+                        validate_binary(control['slctl'],args.prepared/'root',package['guest_files'])
                     m['security_agent_corroboration']=agent_corroborate(control,capture)
                 if acb_probe != ('acb_transport_probe' in control):raise ValueError('explicit ACB probe request/evidence mismatch')
                 if acb_probe:

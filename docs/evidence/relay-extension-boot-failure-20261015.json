@@ -207,7 +207,8 @@
     "cannot_generate_upload_image": true,
     "source_combined111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
     "no_host_experimental_install": true,
-    "original_inputs_unchanged": true
+    "original_inputs_unchanged": true,
+    "known_bad_private_artifact": "retired-firmware-experiments/contiguous-sdk111-DO-NOT-UPLOAD-d468c666.bin (read-only; retained as failure evidence, never a default input)"
   },
   "hardware_access": {
     "current_vm_processes": "All these owned experiment/restore processes terminal",
@@ -215,13 +216,23 @@
     "sudo_noninteractive_query": "password required, including exact user-authorized hub query",
     "user_question": "Requested restoration of previously configured hub access or cold power of affected dongle only; no password requested",
     "hardware_actions_do_not_qualify_natural_recovery": true,
-    "host_hub_power_action_attempted": false,
-    "guest_usb_core_power_cycle_logged": "Guest enumeration retry logged a virtual port power-cycle attempt; no physical power cut or successful recovery inferred."
+    "guest_usb_core_power_cycle_logged": "Guest enumeration retry logged a virtual port power-cycle attempt; no physical power cut or successful recovery inferred.",
+    "host_hub_power_command_attempted": true,
+    "host_hub_power_action_executed": false,
+    "sudo_noninteractive_cycle": "password required for exact /usr/bin/uhubctl -f -l 1-2.1 -a cycle; no power action executed",
+    "cycle_preflight": "No active workspace test QEMU; all four selected hub children ffff:3733"
   },
   "offline": {
     "actual_tool_tests": 502,
     "log_sha256": "9e4877648a6fb97905e039b411ebfa3a0f15d0806a5f6ffd2a47b96d46c3ea14",
-    "scope": "Transformation preservation, bounded runtime placement arithmetic, retired CLI and ordinary actual fd/credential tests; NOT boot/RF/proof success"
+    "scope": "Transformation preservation, bounded runtime placement arithmetic, retired CLI and ordinary actual fd/credential tests; NOT boot/RF/proof success",
+    "ci": {
+      "head": "6ae5df744a19865ef49b41a83346d39b476fd437",
+      "ci": 38676325648,
+      "documentation": 38676325643,
+      "conclusion": "success",
+      "scope": "Source and docs only; NOT boot, recovery or hardware qualification"
+    }
   },
   "formal": {
     "new_hardware_or_boot_proof": false,

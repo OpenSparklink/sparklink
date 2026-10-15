@@ -616,7 +616,7 @@
     "real": "Extra2560 fixed code bytes verified, but new imageboot timeout at fifth data transfer. Initial original Ready not relabeled as new Ready. Original restore failed enumeration and remains unverified.",
     "remaining": "Restore affected device, establish safe segmented/bootstrap boundaries before firmware retry; stock13X Agent/approval/install/encrypted business; begunDown/deadline/NOCP reuse, all originalS0-S6"
   },
-  "updated_at_utc": "2026-10-15T03:24:31.016284+00:00",
+  "updated_at_utc": "2026-10-15T03:33:01.836561+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -666,8 +666,8 @@
     "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
     "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
   ],
-  "issue_sync_status": "PENDING_THIS_BATCH_EXISTING_ISSUES",
-  "issue_sync_receipt": "docs/evidence/relay-table-issues-20261015.json",
+  "issue_sync_status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "issue_sync_receipt": "docs/evidence/relay-extension-failure-issues-20261015.json",
   "previous_goal_turn_classification": {
     "status": "PROGRESS",
     "reason": "Official ISA tool resolves critical decode gap;5632 actual code bytes verified; stock descriptor omission causally narrowed by asymmetric variants, real correct1ff/02 peer PairReject delivered under isolated derivative; both original images restored and failure reproduced. No stock production/security/recovery completion."

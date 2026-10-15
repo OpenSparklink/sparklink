@@ -82,3 +82,5 @@
 
 [保留旧表项连续扩展的boot失败、输出入口退役及第2只恢复缺口](relay-extension-boot-failure-20261015.json)：
 运行态布局检查不能证明下载器工作区；502离线检查不等于该镜像实机通过。
+
+[连续扩展失败本批九项issues读回回执](relay-extension-failure-issues-20261015.json)：原scope与OPEN保持。

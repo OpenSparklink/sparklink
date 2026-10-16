@@ -7,6 +7,9 @@ export DBUS_SESSION_BUS_ADDRESS=$DBUS_SYSTEM_BUS_ADDRESS
 export PYTHONHOME=/usr
 fail() {
     echo "WS73_TARGET_FAILURE: $*"
+    if [ -f /evidence/session-service/run.json ]; then
+        /bin/python3 /usr/share/sparklink/tools/ws73_session_service.py abort > /evidence/session-service-abort.log 2>&1 || true
+    fi
     # A failed bootstrap is still evidence. Stop our owned processes and
     # flush usbmon before shutdown, even when the ordinary shell never opened.
     if [ -n "${daemon:-}" ]; then
@@ -80,6 +83,9 @@ fi
 mount -t 9p -o trans=virtio,version=9p2000.L evidence /evidence || fail 'private evidence share'
 chown 0:0 /evidence; chmod 0755 /evidence
 mkdir /evidence/application; chown 1000:1002 /evidence/application; chmod 0700 /evidence/application
+if grep -qw ws73.session_service=1 /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_session_service.py start > /evidence/session-service-start.log 2>&1 || fail 'Session service trace start'
+fi
 if [ -f /scratch-root-uuid ] && grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
     cat /sys/kernel/tracing/events/header_page > /evidence/benchmark-xhci-header-start.txt || fail 'trace header start'
     printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"requested_buffer_kb":1024,"subbuffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$(cat /sys/kernel/tracing/buffer_subbuf_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-start.json || fail 'trace start readback'
@@ -184,6 +190,9 @@ if grep -q 'ws73.connected_case=' /proc/cmdline; then
 fi
 if grep -qw ws73.channel_grant=1 /proc/cmdline; then
     ! grep -qw ws73.recovery=1 /proc/cmdline || fail 'Grant gate excludes artificial recovery'
+    if grep -qw ws73.session_service=1 /proc/cmdline; then
+        /bin/python3 /usr/share/sparklink/tools/ws73_session_service.py finish > /evidence/session-service-finish.log 2>&1 || fail 'Session service trace finish'
+    fi
     kill -INT "$capture"; wait "$capture" || fail 'Grant capture sealing'
     capture=''
     dmesg > /evidence/kernel.log
@@ -407,6 +416,9 @@ fi
 kill -TERM "$daemon"
 for n in $(seq 1 100); do kill -0 "$daemon" 2>/dev/null || break; sleep 0.1; done
 kill -0 "$daemon" 2>/dev/null && fail 'daemon cleanup timeout'
+if grep -qw ws73.session_service=1 /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_session_service.py finish > /evidence/session-service-finish.log 2>&1 || fail 'Session service trace finish'
+fi
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py bindings-writer || fail 'actual C/Python ownership writer'
 fi

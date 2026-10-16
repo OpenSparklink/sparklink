@@ -36,7 +36,9 @@ worker 决定休眠和新通知可能并发；合并通知不等于可以丢事�
 
 默认关闭的 Session 观测点分别记录 worker、软件队列和实际提交回调。它们不含
 业务载荷或密钥；准入、出队、USB 接受、同步返回和操作退休都不等于对端收到。
-观测序号只用于关联，不替代 generation/lifetime 或 Grant。丢失记录和未覆盖的
+观测序号只用于关联，不替代 generation/lifetime 或 Grant。VM 专用采集器在原业务
+门禁之后关联 Session 阶段与 USB OUT；它没有新的发送路径，见[测量操作](../how-to/measure-socket-ping-pong.md)。
+丢失记录和未覆盖的
 控制分支必须单列；实际字段与范围见固定源码的
 [内核说明](https://github.com/OpenSparklink/linux/blob/c4d5362276d43b6a21fc4f8f152f84f0827bf642/Documentation/networking/sparklink-implementation.rst)。
 

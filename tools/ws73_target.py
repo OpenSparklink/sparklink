@@ -117,7 +117,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/genl_registry_test.c',
@@ -256,7 +256,7 @@ def prepare_locked(args, build_fd):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -577,6 +577,9 @@ def _run(args):
     channel_deadline=bool(getattr(args,'managed_channel_deadline',False))
     session_idle=bool(getattr(args,'managed_channel_idle_observe',False))
     if session_idle and (not channel_revoke_prefix or channel_deadline or channel_link_down or connected_case!='release' or connected_reply or bool(getattr(args,'managed_channel_directions',False)) or channel_scm_rights):raise ValueError('separate release/prefix normal2s real Session idle observation required')
+    session_service=bool(getattr(args,'session_service_observe',False))
+    if session_service and (args.command!='run' or support or parallel or dynamic_channels or agent_mode or channel_close or session_idle or connected_reply or getattr(args,'managed_security_capabilities',False) or not (channel_socket or channel_grant or benchmark_mode)):
+        raise ValueError('Session service trace requires separate real fixed-channel data or Managed Grant gate')
     security_capabilities=bool(getattr(args,'managed_security_capabilities',False))
     security_kind=getattr(args,'managed_security_kind','capabilities')
     original_deadline=security_kind=='original-deadline'
@@ -739,6 +742,9 @@ def _run(args):
     m['live_channel_grant_gate']=channel_grant
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
+    m['session_service_observation_requested']=session_service
+    m['session_service_acceptance']=False
+    if session_service:m['session_service_verifiers']=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]
     m['session_idle_observation_requested']=session_idle
     if session_idle:m['session_idle_verifier']=file_record(HERE/'ws73_session_idle.py')
     m['live_security_capabilities_requested']=security_capabilities
@@ -877,6 +883,7 @@ def _run(args):
                      (' ws73.channel_link_down=1' if channel_link_down else '')+
                      (' ws73.channel_deadline=1' if channel_deadline else '')+
                      (' ws73.session_idle=1' if session_idle else '')+
+                     (' ws73.session_service=1' if session_service else '')+
                      (' ws73.security_capabilities=1' if security_capabilities else '')+
                      (' ws73.security_cancel_pending=1' if cancel_pending else '')+
                      (' ws73.security_original_deadline=1' if original_deadline else '')+
@@ -1376,6 +1383,16 @@ def _run(args):
         if parallel and file_record(HERE/'ws73_parallel.py')!=m['parallel_verifier']:
             raise ValueError('parallel verifier changed during run')
         prepared(args.prepared.resolve())
+        if session_service:
+            if m['status'] not in ['PASSTHROUGH_SUPPORT_PASS','REAL_CHANNEL_GRANT_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS']:
+                raise ValueError('Session observation cannot replace failed original real gate')
+            from ws73_session_service import corroborate as service_corroborate
+            control_path=share/('connected-file/run.json' if channel_grant else 'application/passthrough-control/run.json')
+            m['session_service_observation']=service_corroborate(json.loads(control_path.read_text()),capture,share)
+            if m['session_service_verifiers']!=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]:
+                raise ValueError('Session observation verifier changed during execution')
+            m['session_service_acceptance']=True
+
         if queue_peer and file_record(HERE/'ws73_management_queue_ready_peer.py')!=m['managed_queue_ready_peer_verifier']:
             raise ValueError('Ready queue peer verifier changed during run')
         if queued_gate and file_record(HERE/'ws73_management_queued.py')!=m['managed_queue_verifier']:
@@ -1483,6 +1500,13 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record):
+    requested=record.get('session_service_observation_requested',False)
+    if not requested and (record.get('session_service_acceptance') or 'session_service_observation' in record):return 1
+    if requested:
+        proof=record.get('session_service_observation',{})
+        if (record.get('session_service_acceptance') is not True or record.get('qemu_exit')!=0
+                or proof.get('status')!='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED'
+                or any(type(proof.get(k)) is not int or proof[k]<=0 for k in ['services','attempts','accepted_usb_packets','operations'])):return 1
     if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record):return 1
     if record.get('socket_benchmark_requested'):
         proof=record.get('socket_benchmark_corroboration',{})
@@ -1629,6 +1653,7 @@ def main():
             cmd.add_argument('--managed-security-capabilities',action='store_true',help='explicit Managed security negotiation gate; select bounded kind, never Pair/Encrypted')
             cmd.add_argument('--managed-channel-deadline',action='store_true',help='original5s begun-PDU deadline with separate bounded8s real IN81 hold, not recovery')
             cmd.add_argument('--managed-channel-link-down',action='store_true',help='direct physical Disconnect after actual begun PDU while both Managed leases remain held; separate from revoke/deadline/recovery')
+            cmd.add_argument('--session-service-observe',action='store_true',help='dedicated default-off real Session service/queue/atomic USB trace;not performance or peer delivery proof')
             cmd.add_argument('--managed-channel-idle-observe',action='store_true',help='dedicated VM ftrace of drained Session idle between real business and controlled prefix;not performance qualification')
             cmd.add_argument('--managed-channel-revoke-prefix',action='store_true',help='actual partial2042-byte USB PDU across per-controller Managed withdrawal, never natural recovery')
             cmd.add_argument('--managed-connected-index',type=int,choices=[0,1],default=0,help='actual Create caller in established-link File gate')

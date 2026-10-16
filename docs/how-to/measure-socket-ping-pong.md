@@ -172,3 +172,21 @@ python3 tools/ws73_rx_gap.py "$NEW_RUN_DIRECTORY" > "$NEW_RX_OBSERVATION"
 多轮应用RTT与USB分段；具体单位和不能推导的范围见[指标参考](../reference/socket-benchmark.md)。
 追踪缺原件、配置读回不符或任何必要门禁失败都保留失败，不拿成功轮次覆盖。
 on/off差异仅说明该配置的xHCI增量影响，不授予稳定阈值或最低硬件时延。
+
+
+## 在 VM 内收集 Session 服务与提交记录
+
+需要具备 `sparklink_session_work/queue/tx` 观测点的匹配内核、重新 `prepare` 的工具
+及两个真实端口。在上面的独立 Native benchmark 命令上添加
+`--session-service-observe`，使用新的输出目录。也可用于独立固定 CUTC 的
+`--channel-socket-verify` 或 Managed Grant 门禁；动态通道、Agent、prefix-close
+及空闲观测暂不支持此组合。不能直接在宿主启动采集脚本。
+
+监督器在私有 scratch VM 中创建独立 trace 实例，记录双方身份、原始格式、时钟
+锚点与 CPU 丢失计数，退出后停止并移除实例。先通过原业务与 USB 门禁，再核对
+Session 原件；任一失败整轮不能通过。输出位于 guest-output 的 `session-service/`
+及 manifest 的 `session_service_observation`。缺失记录、无法关联或时钟跳变时保留
+失败，不用另外一轮成功覆盖；具体阶段和限制见[指标参考](../reference/socket-benchmark.md)。
+
+这是高扰动诊断，不授予稳定性能阈值、credit 准确性、callback drain 或公平性资格。
+新入口的实机结果须按准确工具与编译 artifact 单独登记，不能继承历史资格。

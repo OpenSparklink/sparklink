@@ -15,6 +15,7 @@ import re
 from ws73_benchmark import distribution
 from ws73_capture import CaptureError, check_capture_stats, read_capture
 from ws73_socket_benchmark import corroborate
+from ws73_trace_layout import buffer_kib
 
 
 def material(path):
@@ -32,13 +33,9 @@ def check_xhci(share, mode):
     # then the KiB floor in tracing_entries_read; do not accept a tolerance.
     headers=[(share/f'benchmark-xhci-header-{n}.txt').read_text() for n in ['start','end']]
     if headers[0]!=headers[1] or len(headers[0])>4096:raise CaptureError('same original trace page layout before/after')
-    fields=re.findall(r'field: char data;\s*offset:(\d+);\s*size:(\d+);',headers[0])
     subbuffer=rows[0].get('subbuffer_kb')
-    if len(fields)!=1 or type(subbuffer) is not int or subbuffer not in [4,8,16,32,64]:raise CaptureError('actual bounded trace subbuffer layout')
-    offset,payload=map(int,fields[0])
-    if not 0<offset<=128 or payload+offset!=subbuffer*1024:raise CaptureError('trace header/data/subbuffer sizes disagree')
-    pages=max(2,(1024*1024+payload-1)//payload)
-    actual_kb=pages*payload//1024
+    try:actual_kb,payload=buffer_kib(headers[0],1024,subbuffer)
+    except ValueError as error:raise CaptureError(str(error)) from error
     expected=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=actual_kb,requested_buffer_kb=1024,subbuffer_kb=subbuffer,cookie=cookie)
     if any(type(v.get(k)) is not int for v in rows for k in ['buffer_kb','requested_buffer_kb','subbuffer_kb']) or rows!=[expected,expected]:raise CaptureError('actual trace start/end configuration differs')
     path=share/'xhci-trace.log';text=path.read_text();stats=(share/'xhci-trace-stats.txt').read_text()

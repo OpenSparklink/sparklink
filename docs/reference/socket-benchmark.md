@@ -169,3 +169,28 @@ NOCP单独保留handle/count事件，不擅自归给某条消息，也不作为�
 该工具仅输出完整成功原运行的观测；失败运行仍保留原结果、不得从完整尝试清单
 删除。样本量、扰动、资源峰值、饱和/公平性及所有旧未决资格继续由唯一能力入口
 记录；时间线和配置开关建立不等于取得新artifact的实机或完整性能资格。
+
+
+## Session 服务记录的限定关联
+
+`--session-service-observe` 仅在显式 Native 数据门禁启用。采集器要求 VM root、
+scratch 标识、QEMU DMI 和显式内核参数，禁止配置宿主 trace。独立实例使用 nop、
+mono 时钟、请求每 CPU 1024 KiB 并按实际 page layout 精确核对读回。两个 CPU 的
+零丢失计数、原始条数、唯一 begin/end、boot UUID 和原件 hash 都需闭合。
+
+work 的 begin/end 配对实际 Session 服务编号；queue 区分软件准入、出队和操作
+退休，保留原期限。尚未提交且 EAGAIN 的重新入队保留每次出队，不解释为重复
+准入。tx 的 Native 调用开始、同步返回与实际提交回调分别关联；只有回调 result=0
+是 USB 队列接受。已接受但同步返回失败仍列为不确定义务，不能算完整 PDU 或退款。
+每轮八次/4096 字节是数据尝试预算；2 ms 仅在下一次调用前检查，不是整轮 WCET。
+
+双方 controller/generation/lifetime 取自原普通应用收据，Managed 门禁另核对 epoch。
+固定 CMTC 与数据的实际接受数、PB/长度和顺序须匹配原 USB OUT；PB 序列不能混入
+其他操作。时钟映射只使用两次 guest realtime/monotonic 采样的共同偏移区间，含
+trace 量化误差；无交集即拒绝，不伪造跨时钟精确点值。未记录的动态 CMTC 分支
+显式排除，不能将该采集器泛化为所有通道的完整追踪。
+
+`REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED` 只表示这些观测相互一致。
+完整原业务门禁仍必需；它不是 USB 完成、NOCP、对端交付、纯 RF 时延、信用守恒、
+并发证明或性能资格。进程异常、边界未封存、未知事件与缺少阶段均失败；不把
+ABORTED/RUNNING 当作合格报告。

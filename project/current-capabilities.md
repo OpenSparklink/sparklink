@@ -4,11 +4,16 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
-[SDK111 安装回复屏障](../docs/evidence/security-install-reply-barrier-20261017.json)仅通过
-离线 callback/sanitizer、补丁链和暂停无设备匹配的 QMP 检查。默认关闭、保留实际
-成功 IN81 原帧、按完整 HCC 与 G/T opcode 选择，未改生产路径。**真实安装在途
-撤销与迟到回复仍未验收**，本批没有新 WS73、认证、Bond、恢复或形式化资格。
-既有 Agent/data 仍绑定其原始准确源码与产物，不能继承给新 QEMU 或最新 HEAD。
+[SDK111 安装后原请求取消](../docs/evidence/security-install-cancel-real-20261017.json)：
+K14d9/U6166、新QEMUdea80、U2/3真实两角色，共2次G原请求取消、2份真实接受帧
+持有/交还，另一端原生成功；随后8次对端实际校验回复。默认approve、249边界
+及2042长包另24次通过。原两次工具接线失败保留；681工具、严格clippy、2Rust、
+六历史报告重放及15实际证据负对照单列。屏障默认关闭，不改生产Host/Agent。
+**迟到后的不可改写检查针对daemon缓存结果**，原生取消快照在持帧期间取得；
+这不是迟到后物理debt/ref/callback排空、密钥擦除、认证/可信Grant/Bond或复用证明。
+完整安装撤权/最后fd/dup/Down/原期限组合、系统部署、安全及自然恢复继续开放。
+以前的[离线屏障](../docs/evidence/security-install-reply-barrier-20261017.json)保留原身份；
+旧 U42 的其他长度/生命周期/性能记录不自动转移到新 U6166 镜像。
 
 文档 DQ1 的[限定结果](../docs/evidence/documentation-dq1-and-theme-20261016.json)与
 Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-refinement-20261016.json)分别封存；

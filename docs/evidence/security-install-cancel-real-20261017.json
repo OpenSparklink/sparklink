@@ -1,0 +1,883 @@
+{
+  "schema_version": 1,
+  "status": "SELECTED_REAL_INSTALL_CANCELLATION_AND_RETAINED_GATES_PASS_FULL_SCOPE_INCOMPLETE",
+  "compiled_kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
+  "compiled_userspace": "6166b9129375eda825f020a9c3dc50998c86e269",
+  "executed_tools": "6166b9129375eda825f020a9c3dc50998c86e269",
+  "kernel_fixture": "aa0d63693f8c4d8da481842e31cd6673c05f8283",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "original_failures_result": "FAIL",
+  "full_exit_result": "UNPROVED",
+  "scope": [
+    "VM-only SDK111 physicalHi3873U2/3;port1Hi3873E excluded;ordinary actual system-bus author/Agent and basicCUTC31/PI241 applications, not fourdevice/mixedmodel qualification.",
+    "Original physical Session/commandcredit/submissionTicket and productioncrypto/relay/Agent reused. Only disposable testwitness/Host-guest gate changed; no newEngine or productiondriver/Host/Agent semantics change.",
+    "Two actual G installation submissions/held successful acceptance transfers followed by originalrequest cancellation, original lateacceptance hash/length and immutable daemon outcome; oppositeT actual nativecompletion plus both-end peer-validated randompayload replies.",
+    "Kernel state6 is the last native originalFile cancellation observation obtained while acceptance was held. Final immutability check observes cached daemon result, not a fresh postrelease kernelquery, ledger/ref/callbackdrain, encryption rollback, keywipe or reuse proof.",
+    "Actual physical install/initial encryption may complete despite cancellation. No authentication, trustedGrant, Bond, general security or independent cipher/RF-only attestation; approved noMITM SDK111 method only.",
+    "15 copied realdecoded evidence negatives rejected and original report replayed with same verifier, not an independent decoder. Six oldAgent modes exactly replayed, not fresh sixmode hardware qualification.",
+    "Selected retained defaultapprove,249boundary rejects and2042long pass; not a rerun of every historical length, Managedrelease/finalfd/dup/Down/originaldeadline or complete lifecycle matrix.",
+    "No new formal proof, debugkernel/sanitizer/race qualification or natural recovery. Existing offlinefixture ASan/UBSan/LSan is not production concurrency proof. NaturalRCA/nonmanualrecovery/NOCPtruth/reuse stillopen.",
+    "CompleteS0-S6/19WP/10FV/12DG and originalissue scope retained; UserHostlowpriority, VM-only. All attempts/failures preserved; no partialissueclosure."
+  ],
+  "real_gates": [
+    {
+      "name": "two-role-original-install-request-cancel-late-reply",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/install-cancel-real-v3/manifest.json",
+      "business_round_trips": 8
+    },
+    {
+      "name": "retained-approve",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/install-cancel-retained-approve-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "retained-boundary249",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/install-cancel-retained-boundary249-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 16
+    },
+    {
+      "name": "retained-long2042",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/install-cancel-retained-long2042-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "frozen-681-tools-and-strict-example-clippy",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "actual-original-replay-and-15-evidence-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "six-historical-agent-modes-exact-replays",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "new-qemu-empty-signed-kernel-root-smoke",
+      "status": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+      "result": "PASS"
+    }
+  ],
+  "original_failed_gates": [
+    {
+      "name": "original-attempt-v1",
+      "status": "FAIL",
+      "result": "FAIL",
+      "manifest": ".dev/install-cancel-real-v1/manifest.json",
+      "compiled_userspace": "7fd330c5eaa14b7079f81262749124c432cac469",
+      "executed_tools": "7fd330c5eaa14b7079f81262749124c432cac469",
+      "reason": "New mode omitted by guest init whitelist; no security witness ran",
+      "fixed_by": "c0509cc563e9d42ea3a4ebc1bafba4daf8618766",
+      "not_regraded": true
+    },
+    {
+      "name": "original-attempt-v2",
+      "status": "FAIL",
+      "result": "FAIL",
+      "manifest": ".dev/install-cancel-real-v2/manifest.json",
+      "compiled_userspace": "7fd330c5eaa14b7079f81262749124c432cac469",
+      "executed_tools": "c0509cc563e9d42ea3a4ebc1bafba4daf8618766",
+      "reason": "Ordinary caller correctly refused root evidence directory; witness not started",
+      "fixed_by": "6166b9129375eda825f020a9c3dc50998c86e269",
+      "not_regraded": true
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "full-install-managed-release-finalfd-dup-down-deadline",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "postrelease-native-debt-callback-ref-reuse-keywipe-proof",
+      "status": "NOT_PROVEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "authenticated-authorization-bond-full-deployment-and-natural-recovery",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "bounds": {
+    "real_vm_success": 4,
+    "real_role_phases": 8,
+    "new_cancelled_G_requests": 2,
+    "other_T_native_success": 2,
+    "actual_original_held_released_acceptances": 2,
+    "total_peer_business_round_trips": 32,
+    "boundary_rejections": 16,
+    "initial_failed_physical_attempts": 2,
+    "original_negotiation_deadline_ms": 5000,
+    "actual_hold_budget_ms": 2000,
+    "offline_tools": 681,
+    "actual_evidence_negative_controls": 15
+  },
+  "phases": [
+    {
+      "phase": 0,
+      "controller_index": 0,
+      "generation": 1,
+      "lifetime": 1,
+      "handle": 0,
+      "original_request_id": 1,
+      "original_deadline_ns": 33541652359,
+      "native_pending_before_cancel": 3,
+      "native_snapshot_after_cancel": 6,
+      "policy_after_cancel": 6,
+      "late_policy_snapshot_identical": true,
+      "actual_hold": {
+        "status": "ACTUAL_HOST_HOLD_CORROBORATED",
+        "host_transfer_sha256": "320e0f2253e60bdab2ea60844788fe49328cd821319679c635169abf9bdb6fa4",
+        "host_transfer_bytes": 178,
+        "delivered_usb_record": 530,
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false
+      },
+      "other_endpoint_policy": 4,
+      "other_endpoint_native": 9,
+      "relays": 9,
+      "opposite_receipts": 9,
+      "physical_installations": 2
+    },
+    {
+      "phase": 1,
+      "controller_index": 1,
+      "generation": 2,
+      "lifetime": 3,
+      "handle": 0,
+      "original_request_id": 2,
+      "original_deadline_ns": 35843745277,
+      "native_pending_before_cancel": 3,
+      "native_snapshot_after_cancel": 6,
+      "policy_after_cancel": 6,
+      "late_policy_snapshot_identical": true,
+      "actual_hold": {
+        "status": "ACTUAL_HOST_HOLD_CORROBORATED",
+        "host_transfer_sha256": "4fe06ded31b3a675992a32e7505c7032ff4f084347ecd43e60518e2693f5981f",
+        "host_transfer_bytes": 178,
+        "delivered_usb_record": 1650,
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false
+      },
+      "other_endpoint_policy": 4,
+      "other_endpoint_native": 9,
+      "relays": 9,
+      "opposite_receipts": 9,
+      "physical_installations": 2
+    }
+  ],
+  "remaining": [
+    "Actual G request cancellation slice exit met; full release/finalfd/dup/lease-revoke/Down/originaldeadline install composition remains open and can proceed in parallel.",
+    "Direct postterminal physical-debt/callback/ref/status observation and old handle/lifetime reuse barriers not proven by immutable daemon snapshot.",
+    "Advance actual authenticated security+local authorization needed for secure SSAP notification/indication; reuse existing production relay and sole userspace Engine. NoMITM encryption must not satisfy authenticated permissions.",
+    "Continue dynamicmultichannel/fourdevice business,fairness/observer/resource/performance gates; preserved U42 qualifications do not transfer to replacementE.",
+    "Naturalstartup/reenumeration/disappearance RCA, nonmanualrecovery, security/Bond/deployment/PM/release remain open; no manual/QMP/hub/injection recovery acceptance."
+  ],
+  "materials": [
+    {
+      "path": ".dev/install-cancel-real-v1/manifest.json",
+      "sha256": "2c28495452edccefd025ed2f5475cd6045731c9ca4319c274971b83a0197280a",
+      "bytes": 98623,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v1/console.log",
+      "sha256": "5bf5de8d2be97bbb79f19312f4d85aca2d28c2e1ca52d1c5d781dd6843a719a5",
+      "bytes": 16436,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v1/qmp.jsonl",
+      "sha256": "4fe5a8928a593fd1ac48cda1c6341188aa2c59066addc0321c057c68d992506e",
+      "bytes": 1756,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v1/guest-output/ws73.pcap",
+      "sha256": "0efd39f8f043afc21d9854bc557ef820c5a8e77d743cfb392dcc29e6a702dbb5",
+      "bytes": 489724,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v1/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "93865cfd46abfa8fa8d5699f0fb30b7c7e41e91baf05f0b44998e3620874a5e6",
+      "bytes": 664795,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-matrix-v1.json",
+      "sha256": "2a28e3662f78457fbdabb8555b0098737103c2204a319e3b70052f48e88cdd90",
+      "bytes": 1884,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v1.py",
+      "sha256": "5eb1bef3ce0a2c648f54a4319997448b96282f15184dfd3b47258b920cf5856a",
+      "bytes": 2911,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v2/manifest.json",
+      "sha256": "c00bc5e9ebb3425be5454c15aa24579e5e17fb2f38eb2a1a02749e5a6131253e",
+      "bytes": 45737,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v2/console.log",
+      "sha256": "c3e6ab43e408eb5ac6946899e8b55e5bfb3a47f8c052e85c3f3a70a77f05702b",
+      "bytes": 59457,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v2/qmp.jsonl",
+      "sha256": "4394629b6ac7ca66e944a760089fd289b46547a2808ec4fe3f5c5482730ee664",
+      "bytes": 1032,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v2/guest-output/ws73.pcap",
+      "sha256": "349c12aef6c29669bbe8b15d28ba8bc35848158c463724e7ffcb915d5fa8602f",
+      "bytes": 56748,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v2/guest-output/capture-stats.txt",
+      "sha256": "030ad8ba85575492ab0e6ebbed70ad6ed72a9f2ba5609272e85f01acf50e9c63",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "429b0a2416a5f4cbfad50183828f0b7b5a9e8c6c6e7992c33a3f872631b7074d",
+      "bytes": 34898,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-matrix-v2.json",
+      "sha256": "0b1eee5e5a7500af80c94bf23aa258d471b272466d2a830d2595c72de8d3b341",
+      "bytes": 1884,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v2.py",
+      "sha256": "309d928c62409ea811aebea13cf01eca572649f0718fc888d49f0b6a7ec5df0d",
+      "bytes": 2911,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v3/manifest.json",
+      "sha256": "579d3bcd943e008a2f08e4f9b6c77c58e9213c93eec0ea3dbb744b03857b1ccb",
+      "bytes": 1233092,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v3/console.log",
+      "sha256": "95e4269bf1802135e8a24902b336f4196f0e1d3c8a9a010e90d108d39ecf50ee",
+      "bytes": 16247,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v3/qemu-stderr.log",
+      "sha256": "5b6c59f16bdf3a1cac8e907a4319af3ddf55fc5b31be0e4fd9303219e39c7ed5",
+      "bytes": 514,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v3/qmp.jsonl",
+      "sha256": "e202771eafe9656d728ccbe7cf0e9f50408448ecb2e21912d9a369c41318e18d",
+      "bytes": 33949,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v3/guest-output/ws73.pcap",
+      "sha256": "c2985dcf99a062937bb31822e359263d97939b2131dde8cfc423e99599005baf",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v3/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v3/guest-output/application/passthrough-control/run.json",
+      "sha256": "af8593e8595597b59d7bbf9da84cd92000c0705b43657bdbf7f6205b1920e224",
+      "bytes": 716132,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-matrix-v3.json",
+      "sha256": "fd38149b63e9d1985121b343163c0b42c018fab4fd475164e76b82f2d43dac3e",
+      "bytes": 1892,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-real-v3.py",
+      "sha256": "490e69bbd5908403d5e7c9ce5df13f61bb4e1827787670422c8dce3a9de3c9a0",
+      "bytes": 2911,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-approve-v1/manifest.json",
+      "sha256": "78724325d0fed6c368cec8b575a41d04032bcbac71e9f37a9cc2c710bba0f9aa",
+      "bytes": 1222025,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-approve-v1/console.log",
+      "sha256": "e78ed9839b7b410e6016581793f32277b9aba647138c731342604a723df2320e",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-approve-v1/guest-output/ws73.pcap",
+      "sha256": "777dc0f76f6fae58e93f304a634073899012f7c9a6555246e3e55f43c731e7af",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-approve-v1/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "ebf138829c3d54ce68cf43aa55829a687beb92d31627099f690d73acfef18693",
+      "bytes": 697105,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-boundary249-v1/manifest.json",
+      "sha256": "a8c08bf216b971606d5637c3114e54cac3e0175acfc04bc3ce56cdb2c3765b71",
+      "bytes": 1263931,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-boundary249-v1/console.log",
+      "sha256": "fb7f5588b677ffea70ff8bac0325ba77741207dd0e65dcc21ec0bc0cb84777be",
+      "bytes": 16238,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-boundary249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-boundary249-v1/guest-output/ws73.pcap",
+      "sha256": "c7fc75ae367c7731a8de839b92a825e88fdf6c029eaae184346b866ac0b5cb6b",
+      "bytes": 530588,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-boundary249-v1/guest-output/capture-stats.txt",
+      "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-boundary249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "aa9ad2c61efb2f03c37065f2d838bb620cf248c05d848685362745894d55921c",
+      "bytes": 743346,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-long2042-v1/manifest.json",
+      "sha256": "8d1ec7fec625087ae71c407900e3e1c14577322430569eea706909f1a9d1dda4",
+      "bytes": 2243735,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-long2042-v1/console.log",
+      "sha256": "5cb06850543c8140fc33f2816088f1ae27da54a80c64d0662c47e7bce7504f59",
+      "bytes": 16213,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-long2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-long2042-v1/guest-output/ws73.pcap",
+      "sha256": "d04374701af7a09d6b644fb99951f014045a4f1c248c57e61b63e4b3d6cb2c65",
+      "bytes": 1016972,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-long2042-v1/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-long2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "8b17f79d9cdb8a9c81791acee285a801fd649c202db0a725d4600d8bf960529a",
+      "bytes": 791624,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-v1.json",
+      "sha256": "87afc4484c9db72bee8b8b9669f336ee0d22020ea268f432a245cf68dc0301da",
+      "bytes": 3838,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-retained-v1.py",
+      "sha256": "4d18756ef419996c226c1e4587bbc9424d1fa1d91a3307144c5a3d1b98e8df53",
+      "bytes": 2353,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-replay-negatives-v1.json",
+      "sha256": "95a7f3211223e5f7f20d3aab8c1334213ee54229d6afc157f1d5cfd3b6beeaf1",
+      "bytes": 6708,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-replay-negatives-v1.py",
+      "sha256": "3c19340e12208b87234cd67afdd53eaaa5e8fe9486a05219d579a260cf40b8ac",
+      "bytes": 4086,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-historical-agent-replays-v3.json",
+      "sha256": "4db2cf81d4f45b3d8ede48bea7d6094b1edaf8a1485ccf7db72f7ce21b4d0214",
+      "bytes": 1320,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-frozen-tools-v3.log",
+      "sha256": "7498d979568b3f43b427c54b5b73dc113ab00688c16a2765b650dc25913d8a00",
+      "bytes": 816,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-final-clippy-v3.json",
+      "sha256": "0230d621b05a1bcf5bf7cc1e7cdcd44776f4dcdc83e6efbfc2d6e97ed4251334",
+      "bytes": 935,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-final-clippy-v3.log",
+      "sha256": "7b9426914452a4149451ea3a22d1518d58658cab5257148e72657d3669b4968b",
+      "bytes": 771,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-final-rust-test-v3.json",
+      "sha256": "136bfe9b0df1453b451b8e414e330a9a416d197696efe656d8fd6b2776856e78",
+      "bytes": 900,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-final-rust-test-v3.log",
+      "sha256": "2e93cc25f3801a3b7f04a4cbf9ae6bed0d2e4c65ebc7cb01dabe187bd4af0fd6",
+      "bytes": 1107,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-historical-replay-v3.py",
+      "sha256": "45a4203c424d75fd3ff71c8a68b2f92efcc36c733f36f302a6c8562592e406c9",
+      "bytes": 1123,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-root-smoke-v2/manifest.json",
+      "sha256": "8d926dbe859439c5e01752c2b806a4899201d9f73047b77afe48637738e6d8ea",
+      "bytes": 36942,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-root-smoke-v2/console.log",
+      "sha256": "28386348c3890cad2f7a9905a2b0fa9dc706e573cd6a6c96f3ddbcb3ced4d4c6",
+      "bytes": 49818,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/manifest.json",
+      "sha256": "0251a68bfd1723e8806e46ae292a522857321471ffc87b7ef605139c123044c6",
+      "bytes": 26326,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/manifest.json",
+      "sha256": "15a243e8bed6c70d04f7ea7e2732b6699a4a75715081b2f471ca36b657842851",
+      "bytes": 264716,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/build-manifest.json",
+      "sha256": "eb125bad7e5ff3608e46ebb85dc12d80eb6b834694ba4467ae59da7549a502d2",
+      "bytes": 313707,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/host-libusb.c",
+      "sha256": "a7c7e6ee85e401a2f3bdc990dfec538127e2ac18e05d11f01415d2107dd6ee56",
+      "bytes": 81100,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/host-libusb.c.o",
+      "sha256": "ff7ae92a7a7784423558576e76149624e415e54629df20f527e84230a08ce2f1",
+      "bytes": 88056,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/qemu-system-x86_64",
+      "sha256": "dea80cfc383881b83b16744904be1fff82a8e4d523dfa65f2d96d5268e885e68",
+      "bytes": 30099216,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-ci-6166-v1.json",
+      "sha256": "abe08e8533a3bb04b80b6b570115f776681c5f631fa5c00d184c7f5a165a64a2",
+      "bytes": 1047,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-reference-check-v1.json",
+      "sha256": "f2cd3c9fb77770e83a115634773a15339557a36ca9f2c6a498df3636a3d504c9",
+      "bytes": 1078,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/bzImage",
+      "sha256": "6c2c6b3b6092707421af244e255c27510c0d510a082a05afd4f0e486284b85d3",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/root.btrfs",
+      "sha256": "7af036a18f9e512c8e3dd9535f8e13a25c09e817e93757552e3f31e81bf5d378",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/root/bin/ws73-security-agent-probe",
+      "sha256": "a417f43c3dc312f22587061c10b43ebcd5c4c62f8ae82c2b168b923eacff8e89",
+      "bytes": 12492384,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/root/usr/libexec/opensparklink/native-lab/6166b9129375/slctl",
+      "sha256": "21f7212cb3540776b57a8e9f4b15b6c33dab78b7f2bb9164eda27698403f9fb8",
+      "bytes": 7818640,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/root/usr/libexec/opensparklink/native-lab/6166b9129375/slktest",
+      "sha256": "e536069b818d033dc97ac917730992def708b9dad0dc1726b0f0e1347dd44e19",
+      "bytes": 5236176,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/root/usr/libexec/opensparklink/native-lab/6166b9129375/slkd",
+      "sha256": "6c018221318cbb1e69cfba50791d946441d86f05827772b68f551cdaa2037ed5",
+      "bytes": 10527472,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-prepared-v3/root/usr/lib/liblibsparklink.so",
+      "sha256": "0fb387aaa07f02d50122192a3a1a6611751493086a7cc557968ba1c980209e88",
+      "bytes": 546344,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/6166b9129375/slkd",
+      "sha256": "6c018221318cbb1e69cfba50791d946441d86f05827772b68f551cdaa2037ed5",
+      "bytes": 10527472,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/6166b9129375/slctl",
+      "sha256": "21f7212cb3540776b57a8e9f4b15b6c33dab78b7f2bb9164eda27698403f9fb8",
+      "bytes": 7818640,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/6166b9129375/slktest",
+      "sha256": "e536069b818d033dc97ac917730992def708b9dad0dc1726b0f0e1347dd44e19",
+      "bytes": 5236176,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/6166b9129375/slkconfig",
+      "sha256": "f08bb9fd55413d5a3111691e2868a2c005c3fa01deb469d01f917d42e9cde325",
+      "bytes": 1404008,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/6166b9129375/slkmon",
+      "sha256": "44344ed40110c6d4e09d2f50eb39c3ca7251e81da210242336780cd766c51180",
+      "bytes": 1662192,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/6166b9129375/slkdump",
+      "sha256": "455bf5a9b172e7b9cc63a4dc6bd18d6e29451a960f3024a13a3b18c88d260870",
+      "bytes": 1662064,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/6166b9129375/liblibsparklink.so",
+      "sha256": "0fb387aaa07f02d50122192a3a1a6611751493086a7cc557968ba1c980209e88",
+      "bytes": 546344,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "7af6cb4f5ab5734cb4339b68e8b20c7aa262468e4c18cd419fbc3b29eefcdeda",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "39c49d69b56546f2d42e1defb68c17b06956e07d510b9f67682390685c0b3d2c",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    },
+    {
+      "path": ".dev/install-cancel-service-bundle-v3/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Owner original workspace only; no validated offsite archive. Captures may contain installation keys: never publish. Replay with pinned tool commit and original captures; privacy/source licensing restrictions apply."
+    }
+  ],
+  "references": {
+    "communication_nearlink_service": {
+      "head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+      "dirty": false
+    },
+    "libws73-usb": {
+      "head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+      "dirty": false
+    },
+    "ws73_SDK": {
+      "head": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+      "dirty": false
+    },
+    "wire_mapping": {
+      "communication_nearlink_service/services/stack/src/dli/interface/dli_opcode.h": {
+        "sha256": "9592c5651c16224110c6e04fe0e3574faceabc288eba43e42165809af84d50d0",
+        "relevant_symbol": "DLI_ENABLE_ENCRYPTION"
+      },
+      "libws73-usb/src/sle73/sle73_priv.h": {
+        "sha256": "3f3b9283b7b218d105cd54bb92be6515a5aff71934310bd3d6175a7bc6c99114",
+        "relevant_symbol": "SLE73_OP_START_ENCRYPT"
+      },
+      "libws73-usb/src/sle73/sle73_sm.c": {
+        "sha256": "30f8e05c10ddbea028409fd6b7b5df6aac88665cdd40b69de708e892357c89c4",
+        "relevant_symbol": "sm_enc_body"
+      }
+    },
+    "scope": "Fixed local reference dialect mapping, not standard oracle, authenticated security, firmware execution attestation or new production Engine."
+  },
+  "replay": [
+    "Use clean frozen tool/source6166; read_capture(originalws73.pcap,originalguest identities).",
+    "Run ws73_security_agent.corroborate(control,capture) and ws73_security_install_hold.corroborate(originalhosthold,control,capture,originalQEMUstderr); compare exact original manifest.",
+    "Original owner privately retains .dev/install-cancel-replay-negatives-v1.py and all15 mutations; no device operation in replay.",
+    "Raw pcap/install inputs contain keys and cannot be published; private owner access required. Missing originals/hash mismatch must fail local qualification."
+  ],
+  "created_wall_ns": 1792183534932576823
+}

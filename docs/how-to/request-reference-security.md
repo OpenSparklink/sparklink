@@ -70,6 +70,8 @@ slctl --adapter "$ADAPTER" security-request "$CONNECTION" 5000
 
 请求端 Ctrl-C 只撤回自己的请求。Agent 端 `quit`、EOF 或 Ctrl-C 只注销自己的
 Agent；不停止 controller、不主动断链、不释放他人通道或清除在途 credit debt。
+若安装已经提交，取消原请求后控制器仍可能完成安装和报告加密；不要把取消成功
+当作密钥擦除或安全状态回滚。结果中的 kernel 字段是保留快照，物理状态需另验。
 注销失败会明确报错，不能当作已完成清理；退出该 CLI 总线连接后由 broker 收敛。
 
 申请、启动、查询和取消必须保留同一个调用者连接，因此不要把 Allocate 和 Result

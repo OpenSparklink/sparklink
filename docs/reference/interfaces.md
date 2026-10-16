@@ -86,6 +86,10 @@ VM 专用 `native_security_agent_probe.rs` 是独立测试见证，不能安装�
 观察结构依次为 `t request_id, t generation, t lifetime, u phase, i error,
 t deadline_monotonic_ns, b agent_approved, b native_admitted, u kernel_state,
 i kernel_error, u kernel_flags, y kernel_status, i cleanup_error`。
+`kernel_*` 是该请求监督器保留的最后原生观察，不是终态之后持续刷新的硬件状态。
+取消终态不可被迟到回复改写，但这不表示已提交安装被回滚、物理密钥已擦除、
+控制器当前未加密或物理 debt/回调已排空。`CancelReferenceSecurity` 返回 true 仅
+确认取消请求已受理；需要实际原生取消观察后才能区分准入前和在途取消。
 phase 1分配、2等Agent、3原生观察、4限定完成、5拒绝、6取消、7到期、8失败、
 9调用者丢失、10Agent丢失；phase≥4为终态，不可据此一律判成功。
 CLI成功要求phase4、error0、批准且准入、kernel_state9、kernel_error0、

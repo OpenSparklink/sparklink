@@ -36,6 +36,7 @@
 | 正式CLI实机6385/300a：批准拒绝两角色16次对端应用回复 | `real_device` | `PASS` |
 | CLI镜像6385/300a数据保持：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
 | 生产C codec有界fuzz：19固定+20000探索无发现（非证明） | `offline` | `PASS` |
+| 独立CI Clang18 codec有界探索：artifact/源码/目标执行已核对 | `offline` | `PASS` |
 
 保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `6385e43081bfcbeabee1ac4f18b9d0917c7a6057`；执行工具 `300a39b9e496f09119769c03a0a77360263a8c1e`。
 

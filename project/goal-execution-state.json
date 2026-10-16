@@ -1055,6 +1055,10 @@
       "ws73-codec-fuzz-ddea": {
         "level": "offline",
         "result": "PASS"
+      },
+      "ws73-codec-fuzz-ci18": {
+        "level": "offline",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",

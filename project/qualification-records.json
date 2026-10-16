@@ -34,7 +34,8 @@
     "agent-data11-db6e333",
     "security-cli-real2-300a",
     "security-cli-data11-300a",
-    "ws73-codec-fuzz-ddea"
+    "ws73-codec-fuzz-ddea",
+    "ws73-codec-fuzz-ci18"
   ],
   "records": [
     {
@@ -4647,6 +4648,341 @@
           "materials": [
             "ws73-fuzz-report.json",
             "ws73-fuzz-verdict-controls.log"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ws73-codec-fuzz-ci18",
+      "title": "独立CI Clang18 codec有界探索：artifact/源码/目标执行已核对",
+      "level": "offline",
+      "result": "PASS",
+      "contracts": [
+        "separate CI compiler/environment bounded production codec exploration",
+        "actual source/log/binary/corpus/coverage checks beyond green workflow",
+        "five actual supervisor controls"
+      ],
+      "bounds": {
+        "runs": 20000,
+        "seed": 730111,
+        "max_input_bytes": 20480,
+        "input_timeout_seconds": 2,
+        "phase_wall_timeout_seconds": 60,
+        "software_memory_mb": 512
+      },
+      "excluded": [
+        "GitHub CI and compiler/sanitizer/library/runtime are trusted infrastructure, not formally verified",
+        "bounded exploration only; no full parser proof or kernel allocator/locks/concurrency/USB/firmware acceptance",
+        "CI Clang18 is separate from local Clang22 result; neither upgrades hardware or formal qualification",
+        "daily longer schedule configured; no actual scheduled100000 result in this report",
+        "cross-repo pin requires explicit review/update for later codec changes"
+      ],
+      "remaining": [
+        "longer scheduled run not yet observed",
+        "stateful production fuzz/debugVM and complete implementation/hardware remain separate",
+        "required checks/branch protection and complete release provenance are not established by this run"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "ddea575bff556d3884375603edd9003b1cc5ffc4",
+          "scopes": [
+            "tools/testing/selftests/sparklink/fuzz/ws73_codec_fuzz.c",
+            "tools/testing/selftests/sparklink/fuzz/ws73_codec_corpus.json",
+            "tools/testing/selftests/sparklink/run_ws73_codec_fuzz.py",
+            "tools/testing/selftests/sparklink/fuzz/test_ws73_codec_verdict.py",
+            "drivers/sparklink/ws73/wire.c",
+            "drivers/sparklink/ws73/wire.h",
+            "drivers/sparklink/ws73/dli.c",
+            "drivers/sparklink/ws73/dli.h",
+            "drivers/sparklink/ws73/bsle.h"
+          ],
+          "files": {
+            "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e",
+            "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+            "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+            "drivers/sparklink/ws73/wire.c": "d06ce9c48621ac24ba7450b7d3295a01a1a8b4cb66328f83b0acf568ebd2956c",
+            "drivers/sparklink/ws73/wire.h": "605a35601e0ce4fe95bafd8110ca8747e44e8e845510dbb7e0bd331d57b6d0df",
+            "tools/testing/selftests/sparklink/fuzz/test_ws73_codec_verdict.py": "f679e7c32a8474fc6a5c33da82522ea1317d5537ad0247a6358badd1997c8c56",
+            "tools/testing/selftests/sparklink/fuzz/ws73_codec_corpus.json": "849130632614491bba5268f831498645f32865ea28c4450e0ab42a1702eab46e",
+            "tools/testing/selftests/sparklink/fuzz/ws73_codec_fuzz.c": "eb5ae99705d48cd67106aec932a5a4fb8fc8dddba1cce957cba0ee439fef901a",
+            "tools/testing/selftests/sparklink/run_ws73_codec_fuzz.py": "4f6e5fe75fab609d8ce2a4c61f81e7e45aa5595ef10758adcda706814bd2f701"
+          },
+          "manifest_mapping": {
+            "material": "ws73-ci18-report.json",
+            "pointer": [
+              "source_hashes"
+            ]
+          }
+        },
+        "workflow": {
+          "repo": "sparklink",
+          "commit": "d85dd9c1d2053a80ae34117d8ce57b7c0aefc41b",
+          "scopes": [
+            ".github/workflows/codec-fuzz.yml"
+          ],
+          "files": {
+            ".github/workflows/codec-fuzz.yml": "43de384a99cb9f840fb1941800710bdcc90b1c04d457dc97b15622996fef0501"
+          }
+        }
+      },
+      "report": {
+        "material": "ws73-ci18-public-report",
+        "scope_pointer": [
+          "limitations"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "kernel_fuzz_source"
+          ],
+          "workflow": [
+            "workflow_source"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "CI_ARTIFACT_AND_SOURCE_BOUNDED_RESULT_VERIFIED": "PASS"
+        },
+        "gate_rows_pointer": [
+          "gates"
+        ]
+      },
+      "report_commit": "89701e39b7244c7bedab1ad0b9939c78bffc5eb6",
+      "artifact_materials": [
+        "ws73-ci18-ws73-codec-fuzz",
+        "ws73-ci18-merged.profdata"
+      ],
+      "tool_materials": [
+        "ws73-ci18-report.json",
+        "ws73-ci18-run-meta",
+        "ws73-ci18-job-log"
+      ],
+      "configuration_materials": [
+        "ws73-ci18-fixed-corpus-hcc-bsle"
+      ],
+      "required_gates": [
+        "source-hashes",
+        "phase-results",
+        "production-coverage",
+        "binary-hash",
+        "corpus-hashes",
+        "negative-controls"
+      ],
+      "gates": [
+        {
+          "id": "source-hashes",
+          "result": "PASS",
+          "reported_status": "VERIFIED_BOUNDED_RESULT",
+          "report_pointer": [
+            "gates",
+            0
+          ],
+          "materials": [
+            "ws73-ci18-report.json",
+            "ws73-ci18-run-meta"
+          ]
+        },
+        {
+          "id": "phase-results",
+          "result": "PASS",
+          "reported_status": "VERIFIED_BOUNDED_RESULT",
+          "report_pointer": [
+            "gates",
+            1
+          ],
+          "materials": [
+            "ws73-ci18-report.json",
+            "ws73-ci18-run-meta",
+            "ws73-ci18-compile.log",
+            "ws73-ci18-explore.log",
+            "ws73-ci18-export-coverage.log",
+            "ws73-ci18-merge-coverage.log",
+            "ws73-ci18-replay.log"
+          ]
+        },
+        {
+          "id": "production-coverage",
+          "result": "PASS",
+          "reported_status": "VERIFIED_BOUNDED_RESULT",
+          "report_pointer": [
+            "gates",
+            2
+          ],
+          "materials": [
+            "ws73-ci18-report.json",
+            "ws73-ci18-run-meta",
+            "ws73-ci18-export-coverage.log",
+            "ws73-ci18-merged.profdata"
+          ]
+        },
+        {
+          "id": "binary-hash",
+          "result": "PASS",
+          "reported_status": "VERIFIED_BOUNDED_RESULT",
+          "report_pointer": [
+            "gates",
+            3
+          ],
+          "materials": [
+            "ws73-ci18-report.json",
+            "ws73-ci18-run-meta",
+            "ws73-ci18-ws73-codec-fuzz"
+          ]
+        },
+        {
+          "id": "corpus-hashes",
+          "result": "PASS",
+          "reported_status": "VERIFIED_BOUNDED_RESULT",
+          "report_pointer": [
+            "gates",
+            4
+          ],
+          "materials": [
+            "ws73-ci18-report.json",
+            "ws73-ci18-run-meta",
+            "ws73-ci18-explore-corpus-04cec971b164355bf891ec75436fa84ed576e21c",
+            "ws73-ci18-explore-corpus-10687feb9716c9502d9a40fdfe3bb339055c8651",
+            "ws73-ci18-explore-corpus-176171e283d9a1e36dca843776f06ef0e4ac95f4",
+            "ws73-ci18-explore-corpus-176ac2cae5f2ac770f52a5e48fa083bad3e259eb",
+            "ws73-ci18-explore-corpus-188f0cfddaf5e2a937a23da937a16bde25944667",
+            "ws73-ci18-explore-corpus-1b2187011669d12efe5068a7f2ba1f6bdc5481bb",
+            "ws73-ci18-explore-corpus-2212049d49d010ee091ea9ab6e2956cddb6b720a",
+            "ws73-ci18-explore-corpus-23c24e492f4ea6d99796897c83ebcf498ef58d3a",
+            "ws73-ci18-explore-corpus-2538aae4f977e56090c348c144ae13f5f9566e75",
+            "ws73-ci18-explore-corpus-281be9f36408ed1c3e6e98e510a63b84b68ee78b",
+            "ws73-ci18-explore-corpus-2c513f149e737ec4063fc1d37aee9beabc4b4bbf",
+            "ws73-ci18-explore-corpus-31f496e7d23231a5eaf52752b46e5835b576f2ce",
+            "ws73-ci18-explore-corpus-343e9886e6ce36b284a2d73ab15f5dd2de85d3db",
+            "ws73-ci18-explore-corpus-3496f171c424777e5052bc7b7eccb558f98ccfb2",
+            "ws73-ci18-explore-corpus-3747c91d1a00241f8e833d202c221f3905d33add",
+            "ws73-ci18-explore-corpus-3a583319a4f630f73773566de95bbb237cf923e4",
+            "ws73-ci18-explore-corpus-441596b89af44a766dfc157deb036ff27fd3bc8b",
+            "ws73-ci18-explore-corpus-44a4773de8075f1c72f829cd41788e46727bf560",
+            "ws73-ci18-explore-corpus-49f8150d2adae0d61882d66c5011f3fda5c671a4",
+            "ws73-ci18-explore-corpus-4b5d5ce6f4baa28ae9bbccf2101291cba5b7d1e5",
+            "ws73-ci18-explore-corpus-4d9e7d337c366636acd28f07e88bfbed0cd36b45",
+            "ws73-ci18-explore-corpus-59297c3bc47b8966102d853206cbfb357ab56e86",
+            "ws73-ci18-explore-corpus-5a0ac85f1abb1d876c2face4df0054650665f639",
+            "ws73-ci18-explore-corpus-5c16f31a7ba85f5ca276489817696ff4e34830c7",
+            "ws73-ci18-explore-corpus-61f7d4562c20b0fca7810caefc97a31e37b3b165",
+            "ws73-ci18-explore-corpus-64b8b3d90732a9208c44f452bf70a9617ed12757",
+            "ws73-ci18-explore-corpus-64db8f1b2122c299845a97be17f1a1bdd0f84c65",
+            "ws73-ci18-explore-corpus-6b0883ad249c308bff34f1e0034231d1813e348e",
+            "ws73-ci18-explore-corpus-6c066b34f4db79023c0642afbc43b25a5327f710",
+            "ws73-ci18-explore-corpus-6dcd4ce23d88e2ee9568ba546c007c63d9131c1b",
+            "ws73-ci18-explore-corpus-71c0b5f748df352fa78ca81258e726f3f562bb64",
+            "ws73-ci18-explore-corpus-7270d0c46324166d920a45215abbbf666714e8d7",
+            "ws73-ci18-explore-corpus-769af93e7ee3d67675c531de9537eb764d660344",
+            "ws73-ci18-explore-corpus-7a0eb033507925d49c348d6862d0e233a3049822",
+            "ws73-ci18-explore-corpus-7d50d9a395d85a92a336286c561a8edf419d0f9d",
+            "ws73-ci18-explore-corpus-7f954f05fa6c81fc537f15ab627623c0b182711f",
+            "ws73-ci18-explore-corpus-7fe803b1448ae1c310c9c34ecbf7f82630dd107e",
+            "ws73-ci18-explore-corpus-8599a6d8122093bdec025ce98b5559af67a4256b",
+            "ws73-ci18-explore-corpus-86d169bf163c4353b833f236b56927d4d35beac3",
+            "ws73-ci18-explore-corpus-8909a1a1710471f9fd750fdbd68d109028a12b0e",
+            "ws73-ci18-explore-corpus-8e5ef5b0f2cf4678566eeaa6cfa593ea72e66730",
+            "ws73-ci18-explore-corpus-9a88f5df3b417e4e32c238194f52aae86fa139ce",
+            "ws73-ci18-explore-corpus-9c166ec37584b375a2af2923f7dcffbcfea9bd31",
+            "ws73-ci18-explore-corpus-9e6dea6e609fd74fd29a7e5bb6d900ccba5f3fbf",
+            "ws73-ci18-explore-corpus-a05e9bb543bdf5b01e6057c9d235c39ad2fefd04",
+            "ws73-ci18-explore-corpus-a7f7b2d44cb6a5c718b57cee2f8dd656f20f2560",
+            "ws73-ci18-explore-corpus-acb-full",
+            "ws73-ci18-explore-corpus-acb-length-2047",
+            "ws73-ci18-explore-corpus-acb-length-253",
+            "ws73-ci18-explore-corpus-acb-length-254",
+            "ws73-ci18-explore-corpus-acb-length-255",
+            "ws73-ci18-explore-corpus-acb-start",
+            "ws73-ci18-explore-corpus-ace6f761db204030c1a65c0930bd01fd55ecc429",
+            "ws73-ci18-explore-corpus-ae8e117e6d5c7e11cdde128339524afe12dc063c",
+            "ws73-ci18-explore-corpus-af176c66e6bac9dbf71e175d3efc7d72764cbb2f",
+            "ws73-ci18-explore-corpus-b054c5228fb3206133f4545e7c3d4254f99ffc5a",
+            "ws73-ci18-explore-corpus-b400cfdcd76a2e0a3225240617f1ce5bdc74c470",
+            "ws73-ci18-explore-corpus-b5295d4b970da91d3c70aab5644af877f163ab68",
+            "ws73-ci18-explore-corpus-b97e9bc44caddd86071a4054a759ec5b3c19d850",
+            "ws73-ci18-explore-corpus-bad-second-slot",
+            "ws73-ci18-explore-corpus-bb458de977b2171f4e4f7ab9afb693c806895656",
+            "ws73-ci18-explore-corpus-be2f90c8c64eb4260890696beee5039c678caa68",
+            "ws73-ci18-explore-corpus-c042f483653f7a12e57e063b839af8616cf9692a",
+            "ws73-ci18-explore-corpus-c133c537c495c6960d4ff11b560db75ddca274f9",
+            "ws73-ci18-explore-corpus-c4c61ff2d1582d94dc06e82e422e566ce5b795b9",
+            "ws73-ci18-explore-corpus-customize",
+            "ws73-ci18-explore-corpus-d08f88df745fa7950b104e4a707a31cfce7b5841",
+            "ws73-ci18-explore-corpus-d4ade93d54428da2bb80ce88422818a54748a3c0",
+            "ws73-ci18-explore-corpus-d6459ab29c7b9a9fbf0c7c15fa35faa30fbf8cc6",
+            "ws73-ci18-explore-corpus-d8cb881981bce459e2126c4f30c7217cd13a8010",
+            "ws73-ci18-explore-corpus-d9be6524a5f5047db5866813acf3277892a7a30a",
+            "ws73-ci18-explore-corpus-dabd2baaec0f939562764482aeb5178c7eb21b41",
+            "ws73-ci18-explore-corpus-dce3b56acbecf68712c782f09d7ccbaf6efbbc0e",
+            "ws73-ci18-explore-corpus-e395ba43fdafa5592be9afb01a58bdf3de0fc468",
+            "ws73-ci18-explore-corpus-e614f3abbd70aea3e9118abd7e38a5adc9b38ba3",
+            "ws73-ci18-explore-corpus-eca2f3815cf188571091ee69fcf7642849585f9d",
+            "ws73-ci18-explore-corpus-empty",
+            "ws73-ci18-explore-corpus-encryption-event",
+            "ws73-ci18-explore-corpus-f6d2904774c86e33a9ed964d1132dc1528f6f459",
+            "ws73-ci18-explore-corpus-fd90f2af56496b76679785414f8f41421467cc80",
+            "ws73-ci18-explore-corpus-hcc-bsle",
+            "ws73-ci18-explore-corpus-hcc-two-slots",
+            "ws73-ci18-explore-corpus-link-down",
+            "ws73-ci18-explore-corpus-link-up",
+            "ws73-ci18-explore-corpus-pm",
+            "ws73-ci18-explore-corpus-rx-budget-zero",
+            "ws73-ci18-explore-corpus-security-complete",
+            "ws73-ci18-explore-corpus-security-receipt",
+            "ws73-ci18-explore-corpus-short-event",
+            "ws73-ci18-fixed-corpus-acb-full",
+            "ws73-ci18-fixed-corpus-acb-length-2047",
+            "ws73-ci18-fixed-corpus-acb-length-253",
+            "ws73-ci18-fixed-corpus-acb-length-254",
+            "ws73-ci18-fixed-corpus-acb-length-255",
+            "ws73-ci18-fixed-corpus-acb-start",
+            "ws73-ci18-fixed-corpus-bad-second-slot",
+            "ws73-ci18-fixed-corpus-customize",
+            "ws73-ci18-fixed-corpus-empty",
+            "ws73-ci18-fixed-corpus-encryption-event",
+            "ws73-ci18-fixed-corpus-hcc-bsle",
+            "ws73-ci18-fixed-corpus-hcc-two-slots",
+            "ws73-ci18-fixed-corpus-link-down",
+            "ws73-ci18-fixed-corpus-link-up",
+            "ws73-ci18-fixed-corpus-pm",
+            "ws73-ci18-fixed-corpus-rx-budget-zero",
+            "ws73-ci18-fixed-corpus-security-complete",
+            "ws73-ci18-fixed-corpus-security-receipt",
+            "ws73-ci18-fixed-corpus-short-event",
+            "ws73-ci18-replay-corpus-acb-full",
+            "ws73-ci18-replay-corpus-acb-length-2047",
+            "ws73-ci18-replay-corpus-acb-length-253",
+            "ws73-ci18-replay-corpus-acb-length-254",
+            "ws73-ci18-replay-corpus-acb-length-255",
+            "ws73-ci18-replay-corpus-acb-start",
+            "ws73-ci18-replay-corpus-bad-second-slot",
+            "ws73-ci18-replay-corpus-customize",
+            "ws73-ci18-replay-corpus-empty",
+            "ws73-ci18-replay-corpus-encryption-event",
+            "ws73-ci18-replay-corpus-hcc-bsle",
+            "ws73-ci18-replay-corpus-hcc-two-slots",
+            "ws73-ci18-replay-corpus-link-down",
+            "ws73-ci18-replay-corpus-link-up",
+            "ws73-ci18-replay-corpus-pm",
+            "ws73-ci18-replay-corpus-rx-budget-zero",
+            "ws73-ci18-replay-corpus-security-complete",
+            "ws73-ci18-replay-corpus-security-receipt",
+            "ws73-ci18-replay-corpus-short-event"
+          ]
+        },
+        {
+          "id": "negative-controls",
+          "result": "PASS",
+          "reported_status": "VERIFIED_BOUNDED_RESULT",
+          "report_pointer": [
+            "gates",
+            5
+          ],
+          "materials": [
+            "ws73-ci18-report.json",
+            "ws73-ci18-run-meta",
+            "ws73-ci18-job-log"
           ]
         }
       ]
@@ -9503,6 +9839,1140 @@
       "sha256": "849130632614491bba5268f831498645f32865ea28c4450e0ab42a1702eab46e",
       "bytes": 48336,
       "access": "private",
+      "format": "json"
+    },
+    "ws73-ci18-compile.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-2705.profraw": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-2705.profraw",
+      "sha256": "64db7f4da2f1b7d6d56cbd09902b05398f4ad43a23c3e1bbfd52c59639d37206",
+      "bytes": 6624,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-04cec971b164355bf891ec75436fa84ed576e21c": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/04cec971b164355bf891ec75436fa84ed576e21c",
+      "sha256": "1ca894201e2b672e1c52f7916708595c3437914c7ab5fe0c56eb45a4e1258a26",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-10687feb9716c9502d9a40fdfe3bb339055c8651": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/10687feb9716c9502d9a40fdfe3bb339055c8651",
+      "sha256": "0a43b22d89fa2499be5c7704c9bf273260b0ca9588e4cd1897cd80f9c96cd97a",
+      "bytes": 1,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-176171e283d9a1e36dca843776f06ef0e4ac95f4": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/176171e283d9a1e36dca843776f06ef0e4ac95f4",
+      "sha256": "bd10c2a572c324829df35bd649ba0202f9c8df8b2941cb0a40c11223d49212b6",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-176ac2cae5f2ac770f52a5e48fa083bad3e259eb": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/176ac2cae5f2ac770f52a5e48fa083bad3e259eb",
+      "sha256": "89f97a6123d9965e82530c0cd096fe2f79124d8f52ce03e1a8344059380b33e2",
+      "bytes": 83,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-188f0cfddaf5e2a937a23da937a16bde25944667": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/188f0cfddaf5e2a937a23da937a16bde25944667",
+      "sha256": "e8830d87021c18ea5b660310e729c8d72e926b8d494b36f7afa388cbac136000",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-1b2187011669d12efe5068a7f2ba1f6bdc5481bb": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/1b2187011669d12efe5068a7f2ba1f6bdc5481bb",
+      "sha256": "6ac84b0485bff61322072b672e76f31c8b28a1dd149ba170461ff20796455b09",
+      "bytes": 104,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-2212049d49d010ee091ea9ab6e2956cddb6b720a": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/2212049d49d010ee091ea9ab6e2956cddb6b720a",
+      "sha256": "5b5ad14a59f1d057c85bcc8197646ca8603a28cb67147151d00521f00a1c0ed3",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-23c24e492f4ea6d99796897c83ebcf498ef58d3a": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/23c24e492f4ea6d99796897c83ebcf498ef58d3a",
+      "sha256": "f20fd0f833d4df7cdd1409e18228b7c7f4b0b7d68b2add6bef8a3fcbfd364d02",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-2538aae4f977e56090c348c144ae13f5f9566e75": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/2538aae4f977e56090c348c144ae13f5f9566e75",
+      "sha256": "cfeaf45edccccf73581515bc8fe1be3a65b22604b02a8c7e91595f22f9745b4b",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-281be9f36408ed1c3e6e98e510a63b84b68ee78b": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/281be9f36408ed1c3e6e98e510a63b84b68ee78b",
+      "sha256": "d6185f0186e027d3d451e9ebde28a3919a9e6dd50ab02f5ed9b8dcffea6fe77b",
+      "bytes": 6,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-2c513f149e737ec4063fc1d37aee9beabc4b4bbf": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/2c513f149e737ec4063fc1d37aee9beabc4b4bbf",
+      "sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+      "bytes": 12,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-31f496e7d23231a5eaf52752b46e5835b576f2ce": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/31f496e7d23231a5eaf52752b46e5835b576f2ce",
+      "sha256": "49d10e1a62b9e01059bc692e18c3149ad365a721a38de5fccec49fd9168987ec",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-343e9886e6ce36b284a2d73ab15f5dd2de85d3db": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/343e9886e6ce36b284a2d73ab15f5dd2de85d3db",
+      "sha256": "c64918cc879a079cb1b83b13344dd2f35e344add269fe2c240f1d12258ce4893",
+      "bytes": 9,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-3496f171c424777e5052bc7b7eccb558f98ccfb2": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/3496f171c424777e5052bc7b7eccb558f98ccfb2",
+      "sha256": "85f70bfc195469fbac94800f6f76bd9c3a8fb390e2f5881496ecb0339ab199ed",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-3747c91d1a00241f8e833d202c221f3905d33add": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/3747c91d1a00241f8e833d202c221f3905d33add",
+      "sha256": "fc030c2e22fca0887bfd4af5510d5e22f5e6c0a542d7a7f47d75226ecbfba08a",
+      "bytes": 140,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-3a583319a4f630f73773566de95bbb237cf923e4": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/3a583319a4f630f73773566de95bbb237cf923e4",
+      "sha256": "b9a7426f272173f271941bf3e02cce62e8a1e443e55269d17183b4d7eafde0ed",
+      "bytes": 5,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-441596b89af44a766dfc157deb036ff27fd3bc8b": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/441596b89af44a766dfc157deb036ff27fd3bc8b",
+      "sha256": "d470b6c4d69d2a536bd78fd8d7d2841f6f01dbea20492c347a8e58f385139807",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-44a4773de8075f1c72f829cd41788e46727bf560": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/44a4773de8075f1c72f829cd41788e46727bf560",
+      "sha256": "61b7dfafb9da492d34f885ea820abf67ae377eb23c9636bd7ffe4887e15b69fd",
+      "bytes": 5,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-49f8150d2adae0d61882d66c5011f3fda5c671a4": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/49f8150d2adae0d61882d66c5011f3fda5c671a4",
+      "sha256": "b0481de1a17c32511a438c0141a1d20a918dae2f59c5ca0c0165ee738c86d0b4",
+      "bytes": 5,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-4b5d5ce6f4baa28ae9bbccf2101291cba5b7d1e5": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/4b5d5ce6f4baa28ae9bbccf2101291cba5b7d1e5",
+      "sha256": "c0aa46d3c81eeb22c24b80095e2f323c67c47d3291ae19f23bfb49c2a646c4d2",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-4d9e7d337c366636acd28f07e88bfbed0cd36b45": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/4d9e7d337c366636acd28f07e88bfbed0cd36b45",
+      "sha256": "d27109dd1310a5505cd63e893551c89d4138d65bc6e36c87a1443a38afdfd126",
+      "bytes": 2207,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-59297c3bc47b8966102d853206cbfb357ab56e86": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/59297c3bc47b8966102d853206cbfb357ab56e86",
+      "sha256": "75609bda0ead69cc47e0a80cb79e16b10fea9535185679b02d8b8d8aaff6522f",
+      "bytes": 139,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-5a0ac85f1abb1d876c2face4df0054650665f639": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/5a0ac85f1abb1d876c2face4df0054650665f639",
+      "sha256": "0b18cc9069909efeb678b28d4d9f4e6387bde21b38ff4f6a1a52de5b2a2e9a55",
+      "bytes": 5,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-5c16f31a7ba85f5ca276489817696ff4e34830c7": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/5c16f31a7ba85f5ca276489817696ff4e34830c7",
+      "sha256": "f8581665135ad200f211641295373cb318e6b496bed6a87c045faf494818fc42",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-61f7d4562c20b0fca7810caefc97a31e37b3b165": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/61f7d4562c20b0fca7810caefc97a31e37b3b165",
+      "sha256": "830b2b26234240ecb31ee9f39ca9cfcd8e7a56d25550fea9aac76f268a106e18",
+      "bytes": 13,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-64b8b3d90732a9208c44f452bf70a9617ed12757": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/64b8b3d90732a9208c44f452bf70a9617ed12757",
+      "sha256": "772c20949c33501502b9736d11e852c9a23b5635931e8523041262f096f95ced",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-64db8f1b2122c299845a97be17f1a1bdd0f84c65": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/64db8f1b2122c299845a97be17f1a1bdd0f84c65",
+      "sha256": "0b2a1e5782c2c427c7c69dd6d8111bc1c91b0654cf5d47cdb13dca214919e1b6",
+      "bytes": 3906,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-6b0883ad249c308bff34f1e0034231d1813e348e": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/6b0883ad249c308bff34f1e0034231d1813e348e",
+      "sha256": "02c4c056906829a9ff4d6cf53d63d14af734c34f73625c7e906d0b5e05258ff7",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-6c066b34f4db79023c0642afbc43b25a5327f710": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/6c066b34f4db79023c0642afbc43b25a5327f710",
+      "sha256": "bbb3afa31af1adf2deb2cd3774f62df5807acf44963fc296e62de13b00380a6b",
+      "bytes": 2,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-6dcd4ce23d88e2ee9568ba546c007c63d9131c1b": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/6dcd4ce23d88e2ee9568ba546c007c63d9131c1b",
+      "sha256": "559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "bytes": 1,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-71c0b5f748df352fa78ca81258e726f3f562bb64": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/71c0b5f748df352fa78ca81258e726f3f562bb64",
+      "sha256": "9eefa461c6e7babd740914c99f7264897afdab6932472de7af5e067139e98031",
+      "bytes": 2,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-7270d0c46324166d920a45215abbbf666714e8d7": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/7270d0c46324166d920a45215abbbf666714e8d7",
+      "sha256": "9a904afcf32ac63d93dfe3f45782d647227171f0e08d8d94b41da5aa858ddb58",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-769af93e7ee3d67675c531de9537eb764d660344": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/769af93e7ee3d67675c531de9537eb764d660344",
+      "sha256": "b4cc09a903fa62a167ff8ad0e48085c54509806d3d259a89c43d2d3d16da6eb0",
+      "bytes": 2,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-7a0eb033507925d49c348d6862d0e233a3049822": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/7a0eb033507925d49c348d6862d0e233a3049822",
+      "sha256": "03d2ed46b771f796085dfea8eea079717a86c22a5d98a2bbf8a86919eb1e4397",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-7d50d9a395d85a92a336286c561a8edf419d0f9d": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/7d50d9a395d85a92a336286c561a8edf419d0f9d",
+      "sha256": "fac4ce0888e6883d87957cbb19a8ea781b053f7278e46421bf56fea26586b655",
+      "bytes": 11,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-7f954f05fa6c81fc537f15ab627623c0b182711f": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/7f954f05fa6c81fc537f15ab627623c0b182711f",
+      "sha256": "a6f1537fe9e146db9dc16d9f0f32924352cbb48d68724304e357d9d846119efd",
+      "bytes": 12002,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-7fe803b1448ae1c310c9c34ecbf7f82630dd107e": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/7fe803b1448ae1c310c9c34ecbf7f82630dd107e",
+      "sha256": "e3b004017df4cabfa8ec59e906f345e93cebce91651c13cbd72b3fe0364c0811",
+      "bytes": 6400,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-8599a6d8122093bdec025ce98b5559af67a4256b": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/8599a6d8122093bdec025ce98b5559af67a4256b",
+      "sha256": "ed7968cb3cacd764d665c6571b276dbedadfd2b34077df47a0ef9be844482f1e",
+      "bytes": 93,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-86d169bf163c4353b833f236b56927d4d35beac3": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/86d169bf163c4353b833f236b56927d4d35beac3",
+      "sha256": "446bb266055b9d8d8cee6bde358ae7b1afece5359b1c402a1ad8176548a2ce72",
+      "bytes": 382,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-8909a1a1710471f9fd750fdbd68d109028a12b0e": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/8909a1a1710471f9fd750fdbd68d109028a12b0e",
+      "sha256": "9c4a0e6505d16522cd548bec55a5dc931426ade2d333eff18ff25283441593b7",
+      "bytes": 108,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-8e5ef5b0f2cf4678566eeaa6cfa593ea72e66730": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/8e5ef5b0f2cf4678566eeaa6cfa593ea72e66730",
+      "sha256": "dd1c53cf73dc516433e8d1ba090933ad50b428d84893924b93e16586a5883258",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-9a88f5df3b417e4e32c238194f52aae86fa139ce": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/9a88f5df3b417e4e32c238194f52aae86fa139ce",
+      "sha256": "c08c4fecfa93186f14a968d724e51e20eec0eff0b9200ccbd1f63f6015747a16",
+      "bytes": 5,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-9c166ec37584b375a2af2923f7dcffbcfea9bd31": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/9c166ec37584b375a2af2923f7dcffbcfea9bd31",
+      "sha256": "90ee8d3345bd572f48544ab1b227b2e854d0254f33fb34d23e839f87740858f4",
+      "bytes": 1473,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-9e6dea6e609fd74fd29a7e5bb6d900ccba5f3fbf": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/9e6dea6e609fd74fd29a7e5bb6d900ccba5f3fbf",
+      "sha256": "33b67cb5385ceddad93d0ee960679041613bed34b8b4a5e6362fe7539ba2d3ce",
+      "bytes": 2,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-a05e9bb543bdf5b01e6057c9d235c39ad2fefd04": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/a05e9bb543bdf5b01e6057c9d235c39ad2fefd04",
+      "sha256": "4ff12a275eb7e9a6bbcba7e8235ca17c76517d25278fc4feef10fc65e6350ced",
+      "bytes": 96,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-a7f7b2d44cb6a5c718b57cee2f8dd656f20f2560": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/a7f7b2d44cb6a5c718b57cee2f8dd656f20f2560",
+      "sha256": "bad0c7e14bbd1ccb8065e05d175302a15362b70dede6bb4973d03236093707c3",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-acb-full": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/acb-full",
+      "sha256": "bedda237fdb590bd098fa2974680e4d4648d1a2e38d655fe608204520f95f470",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-acb-length-2047": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/acb-length-2047",
+      "sha256": "2903fac9d43b97bb53fa50cdb41586115df28f251bdb2bcb792e1c24c29869de",
+      "bytes": 2052,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-acb-length-253": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/acb-length-253",
+      "sha256": "41da5fe43a1c84a1ee9f3a17c560d8774d3cc83743a671c673e78ee0a098b2d2",
+      "bytes": 258,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-acb-length-254": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/acb-length-254",
+      "sha256": "240d179fd75cbe8ceb9ef978550b97ead12118b41fccf02b2a05ad26d887b15d",
+      "bytes": 259,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-acb-length-255": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/acb-length-255",
+      "sha256": "e196c2a1090c23cb06d9808644218f2d483a696f16c2a21ee832655d5d2ca485",
+      "bytes": 260,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-acb-start": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/acb-start",
+      "sha256": "09c668b5a7367ea293cead98f4fe548fd66f21dfa41d814f1b2e871fbaaf351f",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-ace6f761db204030c1a65c0930bd01fd55ecc429": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/ace6f761db204030c1a65c0930bd01fd55ecc429",
+      "sha256": "b4c43b50bf245bd727623e3c775a8fcfb8d823d00b57dd65f7f79dd33f126315",
+      "bytes": 2,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-ae8e117e6d5c7e11cdde128339524afe12dc063c": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/ae8e117e6d5c7e11cdde128339524afe12dc063c",
+      "sha256": "fa9fd288844bf7cad20bac5fa41fe148a52786943c9b3f6e13912cf6269e52d5",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-af176c66e6bac9dbf71e175d3efc7d72764cbb2f": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/af176c66e6bac9dbf71e175d3efc7d72764cbb2f",
+      "sha256": "b2fe5509795ae75d382e3785962a9f166a26dca5c1007b3bc5959d0d78383564",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-b054c5228fb3206133f4545e7c3d4254f99ffc5a": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/b054c5228fb3206133f4545e7c3d4254f99ffc5a",
+      "sha256": "c984b64039454be34344a7eea975aa952af32ae7e3f16fbd19cd90efe0f37f9a",
+      "bytes": 92,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-b400cfdcd76a2e0a3225240617f1ce5bdc74c470": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/b400cfdcd76a2e0a3225240617f1ce5bdc74c470",
+      "sha256": "8a5f7a0651d45b254ce876f600a14c953791980e68f9a411121bdca89354572c",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-b5295d4b970da91d3c70aab5644af877f163ab68": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/b5295d4b970da91d3c70aab5644af877f163ab68",
+      "sha256": "95d1e891e3b089d857f7343b9011cc9029a10274359d4597564ab5279d9d4df8",
+      "bytes": 13,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-b97e9bc44caddd86071a4054a759ec5b3c19d850": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/b97e9bc44caddd86071a4054a759ec5b3c19d850",
+      "sha256": "8a2d598a5a8bcdfa923e5135c0e60c6c7860aa2a0cef4db06dfb20ed431a113a",
+      "bytes": 6,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-bad-second-slot": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/bad-second-slot",
+      "sha256": "cedd52d7f521060da837a1c620dd5fa37461297c72f999f44a9b2926025ed60c",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-bb458de977b2171f4e4f7ab9afb693c806895656": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/bb458de977b2171f4e4f7ab9afb693c806895656",
+      "sha256": "aaa8906a5da3f2c121a7fa8cda4668a15213e0db26bc2b81c4391d03ce659cc1",
+      "bytes": 14058,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-be2f90c8c64eb4260890696beee5039c678caa68": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/be2f90c8c64eb4260890696beee5039c678caa68",
+      "sha256": "b9687e00f78070f35f1cf5a20c7e5ff15d0a9d037c46bc552f59d47379d71dc2",
+      "bytes": 129,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-c042f483653f7a12e57e063b839af8616cf9692a": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/c042f483653f7a12e57e063b839af8616cf9692a",
+      "sha256": "edb9d5317419395c4a169d55e5d75aab1cb9524b465b179322d294563cd8a0b2",
+      "bytes": 9,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-c133c537c495c6960d4ff11b560db75ddca274f9": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/c133c537c495c6960d4ff11b560db75ddca274f9",
+      "sha256": "e2b1c936d91c63322cdbb426b91d997cbe03cf49e12ea6e9a6293b5332151392",
+      "bytes": 104,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-c4c61ff2d1582d94dc06e82e422e566ce5b795b9": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/c4c61ff2d1582d94dc06e82e422e566ce5b795b9",
+      "sha256": "1e615d9ca9c99ccbb38b935f8f62ed34097dc31e754ff1813e431cb22ffcd7c1",
+      "bytes": 5,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-customize": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/customize",
+      "sha256": "dd590aff9448dcfb7b415e4f5ce1d5d9b2748068dd160a602d8fae444c319d00",
+      "bytes": 140,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-d08f88df745fa7950b104e4a707a31cfce7b5841": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/d08f88df745fa7950b104e4a707a31cfce7b5841",
+      "sha256": "334359b90efed75da5f0ada1d5e6b256f4a6bd0aee7eb39c0f90182a021ffc8b",
+      "bytes": 1,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-d4ade93d54428da2bb80ce88422818a54748a3c0": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/d4ade93d54428da2bb80ce88422818a54748a3c0",
+      "sha256": "cb71fb8a69ca282faf55376fe313c081b7dc8bb85e1240c967f40ec14edd6d28",
+      "bytes": 104,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-d6459ab29c7b9a9fbf0c7c15fa35faa30fbf8cc6": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/d6459ab29c7b9a9fbf0c7c15fa35faa30fbf8cc6",
+      "sha256": "fb5e512425fc9449316ec95969ebe71e2d576dbab833d61e2a5b9330fd70ee02",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-d8cb881981bce459e2126c4f30c7217cd13a8010": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/d8cb881981bce459e2126c4f30c7217cd13a8010",
+      "sha256": "6cf76e6cae7b02828af474fe58283e57df1281ea115c54001ea717cffc897cf5",
+      "bytes": 7403,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-d9be6524a5f5047db5866813acf3277892a7a30a": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/d9be6524a5f5047db5866813acf3277892a7a30a",
+      "sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-dabd2baaec0f939562764482aeb5178c7eb21b41": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/dabd2baaec0f939562764482aeb5178c7eb21b41",
+      "sha256": "dae81d94ed0b0769cb7037c135ccb70d39e26c882b5cc542671ea5492e3323e8",
+      "bytes": 2150,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-dce3b56acbecf68712c782f09d7ccbaf6efbbc0e": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/dce3b56acbecf68712c782f09d7ccbaf6efbbc0e",
+      "sha256": "4cae2e7ed48311f43429c678364903daaf65f413b6dceea24c3142641a71554b",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-e395ba43fdafa5592be9afb01a58bdf3de0fc468": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/e395ba43fdafa5592be9afb01a58bdf3de0fc468",
+      "sha256": "f0f20413f54ecd72387b6aa3e8d00ac9997092f6a94f67b1582d76f46b08ed7a",
+      "bytes": 161,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-e614f3abbd70aea3e9118abd7e38a5adc9b38ba3": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/e614f3abbd70aea3e9118abd7e38a5adc9b38ba3",
+      "sha256": "67c88881ce4cdbb6733dbe7a7f20762a69eb52f8ec14234d17b5022f31ad21b9",
+      "bytes": 5,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-eca2f3815cf188571091ee69fcf7642849585f9d": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/eca2f3815cf188571091ee69fcf7642849585f9d",
+      "sha256": "47411c88a99435dc4f12c834827c548d957fca7d2d96b7bfda498fd681f1c357",
+      "bytes": 138,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-empty": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/empty",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-encryption-event": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/encryption-event",
+      "sha256": "8caafd957e096abf9513452ae0a51d9faa6c31d7391197903bdf6b9d833e4222",
+      "bytes": 9,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-f6d2904774c86e33a9ed964d1132dc1528f6f459": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/f6d2904774c86e33a9ed964d1132dc1528f6f459",
+      "sha256": "717ac23d2fba3f1803e711e6733b0794376140419679eb94169cb4cb5e03a529",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-fd90f2af56496b76679785414f8f41421467cc80": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/fd90f2af56496b76679785414f8f41421467cc80",
+      "sha256": "721a4375eafa7e0b2c657151859987928cb24115185cf49d53fe88cd44dde1cb",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-hcc-bsle": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/hcc-bsle",
+      "sha256": "93152f8c3c17560d803f063dd2269279d8d10a8866a700ebc00ef16418ea018f",
+      "bytes": 104,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-hcc-two-slots": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/hcc-two-slots",
+      "sha256": "42dc56530e50685a15eaf1b20187d50f1065f729e5a7d712ca0d0af8659c540b",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-link-down": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/link-down",
+      "sha256": "162c45ddd24d27ae787f17576bcf4869484b37ea5249ffcb65dbf2c3b638ac3b",
+      "bytes": 9,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-link-up": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/link-up",
+      "sha256": "10a434654265ddeff4a0d2984f7bd2c33ed16464ee02d45c59e40c507f0778c5",
+      "bytes": 16,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-pm": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/pm",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-rx-budget-zero": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/rx-budget-zero",
+      "sha256": "cc61635da46b2c9974335ea37e0b5fd660a5c8a42a89b271fa7ec2ac4b8b26f6",
+      "bytes": 20480,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-security-complete": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/security-complete",
+      "sha256": "6b0e136ce7d36049ca24d6436c7a320637d051c03ba277add1b802061214a56e",
+      "bytes": 13,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-security-receipt": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/security-receipt",
+      "sha256": "6b98e33ff00fadf6439cb513b27550929281237f78f50a87982ddf475e55a8c5",
+      "bytes": 11,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore-corpus-short-event": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore-corpus/short-event",
+      "sha256": "235f008d88ceaed1f3b3a4e0d96f808b7802924c24c762bd623f3698ebeacdab",
+      "bytes": 3,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-explore.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/explore.log",
+      "sha256": "cbcdb965e68adcf95f14980a8d6cee901d59e96165695840ab57bb3976d27d69",
+      "bytes": 28183,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-export-coverage.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/export-coverage.log",
+      "sha256": "3ac8c7ed1a22f8bd05661aa50813676d00f58764d09570baa9afeff054f1ea0e",
+      "bytes": 183875,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-acb-full": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/acb-full",
+      "sha256": "bedda237fdb590bd098fa2974680e4d4648d1a2e38d655fe608204520f95f470",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-acb-length-2047": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/acb-length-2047",
+      "sha256": "2903fac9d43b97bb53fa50cdb41586115df28f251bdb2bcb792e1c24c29869de",
+      "bytes": 2052,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-acb-length-253": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/acb-length-253",
+      "sha256": "41da5fe43a1c84a1ee9f3a17c560d8774d3cc83743a671c673e78ee0a098b2d2",
+      "bytes": 258,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-acb-length-254": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/acb-length-254",
+      "sha256": "240d179fd75cbe8ceb9ef978550b97ead12118b41fccf02b2a05ad26d887b15d",
+      "bytes": 259,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-acb-length-255": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/acb-length-255",
+      "sha256": "e196c2a1090c23cb06d9808644218f2d483a696f16c2a21ee832655d5d2ca485",
+      "bytes": 260,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-acb-start": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/acb-start",
+      "sha256": "09c668b5a7367ea293cead98f4fe548fd66f21dfa41d814f1b2e871fbaaf351f",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-bad-second-slot": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/bad-second-slot",
+      "sha256": "cedd52d7f521060da837a1c620dd5fa37461297c72f999f44a9b2926025ed60c",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-customize": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/customize",
+      "sha256": "dd590aff9448dcfb7b415e4f5ce1d5d9b2748068dd160a602d8fae444c319d00",
+      "bytes": 140,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-empty": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/empty",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-encryption-event": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/encryption-event",
+      "sha256": "8caafd957e096abf9513452ae0a51d9faa6c31d7391197903bdf6b9d833e4222",
+      "bytes": 9,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-hcc-bsle": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/hcc-bsle",
+      "sha256": "93152f8c3c17560d803f063dd2269279d8d10a8866a700ebc00ef16418ea018f",
+      "bytes": 104,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-hcc-two-slots": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/hcc-two-slots",
+      "sha256": "42dc56530e50685a15eaf1b20187d50f1065f729e5a7d712ca0d0af8659c540b",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-link-down": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/link-down",
+      "sha256": "162c45ddd24d27ae787f17576bcf4869484b37ea5249ffcb65dbf2c3b638ac3b",
+      "bytes": 9,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-link-up": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/link-up",
+      "sha256": "10a434654265ddeff4a0d2984f7bd2c33ed16464ee02d45c59e40c507f0778c5",
+      "bytes": 16,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-pm": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/pm",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-rx-budget-zero": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/rx-budget-zero",
+      "sha256": "cc61635da46b2c9974335ea37e0b5fd660a5c8a42a89b271fa7ec2ac4b8b26f6",
+      "bytes": 20480,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-security-complete": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/security-complete",
+      "sha256": "6b0e136ce7d36049ca24d6436c7a320637d051c03ba277add1b802061214a56e",
+      "bytes": 13,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-security-receipt": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/security-receipt",
+      "sha256": "6b98e33ff00fadf6439cb513b27550929281237f78f50a87982ddf475e55a8c5",
+      "bytes": 11,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-fixed-corpus-short-event": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/fixed-corpus/short-event",
+      "sha256": "235f008d88ceaed1f3b3a4e0d96f808b7802924c24c762bd623f3698ebeacdab",
+      "bytes": 3,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-merge-coverage.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/merge-coverage.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-merged.profdata": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/merged.profdata",
+      "sha256": "ad8252156a10e632c771591e6db2924f0a0e8806992d6da064588586646d6fab",
+      "bytes": 5648,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-2702.profraw": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-2702.profraw",
+      "sha256": "73bde03614b87d4ec22b33951e670ba8f3cf8d97feadc575d2ff39cd3b2a6cae",
+      "bytes": 6624,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-acb-full": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/acb-full",
+      "sha256": "bedda237fdb590bd098fa2974680e4d4648d1a2e38d655fe608204520f95f470",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-acb-length-2047": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/acb-length-2047",
+      "sha256": "2903fac9d43b97bb53fa50cdb41586115df28f251bdb2bcb792e1c24c29869de",
+      "bytes": 2052,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-acb-length-253": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/acb-length-253",
+      "sha256": "41da5fe43a1c84a1ee9f3a17c560d8774d3cc83743a671c673e78ee0a098b2d2",
+      "bytes": 258,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-acb-length-254": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/acb-length-254",
+      "sha256": "240d179fd75cbe8ceb9ef978550b97ead12118b41fccf02b2a05ad26d887b15d",
+      "bytes": 259,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-acb-length-255": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/acb-length-255",
+      "sha256": "e196c2a1090c23cb06d9808644218f2d483a696f16c2a21ee832655d5d2ca485",
+      "bytes": 260,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-acb-start": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/acb-start",
+      "sha256": "09c668b5a7367ea293cead98f4fe548fd66f21dfa41d814f1b2e871fbaaf351f",
+      "bytes": 8,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-bad-second-slot": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/bad-second-slot",
+      "sha256": "cedd52d7f521060da837a1c620dd5fa37461297c72f999f44a9b2926025ed60c",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-customize": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/customize",
+      "sha256": "dd590aff9448dcfb7b415e4f5ce1d5d9b2748068dd160a602d8fae444c319d00",
+      "bytes": 140,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-empty": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/empty",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-encryption-event": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/encryption-event",
+      "sha256": "8caafd957e096abf9513452ae0a51d9faa6c31d7391197903bdf6b9d833e4222",
+      "bytes": 9,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-hcc-bsle": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/hcc-bsle",
+      "sha256": "93152f8c3c17560d803f063dd2269279d8d10a8866a700ebc00ef16418ea018f",
+      "bytes": 104,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-hcc-two-slots": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/hcc-two-slots",
+      "sha256": "42dc56530e50685a15eaf1b20187d50f1065f729e5a7d712ca0d0af8659c540b",
+      "bytes": 116,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-link-down": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/link-down",
+      "sha256": "162c45ddd24d27ae787f17576bcf4869484b37ea5249ffcb65dbf2c3b638ac3b",
+      "bytes": 9,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-link-up": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/link-up",
+      "sha256": "10a434654265ddeff4a0d2984f7bd2c33ed16464ee02d45c59e40c507f0778c5",
+      "bytes": 16,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-pm": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/pm",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-rx-budget-zero": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/rx-budget-zero",
+      "sha256": "cc61635da46b2c9974335ea37e0b5fd660a5c8a42a89b271fa7ec2ac4b8b26f6",
+      "bytes": 20480,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-security-complete": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/security-complete",
+      "sha256": "6b0e136ce7d36049ca24d6436c7a320637d051c03ba277add1b802061214a56e",
+      "bytes": 13,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-security-receipt": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/security-receipt",
+      "sha256": "6b98e33ff00fadf6439cb513b27550929281237f78f50a87982ddf475e55a8c5",
+      "bytes": 11,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay-corpus-short-event": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay-corpus/short-event",
+      "sha256": "235f008d88ceaed1f3b3a4e0d96f808b7802924c24c762bd623f3698ebeacdab",
+      "bytes": 3,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-replay.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/replay.log",
+      "sha256": "14d3e4538547016af8179f748f3e22679a7e4135b3c5ec3e2ab283d0b931f55d",
+      "bytes": 748,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-report.json": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/report.json",
+      "sha256": "35a60fe433f654368832e16af8e0c59907b0e4acb013906af981987187c790c7",
+      "bytes": 17623,
+      "access": "private",
+      "format": "json"
+    },
+    "ws73-ci18-ws73-codec-fuzz": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/ws73-codec-fuzz",
+      "sha256": "34c7cd1d3d699a24024c4368e16a448ec1547fe367a2d930c9923326cd72e8d0",
+      "bytes": 2249216,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-run-meta": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748-metadata.json",
+      "sha256": "620fe0dcdd84317997e6d6400f0a3e5a5a80fb7e444754536bb81d7d89b0b805",
+      "bytes": 2822,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "conclusion"
+          ],
+          "equals": "success"
+        },
+        {
+          "pointer": [
+            "headSha"
+          ],
+          "equals": "d85dd9c1d2053a80ae34117d8ce57b7c0aefc41b"
+        }
+      ]
+    },
+    "ws73-ci18-job-log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748-job.log",
+      "sha256": "d7556dcc51c18c037bd9ecc95c369c55bb4482807fb5538430fd49b39ed7b546",
+      "bytes": 47593,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-ci18-public-report": {
+      "base": "repo",
+      "path": "docs/evidence/ws73-codec-fuzz-ci-20261016.json",
+      "sha256": "24d0f3e4deec4fc077a583aa6cb0e6317f0c0d71329674bab04501046ecb1729",
+      "bytes": 4327,
+      "access": "public",
       "format": "json"
     }
   },

@@ -36,9 +36,10 @@ def await_marker(run, tasks, marker, deadline):
 
 
 def execute(run, phase):
-    row = dict(version=1, phase=len(run.data['connection_control']['phases'])-1,
+    long_bytes=getattr(run.args,'dynamic_channel_long_bytes',None)
+    row = dict(version=2 if long_bytes is not None else 1, phase=len(run.data['connection_control']['phases'])-1,
                owners=phase['typed_objects'], start_wall_ns=time.time_ns(),
-               status='RUNNING', channels=[], scheduling='bounded VM peer SIGSTOP; real kernel/firmware remain running')
+               long_bytes=long_bytes, status='RUNNING', channels=[], scheduling='bounded VM peer SIGSTOP; real kernel/firmware remain running')
     run.data.setdefault('dynamic_channels', []).append(row)
     run.save()
     files=ExitStack(); all_tasks=[]; stopped=None
@@ -46,7 +47,7 @@ def execute(run, phase):
         ports = channel['ports'] if role=='initiator' else channel['ports'][::-1]
         args=[str(run.args.slctl),'--adapter',entry['owner']['path'],
               'dynamic-roundtrip' if role=='initiator' else 'dynamic-peer', entry['object']['path'],
-              *map(str,ports),str(channel['aid']),str(channel['rounds']),'61','hold']
+              *map(str,ports),str(channel['aid']),str(channel['rounds']),str(channel['message_bytes']),'hold']
         app=dict(role=role,args=args,start_wall_ns=time.time_ns())
         channel['applications'].append(app)
         stem=f'dynamic-{row["phase"]}-{channel["name"]}-{role}'
@@ -57,8 +58,8 @@ def execute(run, phase):
                               stderr=files.enter_context(paths[1].open('xb')))
         app['pid']=proc.pid; app['credentials']=credentials(proc.pid)
         all_tasks.append((proc,app));run.save();return proc,app
-    def new_channel(name,ports,rounds):
-        channel=dict(name=name,ports=ports,aid=0x7301,rounds=rounds,message_bytes=61,owners=row['owners'],
+    def new_channel(name,ports,rounds,message_bytes=61):
+        channel=dict(name=name,ports=ports,aid=0x7301,rounds=rounds,message_bytes=message_bytes,owners=row['owners'],
                      start_wall_ns=time.time_ns(),applications=[],tx_status_required=True)
         row['channels'].append(channel);return channel
     def close_pair(channel,tasks):
@@ -104,6 +105,28 @@ def execute(run, phase):
         row['peer_resume_wall_ns']=time.time_ns();run.save()
         await_marker(run,btasks,'NativeDynamicBusinessDone: rounds=20 held=true',time.monotonic()+205)
         close_pair(second,btasks)
+        if long_bytes is not None:
+            third=new_channel('C',[24580,24581],4,long_bytes)
+            cpeer=start(third,'peer',row['owners'][1])
+            await_marker(run,[cpeer],'NativeDynamicStaged:',time.monotonic()+3)
+            os.kill(cpeer[0].pid,signal.SIGSTOP);stopped=cpeer[0]
+            row['long_peer_stop_wall_ns']=time.time_ns();limit=time.monotonic()+5
+            while '\nState:\tT' not in Path(f'/proc/{stopped.pid}/status').read_text():
+                if time.monotonic()>=limit:raise CaptureError('long peer did not stop within original budget')
+                time.sleep(.001)
+            row['long_peer_stopped_confirmed']=True
+            cinit=start(third,'initiator',row['owners'][0]);ctasks=[cpeer,cinit]
+            await_marker(run,[cinit],'NativeChannelSent:',limit)
+            row['slot_exhaustion']=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],
+                'dynamic-roundtrip',owner['object']['path'],'24582','24583','29441','1','61'],3,collection='dynamic_slot_refusals')
+            refused=row['slot_exhaustion']
+            if refused['exit']==0 or 'os error 28' not in refused['stderr'] or 'NativeDynamicStaged:' in refused['stdout']:
+                raise CaptureError('full lifetime slot budget must reject before staging with ENOSPC')
+            if time.monotonic()>=limit:raise CaptureError('long peer original pause budget exceeded')
+            os.kill(stopped.pid,signal.SIGCONT);stopped=None
+            row['long_peer_resume_wall_ns']=time.time_ns();run.save()
+            await_marker(run,ctasks,'NativeDynamicBusinessDone: rounds=4 held=true',time.monotonic()+45)
+            close_pair(third,ctasks)
         row['smtc_after_close']=[]
         for entry in row['owners']:
             receipt=run.command([str(run.args.slctl),'--adapter',entry['owner']['path'],'ssap-info',entry['object']['path']],10,collection='dynamic_smtc_after_close')
@@ -137,12 +160,13 @@ def info(channel, owners):
             raise CaptureError('original staged/business/final-close application receipts required')
         if any(app['stdout'].count(marker)!=1 for marker in ['NativeDynamicStaged:','NativeDynamicBusinessDone:','NativeDynamicLastClose:']):
             raise CaptureError('duplicate or malformed dynamic receipts')
-        expected=['--adapter',entry['owner']['path'],'dynamic-roundtrip' if app['role']=='initiator' else 'dynamic-peer',entry['object']['path'],*map(str,ports),str(channel['aid']),str(channel['rounds']),'61','hold']
+        expected=['--adapter',entry['owner']['path'],'dynamic-roundtrip' if app['role']=='initiator' else 'dynamic-peer',entry['object']['path'],*map(str,ports),str(channel['aid']),str(channel['rounds']),str(channel['message_bytes']),'hold']
         if app['args'][1:]!=expected:raise CaptureError('actual dynamic application arguments/identity mismatch')
         owner,obj=entry['owner'],entry['object']
         if fields[:4]!=(owner['index'],owner['generation'],obj['lifetime'],obj['handle']) or obj['generation']!=owner['generation']:
             raise CaptureError('dynamic immutable controller/generation/lifetime mismatch')
-        if not all(0x80<=v<=0xdf for v in fields[4:6]) or fields[6:]!=(241,249,254,0,3):
+        mtu=max(249,channel['message_bytes'])
+        if not all(0x80<=v<=0xdf for v in fields[4:6]) or fields[6:]!=(241,mtu,mtu+5,0,3):
             raise CaptureError('exact negotiated dynamic basic capabilities required')
         values[app['role']]=fields
     if set(values)!={'peer','initiator'} or values['initiator'][4:6]!=values['peer'][5:3:-1] or values['initiator'][4]==values['initiator'][5]:
@@ -154,17 +178,21 @@ def cmtc(payload):
     return b'\x02\0'+len(payload).to_bytes(2,'little')+payload
 
 
-def request(identifier,source,ports,aid):
+def request(identifier,source,ports,aid,mtu=249,mps=254):
     # Independent public-format expectation, not the production C encoder.
-    return bytes([0x10,identifier,18,0,source,10,1,0,249,0,254,0,1,1,1,0])+ports[1].to_bytes(2,'little')+ports[0].to_bytes(2,'little')+aid.to_bytes(2,'little')
+    return bytes([0x10,identifier,18,0,source,10,1,0])+mtu.to_bytes(2,'little')+mps.to_bytes(2,'little')+bytes([1,1,1,0])+ports[1].to_bytes(2,'little')+ports[0].to_bytes(2,'little')+aid.to_bytes(2,'little')
 
 
 def corroborate(run,capture):
     rows=run.get('dynamic_channels')
     if not isinstance(rows,list) or len(rows)!=2:raise CaptureError('both real connection roles require dynamic evidence')
     packets=reassemble_acb(capture);proofs=[];nonces=set();sequences=set()
+    versions={row.get('version') for row in rows}
+    if len(versions)!=1 or versions not in [{1},{2}]:raise CaptureError('one exact dynamic gate version required')
+    extended=versions=={2}
+    if extended and (any(type(row.get('long_bytes')) is not int or row['long_bytes'] not in [250,253,254,255,1024,2042] for row in rows) or rows[0]['long_bytes']!=rows[1]['long_bytes']):raise CaptureError('exact bounded dynamic long workload required')
     for number,row in enumerate(rows):
-        if row.get('version')!=1 or row.get('phase')!=number or row.get('status')!='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING' or [c['name'] for c in row['channels']]!=['A','B']:
+        if row.get('version')!=(2 if extended else 1) or row.get('phase')!=number or row.get('status')!='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING' or [c['name'] for c in row['channels']]!=(['A','B','C'] if extended else ['A','B']):
             raise CaptureError('original dynamic phase/schema/terminal evidence required')
         owners=row['owners'];used=set()
         if owners!=run['connection_control']['phases'][number]['typed_objects']:raise CaptureError('dynamic owners differ from canonical physical phase')
@@ -179,11 +207,11 @@ def corroborate(run,capture):
             if n in used:raise CaptureError('dynamic USB leg reused across obligations')
             used.add(n);return p
         def pair(sender,receiver,raw):return dict(tx=matched(sender,'out',raw),rx=matched(receiver,'in',raw))
-        def create(source,ports,destination,result):
+        def create(source,ports,destination,result,mtu=249,mps=254):
             reqs=[p for p in packets if belongs(p,owners[0]) and p['direction']=='out' and len(bytes.fromhex(p['data']))==26 and bytes.fromhex(p['data'])[4]==0x10 and bytes.fromhex(p['data'])[8]==source]
             if len(reqs)!=1:raise CaptureError('one original ConnectReq per allocated local TCID required')
             identifier=bytes.fromhex(reqs[0]['data'])[5]
-            req=cmtc(request(identifier,source,ports,0x7301))
+            req=cmtc(request(identifier,source,ports,0x7301,mtu,mps))
             rsp=cmtc(bytes([0x11,identifier,4,0,source,destination,result,0]))
             return dict(identifier=identifier,request=pair(owners[0],owners[1],req),response=pair(owners[1],owners[0],rsp))
         refusal=row['unbound_refusal']
@@ -192,18 +220,25 @@ def corroborate(run,capture):
         rejected=create(0x80,[24570,24571],0,1)
         channels=[]
         for channel in row['channels']:
-            if channel.get('tx_status_required') is not True or channel.get('message_bytes')!=61:raise CaptureError('current dynamic budget/message evidence required')
-            if channel['rounds']!=(4 if channel['name']=='A' else 20):raise CaptureError('exact two-channel workload required')
+            if channel.get('tx_status_required') is not True or channel.get('message_bytes')!=(row['long_bytes'] if channel['name']=='C' else 61):raise CaptureError('current dynamic budget/message evidence required')
+            if channel['rounds']!=(20 if channel['name']=='B' else 4):raise CaptureError('exact two-channel workload required')
             fields=info(channel,owners);sent,replies=application_frames(channel)
             for raw in sent:
                 if raw[8:24] in nonces or raw[24:28] in sequences:raise CaptureError('nonce or random wire sequence reused across channels/roles')
                 nonces.add(raw[8:24]);sequences.add(raw[24:28])
-            connected=create(fields['initiator'][4],channel['ports'],fields['peer'][4],0)
+            connected=create(fields['initiator'][4],channel['ports'],fields['peer'][4],0,fields['initiator'][7],fields['initiator'][8])
             legs=[]
             for sequence,(data,reply) in enumerate(zip(sent,replies)):
                 for role,source,dest,raw in [('initiator',owners[0],owners[1],data),('peer',owners[1],owners[0],reply)]:
                     frame=bytes([fields[role][5],0])+ (len(raw)+1).to_bytes(2,'little')+bytes([241])+raw
+                    if len(frame)>fields[role][8]:raise CaptureError('complete dynamic PDU exceeds negotiated MPS')
                     leg=pair(source,dest,frame)
+                    if channel['name']=='C':
+                        for direction in ['tx','rx']:
+                            pieces=leg[direction].get('fragments',[])
+                            if b''.join(bytes.fromhex(p['data']) for p in pieces)!=frame:raise CaptureError('dynamic long fragment bytes disagree with the exact application PDU')
+                            if len(pieces)<2 or [p.get('boundary',0) for p in pieces]!=[1]+[2]*(len(pieces)-2)+[3] or any(not 1<=len(bytes.fromhex(p['data']))<=254 for p in pieces):
+                                raise CaptureError('dynamic long PDU requires bounded actual first/middle/last fragments on both ends')
                     if leg['tx']['wall_ns']<connected['response']['tx']['wall_ns'] or leg['rx']['wall_ns']>channel['end_wall_ns']:
                         raise CaptureError('business outside negotiated channel lifetime')
                     legs.append(dict(sequence=sequence,role=role,**leg))
@@ -219,7 +254,7 @@ def corroborate(run,capture):
                     closes.append(dict(request=pair(sender,receiver,raw),response=pair(receiver,sender,cmtc(bytes([0x13,identifier,3,0,local,remote,0])))))
             if not closes:raise CaptureError('real dynamic close exchange missing')
             channels.append(dict(name=channel['name'],info=fields,connect=connected,business=legs,close=closes))
-        a,b=channels
+        a,b=channels[:2]
         close_end=max(c['response']['rx']['wall_ns'] for c in a['close'])
         if row.get('peer_stopped_confirmed') is not True:raise CaptureError('actual stopped VM process receipt missing')
         if not row['peer_stop_wall_ns']<row['peer_resume_wall_ns'] or row['peer_resume_wall_ns']-row['peer_stop_wall_ns']>=5_000_000_000:
@@ -228,14 +263,21 @@ def corroborate(run,capture):
             raise CaptureError('B must be negotiated while A still exists')
         if not any(leg['sequence']>0 and leg['tx']['wall_ns']>close_end for leg in b['business']):
             raise CaptureError('actual B business after A close response required')
-        if any(a['info'][role][4]==b['info'][role][4] for role in ['initiator','peer']):raise CaptureError('channel TCID tombstone reused')
+        if any(len({c['info'][role][4] for c in channels})!=len(channels) for role in ['initiator','peer']):raise CaptureError('channel TCID tombstone reused')
         dynamic={i for i,p in enumerate(packets) if any(belongs(p,o) for o in owners) and len(bytes.fromhex(p['data']))>=5 and bytes.fromhex(p['data'])[:2]==b'\x02\0' and bytes.fromhex(p['data'])[4] in [0x10,0x11,0x12,0x13]}
         if not dynamic.issubset(used):raise CaptureError('unattributed dynamic CMTC frame')
         dynamic_ids={value['info'][role][4] for value in channels for role in ['initiator','peer']}
         if any(i not in used and any(belongs(p,o) for o in owners) and bytes.fromhex(p['data'])[0] in dynamic_ids for i,p in enumerate(packets)):
             raise CaptureError('unattributed dynamic business frame')
         if len(row.get('smtc_after_close',[]))!=2 or any(r['exit'] for r in row['smtc_after_close']):raise CaptureError('fixed SMTC post-close observations missing')
+        if extended:
+            refused=row.get('slot_exhaustion',{})
+            if not refused.get('exit') or 'os error 28' not in refused.get('stderr','') or 'NativeDynamicStaged:' in refused.get('stdout',''):raise CaptureError('original ENOSPC before staging required')
+            if row.get('long_peer_stopped_confirmed') is not True or not row['long_peer_stop_wall_ns']<refused['start_wall_ns']<=refused['end_wall_ns']<row['long_peer_resume_wall_ns'] or row['long_peer_resume_wall_ns']-row['long_peer_stop_wall_ns']>=5_000_000_000:raise CaptureError('original bounded long-peer scheduling and resource refusal required')
+            if not any(leg['sequence']>0 and leg['tx']['wall_ns']>refused['end_wall_ns'] for leg in channels[2]['business']):raise CaptureError('actual dynamic long business after slot refusal required')
         proofs.append(dict(phase=number,refused=rejected,channels=channels,close_isolation=True))
+    if extended:
+        return dict(status='DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS',round_trips=56,long_bytes=rows[0]['long_bytes'],slot_exhaustion_refusals=2,proofs=proofs,scope='Prior dual dynamic behavior plus C long PDU/actual two-end PB fragments and ENOSPC before staging;Cactual app replies after refusal,both physical roles;no safe TCID reuse/fullcredit/concurrency or natural recovery claim',reliable_mode=False,tcid_reuse=False,natural_recovery=False,full_multichannel_matrix=False)
     return dict(status='DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS',round_trips=48,proofs=proofs,
                 scope='Two real controllers, both physical connection roles, actual CMTC, asymmetric TCIDs, per-channel random app replies, A close/B progress; bounded VM app scheduling only',
                 reliable_mode=False,tcid_reuse=False,natural_recovery=False,full_multichannel_matrix=False)

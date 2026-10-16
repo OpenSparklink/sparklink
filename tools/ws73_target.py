@@ -484,6 +484,8 @@ def _run(args):
     acb_probe=bool(getattr(args,'acb_transport_probe',False))
     agent_mode=getattr(args,'security_agent',None)
     dynamic_channels=bool(getattr(args,'dynamic_channel_verify',False))
+    dynamic_long=getattr(args,'dynamic_channel_long_bytes',None)
+    if dynamic_long is not None and (not dynamic_channels or type(dynamic_long) is not int or dynamic_long not in [250,253,254,255,1024,2042]):raise ValueError('dynamic long requires explicit dynamic gate and bounded supported size')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
     channel_bytes=getattr(args,'channel_socket_bytes',61)
     channel_boundaries=bool(getattr(args,'channel_socket_boundaries',False))
@@ -645,6 +647,7 @@ def _run(args):
     m['live_security_agent_requested']=agent_mode
     if agent_mode:m['security_agent_verifier']=file_record(HERE/'ws73_security_agent.py')
     if agent_mode and agent_mode.startswith('cli-'):m['security_cli_verifier']=file_record(HERE/'ws73_security_cli.py')
+    m['dynamic_channel_long_bytes_requested']=dynamic_long
     m['dynamic_channel_verification_requested']=dynamic_channels
     m['dynamic_channel_acceptance']=False
     m['channel_socket_verification_requested']=channel_socket
@@ -807,6 +810,7 @@ def _run(args):
                      (' ws73.channel_prefix_close=1' if channel_close else '')+
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
+                     (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
                      (f' ws73.security_agent={agent_mode}' if agent_mode else '')+
                      (' ws73.recovery=1' if recovery else '')+
@@ -1164,6 +1168,8 @@ def _run(args):
                 if dynamic_channels:
                     from ws73_dynamic_channels import corroborate as dynamic_corroborate
                     m['dynamic_channel_corroboration']=dynamic_corroborate(control,capture)
+                    expected_status='DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' if dynamic_long is None else 'DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS'
+                    if m['dynamic_channel_corroboration']['status']!=expected_status or (dynamic_long is not None and m['dynamic_channel_corroboration'].get('long_bytes')!=dynamic_long):raise ValueError('original dynamic workload and requested long size disagree')
                     m['dynamic_channel_acceptance']=True
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
                     raise ValueError('explicit daemon crash request and evidence must agree')
@@ -1410,9 +1416,16 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record):
+    if 'dynamic_channel_verification_requested' in record and type(record['dynamic_channel_verification_requested']) is not bool:return 1
+    if record.get('dynamic_channel_long_bytes_requested') is not None and record.get('dynamic_channel_verification_requested') is not True:return 1
     if record.get('dynamic_channel_verification_requested'):
         dynamic=record.get('dynamic_channel_corroboration',{})
-        if (record.get('dynamic_channel_acceptance') is not True or dynamic.get('status')!='DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' or dynamic.get('round_trips')!=48 or len(dynamic.get('proofs',[]))!=2 or record.get('qemu_exit')!=0):return 1
+        size=record.get('dynamic_channel_long_bytes_requested')
+        if size is not None and (type(size) is not int or size not in [250,253,254,255,1024,2042] or dynamic.get('long_bytes')!=size or dynamic.get('slot_exhaustion_refusals')!=2):return 1
+        phases=dynamic.get('proofs',[])
+        names=['A','B'] if size is None else ['A','B','C']
+        if not isinstance(phases,list) or len(phases)!=2 or any(not isinstance(p,dict) or p.get('phase')!=n or [c.get('name') for c in p.get('channels',[])]!=names or any(len(c.get('business',[]))!=(40 if c.get('name')=='B' else 8) for c in p.get('channels',[])) for n,p in enumerate(phases)):return 1
+        if (record.get('ordinary_channel_socket_acceptance') is not True or record.get('dynamic_channel_acceptance') is not True or dynamic.get('status')!=('DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' if size is None else 'DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS') or dynamic.get('round_trips')!=(48 if size is None else 56) or len(dynamic.get('proofs',[]))!=2 or record.get('qemu_exit')!=0):return 1
     if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS','FOUR_DEVICE_PARALLEL_BURST_PASS']:
         isolation=record['status']=='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS'
         burst=record['status']=='FOUR_DEVICE_PARALLEL_BURST_PASS'
@@ -1549,6 +1562,7 @@ def main():
             cmd.add_argument('--channel-socket-close-prefix',action='store_true',help='require captured first USB submit, final fd close, remaining PDU and actual peer/other-channel traffic')
             cmd.add_argument('--channel-socket-boundaries',action='store_true',help='require original EMSGSIZE and no USB traffic for oversized messages')
             cmd.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4,help='bounded application rounds per connection role')
+            cmd.add_argument('--dynamic-channel-long-bytes',type=int,choices=[250,253,254,255,1024,2042],help='extend dynamic gate with long C channel and explicit lifetime slot exhaustion;requires --dynamic-channel-verify')
             cmd.add_argument('--dynamic-channel-verify',action='store_true',help='actual two-channel CMTC/asymmetricTCID/app delivery/close isolation, separate bounded VM gate')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')

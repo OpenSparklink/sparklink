@@ -284,6 +284,23 @@ impl Context {
                 )
                 .await
             }
+            "benchmark-ping" | "benchmark-peer" => {
+                if args.len() != 5 {
+                    anyhow::bail!("benchmark: path count bytes NEW-report.json");
+                }
+                let config = crate::benchmark::Config {
+                    count: args[2].parse()?,
+                    bytes: args[3].parse()?,
+                };
+                config.validate()?;
+                let fd = self.open_application_channel(args[1]).await?;
+                crate::benchmark::run(
+                    fd,
+                    args[0] == "benchmark-peer",
+                    config,
+                    std::path::Path::new(args[4]),
+                )
+            }
             "channel-peer" | "channel-roundtrip" => {
                 let path = args.get(1).ok_or_else(|| {
                     anyhow::anyhow!("channel command requires connection object path")
@@ -1264,14 +1281,9 @@ impl Context {
         );
         Ok(())
     }
-    async fn cmd_channel(
-        &self,
-        path: &str,
-        responder: bool,
-        rounds: u32,
-        bytes: usize,
-        mode: crate::channel::Mode,
-    ) -> anyhow::Result<()> {
+    // Shared identity/authorization preparation for functional and measured traffic.
+    // No D-Bus operation occurs per business datagram.
+    async fn open_application_channel(&self, path: &str) -> anyhow::Result<std::os::fd::OwnedFd> {
         let selected = self.selected_path().await?;
         if !path.starts_with(&format!("{selected}/peer_t")) {
             anyhow::bail!("connection object belongs to another adapter");
@@ -1299,7 +1311,25 @@ impl Context {
             anyhow::bail!("connection is not known/live");
         }
         let fd: zbus::zvariant::OwnedFd = object.call("OpenChannel", &()).await?;
-        crate::channel::exercise(fd.into(), responder, rounds, bytes, mode)?;
+        Ok(fd.into())
+    }
+    async fn cmd_channel(
+        &self,
+        path: &str,
+        responder: bool,
+        rounds: u32,
+        bytes: usize,
+        mode: crate::channel::Mode,
+    ) -> anyhow::Result<()> {
+        let fd = self.open_application_channel(path).await?;
+        let object = zbus::Proxy::new(
+            &self.conn,
+            "org.sparklink",
+            path,
+            "org.sparklink.Connection",
+        )
+        .await?;
+        crate::channel::exercise(fd, responder, rounds, bytes, mode)?;
         // Last-close must not silently recreate the connection CMTC session.
         // Basic CUTC has no qualified close/rebind barrier in this lifetime.
         let reopened: zbus::Result<zbus::zvariant::OwnedFd> = object.call("OpenChannel", &()).await;

@@ -1,6 +1,7 @@
 # Socket benchmark 指标与报告契约
 
-适用：ADR0006 的规划契约；目前没有当前 HEAD 的性能资格或可用 benchmark 命令。
+适用：ADR0006 的规划契约；目前没有当前 HEAD 的性能资格。首个 ping-pong 工具切片见
+[操作指南](../how-to/measure-socket-ping-pong.md)；固定速率、双向窗口和完整证据闭包尚缺。
 现有 channel-roundtrip／burst 是功能门禁，计时包含日志等开销，不能升级为基线。
 [接口支持范围](interfaces.md)继续适用；此页不新增 socket 能力。
 

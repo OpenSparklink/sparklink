@@ -1435,7 +1435,7 @@
     }
   },
   "performance_workstream": {
-    "status": "P0_ADOPTED_P1_NOT_IMPLEMENTED_NO_PERFORMANCE_QUALIFICATION",
+    "status": "P0_SYNCED_P1A_PING_PONG_APPLICATION_TOOL_OFFLINE_ONLY_FULL_P1_OPEN",
     "decision": "docs/decisions/0006-event-driven-session-and-performance-evidence.md",
     "canonical_plan": "project/implementation-plan.md#性能工作批次与退出条件",
     "qualification_record": "event-performance-baseline",
@@ -1473,6 +1473,26 @@
     "rx_measurement": "Single bulk URB completion/process/resubmit gap and perturbation first; no assumed bottleneck. Any change must preserve ordering/generation/buffer ownership/stop-drain.",
     "full_scope_preserved": true,
     "vm_only": true,
-    "performance_qualified": false
+    "performance_qualified": false,
+    "issues_receipt": "docs/evidence/event-performance-planning-issues-20261016.json",
+    "first_exit_completed": true,
+    "tool_slice": {
+      "commands": [
+        "benchmark-peer",
+        "benchmark-ping"
+      ],
+      "production_entry": "existing immutable connection validation/OpenChannel delegation and channel wait/validation/finite linger",
+      "offline": "13slctl unit/2scan/3Agent private-D-Bus tests; no kernel/Native/WS73 qualification",
+      "remaining": [
+        "Real VM exact new build baseline/role swap and existing-path regression",
+        "Independent peer/capture/artifact closure and negative controls",
+        "Absolute-rate/window-bidirectional workloads",
+        "CPU/resources/timeline/trace-overhead"
+      ],
+      "first_failures_retained": [
+        "sandbox local datagram EPERM",
+        "missing explicit private dbus-daemon path"
+      ]
+    }
   }
 }

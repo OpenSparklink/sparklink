@@ -44,7 +44,7 @@ fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 
-fn wait(fd: &OwnedFd, events: i16, deadline: Instant) -> anyhow::Result<()> {
+pub(super) fn wait(fd: &OwnedFd, events: i16, deadline: Instant) -> anyhow::Result<()> {
     loop {
         let remaining = deadline.saturating_duration_since(Instant::now());
         if remaining.is_zero() {
@@ -141,7 +141,12 @@ fn receive(fd: &OwnedFd, deadline: Instant) -> anyhow::Result<Vec<u8>> {
     }
 }
 
-fn validate(bytes: &[u8], sequence: u32, reply: bool, message_bytes: usize) -> anyhow::Result<()> {
+pub(super) fn validate(
+    bytes: &[u8],
+    sequence: u32,
+    reply: bool,
+    message_bytes: usize,
+) -> anyhow::Result<()> {
     if bytes.len() != message_bytes
         || &bytes[..8] != b"SLKSOCK1"
         || bytes[24..28] != sequence.to_le_bytes()
@@ -255,7 +260,7 @@ fn validate_exercise(rounds: u32, message_bytes: usize) -> anyhow::Result<()> {
     }
     Ok(())
 }
-fn prepare_application_fd(fd: OwnedFd) -> anyhow::Result<OwnedFd> {
+pub(super) fn prepare_application_fd(fd: OwnedFd) -> anyhow::Result<OwnedFd> {
     // Exercise the shared open-file description: dropping one descriptor
     // must not retire the Binding while its duplicate is still used.
     let duplicate = fd.try_clone()?;

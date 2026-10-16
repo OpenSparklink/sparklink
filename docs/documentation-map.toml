@@ -1639,3 +1639,17 @@ authority = "project/architecture.md; project/implementation-plan.md; project/cu
 disposition = "保留本主题单一来源；实现后更新契约与证据"
 source_sha256 = "8673b4b253101c4e9d4de72a5ddbf9c730ba578b6eefa7caadb982147bee8d81"
 publication = "html"
+
+[[documents]]
+path = "docs/how-to/measure-socket-ping-pong.md"
+title = "测量已建链通道的应用 ping-pong"
+section = "how-to"
+status = "active"
+reader = "VM集成测试维护者"
+purpose = "执行首个普通socket测量切片并判断未资格报告"
+validity = "工具本地测试通过；VM真实性能待验收，完整P1未完成"
+applicable_version = "slctl benchmark-ping/benchmark-peer implementation batch after62275f8"
+authority = "crates/slctl/src/benchmark.rs; project/current-capabilities.md"
+disposition = "随工具变更维护步骤、失败和未覆盖范围"
+source_sha256 = "24d7cb2e375caaae0445cc48f1ed8ad5a6a675cb72ccf55b605cb6fee615c225"
+publication = "html"

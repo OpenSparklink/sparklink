@@ -1,0 +1,84 @@
+{
+  "planning_commit": "62275f88aa56d57a0f83878258d73964a7b7acc9",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6210983076",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 14,
+      "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6210984172",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6210985297",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6210986358",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6210987920",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "readback_verified": true
+    }
+  ],
+  "source_ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38869525962,
+      "name": "Documentation",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38869525972,
+      "name": "Qualification integrity",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38869525956,
+      "name": "Production codec bounded fuzz",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38869526134,
+      "name": "CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38869519031,
+      "name": "Qualification integrity",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38869519385,
+      "name": "Documentation",
+      "status": "completed"
+    }
+  ],
+  "performance_qualification": false
+}

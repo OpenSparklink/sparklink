@@ -23,6 +23,7 @@ export-board-inputs
 capture-controller-snoop
 capture-and-check-discovery
 check-business-roundtrip
+measure-socket-ping-pong
 ```
 
 [VM 输入契约](../reference/vm-gate-inputs.md)是参考，不能代替从源码制作 VM 的指南。

@@ -16884,13 +16884,13 @@
         "event-driven-session",
         "reproducible-socket-performance"
       ],
-      "bounds": "ADR0006/P0仅规划；历史8次61B功能RTT不作为当前基线",
+      "bounds": "P0 adopted;P1a ordinary-socket ping-pong application tool implemented/localAF_UNIX tested. No Native/WS73 performance qualification; full P1 missing.",
       "excluded": [
         "不得从功能PASS或USB/NOCP继承性能资格",
         "不预设单bulkRXURB或10ms解释全部时延"
       ],
       "remaining": [
-        "P1三负载可信工具及VM双设备基线",
+        "P1a Native/WS73 two-role baseline and independent peer/capture/provenance closure; fixed-rate/window-bidirectional/resources/trace overhead still missing",
         "P2通知/原期限/引用drain和旧新同口径实测",
         "P3有界TX、P4多通道四设备、P5测量后USB优化、P6长期自然恢复"
       ],

@@ -1,3 +1,4 @@
+mod benchmark;
 mod channel;
 mod commands;
 mod security_agent;
@@ -151,6 +152,8 @@ Commands:
   dynamic-peer <path> <source-port> <destination-port> <aid> [rounds] [bytes] [hold]  Accept a real dynamic channel
   dynamic-roundtrip <path> <source-port> <destination-port> <aid> [rounds] [bytes] [hold]  Negotiate and exercise a real dynamic channel
   dynamic-burst <path> <source-port> <destination-port> <aid> 16 2042 [hold]  Exercise bounded dynamic queue pressure
+  benchmark-ping <path> <count> <bytes> <new-report.json>  Measure ordinary socket ping-pong (unqualified)
+  benchmark-peer <path> <count> <bytes> <new-report.json>  Validate and reply; report after timing
   channel-peer <path> [rounds] [bytes] [boundaries]  Validate and reply on a native channel socket
   channel-roundtrip <path> [rounds] [bytes] [boundaries|prefix-close|burst]  Send random business messages and verify replies
   disconnect <address> [type]    Disconnect an unambiguous current peer

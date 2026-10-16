@@ -40,7 +40,7 @@ def check_xhci(share, mode):
     pages=max(2,(1024*1024+payload-1)//payload)
     actual_kb=pages*payload//1024
     expected=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=actual_kb,requested_buffer_kb=1024,subbuffer_kb=subbuffer,cookie=cookie)
-    if any(type(v.get('buffer_kb')) is not int for v in rows) or rows!=[expected,expected]:raise CaptureError('actual trace start/end configuration differs')
+    if any(type(v.get(k)) is not int for v in rows for k in ['buffer_kb','requested_buffer_kb','subbuffer_kb']) or rows!=[expected,expected]:raise CaptureError('actual trace start/end configuration differs')
     path=share/'xhci-trace.log';text=path.read_text();stats=(share/'xhci-trace-stats.txt').read_text()
     if len(text)>8*1024*1024 or 'LOST' in text.upper() or re.findall(r'^# tracer: (.*)$',text,re.M)!=['nop']:raise CaptureError('bounded loss-free nop event trace required')
     header=re.findall(r'#\s*entries-in-buffer/entries-written:\s*(\d+)/(\d+)',text)

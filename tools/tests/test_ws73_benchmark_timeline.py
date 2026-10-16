@@ -40,6 +40,10 @@ class TimelineEvidence(unittest.TestCase):
                 for name in ['start','end']:
                     p=root/f'benchmark-xhci-{name}.json';v=json.loads(p.read_text());v['buffer_kb']=wrong;p.write_text(json.dumps(v))
                 with self.subTest(buffer=wrong),self.assertRaises(CaptureError):check_xhci(root,'on')
+            for field in ['requested_buffer_kb','subbuffer_kb']:
+                for name in ['start','end']:
+                    trace_fixture(root);p=root/f'benchmark-xhci-{name}.json';v=json.loads(p.read_text());v[field]=float(v[field]);p.write_text(json.dumps(v))
+                    with self.subTest(field=field,endpoint=name),self.assertRaises(CaptureError):check_xhci(root,'on')
             trace_fixture(root)
             (root/'benchmark-xhci-header-end.txt').write_text('field: char data; offset:16; size:4096; signed:1;\n')
             with self.assertRaises(CaptureError):check_xhci(root,'on')

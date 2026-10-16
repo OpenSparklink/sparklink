@@ -53,6 +53,7 @@ async def main():
   result['breadcrumb_return']=await js("location.pathname.endsWith('/reference/index.html') && document.querySelector('.bd-article h1').textContent.includes('技术参考')")
   await nav('reference/controller-events.html')
   result['table']=await js("document.querySelectorAll('table').length>=2")
+  result['table_column_legibility']=await js("Array.from(document.querySelectorAll('table tr')).every(r=>Array.from(r.cells).every(c=>c.getBoundingClientRect().width>=96))")
   result['book_sidebars']=await js("document.querySelector('.bd-sidebar-primary').getBoundingClientRect().width>0 && document.querySelector('.bd-sidebar-secondary').getBoundingClientRect().width>0 && document.body.innerText.includes('本页内容') && document.querySelectorAll('.primary-toggle').length===1 && document.querySelectorAll('.secondary-toggle').length===1")
   await click('.theme-switch-button')
   await click('.theme-change-button[data-mode="dark"]')
@@ -140,7 +141,7 @@ async def main():
    redirects[old]=ok
   result['legacy_html_redirects']=all(redirects.values())
   result['redirect_targets']=redirects
-  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','task_cards_desktop','task_cards_mobile','versioned_brand','navigation','chapter_breadcrumbs','breadcrumb_return','mobile_breadcrumbs','table','book_sidebars','dark_mode','code_copy_paste','mobile_navigation','code_block','product_tutorial_navigation','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','source_only_pages_excluded','legacy_html_redirects']) else 'PARTIAL'
+  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','task_cards_desktop','task_cards_mobile','versioned_brand','navigation','chapter_breadcrumbs','breadcrumb_return','mobile_breadcrumbs','table','table_column_legibility','book_sidebars','dark_mode','code_copy_paste','mobile_navigation','code_block','product_tutorial_navigation','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','source_only_pages_excluded','legacy_html_redirects']) else 'PARTIAL'
   (OUT/'report.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['screenshots','browser']},indent=2))
   await call('session.end',{})
   if result['status']!='PASS':raise SystemExit(1)

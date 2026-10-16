@@ -670,7 +670,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T11:51:38.598434+00:00",
+  "updated_at_utc": "2026-10-16T12:33:51.104362+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -1644,6 +1644,17 @@
       "formal": "NO_NEW_PROOF",
       "remaining": "FullP1 traceoverhead/kernelresources/actualparameters/stability;originalDownFAIL;P2next",
       "issues_receipt": "docs/evidence/native-baseline-maintenance-20261016.json"
+    },
+    "immediate_wakeup_implementation": {
+      "kernel": "a0e1ad7b3a1c4397f1c187b5875b88a9efcc26bd",
+      "status": "COMMITTED_COMPILED_OFFLINE_BOUNDED_ONLY_NOT_NEW_REAL_QUALIFIED",
+      "fallback_ms": 10,
+      "actual_rust_tests": 46,
+      "cbmc": "20steps156checks withAPI dependencies;wrongreferenceandshortunwind negatives;notkernel implementation/refinement",
+      "notification_model": "formal/lifecycle/SessionNotification.tla",
+      "model_source": "4dd487e",
+      "tlc": "2controllers/1physicalSessioneach/2events;117649states;weakfairness;lostqueue negative;notRF ormemorymodelproof",
+      "remaining": "New exact VM/source gates;originaltimer separation/removepoll,Runtime/C lock/ref/drain races,LKMM/KCSAN/lockdep andsameconfig comparison"
     }
   },
   "slktest_migration": {
@@ -1677,5 +1688,16 @@
     "report_commit": "5e02d197c8b19937115ca650a57c4ed2982121c6",
     "issues_receipt": "docs/evidence/slktest-migration-maintenance-20261016.json",
     "historical_scope": "Entrymigration7694 andemptyUSBVM historical;exactcompiled9385/newNativef43 qualification separatelyrecorded,not retroactive upgrade."
+  },
+  "build_resource_policy": {
+    "canonical": "project/build-resource-policy.json",
+    "solo_jobs": 12,
+    "with_real_device_vm_jobs": 8,
+    "coordination": "Shared workspace top-level build lock;make/Cargo/bundle/prepare unified;legacy/frozen runs explicitly serialized",
+    "kernel_development_output": ".dev/session-wake-kernel-build-v1",
+    "cargo_native_development_target": ".dev/cargo-native-dev",
+    "qualified_artifacts": "separately frozen;never overwrite recordedoldmanifest/artifact/tool",
+    "historical_exception": "a0e1ad7 build launched before request completed at original-j4;first artifactcheck rejected missingexplicitVirtualmoduleoptin thenexactfrozenconfig optincheck passed;no source/config drift",
+    "original_scope_and_vm_only_preserved": true
   }
 }

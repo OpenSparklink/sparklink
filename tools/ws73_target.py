@@ -26,6 +26,7 @@ from types import SimpleNamespace
 from ws73_north_star import file_record, ordinary_identity
 from ws73_capture import check_capture_stats, read_capture
 import ws73_vm_native_root as native_vm
+from build_resources import build_lock, environment as build_environment
 
 USERSPACE = Path(__file__).resolve().parents[1]
 # Local workspaces keep both repositories side by side. CI checks out the
@@ -87,6 +88,12 @@ def copy_elf(source, target, root):
 
 
 def prepare(args):
+    # Hold through copying/sealing binaries from the shared debug target too.
+    with build_lock() as build_fd:
+        return prepare_locked(args, build_fd)
+
+
+def prepare_locked(args, build_fd):
     ordinary_identity()
     output = args.output.resolve()
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
@@ -132,16 +139,19 @@ def prepare(args):
             if not module_profile:raise ValueError('daemon fd client requires native VM profile')
             inputs.append(args.native_channel_fd_probe)
         manifest['inputs'] = [file_record(p) for p in inputs]
+        manifest['inputs'] += [file_record(HERE / 'build_resources.py'),
+                               file_record(USERSPACE / 'project/build-resource-policy.json')]
         source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
         source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates','bindings/python/sparklink'],cwd=USERSPACE,text=True).splitlines()
         manifest['userspace_sources'] = [file_record(USERSPACE/p) for p in sorted(set(source_files))]
         manifest['userspace_head'] = subprocess.check_output(['git','rev-parse','HEAD'],cwd=USERSPACE,text=True).strip()
+        build_env, manifest['build_resources'] = build_environment()
         with (output/'build.log').open('w') as log:
             subprocess.run(['cargo','build','--offline','--locked','-p','libsparklink','--lib'],cwd=USERSPACE,
-                           stdout=log,stderr=subprocess.STDOUT,check=True)
+                           env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['cargo','build','--offline','--locked','-p','slkd','-p','slctl','-p','slktest','-p','slkconfig',
                             '-p','slkmon','-p','slkdump','--bins','--examples'],cwd=USERSPACE,
-                           stdout=log,stderr=subprocess.STDOUT,check=True)
+                           env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror',
                             '-I'+str(USERSPACE/'crates/libsparklink/include'),str(HERE/'ws73_bindings_probe.c'),
                             '-L'+str(USERSPACE/'target/debug'),'-Wl,-rpath,/usr/lib','-l:liblibsparklink.so',

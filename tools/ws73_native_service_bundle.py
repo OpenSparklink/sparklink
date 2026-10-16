@@ -19,6 +19,7 @@ import subprocess
 from ws73_firmware import HEADER, MAX_PAYLOAD, NAMES
 from ws73_native_build_check import elf_header, release_name
 from ws73_native_root_smoke import digest, save
+from build_resources import build_lock, configuration, environment as build_environment, workspace
 
 PROGRAMS = ('slkd', 'slctl', 'slktest', 'slkconfig', 'slkmon', 'slkdump')
 SOURCE_SCOPE = ('crates', 'data', 'Cargo.toml', 'Cargo.lock')
@@ -53,6 +54,13 @@ def source_state(source):
 
 
 def stage(args):
+    # The shared incremental target remains locked through payload sealing,
+    # not just Cargo exit; another build must not replace ELF inputs mid-copy.
+    with build_lock() as build_fd:
+        return stage_locked(args, build_fd)
+
+
+def stage_locked(args, build_fd):
     source = Path(args.source).resolve(strict=True)
     kernel_manifest = Path(args.kernel_manifest).resolve(strict=True)
     kernel = json.loads(kernel_manifest.read_text())
@@ -73,7 +81,10 @@ def stage(args):
     output.mkdir(mode=0o700)
     tool_inputs = {str(Path(__file__).with_name(name)): digest(Path(__file__).with_name(name))
                    for name in ('ws73_native_service_bundle.py', 'ws73_firmware.py',
-                                'ws73_native_build_check.py', 'ws73_native_root_smoke.py')}
+                                'ws73_native_build_check.py', 'ws73_native_root_smoke.py',
+                                'build_resources.py')}
+    policy = Path(__file__).resolve().parents[1] / 'project/build-resource-policy.json'
+    tool_inputs[str(policy)] = digest(policy)
     record = {'status': 'BUILDING', 'scope': 'private native service and firmware file staging only',
               'userspace_head': head, 'kernel_head': kernel['source_head'], 'kernel_release': release,
               'kernel_manifest_sha256': digest(kernel_manifest),
@@ -86,15 +97,19 @@ def stage(args):
     manifest = output / 'manifest.json'
     save(manifest, record)
     try:
-        build = output / 'build'
+        build = Path(args.build_dir).resolve() if getattr(args, 'build_dir', None) else workspace() / configuration()['cargo_native_development_target']
+        build.mkdir(parents=True, exist_ok=True)
         command = ['cargo', 'build', '--offline', '--locked', '--release', '--workspace']
+        environment, budget = build_environment()
+        environment['CARGO_TARGET_DIR'] = str(build)
         record.update(build_command=command, target_directory=str(build),
+                      build_resources=budget,
                       rustc=subprocess.check_output(['rustc', '--version'], text=True).strip(),
                       cargo=subprocess.check_output(['cargo', '--version'], text=True).strip())
         save(manifest, record)
-        environment = dict(os.environ, CARGO_TARGET_DIR=str(build))
         with (output / 'build.log').open('xb') as log:
             result = subprocess.run(command, cwd=source, env=environment,
+                                    pass_fds=(build_fd,),
                                     stdout=log, stderr=subprocess.STDOUT)
         record['build_exit'] = result.returncode
         if result.returncode != 0 or source_state(source) != (head, source_hashes):
@@ -210,6 +225,7 @@ def main():
     for name in ('source', 'kernel-manifest', 'firmware-dir', 'runtime-config-dir',
                  'combined-sha256', 'output'):
         parser.add_argument('--' + name, required=True)
+    parser.add_argument('--build-dir', help='fixed incremental Cargo target;default workspace .dev/cargo-native-dev;payload is sealed separately')
     stage(parser.parse_args())
 
 

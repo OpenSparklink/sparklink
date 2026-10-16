@@ -15,6 +15,35 @@ cargo +1.96.1 test --locked --workspace --all-features
 cargo +1.96.1 clippy --locked --workspace --all-targets --all-features -- -D warnings
 ```
 
+## 控制本机主线程构建资源
+
+本工作区的共享入口默认最多12路，与真实设备 VM 回归并行时最多8路；CPU affinity
+不足时再下调。`make build/check/test/clippy` 已接入同一预算及 workspace 文件锁，
+避免多个主线程构建各开12路。直接 Cargo 命令可改用：
+
+```sh
+python3 tools/build_resources.py --record "$NEW_BUILD_RECORD" -- cargo +1.96.1 check --workspace --all-targets --all-features
+```
+
+同一时刻有真实设备 VM 回归时加 `--with-vm`；通过 make 或 bundle/prepare 脚本运行
+时设置 `SPARKLINK_BUILD_WITH_VM=1`。`SPARKLINK_BUILD_JOBS` 可显式下调，现有
+`CARGO_BUILD_JOBS` 必须与它一致；冲突直接拒绝，不静默另开一个预算。
+锁被其它构建占用时，等待其结束再重做，不能另开绕过锁的12路构建。历史冻结脚本
+不受新锁保护，运行它们时须自行串行；不要把已接入的根 Makefile 再套一层 wrapper。
+
+内核编译使用已配置的固定开发 `O=` 目录，例如本工作区
+`.dev/session-wake-kernel-build-v1`；每次源码提交不更换路径。直接内核 make 可用：
+
+```sh
+python3 tools/build_resources.py --record "$NEW_KERNEL_BUILD_RECORD" -- make -C "$KERNEL_SOURCE" O="$KERNEL_BUILD" LLVM=1 RUSTC_BOOTSTRAP=1 BINDGEN="$BINDGEN" bzImage modules
+```
+
+该命令只编译，不安装或运行驱动。Native bundle 的 Cargo target 默认固定于
+workspace `.dev/cargo-native-dev`，可用 `--build-dir` 指定另一稳定的配置目录。
+资格产物与 manifest 另行封存后才能复用开发目录；不要修改旧记录、prepared 根或
+历史工具来套用新默认值。新记录保留实际jobs、CPU/affinity、可用内存及完整命令，
+构建来源、配置、工具链和后续 VM 门禁仍须另外核对。构建资源记录不授功能资格。
+
 内核 ABI 和部分工具测试需要匹配的 Linux 源码或 CI 中的固定 UAPI 提交；
 不要用另一版本的头文件解释结果。
 

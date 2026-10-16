@@ -15,6 +15,7 @@ CARGO_FLAGS ?= --release --workspace
 INSTALL ?= install
 UV ?= uv
 DOCS_RUN = $(UV) run --locked --only-group docs
+BUILD_RUN = python3 tools/build_resources.py --
 SPHINX_FLAGS = -n -W --keep-going
 
 .PHONY: all build check test install uninstall clean docs docs-live docs-linkcheck
@@ -22,16 +23,16 @@ SPHINX_FLAGS = -n -W --keep-going
 all: build
 
 build:
-	$(CARGO) build $(CARGO_FLAGS)
+	$(BUILD_RUN) $(CARGO) build $(CARGO_FLAGS)
 
 check:
-	$(CARGO) check --workspace
+	$(BUILD_RUN) $(CARGO) check --workspace
 
 test:
-	$(CARGO) test --workspace
+	$(BUILD_RUN) $(CARGO) test --workspace
 
 clippy:
-	$(CARGO) clippy --workspace -- -W clippy::all
+	$(BUILD_RUN) $(CARGO) clippy --workspace -- -W clippy::all
 
 fmt:
 	$(CARGO) fmt --all

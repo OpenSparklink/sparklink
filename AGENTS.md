@@ -11,10 +11,10 @@ SparkLink (星闪) 无线通信协议的用户态基础设施，对标 BlueZ 的
 ## 构建
 
 ```bash
-cargo +1.96.1 check --locked --workspace
-cargo +1.96.1 build --locked --workspace
-cargo +1.96.1 clippy --locked --workspace --all-targets -- -D warnings
-cargo +1.96.1 test --locked --workspace
+python3 tools/build_resources.py -- cargo +1.96.1 check --locked --workspace
+python3 tools/build_resources.py -- cargo +1.96.1 build --locked --workspace
+python3 tools/build_resources.py -- cargo +1.96.1 clippy --locked --workspace --all-targets -- -D warnings
+python3 tools/build_resources.py -- cargo +1.96.1 test --locked --workspace
 ```
 
 资格工具链按具体 artifact 记录固定（当前保留镜像为 Rust 1.96.1）；浮动 stable
@@ -46,6 +46,21 @@ cargo +1.96.1 test --locked --workspace
 | thiserror | 2 | 错误类型派生 |
 
 ## 代码规范
+
+### 主线程构建资源（2026-10-16）
+
+本机16逻辑CPU：单独构建默认12路，与真实设备VM回归并行默认8路。使用共享
+`tools/build_resources.py`（make的build/check/test/clippy已接入）；VM并行显式设
+`SPARKLINK_BUILD_WITH_VM=1`，必要时`SPARKLINK_BUILD_JOBS`只下调。Cargo和make
+使用同一预算，同一workspace `.dev/main-build.lock`只允许一个主线程重构建；不要
+另开独立12路，直接调用历史脚本不受该锁保护。不要把已接入wrapper的根Makefile
+再包一次；内核直接make命令可用wrapper。CI独立runner按实际CPU上限截断预算。
+
+内核开发固定`O=../.dev/session-wake-kernel-build-v1`，Cargo Native固定
+`.dev/cargo-native-dev`；每种必要debug配置各有稳定目录。先封存准确资格产物再
+复用开发目录，不按每次commit更换O触发objtool/无关模块重编。新构建记录实际
+jobs/CPU affinity/可用内存/命令/配置/工具链/来源；资源记录不授功能资格。
+已运行a0e1ad7的-j4及f43冻结资格链jobs4原样完成，不中断、不回写旧资格。
 
 ### Rust 风格
 

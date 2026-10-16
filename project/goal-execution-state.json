@@ -670,7 +670,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T09:59:00Z",
+  "updated_at_utc": "2026-10-16T09:44:28Z",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -1373,7 +1373,8 @@
     "docs/evidence/four-device-business-issues-20261016.json",
     "docs/evidence/four-device-disconnect-issues-20261016.json",
     "docs/evidence/four-device-burst-issues-20261016.json",
-    "docs/evidence/cmtc-identifier-zero-issues-20261016.json"
+    "docs/evidence/cmtc-identifier-zero-issues-20261016.json",
+    "docs/evidence/slktest-migration-maintenance-20261016.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -1618,6 +1619,7 @@
     "vm": ".dev/slktest-vm-migration-v1/manifest.json",
     "qualification_record": "slktest-migration-7694e14",
     "report": "docs/evidence/slktest-migration-20261016.json",
-    "report_commit": "5e02d197c8b19937115ca650a57c4ed2982121c6"
+    "report_commit": "5e02d197c8b19937115ca650a57c4ed2982121c6",
+    "issues_receipt": "docs/evidence/slktest-migration-maintenance-20261016.json"
   }
 }

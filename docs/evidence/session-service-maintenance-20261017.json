@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_LIFECYCLE_TRACE_ISSUE_READBACK_AND_INTEGRITY_PASS_FULL_EXIT_OPEN",
+  "lifecycle_report": "session-c4-lifecycle-20261017.json",
+  "trace_report": "session-service-trace-20261017.json",
+  "qualification_state_commit": "8a51d7c042d4b82fa6158b6c8539b235d9f38b11",
+  "report_commits": {
+    "trace": "f6d636894c43d6954954f662665311d910215755",
+    "lifecycle": "969f03285da209f9d26a1f15a5e091cdc844175c"
+  },
+  "compiled_kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+  "compiled_userspace": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+  "trace_executed_tools": "e08a22861b1266e999082acee864f5e382559ecc",
+  "scope": [
+    "Sourceaccurate scopedrecords:tennewC4lifecycle gates andnewactualSessiontrace/USBclosure;notnewperformance orformal proof.",
+    "8registrynegativecontrols and40tracecopiedevidence negatives plus100lifecycleevidence negatives;notindependentdecoder orhardwarefaultinjection.",
+    "First1MiBtraceoverrun wholeFAIL retained;new2MiBburstnotrewriteoldfailure.",
+    "Registryfirstattempt rejectedJSONLines CIfiledeclaredasJSON;retainedlog,correctedmaterialformat tobytes,originalhash unchanged;no realtestassertion relaxation.",
+    "Currentgeneratedviews consistent,strictHTML115PASS;newbenchmarktheme/browsernotchangedornewlyqualified.",
+    "Fouroriginalissuebodies andscopeunchanged,OPEN;existinggoalactive/unbudgeted/fullS0-S6/19WP/10FV/12DG unchanged;VM-only."
+  ],
+  "checks": {
+    "lifecycle_materials": 141,
+    "trace_materials": 111,
+    "registry_negative_controls": 8,
+    "copied_evidence_negatives": 140,
+    "offline_tools_tests": 666,
+    "strict_html_documents": 115,
+    "overall": "INCOMPLETE",
+    "full_p2d_exit": "UNPROVED",
+    "new_formal_proof": false,
+    "new_performance_qualification": false
+  },
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6221626281",
+      "comment_id": 6221626281,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "138dc33717cb02981d69c5ec4c5f867ea4f571addd434da36f6f6b406accc690"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6221627598",
+      "comment_id": 6221627598,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "138dc33717cb02981d69c5ec4c5f867ea4f571addd434da36f6f6b406accc690"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6221629248",
+      "comment_id": 6221629248,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "138dc33717cb02981d69c5ec4c5f867ea4f571addd434da36f6f6b406accc690"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6221630774",
+      "comment_id": 6221630774,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "138dc33717cb02981d69c5ec4c5f867ea4f571addd434da36f6f6b406accc690"
+    }
+  ],
+  "ci": {
+    "commit": "e08a22861b1266e999082acee864f5e382559ecc",
+    "observations": [
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38943529008",
+        "name": "Production codec bounded fuzz",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38943529049",
+        "name": "Qualification integrity",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38943529125",
+        "name": "Documentation",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38943529086",
+        "name": "CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38943515710",
+        "name": "Documentation",
+        "status": "completed"
+      }
+    ],
+    "does_not_qualify_latest_documentation_head": true
+  },
+  "remaining": [
+    "MatchedU2/3sameconfiguration observercost/resources,beforeafter performance andrelatedlength/PDUfairness gates.",
+    "Agent/SSAP,multichannel/fourdevice andalloriginalS0-S6 scopes continueparallel;UserHostlowpriority.",
+    "NaturalRCA/nonmanualrecovery,NOCPaccuracy/late/duplicate/reusebarriers,callbackdrain andfullkernelconcurrency/refinement remainOPEN.",
+    "E1notinheritedUqualification;noformal/hardwareprooffromtoolinstallation/model/USBsuccess alone."
+  ],
+  "materials": [
+    {
+      "path": ".dev/session-service-issue-receipts-v1.json",
+      "sha256": "912ff3ede6c63f04b6b4eb18bb030f309dfa7c7ee813841da3661d935337c5c9",
+      "bytes": 1822,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-service-update-issues-v1.py",
+      "sha256": "0d9bc0a4ae337a4eeb61a103f06717f4873cc638ef7c4f440d5ea80e8d1c07af",
+      "bytes": 5786,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-service-ci-e08a228-v3.json",
+      "sha256": "8049885d810cc2b5674150288887b914e94af27e5e528b84006bd4ea4886652f",
+      "bytes": 765,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/c4-lifecycle-registry-local-v1.json",
+      "sha256": "92bc270d793da1e107d7caefba4426974326a48825dcb683b6c24af42812eaf0",
+      "bytes": 883,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-trace-registry-local-v1.json",
+      "sha256": "c11b5c1ee20a345d6d6c28a1be15422359e7b3a7fd483ee9d62376f55928a653",
+      "bytes": 1224,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-trace-register-v1.py",
+      "sha256": "df8ba015bbd5be4830047322631175129b0968341f5aeee4275a3b9a8f566e43",
+      "bytes": 6950,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-trace-register-v1.log",
+      "sha256": "810c313d5d808ecc88ba5a2c500856a886937d99251e7a6b46c38e55d67323b0",
+      "bytes": 1093,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-trace-register-v2.py",
+      "sha256": "ef34b860e84c275f324dc45d924ed2d37a6b299037fe5624e4210d33f5d5fbd6",
+      "bytes": 6994,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-trace-register-v2.log",
+      "sha256": "ac99e2c5092adeaf6da3e6910c3de096ab593578407a832a719f308ab4d9a8f8",
+      "bytes": 28,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-trace-final-docs-v2.log",
+      "sha256": "ed4c4e7441b39695a62950e6240ebae5da40cc4a49d0ebf54a376496a17bc590",
+      "bytes": 260378,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    },
+    {
+      "path": ".dev/session-trace-metadata-v2.json",
+      "sha256": "b2bbd4324fe7c88287338129c359cdda31bf68deab497934851874f984840699",
+      "bytes": 252765,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;no publicrawartifact available."
+    }
+  ]
+}

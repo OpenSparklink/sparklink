@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T17:59:32.670910+00:00",
+  "updated_at_utc": "2026-10-16T18:20:44.162839+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -750,13 +750,13 @@
       "Production stateful fuzz,submit-revoke-Down-original-deadline/debugVM and minimum authenticated authorization parallel;no all-control prerequisite"
     ]
   },
-  "execution_phase": "C4tencontrolledlifecycle gates andactualVM Sessionservice/USB association scopedPASS;new e08burst32RT/25076zero-lossevents824USBacceptances. Original8a7oneMiBburst9147overrun remainsFAIL. FullP2dcost/fairness/resources andfullgoal OPEN.",
+  "execution_phase": "NewC4sevenlengthgates448RT scopedPASS,whole8matrix burstFAIL retained(finalphysicaldrain window). Newcompiled9cdslktest fournegotiatedstartbarriers/shortlong72concurrent+8baseline realRT scopedPASS;notfullfairness/performance. AlloriginalscopeOPEN.",
   "next_resume_tasks": [
-    "NewC4controlledrelease/lastmanagementfd/dup/Down/original5sdeadline tenfreshgates nowqualifiedseparately;24precontrolRT+8primers,100copiedevidence negatives;peerReady/lease/scan only.",
-    "New e08traceburst32RT/25076events/824acceptedUSB/4111actualcreditwaitreturns and20copiedevidence negatives qualifiedonlywithinrecord;old8a7short8RT and20negatives separate. Preserve first1MiBburst9147overrunFAIL,notperformance orcredittruth.",
-    "Advance relatedlengthmatrix andmultichannel PDU-boundary fairness;add matchedU2/3oldkernel/currentkernel andsameobserverresource/cost comparisons beforeclaimingbenefit. OldU1/4lowload cannotservesame-pairbefore/after.",
-    "ContinueAgent/SSAP/multichannel/fourdevice realbehavior parallel,noallcontrolrace prerequisites;UserHostlowpriority. UserconfirmedE1 excludedandnotinheritUqualification;board/firmware/mixedfourdevice stillmissing.",
-    "NaturalRCA/nonmanualrecovery/NOCPaccuracy/late/duplicate/reusebarriers/callbackdrain/LKMM/KCSAN/lockdep andfullimplementationrefinement remainOPEN;manual/hub/QMP/injection nevernaturalrecovery."
+    "Fix explicitpost-close physicalobligation/drain observationbarrier fordynamicburst;exactproductionverifier founddebt2/1 atwindowend withrealNOCP0.34-4.85mslater. Noarbitrarysleep/windowwidening,originalFAIL/predicate preserved;fdrelease/appsuccess notcontrollerdrain.",
+    "Use new9cdrealshort20/long16x2042 progress bothroles asfiniteevidence only;fulladmittedqueuefairnessbounds,slowconsumer/close/revoke interleavings anddynamicCMTC actualconsenttrace stillneeded.",
+    "MatchedU2/3sameconfiguration beforeafter/observeroverhead/resources/saturation/tails remainUNPROVED;oldU1/4performance notsamedevicecomparison.",
+    "ContinueAgent/SSAP/multichannel/fourdevice realbehaviors inparallel,noallcontrolrace prerequisite,UserHostlowpriority. E1excludedandnotinheritUqualification;board/firmware/mixedtopologyqualification stillmissing.",
+    "NaturalRCA/nonmanualrecovery,NOCPaccuracy/duplicate/late/reusebarriers,callbackdrain,LKMM/KCSAN/lockdep andfullimplementationrefinement remainOPEN;manual/hub/QMP/injection notnaturalrecovery."
   ],
   "issue_sync_status": "K4/K17/K19/U8 newc4 initialslice appended/readbackmatched;allOPEN;fullP2dUNPROVED andall originalfailures retained",
   "issue_sync_receipt": "docs/evidence/session-tx-quantum-maintenance-20261017.json",
@@ -1320,18 +1320,42 @@
       "session-trace-e08-full-exit": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "c4-dynamic-e08": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "c4-dynamic-e08-retained-burst-fail": {
+        "level": "real_device",
+        "result": "FAIL"
+      },
+      "c4-dynamic-e08-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
+      },
+      "concurrent-9cd": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "concurrent-9cd-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "concurrent-9cd-full-fairness": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "c4-lifecycle-and-real-session-trace-partial-exit",
-      "production_behavior": "Keep soleSession/Runtime/credit/Grant/Ticket;tennewC4controlledlifecycle gates andactualSessiontrace/USBclosure withimmutable source/runtime/tool identities;no Host/Engine orUSB change",
+      "id": "c4-lengths-and-true-concurrent-short-long-scoped",
+      "production_behavior": "Onlyslktestoptional negotiatedstartbarrier,shared existinginput/message loops;solekernelSession/Runtime/credit/Grant/Ticket unchanged",
       "exit": [
-        "C4tencontrolledgates24precontrolRT+8primers,100evidencenegatives,peerReady/lease/scan only",
-        "e08 2042burst32RT,25076zero-lossevents824acceptedUSB/4111creditwaitreturns;8a7short8RT separate,original1MiBburst9147overrunFAIL retained",
-        "666tooltests,actualfrozen replay40traceevidence negatives total;tracecost/resources/PDUfairness/fullP2d remainUNPROVED"
+        "Oldruntime2c23/e08sevenlength448RT qualified;whole8matrix remainsFAIL onpost-close physicaldrain window",
+        "Newruntime/tools9cd72concurrent+8baseline realpeerRT;shortprogressduringlongTX bothdirections/bothroles,not fullfairness",
+        "27actualRustELFs/strictclippy/669tools/115HTML and72actualevidencenegatives;no newformal/performance/recovery proof"
       ],
-      "next": "Advance relatedlengths/multichannel PDU-boundary fairness andmatchedU2/3benchmark/resources;Agent/SSAP/fourdevice parallel,noallcontrolrace prerequisite;E1notinherited"
+      "next": "Establish explicitpost-close physicalobligation observationbarrier,retainoriginalfailureandzero-drainpredicate;fulladmittedqueuefairness/dynamicconsenttrace andmatchedU2/3resource/performance;Agent/SSAP/fourdevice parallel,noallcontrolrace prerequisite"
     }
   },
   "agent_workstream": {
@@ -1474,14 +1498,14 @@
   },
   "next_real_vertical_slice": {
     "work_package": "WP06/07/16/17",
-    "behavior": "Continue relateddata lengths/PDUfairness andmatched performance/resources;retainRuntime/Session/credit/Grant/Ticket,Agent/SSAP parallel",
+    "behavior": "Explicitpost-close physicaldrain observation thenfullqueuefairness/matchedresources;Agent/SSAP/fourdevice parallel",
     "first_exit": "Finitepacket/byte/next-operation elapsed budget withperfragmentoriginaldeadline;productionfunction tests andrelatedVM data/lifecycle/fairness;noUSBorNOCPspeculation",
     "remaining_after_first_exit": "BoundedcontinuousTX,traceoverhead/resourcepeaks,fullload/multichannel/fourdevices/SSAP andnaturalRCA/nonmanualrecovery;originalpeerDownFAIL parallel",
     "parallel": "existing Agent/SSAP/data/cleanup/quality andfourdeviceWIP;noallcontrolprerequisite",
     "architecture": "Existingdrivers/net/slkd/uniqueSession/Grant/credit/Ticket;VM-only",
-    "state": "C4_LIFECYCLE_AND_TRACE_SCOPED_PASS_COST_FAIRNESS_OPEN",
+    "state": "C4_LENGTH7_AND_SHORT_LONG_PROGRESS_PASS_BURST_DRAIN_FAIL_RETAINED",
     "tool": "actualslktest loadbinary viaexisting ws73_target VMsupervisor;independent ws73_benchmark reportchecker",
-    "report": "docs/evidence/session-service-trace-20261017.json",
+    "report": "docs/evidence/session-concurrent-progress-20261017.json",
     "lifecycle_priority_report": "docs/evidence/lifecycle-u23-hardware-change-20261017.json"
   },
   "issue_sync_receipts_history": [
@@ -1969,6 +1993,30 @@
         "Naturalstartup/re-enumeration/disappearance rootcauses andnonmanualautomaticrecovery OPEN;manual/hub/QMP/injection notnaturalrecovery."
       ],
       "performance_qualified": false
+    },
+    "c4_dynamic_lengths": {
+      "report": "docs/evidence/session-c4-dynamic-lengths-20261017.json",
+      "qualification_record": "c4-dynamic-e08",
+      "original_failed_record": "c4-dynamic-e08-retained-burst-fail",
+      "kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+      "compiled_userspace": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "executed_tools": "e08a22861b1266e999082acee864f5e382559ecc",
+      "selected_length_gates": 7,
+      "selected_round_trips": 448,
+      "whole_matrix_result": "FAIL",
+      "burst_original_predicate_unchanged": true
+    },
+    "concurrent_progress": {
+      "report": "docs/evidence/session-concurrent-progress-20261017.json",
+      "qualification_record": "concurrent-9cd",
+      "kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+      "compiled_userspace": "9cd53fe3053b8b7dd19645042fc7c29d06b1ee34",
+      "executed_tools": "9cd53fe3053b8b7dd19645042fc7c29d06b1ee34",
+      "concurrent_round_trips": 72,
+      "baseline_round_trips": 8,
+      "full_fairness": false,
+      "performance_qualified": false,
+      "new_formal_proof": false
     }
   },
   "slktest_migration": {

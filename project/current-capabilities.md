@@ -85,6 +85,22 @@ FAIL保留；按测得25188条需求有界改2MiB/CPU，零丢失和8MiB文本�
 没有新增形式化或性能资格；动态CMTC不在此观测范围，成本/公平/同配置资源比较
 及完整P2d退出仍UNPROVED，所有自然根因与非人工恢复仍开放。
 
+[新c4长度回归](../docs/evidence/session-c4-dynamic-lengths-20261017.json)绑定编译c4/2c23、
+执行e08：249/250/253/254/255/1024/2042动态门禁七项通过，含两连接角色392次动态及
+56次固定/SSAP基线，共448次真实校验回复；七份重放和56证据负对照通过。第八项
+动态burst整轮仍FAIL：C关闭窗口末仍有2/1份debt，随后0.34–4.85ms观察到NOCP。
+这是原生产verifier的诊断，不宣称内核credit错误或已恢复；尚缺明确关闭后排空屏障，
+不能随意延长捕获窗口或放宽最终debt=0。七项通过不覆盖该失败或旧自然故障。
+
+[真实短/长并发进展](../docs/evidence/session-concurrent-progress-20261017.json)使用同Kc4、
+新编译和执行9cd：四端协商后Armed才放行，每连接角色短20/长16×2042，两角色72次
+并发及8次原基线校验回复；长TX首末之间两方向分别有4/4、3/2个短PDU进展。
+27项冻结源码实际Rust测试ELF、严格clippy、[干净9cd的669工具复核](../docs/evidence/session-concurrent-offline-source-20261017.json)
+及16真实证据负对照通过；
+首次负对照生成器误选peer导致未修改数据的失败保留，改按role选源并断言确实变更。
+这只授有限负载交错进展，不授全部已准入队列饥饿上界、完整公平/性能/NOCP证明。
+动态burst失败、完整P2d、观测成本/资源和所有自然根因与非人工恢复继续开放。
+
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
@@ -147,6 +163,12 @@ FAIL保留；按测得25188条需求有界改2MiB/CPU，零丢失和8MiB文本�
 | Session实际阶段与USB关联：新e08长包32次业务，零丢失限定通过 | `real_device` | `PASS` |
 | 旧8a7长包追踪溢出9147条：原整轮FAIL保留 | `real_device` | `FAIL` |
 | Session追踪成本/PDU公平/同配置性能仍未证明 | `real_device` | `UNPROVED` |
+| c4动态七种长度：448次业务，整矩阵burst失败另列 | `real_device` | `PASS` |
+| 动态burst最终物理debt未在窗口排空：原整轮FAIL | `real_device` | `FAIL` |
+| 动态关闭排空屏障与完整公平/成本：仍未证明 | `real_device` | `UNPROVED` |
+| 双真实短长通道：72并发＋8基线，有限交错进展 | `real_device` | `PASS` |
+| slktest实际27测试ELF、669工具与严格clippy | `offline` | `PASS` |
+| 已准入队列公平上界、关闭排空与性能：未证明 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

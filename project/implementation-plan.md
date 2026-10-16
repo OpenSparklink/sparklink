@@ -75,6 +75,12 @@
 | Session实际阶段与USB关联：新e08长包32次业务，零丢失限定通过 | `real_device` | `PASS` |
 | 旧8a7长包追踪溢出9147条：原整轮FAIL保留 | `real_device` | `FAIL` |
 | Session追踪成本/PDU公平/同配置性能仍未证明 | `real_device` | `UNPROVED` |
+| c4动态七种长度：448次业务，整矩阵burst失败另列 | `real_device` | `PASS` |
+| 动态burst最终物理debt未在窗口排空：原整轮FAIL | `real_device` | `FAIL` |
+| 动态关闭排空屏障与完整公平/成本：仍未证明 | `real_device` | `UNPROVED` |
+| 双真实短长通道：72并发＋8基线，有限交错进展 | `real_device` | `PASS` |
+| slktest实际27测试ELF、669工具与严格clippy | `offline` | `PASS` |
+| 已准入队列公平上界、关闭排空与性能：未证明 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1546,3 +1552,24 @@ NOCP硬件真值或内核并发证明，不把所有控制面组合加成数据�
 组合。下一批接相关长度/多通道PDU公平及同U2/3、同配置、观测开销和资源基线；
 旧U1/4结果不作同口径前测。Agent/真实SSAP、四设备继续并行；完整P2d、自然恢复、
 NOCP重复迟到/复用、callbackdrain及内核并发证明仍开放。
+
+### P2d 后续批：长度与真实并发进展（限定退出，排空失败保留）
+
+退出条件：七种既有动态尺寸按准确新c4镜像重验，四个真实普通用户端点协商后共同
+启动，短/长消息双端校验及PB/TCID/生命周期与原捕获对应；不能用仅总计数或串行
+A关闭/B继续工作替代并发证据。不重写收发循环或引入另一Host/Engine。
+
+[长度证据](../docs/evidence/session-c4-dynamic-lengths-20261017.json)：c4/2c23/e08七项
+448次业务限定通过，249应用字节对应254PDU、250对应255PDU，层次不混淆。
+动态burst第八项仍FAIL，原最终debt=0未满足；实际NOCP晚于C窗口结束，最后fd关闭
+不是物理清偿屏障。先设计有身份、原期限和真实状态的关闭后排空观测，不用sleep、
+任意窗口扩展或成功重跑覆盖失败，不先归为内核ledger缺陷。
+
+[并发进展证据](../docs/evidence/session-concurrent-progress-20261017.json)：新9cd应用
+与工具复用已有start原30秒解析器、动态fd与消息循环；两角色72次并发＋8次原基线
+通过，原件重放及16复制证据负对照拒绝。27实际Rust测试ELF、严格clippy/669工具/
+严格HTML独立记录。准备与实机并行实际8路，共享锁/固定目录；原四设备WIP未纳入。
+
+下一批只补相关关闭排空屏障、全部已准入队列的PDU公平范围及同U2/3匹配性能/
+观测/资源成本；当前有限进展不收尾完整P2d。Agent/SSAP、四设备继续并行，不增
+控制面全集前置；完整S0–S6/19WP/10FV/12DG、自然RCA及非人工恢复原范围保留。

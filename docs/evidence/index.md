@@ -73,6 +73,10 @@
 [Session实际阶段/USB关联及原追踪溢出失败](session-service-trace-20261017.json)
 按编译c4/2c23与各自8a7/e08工具保留，32次新burst校验回复，不授成本/公平/性能资格。
 
+[c4七种动态尺寸及原burst清偿失败](session-c4-dynamic-lengths-20261017.json)与
+[新9cd真实短长并发进展](session-concurrent-progress-20261017.json)分别保留编译/执行
+身份；有限进展不授完整公平性、清偿屏障或性能资格。
+
 ## 历史报告（各自准确镜像，不代表当前HEAD）
 
 以下“本批/新镜像/当前”等原报告用语均以对应报告的源码身份为准；不得据此授予当前工作树资格。

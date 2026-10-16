@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "thread_id": "01a120fe-1165-7c50-9d9f-56e0b8355c3c",
-  "goal_status": "paused",
+  "goal_status": "active",
   "objective_unchanged": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、slk-vendord Proxy 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
   "budget_unchanged": {
     "token_budget": null,
@@ -9,7 +9,7 @@
     "budgeted": false
   },
   "goal_api_objective_edit_available": false,
-  "sync_method": "Original objective/budget retained;user continue authorizes active work. Canonical plan and generated qualification_view are authoritative execution/qualification state;API pause cannot be changed by available tool.",
+  "sync_method": "Existing active goal retained;canonical plan and generated qualification_view remain execution/qualification authority,no duplicate goal.",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -732,7 +732,7 @@
       "Production stateful fuzz,submit-revoke-Down-original-deadline/debugVM and minimum authenticated authorization parallel;no all-control prerequisite"
     ]
   },
-  "execution_phase": "P2a immediate-wake kernel a0:controlled-prefix lifecycle10 PASS/24 pre-control business exchanges;original f355 matrix FAIL retained. Next separate original-deadline scheduling and finite event-driven TX;full scope OPEN.",
+  "execution_phase": "P2b bfaa coded/offlinebounded/incremental12build passed;32 real gates running,not new real-qualified",
   "next_resume_tasks": [
     "Separate uniqueSession immediate ready events from earliest original-deadline scheduling;classify retry reasons and finite budgets before removing10ms fallback.",
     "Reuse a0/9385 artifacts and3f10 controlled-prefix barrier as lifecycle baseline;preserve original f355 completed-before-withdrawal FAIL and supervisor enum FAIL.",
@@ -744,8 +744,8 @@
   "issue_sync_receipt": "docs/evidence/native-baseline-maintenance-20261016.json",
   "previous_goal_turn_classification": "progress:canonical slktest migration,actualemptyUSBVM andqualification/issues synchronization",
   "current_goal_turn_classification": "progress:productionpairedfinish,independentactualreportreplay,selectedCargoVMidentitynegativeand25actualVMtests",
-  "goal_api_status_observed": "paused",
-  "goal_api_update_limitation": "User explicitly said continue;work continues under existing authorization. API exposes no resume/objective-edit action;do not create duplicate goal or falsely complete unfinished goal. Observed API paused is distinct from effective execution.",
+  "goal_api_status_observed": "active",
+  "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
   "additional_reference_review": {
     "source": "docs/evidence/openharmony-peripheral-reference-20261015.json",
@@ -1013,7 +1013,7 @@
       }
     }
   ],
-  "execution_status": "ACTIVE_USER_AUTHORIZED_CONTINUE;overall original scope INCOMPLETE;goal API paused observed without available resume tool",
+  "execution_status": "ACTIVE_USER_AUTHORIZED_CONTINUE;full original scope INCOMPLETE",
   "quality_engineering": {
     "scope": "All12 requested quality areas adopted in sole implementation-plan; not a new phase, goal or prerequisite to all real delivery",
     "baseline_review": {
@@ -1690,6 +1690,16 @@
       "report": "docs/evidence/session-prefix-barrier-20261016.json",
       "qualification_record": "session-prefix-barrier-a0",
       "maintenance_receipt": "docs/evidence/session-prefix-maintenance-20261016.json"
+    },
+    "deadline_ready_separation": {
+      "kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+      "status": "COMPILED_OFFLINE_BOUNDED_VM_RUNNING_NOT_NEW_REAL_QUALIFIED",
+      "build": ".dev/session-event-kernel-build-v1.json",
+      "resource_jobs": 12,
+      "artifact": ".dev/session-event-artifacts-v1/manifest.json",
+      "supervisor": ".dev/session-event-qualification-v1.json",
+      "original_scope_preserved": true,
+      "next": "Complete 32 exact-image real gates andindependentidle/event observation;then scoped evidence/qualification;no fullperformance or naturalrecovery claim"
     }
   },
   "slktest_migration": {

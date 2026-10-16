@@ -11,6 +11,8 @@
 K323/Ub873/toolb873，6VM/48业务回复/16拒绝；实际系统总线12次数字callback，
 拒绝/迟到发生于真实native准入后，未产生proof/install。六角色重放与18实际证据
 负对照分别记录；数字CLI实机、安全等级/Grant/Bond及完整范围仍缺，不能升级旧资格。
+[本批维护回执](security-numeric-agent-maintenance-20261017.json)记录四项issues原scope不变且OPEN、
+102份材料限定核对、五项来源负对照与准确b873 CI；不授新HEAD或自然恢复资格。
 
 [数字比较机制、六门禁与三项路径保持](security-numeric-mechanism-real-20261017.json)：
 K323/U862/tool862/postf695，9VM/48实际业务回复/16边界拒绝；实际crypto VM、

@@ -1392,18 +1392,26 @@
       "matched-u23-f2-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "install-reply-aa0d636-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "install-reply-aa0d636-live": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "matched-u23-finite-workloads-not-performance-qualified",
-      "production_behavior": "Readonly64byteNativeE2,existingauthorizedactor/CLI/FFI;no newHost orEngine,creditpredicateunchanged",
+      "id": "wp09-install-reply-barrier-offline-real-pending",
+      "production_behavior": "No production path change; default-disabled QEMU test selector compiled separately; existing Session/credit/Ticket and original Agent reused next.",
       "exit": [
-        "SameU42fourbinaryhashes,samef2tools/QEMU/config/SDK111,U2/3:12VM2560peerRT;8shortand4longwindow16,allplannedattemptsretained",
-        "673frozentools,4legacyactualreplays,12newactualreplays192evidence negatives;108544RXgaps observed,not callbackCPU/bottleneck/multiURBproof",
-        "No clearmedianendtoendgain established,onecandidatehigherP95retained;fullperformance/stability/observercost/kernelresources/fairness/recoveryOPEN"
+        "Actualfixturecallback/setters ASan/UBSan/LSan,105truncatedexactallocations,18unchangednonmatchcallbacks and bothroles pass.",
+        "Patchchain fullprefix/idempotence/drift refusal and actualpausedunattachedQMP pass; source/object/binary/closure preserved.",
+        "No newrealdevice/formal/security/recovery qualification; originalfailures and exacthistorical WS73 paths preserved."
       ],
-      "next": "Matchedpilot exitmet;Agent/security andSSAP/multichannel nextrealbehaviors parallel withsameKernelobservercost/resources/segmentedtiming anddata-controlfairness;no allcontrolrace prerequisite,naturalRCA/nonmanualrecoveryOPEN"
+      "next": "Connect current Agent witness to selected actualinstallation hold, cancel after submission then late reply and real peer app validation, bothroles originaldeadline; Agent/SSAP/multichannel parallel, fullscope unchanged."
     }
   },
   "agent_workstream": {

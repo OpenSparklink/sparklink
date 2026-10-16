@@ -14,14 +14,14 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "matched-u23-finite-workloads-not-performance-qualified",
-    "production_behavior": "Readonly64byteNativeE2,existingauthorizedactor/CLI/FFI;no newHost orEngine,creditpredicateunchanged",
+    "id": "wp09-install-reply-barrier-offline-real-pending",
+    "production_behavior": "No production path change; default-disabled QEMU test selector compiled separately; existing Session/credit/Ticket and original Agent reused next.",
     "exit": [
-      "SameU42fourbinaryhashes,samef2tools/QEMU/config/SDK111,U2/3:12VM2560peerRT;8shortand4longwindow16,allplannedattemptsretained",
-      "673frozentools,4legacyactualreplays,12newactualreplays192evidence negatives;108544RXgaps observed,not callbackCPU/bottleneck/multiURBproof",
-      "No clearmedianendtoendgain established,onecandidatehigherP95retained;fullperformance/stability/observercost/kernelresources/fairness/recoveryOPEN"
+      "Actualfixturecallback/setters ASan/UBSan/LSan,105truncatedexactallocations,18unchangednonmatchcallbacks and bothroles pass.",
+      "Patchchain fullprefix/idempotence/drift refusal and actualpausedunattachedQMP pass; source/object/binary/closure preserved.",
+      "No newrealdevice/formal/security/recovery qualification; originalfailures and exacthistorical WS73 paths preserved."
     ],
-    "next": "Matchedpilot exitmet;Agent/security andSSAP/multichannel nextrealbehaviors parallel withsameKernelobservercost/resources/segmentedtiming anddata-controlfairness;no allcontrolrace prerequisite,naturalRCA/nonmanualrecoveryOPEN"
+    "next": "Connect current Agent witness to selected actualinstallation hold, cancel after submission then late reply and real peer app validation, bothroles originaldeadline; Agent/SSAP/multichannel parallel, fullscope unchanged."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -94,7 +94,9 @@
     "session-status-regressions-42e-remaining",
     "matched-u23-f2",
     "matched-u23-f2-offline",
-    "matched-u23-f2-remaining"
+    "matched-u23-f2-remaining",
+    "install-reply-aa0d636-offline",
+    "install-reply-aa0d636-live"
   ],
   "records": [
     {
@@ -54401,6 +54403,345 @@
         "KernelAndQueueResourcePeaks",
         "WholeFairnessAndFourDeviceIsolation",
         "NaturalFaultRecovery"
+      ]
+    },
+    {
+      "contracts": [
+        "ExactActualInstallAcceptanceSelection",
+        "NoMutationOrSynthesis",
+        "RetainedTransferAndBoundedReleaseOwnership",
+        "NoOfflineToPhysicalQualificationUpgrade"
+      ],
+      "bounds": "QEMU9.2.0 guarded usb-host, bounded20KiB/24HCCslots, exact SDK111 G/T Status/Complete4byte successfulcredit1 result; actual extracted callbacks with counted dependencies and paused unattached TCG properties only.",
+      "excluded": [
+        "Only default-disabled QEMU usb-host installation-reply selector and actual fixture callback/setter/abort tests; not a new Host, Engine, production driver or security policy change.",
+        "Full bounded HCC validation precedes exact service-A/queue-8 A2 event1/2 with four-byte result: selected0x1c03/0x1c05, credit1/status0. Other layouts do not select; no payload edits, key logging, synthetic reply or physical reset.",
+        "Callback/setter checks extract actual fixture functions; transport/timer/scheduler/digest/USB combining are counted dependencies. They do not establish real kernel concurrency, drain, encryption or peer delivery.",
+        "Paused TCG QMP property check uses USB255:255 and never runs guest or attaches physical device. This is virtual fixture integration only, not production SparkLink VM or real WS73 qualification.",
+        "QEMU ownership remains original retained transfer/buffer/timer, default2000ms fallback; callback/USB cancellation integration with live devices and the original5s negotiation deadline remain to be tested.",
+        "No new formal proof or real-device gate. Existing exact K14d9/U42, old Agent and all original failures remain historical qualifications; production source equivalence does not promote this test binary or latest HEAD.",
+        "Physical port1 is user-confirmed Hi3873E;2/3/4 user-reported Hi3873U. Next physical tests selectU2/3 VM-only; no E or mixedfourdevice qualification.",
+        "Complete S0-S6/19WP/10FV/12DG unchanged; originalissues open, UserHost lowpriority. NaturalRCA/nonmanualrecovery, NOCPtruth/reuse and full security/Bond still open."
+      ],
+      "remaining": [
+        "Connect selector to the existing Agent witness/VM coordinator with original request/gen/life/author/deadline, retain hashes and exact original held/released packet.",
+        "Cancel only after proof that selected actual install was submitted and acceptance retained; distinguish policy terminal, physical obligation and live encryption. Cancellation must not imply hardware key removal.",
+        "Require real late reply and immutable cancelled operation, peer success and subsequent ordinary app-validated replies, both physical connection roles. Release/finalfd/dup/Down/originaldeadline composition remains separate unfinished work.",
+        "Do not delay all control-race, performance or documentation completion before new SSAP/multichannel behavior."
+      ],
+      "sources": {
+        "test_fixture": {
+          "repo": "linux",
+          "commit": "aa0d63693f8c4d8da481842e31cd6673c05f8283",
+          "scopes": [
+            "tools/testing/selftests/sparklink/qemu-sle-dli"
+          ],
+          "files": {
+            "tools/testing/selftests/sparklink/qemu-sle-dli/.gitignore": "2ecf08970d3677b42be53a56dc4500f6b22462b6ee2558c3bd7c1d7771696d0b",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/README.md": "fe0f08274842b404c7bf63a019203c8cebf9d9f6d6c0567d16642f6a4f551ac4",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/apply-usb-host-boundary.py": "69259467ab45aa5e65cad0b66607931fd9a859abe0f87a7663b7be77751fb21a",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/build-qemu.sh": "cecefdbe7a9c8876dcd97be38451a19bd2a4d99ec39710a8620bfa8e91d92e50",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-autoscan.py": "d7ee4c5a09e60a52c6032be805052b303f85f825eae29c6f735ca5fd8a0e5acb",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-boundary.py": "419e66b0cff9734c7e8eddc6185c2dc2ae88bff98933db2065567c733a11edc2",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-enumeration-once.py": "ed985d6f8d60f600bd93865f9452696db31fcb9c4240941a972ab3916420a3db",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-runtime-error.py": "b0243f1925f6188617e4f5899c395ca5cf46160c74de76fbd219e65e16d39322",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-runtime-hold.py": "aa8766f54fd0910cac5c89b0ef763e7a1aa9f84a735b8f21bf33b04c2b3d8d9a",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-ws73-model-hold.py": "9cab27fd39e84ca041f75cff779b4c729b2b213647da1abd12863aa8f49111bc",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/run-usb-host-boundaries.py": "19e29835624b22f655b0b0e12ef3494184e474db7c2603f9ccaaa6314ddfee2b",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-autoscan.patch": "a234843ab07b319c8038df2c4c524629be9e5e3fe27c8dbdd17ac2e53ac5236e",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-boundary.patch": "8c035eb05af0ed644a80d400c163a80084e7c241f08f49b213e9fc390e471089",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-enumeration-once.patch": "86cf96711e2c27d26bc6aae924d80f090f9ba93ac4a2e101e96ab5e2af494aa9",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-reenumeration.patch": "b62abdae5684d4169df9fbd47b99b8953a3421434d5d5e063242c28d2da2b121",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-retry.patch": "dd01bb04b0e75d62590153ddd7ab14d49baf6a17520f7090eeac4f7274222ad0",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-drop.patch": "ba2c97b13925e5eb5b16be66d40da4246ccfa9203c1d8cbce7f82c09cadd739c",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-error.patch": "5d91e770936c4c7b21c7fe5af1001fceb4c8eb1182e1d58ff364cca6c1684652",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-hold.patch": "391bb2d43061808d056d45b9a15467dd33eeb4fd5f5dd25e3aaf0f13f902e170",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-install.patch": "7f284758df07bc9bc300a612f981c73bfb4d95b78234fa7d4976123a14943452",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-selector.patch": "9503a494f2aafeb4ff4cfd8ec361f2ddcafa1a5997204bf4fffed3c2ba126769",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-sle-dli.c": "77eb2f39bc7482574574b9c5572a9323e14cfe5b0dad75ddc3fcee73a5d5d700",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-ws73-test.c": "1209ce01a2bccabd01d6e6f41d2ef88f95a96fa59ce8d88ae14c63af1b9ab740"
+          }
+        }
+      },
+      "report_commit": "e162e6ea7922a51ce7a029e8da8ba462b1bc132f",
+      "artifact_materials": [
+        "install-reply-aa0d636-m2",
+        "install-reply-aa0d636-m3",
+        "install-reply-aa0d636-m7",
+        "install-reply-aa0d636-m8",
+        "install-reply-aa0d636-t4",
+        "install-reply-aa0d636-t5",
+        "install-reply-aa0d636-t6",
+        "install-reply-aa0d636-t7",
+        "install-reply-aa0d636-t8",
+        "install-reply-aa0d636-t9"
+      ],
+      "tool_materials": [
+        "install-reply-aa0d636-t0",
+        "install-reply-aa0d636-t1",
+        "install-reply-aa0d636-t2",
+        "install-reply-aa0d636-t3",
+        "install-reply-aa0d636-t4",
+        "install-reply-aa0d636-t5",
+        "install-reply-aa0d636-t6",
+        "install-reply-aa0d636-t7",
+        "install-reply-aa0d636-t8",
+        "install-reply-aa0d636-t9",
+        "install-reply-aa0d636-t10",
+        "install-reply-aa0d636-t11",
+        "install-reply-aa0d636-t12",
+        "install-reply-aa0d636-t13",
+        "install-reply-aa0d636-t14",
+        "install-reply-aa0d636-t15",
+        "install-reply-aa0d636-t16",
+        "install-reply-aa0d636-t17",
+        "install-reply-aa0d636-t18",
+        "install-reply-aa0d636-t19",
+        "install-reply-aa0d636-t20",
+        "install-reply-aa0d636-t21",
+        "install-reply-aa0d636-t22"
+      ],
+      "configuration_materials": [
+        "install-reply-aa0d636-m0",
+        "install-reply-aa0d636-m17"
+      ],
+      "id": "install-reply-aa0d636-offline",
+      "title": "SDK111真实回复选择器：实际callback sanitizer与暂停QMP（非实机）",
+      "level": "offline",
+      "result": "PASS",
+      "report": {
+        "material": "install-reply-aa0d636-report",
+        "scope_pointer": [
+          "scope"
+        ],
+        "source_pointers": {
+          "test_fixture": [
+            "kernel_fixture_commit"
+          ]
+        },
+        "verdict_pointer": [
+          "offline_result"
+        ],
+        "verdict_results": {
+          "PASS": "PASS"
+        },
+        "gate_rows_pointer": [
+          "offline_gates"
+        ]
+      },
+      "gates": [
+        {
+          "id": "actual-callback-asan-ubsan-lsan",
+          "result": "PASS",
+          "materials": [
+            "install-reply-aa0d636-report",
+            "install-reply-aa0d636-m5"
+          ],
+          "report_pointer": [
+            "offline_gates",
+            0
+          ],
+          "reported_status": "PASS_ACTUAL_QEMU_HOLD_WITH_DEPENDENCY_FIXTURES"
+        },
+        {
+          "id": "existing-error-callback-asan-ubsan-lsan",
+          "result": "PASS",
+          "materials": [
+            "install-reply-aa0d636-report",
+            "install-reply-aa0d636-m11"
+          ],
+          "report_pointer": [
+            "offline_gates",
+            1
+          ],
+          "reported_status": "PASS_MOCKED_ACTUAL_RUNTIME_ERROR_BOUNDARY"
+        },
+        {
+          "id": "patch-chain-and-paused-qmp-boundaries",
+          "result": "PASS",
+          "materials": [
+            "install-reply-aa0d636-report",
+            "install-reply-aa0d636-m12"
+          ],
+          "report_pointer": [
+            "offline_gates",
+            2
+          ],
+          "reported_status": "PASS"
+        }
+      ],
+      "required_gates": [
+        "actual-callback-asan-ubsan-lsan",
+        "existing-error-callback-asan-ubsan-lsan",
+        "patch-chain-and-paused-qmp-boundaries"
+      ]
+    },
+    {
+      "contracts": [
+        "ExactActualInstallAcceptanceSelection",
+        "NoMutationOrSynthesis",
+        "RetainedTransferAndBoundedReleaseOwnership",
+        "NoOfflineToPhysicalQualificationUpgrade"
+      ],
+      "bounds": "QEMU9.2.0 guarded usb-host, bounded20KiB/24HCCslots, exact SDK111 G/T Status/Complete4byte successfulcredit1 result; actual extracted callbacks with counted dependencies and paused unattached TCG properties only.",
+      "excluded": [
+        "Only default-disabled QEMU usb-host installation-reply selector and actual fixture callback/setter/abort tests; not a new Host, Engine, production driver or security policy change.",
+        "Full bounded HCC validation precedes exact service-A/queue-8 A2 event1/2 with four-byte result: selected0x1c03/0x1c05, credit1/status0. Other layouts do not select; no payload edits, key logging, synthetic reply or physical reset.",
+        "Callback/setter checks extract actual fixture functions; transport/timer/scheduler/digest/USB combining are counted dependencies. They do not establish real kernel concurrency, drain, encryption or peer delivery.",
+        "Paused TCG QMP property check uses USB255:255 and never runs guest or attaches physical device. This is virtual fixture integration only, not production SparkLink VM or real WS73 qualification.",
+        "QEMU ownership remains original retained transfer/buffer/timer, default2000ms fallback; callback/USB cancellation integration with live devices and the original5s negotiation deadline remain to be tested.",
+        "No new formal proof or real-device gate. Existing exact K14d9/U42, old Agent and all original failures remain historical qualifications; production source equivalence does not promote this test binary or latest HEAD.",
+        "Physical port1 is user-confirmed Hi3873E;2/3/4 user-reported Hi3873U. Next physical tests selectU2/3 VM-only; no E or mixedfourdevice qualification.",
+        "Complete S0-S6/19WP/10FV/12DG unchanged; originalissues open, UserHost lowpriority. NaturalRCA/nonmanualrecovery, NOCPtruth/reuse and full security/Bond still open."
+      ],
+      "remaining": [
+        "Connect selector to the existing Agent witness/VM coordinator with original request/gen/life/author/deadline, retain hashes and exact original held/released packet.",
+        "Cancel only after proof that selected actual install was submitted and acceptance retained; distinguish policy terminal, physical obligation and live encryption. Cancellation must not imply hardware key removal.",
+        "Require real late reply and immutable cancelled operation, peer success and subsequent ordinary app-validated replies, both physical connection roles. Release/finalfd/dup/Down/originaldeadline composition remains separate unfinished work.",
+        "Do not delay all control-race, performance or documentation completion before new SSAP/multichannel behavior."
+      ],
+      "sources": {
+        "test_fixture": {
+          "repo": "linux",
+          "commit": "aa0d63693f8c4d8da481842e31cd6673c05f8283",
+          "scopes": [
+            "tools/testing/selftests/sparklink/qemu-sle-dli"
+          ],
+          "files": {
+            "tools/testing/selftests/sparklink/qemu-sle-dli/.gitignore": "2ecf08970d3677b42be53a56dc4500f6b22462b6ee2558c3bd7c1d7771696d0b",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/README.md": "fe0f08274842b404c7bf63a019203c8cebf9d9f6d6c0567d16642f6a4f551ac4",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/apply-usb-host-boundary.py": "69259467ab45aa5e65cad0b66607931fd9a859abe0f87a7663b7be77751fb21a",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/build-qemu.sh": "cecefdbe7a9c8876dcd97be38451a19bd2a4d99ec39710a8620bfa8e91d92e50",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-autoscan.py": "d7ee4c5a09e60a52c6032be805052b303f85f825eae29c6f735ca5fd8a0e5acb",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-boundary.py": "419e66b0cff9734c7e8eddc6185c2dc2ae88bff98933db2065567c733a11edc2",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-enumeration-once.py": "ed985d6f8d60f600bd93865f9452696db31fcb9c4240941a972ab3916420a3db",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-runtime-error.py": "b0243f1925f6188617e4f5899c395ca5cf46160c74de76fbd219e65e16d39322",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-usb-host-runtime-hold.py": "aa8766f54fd0910cac5c89b0ef763e7a1aa9f84a735b8f21bf33b04c2b3d8d9a",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/check-ws73-model-hold.py": "9cab27fd39e84ca041f75cff779b4c729b2b213647da1abd12863aa8f49111bc",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/run-usb-host-boundaries.py": "19e29835624b22f655b0b0e12ef3494184e474db7c2603f9ccaaa6314ddfee2b",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-autoscan.patch": "a234843ab07b319c8038df2c4c524629be9e5e3fe27c8dbdd17ac2e53ac5236e",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-boundary.patch": "8c035eb05af0ed644a80d400c163a80084e7c241f08f49b213e9fc390e471089",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-enumeration-once.patch": "86cf96711e2c27d26bc6aae924d80f090f9ba93ac4a2e101e96ab5e2af494aa9",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-reenumeration.patch": "b62abdae5684d4169df9fbd47b99b8953a3421434d5d5e063242c28d2da2b121",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-retry.patch": "dd01bb04b0e75d62590153ddd7ab14d49baf6a17520f7090eeac4f7274222ad0",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-drop.patch": "ba2c97b13925e5eb5b16be66d40da4246ccfa9203c1d8cbce7f82c09cadd739c",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-error.patch": "5d91e770936c4c7b21c7fe5af1001fceb4c8eb1182e1d58ff364cca6c1684652",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-hold.patch": "391bb2d43061808d056d45b9a15467dd33eeb4fd5f5dd25e3aaf0f13f902e170",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-install.patch": "7f284758df07bc9bc300a612f981c73bfb4d95b78234fa7d4976123a14943452",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-host-runtime-selector.patch": "9503a494f2aafeb4ff4cfd8ec361f2ddcafa1a5997204bf4fffed3c2ba126769",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-sle-dli.c": "77eb2f39bc7482574574b9c5572a9323e14cfe5b0dad75ddc3fcee73a5d5d700",
+            "tools/testing/selftests/sparklink/qemu-sle-dli/usb-ws73-test.c": "1209ce01a2bccabd01d6e6f41d2ef88f95a96fa59ce8d88ae14c63af1b9ab740"
+          }
+        }
+      },
+      "report_commit": "e162e6ea7922a51ce7a029e8da8ba462b1bc132f",
+      "artifact_materials": [
+        "install-reply-aa0d636-m2",
+        "install-reply-aa0d636-m3",
+        "install-reply-aa0d636-m7",
+        "install-reply-aa0d636-m8",
+        "install-reply-aa0d636-t4",
+        "install-reply-aa0d636-t5",
+        "install-reply-aa0d636-t6",
+        "install-reply-aa0d636-t7",
+        "install-reply-aa0d636-t8",
+        "install-reply-aa0d636-t9"
+      ],
+      "tool_materials": [
+        "install-reply-aa0d636-t0",
+        "install-reply-aa0d636-t1",
+        "install-reply-aa0d636-t2",
+        "install-reply-aa0d636-t3",
+        "install-reply-aa0d636-t4",
+        "install-reply-aa0d636-t5",
+        "install-reply-aa0d636-t6",
+        "install-reply-aa0d636-t7",
+        "install-reply-aa0d636-t8",
+        "install-reply-aa0d636-t9",
+        "install-reply-aa0d636-t10",
+        "install-reply-aa0d636-t11",
+        "install-reply-aa0d636-t12",
+        "install-reply-aa0d636-t13",
+        "install-reply-aa0d636-t14",
+        "install-reply-aa0d636-t15",
+        "install-reply-aa0d636-t16",
+        "install-reply-aa0d636-t17",
+        "install-reply-aa0d636-t18",
+        "install-reply-aa0d636-t19",
+        "install-reply-aa0d636-t20",
+        "install-reply-aa0d636-t21",
+        "install-reply-aa0d636-t22"
+      ],
+      "configuration_materials": [
+        "install-reply-aa0d636-m0",
+        "install-reply-aa0d636-m17"
+      ],
+      "id": "install-reply-aa0d636-live",
+      "title": "安装已提交后撤销与迟到回复：真实双设备仍未验收",
+      "level": "real_device",
+      "result": "UNPROVED",
+      "report": {
+        "material": "install-reply-aa0d636-report",
+        "scope_pointer": [
+          "scope"
+        ],
+        "source_pointers": {
+          "test_fixture": [
+            "kernel_fixture_commit"
+          ]
+        },
+        "verdict_pointer": [
+          "live_result"
+        ],
+        "verdict_results": {
+          "UNPROVED": "UNPROVED"
+        },
+        "gate_rows_pointer": [
+          "pending_gates"
+        ]
+      },
+      "gates": [
+        {
+          "id": "actual-install-inflight-withdrawal-two-roles",
+          "result": "UNPROVED",
+          "materials": [
+            "install-reply-aa0d636-report"
+          ],
+          "report_pointer": [
+            "pending_gates",
+            0
+          ],
+          "reported_status": "NOT_RUN"
+        },
+        {
+          "id": "late-status-encryption-after-cancel-original-identity",
+          "result": "UNPROVED",
+          "materials": [
+            "install-reply-aa0d636-report"
+          ],
+          "report_pointer": [
+            "pending_gates",
+            1
+          ],
+          "reported_status": "NOT_RUN"
+        },
+        {
+          "id": "other-controller-real-peer-business-and-original-deadline",
+          "result": "UNPROVED",
+          "materials": [
+            "install-reply-aa0d636-report"
+          ],
+          "report_pointer": [
+            "pending_gates",
+            2
+          ],
+          "reported_status": "NOT_RUN"
+        }
+      ],
+      "required_gates": [
+        "actual-install-inflight-withdrawal-two-roles",
+        "late-status-encryption-after-cancel-original-identity",
+        "other-controller-real-peer-business-and-original-deadline"
       ]
     }
   ],
@@ -109439,6 +109780,384 @@
       "sha256": "99720dd4bb5556594eafc723b47047492edd208dffc04663393e0fe5ec29067f",
       "bytes": 237333,
       "source_commit": "3b658456fbe3bfb0eb74b85fba505f16b853dc3b"
+    },
+    "install-reply-aa0d636-m0": {
+      "path": ".dev/security-install-hold-qemu-v2/build-manifest.json",
+      "sha256": "eb125bad7e5ff3608e46ebb85dc12d80eb6b834694ba4467ae59da7549a502d2",
+      "bytes": 313707,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "json"
+    },
+    "install-reply-aa0d636-m1": {
+      "path": ".dev/security-install-hold-qemu-v2/host-libusb.c",
+      "sha256": "a7c7e6ee85e401a2f3bdc990dfec538127e2ac18e05d11f01415d2107dd6ee56",
+      "bytes": 81100,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m2": {
+      "path": ".dev/security-install-hold-qemu-v2/host-libusb.c.o",
+      "sha256": "ff7ae92a7a7784423558576e76149624e415e54629df20f527e84230a08ce2f1",
+      "bytes": 88056,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m3": {
+      "path": ".dev/security-install-hold-qemu-v2/qemu-system-x86_64",
+      "sha256": "dea80cfc383881b83b16744904be1fff82a8e4d523dfa65f2d96d5268e885e68",
+      "bytes": 30099216,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m4": {
+      "path": ".dev/security-install-hold-qemu-v2/build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m5": {
+      "path": ".dev/security-install-hold-asan-v4/manifest.json",
+      "sha256": "ca7856b20392cd1fd47956d53c5756258939e907ffe85c157c93a88b2c980915",
+      "bytes": 2150,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "json"
+    },
+    "install-reply-aa0d636-m6": {
+      "path": ".dev/security-install-hold-asan-v4/production.h",
+      "sha256": "ad170055e550e6901535273e098272459f78399036aa77fa6c2e7536d541199f",
+      "bytes": 13893,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m7": {
+      "path": ".dev/security-install-hold-asan-v4/check.c",
+      "sha256": "7c1367e8e211d995bd2bb0683023c2ffa224163fd7e34b780061e278a65187db",
+      "bytes": 20689,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m8": {
+      "path": ".dev/security-install-hold-asan-v4/check",
+      "sha256": "a48c04688e2350193add14f504f09952783348e25e3b2bcfae24a0555c90b584",
+      "bytes": 1894640,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m9": {
+      "path": ".dev/security-install-hold-asan-v4/stdout.txt",
+      "sha256": "7a7161b5702aef3e843b6549d9e8652f7e2d3ce17198c90efece4e142d5291b5",
+      "bytes": 128,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m10": {
+      "path": ".dev/security-install-hold-asan-v4/stderr.txt",
+      "sha256": "c5404a537dd93ef9c0c23efd8f68b7abf8559ed9e80364db45dfd2fa5c7510e3",
+      "bytes": 272,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m11": {
+      "path": ".dev/security-install-error-asan-v4/manifest.json",
+      "sha256": "6a034619de5b45be8ed818d7cb1e1fc533fa25825422b096821fec3bcd0ef472",
+      "bytes": 629,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "json"
+    },
+    "install-reply-aa0d636-m12": {
+      "path": ".dev/security-install-hold-boundaries-qmp-v2/result.json",
+      "sha256": "0edf92a2eb4b4dd566fdf0ede959d071f05c1f74293f85f49bd617bd296b530f",
+      "bytes": 821,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "json"
+    },
+    "install-reply-aa0d636-m13": {
+      "path": ".dev/security-install-hold-boundaries-qmp-v2/patch.log",
+      "sha256": "70b9563cfb228adf0213c214046532918b904e99a033ac9dbcd46ffb01988976",
+      "bytes": 10868,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m14": {
+      "path": ".dev/security-install-hold-boundaries-qmp-v2/qmp.jsonl",
+      "sha256": "463846f4c75b97965874578513d4dc35836cdae49c06c6345885d15558035a4a",
+      "bytes": 20146,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m15": {
+      "path": ".dev/security-install-hold-boundaries-qmp-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "install-reply-aa0d636-m16": {
+      "path": ".dev/security-install-hold-start-ci.json",
+      "sha256": "8df82fe4a3305f5b955ee8b26d9a08474105121671a2382091d4feb3d5e899aa",
+      "bytes": 1263,
+      "access": "private",
+      "retention": "Original local workspace; no validated offsite backup. Owner access required; replay commands below; generated code/binary and dependency fixtures retained separately.",
+      "base": "workspace",
+      "format": "json"
+    },
+    "install-reply-aa0d636-m17": {
+      "path": ".dev/security-install-hold-boundaries-qmp-v2/qmp-command.json",
+      "sha256": "29d012a8836a8427594e095ff7cb5711beea5618214ffb4f820bf4422ea1a357",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Owner local workspace, no validated offsite archive; paused/unattached TCG command.",
+      "base": "workspace",
+      "format": "json"
+    },
+    "install-reply-aa0d636-report": {
+      "base": "repo",
+      "access": "public",
+      "format": "json",
+      "path": "docs/evidence/security-install-reply-barrier-20261017.json",
+      "sha256": "e0a2b40066cc52aa88c143513e2529e1cc9998e562666d9f28ac1319995fb548",
+      "bytes": 15230,
+      "source_commit": "e162e6ea7922a51ce7a029e8da8ba462b1bc132f"
+    },
+    "install-reply-aa0d636-t0": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/.gitignore",
+      "sha256": "2ecf08970d3677b42be53a56dc4500f6b22462b6ee2558c3bd7c1d7771696d0b",
+      "bytes": 13,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t1": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/README.md",
+      "sha256": "fe0f08274842b404c7bf63a019203c8cebf9d9f6d6c0567d16642f6a4f551ac4",
+      "bytes": 22640,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t2": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/apply-usb-host-boundary.py",
+      "sha256": "69259467ab45aa5e65cad0b66607931fd9a859abe0f87a7663b7be77751fb21a",
+      "bytes": 2544,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t3": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/build-qemu.sh",
+      "sha256": "cecefdbe7a9c8876dcd97be38451a19bd2a4d99ec39710a8620bfa8e91d92e50",
+      "bytes": 5448,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t4": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/check-usb-host-autoscan.py",
+      "sha256": "d7ee4c5a09e60a52c6032be805052b303f85f825eae29c6f735ca5fd8a0e5acb",
+      "bytes": 8499,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t5": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/check-usb-host-boundary.py",
+      "sha256": "419e66b0cff9734c7e8eddc6185c2dc2ae88bff98933db2065567c733a11edc2",
+      "bytes": 21716,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t6": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/check-usb-host-enumeration-once.py",
+      "sha256": "ed985d6f8d60f600bd93865f9452696db31fcb9c4240941a972ab3916420a3db",
+      "bytes": 6972,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t7": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/check-usb-host-runtime-error.py",
+      "sha256": "b0243f1925f6188617e4f5899c395ca5cf46160c74de76fbd219e65e16d39322",
+      "bytes": 8368,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t8": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/check-usb-host-runtime-hold.py",
+      "sha256": "aa8766f54fd0910cac5c89b0ef763e7a1aa9f84a735b8f21bf33b04c2b3d8d9a",
+      "bytes": 25093,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t9": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/check-ws73-model-hold.py",
+      "sha256": "9cab27fd39e84ca041f75cff779b4c729b2b213647da1abd12863aa8f49111bc",
+      "bytes": 10583,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t10": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/run-usb-host-boundaries.py",
+      "sha256": "19e29835624b22f655b0b0e12ef3494184e474db7c2603f9ccaaa6314ddfee2b",
+      "bytes": 3826,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t11": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-autoscan.patch",
+      "sha256": "a234843ab07b319c8038df2c4c524629be9e5e3fe27c8dbdd17ac2e53ac5236e",
+      "bytes": 1252,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t12": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-boundary.patch",
+      "sha256": "8c035eb05af0ed644a80d400c163a80084e7c241f08f49b213e9fc390e471089",
+      "bytes": 2747,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t13": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-enumeration-once.patch",
+      "sha256": "86cf96711e2c27d26bc6aae924d80f090f9ba93ac4a2e101e96ab5e2af494aa9",
+      "bytes": 5364,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t14": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-reenumeration.patch",
+      "sha256": "b62abdae5684d4169df9fbd47b99b8953a3421434d5d5e063242c28d2da2b121",
+      "bytes": 1088,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t15": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-retry.patch",
+      "sha256": "dd01bb04b0e75d62590153ddd7ab14d49baf6a17520f7090eeac4f7274222ad0",
+      "bytes": 1146,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t16": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-runtime-drop.patch",
+      "sha256": "ba2c97b13925e5eb5b16be66d40da4246ccfa9203c1d8cbce7f82c09cadd739c",
+      "bytes": 1242,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t17": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-runtime-error.patch",
+      "sha256": "5d91e770936c4c7b21c7fe5af1001fceb4c8eb1182e1d58ff364cca6c1684652",
+      "bytes": 3598,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t18": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-runtime-hold.patch",
+      "sha256": "391bb2d43061808d056d45b9a15467dd33eeb4fd5f5dd25e3aaf0f13f902e170",
+      "bytes": 8618,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t19": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-runtime-install.patch",
+      "sha256": "7f284758df07bc9bc300a612f981c73bfb4d95b78234fa7d4976123a14943452",
+      "bytes": 7671,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t20": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-host-runtime-selector.patch",
+      "sha256": "9503a494f2aafeb4ff4cfd8ec361f2ddcafa1a5997204bf4fffed3c2ba126769",
+      "bytes": 5445,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t21": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-sle-dli.c",
+      "sha256": "77eb2f39bc7482574574b9c5572a9323e14cfe5b0dad75ddc3fcee73a5d5d700",
+      "bytes": 93777,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
+    },
+    "install-reply-aa0d636-t22": {
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private",
+      "path": ".dev/security-install-hold-tools-aa0d636/usb-ws73-test.c",
+      "sha256": "1209ce01a2bccabd01d6e6f41d2ef88f95a96fa59ce8d88ae14c63af1b9ab740",
+      "bytes": 32752,
+      "retention": "Frozen committed fixture sources in owner workspace; no offsite retention guarantee."
     }
   },
   "baseline_record": "benchmark-window-trace-e34"

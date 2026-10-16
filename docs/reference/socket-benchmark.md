@@ -175,7 +175,7 @@ NOCP单独保留handle/count事件，不擅自归给某条消息，也不作为�
 
 `--session-service-observe` 仅在显式 Native 数据门禁启用。采集器要求 VM root、
 scratch 标识、QEMU DMI 和显式内核参数，禁止配置宿主 trace。独立实例使用 nop、
-mono 时钟、请求每 CPU 1024 KiB 并按实际 page layout 精确核对读回。两个 CPU 的
+mono 时钟、请求每 CPU 2048 KiB 并按实际 page layout 精确核对读回。两个 CPU 的
 零丢失计数、原始条数、唯一 begin/end、boot UUID 和原件 hash 都需闭合。
 
 work 的 begin/end 配对实际 Session 服务编号；queue 区分软件准入、出队和操作
@@ -194,3 +194,7 @@ trace 量化误差；无交集即拒绝，不伪造跨时钟精确点值。未�
 完整原业务门禁仍必需；它不是 USB 完成、NOCP、对端交付、纯 RF 时延、信用守恒、
 并发证明或性能资格。进程异常、边界未封存、未知事件与缺少阶段均失败；不把
 ABORTED/RUNNING 当作合格报告。
+
+首轮 1 MiB/CPU 的真实长包 burst 采集曾覆盖 9147 条，整轮 FAIL 保留；按实际
+25188 条记录调整为 2 MiB/CPU，仍严格检查零丢失与最多 8 MiB 的文本原件。
+该容量是本诊断的预算，不改变应用队列、credit 或协议期限；超过预算仍拒绝。

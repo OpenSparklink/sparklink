@@ -13,8 +13,8 @@ WALL=1_700_000_000_000_000_000
 
 
 def fixture():
-    row=dict(status=STATUS,cookie='a'*32,instance_removed=True,clock='mono',requested_buffer_kb=1024,
-             readbacks=dict(current_tracer='nop',trace_clock='local [mono]',buffer_size_kb='1027',buffer_subbuf_size_kb='4'),
+    row=dict(status=STATUS,cookie='a'*32,instance_removed=True,clock='mono',requested_buffer_kb=2048,
+             readbacks=dict(current_tracer='nop',trace_clock='local [mono]',buffer_size_kb='2051',buffer_subbuf_size_kb='4'),
              enabled=dict.fromkeys(EVENTS,'1'),disabled=dict.fromkeys(EVENTS,'0'),
              header_page='field: char data; offset:16; size:4080;',anchors=[],stats={})
     for kind,t in [('begin',BASE),('end',BASE+1_000_000)]:
@@ -62,7 +62,7 @@ class ServiceTrace(unittest.TestCase):
             elif kind=='clock':row['readbacks']['trace_clock']='[global] mono'
             elif kind=='clock-step':row['anchors'][1]['wall_ns']+=1_000_000
             elif kind=='buffer':row['readbacks']['buffer_size_kb']='1024'
-            elif kind=='float-buffer':row['requested_buffer_kb']=1024.0
+            elif kind=='float-buffer':row['requested_buffer_kb']=2048.0
             elif kind=='schema':text=text.replace('gen=1','gen=1.0')
             elif kind=='unknown':text=text.replace('sparklink_session_tx','unknown_event')
             else:text=text.replace('100.000120','101.000120')

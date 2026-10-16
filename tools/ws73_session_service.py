@@ -27,6 +27,7 @@ INSTANCE = ROOT / 'instances/slk_session_service'
 FOLDER = Path('/evidence/session-service')
 LIMIT = 8 * 1024 * 1024
 STATUS = 'OBSERVED_NOT_PERFORMANCE_QUALIFIED'
+BUFFER_KIB = 2048 # Measured 1MiB per-CPU overrun retained; bounded diagnostic only.
 
 
 def digest(path):
@@ -84,7 +85,7 @@ def configure():
     row = dict(status='RUNNING_NOT_QUALIFIED', cookie=secrets.token_hex(16),
                boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
                kernel_release=os.uname().release, kernel_version=os.uname().version,
-               clock='mono', requested_buffer_kb=1024, anchors=[], created=False)
+               clock='mono', requested_buffer_kb=BUFFER_KIB, anchors=[], created=False)
     save(row)
     try:
         if not (ROOT / 'available_tracers').is_file():
@@ -94,7 +95,7 @@ def configure():
         write('tracing_on', '0')
         write('current_tracer', 'nop')
         write('trace_clock', 'mono')
-        write('buffer_size_kb', '1024')
+        write('buffer_size_kb', str(BUFFER_KIB))
         write('trace', '')
         row['formats'] = {}
         for name in EVENTS:
@@ -177,7 +178,7 @@ def parse(text, row):
         raise ValueError('original trace configuration required')
     expected_kib, _ = buffer_kib(row['header_page'], row['requested_buffer_kb'],
                                int(read['buffer_subbuf_size_kb']))
-    if (type(row['requested_buffer_kb']) is not int or row['requested_buffer_kb'] != 1024
+    if (type(row['requested_buffer_kb']) is not int or row['requested_buffer_kb'] != BUFFER_KIB
             or str(expected_kib) != read['buffer_size_kb']):
         raise ValueError('bounded configured trace buffer required')
     if row['enabled'] != dict.fromkeys(EVENTS, '1') or row['disabled'] != dict.fromkeys(EVENTS, '0'):

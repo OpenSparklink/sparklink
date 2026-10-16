@@ -2,6 +2,15 @@
 
 ## 本批退出条件与近期执行顺序
 
+WP09 当前切片：[安装回复受控屏障](../docs/evidence/security-install-reply-barrier-20261017.json)
+已完成独立测试 QEMU/离线 callback、sanitizer、补丁链及暂停 QMP 检查；不修改生产
+Host/driver/Agent，不是实机撤销资格。下一批复用原 Agent witness，在精确的真实
+安装提交→保留 Status/Complete→撤销→交还原帧后检查原终态不改写、物理义务不
+凭空清除，以及同行真实业务。两角色、原请求/gen/lifetime/作者/原期限和帧 hash
+均须闭合；合并在同一 USB aggregate 的事件一起延迟，不能按帧号或 sleep 推定
+安装时点。release/最后fd/dup/Down/期限的完整安装组合仍开放，不阻塞 SSAP/数据。
+本切片退出只指测试设施，不关闭 K#7/#19、U#5/#8 或任何安全/恢复整项。
+
 近期增加 ADR0006 性能链路：状态/架构核对→可信基线→Session事件驱动→有界连续发送→
 双设备性能/生命周期回归→多通道/四设备→USB与无线参数测量→长期/恢复/发布。
 正在开发的四设备动态工具保留，与 Agent/用户态SSAP、真实数据扩展并行。固定通道

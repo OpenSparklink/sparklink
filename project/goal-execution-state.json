@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T20:04:13.675066+00:00",
+  "updated_at_utc": "2026-10-16T20:19:26.096545+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -764,7 +764,7 @@
   },
   "execution_phase": "ACTIVE_AGENT_SSAP_VERTICAL_WITH_PERFORMANCE_OBSERVER_RESOURCE_FAIRNESS_FOLLOWUP",
   "next_resume_tasks": [
-    "Matched finite workload batch exit met:bfaa/14d9,sameU42/f2,12VM2560peerRT192evidence negatives;preserve raw variation and no median improvement claim.",
+    "WP09 nextrealgate: connect signed aa0d636 test selector/QEMUdea80 to existing Agent probe, originalSession/credit/Ticket; install submitted→actualacceptanceheld→cancel→lateoriginalreply; no policy resurrection, peer app replies. Offline fixture PASS does not qualify live cancellation.",
     "Advance Agent/security install/revoke/Down/originaldeadline and realSSAP/multichannel behavior;do not wait for all control races or completeperformance.",
     "Parallel matched sameKernelobservercost,actualworker/queue/credit/URB/resource peaks andsegmented timing/actualPHY parameters;RX108544gaps do not justify changingmultipleURBs.",
     "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
@@ -772,8 +772,8 @@
   ],
   "issue_sync_status": "FOUR_RELATED_ISSUES_READBACK_OPEN_ORIGINAL_SCOPE_UNCHANGED",
   "issue_sync_receipt": "docs/evidence/matched-u23-maintenance-20261017.json",
-  "previous_goal_turn_classification": "SELECTED_BOUNDED_OBSERVATION_AND_RELATED_REAL_GATE_EXIT_PASS_FULL_OBJECTIVE_OPEN",
-  "current_goal_turn_classification": "PROGRESS_SCALABLE_WORKLOAD_TOOLS_AND_TWELVE_MATCHED_REAL_GATES_WITH_LIMITED_FINDINGS",
+  "previous_goal_turn_classification": "NO_PROGRESS_PORT_IDENTITY_CONFIRMATION_ONLY",
+  "current_goal_turn_classification": "PROGRESS_SIGNED_TEST_ONLY_INSTALL_REPLY_SELECTOR_OFFLINE_AND_PAUSED_QMP",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1412,7 +1412,7 @@
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
     "real": "Six explicit modes two-role scoped real result in qualification_view/report; full deployment/permissions/authentication/Bond and in-flight composition still missing",
     "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
-    "next": "WP09 controlled in-flight installation/revoke/Down/original-deadline and minimum authenticated security+authorization, parallel to the nextWP07 real four-device socket slice; byte fuzz slice already closed locally/CI, stateful/debugVM still open",
+    "next": "Wire validated test-only selector into existing Agent witness/VM coordinator; obtain actual install-inflight cancellation +latephysicalreply +peerbusiness; no newEngine or productionpathreplacement. Continue authenticated authorization/SSAP/multichannel in parallel.",
     "offline_record": "agent-policy-offline-16175",
     "first_failures": [
       "preparev1 wrongsmokemanifestdirectory/noVM",
@@ -1428,7 +1428,18 @@
     "cli_real_report": "docs/evidence/security-cli-real-progress-20261016.json",
     "cli_issues_receipt": "docs/evidence/security-cli-issues-20261016.json",
     "current_validation": "HistoricalCLI2/data11 retained; four-business80 separate d01aa82 report; no active hardware VM after QEMU0; full security/data/recovery incomplete",
-    "cli_retained_report": "docs/evidence/security-cli-retained-data-20261016.json"
+    "cli_retained_report": "docs/evidence/security-cli-retained-data-20261016.json",
+    "install_reply_barrier": {
+      "status": "OFFLINE_EXIT_MET_LIVE_GATE_PENDING",
+      "kernel_fixture_commit": "aa0d63693f8c4d8da481842e31cd6673c05f8283",
+      "report": "docs/evidence/security-install-reply-barrier-20261017.json",
+      "qemu_sha256": "dea80cfc383881b83b16744904be1fff82a8e4d523dfa65f2d96d5268e885e68",
+      "production_path_changed": false,
+      "physical_gate_executed": false,
+      "formal_proven": false,
+      "owner_cleanup_or_natural_recovery_qualified": false,
+      "next": "Existing Agent witness, exact submitted install held acceptance, original cancellation then unchanged late operation result; real peer ordinary business, both roles, original deadline. Fullrelease/finalfd/dup/Down composition still open."
+    }
   },
   "documentation_remediation": {
     "scope": "DQ1–DQ5 in canonical implementation plan; parallel to protocol work, no new goal or gate on all documentation",

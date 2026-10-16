@@ -4,6 +4,12 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
+[SDK111 安装回复屏障](../docs/evidence/security-install-reply-barrier-20261017.json)仅通过
+离线 callback/sanitizer、补丁链和暂停无设备匹配的 QMP 检查。默认关闭、保留实际
+成功 IN81 原帧、按完整 HCC 与 G/T opcode 选择，未改生产路径。**真实安装在途
+撤销与迟到回复仍未验收**，本批没有新 WS73、认证、Bond、恢复或形式化资格。
+既有 Agent/data 仍绑定其原始准确源码与产物，不能继承给新 QEMU 或最新 HEAD。
+
 文档 DQ1 的[限定结果](../docs/evidence/documentation-dq1-and-theme-20261016.json)与
 Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-refinement-20261016.json)分别封存；
 完整内容/使用链仍缺，外链限流未核实；HTML仅四类。文档结果不授予协议/安装/恢复资格，

@@ -1277,7 +1277,8 @@
     "four_matrix": ".dev/cmtc-mps-four-matrix.json",
     "four_matrix_session": 85012,
     "four_matrix_terminal": 0,
-    "real_regression_report": "docs/evidence/cmtc-mtu-mps-real-20261016.json"
+    "real_regression_report": "docs/evidence/cmtc-mtu-mps-real-20261016.json",
+    "real_regression_issues_receipt": "docs/evidence/cmtc-mtu-mps-real-issues-20261016.json"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",

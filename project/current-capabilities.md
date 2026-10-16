@@ -215,7 +215,7 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | Native可变负载：673工具、16实际重放及192证据负对照 | `offline` | `PASS` |
 | 完整性能/观测成本/内核峰值/公平/恢复：未证明 | `real_device` | `UNPROVED` |
 | SDK111真实回复选择器：实际callback sanitizer与暂停QMP（非实机） | `offline` | `PASS` |
-| 安装已提交后撤销与迟到回复：真实双设备仍未验收 | `real_device` | `UNPROVED` |
+| 历史aa0d636离线阶段：当时安装在途实机未运行；新U6166仅限定取消通过 | `real_device` | `UNPROVED` |
 | K14d9/U6166：安装在途原请求取消两角色与三项保持，32次真实回复 | `real_device` | `PASS` |
 | U6166：681冻结工具/严格clippy/2Rust、六历史重放及15实际证据负对照 | `offline` | `PASS` |
 | 历史两次工具接线失败：init漏传及普通目录拒绝，原FAIL保留 | `real_device` | `FAIL` |

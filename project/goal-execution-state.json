@@ -770,8 +770,8 @@
     "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
     "NOCPtruth/late/duplicate,reuse/callbackdrain,naturalstartup/re-enumeration/disappearance RCA andnonmanualrecovery remainOPEN."
   ],
-  "issue_sync_status": "K7/K19/U5/U8 updated/readback OPEN; original issue scope unchanged, no partialclose.",
-  "issue_sync_receipt": "docs/evidence/security-install-reply-barrier-maintenance-20261017.json",
+  "issue_sync_status": "K7/K19/U5/U8 updated/readback OPEN; originalscope unchanged; selectedactualinstallrequestcancel+retainedslices only.",
+  "issue_sync_receipt": "docs/evidence/security-install-cancel-maintenance-20261017.json",
   "previous_goal_turn_classification": "PROGRESS_SIGNED_DEFAULT_DISABLED_SELECTOR_OFFLINE_PAUSED_QMP",
   "current_goal_turn_classification": "PROGRESS_TWO_ROLE_REAL_INSTALL_REQUEST_CANCEL_LATE_REPLY_PLUS_SELECTED_RETAINED_REGRESSION",
   "goal_api_status_observed": "active",
@@ -1465,7 +1465,8 @@
       "next": "Selected original-request cancel gate exited; directpostlate physicaldebt/ref/callback andkeywipe/reuse observation plusfulllease/fd/Down/originaldeadline installation matrix stillopen. Advance authenticatedsecurity/authorization andSSAP/multichannel vertical inparallel.",
       "real_report": "docs/evidence/security-install-cancel-real-20261017.json",
       "current_qualified_scope": "Actualheldinstallacceptance, originalrequest nativecancel snapshotwhileheld, oldacceptdelivered anddaemonterminalimmutable, oppositeTnativecomplete andsamebasicSessionpeerbusiness;not postreleasekernel/debt/drain/keywipe/Grantrevocationproof.",
-      "offline_maintenance_report": "docs/evidence/security-install-reply-barrier-maintenance-20261017.json"
+      "offline_maintenance_report": "docs/evidence/security-install-reply-barrier-maintenance-20261017.json",
+      "maintenance_report": "docs/evidence/security-install-cancel-maintenance-20261017.json"
     }
   },
   "documentation_remediation": {
@@ -1605,7 +1606,8 @@
     "docs/evidence/cmtc-mtu-mps-issues-20261016.json",
     "docs/evidence/session-tx-quantum-maintenance-20261017.json",
     "docs/evidence/session-status-maintenance-20261017.json",
-    "docs/evidence/matched-u23-maintenance-20261017.json"
+    "docs/evidence/matched-u23-maintenance-20261017.json",
+    "docs/evidence/security-install-reply-barrier-maintenance-20261017.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",

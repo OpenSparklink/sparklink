@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "source_report_commit": "d5269ea24bf7a59daded30b813d0bc8ceb252eb2",
+  "canonical_commit": "992656fba27fc8dba48569de039e5f64ef5a280a",
+  "scope": "Readback three existing issues;original scope and OPEN preserved;only scoped dynamic7 and saved fixed-burst credit results,not fullscope closure",
+  "receipts": [
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6209394117",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "46ec0d474afff4c9bf851cebb186431d097e41c24df03f5f91ef351b04b8cebb"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6209394962",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "46ec0d474afff4c9bf851cebb186431d097e41c24df03f5f91ef351b04b8cebb"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6209395793",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "46ec0d474afff4c9bf851cebb186431d097e41c24df03f5f91ef351b04b8cebb"
+    }
+  ]
+}

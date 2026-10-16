@@ -42,6 +42,14 @@ CBMC301+28/28为有界限定证明；不授实际内核并发、NOCP真值或完
 原v1矩阵14通过/1FAIL/17未运行及v2工具flags错误均保留；同行隔离仅Ready/lease/
 扫描，四设备独立业务、自然根因及非人工恢复仍开放。当前整体资格以生成摘要为准。
 
+[生命周期优先复核](../docs/evidence/lifecycle-u23-hardware-change-20261017.json)使用
+封存K bfaa/staged U9385、执行33f，U型端口2/3新跑双向十项：release、最后管理fd、
+dup最终管理引用、直接Down、原5秒期限；24次控制前业务、8条单向primer分开计数。
+22项离线、十份重放和100复制证据负对照通过。同行Ready/lease/扫描保持，不授另一
+独立业务链路。P2d dirty改动未参与，不继承这轮资格；没有新增形式化/性能证明。
+1口已由用户确认换成Hi3873E，其余为U；旧四U结果只代表原硬件组合。初始E1/U4
+两项release子结果保留，整轮因型号变更中止仍FAIL，不能授完整E/混合四设备资格。
+
 P2c的[限定低负载测量](../docs/evidence/benchmark-window-trace-20261017.json)已封存：
 编译bfaa/9385、执行e34、严格复核dbc；窗口1/4、xHCI on/off各3轮，共12项/480次
 真实对端校验回复。12份原件重放一致，216个复制真实证据负对照拒绝；请求1024/
@@ -101,6 +109,8 @@ P2c的[限定低负载测量](../docs/evidence/benchmark-window-trace-20261017.j
 | bfaa/2451实机工具误读ACTIVE失败保留，不改内核契约 | `real_device` | `FAIL` |
 | bfaa/e34逐消息测量：窗口1/4与xHCI开关12项480往返（非完整性能） | `real_device` | `PASS` |
 | 073首次窗口1：40次业务但trace请求/实际容量误判，原整轮FAIL保留 | `real_device` | `FAIL` |
+| Hi3873U端口2/3：新工具双向十项生命周期与受控撤权屏障 | `real_device` | `PASS` |
+| 型号更换后中止初始1/4矩阵：保留监督器中断与两项子结果 | `real_device` | `FAIL` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

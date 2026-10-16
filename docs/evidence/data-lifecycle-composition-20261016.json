@@ -1,0 +1,1386 @@
+{
+  "schema_version": 1,
+  "status": "REAL_DATA_LIFECYCLE_8_PLUS_2_SCOPED_PASS",
+  "generated_utc": "2026-10-16T07:27:55.457196+00:00",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "guest_tools": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "executed_tools": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "ordinary_round_trips_before_control": 20,
+  "partial_pdu_application_round_trips": 0,
+  "offline_evidence_negative_controls": 42,
+  "scope": [
+    "ExactcompiledK400/U25df09b/frozen guestHosttools25df09b;VM-only real2WS73 pre-daemon ordinary UID1000/caps0 delegated fixedCUTC31/PI241. Six release/lastFile/dup rows,two physicalDisconnect rows plus two independent originaldeadline rows. Not a singleallPASS originalmatrix.",
+    "Eachcase has2actual random peervalidated/replied61byteRT beforecontrol;20total. The admitted2042bytePDU/2047completePDU remains partial and hasZEROappRT;never count partialUSB orNOCP as businessdelivery.",
+    "Release/lastFile/dup:actual USB prefix beforewithdrawal,no later submit afterwithdrawal,oldfd rejection and realphysicalDown with peerlease/Ready retained. PhysicalDisconnect:bothManagedleases remainheld,oldlifetime fd remainsESTALE,peerReady and actualscanComplete work. Not another independent peerbusinesslink orfullVFSconcurrency proof.",
+    "Deadline:realQEMU8s boundedIN81delay,actualfullpool5 snapshot,exact5TXfragments1270bytes beforeoriginal5sexpiry;oldfd timeout/failedstate persists after5genuine delayed NOCP packets. Productiondeadline notextended;physicalDown onlylaterexplicitcleanup. No revival fromlatecontrollercompletion.",
+    "Initial10case matrix remainsFAIL:deadline0 rejected missingusb-host.test-runtime-in-hold-ms beforedeadlineacceptance. First8passedrows retained;separate exactQEMU boot-smoke andnewpreparedinputs usedfor2deadline rows. Do not turnfixturefailure into productiondefect or naturalrecovery.",
+    "All originalguest files/captures hashchecked;frozenverifiers replay exactproofs;zero capture drops,VMtaint0,QEMU/supervisor0 forsuccessfulrows.42offlinedecodedcapture/metadata negativesreject missingpeerRX/appreceipt/identity/timing/hold/NOCP/peer scan. Not independentdecoder or hardwaremalformedinput injection.",
+    "Existing Nativecommit/Ledger/Session runtimeunchanged. No whole formal/refinement,NOCPtruth/duplicate/late-reusebarrier,allTicket/ref/worker/concurrency/fairness/thirdpairbusiness ordaemon-survival qualification. Testsrunbeforedaemon,not proofslkd survivesallfaults.",
+    "Naturalstartup/reenumeration/disappearanceRCA andnonhumanrecovery OPEN;manual/hub/QMP/injectionnotnaturalacceptance. FullS0-S6/19WP/10FV/12DG retained,UserHostP4. Onlythisbatchinvariantsgate nextverticaldatawork."
+  ],
+  "gates": [
+    {
+      "name": "release0",
+      "result": "PASS",
+      "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 6,
+      "submitted_bytes": 1524,
+      "elapsed_monotonic_ns": null,
+      "late_nocp_records": [
+        582,
+        586
+      ],
+      "capture_packets": 605,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "manifest_sha256": "27ae8f5d5bcf2b7cb1b9397eda5e51946b68390b04a928e34026baa19148274a"
+    },
+    {
+      "name": "release1",
+      "result": "PASS",
+      "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 6,
+      "submitted_bytes": 1524,
+      "elapsed_monotonic_ns": null,
+      "late_nocp_records": [
+        584,
+        588
+      ],
+      "capture_packets": 609,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "manifest_sha256": "f035b7459786c6bd720bead34b9c167b694e569873843ce05849c243f5d90ef7"
+    },
+    {
+      "name": "close0",
+      "result": "PASS",
+      "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 6,
+      "submitted_bytes": 1524,
+      "elapsed_monotonic_ns": null,
+      "late_nocp_records": [
+        582,
+        590
+      ],
+      "capture_packets": 611,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "manifest_sha256": "1043c71e99ab17a8f481047b8eaefa55dd7c129b92deb6ee798114eb74adfcd6"
+    },
+    {
+      "name": "close1",
+      "result": "PASS",
+      "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 6,
+      "submitted_bytes": 1524,
+      "elapsed_monotonic_ns": null,
+      "late_nocp_records": [
+        582,
+        590
+      ],
+      "capture_packets": 611,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "manifest_sha256": "423a99bf9dce2e7cfd6fc7208bc25af9f90f517eb8b68597d578cc53e2e33c54"
+    },
+    {
+      "name": "dup0",
+      "result": "PASS",
+      "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "elapsed_monotonic_ns": null,
+      "late_nocp_records": [
+        620,
+        624
+      ],
+      "capture_packets": 643,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "manifest_sha256": "e71251f953f238ac3966fe943a1f6273666a3facb37d42eba0796938e71b3aa1"
+    },
+    {
+      "name": "dup1",
+      "result": "PASS",
+      "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 6,
+      "submitted_bytes": 1524,
+      "elapsed_monotonic_ns": null,
+      "late_nocp_records": [
+        634
+      ],
+      "capture_packets": 655,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "manifest_sha256": "a74c2477ad25784c7b19ffb5d65b95e0d3018e34159324d9e56c2e7777feee3f"
+    },
+    {
+      "name": "down0",
+      "result": "PASS",
+      "status": "REAL_BEGUN_LINK_DOWN_CORROBORATED",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 6,
+      "submitted_bytes": 1524,
+      "elapsed_monotonic_ns": null,
+      "late_nocp_records": [],
+      "capture_packets": 607,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "manifest_sha256": "566ec7b3b6d6af6df36d69c94df65df70bad46520d41cd4309831f086485b8c3"
+    },
+    {
+      "name": "down1",
+      "result": "PASS",
+      "status": "REAL_BEGUN_LINK_DOWN_CORROBORATED",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 7,
+      "submitted_bytes": 1778,
+      "elapsed_monotonic_ns": null,
+      "late_nocp_records": [],
+      "capture_packets": 617,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "manifest_sha256": "56201e9323c1e0a30b855c4b583012d42c3b09bff738c340eb87f4a91a5bdfad"
+    },
+    {
+      "name": "deadline0",
+      "result": "PASS",
+      "status": "REAL_ORIGINAL5S_BEGUN_DEADLINE_CORROBORATED",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "elapsed_monotonic_ns": 5001647808,
+      "late_nocp_records": [
+        594,
+        596,
+        598,
+        600,
+        602
+      ],
+      "capture_packets": 627,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "manifest_sha256": "3dd94f8ae0f157599a507c4129bffaf7aa61f5c4011c7958a9be4a6630979799"
+    },
+    {
+      "name": "deadline1",
+      "result": "PASS",
+      "status": "REAL_ORIGINAL5S_BEGUN_DEADLINE_CORROBORATED",
+      "ordinary_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "elapsed_monotonic_ns": 5009256208,
+      "late_nocp_records": [
+        592,
+        594,
+        596,
+        598,
+        600
+      ],
+      "capture_packets": 625,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "qemu_sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "manifest_sha256": "0f054a1a7d28eb40a1fdf8825caaf9e5aa51e2d9480f93e57829b3c7ee2b25e4"
+    }
+  ],
+  "materials": [
+    {
+      "private_workspace_path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800
+    },
+    {
+      "private_workspace_path": ".dev/data-deadline-qemu/qemu-system-x86_64",
+      "sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "bytes": 30094800
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-composition-v1.json",
+      "sha256": "26aed2c5c82933370a407c78ef1882808deca10d0c1332cbfda00bb8cdce6155",
+      "bytes": 10058
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-deadline-prepare-record.json",
+      "sha256": "0d8bef15a5beb4983cc41e655dd6f362f5ddaf691b0f24b9f4acf94d370f6513",
+      "bytes": 1368
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-deadline-smoke-record.json",
+      "sha256": "bb23675cf879439de6dd3e7f589c1fd70e7f334f64465125f9273dcff4981cd9",
+      "bytes": 1278
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-deadline-v2.json",
+      "sha256": "82bf05e6da8fef8104e96d440e5dd60fd55922a7f1b54eab074d81f10c00621c",
+      "bytes": 2625
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-raw-audit-v1.json",
+      "sha256": "0a24b381e5f7125a65443e3818fcd59d11f1e7ee28972fc5bd30bfe9601063bf",
+      "bytes": 6915
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-raw-audit-v1.log",
+      "sha256": "0c3cf6cb5646c470d0f553e3467d7f1b0ed5d05cd15ab78afb3398b077d2b826",
+      "bytes": 104
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-v1-deadline0.log",
+      "sha256": "001bd49ea5c356cf06b85dc27698eadb1a314df8d42dc9b1076043239fde8600",
+      "bytes": 13890
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-prepared/manifest.json",
+      "sha256": "ae66df2675b5e3ae39a6dc7da32e379746b3fc87b9031206d4a34764efb64760",
+      "bytes": 269448
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-smoke/manifest.json",
+      "sha256": "5f6c7579f43dff300eb4ce36a1d4d68a154b6f59b92cf2c557f287c900fef612",
+      "bytes": 37803
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/console.log",
+      "sha256": "4db29b1b190e1b32e4cf7c97efc29f67a4ac7be76632945188fe85fba093bb5b",
+      "bytes": 14103
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/capture-process-status.txt",
+      "sha256": "baee1e4c95c9be0f842896772a878aede3b41777484ee7fb72b631db2828dd15",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/capture-stats.txt",
+      "sha256": "c81818582a20efcefb89a96678633c974a0b979ec9881fe291579325078a48e9",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/channel-deadline/hold-arm_ready.json",
+      "sha256": "fb6786d03ad1d06999117953ac50d8c24c3cdc846d2201cae1cbca86b9769acc",
+      "bytes": 60
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/channel-deadline/hold-armed-ack.json",
+      "sha256": "a4d175838ba4c140646c517cfe1b145270a3e916745e9fd587e38cd0e5d78d26",
+      "bytes": 402
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/channel-deadline/hold-held-ack.json",
+      "sha256": "34086f5ea2cb34aec02ac6c72223f92423c770f1f9c15fe443e1f1887670a23c",
+      "bytes": 401
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/channel-deadline/hold-release_ready.json",
+      "sha256": "358fdc995aab4a2f9eeac5630093e18411964ac3818a2d7b16d3c9d64ec127d9",
+      "bytes": 64
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/channel-deadline/hold-released-ack.json",
+      "sha256": "a8a76553ce3b8ceec11c891310389f6930a81a837d336616e88cab9a67b479f2",
+      "bytes": 410
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/channel-deadline/hold-wait_held.json",
+      "sha256": "05986d3bbab8b5afd3613c1c983a6a11930cd8d2a46fe7b0c69dcaabaadce92a",
+      "bytes": 60
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/connected-file/run.json",
+      "sha256": "8504213575c7480067bf4be205244c413023abbb0da0f35a4d5fd5dcca624b63",
+      "bytes": 45021
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/connected-file-supervisor.log",
+      "sha256": "80794c9c3da2440265bff7bfbe54161645c309944d7478c308ad0f2af1ddb2e6",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/kernel.log",
+      "sha256": "ab7c23d55408ac7b64cc9f65c433a93925ffc19eb72aa770ddcc4e2c4d18bde4",
+      "bytes": 349477
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/setup-release/probe.jsonl",
+      "sha256": "1c1a331ce8d3fc8d2fb3b4be821821c942cef95305a23fe95f5fe49ed4b662a7",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/setup-release/run.json",
+      "sha256": "6d02c9e86de2c741f41149f98827d57f9596c3484e82353babc12c86c8bc5830",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/guest-output/ws73.pcap",
+      "sha256": "99ceb4d394dbcb58fa068691a11b281802454cd0e14739383a114f53b9d9db76",
+      "bytes": 82111
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/manifest.json",
+      "sha256": "3dd94f8ae0f157599a507c4129bffaf7aa61f5c4011c7958a9be4a6630979799",
+      "bytes": 62751
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-0/qemu-stderr.log",
+      "sha256": "a3429b2995d495ae95a57cb6a28bf96ebaa33b7ffcbafc23d3837ccc430f25b1",
+      "bytes": 257
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/console.log",
+      "sha256": "94439b87a5ba638c0ba24a1fce5dc2bd97a39f7cabe02db01de4ec6f5514976d",
+      "bytes": 13913
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/capture-process-status.txt",
+      "sha256": "45c53f0379c2273dd149d7d6457b1fe07e09fc3e3b56c3e9aa60a551c63717d7",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/channel-deadline/hold-arm_ready.json",
+      "sha256": "4a55b33068159ba2732aca1844cad144df9eaddf6f9ce965cc89ddd2ce5dcc32",
+      "bytes": 60
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/channel-deadline/hold-armed-ack.json",
+      "sha256": "74cd0a8176cd3a81b4f308a6cb0a73e6a4a41e1e62053d3042e8042bcd6cae59",
+      "bytes": 402
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/channel-deadline/hold-held-ack.json",
+      "sha256": "25adbc38cea495b39e2b820ff3f389edf36455f9766a4228a04fec814cf0962c",
+      "bytes": 401
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/channel-deadline/hold-release_ready.json",
+      "sha256": "36a8b9e77eb40232158f0fef99b887447e4492ecc165947251d217ceea82757e",
+      "bytes": 64
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/channel-deadline/hold-released-ack.json",
+      "sha256": "dd9aad95e2c497f53b74858ce5296c1fdedf96fbd9007648794838b61f03f818",
+      "bytes": 410
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/channel-deadline/hold-wait_held.json",
+      "sha256": "84cb7a118178879fb40d8d4d37714854d407cc7b834acdf936993ec14a370f66",
+      "bytes": 60
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/connected-file/run.json",
+      "sha256": "8b4539dcf1d840eedbbac42a3b81677e0951406f576f291b7de2414e2c85d29d",
+      "bytes": 45021
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/connected-file-supervisor.log",
+      "sha256": "80794c9c3da2440265bff7bfbe54161645c309944d7478c308ad0f2af1ddb2e6",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/kernel.log",
+      "sha256": "97d78af3ea0b27bc2032bc1b966157f518ed29c8eb5f781cbf9fc44c9a753c4f",
+      "bytes": 348011
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/setup-release/probe.jsonl",
+      "sha256": "f5b8e93641802aac2686595ebd46f62f148b141cf755dd7bf128b55e3aa5411b",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/setup-release/run.json",
+      "sha256": "78e9ff533578f02c441048b4040e0096976c5e0f69ffd92110e7c32e31a41c6b",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/guest-output/ws73.pcap",
+      "sha256": "c418d7cf644615d874a85d0f86108fb8233eff25fdca6699876bc109a199aab6",
+      "bytes": 81773
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/manifest.json",
+      "sha256": "0f054a1a7d28eb40a1fdf8825caaf9e5aa51e2d9480f93e57829b3c7ee2b25e4",
+      "bytes": 62751
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-deadline-v2-1/qemu-stderr.log",
+      "sha256": "08c36e41802400d3dc7a9674e52309d646f44ec263137f54f33e1580cd9772f2",
+      "bytes": 257
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/console.log",
+      "sha256": "f0705a9bae6a885f64f77956409af47cbb81071970a0bf368579789f12beec81",
+      "bytes": 13887
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/capture-process-status.txt",
+      "sha256": "373325191f31675882d1a2c89ca8458ad17858dc08a382b6d46c318f163d2121",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/capture-stats.txt",
+      "sha256": "efc009976a4e5331ec6c85c7396825fd2ba0fd00630c5a6f0eee36a7b27346b7",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/connected-file/run.json",
+      "sha256": "f41cd0c93feb7a6f9fb904c8929d2a451a1da104a45135fa241f7525e56e3528",
+      "bytes": 36010
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/connected-file-supervisor.log",
+      "sha256": "01f3a1219a225a412b81fe6845c129cab67709a71b3f8939f8f04681bf08fd4f",
+      "bytes": 32
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/kernel.log",
+      "sha256": "2d4c85ecdd779d4cac03d25a336b2e94d257a2833c25908cf25eb9fbdc5e1786",
+      "bytes": 348533
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/setup-release/probe.jsonl",
+      "sha256": "9c0b9acdd7e5c44c8a108b0ddfaf230365414f013f4de8757314c6fe33355994",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/setup-release/run.json",
+      "sha256": "3933748b00185723890355befa8178fd34263f4368ddc27ad32c48817822fb97",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/guest-output/ws73.pcap",
+      "sha256": "328947e4931d7c11674d43c6f86abb7b558a9b0a5deb9785f3a62917a938d109",
+      "bytes": 79556
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/manifest.json",
+      "sha256": "1043c71e99ab17a8f481047b8eaefa55dd7c129b92deb6ee798114eb74adfcd6",
+      "bytes": 86581
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close0/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/console.log",
+      "sha256": "993ded6c5885a8eb9beaaaa4db26914ed2a1053cb523bd021a2269e7de41a29b",
+      "bytes": 14077
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/capture-process-status.txt",
+      "sha256": "075e50580bd0f8de3ca666da090d17648aa38fd48d07725b1b638e6d4701061e",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/capture-stats.txt",
+      "sha256": "efc009976a4e5331ec6c85c7396825fd2ba0fd00630c5a6f0eee36a7b27346b7",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/connected-file/run.json",
+      "sha256": "b94da8f0cba842c1836c19b44293d95cde26fe34fa4e455d49ab5bc56d9503cc",
+      "bytes": 36010
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/connected-file-supervisor.log",
+      "sha256": "01f3a1219a225a412b81fe6845c129cab67709a71b3f8939f8f04681bf08fd4f",
+      "bytes": 32
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/kernel.log",
+      "sha256": "d477dfe60ad5912f36654ef8fa96dd5838bfe58219248a1ec15eaf4df3a6fc0f",
+      "bytes": 348888
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/setup-release/probe.jsonl",
+      "sha256": "feaf679dea81ddf695b039ec6e441ed765e2904abbf033d913ff08e35ea50b5e",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/setup-release/run.json",
+      "sha256": "c07b36b43d4757c601898d7b82e63f03416b9c713cffee35f031c78af4733bb7",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/guest-output/ws73.pcap",
+      "sha256": "aad24eea0134599e7af43ba53e56a04fd63c2ce6eab2fb787656329d44110a0d",
+      "bytes": 79556
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/manifest.json",
+      "sha256": "423a99bf9dce2e7cfd6fc7208bc25af9f90f517eb8b68597d578cc53e2e33c54",
+      "bytes": 86582
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-close1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-deadline0/manifest.json",
+      "sha256": "d85d26bbffa28e2cbc950e385c08a549ae3694a1693163acacca8d587f65e677",
+      "bytes": 41643
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/console.log",
+      "sha256": "40d8a6b68dceb58d15c93097d113171702159cd05e289273ed2bb5a3fbf61253",
+      "bytes": 13914
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/capture-process-status.txt",
+      "sha256": "ed2385b294ae8e902c98502e5742f807362326357711888af0bcedb883c95ada",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/capture-stats.txt",
+      "sha256": "b68832ff33ddc55b1d1680b5a84f2d3214ece09662048656e8962b030afa5173",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/connected-file/run.json",
+      "sha256": "22239d553a37db22bd7ae7c5f07c6d71afe55473eb5f86a96a350fc3f667c316",
+      "bytes": 39933
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/connected-file-supervisor.log",
+      "sha256": "0b0f40c7c9a9fa02bdbb61a5058fe23b3c62bcd6af6af19df7063ab823477e9f",
+      "bytes": 32
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/kernel.log",
+      "sha256": "dbcc2bd9b0bd1c217b03935287b91bff442afb90462620299f9788631b7b55c9",
+      "bytes": 348808
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/setup-release/probe.jsonl",
+      "sha256": "c4a4b62015c188ba9122b7c270ddeb58562bd59cd31f8ded743de0222c3b2ef4",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/setup-release/run.json",
+      "sha256": "cdf499563bcda368a2eb71fc73db419fc298f0a26057899593ed70c67a6ea5da",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/guest-output/ws73.pcap",
+      "sha256": "692b93c8bbc66937f23acdd50b5d41c2abb79961768d3c9bc25969970ce0aae5",
+      "bytes": 78880
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/manifest.json",
+      "sha256": "566ec7b3b6d6af6df36d69c94df65df70bad46520d41cd4309831f086485b8c3",
+      "bytes": 58599
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down0/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/console.log",
+      "sha256": "ae0d430c969e97f5199b3cf40649f07baec7fe50d5fcbd5b2677c8694e1357b5",
+      "bytes": 13914
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/capture-process-status.txt",
+      "sha256": "18fd1deff13b4318780e229cc5e81b11db53681bda3d4372dead95f5b2930c60",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/capture-stats.txt",
+      "sha256": "c06729d0a001c5897d4a4a1962f3544bfab165b4233184f62d7f7e442596d154",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/connected-file/run.json",
+      "sha256": "84c5fc1d13626319fbd7b5fda6037a81f584fee4dd7e647b7db6529c17593bab",
+      "bytes": 39931
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/connected-file-supervisor.log",
+      "sha256": "0b0f40c7c9a9fa02bdbb61a5058fe23b3c62bcd6af6af19df7063ab823477e9f",
+      "bytes": 32
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/kernel.log",
+      "sha256": "08379183455e44967a3c218789fc3327d07145a66ecf459c58f6c925808d0cce",
+      "bytes": 348264
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/setup-release/probe.jsonl",
+      "sha256": "e681743360a126d9864ce654a10ba909f25068ecf192dd5c20b25283cb91f5aa",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/setup-release/run.json",
+      "sha256": "f86c406d62313de30c01b0077f43313be1b3ef60982adb623a1aaaf7f7a95d96",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/guest-output/ws73.pcap",
+      "sha256": "779d6084c49789262b8a89e0f4add9eef5003fd0ae98067ff8ce8bbc0d3ff17e",
+      "bytes": 80719
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/manifest.json",
+      "sha256": "56201e9323c1e0a30b855c4b583012d42c3b09bff738c340eb87f4a91a5bdfad",
+      "bytes": 58599
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-down1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/console.log",
+      "sha256": "e009c8b44a88e3020916bae0c10d44a0c2e921a79f7dbc336471097653b74eca",
+      "bytes": 13885
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/capture-process-status.txt",
+      "sha256": "7debb7ee63185b600147960b936eed2e4e8196403fd9d6167e46860f21f294e6",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/capture-stats.txt",
+      "sha256": "edc2933fb8e0917e785afc1a08d933a2f4a3c50daa37da8c4f532ad00740c81d",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/connected-file/run.json",
+      "sha256": "0f228bf0ec542f4935b53fd53c32fb98caf9415f3ef5287618410793ed0d6f7e",
+      "bytes": 39060
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/connected-file-supervisor.log",
+      "sha256": "01f3a1219a225a412b81fe6845c129cab67709a71b3f8939f8f04681bf08fd4f",
+      "bytes": 32
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/kernel.log",
+      "sha256": "77ba9275949c4056895c933d2fc6e9f0177315c907de93052ab89609922d87ef",
+      "bytes": 348529
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/setup-release/probe.jsonl",
+      "sha256": "996e7a8ca86f2fb5b7015581d416c3784ca48a7b428a08f1e0b2c7aca97c0cac",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/setup-release/run.json",
+      "sha256": "a0ea4eb93099b5ff98c3118b6f25a1aff1eb8a40d2f91dbd6368c9d063c791f4",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/guest-output/ws73.pcap",
+      "sha256": "94ec4bc335f8800e59bba06184385c2dcc672de1f935cd17b087042e1ce1ff06",
+      "bytes": 84659
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/manifest.json",
+      "sha256": "e71251f953f238ac3966fe943a1f6273666a3facb37d42eba0796938e71b3aa1",
+      "bytes": 102164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup0/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/console.log",
+      "sha256": "bf5698772479b0d889b893638319e9b9e69ed9b4d951792b43b7eccf29b08216",
+      "bytes": 14075
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/capture-process-status.txt",
+      "sha256": "8270b61ded68faa82c8d50c7656c15a626fd480e525b71da7667fd3961cea53d",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/capture-stats.txt",
+      "sha256": "b93a0627ed3b8a646ecca7ad1d5630ea9c25d42fcba04fdf57c46e4d948598d1",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/connected-file/run.json",
+      "sha256": "999adf3c195a3917419789ad0a9973f8cfe08288b7608844c10723ce2b7686cf",
+      "bytes": 39060
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/connected-file-supervisor.log",
+      "sha256": "01f3a1219a225a412b81fe6845c129cab67709a71b3f8939f8f04681bf08fd4f",
+      "bytes": 32
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/kernel.log",
+      "sha256": "bc16d4fe6b869ba860d8550417cc931218608db2a916391b89b463017a3cfb00",
+      "bytes": 349420
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/setup-release/probe.jsonl",
+      "sha256": "a2bb3948e63970cc6e2f51db9c01497f5d979e1a7d93754612fb1fac9a921feb",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/setup-release/run.json",
+      "sha256": "8c57e34bfed27a47cef899922214c79b31b14825988d23e635a981dd2ea03305",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/guest-output/ws73.pcap",
+      "sha256": "afed5ff46e27ba46dc25701cd6c70c652131c21705badcc7e973dd604b847c1e",
+      "bytes": 86836
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/manifest.json",
+      "sha256": "a74c2477ad25784c7b19ffb5d65b95e0d3018e34159324d9e56c2e7777feee3f",
+      "bytes": 102149
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-dup1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/console.log",
+      "sha256": "dd1dfc3ab35a8d87069b0e7132b9e1f3579783b6bcdce65b2b7d2411b07a7730",
+      "bytes": 13889
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/capture-process-status.txt",
+      "sha256": "fc9f8ec99b94e360bc80eb5d6edd52f7cbb66175a4d509266034b564430d8914",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/capture-stats.txt",
+      "sha256": "5c5eaaa0077f85d010b9ae2428bd3ba85281962811f3e20108bcf4e898ed3492",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/connected-file/run.json",
+      "sha256": "4d1c27598369d5a8c1c7c912ed41a151be98562f3c16d1b46f03f49a216be072",
+      "bytes": 36113
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/connected-file-supervisor.log",
+      "sha256": "01f3a1219a225a412b81fe6845c129cab67709a71b3f8939f8f04681bf08fd4f",
+      "bytes": 32
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/kernel.log",
+      "sha256": "e48910f5f26cffd59a56a1adb8f9879b298e8995a10e8e0531b8186b32a3e367",
+      "bytes": 349294
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/setup-release/probe.jsonl",
+      "sha256": "2c34eec5e28fc387b2308cc5e6488d43424d03d75e0d25a5b84e2acf1e484403",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/setup-release/run.json",
+      "sha256": "e3480ac1958720739bd5ace9cd475b72272ef6357f0cc1e3d87cad50aedcda0b",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/guest-output/ws73.pcap",
+      "sha256": "c174264e45eff7a3d7745d3ffabc41f54b78f77fc1d34b90ba5b2d3a8a5afa63",
+      "bytes": 78542
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/manifest.json",
+      "sha256": "27ae8f5d5bcf2b7cb1b9397eda5e51946b68390b04a928e34026baa19148274a",
+      "bytes": 86640
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release0/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/console.log",
+      "sha256": "79ae7983877ccbbcb9af8688c480380ad8021072defa43283f0b2515db739bbf",
+      "bytes": 13889
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/capture-process-status.txt",
+      "sha256": "eaad804d18ecf4120f33cd6959b4a73d7812e949145c0d27ce4188d0df1e8e23",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/capture-stats.txt",
+      "sha256": "604f49ad22ee8c339ab8afdb366fe68e4f78b2a0aea6268be673f9a901712e23",
+      "bytes": 225
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/connected-file/run.json",
+      "sha256": "b5194d87854e7686a9db8effd63a32d943bcfc3d201517a62fbe3656c4c5e240",
+      "bytes": 36112
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/connected-file-supervisor.log",
+      "sha256": "01f3a1219a225a412b81fe6845c129cab67709a71b3f8939f8f04681bf08fd4f",
+      "bytes": 32
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/kernel.log",
+      "sha256": "fec56ab2fa6a418ca944f08e7c489e79a3adc90b657f72b8ed7dbcf16058e53e",
+      "bytes": 349073
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/setup-release/metadata-0.json",
+      "sha256": "351deced00b6f8e1a62e112aa9a080bca08d6781707536de166938853746cdeb",
+      "bytes": 164
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/setup-release/probe-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/setup-release/probe.jsonl",
+      "sha256": "58225faca08094b6ff651e72b6ea5a756afdf3734e416cdcff34b934b4c8694a",
+      "bytes": 8514
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/setup-release/run.json",
+      "sha256": "31f0e55b27ebab5f84f999fd5cae9b8f1187cfe98668afb8d5f407121d933b93",
+      "bytes": 10005
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/setup-release-supervisor.log",
+      "sha256": "46c42868e826f5e868553fb418df836d2e37c253fae0fbcf4faddfcd26169190",
+      "bytes": 31
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/guest-output/ws73.pcap",
+      "sha256": "d3c016797bab05291c844502d80152a49327a18beb138f8772db069a3a4e9760",
+      "bytes": 79218
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/manifest.json",
+      "sha256": "f035b7459786c6bd720bead34b9c167b694e569873843ce05849c243f5d90ef7",
+      "bytes": 86640
+    },
+    {
+      "private_workspace_path": ".dev/native-data-lifecycle-v1-release1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v2-prepared/manifest.json",
+      "sha256": "4b56583d541071a01e12a673dd422280858c441ad69d7d43e688d75310ee3844",
+      "bytes": 263073
+    },
+    {
+      "private_workspace_path": ".dev/reverify-data-lifecycle-v1.py",
+      "sha256": "1379374d7a438b058602dd000d5a7bbe7aab578bd0b2d279f665d7a95123a522",
+      "bytes": 3850
+    },
+    {
+      "private_workspace_path": ".dev/run-data-lifecycle-composition-v1.py",
+      "sha256": "af8dda68330edc28f32dbf16c11bd70a06d69fe5ca34060ed6db7de0ecd1870e",
+      "bytes": 2616
+    },
+    {
+      "private_workspace_path": ".dev/run-data-lifecycle-deadline-v2.py",
+      "sha256": "e772a0ddbf20403aa1bc240718bbbf78716f2bc03efc70d8446ce3d4218bdb6d",
+      "bytes": 2114
+    }
+  ],
+  "original_failure": {
+    "matrix_status": "FAIL",
+    "case": "deadline0",
+    "error": "QMP qom-get: {'class': 'GenericError', 'desc': \"Property 'usb-host.test-runtime-in-hold-ms' not found\"}",
+    "matrix": ".dev/data-lifecycle-composition-v1.json"
+  },
+  "raw_access": {
+    "condition": "Authorizedworkspace owner;raw USB/capturedsecrets/SDK/firmware remainprivate;offsiteavailability notguaranteed",
+    "replay": "Frozen25df tools + exact per-rowmanifestcommand,VM-only;reverify-data-lifecycle-v1.py is savedrawbyte replay only",
+    "firmware": "SDK111 /1.10.111"
+  }
+}

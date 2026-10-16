@@ -732,7 +732,7 @@
       "Production stateful fuzz,submit-revoke-Down-original-deadline/debugVM and minimum authenticated authorization parallel;no all-control prerequisite"
     ]
   },
-  "execution_phase": "P2c source073 firstrealwindow1:40RT observedbutwholeFAIL due1024 requestedvs1027 actualtracecapacity. Exact liveheader/subbuffer roundupalignment fixed,655offline/strictHTML115 PASS;newexacttool/root12case matrixpending. P2b/originalscope retained.",
+  "execution_phase": "P2c exacte34 comparisonmatrix RUNNING;see immutable progresssnapshot and live.dev supervisor,not a complete qualification. 073 originalFAIL retained;655offline/strictHTML115 PASS;fullscope active.",
   "next_resume_tasks": [
     "Use bfaa exact-source scoped32 andidlecontrol report as retained baseline;preserve originalv1/v2 andpriorpeerDown failures.",
     "Measure segmented sameconfig real socket workload before changing finitecontinuousTX budget;track fairness/resources/traceperturbation,originaldeadlines/Grant/Ticket andcredit obligations.",
@@ -1741,7 +1741,7 @@
       "maintenance_receipt": "docs/evidence/session-event-maintenance-20261016.json"
     },
     "segmented_measurement_batch": {
-      "status": "TRACE_PAGE_ROUNDUP_FIXED_655_OFFLINE_PASS_NEW_REAL_PENDING",
+      "status": "REAL_VM_MATRIX_RUNNING_NOT_QUALIFIED",
       "production_change": false,
       "kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
       "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
@@ -1750,7 +1750,13 @@
       "preserved": "S0-S6/19WP/10FV/12DG,VM-only,uniqueSession/credit/Ticket/Grant;dirtyfourdevicehooks untouched;naturalfault/nonmanualrecoveryOPEN",
       "first_failure": ".dev/benchmark-observation-qualification-v1.json",
       "finding": "073 firstwindow1 real40businessRT complete,buttrace requested1024 readactual1027;strictincorrect assumption rejected fullgate. Derive exact liveheader/subbuffer rounding;originalFAIL retained.",
-      "failure_report": "docs/evidence/benchmark-trace-rounding-failure-20261016.json"
+      "failure_report": "docs/evidence/benchmark-trace-rounding-failure-20261016.json",
+      "supervisor": ".dev/benchmark-observation-qualification-v2.json",
+      "progress_receipt": "docs/evidence/benchmark-measurement-progress-20261017.json",
+      "executed_tools": "e34c7b76b469c01f6afbdbe82e73a53f6a39e278",
+      "snapshot_accepted": 3,
+      "required": 12,
+      "original_failed_supervisor": ".dev/benchmark-observation-qualification-v1.json"
     }
   },
   "slktest_migration": {

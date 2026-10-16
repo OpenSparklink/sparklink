@@ -242,3 +242,7 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [本批五项issues最终读回、签名、原件完整性及严格文档](session-status-maintenance-20261017.json)
 仅维护凭据，不新增实机/证明资格。完整goal继续active，原issues范围及OPEN保持。
+
+[同U42/f2、bfaa与14d9的U2/3负载观察](matched-u23-workloads-20261017.json)：12VM/2560真实
+回复/192证据负对照；中位数无明显收益及尾部差异均保留，108544个RX空窗不证明多URB收益。
+不授完整性能/公平/恢复或新增形式化资格，旧U1/4及失败记录不重写。

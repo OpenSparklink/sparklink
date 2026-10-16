@@ -222,7 +222,7 @@ CPU及Kconfig，保留完整 hash。现有硬件组合以U2/3为选定对象；�
 
 Native runner 可显式设置 count/bytes/window/interval，详见[参数参考](../reference/socket-benchmark.md#native-vm-可变负载请求)。
 先用每角色128条、61字节、window1/4的有限对照验证完整配置透传、计时和双端证据；
-这是近期待实机验收的运行配方。采用预先确定的平衡顺序与重复次数，保留全部尝试。
+该配方已按[当前资格入口](../../project/current-capabilities.md)取得有限实机证据。采用预先确定的平衡顺序与重复次数，保留全部尝试。
 复用同一个slktest二进制，不更改生产协议或消息期限。核对双方真实校验回复及两端USB，
 按物理发送端/连接角色分别汇总，同一发起进程的单调时钟计算RTT；不相减不同进程时钟。
 

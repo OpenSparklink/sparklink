@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T19:23:35.918403+00:00",
+  "updated_at_utc": "2026-10-16T19:55:58.921818+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -762,18 +762,18 @@
       }
     ]
   },
-  "execution_phase": "ACTIVE_NEXT_FAIRNESS_MATCHED_U23_PERFORMANCE_COST_WITH_AGENT_SSAP_PARALLEL",
+  "execution_phase": "ACTIVE_AGENT_SSAP_VERTICAL_WITH_PERFORMANCE_OBSERVER_RESOURCE_FAIRNESS_FOLLOWUP",
   "next_resume_tasks": [
-    "Current selected batch exit met at K14d9/U42e/tool42e:19VM640peerRT196evidence negatives;preserve all historical failures. No need to repeat this batch before next vertical work.",
-    "Continue full admittedqueue fairness and dynamic CMTC consenttrace;bounded snapshots do not prove callback/refdrain,Free,NOCPtruth/late/duplicate or reuse.",
-    "Establish matched U2/3 before/after performance,observeroverhead/resources/saturation/tails with exact artifacts;old U1/4 baseline is not a paired comparison.",
-    "Agent/SSAP/multichannel/fourdevice real behaviors parallel;no allcontrolrace precondition. UserHost lowpriority;Hi3873E port1 excluded until board/firmware/mixedtopology qualification.",
-    "Naturalstartup/re-enumeration/disappearance RCA and nonmanual recovery OPEN;manual/hub/QMP/injection never substitutes natural recovery."
+    "Matched finite workload batch exit met:bfaa/14d9,sameU42/f2,12VM2560peerRT192evidence negatives;preserve raw variation and no median improvement claim.",
+    "Advance Agent/security install/revoke/Down/originaldeadline and realSSAP/multichannel behavior;do not wait for all control races or completeperformance.",
+    "Parallel matched sameKernelobservercost,actualworker/queue/credit/URB/resource peaks andsegmented timing/actualPHY parameters;RX108544gaps do not justify changingmultipleURBs.",
+    "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
+    "NOCPtruth/late/duplicate,reuse/callbackdrain,naturalstartup/re-enumeration/disappearance RCA andnonmanualrecovery remainOPEN."
   ],
   "issue_sync_status": "FIVE_EXISTING_ISSUES_FINAL_READBACK_OPEN_ORIGINAL_SCOPE_UNCHANGED",
   "issue_sync_receipt": "docs/evidence/session-status-maintenance-20261017.json",
   "previous_goal_turn_classification": "SELECTED_BOUNDED_OBSERVATION_AND_RELATED_REAL_GATE_EXIT_PASS_FULL_OBJECTIVE_OPEN",
-  "current_goal_turn_classification": "PROGRESS_VARIABLE_NATIVE_WORKLOAD_IMPLEMENTATION_AND_MATCHED_ARTIFACT_AUDIT",
+  "current_goal_turn_classification": "PROGRESS_SCALABLE_WORKLOAD_TOOLS_AND_TWELVE_MATCHED_REAL_GATES_WITH_LIMITED_FINDINGS",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -2093,7 +2093,7 @@
       "maintenance_report": "docs/evidence/session-status-maintenance-20261017.json"
     },
     "matched_u23_batch": {
-      "status": "IMPLEMENTED_TOOL_PARAMETERS_OFFLINE_PASS_NOT_REAL_QUALIFIED",
+      "status": "TWELVE_FINITE_WORKLOADS_OBSERVED_NOT_PERFORMANCE_QUALIFIED",
       "candidate_kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
       "baseline_kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
       "userspace_compiled": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
@@ -2109,11 +2109,24 @@
       "same_kconfig": true,
       "source_delta_scope": "Combined Kernel change,not isolated causal attribution to one scheduler point",
       "next": [
-        "Sign/freeze parameter tools andsamebinary baseline/candidate bundles",
-        "Matched VM-onlyU2/3 balanced runs;all attempts preserved",
-        "Thenlongpayload/observercost/resource/fairness according to actual data"
+        "Matched pilot exit met;no repeat as new precondition",
+        "Agent/security installation and actualSSAP/multichannel vertical work continue alongside matched observercost/kernelresources/segmented telemetry",
+        "Absolute-rate overload,slowconsumer,fullfairness/fourdevice/longterm remain open"
       ],
-      "performance_qualified": false
+      "performance_qualified": false,
+      "executed_tools": "f2fa4e1bdb1d4267a5774c2e9b959946ba2f1f4d",
+      "report": "docs/evidence/matched-u23-workloads-20261017.json",
+      "counts": {
+        "VM_runs": 12,
+        "physical_role_phases": 24,
+        "peer_round_trips": 2560,
+        "copied_evidence_negatives": 192,
+        "RX_gap_samples": 108544
+      },
+      "findings": [
+        "No clear median end-to-end gain established;candidateU3window1higherP95retained,not stable threshold/regression conclusion",
+        "RXP50 6us both,P99 27/29us,max319/398us;callback/core/VM combined,no multiURB proof"
+      ]
     }
   },
   "slktest_migration": {

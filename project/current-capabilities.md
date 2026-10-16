@@ -9,9 +9,15 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 完整内容/使用链仍缺，外链限流未核实；HTML仅四类。文档结果不授予协议/安装/恢复资格，
 现有Agent与数据报告仍绑定各自准确编译和执行身份。
 
-Native benchmark 参数透传已接通既有slktest（count/bytes/window/rate），673项工具
-离线检查通过；新128条配方及匹配U2/3前后测量尚待实机，不由入口存在升级资格。
-旧固定20条报告保持原提交身份；用户态四二进制字节相同不替代旧内核上的实际运行。
+[匹配U2/3负载观察](../docs/evidence/matched-u23-workloads-20261017.json)绑定同U42四个
+二进制、同f2fa4e1工具及Kconfig/QEMU/SDK111，对比已事件驱动bfaa与14d9：128×61
+的window1/4各两次，64×2042/window16各两次，共12VM/2560真实回复。原件重放及
+192证据负对照、673冻结工具、4份历史报告解读通过；长包实际EAGAIN后恢复，无截断。
+本组两次有限重复未建立明显端到端中位数收益；U3/window1的候选P95较高亦保留，
+不作单一调度点因果归因或发明阈值。首次尝试等待、syscall RTT及端点CPU/RSS/fd分列。
+两版本各54272个RX空窗样本，P50均6µs，P99为27/29µs，最大319/398µs；含callback/
+USBcore/VM调度、1µs量化，未建立多RX URB收益证据，USB驱动未改。完整性能、观测
+开销、内核峰值、实际PHY/连接参数、全部队列公平、四设备及恢复仍缺，未新增形式化证明。
 
 应用测试唯一入口已迁为 `slktest channel`；`slctl` 保留管理/连接/授权。
 [入口迁移证据](../docs/evidence/slktest-migration-20261016.json)保留原限定离线和空USB VM范围；

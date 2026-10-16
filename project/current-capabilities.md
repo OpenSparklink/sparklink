@@ -9,6 +9,10 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 完整内容/使用链仍缺，外链限流未核实；HTML仅四类。文档结果不授予协议/安装/恢复资格，
 现有Agent与数据报告仍绑定各自准确编译和执行身份。
 
+Native benchmark 参数透传已接通既有slktest（count/bytes/window/rate），673项工具
+离线检查通过；新128条配方及匹配U2/3前后测量尚待实机，不由入口存在升级资格。
+旧固定20条报告保持原提交身份；用户态四二进制字节相同不替代旧内核上的实际运行。
+
 应用测试唯一入口已迁为 `slktest channel`；`slctl` 保留管理/连接/授权。
 [入口迁移证据](../docs/evidence/slktest-migration-20261016.json)保留原限定离线和空USB VM范围；
 新编译 U9385／工具 f43 的真实 WS73 结果独立登记，不重写旧命令或身份。

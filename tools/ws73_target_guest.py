@@ -363,9 +363,15 @@ def verify_passthrough():
     if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
     if benchmark_modes:
         from ws73_socket_benchmark import corroborate as benchmark_corroborate
-        windows=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_window=')]
-        if len(windows)!=1 or windows[0] not in ['1','4']:raise ValueError('one explicit bounded benchmark window required')
-        if any(row['config']['mode']!=benchmark_modes[0] or row['config']['window']!=int(windows[0]) for row in run['socket_benchmark']):raise ValueError('requested benchmark mode/window differs')
+        from ws73_socket_benchmark import configuration
+        fields={}
+        words=Path('/proc/cmdline').read_text().split()
+        for field in ['window','count','bytes','interval_us']:
+            values=[w.split('=',1)[1] for w in words if w.startswith('ws73.benchmark_'+field+'=')]
+            if len(values)!=1 or not values[0].isascii() or not values[0].isdecimal():raise ValueError('one explicit numeric benchmark '+field+' required')
+            fields[field]=int(values[0])
+        config=configuration(benchmark_modes[0],fields['window'],count=fields['count'],size=fields['bytes'],interval_us=fields['interval_us'])
+        if any(row['config']!=config for row in run['socket_benchmark']):raise ValueError('requested exact workload differs')
         proofs.append({'socket_benchmark':benchmark_corroborate(run,capture,EVIDENCE)})
     if 'daemon_removal' in run:
         from ws73_daemon_removal import corroborate_wire

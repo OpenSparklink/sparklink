@@ -212,3 +212,19 @@ python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT
 独立 `slktest --check` 动态端点也可加 `--start-barrier`，在Armed前不要写start。
 只有启动调度被协调，不能由它推导公平性上界、credit真值或性能收益。新artifact的
 实机资格与已封存工具分别登记，不因相同命令名称继承。
+
+
+## 准备相同口径的 Native 对照
+
+先列出两个内核 artifact 与同一用户态 bundle/执行工具、SDK111、VM/QEMU、USB端口、
+CPU及Kconfig，保留完整 hash。现有硬件组合以U2/3为选定对象；第1口Hi3873E排除，
+不能使用旧U1/4结果充当前测。默认USB捕获保持开启，分别记录可选xHCI及Session追踪。
+
+Native runner 可显式设置 count/bytes/window/interval，详见[参数参考](../reference/socket-benchmark.md#native-vm-可变负载请求)。
+先用每角色128条、61字节、window1/4的有限对照验证完整配置透传、计时和双端证据；
+这是近期待实机验收的运行配方。采用预先确定的平衡顺序与重复次数，保留全部尝试。
+复用同一个slktest二进制，不更改生产协议或消息期限。核对双方真实校验回复及两端USB，
+按物理发送端/连接角色分别汇总，同一发起进程的单调时钟计算RTT；不相减不同进程时钟。
+
+随后才按实际结果增加长包、负载扫描和观测开销对照；样本量不足时不发布P99.9，
+不预设性能阈值。端点CPU/RSS/fd与内核峰值、队列/credit、URB资源分别列出；未测量项保留缺失。

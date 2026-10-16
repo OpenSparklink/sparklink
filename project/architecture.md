@@ -664,3 +664,9 @@ Session 只读发送观测复用 Runtime Host/data/gate → Session → TX queue
 字段由同一 Session 锁发布。瞬时计数和终态仅用于有界诊断，不授予 Ready、credit、
 Free 或复用资格；测试仍需独立真实 USB/NOCP 与对端应用证据。见
 [接口契约](../docs/reference/interfaces.md#session-发送观测未发布-v1)。
+
+
+性能负载的count/bytes/window/interval属于应用测试请求，由同一slktest收发实现执行；
+Host/guest请求、实际argv、双端报告和连接角色必须一致，窗口不能冒充协议credit。
+不同内核的对照绑定相同用户态字节及配置，结果按实际版本差异限定因果范围；资源
+与观测开销分层记录。此测量契约不改变Runtime/Session/Channel/Grant的所有权。

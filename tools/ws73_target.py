@@ -506,7 +506,9 @@ def _run(args):
     benchmark_mode=getattr(args,'channel_benchmark',None)
     benchmark_window=getattr(args,'channel_benchmark_window',4)
     benchmark_xhci=getattr(args,'channel_benchmark_xhci','on')
-    if type(benchmark_window) is not int or benchmark_window not in (1,4) or benchmark_xhci not in ('on','off') or (not benchmark_mode and (benchmark_window!=4 or benchmark_xhci!='on')):raise ValueError('explicit benchmark required for window/xHCI comparison')
+    from ws73_socket_benchmark import requested_configuration
+    benchmark_config=requested_configuration(args)
+    if benchmark_xhci not in ('on','off') or (not benchmark_mode and benchmark_xhci!='on'):raise ValueError('explicit benchmark required for xHCI comparison')
     if benchmark_mode and (benchmark_mode not in ['rate','window','duplex'] or not passthrough or not connection_verify or support or parallel or acb_probe or agent_mode or dynamic_channels or getattr(args,'daemon_link_resync',False) or getattr(args,'channel_socket_verify',False)):
         raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
@@ -686,6 +688,7 @@ def _run(args):
     m['socket_benchmark_requested']=benchmark_mode
     if benchmark_mode:
         m['socket_benchmark_window_requested']=benchmark_window
+        m['socket_benchmark_config_requested']=benchmark_config
         m['socket_benchmark_xhci_requested']=benchmark_xhci
         m['benchmark_verifiers']=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py']]
     m['socket_benchmark_acceptance']=False
@@ -858,7 +861,7 @@ def _run(args):
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
                      (' ws73.channel_fairness=1' if fairness else '')+
-                     (f' ws73.benchmark_mode={benchmark_mode} ws73.benchmark_window={benchmark_window} ws73.benchmark_xhci={benchmark_xhci}' if benchmark_mode else '')+
+                     (f' ws73.benchmark_mode={benchmark_mode} ws73.benchmark_window={benchmark_window} ws73.benchmark_xhci={benchmark_xhci} ws73.benchmark_count={benchmark_config["count"]} ws73.benchmark_bytes={benchmark_config["bytes"]} ws73.benchmark_interval_us={benchmark_config["interval_us"]}' if benchmark_mode else '')+
                      (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
@@ -1202,7 +1205,7 @@ def _run(args):
                     from ws73_socket_benchmark import corroborate as benchmark_corroborate
                     from ws73_channel_socket import validate_application_tools
                     validate_application_tools(control,args.prepared/'root',package['guest_files'])
-                    if any(r['config']['mode']!=benchmark_mode or r['config']['window']!=benchmark_window for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from requested mode')
+                    if any(r['config']!=benchmark_config for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from exact requested workload')
                     m['socket_benchmark_corroboration']=benchmark_corroborate(control,capture,share)
                     from ws73_benchmark_timeline import check_xhci
                     m['socket_benchmark_xhci_observation']=check_xhci(share,benchmark_xhci)
@@ -1530,18 +1533,27 @@ def run_exit_code(record):
         if (record.get('session_service_acceptance') is not True or record.get('qemu_exit')!=0
                 or proof.get('status')!='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED'
                 or any(type(proof.get(k)) is not int or proof[k]<=0 for k in ['services','attempts','accepted_usb_packets','operations'])):return 1
-    if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record):return 1
+    if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record):return 1
     if record.get('socket_benchmark_requested'):
         proof=record.get('socket_benchmark_corroboration',{})
         mode=record['socket_benchmark_requested']
         window=record.get('socket_benchmark_window_requested',4)
-        if type(window) is not int or window not in (1,4) or type(proof.get('window',4)) is not int or proof.get('window',4)!=window:return 1
+        from ws73_socket_benchmark import record_configuration,configuration,validate_configuration
+        try:config=record_configuration(record)
+        except (ValueError,KeyError,TypeError):return 1
+        if type(proof.get('window',4)) is not int or proof.get('window',4)!=window:return 1
+        try:proof_config=proof['config'] if 'config' in proof else configuration(mode,window)
+        except (ValueError,KeyError,TypeError):return 1
+        try:validate_configuration(proof_config)
+        except (ValueError,KeyError,TypeError):return 1
+        if proof_config!=config:return 1
+        count=config['count']
         if 'socket_benchmark_xhci_requested' in record:
             x=record.get('socket_benchmark_xhci_observation',{})
             if x.get('status')!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED' or x.get('mode')!=record['socket_benchmark_xhci_requested']:return 1
-        if (mode not in ['rate','window','duplex'] or record.get('socket_benchmark_acceptance') is not True or record.get('performance_qualified') is not False or record.get('qemu_exit')!=0 or proof.get('status')!='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED' or proof.get('mode')!=mode or proof.get('performance_qualified') is not False or proof.get('round_trips')!=(80 if mode=='duplex' else 40) or len(proof.get('proofs',[]))!=2):return 1
+        if (mode not in ['rate','window','duplex'] or record.get('socket_benchmark_acceptance') is not True or record.get('performance_qualified') is not False or record.get('qemu_exit')!=0 or proof.get('status')!='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED' or proof.get('mode')!=mode or proof.get('performance_qualified') is not False or proof.get('round_trips')!=count*(4 if mode=='duplex' else 2) or len(proof.get('proofs',[]))!=2):return 1
         phases=proof['proofs']
-        if not isinstance(phases,list) or any(not isinstance(p,dict) or p.get('phase')!=n or not isinstance(p.get('legs'),list) or len(p['legs'])!=(80 if mode=='duplex' else 40) or p.get('application',{}).get('status')!='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED' or p['application'].get('performance_qualified') is not False or p['application'].get('fixture') is not False or p['application'].get('messages')!=([20,20] if mode=='duplex' else [20,0]) for n,p in enumerate(phases)):return 1
+        if not isinstance(phases,list) or any(not isinstance(p,dict) or p.get('phase')!=n or not isinstance(p.get('legs'),list) or len(p['legs'])!=count*(4 if mode=='duplex' else 2) or p.get('application',{}).get('status')!='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED' or p['application'].get('performance_qualified') is not False or p['application'].get('fixture') is not False or p['application'].get('messages')!=([count,count] if mode=='duplex' else [count,0]) for n,p in enumerate(phases)):return 1
     burst=record.get('dynamic_channel_burst_requested',False)
     if type(burst) is not bool or (burst and (record.get('dynamic_channel_verification_requested') is not True or record.get('dynamic_channel_long_bytes_requested')!=2042)):return 1
     if 'dynamic_channel_verification_requested' in record and type(record['dynamic_channel_verification_requested']) is not bool:return 1
@@ -1708,9 +1720,12 @@ def main():
             cmd.add_argument('--dynamic-channel-long-bytes',type=int,choices=[249,250,253,254,255,1024,2042],help='extend dynamic gate with long C channel and explicit lifetime slot exhaustion;requires --dynamic-channel-verify')
             cmd.add_argument('--channel-fairness-verify',action='store_true',help='separate short20/long16x2042 real concurrent channel progress,not fullfairness/performance proof')
             cmd.add_argument('--dynamic-channel-verify',action='store_true',help='actual two-channel CMTC/asymmetricTCID/app delivery/close isolation, separate bounded VM gate')
-            cmd.add_argument('--channel-benchmark-window',type=int,choices=[1,4],default=4,help='one outstanding ping-pong or original bounded window4')
+            cmd.add_argument('--channel-benchmark-window',type=int,default=4,help='bounded application window1..min(count,256),not protocol credit')
+            cmd.add_argument('--channel-benchmark-count',type=int,default=20,help='messages per initiator per role,1..10000')
+            cmd.add_argument('--channel-benchmark-bytes',type=int,default=61,help='application datagram bytes29..2042,including29byte test header')
+            cmd.add_argument('--channel-benchmark-interval-us',type=int,help='rate-only absolute interval10..1000000us,default100000;totalplan<=600s')
             cmd.add_argument('--channel-benchmark-xhci',choices=['on','off'],default='on',help='VM-only xHCI trace comparison;usbmon remains enabled')
-            cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate real20x61/4window application benchmark in both connection roles;not performance qualification')
+            cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate bounded real application benchmark in both connection roles;not performance qualification')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')

@@ -123,8 +123,7 @@ CLI预算为30秒，显式本地fixture为1秒。旧schema2报告保持原身份
 现有 `ws73_target.py run` 增加独立 `--channel-benchmark rate|window|duplex`，
 须配合真实两设备 `--qmp-hotplug --connection-verify --connection-advertising negotiable-t`。
 与 `--channel-socket-verify`、动态通道、Agent、外部probe、resync和四设备门禁分开运行；
-不在已关闭CUTC的同lifetime重新绑定。每连接角色固定20条61字节、窗口4，rate间隔
-100ms；两种连接角色各新建一次连接。应用/管理仍使用各自的slktest/slctl二进制。
+不在已关闭CUTC的同lifetime重新绑定。默认每连接角色20条61字节、窗口4，rate间隔100ms；两种连接角色各新建一次连接。应用/管理仍使用各自的slktest/slctl二进制。
 
 监督器保留实际进程凭据、启动及结束IO顺序、完整原始报告/hash/stdout/stderr；
 大规模报告写出前双方先Quiescent。host和guest复用已有捕获校验，独立逐条匹配
@@ -218,3 +217,22 @@ USB核对要求真实CMTC、不同且交叉匹配TCID、随机对端校验回复
 协议解析仍来自现有捕获设施，未增加另一Engine。`full_fairness_acceptance=false`：
 有限工作量的交错进展不证明所有已准入队列的饥饿上界、强公平、精确时延或性能。
 原尺寸/credit/撤权/SSAP/四设备资格不由新参数推断，准确编译/执行身份另行验收。
+
+
+## Native VM 可变负载请求
+
+`--channel-benchmark-count` 为每发起端、每连接角色的请求数（1..10000，默认20）；
+`--channel-benchmark-bytes` 为包含29字节测试头的应用 datagram 长度（29..2042，默认61）。
+实际 Channel MTU 仍在应用启动时检查，超限拒绝，不截断。`--channel-benchmark-window`
+为应用等待校验回复的预算（1..min(count,256)，默认4），与协议 credit 分开。
+`--channel-benchmark-interval-us` 仅 rate 模式取10..1000000微秒，默认100000；
+count×interval 不超过600秒。其它模式只接受0，省略时自动取0。
+
+Host、guest cmdline、控制器监督器、实际 slktest argv、两端 schema2 和结果核对使用
+相同完整配置；任一数值、类型或物理角色不一致均失败。未选择 benchmark 时拒绝负载
+选项。schema2、收发循环、原30秒屏障/10秒消息期限/1秒尾窗/30秒结束期限不变。
+历史默认20/61及窗口1/4的封存记录按原身份解读，新请求将完整配置写入 manifest。
+
+新范围是工具能力，不由参数验证推出实机或性能资格。固定速率过载时的失败与原始
+报告仍须保留；当前 Native 正向核对要求所有请求实际回复，不能将诊断失败改成完整
+性能 PASS。10000条的上限不代表该配置已完成压力、捕获容量或资源资格。

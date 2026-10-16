@@ -384,8 +384,14 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         if [ -n "$benchmark_mode" ]; then
             case "$benchmark_mode" in rate|window|duplex) ;; *) fail 'explicit benchmark mode' ;; esac
             benchmark_window=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_window=/){sub(/^ws73.benchmark_window=/,"",$i);print $i}}' /proc/cmdline)
-            case "$benchmark_window" in 1|4) ;; *) fail 'explicit benchmark window' ;; esac
+            case "$benchmark_window" in ''|*[!0-9]*) fail 'explicit numeric benchmark window' ;; esac
             connection_arg="$connection_arg --channel-benchmark $benchmark_mode --channel-benchmark-window $benchmark_window"
+            for field in count bytes interval_us; do
+                value=$(awk -v key="ws73.benchmark_$field=" '{for(i=1;i<=NF;i++)if(index($i,key)==1){print substr($i,length(key)+1)}}' /proc/cmdline)
+                case "$value" in ''|*[!0-9]*) fail 'explicit numeric benchmark workload' ;; esac
+                case "$field" in interval_us) option=interval-us ;; *) option=$field ;; esac
+                connection_arg="$connection_arg --channel-benchmark-$option $value"
+            done
         fi
         for word in $(cat /proc/cmdline); do
             case "$word" in

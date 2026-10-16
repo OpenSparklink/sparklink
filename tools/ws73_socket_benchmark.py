@@ -17,20 +17,53 @@ from ws73_channel_socket import credentials, test_program, validate_application_
 from ws73_benchmark import load_application_reports, read_report
 
 COUNT, SIZE, WINDOW = 20, 61, 4
+CONFIG_FIELDS={'mode','count','bytes','window','interval_us'}
 PENDING = 'SOCKET_LOAD_APPLICATION_EVIDENCE_PENDING'
 
 
-def configuration(mode, window=WINDOW):
-    if mode not in ('rate','window','duplex') or type(window) is not int or window not in (1,4):
-        raise CaptureError('explicit supported Native benchmark mode required')
-    return dict(mode=mode,count=COUNT,bytes=SIZE,window=window,
-                interval_us=100000 if mode=='rate' else 0)
+def configuration(mode, window=WINDOW, *, count=COUNT, size=SIZE, interval_us=None):
+    if (mode not in ('rate','window','duplex') or type(count) is not int or not 1<=count<=10000
+            or type(size) is not int or not 29<=size<=2042
+            or type(window) is not int or not 1<=window<=min(count,256)):
+        raise CaptureError('explicit bounded Native benchmark workload required')
+    interval_us=(100000 if mode=='rate' else 0) if interval_us is None else interval_us
+    if type(interval_us) is not int or (mode=='rate' and not (10<=interval_us<=1000000 and interval_us*count<=600000000)) or (mode!='rate' and interval_us!=0):
+        raise CaptureError('original bounded absolute-rate plan or zero non-rate interval required')
+    return dict(mode=mode,count=count,bytes=size,window=window,interval_us=interval_us)
 
 
-def arguments(binary, entry, mode, report, window=WINDOW):
-    c=configuration(mode if mode!='peer' else 'window',window)
+def requested_configuration(args):
+    mode=getattr(args,'channel_benchmark',None)
+    values=dict(window=getattr(args,'channel_benchmark_window',WINDOW),count=getattr(args,'channel_benchmark_count',COUNT),size=getattr(args,'channel_benchmark_bytes',SIZE),interval_us=getattr(args,'channel_benchmark_interval_us',None))
+    if mode is None:
+        if values!=dict(window=WINDOW,count=COUNT,size=SIZE,interval_us=None):
+            raise CaptureError('load parameters require explicit benchmark mode')
+        return None
+    return configuration(mode,**values)
+
+
+def validate_configuration(config):
+    if type(config) is not dict or set(config)!=CONFIG_FIELDS:
+        raise CaptureError('exact requested workload fields required')
+    valid=configuration(config['mode'],config['window'],count=config['count'],size=config['bytes'],interval_us=config['interval_us'])
+    if config!=valid:raise CaptureError('canonical bounded workload required')
+    return valid
+
+
+def record_configuration(record):
+    mode=record['socket_benchmark_requested'];window=record.get('socket_benchmark_window_requested',WINDOW)
+    if type(window) is not int:raise CaptureError('integer requested window required')
+    config=record['socket_benchmark_config_requested'] if 'socket_benchmark_config_requested' in record else configuration(mode,window)
+    valid=validate_configuration(config)
+    if valid['mode']!=mode or valid['window']!=window:
+        raise CaptureError('original mode/window/workload request mismatch')
+    return valid
+
+
+def arguments(binary, entry, mode, report, window=WINDOW, *, count=COUNT, size=SIZE, interval_us=None):
+    c=configuration(mode if mode!='peer' else 'window',window,count=count,size=size,interval_us=0 if mode=='peer' else interval_us)
     args=[str(binary),'--adapter',entry['owner']['path'],'channel',mode,entry['object']['path'],
-          '--count',str(COUNT),'--bytes',str(SIZE),'--window',str(window),'--report',str(report)]
+          '--count',str(c['count']),'--bytes',str(c['bytes']),'--window',str(window),'--report',str(report)]
     if mode=='peer':args+=['--load']
     if mode=='rate':args+=['--interval-us',str(c['interval_us'])]
     return args
@@ -39,7 +72,7 @@ def arguments(binary, entry, mode, report, window=WINDOW):
 def execute(run, phase):
     mode=run.args.channel_benchmark
     window=getattr(run.args,'channel_benchmark_window',WINDOW)
-    config=configuration(mode,window)
+    config=requested_configuration(run.args)
     row=dict(phase=len(run.data['connection_control']['phases'])-1,owners=phase['typed_objects'],
              config=config,application_tool=test_program(run),start_wall_ns=time.time_ns(),
              status='RUNNING',applications=[],events=[],performance_qualified=False,
@@ -64,7 +97,7 @@ def execute(run, phase):
                         duplicates.add(index);row['applications'][index]['dup_observed_wall_ns']=time.time_ns();continue
                     if kind=='armed' and index not in duplicates:raise CaptureError('actual existing duplicate-fd setup receipt required')
                     expected_mode=row['applications'][index]['mode'].capitalize()
-                    if kind=='armed':expected=f'SocketBenchmarkArmed: mode={expected_mode} count={COUNT} bytes={SIZE} window={window}'
+                    if kind=='armed':expected=f"SocketBenchmarkArmed: mode={expected_mode} count={config['count']} bytes={config['bytes']} window={window}"
                     else:expected=f'SocketBenchmarkQuiescent: mode={expected_mode} correctness=true'
                     if text!=expected or index in seen:raise CaptureError('unexpected/duplicate benchmark phase output:'+text)
                     event(kind,index,text=text);seen.add(index)
@@ -79,7 +112,7 @@ def execute(run, phase):
                 appmode=mode if i==0 or mode=='duplex' else 'peer'
                 report=run.output/f'benchmark-{row["phase"]}-{i}.json'
                 err=run.output/f'benchmark-{row["phase"]}-{i}.stderr'
-                app=dict(mode=appmode,args=arguments(row['application_tool']['path'],entry,appmode,report,window),report_path=str(report),stderr_path=str(err),start_wall_ns=time.time_ns())
+                app=dict(mode=appmode,args=arguments(row['application_tool']['path'],entry,appmode,report,window,count=config['count'],size=config['bytes'],interval_us=config['interval_us']),report_path=str(report),stderr_path=str(err),start_wall_ns=time.time_ns())
                 row['applications'].append(app)
                 proc=subprocess.Popen(app['args'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,
                                       stderr=files.enter_context(err.open('xb')),bufsize=0)
@@ -121,9 +154,10 @@ def execute(run, phase):
 
 def check_supervision(row):
     window=row['config']['window']
-    configuration(row['config']['mode'],window)
-    if row['config']!=configuration(row['config']['mode'],window) or len(row['applications'])!=2:
-        raise CaptureError('exact first Native benchmark workload required')
+    config=row['config']
+    validate_configuration(config)
+    if len(row['applications'])!=2:
+        raise CaptureError('exact bounded Native benchmark workload required')
     validate_application_binary(row['application_tool'])
     events=row['events']
     if len(events)!=8:raise CaptureError('complete paired arm/start/quiescent/finish receipts required')
@@ -135,11 +169,11 @@ def check_supervision(row):
         if {e['application'] for e in chunk}!={0,1} or any(e['kind']!=kind for e in chunk):raise CaptureError('paired barrier order before either release')
     for i,app in enumerate(row['applications']):
         expected=row['config']['mode'] if i==0 or row['config']['mode']=='duplex' else 'peer'
-        if app['mode']!=expected or app['args']!=arguments(row['application_tool']['path'],row['owners'][i],expected,app['report_path'],window):raise CaptureError('actual slktest argv/mode mismatch')
+        if app['mode']!=expected or app['args']!=arguments(row['application_tool']['path'],row['owners'][i],expected,app['report_path'],window,count=config['count'],size=config['bytes'],interval_us=config['interval_us']):raise CaptureError('actual slktest argv/mode mismatch')
         cred=app['credentials']
         if app['exit'] or cred['uids']!=[1000]*4 or any(int(v,16) for v in cred['capabilities'].values()):raise CaptureError('ordinary actual benchmark process required')
         lines=app['stdout'].splitlines()
-        expected_lines=['NativeChannelDup: original_closed=1 duplicate_live=1',f'SocketBenchmarkArmed: mode={expected.capitalize()} count={COUNT} bytes={SIZE} window={window}',
+        expected_lines=['NativeChannelDup: original_closed=1 duplicate_live=1',f"SocketBenchmarkArmed: mode={expected.capitalize()} count={config['count']} bytes={config['bytes']} window={window}",
                         f'SocketBenchmarkQuiescent: mode={expected.capitalize()} correctness=true',
                         f'SocketBenchmarkLoadObserved: report={app["report_path"]} qualified=false']
         if lines!=expected_lines:raise CaptureError('exact complete successful stdout receipts')
@@ -177,6 +211,11 @@ def corroborate(run,capture,share):
     rows=run.get('socket_benchmark')
     if type(rows) is not list or len(rows)!=2:raise CaptureError('both actual connection-role benchmark phases required')
     sdus=reassemble_acb(capture);proofs=[];used=set()
+    # Preserve every duplicate candidate; index only replaces repeated full scans.
+    indexed={}
+    for packet in sdus:
+        key=tuple(packet[k] for k in ['bus','device','handle','direction','data'])
+        indexed.setdefault(key,[]).append(packet)
     for n,row in enumerate(rows):
         if row['phase']!=n or row['status']!=PENDING:raise CaptureError('both successful original benchmark phases')
         connection=run['connection_control']['phases'][n]
@@ -189,7 +228,7 @@ def corroborate(run,capture,share):
         end=max(e['wall_ns'] for e in row['events'] if e['kind']=='quiescent')
         def matched(index,direction,frame):
             entry=row['owners'][index];owner=entry['owner'];obj=entry['object']
-            found=[p for p in sdus if (p['bus'],p['device'],p['handle'],p['direction'])==(owner['bus'],owner['device'],obj['handle'],direction) and p['data']==frame.hex() and start<=p['wall_ns']<=end]
+            found=[p for p in indexed.get((owner['bus'],owner['device'],obj['handle'],direction,frame.hex()),[]) if start<=p['wall_ns']<=end]
             if len(found)!=1:raise CaptureError('one exact opposite USB TX/RX for each benchmark business frame')
             packet=found[0];key=(packet['record'],packet.get('hcc_offset',0),direction,owner['bus'],owner['device'])
             if key in used:raise CaptureError('benchmark evidence reused')
@@ -207,10 +246,11 @@ def corroborate(run,capture,share):
             actual=[p for p in sdus if (p['bus'],p['device'],p['handle'])==(o['bus'],o['device'],obj['handle']) and start<=p['wall_ns']<=end and p['data'].startswith('1f00')]
             if len(actual)!=len(expected) or any(p['data'] not in expected for p in actual):raise CaptureError('all CUTC31 business packets must be attributed once')
         proofs.append(dict(phase=n,owners=row['owners'],application=check,legs=legs,events=row['events']))
-    if len({row['config']['window'] for row in rows})!=1:raise CaptureError('same requested window in both physical connection roles required')
+    if rows[0]['config']!=rows[1]['config']:raise CaptureError('same requested workload in both physical connection roles required')
     result=dict(status='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED',
                 mode=rows[0]['config']['mode'],round_trips=sum(len(a['report']['outgoing']) for row in rows for a in row['applications']),
                 proofs=proofs,performance_qualified=False,
                 remaining=['repeatstablebaseline/traceoverhead/resources','crossclockmapping/per-layer latency','fullperformance/stress/fairness/recovery qualification'])
     if rows[0]['config']['window']!=WINDOW:result['window']=rows[0]['config']['window']
+    if any(rows[0]['config'][k]!=v for k,v in [('count',COUNT),('bytes',SIZE),('interval_us',100000 if rows[0]['config']['mode']=='rate' else 0)]):result['config']=rows[0]['config']
     return result

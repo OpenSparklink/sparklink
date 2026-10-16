@@ -151,7 +151,7 @@ def hcc_acb(data):
     return acb(data[68:68 + length])
 
 
-def read_capture(path, targets):
+def read_capture(path, targets, *, observe_rx=False):
     """Read endpoint-1 IN and pair OUT submission/completion by USB/URB identity.
 
     Refuse truncation/malformed traffic on a target; ignore unrelated USB data.
@@ -162,6 +162,7 @@ def read_capture(path, targets):
     pending = {}
     native_events = []
     acb_packets = []
+    rx_urbs = []
     targets = set(tuple(t) for t in targets)
     with Path(path).open('rb') as stream:
         header = stream.read(24)
@@ -194,7 +195,7 @@ def read_capture(path, targets):
             # libpcap swaps the pseudoheader fields with the file byte order.
             urb, kind, transfer, endpoint, device, bus, _, flag_data, usb_sec, usec, status, length, cap = struct.unpack_from(endian + 'QBBBBHBBqiiII', packet)
             if ((bus, device) not in targets or transfer != 3
-                    or not (endpoint == 0x81 and kind == ord('C')
+                    or not (endpoint == 0x81 and kind in map(ord, 'SCE' if observe_rx else 'C')
                             or endpoint == 0x01 and kind in map(ord, 'SCE'))):
                 continue
             if usb_sec < 0 or not 0 <= usec < 1_000_000:
@@ -204,6 +205,12 @@ def read_capture(path, targets):
                 raise CaptureError('pcap/usbmon clocks disagree')
             identity = {'bus': bus, 'device': device, 'wall_ns': timestamp,
                         'urb': urb, 'record': ordinal, 'file_offset': offset}
+            if endpoint == 0x81 and observe_rx:
+                if kind in map(ord, 'SE') and (cap or captured != 64 or original != captured):
+                    raise CaptureError('IN submission/error unexpectedly contains data or truncation')
+                rx_urbs.append(identity | dict(kind=chr(kind), status=status, length=length))
+                if kind != ord('C'):
+                    continue  # diagnostic metadata only; never an HCC/DLI receipt
             if endpoint == 0x01:
                 key = (bus, device, urb)
                 if kind == ord('S'):
@@ -266,9 +273,12 @@ def read_capture(path, targets):
                     complete.append(identity | {'opcode': opcode, 'status': payload[8], 'value': payload[9:].hex()})
     if pending:
         raise CaptureError('unfinished OUT submission at capture end')
-    return {'reports': reports, 'complete': complete, 'commands': commands, 'failures': failures,
+    result = {'reports': reports, 'complete': complete, 'commands': commands, 'failures': failures,
             'empty_bulk_completions':empty, 'native_events':native_events,
             'acb_packets':acb_packets, 'packet_count': ordinal}
+    if observe_rx:
+        result['rx_urbs'] = rx_urbs
+    return result
 
 
 def check_capture_stats(text):

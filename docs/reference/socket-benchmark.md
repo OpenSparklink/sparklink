@@ -125,3 +125,18 @@ CLI预算为30秒，显式本地fixture为1秒。旧schema2报告保持原身份
 请求与校验回复的USB TX/对端RX，并拒绝缺失、重复或无法归属的CUTC业务包。
 真实运行状态及准确资格由唯一能力入口记录；建立入口/合成fixture通过不代表实机通过。
 20条样本不是稳定性能阈值，完整追踪的干扰、分段时钟映射、资源峰值及长期压测仍需另验。
+
+## 单 bulk RX URB 空窗诊断
+
+`tools/ws73_rx_gap.py RUN_DIRECTORY` 只读已有 Native benchmark 的 manifest、双端
+应用报告、监督器记录、guest usbmon pcap 和停止后的捕获统计；不接触设备。
+它先重放原双端业务证据，再在每连接角色的 start→双方 Quiescent 区间，分别按
+guest bus/device/URB 配对完成和下一次提交。原捕获解析默认行为不变，诊断显式
+请求 IN 提交元数据。缺提交、错身份、重叠 URB、倒序、区间内错误、捕获掉包或
+业务重放不一致都拒绝；窗口末尾尚无重提交的完成单列为右删失，不能补造零空窗。
+
+输出 ns 的样本数、min/P50/P95/P99/max、完成字节数、捕获记录/偏移及窗口空窗
+占比，时间戳量化为1 µs。空窗包含 callback、USB core 和 VM 调度，不是 callback
+CPU 时间，也不隔离固件或 RF。低负载样本不能证明饱和接收能力或多 URB 的收益；
+解析/ingress/锁竞争分段、突发负载及低扰动对照仍需另测。该工具不改变接收顺序、
+generation、buffer 或 stop/drain，也不产生新的驱动、形式化或性能资格。

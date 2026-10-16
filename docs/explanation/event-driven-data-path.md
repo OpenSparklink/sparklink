@@ -28,6 +28,18 @@ worker 决定休眠和新通知可能并发；合并通知不等于可以丢事�
 需要以真实业务前后的正对照、原件完整且无丢失的worker追踪核对有限空闲区间；
 它不是无限执行证明或CPU/时延资格。较快RTT也不能替代这些边界。
 
+连续发送把软件执行预算与协议 credit 分开：数据阶段每轮最多尝试八片、4096
+字节，在开始下一次 transport 调用前检查 2 ms 时间预算。同步 USB 调用可能超过
+这个时间，因此它不是整轮执行上界。失败尝试也消耗软件预算；USB 成功仍不能
+退款协议 credit。PB 完整 PDU 结束后才轮转通道，不能逐片混入另一通道的数据。
+同轮先成功、随后遇到 credit 不足时，先前进展不能继续被当作当前可发送状态。
+
+默认关闭的 Session 观测点分别记录 worker、软件队列和实际提交回调。它们不含
+业务载荷或密钥；准入、出队、USB 接受、同步返回和操作退休都不等于对端收到。
+观测序号只用于关联，不替代 generation/lifetime 或 Grant。丢失记录和未覆盖的
+控制分支必须单列；实际字段与范围见固定源码的
+[内核说明](https://github.com/OpenSparklink/linux/blob/c4d5362276d43b6a21fc4f8f152f84f0827bf642/Documentation/networking/sparklink-implementation.rst)。
+
 WS73 bulk RX 已异步，但目前 completion 处理完一份 buffer 后才重提同一 URB。
 这段空窗需要测量；多 URB 可能降低空窗，也增加完成顺序和 buffer 所有权问题，
 不能凭 URB 数量断言性能。发送预分配、多个在途 URB 与 HCC 聚合也要各自比较

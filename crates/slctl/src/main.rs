@@ -150,6 +150,7 @@ Commands:
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   dynamic-peer <path> <source-port> <destination-port> <aid> [rounds] [bytes] [hold]  Accept a real dynamic channel
   dynamic-roundtrip <path> <source-port> <destination-port> <aid> [rounds] [bytes] [hold]  Negotiate and exercise a real dynamic channel
+  dynamic-burst <path> <source-port> <destination-port> <aid> 16 2042 [hold]  Exercise bounded dynamic queue pressure
   channel-peer <path> [rounds] [bytes] [boundaries]  Validate and reply on a native channel socket
   channel-roundtrip <path> [rounds] [bytes] [boundaries|prefix-close|burst]  Send random business messages and verify replies
   disconnect <address> [type]    Disconnect an unambiguous current peer

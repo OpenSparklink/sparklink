@@ -485,6 +485,8 @@ def _run(args):
     agent_mode=getattr(args,'security_agent',None)
     dynamic_channels=bool(getattr(args,'dynamic_channel_verify',False))
     dynamic_long=getattr(args,'dynamic_channel_long_bytes',None)
+    dynamic_burst=bool(getattr(args,'dynamic_channel_burst',False))
+    if dynamic_burst and (not dynamic_channels or dynamic_long!=2042):raise ValueError('dynamic burst requires explicit dynamic2042 workload')
     if dynamic_long is not None and (not dynamic_channels or type(dynamic_long) is not int or dynamic_long not in [249,250,253,254,255,1024,2042]):raise ValueError('dynamic long requires explicit dynamic gate and bounded supported size')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
     channel_bytes=getattr(args,'channel_socket_bytes',61)
@@ -647,6 +649,7 @@ def _run(args):
     m['live_security_agent_requested']=agent_mode
     if agent_mode:m['security_agent_verifier']=file_record(HERE/'ws73_security_agent.py')
     if agent_mode and agent_mode.startswith('cli-'):m['security_cli_verifier']=file_record(HERE/'ws73_security_cli.py')
+    m['dynamic_channel_burst_requested']=dynamic_burst
     m['dynamic_channel_long_bytes_requested']=dynamic_long
     m['dynamic_channel_verification_requested']=dynamic_channels
     m['dynamic_channel_acceptance']=False
@@ -810,6 +813,7 @@ def _run(args):
                      (' ws73.channel_prefix_close=1' if channel_close else '')+
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
+                     (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
                      (f' ws73.security_agent={agent_mode}' if agent_mode else '')+
@@ -1168,7 +1172,7 @@ def _run(args):
                 if dynamic_channels:
                     from ws73_dynamic_channels import corroborate as dynamic_corroborate
                     m['dynamic_channel_corroboration']=dynamic_corroborate(control,capture)
-                    expected_status='DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' if dynamic_long is None else 'DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS'
+                    expected_status='DYNAMIC_BASIC_CHANNEL_BURST_CREDIT_SCOPED_PASS' if dynamic_burst else 'DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' if dynamic_long is None else 'DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS'
                     if m['dynamic_channel_corroboration']['status']!=expected_status or (dynamic_long is not None and m['dynamic_channel_corroboration'].get('long_bytes')!=dynamic_long):raise ValueError('original dynamic workload and requested long size disagree')
                     m['dynamic_channel_acceptance']=True
                 if daemon_crash != (share/'daemon-crash/run.json').exists():
@@ -1410,12 +1414,14 @@ def valid_parallel_burst(proof):
                 if any(endpoint.get(k)!=v for k,v in dict(controller=owner['index'],generation=owner['generation'],lifetime=obj['lifetime'],handle=obj['handle'],capacity=owner['buffers'][1]).items()):return False
                 if (not 0<endpoint.get('capacity',0)==endpoint.get('wire_peak')
                     or endpoint.get('wire_final_debt')!=0
-                    or not 0<endpoint.get('usb_submissions',0)==endpoint.get('nocp_packets')
+                    or type(endpoint.get('usb_submissions')) is not int or not 0<endpoint['usb_submissions']==endpoint.get('nocp_packets')
                     or not endpoint.get('full_nocp_resume_intervals')):return False
     return True
 
 
 def run_exit_code(record):
+    burst=record.get('dynamic_channel_burst_requested',False)
+    if type(burst) is not bool or (burst and (record.get('dynamic_channel_verification_requested') is not True or record.get('dynamic_channel_long_bytes_requested')!=2042)):return 1
     if 'dynamic_channel_verification_requested' in record and type(record['dynamic_channel_verification_requested']) is not bool:return 1
     if record.get('dynamic_channel_long_bytes_requested') is not None and record.get('dynamic_channel_verification_requested') is not True:return 1
     if record.get('dynamic_channel_verification_requested'):
@@ -1424,8 +1430,20 @@ def run_exit_code(record):
         if size is not None and (type(size) is not int or size not in [249,250,253,254,255,1024,2042] or dynamic.get('long_bytes')!=size or dynamic.get('slot_exhaustion_refusals')!=2):return 1
         phases=dynamic.get('proofs',[])
         names=['A','B'] if size is None else ['A','B','C']
-        if not isinstance(phases,list) or len(phases)!=2 or any(not isinstance(p,dict) or p.get('phase')!=n or [c.get('name') for c in p.get('channels',[])]!=names or any(len(c.get('business',[]))!=(40 if c.get('name')=='B' else 8) for c in p.get('channels',[])) for n,p in enumerate(phases)):return 1
-        if (record.get('ordinary_channel_socket_acceptance') is not True or record.get('dynamic_channel_acceptance') is not True or dynamic.get('status')!=('DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' if size is None else 'DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS') or dynamic.get('round_trips')!=(48 if size is None else 56) or len(dynamic.get('proofs',[]))!=2 or record.get('qemu_exit')!=0):return 1
+        if not isinstance(phases,list) or len(phases)!=2 or any(not isinstance(p,dict) or p.get('phase')!=n or [c.get('name') for c in p.get('channels',[])]!=names or any(len(c.get('business',[]))!=(40 if c.get('name')=='B' else 32 if burst and c.get('name')=='C' else 8) for c in p.get('channels',[])) for n,p in enumerate(phases)):return 1
+        if (record.get('ordinary_channel_socket_acceptance') is not True or record.get('dynamic_channel_acceptance') is not True or dynamic.get('status')!=('DYNAMIC_BASIC_CHANNEL_BURST_CREDIT_SCOPED_PASS' if burst else 'DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' if size is None else 'DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS') or dynamic.get('round_trips')!=(80 if burst else 48 if size is None else 56) or len(dynamic.get('proofs',[]))!=2 or record.get('qemu_exit')!=0):return 1
+    if burst:
+        for phase in record['dynamic_channel_corroboration']['proofs']:
+            credit=phase.get('credit',{})
+            if not isinstance(credit,dict) or credit.get('phase')!=phase['phase'] or any(type(credit.get(k)) is not int or credit[k]<=0 for k in ['source_pool_refusals_delta','source_full_samples']):return 1
+            endpoints=credit.get('endpoints',[])
+            if not isinstance(endpoints,list) or len(endpoints)!=2 or any(not isinstance(e,dict) for e in endpoints):return 1
+            fields=phase['channels'][2].get('info',{})
+            if not isinstance(fields,dict):return 1
+            for endpoint,role in zip(endpoints,['initiator','peer']):
+                identity=fields.get(role,[])
+                if not isinstance(identity,(list,tuple)) or len(identity)!=11 or any(endpoint.get(k)!=v for k,v in zip(['controller','generation','lifetime','handle'],identity[:4])):return 1
+                if endpoint.get('capacity')!=5 or endpoint.get('wire_peak')!=5 or endpoint.get('wire_final_debt')!=0 or not 0<endpoint.get('usb_submissions',0)==endpoint.get('nocp_packets') or not endpoint.get('full_nocp_resume_intervals'):return 1
     if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS','FOUR_DEVICE_PARALLEL_BURST_PASS']:
         isolation=record['status']=='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS'
         burst=record['status']=='FOUR_DEVICE_PARALLEL_BURST_PASS'
@@ -1562,6 +1580,7 @@ def main():
             cmd.add_argument('--channel-socket-close-prefix',action='store_true',help='require captured first USB submit, final fd close, remaining PDU and actual peer/other-channel traffic')
             cmd.add_argument('--channel-socket-boundaries',action='store_true',help='require original EMSGSIZE and no USB traffic for oversized messages')
             cmd.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4,help='bounded application rounds per connection role')
+            cmd.add_argument('--dynamic-channel-burst',action='store_true',help='require actual dynamic C16x2042 burst/credit/peer-reply evidence;requires dynamic2042 gate')
             cmd.add_argument('--dynamic-channel-long-bytes',type=int,choices=[249,250,253,254,255,1024,2042],help='extend dynamic gate with long C channel and explicit lifetime slot exhaustion;requires --dynamic-channel-verify')
             cmd.add_argument('--dynamic-channel-verify',action='store_true',help='actual two-channel CMTC/asymmetricTCID/app delivery/close isolation, separate bounded VM gate')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')

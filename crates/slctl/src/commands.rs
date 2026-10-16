@@ -12,6 +12,13 @@ pub struct Context {
     selected: Option<String>,
 }
 
+struct DynamicExercise {
+    rounds: u32,
+    bytes: usize,
+    hold: bool,
+    mode: crate::channel::Mode,
+}
+
 impl Context {
     pub fn new(conn: Connection) -> Self {
         Self {
@@ -245,7 +252,7 @@ impl Context {
                 }
                 self.cmd_ssap_info(args[1]).await
             }
-            "dynamic-peer" | "dynamic-roundtrip" => {
+            "dynamic-peer" | "dynamic-roundtrip" | "dynamic-burst" => {
                 if !(5..=8).contains(&args.len()) {
                     anyhow::bail!(
                         "dynamic command: path source-port destination-port aid [rounds] [bytes] [hold]"
@@ -256,13 +263,24 @@ impl Context {
                 if args.get(7).is_some_and(|s| *s != "hold") {
                     anyhow::bail!("last dynamic argument must be hold");
                 }
+                let burst = args[0] == "dynamic-burst";
+                if burst && (rounds != 16 || bytes != 2042) {
+                    anyhow::bail!("dynamic-burst requires16 rounds of2042 bytes");
+                }
                 self.cmd_dynamic_channel(
                     args[1],
                     args[0] == "dynamic-peer",
                     (args[2].parse()?, args[3].parse()?, args[4].parse()?),
-                    rounds,
-                    bytes,
-                    args.len() == 8,
+                    DynamicExercise {
+                        rounds,
+                        bytes,
+                        hold: args.len() == 8,
+                        mode: if burst {
+                            crate::channel::Mode::Burst
+                        } else {
+                            crate::channel::Mode::Regular
+                        },
+                    },
                 )
                 .await
             }
@@ -1171,10 +1189,14 @@ impl Context {
         path: &str,
         responder: bool,
         route: (u16, u16, u16),
-        rounds: u32,
-        bytes: usize,
-        hold: bool,
+        exercise: DynamicExercise,
     ) -> anyhow::Result<()> {
+        let DynamicExercise {
+            rounds,
+            bytes,
+            hold,
+            mode,
+        } = exercise;
         use std::os::fd::AsRawFd;
         let selected = self.selected_path().await?;
         if !path.starts_with(&format!("{selected}/peer_t")) {
@@ -1227,7 +1249,7 @@ impl Context {
             "NativeDynamicStaged: source={} destination={} aid={} passive={responder}",
             route.0, route.1, route.2
         );
-        crate::channel::exercise_dynamic(fd, responder, rounds, bytes)?;
+        crate::channel::exercise_dynamic(fd, responder, rounds, bytes, mode)?;
         println!("NativeDynamicBusinessDone: rounds={rounds} held={hold}");
         if hold {
             let mut command = String::new();

@@ -84,6 +84,9 @@ K400/Ucca8动态CMTC的[48次短包门禁](../docs/evidence/dynamic-cmtc-real-20
 fuzz仍分层；[负对照字段修正](../docs/evidence/dynamic-capture-field-audit-correction-20261016.json)
 保留原尾分片载荷变异输出，重新针对首片TCID/PI拒绝；真实正向证据不变。
 
+动态C的16×2042突发测试入口已接通既有应用与实际credit观察器，离线回归通过；
+准确新编译产物的VM实机门禁尚待执行，不继承上述七尺寸或固定burst资格。
+
 
 ## 安全与服务的限定范围
 

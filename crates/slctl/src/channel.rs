@@ -297,8 +297,12 @@ pub(crate) fn exercise_dynamic(
     responder: bool,
     rounds: u32,
     message_bytes: usize,
+    mode: Mode,
 ) -> anyhow::Result<()> {
-    exercise_channel(fd, responder, rounds, message_bytes, Mode::Regular, true)
+    if mode == Mode::Burst && (responder || rounds != 16 || message_bytes != 2042) {
+        anyhow::bail!("dynamic burst requires an initiator with16 messages of2042 bytes");
+    }
+    exercise_channel(fd, responder, rounds, message_bytes, mode, true)
 }
 fn exercise_channel(
     fd: OwnedFd,

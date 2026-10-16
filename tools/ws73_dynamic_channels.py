@@ -15,7 +15,8 @@ import signal
 import subprocess
 import time
 from ws73_capture import CaptureError, reassemble_acb
-from ws73_channel_socket import application_frames, credentials
+from ws73_channel_socket import application_frames, credentials, burst_pressure_receipts
+from ws73_credit_observation import observe_phase
 
 
 class ApplicationOutput:
@@ -106,16 +107,18 @@ def await_marker(run, tasks, marker, deadline, reader):
 
 def execute(run, phase):
     long_bytes=getattr(run.args,'dynamic_channel_long_bytes',None)
-    row = dict(version=2 if long_bytes is not None else 1, phase=len(run.data['connection_control']['phases'])-1,
+    burst=bool(getattr(run.args,'dynamic_channel_burst',False))
+    if burst and long_bytes!=2042:raise CaptureError('dynamic burst requires explicit2042byte C workload')
+    row = dict(version=3 if burst else 2 if long_bytes is not None else 1, phase=len(run.data['connection_control']['phases'])-1,
                owners=phase['typed_objects'], start_wall_ns=time.time_ns(),
-               long_bytes=long_bytes, status='RUNNING', channels=[], scheduling='bounded VM peer SIGSTOP; real kernel/firmware remain running')
+               long_bytes=long_bytes, burst=burst, status='RUNNING', channels=[], scheduling='bounded VM peer SIGSTOP; real kernel/firmware remain running')
     run.data.setdefault('dynamic_channels', []).append(row)
     run.save()
-    files=ExitStack(); all_tasks=[]; stopped=None;reader=ApplicationOutput();failed=False
+    files=ExitStack(); all_tasks=[]; stopped=None;reader=ApplicationOutput(maximum=256*1024 if burst else 128*1024);failed=False
     def start(channel, role, entry):
         ports = channel['ports'] if role=='initiator' else channel['ports'][::-1]
         args=[str(run.args.slctl),'--adapter',entry['owner']['path'],
-              'dynamic-roundtrip' if role=='initiator' else 'dynamic-peer', entry['object']['path'],
+              ('dynamic-burst' if channel.get('burst') else 'dynamic-roundtrip') if role=='initiator' else 'dynamic-peer', entry['object']['path'],
               *map(str,ports),str(channel['aid']),str(channel['rounds']),str(channel['message_bytes']),'hold']
         app=dict(role=role,args=args,start_wall_ns=time.time_ns())
         channel['applications'].append(app)
@@ -129,8 +132,8 @@ def execute(run, phase):
         app['pid']=proc.pid; app['credentials']=credentials(proc.pid)
         run.save();return proc,app
     def new_channel(name,ports,rounds,message_bytes=61):
-        channel=dict(name=name,ports=ports,aid=0x7301,rounds=rounds,message_bytes=message_bytes,owners=row['owners'],
-                     start_wall_ns=time.time_ns(),applications=[],tx_status_required=True)
+        channel=dict(name=name,phase=row['phase'],ports=ports,aid=0x7301,rounds=rounds,message_bytes=message_bytes,owners=row['owners'],
+                     start_wall_ns=time.time_ns(),session_start_wall_ns=phase['start_wall_ns'],applications=[],tx_status_required=True,burst=burst and name=='C')
         row['channels'].append(channel);return channel
     def close_pair(channel,tasks):
         channel['close_start_wall_ns']=time.time_ns()
@@ -176,7 +179,7 @@ def execute(run, phase):
         await_marker(run,btasks,'NativeDynamicBusinessDone: rounds=20 held=true',time.monotonic()+205,reader)
         close_pair(second,btasks)
         if long_bytes is not None:
-            third=new_channel('C',[24580,24581],4,long_bytes)
+            third=new_channel('C',[24580,24581],16 if burst else 4,long_bytes)
             cpeer=start(third,'peer',row['owners'][1])
             await_marker(run,[cpeer],'NativeDynamicStaged:',time.monotonic()+3,reader)
             os.kill(cpeer[0].pid,signal.SIGSTOP);stopped=cpeer[0]
@@ -195,7 +198,7 @@ def execute(run, phase):
             if time.monotonic()>=limit:raise CaptureError('long peer original pause budget exceeded')
             os.kill(stopped.pid,signal.SIGCONT);stopped=None
             row['long_peer_resume_wall_ns']=time.time_ns();run.save()
-            await_marker(run,ctasks,'NativeDynamicBusinessDone: rounds=4 held=true',time.monotonic()+45,reader)
+            await_marker(run,ctasks,f'NativeDynamicBusinessDone: rounds={third["rounds"]} held=true',time.monotonic()+165,reader)
             close_pair(third,ctasks)
         row['smtc_after_close']=[]
         for entry in row['owners']:
@@ -240,7 +243,7 @@ def info(channel, owners):
             raise CaptureError('original staged/business/final-close application receipts required')
         if any(app['stdout'].count(marker)!=1 for marker in ['NativeDynamicStaged:','NativeDynamicBusinessDone:','NativeDynamicLastClose:']):
             raise CaptureError('duplicate or malformed dynamic receipts')
-        expected=['--adapter',entry['owner']['path'],'dynamic-roundtrip' if app['role']=='initiator' else 'dynamic-peer',entry['object']['path'],*map(str,ports),str(channel['aid']),str(channel['rounds']),str(channel['message_bytes']),'hold']
+        expected=['--adapter',entry['owner']['path'],('dynamic-burst' if channel.get('burst') else 'dynamic-roundtrip') if app['role']=='initiator' else 'dynamic-peer',entry['object']['path'],*map(str,ports),str(channel['aid']),str(channel['rounds']),str(channel['message_bytes']),'hold']
         if app['args'][1:]!=expected:raise CaptureError('actual dynamic application arguments/identity mismatch')
         owner,obj=entry['owner'],entry['object']
         if fields[:4]!=(owner['index'],owner['generation'],obj['lifetime'],obj['handle']) or obj['generation']!=owner['generation']:
@@ -268,11 +271,13 @@ def corroborate(run,capture):
     if not isinstance(rows,list) or len(rows)!=2:raise CaptureError('both real connection roles require dynamic evidence')
     packets=reassemble_acb(capture);proofs=[];nonces=set();sequences=set()
     versions={row.get('version') for row in rows}
-    if len(versions)!=1 or versions not in [{1},{2}]:raise CaptureError('one exact dynamic gate version required')
-    extended=versions=={2}
+    if len(versions)!=1 or versions not in [{1},{2},{3}]:raise CaptureError('one exact dynamic gate version required')
+    burst=versions=={3}
+    extended=versions in [{2},{3}]
+    if burst and any(row.get('burst') is not True or row.get('long_bytes')!=2042 for row in rows):raise CaptureError('actual dynamic burst schema requires2042')
     if extended and (any(type(row.get('long_bytes')) is not int or row['long_bytes'] not in [249,250,253,254,255,1024,2042] for row in rows) or rows[0]['long_bytes']!=rows[1]['long_bytes']):raise CaptureError('exact bounded dynamic long workload required')
     for number,row in enumerate(rows):
-        if row.get('version')!=(2 if extended else 1) or row.get('phase')!=number or row.get('status')!='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING' or [c['name'] for c in row['channels']]!=(['A','B','C'] if extended else ['A','B']):
+        if row.get('version')!=(3 if burst else 2 if extended else 1) or row.get('phase')!=number or row.get('status')!='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING' or [c['name'] for c in row['channels']]!=(['A','B','C'] if extended else ['A','B']):
             raise CaptureError('original dynamic phase/schema/terminal evidence required')
         owners=row['owners'];used=set()
         if owners!=run['connection_control']['phases'][number]['typed_objects']:raise CaptureError('dynamic owners differ from canonical physical phase')
@@ -301,8 +306,10 @@ def corroborate(run,capture):
         channels=[]
         for channel in row['channels']:
             if channel.get('tx_status_required') is not True or channel.get('message_bytes')!=(row['long_bytes'] if channel['name']=='C' else 61):raise CaptureError('current dynamic budget/message evidence required')
-            if channel['rounds']!=(20 if channel['name']=='B' else 4):raise CaptureError('exact two-channel workload required')
+            if channel['rounds']!=(20 if channel['name']=='B' else 16 if burst and channel['name']=='C' else 4):raise CaptureError('exact two-channel workload required')
+            if bool(channel.get('burst'))!=(burst and channel['name']=='C'):raise CaptureError('dynamic channel burst scope mismatch')
             fields=info(channel,owners);sent,replies=application_frames(channel)
+            if burst and channel['name']=='C':burst_pressure_receipts(channel)
             for raw in sent:
                 if raw[8:24] in nonces or raw[24:28] in sequences:raise CaptureError('nonce or random wire sequence reused across channels/roles')
                 nonces.add(raw[8:24]);sequences.add(raw[24:28])
@@ -360,6 +367,11 @@ def corroborate(run,capture):
             if row.get('long_peer_stopped_confirmed') is not True or not row['long_peer_stop_wall_ns']<refused['start_wall_ns']<=refused['end_wall_ns']<row['long_peer_resume_wall_ns'] or row['long_peer_resume_wall_ns']-row['long_peer_stop_wall_ns']>=5_000_000_000:raise CaptureError('original bounded long-peer scheduling and resource refusal required')
             if not any(leg['sequence']>0 and leg['tx']['wall_ns']>refused['end_wall_ns'] for leg in channels[2]['business']):raise CaptureError('actual dynamic long business after slot refusal required')
         proofs.append(dict(phase=number,refused=rejected,channels=channels,close_isolation=True))
+        if burst:
+            credit=observe_phase(row['channels'][2],capture)
+            proofs[-1]['credit']=credit
+    if burst:
+        return dict(status='DYNAMIC_BASIC_CHANNEL_BURST_CREDIT_SCOPED_PASS',round_trips=80,long_bytes=2042,slot_exhaustion_refusals=2,proofs=proofs,scope='Actual dynamic C16x2042burst per role,softwarepressure/fullpool/NOCP-resumption/finaldrain and actual peer application replies;NOCP truth/duplicate/late/reuse,fullconcurrency/naturalrecovery not proved',reliable_mode=False,tcid_reuse=False,natural_recovery=False,full_multichannel_matrix=False)
     if extended:
         return dict(status='DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS',round_trips=56,long_bytes=rows[0]['long_bytes'],slot_exhaustion_refusals=2,proofs=proofs,scope=('Prior dual dynamic behavior plus C long PDU/actual two-end PB fragments and ENOSPC before staging;Cactual app replies after refusal,both physical roles;no safe TCID reuse/fullcredit/concurrency or natural recovery claim' if rows[0]['long_bytes']>249 else 'Prior dual dynamic behavior plus C249byteSDU/254bytePDU at controller boundary,actual unfragmentedTX/validpeerRX and ENOSPC before staging;Cactual app replies after refusal,bothphysicalroles;no safeTCIDreuse/fullcredit/concurrency/naturalrecovery'),reliable_mode=False,tcid_reuse=False,natural_recovery=False,full_multichannel_matrix=False)
     return dict(status='DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS',round_trips=48,proofs=proofs,

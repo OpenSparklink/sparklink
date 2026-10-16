@@ -6,7 +6,7 @@ import ws73_dynamic_channels as gate
 from ws73_target import run_exit_code
 
 
-def fixture(long_bytes=None):
+def fixture(long_bytes=None,burst=False):
     run={'dynamic_channels':[],'connection_control':{'phases':[]}};packets=[];clock=100
     def emit(entry,direction,raw):
         nonlocal clock
@@ -21,15 +21,15 @@ def fixture(long_bytes=None):
     nonce_count=0
     for phase in range(2):
         clock+=1000
-        owners=[dict(owner=dict(index=i,generation=7,bus=1,device=5+i,path=f'/adapter{i}'),object=dict(generation=7,lifetime=11+phase,handle=3+i,path=f'/adapter{i}/link{phase}')) for i in range(2)]
+        owners=[dict(owner=dict(index=i,generation=7,bus=1,device=5+i,path=f'/adapter{i}',buffers=[254,5,0,0]),object=dict(generation=7,lifetime=11+phase,handle=3+i,path=f'/adapter{i}/link{phase}')) for i in range(2)]
         run['connection_control']['phases'].append(dict(typed_objects=owners))
-        row=dict(version=2 if long_bytes is not None else 1,long_bytes=long_bytes,phase=phase,owners=owners,start_wall_ns=clock,status='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING',channels=[],peer_stopped_confirmed=True,peer_stop_wall_ns=clock+1)
+        row=dict(version=3 if burst else 2 if long_bytes is not None else 1,burst=burst,long_bytes=long_bytes,phase=phase,owners=owners,start_wall_ns=clock,status='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING',channels=[],peer_stopped_confirmed=True,peer_stop_wall_ns=clock+1)
         run['dynamic_channels'].append(row)
         row['unbound_refusal']=dict(exit=1,stdout='NativeDynamicStaged: source=24570 destination=24571 aid=29441 passive=false\n')
         pair(*owners,gate.cmtc(gate.request(1,0x80,[24570,24571],0x7301)))
         pair(*owners[::-1],gate.cmtc(bytes([0x11,1,4,0,0x80,0,1,0])))
         def channel(name,source,dest,ports,rounds,identifier,message_bytes=61):
-            c=dict(name=name,ports=ports,aid=0x7301,rounds=rounds,message_bytes=message_bytes,owners=owners,applications=[],tx_status_required=True,start_wall_ns=clock)
+            c=dict(name=name,phase=phase,ports=ports,aid=0x7301,rounds=rounds,message_bytes=message_bytes,owners=owners,applications=[],tx_status_required=True,start_wall_ns=clock,session_start_wall_ns=row['start_wall_ns'],burst=burst and name=='C')
             row['channels'].append(c)
             mtu=max(249,message_bytes)
             pair(*owners,gate.cmtc(gate.request(identifier,source,ports,0x7301,mtu,mtu+5)))
@@ -40,7 +40,7 @@ def fixture(long_bytes=None):
                 text+=f'NativeChannelInfo: index={n} generation=7 lifetime={11+phase} handle={3+n} local={local} remote={remote} pi=241 mtu={mtu} mps={mtu+5} mode=0 directions=3\n'
                 text+=f'NativeTxStatus: stage=ready sequence=0 index={n} generation=7 lifetime={11+phase} handle={3+n} maximum=254 capacity=5 outstanding=0 debt=0 peak=0 queued=0 limit=8 busy=0 bytes=0 offset=0 flags=0 blocks=0\n'
                 text+=f'NativeChannelOpened: role={role} rounds={rounds}\nNativeChannelMessageSize: bytes={message_bytes}\n'
-                args=['slctl','--adapter',o['path'],'dynamic-roundtrip' if n==0 else 'dynamic-peer',obj['path'],*map(str,p),'29441',str(rounds),str(message_bytes),'hold']
+                args=['slctl','--adapter',o['path'],('dynamic-burst' if c['burst'] else 'dynamic-roundtrip') if n==0 else 'dynamic-peer',obj['path'],*map(str,p),'29441',str(rounds),str(message_bytes),'hold']
                 c['applications'].append(dict(role=role,args=args,stdout=text,exit=0,credentials=dict(uids=[1000]*4,capabilities=dict(CapEff='0',CapPrm='0',CapAmb='0'))))
             return c
         def business(c,source,dest):
@@ -67,16 +67,21 @@ def fixture(long_bytes=None):
         close(a,0x81,0x80,4);row['peer_resume_wall_ns']=clock
         business(b,0x82,0x81);close(b,0x82,0x81,5)
         if long_bytes is not None:
-            c=channel('C',0x83,0x82,[24580,24581],4,6,long_bytes)
+            c=channel('C',0x83,0x82,[24580,24581],16 if burst else 4,6,long_bytes)
             row.update(long_peer_stop_wall_ns=clock+1,long_peer_stopped_confirmed=True,long_peer_resume_wall_ns=clock+4,slot_exhaustion=dict(exit=1,stdout='',stderr='native channel bind: No space left on device (os error 28)',start_wall_ns=clock+2,end_wall_ns=clock+3))
             clock+=4;business(c,0x83,0x82);close(c,0x83,0x82,7)
+        if burst:
+            source=c['applications'][0]
+            source['stdout']+=('NativeBurstBlocked: sequence=8 poll_writable=0\nNativeBurstResumed: sequence=8\nNativeBurstPressure: eagain=1 not_writable=1 replies=16\n')
+            for stage,out,debt,flags,busy,size,offset in [('blocked',5,5,3,1,2047,1270),('replied',0,0,0,0,0,0)]:
+                source['stdout']+=f'NativeTxStatus: stage={stage} sequence=8 index=0 generation=7 lifetime={11+phase} handle=3 maximum=254 capacity=5 outstanding={out} debt={debt} peak=5 queued=0 limit=8 busy={busy} bytes={size} offset={offset} flags={flags} blocks=1\n'
         row['smtc_after_close']=[dict(exit=0),dict(exit=0)];row['end_wall_ns']=clock
     return run,packets
 
 
 class DynamicVerifier(unittest.TestCase):
-    def check(self,run,packets):
-        with patch.object(gate,'reassemble_acb',return_value=packets):return gate.corroborate(run,{})
+    def check(self,run,packets,capture=None):
+        with patch.object(gate,'reassemble_acb',return_value=packets):return gate.corroborate(run,capture or {})
     def test_complete_synthetic_shape_only(self):
         run,packets=fixture();p=self.check(run,packets)
         self.assertEqual(p['round_trips'],48)
@@ -146,6 +151,50 @@ class DynamicVerifier(unittest.TestCase):
             if change=='phase':r['dynamic_channel_corroboration']['proofs'][0]['phase']=1
             if change=='baseline':r['ordinary_channel_socket_acceptance']=False
             with self.subTest(change=change):self.assertEqual(run_exit_code(r),1)
+    def test_dynamic_burst_uses_real_credit_verifier_and_fail_closed_verdict(self):
+        # Only the decoded USB shapes are fixture inputs. Use the actual credit
+        # observer, receipt parser and dynamic verifier; no successful stub.
+        run,packets=fixture(2042,burst=True)
+        capture={'acb_packets':[],'native_events':[]}
+        for packet in packets:
+            if packet['direction']!='out':continue
+            for index,part in enumerate(packet['fragments']):
+                value=dict(part,wall_ns=packet['wall_ns']*10000+index*2,record=len(capture['acb_packets']),completion={'status':0})
+                capture['acb_packets'].append(value)
+        for row in run['dynamic_channels']:
+            # Make room for fragment-order timestamps while preserving the
+            # existing CMTC/business scheduling relationships.
+            for owner in row['owners']:
+                key=owner['owner']['device']
+                values=[p for p in capture['acb_packets'] if p['device']==key and row['start_wall_ns']*10000<=p['wall_ns']<=row['end_wall_ns']*10000]
+                for index in range(0,len(values),5):
+                    group=values[index:index+5];last=group[-1]
+                    capture['native_events'].append(dict(bus=1,device=key,event=9,params=(owner['object']['handle'].to_bytes(2,'little')+bytes([len(group)])).hex(),wall_ns=last['wall_ns']+1,record=100000+index))
+            c=row['channels'][2];c['session_start_wall_ns']*=10000;c['end_wall_ns']*=10000
+        # Packet shapes in the dynamic parser remain on their original clock;
+        # only the credit observer uses the separately expanded USB clock.
+        proof=self.check(run,packets,capture)
+        self.assertEqual(proof['round_trips'],80)
+        self.assertTrue(all(p['credit']['endpoints'][0]['wire_peak']==5 for p in proof['proofs']))
+        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,dynamic_channel_burst_requested=True,dynamic_channel_verification_requested=True,dynamic_channel_long_bytes_requested=2042,dynamic_channel_acceptance=True,ordinary_channel_socket_acceptance=True,dynamic_channel_corroboration=proof)
+        self.assertEqual(run_exit_code(record),0)
+        import copy
+        for change in ['flag','rounds','credit','debt','completion','identity','resume','baseline','bad-credit-type','bad-endpoints-type']:
+            r=copy.deepcopy(record);p=r['dynamic_channel_corroboration']['proofs'][0]
+            if change=='flag':r['dynamic_channel_burst_requested']=False
+            if change=='rounds':r['dynamic_channel_corroboration']['round_trips']=56
+            if change=='credit':p.pop('credit')
+            if change=='debt':p['credit']['endpoints'][0]['wire_final_debt']=1
+            if change=='completion':p['credit']['endpoints'][0]['nocp_packets']+=1
+            if change=='identity':p['credit']['endpoints'][0]['lifetime']+=1
+            if change=='resume':p['credit']['endpoints'][0]['full_nocp_resume_intervals']=[]
+            if change=='baseline':r['ordinary_channel_socket_acceptance']=False
+            if change=='bad-credit-type':p['credit']['source_full_samples']='1'
+            if change=='bad-endpoints-type':p['credit']['endpoints']={'a':{},'b':{}}
+            with self.subTest(change=change):self.assertEqual(run_exit_code(r),1)
+        capture['native_events'].pop()
+        with self.assertRaises(CaptureError):self.check(run,packets,capture)
+
     def test_dynamic_request_cannot_pass_with_legacy_status_only(self):
         self.assertEqual(run_exit_code(dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,dynamic_channel_verification_requested=True)),1)
 

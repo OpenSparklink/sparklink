@@ -352,6 +352,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                 case "$dynamic_long" in 249|250|253|254|255|1024|2042) ;; *) fail 'explicit dynamic long size' ;; esac
                 connection_arg="$connection_arg --dynamic-channel-long-bytes $dynamic_long"
             fi
+            if grep -qw ws73.dynamic_burst=1 /proc/cmdline; then connection_arg="$connection_arg --dynamic-channel-burst"; fi
             if grep -qw ws73.channel_burst=1 /proc/cmdline; then connection_arg="$connection_arg --channel-socket-burst"; fi
             if grep -qw ws73.channel_prefix_close=1 /proc/cmdline; then connection_arg="$connection_arg --channel-socket-close-prefix"; fi
             if grep -qw ws73.channel_boundaries=1 /proc/cmdline; then connection_arg="$connection_arg --channel-socket-boundaries"; fi

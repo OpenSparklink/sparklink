@@ -1355,5 +1355,18 @@
     "dynamic_size_matrix_report": "docs/evidence/dynamic-seven-sizes-20261016.json",
     "prior_dynamic_size_failure_unchanged": "docs/evidence/dynamic249-monitor-failure-20261016.json",
     "retained_credit_observation": "docs/evidence/dynamic-runtime-credit-observation-20261016.json"
+  },
+  "dynamic_credit_batch": {
+    "status": "IMPLEMENTED_OFFLINE_SCOPED_VM_PENDING",
+    "production_behavior": "Existing ordinary dynamic socket burst command;soleSession/Ledger/Tickets unchanged. C16x2042 per physical role;A/B and slot refusal retained.",
+    "invariants": [
+      "Finite queue EAGAIN/poll withdrawal/resume;protocol packet credits independent",
+      "New fullpool refusal,NOCP-linked later submits and final drain,alongside actual peer application reply",
+      "No overwrite original failures,no trustedNOCP/reuse/naturalrecovery inference"
+    ],
+    "offline": "614tool tests;18dynamic/output cases;slctl7unit+2privateDBus integration;strictclippy;strictdocs. Initialsandbox/missingDBus dependency failures preserved.",
+    "real": "PENDING exact new compiled artifacts and frozen tools;not inherited fromK400/Ucca8/45a",
+    "exit": "Two real WS73 both roles,80dynamicRT including32C2042burst,actualEAGAIN/fullpool/refusal/NOCPresume/drain andtwo-endappchecked captures;retained paths regression required.",
+    "scope": "VM-only/fullS0-S6/19WP/10FV/12DG unchanged;all unfinishedissues OPEN"
   }
 }

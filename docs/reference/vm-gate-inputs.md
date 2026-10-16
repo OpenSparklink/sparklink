@@ -48,7 +48,7 @@ CLI 本身没有自动批准功能。每端分别启动 Agent 和原作者请求
 
 `--dynamic-channel-verify` 要求独立 connection/socket VM 门禁，保留普通固定通道
 回归；在同一真实 Session 上验证两动态通道、不对称 TCID 与 A关闭/B继续业务。
-不能与四设备模式、安全 Agent、prefix-close 或 burst 特殊模式混用。
+不能与四设备模式、安全 Agent、prefix-close 或固定通道 burst 特殊模式混用。
 
 `--dynamic-channel-long-bytes 249|250|253|254|255|1024|2042` 显式扩展该门禁：
 版本2记录保留 A/B，再建立第三动态通道 C（4轮）；其MTU等于所选应用长度、
@@ -68,3 +68,20 @@ MPS为长度加5。超过254字节的完整PDU须取得两端实际PB分片及�
 均失败；记录采集操作、errno和异常栈，不以丢弃输出继续取得PASS。
 早期249字节整轮的ENODATA失败保持历史失败，底层I/O原因未查明；新的采集
 方式须独立重跑，不能用“此前已收发”改判该轮通过。
+
+## 动态通道 burst／credit 扩展
+
+`--dynamic-channel-burst` 必须同时指定 `--dynamic-channel-verify` 与
+`--dynamic-channel-long-bytes 2042`。版本3保留 A/B 工作量及四槽拒绝；C改为
+16条2042字节突发消息，交换物理连接角色。应用使用 `dynamic-burst`，复用既有
+普通socket burst收发与 `query_tx_status`，对端仍使用 `dynamic-peer`。
+
+门禁要求真实EAGAIN、poll撤下可写及恢复准入、源端新增credit池满拒绝、USB提交／
+NOCP后恢复提交／最终排空，以及所有对端随机载荷校验回复。软件队列与控制器
+credit分开验证，完整PDU2047与ACB254保持独立。NOCP计数匹配不证明固件完成
+真值、重复／迟到或handle复用屏障；不授予可靠模式或自然恢复资格。
+
+C输出包含32条完整十六进制收发记录，版本3的每stdout/stderr预算明确为256KiB，
+其他版本仍128KiB。采集器的短写／EOF／身份／预算／编码失败规则不变。
+离线夹具使用生产receipt与credit观察函数，但USB形状和调度为fixture，
+不属于真实内核并发或空口资格。当前实现需在准确新编译artifact上另行VM实测。

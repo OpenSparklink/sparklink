@@ -236,3 +236,12 @@ Error communicating with slkd or invalid command.
 .SH SEE ALSO
 .BR slkd (8),
 .BR sparklink.conf (5)
+
+.SH DYNAMIC CHANNEL BURST
+.B dynamic-burst PATH SOURCE-PORT DESTINATION-PORT AID 16 2042 [hold]
+uses the existing native basic-channel socket burst exercise on an explicitly
+negotiated dynamic channel. The peer uses dynamic-peer with the reversed ports,
+16 rounds and 2042 bytes. It requires actual opposite application replies and
+observes finite software queue backpressure. USB completion and NOCP alone do
+not prove peer delivery. This is an unpublished experimental VM-only interface;
+it does not promise reliable mode, authentication or safe TCID reuse.

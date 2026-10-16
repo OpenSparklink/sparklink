@@ -1303,7 +1303,7 @@
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
     "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
     "gate_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
-    "status": "IMPLEMENTED_OFFLINE_AND_BOUNDED_PASS_REAL_PENDING",
+    "status": "REAL_DYNAMIC48_SCOPED_PASS_RETAINED14_RUNNING",
     "evidence": "docs/evidence/dynamic-cmtc-offline-20261016.json",
     "exit_conditions": [
       "Real unmatched endpoint refusal plus exact CMTC/two-end captures",
@@ -1311,8 +1311,11 @@
       "Afinalclose/Bactualtraffic after close response,swapped physical roles",
       "Accurate new image attained fixed/length/long/close/pressure/four-device regression"
     ],
-    "physical_acceptance": false,
     "safe_tcid_reuse": false,
-    "original_scope_unchanged": true
+    "original_scope_unchanged": true,
+    "real_evidence": "docs/evidence/dynamic-cmtc-real-20261016.json",
+    "retained_regression_state": ".dev/dynamic-retained-matrix-v1.json",
+    "dynamic_business_real_acceptance": true,
+    "real_acceptance_scope": "Only actual2device dynamic CMTC and48 app roundtrips/close isolation;not physicalunplug/fullmultichannel/naturalrecovery"
   }
 }

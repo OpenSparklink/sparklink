@@ -80,7 +80,9 @@ K90fda145、编译用户态/guest/Host工具U2ee780c，文档提交不是编译�
 K400bd6812608/Ucca8a20已实现动态基础CMTC、独立local/remote TCID、暂存端点与
 协商后Grant/每通道队列；直接转换有界证明和实际worker离线回归分开记录。
 [本批限定报告](../docs/evidence/dynamic-cmtc-offline-20261016.json)分别记录直接纯转换、
-实际worker夹具、codec fuzz与跨语言检查。新内核与bundle编译、无USB VM启动已通过，**动态业务与新镜像真实回归仍未验收**，
+实际worker夹具、codec fuzz与跨语言检查。新内核与bundle编译、无USB VM启动已通过；[准确新镜像的动态子门禁](../docs/evidence/dynamic-cmtc-real-20261016.json)
+取得48次普通用户真实往返、不对称TCID及A关闭/B继续业务，最长244ms。
+**既有14组固定/长度/长包/关闭/压力/四设备新镜像回归仍在进行**，
 不能继承K90/U2ee资格。四槽/物理lifetime墓碑只是有限策略，完整关闭/复用屏障、
 多通道全矩阵、认证/Bond、安全SSAP更新、正式部署权限/兼容及发布仍未完成。
 普通应用组在真实system-bus/udev/内核授权环境的完整矩阵尚缺；UID1000/caps0

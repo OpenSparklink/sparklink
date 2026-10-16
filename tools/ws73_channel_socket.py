@@ -476,6 +476,7 @@ def benchmark_application_reports(source, peer):
         require(report.get('clock')=='process-local-Rust-Instant-relative-nanoseconds','explicit local ns clock domain')
         require(report.get('rtt_definition')=='successful send syscall entry to validated reply, same initiator clock','RTT origin')
         require(report.get('percentile_method')=='nearest-rank;success-only;p99.9 requires10000 successes','percentile method')
+        require(type(report.get('late',0)) is int and report.get('late',0)==0,'late validations are not timely successes')
         require(report.get('error') is None and all(type(report.get(k)) is int and report[k]==v for k,v in
                 [('attempted',count),('admitted',count),('validated',count),('timed_out',0),('unattempted',0)]),'all attempts and failures must be retained')
         require(integer(report.get('elapsed_ns'),1),'elapsed interval')
@@ -493,6 +494,7 @@ def benchmark_application_reports(source, peer):
                     'would_block','admitted_ns','read_ns','validated_ns','errno','timed_out','frame_hex'} <= set(row),
                     'required original sample fields')
             require(type(row.get('index')) is int and row['index']==index,'ordered sample indices')
+            require(row.get('late',False) is False,'late sample cannot be successful')
             require(row.get('timed_out') is False and row.get('errno') is None,'failed sample cannot be successful')
             require(integer(row.get('send_attempts'),1,(1<<32)-1) and integer(row.get('would_block'),0,(1<<32)-1)
                     and row['send_attempts']==row['would_block']+1,'all send attempts accounted')

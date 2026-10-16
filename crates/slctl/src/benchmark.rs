@@ -39,6 +39,7 @@ struct Sample {
     validated_ns: Option<u64>,
     errno: Option<i32>,
     timed_out: bool,
+    late: bool,
     frame_hex: String, // Filled only after measurement, never in the hot loop.
 }
 
@@ -212,6 +213,16 @@ fn receive(
     }
 }
 
+fn validated(row: &mut Sample, now_ns: u64, deadline_ns: u64) -> anyhow::Result<()> {
+    row.validated_ns = Some(now_ns);
+    if now_ns >= deadline_ns {
+        row.late = true;
+        row.timed_out = true;
+        anyhow::bail!("validation completed after original deadline");
+    }
+    Ok(())
+}
+
 fn measure(
     fd: &OwnedFd,
     responder: bool,
@@ -237,7 +248,11 @@ fn measure(
                     anyhow::bail!("duplicate peer sequence/nonce");
                 }
                 prepared.received[index].copy_from_slice(frame);
-                row.validated_ns = Some(ns(origin));
+                validated(
+                    row,
+                    ns(origin),
+                    deadline.duration_since(origin).as_nanos().try_into()?,
+                )?;
                 frame[28] = 1;
                 send(fd, frame, deadline, origin, row)?;
             } else {
@@ -248,12 +263,16 @@ fn measure(
                 if prepared.received[index] != *request {
                     anyhow::bail!("reply differs from precomputed random request");
                 }
-                row.validated_ns = Some(ns(origin));
+                validated(
+                    row,
+                    ns(origin),
+                    deadline.duration_since(origin).as_nanos().try_into()?,
+                )?;
             }
             Ok(())
         })();
         if let Err(error) = result {
-            row.timed_out = Instant::now() >= deadline;
+            row.timed_out |= Instant::now() >= deadline;
             // Stop this one-outstanding workload on first failure. Remaining
             // samples remain present/unattempted; never report a complete PASS.
             return (ns(origin), Some(format!("sample {index}: {error:#}")));
@@ -281,6 +300,7 @@ struct Report {
     admitted: usize,
     validated: usize,
     timed_out: usize,
+    late: usize,
     unattempted: usize,
     success_only_rtt: Option<Distribution>,
     error: Option<String>,
@@ -320,7 +340,7 @@ pub(crate) fn run(fd: OwnedFd, responder: bool, config: Config, path: &Path) -> 
         .samples
         .iter()
         .filter_map(|s| {
-            if responder {
+            if responder || s.timed_out {
                 None
             } else {
                 s.validated_ns
@@ -374,6 +394,7 @@ pub(crate) fn run(fd: OwnedFd, responder: bool, config: Config, path: &Path) -> 
             .filter(|s| s.validated_ns.is_some())
             .count(),
         timed_out: prepared.samples.iter().filter(|s| s.timed_out).count(),
+        late: prepared.samples.iter().filter(|s| s.late).count(),
         unattempted: prepared
             .samples
             .iter()
@@ -558,6 +579,17 @@ mod tests {
         );
         assert_eq!(std::fs::read(&path).unwrap(), original);
         std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn actual_validation_transition_classifies_original_deadline_boundary_as_late() {
+        for (now, expired) in [(9, false), (10, true), (11, true)] {
+            let mut row = Sample::default();
+            assert_eq!(validated(&mut row, now, 10).is_err(), expired);
+            assert_eq!(row.validated_ns, Some(now));
+            assert_eq!(row.late, expired);
+            assert_eq!(row.timed_out, expired);
+        }
     }
 
     #[test]

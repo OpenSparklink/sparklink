@@ -385,7 +385,7 @@ class BenchmarkApplicationReports(unittest.TestCase):
         for kind in ['missing-peer','incomplete','qualified','clock','origin','unit-method','empty','count','count-bool',
                      'missing-row','duplicate','payload','nonce','timeout','lost-timeout','errno','order','batch-origin',
                      'elapsed','percentile','small-p999','peer-frame','same-controller','stale-lifetime','attempts','bad-capability',
-                     'missing-error','missing-errno','float-percentile','float-peer-config']:
+                     'missing-error','missing-errno','float-percentile','float-peer-config','late-row','late-total']:
             source,peer=self.reports();row=source['samples'][1]
             if kind=='missing-peer':peer=None
             if kind=='incomplete':source['status']='INCOMPLETE'
@@ -417,4 +417,6 @@ class BenchmarkApplicationReports(unittest.TestCase):
             if kind=='missing-errno':row.pop('errno')
             if kind=='float-percentile':source['success_only_rtt']['p99_ns']=3.0
             if kind=='float-peer-config':peer['config']['count']=4.0
+            if kind=='late-row':row['late']=True
+            if kind=='late-total':source['late']=1
             with self.subTest(kind=kind),self.assertRaises(CaptureError):benchmark_application_reports(source,peer)

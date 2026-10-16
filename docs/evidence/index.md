@@ -232,3 +232,7 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [文档DQ1与书式主题：准确源码、UI、失败和剩余](documentation-dq1-and-theme-20261016.json)。
 该目录只保留仓库来源，不构建为用户站点；分类审阅不表示全部内容完成。
+
+[14d9/42ecc6f动态关闭观察：两角色80＋8次真实回复及24实际证据负对照](session-status-burst-20261017.json)。
+原v3最终debt失败保留，v4仅有界瞬时观测，不授callback/ref drain、NOCP准确性或安全复用。
+[实际Session锁发布的两CPU LKMM正反对照](session-worker-publication-20261017.json)不是实现refinement。

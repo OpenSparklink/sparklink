@@ -52,7 +52,8 @@
     "data-lifecycle-eight-plus-two-400bd68",
     "native-sequence-a474a85",
     "event-performance-baseline",
-    "socket-benchmark-app-offline-56e9f45"
+    "socket-benchmark-app-offline-56e9f45",
+    "socket-load-app-offline-0f286bd"
   ],
   "records": [
     {
@@ -17061,6 +17062,196 @@
       ],
       "required_gates": [
         "application-local-and-report-checks"
+      ]
+    },
+    {
+      "id": "socket-load-app-offline-0f286bd",
+      "title": "应用负载AF_UNIX循环：rate/window/duplex与24+5/32负对照（非性能资格）",
+      "level": "offline",
+      "result": "PASS",
+      "contracts": [
+        "Actualapplicationloadfinitewindowabsolutescheduleduplexandfailureaccounting",
+        "Originalvalidationdeadlineandexplicitfinitearminput",
+        "Schema1metadatarejectiononly;schema2oracleMISSING"
+      ],
+      "bounds": {
+        "count": [
+          1,
+          10000
+        ],
+        "bytes": [
+          29,
+          2042
+        ],
+        "application_window": [
+          1,
+          256
+        ],
+        "work_packets": 32,
+        "real_request_ns": 10000000000,
+        "tail_observation_ns": 1000000000,
+        "maximum_run_ns": 612000000000,
+        "start_seconds": 30,
+        "receive_packet_budget": "count*4+16",
+        "test_budgets": "localdatagrams:1s requests/5msgrace/2srun or20ms/2ms/100ms;actualCLI keeps declared constants",
+        "resources": "process endpoint snapshots including probe overhead andlifetime maxrss;kernelcountersunknown",
+        "commands": [
+          "cargo +1.96.1 test --locked -p slctl with explicit SPARKLINK_TEST_DBUS_DAEMON private daemon path",
+          "cargo +1.96.1 clippy --locked -p slctl --all-targets -- -D warnings",
+          "cargo +1.96.1 build --locked -p slctl",
+          "python3 -m unittest discover -s tools/tests -p test_ws73_channel_socket.py",
+          "make docs"
+        ],
+        "registration_environment": {
+          "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+          "platform": "Linux-7.2.8-200.fc44.x86_64-x86_64-with-glibc2.43",
+          "scope": "host application-only checks,notdriver orVM/WS73"
+        }
+      },
+      "excluded": [
+        "Actual production application drive/packet/queue/deadline functions over real local AF_UNIX datagrams: absolute-rate,finite-window and duplex;explicit original deadline/late-observation/run budgets passed as shorter test parameters only;not Native or WS73 execution",
+        "Final24unit+2scan+3AgentCLI private-D-Bus checks;normal message/payload and same-loop249/250/253/254/255/1024/2042 localdatagrams;real socket EAGAIN and missing-peer tests;not hardware boundary qualification",
+        "Application packet-conversion logicalclock tests distinguish late/duplicate/reorder/corrupt,finitequeue overflow and unchanged read-based deadlines;explicitclockfixture,not actual kernel concurrency/lifecycle or formal proof",
+        "Schema1 evidence parser20targeted tests including32syntheticnegativeclasses;schema2 independent both-end/provenance/capture/supervisor oracle NOT IMPLEMENTED",
+        "Direct original pingpong validation transition before/at/afterdeadline and late rejection;processCPU/RSS/fd endpoint probe and explicitstart/partialinput/EOF tests only;no interval kernelresource peaks,RFtiming,performance threshold or trace-overhead qualification"
+      ],
+      "remaining": [
+        "P1 schema2 independentbothend oracle/clock-unit-identity/capture/supervisor negatives",
+        "ExactnewNativeVM artifact build/ordinarycredentials,dualswappedroles andretained functionality/length qualifications",
+        "Stable reproducible baseline,USB/Session/NOCPtimeline/clockmapping,errorbounds,kernelresourcepeaks andtraceoverhead",
+        "P2eventdriven notifications/deadlinetimers andrelatedFV/VM interleavings onlyaftercredibleoldbaseline;P3boundedTX,P4multichannel/fourgroups,P5measuredRXgap/USB,P6longterm/RCA/nonhumanrecovery"
+      ],
+      "sources": {
+        "cli": {
+          "repo": "sparklink",
+          "commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0",
+          "scopes": [
+            "Cargo.lock",
+            "Cargo.toml",
+            "crates/slctl/Cargo.toml",
+            "crates/slctl/src/benchmark.rs",
+            "crates/slctl/src/benchmark/load.rs",
+            "crates/slctl/src/channel.rs",
+            "crates/slctl/src/commands.rs",
+            "crates/slctl/src/main.rs",
+            "crates/slctl/src/security_agent.rs",
+            "crates/slctl/tests/scan_freshness.rs",
+            "crates/slctl/tests/security_agent.rs",
+            "crates/slctl/tests/support/mod.rs"
+          ],
+          "files": {
+            "Cargo.lock": "0a35344ae1e0461fede247c2aa1016f03cccb9b941ad74ccd922ce917610afc2",
+            "Cargo.toml": "074d922eba4ac31a421942c95ed84e1ac6e778e2a3baaf7260a0929d6c9d1244",
+            "crates/slctl/Cargo.toml": "f390b61589443d09280049b720b1650111b5698a2cc55ca41a7aa5f6dab9f363",
+            "crates/slctl/src/benchmark.rs": "799b4938b3b1445a9330a94be4cccc9a0f17237b4a63a432e2ac68f522987f4e",
+            "crates/slctl/src/benchmark/load.rs": "e6e357ea565836d7ef8bdc7b539fd2edd3b25f7197b9fdeaaa00ba44fea20bb3",
+            "crates/slctl/src/channel.rs": "b8244b54e544f4f21d97f241eb823ea18286ed02d074c8c9933e867abda92369",
+            "crates/slctl/src/commands.rs": "8850d73b063f217c8ac70d37df8e724ad03e0240c32ca66f0aabc8e991719a44",
+            "crates/slctl/src/main.rs": "1ddd773f4b77f391f7952ed3b3365c33c99c3efd04034df8403a03922604a50b",
+            "crates/slctl/src/security_agent.rs": "2af7a5ff0d32a13f451bed4e7d7a32ef7aa44a6eee328d17ce0a58ce80cc7e35",
+            "crates/slctl/tests/scan_freshness.rs": "d3679776de69bb7c2dbcf58eded3024a266ddacb9df151e57e063092ad1f5fe9",
+            "crates/slctl/tests/security_agent.rs": "4c810768161c1a91be7397840dba1fd4c789fdab02fef16faff37a6b50dce02c",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed"
+          }
+        },
+        "tools": {
+          "repo": "sparklink",
+          "commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0",
+          "scopes": [
+            "tools/ws73_channel_socket.py",
+            "tools/tests/test_ws73_channel_socket.py"
+          ],
+          "files": {
+            "tools/ws73_channel_socket.py": "955a7861058b8ee2a219f85d3c37d822c330039a1f1931e77b18932d91caf417",
+            "tools/tests/test_ws73_channel_socket.py": "267b58b35289fca57e311dc28af66a43c432f216a9d7e277a84d1ed5e0d24aa9"
+          }
+        }
+      },
+      "report": {
+        "material": "socket-load-app-offline-0f286bd-m3321",
+        "scope_pointer": [
+          "scope"
+        ],
+        "source_pointers": {
+          "cli": [
+            "compiled_cli_source"
+          ],
+          "tools": [
+            "report_tool_source"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "APPLICATION_RATE_WINDOW_DUPLEX_OFFLINE_SCOPED_PASS": "PASS"
+        }
+      },
+      "report_commit": "230560ca0a9708444f5aa5e1ea450e73e184deb4",
+      "artifact_materials": [
+        "socket-load-app-offline-0f286bd-m3321",
+        "socket-load-app-offline-0f286bd-m3322",
+        "socket-load-app-offline-0f286bd-m3323",
+        "socket-load-app-offline-0f286bd-m3324",
+        "socket-load-app-offline-0f286bd-m3325",
+        "socket-load-app-offline-0f286bd-m3326",
+        "socket-load-app-offline-0f286bd-m3327",
+        "socket-load-app-offline-0f286bd-m3328",
+        "socket-load-app-offline-0f286bd-m3329",
+        "socket-load-app-offline-0f286bd-m3330",
+        "socket-load-app-offline-0f286bd-m3331",
+        "socket-load-app-offline-0f286bd-m3332",
+        "socket-load-app-offline-0f286bd-m3333",
+        "socket-load-app-offline-0f286bd-m3334",
+        "socket-load-app-offline-0f286bd-m3335",
+        "socket-load-app-offline-0f286bd-m3336",
+        "socket-load-app-offline-0f286bd-m3337",
+        "socket-load-app-offline-0f286bd-m3338",
+        "socket-load-app-offline-0f286bd-m3339",
+        "socket-load-app-offline-0f286bd-m3340",
+        "socket-load-app-offline-0f286bd-m3341",
+        "socket-load-app-offline-0f286bd-m3342"
+      ],
+      "tool_materials": [
+        "socket-load-app-offline-0f286bd-m3343",
+        "socket-load-app-offline-0f286bd-m3344",
+        "socket-load-app-offline-0f286bd-m3345"
+      ],
+      "configuration_materials": [
+        "socket-load-app-offline-0f286bd-m3346"
+      ],
+      "gates": [
+        {
+          "id": "actual-local-load-and-v1-report-checks",
+          "result": "PASS",
+          "materials": [
+            "socket-load-app-offline-0f286bd-m3321",
+            "socket-load-app-offline-0f286bd-m3322",
+            "socket-load-app-offline-0f286bd-m3323",
+            "socket-load-app-offline-0f286bd-m3324",
+            "socket-load-app-offline-0f286bd-m3325",
+            "socket-load-app-offline-0f286bd-m3326",
+            "socket-load-app-offline-0f286bd-m3327",
+            "socket-load-app-offline-0f286bd-m3328",
+            "socket-load-app-offline-0f286bd-m3329",
+            "socket-load-app-offline-0f286bd-m3330",
+            "socket-load-app-offline-0f286bd-m3331",
+            "socket-load-app-offline-0f286bd-m3332",
+            "socket-load-app-offline-0f286bd-m3333",
+            "socket-load-app-offline-0f286bd-m3334",
+            "socket-load-app-offline-0f286bd-m3335",
+            "socket-load-app-offline-0f286bd-m3336",
+            "socket-load-app-offline-0f286bd-m3337",
+            "socket-load-app-offline-0f286bd-m3338",
+            "socket-load-app-offline-0f286bd-m3339",
+            "socket-load-app-offline-0f286bd-m3340",
+            "socket-load-app-offline-0f286bd-m3341",
+            "socket-load-app-offline-0f286bd-m3342"
+          ]
+        }
+      ],
+      "required_gates": [
+        "actual-local-load-and-v1-report-checks"
       ]
     }
   ],
@@ -44715,6 +44906,219 @@
       "access": "public",
       "format": "bytes",
       "source_commit": "56e9f4596e39d4c077e9d8bea833d02578f637c3"
+    },
+    "socket-load-app-offline-0f286bd-m3321": {
+      "base": "repo",
+      "path": "docs/evidence/socket-benchmark-load-offline-20261016.json",
+      "sha256": "7b5a2e73b9237ba1474612317ba357d352b272f87c13298b7e16262f0ff5b286",
+      "bytes": 9644,
+      "access": "public",
+      "format": "json",
+      "source_commit": "230560ca0a9708444f5aa5e1ea450e73e184deb4"
+    },
+    "socket-load-app-offline-0f286bd-m3322": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-build-v1.log",
+      "sha256": "19fb1ad6e6fc351b7abafd545fa5ac601df68c1378be63d4f95bd563ee817ab6",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3323": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-build-v2-final.log",
+      "sha256": "ee1d3fffa2022e962e63e0dbe4d35c9c198450a20c29fc09030f635dbb38bfcd",
+      "bytes": 72,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3324": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-cli-help-v1.txt",
+      "sha256": "bc4683b0e96d8e4861510ad7ac575e1d31af30bae3b26a8316eba878b2d2e6c0",
+      "bytes": 5646,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3325": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-cli-help-v2-final.txt",
+      "sha256": "bc4683b0e96d8e4861510ad7ac575e1d31af30bae3b26a8316eba878b2d2e6c0",
+      "bytes": 5646,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3326": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-clippy-v1.log",
+      "sha256": "e3cd4c615b75d45d1c5ed04fde9d9bfb5bcb3ed36c864124a32f6e486282a78a",
+      "bytes": 1442,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3327": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-clippy-v2.log",
+      "sha256": "07ec8464123f14c98dcbb9f369cf831f93933095ef048c46326c18f75e742b01",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3328": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-clippy-v3.log",
+      "sha256": "99829426d6081b75ff64af3e15a7369bece9e34370e5b396264a2db9d8aa2ab9",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3329": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-clippy-v4.log",
+      "sha256": "99829426d6081b75ff64af3e15a7369bece9e34370e5b396264a2db9d8aa2ab9",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3330": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-clippy-v5.log",
+      "sha256": "ca4cb8eb496a0a3cebc9264c1efc115dced60451b9cfd6d675e5f2744aab9a08",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3331": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-clippy-v6-final.log",
+      "sha256": "41df6c982a85e08afff321fb854f89ebd38199b87c64c4c0c0d5053725461382",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3332": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-clippy-v7-final.log",
+      "sha256": "0e73effb897dbc0e824c829b03a784a4499175afb066589702082c89a146900a",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3333": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-docs-v1.log",
+      "sha256": "a0ca7070eb0283ddb0ad9ad75da728cf1dfe0cd3f860d595e690bffd2c72ec82",
+      "bytes": 176471,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3334": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-docs-v2-final.log",
+      "sha256": "485512fbf307afb8ce6c29e15443f9d92c10f74a70a848681d8e0a9d1c6da4db",
+      "bytes": 176471,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3335": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-qualification-view-v1.log",
+      "sha256": "91fd593cda98f035b7dc1cb2065145e4b0b58c1bcfc4d78c9e5bc152d0b01154",
+      "bytes": 168858,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3336": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-report-tests-v1.log",
+      "sha256": "b1da13b9f0aa3ba0281ebb23b53a10dece8d0b99e03a334e7e5b85e0156b279e",
+      "bytes": 119,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3337": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-tests-v1.log",
+      "sha256": "d04b2b6d36db642281fe7fdbc30446eb2a47e183f49951224a376983261786a0",
+      "bytes": 2384,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3338": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-tests-v2.log",
+      "sha256": "1842450e5d28e1d6577f690473d804b749835b0bb7abf574ac7f1fae01081988",
+      "bytes": 2384,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3339": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-tests-v3.log",
+      "sha256": "b9ff9fb7b95766bd0817e69aa071465a913bec7b7ff1924538b06ea052182dd4",
+      "bytes": 3668,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3340": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/load-tests-v4-final.log",
+      "sha256": "9697fd087b6876c5c9ba746c4b73d81744f5772427a9852ad091eb4615248497",
+      "bytes": 3766,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3341": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/slctl-0f286bd-debug",
+      "sha256": "d7f3dacf9eb57c9a63ebb7e0908e53b6e47f9a6528a0e791ec7e98f8369ba69d",
+      "bytes": 82471256,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3342": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/slctl-0f286bd-unit-tests",
+      "sha256": "f7799b6f758c5c8853d2d2832728d86f664a169f63e9e655dfcc22e75b7761f4",
+      "bytes": 57673360,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-load-app-offline-0f286bd-m3343": {
+      "base": "repo",
+      "path": "tools/ws73_channel_socket.py",
+      "sha256": "955a7861058b8ee2a219f85d3c37d822c330039a1f1931e77b18932d91caf417",
+      "bytes": 42267,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0"
+    },
+    "socket-load-app-offline-0f286bd-m3344": {
+      "base": "repo",
+      "path": "tools/tests/test_ws73_channel_socket.py",
+      "sha256": "267b58b35289fca57e311dc28af66a43c432f216a9d7e277a84d1ed5e0d24aa9",
+      "bytes": 29820,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0"
+    },
+    "socket-load-app-offline-0f286bd-m3345": {
+      "base": "repo",
+      "path": "crates/slctl/src/benchmark/load.rs",
+      "sha256": "e6e357ea565836d7ef8bdc7b539fd2edd3b25f7197b9fdeaaa00ba44fea20bb3",
+      "bytes": 46650,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0"
+    },
+    "socket-load-app-offline-0f286bd-m3346": {
+      "base": "repo",
+      "path": "Cargo.lock",
+      "sha256": "0a35344ae1e0461fede247c2aa1016f03cccb9b941ad74ccd922ce917610afc2",
+      "bytes": 45213,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0"
     }
   },
   "baseline_record": "dynamic-runtime-fixed14-400bd68"

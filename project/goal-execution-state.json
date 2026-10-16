@@ -1141,6 +1141,10 @@
       "socket-benchmark-app-offline-56e9f45": {
         "level": "offline",
         "result": "PASS"
+      },
+      "socket-load-app-offline-0f286bd": {
+        "level": "offline",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
@@ -1544,15 +1548,20 @@
         "ppoll ns waits,finite original deadlines/drain observation;no hotloop logging/disk/hex",
         "Process CPU/RSS/fd endpoints,application queue peaks;unknown kernel counters explicitnull"
       ],
-      "offline": "Final24unit+5privateDBus CLI and20schema1 report tests/32negative classes;finalidentity to be sealed;no Native or performance qualification",
+      "offline": "24unit+5privateDBus CLI and20schema1reporttests/32negativeclasses at exact0f286bd;strictclippy/docs;NOnewNative,formalorWS73performancequalification",
       "remaining": [
         "schema2 independent two-end oracle/provenance/capture/supervisor negatives",
         "Exact new build NativeVM/WS73 ordinaryuser roles and retained function/length regression",
         "Kernel resources/continuous peaks and trace overhead",
         "P2events aftercredible baseline;measuredRXgap and USBoptimization later",
-        "Clock-domain mapping/error bounds for applicable segmented timeline;no one-wayRF inference"
+        "Clock-domain mapping/error bounds for applicable segmented timeline;no one-wayRF inference",
+        "Coordinate both measurement-endpoints before heavy report rendering;quantify observation interference,including the final peer reply"
       ],
-      "performance_qualified": false
+      "performance_qualified": false,
+      "source_commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0",
+      "late_validation_fix": "aeaf6a8",
+      "offline_record": "socket-load-app-offline-0f286bd",
+      "offline_report": "docs/evidence/socket-benchmark-load-offline-20261016.json"
     }
   }
 }

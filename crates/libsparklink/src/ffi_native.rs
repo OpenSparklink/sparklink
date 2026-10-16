@@ -548,3 +548,21 @@ pub unsafe extern "C" fn slk_security_negotiation_cancel(
         .cancel_native_security_negotiation(request)
         .map_or_else(errno, |()| 0)
 }
+
+/// Decide a privileged original numeric prompt; no raw proof/keys/trusted flag.
+/// # Safety
+/// Non-null pointers must be valid, aligned and nonoverlapping for this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_security_numeric_confirm(
+    adapter: *const SlkAdapter,
+    request: *const SleSecurityNumericConfirm,
+) -> c_int {
+    let (Some(adapter), Some(request)) = (unsafe { adapter.as_ref() }, unsafe { request.as_ref() })
+    else {
+        return -nix::libc::EINVAL;
+    };
+    adapter
+        .inner
+        .confirm_native_security_numeric(request)
+        .map_or_else(errno, |()| 0)
+}

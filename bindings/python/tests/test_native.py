@@ -15,7 +15,7 @@ from sparklink.structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
-    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm,
 )
 
 
@@ -44,6 +44,14 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(bytes(request), before)
         self.assertEqual(self.lib.slk_security_negotiation_cancel(None, ctypes.byref(request)), -errno.EINVAL)
         self.assertEqual(self.lib.slk_security_negotiation_cancel(self.handle, None), -errno.EINVAL)
+
+    def test_numeric_confirmation_is_real_ioctl_without_local_success(self):
+        request = SleSecurityNumericConfirm(version=1, generation=1, lifetime=1, request_id=1, comparison_code=0, accept=1)
+        before = bytes(request)
+        self.assertEqual(self.lib.slk_security_numeric_confirm(self.handle, ctypes.byref(request)), -errno.ENOTTY)
+        self.assertEqual(bytes(request), before)
+        self.assertEqual(self.lib.slk_security_numeric_confirm(None, ctypes.byref(request)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_security_numeric_confirm(self.handle, None), -errno.EINVAL)
 
     def test_channel_info_errors_preserve_output_and_errno(self):
         out = SleChannelInfo(generation=99, reserved=123)

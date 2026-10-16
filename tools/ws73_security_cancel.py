@@ -87,7 +87,7 @@ def verify(row, requests, passive, original_deadline=False):
         raise ValueError('one terminal observation retained across repeated cancellation')
     out = decode(Result, row['results'][passive]);req = requests[passive]
     if original_deadline and evidence.get('expired_before_cancel')!=row['results'][passive]:raise ValueError('deadline terminal must exist before cancelling it')
-    if (out.version,out.profile,out.generation,out.lifetime,out.request_id,out.handle,out.role,out.state,out.flags,out.status,out.error) != (1,1,req.generation,req.lifetime,1,req.handle,1,7 if original_deadline else 6,0,0,-errno.ETIMEDOUT if original_deadline else -errno.ECANCELED) or bytes(out.local_caps) != OFFER or any(out.peer_caps) or any(out.reserved):
+    if (out.version,out.profile,out.generation,out.lifetime,out.request_id,out.handle,out.role,out.state,out.flags,out.status,out.error) != (1,1,req.generation,req.lifetime,1,req.handle,1,7 if original_deadline else 6,0,0,-errno.ETIMEDOUT if original_deadline else -errno.ECANCELED) or bytes(out.local_caps) != OFFER or any(out.peer_caps) or out.comparison_code != 0:
         raise ValueError('exact cancelled original passive request required')
     if row['results'][1-passive] is not None or not row['t_arm_before_wall_ns'] <= evidence['before_wall_ns'] <= row['observed_wall_ns']:
         raise ValueError('no peer approval or time reversal')

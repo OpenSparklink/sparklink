@@ -107,8 +107,11 @@ Bond、第三方互通或完整安全证明。未执行的新组合不能继承�
 当前未发布接口以源码为准：`SL_IOCTL_SECURITY_NEGOTIATION_SUBMIT`（`0xd2`）为
 **版本2、64字节**，携带原始`deadline_monotonic_ns`（CLOCK_MONOTONIC纳秒）。
 `RESULT`（`0xd3`、72字节）和`CANCEL`（`0xd4`、32字节）仍为版本1。
-旧56字节SUBMIT删除，不设兼容期；三种接口不能混用版本或布局。
+旧56字节SUBMIT删除，不设兼容期；这些接口不能混用版本或布局。
 C导出`slk_security_negotiation_submit/result/cancel`与Python NativeAdapter同步。
+另有版本1、40字节的`SL_IOCTL_SECURITY_NUMERIC_CONFIRM`（`0xd5`），
+C `slk_security_numeric_confirm`、Python `NativeAdapter.confirm_security_numeric`同步；
+RESULT末尾4字节现为u32 `comparison_code`，总长仍72字节，UAPI未发布、不保留旧布局语义。
 这是底层机制；显式 Agent 与 Connection 的 SDK111 限定流程已接线。旧 Pair／Encrypt facade 仍 NotSupported，不能用它启动新流程。实机范围见唯一当前资格入口。
 
 原始绝对期限必须在策略/Agent等待前设置，不能在批准后刷新。`timeout_ms`为
@@ -118,16 +121,16 @@ Host的jiffies仅安排清理，不延长准入；转换使用实际内核tick�
 不计系统挂起时间；完整PM取消/恢复仍待实现，不能据此承诺挂起期间继续安全过程。
 当前新ABI/时钟改动不能继承旧56字节镜像资格。
 
-- 必须显式选择`flags=1`（CAPABILITY_ONLY）、`2`（KEY_AGREEMENT_ONLY）或`3`（UNAUTHENTICATED_ENCRYPTION），不能组合；
+- 必须显式选择`flags=1`（CAPABILITY_ONLY）、`2`（KEY_AGREEMENT_ONLY）、`3`（UNAUTHENTICATED_ENCRYPTION）或`4`（NUMERIC_COMPARISON），不能组合；
   由CAP_NET_ADMIN与原活跃Managed
   File调用；其他File或降权后的同一File返回EPERM。查询同样受保护，不开放原始RX或密钥。
 - generation/lifetime/request_id非零，handle为12位；精确核对role/address/type/epoch。
   timeout为1–5000ms原始总期限。仅G action2发起134、T action1先批准并回应135。
   profile/角色组合不支持返回EOPNOTSUPP；无效字段/reserved返回EINVAL；失配连接
   返回ESTALE，错误generation返回ENODEV。同lifetime再次启动返回EBUSY。
-- 本批固定offer为`03 00 00 10 00 02 02 02 02 00`，不请求MITM、Bond、OOB或分发。
+- 模式1/2/3固定offer为`03 00 00 10 00 02 02 02 02 00`，不请求MITM、Bond、OOB或分发。
   只接受该已知offer，不承诺任意SDK/第三方配对互通或可信身份；模式1/2不执行安装/加密。
-- result state：1批准待收、2进行中、3安装中、4能力观察完成、5失败、6撤销、7超时、8未认证候选
+- result state：1批准待收、2进行中、3协商/确认/安装中、4能力观察完成、5失败、6撤销、7超时、8未认证候选
   proof完成、9控制器报告未认证加密开启；flags
   的1/2/4分别表示实际提交、真实成功Complete、对端能力RX。state4/8/9要求flags7。
   失败不产生trusted状态；撤权后查询也失去授权。该入口不是事件历史或可靠交付API。
@@ -275,6 +278,32 @@ Host队列不保存密钥。驱动临时帧在最终提交前通过保留票据�
 安装命令在snoop中置`SNOOP_REDACTED=2`，保留原长度、只捕获真实头部；不可将省略
 参数当作零长度USB包或全零密钥。USB原始抓包含秘密，保持私有，公开证据不输出LTK。
 本节描述接线，不授予新镜像资格；当前准确实机范围仍见唯一资格入口。
+
+## 数字比较机制（开发中，未发布 ABI）
+
+`flags=4` 在同一物理Session使用明确offer `01 00 04 10 00 02 02 02 02 00`：
+显示/是非确认、MITM请求、无OOB、无Bond。只接受精确匹配，不能降级为无入口模式。
+协议为134/135、136/137、T的13C（confirm16+Rb16）、G的139（Ra16），然后等待确认。
+C crypto依赖复用SDK111字节序适配器，依据公开公钥与两端随机数计算六位比较码；
+不得将两端恰好相同的数值当作用户已核对身份。
+
+RESULT flags8表示当前有效提示，`comparison_code`范围0–999999，000000有效。
+提示只在state3、原期限内有效。原CAP_NET_ADMIN、原Managed File通过40字节CONFIRM
+提交generation/lifetime/request_id/version=1/code/handle/accept与5字节零reserved；
+accept=0拒绝，1同意。错误code/已确认返回ESTALE，错误作者请求ENOENT，其他File
+或降权调用EPERM；字段/reserved错误EINVAL，不支持版本EOPNOTSUPP。原期限超时
+ETIMEDOUT，已经关闭ECANCELED；调用不创建Session、不刷新期限、不提供密钥/proof。
+
+flags16仅表示本地明确确认；此后才准入DH proof。T可在自身确认前保存一份属于本
+Session的真实G proof，确认后再验证并回应，重复/旧lifetime不混入新过程。flags32仅
+表示实际peer proof验证；state11/flags119还要求真实安装接受、对应0011加密开启和
+自身relay Complete排空。数字比较码在确认、拒绝、撤销、到期后清除；返回Native操作
+结果不代表daemon身份、可信Grant或Bond，已开始的物理义务仍按现有票据清理。
+
+本批代码与VM专用自动比较见证仍待准确新镜像实机验收。自动见证不是生产Agent。
+正式slkd/CLI尚只支持`sdk111-no-mitm`策略，Pair/可信身份/protected通道/Bond仍明确
+不支持。交互UI及适合人类操作的原期限策略必须另行设计，不能通过刷新现有5秒期限实现。
+旧镜像资格不继承本批；形式化状态/锁/引用/硬件假设与真实两端交付分别记录。
 
 ## 单个安全作者请求取消（未发布 ABI）
 

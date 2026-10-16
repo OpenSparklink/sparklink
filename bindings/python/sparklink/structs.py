@@ -427,7 +427,7 @@ class SleSecurityNegotiationResult(ctypes.Structure):
     _align_ = 8
     _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),("request_id",ctypes.c_uint64),
         ("version",ctypes.c_uint32),("profile",ctypes.c_uint32),("state",ctypes.c_uint32),("error",ctypes.c_int32),("flags",ctypes.c_uint32),
-        ("handle",ctypes.c_uint16),("role",ctypes.c_uint8),("status",ctypes.c_uint8),("local_caps",ctypes.c_uint8*10),("peer_caps",ctypes.c_uint8*10),("reserved",ctypes.c_uint8*4)]
+        ("handle",ctypes.c_uint16),("role",ctypes.c_uint8),("status",ctypes.c_uint8),("local_caps",ctypes.c_uint8*10),("peer_caps",ctypes.c_uint8*10),("comparison_code",ctypes.c_uint32)]
 
 
 class SleSecurityNegotiationCancel(ctypes.Structure):
@@ -450,3 +450,11 @@ class SleSessionTxStatus(ctypes.Structure):
         ("dynamic_pending",ctypes.c_uint16),("dynamic_retired",ctypes.c_uint16),
         ("dynamic_failed",ctypes.c_uint16),("dynamic_allocated",ctypes.c_uint16),
         ("flags",ctypes.c_uint32),("reserved",ctypes.c_uint64*2)]
+
+
+class SleSecurityNumericConfirm(ctypes.Structure):
+    """Original privileged comparison prompt decision; no key/credential input."""
+    _align_ = 8
+    _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),("request_id",ctypes.c_uint64),
+        ("version",ctypes.c_uint32),("comparison_code",ctypes.c_uint32),("handle",ctypes.c_uint16),
+        ("accept",ctypes.c_uint8),("reserved",ctypes.c_uint8*5)]

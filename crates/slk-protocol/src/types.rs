@@ -1646,7 +1646,7 @@ pub struct SleSecurityNegotiationResult {
     pub status: u8,
     pub local_caps: [u8; 10],
     pub peer_caps: [u8; 10],
-    pub reserved: [u8; 4],
+    pub comparison_code: u32,
 }
 
 /// Explicit opt-in to the limited exchange; never a trusted-security flag.
@@ -1667,3 +1667,19 @@ pub struct SleSecurityNegotiationCancel {
     pub reserved: u16,
 }
 const _: () = assert!(core::mem::size_of::<SleSecurityNegotiationCancel>() == 32);
+
+/// One decision on the original numeric prompt; no credential or raw proof.
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default)]
+pub struct SleSecurityNumericConfirm {
+    pub generation: u64,
+    pub lifetime: u64,
+    pub request_id: u64,
+    pub version: u32,
+    pub comparison_code: u32,
+    pub handle: u16,
+    pub accept: u8,
+    pub reserved: [u8; 5],
+}
+pub const SECURITY_NUMERIC_COMPARISON: u32 = 4;
+const _: () = assert!(core::mem::size_of::<SleSecurityNumericConfirm>() == 40);

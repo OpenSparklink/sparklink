@@ -361,6 +361,7 @@ def run(args):
     cancel_pending='ws73.security_cancel_pending=1' in Path('/proc/cmdline').read_text().split()
     encryption='ws73.security_encryption=1' in Path('/proc/cmdline').read_text().split()
     agreement='ws73.security_key_agreement=1' in Path('/proc/cmdline').read_text().split()
+    numeric=next((v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.security_numeric=')),None)
     capabilities='ws73.security_capabilities=1' in Path('/proc/cmdline').read_text().split()
     idle_trace='ws73.session_idle=1' in Path('/proc/cmdline').read_text().split()
     idle_observer=None
@@ -370,6 +371,7 @@ def run(args):
     if link_down and (not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('direct Down requires separate bidirectional begun-PDU release-mode environment')
     if data_deadline and (link_down or not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate bidirectional begun-PDU original-deadline environment required')
+    if numeric and (numeric not in ('numeric-approve','numeric-reject','numeric-late') or not capabilities or agreement or encryption or cancel_pending):raise ValueError('separate numeric mechanism gate required')
     if original_deadline and not cancel_pending:raise ValueError('original deadline requires passive author gate')
     if cancel_pending and (not capabilities or agreement or encryption):raise ValueError('separate passive author cancellation gate required')
     if encryption and not agreement:raise ValueError('installation requires same Session candidate proof gate')
@@ -505,6 +507,7 @@ def run(args):
             grant.exchange('before')
             if idle_observer:idle_observer.idle(grant)
             if capabilities:
+                if numeric:r['numeric_comparison']=numeric
                 if cancel_pending:r['security_cancel_pending']=True
                 if original_deadline:r['security_original_deadline']=True
                 r['key_agreement']=agreement

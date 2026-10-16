@@ -630,7 +630,7 @@ typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationResult {
     uint8_t status;
     uint8_t local_caps[10];
     uint8_t peer_caps[10];
-    uint8_t reserved[4];
+    uint32_t comparison_code;
 } SleSecurityNegotiationResult;
 
 /**
@@ -644,6 +644,13 @@ typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationCancel {
     uint16_t handle;
     uint16_t reserved;
 } SleSecurityNegotiationCancel;
+
+typedef struct SPARKLINK_ALIGN(8) SleSecurityNumericConfirm {
+    uint64_t generation, lifetime, request_id;
+    uint32_t version, comparison_code;
+    uint16_t handle;
+    uint8_t accept, reserved[5];
+} SleSecurityNumericConfirm;
 
 #ifdef __cplusplus
 extern "C" {
@@ -1028,6 +1035,8 @@ int slk_security_negotiation_result(const struct SlkAdapter *adapter,
  */
 int slk_security_negotiation_cancel(const struct SlkAdapter *adapter,
                                     const struct SleSecurityNegotiationCancel *request);
+int slk_security_numeric_confirm(const struct SlkAdapter *adapter,
+                                 const struct SleSecurityNumericConfirm *request);
 
 #ifdef __cplusplus
 }  // extern "C"

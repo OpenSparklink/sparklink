@@ -117,7 +117,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_numeric.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/genl_registry_test.c',
@@ -256,7 +256,7 @@ def prepare_locked(args, build_fd):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -586,6 +586,8 @@ def _run(args):
         raise ValueError('Session service trace requires separate real fixed-channel data or Managed Grant gate')
     security_capabilities=bool(getattr(args,'managed_security_capabilities',False))
     security_kind=getattr(args,'managed_security_kind','capabilities')
+    numeric=security_kind if security_kind in ('numeric-approve','numeric-reject','numeric-late') else None
+    if numeric and not security_capabilities:raise ValueError('numeric mechanism requires standalone explicit security gate')
     original_deadline=security_kind=='original-deadline'
     cancel_pending=security_kind in ['cancel-pending','original-deadline']
     if cancel_pending and not security_capabilities:raise ValueError('passive cancellation requires standalone explicit security gate')
@@ -760,6 +762,8 @@ def _run(args):
     m['live_security_original_deadline_requested']=original_deadline
     if cancel_pending:m['security_cancel_verifier']=file_record(HERE/'ws73_security_cancel.py')
     m['live_security_unauthenticated_encryption_requested']=encryption
+    m['live_security_numeric_requested']=numeric
+    if numeric:m['security_numeric_verifiers']=[file_record(HERE/name) for name in ['ws73_security_numeric.py','ws73_key_agreement.py']]
     m['live_security_key_agreement_requested']=key_agreement
     if key_agreement:m['security_key_agreement_verifier']=file_record(HERE/'ws73_key_agreement.py')
     if security_capabilities:m['security_capabilities_verifier']=file_record(HERE/'ws73_security_capabilities.py')
@@ -901,6 +905,7 @@ def _run(args):
                      (' ws73.security_original_deadline=1' if original_deadline else '')+
                      (' ws73.security_key_agreement=1' if key_agreement else '')+
                      (' ws73.security_encryption=1' if encryption else '')+
+                     (' ws73.security_numeric='+numeric if numeric else '')+
                      (' ws73.channel_scm_rights=1' if channel_scm_rights else '')+
                      (' ws73.channel_directions=1' if channel_directions else '')+
                      (' ws73.selected_domain_cleanup=1' if selected_cleanup else '')+
@@ -1305,6 +1310,7 @@ def _run(args):
                     if bool(probe.get('unauthenticated_encryption',False))!=encryption:raise ValueError('explicit installation gate mismatch')
                     if bool(probe.get('security_original_deadline',False))!=original_deadline:raise ValueError('original security deadline gate mismatch')
                     if bool(probe.get('security_cancel_pending',False))!=cancel_pending:raise ValueError('passive cancellation gate mismatch')
+                    if probe.get('numeric_comparison')!=numeric:raise ValueError('requested original-author numeric mode mismatch')
                     if bool(probe.get('key_agreement',False))!=key_agreement:raise ValueError('requested candidate key agreement gate mismatch')
                     if bool(probe.get('security_capabilities'))!=security_capabilities:raise ValueError('requested limited security capability gate mismatch')
                     if channel_revoke_prefix and file_record(HERE/'ws73_revoke_prefix.py')!=m['revoke_prefix_verifier']:raise ValueError('revoke-prefix verifier changed during run')
@@ -1397,7 +1403,7 @@ def _run(args):
                     # later qualification must not erase/mutate earlier evidence.
                     from ws73_daemon_removal import verify_sealed_record
                     verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']='FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_NUMERIC_COMPARISON_MECHANISM_PASS' if numeric else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
@@ -1445,6 +1451,7 @@ def _run(args):
         if channel_link_down and file_record(HERE/'ws73_channel_link_down.py')!=m['channel_link_down_verifier']:raise ValueError('direct Down verifier changed during run')
         if channel_deadline and file_record(HERE/'ws73_channel_deadline.py')!=m['channel_deadline_verifier']:raise ValueError('original deadline verifier changed during run')
         if cancel_pending and file_record(HERE/'ws73_security_cancel.py')!=m['security_cancel_verifier']:raise ValueError('passive cancel verifier changed during run')
+        if numeric and [file_record(HERE/name) for name in ['ws73_security_numeric.py','ws73_key_agreement.py']]!=m['security_numeric_verifiers']:raise ValueError('numeric mechanism verifiers changed during run')
         if key_agreement and file_record(HERE/'ws73_key_agreement.py')!=m['security_key_agreement_verifier']:raise ValueError('candidate key agreement verifier changed during run')
         if security_capabilities and file_record(HERE/'ws73_security_capabilities.py')!=m['security_capabilities_verifier']:raise ValueError('limited capability verifier changed during run')
         if connected_case and file_record(HERE/'ws73_connected_file_gate.py')!=m['connected_file_verifier']:
@@ -1629,6 +1636,14 @@ def run_exit_code(record):
                     and x['overlap_wall_ns'][0]<x['overlap_wall_ns'][1]
                     for n,x in enumerate(overlaps)))
         return 0 if valid else 1
+    if record.get('status') == 'REAL_NUMERIC_COMPARISON_MECHANISM_PASS':
+        proof=record.get('connected_file_corroboration',{})
+        mode=record.get('live_security_numeric_requested')
+        return 0 if (mode in ('numeric-approve','numeric-reject','numeric-late')
+            and proof.get('status')=='REAL_NUMERIC_COMPARISON_MECHANISM_CORROBORATED'
+            and proof.get('numeric_mode')==mode and proof.get('business_round_trips')==4
+            and len(proof.get('controllers',[]))==2 and len(proof.get('business_legs',[]))==16
+            and record.get('qemu_exit')==0) else 1
     if record.get('status') == 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS':
         proof = record.get('security_agent_corroboration', {})
         business = record.get('channel_socket_corroboration', {})
@@ -1699,7 +1714,7 @@ def main():
             cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
-            cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement','unauthenticated-encryption','cancel-pending','original-deadline'],default='capabilities',help='explicit capability, candidate proof or unauthenticated encryption mechanism; not Agent/identity/Bond')
+            cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement','unauthenticated-encryption','cancel-pending','original-deadline','numeric-approve','numeric-reject','numeric-late'],default='capabilities',help='explicit capability, candidate proof or unauthenticated encryption mechanism; not Agent/identity/Bond')
             cmd.add_argument('--managed-security-capabilities',action='store_true',help='explicit Managed security negotiation gate; select bounded kind, never Pair/Encrypted')
             cmd.add_argument('--managed-channel-deadline',action='store_true',help='original5s begun-PDU deadline with separate bounded8s real IN81 hold, not recovery')
             cmd.add_argument('--managed-channel-link-down',action='store_true',help='direct physical Disconnect after actual begun PDU while both Managed leases remain held; separate from revoke/deadline/recovery')

@@ -330,3 +330,11 @@ nix::ioctl_write_ptr!(
     0xd4,
     super::SleSecurityNegotiationCancel
 );
+
+// Original Managed File, admin and original numeric prompt required.
+nix::ioctl_write_ptr!(
+    sl_security_numeric_confirm,
+    SL_MAGIC,
+    0xd5,
+    super::SleSecurityNumericConfirm
+);

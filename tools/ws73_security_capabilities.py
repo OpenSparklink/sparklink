@@ -23,8 +23,8 @@ SUBMIT=(1<<30)|(ctypes.sizeof(Submit)<<16)|(ord('S')<<8)|0xd2
 RESULT=(3<<30)|(ctypes.sizeof(Result)<<16)|(ord('S')<<8)|0xd3
 
 
-def request(snapshot,link,agreement=False,encryption=False,deadline_ns=None):
-    value=Submit(version=2,deadline_monotonic_ns=time.monotonic_ns()+5_000_000_000 if deadline_ns is None else deadline_ns,profile=1,flags=3 if encryption else 2 if agreement else 1,action=2 if link.role==0 else 1,timeout_ms=5000,generation=snapshot.generation,lifetime=link.lifetime,request_id=1,handle=link.handle,role=link.role,address_type=link.address_type)
+def request(snapshot,link,agreement=False,encryption=False,deadline_ns=None,numeric=False):
+    value=Submit(version=2,deadline_monotonic_ns=time.monotonic_ns()+5_000_000_000 if deadline_ns is None else deadline_ns,profile=1,flags=4 if numeric else 3 if encryption else 2 if agreement else 1,action=2 if link.role==0 else 1,timeout_ms=5000,generation=snapshot.generation,lifetime=link.lifetime,request_id=1,handle=link.handle,role=link.role,address_type=link.address_type)
     value.address[:]=link.address;return value
 
 
@@ -34,7 +34,7 @@ def denied(fd,command,value):
     raise ValueError('unauthorized/invalid limited security request succeeded')
 
 
-def ordinary_denial(writer,req,cancel_pending=False):
+def ordinary_denial(writer,req,cancel_pending=False,numeric=False):
     rd,wr=os.pipe2(os.O_CLOEXEC);pid=os.fork()
     if pid==0:
         try:
@@ -46,6 +46,9 @@ def ordinary_denial(writer,req,cancel_pending=False):
                         if e.errno!=errno.EBADF:raise
             os.setgroups([]);os.setgid(1002);os.setuid(1000)
             out=dict(credentials=credentials(),submit_errno=denied(writer.fileno(),SUBMIT,req),result_errno=denied(writer.fileno(),RESULT,Result(version=1,generation=req.generation,lifetime=req.lifetime,handle=req.handle,request_id=1)))
+            if numeric:
+                from ws73_security_numeric import CONFIRM,decision
+                out['confirm_errno']=denied(writer.fileno(),CONFIRM,decision(req,0))
             if cancel_pending:
                 from ws73_security_cancel import CANCEL,request as cancel_request
                 out['cancel_errno']=denied(writer.fileno(),CANCEL,cancel_request(req))
@@ -72,9 +75,10 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
     if links[i].role!=0 or links[p].role!=1:raise ValueError('actual G Create and T response roles required')
     agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);cancel_pending=r.get('security_cancel_pending',False);wanted=9 if encryption else 8 if agreement else 4
     row['request_before_monotonic_ns']=time.monotonic_ns()
-    requests=[request(s,l,agreement,encryption or cancel_pending) for s,l in zip(snapshots,links)]
+    numeric=r.get('numeric_comparison')
+    requests=[request(s,l,agreement,encryption or cancel_pending,numeric=bool(numeric)) for s,l in zip(snapshots,links)]
     row['request_after_monotonic_ns']=time.monotonic_ns()
-    row['requests']=[bytes(v).hex() for v in requests];row['ordinary_denial']=ordinary_denial(writers[i],requests[i],cancel_pending);save()
+    row['requests']=[bytes(v).hex() for v in requests];row['ordinary_denial']=ordinary_denial(writers[i],requests[i],cancel_pending,bool(numeric));save()
     for n in [i,p]:
         good=requests[n]
         for kind,want in [('generation',errno.ENODEV),('lifetime',errno.ESTALE),('address',errno.ESTALE),('role',errno.ESTALE),('profile',errno.EOPNOTSUPP),('flags',errno.EINVAL),('reserved',errno.EINVAL),('version',errno.EOPNOTSUPP),('deadline_expired',errno.ETIMEDOUT),('deadline_future',errno.EINVAL)]:
@@ -103,7 +107,10 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
         cancel_passive(row,save,writers,observers,requests,links,p,r.get('security_original_deadline',False))
     else:
         row['g_start_before_wall_ns']=time.time_ns();writers[i].submit_security_negotiation(requests[i]);deadline=time.monotonic()+5
-        while True:
+        if numeric:
+            from ws73_security_numeric import finish_exchange
+            finish_exchange(r,row,save,writers,observers,requests,links)
+        while not numeric:
             values=[a.security_negotiation(l.lifetime,l.handle,1) for a,l in zip(writers,links)]
             row['results']=[bytes(v).hex() for v in values];save()
             if all(v.state==wanted for v in values):break
@@ -138,21 +145,22 @@ def verify(r):
     if cancel_pending and (r.get('key_agreement',False) or r.get('unauthenticated_encryption',False)):raise ValueError('separate passive cancellation gate required')
     if r.get('format_version')!=1 or r.get('status')!=('SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'SECURITY_CANCEL_PENDING_PASS' if cancel_pending else 'SECURITY_CAPABILITIES_PASS') or r.get('case')!='release' or r.get('index') not in [0,1] or r.get('daemon_running') is not False or r.get('synthetic_support') is not False:raise ValueError('separate real limited capability gate required')
     if r.get('unauthenticated_encryption',False) and r.get('key_agreement') is not True:raise ValueError('encryption cannot bypass candidate proof gate')
+    numeric=r.get('numeric_comparison')
     row=r['security_capabilities'];i=r['index'];g=r['channel_grant'];agreement=r.get('key_agreement',False);encryption=r.get('unauthenticated_encryption',False);snapshots=[setup(v,n) for n,v in enumerate(r['initial_snapshots'])]
     if row['status']!=('REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_LIMITED_CAPABILITIES_PASS') or len(snapshots)!=2:raise ValueError('two actual controllers required')
     for n in [0,1]:
         before=decode(SleLinkSnapshot,row['before_links'][n]);after=decode(SleLinkSnapshot,row['after_links'][n])
         if before.flags!=1 or before.count!=1 or bytes(before)!=bytes(after) or before.generation!=snapshots[n].generation:raise ValueError('same physical lifetime must survive limited exchange')
         link=before.links[0];req=decode(Submit,row['requests'][n]);owner=g['owners'][n]
-        if (req.version,req.profile,req.flags,req.timeout_ms,req.request_id,req.generation,req.lifetime,req.handle,req.role,req.action,req.address_type)!=(2,1,3 if encryption or cancel_pending else 2 if agreement else 1,5000,1,before.generation,link.lifetime,link.handle,0 if n==i else 1,2 if n==i else 1,link.address_type) or bytes(req.address)!=bytes(link.address) or any(req.reserved):raise ValueError('exact approved physical reference required')
+        if (req.version,req.profile,req.flags,req.timeout_ms,req.request_id,req.generation,req.lifetime,req.handle,req.role,req.action,req.address_type)!=(2,1,4 if numeric else 3 if encryption or cancel_pending else 2 if agreement else 1,5000,1,before.generation,link.lifetime,link.handle,0 if n==i else 1,2 if n==i else 1,link.address_type) or bytes(req.address)!=bytes(link.address) or any(req.reserved):raise ValueError('exact approved physical reference required')
         if not row['request_before_monotonic_ns']+5_000_000_000<=req.deadline_monotonic_ns<=row['request_after_monotonic_ns']+5_000_000_000:raise ValueError('actual original absolute deadline must survive all waiting/crypto/submit steps')
         if original_deadline:
             if not row['request_after_monotonic_ns']<=row['policy_wait_start_ns']<row['policy_wait_end_ns']<=row['t_arm_before_monotonic_ns'] or row['policy_wait_end_ns']-row['policy_wait_start_ns']<2_000_000_000 or not req.deadline_monotonic_ns<=row['observed_monotonic_ns']<row['t_arm_before_monotonic_ns']+4_000_000_000:raise ValueError('expiry after original deadline but before a refreshed post-policy5s deadline required')
-        elif row['observed_monotonic_ns']>=req.deadline_monotonic_ns:raise ValueError('original nanosecond deadline exceeded')
+        elif not numeric and row['observed_monotonic_ns']>=req.deadline_monotonic_ns:raise ValueError('original nanosecond deadline exceeded')
         if (owner['generation'],owner['lifetime'],owner['handle'],owner['lease'])!=(req.generation,req.lifetime,req.handle,r['leases'][n]):raise ValueError('business must use same original Session/lease')
-        if not cancel_pending:
+        if not cancel_pending and not numeric:
             result=decode(Result,row['results'][n])
-            if (result.version,result.profile,result.generation,result.lifetime,result.handle,result.request_id,result.role,result.state,result.error,result.status,result.flags)!=(1,1,req.generation,req.lifetime,req.handle,1,req.role,9 if encryption else 8 if agreement else 4,0,0,7) or bytes(result.local_caps)!=OFFER or bytes(result.peer_caps)!=OFFER or any(result.reserved):raise ValueError('real local Complete and peer capability bytes required, never trusted state')
+            if (result.version,result.profile,result.generation,result.lifetime,result.handle,result.request_id,result.role,result.state,result.error,result.status,result.flags)!=(1,1,req.generation,req.lifetime,req.handle,1,req.role,9 if encryption else 8 if agreement else 4,0,0,7) or bytes(result.local_caps)!=OFFER or bytes(result.peer_caps)!=OFFER or result.comparison_code != 0:raise ValueError('real local Complete and peer capability bytes required, never trusted state')
         for key in ['before_ready','after_ready']:
             ready=decode(SleControllerSnapshot,row[key][n])
             if ready.flags!=1 or ready.generation!=req.generation:raise ValueError('original registration Ready must remain')
@@ -168,8 +176,8 @@ def verify(r):
         worker=g['workers'][n]
         if worker['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker['credentials']['caps'].values()) or worker['original_errno']!=errno.EBADF:raise ValueError('ordinary business application required')
     armed=decode(Result,row['t_armed']);t_req=decode(Submit,row['requests'][1-i])
-    if (armed.version,armed.profile,armed.generation,armed.lifetime,armed.handle,armed.request_id,armed.role,armed.state,armed.status,armed.flags,armed.error)!=(1,1,t_req.generation,t_req.lifetime,t_req.handle,1,1,1,0,0,0) or any(armed.peer_caps) or any(armed.reserved) or bytes(armed.local_caps)!=OFFER:raise ValueError('T approval alone cannot invent RX/TX/Complete')
-    if not 0<row['observed_monotonic_ns']-row['t_arm_before_monotonic_ns']<5_000_000_000:raise ValueError('original limited deadline required')
+    if (armed.version,armed.profile,armed.generation,armed.lifetime,armed.handle,armed.request_id,armed.role,armed.state,armed.status,armed.flags,armed.error)!=(1,1,t_req.generation,t_req.lifetime,t_req.handle,1,1,1,0,0,0) or any(armed.peer_caps) or armed.comparison_code!=0 or bytes(armed.local_caps)!=(bytes([1,0,4,16,0,2,2,2,2,0]) if numeric else OFFER):raise ValueError('T approval alone cannot invent RX/TX/Complete')
+    if not numeric and not 0<row['observed_monotonic_ns']-row['t_arm_before_monotonic_ns']<5_000_000_000:raise ValueError('original limited deadline required')
     denial=row['ordinary_denial']
     if denial['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in denial['credentials']['caps'].values()) or (denial['submit_errno'],denial['result_errno'])!=(errno.EPERM,errno.EPERM):raise ValueError('ordinary inherited Managed fd must not approve or observe protected procedure')
     if [b['label'] for b in g['business']]!=['before','before','after_capabilities','after_capabilities']:raise ValueError('four real before/after business round trips required')
@@ -179,6 +187,9 @@ def verify(r):
     if len(row['down'])!=2 or any(e['event'] not in [5,0x1405] for e in row['down']):raise ValueError('both actual cleanup Down events required')
     cleanup=decode(SleConnectionResult,row['cleanup_result']);owner=g['owners'][i]
     if (cleanup.version,cleanup.profile,cleanup.state,cleanup.operation,cleanup.generation,cleanup.request_id,cleanup.handle,cleanup.flags)!=(1,1,4,2,owner['generation'],950,owner['handle'],7) or any([cleanup.error,cleanup.fault_error,cleanup.command_status,cleanup.outcome_status,*cleanup.reserved]):raise ValueError('real successful physical cleanup required')
+    if numeric:
+        from ws73_security_numeric import verify_exchange
+        verify_exchange(r)
     if cancel_pending:
         from ws73_security_cancel import verify as verify_cancel
         verify_cancel(row,[decode(Submit,v) for v in row['requests']],1-i,original_deadline)
@@ -186,6 +197,9 @@ def verify(r):
 
 
 def corroborate(r,capture):
+    if r.get('numeric_comparison'):
+        from ws73_key_agreement import corroborate as numeric_corroborate
+        return numeric_corroborate(r,capture)
     if r.get('security_cancel_pending',False):
         from ws73_security_cancel import corroborate as cancel_corroborate
         return cancel_corroborate(r,capture)

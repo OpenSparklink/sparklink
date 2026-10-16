@@ -1656,3 +1656,21 @@ Native可变count/bytes/window，2042/window16实际背压恢复；原协议/队
 实际worker/queue/URB/credit资源、真实连接参数及分段测量与Agent/SSAP/多通道继续
 并行；绝对速率过载、慢消费者、长期与四设备范围仍缺。全部已准入队列公平需要覆盖
 数据与控制竞争及硬件前进假设，不以有限成功或最终超时替代无饥饿/服务界限。
+
+
+### WP09 下一纵向批次：原 Session 数字比较机制
+
+复用现有typed relay、CMAC/P256依赖、Host命令credit和最终提交票据；不另造Engine。
+固定NearLink Host f0872df、libws73-usb f4d85d0、SDK111 d5e68a5和标准9.3.4.6核对后，
+新增明确method0/IO1/noBond offer、T 013C、六位比较及原作者确认。上游全局提前proof
+缓存不采用：仅在本Session保存一份，受generation/lifetime/原期限/撤权约束。
+
+本批退出：生产转换离线回归、实际C crypto VM、Rust/C/Python ABI与错误契约；
+新准确artifact在U2/3 VM取得两角色正向数字比较、原作者拒绝/原期限迟到拒绝，
+独立公开transcript CMAC核对、双方USB/HCC真实relay/接受/0011、普通应用前后校验回复；
+另回归既有广播扫描/连接/短包/长度门禁。原失败不删除，未通过不得授新资格。
+不把自动比较见证描述为人类身份确认；slkd数字Agent、认证等级/可撤销安全Grant、
+可信凭据与Bond后续接通，仍明确拒绝。现有5秒原期限不刷新，不扩充当前生产UI承诺。
+
+完整S0–S6、19WP/10FV/12DG不变。安装撤权/最终fd/dup/Down/原期限、物理drain/复用、
+公平/资源、SSAP/四设备、自然根因及非人工恢复并行OPEN；UserHost P4不成为前置。

@@ -4,6 +4,10 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
+数字比较机制正在接线：复用唯一Session，新增六位提示/原作者确认与有界提前proof；
+当前仅源码/离线开发状态，未取得新artifact的真实设备、生产Agent、认证Grant或Bond资格。
+已有安装取消与其他历史实机资格仍绑定以下原始编译身份，不升级到dirty工作区。
+
 [SDK111 安装后原请求取消](../docs/evidence/security-install-cancel-real-20261017.json)：
 K14d9/U6166、新QEMUdea80、U2/3真实两角色，共2次G原请求取消、2份真实接受帧
 持有/交还，另一端原生成功；随后8次对端实际校验回复。默认approve、249边界

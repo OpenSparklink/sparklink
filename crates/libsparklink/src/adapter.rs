@@ -1,7 +1,7 @@
 use std::os::fd::{AsFd, BorrowedFd, OwnedFd};
 use std::path::Path;
 
-use nix::fcntl::{OFlag, open};
+use nix::fcntl::{open, OFlag};
 use nix::sys::stat::Mode;
 use tracing::debug;
 
@@ -760,6 +760,16 @@ impl Adapter {
         Ok(())
     }
 
+    /// Decide the live original numeric prompt. Never refreshes its deadline.
+    pub fn confirm_native_security_numeric(
+        &self,
+        request: &SleSecurityNumericConfirm,
+    ) -> Result<()> {
+        // SAFETY: initialized, padding-free, borrowed input for this syscall.
+        unsafe { ioctl::sl_security_numeric_confirm(self.raw_fd(), request)? };
+        Ok(())
+    }
+
     /// Read local real Complete/peer RX observations, never trusted security.
     /// Query requires the original live Managed File; revoke/Down invalidates it.
     pub fn native_security_negotiation(
@@ -779,26 +789,7 @@ impl Adapter {
         };
         // SAFETY: initialized writable padding-free repr(C) ABI.
         unsafe { ioctl::sl_security_negotiation_result(self.raw_fd(), &mut output)? };
-        if output.version != 1
-            || output.profile != 1
-            || output.generation != generation
-            || output.lifetime != lifetime
-            || output.handle != handle
-            || output.request_id != request_id
-            || !matches!(output.state, 1..=9)
-            || output.flags & !7 != 0
-            || output.role > 1
-            || output.reserved != [0; 4]
-            || (matches!(output.state, 4 | 8 | 9)
-                && (output.flags != 7
-                    || output.status != 0
-                    || output.error != 0
-                    || output.peer_caps != output.local_caps))
-        {
-            return Err(crate::Error::InvalidParam(
-                "malformed limited security observation",
-            ));
-        }
+        validate_security_observation(&output, generation, lifetime, handle, request_id)?;
         Ok(output)
     }
 
@@ -1130,6 +1121,55 @@ impl Adapter {
     }
 }
 
+fn validate_security_observation(
+    output: &SleSecurityNegotiationResult,
+    generation: u64,
+    lifetime: u64,
+    handle: u16,
+    request_id: u64,
+) -> Result<()> {
+    if output.version != 1
+        || output.profile != 1
+        || output.generation != generation
+        || output.lifetime != lifetime
+        || output.handle != handle
+        || output.request_id != request_id
+        || !matches!(output.state, 1..=9 | 11)
+        || output.flags & !127 != 0
+        || output.role > 1
+        || (if output.flags & 8 != 0 {
+            output.state != 3 || output.flags & 16 != 0 || output.comparison_code >= 1000000
+        } else {
+            output.comparison_code != 0
+        })
+        || !matches!(
+            output.local_caps,
+            [3, 0, 0, 16, 0, 2, 2, 2, 2, 0] | [1, 0, 4, 16, 0, 2, 2, 2, 2, 0]
+        )
+        || (output.local_caps[0] != 1 && (output.flags & !7 != 0 || output.state == 11))
+        || (output.local_caps[0] == 1 && matches!(output.state, 4 | 8 | 9))
+        || (output.flags & 4 != 0 && output.peer_caps != output.local_caps)
+        || (output.flags & 32 != 0 && output.flags & 16 == 0)
+        || (output.flags & 64 != 0 && output.state != 11)
+        || (output.state == 11
+            && (output.flags != 119
+                || output.error != 0
+                || output.status != 0
+                || output.local_caps != [1, 0, 4, 16, 0, 2, 2, 2, 2, 0]
+                || output.peer_caps != output.local_caps))
+        || (matches!(output.state, 4 | 8 | 9)
+            && (output.flags != 7
+                || output.status != 0
+                || output.error != 0
+                || output.peer_caps != output.local_caps))
+    {
+        return Err(crate::Error::InvalidParam(
+            "malformed limited security observation",
+        ));
+    }
+    Ok(())
+}
+
 fn validate_diagnostic_submit(value: &SleDiagnosticSubmit) -> Result<()> {
     if value.version != 1
         || value.flags != 0
@@ -1310,17 +1350,113 @@ mod native_validation_tests {
             ..good
         };
         assert!(validate_diagnostic_result(&rejected, 7, 9).is_ok());
-        assert!(
-            validate_diagnostic_result(
-                &SleDiagnosticResult {
-                    status: 1,
-                    ..failure
-                },
-                7,
-                9
-            )
-            .is_err()
-        );
+        assert!(validate_diagnostic_result(
+            &SleDiagnosticResult {
+                status: 1,
+                ..failure
+            },
+            7,
+            9
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn numeric_observation_separates_prompt_confirmation_proof_and_install() {
+        let offer = [1, 0, 4, 16, 0, 2, 2, 2, 2, 0];
+        let prompt = SleSecurityNegotiationResult {
+            version: 1,
+            profile: 1,
+            generation: 2,
+            lifetime: 3,
+            request_id: 4,
+            handle: 5,
+            role: 0,
+            state: 3,
+            flags: 15,
+            local_caps: offer,
+            peer_caps: offer,
+            ..Default::default()
+        };
+        let valid =
+            |v: &SleSecurityNegotiationResult| validate_security_observation(v, 2, 3, 5, 4).is_ok();
+        assert!(valid(&prompt)); // 000000 is a valid six-digit display value.
+        assert!(valid(&SleSecurityNegotiationResult {
+            comparison_code: 999999,
+            ..prompt
+        }));
+        let installed = SleSecurityNegotiationResult {
+            state: 11,
+            flags: 119,
+            ..prompt
+        };
+        assert!(valid(&installed));
+        for bad in [
+            SleSecurityNegotiationResult {
+                comparison_code: 1000000,
+                ..prompt
+            },
+            SleSecurityNegotiationResult {
+                flags: 31,
+                ..prompt
+            },
+            SleSecurityNegotiationResult {
+                flags: 7,
+                comparison_code: 123,
+                ..prompt
+            },
+            SleSecurityNegotiationResult {
+                state: 9,
+                ..installed
+            },
+            SleSecurityNegotiationResult {
+                flags: 55,
+                ..installed
+            },
+            SleSecurityNegotiationResult {
+                flags: 103,
+                ..installed
+            },
+            SleSecurityNegotiationResult {
+                error: -5,
+                ..installed
+            },
+            SleSecurityNegotiationResult {
+                status: 1,
+                ..installed
+            },
+            SleSecurityNegotiationResult {
+                local_caps: [1; 10],
+                ..prompt
+            },
+            SleSecurityNegotiationResult {
+                peer_caps: [3, 0, 0, 16, 0, 2, 2, 2, 2, 0],
+                ..prompt
+            },
+            SleSecurityNegotiationResult {
+                generation: 99,
+                ..prompt
+            },
+            SleSecurityNegotiationResult {
+                lifetime: 99,
+                ..prompt
+            },
+            SleSecurityNegotiationResult {
+                request_id: 99,
+                ..prompt
+            },
+        ] {
+            assert!(!valid(&bad), "accepted malformed observation: {bad:?}");
+        }
+        let old = SleSecurityNegotiationResult {
+            state: 9,
+            flags: 7,
+            local_caps: [3, 0, 0, 16, 0, 2, 2, 2, 2, 0],
+            peer_caps: [3, 0, 0, 16, 0, 2, 2, 2, 2, 0],
+            ..prompt
+        };
+        assert!(valid(&old));
+        assert!(!valid(&SleSecurityNegotiationResult { flags: 119, ..old }));
     }
 
     #[test]

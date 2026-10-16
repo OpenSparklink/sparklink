@@ -48,6 +48,7 @@ WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续�
 | 生产MTU/MPS修复：直接限长与六步状态转换限定证明 | `formal_bounded` | `PASS` |
 | K90/U2ee真实回归：独立MTU/MPS、328次业务往返及2次关闭在途交付 | `real_device` | `PASS` |
 | 动态CMTC生产纯转换：六步有界检查与取消复活负对照 | `formal_bounded` | `PASS` |
+| 双真实WS73动态双通道：48次业务、不对称TCID及关闭同行隔离 | `real_device` | `PASS` |
 
 保留镜像：K `90fda1457a8d8191a1a5fab260927e31644b3e50`；编译 U `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`；执行工具 `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`。
 

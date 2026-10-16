@@ -1100,18 +1100,23 @@
       "dynamic-cmtc-400bd68": {
         "level": "formal_bounded",
         "result": "PASS"
+      },
+      "dynamic-real48-400bd68": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "dynamic-cmtc-production-connected-real-pending",
-      "production_behavior": "K400bd681/Ucca8a20 actual dynamic basic CMTC/Session queues/Grant/stagedfd;gate tools4b33733;no dynamic physical qualification yet",
+      "id": "dynamic-real48-retained14-running",
+      "production_behavior": "Actual K400/Ucca8/4b337 dynamic dual-channel48RT and close isolation SCOPED_PASS;retained14 exact-image regression RUNNING",
       "exit": [
         "Actual production codec/state bounded CBMC and mutation counterexample,actual Session worker sanitizer,20000CMTCfuzz",
         "244Rust allfeatures tests,strict clippy,602tools,cross-language contracts,current selectedPython shared library,strictdocs",
-        "Exact kernel build/artifact and noUSB VM smoke;preserve jobserver warning;frozen SDK111 servicebundle"
+        "Exact kernel build/artifact and noUSB VM smoke;preserve jobserver warning;frozen SDK111 servicebundle",
+        "Dynamic48 exact USB/CMTC+peer applications,12 damaged-evidence negatives;retained14 not yet qualified"
       ],
-      "next": "Run exact prepared SDK111 VM:real refusal/asymmetricTCID/two channels/Aclose-Bactualbusiness/swapped roles,then attained fixed/length/long/close/pressure/four-device regressions. All original scope/RCA/recovery remains OPEN."
+      "next": "Finish accurate newimage attained14 fixed/length/long/close/pressure/four-device regressions;then dynamic resource/Grant/quality/security vertical slices. Full S0-S6/19WP/10FV/12DG and RCA/nonhuman recovery stayOPEN;no allcontrol prerequisite."
     }
   },
   "agent_workstream": {

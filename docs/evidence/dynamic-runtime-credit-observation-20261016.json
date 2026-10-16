@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "status": "REAL_BURST_POOL_DEPLETION_AND_NOCP_RESUMPTION_SCOPED_PASS",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
+  "guest_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+  "executed_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+  "application_round_trips": 32,
+  "assumptions": [
+    "PCAP USB submission/NOCP observed ordering; original link interval starts drained",
+    "NOCP accuracy is firmware/hardware trust, not proven by a matching count",
+    "No duplicate/late NOCP or handle-reuse barrier qualified",
+    "USB completion is not credit return; only NOCP changes reconstructed debt"
+  ],
+  "scope": [
+    "Supplement to saved K400 fixed-channel burst run;not another hardware execution or new dynamic-channel credit qualification.",
+    "Real controller pool full samples/refusals,observed USB submissions/NOCP accounting and final drain,alongside actual peer application replies.",
+    "NOCP accuracy/duplicates/late attribution/reuse,full concurrency/refinement,nonhuman recovery and allremainingS0-S6 OPEN."
+  ],
+  "phases": [
+    {
+      "phase": 0,
+      "source_pool_refusals_delta": 29,
+      "source_full_samples": 6,
+      "endpoints": [
+        {
+          "controller": 0,
+          "generation": 1,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 110,
+          "full_nocp_resume_count": 109,
+          "first_resume": {
+            "full_record": 1564,
+            "nocp_record": 1570,
+            "resumed_submit_record": 1598
+          }
+        },
+        {
+          "controller": 1,
+          "generation": 2,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 125,
+          "full_nocp_resume_count": 124,
+          "first_resume": {
+            "full_record": 1638,
+            "nocp_record": 1658,
+            "resumed_submit_record": 1672
+          }
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "source_pool_refusals_delta": 25,
+      "source_full_samples": 6,
+      "endpoints": [
+        {
+          "controller": 1,
+          "generation": 2,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 106,
+          "full_nocp_resume_count": 105,
+          "first_resume": {
+            "full_record": 8848,
+            "nocp_record": 8856,
+            "resumed_submit_record": 8877
+          }
+        },
+        {
+          "controller": 0,
+          "generation": 1,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 126,
+          "full_nocp_resume_count": 125,
+          "first_resume": {
+            "full_record": 8876,
+            "nocp_record": 8884,
+            "resumed_submit_record": 8906
+          }
+        }
+      ]
+    }
+  ],
+  "negative_controls": [
+    {
+      "name": "missing-final-NOCP",
+      "result": "REJECTED"
+    },
+    {
+      "name": "invented-count",
+      "result": "REJECTED"
+    },
+    {
+      "name": "no-full-pool-refusal",
+      "result": "REJECTED"
+    }
+  ],
+  "materials": [
+    {
+      "private_workspace_path": ".dev/dynamic-k400-retained-burst-credit-observation.json",
+      "sha256": "659865beb711278355d502eb985b3a48cd00f976c78f68c003ebd534d8b4bc0e",
+      "bytes": 69550
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-k400-retained-burst-credit-observation.log",
+      "sha256": "ae7e8f8b79e33db9b62b04a428e9993c6ad03afd24687f5a16e0703dc957e25a",
+      "bytes": 58
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-retained-credit-negative-v1.json",
+      "sha256": "c05de91ff27718a3f45b2012ae31938c44a23316a5ce62c5ab1ea1d7057272d6",
+      "bytes": 508
+    },
+    {
+      "private_workspace_path": ".dev/audit-dynamic-retained-credit-v1.py",
+      "sha256": "bfe332e878c2ce5f25a6e10315335bd2ce948c4e6f967752d07361f5ed924090",
+      "bytes": 1822
+    }
+  ]
+}

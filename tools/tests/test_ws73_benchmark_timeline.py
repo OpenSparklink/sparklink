@@ -15,8 +15,10 @@ COOKIE='01234567-89ab-cdef-0123-456789abcdef'
 
 
 def trace_fixture(root,mode='on'):
-    value=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=1024,cookie=COOKIE)
-    for name in ['start','end']:(root/f'benchmark-xhci-{name}.json').write_text(json.dumps(value))
+    value=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=1027,requested_buffer_kb=1024,subbuffer_kb=4,cookie=COOKIE)
+    for name in ['start','end']:
+        (root/f'benchmark-xhci-{name}.json').write_text(json.dumps(value))
+        (root/f'benchmark-xhci-header-{name}.txt').write_text('field: char data; offset:16; size:4080; signed:1;\n')
     lines=[] if mode=='off' else [f'0.000001: tracing_mark_write: SLK_BENCH_BEGIN:{COOKIE}','0.000002: xhci_urb_giveback: synthetic',f'0.000003: tracing_mark_write: SLK_BENCH_END:{COOKIE}']
     (root/'xhci-trace.log').write_text('# tracer: nop\n# entries-in-buffer/entries-written: '+str(len(lines))+'/'+str(len(lines))+'\n'+'\n'.join(lines)+'\n')
     (root/'xhci-trace-stats.txt').write_text(''.join('entries: '+str(n)+'\noverrun: 0\ncommit overrun: 0\ndropped events: 0\n' for n in [len(lines),0]))
@@ -30,6 +32,18 @@ class TimelineEvidence(unittest.TestCase):
                 self.assertEqual(r['entries'],3 if mode=='on' else 0)
                 self.assertEqual(r['mode'],mode)
 
+    def test_actual_page_payload_roundup_not_requested_kib_or_tolerance(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);trace_fixture(root);r=check_xhci(root,'on')
+            self.assertEqual((r['requested_buffer_kb'],r['actual_buffer_kb'],r['subbuffer_payload_bytes']),(1024,1027,4080))
+            for wrong in [1024,1026,1028,True,1027.0]:
+                for name in ['start','end']:
+                    p=root/f'benchmark-xhci-{name}.json';v=json.loads(p.read_text());v['buffer_kb']=wrong;p.write_text(json.dumps(v))
+                with self.subTest(buffer=wrong),self.assertRaises(CaptureError):check_xhci(root,'on')
+            trace_fixture(root)
+            (root/'benchmark-xhci-header-end.txt').write_text('field: char data; offset:16; size:4096; signed:1;\n')
+            with self.assertRaises(CaptureError):check_xhci(root,'on')
+
     def test_trace_configuration_identity_drop_and_marker_negatives(self):
         for kind in ['oldcookie','enabled','tracing','buffer','bufferfloat','tracer','header','loss','missingcpu','count','truncate','marker','no-work','unexpected','off-has-events']:
             with tempfile.TemporaryDirectory() as d:
@@ -38,7 +52,7 @@ class TimelineEvidence(unittest.TestCase):
                 if kind=='enabled':cfg['enabled']='0'
                 if kind=='tracing':cfg['tracing_on']='0'
                 if kind=='buffer':cfg['buffer_kb']=2048
-                if kind=='bufferfloat':cfg['buffer_kb']=1024.0
+                if kind=='bufferfloat':cfg['buffer_kb']=1027.0
                 if kind=='tracer':cfg['tracer']='function'
                 start.write_text(json.dumps(cfg))
                 if kind=='header':trace.write_text(trace.read_text().replace('3/3','2/3'))

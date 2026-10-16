@@ -28,7 +28,18 @@ def check_xhci(share, mode):
     rows=[json.loads((share/f'benchmark-xhci-{name}.json').read_text()) for name in ['start','end']]
     cookie=rows[0].get('cookie')
     if not isinstance(cookie,str) or not re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',cookie):raise CaptureError('actual per-boot trace identity')
-    expected=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=1024,cookie=cookie)
+    # Match the exact kernel's real page payload and DIV_ROUND_UP resize,
+    # then the KiB floor in tracing_entries_read; do not accept a tolerance.
+    headers=[(share/f'benchmark-xhci-header-{n}.txt').read_text() for n in ['start','end']]
+    if headers[0]!=headers[1] or len(headers[0])>4096:raise CaptureError('same original trace page layout before/after')
+    fields=re.findall(r'field: char data;\s*offset:(\d+);\s*size:(\d+);',headers[0])
+    subbuffer=rows[0].get('subbuffer_kb')
+    if len(fields)!=1 or type(subbuffer) is not int or subbuffer not in [4,8,16,32,64]:raise CaptureError('actual bounded trace subbuffer layout')
+    offset,payload=map(int,fields[0])
+    if not 0<offset<=128 or payload+offset!=subbuffer*1024:raise CaptureError('trace header/data/subbuffer sizes disagree')
+    pages=max(2,(1024*1024+payload-1)//payload)
+    actual_kb=pages*payload//1024
+    expected=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=actual_kb,requested_buffer_kb=1024,subbuffer_kb=subbuffer,cookie=cookie)
     if any(type(v.get('buffer_kb')) is not int for v in rows) or rows!=[expected,expected]:raise CaptureError('actual trace start/end configuration differs')
     path=share/'xhci-trace.log';text=path.read_text();stats=(share/'xhci-trace-stats.txt').read_text()
     if len(text)>8*1024*1024 or 'LOST' in text.upper() or re.findall(r'^# tracer: (.*)$',text,re.M)!=['nop']:raise CaptureError('bounded loss-free nop event trace required')
@@ -53,7 +64,7 @@ def check_xhci(share, mode):
         if not any(v.startswith('xhci_') for v in events[events.index(begin)+1:events.index(end)]):raise CaptureError('actual xHCI positive work required')
         if any(not v.startswith('xhci_') and v not in (begin,end) for v in events):raise CaptureError('unexpected event outside requested xHCI observation')
     return dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode=mode,entries=len(events),cookie=cookie,
-                trace=material(path),scope='Start/end readback and complete finite VM trace;usbmon remains enabled;not all observer overhead or kernel concurrency proof')
+                trace=material(path),requested_buffer_kb=1024,actual_buffer_kb=actual_kb,subbuffer_payload_bytes=payload,scope='Start/end readback and complete finite VM trace;usbmon remains enabled;not all observer overhead or kernel concurrency proof')
 
 
 def intervals(run, proof):

@@ -153,7 +153,9 @@ Native监督入口支持`--channel-benchmark-window 1|4`，默认4；1保持每�
 `--channel-benchmark-xhci on|off`只在该专项benchmark有效，默认on。仅在私有VM
 内开关既有xHCI事件追踪及全局tracing_on；usbmon、双端业务、来源和完整捕获
 断言保持。启动/封存读回、每boot UUID、on的前后标记与实际事件、off的空记录、
-CPU0/1零丢失及trace条数必须一致。缺文件、错误配置、丢失或截断拒绝。这个对照
+CPU0/1零丢失及trace条数必须一致。请求KiB与实际分配分别保存；按捕获的
+header_page有效载荷、subbuffer大小及该内核DIV_ROUND_UP/读回KiB取整精确核对，
+不能假设请求1024就读回1024，也不接受任意容量容差。缺文件、错误配置、丢失或截断拒绝。这个对照
 只测xHCI追踪的增量影响，off仍有usbmon/QEMU等观测开销，不叫“无观测开销”。
 
 `tools/ws73_benchmark_timeline.py RUN_DIRECTORY`只读重放原双端证明，输出每条请求

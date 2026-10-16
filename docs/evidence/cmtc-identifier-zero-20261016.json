@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "status": "CMTC_IDENTIFIER_CODEC_BOUNDED_PASS",
+  "kernel": "d75f7bdf17ab295d8b504f3a803d8a100f131646",
+  "tool_version": "6.11.0 (cbmc-6.11.0)",
+  "properties": 161,
+  "expected_main_properties": [
+    "main.assertion.1",
+    "main.assertion.2",
+    "main.assertion.3",
+    "main.assertion.4",
+    "main.assertion.5",
+    "main.assertion.6",
+    "main.assertion.7",
+    "main.assertion.8"
+  ],
+  "production_source_hashes": {
+    "tools/testing/selftests/sparklink/channel/identifier_cbmc.c": "22429f0080ea6019f442d3a65c113abb0c472c55521fe01876053059f8a2f23f",
+    "net/sparklink/sle_channel_wire.c": "0aefc66198490a1d8d384929db259a23d6c4dcd639d52b0904cf2078f502702e",
+    "net/sparklink/sle_channel_wire.h": "90fce014dc8c06c696580ef3091fbf05414b9fbb440ef40bfe18baf982e6f8fe",
+    "tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py": "1ae85a29b39cc443bd982fc884d24a05652b2b14c37396ce618a6cb9035182e9"
+  },
+  "assumptions": [
+    "Valid C pointers/objects as required by codec interface; length bounded0..16 for arbitrary input",
+    "Sequential pure codec semantics,not real kernel locks/allocator/USB/firmware"
+  ],
+  "bounds": [
+    "All256identifier values,maximum2042 capability roundtrip",
+    "All byte values for arbitrary16-byte array;all valid lengths0..16;failure atomicity",
+    "Fixed16-iteration initialization,unwind17 with unwinding assertions enabled"
+  ],
+  "limits": [
+    "Actual production pure CMTC capability codec only:all256identifier values and arbitrary16-byte buffers/length0..16. Valid C objects/pointers,serial semantics,unwind17 with unwinding assertions. Not complete dynamic signaling codec.",
+    "161allSUCCESS properties with expected8main assertions and solver success,not check-count-only verdict. CBMC/toolchain/C semantics trusted. No proof of Linux/allocator/locks/USB/firmware or implementation refinement.",
+    "Actual Session route request0/pending tests run under explicit spinlock/allocation/notification fixtures and sanitizer;not real kernel concurrency,full capability worker response or lifetime/Grant verification.",
+    "Default native own capability query becomesidentifier0;old identifier1 capture records keep original identity. Changed request number does not solve late replies/physical lifetime barriers. ActualnewVM0exchange/data qualification pending.",
+    "Dynamic singlecast TCID0x80..0xdf,Connect/Disconnect,authorization,local/remoteTCID and bounded queues still need integration;fixed31/241 and10/0only remain. No relaxed bind or alternate Engine.",
+    "Old ddea capability encoder rejects0;corrected guarded harness reports main.assertion.1 failure. Earlier exploratory harness continued after failed size assertion,producing dependent false-path failures;v2 guards valid lengths. Only exact retainedv2 used here.",
+    "Initial sanitizer execution failed due sandboxLSan/ptrace;same binary then passed as ordinary user outside sandbox with no kernel/device operations. Original tool failure retained.",
+    "No new physical qualification,NOCP truth,fairness,natural recovery,protectedCPCD/security/Bond or full Session/control composition proof. Existingunsupported1766installation checks stay UNPROVED.",
+    "Private raw materials require original machine;hash/access/commands available,no SDK/firmware/restrictedstandard copied. Formal passing does not replace actual device/RF evidence."
+  ],
+  "gates": [
+    {
+      "name": "production-codec",
+      "status": "SCOPED_BOUNDED_PASS"
+    }
+  ],
+  "old_counterexample": {
+    "kernel": "ddea575bff556d3884375603edd9003b1cc5ffc4",
+    "property": "main.assertion.1",
+    "cause": "identifier0 returns-EINVAL instead of encoded8-byte request",
+    "scope": "actualold production codec,guarded valid pointers;not kernel/hardware failure"
+  },
+  "offline": {
+    "exhaustive_identifiers": 256,
+    "actual_route_request_zero": "fixture/sanitizer PASS",
+    "python_tests": 80,
+    "strict_docs": "PASS"
+  },
+  "new_real_qualification": false,
+  "materials": {
+    "cbmc-report": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-cbmc-d75f7bd/report.json",
+      "sha256": "c0d5afe61892e26186d93275765b0d64d4c8df18f7f3d5b5e40184ebada447c2",
+      "bytes": 212862,
+      "access": "private",
+      "format": "json"
+    },
+    "cbmc-raw": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-cbmc-d75f7bd/raw.json",
+      "sha256": "e7cdf5fb9e25925775794976efe9c1d8c88a21cc389e44d4989c468ae74f3c42",
+      "bytes": 192736,
+      "access": "private",
+      "format": "json"
+    },
+    "cbmc-stderr": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-cbmc-d75f7bd/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "old-source": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-old-wire.c",
+      "sha256": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+      "bytes": 3886,
+      "access": "private",
+      "format": "bytes"
+    },
+    "old-counterexample": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-old-counterexample-v2.json",
+      "sha256": "82ff06ad539b4af79e04c1a22ead21158ff4f93807b2dbdee9f632e1c7ef87ad",
+      "bytes": 231169,
+      "access": "private",
+      "format": "json"
+    },
+    "wire-sanitizer-log": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-wire-unsandboxed.log",
+      "sha256": "fe4ba0cb7d67f06a926cfc7202babb0e345df3f0eb8656617c5b8b85b5387d32",
+      "bytes": 53,
+      "access": "private",
+      "format": "bytes"
+    },
+    "route-sanitizer-report": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-session-offline.json",
+      "sha256": "e59329c90e55c3b2a01498eaf4ededb453f446b60b88dd733993a95a78bdef54",
+      "bytes": 1769,
+      "access": "private",
+      "format": "json"
+    },
+    "route-sanitizer-log": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-session-offline.log",
+      "sha256": "b52550ed3974b9f47af92453b79f8d477451c3efd49222175ac71c6dc95eb33a",
+      "bytes": 1839,
+      "access": "private",
+      "format": "bytes"
+    },
+    "python-offline": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-tools-final-offline.log",
+      "sha256": "e68769b694383597655c52d2f100abdcdde62243b11a06d69a79a0e3f5c0b11a",
+      "bytes": 179,
+      "access": "private",
+      "format": "bytes"
+    },
+    "sandbox-failure": {
+      "base": "workspace",
+      "path": ".dev/cmtc-id0-sanitizer-sandbox-failure.json",
+      "sha256": "9ddfebdece1d2410b8ed063d8db9ded1bec9ad6ad217b55ba8ce61fce8e1a201",
+      "bytes": 314,
+      "access": "private",
+      "format": "json"
+    }
+  },
+  "replay": {
+    "formal": "python3 linux/tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py --output NEW_DIRECTORY",
+    "codec": "clang -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined linux/tools/testing/selftests/sparklink/sle_channel_wire_test.c linux/net/sparklink/sle_channel_wire.c -o NEW_BINARY; execute outside ptrace sandbox",
+    "route": "python3 linux/tools/testing/selftests/sparklink/run_session_dispatch.py --output NEW_REPORT.json"
+  },
+  "reference": {
+    "standard": "T/XS20002-2025 sections6.2,7.3.3,7.3.4;restrictedlocal materials,not redistributed",
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906"
+  }
+}

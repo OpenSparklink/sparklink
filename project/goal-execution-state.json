@@ -1344,18 +1344,30 @@
       "concurrent-9cd-full-fairness": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "session-status-42e": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "session-status-42e-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "session-status-42e-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "c4-lengths-and-true-concurrent-short-long-scoped",
-      "production_behavior": "Onlyslktestoptional negotiatedstartbarrier,shared existinginput/message loops;solekernelSession/Runtime/credit/Grant/Ticket unchanged",
+      "id": "bounded-session-close-snapshot-newartifact-burst",
+      "production_behavior": "Readonly64byteNativeE2,existingauthorizedactor/CLI/FFI;no newHost orEngine,creditpredicateunchanged",
       "exit": [
-        "Oldruntime2c23/e08sevenlength448RT qualified;whole8matrix remainsFAIL onpost-close physicaldrain window",
-        "Newruntime/tools9cd72concurrent+8baseline realpeerRT;shortprogressduringlongTX bothdirections/bothroles,not fullfairness",
-        "27actualRustELFs/strictclippy/669tools/115HTML and72actualevidencenegatives;no newformal/performance/recovery proof"
+        "New14d9/42eU2/3dynamic80+baseline8realpeerRT;actual Nativeopenpositivecontrols andboundedclosedzero-debtsnapshots;24actualevidencenegatives",
+        "ProductionCsanitizers,190unit+5docRust,671frozentools,40Python,4ABI,strictHTML115;LKMMtwoCPUrepresentativepublicationonly",
+        "Originalv3wholeFAILretained;length/concurrent/lifecycle newartifactgates separatelyrunning"
       ],
-      "next": "Establish explicitpost-close physicalobligation observationbarrier,retainoriginalfailureandzero-drainpredicate;fulladmittedqueuefairness/dynamicconsenttrace andmatchedU2/3resource/performance;Agent/SSAP/fourdevice parallel,noallcontrolrace prerequisite"
+      "next": "Finishrelatednewartifactregressions;wholefairness/P2dmatchedU2/3cost/resource/performance,Agent/SSAP/fourdeviceparallel,noallcontrolraces prerequisite;naturalRCA/nonmanualrecoveryOPEN"
     }
   },
   "agent_workstream": {

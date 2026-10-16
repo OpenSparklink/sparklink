@@ -178,6 +178,9 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定/SSAP�
 | 双真实短长通道：72并发＋8基线，有限交错进展 | `real_device` | `PASS` |
 | slktest实际27测试ELF、669工具与严格clippy | `offline` | `PASS` |
 | 已准入队列公平上界、关闭排空与性能：未证明 | `real_device` | `UNPROVED` |
+| 14d9/42e动态burst：80＋8真实回复，受控关闭观测 | `real_device` | `PASS` |
+| Session只读接口：生产C/Rust/跨语言与671工具限定检查 | `offline` | `PASS` |
+| 物理callback/ref drain、复用、公平及性能：未证明 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

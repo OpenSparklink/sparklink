@@ -1051,6 +1051,10 @@
       "security-cli-data11-300a": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "ws73-codec-fuzz-ddea": {
+        "level": "offline",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
@@ -1058,9 +1062,9 @@
       "id": "production-parser-fuzz-and-inflight-composition",
       "production_behavior": "Next parallel Q3: actual production wire/DLI byte fuzz+sanitizer, preserve Session/credit/author lifetime; compose revoke/Down/original-deadline with final submission. No new Engine or relaxed CCC security",
       "exit": [
-        "previous explicit CLI2 scoped real PASS at compiled6385/tools300a",
-        "previous new-image data11 scoped real PASS:136 replies/32 oversize/2 strictfd",
-        "new Q3 relevant production functions, bounded corpus+negative controls, exact source/tool/config mapping; not a full implementation proof"
+        "previous CLI2 and data11 real scoped PASS, full issues open",
+        "ws73-codec-fuzz-ddea offline bounded no-finding, not a proof; separate actual CI Clang18 artifact verified, source-bound report linked",
+        "next: stateful/submit-revoke-deadline composition and debugVM, dynamic channels/fourdevices; protected CCC requires minimal authenticated security+authorization"
       ],
       "next": "Add first direct C production codec fuzz/ASAN/UBSAN gate; in-flight model/debugVM and dynamic channels/fourdevices parallel; protected SSAP CCC requires minimum authenticated security+authorization. Full S0-S6 unchanged"
     }
@@ -1162,7 +1166,7 @@
     ]
   },
   "codec_fuzz_workstream": {
-    "status": "BOUNDED_OFFLINE_NO_FINDING; CI_CONFIGURED_PENDING_EXECUTION",
+    "status": "LOCAL_CLANG22_BOUNDED_NO_FINDING_AND_SEPARATE_CI_CLANG18_ARTIFACT_VERIFIED; no proof or new hardware qualification",
     "kernel_test_source": "ddea575bff556d3884375603edd9003b1cc5ffc4",
     "report": "docs/evidence/ws73-production-codec-fuzz-20261016.json",
     "runs": 20000,
@@ -1170,10 +1174,12 @@
     "supervisor_negative_controls": 5,
     "proof": false,
     "physical_acceptance": false,
-    "next": "CI actual run/source binding; production sequence fuzz and submission-revoke-Down-deadline composition/debugVM alongside dynamic channels/fourdevices/protected SSAP",
+    "next": "Stateful production Session/Grant/credit sequence fuzz and submit-revoke-Down-deadline composition/debugVM; dynamic channels/fourdevices parallel; protected CCC needs authenticated security and authorization",
     "kept_failures": [
       "sandbox ptrace/LSan tool failure",
       "99b command stage metadata then corrected exact ddea run"
-    ]
+    ],
+    "ci_report": "docs/evidence/ws73-codec-fuzz-ci-20261016.json",
+    "ci_run": 38782753748
   }
 }

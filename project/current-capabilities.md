@@ -24,6 +24,7 @@
 | 数据保持85cdf/db6：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
 | 正式CLI实机6385/300a：批准拒绝两角色16次对端应用回复 | `real_device` | `PASS` |
 | CLI镜像6385/300a数据保持：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
+| 生产C codec有界fuzz：19固定+20000探索无发现（非证明） | `offline` | `PASS` |
 
 保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `6385e43081bfcbeabee1ac4f18b9d0917c7a6057`；执行工具 `300a39b9e496f09119769c03a0a77360263a8c1e`。
 
@@ -138,4 +139,6 @@ Host工具 `db6e333814cf` 的[CI](https://github.com/OpenSparklink/sparklink/act
 Linux ddea575bff55 的离线[准确结果](../docs/evidence/ws73-production-codec-fuzz-20261016.json)：
 固定语料19次执行加20,000次有界探索无发现，ASAN/UBSAN/LSan及六个目标生产函数实际执行
 已核对；5项监督器负对照单列。沙箱LSan工具失败及前序报告保留。未新增形式化、
-内核sanitizer/并发/USB/恢复资格；独立CI配置已接入，尚待真实运行，不能据此宣称CI通过。
+内核sanitizer/并发/USB/恢复资格。独立[CI artifact已核对](../docs/evidence/ws73-codec-fuzz-ci-20261016.json)：
+实际Clang18、相同ddea源码、19固定+20000探索、目标函数/二进制/语料/日志hash及5负对照
+分别检查；这与本机Clang22分开，不等于形式化或实机资格。较长定时探索尚无实跑结果。

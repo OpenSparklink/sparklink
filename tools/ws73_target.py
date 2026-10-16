@@ -117,7 +117,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_numeric.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_numeric.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_protected_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_register_reset_init.sh',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/genl_registry_test.c',
@@ -256,7 +256,7 @@ def prepare_locked(args, build_fd):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -584,6 +584,10 @@ def _run(args):
     session_service=bool(getattr(args,'session_service_observe',False))
     if session_service and (args.command!='run' or support or parallel or dynamic_channels or agent_mode or channel_close or session_idle or connected_reply or getattr(args,'managed_security_capabilities',False) or not (channel_socket or channel_grant or benchmark_mode)):
         raise ValueError('Session service trace requires separate real fixed-channel data or Managed Grant gate')
+    protected=getattr(args,'managed_channel_security',0)
+    if type(protected) is not int or protected not in (0,1,2):raise ValueError('unsupported lifecycle security requirement')
+    if protected and (not channel_grant or not connected_case or not channel_revoke_prefix or connected_reply or session_idle or session_service or link_snapshot or peer_binding or channel_scm_rights or getattr(args,'managed_channel_directions',False) or getattr(args,'managed_security_capabilities',False)):
+        raise ValueError('protected mechanism requires standalone bidirectional prefix lifecycle gate')
     security_capabilities=bool(getattr(args,'managed_security_capabilities',False))
     security_kind=getattr(args,'managed_security_kind','capabilities')
     numeric=security_kind if security_kind in ('numeric-approve','numeric-reject','numeric-late') else None
@@ -750,6 +754,7 @@ def _run(args):
     m['live_link_snapshot_gate']=link_snapshot
     m['live_peer_binding_gate']=peer_binding
     m['live_channel_grant_gate']=channel_grant
+    if protected:m.update(live_channel_security_required=protected,protected_security_verifiers=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']])
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
     m['session_service_observation_requested']=session_service
@@ -895,6 +900,7 @@ def _run(args):
                      (' ws73.peer_binding=1' if peer_binding else '')+
                      (' ws73.channel_daemon_crash=1 ws73.channel_daemon_index='+str(channel_death_index) if channel_death else '')+
                      (' ws73.channel_grant=1' if channel_grant else '')+
+                     (f' ws73.channel_security={protected}' if protected else '')+
                      (' ws73.channel_revoke_prefix=1' if channel_revoke_prefix else '')+
                      (' ws73.channel_link_down=1' if channel_link_down else '')+
                      (' ws73.channel_deadline=1' if channel_deadline else '')+
@@ -1301,6 +1307,7 @@ def _run(args):
                     if bool(probe.get('channel_grant',{}).get('directional',False))!=channel_directions:raise ValueError('requested directional Grant gate mismatch')
                     if bool(probe.get('channel_grant',{}).get('scm_rights',False))!=channel_scm_rights:raise ValueError('requested SCM_RIGHTS Grant gate mismatch')
                     if bool(probe.get('channel_grant'))!=channel_grant:raise ValueError('requested real channel Grant gate mismatch')
+                    if probe.get('channel_security_requirement',0)!=protected:raise ValueError('requested protected Grant cannot downgrade')
                     if bool(probe.get('channel_grant',{}).get('revoke_prefix'))!=channel_revoke_prefix:raise ValueError('requested actual revoke-prefix gate mismatch')
                     if channel_link_down and not probe.get('prefix_hold',{}).get('primed',False):raise ValueError('requested primed-debt physicalDown barrier missing')
                     if bool(probe.get('data_link_down'))!=channel_link_down:raise ValueError('requested direct physical Down gate mismatch')
@@ -1453,6 +1460,7 @@ def _run(args):
         if cancel_pending and file_record(HERE/'ws73_security_cancel.py')!=m['security_cancel_verifier']:raise ValueError('passive cancel verifier changed during run')
         if numeric and [file_record(HERE/name) for name in ['ws73_security_numeric.py','ws73_key_agreement.py']]!=m['security_numeric_verifiers']:raise ValueError('numeric mechanism verifiers changed during run')
         if key_agreement and file_record(HERE/'ws73_key_agreement.py')!=m['security_key_agreement_verifier']:raise ValueError('candidate key agreement verifier changed during run')
+        if protected and m['protected_security_verifiers']!=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']]:raise ValueError('protected prelude verifier changed during execution')
         if security_capabilities and file_record(HERE/'ws73_security_capabilities.py')!=m['security_capabilities_verifier']:raise ValueError('limited capability verifier changed during run')
         if connected_case and file_record(HERE/'ws73_connected_file_gate.py')!=m['connected_file_verifier']:
             raise ValueError('connected File verifier changed during run')
@@ -1535,6 +1543,17 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record):
+    required=record.get('live_channel_security_required',0)
+    connected=record.get('connected_file_corroboration',{})
+    if not isinstance(connected,dict):return 1
+    proof=connected.get('protected_security')
+    if type(required) is not int or required not in (0,1,2):return 1
+    if required:
+        if (record.get('qemu_exit')!=0 or not isinstance(proof,dict) or type(proof.get('requirement')) is not int or proof['requirement']!=required
+                or proof.get('status')!='ACTUAL_PROTECTED_PRELUDE_AND_LIFECYCLE_SCOPE'
+                or not isinstance(proof.get('wire'),dict) or proof['wire'].get('status')!='REAL_POSITIVE_EXCHANGE_ONLY_CORROBORATED'):return 1
+    elif proof is not None:return 1
+
     fairness=record.get('channel_fairness_requested',False)
     if type(fairness) is not bool:return 1
     if not fairness and (record.get('channel_fairness_acceptance') or 'channel_fairness_corroboration' in record):return 1
@@ -1713,6 +1732,7 @@ def main():
             cmd.add_argument('--managed-connected-reply',choices=['status','outcome'],help='retain actual original Create Status or outcome frame before File withdrawal')
             cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
+            cmd.add_argument('--managed-channel-security',type=int,choices=[0,1,2],default=0,help='VM-only existing positive mechanism before first protected CUTC bind;then original prefix/File/Down/deadline lifecycle,not Agent/Bond/recovery')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
             cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement','unauthenticated-encryption','cancel-pending','original-deadline','numeric-approve','numeric-reject','numeric-late'],default='capabilities',help='explicit capability, candidate proof or unauthenticated encryption mechanism; not Agent/identity/Bond')
             cmd.add_argument('--managed-security-capabilities',action='store_true',help='explicit Managed security negotiation gate; select bounded kind, never Pair/Encrypted')

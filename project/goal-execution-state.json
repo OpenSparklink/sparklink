@@ -802,7 +802,7 @@
   "issue_sync_status": "K7/K19/U5/U8 liveSessionmechanism/UNPROVED/Grantconditions updated/readbackOPEN;originalscopebodiesunchanged",
   "issue_sync_receipt": "docs/evidence/security-live-state-maintenance-20261017.json",
   "previous_goal_turn_classification": "progress:liveSessionkernel6861/U13bb sixrealVM/32snapshots/48peerRT,31mutants,signedpushedb9,4issuesOPENand115materialscopedregistry",
-  "current_goal_turn_classification": "PROTECTED_POSITIVE_AND_PLAIN_TEN_LIFECYCLE_SCOPED_REAL_PASS_FULL_GOAL_ACTIVE",
+  "current_goal_turn_classification": "PROGRESS_SHARED_PROTECTED_LIFECYCLE_ORCHESTRATION_NOT_YET_REAL_QUALIFIED",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1539,7 +1539,7 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "wp09-fixed-security-epoch-Grant-partial-no-full-lifecycle",
+      "id": "wp09-protected-lifecycle-orchestration-real-pending",
       "production_behavior": "OriginalphysicalSession immutableGrant frozenatbind;currentgrade/epochatsoftwareadmission/poll/dequeue/metadata/atomicUSB,ACBingressrevision/PBisolation;ordinaryslktestsecurity1/2",
       "exit": [
         "K619/U73/tool73/post02:6VM/16protectedand48totalactualpeerRT/20grade-refusals/32snapshots,selectedplain249/2042",
@@ -1547,7 +1547,7 @@
         "FullbatchexitNOTmet:protectedrelease/finalfd/dup/Down/deadline/inflight andSSAPpermissionconsumers/fulloriginalscopeOPEN",
         "SameK619/U73:10plainsecurity0lifecycle,24precontrolRT,tenexactreplays100negatives,unchangedpeerlease/Ready/scan;original2s/8sfixtures/5sdeadline;notprotectedinvalidation"
       ],
-      "next": "ProtectedsecurityepochGrant live release/finalfd/dup/Down/deadline/inflightandGrantauthority/soleSSAPconsumers;originaldata/multichannel/fourdevice/performance/naturalRCAparallel,noallcontrolprecondition"
+      "next": "Freeze newtypedprelude+existinglifecycletools;20VM security1/2 x5cases x2indices withoriginalbarriers/credit/1270prefix/oldfd/poll/peerleaseReadyScan;then soleSSAPsecurityconsumer,noallcontrolprecondition"
     }
   },
   "agent_workstream": {
@@ -2510,5 +2510,12 @@
     },
     "maintenance_report": "docs/evidence/security-grant-maintenance-20261017.json",
     "issues_readback": "K7/K17/K19/U5/U8OPEN;originalscopebodyunchanged"
+  },
+  "protected_lifecycle_batch": {
+    "status": "IMPLEMENTING_NOT_QUALIFIED",
+    "kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+    "behavior": "Reuse typed mechanism exchange before first protected CUTC bind,then original File/Down/deadline workers/barriers;no newEngine orkernelchange",
+    "exit": "20actualVMcases:security1/2 xrelease/lastfd/dup/Down/originaldeadline xbothindices,originalphysicaldebt/1270prefix/no-postrevoke-submit/poll/oldfd/peerleaseReadyScan unchanged;actualpeerbeforecontrolRT",
+    "missing": "Newartifactrealgates,livecipher-off/rekey/unknown/nativequeryinvalidationandcombinedproof/fullscopeOPEN"
   }
 }

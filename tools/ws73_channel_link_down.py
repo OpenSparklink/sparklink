@@ -60,6 +60,8 @@ def exercise(r, save, grant, observers, writers, snapshots, leases, discover, ou
 
 
 def verify(r):
+    from ws73_protected_grant import requirement
+    security=requirement(r)
     if r.get('status')!='DATA_LINK_DOWN_PASS' or r.get('case')!='release' or r.get('index') not in [0,1] or r.get('daemon_running') is not False or r.get('synthetic_support') is not False:
         raise ValueError('explicit pre-daemon real direct-Down gate required')
     row=r['data_link_down'];g=r['channel_grant'];i=r['index']
@@ -74,7 +76,7 @@ def verify(r):
             raise ValueError('original known physical lifetime must disappear on both ends')
         owner=g['owners'][n];address=Address.from_buffer_copy(bytes.fromhex(owner['address']))
         if (owner['generation'],owner['lifetime'],owner['handle'],owner['lease'])!=(before.generation,before.links[0].lifetime,before.links[0].handle,r['leases'][n]):raise ValueError('exact original binding lifetime/lease required')
-        if (address.generation,address.lifetime,address.lease,address.handle,address.directions,address.security)!=(owner['generation'],owner['lifetime'],owner['lease'],owner['handle'],3,0):raise ValueError('original bidirectional unprotected binding required')
+        if (address.generation,address.lifetime,address.lease,address.handle,address.directions,address.security)!=(owner['generation'],owner['lifetime'],owner['lease'],owner['handle'],3,security):raise ValueError('original bidirectional declared-security binding required')
         if (address.family,address.controller,address.version,address.flags,address.local_tcid,address.remote_tcid,address.pi)!=(46,n,2,0,31,31,241) or any(address.reserved):raise ValueError('exact original unpublished channel address required')
         worker=g['workers'][n]
         if worker['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker['credentials']['caps'].values()) or worker['original_errno']!=errno.EBADF:raise ValueError('actual ordinary duplicate fd required')

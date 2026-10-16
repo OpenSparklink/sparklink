@@ -146,3 +146,22 @@ G 原请求并交还原 transfer。匹配以完整 HCC 边界和 role opcode 为
 handle 可安全复用。完整 release/最后 fd/dup/Down/期限组合仍是独立未完成门禁。
 工具实现与离线 synthetic oracle 通过都不授予 WS73 实机或认证/Bond/恢复资格；
 准确结果仍只见仓库中的唯一当前资格入口。
+
+
+## 受保护通道生命周期输入
+
+`--managed-channel-security 1|2` 仅与独立pre-daemon `--managed-connected-case`、
+`--managed-channel-grant`、`--managed-channel-revoke-prefix` 使用。1先完成现有无MITM
+安装，2先完成现有数字机制；读取同物理Session当前等级/epoch后，首次绑定对应要求
+的CUTC。随后执行原release/close/dup，或release模式加实际Down/原期限；不先绑定
+普通CUTC再重开，不走另一条业务路径。0保留原普通门禁。
+
+该操作是显式特权机制审批，数据worker仍为普通UID1000/caps0；不是daemon Agent或
+人类确认资格。原2秒回复屏障与专用8秒期限屏障分别核验，生产5秒期限不刷新。
+完整真实relay/对端RX/安装接受/0011及业务、旧fd、peer lease/Ready/扫描须分别成立。
+同行不是另一个存活业务组，原始PDU前缀也不是已交付消息。
+
+未知等级、组合模式不匹配、缺少当前机制、静默普通fd降级、原始deadline不符或
+共享checker在运行中变化均失败。数字、无MITM及每个端点/生命周期各自记录；新工具
+必须重新取得实机资格，不能继承旧测试名称的PASS。安全off/rekey、固件排空/复用与
+自然恢复另验；SMTC安全权限消费者仍后续接线。

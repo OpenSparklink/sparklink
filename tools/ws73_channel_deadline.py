@@ -75,6 +75,8 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,s
 
 
 def verify(r):
+    from ws73_protected_grant import requirement
+    security=requirement(r)
     if r.get('format_version')!=1 or r.get('status')!='DATA_DEADLINE_PASS' or r.get('case')!='release' or r.get('index') not in [0,1] or r.get('daemon_running') is not False or r.get('synthetic_support') is not False:raise ValueError('separate real original-deadline gate required')
     d=r['data_deadline'];g=r['channel_grant'];i=r['index'];snapshots=[setup(raw,n) for n,raw in enumerate(r['initial_snapshots'])]
     if len(snapshots)!=2 or d['status']!='ACTUAL_ORIGINAL_DEADLINE_PASS':raise ValueError('exact two original controllers required')
@@ -86,7 +88,7 @@ def verify(r):
         before=decode(SleLinkSnapshot,d['links_before'][n]);during=decode(SleLinkSnapshot,d['links_at_timeout'][n]);after=decode(SleLinkSnapshot,d['links_after'][n])
         if before.flags!=1 or before.count!=1 or bytes(during)!=bytes(before) or after.flags!=1 or after.count or after.generation!=before.generation or before.generation!=snapshots[n].generation:raise ValueError('timeout does not fabricate physical Down; real cleanup must follow')
         owner=g['owners'][n];a=Address.from_buffer_copy(bytes.fromhex(owner['address']));link=before.links[0]
-        if (a.family,a.controller,a.version,a.flags,a.generation,a.lifetime,a.lease,a.handle,a.local_tcid,a.remote_tcid,a.pi,a.directions,a.security)!=(46,n,2,0,before.generation,link.lifetime,r['leases'][n],link.handle,31,31,241,3,0) or any(a.reserved):raise ValueError('exact current bidirectional ordinary binding required')
+        if (a.family,a.controller,a.version,a.flags,a.generation,a.lifetime,a.lease,a.handle,a.local_tcid,a.remote_tcid,a.pi,a.directions,a.security)!=(46,n,2,0,before.generation,link.lifetime,r['leases'][n],link.handle,31,31,241,3,security) or any(a.reserved):raise ValueError('exact current bidirectional ordinary binding required')
         if (owner['generation'],owner['lifetime'],owner['handle'],owner['lease'])!=(a.generation,a.lifetime,a.handle,a.lease):raise ValueError('exact original owner required')
         worker=g['workers'][n]
         if worker['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker['credentials']['caps'].values()) or worker['original_errno']!=errno.EBADF:raise ValueError('actual ordinary duplicate fd required')

@@ -136,7 +136,7 @@ class DirectionalGrantProof(unittest.TestCase):
         row['bind_rejections']=[]
         for n,owner in enumerate(row['owners']):
             address=Address.from_buffer_copy(bytes.fromhex(owner['address']));address.directions=1 if n==0 else 2;owner['address']=bytes(address).hex()
-            for directions,security,error in [(0,0,22),(4,0,22),(3,1,95),(3,2,95)]:
+            for directions,security,error in [(0,0,22),(4,0,22),(3,1,13),(3,2,13),(3,3,95)]:
                 bad=Address.from_buffer_copy(bytes(address));bad.directions=directions;bad.security=security
                 row['bind_rejections'].append(dict(controller=n,input=bytes(bad).hex(),errno=error))
         row['business']=row['business'][:1];business=row['business'][0];business.update(start_wall_ns=10,end_wall_ns=19)

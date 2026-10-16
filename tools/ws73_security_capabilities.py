@@ -68,7 +68,7 @@ def ordinary_denial(writer,req,cancel_pending=False,numeric=False):
             os.waitpid(pid,0)
 
 
-def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disconnect,discover,standby,stop):
+def negotiate(r,save,observers,writers,snapshots):
     i=r['index'];p=1-i
     row=dict(status='STARTING',before_links=[bytes(a.link_snapshot()).hex() for a in observers],before_ready=[bytes(a.snapshot()).hex() for a in observers],management_before=[bytes(a.management_status()).hex() for a in observers],negative=[],start_wall_ns=time.time_ns())
     r['security_capabilities']=row;save();links=[decode(SleLinkSnapshot,v).links[0] for v in row['before_links']]
@@ -122,6 +122,13 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disc
         retry_before=time.monotonic_ns();again.deadline_monotonic_ns=retry_before+5_000_000_000
         row['negative'].append(dict(index=n,kind='same_lifetime_restart',input=bytes(again).hex(),before_monotonic_ns=retry_before,errno=denied(writers[n].fileno(),SUBMIT,again)))
         if row['negative'][-1]['errno']!=errno.EBUSY:raise ValueError('same-life security restart lacks a proven barrier')
+    return row,links
+
+
+def exercise(r,save,grant,observers,writers,snapshots,leases,outcomes,bound_disconnect,discover,standby,stop):
+    i=r['index'];p=1-i
+    row,links=negotiate(r,save,observers,writers,snapshots)
+    cancel_pending=r.get('security_cancel_pending',False)
     grant.exchange('after_capabilities');row['after_links']=[bytes(a.link_snapshot()).hex() for a in observers];row['after_ready']=[bytes(a.snapshot()).hex() for a in observers];row['management_after']=[bytes(a.management_status()).hex() for a in observers];save()
     cleanup=bound_disconnect(snapshots[i],links[i],950);row['cleanup_input']=bytes(cleanup).hex();row['cleanup_before_wall_ns']=time.time_ns();writers[i].submit_connection(cleanup);row['down']=outcomes('down',[5,0x1405]);row['cleanup_after_wall_ns']=time.time_ns()
     deadline=time.monotonic()+2

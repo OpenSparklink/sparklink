@@ -233,7 +233,7 @@ def verify_records(r):
     return snapshots
 
 
-def corroborate(r, capture, hold=None, stderr=None, expected=None):
+def _corroborate(r, capture, hold=None, stderr=None, expected=None):
     if 'security_capabilities' in r:
         if hold is not None:raise CaptureError('limited capability gate excludes reply hold/recovery')
         from ws73_security_capabilities import corroborate as capability_corroborate
@@ -352,11 +352,21 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
     return proof
 
 
+def corroborate(r, capture, hold=None, stderr=None, expected=None):
+    from ws73_protected_grant import requirement,corroborate as protected_wire
+    security=requirement(r)
+    proof=_corroborate(r,capture,hold,stderr,expected)
+    if security:proof['protected_security']=protected_wire(r,capture)
+    return proof
+
+
 def run(args):
     reply_hold=getattr(args,'reply_hold',None)
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
+    protected=int(next((v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.channel_security=')), '0'))
+    if protected not in (0,1,2):raise ValueError('unknown protected lifecycle requirement')
     original_deadline='ws73.security_original_deadline=1' in Path('/proc/cmdline').read_text().split()
     cancel_pending='ws73.security_cancel_pending=1' in Path('/proc/cmdline').read_text().split()
     encryption='ws73.security_encryption=1' in Path('/proc/cmdline').read_text().split()
@@ -367,6 +377,7 @@ def run(args):
     idle_observer=None
     data_deadline='ws73.channel_deadline=1' in Path('/proc/cmdline').read_text().split()
     link_down='ws73.channel_link_down=1' in Path('/proc/cmdline').read_text().split()
+    if protected and (not channel_gate or capabilities or reply_hold or idle_trace or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False)):raise ValueError('separate protected bidirectional lifecycle required')
     if idle_trace and (not channel_gate or args.case!='release' or reply_hold or data_deadline or link_down or capabilities or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate established ordinary prefix/idle VM required')
     if link_down and (not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('direct Down requires separate bidirectional begun-PDU release-mode environment')
@@ -500,7 +511,10 @@ def run(args):
                 r['binding_after']=bytes(observers[i].link_snapshot()).hex();save()
         if channel_gate:
             from ws73_channel_grant import Gate
-            grant=Gate(observers,snapshots,leases,i,r,save,directional,scm_rights)
+            if protected:
+                from ws73_protected_grant import execute as protect
+                protect(r,save,observers,writers,snapshots,protected)
+            grant=Gate(observers,snapshots,leases,i,r,save,directional,scm_rights,security=protected)
             if idle_trace:
                 from ws73_session_idle import SessionIdleTrace
                 idle_observer=SessionIdleTrace(r,save)

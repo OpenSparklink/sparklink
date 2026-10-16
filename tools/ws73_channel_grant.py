@@ -209,7 +209,9 @@ def worker(data, control):
 
 
 class Gate:
-    def __init__(self, observers, snapshots, leases, index, record, save, directional=False, scm_rights=False):
+    def __init__(self, observers, snapshots, leases, index, record, save, directional=False, scm_rights=False, security=0):
+        from ws73_protected_grant import requirement
+        if security!=requirement(record):raise ValueError('requested protected binding and original prelude must agree')
         self.directional=directional
         self.index=index;self.record=record;self.save=save;self.children=[];self.parents=[]
         self.row=dict(status='STARTING',index=index,owners=[],workers=[],business=[],start_wall_ns=time.time_ns())
@@ -221,14 +223,14 @@ class Gate:
             for n,observer in enumerate(observers):
                 table=observer.link_snapshot()
                 if table.flags!=1 or table.count!=1:raise ValueError('one actual physical link per controller')
-                link=table.links[0];address=Address(family=46,controller=n,version=2,generation=snapshots[n].generation,lifetime=link.lifetime,lease=leases[n],handle=link.handle,local_tcid=31,remote_tcid=31,pi=241,directions=(1 if n==index else 2) if directional else 3)
+                link=table.links[0];address=Address(family=46,controller=n,version=2,generation=snapshots[n].generation,lifetime=link.lifetime,lease=leases[n],handle=link.handle,local_tcid=31,remote_tcid=31,pi=241,directions=(1 if n==index else 2) if directional else 3,security=security)
                 data=socket.socket(46,socket.SOCK_DGRAM|socket.SOCK_CLOEXEC,0)
                 channels.append(data)
                 data.setsockopt(socket.SOL_SOCKET,socket.SO_RCVTIMEO,struct.pack('ll',8,0))
                 data.setsockopt(socket.SOL_SOCKET,socket.SO_SNDTIMEO,struct.pack('ll',8,0))
                 if directional:
-                    for directions,security,expected in [(0,0,errno.EINVAL),(4,0,errno.EINVAL),(3,1,errno.EOPNOTSUPP),(3,2,errno.EOPNOTSUPP)]:
-                        bad=Address.from_buffer_copy(bytes(address));bad.directions=directions;bad.security=security
+                    for directions,requested_security,expected in [(0,0,errno.EINVAL),(4,0,errno.EINVAL),(3,1,errno.EACCES),(3,2,errno.EACCES),(3,3,errno.EOPNOTSUPP)]:
+                        bad=Address.from_buffer_copy(bytes(address));bad.directions=directions;bad.security=requested_security
                         with socket.socket(46,socket.SOCK_DGRAM|socket.SOCK_CLOEXEC,0) as rejected:
                             ret=libc.bind(rejected.fileno(),ctypes.byref(bad),ctypes.sizeof(bad));actual=ctypes.get_errno()
                         if ret!=-1 or actual!=expected:raise ValueError('unsupported/invalid scoped bind did not reject')
@@ -360,13 +362,15 @@ class Gate:
 
 def verify(row, outer):
     i=outer['index']
+    from ws73_protected_grant import requirement
+    security=requirement(outer)
     if row['status']!='GRANT_GATE_PASS' or row['index']!=i or len(row['owners'])!=2 or len(row['workers'])!=2:raise ValueError('complete Grant gate required')
     for n,owner in enumerate(row['owners']):
         address=Address.from_buffer_copy(bytes.fromhex(owner['address']))
         if (owner['index']!=n or owner['lease']!=outer['leases'][n] or owner['generation']<=0 or owner['lifetime']<=0
                 or (address.family,address.controller,address.version,address.flags)!=(46,n,2,0)
                 or (address.generation,address.lifetime,address.lease,address.handle)!=(owner['generation'],owner['lifetime'],owner['lease'],owner['handle'])
-                or (address.local_tcid,address.remote_tcid,address.pi,address.directions,address.security)!=(31,31,241,(1 if n==i else 2) if row.get('directional',False) else 3,0) or any(address.reserved)):
+                or (address.local_tcid,address.remote_tcid,address.pi,address.directions,address.security)!=(31,31,241,(1 if n==i else 2) if row.get('directional',False) else 3,security) or any(address.reserved)):
             raise ValueError('exact original v2 socket identity/lease required')
     for n,worker_row in enumerate(row['workers']):
         if worker_row['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker_row['credentials']['caps'].values()) or worker_row['original']==worker_row['fd'] or worker_row['original_errno']!=errno.EBADF or worker_row['pid']<=0:raise ValueError('actual ordinary duplicated socket required')
@@ -428,10 +432,10 @@ def corroborate(row, outer, capture):
         for business in row['business']:
             for application in business['applications']:
                 if any(application['denied_marker'] in p['data'] for p in sdus):raise CaptureError('forbidden direction marker reached wire')
-        if len(row['bind_rejections'])!=8:raise CaptureError('all invalid/protected bind requests required')
+        if len(row['bind_rejections'])!=10:raise CaptureError('all invalid/protected bind requests required')
         for n in range(2):
-            values=row['bind_rejections'][n*4:n*4+4]
-            if [(Address.from_buffer_copy(bytes.fromhex(v['input'])).directions,Address.from_buffer_copy(bytes.fromhex(v['input'])).security,v['errno']) for v in values]!=[(0,0,22),(4,0,22),(3,1,95),(3,2,95)]:raise CaptureError('exact invalid/protected request errors')
+            values=row['bind_rejections'][n*5:n*5+5]
+            if [(Address.from_buffer_copy(bytes.fromhex(v['input'])).directions,Address.from_buffer_copy(bytes.fromhex(v['input'])).security,v['errno']) for v in values]!=[(0,0,22),(4,0,22),(3,1,13),(3,2,13),(3,3,95)]:raise CaptureError('exact invalid/protected request errors')
     proof=dict(status='REAL_DIRECTIONAL_GRANT_USB_CORROBORATED' if row.get('directional',False) else 'REAL_BLOCKED_RX_GRANT_USB_CORROBORATED' ,scope='pre-daemon two real devices/independent Managed Files; ordinary socket dup, witnessed blocked RX, control release/final close/dup, successor old-fd denial; peer radio continuity in outer gate',business_round_trips=0 if row.get('directional',False) else len(row['business']),legs=legs,blocked_rx_acceptance=not row.get('directional',False),daemon_death_acceptance=False,inflight_usb_acceptance=False,natural_recovery_acceptance=False,full_grant_complete=False)
 
     if row.get('directional',False):

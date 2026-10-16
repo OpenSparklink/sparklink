@@ -4,6 +4,10 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
+本批在原K619上扩展受保护生命周期测试编排：共享typed交换先于首次CUTC绑定，
+原File/Down/期限屏障继续使用。当前仅工具接线和700项离线检查通过，新artifact
+20项实机矩阵尚未执行；下列U73资格保留原工具身份，不转授到新测试实现。
+
 [固定安全epoch Grant限定实机结果](../docs/evidence/security-grant-fixed-real-20261017.json)
 绑定K61905139/U73a2898，执行73a、后处理02ac：普通control组用户通过既有slkd与
 slktest取得security1/2固定CUTC，各两连接角色，共16次受保护业务校验回复；加密前

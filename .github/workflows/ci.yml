@@ -121,7 +121,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 400bd6812608935e2845d6d2b80ec58e7a6a6415
+          ref: a9bf10c45fe445a3d7f66ae3e7e1667156a6d686
           path: .kernel-uapi
           sparse-checkout: |
             include/uapi/linux/sparklink_ioctl.h
@@ -160,7 +160,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 400bd6812608935e2845d6d2b80ec58e7a6a6415
+          ref: a9bf10c45fe445a3d7f66ae3e7e1667156a6d686
           path: .kernel-tools
           # Raw worker ioctls also compile against the canonical pinned UAPI.
           sparse-checkout: |
@@ -184,7 +184,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 400bd6812608935e2845d6d2b80ec58e7a6a6415
+          ref: a9bf10c45fe445a3d7f66ae3e7e1667156a6d686
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -234,6 +234,7 @@ jobs:
           python tools/testing/selftests/sparklink/run_native_ticket_driver.py
           python tools/testing/selftests/sparklink/run_native_ticket_driver.py --command
           python tools/testing/selftests/sparklink/run_session_dispatch.py
+          python tools/testing/selftests/sparklink/run_session_wake.py
           clang -O2 -std=c11 -Wall -Wextra -Werror tools/testing/selftests/sparklink/sle_channel_table_test.c -o /tmp/sle-channel-table-test
           /tmp/sle-channel-table-test
           clang -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer tools/testing/selftests/sparklink/ws73_acb_test.c drivers/sparklink/ws73/wire.c -o /tmp/ws73-acb-test

@@ -1116,18 +1116,26 @@
       "dynamic-seven-sizes-400bd68": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "dynamic-burst80-400bd68-25df09b": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "dynamic-new-cli-seven-sizes-400bd68-25df09b": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "dynamic-seven-sizes-qualified-credit-next",
-      "production_behavior": "K400/Ucca8/tools45a actual seven dynamic sizes:392RT/14slotrefusals/119decoded evidence negatives. Retained14 fixed/4device attools4b and pilot2042 atd14 stay separately scoped.",
+      "id": "dynamic-burst80-and-new-cli-seven-sizes-scoped-pass",
+      "production_behavior": "K400/U25df09b/tools25df09b actual dynamicC16x2042perrole:80RT includes32burst;actualEAGAIN/poll/fullpool25and26newrefusals/NOCPresume/drain. Priorseven-sizeUcca8 report unchanged.",
       "exit": [
-        "All7 actual peer random validation/reply,matchedMTU/MPS,two-endPB,slotrefusal/Cprogress and swapped physicalroles complete",
-        "427original material hashes,raw child output closure,zero capture drops,QEMU/supervisor0 and exactfrozen replay checked",
-        "Bounded production pure formal/sanitizer/fuzz evidence separate;not fullimplementation/firmwareproof"
+        "K400/U25df09b/tools25df actual80dynamicRT incl32Cburst withEAGAIN/poll/fullpool25-26newrefusals/NOCPresume/drain;20negativecontrols",
+        "Same compiledCLI seven attaineddynamic sizes separatelyrepeated:392RT/14slotrefusals/119negativecontrols;allraw output/capture/source/artifact bytes checked",
+        "PriorK400/Ucca8 retained14/fourdevice qualification unchanged;no inheritednewcompiledwhole-treequalification"
       ],
-      "next": "Extend existing dynamic app/gate with real finite burst/credit/backpressure and submission/revoke lifetime composition;reuse soleSession/actualLedger/tickets. Original829ENODATA fail unresolved;safeTCIDreuse/RCA/nonhumanrecovery/fullS0-S6/19WP/10FV/12DG OPEN."
+      "next": "Controlled submission/revoke/Down/originaldeadline composition via existing actual Nativecommit/Ledger/Tickets and explicit failure dependencies;fullscope/RCA/nonhumanrecovery/safeTCIDreuse remain OPEN. No controlrace全集 prerequisite."
     }
   },
   "agent_workstream": {
@@ -1327,7 +1335,7 @@
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
     "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
     "gate_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
-    "status": "FIXED14_AND_DYNAMIC_SEVEN_SIZES_SCOPED_PASS_CREDIT_NEXT",
+    "status": "HISTORICAL_K400_Ucca8_DYNAMIC7_COMPLETED_SCOPE_RETAINED",
     "evidence": "docs/evidence/dynamic-cmtc-offline-20261016.json",
     "exit_conditions": [
       "Real unmatched endpoint refusal plus exact CMTC/two-end captures",
@@ -1347,7 +1355,7 @@
     "dynamic_long_report": "docs/evidence/dynamic-long-2042-20261016.json",
     "field_audit_correction": "docs/evidence/dynamic-capture-field-audit-correction-20261016.json",
     "next_gate_tools": "45a658eacd84a829c355e1dc8461a6f9a3d6e8b9",
-    "next_gate": "Actual dynamic bounded burst,credit/poll/backpressure and submission lifecycle;not allcontrolraces prerequisite",
+    "next_gate": "Current next actions are generated qualification_view.batch and dynamic_credit_batch;oldcollector/matrix failures retainedhistorically",
     "dynamic_size_matrix": ".dev/dynamic-boundary-matrix-v2.json",
     "dynamic_size_matrix_status": "ALL7_DYNAMIC_SIZE_AND_SLOT_BUDGET_SCOPED_PASS",
     "dynamic_size_failure": "docs/evidence/dynamic249-monitor-failure-20261016.json",
@@ -1357,16 +1365,26 @@
     "retained_credit_observation": "docs/evidence/dynamic-runtime-credit-observation-20261016.json"
   },
   "dynamic_credit_batch": {
-    "status": "IMPLEMENTED_OFFLINE_SCOPED_VM_PENDING",
+    "status": "REAL80_AND_NEW_COMPILED_DYNAMIC7_SCOPED_PASS",
     "production_behavior": "Existing ordinary dynamic socket burst command;soleSession/Ledger/Tickets unchanged. C16x2042 per physical role;A/B and slot refusal retained.",
     "invariants": [
       "Finite queue EAGAIN/poll withdrawal/resume;protocol packet credits independent",
       "New fullpool refusal,NOCP-linked later submits and final drain,alongside actual peer application reply",
       "No overwrite original failures,no trustedNOCP/reuse/naturalrecovery inference"
     ],
-    "offline": "614tool tests;18dynamic/output cases;slctl7unit+2privateDBus integration;strictclippy;strictdocs. Initialsandbox/missingDBus dependency failures preserved.",
-    "real": "PENDING exact new compiled artifacts and frozen tools;not inherited fromK400/Ucca8/45a",
+    "offline": "614tools;7unit+2scan/privateDBus+3securityCLI integration;strictclippy/docs;rawoutput/hash replay20negatives",
+    "real": "PASS K400/U25df09b/tools25df09b80dynamicRT incl32Cburst;bothphysicalroles;20offlinenegativecontrols;no NOCPtruth/reuse qualification",
     "exit": "Two real WS73 both roles,80dynamicRT including32C2042burst,actualEAGAIN/fullpool/refusal/NOCPresume/drain andtwo-endappchecked captures;retained paths regression required.",
-    "scope": "VM-only/fullS0-S6/19WP/10FV/12DG unchanged;all unfinishedissues OPEN"
+    "scope": "VM-only/fullS0-S6/19WP/10FV/12DG unchanged;all unfinishedissues OPEN",
+    "source_commit": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+    "real_report": "docs/evidence/dynamic-burst-real-20261016.json",
+    "retained_regression": {
+      "state": "ALL7_REAL_SCOPED_PASS",
+      "supervisor": ".dev/dynamic-burst-retained-matrix-v1.json",
+      "report": "docs/evidence/dynamic-burst-retained-seven-sizes-20261016.json",
+      "live_session": null
+    },
+    "next": "Actual submission/revoke/Down/originaldeadline combinations;keep no-all-control-precondition and fullS0-S6/19WP/10FV/12DG",
+    "whole_current_tree_qualified": false
   }
 }

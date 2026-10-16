@@ -39,6 +39,8 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 | K400/Ucca8既有14组回归：328次往返、32次拒绝、2次在途交付 | `real_device` | `PASS` |
 | 动态2042字节与四槽预算：56次总往返，含8次动态长包 | `real_device` | `PASS` |
 | 动态七尺寸/槽位门禁：392次往返、14次拒绝，原失败保留 | `real_device` | `PASS` |
+| 动态C突发/真实credit：80次往返（含32次2042突发） | `real_device` | `PASS` |
+| 新编译CLI重验七尺寸：392次动态往返、14次槽位拒绝 | `real_device` | `PASS` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
 
@@ -84,8 +86,14 @@ K400/Ucca8动态CMTC的[48次短包门禁](../docs/evidence/dynamic-cmtc-real-20
 fuzz仍分层；[负对照字段修正](../docs/evidence/dynamic-capture-field-audit-correction-20261016.json)
 保留原尾分片载荷变异输出，重新针对首片TCID/PI拒绝；真实正向证据不变。
 
-动态C的16×2042突发测试入口已接通既有应用与实际credit观察器，离线回归通过；
-准确新编译产物的VM实机门禁尚待执行，不继承上述七尺寸或固定burst资格。
+新编译U25df09b／工具25df09b在同一K400取得[动态burst/credit限定门禁](../docs/evidence/dynamic-burst-real-20261016.json)：
+80次动态往返中32次为C的2042字节突发，两物理角色均取得真实EAGAIN/poll背压、
+源端新增25/26次credit池满拒绝、NOCP后恢复提交与最终排空。实际对端逐条校验
+回复，两端PB重组一致，20个离线证据负对照拒绝；不证明NOCP迟到/重复及安全复用。
+同一新编译用户态又[独立重验七尺寸](../docs/evidence/dynamic-burst-retained-seven-sizes-20261016.json)，
+392次动态往返、14次槽位拒绝与119个负对照；不继承或重命名旧Ucca8结果。
+既有14组固定通道/四设备资格仍仅属于其原K400/Ucca8产物；当前整个树和原完整范围
+未通过整体验收。下一批继续提交/撤权/断链/原期限组合，未查明根因与非人工恢复开放。
 
 
 ## 安全与服务的限定范围

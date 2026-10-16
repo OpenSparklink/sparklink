@@ -52,6 +52,8 @@ WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续�
 | K400/Ucca8既有14组回归：328次往返、32次拒绝、2次在途交付 | `real_device` | `PASS` |
 | 动态2042字节与四槽预算：56次总往返，含8次动态长包 | `real_device` | `PASS` |
 | 动态七尺寸/槽位门禁：392次往返、14次拒绝，原失败保留 | `real_device` | `PASS` |
+| 动态C突发/真实credit：80次往返（含32次2042突发） | `real_device` | `PASS` |
+| 新编译CLI重验七尺寸：392次动态往返、14次槽位拒绝 | `real_device` | `PASS` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
 
@@ -1260,5 +1262,12 @@ K83c4f2d/400bd681与Ucca8a20已接线实际CMTC、Session唯一分流、按完�
 本批退出后直接扩展既有动态应用的有限burst、实际credit/背压与提交/撤权生命周期，
 复用唯一Session、Ledger和票据；不追加控制面全集前置。4槽墓碑不缩减安全回收、
 长期收敛和完整多通道目标。
+U25df09b接通既有burst应用后取得[80次动态实机往返](../docs/evidence/dynamic-burst-real-20261016.json)，
+含32次C2042突发，实际EAGAIN/poll、credit池满、NOCP后恢复提交与排空；20个
+证据负对照拒绝。随后同编译产物[七尺寸回归](../docs/evidence/dynamic-burst-retained-seven-sizes-20261016.json)
+另取得392次往返/14次槽位拒绝/119个负对照。应用、包credit与软件队列分开判断，
+不从这些限定结果推导NOCP真值、复用屏障或完整并发证明。本数据批次退出，下一条
+纵向链以既有实际Nativecommit/Ledger/Tickets覆盖撤权/Down/原期限与晚到完成；
+只设置该改动相关不变量，不追加控制面全集前置。原14组fixed/4device资格不升级新产物。
 全S0–S6/19WP/10FV/12DG、认证/Bond、质量、自然根因与非人工恢复继续并行，
 未完成issue保持开放。UserHost仍P4规划，所有真实驱动/设备仅VM。

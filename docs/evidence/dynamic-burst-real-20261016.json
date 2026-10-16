@@ -1,0 +1,754 @@
+{
+  "schema_version": 1,
+  "status": "REAL_DYNAMIC_BURST_CREDIT_SCOPED_PASS",
+  "generated_utc": "2026-10-16T06:41:54.851894+00:00",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "guest_tools": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "executed_tools": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "ordinary_round_trips": 80,
+  "C_burst_round_trips": 32,
+  "slot_refusals": 2,
+  "capture_packets": 17101,
+  "capture_drops": 0,
+  "kernel_taint": 0,
+  "qemu_exit": 0,
+  "supervisor_exit": 0,
+  "phases": [
+    {
+      "phase": 0,
+      "C_info": {
+        "peer": [
+          1,
+          2,
+          1,
+          0,
+          130,
+          131,
+          241,
+          2042,
+          2047,
+          0,
+          3
+        ],
+        "initiator": [
+          0,
+          1,
+          1,
+          0,
+          131,
+          130,
+          241,
+          2042,
+          2047,
+          0,
+          3
+        ]
+      },
+      "C_directional_packets": 32,
+      "C_tx_fragment_counts": [
+        9
+      ],
+      "C_rx_fragment_counts": [
+        81
+      ],
+      "new_source_pool_refusals": 25,
+      "source_full_samples": 6,
+      "endpoints": [
+        {
+          "controller": 0,
+          "generation": 1,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 242,
+          "nocp_packets": 242,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 106,
+          "full_nocp_resume_count": 105,
+          "first_resume": {
+            "full_record": 2254,
+            "nocp_record": 2272,
+            "resumed_submit_record": 2282
+          }
+        },
+        {
+          "controller": 1,
+          "generation": 2,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 242,
+          "nocp_packets": 242,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 128,
+          "full_nocp_resume_count": 127,
+          "first_resume": {
+            "full_record": 2290,
+            "nocp_record": 2300,
+            "resumed_submit_record": 2324
+          }
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "C_info": {
+        "peer": [
+          0,
+          1,
+          3,
+          0,
+          130,
+          131,
+          241,
+          2042,
+          2047,
+          0,
+          3
+        ],
+        "initiator": [
+          1,
+          2,
+          3,
+          0,
+          131,
+          130,
+          241,
+          2042,
+          2047,
+          0,
+          3
+        ]
+      },
+      "C_directional_packets": 32,
+      "C_tx_fragment_counts": [
+        9
+      ],
+      "C_rx_fragment_counts": [
+        81
+      ],
+      "new_source_pool_refusals": 26,
+      "source_full_samples": 6,
+      "endpoints": [
+        {
+          "controller": 1,
+          "generation": 2,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 241,
+          "nocp_packets": 241,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 106,
+          "full_nocp_resume_count": 105,
+          "first_resume": {
+            "full_record": 10170,
+            "nocp_record": 10174,
+            "resumed_submit_record": 10196
+          }
+        },
+        {
+          "controller": 0,
+          "generation": 1,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 241,
+          "nocp_packets": 241,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 127,
+          "full_nocp_resume_count": 126,
+          "first_resume": {
+            "full_record": 10208,
+            "nocp_record": 10214,
+            "resumed_submit_record": 10238
+          }
+        }
+      ]
+    }
+  ],
+  "scope": [
+    "ExactK400/newcompiledU25df09b/frozen guestHosttools25df09b;two real WS73,swappedphysicalroles,A4+B20+C16 perrole:80ordinary dynamic appRT includes32Cburst2042byteSDU/2047bytePDU. Fixedsocket8RT/RF baseline separately present,not counted asdynamic.",
+    "Actual dynamic CMTC/asymmetricTCIDs/Aclose-Bprogress/fifthlifetimeslotENOSPC-Cprogress andCburst;existingSession/Ledger/Tickets andburstfunctions reused. ControllerACB254,5credits,software8queue independent. Finitefourtombstones not safe reuse orlongterm convergence.",
+    "Actual EAGAIN/pollwithdrawal/resumedadmission andnewfullpoolrefusals25/26;both endpointsobserved fullpool5/NOCP-linkedresumption/finaldrain. Counts242/242 then241/241include all actual A/B/C/controltraffic sincephysicalphase start,not onlyC. USBsuccess doesnotreturncredit.",
+    "Actual ordinaryuid1000/caps0 apps validate random dataandreply;all Ctwo-endPB exactreassembly9TX/81RX. Complete USB/HCC/A3 evidence zero drops,VMtaint0/QEMU0/supervisor0;not independentRFsniffer,thirdpartyinteroperability or fullpermissionsdeployment.",
+    "Raw childpipes bound256KiBperstream onlyversion3;allbytesmatch original artifacts. Original5s scheduling/10s businessdeadlines unchanged.20offlinedecodedcapture/metadata negativesreject missingpeerRX/appreply/firstTCID-PI/finalTX/fullpool/NOCP/identity/debt/proof;not firmwarefaultinjection orindependentdecoder.",
+    "NOCP accuracy/duplicates/late ownership/handle-reusebarrier,Grant/revoke/down/deadlinefullcomposition,safeTCIDreuse/fairness/debugkernel/fullformalrefinement/security/Bond/SSAPprotectedpaths/RCA/nonhumanrecovery remainOPEN. No newformalproof fromthisrealtest.",
+    "PriorK400/Ucca8 dynamic7/fixed14/pilot reportsremain immutable.NewcompiledCLI retainedlengthmatrix separately running;thisonegate doesnot grantallpriorlengths/full12DG orwholecurrenttreequalification. Original829ENODATA andsetup/sandbox/DBus failures retained.",
+    "AllS0-S6/19WP/10FV/12DG preserved,UserHostP4;allhardware/driveroperationsVM-only. Manual/hub/QMP/injectedactions never qualify natural recovery;unfinishedissues remainOPEN."
+  ],
+  "gates": [
+    {
+      "name": "dynamic-burst-credit-two-role",
+      "status": "ACTUAL_PEER_BURST_CREDIT_AND_TWO_END_PB_PASS",
+      "result": "PASS",
+      "ordinary_round_trips": 80,
+      "C_burst_round_trips": 32,
+      "slot_refusals": 2
+    }
+  ],
+  "negative_controls": [
+    {
+      "name": "missing-C-peer-RX",
+      "result": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "wrong-C-TCID-first-fragment",
+      "result": "REJECTED",
+      "mutation_location": {
+        "record": 1928,
+        "hcc_offset": 92,
+        "boundary": 1,
+        "byte": 0,
+        "before": 130,
+        "after": 131
+      }
+    },
+    {
+      "name": "wrong-C-PI-first-fragment",
+      "result": "REJECTED",
+      "mutation_location": {
+        "record": 1928,
+        "hcc_offset": 92,
+        "boundary": 1,
+        "byte": 4,
+        "before": 241,
+        "after": 240
+      }
+    },
+    {
+      "name": "missing-C-final-TX-fragment",
+      "result": "REJECTED",
+      "mutation_location": {
+        "record": 2066,
+        "hcc_offset": 0,
+        "boundary": 3
+      }
+    },
+    {
+      "name": "missing-C-peer-application-reply",
+      "result": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-burst-pressure",
+      "result": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "no-new-full-pool-refusal",
+      "result": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "invented-NOCP-count",
+      "result": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-NOCP",
+      "result": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "wrong-slot-refusal",
+      "result": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "old-lifetime",
+      "result": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-credit",
+      "result": "REJECTED"
+    },
+    {
+      "name": "residual-debt",
+      "result": "REJECTED"
+    },
+    {
+      "name": "wrong-credit-lifetime",
+      "result": "REJECTED"
+    },
+    {
+      "name": "no-resume",
+      "result": "REJECTED"
+    },
+    {
+      "name": "downgraded-burst-flag",
+      "result": "REJECTED"
+    },
+    {
+      "name": "wrong-roundtrip-total",
+      "result": "REJECTED"
+    },
+    {
+      "name": "wrong-burst-type",
+      "result": "REJECTED"
+    },
+    {
+      "name": "failed-qemu",
+      "result": "REJECTED"
+    },
+    {
+      "name": "missing-baseline",
+      "result": "REJECTED"
+    }
+  ],
+  "raw_access": {
+    "condition": "Authorized workspace owner;privatecaptures/SDK/firmware notpublic;offsiteavailability notguaranteed",
+    "replay": "Exact frozen25df09b tools and originalsupervisorcommand inVM-only;reverify-dynamic-burst-v1.py onlysavedrawbytes",
+    "firmware": "SDK111 /1.10.111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3"
+  },
+  "materials": [
+    {
+      "private_workspace_path": ".dev/dynamic-burst-prepare-v1-record.json",
+      "sha256": "23664f9d93cc7ae5e37e780e188ff14094c960e79928632b22d4a560f0086ed3",
+      "bytes": 1389
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-prepare-v2-record.json",
+      "sha256": "fab3bd56ac7c5aecc2477270ec62c984517a37f55764463b70dbe905cd9a7568",
+      "bytes": 1552
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-v1-audit.json",
+      "sha256": "132d7a5d4f3a2f1046b3bdd1f1233c960073c66aadc0b091818abf93fec29bf4",
+      "bytes": 2849
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-v1-audit.log",
+      "sha256": "347ce8bd17dc6252918d228ec2be68c1c8f2d3448606c9e077094ccd080a4d95",
+      "bytes": 62
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-v1-supervisor.json",
+      "sha256": "3c1e4b0d8ad4df3f97f77e9d6af729bf6cb1f3773cfb4e4b5b51af6193a67cf0",
+      "bytes": 1321
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/build.log",
+      "sha256": "9b79efaec511bbf72784854d8cb7fa74ce83d950afe4d78c7fd926f7ddc588ca",
+      "bytes": 4985
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/manifest.json",
+      "sha256": "46d6c37c9140f44de2663def59cc51883b46c393ab558c36cf934c1895b97259",
+      "bytes": 23298
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "0aa10dbb3eac7e2db81382ac89e0370fac75d42afc0575a8a3095445b62bd856",
+      "bytes": 507
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/libexec/opensparklink/native-lab/25df09b7cca7/liblibsparklink.so",
+      "sha256": "6a3121bd203810ba9292a42a10191a38f363093e8168aa9e6989a11800c30757",
+      "bytes": 545176
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/libexec/opensparklink/native-lab/25df09b7cca7/slctl",
+      "sha256": "edb89ba71da83bebd6df9228801e4fef0656b90a2f655f842926a8f976d8c8f7",
+      "bytes": 7922488
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/libexec/opensparklink/native-lab/25df09b7cca7/slkconfig",
+      "sha256": "d66324c14ab02ab776e47f281f55f0c6f6f3480d1924a05e5adde424b54468a2",
+      "bytes": 1402400
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/libexec/opensparklink/native-lab/25df09b7cca7/slkd",
+      "sha256": "bbc30ac649045c2f09af2ca470a676844f2ff11b0bfd7c6bd4787c818773cecc",
+      "bytes": 10473816
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/libexec/opensparklink/native-lab/25df09b7cca7/slkdump",
+      "sha256": "5823d3e61c9cee996e2d0848df21078038510472fef5a21f4e73f9fde7ea9b82",
+      "bytes": 1660208
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/libexec/opensparklink/native-lab/25df09b7cca7/slkmon",
+      "sha256": "9c8ee49f9006b16d1b9b19c6d7ae0ed451bfb8c26a831180ca8410faa9c600ab",
+      "bytes": 1660368
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-service-bundle/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "c9c8328a3d17e40d7944a1a4ca0fe5c4591a7c30661eecc05c4f029c3e6455da",
+      "bytes": 154
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-prepared/manifest.json",
+      "sha256": "c3187565dc460c98166478ba6de2ebada8447d95510497c888058cb1bc7f3888",
+      "bytes": 445
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/console.log",
+      "sha256": "6b4256c223dc68f4bdaa4749b1556a41e8e6f02873d884dae19e8329f75afc7b",
+      "bytes": 16296
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "befcb082d70fc30e6eb86de27f3480a4232066cb200dd1adda256d844284ee33",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "ce301f844c717347df74e15aae6aa5947a6b8b9214cf25109fcaf85d3571d645",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "de082f386648893e9b7dba656a8841b2c37bc4dc392cf0c4ee477acb086bf2e9",
+      "bytes": 1940
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "eedc17e66468a13760f415271e5ad8b42182f8becbbf9ef7da18bf2d7036c89d",
+      "bytes": 1878
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "74de0d3f668b349c78c839e0b8fb38cef5bce4e2d839eea5944a446cdd7b1e99",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "7507f8e7a66fc1f56f17e5c87e2b8e2bfd9ebc6cf95b202a280c1a5c47491829",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "109354eba4d225ae8322447a9b05eaed3fbeb8c4dade443e88d2e6a4e468575e",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "03a01653154f7b6d72ac4c6a9125afb7a349a16b74f066c6392d92555ae0fab5",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "12a7bb7d9b5c57da3828b5a8014abc35aa7a9ff412dcaacb2c015c357bfcc891",
+      "bytes": 135361
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "a8948cf1fcddb69b30523b9a999c541d94e1e7beafde6881829136129f0d3f89",
+      "bytes": 132683
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "941d8ccaba5009b28bd11c8a0e9c41a8c3694b49d776c435b25f04a1090ffa98",
+      "bytes": 2069
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "102eca894f02c5203219f808e3815ecad2588b81548f761ada1c8ca7fb307b20",
+      "bytes": 2006
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "cf2b4106716dd1f70ccb1a56a5d1947a3685eea8865f53472020152058658386",
+      "bytes": 7484
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "820f16f056c9a823c07662c813c715e819592c5829a4f1c1bc409dc14316217d",
+      "bytes": 7196
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "6700c8b8ce14a3f58b5c885e4052a43f96781e1ede520cc5ac5ca755dbbe2f69",
+      "bytes": 135380
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "2aa7e1ce5c6bf29845a4c109f94dd88b6ad90bcbe0f1fdfdc422eee4c7e887c4",
+      "bytes": 132684
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/passthrough-control/run.json",
+      "sha256": "27473e24019aa563d912d21c6d324da01a47f44f3e3c3f5d75ec92345911659a",
+      "bytes": 1327557
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/capture-process-status.txt",
+      "sha256": "6f16544a6d476e99a318664edddca5f25a74afbf7565cd85dec83f4bd4e6ca0b",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/capture-stats.txt",
+      "sha256": "04ac7844683b1b30ad0e30c82a99678cc6440a1dc76da36e7346252db13fcd33",
+      "bytes": 229
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/kernel.log",
+      "sha256": "3ad32338095de20fa3c8c95e83f7c2d815bf1cfb1462c0a133f54540a97b139e",
+      "bytes": 49200
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/passthrough-control-proofs.json",
+      "sha256": "de8c746a1393d0e0a2b8b87e7f53218dfee5c4242b0bc5003abbba0bd4f5dd31",
+      "bytes": 478416
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/pending-observations-0.json",
+      "sha256": "d4a569d4021ff9ee9816e3031042fba51c69e3fd5da48d6ac188b7d085502342",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/pending-observations-1.json",
+      "sha256": "4d6464315565b4a5deedf22087f97fb2770e625dd0d29f63078a506a3303d7f9",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/ready-progress-0.json",
+      "sha256": "90b1e47dac889aa77b4e8377edf666a081614a331f30b226b0cb90da9b76031f",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/ready-progress-1.json",
+      "sha256": "af8c96ed81f127993ccc17e322d5d77932e12c93e8bce6bf5c094ad42ed7322d",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/slkd-process-status.txt",
+      "sha256": "a9c74dab3e532f2f3d4b48b8d80b9c57e6c2704dc27c8cf1e194b08ab60f137f",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/slkd.log",
+      "sha256": "cd211c84e3d160f20700ad14eed666f1bbd71b92a467f5d2ca72dcf26fc70524",
+      "bytes": 5249
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/ws73.pcap",
+      "sha256": "726a95b61b4464c475cba0f69660ed94e2fafee5d52d0bb1bdd5053a6551167a",
+      "bytes": 2899508
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/xhci-trace-stats.txt",
+      "sha256": "5a9a9461a5df4841b8cfe17ce43a02431b776e7a5da1d08222c13f98dfbe0b62",
+      "bytes": 288
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/guest-output/xhci-trace.log",
+      "sha256": "cb1ddfeb4dad1f8cb0afc768ab0b3eab6ab84b4325f04344b1a1bed723787dc2",
+      "bytes": 3760756
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v1-run/manifest.json",
+      "sha256": "a02dfdb85ba36f902407ed3e29c154b6743e1e32cf55366888ca2c02716a1389",
+      "bytes": 6792943
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-v2-prepared/manifest.json",
+      "sha256": "4b56583d541071a01e12a673dd422280858c441ad69d7d43e688d75310ee3844",
+      "bytes": 263073
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-artifacts/manifest.json",
+      "sha256": "7f6ec27cc09c34d0f1e88fe005792322d1a61c3805156fd8a88486f4f8b736e2",
+      "bytes": 229027
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-root-smoke/manifest.json",
+      "sha256": "fa397809a06bc247ed2ab3d7752fd1e2e90161d358887b77dbfd7080a7aa4265",
+      "bytes": 37174
+    },
+    {
+      "private_workspace_path": ".dev/reverify-dynamic-burst-v1.py",
+      "sha256": "7230ce59518a8576a064b302a20ce3de0bb161ed696fb7e95e707ca903ce9d94",
+      "bytes": 5996
+    },
+    {
+      "private_workspace_path": ".dev/run-dynamic-burst-v1.py",
+      "sha256": "db30dc0ee6f092b3b238feef4acc5e29d272510b63f97cdf9e2ba402b30e5abb",
+      "bytes": 2147
+    }
+  ]
+}

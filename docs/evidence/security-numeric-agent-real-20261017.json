@@ -1,0 +1,959 @@
+{
+  "schema_version": 1,
+  "status": "NUMERIC_AGENT_NATIVE_DELIVERY_SCOPED_PASS_FULL_SECURITY_INCOMPLETE",
+  "compiled_kernel": "323668c6015ef69fa233c008d8ef0c4c70402686",
+  "compiled_userspace": "b87318bbfb5897ed5b085a30a266a8f8b26afe4f",
+  "executed_tools": "b87318bbfb5897ed5b085a30a266a8f8b26afe4f",
+  "post_processing_tools": "59c0cabb6848f9e46e02fdc383f1d722e1d031ca",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "full_exit_result": "UNPROVED",
+  "original_failures_result": "FAIL",
+  "scope": [
+    "VM-only stockSDK111 Hi3873U2/3;E1excluded,nofourdevice/mixedmodel inheritance.",
+    "One existingRegistry/Entry/physicalSession/commandcredit/Ticket/originalManagedFile;frozenmethod/Agentepoch,preauthorization thenrealnumericconfirmation callback. No secondEngine orrawkeys.",
+    "Actualordinarycontroluser onguestsystembus,2actualconnectionroles perNumericApprove/Reject/Late run. Realcallbacks,independentpublictranscriptCMAC,actualownconfirmation/proof/install/0011 andpeer-validated random appreplies.",
+    "NegativeNumericReject/Late wereAFTERnativeadmission,not preadmission refusal;no DHproof/install/encryption;original5second budget not renewed.",
+    "CLInewnumericinputexact6digits andidentity/method checks implemented/offlinetested;numericCLI physical/humanendtoend notqualified bydisposableAgent witness.",
+    "Frozenoperation observation/kernelstate11 isnotliveauthenticatedsecuritygrade,protectedGrant,Paired,Bond orindependent RFcipherattestation;securityfacades/protectedchannel remainunsupported.",
+    "SelectedretaineddefaultNoMITM Agent,249/2042newrun,notfullsevenlength/tenlifecycle/numericownerloss/cancel/Down/inflightmatrix.",
+    "No newformal/LKMM/KCSAN/wholeprotocol proof;puredecision/privatebus metadata fixtures andENOTTY areexplicitlylimited. Capturemutants arecopieddecoded evidence,samechecker not independentdecoder.",
+    "CompleteS0-S6/19WP/10FV/12DG unchanged;UserHostP4,originalfailurespreserved,naturalRCA/nonmanualrecovery/NOCPtruth/reuse/drain/fourdevice/PM/release stillOPEN.",
+    "Postprocessor59 auditsnegativecases throughactualphysicalDown,notonlywitness exit:rejectnewmatchingrelay/keycommandsandunexpectedkeyrequest/cipher events;lateoriginalComplete/NOCP arephysicalobligations,not newsubmissions. Fournegativephaseaudits and20mutants added;not physicaldrain orfullhandle-reuse proof."
+  ],
+  "real_gates": [
+    {
+      "name": "numeric-approve",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-agent-real-approve-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "numeric-reject",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-agent-real-numeric-reject-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "numeric-late",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-agent-real-numeric-late-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "retained-approve",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-agent-real-retained-approve-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "retained-boundary249",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-agent-real-retained-boundary249-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 16
+    },
+    {
+      "name": "retained-long2042",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-agent-real-retained-long2042-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "strict-workspace-clippy-and-real-privatebus-ENOTTY-tests",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "688-frozen-tools-and-explicit-evidence-fixtures",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "six-real-replays-and38-evidence-mutants-including-postterminal-Down-window",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "115-document-strictHTML-and-exact-b873-CI",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "actualinstalledsecuritygrade-revocableGrant-Bond-andSSAPpermissions",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "numericCLI-human-flow-and-fullcallback-ownerloss-cancel-Down-installcomposition",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "newartifactfullsevenlength-tenlifecycle-fairness-andfourdevice",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "naturalRCA-nonmanualrecovery-NOCP-reuse-drain-PM-release",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "bounds": {
+    "real_vm_success": 6,
+    "role_phases": 12,
+    "numeric_role_phases": 6,
+    "numeric_callbacks": 12,
+    "native_numeric_installs": 4,
+    "numeric_relay_submits": 40,
+    "numeric_opposite_receipts": 40,
+    "peer_business_round_trips": 48,
+    "boundary_rejections": 16,
+    "original_deadline_ms": 5000,
+    "workspace_rust_tests": 275,
+    "frozen_tools": 688,
+    "copied_actual_evidence_negatives": 38,
+    "postprocessor_tools": 689
+  },
+  "numeric_phases": [
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "preauthorizations": 2,
+      "numeric_callbacks": 2,
+      "numeric_decisions": 2,
+      "kernel_states": [
+        11,
+        11
+      ],
+      "policy_phases": [
+        4,
+        4
+      ],
+      "relay_pdus": 8,
+      "opposite_receipts": 8,
+      "installations": 2
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "preauthorizations": 2,
+      "numeric_callbacks": 2,
+      "numeric_decisions": 2,
+      "kernel_states": [
+        11,
+        11
+      ],
+      "policy_phases": [
+        4,
+        4
+      ],
+      "relay_pdus": 8,
+      "opposite_receipts": 8,
+      "installations": 2
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "preauthorizations": 2,
+      "numeric_callbacks": 2,
+      "numeric_decisions": 2,
+      "kernel_states": [
+        5,
+        5
+      ],
+      "policy_phases": [
+        5,
+        5
+      ],
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "preauthorizations": 2,
+      "numeric_callbacks": 2,
+      "numeric_decisions": 2,
+      "kernel_states": [
+        5,
+        5
+      ],
+      "policy_phases": [
+        5,
+        5
+      ],
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "preauthorizations": 2,
+      "numeric_callbacks": 2,
+      "numeric_decisions": 2,
+      "kernel_states": [
+        7,
+        7
+      ],
+      "policy_phases": [
+        7,
+        7
+      ],
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "preauthorizations": 2,
+      "numeric_callbacks": 2,
+      "numeric_decisions": 2,
+      "kernel_states": [
+        7,
+        7
+      ],
+      "policy_phases": [
+        7,
+        7
+      ],
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    }
+  ],
+  "remaining": [
+    "actualinstalledsecuritygrade-revocableGrant-Bond-andSSAPpermissions",
+    "numericCLI-human-flow-and-fullcallback-ownerloss-cancel-Down-installcomposition",
+    "newartifactfullsevenlength-tenlifecycle-fairness-andfourdevice",
+    "naturalRCA-nonmanualrecovery-NOCP-reuse-drain-PM-release"
+  ],
+  "references": {
+    "status": "FIXED_LOCAL_REFERENCE_RECHECKED_NOT_ORACLE",
+    "references": [
+      {
+        "repo": "communication_nearlink_service",
+        "head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+        "dirty": ""
+      },
+      {
+        "repo": "libws73-usb",
+        "head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+        "dirty": ""
+      },
+      {
+        "repo": "ws73_SDK",
+        "head": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+        "dirty": ""
+      }
+    ],
+    "numeric_reference_source": {
+      "path": "communication_nearlink_service/services/stack/src/cp/bsl/sle/sm/src/sm_numcmp.c",
+      "sha256": "c2b0a8ea2e35f34ead5c95556ec8e962ff10cae8ebe52fdfe2ca5163871a46fd"
+    },
+    "choices": [
+      "Unique physical Session with bounded one earlyproof slot;do not copy upstream global cache",
+      "Method0 IO1,noBond vs existingSDK111 adapter,explicit013C confirm+Rb32",
+      "libws73 onlyNoEntry path;newnumeric qualification needs actual capture,not inherited",
+      "SDK111 opaque relay envelope and stock firmware;no firmwarepatch or independent cipher attestation"
+    ],
+    "scope": "Local source/dialect comparison;not third-party interoperability or proof of reference correctness"
+  },
+  "materials": [
+    {
+      "path": ".dev/numeric-agent-real-approve-v1/manifest.json",
+      "sha256": "60f3e2741f33aee9b4786ccfdbdf6930216a741eae4984c869a1c67544f0767e",
+      "bytes": 1221715,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-approve-v1/console.log",
+      "sha256": "e39801a32ffb20b198a4fcbfbee92d78a18cceb2a28fbbf85375ac270bf84046",
+      "bytes": 16437,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-approve-v1/guest-output/ws73.pcap",
+      "sha256": "6247a6d3d71918a00f80987c36e4b38773593c5f62c3bce1349d649046c8fbe3",
+      "bytes": 532732,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-approve-v1/guest-output/capture-stats.txt",
+      "sha256": "798730e9c9f533387c50ca93d2823ff8118fb865f8d005f3fadd6e4d074e8a45",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "67e1a57beabefacd07613df8d4e9247cd6f27e444a6c4b2664135d358e9f338c",
+      "bytes": 706044,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-reject-v1/manifest.json",
+      "sha256": "ab63d365523180f296550e7165803ef4c4063633765a434612af44f68f081194",
+      "bytes": 1177001,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-reject-v1/console.log",
+      "sha256": "fca3635d5de3ca5263b20475e8a86b4e5cae2db584f5c89dd5cbe3647d808a74",
+      "bytes": 16436,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-reject-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-reject-v1/guest-output/ws73.pcap",
+      "sha256": "95f474c32860c056e560bdf890b58f236abe347ec8a1998d74fd4f67f92390f6",
+      "bytes": 501360,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-reject-v1/guest-output/capture-stats.txt",
+      "sha256": "bce94a4a00f24c14faa7c379bb5c6c358f2450c1cace706262f46261e7cad2ed",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-reject-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "90d94a9a9bd0134da2f83a2e162804f6553a2674223af14e089b1486be679d13",
+      "bytes": 706077,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-late-v1/manifest.json",
+      "sha256": "b7d09ab9f2824bbe9adf107ce2d08f55607eddd4208270e8f382d7fdf7a41f1e",
+      "bytes": 1176913,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-late-v1/console.log",
+      "sha256": "188b922c956f27dbc07b55a22d9522860aaca8954ff03d55b467fce05999e6c6",
+      "bytes": 16244,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-late-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-late-v1/guest-output/ws73.pcap",
+      "sha256": "53bff1f282c520666fc5c2ea7e85b5cd47c49d7a28629b332f36dbec647e017d",
+      "bytes": 501360,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-late-v1/guest-output/capture-stats.txt",
+      "sha256": "bce94a4a00f24c14faa7c379bb5c6c358f2450c1cace706262f46261e7cad2ed",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-numeric-late-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "1ab976250d62d44becb013fe6b1613c2cdeebb000b88697aedf67b21bdf584db",
+      "bytes": 706039,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-approve-v1/manifest.json",
+      "sha256": "f4d6f5ca50c92a66cd542a5a3794d3e6b3660aa797cad5d1efa0c22d3ac53742",
+      "bytes": 1222089,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-approve-v1/console.log",
+      "sha256": "2d8bd31fd741b1f0a41b76a4be4321366772be439ac9ee92faa870f86c526ac3",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-approve-v1/guest-output/ws73.pcap",
+      "sha256": "174c948925b823766502e431848f4e7f0e905eb6b03125810e4e88d4d62a236e",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-approve-v1/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "213e1649f29677d55d55f2aaee30196d80a519ed308dfbc4fa1e9284cf9fa3ce",
+      "bytes": 697075,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-boundary249-v1/manifest.json",
+      "sha256": "4105d5e3348d815054bc3742b9c0fd23622dc2ce933d7a8948a69f16476ca6cd",
+      "bytes": 1263998,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-boundary249-v1/console.log",
+      "sha256": "815dc3abc14837fb85c4e40fd9f0e1640aa1e5be8022faf7af6921ec834fa4ce",
+      "bytes": 16238,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-boundary249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-boundary249-v1/guest-output/ws73.pcap",
+      "sha256": "407de0cad89b8a973e907f4a9d740aaec9c9fd0badc6453fbde28f9de3e03d4c",
+      "bytes": 530588,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-boundary249-v1/guest-output/capture-stats.txt",
+      "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-boundary249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "444e0f7024e88914b9c3798f24ca0ed62399dea4cd9ff79b19d3b48b0f192b5b",
+      "bytes": 743386,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-long2042-v1/manifest.json",
+      "sha256": "f38556d1925c81eeb1eef292568acde5006e07182631b7dd9383fe775b0972f0",
+      "bytes": 2243802,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-long2042-v1/console.log",
+      "sha256": "b321c51db9cca8ff5cf3b9757ae8a42a5cfb000437bf6009914e6e9724a30136",
+      "bytes": 16213,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-long2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-long2042-v1/guest-output/ws73.pcap",
+      "sha256": "3e038873e3ec16e5a72a77df4cc27b5f6731ae05d6d71b39d091bd22597eb2b5",
+      "bytes": 1016972,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-long2042-v1/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-retained-long2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "5e3f28ecb542177b40872e87a29f8d43d436c00d45e913a6f7193e752a4c0195",
+      "bytes": 791604,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-matrix-v1.json",
+      "sha256": "6ebfc035c5254d80249e5418e9db04ba304c2f89358daf1e471cb4896957797c",
+      "bytes": 7586,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-matrix-v1.py",
+      "sha256": "8344a43a2c220bf194d43ee31c25962cd67f56de72eb2dc570bde91602be838a",
+      "bytes": 2285,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-v1.json",
+      "sha256": "8fb06fba69263b5f6c437f53db42139119471090a37747968f5f8c8fc795a7c8",
+      "bytes": 1151,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-real-v1.py",
+      "sha256": "e4a39d493581db7b333c81f5c6fb6f3452e4e2227caae7ee80c1fdaff569cafb",
+      "bytes": 1586,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-build-prepare-v1.json",
+      "sha256": "3fff05e6dfe7425ad8455eecde321cb4379680a47cbb5fbaff0b97e91ef12bdd",
+      "bytes": 2964,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-build-prepare-v1.py",
+      "sha256": "b4275560e8cfb2f443d523c0701ccb7817aeee50e69582fcdb748ae0e5a16f5e",
+      "bytes": 2527,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/manifest.json",
+      "sha256": "bb878ab96e45eff12564305933f4f04b99fb41daed1d31365140933f0160d97e",
+      "bytes": 26326,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-prepared-v1/manifest.json",
+      "sha256": "5da85fab5e93a29ff136c3db02ec015a4f91b91b9773861fd893c2875efc8969",
+      "bytes": 264047,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-workspace-tests-v1.json",
+      "sha256": "e566d87347178779e3fba1c69277ba3137ae2a64bd0649db10be7cc1d2f49799",
+      "bytes": 836,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-workspace-tests-v1.log",
+      "sha256": "7f01b20e02058d18802c04f6a97bf68f8e9e3c63cf5ede83b68a3e1016d0ba23",
+      "bytes": 25832,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-final-clippy-v1.json",
+      "sha256": "fd1a1dd6ce70f227ab038991a5955f5e170ab58f827ac153794c3be27382a8c7",
+      "bytes": 895,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-final-clippy-v1.log",
+      "sha256": "f42ed88a92ef803d1c06b48b15e1ca4708b557a53a5441b02c3b1142b2a1fc88",
+      "bytes": 500,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-frozen-tools-v1.log",
+      "sha256": "524981bcb70a12225c8a960f3d35cb90d84f9579ecae1ec2ddcaf8063fc53233",
+      "bytes": 823,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-tools-tests-v2.log",
+      "sha256": "6dda9dd57a0cfaef93658bc3ff24f9bb661f71beab02244c9a89803dafe29640",
+      "bytes": 118,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-replay-v1.log",
+      "sha256": "19bb236036e724637547c290a243ba63df7636cf32440e9ec3bb5728d4968833",
+      "bytes": 1120,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-replay-v2.py",
+      "sha256": "598e289837e04eceefbbaaf48bd831afee89cbcf9f5337ad06eab25a50fc2c0b",
+      "bytes": 4038,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-replay-v2.json",
+      "sha256": "006ec3a260693327a760fc9b33f0dbc48a2d0d7b7bc2703d3a238600941a3bf3",
+      "bytes": 5241,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-replay-all-v1.py",
+      "sha256": "7737a246d95dc36d438948c60e98f2821770927c9b3d31757727a754d32a1a31",
+      "bytes": 1710,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-replay-all-v1.json",
+      "sha256": "429f4d1e8dd51dfc5b002be9f27d2d46173710add8f772f7ea1ae2940afa5b75",
+      "bytes": 2479,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-ci-b873-v1.json",
+      "sha256": "76cc20f54a7b1436bc6d90db7a030449b47294bd780e54801bad487b3301d727",
+      "bytes": 5030,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-docs-v1.log",
+      "sha256": "7157f11a4a0cc42b6c0e2d2d83a598d57adcc11d68b9a2f1f6ad7d202cf21ace",
+      "bytes": 297693,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-kernel-artifacts-v1/manifest.json",
+      "sha256": "37539d6d7220602415b3c28f1f6eede24e0197435d3608e3d848497ab3da5be0",
+      "bytes": 229016,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-root-smoke-v1/manifest.json",
+      "sha256": "73f957d526e310b7ede5ec1c76e7bf3e69423df8756ca99e557a143982ec64f7",
+      "bytes": 36226,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-modules-v1/manifest.json",
+      "sha256": "35afffada8c1084b23c6853abae0d7b122535aa18648aa850c0156fdfe8246fd",
+      "bytes": 2346,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/build-manifest.json",
+      "sha256": "eb125bad7e5ff3608e46ebb85dc12d80eb6b834694ba4467ae59da7549a502d2",
+      "bytes": 313707,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/qemu-system-x86_64",
+      "sha256": "dea80cfc383881b83b16744904be1fff82a8e4d523dfa65f2d96d5268e885e68",
+      "bytes": 30099216,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-reference-check-v1.json",
+      "sha256": "4b5a3dd1aa4b106dd3ff17dfb9ca0520e50aa3dd22f79c03948298d2c44465ab",
+      "bytes": 1172,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-reference-check-v1.json",
+      "sha256": "3d829e40af096f2c252b6308390b84bd80b3c54c533683a3ad3c04a5cf0a3c5a",
+      "bytes": 567,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-prepared-v1/bzImage",
+      "sha256": "786af3c89d63192b52132f3829c176b8f2a7ab6946cb3a4500253d0cb6898cd2",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-prepared-v1/root.btrfs",
+      "sha256": "7e4d93f604f60375e37241d826e17a28ca156285a297518d8c5204b9ead74b1b",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b87318bbfb58/slkd",
+      "sha256": "e7e0a354d669b8c285d8627c92e7f731c26119268afd3eb6af2dd18b3fea06cb",
+      "bytes": 10507920,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b87318bbfb58/slctl",
+      "sha256": "7e80752ce5ba7858df30b1ee01a8c7c9ce712be2cc6ed3ab7452390885a9009d",
+      "bytes": 7829168,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b87318bbfb58/slktest",
+      "sha256": "2957be67d7071ac7716995e0672958978ae3e767c745075084ff7079a0e2eaf0",
+      "bytes": 5236176,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b87318bbfb58/slkconfig",
+      "sha256": "d0ba8ce60cee69adcbd434a192bad21079495fe1f86437c07adca0b913ccd8c5",
+      "bytes": 1404064,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b87318bbfb58/slkmon",
+      "sha256": "6757a09487363ce7e830cd0e0b4a18992827ca6e6a8cc1e995cc3ccb56653fbf",
+      "bytes": 1662256,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b87318bbfb58/slkdump",
+      "sha256": "8e0a88033b10d07cd065341e03b4b7d6eeabfa26c5cce0200ebdbc91cb830da0",
+      "bytes": 1662120,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b87318bbfb58/liblibsparklink.so",
+      "sha256": "6318eccf1c94da03c33f4ed7f508623083c3c72ec3f4b9c036011b7d3d85941c",
+      "bytes": 547208,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "983e328aa00130dd5bc8cb82716dcd0d033a000a4b202d9cbcfd824f44780c83",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "49d540b2a661ed613b217966412c6baf3b0052ff916f7d64cc4ac1dfe53b8271",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Owner original workspace only;no verified offsitearchive. Raw USB installation captures may contain keys and remain private. Missingbytes/hash mismatch cannot qualify currentPASS."
+    },
+    {
+      "path": ".dev/numeric-agent-replay-all-v2.py",
+      "sha256": "3f2b4f9cb22588c252d67a0de0ca1b9e8e3a8ae53d9adfff3212bfdcfd69bd49",
+      "bytes": 1747,
+      "access": "private",
+      "retention": "Originalownerworkspaceonly,no offsitearchive;source/evidencebytechecks required,not publicrawcaptures."
+    },
+    {
+      "path": ".dev/numeric-agent-replay-all-v2.json",
+      "sha256": "39527789e1db03a5b0455d6b7bd6a7cd9af4973b2860a839ebb02b2f755fc127",
+      "bytes": 2518,
+      "access": "private",
+      "retention": "Originalownerworkspaceonly,no offsitearchive;source/evidencebytechecks required,not publicrawcaptures."
+    },
+    {
+      "path": ".dev/numeric-agent-replay-all-v2.log",
+      "sha256": "67bc29140b476c00cbe51a412b4d0579d43aa68444efec787b134cc1bd2fca7b",
+      "bytes": 28,
+      "access": "private",
+      "retention": "Originalownerworkspaceonly,no offsitearchive;source/evidencebytechecks required,not publicrawcaptures."
+    },
+    {
+      "path": ".dev/numeric-agent-postterminal-replay-v1.py",
+      "sha256": "6e4130b248c4ec242fc86ed8fe5ae7053c140b5f392197ead91eba9cb1c6e055",
+      "bytes": 2408,
+      "access": "private",
+      "retention": "Originalownerworkspaceonly,no offsitearchive;source/evidencebytechecks required,not publicrawcaptures."
+    },
+    {
+      "path": ".dev/numeric-agent-postterminal-replay-v1.json",
+      "sha256": "a5877787ca327435e889322c3c06c903b5a144390e961bd023e6ccfb3884a827",
+      "bytes": 4488,
+      "access": "private",
+      "retention": "Originalownerworkspaceonly,no offsitearchive;source/evidencebytechecks required,not publicrawcaptures."
+    },
+    {
+      "path": ".dev/numeric-agent-postterminal-replay-v1.log",
+      "sha256": "432f9853d13213f0a1a58c6ab3f40fb9b31592e00aafe6f249663521897e611c",
+      "bytes": 31,
+      "access": "private",
+      "retention": "Originalownerworkspaceonly,no offsitearchive;source/evidencebytechecks required,not publicrawcaptures."
+    },
+    {
+      "path": ".dev/numeric-agent-postprocessor-tools-v2.log",
+      "sha256": "da260e6da66633033e71a84eb05a6f2ec781648a033a3ce662856f58eadda536",
+      "bytes": 825,
+      "access": "private",
+      "retention": "Originalownerworkspaceonly,no offsitearchive;source/evidencebytechecks required,not publicrawcaptures."
+    },
+    {
+      "path": ".dev/numeric-agent-postterminal-tests-v1.log",
+      "sha256": "65e028d9927eea93eda6259d5cea618c53e56cb2cd899853ffdf58495fe731d1",
+      "bytes": 113,
+      "access": "private",
+      "retention": "Originalownerworkspaceonly,no offsitearchive;source/evidencebytechecks required,not publicrawcaptures."
+    }
+  ],
+  "original_failed_checks": [
+    {
+      "name": "private-replay-output-metadata-shape",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "Allmutants rejected butprivatepublisher assumedlist runner_inputs wasdict;originaltrace retained. v2uses exactfrozen toolcommit. No realattempt regraded."
+    }
+  ],
+  "formal": {
+    "status": "NOT_PROVEN",
+    "scope": "No newnumericAgent combinedproofclaimed;actualpurehelper/privatebus tests arenot kernelconcurrency,Agentpolicy/human identity orhardwareproof",
+    "next": "Actualinstalledsecuritygrade/revocableGrant combinedwithoriginalcancel/deadline/physicalobligations,securitymodel andrelatedVMinterleavings"
+  },
+  "replay": [
+    "Frozenb873 read_capture(originalpcap,guestUSBidentities),check_capture_stats,ws73_security_agent.corroborate(originalcontrol,capture),compare exact originalproof.",
+    "Privateoriginalmaterials containkeys;authorizedowner access required,not published. No actual device action inreplay. Missingbytes/hash/source mismatch failclosed."
+  ],
+  "created_wall_ns": 1792188296050675724
+}

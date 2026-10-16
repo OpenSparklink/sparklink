@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T21:52:53.013756+00:00",
+  "updated_at_utc": "2026-10-16T22:07:18.616906+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -772,11 +772,20 @@
       "tool": "actualslktest loadbinary viaexisting ws73_target VMsupervisor;independent ws73_benchmark reportchecker",
       "report": "docs/evidence/session-concurrent-progress-20261017.json",
       "lifecycle_priority_report": "docs/evidence/lifecycle-u23-hardware-change-20261017.json"
+    },
+    "next_real_vertical_slice_before_numeric_agent_20261017": {
+      "work_package": "WP09 then WP08;WP06/07/16/17 parallel",
+      "behavior": "Extend existing broker/Agent with original numeric prompt and explicit confirmation, publish actual installed security grade for kernelrevocableGrant,then soleSSAPpermissions;no secondEngine",
+      "first_exit": "Approved/rejected/absentAgent/ownerloss/deadline decisions map tooriginalManagedrequest;realtwoWS73 positive andnegative withordinaryappreply;noGradebeforeactualproof/install",
+      "state": "NUMERIC_MECHANISM_REAL_SCOPED_PASS_AGENT_GRADE_AND_GRANT_MISSING",
+      "report": "docs/evidence/security-numeric-mechanism-real-20261017.json",
+      "architecture": "Existingdrivers/net/slkd/uniqueSession/credit/Ticket/Grant;VM-only;UserHost P4",
+      "parallel": "Fullnewsevenlength/tenlifecycle/installcancelcomposition,data/credit/fairness/resources,SSAP/fourdevice,naturalRCA/nonmanualrecovery remainOPEN;noallcontrolprerequisite"
     }
   },
-  "execution_phase": "ACTIVE_NUMERIC_AGENT_AND_INSTALLED_SECURITY_GRADE_GRANT_THEN_SSAP_WITH_DATA_PARALLEL",
+  "execution_phase": "ACTIVE_INSTALLED_SECURITY_GRADE_AND_REVOCABLE_GRANT_THEN_SSAP_WITH_DATA_PARALLEL",
   "next_resume_tasks": [
-    "Numeric mechanism boundedgateexitmet atK323/U862/tool862/postf695:6numeric+3retainedVM,48peerRT;nowextendexistingbroker/Agent with originalpromptconfirmation and kernelactualsecuritylevel/revocableGrant,thensoleSSAPpermissions. Noautomatic/humanidentity orBondclaim. Fullsevenlength/tenlifecycle/installrelease/fd/Down/deadline remainparallelOPEN.",
+    "NumericAgent boundedmechanism gate exited K323/Ub873/toolb873:6VM/48peerRT,12actualnumericcallbacks;nextactualinstalledperSessionsecuritygrade/revocableGrant then soleSSAPpermissions. NumericCLI/humanbudget andfullnumericownerloss/cancel/Down/inflight matrix remainparallelOPEN.",
     "NewU6166 qualifies only namedcancel/defaultapprove/249boundary/2042 slices;oldU42sevenlength/lifecycle/matchedperformance retainoldidentities. Continue dynamicmultichannel/fourdevice business/datafairness;no inheritance to Eport1.",
     "Parallel matched sameKernelobservercost,actualworker/queue/credit/URB/resource peaks andsegmented timing/actualPHY parameters;RX108544gaps do not justify changingmultipleURBs.",
     "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
@@ -785,7 +794,7 @@
   "issue_sync_status": "K7/K19/U5/U8 originalcomments updated withCI88 followup andexactreadbackOPEN;originalscopebodiesunchanged",
   "issue_sync_receipt": "docs/evidence/security-numeric-maintenance-20261017.json",
   "previous_goal_turn_classification": "progress:K323/U862 numericmechanism real9VM/48peerRT,CI88 complete,135materials and54mutants,issueskeptOPEN",
-  "current_goal_turn_classification": "progress:actualexistingbroker/Agent andforegroundCLI numericconfirmation productionwiring,strictprivatebus/ENOTTY andevidencefixtures;newartifact realgates pending",
+  "current_goal_turn_classification": "progress:productionbroker/Agent/CLI b873,6realVM/48peerRT,275Rust/688executiontools/689postprocessortools,completeb873CI;6replays/38mutants withnegativeauditthroughDown;fullscopeOPEN",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1458,14 +1467,14 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "wp09-numeric-Agent-original-confirmation-in-progress",
-      "production_behavior": "ExistingRegistry/Entry/physicalSession/commandcredit/Ticket reused;originalpreapproval thenactualcode callbackandexplicitOriginalFileconfirmation,no secondEngine",
+      "id": "wp09-numeric-Agent-real-not-live-security-grade-or-trusted-grant",
+      "production_behavior": "ExistingRegistry/Entry/physicalSession/credit/Ticket/ManagedFile;frozenmethod/epoch,initialauthorization thenrealcodeconfirmation andjoinedoriginalcleanup,no secondEngine",
       "exit": [
-        "Privatebus/ENOTTY,no simulatednative success;strictworkspace/CLI/evidencecontrols",
-        "AccuratenewU2/3bundle twoactualroles approve/reject/late thenordinarypeerreplies;realnotyetqualified",
-        "OriginalK323/U862mechanism qualification frozen;newAgent/securitygrade/Grant/Bond/currentartifactfullmatrix notinherited"
+        "K323/Ub873/toolb873,U2/3:3numericAgent+3retainedVM,48actualpeerRT,16boundaryrefusals;12actualnumericcallbacks,40relay/oppositeRX,4installs",
+        "275Rust/688frozenexecutiontools/689postprocessortools,6phaseexactreplays/38mutants includingnegativeauditthroughactualDown;strictdocs/exactb873completeCI,no newformalproof",
+        "NumericCLIphysical/humanbudget,actualsecuritygrade/revocableGrant/Bond,fullnumericcallbackloss/cancel/Down/inflight andfullretainedmatrix remainOPEN"
       ],
-      "next": "FinishboundedAgent vertical,thenactualinstalledsecuritygrade/revocableGrant+soleSSAPpermissions;data/lifecycle/performance/fourdevice/naturalRCA parallelOPEN"
+      "next": "Agentboundedmechanismexitmet;actualinstalledsecuritygrade/revocableGrant thensoleSSAPpermissions,data/fairness/fourdevice andnaturalRCA/nonmanualrecovery parallel;noallcontrolprerequisite"
     }
   },
   "agent_workstream": {
@@ -1622,13 +1631,13 @@
     "issues_receipt": "docs/evidence/codec-fuzz-and-retained-issues-20261016.json"
   },
   "next_real_vertical_slice": {
-    "work_package": "WP09 then WP08;WP06/07/16/17 parallel",
-    "behavior": "Extend existing broker/Agent with original numeric prompt and explicit confirmation, publish actual installed security grade for kernelrevocableGrant,then soleSSAPpermissions;no secondEngine",
-    "first_exit": "Approved/rejected/absentAgent/ownerloss/deadline decisions map tooriginalManagedrequest;realtwoWS73 positive andnegative withordinaryappreply;noGradebeforeactualproof/install",
-    "state": "NUMERIC_MECHANISM_REAL_SCOPED_PASS_AGENT_GRADE_AND_GRANT_MISSING",
-    "report": "docs/evidence/security-numeric-mechanism-real-20261017.json",
-    "architecture": "Existingdrivers/net/slkd/uniqueSession/credit/Ticket/Grant;VM-only;UserHost P4",
-    "parallel": "Fullnewsevenlength/tenlifecycle/installcancelcomposition,data/credit/fairness/resources,SSAP/fourdevice,naturalRCA/nonmanualrecovery remainOPEN;noallcontrolprerequisite"
+    "work_package": "WP09/WP08,WP06/07/16/17 parallel",
+    "state": "AGENT_MECHANISM_REAL_PASS_LIVE_SECURITY_GRADE_AND_GRANT_MISSING",
+    "behavior": "ReuseoneactualphysicalSession crypto/installstate andb873Agent confirmation;livegeneration/lifetime/epoch-boundsecurity observation andrevocableGrant,then soleSSAPpermission checks",
+    "first_exit": "Nounauthenticatedpromotion;actualconfirmedproof+installation/cipherandvalidatedidentity required;off/Down/revoke/unknown failclosed;no cachedoperation-as-livegrade. ExplicitNOCP/reuse/firmwareassumptions andrelatedactualVMpositive/negative+peerbusiness gates.",
+    "report": "docs/evidence/security-numeric-agent-real-20261017.json",
+    "parallel": "NumericCLI/humanbudget andcallbackloss/cancel/Down/inflight;fullnewsevenlength/tenlifecycle,fairness/resources,fourdevice,naturalRCA/nonmanualrecovery remainOPEN,noallcontrolprerequisite",
+    "architecture": "Existingdrivers/net/slkd/Session/Grant/credit/Ticket;VM-only,U2/3,E1excluded,UserHostP4"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -2334,10 +2343,31 @@
     "maintenance_report": "docs/evidence/security-numeric-maintenance-20261017.json"
   },
   "security_numeric_agent_batch": {
-    "status": "IMPLEMENTED_NOT_REAL_QUALIFIED",
+    "status": "REAL_AGENT_MECHANISM_SCOPED_PASS_GRADE_GRANT_BOND_MISSING",
     "behavior": "Frozenmethod/Agentepoch/originalrequest;preauthorization thenactualcodeconfirmation,joinstartedioctl thenoriginalFilecleanup;onlyphysicalstate11+119 completesnumericoperation",
     "first_exit": "NewartifactU2/3 realapprove/reject/latewithtwoactualconnectionroles,independentcaptureandordinaryappreplies;oldNoMITM/249/2042 retained",
     "missing": "productionsecuritygrade/revocableGrant/Bond,fullnumericcallbackloss/cancel/Down/inflightcompositions,physicalnumericCLI andfullretainedmatrix",
-    "scope": "VM-only,Eport1excluded,UserHostP4,fullS0-S6/19WP/10FV/12DG retained;noallcontrolprerequisite"
+    "scope": "VM-only,Eport1excluded,UserHostP4,fullS0-S6/19WP/10FV/12DG retained;noallcontrolprerequisite",
+    "compiled_kernel": "323668c6015ef69fa233c008d8ef0c4c70402686",
+    "compiled_userspace": "b87318bbfb5897ed5b085a30a266a8f8b26afe4f",
+    "executed_tools": "b87318bbfb5897ed5b085a30a266a8f8b26afe4f",
+    "report": "docs/evidence/security-numeric-agent-real-20261017.json",
+    "bounds": {
+      "real_vm_success": 6,
+      "role_phases": 12,
+      "numeric_role_phases": 6,
+      "numeric_callbacks": 12,
+      "native_numeric_installs": 4,
+      "numeric_relay_submits": 40,
+      "numeric_opposite_receipts": 40,
+      "peer_business_round_trips": 48,
+      "boundary_rejections": 16,
+      "original_deadline_ms": 5000,
+      "workspace_rust_tests": 275,
+      "frozen_tools": 688,
+      "copied_actual_evidence_negatives": 38,
+      "postprocessor_tools": 689
+    },
+    "post_processing_tools": "59c0cabb6848f9e46e02fdc383f1d722e1d031ca"
   }
 }

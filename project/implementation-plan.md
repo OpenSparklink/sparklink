@@ -113,7 +113,7 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | K323/U862：34转换/272Rust、684及685工具、54真实证据负对照 | `offline` | `PASS` |
 | K323：实际crypto材料/数字向量及无USB签名模块VM | `virtual_integration` | `PASS` |
 | 历史数字批次解析器/CI/环境失败：保留FAIL不升级 | `offline` | `FAIL` |
-| 数字Agent/身份等级/可信Grant/Bond、完整矩阵/恢复：仍缺失 | `real_device` | `UNPROVED` |
+| 历史U862完整安全范围未闭合；后续b873限定Agent另记，等级/Grant/Bond仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1714,3 +1714,13 @@ Native可变count/bytes/window，2042/window16实际背压恢复；原协议/队
 后续实际安全等级/可撤销Grant与SSAP权限、完整数字Agent丢失/取消/断链/在途组合、
 CLI数字提示实际操作、七长度/十生命周期、四设备及自然RCA/非人工恢复继续并行开放。
 完整S0-S6/19WP/10FV/12DG与VM-only不变，不追加所有控制面竞争前置。
+
+
+本批[准确Agent结果](../docs/evidence/security-numeric-agent-real-20261017.json)绑定K323/Ub873：
+6次VM/12连接角色/48次对端实际回复/16拒绝；其中6个数字角色、12次真实数字callback、
+40次双端relay匹配、4份安装/0011。六角色原件重放和38实际证据负对照通过，含拒绝/到期后至真实Down的额外审计；275Rust、
+688冻结工具与完整CI通过；不增加形式化/内核并发/自然恢复证明。私有重放输出元数据
+错误保留。有限broker机制与专用Agent见证门禁已退出，下一纵向链路接实际连接安全
+等级/撤销与Grant，再消费于唯一SSAP Engine；数字CLI真实操作/人机期限设计及完整
+数字失联/取消/Down/安装在途矩阵、七长度/十生命周期、四设备继续并行OPEN。
+不将K#7/U#5整项关闭，不弱化CPCD认证授权，不等待所有控制竞争才继续数据交付。

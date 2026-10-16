@@ -368,8 +368,8 @@ CCC写入的认证/授权由实际内核安全上下文与有效Grant强制，�
 数字比较仍由唯一物理Session承担机制：明确IO1/method0/noBond offer，公开transcript
 六位码、原作者确认、peer proof、真实安装接受和加密开启分别表达。提示和确认绑定
 原File/request/generation/lifetime/epoch/原期限；T提前proof仅允许本Session有界单份，
-不采用全局缓存或另造Engine。slkd后续拥有数字Agent/身份策略，内核发布实际安全
-等级并强制可撤销Grant；自动见证码相同不代表人类身份确认。现有未认证Agent、
+不采用全局缓存或另造Engine。slkd以同一broker接数字Agent两阶段决策，身份策略及内核实际安全
+等级/可撤销Grant仍须独立接通；自动见证码相同不代表人类身份确认。现有未认证Agent、
 protected Grant和Bond支持范围不得因机制局部通过升级。见[所有权ADR](../docs/decisions/0004-application-ownership-and-delivery.md)。
 
 

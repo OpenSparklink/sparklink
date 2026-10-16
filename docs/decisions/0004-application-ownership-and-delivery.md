@@ -122,3 +122,12 @@ T在自身确认前允许暂存一份本Session的实际G proof，绝不采用�
 Grant或弱化CPCD检查。交互所需的期限策略另行设计，不能延长已经开始的请求。
 准确资格统一登记于CURRENT_CAPABILITIES；尚未完成的Agent/安全等级/Bond、drain、
 NOCP及复用假设继续开放，新的转换门禁不扩展为全部控制面组合的开发前置。
+
+
+数字Agent沿用原Registry/Entry和监督任务，两次决策不得合并：前置Authorize仅允许
+开始交换，实际flags8提示出现后才请求ConfirmNumericComparison。注册方法/Agent
+唯一owner及epoch在Allocate冻结；Begin拒绝换方法。两个callback和后续原File确认、
+proof、安装共享最初绝对期限。未知callback/拒绝/丢失/到期走原请求清理，已开始的
+ioctl必须join。数字码和FrozenOperation终态均不是活连接安全等级或可信Grant。
+前台CLI必须核对实际六位码和原id，不能把预输入批准用作后续数字确认；人机期限
+策略及真实操作单独验收，不通过刷新已开始请求解决5秒预算的可用性限制。

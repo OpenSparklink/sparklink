@@ -4,9 +4,15 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
-数字Agent的两阶段broker和显式CLI确认正在接入，当前仅代码/离线状态；新用户态
-尚未取得本批实机资格。原K323/U862仅证明内核机制和自动见证，不能升级为新Agent、
-可信Grant或Bond资格。准确新artifact验收后另行登记。
+[数字Agent生产接线限定结果](../docs/evidence/security-numeric-agent-real-20261017.json)：
+准确K323/Ub873、执行b873、后处理59c；普通控制组用户在实际guest system bus完成初始批准及
+真实数字确认。批准、拒绝、原期限迟到各两连接角色，加默认方法/249/2042保持，
+共6VM/48次实际对端回复/16拒绝；12次数字callback、40次真实relay与相反端RX、
+4份实际安装/0011。原5秒期限不续期；拒绝/迟到在native准入后，均无proof/install。
+六逐角色原件重放、38复制真实证据负对照（含终态到真实Down审计）、275Rust、688冻结工具及准确b873完整CI
+分别记录；未新增形式化证明。原私有重放输出元数据错误保留，不重评级。
+CLI数字输入已实现且离线验证，本批实机使用专用Agent见证；不授数字CLI/人工全流程、
+实际安全等级/可信Grant、Bond、全部长度/生命周期/四设备或自然恢复资格。
 
 [数字比较机制限定实机结果](../docs/evidence/security-numeric-mechanism-real-20261017.json)：
 编译K323668c/U862b95b、执行862、后处理f695；U2/3两角色批准/拒绝/原期限迟到各两项，
@@ -240,7 +246,7 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | K323/U862：34转换/272Rust、684及685工具、54真实证据负对照 | `offline` | `PASS` |
 | K323：实际crypto材料/数字向量及无USB签名模块VM | `virtual_integration` | `PASS` |
 | 历史数字批次解析器/CI/环境失败：保留FAIL不升级 | `offline` | `FAIL` |
-| 数字Agent/身份等级/可信Grant/Bond、完整矩阵/恢复：仍缺失 | `real_device` | `UNPROVED` |
+| 历史U862完整安全范围未闭合；后续b873限定Agent另记，等级/Grant/Bond仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

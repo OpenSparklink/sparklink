@@ -184,6 +184,9 @@ def execute(run, a, b):
             if getattr(run.args, 'channel_socket_verify', False):
                 from ws73_channel_socket import execute as channel_execute
                 channel_execute(run, phase)
+            if getattr(run.args, 'dynamic_channel_verify', False):
+                from ws73_dynamic_channels import execute as dynamic_execute
+                dynamic_execute(run, phase)
             if hasattr(run, 'connection_barrier'):
                 run.connection_barrier('business-done',phase)
             phase['disconnect_command'] = len(run.data['commands'])

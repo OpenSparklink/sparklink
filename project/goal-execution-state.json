@@ -799,8 +799,8 @@
     "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
     "NOCPtruth/late/duplicate,reuse/callbackdrain,naturalstartup/re-enumeration/disappearance RCA andnonmanualrecovery remainOPEN."
   ],
-  "issue_sync_status": "K7/K19/U5/U8 numericAgentmechanism andexactb873CI updated/readbackOPEN;originalscopebodiesunchanged",
-  "issue_sync_receipt": "docs/evidence/security-numeric-agent-maintenance-20261017.json",
+  "issue_sync_status": "K7/K19/U5/U8 liveSessionmechanism/UNPROVED/Grantconditions updated/readbackOPEN;originalscopebodiesunchanged",
+  "issue_sync_receipt": "docs/evidence/security-live-state-maintenance-20261017.json",
   "previous_goal_turn_classification": "progress:two signedregistry/maintenance commits,pushedexact9dbc;fourissueOPENreadbacks andstrict115docs verified",
   "current_goal_turn_classification": "progress:signedK6861,U691/13bb/post6c;6realVM/32currentsnapshots/48peerRT,31copiedactualnegatives;formalunsupportedretained;Grant/fullscopeOPEN",
   "goal_api_status_observed": "active",
@@ -1703,7 +1703,8 @@
     "docs/evidence/matched-u23-maintenance-20261017.json",
     "docs/evidence/security-install-reply-barrier-maintenance-20261017.json",
     "docs/evidence/security-install-cancel-maintenance-20261017.json",
-    "docs/evidence/security-numeric-maintenance-20261017.json"
+    "docs/evidence/security-numeric-maintenance-20261017.json",
+    "docs/evidence/security-numeric-agent-maintenance-20261017.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -2454,6 +2455,7 @@
       "python_CABI_tests": 42,
       "copied_actual_evidence_negatives": 31
     },
-    "full_batch_exit_achieved": false
+    "full_batch_exit_achieved": false,
+    "maintenance_report": "docs/evidence/security-live-state-maintenance-20261017.json"
   }
 }

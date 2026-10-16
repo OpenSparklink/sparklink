@@ -11,6 +11,8 @@
 K6861/U13bb/tool13bb/post6c8；6VM/48真实回复/16拒绝，四安全场景32快照与逐连接
 receipt计数一致。四原件场景重放、31证据负对照与准确CI分别记录；Kaniunsupported
 仍未证明。实时撤权/Down矩阵、安全Grant/SSAP消费与完整原范围继续OPEN。
+[维护回执](security-live-state-maintenance-20261017.json)记录四项issues读回OPEN、
+115材料限定检查、五来源负对照及27资格检查；整体仍INCOMPLETE。
 
 [数字Agent两阶段原请求与真实交付](security-numeric-agent-real-20261017.json)：
 K323/Ub873/toolb873，6VM/48业务回复/16拒绝；实际系统总线12次数字callback，

@@ -319,7 +319,7 @@ CLI入口为`agent [method]`、`security-request <path> [ms] [method]`，省略m
 `confirm <id> <六位码>`或`reject <id>`；000000有效，`approve`不能代替数字确认，预输入
 不沿用到下一提示。两个提示共享最初1–5000ms期限，不刷新。5秒也包含前置人工等待，
 当前并非通用人机配对体验；更适合人类的期限策略仍须单独设计和验证。
-Pair/全局GetPasskey、安全等级/可信Grant/protected通道/Bond仍明确不支持。
+Pair/全局GetPasskey、可信Grant/protected通道/Bond仍明确不支持；当前机制事实另见下文。
 旧镜像资格不继承本批；形式化状态/锁/引用/硬件假设与真实两端交付分别记录。
 
 ## 单个安全作者请求取消（未发布 ABI）

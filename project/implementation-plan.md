@@ -1770,3 +1770,12 @@ Grant：软件准入、实际USB提交和RX交付处核对当前状态；撤权�
 callback/kref、credit和Ticket。随后供唯一SSAP Engine执行认证/本地授权/CPCD，
 protected未接通前保持拒绝。完整长度/多通道/四设备、性能、恢复和其他原验收继续
 并行，不等待控制面竞争全集，不因本批快照或形式化局部结果关闭整项issue。
+
+[实时机制维护回执](../docs/evidence/security-live-state-maintenance-20261017.json)保留四项
+issues原scope/OPEN、115材料限定核对、五来源负对照及27资格检查；严格115文档
+不授新资格，两个测试调用准备错误保留，准确13bb CI与后处理6c8身份分开。
+
+Kani 未证明项按工具限制处理：定位原始caller_location/foreign-function诊断及源码
+位置，评估兼容的受支持工具链/直接生产转换边界，用负对照核对实际性质，禁止屏蔽
+unsupported或裁掉真实失败分支取得PASS。实际Owner锁/引用/Host→USB映射和固件
+归属仍以组合模型及受控VM交错核对；本批检查数不是整套实现的证明。

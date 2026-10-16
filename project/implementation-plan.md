@@ -6,7 +6,8 @@ WP07首个四设备正向切片已在编译/guest/Host d01aa82取得80次真实�
 两连接角色阶段均有原始USB业务区间重叠；准确资格见下方生成摘要与证据索引。
 受控Disconnect/Down隔离也已在compiled d01/工具ff13取得[48次限定结果](../docs/evidence/four-device-disconnect-20261016.json)，
 同行分别有6/8次早于Disconnect、13/11次晚于两个Down；实际USB/设备故障隔离仍缺。
-下一批为四设备长包/预算/公平性、动态多通道。保持现有
+四设备2042字节burst也已在编译d01/工具d42取得[64次限定结果](../docs/evidence/four-device-burst-20261016.json)，
+包括真实软件背压和池/NOCP恢复观察；不证明完整credit或公平性。下一批接通动态多通道。保持现有
 Runtime/Session/socket及唯一用户态SSAP路径，不另造Engine。首片不关闭WP07或相关整项issues。
 Q3生产状态序列fuzz、提交/撤权/Down/原期限组合及debugVM并行，不设控制竞争全集
 前置；安全所需的最小认证授权只约束保护CPCD等操作。
@@ -41,14 +42,15 @@ WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续�
 | 独立CI Clang18 codec有界探索：artifact/源码/目标执行已核对 | `offline` | `PASS` |
 | 四设备d01aa82：两组两角色80次实际应用回复及USB业务重叠 | `real_device` | `PASS` |
 | 四设备d01/ff13：轮换受控断链，48次对端实际校验回复 | `real_device` | `PASS` |
+| 四设备d01/d42：64次2042字节往返、队列背压及预算观察 | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `ff13d8c8ed927a5a468a6c5642c610660ec79eaa`。
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `d42da67fc29f2958922e30f2ef370f21d10bb1bd`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `ff13d8c8ed927a5a468a6c5642c610660ec79eaa`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `d42da67fc29f2958922e30f2ef370f21d10bb1bd`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
@@ -1134,7 +1136,7 @@ Disconnect至双Down，第二阶段一轮在Disconnect后、双Down前开始并�
 及修正原始包定位后的8项拒绝均保留。不是独立decoder或新形式化证明。
 
 
-### WP07 当前批：四设备并行2042字节burst及预算观察（未实机验收）
+### WP07 四设备并行2042字节burst及预算观察（限定实机通过）
 
 新增独立 `--four-device-burst` 模式，复用普通每通道socket、既有16消息burst、
 长包/DLI PB重组、软件背压核对及 `ws73_credit_observation.observe_phase`，不另造
@@ -1148,3 +1150,11 @@ controller预算均有新池满拒绝、原始提交/NOCP/恢复提交且最终d
 预算观察不能证明NOCP准确、重复/迟到/复用屏障或完整credit正确性，不授予
 公平性、动态多通道、USB/设备故障或自然恢复资格。原80正向和48受控Down报告
 保留准确身份；两份原捕获在新verifier下输出相同证明，不改写为新实机执行。
+
+本批[限定结果](../docs/evidence/four-device-burst-20261016.json)绑定K8cbf、编译d01、guest/Host工具d42：
+64次对端实际回复、1152个business TX片，两个阶段USB交集3850.196/3856.544ms，
+29693包零drop/taint0。源端新池满拒绝26/27/28/25；8端点/角色上下文各206提交/NOCP、
+peak/capacity5和finaldebt0。十项损坏证据在observer/verifier层拒绝，不称内核已通过
+注入重复NOCP或完整ledger证明。下一条纵向链为现有唯一Session分流上的实际动态
+Channel信令、local/remote TCID、独立队列和socket收发，不另造Engine；公平性/慢消费者
+和真实设备故障矩阵继续保留，不把控制竞争全集设为前置。

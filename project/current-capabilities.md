@@ -28,14 +28,15 @@
 | 独立CI Clang18 codec有界探索：artifact/源码/目标执行已核对 | `offline` | `PASS` |
 | 四设备d01aa82：两组两角色80次实际应用回复及USB业务重叠 | `real_device` | `PASS` |
 | 四设备d01/ff13：轮换受控断链，48次对端实际校验回复 | `real_device` | `PASS` |
+| 四设备d01/d42：64次2042字节往返、队列背压及预算观察 | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `ff13d8c8ed927a5a468a6c5642c610660ec79eaa`。
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `d42da67fc29f2958922e30f2ef370f21d10bb1bd`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `ff13d8c8ed927a5a468a6c5642c610660ec79eaa`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `d42da67fc29f2958922e30f2ef370f21d10bb1bd`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 ## 四设备业务首片（限定实机通过）
@@ -58,6 +59,18 @@ K8cbf、编译d01、guest/Host工具ff13的[受控断链报告](../docs/evidence
 5305包零丢包、taint0、QEMU/监督器0；八项损坏证据拒绝，首次无效负对照失败保留。
 这只支持受控物理Disconnect隔离，USB/设备故障隔离和自然恢复仍缺；四设备长包、
 压力/公平性、多通道、保护CPCD及完整socket/权限范围继续开放。无新形式化证明。
+
+## 四设备并行长包与背压（限定实机通过）
+
+K8cbf、编译d01、guest/Host工具d42的[并行burst报告](../docs/evidence/four-device-burst-20261016.json)
+封存两组两角色共64次2042字节实际校验回复、1152个business TX片；每消息9个
+有序TX PB片，两端重组匹配，软件队列阻塞/恢复有原始记录。两阶段USB业务区间
+各重叠3850.196/3856.544ms，29693包零drop、taint0、QEMU/监督器0。
+
+源端新池满拒绝26/27/28/25；8个端点/角色上下文各206提交/206NOCP、容量与峰值5、
+最终debt0。这是原始捕获和采样的限定观察，不证明NOCP真实性、重复/迟到/复用屏障
+或整个credit正确性；公平性、慢消费者和长期收敛仍缺。十项损坏证据在核对器中拒绝，
+不是内核注入故障测试。动态多通道、真实设备故障及自然恢复继续开放。无新形式化证明。
 
 ## 正式安全 CLI 增量（双模式限定实机通过）
 

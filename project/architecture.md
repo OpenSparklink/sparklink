@@ -628,3 +628,9 @@ lifetime内保留墓碑，耗尽明确拒绝，不承诺未证明的复用。动
 该Session分流和完整授权，禁止仅移除原socket注册限制。标准T/XS20002-2025 §6.2/7.3.3/7.3.4是规范依据；
 NearLinkHost f087的signaling/dyntrans实现用于核对，不能照搬其宽泛dynamic宏或
 把本地timeout枚举当作标准线上result。用户态SSAP继续复用既有Session/Channel。
+
+
+应用负载报告的结束屏障不属于协议credit或远端交付确认：循环停止后保留fd，
+监督器确认双方Quiescent才授权finish，再做hex/JSON；原消息期限与在途物理义务不变。
+独立应用报告核对只证明所列报告之间的一致性；实际编译/凭据/双端USB与监督器顺序
+由既有VM证据层绑定，不能用局部一致升级Native或性能资格。见ADR0006与唯一计划P1。

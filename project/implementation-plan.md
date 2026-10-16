@@ -51,6 +51,7 @@
 | 普通socket测量工具：13+5本地CLI、20报告检查及30负对照（无性能资格） | `offline` | `PASS` |
 | 应用负载AF_UNIX循环：rate/window/duplex与24+5/32负对照（非性能资格） | `offline` | `PASS` |
 | slktest独立入口：空USB KVM普通用户22项应用回归（非WS73/性能资格） | `virtual_integration` | `PASS` |
+| schema2应用双端核对与结束屏障：生产报告重放/空USB VM25项（非Native或性能资格） | `virtual_integration` | `PASS` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
 
@@ -1348,3 +1349,10 @@ P1 schema2 应用层闭包批次：复用生产drive/report抽取、双端Quiesc
 本批退出为严格构建、实际生产AF_UNIX报告交叉核对、篡改/缺字段/失败负对照、
 空USB VM运行新测试；这不是Native或性能资格。下一纵向切片接VM监督器的实际
 双端屏障与来源/捕获闭包，取得新slktest双WS73基线，再进入P2；不追加控制面全集。
+
+
+该应用层批次已在U64b8d19编译/U b1dd6b0核对范围内限定通过：
+[报告](../docs/evidence/schema2-application-closure-20261016.json)保留准确25项VM、
+58类应用报告负对照、旧测试二进制误选失败及自动身份拒绝。完整P1未完成。
+下一批优先接现有Native VM监督器的真实start/finish/凭据/双端捕获，取得双WS73
+新artifact换向基线及已取得长度资格回归；随后P2，禁止将局部结果当完整性能资格。

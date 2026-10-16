@@ -13,6 +13,10 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 [本批证据](../docs/evidence/slktest-migration-20261016.json)仅授予限定离线和空USB VM范围；
 新 artifact 的真实 WS73 与性能资格仍缺，旧记录保持原命令和身份。
 
+schema2 的[本批限定证据](../docs/evidence/schema2-application-closure-20261016.json)包括
+生产结束屏障、实际AF_UNIX报告独立核对及准确25项空USB VM回归；首次旧测试输入失败保留。
+新Native/WS73基线及来源/捕获/监督器闭包仍缺，未授予性能资格或新增形式化证明。
+
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
@@ -51,6 +55,7 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 | 普通socket测量工具：13+5本地CLI、20报告检查及30负对照（无性能资格） | `offline` | `PASS` |
 | 应用负载AF_UNIX循环：rate/window/duplex与24+5/32负对照（非性能资格） | `offline` | `PASS` |
 | slktest独立入口：空USB KVM普通用户22项应用回归（非WS73/性能资格） | `virtual_integration` | `PASS` |
+| schema2应用双端核对与结束屏障：生产报告重放/空USB VM25项（非Native或性能资格） | `virtual_integration` | `PASS` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
 

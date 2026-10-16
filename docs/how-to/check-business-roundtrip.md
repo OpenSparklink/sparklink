@@ -149,3 +149,25 @@ python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN \
 
 `controlled_disconnect_isolation_acceptance` 只表达受控断链隔离，不能扩展为设备故障、
 USB故障、物理拔插或自然恢复。普通用户与管理者的权限、长包和动态多通道仍单列。
+
+
+## 核对四设备并行长包burst和预算
+
+新增 `--four-device-burst` 集成门禁尚未取得实机资格。准备条件同四设备门禁，使用
+独立输出目录，以该选项替换其他four-device选项，不能组合：
+
+```sh
+python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN \
+  --ports 1-2.1.1 1-2.1.2 1-2.1.3 1-2.1.4 --four-device-burst
+```
+
+两组两角色各16次2042字节业务，共64次对端实际校验回复。核对两组USB区间重叠、
+长PDU两端重组和有序DLI PB分片；每组每角色须保留真实软件队列阻塞/恢复记录。
+`budget_observations` 对应每个原controller/generation/lifetime/handle，须有新池满
+拒绝、实际NOCP后继续USB提交、最终debt0及提交/完成计数一致。
+
+只有应用、包、身份、预算、捕获完整性和内核检查均完成，才接受
+`FOUR_DEVICE_PARALLEL_BURST_PASS`。无池满/恢复、缺端点、丢包或未完成就保留失败，
+使用新输出目录；不能用继承的peak或局部日志代替。预算观察不授予NOCP真实性、
+重复/迟到/复用证明或公平性；`controller_credit_correctness_proof` 和
+`fairness_acceptance` 均应保持false。完整设备故障和自然恢复仍单独验收。

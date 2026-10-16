@@ -105,7 +105,7 @@ def prepare(args):
                   HERE/'ws73_vm_native_root.py',
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
-                  HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',
+                  HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
                   HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
@@ -242,7 +242,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -467,7 +467,8 @@ def _run(args):
     passthrough=bool(getattr(args,'qmp_hotplug',False))
     recovery=bool(getattr(args,'fault_recovery',False))
     disconnect_isolation=bool(getattr(args,'four_device_disconnect',False))
-    business=disconnect_isolation or bool(getattr(args,'four_device_business',False))
+    parallel_burst=bool(getattr(args,'four_device_burst',False))
+    business=parallel_burst or disconnect_isolation or bool(getattr(args,'four_device_business',False))
     if business:
         validate_business_mode(args)
     parallel=business or bool(getattr(args,'parallel_pairs',False))
@@ -629,10 +630,11 @@ def _run(args):
     m['four_device_parallel_rf']=parallel and not business
     m['four_device_parallel_business']=business
     m['four_device_disconnect_requested']=disconnect_isolation
+    m['four_device_burst_requested']=parallel_burst
     if business:m['parallel_business_verifier']=file_record(HERE/'ws73_parallel_data.py')
     m['parallel_start_offset_ms']=parallel_offset
     if parallel:
-        m['scope']='four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
+        m['scope']='four real WS73 two-pair 2042-byte burst and observed budgets' if parallel_burst else 'four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
     if parallel:m['parallel_verifier']=file_record(HERE/'ws73_parallel.py')
     m['qmp_guest_hotplug']=passthrough
     m['connection_verify_requested']=connection_verify
@@ -788,6 +790,7 @@ def _run(args):
                      (' ws73.parallel=1' if parallel else '')+
                      (' ws73.parallel_business=1' if business else '')+
                      (' ws73.parallel_disconnect=1' if disconnect_isolation else '')+
+                     (' ws73.parallel_burst=1' if parallel_burst else '')+
                      (f' ws73.parallel_offset={parallel_offset}' if parallel else '')+
                      (' ws73.daemon_remove=1' if daemon_remove else '')+
                      (' ws73.initializer_lifecycle=1' if initializer_lifecycle else '')+
@@ -1084,6 +1087,8 @@ def _run(args):
                         from ws73_parallel import corroborate as corroborate_parallel
                     control_path=share/('application/parallel-business/run.json' if business else 'application/parallel-control/run.json')
                     control=json.loads(control_path.read_text())
+                    if business and control.get('burst_mode',False)!=parallel_burst:
+                        raise ValueError('explicit burst request and actual guest scope disagree')
                     if business and control.get('disconnect_isolation',False)!=disconnect_isolation:
                         raise ValueError('explicit disconnect request and actual guest scope disagree')
                     if not business and control['second_pair_start_offset_ms']!=parallel_offset:
@@ -1274,7 +1279,7 @@ def _run(args):
                     # later qualification must not erase/mutate earlier evidence.
                     from ws73_daemon_removal import verify_sealed_record
                     verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
@@ -1356,9 +1361,9 @@ def _run(args):
 def validate_business_mode(args):
     # Dedicated positive gate: never silently combine injection, RF diagnostics
     # or two-device options with a four-controller business qualification.
-    if (args.command!='run' or (bool(getattr(args,'four_device_business',False))+bool(getattr(args,'four_device_disconnect',False)))!=1
+    if (args.command!='run' or sum(bool(getattr(args,k,False)) for k in ['four_device_business','four_device_disconnect','four_device_burst'])!=1
             or any(v for k,v in vars(args).items()
-            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect'])
+            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect','four_device_burst'])
             or getattr(args,'parallel_start_offset_ms',0)
             or any(getattr(args,k,None) for k in ['security_agent','daemon_hold_case',
                 'managed_partial_case','managed_connected_case','managed_connected_reply',
@@ -1369,17 +1374,44 @@ def validate_business_mode(args):
         raise ValueError('four-device business requires dedicated real VM without other gates')
 
 
+def valid_parallel_burst(proof):
+    if not all(proof.get(k) is True for k in ['long_pdu_acceptance','software_backpressure_acceptance',
+            'observed_controller_pool_saturation_and_resumption']):return False
+    if any(proof.get(k) is not False for k in ['controller_credit_correctness_proof','fairness_acceptance']):return False
+    if len(proof.get('pairs',[]))!=2:return False
+    for pair in proof['pairs']:
+        if pair['channel'].get('credit_exhaustion_acceptance') is not False:return False
+        if (pair['channel'].get('long_pdu_acceptance') is not True
+                or pair['channel'].get('software_backpressure_acceptance') is not True):return False
+        observations=pair.get('budget_observations',[])
+        if len(observations)!=2:return False
+        for n,obs in enumerate(observations):
+            if obs.get('phase')!=n or obs.get('source_pool_refusals_delta',0)<=0 or len(obs.get('endpoints',[]))!=2:return False
+            owners=pair['channel']['proofs'][n].get('owners',[])
+            if len(owners)!=2:return False
+            for endpoint,entry in zip(obs['endpoints'],owners):
+                owner,obj=entry['owner'],entry['object']
+                if any(endpoint.get(k)!=v for k,v in dict(controller=owner['index'],generation=owner['generation'],lifetime=obj['lifetime'],handle=obj['handle'],capacity=owner['buffers'][1]).items()):return False
+                if (not 0<endpoint.get('capacity',0)==endpoint.get('wire_peak')
+                    or endpoint.get('wire_final_debt')!=0
+                    or not 0<endpoint.get('usb_submissions',0)==endpoint.get('nocp_packets')
+                    or not endpoint.get('full_nocp_resume_intervals')):return False
+    return True
+
+
 def run_exit_code(record):
-    if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS']:
+    if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS','FOUR_DEVICE_PARALLEL_BURST_PASS']:
         isolation=record['status']=='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS'
+        burst=record['status']=='FOUR_DEVICE_PARALLEL_BURST_PASS'
         proof=record.get('parallel_corroboration',{})
         overlaps=proof.get('overlaps',[])
-        valid=(record.get('four_device_disconnect_requested',False) is isolation
+        valid=(record.get('four_device_burst_requested',False) is burst
+               and record.get('four_device_disconnect_requested',False) is isolation
                and record.get('four_device_parallel_business') is True
                and record.get('four_device_parallel_rf') is False
                and record.get('qemu_exit')==0
-               and proof.get('status')==('FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED')
-               and proof.get('controller_count')==4 and proof.get('round_trips')==(48 if isolation else 80)
+               and proof.get('status')==('FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED')
+               and proof.get('controller_count')==4 and proof.get('round_trips')==(64 if burst else 48 if isolation else 80)
                and proof.get('ordinary_uid')==1000
                and proof.get('fixed_basic_channel_business_acceptance') is True
                and proof.get('controlled_disconnect_isolation_acceptance',False) is isolation
@@ -1388,11 +1420,12 @@ def run_exit_code(record):
                     'protected_ssap_acceptance','full_goal_complete'])
                and len(proof.get('pairs',[]))==2 and len(overlaps)==2
                and all(p.get('channel',{}).get('status')=='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
-                    and p['channel'].get('round_trips')==(24 if isolation else 40)
+                    and p['channel'].get('round_trips')==(32 if burst else 24 if isolation else 40)
                     and len(p['channel'].get('proofs',[]))==2
-                    and all(len(v.get('legs',[]))==(8 if isolation and n==pair else 40)
+                    and all(len(v.get('legs',[]))==(32 if burst else 8 if isolation and n==pair else 40)
                             for n,v in enumerate(p['channel']['proofs']))
                     and len(p.get('connections',[]))==2 for pair,p in enumerate(proof['pairs']))
+               and (not burst or valid_parallel_burst(proof))
                and (not isolation or (proof.get('controlled_disconnect_isolation_acceptance') is True
                     and len(proof.get('disconnect_proofs',[]))==2
                     and all(x.get('role_phase')==n and x.get('victim_pair')==n
@@ -1450,6 +1483,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs='+',required=True)
+            cmd.add_argument('--four-device-burst',action='store_true',help='two real pairs,2roles16replies2042bytes each:64actual app replies,USB fragmentation,finite-queue pressure and observed pool/NOCP resumption;not fairness or credit correctness proof')
             cmd.add_argument('--four-device-disconnect',action='store_true',help='dedicated four-real-device controlled pair Disconnect/Down while other pair continues actual replies; alternates victims, no fault/recovery claim')
             cmd.add_argument('--four-device-business',action='store_true',help='four real controllers, two physical pairs, two connection roles, 80 ordinary app round trips; positive fixed-channel slice only')
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')

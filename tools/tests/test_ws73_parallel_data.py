@@ -16,7 +16,7 @@ from ws73_capture import CaptureError
 from ws73_parallel import EventReader, PREFIX
 from ws73_north_star import Run
 from ws73_parallel_data import (BusinessPair, BARRIER_SECONDS, PENDING, SUCCESS,
-    SCOPE, SEQUENCE, ISOLATION_SCOPE, stage_specs, rounds_for, disconnect_proofs, overlap_window, pair_capture, verify_records)
+    SCOPE, SEQUENCE, ISOLATION_SCOPE, BURST_SCOPE, stage_specs, rounds_for, disconnect_proofs, overlap_window, pair_capture, verify_records)
 from ws73_target import run_exit_code, validate_business_mode
 
 
@@ -84,6 +84,75 @@ def capture_disconnect_fixture():
                     legs.append(dict(sequence=seq,tx=dict(wall_ns=t),rx=dict(wall_ns=t+1)))
             pairs[pair]['channel']['proofs'].append(dict(legs=legs))
     return pairs
+
+
+def burst_fixture():
+    r=fixture();r.update(scope=BURST_SCOPE,burst_mode=True)
+    for w in r['workers']:
+        child=w['run'];child.update(scope=BURST_SCOPE,burst_mode=True)
+        w['args'].insert(-2,'--burst')
+        for row in child['channel_socket']:row.update(rounds=16,message_bytes=2042,burst=True)
+    return r
+
+
+def burst_summary_fixture():
+    r=burst_fixture();pairs=[]
+    for w in r['workers']:
+        owners=[dict(owner=o,object=dict(lifetime=1,handle=0)) for o in w['run']['initial']]
+        endpoints=[dict(controller=e['owner']['index'],generation=e['owner']['generation'],lifetime=1,handle=0,
+            capacity=e['owner']['buffers'][1],wire_peak=e['owner']['buffers'][1],usb_submissions=206,nocp_packets=206,
+            wire_final_debt=0,full_nocp_resume_intervals=[dict(full_record=5,nocp_record=6,resumed_submit_record=7)]) for e in owners]
+        pairs.append(dict(connections=[{},{}],channel=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',
+            round_trips=32,long_pdu_acceptance=True,software_backpressure_acceptance=True,credit_exhaustion_acceptance=False,
+            proofs=[dict(owners=owners,legs=[{}]*32) for _ in range(2)]),budget_observations=[dict(phase=n,source_pool_refusals_delta=3,endpoints=copy.deepcopy(endpoints)) for n in range(2)]))
+    proof=dict(status='FOUR_REAL_PARALLEL_BURST_CORROBORATED',controller_count=4,round_trips=64,ordinary_uid=1000,
+        fixed_basic_channel_business_acceptance=True,long_pdu_acceptance=True,software_backpressure_acceptance=True,
+        observed_controller_pool_saturation_and_resumption=True,controller_credit_correctness_proof=False,fairness_acceptance=False,
+        fault_isolation_acceptance=False,dynamic_channel_acceptance=False,automatic_fault_recovery_acceptance=False,
+        protected_ssap_acceptance=False,full_goal_complete=False,pairs=pairs,
+        overlaps=[dict(role_phase=n,overlap_wall_ns=[1,2]) for n in range(2)])
+    return dict(status='FOUR_DEVICE_PARALLEL_BURST_PASS',four_device_burst_requested=True,
+        four_device_parallel_business=True,four_device_parallel_rf=False,qemu_exit=0,parallel_corroboration=proof)
+
+
+class BurstEvidenceTests(unittest.TestCase):
+    def test_explicit_two_pair_2042_burst_metadata(self):
+        self.assertEqual(len(verify_records(burst_fixture())),4)
+        validate_business_mode(SimpleNamespace(command='run',four_device_burst=True))
+        for key in ['four_device_business','four_device_disconnect']:
+            with self.assertRaises(ValueError):validate_business_mode(SimpleNamespace(command='run',four_device_burst=True,**{key:True}))
+        for change in ['wrong-scope','worker-mode','worker-flag','small-size','wrong-rounds','not-burst','mixed-down']:
+            r=burst_fixture();child=r['workers'][1]['run']
+            if change=='wrong-scope':r['scope']=SCOPE
+            if change=='worker-mode':child['burst_mode']=False
+            if change=='worker-flag':r['workers'][0]['args'].remove('--burst')
+            if change=='small-size':child['channel_socket'][0]['message_bytes']=61
+            if change=='wrong-rounds':child['channel_socket'][0]['rounds']=20
+            if change=='not-burst':child['channel_socket'][0]['burst']=False
+            if change=='mixed-down':r['disconnect_isolation']=True
+            with self.subTest(change=change),self.assertRaises((CaptureError,ValueError)):
+                verify_records(r)
+
+    def test_summary_requires_long_pressure_actual_budgets_and_no_broad_proof(self):
+        self.assertEqual(run_exit_code(burst_summary_fixture()),0)
+        for change in ['request','status','long','software','no-observation','no-refusal','source-owner','no-nocp','no-resume','debt','inherited-peak','proof','fairness','wrong-count','missing-pair']:
+            r=burst_summary_fixture();p=r['parallel_corroboration'];pair=p['pairs'][1];obs=pair['budget_observations'][0];end=obs['endpoints'][0]
+            if change=='request':r['four_device_burst_requested']=False
+            if change=='status':r['status']='FOUR_DEVICE_PARALLEL_BUSINESS_PASS'
+            if change=='long':pair['channel']['long_pdu_acceptance']=False
+            if change=='software':p['software_backpressure_acceptance']=False
+            if change=='no-observation':pair.pop('budget_observations')
+            if change=='no-refusal':obs['source_pool_refusals_delta']=0
+            if change=='source-owner':end['generation']+=100
+            if change=='no-nocp':end['nocp_packets']-=1
+            if change=='no-resume':end['full_nocp_resume_intervals']=[]
+            if change=='debt':end['wire_final_debt']=1
+            if change=='inherited-peak':end['wire_peak']-=1
+            if change=='proof':p['controller_credit_correctness_proof']=True
+            if change=='fairness':p['fairness_acceptance']=True
+            if change=='wrong-count':p['round_trips']=80
+            if change=='missing-pair':p['pairs'].pop()
+            with self.subTest(change=change):self.assertEqual(run_exit_code(r),1)
 
 
 class DisconnectEvidenceTests(unittest.TestCase):

@@ -21,6 +21,7 @@ from ws73_parallel import PairRun, EventReader, abort_workers, policy_expectatio
 
 SCOPE = 'four real WS73 two-pair connected business'
 ISOLATION_SCOPE = 'four real WS73 controlled pair disconnect with surviving business'
+BURST_SCOPE = 'four real WS73 two-pair 2042-byte burst and observed budgets'
 PENDING = 'PARALLEL_BUSINESS_EVIDENCE_PENDING'
 SUCCESS = 'CONNECTED_PAIR_BUSINESS_EVIDENCE_PENDING'
 SEQUENCE = [('ready', 0), *[(kind, n) for n in range(2)
@@ -40,8 +41,8 @@ def stage_specs(isolation):
     return stages
 
 
-def rounds_for(isolation,pair,phase):
-    return 4 if isolation and pair==phase else 20
+def rounds_for(isolation,pair,phase,burst=False):
+    return 16 if burst else 4 if isolation and pair==phase else 20
 
 
 class BusinessPair(PairRun):
@@ -51,9 +52,13 @@ class BusinessPair(PairRun):
 
     def __init__(self,args):
         self.isolation=bool(getattr(args,'disconnect_isolation',False))
+        self.burst=bool(getattr(args,'burst',False))
+        if self.isolation and self.burst:raise ValueError('separate burst and Disconnect scopes required')
         if self.isolation:self.SCOPE=ISOLATION_SCOPE
+        if self.burst:self.SCOPE=BURST_SCOPE
         super().__init__(args)
         self.data['disconnect_isolation']=self.isolation
+        self.data['burst_mode']=self.burst
 
     # Share bounded pipe coordination and cleanup, not the RF-only start/match hooks.
     def ctl(self, identity, *words):
@@ -66,7 +71,7 @@ class BusinessPair(PairRun):
         self.barrier(kind, len(self.data['connection_control']['phases'])-1)
 
     def channel_barrier(self, row):
-        row['rounds']=rounds_for(self.isolation,self.args.pair,row['phase'])
+        row['rounds']=rounds_for(self.isolation,self.args.pair,row['phase'],self.burst)
         self.barrier('business-ready', row['phase'])
 
     def execute(self):
@@ -139,7 +144,9 @@ def run_parallel(args):
     args.slctl=args.slctl.resolve()
     output=args.output.resolve();output.mkdir(parents=True,exist_ok=False,mode=0o700)
     isolation=bool(getattr(args,'disconnect_isolation',False))
-    record=dict(format_version=1,scope=ISOLATION_SCOPE if isolation else SCOPE,disconnect_isolation=isolation,status='RUNNING',application_identity=ordinary_identity(),
+    burst=bool(getattr(args,'burst',False))
+    if isolation and burst:raise ValueError('separate burst and Disconnect scopes required')
+    record=dict(format_version=1,scope=BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE,disconnect_isolation=isolation,burst_mode=burst,status='RUNNING',application_identity=ordinary_identity(),
                 workers=[],stages=[],policy_expectation=policy_expectation(args.policy_expectation),
                 barrier_budget_seconds=BARRIER_SECONDS,physical_unplug_acceptance=False,
                 automatic_fault_recovery_acceptance=False,fault_isolation_acceptance=False)
@@ -150,7 +157,7 @@ def run_parallel(args):
         for pair in range(2):
             argv=[sys.executable,str(Path(__file__).resolve()),'pair','--pair',str(pair),'--ports',
                   *args.ports[pair*2:pair*2+2],'--slctl',str(args.slctl),'--slkd-pid',str(args.slkd_pid),
-                  '--output',str(output/f'pair-{pair}'),*(['--disconnect-isolation'] if isolation else []),
+                  '--output',str(output/f'pair-{pair}'),*(['--disconnect-isolation'] if isolation else []),*(['--burst'] if burst else []),
                   '--policy-expectation',str(args.policy_expectation)]
             row=dict(args=argv,start_wall_ns=time.time_ns(),stdout='',stderr='');record['workers'].append(row)
             p=subprocess.Popen(argv,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -199,8 +206,9 @@ def run_parallel(args):
 
 def verify_records(record):
     isolation=record.get('disconnect_isolation',False)
-    if type(isolation) is not bool:raise CaptureError('explicit boolean disconnect scope required')
-    scope=ISOLATION_SCOPE if isolation else SCOPE
+    burst=record.get('burst_mode',False)
+    if type(isolation) is not bool or type(burst) is not bool or (isolation and burst):raise CaptureError('explicit exclusive scope booleans required')
+    scope=BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE
     if (record.get('format_version')!=1 or record.get('scope')!=scope or record.get('status')!=PENDING
             or record.get('barrier_budget_seconds')!=BARRIER_SECONDS or len(record.get('workers',[]))!=2
             or record.get('failure_shutdown') or any(record.get(k) is not False for k in
@@ -230,7 +238,7 @@ def verify_records(record):
                 raise CaptureError('victim actual Down must precede survivor disconnect admission')
     for pair,w in enumerate(record['workers']):
         r=w['run']
-        if w['exit'] or r['status']!=SUCCESS or r['scope']!=scope or r.get('disconnect_isolation',False)!=isolation or r['pair']!=pair or r['application_identity']!=app:
+        if w['exit'] or r['status']!=SUCCESS or r['scope']!=scope or r.get('disconnect_isolation',False)!=isolation or r.get('burst_mode',False)!=burst or r['pair']!=pair or r['application_identity']!=app:
             raise CaptureError('actual successful ordinary pair workers required')
         if type(w['pid']) is not int or w['pid']<=0 or w['pid'] in pids:raise CaptureError('distinct worker PID required')
         pids.add(w['pid'])
@@ -242,6 +250,7 @@ def verify_records(record):
         daemon,bus=r['daemon_before'],r['bus_before']
         argv=w['args'];expected=['pair','--pair',str(pair),'--ports',*[v['port'] for v in r['initial']],
                     '--slctl',r['slctl']['path'],'--slkd-pid',str(daemon['pid'])]
+        if argv.count('--burst')!=int(burst):raise CaptureError('explicit worker burst selector required')
         if argv.count('--disconnect-isolation')!=int(isolation):raise CaptureError('explicit worker disconnect selector required')
         if argv[2:12]!=expected or argv[-2:]!=['--policy-expectation',record['policy_expectation']['file']['path']]:
             raise CaptureError('original CLI/port/daemon worker affinity required')
@@ -249,8 +258,8 @@ def verify_records(record):
         if (len(r['cleanup'])!=2 or any(v['status']!='STOP_CONFIRMED' for v in r['cleanup'])
                 or len(r['connection_cleanup'])!=2 or any(v['status']!='NO_CURRENT_QUERIED_LINKS' for v in r['connection_cleanup'])):
             raise CaptureError('all four actual owned cleanups required')
-        if len(r.get('channel_socket',[]))!=2 or any(x['rounds']!=rounds_for(isolation,pair,n) or x['message_bytes']!=61 or x.get('close_prefix') or x.get('burst') or x.get('boundary_check') for n,x in enumerate(r['channel_socket'])):
-            raise CaptureError('exact two-role20-message61-byte slice required')
+        if len(r.get('channel_socket',[]))!=2 or any(x['rounds']!=rounds_for(isolation,pair,n,burst) or x['message_bytes']!=(2042 if burst else 61) or x.get('close_prefix') or x.get('burst',False)!=burst or x.get('boundary_check') for n,x in enumerate(r['channel_socket'])):
+            raise CaptureError('exact requested role/message-size/burst slice required')
         if [(s['phase'],s['round']) for s in r['barriers']]!=SEQUENCE:raise CaptureError('worker barrier history mismatch')
         for index,entry in enumerate(r['barriers']):
             stage,seen=observations[pair,entry['phase'],entry['round']];live=seen['event']
@@ -288,11 +297,13 @@ def corroborate(record,capture):
     from ws73_channel_socket import corroborate as channel_proof,application_frames
     from ws73_rf_rounds import corroborate_stops
     owners=verify_records(record);pairs=[];nonces=set();sequences=set()
-    isolation=record.get('disconnect_isolation',False)
+    isolation=record.get('disconnect_isolation',False);burst=record.get('burst_mode',False)
     for w in record['workers']:
         r=w['run'];subset=pair_capture(capture,r['initial'])
         conn=connection_proof(r,subset);objects=object_proof(r,subset,conn);channel=channel_proof(r,subset)
-        if channel['round_trips']!=(24 if isolation else 40):raise CaptureError('all actual peer replies per pair required')
+        if channel['round_trips']!=(32 if burst else 24 if isolation else 40):raise CaptureError('all actual peer replies per pair required')
+        if burst and (channel.get('long_pdu_acceptance') is not True or channel.get('software_backpressure_acceptance') is not True):
+            raise CaptureError('actual long-fragment and finite-queue pressure proofs required')
         corroborate_stops(r,subset)
         for row in r['channel_socket']:
             sent,_=application_frames(row)
@@ -319,13 +330,17 @@ def corroborate(record,capture):
             metadata.append([command_reply(subset,owner,op,0,owner['observed_wall_ns'],b'',value)
                 for op,value in [(0x404,owner['version']),(0x402,struct.pack('<HBHB',*owner['buffers']).hex()),
                                  (0x403,owner['features']),(0x406,owner['address'].replace(':','').lower())]])
-        pairs.append(dict(connections=conn,objects=objects,channel=channel,metadata=metadata,policy_readbacks=policy_rows))
+        entry=dict(connections=conn,objects=objects,channel=channel,metadata=metadata,policy_readbacks=policy_rows)
+        if burst:
+            from ws73_credit_observation import observe_phase
+            entry['budget_observations']=[observe_phase(row,subset) for row in r['channel_socket']]
+        pairs.append(entry)
     overlaps=[]
     for n in range(2):
         windows=[];lifetimes=[]
         for number,pair in enumerate(pairs):
             legs=pair['channel']['proofs'][n]['legs']
-            if len(legs)!=2*rounds_for(isolation,number,n):raise CaptureError('exact bidirectional business message pairs required')
+            if len(legs)!=2*rounds_for(isolation,number,n,burst):raise CaptureError('exact bidirectional business message pairs required')
             window=[min(v['tx']['wall_ns'] for v in legs),max(v['rx']['wall_ns'] for v in legs)]
             up=pair['connections'][n]['steps'][0]['outcomes'];down=pair['connections'][n]['steps'][1]['outcomes']
             if max(v['wall_ns'] for v in up)>window[0] or min(v['wall_ns'] for v in down)<window[1]:
@@ -334,9 +349,10 @@ def corroborate(record,capture):
         overlap=overlap_window(windows)
         if overlap[0]<max(v[0] for v in lifetimes) or overlap[1]>min(v[1] for v in lifetimes):raise CaptureError('both physical connections must coexist during real business')
         overlaps.append(dict(role_phase=n,business_windows=windows,overlap_wall_ns=overlap))
-    return dict(status='FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
+    return dict(status='FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
                 **(dict(disconnect_proofs=disconnect_proofs(pairs),controlled_disconnect_isolation_acceptance=True) if isolation else {}),
-                controller_count=len(owners),round_trips=48 if isolation else 80,ordinary_uid=1000,
+                **(dict(long_pdu_acceptance=True,software_backpressure_acceptance=True,observed_controller_pool_saturation_and_resumption=True,controller_credit_correctness_proof=False,fairness_acceptance=False) if burst else {}),
+                controller_count=len(owners),round_trips=64 if burst else 48 if isolation else 80,ordinary_uid=1000,
                 fixed_basic_channel_business_acceptance=True,fault_isolation_acceptance=False,
                 dynamic_channel_acceptance=False,automatic_fault_recovery_acceptance=False,
                 protected_ssap_acceptance=False,full_goal_complete=False)
@@ -381,15 +397,18 @@ def main():
     parser.add_argument('--slkd-pid',type=int,required=True);parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--policy-expectation',type=Path,required=True);parser.add_argument('--pair',type=int,choices=[0,1])
     parser.add_argument('--disconnect-isolation',action='store_true',help='alternate which physical pair disconnects while the other continues20 real replies; not natural fault recovery')
+    parser.add_argument('--burst',action='store_true',help='16 real2042-byte replies perpair perrole; actual queue pressure and scoped pool/NOCP observations')
     args=parser.parse_args()
+    if args.burst and args.disconnect_isolation:parser.error('select one explicit scope')
     if args.mode=='run':
         if args.pair is not None:parser.error('pair selector internal only')
         return run_parallel(args)
     if args.pair is None or len(args.ports)!=2 or len(set(args.ports))!=2:parser.error('worker requires explicit pair and two ports')
     args.artifact=[name+'='+str(Path(__file__).with_name(name+'.py').resolve()) for name in
-                   ['ws73_parallel_data','ws73_connection_control','ws73_connection_objects','ws73_channel_socket','ws73_ssap_value','ws73_ssap_discovery']]
+                   ['ws73_credit_observation','ws73_parallel_data','ws73_connection_control','ws73_connection_objects','ws73_channel_socket','ws73_ssap_value','ws73_ssap_discovery']]
     args.start_offset_ms=0;args.channel_socket_verify=True;args.channel_socket_rounds=20
-    args.channel_socket_bytes=61;args.connection_advertising='negotiable-t'
+    args.channel_socket_bytes=2042 if args.burst else 61
+    args.channel_socket_burst=args.burst;args.connection_advertising='negotiable-t'
     return BusinessPair(args).execute()
 
 

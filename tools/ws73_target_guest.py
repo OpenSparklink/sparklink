@@ -321,6 +321,8 @@ def verify_parallel():
     run=json.loads((EVIDENCE/f'application/{name}/run.json').read_text())
     if business and run.get('disconnect_isolation',False)!=('ws73.parallel_disconnect=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('guest disconnect scope disagrees with explicit boot request')
+    if business and run.get('burst_mode',False)!=('ws73.parallel_burst=1' in Path('/proc/cmdline').read_text().split()):
+        raise ValueError('guest burst scope disagrees with explicit boot request')
     owners=[o for w in run['workers'] for o in w['run']['initial']]
     capture=read_capture(EVIDENCE/'ws73.pcap',[(o['bus'],o['device']) for o in owners])
     count=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())

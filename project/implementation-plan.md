@@ -1132,3 +1132,19 @@ QEMU/监督器0；第一阶段6pre/13post、第二阶段8pre/11post。第一阶�
 Disconnect至双Down，第二阶段一轮在Disconnect后、双Down前开始并在Down后回复，
 不将两者混称同一时序。工具首次删除Down负对照选错事件未生效，fail-closed失败
 及修正原始包定位后的8项拒绝均保留。不是独立decoder或新形式化证明。
+
+
+### WP07 当前批：四设备并行2042字节burst及预算观察（未实机验收）
+
+新增独立 `--four-device-burst` 模式，复用普通每通道socket、既有16消息burst、
+长包/DLI PB重组、软件背压核对及 `ws73_credit_observation.observe_phase`，不另造
+协议或ledger。两组两连接角色各16次2042字节随机请求/实际校验回复，共64次。
+
+本批退出：两角色阶段两组USB实际业务区间重叠；每消息实际first/middle/last
+分片和两端完整重组匹配；真实EAGAIN/POLLOUT收回/恢复及有限队列；每组每阶段
+controller预算均有新池满拒绝、原始提交/NOCP/恢复提交且最终debt0，身份对应
+各自controller/generation/lifetime/handle。USB完成不归还协议credit。
+
+预算观察不能证明NOCP准确、重复/迟到/复用屏障或完整credit正确性，不授予
+公平性、动态多通道、USB/设备故障或自然恢复资格。原80正向和48受控Down报告
+保留准确身份；两份原捕获在新verifier下输出相同证明，不改写为新实机执行。

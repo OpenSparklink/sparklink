@@ -1078,14 +1078,14 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "four-controller-controlled-disconnect",
-      "production_behavior": "Existing real Runtime/Session/socket under pair Disconnect/Down; compiled d01aa82 and toolsff13d8c. No new Engine, no app pause or deadline refresh.",
+      "id": "four-controller-long-burst-budgets",
+      "production_behavior": "Test existing2042-byte per-channel burst on two simultaneous real pairs;same Runtime/Session/credit/socket. No production Engine change.",
       "exit": [
-        "Real2phases alternate victims:48actual replies; survivors6/8before Disconnect,13/11after both Down;5,305packets0drops,taint0,QEMU/supervisor0",
-        "92offline/strictdocs separate;old80saved capture same proof;8corruptions reject after retaining first failed no-op selector;no new formal proof",
-        "Warm4 each-110 then one recovery0 retained;controlled physical Disconnect only,not USB/device fault or natural recovery"
+        "Retain d01 positive80 and compiled d01/toolsff13 controlledDown48 under original identities",
+        "New pending real gate:2pairs x2roles x16=64 actual2042-byte peer replies;PB fragments/overlap/finite-queue pressure plus per-endpoint pool/NOCP/resume/finaldrain observations",
+        "No controller credit correctness proof,NOCP truth/late/reuse or fairness qualification. Actual device faults/natural recovery remain open"
       ],
-      "next": "Four-device long/burst/budget/fairness then dynamic channels; actual device/USB fault isolation remains open. Production stateful fuzz,submit-revoke-Down-original-deadline composition/debugVM and minimum authenticated authorization parallel; full originalS0-S6/19WP/10FV/12DG unchanged."
+      "next": "After this scoped gate, establish dynamic channels and per-channel queues/real business,then SSAP on verified channels;stateful production fuzz/submit-revoke-Down-original-deadline/debugVM/minimum authenticated authorization parallel. Keep originalS0-S6/19WP/10FV/12DG."
     }
   },
   "agent_workstream": {
@@ -1209,7 +1209,7 @@
     "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
     "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
     "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only",
-    "state": "CONTROLLED_DISCONNECT_REAL_SCOPED_PASS_REMAINING_OPEN",
+    "state": "FOUR_DEVICE_BURST_GATE_IMPLEMENTED_REAL_PENDING",
     "tool": "tools/ws73_parallel_data.py via ws73_target.py --four-device-business",
     "invariants": [
       "four distinct Ready registrations and unchanged daemon identity",
@@ -1222,7 +1222,9 @@
     "next": "Four-device long/burst/budget/fairness and dynamic channels;actual USB/device fault isolation/natural RCA/recovery remain open;stateful production/submit-revoke-Down-original-deadline/debugVM parallel",
     "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json",
     "controlled_disconnect_report": "docs/evidence/four-device-disconnect-20261016.json",
-    "controlled_disconnect_issues_receipt": "docs/evidence/four-device-disconnect-issues-20261016.json"
+    "controlled_disconnect_issues_receipt": "docs/evidence/four-device-disconnect-issues-20261016.json",
+    "active_gate": "--four-device-burst",
+    "active_exit": "2pairs2roles16x2042bytes=64actual peer replies;actual overlap/PB/queue pressure/pool-NOCP-resume-finaldrain;no broadcredit/fairness proof"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",

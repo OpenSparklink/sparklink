@@ -13,14 +13,14 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "data-lifecycle-eight-plus-two-and-native-sequences-scoped-pass",
-    "production_behavior": "K400/U25df unchanged runtime:8withdrawal/Down plus2independent original5s deadline cases;20precontrol appRT,0partialPDU delivery. Kselftesta474 onlytestchanges.",
+    "id": "slktest-entry-migration-scoped-pass",
+    "production_behavior": "Application tool ownership only:slktest uniqueentry/internalimplementation,slctl management; noHost/kernel/wire/schema contract change.",
     "exit": [
-      "OriginalmatrixFAIL missingQEMUhold property retained;exactindependent8sQEMU smoke/prepare andtwo deadlinecasespassed",
-      "Raw10successfulcaptures/apps/holds replayed;42offlineevidence negatives;ordinaryuid/cap/peerleaseReady andactualscanwhereapplicable",
-      "Actualproduction-body seeded1024x32 sequences,113actual callbackrejections/125accepteduncertain outcomes,2intended mutationcounterexamples;notformalproof"
+      "U10be90c source move/U7694e14 callers,bundles,installation manifests;original four-device WIP preserved",
+      "ActualU7694e14 slktest+22tests asuid1000 emptyUSBKVM PASS;266workspace/621Python supporting offline checks;failures retained",
+      "Newslktest Native/WS73 and performancequalification MISSING;historicalslctl identities unchanged"
     ],
-    "next": "ADR0006 P0 planning synchronized;P1 credible socket baseline before P2 event scheduling; preserve in-progress four-device dynamic tools and parallel Agent/SSAP/control-composition/RCA. FullS0-S6/19WP/10FV/12DG unchanged; no performance qualification."
+    "next": "Continue P1schema2 two-end evidenceclosure/pairedendbarrier/credibleNativebaseline,then P2event-driven Session;fullS0-S6/19WP/10FV/12DG,Agent/SSAP/fourdevice/naturalRCA/nonhumanrecovery OPEN;UserHost lowpriority"
   },
   "overall_required_records": [
     "deadline-real21",
@@ -53,7 +53,8 @@
     "native-sequence-a474a85",
     "event-performance-baseline",
     "socket-benchmark-app-offline-56e9f45",
-    "socket-load-app-offline-0f286bd"
+    "socket-load-app-offline-0f286bd",
+    "slktest-migration-7694e14"
   ],
   "records": [
     {
@@ -17252,6 +17253,405 @@
       ],
       "required_gates": [
         "actual-local-load-and-v1-report-checks"
+      ]
+    },
+    {
+      "id": "slktest-migration-7694e14",
+      "title": "slktest独立入口：空USB KVM普通用户22项应用回归（非WS73/性能资格）",
+      "level": "virtual_integration",
+      "result": "PASS",
+      "contracts": [
+        "SingleCanonicalApplicationTestTool",
+        "ExistingApplicationLoopsAndSchemasPreserved",
+        "ActualBinaryAndLocalDatagramTestsAsUid1000InEmptyUSBVM"
+      ],
+      "bounds": {
+        "application_tests": 22,
+        "workspace_supporting_tests": 266,
+        "python_supporting_tests": 621,
+        "environment": "emptyUSB KVM:2vCPU/2048M;AF_UNIX explicit test budgets;noNative controller/firmware/RF",
+        "source_roles": "Exact compiledRust and frozenVMrunner; supporting fullworktree offline tests retain original uncommitted four-device WIP"
+      },
+      "excluded": [
+        "One moved application implementation; channel.rs and benchmark/load.rs byte-identical to ca7a8a0; benchmark.rs differs only test temporary filename/formatting. Existing wire and report schema1/2 unchanged.",
+        "Actual slktest entry, parameters and all22 internal library tests executed as uid1000 in empty-USB KVM. Local AF_UNIX pairs, explicit shorter test budgets and logical-clock fixtures do not establish Native socket/Grant/credit/lifecycle or WS73 behavior.",
+        "266 workspace tests and621 Python checks are supporting offline regressions; original four-device WIP hook remains uncommitted and separately identified. CLI help, removed management entries, start/deadline/load/report negatives passed; no new formal proof.",
+        "New slktest artifact real-device qualification, independent schema2 both-end/provenance/capture/supervisor closure, stable performance baseline and event-driven kernel scheduling remain MISSING. Prior WS73 evidence and historical commands/artifacts remain at original identities."
+      ],
+      "remaining": [
+        "New Native/WS73 artifact qualification (roles, length and lifecycles); no inheritance from old slctl binary.",
+        "P1 schema2 oracle and paired measurement-end coordination before credible Native baseline, then P2 event notifications.",
+        "Dynamic four-device WIP, original full S0-S6/19WP/10FV/12DG, natural fault RCA/nonhuman recovery remain OPEN.",
+        "No general installation/debian upgrade/service deployment or complete formal/kernel concurrency qualification."
+      ],
+      "sources": {
+        "application": {
+          "repo": "sparklink",
+          "commit": "7694e14fccab1ac101521edb8ef09fa20bcc5e1b",
+          "scopes": [
+            "Cargo.toml",
+            "Cargo.lock",
+            "crates/slktest",
+            "crates/slk-protocol",
+            "crates/slctl"
+          ],
+          "files": {
+            "Cargo.lock": "171164a0b8b962c0243a7f22119ef96e9e50748c35b4f82703c1ab5e192c5509",
+            "Cargo.toml": "18a1334d7e309bc28a2bddffb614bf3415bee043eb5b4a80d2c832f996bf12d8",
+            "crates/slctl/Cargo.toml": "f390b61589443d09280049b720b1650111b5698a2cc55ca41a7aa5f6dab9f363",
+            "crates/slctl/examples/bus_policy_probe.rs": "fa344893368710bd6db5a8ea2c19248ff1a931305a54df32598506f60f989585",
+            "crates/slctl/examples/native_security_agent_probe.rs": "d23f9afa2e18e83453be00f2f1f4fd162bde077a0b4addbd9009c2772c246b74",
+            "crates/slctl/src/commands.rs": "a5311e7c6ef5c768a63ff197cc73e0454f4a1c5a09a3169b94b5e91e1f93ad33",
+            "crates/slctl/src/main.rs": "b960a16d30b77c63ab0a9a8ad635580a95edb4003cb44c641940f46fb2f4e63f",
+            "crates/slctl/src/security_agent.rs": "2af7a5ff0d32a13f451bed4e7d7a32ef7aa44a6eee328d17ce0a58ce80cc7e35",
+            "crates/slctl/tests/scan_freshness.rs": "d3679776de69bb7c2dbcf58eded3024a266ddacb9df151e57e063092ad1f5fe9",
+            "crates/slctl/tests/security_agent.rs": "4c810768161c1a91be7397840dba1fd4c789fdab02fef16faff37a6b50dce02c",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "c8c68a94e1c268c5bfb80ce0dbb98bc39e16b5d6a7685e68c3ab1f8479ecb3a1",
+            "crates/slk-protocol/src/channel.rs": "d52efb6afcc52f87fc2654278cc703dd925a58387b114a407f7a65b431f967dc",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/ioctl.rs": "23be963504c1a80af31fe0cb8af9aad719770a39a532dd7914c00edf4c062df6",
+            "crates/slk-protocol/src/lib.rs": "9a4cf882a77f0aef621a519e7928b32d18633dfdf0b1524e93bd4d6fdc0e837b",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "d093c33faa18025bb1aa2f16c9ba888cef6e85131a813d058dd1872cde479225",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "0faff47303886b82e826047d44c64c755599f0bf31975185014e6226ce272343",
+            "crates/slk-protocol/src/types.rs": "0717bb7c3c125c94ae1624e240e1a8e4d9b8a53eb6590a2c8e4403c5c8cbd172",
+            "crates/slktest/Cargo.toml": "6135ddb03866cdb5bc6d7e33549b99e5adabbc73e9e7d45291a66b56ad1d413b",
+            "crates/slktest/src/benchmark.rs": "9ea3818984ed44667dbc1b8f7cd7fd67bb3baea2883e3a1e94c316c55b2df3b4",
+            "crates/slktest/src/benchmark/load.rs": "e6e357ea565836d7ef8bdc7b539fd2edd3b25f7197b9fdeaaa00ba44fea20bb3",
+            "crates/slktest/src/channel.rs": "b8244b54e544f4f21d97f241eb823ea18286ed02d074c8c9933e867abda92369",
+            "crates/slktest/src/cli.rs": "e5b0f33417307f155b4a92e0bd390552659c2333c2c96927d07b04577236c817",
+            "crates/slktest/src/connection.rs": "1d7906c1d6b7df1f63bbc2b20b1fd453305e0131960359c2987bd51edc8cde1b",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755"
+          }
+        },
+        "vm_runner": {
+          "repo": "sparklink",
+          "commit": "7694e14fccab1ac101521edb8ef09fa20bcc5e1b",
+          "scopes": [
+            "tools/ws73_native_root_smoke.py",
+            "tools/ws73_native_module_init.sh",
+            "tools/ws73_native_build_check.py",
+            "tools/ws73_target.py",
+            "tools/ws73_vm_native_root.py"
+          ],
+          "files": {
+            "tools/ws73_native_build_check.py": "cb9ee7a0332766bcdd7b3c04d701e70f253877c66acb9b76a44388e1f2846abc",
+            "tools/ws73_native_module_init.sh": "616a30940d90f7b04a3d37fb6a8485217330ae29a4fb0c0d7af2f1ce2ae9d914",
+            "tools/ws73_native_root_smoke.py": "dc0aa6efd5f77c24d3bdb429e897404da4ccef8e97b0db9feadf28656daa3795",
+            "tools/ws73_target.py": "6d4a56b6fd367c43ee6d53356d35efdbc5b11935e24955d96dc3a1865a575f86",
+            "tools/ws73_vm_native_root.py": "a805611862274dd7ed7a4b47d62e34cf423d524096d3136d15d9e40a594ea058"
+          }
+        }
+      },
+      "report": {
+        "material": "slktest-migration-7694e14-report",
+        "scope_pointer": [
+          "scope"
+        ],
+        "source_pointers": {
+          "application": [
+            "compiled_source"
+          ],
+          "vm_runner": [
+            "executed_tool_source"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "SLKTEST_ENTRY_AND_EMPTY_USB_VM_SCOPED_PASS": "PASS"
+        }
+      },
+      "report_commit": "5e02d197c8b19937115ca650a57c4ed2982121c6",
+      "artifact_materials": [
+        "slktest-migration-7694e14-report",
+        "slktest-migration-7694e14-m0",
+        "slktest-migration-7694e14-m1",
+        "slktest-migration-7694e14-m2",
+        "slktest-migration-7694e14-m3",
+        "slktest-migration-7694e14-m4",
+        "slktest-migration-7694e14-m5",
+        "slktest-migration-7694e14-m6",
+        "slktest-migration-7694e14-m7",
+        "slktest-migration-7694e14-m8",
+        "slktest-migration-7694e14-m9",
+        "slktest-migration-7694e14-m10",
+        "slktest-migration-7694e14-m11",
+        "slktest-migration-7694e14-m12",
+        "slktest-migration-7694e14-m13",
+        "slktest-migration-7694e14-m14",
+        "slktest-migration-7694e14-m15",
+        "slktest-migration-7694e14-m16",
+        "slktest-migration-7694e14-m17",
+        "slktest-migration-7694e14-m18",
+        "slktest-migration-7694e14-m19",
+        "slktest-migration-7694e14-m20",
+        "slktest-migration-7694e14-m21",
+        "slktest-migration-7694e14-m22",
+        "slktest-migration-7694e14-m23",
+        "slktest-migration-7694e14-m24",
+        "slktest-migration-7694e14-m25",
+        "slktest-migration-7694e14-m26",
+        "slktest-migration-7694e14-m27",
+        "slktest-migration-7694e14-m28",
+        "slktest-migration-7694e14-m29",
+        "slktest-migration-7694e14-m30",
+        "slktest-migration-7694e14-m31",
+        "slktest-migration-7694e14-m32",
+        "slktest-migration-7694e14-m33",
+        "slktest-migration-7694e14-m34",
+        "slktest-migration-7694e14-m35",
+        "slktest-migration-7694e14-m36",
+        "slktest-migration-7694e14-m37",
+        "slktest-migration-7694e14-m38",
+        "slktest-migration-7694e14-m39",
+        "slktest-migration-7694e14-m40",
+        "slktest-migration-7694e14-m41",
+        "slktest-migration-7694e14-m42",
+        "slktest-migration-7694e14-m43",
+        "slktest-migration-7694e14-m44",
+        "slktest-migration-7694e14-m45",
+        "slktest-migration-7694e14-m46",
+        "slktest-migration-7694e14-m47",
+        "slktest-migration-7694e14-m48",
+        "slktest-migration-7694e14-m49",
+        "slktest-migration-7694e14-m50",
+        "slktest-migration-7694e14-m51",
+        "slktest-migration-7694e14-m52",
+        "slktest-migration-7694e14-m53",
+        "slktest-migration-7694e14-m54",
+        "slktest-migration-7694e14-m55",
+        "slktest-migration-7694e14-m56",
+        "slktest-migration-7694e14-m57",
+        "slktest-migration-7694e14-m58",
+        "slktest-migration-7694e14-m59",
+        "slktest-migration-7694e14-m60",
+        "slktest-migration-7694e14-m61",
+        "slktest-migration-7694e14-m62",
+        "slktest-migration-7694e14-m63",
+        "slktest-migration-7694e14-m64",
+        "slktest-migration-7694e14-m65",
+        "slktest-migration-7694e14-m66",
+        "slktest-migration-7694e14-m67",
+        "slktest-migration-7694e14-m68",
+        "slktest-migration-7694e14-m69",
+        "slktest-migration-7694e14-m70",
+        "slktest-migration-7694e14-m71",
+        "slktest-migration-7694e14-m72",
+        "slktest-migration-7694e14-m73",
+        "slktest-migration-7694e14-m74",
+        "slktest-migration-7694e14-m75",
+        "slktest-migration-7694e14-m76",
+        "slktest-migration-7694e14-m77",
+        "slktest-migration-7694e14-m78",
+        "slktest-migration-7694e14-m79",
+        "slktest-migration-7694e14-m80",
+        "slktest-migration-7694e14-m81",
+        "slktest-migration-7694e14-m82",
+        "slktest-migration-7694e14-m83",
+        "slktest-migration-7694e14-m84",
+        "slktest-migration-7694e14-m85",
+        "slktest-migration-7694e14-m86",
+        "slktest-migration-7694e14-m87",
+        "slktest-migration-7694e14-m88",
+        "slktest-migration-7694e14-m89",
+        "slktest-migration-7694e14-m90",
+        "slktest-migration-7694e14-m91",
+        "slktest-migration-7694e14-m92",
+        "slktest-migration-7694e14-m93",
+        "slktest-migration-7694e14-m94",
+        "slktest-migration-7694e14-m95",
+        "slktest-migration-7694e14-m96",
+        "slktest-migration-7694e14-m97",
+        "slktest-migration-7694e14-m98",
+        "slktest-migration-7694e14-m99",
+        "slktest-migration-7694e14-m100",
+        "slktest-migration-7694e14-m101",
+        "slktest-migration-7694e14-m102",
+        "slktest-migration-7694e14-m103",
+        "slktest-migration-7694e14-m104",
+        "slktest-migration-7694e14-m105",
+        "slktest-migration-7694e14-m106",
+        "slktest-migration-7694e14-m107",
+        "slktest-migration-7694e14-m108",
+        "slktest-migration-7694e14-m109",
+        "slktest-migration-7694e14-m110",
+        "slktest-migration-7694e14-m111",
+        "slktest-migration-7694e14-m112",
+        "slktest-migration-7694e14-m113",
+        "slktest-migration-7694e14-m114",
+        "slktest-migration-7694e14-m115",
+        "slktest-migration-7694e14-m116",
+        "slktest-migration-7694e14-m117",
+        "slktest-migration-7694e14-m118",
+        "slktest-migration-7694e14-m119",
+        "slktest-migration-7694e14-m120",
+        "slktest-migration-7694e14-m121",
+        "slktest-migration-7694e14-m122",
+        "slktest-migration-7694e14-m123",
+        "slktest-migration-7694e14-m124",
+        "slktest-migration-7694e14-m125",
+        "slktest-migration-7694e14-m126",
+        "slktest-migration-7694e14-m127",
+        "slktest-migration-7694e14-m128"
+      ],
+      "tool_materials": [
+        "slktest-migration-7694e14-runner-source"
+      ],
+      "configuration_materials": [
+        "slktest-migration-7694e14-lock"
+      ],
+      "gates": [
+        {
+          "id": "actual-binary-empty-usb-uid1000-local-regression",
+          "result": "PASS",
+          "materials": [
+            "slktest-migration-7694e14-report",
+            "slktest-migration-7694e14-m0",
+            "slktest-migration-7694e14-m1",
+            "slktest-migration-7694e14-m2",
+            "slktest-migration-7694e14-m3",
+            "slktest-migration-7694e14-m4",
+            "slktest-migration-7694e14-m5",
+            "slktest-migration-7694e14-m6",
+            "slktest-migration-7694e14-m7",
+            "slktest-migration-7694e14-m8",
+            "slktest-migration-7694e14-m9",
+            "slktest-migration-7694e14-m10",
+            "slktest-migration-7694e14-m11",
+            "slktest-migration-7694e14-m12",
+            "slktest-migration-7694e14-m13",
+            "slktest-migration-7694e14-m14",
+            "slktest-migration-7694e14-m15",
+            "slktest-migration-7694e14-m16",
+            "slktest-migration-7694e14-m17",
+            "slktest-migration-7694e14-m18",
+            "slktest-migration-7694e14-m19",
+            "slktest-migration-7694e14-m20",
+            "slktest-migration-7694e14-m21",
+            "slktest-migration-7694e14-m22",
+            "slktest-migration-7694e14-m23",
+            "slktest-migration-7694e14-m24",
+            "slktest-migration-7694e14-m25",
+            "slktest-migration-7694e14-m26",
+            "slktest-migration-7694e14-m27",
+            "slktest-migration-7694e14-m28",
+            "slktest-migration-7694e14-m29",
+            "slktest-migration-7694e14-m30",
+            "slktest-migration-7694e14-m31",
+            "slktest-migration-7694e14-m32",
+            "slktest-migration-7694e14-m33",
+            "slktest-migration-7694e14-m34",
+            "slktest-migration-7694e14-m35",
+            "slktest-migration-7694e14-m36",
+            "slktest-migration-7694e14-m37",
+            "slktest-migration-7694e14-m38",
+            "slktest-migration-7694e14-m39",
+            "slktest-migration-7694e14-m40",
+            "slktest-migration-7694e14-m41",
+            "slktest-migration-7694e14-m42",
+            "slktest-migration-7694e14-m43",
+            "slktest-migration-7694e14-m44",
+            "slktest-migration-7694e14-m45",
+            "slktest-migration-7694e14-m46",
+            "slktest-migration-7694e14-m47",
+            "slktest-migration-7694e14-m48",
+            "slktest-migration-7694e14-m49",
+            "slktest-migration-7694e14-m50",
+            "slktest-migration-7694e14-m51",
+            "slktest-migration-7694e14-m52",
+            "slktest-migration-7694e14-m53",
+            "slktest-migration-7694e14-m54",
+            "slktest-migration-7694e14-m55",
+            "slktest-migration-7694e14-m56",
+            "slktest-migration-7694e14-m57",
+            "slktest-migration-7694e14-m58",
+            "slktest-migration-7694e14-m59",
+            "slktest-migration-7694e14-m60",
+            "slktest-migration-7694e14-m61",
+            "slktest-migration-7694e14-m62",
+            "slktest-migration-7694e14-m63",
+            "slktest-migration-7694e14-m64",
+            "slktest-migration-7694e14-m65",
+            "slktest-migration-7694e14-m66",
+            "slktest-migration-7694e14-m67",
+            "slktest-migration-7694e14-m68",
+            "slktest-migration-7694e14-m69",
+            "slktest-migration-7694e14-m70",
+            "slktest-migration-7694e14-m71",
+            "slktest-migration-7694e14-m72",
+            "slktest-migration-7694e14-m73",
+            "slktest-migration-7694e14-m74",
+            "slktest-migration-7694e14-m75",
+            "slktest-migration-7694e14-m76",
+            "slktest-migration-7694e14-m77",
+            "slktest-migration-7694e14-m78",
+            "slktest-migration-7694e14-m79",
+            "slktest-migration-7694e14-m80",
+            "slktest-migration-7694e14-m81",
+            "slktest-migration-7694e14-m82",
+            "slktest-migration-7694e14-m83",
+            "slktest-migration-7694e14-m84",
+            "slktest-migration-7694e14-m85",
+            "slktest-migration-7694e14-m86",
+            "slktest-migration-7694e14-m87",
+            "slktest-migration-7694e14-m88",
+            "slktest-migration-7694e14-m89",
+            "slktest-migration-7694e14-m90",
+            "slktest-migration-7694e14-m91",
+            "slktest-migration-7694e14-m92",
+            "slktest-migration-7694e14-m93",
+            "slktest-migration-7694e14-m94",
+            "slktest-migration-7694e14-m95",
+            "slktest-migration-7694e14-m96",
+            "slktest-migration-7694e14-m97",
+            "slktest-migration-7694e14-m98",
+            "slktest-migration-7694e14-m99",
+            "slktest-migration-7694e14-m100",
+            "slktest-migration-7694e14-m101",
+            "slktest-migration-7694e14-m102",
+            "slktest-migration-7694e14-m103",
+            "slktest-migration-7694e14-m104",
+            "slktest-migration-7694e14-m105",
+            "slktest-migration-7694e14-m106",
+            "slktest-migration-7694e14-m107",
+            "slktest-migration-7694e14-m108",
+            "slktest-migration-7694e14-m109",
+            "slktest-migration-7694e14-m110",
+            "slktest-migration-7694e14-m111",
+            "slktest-migration-7694e14-m112",
+            "slktest-migration-7694e14-m113",
+            "slktest-migration-7694e14-m114",
+            "slktest-migration-7694e14-m115",
+            "slktest-migration-7694e14-m116",
+            "slktest-migration-7694e14-m117",
+            "slktest-migration-7694e14-m118",
+            "slktest-migration-7694e14-m119",
+            "slktest-migration-7694e14-m120",
+            "slktest-migration-7694e14-m121",
+            "slktest-migration-7694e14-m122",
+            "slktest-migration-7694e14-m123",
+            "slktest-migration-7694e14-m124",
+            "slktest-migration-7694e14-m125",
+            "slktest-migration-7694e14-m126",
+            "slktest-migration-7694e14-m127",
+            "slktest-migration-7694e14-m128"
+          ]
+        }
+      ],
+      "required_gates": [
+        "actual-binary-empty-usb-uid1000-local-regression"
       ]
     }
   ],
@@ -45119,6 +45519,1065 @@
       "access": "public",
       "format": "bytes",
       "source_commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0"
+    },
+    "slktest-migration-7694e14-m0": {
+      "path": ".dev/slktest-build-7694e14.log",
+      "sha256": "c470d1ba6b1aaa8b859b4acf269b6a4ff18f6449f894fc393868ec58ffb2b50c",
+      "bytes": 256,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m1": {
+      "path": ".dev/slktest-clippy-v1.log",
+      "sha256": "6d07f49c7dfad51bc183bb6eff97ccd48007962def36f385fb95a3be0221d5d3",
+      "bytes": 2949,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m2": {
+      "path": ".dev/slktest-clippy-v2-original-lock.log",
+      "sha256": "4a7c0b6a3e9fe5d4a84e550cd2903db001645756c85a425da12e299e89c50a41",
+      "bytes": 480,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m3": {
+      "path": ".dev/slktest-clippy-v3.log",
+      "sha256": "07de426f9285b9ac9e16cec55e098e06b23dfde0e1f50dfbf0d3573cf583ab7d",
+      "bytes": 984,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m4": {
+      "path": ".dev/slktest-lock-update.log",
+      "sha256": "cb1116420f653d2da3145fdd15dceea25e637bc0b7e52569e4820b04e8a91985",
+      "bytes": 206,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m5": {
+      "path": ".dev/slktest-python-tests-v1.log",
+      "sha256": "2764261f412b959bc1e908501b1c63fa221c0ec8686bc5cf27eb1a2b7432bc92",
+      "bytes": 1450,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m6": {
+      "path": ".dev/slktest-python-tests-v2.log",
+      "sha256": "f89db9ee1cc7586e95793d7fbe6a0bcdf97ac455459015517629c6e84dcf74ef",
+      "bytes": 760,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m7": {
+      "path": ".dev/slktest-python-tests-v3.log",
+      "sha256": "ad671683101eb2bab630d183a2682b7e53f415f20dc14987af4336738d251838",
+      "bytes": 755,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m8": {
+      "path": ".dev/slktest-python-tests-v4.log",
+      "sha256": "1377aaff6ac5fee0e33170a7005d32edc858988ca2d2ca3c104a0bac8dd35617",
+      "bytes": 756,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m9": {
+      "path": ".dev/slktest-qualification-view-v1.log",
+      "sha256": "0ccdca85704eb98b11d7c8f75893f0e5e6a9d7068dc4ee42ef9d4341398b5ba4",
+      "bytes": 169803,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m10": {
+      "path": ".dev/slktest-runner-final.log",
+      "sha256": "af8759473a3df2b9085f23fcdff68a582ccb836c1b8b7e90687fc087601580d7",
+      "bytes": 142,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m11": {
+      "path": ".dev/slktest-runner-final2.log",
+      "sha256": "1259cee524e58db4155ef15ab837991edd8300d901696dcbcc770c190b5b2f59",
+      "bytes": 142,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m12": {
+      "path": ".dev/slktest-tests-v1.log",
+      "sha256": "03379140b6e424f288fa6ca04f7ab392a64297bd2e71c151ffe03b5ccf409957",
+      "bytes": 5676,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m13": {
+      "path": ".dev/slktest-tests-v2.log",
+      "sha256": "70b8aad678a806753a7086381601ae847a13578b4709357e4f6d2cfdbede023a",
+      "bytes": 5057,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m14": {
+      "path": ".dev/slktest-vm-migration-v1.log",
+      "sha256": "1f36c9658d315d56cc019044dfa1cec81fd2bca41b758ffe3ed739b3db1ddcbc",
+      "bytes": 205,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m15": {
+      "path": ".dev/slktest-vm-verdict-final.log",
+      "sha256": "698d16d7b93c4bd9707d3cfacda6fb1e0fea99ed0cda6e69bedc42772940540a",
+      "bytes": 106,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m16": {
+      "path": ".dev/slktest-workspace-tests-v3.log",
+      "sha256": "67d854a88cd8af620347a926200de7a6c306299a84c441210ebc4acb1b9a0235",
+      "bytes": 3810,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m17": {
+      "path": ".dev/slktest-workspace-tests-v4.log",
+      "sha256": "8350acdda2ab0d3b94713d55accbfc4066bafb55152ee218b853b158891b39e2",
+      "bytes": 4072,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m18": {
+      "path": ".dev/slktest-workspace-tests-v5.log",
+      "sha256": "806a1e9ea91a86878bec64ac3a194f22ea1c17ac45c57f716d2e2188fef92794",
+      "bytes": 22862,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m19": {
+      "path": ".dev/slktest-unwanted-lock-v1.diff",
+      "sha256": "33e18765bf5833af11d35690e5a701f677c0a5ff9f517587c033a66c9baf2f13",
+      "bytes": 26488,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m20": {
+      "path": ".dev/slktest-build-identity-7694e14.json",
+      "sha256": "b77f5778df449967ea01bd8add8e003c07a7d1053fa9309a84ebcee70b4da247",
+      "bytes": 671,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "slktest-migration-7694e14-m21": {
+      "path": ".dev/slktest-vm-migration-v1/manifest.json",
+      "sha256": "ea72b04cc4f9ec0597e129801865f3c5538fbc94f2a3ce063d761259b7950adb",
+      "bytes": 37213,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "slktest-migration-7694e14-m22": {
+      "path": ".dev/slktest-vm-migration-v1/console.log",
+      "sha256": "73302162ba4883ffc19d3b78ab8ce9e0e5fd2a59133f972162a5bd421e2de90d",
+      "bytes": 52151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m23": {
+      "path": ".dev/tools/dbus/usr/bin/dbus-daemon",
+      "sha256": "cbb05276d0a322ddbfd71e58c135625117dfab72967ad743c60fdaf10970545e",
+      "bytes": 228064,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m24": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/kernel_manifest",
+      "sha256": "7f6ec27cc09c34d0f1e88fe005792322d1a61c3805156fd8a88486f4f8b736e2",
+      "bytes": 229027,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m25": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/kernel",
+      "sha256": "932804f89a00fd5d49d905fbe076731c20094bc3499cd842e0ed21a8b7037154",
+      "bytes": 15745024,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m26": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/initramfs",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m27": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/module",
+      "sha256": "0630e0db06ffb0afbabff2484ba64b098eb78ca01c60e399436ec6bd8da37b8e",
+      "bytes": 138049,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m28": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/busybox",
+      "sha256": "98d9040015eb17931e17b45e00b5f49f2451326372d5107a3a280f1cb3aaf3fc",
+      "bytes": 1440888,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m29": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m30": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/slktest",
+      "sha256": "9d0ae3dc3fff1bacce6c33828f420a1a76968453d0e1791433cdcea7a87d8bfc",
+      "bytes": 66900416,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m31": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/slktest-tests",
+      "sha256": "70d772d9420ce097a009f7cb83b794e85ebd826d302b5c8a6d4c36d8f99d2ccb",
+      "bytes": 56914808,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m32": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/QEMU,cgthree.bin",
+      "sha256": "a99f3a06fdac5cf5d72bd0fd24647d897302c3ff8e918add65168185f8cbdf4d",
+      "bytes": 850,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m33": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/QEMU,tcx.bin",
+      "sha256": "92da99a770ab24f96c33c78382940cac8b25e88cb110634c1b32aa2d8cb852e7",
+      "bytes": 1402,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m34": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/README",
+      "sha256": "13d1dc7eda1ddf20bc4ed970621c4c7c190e8db209c005a953b00912da77215d",
+      "bytes": 4338,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m35": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/bamboo.dtb",
+      "sha256": "90f7b887ef793cdd5982de3300b8bda3175eb508ba2c010a7b5a6a21cb00c512",
+      "bytes": 3173,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m36": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/bamboo.dts",
+      "sha256": "a3244935b78facb6d96a007e234a4a72c622a5eb232b0e3731092bd9ef48c332",
+      "bytes": 4639,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m37": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/bios-256k.bin",
+      "sha256": "f1d4f396011197eb989029659cde250751cc711c336b8fbbe6f77cfe0dc5dcd8",
+      "bytes": 262144,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m38": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/bios-microvm.bin",
+      "sha256": "42780e1ab9161752848475529a25c39d7c76baee82a1b2ddff666c2f7de7bbee",
+      "bytes": 131072,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m39": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/bios.bin",
+      "sha256": "8244f3e5eaca828cc0a6a963f1fad15d68d8d3c0b5c80b8451b3067a85f14ae1",
+      "bytes": 131072,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m40": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/canyonlands.dtb",
+      "sha256": "3e7ed2ed8637d8c8a1e619d8a280bc2da853e7a17eab689597c7b69770e503b0",
+      "bytes": 9779,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m41": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/canyonlands.dts",
+      "sha256": "19b64acfc34bbea86ea9eefc0853dcc98ad4b100c03be97d3b5880e779a871de",
+      "bytes": 15766,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m42": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-aarch64-code.fd",
+      "sha256": "47765fe344818cbc464b1c14ae658fb4b854f5c2ceffa982411731eb4865594d",
+      "bytes": 67108864,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m43": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-aarch64-code.fd.bz2",
+      "sha256": "c023444108b7a132fdebf70c4765cd2dd9af2a9ff7d001a743aaabe87c20a458",
+      "bytes": 1565763,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m44": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-arm-code.fd",
+      "sha256": "c632a04ddd55dfa7136a0a36790c72f5c9b52542ecba979bbeeb5ddef99acd64",
+      "bytes": 67108864,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m45": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-arm-code.fd.bz2",
+      "sha256": "d87ac8dcad15778142c6abc4e2f34f48bf3d4ea6036efd531297965d8ae0542d",
+      "bytes": 1570311,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m46": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-arm-vars.fd",
+      "sha256": "b3b855c5a80310168051164986855692d1bdb06e67619856177965cd87c6774f",
+      "bytes": 67108864,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m47": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-arm-vars.fd.bz2",
+      "sha256": "0011d83b5e67c691a58e3ae25a2e7fdf1d245a73d1b2b8bccb24af1a8c2e2523",
+      "bytes": 263,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m48": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-i386-code.fd",
+      "sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "bytes": 3653632,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m49": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-i386-code.fd.bz2",
+      "sha256": "32e7e621e568598088a87b7008b63dcbaece1da4163ca6c294d80c142c62e695",
+      "bytes": 1780004,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m50": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-i386-secure-code.fd",
+      "sha256": "2c5e36fc70b391532ceff5bc9b410c6e0fb29b486906e91577f5818368b0ce78",
+      "bytes": 3653632,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m51": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-i386-secure-code.fd.bz2",
+      "sha256": "69c934beac849e3cad32e1d17493b4161dc822f6f401f6ebe0b62508bb295809",
+      "bytes": 1858666,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m52": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-i386-vars.fd",
+      "sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "bytes": 540672,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m53": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-i386-vars.fd.bz2",
+      "sha256": "83470f393b9a200838b2292a65ca5708a109005d65a6422f3fa23cb21c8179b9",
+      "bytes": 190,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m54": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-licenses.txt",
+      "sha256": "1ddeaed2e7d2e9ecb960bdfc1b8ee45387aff70d056d985d145949af3951657c",
+      "bytes": 42903,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m55": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-loongarch64-code.fd",
+      "sha256": "edd5a67fe50f7597faecb2fe67c5733b9a31b0b345a2127c3c358a5737446ef7",
+      "bytes": 16777216,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m56": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-loongarch64-code.fd.bz2",
+      "sha256": "4fdedf8501cf970dffaca292f0eddec8f2a6b63c8b7d0c9372940b0eb8d46f4b",
+      "bytes": 1148383,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m57": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-loongarch64-vars.fd",
+      "sha256": "adbfcb31d6470ef090220baeb53559e26323b6cfb5e7614f879e89608a3ed748",
+      "bytes": 16777216,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m58": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-loongarch64-vars.fd.bz2",
+      "sha256": "f1c537cdb136c5ee634f1c7797db06276e0ed92c0e09e001c8156fa04f55614e",
+      "bytes": 233,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m59": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-riscv-code.fd",
+      "sha256": "c3b779f86671c0cadf9cbdb274917a20210aeceb6f58b42d68406cdddfa48869",
+      "bytes": 33554432,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m60": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-riscv-code.fd.bz2",
+      "sha256": "e33120b298f76f3658ec9daa7ba7f579062e60decf75cd746a933625b8b76167",
+      "bytes": 1296526,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m61": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-riscv-vars.fd",
+      "sha256": "ea8094e953b1215444bd001ee1cf22818f1f7f8abcb158e62180cbaa6c1f70af",
+      "bytes": 33554432,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m62": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-riscv-vars.fd.bz2",
+      "sha256": "881b87567b3a20c8363c602c56b688ccfc0fb83683dab23acfcbb5eadb0b1e09",
+      "bytes": 235,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m63": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-x86_64-code.fd",
+      "sha256": "33090cc07675baa5190d9f1e84bf5176b33bcbfa9bacac522961150cdb6dbb2a",
+      "bytes": 3653632,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m64": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-x86_64-code.fd.bz2",
+      "sha256": "f4d7c29fccb5e1d4d851eaddc41a5c4feec7de96ca7ad9bbf96f4d09838ef973",
+      "bytes": 1907255,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m65": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-x86_64-microvm.fd.bz2",
+      "sha256": "144f2b89fe32bdd912b15f0118b3becafa5c47d982d34732391096ec6b60b780",
+      "bytes": 1787244,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m66": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-x86_64-secure-code.fd",
+      "sha256": "32807682a9e5c0e2d192ecb6077941d4be8bcfa6b9cd6e60830c3a9f48c0555a",
+      "bytes": 3653632,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m67": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/edk2-x86_64-secure-code.fd.bz2",
+      "sha256": "90a20d858b35c29ff7e0a1d2002a3ec886665935eb4d0dbf70fe6b12ae500993",
+      "bytes": 1962992,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m68": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/efi-e1000.rom",
+      "sha256": "f37222fcdf0481bfbaf7a16d9aaf740aeb41d3d24c187801eb6e9a628cec0fc8",
+      "bytes": 159232,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m69": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/efi-e1000e.rom",
+      "sha256": "102c20348be2d0ebe45a77b076b31848182c2f7b4364775b6bc2ece6e97b4024",
+      "bytes": 159232,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m70": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/efi-eepro100.rom",
+      "sha256": "2b5b55ba8afae7b5ef7116606babf60e6ceaa531c345d54542857cc3fbe3912e",
+      "bytes": 159232,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m71": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/efi-ne2k_pci.rom",
+      "sha256": "9925e0a34547118110479d8fc4e01092a0a73e0a236416e9ff862655b46751f7",
+      "bytes": 157696,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m72": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/efi-pcnet.rom",
+      "sha256": "71c494fde94efa9871cf43868d7e3c8f4190e406d47a5102a2a21b36ded8a162",
+      "bytes": 157696,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m73": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/efi-rtl8139.rom",
+      "sha256": "4cdd69a7f5c6ce7aec3a3f20a034dc80e1d22aa37a739c364378952d997a32c7",
+      "bytes": 160768,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m74": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/efi-virtio.rom",
+      "sha256": "26be36901db7f8181c306cc62bd74891d8646528965a78e40cceadba5dd7c8e7",
+      "bytes": 160768,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m75": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/efi-vmxnet3.rom",
+      "sha256": "33e833123ad9831df94b2d623a17f91e4c779e3cb799baa97058f5972676a32a",
+      "bytes": 156672,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m76": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/hppa-firmware.img",
+      "sha256": "974ff1072c60d06d0c88c2d1386cfe69987a552387c15d42ab6d5c5c2929c6c2",
+      "bytes": 676760,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m77": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/hppa-firmware64.img",
+      "sha256": "98a7476cac3bc2805b7c7a743f8810e4d2a1a7a58eb458b214d4101d914844e7",
+      "bytes": 763416,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m78": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/kvmvapic.bin",
+      "sha256": "cdf057a71b07e3b52b19cbe210bdefa59250d01a9810b960f7fe1f98eed95a27",
+      "bytes": 9216,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m79": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/linuxboot.bin",
+      "sha256": "1ecfb26c19da9dc00cdec0d0d738db69aeea4f1231c0c0ffc483ff69b3cda6ce",
+      "bytes": 1024,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m80": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/linuxboot_dma.bin",
+      "sha256": "9c49e255340c78fc12e54ed043462bca02fb7fca29b7cfab62ff88a5344b6950",
+      "bytes": 1536,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m81": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/meson.build",
+      "sha256": "0ad661ae272c9e98eac6742c84190e5736948d6306bbe010d28592792bfef1ea",
+      "bytes": 2584,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m82": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/multiboot.bin",
+      "sha256": "13a3f9f119797b8776105f020f36572ce6a20fa2c60d3b8112818bfaefcdd348",
+      "bytes": 1024,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m83": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/multiboot_dma.bin",
+      "sha256": "e01667420ee78a318ea44627d2dd68058d3377d024e6eb7237700afe2e86507d",
+      "bytes": 1024,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m84": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/npcm7xx_bootrom.bin",
+      "sha256": "1e643db3e209e801f30f4492fdbdafca3e8f251a7b8e12239249eb480f081003",
+      "bytes": 768,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m85": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/openbios-ppc",
+      "sha256": "d887db7ae55689612a4355d49f3eee74b492e27272fa3477edcd4e7f414aae94",
+      "bytes": 677200,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m86": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/openbios-sparc32",
+      "sha256": "f623853eb59c276e42b1d74c020ae56904dd9cb02916cea9156daa7c42781ae7",
+      "bytes": 382080,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m87": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/openbios-sparc64",
+      "sha256": "377af41537b4e51f4ee76d704e97c4eb81b1e1d165275d94f103b7dc631117e8",
+      "bytes": 1593408,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m88": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/opensbi-riscv32-generic-fw_dynamic.bin",
+      "sha256": "bf3798af44effe522ae2ec801a103bf012179f170210ff8bf217dbac56c2af51",
+      "bytes": 268312,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m89": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/opensbi-riscv64-generic-fw_dynamic.bin",
+      "sha256": "0e6f495e3313e6e2a6e7d5a5dd613a76623bc65c230b6058bb60c372331ef12c",
+      "bytes": 272504,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m90": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/palcode-clipper",
+      "sha256": "9f8da7264c7438fe4a24a2215e81893586f5cfafcd6e5fd0059fccc31a4e8839",
+      "bytes": 153728,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m91": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/petalogix-ml605.dtb",
+      "sha256": "37bda496b0b4216cce70626492b43d9aaf0d5fcdefcce45efa09d5c583770c69",
+      "bytes": 9882,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m92": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/petalogix-ml605.dts",
+      "sha256": "58559c88fcbbd97205e6c94050696ba4db40d09f9643b5e8a00ad0f53eba11a5",
+      "bytes": 10302,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m93": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/petalogix-s3adsp1800.dtb",
+      "sha256": "ef9f3112b7d9258cfad362dba8338ce9a8bdce59dec4d47c690b28fbefc841d7",
+      "bytes": 8161,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m94": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/petalogix-s3adsp1800.dts",
+      "sha256": "54f4958f22e5bdf0e7fdea26768c63ae99bf7173809ccdf7066e565f3cb78b15",
+      "bytes": 8076,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m95": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/pvh.bin",
+      "sha256": "918ff03a118615c2f4611a5df2d9496aabe099b5cfaaf69e544ebf973305d59d",
+      "bytes": 1536,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m96": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/pxe-e1000.rom",
+      "sha256": "981a728f95b7a01645645e9b753cfb764c9eb59266fa888ac58d7008fbb48c10",
+      "bytes": 67072,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m97": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/pxe-eepro100.rom",
+      "sha256": "07b89a742e0f6d0e92dafe57b0f28c493436d0e1e07b7b77e728490c1f7b45dd",
+      "bytes": 61440,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m98": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/pxe-ne2k_pci.rom",
+      "sha256": "bb9c0eaad36b9b4ce26c5f348bd05a832c8bf83ef38391db0ce9b51de8523ac7",
+      "bytes": 61440,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m99": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/pxe-pcnet.rom",
+      "sha256": "92358396c05b3346c6bfd52bbf2a47978d0a8c6ddea932ee091a24faefbd489e",
+      "bytes": 61440,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m100": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/pxe-rtl8139.rom",
+      "sha256": "d491351e37a50eb5a40e98a9f6b4d85010ee60fb9e64129d65ea10839287f138",
+      "bytes": 61440,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m101": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/pxe-virtio.rom",
+      "sha256": "6994337fe07783a6233072e33771dc4f58260edc3269debe677a5227b264bfdc",
+      "bytes": 60416,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m102": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/qboot.rom",
+      "sha256": "9b9dfc6c25740d6225625570d71cab6805cc9216e68c8932e343266daaeb8c4b",
+      "bytes": 65536,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m103": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/qemu-nsis.bmp",
+      "sha256": "93f79a2b6e0f97bc7b7c75ded89a3c4c7657af37c087cf067470771e0affda9c",
+      "bytes": 154542,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m104": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/qemu-nsis.ico",
+      "sha256": "a63f8dabf35130d2da8e8e0f59e3346f3af6d6d0a050e00817c3f2393408c7b2",
+      "bytes": 4846,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m105": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/qemu.rsrc",
+      "sha256": "9e1e5cf3d8f835501fc8bf6f6bc8353580b40c57edc4de83e4fed64518697b8a",
+      "bytes": 134622,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m106": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/qemu_logo.svg",
+      "sha256": "0f0879c3929d8fa0750960f35cf100147ab5152fbd4a0c489ae225616c1c2671",
+      "bytes": 32447,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m107": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/qemu_vga.ndrv",
+      "sha256": "d8697354bde8a7ac9e6fe3a5fbca03698de623e95433a59c248e8e09b882c6b8",
+      "bytes": 18752,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m108": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/s390-ccw.img",
+      "sha256": "f818b2c26074bafd78757a0cbdfda2444c29ccc92d235696b1f4ca8832626328",
+      "bytes": 79608,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m109": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/skiboot.lid",
+      "sha256": "6de4771f2f686482d387532115004cddaaa9d2bb39ef18d81e9629b11195c106",
+      "bytes": 2527328,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m110": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/slof.bin",
+      "sha256": "9a9047e0d949097724dec83260f04fc1dd1e55af0b7debbcad3889ff7114ffb7",
+      "bytes": 995000,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m111": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/u-boot-sam460-20100605.bin",
+      "sha256": "be88ed96a6f50d5ba8ad7bf019f48e7f73acee95402d90d0dac3775d9c7a8d03",
+      "bytes": 524288,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m112": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/u-boot.e500",
+      "sha256": "f0250e391566bca7b5e643c43b761ab9629a0b82427792a772e80c8b97836425",
+      "bytes": 421720,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m113": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios-ati.bin",
+      "sha256": "9d4d1f32a7e059de82c09c19fc25e276a39d96a1a516605a32ba704596e10d8e",
+      "bytes": 39424,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m114": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios-bochs-display.bin",
+      "sha256": "d5fd6992dfdf0c980996b79c5ea13b9c8b36342c1dc94fcd682a6c3e8df850ff",
+      "bytes": 28672,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m115": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios-cirrus.bin",
+      "sha256": "305d3b15f67e65f1899a1664621f6b471e4345d33fd9eb4f6320b4559f6a04f2",
+      "bytes": 38912,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m116": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios-qxl.bin",
+      "sha256": "e81cc2807ebb9a1467b1933d192a4313424b499b73e7674257f07cd2171e01c7",
+      "bytes": 39424,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m117": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios-ramfb.bin",
+      "sha256": "31b26b2288ed5594b65a234e797ee7105d225d48086170b27ab518c3fb69b7de",
+      "bytes": 28672,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m118": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios-stdvga.bin",
+      "sha256": "651513519f9e0d5b99d3b051a8f5c68db69e987339b59a441d371068c34c146b",
+      "bytes": 39424,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m119": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios-virtio.bin",
+      "sha256": "746f38c2023dbbc071503113f970bcf69d49c6e7c55fa8c0e3748dbccba42772",
+      "bytes": 39424,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m120": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios-vmware.bin",
+      "sha256": "c12841eb2b057b6d99bfbc7ab72bea896e2b5cd694c93b026d7510de2b68ca11",
+      "bytes": 39424,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m121": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vgabios.bin",
+      "sha256": "f0defab87465236d0d22b6000bd2c270e05a56ff3bb7fd209a56069caed86d57",
+      "bytes": 38912,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m122": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vof-nvram.bin",
+      "sha256": "cf97201f9403212ab75287bf209bfb7710cb5f253e8fe80723cf43760a9e8a12",
+      "bytes": 16384,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m123": {
+      "path": ".dev/slktest-vm-migration-v1/inputs/qemu-data/vof.bin",
+      "sha256": "8c88070f252075111468e7b2a8043209e7798c3fb136326227390ea50f168f13",
+      "bytes": 3456,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m124": {
+      "path": ".dev/slktest-docs-exact-7f78329.log",
+      "sha256": "9ef53b0964b5a472eff4789b73a06f883c4d94316d1daeb30a7662ea1c112845",
+      "bytes": 177416,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m125": {
+      "path": ".dev/slktest-docs-browser-7f78329.log",
+      "sha256": "c780b9aa0f82f66a1855843e948ab2570ec80f7b17396842db34f3218f9aae89",
+      "bytes": 1134,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "slktest-migration-7694e14-m126": {
+      "path": ".dev/slktest-ci-main-38881030431.json",
+      "sha256": "28350e327d2faaa2f71c9be73f5158a9a00b6d42db07a79b92da272bc0e99651",
+      "bytes": 18319,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "slktest-migration-7694e14-m127": {
+      "path": ".dev/slktest-ci-observed-v3.json",
+      "sha256": "c0608c0a1c4a5415bd06876925da5e21417e76c5295407378c09139c50ee2dfc",
+      "bytes": 2272,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "slktest-migration-7694e14-m128": {
+      "path": ".dev/slktest-docs-browser-7f78329/report.json",
+      "sha256": "70609729fcb4db5601b1121c85b2231fdb595f0354c29306a111051ca74a6e3e",
+      "bytes": 3135,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "slktest-migration-7694e14-report": {
+      "base": "repo",
+      "path": "docs/evidence/slktest-migration-20261016.json",
+      "sha256": "78b94ce42d92cb15d43de15a75acabae5654e1300ff4cdc9f052433ea70944cf",
+      "bytes": 38459,
+      "access": "public",
+      "format": "json",
+      "source_commit": "5e02d197c8b19937115ca650a57c4ed2982121c6"
+    },
+    "slktest-migration-7694e14-runner-source": {
+      "base": "repo",
+      "path": "tools/ws73_native_root_smoke.py",
+      "sha256": "dc0aa6efd5f77c24d3bdb429e897404da4ccef8e97b0db9feadf28656daa3795",
+      "bytes": 14457,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "7694e14fccab1ac101521edb8ef09fa20bcc5e1b"
+    },
+    "slktest-migration-7694e14-lock": {
+      "base": "repo",
+      "path": "Cargo.lock",
+      "sha256": "171164a0b8b962c0243a7f22119ef96e9e50748c35b4f82703c1ab5e192c5509",
+      "bytes": 45376,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "7694e14fccab1ac101521edb8ef09fa20bcc5e1b"
     }
   },
   "baseline_record": "dynamic-runtime-fixed14-400bd68"

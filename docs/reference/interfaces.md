@@ -348,3 +348,6 @@ WORK_RUNNING。队列合计是保守的瞬时观察，不能推导未来空闲�
 包括等待 state lock、actor 排队及回复在内，共享调用起点的 1 秒原始期限。CLI 为
 `slctl --adapter ADAPTER_PATH transport-status CONNECTION_PATH`。
 结构存在不代表新镜像已通过实机门禁；资格以项目记录中的准确 artifact 为准。
+
+本批 ABI 检查在 LP64 下执行 C/Rust/Python 对照；ILP32 仅比较生成 C 头与内核头的
+编译布局。32 位运行和 compat 系统调用仍待 VM 验收，不由布局检查升级为通过。

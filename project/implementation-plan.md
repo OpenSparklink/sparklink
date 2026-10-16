@@ -1591,7 +1591,10 @@ credit 和独立 USB 核对器。原 C4/v3 两角色末尾 debt 失败保留；�
 burst、短/长包、并行进展及本批相关生命周期回归。源码、编译产物与执行工具分别
 记录。新镜像 U2/3 burst 两角色80＋8次真实回复及24证据负对照已通过，见
 [准确范围](../docs/evidence/session-status-burst-20261017.json)；长度/并行/十项生命周期
-仍在独立回归，不能由本项升级通过。callback/ref drain、Free/复用及NOCP真值未证明。
+已按[独立十八项报告](../docs/evidence/session-status-regressions-20261017.json)完成552次真实
+回复、18重放和172负对照；与首次burst合计640次，未放宽原断言。callback/ref drain、
+Free/复用及NOCP真值未证明。本批相关门禁已退出，下一步直接推进同U2/3配置的
+公平/性能/观测与资源成本闭包，Agent/SSAP/四设备并行，不追加控制面全集前置。
 未通过即保留失败，不降为离线或局部 PASS。
 第1口已由用户确认改为 Hi3873E，不继承 Hi3873U 资格；四设备混合门禁仍缺失。
 此工作属于 WP03–06/WP09/WP16–17 现有范围，不新增总跟踪或 goal，不阻塞后续

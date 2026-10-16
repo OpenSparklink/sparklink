@@ -1,0 +1,2009 @@
+{
+  "schema_version": 1,
+  "status": "EIGHTEEN_NEW_ARTIFACT_REGRESSIONS_SCOPED_PASS_NOT_FULL_GOAL",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "full_exit_result": "UNPROVED",
+  "compiled_kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
+  "compiled_userspace": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
+  "executed_tools": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
+  "scope": [
+    "Exact K14d9/U42ecc6f compiled and tool42ecc6f;selected real Hi3873U2/3 VM-only,port1 Hi3873E excluded",
+    "Seven lengths249/250/253/254/255/1024/2042;both roles,448 actual dynamic/fixed-channel peer round trips",
+    "Concurrent short/long72+fixed8 finite progress;not a starvation/fairness bound",
+    "Release,last managementFilefd,dup finalmanagementreference,directDown andoriginal5s deadline eachbothindices;24 precontrol businessRT;8 one-way primers separately,partialPDU never delivery",
+    "Peer isolation only generation/Ready/lease/scan,not four-device independent businesspair",
+    "Same frozen originalverifier replay and172 copiedevidence negatives;not independent decoder/newhardware injection or implementationrefinement"
+  ],
+  "remaining": [
+    "Original v3 dynamicburst wholeFAIL retained;separate v4 snapshot report qualifies new observed boundary only.",
+    "Callback/ref drain,Free,reuse barrier and NOCP accuracy/late/duplicate remain UNPROVED.",
+    "Full admittedqueue fairness,matchedU2/3 performance/resources/observercost and completeP2d remain open.",
+    "Full S0-S6/19WP/10FV/12DG,Agent/SSAP/multichannel/fourdevice/safety/Bond/PM/release preserved;UserHost lowpriority.",
+    "Natural startup/re-enumeration/disappearance RCA and nonmanual recovery OPEN;manual/hub/QMP/injected recovery cannot qualify."
+  ],
+  "real_gates": [
+    {
+      "name": "length249",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-dynamic-length249-v1/manifest.json",
+        "sha256": "513198a34db2b2d5fd7a233135e90c90cd608532de2b3f27c0b0718873d9f19b",
+        "bytes": 1958113,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 64,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "length250",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-dynamic-length250-v1/manifest.json",
+        "sha256": "31f984ff6e719a5575ed943f81c64e4e0fc5b3334618715703fcf28adc9a1aae",
+        "bytes": 1982390,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 64,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "length253",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-dynamic-length253-v1/manifest.json",
+        "sha256": "b7e44ad25a2e27e77a2cd6c2df7f2c32d83f7f846c6f0ab51d9f1c0c0f5ea73c",
+        "bytes": 1982774,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 64,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "length254",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-dynamic-length254-v1/manifest.json",
+        "sha256": "d8109f4a72606900aa7233df1c3d6edf7c51f7eae6cdc7a2ed5075fa77a36c8d",
+        "bytes": 1982900,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 64,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "length255",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-dynamic-length255-v1/manifest.json",
+        "sha256": "5b797d7a66a491964910adb4bd2126be25bb614296197d4ce19086ceda0b433d",
+        "bytes": 1983030,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 64,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "length1024",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-dynamic-length1024-v1/manifest.json",
+        "sha256": "bfbc7933fb8db57e083a45de5273b82a84aa549f768113c3ce0858ebf3d93e9d",
+        "bytes": 2426657,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 64,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "length2042",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-dynamic-length2042-v1/manifest.json",
+        "sha256": "e974e7abca3e62cab4002dd5a05a8525b3e10a3a8f7e01c78adda1b98cc96d71",
+        "bytes": 3017457,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 64,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "concurrent-progress",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-concurrent-real-v1/manifest.json",
+        "sha256": "76616873eea504c227c35ac0ab782806d49fd7a84b3947d7ee96e0568eb1df2c",
+        "bytes": 6601682,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 80,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "release0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-release0-v1/manifest.json",
+        "sha256": "eca7dd2b8ea9a1b983942c2e51f36b0ab452b710b5289be8205c00df3506759c",
+        "bytes": 91372,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 2,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "release1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-release1-v1/manifest.json",
+        "sha256": "0e4a7c65e7cedeb369899ad4074013305ac1d7fac1c6315cadb96d889d6485a0",
+        "bytes": 91372,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 2,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "close0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-close0-v1/manifest.json",
+        "sha256": "35ed7f8dacb57b53f02ceac0e1f0ed248ac651eb493b685fbbe6316e8cea8ef5",
+        "bytes": 91302,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 2,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "close1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-close1-v1/manifest.json",
+        "sha256": "82b199b5bf08c6378ee0b839611db6161ba310f5019fa13c9bc5bc96e64156c6",
+        "bytes": 91302,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 2,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "dup0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-dup0-v1/manifest.json",
+        "sha256": "4f824b11c470f8f9e53386489b08a7a37b9140bf777dd06126df7561ed58e0dc",
+        "bytes": 106872,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 4,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "dup1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-dup1-v1/manifest.json",
+        "sha256": "d2fe4638fb1b14c18e64c5d832cf372ea80caadf5aa17b0c20e92af852d544ae",
+        "bytes": 106872,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 4,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "down0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-down0-v1/manifest.json",
+        "sha256": "a882f003dd835fe72d8389b02a45bf34a48b592281b7a9a7fd2e8aac7b8fb9e9",
+        "bytes": 63265,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 2,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "down1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-down1-v1/manifest.json",
+        "sha256": "ef733ee8dbd95e664312df51616326d1aa90ab608a4c2a0cc4d6e7041b108061",
+        "bytes": 63265,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 2,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "deadline0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-deadline0-v1/manifest.json",
+        "sha256": "acb0ce463f4c4a8026a65260b7433ae77a03831df42e38f9c88fa127f5690ad1",
+        "bytes": 62705,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 2,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    },
+    {
+      "name": "deadline1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "manifest": {
+        "path": ".dev/session-status-lifecycle-deadline1-v1/manifest.json",
+        "sha256": "1378fe253e9881a5b2ec08588cdeec6d2e037dc17c795285076b397be08b4064",
+        "bytes": 62705,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      },
+      "round_trips": 2,
+      "proof_level": "Real peer applications and both USB captures;controlled prefix cases are not natural recovery"
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "exact-replays-and-negative-controls",
+      "result": "PASS",
+      "status": "EIGHT_DATA_PLUS_TEN_LIFECYCLE_EXACT_REPLAYS_AND172_COPIED_NEGATIVES_PASS",
+      "report": {
+        "path": ".dev/session-status-related-replay-summary-v1.json",
+        "sha256": "07817cfd349a96fb6a400b2f127e5c01b80e84fad5f38e3731bc783dec75e1b9",
+        "bytes": 1193,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+      }
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "FullCallbackDrainAndReuseBarrier",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_SELECTED_GATE_MATRIX"
+    },
+    {
+      "name": "WholeAdmittedQueueFairness",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_SELECTED_GATE_MATRIX"
+    },
+    {
+      "name": "MatchedPerformanceAndResources",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_SELECTED_GATE_MATRIX"
+    },
+    {
+      "name": "NaturalFaultRecovery",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_SELECTED_GATE_MATRIX"
+    }
+  ],
+  "counts": {
+    "related_actual_VM_runs": 18,
+    "length_round_trips": 448,
+    "concurrent_round_trips": 80,
+    "lifecycle_precontrol_round_trips": 24,
+    "one_way_primers": 8,
+    "incomplete_pdu_deliveries": 0,
+    "selected_related_round_trips": 552,
+    "prior_separate_burst_round_trips": 88,
+    "selected_combined_round_trips": 640,
+    "exact_replays": 18,
+    "related_copied_evidence_negatives": 172,
+    "prior_burst_negatives": 24,
+    "combined_copied_evidence_negatives": 196
+  },
+  "prerequisite_reports": [
+    "session-status-burst-20261017.json"
+  ],
+  "firmware": {
+    "sdk": "1.10.111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "board_qualified": false
+  },
+  "build": {
+    "kernel_jobs": 12,
+    "bundle_jobs": 12,
+    "normal_prepare_jobs": 12,
+    "deadline_prepare_jobs": 8,
+    "stableO": true,
+    "shared_lock": true,
+    "host_installation": false
+  },
+  "formal": {
+    "new_formal_proof": false,
+    "related_report": "session-worker-publication-20261017.json",
+    "scope": "Only prior representative twoCPU publication model;not enlarged by this hardware matrix"
+  },
+  "performance_qualified": false,
+  "full_fairness": false,
+  "physical_drain_proved": false,
+  "materials": [
+    {
+      "path": ".dev/session-status-dynamic-length249-v1/manifest.json",
+      "sha256": "513198a34db2b2d5fd7a233135e90c90cd608532de2b3f27c0b0718873d9f19b",
+      "bytes": 1958113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-v1/console.log",
+      "sha256": "4c0c9947fd2ffa859c9d5d9f7144bdb03c7b8bb480b1933d867c947637ebe04c",
+      "bytes": 16257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-v1/qmp.jsonl",
+      "sha256": "7768d8e10f8f5901528343774d974abd7e54308698dff8e6ffdf406181cbd584",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-v1/guest-output/ws73.pcap",
+      "sha256": "4ed887fb09408d0a5157b5fa2ab8678a40747e65d64c5f4bc1aee94b2f92de18",
+      "bytes": 754060,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-v1/guest-output/capture-stats.txt",
+      "sha256": "f9b12f1e5849dfa58689da269f8bed44503b73a220939bffcca5295ad84ed5e3",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-v1/guest-output/kernel.log",
+      "sha256": "15a587a1256f7b962bbe079ba51a22e4ec2b844a8eac98129570d626b8bd9169",
+      "bytes": 49156,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "f7a385ea56df97d0ea3bbf53f16d86e76f5a4b73c2f6999483041f0f09e19409",
+      "bytes": 816905,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-replay-v1.json",
+      "sha256": "81e2030b6ba853c92e4de8aa806eb293a34db01fe6eb4558ccf8ad0fd9eb0721",
+      "bytes": 1939810,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length249-negative-v1.json",
+      "sha256": "00e769610e5e9f28723e086071f0f30f12f96563b272fa242069ce1ca9be2b38",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/manifest.json",
+      "sha256": "60dba5add97b92bdd2aa566920887f2991c5af2199fe50aa2fdc3c6de016c018",
+      "bytes": 264226,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/bzImage",
+      "sha256": "6c2c6b3b6092707421af244e255c27510c0d510a082a05afd4f0e486284b85d3",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/root.btrfs",
+      "sha256": "2440990bd98adb4b8b7f7ea766b69305d0178eefd546bfa0d59c66f2e272b7a0",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "9d7bd90c52d7cb2382bc3b8ce6fa4e20a2ac258189b6e8a17244950a8c98d2ee",
+      "bytes": 138049,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-v1/manifest.json",
+      "sha256": "31f984ff6e719a5575ed943f81c64e4e0fc5b3334618715703fcf28adc9a1aae",
+      "bytes": 1982390,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-v1/console.log",
+      "sha256": "1687d787c49d856383d68172e24c838b35dd276b0166fb3cb536011f13de0735",
+      "bytes": 16257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-v1/qmp.jsonl",
+      "sha256": "c63eb1225c418d19bf60afab0775dc313b2a8974ccfd2de2b6d74a75cb236f79",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-v1/guest-output/ws73.pcap",
+      "sha256": "8382efdf3888e68f40ac84c7d84b7eed61f735144bdda48f84e810db00d6fb6e",
+      "bytes": 769484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-v1/guest-output/capture-stats.txt",
+      "sha256": "27bf4a7143d8648cabe2e20bc58964d70f3c2118ee5bae62378cc664738941a4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-v1/guest-output/kernel.log",
+      "sha256": "cd750810239ec4aad5a8de85fef3270fa341c12403fe3eab532a2afd8d1f5e43",
+      "bytes": 49409,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "80e2877590636503e51b859a72331267bd59f1489a70f310663dd95dd26293c8",
+      "bytes": 816911,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-replay-v1.json",
+      "sha256": "f335f76eb66d0121c4eb061fbf8dc52c43a0837642293e73d73363360fb823ed",
+      "bytes": 1965239,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length250-negative-v1.json",
+      "sha256": "00e769610e5e9f28723e086071f0f30f12f96563b272fa242069ce1ca9be2b38",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-v1/manifest.json",
+      "sha256": "b7e44ad25a2e27e77a2cd6c2df7f2c32d83f7f846c6f0ab51d9f1c0c0f5ea73c",
+      "bytes": 1982774,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-v1/console.log",
+      "sha256": "7d09edcb269602b374864941d00c29ad5a90366cf3796489fa4bb4b060594fb5",
+      "bytes": 16257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-v1/qmp.jsonl",
+      "sha256": "37587128ef89b1cbe6c972a7a0d8f02808ad74fb9e3b3ff2091d90f4bb3fefad",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-v1/guest-output/ws73.pcap",
+      "sha256": "73be210ad04884dbb20f0afc5a7d4361aac2d4350399ec30ad2a970ac2310188",
+      "bytes": 769484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-v1/guest-output/capture-stats.txt",
+      "sha256": "27bf4a7143d8648cabe2e20bc58964d70f3c2118ee5bae62378cc664738941a4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-v1/guest-output/kernel.log",
+      "sha256": "720ff97ccc73df4618f1b47d6c9c73b10807383bb77c47b894b13a15e3331efe",
+      "bytes": 49368,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "41d74a09b7331cdb833df79d18af66968f082b0ea580c874cc49033dad85356c",
+      "bytes": 817109,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-replay-v1.json",
+      "sha256": "0b7e3943ab7bfdaa7a2691a6a4046d135e925f99093904477cdb924db769287a",
+      "bytes": 1965623,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length253-negative-v1.json",
+      "sha256": "00e769610e5e9f28723e086071f0f30f12f96563b272fa242069ce1ca9be2b38",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-v1/manifest.json",
+      "sha256": "d8109f4a72606900aa7233df1c3d6edf7c51f7eae6cdc7a2ed5075fa77a36c8d",
+      "bytes": 1982900,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-v1/console.log",
+      "sha256": "d6404f947443f12c3438cfee7bb3d3cd98d42bc612cf3f5fa65e2c9cf51cfbb7",
+      "bytes": 16245,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-v1/qmp.jsonl",
+      "sha256": "5d14ecc6c120843cb970607ac32c7a27a0dd2ae3632949445eda54484b55b1b7",
+      "bytes": 1756,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-v1/guest-output/ws73.pcap",
+      "sha256": "38b769e490886a23bd04da5f2ebb88bd67b36506ec776eaadaff45967895ee0e",
+      "bytes": 769484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-v1/guest-output/capture-stats.txt",
+      "sha256": "27bf4a7143d8648cabe2e20bc58964d70f3c2118ee5bae62378cc664738941a4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-v1/guest-output/kernel.log",
+      "sha256": "cc7a65792289f32e1db4567fa0994c347f4dad845103450c40e83981b24d2b83",
+      "bytes": 49283,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "fe0764639b6cdcad512b39d90164f46a1720ec000bced3f98922b6158eea525f",
+      "bytes": 817215,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-replay-v1.json",
+      "sha256": "faf251e29ab3fff79ccb5fac834a02a04eb0d0b9eadb973fd2d5c37df37b9b44",
+      "bytes": 1965749,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length254-negative-v1.json",
+      "sha256": "00e769610e5e9f28723e086071f0f30f12f96563b272fa242069ce1ca9be2b38",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-v1/manifest.json",
+      "sha256": "5b797d7a66a491964910adb4bd2126be25bb614296197d4ce19086ceda0b433d",
+      "bytes": 1983030,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-v1/console.log",
+      "sha256": "1781d30de3f93e86756b7b5417471a354bbae13635cf416a1b9504cfa98ed56a",
+      "bytes": 16447,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-v1/qmp.jsonl",
+      "sha256": "7b685dc5779fe4dded515eeaa614168a4f5c9be1c8814cb92c25e8430c95837e",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-v1/guest-output/ws73.pcap",
+      "sha256": "ac89cffbfc1b2d8630e579ffa68f7629f7fb7f4c9dfa2db877806bded4c38639",
+      "bytes": 769484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-v1/guest-output/capture-stats.txt",
+      "sha256": "27bf4a7143d8648cabe2e20bc58964d70f3c2118ee5bae62378cc664738941a4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-v1/guest-output/kernel.log",
+      "sha256": "f20a752a26c895f8f7a11e1ed2a39361b7fd809e8a6a5413c2c39ac701f38dbb",
+      "bytes": 49447,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "69f1ff4980c75b0bdb93eda51478e533bac1bf7e25be69413575218675145635",
+      "bytes": 817242,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-replay-v1.json",
+      "sha256": "90912ed140ecbec653edf25e26304f7ea1b85b5d86d6328db77c9593a69fbb8f",
+      "bytes": 1965879,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length255-negative-v1.json",
+      "sha256": "00e769610e5e9f28723e086071f0f30f12f96563b272fa242069ce1ca9be2b38",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-v1/manifest.json",
+      "sha256": "bfbc7933fb8db57e083a45de5273b82a84aa549f768113c3ce0858ebf3d93e9d",
+      "bytes": 2426657,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-v1/console.log",
+      "sha256": "491211060b67a7e59a756ffc8d553cd0b42f3400db58e1c85d0a713c6390de03",
+      "bytes": 16258,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-v1/qmp.jsonl",
+      "sha256": "f06cfb07d35be15ec4ef873040feae7aa7ce6be991e24bfd7393a86cd5b13721",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-v1/guest-output/ws73.pcap",
+      "sha256": "0cc6b4cd73bf1df1745f058a6aaf96c4666a9495a94e2f48f82aa46a93d4505d",
+      "bytes": 971324,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-v1/guest-output/capture-stats.txt",
+      "sha256": "2fc7e14c01738afae845bfc9bfb5b1bd15ce06ceb2fc5577480d2bc68a275280",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-v1/guest-output/kernel.log",
+      "sha256": "a1c4dcad5f2a51951c5fbebf897d333ac02f20a4362dcefdfb175b4efb3ca2aa",
+      "bytes": 49323,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "6d4f7a4f983886158f7f8d58bb8fd69ef0a50536cca5be59699508e3d1c85f49",
+      "bytes": 866501,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-replay-v1.json",
+      "sha256": "6940653b243831b597695853cc4315cd48933920135c58945e1bcf3f9fa2f14a",
+      "bytes": 2425858,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length1024-negative-v1.json",
+      "sha256": "00e769610e5e9f28723e086071f0f30f12f96563b272fa242069ce1ca9be2b38",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-v1/manifest.json",
+      "sha256": "e974e7abca3e62cab4002dd5a05a8525b3e10a3a8f7e01c78adda1b98cc96d71",
+      "bytes": 3017457,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-v1/console.log",
+      "sha256": "bf2acd556414836a7fa6527f099518b33af7d412b7172c4f144cc7045f373887",
+      "bytes": 16258,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-v1/qmp.jsonl",
+      "sha256": "c94208b87cd8c31c8f05e3fc2055fcc7519a13e11869639605bcf1b6a9c12efe",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-v1/guest-output/ws73.pcap",
+      "sha256": "6190b6495778f07d4a68e9ffc9296278ef0af80c51977271b7f5d7f40776508f",
+      "bytes": 1240444,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-v1/guest-output/capture-stats.txt",
+      "sha256": "4061ede20de601d9b3282055a3e6b3d16c6a216f628e7fdaaa85056f81d5f2a8",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-v1/guest-output/kernel.log",
+      "sha256": "fff730036a58477f937016cb87a5ba0d9bd592c6b38225410e21284fc6194e97",
+      "bytes": 49157,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "1e14c30a01832e2c52fdc20dca435a00c41d78a5169ca37e4863075f03818a92",
+      "bytes": 931634,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-replay-v1.json",
+      "sha256": "49a458578f8fdaac090703c4a4179291211eac8463d78db62cdefa96f81514e3",
+      "bytes": 3038542,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-length2042-negative-v1.json",
+      "sha256": "00e769610e5e9f28723e086071f0f30f12f96563b272fa242069ce1ca9be2b38",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-real-v1/manifest.json",
+      "sha256": "76616873eea504c227c35ac0ab782806d49fd7a84b3947d7ee96e0568eb1df2c",
+      "bytes": 6601682,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-real-v1/console.log",
+      "sha256": "d9d1efd88fb5197c7e0ae12d9c8db0c969a07e21e964d2a3979a06b2202770a7",
+      "bytes": 16235,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-real-v1/qmp.jsonl",
+      "sha256": "7cae5204ee31085bcc069114ceab7f6e8b92762be8be858d8a7692b809665746",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-real-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-real-v1/guest-output/ws73.pcap",
+      "sha256": "09a82f0d23f08088789d517d372a6ce74a5e87d5f99de32b6058483291d56415",
+      "bytes": 2863452,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-real-v1/guest-output/capture-stats.txt",
+      "sha256": "2867e004c44669a5742c91bb11bab0049ffdbdd07a53cf9c0330e76864aa4ae2",
+      "bytes": 229,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-real-v1/guest-output/kernel.log",
+      "sha256": "4cbcc9ce7130657b6ad1d6a65ca62c46c861b09bc3a31756bfe01507e70c2d0b",
+      "bytes": 49111,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "e6e97dc7bfb2a29a848f933f022b5b014f8c285a92f498302ee68e8bb3e6b8da",
+      "bytes": 1298315,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-replay-negatives-v1.json",
+      "sha256": "039bbcfe6c4c2a050475abc7568632bb706cf5d80a5b01a3193d86f13796a824",
+      "bytes": 5423978,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-v1/manifest.json",
+      "sha256": "eca7dd2b8ea9a1b983942c2e51f36b0ab452b710b5289be8205c00df3506759c",
+      "bytes": 91372,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-v1/console.log",
+      "sha256": "b2fc2ce1d41f35c7bdd2a6df2492b6b685960b79b738f1cea2e234ab692d97c9",
+      "bytes": 13889,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-v1/qmp.jsonl",
+      "sha256": "e7228eb91a0a7c74ffdebd3898fe783ac0557f2d480acdb7257f8d8a3345b2eb",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-v1/qemu-stderr.log",
+      "sha256": "3caec5118c33fe5a2cba5a57529ba7fa14efda76319f9081bc834569285faf9f",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-v1/guest-output/ws73.pcap",
+      "sha256": "ec9dd82b83a31c10d3786f8a28578d230b89f2f8881ba4d09c0d2418daf5097a",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-v1/guest-output/kernel.log",
+      "sha256": "09be2f40e7650deca02ffea345f76029f58e5eac9bf826fdb89ed82d745c0e2e",
+      "bytes": 349570,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-v1/guest-output/connected-file/run.json",
+      "sha256": "a6d9d8e775581333f5e1342dae434633d2a6a64f5693411597e900e39d910989",
+      "bytes": 38664,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release0-replay-v1.json",
+      "sha256": "20460d3e97ccf8b438e8d3420740027af75541745f237c98d24c18e7417e433d",
+      "bytes": 48891,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-release0-v1.json",
+      "sha256": "de314a5edcc37345a6296dd92d4ae3e002cf4f453313b635eea5f67f58c38264",
+      "bytes": 2404,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-v1/manifest.json",
+      "sha256": "0e4a7c65e7cedeb369899ad4074013305ac1d7fac1c6315cadb96d889d6485a0",
+      "bytes": 91372,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-v1/console.log",
+      "sha256": "d078b2534c6d36008c3f6f3dfce6888d876bc090d9fd4f9a293770b637a60148",
+      "bytes": 13889,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-v1/qmp.jsonl",
+      "sha256": "51e164a39eccce8c0b52c500be9686b00abfd42eadca672aef9c2b9adcd9a645",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-v1/qemu-stderr.log",
+      "sha256": "566bd792c37a421c5c812e47767b50dda5913bba1efa9e1e5b98789a953a07d7",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-v1/guest-output/ws73.pcap",
+      "sha256": "e158b60c541e5f764d5c638eb4b236e4cee10c77526befb9247262582d5c590d",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-v1/guest-output/kernel.log",
+      "sha256": "cffb4c73c460c1be2804ba8c668c974ca3c9dea8748af9e2c8c45d2ed779ee17",
+      "bytes": 348547,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-v1/guest-output/connected-file/run.json",
+      "sha256": "d032a9a15075ac205b6ac7f7917c08f6aba36315798440b2f7bc68658a7c5cb1",
+      "bytes": 38664,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-release1-replay-v1.json",
+      "sha256": "0d1a08460978a41a7f409bc611ff42b3c6b824626f43316a44f303daf8972522",
+      "bytes": 48891,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-release1-v1.json",
+      "sha256": "a2d7d28d822cb278ffcfaabb64332bf7df1208c767aed69d2e2e91a41aff0eb1",
+      "bytes": 2404,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-v1/manifest.json",
+      "sha256": "35ed7f8dacb57b53f02ceac0e1f0ed248ac651eb493b685fbbe6316e8cea8ef5",
+      "bytes": 91302,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-v1/console.log",
+      "sha256": "423f37c1e47f4009385e348b5c8b4273679d3cc33e2c7b83f2acf341b0dac16b",
+      "bytes": 13887,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-v1/qmp.jsonl",
+      "sha256": "e7228eb91a0a7c74ffdebd3898fe783ac0557f2d480acdb7257f8d8a3345b2eb",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-v1/qemu-stderr.log",
+      "sha256": "72a9407c7b82402ead79d6a17e737c395cf6725249ce6d630f1816607b412e18",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-v1/guest-output/ws73.pcap",
+      "sha256": "69a49466141455815363a37340f7dd5dbc60eee95eee63dbbb7335e52884a002",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-v1/guest-output/kernel.log",
+      "sha256": "35a8c160c80c50fad147c4b74863e08f8f26c620c88dcfbab43767ba82cfdd5b",
+      "bytes": 348275,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-v1/guest-output/connected-file/run.json",
+      "sha256": "765b2855651af313e8944e2fbbd930b67edad59a2debdc4abf107cf6dc6795cc",
+      "bytes": 38561,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close0-replay-v1.json",
+      "sha256": "f847731e0998678815cbd74d7fff2d33660dfe5ac09d372c0b1403d74941a2c3",
+      "bytes": 48887,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-close0-v1.json",
+      "sha256": "015555ad8a96141abed68c4eb2059e43914dd93706d4caa46330017e897ad7a7",
+      "bytes": 2382,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-v1/manifest.json",
+      "sha256": "82b199b5bf08c6378ee0b839611db6161ba310f5019fa13c9bc5bc96e64156c6",
+      "bytes": 91302,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-v1/console.log",
+      "sha256": "6ed12f2f1ab77d4cea0d7e8fcd35a301ea20ab3174ca5a6b270838a08d368ce1",
+      "bytes": 13887,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-v1/qmp.jsonl",
+      "sha256": "51e164a39eccce8c0b52c500be9686b00abfd42eadca672aef9c2b9adcd9a645",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-v1/qemu-stderr.log",
+      "sha256": "4904c0a1f5a593af5556415f847ed3ed56bbc90c149d4cb452896a2df6cea525",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-v1/guest-output/ws73.pcap",
+      "sha256": "21655d4954ad68f4e92c41ea34c0a2668ff14821945db11c20dac31a73104e0c",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-v1/guest-output/kernel.log",
+      "sha256": "b3bdba9e96a39767d066d5d9cef214ac03671c383f65d6d44ef8f3a9d431e0da",
+      "bytes": 349615,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-v1/guest-output/connected-file/run.json",
+      "sha256": "d4b45ceb70675253fa30be6d1d9fd2344617fa3db2723b74f3037bf12ef5a981",
+      "bytes": 38563,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-close1-replay-v1.json",
+      "sha256": "1fdf5116eb2e8ca20fb6fe94eb7fccbd484ef2b7b3db5a5c3f45e5a07835ef97",
+      "bytes": 48887,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-close1-v1.json",
+      "sha256": "af9a864d779a03aa38fd527e23edf872c76376280894c9be9ceb5ad8fd81b884",
+      "bytes": 2382,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-v1/manifest.json",
+      "sha256": "4f824b11c470f8f9e53386489b08a7a37b9140bf777dd06126df7561ed58e0dc",
+      "bytes": 106872,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-v1/console.log",
+      "sha256": "8d66172ed0b2fc5100ee8c5920f39b690530bb8bde17bc1cf7d7d2a5747cc098",
+      "bytes": 13885,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-v1/qmp.jsonl",
+      "sha256": "e7228eb91a0a7c74ffdebd3898fe783ac0557f2d480acdb7257f8d8a3345b2eb",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-v1/qemu-stderr.log",
+      "sha256": "698dc81382b1d7dd8ea7d50d8255a17e16e5b7cf24fd38c580a31bb400ac477d",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-v1/guest-output/ws73.pcap",
+      "sha256": "27b439f917b9cd70066b3fff95fe5a7f95ec5b6ccc82741f69437268eac2ba6e",
+      "bytes": 88377,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-v1/guest-output/capture-stats.txt",
+      "sha256": "58d0f63402f1f8921ad062388d5dca5e772cbbc1780838f7c66d8734dfbc22d3",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-v1/guest-output/kernel.log",
+      "sha256": "8f0107d0b70744c695bdc00ee9ac5e549d8f5a686a6d6fa0a066081a8bd15f41",
+      "bytes": 349075,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-v1/guest-output/connected-file/run.json",
+      "sha256": "d4d19fabff2b2882da9df8ba5314fe81b34704c32d90b65a83628a815b3668b6",
+      "bytes": 41610,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup0-replay-v1.json",
+      "sha256": "e61dccfdf890228c4e6d52bba34c3165790d8a63a0456f9589e4ae8e1a3a1c44",
+      "bytes": 65372,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-dup0-v1.json",
+      "sha256": "42311585e2edc75ff707e88a3ffebac37812cbccf8d4610b135926f4268ec085",
+      "bytes": 2360,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-v1/manifest.json",
+      "sha256": "d2fe4638fb1b14c18e64c5d832cf372ea80caadf5aa17b0c20e92af852d544ae",
+      "bytes": 106872,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-v1/console.log",
+      "sha256": "32b00730c79b1285dba385ddaff8947e1b79552149b7715b28312ac80d67b4bc",
+      "bytes": 13885,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-v1/qmp.jsonl",
+      "sha256": "51e164a39eccce8c0b52c500be9686b00abfd42eadca672aef9c2b9adcd9a645",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-v1/qemu-stderr.log",
+      "sha256": "974bcade6f495d365287e7b622af290b123e051f581f10f41eb87d9e5f8fb113",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-v1/guest-output/ws73.pcap",
+      "sha256": "da2ddebd0f614e691fbc0f34b91f30f35360982b788f9a3005ffd85b486ffa39",
+      "bytes": 88377,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-v1/guest-output/capture-stats.txt",
+      "sha256": "58d0f63402f1f8921ad062388d5dca5e772cbbc1780838f7c66d8734dfbc22d3",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-v1/guest-output/kernel.log",
+      "sha256": "b12d6bc1150f7157f5dea752ed4152c78e8205f216629cdeeefb98a4b3448527",
+      "bytes": 349390,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-v1/guest-output/connected-file/run.json",
+      "sha256": "4692fbe926c9d199631dc455b60b1c59bfef37d45bb4f2700d44cd3b6a9cf2e3",
+      "bytes": 41610,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-dup1-replay-v1.json",
+      "sha256": "978b921633fe507028b4516433b9374031746268ada87124732ce605ed4492ca",
+      "bytes": 65372,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-dup1-v1.json",
+      "sha256": "1f29e67482b536ba49a66f4c25c87db67b1df20a7fd4a55111d42714ad85f52b",
+      "bytes": 2360,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-v1/manifest.json",
+      "sha256": "a882f003dd835fe72d8389b02a45bf34a48b592281b7a9a7fd2e8aac7b8fb9e9",
+      "bytes": 63265,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-v1/console.log",
+      "sha256": "86e9a280012a640501b29671b26d20e75e007dc77fcb0c6c4aafcb8d9ecf91ef",
+      "bytes": 14104,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-v1/qmp.jsonl",
+      "sha256": "e7228eb91a0a7c74ffdebd3898fe783ac0557f2d480acdb7257f8d8a3345b2eb",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-v1/qemu-stderr.log",
+      "sha256": "89775b33ebb3c4734900e6fb23b64a555522944732abc6cf3bef6a099b52ef6b",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-v1/guest-output/ws73.pcap",
+      "sha256": "de706bb6ab81e279d92293915d36ef521219038763c4b0eeee76ebddf48b347c",
+      "bytes": 75682,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-v1/guest-output/capture-stats.txt",
+      "sha256": "d51a51102bad038d9d4f4d4ee3bba816a83f7bc476afadfe61454a0b8efda190",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-v1/guest-output/kernel.log",
+      "sha256": "6eee54095a6363f912e2d2b1f3c1fdc480f36eaa6829d2cbbe3b0d0359924e11",
+      "bytes": 349211,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-v1/guest-output/connected-file/run.json",
+      "sha256": "cea93bb8631bd42d7a85e3a14800920382af52392dad3d71188fbe951aff8691",
+      "bytes": 45400,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down0-replay-v1.json",
+      "sha256": "d00e150c72d540afdba9db62404571017fa4af82c54b01228dec3e8cacb33c49",
+      "bytes": 18827,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-down0-v1.json",
+      "sha256": "2feecfdc17c95835fad003e5b84a017b03fa4314c80db9c9d59b551f21b1d9a2",
+      "bytes": 2350,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-v1/manifest.json",
+      "sha256": "ef733ee8dbd95e664312df51616326d1aa90ab608a4c2a0cc4d6e7041b108061",
+      "bytes": 63265,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-v1/console.log",
+      "sha256": "22cc45fd1799ae8c017a002ff21a88e995c55128fc3b4ba75d4e7099e52dfffd",
+      "bytes": 13914,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-v1/qmp.jsonl",
+      "sha256": "51e164a39eccce8c0b52c500be9686b00abfd42eadca672aef9c2b9adcd9a645",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-v1/qemu-stderr.log",
+      "sha256": "965248b34b432132880c498356ee600d1c06aaf9a0d41fad0d8391beea2336b2",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-v1/guest-output/ws73.pcap",
+      "sha256": "2f173fd6a2e97894745744e20d3ce20b34d89910c8638c5eadeeae0600ae0eaf",
+      "bytes": 74857,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-v1/guest-output/capture-stats.txt",
+      "sha256": "dadde7f9abfba00891ff90e693fa1a2c969104acfc75b2d002279ddf65af17c4",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-v1/guest-output/kernel.log",
+      "sha256": "0b7793e825d69aa935e1b4acb1e253dcee70d6af659e7a09646254030c9d102e",
+      "bytes": 349479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-v1/guest-output/connected-file/run.json",
+      "sha256": "6896d97335c691b6a1e90f17856d470fc1bc02c396e921c138b33bc3168e2ea2",
+      "bytes": 45400,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-down1-replay-v1.json",
+      "sha256": "b8af836e23623fcf60d65c9c6d259fa9d4c88225e11fbf09352b97de4a92f426",
+      "bytes": 18827,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-down1-v1.json",
+      "sha256": "48b7963718285cc41f987505f182a9447911d77e7bd6f19bcad46d8a9080e3e1",
+      "bytes": 2350,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-v1/manifest.json",
+      "sha256": "acb0ce463f4c4a8026a65260b7433ae77a03831df42e38f9c88fa127f5690ad1",
+      "bytes": 62705,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-v1/console.log",
+      "sha256": "763b29266be4af6c10f205491c1a8bdb66ebf5e578a317d7f2463e9b3fa86835",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-v1/qmp.jsonl",
+      "sha256": "50182de71cad1758b9d0f09e789a4ef3e69c72261ba49095362f9b549b32f304",
+      "bytes": 11367,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-v1/qemu-stderr.log",
+      "sha256": "928da33167b46bba5cb36482946a2a8353cd6ec809e3e4ff827f41ba1effc1ba",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-v1/guest-output/ws73.pcap",
+      "sha256": "ec15aa0762384f3b4a59a6f6376288c4d36eff545fa57ff97aadba9451a5196e",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-v1/guest-output/kernel.log",
+      "sha256": "f314fccd8a9b7d01648e1ae85e1d00f9507e7ea0bf6272508f05e308ab30a23e",
+      "bytes": 349209,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-v1/guest-output/connected-file/run.json",
+      "sha256": "a66146bef00e52fef56cbeef9a8009ce234a30de51c6c035f6ac9fb1f598636d",
+      "bytes": 45020,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline0-replay-v1.json",
+      "sha256": "37c83155d066f1512f64c4f77c67ff324b9a26645daac633c98b3ea4edd7f741",
+      "bytes": 17479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-deadline0-v1.json",
+      "sha256": "3e1c5affe82b4c678bc7d934e112713676f7c8298c17138e564486e4caf1db98",
+      "bytes": 2364,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-deadline-prepared-v1/manifest.json",
+      "sha256": "88e2c63a2e5aba67ee892c0cc8515b7e85388c7dd52e5a1d45e422c052b66901",
+      "bytes": 272511,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-deadline-prepared-v1/bzImage",
+      "sha256": "6c2c6b3b6092707421af244e255c27510c0d510a082a05afd4f0e486284b85d3",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-deadline-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-deadline-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-deadline-prepared-v1/root.btrfs",
+      "sha256": "c58eb3837824cd048fe3a09a499979dff8906db1f75b5e02b16aeae158876a61",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/data-deadline-qemu/qemu-system-x86_64",
+      "sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-v1/manifest.json",
+      "sha256": "1378fe253e9881a5b2ec08588cdeec6d2e037dc17c795285076b397be08b4064",
+      "bytes": 62705,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-v1/console.log",
+      "sha256": "4ee77a39b160207a3ef0f7bc469cbdd8241782b6db283f3250f7f36e23fea050",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-v1/qmp.jsonl",
+      "sha256": "6f3fd1b9c142ff073f3d159fe09726f4eb27a73d110bf714e31e752f608edc74",
+      "bytes": 11367,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-v1/qemu-stderr.log",
+      "sha256": "cbe42566caf98059cf718100fc5c34f4d3ec3a2f8746c449f9d55e0d93ea6aad",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-v1/guest-output/ws73.pcap",
+      "sha256": "bdbd7d0ca8347d7c299909af460e5bcfc373a7d5640e1b9d00a39ef69902450c",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-v1/guest-output/kernel.log",
+      "sha256": "acda7be545ab408f953bf0e13292109ea5697eaa333039bddbcc4b377651ece1",
+      "bytes": 348665,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-v1/guest-output/connected-file/run.json",
+      "sha256": "4b2ce74ca63e2fa49409e2e8f9c1ae9ea3a0b8c8802e1b1d797fe81a5b0d768d",
+      "bytes": 45019,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-deadline1-replay-v1.json",
+      "sha256": "a0bfe3f06d9bfa92402a427e2302816bb19bc99663edbf3a9c11b99770535cda",
+      "bytes": 17479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-evidence-negatives-deadline1-v1.json",
+      "sha256": "bc16cc71aea29fac1f5769b085cb1755047d91554c7bf0684abe998ddf1df787",
+      "bytes": 2364,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-regression-supervisor-v1.py",
+      "sha256": "a302799c5c579ad6d23cf9a34b10b804cccbee3a8a2456a03531099421962b14",
+      "bytes": 1033,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-regression-supervisor-v1.json",
+      "sha256": "643ebfe65efb3ee2b86ec8eb5f3cb5116132414befc204f96a0a889c0b0d39b5",
+      "bytes": 663,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-lengths-v1.py",
+      "sha256": "6c2d0b0d5ea83e44f1ce3935052c010f81fc3ff71786131b305cab2a8d45743e",
+      "bytes": 2448,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-lengths-v1.json",
+      "sha256": "5801668d171c6466211ac39e3ec91d4f47702c062f143c2d0e43e91b773212e0",
+      "bytes": 8827,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-run-v1.py",
+      "sha256": "d86ed557f3a288769f9d814d7fbb05909858fe990d43daab07f869ff3bc71219",
+      "bytes": 2130,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-run-v1.json",
+      "sha256": "61767ad3b7d85a23ef83051aa8ae92925c2ff9c542bd33bb90ce6145e8b09a14",
+      "bytes": 1389,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-qualify-v1.py",
+      "sha256": "080bc6b1d0be773cac198d2757a6e80142de544ed23eec0fa3b6f2ff496c27ec",
+      "bytes": 4240,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-qualification-v1.json",
+      "sha256": "bfcbe796e9f283bd9b417ac11947403391c3e58d9edc9abbe92567645da9b0c4",
+      "bytes": 12668,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-related-replay-v1.py",
+      "sha256": "c1bdc53c7d5e22ae806d7b631d68dcbeef9d75895cc4b68d4302e46942f6d0d3",
+      "bytes": 2520,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-related-replay-v1.log",
+      "sha256": "ffb0396fa26b3068fc42fc5e16b9ceb97b32382ec2fe9a40e231435a9f415a4d",
+      "bytes": 1404,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-related-replay-summary-v1.json",
+      "sha256": "07817cfd349a96fb6a400b2f127e5c01b80e84fad5f38e3731bc783dec75e1b9",
+      "bytes": 1193,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-dynamic-negatives-v1.py",
+      "sha256": "8f3b97dc7458f21d363ed7426eb42e7aeb75a097671a0fbdb1cd39a7e6a4d98a",
+      "bytes": 2671,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-concurrent-replay-negatives-v1.py",
+      "sha256": "387eae43546eea46fe76158e488403e34d0d54134a05bb3999a4e6ee5cfbc159",
+      "bytes": 4244,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-negatives-v1.py",
+      "sha256": "7ae72678b84b33ec811095d2e30ec25153851de443038c819c3e025835f52474",
+      "bytes": 3570,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-replay-all-v1.py",
+      "sha256": "9a55741c1db14d3c252fdfec497ebc9fda41bd4f175948ee11fabf49a98ac000",
+      "bytes": 1815,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-lifecycle-replay-summary-v1.json",
+      "sha256": "5f2d36d454a5c8ae4b036d9943fe302c066ec9a874df7d1d010c1c2288037498",
+      "bytes": 2116,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-prepare-deadline-v1.py",
+      "sha256": "8aaead3c921d0d233ddaa02bb1f4c08ca2d816c07540e75a0761fb4a292ac9f4",
+      "bytes": 1183,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-deadline-smoke-v1/manifest.json",
+      "sha256": "08101e2181798be4074500485d645057f9acd478d918d49a77f58912d6c0b158",
+      "bytes": 37377,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/manifest.json",
+      "sha256": "ecf0d35ada948661587d01b23fce37a13d99d4e1d145bbee51da61bc840bbb07",
+      "bytes": 26326,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-artifacts-v1/manifest.json",
+      "sha256": "2d384fd343dd3bfbf51d68fb9e9425b895e0eded57e651bea02640926c13efa9",
+      "bytes": 229023,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-artifacts-v1/retained-vmlinux",
+      "sha256": "5228ca5dd6d95b3d4d3380997dc757d0303a69745e6b01778b7830cda1436c02",
+      "bytes": 409836592,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/manifest.json",
+      "sha256": "1070529121e0c0292f1d5ad4a4d2e30da5234f66e195935235014ac53a2ac0b3",
+      "bytes": 2381,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slkd",
+      "sha256": "02efd6e2c102ad0727cfd6b371b5b5c8a06bf3c0f26e3a8e5e9410ad50eae126",
+      "bytes": 10527128,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slctl",
+      "sha256": "10a80a1c7aecbc3c3e3b1e2bd11d3ddb98656393db4ad2b90714f71f5b5bb8af",
+      "bytes": 7818832,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slktest",
+      "sha256": "54b9cd0611d714efc9f91b95d17644ef5d7cc431cbc42e1fea1ddf697b30b935",
+      "bytes": 5236208,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slkconfig",
+      "sha256": "2b9a5b71d626f42346e99618ef619bfd0f1d87ce38982d29369d886b86c6f9fd",
+      "bytes": 1403824,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slkmon",
+      "sha256": "677a0b52e0f59f6a1620a0dfce60ff10c38d4a96e9a9e5a1a3ec3ceae8f1f17e",
+      "bytes": 1662288,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slkdump",
+      "sha256": "99c48c59778bd8bab8ace3a1e7eb62871d967c58f6d275f33a2b0704c1344d34",
+      "bytes": 1662128,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/liblibsparklink.so",
+      "sha256": "0fb387aaa07f02d50122192a3a1a6611751493086a7cc557968ba1c980209e88",
+      "bytes": 546344,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "739a3d116452738d60da4142c31d4f90b1939354e0d77b4ce5af296f0e33828e",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "fbf83993a333fb3ffb5389f0ec7c1210316dd104ba7c93f1e1e6b3c4e8f626b6",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB,SDK/firmware and VM payload not publicly downloadable. Exact sources/artifacts/tools and replay commands listed."
+    }
+  ]
+}

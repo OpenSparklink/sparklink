@@ -102,13 +102,19 @@ FAIL保留；按测得25188条需求有界改2MiB/CPU，零丢失和8MiB文本�
 历史动态burst失败保留；新镜像观察见下。完整P2d、观测成本/资源和所有自然根因与非人工恢复继续开放。
 
 [新关闭观测限定实机资格](../docs/evidence/session-status-burst-20261017.json)绑定编译
-K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定/SSAP基线真实回复。
+K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道基线真实回复；SSAP门禁另核对，不计入这8次。
 两端 C-open 正对照及关闭后首组真实 Native 终态/零债务快照成立，原独立 USB/NOCP
 账目断言通过，24实际证据负对照拒绝。190单元/5文档Rust、671冻结工具、40Python、
 4跨语言布局和严格HTML115分别通过。LKMM只验证两CPU代表字段锁发布，弱化对照
 可观察旧值，非实现refinement。快照不证明callback/ref drain、Free、NOCP准确性或
-安全复用。历史v3 FAIL不改判。新镜像长度/并行/生命周期回归另行完成；完整公平、
+安全复用。历史v3 FAIL不改判。新镜像相关回归见下；完整公平、
 性能/资源及混合四设备仍缺，第1口Hi3873E排除。
+
+[同产物十八项保持回归](../docs/evidence/session-status-regressions-20261017.json)已封存：
+七长度448次、并行80次、十项release/最后管理fd/dup/Down/原5秒期限24次，共552次
+实际业务回复；8条单向primer及不完整PDU分列。十八份原件重放及172证据负对照通过。
+加前述独立burst88次，本批19次VM运行/640次实际往返/196证据负对照，均绑定14d9/42e。
+同行仅Ready/generation/lease/扫描范围；完整公平/P2d成本和混合四设备仍缺。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。

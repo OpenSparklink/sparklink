@@ -236,3 +236,6 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 [14d9/42ecc6f动态关闭观察：两角色80＋8次真实回复及24实际证据负对照](session-status-burst-20261017.json)。
 原v3最终debt失败保留，v4仅有界瞬时观测，不授callback/ref drain、NOCP准确性或安全复用。
 [实际Session锁发布的两CPU LKMM正反对照](session-worker-publication-20261017.json)不是实现refinement。
+
+[14d9/42e十八项保持：七长度、有限并行及十生命周期](session-status-regressions-20261017.json)：
+552次真实回复/18重放/172负对照；加独立burst共640次。仅限定同行Ready/lease/扫描，未授完整P2d或恢复。

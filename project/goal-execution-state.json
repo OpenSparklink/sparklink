@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T18:55:59.124608+00:00",
+  "updated_at_utc": "2026-10-16T19:09:58.475955+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -2031,7 +2031,7 @@
       "new_formal_proof": false
     },
     "post_close_observation_batch": {
-      "status": "REAL_BURST88_SCOPED_PASS_RELATED_REGRESSIONS_RUNNING",
+      "status": "SELECTED_BATCH_GATES_PASS_FULL_OBJECTIVE_OPEN",
       "kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
       "userspace_source": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
       "original_failure": "docs/evidence/session-c4-dynamic-lengths-20261017.json",
@@ -2050,19 +2050,21 @@
         "port4": "Hi3873U user reported;not qualified by this batch"
       },
       "next": [
-        "Finish exactnewartifact length/concurrent/lifecycle gates;retain failures",
-        "Full fairness and matched U2/3 performance/resource/observer-cost closure",
-        "Agent/SSAP/fourdevice remain parallel without all-control precondition"
+        "Related batch exit met;continue matched U2/3 performance/resource/observer-cost and queue fairness closure",
+        "Agent/SSAP/fourdevice remain parallel;UserHost low priority",
+        "Natural RCA/nonmanual recovery,NOCPtruth/reuse/callbackdrain and fulloriginalscope OPEN"
       ],
       "compiled_userspace": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
       "executed_tools": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
       "report": "docs/evidence/session-status-burst-20261017.json",
       "counts": {
-        "dynamic_round_trips": 80,
-        "baseline_round_trips": 8,
-        "actual_queries": 8,
-        "copied_evidence_negatives": 24
-      }
+        "actual_vm_runs": 19,
+        "peer_round_trips": 640,
+        "one_way_primers": 8,
+        "incomplete_pdu_deliveries": 0,
+        "copied_evidence_negatives": 196
+      },
+      "regression_report": "docs/evidence/session-status-regressions-20261017.json"
     }
   },
   "slktest_migration": {

@@ -58,7 +58,7 @@ K90fda145、编译用户态/guest/Host工具U2ee780c，文档提交不是编译�
 [生产代码限定证明](../docs/evidence/cmtc-mtu-mps-fix-20261016.json)另记六步转换、
 13项主性质/341项有界检查及原源码变异反例。两者不互相替代。
 
-当前仅固定基础CUTC31/PI241与SMTC10/PI0。真实peer校验回复、PB分片与软件
+上述实机资格仅固定基础CUTC31/PI241与SMTC10/PI0。真实peer校验回复、PB分片与软件
 背压已取得上述范围资格；均不证明可靠模式、NOCP准确性/重复迟到/复用屏障、
 公平性、慢消费者、长期收敛或真实USB/设备故障隔离。受控连接断开不代表自然故障。
 
@@ -76,8 +76,12 @@ K90fda145、编译用户态/guest/Host工具U2ee780c，文档提交不是编译�
 
 ## 尚缺与工程边界
 
-动态Connect/Disconnect、独立local/remote TCID、动态Channel Grant/队列/关闭屏障、
-完整多通道、认证/Bond、安全SSAP更新、正式部署权限/兼容及发布仍未完成。
+K400bd6812608/Ucca8a20已实现动态基础CMTC、独立local/remote TCID、暂存端点与
+协商后Grant/每通道队列；直接转换有界证明和实际worker离线回归分开记录。
+[本批限定报告](../docs/evidence/dynamic-cmtc-offline-20261016.json)分别记录直接纯转换、
+实际worker夹具、codec fuzz与跨语言检查。新内核与bundle编译、无USB VM启动已通过，**动态业务与新镜像真实回归仍未验收**，
+不能继承K90/U2ee资格。四槽/物理lifetime墓碑只是有限策略，完整关闭/复用屏障、
+多通道全矩阵、认证/Bond、安全SSAP更新、正式部署权限/兼容及发布仍未完成。
 普通应用组在真实system-bus/udev/内核授权环境的完整矩阵尚缺；UID1000/caps0
 的VM业务不能替代全部部署权限。单daemon管理设备也不等于独立进程故障域。
 

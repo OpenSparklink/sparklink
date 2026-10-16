@@ -575,3 +575,24 @@ T/XS20002-2025 §7.3.3允许identifier0；旧codec拒绝0、待回复字段用0�
 编号只是关联字段，不能替代controller/generation/lifetime/epoch、原期限和物理屏障。
 以生产codec全256值及直接CBMC有界检查、实际route函数和新VM两端0编号交换验收；
 局部证明不授予动态多通道或完整Session并发资格，旧实机记录不升级为新内核资格。
+
+
+### 2026-10-16 动态基础 CMTC 生产接线（实机待验收）
+
+K400bd6812608复用已有物理Session、唯一RX分流、ACB credit及提交票据，
+不另建Host/业务Engine。未发布sockaddr v3以64字节表达显式端点/端口/AID及
+独立MTU/MPS；daemon仅暂存有授权范围的端点。实际建立回复、或实际响应提交
+线性化后，才在Runtime→Session锁内发布完整local/remoteTCID Grant。
+应用fd、CMTC事务和物理lifetime继续分离，dup不提前关闭；最后fd撤销本应用
+准入并保留已开始的Session物理义务。对端关闭可排空此前完整RX，不能准入新RX
+或通过晚到建立回复恢复Grant。现有v2固定CUTC/SMTC入口保持。
+
+首片每物理lifetime最多4个动态槽位，TCID0x80..0xdf、用户PI241..250；
+已使用槽/TCID和事务号保持墓碑，耗尽ENOSPC。该有限策略避免无依据复用，
+不替代后续经过证明和实测的关闭/回收屏障或完整资源长期收敛要求。端口/AID
+匹配不是认证；preferred SLQI不代表已配置硬件QoS，可靠/保护模式仍拒绝。
+
+退出门禁为准确新镜像：真实未绑定端口拒绝、两条动态通道并存、不对称TCID、
+普通用户随机校验回复、关闭A后B实际继续业务、交换连接角色及原已取得数据
+矩阵回归。受控暂停仅限VM应用进程且受原期限约束，不暂停内核/设备，不作为
+自然恢复或公平性资格。当前有界纯转换、实际函数夹具及codec fuzz不代表门禁通过。

@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "status": "DYNAMIC_CMTC_OFFLINE_BOUNDED_PASS_REAL_PENDING",
+  "generated_utc": "2026-10-16T04:55:28.387046+00:00",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
+  "gate_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+  "physical_acceptance": false,
+  "whole_implementation_proof": false,
+  "production_behavior": "Actual dynamic CMTC setup/close and Session-owned per-channel dispatch/queues/Grant, daemon staged fd and ordinary slctl apps; no second Engine",
+  "formal_excluded": [
+    "Actual production pure codec/state only; six events, all8bit identifiers/unicastTCID0x80..0xdf, MTU1..2042/MPS6..2047,8bit port/AID/SLQI,arbitrary32bytes/length0..32,unwind65. Not unbounded temporal liveness or whole Session refinement.",
+    "CBMC6.11.0/compiler/C semantics are trusted; all expected main properties and solver success required; no proof of Linux,real locks/allocator,credit ledger,USB,firmware or hardware.",
+    "A canceled submitted request must not become Open in the actual pure transition. The deliberate production-source mutation supplies a synthetic counterexample, not a reproduced hardware defect.",
+    "Actual dynamic socket/Grant/queue/close integration,resource reuse barriers and peer delivery require separate controlled VM and physical acceptance."
+  ],
+  "gates": [
+    {
+      "name": "direct-production-cmtc",
+      "status": "BOUNDED_PASS",
+      "result": "PASS",
+      "properties": 769,
+      "main_properties": 8,
+      "transitions": 6,
+      "events": 4,
+      "unwind": 65,
+      "tool": "6.11.0 (cbmc-6.11.0)",
+      "assumptions": [
+        "Valid C pointers/objects as required by the codec; arbitrary input length0..32",
+        "Sequential actual pure codec/state transitions; no kernel locks/allocator/USB/firmware refinement"
+      ],
+      "bounds": [
+        "All8bit identifiers,unicastTCID0x80..0xdf,MTU1..2042/MPS6..2047,8bit port/AID and SLQI inputs",
+        "Arbitrary32byte buffers,length0..32;failure atomicity;unwind65 with unwinding assertions,including full64byte decoded-struct memcmp",
+        "Six sequential events:submit,detach,expiry,arbitrary response;terminal/abandon/oldID invariants"
+      ]
+    },
+    {
+      "name": "expected-production-mutation",
+      "status": "EXPECTED_COUNTEREXAMPLE",
+      "result": "PASS",
+      "mutation": "Allow canceled submitted Connect to become OPEN on late success; actual production pure transition copy only",
+      "failed": [
+        "main.assertion.7"
+      ]
+    },
+    {
+      "name": "actual-session-worker",
+      "status": "SANITIZER_FIXTURE_PASS",
+      "result": "PASS",
+      "scope": "Actual publish/worker/codec/consent/route/RX functions, explicit lock/allocator/Runtime/USB dependencies; no kernel concurrency proof"
+    },
+    {
+      "name": "actual-cmtc-fuzz",
+      "status": "BOUNDED_FUZZ_COMPLETED_NO_FINDING",
+      "result": "PASS",
+      "runs": 20000,
+      "seed": 730111,
+      "coverage": {
+        "sl_channel_signal_decode": 20498,
+        "sl_channel_signal_encode": 242
+      },
+      "proof": false
+    },
+    {
+      "name": "userspace-and-contracts",
+      "status": "OFFLINE_PASS",
+      "result": "PASS",
+      "rust_all_features_passed": 244,
+      "strict_clippy": true,
+      "tools": 602,
+      "c_rust_v3_bytes": true,
+      "python_result": "OK"
+    },
+    {
+      "name": "kernel-and-root-smoke",
+      "status": "VM_NO_USB_PASS",
+      "result": "PASS",
+      "diagnostics": {
+        "log_sha256": "00ae07f72e2378d10338d180356805a862845af79b4cf1ac47ba2198a309a088",
+        "compiler_warning_count": 0,
+        "compiler_diagnostics": [],
+        "make_warning_count": 1,
+        "make_diagnostics": [
+          "make[4]: 警告: jobserver 不可用: 正使用 -j1。添加 “+” 到父 make 的规则。"
+        ],
+        "unclassified_warning_count": 0,
+        "unclassified_diagnostics": [],
+        "warning_free_log": false
+      },
+      "actual_root_smoke": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+      "qualification": false
+    }
+  ],
+  "remaining": [
+    "New dynamic2channel gate,actual unmatched endpoint refusal,asymmetricTCIDs,Aclose/Bactual business,swapped physical connection roles",
+    "Exact new image original short/length/long/queue/close and4device regression;old K90/U2ee real report remains historical exact qualification",
+    "Four lifetime tombstones are a finite initial policy,not full safe reuse or long-term resource convergence",
+    "Full authenticated security/CPCD/Bond,multichannel/fairness/fullpermissions/deployment and originalS0-S6/19WP/10FV/12DG",
+    "Natural startup/reenumeration/disappearance RCA and nonhuman recovery remain OPEN;manual/hub/QMP/injection not substitutes"
+  ],
+  "reference_versions": {
+    "NearLinkHost": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73-usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "SDK": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+    "wire_notes": "Actual hexadecimal0x10..13;unicast0x80..df;response src echoes requester local,dst responder local;wire result0..4 only;preferredSLQI not QoS attestation"
+  },
+  "failures_preserved": [
+    "First CBMC unwind33 did not finish full64byte struct comparison:UNPROVED;new unwind65 pass separately",
+    "LSan cannot run under sandbox ptrace; original tool failure kept,ordinary authorized run passes with detector enabled",
+    "Tool tests sandbox Unix socket refused;596/602 authorized reruns pass",
+    "Python first missing PYTHONPATH,then implicit obsolete release cdylib,then read-only ccache:original failures retained;explicit current debug library/PYTHONPATH/private ccache passes",
+    "First synthetic verifier fixture lacked owners;then touching synthetic phase times made handle-reused raw packet ambiguous;correct independent intervals tested,missing-leg negatives remain required"
+  ],
+  "raw_access": {
+    "condition": "Authorized original workspace developer;raw private artifacts/corpus/logs retained under.dev,not public website",
+    "replay": "Exact commits and source hashes;selftests run_channel_identifier_cbmc.py --contract dynamic;run_session_dispatch.py;run_ws73_codec_fuzz.py --contract cmtc --runs20000 --seed730111;actual tools/tests and lockedRust;all real drivers/USB only inVM"
+  },
+  "materials": [
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-cbmc-400bd68/report.json",
+      "sha256": "770b53f45350f3580938c6ee48e8d43f7779f346cf532fea0e64dd052ae7e6d1",
+      "bytes": 1022298
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-cbmc-400bd68/raw.json",
+      "sha256": "7d85a2f36770156d9960372ee29712fb1f4623b5668e707a2ce827419504465d",
+      "bytes": 926534
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-cbmc-400bd68/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-negative-400bd68/report.json",
+      "sha256": "7589ce167ab62a8af919d86072aa1ee2623fc54fcbea5a3474c1bd0fd30f900c",
+      "bytes": 1460215
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-negative-400bd68/raw.json",
+      "sha256": "4ba6d7a3c339eca7c8a859678b742ad7d17cb7c860e9be5c9fd8a9249a273912",
+      "bytes": 2348453
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-session-400bd68.json",
+      "sha256": "43292e160f4d028126e6f62582121847de552df3a27655fda9e5acdd52bab81a",
+      "bytes": 2008
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-session-400bd68.log",
+      "sha256": "9a188e761ae793bf63cd0964bb20434cbd0f91bb0481ab94add78ff570ebac70",
+      "bytes": 2078
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-fuzz-400bd68/report.json",
+      "sha256": "ff76944e94a23515ee17ce551c36936a48e7a4cef757c2e09dad0067e1ac64f2",
+      "bytes": 11086
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-fuzz-400bd68/replay.log",
+      "sha256": "6407296306f2d17b8fe6d24a9505747d755bdf0e7762bc121bb1741cc8618f9e",
+      "bytes": 734
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-fuzz-400bd68/explore.log",
+      "sha256": "4783d99c06b5df9d965774cb4ef0f3cb0981a6d59d27bb9bedb42d07323e259a",
+      "bytes": 4175
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-userspace-final-all-features.log",
+      "sha256": "9554e9fa69d9c5a7170c75283631beb51d4a175200089e88a1c36eb872c9e96e",
+      "bytes": 19836
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-clippy-final.log",
+      "sha256": "59639588a6f1826f129cbcd121edc07279dab94786f5fa5bde6b3439b2e845cc",
+      "bytes": 72
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-all-tools-v2.log",
+      "sha256": "803a9da7e3c54e4b8e02fc98666f9f952f2f6a538d2fff9f9617348eb45dbf31",
+      "bytes": 97054
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-tools-gate-v1.log",
+      "sha256": "981e636fdc2681d081e8e010d5c3c655e6a224a2e1f782069f475a49f317f218",
+      "bytes": 97890
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-bindings-v5.log",
+      "sha256": "d5d8d686ce5453ba076d319af2bee61903e46bc60bafeedc4b08359f5a1acab6",
+      "bytes": 4970
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-channel-contract-400bd68.log",
+      "sha256": "464ac65daf308b86cfa49da8922100f9f66ddddec6097b21185f839723a94a78",
+      "bytes": 552
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-kernel-build-record.json",
+      "sha256": "2e40ea31e178e277419942328a1e5e5ce49e206f019b43331fee905b77fc6320",
+      "bytes": 1308
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-kernel-build-check-record.json",
+      "sha256": "73ac1a0f4bb6a98715ebc7a7a34eebc92abe88f69426e4bd4577aff7e88cdcdc",
+      "bytes": 1720
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-kernel-build.log",
+      "sha256": "00ae07f72e2378d10338d180356805a862845af79b4cf1ac47ba2198a309a088",
+      "bytes": 2468
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-artifacts/manifest.json",
+      "sha256": "7f6ec27cc09c34d0f1e88fe005792322d1a61c3805156fd8a88486f4f8b736e2",
+      "bytes": 229027
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-root-smoke/manifest.json",
+      "sha256": "fa397809a06bc247ed2ab3d7752fd1e2e90161d358887b77dbfd7080a7aa4265",
+      "bytes": 37174
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-service-bundle/manifest.json",
+      "sha256": "98fae75622d4a7b43a3c821d68e363000784450b3ff80e6802f1119de93cef20",
+      "bytes": 23270
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-actual-worker-candidate.log",
+      "sha256": "cb7de7507a20b43914fb3554ef84aa3a802297342420b0cfab6d656d50b92773",
+      "bytes": 1380
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-verifier-candidate.log",
+      "sha256": "b5c40f8674b610ab1956433df3b1c9573374ddc3bdd01a65b183c8efd799b581",
+      "bytes": 9281
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-verifier-v2.log",
+      "sha256": "9830e1487abc8af882f695bab3d6ec4ebc682f784db5bed5e4fd88875832b68d",
+      "bytes": 3588
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-verifier-v3.log",
+      "sha256": "fa766c336f1ae9d25f9e2a18a9a45f52d0aaf70e3f980e033c06115afb53a86d",
+      "bytes": 1006
+    }
+  ]
+}

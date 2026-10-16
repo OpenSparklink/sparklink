@@ -1100,14 +1100,14 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "cmtc-mps-fix-regression-complete-dynamic-next",
-      "production_behavior": "Independent MTU/MPS production fix and original14execution regressions completed at K90/U2ee;fixed channels only",
+      "id": "dynamic-cmtc-production-connected-real-pending",
+      "production_behavior": "K400bd681/Ucca8a20 actual dynamic basic CMTC/Session queues/Grant/stagedfd;gate tools4b33733;no dynamic physical qualification yet",
       "exit": [
-        "SignedK90 andU2ee;actual source-mapped bounded341+identifier and sanitizer/596tools/strictdocs passed",
-        "All11dual-device gates:136ordinaryRT,32oversize,2strictprefix;fourdevice80+48+64=192ordinaryRT",
-        "Actual identifier0/MTU2042/MPS2047/twoendcapture/maxPDU2047 verified;supervisor classification failure preserved separately"
+        "Actual production codec/state bounded CBMC and mutation counterexample,actual Session worker sanitizer,20000CMTCfuzz",
+        "244Rust allfeatures tests,strict clippy,602tools,cross-language contracts,current selectedPython shared library,strictdocs",
+        "Exact kernel build/artifact and noUSB VM smoke;preserve jobserver warning;frozen SDK111 servicebundle"
       ],
-      "next": "Enter minimum actual dynamicCMTC Connect/Disconnect/local-remoteTCID/Grant/uniqueSessionRX/per-channel socket queues;do not wait allcontrol races. Security minimum authenticated authorization,quality,fuzz/debugVM,RCA/recovery remain parallel."
+      "next": "Run exact prepared SDK111 VM:real refusal/asymmetricTCID/two channels/Aclose-Bactualbusiness/swapped roles,then attained fixed/length/long/close/pressure/four-device regressions. All original scope/RCA/recovery remains OPEN."
     }
   },
   "agent_workstream": {
@@ -1294,5 +1294,21 @@
     "docs/evidence/four-device-disconnect-issues-20261016.json",
     "docs/evidence/four-device-burst-issues-20261016.json",
     "docs/evidence/cmtc-identifier-zero-issues-20261016.json"
-  ]
+  ],
+  "dynamic_cmtc_batch": {
+    "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+    "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
+    "gate_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+    "status": "IMPLEMENTED_OFFLINE_AND_BOUNDED_PASS_REAL_PENDING",
+    "evidence": "docs/evidence/dynamic-cmtc-offline-20261016.json",
+    "exit_conditions": [
+      "Real unmatched endpoint refusal plus exact CMTC/two-end captures",
+      "Two simultaneous dynamic basic channels/asymmetric local-remoteTCIDs,ordinary app random validation/reply",
+      "Afinalclose/Bactualtraffic after close response,swapped physical roles",
+      "Accurate new image attained fixed/length/long/close/pressure/four-device regression"
+    ],
+    "physical_acceptance": false,
+    "safe_tcid_reuse": false,
+    "original_scope_unchanged": true
+  }
 }

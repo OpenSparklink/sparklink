@@ -1377,7 +1377,8 @@
     "docs/evidence/four-device-disconnect-issues-20261016.json",
     "docs/evidence/four-device-burst-issues-20261016.json",
     "docs/evidence/cmtc-identifier-zero-issues-20261016.json",
-    "docs/evidence/slktest-migration-maintenance-20261016.json"
+    "docs/evidence/slktest-migration-maintenance-20261016.json",
+    "docs/evidence/schema2-application-maintenance-20261016.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -1601,7 +1602,8 @@
       "actual_vm_tests": 25,
       "first_vm": "FAIL_STALE_LIBRARY_TEST_INPUT retained",
       "current_scope": "applicationreport/emptyUSBVM only;noNativeRF/performance/formalqualification",
-      "next": "NativeVMsupervisor/source/captureclosure andrealbaseline"
+      "next": "NativeVMsupervisor/source/captureclosure andrealbaseline",
+      "issues_receipt": "docs/evidence/schema2-application-maintenance-20261016.json"
     }
   },
   "slktest_migration": {

@@ -7,6 +7,9 @@ not a device fault, natural recovery, fairness or protocol reliability claim.
 from contextlib import ExitStack
 from pathlib import Path
 import os
+import codecs
+import selectors
+import traceback
 import re
 import signal
 import subprocess
@@ -15,15 +18,81 @@ from ws73_capture import CaptureError, reassemble_acb
 from ws73_channel_socket import application_frames, credentials
 
 
-def refresh(app):
-    app['stdout'], app['stderr'] = [Path(p).read_text() for p in app['output_files']]
+class ApplicationOutput:
+    """Bounded real child pipes, mirrored to artifacts; no live file tailing.
+
+    Raw writes, decode errors, missing EOF and budget overflow fail the run.
+    This collector does not interpret controller data or fabricate app receipts.
+    """
+    def __init__(self, maximum=128*1024):
+        self.maximum=maximum
+        self.selector=selectors.DefaultSelector()
+        self.streams=[]
+
+    def add(self, process, app, sinks):
+        app['output_collection']={'method':'bounded-child-pipes','maximum_bytes_per_stream':self.maximum}
+        app['captured_bytes']={}
+        for name,pipe,sink in zip(['stdout','stderr'],[process.stdout,process.stderr],sinks):
+            app[name]='';app['captured_bytes'][name]=0
+            os.set_blocking(pipe.fileno(),False)
+            entry=dict(app=app,name=name,pipe=pipe,sink=sink,bytes=0,eof=False,
+                       decoder=codecs.getincrementaldecoder('utf-8')('strict'))
+            self.streams.append(entry);self.selector.register(pipe,selectors.EVENT_READ,entry)
+
+    def drain(self):
+        for key,_ in self.selector.select(0):
+            stream=key.data;app=stream['app'];operation='read-child-pipe'
+            try:
+                while True:
+                    try:data=os.read(stream['pipe'].fileno(),4096)
+                    except BlockingIOError:break
+                    if not data:
+                        operation='finalize-utf8'
+                        app[stream['name']]+=stream['decoder'].decode(b'',final=True)
+                        self.selector.unregister(stream['pipe']);stream['pipe'].close();stream['eof']=True
+                        break
+                    stream['bytes']+=len(data);app['captured_bytes'][stream['name']]=stream['bytes']
+                    operation='byte-budget'
+                    if stream['bytes']>self.maximum:raise CaptureError('application output exceeded finite stream budget')
+                    operation='persist-artifact'
+                    if stream['sink'].write(data)!=len(data):raise CaptureError('short application artifact write')
+                    stream['sink'].flush()
+                    operation='decode-utf8'
+                    app[stream['name']]+=stream['decoder'].decode(data,final=False)
+                    operation='read-child-pipe'
+            except BaseException as error:
+                app['output_collection_error']=dict(operation=operation,stream=stream['name'],errno=getattr(error,'errno',None),
+                    error_type=type(error).__name__,error=str(error),traceback=traceback.format_exc())
+                raise
+
+    def final(self, app):
+        self.drain()
+        for stream in self.streams:
+            if stream['app'] is not app:continue
+            if not stream['eof']:raise CaptureError('reaped application output did not reach both EOFs')
+            try:
+                actual=os.fstat(stream['sink'].fileno());named=Path(stream['sink'].name).stat()
+                if (actual.st_dev,actual.st_ino)!=(named.st_dev,named.st_ino) or named.st_size!=stream['bytes']:
+                    raise CaptureError('application output artifact replaced or truncated')
+            except BaseException as error:
+                app['output_collection_error']=dict(operation='final-artifact-identity',stream=stream['name'],errno=getattr(error,'errno',None),error_type=type(error).__name__,error=str(error),traceback=traceback.format_exc())
+                raise
+
+    def close(self):
+        for stream in self.streams:
+            if not stream['pipe'].closed:stream['pipe'].close()
+        self.selector.close()
 
 
-def await_marker(run, tasks, marker, deadline):
+def refresh(app, reader):
+    reader.drain()
+
+
+def await_marker(run, tasks, marker, deadline, reader):
     while time.monotonic() < deadline:
         complete = True
         for process, app in tasks:
-            refresh(app)
+            refresh(app,reader)
             if marker not in app['stdout']:
                 complete = False
                 if process.poll() is not None:
@@ -42,7 +111,7 @@ def execute(run, phase):
                long_bytes=long_bytes, status='RUNNING', channels=[], scheduling='bounded VM peer SIGSTOP; real kernel/firmware remain running')
     run.data.setdefault('dynamic_channels', []).append(row)
     run.save()
-    files=ExitStack(); all_tasks=[]; stopped=None
+    files=ExitStack(); all_tasks=[]; stopped=None;reader=ApplicationOutput();failed=False
     def start(channel, role, entry):
         ports = channel['ports'] if role=='initiator' else channel['ports'][::-1]
         args=[str(run.args.slctl),'--adapter',entry['owner']['path'],
@@ -53,11 +122,12 @@ def execute(run, phase):
         stem=f'dynamic-{row["phase"]}-{channel["name"]}-{role}'
         paths=[run.output/(stem+'.stdout'),run.output/(stem+'.stderr')]
         app['output_files']=list(map(str,paths))
-        proc=subprocess.Popen(args,stdin=subprocess.PIPE,
-                              stdout=files.enter_context(paths[0].open('xb')),
-                              stderr=files.enter_context(paths[1].open('xb')))
+        sinks=[files.enter_context(path.open('xb')) for path in paths]
+        proc=subprocess.Popen(args,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        all_tasks.append((proc,app))
+        reader.add(proc,app,sinks)
         app['pid']=proc.pid; app['credentials']=credentials(proc.pid)
-        all_tasks.append((proc,app));run.save();return proc,app
+        run.save();return proc,app
     def new_channel(name,ports,rounds,message_bytes=61):
         channel=dict(name=name,ports=ports,aid=0x7301,rounds=rounds,message_bytes=message_bytes,owners=row['owners'],
                      start_wall_ns=time.time_ns(),applications=[],tx_status_required=True)
@@ -68,7 +138,7 @@ def execute(run, phase):
             if proc.poll() is not None:raise CaptureError('held dynamic fd exited early')
             proc.stdin.write(b'close\n');proc.stdin.flush();proc.stdin.close()
         for proc,app in tasks:
-            proc.wait(timeout=3);refresh(app);app.update(exit=proc.returncode,end_wall_ns=time.time_ns())
+            proc.wait(timeout=3);reader.final(app);app.update(exit=proc.returncode,end_wall_ns=time.time_ns())
             if proc.returncode or app['stdout'].count('NativeDynamicLastClose:')!=1:
                 raise CaptureError('real final dynamic fd release failed: '+app['stderr'])
         channel['end_wall_ns']=time.time_ns();run.save()
@@ -83,12 +153,12 @@ def execute(run, phase):
             raise CaptureError('unmatched endpoint must be refused after staging; USB evidence still required')
         first=new_channel('A',[24576,24577],4)
         apeer=start(first,'peer',row['owners'][1])
-        await_marker(run,[apeer],'NativeDynamicStaged:',time.monotonic()+3)
+        await_marker(run,[apeer],'NativeDynamicStaged:',time.monotonic()+3,reader)
         ainit=start(first,'initiator',row['owners'][0]);atasks=[apeer,ainit]
-        await_marker(run,atasks,'NativeDynamicBusinessDone: rounds=4 held=true',time.monotonic()+45)
+        await_marker(run,atasks,'NativeDynamicBusinessDone: rounds=4 held=true',time.monotonic()+45,reader)
         second=new_channel('B',[24578,24579],20)
         bpeer=start(second,'peer',row['owners'][1])
-        await_marker(run,[bpeer],'NativeDynamicStaged:',time.monotonic()+3)
+        await_marker(run,[bpeer],'NativeDynamicStaged:',time.monotonic()+3,reader)
         os.kill(bpeer[0].pid,signal.SIGSTOP);stopped=bpeer[0]
         row['peer_stop_wall_ns']=time.time_ns();stop_deadline=time.monotonic()+5
         while '\nState:\tT' not in Path(f'/proc/{stopped.pid}/status').read_text():
@@ -97,18 +167,18 @@ def execute(run, phase):
         row['peer_stopped_confirmed']=True
         binit=start(second,'initiator',row['owners'][0]);btasks=[bpeer,binit]
         # Kernel negotiates B while its application is paused, then A closes.
-        await_marker(run,[binit],'NativeChannelSent:',stop_deadline)
+        await_marker(run,[binit],'NativeChannelSent:',stop_deadline,reader)
         close_pair(first,atasks)
         time.sleep(.2)  # bounded observation gap, not an assumed wire barrier
         if time.monotonic()>=stop_deadline:raise CaptureError('peer pause exceeded original five-second budget')
         os.kill(stopped.pid,signal.SIGCONT);stopped=None
         row['peer_resume_wall_ns']=time.time_ns();run.save()
-        await_marker(run,btasks,'NativeDynamicBusinessDone: rounds=20 held=true',time.monotonic()+205)
+        await_marker(run,btasks,'NativeDynamicBusinessDone: rounds=20 held=true',time.monotonic()+205,reader)
         close_pair(second,btasks)
         if long_bytes is not None:
             third=new_channel('C',[24580,24581],4,long_bytes)
             cpeer=start(third,'peer',row['owners'][1])
-            await_marker(run,[cpeer],'NativeDynamicStaged:',time.monotonic()+3)
+            await_marker(run,[cpeer],'NativeDynamicStaged:',time.monotonic()+3,reader)
             os.kill(cpeer[0].pid,signal.SIGSTOP);stopped=cpeer[0]
             row['long_peer_stop_wall_ns']=time.time_ns();limit=time.monotonic()+5
             while '\nState:\tT' not in Path(f'/proc/{stopped.pid}/status').read_text():
@@ -116,7 +186,7 @@ def execute(run, phase):
                 time.sleep(.001)
             row['long_peer_stopped_confirmed']=True
             cinit=start(third,'initiator',row['owners'][0]);ctasks=[cpeer,cinit]
-            await_marker(run,[cinit],'NativeChannelSent:',limit)
+            await_marker(run,[cinit],'NativeChannelSent:',limit,reader)
             row['slot_exhaustion']=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],
                 'dynamic-roundtrip',owner['object']['path'],'24582','24583','29441','1','61'],3,collection='dynamic_slot_refusals')
             refused=row['slot_exhaustion']
@@ -125,7 +195,7 @@ def execute(run, phase):
             if time.monotonic()>=limit:raise CaptureError('long peer original pause budget exceeded')
             os.kill(stopped.pid,signal.SIGCONT);stopped=None
             row['long_peer_resume_wall_ns']=time.time_ns();run.save()
-            await_marker(run,ctasks,'NativeDynamicBusinessDone: rounds=4 held=true',time.monotonic()+45)
+            await_marker(run,ctasks,'NativeDynamicBusinessDone: rounds=4 held=true',time.monotonic()+45,reader)
             close_pair(third,ctasks)
         row['smtc_after_close']=[]
         for entry in row['owners']:
@@ -135,14 +205,24 @@ def execute(run, phase):
         for channel in row['channels']:application_frames(channel)
         row['status']='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING'
     except BaseException as error:
-        row.update(status='FAIL',error=str(error),error_type=type(error).__name__);raise
+        failed=True
+        row.update(status='FAIL',error=str(error),error_type=type(error).__name__,error_traceback=traceback.format_exc());raise
     finally:
         if stopped is not None and stopped.poll() is None:os.kill(stopped.pid,signal.SIGCONT)
+        cleanup_error=None
         for proc,app in all_tasks:
             if proc.poll() is None:proc.kill()
-            proc.wait();refresh(app)
+            proc.wait()
+            if proc.stdin is not None and not proc.stdin.closed:proc.stdin.close()
+            try:reader.final(app)
+            except BaseException as error:
+                cleanup_error=error
+                row.setdefault('output_cleanup_errors',[]).append(dict(role=app['role'],error=str(error),error_type=type(error).__name__,traceback=traceback.format_exc()))
             if 'exit' not in app:app.update(exit=proc.returncode,end_wall_ns=time.time_ns())
-        files.close();row['end_wall_ns']=time.time_ns();run.save()
+        reader.close();files.close()
+        if cleanup_error is not None and not failed:row.update(status='FAIL',error=str(cleanup_error),error_type=type(cleanup_error).__name__)
+        row['end_wall_ns']=time.time_ns();run.save()
+        if cleanup_error is not None and not failed:raise cleanup_error
 
 
 def info(channel, owners):

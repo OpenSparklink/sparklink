@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T17:16:12.931111+00:00",
+  "updated_at_utc": "2026-10-16T17:53:41.684273+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -750,12 +750,12 @@
       "Production stateful fuzz,submit-revoke-Down-original-deadline/debugVM and minimum authenticated authorization parallel;no all-control prerequisite"
     ]
   },
-  "execution_phase": "P2d initialpartial:clean signedc4 production boundedTX/passivetrace implemented;48 Rust/actualC andboundedCBMC,12solo build/emptyUSB VM;U2/3 threeinitialrealgates48peerRT. FullP2dtrace/lifecycle/fairness/cost UNPROVED;alloriginalscope OPEN.",
+  "execution_phase": "Newc4 tencontrolledlifecycle gates scopedPASS with24precontrolRT/100copiedevidence negatives;VM-only Sessionservice collection andactualUSB join beingvalidated. FullP2d fairness/resources/performance andfullgoal OPEN.",
   "next_resume_tasks": [
-    "Use newc4/compiled2c23/frozen2c23 initial3gates48RT as scoped evidence only;bfaa lifecycle/lowload baseline remains its originalidentity. Preserve originalnullcallback/LSan/setup/prelaunch failures.",
-    "Add dedicatedVM default-off Sessionwork/queue/commit trace capture,source/runtime/lifetime correlation,loss/stop/drain andtracecost checks;do not label API return or operationretirement as peercompletion.",
-    "Run newc4 controlledrelease,lastmanagementfd,dup,Down andoriginal5sdeadline bothindices;keep incompletePDU/credit/Grant/Ticket assertions andverify peercontroller Ready/lease/scan;PDU-boundary multichannelfairness andrelatedlengths before P2dexit.",
-    "Then pairedsameconfig baseline/resources andmultichannel/fourdevice/Agent/SSAP continue;noallcontrolrace prerequisite,UserHostlowpriority. E1 notinherit oldUqualification;usematchingboard/firmware evidence.",
+    "Complete newVM Sessionservice observation with8a7f11f frozen tools andsamec4/compiled2c23 runtime;preserve originalpreflight/mapping failures andrequire originalbusiness/USB gate first.",
+    "Newc4 release/lastmanagementfd/dup/Down/original5sdeadline nowhave10freshgates/24precontrolRT+8primers and100evidencenegatives. PeeronlyReady/lease/scan,not anotherbusinesspair;do notreuse oldbfaa qualification.",
+    "Aftertraceclosure continue relatedlengths/multichannel PDUfairness andmatchedU2/3performance/resources;oldU1/4 lowload isnot pairedbefore/after. Agent/SSAP/fourdevice parallel,noallcontrolrace prerequisite.",
+    "UserconfirmedE1 remainsoutsideU2/3gate;matchingboard/firmware andmixedfourdevicequalification stillmissing.",
     "NaturalRCA/nonmanualrecovery/NOCPtruth/reusebarriers/callbackdrain/LKMM/KCSAN/lockdep remainOPEN;manual/hub/QMP/injection nevernaturalrecovery."
   ],
   "issue_sync_status": "K4/K17/K19/U8 newc4 initialslice appended/readbackmatched;allOPEN;fullP2dUNPROVED andall originalfailures retained",
@@ -1304,18 +1304,21 @@
       "tx-quantum-c4-initial-retained-v1": {
         "level": "real_device",
         "result": "FAIL"
+      },
+      "c4-lifecycle-2c23": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "p2d-first-production-and-three-real-gates-incomplete",
-      "production_behavior": "UniqueSession boundedcontinuousTX8/4096/next-operation2ms,blockeddata suppressesprogress requeue,passive identity-scopedtrace;Runtime/Grant/credit/Ticket obligations unchanged",
+      "id": "c4-lifecycle-exit-and-session-service-observation",
+      "production_behavior": "Keep soleRuntime/Session/Grant/credit/Ticket;new C4 controlledlifecycle qualification andVM-only passiveSession diagnostic,notnewEngine",
       "exit": [
-        "Implemented clean signedc4;actual Csanitizers/Rust48 andCBMCbounds,5budgetmutants/shortunwind;actual12solo incrementalbuild andemptyUSBVM PASS",
-        "Initialnewc4 short/long/burst3gates48realpeerRT;fulltrace/lifecycle/PDUfairness/resource/pairedmeasurement still UNPROVED",
-        "Priorbfaa qualifications historicalonly;originalfixture/LSan/setup/prelaunchfailures retained;no performance ornaturalrecovery claim"
+        "TenexactnewC4 realgates24precontrol peerRT+8primers,tenreplays100evidence negatives;peerReady/lease/scan only",
+        "Newtool8a7f11f666offline tests andstrictHTML;actualSession/USB association beingqualified separately;do notinherit newtool realqualification"
       ],
-      "next": "Add dedicatedVM Sessiontrace closure andnewc4 controlledrelease/lastfd/dup/Down/originaldeadline;related length/multichannel fairnesstests;Agent/SSAP/fourdevice parallel,noallcontrolrace prerequisites"
+      "next": "FinishactualSessiontrace/USBclosure,thenrelatedlengths/PDUfairness/matchedresources andperformance;Agent/SSAP/fourdevice parallel,noallcontrolrace prerequisites"
     }
   },
   "agent_workstream": {
@@ -1896,6 +1899,29 @@
       },
       "maintenance_receipt": "docs/evidence/session-tx-quantum-maintenance-20261017.json",
       "ci_observation": "2c23 and03ef complete success;589 overallCI confirmedinprogress at38938908908,otherworkflows success"
+    },
+    "c4_lifecycle_recheck": {
+      "status": "NEW_C4_TEN_CONTROLLED_LIFECYCLE_GATES_SCOPED_PASS",
+      "report": "docs/evidence/session-c4-lifecycle-20261017.json",
+      "qualification_record": "c4-lifecycle-2c23",
+      "compiled_kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+      "compiled_userspace": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "executed_tools": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "counts": {
+        "gates": 10,
+        "application_round_trips": 24,
+        "priming_one_way": 8,
+        "partial_pdu_delivery": 0,
+        "exact_replays": 10,
+        "copied_evidence_negatives": 100
+      },
+      "peer_scope": "generation/Ready/unchangedlease/scan only,not independentbusinesspair",
+      "remaining": [
+        "FullP2d stillUNPROVED:actualSessiontraceclosure,observationcost,relatedlengths/multichannel PDUfairness andmatchedperformance/resources.",
+        "FullS0-S6/19WP/10FV/12DG andalloriginalacceptance unchanged;Agent/SSAP/multichannel/fourdevice continueparallel.",
+        "NOCPtruth/duplicates/late/reusebarriers,callbackdrain,concurrency/refinement andEboardqualification notgranted.",
+        "Naturalstartup/re-enumeration/disappearance RCA andnonmanualautomaticrecovery OPEN;manual/hub/QMP/injection cannotqualify."
+      ]
     }
   },
   "slktest_migration": {

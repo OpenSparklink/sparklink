@@ -14,14 +14,13 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "p2d-first-production-and-three-real-gates-incomplete",
-    "production_behavior": "UniqueSession boundedcontinuousTX8/4096/next-operation2ms,blockeddata suppressesprogress requeue,passive identity-scopedtrace;Runtime/Grant/credit/Ticket obligations unchanged",
+    "id": "c4-lifecycle-exit-and-session-service-observation",
+    "production_behavior": "Keep soleRuntime/Session/Grant/credit/Ticket;new C4 controlledlifecycle qualification andVM-only passiveSession diagnostic,notnewEngine",
     "exit": [
-      "Implemented clean signedc4;actual Csanitizers/Rust48 andCBMCbounds,5budgetmutants/shortunwind;actual12solo incrementalbuild andemptyUSBVM PASS",
-      "Initialnewc4 short/long/burst3gates48realpeerRT;fulltrace/lifecycle/PDUfairness/resource/pairedmeasurement still UNPROVED",
-      "Priorbfaa qualifications historicalonly;originalfixture/LSan/setup/prelaunchfailures retained;no performance ornaturalrecovery claim"
+      "TenexactnewC4 realgates24precontrol peerRT+8primers,tenreplays100evidence negatives;peerReady/lease/scan only",
+      "Newtool8a7f11f666offline tests andstrictHTML;actualSession/USB association beingqualified separately;do notinherit newtool realqualification"
     ],
-    "next": "Add dedicatedVM Sessiontrace closure andnewc4 controlledrelease/lastfd/dup/Down/originaldeadline;related length/multichannel fairnesstests;Agent/SSAP/fourdevice parallel,noallcontrolrace prerequisites"
+    "next": "FinishactualSessiontrace/USBclosure,thenrelatedlengths/PDUfairness/matchedresources andperformance;Agent/SSAP/fourdevice parallel,noallcontrolrace prerequisites"
   },
   "overall_required_records": [
     "deadline-real21",
@@ -75,7 +74,8 @@
     "tx-quantum-c4-initial-formal",
     "tx-quantum-c4-initial-empty-vm",
     "tx-quantum-c4-initial-full-exit",
-    "tx-quantum-c4-initial-retained-v1"
+    "tx-quantum-c4-initial-retained-v1",
+    "c4-lifecycle-2c23"
   ],
   "records": [
     {
@@ -39064,6 +39064,819 @@
       ],
       "required_gates": [
         "initial-burst-command"
+      ]
+    },
+    {
+      "contracts": [
+        "ExactLifetimeGrantAndSubmitTicket",
+        "RealCreditExhaustionAndIncompletePdu",
+        "OriginalDeadlineAndPeerControllerIsolation",
+        "ImmutableBoardSourceArtifactToolIdentity"
+      ],
+      "bounds": "Newcompiled c4 andstaged/frozen2c23;physicalU2/3,tencontrolledlifecycle bothindices,24precontrolRT+8onewayprimers;2s/8s fixtures,original5sPDU;peerReady/lease/scan only.",
+      "excluded": [
+        "Real U2/3 inVM-only;actual c4 productionkernel,compileduserspace andfrozenexecution2c23;no new Host/Engine orUSB change.",
+        "Release,lastmanagementFile,dup finalmanagementFile,directDown,original5second PDU deadline bothindices;applicationauthorizedfd is a distinctobject.2s realIN81 fixture;deadline8s fixture separate.",
+        "24 ordinaryprecontrol randompeer-validated roundtrips,8Downonewayprimers;incomplete2042 PDU notdelivery. Existingcreditpool/incompleteprefix/no-postwithdrawal-submit assertions retained.",
+        "Othercontroller isolation isgeneration/Ready/unchangedlease/actualscan only;not separate survivingbusinesspair,fourdevices orhardwarefault recovery.",
+        "Tenexactfrozen sameverifier replays and100copiedactualevidence negatives;not independent decoder ornewhardwarefaultinjection.",
+        "Hi3873E port1 userconfirmed excluded;U2/3 userreported notsilicon/firmwareexecution attestation. Oldfailures remainoriginal,not rewritten."
+      ],
+      "remaining": [
+        "FullP2d stillUNPROVED:actualSessiontraceclosure,observationcost,relatedlengths/multichannel PDUfairness andmatchedperformance/resources.",
+        "FullS0-S6/19WP/10FV/12DG andalloriginalacceptance unchanged;Agent/SSAP/multichannel/fourdevice continueparallel.",
+        "NOCPtruth/duplicates/late/reusebarriers,callbackdrain,concurrency/refinement andEboardqualification notgranted.",
+        "Naturalstartup/re-enumeration/disappearance RCA andnonmanualautomaticrecovery OPEN;manual/hub/QMP/injection cannotqualify."
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+          "scopes": [
+            "drivers/sparklink",
+            "net/sparklink",
+            "include/trace/events/sparklink.h",
+            "include/uapi/linux/sparklink_ioctl.h",
+            "include/uapi/linux/sparklink_socket.h",
+            "include/linux/sparklink_channel.h",
+            "include/linux/sparklink_native.h"
+          ],
+          "files": {
+            "drivers/sparklink/Kconfig": "a4fe289630742cc56513e14d9baccc395b95891b7f49b03d607e213d2789b7a1",
+            "drivers/sparklink/Makefile": "f208817106ac1d72224079f79b486eda1b914bdddfdc9a68efb83043bbc4bdea",
+            "drivers/sparklink/standard_usb.c": "3a33dd49e91052c501b2d185df192184e5c45ad126c42154dfae7578881f7c67",
+            "drivers/sparklink/virtual.c": "b4c13ebca4cdaa80a77f0b5d6e9e90b6ea4abd16b7fdb8de3cff4d871a8391d9",
+            "drivers/sparklink/virtual.h": "774a29ad1ab3ce7dffe8ffbf396191abd2b8a7f68f7d5b342d98eb9a2f2827ef",
+            "drivers/sparklink/virtual_codec.h": "1cb87ed4fff0aeef6e56b259097499573e90a7b20ab90833ce68b9174a0af6c6",
+            "drivers/sparklink/ws73/bsle.c": "47a3e2ba4e169baa91fa5eaf098cfa77825cf06002c155986175037eee57f310",
+            "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e",
+            "drivers/sparklink/ws73/connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+            "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+            "drivers/sparklink/ws73/discovery.c": "584b8e246ae5accce54ce7647ee4469cb410bf41409c79a01799312d4fdb19ca",
+            "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+            "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+            "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+            "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+            "drivers/sparklink/ws73/usb.c": "02fcb3675dd7bff0cec665b2eb108973276247306c6341a3754d9963f8948e81",
+            "drivers/sparklink/ws73/wire.c": "d06ce9c48621ac24ba7450b7d3295a01a1a8b4cb66328f83b0acf568ebd2956c",
+            "drivers/sparklink/ws73/wire.h": "605a35601e0ce4fe95bafd8110ca8747e44e8e845510dbb7e0bd331d57b6d0df",
+            "include/linux/sparklink_channel.h": "ef48128acdad9c7a53505a38f42bff55eb07cca4be3e322fbf50382b491b8a2a",
+            "include/linux/sparklink_native.h": "46ae41f3e944f88196ebf18eaa903e15acc55b701b4f635f75402d6534c3ccf0",
+            "include/trace/events/sparklink.h": "279afabf3424aa3b405cd83ffdc2e7c866234a11837d059c04c4e8b67b733800",
+            "include/uapi/linux/sparklink_ioctl.h": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+            "include/uapi/linux/sparklink_socket.h": "e595ad90a6d6c552840fa59db23ea6ad68990c41211e958d64c8ddc9e1b0e162",
+            "net/sparklink/Kconfig": "352656711a97406f5303dc11b94ce5a5d4f792a6b6adb874814bf890f0a27a18",
+            "net/sparklink/Makefile": "f602d17ad2cebbb1232854b361451c486aed8a433eab2f6241d0820506c2308d",
+            "net/sparklink/experimental/README": "950d51c089ab48be6a7ecc541a5113fe673949a3fb6e2ccba99156265ca4304d",
+            "net/sparklink/sle_authorization.rs": "92b40f2a04e2aafae443ca8b9d6743ceaa3a68ad14867dcabb69b5f0f293d307",
+            "net/sparklink/sle_backend.rs": "65d9fec9abaa64edc2fa06756f67ce7bb1a17d3ff73bb744d95d721388bc734d",
+            "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+            "net/sparklink/sle_channel_socket.c": "07440ed0e2e7f3ab6c95c77bbce238419bde763430009110e49af9c560a0ebd2",
+            "net/sparklink/sle_channel_state.h": "2be8f64ad94f32b698286a19211b8d66954402591239627679b6908327bda565",
+            "net/sparklink/sle_channel_table.h": "6a1ecbcbaf134ca3f6fe66577b93113f2f6fd4e8cad1de97d561d66e27aa039e",
+            "net/sparklink/sle_channel_wire.c": "f64a6850c88177f1e89b2a95f09d5a0a1b19a26570c8907486778f5169ba6af2",
+            "net/sparklink/sle_channel_wire.h": "05b4f91e039982ca4fe4257201f2ac04bc3a54ae27e6cddbe6ff4728b695f32a",
+            "net/sparklink/sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+            "net/sparklink/sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+            "net/sparklink/sle_configfs.rs": "048964fc18927cbd55a470c5c0c6abb865a1214d822ddd839aef8cde36b70b69",
+            "net/sparklink/sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+            "net/sparklink/sle_controller_event.rs": "81423ded2609f8953bf2fc25f44253c83606eeafd88802af0e1685a80d9c21d7",
+            "net/sparklink/sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+            "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c",
+            "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+            "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+            "net/sparklink/sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+            "net/sparklink/sle_dli.rs": "c2935790c9edd1167f037694318dc2d5d1531df0611410a1fa594f3715c8b981",
+            "net/sparklink/sle_dynamic_state.h": "33835dc321e93a8dd7c7c810bdae5d717e27825c198ec68f660ff192052f3452",
+            "net/sparklink/sle_fragment_cursor.h": "d72b79e0aea7d2bb72b3b738fe30c0bfadcaf9ec4bb2694a61eda3098d538b95",
+            "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+            "net/sparklink/sle_host.rs": "4eccb8c3c4e4b954778438cd2bf911bcd12faf8a679a6e61e415ffcccd45ed88",
+            "net/sparklink/sle_ingress.rs": "fbc3d68b8ae838e823c72d5923b0e24ac74231e6deae85e2037b72d00edd4978",
+            "net/sparklink/sle_irq_lock.c": "b1f8a8fe4c3cd3697d6c3babd3f4aee0f93f0fb7cf98526f3490767c5d9cd9cf",
+            "net/sparklink/sle_irq_lock.h": "3f9a44812ebdd84d08db0f88834910f370bb92a0ce5760ba9371608a3679cb2d",
+            "net/sparklink/sle_irq_lock.rs": "5b5ca8e8750ea21825a34be4f45dd6eeba63cc43eeeda1e6053f55acbb6476a8",
+            "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+            "net/sparklink/sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+            "net/sparklink/sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+            "net/sparklink/sle_native.rs": "eaa52210bee199b009fbed2dfe84aa654171288badbb50aee9b8db71459d4ad5",
+            "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+            "net/sparklink/sle_native_ffi.c": "96768715727707c75d6f7439536f565c555d87130b826c6dc34375fca1c15a8b",
+            "net/sparklink/sle_native_ffi.h": "0b21eb6c9a2cec1a22c75014de4891cc9a55bb6e77a0298269e813bf96489401",
+            "net/sparklink/sle_pair_crypto.c": "0706143298e86df6013549c2a8886b2b1b283fac82aa750d1d16cd29166900fd",
+            "net/sparklink/sle_pair_material.c": "151abb8c59512dc0cebb62b58d291708ba0dee27e2ae2424f4ac147e4599c9fd",
+            "net/sparklink/sle_pair_material.h": "ac4773f0a99b679572b14142d2b5626a420d333d7c8ea9dbbdc71f86da9efbc0",
+            "net/sparklink/sle_pair_material.rs": "9a564388b898be4fc1a0c09c0f353a7159bc24d835480135b67afc11bdf659ed",
+            "net/sparklink/sle_security_relay.h": "93b664edbcdb4c729724fa0c54017c6e02e964b2eb0925e95c702a5bc74b635d",
+            "net/sparklink/sle_security_relay.rs": "87d56be3e65729c9df99375a386f643d1e9e88aa9645365314e295013b08ca0d",
+            "net/sparklink/sle_security_relay_state.rs": "c44e1dc4d8b30743323072473e7c969413c403d9175eaa0ef1da75c8b3b76d0c",
+            "net/sparklink/sle_session_schedule.h": "306e26113573f3ca003dc78f73a320e06e8534220cfa4d1aae9d599e4e0c851e",
+            "net/sparklink/sle_sessions.rs": "d167483e42118abbefcdf88c896267944f19fac637f7d59dbfaff1597ab2e472",
+            "net/sparklink/sle_snoop.rs": "d2a7d85f841066d8ea735d990b80281d01135a8488eb9c60778c790600ea8e73",
+            "net/sparklink/sle_standard_dli.rs": "a07c9af73eb2b71554a3e73fd32f06726cbbab48ef807b250a7c88aeac92e606",
+            "net/sparklink/sle_tx_budget.h": "f75c2f9133170f40651a8addc9a8a739872e5f456ad9fe9f4847bd15a84d0ed2",
+            "net/sparklink/sle_uapi.rs": "10058503091ed44debba18ab1e86031fdf37d7900300528c7ec474eb4620f726",
+            "net/sparklink/sle_workers.rs": "14cbaffd8906243f9b91c4da540e7698cdfccc3936ab92104d09b57af506e0b9",
+            "net/sparklink/sparklink_core.rs": "ebda0544019292148a8ed50f4aa058a393d6b6aff84ec12505249f658f9bbc3b",
+            "net/sparklink/sparklink_genl.c": "ffe57e94d4f5da25ae5e4548c25f503510b95a31b64c68271412c145975c2d63"
+          }
+        },
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+          "scopes": [
+            "crates",
+            "data",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "171164a0b8b962c0243a7f22119ef96e9e50748c35b4f82703c1ab5e192c5509",
+            "Cargo.toml": "18a1334d7e309bc28a2bddffb614bf3415bee043eb5b4a80d2c832f996bf12d8",
+            "crates/libsparklink/Cargo.toml": "12bf208733281aa2d93669f1b4660fb61ae1d0df4438a773282bc11eb80aaec5",
+            "crates/libsparklink/cbindgen.toml": "c2cd1c996ec9a7bd60dd08340222129c2218560194cbd9f524bf18a32a11bd5b",
+            "crates/libsparklink/include/sparklink.h": "ba0783f6d19fbc6b893f4c5566b6ade041b3fff7aa552b0f80e81c524c23f305",
+            "crates/libsparklink/src/adapter.rs": "508fd057240c72b06dfef35d76ea8f0818a8807028872989072635ad7a000342",
+            "crates/libsparklink/src/controller_events.rs": "cb52719ffe814af8f963936e448209211cab6a26b7eb4945c3e409e0017da356",
+            "crates/libsparklink/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/libsparklink/src/event.rs": "728ff9608818e63c09e0df16b7647cbb21b6e16f4680dd2e408ba7d5da9d52d2",
+            "crates/libsparklink/src/ffi.rs": "9684b5a3454c405528821ae6fcab2fd38bec0c1563e64307618c9d3aac7f8cdc",
+            "crates/libsparklink/src/ffi_native.rs": "8699a129e6bad05ecc37669bc8c69e5031e541f5e1a6544a472050d9cd2f1069",
+            "crates/libsparklink/src/lib.rs": "e9de984c1bd28a7cfc5942dbdfe63fa4f9091326825465d48d4204b5e5188e1c",
+            "crates/libsparklink/src/retired_event.rs": "bf8f5a40f84ef0d08dd0f2e379a37175a72800f17f45209f3c115c0762a84bbf",
+            "crates/libsparklink/src/snoop.rs": "d32180800723109c067eb7a51ad1215a9983f04a8985cd193140b365e4c8fad1",
+            "crates/libsparklink/src/ws73_discovery.rs": "ee0ad25307cec94fed54b95cc5cb5921de1eb496885b7fa374fe88db9240bf91",
+            "crates/slctl/Cargo.toml": "f390b61589443d09280049b720b1650111b5698a2cc55ca41a7aa5f6dab9f363",
+            "crates/slctl/examples/bus_policy_probe.rs": "fa344893368710bd6db5a8ea2c19248ff1a931305a54df32598506f60f989585",
+            "crates/slctl/examples/native_security_agent_probe.rs": "d23f9afa2e18e83453be00f2f1f4fd162bde077a0b4addbd9009c2772c246b74",
+            "crates/slctl/src/commands.rs": "a5311e7c6ef5c768a63ff197cc73e0454f4a1c5a09a3169b94b5e91e1f93ad33",
+            "crates/slctl/src/main.rs": "b960a16d30b77c63ab0a9a8ad635580a95edb4003cb44c641940f46fb2f4e63f",
+            "crates/slctl/src/security_agent.rs": "2af7a5ff0d32a13f451bed4e7d7a32ef7aa44a6eee328d17ce0a58ce80cc7e35",
+            "crates/slctl/tests/scan_freshness.rs": "d3679776de69bb7c2dbcf58eded3024a266ddacb9df151e57e063092ad1f5fe9",
+            "crates/slctl/tests/security_agent.rs": "4c810768161c1a91be7397840dba1fd4c789fdab02fef16faff37a6b50dce02c",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-experimental/Cargo.toml": "f4f874a9e3d4e9e9e04aa161e3ed6bf2ccfacd46cc0f800f3a6ef15dfc9f157e",
+            "crates/slk-experimental/README.md": "bb9ecebd88fb9b8caddea4a6c2a7203a40dcc3e8f4e46aca970d578f5a258f11",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "578d136b61749d812c1db624f493ca50f4a76bc73a04f5e7615e5a4a00933263",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "c8c68a94e1c268c5bfb80ce0dbb98bc39e16b5d6a7685e68c3ab1f8479ecb3a1",
+            "crates/slk-protocol/src/channel.rs": "d52efb6afcc52f87fc2654278cc703dd925a58387b114a407f7a65b431f967dc",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/ioctl.rs": "23be963504c1a80af31fe0cb8af9aad719770a39a532dd7914c00edf4c062df6",
+            "crates/slk-protocol/src/lib.rs": "9a4cf882a77f0aef621a519e7928b32d18633dfdf0b1524e93bd4d6fdc0e837b",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "d093c33faa18025bb1aa2f16c9ba888cef6e85131a813d058dd1872cde479225",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "0faff47303886b82e826047d44c64c755599f0bf31975185014e6226ce272343",
+            "crates/slk-protocol/src/types.rs": "0717bb7c3c125c94ae1624e240e1a8e4d9b8a53eb6590a2c8e4403c5c8cbd172",
+            "crates/slkconfig/Cargo.toml": "050fceaff604f8c3827367733f87150be35011e3330d83bbcdeba2c96d4abe54",
+            "crates/slkconfig/src/main.rs": "638f0d579565eee6ab350e39764659e184d81fb3f7eb4ac75ff1bd4c02a4285c",
+            "crates/slkd/Cargo.toml": "a0af013f553fa4a96c2fa82ffa9b3934bfbabc424c2375c3b5df58678f1278ee",
+            "crates/slkd/src/adapters.rs": "c095bf5421db3ea9a8d13ba3f7bbeb38114e889c80e552b7883627720a2c5447",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "225e216b706e6f71561f4e4228ab153c4dc17a324ed0a7d9156466aa3e62906b",
+            "crates/slkd/src/config.rs": "ce93efeead5a25c3b33e03e279feb61d5d099024c9fc84c2099f306f198b1a0c",
+            "crates/slkd/src/connection.rs": "7dc87661087a7c0357fc3159204be332fd760835eae978146f0551b9668698c9",
+            "crates/slkd/src/connection_object.rs": "884f65d88844ef16bf905b20aa3703d13e05666c40e867cbb0b635e3bdf71e20",
+            "crates/slkd/src/controller.rs": "89621843d9dcd8bfce9d61dd070b9edc5ca9c9a6af3ef2b5f7d9e913f2838d62",
+            "crates/slkd/src/dbus_iface.rs": "862a7b76b523bdb9988e4af812a62da5aa19db59a950794ed6e58639ccbc1e12",
+            "crates/slkd/src/event_loop.rs": "09595af3b6016ebf49818be499af8387edaafce783196b6972faefd04c69513d",
+            "crates/slkd/src/event_loop_tests.rs": "d031eb5deceedb6788f350f33bd83c7c5fbe57b3aaddcea5f7c0c753fe034dc3",
+            "crates/slkd/src/extadv.rs": "d80ca3d949a4f3a5974b03b8f43584053c8c3e675c782848fd9a70547a2474cb",
+            "crates/slkd/src/kernel.rs": "fc7dc11c930710f06e1ede116ba40edc5c73b1d77c4ff9509d999d89919c85ae",
+            "crates/slkd/src/main.rs": "d8f38c3d33b4e1c4b7747cfe1f63af0b8d04733346add6230338971ec779af0b",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "60fd41e9830cea2f8a1599f0b5c404b42050816eeb5ffd46d1d1863dfef7cb9f",
+            "crates/slkd/src/registration.rs": "ae2a1e82b49cd4e8cf6194fb020e4c45fc72c307339d9bbce6ab840b4500e4b8",
+            "crates/slkd/src/security.rs": "80acd72f152fc013f77d740461488ba64ebd795ec39defebafe86cb2e92b0256",
+            "crates/slkd/src/security_policy.rs": "ef37b0f7c44b63217c435d5dff970fb27e9c5ef9bee4069c7ba32086188fc8ee",
+            "crates/slkd/src/security_policy_tests.rs": "75387d7376addad22f6ec6a16005ab9fe26f0b85a01b1d1c4eac71f060a24245",
+            "crates/slkd/src/service.rs": "b1d9d23e654cfe6d31bd51489a47fdf91f9b77819fafca241d829e2e6e2145c4",
+            "crates/slkd/src/ssap_database.rs": "b159c93e7482dceabf72ec628c4d296407bc68bdebd7405b00eda6858e9f32a5",
+            "crates/slkd/src/ssap_engine.rs": "1cd34eb739e423c18eabafdf987874891aecbce3ef9da618cb33f734d4ea4ce8",
+            "crates/slkd/src/state.rs": "275aef0b12f4f8a2bdc24c587c44f02ec138ed06b3a03fa4ed1397c09c32b38d",
+            "crates/slkd/tests/config_startup.rs": "ee996e38b047f2fb37a0f57a63466f97c897b81acef56411836373c1011e2a0f",
+            "crates/slkdump/Cargo.toml": "38f9b701c304207ec581c5be5a504b08016e1a3401b06a8dd6eda9cad493672e",
+            "crates/slkdump/src/main.rs": "4a8781eda8d03ca63d00bc0c35133712660b4adc97cf82fa861349fd71f77629",
+            "crates/slkmon/Cargo.toml": "b9fd1c1362473d58b973ea4ae4f1b857e4e165f2a294b2bf888a1ddfbef59753",
+            "crates/slkmon/src/main.rs": "9e9cfb3ca5cdf37122ccc731d53c7a147f12860371efdfc62284715f511abab4",
+            "crates/slktest/Cargo.toml": "6135ddb03866cdb5bc6d7e33549b99e5adabbc73e9e7d45291a66b56ad1d413b",
+            "crates/slktest/src/benchmark.rs": "9ea3818984ed44667dbc1b8f7cd7fd67bb3baea2883e3a1e94c316c55b2df3b4",
+            "crates/slktest/src/benchmark/load.rs": "3b39dded12a137c3b57f8f589d49083da5aa7bbdbfb6e469baf829ffcf15b848",
+            "crates/slktest/src/channel.rs": "b8244b54e544f4f21d97f241eb823ea18286ed02d074c8c9933e867abda92369",
+            "crates/slktest/src/cli.rs": "b39ac992bc85c33401029f6eccde878838dc908a305dbb0fe89223df8ada199e",
+            "crates/slktest/src/connection.rs": "1d7906c1d6b7df1f63bbc2b20b1fd453305e0131960359c2987bd51edc8cde1b",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755",
+            "data/config/main.conf": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+            "data/man/man1/slctl.1": "4bab02fb61a2f201c74b358a274014247933a386343a2a43bd968403eb03d401",
+            "data/man/man1/slktest.1": "fe3c4ef2cbcc0a0106bd86fd67698bd48f9bd0ff1af7de39efb2f65d5dc32d73",
+            "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+            "data/man/man8/slkd.8": "6280641da97bcd1ca0c54562de56aa0045ee14ecbb1a12abea1f3de90b102729",
+            "data/pkgconfig/sparklink.pc": "ca12e4bf8d6c4458c868c5468c3afd6d5a3cc1e5a433eadc35a2f765bbcc765f",
+            "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+            "data/udev/99-sparklink.rules": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6"
+          }
+        },
+        "executed_tools": {
+          "repo": "sparklink",
+          "commit": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+          "scopes": [
+            "tools",
+            "bindings/python/sparklink"
+          ],
+          "files": {
+            "bindings/python/sparklink/__init__.py": "4bb3dfee76d31c490d673bddcdebb2593c88c9052e1cee5f6bd694827daec3ef",
+            "bindings/python/sparklink/adapter.py": "67b3a001e048a4a0d28edd009162a8a10c31b809edec0b1787fb758d864d7706",
+            "bindings/python/sparklink/native.py": "f55b2e6eed5d883b28d3ff2bf22233d295a66ed4dbbe04674a5e18d7efa68873",
+            "bindings/python/sparklink/ssap.py": "3eccb6189793610e8a1fad44c7ee7f4499486cd170c884aa310c1aed1036ba60",
+            "bindings/python/sparklink/structs.py": "9dc2a631fd19deccf11ecdf5b0d8211e2ae8a82e7b7fa6cc1bb4ff9ca1452439",
+            "tools/backend_registration_contract.py": "d68e1de74a1501fbdbcda4b2af8795e5be1c033c5086be893b10b8419bf69534",
+            "tools/build_resources.py": "a4e2bc174be731d25e4410db3a4016954597e0bae0a3026789cab302cc9d375c",
+            "tools/channel_socket_contract.py": "0934ffcd5cf17f72150e3fadb781f3218f9d1a52a06cc77c879e8cc9637b2769",
+            "tools/check_doc_examples.py": "3e407da3f1604658d396dcd4fcdd8a88c992b1be8ac9560eb8913bd69ccb6e2b",
+            "tools/check_docs.py": "7d43ffd4922e59294ee8d7c486716e6ade5505c5142fdacb27b6e5c37f12fc5d",
+            "tools/check_docs_browser.py": "1e88324521d9cd1ba35ac1137bdaf796071fb0973814a340112d3426e37025ff",
+            "tools/check_qualifications.py": "cd9f4818f2918f1377ba0cb24ee11dbded35b3137c17898aec4fa46c119aeb57",
+            "tools/docs_integrity.py": "e575e05373d7c447c72c9c394da6a533cea55b59e78e56b77ccb4dfee45fd9c1",
+            "tools/lab/README.md": "f6176251abb7836a3f98db4f721a24f97e474099c37bb04be35f1425d5af7125",
+            "tools/lab/channel_fd_probe/Cargo.lock": "8e676693331fd9519329d25612131c348db58fa967a691e2eb7081cd50a76553",
+            "tools/lab/channel_fd_probe/Cargo.toml": "fe70d9e8acfc8833f309a5b5cc50ed4cf722d6a45a4d36062f44097854656279",
+            "tools/lab/channel_fd_probe/README.md": "0cab2ccf56845a1d87e47b4c78abfe8b47562e1ce7f8ba9fe7f407795c1b8e46",
+            "tools/lab/channel_fd_probe/src/main.rs": "a59a7d827012d922ac977bc9aeb033dde3c5603053360337af388fafe5685100",
+            "tools/lab/retired-event-poll/legacy_probe_run.py.txt": "cfda74810ff5500e8581abf0d0df9742e3263be00544dbc4791dbb3664768a3a",
+            "tools/lab/retired-power/legacy_cli_stats.rs.txt": "7dc19ade5e6ef1f1eee11130818341cc7670d5cedbf5a480ce281fc53f3ad954",
+            "tools/lab/retired-power/legacy_get_stats.rs.txt": "2d6f966182c7201fb9eca14a8f06fded836c6345b70182014bd6265435ba479d",
+            "tools/lab/retired-power/legacy_pm_methods.rs.txt": "367314acd7c2807a2e53103da5db71ad474029a7ebddea889a92e1f6e32bca73",
+            "tools/lab/retired-power/legacy_slkconfig_stats.rs.txt": "0b7891d2cc924d26820d0dd0e6fada1bd33c98da30a84de4fa8bccfdeb22419d",
+            "tools/lab/retired-power/legacy_stats_type.rs.txt": "d324f8f920ec71f1113d0edc8cb34a8f9883721e179dbb223ccc38d289776f71",
+            "tools/lab/retired-power/legacy_stats_values_test.rs.txt": "f6600302c8709e09f07c21f510989ffcdfd005d0415472aed7fe1ba5101ccb13",
+            "tools/lab/retired-read/legacy_copy_execute.py.txt": "aa029f5d524a70bf4009b11a88bc48d439556862929f81ac9087f5289dba8ee9",
+            "tools/lab/security_relay_oracle.c": "ec21b55941590250c9c18c8fe9a79b0fa5db4324d90d5612d79eea4706bc39cb",
+            "tools/lab/security_relay_reference_sdk111.patch": "edc7749cbbbd982e76bf0a8b26654925a1b60522ab52e7f39f3b2d63be9d1140",
+            "tools/lab/security_relay_reference_warm.patch": "fb26b36dd321c53d67b6c4b59a79f5795636b401bf378ab2848abadaec2a1ebc",
+            "tools/lab/ws73_acb_transport_probe.c": "2e2016b778192648b411c1e1d02e273bbcb45846ebc58f337a14b004ef150b37",
+            "tools/reference/fresh_context.c": "92aefd2b25db3d3a8013db0e47c73a5f2dfc24b30b574a342d41e7736b94f3c1",
+            "tools/reference/libusb_trace.c": "d102ae1020ce0e0df1d5e4ee1c03bc3e587d52ef39e2036485625a91fa8e7803",
+            "tools/retired_dli_event.py": "9670b3c1242ec867ffd64e8a04cd438cc9d62ddbb854110c86fa28aa4693a109",
+            "tools/run_formal.py": "984f240839e798f159a087e242716536704cdc62dc9cb23ef77342f477012547",
+            "tools/run_pdu_submit_cbmc.py": "9158f497309ec51f9792dc99c7acfa2cea7bddf520fbd0325179acecc770e78d",
+            "tools/run_registration_proof.py": "a4203308ad217d9aca473183fb7f36ed20df4a1e59e5a84bcba4ed2ff6efb021",
+            "tools/run_standard_metadata_proof.py": "e2c2170019b9d4c976c5506388404e041c5e26b9e3a0fb793a2fe99aa80bd5d1",
+            "tools/run_standard_usb_writer_proof.py": "c1e448350d2fc7235f87bb6ebbc5b7863100d7511409d4851b07f77b7745c522",
+            "tools/run_virtual_codec_proof.py": "82385b75e30cd0be77a9d13ed5da2f399fda9e6cd0ed235b837da1e6d8243057",
+            "tools/tests/data/connected_file_record.json": "9a1f21ba55b369e639f6e010ab24a9bfe35de40d01bf5ba345cb1d05e6490ec4",
+            "tools/tests/data/connected_file_v1_record.json": "f7eb000c53643b21805d912482d189053c100e3f41deafdf1897c3db5ab0ba82",
+            "tools/tests/data/resource_file_remove_record.json": "c1d3db434bfe4989fdc0801d1d767f09bf9119914786de7e61863b4cc46b1ce5",
+            "tools/tests/test_backend_install_formal_scope.py": "f0bf4a7445f1100bf5816165f99955d8630e53e1631f3a9e613066a8682fbb37",
+            "tools/tests/test_build_resources.py": "9da79f86cd86d8508fda4f359501c7fbef848d58cb32ebe1ffe912e21228273e",
+            "tools/tests/test_docs_integrity.py": "d1c43691e9c343db019c0bf57147aadc906ac0400b56c915934df5cebe5f6204",
+            "tools/tests/test_event_copy_probe.py": "06d2de5a579d04916138993f3f051608d0260b6f100ee603edc337b1b46f864a",
+            "tools/tests/test_formal_rx_scope.py": "0222d524faccb4e559809b82d1621ade89bd8d272150feb35d150a297be7728c",
+            "tools/tests/test_qualifications.py": "a5de39ab3da4e56d723e4e60323045be53b18442e019734e90b33e52dfe75368",
+            "tools/tests/test_registration_proof.py": "0dd131dd5b81389cdf33721c021b9864843a55922df689b87176499553eeb9c8",
+            "tools/tests/test_standard_metadata_proof.py": "0188c394532866bbaa72c6ef3041556a0695da8652b1bc6d6086a6a875a962cd",
+            "tools/tests/test_standard_usb_writer_proof.py": "76c10020ee086f208084e3610a242dec3c720516a48562f6e043e7b927cedaf6",
+            "tools/tests/test_ws73_acb_transport_probe.py": "2372bf895f65052b8e8058baab692d52127f741fb87f124e0b626c4c820ae611",
+            "tools/tests/test_ws73_active_close.py": "0361c13f07c0f7a051602e7e3ca59aaf2f28241aa15cfe3d8e373a58c30cd28f",
+            "tools/tests/test_ws73_active_deadline.py": "6f610916f507e76546fac7da65400afdf4ef80e9a47d12f02224b869db49a452",
+            "tools/tests/test_ws73_benchmark.py": "73996f41ce2e8fac3bad8e28d590e7b26cff59e62f054bda35b7726ee169bf53",
+            "tools/tests/test_ws73_benchmark_timeline.py": "8e04d34751861761d67b75dbbae523d9ad8f3d74fb04c6584a5325396375ce3c",
+            "tools/tests/test_ws73_board_config.py": "bf5f69786b82da215853109e082b53fea6c8ec85d60ebc32b3800f12f5eb4db7",
+            "tools/tests/test_ws73_boot_code_evidence.py": "e9d9a36317053ae6039a6b59436d509ed8bbfbd469370e43559d4eace92c8c37",
+            "tools/tests/test_ws73_channel_daemon_crash.py": "ae37be2de198f89f0424f15f325b218c6bbcc570da4a5dadf2183455a76e2586",
+            "tools/tests/test_ws73_channel_deadline.py": "ddfa4e5bb1308ed785bb73262121d9919be641838e803f92a1d7373c7a16d520",
+            "tools/tests/test_ws73_channel_death_mode.py": "d676e229b11d334359f0b756267f45d0294c79f5c5f2d350af4bfc849a653205",
+            "tools/tests/test_ws73_channel_grant.py": "9702bb5a7de7f52d715be725c96159ee1994e1b88d10c11bafe29886afd51ca6",
+            "tools/tests/test_ws73_channel_link_down.py": "fe713784ada78a34c9db142b3a5c2d962377950036bab48d5f6f3996e02aa238",
+            "tools/tests/test_ws73_channel_prefix_hold.py": "9a2dfb9d573faf960d25a240c5333b9c17b6253e419934c6615eaa5393332dd8",
+            "tools/tests/test_ws73_channel_socket.py": "f9e1c2365f7fc64d956cef65af21329952ff991ab148c98db20b1772bad553a1",
+            "tools/tests/test_ws73_command_failure.py": "581d44cf3d11c3909ce155cac635d07d4f484c9887498010aed3bd43f5ca6301",
+            "tools/tests/test_ws73_connected_file_gate.py": "c6bdacb28bceed065191d2fda59aef886514378d1016fc9c2350b84c291e3bdb",
+            "tools/tests/test_ws73_connection_control.py": "ee6e50c518643b3e728b8414c3dc93073e443d916ea5d91ffaf53586ae54e62b",
+            "tools/tests/test_ws73_connection_objects.py": "703828e815ce5ec680a764ed793bef292dc95c9595316b654058cba70971cada",
+            "tools/tests/test_ws73_connection_queued.py": "a91fc552b1b7a80f319da697e933a1a23eec0f49bd1b4ce162ddbdb7fa4d2439",
+            "tools/tests/test_ws73_credit_observation.py": "cbefbdc04057e9802e2e9ad9ae61d1b647e24928c5eeb3ef3550fefd5464f2c8",
+            "tools/tests/test_ws73_daemon_channel_fd.py": "1caf1ac1e4065e4c219901bb8cb6128efc54f56be600fbc792e24f08ee71fbb2",
+            "tools/tests/test_ws73_daemon_crash.py": "01650d3aad0266f2d53c08be7d4e8046d2f5e7ca119edb3d0b9deef7b340f95f",
+            "tools/tests/test_ws73_daemon_hold.py": "75498594bd65648497776c4639f2e0bf84f8402dfc22cf517d404de60a7952c5",
+            "tools/tests/test_ws73_daemon_removal.py": "59788574570b253fd6e456f21ef43b7592b813b4d102a9e881284f1cfbd10e89",
+            "tools/tests/test_ws73_diagnostic_autonomous.py": "39e34fd0c8de67ed878877e5e5f45267e99290386e8b47eb2142517716376e42",
+            "tools/tests/test_ws73_diagnostic_autonomous_capture.py": "e4e791a026a401df1cf0f6fb0c6933cb1b8ac9da409ebf9eef5e13ea8618ea9e",
+            "tools/tests/test_ws73_diagnostic_cancel.py": "6261ec3f4b1ba3793a6d2e9408b0f08e809862b7674eee6e0538a0cb54be30b5",
+            "tools/tests/test_ws73_diagnostic_cancel_capture.py": "e48e88beb2cfbe0edbb44a66232f69c60c5ea63aa0a472dacb71b46daaabf3d6",
+            "tools/tests/test_ws73_diagnostic_capture.py": "f2a448c6487c2d82ba76f64fe099b52edff96b5600a25f11ef1fc56bd546c4d7",
+            "tools/tests/test_ws73_diagnostic_deadline.py": "c01e6a96d7ceed6c5bbf4329fb088426fdf9ef87368d7c44f4ce578833406658",
+            "tools/tests/test_ws73_diagnostic_deadline_capture.py": "b4f866f535239e486db165b07a56dc51249940a2300740dfc40bfe61b929acb4",
+            "tools/tests/test_ws73_diagnostic_hold.py": "ffcf985958f6178ddbf7d7d64aae89660c8c3059e1539a6712db327bb7006cbd",
+            "tools/tests/test_ws73_diagnostic_probe.py": "dd97984822b9a0fe2c0c6b77a835fb285ef79e98c4c89cb9fec8154e8aed3e4b",
+            "tools/tests/test_ws73_discovery_policy_capture.py": "81c460fe822b87778fa195a4b44f704d2ad835a3a8c7eb984929cde4371726f7",
+            "tools/tests/test_ws73_down_observation.py": "228679274aba283d681e249a722b610dcf995caa2219ec42ac66e2790ff70713",
+            "tools/tests/test_ws73_dynamic_channels.py": "f7eaae6ed6ff3f2f458c2620a1ffb99f737095f0d8d97f8b0004405a2f15266f",
+            "tools/tests/test_ws73_dynamic_output.py": "29f8d5ed548842f32c8b3d57ba3181e84d28a3b80253cfe7839c69f974c4e7a9",
+            "tools/tests/test_ws73_early_fault.py": "11f641aab5c03b2db631fde964cf705d0f2d03c22915510ceab49cc82ed3475f",
+            "tools/tests/test_ws73_encryption.py": "65d199e58c4d6ff0f0518881eabfae1d10fbfda213c7ae20933dfcc5ac7cf073",
+            "tools/tests/test_ws73_firmware.py": "140a3da1cf4b1deac4f7125457f8ef1a8fd368178c9c206957657e6f5943e4ef",
+            "tools/tests/test_ws73_firmware_upload_evidence.py": "6f36a4efdb82594801f979c6db3b0fe5b19af38492e6f56c8c57f8e52ee33b4a",
+            "tools/tests/test_ws73_host_diagnostics.py": "32d3ddea6a98af5d0f5efabe9c69b7d1bbe7e021c9720037608e7479e5fdf738",
+            "tools/tests/test_ws73_host_later_hold.py": "df92d3eecbc0044c40124f9f0af5dee81821620cfebab2aa41c0e87ab1c6e93d",
+            "tools/tests/test_ws73_initialization_lifecycle.py": "417af3449cdf591aab7e3ff3de17f36fd4424fd2186e6aa1db0aa73f4b4f7c42",
+            "tools/tests/test_ws73_initialization_off.py": "61074836efe06c760149e8cf4f2717664ea0a34395a2bc9c214dcce53cde059f",
+            "tools/tests/test_ws73_key_agreement.py": "51d1dd259838fbfb2574150728bd81864424193015c6ca43fc25f9abe0f58b3c",
+            "tools/tests/test_ws73_link_resync.py": "2cd65eeccff8d41bacbed4b10ad505492b65c24aece802e3ca8c2505f737cb6a",
+            "tools/tests/test_ws73_managed_queue_support.py": "754e449dd6c9ccb13f1e7fc2507938317fcf197ed8d45c39467936a8be730b20",
+            "tools/tests/test_ws73_management_eviction.py": "7902537189dfb10909c4d8bb385aa5945bb1abdd36db53aa6623436716cc6974",
+            "tools/tests/test_ws73_management_partial.py": "66dad831125bc175f25e1c1ecca00ea5032688c626669f94b6fdfc6d192ab03a",
+            "tools/tests/test_ws73_management_queue_ready_peer.py": "3ea4507b1020b4c8d14adcbb336518d186861f0f0ddb50470f951abf86b192ab",
+            "tools/tests/test_ws73_management_queued.py": "7f31cd0128c57e486bd78440eb4179e6d735538c5126c9506ac61289eadc38cb",
+            "tools/tests/test_ws73_management_ready_peer.py": "38ceae8a04468e18e7e248710b82e5e77be0c8e3ca50634ef4d56dd7138245b6",
+            "tools/tests/test_ws73_management_setup.py": "503f8ed5e48bf63499245516a5420ae97508c14331a69a928d4c27b4bd5bac69",
+            "tools/tests/test_ws73_model_hold.py": "128432a42a0b6b64ffef02573ba9cc4d5fa01bd804a156a017e8f1ec9b6dd35f",
+            "tools/tests/test_ws73_native_build_check.py": "d9c59ede4aa1e808a78feb3a5ab7d7ed0062cf45a5c67234feedce2506e3373e",
+            "tools/tests/test_ws73_native_deploy.py": "462392307fbbd3f1052cebc9bc8a8f60f2358cd22ece0174563eaa6db65cc5b6",
+            "tools/tests/test_ws73_native_root_smoke.py": "24679553c3520664f0e8e8965ef6f07df17a455ef4ad212b669c598f12d6d564",
+            "tools/tests/test_ws73_native_service_bundle.py": "37dc26987f12d4acdd5eb9f76054205af2677fd9a0eabb816c4bb3e6c4d34a33",
+            "tools/tests/test_ws73_north_star.py": "3f25ae4fcbe390f391013f905c8122f6eba2e5175acdbcbdf2f7b1bafeae1cb2",
+            "tools/tests/test_ws73_observer_policy.py": "f5f9355e7b3b204b8ecf1fe367af578bba8caefe7884c00858c4a867b9798e52",
+            "tools/tests/test_ws73_parallel.py": "84ccfd960cab5251117af321c348c2bb0a45f58b601a505a7f284b5a26a7fa81",
+            "tools/tests/test_ws73_parallel_data.py": "9988aad6d2f1e9fda787ac8a32d256f26810c65793c38a41ba02037dddebf197",
+            "tools/tests/test_ws73_qemu_hold_budget.py": "8161b753b30e1f47f09d7e8172c2eb0bddca173d64b63fa62dfbbfaf2f0d7bdc",
+            "tools/tests/test_ws73_recovery_budget_observation.py": "d8c14901a82a322b310199c4c5080f634e1571edae9dbe82c8c126f7704bf14a",
+            "tools/tests/test_ws73_recovery_capture.py": "330b82a97b17799f29939d10f458f662df30c9b7170bc7650617d05c1c1f5b99",
+            "tools/tests/test_ws73_reference_capture.py": "d7501342c65df75bd2e58a99190d72f1153e6e22847734d6aa839e9392dd7f7e",
+            "tools/tests/test_ws73_relay_firmware_extension.py": "c313003bade9d8c429e2d91b04ef60e3ad2a283d67138f93ba4719094e02dc06",
+            "tools/tests/test_ws73_resource_file_gate.py": "3ad41752e10932c584311b3656f4f5ec58d10de53d4dffa20925926e35de855b",
+            "tools/tests/test_ws73_revoke_prefix.py": "ff9f89b811643632af1f6a4fd32be919fec4e80e89bb042eb094a398135bb236",
+            "tools/tests/test_ws73_rx_gap.py": "0692b9ecfa381ece323f3d1364a7841f9cb5b3755e9a888cc34d4b09f880a79f",
+            "tools/tests/test_ws73_security_agent.py": "c933b1b7e3db225f3d399bd1a1487ae0a9b7c7884b42634a9c5b8db7ed2e5cf7",
+            "tools/tests/test_ws73_security_cancel.py": "268175eb9787dfa429e44329414dd0c5862dcfa149d5ecc0aa496203095bf2e8",
+            "tools/tests/test_ws73_security_capabilities.py": "2f071544a70e4f3a542e5a0bf448fd0216d8276730a7e1ccfa649249b19e1b47",
+            "tools/tests/test_ws73_security_cli.py": "0ab47ad88ec488e272ed8fdc5a1221fc572cacaa685b3ccd7ab45e2523890842",
+            "tools/tests/test_ws73_session_idle.py": "ac78693acaa77a23a5a739eef1e604c243613a7b06490bde31e3313f581a4842",
+            "tools/tests/test_ws73_socket_benchmark.py": "5848ec48155876de43b7c37377cbbe283f935a130e988958bb2c25c085ea0144",
+            "tools/tests/test_ws73_ssap_discovery.py": "833c4a82425e6a885fbd222fd35131367c374707d919fa570b399e5a2fe1c9f3",
+            "tools/tests/test_ws73_ssap_value.py": "37449aa9d535beb6f74dfb9c4742c4066f85641238f577a6c0ed7010d3ab3346",
+            "tools/tests/test_ws73_target.py": "eb40a7d00f42538f17486d4b58f5f057e06d3011720d4e513f4673e0bdacf536",
+            "tools/tests/test_ws73_tx_capture.py": "24200d0df36524e9245606a727ba088d53aeabf2175d688abaef055c7b0d2193",
+            "tools/tests/test_ws73_vm_native_root.py": "86d75b386d238919c5ff73ee89696779517196367f558e7138af899267b94adb",
+            "tools/tests/test_ws73_vm_register_reset.py": "3dfdd19d645ad9ee65d12f004cb650613142a0f1b9fc7814815035a74febb035",
+            "tools/ws73-board-config.py": "5dfde390c8041f3d9aa33ff7a4e2854e24b5d7a34d837ceab8a76fcba3f9b138",
+            "tools/ws73_acb_transport_probe.py": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+            "tools/ws73_active_deadline.py": "fff7caf3aeb1a6ca99ac7eb6f3ccdb593b237f38b260a268bd473c3f937665e0",
+            "tools/ws73_benchmark.py": "8c06a3a038c199700d407c694c79cc541628bf59775e9cc63b1da31181cd5823",
+            "tools/ws73_benchmark_timeline.py": "856c1d9ef068e792621adca2a3b683e53f80ee16b2fd5df885688b03d26216df",
+            "tools/ws73_bindings_probe.c": "e0e1f33c2b939d95aeffba2acd1f791422d963af3fde35c4408b787ad5403fd3",
+            "tools/ws73_bindings_probe.py": "a8cee9e23dd6680345a7c278b04d84101bfd347ec3b9bc1629e330466c350683",
+            "tools/ws73_boot_code_evidence.py": "0ab7823dc6dafe5f59f385fe2335f9ef95e8d4ed5f8df006a66983aaf6a93be5",
+            "tools/ws73_capture.py": "80590536783292b2f020b6c065c04a95a6e809af6f7098e77fcc2dc9080c562a",
+            "tools/ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+            "tools/ws73_channel_deadline.py": "eee746b38308719e740df4a1f712536cd96bff5620d6889ab37408789f6288e2",
+            "tools/ws73_channel_grant.py": "e61b7e6fb7cc665f6038c54d5942154a79e67ec07cf2bb6a758fcccb77aab1d0",
+            "tools/ws73_channel_link_down.py": "e2f4ea1e1bc9797afa9280f43ad36d14bcdb65328080b4335f5a2b07fc7dea51",
+            "tools/ws73_channel_prefix_hold.py": "2a6b8720777f098a6d5d7270af772b25bc46fee4dd4591cabec55459e97052a3",
+            "tools/ws73_channel_socket.py": "06e08a1170071f95cd5bad3d8c158f39d525f0e05a2556242df5274c4bf1eea5",
+            "tools/ws73_connected_file_gate.py": "ca194a829b2194ef4acc718e45942228478e072fdc338743f9c65fd334fe3094",
+            "tools/ws73_connection_control.py": "4edd8c6a8c6c1a4d44939fa9034f1b653c031e5f031676636b0936c49225e49c",
+            "tools/ws73_connection_objects.py": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+            "tools/ws73_connection_queued.py": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+            "tools/ws73_credit_observation.py": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+            "tools/ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+            "tools/ws73_daemon_crash.py": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+            "tools/ws73_daemon_hold.py": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+            "tools/ws73_daemon_removal.py": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+            "tools/ws73_diagnostic_autonomous.py": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+            "tools/ws73_diagnostic_cancel.py": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+            "tools/ws73_diagnostic_deadline.py": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+            "tools/ws73_diagnostic_hold.py": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+            "tools/ws73_diagnostic_probe.py": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+            "tools/ws73_discovery_policy_capture.py": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+            "tools/ws73_dracut_ldconfig.sh": "b55e4d4e3020fb060b22b4c4f719dbdd9c4cd8888ae3c9dc1bace3f4a694d501",
+            "tools/ws73_dynamic_channels.py": "2437bdf202d46fbd76cc3479149d98615dbd83302e05640be2b504b5e0673fb7",
+            "tools/ws73_early_fault.py": "4e90b25cde9f7ce2f46b63a99ff8e70b4deb1e6448146e6741bda3ba3d23c604",
+            "tools/ws73_event_copy_probe.py": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+            "tools/ws73_firmware.py": "d48f48e2b169631cac1f4919a1f393a010e5aedd363fe19f9113d041964012fc",
+            "tools/ws73_firmware_upload_evidence.py": "ab140aeddc063f3ceb0baa65f2e572c73d9c03709e774b6d16ec5cd438735bde",
+            "tools/ws73_host_diagnostics.py": "1a53382ccdafce3d34bf2dd853303505955779b2e2b89f1fa00d5616f1e7a347",
+            "tools/ws73_host_later_hold.py": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+            "tools/ws73_initialization_lifecycle.py": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+            "tools/ws73_key_agreement.py": "a719758392ab2f66f1abad205420e79d853e8e862bbd5159fd376893eda10cb8",
+            "tools/ws73_link_resync.py": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+            "tools/ws73_managed_queue_probe.c": "1670731a7c5b8a1888ca2c0bc899817a762b03061570ec6a29212b2a855eb7d8",
+            "tools/ws73_managed_queue_support.py": "7c951e9dc3b6bec05c16b8f256f7537c422aceadc7870b5ac74518337944b898",
+            "tools/ws73_management_eviction.py": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+            "tools/ws73_management_partial.py": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+            "tools/ws73_management_queue_ready_peer.py": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+            "tools/ws73_management_queued.py": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+            "tools/ws73_management_ready_peer.py": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+            "tools/ws73_management_setup.py": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+            "tools/ws73_model_hold.py": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+            "tools/ws73_native_boot_bundle.py": "e8509d094443e0ae3b1cbbb2624c00f9f220b1c9666e22b66c990443c40c6de3",
+            "tools/ws73_native_build_check.py": "cb9ee7a0332766bcdd7b3c04d701e70f253877c66acb9b76a44388e1f2846abc",
+            "tools/ws73_native_deploy.py": "e1ee10a4c6d73bcb710d3141c3d3c20a1cc9d154bb3ab9fca2da8795147871f6",
+            "tools/ws73_native_module_init.sh": "616a30940d90f7b04a3d37fb6a8485217330ae29a4fb0c0d7af2f1ce2ae9d914",
+            "tools/ws73_native_root_smoke.py": "dc0aa6efd5f77c24d3bdb429e897404da4ccef8e97b0db9feadf28656daa3795",
+            "tools/ws73_native_service_bundle.py": "2eb126e97008e778a8b9d72cbee9244bb01b1f3d56718778d07512b2bdf1a9d7",
+            "tools/ws73_north_star.py": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+            "tools/ws73_observer_policy.py": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+            "tools/ws73_parallel.py": "635565aca4b179de641ffee2a70503e447e272f2eb6dc8a34e8bbe60c2b76894",
+            "tools/ws73_parallel_data.py": "47f105065fdc82c6189fe51a158a33de22cc1304d615efa282beaf753b9af7c4",
+            "tools/ws73_qemu_hold_budget.py": "0e87ae6f55bbc7aab8b0f33822e746cc187beb31e4f66f74802ce4de0a8d01f2",
+            "tools/ws73_reference_capture.py": "1e6893e0992b72586cc0493fc81265f42c2529ff6c11a9f918e52bd84c770935",
+            "tools/ws73_register_reset_init.sh": "826541c4d499b3905db5b9f24a83154024e9a59ae1a62e27c8f4a214dc659ecd",
+            "tools/ws73_relay_firmware_extension.py": "03f2086ace2f90087360580d18435b2ef8f0355ec7de5f194d1438bfa0a75b87",
+            "tools/ws73_resource_file_gate.py": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+            "tools/ws73_revoke_prefix.py": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+            "tools/ws73_rf_rounds.py": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+            "tools/ws73_rx_gap.py": "43b2c647452504b332e4cb1c2268354b9098a5cb1af0755c7d56b0f7030b4390",
+            "tools/ws73_security_agent.py": "90e34159099e19bebc8cdd9b18ba7fc5fe5feca89847837e37e22644dea6bb81",
+            "tools/ws73_security_cancel.py": "8a2f20b241a307e9510dce9a1bd596380690d735e5baead806e38470d676a2ca",
+            "tools/ws73_security_capabilities.py": "0380d18f3082bee53bede21c41257cdfcc31ed6f6716251d5ea9749c794d9100",
+            "tools/ws73_security_cli.py": "99bda3dfde564693382723cd00366f7e906a89647ef29edb3b06f9b0295316ce",
+            "tools/ws73_security_relay_reference.py": "b140fb763e6fe087a8e06f4e181c1bfd3171b18a9fd8dacc7f86f61571b30d01",
+            "tools/ws73_session_idle.py": "0e3ba7c5848a974872280c0e2e257c79c12c8ff4a7b33a3da44e46473f37c776",
+            "tools/ws73_socket_benchmark.py": "19c9c6e031045f02b274c341bc94e610a12ae22cecbd402bce42f3a702016b79",
+            "tools/ws73_ssap_discovery.py": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+            "tools/ws73_ssap_value.py": "45f6ca4786e7b87fb8f9bd50a6d14dc56ec2235b2bafbd562db24ff6bbff58d8",
+            "tools/ws73_target.py": "9faaa33d40a143c1e6e0a800e074cc5d4cd2a35c160ab678caa292155311671d",
+            "tools/ws73_target_control.py": "7e37b080749aed33b9f50afa6ea0322102888677db7e7744bab19746ac0ee36b",
+            "tools/ws73_target_guest.py": "9361ab9532b690cd505bdf0ff7738047598e384afac3c08d33b2fd2ff6b2e949",
+            "tools/ws73_target_init.sh": "2ba92dabe481f6b914381ea2672f34f744f7573162730c94f17cab3d1be5f625",
+            "tools/ws73_target_recovery.py": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+            "tools/ws73_vm_native_root.py": "a805611862274dd7ed7a4b47d62e34cf423d524096d3136d15d9e40a594ea058",
+            "tools/ws73_vm_register_reset.py": "99e759dc2ff4d0171fd002102c925c1a68ba865ead419d7da4cc4b9f4b1f5d70"
+          }
+        },
+        "kernel_proof_tools": {
+          "repo": "linux",
+          "commit": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+          "scopes": [
+            "tools/testing/selftests/sparklink/run_native_data.py",
+            "tools/testing/selftests/sparklink/native-data",
+            "tools/testing/selftests/sparklink/run_session_dispatch.py",
+            "tools/testing/selftests/sparklink/run_session_wake.py",
+            "tools/testing/selftests/sparklink/run_session_schedule.py",
+            "tools/testing/selftests/sparklink/run_tx_budget.py",
+            "tools/testing/selftests/sparklink/run_fragment_cursor_cbmc.py",
+            "tools/testing/selftests/sparklink/fragment_cursor_cbmc.c",
+            "tools/testing/selftests/sparklink/session"
+          ],
+          "files": {
+            "tools/testing/selftests/sparklink/fragment_cursor_cbmc.c": "a2636ea0a073cbf5ab7fd20ef824c475c29920b90fb2a243f9057ca25cca1356",
+            "tools/testing/selftests/sparklink/native-data/README": "9a6bbd6dd56106a133e0cf4e1ee40b673a12a4aa358577dc6fd1f8989c05dcc7",
+            "tools/testing/selftests/sparklink/native-data/fixture.rs": "a33bff1398b696998d2d3988d6f27a0396083184878c2a8f104d40859b60f201",
+            "tools/testing/selftests/sparklink/run_fragment_cursor_cbmc.py": "0873016d1671ad6cdbb63bf182c5b95caec819d4f1846a1dd9cabe91b9ce9f41",
+            "tools/testing/selftests/sparklink/run_native_data.py": "3cf782bdd34cf79481b7c9fcb29d2b29689e94aa61135ed8eee15cccf1b7664c",
+            "tools/testing/selftests/sparklink/run_session_dispatch.py": "2e2ee42d46395f130ede81ec3bb3287277987d4b182188e26c39bf55d1b42174",
+            "tools/testing/selftests/sparklink/run_session_schedule.py": "57f2a404c9aeb8b63daa77e5df0c5255dd50277c3d1c51ff312ddc213099ecbc",
+            "tools/testing/selftests/sparklink/run_session_wake.py": "c68b063e126c51ef3050dbcccaf1da8ba3eac05abf91b705414811c56fc97da8",
+            "tools/testing/selftests/sparklink/run_tx_budget.py": "69973851493bc59dedd75218065e63ec26fc509a0d7a9f8bd7a489845cd6410a",
+            "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "75cdc9574fad9543c5703bc5d1401fc7a19daf5cd44cf4e6575956ce15411ce7",
+            "tools/testing/selftests/sparklink/session/schedule_cbmc.c": "6f4f3d07dad73edbe603450d16a8abed6d675168cfcd9ed788b17d3e7a40ad92",
+            "tools/testing/selftests/sparklink/session/tx_budget_cbmc.c": "36da228039f126e8c2077db7801aa252679e43c03a93ca2dca9aa6d3c0013782",
+            "tools/testing/selftests/sparklink/session/wake_cbmc.c": "c6b49a888dd74d2bd7702dea3b8c90a1733c10b52f5dd195646e8969696409ec",
+            "tools/testing/selftests/sparklink/session/wake_fixture.c": "30977e435af53fbbf020a8b4de76fcd93ab4544cffe6650aba08b491fe7ad0ba"
+          }
+        }
+      },
+      "report_commit": "969f03285da209f9d26a1f15a5e091cdc844175c",
+      "artifact_materials": [
+        "c4-lifecycle-2c23-m0",
+        "c4-lifecycle-2c23-m1",
+        "c4-lifecycle-2c23-m2",
+        "c4-lifecycle-2c23-m3",
+        "c4-lifecycle-2c23-m4",
+        "c4-lifecycle-2c23-m5",
+        "c4-lifecycle-2c23-m6",
+        "c4-lifecycle-2c23-m7",
+        "c4-lifecycle-2c23-m8",
+        "c4-lifecycle-2c23-m9",
+        "c4-lifecycle-2c23-m10",
+        "c4-lifecycle-2c23-m11",
+        "c4-lifecycle-2c23-m12",
+        "c4-lifecycle-2c23-m13",
+        "c4-lifecycle-2c23-m14",
+        "c4-lifecycle-2c23-m15",
+        "c4-lifecycle-2c23-m16",
+        "c4-lifecycle-2c23-m17",
+        "c4-lifecycle-2c23-m18",
+        "c4-lifecycle-2c23-m19",
+        "c4-lifecycle-2c23-m20",
+        "c4-lifecycle-2c23-m21",
+        "c4-lifecycle-2c23-m22",
+        "c4-lifecycle-2c23-m23",
+        "c4-lifecycle-2c23-m24",
+        "c4-lifecycle-2c23-m25",
+        "c4-lifecycle-2c23-m26",
+        "c4-lifecycle-2c23-m27",
+        "c4-lifecycle-2c23-m28",
+        "c4-lifecycle-2c23-m29",
+        "c4-lifecycle-2c23-m30",
+        "c4-lifecycle-2c23-m31",
+        "c4-lifecycle-2c23-m32",
+        "c4-lifecycle-2c23-m33",
+        "c4-lifecycle-2c23-m34",
+        "c4-lifecycle-2c23-m35",
+        "c4-lifecycle-2c23-m36",
+        "c4-lifecycle-2c23-m37",
+        "c4-lifecycle-2c23-m38",
+        "c4-lifecycle-2c23-m39",
+        "c4-lifecycle-2c23-m40",
+        "c4-lifecycle-2c23-m41",
+        "c4-lifecycle-2c23-m42",
+        "c4-lifecycle-2c23-m43",
+        "c4-lifecycle-2c23-m44",
+        "c4-lifecycle-2c23-m45",
+        "c4-lifecycle-2c23-m46",
+        "c4-lifecycle-2c23-m47",
+        "c4-lifecycle-2c23-m48",
+        "c4-lifecycle-2c23-m49",
+        "c4-lifecycle-2c23-m50",
+        "c4-lifecycle-2c23-m51",
+        "c4-lifecycle-2c23-m52",
+        "c4-lifecycle-2c23-m53",
+        "c4-lifecycle-2c23-m54",
+        "c4-lifecycle-2c23-m55",
+        "c4-lifecycle-2c23-m56",
+        "c4-lifecycle-2c23-m57",
+        "c4-lifecycle-2c23-m58",
+        "c4-lifecycle-2c23-m59",
+        "c4-lifecycle-2c23-m60",
+        "c4-lifecycle-2c23-m61",
+        "c4-lifecycle-2c23-m62",
+        "c4-lifecycle-2c23-m63",
+        "c4-lifecycle-2c23-m64",
+        "c4-lifecycle-2c23-m65",
+        "c4-lifecycle-2c23-m66",
+        "c4-lifecycle-2c23-m67",
+        "c4-lifecycle-2c23-m68",
+        "c4-lifecycle-2c23-m69",
+        "c4-lifecycle-2c23-m70",
+        "c4-lifecycle-2c23-m71",
+        "c4-lifecycle-2c23-m72",
+        "c4-lifecycle-2c23-m73",
+        "c4-lifecycle-2c23-m74",
+        "c4-lifecycle-2c23-m75",
+        "c4-lifecycle-2c23-m76",
+        "c4-lifecycle-2c23-m77",
+        "c4-lifecycle-2c23-m78",
+        "c4-lifecycle-2c23-m79",
+        "c4-lifecycle-2c23-m80",
+        "c4-lifecycle-2c23-m81",
+        "c4-lifecycle-2c23-m82",
+        "c4-lifecycle-2c23-m83",
+        "c4-lifecycle-2c23-m84",
+        "c4-lifecycle-2c23-m85",
+        "c4-lifecycle-2c23-m86",
+        "c4-lifecycle-2c23-m87",
+        "c4-lifecycle-2c23-m88",
+        "c4-lifecycle-2c23-m89",
+        "c4-lifecycle-2c23-m90",
+        "c4-lifecycle-2c23-m91",
+        "c4-lifecycle-2c23-m92",
+        "c4-lifecycle-2c23-m93",
+        "c4-lifecycle-2c23-m94",
+        "c4-lifecycle-2c23-m95",
+        "c4-lifecycle-2c23-m96",
+        "c4-lifecycle-2c23-m97",
+        "c4-lifecycle-2c23-m98",
+        "c4-lifecycle-2c23-m99",
+        "c4-lifecycle-2c23-m100",
+        "c4-lifecycle-2c23-m101",
+        "c4-lifecycle-2c23-m102",
+        "c4-lifecycle-2c23-m103",
+        "c4-lifecycle-2c23-m104",
+        "c4-lifecycle-2c23-m105",
+        "c4-lifecycle-2c23-m106",
+        "c4-lifecycle-2c23-m107",
+        "c4-lifecycle-2c23-m108",
+        "c4-lifecycle-2c23-m109",
+        "c4-lifecycle-2c23-m110",
+        "c4-lifecycle-2c23-m111",
+        "c4-lifecycle-2c23-m112",
+        "c4-lifecycle-2c23-m113",
+        "c4-lifecycle-2c23-m114",
+        "c4-lifecycle-2c23-m115",
+        "c4-lifecycle-2c23-m116",
+        "c4-lifecycle-2c23-m117",
+        "c4-lifecycle-2c23-m118",
+        "c4-lifecycle-2c23-m119",
+        "c4-lifecycle-2c23-m120",
+        "c4-lifecycle-2c23-m121",
+        "c4-lifecycle-2c23-m122",
+        "c4-lifecycle-2c23-m123",
+        "c4-lifecycle-2c23-m124",
+        "c4-lifecycle-2c23-m125",
+        "c4-lifecycle-2c23-m126",
+        "c4-lifecycle-2c23-m127",
+        "c4-lifecycle-2c23-m128",
+        "c4-lifecycle-2c23-m129",
+        "c4-lifecycle-2c23-m130",
+        "c4-lifecycle-2c23-m131",
+        "c4-lifecycle-2c23-m132",
+        "c4-lifecycle-2c23-m133",
+        "c4-lifecycle-2c23-m134",
+        "c4-lifecycle-2c23-m135",
+        "c4-lifecycle-2c23-m136",
+        "c4-lifecycle-2c23-m137",
+        "c4-lifecycle-2c23-m138",
+        "c4-lifecycle-2c23-m139",
+        "c4-lifecycle-2c23-report"
+      ],
+      "tool_materials": [
+        "c4-lifecycle-2c23-m16",
+        "c4-lifecycle-2c23-m115"
+      ],
+      "configuration_materials": [
+        "c4-lifecycle-2c23-m11",
+        "c4-lifecycle-2c23-m134"
+      ],
+      "id": "c4-lifecycle-2c23",
+      "title": "c4双U：release/最后管理fd/dup/Down/原期限十项新实机门禁",
+      "level": "real_device",
+      "result": "PASS",
+      "report": {
+        "material": "c4-lifecycle-2c23-report",
+        "scope_pointer": [
+          "scope"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "compiled_kernel"
+          ],
+          "compiled_userspace": [
+            "compiled_userspace"
+          ],
+          "executed_tools": [
+            "executed_tools"
+          ],
+          "kernel_proof_tools": [
+            "compiled_kernel"
+          ]
+        },
+        "verdict_pointer": [
+          "real_result"
+        ],
+        "verdict_results": {
+          "PASS": "PASS"
+        },
+        "gate_rows_pointer": [
+          "real_gates"
+        ]
+      },
+      "gates": [
+        {
+          "id": "release0",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m0"
+          ],
+          "report_pointer": [
+            "real_gates",
+            0
+          ],
+          "reported_status": "REAL_CHANNEL_GRANT_PASS"
+        },
+        {
+          "id": "release1",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m22"
+          ],
+          "report_pointer": [
+            "real_gates",
+            1
+          ],
+          "reported_status": "REAL_CHANNEL_GRANT_PASS"
+        },
+        {
+          "id": "close0",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m33"
+          ],
+          "report_pointer": [
+            "real_gates",
+            2
+          ],
+          "reported_status": "REAL_CHANNEL_GRANT_PASS"
+        },
+        {
+          "id": "close1",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m44"
+          ],
+          "report_pointer": [
+            "real_gates",
+            3
+          ],
+          "reported_status": "REAL_CHANNEL_GRANT_PASS"
+        },
+        {
+          "id": "dup0",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m55"
+          ],
+          "report_pointer": [
+            "real_gates",
+            4
+          ],
+          "reported_status": "REAL_CHANNEL_GRANT_PASS"
+        },
+        {
+          "id": "dup1",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m66"
+          ],
+          "report_pointer": [
+            "real_gates",
+            5
+          ],
+          "reported_status": "REAL_CHANNEL_GRANT_PASS"
+        },
+        {
+          "id": "down0",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m77"
+          ],
+          "report_pointer": [
+            "real_gates",
+            6
+          ],
+          "reported_status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS"
+        },
+        {
+          "id": "down1",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m88"
+          ],
+          "report_pointer": [
+            "real_gates",
+            7
+          ],
+          "reported_status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS"
+        },
+        {
+          "id": "deadline0",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m99"
+          ],
+          "report_pointer": [
+            "real_gates",
+            8
+          ],
+          "reported_status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS"
+        },
+        {
+          "id": "deadline1",
+          "result": "PASS",
+          "materials": [
+            "c4-lifecycle-2c23-report",
+            "c4-lifecycle-2c23-m116"
+          ],
+          "report_pointer": [
+            "real_gates",
+            9
+          ],
+          "reported_status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS"
+        }
+      ],
+      "required_gates": [
+        "release0",
+        "release1",
+        "close0",
+        "close1",
+        "dup0",
+        "dup1",
+        "down0",
+        "down1",
+        "deadline0",
+        "deadline1"
       ]
     }
   ],
@@ -83503,6 +84316,1135 @@
       "sha256": "2b50b2823ec8409ff1d0c5639b39a73930a751f45b2d46c0a8dc4e55d6810724",
       "bytes": 89154,
       "source_commit": "03ef98f46133cf448a139d8d20cea99401de0a9b"
+    },
+    "c4-lifecycle-2c23-m0": {
+      "path": ".dev/c4-lifecycle-release0-v1/manifest.json",
+      "sha256": "5d80e89292a6a8bd6ef55c7b7c0a86c6df6f98804866498a76b88a34b45e0a84",
+      "bytes": 91043,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m1": {
+      "path": ".dev/c4-lifecycle-release0-v1/guest-output/ws73.pcap",
+      "sha256": "578ddac7756694d4ee26e2c02abaa9daaecb7f085ae786aa03b7b625e6bd7ce5",
+      "bytes": 81773,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m2": {
+      "path": ".dev/c4-lifecycle-release0-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m3": {
+      "path": ".dev/c4-lifecycle-release0-v1/guest-output/kernel.log",
+      "sha256": "0dc87faf6bd99f96b47eb060b3cc4b20590b254be946d4778c72fa43877f70d7",
+      "bytes": 348671,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m4": {
+      "path": ".dev/c4-lifecycle-release0-v1/guest-output/connected-file/run.json",
+      "sha256": "f5d1047e050f094e2d05f86a842a06323df7c7e854ea7f638f5600af6b1c6d58",
+      "bytes": 38665,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m5": {
+      "path": ".dev/c4-lifecycle-release0-v1/guest-output/setup-release/run.json",
+      "sha256": "29175acc1e2be2baa456d1f97d0b94f8d93bad258131097fd9fc83357051d97c",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m6": {
+      "path": ".dev/c4-lifecycle-release0-v1/qemu-stderr.log",
+      "sha256": "4b3ecf18ae7b5eeb7149cec832bad79ab5b841c19be03edbbdc2eacacd53eab7",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m7": {
+      "path": ".dev/c4-lifecycle-release0-v1/qmp.jsonl",
+      "sha256": "e7228eb91a0a7c74ffdebd3898fe783ac0557f2d480acdb7257f8d8a3345b2eb",
+      "bytes": 11151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m8": {
+      "path": ".dev/c4-lifecycle-release0-v1/console.log",
+      "sha256": "15c4bab16db8651f5fbef8c4d17f4dd2ca8eaba7c7bc13cba600f7c5541adc59",
+      "bytes": 14079,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m9": {
+      "path": ".dev/c4-lifecycle-release0-replay-v1.json",
+      "sha256": "933ac24a7ee96bd4a6f94792d40e1401aa0b476ae0426b33e700b74bddff30d7",
+      "bytes": 48867,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m10": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-release0-v1.json",
+      "sha256": "24f959d0f3ed712259f4669c92d5ebf75d745069ee1258e5abad3fcbf0423a90",
+      "bytes": 2404,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m11": {
+      "path": ".dev/tx-quantum-normal-prepared-v2/manifest.json",
+      "sha256": "c841688983dad391867f287d32c8b743563acac76c4913db847952b3070f8765",
+      "bytes": 264465,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m12": {
+      "path": ".dev/tx-quantum-normal-prepared-v2/bzImage",
+      "sha256": "03f08bbabd513913620dce0625860fd23df53deb3d6d8d6e61977887c016d3ba",
+      "bytes": 15749120,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m13": {
+      "path": ".dev/tx-quantum-normal-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m14": {
+      "path": ".dev/tx-quantum-normal-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m15": {
+      "path": ".dev/tx-quantum-normal-prepared-v2/root.btrfs",
+      "sha256": "c4732e6077e1649c603d8a73d175b576a236b35a7bd255d1f6d97d94dfff0875",
+      "bytes": 1073741824,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m16": {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m17": {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m18": {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m19": {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m20": {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m21": {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "9d7bd90c52d7cb2382bc3b8ce6fa4e20a2ac258189b6e8a17244950a8c98d2ee",
+      "bytes": 138049,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m22": {
+      "path": ".dev/c4-lifecycle-release1-v1/manifest.json",
+      "sha256": "a38f470acb6a2a7750cf80e7947cc4e0e64b6e9c54acc5834c9ec48017c06d1a",
+      "bytes": 91043,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m23": {
+      "path": ".dev/c4-lifecycle-release1-v1/guest-output/ws73.pcap",
+      "sha256": "2c619529e1902b53b7f314d22fd70541613008dbee1a4420154ca0d5ecc437a5",
+      "bytes": 81773,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m24": {
+      "path": ".dev/c4-lifecycle-release1-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m25": {
+      "path": ".dev/c4-lifecycle-release1-v1/guest-output/kernel.log",
+      "sha256": "e6d1aaffe60162c99c4cfcd23e638cc918b3c894925ec64f09907168fff98f06",
+      "bytes": 349554,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m26": {
+      "path": ".dev/c4-lifecycle-release1-v1/guest-output/connected-file/run.json",
+      "sha256": "61b454eafab9eb89f5a50da69fe70e542679b6cda18331e648afcbc91e89f764",
+      "bytes": 38663,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m27": {
+      "path": ".dev/c4-lifecycle-release1-v1/guest-output/setup-release/run.json",
+      "sha256": "61ae67dff2d856ec9f251cd5eb74f09ab19d4f1874512757dc58a445dd970693",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m28": {
+      "path": ".dev/c4-lifecycle-release1-v1/qemu-stderr.log",
+      "sha256": "81577b4d99c40bb8673cb947522d22fc828806350927b25ea0026977637c78e9",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m29": {
+      "path": ".dev/c4-lifecycle-release1-v1/qmp.jsonl",
+      "sha256": "51e164a39eccce8c0b52c500be9686b00abfd42eadca672aef9c2b9adcd9a645",
+      "bytes": 11151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m30": {
+      "path": ".dev/c4-lifecycle-release1-v1/console.log",
+      "sha256": "93228be440dcf5c06b4d1d75ed17d5abd2813475477b186174dd9e5f9542df8b",
+      "bytes": 13889,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m31": {
+      "path": ".dev/c4-lifecycle-release1-replay-v1.json",
+      "sha256": "2eb4d8b950d7cb20a2e72b14a4d52899321b69efa39cd1db65055db47f03acd0",
+      "bytes": 48867,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m32": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-release1-v1.json",
+      "sha256": "133764e17b738718cca36472f01ee09133bca485ee6976f67a59f580c5f54518",
+      "bytes": 2404,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m33": {
+      "path": ".dev/c4-lifecycle-close0-v1/manifest.json",
+      "sha256": "c46b2f0067422f56232fbfdbfcf55d9ccd383b3e2e463d24988a448208f433eb",
+      "bytes": 90973,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m34": {
+      "path": ".dev/c4-lifecycle-close0-v1/guest-output/ws73.pcap",
+      "sha256": "ebb0defa2e7d1f1fd8cb427ce78352ad23f90ff3fc033ff6b6f5c32a6ef54a46",
+      "bytes": 81773,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m35": {
+      "path": ".dev/c4-lifecycle-close0-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m36": {
+      "path": ".dev/c4-lifecycle-close0-v1/guest-output/kernel.log",
+      "sha256": "27d3965c3b3cceccdf6a291bceaa9340d8f3d08032f60d5c35c9a4834136b06c",
+      "bytes": 349023,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m37": {
+      "path": ".dev/c4-lifecycle-close0-v1/guest-output/connected-file/run.json",
+      "sha256": "cf41fcc02a30de9957e0d3d193e58af88d1e1448ef3e3477e5b6dd0a503b778a",
+      "bytes": 38561,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m38": {
+      "path": ".dev/c4-lifecycle-close0-v1/guest-output/setup-release/run.json",
+      "sha256": "d9990cdb94c4d860b2aca0c4d10bcd9ba1415d26eea96fa501bcba7eef4aeab5",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m39": {
+      "path": ".dev/c4-lifecycle-close0-v1/qemu-stderr.log",
+      "sha256": "d643571b459e742ef333ab39008b9f1205ae138311741e3b1736495f41474a6b",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m40": {
+      "path": ".dev/c4-lifecycle-close0-v1/qmp.jsonl",
+      "sha256": "e7228eb91a0a7c74ffdebd3898fe783ac0557f2d480acdb7257f8d8a3345b2eb",
+      "bytes": 11151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m41": {
+      "path": ".dev/c4-lifecycle-close0-v1/console.log",
+      "sha256": "b928dc8ae1f44d5f95a9e2ee0839806fcce4cf6b7d1f75ecf9ebed45fd35a627",
+      "bytes": 13887,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m42": {
+      "path": ".dev/c4-lifecycle-close0-replay-v1.json",
+      "sha256": "8eae888648df13c8d19c65aa95793494ab0b869d02dba749e3092d768ed412bd",
+      "bytes": 48863,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m43": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-close0-v1.json",
+      "sha256": "a7224079808d043d182fde38ad21973dea229a32fb66d8fec037bb4b85c3c4bf",
+      "bytes": 2382,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m44": {
+      "path": ".dev/c4-lifecycle-close1-v1/manifest.json",
+      "sha256": "90244de6195a776c308d7378090f25ace659e13cd9961a7c6db84ccee0ad367f",
+      "bytes": 90973,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m45": {
+      "path": ".dev/c4-lifecycle-close1-v1/guest-output/ws73.pcap",
+      "sha256": "aec41b60ad035de9299276f620253f03331c51ce5e3dea9586981b112fd928df",
+      "bytes": 81773,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m46": {
+      "path": ".dev/c4-lifecycle-close1-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m47": {
+      "path": ".dev/c4-lifecycle-close1-v1/guest-output/kernel.log",
+      "sha256": "1fc6d730383ebe4fc45e3e409eb66209e4b56b06b3bccd03d1a4cafea9e2253b",
+      "bytes": 349417,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m48": {
+      "path": ".dev/c4-lifecycle-close1-v1/guest-output/connected-file/run.json",
+      "sha256": "69d3cd7a0677c6e296e0e48e56c39e741811715f65fd735b636f5fef9f9891cb",
+      "bytes": 38561,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m49": {
+      "path": ".dev/c4-lifecycle-close1-v1/guest-output/setup-release/run.json",
+      "sha256": "dbaab5ac6b57c6db159f13b993719145345e5ec416be5ba2dc36ebea2bf89cfb",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m50": {
+      "path": ".dev/c4-lifecycle-close1-v1/qemu-stderr.log",
+      "sha256": "023d596000bf7d510e830bac8bf82f521b486352e571b612c27218d4f3d687df",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m51": {
+      "path": ".dev/c4-lifecycle-close1-v1/qmp.jsonl",
+      "sha256": "51e164a39eccce8c0b52c500be9686b00abfd42eadca672aef9c2b9adcd9a645",
+      "bytes": 11151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m52": {
+      "path": ".dev/c4-lifecycle-close1-v1/console.log",
+      "sha256": "f82edcdd22eb5b1a2095d7c13cc9504462fc34f4ef37b6e2bb18208cb5651150",
+      "bytes": 13887,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m53": {
+      "path": ".dev/c4-lifecycle-close1-replay-v1.json",
+      "sha256": "fad1505567953c3ae35c5e5572f9e1303eb26d213f134db6cb5b205396673f07",
+      "bytes": 48863,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m54": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-close1-v1.json",
+      "sha256": "4bd0e48c8d79670e1f2a5015f084e047ddaace15fe265de7f1abcd94b58bc1f6",
+      "bytes": 2382,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m55": {
+      "path": ".dev/c4-lifecycle-dup0-v1/manifest.json",
+      "sha256": "5e6d550bf6fa5a72022351169bd22434f8d846d3cb0f66d911187cb87ab8b060",
+      "bytes": 106543,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m56": {
+      "path": ".dev/c4-lifecycle-dup0-v1/guest-output/ws73.pcap",
+      "sha256": "1ac3fc5573e223d1730a40c9d969f0e68deb4208e560bb826a1df4cb2174f496",
+      "bytes": 88377,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m57": {
+      "path": ".dev/c4-lifecycle-dup0-v1/guest-output/capture-stats.txt",
+      "sha256": "58d0f63402f1f8921ad062388d5dca5e772cbbc1780838f7c66d8734dfbc22d3",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m58": {
+      "path": ".dev/c4-lifecycle-dup0-v1/guest-output/kernel.log",
+      "sha256": "f52df06241ab67da19269a39e1ce3bce7d7104e27a77ae640221c4ea141e05df",
+      "bytes": 349256,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m59": {
+      "path": ".dev/c4-lifecycle-dup0-v1/guest-output/connected-file/run.json",
+      "sha256": "cee90eb27cb14b02f78cc241fa109fa77812bef48f5e0fe829431ed250cbb972",
+      "bytes": 41610,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m60": {
+      "path": ".dev/c4-lifecycle-dup0-v1/guest-output/setup-release/run.json",
+      "sha256": "b06f69e28599e1a973c6af470f3c4855e31396410c67278e72a9ce73b8e85d82",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m61": {
+      "path": ".dev/c4-lifecycle-dup0-v1/qemu-stderr.log",
+      "sha256": "0a33be447c9b2bbde6d7dc06e3a74dddb2f57345485274cae1995115a43ba21a",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m62": {
+      "path": ".dev/c4-lifecycle-dup0-v1/qmp.jsonl",
+      "sha256": "e7228eb91a0a7c74ffdebd3898fe783ac0557f2d480acdb7257f8d8a3345b2eb",
+      "bytes": 11151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m63": {
+      "path": ".dev/c4-lifecycle-dup0-v1/console.log",
+      "sha256": "24a2bd8d267c2253324ffc4aa9babe0d42c30be3c7b08c78e7daf5041b32aa3f",
+      "bytes": 13885,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m64": {
+      "path": ".dev/c4-lifecycle-dup0-replay-v1.json",
+      "sha256": "b1fda845c9b862060fc2b3218e5de4d3e46bb239ce0dee1f749f25a681ac1bf1",
+      "bytes": 65348,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m65": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-dup0-v1.json",
+      "sha256": "7257956a5f607797a32424b4af77954f3924fcb40f5a242d2203efdc1a95d2f4",
+      "bytes": 2360,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m66": {
+      "path": ".dev/c4-lifecycle-dup1-v1/manifest.json",
+      "sha256": "21f5c4a32167d25a1a368f5d7682d8ba4e338f3d518dbe7e55c0856175f8421f",
+      "bytes": 106543,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m67": {
+      "path": ".dev/c4-lifecycle-dup1-v1/guest-output/ws73.pcap",
+      "sha256": "51077f788f5f9e3f0a34ac50c6be979cd85c9b54863fee9af53f1fab45ef5ab9",
+      "bytes": 88377,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m68": {
+      "path": ".dev/c4-lifecycle-dup1-v1/guest-output/capture-stats.txt",
+      "sha256": "58d0f63402f1f8921ad062388d5dca5e772cbbc1780838f7c66d8734dfbc22d3",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m69": {
+      "path": ".dev/c4-lifecycle-dup1-v1/guest-output/kernel.log",
+      "sha256": "340db1ace4464c16f351b1b9fa895a65949013b58e5dbd68de243f96e660a624",
+      "bytes": 347679,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m70": {
+      "path": ".dev/c4-lifecycle-dup1-v1/guest-output/connected-file/run.json",
+      "sha256": "664abd09a7de760f52e83cd14ddf12d9efbdfa5c684283321bc52a596971b7a8",
+      "bytes": 41611,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m71": {
+      "path": ".dev/c4-lifecycle-dup1-v1/guest-output/setup-release/run.json",
+      "sha256": "97997df4f28505dcf23aa56a1012e5f3713fbf1f8b6fe52a5033b68fb3195d0f",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m72": {
+      "path": ".dev/c4-lifecycle-dup1-v1/qemu-stderr.log",
+      "sha256": "8ee3123c7776a5cf54d5d8bcd604d03206081fa0d4efc906d0e2def8d67df80c",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m73": {
+      "path": ".dev/c4-lifecycle-dup1-v1/qmp.jsonl",
+      "sha256": "51e164a39eccce8c0b52c500be9686b00abfd42eadca672aef9c2b9adcd9a645",
+      "bytes": 11151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m74": {
+      "path": ".dev/c4-lifecycle-dup1-v1/console.log",
+      "sha256": "e8f4c925a1fee86a87de028bda0e2fd47793c7859af9cac65ef223f27011ad82",
+      "bytes": 14075,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m75": {
+      "path": ".dev/c4-lifecycle-dup1-replay-v1.json",
+      "sha256": "306112e23b5068c59e8c2f086b01a72c81613deaf42aef5bc9532351f7a09c9a",
+      "bytes": 65348,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m76": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-dup1-v1.json",
+      "sha256": "039668b3580429bf0119d24f80ed8a8ff4ca49b498d1c5c65c7be73fd64d049f",
+      "bytes": 2360,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m77": {
+      "path": ".dev/c4-lifecycle-down0-v1/manifest.json",
+      "sha256": "2225f67f3528ada09fa054d5bf6313798cd0f213dfb15066d356871cfc286908",
+      "bytes": 62931,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m78": {
+      "path": ".dev/c4-lifecycle-down0-v1/guest-output/ws73.pcap",
+      "sha256": "1eb0cd2c3c95ad753d190f10d7c5dcc23a83b14d8344578d2af385bf5945ca7d",
+      "bytes": 73207,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m79": {
+      "path": ".dev/c4-lifecycle-down0-v1/guest-output/capture-stats.txt",
+      "sha256": "4335ef95ee40c7520a3ba22935133bf952841f6c987c2b9e83ad911ced3b4695",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m80": {
+      "path": ".dev/c4-lifecycle-down0-v1/guest-output/kernel.log",
+      "sha256": "8493ed579e155798985a5c2ff149c2d0c0f3afb8b91686a0d35ba4eaf35ffec3",
+      "bytes": 348801,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m81": {
+      "path": ".dev/c4-lifecycle-down0-v1/guest-output/connected-file/run.json",
+      "sha256": "a24d9a6778cf8e79382f98d8f19fdefdb250d95fc503c22b9f46f620edf47a0c",
+      "bytes": 45402,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m82": {
+      "path": ".dev/c4-lifecycle-down0-v1/guest-output/setup-release/run.json",
+      "sha256": "b81f26777b455b58c94548bbf14646ed913df7c6422ca0a774e1865601ee45a6",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m83": {
+      "path": ".dev/c4-lifecycle-down0-v1/qemu-stderr.log",
+      "sha256": "5774e621c4e496d73c6d8f5864f75d377fae00187cefeb33cccbd9e56d8e52e2",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m84": {
+      "path": ".dev/c4-lifecycle-down0-v1/qmp.jsonl",
+      "sha256": "e7228eb91a0a7c74ffdebd3898fe783ac0557f2d480acdb7257f8d8a3345b2eb",
+      "bytes": 11151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m85": {
+      "path": ".dev/c4-lifecycle-down0-v1/console.log",
+      "sha256": "3b222a0513a58964821da6cfcb79ec51e25b44269ef564446fc8a45adda8d619",
+      "bytes": 13914,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m86": {
+      "path": ".dev/c4-lifecycle-down0-replay-v1.json",
+      "sha256": "3126b3ad4f6531447fd53ddad29518d6935f9f4c4cfadaf1fe16f6d8ba01fa96",
+      "bytes": 18802,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m87": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-down0-v1.json",
+      "sha256": "8b1d841f33cc4a61f0e4ca9e09874fbdbd7ea40aaf30965ab7076f7a5a159d91",
+      "bytes": 2350,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m88": {
+      "path": ".dev/c4-lifecycle-down1-v1/manifest.json",
+      "sha256": "02d6d5d11887b49cf84b4489921fc17818a9f594a99a5d42f2c5b102519328bf",
+      "bytes": 62932,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m89": {
+      "path": ".dev/c4-lifecycle-down1-v1/guest-output/ws73.pcap",
+      "sha256": "a78e3a9fa0cd353556cd88aa2c9f40f7fb27e37e02021d5b02f66fe751d603eb",
+      "bytes": 74857,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m90": {
+      "path": ".dev/c4-lifecycle-down1-v1/guest-output/capture-stats.txt",
+      "sha256": "dadde7f9abfba00891ff90e693fa1a2c969104acfc75b2d002279ddf65af17c4",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m91": {
+      "path": ".dev/c4-lifecycle-down1-v1/guest-output/kernel.log",
+      "sha256": "b15d82e1abe5306a9ca684abde9802b6d9ad53c82c6dc3b4d388f80de382ae15",
+      "bytes": 348722,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m92": {
+      "path": ".dev/c4-lifecycle-down1-v1/guest-output/connected-file/run.json",
+      "sha256": "e518353a870f77f98fbdcf7e8fd1433d9c2da889467c0dfc4ea6ed7069c18d8b",
+      "bytes": 45402,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m93": {
+      "path": ".dev/c4-lifecycle-down1-v1/guest-output/setup-release/run.json",
+      "sha256": "bc6bdd57968a3825db07b3694f5d9a65065c0afec290daf3cc38039e8e745d7a",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m94": {
+      "path": ".dev/c4-lifecycle-down1-v1/qemu-stderr.log",
+      "sha256": "465bbc54b10015afb210c704482e688df21b2e7e3ea9f824f6c28756150e5896",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m95": {
+      "path": ".dev/c4-lifecycle-down1-v1/qmp.jsonl",
+      "sha256": "51e164a39eccce8c0b52c500be9686b00abfd42eadca672aef9c2b9adcd9a645",
+      "bytes": 11151,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m96": {
+      "path": ".dev/c4-lifecycle-down1-v1/console.log",
+      "sha256": "3ad91fc9b07d8499b95d84d0a1d1afd233f8b32ada3af8fa841c1b543f494e72",
+      "bytes": 13914,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m97": {
+      "path": ".dev/c4-lifecycle-down1-replay-v1.json",
+      "sha256": "941d1d60428641156764926e6d55f19d544a3b3d4dd0a0d990cd0ffff51c96f2",
+      "bytes": 18803,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m98": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-down1-v1.json",
+      "sha256": "0a2c74bcd586c2dac96c2b298c955cd1eca4d72c1186efcba3e2714aca7c2a35",
+      "bytes": 2350,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m99": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/manifest.json",
+      "sha256": "c4767d0138fe34db1858551e748d73dc985315906127b8ff691428673f2c1123",
+      "bytes": 61697,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m100": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/guest-output/ws73.pcap",
+      "sha256": "b608dadd8b84d6dd8c1a44a7a63e00ff549e8f8726d8a6c1a37a56590eba2cdc",
+      "bytes": 81773,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m101": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m102": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/guest-output/kernel.log",
+      "sha256": "c6f14cea3072ddc6350a140a5b8a80d1d278adc71b83da0768c8ba389c5360a8",
+      "bytes": 348318,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m103": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/guest-output/connected-file/run.json",
+      "sha256": "b4d10bd4bf9d8a7b97b1e8c3a7b15d1dd8c897089d25dde8fa2278494d496460",
+      "bytes": 45018,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m104": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/guest-output/setup-release/run.json",
+      "sha256": "784beff94e9df44e545859a5e49cb9286c11764a11c41131b2c0ff9d1fa40b75",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m105": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/qemu-stderr.log",
+      "sha256": "d63a8d11b2cfde162418dd621ea70a99b47837ce750bb9acab70955689bc72e0",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m106": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/qmp.jsonl",
+      "sha256": "50182de71cad1758b9d0f09e789a4ef3e69c72261ba49095362f9b549b32f304",
+      "bytes": 11367,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m107": {
+      "path": ".dev/c4-lifecycle-deadline0-v1/console.log",
+      "sha256": "e3a7629c9136c78a3e9d42a3d0ece9f9f41c306d2be8d30e63e7e9843d1db51a",
+      "bytes": 13913,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m108": {
+      "path": ".dev/c4-lifecycle-deadline0-replay-v1.json",
+      "sha256": "9a24606a697881acdc586218d6b2d171a36a6203acc427af45b21262119f4c9c",
+      "bytes": 17455,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m109": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-deadline0-v1.json",
+      "sha256": "2e15709f08ca40ffa3b9efa55639207237aee317fec6dd7115985b73fbf563f6",
+      "bytes": 2364,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m110": {
+      "path": ".dev/tx-quantum-deadline-prepared-v1/manifest.json",
+      "sha256": "8be792f1dd77cab9771f6129fee021547b12d7191c091f6b71ec1b8d98fadf00",
+      "bytes": 266297,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m111": {
+      "path": ".dev/tx-quantum-deadline-prepared-v1/bzImage",
+      "sha256": "03f08bbabd513913620dce0625860fd23df53deb3d6d8d6e61977887c016d3ba",
+      "bytes": 15749120,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m112": {
+      "path": ".dev/tx-quantum-deadline-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m113": {
+      "path": ".dev/tx-quantum-deadline-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m114": {
+      "path": ".dev/tx-quantum-deadline-prepared-v1/root.btrfs",
+      "sha256": "2f149bf24cd70678324d198f05c6ed55bfb150c2b427505c61a25cfce78a013a",
+      "bytes": 1073741824,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m115": {
+      "path": ".dev/data-deadline-qemu/qemu-system-x86_64",
+      "sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "bytes": 30094800,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m116": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/manifest.json",
+      "sha256": "624626f8928f41b78ac163fb9983302f3aa039a20090c93b801869cc05203848",
+      "bytes": 61697,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m117": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/guest-output/ws73.pcap",
+      "sha256": "88380a21491be7c870290d17d38fa85035259831de7a7ffa46a0032238176b82",
+      "bytes": 81773,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m118": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m119": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/guest-output/kernel.log",
+      "sha256": "2e1171a956ec1916b1a8d2d3eade44992bc28d58ea356d4456cb2b33aa796c20",
+      "bytes": 349287,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m120": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/guest-output/connected-file/run.json",
+      "sha256": "8a2bbcb7496c6fbf7ae40ac34e65909ab80f5472b7f20b095bba3c0a3c924c79",
+      "bytes": 45019,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m121": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/guest-output/setup-release/run.json",
+      "sha256": "758342000e07fa678642215867505c6739cd38ac88f9df5aae52261bca3a61f5",
+      "bytes": 10005,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m122": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/qemu-stderr.log",
+      "sha256": "1561e98dfe5564e8b3bfb86fa71cbfb7b191690cf9672b0d1e6e1a5c81a9d24d",
+      "bytes": 257,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m123": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/qmp.jsonl",
+      "sha256": "6f3fd1b9c142ff073f3d159fe09726f4eb27a73d110bf714e31e752f608edc74",
+      "bytes": 11367,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m124": {
+      "path": ".dev/c4-lifecycle-deadline1-v1/console.log",
+      "sha256": "f9a3176b046416cc323bb458fe01e1749c717ac9b9995ef0bfc93751ee57e0b3",
+      "bytes": 13913,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m125": {
+      "path": ".dev/c4-lifecycle-deadline1-replay-v1.json",
+      "sha256": "08bfcefee39637d3a73b33b55b78cb0d508d66f585e0e4f9bd4ced02cf5601d2",
+      "bytes": 17455,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m126": {
+      "path": ".dev/c4-lifecycle-evidence-negatives-deadline1-v1.json",
+      "sha256": "72af0345f95d20d7955d1d611521bfd02fe8ab66c8eadb47c08cbf481571c015",
+      "bytes": 2364,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m127": {
+      "path": ".dev/c4-lifecycle-qualification-v1.json",
+      "sha256": "b02b18654d03fa5bc69a25de8778a91356108c1f3283b51df98ed8a5822a11e3",
+      "bytes": 12404,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m128": {
+      "path": ".dev/c4-lifecycle-qualify-v1.py",
+      "sha256": "5361e7791d63d3d7f0e764c77113598957f3faa3b4f0d42ece3018f643b92681",
+      "bytes": 4120,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m129": {
+      "path": ".dev/c4-lifecycle-replay-summary-v1.json",
+      "sha256": "c1e8967478ab552540dc25161d965c60957f05add85e61b4d9323043ba982072",
+      "bytes": 1876,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m130": {
+      "path": ".dev/c4-lifecycle-replay-all-v1.py",
+      "sha256": "cc04e2c21de85693f9945cdf817574dcdbdf0834e71d91aeb237d69c961ce130",
+      "bytes": 1739,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m131": {
+      "path": ".dev/c4-lifecycle-negatives-v1.py",
+      "sha256": "d799fcc054e16484958083d7c38489f7d217aac0a868c5d9e1bb57ba5050e7f1",
+      "bytes": 3542,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m132": {
+      "path": ".dev/session-event-replay-case-v2.py",
+      "sha256": "12e4ad6d265c4d582aef4485fa42b6d4d171ebcb34a7b91a3daafd61c01b25b3",
+      "bytes": 3031,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m133": {
+      "path": ".dev/tx-quantum-deadline-smoke-v1/manifest.json",
+      "sha256": "0a862ad821dc589bfb029f9bddff43bfc1dc5dc6cd1f7a5b45384469ccf9206c",
+      "bytes": 36945,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m134": {
+      "path": ".dev/tx-quantum-service-bundle-v1/manifest.json",
+      "sha256": "fa31002ea6c8eb90d804bfd512142f4be023bb2b5681e7536977a25c82826a57",
+      "bytes": 26103,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m135": {
+      "path": ".dev/tx-quantum-kernel-build-v1.json",
+      "sha256": "9c1d79408254dd3173020fccd3684f121c988b2836d8b62d7c2e8e966882ba05",
+      "bytes": 1639,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "c4-lifecycle-2c23-m136": {
+      "path": ".dev/session-service-unit-v4.log",
+      "sha256": "fc18b608c2254cdadcc5fc5b4cbc8141c4ef480dffac6ed65193b757b1f7c1ca",
+      "bytes": 937,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m137": {
+      "path": ".dev/session-service-unit-v5.log",
+      "sha256": "6e2c2e2d0c5d4f2445feb5005937a4d47635379f8adf4113de6f692d171b2766",
+      "bytes": 110,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m138": {
+      "path": ".dev/session-service-all-tools-v2.log",
+      "sha256": "8a94e13fc85a3da25ed5edd033d8d686368573582bfcb9c549188d4baedaf72f",
+      "bytes": 801,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-m139": {
+      "path": ".dev/session-service-docs-v1.log",
+      "sha256": "fc06d494520dd122ac9186d80ebf044b71edef4d38f40c0a85d57b01628aa04c",
+      "bytes": 253098,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "c4-lifecycle-2c23-report": {
+      "path": "docs/evidence/session-c4-lifecycle-20261017.json",
+      "base": "repo",
+      "format": "json",
+      "access": "public",
+      "sha256": "a504c21bdb3eb324bde3a8719a51b168a89f8ded0add0bc3703dedd331182b26",
+      "bytes": 482243,
+      "source_commit": "969f03285da209f9d26a1f15a5e091cdc844175c"
     }
   },
   "baseline_record": "benchmark-window-trace-e34"

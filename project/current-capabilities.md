@@ -65,8 +65,16 @@ burst32，共48次真实对端校验回复，三份原件重放及18复制证据
 实际C sanitizer依赖fixture、CBMC预算12步69性质与5反例/不足展开、原排队/期限/
 游标限定检查分别记录，不授Linux并发或硬件证明。固定O实际12路构建及空USB VM通过。
 原Cfixture空回调和首次burst缺16轮启动前失败保留。**完整P2d退出仍未证明**：新c4
-trace闭包、受控生命周期、通道公平及成本/同配置比较尚缺，不宣称性能收益，也不
-继承bfaa十项生命周期资格。保留旧性能基线身份，所有自然根因和非人工恢复继续开放。
+首批报告当时缺trace、生命周期、公平及成本；后续独立记录如下，不回写历史身份。
+公平及成本/同配置比较仍缺，不宣称性能收益，也不继承bfaa资格。保留旧性能基线身份，所有自然根因和非人工恢复继续开放。
+
+[新 c4 生命周期限定资格](../docs/evidence/session-c4-lifecycle-20261017.json)另绑定编译
+Kc4/U2c23与执行2c23：U2/3完成release、最后管理fd、dup最终管理引用、直接Down及
+原5秒期限各双向十项；24次控制前真实校验回复及8条单向primer分开计数，不完整
+PDU不计交付。十份原件重放和100复制证据负对照通过，原断言与失败不改。同行范围
+仅generation/Ready/lease/扫描。未新增形式化、性能、NOCP真值或自然恢复资格。
+新8a7f11f只新增VM专用Session观测和USB关联，666项工具检查与严格HTML通过；
+实际采集和关联仍单独验收，不能由改名、fixture或这个生命周期结果推断通过。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -126,6 +134,7 @@ trace闭包、受控生命周期、通道公平及成本/同配置比较尚缺�
 | c4空USB启动与签名模块，仅虚拟集成 | `virtual_integration` | `PASS` |
 | c4完整P2d：trace/生命周期/公平性/成本仍未证明 | `real_device` | `UNPROVED` |
 | 首批burst缺16轮参数：启动前拒绝，原矩阵FAIL保留 | `real_device` | `FAIL` |
+| c4双U：release/最后管理fd/dup/Down/原期限十项新实机门禁 | `real_device` | `PASS` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

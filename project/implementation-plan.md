@@ -71,6 +71,7 @@
 | c4空USB启动与签名模块，仅虚拟集成 | `virtual_integration` | `PASS` |
 | c4完整P2d：trace/生命周期/公平性/成本仍未证明 | `real_device` | `UNPROVED` |
 | 首批burst缺16轮参数：启动前拒绝，原矩阵FAIL保留 | `real_device` | `FAIL` |
+| c4双U：release/最后管理fd/dup/Down/原期限十项新实机门禁 | `real_device` | `PASS` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1518,6 +1519,16 @@ credit或权限；默认关闭，root VM内启用，无业务载荷/密钥日志
 U2/3短包8、2042长包8、16轮burst32，共48次新实机往返与双端USB核对；3原件重放、
 18复制证据负对照拒绝。原Cfixture缺有效socket回调失败、LSan环境失败、artifact/
 staging/prepare调用错误及首次burst缺16轮启动前拒绝保留，不修改原断言或旧结果。
-本批尚未退出：继续新c4 trace/实际USB对应与丢失/成本、受控release/lastfd/dup/Down/
-原期限、多通道PDU边界公平和相关长度矩阵。原bfaa通过不转移；不授性能收益、
+首批当时尚未退出；后续新c4生命周期另记下方。继续trace/实际USB对应与丢失/成本、
+多通道PDU边界公平和相关长度矩阵。原bfaa通过不转移；不授性能收益、
 NOCP硬件真值或内核并发证明，不把所有控制面组合加成数据面前置。
+
+新 c4 的[十项生命周期报告](../docs/evidence/session-c4-lifecycle-20261017.json)已独立
+封存：执行/编译U2c23、U2/3、原受控IN屏障及原5秒期限，24次控制前校验回复、
+8条单向primer和100证据负对照；同行仅Ready/lease/扫描。它收尾本批该组门禁，
+不依赖更多控制面组合，也不提前宣布P2d完整退出。
+
+8a7f11f新增VM-only独立Session trace实例，原件/时钟/丢失及实际USB提交关联工具；
+666项离线与严格HTML通过。真实collector→原业务门禁→身份/阶段/USB闭包是下一
+门禁，失败保留；动态CMTC、性能阈值、资源峰值、callbackdrain及NOCP真值不在其
+资格内。通过后继续相关长度与PDU公平、matched U2/3基线，Agent/SSAP并行。

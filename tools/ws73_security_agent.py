@@ -24,6 +24,8 @@ def execute(run,phase):
     # Same witness/Engine: only add read-only current Session observations.
     row['live_security_required']=mode in ['approve','numeric-approve','numeric-reject','numeric-late']
     if row['live_security_required']:command+=['--observe-connection-security']
+    row['protected_grant_required']=mode in ['approve','numeric-approve']
+    if row['protected_grant_required']:command+=['--protected-grant-probe']
     if mode=='timeout':command+=['--timeout-ms','500','--approval-delay-ms','800']
     elif mode in ['cancel','agent-exit','caller-exit']:command+=['--approval-delay-ms','700']
     if mode=='install-cancel':
@@ -74,6 +76,25 @@ def live_security_wire(row,phase,capture):
             if handle==before[2]:receipts.append(e)
         if before[3]!=1 or after[3]!=1+len(receipts):raise CaptureError('current security epoch must match captured per-link ingress receipts')
 
+def protected_grant_refusals(stages,paths,infos,mode):
+    if mode not in ['approve','numeric-approve']:raise CaptureError('protected Grant requires positive mechanism')
+    expected={(path,phase,required) for path in paths for phase,required in
+              ([('before',1),('before',2),('after',2)] if mode=='approve' else [('before',1),('before',2)])}
+    seen=set()
+    for row in stages.get('protected_grant_refusal',[]):
+        key=(row.get('path'),row.get('phase'),row.get('required'))
+        if key not in expected or key in seen:raise CaptureError('missing/duplicate/foreign protected Grant refusal')
+        index=paths.index(row['path']);snap=next(v for v in stages['current_security_'+row['phase']] if v['path']==row['path'])
+        if (row.get('identity')!=infos[index][:3] or row.get('error')!='org.freedesktop.DBus.Error.Failed'
+                or row.get('detail')!='native channel bind: Permission denied (os error 13)'
+                or row['wall_ns']<=snap['wall_ns']):raise CaptureError('actual native grade refusal and original identity required')
+        if row['phase']=='before':
+            allocation=next(v for v in stages['allocated'] if v['path']==row['path'])
+            if row['wall_ns']>=allocation['start_wall_ns']:raise CaptureError('pre-security refusal must precede mechanism')
+        seen.add(key)
+    if seen!=expected:raise CaptureError('all protected Grant refusals required')
+    return len(seen)
+
 def witness(row,phase,daemon,binary=None):
     if row.get('mode','').startswith('cli-'):
         from ws73_security_cli import witness as cli_witness
@@ -89,6 +110,9 @@ def witness(row,phase,daemon,binary=None):
     numeric=row['mode'].startswith('numeric-')
     if numeric:expected.update(numeric_callback=2,numeric_decision=2)
     if row.get('live_security_required'):expected.update(current_security_before=2,current_security_after=2)
+    if row.get('protected_grant_required'):
+        if not row.get('live_security_required'):raise CaptureError('protected Grant requires current mechanism snapshots')
+        expected['protected_grant_refusal']=6 if row['mode']=='approve' else 4
     if row['mode']=='install-cancel':expected.update(install_barrier=2,install_before_cancel=1,install_cancelled=1,install_terminal_stable=1)
     if {key:len(value) for key,value in stages.items()}!=expected:raise CaptureError('missing/duplicate/unexpected Agent witness stages')
     identity=stages['probe_identity'][0]
@@ -146,6 +170,8 @@ def witness(row,phase,daemon,binary=None):
             elif result['native_admitted'] or result['kernel_state']:raise CaptureError('pre-admission negative path cannot enter physical mechanism')
     if row.get('live_security_required'):
         live_security(stages,paths,identity['infos'],row['mode'])
+    if row.get('protected_grant_required'):
+        protected_grant_refusals(stages,paths,identity['infos'],row['mode'])
     return stages
 
 def wire(row,phase,capture):
@@ -256,8 +282,12 @@ def corroborate(control,capture):
         proof=wire(row,phase,capture)
         live_security_wire(row,phase,capture)
         post_terminal_numeric(row,phase,capture)
+        if row.get('protected_grant_required') and business.get('security_requirement')!=(2 if row['mode']=='numeric-approve' else 1):
+            raise CaptureError('positive application must use the required protected fd, never plain fallback')
         if business['session_start_wall_ns']!=phase['start_wall_ns'] or business['start_wall_ns']<row['end_wall_ns'] or business.get('close_prefix'):raise CaptureError('same physical Session ordinary application delivery must follow Agent procedure')
         result.append(dict(mode=row['mode'],wire=proof,application_phase=business['phase'],
-            current_security_snapshots=4 if row.get('live_security_required') else 0))
+            current_security_snapshots=4 if row.get('live_security_required') else 0,
+            protected_grant_refusals=(6 if row['mode']=='approve' else 4) if row.get('protected_grant_required') else 0,
+            application_security_requirement=business.get('security_requirement',0)))
     return dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=result,
         business_round_trips=business_proof['round_trips'],current_security_snapshots=sum(v['current_security_snapshots'] for v in result),scope='Actual ordinary control user Agent callbacks, original owner/reference/deadline, real dual-controller wire and subsequent peer-checked business. Not authentication/Bond/full deployment/udev/systemd/natural recovery.')

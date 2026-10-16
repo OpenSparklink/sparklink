@@ -1779,3 +1779,22 @@ Kani 未证明项按工具限制处理：定位原始caller_location/foreign-fun
 位置，评估兼容的受支持工具链/直接生产转换边界，用负对照核对实际性质，禁止屏蔽
 unsupported或裁掉真实失败分支取得PASS。实际Owner锁/引用/Host→USB映射和固件
 归属仍以组合模型及受控VM交错核对；本批检查数不是整套实现的证明。
+
+
+### 当前批次：固定通道的安全 epoch Grant（实现中，未授新资格）
+
+复用唯一物理Session、现有Grant/credit/Ticket。固定CUTC/SMTC的security0保持原行为，
+security1要求当前加密机制，security2要求明确确认的数字机制；均不授命名身份/Bond。
+仅活动管理者能绑定，slkd按既有组/调用者策略传递受限fd，应用与管理权限继续分开。
+Grant在最终绑定时由内核冻结当前receipt epoch，之后软件准入、poll、实际USB提交、
+用户RX交付和观测均在原Host→data→gate线性化入口核对；不能从查询缓存重建授权。
+ACB在入口保留安全revision，PB跨revision拒绝，旧epoch残留不交给之后的受保护fd。
+安全变化只退休受影响绑定，已提交片段的物理credit义务不退款；其他通道/设备继续。
+动态通道protected仍明确不支持，作为后续适配，不能静默降级；无第二Engine。
+
+本批退出：生产纯Grant/原Session callback/原生ACB入口与PB回归、相关直接CBMC及
+严格内核/跨语言构建；新准确VM普通用户security1/2真实双向回复及错误等级拒绝，
+再覆盖真实原管理File的release/最终fd/dup、Down、原期限和同行隔离。实际安全状态
+依赖已有snapshot，形式化/离线/虚拟/实机分别记录。通过后继续SSAP认证与本地授权，
+不把控制面竞争全集设为前置；完整S0-S6/19WP/10FV/12DG、自然RCA/非人工恢复、
+NOCP/复用/drain、完整数据矩阵和四设备全部保留，未完项不关闭。

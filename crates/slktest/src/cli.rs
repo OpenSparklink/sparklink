@@ -19,6 +19,9 @@ struct Cli {
     /// Current immutable adapter object path, selected and managed with slctl.
     #[arg(long)]
     adapter: String,
+    /// Minimum kernel-enforced mechanism for fixed --check: 0 none,1 encryption,2 numeric.
+    #[arg(long, global=true, default_value_t=0,value_parser=clap::value_parser!(u32).range(0..=2))]
+    security: u32,
     #[command(subcommand)]
     command: Command,
 }
@@ -195,6 +198,18 @@ impl Cli {
             anyhow::bail!("--adapter requires the exact current object path");
         }
         let Command::Channel { command } = &self.command;
+        if self.security != 0 {
+            match command {
+                Channel::Ping(p) | Channel::Peer(p)
+                    if p.check
+                        && p.source_port.is_none()
+                        && p.destination_port.is_none()
+                        && p.aid.is_none() => {}
+                _ => anyhow::bail!(
+                    "--security currently requires a fixed --check exercise; protected performance reports/dynamic modes are not supported"
+                ),
+            }
+        }
         match command {
             Channel::Ping(p) => p.validate(false),
             Channel::Peer(p) => p.validate(true),
@@ -212,7 +227,7 @@ impl Cli {
         } else {
             zbus::Connection::system().await?
         };
-        let client = Client::new(conn, self.adapter);
+        let client = Client::new(conn, self.adapter).requiring_security(self.security)?;
         let Command::Channel { command } = self.command;
         match command {
             Channel::Ping(p) => run_pair(client, p, false).await,
@@ -317,6 +332,33 @@ mod tests {
         let c = Cli::try_parse_from(words)?;
         c.validate()?;
         Ok(c)
+    }
+    #[test]
+    fn fixed_correctness_requires_explicit_supported_security_without_downgrade() {
+        for level in ["0", "1", "2"] {
+            assert!(parse(&["ping", "/link", "--check", "--security", level]).is_ok());
+            assert!(parse(&["peer", "/link", "--check", "--security", level]).is_ok());
+        }
+        for args in [
+            vec!["ping", "/link", "--check", "--security", "3"],
+            vec!["ping", "/link", "--security", "1", "--report", "new.json"],
+            vec!["window", "/link", "--security", "2", "--report", "new.json"],
+            vec![
+                "peer",
+                "/link",
+                "--check",
+                "--security",
+                "2",
+                "--source-port",
+                "10",
+                "--destination-port",
+                "11",
+                "--aid",
+                "12",
+            ],
+        ] {
+            assert!(parse(&args).is_err(), "{args:?}");
+        }
     }
     #[test]
     fn command_tree_keeps_all_measurement_and_correctness_modes() {

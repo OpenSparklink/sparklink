@@ -694,4 +694,5 @@ Runtime Host在安全receipt进入普通RX队列前维护每lifetime独立revisi
 off/failure/rekey/撤权/Down/退休均fail closed；USB callback不获取Session睡眠锁。
 该revision是软件收到事件的屏障，不证明固件handle复用、真实RF加密或可信身份。
 原操作终态不随当前cipher-off改写；可撤销Grant/SSAP消费端须在实际准入和提交处
-检查当前安全epoch，不能持有一次快照永久授权。消费端未接通前protected仍拒绝。
+检查当前安全epoch，不能持有一次快照永久授权。K61905139固定通道消费端已接线，
+新artifact实机资格单独验收；动态protected、SSAP安全消费者及可信身份/Bond仍缺。

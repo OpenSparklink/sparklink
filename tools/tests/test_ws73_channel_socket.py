@@ -430,6 +430,16 @@ class SlktestEntryMigration(unittest.TestCase):
         self.assertEqual(args,['/bin/slktest','--adapter','/adapter','channel','ping','/adapter/connection','--check','--count','16','--bytes','2042','--exercise','burst','--source-port','24576','--destination-port','24577','--aid','29441','--hold'])
         self.assertEqual(check_arguments('/bin/slktest',entry,True,4,61)[3:5],['channel','peer'])
 
+    def test_protected_check_uses_one_explicit_requirement_without_plain_fallback(self):
+        from ws73_channel_socket import check_arguments
+        entry=dict(owner=dict(path='/adapter'),object=dict(path='/adapter/connection'))
+        for requirement in [1,2]:
+            args=check_arguments('/bin/slktest',entry,False,4,61,security=requirement)
+            self.assertEqual(args[-2:],['--security',str(requirement)])
+            with self.assertRaises(CaptureError):
+                check_arguments('/bin/slktest',entry,False,4,61,route=(1,2,3),security=requirement)
+        with self.assertRaises(CaptureError):check_arguments('/bin/slktest',entry,False,4,61,security=3)
+
     def test_metadata_cannot_substitute_management_binary_missing_or_mixed_artifacts(self):
         from ws73_channel_socket import validate_application_tools
         good=dict(path='/usr/libexec/opensparklink/native-lab/0123456789ab/slktest',sha256='a'*64)

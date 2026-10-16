@@ -179,13 +179,13 @@ fn open_raw_address<T>(address: T, active: bool) -> std::io::Result<OwnedFd> {
     Ok(fd)
 }
 
-/// Same unpublished TX/RX bits as kernel UAPI. Protected requirements remain
-/// unsupported until a real trusted controller security state is available.
+/// Unpublished TX/RX and fixed-channel security requirements. The kernel
+/// mints a frozen security epoch; no userspace cached grade authorizes it.
 pub(crate) fn validate(directions: u32, security: u32) -> std::io::Result<()> {
     if directions == 0 || directions & !3 != 0 {
         return Err(std::io::Error::from_raw_os_error(nix::libc::EINVAL));
     }
-    if security != 0 {
+    if security > 2 {
         return Err(std::io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP));
     }
     Ok(())
@@ -241,14 +241,16 @@ mod tests {
                 Some(nix::libc::EINVAL)
             );
         }
-        for security in [1, 2, u32::MAX] {
+        for security in [3, u32::MAX] {
             assert_eq!(
                 open(0, 1, 1, 0, 1, 3, security).unwrap_err().raw_os_error(),
                 Some(nix::libc::EOPNOTSUPP)
             );
         }
         for directions in [1, 2, 3] {
-            validate(directions, 0).unwrap();
+            for security in [0, 1, 2] {
+                validate(directions, security).unwrap();
+            }
         }
     }
 }

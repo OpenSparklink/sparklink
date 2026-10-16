@@ -186,7 +186,7 @@ impl ConnectionIface {
     ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
         crate::channel::validate(directions, security).map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
-                zbus::fdo::Error::NotSupported("protected channel security is not supported".into())
+                zbus::fdo::Error::NotSupported("unsupported channel security requirement".into())
             } else {
                 zbus::fdo::Error::InvalidArgs("invalid channel authorization directions".into())
             }
@@ -996,7 +996,7 @@ mod grant_tests {
             .unwrap();
             assert!(matches!(result, Err(zbus::fdo::Error::InvalidArgs(_))));
         }
-        for security in [1, 2, u32::MAX] {
+        for security in [3, u32::MAX] {
             let result = tokio::time::timeout(
                 std::time::Duration::from_millis(100),
                 interface.open_channel_scoped(3, security),

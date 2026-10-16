@@ -19,9 +19,12 @@ def test_program(run):
     return record
 
 
-def check_arguments(binary, entry, peer, rounds, message_bytes, exercise='regular', route=None, hold=False, start_barrier=False):
+def check_arguments(binary, entry, peer, rounds, message_bytes, exercise='regular', route=None, hold=False, start_barrier=False, security=0):
     args=[str(binary),'--adapter',entry['owner']['path'],'channel','peer' if peer else 'ping',
           entry['object']['path'],'--check','--count',str(rounds),'--bytes',str(message_bytes)]
+    if security:
+        if security not in [1,2] or route is not None:raise CaptureError('explicit supported fixed security requirement needed')
+        args+=['--security',str(security)]
     if exercise!='regular':args+=['--exercise',exercise]
     if route is not None:args+=['--source-port',str(route[0]),'--destination-port',str(route[1]),'--aid',str(route[2])]
     if hold:args+=['--hold']
@@ -72,6 +75,7 @@ def execute(run, phase):
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
                boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     row['application_tool']=test_program(run)
+    row['security_requirement']={'approve':1,'numeric-approve':2}.get(getattr(run.args,'security_agent',None),0)
     run.data.setdefault('channel_socket', []).append(row); run.save()
     processes=[];files=ExitStack()
     try:
@@ -86,7 +90,7 @@ def execute(run, phase):
         # Both binds must occur during the same live connection. Never synthesize RX.
         for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
             exercise='boundaries' if row['boundary_check'] else 'prefix-close' if row['close_prefix'] and role=='initiator' else 'burst' if row['burst'] and role=='initiator' else 'regular'
-            args=check_arguments(row['application_tool']['path'],entry,role=='peer',row['rounds'],row['message_bytes'],exercise)
+            args=check_arguments(row['application_tool']['path'],entry,role=='peer',row['rounds'],row['message_bytes'],exercise,security=row['security_requirement'])
             app=dict(role=role,args=args,start_wall_ns=time.time_ns())
             row['applications'].append(app);run.save()
             stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
@@ -231,7 +235,7 @@ def validate_application_arguments(row):
         if 'ports' in row:
             ports=row['ports'][::-1] if peer else row['ports']
             route=(*ports,row['aid'])
-        expected=check_arguments(row['application_tool']['path'],entry,peer,row['rounds'],row.get('message_bytes',61),exercise,route,route is not None,row.get('start_barrier',False))
+        expected=check_arguments(row['application_tool']['path'],entry,peer,row['rounds'],row.get('message_bytes',61),exercise,route,route is not None,row.get('start_barrier',False),row.get('security_requirement',0))
         if app.get('args')!=expected:raise CaptureError('actual slktest channel arguments/identity mismatch')
 
 

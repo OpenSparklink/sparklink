@@ -71,8 +71,38 @@ struct Args {
     /// New kernel snapshot qualification only; not policy/Agent emulation.
     #[arg(long)]
     observe_connection_security: bool,
+    /// Refusal witness only; positive fds belong to the ordinary slktest process.
+    #[arg(long, requires = "observe_connection_security")]
+    protected_grant_probe: bool,
 }
 type CurrentSecurity = (u64, u64, u16, u64, u32, u32, u32, u8, u8);
+async fn protected_grant_refusal(
+    c: &Connection,
+    path: &str,
+    info: &Info,
+    phase: &str,
+    required: u32,
+) -> anyhow::Result<()> {
+    let proxy = zbus::Proxy::new(c, SERVICE, path, "org.sparklink.Connection").await?;
+    let opened: zbus::Result<zbus::zvariant::OwnedFd> =
+        proxy.call("OpenChannelScoped", &(3u32, required)).await;
+    match opened {
+        Err(zbus::Error::MethodError(name, Some(detail), _))
+            if name.as_str() == "org.freedesktop.DBus.Error.Failed"
+                && detail == "native channel bind: Permission denied (os error 13)" =>
+        {
+            println!(
+                "{}",
+                json!({"stage":"protected_grant_refusal","wall_ns":wall(),
+                "path":path,"identity":[info.0,info.1,info.2],"phase":phase,
+                "required":required,"error":name.as_str(),"detail":detail})
+            );
+            Ok(())
+        }
+        Err(error) => Err(error).context("expected actual native security-grade refusal"),
+        Ok(_) => bail!("insufficient mechanism unexpectedly obtained a protected fd"),
+    }
+}
 async fn current_security(
     c: &Connection,
     path: &str,
@@ -572,6 +602,17 @@ async fn execute(args: Args) -> anyhow::Result<()> {
             current_security(&requester, path, info, "current_security_before", 0).await?;
         }
     }
+    if args.protected_grant_probe {
+        ensure!(
+            matches!(args.mode, Mode::Approve | Mode::NumericApprove),
+            "protected Grant witness requires an explicit positive mechanism"
+        );
+        for (path, info) in args.connections.iter().zip(&infos) {
+            for required in [1, 2] {
+                protected_grant_refusal(&requester, path, info, "before", required).await?;
+            }
+        }
+    }
     println!(
         "{}",
         json!({"stage":"probe_identity","wall_ns":wall(),"process_status":process,"requester":requester.unique_name().unwrap().as_str(),"daemon_owner":daemon.as_str(),"daemon_pid":daemon_pid,"mode":format!("{:?}",args.mode),"connections":args.connections,"infos":infos,"missing_agent_refusals":2,"unknown_registration_refusals":2})
@@ -842,6 +883,11 @@ async fn execute(args: Args) -> anyhow::Result<()> {
             };
             for (path, info) in args.connections.iter().zip(&infos) {
                 current_security(&requester, path, info, "current_security_after", level).await?;
+            }
+        }
+        if args.protected_grant_probe && args.mode == Mode::Approve {
+            for (path, info) in args.connections.iter().zip(&infos) {
+                protected_grant_refusal(&requester, path, info, "after", 2).await?;
             }
         }
     }

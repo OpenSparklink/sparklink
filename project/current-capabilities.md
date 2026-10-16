@@ -4,6 +4,10 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
+K61905139已实现固定通道的安全epoch Grant与ACB入口revision；用户态适配及新VM
+验收正在进行。当前受保护fd实机资格尚未取得，不能由下列K6861/U13bb快照记录
+推断；动态protected、完整实时失效矩阵和SSAP安全消费者仍缺。
+
 [实时 Session 机制快照限定结果](../docs/evidence/security-live-state-real-20261017.json)：
 准确K6861/U13bb、执行13bb、后处理6c8。新增d6及GetSecurityState在唯一物理
 Session读取当前机制，原操作终态保留；每lifetime接收revision在普通RX队列前发布。

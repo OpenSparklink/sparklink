@@ -144,6 +144,20 @@ mutex带入USB callback。查询按Host→gate→owner锁序，不创建新Engin
 选择保守处理重复/丢失/未知后继receipt：即使旧操作仍成功，也可以不再提供当前
 正向机制，禁止未经协议屏障再启用。管理撤权、断链和退休继续由原身份/所有权
 收敛；独立revision不替代Grant epoch或实际USB Ticket。只有未来在实际准入/提交
-核对当前安全状态的Grant才可使用这些事实。本次快照接线不开放protected通道。
+核对当前安全状态的Grant才可使用这些事实。原K6861快照资格未开放protected通道；
+后续K61905139实现固定通道安全epoch Grant，新实机资格不得从原快照继承。
 固件只有handle的0011/Complete、复用/drain和真实RF加密仍是明确待验证的受信任
 基础，不把当前软件屏障描述为已经证明的硬件归属。
+
+
+## 固定通道的机制要求与不可变 epoch
+
+选择在现有Grant内冻结安全receipt epoch，而非每次查询slkd缓存。Runtime→data→
+gate锁域内借用同一Owner读取机制等级，不创建第二Session或Engine。C Session内
+不得反向获取Host锁；Owner停止路径先释放Owner锁再清理C Session。轮询/准入/实际
+USB提交共享原Host callback线性化点；状态通知只重新检查，不授予权限。
+
+接收包同时保存入口revision，避免加密前排队的数据被之后绑定的protected通道消费；
+PB跨revision拒绝。失效只退休受影响绑定，既有物理debt保持；并非固件擦除/排空或
+可信身份的证明。CBMC只证明生产纯Grant helper的有界性质，不能覆盖Host锁、Owner
+引用、USB callback及固件行为。实际VM与组合验证分别记录，不扩大证明范围。

@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T22:49:36Z",
+  "updated_at_utc": "2026-10-16T23:07:14Z",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -801,8 +801,8 @@
   ],
   "issue_sync_status": "K7/K19/U5/U8 liveSessionmechanism/UNPROVED/Grantconditions updated/readbackOPEN;originalscopebodiesunchanged",
   "issue_sync_receipt": "docs/evidence/security-live-state-maintenance-20261017.json",
-  "previous_goal_turn_classification": "progress:two signedregistry/maintenance commits,pushedexact9dbc;fourissueOPENreadbacks andstrict115docs verified",
-  "current_goal_turn_classification": "progress:signedK6861,U691/13bb/post6c;6realVM/32currentsnapshots/48peerRT,31copiedactualnegatives;formalunsupportedretained;Grant/fullscopeOPEN",
+  "previous_goal_turn_classification": "progress:liveSessionkernel6861/U13bb sixrealVM/32snapshots/48peerRT,31mutants,signedpushedb9,4issuesOPENand115materialscopedregistry",
+  "current_goal_turn_classification": "progress:securityGrantkernel/ACBepochproductionworkinprogress;no newphysicalqualification",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -2457,5 +2457,11 @@
     },
     "full_batch_exit_achieved": false,
     "maintenance_report": "docs/evidence/security-live-state-maintenance-20261017.json"
+  },
+  "security_grant_batch": {
+    "status": "IMPLEMENTING_NOT_QUALIFIED",
+    "behavior": "Fixedchannel requirements0/1/2,frozenkernelreceipt-epoch,actualadmission/USB/RX/poll enforced;ACBsecurityrevision preserved,noEngine",
+    "first_exit": "Strictproductionhelper/NativeSessionCallback/ingress/PB/CBMCplusnewVMordinaryprotectedpeerRT,badgrade/revoke/finalfd/dup/Down/deadline/isolation",
+    "limits": "Dynamicprotected not supported yet;no namedidentity/Bond;no currentPASS before newgates;fullscopeunchanged"
   }
 }

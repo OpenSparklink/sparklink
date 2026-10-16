@@ -23,6 +23,32 @@ class LiveSecurity(unittest.TestCase):
     def test_positive_and_rejected_expired_mechanisms(self):
         for mode in ['numeric-approve','numeric-reject','numeric-late']:
             r,p,d,_=live_fixture(mode);witness(r,p,d)
+    def test_protected_refusals_are_native_grade_errors_not_missing_support(self):
+        row,phase,daemon,_=live_fixture()
+        row['protected_grant_required']=True
+        for entry in phase['typed_objects']:
+            obj=entry['object']
+            for required in [1,2]:
+                row['events'].append(dict(stage='protected_grant_refusal',wall_ns=2,
+                    path=obj['path'],identity=[obj[k] for k in ['generation','lifetime','handle']],
+                    phase='before',required=required,error='org.freedesktop.DBus.Error.Failed',
+                    detail='native channel bind: Permission denied (os error 13)'))
+        seal(row);witness(row,phase,daemon)
+        for kind in ['missing','duplicate','identity','unsupported','unknownmethod','wrongerrno','grade','phase','time','no-snapshot-guard']:
+            r=copy.deepcopy(row);v=next(v for v in r['events'] if v['stage']=='protected_grant_refusal')
+            if kind=='missing':r['events'].remove(v)
+            elif kind=='duplicate':r['events'].append(copy.deepcopy(v))
+            elif kind=='identity':v['identity'][1]+=1
+            elif kind=='unsupported':v['error']='org.freedesktop.DBus.Error.NotSupported'
+            elif kind=='unknownmethod':v['error']='org.freedesktop.DBus.Error.UnknownMethod'
+            elif kind=='wrongerrno':v['detail']='native channel bind: Resource busy (os error 16)'
+            elif kind=='grade':v['required']=0
+            elif kind=='phase':v['phase']='after'
+            elif kind=='time':v['wall_ns']=12
+            else:r['live_security_required']=False
+            seal(r)
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):witness(r,phase,daemon)
+
     def test_actual_receipt_barrier_requires_captured_per_link_events(self):
         r,p,_,c=live_fixture();live_security_wire(r,p,c)
         for kind in ['epoch','missing','extra','foreign-controller']:

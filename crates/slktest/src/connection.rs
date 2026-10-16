@@ -11,10 +11,20 @@ pub(crate) struct DynamicExercise {
 pub(crate) struct Client {
     conn: Connection,
     selected: String,
+    security: u32,
 }
 impl Client {
     pub(crate) fn new(conn: Connection, selected: String) -> Self {
-        Self { conn, selected }
+        Self {
+            conn,
+            selected,
+            security: 0,
+        }
+    }
+    pub(crate) fn requiring_security(mut self, security: u32) -> anyhow::Result<Self> {
+        anyhow::ensure!(security <= 2, "unsupported security requirement");
+        self.security = security;
+        Ok(self)
     }
     async fn selected_path(&self) -> anyhow::Result<String> {
         let manager = zbus::Proxy::new(
@@ -46,6 +56,10 @@ impl Client {
         route: (u16, u16, u16),
         exercise: DynamicExercise,
     ) -> anyhow::Result<()> {
+        anyhow::ensure!(
+            self.security == 0,
+            "dynamic protected modes are not supported"
+        );
         let DynamicExercise {
             rounds,
             bytes,
@@ -152,7 +166,14 @@ impl Client {
         if !info.6 || !info.7 {
             anyhow::bail!("connection is not known/live");
         }
-        let fd: zbus::zvariant::OwnedFd = object.call("OpenChannel", &()).await?;
+        let fd: zbus::zvariant::OwnedFd = if self.security == 0 {
+            object.call("OpenChannel", &()).await?
+        } else {
+            // No fallback to an unprotected fd on any broker/kernel failure.
+            object
+                .call("OpenChannelScoped", &(3u32, self.security))
+                .await?
+        };
         Ok(fd.into())
     }
     pub(crate) async fn cmd_channel(
@@ -174,7 +195,13 @@ impl Client {
         crate::channel::exercise(fd, responder, rounds, bytes, mode)?;
         // Last-close must not silently recreate the connection CMTC session.
         // Basic CUTC has no qualified close/rebind barrier in this lifetime.
-        let reopened: zbus::Result<zbus::zvariant::OwnedFd> = object.call("OpenChannel", &()).await;
+        let reopened: zbus::Result<zbus::zvariant::OwnedFd> = if self.security == 0 {
+            object.call("OpenChannel", &()).await
+        } else {
+            object
+                .call("OpenChannelScoped", &(3u32, self.security))
+                .await
+        };
         match reopened {
             Err(zbus::Error::MethodError(name, _, _))
                 if name.as_str() == "org.freedesktop.DBus.Error.NotSupported" =>

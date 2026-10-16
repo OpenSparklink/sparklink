@@ -403,7 +403,7 @@ WORK_RUNNING。队列合计是保守的瞬时观察，不能推导未来空闲�
 编译布局。32 位运行和 compat 系统调用仍待 VM 验收，不由布局检查升级为通过。
 
 
-### 当前连接安全快照（限定机制实机通过，Grant未接通）
+### 当前连接安全快照（机制实机范围与 Grant 分别验收）
 
 `org.sparklink.Connection.GetSecurityState()`返回单一结构，依次为generation、
 lifetime、handle、security_epoch、profile、level、flags、method、key_size。
@@ -430,9 +430,30 @@ security_epoch是本物理lifetime的接收revision：安全receipt在普通队�
 新的加密失败/关闭/rekey、撤权、Down或退休不能由晚到on恢复旧资格；重复或丢失
 事件可能保守地降为level0，需重新建链。旧操作终态保留，当前状态另查本接口。
 
-快照只描述读取线性化时刻的机制事实，不是后续USB提交授权。protected Grant仍
-拒绝；未来消费端必须在实际准入/提交时重新检查安全epoch及全部原权限。
+快照只描述读取线性化时刻的机制事实，不是后续USB提交授权。K61905139消费端
+在固定通道的实际准入/提交时重新检查安全epoch及全部原权限，新资格单独取得。
 SDK111 handle-only0011/Complete的物理复用屏障、固件真实性及无线加密仍有未证明
 假设；USB写入、NOCP或日志不代替对端业务校验。准确K6861/U13bb的批准/拒绝/原期限
 及无MITM快照限定实机范围见[当前资格](../../project/current-capabilities.md)；实时撤权/
 Down等完整失效矩阵及protected Grant尚未取得资格。
+
+
+### 固定通道安全 epoch Grant（实现，实机资格待验）
+
+未发布48字节v2地址布局不变。`OpenChannelScoped(directions,security)` 的security0
+不要求机制，1要求当前level≥1，2要求level2。只有原Managed管理者绑定；普通应用
+通过slkd既有调用者/组策略接收fd，不获得控制器管理权限。未知security返回
+NotSupported；当前等级不足时返回Failed，包含原生EACCES。动态protected仍不支持。
+level2表示本机制的本地数字确认，不表示命名身份、Bond或任意应用授权。
+
+内核在最终绑定的Host锁域内冻结security_epoch。软件发送准入、poll、接收出队、
+状态观测及每次实际USB Ticket提交均重新核对当前机制和冻结epoch。epoch变化或
+机制失效后只退休相关绑定并唤醒等待者；旧fd不因后续on事件恢复。ACB入口冻结
+revision，跨revision的PB重组失败，旧RX不交给之后的受保护fd。已在线性化点准入
+的用户copy可继续；已开始的物理发送义务不随关闭/取消消失，USB成功不返协议credit。
+同lifetime固定通道最后关闭后重绑仍NotSupported，不由本改动引入热重绑。
+
+`slktest --security 1|2 channel ping|peer ... --check` 复用原普通fd和校验回复。
+新选项仅用于固定通道正确性，测量模式和动态路由明确拒绝非零要求，不静默降级。
+默认0及原性能报告语义不变；历史报告保留原命令和工具身份。新名称/新选项不授予
+新实机资格；真实release/最终fd/dup/Down/期限与同行隔离矩阵仍按唯一计划验收。

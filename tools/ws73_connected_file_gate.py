@@ -242,9 +242,14 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
         from ws73_channel_deadline import corroborate as deadline_corroborate
         return deadline_corroborate(r,capture,hold,stderr,expected)
     if 'data_link_down' in r:
-        if hold is not None:raise CaptureError('direct Down excludes synthetic hold/recovery')
+        if 'prefix_hold' in r:
+            from ws73_channel_prefix_hold import corroborate as corroborate_prefix_hold
+            barrier_proof=corroborate_prefix_hold(r,capture,hold,stderr,expected)
+        elif hold is not None:raise CaptureError('unexpected direct Down hold')
         from ws73_channel_link_down import corroborate as down_corroborate
-        return down_corroborate(r,capture)
+        proof=down_corroborate(r,capture)
+        if 'prefix_hold' in r:proof['prefix_hold']=barrier_proof
+        return proof
     snapshots = verify_records(r); i=r['index']; p=1-i
     def belongs(row,n,start,end):
         usb=r['usb'][n]
@@ -333,6 +338,9 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
             else:
                 guest=dict(records=r['markers'],host_hold_acknowledgements=r['hold_acknowledgements'])
                 held['host']=corroborate_host_hold(hold,guest,[],stderr,expected,held_reply=reply)
+    elif 'prefix_hold' in r:
+        from ws73_channel_prefix_hold import corroborate as corroborate_prefix_hold
+        held=corroborate_prefix_hold(r,capture,hold,stderr,expected)
     elif hold is not None:raise CaptureError('unexpected host hold in completed connection gate')
     proof=dict(scope='pre-daemon actual Create reply File withdrawal and late-link cleanup; not natural recovery' if r.get('reply_hold') else 'pre-daemon established link actual File release/last-close/dup; not in-flight or natural recovery',
         discovery=proofs,heard=heard,links=links,connected_file_support_acceptance=True,
@@ -517,12 +525,18 @@ def run(args):
             r['after_first_management']=bytes(observers[i].management_status()).hex()
             if any(e['event'] in [5,0x1405] for events in r['events'] for e in events):raise ValueError('first dup close disconnected actual link')
         if grant and args.case=='dup':grant.exchange('after_first_control_close')
-        if grant and not directional:grant.arm()
+        prefix_barrier=None
+        if grant and not directional:
+            if 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split():
+                from ws73_channel_prefix_hold import PrefixBarrier
+                prefix_barrier=PrefixBarrier(r,save);prefix_barrier.arm(grant)
+            else:grant.arm()
         r['release_before_wall_ns']=time.time_ns();save()
         if args.case=='release':writers[i].release_management(leases[i],1)
         elif args.case=='close':writers[i].close()
         else:os.close(alias);alias=None
         r['release_after_wall_ns']=time.time_ns()
+        if prefix_barrier:prefix_barrier.release()
         if reply_hold:
             r['revoking']=bytes(observers[i].management_status()).hex()
             r['cancelled']=bytes(writers[i].connection_result(snapshots[i].generation,900)).hex() if args.case=='release' else None

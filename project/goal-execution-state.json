@@ -1654,7 +1654,16 @@
       "notification_model": "formal/lifecycle/SessionNotification.tla",
       "model_source": "4dd487e",
       "tlc": "2controllers/1physicalSessioneach/2events;117649states;weakfairness;lostqueue negative;notRF ormemorymodelproof",
-      "remaining": "New exact VM/source gates;originaltimer separation/removepoll,Runtime/C lock/ref/drain races,LKMM/KCSAN/lockdep andsameconfig comparison"
+      "remaining": "New exact VM/source gates;originaltimer separation/removepoll,Runtime/C lock/ref/drain races,LKMM/KCSAN/lockdep andsameconfig comparison",
+      "controlled_prefix_barrier_batch": {
+        "status": "IN_PROGRESS_NOT_NEW_QUALIFIED",
+        "compiled_kernel": "a0e1ad7b3a1c4397f1c187b5875b88a9efcc26bd",
+        "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+        "original_failure": ".dev/session-wake-retained-release0-v1/manifest.json",
+        "scope": "Test-only real-IN81 bounded barrier;original prefix oracle and deadlines retained",
+        "exit": "release,last control fd,dup final control fd,direct Down,original5s each on both indices;peer lease/Ready/scan;new exact report/registry required",
+        "recovery_acceptance": false
+      }
     }
   },
   "slktest_migration": {

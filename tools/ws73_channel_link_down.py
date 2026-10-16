@@ -23,11 +23,13 @@ def exercise(r, save, grant, observers, writers, snapshots, leases, discover, ou
     r['data_link_down']=row;save()
     # Historical helper field revoke_prefix describes admission only here.
     # The explicit Disconnect below does NOT revoke either Managed epoch.
-    grant.arm()
+    from ws73_channel_prefix_hold import PrefixBarrier
+    barrier=PrefixBarrier(r,save);barrier.arm(grant)
     link=decode(SleLinkSnapshot,row['links_before'][i]).links[0]
     request=bound_disconnect(snapshots[i],link,950)
     row.update(input=bytes(request).hex(),submit_before_wall_ns=time.time_ns());save()
     writers[i].submit_connection(request);row['submit_after_wall_ns']=time.time_ns();save()
+    barrier.release()
     row['down']=outcomes('down',[5,0x1405])
     deadline=time.monotonic()+2
     while True:

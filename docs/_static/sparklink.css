@@ -127,9 +127,9 @@ html { --pst-sidebar-width: 17rem; --pst-sidebar-secondary: 14rem; }
 .bd-sidebar-secondary .toc-entry a.active { color: var(--pst-color-link); font-weight: 600; }
 .bd-article div.highlight { background: var(--pst-color-surface); }
 .bd-article div.highlight pre { padding: 1.1rem 1.25rem; line-height: 1.65; }
-.bd-article table { width: 100%; border-collapse: collapse; }
+.bd-article table { width: 100%; min-width: 42rem; border-collapse: collapse; }
 .bd-article table th { background: var(--pst-color-surface); font-weight: 600; }
-.bd-article table :is(th, td) { padding: .7rem .85rem; border-bottom: 1px solid var(--pst-color-border); }
+.bd-article table :is(th, td) { min-width: 8rem; padding: .7rem .85rem; border-bottom: 1px solid var(--pst-color-border); }
 .bd-article blockquote { border-left: 3px solid var(--pst-color-primary); padding-left: 1rem; }
 .bd-article .admonition { border-radius: .6rem; overflow: hidden; }
 .prev-next-area a { flex: 1 1 0; max-width: 49%; text-decoration: none; }

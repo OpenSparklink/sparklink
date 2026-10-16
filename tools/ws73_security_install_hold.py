@@ -6,7 +6,6 @@ is not a lifetime proof; independent capture and original author witness follow.
 """
 import hashlib
 import json
-import os
 from pathlib import Path
 import time
 
@@ -29,11 +28,10 @@ def arm(run, phase, row):
     target = next(v for v in phase['typed_objects'] if v['object']['role']==0)
     index = target['owner']['index'];obj=target['object']
     if type(index) is not int or index not in (0,1):raise ValueError('original native controller required')
-    folder = Path('/evidence/security-install-hold')/f'phase-{number}'
+    folder = run.output/'security-install-hold'/f'phase-{number}'
     folder.parent.mkdir(exist_ok=True);folder.mkdir(mode=0o700)
     selection = dict(phase=number,index=index,opcode=0x1c03,**{k:obj[k] for k in ['generation','lifetime','handle','path']})
     write_marker(folder/'selection.json',selection)
-    os.chown(folder,1000,1002)
     marker=dict(hold_phase='arm_ready',wall_ns=time.time_ns())
     write_marker(folder/'hold-arm_ready.json',marker)
     limit=time.monotonic()+3;reply=folder/'hold-armed-ack.json'
@@ -64,7 +62,7 @@ class SelectedHold(HoldCoordinator):
 class InstallCoordinator:
     def __init__(self,share,record,qemu):
         validate_qemu(qemu)
-        self.root=Path(share)/'security-install-hold';self.record=record
+        self.root=Path(share)/'application/passthrough-control/security-install-hold';self.record=record
         record.update(method=METHOD,qemu_sha256=QEMU_SHA256,phases=[],complete=False,
                       physical_acceptance=False,automatic_fault_recovery_acceptance=False)
         self.child=None;self.used=[]

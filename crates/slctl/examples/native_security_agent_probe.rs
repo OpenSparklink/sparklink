@@ -359,7 +359,10 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         ensure!(
             args.timeout_ms == 5000
                 && folder.is_dir()
-                && folder.parent() == Some(Path::new("/evidence/security-install-hold"))
+                && folder.parent()
+                    == Some(Path::new(
+                        "/evidence/application/passthrough-control/security-install-hold"
+                    ))
                 && matches!(
                     folder.file_name().and_then(|v| v.to_str()),
                     Some("phase-0" | "phase-1")

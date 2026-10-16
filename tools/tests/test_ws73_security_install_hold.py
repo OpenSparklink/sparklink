@@ -47,7 +47,7 @@ class InstallationHoldTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp,patch('ws73_security_install_hold.validate_qemu'):
             record={};gate=InstallCoordinator(tmp,record,'not-a-real-qemu');m=Monitor()
             for n in range(2):
-                folder=Path(tmp)/'security-install-hold'/f'phase-{n}';folder.mkdir(parents=True)
+                folder=Path(tmp)/'application/passthrough-control/security-install-hold'/f'phase-{n}';folder.mkdir(parents=True)
                 write_marker(folder/'selection.json',dict(phase=n,index=n,opcode=0x1c03,generation=7,lifetime=n+1,handle=0,path=f'/original/{n}'))
                 write_marker(folder/'hold-arm_ready.json',dict(hold_phase='arm_ready',wall_ns=1))
                 gate.poll(m,lambda i:dict(bus=1,address=i+2));self.assertEqual(m.devices[n][SELECTORS[0]],0x1c03)
@@ -74,6 +74,21 @@ class InstallationHoldTests(unittest.TestCase):
                 self.assertEqual(result.returncode,0,mode);self.assertEqual(result.stdout,' --security-agent='+mode)
             else:self.assertEqual(result.returncode,99,mode)
 
+    def test_arm_uses_existing_ordinary_application_output(self):
+        from types import SimpleNamespace
+        from ws73_security_install_hold import arm
+        with tempfile.TemporaryDirectory() as tmp:
+            run=SimpleNamespace(output=Path(tmp),data=dict(security_agent=[{}]),save=lambda:None)
+            phase=dict(typed_objects=[dict(owner=dict(index=0),object=dict(role=0,generation=7,lifetime=1,handle=0,path='/original'))])
+            def write(path,value):
+                write_marker(path,value)
+                if path.name=='hold-arm_ready.json':write_marker(path.parent/'hold-armed-ack.json',dict(stage='armed',request=value))
+            row={}
+            with patch('ws73_security_install_hold.write_marker',side_effect=write):folder=arm(run,phase,row)
+            self.assertEqual(folder,Path(tmp)/'security-install-hold/phase-0')
+            self.assertEqual(folder.stat().st_uid,__import__('os').getuid())
+            self.assertEqual(folder.stat().st_mode&0o777,0o700)
+
     def test_bad_qemu_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)/'qemu';p.write_bytes(b'wrong')
@@ -83,7 +98,7 @@ class InstallationHoldTests(unittest.TestCase):
         for key,value in [(SELECTORS[0],0x1c05),(SELECTORS[1],1),(PROPERTIES[2],1),('test-enumeration-reset-once',True)]:
             with self.subTest(key=key),tempfile.TemporaryDirectory() as tmp,patch('ws73_security_install_hold.validate_qemu'):
                 record={};gate=InstallCoordinator(tmp,record,'fixture');m=Monitor();m.devices[0][key]=value
-                folder=Path(tmp)/'security-install-hold/phase-0';folder.mkdir(parents=True)
+                folder=Path(tmp)/'application/passthrough-control/security-install-hold/phase-0';folder.mkdir(parents=True)
                 write_marker(folder/'selection.json',dict(phase=0,index=0,opcode=0x1c03,generation=7,lifetime=1,handle=0,path='/original/0'))
                 write_marker(folder/'hold-arm_ready.json',dict(hold_phase='arm_ready',wall_ns=1))
                 with self.assertRaises(ValueError):gate.poll(m,lambda i:dict(bus=1,address=2))

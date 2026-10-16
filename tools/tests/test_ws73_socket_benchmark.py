@@ -15,14 +15,14 @@ from ws73_capture import CaptureError
 from ws73_target import run_exit_code
 
 
-def fixture(share,mode='window'):
+def fixture(share,mode='window',window=4):
     rows=[];packets=[];record=1
     for phase in range(2):
         reports=reports_fixture(mode,count=20)
         owners=[dict(owner=dict(index=i,generation=7+i,path=f'/org/sparklink/slk{i}_g{7+i}',bus=1,device=2+i),object=dict(generation=7+i,lifetime=11+i,handle=0,path=f'/link{i}')) for i in range(2)]
         if phase:owners=owners[::-1];reports=reports[::-1] if mode=='duplex' else reports
         # Deliberately map identities to actual fixture ownership for role swap.
-        row=dict(phase=phase,owners=owners,config=gate.configuration(mode),application_tool=dict(path='/bin/slktest',sha256='a'*64),start_wall_ns=phase*2000,status=gate.PENDING,applications=[],events=[],end_wall_ns=phase*2000+1500)
+        row=dict(phase=phase,owners=owners,config=gate.configuration(mode,window),application_tool=dict(path='/bin/slktest',sha256='a'*64),start_wall_ns=phase*2000,status=gate.PENDING,applications=[],events=[],end_wall_ns=phase*2000+1500)
         base=phase*2000
         for kind,offset in [('armed',100),('start',200),('quiescent',1000),('finish',1100)]:
             for i in range(2):
@@ -30,17 +30,17 @@ def fixture(share,mode='window'):
                 if kind in ('start','finish'):e.update(before_wall_ns=e['wall_ns']-1,before_monotonic_ns=e['monotonic_ns']-1)
                 row['events'].append(e)
         for i,(r,o) in enumerate(zip(reports,owners)):
-            m=mode if i==0 or mode=='duplex' else 'peer';r['config'].update(mode=m,window=4,interval_us=100000 if m=='rate' else 0)
+            m=mode if i==0 or mode=='duplex' else 'peer';r['config'].update(mode=m,window=window,interval_us=100000 if m=='rate' else 0)
             if m=='rate':
                 # Use window mode in synthetic wire fixtures; absolute-rate rows
                 # are covered independently and by actual production report replay.
                 raise ValueError('use window/duplex fixture')
             r['channel_identity'].update(controller=o['owner']['index'],generation=o['owner']['generation'],lifetime=o['object']['lifetime'])
             path=f'/evidence/application/passthrough-control/benchmark-{phase}-{i}.json'
-            stdout=f'NativeChannelDup: original_closed=1 duplicate_live=1\nSocketBenchmarkArmed: mode={m.capitalize()} count=20 bytes=61 window=4\nSocketBenchmarkQuiescent: mode={m.capitalize()} correctness=true\nSocketBenchmarkLoadObserved: report={path} qualified=false\n'
+            stdout=f'NativeChannelDup: original_closed=1 duplicate_live=1\nSocketBenchmarkArmed: mode={m.capitalize()} count=20 bytes=61 window={window}\nSocketBenchmarkQuiescent: mode={m.capitalize()} correctness=true\nSocketBenchmarkLoadObserved: report={path} qualified=false\n'
             for e in row['events']:
                 if e['application']==i and e['kind'] in ('armed','quiescent'):e['text']=stdout.splitlines()[1 if e['kind']=='armed' else 2]
-            app=dict(mode=m,args=gate.arguments('/bin/slktest',o,m,path),report_path=path,credentials=dict(uids=[1000]*4,capabilities=dict(CapEff='0',CapPrm='0',CapAmb='0')),exit=0,stdout=stdout,stderr='',report=r,dup_observed_wall_ns=base+50,start_wall_ns=base+10,end_wall_ns=base+1400)
+            app=dict(mode=m,args=gate.arguments('/bin/slktest',o,m,path,window),report_path=path,credentials=dict(uids=[1000]*4,capabilities=dict(CapEff='0',CapPrm='0',CapAmb='0')),exit=0,stdout=stdout,stderr='',report=r,dup_observed_wall_ns=base+50,start_wall_ns=base+10,end_wall_ns=base+1400)
             p=share/Path(path).relative_to('/evidence');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(r));p.with_suffix('.stdout').write_text(stdout);p.with_suffix('.stderr').write_text('')
             app['report_file']=dict(path=path,sha256=hashlib.sha256(p.read_bytes()).hexdigest(),bytes=p.stat().st_size);row['applications'].append(app)
         rows.append(row)
@@ -95,6 +95,21 @@ class NativeBenchmarkEvidence(unittest.TestCase):
                 if kind=='mode':r['config']['mode']='duplex'
                 if kind=='stalephase':r['phase']=1
                 with self.subTest(kind=kind),self.assertRaises((CaptureError,OSError,ValueError)):gate.corroborate(run,capture,root)
+
+    def test_single_outstanding_window_uses_same_codec_and_original_argv(self):
+        for window in [1,4]:
+            with tempfile.TemporaryDirectory() as directory:
+                run,capture=fixture(Path(directory),window=window)
+                proof=gate.corroborate(run,capture,directory)
+                self.assertEqual(proof.get('window',4),window)
+                record=dict(status='PASSTHROUGH_SUPPORT_PASS',socket_benchmark_requested='window',socket_benchmark_window_requested=window,socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,qemu_exit=0)
+                self.assertEqual(run_exit_code(record),0)
+                record['socket_benchmark_window_requested']=4 if window==1 else 1
+                self.assertEqual(run_exit_code(record),1)
+                run['socket_benchmark'][0]['applications'][0]['args'][-3]='999'
+                with self.assertRaises(CaptureError):gate.corroborate(run,capture,directory)
+        for invalid in [True,0,2,256,'1',1.0]:
+            with self.subTest(window=invalid),self.assertRaises(CaptureError):gate.configuration('window',invalid)
 
     def test_request_without_corroboration_and_performance_upgrades_are_rejected(self):
         for mode in ['window','rate','duplex']:

@@ -363,7 +363,9 @@ def verify_passthrough():
     if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
     if benchmark_modes:
         from ws73_socket_benchmark import corroborate as benchmark_corroborate
-        if any(row['config']['mode']!=benchmark_modes[0] for row in run['socket_benchmark']):raise ValueError('requested benchmark mode differs')
+        windows=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_window=')]
+        if len(windows)!=1 or windows[0] not in ['1','4']:raise ValueError('one explicit bounded benchmark window required')
+        if any(row['config']['mode']!=benchmark_modes[0] or row['config']['window']!=int(windows[0]) for row in run['socket_benchmark']):raise ValueError('requested benchmark mode/window differs')
         proofs.append({'socket_benchmark':benchmark_corroborate(run,capture,EVIDENCE)})
     if 'daemon_removal' in run:
         from ws73_daemon_removal import corroborate_wire

@@ -670,7 +670,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T15:36:27.882081+00:00",
+  "updated_at_utc": "2026-10-16T15:50:53.234187+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -732,7 +732,7 @@
       "Production stateful fuzz,submit-revoke-Down-original-deadline/debugVM and minimum authenticated authorization parallel;no all-control prerequisite"
     ]
   },
-  "execution_phase": "P2b scoped exit:bfaa/9385 event and originaldeadline,32 exacttool cases PASS;10 lifecycle bothindices/24 precontrol exchanges;idle2 positives andolda0 expectedrejection. Originalv1/v2FAIL retained. Full S0-S6 remainsOPEN.",
+  "execution_phase": "P2c measurement tools implemented,offline gates running;new per-message USB/RX assembly timeline andwindow1/4 xHCI on/off control require exact newtool realmatrix. P2b retained qualified scopes unchanged.",
   "next_resume_tasks": [
     "Use bfaa exact-source scoped32 andidlecontrol report as retained baseline;preserve originalv1/v2 andpriorpeerDown failures.",
     "Measure segmented sameconfig real socket workload before changing finitecontinuousTX budget;track fairness/resources/traceperturbation,originaldeadlines/Grant/Ticket andcredit obligations.",
@@ -741,7 +741,7 @@
   ],
   "issue_sync_status": "K17/K19/U8 appended/readbackmatched;allOPEN;originalDownFAIL retained",
   "issue_sync_receipt": "docs/evidence/native-baseline-maintenance-20261016.json",
-  "previous_goal_turn_classification": "progress:canonical slktest migration,actualemptyUSBVM andqualification/issues synchronization",
+  "previous_goal_turn_classification": "progress:sealed32realgates/840RT,tenlifecycle24precontrol,proofs andexistingissues synchronized;originalfailures preserved",
   "current_goal_turn_classification": "progress:productionpairedfinish,independentactualreportreplay,selectedCargoVMidentitynegativeand25actualVMtests",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
@@ -1739,6 +1739,15 @@
       "priming_failure": ".dev/session-event-qualification-v2.json",
       "peer_isolation_scope": "Samegeneration/Ready/unchangedmanagementlease/scan startstop;notanotherindependentbusinesspair",
       "maintenance_receipt": "docs/evidence/session-event-maintenance-20261016.json"
+    },
+    "segmented_measurement_batch": {
+      "status": "IMPLEMENTED_OFFLINE_RUNNING_NOT_NEW_REAL_QUALIFIED",
+      "production_change": false,
+      "kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+      "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+      "scope": "Existing ordinaryslktest loop;window1/4 plus VM xHCI on/off;USBwall andapplocalmono separate;SDK111RX assembly first/last;NOCP notdelivery",
+      "exit": "12alternatingVMruns:window1/4 xon/off3each,twoactualroles perrun;allattempts/rawmaterials retained,independent fullpairedproof;not stablethreshold/fullperformance",
+      "preserved": "S0-S6/19WP/10FV/12DG,VM-only,uniqueSession/credit/Ticket/Grant;dirtyfourdevicehooks untouched;naturalfault/nonmanualrecoveryOPEN"
     }
   },
   "slktest_migration": {

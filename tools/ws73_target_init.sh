@@ -66,12 +66,24 @@ if [ -f /scratch-root-uuid ]; then
     ensure_mount /sys/kernel/tracing tracefs
     [ -f /sys/kernel/tracing/events/xhci-hcd/enable ] || fail 'native xHCI trace events unavailable'
     echo 1024 > /sys/kernel/tracing/buffer_size_kb || fail 'native xHCI trace buffer'
-    echo 1 > /sys/kernel/tracing/events/xhci-hcd/enable || fail 'native xHCI tracing'
+    xhci_mode=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_xhci=/){sub(/^ws73.benchmark_xhci=/,"",$i);print $i}}' /proc/cmdline)
+    case "$xhci_mode" in
+        ''|on) xhci_enabled=1 ;;
+        off) grep -q 'ws73.benchmark_mode=' /proc/cmdline || fail 'trace comparison needs benchmark'; xhci_enabled=0 ;;
+        *) fail 'one explicit xHCI mode' ;;
+    esac
+    echo "$xhci_enabled" > /sys/kernel/tracing/events/xhci-hcd/enable || fail 'native xHCI tracing'
+    echo "$xhci_enabled" > /sys/kernel/tracing/tracing_on || fail 'native trace gate'
+    xhci_cookie=$(cat /proc/sys/kernel/random/uuid) || fail 'trace observation identity'
     echo "WS73_TARGET_NATIVE_VM_ROOT: $(uname -r) NVMe/Btrfs signed-module"
 fi
 mount -t 9p -o trans=virtio,version=9p2000.L evidence /evidence || fail 'private evidence share'
 chown 0:0 /evidence; chmod 0755 /evidence
 mkdir /evidence/application; chown 1000:1002 /evidence/application; chmod 0700 /evidence/application
+if [ -f /scratch-root-uuid ] && grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
+    printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-start.json || fail 'trace start readback'
+    if [ "$xhci_enabled" = 1 ]; then echo "SLK_BENCH_BEGIN:$xhci_cookie" > /sys/kernel/tracing/trace_marker || fail 'trace begin marker'; fi
+fi
 for n in $(seq 1 100); do [ -c /dev/usbmon1 ] && [ -c /dev/sparklink ] && break; sleep 0.1; done
 [ -c /dev/usbmon1 ] && [ -c /dev/sparklink ] || fail 'built-in usbmon/sparklink nodes'
 chown 0:1000 /dev/sparklink; chmod 0660 /dev/sparklink
@@ -360,7 +372,9 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         benchmark_mode=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_mode=/){sub(/^ws73.benchmark_mode=/,"",$i);print $i}}' /proc/cmdline)
         if [ -n "$benchmark_mode" ]; then
             case "$benchmark_mode" in rate|window|duplex) ;; *) fail 'explicit benchmark mode' ;; esac
-            connection_arg="$connection_arg --channel-benchmark $benchmark_mode"
+            benchmark_window=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_window=/){sub(/^ws73.benchmark_window=/,"",$i);print $i}}' /proc/cmdline)
+            case "$benchmark_window" in 1|4) ;; *) fail 'explicit benchmark window' ;; esac
+            connection_arg="$connection_arg --channel-benchmark $benchmark_mode --channel-benchmark-window $benchmark_window"
         fi
         for word in $(cat /proc/cmdline); do
             case "$word" in
@@ -400,6 +414,10 @@ wait "$capture" || fail 'capture shutdown'
 chown 0:1000 /evidence/ws73.pcap /evidence/capture-stats.txt; chmod 0640 /evidence/ws73.pcap /evidence/capture-stats.txt
 dmesg > /evidence/kernel.log
 if [ -f /scratch-root-uuid ]; then
+    if grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
+        if [ "$xhci_enabled" = 1 ]; then echo "SLK_BENCH_END:$xhci_cookie" > /sys/kernel/tracing/trace_marker || fail 'trace end marker'; fi
+        printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-end.json || fail 'trace end readback'
+    fi
     echo 0 > /sys/kernel/tracing/tracing_on
     cat /sys/kernel/tracing/trace > /evidence/xhci-trace.log || fail 'native xHCI trace seal'
     for stats in /sys/kernel/tracing/per_cpu/cpu*/stats; do

@@ -141,3 +141,29 @@ guest bus/device/URB 配对完成和下一次提交。原捕获解析默认行�
 CPU 时间，也不隔离固件或 RF。低负载样本不能证明饱和接收能力或多 URB 的收益；
 解析/ingress/锁竞争分段、突发负载及低扰动对照仍需另测。该工具不改变接收顺序、
 generation、buffer 或 stop/drain，也不产生新的驱动、形式化或性能资格。
+
+
+## 窗口1与xHCI观测对照
+
+Native监督入口支持`--channel-benchmark-window 1|4`，默认4；1保持每应用最多一条
+尚未收到校验回复的请求。两端CLI argv、Armed、schema2配置、guest cmdline与host
+请求必须一致；仍固定20条61字节、两种物理连接角色。复用原应用循环与报告，不
+新增wire Engine，也不把软件窗口解释为协议credit。
+
+`--channel-benchmark-xhci on|off`只在该专项benchmark有效，默认on。仅在私有VM
+内开关既有xHCI事件追踪及全局tracing_on；usbmon、双端业务、来源和完整捕获
+断言保持。启动/封存读回、每boot UUID、on的前后标记与实际事件、off的空记录、
+CPU0/1零丢失及trace条数必须一致。缺文件、错误配置、丢失或截断拒绝。这个对照
+只测xHCI追踪的增量影响，off仍有usbmon/QEMU等观测开销，不叫“无观测开销”。
+
+`tools/ws73_benchmark_timeline.py RUN_DIRECTORY`只读重放原双端证明，输出每条请求
+的OUT提交/完成、对端首/末片RX、对端回复OUT及源端首/末片RX间隔和原record索引。
+61字节应用消息也可由SDK111分成28/28/10字节RX，必须沿原DLI PB重组证明处理，
+不能假定短包单片。应用自己的单调时钟RTT/准入和guest usbmon墙钟间隔分开，
+不跨时钟相减，不用RTT/2。OUT完成允许晚于对端IN，不表示协议credit归还。
+
+NOCP单独保留handle/count事件，不擅自归给某条消息，也不作为业务交付。USB到
+对端USB区间包含USB/固件/无线/VM；首末RX差含多层调度，不是纯RF分片时延。
+该工具仅输出完整成功原运行的观测；失败运行仍保留原结果、不得从完整尝试清单
+删除。样本量、扰动、资源峰值、饱和/公平性及所有旧未决资格继续由唯一能力入口
+记录；时间线和配置开关建立不等于取得新artifact的实机或完整性能资格。

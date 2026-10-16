@@ -156,3 +156,19 @@ python3 tools/ws73_rx_gap.py "$NEW_RUN_DIRECTORY" > "$NEW_RX_OBSERVATION"
 时间含 callback、USB core 和 VM 调度，不能等同 callback CPU 时间或 RF 时延。
 诊断失败保留 stderr 和原文件；缺失输入、配对错误或掉包不生成完整观测。
 结果字段和限制见[指标参考](../reference/socket-benchmark.md)。
+
+
+## 在封存VM门禁上做同口径对照
+
+准备与[Native输入契约](../reference/vm-gate-inputs.md)匹配的新prepared目录；
+复用原实验内核和运行程序时仍记录它们自己的编译身份，新runner另记执行身份。
+使用现有`ws73_target.py run`专项benchmark，在同一prepared镜像、两只真实WS73和
+相同VM配置上，分别选择`--channel-benchmark window --channel-benchmark-window 1`
+及4，并各用`--channel-benchmark-xhci on`或off。每轮全新output目录，交替运行，
+保留所有尝试；不要与构建或其它设备VM回归并行进行性能采样。
+
+完整退出后运行`python3 tools/ws73_benchmark_timeline.py "$RUN_DIRECTORY"`并保存
+输出。先检查原manifest、两端随机载荷和原期限、usbmon零丢包，再比较同窗口的
+多轮应用RTT与USB分段；具体单位和不能推导的范围见[指标参考](../reference/socket-benchmark.md)。
+追踪缺原件、配置读回不符或任何必要门禁失败都保留失败，不拿成功轮次覆盖。
+on/off差异仅说明该配置的xHCI增量影响，不授予稳定阈值或最低硬件时延。

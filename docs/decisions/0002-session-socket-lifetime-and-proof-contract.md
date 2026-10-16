@@ -100,6 +100,12 @@ credit耗尽/满队列/断链/旧lifetime；不等待全部控制面竞争排列
 
 ## 验证不是硬件事实的替代
 
+MTU、MPS和ACB包预算是三个契约：MTU约束SDU，MPS包含完整DTAP帧头，
+ACB只约束一次控制器分片。能力响应不得用MTU填充MPS。Channel按模式帧头
+收紧有效SDU预算，Session锁内同时发布两项及通道预算；最终准入与完整RX均检查。
+这样长包的成功分片不会掩盖MPS违约。验证须覆盖独立能力、恰好边界及超一字节，
+并保留原失败；旧对端回复不能自动成为修复后的协议一致性资格。
+
 | 对象 | 方法与性质 | 边界 |
 |---|---|---|
 | CreditLedger | Kani直接编译生产Rust纯转换：构造/归纳保持debt总和=outstanding≤capacity，独立controller、USB不退款、不确定不退款、旧debt不迁移 | NoCP真实性/来源不能作为未证硬件假设被消掉 |

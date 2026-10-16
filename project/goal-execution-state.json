@@ -677,7 +677,7 @@
   },
   "execution_phase": "WP07 four-device long burst slice sealed;next actual dynamic channels over unique Session dispatcher;full original scope remains incomplete",
   "next_resume_tasks": [
-    "Finish exact K90/U2ee real MTU/MPS length/close/burst regression using live matrix77362,then four-device gates;keep original FAIL/history and original qualification identities",
+    "Observe existing41085 burst VM;earlier matrix77362 terminalFAIL was private supervisor ordinary-vs-prefix classification;raw prefix gate and replay pass under original contract,fail retained. After fullmatrixv2 PASS run four-device original gates,then dynamicCMTC.",
     "Audit latest actual CMTC dynamic-channel signaling and existing ChannelTable/Session/socket consumers against fixedNearLinkHost,SDK111,libws73 and standards;reuse existing implementation",
     "Implement minimum dynamic Channel local/remote TCID negotiation and actual per-channel socket routing/queues;VM two-channel real peer-checked business",
     "Fairness/slowconsumer and actual USB/device-fault isolation with surviving real replies;natural RCA/nonhuman recovery remains open",
@@ -1103,7 +1103,7 @@
         "New build/artifacts and exact-QEMU root smoke pass;new real40short replies pass",
         "Full original length/close/burst and four-device data regressions remain required before declaring batch complete"
       ],
-      "next": "Poll exact real matrix77362;then original four-device gates and actual dynamic Connect/Disconnect;do not wait allcontrol races"
+      "next": "Poll exact41085 burst;prefix gate raw PASSED and saved-capture negatives confirmed separate delivery contract,initial supervisor misclassification retained. Then original four-device gates and actual dynamic CMTC;no allcontrol prerequisite"
     }
   },
   "agent_workstream": {
@@ -1235,7 +1235,7 @@
     "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
     "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
     "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only",
-    "state": "MPS_FIX_SHORT40_REAL_PASS_LENGTH_MATRIX_RUNNING",
+    "state": "MPS_REAL_LENGTHS_PASS_PREFIX_CONTRACT_RECHECKED_BURST_RUNNING",
     "tool": "tools/ws73_parallel_data.py via ws73_target.py --four-device-business",
     "invariants": [
       "four distinct Ready registrations and unchanged daemon identity",
@@ -1245,7 +1245,7 @@
     ],
     "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification",
     "report": "docs/evidence/four-device-business-20261016.json",
-    "next": "Observe exact live77362 matrix;finish original newkernel length/close/burst/four-device gates before full data requalification;thenactual dynamic negotiation/grants/socket queues;no all-control prerequisite",
+    "next": "Poll exact41085 remaining burst;original prefix real gate and saved capture/negative controls pass under unchanged distinct prefix-delivery contract. Original supervisor misclassification preserved. Then four-device original gates;dynamic signaling next,not allcontrol prerequisite",
     "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json",
     "controlled_disconnect_report": "docs/evidence/four-device-disconnect-20261016.json",
     "controlled_disconnect_issues_receipt": "docs/evidence/four-device-disconnect-issues-20261016.json",
@@ -1264,9 +1264,11 @@
     "kernel_build_terminal": 0,
     "mtu_mps_fix_report": "docs/evidence/cmtc-mtu-mps-fix-20261016.json",
     "real_short_manifest": ".dev/native-cmtc-mps-short-v1-run/manifest.json",
-    "length_matrix": ".dev/cmtc-mps-retained-matrix.json",
-    "length_matrix_session": 77362,
-    "mtu_mps_fix_issues_receipt": "docs/evidence/cmtc-mtu-mps-fix-issues-20261016.json"
+    "length_matrix": ".dev/cmtc-mps-retained-matrix-v2.json",
+    "length_matrix_session": 41085,
+    "mtu_mps_fix_issues_receipt": "docs/evidence/cmtc-mtu-mps-fix-issues-20261016.json",
+    "length_matrix_prior_failure": ".dev/cmtc-mps-retained-matrix.json",
+    "prefix_classification_correction": ".dev/cmtc-mps-prefix-classification-correction.json"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",

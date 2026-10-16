@@ -228,6 +228,12 @@ DLI PB、DTAP SAR、SSAP分片是不同层；DLI PB将一个DTAP PDU拆成控制
 RX仍由Session唯一分流。控制器包上限与协商MTU/MPS分开，实现预算为DTAP PDU
 最多2047字节、应用最多2042字节、每通道8个TX项（含持续busy的Session在途项）。
 
+MTU限制上层SDU，MPS限制完整DTAP PDU，不能共用一个数值或把ACB分片大小
+当作MPS。Channel的有效SDU预算不超过双方MTU与“双方MPS减该模式完整帧头”
+的较小值；基础CUTC/SMTC分别预留5/4字节。能力响应独立公布两项，Session在
+同一锁内发布原始能力及每通道有效预算；TX最终准入与RX完整PDU均执行限制。
+这些实现上限及能力查询返回值不代表任意模式、动态通道或硬件全域资格。
+
 worker在Session锁内取包并冻结该有限operation的Grant。首片实际USB准入仍要求
 Binding活着；成功提交在同一锁内标记begun，是fd取消与物理义务交接的线性化点。
 已经begun的PDU缓冲区在Session持有，不放回fd队列、不引用已释放SocketBinding。

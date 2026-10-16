@@ -1181,9 +1181,11 @@
       "status": "18 real browser checks passed at exact4a581c5; failures preserved; no Pages deployment or functional qualification",
       "refinement": {
         "scope": "GitBook-style task cards, compact chapter navigation, versioned branding, mobile and keyboard reading; documentation only",
-        "status": "implemented; strict build passed on initial dirty candidate; exact-source browser gate pending",
+        "status": "strict HTML and all21 browser checks PASS; three screenshots visually reviewed; no deployment",
         "runtime_qualification_changed": false,
-        "publication": "HTML artifact only; Pages API404, no deployment claimed"
+        "publication": "HTML artifact only; Pages API404, no deployment claimed",
+        "tested_documentation_source": "e62a77044700705ea68e9ac6e5cf2597da2d2bf9",
+        "evidence": "docs/evidence/documentation-gitbook-refinement-20261016.json"
       }
     },
     "status_evidence": "docs/evidence/documentation-dq1-and-theme-20261016.json",

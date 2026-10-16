@@ -91,6 +91,9 @@ struct Pair {
     /// Dynamic correctness: keep fd reference until an explicit close line.
     #[arg(long,requires_all=["source_port","check"])]
     hold: bool,
+    /// Dynamic correctness: after real negotiation, await exact start line (30s).
+    #[arg(long, requires_all=["source_port", "check"])]
+    start_barrier: bool,
 }
 #[derive(Args)]
 struct Load {
@@ -159,6 +162,7 @@ impl Pair {
                 || self.exercise != Exercise::Regular
                 || self.source_port.is_some()
                 || self.hold
+                || self.start_barrier
             {
                 anyhow::bail!(
                     "measurements require --report;route/exercise/hold are correctness-only"
@@ -252,6 +256,7 @@ async fn run_pair(client: Client, p: Pair, peer: bool) -> anyhow::Result<()> {
                         rounds: p.count as u32,
                         bytes: p.bytes,
                         hold: p.hold,
+                        start_barrier: p.start_barrier,
                         mode: p.exercise.mode(),
                     },
                 )
@@ -348,6 +353,7 @@ mod tests {
                 "--aid",
                 "29441",
                 "--hold",
+                "--start-barrier",
             ],
         ] {
             assert!(parse(&args).is_ok(), "{args:?}");
@@ -361,6 +367,8 @@ mod tests {
             vec!["ping", "/link", "--check", "--count", "21"],
             vec!["ping", "/link", "--check", "--source-port", "1"],
             vec!["ping", "/link", "--check", "--hold"],
+            vec!["ping", "/link", "--check", "--start-barrier"],
+            vec!["peer", "/link", "--report", "bad.json", "--start-barrier"],
             vec!["peer", "/link", "--check", "--exercise", "burst"],
             vec!["ping", "/link", "--load", "--report", "bad.json"],
             vec!["peer", "/link", "--check", "--load"],

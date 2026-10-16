@@ -295,7 +295,7 @@ pub(crate) fn exercise(
     message_bytes: usize,
     mode: Mode,
 ) -> anyhow::Result<()> {
-    exercise_channel(fd, responder, rounds, message_bytes, mode, false)
+    exercise_channel(fd, responder, rounds, message_bytes, mode, false, false)
 }
 pub(crate) fn exercise_dynamic(
     fd: OwnedFd,
@@ -303,11 +303,20 @@ pub(crate) fn exercise_dynamic(
     rounds: u32,
     message_bytes: usize,
     mode: Mode,
+    start_barrier: bool,
 ) -> anyhow::Result<()> {
     if mode == Mode::Burst && (responder || rounds != 16 || message_bytes != 2042) {
         anyhow::bail!("dynamic burst requires an initiator with16 messages of2042 bytes");
     }
-    exercise_channel(fd, responder, rounds, message_bytes, mode, true)
+    exercise_channel(
+        fd,
+        responder,
+        rounds,
+        message_bytes,
+        mode,
+        true,
+        start_barrier,
+    )
 }
 fn exercise_channel(
     fd: OwnedFd,
@@ -316,6 +325,7 @@ fn exercise_channel(
     message_bytes: usize,
     mode: Mode,
     dynamic: bool,
+    start_barrier: bool,
 ) -> anyhow::Result<()> {
     validate_exercise(rounds, message_bytes)?;
     let fd = prepare_application_fd(fd)?;
@@ -355,6 +365,12 @@ fn exercise_channel(
     );
     info_copy_retry(&fd, info)?;
     tx_status(&fd, "ready", 0)?;
+    if start_barrier {
+        // Channel capability/authority checks above are real; this controls only
+        // application scheduling and never extends negotiation or PDU deadlines.
+        println!("NativeDynamicArmed: count={rounds} bytes={message_bytes}");
+        crate::benchmark::read_start(nix::libc::STDIN_FILENO, Duration::from_secs(30))?;
+    }
     if mode == Mode::PrefixClose {
         exercise_prefix_close(fd, message_bytes)
     } else {

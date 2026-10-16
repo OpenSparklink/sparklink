@@ -190,3 +190,25 @@ Session 原件；任一失败整轮不能通过。输出位于 guest-output 的 
 
 这是高扰动诊断，不授予稳定性能阈值、credit 准确性、callback drain 或公平性资格。
 新入口的实机结果须按准确工具与编译 artifact 单独登记，不能继承历史资格。
+
+
+## 检查短包与长包的并发进展
+
+这是正确性任务，不输出新的性能资格。需要支持 `--start-barrier` 的匹配 `slktest`、
+重新prepare的工具及真实双设备VM，使用新输出目录：
+
+```sh
+python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT_B" \
+  --qmp-hotplug --connection-verify --connection-advertising negotiable-t \
+  --channel-socket-verify --channel-fairness-verify --timeout 600 --output "$NEW_RUN_DIRECTORY"
+```
+
+监督器先运行既有固定通道/SSAP回归，再在每次连接上协商独立短、长两个动态通道。
+四个普通用户应用都Armed后才写start；测试结束后才释放保留fd。查看原manifest的
+`channel_fairness_corroboration`和应用原件，核对每个方向短包确实在长包发送期间前进，
+而非仅看总成功计数。缺捕获、错误载荷、原期限超时、无真实重叠都保留FAIL；
+不得重复运行至通过后删掉原失败。详细范围见[指标参考](../reference/socket-benchmark.md)。
+
+独立 `slktest --check` 动态端点也可加 `--start-barrier`，在Armed前不要写start。
+只有启动调度被协调，不能由它推导公平性上界、credit真值或性能收益。新artifact的
+实机资格与已封存工具分别登记，不因相同命令名称继承。

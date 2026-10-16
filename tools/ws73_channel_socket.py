@@ -19,12 +19,13 @@ def test_program(run):
     return record
 
 
-def check_arguments(binary, entry, peer, rounds, message_bytes, exercise='regular', route=None, hold=False):
+def check_arguments(binary, entry, peer, rounds, message_bytes, exercise='regular', route=None, hold=False, start_barrier=False):
     args=[str(binary),'--adapter',entry['owner']['path'],'channel','peer' if peer else 'ping',
           entry['object']['path'],'--check','--count',str(rounds),'--bytes',str(message_bytes)]
     if exercise!='regular':args+=['--exercise',exercise]
     if route is not None:args+=['--source-port',str(route[0]),'--destination-port',str(route[1]),'--aid',str(route[2])]
     if hold:args+=['--hold']
+    if start_barrier:args+=['--start-barrier']
     return args
 
 
@@ -230,7 +231,7 @@ def validate_application_arguments(row):
         if 'ports' in row:
             ports=row['ports'][::-1] if peer else row['ports']
             route=(*ports,row['aid'])
-        expected=check_arguments(row['application_tool']['path'],entry,peer,row['rounds'],row.get('message_bytes',61),exercise,route,route is not None)
+        expected=check_arguments(row['application_tool']['path'],entry,peer,row['rounds'],row.get('message_bytes',61),exercise,route,route is not None,row.get('start_barrier',False))
         if app.get('args')!=expected:raise CaptureError('actual slktest channel arguments/identity mismatch')
 
 

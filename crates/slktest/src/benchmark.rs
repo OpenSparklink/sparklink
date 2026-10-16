@@ -1,7 +1,7 @@
 //! Low-perturbation application ping-pong, over the normal delegated channel.
 //! This is a measurement tool, not a Host, protocol Engine or qualification oracle.
 mod load;
-pub(crate) use load::{LoadConfig, Mode as LoadMode, run_load};
+pub(crate) use load::{LoadConfig, Mode as LoadMode, read_start, run_load};
 
 use std::collections::{BTreeSet, HashSet};
 use std::fs::{File, OpenOptions};

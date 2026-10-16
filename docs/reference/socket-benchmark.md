@@ -100,6 +100,11 @@ schema1 双端核对含迟到拒绝；schema2 已有独立应用报告核对（�
 `ping/peer --check` 保留原正确性门禁和 stdout receipts；测量不加 --check 且须 --report。
 --exercise boundaries/prefix-close/burst 保留原约束；动态只在 --check 下提供完整的
 --source-port/--destination-port/--aid，--hold 仍等显式close，不承诺动态 benchmark。
+动态正确性可选 `--start-barrier`：真实协商和能力/授权核对后输出
+`NativeDynamicArmed: count=N bytes=B`，复用已有输入解析器等待精确 `start\n`，
+原期限30秒，部分输入不续期、EOF撤回；等待期间不开始业务循环。该应用启动等待
+不延长内核协商、队列或已准入PDU的原期限，不授予credit/Ready。固定CUTC和测量
+入口拒绝此参数；默认行为不变，随机载荷与收发仍用同一正确性实现。
 
 代码迁移不改 schema1/2、wire、socket/Grant/credit/Ticket 或原期限。历史证据中的
 slctl 命令和 artifact/hash 保持不动，由原提交工具复核；当前 verifier 的旧 argv 分支
@@ -198,3 +203,18 @@ ABORTED/RUNNING 当作合格报告。
 首轮 1 MiB/CPU 的真实长包 burst 采集曾覆盖 9147 条，整轮 FAIL 保留；按实际
 25188 条记录调整为 2 MiB/CPU，仍严格检查零丢失与最多 8 MiB 的文本原件。
 该容量是本诊断的预算，不改变应用队列、credit 或协议期限；超过预算仍拒绝。
+
+
+## 并发短包／长包的限定进展门禁
+
+`ws73_target.py run --channel-fairness-verify` 要求独立真实双设备、connection 与固定
+socket baseline 门禁；不能与动态旧矩阵、Agent、prefix-close、burst、边界检查、
+Session trace 或其它专项混跑。它复用 `slktest --check`、唯一物理Session与动态通道，
+两种连接角色各短20轮61字节及长16轮2042字节，四个普通用户端点协商后全部Armed
+才逐一放行。每次stdin写入记录前后guest墙钟，原件保留实际凭据、pid、argv、stdout。
+
+USB核对要求真实CMTC、不同且交叉匹配TCID、随机对端校验回复、长包连续PB与
+软件队列背压；每个方向的短PDU必须在长TX流首末之间取得进展，缺重叠即拒绝。
+协议解析仍来自现有捕获设施，未增加另一Engine。`full_fairness_acceptance=false`：
+有限工作量的交错进展不证明所有已准入队列的饥饿上界、强公平、精确时延或性能。
+原尺寸/credit/撤权/SSAP/四设备资格不由新参数推断，准确编译/执行身份另行验收。

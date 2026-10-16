@@ -244,7 +244,7 @@ def info(channel, owners):
         expected=['--adapter',entry['owner']['path'],('dynamic-burst' if channel.get('burst') else 'dynamic-roundtrip') if app['role']=='initiator' else 'dynamic-peer',entry['object']['path'],*map(str,ports),str(channel['aid']),str(channel['rounds']),str(channel['message_bytes']),'hold']
         if 'application_tool' in channel:
             expected=check_arguments(channel['application_tool']['path'],entry,app['role']=='peer',channel['rounds'],channel['message_bytes'],
-                'burst' if channel.get('burst') and app['role']=='initiator' else 'regular',(*ports,channel['aid']),True)
+                'burst' if channel.get('burst') and app['role']=='initiator' else 'regular',(*ports,channel['aid']),True,channel.get('start_barrier',False))
             if app['args']!=expected:raise CaptureError('actual slktest dynamic arguments/identity mismatch')
         elif app['args'][1:]!=expected:raise CaptureError('actual historical dynamic application arguments/identity mismatch')
         owner,obj=entry['owner'],entry['object']

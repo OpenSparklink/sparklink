@@ -187,6 +187,9 @@ def execute(run, a, b):
             if getattr(run.args,'channel_benchmark',None):
                 from ws73_socket_benchmark import execute as benchmark_execute
                 benchmark_execute(run,phase)
+            if getattr(run.args,'channel_fairness_verify',False):
+                from ws73_channel_fairness import execute as fairness_execute
+                fairness_execute(run,phase)
             if getattr(run.args, 'dynamic_channel_verify', False):
                 from ws73_dynamic_channels import execute as dynamic_execute
                 dynamic_execute(run, phase)

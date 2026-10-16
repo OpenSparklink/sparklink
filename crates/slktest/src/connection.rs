@@ -4,6 +4,7 @@ pub(crate) struct DynamicExercise {
     pub(crate) rounds: u32,
     pub(crate) bytes: usize,
     pub(crate) hold: bool,
+    pub(crate) start_barrier: bool,
     pub(crate) mode: crate::channel::Mode,
 }
 
@@ -49,6 +50,7 @@ impl Client {
             rounds,
             bytes,
             hold,
+            start_barrier,
             mode,
         } = exercise;
         use std::os::fd::AsRawFd;
@@ -103,7 +105,7 @@ impl Client {
             "NativeDynamicStaged: source={} destination={} aid={} passive={responder}",
             route.0, route.1, route.2
         );
-        crate::channel::exercise_dynamic(fd, responder, rounds, bytes, mode)?;
+        crate::channel::exercise_dynamic(fd, responder, rounds, bytes, mode, start_barrier)?;
         println!("NativeDynamicBusinessDone: rounds={rounds} held={hold}");
         if hold {
             let mut command = String::new();

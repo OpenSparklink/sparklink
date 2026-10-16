@@ -685,7 +685,7 @@ fn read_control<const N: usize>(
     Ok(())
 }
 
-fn read_start(fd: nix::libc::c_int, budget: Duration) -> anyhow::Result<()> {
+pub(crate) fn read_start(fd: nix::libc::c_int, budget: Duration) -> anyhow::Result<()> {
     read_control(fd, budget, b"start\n", "start")
 }
 

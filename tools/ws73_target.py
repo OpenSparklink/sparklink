@@ -113,7 +113,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -256,7 +256,7 @@ def prepare_locked(args, build_fd):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -497,6 +497,7 @@ def _run(args):
     connection_verify=bool(getattr(args,'connection_verify',False))
     acb_probe=bool(getattr(args,'acb_transport_probe',False))
     agent_mode=getattr(args,'security_agent',None)
+    fairness=bool(getattr(args,'channel_fairness_verify',False))
     dynamic_channels=bool(getattr(args,'dynamic_channel_verify',False))
     dynamic_long=getattr(args,'dynamic_channel_long_bytes',None)
     dynamic_burst=bool(getattr(args,'dynamic_channel_burst',False))
@@ -519,6 +520,7 @@ def _run(args):
     if channel_close and (not channel_socket or channel_bytes!=2042 or channel_rounds!=1 or channel_boundaries):raise ValueError('prefix-close requires explicit one-round 2042-byte socket gate')
     if channel_burst and (not channel_socket or channel_bytes!=2042 or channel_rounds!=16 or channel_close or channel_boundaries):raise ValueError('burst requires explicit16-round2042-byte socket gate')
     link_resync=bool(getattr(args,'daemon_link_resync',False))
+    if fairness and (not channel_socket or dynamic_channels or agent_mode or channel_close or channel_burst or channel_boundaries or parallel or bool(getattr(args,'session_service_observe',False))):raise ValueError('concurrent channel gate requires separate ordinary baseline without trace or other special modes')
     if dynamic_channels and (not channel_socket or agent_mode or channel_close or channel_burst or channel_boundaries or parallel):raise ValueError('dynamic gate requires separate ordinary fixed-channel baseline without other special modes')
     if channel_socket and (not connection_verify or acb_probe or link_resync):raise ValueError('ordinary channel socket requires a separate real connection gate without test module')
     if acb_probe and (not connection_verify or link_resync):raise ValueError('ACB selftest requires separate explicit connection gate')
@@ -674,6 +676,9 @@ def _run(args):
     m['live_security_agent_requested']=agent_mode
     if agent_mode:m['security_agent_verifier']=file_record(HERE/'ws73_security_agent.py')
     if agent_mode and agent_mode.startswith('cli-'):m['security_cli_verifier']=file_record(HERE/'ws73_security_cli.py')
+    m['channel_fairness_requested']=fairness
+    m['channel_fairness_acceptance']=False
+    if fairness:m['channel_fairness_verifier']=file_record(HERE/'ws73_channel_fairness.py')
     m['dynamic_channel_burst_requested']=dynamic_burst
     m['dynamic_channel_long_bytes_requested']=dynamic_long
     m['dynamic_channel_verification_requested']=dynamic_channels
@@ -852,6 +857,7 @@ def _run(args):
                      (' ws73.channel_prefix_close=1' if channel_close else '')+
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
+                     (' ws73.channel_fairness=1' if fairness else '')+
                      (f' ws73.benchmark_mode={benchmark_mode} ws73.benchmark_window={benchmark_window} ws73.benchmark_xhci={benchmark_xhci}' if benchmark_mode else '')+
                      (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
@@ -1230,6 +1236,12 @@ def _run(args):
                     m['ordinary_software_backpressure_acceptance']=channel_burst
                     m['ordinary_prefix_close_acceptance']=channel_close
                     m['ordinary_channel_socket_acceptance']=not channel_close
+                if fairness != ('channel_fairness' in control):raise ValueError('concurrent channel request and original evidence disagree')
+                if fairness:
+                    from ws73_channel_fairness import corroborate as fairness_corroborate
+                    m['channel_fairness_corroboration']=fairness_corroborate(control,capture)
+                    if file_record(HERE/'ws73_channel_fairness.py')!=m['channel_fairness_verifier']:raise ValueError('concurrent channel verifier changed during execution')
+                    m['channel_fairness_acceptance']=True
                 if dynamic_channels != ('dynamic_channels' in control):raise ValueError('dynamic request and original evidence disagree')
                 if dynamic_channels:
                     from ws73_dynamic_channels import corroborate as dynamic_corroborate
@@ -1500,6 +1512,16 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record):
+    fairness=record.get('channel_fairness_requested',False)
+    if type(fairness) is not bool:return 1
+    if not fairness and (record.get('channel_fairness_acceptance') or 'channel_fairness_corroboration' in record):return 1
+    if fairness:
+        p=record.get('channel_fairness_corroboration',{})
+        if (record.get('channel_fairness_acceptance') is not True or record.get('qemu_exit')!=0
+                or p.get('status')!='REAL_CONCURRENT_SHORT_LONG_PDU_PROGRESS_SCOPED_PASS'
+                or type(p.get('round_trips')) is not int or p['round_trips']!=72
+                or p.get('full_fairness_acceptance') is not False or p.get('performance_qualified') is not False
+                or p.get('natural_recovery') is not False or len(p.get('proofs',[]))!=2):return 1
     requested=record.get('session_service_observation_requested',False)
     if not requested and (record.get('session_service_acceptance') or 'session_service_observation' in record):return 1
     if requested:
@@ -1683,6 +1705,7 @@ def main():
             cmd.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4,help='bounded application rounds per connection role')
             cmd.add_argument('--dynamic-channel-burst',action='store_true',help='require actual dynamic C16x2042 burst/credit/peer-reply evidence;requires dynamic2042 gate')
             cmd.add_argument('--dynamic-channel-long-bytes',type=int,choices=[249,250,253,254,255,1024,2042],help='extend dynamic gate with long C channel and explicit lifetime slot exhaustion;requires --dynamic-channel-verify')
+            cmd.add_argument('--channel-fairness-verify',action='store_true',help='separate short20/long16x2042 real concurrent channel progress,not fullfairness/performance proof')
             cmd.add_argument('--dynamic-channel-verify',action='store_true',help='actual two-channel CMTC/asymmetricTCID/app delivery/close isolation, separate bounded VM gate')
             cmd.add_argument('--channel-benchmark-window',type=int,choices=[1,4],default=4,help='one outstanding ping-pong or original bounded window4')
             cmd.add_argument('--channel-benchmark-xhci',choices=['on','off'],default='on',help='VM-only xHCI trace comparison;usbmon remains enabled')

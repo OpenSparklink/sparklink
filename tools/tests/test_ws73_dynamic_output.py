@@ -27,10 +27,11 @@ class OutputCollector(unittest.TestCase):
                 def fileno(self):return real.fileno()
             sinks[0]=Sink()
         reader=ApplicationOutput(maximum);self.addCleanup(reader.close)
-        proc=subprocess.Popen([sys.executable,'-c',program],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        proc=subprocess.Popen([sys.executable,'-c',program],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         def stop():
             if proc.poll() is None:proc.kill()
             proc.wait(timeout=2)
+            proc.stdin.close()
         self.addCleanup(stop)
         app=dict(output_files=list(map(str,paths)));reader.add(proc,app,sinks)
         return proc,app,reader,paths
@@ -42,7 +43,14 @@ class OutputCollector(unittest.TestCase):
             time.sleep(.002)
         reader.final(app)
     def test_partial_utf8_both_streams_and_original_bytes(self):
-        proc,app,reader,paths=self.spawn("import os,time;os.write(1,b'\\xe6');time.sleep(.02);os.write(1,b'\\x98\\x9f\\n');os.write(2,b'error\\n')")
+        proc,app,reader,paths=self.spawn("import os;os.write(1,b'\\xe6');os.read(0,1);os.write(1,b'\\x98\\x9f\\n');os.write(2,b'error\\n')")
+        limit=time.monotonic()+2
+        while app['captured_bytes']['stdout']!=1:
+            reader.drain()
+            if time.monotonic()>=limit:self.fail('first partial UTF-8 byte did not arrive')
+            time.sleep(.002)
+        self.assertEqual(app['stdout'],'')
+        proc.stdin.write(b'continue');proc.stdin.flush()
         self.finish(proc,app,reader)
         self.assertEqual(app['stdout'],'星\n');self.assertEqual(app['stderr'],'error\n')
         self.assertEqual(paths[0].read_bytes(),'星\n'.encode());self.assertEqual(app['captured_bytes']['stdout'],4)
@@ -72,7 +80,7 @@ class OutputCollector(unittest.TestCase):
             else:paths[0].write_bytes(b'')
             with self.subTest(deleted=deleted),self.assertRaises((OSError,CaptureError)):reader.final(app)
     def test_incomplete_eof_cannot_be_final(self):
-        proc,app,reader,_=self.spawn("import time;print('held',flush=True);time.sleep(.5)")
+        proc,app,reader,_=self.spawn("import os;print('held',flush=True);os.read(0,1)")
         with self.assertRaises(CaptureError):reader.final(app)
 
 

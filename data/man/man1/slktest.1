@@ -1,4 +1,4 @@
-.TH SLKTEST 1 "2026-10-16" "SparkLink development" "User Commands"
+.TH SLKTEST 1 "2026-10-17" "SparkLink development" "User Commands"
 .SH NAME
 slktest \- SparkLink application channel correctness and load tests
 .SH SYNOPSIS
@@ -25,6 +25,12 @@ boundaries, prefix-close or burst. Prefix-close is initiator1x2042; burst is
 initiator16x2042. Peers use regular. Dynamic correctness requires --source-port,
 --destination-port and --aid together; --hold retains the fd until a close line.
 Dynamic measurement is not supported.
+.PP
+--security defaults to0. Fixed ping/peer --check accepts1 (current encryption
+mechanism) or2 (confirmed numeric mechanism), enforced by the kernel's frozen
+security epoch Grant. A refusal never falls back to a plain fd. Nonzero security
+with measurement or dynamic routes is rejected. These mechanism requirements
+do not establish a named identity, Bond or independent RF cipher attestation.
 .SH BOUNDS AND FAILURE
 Measure count is 1..10000, bytes29..2042 within actual basic CUTC MTU/MPS.
 Rate/window/duplex and peer --load wait at most30s for start followed by newline.
@@ -37,7 +43,7 @@ records remain enforced. Reports never grant performance qualification.
 See channel subcommand --help and the versioned documentation for precise bounds.
 .SH STATUS
 Basic CUTC measurements and limited dynamic correctness only. Reliable modes,
-protected security and safe TCID reuse are not promised. New executable names
+protected measurements/dynamic routes and safe TCID reuse are not promised. New executable names
 never requalify historical artifacts. Full Native/WS73 and performance gates
 must be run against the exact new binary.
 .SH EXIT STATUS

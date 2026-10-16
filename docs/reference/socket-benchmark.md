@@ -54,6 +54,10 @@ schema 版本、run id、源角色及 controller/generation/lifetime/channel 身
 
 ## 当前 CLI 参数与 schema2 边界
 
+`--security`默认0；非零1/2仅用于固定`ping|peer --check`正确性，经同一普通授权fd
+验证当前机制与冻结epoch。测量模式及动态路由明确拒绝非零要求，不降级或沿用普通
+测量的资格；本页性能报告schema不变。具体等级、失效和资格见[接口契约](interfaces.md)。
+
 | 命令 | 路径后的位置参数 | 行为 |
 |---|---|---|
 | slktest channel ping / peer | CONNECTION --count N --bytes B --report FILE | schema1，单未完成请求／校验回复 |

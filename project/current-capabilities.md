@@ -4,9 +4,18 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
-K61905139已实现固定通道的安全epoch Grant与ACB入口revision；用户态适配及新VM
-验收正在进行。当前受保护fd实机资格尚未取得，不能由下列K6861/U13bb快照记录
-推断；动态protected、完整实时失效矩阵和SSAP安全消费者仍缺。
+[固定安全epoch Grant限定实机结果](../docs/evidence/security-grant-fixed-real-20261017.json)
+绑定K61905139/U73a2898，执行73a、后处理02ac：普通control组用户通过既有slkd与
+slktest取得security1/2固定CUTC，各两连接角色，共16次受保护业务校验回复；加密前
+1/2及无MITM后的2共20次原生EACCES。四机制场景加249/2042保持共6VM/48次回复、
+32快照、16边界拒绝，58次relay与相反端RX、8份安装/0011。无静默普通fd降级。
+
+生产Grant helper CBMC79检查/三负对照仅限定纯逻辑通过，实际锁/引用/USB/credit/
+撤权/晚到/复用组合仍未证明；53原生入口、实际C sanitizer、279Rust、694执行/695后
+处理工具、42跨语言、39复制真实证据负对照分别记录。原编译/fixture/路径/监督器
+失败保留。动态protected、SMTC安全消费者、protected完整实时失效与完整新数据门禁
+仍缺；十项旧生命周期正按新产物重跑，不能继承旧镜像或充当protected组合通过。
+机制等级2不是命名身份/Bond或独立RF加密证明；自然RCA/非人工恢复及整项继续OPEN。
 
 [实时 Session 机制快照限定结果](../docs/evidence/security-live-state-real-20261017.json)：
 准确K6861/U13bb、执行13bb、后处理6c8。新增d6及GetSecurityState在唯一物理
@@ -279,6 +288,12 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | 实际安装/取消/当前机制Kani：unsupported，未证明 | `formal_bounded` | `UNPROVED` |
 | 历史私有准备/见证所有权/沙箱失败：原FAIL保留 | `offline` | `FAIL` |
 | 实时失效矩阵、安全Grant/SSAP消费及完整原范围：仍缺 | `real_device` | `UNPROVED` |
+| K619/U73：固定安全epoch Grant，16真实受保护回复与20等级拒绝 | `real_device` | `PASS` |
+| 53实际入口/Session sanitizer、279Rust、跨语言及39真实证据负对照 | `offline` | `PASS` |
+| 生产纯Grant helper：CBMC79检查与三负对照，限定通过 | `formal_bounded` | `PASS` |
+| 实际锁/引用/USB/credit/撤权/晚到/复用组合：未证明 | `formal_bounded` | `UNPROVED` |
+| 原构造器/路径/fixture/LSan/证明监督器失败保留 | `offline` | `FAIL` |
+| 受保护实时失效/SSAP消费者及完整原范围：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

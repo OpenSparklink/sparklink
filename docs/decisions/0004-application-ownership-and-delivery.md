@@ -29,7 +29,7 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
 3. `sparklink` 是管理组；可选 `sparklink-apps` 只开放 Connection 的 `OpenChannel`
    和 `OpenChannelScoped`，不开放广播/扫描/断链/控制器操作或 service 名称所有权。
    kernel 仍要求特权创建绑定，broker 传递 scoped fd，内核强制 epoch/方向/lifetime。
-   分组是粗粒度准入，**不是完整逐应用/逐 Peer 策略**；protected security 仍拒绝。
+   分组是粗粒度准入，**不是完整逐应用/逐 Peer 策略**；固定通道机制要求按后文安全epoch决策；动态protected仍拒绝。
 4. Peer 为身份/观察；ConnectionSession 为一次物理 lifetime、信令/能力/分流/安全；
    Channel 为 TCID/PI/模式/独立队列；SocketBinding 为 fd 引用、授予范围与关闭。
    已观察连接、协商、服务发现、配对、Bond、认证、加密、本地授权分别表达。

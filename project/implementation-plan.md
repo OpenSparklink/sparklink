@@ -123,6 +123,12 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | 实际安装/取消/当前机制Kani：unsupported，未证明 | `formal_bounded` | `UNPROVED` |
 | 历史私有准备/见证所有权/沙箱失败：原FAIL保留 | `offline` | `FAIL` |
 | 实时失效矩阵、安全Grant/SSAP消费及完整原范围：仍缺 | `real_device` | `UNPROVED` |
+| K619/U73：固定安全epoch Grant，16真实受保护回复与20等级拒绝 | `real_device` | `PASS` |
+| 53实际入口/Session sanitizer、279Rust、跨语言及39真实证据负对照 | `offline` | `PASS` |
+| 生产纯Grant helper：CBMC79检查与三负对照，限定通过 | `formal_bounded` | `PASS` |
+| 实际锁/引用/USB/credit/撤权/晚到/复用组合：未证明 | `formal_bounded` | `UNPROVED` |
+| 原构造器/路径/fixture/LSan/证明监督器失败保留 | `offline` | `FAIL` |
+| 受保护实时失效/SSAP消费者及完整原范围：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1781,7 +1787,7 @@ unsupported或裁掉真实失败分支取得PASS。实际Owner锁/引用/Host→
 归属仍以组合模型及受控VM交错核对；本批检查数不是整套实现的证明。
 
 
-### 当前批次：固定通道的安全 epoch Grant（实现中，未授新资格）
+### 当前批次：固定通道的安全 epoch Grant（正向限定实机通过，完整退出未达）
 
 复用唯一物理Session、现有Grant/credit/Ticket。固定CUTC/SMTC的security0保持原行为，
 security1要求当前加密机制，security2要求明确确认的数字机制；均不授命名身份/Bond。
@@ -1798,3 +1804,12 @@ ACB在入口保留安全revision，PB跨revision拒绝，旧epoch残留不交给
 依赖已有snapshot，形式化/离线/虚拟/实机分别记录。通过后继续SSAP认证与本地授权，
 不把控制面竞争全集设为前置；完整S0-S6/19WP/10FV/12DG、自然RCA/非人工恢复、
 NOCP/复用/drain、完整数据矩阵和四设备全部保留，未完项不关闭。
+
+
+本批[准确资格](../docs/evidence/security-grant-fixed-real-20261017.json)：K619/U73、执行73a/
+后处理02ac，6VM/16受保护与48总往返/20原生等级拒绝/32快照；249/2042保留。
+CBMC79仅纯Grant helper，组合仍UNPROVED；原失败与39真实证据负对照保留。
+下一步正在重跑同产物release/最终fd/dup/Down/原5秒十项旧门禁，随后补protected
+同类交错与SSAP唯一Engine消费者，不把旧普通通道回归描述成受保护失效资格。
+首次生命周期环境因缺原pinned2s属性被严格拒绝，原FAIL保留；使用原合格QEMU重新
+封存同内核/用户态，不改原断言或监督期限。自然RCA/非人工恢复和整项保持OPEN。

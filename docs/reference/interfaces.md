@@ -319,7 +319,7 @@ CLI入口为`agent [method]`、`security-request <path> [ms] [method]`，省略m
 `confirm <id> <六位码>`或`reject <id>`；000000有效，`approve`不能代替数字确认，预输入
 不沿用到下一提示。两个提示共享最初1–5000ms期限，不刷新。5秒也包含前置人工等待，
 当前并非通用人机配对体验；更适合人类的期限策略仍须单独设计和验证。
-Pair/全局GetPasskey、可信Grant/protected通道/Bond仍明确不支持；当前机制事实另见下文。
+Pair/全局GetPasskey、命名可信身份/Bond仍明确不支持；固定CUTC机制要求及当前事实另见下文。
 旧镜像资格不继承本批；形式化状态/锁/引用/硬件假设与真实两端交付分别记录。
 
 ## 单个安全作者请求取消（未发布 ABI）
@@ -435,10 +435,10 @@ security_epoch是本物理lifetime的接收revision：安全receipt在普通队�
 SDK111 handle-only0011/Complete的物理复用屏障、固件真实性及无线加密仍有未证明
 假设；USB写入、NOCP或日志不代替对端业务校验。准确K6861/U13bb的批准/拒绝/原期限
 及无MITM快照限定实机范围见[当前资格](../../project/current-capabilities.md)；实时撤权/
-Down等完整失效矩阵及protected Grant尚未取得资格。
+Down等完整失效矩阵及protected完整失效矩阵仍待验，正向固定CUTC另见下文。
 
 
-### 固定通道安全 epoch Grant（实现，实机资格待验）
+### 固定通道安全 epoch Grant（CUTC正向限定实机通过）
 
 未发布48字节v2地址布局不变。`OpenChannelScoped(directions,security)` 的security0
 不要求机制，1要求当前level≥1，2要求level2。只有原Managed管理者绑定；普通应用

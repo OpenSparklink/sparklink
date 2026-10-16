@@ -57,6 +57,10 @@
 | a0/3f10受控未完成PDU：release/最后管理fd/dup/Down/原期限双向10项 | `real_device` | `PASS` |
 | a0/f355原保留矩阵：15通过/1前缀前提失败/9未运行，原失败保留 | `real_device` | `FAIL` |
 | a0唤醒限定依赖验证：46生产fixture、CBMC300有界、TLC117649状态 | `formal_bounded` | `PASS` |
+| bfaa事件/原期限：32项双WS73数据与生命周期限定门禁 | `real_device` | `PASS` |
+| bfaa生产调度：20步CBMC301与32/64位期限各28检查 | `formal_bounded` | `PASS` |
+| bfaa原32项矩阵：14通过/1前提前缀失败/17未运行 | `real_device` | `FAIL` |
+| bfaa/2451实机工具误读ACTIVE失败保留，不改内核契约 | `real_device` | `FAIL` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `f43a72bd1ad224f9504c491652b4586a4864143d`。
 
@@ -1411,28 +1415,32 @@ K a0/U9385/执行3f10，10项双向门禁与24次控制前真实业务通过，�
 不将所有控制面整改重新设为前置；自然根因、非人工恢复与完整S0–S6等继续开放。
 
 
-### P2b 就绪与原期限分离（实机验收进行中）
+### P2b 就绪与原期限分离（本批限定退出通过，完整性能开放）
 
-生产 K bfaa93b674d0 复用唯一Session/原Native Ticket与credit：空闲Open不排维护work；
-最早原期限与就绪提示共用同一有引用work，真实reserve WouldBlock才归为CREDIT，
-其余EAGAIN有限10ms重试。每轮RX最多16、六槽各最多一片；残余可执行工作立即
-重排，PB序列仍不交错。队列/待发拒绝到期不能被另一已开始PDU挡成零延时空转，
-只清理未提交本地工作，不退款物理debt。旧内部guarded入口已迁移删除，无UAPI变更。
+生产 K bfaa93b674d0 复用唯一Session/Native Ticket及credit：空闲Open不排维护work；
+最早原期限与就绪提示共用有引用work，实际reserve WouldBlock才归CREDIT，其余
+EAGAIN在原期限内有限10ms重试。每轮RX最多16、六槽各最多一片，有进展可立即
+重排；PB序列不交错。另一已开始PDU不能阻止未提交队列及控制拒绝按原期限终结，
+不退款物理debt、不形成过期零延时空转。已迁移旧内部guarded包装删除，UAPI未改。
 
-相关离线门禁48实际Rust fixture、实际C状态/worker/collector与ASAN/UBSAN、
-301项20步enqueue依赖检查，以及32/64位原期限helper各28项有界检查均限定通过；
-错误队列引用、取最大期限和展开不足反例保留。不是实际内核并发或整套协议证明。
-同config固定O以12路增量编译通过，准确产物另封存。准备原工具3f10/U9385的
-新bfaa镜像32项双设备VM业务、长度与受控生命周期门禁；本批退出要求这些完成，
-且以独立观测核对Session空闲休眠/真实事件重新推进，不从源码推导性能资格。
-观察原始期限、借用/退出引用、credit与队列预算，不放宽旧断言；已有原失败保留。
+[准确资格与保留失败](../docs/evidence/session-event-deadline-20261016.json)记录编译
+K bfaa/U9385、13项执行3f10和19项执行693：32项已验收数据、长度及生命周期门禁
+通过，包含release、最后管理fd关闭、dup最终关闭、直接Down和原5秒期限各双向。
+这些不是32项重跑新工具；未完成PDU不计业务交付。同行Ready/generation/lease及
+实际扫描保持，不授另一独立业务组隔离。48实际Rust/实际C依赖fixture离线通过；
+CBMC301项20步enqueue及32/64位期限各28项限定通过、反例拒绝，不是实际内核
+并发、refinement或NOCP硬件证明。同config固定O实际12路构建，资格产物另封存。
 
-未通过前新镜像无实机资格；原a0/3f10及更旧资格保持各自身份。全S0–S6/19WP/
-10FV/12DG、VM-only及自然根因/非人工恢复OPEN；Agent/SSAP/多通道/四设备并行。
+两次新镜像各2秒排空空闲观察均为0次sl_work，真实业务前后正对照存在且无trace
+丢失；旧a0轮询镜像364次被同一观察器拒绝。它仅证实有限区间工作行为，不授CPU、
+完整性能或无丢失唤醒证明。32份原工具离线重放一致、100份复制真实证据负对照拒绝。
 
-原32项矩阵在down1停止，14 PASS/1 FAIL/17未运行；
-[原失败与时间线](../docs/evidence/session-event-down-prefix-failure-20261016.json)显示
-末片在源端USB Down前0.152ms发完，未观察到Down后提交，但已丢失未完成PDU前提。
-修复只加强测试：四条对端实际校验的单向短消息占四份真实未支付debt，长包先占
-余下一份；等待对端真实Down再释放原NOCP，保持原不完整前缀断言与期限。新工具
-647离线通过，尚需准确新root/工具实机；原矩阵仍FAIL，不按重跑抹去。
+原32项v1仍FAIL（14通过/1前提失败/17未运行），不被新矩阵覆盖；v2误读ACTIVE
+失败也保留。四条真实对端校验单向消息占四份未支付debt，长PDU先占余下一份，
+等对端Down再释放原NOCP；修复加强前提，不改变原不完整前缀断言、内核flags或期限。
+
+下一批直接推进有界连续TX/公平性及分段同配置测量，先核对实际收益、队列和资源、
+追踪扰动，再决定更大执行预算或USB预分配/多URB优化；不预设RX瓶颈或时延承诺。
+现有动态/四设备、Agent与用户态SSAP继续并行，不等控制面竞争全集。保持完整
+S0–S6/19WP/10FV/12DG、VM-only；原自然根因、非人工恢复、NOCP真值/复用、
+实际callback drain、LKMM/KCSAN/lockdep及完整性能仍开放。

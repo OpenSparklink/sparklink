@@ -19,6 +19,8 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](../docs/decision
 采用 [ADR0006](../docs/decisions/0006-event-driven-session-and-performance-evidence.md)：
 唯一 Session 的事件就绪与原期限定时分离，Runtime 通知只触发重查；身份、引用、
 锁序、撤销/drain、有限预算、公平性和每次实际 Ticket 提交维持现有所有权。
+实际reserve池满等待与其他EAGAIN重试分开；空闲无待办不排维护轮次，通知不能
+推迟更早原期限。已开始PDU保持顺序，未提交工作仍按各自原期限终结。
 先取得普通 socket 的可信基线，再优化调度及有界连续 TX；TX 预分配/多在途/聚合
 和单 bulk RX URB 的处理/重提交空窗均测量后另设门禁，不预设 USB 是瓶颈。
 分层时间线区分应用、准入、USB、NOCP 与对端校验；无 RF/时钟证据不宣称精确

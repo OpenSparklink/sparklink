@@ -34,6 +34,14 @@ a0 即时Session唤醒的[限定生命周期新资格](../docs/evidence/session-
 另一组业务隔离。原f355 release0前提失败与监督器枚举失败保留；10ms维护兜底、
 完整事件驱动、内核并发、性能、NOCP复用及自然恢复仍未取得完整资格。
 
+bfaa/9385 的[事件与原期限定调度限定资格](../docs/evidence/session-event-deadline-20261016.json)
+为32项实机门禁通过（13项执行3f10、19项693），含双向release／最后管理fd／dup／
+Down／原5秒期限；两次2秒空闲区间sl_work为0，旧a0轮询364次正确拒绝。
+32份按原工具重放一致、100证据负对照拒绝。48Rust与实际C fixture是离线依赖检查，
+CBMC301+28/28为有界限定证明；不授实际内核并发、NOCP真值或完整性能。
+原v1矩阵14通过/1FAIL/17未运行及v2工具flags错误均保留；同行隔离仅Ready/lease/
+扫描，四设备独立业务、自然根因及非人工恢复仍开放。当前整体资格以生成摘要为准。
+
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
@@ -78,6 +86,10 @@ a0 即时Session唤醒的[限定生命周期新资格](../docs/evidence/session-
 | a0/3f10受控未完成PDU：release/最后管理fd/dup/Down/原期限双向10项 | `real_device` | `PASS` |
 | a0/f355原保留矩阵：15通过/1前缀前提失败/9未运行，原失败保留 | `real_device` | `FAIL` |
 | a0唤醒限定依赖验证：46生产fixture、CBMC300有界、TLC117649状态 | `formal_bounded` | `PASS` |
+| bfaa事件/原期限：32项双WS73数据与生命周期限定门禁 | `real_device` | `PASS` |
+| bfaa生产调度：20步CBMC301与32/64位期限各28检查 | `formal_bounded` | `PASS` |
+| bfaa原32项矩阵：14通过/1前提前缀失败/17未运行 | `real_device` | `FAIL` |
+| bfaa/2451实机工具误读ACTIVE失败保留，不改内核契约 | `real_device` | `FAIL` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `f43a72bd1ad224f9504c491652b4586a4864143d`。
 
@@ -199,8 +211,9 @@ KCOV的新调试VM资格。生产函数夹具不包含真实内核锁、分配�
 声明范围源码。历史记录故意保留旧源码，不能把整库历史的当前匹配失败当作新记录
 通过，或用当前docs HEAD替换编译身份。本地匹配也不是硬件重放或独立decoder证明。
 
-U2ee780c的[综合CI](https://github.com/OpenSparklink/sparklink/actions/runs/38843688106)、
-[文档](https://github.com/OpenSparklink/sparklink/actions/runs/38843688120)、
-[资格元数据](https://github.com/OpenSparklink/sparklink/actions/runs/38843687996)及
-[限定codec fuzz](https://github.com/OpenSparklink/sparklink/actions/runs/38843688130)通过；
-这些结果不是328次真实业务证据的替代，也不是完整发布资格。
+执行工具69314c4的[综合CI](https://github.com/OpenSparklink/sparklink/actions/runs/38921748547)、
+[严格文档](https://github.com/OpenSparklink/sparklink/actions/runs/38921748917)、
+[资格元数据](https://github.com/OpenSparklink/sparklink/actions/runs/38921748794)及
+[限定codec探索](https://github.com/OpenSparklink/sparklink/actions/runs/38921748783)通过；
+准确范围见事件调度报告，不能替代实机、实际内核并发或完整发布资格。后续文档提交
+不改变该工具CI身份，也不自动更新编译artifact的资格。

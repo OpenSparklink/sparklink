@@ -109,7 +109,7 @@ def execute(run, phase):
     long_bytes=getattr(run.args,'dynamic_channel_long_bytes',None)
     burst=bool(getattr(run.args,'dynamic_channel_burst',False))
     if burst and long_bytes!=2042:raise CaptureError('dynamic burst requires explicit2042byte C workload')
-    row = dict(version=3 if burst else 2 if long_bytes is not None else 1, phase=len(run.data['connection_control']['phases'])-1,
+    row = dict(version=4 if burst else 2 if long_bytes is not None else 1, phase=len(run.data['connection_control']['phases'])-1,
                owners=phase['typed_objects'], start_wall_ns=time.time_ns(),
                long_bytes=long_bytes, burst=burst, status='RUNNING', channels=[], scheduling='bounded VM peer SIGSTOP; real kernel/firmware remain running')
     row['application_tool']=test_program(run)
@@ -136,6 +136,7 @@ def execute(run, phase):
                      start_wall_ns=time.time_ns(),session_start_wall_ns=phase['start_wall_ns'],applications=[],tx_status_required=True,burst=burst and name=='C')
         row['channels'].append(channel);return channel
     def close_pair(channel,tasks):
+        channel['close_start_monotonic_ns']=time.monotonic_ns()
         channel['close_start_wall_ns']=time.time_ns()
         for proc,app in tasks:
             if proc.poll() is not None:raise CaptureError('held dynamic fd exited early')
@@ -197,7 +198,13 @@ def execute(run, phase):
             os.kill(stopped.pid,signal.SIGCONT);stopped=None
             row['long_peer_resume_wall_ns']=time.time_ns();run.save()
             await_marker(run,ctasks,f'NativeDynamicBusinessDone: rounds={third["rounds"]} held=true',time.monotonic()+165,reader)
+            if burst:
+                from ws73_session_drain import queries
+                third['before_close_status']=queries(run,row['owners']);run.save()
             close_pair(third,ctasks)
+            if burst:
+                from ws73_session_drain import await_closed
+                await_closed(run,third)
         row['smtc_after_close']=[]
         for entry in row['owners']:
             receipt=run.command([str(run.args.slctl),'--adapter',entry['owner']['path'],'ssap-info',entry['object']['path']],10,collection='dynamic_smtc_after_close')
@@ -273,13 +280,14 @@ def corroborate(run,capture):
     if not isinstance(rows,list) or len(rows)!=2:raise CaptureError('both real connection roles require dynamic evidence')
     packets=reassemble_acb(capture);proofs=[];nonces=set();sequences=set()
     versions={row.get('version') for row in rows}
-    if len(versions)!=1 or versions not in [{1},{2},{3}]:raise CaptureError('one exact dynamic gate version required')
-    burst=versions=={3}
-    extended=versions in [{2},{3}]
+    if len(versions)!=1 or versions not in [{1},{2},{3},{4}]:raise CaptureError('one exact dynamic gate version required')
+    drain=versions=={4}
+    burst=versions in [{3},{4}]
+    extended=versions in [{2},{3},{4}]
     if burst and any(row.get('burst') is not True or row.get('long_bytes')!=2042 for row in rows):raise CaptureError('actual dynamic burst schema requires2042')
     if extended and (any(type(row.get('long_bytes')) is not int or row['long_bytes'] not in [249,250,253,254,255,1024,2042] for row in rows) or rows[0]['long_bytes']!=rows[1]['long_bytes']):raise CaptureError('exact bounded dynamic long workload required')
     for number,row in enumerate(rows):
-        if row.get('version')!=(3 if burst else 2 if extended else 1) or row.get('phase')!=number or row.get('status')!='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING' or [c['name'] for c in row['channels']]!=(['A','B','C'] if extended else ['A','B']):
+        if row.get('version')!=(4 if drain else 3 if burst else 2 if extended else 1) or row.get('phase')!=number or row.get('status')!='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING' or [c['name'] for c in row['channels']]!=(['A','B','C'] if extended else ['A','B']):
             raise CaptureError('original dynamic phase/schema/terminal evidence required')
         owners=row['owners'];used=set()
         if owners!=run['connection_control']['phases'][number]['typed_objects']:raise CaptureError('dynamic owners differ from canonical physical phase')
@@ -372,6 +380,9 @@ def corroborate(run,capture):
         if burst:
             credit=observe_phase(row['channels'][2],capture)
             proofs[-1]['credit']=credit
+            if drain:
+                from ws73_session_drain import corroborate as drain_proof
+                proofs[-1]['post_close_drain']=drain_proof(row['channels'][2],capture)
     if burst:
         return dict(status='DYNAMIC_BASIC_CHANNEL_BURST_CREDIT_SCOPED_PASS',round_trips=80,long_bytes=2042,slot_exhaustion_refusals=2,proofs=proofs,scope='Actual dynamic C16x2042burst per role,softwarepressure/fullpool/NOCP-resumption/finaldrain and actual peer application replies;NOCP truth/duplicate/late/reuse,fullconcurrency/naturalrecovery not proved',reliable_mode=False,tcid_reuse=False,natural_recovery=False,full_multichannel_matrix=False)
     if extended:

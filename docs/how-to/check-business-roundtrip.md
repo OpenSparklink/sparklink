@@ -172,3 +172,16 @@ python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN \
 使用新输出目录；不能用继承的peak或局部日志代替。预算观察不授予NOCP真实性、
 重复/迟到/复用证明或公平性；`controller_credit_correctness_proof` 和
 `fairness_acceptance` 均应保持false。完整设备故障和自然恢复仍单独验收。
+
+
+## 核对动态通道关闭后的观察边界
+
+新执行的 dynamic-burst v4 使用实际 Native Session 观测：先在 C 通道尚打开时
+保留两端正对照，再从第一次 C close 前设定不可续期的 5 秒观察期限，最多 64 组
+两端查询。仅在本轮所创建通道达到准确期望终态、队列/活动 PDU/debt/outstanding
+和 pending flags 均为零时封存 C 的结束边界；超时、身份变化或查询失败均失败。
+这段期限属于诊断观察，不延长原协商、发送或关闭期限。
+
+随后仍运行原独立 USB/CMTC/NOCP 核对，要求真实提交与完成账目和对端应用回复。
+快照不代替这一核对，也不证明 callback 排空或完成事件准确性。不要通过固定睡眠、
+延伸抓包窗口或重跑覆盖失败取得 PASS；历史 v3 的末尾债务失败保留原边界和结果。

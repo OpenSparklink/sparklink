@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T18:20:44.162839+00:00",
+  "updated_at_utc": "2026-10-16T18:47:54.866500+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -2017,6 +2017,32 @@
       "full_fairness": false,
       "performance_qualified": false,
       "new_formal_proof": false
+    },
+    "post_close_observation_batch": {
+      "status": "IMPLEMENTED_OFFLINE_CHECKED_NEW_ARTIFACT_NOT_REAL_QUALIFIED",
+      "kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
+      "userspace_source": "commit containing this update; compiled identity must be recorded separately",
+      "original_failure": "docs/evidence/session-c4-dynamic-lengths-20261017.json",
+      "contract": "Native64byte E2 snapshot through existing actor,original1s metadata deadline;dynamic burst v4 original5s/64samples;unchanged independentUSB/NOCP oracle",
+      "not_proved": [
+        "callback drain",
+        "NOCP accuracy",
+        "safe reuse",
+        "whole fairness",
+        "P2d performance",
+        "natural recovery"
+      ],
+      "hardware": {
+        "port1": "Hi3873E:user confirmed;excluded from current U qualification",
+        "ports2_3": "Hi3873U current selected pair",
+        "port4": "Hi3873U user reported;not qualified by this batch"
+      },
+      "next": [
+        "Seal clean kernel and userspace artifacts",
+        "EmptyUSB VM smoke",
+        "U2/3 v4dynamicburst and related actual gate regressions",
+        "Retain failures;accurate registry and existing issue updates"
+      ]
     }
   },
   "slktest_migration": {

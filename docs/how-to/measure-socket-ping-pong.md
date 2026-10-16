@@ -2,8 +2,10 @@
 
 目标：让一个普通应用发送随机消息，另一应用实际校验并回复，得到每消息的应用
 RTT。当前是 benchmark 的第一个切片，已运行本地 AF_UNIX 应用回归，**尚未取得
-此工具的真实 WS73 性能资格**。已接通三类负载及进程资源端点快照；
-schema2 应用报告已有独立双端核对；VM 基线、双端捕获/来源核对及内核资源采样仍缺。
+此工具的完整性能资格**。已接通三类负载及进程资源端点快照；
+schema2 的限定 Native VM 运行已具备双端捕获/来源/监督器核对，准确版本和结果见
+[当前资格](../../project/current-capabilities.md)。内核资源峰值、追踪扰动及稳定性能门禁仍缺，
+不能把所列命令或局部成功直接当作新构建的性能资格。
 
 ## 前置条件
 
@@ -59,12 +61,13 @@ INCOMPLETE 标记及 stderr。文件存在直接拒绝，不覆盖前次运行�
 分位数只覆盖成功样本；空样本为 null，P99.9 至少 10000 成功样本，算法与单位见
 [指标参考](../reference/socket-benchmark.md)。已接通内部 `tools/ws73_channel_socket.py` 的 `benchmark_application_reports(source, peer)`，
 用于双端 JSON 的字段/帧/时钟契约与分位数核对；其一致结果仍不是资格。
-目前还没有完整双端捕获/来源聚合器和跨层时间线；不要从 ping-pong 推断饱和吞吐或公平性。
+下述 Native schema2 监督入口另有双端捕获/来源核对；跨层精确时间线仍缺。
+不能从此手工 schema1 ping-pong 或低负载样本推断饱和吞吐和公平性。
 
 
 ## 运行固定速率、有限窗口及双向负载
 
-以下新命令的本地应用循环已回归，**真实 WS73 与完整证据闭包尚待验收**。
+以下命令的本地应用循环及限定 Native WS73 运行已分别回归，**完整性能资格仍缺**。
 仍需上述已建链 VM、普通用户、匹配构建和全新的报告路径。每次重做需新连接 lifetime。
 只使用 one-shot slktest CLI；两端看到 `SocketBenchmarkArmed` 后，各自在该进程 stdin 输入
 一行 `start`，或由现有 VM 监督器在核对凭据后写入 `start\n`。启动等待原期限 30 秒，
@@ -127,3 +130,29 @@ python3 tools/ws73_benchmark.py --left "$SOURCE_REPORT" --right "$PEER_REPORT" -
 截断或异常退出留下的 INCOMPLETE/FAIL 不能用于资格。`--fixture` 只供显式 AF_UNIX
 测试身份使用，真实 VM 门禁不得开启。报告核对尚不绑定编译 artifact、凭据、捕获
 或监督器；这些仍是取得可复现性能资格的必需条件。
+
+## 由 Native VM 监督器收集配对证据
+
+使用匹配源码已经 `prepare` 的独立 VM 环境，指定新输出目录和实际可用两端口：
+
+```sh
+python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT_B" \
+  --qmp-hotplug --connection-verify --connection-advertising negotiable-t \
+  --channel-benchmark window --timeout 600 --output "$NEW_RUN_DIRECTORY"
+```
+
+该入口使用实际 `slktest`，完成普通用户凭据、双端 Arms→start、双方 Quiescent→finish、
+原始报告/hash、两连接角色及两端 USB 逐条匹配。可分别换成 `rate` 或 `duplex`；
+首批固定20条61字节、窗口4，rate间隔100ms，不与其它通道/Agent/four-device门禁混跑。
+不覆盖旧目录；失败保留后使用新目录诊断，不放宽期限，也不把 QMP 当物理拔插或恢复。
+
+完整捕获运行结束后，可只读观测单 bulk RX URB 空窗：
+
+```sh
+python3 tools/ws73_rx_gap.py "$NEW_RUN_DIRECTORY" > "$NEW_RX_OBSERVATION"
+```
+
+该命令重放应用/USB证据后输出相同 guest 时钟的完成→重提交间隔；不操作硬件。
+时间含 callback、USB core 和 VM 调度，不能等同 callback CPU 时间或 RF 时延。
+诊断失败保留 stderr 和原文件；缺失输入、配对错误或掉包不生成完整观测。
+结果字段和限制见[指标参考](../reference/socket-benchmark.md)。

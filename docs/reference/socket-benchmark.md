@@ -1,7 +1,8 @@
 # Socket benchmark 指标与报告契约
 
 适用：ADR0006 的规划契约；目前没有当前 HEAD 的性能资格。首个 ping-pong 工具切片见
-[操作指南](../how-to/measure-socket-ping-pong.md)；固定速率/窗口/双向的应用循环已接通，完整证据闭包尚缺。
+[操作指南](../how-to/measure-socket-ping-pong.md)；固定速率/窗口/双向的应用循环及限定
+Native 双端证据闭包已接通，完整性能门禁仍缺。准确构建与结果见唯一资格入口。
 历史 channel-roundtrip／burst 与当前 slktest --check 是功能门禁，计时包含日志等开销，不能升级为基线。
 [接口支持范围](interfaces.md)继续适用；此页不新增 socket 能力。
 
@@ -87,8 +88,8 @@ pattern goodput 排除29字节应用测试头，datagram goodput另列；DLI/DTA
 
 schema1 双端核对含迟到拒绝；schema2 已有独立应用报告核对（载荷/方向/
 逐消息期限/计数/分位数/goodput/进程端点/结束屏障结果）。它拒绝失败或缺字段
-取得完整一致结果；原诊断报告仍保留。来源/捕获/监督器闭包仍缺，不能把应用层
-一致当 Native 或性能资格。新模式尚无真实 WS73 性能资格。
+取得完整一致结果；原诊断报告仍保留。独立 Native 监督入口另核对来源/捕获/屏障，
+不能把应用层一致直接当 Native 资格。限定真实 WS73 低负载闭包不等于完整性能资格。
 
 
 ## 工具所有权与迁移

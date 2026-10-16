@@ -10,12 +10,22 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 现有Agent与数据报告仍绑定各自准确编译和执行身份。
 
 应用测试唯一入口已迁为 `slktest channel`；`slctl` 保留管理/连接/授权。
-[本批证据](../docs/evidence/slktest-migration-20261016.json)仅授予限定离线和空USB VM范围；
-新 artifact 的真实 WS73 与性能资格仍缺，旧记录保持原命令和身份。
+[入口迁移证据](../docs/evidence/slktest-migration-20261016.json)保留原限定离线和空USB VM范围；
+新编译 U9385／工具 f43 的真实 WS73 结果独立登记，不重写旧命令或身份。
 
 schema2 的[本批限定证据](../docs/evidence/schema2-application-closure-20261016.json)包括
 生产结束屏障、实际AF_UNIX报告独立核对及准确25项空USB VM回归；首次旧测试输入失败保留。
-新Native/WS73基线及来源/捕获/监督器闭包仍缺，未授予性能资格或新增形式化证明。
+其后取得的[Native 双端基线](../docs/evidence/native-slktest-baseline-20261016.json)绑定
+编译 K400/U9385、执行 f43：五次完整捕获运行共240轮实际对端校验回复（window120、
+rate40、duplex80），包含普通用户凭据、双端 start/finish、准确 artifact 与两端 USB 匹配。
+这是限定低负载功能/测量闭包；追踪扰动、内核资源峰值、实际 PHY/参数、稳定性能阈值仍缺。
+未授予完整性能资格或新增形式化证明。
+
+同批17次真实VM尝试为16次门禁通过、1次失败。动态249/250/253/254/255/1024/2042、
+长包burst与prefix-close已在各自新目录通过，但首次253整轮因对端Down迟到仍为FAIL：
+对端事件在原5秒观察截止后65.220280ms才到达。重跑不覆盖失败，不放宽期限或关闭RCA。
+五次基线的1920个单RX URB空窗样本P50=7µs、P99=24µs、最大87µs，包含callback、
+USBcore与VM调度；仅低负载、1µs量化。尚无证据支持优先多URB，未修改RX驱动契约。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -56,14 +66,16 @@ schema2 的[本批限定证据](../docs/evidence/schema2-application-closure-202
 | 应用负载AF_UNIX循环：rate/window/duplex与24+5/32负对照（非性能资格） | `offline` | `PASS` |
 | slktest独立入口：空USB KVM普通用户22项应用回归（非WS73/性能资格） | `virtual_integration` | `PASS` |
 | schema2应用双端核对与结束屏障：生产报告重放/空USB VM25项（非Native或性能资格） | `virtual_integration` | `PASS` |
+| slktest真实双端测量闭包：5次/240往返及RX空窗（非完整性能资格） | `real_device` | `PASS` |
+| 新artifact保留路径矩阵：16通过/1对端Down迟到失败，原失败未覆盖 | `real_device` | `FAIL` |
 
-保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
+保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `f43a72bd1ad224f9504c491652b4586a4864143d`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `4b337331fa1959a86fb01f3cca2449be63371e11`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `f43a72bd1ad224f9504c491652b4586a4864143d`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 ## 当前数据子资格

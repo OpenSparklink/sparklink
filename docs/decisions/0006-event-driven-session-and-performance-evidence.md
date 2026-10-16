@@ -57,6 +57,12 @@ submit；notification URB 是另一用途，不能算第二个并行 bulk RX。�
 多 URB 必须证明 controller 包顺序（含完成乱序与 aggregate 边界）、旧 generation
 拒绝、每 buffer 唯一所有者、部分提交失败和 stop 后禁止重提交，join 后才释放。
 
+首轮只读 RX 观测使用同 guest usbmon 的 completion→下一次同 URB submit，必须先
+独立重放该次 Native 应用/两端 USB 证据，再限制到 start→双方 Quiescent 的区间。
+该间隔包含 callback、USB core 与 VM 调度；不能作为 callback CPU 分段。多 URB
+的决策仍依赖饱和/突发与观测扰动测量，低负载微秒级空窗不证明不存在饱和瓶颈。
+具体当前结果归唯一资格入口，原始逐轮观测归证据，不在此维护第二份能力矩阵。
+
 ## 性能证据与验证
 
 使用普通应用的现有通道 socket，管理授权可经 slkd，逐包不走 D-Bus。三个负载及

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "thread_id": "01a120fe-1165-7c50-9d9f-56e0b8355c3c",
-  "goal_status": "active",
+  "goal_status": "paused",
   "objective_unchanged": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、slk-vendord Proxy 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
   "budget_unchanged": {
     "token_budget": null,
@@ -9,7 +9,7 @@
     "budgeted": false
   },
   "goal_api_objective_edit_available": false,
-  "sync_method": "Goal remains active with original objective/budget; execution scope and dependencies synchronized in canonical plan and this record.",
+  "sync_method": "Original objective/budget retained;user continue authorizes active work. Canonical plan and generated qualification_view are authoritative execution/qualification state;API pause cannot be changed by available tool.",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
@@ -670,7 +670,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T10:21:32.486147+00:00",
+  "updated_at_utc": "2026-10-16T11:51:38.598434+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -732,19 +732,20 @@
       "Production stateful fuzz,submit-revoke-Down-original-deadline/debugVM and minimum authenticated authorization parallel;no all-control prerequisite"
     ]
   },
-  "execution_phase": "P1schema2application/finish scopedPASS;NativeWS73 supervisor/capture/provenance andcrediblebaseline next;fullscopeINCOMPLETE",
+  "execution_phase": "P1 actualNative pairedbaseline240 andsingleRXgap observed;retainedregression16PASS/1peerDownFAIL;P2events next alongside failureRCA/resources/Agent/SSAP",
   "next_resume_tasks": [
-    "Implement existingVMsupervisor benchmark mode:actualslktest dualprocess uid1000 fddelegation,Armed-beforestart andbothQuiescent-beforefinish;bindtimestamps,source/artifact/config/firmware andsame-run dualUSBcaptures.",
-    "Acquire exactnewNativeVM dualWS73 role-swapped short/window/rate/duplex baseline andretainedlength/lifecycle regressions;independentpeerpayload coverage/drop/supervisor failures;noRF/performance claimuntilcomplete.",
-    "Aftercredibleoldpollingbaseline implementP2Runtime->Session notifications/originaltimers/boundedwork/refdrain/lostwake checks;do notwait allcontrolcompetition.",
-    "PreservefourdeviceWIP andparallelAgent/auth/SSAP/multichannel/quality/fuzz/debugVM;measure singleRXURB callbackgap beforeUSBoptimization;naturalRCA/nonhumanrecovery remainOPEN."
+    "P2implement uniqueSession immediate ready events separatedfromoriginal-deadline timer;write exitconditions/ref/lock/drain/noLostWake andproductiontests before realVM comparison.",
+    "Retain first253 DownFAIL;trace peerDown5.080471s afterlocal vs5s propertybudget,do notrelaxdeadline orclaimrootcause;boundedrepeatPASS doesnoterasefailure.",
+    "Compare sameconfig fullcapture ordinaryslktest old/new,preserve240baseline andalloldqualifications;collecttraceoverhead/resources/actualparameters separately.",
+    "Continue boundedTX,realcredit/backpressure,multichannel/fourdevices andSSAP/Agent inparallel;noallcontrolraces prerequisite.",
+    "Measure callbacksegments/RXstress beforemultiURB;current1920 lowloadgaps P50=7us/P99=24us/max87us noRXdriverchange."
   ],
   "issue_sync_status": "ConfirmedMPSFAIL:K17/U8 exact readbackOPEN;full originalscopes retained",
   "issue_sync_receipt": "docs/evidence/cmtc-mtu-mps-issues-20261016.json",
   "previous_goal_turn_classification": "progress:canonical slktest migration,actualemptyUSBVM andqualification/issues synchronization",
   "current_goal_turn_classification": "progress:productionpairedfinish,independentactualreportreplay,selectedCargoVMidentitynegativeand25actualVMtests",
-  "goal_api_status_observed": "active",
-  "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
+  "goal_api_status_observed": "paused",
+  "goal_api_update_limitation": "User explicitly said continue;work continues under existing authorization. API exposes no resume/objective-edit action;do not create duplicate goal or falsely complete unfinished goal. Observed API paused is distinct from effective execution.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
   "additional_reference_review": {
     "source": "docs/evidence/openharmony-peripheral-reference-20261015.json",
@@ -1012,7 +1013,7 @@
       }
     }
   ],
-  "execution_status": "ACTIVE; qualification_view is generated; implementation/Agent/data parallel, full original scope open",
+  "execution_status": "ACTIVE_USER_AUTHORIZED_CONTINUE;overall original scope INCOMPLETE;goal API paused observed without available resume tool",
   "quality_engineering": {
     "scope": "All12 requested quality areas adopted in sole implementation-plan; not a new phase, goal or prerequisite to all real delivery",
     "baseline_review": {
@@ -1065,10 +1066,10 @@
     "schema_version": 1,
     "baseline": {
       "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
-      "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
-      "guest_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
-      "executed_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
-      "report_commit": "1c2d92e0e5f19178831a6ece879b0e541488b3a1"
+      "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+      "guest_tools": "f43a72bd1ad224f9504c491652b4586a4864143d",
+      "executed_tools": "f43a72bd1ad224f9504c491652b4586a4864143d",
+      "report_commit": "dd0352bba6f5a747a0ad88b0ef48d172ba5f0981"
     },
     "current_tree_qualification": "NOT_REVALIDATED",
     "private_evidence_in_ci": "METADATA_ONLY_NOT_REVERIFIED",
@@ -1208,18 +1209,26 @@
       "schema2-application-64b8d19": {
         "level": "virtual_integration",
         "result": "PASS"
+      },
+      "native-slktest-f43": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "native-slktest-f43-retained": {
+        "level": "real_device",
+        "result": "FAIL"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "schema2-application-closure-scoped-pass",
-      "production_behavior": "Finite paired finish after Quiescent;deferredhex/JSON;actualproductionserializer andindependentapplicationpair checker;noHost/kernelprotocol change.",
+      "id": "native-slktest-paired-baseline-retained-failure",
+      "production_behavior": "Actualslktest load supervision andread-only RXcapture observation;noHost/kernelprotocol change",
       "exit": [
-        "Committed64b8d19 application25tests+matchingUID1000emptyUSBVM;actualrate/window/duplex32source requests independentlyreplayed",
-        "58pairnegativeclasses+9selectedVMartifactclasses;old22testVM inputFAIL retained/rejected;originaldeadline/failure rows preserved",
-        "NewNative/WS73/performance andprovenance/capture/supervisor closure remainMISSING"
+        "Five paired Native runs240 real application request/replies independently bound toUSB/UID/artifact,Armed/start/Quiescent/finish",
+        "Seventeen realVM attempts16PASS/1FAIL retained;253peerDown65.220280ms afteroriginal5s budget,repeat not erasure",
+        "633Python/strictdocs andsamepreparedbytes;no new formal/completeperformance or naturalrecovery qualification"
       ],
-      "next": "P1NativeVM supervisor Armed/start/Quiescent/finish/credentials andsource/artifact/capture closure;realdualWS73 swappedroles/retainedlengths crediblebaseline,thenP2events. FullS0-S6/19WP/10FV/12DG andparallelAgent/SSAP/fourdevice/RCA unchanged."
+      "next": "P2 immediate Session events/separate original-deadline timers withref/drain/noLostWake gates;sameconfig before/after then boundedTX;DownRCA/traceoverhead/resources/Agent/SSAP/fourdevices parallel"
     }
   },
   "agent_workstream": {
@@ -1362,14 +1371,14 @@
   },
   "next_real_vertical_slice": {
     "work_package": "WP06/07/16/17",
-    "behavior": "P1 credible ordinary socket baseline via actual slktest and real peer validation",
-    "first_exit": "SameVMdualWS73 ordinarycredentials,exactnewartifacts,pairedstart/endIOreceipts,two-endactualpayloadcapture andswappedrolebaseline withretainedfunction/length gates",
-    "remaining_after_first_exit": "P2event-driven notifications/originaltimers/refdrain andboundedTX;multichannel/fourdevice/SSAP/longterm/RCA remainOPEN",
+    "behavior": "P2 immediate Session scheduling andseparate original-deadline timers;uniqueSession/Grant/credit/Ticket unchanged",
+    "first_exit": "Allrelevant wakeups/ref/drain/noLostWake boundedproductionregressions andsameconfig before-after real ordinarydualWS73 swappedroles/lifecycle/lengths;no completeperformanceclaim",
+    "remaining_after_first_exit": "BoundedcontinuousTX,traceoverhead/resourcepeaks,fullload/multichannel/fourdevices/SSAP andnaturalRCA/nonmanualrecovery;originalpeerDownFAIL parallel",
     "parallel": "existing Agent/SSAP/data/cleanup/quality andfourdeviceWIP;noallcontrolprerequisite",
     "architecture": "Existingdrivers/net/slkd/uniqueSession/Grant/credit/Ticket;VM-only",
-    "state": "SCHEMA2_APPLICATION_AND_EMPTY_USB_VM_PASSED_NATIVE_BASELINE_MISSING",
+    "state": "NATIVE_PAIRED_BASELINE_SCOPED_PASS_RETAINED_FAILURE_OPEN",
     "tool": "actualslktest loadbinary viaexisting ws73_target VMsupervisor;independent ws73_benchmark reportchecker",
-    "report": "docs/evidence/schema2-application-closure-20261016.json"
+    "report": "docs/evidence/native-slktest-baseline-20261016.json"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -1471,7 +1480,7 @@
     }
   },
   "performance_workstream": {
-    "status": "P1D_APPLICATION_SCHEMA2_FINISH_SCOPED_PASS_NATIVE_CLOSURE_AND_BASELINE_OPEN",
+    "status": "NATIVE_PAIRED_BASELINE_SCOPED_PASS_PERFORMANCE_INCOMPLETE",
     "decision": "docs/decisions/0006-event-driven-session-and-performance-evidence.md",
     "canonical_plan": "project/implementation-plan.md#性能工作批次与退出条件",
     "qualification_record": "event-performance-baseline",
@@ -1506,7 +1515,17 @@
       "Agent/auth/SSAP/data gates",
       "RCA/nonhuman recovery/partial-init/events/old-code cleanup"
     ],
-    "rx_measurement": "Single bulk URB completion/process/resubmit gap and perturbation first; no assumed bottleneck. Any change must preserve ordering/generation/buffer ownership/stop-drain.",
+    "rx_measurement": {
+      "source": "6383c7c",
+      "samples": 1920,
+      "p50_ns": 7000,
+      "p99_ns": 24000,
+      "max_ns": 87000,
+      "scope": "sameguestusbmon completion->resubmit;1usquantization;callback/USBcore/VM combined;lowloadonly",
+      "driver_change": false,
+      "multiurb_decision": "No evidence to prioritize multiURB fromthese samples;callbacksegments/stress/perturbation pending",
+      "report": "docs/evidence/native-slktest-baseline-20261016.json"
+    },
     "full_scope_preserved": true,
     "vm_only": true,
     "performance_qualified": false,
@@ -1591,7 +1610,7 @@
       "offline_record": "socket-load-app-offline-0f286bd",
       "offline_report": "docs/evidence/socket-benchmark-load-offline-20261016.json",
       "issues_receipt": "docs/evidence/socket-benchmark-load-issues-ci-20261016.json",
-      "next": "Implement schema2 oracle and matched VM supervisor with paired start/end and bounded raw evidence. Then exact new artifacts/ordinary credentials/roles/USB captures/retained regressions;do not change kernel scheduling before credible baseline."
+      "next": "Nativebaseline240 nowseparatelyrecorded;P2events andresource/perturbation work;oldofflineentryidentityretained"
     },
     "canonical_application_tool": "slktest channel ping/rate/window/duplex/peer",
     "application_closure": {
@@ -1602,8 +1621,27 @@
       "actual_vm_tests": 25,
       "first_vm": "FAIL_STALE_LIBRARY_TEST_INPUT retained",
       "current_scope": "applicationreport/emptyUSBVM only;noNativeRF/performance/formalqualification",
-      "next": "NativeVMsupervisor/source/captureclosure andrealbaseline",
+      "next": "ExactnewNativebaseline now separatelyrecorded;P2 events withsameconfig regression andretainedfailureRCA",
       "issues_receipt": "docs/evidence/schema2-application-maintenance-20261016.json"
+    },
+    "native_baseline": {
+      "record": "native-slktest-f43",
+      "regression_record": "native-slktest-f43-retained",
+      "report": "docs/evidence/native-slktest-baseline-20261016.json",
+      "compiled_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+      "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+      "executed_tools": "f43a72bd1ad224f9504c491652b4586a4864143d",
+      "runs": 5,
+      "round_trips": 240,
+      "window": 120,
+      "rate": 40,
+      "duplex": 80,
+      "all_attempts": 17,
+      "passed_attempts": 16,
+      "failed_attempts": 1,
+      "performance_qualified": false,
+      "formal": "NO_NEW_PROOF",
+      "remaining": "FullP1 traceoverhead/kernelresources/actualparameters/stability;originalDownFAIL;P2next"
     }
   },
   "slktest_migration": {
@@ -1626,8 +1664,8 @@
       "VM-only noUSB actualslktest/uid1000 allapplicationtests"
     ],
     "remaining": [
-      "Newbinary realWS73 roles/length qualification MISSING",
-      "P1schema2oracle/provenance/capture/start-end coordination/resources/tracing;thenP2events"
+      "Newslktest realNative 240 baseline andboundedlengthregression separatelyrecorded;firstpeerDownFAIL remainsOPEN",
+      "P2events;fullperformance resources/overhead/stability andoriginalcomplete scope"
     ],
     "real_or_performance_qualified": false,
     "source": "7694e14fccab1ac101521edb8ef09fa20bcc5e1b",
@@ -1636,6 +1674,6 @@
     "report": "docs/evidence/slktest-migration-20261016.json",
     "report_commit": "5e02d197c8b19937115ca650a57c4ed2982121c6",
     "issues_receipt": "docs/evidence/slktest-migration-maintenance-20261016.json",
-    "historical_scope": "Completed entrymigration at7694;laterloadbehavior andsource qualification use currentregistryrecords,not thishistoricalartifact."
+    "historical_scope": "Entrymigration7694 andemptyUSBVM historical;exactcompiled9385/newNativef43 qualification separatelyrecorded,not retroactive upgrade."
   }
 }

@@ -52,14 +52,16 @@
 | 应用负载AF_UNIX循环：rate/window/duplex与24+5/32负对照（非性能资格） | `offline` | `PASS` |
 | slktest独立入口：空USB KVM普通用户22项应用回归（非WS73/性能资格） | `virtual_integration` | `PASS` |
 | schema2应用双端核对与结束屏障：生产报告重放/空USB VM25项（非Native或性能资格） | `virtual_integration` | `PASS` |
+| slktest真实双端测量闭包：5次/240往返及RX空窗（非完整性能资格） | `real_device` | `PASS` |
+| 新artifact保留路径矩阵：16通过/1对端Down迟到失败，原失败未覆盖 | `real_device` | `FAIL` |
 
-保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
+保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `f43a72bd1ad224f9504c491652b4586a4864143d`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `4b337331fa1959a86fb01f3cca2449be63371e11`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `f43a72bd1ad224f9504c491652b4586a4864143d`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
@@ -812,8 +814,17 @@ uid1000，原期限不放宽。新binary真实WS73两角色及长度资格另取
 
 P0已签名提交62275f8并同步K#4/#14/#17/#19与U#8，原scope不变。P1a已接通
 普通socket的ping-pong及绝对速率/窗口/双向应用循环；有限应用队列、原期限、
-ppoll、进程CPU/RSS/fd端点快照与本地回归已接通。完整P1仍待schema2双端oracle、
-真实VM基线、独立捕获/来源闭包、内核资源峰值和追踪扰动，不把工具完成当性能资格。
+ppoll、进程CPU/RSS/fd端点快照与本地回归已接通。schema2独立oracle及Native监督器
+已接通；编译K400/U9385、工具f43取得五次/240轮真实双端测量闭包，见
+[准确报告](../docs/evidence/native-slktest-baseline-20261016.json)。完整P1仍缺内核资源
+峰值、追踪扰动、实际PHY/参数和稳定基线，不把局部测量当完整性能资格。
+
+17次实机尝试保留16PASS/1FAIL：首次253字节对端Down晚于原5秒观察截止65.220280ms。
+重跑与其余长度/burst/prefix通过不消除原失败，根因并行定位，禁止放宽期限。
+当前可开始P2实现和相关离线/VM门禁，用相同完整捕获配置与旧版比较；完整性能资格
+仍需补齐低扰动/资源门禁。不得将此控制面故障扩成控制面全集前置。
+单RX URB低负载1920样本P50=7µs/P99=24µs/max87µs；暂不改多URB，callback分段、
+饱和负载与追踪开销继续测量。原恢复、完整S0–S6/19WP/10FV/12DG条件均保留。
 
 以下归入既有工作包和Q3–Q5，不新增WP/FV/DG或平行计划。每批固定生产行为、
 相关不变量、离线/VM/实机与剩余条件；过门禁后进入下一链路，不无限扩前置。

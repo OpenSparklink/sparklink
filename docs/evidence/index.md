@@ -10,7 +10,8 @@
 [数字比较机制、六门禁与三项路径保持](security-numeric-mechanism-real-20261017.json)：
 K323/U862/tool862/postf695，9VM/48实际业务回复/16边界拒绝；实际crypto VM、
 34生产转换、6原件重放及54真实证据负对照分别记录。自动见证不授人类身份、数字
-Agent、安全Grant或Bond；原解析器/CI失败保留，新全CI核对单列，完整范围未完成。
+Agent、安全Grant或Bond；原解析器/CI失败保留；
+[维护与CI回执](security-numeric-maintenance-20261017.json)记录准确88完整CI通过，完整范围未完成。
 
 [资格一致性首批实测与边界](qualification-provenance-batch1-20261015.json)记录20负对照、542工具、
 104文档严格构建及154原件核对；不增加Agent或其他协议实机资格。

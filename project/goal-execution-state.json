@@ -1565,5 +1565,32 @@
       "issues_receipt": "docs/evidence/socket-benchmark-load-issues-ci-20261016.json",
       "next": "Implement schema2 oracle and matched VM supervisor with paired start/end and bounded raw evidence. Then exact new artifacts/ordinary credentials/roles/USB captures/retained regressions;do not change kernel scheduling before credible baseline."
     }
+  },
+  "slktest_migration": {
+    "status": "IMPLEMENTED_OFFLINE_AND_EMPTY_USB_VM_SCOPED_PASS",
+    "scope": "Tool entry/organization only;noHostorprotocolarchitecturechange",
+    "canonical_entry": "slktest channel ping/rate/window/duplex/peer",
+    "management": "slctl devices/connections/authorization/dailyinteraction",
+    "implementation": "moved channel.rs/benchmark.rs/benchmark/load.rs once toslktest internal lib;removed oldslctl entrypoints",
+    "preserved": [
+      "Originaldirtyfourdevicehooks",
+      "Ordinarydelegatedfd/Runtime/uniqueSession/Grant/credit/Ticket/originaldeadlines",
+      "BasicCUTCmeasurementandlimiteddynamiccorrectness",
+      "Historicalargv/source/artifact/hash/report schemas",
+      "FullS0-S6/19WP/10FV/12DG/naturalRCA/nonhumanrecoveryOPEN"
+    ],
+    "gates": [
+      "Strictlockedbuild,actualbinaryargandoldentryrejection",
+      "Sameapplication send/receive/deadline/arm/load/report regressions",
+      "Currentcallerargv/sealedbinary andhistoricalverifierseparation",
+      "VM-only noUSB actualslktest/uid1000 allapplicationtests"
+    ],
+    "remaining": [
+      "Newbinary realWS73 roles/length qualification MISSING",
+      "P1schema2oracle/provenance/capture/start-end coordination/resources/tracing;thenP2events"
+    ],
+    "real_or_performance_qualified": false,
+    "source": "7694e14fccab1ac101521edb8ef09fa20bcc5e1b",
+    "vm": ".dev/slktest-vm-migration-v1/manifest.json"
   }
 }

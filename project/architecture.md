@@ -24,6 +24,12 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](../docs/decision
 分层时间线区分应用、准入、USB、NOCP 与对端校验；无 RF/时钟证据不宣称精确
 单向空口时延。实施依赖、当前资格仍由各自唯一入口维护，不在架构页累加运行结果。
 
+应用工具职责固定为 slctl 管理/连接/授权与日常交互，slktest 应用通道正确性、
+时延、带宽/压力测试。后者内部复用唯一收发/codec/状态/报告模块，仍使用原普通
+委托fd，不承担Host/协议Engine；抓包、内核selftests、形式化和资格聚合仍独立。
+该职责调整参考 [BlueZ l2test 的工具定位](https://github.com/bluez/bluez/blob/master/tools/l2test.c)，
+不采用其Bluetooth协议实现，不改变当前分层或支持范围。
+
 ## 目标分层及架构决策
 
 ### 总体结构

@@ -29,6 +29,7 @@ cargo +1.96.1 test --locked --workspace
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
 | `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset/services/list-services/read-prop/write-prop/remote-discover/remote-read/remote-write 子命令, clap 4 |
 | `slctl` | bin | 交互式控制工具 (对标 bluetoothctl): rustyline 15, 通过 D-Bus 与 slkd 通信 |
+| `slktest` | bin + internal lib | 应用通道正确性/时延/速率/窗口/双向测试；普通授权fd，不是Host或协议Engine |
 | `slkmon` | bin | 协议分析器 (对标 btmon): DLI 帧解码、事件过滤、hexdump、文件填出 |
 | `slkdump` | bin | 帧转储工具 (对标 hcidump): 轻量级、原始数据捕获、二进制输出 |
 
@@ -113,6 +114,7 @@ Trailer 要求:
 │   ├── slkd/src/ (main.rs, config.rs, kernel.rs, dbus_iface.rs, state.rs, security.rs, service.rs)
 │   └── slkconfig/src/ (main.rs)
 │   ├── slctl/src/ (main.rs, commands.rs)
+│   ├── slktest/src/ (channel.rs, benchmark/, cli.rs, connection.rs)
 │   ├── slkmon/src/ (main.rs, decode.rs)
 │   └── slkdump/src/ (main.rs)
 ├── bindings/

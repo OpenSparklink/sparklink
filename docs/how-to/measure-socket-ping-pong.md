@@ -13,7 +13,7 @@ VM 基线、schema2 双端捕获/来源核对及内核资源采样仍缺。
 先核对[当前资格与限制](../../project/current-capabilities.md)和
 [通道接口](../reference/interfaces.md)。
 
-使用包含 `benchmark-peer` / `benchmark-ping` 的 slctl 构建。每端选择全新的 JSON
+使用匹配的 `slktest` 构建；`slctl` 只管理设备、连接和授权。每端选择全新的 JSON
 路径和单独 stderr/stdout 文件，保留编译 artifact、源码/dirty、执行工具、固件、
 VM/USB/CPU 与连接实际参数身份。示例变量必须替换成该 VM 的实际对象及路径。
 普通应用无需 sudo；不要用管理员身份替代授权验收。
@@ -23,13 +23,13 @@ VM/USB/CPU 与连接实际参数身份。示例变量必须替换成该 VM 的�
 1. 对端终端先运行；在计时前看到 `SocketBenchmarkReady` 后再启发起端：
 
    ```sh
-   slctl --adapter "$ADAPTER_B" benchmark-peer "$CONNECTION_B" 100 61 "$PEER_REPORT"
+   slktest --adapter "$ADAPTER_B" channel peer "$CONNECTION_B" --count 100 --bytes 61 --report "$PEER_REPORT"
    ```
 
 2. 发起端终端运行匹配的 count/bytes：
 
    ```sh
-   slctl --adapter "$ADAPTER_A" benchmark-ping "$CONNECTION_A" 100 61 "$SOURCE_REPORT"
+   slktest --adapter "$ADAPTER_A" channel ping "$CONNECTION_A" --count 100 --bytes 61 --report "$SOURCE_REPORT"
    ```
 
 3. 两端保存退出码、完整 stdout/stderr 和 JSON。报告在循环后写出；不要因为等待
@@ -66,28 +66,28 @@ INCOMPLETE 标记及 stderr。文件存在直接拒绝，不覆盖前次运行�
 
 以下新命令的本地应用循环已回归，**真实 WS73、schema2 报告及完整证据闭包尚待验收**。
 仍需上述已建链 VM、普通用户、匹配构建和全新的报告路径。每次重做需新连接 lifetime。
-只使用 one-shot CLI；两端看到 `SocketBenchmarkArmed` 后，各自在该进程 stdin 输入
+只使用 one-shot slktest CLI；两端看到 `SocketBenchmarkArmed` 后，各自在该进程 stdin 输入
 一行 `start`，或由现有 VM 监督器在核对凭据后写入 `start\n`。启动等待原期限 30 秒，
 部分输入不延长，EOF 为撤回；不要提前释放一端就将它当同步的双向起点。
 
-- 固定速率：对端使用 `benchmark-load-peer`；发端的 interval 单位是 µs。
+- 固定速率：对端使用 `slktest channel peer --load`；发端的 interval 单位是 µs。
 
   ```sh
-  slctl --adapter "$ADAPTER_B" benchmark-load-peer "$CONNECTION_B" 1000 61 16 "$PEER_REPORT"
-  slctl --adapter "$ADAPTER_A" benchmark-rate "$CONNECTION_A" 1000 61 16 1000 "$SOURCE_REPORT"
+  slktest --adapter "$ADAPTER_B" channel peer "$CONNECTION_B" --load --count 1000 --bytes 61 --window 16 --report "$PEER_REPORT"
+  slktest --adapter "$ADAPTER_A" channel rate "$CONNECTION_A" --count 1000 --bytes 61 --window 16 --interval-us 1000 --report "$SOURCE_REPORT"
   ```
 
 - 有限窗口：保持相同对端，发端改用：
 
   ```sh
-  slctl --adapter "$ADAPTER_A" benchmark-window "$CONNECTION_A" 1000 61 16 "$SOURCE_REPORT"
+  slktest --adapter "$ADAPTER_A" channel window "$CONNECTION_A" --count 1000 --bytes 61 --window 16 --report "$SOURCE_REPORT"
   ```
 
 - 双向：双方均发送独立随机消息并处理对方请求，在各自终端运行：
 
   ```sh
-  slctl --adapter "$ADAPTER_A" benchmark-duplex "$CONNECTION_A" 1000 61 16 "$SOURCE_REPORT"
-  slctl --adapter "$ADAPTER_B" benchmark-duplex "$CONNECTION_B" 1000 61 16 "$PEER_REPORT"
+  slktest --adapter "$ADAPTER_A" channel duplex "$CONNECTION_A" --count 1000 --bytes 61 --window 16 --report "$SOURCE_REPORT"
+  slktest --adapter "$ADAPTER_B" channel duplex "$CONNECTION_B" --count 1000 --bytes 61 --window 16 --report "$PEER_REPORT"
   ```
 
 应用窗口 1..min(count,256) 独立于协议 credit。绝对速率不因回复推迟计划，窗口满

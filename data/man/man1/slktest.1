@@ -1,0 +1,45 @@
+.TH SLKTEST 1 "2026-10-16" "SparkLink development" "User Commands"
+.SH NAME
+slktest \- SparkLink application channel correctness and load tests
+.SH SYNOPSIS
+.B slktest --adapter
+.I ADAPTER
+.B channel
+.I ping|rate|window|duplex|peer CONNECTION
+.RI [ options ]
+.SH DESCRIPTION
+Uses ordinary delegated channel file descriptors. slctl and slkd manage devices,
+connections and authorization. This tool is not a Host or protocol Engine.
+Capture, kernel selftests, formal verification and qualification aggregation
+remain independent facilities. Experimental drivers and WS73 tests are VM-only.
+.SH MODES
+ping initiates one-outstanding-request measurement. peer replies to ping, or to
+rate/window with --load. rate uses absolute --interval-us schedules. window
+bounds outstanding application requests with --window. duplex runs on both ends
+and independently sends, validates and replies. Measurements require a new
+--report file. Application windows are not protocol credit.
+.PP
+--check on ping/peer runs existing correctness receipts instead of measurement.
+It permits 1..20 --count and 29..2042 --bytes. --exercise selects regular,
+boundaries, prefix-close or burst. Prefix-close is initiator1x2042; burst is
+initiator16x2042. Peers use regular. Dynamic correctness requires --source-port,
+--destination-port and --aid together; --hold retains the fd until a close line.
+Dynamic measurement is not supported.
+.SH BOUNDS AND FAILURE
+Measure count is 1..10000, bytes29..2042 within actual basic CUTC MTU/MPS.
+Rate/window/duplex and peer --load wait at most30s for start followed by newline.
+Message original deadlines, finite queues, random validation, error and timeout
+records remain enforced. Reports never grant performance qualification.
+See channel subcommand --help and the versioned documentation for precise bounds.
+.SH STATUS
+Basic CUTC measurements and limited dynamic correctness only. Reliable modes,
+protected security and safe TCID reuse are not promised. New executable names
+never requalify historical artifacts. Full Native/WS73 and performance gates
+must be run against the exact new binary.
+.SH EXIT STATUS
+Zero means the selected exercise/measurement completed locally; it is not RF
+qualification. Invalid input, timeout, correctness or resource failures are
+nonzero. Incomplete reports and stderr must be retained.
+.SH SEE ALSO
+.BR slctl (1),
+.BR slkd (8)

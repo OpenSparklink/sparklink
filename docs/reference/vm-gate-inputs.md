@@ -73,7 +73,7 @@ MPS为长度加5。超过254字节的完整PDU须取得两端实际PB分片及�
 
 `--dynamic-channel-burst` 必须同时指定 `--dynamic-channel-verify` 与
 `--dynamic-channel-long-bytes 2042`。版本3保留 A/B 工作量及四槽拒绝；C改为
-16条2042字节突发消息，交换物理连接角色。应用使用 `dynamic-burst`，复用既有
+16条2042字节突发消息，交换物理连接角色。历史镜像应用使用 `dynamic-burst`；当前等价入口为 `slktest channel ping --check --exercise burst`，复用既有
 普通socket burst收发与 `query_tx_status`，对端仍使用 `dynamic-peer`。
 
 门禁要求真实EAGAIN、poll撤下可写及恢复准入、源端新增credit池满拒绝、USB提交／

@@ -55,11 +55,12 @@ schema 版本、run id、源角色及 controller/generation/lifetime/channel 身
 
 | 命令 | 路径后的位置参数 | 行为 |
 |---|---|---|
-| benchmark-ping / benchmark-peer | count bytes new-report | schema1，单未完成请求／对端校验；启动后直接运行 |
-| benchmark-rate | count bytes window interval-us new-report | schema2，绝对计划、单次非阻塞准入，拒绝不减慢计划 |
-| benchmark-window | count bytes window new-report | schema2，有限在途应用请求，EAGAIN 后等待可写 |
-| benchmark-duplex | count bytes window new-report | schema2，双方独立发起并校验回复，唯一同一 socket 路径 |
-| benchmark-load-peer | count bytes window new-report | schema2，只处理 rate/window 的对端请求 |
+| slktest channel ping / peer | CONNECTION --count N --bytes B --report FILE | schema1，单未完成请求／校验回复 |
+| slktest channel rate | CONNECTION --count N --bytes B --window W --interval-us U --report FILE | schema2，绝对计划 |
+| slktest channel window | CONNECTION --count N --bytes B --window W --report FILE | schema2，有限应用窗口 |
+| slktest channel duplex | CONNECTION --count N --bytes B --window W --report FILE | schema2，两端独立发起/应答 |
+| slktest channel peer --load | CONNECTION --count N --bytes B --window W --report FILE | schema2，应答rate/window |
+
 
 count 1..10000，bytes 29..2042 且匹配实际基本 CUTC MTU/MPS。window 1..min(count,256)，
 interval 10..1000000 µs，总计划不超过600秒；其它模式 interval 为0。schema2 等待
@@ -84,3 +85,17 @@ pattern goodput 排除29字节应用测试头，datagram goodput另列；DLI/DTA
 
 schema1 双端核对含迟到拒绝；schema2 的端到端 oracle、来源/捕获/监督器负对照
 尚缺，不能沿用 schema1 的局部通过。新模式尚无真实 WS73 性能资格。
+
+
+## 工具所有权与迁移
+
+`slktest` 是应用测试的唯一规范入口，使用内部库中的同一套旧 channel/benchmark
+实现；`slctl` 不再接受旧测试命令，负责管理、连接、授权和日常交互。--adapter
+必须给出当前完整对象路径，与 CONNECTION 的 generation/lifetime 一起核对。
+`ping/peer --check` 保留原正确性门禁和 stdout receipts；测量不加 --check 且须 --report。
+--exercise boundaries/prefix-close/burst 保留原约束；动态只在 --check 下提供完整的
+--source-port/--destination-port/--aid，--hold 仍等显式close，不承诺动态 benchmark。
+
+代码迁移不改 schema1/2、wire、socket/Grant/credit/Ticket 或原期限。历史证据中的
+slctl 命令和 artifact/hash 保持不动，由原提交工具复核；当前 verifier 的旧 argv 分支
+仅解读历史记录，不是运行时兼容入口。新 binary/runner/报告来源和实机资格单独登记。

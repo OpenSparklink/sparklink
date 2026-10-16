@@ -8,6 +8,9 @@ SparkLink 的 Linux 子系统和 Rust 用户态工具正在开发，提供每控
 - [目标架构](project/architecture.md)、[唯一实施计划](project/implementation-plan.md)
 - [贡献规范](AGENTS.md)
 
+`slctl` 用于设备管理、连接与授权；`slktest channel` 用于普通授权 fd 上的应用正确性与负载测试。
+新工具名不代表新的性能或实机资格，支持范围见[测试工具参考](docs/reference/socket-benchmark.md)。
+
 实验驱动和真实 WS73 测试保持 **VM-only**。自然故障根因、非人工自动恢复及未完成的 SSAP、安全和发布事项继续开放。UAPI 尚未发布。
 
 文档使用独立的 uv 环境，不打包 Rust 项目或 Python 绑定：

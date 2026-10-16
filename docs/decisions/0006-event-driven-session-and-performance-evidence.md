@@ -77,3 +77,16 @@ unsupported/timeout/未展开均未证明，模型通过不等于实现 refineme
 参考固定 NearLink Host f0872dfa 的 DTAP_SendCompleteCbk→SchedulerRun 与 libws73-usb
 f4d85d0e 的 ACB pool gate，解释 SDK111 封装/调度差异；handle/count 回调不能证明
 Linux lifetime 复用安全，也不把参考实现当性能裁判。
+
+
+## 应用工具入口（2026-10-16）
+
+应用正确性、ping-pong、绝对速率、有限窗口、双向与应答端统一归入独立
+`slktest channel`，定位参考 BlueZ l2test；这是工具组织决策，不采用其协议实现。
+`slctl` 保持管理、连接与授权。旧测试入口删除，不承诺未发布工具的兼容期。
+迁移同一份循环/codec/报告实现至内部库；抓包、内核 selftests、形式化和资格聚合
+继续使用现有设施。动态路由仅保留已有正确性门禁，测量仍受基本 CUTC 能力约束。
+
+新二进制必须记录独立源码、artifact 与执行身份。历史报告和 argv 不重写；schema
+语义不变。离线与空 USB VM 的入口/本地数据报回归不能继承旧 WS73 或性能资格。
+入口整改结束后继续 P1 双端证据与基线，再推进 P2 事件驱动，不追加控制面全集门槛。

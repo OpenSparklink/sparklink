@@ -81,7 +81,7 @@ async def main():
   await nav('tutorials/index.html')
   await js("Array.from(document.links).find(a=>a.href.endsWith('tutorials/first-ws73-message.html')).click();true")
   await asyncio.sleep(.5)
-  result['product_tutorial_navigation']=await js("location.pathname.endsWith('/tutorials/first-ws73-message.html') && document.body.innerText.includes('channel-peer') && document.body.innerText.includes('channel-roundtrip') && document.body.innerText.includes('受限教程草案')")
+  result['product_tutorial_navigation']=await js("location.pathname.endsWith('/tutorials/first-ws73-message.html') && document.body.innerText.includes('slktest') && document.body.innerText.includes('冻结') && document.body.innerText.includes('受限教程草案')")
   result['screenshots'].append(await shot('product-tutorial'))
   await nav('search.html?q=ControllerEventGet')
   found=False

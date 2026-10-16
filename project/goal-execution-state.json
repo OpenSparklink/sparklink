@@ -1321,6 +1321,7 @@
     "real_evidence": "docs/evidence/dynamic-cmtc-real-20261016.json",
     "retained_regression_state": ".dev/dynamic-retained-matrix-v1.json",
     "dynamic_business_real_acceptance": true,
-    "real_acceptance_scope": "Only actual2device dynamic CMTC and48 app roundtrips/close isolation;not physicalunplug/fullmultichannel/naturalrecovery"
+    "real_acceptance_scope": "Only actual2device dynamic CMTC and48 app roundtrips/close isolation;not physicalunplug/fullmultichannel/naturalrecovery",
+    "issues_receipt": "docs/evidence/dynamic-cmtc-issues-20261016.json"
   }
 }

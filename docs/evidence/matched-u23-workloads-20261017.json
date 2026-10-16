@@ -2384,7 +2384,21 @@
       "pairedobservercost",
       "longterm stability/faultrecovery"
     ],
-    "baseline_scheduler": "bfaa is already event-driven;this is later boundedTX/trace/publication bundle comparison,not original10ms polling versus current"
+    "baseline_scheduler": "bfaa is already event-driven;this is later boundedTX/trace/publication bundle comparison,not original10ms polling versus current",
+    "kernel_profile": {
+      "classification": "Same normalqualification profile;not a lean-performance or separate race/fault-injection image",
+      "flags": {
+        "UBSAN": "y",
+        "KASAN": "n",
+        "KCSAN": "n",
+        "PROVE_LOCKING": "n",
+        "DEBUG_ATOMIC_SLEEP": "n",
+        "FAULT_INJECTION": "n",
+        "KCOV": "n",
+        "SPARKLINK_VIRTUAL": "m"
+      },
+      "scope": "Configuration presence not proof of target instrumentation coverage;Rust sanitizer coverage not asserted;Virtual module not staged/loaded."
+    }
   },
   "no_USB_driver_change": true,
   "no_multiple_RX_URB_change": true,
@@ -4951,5 +4965,18 @@
       "access": "private",
       "retention": "Authorized workspace maintainers only;raw USB,addresses,firmware/SDK andVMpayload not publicly downloadable. Replay exact frozen source/tool/artifact and saved capture inputs."
     }
-  ]
+  ],
+  "firmware": {
+    "label": "SDK1.10.111 user-supplied combined ws73+wifi_cali+btc_cali",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "board_qualification": false,
+    "runtime_version_bytes": "016c00a100",
+    "runtime_version_scope": "Raw DLI ReadLocalVersion bytes observed on both selected modules;not reinterpreted as SDK release number"
+  },
+  "same_user_binary_sha256": {
+    "slkd": "02efd6e2c102ad0727cfd6b371b5b5c8a06bf3c0f26e3a8e5e9410ad50eae126",
+    "slctl": "10a80a1c7aecbc3c3e3b1e2bd11d3ddb98656393db4ad2b90714f71f5b5bb8af",
+    "slktest": "54b9cd0611d714efc9f91b95d17644ef5d7cc431cbc42e1fea1ddf697b30b935",
+    "liblibsparklink.so": "0fb387aaa07f02d50122192a3a1a6611751493086a7cc557968ba1c980209e88"
+  }
 }

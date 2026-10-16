@@ -13,14 +13,14 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "four-controller-long-burst-budgets",
-    "production_behavior": "Existing2042-byte per-channel burst on two simultaneous real pairs;compiled d01aa82,guest/Host d42da67;64actual peer replies and1152business TX fragments. No new Engine.",
+    "id": "dynamic-channel-cmtc-identifier",
+    "production_behavior": "Begin actual dynamic Channel path;fix existing codec/Session identifier0 contract first,with explicit pending boolean. Dynamic creation remains unsupported until real signaling/grant/table integration.",
     "exit": [
-      "Actual2pairs2roles16x2042bytes=64peer replies;USB overlap3850.196/3856.544ms,29693packets0drop,taint0,QEMU/supervisor0",
-      "Software queue pressure,source new pool refusals26/27/28/25;all8endpoint-role contexts206submit/206NOCP,capacity/peak5,finaldebt0;observations not NOCP truth or wholecredit/fairness proof",
-      "100offline+strictdocs;old80/48saved proofs unchanged;10corruptions rejected in verifier;no new formal or debugVM qualification"
+      "Latest fixed Session dispatcher audited against standard and fixedNearLinkHost;no duplicate Engine or loosened bind",
+      "K d75f7bd codec all256 values and source-mapped boundedCBMC+actualroute;old implementation counterexample retained",
+      "New VM zero-id capability exchange and real app/data regression pending;old80/48/64qualifications keep original identities"
     ],
-    "next": "Begin actual dynamic Channel signaling/TCID negotiation and per-channel queues/socket business over the existing unique Session dispatcher. Fairness/slowconsumers/actual devicefault/natural recovery remain open. Production stateful fuzz/submit-revoke-Down-original-deadline/debugVM/minimum authenticated authorization parallel;retain originalS0-S6/19WP/10FV/12DG."
+    "next": "Finish exact newkernel VM regression;then actual bounded CMTC dynamic Connect/Disconnect,local/remoteTCID,per-channel auth/queues/socket double-channel business;stateful/inflight/debugVM/auth parallel;full S0-S6 unchanged."
   },
   "overall_required_records": [
     "deadline-real21",

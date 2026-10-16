@@ -181,6 +181,19 @@ class IndependentUSBProof(unittest.TestCase):
                 events.append(dict(bus=1,device=sender['owner']['device'],event=9,params=(b'\0\0'+bytes([rounds+2])).hex(),wall_ns=n*100+30))
         return dict(channel_socket=phases),dict(native_events=events),sdus
 
+    def test_identifier_zero_is_current_and_historical_one_stays_scoped(self):
+        from unittest.mock import patch
+        from ws73_channel_socket import corroborate
+        run,capture,sdus=self.fixture()
+        for row in run['channel_socket']:row['cmtc_identifier']=0
+        for p in sdus:
+            raw=bytearray.fromhex(p['data'])
+            if raw[0]==2:raw[5]=0;p['data']=raw.hex()
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            self.assertEqual(corroborate(run,capture)['round_trips'],8)
+            for row in run['channel_socket']:row['cmtc_identifier']=1
+            with self.assertRaises(CaptureError):corroborate(run,capture)
+
     def test_long_requires_each_actual_fragment_and_physical_completion_count(self):
         from unittest.mock import patch
         from ws73_channel_socket import corroborate

@@ -18,7 +18,7 @@ def credentials(pid):
 
 
 def execute(run, phase):
-    row = dict(phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
+    row = dict(cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
                boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     run.data.setdefault('channel_socket', []).append(row); run.save()
@@ -345,10 +345,12 @@ def corroborate(run,capture):
                 raise CaptureError('old SSAP traffic cannot stand in for post-close isolation')
         capabilities=[]
         for sender,receiver in [owners,owners[::-1]]:
-            query=bytes.fromhex('0200080001010400e2000000')
+            identifier=row.get('cmtc_identifier',1) # historical captures retain original identifier1
+            if type(identifier) is not int or not 0<=identifier<=255:raise CaptureError('exact CMTC wire identifier required')
+            query=bytes([2,0,8,0,1,identifier,4,0,0xe2,0,0,0])
             receipt=next((value for value in channel_info_receipts(row) if value['fields'][0]==sender['owner']['index']),None)
             mtu=receipt['fields'][7] if receipt else 249
-            response=bytes.fromhex('0200100002010c00e20000000000')+mtu.to_bytes(2,'little')*2+bytes.fromhex('0101')
+            response=bytes([2,0,16,0,2,identifier,12,0,0xe2,0,0,0,0,0])+mtu.to_bytes(2,'little')*2+bytes.fromhex('0101')
             capabilities.append(dict(request_tx=matched(sender,'out',query,session=row.get('ssap_exchange_required',False)),request_rx=matched(receiver,'in',query,session=row.get('ssap_exchange_required',False)),
                                      response_tx=matched(sender,'out',response,session=row.get('ssap_exchange_required',False)),response_rx=matched(receiver,'in',response,session=row.get('ssap_exchange_required',False))))
             owner,obj=sender['owner'],sender['object']

@@ -1083,14 +1083,14 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "four-controller-long-burst-budgets",
-      "production_behavior": "Existing2042-byte per-channel burst on two simultaneous real pairs;compiled d01aa82,guest/Host d42da67;64actual peer replies and1152business TX fragments. No new Engine.",
+      "id": "dynamic-channel-cmtc-identifier",
+      "production_behavior": "Begin actual dynamic Channel path;fix existing codec/Session identifier0 contract first,with explicit pending boolean. Dynamic creation remains unsupported until real signaling/grant/table integration.",
       "exit": [
-        "Actual2pairs2roles16x2042bytes=64peer replies;USB overlap3850.196/3856.544ms,29693packets0drop,taint0,QEMU/supervisor0",
-        "Software queue pressure,source new pool refusals26/27/28/25;all8endpoint-role contexts206submit/206NOCP,capacity/peak5,finaldebt0;observations not NOCP truth or wholecredit/fairness proof",
-        "100offline+strictdocs;old80/48saved proofs unchanged;10corruptions rejected in verifier;no new formal or debugVM qualification"
+        "Latest fixed Session dispatcher audited against standard and fixedNearLinkHost;no duplicate Engine or loosened bind",
+        "K d75f7bd codec all256 values and source-mapped boundedCBMC+actualroute;old implementation counterexample retained",
+        "New VM zero-id capability exchange and real app/data regression pending;old80/48/64qualifications keep original identities"
       ],
-      "next": "Begin actual dynamic Channel signaling/TCID negotiation and per-channel queues/socket business over the existing unique Session dispatcher. Fairness/slowconsumers/actual devicefault/natural recovery remain open. Production stateful fuzz/submit-revoke-Down-original-deadline/debugVM/minimum authenticated authorization parallel;retain originalS0-S6/19WP/10FV/12DG."
+      "next": "Finish exact newkernel VM regression;then actual bounded CMTC dynamic Connect/Disconnect,local/remoteTCID,per-channel auth/queues/socket double-channel business;stateful/inflight/debugVM/auth parallel;full S0-S6 unchanged."
     }
   },
   "agent_workstream": {
@@ -1214,7 +1214,7 @@
     "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
     "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
     "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only",
-    "state": "FOUR_DEVICE_BURST_REAL_SCOPED_PASS_REMAINING_OPEN",
+    "state": "DYNAMIC_SIGNALING_IDENTIFIER0_FIX_BUILDING_VM_PENDING",
     "tool": "tools/ws73_parallel_data.py via ws73_target.py --four-device-business",
     "invariants": [
       "four distinct Ready registrations and unchanged daemon identity",
@@ -1228,10 +1228,12 @@
     "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json",
     "controlled_disconnect_report": "docs/evidence/four-device-disconnect-20261016.json",
     "controlled_disconnect_issues_receipt": "docs/evidence/four-device-disconnect-issues-20261016.json",
-    "active_gate": "--four-device-burst",
+    "active_gate": "exact newkernel CMTCidentifier0 exchange + existing socket/data regressions",
     "active_exit": "2pairs2roles16x2042bytes=64actual peer replies;actual overlap/PB/queue pressure/pool-NOCP-resume-finaldrain;no broadcredit/fairness proof",
     "burst_report": "docs/evidence/four-device-burst-20261016.json",
-    "burst_issues_receipt": "docs/evidence/four-device-burst-issues-20261016.json"
+    "burst_issues_receipt": "docs/evidence/four-device-burst-issues-20261016.json",
+    "kernel_change": "d75f7bdf17ab295d8b504f3a803d8a100f131646",
+    "dynamic_scope": "Connect/Disconnect and local-remoteTCID/per-channel auth/queue/socket still pending;do not relax existing fixed table first"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",

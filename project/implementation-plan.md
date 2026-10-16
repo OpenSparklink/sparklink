@@ -1158,3 +1158,14 @@ peak/capacity5和finaldebt0。十项损坏证据在observer/verifier层拒绝，
 注入重复NOCP或完整ledger证明。下一条纵向链为现有唯一Session分流上的实际动态
 Channel信令、local/remote TCID、独立队列和socket收发，不另造Engine；公平性/慢消费者
 和真实设备故障矩阵继续保留，不把控制竞争全集设为前置。
+
+
+### 动态Channel当前接线：先修CMTC identifier0（新实机待验）
+
+审计当前K ddea/用户态10c691b：唯一Session分流已接通，固定两槽；动态信令和
+授权/建链/关闭仍缺。标准与NearLinkHost f087方向已核对，保留完整动态多通道目标。
+K d75f7bd已分离response_pending和合法编号0、允许完整256值并使用0发起能力查询；
+未放开动态bind或伪造成功。直接codec有界CBMC、实际route及sanitizer单列，新VM
+必须取得双端真实0编号请求/响应、普通业务及既有长度/四设备回归后才授予新资格。
+旧8cbf/D01/D42的所有实机报告保持原身份。随后继续实际Connect/Disconnect事务及
+local/remoteTCID/独立队列，不能将本修复称为动态多通道完成或加回控制全集前置。

@@ -583,3 +583,16 @@ generation内峰值包括已知未提交后回滚的reservation，pool满拒绝�
 报告本通道队列和在途长度；控制器总债务与物理连接债务有明确不同作用域。
 源码契约见[接口参考](../docs/reference/interfaces.md)，准确当前实机范围仍只维护于
 [当前能力](current-capabilities.md)。完整S0–S6与真实credit/撤权/复用/自然恢复门禁保持。
+
+
+### 动态通道接线的编号与方向约束
+
+CMTC请求/响应identifier允许完整8位范围；0不是“无待回复”的哨兵。
+Session以显式pending状态表示义务，能力查询使用保留的编号0；未来动态事务在同一
+Session内分配其他未在途编号，不能仅改编号就宣称解决迟到消息或lifetime复用。
+动态单播TCID使用标准单播范围，与广播/组播及保留范围区分；建立响应src回显
+请求者本地TCID，dst才是响应方分配的TCID，收发分别使用local/remote身份。
+当前数据路径仍仅固定CUTC/SMTC，动态Connect/Disconnect、授权和独立队列待接通，
+不先放开socket注册限制。标准T/XS20002-2025 §6.2/7.3.3/7.3.4是规范依据；
+NearLinkHost f087的signaling/dyntrans实现用于核对，不能照搬其宽泛dynamic宏或
+把本地timeout枚举当作标准线上result。用户态SSAP继续复用既有Session/Channel。

@@ -13,14 +13,14 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "four-controller-business-and-inflight-composition",
-    "production_behavior": "First real four-controller fixed-channel two-pair slice reuses Runtime/Session/socket;80 actual peer replies with overlapping USB business. No new Engine or relaxed CCC.",
+    "id": "four-controller-controlled-disconnect",
+    "production_behavior": "Test existing same-session ordinary socket delivery during the other physical pair Disconnect/Down;alternate victim pairs without pausing apps or refreshing original deadlines. No production Engine change.",
     "exit": [
-      "d01aa82 compiled/guest/Host:4Ready,2pairs x2roles x20=80actual replies; raw overlaps;supervisor/QEMU0,zero capture loss,taint0",
-      "six corrupted real-evidence controls rejected;87 offline and strictdocs separate;no new formal proof",
-      "four warm starts each timed out-110 then one warm recovery succeeded; observations retained, no general natural recovery qualification"
+      "Retain original d01aa82 positive80 qualification under exact source identities",
+      "New gate:2roles x(4victim+20survivor)=48 actual peer replies;each survivor >=2before actual Disconnect submit and >=4after both Down",
+      "Offline/pipes/capture negative controls separate from real VM;new real evidence pending; all original scopes remain open"
     ],
-    "next": "One pair disconnect/Down while other pair keeps actual peer-checked business, then four-device long/budget/fairness and dynamic channels. Stateful submit-revoke-Down-original-deadline/debugVM and minimum authenticated security+authorization parallel; original S0-S6 remains incomplete."
+    "next": "After controlled Disconnect slice, four-device long/budget/fairness and dynamic channels; actual transport fault isolation/natural RCA/recovery remain open. Stateful submit-revoke-Down-original-deadline and debugVM parallel."
   },
   "overall_required_records": [
     "deadline-real21",

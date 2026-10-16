@@ -132,3 +132,19 @@ python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN \
 `FOUR_DEVICE_PARALLEL_BUSINESS_PASS`。缺记录、无区间重叠、worker超时或本组清理失败
 均保留FAIL，使用新输出目录重跑；不得手改产物或改用广播证据。
 该结果仍不覆盖单组故障隔离、长包压力、公平性、动态多通道及非人工自动恢复。
+
+
+## 核对受控单组断链期间的同行业务
+
+集成门禁 `--four-device-disconnect` 尚未取得新实机资格。准备条件同四设备业务门禁，
+使用独立输出目录并以此选项替换 `--four-device-business`，禁止二者混用。
+它不暂停应用：两阶段轮换断链方，断链方4次、持续业务方20次，共48次实际回复。
+
+核对 `disconnect_proofs` 两条记录：持续业务方至少2个完整往返早于对方Disconnect
+实际USB提交，至少4个完整往返的首提交晚于对方两个真实Down事件；序号和原始包
+都必须对应同一既存物理Session/Channel，应用实际校验回复且无daemon重启。
+监督器完成状态应是 `FOUR_DEVICE_DISCONNECT_ISOLATION_PASS`，不能用旧80次
+正向状态替代。时序不足、任一端Down缺失、同行换lifetime或缺少应用记录均失败。
+
+`controlled_disconnect_isolation_acceptance` 只表达受控断链隔离，不能扩展为设备故障、
+USB故障、物理拔插或自然恢复。普通用户与管理者的权限、长包和动态多通道仍单列。

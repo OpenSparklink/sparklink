@@ -5,15 +5,18 @@ Fixtures test only the new verifier contract, never actual kernel/USB delivery.
 The actual app/USB proof functions remain the existing independently tested path.
 """
 import copy
+import subprocess
+import sys
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 from test_ws73_parallel import fixture as rf_fixture
 from ws73_capture import CaptureError
+from ws73_parallel import EventReader, PREFIX
 from ws73_north_star import Run
 from ws73_parallel_data import (BusinessPair, BARRIER_SECONDS, PENDING, SUCCESS,
-    SCOPE, SEQUENCE, overlap_window, pair_capture, verify_records)
+    SCOPE, SEQUENCE, ISOLATION_SCOPE, stage_specs, rounds_for, disconnect_proofs, overlap_window, pair_capture, verify_records)
 from ws73_target import run_exit_code, validate_business_mode
 
 
@@ -42,6 +45,131 @@ def fixture():
             w['run']['barriers'].append(event|dict(ack_wall_ns=105+n*10))
         record['stages'].append(dict(phase=kind,round=role,waits=waits,release_wall_ns=104+n*10))
     return record
+
+
+def disconnect_fixture():
+    r=fixture();r.update(scope=ISOLATION_SCOPE,disconnect_isolation=True,stages=[])
+    held={};clock=100
+    for pair,w in enumerate(r['workers']):
+        child=w['run'];child.update(scope=ISOLATION_SCOPE,disconnect_isolation=True,barriers=[])
+        for n,row in enumerate(child['channel_socket']):row['rounds']=rounds_for(True,pair,n)
+        w['args'].insert(-2,'--disconnect-isolation')
+    def observe(pair,kind,phase):
+        nonlocal clock
+        clock+=1;event=dict(pair=pair,phase=kind,round=phase,wait_wall_ns=clock)
+        if kind=='ready':event['owners']=r['workers'][pair]['run']['initial']
+        r['workers'][pair]['run']['barriers'].append(event)
+        clock+=1;return dict(event=copy.deepcopy(event),observed_wall_ns=clock)
+    for kind,n,pairs in stage_specs(True):
+        waits=[held.pop(n) if kind=='down' and pair==n else observe(pair,kind,n) for pair in pairs]
+        clock+=1;r['stages'].append(dict(phase=kind,round=n,waits=waits,release_wall_ns=clock))
+        for pair in pairs:
+            child=r['workers'][pair]['run'];child['barriers'][-1]['ack_wall_ns']=clock+1
+        clock+=1
+        if kind=='business-done' and pairs==(n,):held[n]=observe(n,'down',n)
+    return r
+
+
+def capture_disconnect_fixture():
+    pairs=[dict(connections=[],channel=dict(proofs=[])) for _ in range(2)]
+    for pair in range(2):
+        for n in range(2):
+            shift=1000*n
+            pairs[pair]['connections'].append(dict(steps=[{},dict(command=dict(wall_ns=shift+70),
+                outcomes=[dict(bus=1,device=pair*2+dev,wall_ns=shift+80+dev) for dev in [2,3]])]))
+            legs=[]
+            for seq in range(20):
+                for direction in range(2):
+                    t=shift+10+seq*20+direction*2
+                    legs.append(dict(sequence=seq,tx=dict(wall_ns=t),rx=dict(wall_ns=t+1)))
+            pairs[pair]['channel']['proofs'].append(dict(legs=legs))
+    return pairs
+
+
+class DisconnectEvidenceTests(unittest.TestCase):
+    def test_ordered_alternating_disconnect_records(self):
+        r=disconnect_fixture();self.assertEqual(len(verify_records(r)),4)
+        self.assertEqual([[x['rounds'] for x in w['run']['channel_socket']] for w in r['workers']],[[4,20],[20,4]])
+        self.assertEqual(len(r['stages']),11)
+
+    def test_wrong_scope_participant_release_or_victim_budget_rejected(self):
+        for change in ['scope','no-worker-flag','wrong-worker-flag','no-victim-down','early-survivor-release','wrong-victim','few-survivor','missing-wait','wrong-participant']:
+            r=disconnect_fixture()
+            if change=='scope':r['scope']=SCOPE
+            if change=='no-worker-flag':r['workers'][1]['args'].remove('--disconnect-isolation')
+            if change=='wrong-worker-flag':r['workers'][1]['run']['disconnect_isolation']=False
+            if change=='no-victim-down':r['workers'][0]['run']['barriers'].pop(4)
+            if change=='early-survivor-release':r['stages'][4]['release_wall_ns']=1
+            if change=='wrong-victim':r['workers'][0]['run']['channel_socket'][0]['rounds']=20
+            if change=='few-survivor':r['workers'][1]['run']['channel_socket'][0]['rounds']=4
+            if change=='missing-wait':r['stages'][4]['waits']=[]
+            if change=='wrong-participant':r['stages'][3]['waits'][0]['event']['pair']=1
+            with self.subTest(change=change),self.assertRaises((CaptureError,ValueError,KeyError)):
+                verify_records(r)
+
+    def test_actual_pipes_select_victim_down_before_releasing_other_pair(self):
+        processes=[];reader=None;rows=[]
+        try:
+            for pair in range(2):
+                program=f"import json,sys,time; print({PREFIX!r}+json.dumps(dict(pair={pair},phase='business-done',round=0,wait_wall_ns=time.time_ns())),flush=True); assert sys.stdin.readline()=='done\\n'; print({PREFIX!r}+json.dumps(dict(pair={pair},phase='down',round=0,wait_wall_ns=time.time_ns())),flush=True); assert sys.stdin.readline()=='down\\n'"
+                processes.append(subprocess.Popen([sys.executable,'-c',program],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE))
+                rows.append(dict(stdout='',stderr=''))
+            reader=EventReader(processes,rows,timeout_seconds=2)
+            reader.wait_one(processes,0,'business-done',0)
+            processes[0].stdin.write(b'done\n');processes[0].stdin.flush()
+            first=reader.wait_one(processes,0,'down',0)
+            second=reader.wait_one(processes,1,'business-done',0)
+            self.assertLessEqual(first['observed_wall_ns'],second['observed_wall_ns'])
+            processes[1].stdin.write(b'done\n');processes[1].stdin.flush()
+            reader.wait_one(processes,1,'down',0)
+            for p in processes:p.stdin.write(b'down\n');p.stdin.flush()
+            for p in processes:p.wait(timeout=3);self.assertEqual(p.returncode,0)
+        finally:
+            for p in processes:
+                if p.poll() is None:p.kill()
+                p.wait()
+                for stream in [p.stdin,p.stdout,p.stderr]:stream.close()
+            if reader:reader.watch.close()
+
+    def test_actual_down_needs_completed_replies_on_both_sides(self):
+        p=capture_disconnect_fixture();proof=disconnect_proofs(p)
+        self.assertEqual([x['victim_pair'] for x in proof],[0,1])
+        self.assertEqual([x['survivor_pair'] for x in proof],[1,0])
+        self.assertTrue(all(len(x['before_sequences'])>=2 and len(x['after_down_sequences'])>=4 for x in proof))
+        for change in ['no-down','same-down-end','down-before-submit','survivor-finishes-before-down','survivor-starts-after-disconnect','missing-reply','duplicate-sequence']:
+            p=capture_disconnect_fixture();step=p[0]['connections'][0]['steps'][1];legs=p[1]['channel']['proofs'][0]['legs']
+            if change=='no-down':step['outcomes'].pop()
+            if change=='same-down-end':step['outcomes'][1]['device']=step['outcomes'][0]['device']
+            if change=='down-before-submit':step['command']['wall_ns']=100
+            if change=='survivor-finishes-before-down':step['outcomes'][1]['wall_ns']=10000
+            if change=='survivor-starts-after-disconnect':step['command']['wall_ns']=1
+            if change=='missing-reply':legs.pop()
+            if change=='duplicate-sequence':legs[-1]['sequence']=0
+            with self.subTest(change=change),self.assertRaises(CaptureError):disconnect_proofs(p)
+
+    def test_dedicated_mode_and_summary_require_disconnect_proof(self):
+        validate_business_mode(SimpleNamespace(command='run',four_device_disconnect=True))
+        with self.assertRaises(ValueError):validate_business_mode(SimpleNamespace(command='run',four_device_disconnect=True,four_device_business=True))
+        proof=dict(status='FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED',controller_count=4,round_trips=48,
+            ordinary_uid=1000,fixed_basic_channel_business_acceptance=True,
+            fault_isolation_acceptance=False,dynamic_channel_acceptance=False,automatic_fault_recovery_acceptance=False,
+            protected_ssap_acceptance=False,full_goal_complete=False,controlled_disconnect_isolation_acceptance=True,
+            disconnect_proofs=[dict(role_phase=n,victim_pair=n,survivor_pair=1-n,before_sequences=[0,1],after_down_sequences=[16,17,18,19]) for n in range(2)],
+            overlaps=[dict(role_phase=n,overlap_wall_ns=[1,2]) for n in range(2)],
+            pairs=[dict(connections=[{},{}],channel=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=24,
+                proofs=[dict(legs=[{}]*(8 if n==pair else 40)) for n in range(2)])) for pair in range(2)])
+        r=dict(status='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS',four_device_disconnect_requested=True,
+            four_device_parallel_business=True,four_device_parallel_rf=False,qemu_exit=0,parallel_corroboration=proof)
+        self.assertEqual(run_exit_code(r),0)
+        for change in ['flag','proof','post-count','wrong-victim','status','count']:
+            bad=copy.deepcopy(r);p=bad['parallel_corroboration']
+            if change=='flag':bad['four_device_disconnect_requested']=False
+            if change=='proof':p.pop('disconnect_proofs')
+            if change=='post-count':p['disconnect_proofs'][1]['after_down_sequences']=[19]
+            if change=='wrong-victim':p['disconnect_proofs'][1]['victim_pair']=0
+            if change=='status':bad['status']='FOUR_DEVICE_PARALLEL_BUSINESS_PASS'
+            if change=='count':p['round_trips']=80
+            with self.subTest(change=change):self.assertEqual(run_exit_code(bad),1)
 
 
 class BusinessEvidenceTests(unittest.TestCase):

@@ -177,19 +177,21 @@ class EventReader:
 
     def waits(self, processes, phase, number):
         deadline = time.monotonic()+self.timeout_seconds
-        result = []
-        for pair in range(2):
-            while not self.queue[pair]:
-                if processes[pair].poll() is not None:
-                    raise ValueError('parallel worker exited before peer barrier')
-                if time.monotonic() > deadline:
-                    raise TimeoutError('bounded parallel worker event')
-                self.pump(.01)
-            event = self.queue[pair].pop(0)
-            if event['pair'] != pair or event['phase'] != phase or event['round'] != number or 'ack_wall_ns' in event:
-                raise ValueError('wrong/duplicate/out-of-order parallel event')
-            result.append(dict(event=event, observed_wall_ns=time.time_ns()))
-        return result
+        return [self.wait_one(processes, pair, phase, number, deadline) for pair in range(2)]
+
+    def wait_one(self, processes, pair, phase, number, deadline=None):
+        if deadline is None:
+            deadline=time.monotonic()+self.timeout_seconds
+        while not self.queue[pair]:
+            if processes[pair].poll() is not None:
+                raise ValueError('parallel worker exited before peer barrier')
+            if time.monotonic()>deadline:
+                raise TimeoutError('bounded parallel worker event')
+            self.pump(.01)
+        event=self.queue[pair].pop(0)
+        if event['pair']!=pair or event['phase']!=phase or event['round']!=number or 'ack_wall_ns' in event:
+            raise ValueError('wrong/duplicate/out-of-order parallel event')
+        return dict(event=event,observed_wall_ns=time.time_ns())
 
 
 def abort_workers(processes, reader, timeout=30):

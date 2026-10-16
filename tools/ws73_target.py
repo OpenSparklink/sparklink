@@ -466,7 +466,8 @@ def _run(args):
     support=args.command=='support'
     passthrough=bool(getattr(args,'qmp_hotplug',False))
     recovery=bool(getattr(args,'fault_recovery',False))
-    business=bool(getattr(args,'four_device_business',False))
+    disconnect_isolation=bool(getattr(args,'four_device_disconnect',False))
+    business=disconnect_isolation or bool(getattr(args,'four_device_business',False))
     if business:
         validate_business_mode(args)
     parallel=business or bool(getattr(args,'parallel_pairs',False))
@@ -627,10 +628,11 @@ def _run(args):
     if early_fault:m['early_bootstrap_verifier']=file_record(HERE/'ws73_early_fault.py')
     m['four_device_parallel_rf']=parallel and not business
     m['four_device_parallel_business']=business
+    m['four_device_disconnect_requested']=disconnect_isolation
     if business:m['parallel_business_verifier']=file_record(HERE/'ws73_parallel_data.py')
     m['parallel_start_offset_ms']=parallel_offset
     if parallel:
-        m['scope']='four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
+        m['scope']='four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
     if parallel:m['parallel_verifier']=file_record(HERE/'ws73_parallel.py')
     m['qmp_guest_hotplug']=passthrough
     m['connection_verify_requested']=connection_verify
@@ -785,6 +787,7 @@ def _run(args):
                      (' ws73.passthrough=1' if passthrough else '')+
                      (' ws73.parallel=1' if parallel else '')+
                      (' ws73.parallel_business=1' if business else '')+
+                     (' ws73.parallel_disconnect=1' if disconnect_isolation else '')+
                      (f' ws73.parallel_offset={parallel_offset}' if parallel else '')+
                      (' ws73.daemon_remove=1' if daemon_remove else '')+
                      (' ws73.initializer_lifecycle=1' if initializer_lifecycle else '')+
@@ -1081,6 +1084,8 @@ def _run(args):
                         from ws73_parallel import corroborate as corroborate_parallel
                     control_path=share/('application/parallel-business/run.json' if business else 'application/parallel-control/run.json')
                     control=json.loads(control_path.read_text())
+                    if business and control.get('disconnect_isolation',False)!=disconnect_isolation:
+                        raise ValueError('explicit disconnect request and actual guest scope disagree')
                     if not business and control['second_pair_start_offset_ms']!=parallel_offset:
                         raise ValueError('guest start offset differs from actual requested diagnostic')
                     expectation = control['policy_expectation']
@@ -1269,7 +1274,7 @@ def _run(args):
                     # later qualification must not erase/mutate earlier evidence.
                     from ws73_daemon_removal import verify_sealed_record
                     verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']='FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                m['status']='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                 if timeout_seal is not None:
                     m['graceful_timeout']['state']='SEALED'
                     m['status']='FAIL'
@@ -1351,8 +1356,9 @@ def _run(args):
 def validate_business_mode(args):
     # Dedicated positive gate: never silently combine injection, RF diagnostics
     # or two-device options with a four-controller business qualification.
-    if (args.command!='run' or any(v for k,v in vars(args).items()
-            if isinstance(v,bool) and k!='four_device_business')
+    if (args.command!='run' or (bool(getattr(args,'four_device_business',False))+bool(getattr(args,'four_device_disconnect',False)))!=1
+            or any(v for k,v in vars(args).items()
+            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect'])
             or getattr(args,'parallel_start_offset_ms',0)
             or any(getattr(args,k,None) for k in ['security_agent','daemon_hold_case',
                 'managed_partial_case','managed_connected_case','managed_connected_reply',
@@ -1364,25 +1370,35 @@ def validate_business_mode(args):
 
 
 def run_exit_code(record):
-    if record.get('status') == 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS':
+    if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS']:
+        isolation=record['status']=='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS'
         proof=record.get('parallel_corroboration',{})
         overlaps=proof.get('overlaps',[])
-        valid=(record.get('four_device_parallel_business') is True
+        valid=(record.get('four_device_disconnect_requested',False) is isolation
+               and record.get('four_device_parallel_business') is True
                and record.get('four_device_parallel_rf') is False
                and record.get('qemu_exit')==0
-               and proof.get('status')=='FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED'
-               and proof.get('controller_count')==4 and proof.get('round_trips')==80
+               and proof.get('status')==('FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED')
+               and proof.get('controller_count')==4 and proof.get('round_trips')==(48 if isolation else 80)
                and proof.get('ordinary_uid')==1000
                and proof.get('fixed_basic_channel_business_acceptance') is True
+               and proof.get('controlled_disconnect_isolation_acceptance',False) is isolation
                and all(proof.get(k) is False for k in ['fault_isolation_acceptance',
                     'dynamic_channel_acceptance','automatic_fault_recovery_acceptance',
                     'protected_ssap_acceptance','full_goal_complete'])
                and len(proof.get('pairs',[]))==2 and len(overlaps)==2
                and all(p.get('channel',{}).get('status')=='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
-                    and p['channel'].get('round_trips')==40
+                    and p['channel'].get('round_trips')==(24 if isolation else 40)
                     and len(p['channel'].get('proofs',[]))==2
-                    and all(len(v.get('legs',[]))==40 for v in p['channel']['proofs'])
-                    and len(p.get('connections',[]))==2 for p in proof['pairs'])
+                    and all(len(v.get('legs',[]))==(8 if isolation and n==pair else 40)
+                            for n,v in enumerate(p['channel']['proofs']))
+                    and len(p.get('connections',[]))==2 for pair,p in enumerate(proof['pairs']))
+               and (not isolation or (proof.get('controlled_disconnect_isolation_acceptance') is True
+                    and len(proof.get('disconnect_proofs',[]))==2
+                    and all(x.get('role_phase')==n and x.get('victim_pair')==n
+                        and x.get('survivor_pair')==1-n and len(x.get('before_sequences',[]))>=2
+                        and len(x.get('after_down_sequences',[]))>=4
+                        for n,x in enumerate(proof['disconnect_proofs']))))
                and all(x.get('role_phase')==n
                     and isinstance(x.get('overlap_wall_ns'),list)
                     and len(x['overlap_wall_ns'])==2
@@ -1434,6 +1450,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs='+',required=True)
+            cmd.add_argument('--four-device-disconnect',action='store_true',help='dedicated four-real-device controlled pair Disconnect/Down while other pair continues actual replies; alternates victims, no fault/recovery claim')
             cmd.add_argument('--four-device-business',action='store_true',help='four real controllers, two physical pairs, two connection roles, 80 ordinary app round trips; positive fixed-channel slice only')
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')

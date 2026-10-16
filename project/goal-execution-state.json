@@ -1072,14 +1072,14 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "four-controller-business-and-inflight-composition",
-      "production_behavior": "First real four-controller fixed-channel two-pair slice reuses Runtime/Session/socket;80 actual peer replies with overlapping USB business. No new Engine or relaxed CCC.",
+      "id": "four-controller-controlled-disconnect",
+      "production_behavior": "Test existing same-session ordinary socket delivery during the other physical pair Disconnect/Down;alternate victim pairs without pausing apps or refreshing original deadlines. No production Engine change.",
       "exit": [
-        "d01aa82 compiled/guest/Host:4Ready,2pairs x2roles x20=80actual replies; raw overlaps;supervisor/QEMU0,zero capture loss,taint0",
-        "six corrupted real-evidence controls rejected;87 offline and strictdocs separate;no new formal proof",
-        "four warm starts each timed out-110 then one warm recovery succeeded; observations retained, no general natural recovery qualification"
+        "Retain original d01aa82 positive80 qualification under exact source identities",
+        "New gate:2roles x(4victim+20survivor)=48 actual peer replies;each survivor >=2before actual Disconnect submit and >=4after both Down",
+        "Offline/pipes/capture negative controls separate from real VM;new real evidence pending; all original scopes remain open"
       ],
-      "next": "One pair disconnect/Down while other pair keeps actual peer-checked business, then four-device long/budget/fairness and dynamic channels. Stateful submit-revoke-Down-original-deadline/debugVM and minimum authenticated security+authorization parallel; original S0-S6 remains incomplete."
+      "next": "After controlled Disconnect slice, four-device long/budget/fairness and dynamic channels; actual transport fault isolation/natural RCA/recovery remain open. Stateful submit-revoke-Down-original-deadline and debugVM parallel."
     }
   },
   "agent_workstream": {
@@ -1203,7 +1203,7 @@
     "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
     "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
     "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only",
-    "state": "FIRST_POSITIVE_REAL_SCOPED_PASS_REMAINING_OPEN",
+    "state": "CONTROLLED_DISCONNECT_GATE_IMPLEMENTED_REAL_PENDING",
     "tool": "tools/ws73_parallel_data.py via ws73_target.py --four-device-business",
     "invariants": [
       "four distinct Ready registrations and unchanged daemon identity",
@@ -1213,7 +1213,7 @@
     ],
     "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification",
     "report": "docs/evidence/four-device-business-20261016.json",
-    "next": "Actual one-pair Disconnect/Down overlaps surviving pair peer-checked socket replies; then long/budget/fairness/dynamic channels. No wholeWP07 close.",
+    "next": "Alternate victim pairs:2phases,48 actual replies,>=2 full surviving replies before other Disconnect and>=4after both Down;no app pauses or refreshed protocol deadline",
     "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json"
   },
   "issue_sync_receipts_history": [

@@ -3,8 +3,8 @@
 """Four real controllers, two live physical pairs and actual app replies.
 
 Reuses connection/socket/USB proofs. Barriers coordinate test workers, never
-fabricate controller events or data. Positive fixed-channel slice only; no
-fault-isolation, dynamic-channel, protected SSAP or natural-recovery claim.
+fabricate controller events or data. Positive fixed-channel and controlled pair-Disconnect slices only;
+no transport-fault, dynamic-channel, protected SSAP or natural-recovery claim.
 """
 import argparse
 import json
@@ -20,6 +20,7 @@ from ws73_north_star import Run, daemon_identity, file_record, ordinary_identity
 from ws73_parallel import PairRun, EventReader, abort_workers, policy_expectation
 
 SCOPE = 'four real WS73 two-pair connected business'
+ISOLATION_SCOPE = 'four real WS73 controlled pair disconnect with surviving business'
 PENDING = 'PARALLEL_BUSINESS_EVIDENCE_PENDING'
 SUCCESS = 'CONNECTED_PAIR_BUSINESS_EVIDENCE_PENDING'
 SEQUENCE = [('ready', 0), *[(kind, n) for n in range(2)
@@ -29,10 +30,30 @@ from ws73_discovery_policy_capture import checked_expectation, expected_policy, 
 BARRIER_SECONDS = 45  # bounded test synchronization, not a refreshed protocol deadline
 
 
+def stage_specs(isolation):
+    stages=[('ready',0,(0,1))]
+    for n in range(2):
+        stages.extend([('linked',n,(0,1)),('business-ready',n,(0,1))])
+        stages.extend([('business-done',n,(n,)),('business-done',n,(1-n,))]
+                      if isolation else [('business-done',n,(0,1))])
+        stages.append(('down',n,(0,1)))
+    return stages
+
+
+def rounds_for(isolation,pair,phase):
+    return 4 if isolation and pair==phase else 20
+
+
 class BusinessPair(PairRun):
     SCOPE = SCOPE
     SUCCESS = SUCCESS
     barrier_timeout = BARRIER_SECONDS
+
+    def __init__(self,args):
+        self.isolation=bool(getattr(args,'disconnect_isolation',False))
+        if self.isolation:self.SCOPE=ISOLATION_SCOPE
+        super().__init__(args)
+        self.data['disconnect_isolation']=self.isolation
 
     # Share bounded pipe coordination and cleanup, not the RF-only start/match hooks.
     def ctl(self, identity, *words):
@@ -45,6 +66,7 @@ class BusinessPair(PairRun):
         self.barrier(kind, len(self.data['connection_control']['phases'])-1)
 
     def channel_barrier(self, row):
+        row['rounds']=rounds_for(self.isolation,self.args.pair,row['phase'])
         self.barrier('business-ready', row['phase'])
 
     def execute(self):
@@ -116,7 +138,8 @@ def run_parallel(args):
     if len(args.ports)!=4 or len(set(args.ports))!=4:raise ValueError('four distinct guest USB ports required')
     args.slctl=args.slctl.resolve()
     output=args.output.resolve();output.mkdir(parents=True,exist_ok=False,mode=0o700)
-    record=dict(format_version=1,scope=SCOPE,status='RUNNING',application_identity=ordinary_identity(),
+    isolation=bool(getattr(args,'disconnect_isolation',False))
+    record=dict(format_version=1,scope=ISOLATION_SCOPE if isolation else SCOPE,disconnect_isolation=isolation,status='RUNNING',application_identity=ordinary_identity(),
                 workers=[],stages=[],policy_expectation=policy_expectation(args.policy_expectation),
                 barrier_budget_seconds=BARRIER_SECONDS,physical_unplug_acceptance=False,
                 automatic_fault_recovery_acceptance=False,fault_isolation_acceptance=False)
@@ -127,16 +150,25 @@ def run_parallel(args):
         for pair in range(2):
             argv=[sys.executable,str(Path(__file__).resolve()),'pair','--pair',str(pair),'--ports',
                   *args.ports[pair*2:pair*2+2],'--slctl',str(args.slctl),'--slkd-pid',str(args.slkd_pid),
-                  '--output',str(output/f'pair-{pair}'),'--policy-expectation',str(args.policy_expectation)]
+                  '--output',str(output/f'pair-{pair}'),*(['--disconnect-isolation'] if isolation else []),
+                  '--policy-expectation',str(args.policy_expectation)]
             row=dict(args=argv,start_wall_ns=time.time_ns(),stdout='',stderr='');record['workers'].append(row)
             p=subprocess.Popen(argv,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             processes.append(p);row['pid']=p.pid;save()
         reader=EventReader(processes,record['workers'],timeout_seconds=BARRIER_SECONDS)
-        for kind,number in SEQUENCE:
-            waits=reader.waits(processes,kind,number)
+        held_down={}
+        for kind,number,participants in stage_specs(isolation):
+            waits=[held_down.pop((number,pair)) if (kind=='down' and (number,pair) in held_down)
+                   else reader.wait_one(processes,pair,kind,number) for pair in participants]
             stage=dict(phase=kind,round=number,waits=waits,release_wall_ns=time.time_ns());record['stages'].append(stage);save()
-            for p in processes:p.stdin.write(f'parallel-{kind}-{number}\n'.encode());p.stdin.flush()
-            print(f'WS73_PARALLEL_BUSINESS_STAGE: {kind} role_phase={number}',flush=True)
+            for pair in participants:
+                p=processes[pair];p.stdin.write(f'parallel-{kind}-{number}\n'.encode());p.stdin.flush()
+            print(f'WS73_PARALLEL_BUSINESS_STAGE: {kind} role_phase={number} pairs={participants}',flush=True)
+            if isolation and kind=='business-done' and participants==(number,):
+                # Let only this pair issue actual Disconnect. Hold its Down ack
+                # until the other pair finishes real business and its own Down.
+                held_down[number,number]=reader.wait_one(processes,number,'down',number)
+        if held_down:raise CaptureError('unreleased Down barrier')
         deadline=time.monotonic()+45
         while any(p.poll() is None for p in processes):
             if time.monotonic()>deadline:raise TimeoutError('bounded business final cleanup/reap')
@@ -166,7 +198,10 @@ def run_parallel(args):
 
 
 def verify_records(record):
-    if (record.get('format_version')!=1 or record.get('scope')!=SCOPE or record.get('status')!=PENDING
+    isolation=record.get('disconnect_isolation',False)
+    if type(isolation) is not bool:raise CaptureError('explicit boolean disconnect scope required')
+    scope=ISOLATION_SCOPE if isolation else SCOPE
+    if (record.get('format_version')!=1 or record.get('scope')!=scope or record.get('status')!=PENDING
             or record.get('barrier_budget_seconds')!=BARRIER_SECONDS or len(record.get('workers',[]))!=2
             or record.get('failure_shutdown') or any(record.get(k) is not False for k in
                 ['physical_unplug_acceptance','automatic_fault_recovery_acceptance','fault_isolation_acceptance'])):
@@ -176,11 +211,26 @@ def verify_records(record):
     if app['uids']!=[1000]*4 or any(int(app[k],16) for k in ['cap_eff','cap_prm','cap_amb']):
         raise CaptureError('actual ordinary coordinator required')
     owners=[];daemon=None;bus=None;pids=set()
-    if [(s['phase'],s['round']) for s in record['stages']]!=SEQUENCE:
+    specs=stage_specs(isolation)
+    if [(s['phase'],s['round']) for s in record['stages']]!=[(kind,n) for kind,n,_ in specs]:
         raise CaptureError('all ordered live connection/business barriers required')
+    observations={}
+    for stage,(_,_,participants) in zip(record['stages'],specs):
+        if len(stage['waits'])!=len(participants):raise CaptureError('exact participating live pipes required')
+        for pair,seen in zip(participants,stage['waits']):
+            event=seen['event'];key=(pair,event['phase'],event['round'])
+            if event['pair']!=pair or (event['phase'],event['round'])!=(stage['phase'],stage['round']) or key in observations:raise CaptureError('unique original live barrier required')
+            observations[key]=(stage,seen)
+    if isolation:
+        for n in range(2):
+            victim_done=observations[n,'business-done',n][0]
+            survivor_done=observations[1-n,'business-done',n][0]
+            down=observations[n,'down',n][1]
+            if not victim_done['release_wall_ns']<=down['observed_wall_ns']<=survivor_done['release_wall_ns']:
+                raise CaptureError('victim actual Down must precede survivor disconnect admission')
     for pair,w in enumerate(record['workers']):
         r=w['run']
-        if w['exit'] or r['status']!=SUCCESS or r['scope']!=SCOPE or r['pair']!=pair or r['application_identity']!=app:
+        if w['exit'] or r['status']!=SUCCESS or r['scope']!=scope or r.get('disconnect_isolation',False)!=isolation or r['pair']!=pair or r['application_identity']!=app:
             raise CaptureError('actual successful ordinary pair workers required')
         if type(w['pid']) is not int or w['pid']<=0 or w['pid'] in pids:raise CaptureError('distinct worker PID required')
         pids.add(w['pid'])
@@ -192,17 +242,18 @@ def verify_records(record):
         daemon,bus=r['daemon_before'],r['bus_before']
         argv=w['args'];expected=['pair','--pair',str(pair),'--ports',*[v['port'] for v in r['initial']],
                     '--slctl',r['slctl']['path'],'--slkd-pid',str(daemon['pid'])]
+        if argv.count('--disconnect-isolation')!=int(isolation):raise CaptureError('explicit worker disconnect selector required')
         if argv[2:12]!=expected or argv[-2:]!=['--policy-expectation',record['policy_expectation']['file']['path']]:
             raise CaptureError('original CLI/port/daemon worker affinity required')
         if r['policy_expectation']!=record['policy_expectation']:raise CaptureError('same frozen policy required')
         if (len(r['cleanup'])!=2 or any(v['status']!='STOP_CONFIRMED' for v in r['cleanup'])
                 or len(r['connection_cleanup'])!=2 or any(v['status']!='NO_CURRENT_QUERIED_LINKS' for v in r['connection_cleanup'])):
             raise CaptureError('all four actual owned cleanups required')
-        if len(r.get('channel_socket',[]))!=2 or any(x['rounds']!=20 or x['message_bytes']!=61 or x.get('close_prefix') or x.get('burst') or x.get('boundary_check') for x in r['channel_socket']):
+        if len(r.get('channel_socket',[]))!=2 or any(x['rounds']!=rounds_for(isolation,pair,n) or x['message_bytes']!=61 or x.get('close_prefix') or x.get('burst') or x.get('boundary_check') for n,x in enumerate(r['channel_socket'])):
             raise CaptureError('exact two-role20-message61-byte slice required')
         if [(s['phase'],s['round']) for s in r['barriers']]!=SEQUENCE:raise CaptureError('worker barrier history mismatch')
         for index,entry in enumerate(r['barriers']):
-            stage=record['stages'][index];seen=stage['waits'][pair];live=seen['event']
+            stage,seen=observations[pair,entry['phase'],entry['round']];live=seen['event']
             if entry['phase']=='ready' and entry.get('owners')!=r['initial']:
                 raise CaptureError('Ready barrier must name its original pair')
             if (live!={k:v for k,v in entry.items() if k!='ack_wall_ns'} or live['pair']!=pair
@@ -237,10 +288,11 @@ def corroborate(record,capture):
     from ws73_channel_socket import corroborate as channel_proof,application_frames
     from ws73_rf_rounds import corroborate_stops
     owners=verify_records(record);pairs=[];nonces=set();sequences=set()
+    isolation=record.get('disconnect_isolation',False)
     for w in record['workers']:
         r=w['run'];subset=pair_capture(capture,r['initial'])
         conn=connection_proof(r,subset);objects=object_proof(r,subset,conn);channel=channel_proof(r,subset)
-        if channel['round_trips']!=40:raise CaptureError('forty actual peer replies per pair required')
+        if channel['round_trips']!=(24 if isolation else 40):raise CaptureError('all actual peer replies per pair required')
         corroborate_stops(r,subset)
         for row in r['channel_socket']:
             sent,_=application_frames(row)
@@ -271,9 +323,9 @@ def corroborate(record,capture):
     overlaps=[]
     for n in range(2):
         windows=[];lifetimes=[]
-        for pair in pairs:
+        for number,pair in enumerate(pairs):
             legs=pair['channel']['proofs'][n]['legs']
-            if len(legs)!=40:raise CaptureError('twenty bidirectional business message pairs required')
+            if len(legs)!=2*rounds_for(isolation,number,n):raise CaptureError('exact bidirectional business message pairs required')
             window=[min(v['tx']['wall_ns'] for v in legs),max(v['rx']['wall_ns'] for v in legs)]
             up=pair['connections'][n]['steps'][0]['outcomes'];down=pair['connections'][n]['steps'][1]['outcomes']
             if max(v['wall_ns'] for v in up)>window[0] or min(v['wall_ns'] for v in down)<window[1]:
@@ -282,11 +334,45 @@ def corroborate(record,capture):
         overlap=overlap_window(windows)
         if overlap[0]<max(v[0] for v in lifetimes) or overlap[1]>min(v[1] for v in lifetimes):raise CaptureError('both physical connections must coexist during real business')
         overlaps.append(dict(role_phase=n,business_windows=windows,overlap_wall_ns=overlap))
-    return dict(status='FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
-                controller_count=len(owners),round_trips=80,ordinary_uid=1000,
+    return dict(status='FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
+                **(dict(disconnect_proofs=disconnect_proofs(pairs),controlled_disconnect_isolation_acceptance=True) if isolation else {}),
+                controller_count=len(owners),round_trips=48 if isolation else 80,ordinary_uid=1000,
                 fixed_basic_channel_business_acceptance=True,fault_isolation_acceptance=False,
                 dynamic_channel_acceptance=False,automatic_fault_recovery_acceptance=False,
                 protected_ssap_acceptance=False,full_goal_complete=False)
+
+
+def disconnect_proofs(pairs):
+    """Check actual USB timing; a coordinated schedule alone never qualifies.
+
+    No pauses or reply synthesis. Both existing application processes span
+    the other pair's Down. Full replies must occur on both sides of it.
+    """
+    if len(pairs)!=2:raise CaptureError('two original pair proofs required')
+    proofs=[]
+    for n in range(2):
+        victim=pairs[n]['connections'][n]['steps'][1]
+        submitted=victim['command']['wall_ns']
+        events=victim['outcomes']
+        if len(events)!=2 or len({(e['bus'],e['device']) for e in events})!=2:
+            raise CaptureError('both actual victim Down endpoints required')
+        down=max(e['wall_ns'] for e in events)
+        if submitted>=min(e['wall_ns'] for e in events):raise CaptureError('actual Disconnect must precede both Down')
+        legs=pairs[1-n]['channel']['proofs'][n]['legs']
+        if len(legs)!=40:raise CaptureError('twenty actual surviving replies required')
+        windows=[]
+        for seq in range(20):
+            parts=[v for v in legs if v['sequence']==seq]
+            if len(parts)!=2:raise CaptureError('request and reply USB legs per surviving sequence required')
+            windows.append([min(v['tx']['wall_ns'] for v in parts),max(v['rx']['wall_ns'] for v in parts)])
+        before=[i for i,w in enumerate(windows) if w[1]<submitted]
+        after=[i for i,w in enumerate(windows) if w[0]>down]
+        if len(before)<2 or len(after)<4:raise CaptureError('survivor requires >=2 full replies before Disconnect and >=4 after both Down')
+        proofs.append(dict(role_phase=n,victim_pair=n,survivor_pair=1-n,
+            disconnect=victim['command'],victim_down=events,before_sequences=before,
+            after_down_sequences=after,survivor_round_trip_windows=windows,
+            scope='controlled physical Disconnect/Down with continuous same-session app replies; not transport fault or natural recovery'))
+    return proofs
 
 
 def main():
@@ -294,6 +380,7 @@ def main():
     parser.add_argument('--ports',nargs='+',required=True);parser.add_argument('--slctl',type=Path,required=True)
     parser.add_argument('--slkd-pid',type=int,required=True);parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--policy-expectation',type=Path,required=True);parser.add_argument('--pair',type=int,choices=[0,1])
+    parser.add_argument('--disconnect-isolation',action='store_true',help='alternate which physical pair disconnects while the other continues20 real replies; not natural fault recovery')
     args=parser.parse_args()
     if args.mode=='run':
         if args.pair is not None:parser.error('pair selector internal only')

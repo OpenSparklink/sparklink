@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "status": "EXISTING_ISSUES_READBACK_AND_SCOPED_MATERIAL_INTEGRITY_PASS",
+  "report": "session-event-deadline-20261016.json",
+  "report_commit": "4d62b813a9bfb51fa89bec4832bc84a012ccccac",
+  "qualification_state_commit": "283b546d3c56f3c6d51921dfb56fd5d2d57dac5b",
+  "compiled_kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+  "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+  "goal_api_observed_status": "active",
+  "goal_objective_budget_scope_unchanged": true,
+  "scope": [
+    "Four existing issues comments read back exactly,original bodies unchanged,all OPEN",
+    "549 newly recorded private/public material identities locally checked;not all historical materials verified or hardware replay",
+    "Four registry andten exact report negatives reject stale identity,missing artifact,scope/failure upgrade,dup/duplexcount andidlecontrol errors",
+    "Metadata andstrict HTML115 valid;whole qualification INCOMPLETE,current treeNOT_REVALIDATED",
+    "No new protocol,formal or physical qualification beyond the separate exact report;full S0-S6/19WP/10FV/12DG retained"
+  ],
+  "checks": {
+    "new_materials": 549,
+    "registry_negative_controls": 4,
+    "report_negative_controls": 10,
+    "actual_evidence_negative_controls": 100,
+    "strict_html": "PASS",
+    "documentation_inventory": 115,
+    "overall": "INCOMPLETE"
+  },
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 4,
+      "title": "让每个控制器独立拥有协议状态与工作队列",
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6219011725",
+      "comment_id": 6219011725,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "e0d396614ce7c914842914ec64685dd62dc6bb58d411865986269529f1d50454"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 17,
+      "title": "补齐 WS73 TCID 数据通道、ACB 重组与发送 credit",
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6219013240",
+      "comment_id": 6219013240,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "e0d396614ce7c914842914ec64685dd62dc6bb58d411865986269529f1d50454"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "title": "建立厂商 Backend 回归矩阵、WS73 硬件 gates 与维护文档",
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6219014906",
+      "comment_id": 6219014906,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "e0d396614ce7c914842914ec64685dd62dc6bb58d411865986269529f1d50454"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "title": "跟踪：Linux 与用户态 SparkLink 全部 issues 的联合实施和验收",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6219016513",
+      "comment_id": 6219016513,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "e0d396614ce7c914842914ec64685dd62dc6bb58d411865986269529f1d50454"
+    }
+  ],
+  "ci_observations": [
+    {
+      "name": "Production codec bounded fuzz",
+      "run": 38925495087,
+      "head": "283b546d3c56f3c6d51921dfb56fd5d2d57dac5b",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38925495087"
+    },
+    {
+      "name": "Qualification integrity",
+      "run": 38925495240,
+      "head": "283b546d3c56f3c6d51921dfb56fd5d2d57dac5b",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38925495240"
+    },
+    {
+      "name": "CI",
+      "run": 38925495016,
+      "head": "283b546d3c56f3c6d51921dfb56fd5d2d57dac5b",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38925495016"
+    },
+    {
+      "name": "Documentation",
+      "run": 38925495130,
+      "head": "283b546d3c56f3c6d51921dfb56fd5d2d57dac5b",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38925495130"
+    },
+    {
+      "name": "Qualification integrity",
+      "run": 38925488164,
+      "head": "283b546d3c56f3c6d51921dfb56fd5d2d57dac5b",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38925488164"
+    },
+    {
+      "name": "Documentation",
+      "run": 38925488222,
+      "head": "283b546d3c56f3c6d51921dfb56fd5d2d57dac5b",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38925488222"
+    }
+  ],
+  "remaining": [
+    "ComprehensiveCI283 stillinprogress atread;no upgrading693CI to283 ormaintenancecommit",
+    "Naturalboot/re-enumeration/disappearance RCA,nonmanualrecovery,NOCPaccuracy/duplicate/late/reuse andcallbackdrain OPEN",
+    "KASAN/KCSAN/lockdep/LKMM orimplementationrefinement/fullperformance/fourdevice currentartifact not granted",
+    "Peer isolation scopedReady/generation/lease/realscan,not an independentbusinesspair"
+  ],
+  "materials": [
+    {
+      "path": ".dev/session-event-final-issue-receipts-v1.json",
+      "sha256": "448d6d39f07d3ede7c394166247e2e2cadd53f4ec0c10bee302e069679b71136",
+      "bytes": 2275,
+      "access": "private",
+      "scope": "Readback/integrity/offline maintenance,not new hardware result"
+    },
+    {
+      "path": ".dev/session-event-registry-local-v1.json",
+      "sha256": "212cc9c14874cf22818e18a2b9cd10ef2fb39b721c930c230a5dba91e81b264b",
+      "bytes": 1310,
+      "access": "private",
+      "scope": "Readback/integrity/offline maintenance,not new hardware result"
+    },
+    {
+      "path": ".dev/session-event-report-contract-v1.py",
+      "sha256": "7c66e9e60a391df326b169b88c537918656094dbede6aa423c8b37ca5ded3759",
+      "bytes": 3715,
+      "access": "private",
+      "scope": "Readback/integrity/offline maintenance,not new hardware result"
+    },
+    {
+      "path": ".dev/session-event-report-contract-v1.json",
+      "sha256": "6d5c03224c9945504acc1b78821a726f75a24c51255a346f4502133ae2599552",
+      "bytes": 1072,
+      "access": "private",
+      "scope": "Readback/integrity/offline maintenance,not new hardware result"
+    },
+    {
+      "path": ".dev/session-event-canonical-metadata-v1.json",
+      "sha256": "0231aefb01011d8c93b23b8f8ffff080e16cb98e9c594095f6cb12c01fb21341",
+      "bytes": 215666,
+      "access": "private",
+      "scope": "Readback/integrity/offline maintenance,not new hardware result"
+    },
+    {
+      "path": ".dev/session-event-canonical-docs-v1.log",
+      "sha256": "373ffd4c1266b2f9a773f34fa60857b144440ead15b57f4a1278fb5f4e93e1a2",
+      "bytes": 223279,
+      "access": "private",
+      "scope": "Readback/integrity/offline maintenance,not new hardware result"
+    },
+    {
+      "path": ".dev/session-event-ci-state-283-v1.json",
+      "sha256": "e1f4dc85b2a5df12fd489e32aefa52c4f555c64691bdeaf82e39ff6f880e3015",
+      "bytes": 97115,
+      "access": "private",
+      "scope": "Readback/integrity/offline maintenance,not new hardware result"
+    },
+    {
+      "path": ".dev/session-event-maintenance-doc-inventory-v1.log",
+      "sha256": "d671c3a28fd8ffb0446de4b27e7701baffbf8f13d086b5a6369aaa1919a8c175",
+      "bytes": 30,
+      "access": "private",
+      "scope": "Documentation stale-revision rejection andfresh strict build;not hardware"
+    },
+    {
+      "path": ".dev/session-event-maintenance-docs-v2.log",
+      "sha256": "7523a8d4bdc5d56c48e4ccec9ffdf2aff9bfaad1dfa753700495177b6239f315",
+      "bytes": 223279,
+      "access": "private",
+      "scope": "Documentation stale-revision rejection andfresh strict build;not hardware"
+    }
+  ],
+  "documentation_revision_guard": {
+    "initial_inventory_result": "FAIL_REJECTED_STALE_HTML_REVISION",
+    "failure_log": ".dev/session-event-maintenance-doc-inventory-v1.log",
+    "finding": "After signed283 commit the existing HTML still carried prior4d build revision;source revision guard rejected reuse. Original log retained.",
+    "fresh_strict_build": "PASS",
+    "fresh_build_head": "283b546d3c56f3c6d51921dfb56fd5d2d57dac5b",
+    "fresh_log": ".dev/session-event-maintenance-docs-v2.log",
+    "scope": "Documentation build revision only;no production or physical failure andnoassertion relaxation"
+  }
+}

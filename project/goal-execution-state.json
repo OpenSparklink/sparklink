@@ -1737,7 +1737,8 @@
       "formal_scope": "Actualproduction helpers:CBMC20step301 and32/64bit originaldeadline28each;negativecontrols,explicit sequential Linux dependencies;48Rust/actualC fixture offline,notformal",
       "original_matrix": ".dev/session-event-qualification-v1.json",
       "priming_failure": ".dev/session-event-qualification-v2.json",
-      "peer_isolation_scope": "Samegeneration/Ready/unchangedmanagementlease/scan startstop;notanotherindependentbusinesspair"
+      "peer_isolation_scope": "Samegeneration/Ready/unchangedmanagementlease/scan startstop;notanotherindependentbusinesspair",
+      "maintenance_receipt": "docs/evidence/session-event-maintenance-20261016.json"
     }
   },
   "slktest_migration": {

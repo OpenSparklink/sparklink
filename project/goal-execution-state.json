@@ -685,7 +685,7 @@
   "issue_sync_status": "ParallelBurst64:K17/U8 exact comment readback and OPEN;original full scopes unchanged",
   "issue_sync_receipt": "docs/evidence/four-device-burst-issues-20261016.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
-  "current_goal_turn_classification": "progress:signedd42 burst gate;actual64x2042byte peer replies/1152TXfragments/queuepressure/scopedpool observations sealed;10negativecontrols,100offline and strictdocs;no broadcredit/fairness proof",
+  "current_goal_turn_classification": "progress:actual CMTC pending/identifier0 production fix signedK d75/U033;clean-source bounded codec proof,oldcounterexample and80offline retained;isolated newkernel build live12826;dynamic/signaling/realVM still pending",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1079,6 +1079,10 @@
       "four-burst64-d42da67": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "cmtc-identifier-codec-d75f7bd": {
+        "level": "formal_bounded",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
@@ -1233,7 +1237,10 @@
     "burst_report": "docs/evidence/four-device-burst-20261016.json",
     "burst_issues_receipt": "docs/evidence/four-device-burst-issues-20261016.json",
     "kernel_change": "d75f7bdf17ab295d8b504f3a803d8a100f131646",
-    "dynamic_scope": "Connect/Disconnect and local-remoteTCID/per-channel auth/queue/socket still pending;do not relax existing fixed table first"
+    "dynamic_scope": "Connect/Disconnect and local-remoteTCID/per-channel auth/queue/socket still pending;do not relax existing fixed table first",
+    "identifier_report": "docs/evidence/cmtc-identifier-zero-20261016.json",
+    "kernel_build_session": 12826,
+    "kernel_build_record": ".dev/cmtc-id0-kernel-build-record.json"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",

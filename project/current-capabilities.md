@@ -29,6 +29,7 @@
 | 四设备d01aa82：两组两角色80次实际应用回复及USB业务重叠 | `real_device` | `PASS` |
 | 四设备d01/ff13：轮换受控断链，48次对端实际校验回复 | `real_device` | `PASS` |
 | 四设备d01/d42：64次2042字节往返、队列背压及预算观察 | `real_device` | `PASS` |
+| 生产CMTC编号codec：256值与16字节输入有界限定通过 | `formal_bounded` | `PASS` |
 
 保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `d42da67fc29f2958922e30f2ef370f21d10bb1bd`。
 

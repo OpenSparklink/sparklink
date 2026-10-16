@@ -200,3 +200,22 @@ class DynamicVerifier(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class SlktestDynamicArguments(unittest.TestCase):
+    def test_current_dynamic_argument_receipt_and_historical_verification_are_separate(self):
+        from ws73_channel_socket import check_arguments
+        run,_=fixture(long_bytes=2042,burst=True)
+        for row in run['dynamic_channels']:
+            for channel in row['channels']:
+                channel['application_tool']=dict(path='/bin/slktest',sha256='a'*64)
+                for app in channel['applications']:
+                    peer=app['role']=='peer';entry=channel['owners'][int(peer)]
+                    ports=channel['ports'][::-1] if peer else channel['ports']
+                    app['args']=check_arguments('/bin/slktest',entry,peer,channel['rounds'],channel['message_bytes'],
+                        'burst' if channel.get('burst') and not peer else 'regular',(*ports,channel['aid']),True)
+                gate.info(channel,channel['owners'])
+                from ws73_channel_socket import application_frames
+                application_frames(channel)
+                channel['applications'][0]['args'][0]='/bin/slctl'
+                with self.assertRaises(CaptureError):gate.info(channel,channel['owners'])

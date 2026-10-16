@@ -20,7 +20,7 @@ from ws73_firmware import HEADER, MAX_PAYLOAD, NAMES
 from ws73_native_build_check import elf_header, release_name
 from ws73_native_root_smoke import digest, save
 
-PROGRAMS = ('slkd', 'slctl', 'slkconfig', 'slkmon', 'slkdump')
+PROGRAMS = ('slkd', 'slctl', 'slktest', 'slkconfig', 'slkmon', 'slkdump')
 SOURCE_SCOPE = ('crates', 'data', 'Cargo.toml', 'Cargo.lock')
 
 
@@ -149,7 +149,7 @@ def stage(args):
                    DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/ws73-staging-no-session-bus.sock')
         queries = {}
         for name, arguments in [('slkd', ['--help']), ('slctl', ['--help']),
-                                ('slctl-version', ['--version'])]:
+                                ('slctl-version', ['--version']), ('slktest', ['--help']), ('slktest-version', ['--version'])]:
             binary = build / 'release' / name.split('-')[0]
             result = subprocess.run([str(binary), *arguments], env=env, capture_output=True, text=True)
             if result.returncode != 0:

@@ -139,7 +139,7 @@ def prepare(args):
         with (output/'build.log').open('w') as log:
             subprocess.run(['cargo','build','--offline','--locked','-p','libsparklink','--lib'],cwd=USERSPACE,
                            stdout=log,stderr=subprocess.STDOUT,check=True)
-            subprocess.run(['cargo','build','--offline','--locked','-p','slkd','-p','slctl','-p','slkconfig',
+            subprocess.run(['cargo','build','--offline','--locked','-p','slkd','-p','slctl','-p','slktest','-p','slkconfig',
                             '-p','slkmon','-p','slkdump','--bins','--examples'],cwd=USERSPACE,
                            stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror',
@@ -214,7 +214,7 @@ def prepare(args):
         subprocess.run(compile_queued, check=True)
         manifest['managed_queue_probe_compile'] = compile_queued
         programs['managed-queue-probe'] = queued_probe
-        programs.update({name:USERSPACE/'target/debug'/name for name in ['slkd','slctl','slkconfig','slkmon','slkdump']})
+        programs.update({name:USERSPACE/'target/debug'/name for name in ['slkd','slctl','slktest','slkconfig','slkmon','slkdump']})
         programs['bus-policy-probe'] = USERSPACE/'target/debug/examples/bus_policy_probe'
         programs['ws73-security-agent-probe'] = USERSPACE/'target/debug/examples/native_security_agent_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
@@ -1110,6 +1110,9 @@ def _run(args):
                     if (expectation['data'] != package['policy_expectation']['data']
                             or expectation['file']['sha256'] != package['policy_expectation']['guest_sha256']):
                         raise ValueError('actual parallel policy expectation differs from frozen preparation')
+                    if business:
+                        from ws73_channel_socket import validate_application_tools
+                        validate_application_tools(control,args.prepared/'root',package['guest_files'])
                     m['parallel_corroboration']=corroborate_parallel(control,capture)
                     m['parallel_control']=file_record(control_path)
                 if daemon_remove:
@@ -1149,6 +1152,9 @@ def _run(args):
                     if any(row.get('message_bytes',61)!=channel_bytes or row.get('boundary_check',False)!=channel_boundaries for row in control['channel_socket']):raise ValueError('socket message size or boundary request differs from actual gate')
                     if any(row['rounds']!=channel_rounds for row in control['channel_socket']):raise ValueError('socket round count differs from explicit request')
                     if not all(row.get('channel_info_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires original capability receipts')
+                    from ws73_channel_socket import validate_application_tools
+                    binary=validate_application_tools(control,args.prepared/'root',package['guest_files'])
+                    if any(row.get('application_tool')!=binary for row in control['channel_socket']):raise ValueError('channel applications must use same sealed slktest')
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
                     if not all(row.get('tx_status_required') is True for row in control['channel_socket']):raise ValueError('current gate requires actual TX-budget snapshots')
                     m['ordinary_channel_tx_status_acceptance']=True

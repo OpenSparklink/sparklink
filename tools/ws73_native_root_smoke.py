@@ -27,7 +27,7 @@ def save(path, record):
     path.write_text(json.dumps(record, indent=2) + '\n')
 
 
-def verify_console(console, release, root_uuid, exit_code, empty_registry=False):
+def verify_console(console, release, root_uuid, exit_code, empty_registry=False, application_tests=None):
     """Require boot/root/module evidence together; poweroff alone can be failure."""
     text = re.sub(r'\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)', '', console)
     text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text).replace('\r', '')
@@ -56,6 +56,16 @@ def verify_console(console, release, root_uuid, exit_code, empty_registry=False)
         if current <= position:
             raise ValueError('out-of-order marker: ' + marker)
         position = current
+    if application_tests is not None:
+        position=text.index('NATIVE_MODULE_TAINT_AFTER: 0')
+        for marker in ['SLKTEST_VM_UID: 1000','SLKTEST_VM_ENTRY_PASS','SLKTEST_VM_TESTS_BEGIN','SLKTEST_VM_TESTS_END']:
+            if text.splitlines().count(marker)!=1:raise ValueError('missing/duplicate slktest VM marker:'+marker)
+            current=text.index(marker)
+            if current<=position or current>=text.index('NATIVE_MODULE_KERNEL_LOG_BEGIN'):raise ValueError('out-of-order slktest VM marker:'+marker)
+            position=current
+        section=text.split('SLKTEST_VM_TESTS_BEGIN\n',1)[1].split('\nSLKTEST_VM_TESTS_END',1)[0]
+        if section.count(f'test result: ok. {application_tests} passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;')!=1:
+            raise ValueError('full actual slktest test binary/zero-skip verdict required')
     kernel_log = text.split('NATIVE_MODULE_KERNEL_LOG_BEGIN\n', 1)[1].split(
         '\nNATIVE_MODULE_KERNEL_LOG_END', 1)[0]
     if not re.search(r'\[\s*0\.000000\] Linux version ' + re.escape(release) + r'\s', kernel_log):
@@ -95,6 +105,11 @@ def run(args):
     if getattr(args,'empty_registry_probe',None):
         paths['empty-registry-probe']=Path(args.empty_registry_probe).resolve(strict=True)
         elf_header(paths['empty-registry-probe'],{2,3})
+    if bool(getattr(args,'slktest',None))!=bool(getattr(args,'slktest_tests',None)):
+        raise ValueError('slktest and its actual library test binary must be supplied together')
+    if getattr(args,'slktest',None):
+        for name,option in [('slktest','slktest'),('slktest-tests','slktest_tests')]:
+            paths[name]=Path(getattr(args,option)).resolve(strict=True);elf_header(paths[name],{2,3})
     output = Path(args.output).resolve()
     if ',' in str(output):
         raise ValueError('QEMU drive pathname cannot contain commas')
@@ -134,16 +149,29 @@ def run(args):
                 'source': str(source), 'path': str(destination), 'sha256': before}
         helper = Path(__file__).with_name('ws73_native_module_init.sh')
         root = output / 'root'
-        for directory in ('bin', 'sbin', 'etc', 'usr', 'proc', 'sys', 'dev', 'run'):
+        for directory in ('bin', 'sbin', 'etc', 'usr', 'proc', 'sys', 'dev', 'run', 'tmp'):
             (root / directory).mkdir(parents=True)
         shutil.copy2(paths['busybox'], root / 'bin/busybox')
-        for applet in ('sh', 'cat', 'dmesg', 'insmod', 'rmmod', 'mount', 'sync', 'uname', 'poweroff'):
+        for applet in ('sh', 'cat', 'dmesg', 'insmod', 'rmmod', 'mount', 'sync', 'uname', 'poweroff', 'su', 'id', 'grep'):
             (root / 'bin' / applet).symlink_to('busybox')
         if 'empty-registry-probe' in paths:
             from ws73_target import copy_elf
             copy_elf(paths['empty-registry-probe'],root/'bin/sparklink-no-ghost-probe',root)
             (root/'bin/sparklink-no-ghost-probe').chmod(0o755)
             record['empty_registry_probe']=True
+        if 'slktest' in paths:
+            from ws73_target import copy_elf
+            for name in ['slktest','slktest-tests']:
+                copy_elf(paths[name],root/'bin'/name,root);(root/'bin'/name).chmod(0o755)
+            listing=subprocess.check_output([str(paths['slktest-tests']),'--list'],text=True)
+            count=sum(line.endswith(': test') for line in listing.splitlines())
+            if count<1:raise ValueError('slktest test binary has no actual tests')
+            record['application_tests']=count
+            record['application_test_listing_sha256']=hashlib.sha256(listing.encode()).hexdigest()
+            (root/'expected-slktest-tests').write_text(str(count)+'\n')
+            (root/'tmp').chmod(0o1777)
+            (root/'etc/passwd').write_text('root:x:0:0:root:/root:/bin/sh\nws73:x:1000:1000:WS73:/tmp:/bin/sh\n')
+            (root/'etc/group').write_text('root:x:0:\nws73:x:1000:\n')
         helper_before = digest(helper)
         shutil.copy2(helper, root / 'sbin/init')
         (root / 'sbin/init').chmod(0o755)
@@ -185,7 +213,7 @@ def run(args):
             if digest(info['path']) != info['sha256']:
                 raise ValueError('snapshotted input changed: ' + name)
         verify_console((output / 'console.log').read_text(errors='replace'), release, root_uuid,
-                       process.returncode, bool(getattr(args, 'empty_registry_probe', None)))
+                       process.returncode, bool(getattr(args, 'empty_registry_probe', None)),record.get('application_tests'))
         record['status'] = 'PASS_ISOLATED_NATIVE_ROOT_SMOKE'
     except (Exception, KeyboardInterrupt) as error:
         record.update(status='FAIL', error=str(error))
@@ -206,6 +234,8 @@ def main():
         parser.add_argument('--' + option, required=True)
     parser.add_argument('--module-name',choices=('sparklink_ws73_usb','sparklink_standard_usb'),default='sparklink_ws73_usb')
     parser.add_argument('--empty-registry-probe',help='explicit guest-only no phantom Runtime/selector test binary')
+    parser.add_argument('--slktest',help='optional actual application test tool;noUSB CLI/uid1000 regression')
+    parser.add_argument('--slktest-tests',help='matching actual slktest library test executable;allcases run inVM')
     parser.add_argument('--timeout', type=int, default=150)
     args = parser.parse_args()
     if not 30 <= args.timeout <= 600:

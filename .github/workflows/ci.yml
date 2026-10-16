@@ -86,6 +86,7 @@ jobs:
             target/release/slkd
             target/release/slkconfig
             target/release/slctl
+            target/release/slktest
             target/release/slkmon
             target/release/slkdump
             target/release/liblibsparklink.so

@@ -68,6 +68,15 @@ for round in 1 2; do
     echo "NATIVE_MODULE_UNLOAD: $round"
 done
 echo "NATIVE_MODULE_TAINT_AFTER: $(cat /proc/sys/kernel/tainted)"
+if [ -x /bin/slktest ]; then
+    /bin/su ws73 -s /bin/sh -c 'echo "SLKTEST_VM_UID: $(id -u)"; /bin/slktest channel --help > /tmp/slktest-help && grep -q duplex /tmp/slktest-help' || fail 'actual slktest entry'
+    if /bin/su ws73 -s /bin/sh -c '/bin/slktest --adapter /org/sparklink/slk0_g7 channel rate /link --interval-us 1 --report /tmp/slktest-invalid.json' > /tmp/slktest-invalid.log 2>&1; then fail 'slktest invalid interval accepted'; fi
+    grep -q 'absolute interval' /tmp/slktest-invalid.log || fail 'slktest parameter error before bus'
+    echo SLKTEST_VM_ENTRY_PASS
+    echo SLKTEST_VM_TESTS_BEGIN
+    /bin/su ws73 -s /bin/sh -c '/bin/slktest-tests --test-threads=1' || fail 'actual slktest local application regression'
+    echo SLKTEST_VM_TESTS_END
+fi
 echo NATIVE_MODULE_KERNEL_LOG_BEGIN
 dmesg
 echo NATIVE_MODULE_KERNEL_LOG_END

@@ -10,8 +10,10 @@ override_dh_auto_install:
 	install -Dm755 target/release/slkd        debian/sparklink/usr/sbin/slkd
 	install -Dm755 target/release/slkconfig    debian/sparklink/usr/bin/slkconfig
 	install -Dm755 target/release/slctl        debian/sparklink/usr/bin/slctl
+	install -Dm755 target/release/slktest        debian/sparklink/usr/bin/slktest
 	install -Dm755 target/release/slkmon       debian/sparklink/usr/bin/slkmon
 	install -Dm755 target/release/slkdump      debian/sparklink/usr/bin/slkdump
+	install -Dm644 data/man/man1/slktest.1 debian/sparklink/usr/share/man/man1/slktest.1
 	# Shared library
 	install -Dm755 target/release/libsparklink.so debian/libsparklink0/usr/lib/$(DEB_HOST_MULTIARCH)/libsparklink.so.0.1.0
 	ln -sf libsparklink.so.0.1.0 debian/libsparklink0/usr/lib/$(DEB_HOST_MULTIARCH)/libsparklink.so.0

@@ -420,3 +420,40 @@ class BenchmarkApplicationReports(unittest.TestCase):
             if kind=='late-row':row['late']=True
             if kind=='late-total':source['late']=1
             with self.subTest(kind=kind),self.assertRaises(CaptureError):benchmark_application_reports(source,peer)
+
+
+class SlktestEntryMigration(unittest.TestCase):
+    def test_one_current_argument_builder_preserves_role_route_and_exercise(self):
+        from ws73_channel_socket import check_arguments
+        entry=dict(owner=dict(path='/adapter'),object=dict(path='/adapter/connection'))
+        args=check_arguments('/bin/slktest',entry,False,16,2042,'burst',(24576,24577,29441),True)
+        self.assertEqual(args,['/bin/slktest','--adapter','/adapter','channel','ping','/adapter/connection','--check','--count','16','--bytes','2042','--exercise','burst','--source-port','24576','--destination-port','24577','--aid','29441','--hold'])
+        self.assertEqual(check_arguments('/bin/slktest',entry,True,4,61)[3:5],['channel','peer'])
+
+    def test_metadata_cannot_substitute_management_binary_missing_or_mixed_artifacts(self):
+        from ws73_channel_socket import validate_application_tools
+        good=dict(path='/usr/libexec/opensparklink/native-lab/0123456789ab/slktest',sha256='a'*64)
+        row=dict(channel_socket=[dict(application_tool=good)])
+        self.assertEqual(validate_application_tools(row),good)
+        for bad in [dict(channel_socket=[{}]),dict(channel_socket=[dict(application_tool=dict(good,path='/bin/slctl'))]),
+                    dict(channel_socket=[dict(application_tool=good),dict(application_tool=dict(good,sha256='b'*64))])]:
+            with self.assertRaises(CaptureError):validate_application_tools(bad)
+
+
+class CurrentApplicationArguments(unittest.TestCase):
+    def test_new_tool_receipts_require_exact_current_argv(self):
+        from ws73_channel_socket import check_arguments
+        row=fixture()
+        row['application_tool']=dict(path='/bin/slktest',sha256='a'*64)
+        row['owners']=[dict(owner=dict(path='/org/sparklink/slk0_g1'),object=dict(path='/link0')),dict(owner=dict(path='/org/sparklink/slk1_g2'),object=dict(path='/link1'))]
+        for app in row['applications']:
+            peer=app['role']=='peer';entry=row['owners'][int(peer)]
+            app['args']=check_arguments('/bin/slktest',entry,peer,4,61)
+        application_frames(row)
+        for kind in ('oldtool','count','direction','missing'):
+            bad=copy.deepcopy(row);args=bad['applications'][0]['args']
+            if kind=='oldtool':args[0]='/bin/slctl'
+            if kind=='count':args[args.index('--count')+1]='5'
+            if kind=='direction':args[4]='peer'
+            if kind=='missing':bad['applications'][0].pop('args')
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(bad)

@@ -104,7 +104,7 @@ for n in $(seq 1 1800); do
  sleep 0.1
 done
 [ -n "$connection" ] || fail 'real connection object'
-/bin/su ws73 -s /bin/sh -c "/bin/slctl --adapter $adapter channel-peer $connection 1" > /evidence/channel.txt 2>&1 & binding=$!
+/bin/su ws73 -s /bin/sh -c "/bin/slktest --adapter $adapter channel peer $connection --check --count 1" > /evidence/channel.txt 2>&1 & binding=$!
 for n in $(seq 1 3000); do [ -f /evidence/stop ] && break; sleep 0.1; done
 /bin/slctl --adapter "$adapter" connections > /evidence/connections.txt 2>&1
 /bin/slctl --adapter "$other" show > /evidence/peer-after.txt 2>&1 || fail 'peer still Ready'

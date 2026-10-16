@@ -8,6 +8,55 @@ import time
 from ws73_capture import CaptureError, reassemble_acb
 
 
+def test_program(run):
+    from ws73_north_star import file_record
+    program=Path(run.args.slctl).with_name('slktest').resolve(strict=True)
+    if program.name!='slktest':raise CaptureError('actual sibling slktest required')
+    record=file_record(program)
+    previous=run.data.get('slktest')
+    if previous is not None and previous!=record:raise CaptureError('slktest changed during gate')
+    run.data['slktest']=record
+    return record
+
+
+def check_arguments(binary, entry, peer, rounds, message_bytes, exercise='regular', route=None, hold=False):
+    args=[str(binary),'--adapter',entry['owner']['path'],'channel','peer' if peer else 'ping',
+          entry['object']['path'],'--check','--count',str(rounds),'--bytes',str(message_bytes)]
+    if exercise!='regular':args+=['--exercise',exercise]
+    if route is not None:args+=['--source-port',str(route[0]),'--destination-port',str(route[1]),'--aid',str(route[2])]
+    if hold:args+=['--hold']
+    return args
+
+
+def validate_application_binary(binary, root=None, guest_files=None):
+    import hashlib
+    if not isinstance(binary,dict) or not re.fullmatch(r'(?:/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}|/bin)/slktest',binary.get('path','')) or not re.fullmatch(r'[0-9a-f]{64}',binary.get('sha256','')):
+        raise CaptureError('exact versioned slktest artifact identity required')
+    if root is not None:
+        expected=Path(root)/binary['path'].lstrip('/')
+        matches=[v for v in guest_files if Path(v['path'])==expected]
+        if len(matches)!=1 or matches[0]['sha256']!=binary['sha256'] or hashlib.sha256(expected.read_bytes()).hexdigest()!=binary['sha256']:
+            raise CaptureError('slktest differs from sealed VM artifact')
+
+
+def validate_application_tools(run, root=None, guest_files=None):
+    used=[]
+    def visit(value):
+        if isinstance(value,dict):
+            for key,item in value.items():
+                if key=='application_tool':used.append(item)
+                if key=='channel_socket' and isinstance(item,list):
+                    if any('application_tool' not in row for row in item):raise CaptureError('current channel gate requires slktest identity')
+                visit(item)
+        elif isinstance(value,list):
+            for item in value:visit(item)
+    visit(run)
+    if not used:raise CaptureError('actual slktest application evidence required')
+    for item in used:validate_application_binary(item,root,guest_files)
+    if any(item!=used[0] for item in used):raise CaptureError('mixed application test binaries in one VM run')
+    return used[0]
+
+
 def credentials(pid):
     fields = dict(line.split(':', 1) for line in Path(f'/proc/{pid}/status').read_text().splitlines() if ':' in line)
     value = dict(uids=list(map(int, fields['Uid'].split())),
@@ -21,6 +70,7 @@ def execute(run, phase):
     row = dict(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
                boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+    row['application_tool']=test_program(run)
     run.data.setdefault('channel_socket', []).append(row); run.save()
     processes=[];files=ExitStack()
     try:
@@ -34,12 +84,8 @@ def execute(run, phase):
             run.channel_barrier(row)
         # Both binds must occur during the same live connection. Never synthesize RX.
         for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
-            args=[str(run.args.slctl),'--adapter',entry['owner']['path'],
-                  'channel-peer' if role=='peer' else 'channel-roundtrip',entry['object']['path'],str(row['rounds'])]
-            if row['message_bytes']!=61 or row['boundary_check']:args.append(str(row['message_bytes']))
-            if row['boundary_check']:args.append('boundaries')
-            if row['close_prefix'] and role=='initiator':args.append('prefix-close')
-            if row['burst'] and role=='initiator':args.append('burst')
+            exercise='boundaries' if row['boundary_check'] else 'prefix-close' if row['close_prefix'] and role=='initiator' else 'burst' if row['burst'] and role=='initiator' else 'regular'
+            args=check_arguments(row['application_tool']['path'],entry,role=='peer',row['rounds'],row['message_bytes'],exercise)
             app=dict(role=role,args=args,start_wall_ns=time.time_ns())
             row['applications'].append(app);run.save()
             stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
@@ -170,7 +216,26 @@ def channel_info_receipts(row):
     return result
 
 
+def validate_application_arguments(row):
+    # Historical receipts remain readable with their original commands. Current
+    # execution always records a slktest artifact and must match the new argv.
+    if 'application_tool' not in row:return
+    validate_application_binary(row['application_tool'])
+    for app in row['applications']:
+        if app['role'] not in ('peer','initiator'):raise CaptureError('invalid application role')
+        peer=app['role']=='peer'
+        entry=row['owners'][1 if peer else 0]
+        exercise='boundaries' if row.get('boundary_check') else 'prefix-close' if row.get('close_prefix') and not peer else 'burst' if row.get('burst') and not peer else 'regular'
+        route=None
+        if 'ports' in row:
+            ports=row['ports'][::-1] if peer else row['ports']
+            route=(*ports,row['aid'])
+        expected=check_arguments(row['application_tool']['path'],entry,peer,row['rounds'],row.get('message_bytes',61),exercise,route,route is not None)
+        if app.get('args')!=expected:raise CaptureError('actual slktest channel arguments/identity mismatch')
+
+
 def application_frames(row):
+    validate_application_arguments(row)
     rounds=row['rounds'];message_bytes=row.get('message_bytes',61)
     if type(message_bytes) is not int or not 29<=message_bytes<=2042:raise CaptureError('supported basic channel message size required')
     if type(rounds) is not int or not 1<=rounds<=20:raise CaptureError('finite original round count required')
@@ -262,6 +327,7 @@ def burst_pressure_receipts(row):
 
 
 def prefix_application_frames(row):
+    validate_application_arguments(row)
     if row.get('rounds')!=1 or row.get('message_bytes')!=2042 or row.get('boundary_check'):
         raise CaptureError('prefix-close requires one actual 2042-byte operation')
     apps={a['role']:a for a in row['applications']}

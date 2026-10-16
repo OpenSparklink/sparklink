@@ -82,3 +82,14 @@ class EmptyRegistryEvidence(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SlktestVmVerdict(unittest.TestCase):
+    release=NativeRootEvidence.release
+    uuid=NativeRootEvidence.uuid
+    def test_actual_tool_full_tests_uid_and_no_skip_are_required(self):
+        markers='SLKTEST_VM_UID: 1000\nSLKTEST_VM_ENTRY_PASS\nSLKTEST_VM_TESTS_BEGIN\ntest result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out;\nSLKTEST_VM_TESTS_END\n'
+        full=NativeRootEvidence.evidence(self).replace('NATIVE_MODULE_KERNEL_LOG_BEGIN',markers+'NATIVE_MODULE_KERNEL_LOG_BEGIN')
+        verify_console(full,self.release,self.uuid,0,application_tests=22)
+        for old,new in [('1000','0'),('22 passed','21 passed'),('0 ignored','1 ignored'),('SLKTEST_VM_ENTRY_PASS','missing')]:
+            with self.subTest(old=old),self.assertRaises(ValueError):verify_console(full.replace(old,new),self.release,self.uuid,0,application_tests=22)

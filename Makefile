@@ -8,6 +8,7 @@ DBUSSERVICEDIR ?= $(PREFIX)/share/dbus-1/system-services
 DBUSCONFDIR ?= $(PREFIX)/share/dbus-1/system.d
 UNITDIR ?= $(PREFIX)/lib/systemd/system
 STATEDIR ?= /var/lib/sparklink
+MANDIR ?= $(PREFIX)/share/man
 
 CARGO ?= cargo
 CARGO_FLAGS ?= --release --workspace
@@ -41,8 +42,10 @@ install: build
 	# CLI tools
 	$(INSTALL) -Dm755 target/release/slkconfig    $(DESTDIR)$(BINDIR)/slkconfig
 	$(INSTALL) -Dm755 target/release/slctl        $(DESTDIR)$(BINDIR)/slctl
+	$(INSTALL) -Dm755 target/release/slktest        $(DESTDIR)$(BINDIR)/slktest
 	$(INSTALL) -Dm755 target/release/slkmon       $(DESTDIR)$(BINDIR)/slkmon
 	$(INSTALL) -Dm755 target/release/slkdump      $(DESTDIR)$(BINDIR)/slkdump
+	$(INSTALL) -Dm644 data/man/man1/slktest.1 $(DESTDIR)$(MANDIR)/man1/slktest.1
 	# Shared library
 	$(INSTALL) -Dm755 target/release/liblibsparklink.so $(DESTDIR)$(LIBDIR)/libsparklink.so.0.1.0
 	ln -sf libsparklink.so.0.1.0 $(DESTDIR)$(LIBDIR)/libsparklink.so.0
@@ -63,6 +66,8 @@ uninstall:
 	rm -f $(DESTDIR)$(SBINDIR)/slkd
 	rm -f $(DESTDIR)$(BINDIR)/slkconfig
 	rm -f $(DESTDIR)$(BINDIR)/slctl
+	rm -f $(DESTDIR)$(BINDIR)/slktest
+	rm -f $(DESTDIR)$(MANDIR)/man1/slktest.1
 	rm -f $(DESTDIR)$(BINDIR)/slkmon
 	rm -f $(DESTDIR)$(BINDIR)/slkdump
 	rm -f $(DESTDIR)$(LIBDIR)/libsparklink.so*

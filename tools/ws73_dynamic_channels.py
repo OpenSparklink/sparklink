@@ -15,7 +15,7 @@ import signal
 import subprocess
 import time
 from ws73_capture import CaptureError, reassemble_acb
-from ws73_channel_socket import application_frames, credentials, burst_pressure_receipts
+from ws73_channel_socket import application_frames, credentials, burst_pressure_receipts, test_program, check_arguments
 from ws73_credit_observation import observe_phase
 
 
@@ -112,14 +112,14 @@ def execute(run, phase):
     row = dict(version=3 if burst else 2 if long_bytes is not None else 1, phase=len(run.data['connection_control']['phases'])-1,
                owners=phase['typed_objects'], start_wall_ns=time.time_ns(),
                long_bytes=long_bytes, burst=burst, status='RUNNING', channels=[], scheduling='bounded VM peer SIGSTOP; real kernel/firmware remain running')
+    row['application_tool']=test_program(run)
     run.data.setdefault('dynamic_channels', []).append(row)
     run.save()
     files=ExitStack(); all_tasks=[]; stopped=None;reader=ApplicationOutput(maximum=256*1024 if burst else 128*1024);failed=False
     def start(channel, role, entry):
         ports = channel['ports'] if role=='initiator' else channel['ports'][::-1]
-        args=[str(run.args.slctl),'--adapter',entry['owner']['path'],
-              ('dynamic-burst' if channel.get('burst') else 'dynamic-roundtrip') if role=='initiator' else 'dynamic-peer', entry['object']['path'],
-              *map(str,ports),str(channel['aid']),str(channel['rounds']),str(channel['message_bytes']),'hold']
+        args=check_arguments(row['application_tool']['path'],entry,role=='peer',channel['rounds'],channel['message_bytes'],
+                             'burst' if channel.get('burst') and role=='initiator' else 'regular',(*ports,channel['aid']),True)
         app=dict(role=role,args=args,start_wall_ns=time.time_ns())
         channel['applications'].append(app)
         stem=f'dynamic-{row["phase"]}-{channel["name"]}-{role}'
@@ -132,7 +132,7 @@ def execute(run, phase):
         app['pid']=proc.pid; app['credentials']=credentials(proc.pid)
         run.save();return proc,app
     def new_channel(name,ports,rounds,message_bytes=61):
-        channel=dict(name=name,phase=row['phase'],ports=ports,aid=0x7301,rounds=rounds,message_bytes=message_bytes,owners=row['owners'],
+        channel=dict(application_tool=row['application_tool'],name=name,phase=row['phase'],ports=ports,aid=0x7301,rounds=rounds,message_bytes=message_bytes,owners=row['owners'],
                      start_wall_ns=time.time_ns(),session_start_wall_ns=phase['start_wall_ns'],applications=[],tx_status_required=True,burst=burst and name=='C')
         row['channels'].append(channel);return channel
     def close_pair(channel,tasks):
@@ -149,8 +149,7 @@ def execute(run, phase):
         # A real unmatched endpoint refusal also ensures asymmetric TCID
         # allocation without changing a kernel allocator or simulating a peer.
         owner=row['owners'][0]
-        row['unbound_refusal']=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],
-            'dynamic-roundtrip',owner['object']['path'],'24570','24571','29441','1','61'],12,collection='dynamic_refusals')
+        row['unbound_refusal']=run.command(check_arguments(row['application_tool']['path'],owner,False,1,61,route=(24570,24571,29441)),12,collection='dynamic_refusals')
         refusal=row['unbound_refusal']
         if not refusal['exit'] or refusal['stdout'].count('NativeDynamicStaged:')!=1 or 'NativeChannelInfo:' in refusal['stdout'] or 'NativeChannelRoundTrip:' in refusal['stdout']:
             raise CaptureError('unmatched endpoint must be refused after staging; USB evidence still required')
@@ -190,8 +189,7 @@ def execute(run, phase):
             row['long_peer_stopped_confirmed']=True
             cinit=start(third,'initiator',row['owners'][0]);ctasks=[cpeer,cinit]
             await_marker(run,[cinit],'NativeChannelSent:',limit,reader)
-            row['slot_exhaustion']=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],
-                'dynamic-roundtrip',owner['object']['path'],'24582','24583','29441','1','61'],3,collection='dynamic_slot_refusals')
+            row['slot_exhaustion']=run.command(check_arguments(row['application_tool']['path'],owner,False,1,61,route=(24582,24583,29441)),3,collection='dynamic_slot_refusals')
             refused=row['slot_exhaustion']
             if refused['exit']==0 or 'os error 28' not in refused['stderr'] or 'NativeDynamicStaged:' in refused['stdout']:
                 raise CaptureError('full lifetime slot budget must reject before staging with ENOSPC')
@@ -244,7 +242,11 @@ def info(channel, owners):
         if any(app['stdout'].count(marker)!=1 for marker in ['NativeDynamicStaged:','NativeDynamicBusinessDone:','NativeDynamicLastClose:']):
             raise CaptureError('duplicate or malformed dynamic receipts')
         expected=['--adapter',entry['owner']['path'],('dynamic-burst' if channel.get('burst') else 'dynamic-roundtrip') if app['role']=='initiator' else 'dynamic-peer',entry['object']['path'],*map(str,ports),str(channel['aid']),str(channel['rounds']),str(channel['message_bytes']),'hold']
-        if app['args'][1:]!=expected:raise CaptureError('actual dynamic application arguments/identity mismatch')
+        if 'application_tool' in channel:
+            expected=check_arguments(channel['application_tool']['path'],entry,app['role']=='peer',channel['rounds'],channel['message_bytes'],
+                'burst' if channel.get('burst') and app['role']=='initiator' else 'regular',(*ports,channel['aid']),True)
+            if app['args']!=expected:raise CaptureError('actual slktest dynamic arguments/identity mismatch')
+        elif app['args'][1:]!=expected:raise CaptureError('actual historical dynamic application arguments/identity mismatch')
         owner,obj=entry['owner'],entry['object']
         if fields[:4]!=(owner['index'],owner['generation'],obj['lifetime'],obj['handle']) or obj['generation']!=owner['generation']:
             raise CaptureError('dynamic immutable controller/generation/lifetime mismatch')

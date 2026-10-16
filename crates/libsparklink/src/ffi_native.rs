@@ -461,6 +461,27 @@ pub unsafe extern "C" fn slk_channel_tx_status(
     }
 }
 
+/// Coherent read-only Session mechanism observation of an authorized fd.
+/// Returns0 or negative errno; output unchanged on error. No credit mutation.
+/// # Safety
+/// output is null or a live aligned writable SleSessionTxStatus object.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_session_tx_status(
+    fd: c_int,
+    output: *mut SleSessionTxStatus,
+) -> c_int {
+    if output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    match slk_protocol::channel::query_session_tx_status(fd) {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error.raw_os_error().unwrap_or(nix::libc::EPROTO),
+    }
+}
+
 /// Explicit known no-MITM mechanism approval; same live Managed File and admin required.
 /// Candidate proof or controller encryption observations never promise authenticated
 /// identity, Agent consent, Bond, key export or peer application acknowledgment.

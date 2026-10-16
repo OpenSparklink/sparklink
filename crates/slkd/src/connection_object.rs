@@ -621,6 +621,53 @@ impl ConnectionIface {
     async fn write_ssap_value(&self, handle: u16, value: Vec<u8>) -> zbus::fdo::Result<Vec<u8>> {
         self.synchronous_ssap_value(handle, Some(value)).await
     }
+    /// Read-only native mechanism state via an existing owner. Do not start an
+    /// SSAP Engine, open a channel, mutate credit or mint authorization here.
+    async fn get_transport_status(&self) -> zbus::fdo::Result<crate::channel::TransportInfo> {
+        let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(1);
+        tokio::time::timeout_at(deadline, async {
+            if self.observation().await != (true, true) {
+                return Err(zbus::fdo::Error::Failed(
+                    "retired/unknown transport lifetime".into(),
+                ));
+            }
+            let index = self.state.lock().await.controller.dev_index;
+            let observer = self
+                .ssap
+                .lock()
+                .await
+                .as_ref()
+                .map(|actor| actor.observer())
+                .ok_or_else(|| {
+                    zbus::fdo::Error::NotSupported(
+                        "no existing channel owner for observation".into(),
+                    )
+                })?;
+            let value = observer
+                .transport_status(deadline)
+                .await
+                .map_err(zbus::fdo::Error::Failed)?;
+            if (
+                value.controller,
+                value.generation,
+                value.lifetime,
+                value.handle,
+            ) != (
+                index,
+                self.generation,
+                self.reference.lifetime,
+                self.reference.handle,
+            ) || self.observation().await != (true, true)
+            {
+                return Err(zbus::fdo::Error::Failed(
+                    "transport observation lifetime changed".into(),
+                ));
+            }
+            Ok(crate::channel::transport_info(value))
+        })
+        .await
+        .map_err(|_| zbus::fdo::Error::Failed("transport observation original deadline".into()))?
+    }
     async fn get_ssap_info(&self) -> zbus::fdo::Result<crate::ssap_engine::Info> {
         if self.observation().await != (true, true) {
             return Err(zbus::fdo::Error::Failed(
@@ -739,6 +786,56 @@ mod grant_tests {
             .expect("production snapshot must not retain adapter guard");
         assert_eq!(index, 17);
         assert!(Arc::ptr_eq(&store, &guard.ssap_database));
+    }
+    #[tokio::test]
+    async fn transport_snapshot_never_starts_owner_and_has_one_original_deadline() {
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            Arc::new(libsparklink::Adapter::open("/dev/null").unwrap()),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(
+                std::path::Path::new("/tmp"),
+                "transport-status-test",
+            ),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let reference = SleLinkInfo {
+            lifetime: 11,
+            handle: 3,
+            ..Default::default()
+        };
+        let iface = ConnectionIface::new(state.clone(), 7, reference);
+        assert!(matches!(
+            iface.get_transport_status().await,
+            Err(zbus::fdo::Error::Failed(_))
+        ));
+        {
+            let mut st = state.lock().await;
+            st.present = true;
+            st.controller.generation = 7;
+            let mut table = slk_protocol::SleLinkSnapshot {
+                flags: slk_protocol::LINK_SNAPSHOT_KNOWN,
+                count: 1,
+                ..Default::default()
+            };
+            table.links[0] = reference;
+            st.native_links = Some(table);
+        }
+        assert!(matches!(
+            iface.get_transport_status().await,
+            Err(zbus::fdo::Error::NotSupported(_))
+        ));
+        assert!(iface.ssap.lock().await.is_none());
+        let _held = state.lock().await;
+        let result = tokio::time::timeout(
+            std::time::Duration::from_millis(1200),
+            iface.get_transport_status(),
+        )
+        .await
+        .unwrap();
+        assert!(
+            matches!(result,Err(zbus::fdo::Error::Failed(ref error)) if error.contains("original deadline"))
+        );
+        assert!(iface.ssap.lock().await.is_none());
     }
     #[tokio::test]
     async fn actual_scoped_handler_rejects_before_held_business_state() {

@@ -1,6 +1,6 @@
 pub mod advdata;
 pub mod channel;
-pub use channel::{SleChannelInfo, SleChannelTxStatus};
+pub use channel::{SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus};
 mod genl;
 pub mod ioctl;
 pub mod service_hash;

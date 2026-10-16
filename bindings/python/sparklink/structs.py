@@ -436,3 +436,17 @@ class SleSecurityNegotiationCancel(ctypes.Structure):
     _fields_ = [("generation", ctypes.c_uint64), ("lifetime", ctypes.c_uint64),
                 ("request_id", ctypes.c_uint64), ("version", ctypes.c_uint32),
                 ("handle", ctypes.c_uint16), ("reserved", ctypes.c_uint16)]
+
+
+class SleSessionTxStatus(ctypes.Structure):
+    """Unpublished v1 mechanism counts, not a drain/reuse or firmware proof."""
+    _align_ = 8
+    _fields_ = [("version",ctypes.c_uint16),("size",ctypes.c_uint16),
+        ("controller",ctypes.c_uint16),("handle",ctypes.c_uint16),
+        ("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),
+        ("capacity",ctypes.c_uint16),("outstanding",ctypes.c_uint16),
+        ("connection_debt",ctypes.c_uint16),("queued",ctypes.c_uint16),
+        ("active_pdus",ctypes.c_uint16),("dynamic_open",ctypes.c_uint16),
+        ("dynamic_pending",ctypes.c_uint16),("dynamic_retired",ctypes.c_uint16),
+        ("dynamic_failed",ctypes.c_uint16),("dynamic_allocated",ctypes.c_uint16),
+        ("flags",ctypes.c_uint32),("reserved",ctypes.c_uint64*2)]

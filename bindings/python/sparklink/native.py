@@ -13,7 +13,7 @@ from .structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus,
+    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
     SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel,
 )
 
@@ -37,6 +37,7 @@ def _get_native_lib():
     signatures = {
         "slk_channel_info": [ctypes.c_int, ctypes.POINTER(SleChannelInfo)],
         "slk_channel_tx_status": [ctypes.c_int, ctypes.POINTER(SleChannelTxStatus)],
+        "slk_session_tx_status": [ctypes.c_int, ctypes.POINTER(SleSessionTxStatus)],
         "slk_adapter_select": [handle, ctypes.c_uint16],
         "slk_adapter_fd": [handle],
         "slk_device_mask": [handle, ctypes.POINTER(ctypes.c_uint16)],
@@ -330,4 +331,16 @@ def channel_tx_status(fd):
     result=_get_native_lib().slk_channel_tx_status(fd,ctypes.byref(value))
     if result < 0:
         raise OSError(-result,"channel TX observation")
+    return value
+
+def session_tx_status(fd):
+    """No lease or payload; reservations/queue do not mean USB/peer completion."""
+    if type(fd) is not int or not -(1 << 31) <= fd < (1 << 31):
+        raise ValueError("channel fd must be a signed 32-bit integer")
+    if ctypes.sizeof(SleSessionTxStatus) != 64 or ctypes.alignment(SleSessionTxStatus) != 8:
+        raise RuntimeError("TX snapshot requires exact64-byte/8-aligned ABI")
+    value=SleSessionTxStatus()
+    result=_get_native_lib().slk_session_tx_status(fd,ctypes.byref(value))
+    if result < 0:
+        raise OSError(-result,"Session TX observation")
     return value

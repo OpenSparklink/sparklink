@@ -1,0 +1,25 @@
+C SessionWorkerPublication
+
+(* Start from an already running serialized worker. Clearing service_running
+   under Session lock publishes prior worker-private response_pending writes.
+   sl_read_session_status reads those fields only while !service_running under
+   the same lock. This is a two-CPU CPU-memory abstraction, not workqueue/ref,
+   Host/IRQ, USB, callback drain, firmware or implementation refinement proof. *)
+{ running=1; }
+P0(int *running, int *pending, spinlock_t *session_lock)
+{
+ WRITE_ONCE(*pending, 1);
+ spin_lock(session_lock);
+ WRITE_ONCE(*running, 0);
+ spin_unlock(session_lock);
+}
+P1(int *running, int *pending, spinlock_t *session_lock)
+{
+ int r0;
+ int r1 = -1;
+ spin_lock(session_lock);
+ r0 = READ_ONCE(*running);
+ if (r0 == 0) r1 = READ_ONCE(*pending);
+ spin_unlock(session_lock);
+}
+exists (1:r0=0 /\ 1:r1=0)

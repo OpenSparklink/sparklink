@@ -657,3 +657,10 @@ Grant。VM专用实例在原业务/USB门禁后核对生命周期、PB和预算�
 返回、操作退休、NOCP及对端应用交付分别表达。容量、时钟夹逼和丢失均失败封闭；
 不完整记录不能因业务循环完成而升级通过。见[ADR0006](../docs/decisions/0006-event-driven-session-and-performance-evidence.md)，
 准确结果只在唯一资格入口维护，诊断不另建Host/Engine或公开ABI。
+
+
+Session 只读发送观测复用 Runtime Host/data/gate → Session → TX queue 锁序与现有
+授权 fd；daemon 只通过已有唯一 actor 读取，不创建新 owner。worker 私有 pending
+字段由同一 Session 锁发布。瞬时计数和终态仅用于有界诊断，不授予 Ready、credit、
+Free 或复用资格；测试仍需独立真实 USB/NOCP 与对端应用证据。见
+[接口契约](../docs/reference/interfaces.md#session-发送观测未发布-v1)。

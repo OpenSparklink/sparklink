@@ -47,6 +47,10 @@ enum Status {
 }
 enum Query {
     Info(oneshot::Sender<Result<Info, String>>),
+    TransportStatus {
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_protocol::SleSessionTxStatus, String>>,
+    },
     Incoming {
         handles: Vec<u16>,
         modes: u8,
@@ -310,6 +314,21 @@ impl Observer {
             .await
             .map_err(|_| "SSAP value original deadline".to_string())?
             .map_err(|_| "SSAP actor stopped during value operation".to_string())?
+    }
+    /// Native metadata through the existing owned fd; no SSAP request or new
+    /// binding. Cancellation/queueing preserve this original metadata deadline.
+    pub(crate) async fn transport_status(
+        &self,
+        deadline: Instant,
+    ) -> Result<slk_protocol::SleSessionTxStatus, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::TransportStatus { deadline, reply })
+            .map_err(|_| "transport observation queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "transport observation original deadline".to_string())?
+            .map_err(|_| "actor stopped during transport observation".to_string())?
     }
     pub(crate) async fn info(mut self) -> Result<Info, String> {
         tokio::time::timeout(Duration::from_secs(5), async {
@@ -602,6 +621,21 @@ async fn exchange_loop(
                     if bytes.len()>usize::from(capabilities.mtu) {let _=reply.send(Err("SSAP request exceeds channel".into()));continue;}
                     pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client});client=Some(ClientRequest{bytes,deadline,admitted:false,reply});continue;
                 }
+                if let Query::TransportStatus{deadline,reply}=query {
+                    if reply.is_closed() {continue;}
+                    let result=if Instant::now()>=deadline {
+                        Err("transport observation original deadline".into())
+                    } else {
+                        slk_protocol::channel::query_session_tx_status(fd.get_ref().as_raw_fd())
+                            .map_err(|error|error.to_string()).and_then(|current| {
+                                if (current.controller,current.generation,current.lifetime,current.handle)
+                                    != (capabilities.controller,capabilities.generation,capabilities.lifetime,capabilities.handle) {
+                                    Err("transport observation lifetime changed".into())
+                                } else {Ok(current)}
+                            })
+                    };
+                    let _=reply.send(result);continue;
+                }
                 let Query::Info(reply)=query else {unreachable!()};
                 let result=match state.borrow().clone() {
                     Status::Negotiated(info) => slk_protocol::channel::query(fd.get_ref().as_raw_fd()).map_err(|e|e.to_string()).and_then(|current| {
@@ -811,6 +845,13 @@ mod tests {
             state: state0,
             queries: q0,
         };
+        assert!(
+            observer
+                .transport_status(Instant::now() + Duration::from_secs(1))
+                .await
+                .unwrap_err()
+                .contains("25")
+        );
         assert!(observer.info().await.unwrap_err().contains("25")); // AF_UNIX is not Native.
         stop0.send(()).unwrap();
         stop1.send(()).unwrap();

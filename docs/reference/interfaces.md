@@ -322,3 +322,29 @@ CLI使用 `dynamic-peer <connection-path> <source-port> <destination-port> <aid>
 关闭后允许排空此前已完整排队的RX，禁止新业务准入和迟到成功复活Grant。
 资源拒绝、取消、原期限、撤权/断链与同行隔离分别验收；本段说明生产接线，
 不把离线函数夹具、有界证明或USB提交升级为真实动态多通道资格。
+
+
+## Session 发送观测（未发布 v1）
+
+`SPARKLINK_SESSION_TX_STATUS`（E2）是当前已授权通道 fd 的只读 ioctl，固定
+64 字节，native/compat 布局一致。Rust `query_session_tx_status`、C
+`slk_session_tx_status`、Python `native.session_tx_status` 使用相同结构。
+它不创建通道、申请 credit、启动 SSAP 或提交 USB；不输出 lease 或业务载荷。
+
+返回原 controller/generation/lifetime/handle、controller capacity/outstanding、
+connection debt、全 Session 的 queued/active PDU，以及 dynamic
+open/pending/retired/failed/allocated 计数。当前动态槽预算为 4；计数和为 allocated。
+flags 分别为 WORK_RUNNING=1、WORK_QUEUED=2、BASE_PENDING=4、STATE_UNKNOWN=8。
+failed 不等于成功关闭，必须根据本次实际创建和拒绝的通道核对期望终态。
+
+Runtime 按 Host/data/gate → Session → 单个 TX queue 的锁序检查身份、授权和预算。
+worker 通过同一 Session 锁发布私有 pending 字段；运行中不读取这些字段，返回
+WORK_RUNNING。队列合计是保守的瞬时观察，不能推导未来空闲、callback/引用排空、
+固件 NOCP 准确性、Free 或 handle 安全复用。成功 copy 后仍可立即撤权或断链。
+错误语义沿用通道只读检查：未连接/已退休、未协商、撤权和坏地址均明确失败。
+
+`org.sparklink.Connection.GetTransportStatus` 经已有的唯一 SMTC actor 读取该快照。
+没有该 owner 时返回 NotSupported，不隐式启动 Engine；退休或身份变化返回 Failed。
+包括等待 state lock、actor 排队及回复在内，共享调用起点的 1 秒原始期限。CLI 为
+`slctl --adapter ADAPTER_PATH transport-status CONNECTION_PATH`。
+结构存在不代表新镜像已通过实机门禁；资格以项目记录中的准确 artifact 为准。

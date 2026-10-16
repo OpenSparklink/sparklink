@@ -73,6 +73,15 @@ Connect to a device.
 .TP
 .BI disconnect " [address]"
 Disconnect the current or specified device.
+.SS Read-only Session Observation
+.TP
+.BI transport-status " connection-path"
+Read the existing authorized Session transport snapshot through its current
+SMTC owner. Does not start an Engine or open a channel. Missing owner returns
+NotSupported; retirement, changed identity and the original one-second deadline
+fail. Zero queues or debt do not prove callback drain, future idleness, firmware
+completion accuracy or safe handle reuse. This unreleased API has no compatibility
+promise; consult the exact artifact qualification.
 .SS Explicit Reference Security
 .TP
 .B agent

@@ -14,7 +14,7 @@ from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus,
+    SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
     SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel,
 )
 
@@ -63,6 +63,13 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(self.lib.slk_channel_tx_status(-1,ctypes.byref(out)),-errno.EBADF)
         self.assertEqual(bytes(out),before)
         self.assertEqual(self.lib.slk_channel_tx_status(-1,None),-errno.EINVAL)
+
+    def test_session_status_denies_bad_fd_without_overwriting(self):
+        out=SleSessionTxStatus(generation=99)
+        before=bytes(out)
+        self.assertEqual(self.lib.slk_session_tx_status(-1,ctypes.byref(out)),-errno.EBADF)
+        self.assertEqual(bytes(out),before)
+        self.assertEqual(self.lib.slk_session_tx_status(-1,None),-errno.EINVAL)
 
     def test_registration_probe_rejects_invalid_index_and_closes_on_error(self):
         before = len(list(Path('/proc/self/fd').iterdir()))

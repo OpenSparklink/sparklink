@@ -52,7 +52,7 @@ impl Context {
                 } else {
                     Vec::new()
                 };
-                let object = self.ssap_proxy(args[1]).await?;
+                let object = self.connection_proxy(args[1]).await?;
                 type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
                 type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);
                 let (entries, trace): Discovery =
@@ -157,7 +157,7 @@ impl Context {
                         "ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
                     );
                 }
-                let object = self.ssap_proxy(args[1]).await?;
+                let object = self.connection_proxy(args[1]).await?;
                 let handle: u16 = args[2].parse()?;
                 let modes: u8 = match args.get(3).copied().unwrap_or("both") {
                     "notify" => 1,
@@ -190,7 +190,7 @@ impl Context {
                 if args.len() != 5 {
                     anyhow::bail!("ssap-read-uuid CONNECTION START END UUID_HEX");
                 }
-                let object = self.ssap_proxy(args[1]).await?;
+                let object = self.connection_proxy(args[1]).await?;
                 let start: u16 = args[2].parse()?;
                 let end: u16 = args[3].parse()?;
                 let (entries, request, response): UuidValues = object
@@ -221,7 +221,7 @@ impl Context {
                         "SSAP value requires connection path, handle and write hex value"
                     );
                 }
-                let object = self.ssap_proxy(args[1]).await?;
+                let object = self.connection_proxy(args[1]).await?;
                 let handle: u16 = args[2].parse()?;
                 let value: Vec<u8> = if args[0] == "ssap-read" {
                     object.call("ReadSsapValue", &(handle,)).await?
@@ -238,6 +238,12 @@ impl Context {
                     hex_bytes(&value)
                 );
                 Ok(())
+            }
+            "transport-status" => {
+                if args.len() != 2 {
+                    anyhow::bail!("transport-status requires one immutable connection path");
+                }
+                self.cmd_transport_status(args[1]).await
             }
             "ssap-info" => {
                 if args.len() != 2 {
@@ -1055,10 +1061,10 @@ impl Context {
         }
         Ok(())
     }
-    async fn ssap_proxy(&self, path: &str) -> anyhow::Result<zbus::Proxy<'_>> {
+    async fn connection_proxy(&self, path: &str) -> anyhow::Result<zbus::Proxy<'_>> {
         let selected = self.selected_path().await?;
         if !path.starts_with(&format!("{selected}/peer_t")) {
-            anyhow::bail!("SSAP connection belongs to another adapter");
+            anyhow::bail!("connection belongs to another adapter");
         }
         let object = zbus::Proxy::new(
             &self.conn,
@@ -1077,12 +1083,42 @@ impl Context {
         let adapter = self.adapter_proxy().await?;
         let generation: u64 = adapter.get_property("Generation").await?;
         if path != expected || generation != identity.0 || !identity.6 || !identity.7 {
-            anyhow::bail!("SSAP lifetime unknown/retired");
+            anyhow::bail!("connection lifetime unknown/retired");
         }
         Ok(object)
     }
+    async fn cmd_transport_status(&self, path: &str) -> anyhow::Result<()> {
+        let object = self.connection_proxy(path).await?;
+        let identity: NativeObjectInfo = object.call("GetInfo", &()).await?;
+        type View = (
+            u16,
+            u64,
+            u64,
+            u16,
+            u16,
+            u16,
+            u16,
+            u16,
+            u16,
+            u16,
+            u16,
+            u16,
+            u16,
+            u16,
+            u32,
+        );
+        let v: View = object.call("GetTransportStatus", &()).await?;
+        if (v.1, v.2, v.3) != (identity.0, identity.1, identity.2) {
+            anyhow::bail!("transport observation lifetime mismatch");
+        }
+        println!(
+            "SessionTxStatus: index={} generation={} lifetime={} handle={} capacity={} outstanding={} debt={} queued={} active={} open={} pending={} retired={} failed={} allocated={} flags={}",
+            v.0, v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14
+        );
+        Ok(())
+    }
     async fn cmd_ssap_info(&self, path: &str) -> anyhow::Result<()> {
-        let object = self.ssap_proxy(path).await?;
+        let object = self.connection_proxy(path).await?;
         let identity: NativeObjectInfo = object.call("GetInfo", &()).await?;
         type SsapInfo = (
             u16,

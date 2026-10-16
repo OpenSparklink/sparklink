@@ -190,6 +190,44 @@ pub(crate) fn validate(directions: u32, security: u32) -> std::io::Result<()> {
     }
     Ok(())
 }
+/// D-Bus mechanism observation, not an SSAP capability or a readiness grant.
+pub(crate) type TransportInfo = (
+    u16,
+    u64,
+    u64,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u32,
+);
+pub(crate) fn transport_info(v: slk_protocol::SleSessionTxStatus) -> TransportInfo {
+    (
+        v.controller,
+        v.generation,
+        v.lifetime,
+        v.handle,
+        v.capacity,
+        v.outstanding,
+        v.connection_debt,
+        v.queued,
+        v.active_pdus,
+        v.dynamic_open,
+        v.dynamic_pending,
+        v.dynamic_retired,
+        v.dynamic_failed,
+        v.dynamic_allocated,
+        v.flags,
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

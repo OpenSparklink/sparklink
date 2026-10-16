@@ -289,3 +289,128 @@ mod tx_status_tests {
         );
     }
 }
+
+/// Read-only Session mechanism snapshot through an already authorized fd.
+/// It never grants readiness, clears credit, proves callback drain or permits reuse.
+#[repr(C, align(8))]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct SleSessionTxStatus {
+    pub version: u16,
+    pub size: u16,
+    pub controller: u16,
+    pub handle: u16,
+    pub generation: u64,
+    pub lifetime: u64,
+    pub capacity: u16,
+    pub outstanding: u16,
+    pub connection_debt: u16,
+    pub queued: u16,
+    pub active_pdus: u16,
+    pub dynamic_open: u16,
+    pub dynamic_pending: u16,
+    pub dynamic_retired: u16,
+    pub dynamic_failed: u16,
+    pub dynamic_allocated: u16,
+    pub flags: u32,
+    pub reserved: [u64; 2],
+}
+const _: () = assert!(std::mem::size_of::<SleSessionTxStatus>() == 64);
+nix::ioctl_read!(sl_session_tx_status, b'S', 0xe2, SleSessionTxStatus);
+
+/// cbindgen:ignore
+impl SleSessionTxStatus {
+    pub fn validate(&self) -> io::Result<()> {
+        let dynamic = u32::from(self.dynamic_open)
+            + u32::from(self.dynamic_pending)
+            + u32::from(self.dynamic_retired)
+            + u32::from(self.dynamic_failed);
+        if self.version != 1
+            || self.size != 64
+            || self.generation == 0
+            || self.lifetime == 0
+            || self.capacity == 0
+            || self.capacity > 255
+            || self.outstanding > self.capacity
+            || self.connection_debt > self.outstanding
+            || self.active_pdus > 1
+            || u32::from(self.queued) + u32::from(self.active_pdus) > 48
+            || self.dynamic_allocated > 4
+            || dynamic != u32::from(self.dynamic_allocated)
+            || self.flags & !15 != 0
+            || self.reserved != [0; 2]
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "invalid Session TX snapshot",
+            ));
+        }
+        Ok(())
+    }
+}
+pub fn query_session_tx_status(fd: RawFd) -> io::Result<SleSessionTxStatus> {
+    let mut value = SleSessionTxStatus::default();
+    // SAFETY: complete initialized output object lives through this ioctl.
+    unsafe { sl_session_tx_status(fd, &mut value) }
+        .map_err(|e| io::Error::from_raw_os_error(e as i32))?;
+    value.validate()?;
+    Ok(value)
+}
+#[cfg(test)]
+mod session_status_tests {
+    use super::*;
+    #[test]
+    fn malformed_or_mixed_session_observations_are_rejected() {
+        let v = SleSessionTxStatus {
+            version: 1,
+            size: 64,
+            generation: 7,
+            lifetime: 11,
+            capacity: 5,
+            outstanding: 2,
+            connection_debt: 1,
+            dynamic_allocated: 4,
+            dynamic_retired: 3,
+            dynamic_failed: 1,
+            ..Default::default()
+        };
+        v.validate().unwrap();
+        for bad in [
+            SleSessionTxStatus { version: 0, ..v },
+            SleSessionTxStatus { size: 63, ..v },
+            SleSessionTxStatus { generation: 0, ..v },
+            SleSessionTxStatus { lifetime: 0, ..v },
+            SleSessionTxStatus {
+                outstanding: 6,
+                ..v
+            },
+            SleSessionTxStatus {
+                connection_debt: 3,
+                ..v
+            },
+            SleSessionTxStatus {
+                queued: 48,
+                active_pdus: 1,
+                ..v
+            },
+            SleSessionTxStatus {
+                active_pdus: 2,
+                ..v
+            },
+            SleSessionTxStatus {
+                dynamic_retired: 4,
+                ..v
+            },
+            SleSessionTxStatus { flags: 16, ..v },
+            SleSessionTxStatus {
+                reserved: [0, 1],
+                ..v
+            },
+        ] {
+            assert!(bad.validate().is_err());
+        }
+        assert_eq!(
+            query_session_tx_status(-1).unwrap_err().raw_os_error(),
+            Some(nix::libc::EBADF)
+        );
+    }
+}

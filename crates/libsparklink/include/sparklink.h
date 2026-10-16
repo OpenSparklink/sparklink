@@ -566,6 +566,31 @@ typedef struct SPARKLINK_ALIGN(8) SleChannelTxStatus {
 } SleChannelTxStatus;
 
 /**
+ * Read-only Session mechanism snapshot through an already authorized fd.
+ * It never grants readiness, clears credit, proves callback drain or permits reuse.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleSessionTxStatus {
+    uint16_t version;
+    uint16_t size;
+    uint16_t controller;
+    uint16_t handle;
+    uint64_t generation;
+    uint64_t lifetime;
+    uint16_t capacity;
+    uint16_t outstanding;
+    uint16_t connection_debt;
+    uint16_t queued;
+    uint16_t active_pdus;
+    uint16_t dynamic_open;
+    uint16_t dynamic_pending;
+    uint16_t dynamic_retired;
+    uint16_t dynamic_failed;
+    uint16_t dynamic_allocated;
+    uint32_t flags;
+    uint64_t reserved[2];
+} SleSessionTxStatus;
+
+/**
  * Experimental capability/candidate-proof observation; no raw RX/TX or trusted result.
  */
 typedef struct SPARKLINK_ALIGN(8) SleSecurityNegotiationSubmit {
@@ -963,6 +988,14 @@ int slk_channel_info(int fd, struct SleChannelInfo *output);
  * output is null or a live aligned writable SleChannelTxStatus object.
  */
 int slk_channel_tx_status(int fd, struct SleChannelTxStatus *output);
+
+/**
+ * Coherent read-only Session mechanism observation of an authorized fd.
+ * Returns0 or negative errno; output unchanged on error. No credit mutation.
+ * # Safety
+ * output is null or a live aligned writable SleSessionTxStatus object.
+ */
+int slk_session_tx_status(int fd, struct SleSessionTxStatus *output);
 
 /**
  * Explicit known no-MITM mechanism approval; same live Managed File and admin required.

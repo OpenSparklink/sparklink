@@ -1,0 +1,17 @@
+C SessionWorkerPublicationWeak
+
+(* Negative control: missing publication lock; ONCE alone does not publish. *)
+{ running=1; }
+P0(int *running, int *pending)
+{
+ WRITE_ONCE(*pending, 1);
+ WRITE_ONCE(*running, 0);
+}
+P1(int *running, int *pending)
+{
+ int r0;
+ int r1 = -1;
+ r0 = READ_ONCE(*running);
+ if (r0 == 0) r1 = READ_ONCE(*pending);
+}
+exists (1:r0=0 /\ 1:r1=0)

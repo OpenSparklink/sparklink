@@ -146,6 +146,7 @@ Commands:
   ssap-read-uuid <path> <start> <end> <uuid-hex> Read actual peer values by UUID
   ssap-read <path> <handle>                  Read actual peer value on SMTC
   ssap-write <path> <handle> <value-hex>      Write with peer verification and reply
+  transport-status <path>                    Read current Session queues/debt/state (not drain/reuse proof)
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   disconnect <address> [type]    Disconnect an unambiguous current peer
   disconnect-link <addr> <type> <handle> <lifetime> <role>  Disconnect exact link

@@ -70,6 +70,7 @@ facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合�
 | BeginReferenceSecurity | `t request_id, s method` → 无 | 开始异步策略流程；不是控制器成功 |
 | GetReferenceSecurityResult | `t request_id` → 观察结构 | 策略终态和原生状态分别返回，不读取密钥 |
 | CancelReferenceSecurity | `t request_id` → `b` | 请求撤销；不是硬件排空确认 |
+| GetSecurityState | 无 → `(ttqtuuuyy)` | 当前内核机制快照；实现待新镜像实机验收，不是授权或 Bond |
 
 Agent 的 `org.sparklink.Agent.AuthorizeReferenceSecurity` 接收一个结构参数：
 `(s connection_path, t request_id, t generation, t lifetime, q handle, y role,
@@ -400,3 +401,36 @@ WORK_RUNNING。队列合计是保守的瞬时观察，不能推导未来空闲�
 
 本批 ABI 检查在 LP64 下执行 C/Rust/Python 对照；ILP32 仅比较生成 C 头与内核头的
 编译布局。32 位运行和 compat 系统调用仍待 VM 验收，不由布局检查升级为通过。
+
+
+### 当前连接安全快照（实现中，实机资格待取得）
+
+`org.sparklink.Connection.GetSecurityState()`返回单一结构，依次为generation、
+lifetime、handle、security_epoch、profile、level、flags、method、key_size。
+使用slkd原Managed File查询唯一物理Session；调用不创建Session、启动配对或读取密钥。
+整个只读调用有1秒原始预算；退役/未知连接或管理不可用返回Failed，旧内核ENOTTY/
+EOPNOTSUPP映射NotSupported，不从缓存的Agent操作结果拼出正向状态。
+
+对应未发布内核`SL_IOCTL_CONNECTION_SECURITY`（d6、48字节）、Rust
+`Adapter::native_connection_security`、C `slk_connection_security`及Python
+`NativeAdapter.connection_security(generation,lifetime,handle)`。原生查询仍要求
+CAP_NET_ADMIN及活动Managed File；普通用户不由此获得控制器权限。
+输入version1、精确非零generation/lifetime和handle≤0xfff，其余字段零。
+失败不改写C输出；Rust/Python拒绝身份、epoch或事实组合不一致的内核输出。
+
+| level | flags | method / key_size | 含义 |
+|---|---|---|---|
+| 0 | 0 | 0 / 0 | 未取得当前正向机制事实；不能假定可用或可信 |
+| 1 | 13 | 3 / 16 | 本Session proof、安装接受和0011；无MITM机制 |
+| 2 | 15 | 4 / 16 | 再加本地明确数字确认；不是命名身份或应用授权 |
+
+flags为cipher1、数字确认2、peer proof4、自身安装接受8的组合。
+security_epoch是本物理lifetime的接收revision：安全receipt在普通队列之前递增，
+即使worker未执行或队列丢失，也不能保留旧正向快照。0为溢出毒化，查询拒绝。
+新的加密失败/关闭/rekey、撤权、Down或退休不能由晚到on恢复旧资格；重复或丢失
+事件可能保守地降为level0，需重新建链。旧操作终态保留，当前状态另查本接口。
+
+快照只描述读取线性化时刻的机制事实，不是后续USB提交授权。protected Grant仍
+拒绝；未来消费端必须在实际准入/提交时重新检查安全epoch及全部原权限。
+SDK111 handle-only0011/Complete的物理复用屏障、固件真实性及无线加密仍有未证明
+假设；USB写入、NOCP或日志不代替对端业务校验。本批尚未授新实机资格。

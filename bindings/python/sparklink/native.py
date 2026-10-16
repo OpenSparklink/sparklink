@@ -14,7 +14,7 @@ from .structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
-    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity,
 )
 
 _native_library = None
@@ -29,7 +29,7 @@ def _get_native_lib():
         SleControllerSnapshot, SleRegistrationSnapshot, SleManagementQuery, SleDiscoverySubmit,
         SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
         SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
-        SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm,
+        SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity,
     )):
         raise OSError("native UAPI requires ctypes with 8-byte structure alignment")
     handle = ctypes.c_void_p
@@ -47,6 +47,7 @@ def _get_native_lib():
         "slk_security_negotiation_submit": [handle, ctypes.POINTER(SleSecurityNegotiationSubmit)],
         "slk_security_negotiation_cancel": [handle, ctypes.POINTER(SleSecurityNegotiationCancel)],
         "slk_security_numeric_confirm": [handle,ctypes.POINTER(SleSecurityNumericConfirm)],
+        "slk_connection_security": [handle,u64,u64,ctypes.c_uint16,ctypes.POINTER(SleConnectionSecurity)],
         "slk_security_negotiation_result": [handle,u64,u64,ctypes.c_uint16,u64,ctypes.POINTER(SleSecurityNegotiationResult)],
         "slk_management_acquire": [handle, u64, u32, ctypes.POINTER(u64)],
         "slk_management_query": [handle, u64, ctypes.POINTER(SleManagementQuery)],
@@ -185,6 +186,20 @@ class NativeAdapter:
         result = SleManagementQuery()
         self._invoke('slk_management_query', self.generation, ctypes.byref(result))
         return result
+
+    def connection_security(self, generation, lifetime, handle):
+        """Current scalar mechanism snapshot; never identity/Bond/authorization."""
+        _unsigned(generation, 64, "generation", nonzero=True)
+        _unsigned(lifetime, 64, "lifetime", nonzero=True)
+        _unsigned(handle, 12, "handle")
+        value = SleConnectionSecurity()
+        self._invoke('slk_connection_security', generation, lifetime, handle, ctypes.byref(value))
+        if ((value.generation,value.lifetime,value.handle,value.version) != (generation,lifetime,handle,1)
+                or not value.security_epoch or value.profile != 1 or value.error
+                or (value.level,value.flags,value.method,value.key_size) not in
+                   [(0,0,0,0),(1,13,3,16),(2,15,4,16)]):
+            raise OSError(errno.EPROTO, "invalid connection security snapshot")
+        return value
 
     def submit_security_negotiation(self, request):
         """Explicit known no-MITM approval; no Agent, authenticated identity or Bond promise."""

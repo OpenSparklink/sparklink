@@ -9,6 +9,8 @@ use zbus::interface;
 
 pub(crate) type Info = (u64, u64, u16, u8, u8, String, bool, bool);
 pub(crate) type Objects = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8, String)>);
+/// Kernel mechanism facts, never policy authorization or a future TX grant.
+type SecurityState = (u64, u64, u16, u64, u32, u32, u32, u8, u8);
 
 /// Subscribe before checking ownership or polling the receive future. Known
 /// bus-owner loss cancels the call-owned queue; it does not erase queued ACKs.
@@ -347,6 +349,73 @@ impl ConnectionIface {
             connected,
         )
     }
+    /// Read the same physical Session; never use cached Agent operation state
+    /// as live encryption. The kernel rechecks the original management epoch.
+    async fn get_security_state(&self) -> zbus::fdo::Result<SecurityState> {
+        // One original read deadline; no protocol operation or retry budget.
+        tokio::time::timeout(std::time::Duration::from_secs(1), async {
+            if self.observation().await != (true, true) {
+                return Err(zbus::fdo::Error::Failed(
+                    "retired/unknown security lifetime".into(),
+                ));
+            }
+            let (adapter, lease) = {
+                let state = self.state.lock().await;
+                (
+                    state.native_control.clone().ok_or_else(|| {
+                        zbus::fdo::Error::NotSupported(
+                            "native security snapshot unavailable".into(),
+                        )
+                    })?,
+                    state
+                        .native_lease
+                        .clone()
+                        .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?,
+                )
+            };
+            let admission = lease
+                .try_lock_owned()
+                .map_err(|_| zbus::fdo::Error::Failed("management handoff busy".into()))?;
+            if !admission.accepting || admission.token.is_none() {
+                return Err(zbus::fdo::Error::Failed("management unavailable".into()));
+            }
+            let generation = self.generation;
+            let reference = self.reference;
+            // A detached read still owns its guard/Adapter until the actual ioctl
+            // returns. It cannot write keys, extend a deadline or publish a Grant.
+            let value = tokio::task::spawn_blocking(move || {
+                let _admission = admission;
+                adapter.native_connection_security(generation, reference.lifetime, reference.handle)
+            })
+            .await
+            .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
+            .map_err(|e| match e {
+                libsparklink::Error::Ioctl(
+                    nix::errno::Errno::ENOTTY | nix::errno::Errno::EOPNOTSUPP,
+                ) => zbus::fdo::Error::NotSupported("kernel security snapshot unavailable".into()),
+                _ => zbus::fdo::Error::Failed(e.to_string()),
+            })?;
+            if self.observation().await != (true, true) {
+                return Err(zbus::fdo::Error::Failed(
+                    "connection retired during security snapshot".into(),
+                ));
+            }
+            Ok((
+                value.generation,
+                value.lifetime,
+                value.handle,
+                value.security_epoch,
+                value.profile,
+                value.level,
+                value.flags,
+                value.method,
+                value.key_size,
+            ))
+        })
+        .await
+        .map_err(|_| zbus::fdo::Error::Failed("security snapshot original deadline".into()))?
+    }
+
     /// Allocate the caller-bound ID and ORIGINAL deadline before Agent waiting.
     async fn allocate_reference_security(
         &self,
@@ -764,6 +833,61 @@ mod grant_tests {
     use std::sync::Arc;
     use tokio::sync::Mutex;
 
+    #[tokio::test]
+    async fn security_snapshot_never_uses_cached_policy_or_creates_an_engine() {
+        let adapter = Arc::new(libsparklink::Adapter::open("/dev/null").unwrap());
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            adapter.clone(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(std::path::Path::new("/tmp"), "live-security"),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let reference = SleLinkInfo {
+            lifetime: 11,
+            handle: 3,
+            ..Default::default()
+        };
+        let iface = ConnectionIface::new(state.clone(), 7, reference);
+        assert!(matches!(
+            iface.get_security_state().await,
+            Err(zbus::fdo::Error::Failed(_))
+        ));
+        {
+            let mut st = state.lock().await;
+            st.present = true;
+            st.controller.generation = 7;
+            let mut table = slk_protocol::SleLinkSnapshot {
+                flags: slk_protocol::LINK_SNAPSHOT_KNOWN,
+                count: 1,
+                ..Default::default()
+            };
+            table.links[0] = reference;
+            st.native_links = Some(table);
+            st.native_control = Some(adapter);
+            st.native_lease = Some(Arc::new(Mutex::new(crate::state::NativeManagement {
+                token: Some(1),
+                accepting: true,
+                connection_id: 1,
+                initialized_off: [None; 2],
+            })));
+        }
+        // Real /dev/null ioctl => ENOTTY, never a successful native fixture.
+        assert!(matches!(
+            iface.get_security_state().await,
+            Err(zbus::fdo::Error::NotSupported(_))
+        ));
+        assert!(iface.ssap.lock().await.is_none());
+        let _held = state.lock().await;
+        let result = tokio::time::timeout(
+            std::time::Duration::from_millis(1200),
+            iface.get_security_state(),
+        )
+        .await
+        .unwrap();
+        assert!(
+            matches!(result,Err(zbus::fdo::Error::Failed(ref e)) if e.contains("original deadline"))
+        );
+    }
     #[tokio::test]
     async fn ssap_start_context_releases_one_adapter_guard_before_actor_arguments() {
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(

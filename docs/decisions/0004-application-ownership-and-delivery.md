@@ -131,3 +131,19 @@ proof、安装共享最初绝对期限。未知callback/拒绝/丢失/到期走�
 ioctl必须join。数字码和FrozenOperation终态均不是活连接安全等级或可信Grant。
 前台CLI必须核对实际六位码和原id，不能把预输入批准用作后续数字确认；人机期限
 策略及真实操作单独验收，不通过刷新已开始请求解决5秒预算的可用性限制。
+
+
+## 实时安全状态与历史请求结果
+
+原请求的成功/失败/取消终态属于一次操作；当前连接的机制事实属于物理Session。
+不得在后续off时改写旧成功来兼作live状态，也不得将旧成功缓存成永久Encrypted。
+每lifetime在原生接收处更新revision，早于普通队列；处理时冻结的revision与当前Host
+不一致则不再暴露正向快照。这样普通队列丢失/延迟不保留旧资格，且不将Session
+mutex带入USB callback。查询按Host→gate→owner锁序，不创建新Engine或物理Session。
+
+选择保守处理重复/丢失/未知后继receipt：即使旧操作仍成功，也可以不再提供当前
+正向机制，禁止未经协议屏障再启用。管理撤权、断链和退休继续由原身份/所有权
+收敛；独立revision不替代Grant epoch或实际USB Ticket。只有未来在实际准入/提交
+核对当前安全状态的Grant才可使用这些事实。本次快照接线不开放protected通道。
+固件只有handle的0011/Complete、复用/drain和真实RF加密仍是明确待验证的受信任
+基础，不把当前软件屏障描述为已经证明的硬件归属。

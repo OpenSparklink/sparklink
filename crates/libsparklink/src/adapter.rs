@@ -770,6 +770,31 @@ impl Adapter {
         Ok(())
     }
 
+    /// Current mechanism facts under kernel identity/lease/ingress barriers.
+    /// Requires Managed + CAP_NET_ADMIN. No pairing, identity, Bond or Grant
+    /// is inferred from this informational snapshot; it may become stale.
+    pub fn native_connection_security(
+        &self,
+        generation: u64,
+        lifetime: u64,
+        handle: u16,
+    ) -> Result<SleConnectionSecurity> {
+        if generation == 0 || lifetime == 0 || handle > 0x0fff {
+            return Err(Error::InvalidParam("invalid security connection identity"));
+        }
+        let mut output = SleConnectionSecurity {
+            version: 1,
+            generation,
+            lifetime,
+            handle,
+            ..Default::default()
+        };
+        // SAFETY: complete initialized writable scalar ABI for this syscall.
+        unsafe { ioctl::sl_connection_security(self.raw_fd(), &mut output)? };
+        validate_connection_security(&output, generation, lifetime, handle)?;
+        Ok(output)
+    }
+
     /// Read local real Complete/peer RX observations, never trusted security.
     /// Query requires the original live Managed File; revoke/Down invalidates it.
     pub fn native_security_negotiation(
@@ -1474,5 +1499,92 @@ mod native_validation_tests {
             adapter.diagnostic_result(1, 1),
             Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
         ));
+    }
+}
+
+fn validate_connection_security(
+    value: &SleConnectionSecurity,
+    generation: u64,
+    lifetime: u64,
+    handle: u16,
+) -> Result<()> {
+    if (
+        value.version,
+        value.generation,
+        value.lifetime,
+        value.handle,
+    ) != (1, generation, lifetime, handle)
+        || value.security_epoch == 0
+        || value.profile != 1
+        || value.error != 0
+        || !matches!(
+            (value.level, value.flags, value.method, value.key_size),
+            (0, 0, 0, 0) | (1, 13, 3, 16) | (2, 15, 4, 16)
+        )
+    {
+        return Err(nix::errno::Errno::EPROTO.into());
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod connection_security_tests {
+    use super::*;
+    #[test]
+    fn snapshot_requires_exact_identity_epoch_and_supported_fact_conjunction() {
+        let base = SleConnectionSecurity {
+            version: 1,
+            generation: 2,
+            lifetime: 3,
+            handle: 0,
+            profile: 1,
+            security_epoch: 1,
+            ..Default::default()
+        };
+        for (level, flags, method, key_size) in [(0, 0, 0, 0), (1, 13, 3, 16), (2, 15, 4, 16)] {
+            let v = SleConnectionSecurity {
+                level,
+                flags,
+                method,
+                key_size,
+                ..base
+            };
+            assert!(validate_connection_security(&v, 2, 3, 0).is_ok());
+            for bad in [
+                SleConnectionSecurity {
+                    generation: 99,
+                    ..v
+                },
+                SleConnectionSecurity { lifetime: 99, ..v },
+                SleConnectionSecurity { handle: 99, ..v },
+                SleConnectionSecurity { version: 2, ..v },
+                SleConnectionSecurity {
+                    security_epoch: 0,
+                    ..v
+                },
+                SleConnectionSecurity { profile: 0, ..v },
+                SleConnectionSecurity { error: -5, ..v },
+                SleConnectionSecurity { level: 99, ..v },
+                SleConnectionSecurity { flags: 99, ..v },
+                SleConnectionSecurity { method: 99, ..v },
+                SleConnectionSecurity { key_size: 99, ..v },
+            ] {
+                assert!(validate_connection_security(&bad, 2, 3, 0).is_err());
+            }
+        }
+    }
+    #[test]
+    fn snapshot_never_falls_back_on_missing_kernel_support() {
+        let adapter = Adapter::open("/dev/null").unwrap();
+        assert!(matches!(
+            adapter.native_connection_security(1, 1, 0),
+            Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+        ));
+        for identity in [(0, 1, 0), (1, 0, 0), (1, 1, 0x1000)] {
+            assert!(matches!(
+                adapter.native_connection_security(identity.0, identity.1, identity.2),
+                Err(Error::InvalidParam(_))
+            ));
+        }
     }
 }

@@ -1683,3 +1683,23 @@ pub struct SleSecurityNumericConfirm {
 }
 pub const SECURITY_NUMERIC_COMPARISON: u32 = 4;
 const _: () = assert!(core::mem::size_of::<SleSecurityNumericConfirm>() == 40);
+
+/// Current physical Session mechanism facts, not historical operation success,
+/// application authorization, named identity or Bond. Epoch advances at native
+/// ingress before ordinary queueing; snapshot alone cannot authorize later TX.
+#[repr(C, align(8))]
+#[derive(Debug, Clone, Copy, Default)]
+pub struct SleConnectionSecurity {
+    pub generation: u64,
+    pub lifetime: u64,
+    pub security_epoch: u64,
+    pub version: u32,
+    pub profile: u32,
+    pub level: u32,
+    pub flags: u32,
+    pub handle: u16,
+    pub method: u8,
+    pub key_size: u8,
+    pub error: i32,
+}
+const _: () = assert!(core::mem::size_of::<SleConnectionSecurity>() == 48);

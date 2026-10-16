@@ -458,3 +458,13 @@ class SleSecurityNumericConfirm(ctypes.Structure):
     _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),("request_id",ctypes.c_uint64),
         ("version",ctypes.c_uint32),("comparison_code",ctypes.c_uint32),("handle",ctypes.c_uint16),
         ("accept",ctypes.c_uint8),("reserved",ctypes.c_uint8*5)]
+
+
+class SleConnectionSecurity(ctypes.Structure):
+    """Current mechanism facts, not historical success, identity, Bond or Grant."""
+    _align_ = 8
+    _fields_ = [("generation",ctypes.c_uint64),("lifetime",ctypes.c_uint64),
+        ("security_epoch",ctypes.c_uint64),("version",ctypes.c_uint32),
+        ("profile",ctypes.c_uint32),("level",ctypes.c_uint32),("flags",ctypes.c_uint32),
+        ("handle",ctypes.c_uint16),("method",ctypes.c_uint8),("key_size",ctypes.c_uint8),
+        ("error",ctypes.c_int32)]

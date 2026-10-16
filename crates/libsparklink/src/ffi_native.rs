@@ -566,3 +566,30 @@ pub unsafe extern "C" fn slk_security_numeric_confirm(
         .confirm_native_security_numeric(request)
         .map_or_else(errno, |()| 0)
 }
+
+/// Current connection mechanism snapshot; never named identity, Bond or Grant.
+/// Returns 0 or negative errno, without mutating output on failure.
+/// # Safety
+/// Non-null pointers must be valid, aligned, nonoverlapping; output writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_security(
+    adapter: *const SlkAdapter,
+    generation: u64,
+    lifetime: u64,
+    handle: u16,
+    out: *mut SleConnectionSecurity,
+) -> c_int {
+    let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter
+        .inner
+        .native_connection_security(generation, lifetime, handle)
+    {
+        Ok(value) => {
+            *out = value;
+            0
+        }
+        Err(error) => errno(error),
+    }
+}

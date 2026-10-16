@@ -659,6 +659,25 @@ typedef struct SPARKLINK_ALIGN(8) SleSecurityNumericConfirm {
     uint8_t reserved[5];
 } SleSecurityNumericConfirm;
 
+/**
+ * Current physical Session mechanism facts, not historical operation success,
+ * application authorization, named identity or Bond. Epoch advances at native
+ * ingress before ordinary queueing; snapshot alone cannot authorize later TX.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleConnectionSecurity {
+    uint64_t generation;
+    uint64_t lifetime;
+    uint64_t security_epoch;
+    uint32_t version;
+    uint32_t profile;
+    uint32_t level;
+    uint32_t flags;
+    uint16_t handle;
+    uint8_t method;
+    uint8_t key_size;
+    int32_t error;
+} SleConnectionSecurity;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -1050,6 +1069,18 @@ int slk_security_negotiation_cancel(const struct SlkAdapter *adapter,
  */
 int slk_security_numeric_confirm(const struct SlkAdapter *adapter,
                                  const struct SleSecurityNumericConfirm *request);
+
+/**
+ * Current connection mechanism snapshot; never named identity, Bond or Grant.
+ * Returns 0 or negative errno, without mutating output on failure.
+ * # Safety
+ * Non-null pointers must be valid, aligned, nonoverlapping; output writable.
+ */
+int slk_connection_security(const struct SlkAdapter *adapter,
+                            uint64_t generation,
+                            uint64_t lifetime,
+                            uint16_t handle,
+                            struct SleConnectionSecurity *out);
 
 #ifdef __cplusplus
 }  // extern "C"

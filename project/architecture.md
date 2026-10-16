@@ -686,3 +686,12 @@ Free 或复用资格；测试仍需独立真实 USB/NOCP 与对端应用证据�
 Host/guest请求、实际argv、双端报告和连接角色必须一致，窗口不能冒充协议credit。
 不同内核的对照绑定相同用户态字节及配置，结果按实际版本差异限定因果范围；资源
 与观测开销分层记录。此测量契约不改变Runtime/Session/Channel/Grant的所有权。
+
+
+实时安全快照由唯一物理Session持有，不能从历史Agent/安装操作成功反推。
+Runtime Host在安全receipt进入普通RX队列前维护每lifetime独立revision；Session
+保存已处理receipt身份。查询在Host→gate→owner锁下复制一致快照，revision不符、
+off/failure/rekey/撤权/Down/退休均fail closed；USB callback不获取Session睡眠锁。
+该revision是软件收到事件的屏障，不证明固件handle复用、真实RF加密或可信身份。
+原操作终态不随当前cipher-off改写；可撤销Grant/SSAP消费端须在实际准入和提交处
+检查当前安全epoch，不能持有一次快照永久授权。消费端未接通前protected仍拒绝。

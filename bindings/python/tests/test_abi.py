@@ -63,6 +63,7 @@ STRUCT_NAMES = {
     "SleSecurityNegotiationResult": "sle_security_negotiation_result",
     "SleSecurityNegotiationCancel": "sle_security_negotiation_cancel",
     "SleSecurityNumericConfirm": "sle_security_numeric_confirm",
+    "SleConnectionSecurity": "sle_connection_security",
 }
 
 

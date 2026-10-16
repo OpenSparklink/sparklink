@@ -15,7 +15,7 @@ from sparklink.structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
-    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity,
 )
 
 
@@ -44,6 +44,17 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(bytes(request), before)
         self.assertEqual(self.lib.slk_security_negotiation_cancel(None, ctypes.byref(request)), -errno.EINVAL)
         self.assertEqual(self.lib.slk_security_negotiation_cancel(self.handle, None), -errno.EINVAL)
+
+    def test_connection_security_requires_real_kernel_and_preserves_failed_output(self):
+        out = SleConnectionSecurity(generation=99, security_epoch=123)
+        before = bytes(out)
+        self.assertEqual(self.lib.slk_connection_security(self.handle, 1, 1, 0, ctypes.byref(out)), -errno.ENOTTY)
+        self.assertEqual(bytes(out), before)
+        self.assertEqual(self.lib.slk_connection_security(None, 1, 1, 0, ctypes.byref(out)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_connection_security(self.handle, 1, 1, 0, None), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_connection_security(self.handle, 0, 1, 0, ctypes.byref(out)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_connection_security(self.handle, 1, 1, 4096, ctypes.byref(out)), -errno.EINVAL)
+        self.assertEqual(bytes(out), before)
 
     def test_numeric_confirmation_is_real_ioctl_without_local_success(self):
         request = SleSecurityNumericConfirm(version=1, generation=1, lifetime=1, request_id=1, comparison_code=0, accept=1)

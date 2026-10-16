@@ -1,6 +1,13 @@
 /// SparkLink ioctl magic number: 'S' (0x53)
 pub const SL_MAGIC: u8 = b'S';
 
+nix::ioctl_readwrite!(
+    sl_connection_security,
+    SL_MAGIC,
+    0xd6,
+    super::SleConnectionSecurity
+);
+
 // ----- Device Management (0x01 - 0x08) -----
 
 // Removed unpublished no-op registration commands 0x01/0x02.

@@ -63,6 +63,11 @@ project、history、decisions、evidence 原文保留仓库、清单和源码链
 由 uv.lock 固定，CSS/JS 随 HTML 构建输出。Mermaid 的 CDN 依赖仍单独保留；
 主题变更须重查搜索、代码复制、宽表格、夜间/移动布局与 `/sparklink/` 子路径。
 
+本站保留该锁定主题，使用本地 CSS 与 sidebar 模板实现 GitBook 风格：四类任务卡片、
+默认收拢的章节、左侧搜索/版本入口及右侧页内目录。手机上卡片改为单列，章节使用
+主题原有抽屉；键盘焦点和减少动画偏好保留。版本入口绑定文档源码，不表示功能资格。
+这组调整不增加主题 CDN 或托管服务，不改变发布范围；HTML artifact 仍需独立发布。
+
 Book Theme 1.4.0／PyData 0.20.0 的组合会保留隐藏的父导航和重复 toggle；
 本站通过标准 `layout.html` 模板扩展只保留 Book 阅读控件，保留父主题 scroll-spy
 所需的空几何锚点。浏览器门禁要求唯一 toggle、真实移动菜单和实际复制/粘贴；

@@ -1178,7 +1178,13 @@
       "locked_version": "1.4.0",
       "intent": "GitBook-like chapter navigation, page TOC, search and responsive reading",
       "reason": "User explicitly requests theme change; replaces earlier Furo choice, same uv/Sphinx/MyST infrastructure",
-      "status": "18 real browser checks passed at exact4a581c5; failures preserved; no Pages deployment or functional qualification"
+      "status": "18 real browser checks passed at exact4a581c5; failures preserved; no Pages deployment or functional qualification",
+      "refinement": {
+        "scope": "GitBook-style task cards, compact chapter navigation, versioned branding, mobile and keyboard reading; documentation only",
+        "status": "implemented; strict build passed on initial dirty candidate; exact-source browser gate pending",
+        "runtime_qualification_changed": false,
+        "publication": "HTML artifact only; Pages API404, no deployment claimed"
+      }
     },
     "status_evidence": "docs/evidence/documentation-dq1-and-theme-20261016.json",
     "tested_documentation_source": "4a581c5fd829c4041561f21becfd2892fb2649db",

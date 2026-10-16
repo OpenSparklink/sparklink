@@ -19,7 +19,7 @@ html_static_path = ["_static"]
 templates_path = ["_templates"]
 html_css_files = ["sparklink.css"]
 html_theme_options = {
-    "show_navbar_depth": 2,
+    "show_navbar_depth": 1,
     "show_toc_level": 2,
     "toc_title": "本页内容",
     "navigation_with_keys": False,
@@ -65,6 +65,8 @@ _source_revision = os.environ.get('SPARKLINK_DOCS_REVISION') or subprocess.check
 release = _source_revision[:12] + ' (development; qualification is separate)'
 html_title = 'SparkLink · ' + _source_revision[:12]
 html_theme_options['logo'] = {'text': 'SparkLink · ' + _source_revision[:8]}
+html_context = {'docs_revision': _source_revision}
+html_sidebars = {'**': ['sparklink-brand.html', 'search-button-field.html', 'sbt-sidebar-nav.html']}
 # No raw reST/Markdown download exposing workstation paths; repository originals
 # remain linked at their immutable revision.
 html_copy_source = False

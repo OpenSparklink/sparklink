@@ -8,17 +8,34 @@ SparkLink 的 Linux 子系统与用户态工具仍在开发中。阅读使用步
 （限已准备的实验 VM，完整入门流程仍待重放）；能力与限制始终单独核对。
 项目文档按 [Diátaxis](https://diataxis.fr/) 区分下列读者需求：
 
-| 你想做什么 | 从哪里开始 |
-|---|---|
-| 初次使用真实设备，学习发送和回复 | [教程](tutorials/index.md) |
-| 已有具体任务，寻找操作步骤 | [操作指南](how-to/index.md) |
-| 查找接口、配置、权限和错误的准确契约 | [技术参考](reference/index.md) |
-| 理解分层、所有权与设计取舍 | [原理解释](explanation/index.md) |
+::::{container} sl-task-grid
+:::{container} sl-task-card
+[**教程 →**](tutorials/index.md)
+
+跟随一个学习过程，在两只真实 WS73 之间发送与回复。
+:::
+:::{container} sl-task-card
+[**操作指南 →**](how-to/index.md)
+
+解决具体任务：准备输入、保存抓包、检查业务往返。
+:::
+:::{container} sl-task-card
+[**技术参考 →**](reference/index.md)
+
+查找接口、配置、权限、错误与当前支持范围。
+:::
+:::{container} sl-task-card
+[**原理解释 →**](explanation/index.md)
+
+理解协议分层、资源所有权和验证边界。
+:::
+::::
 
 实验驱动和真实 WS73 I/O 的当前开发约束是 **VM-only**。文档构建和纯离线验证
 可以在主机执行。用户态业务应用无需 sudo；环境管理和底层诊断权限另有边界。
 
 ```{toctree}
+:hidden:
 :maxdepth: 1
 
 tutorials/index

@@ -45,3 +45,42 @@ article .table-wrapper, article .pst-scrollable-table-container { max-width: 100
   article table { min-width: 40rem; }
   article th { white-space: nowrap; }
 }
+
+/* Book-style reading: quiet chrome, clear chapter hierarchy and task entries. */
+html { --pst-sidebar-width: 17rem; --pst-sidebar-secondary: 14rem; }
+.sl-brand { padding: .5rem 0 1.35rem; }
+.sl-brand-home { display: flex; align-items: center; gap: .75rem; color: var(--pst-color-text-base); font-size: 1.25rem; font-weight: 700; text-decoration: none; }
+.sl-brand-home:hover { text-decoration: none; }
+.sl-brand-mark { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; flex: 0 0 auto; border-radius: .65rem; background: var(--pst-color-primary); color: var(--pst-color-background); font-size: 1.4rem; }
+.sl-brand-caption { display: block; margin-top: .2rem; color: var(--pst-color-text-muted); font-size: .75rem; font-weight: 400; }
+.sl-version { display: inline-block; margin-top: 1rem; padding: .2rem .55rem; border: 1px solid var(--pst-color-border); border-radius: .4rem; color: var(--pst-color-text-muted); font-size: .75rem; text-decoration: none; }
+.bd-sidebar-primary { padding: 1.5rem 1rem; }
+.bd-sidebar-primary .bd-links { font-size: .875rem; }
+.bd-sidebar-primary .bd-links .nav-link { padding-top: .5rem; padding-bottom: .5rem; line-height: 1.5; }
+.bd-sidebar-primary li.toctree-l1 > .nav-link { font-weight: 600; }
+.bd-sidebar-primary .nav-link:hover { background: var(--pst-color-on-surface); }
+.bd-sidebar-primary .nav-link.active { background: var(--pst-color-on-surface); }
+.bd-sidebar-primary .search-button-field { border-radius: .5rem; }
+.bd-article h1 { letter-spacing: -.025em; margin-bottom: 1.25rem; }
+.bd-article h2 { border-top: 1px solid var(--pst-color-border); padding-top: 1.5rem; }
+.bd-article p { margin-bottom: 1.1rem; }
+.bd-article code.literal { border-radius: .25rem; }
+.bd-article a:focus-visible, .sl-brand a:focus-visible { outline: 2px solid var(--pst-color-primary); outline-offset: 4px; border-radius: .25rem; }
+.sl-task-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.75rem 0; }
+.sl-task-card { position: relative; border: 1px solid var(--pst-color-border); border-radius: .75rem; padding: 1.25rem; background: var(--pst-color-on-background); }
+.sl-task-card:hover, .sl-task-card:focus-within { border-color: var(--pst-color-primary); background: var(--pst-color-surface); }
+.sl-task-card p:first-child { margin-bottom: .65rem; font-size: 1.1rem; }
+.sl-task-card a { text-decoration: none; }
+.sl-task-card a::after { position: absolute; inset: 0; content: ""; border-radius: .75rem; }
+.sl-task-card p:last-child { margin-bottom: 0; color: var(--pst-color-text-muted); font-size: .9rem; line-height: 1.7; }
+.prev-next-area { gap: 1rem; margin-top: 2.5rem; }
+.prev-next-area a { border: 1px solid var(--pst-color-border); border-radius: .65rem; padding: .9rem 1rem; }
+.prev-next-area a:hover { border-color: var(--pst-color-primary); }
+@media (prefers-reduced-motion: no-preference) {
+  .sl-task-card, .bd-sidebar-primary .nav-link { transition: background-color .15s, border-color .15s; }
+}
+@media (max-width: 48rem) {
+  .sl-task-grid { grid-template-columns: minmax(0, 1fr); }
+  .sl-task-card { padding: 1rem; }
+  .bd-article { padding-left: 1rem; padding-right: 1rem; }
+}

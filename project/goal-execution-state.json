@@ -679,8 +679,8 @@
     "Four-device long payload/budget/fairness and dynamic channels after first isolation exit",
     "Stateful production fuzz,submit-revoke-Down-original-deadline composition and debugVM parallel; minimum authenticated security and authorization before protected CCC"
   ],
-  "issue_sync_status": "Nine current quality comments exact readback; original scope unchanged and OPEN",
-  "issue_sync_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
+  "issue_sync_status": "Four-device first positive increment: K17/U3/U8 exact comment readback and OPEN; original scope unchanged",
+  "issue_sync_receipt": "docs/evidence/four-device-business-issues-20261016.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
   "current_goal_turn_classification": "progress: d01aa82 signed/pushed gate,87 offline+strictdocs; exact VM4Ready/two-pair/two-role80real replies sealed; no whole goal complete",
   "goal_api_status_observed": "active",
@@ -1213,6 +1213,10 @@
     ],
     "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification",
     "report": "docs/evidence/four-device-business-20261016.json",
-    "next": "Actual one-pair Disconnect/Down overlaps surviving pair peer-checked socket replies; then long/budget/fairness/dynamic channels. No wholeWP07 close."
-  }
+    "next": "Actual one-pair Disconnect/Down overlaps surviving pair peer-checked socket replies; then long/budget/fairness/dynamic channels. No wholeWP07 close.",
+    "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json"
+  },
+  "issue_sync_receipts_history": [
+    "docs/evidence/qualification-quality-issues-20261015.json"
+  ]
 }

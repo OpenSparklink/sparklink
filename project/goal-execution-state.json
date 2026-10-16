@@ -1433,6 +1433,26 @@
       "install-cancel-6166-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "numeric-862-real": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "numeric-862-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "numeric-862-virtual": {
+        "level": "virtual_integration",
+        "result": "PASS"
+      },
+      "numeric-862-failed": {
+        "level": "offline",
+        "result": "FAIL"
+      },
+      "numeric-862-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",

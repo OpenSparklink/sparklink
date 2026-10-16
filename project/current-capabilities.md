@@ -231,6 +231,11 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | U6166：681冻结工具/严格clippy/2Rust、六历史重放及15实际证据负对照 | `offline` | `PASS` |
 | 历史两次工具接线失败：init漏传及普通目录拒绝，原FAIL保留 | `real_device` | `FAIL` |
 | 完整安装lease/fd/Down/期限与迟到后物理义务、认证/恢复：未证明 | `real_device` | `UNPROVED` |
+| K323/U862：数字比较六门禁与三项路径保持，48次真实回复 | `real_device` | `PASS` |
+| K323/U862：34转换/272Rust、684及685工具、54真实证据负对照 | `offline` | `PASS` |
+| K323：实际crypto材料/数字向量及无USB签名模块VM | `virtual_integration` | `PASS` |
+| 历史数字批次解析器/CI/环境失败：保留FAIL不升级 | `offline` | `FAIL` |
+| 数字Agent/身份等级/可信Grant/Bond、完整矩阵/恢复：仍缺失 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

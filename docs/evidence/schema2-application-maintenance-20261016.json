@@ -139,5 +139,57 @@
     "schema2supervisor/provenance/captureclosure",
     "naturalRCA/nonhumanrecovery",
     "alloriginalunfinishedscope"
-  ]
+  ],
+  "subsequent_ci_observation": {
+    "run": 38886879662,
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38886879662",
+    "source": "e348186162c7124e81404019b97784e8318df43f",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo check",
+        "conclusion": "success"
+      },
+      {
+        "name": "Kernel crypto/wire and archived protocol boundaries",
+        "conclusion": "success"
+      },
+      {
+        "name": "Python bindings and kernel ABI conformance",
+        "conclusion": "success"
+      },
+      {
+        "name": "rustfmt",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo test",
+        "conclusion": "success"
+      },
+      {
+        "name": "clippy",
+        "conclusion": "success"
+      },
+      {
+        "name": "C header generation",
+        "conclusion": "success"
+      },
+      {
+        "name": "release build",
+        "conclusion": "success"
+      }
+    ],
+    "raw": {
+      "path": ".dev/schema2-ci-e348186-observed.json",
+      "sha256": "8d3d1bb1cd238294248ad584953373a350041eec6da32096015cac2e99401848",
+      "bytes": 18762,
+      "access": "private"
+    },
+    "scope": "CI sourcee348186 only;notNative/RF/performance qualification;prior pending observation retained"
+  }
 }

@@ -41,7 +41,8 @@
     "four-burst64-d42da67",
     "cmtc-identifier-codec-d75f7bd",
     "cmtc-mps-real14-90fda14",
-    "cmtc-mps-limits-90fda14"
+    "cmtc-mps-limits-90fda14",
+    "dynamic-cmtc-400bd68"
   ],
   "records": [
     {
@@ -9065,6 +9066,132 @@
         "four-business",
         "four-disconnect",
         "four-burst"
+      ]
+    },
+    {
+      "id": "dynamic-cmtc-400bd68",
+      "title": "动态CMTC生产纯转换：六步有界检查与取消复活负对照",
+      "level": "formal_bounded",
+      "result": "PASS",
+      "contracts": [
+        "Actual codec roundtrip/failure atomicity and defined unicast signaling identities",
+        "Six production transitions: terminal permanence,abandoned cannot Open,wrong identifier no effect"
+      ],
+      "bounds": {
+        "name": "direct-production-cmtc",
+        "status": "BOUNDED_PASS",
+        "result": "PASS",
+        "properties": 769,
+        "main_properties": 8,
+        "transitions": 6,
+        "events": 4,
+        "unwind": 65,
+        "tool": "6.11.0 (cbmc-6.11.0)",
+        "assumptions": [
+          "Valid C pointers/objects as required by the codec; arbitrary input length0..32",
+          "Sequential actual pure codec/state transitions; no kernel locks/allocator/USB/firmware refinement"
+        ],
+        "bounds": [
+          "All8bit identifiers,unicastTCID0x80..0xdf,MTU1..2042/MPS6..2047,8bit port/AID and SLQI inputs",
+          "Arbitrary32byte buffers,length0..32;failure atomicity;unwind65 with unwinding assertions,including full64byte decoded-struct memcmp",
+          "Six sequential events:submit,detach,expiry,arbitrary response;terminal/abandon/oldID invariants"
+        ]
+      },
+      "excluded": [
+        "Actual production pure codec/state only; six events, all8bit identifiers/unicastTCID0x80..0xdf, MTU1..2042/MPS6..2047,8bit port/AID/SLQI,arbitrary32bytes/length0..32,unwind65. Not unbounded temporal liveness or whole Session refinement.",
+        "CBMC6.11.0/compiler/C semantics are trusted; all expected main properties and solver success required; no proof of Linux,real locks/allocator,credit ledger,USB,firmware or hardware.",
+        "A canceled submitted request must not become Open in the actual pure transition. The deliberate production-source mutation supplies a synthetic counterexample, not a reproduced hardware defect.",
+        "Actual dynamic socket/Grant/queue/close integration,resource reuse barriers and peer delivery require separate controlled VM and physical acceptance."
+      ],
+      "remaining": [
+        "New dynamic2channel gate,actual unmatched endpoint refusal,asymmetricTCIDs,Aclose/Bactual business,swapped physical connection roles",
+        "Exact new image original short/length/long/queue/close and4device regression;old K90/U2ee real report remains historical exact qualification",
+        "Four lifetime tombstones are a finite initial policy,not full safe reuse or long-term resource convergence",
+        "Full authenticated security/CPCD/Bond,multichannel/fairness/fullpermissions/deployment and originalS0-S6/19WP/10FV/12DG",
+        "Natural startup/reenumeration/disappearance RCA and nonhuman recovery remain OPEN;manual/hub/QMP/injection not substitutes"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+          "scopes": [
+            "net/sparklink/sle_channel_wire.c",
+            "net/sparklink/sle_channel_wire.h",
+            "net/sparklink/sle_dynamic_state.h",
+            "tools/testing/selftests/sparklink/channel/dynamic_cbmc.c",
+            "tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py"
+          ],
+          "files": {
+            "net/sparklink/sle_channel_wire.c": "f64a6850c88177f1e89b2a95f09d5a0a1b19a26570c8907486778f5169ba6af2",
+            "net/sparklink/sle_channel_wire.h": "05b4f91e039982ca4fe4257201f2ac04bc3a54ae27e6cddbe6ff4728b695f32a",
+            "net/sparklink/sle_dynamic_state.h": "33835dc321e93a8dd7c7c810bdae5d717e27825c198ec68f660ff192052f3452",
+            "tools/testing/selftests/sparklink/channel/dynamic_cbmc.c": "71e8547f8bd082f7091818dbe17b7cdead86adeea79b7a8f0602103dc1df3ec8",
+            "tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py": "43eaac3b7bbee4ef5dbba6f024004473470de4587cf6fe55101b6e95ae2e956c"
+          }
+        }
+      },
+      "report": {
+        "material": "dynamic-cmtc-400bd68-report",
+        "scope_pointer": [
+          "formal_excluded"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "kernel"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "DYNAMIC_CMTC_OFFLINE_BOUNDED_PASS_REAL_PENDING": "PASS"
+        }
+      },
+      "report_commit": "80e5307c14a0789ef84f4e43d30aedcdc22b91ec",
+      "artifact_materials": [
+        "dynamic-cmtc-400bd68-cbmc",
+        "dynamic-cmtc-400bd68-raw",
+        "dynamic-cmtc-400bd68-negative",
+        "dynamic-cmtc-400bd68-negative-raw"
+      ],
+      "tool_materials": [
+        "dynamic-cmtc-400bd68-runner"
+      ],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "direct-production-cmtc",
+          "result": "PASS",
+          "reported_status": "BOUNDED_PASS",
+          "report_pointer": [
+            "gates",
+            0
+          ],
+          "materials": [
+            "dynamic-cmtc-400bd68-report",
+            "dynamic-cmtc-400bd68-cbmc",
+            "dynamic-cmtc-400bd68-raw",
+            "dynamic-cmtc-400bd68-stderr"
+          ]
+        },
+        {
+          "id": "expected-production-mutation",
+          "result": "PASS",
+          "reported_status": "EXPECTED_COUNTEREXAMPLE",
+          "report_pointer": [
+            "gates",
+            1
+          ],
+          "materials": [
+            "dynamic-cmtc-400bd68-report",
+            "dynamic-cmtc-400bd68-negative",
+            "dynamic-cmtc-400bd68-negative-raw"
+          ]
+        }
+      ],
+      "required_gates": [
+        "direct-production-cmtc",
+        "expected-production-mutation"
       ]
     }
   ],
@@ -21868,6 +21995,62 @@
       "bytes": 249733,
       "access": "public",
       "format": "json"
+    },
+    "dynamic-cmtc-400bd68-report": {
+      "base": "repo",
+      "path": "docs/evidence/dynamic-cmtc-offline-20261016.json",
+      "access": "public",
+      "format": "json",
+      "sha256": "bba329bbbdec751c16c49c9ce0a6d0497c92eae725cf7b5b3d71ec3d52ece6a9",
+      "bytes": 11342
+    },
+    "dynamic-cmtc-400bd68-cbmc": {
+      "base": "workspace",
+      "path": ".dev/dynamic-cmtc-cbmc-400bd68/report.json",
+      "access": "private",
+      "format": "json",
+      "sha256": "770b53f45350f3580938c6ee48e8d43f7779f346cf532fea0e64dd052ae7e6d1",
+      "bytes": 1022298
+    },
+    "dynamic-cmtc-400bd68-raw": {
+      "base": "workspace",
+      "path": ".dev/dynamic-cmtc-cbmc-400bd68/raw.json",
+      "access": "private",
+      "format": "json",
+      "sha256": "7d85a2f36770156d9960372ee29712fb1f4623b5668e707a2ce827419504465d",
+      "bytes": 926534
+    },
+    "dynamic-cmtc-400bd68-stderr": {
+      "base": "workspace",
+      "path": ".dev/dynamic-cmtc-cbmc-400bd68/stderr.txt",
+      "access": "private",
+      "format": "bytes",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "dynamic-cmtc-400bd68-negative": {
+      "base": "workspace",
+      "path": ".dev/dynamic-cmtc-negative-400bd68/report.json",
+      "access": "private",
+      "format": "json",
+      "sha256": "7589ce167ab62a8af919d86072aa1ee2623fc54fcbea5a3474c1bd0fd30f900c",
+      "bytes": 1460215
+    },
+    "dynamic-cmtc-400bd68-negative-raw": {
+      "base": "workspace",
+      "path": ".dev/dynamic-cmtc-negative-400bd68/raw.json",
+      "access": "private",
+      "format": "json",
+      "sha256": "4ba6d7a3c339eca7c8a859678b742ad7d17cb7c860e9be5c9fd8a9249a273912",
+      "bytes": 2348453
+    },
+    "dynamic-cmtc-400bd68-runner": {
+      "base": "workspace",
+      "path": ".dev/dynamic-cmtc-frozen-runner-400bd68.py",
+      "access": "private",
+      "format": "bytes",
+      "sha256": "43eaac3b7bbee4ef5dbba6f024004473470de4587cf6fe55101b6e95ae2e956c",
+      "bytes": 5117
     }
   },
   "baseline_record": "cmtc-mps-real14-90fda14"

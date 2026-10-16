@@ -34,6 +34,7 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 | 历史d75 MTU/MPS违约FAIL保留；当前K90由独立实机回归记录取代 | `implemented` | `FAIL` |
 | 生产MTU/MPS修复：直接限长与六步状态转换限定证明 | `formal_bounded` | `PASS` |
 | K90/U2ee真实回归：独立MTU/MPS、328次业务往返及2次关闭在途交付 | `real_device` | `PASS` |
+| 动态CMTC生产纯转换：六步有界检查与取消复活负对照 | `formal_bounded` | `PASS` |
 
 保留镜像：K `90fda1457a8d8191a1a5fab260927e31644b3e50`；编译 U `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`；执行工具 `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`。
 

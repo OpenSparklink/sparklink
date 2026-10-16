@@ -168,6 +168,15 @@ version1/size40，返回controller/handle/generation/lifetime、实际有效MTU/
 local/remote TCID/PI/basic mode/directions，reserved0，无lease/security承诺。
 未bound/关闭ENOTCONN，协商前EAGAIN，撤权/旧身份按Runtime拒绝，copy故障EFAULT
 不改变通道或消费队列。快照仅在授权准入点一致，不保证返回后的连接存续。
+
+K90fda145 修正独立预算：本实现公布 SDU MTU2042、完整 DTAP PDU MPS2047，
+并分别与对端能力取较小值。CHANNEL_INFO 的 mtu 是按通道帧头收紧后的有效
+SDU 上限，mps 是完整 PDU 上限；CUTC 帧头5字节、SMTC帧头4字节。
+例如对端 MPS254 时 CUTC 至多249字节，SMTC至多250字节。发送超限
+EMSGSIZE，接收完整 PDU 超限丢弃；ACB254字节分片/控制器 credit 是另一层限制。
+本地20字节 CMTC 响应决定当前实现所需最小 MPS20，并非标准全局最小值。
+该修复有离线及限定证明，准确新镜像的真实设备资格仍须另行核对；历史回复
+成功不能自动取得修复后的 MPS 一致性资格。
 C `slk_channel_info`错误不改输出；Python `native.channel_info(fd)`用于delegated
 socket，不是NativeAdapter的控制fd。32位仅C布局已验，真实compat调用仍待验收。
 

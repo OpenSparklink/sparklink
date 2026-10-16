@@ -18,7 +18,7 @@ def credentials(pid):
 
 
 def execute(run, phase):
-    row = dict(cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
+    row = dict(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
                boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     run.data.setdefault('channel_socket', []).append(row); run.save()
@@ -137,9 +137,21 @@ def rejected_frames(row):
     return result
 
 
+def dtap_limits(row):
+    if 'dtap_limits_version' not in row:
+        return None  # Preserve historical identity; never add MPS conformance.
+    cap = row.get('cmtc_local_capability')
+    if type(row['dtap_limits_version']) is not int or row['dtap_limits_version'] != 1 or not isinstance(cap,dict) or set(cap) != {'mtu','mps'}:
+        raise CaptureError('versioned independent MTU/MPS contract required')
+    if any(type(v) is not int for v in cap.values()) or cap != dict(mtu=2042,mps=2047) or not row.get('channel_info_required'):
+        raise CaptureError('exact current Native capability advertisement and channel receipts required')
+    return cap
+
+
 def channel_info_receipts(row):
     if not row.get('channel_info_required', False):
         return []  # Historical records never gain this qualification.
+    limits = dtap_limits(row)
     owners = row['owners']; result = []
     for app in row['applications']:
         entry = owners[0 if app['role'] == 'initiator' else 1]
@@ -152,6 +164,8 @@ def channel_info_receipts(row):
         fields = tuple(map(int, values[0]))
         if fields[:7] != expected or fields[-2:] != (0, 3) or min(fields[7:9]) < row.get('message_bytes',61):
             raise CaptureError('channel capabilities disagree with original owner/lifetime/mode/budget')
+        if limits and (fields[7] > limits['mtu'] or fields[8] > limits['mps'] or fields[7]+5 > fields[8]):
+            raise CaptureError('CUTC SDU budget plus complete header exceeds independent PDU MPS')
         result.append(dict(role=app['role'], fields=fields, partial_copy_bytes=int(copies[0])))
     return result
 
@@ -297,10 +311,14 @@ def corroborate(run,capture):
         rejected=rejected_frames(row)
         for raw in rejected:
             if any(raw.hex() in p['data'] and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('rejected message reached USB data path')
+        limits=dtap_limits(row)
         owners=row['owners']
         if len(owners)!=2 or owners[0]['owner']['index']==owners[1]['owner']['index']:raise CaptureError('independent controller identities required')
         def matched(entry,direction,payload,session=False):
             owner,obj=entry['owner'],entry['object']
+            if limits and payload[:2]!=b'\x02\x00':
+                receipt=next((x for x in channel_info_receipts(row) if x['fields'][0]==owner['index']),None)
+                if not receipt or len(payload)>receipt['fields'][8]:raise CaptureError('complete business PDU exceeds negotiated MPS')
             if owner['generation']!=obj['generation'] or not obj['lifetime']:raise CaptureError('canonical generation/lifetime required')
             found=[p for p in sdus if (p['bus'],p['device'])==(owner['bus'],owner['device'])
                    and p['handle']==obj['handle'] and p['direction']==direction and p['data']==payload.hex()
@@ -350,7 +368,8 @@ def corroborate(run,capture):
             query=bytes([2,0,8,0,1,identifier,4,0,0xe2,0,0,0])
             receipt=next((value for value in channel_info_receipts(row) if value['fields'][0]==sender['owner']['index']),None)
             mtu=receipt['fields'][7] if receipt else 249
-            response=bytes([2,0,16,0,2,identifier,12,0,0xe2,0,0,0,0,0])+mtu.to_bytes(2,'little')*2+bytes.fromhex('0101')
+            advertised=limits or dict(mtu=mtu,mps=mtu)
+            response=bytes([2,0,16,0,2,identifier,12,0,0xe2,0,0,0,0,0])+advertised['mtu'].to_bytes(2,'little')+advertised['mps'].to_bytes(2,'little')+bytes.fromhex('0101')
             capabilities.append(dict(request_tx=matched(sender,'out',query,session=row.get('ssap_exchange_required',False)),request_rx=matched(receiver,'in',query,session=row.get('ssap_exchange_required',False)),
                                      response_tx=matched(sender,'out',response,session=row.get('ssap_exchange_required',False)),response_rx=matched(receiver,'in',response,session=row.get('ssap_exchange_required',False))))
             owner,obj=sender['owner'],sender['object']
@@ -377,6 +396,7 @@ def corroborate(run,capture):
                     ssap_legs.append(dict(tx=matched(owner,'out',frame,True),rx=matched(receiver,'in',frame,True)))
                 ssap.append(dict(receipt=source,wire=ssap_legs))
         entry = dict(phase=n,owners=owners,capabilities=capabilities,legs=legs)
+        if limits:entry.update(dtap_limits_version=1,independent_mtu_mps=True)
         if row.get('tx_status_required',False):entry['tx_status']=tx_status_receipts(row)
         if row.get('burst',False):entry['burst_pressure']=burst_pressure_receipts(row)
         if prefix:entry['prefix_close']={k:v for k,v in prefix.items() if k!='dropped'}|dict(dropped_marker=prefix['dropped'].hex(),other_channel_after_close=True)

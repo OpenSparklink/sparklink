@@ -181,6 +181,40 @@ class IndependentUSBProof(unittest.TestCase):
                 events.append(dict(bus=1,device=sender['owner']['device'],event=9,params=(b'\0\0'+bytes([rounds+2])).hex(),wall_ns=n*100+30))
         return dict(channel_socket=phases),dict(native_events=events),sdus
 
+    def test_independent_mtu_mps_current_wire_and_historical_scope(self):
+        from unittest.mock import patch
+        from ws73_channel_socket import corroborate
+        run,capture,sdus=self.fixture()
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            old=corroborate(run,capture)
+            self.assertNotIn('independent_mtu_mps',old['proofs'][0])
+        for row in run['channel_socket']:
+            row.update(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),channel_info_required=True,cmtc_identifier=0)
+            for app,entry in zip(row['applications'],row['owners']):
+                o,obj=entry['owner'],entry['object']
+                app['stdout']+=f"NativeChannelInfo: index={o['index']} generation={o['generation']} lifetime={obj['lifetime']} handle=0 local=31 remote=31 pi=241 mtu=2042 mps=2047 mode=0 directions=3\nNativeChannelInfoCopy: partial=16 retry=1 unchanged=1\n"
+        for packet in sdus:
+            raw=bytearray.fromhex(packet['data'])
+            if raw[0]==2:
+                raw[5]=0
+                if raw[4]==2:raw[14:16]=(2042).to_bytes(2,'little');raw[16:18]=(2047).to_bytes(2,'little')
+                packet['data']=raw.hex()
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            result=corroborate(run,capture)
+            self.assertTrue(all(p['independent_mtu_mps'] for p in result['proofs']))
+        for kind in ['budget','wire','version','advertisement','missing-info']:
+            changed,packets=copy.deepcopy(run),copy.deepcopy(sdus)
+            row=changed['channel_socket'][0]
+            if kind=='budget':row['applications'][0]['stdout']=row['applications'][0]['stdout'].replace('mps=2047','mps=2042')
+            elif kind=='wire':
+                for packet in packets:
+                    raw=bytearray.fromhex(packet['data'])
+                    if raw[:6]==bytes.fromhex('020010000200'):raw[16:18]=(2042).to_bytes(2,'little');packet['data']=raw.hex()
+            elif kind=='version':row['dtap_limits_version']=True
+            elif kind=='advertisement':row['cmtc_local_capability']['mps']=2042
+            else:row['channel_info_required']=False
+            with self.subTest(kind=kind),patch('ws73_channel_socket.reassemble_acb',return_value=packets),self.assertRaises(CaptureError):corroborate(changed,capture)
+
     def test_identifier_zero_is_current_and_historical_one_stays_scoped(self):
         from unittest.mock import patch
         from ws73_channel_socket import corroborate

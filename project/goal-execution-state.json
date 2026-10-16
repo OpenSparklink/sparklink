@@ -1380,18 +1380,30 @@
       "session-status-regressions-42e-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "matched-u23-f2": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "matched-u23-f2-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "matched-u23-f2-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "newartifact-length-concurrent-lifecycle-regression-complete",
+      "id": "matched-u23-finite-workloads-not-performance-qualified",
       "production_behavior": "Readonly64byteNativeE2,existingauthorizedactor/CLI/FFI;no newHost orEngine,creditpredicateunchanged",
       "exit": [
-        "18VM-onlyU2/3relatedregressions552peerRT,plusseparateinitialburst88=640selectednewartifactRT",
-        "Sevenlengths448,concurrent80,tenrelease/lastmanagementfd/dup/Down/originaldeadline24peerRT;18exactreplays172actualevidencenegatives pluspriorburst24=196",
-        "Originalv3wholeFAILretained;no callbackdrain/reuse/NOCPtruth,fairness/performance ornaturalrecovery qualification"
+        "SameU42fourbinaryhashes,samef2tools/QEMU/config/SDK111,U2/3:12VM2560peerRT;8shortand4longwindow16,allplannedattemptsretained",
+        "673frozentools,4legacyactualreplays,12newactualreplays192evidence negatives;108544RXgaps observed,not callbackCPU/bottleneck/multiURBproof",
+        "No clearmedianendtoendgain established,onecandidatehigherP95retained;fullperformance/stability/observercost/kernelresources/fairness/recoveryOPEN"
       ],
-      "next": "Relatedgatescomplete;continuewholefairness/P2dmatchedU2/3cost/resource/performance,Agent/SSAP/fourdeviceparallel,noallcontrolraces prerequisite;naturalRCA/nonmanualrecoveryOPEN"
+      "next": "Matchedpilot exitmet;Agent/security andSSAP/multichannel nextrealbehaviors parallel withsameKernelobservercost/resources/segmentedtiming anddata-controlfairness;no allcontrolrace prerequisite,naturalRCA/nonmanualrecoveryOPEN"
     }
   },
   "agent_workstream": {
@@ -2126,7 +2138,14 @@
       "findings": [
         "No clear median end-to-end gain established;candidateU3window1higherP95retained,not stable threshold/regression conclusion",
         "RXP50 6us both,P99 27/29us,max319/398us;callback/core/VM combined,no multiURB proof"
-      ]
+      ],
+      "long_stage_workload": {
+        "count_per_role": 64,
+        "application_bytes": 2042,
+        "window": 16,
+        "repeats": 2,
+        "predeclared_private_plan": ".dev/matched-u23-long-matrix-v1.json"
+      }
     }
   },
   "slktest_migration": {

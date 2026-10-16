@@ -200,6 +200,9 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | 14d9/42e：七长度/并行/十生命周期，552次真实回复 | `real_device` | `PASS` |
 | 18份原件重放及172实际证据负对照 | `offline` | `PASS` |
 | 物理callback/ref drain、复用、公平及性能：未证明 | `real_device` | `UNPROVED` |
+| 同U42/f2的bfaa/14d9：十二有限负载，2560次真实回复 | `real_device` | `PASS` |
+| Native可变负载：673工具、16实际重放及192证据负对照 | `offline` | `PASS` |
+| 完整性能/观测成本/内核峰值/公平/恢复：未证明 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

@@ -2,7 +2,7 @@
 """Synthetic evidence controls; not actual Agent/kernel/crypto/RF qualification."""
 import json,unittest
 from test_ws73_security_agent import fixture as old_fixture
-from ws73_security_agent import witness,wire
+from ws73_security_agent import witness,wire,post_terminal_numeric
 from ws73_capture import CaptureError
 
 def fixture(mode='numeric-approve'):
@@ -53,3 +53,16 @@ class NumericAgentEvidence(unittest.TestCase):
         for mode in ['numeric-reject','numeric-late']:
             r,p,d,c=fixture(mode);c['commands'].append(dict(bus=1,device=2,opcode=0x1c03,wall_ns=80))
             with self.assertRaises(CaptureError):wire(r,p,c)
+
+    def test_negative_audit_reaches_down_without_erasing_late_physical_obligations(self):
+        for mode in ['numeric-reject','numeric-late']:
+            row,phase,_,capture=fixture(mode);phase.update(start_wall_ns=0,end_wall_ns=120)
+            capture['complete'].append(dict(bus=1,device=2,opcode=0x1812,status=0,value='01003901',wall_ns=110))
+            capture['native_events'].append(dict(bus=1,device=2,event=0x13,params='0100',wall_ns=110))
+            post_terminal_numeric(row,phase,capture)
+            for opcode in [0x1812,0x1c03,0x1c05]:
+                c=dict(commands=capture['commands']+[dict(bus=1,device=2,opcode=opcode,params='0100',wall_ns=110)],native_events=capture['native_events'])
+                with self.assertRaises(CaptureError):post_terminal_numeric(row,phase,c)
+            for event,params in [(0xe,'0100'),(0x11,'00010001')]:
+                c=dict(commands=capture['commands'],native_events=capture['native_events']+[dict(bus=1,device=2,event=event,params=params,wall_ns=110)])
+                with self.assertRaises(CaptureError):post_terminal_numeric(row,phase,c)

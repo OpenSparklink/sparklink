@@ -182,6 +182,27 @@ def wire(row,phase,capture):
         return dict(relay_indices=list(sent),opposite_receipts=len(received),installations=installs)
     return dict(no_security_commands_or_events=True)
 
+def post_terminal_numeric(row,phase,capture):
+    """Audit through physical Down; a short witness window is insufficient.
+
+    Matching late Complete/NOCP can still pay an existing physical obligation.
+    They are not a new relay/key command or an unsolicited cipher-on event.
+    """
+    if row['mode'] not in ['numeric-reject','numeric-late']:return
+    if not phase['start_wall_ns']<=row['start_wall_ns']<=row['end_wall_ns']<=phase['end_wall_ns']:
+        raise CaptureError('complete original connection lifetime window required')
+    for entry in phase['typed_objects']:
+        owner=entry['owner'];handle=entry['object']['handle'].to_bytes(2,'little')
+        same=lambda v:(v['bus'],v['device'])==(owner['bus'],owner['device']) and row['end_wall_ns']<v['wall_ns']<=phase['end_wall_ns']
+        for command in capture['commands']:
+            if same(command) and command['opcode'] in [0x1812,0x1c03,0x1c05]:
+                raw=bytes.fromhex(command['params'])
+                if len(raw)<2 or raw[:2]==handle:raise CaptureError('new security command after numeric terminal before actual Down')
+        for event in capture['native_events']:
+            if same(event) and event['event'] in [0xe,0x11]:
+                raw=bytes.fromhex(event['params']);matched=raw[:2]==handle if event['event']==0xe else raw[1:3]==handle
+                if matched:raise CaptureError('unexpected installation/encryption after rejected or expired numeric request')
+
 def corroborate(control,capture):
     from ws73_channel_socket import corroborate as channel_corroborate
     business_proof=channel_corroborate(control,capture)
@@ -191,6 +212,7 @@ def corroborate(control,capture):
     for row,phase,business in zip(rows,phases,control['channel_socket'],strict=True):
         witness(row,phase,control['bus_before'],control.get('slctl'))
         proof=wire(row,phase,capture)
+        post_terminal_numeric(row,phase,capture)
         if business['session_start_wall_ns']!=phase['start_wall_ns'] or business['start_wall_ns']<row['end_wall_ns'] or business.get('close_prefix'):raise CaptureError('same physical Session ordinary application delivery must follow Agent procedure')
         result.append(dict(mode=row['mode'],wire=proof,application_phase=business['phase']))
     return dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=result,

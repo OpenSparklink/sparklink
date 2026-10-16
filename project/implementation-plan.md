@@ -61,14 +61,16 @@
 | bfaa生产调度：20步CBMC301与32/64位期限各28检查 | `formal_bounded` | `PASS` |
 | bfaa原32项矩阵：14通过/1前提前缀失败/17未运行 | `real_device` | `FAIL` |
 | bfaa/2451实机工具误读ACTIVE失败保留，不改内核契约 | `real_device` | `FAIL` |
+| bfaa/e34逐消息测量：窗口1/4与xHCI开关12项480往返（非完整性能） | `real_device` | `PASS` |
+| 073首次窗口1：40次业务但trace请求/实际容量误判，原整轮FAIL保留 | `real_device` | `FAIL` |
 
-保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `f43a72bd1ad224f9504c491652b4586a4864143d`。
+保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `f43a72bd1ad224f9504c491652b4586a4864143d`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
@@ -1446,7 +1448,7 @@ S0–S6/19WP/10FV/12DG、VM-only；原自然根因、非人工恢复、NOCP真�
 实际callback drain、LKMM/KCSAN/lockdep及完整性能仍开放。
 
 
-### P2c 逐消息分段及追踪扰动（新工具离线收尾，实机待验收）
+### P2c 逐消息分段及追踪扰动（限定退出通过，完整性能开放）
 
 复用现有schema2应用循环/完整双端USB证明，新增窗口1/4请求绑定和VM-only xHCI
 on/off开关，usbmon必需门禁不变。只读时间线分别保留应用单调时钟、USB墙钟、
@@ -1458,3 +1460,28 @@ on/off开关，usbmon必需门禁不变。只读时间线分别保留应用单�
 记录追踪丢失、失败与未证明项，先判断收益再改生产预算。未修改Runtime/USB及
 提交票据，不继承旧artifact的性能资格。完整19WP/10FV/12DG与所有原范围开放，
 不阻塞Agent/SSAP、四设备和相关生命周期主线。
+
+
+[本批准确报告](../docs/evidence/benchmark-window-trace-20261017.json)记录12项/480次
+真实业务、e34执行与dbc严格复核、216实际证据负对照、原073整轮FAIL及全部限定。
+窗口1各角色P50约12–13.5ms、窗口4约34.6–35.7ms，负载不同，不是优化收益。
+同窗口追踪on/off仍不足以授予稳定阈值；off保留usbmon/QEMU/宿主调度开销。
+
+### P2d Session实际等待与有界连续TX（下一生产批次）
+
+已有长包合格数据的512次USB交接中，16次无同设备NOCP重叠的P50为20us，496次
+有重叠的P50为15.917ms；这不证明credit因果或调度时间，不能仅据USB日志增加预算。
+本批接通实际Session准入/等待原因/服务轮次的只读观测，并在同一纵向切片实现
+有界连续TX。观测绑定controller/generation/lifetime/通道及实际提交，不能授予Ready、
+credit或权限；默认关闭，root VM内启用，无业务载荷/密钥日志。不新造发送Engine。
+
+复用既有sl_transmit_channel及Native Ticket，每轮包数/字节/开始下一操作的时间预算
+有限；同步USB等待本身不能声称受微秒级整体执行预算保障。保持PB不交错，完整PDU
+边界轮转通道，真实credit不足停等原事件，其他EAGAIN有限重试；原期限不刷新。
+每片仍核对Grant/generation/lifetime/原期限/票据；作者退出不抹物理义务、不确定失败
+不退款。新预算不能挡住其他通道未提交工作的原期限、关闭、撤权或设备隔离。
+
+退出：直接生产C转换/预算及相关反例、同配置VM内长包/真实credit与队列背压、
+多通道PDU边界公平、关闭/撤权/Down/原期限和相关已合格数据回归通过；实际Session
+观测与USB/应用证据对应，准确before/after计数和成本齐全才宣称收益。只设本批相关
+不变量门禁，不追加控制面全集；Agent/SSAP、四设备及原恢复/清理继续并行。

@@ -42,12 +42,14 @@ CBMC301+28/28为有界限定证明；不授实际内核并发、NOCP真值或完
 原v1矩阵14通过/1FAIL/17未运行及v2工具flags错误均保留；同行隔离仅Ready/lease/
 扫描，四设备独立业务、自然根因及非人工恢复仍开放。当前整体资格以生成摘要为准。
 
-P2c逐消息时间线、Native窗口1/4及VM内xHCI追踪on/off已接通工具；654离线测试
-与严格HTML115通过。首轮073窗口1完成40次业务，但trace请求1024/实际1027的
-错误相等假设使整轮FAIL；原失败保留。精确页对齐整改的655项离线回归通过，
-新root/工具仍待实机，不将该40次计为整轮通过。工具保留首/末片，
-不把合并区间解释成纯RF或内核调度时间。新执行工具的同配置实机对照尚待验收，
-没有新增完整性能或生产Runtime资格；既有bfaa/9385资格保持原准确工具身份。
+P2c的[限定低负载测量](../docs/evidence/benchmark-window-trace-20261017.json)已封存：
+编译bfaa/9385、执行e34、严格复核dbc；窗口1/4、xHCI on/off各3轮，共12项/480次
+真实对端校验回复。12份原件重放一致，216个复制真实证据负对照拒绝；请求1024/
+实际1027按实际页布局精确核对。原073完成40次业务但整轮trace FAIL，继续保留。
+分组按物理角色与窗口，不能把不同窗口当优化前后，也不能把xHCI off说成无观测。
+已有长包512次USB交接的NOCP重叠是时间关联，不证明credit因果或Session调度耗时。
+当前保留镜像推进为本次准确低负载基线；旧K400/f43等记录保留原身份。未授予稳定
+性能阈值、资源峰值、饱和/公平性、RF、内核并发或自然恢复，完整范围继续INCOMPLETE。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -97,14 +99,16 @@ P2c逐消息时间线、Native窗口1/4及VM内xHCI追踪on/off已接通工具�
 | bfaa生产调度：20步CBMC301与32/64位期限各28检查 | `formal_bounded` | `PASS` |
 | bfaa原32项矩阵：14通过/1前提前缀失败/17未运行 | `real_device` | `FAIL` |
 | bfaa/2451实机工具误读ACTIVE失败保留，不改内核契约 | `real_device` | `FAIL` |
+| bfaa/e34逐消息测量：窗口1/4与xHCI开关12项480往返（非完整性能） | `real_device` | `PASS` |
+| 073首次窗口1：40次业务但trace请求/实际容量误判，原整轮FAIL保留 | `real_device` | `FAIL` |
 
-保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `f43a72bd1ad224f9504c491652b4586a4864143d`。
+保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `f43a72bd1ad224f9504c491652b4586a4864143d`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 ## 已封存数据子资格（以下均按各自准确镜像）

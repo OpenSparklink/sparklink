@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T21:14:03.234690+00:00",
+  "updated_at_utc": "2026-10-16T21:29:57.608393+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -760,20 +760,32 @@
           "NaturalRCA/nonmanualrecovery,NOCPaccuracy/duplicate/late/reusebarriers,callbackdrain,LKMM/KCSAN/lockdep andfullimplementationrefinement remainOPEN;manual/hub/QMP/injection notnaturalrecovery."
         ]
       }
-    ]
+    ],
+    "next_real_vertical_slice_before_numeric_20261017": {
+      "work_package": "WP06/07/16/17",
+      "behavior": "Explicitpost-close physicaldrain observation thenfullqueuefairness/matchedresources;Agent/SSAP/fourdevice parallel",
+      "first_exit": "Finitepacket/byte/next-operation elapsed budget withperfragmentoriginaldeadline;productionfunction tests andrelatedVM data/lifecycle/fairness;noUSBorNOCPspeculation",
+      "remaining_after_first_exit": "BoundedcontinuousTX,traceoverhead/resourcepeaks,fullload/multichannel/fourdevices/SSAP andnaturalRCA/nonmanualrecovery;originalpeerDownFAIL parallel",
+      "parallel": "existing Agent/SSAP/data/cleanup/quality andfourdeviceWIP;noallcontrolprerequisite",
+      "architecture": "Existingdrivers/net/slkd/uniqueSession/Grant/credit/Ticket;VM-only",
+      "state": "C4_LENGTH7_AND_SHORT_LONG_PROGRESS_PASS_BURST_DRAIN_FAIL_RETAINED",
+      "tool": "actualslktest loadbinary viaexisting ws73_target VMsupervisor;independent ws73_benchmark reportchecker",
+      "report": "docs/evidence/session-concurrent-progress-20261017.json",
+      "lifecycle_priority_report": "docs/evidence/lifecycle-u23-hardware-change-20261017.json"
+    }
   },
   "execution_phase": "ACTIVE_WP09_NUMERIC_COMPARISON_MECHANISM_WITH_AGENT_SSAP_DATA_PARALLEL",
   "next_resume_tasks": [
-    "Complete WP09 numeric mechanism slice with accurate signed artifact and real two-role approval/rejection/late-confirm evidence,then daemon Agent/security-level/local authorization over sameSession;fullinstallrelease/lastfd/dup/Down/deadline/nativeobligation proofs remain parallel OPEN.",
+    "Numeric mechanism boundedgateexitmet atK323/U862/tool862/postf695:6numeric+3retainedVM,48peerRT;nowextendexistingbroker/Agent with originalpromptconfirmation and kernelactualsecuritylevel/revocableGrant,thensoleSSAPpermissions. Noautomatic/humanidentity orBondclaim. Fullsevenlength/tenlifecycle/installrelease/fd/Down/deadline remainparallelOPEN.",
     "NewU6166 qualifies only namedcancel/defaultapprove/249boundary/2042 slices;oldU42sevenlength/lifecycle/matchedperformance retainoldidentities. Continue dynamicmultichannel/fourdevice business/datafairness;no inheritance to Eport1.",
     "Parallel matched sameKernelobservercost,actualworker/queue/credit/URB/resource peaks andsegmented timing/actualPHY parameters;RX108544gaps do not justify changingmultipleURBs.",
     "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
     "NOCPtruth/late/duplicate,reuse/callbackdrain,naturalstartup/re-enumeration/disappearance RCA andnonmanualrecovery remainOPEN."
   ],
-  "issue_sync_status": "K7/K19/U5/U8 updated/readback OPEN; originalscope unchanged; selectedactualinstallrequestcancel+retainedslices only.",
+  "issue_sync_status": "Numeric batch newimplementation/real evidence pending existingK7/K19/U5/U8 update;old receipts retained",
   "issue_sync_receipt": "docs/evidence/security-install-cancel-maintenance-20261017.json",
   "previous_goal_turn_classification": "no_progress: previous turn confirmed already-recorded port1 topology only",
-  "current_goal_turn_classification": "progress: implementing numeric comparison in production Session/crypto and original Managed File confirmation; offline checks and VM gate wiring underway, no real qualification yet",
+  "current_goal_turn_classification": "progress: signed/pushed newnumericproductionSession+bindings/gates,9actualVM/48peerRT,6replays/54mutants,originalparser+CI failurespreserved andfixed;fullgoal remainsactive",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1089,7 +1101,12 @@
     "Q2_real_records": [
       "agent-real6-db6e333",
       "agent-data11-db6e333"
-    ]
+    ],
+    "numeric_ci_followup": {
+      "original": "862 CI failed:canonicalKpin/generatedheader",
+      "fix": "e53b237 canonicalK323 andactualcbindgen0.29.4;41bindingtests passed againstsealedlibrary",
+      "scope": "No binarybehaviorchange;fullnewCIpending;explicitinvalidlibraryoverride fallbackfollowup remains"
+    }
   },
   "qualification_view": {
     "registry": "project/qualification-records.json",
@@ -1420,14 +1437,14 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "wp09-numeric-comparison-in-progress-not-authenticated-grant",
-      "production_behavior": "Existing physical Session/relay/credit/Ticket extended with explicit numeric method, original-author confirmation and bounded sameSession earlyproof;no secondEngine",
+      "id": "wp09-numeric-mechanism-real-not-production-agent-or-trusted-grant",
+      "production_behavior": "ExistingphysicalSession/typedrelay/CMAC/P256/credit/Ticket;explicitmethod0,originalauthornumericconfirmation andoneperSessionearlyproofslot. No secondEngine.",
       "exit": [
-        "Production transitions/ABI/strict builds andactualCcryptoVM required",
-        "Accurate new U2/3 VM roles approve/reject/originaldeadline andordinarypeerreplies plusretainedpath regression required;notyet run",
-        "slkd numericAgent/authenticatedGrant/Bond/physicaldrain/reuse/naturalrecovery remainOPEN"
+        "K323/U862/tool862/postf695,U2/3:6numeric+3selectedretainedVM,48actualpeerRT,16boundaryrefusals;allattempts retained.",
+        "34pureproductionstate,actualcryptoVM,272Rust,684executiontools/685fixedverifiertools,6actualreplays/54mutants;noneisnewformalorwholekernelproof.",
+        "OriginalCI862failedABIpin/generatedheader;fixe53hasmatchingK323/actualcbindgen0.29.4. NewwholeCIverification separate,not currentruntimequalification."
       ],
-      "next": "Finish this bounded mechanism gate thenactualAgent/securitylevel/authorization overexistingSession;SSAP/data/performance/fourdevice parallel,noallcontrolprerequisite"
+      "next": "Mechanismboundedgateexitmet;extendexistingbroker/Agent andkernelactualsecuritylevel/revocableGrant forsoleSSAPpermissions;fullsevenlength/tenlifecycle/installcompositions andnaturalfaults remainparallelOPEN."
     }
   },
   "agent_workstream": {
@@ -1584,16 +1601,13 @@
     "issues_receipt": "docs/evidence/codec-fuzz-and-retained-issues-20261016.json"
   },
   "next_real_vertical_slice": {
-    "work_package": "WP06/07/16/17",
-    "behavior": "Explicitpost-close physicaldrain observation thenfullqueuefairness/matchedresources;Agent/SSAP/fourdevice parallel",
-    "first_exit": "Finitepacket/byte/next-operation elapsed budget withperfragmentoriginaldeadline;productionfunction tests andrelatedVM data/lifecycle/fairness;noUSBorNOCPspeculation",
-    "remaining_after_first_exit": "BoundedcontinuousTX,traceoverhead/resourcepeaks,fullload/multichannel/fourdevices/SSAP andnaturalRCA/nonmanualrecovery;originalpeerDownFAIL parallel",
-    "parallel": "existing Agent/SSAP/data/cleanup/quality andfourdeviceWIP;noallcontrolprerequisite",
-    "architecture": "Existingdrivers/net/slkd/uniqueSession/Grant/credit/Ticket;VM-only",
-    "state": "C4_LENGTH7_AND_SHORT_LONG_PROGRESS_PASS_BURST_DRAIN_FAIL_RETAINED",
-    "tool": "actualslktest loadbinary viaexisting ws73_target VMsupervisor;independent ws73_benchmark reportchecker",
-    "report": "docs/evidence/session-concurrent-progress-20261017.json",
-    "lifecycle_priority_report": "docs/evidence/lifecycle-u23-hardware-change-20261017.json"
+    "work_package": "WP09 then WP08;WP06/07/16/17 parallel",
+    "behavior": "Extend existing broker/Agent with original numeric prompt and explicit confirmation, publish actual installed security grade for kernelrevocableGrant,then soleSSAPpermissions;no secondEngine",
+    "first_exit": "Approved/rejected/absentAgent/ownerloss/deadline decisions map tooriginalManagedrequest;realtwoWS73 positive andnegative withordinaryappreply;noGradebeforeactualproof/install",
+    "state": "NUMERIC_MECHANISM_REAL_SCOPED_PASS_AGENT_GRADE_AND_GRANT_MISSING",
+    "report": "docs/evidence/security-numeric-mechanism-real-20261017.json",
+    "architecture": "Existingdrivers/net/slkd/uniqueSession/credit/Ticket/Grant;VM-only;UserHost P4",
+    "parallel": "Fullnewsevenlength/tenlifecycle/installcancelcomposition,data/credit/fairness/resources,SSAP/fourdevice,naturalRCA/nonmanualrecovery remainOPEN;noallcontrolprerequisite"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -2240,7 +2254,7 @@
     "correction_evidence": "docs/evidence/session-prefix-barrier-20261016.json"
   },
   "security_numeric_workstream": {
-    "status": "IMPLEMENTED_DIRTY_NOT_REAL_QUALIFIED",
+    "status": "REAL_MECHANISM_SCOPED_PASS_NOT_AGENT_IDENTITY_GRANT_BOND",
     "production": "UniqueSession method0/IO1/noBond,13C,own confirmation before proof,one perSession earlyproof slot,actual installation;existingcredit/Ticket/Grant/original5s",
     "first_exit": "Accurate signed sources,strict offline/ABI and actualcryptoVM;U2/3 two-role approve/reject/late gates and retained data regressions",
     "not_qualified": [
@@ -2257,6 +2271,35 @@
       "libws73": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
       "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
     },
-    "scope": "S0-S6/19WP/10FV/12DG unchanged;UserHost P4;VM-only;do not inherit old hardware/artifactqualification"
+    "scope": "S0-S6/19WP/10FV/12DG unchanged;UserHost P4;VM-only;do not inherit old hardware/artifactqualification",
+    "compiled_kernel": "323668c6015ef69fa233c008d8ef0c4c70402686",
+    "compiled_userspace": "862b95b623c3069c5a798aeaeff7fec382c46627",
+    "executed_tools": "862b95b623c3069c5a798aeaeff7fec382c46627",
+    "post_processing_tools": "f69554ca0a41ab37985be4ae0e8b241d080d1e1f",
+    "report": "docs/evidence/security-numeric-mechanism-real-20261017.json",
+    "bounds": {
+      "real_vm_success": 9,
+      "numeric_vm_success": 6,
+      "numeric_actual_installs": 4,
+      "numeric_relay_submissions": 40,
+      "numeric_opposite_receipts": 40,
+      "total_peer_business_round_trips": 48,
+      "boundary_rejections": 16,
+      "original_deadline_ms": 5000,
+      "actual_evidence_negative_controls": 54,
+      "session_regressions": 34,
+      "frozen_execution_tool_tests": 684,
+      "fixed_verifier_tests": 685,
+      "workspace_rust_tests": 272
+    },
+    "ci_maintenance": {
+      "original_source": "862b95b623c3069c5a798aeaeff7fec382c46627",
+      "original_status": "FAIL",
+      "fix_source": "e53b237dcdeac7a15724749600d8ec0c0a7e12c0",
+      "fix": "matching canonical kernel323pin inthreejobs;actualcbindgen0.29.4 regeneratedheader",
+      "local_41_bindings": "PASS_AGAINST_SEALED862_LIBRARY_AND_K323",
+      "new_full_ci": "NOT_YET_VERIFIED",
+      "scope": "Headercomments/formatting andCIpin only;realruntime remains accuratelyK323/U862/tool862,postprocessf695,notlatestdocHEAD"
+    }
   }
 }

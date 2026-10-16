@@ -4,9 +4,16 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
-数字比较机制正在接线：复用唯一Session，新增六位提示/原作者确认与有界提前proof；
-当前仅源码/离线开发状态，未取得新artifact的真实设备、生产Agent、认证Grant或Bond资格。
-已有安装取消与其他历史实机资格仍绑定以下原始编译身份，不升级到dirty工作区。
+[数字比较机制限定实机结果](../docs/evidence/security-numeric-mechanism-real-20261017.json)：
+编译K323668c/U862b95b、执行862、后处理f695；U2/3两角色批准/拒绝/原期限迟到各两项，
+加默认无MITM Agent、249边界和2042长包，共9VM/48次真实对端校验回复、16边界拒绝。
+数字路径40次relay提交均有真实相反端RX，两个正向过程共4份实际安装/0011；独立公开
+transcript CMAC核对双端比较码。六原件重放及54复制真实证据负对照拒绝；首次解析器
+异常保留并固定。34生产转换、272Rust、684/685工具与实际crypto VM分别记录，未新增
+形式化或内核并发证明。旧CI的pin/生成头失败保留，e53修复；新全CI仍待核实。
+自动比较见证不是人类身份检查或生产数字Agent；安全等级/可信Grant/Bond仍未接通，
+protected通道继续拒绝。新镜像尚未重跑全部七长度/十生命周期，旧资格不继承；完整
+安装取消/物理drain/复用、四设备、自然根因及非人工恢复继续OPEN。
 
 [SDK111 安装后原请求取消](../docs/evidence/security-install-cancel-real-20261017.json)：
 K14d9/U6166、新QEMUdea80、U2/3真实两角色，共2次G原请求取消、2份真实接受帧

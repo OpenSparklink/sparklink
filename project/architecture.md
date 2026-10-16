@@ -365,6 +365,14 @@ CCC写入的认证/授权由实际内核安全上下文与有效Grant强制，�
 
 ### 安全职责
 
+数字比较仍由唯一物理Session承担机制：明确IO1/method0/noBond offer，公开transcript
+六位码、原作者确认、peer proof、真实安装接受和加密开启分别表达。提示和确认绑定
+原File/request/generation/lifetime/epoch/原期限；T提前proof仅允许本Session有界单份，
+不采用全局缓存或另造Engine。slkd后续拥有数字Agent/身份策略，内核发布实际安全
+等级并强制可撤销Grant；自动见证码相同不代表人类身份确认。现有未认证Agent、
+protected Grant和Bond支持范围不得因机制局部通过升级。见[所有权ADR](../docs/decisions/0004-application-ownership-and-delivery.md)。
+
+
 内核：协议时序、密码学、active credential、加密安装及强制安全。slkd：Agent、方法选择、用户确认、trust、持久化和撤销策略。
 
 每连接安全状态只由真实协议与安装结果提交。无owner、拒绝、proof缺失/错误、超时、非法key、FFI失败或崩溃均fail closed。失败不提交密钥、计数或Encrypted。禁止测试密钥降级和固定nonce。
@@ -382,13 +390,14 @@ lifetime不得重启交换；更换request ID不能绕过。完整Pair及其Agen
 `deadline_monotonic_ns`传入。Session的准入、密码工作、输入、最终提交票据与查询
 使用同一CLOCK_MONOTONIC纳秒期限；Host的粗粒度tick仅用于清理调度，不能据此
 刷新或延长准入。tick转换取实际内核速率，不取userspace HZ。CLOCK_MONOTONIC
-不包含挂起时间，完整PM暂停/撤销规则仍需单独验收。RESULT/CANCEL仍版本1。
+不包含挂起时间，完整PM暂停/撤销规则仍需单独验收。RESULT/CANCEL及新增40字节数字确认仍版本1。
 
 Agent调用者取消与物理状态分别表达：每File操作及Managed授权门当前序列化ioctl，
 取消不能假装已经抹掉先前准入/在途的提交。daemon必须保留原请求与工作引用，观察
 原提交完成再对原请求撤回，并报告策略操作终态与内核物理观察；取消返回不代表Off。
 不能通过drop JoinHandle、释放整个controller租约或改写已成功安装结果来处理单应用退出。
-Agent尚未接线；本段是其必须遵守的契约，不授予功能资格。
+限定SDK111无MITM Agent已接入原请求机制；数字比较Agent、可信安全等级/Grant与Bond
+仍须后续接通。准确实机范围见CURRENT_CAPABILITIES，不由本段授予资格。
 
 无MITM候选密钥协商仍归同一物理Session，不能另建每fd密码Engine。密码材料由
 Session独占；公钥验证、ECDH、CMAC及派生在IRQ/Host/gate锁外执行。执行期间保留

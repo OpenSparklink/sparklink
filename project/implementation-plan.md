@@ -1170,3 +1170,11 @@ K d75f7bd已分离response_pending和合法编号0、允许完整256值并使用
 必须取得双端真实0编号请求/响应、普通业务及既有长度/四设备回归后才授予新资格。
 旧8cbf/D01/D42的所有实机报告保持原身份。随后继续实际Connect/Disconnect事务及
 local/remoteTCID/独立队列，不能将本修复称为动态多通道完成或加回控制全集前置。
+
+
+当前另确认直接数据P1：[MTU/MPS源码和原捕获审计](../docs/evidence/cmtc-mtu-mps-audit-20261016.json)。
+MTU与MPS目前同报2042，实际基础PDU2047，不能以ACB分片254解释。原peer回复结果保留，
+协商/准入契约列为失败待修；D75编号0纯codec证明不覆盖这一标准语义。
+不干预当前已启动build；其终态后拆开能力响应、peer限制、ChannelInfo与每通道准入，
+增量构建冻结准确新镜像，再做0编号及长度/四设备真实回归；继续动态Connect/Disconnect，
+不增加无关控制竞争前置，也不从总体scope删除任一原有门禁。

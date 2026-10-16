@@ -73,6 +73,14 @@ K8cbf、编译d01、guest/Host工具d42的[并行burst报告](../docs/evidence/f
 或整个credit正确性；公平性、慢消费者和长期收敛仍缺。十项损坏证据在核对器中拒绝，
 不是内核注入故障测试。动态多通道、真实设备故障及自然恢复继续开放。无新形式化证明。
 
+## 已确认的MTU/MPS契约缺陷
+
+[源码与原捕获审计](../docs/evidence/cmtc-mtu-mps-audit-20261016.json)显示：当前capability
+把MTU/MPS同报2042，最大业务基础帧实际2047字节。T/XS20002-2025 §6.1/7.3.4.1
+的MPS约束完整PDU；ACB254字节分片是另一层，不能替代该限额。**协商/准入契约未通过**，
+需拆开SDU MTU、PDU MPS与ACB包大小并重新回归。旧64次实际回复保持其真实交付范围，
+不升级为MPS协商一致或标准互操作通过；编号0codec有界安全检查也不证明此语义。
+
 ## 新内核CMTC编号修复（实机待验）
 
 K d75f7bd修复合法identifier0被拒绝和0值pending哨兵冲突，使用显式pending状态；

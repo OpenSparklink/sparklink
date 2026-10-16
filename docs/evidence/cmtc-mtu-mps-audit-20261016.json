@@ -1,0 +1,39 @@
+{
+  "status": "CONFIRMED_SOURCE_AND_RETAINED_WIRE_CONTRACT_GAP",
+  "current_kernel": "d75f7bdf17ab295d8b504f3a803d8a100f131646",
+  "observed_kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+  "report_source": ".dev/native-four-burst-v1-run/manifest.json",
+  "report_sha256": "0ff9d2151cdd88303e4834c6d2fd2aeef0d8b4ac67f7bdb6740a5502288130a8",
+  "advertised_mtu": 2042,
+  "advertised_mps": 2042,
+  "actual_business_dtap_pdu_bytes": 2047,
+  "excess_over_advertised_mps": 5,
+  "capability_response_source": {
+    "bus": 1,
+    "device": 2,
+    "record": 873,
+    "usb_sha256": "521b54436d62ad9ee33d41952df59f5e9ec13605e175b18cabf17c15d6e6335b"
+  },
+  "business_source": {
+    "bus": 1,
+    "device": 2,
+    "record": 2804,
+    "tx_fragment_count": 9
+  },
+  "basis": "T/XS20002-2025 6.1 and7.3.4.1 define MPS as complete DTAP PDU delivered to access layer;current capability response uses same maximum forMTU/MPS while basic framing adds5bytes",
+  "scope": "Actual peer delivery remains historical physical evidence;does not prove negotiated MPS conformance. Not an observed hardware drop or firmware failure.",
+  "next": "Separate MTU SDU limit,MPS PDU limit and ACB packet size;fix negotiate/per-channel admission/ChannelInfo and capture contracts before assigning new max-size conformance qualification;no all-control prerequisite",
+  "schema_version": 1,
+  "limits": [
+    "Known standards/admission contract defect,not an observed lost packet or firmware fault. Historical64 actual peer replies remain original physical evidence only.",
+    "MPS is full DTAP PDU;MTU is upper SDU;ACB254 packet fragments are a third independent bound. No new conformance qualification before fix/regression.",
+    "Currentd75 capability builder still uses same maximum forMTU/MPS;identifier0 fix and bounded codec safety do not prove standards MTU/MPS semantics.",
+    "Raw manifest/USB records private original workspace;source/hash/packet identities preserved;restricted standard text not redistributed."
+  ],
+  "gates": [
+    {
+      "name": "mps-admission-contract",
+      "status": "CONFIRMED_FAIL"
+    }
+  ]
+}

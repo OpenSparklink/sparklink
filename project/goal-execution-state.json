@@ -1228,7 +1228,7 @@
     ],
     "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification",
     "report": "docs/evidence/four-device-business-20261016.json",
-    "next": "Implement dynamic Channel signaling/local-remote TCID/independent queues/socket business over existing unique Session dispatcher. Full fairness,actual devicefault,natural recovery remain open;stateful production/inflight composition/debugVM/auth parallel.",
+    "next": "Observe same livebuild12826;after terminal freeze/check artifacts,fix independentMTU SDU/MPS PDU/ACB packet limits and incrementally build;then exact0identifier/length/four-device VM regression;continue actual dynamic signaling/grants/queues,not allcontrol prerequisite",
     "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json",
     "controlled_disconnect_report": "docs/evidence/four-device-disconnect-20261016.json",
     "controlled_disconnect_issues_receipt": "docs/evidence/four-device-disconnect-issues-20261016.json",
@@ -1241,7 +1241,8 @@
     "identifier_report": "docs/evidence/cmtc-identifier-zero-20261016.json",
     "kernel_build_session": 12826,
     "kernel_build_record": ".dev/cmtc-id0-kernel-build-record.json",
-    "identifier_issues_receipt": "docs/evidence/cmtc-identifier-zero-issues-20261016.json"
+    "identifier_issues_receipt": "docs/evidence/cmtc-identifier-zero-issues-20261016.json",
+    "mtu_mps_defect_report": "docs/evidence/cmtc-mtu-mps-audit-20261016.json"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",

@@ -59,6 +59,21 @@ class InstallationHoldTests(unittest.TestCase):
             self.assertTrue(record['complete']);self.assertEqual(record['qemu_sha256'],QEMU_SHA256)
             self.assertEqual(m.mutations,[(n,key,True) for n in range(2) for key in ['test-runtime-install-g',PROPERTIES[0],'test-runtime-in-release']])
 
+    def test_actual_guest_init_fragment_forwards_every_mode_or_fails(self):
+        import os
+        import subprocess
+        from ws73_security_agent import MODES
+        text=(Path(__file__).parents[1]/'ws73_target_init.sh').read_text()
+        start=text.index('        for word in $(cat /proc/cmdline); do')
+        end=text.index('\n        done',start)+len('\n        done')
+        fragment=text[start:end].replace('$(cat /proc/cmdline)','$(printf \'%s\\n\' "$test_cmdline")')
+        command='fail() { exit 99; }; connection_arg=""; '+fragment+'; printf \'%s\' "$connection_arg"'
+        for mode in [*MODES,'unknown','']:
+            result=subprocess.run(['sh','-c',command],env=os.environ|dict(test_cmdline='unrelated=1 ws73.security_agent='+mode),capture_output=True,text=True)
+            if mode in MODES:
+                self.assertEqual(result.returncode,0,mode);self.assertEqual(result.stdout,' --security-agent='+mode)
+            else:self.assertEqual(result.returncode,99,mode)
+
     def test_bad_qemu_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)/'qemu';p.write_bytes(b'wrong')

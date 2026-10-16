@@ -395,7 +395,11 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         fi
         for word in $(cat /proc/cmdline); do
             case "$word" in
-                ws73.security_agent=approve|ws73.security_agent=reject|ws73.security_agent=timeout|ws73.security_agent=cancel|ws73.security_agent=agent-exit|ws73.security_agent=caller-exit|ws73.security_agent=cli-approve|ws73.security_agent=cli-reject)
+                ws73.security_agent=*)
+                    case "${word#*=}" in
+                        approve|reject|timeout|cancel|agent-exit|caller-exit|cli-approve|cli-reject|install-cancel) ;;
+                        *) fail 'unsupported Agent witness mode' ;;
+                    esac
                     connection_arg="$connection_arg --security-agent=${word#*=}" ;;
             esac
         done

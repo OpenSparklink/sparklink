@@ -72,6 +72,9 @@
 | c4完整P2d：trace/生命周期/公平性/成本仍未证明 | `real_device` | `UNPROVED` |
 | 首批burst缺16轮参数：启动前拒绝，原矩阵FAIL保留 | `real_device` | `FAIL` |
 | c4双U：release/最后管理fd/dup/Down/原期限十项新实机门禁 | `real_device` | `PASS` |
+| Session实际阶段与USB关联：新e08长包32次业务，零丢失限定通过 | `real_device` | `PASS` |
+| 旧8a7长包追踪溢出9147条：原整轮FAIL保留 | `real_device` | `FAIL` |
+| Session追踪成本/PDU公平/同配置性能仍未证明 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1532,3 +1535,14 @@ NOCP硬件真值或内核并发证明，不把所有控制面组合加成数据�
 666项离线与严格HTML通过。真实collector→原业务门禁→身份/阶段/USB闭包是下一
 门禁，失败保留；动态CMTC、性能阈值、资源峰值、callbackdrain及NOCP真值不在其
 资格内。通过后继续相关长度与PDU公平、matched U2/3基线，Agent/SSAP并行。
+
+[Session观测后续限定退出](../docs/evidence/session-service-trace-20261017.json)：Kc4和
+运行包2c23不变，执行e08，U2/3两角色长包burst32次校验回复、25076条零丢失观测、
+824次USB接受与4111次真实reserve等待返回；不授NOCP硬件真值。旧8a7短包8次和
+首次1MiB覆盖9147条的整轮FAIL分别保留；容量按实际需求有界增至2MiB/CPU，不
+改变期限或零丢失断言。666项工具检查、40复制证据负对照和各自原件重放通过。
+
+本批只收尾新C4受控生命周期与固定通道Session/USB关联，不继续追加全部控制面
+组合。下一批接相关长度/多通道PDU公平及同U2/3、同配置、观测开销和资源基线；
+旧U1/4结果不作同口径前测。Agent/真实SSAP、四设备继续并行；完整P2d、自然恢复、
+NOCP重复迟到/复用、callbackdrain及内核并发证明仍开放。

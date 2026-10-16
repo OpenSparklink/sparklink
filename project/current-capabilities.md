@@ -74,7 +74,16 @@ Kc4/U2c23与执行2c23：U2/3完成release、最后管理fd、dup最终管理引
 PDU不计交付。十份原件重放和100复制证据负对照通过，原断言与失败不改。同行范围
 仅generation/Ready/lease/扫描。未新增形式化、性能、NOCP真值或自然恢复资格。
 新8a7f11f只新增VM专用Session观测和USB关联，666项工具检查与严格HTML通过；
-实际采集和关联仍单独验收，不能由改名、fixture或这个生命周期结果推断通过。
+实际采集和关联按下方独立证据登记，不由fixture或这个生命周期结果推断通过。
+
+[Session观测限定实机闭包](../docs/evidence/session-service-trace-20261017.json)绑定同一
+Kc4/运行包U2c23、执行e08：U2/3两连接角色2042字节burst共32次真实校验回复，
+25076条零丢失记录、824次实际USB接受匹配；4111次credit等待返回不证明NOCP准确性。
+原8a7短包8次/264次USB接受只保留自身身份。首次1MiB突发CPU0覆盖9147条，整轮
+FAIL保留；按测得25188条需求有界改2MiB/CPU，零丢失和8MiB文本限额不放宽。
+两份原件按各自冻结工具重放、共40个复制证据负对照拒绝。666项工具离线通过，
+没有新增形式化或性能资格；动态CMTC不在此观测范围，成本/公平/同配置资源比较
+及完整P2d退出仍UNPROVED，所有自然根因与非人工恢复仍开放。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -135,6 +144,9 @@ PDU不计交付。十份原件重放和100复制证据负对照通过，原断�
 | c4完整P2d：trace/生命周期/公平性/成本仍未证明 | `real_device` | `UNPROVED` |
 | 首批burst缺16轮参数：启动前拒绝，原矩阵FAIL保留 | `real_device` | `FAIL` |
 | c4双U：release/最后管理fd/dup/Down/原期限十项新实机门禁 | `real_device` | `PASS` |
+| Session实际阶段与USB关联：新e08长包32次业务，零丢失限定通过 | `real_device` | `PASS` |
+| 旧8a7长包追踪溢出9147条：原整轮FAIL保留 | `real_device` | `FAIL` |
+| Session追踪成本/PDU公平/同配置性能仍未证明 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

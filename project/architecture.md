@@ -650,3 +650,10 @@ NearLinkHost f087的signaling/dyntrans实现用于核对，不能照搬其宽泛
 监督器确认双方Quiescent才授权finish，再做hex/JSON；原消息期限与在途物理义务不变。
 独立应用报告核对只证明所列报告之间的一致性；实际编译/凭据/双端USB与监督器顺序
 由既有VM证据层绑定，不能用局部一致升级Native或性能资格。见ADR0006与唯一计划P1。
+
+
+Session 被动诊断仍服从上述所有权：采集器只读生产阶段，不授予Ready、credit或
+Grant。VM专用实例在原业务/USB门禁后核对生命周期、PB和预算；提交接受、同步
+返回、操作退休、NOCP及对端应用交付分别表达。容量、时钟夹逼和丢失均失败封闭；
+不完整记录不能因业务循环完成而升级通过。见[ADR0006](../docs/decisions/0006-event-driven-session-and-performance-evidence.md)，
+准确结果只在唯一资格入口维护，诊断不另建Host/Engine或公开ABI。

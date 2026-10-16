@@ -15,6 +15,7 @@ def fixture(long_bytes=None):
         if len(raw)>254:
             size=254 if direction=='out' else 28;chunks=[raw[n:n+size] for n in range(0,len(raw),size)]
             packet['fragments']=[dict(packet,data=part.hex(),boundary=1 if n==0 else 3 if n==len(chunks)-1 else 2) for n,part in enumerate(chunks)]
+        if 'fragments' not in packet:packet['fragments']=[dict(packet,boundary=0)]
         packets.append(packet)
     def pair(a,b,raw):emit(a,'out',raw);emit(b,'in',raw)
     nonce_count=0
@@ -106,7 +107,7 @@ class DynamicVerifier(unittest.TestCase):
             if change=='exit':app['exit']=1
             with self.subTest(change=change),self.assertRaises(CaptureError):self.check(run,packets)
     def test_long_variant_and_asymmetric_fragment_shapes(self):
-        for size in [250,253,254,255,1024,2042]:
+        for size in [249,250,253,254,255,1024,2042]:
             with self.subTest(size=size):
                 run,packets=fixture(size);proof=self.check(run,packets)
                 self.assertEqual(proof['round_trips'],56)

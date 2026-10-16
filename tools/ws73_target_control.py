@@ -132,7 +132,7 @@ def main():
     parser.add_argument('--channel-socket-close-prefix',action='store_true')
     parser.add_argument('--channel-socket-boundaries',action='store_true')
     parser.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4)
-    parser.add_argument('--dynamic-channel-long-bytes',type=int,choices=[250,253,254,255,1024,2042])
+    parser.add_argument('--dynamic-channel-long-bytes',type=int,choices=[249,250,253,254,255,1024,2042])
     parser.add_argument('--dynamic-channel-verify',action='store_true')
     parser.add_argument('--channel-socket-verify',action='store_true')
     parser.add_argument('--acb-transport-probe',action='store_true')

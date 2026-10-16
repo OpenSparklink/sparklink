@@ -485,7 +485,7 @@ def _run(args):
     agent_mode=getattr(args,'security_agent',None)
     dynamic_channels=bool(getattr(args,'dynamic_channel_verify',False))
     dynamic_long=getattr(args,'dynamic_channel_long_bytes',None)
-    if dynamic_long is not None and (not dynamic_channels or type(dynamic_long) is not int or dynamic_long not in [250,253,254,255,1024,2042]):raise ValueError('dynamic long requires explicit dynamic gate and bounded supported size')
+    if dynamic_long is not None and (not dynamic_channels or type(dynamic_long) is not int or dynamic_long not in [249,250,253,254,255,1024,2042]):raise ValueError('dynamic long requires explicit dynamic gate and bounded supported size')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
     channel_bytes=getattr(args,'channel_socket_bytes',61)
     channel_boundaries=bool(getattr(args,'channel_socket_boundaries',False))
@@ -1421,7 +1421,7 @@ def run_exit_code(record):
     if record.get('dynamic_channel_verification_requested'):
         dynamic=record.get('dynamic_channel_corroboration',{})
         size=record.get('dynamic_channel_long_bytes_requested')
-        if size is not None and (type(size) is not int or size not in [250,253,254,255,1024,2042] or dynamic.get('long_bytes')!=size or dynamic.get('slot_exhaustion_refusals')!=2):return 1
+        if size is not None and (type(size) is not int or size not in [249,250,253,254,255,1024,2042] or dynamic.get('long_bytes')!=size or dynamic.get('slot_exhaustion_refusals')!=2):return 1
         phases=dynamic.get('proofs',[])
         names=['A','B'] if size is None else ['A','B','C']
         if not isinstance(phases,list) or len(phases)!=2 or any(not isinstance(p,dict) or p.get('phase')!=n or [c.get('name') for c in p.get('channels',[])]!=names or any(len(c.get('business',[]))!=(40 if c.get('name')=='B' else 8) for c in p.get('channels',[])) for n,p in enumerate(phases)):return 1
@@ -1562,7 +1562,7 @@ def main():
             cmd.add_argument('--channel-socket-close-prefix',action='store_true',help='require captured first USB submit, final fd close, remaining PDU and actual peer/other-channel traffic')
             cmd.add_argument('--channel-socket-boundaries',action='store_true',help='require original EMSGSIZE and no USB traffic for oversized messages')
             cmd.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4,help='bounded application rounds per connection role')
-            cmd.add_argument('--dynamic-channel-long-bytes',type=int,choices=[250,253,254,255,1024,2042],help='extend dynamic gate with long C channel and explicit lifetime slot exhaustion;requires --dynamic-channel-verify')
+            cmd.add_argument('--dynamic-channel-long-bytes',type=int,choices=[249,250,253,254,255,1024,2042],help='extend dynamic gate with long C channel and explicit lifetime slot exhaustion;requires --dynamic-channel-verify')
             cmd.add_argument('--dynamic-channel-verify',action='store_true',help='actual two-channel CMTC/asymmetricTCID/app delivery/close isolation, separate bounded VM gate')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')

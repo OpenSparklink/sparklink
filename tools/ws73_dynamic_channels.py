@@ -190,7 +190,7 @@ def corroborate(run,capture):
     versions={row.get('version') for row in rows}
     if len(versions)!=1 or versions not in [{1},{2}]:raise CaptureError('one exact dynamic gate version required')
     extended=versions=={2}
-    if extended and (any(type(row.get('long_bytes')) is not int or row['long_bytes'] not in [250,253,254,255,1024,2042] for row in rows) or rows[0]['long_bytes']!=rows[1]['long_bytes']):raise CaptureError('exact bounded dynamic long workload required')
+    if extended and (any(type(row.get('long_bytes')) is not int or row['long_bytes'] not in [249,250,253,254,255,1024,2042] for row in rows) or rows[0]['long_bytes']!=rows[1]['long_bytes']):raise CaptureError('exact bounded dynamic long workload required')
     for number,row in enumerate(rows):
         if row.get('version')!=(2 if extended else 1) or row.get('phase')!=number or row.get('status')!='DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING' or [c['name'] for c in row['channels']]!=(['A','B','C'] if extended else ['A','B']):
             raise CaptureError('original dynamic phase/schema/terminal evidence required')
@@ -237,8 +237,12 @@ def corroborate(run,capture):
                         for direction in ['tx','rx']:
                             pieces=leg[direction].get('fragments',[])
                             if b''.join(bytes.fromhex(p['data']) for p in pieces)!=frame:raise CaptureError('dynamic long fragment bytes disagree with the exact application PDU')
-                            if len(pieces)<2 or [p.get('boundary',0) for p in pieces]!=[1]+[2]*(len(pieces)-2)+[3] or any(not 1<=len(bytes.fromhex(p['data']))<=254 for p in pieces):
-                                raise CaptureError('dynamic long PDU requires bounded actual first/middle/last fragments on both ends')
+                            boundaries=[p.get('boundary',0) for p in pieces]
+                            expected=[0] if len(pieces)==1 else [1]+[2]*(len(pieces)-2)+[3]
+                            if not pieces or boundaries!=expected or any(not 1<=len(bytes.fromhex(p['data']))<=254 for p in pieces):
+                                raise CaptureError('dynamic PDU requires bounded actual PB framing on both ends')
+                            if direction=='tx' and (len(pieces)>1)!=(len(frame)>254):
+                                raise CaptureError('dynamic 254-byte controller boundary requires exact unfragmented/fragmented TX posture')
                     if leg['tx']['wall_ns']<connected['response']['tx']['wall_ns'] or leg['rx']['wall_ns']>channel['end_wall_ns']:
                         raise CaptureError('business outside negotiated channel lifetime')
                     legs.append(dict(sequence=sequence,role=role,**leg))
@@ -277,7 +281,7 @@ def corroborate(run,capture):
             if not any(leg['sequence']>0 and leg['tx']['wall_ns']>refused['end_wall_ns'] for leg in channels[2]['business']):raise CaptureError('actual dynamic long business after slot refusal required')
         proofs.append(dict(phase=number,refused=rejected,channels=channels,close_isolation=True))
     if extended:
-        return dict(status='DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS',round_trips=56,long_bytes=rows[0]['long_bytes'],slot_exhaustion_refusals=2,proofs=proofs,scope='Prior dual dynamic behavior plus C long PDU/actual two-end PB fragments and ENOSPC before staging;Cactual app replies after refusal,both physical roles;no safe TCID reuse/fullcredit/concurrency or natural recovery claim',reliable_mode=False,tcid_reuse=False,natural_recovery=False,full_multichannel_matrix=False)
+        return dict(status='DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS',round_trips=56,long_bytes=rows[0]['long_bytes'],slot_exhaustion_refusals=2,proofs=proofs,scope=('Prior dual dynamic behavior plus C long PDU/actual two-end PB fragments and ENOSPC before staging;Cactual app replies after refusal,both physical roles;no safe TCID reuse/fullcredit/concurrency or natural recovery claim' if rows[0]['long_bytes']>249 else 'Prior dual dynamic behavior plus C249byteSDU/254bytePDU at controller boundary,actual unfragmentedTX/validpeerRX and ENOSPC before staging;Cactual app replies after refusal,bothphysicalroles;no safeTCIDreuse/fullcredit/concurrency/naturalrecovery'),reliable_mode=False,tcid_reuse=False,natural_recovery=False,full_multichannel_matrix=False)
     return dict(status='DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS',round_trips=48,proofs=proofs,
                 scope='Two real controllers, both physical connection roles, actual CMTC, asymmetric TCIDs, per-channel random app replies, A close/B progress; bounded VM app scheduling only',
                 reliable_mode=False,tcid_reuse=False,natural_recovery=False,full_multichannel_matrix=False)

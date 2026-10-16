@@ -1,0 +1,1128 @@
+{
+  "schema_version": 1,
+  "status": "K619_U73_TEN_PLAIN_LIFECYCLE_SCOPED_PASS_PROTECTED_MATRIX_OPEN",
+  "real_result": "PASS",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "73a2898b05e662afb1bb768fecc9e6eefce5c3f8",
+  "executed_tools": "73a2898b05e662afb1bb768fecc9e6eefce5c3f8",
+  "scope": [
+    "VM-only Hi3873U2/3;Hi3873E1 explicitly user-confirmed excluded. Same sealed K619/U73;no new production engine or kernel change.",
+    "Existing plain security0 ordinary channel fds: release,last management File,dup final reference,directDown,original5sPDU deadline,each endpoint selected once. Two-second real IN81 hold QEMU05a and separate8second deadline QEMUe4b;normal deadlines not relaxed.",
+    "24actual ordinary random peer-validated before-control roundtrips;incomplete2042byte prefix is not a delivered message. Actual creditpool5 and1270byte prefix/original no-postwithdrawal submit assertions preserved.",
+    "Otherdevice isolation means same-generation Ready,unchanged independent Managed lease and real scan;not another independent surviving business pair or four-device qualification.",
+    "Ten complete frozen verifier replays and100copied evidence negatives rejected;not independent decoder,not new hardware injection andnot formal proof.",
+    "This DOES NOT qualify protected release/finalfd/dup/Down/deadline or live-security-query invalidation. Positive protectedCUTC qualification remains separate d7eabe8 report;no blanket scope inheritance.",
+    "First v1 lifecycle fixture mismatch remainsFAIL:pinned2s property missing from security-install QEMU;correct existing QEMU used with unchanged source/physical assertions. Original zero-test invocation is NOT a PASS;correct27provenance tests recorded separately.",
+    "NaturalRCA/nonmanualrecovery,firmwareNOCPtruth/reuse/drain andfullS0-S6/19WP/10FV/12DG remainOPEN. QMP/hub/manual/injected isnot natural recovery."
+  ],
+  "remaining": [
+    "Protected actual lifetime/authority/security-epoch invalidation andlatephysicalobligation combinations",
+    "SoleSSAPEngine security/local authorization/CPCD consumers",
+    "Fullrelated sevenlength/multichannel/fourdevice/fairness/performance/deployment/PM/securityBond/recovery originalscope"
+  ],
+  "real_gates": [
+    {
+      "name": "release0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-release0-v2/manifest.json",
+        "sha256": "45177f8285a58e6f75cc594a052e319f19a5f90bf646a67a4fa16f9f3dbc6cdb",
+        "bytes": 92385,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 2,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "release1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-release1-v2/manifest.json",
+        "sha256": "99c6e026fc7d576941b4b67b3d0896223bea602e710fa32164f32382d611a4ef",
+        "bytes": 92385,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 2,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "close0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-close0-v2/manifest.json",
+        "sha256": "f926be7e62d4267c90127cf2ef8e86fc3ba1da54c61449038b524e1f80f87ab2",
+        "bytes": 92315,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 2,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "close1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-close1-v2/manifest.json",
+        "sha256": "b803c287ab65837d451ede5437a3cb92a18e453ab4d34e435ec108a95872bdde",
+        "bytes": 92315,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 2,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "dup0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-dup0-v2/manifest.json",
+        "sha256": "f2057975bfafdd2e807c25e8ae1324180f65fc9dbc76f3290e1a8c954ca520f7",
+        "bytes": 107885,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 4,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "dup1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-dup1-v2/manifest.json",
+        "sha256": "c2c2a0c36ef256e6dfcf57f1d9a10ba42cd81f054ca561014bad60d594cb96a4",
+        "bytes": 107885,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 4,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "down0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-down0-v2/manifest.json",
+        "sha256": "3d2dcfd54169c3caf25d7d1eecd60b4906f4b1bc79bd30472b1a31a847ea4769",
+        "bytes": 64278,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 2,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "down1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-down1-v2/manifest.json",
+        "sha256": "0e52406c939588fe1fe34a5317bf8dd74e63aad152f88920d638e4724214b2f0",
+        "bytes": 64278,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 2,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "deadline0",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-deadline0-v2/manifest.json",
+        "sha256": "d26219d90dbbd4e4ded2d527ac6020ecfff785ff96d5b22186080c03ec46c7ec",
+        "bytes": 62748,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 2,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    },
+    {
+      "name": "deadline1",
+      "result": "PASS",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "manifest": {
+        "path": ".dev/security-grant-lifecycle-deadline1-v2/manifest.json",
+        "sha256": "8b64707f412d3178541f8e373b902e1d0e0454e85e7f0217c6ebd43100ec8e35",
+        "bytes": 62748,
+        "access": "private",
+        "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+      },
+      "round_trips": 2,
+      "application_security_requirement": 0,
+      "peer_isolation": "unchanged generation/Ready/lease and actual scan;not surviving separate business pair"
+    }
+  ],
+  "bounds": {
+    "real_gates": 10,
+    "ordinary_before_control_round_trips": 24,
+    "application_security_requirement": 0,
+    "exact_replays": 10,
+    "copied_actual_evidence_negatives": 100,
+    "qualified_provenance_checker_tests": 27
+  },
+  "proof_strength": "ActualVMcontrolled plainchannel hardwaretests plus sameverifier replay;no new formalproof,independentfirmwaretruth or recovery qualification",
+  "maintenance": {
+    "issues": "Four existing issues readbackOPEN and originalbody unchanged,scopeperprivate receipt",
+    "registry": "Six earlier scopedGrant records154materials/fiveprovenance negatives;not fullgoalPASS",
+    "documentation": "115strictHTML/readernavigation,not protocolqualification",
+    "zero_test_call": "Original0tests retained NOT_GATE;27propertests passed"
+  },
+  "materials": [
+    {
+      "path": ".dev/security-grant-lifecycle-release0-v2/manifest.json",
+      "sha256": "45177f8285a58e6f75cc594a052e319f19a5f90bf646a67a4fa16f9f3dbc6cdb",
+      "bytes": 92385,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release0-v2/console.log",
+      "sha256": "99abd58b51c55ed6eddf03e38acea830d347a45eeea892665cf37fa0da6d3dc3",
+      "bytes": 13889,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release0-v2/qemu-stderr.log",
+      "sha256": "3b827a69f8f26d8d64a3a45b6de25def8affe214f5de703d42255f793469e81f",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release0-v2/guest-output/ws73.pcap",
+      "sha256": "8c79c19f76612db4b8af72565170c5dd8bf0531b380697804074d884de4e259b",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release0-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release0-v2/guest-output/connected-file/run.json",
+      "sha256": "b1d812738d6b650e18227d6d266f6ff01d59d5ae235700d964cb3c6420b90215",
+      "bytes": 38663,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release0-replay-v2.json",
+      "sha256": "bf449a90dac74415145e5cfb3b6d73eb727339c1963a914ef414b1dc9a8c17f0",
+      "bytes": 48891,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-release0-v2.json",
+      "sha256": "5966b187f84bce8a8021d275df872e1e507abaf12d3de57f29e7937402b6629f",
+      "bytes": 2404,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release1-v2/manifest.json",
+      "sha256": "99c6e026fc7d576941b4b67b3d0896223bea602e710fa32164f32382d611a4ef",
+      "bytes": 92385,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release1-v2/console.log",
+      "sha256": "f59288ba2bddfd38d2d08112d12601e31447e629418b4f49f65db027e9a9a902",
+      "bytes": 13889,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release1-v2/qemu-stderr.log",
+      "sha256": "10e387ecba4d197462e4c967d34b1e8c2f8b01c69c3942a29ee8c0d86c3168a6",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release1-v2/guest-output/ws73.pcap",
+      "sha256": "7fd77712c8f16aee78fdc679b2ee98bb6ba40203e7fabb4d8237c2a6c33cf052",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release1-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release1-v2/guest-output/connected-file/run.json",
+      "sha256": "269e16a4f81114f2dcdfab5006abea34f60661da2c53e1010a522160c3e6151a",
+      "bytes": 38663,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release1-replay-v2.json",
+      "sha256": "6c0699f1e8e46a19b2b84668f4422b74337ff3b7d43d1f3006a55e5ef977d266",
+      "bytes": 48891,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-release1-v2.json",
+      "sha256": "87612ade95de1da61b850d675c58b7933edf0715ad2ebb1f397ece6e496762fa",
+      "bytes": 2404,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close0-v2/manifest.json",
+      "sha256": "f926be7e62d4267c90127cf2ef8e86fc3ba1da54c61449038b524e1f80f87ab2",
+      "bytes": 92315,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close0-v2/console.log",
+      "sha256": "4566700f54b5248f83fac709729cf52e78b4caa1ae9d1f970ca3707f23bdd2df",
+      "bytes": 13887,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close0-v2/qemu-stderr.log",
+      "sha256": "f1369a2f2560d60d0ec3b74129f7070b82cede3d65075ffe75ab94e278c0afb1",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close0-v2/guest-output/ws73.pcap",
+      "sha256": "ab441bebf738301841fb0a318c29e432dcbd3a5cd51c09a264a2364694fcc3d4",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close0-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close0-v2/guest-output/connected-file/run.json",
+      "sha256": "e0a407982da4ec2210c0bba111a983cfad60d43d864f36b11d1acd6dc0acc9d2",
+      "bytes": 38561,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close0-replay-v2.json",
+      "sha256": "3e51f5d7e2ce39ee672d43c1fac92deb76896f1fdfa5020bf72fb5bb24c851ad",
+      "bytes": 48887,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-close0-v2.json",
+      "sha256": "fb4ae3271694d45fafca06399c1354eff8d3f624485b85ef61c0d62c0b003473",
+      "bytes": 2382,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close1-v2/manifest.json",
+      "sha256": "b803c287ab65837d451ede5437a3cb92a18e453ab4d34e435ec108a95872bdde",
+      "bytes": 92315,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close1-v2/console.log",
+      "sha256": "1e3d285af4648cb2bc092c3da8a14379e9a969b404aeccd1a98eef3d5c908058",
+      "bytes": 13887,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close1-v2/qemu-stderr.log",
+      "sha256": "4f73b3478d3dedd800a3946b699a5c510fa1d3ee61c4de55d8eb4f93a611122f",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close1-v2/guest-output/ws73.pcap",
+      "sha256": "adcbd3a32831826b949a32aa502c575386df912da74abfd7da0e48e4acb06f4b",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close1-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close1-v2/guest-output/connected-file/run.json",
+      "sha256": "f111bed383d24cb3c5c7e1cd6db56051ed1acb20ac6a7aed7692adb37fe95ac1",
+      "bytes": 38561,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-close1-replay-v2.json",
+      "sha256": "6c62d6e652ae9e5058c89b194c303f00679afce3524ad185e1b9bfec78219e19",
+      "bytes": 48887,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-close1-v2.json",
+      "sha256": "ec0408a249e6bfa48a0444270517679ef36acd48943dfe0436d531a303a6422c",
+      "bytes": 2382,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup0-v2/manifest.json",
+      "sha256": "f2057975bfafdd2e807c25e8ae1324180f65fc9dbc76f3290e1a8c954ca520f7",
+      "bytes": 107885,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup0-v2/console.log",
+      "sha256": "4ea4694f03fe95517dc5b75074915ebb0431dd8ad14fad8bbbf7312629e27613",
+      "bytes": 13885,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup0-v2/qemu-stderr.log",
+      "sha256": "e644f789a28064ed2b2a45cf870cf8badc572f643e7c79a9caa4a5a5198e374c",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup0-v2/guest-output/ws73.pcap",
+      "sha256": "d14f0390b32cce15399dc7f2618d40d28614dd713ff33d92d2610bac1c793050",
+      "bytes": 88377,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup0-v2/guest-output/capture-stats.txt",
+      "sha256": "58d0f63402f1f8921ad062388d5dca5e772cbbc1780838f7c66d8734dfbc22d3",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup0-v2/guest-output/connected-file/run.json",
+      "sha256": "4f3af0a8b3c5b8b6595f10fb34d34cd2f65f3626e5724c1c9ba7835f8a76044e",
+      "bytes": 41610,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup0-replay-v2.json",
+      "sha256": "3b23ca9d749b9a4029deede57a3d7016a8d904c5c09230b8ecb7dae5200e4cae",
+      "bytes": 65372,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-dup0-v2.json",
+      "sha256": "68df23e42c796a6263ca07e3b341c391be6d8c2585b56782e9d95b51f9d7c49d",
+      "bytes": 2360,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup1-v2/manifest.json",
+      "sha256": "c2c2a0c36ef256e6dfcf57f1d9a10ba42cd81f054ca561014bad60d594cb96a4",
+      "bytes": 107885,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup1-v2/console.log",
+      "sha256": "f727e66c10c4229a69204a0ecdb7fffdf781e738729d4a1a984a97d6e0f0f69c",
+      "bytes": 13885,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup1-v2/qemu-stderr.log",
+      "sha256": "ee42e400026d6da0b5fcd8c1ea861b85873d8fac38ea236b43a0c55feae0189a",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup1-v2/guest-output/ws73.pcap",
+      "sha256": "6b867a0ea95bfebbd1fc10e72d7927ce87f329053d9d7d2b50232f3241096749",
+      "bytes": 88377,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup1-v2/guest-output/capture-stats.txt",
+      "sha256": "58d0f63402f1f8921ad062388d5dca5e772cbbc1780838f7c66d8734dfbc22d3",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup1-v2/guest-output/connected-file/run.json",
+      "sha256": "deb29af03a19b1ac2c0aaef7dc363b07b06323ed0c4e2389e1c8e354e74f7ad4",
+      "bytes": 41612,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-dup1-replay-v2.json",
+      "sha256": "48520e2a4351eb5530f5ec8f5298b7e21e315731b081e7378eb90dd9cdeb4558",
+      "bytes": 65372,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-dup1-v2.json",
+      "sha256": "94333cebfe3ff063871e1a1daec2e6c2e828226518ac8e09c725c73a2cb6b389",
+      "bytes": 2360,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down0-v2/manifest.json",
+      "sha256": "3d2dcfd54169c3caf25d7d1eecd60b4906f4b1bc79bd30472b1a31a847ea4769",
+      "bytes": 64278,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down0-v2/console.log",
+      "sha256": "eb5f28a3eb46ded7726ca39464bb87e796bac54c03ce0855d1214427b9e1e107",
+      "bytes": 14104,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down0-v2/qemu-stderr.log",
+      "sha256": "15365adbc45a02e0adec0bbfd1eefb9e9b5482685cf64f50379db85899199bc3",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down0-v2/guest-output/ws73.pcap",
+      "sha256": "03173199859edc004fba79908e1e95fe6f8539b2ec33ea7986ed9f66f72d09ee",
+      "bytes": 75682,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down0-v2/guest-output/capture-stats.txt",
+      "sha256": "d51a51102bad038d9d4f4d4ee3bba816a83f7bc476afadfe61454a0b8efda190",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down0-v2/guest-output/connected-file/run.json",
+      "sha256": "aff1d1e442ee9141eac6f82656af482d9033c2505aa5d960dd6e8903af364723",
+      "bytes": 45402,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down0-replay-v2.json",
+      "sha256": "96adddc35a6d59fafe4eef89b8d81c9626b7f788b783863b88e5c70f5a2301d9",
+      "bytes": 18827,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-down0-v2.json",
+      "sha256": "76265982f4ac350314c3b4d11a063bab65e82c905c5c12e703fa31adc400dc96",
+      "bytes": 2350,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down1-v2/manifest.json",
+      "sha256": "0e52406c939588fe1fe34a5317bf8dd74e63aad152f88920d638e4724214b2f0",
+      "bytes": 64278,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down1-v2/console.log",
+      "sha256": "74d7e0be09f297006185e2bc37ae0cffa1ffa7600f4fda1ed328849870efa53d",
+      "bytes": 13914,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down1-v2/qemu-stderr.log",
+      "sha256": "42e078494783bbdcebec424061da2866322245e7caaadca1ec70fca77c59c46d",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down1-v2/guest-output/ws73.pcap",
+      "sha256": "632ffaca7f614abb096fe821de797c3571e0ec76b681ea4ce597741e82d3b113",
+      "bytes": 74032,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down1-v2/guest-output/capture-stats.txt",
+      "sha256": "bf22c8b3fa6fb585c0b9b209688a11f3e8ec5896482ffb9dcdadb7f3b4f57cba",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down1-v2/guest-output/connected-file/run.json",
+      "sha256": "bbf10545c075d50d20213ffdc1ebf43005459bee0f6cd75e180b03f9824872ed",
+      "bytes": 45402,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-down1-replay-v2.json",
+      "sha256": "224d99207708fa331e47abe40715797488e62866e026dfed376e7df7b84cb65b",
+      "bytes": 18827,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-down1-v2.json",
+      "sha256": "dee5773916397d352c4070b774f19f1971b6667498576168949edec86238f05e",
+      "bytes": 2350,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline0-v2/manifest.json",
+      "sha256": "d26219d90dbbd4e4ded2d527ac6020ecfff785ff96d5b22186080c03ec46c7ec",
+      "bytes": 62748,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline0-v2/console.log",
+      "sha256": "118460821306c058f39c7c5d4290006fe31f71d6e70d36ff8f38bc6b14c9926b",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline0-v2/qemu-stderr.log",
+      "sha256": "69c72f45f68d217257d0bb4410c298fbeaee3197ff7f7607328fca94ec0c195d",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline0-v2/guest-output/ws73.pcap",
+      "sha256": "65f595a51b9b8ec81783f6288dc8b545250d0bf831482a79725e188792c0a810",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline0-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline0-v2/guest-output/connected-file/run.json",
+      "sha256": "7d80d581ad4fd913318c7c3ce5dd670f221b1c7128ebd28c3b855653fa8dafd4",
+      "bytes": 45021,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline0-replay-v2.json",
+      "sha256": "63f13ff7bc2bf78b3c133831eaa3f6c6cd1024cb16b3e409b33de1930b73f3d6",
+      "bytes": 17479,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-deadline0-v2.json",
+      "sha256": "9425154a68c276acb8652c2590408efa2939312f7b651bf95b2cfd741aa4f14b",
+      "bytes": 2364,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline1-v2/manifest.json",
+      "sha256": "8b64707f412d3178541f8e373b902e1d0e0454e85e7f0217c6ebd43100ec8e35",
+      "bytes": 62748,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline1-v2/console.log",
+      "sha256": "1bed106a024a561c34d3b1232fd2dc1e3bc0abb569c7d450c1860cef938c5856",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline1-v2/qemu-stderr.log",
+      "sha256": "a2caf3a892ff9af1b5008d965d3e3519250c909178d4bb8c1c4cec850b3a7cde",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline1-v2/guest-output/ws73.pcap",
+      "sha256": "dec4d4509dc961a04574d8bd3f988fafbbc25c3c4fe5872d8d29f24977760a63",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline1-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline1-v2/guest-output/connected-file/run.json",
+      "sha256": "6b37bdb2fb9e6f45260811db5d7364047cde0dbd7c580b94207c44391e596028",
+      "bytes": 45019,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-deadline1-replay-v2.json",
+      "sha256": "59fbc22b024d0b68092d0e522d44f261912c7a3545c5e3beb9443d7ec5adde29",
+      "bytes": 17479,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-evidence-negatives-deadline1-v2.json",
+      "sha256": "99af5b9558bcd82705bb845493707e3bdb58d839adb7062bed601897e922a173",
+      "bytes": 2364,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-v2.json",
+      "sha256": "32b55ec189652251001ece97ae428aee3bd7fa5f6f9fc5567420cbaabab9f3f0",
+      "bytes": 12868,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-v2.py",
+      "sha256": "57b824d6571a0254338c9ab8b41781bab2bf45fca534ddadb72902216490cf6e",
+      "bytes": 4303,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-v1.json",
+      "sha256": "cc2a7670c49c0f353fbd5da36eff4e518c382f634b222e5c95bcf8f758a6e614",
+      "bytes": 2460,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-v1.py",
+      "sha256": "2a4514efe5e0514b1898e187e99fbdd8989f924a44159389df181579a6ee2765",
+      "bytes": 4185,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release0-v1/manifest.json",
+      "sha256": "0c2338fa9f922f9db6a3a5b3c12ac2b11d37051ec149414b41a0dbf161f99a60",
+      "bytes": 36902,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-release0-v1/qemu-stderr.log",
+      "sha256": "dcabf43eaf35c998c161a6e605cb5f91bc8055cc3aa31ba01161c548962d9463",
+      "bytes": 100,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-replay-summary-v2.json",
+      "sha256": "ac862bc90415265f477ea8435f64e7c7620a2cddaf977dea0097df7c58ac8c51",
+      "bytes": 2116,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-replay-all-v2.py",
+      "sha256": "02f31301c02d46d25e60d9f919ab3e24f181e970a0111d91282abf56b0dd4f6f",
+      "bytes": 1801,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-negatives-v2.py",
+      "sha256": "bdab4f4a769d8d5dba623ed1c61e313a97d305d95e086e6fa40982588dc8913c",
+      "bytes": 3556,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-prepare-lifecycle-v2.py",
+      "sha256": "e9cee1c1463718403a9630753ac1eec89e67b7e197dbe26896b181d87498a755",
+      "bytes": 2735,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-prepared-v2/manifest.json",
+      "sha256": "830f3ee0657b02c9581009d050b183a67c9266a7d4def84134047081d1d112df",
+      "bytes": 274400,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-smoke-v2/manifest.json",
+      "sha256": "51c51999218a7762c4696caf75374fb12a09d6f9e2a3cdaeb0ffe609bbd0f85b",
+      "bytes": 37497,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-deadline-prepared-v1/manifest.json",
+      "sha256": "aa066c85f06cd43fe75b36bda2e14175911f87e4531b3560e39aa59ae8751bd4",
+      "bytes": 273473,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-deadline-smoke-v1/manifest.json",
+      "sha256": "40e922bb578f3c25ed3e6b942c28fbd7d211944dafeca21ae66d204a026139d6",
+      "bytes": 37391,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/manifest.json",
+      "sha256": "ae898585fac92a8f9c6294129a4717e28550ba1956a6e565cdb4b313f861103d",
+      "bytes": 26493,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-artifacts-v1/manifest.json",
+      "sha256": "1ccf3d01364acb2fb673d837fd41e3e42cddaed629d4d7b4bfa9446477e7cbb7",
+      "bytes": 229023,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/data-deadline-qemu/qemu-system-x86_64",
+      "sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-registry-local-v1.json",
+      "sha256": "765138a192bed02ced30b16868c057e019e3632d9c61eab8b63e6805d00584ce",
+      "bytes": 1274,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-issue-receipts-v1.json",
+      "sha256": "1cf2d367445992a8c7f93ce9f78fb55106878e47d96a34a3630884446359ed10",
+      "bytes": 1933,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-docs-v3.log",
+      "sha256": "5602f958d33b49e474e7d45cdb12e3a5436d5b00a1917f7e1993c461e593e549",
+      "bytes": 308126,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-qualification-tests-v1.log",
+      "sha256": "e70fec2825d9bf206d27463a792768195039599cb39bcca66339f47283f84cce",
+      "bytes": 108,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-qualification-tests-v2.log",
+      "sha256": "7fc870e836aef96f2edeac7aed0844c76602b488679279dbe260c2ed1c8f8a58",
+      "bytes": 126,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-maintenance-checkpoint-v1.json",
+      "sha256": "63ae6018eb9a1aa9100624472674aa659a8b750b567f0a53f7f8f2db2d88c58a",
+      "bytes": 3597,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/build-manifest.json",
+      "sha256": "638f397bea514551c6dd55964e05acfbe8c0f2a3f23ac1c589bddef3ca9db539",
+      "bytes": 312966,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/data-deadline-qemu/build-manifest.json",
+      "sha256": "1f7b25b56578148f8d3059c05cf93a2efbbeb324215f7e3b53a6aa6d7989415f",
+      "bytes": 313073,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/session-event-replay-case-v2.py",
+      "sha256": "12e4ad6d265c4d582aef4485fa42b6d4d171ebcb34a7b91a3daafd61c01b25b3",
+      "bytes": 3031,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-prepared-v2/root.btrfs",
+      "sha256": "f6ebf9fce0258de4d84205f2d65d5d18eb55d4e7fa2c66c54f14de96d5bc5f05",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-prepared-v2/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-deadline-prepared-v1/root.btrfs",
+      "sha256": "7be095747d1966e036399223ddd292826358ac1c8ce79d6ac188f12e47dbc4c9",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-deadline-prepared-v1/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-deadline-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-deadline-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slkd",
+      "sha256": "246e3ae2f71cd96a5378b753d0cc902f2b3ba9bd1964911dc458e7d0fcb68946",
+      "bytes": 10579552,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slctl",
+      "sha256": "a6c0c7432f2f85cd8473a1639603b464208dc9a38dbbdfee2c3d34f21826deef",
+      "bytes": 7828432,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slktest",
+      "sha256": "5bb2e137ac1139f528ec0ccfa06e2285fb6f99a72e089792ca717c3a88c42dab",
+      "bytes": 5264304,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slkconfig",
+      "sha256": "09560f3e0b4263d08b220ee0dad8a0bf0fd84532cf244bf92bce9dac92acea3d",
+      "bytes": 1404136,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slkmon",
+      "sha256": "b29f1cf8f8e81a3c87d253911b93dfe79d916fcf8fa0c24384d6537c9a14e4ae",
+      "bytes": 1662328,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slkdump",
+      "sha256": "93929b9aaa903d2039077a59a399b978266c461889a5f9251be42f776a40e744",
+      "bytes": 1662200,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/liblibsparklink.so",
+      "sha256": "3126822aa5dc51cb00a823d0f9641c33ce22cdbe7fb4e95fd1ecc81fb74460bd",
+      "bytes": 548536,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "fba79776015c968128a87d0d76ba07b6d1f3bb906507bb4207d2633c9993a467",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "4d14f24a6bf039defa65290cf6332c6e96f1a520c83ef2b945b86e6f7dbaea41",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Workspace maintainers only;USB/firmware originals not published or verified offsite. Missing/hash mismatch cannot verify PASS."
+    }
+  ],
+  "replay": [
+    "tools73 ws73_capture.read_capture/check_capture_stats -> ws73_connected_file_gate.corroborate(originalrealhold,QEMUstderr,hostidentity);compare entireJSON values. Same decoder,not independent implementation.",
+    "ws73_target.py run --prepared exactnormal/deadline manifest --ports 1-2.1.2 1-2.1.3 --setup-release-verify --managed-connected-case release|close|dup --managed-connected-index0|1 --managed-channel-grant --managed-channel-revoke-prefix;dedicated --managed-channel-link-down or --managed-channel-deadline;never hostdriverload."
+  ],
+  "wall_ns": 1792194292788534377
+}

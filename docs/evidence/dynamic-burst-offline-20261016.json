@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "status": "OFFLINE_SCOPED_PASS_REAL_DYNAMIC_BURST_PENDING",
+  "source": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "kernel_unchanged": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "source_sha256": {
+    "crates/slctl/src/channel.rs": "b6dc5b6a5ffa22d57b3254a5ee8a877db21382539a41cb91a8cdcfe81264ef5e",
+    "crates/slctl/src/commands.rs": "099dd2d3c08ac635084736220498775baa78afd5e728c5607bc553a9b99898f2",
+    "crates/slctl/src/main.rs": "126f113b2e9639d7482e8992a04acc9855451797ea251fffd5795d6fd44c4fdd",
+    "tools/ws73_dynamic_channels.py": "aadde2720d34391c1167cfb6f583e1d87de1cfc221f44c31dd764112d0bca6b8",
+    "tools/ws73_target.py": "23c67b9b1505ae77b4cac873943dd015a2650e7b886f18e6a37a082dda6f4f9b",
+    "tools/tests/test_ws73_dynamic_channels.py": "cae0929a83c755f4a8c30f45dbb30d3494b3a66f9a8f636227c72a6d6d941365"
+  },
+  "checks": {
+    "strict_slctl_clippy": "PASS Rust1.96.1 offline/locked/alltargets -Dwarnings",
+    "slctl_tests": "PASS7unit+2scan/privateDBus+3securityAgentCLI integration",
+    "tools": "PASS614offline cases;18dynamic/output cases included",
+    "strict_docs": "PASS inventory110/internalresources/qualificationconsistency/warnings-as-errors",
+    "local_qualification_closure": "PASS retained fixed14/pilot/seven-size rawmaterials andcompiledinputs;4negativecontrols rejected"
+  },
+  "fixture_boundary": "Actual production CLI burst/localAF_UNIX tests and actual receipt/credit observer/verdict used. USB shapes/clocks for offline dynamic test are explicit fixtures;reassembly mocked. No successful credit stub. Not realkernel concurrency/USB/RF or formalrefinement.",
+  "failures_preserved": [
+    {
+      "kind": "sandbox",
+      "result": "AF_UNIX/SO_PASSCRED operation denied;rerun authorized pure tests outside sandbox succeeded"
+    },
+    {
+      "kind": "environment",
+      "result": "PrivateDBus executable missing;explicit existing DBus path supplied thenallCLI12tests succeeded"
+    },
+    {
+      "kind": "implementation",
+      "result": "First expanded fixture exposed missing phase on dynamic channel row;production row nowcarries actual phase and regressionpasses"
+    }
+  ],
+  "real_result": "PENDING exact new artifact/frozen VM",
+  "scope": [
+    "Dynamic C16x2042 gate reuses existing burst,Session,actualLedger/Tickets;no newprotocolEngine.",
+    "Prior7size/retainedfixed qualifications keep exactK400/Ucca8 identity and are not inherited by new25df compiledruntime.",
+    "AllS0-S6/19WP/10FV/12DG and unproven hardwareNOCP/late/duplicate/reuse/RCA/nonhumanrecovery retainedOPEN."
+  ],
+  "materials": [
+    {
+      "private_workspace_path": ".dev/dynamic-burst-slctl-clippy.log",
+      "sha256": "fed7363b491c36cdfb2088be850d88db818931b122630b4acae66b2def51e80f",
+      "bytes": 274
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-slctl-tests.log",
+      "sha256": "6387ffb2a6bc61b7ca9ac1bd32a9e7f4e4bf11922ea1ff4103d1ef0ae128ebe9",
+      "bytes": 2102
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-slctl-tests-unsandboxed.log",
+      "sha256": "dd35383d9508fa80aa6bf3032955cd449c803c071c0083a80649e8338b029394",
+      "bytes": 2069
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-slctl-tests-dbus.log",
+      "sha256": "dae5070df356f6f2d8f334fa6d404a6a87c72faca1f8f83fc9ddcbdfdcce903e",
+      "bytes": 1933
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-all-tools-v1.log",
+      "sha256": "2a63c43bebf2652b933e32545449ce6061d895adbc4a9e54dc746bdb96e0f53c",
+      "bytes": 1448
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-all-tools-unsandboxed.log",
+      "sha256": "8fd85a39ff2d1cbe74cf1e10f139cf481b844ff5362b5f74a1cec59f04653f08",
+      "bytes": 749
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-expanded-tests.log",
+      "sha256": "0cb04933abab8c2a1138cf3173c1c2106dc332e593d0c76834932bb0324a6709",
+      "bytes": 1514
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-fixture-final.log",
+      "sha256": "4f349c31750b0c54d979e4dbd20a358a940b4625260e4ab9219b0efdb4ee273e",
+      "bytes": 117
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-docs-final.log",
+      "sha256": "e898e45d236e6c7efda89f7aca559941ca4776d1e00b177628bd83ad3bb4e9ce",
+      "bytes": 135172
+    },
+    {
+      "private_workspace_path": ".dev/dynamic7-local-provenance-v1.json",
+      "sha256": "2034890d17b828d83bb7950474c4669edd47e5cfc97807ecea4935a447f3e4a3",
+      "bytes": 640
+    }
+  ]
+}

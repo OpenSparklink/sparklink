@@ -740,8 +740,8 @@
     "Continue boundedTX,realcredit/backpressure,multichannel/fourdevices andSSAP/Agent inparallel;noallcontrolraces prerequisite.",
     "Measure callbacksegments/RXstress beforemultiURB;current1920 lowloadgaps P50=7us/P99=24us/max87us noRXdriverchange."
   ],
-  "issue_sync_status": "ConfirmedMPSFAIL:K17/U8 exact readbackOPEN;full originalscopes retained",
-  "issue_sync_receipt": "docs/evidence/cmtc-mtu-mps-issues-20261016.json",
+  "issue_sync_status": "K17/K19/U8 appended/readbackmatched;allOPEN;originalDownFAIL retained",
+  "issue_sync_receipt": "docs/evidence/native-baseline-maintenance-20261016.json",
   "previous_goal_turn_classification": "progress:canonical slktest migration,actualemptyUSBVM andqualification/issues synchronization",
   "current_goal_turn_classification": "progress:productionpairedfinish,independentactualreportreplay,selectedCargoVMidentitynegativeand25actualVMtests",
   "goal_api_status_observed": "paused",
@@ -1387,7 +1387,8 @@
     "docs/evidence/four-device-burst-issues-20261016.json",
     "docs/evidence/cmtc-identifier-zero-issues-20261016.json",
     "docs/evidence/slktest-migration-maintenance-20261016.json",
-    "docs/evidence/schema2-application-maintenance-20261016.json"
+    "docs/evidence/schema2-application-maintenance-20261016.json",
+    "docs/evidence/cmtc-mtu-mps-issues-20261016.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -1641,7 +1642,8 @@
       "failed_attempts": 1,
       "performance_qualified": false,
       "formal": "NO_NEW_PROOF",
-      "remaining": "FullP1 traceoverhead/kernelresources/actualparameters/stability;originalDownFAIL;P2next"
+      "remaining": "FullP1 traceoverhead/kernelresources/actualparameters/stability;originalDownFAIL;P2next",
+      "issues_receipt": "docs/evidence/native-baseline-maintenance-20261016.json"
     }
   },
   "slktest_migration": {

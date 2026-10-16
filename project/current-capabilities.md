@@ -187,6 +187,9 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | 14d9/42e动态burst：80＋8真实回复，受控关闭观测 | `real_device` | `PASS` |
 | Session只读接口：生产C/Rust/跨语言与671工具限定检查 | `offline` | `PASS` |
 | 物理callback/ref drain、复用、公平及性能：未证明 | `real_device` | `UNPROVED` |
+| 14d9/42e：七长度/并行/十生命周期，552次真实回复 | `real_device` | `PASS` |
+| 18份原件重放及172实际证据负对照 | `offline` | `PASS` |
+| 物理callback/ref drain、复用、公平及性能：未证明 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

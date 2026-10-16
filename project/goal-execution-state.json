@@ -1356,18 +1356,30 @@
       "session-status-42e-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "session-status-regressions-42e": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "session-status-regressions-42e-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "session-status-regressions-42e-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "bounded-session-close-snapshot-newartifact-burst",
+      "id": "newartifact-length-concurrent-lifecycle-regression-complete",
       "production_behavior": "Readonly64byteNativeE2,existingauthorizedactor/CLI/FFI;no newHost orEngine,creditpredicateunchanged",
       "exit": [
-        "New14d9/42eU2/3dynamic80+baseline8realpeerRT;actual Nativeopenpositivecontrols andboundedclosedzero-debtsnapshots;24actualevidencenegatives",
-        "ProductionCsanitizers,190unit+5docRust,671frozentools,40Python,4ABI,strictHTML115;LKMMtwoCPUrepresentativepublicationonly",
-        "Originalv3wholeFAILretained;length/concurrent/lifecycle newartifactgates separatelyrunning"
+        "18VM-onlyU2/3relatedregressions552peerRT,plusseparateinitialburst88=640selectednewartifactRT",
+        "Sevenlengths448,concurrent80,tenrelease/lastmanagementfd/dup/Down/originaldeadline24peerRT;18exactreplays172actualevidencenegatives pluspriorburst24=196",
+        "Originalv3wholeFAILretained;no callbackdrain/reuse/NOCPtruth,fairness/performance ornaturalrecovery qualification"
       ],
-      "next": "Finishrelatednewartifactregressions;wholefairness/P2dmatchedU2/3cost/resource/performance,Agent/SSAP/fourdeviceparallel,noallcontrolraces prerequisite;naturalRCA/nonmanualrecoveryOPEN"
+      "next": "Relatedgatescomplete;continuewholefairness/P2dmatchedU2/3cost/resource/performance,Agent/SSAP/fourdeviceparallel,noallcontrolraces prerequisite;naturalRCA/nonmanualrecoveryOPEN"
     }
   },
   "agent_workstream": {

@@ -79,8 +79,9 @@
     "manual_request_pending": false,
     "host_installation": false,
     "constraint": "VM-only; no activity on unrelated libvirt VMs",
-    "current_operational_scope": "Four real ports1/2/3/4 completed first80-reply positive gate at d01aa82. Historical manual/RAM failures retained. No natural RCA/recovery or full four-device waiver.",
-    "recovery_qualification": false
+    "current_operational_scope": "Four ports1/2/3/4 positive80 at d01 and controlled pair Down48 at compiled d01/toolsff13. Historical manual/RAM failures retained; no general devicefault/natural recovery qualification.",
+    "recovery_qualification": false,
+    "controlled_disconnect_record": "four-disconnect48-ff13d8c"
   },
   "packages": [
     {
@@ -673,16 +674,17 @@
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
     "scope": "Retained prior progress/qualified identities; not live current state"
   },
-  "execution_phase": "WP07 four-controller positive slice sealed; next actual one-pair Down with surviving peer-checked business; Q3/WP09 composition parallel",
+  "execution_phase": "WP07 controlled Disconnect slice sealed; next four-device long/budget/fairness and dynamic channels. Full original scopes remain incomplete.",
   "next_resume_tasks": [
-    "WP07 actual one-pair Disconnect/Down during independent surviving-pair random socket traffic; preserve all capture/application failures",
-    "Four-device long payload/budget/fairness and dynamic channels after first isolation exit",
-    "Stateful production fuzz,submit-revoke-Down-original-deadline composition and debugVM parallel; minimum authenticated security and authorization before protected CCC"
+    "WP07 four-device long payload/burst/controller budgets/fairness; actual packet/peer proof;preserve existing80positive/48controlledDown qualifications",
+    "Dynamic multichannel on existing unique Session dispatcher, per-channel bounded queues and socket contract",
+    "Actual USB/device-fault isolation with surviving peer replies;natural RCA/nonhuman recovery remains unqualified",
+    "Production stateful fuzz,submit-revoke-Down-original-deadline composition/debugVM parallel;minimum authenticated authorization before protectedCPCD"
   ],
   "issue_sync_status": "Four-device first positive increment: K17/U3/U8 exact comment readback and OPEN; original scope unchanged",
   "issue_sync_receipt": "docs/evidence/four-device-business-issues-20261016.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
-  "current_goal_turn_classification": "progress: d01aa82 signed/pushed gate,87 offline+strictdocs; exact VM4Ready/two-pair/two-role80real replies sealed; no whole goal complete",
+  "current_goal_turn_classification": "progress: signedff13 test gate; actualcontrolled Disconnect2roles48app replies and saved raw proofs sealed;8negativecontrols and initial no-op selectorfailure retained",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1006,9 +1008,9 @@
     "baseline": {
       "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
       "compiled_userspace": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
-      "guest_tools": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
-      "executed_tools": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
-      "report_commit": "878d81ebf56c7cd205cf7d5e8f306351cadda7c8"
+      "guest_tools": "ff13d8c8ed927a5a468a6c5642c610660ec79eaa",
+      "executed_tools": "ff13d8c8ed927a5a468a6c5642c610660ec79eaa",
+      "report_commit": "f602ada91d694c2dcec4af0f61c6c8821e99fc03"
     },
     "current_tree_qualification": "NOT_REVALIDATED",
     "private_evidence_in_ci": "METADATA_ONLY_NOT_REVERIFIED",
@@ -1068,18 +1070,22 @@
       "four-business80-d01aa82": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "four-disconnect48-ff13d8c": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "four-controller-controlled-disconnect",
-      "production_behavior": "Test existing same-session ordinary socket delivery during the other physical pair Disconnect/Down;alternate victim pairs without pausing apps or refreshing original deadlines. No production Engine change.",
+      "production_behavior": "Existing real Runtime/Session/socket under pair Disconnect/Down; compiled d01aa82 and toolsff13d8c. No new Engine, no app pause or deadline refresh.",
       "exit": [
-        "Retain original d01aa82 positive80 qualification under exact source identities",
-        "New gate:2roles x(4victim+20survivor)=48 actual peer replies;each survivor >=2before actual Disconnect submit and >=4after both Down",
-        "Offline/pipes/capture negative controls separate from real VM;new real evidence pending; all original scopes remain open"
+        "Real2phases alternate victims:48actual replies; survivors6/8before Disconnect,13/11after both Down;5,305packets0drops,taint0,QEMU/supervisor0",
+        "92offline/strictdocs separate;old80saved capture same proof;8corruptions reject after retaining first failed no-op selector;no new formal proof",
+        "Warm4 each-110 then one recovery0 retained;controlled physical Disconnect only,not USB/device fault or natural recovery"
       ],
-      "next": "After controlled Disconnect slice, four-device long/budget/fairness and dynamic channels; actual transport fault isolation/natural RCA/recovery remain open. Stateful submit-revoke-Down-original-deadline and debugVM parallel."
+      "next": "Four-device long/burst/budget/fairness then dynamic channels; actual device/USB fault isolation remains open. Production stateful fuzz,submit-revoke-Down-original-deadline composition/debugVM and minimum authenticated authorization parallel; full originalS0-S6/19WP/10FV/12DG unchanged."
     }
   },
   "agent_workstream": {
@@ -1203,7 +1209,7 @@
     "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
     "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
     "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only",
-    "state": "CONTROLLED_DISCONNECT_GATE_IMPLEMENTED_REAL_PENDING",
+    "state": "CONTROLLED_DISCONNECT_REAL_SCOPED_PASS_REMAINING_OPEN",
     "tool": "tools/ws73_parallel_data.py via ws73_target.py --four-device-business",
     "invariants": [
       "four distinct Ready registrations and unchanged daemon identity",
@@ -1213,8 +1219,9 @@
     ],
     "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification",
     "report": "docs/evidence/four-device-business-20261016.json",
-    "next": "Alternate victim pairs:2phases,48 actual replies,>=2 full surviving replies before other Disconnect and>=4after both Down;no app pauses or refreshed protocol deadline",
-    "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json"
+    "next": "Four-device long/burst/budget/fairness and dynamic channels;actual USB/device fault isolation/natural RCA/recovery remain open;stateful production/submit-revoke-Down-original-deadline/debugVM parallel",
+    "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json",
+    "controlled_disconnect_report": "docs/evidence/four-device-disconnect-20261016.json"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json"

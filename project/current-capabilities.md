@@ -27,14 +27,15 @@
 | 生产C codec有界fuzz：19固定+20000探索无发现（非证明） | `offline` | `PASS` |
 | 独立CI Clang18 codec有界探索：artifact/源码/目标执行已核对 | `offline` | `PASS` |
 | 四设备d01aa82：两组两角色80次实际应用回复及USB业务重叠 | `real_device` | `PASS` |
+| 四设备d01/ff13：轮换受控断链，48次对端实际校验回复 | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`。
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `ff13d8c8ed927a5a468a6c5642c610660ec79eaa`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `ff13d8c8ed927a5a468a6c5642c610660ec79eaa`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 ## 四设备业务首片（限定实机通过）
@@ -48,6 +49,15 @@
 四只warm启动均观察到-110后一次warm recovery result0；保留该事实，不升级为自然
 故障根因闭合或通用自动恢复资格。单组故障下同行实际业务、四设备长包压力/公平性、
 动态多通道和CPCD安全仍缺。旧6385/300a长度矩阵保留准确原身份，不改写为本轮执行。
+
+## 四设备受控断链隔离（限定实机通过）
+
+K8cbf、编译d01、guest/Host工具ff13的[受控断链报告](../docs/evidence/four-device-disconnect-20261016.json)
+记录两组轮换断链方，合计48次实际往返。同行第一阶段6次早于Disconnect、13次
+晚于双Down；第二阶段分别8次、11次，仍为同一物理Session/socket应用和slkd。
+5305包零丢包、taint0、QEMU/监督器0；八项损坏证据拒绝，首次无效负对照失败保留。
+这只支持受控物理Disconnect隔离，USB/设备故障隔离和自然恢复仍缺；四设备长包、
+压力/公平性、多通道、保护CPCD及完整socket/权限范围继续开放。无新形式化证明。
 
 ## 正式安全 CLI 增量（双模式限定实机通过）
 

@@ -4,8 +4,9 @@
 
 WP07首个四设备正向切片已在编译/guest/Host d01aa82取得80次真实对端校验回复，
 两连接角色阶段均有原始USB业务区间重叠；准确资格见下方生成摘要与证据索引。
-下一条实机切片是：一组真实Disconnect/Down期间，另一组普通用户socket业务持续
-获得对端实际校验回复；随后四设备长包/预算/公平性、动态多通道。保持现有
+受控Disconnect/Down隔离也已在compiled d01/工具ff13取得[48次限定结果](../docs/evidence/four-device-disconnect-20261016.json)，
+同行分别有6/8次早于Disconnect、13/11次晚于两个Down；实际USB/设备故障隔离仍缺。
+下一批为四设备长包/预算/公平性、动态多通道。保持现有
 Runtime/Session/socket及唯一用户态SSAP路径，不另造Engine。首片不关闭WP07或相关整项issues。
 Q3生产状态序列fuzz、提交/撤权/Down/原期限组合及debugVM并行，不设控制竞争全集
 前置；安全所需的最小认证授权只约束保护CPCD等操作。
@@ -39,14 +40,15 @@ WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续�
 | 生产C codec有界fuzz：19固定+20000探索无发现（非证明） | `offline` | `PASS` |
 | 独立CI Clang18 codec有界探索：artifact/源码/目标执行已核对 | `offline` | `PASS` |
 | 四设备d01aa82：两组两角色80次实际应用回复及USB业务重叠 | `real_device` | `PASS` |
+| 四设备d01/ff13：轮换受控断链，48次对端实际校验回复 | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`。
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `ff13d8c8ed927a5a468a6c5642c610660ec79eaa`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `ff13d8c8ed927a5a468a6c5642c610660ec79eaa`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
@@ -1111,7 +1113,7 @@ ECANCELED分支可见，不模拟成功USB/固件/协议。未运行目标、缺
 四次warm-start超时及自动warm序列结果保留，恢复根因/通用非人工恢复仍开放。
 
 
-### WP07 当前批：受控单组 Disconnect/Down 隔离（未实机验收）
+### WP07 受控单组 Disconnect/Down 隔离（限定实机通过）
 
 新增独立 `--four-device-disconnect` 门禁，复用同一pair worker、普通socket及原始包核对。
 每角色阶段断链组4轮、持续业务组20轮，下一阶段轮换断链组，共48次实际回复。
@@ -1124,3 +1126,9 @@ ECANCELED分支可见，不模拟成功USB/固件/协议。未运行目标、缺
 不通过延长原协议期限、暂停应用、重跑丢弃失败或更改预期取得PASS。
 此为受控物理Disconnect隔离，**不是USB/设备故障隔离、硬拔插或自然恢复**；
 DG11、长包/公平性、动态多通道及自然故障根因/非人工恢复继续开放。
+
+本批限定结果已封存：K8cbf/compiled d01/guest与Host ff13，5305包零丢包、taint0、
+QEMU/监督器0；第一阶段6pre/13post、第二阶段8pre/11post。第一阶段一轮跨完整
+Disconnect至双Down，第二阶段一轮在Disconnect后、双Down前开始并在Down后回复，
+不将两者混称同一时序。工具首次删除Down负对照选错事件未生效，fail-closed失败
+及修正原始包定位后的8项拒绝均保留。不是独立decoder或新形式化证明。

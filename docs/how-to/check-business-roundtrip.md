@@ -136,7 +136,8 @@ python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN \
 
 ## 核对受控单组断链期间的同行业务
 
-集成门禁 `--four-device-disconnect` 尚未取得新实机资格。准备条件同四设备业务门禁，
+集成门禁 `--four-device-disconnect` 在编译d01/工具ff13取得[限定结果](../evidence/four-device-disconnect-20261016.json)；
+其他提交/配置不继承该资格。准备条件同四设备业务门禁，
 使用独立输出目录并以此选项替换 `--four-device-business`，禁止二者混用。
 它不暂停应用：两阶段轮换断链方，断链方4次、持续业务方20次，共48次实际回复。
 

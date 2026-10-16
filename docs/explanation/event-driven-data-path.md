@@ -13,6 +13,17 @@ worker 决定休眠和新通知可能并发；合并通知不等于可以丢事�
 通知、join worker、timer/callback drain 与最终释放是同一生命周期契约。计划中的
 事件改造还需生产源码、模型和 VM 交错验证，不能据本解释宣称已经无丢失唤醒。
 
+第一阶段的通知链保留这些边界：USB 接收与 NOCP 处理只设置 per-controller 合并
+提示并唤醒 Runtime。Runtime 在进程上下文从 Session 表取得临时引用，退出表锁后
+通知唯一 Session worker。提示不保存可追随复用的裸 handle，也不在 USB callback
+取得可睡眠的 Session 表锁。Session 再次检查自己是否关闭，所有业务状态和准入
+仍从原锁保护的数据读取，不能从提示标志推导 Ready 或 credit。
+
+修改已经排队的 work 只提前执行时间，保留原排队引用；运行中再排下一次执行则
+需要另一份引用。stop 先在同一 Session 锁下关闭新排队，再在锁外取消并 join，
+才能结清排队和运行引用。维护定时尚未分离时仍保留原周期兜底；接通即时通知不
+代表已经达到“无工作时休眠”。这项剩余条件不能被一次较快的 RTT 掩盖。
+
 WS73 bulk RX 已异步，但目前 completion 处理完一份 buffer 后才重提同一 URB。
 这段空窗需要测量；多 URB 可能降低空窗，也增加完成顺序和 buffer 所有权问题，
 不能凭 URB 数量断言性能。发送预分配、多个在途 URB 与 HCC 聚合也要各自比较
@@ -20,5 +31,6 @@ WS73 bulk RX 已异步，但目前 completion 处理完一份 buffer 后才重�
 
 普通用户应用的校验回复才是业务闭环。软件准入、USB 完成、NOCP 和协议 ACK
 各有不同含义；[benchmark 指标契约](../reference/socket-benchmark.md)解释如何避免
-闭环过载隐藏、整批起点计时、日志扰动和跨时钟错误。目前性能基线与事件改造均
-待验收，功能门禁样本不是硬件最低时延。
+闭环过载隐藏、整批起点计时、日志扰动和跨时钟错误。准确源码的限定基线与改造
+状态只在[当前资格](../../project/current-capabilities.md)维护；功能样本不是硬件最低时延，
+也不等于完成性能或并发验收。

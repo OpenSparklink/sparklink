@@ -1,5 +1,3 @@
-mod benchmark;
-mod channel;
 mod commands;
 mod security_agent;
 
@@ -149,17 +147,6 @@ Commands:
   ssap-read <path> <handle>                  Read actual peer value on SMTC
   ssap-write <path> <handle> <value-hex>      Write with peer verification and reply
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
-  dynamic-peer <path> <source-port> <destination-port> <aid> [rounds] [bytes] [hold]  Accept a real dynamic channel
-  dynamic-roundtrip <path> <source-port> <destination-port> <aid> [rounds] [bytes] [hold]  Negotiate and exercise a real dynamic channel
-  dynamic-burst <path> <source-port> <destination-port> <aid> 16 2042 [hold]  Exercise bounded dynamic queue pressure
-  benchmark-rate <path> <count> <bytes> <window> <interval-us> <new-report.json>  Absolute-rate load; stdin start barrier
-  benchmark-window <path> <count> <bytes> <window> <new-report.json>  Finite-window load; stdin start barrier
-  benchmark-duplex <path> <count> <bytes> <window> <new-report.json>  Both endpoints send/validate/reply; stdin start barrier
-  benchmark-load-peer <path> <count> <bytes> <window> <new-report.json>  Peer for rate/window; stdin start barrier
-  benchmark-ping <path> <count> <bytes> <new-report.json>  Measure ordinary socket ping-pong (unqualified)
-  benchmark-peer <path> <count> <bytes> <new-report.json>  Validate and reply; report after timing
-  channel-peer <path> [rounds] [bytes] [boundaries]  Validate and reply on a native channel socket
-  channel-roundtrip <path> [rounds] [bytes] [boundaries|prefix-close|burst]  Send random business messages and verify replies
   disconnect <address> [type]    Disconnect an unambiguous current peer
   disconnect-link <addr> <type> <handle> <lifetime> <role>  Disconnect exact link
   services                      List local SSAP services

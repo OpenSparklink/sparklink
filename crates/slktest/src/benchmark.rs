@@ -545,8 +545,10 @@ mod tests {
 
     #[test]
     fn failed_native_setup_leaves_only_incomplete_marker_and_cannot_overwrite() {
-        let path =
-            std::env::temp_dir().join(format!("slctl-benchmark-test-{}.json", std::process::id()));
+        let path = std::env::temp_dir().join(format!(
+            "slktest-benchmark-test-{}.json",
+            std::process::id()
+        ));
         // Exclusive creation also tests the path is not silently reused.
         assert!(!path.exists());
         let (a, _b) = UnixDatagram::pair().unwrap();

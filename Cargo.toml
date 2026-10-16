@@ -7,6 +7,7 @@ members = [
     "crates/slk-experimental",
     "crates/slkconfig",
     "crates/slctl",
+    "crates/slktest",
     "crates/slkmon",
     "crates/slkdump",
 ]

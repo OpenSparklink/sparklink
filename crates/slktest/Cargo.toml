@@ -1,0 +1,16 @@
+[package]
+name = "slktest"
+description = "SparkLink application channel correctness and load test utility"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+slk-protocol = { workspace = true }
+zbus = { workspace = true }
+tokio = { workspace = true }
+nix = { workspace = true }
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = "1"
+anyhow = "1"

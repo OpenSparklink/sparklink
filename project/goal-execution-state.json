@@ -1083,6 +1083,10 @@
       "cmtc-identifier-codec-d75f7bd": {
         "level": "formal_bounded",
         "result": "PASS"
+      },
+      "cmtc-mtu-mps-contract-gap": {
+        "level": "implemented",
+        "result": "FAIL"
       }
     },
     "overall": "INCOMPLETE",
@@ -1094,7 +1098,7 @@
         "K d75f7bd codec all256 values and source-mapped boundedCBMC+actualroute;old implementation counterexample retained",
         "New VM zero-id capability exchange and real app/data regression pending;old80/48/64qualifications keep original identities"
       ],
-      "next": "Finish exact newkernel VM regression;then actual bounded CMTC dynamic Connect/Disconnect,local/remoteTCID,per-channel auth/queues/socket double-channel business;stateful/inflight/debugVM/auth parallel;full S0-S6 unchanged."
+      "next": "Observe same livekernel build then fix direct dataP1:MTU SDU/MPS fullPDU/ACB packet separation and per-channel admission;incremental build,new0capability/length/four-device VM regression. Continueactual dynamicConnect/Disconnect/TCID/Grant/queues after this relevant contract repair;no all-control prerequisite."
     }
   },
   "agent_workstream": {

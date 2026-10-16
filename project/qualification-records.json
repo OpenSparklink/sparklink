@@ -20,7 +20,7 @@
       "K d75f7bd codec all256 values and source-mapped boundedCBMC+actualroute;old implementation counterexample retained",
       "New VM zero-id capability exchange and real app/data regression pending;old80/48/64qualifications keep original identities"
     ],
-    "next": "Finish exact newkernel VM regression;then actual bounded CMTC dynamic Connect/Disconnect,local/remoteTCID,per-channel auth/queues/socket double-channel business;stateful/inflight/debugVM/auth parallel;full S0-S6 unchanged."
+    "next": "Observe same livekernel build then fix direct dataP1:MTU SDU/MPS fullPDU/ACB packet separation and per-channel admission;incremental build,new0capability/length/four-device VM regression. Continueactual dynamicConnect/Disconnect/TCID/Grant/queues after this relevant contract repair;no all-control prerequisite."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -39,7 +39,8 @@
     "four-business80-d01aa82",
     "four-disconnect48-ff13d8c",
     "four-burst64-d42da67",
-    "cmtc-identifier-codec-d75f7bd"
+    "cmtc-identifier-codec-d75f7bd",
+    "cmtc-mtu-mps-contract-gap"
   ],
   "records": [
     {
@@ -7405,6 +7406,91 @@
       ],
       "required_gates": [
         "production-codec"
+      ]
+    },
+    {
+      "id": "cmtc-mtu-mps-contract-gap",
+      "title": "当前MTU/MPS协商与准入：已确认缺陷，待修复",
+      "level": "implemented",
+      "result": "FAIL",
+      "contracts": [
+        "DTAP fullPDU must respect negotiatedMPS distinct from upperSDU MTU andACB fragment limit"
+      ],
+      "bounds": {
+        "advertised_mtu": 2042,
+        "advertised_mps": 2042,
+        "actual_dtap_pdu": 2047,
+        "excess": 5
+      },
+      "excluded": [
+        "Known standards/admission contract defect,not an observed lost packet or firmware fault. Historical64 actual peer replies remain original physical evidence only.",
+        "MPS is full DTAP PDU;MTU is upper SDU;ACB254 packet fragments are a third independent bound. No new conformance qualification before fix/regression.",
+        "Currentd75 capability builder still uses same maximum forMTU/MPS;identifier0 fix and bounded codec safety do not prove standards MTU/MPS semantics.",
+        "Raw manifest/USB records private original workspace;source/hash/packet identities preserved;restricted standard text not redistributed."
+      ],
+      "remaining": [
+        "Separate capabilityMTU/MPS,peer limits,per-channel admission andChannelInfo",
+        "Exact newkernel0identifier/length/four-device real regression and dynamic signaling"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "d75f7bdf17ab295d8b504f3a803d8a100f131646",
+          "scopes": [
+            "net/sparklink/sle_channel_wire.c",
+            "net/sparklink/sle_channel_wire.h",
+            "net/sparklink/sle_channel_socket.c"
+          ],
+          "files": {
+            "net/sparklink/sle_channel_socket.c": "2002aae665a36f60f66a4a4a37e906443bf54c3f3fcee689ac12ad29190da685",
+            "net/sparklink/sle_channel_wire.c": "0aefc66198490a1d8d384929db259a23d6c4dcd639d52b0904cf2078f502702e",
+            "net/sparklink/sle_channel_wire.h": "90fce014dc8c06c696580ef3091fbf05414b9fbb440ef40bfe18baf982e6f8fe"
+          }
+        }
+      },
+      "report": {
+        "material": "cmtc-mps-audit-report",
+        "scope_pointer": [
+          "limits"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "current_kernel"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "CONFIRMED_SOURCE_AND_RETAINED_WIRE_CONTRACT_GAP": "FAIL"
+        },
+        "gate_rows_pointer": [
+          "gates"
+        ]
+      },
+      "report_commit": "8f0150384938b4a6395b9ed589b861e92c14c75c",
+      "artifact_materials": [
+        "cmtc-mps-audit-manifest"
+      ],
+      "tool_materials": [],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "mps-admission-contract",
+          "result": "FAIL",
+          "reported_status": "CONFIRMED_FAIL",
+          "report_pointer": [
+            "gates",
+            0
+          ],
+          "materials": [
+            "cmtc-mps-audit-report",
+            "cmtc-mps-audit-manifest"
+          ]
+        }
+      ],
+      "required_gates": [
+        "mps-admission-contract"
       ]
     }
   ],
@@ -15280,6 +15366,22 @@
       "bytes": 3222,
       "access": "private",
       "format": "bytes"
+    },
+    "cmtc-mps-audit-report": {
+      "base": "repo",
+      "path": "docs/evidence/cmtc-mtu-mps-audit-20261016.json",
+      "sha256": "43a8aa15ff50bce226a6ced14cea4475e63800b9c9814abbb212b93cb404f822",
+      "bytes": 2104,
+      "access": "public",
+      "format": "json"
+    },
+    "cmtc-mps-audit-manifest": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/manifest.json",
+      "sha256": "0ff9d2151cdd88303e4834c6d2fd2aeef0d8b4ac67f7bdb6740a5502288130a8",
+      "bytes": 12945100,
+      "access": "private",
+      "format": "json"
     }
   },
   "baseline_record": "four-burst64-d42da67"

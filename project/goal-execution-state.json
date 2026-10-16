@@ -669,7 +669,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T01:39:40.237594+00:00",
+  "updated_at_utc": "2026-10-16T03:15:39.111957+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -677,6 +677,7 @@
   },
   "execution_phase": "WP07 four-device long burst slice sealed;next actual dynamic channels over unique Session dispatcher;full original scope remains incomplete",
   "next_resume_tasks": [
+    "Finish exact K90/U2ee real MTU/MPS length/close/burst regression using live matrix77362,then four-device gates;keep original FAIL/history and original qualification identities",
     "Audit latest actual CMTC dynamic-channel signaling and existing ChannelTable/Session/socket consumers against fixedNearLinkHost,SDK111,libws73 and standards;reuse existing implementation",
     "Implement minimum dynamic Channel local/remote TCID negotiation and actual per-channel socket routing/queues;VM two-channel real peer-checked business",
     "Fairness/slowconsumer and actual USB/device-fault isolation with surviving real replies;natural RCA/nonhuman recovery remains open",
@@ -684,8 +685,8 @@
   ],
   "issue_sync_status": "ConfirmedMPSFAIL:K17/U8 exact readbackOPEN;full originalscopes retained",
   "issue_sync_receipt": "docs/evidence/cmtc-mtu-mps-issues-20261016.json",
-  "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
-  "current_goal_turn_classification": "progress:actual CMTC pending/identifier0 production fix signedK d75/U033;clean-source bounded codec proof,oldcounterexample and80offline retained;isolated newkernel build live12826;dynamic/signaling/realVM still pending",
+  "previous_goal_turn_classification": "progress:actual CMTC pending/identifier0 production fix signedK d75/U033;clean-source bounded codec proof,oldcounterexample and80offline retained;isolated newkernel build live12826;dynamic/signaling/realVM still pending",
+  "current_goal_turn_classification": "progress:K90 MTU/MPS production fix,signed/pushed;clean-source bounded341 and ID proof,negativecontrols,sanitizer,596tools,build/rootVM;new real short40 and exact length matrix running",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1087,18 +1088,22 @@
       "cmtc-mtu-mps-contract-gap": {
         "level": "implemented",
         "result": "FAIL"
+      },
+      "cmtc-mps-limits-90fda14": {
+        "level": "formal_bounded",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "dynamic-channel-cmtc-identifier",
-      "production_behavior": "Begin actual dynamic Channel path;fix existing codec/Session identifier0 contract first,with explicit pending boolean. Dynamic creation remains unsupported until real signaling/grant/table integration.",
+      "id": "cmtc-independent-mtu-mps",
+      "production_behavior": "K90 advertises SDU2042/PDU2047 and independently clamps peer caps;locked per-channel header-aware admission/RX;new records distinguish historical nonconformance",
       "exit": [
-        "Latest fixed Session dispatcher audited against standard and fixedNearLinkHost;no duplicate Engine or loosened bind",
-        "K d75f7bd codec all256 values and source-mapped boundedCBMC+actualroute;old implementation counterexample retained",
-        "New VM zero-id capability exchange and real app/data regression pending;old80/48/64qualifications keep original identities"
+        "Signed K90 production fix,596 tool tests,actual route/state sanitizer,341 bounded properties and expected two counterexamples",
+        "New build/artifacts and exact-QEMU root smoke pass;new real40short replies pass",
+        "Full original length/close/burst and four-device data regressions remain required before declaring batch complete"
       ],
-      "next": "Observe same livekernel build then fix direct dataP1:MTU SDU/MPS fullPDU/ACB packet separation and per-channel admission;incremental build,new0capability/length/four-device VM regression. Continueactual dynamicConnect/Disconnect/TCID/Grant/queues after this relevant contract repair;no all-control prerequisite."
+      "next": "Poll exact real matrix77362;then original four-device gates and actual dynamic Connect/Disconnect;do not wait allcontrol races"
     }
   },
   "agent_workstream": {
@@ -1230,7 +1235,7 @@
     "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
     "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
     "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only",
-    "state": "DYNAMIC_SIGNALING_IDENTIFIER0_FIX_BUILDING_VM_PENDING",
+    "state": "MPS_FIX_SHORT40_REAL_PASS_LENGTH_MATRIX_RUNNING",
     "tool": "tools/ws73_parallel_data.py via ws73_target.py --four-device-business",
     "invariants": [
       "four distinct Ready registrations and unchanged daemon identity",
@@ -1240,7 +1245,7 @@
     ],
     "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification",
     "report": "docs/evidence/four-device-business-20261016.json",
-    "next": "Observe same livebuild12826;after terminal freeze/check artifacts,fix independentMTU SDU/MPS PDU/ACB packet limits and incrementally build;then exact0identifier/length/four-device VM regression;continue actual dynamic signaling/grants/queues,not allcontrol prerequisite",
+    "next": "Observe exact live77362 matrix;finish original newkernel length/close/burst/four-device gates before full data requalification;thenactual dynamic negotiation/grants/socket queues;no all-control prerequisite",
     "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json",
     "controlled_disconnect_report": "docs/evidence/four-device-disconnect-20261016.json",
     "controlled_disconnect_issues_receipt": "docs/evidence/four-device-disconnect-issues-20261016.json",
@@ -1248,14 +1253,19 @@
     "active_exit": "2pairs2roles16x2042bytes=64actual peer replies;actual overlap/PB/queue pressure/pool-NOCP-resume-finaldrain;no broadcredit/fairness proof",
     "burst_report": "docs/evidence/four-device-burst-20261016.json",
     "burst_issues_receipt": "docs/evidence/four-device-burst-issues-20261016.json",
-    "kernel_change": "d75f7bdf17ab295d8b504f3a803d8a100f131646",
+    "kernel_change": "90fda1457a8d8191a1a5fab260927e31644b3e50",
     "dynamic_scope": "Connect/Disconnect and local-remoteTCID/per-channel auth/queue/socket still pending;do not relax existing fixed table first",
     "identifier_report": "docs/evidence/cmtc-identifier-zero-20261016.json",
-    "kernel_build_session": 12826,
-    "kernel_build_record": ".dev/cmtc-id0-kernel-build-record.json",
+    "kernel_build_session": 16607,
+    "kernel_build_record": ".dev/cmtc-mps-kernel-build-record.json",
     "identifier_issues_receipt": "docs/evidence/cmtc-identifier-zero-issues-20261016.json",
     "mtu_mps_defect_report": "docs/evidence/cmtc-mtu-mps-audit-20261016.json",
-    "mtu_mps_issues_receipt": "docs/evidence/cmtc-mtu-mps-issues-20261016.json"
+    "mtu_mps_issues_receipt": "docs/evidence/cmtc-mtu-mps-issues-20261016.json",
+    "kernel_build_terminal": 0,
+    "mtu_mps_fix_report": "docs/evidence/cmtc-mtu-mps-fix-20261016.json",
+    "real_short_manifest": ".dev/native-cmtc-mps-short-v1-run/manifest.json",
+    "length_matrix": ".dev/cmtc-mps-retained-matrix.json",
+    "length_matrix_session": 77362
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",

@@ -13,14 +13,14 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "dynamic-channel-cmtc-identifier",
-    "production_behavior": "Begin actual dynamic Channel path;fix existing codec/Session identifier0 contract first,with explicit pending boolean. Dynamic creation remains unsupported until real signaling/grant/table integration.",
+    "id": "cmtc-independent-mtu-mps",
+    "production_behavior": "K90 advertises SDU2042/PDU2047 and independently clamps peer caps;locked per-channel header-aware admission/RX;new records distinguish historical nonconformance",
     "exit": [
-      "Latest fixed Session dispatcher audited against standard and fixedNearLinkHost;no duplicate Engine or loosened bind",
-      "K d75f7bd codec all256 values and source-mapped boundedCBMC+actualroute;old implementation counterexample retained",
-      "New VM zero-id capability exchange and real app/data regression pending;old80/48/64qualifications keep original identities"
+      "Signed K90 production fix,596 tool tests,actual route/state sanitizer,341 bounded properties and expected two counterexamples",
+      "New build/artifacts and exact-QEMU root smoke pass;new real40short replies pass",
+      "Full original length/close/burst and four-device data regressions remain required before declaring batch complete"
     ],
-    "next": "Observe same livekernel build then fix direct dataP1:MTU SDU/MPS fullPDU/ACB packet separation and per-channel admission;incremental build,new0capability/length/four-device VM regression. Continueactual dynamicConnect/Disconnect/TCID/Grant/queues after this relevant contract repair;no all-control prerequisite."
+    "next": "Poll exact real matrix77362;then original four-device gates and actual dynamic Connect/Disconnect;do not wait allcontrol races"
   },
   "overall_required_records": [
     "deadline-real21",
@@ -7410,7 +7410,7 @@
     },
     {
       "id": "cmtc-mtu-mps-contract-gap",
-      "title": "当前MTU/MPS协商与准入：已确认缺陷，待修复",
+      "title": "历史d75 MTU/MPS已确认FAIL；K90修复已提交、完整实机回归待闭合",
       "level": "implemented",
       "result": "FAIL",
       "contracts": [
@@ -7429,8 +7429,8 @@
         "Raw manifest/USB records private original workspace;source/hash/packet identities preserved;restricted standard text not redistributed."
       ],
       "remaining": [
-        "Separate capabilityMTU/MPS,peer limits,per-channel admission andChannelInfo",
-        "Exact newkernel0identifier/length/four-device real regression and dynamic signaling"
+        "K90 production fix and bounded proof implemented;required full exact-image data/four-device regressions pending",
+        "Historical failure/evidence retained;not superseded by local proof or short-only delivery"
       ],
       "sources": {
         "kernel": {
@@ -7491,6 +7491,131 @@
       ],
       "required_gates": [
         "mps-admission-contract"
+      ]
+    },
+    {
+      "id": "cmtc-mps-limits-90fda14",
+      "title": "生产MTU/MPS修复：直接限长与六步状态转换限定证明",
+      "level": "formal_bounded",
+      "result": "PASS",
+      "contracts": [
+        "SDU MTU and complete DTAP PDU MPS independent;header-aware admission",
+        "original negotiation expiry and terminal state preserved within six transitions"
+      ],
+      "bounds": {
+        "properties": 341,
+        "transitions": 6,
+        "events": 7,
+        "unsigned_bits": 32,
+        "unwind": 17,
+        "mtu_advertisement": [
+          1,
+          2042
+        ],
+        "mps_advertisement": [
+          20,
+          2047
+        ],
+        "expected_main_properties": [
+          "main.assertion.1",
+          "main.assertion.2",
+          "main.assertion.3",
+          "main.assertion.4",
+          "main.assertion.5",
+          "main.assertion.6",
+          "main.assertion.7",
+          "main.assertion.8",
+          "main.assertion.9",
+          "main.assertion.10",
+          "main.assertion.11",
+          "main.assertion.12",
+          "main.assertion.13"
+        ]
+      },
+      "excluded": [
+        "Direct actual production pure state/codec only:arbitrary unsigned32 MTU/MPS/TCID payload-limit inputs;six event transitions;independent MTU1..2042/MPS20..2047 advertisements;unwind17 with unwinding assertions. Not unbounded liveness or kernel refinement.",
+        "CBMC6.11.0 all341properties SUCCESS,expected13main assertions and solver success;identifier companion proof re-run. C/compiler/CBMC trusted;not proof of Linux,allocator,locks,USB,firmware or hardware.",
+        "Actual route -> locked state publication -> per-channel admission/RX extracted bodies tested with explicit dependency fixtures under ASAN/UBSAN;not actual kernel lock/allocator/wakeup concurrency or full lifecycle.",
+        "Native advertises localSDU2042 and completePDU2047 independently;peer limits clamp independently and basic CUTC/SMTC headers consume5/4bytes. Local selected capability response requires20bytes;these are implementation bounds,not universal standard maxima.",
+        "New real records require versioned distinct budgets and exact advertisements;historical sealed verifier outputs stay unchanged and never gain MPS conformance. Existingd75 defect and old real64peer replies remain original evidence.",
+        "Newkernel build/artifact check and isolated scratch-root VM smoke passed;ordinary real pair40/length/fourdevice requalification still pending when this report was sealed. No physical PASS from build,USB completion,NOCP,model or log.",
+        "Dynamic signaling/TCID allocation/close barriers,fairness,NOCP duplicate/late truth,authentication/CPCD/Bond,natural recovery/root cause and fullS0-S6 remain open. Existingunsupported formal items stayUNPROVED.",
+        "Expected counterexamples mutate actual limit/header and capability encoder,not substitute models. First fixture initialization omission,historical-output representation regression and sandboxSO_PASSCRED refusal retained;corrected checks passed.",
+        "Prepare correctly refused QEMU differing from boot-smoke proof;new smoke with exactQEMU passed and separate preparation succeeded. No validation weakened;no host installation. Private raw records require original workspace;restricted standards/SDK/firmware not published."
+      ],
+      "remaining": [
+        "Exact new-image length/burst/close and four-device VM requalification",
+        "Dynamic Connect/Disconnect,TCID,Grant,queue and real multichannel data",
+        "Full concurrency/lifetime/credit/firmware and original S0-S6 scopes"
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "90fda1457a8d8191a1a5fab260927e31644b3e50",
+          "scopes": [
+            "tools/testing/selftests/sparklink/channel/mtu_mps_cbmc.c",
+            "net/sparklink/sle_channel_wire.c",
+            "net/sparklink/sle_channel_wire.h",
+            "tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+            "net/sparklink/sle_channel_state.h"
+          ],
+          "files": {
+            "tools/testing/selftests/sparklink/channel/mtu_mps_cbmc.c": "deba64621bf65692770683b98f6ca299a9b9e4ee56a8770d304f605c75be729a",
+            "net/sparklink/sle_channel_wire.c": "9bd408a62d836b5b4cb8a3c121aa18765cd70f2cfef8203ef1f5608e8139ede6",
+            "net/sparklink/sle_channel_wire.h": "87888bf8faa63c1100578059e302a8c6c9468b3a2db24c6fee2cad724dbc2de5",
+            "tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py": "8e3a3eb69ae507f70dbda5305afb1003b1ec584667bbe18ff86ce21a8b3eb41b",
+            "net/sparklink/sle_channel_state.h": "2be8f64ad94f32b698286a19211b8d66954402591239627679b6908327bda565"
+          }
+        }
+      },
+      "report": {
+        "material": "cmtc-mps-fix-report",
+        "scope_pointer": [
+          "limits"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "kernel"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "MTU_MPS_PRODUCTION_BOUNDED_PASS_REAL_PENDING": "PASS"
+        },
+        "gate_rows_pointer": [
+          "gates"
+        ]
+      },
+      "report_commit": "ddf807edb7b79cbd326b811720b87646436feaab",
+      "artifact_materials": [
+        "cmtc-mps-fix-limits-cbmc-report",
+        "cmtc-mps-fix-limits-cbmc-raw"
+      ],
+      "tool_materials": [
+        "cmtc-mps-fix-runner"
+      ],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "production-limits",
+          "result": "PASS",
+          "reported_status": "SCOPED_BOUNDED_PASS",
+          "report_pointer": [
+            "gates",
+            0
+          ],
+          "materials": [
+            "cmtc-mps-fix-report",
+            "cmtc-mps-fix-limits-cbmc-report",
+            "cmtc-mps-fix-limits-cbmc-raw",
+            "cmtc-mps-fix-negative-controls"
+          ]
+        }
+      ],
+      "required_gates": [
+        "production-limits"
       ]
     }
   ],
@@ -15382,6 +15507,238 @@
       "bytes": 12945100,
       "access": "private",
       "format": "json"
+    },
+    "cmtc-mps-fix-limits-cbmc-report": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-limits-90fda14/report.json",
+      "sha256": "07ca3a947059784482ca988771b4572452ebd08d89613eecd3b6e64cd4de5b1c",
+      "bytes": 459919,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-limits-cbmc-raw": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-limits-90fda14/raw.json",
+      "sha256": "65437cd2054274e8cf8df3c3494a5fc45e2b0266ddeff4249c721f8a3abb2555",
+      "bytes": 417013,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-limits-cbmc-stderr": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-limits-90fda14/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-identifier-cbmc-report": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-id-90fda14/report.json",
+      "sha256": "994c07692d82a3ef0dbd3de30a6226a2cb974af6614b3d24a19a01f06379583d",
+      "bytes": 213856,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-identifier-cbmc-raw": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-id-90fda14/raw.json",
+      "sha256": "c0811ae8e6b31731937344be98756834dfe99debc0d91c2c82c7000534adb033",
+      "bytes": 193702,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-negative-controls": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/report.json",
+      "sha256": "0e1469416ec22c6a26403287b2d9055f49ee1a93ea973ef8a6a594e77160da73",
+      "bytes": 2623,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-production-offline": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-production-90fda14/report.json",
+      "sha256": "71eec833f7da3392743f367137a4497d186802338e54c8cfe6d9257bd656aaba",
+      "bytes": 2517,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-session-offline": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-production-90fda14/session.json",
+      "sha256": "0568a0bfd528b56a38e37604e8dfb65b2747e31886e4b7e62d294a5eef87af72",
+      "bytes": 1769,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-wire-binary": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-production-90fda14/wire",
+      "sha256": "4871371d8ebe0a8949d26b0b858cf204673ac32bcb315fced4bbf06ba557f65d",
+      "bytes": 1773488,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-state-binary": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-production-90fda14/state",
+      "sha256": "a28e9c1a06e99fbf856787b539d68f88611ba8afe0bb47ba707f756e71abd001",
+      "bytes": 1772960,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-python-tools": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-all-tools-unsandboxed.log",
+      "sha256": "ba66437b337c58eea772f66aa586b361ac09c2c98aae2b722759ed1681885ce8",
+      "bytes": 97054,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-python-sandbox-refusal": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-all-tools.log",
+      "sha256": "b95c5783f62cb962be2d45c09a832fe883ece44622297f17dba54aed135f38d1",
+      "bytes": 97756,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-python-first-candidate-failure": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-python-candidate.log",
+      "sha256": "c527e96afa12d908f04af18d646743a5f63ab85d2acb8f2b1c45a355c5665116",
+      "bytes": 5703,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-route-first-candidate-failure": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-route-candidate.log",
+      "sha256": "5c6eaf7b9daf7f44d10de36d056305be7618eb8a9b21041bfe4da74011896c32",
+      "bytes": 1369,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-kernel-build-record": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-kernel-build-record.json",
+      "sha256": "332bcb09d172ee2e38c71e9e400876d392c29cf97946031230f3561603e4ccca",
+      "bytes": 1285,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-kernel-artifacts": {
+      "base": "workspace",
+      "path": ".dev/native-cmtc-mps-artifacts/manifest.json",
+      "sha256": "e0a5374d53e06f6ad6056ac0cf2c758539bad5b5bafefbf453425be544ae44d7",
+      "bytes": 229017,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-root-smoke": {
+      "base": "workspace",
+      "path": ".dev/native-cmtc-mps-root-smoke-v2/manifest.json",
+      "sha256": "aff35326721a0a84e3128b5bdc06f0fb5d9ce657f384a280c0d64ed2990dd01f",
+      "bytes": 37057,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-prepare-first-failure": {
+      "base": "workspace",
+      "path": ".dev/native-cmtc-mps-v1-prepared/manifest.json",
+      "sha256": "a473e1572863b2f3355c113cb02e8e13e3ad9668ef16589e7f59f99a57baee13",
+      "bytes": 41565,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-prepare-corrected": {
+      "base": "workspace",
+      "path": ".dev/native-cmtc-mps-v2-prepared/manifest.json",
+      "sha256": "c50f02eb2d71e10c4c852f687951246be4bafeb8cdd427b85fdb06c74285c988",
+      "bytes": 254359,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-missing-header-raw.json": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/missing-header/raw.json",
+      "sha256": "0aa2f2d233ca5cfb510af1906903e0ff8d96ae1ebf63cf3696d8b550740ac753",
+      "bytes": 515988,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-missing-header-state.h": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/missing-header/state.h",
+      "sha256": "c5b3edf6151db0688c8a3f2f60e10da38001b780bfa2e9ba8539be5867eabdda",
+      "bytes": 4222,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-missing-header-wire.c": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/missing-header/wire.c",
+      "sha256": "1798cfc6babbc98381f342511c10471570d7ff35a5556f5a71c126b2f065261c",
+      "bytes": 3979,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-missing-header-harness.c": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/missing-header/harness.c",
+      "sha256": "1660160bdd3941812114fe75324a4727320acf6180a3b0ffac37710b76047ad9",
+      "bytes": 2607,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-conflated-advertisement-raw.json": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/conflated-advertisement/raw.json",
+      "sha256": "2765ea43207a9bb4eff11a431b7d9836ddaca55f708abfe09d97174720f6339c",
+      "bytes": 926461,
+      "access": "private",
+      "format": "json"
+    },
+    "cmtc-mps-fix-conflated-advertisement-state.h": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/conflated-advertisement/state.h",
+      "sha256": "2be8f64ad94f32b698286a19211b8d66954402591239627679b6908327bda565",
+      "bytes": 4240,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-conflated-advertisement-wire.c": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/conflated-advertisement/wire.c",
+      "sha256": "3ec9dad2c020c622b33ca19f0b797cefdca032c824bc69d38785be2b8746cdff",
+      "bytes": 3975,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-conflated-advertisement-harness.c": {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-proof-negative-controls/conflated-advertisement/harness.c",
+      "sha256": "44a80fc4ee6f92f8e24c9f357728a717537d6dfd8dcfc3a287b6cb1f6160b68c",
+      "bytes": 2616,
+      "access": "private",
+      "format": "bytes"
+    },
+    "cmtc-mps-fix-report": {
+      "base": "repo",
+      "path": "docs/evidence/cmtc-mtu-mps-fix-20261016.json",
+      "sha256": "cb402d9e0de32a035bd91b959a6606cf776aeafe559499925272a3029b53b718",
+      "bytes": 13294,
+      "access": "public",
+      "format": "json"
+    },
+    "cmtc-mps-fix-runner": {
+      "base": "workspace",
+      "path": "linux/tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+      "sha256": "8e3a3eb69ae507f70dbda5305afb1003b1ec584667bbe18ff86ce21a8b3eb41b",
+      "bytes": 4175,
+      "access": "private",
+      "format": "bytes"
     }
   },
   "baseline_record": "four-burst64-d42da67"

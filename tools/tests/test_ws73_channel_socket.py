@@ -350,3 +350,71 @@ class SealedRealEvidence(unittest.TestCase):
         self.assertEqual(len(reassemble_acb(case['decoded_capture'])),176)
         self.assertEqual(evidence['real_nocp_packet_count'],88)
         self.assertIs(evidence['full_goal_complete'],False)
+
+
+class BenchmarkApplicationReports(unittest.TestCase):
+    """Synthetic report mutations only, never measured performance or RF."""
+    @staticmethod
+    def reports():
+        reports=[]
+        for responder in [False,True]:
+            rows=[]
+            for i in range(4):
+                nonce=bytes([i+1])*16;seq=0x730100+i
+                frame=b'SLKSOCK1'+nonce+seq.to_bytes(4,'little')+b'\x01'+bytes(nonce[j%16]^((seq+j)&255) for j in range(32))
+                timestamps=[i*100+n for n in range(6)]
+                fields=['planned_ns','read_ns','validated_ns','first_syscall_ns','syscall_ns','admitted_ns'] if responder else [
+                    'planned_ns','first_syscall_ns','syscall_ns','admitted_ns','read_ns','validated_ns']
+                rows.append(dict(zip(fields,timestamps),index=i,send_attempts=1,would_block=0,errno=None,timed_out=False,frame_hex=frame.hex()))
+            reports.append(dict(schema_version=1,status='MEASURED_NOT_QUALIFIED',performance_qualified=False,
+                workload='ping-pong-one-outstanding',responder=responder,config=dict(count=4,bytes=61),
+                clock='process-local-Rust-Instant-relative-nanoseconds',rtt_definition='successful send syscall entry to validated reply, same initiator clock',
+                percentile_method='nearest-rank;success-only;p99.9 requires10000 successes',elapsed_ns=400,unmeasured=['fixture-only-no-provenance'],
+                channel_identity=dict(controller=int(responder),generation=1,lifetime=1,handle=0,mtu=2042,mps=2047,local_tcid=31,remote_tcid=31,pi=241,mode=0,directions=3),
+                attempted=4,admitted=4,validated=4,timed_out=0,unattempted=0,error=None,samples=rows,
+                success_only_rtt=None if responder else dict(successful_samples=4,min_ns=3,p50_ns=3,p90_ns=3,p95_ns=3,p99_ns=3,p999_ns=None,max_ns=3)))
+        return reports
+
+    def test_matching_reports_do_not_publish_performance_qualification(self):
+        from ws73_channel_socket import benchmark_application_reports
+        result=benchmark_application_reports(*self.reports())
+        self.assertEqual(result['messages'],4);self.assertFalse(result['performance_qualified'])
+
+    def test_missing_stale_inconsistent_or_corrupt_measurements_fail_closed(self):
+        from ws73_channel_socket import benchmark_application_reports
+        for kind in ['missing-peer','incomplete','qualified','clock','origin','unit-method','empty','count','count-bool',
+                     'missing-row','duplicate','payload','nonce','timeout','lost-timeout','errno','order','batch-origin',
+                     'elapsed','percentile','small-p999','peer-frame','same-controller','stale-lifetime','attempts','bad-capability',
+                     'missing-error','missing-errno','float-percentile','float-peer-config']:
+            source,peer=self.reports();row=source['samples'][1]
+            if kind=='missing-peer':peer=None
+            if kind=='incomplete':source['status']='INCOMPLETE'
+            if kind=='qualified':source['performance_qualified']=True
+            if kind=='clock':peer['clock']='guest-wall-clock-microseconds'
+            if kind=='origin':source['rtt_definition']='batch-start'
+            if kind=='unit-method':source['percentile_method']='milliseconds'
+            if kind=='empty':source['samples']=[]
+            if kind=='count':source['admitted']=3
+            if kind=='count-bool':source['config']['count']=True
+            if kind=='missing-row':peer['samples'].pop()
+            if kind=='duplicate':row['index']=0
+            if kind=='payload':row['frame_hex']=row['frame_hex'][:-2]+'00'
+            if kind=='nonce':row['frame_hex']=source['samples'][0]['frame_hex']
+            if kind=='timeout':row['timed_out']=True
+            if kind=='lost-timeout':source['timed_out']=1
+            if kind=='errno':row['errno']=11
+            if kind=='order':row['validated_ns']=row['syscall_ns']-1
+            if kind=='batch-origin':row['planned_ns']=0
+            if kind=='elapsed':source['elapsed_ns']=1
+            if kind=='percentile':source['success_only_rtt']['p99_ns']=99
+            if kind=='small-p999':source['success_only_rtt']['p999_ns']=3
+            if kind=='peer-frame':peer['samples']=list(reversed(peer['samples']))
+            if kind=='same-controller':peer['channel_identity']['controller']=0
+            if kind=='stale-lifetime':source['channel_identity']['lifetime']=0
+            if kind=='attempts':row['send_attempts']=2
+            if kind=='bad-capability':source['channel_identity']['mps']=20
+            if kind=='missing-error':source.pop('error')
+            if kind=='missing-errno':row.pop('errno')
+            if kind=='float-percentile':source['success_only_rtt']['p99_ns']=3.0
+            if kind=='float-peer-config':peer['config']['count']=4.0
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):benchmark_application_reports(source,peer)

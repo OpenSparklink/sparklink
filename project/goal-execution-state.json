@@ -1482,7 +1482,7 @@
         "benchmark-ping"
       ],
       "production_entry": "existing immutable connection validation/OpenChannel delegation and channel wait/validation/finite linger",
-      "offline": "13slctl unit/2scan/3Agent private-D-Bus tests; no kernel/Native/WS73 qualification",
+      "offline": "Final13slctl unit +2scan +3Agent CLI private-D-Bus tests at exact56e9f45 CLI source;strictclippy;application report parser targeted tests. No Native/WS73 performance qualification.",
       "remaining": [
         "Real VM exact new build baseline/role swap and existing-path regression",
         "Independent peer/capture/artifact closure and negative controls",
@@ -1492,7 +1492,9 @@
       "first_failures_retained": [
         "sandbox local datagram EPERM",
         "missing explicit private dbus-daemon path"
-      ]
+      ],
+      "implementation_commit": "56e9f4596e39d4c077e9d8bea833d02578f637c3",
+      "application_report_checker": "tools/ws73_channel_socket.py benchmark_application_reports;typed original rows/random frame match/local timing/recomputed nearest-rank;30 synthetic mutations failclosed; never performance qualification"
     }
   }
 }

@@ -429,3 +429,102 @@ def corroborate(run,capture):
         proof['application_message_bytes']=rows[0].get('message_bytes',61)
         proof['dtap_pdu_bytes']=proof['application_message_bytes']+5
     return proof
+
+
+def benchmark_application_reports(source, peer):
+    """Check v1 ping-pong application reports, NOT artifact/USB/RF qualification.
+
+    Reuses this gate's application evidence layer. Time arithmetic stays within
+    each process clock; neither peer timestamps nor NOCP stand in for source RTT.
+    A future VM gate must also bind owners/credentials/artifacts/captures.
+    """
+    def require(condition, message):
+        if not condition:
+            raise CaptureError('benchmark: ' + message)
+
+    def integer(value, low=0, high=(1 << 64)-1):
+        return type(value) is int and low <= value <= high
+
+    def ranks(values):
+        values = sorted(values)
+        require(bool(values), 'empty RTT samples')
+        def rank(p, denominator=100):
+            return values[(p*len(values)+denominator-1)//denominator-1]
+        return dict(successful_samples=len(values),min_ns=values[0],p50_ns=rank(50),
+                    p90_ns=rank(90),p95_ns=rank(95),p99_ns=rank(99),
+                    p999_ns=rank(999,1000) if len(values)>=10000 else None,max_ns=values[-1])
+
+    require(isinstance(source,dict) and isinstance(peer,dict), 'both original reports required')
+    config=source.get('config')
+    require(isinstance(config,dict) and set(config)=={'count','bytes'},'exact workload parameters')
+    count,size=config['count'],config['bytes']
+    require(integer(count,1,10000) and integer(size,29,2042),'finite sample and byte bounds')
+    replies=[];rtts=[];identities=[]
+    for responder,report in [(False,source),(True,peer)]:
+        require({'schema_version','status','performance_qualified','workload','responder','config','clock',
+                 'rtt_definition','percentile_method','unmeasured','channel_identity','elapsed_ns','attempted',
+                 'admitted','validated','timed_out','unattempted','success_only_rtt','error','samples'} <= set(report),
+                'required report fields')
+        require(type(report['config']) is dict and set(report['config'])=={'count','bytes'}
+                and all(type(v) is int for v in report['config'].values()), 'exact integer config')
+        require(isinstance(report['unmeasured'],list) and bool(report['unmeasured'])
+                and all(isinstance(v,str) for v in report['unmeasured']), 'explicit incomplete evidence closure')
+        require(report.get('schema_version')==1 and type(report.get('schema_version')) is int,'schema version')
+        require(report.get('status')=='MEASURED_NOT_QUALIFIED' and report.get('performance_qualified') is False,'measurement is never qualification')
+        require(report.get('responder') is responder and report.get('config')==config,'same workload, opposite application roles')
+        require(report.get('workload')=='ping-pong-one-outstanding','supported workload')
+        require(report.get('clock')=='process-local-Rust-Instant-relative-nanoseconds','explicit local ns clock domain')
+        require(report.get('rtt_definition')=='successful send syscall entry to validated reply, same initiator clock','RTT origin')
+        require(report.get('percentile_method')=='nearest-rank;success-only;p99.9 requires10000 successes','percentile method')
+        require(report.get('error') is None and all(type(report.get(k)) is int and report[k]==v for k,v in
+                [('attempted',count),('admitted',count),('validated',count),('timed_out',0),('unattempted',0)]),'all attempts and failures must be retained')
+        require(integer(report.get('elapsed_ns'),1),'elapsed interval')
+        samples=report.get('samples')
+        require(isinstance(samples,list) and len(samples)==count,'all original samples')
+        identity=report.get('channel_identity')
+        require(isinstance(identity,dict),'channel identity')
+        for name,low,high in [('controller',0,65535),('generation',1,(1<<64)-1),('lifetime',1,(1<<64)-1),('handle',0,4095),('mtu',size,2042),('mps',size+5,2047)]:
+            require(integer(identity.get(name),low,high),'bounded identity/capability '+name)
+        require(all(identity.get(k)==v and type(identity.get(k)) is int for k,v in [('local_tcid',31),('remote_tcid',31),('pi',241),('mode',0),('directions',3)]),'current basic CUTC capabilities')
+        identities.append((identity['controller'],identity['generation']))
+        nonces=set();sequences=set();frames=[];previous=0
+        for index,row in enumerate(samples):
+            require(isinstance(row,dict) and {'index','planned_ns','first_syscall_ns','syscall_ns','send_attempts',
+                    'would_block','admitted_ns','read_ns','validated_ns','errno','timed_out','frame_hex'} <= set(row),
+                    'required original sample fields')
+            require(type(row.get('index')) is int and row['index']==index,'ordered sample indices')
+            require(row.get('timed_out') is False and row.get('errno') is None,'failed sample cannot be successful')
+            require(integer(row.get('send_attempts'),1,(1<<32)-1) and integer(row.get('would_block'),0,(1<<32)-1)
+                    and row['send_attempts']==row['would_block']+1,'all send attempts accounted')
+            fields=['planned_ns','read_ns','validated_ns','first_syscall_ns','syscall_ns','admitted_ns'] if responder else [
+                'planned_ns','first_syscall_ns','syscall_ns','admitted_ns','read_ns','validated_ns']
+            times=[row.get(k) for k in fields]
+            require(all(integer(t) for t in times) and previous<=times[0] and times==sorted(times)
+                    and times[-1]<=report['elapsed_ns'],'same-domain per-message ordering and finite elapsed')
+            previous=times[-1]
+            if not responder:
+                latency=row['validated_ns']-row['syscall_ns']
+                require(latency<=10_000_000_000,'original request deadline')
+                rtts.append(latency)
+            raw=row.get('frame_hex')
+            require(isinstance(raw,str) and len(raw)==2*size and re.fullmatch('[0-9a-f]+',raw) is not None,'bounded original frame bytes')
+            frame=bytes.fromhex(raw)
+            require(frame[:8]==b'SLKSOCK1' and frame[28]==1,'actual validated reply encoding')
+            nonce=frame[8:24];sequence=int.from_bytes(frame[24:28],'little')
+            require(nonce not in nonces and sequence not in sequences,'unique nonce and sequence')
+            nonces.add(nonce);sequences.add(sequence)
+            require(all(frame[29+j]==nonce[j%16]^((sequence+j)&255) for j in range(size-29)),'payload validation')
+            frames.append(frame)
+        if not responder:
+            distribution=report['success_only_rtt']
+            require(isinstance(distribution,dict) and set(distribution)==set(ranks(rtts))
+                    and all((v is None and k=='p999_ns' and count<10000) or integer(v)
+                            for k,v in distribution.items()),'integer ns distribution fields')
+        require(report.get('success_only_rtt')==(None if responder else ranks(rtts)),'recomputed successful RTT distribution')
+        replies.append(frames)
+    require(identities[0]!=identities[1],'two distinct controller identities')
+    require(replies[0]==replies[1],'actual peer validated and replied to every random source message')
+    return dict(status='APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED',performance_qualified=False,
+                messages=count,application_bytes=size,source_rtt=ranks(rtts),
+                remaining=['artifact/source/tool/config/firmware closure','actual ordinary credentials and kernel ownership',
+                           'independent both-end captures/drop checks','resource and trace-overhead measurements'])

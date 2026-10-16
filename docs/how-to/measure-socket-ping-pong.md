@@ -56,5 +56,7 @@ INCOMPLETE 标记及 stderr。文件存在直接拒绝，不覆盖前次运行�
 写出中断留下空/截断/INCOMPLETE 文件均不能当测量完成。保留失败再用新目录重跑。
 
 分位数只覆盖成功样本；空样本为 null，P99.9 至少 10000 成功样本，算法与单位见
-[指标参考](../reference/socket-benchmark.md)。当前还没有完整双端报告聚合器、固定
+[指标参考](../reference/socket-benchmark.md)。已接通内部 `tools/ws73_channel_socket.py` 的 `benchmark_application_reports(source, peer)`，
+用于双端 JSON 的字段/帧/时钟契约与分位数核对；其一致结果仍不是资格。
+目前还没有完整双端捕获/来源聚合器、固定
 速率/有限窗口双向、跨层时间线和资源采样；不要从 ping-pong 推断饱和吞吐或公平性。

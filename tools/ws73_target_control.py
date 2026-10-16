@@ -126,7 +126,7 @@ def main():
     parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')
     parser.add_argument('--initializer-lifecycle',action='store_true',help='actual initializer withdrawal, eviction and guest-generation gate; excludes private File close/dup')
     parser.add_argument('--daemon-link-resync',action='store_true')
-    parser.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject'])
+    parser.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel'])
     parser.add_argument('--channel-socket-bytes',type=int,default=61)
     parser.add_argument('--channel-socket-burst',action='store_true')
     parser.add_argument('--channel-socket-close-prefix',action='store_true')

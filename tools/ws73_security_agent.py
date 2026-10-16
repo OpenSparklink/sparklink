@@ -9,7 +9,7 @@ import time
 from ws73_capture import CaptureError
 from ws73_security_capabilities import OFFER
 
-MODES=('approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject')
+MODES=('approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel')
 
 def execute(run,phase):
     mode=run.args.security_agent
@@ -23,10 +23,16 @@ def execute(run,phase):
     command=['/bin/ws73-security-agent-probe','--connections',*paths,'--mode',mode]
     if mode=='timeout':command+=['--timeout-ms','500','--approval-delay-ms','800']
     elif mode in ['cancel','agent-exit','caller-exit']:command+=['--approval-delay-ms','700']
+    if mode=='install-cancel':
+        from ws73_security_install_hold import arm
+        folder=arm(run,phase,row);command+=['--install-hold-directory',str(folder)]
     result=run.command(command,20,collection='security_agent_commands')
     row['command']=result;run.save()
     if result['exit']:raise CaptureError('actual Agent witness failed: '+result['stderr'])
     row['events']=[json.loads(line) for line in result['stdout'].splitlines()]
+    if mode=='install-cancel':
+        from ws73_security_install_hold import collect
+        collect(row,folder)
     row['end_wall_ns']=time.time_ns();row['status']='PENDING_USB_AND_APPLICATION_CORROBORATION';run.save()
 
 def witness(row,phase,daemon,binary=None):
@@ -41,6 +47,7 @@ def witness(row,phase,daemon,binary=None):
     expected={'probe_identity':1,'allocated':2,'agent_callback':2,'probe_complete':1,
               'caller_loss_cleanup':2} if row['mode']=='caller-exit' else {
                   'probe_identity':1,'allocated':2,'agent_callback':2,'probe_complete':1,'policy_result':2}
+    if row['mode']=='install-cancel':expected.update(install_barrier=2,install_before_cancel=1,install_cancelled=1,install_terminal_stable=1)
     if {key:len(value) for key,value in stages.items()}!=expected:raise CaptureError('missing/duplicate/unexpected Agent witness stages')
     identity=stages['probe_identity'][0]
     if (identity['daemon_owner']!=daemon['owner'] or identity['daemon_pid']!=daemon['pid'] or daemon['uid']!=0
@@ -69,9 +76,18 @@ def witness(row,phase,daemon,binary=None):
             result=[v for v in stages['policy_result'] if v['path']==path]
             if len(result)!=1:raise CaptureError('one terminal policy observation required')
             result=result[0]
-            phase_value={'approve':4,'reject':5,'timeout':7,'cancel':6,'agent-exit':10}[row['mode']]
+            phase_value={'approve':4,'reject':5,'timeout':7,'cancel':6,'agent-exit':10,'install-cancel':6 if obj['role']==0 else 4}[row['mode']]
             if any(result[k]!=allocation[k] for k in ['request_id','generation','lifetime','deadline_monotonic_ns']) or result['phase']!=phase_value:raise CaptureError('old identity/terminal state mismatch')
-            if row['mode']=='approve':
+            if row['mode']=='install-cancel' and obj['role']==0:
+                if not result['agent_approved'] or not result['native_admitted'] or result['kernel_state']!=6 or result['cleanup_error']:
+                    raise CaptureError('original native in-flight cancellation must settle')
+                before=stages['install_before_cancel'][0];withdrawn=stages['install_cancelled'][0];late=stages['install_terminal_stable'][0]
+                raw=[result[k] for k in ['request_id','generation','lifetime','phase','error','deadline_monotonic_ns','agent_approved','native_admitted','kernel_state','kernel_error','kernel_flags','kernel_status','cleanup_error']]
+                if (any(e['path']!=path for e in [before,withdrawn,late]) or withdrawn['raw']!=raw or late['raw']!=raw
+                        or before['raw'][:3]!=raw[:3] or before['raw'][5]!=raw[5]
+                        or before['raw'][3]!=3 or before['raw'][6:8]!=[True,True]
+                        or before['raw'][8] not in [1,2,3]):raise CaptureError('exact admitted/cancelled/late original request witness required')
+            elif row['mode'] in ['approve','install-cancel']:
                 if (not result['agent_approved'] or not result['native_admitted'] or result['kernel_state']!=9
                         or any(result[k] for k in ['error','kernel_error','kernel_status','cleanup_error'])):raise CaptureError('actual native result distinct from policy yes required')
             elif result['native_admitted'] or result['kernel_state']:raise CaptureError('pre-admission negative path cannot enter physical mechanism')
@@ -79,7 +95,7 @@ def witness(row,phase,daemon,binary=None):
 
 def wire(row,phase,capture):
     low,high=row['start_wall_ns'],row['end_wall_ns']
-    approved=row['mode'] in ['approve','cli-approve']
+    approved=row['mode'] in ['approve','cli-approve','install-cancel']
     received={};sent={};completed={};installs=[];keys=[];install_commands={}
     for entry in phase['typed_objects']:
         owner=entry['owner'];obj=entry['object'];role=obj['role'];handle=obj['handle'].to_bytes(2,'little')

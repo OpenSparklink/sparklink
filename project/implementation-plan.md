@@ -4,7 +4,8 @@
 
 WP09 当前切片：[安装回复受控屏障](../docs/evidence/security-install-reply-barrier-20261017.json)
 已完成独立测试 QEMU/离线 callback、sanitizer、补丁链及暂停 QMP 检查；不修改生产
-Host/driver/Agent，不是实机撤销资格。下一批复用原 Agent witness，在精确的真实
+Host/driver/Agent，不是实机撤销资格。专用 `install-cancel` 已接现有 Agent witness、
+Host/guest 参数和独立 USB/verdict 检查，正在准备本批实机；在精确的真实
 安装提交→保留 Status/Complete→撤销→交还原帧后检查原终态不改写、物理义务不
 凭空清除，以及同行真实业务。两角色、原请求/gen/lifetime/作者/原期限和帧 hash
 均须闭合；合并在同一 USB aggregate 的事件一起延迟，不能按帧号或 sleep 推定

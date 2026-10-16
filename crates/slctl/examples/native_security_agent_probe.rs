@@ -5,6 +5,8 @@ use clap::{Parser, ValueEnum};
 use serde_json::json;
 use std::{
     collections::BTreeMap,
+    io::Write,
+    path::{Path, PathBuf},
     sync::Arc,
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
@@ -40,6 +42,7 @@ enum Mode {
     Cancel,
     AgentExit,
     CallerExit,
+    InstallCancel,
 }
 #[derive(Parser)]
 struct Args {
@@ -51,6 +54,8 @@ struct Args {
     timeout_ms: u32,
     #[arg(long, default_value_t = 0)]
     approval_delay_ms: u64,
+    #[arg(long)]
+    install_hold_directory: Option<PathBuf>,
 }
 fn wall() -> u64 {
     SystemTime::now()
@@ -176,6 +181,149 @@ fn controller_path(path: &str) -> anyhow::Result<&str> {
     Ok(controller)
 }
 
+// Disposable-VM witness only. The host retains an actual original USB
+// transfer; these markers never manufacture protocol data or kernel results.
+async fn install_barrier(folder: &Path, phase: &str, ack: &str) -> anyhow::Result<()> {
+    let request = json!({"hold_phase":phase,"wall_ns":wall()});
+    let path = folder.join(format!("hold-{phase}.json"));
+    ensure!(!path.exists(), "fresh hold request required");
+    let temporary = path.with_extension("tmp");
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&temporary)?;
+    writeln!(file, "{request}")?;
+    drop(file);
+    std::fs::rename(&temporary, &path)?;
+    let reply = folder.join(format!("hold-{ack}-ack.json"));
+    let until = Instant::now() + Duration::from_secs(2);
+    let value = loop {
+        ensure!(
+            Instant::now() < until,
+            "bounded original host hold acknowledgment"
+        );
+        if reply.exists() {
+            break serde_json::from_slice::<serde_json::Value>(&std::fs::read(&reply)?)?;
+        }
+        tokio::time::sleep(Duration::from_millis(2)).await;
+    };
+    ensure!(
+        value["stage"] == ack && value["request"] == request,
+        "exact original hold acknowledgment"
+    );
+    println!(
+        "{}",
+        json!({"stage":"install_barrier","wall_ns":wall(),"request":request,"ack":value})
+    );
+    Ok(())
+}
+
+async fn install_cancel(
+    args: &Args,
+    c: &Connection,
+    infos: &[Info],
+    ids: &[u64],
+    deadlines: &[u64],
+) -> anyhow::Result<()> {
+    let folder = args
+        .install_hold_directory
+        .as_ref()
+        .context("explicit install hold directory")?;
+    let selected = infos
+        .iter()
+        .position(|v| v.3 == 0)
+        .context("original G role required")?;
+    let path = &args.connections[selected];
+    install_barrier(folder, "wait_held", "held").await?;
+    let before = read(c, path, ids[selected]).await?;
+    ensure!(
+        before.3 == 3 && before.6 && before.7 && (1..=3).contains(&before.8),
+        "actual admitted pending native operation required before cancellation"
+    );
+    println!(
+        "{}",
+        json!({"stage":"install_before_cancel","wall_ns":wall(),"path":path,"raw":before})
+    );
+    ensure!(
+        link(c, path)
+            .await?
+            .call::<_, _, bool>("CancelReferenceSecurity", &(ids[selected],))
+            .await?,
+        "withdraw the original already-submitted request"
+    );
+    let until = Instant::now() + Duration::from_millis(500);
+    let cancelled = loop {
+        let raw = read(c, path, ids[selected]).await?;
+        if raw.3 == 6 && raw.8 == 6 && raw.12 == 0 {
+            break raw;
+        }
+        ensure!(
+            Instant::now() < until,
+            "actual original native cancellation must settle while reply is held"
+        );
+        tokio::time::sleep(Duration::from_millis(2)).await;
+    };
+    ensure!(
+        cancelled.6 && cancelled.7,
+        "cannot substitute a pre-admission refusal"
+    );
+    println!(
+        "{}",
+        json!({"stage":"install_cancelled","wall_ns":wall(),"path":path,"raw":cancelled})
+    );
+    install_barrier(folder, "release_ready", "released").await?;
+    let until = Instant::now() + Duration::from_secs(3);
+    for (i, path) in args.connections.iter().enumerate() {
+        let raw = loop {
+            let raw = read(c, path, ids[i]).await?;
+            if raw.3 >= 4 {
+                break raw;
+            }
+            ensure!(
+                Instant::now() < until,
+                "peer original operation must complete"
+            );
+            tokio::time::sleep(Duration::from_millis(2)).await;
+        };
+        ensure!(
+            raw.0 == ids[i] && raw.1 == infos[i].0 && raw.2 == infos[i].1 && raw.5 == deadlines[i],
+            "original identity and deadline must not be replaced"
+        );
+        if i == selected {
+            ensure!(
+                serde_json::to_value(raw)? == serde_json::to_value(cancelled)?,
+                "late installation reply must not rewrite cancelled operation"
+            );
+        } else {
+            ensure!(
+                raw.3 == 4
+                    && raw.6
+                    && raw.7
+                    && raw.8 == 9
+                    && raw.4 == 0
+                    && raw.9 == 0
+                    && raw.11 == 0
+                    && raw.12 == 0,
+                "other controller needs actual native success, not policy approval"
+            );
+        }
+        println!("{}", observation(path, &raw));
+    }
+    // This bounded observation is not a callback-drain or key-erasure proof.
+    // Independent capture must show actual late delivery before the final read.
+    tokio::time::sleep(Duration::from_millis(100)).await;
+    let late = read(c, &args.connections[selected], ids[selected]).await?;
+    ensure!(
+        serde_json::to_value(late)? == serde_json::to_value(cancelled)?,
+        "old terminal outcome changed after physical release"
+    );
+    println!(
+        "{}",
+        json!({"stage":"install_terminal_stable","wall_ns":wall(),"path":args.connections[selected],"raw":late})
+    );
+    Ok(())
+}
+
 async fn execute(args: Args) -> anyhow::Result<()> {
     ensure!(
         args.connections.len() == 2 && args.connections[0] != args.connections[1],
@@ -190,7 +338,7 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         "bounded test Agent required"
     );
     match args.mode {
-        Mode::Approve | Mode::Reject => ensure!(
+        Mode::Approve | Mode::Reject | Mode::InstallCancel => ensure!(
             args.approval_delay_ms == 0,
             "immediate explicit decision required"
         ),
@@ -202,6 +350,22 @@ async fn execute(args: Args) -> anyhow::Result<()> {
             args.approval_delay_ms >= 500 && args.timeout_ms >= 1000,
             "observable live callback required"
         ),
+    }
+    ensure!(
+        (args.mode == Mode::InstallCancel) == args.install_hold_directory.is_some(),
+        "install hold is exclusive to explicit install-cancel witness"
+    );
+    if let Some(folder) = &args.install_hold_directory {
+        ensure!(
+            args.timeout_ms == 5000
+                && folder.is_dir()
+                && folder.parent() == Some(Path::new("/evidence/security-install-hold"))
+                && matches!(
+                    folder.file_name().and_then(|v| v.to_str()),
+                    Some("phase-0" | "phase-1")
+                ),
+            "original five-second deadline and isolated two-phase VM folder required"
+        );
     }
     let process = std::fs::read_to_string("/proc/self/status")?;
     for name in ["Uid:", "Gid:"] {
@@ -361,7 +525,9 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         callbacks[0].0 != callbacks[1].0,
         "two distinct real Agent callbacks required"
     );
-    if args.mode == Mode::CallerExit {
+    if args.mode == Mode::InstallCancel {
+        install_cancel(&args, &requester, &infos, &ids, &deadlines).await?;
+    } else if args.mode == Mode::CallerExit {
         // Old caller cannot query after death. A distinct caller must be denied
         // access to old IDs and may only allocate fresh non-native operations.
         drop(bus);

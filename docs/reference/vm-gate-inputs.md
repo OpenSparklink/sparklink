@@ -126,3 +126,23 @@ credit、队列和在途PDU排空后，观察原2秒区间；前后仍需真实�
 观察器拒绝区间内任一次sl_work、丢失/截断、错误fd或generation及缺少前后工作。
 同口径旧轮询镜像用于预期拒绝负对照，只记录该镜像身份和原FAIL，不授新内核
 资格。完整CPU/时延/公平性、调度或USB callback drain证明均不在该观察范围。
+
+## 安装已提交后的 Agent 取消门禁
+
+`--security-agent install-cancel` 是专用 VM 测试入口，要求独立的真实连接和普通
+应用通道门禁，以及已审查的安装回复选择器 QEMU。它不是 slctl 的自动批准策略，
+不应部署测试用 `native_security_agent_probe` 为常驻 Agent。
+
+与准入前 `cancel` 不同，该模式立即批准两端原请求，在 G 安装命令实际提交后，
+由 Host 保留精确 SDK111 成功 Status/Complete 所在的原 IN81 aggregate，再取消
+G 原请求并交还原 transfer。匹配以完整 HCC 边界和 role opcode 为准，不能靠第
+几个帧或固定等待推定安装时点；同一 aggregate 的其他事件一起延迟，不拆分。
+两秒 Host 保留预算与原五秒协商期限分开，不能重设协议期限。
+
+报告要求原作者、request/generation/lifetime、原期限、完整 arm/held/release
+握手、原 transfer hash、真实迟到接受事件、不可改写的取消结果、另一端实际
+安装成功及同 Session 的随后对端应用校验回复。两个物理连接角色分别执行。
+取消的是原操作，不能解释成硬件从未加密、密钥已经擦除、callback 已排空或
+handle 可安全复用。完整 release/最后 fd/dup/Down/期限组合仍是独立未完成门禁。
+工具实现与离线 synthetic oracle 通过都不授予 WS73 实机或认证/Bond/恢复资格；
+准确结果仍只见仓库中的唯一当前资格入口。

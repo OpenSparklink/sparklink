@@ -284,6 +284,31 @@ impl Context {
                 )
                 .await
             }
+            "benchmark-rate" | "benchmark-window" | "benchmark-duplex" | "benchmark-load-peer" => {
+                let rate = args[0] == "benchmark-rate";
+                if args.len() != if rate { 7 } else { 6 } {
+                    anyhow::bail!("load: path count bytes window [interval-us] NEW-report.json");
+                }
+                let config = crate::benchmark::LoadConfig {
+                    mode: match args[0] {
+                        "benchmark-rate" => crate::benchmark::LoadMode::Rate,
+                        "benchmark-window" => crate::benchmark::LoadMode::Window,
+                        "benchmark-duplex" => crate::benchmark::LoadMode::Duplex,
+                        _ => crate::benchmark::LoadMode::Peer,
+                    },
+                    count: args[2].parse()?,
+                    bytes: args[3].parse()?,
+                    window: args[4].parse()?,
+                    interval_us: if rate { args[5].parse()? } else { 0 },
+                };
+                config.validate()?;
+                let fd = self.open_application_channel(args[1]).await?;
+                crate::benchmark::run_load(
+                    fd,
+                    config,
+                    std::path::Path::new(args[if rate { 6 } else { 5 }]),
+                )
+            }
             "benchmark-ping" | "benchmark-peer" => {
                 if args.len() != 5 {
                     anyhow::bail!("benchmark: path count bytes NEW-report.json");

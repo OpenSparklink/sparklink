@@ -16885,13 +16885,13 @@
         "event-driven-session",
         "reproducible-socket-performance"
       ],
-      "bounds": "P0 adopted;P1a ordinary-socket ping-pong application tool implemented/localAF_UNIX tested. No Native/WS73 performance qualification; full P1 missing.",
+      "bounds": "P0 adopted;P1a pingpong andP1b absolute-rate/window/duplex application loops implemented/localtested. New Native/WS73 performance baseline andschema2oracle remainmissing;old offline records retain exact old source.",
       "excluded": [
         "不得从功能PASS或USB/NOCP继承性能资格",
         "不预设单bulkRXURB或10ms解释全部时延"
       ],
       "remaining": [
-        "P1a Native/WS73 two-role baseline and independent peer/capture/provenance closure; fixed-rate/window-bidirectional/resources/trace overhead still missing",
+        "P1 schema2 independent both-end/provenance/capture/supervisor oracle and negative controls;exactnew Native/WS73 roles baseline;kernel resources/trace overhead",
         "P2通知/原期限/引用drain和旧新同口径实测",
         "P3有界TX、P4多通道四设备、P5测量后USB优化、P6长期自然恢复"
       ],

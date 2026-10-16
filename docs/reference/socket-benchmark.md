@@ -1,7 +1,7 @@
 # Socket benchmark 指标与报告契约
 
 适用：ADR0006 的规划契约；目前没有当前 HEAD 的性能资格。首个 ping-pong 工具切片见
-[操作指南](../how-to/measure-socket-ping-pong.md)；固定速率、双向窗口和完整证据闭包尚缺。
+[操作指南](../how-to/measure-socket-ping-pong.md)；固定速率/窗口/双向的应用循环已接通，完整证据闭包尚缺。
 现有 channel-roundtrip／burst 是功能门禁，计时包含日志等开销，不能升级为基线。
 [接口支持范围](interfaces.md)继续适用；此页不新增 socket 能力。
 
@@ -49,3 +49,38 @@ schema 版本、run id、源角色及 controller/generation/lifetime/channel 身
 
 正常资格、性能、sanitizer/lockdep 镜像独立，不能放宽原协议期限。基线稳定后才按
 相同配置设回归阈值，环境或特殊调优变更独立报告；所有 WS73 操作 VM-only。
+
+
+## 当前 CLI 参数与 schema2 边界
+
+| 命令 | 路径后的位置参数 | 行为 |
+|---|---|---|
+| benchmark-ping / benchmark-peer | count bytes new-report | schema1，单未完成请求／对端校验；启动后直接运行 |
+| benchmark-rate | count bytes window interval-us new-report | schema2，绝对计划、单次非阻塞准入，拒绝不减慢计划 |
+| benchmark-window | count bytes window new-report | schema2，有限在途应用请求，EAGAIN 后等待可写 |
+| benchmark-duplex | count bytes window new-report | schema2，双方独立发起并校验回复，唯一同一 socket 路径 |
+| benchmark-load-peer | count bytes window new-report | schema2，只处理 rate/window 的对端请求 |
+
+count 1..10000，bytes 29..2042 且匹配实际基本 CUTC MTU/MPS。window 1..min(count,256)，
+interval 10..1000000 µs，总计划不超过600秒；其它模式 interval 为0。schema2 等待
+原30秒 `start\n` 屏障，消息原10秒期限，1秒尾部观察，总运行上限612秒。测试中的
+较短 AF_UNIX 期限是显式 fixture 参数，不替代真实模式常量或协议期限。
+
+`outgoing` 全量保留计划/dispatch、首次及成功 syscall、准入、原 deadline、read、
+校验、尝试/EAGAIN、errno、本地预算拒绝、超时、迟到及 reply_count。固定速率
+即使未尝试也保留原计划。`incoming` 保留实际本地校验与回复准入时间；未知或
+错误不能伪造成功行。counter 区分重复请求/回复、乱序、损坏、未知/非预期包、
+记录和 reply 队列溢出；接收观测最多 count×4+16 包，达到预算后失败退出。
+
+每轮 32 包预算，各应用队列预留容量，热循环无日志/hex/落盘，无全记录扫描；
+逾期检查和最早期限查询仅遍历有限窗口。通知不映射协议 credit；应用超时释放
+应用等待预算，不抹去内核或控制器的在途义务。
+
+report 的 correctness 只是单个应用的限定检查。CPU user/system delta、RSS/fd 是
+进程端点快照，含采样端点开销，maxrss 是进程 lifetime，不是本次峰值；内核资源
+与 USB 字节率仍 null。每秒率分母 active_elapsed_ns 包含失败/超时，排除1秒尾窗；
+pattern goodput 排除29字节应用测试头，datagram goodput另列；DLI/DTAP/HCC/USB
+开销未取得时不得补猜。完整追踪与低扰动差值仍未测量。
+
+schema1 双端核对含迟到拒绝；schema2 的端到端 oracle、来源/捕获/监督器负对照
+尚缺，不能沿用 schema1 的局部通过。新模式尚无真实 WS73 性能资格。

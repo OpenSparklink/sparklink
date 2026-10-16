@@ -1,8 +1,9 @@
-# 测量已建链通道的应用 ping-pong
+# 测量通道 socket 的时延与负载
 
 目标：让一个普通应用发送随机消息，另一应用实际校验并回复，得到每消息的应用
 RTT。当前是 benchmark 的第一个切片，已运行本地 AF_UNIX 应用回归，**尚未取得
-此工具的真实 WS73 性能资格**。固定速率、持续双向和资源采样仍待接通。
+此工具的真实 WS73 性能资格**。已接通三类负载及进程资源端点快照；
+VM 基线、schema2 双端捕获/来源核对及内核资源采样仍缺。
 
 ## 前置条件
 
@@ -58,5 +59,52 @@ INCOMPLETE 标记及 stderr。文件存在直接拒绝，不覆盖前次运行�
 分位数只覆盖成功样本；空样本为 null，P99.9 至少 10000 成功样本，算法与单位见
 [指标参考](../reference/socket-benchmark.md)。已接通内部 `tools/ws73_channel_socket.py` 的 `benchmark_application_reports(source, peer)`，
 用于双端 JSON 的字段/帧/时钟契约与分位数核对；其一致结果仍不是资格。
-目前还没有完整双端捕获/来源聚合器、固定
-速率/有限窗口双向、跨层时间线和资源采样；不要从 ping-pong 推断饱和吞吐或公平性。
+目前还没有完整双端捕获/来源聚合器和跨层时间线；不要从 ping-pong 推断饱和吞吐或公平性。
+
+
+## 运行固定速率、有限窗口及双向负载
+
+以下新命令的本地应用循环已回归，**真实 WS73、schema2 报告及完整证据闭包尚待验收**。
+仍需上述已建链 VM、普通用户、匹配构建和全新的报告路径。每次重做需新连接 lifetime。
+只使用 one-shot CLI；两端看到 `SocketBenchmarkArmed` 后，各自在该进程 stdin 输入
+一行 `start`，或由现有 VM 监督器在核对凭据后写入 `start\n`。启动等待原期限 30 秒，
+部分输入不延长，EOF 为撤回；不要提前释放一端就将它当同步的双向起点。
+
+- 固定速率：对端使用 `benchmark-load-peer`；发端的 interval 单位是 µs。
+
+  ```sh
+  slctl --adapter "$ADAPTER_B" benchmark-load-peer "$CONNECTION_B" 1000 61 16 "$PEER_REPORT"
+  slctl --adapter "$ADAPTER_A" benchmark-rate "$CONNECTION_A" 1000 61 16 1000 "$SOURCE_REPORT"
+  ```
+
+- 有限窗口：保持相同对端，发端改用：
+
+  ```sh
+  slctl --adapter "$ADAPTER_A" benchmark-window "$CONNECTION_A" 1000 61 16 "$SOURCE_REPORT"
+  ```
+
+- 双向：双方均发送独立随机消息并处理对方请求，在各自终端运行：
+
+  ```sh
+  slctl --adapter "$ADAPTER_A" benchmark-duplex "$CONNECTION_A" 1000 61 16 "$SOURCE_REPORT"
+  slctl --adapter "$ADAPTER_B" benchmark-duplex "$CONNECTION_B" 1000 61 16 "$PEER_REPORT"
+  ```
+
+应用窗口 1..min(count,256) 独立于协议 credit。绝对速率不因回复推迟计划，窗口满
+记录本地预算拒绝，真实 EAGAIN 记录内核拒绝，不伪装成对端丢包。窗口模式在有限
+窗口内推进，EAGAIN 保留原计划/期限，等待 poll 可写后再尝试。过载、超时和拒绝
+保留，不能因为闭环降速而隐藏负载。ppoll 使用 ns 等待，但不承诺实际发出时间精度；
+每条 dispatch/准入时间显示真实调度偏差。
+
+每应用请求从计划/首次可推进时刻保留 10 秒原期限。对端 reply 从实际 read 起算，
+重复包不刷新该期限。对端等候下一个唯一请求的进度预算 10 秒，整个运行最多
+612 秒；最后保留 1 秒迟到观察。该观察窗外的迟到不在范围内，不能称永久无丢包。
+每轮最多处理 32 个接收/回复/发送包，队列和观测预算有限，溢出可见。分位数排除
+超时/迟到，相关原始行及计数保留；异常、正确性失败与非零退出不覆盖测量文件。
+
+schema2 的 `LOAD_OBSERVED_NOT_QUALIFIED` 只表示本地全量循环及正确性条件满足；
+失败可能输出 `LOAD_OBSERVED_WITH_FAILURES_NOT_QUALIFIED` 或 `INCOMPLETE`，进程非零退出。
+所有情况 `performance_qualified=false`。现有 schema1 核对器不能直接授予 schema2 资格。
+资源是测量前后进程快照，maxrss 为进程存续期最大值，非本轮峰值；队列峰值仅应用
+队列。goodput 区分含 29 字节测试头的 datagram 与真正 pattern payload，分母为同一
+进程的 active interval，包含失败/超时且不含最后观察窗；USB 字节率仍未知。

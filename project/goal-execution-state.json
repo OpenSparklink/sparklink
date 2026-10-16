@@ -1440,7 +1440,7 @@
     }
   },
   "performance_workstream": {
-    "status": "P0_SYNCED_P1A_PING_PONG_APPLICATION_TOOL_OFFLINE_ONLY_FULL_P1_OPEN",
+    "status": "P0_SYNCED_P1B_LOAD_APPLICATION_IMPLEMENTED_LOCAL_ONLY_P1_NATIVE_BASELINE_OPEN",
     "decision": "docs/decisions/0006-event-driven-session-and-performance-evidence.md",
     "canonical_plan": "project/implementation-plan.md#性能工作批次与退出条件",
     "qualification_record": "event-performance-baseline",
@@ -1509,6 +1509,50 @@
         "full_native_or_performance_qualification": false
       },
       "issue_ci_receipt": "docs/evidence/socket-benchmark-issues-ci-20261016.json"
+    },
+    "load_slice": {
+      "production_entry": "same OpenChannel/normal delegated socket and shared precomputed application frames;no Host/Engine/alternate path",
+      "commands": [
+        "benchmark-rate",
+        "benchmark-window",
+        "benchmark-duplex",
+        "benchmark-load-peer"
+      ],
+      "bounds": {
+        "count": [
+          1,
+          10000
+        ],
+        "bytes": [
+          29,
+          2042
+        ],
+        "application_window": [
+          1,
+          256
+        ],
+        "dispatch_round_packets": 32,
+        "request_deadline_ns": 10000000000,
+        "late_observation_grace_ns": 1000000000,
+        "maximum_run_ns": 612000000000,
+        "start_deadline_seconds": 30,
+        "receive_observation_budget": "count*4+16"
+      },
+      "implemented": [
+        "Absolute schedule independent of replies;local application budget refusal separate from kernel errno",
+        "Application window/duplex,real validation and reply,late/duplicate/reorder/corrupt/missing accounting",
+        "ppoll ns waits,finite original deadlines/drain observation;no hotloop logging/disk/hex",
+        "Process CPU/RSS/fd endpoints,application queue peaks;unknown kernel counters explicitnull"
+      ],
+      "offline": "Final24unit+5privateDBus CLI and20schema1 report tests/32negative classes;finalidentity to be sealed;no Native or performance qualification",
+      "remaining": [
+        "schema2 independent two-end oracle/provenance/capture/supervisor negatives",
+        "Exact new build NativeVM/WS73 ordinaryuser roles and retained function/length regression",
+        "Kernel resources/continuous peaks and trace overhead",
+        "P2events aftercredible baseline;measuredRXgap and USBoptimization later",
+        "Clock-domain mapping/error bounds for applicable segmented timeline;no one-wayRF inference"
+      ],
+      "performance_qualified": false
     }
   }
 }

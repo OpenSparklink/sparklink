@@ -10,4 +10,5 @@ ADR 保留决策理由，目标不代表实现资格。
 0003-optional-exclusive-user-host
 0004-application-ownership-and-delivery
 0005-qualification-and-quality-gates
+0006-event-driven-session-and-performance-evidence
 ```

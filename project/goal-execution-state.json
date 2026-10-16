@@ -649,6 +649,7 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
+    "ADR0006 P0 architecture/contracts/issues, then P1 credible real socket baseline before P2 Session event-driven optimization; preserve ongoing four-device tools and existing S0-S6 parallel scope.",
     "Quality provenance batch first; then actual Agent/method/caller positive/reject/loss on existing installed relay path. No duplicate Engine; installation subqualification already retained at exact8cbf/2d81/575.",
     "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
     "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
@@ -1132,6 +1133,10 @@
       "native-sequence-a474a85": {
         "level": "offline",
         "result": "PASS"
+      },
+      "event-performance-baseline": {
+        "level": "implemented",
+        "result": "MISSING"
       }
     },
     "overall": "INCOMPLETE",
@@ -1143,7 +1148,7 @@
         "Raw10successfulcaptures/apps/holds replayed;42offlineevidence negatives;ordinaryuid/cap/peerleaseReady andactualscanwhereapplicable",
         "Actualproduction-body seeded1024x32 sequences,113actual callbackrejections/125accepteduncertain outcomes,2intended mutationcounterexamples;notformalproof"
       ],
-      "next": "Nextvertical data delivery:four real controllers/two groups on dynamic channels,parallel boundedburst and independent pair progress. Continue commit/revoke/Down/deadline/reuse andquality inparallel,notallcontrols prerequisite. FullS0-S6/19WP/10FV/12DG/RCA/nonhumanrecovery OPEN."
+      "next": "ADR0006 P0 planning synchronized;P1 credible socket baseline before P2 event scheduling; preserve in-progress four-device dynamic tools and parallel Agent/SSAP/control-composition/RCA. FullS0-S6/19WP/10FV/12DG unchanged; no performance qualification."
     }
   },
   "agent_workstream": {
@@ -1428,5 +1433,46 @@
       "kernel_test_commit": "a474a8503637f10cdf1c1160f64f6391c40919a7",
       "kernel_status": "NO_MATCHING_RUN_NOT_PASS"
     }
+  },
+  "performance_workstream": {
+    "status": "P0_ADOPTED_P1_NOT_IMPLEMENTED_NO_PERFORMANCE_QUALIFICATION",
+    "decision": "docs/decisions/0006-event-driven-session-and-performance-evidence.md",
+    "canonical_plan": "project/implementation-plan.md#性能工作批次与退出条件",
+    "qualification_record": "event-performance-baseline",
+    "audited_source": {
+      "kernel": "a474a8503637f10cdf1c1160f64f6391c40919a7",
+      "userspace": "44108b237b8c618f2f5053f019462416914477ca",
+      "preserved_dirty": [
+        "tools/ws73_dynamic_channels.py",
+        "tools/ws73_parallel_data.py"
+      ]
+    },
+    "compiled_runtime": {
+      "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+      "userspace": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b"
+    },
+    "sequence": [
+      "P0 audit/architecture/issues",
+      "P1 credible socket baseline",
+      "P2 Session event notifications + original timers",
+      "P3 bounded continuous TX",
+      "P4 dual/multichannel/four-device stress",
+      "P5 measured USB/RX/TX and radio exploration",
+      "P6 longevity/recovery/release"
+    ],
+    "first_exit": [
+      "Canonical planning/ADR/registry/goal/issues synchronized",
+      "Notification identity/ref/locks/drain and timer/budget/fairness contract",
+      "Three workloads/per-message clocks/fail-closed schema, no fabricated baseline"
+    ],
+    "parallel": [
+      "Ongoing four-device dynamic dirty tools preserved",
+      "Agent/auth/SSAP/data gates",
+      "RCA/nonhuman recovery/partial-init/events/old-code cleanup"
+    ],
+    "rx_measurement": "Single bulk URB completion/process/resubmit gap and perturbation first; no assumed bottleneck. Any change must preserve ordering/generation/buffer ownership/stop-drain.",
+    "full_scope_preserved": true,
+    "vm_only": true,
+    "performance_qualified": false
   }
 }

@@ -16,6 +16,14 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](../docs/decision
 实现状态、逐轮门禁和历史失败不在本页维护，参阅唯一资格与实施计划。
 [拆分前的历史原文](https://github.com/OpenSparklink/sparklink/blob/670674736ac90ec0f89ca0330849e22b1bc8f81b/docs/ARCHITECTURE.md)保留原始源码身份及全部限定范围。目标职责及以下架构决策保持不变。
 
+采用 [ADR0006](../docs/decisions/0006-event-driven-session-and-performance-evidence.md)：
+唯一 Session 的事件就绪与原期限定时分离，Runtime 通知只触发重查；身份、引用、
+锁序、撤销/drain、有限预算、公平性和每次实际 Ticket 提交维持现有所有权。
+先取得普通 socket 的可信基线，再优化调度及有界连续 TX；TX 预分配/多在途/聚合
+和单 bulk RX URB 的处理/重提交空窗均测量后另设门禁，不预设 USB 是瓶颈。
+分层时间线区分应用、准入、USB、NOCP 与对端校验；无 RF/时钟证据不宣称精确
+单向空口时延。实施依赖、当前资格仍由各自唯一入口维护，不在架构页累加运行结果。
+
 ## 目标分层及架构决策
 
 ### 总体结构

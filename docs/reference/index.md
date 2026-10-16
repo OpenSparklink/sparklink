@@ -12,6 +12,7 @@ controller-events
 documentation-build
 controller-snoop
 vm-gate-inputs
+socket-benchmark
 ```
 
 [API 查找入口](../../project/reference/management/api.md)已退休旧全量编号表；旧表按固定提交保留。

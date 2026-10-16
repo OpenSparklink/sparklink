@@ -20,7 +20,7 @@
       "Raw10successfulcaptures/apps/holds replayed;42offlineevidence negatives;ordinaryuid/cap/peerleaseReady andactualscanwhereapplicable",
       "Actualproduction-body seeded1024x32 sequences,113actual callbackrejections/125accepteduncertain outcomes,2intended mutationcounterexamples;notformalproof"
     ],
-    "next": "Nextvertical data delivery:four real controllers/two groups on dynamic channels,parallel boundedburst and independent pair progress. Continue commit/revoke/Down/deadline/reuse andquality inparallel,notallcontrols prerequisite. FullS0-S6/19WP/10FV/12DG/RCA/nonhumanrecovery OPEN."
+    "next": "ADR0006 P0 planning synchronized;P1 credible socket baseline before P2 event scheduling; preserve in-progress four-device dynamic tools and parallel Agent/SSAP/control-composition/RCA. FullS0-S6/19WP/10FV/12DG unchanged; no performance qualification."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -50,7 +50,8 @@
     "dynamic-burst80-400bd68-25df09b",
     "dynamic-new-cli-seven-sizes-400bd68-25df09b",
     "data-lifecycle-eight-plus-two-400bd68",
-    "native-sequence-a474a85"
+    "native-sequence-a474a85",
+    "event-performance-baseline"
   ],
   "records": [
     {
@@ -16872,6 +16873,42 @@
       ],
       "required_gates": [
         "actual-native-seeded-sequences"
+      ]
+    },
+    {
+      "id": "event-performance-baseline",
+      "title": "事件调度/可复现socket性能与压力：待基线，未授资格",
+      "level": "implemented",
+      "result": "MISSING",
+      "contracts": [
+        "event-driven-session",
+        "reproducible-socket-performance"
+      ],
+      "bounds": "ADR0006/P0仅规划；历史8次61B功能RTT不作为当前基线",
+      "excluded": [
+        "不得从功能PASS或USB/NOCP继承性能资格",
+        "不预设单bulkRXURB或10ms解释全部时延"
+      ],
+      "remaining": [
+        "P1三负载可信工具及VM双设备基线",
+        "P2通知/原期限/引用drain和旧新同口径实测",
+        "P3有界TX、P4多通道四设备、P5测量后USB优化、P6长期自然恢复"
+      ],
+      "sources": {},
+      "report": null,
+      "report_commit": null,
+      "artifact_materials": [],
+      "tool_materials": [],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "baseline-and-event-regression",
+          "result": "MISSING",
+          "materials": []
+        }
+      ],
+      "required_gates": [
+        "baseline-and-event-regression"
       ]
     }
   ],

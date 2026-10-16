@@ -23,6 +23,7 @@ html_theme_options = {
     "show_toc_level": 2,
     "toc_title": "本页内容",
     "navigation_with_keys": False,
+    "article_header_start": ["toggle-primary-sidebar.html", "sparklink-breadcrumbs.html"],
     "home_page_in_toc": False,
     "use_download_button": False,
     "use_fullscreen_button": False,

@@ -47,6 +47,11 @@ async def main():
   await js("Array.from(document.links).find(a=>a.href.endsWith('reference/controller-events.html')).click();true")
   await asyncio.sleep(.5)
   result['navigation']=await js("location.pathname.endsWith('/reference/controller-events.html') && document.body.innerText.includes('GetControllerEventPosition')")
+  result['chapter_breadcrumbs']=await js("document.querySelector('.sl-breadcrumbs [aria-current=page]').textContent.includes('Controller') && new URL(document.querySelector('.sl-breadcrumbs li:nth-child(2) a').href).pathname.endsWith('/reference/index.html') && document.querySelector('.sl-breadcrumbs').getBoundingClientRect().right<=innerWidth")
+  await click('.sl-breadcrumbs li:nth-child(2) a')
+  await asyncio.sleep(.3)
+  result['breadcrumb_return']=await js("location.pathname.endsWith('/reference/index.html') && document.querySelector('.bd-article h1').textContent.includes('技术参考')")
+  await nav('reference/controller-events.html')
   result['table']=await js("document.querySelectorAll('table').length>=2")
   result['book_sidebars']=await js("document.querySelector('.bd-sidebar-primary').getBoundingClientRect().width>0 && document.querySelector('.bd-sidebar-secondary').getBoundingClientRect().width>0 && document.body.innerText.includes('本页内容') && document.querySelectorAll('.primary-toggle').length===1 && document.querySelectorAll('.secondary-toggle').length===1")
   await click('.theme-switch-button')
@@ -103,6 +108,7 @@ async def main():
   await nav('index.html')
 
   await nav('reference/controller-events.html');result['mobile_table_container']=await js("Array.from(document.querySelectorAll('table')).every(t=>{let p=t.parentElement;return t.scrollWidth<=window.innerWidth || ['auto','scroll'].includes(getComputedStyle(p).overflowX)})")
+  result['mobile_breadcrumbs']=await js("document.documentElement.scrollWidth<=innerWidth && getComputedStyle(document.querySelector('.sl-breadcrumbs [aria-current=page]')).display==='none' && document.querySelector('.sl-breadcrumbs li:nth-child(2) a').getBoundingClientRect().width>0")
   result['screenshots'].append(await shot('mobile-reference'))
   await call('browsingContext.setViewport',{'context':context,'viewport':{'width':1280,'height':900},'devicePixelRatio':1})
   await nav('explanation/architecture.html'); diagrams=False
@@ -134,7 +140,7 @@ async def main():
    redirects[old]=ok
   result['legacy_html_redirects']=all(redirects.values())
   result['redirect_targets']=redirects
-  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','task_cards_desktop','task_cards_mobile','versioned_brand','navigation','table','book_sidebars','dark_mode','code_copy_paste','mobile_navigation','code_block','product_tutorial_navigation','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','source_only_pages_excluded','legacy_html_redirects']) else 'PARTIAL'
+  result['browser']=(await call('session.status',{}));result['status']='PASS' if all(result[k] is True for k in ['home_tasks','task_cards_desktop','task_cards_mobile','versioned_brand','navigation','chapter_breadcrumbs','breadcrumb_return','mobile_breadcrumbs','table','book_sidebars','dark_mode','code_copy_paste','mobile_navigation','code_block','product_tutorial_navigation','javascript_search','chinese_search','mobile_no_page_overflow','mobile_table_container','mermaid_rendered','business_evidence_navigation','qualification_explanation','source_only_pages_excluded','legacy_html_redirects']) else 'PARTIAL'
   (OUT/'report.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['screenshots','browser']},indent=2))
   await call('session.end',{})
   if result['status']!='PASS':raise SystemExit(1)

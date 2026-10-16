@@ -1,0 +1,12 @@
+{# Use Sphinx's actual document ancestry; no second navigation hierarchy. #}
+{% if title and pagename != root_doc %}
+<nav class="sl-breadcrumbs" aria-label="当前位置">
+  <ol>
+    <li><a href="{{ pathto(root_doc) }}">文档</a></li>
+    {% for parent in parents %}
+    <li><a href="{{ parent.link|e }}">{{ parent.title }}</a></li>
+    {% endfor %}
+    <li aria-current="page">{{ title }}</li>
+  </ol>
+</nav>
+{% endif %}

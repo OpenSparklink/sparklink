@@ -84,3 +84,25 @@ html { --pst-sidebar-width: 17rem; --pst-sidebar-secondary: 14rem; }
   .bd-article .sl-task-card { padding: 1rem; }
   .bd-article { padding-left: 1rem; padding-right: 1rem; }
 }
+
+/* Chapter location stays readable beside the theme's existing controls. */
+.header-article-items__start { min-width: 0; flex: 1 1 auto; }
+.header-article-items__start .header-article-item:last-child { min-width: 0; }
+.header-article-items__end { flex: 0 0 auto; }
+.sl-breadcrumbs { min-width: 0; font-size: .8125rem; color: var(--pst-color-text-muted); }
+.sl-breadcrumbs ol { display: flex; align-items: center; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.sl-breadcrumbs li { display: flex; align-items: center; min-width: 0; }
+.sl-breadcrumbs li + li::before { content: "/"; margin-right: .5rem; opacity: .6; }
+.sl-breadcrumbs a { color: inherit; white-space: nowrap; text-decoration: none; }
+.sl-breadcrumbs a:hover { color: var(--pst-color-primary); text-decoration: underline; }
+.sl-breadcrumbs li[aria-current] { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.sl-breadcrumbs li[aria-current]::before { display: inline; }
+.sl-breadcrumbs a:focus-visible { outline: 2px solid var(--pst-color-primary); outline-offset: 3px; }
+.bd-sidebar-primary .nav-link.active { box-shadow: inset 3px 0 var(--pst-color-primary); }
+.bd-article code.literal { padding: .12em .35em; background: var(--pst-color-surface); border: 1px solid var(--pst-color-border); }
+@media (max-width: 48rem) {
+  /* Keep the category link on small screens; the article already has its h1. */
+  .sl-breadcrumbs li[aria-current] { display: none; }
+  .sl-breadcrumbs ol { gap: .35rem; }
+  .sl-breadcrumbs li + li::before { margin-right: .35rem; }
+}

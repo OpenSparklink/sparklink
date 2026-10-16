@@ -65,6 +65,12 @@
 | 073首次窗口1：40次业务但trace请求/实际容量误判，原整轮FAIL保留 | `real_device` | `FAIL` |
 | Hi3873U端口2/3：新工具双向十项生命周期与受控撤权屏障 | `real_device` | `PASS` |
 | 型号更换后中止初始1/4矩阵：保留监督器中断与两项子结果 | `real_device` | `FAIL` |
+| c4连续TX首批：双U三项48次真实业务，完整P2d未退出 | `real_device` | `PASS` |
+| c4实际Rust48及C dispatch/enqueue依赖fixture | `offline` | `PASS` |
+| c4生产预算12步69检查及排队/期限/游标限定证明 | `formal_bounded` | `PASS` |
+| c4空USB启动与签名模块，仅虚拟集成 | `virtual_integration` | `PASS` |
+| c4完整P2d：trace/生命周期/公平性/成本仍未证明 | `real_device` | `UNPROVED` |
+| 首批burst缺16轮参数：启动前拒绝，原矩阵FAIL保留 | `real_device` | `FAIL` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1481,10 +1487,10 @@ Down单向primer分开；不完整PDU不计交付。同行仅generation/Ready/le
 用户确认1口换为Hi3873E，其余为U；初始1/4两项release子结果保留，监督器因型号
 更换中断仍FAIL，不补记成完整矩阵。旧四U资格保留原硬件身份；混合四设备、E板级/
 固件适用性另验，不要求人工拔插。环境准备实际12路、共享锁与固定Cargo目录，物理
-回归不并行重构建。P2d现有dirty生产/fixture改动保留，原sanitizer失败未被这轮通过
-覆盖；先修相关离线检查，再新签名源码构建/VM回归。自然RCA和非人工恢复仍开放。
+回归不并行重构建。当时P2d dirty改动未参与bfaa资格；原sanitizer失败保留，后续修复和新源码门禁
+分别见下方P2d首批记录。自然RCA和非人工恢复仍开放。
 
-### P2d Session实际等待与有界连续TX（下一生产批次）
+### P2d Session实际等待与有界连续TX（已实现首批，完整退出未证明）
 
 已有长包合格数据的512次USB交接中，16次无同设备NOCP重叠的P50为20us，496次
 有重叠的P50为15.917ms；这不证明credit因果或调度时间，不能仅据USB日志增加预算。
@@ -1502,3 +1508,16 @@ credit或权限；默认关闭，root VM内启用，无业务载荷/密钥日志
 多通道PDU边界公平、关闭/撤权/Down/原期限和相关已合格数据回归通过；实际Session
 观测与USB/应用证据对应，准确before/after计数和成本齐全才宣称收益。只设本批相关
 不变量门禁，不追加控制面全集；Agent/SSAP、四设备及原恢复/清理继续并行。
+
+[首批记录](../docs/evidence/session-tx-quantum-progress-20261017.json)绑定生产c4、运行包和
+执行2c23：每轮8尝试/4096字节/开始下一操作前2ms，失败收费、阻塞停止按旧进展
+重排；全槽原期限检查及完整PDU边界轮转。实际C dispatch/enqueue sanitizer与Rust48、
+预算CBMC12步69/5负对照、原期限/排队/游标限定检查通过，依赖和边界独立列出。
+固定O实际12路、66.96秒、无warning，五个新签名模块与空USB VM检查通过。
+
+U2/3短包8、2042长包8、16轮burst32，共48次新实机往返与双端USB核对；3原件重放、
+18复制证据负对照拒绝。原Cfixture缺有效socket回调失败、LSan环境失败、artifact/
+staging/prepare调用错误及首次burst缺16轮启动前拒绝保留，不修改原断言或旧结果。
+本批尚未退出：继续新c4 trace/实际USB对应与丢失/成本、受控release/lastfd/dup/Down/
+原期限、多通道PDU边界公平和相关长度矩阵。原bfaa通过不转移；不授性能收益、
+NOCP硬件真值或内核并发证明，不把所有控制面组合加成数据面前置。

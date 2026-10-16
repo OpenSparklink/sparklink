@@ -46,7 +46,7 @@ CBMC301+28/28为有界限定证明；不授实际内核并发、NOCP真值或完
 封存K bfaa/staged U9385、执行33f，U型端口2/3新跑双向十项：release、最后管理fd、
 dup最终管理引用、直接Down、原5秒期限；24次控制前业务、8条单向primer分开计数。
 22项离线、十份重放和100复制证据负对照通过。同行Ready/lease/扫描保持，不授另一
-独立业务链路。P2d dirty改动未参与，不继承这轮资格；没有新增形式化/性能证明。
+独立业务链路。该bfaa结果不含后续c4代码，不能继承为c4资格；本轮未新增形式化/性能证明。
 1口已由用户确认换成Hi3873E，其余为U；旧四U结果只代表原硬件组合。初始E1/U4
 两项release子结果保留，整轮因型号变更中止仍FAIL，不能授完整E/混合四设备资格。
 
@@ -58,6 +58,15 @@ P2c的[限定低负载测量](../docs/evidence/benchmark-window-trace-20261017.j
 已有长包512次USB交接的NOCP重叠是时间关联，不证明credit因果或Session调度耗时。
 当前保留镜像推进为本次准确低负载基线；旧K400/f43等记录保留原身份。未授予稳定
 性能阈值、资源峰值、饱和/公平性、RF、内核并发或自然恢复，完整范围继续INCOMPLETE。
+
+[P2d首批准确范围](../docs/evidence/session-tx-quantum-progress-20261017.json)：K c4d5362已实现
+有界连续TX及默认关闭的被动观测；编译/执行U2c23，U2/3新跑短包8、2042长包8、
+burst32，共48次真实对端校验回复，三份原件重放及18复制证据负对照通过。48Rust与
+实际C sanitizer依赖fixture、CBMC预算12步69性质与5反例/不足展开、原排队/期限/
+游标限定检查分别记录，不授Linux并发或硬件证明。固定O实际12路构建及空USB VM通过。
+原Cfixture空回调和首次burst缺16轮启动前失败保留。**完整P2d退出仍未证明**：新c4
+trace闭包、受控生命周期、通道公平及成本/同配置比较尚缺，不宣称性能收益，也不
+继承bfaa十项生命周期资格。保留旧性能基线身份，所有自然根因和非人工恢复继续开放。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -111,6 +120,12 @@ P2c的[限定低负载测量](../docs/evidence/benchmark-window-trace-20261017.j
 | 073首次窗口1：40次业务但trace请求/实际容量误判，原整轮FAIL保留 | `real_device` | `FAIL` |
 | Hi3873U端口2/3：新工具双向十项生命周期与受控撤权屏障 | `real_device` | `PASS` |
 | 型号更换后中止初始1/4矩阵：保留监督器中断与两项子结果 | `real_device` | `FAIL` |
+| c4连续TX首批：双U三项48次真实业务，完整P2d未退出 | `real_device` | `PASS` |
+| c4实际Rust48及C dispatch/enqueue依赖fixture | `offline` | `PASS` |
+| c4生产预算12步69检查及排队/期限/游标限定证明 | `formal_bounded` | `PASS` |
+| c4空USB启动与签名模块，仅虚拟集成 | `virtual_integration` | `PASS` |
+| c4完整P2d：trace/生命周期/公平性/成本仍未证明 | `real_device` | `UNPROVED` |
+| 首批burst缺16轮参数：启动前拒绝，原矩阵FAIL保留 | `real_device` | `FAIL` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

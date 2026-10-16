@@ -55,6 +55,25 @@ def live_security(stages,paths,infos,mode):
         if level and snapshots[1]['snapshot'][3]==snapshots[0]['snapshot'][3]:raise CaptureError('positive mechanism requires actual new receipt epoch')
     return len(paths)*2
 
+def live_security_wire(row,phase,capture):
+    if not row.get('live_security_required'):return
+    # This gate starts a fresh physical lifetime, before any security exchange.
+    # Complete capture is checked by the existing supervisor. This counts only
+    # valid host-ingress security receipts, not controller truth or RF cipher.
+    for entry in phase['typed_objects']:
+        path=entry['object']['path'];owner=entry['owner'];events=row['events']
+        before=next(v['snapshot'] for v in events if v['stage']=='current_security_before' and v['path']==path)
+        after=next(v['snapshot'] for v in events if v['stage']=='current_security_after' and v['path']==path)
+        receipts=[]
+        for e in capture['native_events']:
+            if (e['bus'],e['device'])!=(owner['bus'],owner['device']) or not row['start_wall_ns']<=e['wall_ns']<=row['end_wall_ns']:continue
+            raw=bytes.fromhex(e['params'])
+            if e['event']==0xe and len(raw)==2:handle=int.from_bytes(raw,'little')
+            elif e['event']==0x11 and len(raw)==4:handle=int.from_bytes(raw[1:3],'little')
+            else:continue
+            if handle==before[2]:receipts.append(e)
+        if before[3]!=1 or after[3]!=1+len(receipts):raise CaptureError('current security epoch must match captured per-link ingress receipts')
+
 def witness(row,phase,daemon,binary=None):
     if row.get('mode','').startswith('cli-'):
         from ws73_security_cli import witness as cli_witness
@@ -235,6 +254,7 @@ def corroborate(control,capture):
     for row,phase,business in zip(rows,phases,control['channel_socket'],strict=True):
         witness(row,phase,control['bus_before'],control.get('slctl'))
         proof=wire(row,phase,capture)
+        live_security_wire(row,phase,capture)
         post_terminal_numeric(row,phase,capture)
         if business['session_start_wall_ns']!=phase['start_wall_ns'] or business['start_wall_ns']<row['end_wall_ns'] or business.get('close_prefix'):raise CaptureError('same physical Session ordinary application delivery must follow Agent procedure')
         result.append(dict(mode=row['mode'],wire=proof,application_phase=business['phase'],

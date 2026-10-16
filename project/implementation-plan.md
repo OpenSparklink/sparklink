@@ -118,6 +118,11 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | Ub873：生产privatebus/ENOTTY、688/689工具及38实际证据负对照 | `offline` | `PASS` |
 | 历史私有重放输出元数据错误：原FAIL保留 | `offline` | `FAIL` |
 | 安全等级/可撤销Grant/Bond、数字CLI与完整生命周期/恢复：仍缺 | `real_device` | `UNPROVED` |
+| K6861/U13bb：32当前机制快照、48真实回复及两项长度保持 | `real_device` | `PASS` |
+| 34状态/51入口/14link、跨语言与31实际证据负对照，准确13bb CI | `offline` | `PASS` |
+| 实际安装/取消/当前机制Kani：unsupported，未证明 | `formal_bounded` | `UNPROVED` |
+| 历史私有准备/见证所有权/沙箱失败：原FAIL保留 | `offline` | `FAIL` |
+| 实时失效矩阵、安全Grant/SSAP消费及完整原范围：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1732,3 +1737,36 @@ CLI数字提示实际操作、七长度/十生命周期、四设备及自然RCA/
 [数字Agent维护回执](../docs/evidence/security-numeric-agent-maintenance-20261017.json)记录
 四项原issues读回OPEN、四条限定记录/102材料、五来源负对照及27资格检查，
 115文档严格构建；准确Ub873完整CI与后处理59分别绑定，不将文档提交当编译身份。
+
+
+### 当前批次：物理 Session 实时安全快照（实现中，未授新资格）
+
+数字 Agent 限定退出之后，先接通同一 Session 的当前机制事实，再由可撤销 Grant
+与唯一 SSAP Engine 消费。原操作终态与当前安全状态分离；Host 为每条物理连接在
+安全 receipt 进入普通 RX 队列之前递增独立 revision，避免 worker 延迟或丢失该队列
+记录仍暴露旧正向快照。不会在 USB callback 获取 Session mutex 或执行完整协议。
+快照必须同时看到实际 proof、显式数字确认（数字方法）、自身安装接受和0011，
+并在 Host→gate→owner 锁下一致核对 generation/lifetime/管理 epoch/revision。
+关闭、失败、rekey、撤权、Down/退休均不能由迟到 on 复活。无新 Host/Engine。
+
+本批门禁：严格内核构建、跨语言48字节未发布 ABI、生产转换/实际 ingress 回归与
+适用有界安装组合检查；准确新提交 VM 内双U的数字/无MITM正向快照、撤权/Down
+及同行业务保持。未通过前保持“实现中”，旧K323/Ub873资格不继承。受保护 Grant
+准入和真实 SSAP 权限接线为后续消费端，不弱化现有 EOPNOTSUPP 或 CPCD 检查。
+receipt/revision只解决软件队列屏障；0011/Complete仅handle的固件归属、物理复用
+排空屏障和真实无线加密仍单列待验证。完整范围与其他并行门禁不变。
+
+
+本批[准确新机制结果](../docs/evidence/security-live-state-real-20261017.json)：
+K6861/U13bb/tool13bb/post6c8，六VM/48真实业务回复/16边界拒绝；四安全场景各两
+连接角色，32份当前快照与实际receipt逐连接计数一致。旧请求成功和当前cipher状态
+已分离，不以策略批准或USB成功替代。原件重放/31证据负对照、严格构建与跨语言
+契约分别记录；Kani因unsupported仍未证明。原失败、make警告及受信任假设保留。
+
+**核心快照纵向链路已取得限定正向实机证据，当前批完整退出尚未达到。** 下一步直接
+补实时release/最终fd/dup/Down/原期限与实际授权拒绝，再接安全epoch绑定的不可变
+Grant：软件准入、实际USB提交和RX交付处核对当前状态；撤权不能抹去已开始物理义务。
+不要在持有C Session锁时重新取得Host锁造成倒序；复用现有Runtime→Session通知、
+callback/kref、credit和Ticket。随后供唯一SSAP Engine执行认证/本地授权/CPCD，
+protected未接通前保持拒绝。完整长度/多通道/四设备、性能、恢复和其他原验收继续
+并行，不等待控制面竞争全集，不因本批快照或形式化局部结果关闭整项issue。

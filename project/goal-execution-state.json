@@ -667,12 +667,12 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "ADR0006 P0 architecture/contracts/issues, then P1 credible real socket baseline before P2 Session event-driven optimization; preserve ongoing four-device tools and existing S0-S6 parallel scope.",
-    "Quality provenance batch first; then actual Agent/method/caller positive/reject/loss on existing installed relay path. No duplicate Engine; installation subqualification already retained at exact8cbf/2d81/575.",
-    "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
-    "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
-    "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
-    "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
+    "K6861/U13bb/tool13bb/post6c scopedcurrentmechanism:6VM/32snapshots/48peerRT,positivelevel1/2 andnative-admitted reject/expiry0. Nextlivequeryrelease/finalfd/dup/Down/originaldeadline andprotectedGrantactualadmission/submit/RXthenSSAP;not cachedoperation-as-security.",
+    "Currentartifact retainsselected249/2042,notfullnewsevenlength/tenlifecycle. Oldsourcequalificationskeepexactidentities;multichannel/fourdevice/fairness/performancecontinueparallel,Eport1excluded.",
+    "SameuniqueSession/credit/Ticket/RuntimeGrant;joinphysicalobligations onauthorloss;authenticatedmechanism andlocalappauthorization distinct. No additionalHost/Engine.",
+    "Parallel exactnumericCLI/humanoriginalbudget andownerloss/inflight;no allcontrolcompetition prerequisite.",
+    "Parallel naturalRCA/nonmanualrecovery,partial-init/drain/eventmigration/old-code,performance andfourdevice;no QMP/manual/hub/injection-as-naturalproof.",
+    "FullS0-S6/19WP/10FV/12DG/originalissues retained;UserHostP4 andDiataxisindependent."
   ],
   "architecture_contract_adoption": "docs/decisions/0004-application-ownership-and-delivery.md",
   "proof_policy": {
@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T22:17:48Z",
+  "updated_at_utc": "2026-10-16T22:49:36Z",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -781,20 +781,28 @@
       "report": "docs/evidence/security-numeric-mechanism-real-20261017.json",
       "architecture": "Existingdrivers/net/slkd/uniqueSession/credit/Ticket/Grant;VM-only;UserHost P4",
       "parallel": "Fullnewsevenlength/tenlifecycle/installcancelcomposition,data/credit/fairness/resources,SSAP/fourdevice,naturalRCA/nonmanualrecovery remainOPEN;noallcontrolprerequisite"
-    }
+    },
+    "next_slices_before_live_state_20261017": [
+      "ADR0006 P0 architecture/contracts/issues, then P1 credible real socket baseline before P2 Session event-driven optimization; preserve ongoing four-device tools and existing S0-S6 parallel scope.",
+      "Quality provenance batch first; then actual Agent/method/caller positive/reject/loss on existing installed relay path. No duplicate Engine; installation subqualification already retained at exact8cbf/2d81/575.",
+      "Connect role-bound1c03/1c05 actual key installation and matching0011 with Agent/peer proof/security levels; real positive encrypted business/remote CCC, sole userspace SSAP notification/indication TX and bounded ACK ledger.",
+      "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
+      "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
+      "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
+    ]
   },
-  "execution_phase": "ACTIVE_INSTALLED_SECURITY_GRADE_AND_REVOCABLE_GRANT_THEN_SSAP_WITH_DATA_PARALLEL",
+  "execution_phase": "ACTIVE_LIVE_MECHANISM_CORE_REAL_PASS_INVALIDATION_AND_SECURITY_GRANT_THEN_SSAP",
   "next_resume_tasks": [
-    "NumericAgent boundedmechanism gate exited K323/Ub873/toolb873:6VM/48peerRT,12actualnumericcallbacks;nextactualinstalledperSessionsecuritygrade/revocableGrant then soleSSAPpermissions. NumericCLI/humanbudget andfullnumericownerloss/cancel/Down/inflight matrix remainparallelOPEN.",
-    "NewU6166 qualifies only namedcancel/defaultapprove/249boundary/2042 slices;oldU42sevenlength/lifecycle/matchedperformance retainoldidentities. Continue dynamicmultichannel/fourdevice business/datafairness;no inheritance to Eport1.",
+    "K6861/U13bb/tool13bb/post6c scopedcurrentmechanism:6VM/32snapshots/48peerRT,positivelevel1/2 andnative-admitted reject/expiry0. Nextlivequeryrelease/finalfd/dup/Down/originaldeadline andprotectedGrantactualadmission/submit/RXthenSSAP;not cachedoperation-as-security.",
+    "Currentartifact retainsselected249/2042,notfullnewsevenlength/tenlifecycle. Oldsourcequalificationskeepexactidentities;multichannel/fourdevice/fairness/performancecontinueparallel,Eport1excluded.",
     "Parallel matched sameKernelobservercost,actualworker/queue/credit/URB/resource peaks andsegmented timing/actualPHY parameters;RX108544gaps do not justify changingmultipleURBs.",
     "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
     "NOCPtruth/late/duplicate,reuse/callbackdrain,naturalstartup/re-enumeration/disappearance RCA andnonmanualrecovery remainOPEN."
   ],
   "issue_sync_status": "K7/K19/U5/U8 numericAgentmechanism andexactb873CI updated/readbackOPEN;originalscopebodiesunchanged",
   "issue_sync_receipt": "docs/evidence/security-numeric-agent-maintenance-20261017.json",
-  "previous_goal_turn_classification": "progress:K323/U862 numericmechanism real9VM/48peerRT,CI88 complete,135materials and54mutants,issueskeptOPEN",
-  "current_goal_turn_classification": "progress:productionbroker/Agent/CLI b873,6realVM/48peerRT,275Rust/688executiontools/689postprocessortools,completeb873CI;6replays/38mutants withnegativeauditthroughDown;fullscopeOPEN",
+  "previous_goal_turn_classification": "progress:two signedregistry/maintenance commits,pushedexact9dbc;fourissueOPENreadbacks andstrict115docs verified",
+  "current_goal_turn_classification": "progress:signedK6861,U691/13bb/post6c;6realVM/32currentsnapshots/48peerRT,31copiedactualnegatives;formalunsupportedretained;Grant/fullscopeOPEN",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1479,42 +1487,64 @@
       "numeric-agent-b873-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "live-security-13bb-real": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "live-security-13bb-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "live-security-13bb-formal": {
+        "level": "formal_bounded",
+        "result": "UNPROVED"
+      },
+      "live-security-13bb-failed": {
+        "level": "offline",
+        "result": "FAIL"
+      },
+      "live-security-13bb-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "wp09-numeric-Agent-real-not-live-security-grade-or-trusted-grant",
-      "production_behavior": "ExistingRegistry/Entry/physicalSession/credit/Ticket/ManagedFile;frozenmethod/epoch,initialauthorization thenrealcodeconfirmation andjoinedoriginalcleanup,no secondEngine",
+      "id": "wp09-live-Session-mechanism-partial-no-protected-Grant",
+      "production_behavior": "UniquephysicalSession currentsnapshot separatedfromhistoricaloperation;Hostperlinkreceiptbarrier beforeRXqueue,typedkernel/Rust/C/Python/DBus,noEngine",
       "exit": [
-        "K323/Ub873/toolb873,U2/3:3numericAgent+3retainedVM,48actualpeerRT,16boundaryrefusals;12actualnumericcallbacks,40relay/oppositeRX,4installs",
-        "275Rust/688frozenexecutiontools/689postprocessortools,6phaseexactreplays/38mutants includingnegativeauditthroughactualDown;strictdocs/exactb873completeCI,no newformalproof",
-        "NumericCLIphysical/humanbudget,actualsecuritygrade/revocableGrant/Bond,fullnumericcallbackloss/cancel/Down/inflight andfullretainedmatrix remainOPEN"
+        "K6861/U13bb/tool13bb/post6c8:6VM/32snapshots/48actualpeerRT/16boundaryrefusals,selected249/2042",
+        "Exact13bbCI/offline/31actualmutants and4scenariooriginalreplays;Kaniunsupported remainsUNPROVED",
+        "FullbatchexitNOTmet:livequeryrelease/finalfd/dup/Down/rekey/unknown,nativeGrantactualsubmit/RXandSSAPpermissions/fulloriginalscopeOPEN"
       ],
-      "next": "Agentboundedmechanismexitmet;actualinstalledsecuritygrade/revocableGrant thensoleSSAPpermissions,data/fairness/fourdevice andnaturalRCA/nonmanualrecovery parallel;noallcontrolprerequisite"
+      "next": "LiveinvalidationactualVM andsecurityepoch-boundGrant atoriginaladmission/Ticket/USB/RX,then soleSSAP;not allcontrolprerequisite;data/fourdevice/performance/naturalRCA parallel"
     }
   },
   "agent_workstream": {
-    "state": "SelectedG in-flight originalrequest cancel andlateacceptance two physicalroles scopedPASS;3defaultretainedgatesPASS,32peerRTtotal;2originaltoolFAILretained. Fulllease/fd/Down/deadline/auth/Bond andpostlatephysicaldrain unproved.",
-    "test_scope": "See agent-policy-offline-16175; fixtures and actual dependencies in structured report",
+    "state": "NumericAgent pluscurrentSessionmechanism core scopedrealPASS;liveinvalidationmatrix/nativeGrant/SSAPsecurityconsumers remainOPEN",
+    "test_scope": "Exact live-state andnumericAgent reports/structured records;production fixtures,privatebus,actualdevices andformalUNPROVED scopes distinguished",
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
     "real": "Oldsixmodes andCLI qualifiers retained; newK14d9/U6166 originalGrequestinstall-cancel2roles+3selectedretainedgates32peerRT. Snapshotafterlate iscached, notnewnativephysicaldrain. Fullpermissions/auth/Bond/installcomposition incomplete.",
-    "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
+    "formal": "NOT_PROVEN_UNSUPPORTED innewactualinstallationcomposition;originalproofs retainidentities",
     "next": "Advance authenticatedsecurity/localauthorization and soleuserspaceSSAP vertical withexisting Session/relay/credit/Ticket; complete directpostterminalphysical-obligation observation andlease/release/finalfd/dup/Down/deadline installmatrix inparallel, not anallcontrolraceprerequisite.",
-    "offline_record": "agent-policy-offline-16175",
+    "offline_record": "live-security-13bb-offline",
     "first_failures": [
       "preparev1 wrongsmokemanifestdirectory/noVM",
       "actualv1 obsoleteprobe objectpath beforeAgent",
       "actualv2 realwire/app observations but supervisor1 and PASSmanifest mismatch; overallFAIL retained"
     ],
-    "real_record": "agent-real6-db6e333",
+    "real_record": "live-security-13bb-real",
     "real_records": [
       "agent-real6-db6e333",
-      "agent-data11-db6e333"
+      "agent-data11-db6e333",
+      "numeric-agent-b873-real",
+      "live-security-13bb-real"
     ],
     "retained_data_record": "agent-data11-db6e333",
     "cli_real_report": "docs/evidence/security-cli-real-progress-20261016.json",
     "cli_issues_receipt": "docs/evidence/security-cli-issues-20261016.json",
-    "current_validation": "K14d9/U6166/QEMUdea80, VM-onlyU2/3; twoGcancel+oppositeTnativecomplete,32actualpeerRT withselecteddefaultapprove/249boundary/2042;not allhistorical matrix qualification.",
+    "current_validation": "CurrentselectedK6861/U13bb/tool13bb/post6c snapshot report;6VM/32snapshots/48peerRT,notfullauth/Grant/Bond/lifecycle",
     "cli_retained_report": "docs/evidence/security-cli-retained-data-20261016.json",
     "install_reply_barrier": {
       "status": "REAL_ORIGINAL_REQUEST_CANCEL_SLICE_EXIT_MET_FULL_COMPOSITION_OPEN",
@@ -1530,7 +1560,11 @@
       "current_qualified_scope": "Actualheldinstallacceptance, originalrequest nativecancel snapshotwhileheld, oldacceptdelivered anddaemonterminalimmutable, oppositeTnativecomplete andsamebasicSessionpeerbusiness;not postreleasekernel/debt/drain/keywipe/Grantrevocationproof.",
       "offline_maintenance_report": "docs/evidence/security-install-reply-barrier-maintenance-20261017.json",
       "maintenance_report": "docs/evidence/security-install-cancel-maintenance-20261017.json"
-    }
+    },
+    "historical_install_cancel_validation": "K14d9/U6166/QEMUdea80, VM-onlyU2/3; twoGcancel+oppositeTnativecomplete,32actualpeerRT withselecteddefaultapprove/249boundary/2042;not allhistorical matrix qualification.",
+    "current_report": "docs/evidence/security-live-state-real-20261017.json",
+    "historical_real_record": "agent-real6-db6e333",
+    "historical_offline_record": "agent-policy-offline-16175"
   },
   "documentation_remediation": {
     "scope": "DQ1–DQ5 in canonical implementation plan; parallel to protocol work, no new goal or gate on all documentation",
@@ -1648,10 +1682,10 @@
   },
   "next_real_vertical_slice": {
     "work_package": "WP09/WP08,WP06/07/16/17 parallel",
-    "state": "AGENT_MECHANISM_REAL_PASS_LIVE_SECURITY_GRADE_AND_GRANT_MISSING",
-    "behavior": "ReuseoneactualphysicalSession crypto/installstate andb873Agent confirmation;livegeneration/lifetime/epoch-boundsecurity observation andrevocableGrant,then soleSSAPpermission checks",
-    "first_exit": "Nounauthenticatedpromotion;actualconfirmedproof+installation/cipherandvalidatedidentity required;off/Down/revoke/unknown failclosed;no cachedoperation-as-livegrade. ExplicitNOCP/reuse/firmwareassumptions andrelatedactualVMpositive/negative+peerbusiness gates.",
-    "report": "docs/evidence/security-numeric-agent-real-20261017.json",
+    "state": "CURRENT_MECHANISM_REAL_PASS_LIVE_INVALIDATION_AND_PROTECTED_GRANT_PENDING",
+    "behavior": "ReuseactualperSessionsecuritysnapshot+perlinkingressrevision;kernelimmutableGrantboundtosecurityepoch atsoftwareadmission/actualTicketUSBsubmission/RX,then soleSSAPpermissions withoutCPCDweakening",
+    "first_exit": "ActualVMlivequeryrevoke/Down/refdenialandordinaryprotectedchannelrealpeerreplies;no postrevocationnewsubmit,oldphysicalobligationsremain,staleepochcannotrevive;relatedpure/lockingmappingandoriginaldatagates,noallcontrolprerequisite",
+    "report": "docs/evidence/security-live-state-real-20261017.json",
     "parallel": "NumericCLI/humanbudget andcallbackloss/cancel/Down/inflight;fullnewsevenlength/tenlifecycle,fairness/resources,fourdevice,naturalRCA/nonmanualrecovery remainOPEN,noallcontrolprerequisite",
     "architecture": "Existingdrivers/net/slkd/Session/Grant/credit/Ticket;VM-only,U2/3,E1excluded,UserHostP4"
   },
@@ -2388,5 +2422,38 @@
     "post_processing_tools": "59c0cabb6848f9e46e02fdc383f1d722e1d031ca",
     "maintenance_report": "docs/evidence/security-numeric-agent-maintenance-20261017.json",
     "ci_source": "b87318bbfb5897ed5b085a30a266a8f8b26afe4f"
+  },
+  "live_security_batch": {
+    "status": "CORE_CURRENT_MECHANISM_SCOPED_REAL_PASS_INVALIDATION_AND_GRANT_OPEN",
+    "production_behavior": "ExistingphysicalSession currentmechanism snapshot;Hostperlinksecurityreceiptrevision publishedbeforeordinaryRXqueue;originaloperationterminalseparate",
+    "kernel_changes": "48byte protectedd6 query;perlinkrevision;actualSessionproof/acceptance/cipherconjunction;withdraw/off/rekey/Down/retire failclosed",
+    "exit": "Strictkernel/ABI/puretransition andboundedproofchecks;exactnewbundleU2/3 actualnumeric andnoMITM snapshots;revoke/Down/peerisolation andoriginaldataretained",
+    "remaining": "protectedGrantconsumptionandnativeSSAPpermissionenforcement followthisstate;no cachedoperation-as-livegrade;fullS0-S6/19WP/10FV/12DG unchanged",
+    "hardware": "VM-onlyU2/3;Eport1excluded",
+    "assumptions": "SDK111 handle-only0011 andComplete association/reusebarrier/hardwareciphertruth remain unproved;receiptbarrier handles softwarequeue lag/loss,not unobservedphysicalevents",
+    "compiled_kernel": "6861a5bc955b3e7899ce0e196ed1e9e2fcb37b26",
+    "compiled_userspace": "13bb050595c597b7e38c8067618ca85a817f1617",
+    "executed_tools": "13bb050595c597b7e38c8067618ca85a817f1617",
+    "post_processing_tools": "6c8b2548ca72a5e2c391a69015335785a95a197c",
+    "formal": "NOT_PROVEN_UNSUPPORTED:Kani0.68 caller_location/foreignfunction warnings retained despite2030checks/exit0",
+    "physical_scope": "Four actual securityscenarios/tworoles/32snapshots plusselected249/2042;liveQueryrelease/finalfd/dup/Down/rekey/unknown andprotectedGrant/SSAP missing",
+    "report": "docs/evidence/security-live-state-real-20261017.json",
+    "bounds": {
+      "real_vm_success": 6,
+      "connection_role_phases": 12,
+      "security_role_phases": 8,
+      "current_security_snapshots": 32,
+      "peer_business_round_trips": 48,
+      "boundary_rejections": 16,
+      "relay_submits": 58,
+      "opposite_receipts": 58,
+      "actual_installations": 8,
+      "workspace_tests_at691": 278,
+      "frozen_tool_tests": 691,
+      "postprocessor_tool_tests": 692,
+      "python_CABI_tests": 42,
+      "copied_actual_evidence_negatives": 31
+    },
+    "full_batch_exit_achieved": false
   }
 }

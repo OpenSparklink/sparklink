@@ -70,7 +70,7 @@ facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合�
 | BeginReferenceSecurity | `t request_id, s method` → 无 | 开始异步策略流程；不是控制器成功 |
 | GetReferenceSecurityResult | `t request_id` → 观察结构 | 策略终态和原生状态分别返回，不读取密钥 |
 | CancelReferenceSecurity | `t request_id` → `b` | 请求撤销；不是硬件排空确认 |
-| GetSecurityState | 无 → `(ttqtuuuyy)` | 当前内核机制快照；实现待新镜像实机验收，不是授权或 Bond |
+| GetSecurityState | 无 → `(ttqtuuuyy)` | 当前内核机制快照；限定新镜像范围见下，不是授权或 Bond |
 
 Agent 的 `org.sparklink.Agent.AuthorizeReferenceSecurity` 接收一个结构参数：
 `(s connection_path, t request_id, t generation, t lifetime, q handle, y role,
@@ -403,7 +403,7 @@ WORK_RUNNING。队列合计是保守的瞬时观察，不能推导未来空闲�
 编译布局。32 位运行和 compat 系统调用仍待 VM 验收，不由布局检查升级为通过。
 
 
-### 当前连接安全快照（实现中，实机资格待取得）
+### 当前连接安全快照（限定机制实机通过，Grant未接通）
 
 `org.sparklink.Connection.GetSecurityState()`返回单一结构，依次为generation、
 lifetime、handle、security_epoch、profile、level、flags、method、key_size。
@@ -433,4 +433,6 @@ security_epoch是本物理lifetime的接收revision：安全receipt在普通队�
 快照只描述读取线性化时刻的机制事实，不是后续USB提交授权。protected Grant仍
 拒绝；未来消费端必须在实际准入/提交时重新检查安全epoch及全部原权限。
 SDK111 handle-only0011/Complete的物理复用屏障、固件真实性及无线加密仍有未证明
-假设；USB写入、NOCP或日志不代替对端业务校验。本批尚未授新实机资格。
+假设；USB写入、NOCP或日志不代替对端业务校验。准确K6861/U13bb的批准/拒绝/原期限
+及无MITM快照限定实机范围见[当前资格](../../project/current-capabilities.md)；实时撤权/
+Down等完整失效矩阵及protected Grant尚未取得资格。

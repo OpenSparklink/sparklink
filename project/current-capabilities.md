@@ -4,6 +4,25 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
+[实时 Session 机制快照限定结果](../docs/evidence/security-live-state-real-20261017.json)：
+准确K6861/U13bb、执行13bb、后处理6c8。新增d6及GetSecurityState在唯一物理
+Session读取当前机制，原操作终态保留；每lifetime接收revision在普通RX队列前发布。
+数字批准level2、无MITM批准level1、真实native准入后的拒绝/原期限迟到level0，
+两角色共32份快照，与独立捕获的逐连接receipt计数一致；6VM共48次实际对端校验
+回复、16边界拒绝，包含249/2042保持。58次relay相反端接收匹配、8份实际安装/0011。
+
+34生产状态/51入口fixture/14link/4权限契约、691/692执行及后处理工具、42实际共享库
+Python/C ABI（32位仅编译布局）、278项Rust（691提交）与准确13bb完整CI分别记录；
+四场景原件重放、31复制真实证据负对照通过，115严格文档通过。内核0编译器警告，
+保留1条子make jobserver回退警告；主构建12路。Kani2030检查虽无失败，因unsupported
+警告仍为**未证明**，不以退出码升级PASS。私有准备/所有权编译/沙箱失败原件保留。
+
+这是当前机制事实的限定实机资格；不是命名身份、可信Grant、Bond或独立RF加密证明。
+实时release/最终fd/dup/Down/rekey/未知及原生权限矩阵、受保护Grant在实际提交处的
+安全epoch验证、SSAP权限消费和完整新七长度/十生命周期仍缺。protected继续拒绝。
+固件handle-only0011/Complete、物理复用/drain、自然RCA及非人工恢复继续OPEN；
+旧资格不继承为当前整树资格。
+
 [数字Agent生产接线限定结果](../docs/evidence/security-numeric-agent-real-20261017.json)：
 准确K323/Ub873、执行b873、后处理59c；普通控制组用户在实际guest system bus完成初始批准及
 真实数字确认。批准、拒绝、原期限迟到各两连接角色，加默认方法/249/2042保持，
@@ -251,6 +270,11 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | Ub873：生产privatebus/ENOTTY、688/689工具及38实际证据负对照 | `offline` | `PASS` |
 | 历史私有重放输出元数据错误：原FAIL保留 | `offline` | `FAIL` |
 | 安全等级/可撤销Grant/Bond、数字CLI与完整生命周期/恢复：仍缺 | `real_device` | `UNPROVED` |
+| K6861/U13bb：32当前机制快照、48真实回复及两项长度保持 | `real_device` | `PASS` |
+| 34状态/51入口/14link、跨语言与31实际证据负对照，准确13bb CI | `offline` | `PASS` |
+| 实际安装/取消/当前机制Kani：unsupported，未证明 | `formal_bounded` | `UNPROVED` |
+| 历史私有准备/见证所有权/沙箱失败：原FAIL保留 | `offline` | `FAIL` |
+| 实时失效矩阵、安全Grant/SSAP消费及完整原范围：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

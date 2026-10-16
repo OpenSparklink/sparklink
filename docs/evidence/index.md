@@ -7,6 +7,11 @@
 当前已纳入范围以记录/生成摘要为准；其他历史报告未迁移不等于丢失或已校验。
 公开metadata检查不是私有原件核对，本机原件核对不是重放或新镜像资格。
 
+[当前 Session 机制、接收屏障与真实快照](security-live-state-real-20261017.json)：
+K6861/U13bb/tool13bb/post6c8；6VM/48真实回复/16拒绝，四安全场景32快照与逐连接
+receipt计数一致。四原件场景重放、31证据负对照与准确CI分别记录；Kaniunsupported
+仍未证明。实时撤权/Down矩阵、安全Grant/SSAP消费与完整原范围继续OPEN。
+
 [数字Agent两阶段原请求与真实交付](security-numeric-agent-real-20261017.json)：
 K323/Ub873/toolb873，6VM/48业务回复/16拒绝；实际系统总线12次数字callback，
 拒绝/迟到发生于真实native准入后，未产生proof/install。六角色重放与18实际证据

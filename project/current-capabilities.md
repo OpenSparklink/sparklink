@@ -4,6 +4,10 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
+数字Agent的两阶段broker和显式CLI确认正在接入，当前仅代码/离线状态；新用户态
+尚未取得本批实机资格。原K323/U862仅证明内核机制和自动见证，不能升级为新Agent、
+可信Grant或Bond资格。准确新artifact验收后另行登记。
+
 [数字比较机制限定实机结果](../docs/evidence/security-numeric-mechanism-real-20261017.json)：
 编译K323668c/U862b95b、执行862、后处理f695；U2/3两角色批准/拒绝/原期限迟到各两项，
 加默认无MITM Agent、249边界和2042长包，共9VM/48次真实对端校验回复、16边界拒绝。

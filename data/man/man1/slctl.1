@@ -84,14 +84,17 @@ completion accuracy or safe handle reuse. This unreleased API has no compatibili
 promise; consult the exact artifact qualification.
 .SS Explicit Reference Security
 .TP
-.B agent
-Run one foreground, explicit human Agent for the selected controller. Only
-sdk111-no-mitm is supported; there is no automatic approval. Enter approve or
-reject followed by the exact current request id before its original deadline.
+.BI agent " [method]"
+Run one foreground, explicit human Agent for the selected controller. Method
+is sdk111-no-mitm (default) or sdk111-numeric-comparison; no automatic approval.
+Enter approve or reject followed by the exact current request id for initial
+consent. Numeric comparison then requires confirm, request id and the exact
+displayed six-digit code, or reject with that id. Compare with the intended peer.
+Both callbacks share the original deadline; no renewal is allowed.
 Quit, EOF and Ctrl-C unregister only this Agent, without stopping the controller.
 A pollable terminal or pipe is required; input lines are limited to 512 bytes.
 .TP
-.BI security-request " connection-path [timeout-ms]"
+.BI security-request " connection-path [timeout-ms] [method]"
 Allocate, begin and observe one author-owned request on the same bus connection.
 Timeout is 1 through 5000 milliseconds, default 5000, including policy waiting;
 approval never renews it. Start the passive T request before active G, with
@@ -101,8 +104,11 @@ These experimental commands require management/Agent permission, not just an
 application channel grant. Exact CLI real-device qualifications are listed in project/current-capabilities.md;
 they do not imply complete security or deployment support.
 .PP
-Success only reports the limited unauthenticated SDK111 reference mechanism,
-not authenticated peer identity, a trusted Grant, Bond or application delivery.
+Success reports the selected limited SDK111 mechanism and observed installation.
+The no-MITM method is unauthenticated. Numeric comparison needs separate local
+confirmation and real peer proof; neither operation grants a trusted channel,
+Bond or application delivery. The five-second budget includes both prompts;
+general human pairing and numeric CLI physical qualification remain separate.
 Rejection, timeout, ownership loss and incomplete native results exit nonzero.
 Legacy Pair/Encrypt do not invoke this workflow.
 .SS SSAP Services

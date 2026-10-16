@@ -84,8 +84,14 @@ mean stopping the controller. Old fd, handle or address cannot select a new life
 .SS Explicit limited security
 org.sparklink.Security is at the adapter's /security child.
 RegisterAgent(o path, s method) and UnregisterAgent(o path) manage one explicit
-Agent unique bus owner for that controller. The only current method is
-sdk111-no-mitm; default policy does not approve automatically.
+Agent unique bus owner for that controller. Methods are sdk111-no-mitm and
+sdk111-numeric-comparison; no fallback or automatic approval. The original
+Agent epoch and method are frozen at allocation. Numeric mode first requests
+authorization to start, then ConfirmNumericComparison with the original prompt
+and live u32 code. False rejects; timeout/loss cancels only the original request.
+A started native ioctl is joined before cleanup; no controller release or
+physical-debt erasure is implied. Trusted Grant, Bond and global Pair remain
+unsupported.
 .PP
 On org.sparklink.Connection, AllocateReferenceSecurity(u timeout_ms) returns
 a caller-bound t request_id. The original 1-5000 ms CLOCK_MONOTONIC deadline

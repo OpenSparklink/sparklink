@@ -9,7 +9,7 @@ import time
 from ws73_capture import CaptureError
 from ws73_security_capabilities import OFFER
 
-MODES=('approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel')
+MODES=('approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel','numeric-approve','numeric-reject','numeric-late')
 
 def execute(run,phase):
     mode=run.args.security_agent
@@ -47,6 +47,8 @@ def witness(row,phase,daemon,binary=None):
     expected={'probe_identity':1,'allocated':2,'agent_callback':2,'probe_complete':1,
               'caller_loss_cleanup':2} if row['mode']=='caller-exit' else {
                   'probe_identity':1,'allocated':2,'agent_callback':2,'probe_complete':1,'policy_result':2}
+    numeric=row['mode'].startswith('numeric-')
+    if numeric:expected.update(numeric_callback=2,numeric_decision=2)
     if row['mode']=='install-cancel':expected.update(install_barrier=2,install_before_cancel=1,install_cancelled=1,install_terminal_stable=1)
     if {key:len(value) for key,value in stages.items()}!=expected:raise CaptureError('missing/duplicate/unexpected Agent witness stages')
     identity=stages['probe_identity'][0]
@@ -66,7 +68,7 @@ def witness(row,phase,daemon,binary=None):
         callback=[v for v in stages['agent_callback'] if v['prompt'][0]==path]
         if len(allocation)!=1 or len(callback)!=1:raise CaptureError('one original allocation and callback per controller')
         allocation=allocation[0];callback=callback[0]
-        expected_prompt=[path,allocation['request_id'],*info[:2],info[2],info[3],info[4],info[5], 'sdk111-no-mitm',allocation['deadline_monotonic_ns']]
+        expected_prompt=[path,allocation['request_id'],*info[:2],info[2],info[3],info[4],info[5], 'sdk111-numeric-comparison' if numeric else 'sdk111-no-mitm',allocation['deadline_monotonic_ns']]
         if (callback['prompt']!=expected_prompt or callback['daemon_owner']!=daemon['owner'] or not allocation['unknown_begin_refused']
                 or not row['start_wall_ns']<=allocation['start_wall_ns']<=callback['wall_ns']<=complete['wall_ns']<=row['end_wall_ns']):raise CaptureError('actual request/method/original deadline callback linkage required')
         if row['mode']=='caller-exit':
@@ -76,9 +78,20 @@ def witness(row,phase,daemon,binary=None):
             result=[v for v in stages['policy_result'] if v['path']==path]
             if len(result)!=1:raise CaptureError('one terminal policy observation required')
             result=result[0]
-            phase_value={'approve':4,'reject':5,'timeout':7,'cancel':6,'agent-exit':10,'install-cancel':6 if obj['role']==0 else 4}[row['mode']]
+            phase_value={'approve':4,'reject':5,'timeout':7,'cancel':6,'agent-exit':10,'install-cancel':6 if obj['role']==0 else 4,'numeric-approve':4,'numeric-reject':5,'numeric-late':7}[row['mode']]
             if any(result[k]!=allocation[k] for k in ['request_id','generation','lifetime','deadline_monotonic_ns']) or result['phase']!=phase_value:raise CaptureError('old identity/terminal state mismatch')
-            if row['mode']=='install-cancel' and obj['role']==0:
+            if numeric:
+                callbacks=[v for v in stages['numeric_callback'] if v['prompt'][0]==path]
+                decisions=[v for v in stages['numeric_decision'] if v['prompt'][0]==path]
+                if len(callbacks)!=1 or len(decisions)!=1:raise CaptureError('one live original numeric callback and decision required')
+                cb,dec=callbacks[0],decisions[0]
+                if cb['prompt']!=expected_prompt or dec['prompt']!=expected_prompt or cb['daemon_owner']!=daemon['owner'] or type(cb['code']) is not int or not 0<=cb['code']<1_000_000 or dec['code']!=cb['code'] or not callback['wall_ns']<=cb['wall_ns']<=dec['wall_ns']<=result['wall_ns']<=complete['wall_ns']:raise CaptureError('actual numeric code/decision/original author/terminal causal chain required')
+                late=row['mode']=='numeric-late'
+                if (dec['accepted'] is not (row['mode']!='numeric-reject') or not late and dec['reply_delivered'] is not True
+                        or (dec['monotonic_ns']>=allocation['deadline_monotonic_ns'])!=late):raise CaptureError('explicit confirmation and original nanosecond deadline required')
+                wanted=(11,0,119) if row['mode']=='numeric-approve' else (5,-13,7) if row['mode']=='numeric-reject' else (7,-110,7)
+                if not result['agent_approved'] or not result['native_admitted'] or (result['kernel_state'],result['kernel_error'],result['kernel_flags'])!=wanted or result['kernel_status'] or result['cleanup_error'] or result['error']!=(0 if row['mode']=='numeric-approve' else -110 if late else -125):raise CaptureError('numeric policy decision does not replace real original native terminal')
+            elif row['mode']=='install-cancel' and obj['role']==0:
                 if not result['agent_approved'] or not result['native_admitted'] or result['kernel_state']!=6 or result['cleanup_error']:
                     raise CaptureError('original native in-flight cancellation must settle')
                 before=stages['install_before_cancel'][0];withdrawn=stages['install_cancelled'][0];late=stages['install_terminal_stable'][0]
@@ -95,33 +108,40 @@ def witness(row,phase,daemon,binary=None):
 
 def wire(row,phase,capture):
     low,high=row['start_wall_ns'],row['end_wall_ns']
-    approved=row['mode'] in ['approve','cli-approve','install-cancel']
+    numeric=row['mode'].startswith('numeric-')
+    approved=row['mode'] in ['approve','cli-approve','install-cancel','numeric-approve']
+    active=approved or numeric
+    order=([0x134,0x135,0x136,0x137,0x13c,0x139]+([0x141,0x142] if approved else [])) if numeric else [0x134,0x135,0x136,0x137,0x138,0x139,0x13a,0x141,0x142]
+    offer=bytes([1,0,4,16,0,2,2,2,2,0]) if numeric else OFFER
     received={};sent={};completed={};installs=[];keys=[];install_commands={}
     for entry in phase['typed_objects']:
         owner=entry['owner'];obj=entry['object'];role=obj['role'];handle=obj['handle'].to_bytes(2,'little')
         same=lambda v:(v['bus'],v['device'])==(owner['bus'],owner['device']) and low<=v['wall_ns']<=high
         commands=[v for v in capture['commands'] if same(v) and v['opcode'] in [0x1812,0x1c03,0x1c05]]
-        if not approved:
+        if not active:
             if commands or any(same(v) and v['event'] in [0xe,0x11,0x14] for v in capture['native_events']):raise CaptureError('negative Agent policy must have no security wire activity')
             continue
-        indices=[0x134,0x136,0x139,0x141] if role==0 else [0x135,0x137,0x138,0x13a,0x142]
+        indices=[v for v in order if (v in [0x134,0x136,0x139,0x141])==(role==0)]
         relays=[v for v in commands if v['opcode']==0x1812]
         if len(relays)!=len(indices):raise CaptureError('all role-specific relay commands required')
         for cmd,index in zip(relays,indices):
-            raw=bytes.fromhex(cmd['params']);size=10 if index in [0x134,0x135] else 70 if index==0x136 else 64 if index==0x137 else 16
+            raw=bytes.fromhex(cmd['params']);size=10 if index in [0x134,0x135] else 70 if index==0x136 else 64 if index==0x137 else 32 if index==0x13c else 16
             if raw[:4]!=handle+index.to_bytes(2,'little') or len(raw)!=size+5 or raw[4]!=size or not cmd.get('completion'):raise CaptureError('relay schema/handle/type/actual USB completion required')
-            if index==0x136 and raw[5:11]!=bytes([16,1,2,2,2,2]):raise CaptureError('explicit no-entry/no-MITM public-key envelope required')
-            if index in [0x134,0x135] and raw[5:]!=OFFER:raise CaptureError('only known no-MITM/no-Bond offer permitted')
+            if index==0x136 and raw[5:11]!=bytes([16,0 if numeric else 1,2,2,2,2]):raise CaptureError('explicit no-entry/no-MITM public-key envelope required')
+            if index in [0x134,0x135] and raw[5:]!=offer:raise CaptureError('only known no-MITM/no-Bond offer permitted')
             reply=[v for v in capture['complete'] if same(v) and v['opcode']==0x1812 and v['status']==0 and v['value']==raw[:4].hex() and v['wall_ns']>=cmd['wall_ns']]
             if len(reply)!=1:raise CaptureError('real exact command Complete required')
             sent[index]=(cmd,raw[5:]);completed[index]=reply[0]
         events=[v for v in capture['native_events'] if same(v) and v['event']==0x14]
-        expected_rx=[0x135,0x137,0x138,0x13a,0x142] if role==0 else [0x134,0x136,0x139,0x141]
+        expected_rx=[v for v in order if v not in indices]
         if len(events)!=len(expected_rx):raise CaptureError('all opposite real RX required')
         for event,index in zip(events,expected_rx):
             raw=bytes.fromhex(event['params'])
             if raw[:4]!=handle+index.to_bytes(2,'little'):raise CaptureError('opposite exact handle/index required')
             received[index]=event
+        if not approved:
+            if any(v['opcode'] in [0x1c03,0x1c05] for v in commands) or any(same(v) and v['event'] in [0xe,0x11] for v in capture['native_events']):raise CaptureError('rejected/expired numeric decision cannot install or enable encryption')
+            continue
         installs_for_role=[v for v in commands if v['opcode'] in [0x1c03,0x1c05]]
         if len(installs_for_role)!=1:raise CaptureError('one installation per real role required')
         cmd=installs_for_role[0];raw=bytes.fromhex(cmd['params']);opcode=0x1c03 if role==0 else 0x1c05
@@ -133,21 +153,32 @@ def wire(row,phase,capture):
         if not accepted or len(on)!=1 or len([v for v in capture['native_events'] if same(v) and v['event']==0x11])!=1:raise CaptureError('actual acceptance AND exact initial encryption event required')
         install_commands[role]=cmd
         installs.append(dict(role=role,opcode=opcode,key_redacted=True,command_record=cmd['record'],event_record=on[0]['record'],wall_ns=on[0]['wall_ns']))
-    if approved:
-        if len(keys)!=2 or keys[0]!=keys[1]:raise CaptureError('actual same derived material at both controllers required')
+    if active:
+        if approved and (len(keys)!=2 or keys[0]!=keys[1]):raise CaptureError('actual same derived material at both controllers required')
         for index,(cmd,payload) in sent.items():
             event=received[index];raw=bytes.fromhex(event['params'])
             if len(raw)!=len(payload)+5 or raw[4]!=len(payload) or raw[5:]!=payload or event['wall_ns']<cmd['wall_ns']:raise CaptureError('USB success cannot replace exact peer receipt')
-        order=[0x134,0x135,0x136,0x137,0x138,0x139,0x13a,0x141,0x142]
         for previous,index in zip(order,order[1:]):
-            prerequisite=completed[previous] if index==0x138 else received[previous]
+            prerequisite=completed[previous] if index in [0x138,0x13c] else received[previous]
             if prerequisite['wall_ns']>sent[index][0]['wall_ns']:raise CaptureError('actual peer/Complete dependency order required')
         gp,tp=sent[0x136][1][6:],sent[0x137][1]
-        gn,tn=sent[0x139][1],sent[0x13a][1]
+        gn,tn=sent[0x139][1],sent[0x13c][1][16:] if numeric else sent[0x13a][1]
         if gp==tp or not any(gp) or not any(tp) or gn==tn or not any(gn) or not any(tn):raise CaptureError('distinct real public material and role nonces required')
-        target=next(v for v in phase['typed_objects'] if v['object']['role']==1)
-        req=[v for v in capture['native_events'] if (v['bus'],v['device'])==(target['owner']['bus'],target['owner']['device']) and low<=v['wall_ns']<=high and v['event']==0xe]
-        if len(req)!=1 or req[0]['params']!=target['object']['handle'].to_bytes(2,'little').hex() or not received[0x142]['wall_ns']<=install_commands[0]['wall_ns']<=req[0]['wall_ns']<=install_commands[1]['wall_ns'] or completed[0x142]['wall_ns']>install_commands[1]['wall_ns']:raise CaptureError('real T key request and final proof must precede installation')
+        if numeric:
+            from ws73_security_numeric import public_comparison
+            code=public_comparison(gp,tp,gn,tn)
+            events=[json.loads(v) for v in row['command']['stdout'].splitlines()]
+            cb=[v for v in events if v['stage']=='numeric_callback']
+            if len(cb)!=2 or any(v['code']!=code for v in cb):raise CaptureError('both actual numeric Agent codes must match independently checked public transcript')
+            if approved:
+                for role,index in [(0,0x141),(1,0x142)]:
+                    path=next(v['object']['path'] for v in phase['typed_objects'] if v['object']['role']==role)
+                    decision=next(v for v in events if v['stage']=='numeric_decision' and v['prompt'][0]==path)
+                    if sent[index][0]['wall_ns']<decision['wall_ns']:raise CaptureError('DH proof cannot precede explicit local Agent decision')
+        if approved:
+            target=next(v for v in phase['typed_objects'] if v['object']['role']==1)
+            req=[v for v in capture['native_events'] if (v['bus'],v['device'])==(target['owner']['bus'],target['owner']['device']) and low<=v['wall_ns']<=high and v['event']==0xe]
+            if len(req)!=1 or req[0]['params']!=target['object']['handle'].to_bytes(2,'little').hex() or not received[0x142]['wall_ns']<=install_commands[0]['wall_ns']<=req[0]['wall_ns']<=install_commands[1]['wall_ns'] or completed[0x142]['wall_ns']>install_commands[1]['wall_ns']:raise CaptureError('real T key request and final proof must precede installation')
         return dict(relay_indices=list(sent),opposite_receipts=len(received),installations=installs)
     return dict(no_security_commands_or_events=True)
 

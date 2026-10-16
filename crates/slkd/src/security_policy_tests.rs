@@ -619,3 +619,110 @@ async fn duplicate_begin_while_agent_pending_invokes_only_one_callback() {
     wait_phase(&st, id, 5).await;
     assert!(rx.try_recv().is_err());
 }
+
+#[test]
+fn numeric_completion_requires_local_confirmation_proof_and_installation() {
+    let good = SleSecurityNegotiationResult {
+        state: 11,
+        flags: 119,
+        ..Default::default()
+    };
+    assert!(Method::Numeric.completed(&good, true));
+    assert!(!Method::Numeric.completed(&good, false));
+    for bad in [
+        SleSecurityNegotiationResult { state: 3, ..good },
+        SleSecurityNegotiationResult { state: 9, ..good },
+        SleSecurityNegotiationResult { flags: 7, ..good },
+        SleSecurityNegotiationResult { flags: 87, ..good },
+        SleSecurityNegotiationResult { error: -5, ..good },
+        SleSecurityNegotiationResult { status: 1, ..good },
+    ] {
+        assert!(!Method::Numeric.completed(&bad, true));
+    }
+    assert!(!Method::NoMitm.completed(&good, true));
+    assert!(Method::parse("numeric-comparison").is_err());
+}
+
+struct NumericConsent {
+    seen: mpsc::UnboundedSender<(Args, u32)>,
+}
+#[zbus::interface(name = "org.sparklink.Agent")]
+impl NumericConsent {
+    async fn authorize_reference_security(&self, _args: Args) -> bool {
+        true
+    }
+    async fn confirm_numeric_comparison(&self, args: Args, code: u32) -> bool {
+        self.seen.send((args, code)).unwrap();
+        false
+    }
+}
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn numeric_method_is_frozen_and_native_failure_never_requests_confirmation() {
+    let bus = PrivateBus::start();
+    let st = state();
+    let server = server(&bus, &st).await;
+    let (seen, mut rx) = mpsc::unbounded_channel();
+    let a = zbus::connection::Builder::address(bus.address.as_str())
+        .unwrap()
+        .serve_at(AGENT, NumericConsent { seen })
+        .unwrap()
+        .build()
+        .await
+        .unwrap();
+    security(&a)
+        .await
+        .call::<_, _, ()>(
+            "RegisterAgent",
+            &(OwnedObjectPath::try_from(AGENT).unwrap(), NUMERIC_METHOD),
+        )
+        .await
+        .unwrap();
+    let c = client(&bus).await;
+    let id = allocate_rpc(&c, 1000).await;
+    assert!(
+        link(&c)
+            .await
+            .call::<_, _, ()>("BeginReferenceSecurity", &(id, METHOD))
+            .await
+            .is_err()
+    );
+    assert_eq!(read_rpc(&c, id).await.phase, 1);
+    link(&c)
+        .await
+        .call::<_, _, ()>("BeginReferenceSecurity", &(id, NUMERIC_METHOD))
+        .await
+        .unwrap();
+    let out = wait_phase(&st, id, 8).await;
+    assert!(out.agent_approved);
+    assert!(!out.native_admitted);
+    assert_eq!(out.error, -nix::libc::ENOTTY);
+    assert!(rx.try_recv().is_err()); // /dev/null never invents a native prompt.
+    let reg = registry(&st).await;
+    let entry = reg.lock().await.entries.get(&id).unwrap().clone();
+    let args = (
+        LINK.to_owned(),
+        id,
+        7,
+        13,
+        1,
+        0,
+        0,
+        "01:02:03:04:05:06".to_owned(),
+        NUMERIC_METHOD.to_owned(),
+        out.deadline_monotonic_ns,
+    );
+    // Direct production callback transport only; not the native workflow.
+    assert!(
+        !agent_decision(&server, &entry, &args, Some(0))
+            .await
+            .unwrap()
+    );
+    let got = rx.recv().await.unwrap();
+    assert_eq!(got, (args.clone(), 0));
+    assert!(
+        agent_decision(&server, &entry, &args, Some(1_000_000))
+            .await
+            .is_err()
+    );
+    assert!(rx.try_recv().is_err());
+}

@@ -129,8 +129,8 @@ Commands:
   management                    Query native kernel management state without token
   devices                       List discovered devices
   info <address>                Show device details
-  agent                         Foreground explicit SDK111 no-MITM Agent (no auto-approval)
-  security-request <path> [ms]  Request limited reference security on exact Connection (1..5000ms)
+  agent [method]                Foreground Agent [sdk111-no-mitm|sdk111-numeric-comparison], no auto-approval
+  security-request <path> [ms] [method]  Request exact Connection security (1..5000ms)
   pair <address>                Pair with device
   connect <address>             Connect to device
   connections                   Show canonical native links and lifetimes

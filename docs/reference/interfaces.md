@@ -59,7 +59,7 @@ facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合�
 
 `org.sparklink.Security` 位于 `/org/sparklink/slk{index}_g{generation}/security`。
 `RegisterAgent(o path, s method)` 绑定该 controller 的一个 Agent 唯一总线所有者；
-仅接受 `sdk111-no-mitm`。`UnregisterAgent(o path)` 撤销原注册，普通通道权限
+明确接受 `sdk111-no-mitm` 或 `sdk111-numeric-comparison`；未知方法不降级。`UnregisterAgent(o path)` 撤销原注册，普通通道权限
 不授予 controller 管理或 Agent 注册权。默认不自动批准。
 
 `org.sparklink.Connection` 的原生命周期对象提供：
@@ -76,8 +76,8 @@ Agent 的 `org.sparklink.Agent.AuthorizeReferenceSecurity` 接收一个结构参
 y address_type, s address, s method, t deadline_monotonic_ns)`，返回 `b`。
 原始期限为 CLOCK_MONOTONIC 纳秒，批准后不刷新；调用者、Agent 唯一总线连接、
 注册 epoch 和完整连接引用共同约束请求。重复启动、撤销、原期限、替换 Agent、
-旧身份和退出不能产生新成功。正式 `slctl agent` 提供前台逐请求人工批准/拒绝，
-`slctl security-request <connection-path> [timeout-ms]` 在同一原作者连接内完成
+旧身份和退出不能产生新成功。正式 `slctl agent [method]` 提供前台逐请求人工批准/拒绝，
+`slctl security-request <connection-path> [timeout-ms] [method]` 在同一原作者连接内完成
 分配、启动和查询；Ctrl-C 只尝试原请求取消。默认超时5000ms，范围1–5000ms。
 这两个入口绑定原 daemon 唯一所有者，不自动跟随替换。见
 [实验 VM 操作及退出契约](../how-to/request-reference-security.md)。新 CLI 的双模式限定实机范围仅见当前资格；
@@ -300,9 +300,25 @@ Session的真实G proof，确认后再验证并回应，重复/旧lifetime不混
 自身relay Complete排空。数字比较码在确认、拒绝、撤销、到期后清除；返回Native操作
 结果不代表daemon身份、可信Grant或Bond，已开始的物理义务仍按现有票据清理。
 
-本批代码与VM专用自动比较见证仍待准确新镜像实机验收。自动见证不是生产Agent。
-正式slkd/CLI尚只支持`sdk111-no-mitm`策略，Pair/可信身份/protected通道/Bond仍明确
-不支持。交互UI及适合人类操作的原期限策略必须另行设计，不能通过刷新现有5秒期限实现。
+内核机制已有单独准确镜像资格；新broker/Agent接线的准确实机范围另记于当前能力页。
+`RegisterAgent(path,method)`新增明确方法`sdk111-numeric-comparison`，默认方法仍为
+`sdk111-no-mitm`。Allocate冻结Agent唯一owner/epoch/方法；Begin必须精确匹配，不能
+更换Agent或降级。原来的Allocate/Begin/Result/Cancel和13字段Observation不另造副本。
+
+数字方法首先调用`AuthorizeReferenceSecurity(prompt)`允许开始交换；内核出现有效
+flags8提示后，才调用`ConfirmNumericComparison(prompt,code:u32)`。prompt沿用原有
+完整Connection路径、request_id、generation/lifetime/handle/role/address/type、明确方法
+及原deadline。前置批准不是数字确认；确认true才经同一原Managed File提交实际CONFIRM，
+false提交明确拒绝。未知callback、Agent/作者失联、取消和到期均走原请求清理；已开始
+的ioctl必须join，不能通过丢弃任务抹去物理义务。kernel_state/flags才表示原生观察，
+Observation.agent_approved仅表示前置批准；kernel_state11/flags119还不授予可信Grant。
+
+CLI入口为`agent [method]`、`security-request <path> [ms] [method]`，省略method行为不变。
+数字Agent分两次询问：先`approve <id>`允许交换，再展示真实六位码并要求
+`confirm <id> <六位码>`或`reject <id>`；000000有效，`approve`不能代替数字确认，预输入
+不沿用到下一提示。两个提示共享最初1–5000ms期限，不刷新。5秒也包含前置人工等待，
+当前并非通用人机配对体验；更适合人类的期限策略仍须单独设计和验证。
+Pair/全局GetPasskey、安全等级/可信Grant/protected通道/Bond仍明确不支持。
 旧镜像资格不继承本批；形式化状态/锁/引用/硬件假设与真实两端交付分别记录。
 
 ## 单个安全作者请求取消（未发布 ABI）

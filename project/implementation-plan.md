@@ -1697,3 +1697,20 @@ Native可变count/bytes/window，2042/window16实际背压恢复；原协议/队
 原862/e53/7ed的CI失败均保留，内核8757仅补guest保护类条目（76生产文件字节相同），
 用户态88按工作区edition格式化；准确88的完整CI及文档/资格/fuzz工作流通过。
 这不改变K323/U862实机身份，不新增形式化或恢复资格，不将CI artifact视为合格发布。
+
+
+### WP09 数字Agent生产接线批次
+
+复用原Registry/Entry、监督任务、Managed File/lease、typed mode4与确认ioctl；
+不新增Engine、第二数据路径或密钥接口。Agent注册冻结明确方法，原前置批准与真实
+数字确认分开；原期限覆盖两次callback、Native提交/Complete/实际安装。未知方法、
+撤回/失联、拒绝和到期均fail closed，started ioctl必须join后清理。CLI仅显式确认，
+不引入默认自动比较。kernel状态11仍不授权protected Grant或Bond。
+
+本批退出：严格全workspace构建/实际privatebus和ENOTTY失败、CLI参数/数字回答约束、
+证据负对照；准确新用户态bundle在U2/3 VM取得数字批准/拒绝/迟到各双连接角色，
+核对真实callback/原期限/确认后DHproof/实际install+0011/对端应用校验回复，再回归
+既有无MITM Agent及249/2042路径。代码完成、离线、实机和形式化分别记录。
+后续实际安全等级/可撤销Grant与SSAP权限、完整数字Agent丢失/取消/断链/在途组合、
+CLI数字提示实际操作、七长度/十生命周期、四设备及自然RCA/非人工恢复继续并行开放。
+完整S0-S6/19WP/10FV/12DG与VM-only不变，不追加所有控制面竞争前置。

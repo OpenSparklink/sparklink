@@ -2,12 +2,54 @@
 //! the only protocol/crypto engine. No keys or wire packets cross this broker.
 use crate::state::{NativeLease, SharedState};
 use libsparklink::Adapter;
-use slk_protocol::{SleLinkInfo, SleSecurityNegotiationCancel, SleSecurityNegotiationSubmit};
+use slk_protocol::{
+    SleLinkInfo, SleSecurityNegotiationCancel, SleSecurityNegotiationResult,
+    SleSecurityNegotiationSubmit, SleSecurityNumericConfirm,
+};
 use std::{collections::BTreeMap, sync::Arc, time::Duration};
 use tokio::sync::{Mutex, watch};
 use zbus::{export::ordered_stream::OrderedStreamExt, zvariant::OwnedObjectPath};
 
 pub(crate) const METHOD: &str = "sdk111-no-mitm";
+pub(crate) const NUMERIC_METHOD: &str = "sdk111-numeric-comparison";
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Method {
+    NoMitm,
+    Numeric,
+}
+impl Method {
+    fn parse(value: &str) -> zbus::fdo::Result<Self> {
+        match value {
+            METHOD => Ok(Self::NoMitm),
+            NUMERIC_METHOD => Ok(Self::Numeric),
+            _ => Err(zbus::fdo::Error::NotSupported(
+                "unsupported Agent method; no fallback".into(),
+            )),
+        }
+    }
+    fn name(self) -> &'static str {
+        match self {
+            Self::NoMitm => METHOD,
+            Self::Numeric => NUMERIC_METHOD,
+        }
+    }
+    fn flags(self) -> u32 {
+        match self {
+            Self::NoMitm => 3,
+            Self::Numeric => 4,
+        }
+    }
+    fn completed(self, result: &SleSecurityNegotiationResult, confirmed: bool) -> bool {
+        result.error == 0
+            && result.status == 0
+            && match self {
+                Self::NoMitm => result.state == 9 && result.flags == 7,
+                Self::Numeric => confirmed && result.state == 11 && result.flags == 119,
+            }
+    }
+}
+type Prompt = (String, u64, u64, u64, u16, u8, u8, String, String, u64);
+
 const MAX_RECORDS: usize = 64;
 const MAX_AUTHOR_PENDING: usize = 4;
 pub(crate) type Shared = Arc<Mutex<Registry>>;
@@ -33,6 +75,7 @@ pub(crate) struct Observation {
 }
 #[derive(Clone)]
 struct Agent {
+    method: Method,
     owner: String,
     path: OwnedObjectPath,
     epoch: u64,
@@ -153,11 +196,7 @@ pub(crate) async fn register(
             ));
         }
     }
-    if method != METHOD {
-        return Err(zbus::fdo::Error::NotSupported(
-            "unsupported Agent method; no fallback".into(),
-        ));
-    }
+    let method = Method::parse(method)?;
     if path.as_str() == "/" {
         return Err(invalid("an explicit Agent object path is required"));
     }
@@ -186,6 +225,7 @@ pub(crate) async fn register(
             .ok_or_else(|| failed("Agent epoch exhausted"))?;
         let (revoked, _) = watch::channel(false);
         let agent = Agent {
+            method,
             owner,
             path,
             epoch: guard.epoch,
@@ -487,11 +527,7 @@ pub(crate) async fn begin(
     id: u64,
     method: &str,
 ) -> zbus::fdo::Result<()> {
-    if method != METHOD {
-        return Err(zbus::fdo::Error::NotSupported(
-            "unsupported method; no fallback".into(),
-        ));
-    }
+    let method = Method::parse(method)?;
     let registry = registry(state).await;
     let entry = {
         let mut guard = registry.lock().await;
@@ -500,6 +536,11 @@ pub(crate) async fn begin(
             return Err(failed("controller policy retired"));
         }
         let entry = guard.owned(id, owner, generation, reference)?;
+        if entry.agent.method != method {
+            return Err(zbus::fdo::Error::NotSupported(
+                "method differs from allocated Agent; no fallback".into(),
+            ));
+        }
         if entry.observation.phase != 1 {
             return Err(failed("request already started or terminal"));
         }
@@ -552,6 +593,35 @@ async fn finish(registry: &Shared, id: u64, phase: u32, error: i32) {
 struct Stop {
     phase: u32,
     error: i32,
+}
+/// Both callbacks address the same pinned Agent and full original identity.
+/// Numeric confirmation is a separate decision after the kernel's live prompt.
+async fn agent_decision(
+    connection: &zbus::Connection,
+    entry: &Entry,
+    args: &Prompt,
+    code: Option<u32>,
+) -> zbus::Result<bool> {
+    let agent = zbus::Proxy::new(
+        connection,
+        entry.agent.owner.as_str(),
+        entry.agent.path.as_str(),
+        "org.sparklink.Agent",
+    )
+    .await?;
+    match code {
+        None => {
+            agent
+                .call("AuthorizeReferenceSecurity", &(args.clone(),))
+                .await
+        }
+        Some(code) if entry.agent.method == Method::Numeric && code < 1_000_000 => {
+            agent
+                .call("ConfirmNumericComparison", &(args.clone(), code))
+                .await
+        }
+        Some(_) => Err(zbus::Error::Failure("invalid numeric prompt/method".into())),
+    }
 }
 async fn supervise(
     state: &SharedState,
@@ -623,21 +693,10 @@ async fn supervise(
         entry.reference.role,
         entry.reference.address_type,
         crate::dbus_iface::format_addr(&entry.reference.address),
-        METHOD.to_string(),
+        entry.agent.method.name().to_string(),
         entry.observation.deadline_monotonic_ns,
     );
-    let approval = async {
-        let agent = zbus::Proxy::new(
-            connection,
-            entry.agent.owner.as_str(),
-            entry.agent.path.as_str(),
-            "org.sparklink.Agent",
-        )
-        .await?;
-        agent
-            .call::<_, _, bool>("AuthorizeReferenceSecurity", &(args,))
-            .await
-    };
+    let approval = agent_decision(connection, &entry, &args, None);
     let approved = tokio::select! {biased;
         stopped=&mut stop=>{finish(registry,id,stopped.phase,stopped.error).await;return Ok(());},
         result=approval=>result,
@@ -685,7 +744,7 @@ async fn supervise(
         version: 2,
         profile: 1,
         action: if entry.reference.role == 0 { 2 } else { 1 },
-        flags: 3,
+        flags: entry.agent.method.flags(),
         timeout_ms: 5000,
         handle: entry.reference.handle,
         role: entry.reference.role,
@@ -732,6 +791,7 @@ async fn supervise(
             error,
         }));
     }
+    let mut numeric_confirmed = false;
     if stopped.is_none() {
         loop {
             let fd = native.fd.clone();
@@ -755,9 +815,118 @@ async fn supervise(
                         out.kernel_flags = result.flags;
                         out.kernel_status = result.status;
                     }
-                    if result.state == 9 && result.error == 0 {
+                    // Join the actual query, then prioritize already-observable
+                    // caller/Agent/cancel/deadline loss before any continuation.
+                    tokio::select! {biased;
+                        value=&mut stop=>{stopped=Some(value);break;},
+                        _=std::future::ready(())=>{},
+                    }
+                    if entry.agent.method == Method::Numeric && result.flags & 8 != 0 {
+                        if numeric_confirmed {
+                            stopped = Some(Stop {
+                                phase: 8,
+                                error: -nix::libc::EPROTO,
+                            });
+                            break;
+                        }
+                        let decision = tokio::select! {biased;
+                            value=&mut stop=>{stopped=Some(value);break;},
+                            value=agent_decision(connection,&entry,&args,Some(result.comparison_code))=>value,
+                        };
+                        let accepted = match decision {
+                            Ok(value) => value,
+                            Err(_) => {
+                                stopped = Some(Stop {
+                                    phase: 10,
+                                    error: -nix::libc::ECANCELED,
+                                });
+                                break;
+                            }
+                        };
+                        // The immutable Agent epoch/method and original File,
+                        // lease and deadline remain authoritative, not the UI.
+                        if registry
+                            .lock()
+                            .await
+                            .agent
+                            .as_ref()
+                            .is_none_or(|a| a.epoch != entry.agent.epoch)
+                        {
+                            stopped = Some(Stop {
+                                phase: 10,
+                                error: -nix::libc::ECANCELED,
+                            });
+                            break;
+                        }
+                        tokio::select! {biased;
+                            value=&mut stop=>{stopped=Some(value);break;},
+                            _=std::future::ready(())=>{},
+                        }
+                        let authority = match native.lease.clone().try_lock_owned() {
+                            Ok(guard) if guard.accepting && guard.token == Some(native.token) => {
+                                guard
+                            }
+                            _ => {
+                                stopped = Some(Stop {
+                                    phase: 8,
+                                    error: -nix::libc::EACCES,
+                                });
+                                break;
+                            }
+                        };
+                        let confirm = SleSecurityNumericConfirm {
+                            generation: request.generation,
+                            lifetime: request.lifetime,
+                            request_id: id,
+                            version: 1,
+                            comparison_code: result.comparison_code,
+                            handle: request.handle,
+                            accept: u8::from(accepted),
+                            ..Default::default()
+                        };
+                        let fd = native.fd.clone();
+                        let mut operation = tokio::task::spawn_blocking(move || {
+                            let _authority = authority;
+                            fd.confirm_native_security_numeric(&confirm)
+                                .map_err(native_errno)
+                        });
+                        // Never abandon a started original File ioctl on stop.
+                        let (confirmed, withdrawal) = tokio::select! {biased;
+                            value=&mut stop=>(operation.await,Some(value)),
+                            value=&mut operation=>(value,None),
+                        };
+                        let confirmed = confirmed.unwrap_or(Err(-nix::libc::EIO));
+                        if let Some(value) = withdrawal {
+                            stopped = Some(value);
+                            break;
+                        }
+                        if let Err(error) = confirmed {
+                            stopped = Some(Stop {
+                                phase: if error == -nix::libc::ETIMEDOUT { 7 } else { 8 },
+                                error,
+                            });
+                            break;
+                        }
+                        if !accepted {
+                            stopped = Some(Stop {
+                                phase: 5,
+                                error: -nix::libc::ECANCELED,
+                            });
+                            break;
+                        }
+                        numeric_confirmed = true; // Local ioctl only, not trust/install.
+                        continue;
+                    }
+                    if entry.agent.method.completed(&result, numeric_confirmed) {
                         finish(registry, id, 4, 0).await;
                         return Ok(());
+                    }
+                    if matches!(result.state, 4 | 8 | 9 | 11) {
+                        stopped = Some(Stop {
+                            phase: 8,
+                            error: -nix::libc::EPROTO,
+                        });
+                        break;
                     }
                     if matches!(result.state, 5..=7) {
                         stopped = Some(Stop {

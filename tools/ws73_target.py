@@ -1649,7 +1649,7 @@ def run_exit_code(record):
         business = record.get('channel_socket_corroboration', {})
         phases = proof.get('phases', [])
         mode = record.get('live_security_agent_requested')
-        valid = (mode in ['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel']
+        valid = (mode in ['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel','numeric-approve','numeric-reject','numeric-late']
                  and proof.get('status') == 'REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS'
                  and len(phases) == 2 and all(p.get('mode') == mode for p in phases)
                  and record.get('ordinary_channel_socket_acceptance') is True
@@ -1699,7 +1699,7 @@ def main():
             cmd.add_argument('--early-bootstrap-fault',action='store_true',help='separate native three-real-device missing-custom fault, ordinary Core diagnostics and peer business; controlled QMP retry only')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--channel-daemon-crash',action='store_true',help='actual slkd SIGKILL with ordinary retained business fd, successor and no USB reset')
-            cmd.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel'],help='actual ordinary Agent policy plus current native relay and peer application evidence; requires separate connection/socket gate')
+            cmd.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel','numeric-approve','numeric-reject','numeric-late'],help='actual ordinary Agent policy plus current native relay and peer application evidence; requires separate connection/socket gate')
             cmd.add_argument('--channel-daemon-index',type=int,choices=[0,1],default=0)
             cmd.add_argument('--daemon-crash',action='store_true',help='actual active-radio SIGKILL/last-File cleanup and successor before native RF22; separate --qmp-hotplug mode')
             cmd.add_argument('--observer-policy',action='store_true',help='actual default observer/control read and denial roles before/after native RF22; separate --qmp-hotplug mode')

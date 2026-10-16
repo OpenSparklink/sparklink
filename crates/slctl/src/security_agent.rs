@@ -9,7 +9,11 @@ use tokio::{
 use zbus::{Connection, export::ordered_stream::OrderedStreamExt, zvariant::OwnedObjectPath};
 
 const SERVICE: &str = "org.sparklink";
-const METHOD: &str = "sdk111-no-mitm";
+pub(crate) const METHOD: &str = "sdk111-no-mitm";
+const NUMERIC_METHOD: &str = "sdk111-numeric-comparison";
+fn supported(method: &str) -> bool {
+    matches!(method, METHOD | NUMERIC_METHOD)
+}
 const AGENT_PATH: &str = "/org/sparklink/slctl/agent";
 type Info = (u64, u64, u16, u8, u8, String, bool, bool);
 type Prompt = (String, u64, u64, u64, u16, u8, u8, String, String, u64);
@@ -138,13 +142,19 @@ fn validate_identity(controller: &str, path: &str, info: &Info) -> anyhow::Resul
     );
     Ok(())
 }
-fn validate_prompt(controller: &str, prompt: &Prompt, info: &Info) -> anyhow::Result<()> {
+fn validate_prompt(
+    controller: &str,
+    prompt: &Prompt,
+    info: &Info,
+    method: &str,
+) -> anyhow::Result<()> {
     validate_identity(controller, &prompt.0, info)?;
     ensure!(
         prompt.1 > 0
             && (prompt.2, prompt.3, prompt.4, prompt.5, prompt.6, &prompt.7)
                 == (info.0, info.1, info.2, info.3, info.4, &info.5)
-            && prompt.8 == METHOD,
+            && supported(method)
+            && prompt.8 == method,
         "prompt identity or method mismatch"
     );
     let duration = remaining(prompt.9)?;
@@ -154,25 +164,39 @@ fn validate_prompt(controller: &str, prompt: &Prompt, info: &Info) -> anyhow::Re
     );
     Ok(())
 }
+#[derive(Clone, Copy, Debug)]
+enum DecisionKind {
+    Consent,
+    Numeric(u32),
+}
 struct Pending {
     prompt: Prompt,
+    kind: DecisionKind,
     reply: oneshot::Sender<bool>,
 }
 struct Agent {
+    method: String,
     controller: String,
     owner: String,
     lost: watch::Receiver<bool>,
     pending: mpsc::Sender<Pending>,
     slot: Arc<Semaphore>,
 }
-#[zbus::interface(name = "org.sparklink.Agent")]
 impl Agent {
-    async fn authorize_reference_security(
+    async fn decide(
         &self,
         prompt: Prompt,
-        #[zbus(connection)] conn: &Connection,
-        #[zbus(header)] header: zbus::message::Header<'_>,
+        kind: DecisionKind,
+        conn: &Connection,
+        header: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<bool> {
+        if let DecisionKind::Numeric(code) = kind
+            && (self.method != NUMERIC_METHOD || code >= 1_000_000)
+        {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "invalid numeric method/code".into(),
+            ));
+        }
         if header.sender().map(|s| s.as_str()) != Some(self.owner.as_str()) || *self.lost.borrow() {
             return Err(zbus::fdo::Error::AccessDenied(
                 "not the original daemon owner".into(),
@@ -190,7 +214,7 @@ impl Agent {
             )
             .await?;
             let info: Info = proxy.call("GetInfo", &()).await?;
-            validate_prompt(&self.controller, &prompt, &info)?;
+            validate_prompt(&self.controller, &prompt, &info, &self.method)?;
             anyhow::Ok(())
         };
         let Ok(budget) = remaining(prompt.9) else {
@@ -204,7 +228,15 @@ impl Agent {
         }
         let (reply, result) = oneshot::channel();
         let deadline = prompt.9;
-        if self.pending.try_send(Pending { prompt, reply }).is_err() {
+        if self
+            .pending
+            .try_send(Pending {
+                prompt,
+                kind,
+                reply,
+            })
+            .is_err()
+        {
             return Ok(false);
         }
         let Ok(budget) = remaining(deadline) else {
@@ -216,6 +248,28 @@ impl Agent {
             result = tokio::time::timeout(budget, result) => matches!(result, Ok(Ok(true))),
         };
         Ok(approved && !*lost.borrow() && remaining(deadline).is_ok())
+    }
+}
+#[zbus::interface(name = "org.sparklink.Agent")]
+impl Agent {
+    async fn authorize_reference_security(
+        &self,
+        prompt: Prompt,
+        #[zbus(connection)] conn: &Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<bool> {
+        self.decide(prompt, DecisionKind::Consent, conn, header)
+            .await
+    }
+    async fn confirm_numeric_comparison(
+        &self,
+        prompt: Prompt,
+        code: u32,
+        #[zbus(connection)] conn: &Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<bool> {
+        self.decide(prompt, DecisionKind::Numeric(code), conn, header)
+            .await
     }
 }
 
@@ -291,8 +345,31 @@ fn answer(line: &str, id: u64) -> Option<bool> {
     }
 }
 
+fn decision(line: &str, id: u64, kind: DecisionKind) -> Option<bool> {
+    if matches!(kind, DecisionKind::Consent) {
+        return answer(line, id);
+    }
+    if answer(line, id) == Some(false) {
+        return Some(false);
+    }
+    let DecisionKind::Numeric(code) = kind else {
+        return None;
+    };
+    let words = line.split_whitespace().collect::<Vec<_>>();
+    (words.len() == 3
+        && words[0] == "confirm"
+        && words[1].parse::<u64>().ok() == Some(id)
+        && words[2] == format!("{code:06}"))
+    .then_some(true)
+}
+
 /// Foreground explicit human Agent for one controller, never a daemon default.
-pub(crate) async fn run_agent(conn: &Connection, controller: &str) -> anyhow::Result<()> {
+pub(crate) async fn run_agent(
+    conn: &Connection,
+    controller: &str,
+    method: &str,
+) -> anyhow::Result<()> {
+    ensure!(supported(method), "unsupported Agent method; no fallback");
     controller_generation(controller)?;
     let mut input = Input::stdin()?;
     let mut daemon = Daemon::pin(conn).await?;
@@ -304,6 +381,7 @@ pub(crate) async fn run_agent(conn: &Connection, controller: &str) -> anyhow::Re
         .at(
             AGENT_PATH,
             Agent {
+                method: method.to_owned(),
                 controller: controller.to_owned(),
                 owner: daemon.owner.clone(),
                 lost: daemon.lost.clone(),
@@ -312,11 +390,15 @@ pub(crate) async fn run_agent(conn: &Connection, controller: &str) -> anyhow::Re
             },
         )
         .await?;
-    let register_args = (object_path.clone(), METHOD);
+    let register_args = (object_path.clone(), method);
     let register = proxy.call::<_, _, ()>("RegisterAgent", &register_args);
     let result = async {
         tokio::time::timeout(Duration::from_secs(5), register).await??;
-        println!("AgentReady: controller={controller} daemon={} method={METHOD}; explicit per-request consent only; unauthenticated, no Bond", daemon.owner);
+        if method==METHOD {
+            println!("AgentReady: controller={controller} daemon={} method={method}; explicit per-request consent only; unauthenticated, no Bond",daemon.owner);
+        } else {
+            println!("AgentReady: controller={controller} daemon={} method={method}; explicit initial consent AND six-digit confirmation; no trusted Grant or Bond",daemon.owner);
+        }
         let mut current: Option<Pending> = None;
         loop {
             let budget = current.as_ref().map(|p| remaining(p.prompt.9).unwrap_or_default()).unwrap_or(Duration::from_secs(3600));
@@ -334,7 +416,13 @@ pub(crate) async fn run_agent(conn: &Connection, controller: &str) -> anyhow::Re
                     input.discard_before_prompt()?;
                     let p = &next.prompt;
                     println!("AgentPrompt: request={} path={} generation={} lifetime={} handle={} role={} address_type={} address={} method={} deadline_monotonic_ns={}", p.1,p.0,p.2,p.3,p.4,p.5,p.6,p.7,p.8,p.9);
-                    println!("Type approve {} or reject {} before the ORIGINAL deadline (maximum 5 seconds); approval does not authenticate the peer", p.1, p.1);
+                    match next.kind {
+                        DecisionKind::Consent=>println!("Type approve {} or reject {} before the ORIGINAL deadline (maximum 5 seconds); approval does not authenticate the peer",p.1,p.1),
+                        DecisionKind::Numeric(code)=> {
+                            println!("AgentNumericPrompt: request={} path={} generation={} lifetime={} code={code:06} deadline_monotonic_ns={}",p.1,p.0,p.2,p.3,p.9);
+                            println!("Compare with the intended peer; type confirm {} {code:06} or reject {} before the ORIGINAL deadline; no trusted Grant or Bond",p.1,p.1);
+                        }
+                    }
                     current = Some(next);
                 },
                 line = input.line() => {
@@ -342,7 +430,7 @@ pub(crate) async fn run_agent(conn: &Connection, controller: &str) -> anyhow::Re
                     if line == "quit" { break; }
                     if let Some(p) = current.as_ref()
                         && !p.reply.is_closed() && remaining(p.prompt.9).is_ok()
-                        && let Some(yes) = answer(&line, p.prompt.1)
+                        && let Some(yes) = decision(&line, p.prompt.1, p.kind)
                     {
                         let p = current.take().unwrap();
                         let _ = p.reply.send(yes);
@@ -371,11 +459,13 @@ pub(crate) async fn request(
     controller: &str,
     path: &str,
     timeout_ms: u32,
+    method: &str,
 ) -> anyhow::Result<()> {
     ensure!(
         (1..=5000).contains(&timeout_ms),
         "timeout must be 1..5000 ms"
     );
+    ensure!(supported(method), "unsupported method; no fallback");
     let mut daemon = Daemon::pin(conn).await?;
     let proxy = daemon.proxy(conn, path, "org.sparklink.Connection").await?;
     let info: Info =
@@ -402,7 +492,7 @@ pub(crate) async fn request(
             "ReferenceSecurityAllocated: request={allocated} path={path} deadline_monotonic_ns={deadline}"
         );
         proxy
-            .call::<_, _, ()>("BeginReferenceSecurity", &(allocated, METHOD))
+            .call::<_, _, ()>("BeginReferenceSecurity", &(allocated, method))
             .await?;
         loop {
             let observation: Observation = proxy
@@ -425,17 +515,25 @@ pub(crate) async fn request(
                         && observation.error == 0
                         && observation.agent_approved
                         && observation.native_admitted
-                        && observation.kernel_state == 9
+                        && observation.kernel_state
+                            == if method == NUMERIC_METHOD { 11 } else { 9 }
                         && observation.kernel_error == 0
-                        && observation.kernel_flags & 7 == 7
+                        && observation.kernel_flags
+                            == if method == NUMERIC_METHOD { 119 } else { 7 }
                         && observation.kernel_status == 0
                         && observation.cleanup_error == 0,
                     "reference security did not complete successfully (phase={})",
                     observation.phase
                 );
-                println!(
-                    "ReferenceSecurityCompleted: unauthenticated SDK111 reference only; not peer identity, trusted Grant or Bond; peer application delivery requires its own test"
-                );
+                if method == NUMERIC_METHOD {
+                    println!(
+                        "NumericSecurityCompleted: original comparison confirmation, peer proof and observed installation; trusted Grant/Bond and application delivery require separate qualification"
+                    );
+                } else {
+                    println!(
+                        "ReferenceSecurityCompleted: unauthenticated SDK111 reference only; not peer identity, trusted Grant or Bond; peer application delivery requires its own test"
+                    );
+                }
                 break;
             }
             tokio::time::sleep(Duration::from_millis(10)).await;
@@ -532,16 +630,43 @@ mod tests {
             METHOD.into(),
             monotonic_ns().unwrap() + 1_000_000_000,
         );
-        assert!(validate_prompt(CONTROLLER, &p, &info()).is_ok());
+        assert!(validate_prompt(CONTROLLER, &p, &info(), METHOD).is_ok());
         p.8 = "unknown".into();
-        assert!(validate_prompt(CONTROLLER, &p, &info()).is_err());
+        assert!(validate_prompt(CONTROLLER, &p, &info(), METHOD).is_err());
         p.8 = METHOD.into();
         p.4 = 2;
-        assert!(validate_prompt(CONTROLLER, &p, &info()).is_err());
+        assert!(validate_prompt(CONTROLLER, &p, &info(), METHOD).is_err());
         p.4 = 1;
         p.9 = 1;
-        assert!(validate_prompt(CONTROLLER, &p, &info()).is_err());
+        assert!(validate_prompt(CONTROLLER, &p, &info(), METHOD).is_err());
         p.9 = monotonic_ns().unwrap() + 6_000_000_000;
-        assert!(validate_prompt(CONTROLLER, &p, &info()).is_err());
+        assert!(validate_prompt(CONTROLLER, &p, &info(), METHOD).is_err());
+    }
+    #[test]
+    fn numeric_decision_requires_original_id_and_exact_six_digit_code() {
+        assert_eq!(
+            decision("confirm 17 000000", 17, DecisionKind::Numeric(0)),
+            Some(true)
+        );
+        assert_eq!(
+            decision("confirm 17 759201", 17, DecisionKind::Numeric(759201)),
+            Some(true)
+        );
+        assert_eq!(
+            decision("reject 17", 17, DecisionKind::Numeric(759201)),
+            Some(false)
+        );
+        for line in [
+            "approve 17",
+            "confirm 18 759201",
+            "confirm 17 759202",
+            "confirm 17 0",
+            "confirm 17 000000 extra",
+            "yes 17 759201",
+        ] {
+            assert_eq!(decision(line, 17, DecisionKind::Numeric(759201)), None);
+        }
+        assert!(supported(NUMERIC_METHOD));
+        assert!(!supported("numeric-comparison"));
     }
 }

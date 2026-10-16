@@ -10,10 +10,11 @@ use std::{
     sync::Arc,
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
-use tokio::sync::{Mutex, mpsc};
+use tokio::sync::{Mutex, mpsc, oneshot};
 use zbus::{Connection, fdo::DBusProxy, zvariant::OwnedObjectPath};
 
 const METHOD: &str = "sdk111-no-mitm";
+const NUMERIC_METHOD: &str = "sdk111-numeric-comparison";
 const SERVICE: &str = "org.sparklink";
 const AGENT: &str = "/test/explicit_reference_agent";
 type Prompt = (String, u64, u64, u64, u16, u8, u8, String, String, u64);
@@ -43,6 +44,17 @@ enum Mode {
     AgentExit,
     CallerExit,
     InstallCancel,
+    NumericApprove,
+    NumericReject,
+    NumericLate,
+}
+impl Mode {
+    fn numeric(self) -> bool {
+        matches!(
+            self,
+            Self::NumericApprove | Self::NumericReject | Self::NumericLate
+        )
+    }
 }
 #[derive(Parser)]
 struct Args {
@@ -63,21 +75,39 @@ fn wall() -> u64 {
         .unwrap()
         .as_nanos() as u64
 }
+fn monotonic_ns() -> anyhow::Result<u64> {
+    let mut value = nix::libc::timespec {
+        tv_sec: 0,
+        tv_nsec: 0,
+    };
+    // SAFETY: live timespec, same CLOCK_MONOTONIC as original native request.
+    ensure!(
+        unsafe { nix::libc::clock_gettime(nix::libc::CLOCK_MONOTONIC, &mut value) } == 0,
+        "monotonic clock unavailable"
+    );
+    u64::try_from(value.tv_sec)
+        .ok()
+        .and_then(|v| v.checked_mul(1_000_000_000))
+        .and_then(|v| v.checked_add(value.tv_nsec as u64))
+        .context("clock overflow")
+}
+struct NumericPending {
+    prompt: Prompt,
+    code: u32,
+    reply: oneshot::Sender<bool>,
+}
 struct Agent {
+    method: &'static str,
+    numeric: Option<mpsc::Sender<NumericPending>>,
     owner: String,
     expected: Expected,
     yes: bool,
     delay: Duration,
     seen: mpsc::UnboundedSender<Prompt>,
 }
-#[zbus::interface(name = "org.sparklink.Agent")]
 impl Agent {
-    async fn authorize_reference_security(
-        &self,
-        prompt: Prompt,
-        #[zbus(header)] header: zbus::message::Header<'_>,
-    ) -> zbus::fdo::Result<bool> {
-        if header.sender().map(|n| n.as_str()) != Some(self.owner.as_str()) {
+    async fn check(&self, prompt: &Prompt, sender: Option<&str>) -> zbus::fdo::Result<()> {
+        if sender != Some(self.owner.as_str()) {
             return Err(zbus::fdo::Error::AccessDenied(
                 "not the original daemon".into(),
             ));
@@ -104,14 +134,25 @@ impl Agent {
             info.3,
             info.4,
             info.5.as_str(),
-            METHOD,
+            self.method,
             *deadline,
         ) {
             return Err(zbus::fdo::Error::InvalidArgs(
                 "identity/method/original deadline mismatch".into(),
             ));
         }
-        drop(expected);
+        Ok(())
+    }
+}
+#[zbus::interface(name = "org.sparklink.Agent")]
+impl Agent {
+    async fn authorize_reference_security(
+        &self,
+        prompt: Prompt,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<bool> {
+        self.check(&prompt, header.sender().map(|n| n.as_str()))
+            .await?;
         println!(
             "{}",
             json!({"stage":"agent_callback","wall_ns":wall(),"prompt":prompt,"daemon_owner":self.owner})
@@ -121,6 +162,35 @@ impl Agent {
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
         tokio::time::sleep(self.delay).await;
         Ok(self.yes)
+    }
+    async fn confirm_numeric_comparison(
+        &self,
+        prompt: Prompt,
+        code: u32,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<bool> {
+        self.check(&prompt, header.sender().map(|n| n.as_str()))
+            .await?;
+        if self.method != NUMERIC_METHOD || code >= 1_000_000 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "numeric prompt required".into(),
+            ));
+        }
+        let (reply, result) = oneshot::channel();
+        println!(
+            "{}",
+            json!({"stage":"numeric_callback","wall_ns":wall(),"prompt":prompt,"code":code,"daemon_owner":self.owner})
+        );
+        self.numeric
+            .as_ref()
+            .ok_or_else(|| zbus::fdo::Error::NotSupported("numeric witness disabled".into()))?
+            .try_send(NumericPending {
+                prompt,
+                code,
+                reply,
+            })
+            .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
+        Ok(result.await.unwrap_or(false))
     }
 }
 async fn security<'a>(c: &Connection, path: &'a str) -> zbus::Result<zbus::Proxy<'a>> {
@@ -338,7 +408,12 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         "bounded test Agent required"
     );
     match args.mode {
-        Mode::Approve | Mode::Reject | Mode::InstallCancel => ensure!(
+        Mode::Approve
+        | Mode::Reject
+        | Mode::InstallCancel
+        | Mode::NumericApprove
+        | Mode::NumericReject
+        | Mode::NumericLate => ensure!(
             args.approval_delay_ms == 0,
             "immediate explicit decision required"
         ),
@@ -453,6 +528,12 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         "{}",
         json!({"stage":"probe_identity","wall_ns":wall(),"process_status":process,"requester":requester.unique_name().unwrap().as_str(),"daemon_owner":daemon.as_str(),"daemon_pid":daemon_pid,"mode":format!("{:?}",args.mode),"connections":args.connections,"infos":infos,"missing_agent_refusals":2,"unknown_registration_refusals":2})
     );
+    let method = if args.mode.numeric() {
+        NUMERIC_METHOD
+    } else {
+        METHOD
+    };
+    let (numeric, mut numeric_incoming) = mpsc::channel(2);
     let expected: Expected = Arc::new(Mutex::new(BTreeMap::new()));
     let (seen, mut incoming) = mpsc::unbounded_channel();
     let agent = Connection::system().await?;
@@ -461,6 +542,8 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         .at(
             AGENT,
             Agent {
+                method,
+                numeric: args.mode.numeric().then_some(numeric),
                 owner: daemon.to_string(),
                 expected: expected.clone(),
                 yes: args.mode != Mode::Reject,
@@ -474,7 +557,7 @@ async fn execute(args: Args) -> anyhow::Result<()> {
             .await?
             .call::<_, _, ()>(
                 "RegisterAgent",
-                &(OwnedObjectPath::try_from(AGENT)?, METHOD),
+                &(OwnedObjectPath::try_from(AGENT)?, method),
             )
             .await?;
     }
@@ -513,7 +596,7 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         let i = infos.iter().position(|v| v.3 == role).unwrap();
         link(&requester, &args.connections[i])
             .await?
-            .call::<_, _, ()>("BeginReferenceSecurity", &(ids[i], METHOD))
+            .call::<_, _, ()>("BeginReferenceSecurity", &(ids[i], method))
             .await?;
     }
     let mut callbacks = Vec::new();
@@ -528,6 +611,36 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         callbacks[0].0 != callbacks[1].0,
         "two distinct real Agent callbacks required"
     );
+    if args.mode.numeric() {
+        let mut prompts = Vec::new();
+        for _ in 0..2 {
+            prompts.push(
+                tokio::time::timeout(Duration::from_secs(4), numeric_incoming.recv())
+                    .await?
+                    .context("missing real numeric callback")?,
+            );
+        }
+        ensure!(
+            prompts[0].prompt.0 != prompts[1].prompt.0 && prompts[0].code == prompts[1].code,
+            "both independently computed real codes must match"
+        );
+        if args.mode == Mode::NumericLate {
+            loop {
+                if monotonic_ns()? > *deadlines.iter().max().unwrap() + 50_000_000 {
+                    break;
+                }
+                tokio::time::sleep(Duration::from_millis(2)).await;
+            }
+        }
+        for pending in prompts {
+            let yes = args.mode != Mode::NumericReject;
+            let delivered = pending.reply.send(yes).is_ok();
+            println!(
+                "{}",
+                json!({"stage":"numeric_decision","wall_ns":wall(),"monotonic_ns":monotonic_ns()?,"prompt":pending.prompt,"code":pending.code,"accepted":yes,"reply_delivered":delivered})
+            );
+        }
+    }
     if args.mode == Mode::InstallCancel {
         install_cancel(&args, &requester, &infos, &ids, &deadlines).await?;
     } else if args.mode == Mode::CallerExit {
@@ -594,7 +707,9 @@ async fn execute(args: Args) -> anyhow::Result<()> {
             }
         }
         let expected_phase = match args.mode {
-            Mode::Approve => 4,
+            Mode::Approve | Mode::NumericApprove => 4,
+            Mode::NumericReject => 5,
+            Mode::NumericLate => 7,
             Mode::Reject => 5,
             Mode::Timeout => 7,
             Mode::Cancel => 6,
@@ -628,16 +743,30 @@ async fn execute(args: Args) -> anyhow::Result<()> {
                 "unexpected policy phase{}, expected{expected_phase}",
                 raw.3
             );
-            if args.mode == Mode::Approve {
+            if matches!(args.mode, Mode::Approve | Mode::NumericApprove) {
                 ensure!(
                     raw.6
                         && raw.7
-                        && raw.8 == 9
+                        && raw.8 == if args.mode.numeric() { 11 } else { 9 }
                         && raw.4 == 0
                         && raw.9 == 0
                         && raw.11 == 0
                         && raw.12 == 0,
                     "actual native success required, policy yes insufficient"
+                );
+            } else if args.mode.numeric() {
+                ensure!(
+                    raw.6
+                        && raw.7
+                        && raw.8
+                            == if args.mode == Mode::NumericReject {
+                                5
+                            } else {
+                                7
+                            }
+                        && raw.12 == 0
+                        && raw.10 & 120 == 0,
+                    "numeric negative must retain actual native terminal without proof/install"
                 );
             } else {
                 ensure!(
@@ -647,7 +776,7 @@ async fn execute(args: Args) -> anyhow::Result<()> {
             }
             results.push(raw);
         }
-        if matches!(args.mode, Mode::Cancel | Mode::Timeout) {
+        if matches!(args.mode, Mode::Cancel | Mode::Timeout | Mode::NumericLate) {
             tokio::time::sleep(Duration::from_millis(args.approval_delay_ms + 20)).await;
             for (i, path) in args.connections.iter().enumerate() {
                 ensure!(

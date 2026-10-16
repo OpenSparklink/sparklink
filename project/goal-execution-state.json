@@ -1688,7 +1688,8 @@
         "remaining": "Full original scope andnaturalRCA/nonmanual recovery stillOPEN"
       },
       "report": "docs/evidence/session-prefix-barrier-20261016.json",
-      "qualification_record": "session-prefix-barrier-a0"
+      "qualification_record": "session-prefix-barrier-a0",
+      "maintenance_receipt": "docs/evidence/session-prefix-maintenance-20261016.json"
     }
   },
   "slktest_migration": {

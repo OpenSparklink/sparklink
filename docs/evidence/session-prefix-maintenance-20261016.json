@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "status": "CANONICAL_STATE_AND_FOUR_ISSUES_SYNCHRONIZED",
+  "qualification_report": "docs/evidence/session-prefix-barrier-20261016.json",
+  "report_commit": "4c7b8e4c9034f1efb135ca8787f6d40f70a267cf",
+  "canonical_sync_commit": "f3f9cd260d44dd5354223a5fb4cbc88d453cc3d4",
+  "new_real_or_formal_qualification": false,
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 4,
+      "comment_id": 6217017166,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6217017166",
+      "body_readback_matches": true,
+      "issue_state": "open",
+      "original_body_unchanged": true,
+      "comment_body_sha256": "54477513b3dba79d4036a5538a6a7bca51ef82176d4b44540f0975ba841ae235"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 17,
+      "comment_id": 6217018735,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6217018735",
+      "body_readback_matches": true,
+      "issue_state": "open",
+      "original_body_unchanged": true,
+      "comment_body_sha256": "b409c3e82c24d7a06aa080d34b432e761fe8bc1f4146c614c0ac22dfc0b58c3c"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "comment_id": 6217020281,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6217020281",
+      "body_readback_matches": true,
+      "issue_state": "open",
+      "original_body_unchanged": true,
+      "comment_body_sha256": "9782cc4614c9162e320d4734ecdaba177b0ad9dfd41a4bbb7a4b5422d5b33149"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "comment_id": 6217021648,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6217021648",
+      "body_readback_matches": true,
+      "issue_state": "open",
+      "original_body_unchanged": true,
+      "comment_body_sha256": "13dc3379681739c16100a49fadcec828e1b6e04a421bd35fb3266aca0d03dc17"
+    }
+  ],
+  "checks": {
+    "new_registered_materials": 190,
+    "private_bytes": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "independent_real_capture_replays": 10,
+    "actual_evidence_negative_controls": 100,
+    "registry_negative_classes": 4,
+    "strict_html": "PASS",
+    "inventory": 115,
+    "ci_commit": "ac7730503e8802f047168cb311cbfd77670e18f5",
+    "ci_jobs": 9,
+    "ci_result": "PASS",
+    "overall": "INCOMPLETE",
+    "current_whole_tree": "NOT_REVALIDATED"
+  },
+  "scope": [
+    "Maintenance/readback/integrity only;actual real/formal scope remains in the separately pinned report.",
+    "Source map additionally includes all Sparklink kernel interface headers and actual strong/weak TLC configurations/mapping;not proof of the rest of Linux.",
+    "Original issue bodies/checklists/states untouched;original completed-before-withdrawal and supervisor failures retained.",
+    "S0-S6/19WP/10FV/12DG,VM-only,natural fault RCA and nonmanual recovery remain open."
+  ],
+  "materials": [
+    {
+      "path": ".dev/prefix-barrier-issues-readback-v1.json",
+      "sha256": "0e067986d0671e89fbb3c7022c2ca6e97efdec80e22438f748ed0e37e1f1032f",
+      "bytes": 1679,
+      "access": "private"
+    },
+    {
+      "path": ".dev/prefix-barrier-registry-local-final-v1.json",
+      "sha256": "d92b1172df51d184bf3ab0e6f6838bc7a5b0861366cdfcf992b44e105d257a22",
+      "bytes": 1110,
+      "access": "private"
+    },
+    {
+      "path": ".dev/prefix-barrier-final-source-header-check.json",
+      "sha256": "ab98128e093e875f5300becb95e6f7d6af0e28f132d698551683eabe806a1180",
+      "bytes": 612,
+      "access": "private"
+    },
+    {
+      "path": ".dev/prefix-barrier-docs-final-v1.log",
+      "sha256": "50aa9625d9822882c0e75484960778d987fbe731c348c3121fc4d1294c76c545",
+      "bytes": 201469,
+      "access": "private"
+    },
+    {
+      "path": ".dev/prefix-barrier-qualification-views-v1.json",
+      "sha256": "8c0f0313883197f7f2bd16051005ef6f59ce8d304b0022857f8571922398d674",
+      "bytes": 193856,
+      "access": "private"
+    },
+    {
+      "path": ".dev/prefix-barrier-ci-ac77305.json",
+      "sha256": "bae185c4fe33583572298efdf5295e29d9da86730e39b079a7fcea050cdc61ac",
+      "bytes": 13333,
+      "access": "private"
+    },
+    {
+      "path": ".dev/prefix-barrier-ci-ac77305-jobs.json",
+      "sha256": "fe65a713978e8342d24108ce9052c34af3735a806e93835f500116a8ab93f247",
+      "bytes": 24646,
+      "access": "private"
+    }
+  ]
+}

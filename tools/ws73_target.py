@@ -26,7 +26,7 @@ from types import SimpleNamespace
 from ws73_north_star import file_record, ordinary_identity
 from ws73_capture import check_capture_stats, read_capture
 import ws73_vm_native_root as native_vm
-from build_resources import build_lock, environment as build_environment
+from build_resources import build_lock, configuration as build_configuration, workspace as build_workspace, environment as build_environment
 
 USERSPACE = Path(__file__).resolve().parents[1]
 # Local workspaces keep both repositories side by side. CI checks out the
@@ -146,6 +146,10 @@ def prepare_locked(args, build_fd):
         manifest['userspace_sources'] = [file_record(USERSPACE/p) for p in sorted(set(source_files))]
         manifest['userspace_head'] = subprocess.check_output(['git','rev-parse','HEAD'],cwd=USERSPACE,text=True).strip()
         build_env, manifest['build_resources'] = build_environment()
+        default_target = build_workspace()/build_configuration()['cargo_native_development_target'] if module_profile else USERSPACE/'target'
+        build_target = Path(build_env.get('CARGO_TARGET_DIR',default_target)).resolve()
+        build_env['CARGO_TARGET_DIR'] = str(build_target)
+        manifest['build_resources']['cargo_target_directory'] = str(build_target)
         with (output/'build.log').open('w') as log:
             subprocess.run(['cargo','build','--offline','--locked','-p','libsparklink','--lib'],cwd=USERSPACE,
                            env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
@@ -154,7 +158,7 @@ def prepare_locked(args, build_fd):
                            env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror',
                             '-I'+str(USERSPACE/'crates/libsparklink/include'),str(HERE/'ws73_bindings_probe.c'),
-                            '-L'+str(USERSPACE/'target/debug'),'-Wl,-rpath,/usr/lib','-l:liblibsparklink.so',
+                            '-L'+str(build_target/'debug'),'-Wl,-rpath,/usr/lib','-l:liblibsparklink.so',
                             '-o',str(output/'native-bindings-probe')],stdout=log,stderr=subprocess.STDOUT,check=True)
         root = output/'root'
         for name in ['bin','usr/bin','dev','proc','sys','etc','tmp','run','evidence','boot']:
@@ -224,11 +228,11 @@ def prepare_locked(args, build_fd):
         subprocess.run(compile_queued, check=True)
         manifest['managed_queue_probe_compile'] = compile_queued
         programs['managed-queue-probe'] = queued_probe
-        programs.update({name:USERSPACE/'target/debug'/name for name in ['slkd','slctl','slktest','slkconfig','slkmon','slkdump']})
-        programs['bus-policy-probe'] = USERSPACE/'target/debug/examples/bus_policy_probe'
-        programs['ws73-security-agent-probe'] = USERSPACE/'target/debug/examples/native_security_agent_probe'
+        programs.update({name:build_target/'debug'/name for name in ['slkd','slctl','slktest','slkconfig','slkmon','slkdump']})
+        programs['bus-policy-probe'] = build_target/'debug/examples/bus_policy_probe'
+        programs['ws73-security-agent-probe'] = build_target/'debug/examples/native_security_agent_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
-        shared_library=USERSPACE/'target/debug/liblibsparklink.so'
+        shared_library=build_target/'debug/liblibsparklink.so'
         manifest['unstripped_programs'] = [file_record(p) for p in [*programs.values(),shared_library]]
         for name, source in programs.items():
             copy_elf(source,root/'bin'/name,root)

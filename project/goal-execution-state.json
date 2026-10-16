@@ -1193,6 +1193,15 @@
     "first_exit": "20 roundtrips per pair per connection-role phase,2 role phases,80 total; actual two-end USB/HCC/ACB/DTAP evidence and overlapping business intervals; no simulated replies or radio-only substitution",
     "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
     "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
-    "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only"
+    "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only",
+    "state": "IMPLEMENTED_TEST_GATE_PENDING_NEW_EXACT_SOURCE_VM",
+    "tool": "tools/ws73_parallel_data.py via ws73_target.py --four-device-business",
+    "invariants": [
+      "four distinct Ready registrations and unchanged daemon identity",
+      "two physical pairs; two role phases;80 app-verified random request/replies",
+      "pair-partitioned unchanged connection/socket capture verifier; actual overlapping business windows",
+      "own-pair bounded disconnect/radio cleanup; failures retained; no fault/recovery acceptance"
+    ],
+    "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification"
   }
 }

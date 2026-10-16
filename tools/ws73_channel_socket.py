@@ -30,6 +30,8 @@ def execute(run, phase):
             row['ssap_receipts'].append(receipt);run.save()
         from ws73_ssap_value import execute as ssap_value_execute
         if not row['close_prefix']:ssap_value_execute(run,row)
+        if hasattr(run, 'channel_barrier'):
+            run.channel_barrier(row)
         # Both binds must occur during the same live connection. Never synthesize RX.
         for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
             args=[str(run.args.slctl),'--adapter',entry['owner']['path'],

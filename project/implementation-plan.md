@@ -1087,3 +1087,20 @@ ECANCELED分支可见，不模拟成功USB/固件/协议。未运行目标、缺
 失败；Clang18与本机Clang22环境分开，不作合格发布artifact。尚未实际执行的CI状态
 保持未验收。后续扩展DLI/ACB/CMTC/DTAP/SSAP及Session/Grant/credit序列、syzkaller
 和独立debug VM，不能从本pureC切片继承内核KASAN/KCSAN/锁/引用/USB或硬件资格。
+
+
+### WP07 当前批：四设备两组真实业务的首个正向切片
+
+`tools/ws73_parallel_data.py` 复用现有 Connection/Socket/SSAP 读写观察和两端捕获核对；
+`ws73_target.py run --four-device-business` 独立于旧 `--parallel-pairs` 广播门禁。
+此处是测试接线，**尚未取得新准确提交的四设备业务资格**，不新增生产 Engine。
+
+本批退出：四只独立 Ready、同一未重启 slkd、两组各两种连接角色，每组每角色20次
+61字节随机请求及实际对端校验回复，共80次。两角色均需原始 USB/HCC/ACB/DTAP
+证明两组物理连接共存且业务区间实际重叠；仅同时启动 worker 不足。各组只清理
+自己的连接和 radio；异常、未回收 worker、捕获丢包或缺少一端记录使整轮失败。
+45秒是有界测试同步预算，不刷新原协议/应用期限。离线 fixture 和 pipe 检查只验证
+监督/证据契约，不授予实机或内核并发资格。
+
+通过本切片后再验一组故障时另一组实际回复、四设备长包/压力/公平性、多通道。
+自然恢复、认证/CPCD、Agent在途组合和完整WP07继续开放，保持原S0–S6范围。

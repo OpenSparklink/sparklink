@@ -312,15 +312,20 @@ def support_input():
 
 
 def verify_parallel():
-    from ws73_parallel import corroborate
-    run=json.loads((EVIDENCE/'application/parallel-control/run.json').read_text())
+    business='ws73.parallel_business=1' in Path('/proc/cmdline').read_text().split()
+    if business:
+        from ws73_parallel_data import corroborate
+    else:
+        from ws73_parallel import corroborate
+    name='parallel-business' if business else 'parallel-control'
+    run=json.loads((EVIDENCE/f'application/{name}/run.json').read_text())
     owners=[o for w in run['workers'] for o in w['run']['initial']]
     capture=read_capture(EVIDENCE/'ws73.pcap',[(o['bus'],o['device']) for o in owners])
     count=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     if capture['packet_count']!=count:raise ValueError('parallel sealed capture count mismatch')
     proof=corroborate(run,capture)
-    (EVIDENCE/'parallel-control-proofs.json').write_text(json.dumps(proof,indent=2)+'\n')
-    print('WS73_TARGET_PARALLEL_RF: PASS',flush=True)
+    (EVIDENCE/f'{name}-proofs.json').write_text(json.dumps(proof,indent=2)+'\n')
+    print('WS73_TARGET_PARALLEL_BUSINESS: PASS' if business else 'WS73_TARGET_PARALLEL_RF: PASS',flush=True)
 
 
 def verify_passthrough():

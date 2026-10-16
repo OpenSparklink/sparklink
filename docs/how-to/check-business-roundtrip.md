@@ -109,3 +109,25 @@ python3 tools/ws73_credit_observation.py --run-folder SAVED_VM_RUN --output NEW_
 和 [249 字节报告](../evidence/ws73-standard-driver-move-249-boundary-20261013.json)
 在此直接保留入口，不要求从不断更新的当前资格页反查。原始材料不可取得时只能
 审阅摘要与 hash，不能声称复算或重现。本页也不等于首次设备操作教程。
+
+
+## 核对四设备两组业务记录
+
+这是集成测试维护者的新增门禁，尚未取得当前准确提交的实机资格。
+前置条件是已冻结的 Native VM prepared 目录、四只可独占的真实 WS73、原始捕获
+和普通用户工具。不得与广播 parallel、QMP故障或双设备选择项混用：
+
+```sh
+python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN \
+  --ports 1-2.1.1 1-2.1.2 1-2.1.3 1-2.1.4 --four-device-business
+```
+
+`application/parallel-business/run.json` 必须包含两组 worker、原始四只 Ready身份、
+未变更daemon身份及所有有序pipe屏障。每组两种连接角色各20轮61字节业务，合计80次；
+每条均复用四份实际应用记录和两端USB核对。`parallel-business-proofs.json` 的两个
+角色阶段须各有真实业务区间交集，且交集位于两条物理连接的Up/Down内。
+
+只在所有这些证据及捕获完整性/内核日志门禁通过时接受
+`FOUR_DEVICE_PARALLEL_BUSINESS_PASS`。缺记录、无区间重叠、worker超时或本组清理失败
+均保留FAIL，使用新输出目录重跑；不得手改产物或改用广播证据。
+该结果仍不覆盖单组故障隔离、长包压力、公平性、动态多通道及非人工自动恢复。

@@ -179,9 +179,13 @@ def execute(run, a, b):
             if getattr(run.args,'security_agent',None):
                 from ws73_security_agent import execute as agent_execute
                 agent_execute(run,phase)
+            if hasattr(run, 'connection_barrier'):
+                run.connection_barrier('linked',phase)
             if getattr(run.args, 'channel_socket_verify', False):
                 from ws73_channel_socket import execute as channel_execute
                 channel_execute(run, phase)
+            if hasattr(run, 'connection_barrier'):
+                run.connection_barrier('business-done',phase)
             phase['disconnect_command'] = len(run.data['commands'])
             row = run.command([str(run.args.slctl), '--adapter', caller['path'],
                 'disconnect-object',selected['path']], 18, collection='commands')
@@ -197,6 +201,8 @@ def execute(run, a, b):
             # failure; no local connected/disconnected state means radio OFF.
             run.stop(peer, 'advertise')
             run.check(caller); run.check(peer)
+            if hasattr(run, 'connection_barrier'):
+                run.connection_barrier('down',phase)
             phase['end_wall_ns'] = time.time_ns(); run.save()
         record['status'] = 'CONNECTION_CONTROL_EVIDENCE_PENDING'
     except BaseException as error:

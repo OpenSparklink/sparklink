@@ -61,7 +61,7 @@ class PairRun(Run):
         self.data.setdefault('barriers', []).append(row)
         self.save()
         print(PREFIX+json.dumps(row, separators=(',', ':')), flush=True)
-        if not select.select([sys.stdin], [], [], 15)[0]:
+        if not select.select([sys.stdin], [], [], getattr(self, 'barrier_timeout', 15))[0]:
             raise TimeoutError('bounded parallel peer barrier')
         token = sys.stdin.readline()
         if token == 'parallel-abort\n':
@@ -112,42 +112,46 @@ class PairRun(Run):
         except (Exception, KeyboardInterrupt) as error:
             self.data.update(status='FAIL', error=str(error) or type(error).__name__)
         finally:
-            self.barriers_active = False
-            self.data['cleanup'] = []
-            if self.pid is not None:
-                for port in self.args.ports:
-                    if not (USB_ROOT/port).exists():
-                        self.data['cleanup'].append(dict(port=port, status='FAILED', error='device absent'))
-                        self.data['status'] = 'FAIL'
-                        continue
-                    try:
-                        owner = self.read_registration(port)
-                        failures = []
-                        for domain in ['advertise', 'scan']:
-                            try:
-                                prefix = [str(self.args.slctl.resolve()), '--adapter', owner['path'], domain]
-                                if any(c['args'][:4] == prefix and c['args'][4:5] in [['on'], ['off']]
-                                       for c in self.data['commands']):
-                                    self.require_initialization_invalidated(owner, domain)
-                                self.stop(owner, domain)
-                            except Exception as error:
-                                failures.append(dict(domain=domain, error=str(error)))
-                        if failures:
-                            self.data['cleanup'].append(dict(port=port, status='FAILED', errors=failures))
-                            self.data['status'] = 'FAIL'
-                            continue
-                        self.data['cleanup'].append(dict(port=port, status='STOP_CONFIRMED'))
-                    except Exception as error:
-                        self.data['cleanup'].append(dict(port=port, status='FAILED', error=str(error)))
-                        self.data['status'] = 'FAIL'
-            self.save()
+            self.cleanup()
         print(self.data['status'], self.output/'run.json', flush=True)
         return 0 if self.data['status'] == self.SUCCESS else 1
+
+    def cleanup(self):
+        self.barriers_active = False
+        self.data['cleanup'] = []
+        if self.pid is not None:
+            for port in self.args.ports:
+                if not (USB_ROOT/port).exists():
+                    self.data['cleanup'].append(dict(port=port, status='FAILED', error='device absent'))
+                    self.data['status'] = 'FAIL'
+                    continue
+                try:
+                    owner = self.read_registration(port)
+                    failures = []
+                    for domain in ['advertise', 'scan']:
+                        try:
+                            prefix = [str(self.args.slctl.resolve()), '--adapter', owner['path'], domain]
+                            if any(c['args'][:4] == prefix and c['args'][4:5] in [['on'], ['off']]
+                                   for c in self.data['commands']):
+                                self.require_initialization_invalidated(owner, domain)
+                            self.stop(owner, domain)
+                        except Exception as error:
+                            failures.append(dict(domain=domain, error=str(error)))
+                    if failures:
+                        self.data['cleanup'].append(dict(port=port, status='FAILED', errors=failures))
+                        self.data['status'] = 'FAIL'
+                        continue
+                    self.data['cleanup'].append(dict(port=port, status='STOP_CONFIRMED'))
+                except Exception as error:
+                    self.data['cleanup'].append(dict(port=port, status='FAILED', error=str(error)))
+                    self.data['status'] = 'FAIL'
+        self.save()
 
 
 class EventReader:
     """Consume live pipes, not mutable worker output files."""
-    def __init__(self, processes, rows):
+    def __init__(self, processes, rows, timeout_seconds=15):
+        self.timeout_seconds = timeout_seconds
         self.watch = selectors.DefaultSelector()
         self.buffers = {n: b'' for n in range(2)}
         self.queue = {n: [] for n in range(2)}
@@ -172,7 +176,7 @@ class EventReader:
                         self.queue[pair].append(json.loads(line[len(PREFIX):]))
 
     def waits(self, processes, phase, number):
-        deadline = time.monotonic()+15
+        deadline = time.monotonic()+self.timeout_seconds
         result = []
         for pair in range(2):
             while not self.queue[pair]:

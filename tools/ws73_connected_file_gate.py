@@ -362,8 +362,11 @@ def run(args):
     encryption='ws73.security_encryption=1' in Path('/proc/cmdline').read_text().split()
     agreement='ws73.security_key_agreement=1' in Path('/proc/cmdline').read_text().split()
     capabilities='ws73.security_capabilities=1' in Path('/proc/cmdline').read_text().split()
+    idle_trace='ws73.session_idle=1' in Path('/proc/cmdline').read_text().split()
+    idle_observer=None
     data_deadline='ws73.channel_deadline=1' in Path('/proc/cmdline').read_text().split()
     link_down='ws73.channel_link_down=1' in Path('/proc/cmdline').read_text().split()
+    if idle_trace and (not channel_gate or args.case!='release' or reply_hold or data_deadline or link_down or capabilities or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate established ordinary prefix/idle VM required')
     if link_down and (not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):
         raise ValueError('direct Down requires separate bidirectional begun-PDU release-mode environment')
     if data_deadline and (link_down or not channel_gate or args.case!='release' or reply_hold or getattr(args,'channel_directions',False) or getattr(args,'channel_scm_rights',False) or not 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split()):raise ValueError('separate bidirectional begun-PDU original-deadline environment required')
@@ -469,11 +472,12 @@ def run(args):
                 if time.monotonic()>deadline:raise TimeoutError('actual connection')
                 time.sleep(.002)
             if result.state!=4:raise ValueError('actual Create failed')
-        def outcomes(key,codes):
+        def outcomes(key,codes,index=None):
             deadline=time.monotonic()+8
             while True:
                 drain();values=[[e for e in events if e['event'] in codes] for events in r['events']]
-                if all(len(v)==1 for v in values):return [v[0] for v in values]
+                if index is not None and len(values[index])==1:return values[index][0]
+                if index is None and all(len(v)==1 for v in values):return [v[0] for v in values]
                 if time.monotonic()>deadline:raise TimeoutError('both actual '+key+' events')
                 time.sleep(.002)
         if not reply_hold:
@@ -495,7 +499,11 @@ def run(args):
         if channel_gate:
             from ws73_channel_grant import Gate
             grant=Gate(observers,snapshots,leases,i,r,save,directional,scm_rights)
+            if idle_trace:
+                from ws73_session_idle import SessionIdleTrace
+                idle_observer=SessionIdleTrace(r,save)
             grant.exchange('before')
+            if idle_observer:idle_observer.idle(grant)
             if capabilities:
                 if cancel_pending:r['security_cancel_pending']=True
                 if original_deadline:r['security_original_deadline']=True
@@ -582,11 +590,13 @@ def run(args):
                 else:raise ValueError('malformed/stale snapshot input accepted')
                 if bytes(buffer)!=original:raise ValueError('failed query modified caller input')
             r['snapshot_error_observations'].append(bytes(observers[i].link_snapshot()).hex());save()
+        if idle_observer:idle_observer.finish()
         r.update(end_wall_ns=time.time_ns(),status='INFLIGHT_FILE_PASS' if reply_hold else 'CONNECTED_FILE_PASS');verify_records(r);save()
         print('WS73_TARGET_CONNECTED_FILE_PASS',flush=True)
     except BaseException as error:
         r.update(status='FAIL',error=str(error),error_type=type(error).__name__);save();raise
     finally:
+        if idle_observer:idle_observer.close()
         if grant:grant.close()
         if alias is not None:os.close(alias)
         for handle in handles:handle.close()

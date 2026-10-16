@@ -67,3 +67,48 @@ class PrefixHold(unittest.TestCase):
                 helper.held(m);h.poll(m);helper.marker(h,'release_ready');h.poll(m)
                 self.assertTrue(h.record['complete'])
                 self.assertEqual(len(m.sets),2)
+
+
+def primed_fixture():
+    from ws73_channel_grant import message
+    from sparklink.structs import SleChannelTxStatus
+    r,c,h,s,e=fixture();g=r['channel_grant'];d=r['prefix_hold'];d['primed']=True
+    payloads=[message().hex() for _ in range(4)];o=g['owners'][0]
+    v=SleChannelTxStatus(version=1,size=64,controller=0,generation=o['generation'],lifetime=o['lifetime'],handle=o['handle'],packet_maximum=254,capacity=5,outstanding=4,connection_debt=4,flags=1)
+    p=dict(status='PRIMING_RECEIPTS_RECORDED',payloads=payloads,start_wall_ns=700_000_000,end_wall_ns=900_000_000,source_pool_samples=[dict(stage='tx_status',pid=g['workers'][0]['pid'],fd=g['workers'][0]['fd'],value=bytes(v).hex())],applications=[])
+    for n,w in enumerate(g['workers']):p['applications'].append(dict(stage='primed',sender=n==0,pid=w['pid'],fd=w['fd'],values=payloads.copy(),start_wall_ns=710_000_000,end_wall_ns=800_000_000))
+    g['priming']=p;g['revoke_prefix']['admission_before_wall_ns']=1_400_000_000
+    g['armed'].update(pre_block_tx_status_wall_ns=1_650_000_000,wall_ns=1_660_000_000)
+    v=SleChannelTxStatus.from_buffer_copy(bytes.fromhex(g['armed']['pre_block_tx_status']));v.active_pdu_offset=254;g['armed']['pre_block_tx_status']=bytes(v).hex()
+    peer=dict(wall_ns=2_100_000_000);r['data_link_down']=dict(submit_before_wall_ns=1_900_000_000,submit_after_wall_ns=1_910_000_000,peer_down_while_held=peer.copy(),peer_down_receipt_wall_ns=2_110_000_000,down=[dict(wall_ns=2_300_000_000),peer])
+    d['markers'][2]['wall_ns']=2_200_000_000;d['acks'][2]['host_wall_ns']=2_210_000_000;d['ack_receipts'][2]['wall_ns']=2_220_000_000
+    c['acb_packets']=[]
+    for j,payload in enumerate(payloads):
+        wire=b'\x1f\0\x3e\0\xf1'+bytes.fromhex(payload)
+        for n,direction in [(0,'out'),(1,'in')]:c['acb_packets'].append(dict(**r['usb'][n],handle=0,direction=direction,boundary=0,data=wire.hex(),wall_ns=720_000_000+j*1_000_000+n,record=100+j*2+n,completion={'record':200+j*2+n}))
+    wire=b'\x1f\0\xfb\x07\xf1'+bytes.fromhex(g['revoke_prefix']['payload'])
+    c['acb_packets'].append(dict(**r['usb'][0],handle=0,direction='out',boundary=1,data=wire[:254].hex(),wall_ns=1_410_000_000,record=300,completion={'record':301}))
+    c['native_events'][1].update(record=500,wall_ns=2_300_000_000)
+    c['native_events'][2].update(record=400,wall_ns=2_100_000_000)
+    for j,event in enumerate(c['native_events'][3:]):event['wall_ns']=2_211_000_000+j
+    return r,c,h,s,e
+
+
+class PrimedDownHold(unittest.TestCase):
+    def test_four_real_peer_primers_leave_one_credit_for_begun_pdu(self):
+        r,c,h,s,e=primed_fixture();p=corroborate(r,c,h,s,e)
+        self.assertEqual(p['submitted_before_snapshot'],1);self.assertEqual(p['priming_one_way_deliveries'],4)
+
+    def test_priming_does_not_replace_peer_receipt_credit_or_wire_evidence(self):
+        for kind in ['count','app','fd','debt','late-prime','peer-down','early-release','missing-wire','corrupt-wire']:
+            r,c,h,s,e=primed_fixture();p=r['channel_grant']['priming']
+            if kind=='count':p['payloads'].pop()
+            elif kind=='app':p['applications'][1]['values'][0]=p['applications'][1]['values'][1]
+            elif kind=='fd':p['source_pool_samples'][0]['fd']+=1
+            elif kind=='debt':p['source_pool_samples'][0]['value']='00'*64
+            elif kind=='late-prime':p['end_wall_ns']=1_500_000_000
+            elif kind=='peer-down':r['data_link_down']['peer_down_while_held']['wall_ns']=1
+            elif kind=='early-release':r['prefix_hold']['markers'][2]['wall_ns']=2_105_000_000
+            elif kind=='missing-wire':c['acb_packets'].pop(1)
+            else:c['acb_packets'][1]['data']='00'*66
+            with self.subTest(kind=kind),self.assertRaises(ValueError):corroborate(r,c,h,s,e)

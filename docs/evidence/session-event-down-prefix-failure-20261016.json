@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "status": "FAIL",
+  "compiled_kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+  "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+  "executed_tools": "3f10abb106234063d8b1b1cfa8901e3cc7de145b",
+  "scope": [
+    "Original32-case bfaa event/deadline matrix stopped at directDown index1;14 real gates PASS/1FAIL/17NOT_RUN.",
+    "Original incomplete-PDU assertion unchanged;Guest success marker never overrides independent USB verdict.",
+    "No observed submit after sourceUSBDown in this sample;USB receipt,Host publication,actual RF andapplication delivery are distinct.",
+    "Failure is retained test-precondition loss,not natural recovery or full submission/reuse proof."
+  ],
+  "finding": {
+    "status": "INCOMPLETE_PDU_PRECONDITION_LOST_NOT_POST_DOWN_SUBMISSION_OBSERVED",
+    "original_result": "FAIL",
+    "compiled_kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+    "pcap_sha256": "af225d869e1a5c66a95d822708cdfd9de485e22dce4ee7af77a6fdb0bb6add6f",
+    "source_usb_down_ns": 1792161666462704000,
+    "peer_usb_down_ns": 1792161666455254000,
+    "source_guest_down_receipt_ns": 1792161666472591475,
+    "last_fragment_usb_submit_ns": 1792161666462552000,
+    "last_fragment_before_source_usb_down_ns": 152000,
+    "complete_pdu_before_source_down": true,
+    "usb_submissions_after_source_usb_down": 0,
+    "limitation": "USBDown receipt and kernel Host publication are distinct;no proof of exact kernel linearization or RF delivery",
+    "next": "Keep oracle;real4-peer-validated primers/four unpaid source credits leave one for longPDU;wait actualpeerDown before releasing originalNOCP"
+  },
+  "passed_real_gates": [
+    "short20",
+    "window",
+    "rate",
+    "duplex",
+    "dynamic2042",
+    "burst2042",
+    "prefix2042",
+    "release0",
+    "release1",
+    "close0",
+    "close1",
+    "dup0",
+    "dup1",
+    "down0"
+  ],
+  "not_run": [
+    "deadline0",
+    "deadline1",
+    "fixed248",
+    "fixed249",
+    "fixed250",
+    "fixed253",
+    "fixed254",
+    "fixed255",
+    "fixed1024",
+    "dynamic249",
+    "dynamic250",
+    "dynamic253",
+    "dynamic254",
+    "dynamic255",
+    "dynamic1024",
+    "window-repeat2",
+    "window-repeat3"
+  ],
+  "new_test_fix": {
+    "status": "IMPLEMENTED_OFFLINE_NOT_REAL_QUALIFIED",
+    "behavior": "Four distinct ordinary61byte one-way messages actually validated bypeer;four unpaid sourcecredits leave one forbegun2042bytePDU. Wait realpeerDown before releasing originalNOCP.",
+    "original_deadlines_and_oracle_unchanged": true,
+    "priming_round_trips": 0,
+    "priming_one_way_deliveries": 4,
+    "no_synthetic_packets": true
+  },
+  "idle_observer": {
+    "status": "IMPLEMENTED_OFFLINE_NOT_REAL_QUALIFIED",
+    "behavior": "Dedicated VM functiontrace actual sl_work;drained ordinaryfd snapshots,realbusiness before/controlledprefix after,loss-freeCPUstats andfinite2s idle interval",
+    "scope": "Callback counts only;not Runtime idleCPU,unbounded/concurrent proof or latency qualification"
+  },
+  "checks": {
+    "tool_tests": 647,
+    "tool_result": "PASS",
+    "strict_html": "PASS",
+    "inventory": 115,
+    "production_rust_tests": 48,
+    "enqueue_cbmc_checks": 301,
+    "enqueue_event_bound": 20,
+    "deadline_cbmc_checks_each_word_width": 28,
+    "word_widths": [
+      32,
+      64
+    ],
+    "negative_controls": [
+      "wrong queue reference",
+      "wrong deadline maximum",
+      "insufficient unwind"
+    ],
+    "formal_scope": "Production bodies/purehelpers with explicit sequential API andLinux modulo-clock assumptions;no actualkernelconcurrency/completeFV claim"
+  },
+  "remaining": [
+    "Complete original32-case matrix andsameconfig idle/event observation with precise source identities;newtests nothardwarequalified yet.",
+    "Natural fault rootcauses,nonmanualrecovery,NOCP truth/duplicate/late attribution,reuse/drain,KCSAN/lockdep,fullS0-S6/19WP/10FV/12DG remainOPEN."
+  ],
+  "materials": [
+    {
+      "path": ".dev/session-event-qualification-v1.json",
+      "sha256": "0c63686f9db929ed1d7ae2f7ec82c9162e0e9a622e3192e1deae3e663c236f40",
+      "bytes": 37121,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-down1-analysis-v1.json",
+      "sha256": "0f1c8fe6703c26f1ce2658e686a82cfe4d262ae1c005467ae1ae63da76cf04f6",
+      "bytes": 3138,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-down1-analysis-v2.json",
+      "sha256": "60df4c8a3007fd317502e59aed2699ef2f2dfababacbd4accb4700c77c68fffa",
+      "bytes": 886,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-down1-v1/manifest.json",
+      "sha256": "6bf7c7bc7eacca0852fa3012c9abbdd49a558d594bd10a80cf9ddb94b73d1bcc",
+      "bytes": 45923,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-down1-v1/guest-output/connected-file/run.json",
+      "sha256": "73c6b2f01111fd07943ff54abbfa3b0909e9c1b5536f0a97aff0b238bae0b6b5",
+      "bytes": 42483,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-down1-v1/guest-output/ws73.pcap",
+      "sha256": "af225d869e1a5c66a95d822708cdfd9de485e22dce4ee7af77a6fdb0bb6add6f",
+      "bytes": 84874,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-down1-v1/qemu-stderr.log",
+      "sha256": "bd295c9d83094054e4fc105425eb03b08fdccea72b611d3ac3db60d415cc4726",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-down1-v1/qmp.jsonl",
+      "sha256": "fd44948226d9fcca373f04b1b3832e61ece1478a413a2b3801decd95c16f3a89",
+      "bytes": 11151,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-kernel-build-v1.json",
+      "sha256": "4da6f8bb41637962f5e6c41a8704bb851dae7ddf11ff8d77973690e39384520a",
+      "bytes": 1645,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-build-budget-v1.json",
+      "sha256": "1f207bb1a49f16d02b2315c32950129210ca939136e9a70332ebf36a0ef6666c",
+      "bytes": 1070,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-toolkit-python-final-v2.log",
+      "sha256": "0f61d0f2ddf18ddf7472f1a16f63df3cf453a0740ec2ca1ff85015aa4e765029",
+      "bytes": 782,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-native-clean-v1.json",
+      "sha256": "aa98c47dd5aef0948b74b24a92f8147dc8f4049822ca79cde542ab733952395d",
+      "bytes": 2208,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-dispatch-clean-v1.json",
+      "sha256": "da59472fe592f4cf799155a9d7687cf2f4671dc329008f2fb2ab9c72aa872a25",
+      "bytes": 2228,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-deadline-cbmc-final-v2/report.json",
+      "sha256": "9892ca3b4fa9b7ce3dd58403bccd9b5bb256b5bb9b94fe4178e2a54e28cc06ad",
+      "bytes": 6358,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-enqueue-cbmc-final-v1/report.json",
+      "sha256": "187f14ecb95a304afd0883fb6782283c924a099d842d004239a974d86b6dcde9",
+      "bytes": 3211,
+      "access": "private"
+    }
+  ]
+}

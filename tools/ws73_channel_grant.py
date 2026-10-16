@@ -157,6 +157,21 @@ def worker(data, control):
                     arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False);arrived=arrived.hex();sent=None
                 if denied!=errno.EACCES:raise ValueError('exact forbidden direction EACCES required')
                 send(control,dict(stage='oneway',initiator=command['initiator'],sent=sent,received=arrived,direction_errno=denied,denied_marker=marker.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
+            elif kind=='prime':
+                payloads=[bytes.fromhex(v) for v in command['payloads']]
+                if len(payloads)!=4 or len(set(payloads))!=4:raise ValueError('four distinct bounded real priming messages required')
+                values=[];before=time.time_ns()
+                for payload in payloads:
+                    validate(payload,payload,False)
+                    if command['sender']:
+                        if data.send(payload,socket.MSG_NOSIGNAL)!=len(payload):raise ValueError('partial priming send')
+                        values.append(payload.hex())
+                    else:
+                        arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False);values.append(arrived.hex())
+                send(control,dict(stage='primed',sender=command['sender'],values=values,pid=os.getpid(),fd=data.fileno(),start_wall_ns=before,end_wall_ns=time.time_ns()))
+            elif kind=='tx_status':
+                from sparklink.native import channel_tx_status
+                send(control,dict(stage='tx_status',pid=os.getpid(),fd=data.fileno(),value=bytes(channel_tx_status(data.fileno())).hex(),wall_ns=time.time_ns()))
             elif kind=='block':
                 prefix=command.get('prefix');admission={}
                 if prefix is not None:
@@ -262,6 +277,23 @@ class Gate:
             row=dict(label=label,initiator=initiator,payload=payload.hex(),applications=receipts,start_wall_ns=start,end_wall_ns=time.time_ns());rows.append(row)
             self.row['business'].append(row);self.save()
         return rows
+
+    def prime(self):
+        from ws73_management_setup import decode
+        from sparklink.structs import SleChannelTxStatus
+        payloads=[message().hex() for _ in range(4)]
+        row=dict(payloads=payloads,start_wall_ns=time.time_ns(),applications=[],source_pool_samples=[])
+        self.row['priming']=row;self.save()
+        for n,parent in enumerate(self.parents):send(parent,dict(kind='prime',sender=n==self.index,payloads=payloads))
+        row['applications']=[receive(parent) for parent in self.parents];self.save()
+        deadline=time.monotonic()+.5
+        while True:
+            send(self.parents[self.index],dict(kind='tx_status'));value=receive(self.parents[self.index]);row['source_pool_samples'].append(value);self.save()
+            tx=decode(SleChannelTxStatus,value['value'])
+            if (tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset)==(4,4,1,0,0,0,0):break
+            if time.monotonic()>deadline:raise TimeoutError('actual four unpaid priming credits before long PDU')
+            time.sleep(.005)
+        row.update(end_wall_ns=time.time_ns(),status='PRIMING_RECEIPTS_RECORDED');self.save()
 
     def arm(self, sample_before_block=False):
         request=dict(kind='block')

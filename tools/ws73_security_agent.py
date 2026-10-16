@@ -21,6 +21,9 @@ def execute(run,phase):
         return cli_execute(run,phase,row)
     paths=[v['object']['path'] for v in phase['typed_objects']]
     command=['/bin/ws73-security-agent-probe','--connections',*paths,'--mode',mode]
+    # Same witness/Engine: only add read-only current Session observations.
+    row['live_security_required']=mode in ['approve','numeric-approve','numeric-reject','numeric-late']
+    if row['live_security_required']:command+=['--observe-connection-security']
     if mode=='timeout':command+=['--timeout-ms','500','--approval-delay-ms','800']
     elif mode in ['cancel','agent-exit','caller-exit']:command+=['--approval-delay-ms','700']
     if mode=='install-cancel':
@@ -34,6 +37,23 @@ def execute(run,phase):
         from ws73_security_install_hold import collect
         collect(row,folder)
     row['end_wall_ns']=time.time_ns();row['status']='PENDING_USB_AND_APPLICATION_CORROBORATION';run.save()
+
+def live_security(stages,paths,infos,mode):
+    """Typed D-Bus snapshots; actual relay/install proof remains independent."""
+    level=1 if mode=='approve' else 2 if mode=='numeric-approve' else 0
+    for path,info in zip(paths,infos):
+        snapshots=[]
+        for key,wanted in [('current_security_before',0),('current_security_after',level)]:
+            rows=[v for v in stages.get(key,[]) if v.get('path')==path]
+            if len(rows)!=1:raise CaptureError('missing/duplicate current Session security snapshot')
+            v=rows[0]['snapshot'];facts=(0,0,0) if not wanted else (13,3,16) if wanted==1 else (15,4,16)
+            if (len(v)!=9 or v[:3]!=info[:3] or type(v[3]) is not int or v[3]<=0 or v[4]!=1
+                    or v[5]!=wanted or tuple(v[6:])!=facts):raise CaptureError('invalid current mechanism facts/identity/epoch')
+            snapshots.append(rows[0])
+        if snapshots[0]['wall_ns']>=snapshots[1]['wall_ns']:raise CaptureError('current snapshot time order')
+        if snapshots[1]['snapshot'][3]<snapshots[0]['snapshot'][3]:raise CaptureError('current security epoch regressed')
+        if level and snapshots[1]['snapshot'][3]==snapshots[0]['snapshot'][3]:raise CaptureError('positive mechanism requires actual new receipt epoch')
+    return len(paths)*2
 
 def witness(row,phase,daemon,binary=None):
     if row.get('mode','').startswith('cli-'):
@@ -49,6 +69,7 @@ def witness(row,phase,daemon,binary=None):
                   'probe_identity':1,'allocated':2,'agent_callback':2,'probe_complete':1,'policy_result':2}
     numeric=row['mode'].startswith('numeric-')
     if numeric:expected.update(numeric_callback=2,numeric_decision=2)
+    if row.get('live_security_required'):expected.update(current_security_before=2,current_security_after=2)
     if row['mode']=='install-cancel':expected.update(install_barrier=2,install_before_cancel=1,install_cancelled=1,install_terminal_stable=1)
     if {key:len(value) for key,value in stages.items()}!=expected:raise CaptureError('missing/duplicate/unexpected Agent witness stages')
     identity=stages['probe_identity'][0]
@@ -104,6 +125,8 @@ def witness(row,phase,daemon,binary=None):
                 if (not result['agent_approved'] or not result['native_admitted'] or result['kernel_state']!=9
                         or any(result[k] for k in ['error','kernel_error','kernel_status','cleanup_error'])):raise CaptureError('actual native result distinct from policy yes required')
             elif result['native_admitted'] or result['kernel_state']:raise CaptureError('pre-admission negative path cannot enter physical mechanism')
+    if row.get('live_security_required'):
+        live_security(stages,paths,identity['infos'],row['mode'])
     return stages
 
 def wire(row,phase,capture):
@@ -214,6 +237,7 @@ def corroborate(control,capture):
         proof=wire(row,phase,capture)
         post_terminal_numeric(row,phase,capture)
         if business['session_start_wall_ns']!=phase['start_wall_ns'] or business['start_wall_ns']<row['end_wall_ns'] or business.get('close_prefix'):raise CaptureError('same physical Session ordinary application delivery must follow Agent procedure')
-        result.append(dict(mode=row['mode'],wire=proof,application_phase=business['phase']))
+        result.append(dict(mode=row['mode'],wire=proof,application_phase=business['phase'],
+            current_security_snapshots=4 if row.get('live_security_required') else 0))
     return dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=result,
-        business_round_trips=business_proof['round_trips'],scope='Actual ordinary control user Agent callbacks, original owner/reference/deadline, real dual-controller wire and subsequent peer-checked business. Not authentication/Bond/full deployment/udev/systemd/natural recovery.')
+        business_round_trips=business_proof['round_trips'],current_security_snapshots=sum(v['current_security_snapshots'] for v in result),scope='Actual ordinary control user Agent callbacks, original owner/reference/deadline, real dual-controller wire and subsequent peer-checked business. Not authentication/Bond/full deployment/udev/systemd/natural recovery.')

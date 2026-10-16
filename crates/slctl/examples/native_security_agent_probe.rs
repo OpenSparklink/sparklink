@@ -68,6 +68,42 @@ struct Args {
     approval_delay_ms: u64,
     #[arg(long)]
     install_hold_directory: Option<PathBuf>,
+    /// New kernel snapshot qualification only; not policy/Agent emulation.
+    #[arg(long)]
+    observe_connection_security: bool,
+}
+type CurrentSecurity = (u64, u64, u16, u64, u32, u32, u32, u8, u8);
+async fn current_security(
+    c: &Connection,
+    path: &str,
+    info: &Info,
+    stage: &str,
+    level: u32,
+) -> anyhow::Result<()> {
+    let proxy = zbus::Proxy::new(c, SERVICE, path, "org.sparklink.Connection").await?;
+    let value: CurrentSecurity = proxy.call("GetSecurityState", &()).await?;
+    ensure!(
+        (value.0, value.1, value.2) == (info.0, info.1, info.2)
+            && value.3 != 0
+            && value.4 == 1
+            && value.5 == level,
+        "current physical security identity/epoch/level mismatch"
+    );
+    let expected = match level {
+        0 => (0, 0, 0),
+        1 => (13, 3, 16),
+        2 => (15, 4, 16),
+        _ => bail!("unsupported expected mechanism"),
+    };
+    ensure!(
+        (value.6, value.7, value.8) == expected,
+        "current mechanism facts must agree"
+    );
+    println!(
+        "{}",
+        json!({"stage":stage,"wall_ns":wall(),"path":path,"snapshot":value})
+    );
+    Ok(())
 }
 fn wall() -> u64 {
     SystemTime::now()
@@ -524,6 +560,18 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         infos.push(info);
     }
     ensure!(infos[0].3 != infos[1].3, "opposite physical roles required");
+    if args.observe_connection_security {
+        ensure!(
+            matches!(
+                args.mode,
+                Mode::Approve | Mode::NumericApprove | Mode::NumericReject | Mode::NumericLate
+            ),
+            "current snapshot qualification requires explicit supported scenario"
+        );
+        for (path, info) in args.connections.iter().zip(&infos) {
+            current_security(&requester, path, info, "current_security_before", 0).await?;
+        }
+    }
     println!(
         "{}",
         json!({"stage":"probe_identity","wall_ns":wall(),"process_status":process,"requester":requester.unique_name().unwrap().as_str(),"daemon_owner":daemon.as_str(),"daemon_pid":daemon_pid,"mode":format!("{:?}",args.mode),"connections":args.connections,"infos":infos,"missing_agent_refusals":2,"unknown_registration_refusals":2})
@@ -784,6 +832,16 @@ async fn execute(args: Args) -> anyhow::Result<()> {
                         == serde_json::to_value(results[i])?,
                     "late approval must not rewrite a terminal result"
                 );
+            }
+        }
+        if args.observe_connection_security {
+            let level = match args.mode {
+                Mode::Approve => 1,
+                Mode::NumericApprove => 2,
+                _ => 0,
+            };
+            for (path, info) in args.connections.iter().zip(&infos) {
+                current_security(&requester, path, info, "current_security_after", level).await?;
             }
         }
     }

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "EXACT_CLEAN_9CD_TOOLS669_AND_RUST27_PASS",
+  "result": "PASS",
+  "compiled_kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+  "compiled_userspace": "9cd53fe3053b8b7dd19645042fc7c29d06b1ee34",
+  "executed_tools": "9cd53fe3053b8b7dd19645042fc7c29d06b1ee34",
+  "tree_clean": true,
+  "environment": {
+    "SPARKLINK_KERNEL_SOURCE": "workspace/linux",
+    "PYTHONPATH": "tools:bindings/python"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests"
+  ],
+  "tools_tests": 669,
+  "rust_tests": 27,
+  "related_report": "session-concurrent-progress-20261017.json",
+  "scope": [
+    "Supplementexactclean toolsource validation;existingactualrealcapture remainscompiledc4/9cd andexecuted9cd.",
+    "Earlierfairness-all-tools-v2.log executedworktree containing preservedfourdeviceWIP,supportonlynotexactfrozen identity. Thisnewfullsuite provesactualclean9cdtools independently.",
+    "Firstclean-run lackedSPARKLINK_KERNEL_SOURCE andfailed4canonicalUAPI/QEMUhelper imports because frozenclone .dev/linuxdoesnotexist;originalfailurelogretained. Correctexplicitkernelpath matchesactualVMrecipe,assertions unchanged.",
+    "27actualRusttests executedclean9cd andELFsretainedinrelatedreport;no Kernelconcurrency,formal,performance ornaturalrecovery qualification."
+  ],
+  "materials": [
+    {
+      "path": ".dev/fairness-frozen-tools-v1.log",
+      "sha256": "a21315f862e196df2eea75a08e3faa8053836771d1cfd8909ab71bb1d86e0116",
+      "bytes": 6282,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;replayclean signedtooltree withlisted sourceenv,no physicaldevice operations."
+    },
+    {
+      "path": ".dev/fairness-frozen-tools-v2.log",
+      "sha256": "b795ba74a317acbf0b15bbe9c421988f375f66f6f6f8af7ee226754cff2a5e8f",
+      "bytes": 804,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;replayclean signedtooltree withlisted sourceenv,no physicaldevice operations."
+    },
+    {
+      "path": ".dev/fairness-frozen-tests-v1.log",
+      "sha256": "f461f807d39f363366c6d30b8ae083c3e9a0eb991477ae8e13db5468e6268172",
+      "bytes": 4076,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;replayclean signedtooltree withlisted sourceenv,no physicaldevice operations."
+    },
+    {
+      "path": ".dev/fairness-frozen-test-build-v1.json",
+      "sha256": "0ea058c33889fd86a8c2003d1eda3a438d8f41cc66d55856155ff4ecf1b5e361",
+      "bytes": 848,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;replayclean signedtooltree withlisted sourceenv,no physicaldevice operations."
+    }
+  ]
+}

@@ -49,6 +49,17 @@ class LiveSecurity(unittest.TestCase):
             seal(r)
             with self.subTest(kind=kind),self.assertRaises(CaptureError):witness(r,phase,daemon)
 
+    def test_current_positive_aggregator_cannot_drop_protected_witness_guard(self):
+        from unittest.mock import patch
+        from ws73_security_agent import corroborate
+        row,phase,daemon,_=live_fixture()
+        # Isolate the new aggregation prerequisite; not a fake physical PASS.
+        control=dict(connection_control=dict(phases=[phase,phase]),security_agent=[row,row],
+                     channel_socket=[{},{}],bus_before=daemon)
+        with patch('ws73_channel_socket.corroborate',return_value={}):
+            with self.assertRaisesRegex(CaptureError,'protected Grant witnesses'):
+                corroborate(control,{})
+
     def test_actual_receipt_barrier_requires_captured_per_link_events(self):
         r,p,_,c=live_fixture();live_security_wire(r,p,c)
         for kind in ['epoch','missing','extra','foreign-controller']:

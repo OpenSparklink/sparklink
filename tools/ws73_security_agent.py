@@ -278,6 +278,10 @@ def corroborate(control,capture):
     if len(rows)!=2 or len(phases)!=2:raise CaptureError('both exchanged connection roles required')
     result=[]
     for row,phase,business in zip(rows,phases,control['channel_socket'],strict=True):
+        # New executions must opt into the complete protected-fd witness. Old
+        # reports retain their original frozen verifier; do not upgrade them.
+        if row['mode'] in ['approve','numeric-approve'] and row.get('protected_grant_required') is not True:
+            raise CaptureError('current positive qualification requires protected Grant witnesses')
         witness(row,phase,control['bus_before'],control.get('slctl'))
         proof=wire(row,phase,capture)
         live_security_wire(row,phase,capture)

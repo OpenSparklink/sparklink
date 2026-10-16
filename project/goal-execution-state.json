@@ -670,7 +670,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T12:33:51.104362+00:00",
+  "updated_at_utc": "2026-10-16T13:50:41.221909+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -732,13 +732,13 @@
       "Production stateful fuzz,submit-revoke-Down-original-deadline/debugVM and minimum authenticated authorization parallel;no all-control prerequisite"
     ]
   },
-  "execution_phase": "P1 actualNative pairedbaseline240 andsingleRXgap observed;retainedregression16PASS/1peerDownFAIL;P2events next alongside failureRCA/resources/Agent/SSAP",
+  "execution_phase": "P2a immediate-wake kernel a0:controlled-prefix lifecycle10 PASS/24 pre-control business exchanges;original f355 matrix FAIL retained. Next separate original-deadline scheduling and finite event-driven TX;full scope OPEN.",
   "next_resume_tasks": [
-    "P2implement uniqueSession immediate ready events separatedfromoriginal-deadline timer;write exitconditions/ref/lock/drain/noLostWake andproductiontests before realVM comparison.",
-    "Retain first253 DownFAIL;trace peerDown5.080471s afterlocal vs5s propertybudget,do notrelaxdeadline orclaimrootcause;boundedrepeatPASS doesnoterasefailure.",
-    "Compare sameconfig fullcapture ordinaryslktest old/new,preserve240baseline andalloldqualifications;collecttraceoverhead/resources/actualparameters separately.",
-    "Continue boundedTX,realcredit/backpressure,multichannel/fourdevices andSSAP/Agent inparallel;noallcontrolraces prerequisite.",
-    "Measure callbacksegments/RXstress beforemultiURB;current1920 lowloadgaps P50=7us/P99=24us/max87us noRXdriverchange."
+    "Separate uniqueSession immediate ready events from earliest original-deadline scheduling;classify retry reasons and finite budgets before removing10ms fallback.",
+    "Reuse a0/9385 artifacts and3f10 controlled-prefix barrier as lifecycle baseline;preserve original f355 completed-before-withdrawal FAIL and supervisor enum FAIL.",
+    "Compare sameconfig real socket measurements and retained lengths after runtime changes;no performance or RXmultiURB claim without measured evidence.",
+    "Continue existing Agent/security/SSAP/dynamic/fourdevice work with relevant invariants only;no all-control-race prerequisite.",
+    "Natural fault RCA/nonmanual recovery/NOCP accuracy andreuse barriers remainOPEN;manual/QMP/hub/injection not natural recovery."
   ],
   "issue_sync_status": "K17/K19/U8 appended/readbackmatched;allOPEN;originalDownFAIL retained",
   "issue_sync_receipt": "docs/evidence/native-baseline-maintenance-20261016.json",
@@ -1217,18 +1217,30 @@
       "native-slktest-f43-retained": {
         "level": "real_device",
         "result": "FAIL"
+      },
+      "session-prefix-barrier-a0": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "session-prefix-barrier-a0-retained-f355": {
+        "level": "real_device",
+        "result": "FAIL"
+      },
+      "session-prefix-barrier-a0-formal": {
+        "level": "formal_bounded",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "native-slktest-paired-baseline-retained-failure",
-      "production_behavior": "Actualslktest load supervision andread-only RXcapture observation;noHost/kernelprotocol change",
+      "id": "session-wake-controlled-prefix-lifecycle",
+      "production_behavior": "a0 immediate uniqueSession wakeups retained;test-only causal exhausted-pool barrier,not a new Engine or deadline change",
       "exit": [
-        "Five paired Native runs240 real application request/replies independently bound toUSB/UID/artifact,Armed/start/Quiescent/finish",
-        "Seventeen realVM attempts16PASS/1FAIL retained;253peerDown65.220280ms afteroriginal5s budget,repeat not erasure",
-        "633Python/strictdocs andsamepreparedbytes;no new formal/completeperformance or naturalrecovery qualification"
+        "Ten real dual-controller selected lifecycle gates,24 pre-control application exchanges,all original incomplete-prefix/withdrawal assertions preserved",
+        "Complete proof independently replayed10 times;100 copied actual evidence mutations rejected;641tools/strictHTML115 and exact ac77305 CI9 jobs",
+        "Original f355 release0 FAIL and v1 supervisor enum FAIL retained;NOCP/reuse/concurrency/naturalrecovery/full performance still open"
       ],
-      "next": "P2 immediate Session events/separate original-deadline timers withref/drain/noLostWake gates;sameconfig before/after then boundedTX;DownRCA/traceoverhead/resources/Agent/SSAP/fourdevices parallel"
+      "next": "Separate original-deadline timer from ready notifications,remove empty periodic maintenance with explicit retry reasons and finite budgets;keep Runtime/Grant/Ticket/uniqueSession andfull scope;Agent/SSAP/multichannel/fourdevice parallel"
     }
   },
   "agent_workstream": {
@@ -1371,14 +1383,14 @@
   },
   "next_real_vertical_slice": {
     "work_package": "WP06/07/16/17",
-    "behavior": "P2 immediate Session scheduling andseparate original-deadline timers;uniqueSession/Grant/credit/Ticket unchanged",
-    "first_exit": "Allrelevant wakeups/ref/drain/noLostWake boundedproductionregressions andsameconfig before-after real ordinarydualWS73 swappedroles/lifecycle/lengths;no completeperformanceclaim",
+    "behavior": "Separate Session ready notifications and original-deadline scheduling;finiteprogress budgets andclassified waits,retainuniqueSession/Grant/credit/Ticket",
+    "first_exit": "Production timeout/notify/close/ref/finitewait invariants;controlled VM interleavings andsameconfig realordinarydualWS73 swappedroles/lifecycle/lengths;no fullperformanceclaim",
     "remaining_after_first_exit": "BoundedcontinuousTX,traceoverhead/resourcepeaks,fullload/multichannel/fourdevices/SSAP andnaturalRCA/nonmanualrecovery;originalpeerDownFAIL parallel",
     "parallel": "existing Agent/SSAP/data/cleanup/quality andfourdeviceWIP;noallcontrolprerequisite",
     "architecture": "Existingdrivers/net/slkd/uniqueSession/Grant/credit/Ticket;VM-only",
-    "state": "NATIVE_PAIRED_BASELINE_SCOPED_PASS_RETAINED_FAILURE_OPEN",
+    "state": "P2A_SCOPED_LIFECYCLE_EXIT_PASSED_FULL_P2_OPEN",
     "tool": "actualslktest loadbinary viaexisting ws73_target VMsupervisor;independent ws73_benchmark reportchecker",
-    "report": "docs/evidence/native-slktest-baseline-20261016.json"
+    "report": "docs/evidence/session-prefix-barrier-20261016.json"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -1647,23 +1659,36 @@
     },
     "immediate_wakeup_implementation": {
       "kernel": "a0e1ad7b3a1c4397f1c187b5875b88a9efcc26bd",
-      "status": "COMMITTED_COMPILED_OFFLINE_BOUNDED_ONLY_NOT_NEW_REAL_QUALIFIED",
+      "status": "SCOPED_REAL_LIFECYCLE_PASS_NOT_FULL_EVENT_DRIVEN",
       "fallback_ms": 10,
       "actual_rust_tests": 46,
-      "cbmc": "20steps156checks withAPI dependencies;wrongreferenceandshortunwind negatives;notkernel implementation/refinement",
+      "cbmc": "20steps300checks with actual productionChannelphase helpers and sequentialLinuxAPI dependencies;wrongreference/shortunwind rejected;not actualkernel/refinement",
       "notification_model": "formal/lifecycle/SessionNotification.tla",
       "model_source": "4dd487e",
       "tlc": "2controllers/1physicalSessioneach/2events;117649states;weakfairness;lostqueue negative;notRF ormemorymodelproof",
-      "remaining": "New exact VM/source gates;originaltimer separation/removepoll,Runtime/C lock/ref/drain races,LKMM/KCSAN/lockdep andsameconfig comparison",
+      "remaining": "Separate original deadlines/remove10ms maintenance fallback;classified EAGAIN retries/finite budgets/ref/drain,LKMM/KCSAN/lockdep,full performance/resources/multichannel/fourdevice andoriginalnaturalRCA scope",
       "controlled_prefix_barrier_batch": {
-        "status": "IN_PROGRESS_NOT_NEW_QUALIFIED",
+        "status": "SCOPED_REAL_PASS_10_GATES_NOT_NATURAL_RECOVERY",
         "compiled_kernel": "a0e1ad7b3a1c4397f1c187b5875b88a9efcc26bd",
         "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
         "original_failure": ".dev/session-wake-retained-release0-v1/manifest.json",
         "scope": "Test-only real-IN81 bounded barrier;original prefix oracle and deadlines retained",
         "exit": "release,last control fd,dup final control fd,direct Down,original5s each on both indices;peer lease/Ready/scan;new exact report/registry required",
-        "recovery_acceptance": false
-      }
+        "recovery_acceptance": false,
+        "executed_tools": "3f10abb106234063d8b1b1cfa8901e3cc7de145b",
+        "report": "docs/evidence/session-prefix-barrier-20261016.json",
+        "qualification_record": "session-prefix-barrier-a0",
+        "real_gates": 10,
+        "real_business_round_trips_before_control": 24,
+        "partial_pdu_business_round_trips": 0,
+        "independent_captured_proofs_replayed": 10,
+        "real_evidence_negative_controls": 100,
+        "original_matrix_qualification": "session-prefix-barrier-a0-retained-f355",
+        "peer_isolation_scope": "Same Ready/generation/lease andactualscan;physical link loss affects bothends,not a separate businesspair",
+        "remaining": "Full original scope andnaturalRCA/nonmanual recovery stillOPEN"
+      },
+      "report": "docs/evidence/session-prefix-barrier-20261016.json",
+      "qualification_record": "session-prefix-barrier-a0"
     }
   },
   "slktest_migration": {
@@ -1710,6 +1735,8 @@
     "original_scope_and_vm_only_preserved": true,
     "evidence": "docs/evidence/build-resources-20261016.json",
     "actual_new_cargo_jobs": 12,
-    "runtime_binary_hashes_unchanged": true
+    "runtime_binary_hashes_unchanged": true,
+    "prepare_cache_correction": "3f10abb fixes previous worktree-local prepare target;new normal/deadline preparations recorded12jobs and fixed .dev/cargo-native-dev;old build-resources evidence andmanifests unchanged",
+    "correction_evidence": "docs/evidence/session-prefix-barrier-20261016.json"
   }
 }

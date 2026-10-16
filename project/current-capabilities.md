@@ -27,6 +27,13 @@ rate40、duplex80），包含普通用户凭据、双端 start/finish、准确 a
 五次基线的1920个单RX URB空窗样本P50=7µs、P99=24µs、最大87µs，包含callback、
 USBcore与VM调度；仅低负载、1µs量化。尚无证据支持优先多URB，未修改RX驱动契约。
 
+a0 即时Session唤醒的[限定生命周期新资格](../docs/evidence/session-prefix-barrier-20261016.json)
+绑定编译K a0e1ad7/U9385、执行3f10：release、最后管理fd关闭、dup最终关闭、
+直接Down和原5秒期限各双向，共10项/24次控制前业务通过；未完成PDU不计交付。
+两端捕获独立重放一致，100证据负对照拒绝；同行lease/Ready/扫描保持不等于四设备
+另一组业务隔离。原f355 release0前提失败与监督器枚举失败保留；10ms维护兜底、
+完整事件驱动、内核并发、性能、NOCP复用及自然恢复仍未取得完整资格。
+
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
@@ -68,6 +75,9 @@ USBcore与VM调度；仅低负载、1µs量化。尚无证据支持优先多URB�
 | schema2应用双端核对与结束屏障：生产报告重放/空USB VM25项（非Native或性能资格） | `virtual_integration` | `PASS` |
 | slktest真实双端测量闭包：5次/240往返及RX空窗（非完整性能资格） | `real_device` | `PASS` |
 | 新artifact保留路径矩阵：16通过/1对端Down迟到失败，原失败未覆盖 | `real_device` | `FAIL` |
+| a0/3f10受控未完成PDU：release/最后管理fd/dup/Down/原期限双向10项 | `real_device` | `PASS` |
+| a0/f355原保留矩阵：15通过/1前缀前提失败/9未运行，原失败保留 | `real_device` | `FAIL` |
+| a0唤醒限定依赖验证：46生产fixture、CBMC300有界、TLC117649状态 | `formal_bounded` | `PASS` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `f43a72bd1ad224f9504c491652b4586a4864143d`。
 
@@ -78,7 +88,7 @@ USBcore与VM调度；仅低负载、1µs量化。尚无证据支持优先多URB�
 预备/guest 工具 `f43a72bd1ad224f9504c491652b4586a4864143d`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
-## 当前数据子资格
+## 已封存数据子资格（以下均按各自准确镜像）
 
 [本轮准确新镜像报告](../docs/evidence/dynamic-runtime-retained14-20261016.json)绑定
 K400bd681、编译用户态Ucca8a20、guest/Host工具4b33733；文档提交不是编译身份。

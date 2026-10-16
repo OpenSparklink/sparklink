@@ -145,3 +145,28 @@ class Schema2Reports(unittest.TestCase):
             out.unlink();paths[1].unlink()
             self.assertNotEqual(subprocess.run(args,capture_output=True).returncode,0)
             self.assertEqual(json.loads(out.read_text())['status'],'FAIL')
+
+
+class VmSelectedArtifacts(unittest.TestCase):
+    def pair(self):
+        import hashlib
+        listing='benchmark::test: test\n\n1 test, 0 benchmarks\n'
+        b=dict(compiled_source='a'*40,test_count=1,test_listing=listing,
+               compiler_artifact=dict(reason='compiler-artifact',target=dict(name='slktest',kind=['lib']),profile=dict(test=True),executable='/build/current-tests'),
+               artifacts=dict(slktest=dict(sha256='b'*64,bytes=100,path='/build/slktest'),tests=dict(sha256='c'*64,bytes=200,path='/build/current-tests')))
+        v=dict(status='PASS_ISOLATED_NATIVE_ROOT_SMOKE',qemu_exit=0,physical_acceptance=False,native_acceptance=False,application_tests=1,application_test_listing_sha256=hashlib.sha256(listing.encode()).hexdigest(),inputs={'slktest':dict(sha256='b'*64),'slktest-tests':dict(sha256='c'*64)})
+        return v,b
+    def test_generic_vm_pass_cannot_upgrade_old_or_missing_selected_artifact(self):
+        v,b=self.pair();self.assertEqual(gate.verify_vm_build(v,b)['tests'],1)
+        for change in ['oldtests','wrongcount','wronglist','missingmain','wrongkind','notestprofile','wrongexecutable','noterminal','duplicate-list']:
+            v,b=self.pair()
+            if change=='oldtests':v['inputs']['slktest-tests']['sha256']='d'*64
+            if change=='wrongcount':v['application_tests']=22
+            if change=='wronglist':v['application_test_listing_sha256']='d'*64
+            if change=='missingmain':v['inputs'].pop('slktest')
+            if change=='wrongkind':b['compiler_artifact']['target']['kind']=['bin']
+            if change=='notestprofile':b['compiler_artifact']['profile']['test']=False
+            if change=='wrongexecutable':b['compiler_artifact']['executable']='/build/old-tests'
+            if change=='noterminal':v['status']='RUNNING'
+            if change=='duplicate-list':b['test_listing']+='benchmark::test: test\n'
+            with self.subTest(change=change),self.assertRaises(CaptureError):gate.verify_vm_build(v,b)

@@ -210,6 +210,47 @@ def load_application_reports(left, right, *, fixture=False):
                            'stable baseline/resources/trace overhead and performance qualification'])
 
 
+def verify_vm_build(vm, build):
+    """Bind a completed empty-USB VM to the selected Cargo test artifact.
+
+    This checks identities, not compiler correctness or reproducible builds.
+    The qualification registry separately pins source maps and retained bytes.
+    It prevents an honest generic VM PASS with an old test executable being
+    upgraded to a new source qualification, as observed in the first attempt.
+    """
+    import re
+    require(type(build) is dict and re.fullmatch('[0-9a-f]{40}', build.get('compiled_source','')) is not None,
+            'exact compiled source identity')
+    count=build.get('test_count');listing=build.get('test_listing')
+    require(integer(count,1,10000) and type(listing) is str, 'actual Cargo library test listing')
+    names=[line[:-6] for line in listing.splitlines() if line.endswith(': test')]
+    require(len(names)==count and len(set(names))==count, 'complete unique test listing')
+    artifact=build.get('compiler_artifact')
+    require(type(artifact) is dict and artifact.get('reason')=='compiler-artifact'
+            and artifact.get('target',{}).get('name')=='slktest'
+            and artifact.get('target',{}).get('kind')==['lib']
+            and artifact.get('profile',{}).get('test') is True, 'actual Cargo library test artifact')
+    require(type(vm) is dict and vm.get('status')=='PASS_ISOLATED_NATIVE_ROOT_SMOKE'
+            and vm.get('qemu_exit')==0 and vm.get('physical_acceptance') is False
+            and vm.get('native_acceptance') is False, 'scoped completed emptyUSB VM')
+    require(type(vm.get('application_tests')) is int and vm['application_tests']==count,
+            'VM tests belong to selected current library')
+    require(vm.get('application_test_listing_sha256')==hashlib.sha256(listing.encode()).hexdigest(),
+            'VM uses exact selected test listing')
+    require(artifact.get('executable')==build.get('artifacts',{}).get('tests',{}).get('path'),
+            'selected Cargo executable path')
+    for selected,name in [('slktest','slktest'),('tests','slktest-tests')]:
+        expected=build.get('artifacts',{}).get(selected,{})
+        require(re.fullmatch('[0-9a-f]{64}',expected.get('sha256','')) is not None
+                and integer(expected.get('bytes'),1), 'exact build artifact '+selected)
+        require(vm.get('inputs',{}).get(name,{}).get('sha256')==expected['sha256'],
+                'VM artifact mismatch '+selected)
+    return dict(status='VM_SELECTED_APPLICATION_ARTIFACTS_MATCH_NOT_QUALIFIED',
+                compiled_source=build['compiled_source'],tests=count,performance_qualified=False,
+                remaining=['retained bytes/source-map checks','compiler/build reproducibility',
+                           'Native/realWS73/performance qualification'])
+
+
 def read_report(path):
     with Path(path).open('rb') as stream:
         raw=stream.read(MAX_REPORT_BYTES+1)

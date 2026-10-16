@@ -38,6 +38,7 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 | 双真实WS73动态双通道：48次业务、不对称TCID及关闭同行隔离 | `real_device` | `PASS` |
 | K400/Ucca8既有14组回归：328次往返、32次拒绝、2次在途交付 | `real_device` | `PASS` |
 | 动态2042字节与四槽预算：56次总往返，含8次动态长包 | `real_device` | `PASS` |
+| 动态七尺寸/槽位门禁：392次往返、14次拒绝，原失败保留 | `real_device` | `PASS` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
 
@@ -71,7 +72,14 @@ K400/Ucca8动态CMTC的[48次短包门禁](../docs/evidence/dynamic-cmtc-real-20
 工具4b33733/d14c988。后者含8次动态长包往返、两次四槽预算ENOSPC，拒绝后C
 仍实际回复；TX9片/RX81片重组完整2047字节PDU。它不代表所有动态长度已验收。工具8297955的249整轮发生
 [监督器ENODATA失败](../docs/evidence/dynamic249-monitor-failure-20261016.json)，底层原因未查明，
-该矩阵保持FAIL；正在改进有界输出采集并准备独立重跑，原失败不被覆盖。
+该历史矩阵保持FAIL。工具45a658e采用有界子进程管道采集后，独立的[七尺寸新矩阵](../docs/evidence/dynamic-seven-sizes-20261016.json)
+已通过：249/250/253/254/255/1024/2042，共392次动态往返（其中56次C尺寸）、14次
+槽位ENOSPC；拒绝后C仍实际回复，交换物理角色。249字节完整PDU254为单片TX，
+其余尺寸按实际两端PB重组；不假定固件RX与TX分片数相同。119个离线证据负对照
+拒绝，原失败未覆盖，也没有证明TCID安全复用、完整credit或自然恢复。
+同镜像固定通道burst的[补充credit观察](../docs/evidence/dynamic-runtime-credit-observation-20261016.json)
+核对两角色源端新增29/25次池满拒绝，各端206次提交/206包NOCP及最终排空；32次
+应用往返属于原burst，不重复计数。NOCP准确性、迟到/重复和复用屏障仍待验证。
 [限定离线证明](../docs/evidence/dynamic-cmtc-offline-20261016.json)与实际函数夹具、
 fuzz仍分层；[负对照字段修正](../docs/evidence/dynamic-capture-field-audit-correction-20261016.json)
 保留原尾分片载荷变异输出，重新针对首片TCID/PI拒绝；真实正向证据不变。

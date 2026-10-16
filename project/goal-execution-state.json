@@ -1112,18 +1112,22 @@
       "dynamic-long56-400bd68": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "dynamic-seven-sizes-400bd68": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "fixed14-long2042-qualified-dynamic249-monitor-failed",
-      "production_behavior": "K400/Ucca8 runtime:fixed14 with328ordinaryRT/32refusal/2prefix attools4b337;dynamic48 at4b337 anddynamic2042 pilot56incl8long atd14 qualified separately",
+      "id": "dynamic-seven-sizes-qualified-credit-next",
+      "production_behavior": "K400/Ucca8/tools45a actual seven dynamic sizes:392RT/14slotrefusals/119decoded evidence negatives. Retained14 fixed/4device attools4b and pilot2042 atd14 stay separately scoped.",
       "exit": [
-        "Original dynamic48,all14attainedfixeddata regressions and2042dynamic pilot actual captures and peer app replies passed on exact records",
-        "769property sixstep pure CBMC with mutation counterexample,actual worker sanitizer,20000codec fuzz separately bounded;not full refinement",
-        "Raw captures/apps replayed,hash/exit/drop/taint checked;firstfragment TCID/PI negative label correction retained with new accurate audit"
+        "All7 actual peer random validation/reply,matchedMTU/MPS,two-endPB,slotrefusal/Cprogress and swapped physicalroles complete",
+        "427original material hashes,raw child output closure,zero capture drops,QEMU/supervisor0 and exactfrozen replay checked",
+        "Bounded production pure formal/sanitizer/fuzz evidence separate;not fullimplementation/firmwareproof"
       ],
-      "next": "Retain original8297955 dynamic249 matrix FAIL/ENODATA;diagnostic rootcause unresolved. Tool45a658e finite child-pipe capture and613offline tool cases passed;prepare newexactVMand validate and re-run new exact VM matrix without relaxing original deadlines. Runtime/sourceK400/Ucca8 unchanged. FullS0-S6/19WP/10FV/12DG/RCA/nonhuman recovery OPEN."
+      "next": "Extend existing dynamic app/gate with real finite burst/credit/backpressure and submission/revoke lifetime composition;reuse soleSession/actualLedger/tickets. Original829ENODATA fail unresolved;safeTCIDreuse/RCA/nonhumanrecovery/fullS0-S6/19WP/10FV/12DG OPEN."
     }
   },
   "agent_workstream": {
@@ -1323,7 +1327,7 @@
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
     "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
     "gate_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
-    "status": "FIXED14_AND_DYNAMIC2042_PASS_DYNAMIC249_MATRIX_FAILED_IO",
+    "status": "FIXED14_AND_DYNAMIC_SEVEN_SIZES_SCOPED_PASS_CREDIT_NEXT",
     "evidence": "docs/evidence/dynamic-cmtc-offline-20261016.json",
     "exit_conditions": [
       "Real unmatched endpoint refusal plus exact CMTC/two-end captures",
@@ -1336,17 +1340,20 @@
     "real_evidence": "docs/evidence/dynamic-cmtc-real-20261016.json",
     "retained_regression_state": ".dev/dynamic-retained-matrix-v1.json",
     "dynamic_business_real_acceptance": true,
-    "real_acceptance_scope": "Only actual2device dynamic CMTC and48 app roundtrips/close isolation;not physicalunplug/fullmultichannel/naturalrecovery",
+    "real_acceptance_scope": "ExactK400/Ucca8/tools45a dynamic7sizes392RT/14refusal;plusseparate48short andpilot56;notfullmultichannel/concurrency/naturalrecovery",
     "issues_receipt": "docs/evidence/dynamic-cmtc-issues-20261016.json",
     "retained_regression_result": "ALL14_EXACT_DYNAMIC_IMAGE_RETAINED_DATA_SCOPED_PASS",
     "retained_regression_report": "docs/evidence/dynamic-runtime-retained14-20261016.json",
     "dynamic_long_report": "docs/evidence/dynamic-long-2042-20261016.json",
     "field_audit_correction": "docs/evidence/dynamic-capture-field-audit-correction-20261016.json",
     "next_gate_tools": "45a658eacd84a829c355e1dc8461a6f9a3d6e8b9",
-    "next_gate": "Bounded child output collector regression and new exact VM replay,original failure preserved",
-    "dynamic_size_matrix": ".dev/dynamic-boundary-matrix-v1.json",
-    "dynamic_size_matrix_status": "FAIL_ENODATA_MONITOR_ROOT_CAUSE_UNRESOLVED",
+    "next_gate": "Actual dynamic bounded burst,credit/poll/backpressure and submission lifecycle;not allcontrolraces prerequisite",
+    "dynamic_size_matrix": ".dev/dynamic-boundary-matrix-v2.json",
+    "dynamic_size_matrix_status": "ALL7_DYNAMIC_SIZE_AND_SLOT_BUDGET_SCOPED_PASS",
     "dynamic_size_failure": "docs/evidence/dynamic249-monitor-failure-20261016.json",
-    "collector_regression": "613 tool tests PASS; bounded pipes/fault/EOF/shortwrite/artifact guards;VM replay pending"
+    "collector_regression": "613offline tools PASS;all7realVM cases and raw output closure passed;ENODATA original rootcause unproven",
+    "dynamic_size_matrix_report": "docs/evidence/dynamic-seven-sizes-20261016.json",
+    "prior_dynamic_size_failure_unchanged": "docs/evidence/dynamic249-monitor-failure-20261016.json",
+    "retained_credit_observation": "docs/evidence/dynamic-runtime-credit-observation-20261016.json"
   }
 }

@@ -290,6 +290,24 @@ pub(crate) fn exercise(
     message_bytes: usize,
     mode: Mode,
 ) -> anyhow::Result<()> {
+    exercise_channel(fd, responder, rounds, message_bytes, mode, false)
+}
+pub(crate) fn exercise_dynamic(
+    fd: OwnedFd,
+    responder: bool,
+    rounds: u32,
+    message_bytes: usize,
+) -> anyhow::Result<()> {
+    exercise_channel(fd, responder, rounds, message_bytes, Mode::Regular, true)
+}
+fn exercise_channel(
+    fd: OwnedFd,
+    responder: bool,
+    rounds: u32,
+    message_bytes: usize,
+    mode: Mode,
+    dynamic: bool,
+) -> anyhow::Result<()> {
     validate_exercise(rounds, message_bytes)?;
     let fd = prepare_application_fd(fd)?;
     wait(
@@ -298,11 +316,17 @@ pub(crate) fn exercise(
         Instant::now() + Duration::from_secs(10),
     )?;
     let info = slk_protocol::channel::query(fd.as_raw_fd())?;
-    if info.local_tcid != 31
-        || info.remote_tcid != 31
+    let valid_pair = if dynamic {
+        (0x80..=0xdf).contains(&info.local_tcid) && (0x80..=0xdf).contains(&info.remote_tcid)
+    } else {
+        info.local_tcid == 31 && info.remote_tcid == 31
+    };
+    if !valid_pair
         || info.pi != 241
         || info.directions != 3
         || usize::from(info.mtu) < message_bytes
+        || info.mode != 0
+        || usize::from(info.mps) < message_bytes + 5
     {
         anyhow::bail!("actual channel capabilities do not permit this business exercise");
     }

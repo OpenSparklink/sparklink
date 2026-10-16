@@ -297,3 +297,28 @@ handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C�
 写入要求认证和授权；`sdk111-no-mitm`和Agent同意均不足以满足，当前拒绝保持。
 只读写公开值的历史资格不能升级成通知订阅、安全或Profile资格。配置须由唯一
 ConnectionSession按物理lifetime独立持有，不按可复用handle或地址继承。
+
+## 动态基础通道：已接线，实机待验收
+
+Linux `400bd6812608` 的未发布 sockaddr v3 长64字节，保留原48字节 v2固定通道。
+受管理 lease 约束的 daemon 使用 bind 暂存被动端点，或使用非阻塞 connect 发起
+真实 CMTC（返回 EINPROGRESS）。`Connection.PrepareDynamicChannel` 接收单一
+D-Bus struct `(qqqqqyb)`：source_port、destination_port、AID、MTU、MPS、
+preferred SLQI、passive，并返回一个仍可能协商中的 fd；返回 fd 不是远端建立成功。
+ports/AID必须非零，MTU1..2042、MPS不超过2047且至少MTU+5；首版仅basic、
+未保护安全等级，不承诺preferred SLQI已配置硬件QoS。
+
+CLI使用 `dynamic-peer <connection-path> <source-port> <destination-port> <aid>
+[rounds] [bytes] [hold]`，主动端改用 `dynamic-roundtrip`。它们复用已有随机业务校验
+与socket收发逻辑。`hold`供受控测试在双端校验后协调最终fd关闭；不是线上ACK。
+
+只有实际协商完成及Runtime身份重新验证后，ChannelInfo才返回local/remote TCID
+和Grant；此前INFO为EAGAIN，poll不返回可写。动态单播TCID为0x80..0xdf、PI241..250；
+双方TCID可以不同，不能用handle或本地TCID代替对端TCID。四个动态槽位分别有
+有限队列，唯一Session worker消费ACB并按本地TCID/PI分流。暂不在同一物理lifetime
+重用已用槽位/TCID；耗尽ENOSPC，重用屏障仍待实现验证。
+
+最后fd关闭撤销本应用准入并发起真实关闭；已开始物理PDU仍归Session。对端逻辑
+关闭后允许排空此前已完整排队的RX，禁止新业务准入和迟到成功复活Grant。
+资源拒绝、取消、原期限、撤权/断链与同行隔离分别验收；本段说明生产接线，
+不把离线函数夹具、有界证明或USB提交升级为真实动态多通道资格。

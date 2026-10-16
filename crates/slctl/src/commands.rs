@@ -245,6 +245,27 @@ impl Context {
                 }
                 self.cmd_ssap_info(args[1]).await
             }
+            "dynamic-peer" | "dynamic-roundtrip" => {
+                if !(5..=8).contains(&args.len()) {
+                    anyhow::bail!(
+                        "dynamic command: path source-port destination-port aid [rounds] [bytes] [hold]"
+                    );
+                }
+                let rounds = args.get(5).unwrap_or(&"4").parse()?;
+                let bytes = args.get(6).unwrap_or(&"61").parse()?;
+                if args.get(7).is_some_and(|s| *s != "hold") {
+                    anyhow::bail!("last dynamic argument must be hold");
+                }
+                self.cmd_dynamic_channel(
+                    args[1],
+                    args[0] == "dynamic-peer",
+                    (args[2].parse()?, args[3].parse()?, args[4].parse()?),
+                    rounds,
+                    bytes,
+                    args.len() == 8,
+                )
+                .await
+            }
             "channel-peer" | "channel-roundtrip" => {
                 let path = args.get(1).ok_or_else(|| {
                     anyhow::anyhow!("channel command requires connection object path")
@@ -1145,6 +1166,82 @@ impl Context {
         Ok(())
     }
 
+    async fn cmd_dynamic_channel(
+        &self,
+        path: &str,
+        responder: bool,
+        route: (u16, u16, u16),
+        rounds: u32,
+        bytes: usize,
+        hold: bool,
+    ) -> anyhow::Result<()> {
+        use std::os::fd::AsRawFd;
+        let selected = self.selected_path().await?;
+        if !path.starts_with(&format!("{selected}/peer_t")) {
+            anyhow::bail!("dynamic connection belongs to another adapter");
+        }
+        if !(29..=2042).contains(&bytes) || !(1..=20).contains(&rounds) {
+            anyhow::bail!("dynamic exercise requires1..20 rounds and29..2042 bytes");
+        }
+        let object = zbus::Proxy::new(
+            &self.conn,
+            "org.sparklink",
+            path,
+            "org.sparklink.Connection",
+        )
+        .await?;
+        let info: NativeObjectInfo = object.call("GetInfo", &()).await?;
+        let generation: u64 = self
+            .adapter_proxy()
+            .await?
+            .get_property("Generation")
+            .await?;
+        let expected = format!(
+            "{selected}/peer_t{:02x}_{}/link_{:016x}",
+            info.4,
+            info.5.replace(':', "").to_lowercase(),
+            info.1
+        );
+        if info.0 != generation || path != expected || !info.6 || !info.7 {
+            anyhow::bail!("dynamic immutable connection is not known/live");
+        }
+        let mtu = u16::try_from(bytes.max(249))?;
+        let request = (route.0, route.1, route.2, mtu, mtu + 5, 1u8, responder);
+        let fd: zbus::zvariant::OwnedFd = object.call("PrepareDynamicChannel", &(request,)).await?;
+        let fd: std::os::fd::OwnedFd = fd.into();
+        // An explicit test/coordinated-service hold keeps the final VFS
+        // reference alive until both applications have validated their data.
+        let retained = if hold {
+            // SAFETY: fd is live; success creates a distinct owned reference.
+            let raw = unsafe { nix::libc::fcntl(fd.as_raw_fd(), nix::libc::F_DUPFD_CLOEXEC, 0) };
+            if raw < 0 {
+                return Err(std::io::Error::last_os_error().into());
+            }
+            use std::os::fd::FromRawFd;
+            // SAFETY: unique newly returned descriptor.
+            Some(unsafe { std::os::fd::OwnedFd::from_raw_fd(raw) })
+        } else {
+            None
+        };
+        println!(
+            "NativeDynamicStaged: source={} destination={} aid={} passive={responder}",
+            route.0, route.1, route.2
+        );
+        crate::channel::exercise_dynamic(fd, responder, rounds, bytes)?;
+        println!("NativeDynamicBusinessDone: rounds={rounds} held={hold}");
+        if hold {
+            let mut command = String::new();
+            if std::io::stdin().read_line(&mut command)? == 0 || command.trim() != "close" {
+                anyhow::bail!("explicit dynamic hold requires close; EOF is author withdrawal");
+            }
+        }
+        drop(retained);
+        println!(
+            "NativeDynamicLastClose: source={} destination={} aid={}",
+            route.0, route.1, route.2
+        );
+        Ok(())
+    }
     async fn cmd_channel(
         &self,
         path: &str,

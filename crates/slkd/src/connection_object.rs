@@ -1,6 +1,7 @@
 //! One immutable registration/type/address/lifetime identity per physical link.
 //! Properties are canonical observation, never an author operation result.
 type SsapEntry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
+type DynamicRequest = (u16, u16, u16, u16, u16, u8, bool);
 type SsapDiscovery = (Vec<SsapEntry>, Vec<(Vec<u8>, Vec<u8>)>);
 use crate::state::SharedState;
 use slk_protocol::SleLinkInfo;
@@ -147,6 +148,11 @@ pub(crate) struct ConnectionIface {
     ssap: tokio::sync::Mutex<Option<crate::ssap_engine::Engine>>,
     remote_services: tokio::sync::Mutex<Option<Vec<slk_protocol::ssap::discovery::Entry>>>,
 }
+enum ChannelKind {
+    User,
+    Service,
+    Dynamic(crate::channel::DynamicConfig),
+}
 impl ConnectionIface {
     pub(crate) fn new(state: SharedState, generation: u64, reference: SleLinkInfo) -> Self {
         Self {
@@ -174,7 +180,7 @@ impl ConnectionIface {
         &self,
         directions: u32,
         security: u32,
-        service: bool,
+        kind: ChannelKind,
     ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
         crate::channel::validate(directions, security).map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
@@ -212,16 +218,15 @@ impl ConnectionIface {
         let token = admission
             .token
             .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?;
-        let fd = if service {
-            crate::channel::open_service(
+        let fd = match kind {
+            ChannelKind::Service => crate::channel::open_service(
                 index,
                 self.generation,
                 self.reference.lifetime,
                 self.reference.handle,
                 token,
-            )
-        } else {
-            crate::channel::open(
+            ),
+            ChannelKind::User => crate::channel::open(
                 index,
                 self.generation,
                 self.reference.lifetime,
@@ -229,7 +234,15 @@ impl ConnectionIface {
                 token,
                 directions,
                 security,
-            )
+            ),
+            ChannelKind::Dynamic(config) => crate::channel::open_dynamic(
+                index,
+                self.generation,
+                self.reference.lifetime,
+                self.reference.handle,
+                token,
+                config,
+            ),
         }
         .map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
@@ -247,7 +260,7 @@ impl ConnectionIface {
         directions: u32,
         security: u32,
     ) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
-        self.authorized_fd(directions, security, false)
+        self.authorized_fd(directions, security, ChannelKind::User)
             .await
             .map(Into::into)
     }
@@ -295,7 +308,7 @@ impl ConnectionIface {
         if actor.is_some() {
             return Ok(());
         }
-        let fd = self.authorized_fd(3, 0, true).await?;
+        let fd = self.authorized_fd(3, 0, ChannelKind::Service).await?;
         let (index, database) = self.ssap_context().await;
         *actor = Some(
             crate::ssap_engine::Engine::start(
@@ -630,6 +643,30 @@ impl ConnectionIface {
         }
         Ok(info)
     }
+    /// Return a staged nonblocking fd, not a fabricated connection result.
+    /// Kernel CHANNEL_INFO/poll expose readiness only after actual CMTC and
+    /// Runtime epoch revalidation. Port/AID routing is not authentication.
+    async fn prepare_dynamic_channel(
+        &self,
+        request: DynamicRequest,
+    ) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
+        let (source_port, destination_port, aid, mtu, mps, slqi, passive) = request;
+        let config = crate::channel::DynamicConfig {
+            source_port,
+            destination_port,
+            aid,
+            mtu,
+            mps,
+            slqi,
+            passive,
+        };
+        config
+            .validate()
+            .map_err(|error| zbus::fdo::Error::InvalidArgs(error.to_string()))?;
+        self.authorized_fd(3, 0, ChannelKind::Dynamic(config))
+            .await
+            .map(Into::into)
+    }
     async fn open_channel(&self) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
         self.open_authorized_channel(3, 0).await
     }
@@ -720,6 +757,19 @@ mod grant_tests {
             let result = tokio::time::timeout(
                 std::time::Duration::from_millis(100),
                 interface.open_channel_scoped(directions, 0),
+            )
+            .await
+            .unwrap();
+            assert!(matches!(result, Err(zbus::fdo::Error::InvalidArgs(_))));
+        }
+        for request in [
+            (0, 20, 30, 249, 254, 1, true),
+            (10, 20, 30, 249, 253, 1, false),
+            (10, 20, 0, 249, 254, 1, true),
+        ] {
+            let result = tokio::time::timeout(
+                std::time::Duration::from_millis(100),
+                interface.prepare_dynamic_channel(request),
             )
             .await
             .unwrap();

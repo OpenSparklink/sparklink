@@ -75,6 +75,7 @@ class ObserverPolicyTests(unittest.TestCase):
         self.assertEqual(rules,[
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannel'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannelScoped'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'PrepareDynamicChannel'},
         ])
         self.assertFalse(any('own' in r or r.get('send_interface')=='org.sparklink.Adapter' for r in rules))
         source=(Path(__file__).resolve().parents[2]/'crates/slkd/src/dbus_iface.rs').read_text()

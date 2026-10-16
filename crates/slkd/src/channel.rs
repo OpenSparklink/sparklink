@@ -22,6 +22,73 @@ struct Address {
 }
 const _: () = assert!(std::mem::size_of::<Address>() == 48);
 
+#[derive(Clone, Copy)]
+pub(crate) struct DynamicConfig {
+    pub(crate) source_port: u16,
+    pub(crate) destination_port: u16,
+    pub(crate) aid: u16,
+    pub(crate) mtu: u16,
+    pub(crate) mps: u16,
+    pub(crate) slqi: u8,
+    pub(crate) passive: bool,
+}
+impl DynamicConfig {
+    pub(crate) fn validate(&self) -> std::io::Result<()> {
+        let config = self;
+        if config.source_port == 0
+            || config.destination_port == 0
+            || config.aid == 0
+            || config.mtu == 0
+            || config.mtu > 2042
+            || config.mps > 2047
+            || u32::from(config.mps) < u32::from(config.mtu) + 5
+        {
+            return Err(std::io::Error::from_raw_os_error(nix::libc::EINVAL));
+        }
+        Ok(())
+    }
+}
+#[repr(C)]
+struct DynamicAddress {
+    base: Address,
+    source_port: u16,
+    destination_port: u16,
+    aid: u16,
+    mtu: u16,
+    mps: u16,
+    slqi: u8,
+    mode: u8,
+    reserved: u32,
+}
+const _: () = assert!(std::mem::size_of::<DynamicAddress>() == 64);
+
+pub(crate) fn open_dynamic(
+    controller: u16,
+    generation: u64,
+    lifetime: u64,
+    handle: u16,
+    lease: u64,
+    config: DynamicConfig,
+) -> std::io::Result<OwnedFd> {
+    config.validate()?;
+    let mut base = address(controller, generation, lifetime, handle, lease, 3, 0);
+    base.version = 3;
+    base.local_tcid = 0;
+    base.remote_tcid = 0;
+    let address = DynamicAddress {
+        base,
+        source_port: config.source_port,
+        destination_port: config.destination_port,
+        aid: config.aid,
+        mtu: config.mtu,
+        mps: config.mps,
+        slqi: config.slqi,
+        mode: 0,
+        reserved: 0,
+    };
+    open_raw_address(address, !config.passive)
+}
+
 pub(crate) fn open(
     controller: u16,
     generation: u64,
@@ -77,6 +144,9 @@ pub(crate) fn open_service(
     open_address(address)
 }
 fn open_address(address: Address) -> std::io::Result<OwnedFd> {
+    open_raw_address(address, false)
+}
+fn open_raw_address<T>(address: T, active: bool) -> std::io::Result<OwnedFd> {
     // SAFETY: scalar syscall arguments; successful socket returns an owned fd.
     let raw = unsafe {
         nix::libc::socket(
@@ -92,14 +162,19 @@ fn open_address(address: Address) -> std::io::Result<OwnedFd> {
     let fd = unsafe { OwnedFd::from_raw_fd(raw) };
     // SAFETY: address is a complete initialized ABI structure valid for this call.
     let result = unsafe {
-        nix::libc::bind(
-            raw,
-            (&address as *const Address).cast(),
-            std::mem::size_of::<Address>() as u32,
-        )
+        let pointer = (&address as *const T).cast();
+        let size = std::mem::size_of::<T>() as u32;
+        if active {
+            nix::libc::connect(raw, pointer, size)
+        } else {
+            nix::libc::bind(raw, pointer, size)
+        }
     };
     if result < 0 {
-        return Err(std::io::Error::last_os_error());
+        let error = std::io::Error::last_os_error();
+        if !active || error.raw_os_error() != Some(nix::libc::EINPROGRESS) {
+            return Err(error);
+        }
     }
     Ok(fd)
 }

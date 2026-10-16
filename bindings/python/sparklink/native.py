@@ -304,6 +304,8 @@ class NativeAdapter:
 def channel_info(fd):
     """Snapshot of a delegated channel fd, not NativeAdapter's control fd.
 
+    Fixed or negotiated dynamic local/remote TCIDs are returned separately.
+    Pending dynamic setup returns EAGAIN; metadata is not a peer delivery ACK.
     No lease acquisition, traffic consumption or permission escalation.
     Metadata is coherent at admission; it does not promise future connectivity.
     """

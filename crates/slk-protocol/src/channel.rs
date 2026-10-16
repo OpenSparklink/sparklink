@@ -29,6 +29,10 @@ nix::ioctl_read!(sl_channel_info, b'S', 0xe0, SleChannelInfo);
 impl SleChannelInfo {
     pub fn validate(&self) -> io::Result<()> {
         let key = (self.local_tcid, self.remote_tcid, self.pi);
+        let dynamic = (0x80..=0xdf).contains(&self.local_tcid)
+            && (0x80..=0xdf).contains(&self.remote_tcid)
+            && (241..=250).contains(&self.pi);
+        let header = if self.remote_tcid <= 0x1d { 4 } else { 5 };
         if self.version != 1
             || self.size != 40
             || self.reserved != 0
@@ -39,7 +43,8 @@ impl SleChannelInfo {
             || self.mode != 0
             || self.directions == 0
             || self.directions & !3 != 0
-            || !matches!(key, (31, 31, 241) | (10, 10, 0))
+            || u32::from(self.mtu) + header > u32::from(self.mps)
+            || !(dynamic || matches!(key, (31, 31, 241) | (10, 10, 0)))
         {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
@@ -72,7 +77,7 @@ mod tests {
             generation: 3,
             lifetime: 7,
             mtu: 249,
-            mps: 249,
+            mps: 254,
             local_tcid: 31,
             remote_tcid: 31,
             pi: 241,
@@ -114,6 +119,34 @@ mod tests {
         }
         .validate()
         .unwrap();
+        SleChannelInfo {
+            local_tcid: 0x83,
+            remote_tcid: 0x95,
+            ..info
+        }
+        .validate()
+        .unwrap();
+        for bad in [
+            SleChannelInfo {
+                local_tcid: 0x7f,
+                remote_tcid: 0x95,
+                ..info
+            },
+            SleChannelInfo {
+                local_tcid: 0x83,
+                remote_tcid: 0xe0,
+                ..info
+            },
+            SleChannelInfo {
+                local_tcid: 0x83,
+                remote_tcid: 0x95,
+                pi: 240,
+                ..info
+            },
+            SleChannelInfo { mps: 253, ..info },
+        ] {
+            assert!(bad.validate().is_err());
+        }
         assert_eq!(
             query(-1).unwrap_err().raw_os_error(),
             Some(nix::libc::EBADF)

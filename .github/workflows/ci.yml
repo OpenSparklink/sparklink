@@ -101,7 +101,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 90fda1457a8d8191a1a5fab260927e31644b3e50
+          ref: 400bd6812608935e2845d6d2b80ec58e7a6a6415
           path: .kernel-uapi
           sparse-checkout: |
             include/uapi/linux/sparklink_ioctl.h
@@ -117,7 +117,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-multilib
           cargo build -p libsparklink --lib
-      - name: Compare actual C and broker socket v2 layout
+      - name: Compare actual C and broker socket v2/v3 layout
         run: CC=cc python tools/channel_socket_contract.py --kernel .kernel-uapi
       - run: python -m py_compile bindings/python/sparklink/__init__.py
       - run: python -m py_compile bindings/python/sparklink/structs.py
@@ -126,6 +126,7 @@ jobs:
       - name: Run Python unit and compiled C/Rust ABI tests
         env:
           PYTHONPATH: bindings/python
+          LIBSPARKLINK_PATH: ${{ github.workspace }}/target/debug/liblibsparklink.so
           SPARKLINK_KERNEL_UAPI: ${{ github.workspace }}/.kernel-uapi/include/uapi/linux/sparklink_ioctl.h
           SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-uapi
         run: python -m unittest discover -s bindings/python/tests -v
@@ -139,7 +140,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 90fda1457a8d8191a1a5fab260927e31644b3e50
+          ref: 400bd6812608935e2845d6d2b80ec58e7a6a6415
           path: .kernel-tools
           # Raw worker ioctls also compile against the canonical pinned UAPI.
           sparse-checkout: |
@@ -163,7 +164,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 90fda1457a8d8191a1a5fab260927e31644b3e50
+          ref: 400bd6812608935e2845d6d2b80ec58e7a6a6415
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -219,6 +220,8 @@ jobs:
           /tmp/ws73-acb-test
           clang -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined tools/testing/selftests/sparklink/sle_channel_wire_test.c net/sparklink/sle_channel_wire.c -o /tmp/sle-channel-wire-test
           /tmp/sle-channel-wire-test
+          clang -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined tools/testing/selftests/sparklink/sle_channel_signal_test.c net/sparklink/sle_channel_wire.c -o /tmp/sle-channel-signal-test
+          /tmp/sle-channel-signal-test
           python tools/testing/selftests/sparklink/run_ssap_containment.py
           python tools/testing/selftests/sparklink/run_event_copy.py
           python tools/testing/selftests/sparklink/run_phy_model.py

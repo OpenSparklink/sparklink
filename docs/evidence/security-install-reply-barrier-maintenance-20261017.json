@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_OFFLINE_BARRIER_MAINTENANCE_SIGNED_PUSHED_LIVE_STILL_UNPROVED",
+  "source_report": "docs/evidence/security-install-reply-barrier-20261017.json",
+  "source_report_commit": "e162e6ea7922a51ce7a029e8da8ba462b1bc132f",
+  "registry_commit": "75d8b0608d3ac12d1b81f6b9f68291354ba2ad88",
+  "signatures": {
+    "linux/aa0d63693f8c4d8da481842e31cd6673c05f8283": "G",
+    "sparklink/e162e6ea7922a51ce7a029e8da8ba462b1bc132f": "G",
+    "sparklink/75d8b0608d3ac12d1b81f6b9f68291354ba2ad88": "G"
+  },
+  "checks": {
+    "strict_locked_html": "PASS inventory115",
+    "html_scope": "Only four reader quadrants; project/decisions/evidence source-only. No browser check or live hardware operation in this batch.",
+    "html_source_revision": "e162e6ea7922a51ce7a029e8da8ba462b1bc132f",
+    "html_working_tree_changes": [
+      " M project/architecture.md",
+      " M project/current-capabilities.md",
+      " M project/goal-execution-state.json",
+      " M project/implementation-plan.md",
+      " M project/qualification-records.json",
+      " M tools/ws73_dynamic_channels.py",
+      " M tools/ws73_parallel_data.py"
+    ],
+    "html_not_qualification_of_future_documentation_head": true,
+    "qualification_checker_tests": 27,
+    "qualification_negative_controls": 5,
+    "local_materials": 42,
+    "local_byte_check": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "metadata": "METADATA_ONLY_NOT_REVERIFIED",
+    "overall": "INCOMPLETE"
+  },
+  "issues": {
+    "status": "EXISTING_FOUR_ISSUES_UPDATED_READBACK_OPEN_SCOPE_UNCHANGED",
+    "rows": [
+      {
+        "repo": "linux",
+        "issue": 7,
+        "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6223990923",
+        "state": "open",
+        "comment_id": 6223990923,
+        "original_body_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95",
+        "readback_original_body_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95",
+        "comment_sha256": "29fddb4561b356734fe6781c64ddbde69f84f7555cc29923691ab8b818425b74",
+        "readback_comment_sha256": "29fddb4561b356734fe6781c64ddbde69f84f7555cc29923691ab8b818425b74",
+        "original_scope_preserved": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6223991797",
+        "state": "open",
+        "comment_id": 6223991797,
+        "original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+        "readback_original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+        "comment_sha256": "c4c5234f6ea24098c9e102a64d60f9af49d93dca23177beaac659573f49dbbb4",
+        "readback_comment_sha256": "c4c5234f6ea24098c9e102a64d60f9af49d93dca23177beaac659573f49dbbb4",
+        "original_scope_preserved": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 5,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6223992683",
+        "state": "open",
+        "comment_id": 6223992683,
+        "original_body_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+        "readback_original_body_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+        "comment_sha256": "30301061b5ab630b7d3e6907750ccaeb91ff91e93a382ead16fc91632da18013",
+        "readback_comment_sha256": "30301061b5ab630b7d3e6907750ccaeb91ff91e93a382ead16fc91632da18013",
+        "original_scope_preserved": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6223993526",
+        "state": "open",
+        "comment_id": 6223993526,
+        "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+        "readback_original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+        "comment_sha256": "4e7df1ec31a7ca9bfd494d20420eb4453774596a077911ba5998003e23cbf1a6",
+        "readback_comment_sha256": "4e7df1ec31a7ca9bfd494d20420eb4453774596a077911ba5998003e23cbf1a6",
+        "original_scope_preserved": true
+      }
+    ],
+    "complete": true,
+    "wall_ns": 1792182157395961206
+  },
+  "ci": {
+    "security-install-hold-ci-75d8b06-v1.json": [
+      {
+        "conclusion": "success",
+        "headSha": "75d8b0608d3ac12d1b81f6b9f68291354ba2ad88",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38961736935",
+        "workflowName": "Qualification integrity"
+      },
+      {
+        "conclusion": "success",
+        "headSha": "75d8b0608d3ac12d1b81f6b9f68291354ba2ad88",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38961736784",
+        "workflowName": "Documentation"
+      },
+      {
+        "conclusion": "",
+        "headSha": "75d8b0608d3ac12d1b81f6b9f68291354ba2ad88",
+        "status": "in_progress",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38961736777",
+        "workflowName": "CI"
+      },
+      {
+        "conclusion": "success",
+        "headSha": "75d8b0608d3ac12d1b81f6b9f68291354ba2ad88",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38961736950",
+        "workflowName": "Production codec bounded fuzz"
+      },
+      {
+        "conclusion": "success",
+        "headSha": "75d8b0608d3ac12d1b81f6b9f68291354ba2ad88",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38961724666",
+        "workflowName": "Qualification integrity"
+      },
+      {
+        "conclusion": "success",
+        "headSha": "75d8b0608d3ac12d1b81f6b9f68291354ba2ad88",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38961724662",
+        "workflowName": "Documentation"
+      }
+    ],
+    "security-install-hold-ci-aa0d636-v1.json": []
+  },
+  "materials": {
+    "security-install-hold-documentation-audit-v1.json": {
+      "path": ".dev/security-install-hold-documentation-audit-v1.json",
+      "sha256": "18cc70bcf73d793ea47057a0e2b79fbb01bdf89d93c76274ca2873bd6906043b",
+      "bytes": 132123,
+      "access": "private owner workspace, no offsite archive guarantee"
+    },
+    "security-install-hold-docs-v1.log": {
+      "path": ".dev/security-install-hold-docs-v1.log",
+      "sha256": "2ca182232e6c579ab326cefdc1c3e7f4b21d863864bac1247913ff3c75de8c8f",
+      "bytes": 291858,
+      "access": "private owner workspace, no offsite archive guarantee"
+    },
+    "security-install-hold-qualification-tests-v2.log": {
+      "path": ".dev/security-install-hold-qualification-tests-v2.log",
+      "sha256": "e370824974f00ae8d8f0fa86d799fd59bb4fa69858ee9102c8bb75604935481e",
+      "bytes": 126,
+      "access": "private owner workspace, no offsite archive guarantee"
+    },
+    "security-install-hold-registry-local-v1.json": {
+      "path": ".dev/security-install-hold-registry-local-v1.json",
+      "sha256": "bfcec20251dbd2e87f5e3e06f42786a52ea03e6b673874a3a88d6963c4169eb2",
+      "bytes": 1295,
+      "access": "private owner workspace, no offsite archive guarantee"
+    },
+    "security-install-hold-issue-receipts-v1.json": {
+      "path": ".dev/security-install-hold-issue-receipts-v1.json",
+      "sha256": "19fe97842a253e431ff2aeff94ceba6c636d3f15109fdbbd9c728c3b1d06d368",
+      "bytes": 2701,
+      "access": "private owner workspace, no offsite archive guarantee"
+    },
+    "security-install-hold-ci-75d8b06-v1.json": {
+      "path": ".dev/security-install-hold-ci-75d8b06-v1.json",
+      "sha256": "05bc2c1955620278d155074c0b553b73c819ddd9f5698068d88acf6072d319d3",
+      "bytes": 1258,
+      "access": "private owner workspace, no offsite archive guarantee"
+    },
+    "security-install-hold-ci-aa0d636-v1.json": {
+      "path": ".dev/security-install-hold-ci-aa0d636-v1.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3,
+      "access": "private owner workspace, no offsite archive guarantee"
+    }
+  },
+  "scope": [
+    "Test-only QEMU installation acceptance selection and originalcallback ownership, no productiondriver/Host/Agent/data change.",
+    "Offline ASan/UBSan/LSan, originalfixtures and paused unattachedTCG check scopes only; no physical WS73 run, new protocol/formal/security/performance/recovery qualification.",
+    "Existing archived compiled K14d9/U42 and olderAgent results retain exactoriginalidentities; no promotion to latestHEAD or thisQEMU.",
+    "NaturalRCA/nonmanualrecovery, NOCPtruth/reuse/callbackdrain/authenticatedsecurity/Bond and fullS0-S6/19WP/10FV/12DG stillopen; UserHostP4,VM-onlyU2/3,Eport1excluded."
+  ],
+  "next": "Implement controlled install-cancel in the existing Agent witness/coordinator using pinned QEMUdea80, then actual lateoriginalreply and peer ordinary application validation bothroles; continue SSAP/multichannel vertical and lifecycle inparallel.",
+  "wall_ns": 1792182198344461074
+}

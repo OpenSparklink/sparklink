@@ -770,8 +770,8 @@
     "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
     "NOCPtruth/late/duplicate,reuse/callbackdrain,naturalstartup/re-enumeration/disappearance RCA andnonmanualrecovery remainOPEN."
   ],
-  "issue_sync_status": "FOUR_RELATED_ISSUES_READBACK_OPEN_ORIGINAL_SCOPE_UNCHANGED",
-  "issue_sync_receipt": "docs/evidence/matched-u23-maintenance-20261017.json",
+  "issue_sync_status": "K7/K19/U5/U8 updated/readback OPEN; original issue scope unchanged, no partialclose.",
+  "issue_sync_receipt": "docs/evidence/security-install-reply-barrier-maintenance-20261017.json",
   "previous_goal_turn_classification": "NO_PROGRESS_PORT_IDENTITY_CONFIRMATION_ONLY",
   "current_goal_turn_classification": "PROGRESS_SIGNED_TEST_ONLY_INSTALL_REPLY_SELECTOR_OFFLINE_AND_PAUSED_QMP",
   "goal_api_status_observed": "active",
@@ -1446,7 +1446,8 @@
       "physical_gate_executed": false,
       "formal_proven": false,
       "owner_cleanup_or_natural_recovery_qualified": false,
-      "next": "Existing Agent witness, exact submitted install held acceptance, original cancellation then unchanged late operation result; real peer ordinary business, both roles, original deadline. Fullrelease/finalfd/dup/Down composition still open."
+      "next": "Existing Agent witness, exact submitted install held acceptance, original cancellation then unchanged late operation result; real peer ordinary business, both roles, original deadline. Fullrelease/finalfd/dup/Down composition still open.",
+      "maintenance_report": "docs/evidence/security-install-reply-barrier-maintenance-20261017.json"
     }
   },
   "documentation_remediation": {
@@ -1585,7 +1586,8 @@
     "docs/evidence/schema2-application-maintenance-20261016.json",
     "docs/evidence/cmtc-mtu-mps-issues-20261016.json",
     "docs/evidence/session-tx-quantum-maintenance-20261017.json",
-    "docs/evidence/session-status-maintenance-20261017.json"
+    "docs/evidence/session-status-maintenance-20261017.json",
+    "docs/evidence/matched-u23-maintenance-20261017.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",

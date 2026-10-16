@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "TWO_EXISTING_ISSUES_UPDATED_AND_READ_BACK_OPEN",
+  "qualification_record": "four-disconnect48-ff13d8c",
+  "report": "docs/evidence/four-device-disconnect-20261016.json",
+  "scope": "Controlled physical pair Disconnect/Down with existing surviving application replies only; actual USB/device fault and natural recovery still open; no issue closed",
+  "body_sha256": "45eb5c0ee9b1d0e74e4e0ae00127400d612fec29a83fca0e53265264daf44822",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6206251023",
+      "id": 6206251023,
+      "state": "OPEN",
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6206251792",
+      "id": 6206251792,
+      "state": "OPEN",
+      "readback_verified": true
+    }
+  ],
+  "exact_tools_ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38836994457,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38836994457",
+      "workflowName": "Production codec bounded fuzz"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38836994449,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38836994449",
+      "workflowName": "Qualification integrity"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38836994438,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38836994438",
+      "workflowName": "Documentation"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38836994425,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38836994425",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38836988919,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38836988919",
+      "workflowName": "Qualification integrity"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38836988923,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38836988923",
+      "workflowName": "Documentation"
+    }
+  ],
+  "ci_scope": "Observed completed ff13d8c CI statuses; no artifact requalification or hardware/formal claim derived from green jobs"
+}

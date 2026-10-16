@@ -681,8 +681,8 @@
     "Actual USB/device-fault isolation with surviving peer replies;natural RCA/nonhuman recovery remains unqualified",
     "Production stateful fuzz,submit-revoke-Down-original-deadline composition/debugVM parallel;minimum authenticated authorization before protectedCPCD"
   ],
-  "issue_sync_status": "Four-device first positive increment: K17/U3/U8 exact comment readback and OPEN; original scope unchanged",
-  "issue_sync_receipt": "docs/evidence/four-device-business-issues-20261016.json",
+  "issue_sync_status": "ControlledDisconnect48:K17/U8 exact comment readback and OPEN; original scope unchanged",
+  "issue_sync_receipt": "docs/evidence/four-device-disconnect-issues-20261016.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
   "current_goal_turn_classification": "progress: signedff13 test gate; actualcontrolled Disconnect2roles48app replies and saved raw proofs sealed;8negativecontrols and initial no-op selectorfailure retained",
   "goal_api_status_observed": "active",
@@ -1221,9 +1221,11 @@
     "report": "docs/evidence/four-device-business-20261016.json",
     "next": "Four-device long/burst/budget/fairness and dynamic channels;actual USB/device fault isolation/natural RCA/recovery remain open;stateful production/submit-revoke-Down-original-deadline/debugVM parallel",
     "issues_receipt": "docs/evidence/four-device-business-issues-20261016.json",
-    "controlled_disconnect_report": "docs/evidence/four-device-disconnect-20261016.json"
+    "controlled_disconnect_report": "docs/evidence/four-device-disconnect-20261016.json",
+    "controlled_disconnect_issues_receipt": "docs/evidence/four-device-disconnect-issues-20261016.json"
   },
   "issue_sync_receipts_history": [
-    "docs/evidence/qualification-quality-issues-20261015.json"
+    "docs/evidence/qualification-quality-issues-20261015.json",
+    "docs/evidence/four-device-business-issues-20261016.json"
   ]
 }

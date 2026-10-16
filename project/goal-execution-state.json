@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-16T19:55:58.921818+00:00",
+  "updated_at_utc": "2026-10-16T20:04:13.675066+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -770,8 +770,8 @@
     "Continue data/control fairness,absolute-rate saturation/slowconsumer,longterm andfourdevice;Hi3873Eport1 qualification distinct,UserHost lowpriority.",
     "NOCPtruth/late/duplicate,reuse/callbackdrain,naturalstartup/re-enumeration/disappearance RCA andnonmanualrecovery remainOPEN."
   ],
-  "issue_sync_status": "FIVE_EXISTING_ISSUES_FINAL_READBACK_OPEN_ORIGINAL_SCOPE_UNCHANGED",
-  "issue_sync_receipt": "docs/evidence/session-status-maintenance-20261017.json",
+  "issue_sync_status": "FOUR_RELATED_ISSUES_READBACK_OPEN_ORIGINAL_SCOPE_UNCHANGED",
+  "issue_sync_receipt": "docs/evidence/matched-u23-maintenance-20261017.json",
   "previous_goal_turn_classification": "SELECTED_BOUNDED_OBSERVATION_AND_RELATED_REAL_GATE_EXIT_PASS_FULL_OBJECTIVE_OPEN",
   "current_goal_turn_classification": "PROGRESS_SCALABLE_WORKLOAD_TOOLS_AND_TWELVE_MATCHED_REAL_GATES_WITH_LIMITED_FINDINGS",
   "goal_api_status_observed": "active",
@@ -1565,7 +1565,8 @@
     "docs/evidence/slktest-migration-maintenance-20261016.json",
     "docs/evidence/schema2-application-maintenance-20261016.json",
     "docs/evidence/cmtc-mtu-mps-issues-20261016.json",
-    "docs/evidence/session-tx-quantum-maintenance-20261017.json"
+    "docs/evidence/session-tx-quantum-maintenance-20261017.json",
+    "docs/evidence/session-status-maintenance-20261017.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -2145,7 +2146,8 @@
         "window": 16,
         "repeats": 2,
         "predeclared_private_plan": ".dev/matched-u23-long-matrix-v1.json"
-      }
+      },
+      "maintenance_report": "docs/evidence/matched-u23-maintenance-20261017.json"
     }
   },
   "slktest_migration": {

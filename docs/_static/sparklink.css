@@ -67,7 +67,7 @@ html { --pst-sidebar-width: 17rem; --pst-sidebar-secondary: 14rem; }
 .bd-article code.literal { border-radius: .25rem; }
 .bd-article a:focus-visible, .sl-brand a:focus-visible { outline: 2px solid var(--pst-color-primary); outline-offset: 4px; border-radius: .25rem; }
 .sl-task-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.75rem 0; }
-.sl-task-card { position: relative; border: 1px solid var(--pst-color-border); border-radius: .75rem; padding: 1.25rem; background: var(--pst-color-on-background); }
+.bd-article .sl-task-card { position: relative; border: 1px solid var(--pst-color-border); border-radius: .75rem; padding: 1.25rem; background: var(--pst-color-on-background); }
 .sl-task-card:hover, .sl-task-card:focus-within { border-color: var(--pst-color-primary); background: var(--pst-color-surface); }
 .sl-task-card p:first-child { margin-bottom: .65rem; font-size: 1.1rem; }
 .sl-task-card a { text-decoration: none; }
@@ -81,6 +81,6 @@ html { --pst-sidebar-width: 17rem; --pst-sidebar-secondary: 14rem; }
 }
 @media (max-width: 48rem) {
   .sl-task-grid { grid-template-columns: minmax(0, 1fr); }
-  .sl-task-card { padding: 1rem; }
+  .bd-article .sl-task-card { padding: 1rem; }
   .bd-article { padding-left: 1rem; padding-right: 1rem; }
 }

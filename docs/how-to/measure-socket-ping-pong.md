@@ -3,7 +3,7 @@
 目标：让一个普通应用发送随机消息，另一应用实际校验并回复，得到每消息的应用
 RTT。当前是 benchmark 的第一个切片，已运行本地 AF_UNIX 应用回归，**尚未取得
 此工具的真实 WS73 性能资格**。已接通三类负载及进程资源端点快照；
-VM 基线、schema2 双端捕获/来源核对及内核资源采样仍缺。
+schema2 应用报告已有独立双端核对；VM 基线、双端捕获/来源核对及内核资源采样仍缺。
 
 ## 前置条件
 
@@ -64,11 +64,15 @@ INCOMPLETE 标记及 stderr。文件存在直接拒绝，不覆盖前次运行�
 
 ## 运行固定速率、有限窗口及双向负载
 
-以下新命令的本地应用循环已回归，**真实 WS73、schema2 报告及完整证据闭包尚待验收**。
+以下新命令的本地应用循环已回归，**真实 WS73 与完整证据闭包尚待验收**。
 仍需上述已建链 VM、普通用户、匹配构建和全新的报告路径。每次重做需新连接 lifetime。
 只使用 one-shot slktest CLI；两端看到 `SocketBenchmarkArmed` 后，各自在该进程 stdin 输入
 一行 `start`，或由现有 VM 监督器在核对凭据后写入 `start\n`。启动等待原期限 30 秒，
 部分输入不延长，EOF 为撤回；不要提前释放一端就将它当同步的双向起点。
+两端随后会各输出 `SocketBenchmarkQuiescent`。监督器确认双方都到达该点后，
+分别在 stdin 输入一行 `finish`；此后才做 hex/JSON 编码并关闭 fd。结束等待也只有
+原 30 秒，部分输入不续期，EOF/超时留下失败报告；它不延长消息原期限。
+不能把预先排入 stdin 的 `finish` 当成已经证明双端结束；该顺序还须由 VM 监督器记录。
 
 - 固定速率：对端使用 `slktest channel peer --load`；发端的 interval 单位是 µs。
 
@@ -108,3 +112,18 @@ schema2 的 `LOAD_OBSERVED_NOT_QUALIFIED` 只表示本地全量循环及正确�
 资源是测量前后进程快照，maxrss 为进程存续期最大值，非本轮峰值；队列峰值仅应用
 队列。goodput 区分含 29 字节测试头的 datagram 与真正 pattern payload，分母为同一
 进程的 active interval，包含失败/超时且不含最后观察窗；USB 字节率仍未知。
+
+
+## 核对 schema2 应用报告
+
+保存双方原始文件，再在独立路径生成核对结果：
+
+```sh
+python3 tools/ws73_benchmark.py --left "$SOURCE_REPORT" --right "$PEER_REPORT" --output "$CHECK_REPORT"
+```
+
+仅完整成功的两端报告可以得到 `LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED`。
+原失败/超时仍留在原始报告，核对工具会拒绝将其显示为完整通过。文件存在不覆盖，
+截断或异常退出留下的 INCOMPLETE/FAIL 不能用于资格。`--fixture` 只供显式 AF_UNIX
+测试身份使用，真实 VM 门禁不得开启。报告核对尚不绑定编译 artifact、凭据、捕获
+或监督器；这些仍是取得可复现性能资格的必需条件。

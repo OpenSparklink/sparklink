@@ -2,7 +2,7 @@
 
 适用：ADR0006 的规划契约；目前没有当前 HEAD 的性能资格。首个 ping-pong 工具切片见
 [操作指南](../how-to/measure-socket-ping-pong.md)；固定速率/窗口/双向的应用循环已接通，完整证据闭包尚缺。
-现有 channel-roundtrip／burst 是功能门禁，计时包含日志等开销，不能升级为基线。
+历史 channel-roundtrip／burst 与当前 slktest --check 是功能门禁，计时包含日志等开销，不能升级为基线。
 [接口支持范围](interfaces.md)继续适用；此页不新增 socket 能力。
 
 ## 负载与时间
@@ -64,7 +64,9 @@ schema 版本、run id、源角色及 controller/generation/lifetime/channel 身
 
 count 1..10000，bytes 29..2042 且匹配实际基本 CUTC MTU/MPS。window 1..min(count,256)，
 interval 10..1000000 µs，总计划不超过600秒；其它模式 interval 为0。schema2 等待
-原30秒 `start\n` 屏障，消息原10秒期限，1秒尾部观察，总运行上限612秒。测试中的
+原30秒 `start\n` 屏障，消息原10秒期限，1秒尾部观察，测量循环上限612秒。
+循环结束输出Quiescent，双方到达后监督器各发 `finish\n`，结束等待另有原30秒预算；
+fd保持到结束授权，hex/JSON在其后生成。该预算不续消息期限，最终失败不覆盖原循环错误。测试中的
 较短 AF_UNIX 期限是显式 fixture 参数，不替代真实模式常量或协议期限。
 
 `outgoing` 全量保留计划/dispatch、首次及成功 syscall、准入、原 deadline、read、
@@ -83,8 +85,10 @@ report 的 correctness 只是单个应用的限定检查。CPU user/system delta
 pattern goodput 排除29字节应用测试头，datagram goodput另列；DLI/DTAP/HCC/USB
 开销未取得时不得补猜。完整追踪与低扰动差值仍未测量。
 
-schema1 双端核对含迟到拒绝；schema2 的端到端 oracle、来源/捕获/监督器负对照
-尚缺，不能沿用 schema1 的局部通过。新模式尚无真实 WS73 性能资格。
+schema1 双端核对含迟到拒绝；schema2 已有独立应用报告核对（载荷/方向/
+逐消息期限/计数/分位数/goodput/进程端点/结束屏障结果）。它拒绝失败或缺字段
+取得完整一致结果；原诊断报告仍保留。来源/捕获/监督器闭包仍缺，不能把应用层
+一致当 Native 或性能资格。新模式尚无真实 WS73 性能资格。
 
 
 ## 工具所有权与迁移
@@ -99,3 +103,10 @@ schema1 双端核对含迟到拒绝；schema2 的端到端 oracle、来源/捕�
 代码迁移不改 schema1/2、wire、socket/Grant/credit/Ticket 或原期限。历史证据中的
 slctl 命令和 artifact/hash 保持不动，由原提交工具复核；当前 verifier 的旧 argv 分支
 仅解读历史记录，不是运行时兼容入口。新 binary/runner/报告来源和实机资格单独登记。
+
+
+schema2 的 `finalization` 为新增必要字段：completed、原 budget_ns、elapsed_ns、error；
+CLI预算为30秒，显式本地fixture为1秒。旧schema2报告保持原身份，缺此字段不能授予
+当前结束屏障资格，不另改schema版本。核对器支持rate/peer、window/peer或duplex/duplex，
+允许方向交换；只在各进程的时间域内运算。应用报告核对不证明监督器确实等待双方，
+该事实必须与实际输入/输出时序及artifact/capture一起单独核验。

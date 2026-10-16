@@ -30,7 +30,26 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Install private D-Bus regression dependency
         run: sudo apt-get update && sudo apt-get install -y dbus-daemon
-      - run: cargo test --workspace --all-features
+      - name: Test workspace and export actual local application reports
+        env:
+          SLKTEST_REPORT_FIXTURE_DIR: ${{ runner.temp }}/slktest-report-fixtures
+        run: cargo test --locked --workspace --all-features
+      - name: Independently check actual production schema2 reports (AF_UNIX only)
+        env:
+          PYTHONPATH: tools
+        run: |
+          python3 -m unittest discover -s tools/tests -p test_ws73_benchmark.py -v
+          for mode in rate window duplex; do
+            python3 tools/ws73_benchmark.py --fixture --left "$RUNNER_TEMP/slktest-report-fixtures/$mode-0.json" --right "$RUNNER_TEMP/slktest-report-fixtures/$mode-1.json" --output "$RUNNER_TEMP/slktest-report-fixtures/$mode-check.json"
+          done
+      - name: Retain local report fixtures; not performance or hardware qualification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: slktest-local-reports-not-performance-qualification
+          path: ${{ runner.temp }}/slktest-report-fixtures
+          if-no-files-found: error
+          retention-days: 14
 
   clippy:
     name: clippy

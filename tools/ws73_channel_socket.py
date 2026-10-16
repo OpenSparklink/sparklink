@@ -498,6 +498,9 @@ def corroborate(run,capture):
 
 
 def benchmark_application_reports(source, peer):
+    if isinstance(source,dict) and source.get("schema_version")==2:
+        from ws73_benchmark import load_application_reports
+        return load_application_reports(source,peer)
     """Check v1 ping-pong application reports, NOT artifact/USB/RF qualification.
 
     Reuses this gate's application evidence layer. Time arithmetic stays within

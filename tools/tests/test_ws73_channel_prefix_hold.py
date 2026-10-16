@@ -74,7 +74,7 @@ def primed_fixture():
     from sparklink.structs import SleChannelTxStatus
     r,c,h,s,e=fixture();g=r['channel_grant'];d=r['prefix_hold'];d['primed']=True
     payloads=[message().hex() for _ in range(4)];o=g['owners'][0]
-    v=SleChannelTxStatus(version=1,size=64,controller=0,generation=o['generation'],lifetime=o['lifetime'],handle=o['handle'],packet_maximum=254,capacity=5,outstanding=4,connection_debt=4,flags=1)
+    v=SleChannelTxStatus(version=1,size=64,controller=0,generation=o['generation'],lifetime=o['lifetime'],handle=o['handle'],packet_maximum=254,capacity=5,outstanding=4,connection_debt=4,flags=0)
     p=dict(status='PRIMING_RECEIPTS_RECORDED',payloads=payloads,start_wall_ns=700_000_000,end_wall_ns=900_000_000,source_pool_samples=[dict(stage='tx_status',pid=g['workers'][0]['pid'],fd=g['workers'][0]['fd'],value=bytes(v).hex())],applications=[])
     for n,w in enumerate(g['workers']):p['applications'].append(dict(stage='primed',sender=n==0,pid=w['pid'],fd=w['fd'],values=payloads.copy(),start_wall_ns=710_000_000,end_wall_ns=800_000_000))
     g['priming']=p;g['revoke_prefix']['admission_before_wall_ns']=1_400_000_000
@@ -112,3 +112,15 @@ class PrimedDownHold(unittest.TestCase):
             elif kind=='missing-wire':c['acb_packets'].pop(1)
             else:c['acb_packets'][1]['data']='00'*66
             with self.subTest(kind=kind),self.assertRaises(ValueError):corroborate(r,c,h,s,e)
+
+    def test_actual_captured_four_debt_snapshot_has_no_active_or_begun_flags(self):
+        from ws73_channel_prefix_hold import verify_priming
+        from sparklink.structs import SleChannelTxStatus
+        r,_,_,_,_=primed_fixture();g=r['channel_grant'];p=g['priming']
+        # Exact64byte producer receipt from failed2451 VM;not a READY bit.
+        raw='010040000000000001000000000000000100000000000000fe000500040004000400000008000000000000000000000000000000000000000000000000000000'
+        g['owners'][0]['generation']=1;p['source_pool_samples'][0]['value']=raw
+        self.assertEqual(SleChannelTxStatus.from_buffer_copy(bytes.fromhex(raw)).flags,0)
+        verify_priming(r)
+        v=SleChannelTxStatus.from_buffer_copy(bytes.fromhex(raw));v.flags=1;p['source_pool_samples'][0]['value']=bytes(v).hex()
+        with self.assertRaises(ValueError):verify_priming(r)

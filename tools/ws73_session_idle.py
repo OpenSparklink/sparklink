@@ -56,7 +56,7 @@ class SessionIdleTrace:
             for n,v in enumerate(samples):
                 o=grant.row['owners'][n]
                 if (v.version,v.size,v.controller,v.generation,v.lifetime,v.handle,v.packet_maximum,v.capacity,v.reserved)!=(1,64,n,o['generation'],o['lifetime'],o['handle'],254,5,0):raise ValueError('current physical pool identity required')
-                drained &= not any([v.outstanding,v.connection_debt,v.queued,v.busy,v.active_pdu_bytes,v.active_pdu_offset]) and v.flags==1
+                drained &= not any([v.outstanding,v.connection_debt,v.queued,v.busy,v.active_pdu_bytes,v.active_pdu_offset]) and v.flags==0
             if drained:break
             if time.monotonic()>deadline:raise TimeoutError('actual two-controller credit/queue drain before idle')
             time.sleep(.01)
@@ -124,5 +124,5 @@ def corroborate(record,share):
         v=decode(SleChannelTxStatus,r['value']);o=owners[n]
         worker=record['channel_grant']['workers'][n]
         if (r['pid'],r['fd'])!=(worker['pid'],worker['fd']):raise ValueError('same ordinary worker fd identity required')
-        if (r['stage'],v.version,v.size,v.controller,v.generation,v.lifetime,v.handle,v.packet_maximum,v.capacity,v.queue_limit,v.flags)!=('tx_status',1,64,n,o['generation'],o['lifetime'],o['handle'],254,5,8,1) or any([v.outstanding,v.connection_debt,v.queued,v.busy,v.active_pdu_bytes,v.active_pdu_offset,v.reserved]):raise ValueError('actual drained current owner receipts required')
+        if (r['stage'],v.version,v.size,v.controller,v.generation,v.lifetime,v.handle,v.packet_maximum,v.capacity,v.queue_limit,v.flags)!=('tx_status',1,64,n,o['generation'],o['lifetime'],o['handle'],254,5,8,0) or any([v.outstanding,v.connection_debt,v.queued,v.busy,v.active_pdu_bytes,v.active_pdu_offset,v.reserved]):raise ValueError('actual drained current owner receipts required')
     return dict(status='REAL_SESSION_IDLE_AND_EVENT_RESTART_CORROBORATED',counts=counts,idle_monotonic_ns=row['interval_monotonic_ns'][1]-row['interval_monotonic_ns'][0],trace_sha256=row['trace_sha256'],scope='Aggregate production sl_work calls on two-controller VM;real business before/controlled prefix after;not Runtime idleCPU,concurrency proof,RF or performance qualification')

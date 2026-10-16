@@ -51,7 +51,7 @@ class SessionIdle(unittest.TestCase):
         owners=[dict(generation=i+1,lifetime=1,handle=0) for i in range(2)];workers=[dict(pid=i+80,fd=i+3) for i in range(2)]
         row['pool_before']=[]
         for n,o in enumerate(owners):
-            v=SleChannelTxStatus(version=1,size=64,controller=n,handle=0,generation=o['generation'],lifetime=1,packet_maximum=254,capacity=5,queue_limit=8,flags=1)
+            v=SleChannelTxStatus(version=1,size=64,controller=n,handle=0,generation=o['generation'],lifetime=1,packet_maximum=254,capacity=5,queue_limit=8,flags=0)
             row['pool_before'].append(dict(stage='tx_status',value=bytes(v).hex(),**workers[n]))
         r=dict(session_idle=row,channel_grant=dict(owners=owners,workers=workers))
         with tempfile.TemporaryDirectory() as tmp:

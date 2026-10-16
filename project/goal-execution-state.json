@@ -732,7 +732,7 @@
       "Production stateful fuzz,submit-revoke-Down-original-deadline/debugVM and minimum authenticated authorization parallel;no all-control prerequisite"
     ]
   },
-  "execution_phase": "P2b bfaa original32 matrix FAIL atdown1:14PASS/1FAIL/17NOT_RUN;no postSourceUSBDown submission observed,precondition lost;primed-credit barrier andidle observer offline647 pending newVM",
+  "execution_phase": "P2b bfaa newprimedDown0 stopped beforelongPDU:actualpeer4 delivery/debt4 observed,tool2451 used wrongTX_ACTIVE predicate;contractflags0 fix ready fornewVM. Original32FAIL retained;new648toolcheck PASS;newVM pending.",
   "next_resume_tasks": [
     "Separate uniqueSession immediate ready events from earliest original-deadline scheduling;classify retry reasons and finite budgets before removing10ms fallback.",
     "Reuse a0/9385 artifacts and3f10 controlled-prefix barrier as lifecycle baseline;preserve original f355 completed-before-withdrawal FAIL and supervisor enum FAIL.",
@@ -1700,7 +1700,8 @@
       "supervisor": ".dev/session-event-qualification-v1.json",
       "original_scope_preserved": true,
       "next": "New exacttool/root forprimedDown0/1 thenremaining deadlines/lengths/repeats;retainoriginal failure andallqualifications;independentidle/event observation also required",
-      "failure_report": "docs/evidence/session-event-down-prefix-failure-20261016.json"
+      "failure_report": "docs/evidence/session-event-down-prefix-failure-20261016.json",
+      "snapshot_flag_failure": "docs/evidence/session-event-priming-tx-flags-failure-20261016.json"
     }
   },
   "slktest_migration": {

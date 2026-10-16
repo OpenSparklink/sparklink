@@ -290,7 +290,7 @@ class Gate:
         while True:
             send(self.parents[self.index],dict(kind='tx_status'));value=receive(self.parents[self.index]);row['source_pool_samples'].append(value);self.save()
             tx=decode(SleChannelTxStatus,value['value'])
-            if (tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset)==(4,4,1,0,0,0,0):break
+            if (tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset)==(4,4,0,0,0,0,0):break
             if time.monotonic()>deadline:raise TimeoutError('actual four unpaid priming credits before long PDU')
             time.sleep(.005)
         row.update(end_wall_ns=time.time_ns(),status='PRIMING_RECEIPTS_RECORDED');self.save()

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "status": "CORRECT_FIRST_FRAGMENT_NEGATIVES_REVERIFIED",
+  "scope": "Evidence tool label correction only;positiveRF/CMTC/app qualification unchanged",
+  "historical_report": "docs/evidence/dynamic-cmtc-real-20261016.json",
+  "historical_audit": ".dev/reverify-dynamic-cmtc-v1.py",
+  "finding": "Original TCID/PI-labelled mutations selected lastreassembled fragment;it tested tail applicationpayload corruption,not those headerfields. Original outputs unchanged.",
+  "correction": "Select firstfragment record/hcc offset and byte0/4,assertheaderposture,record old/new byte;both original48 and new56 saved evidence reject correctly targeted mutations.",
+  "audits": [
+    {
+      "round_trips": 48,
+      "corrected_mutations": [
+        {
+          "name": "wrong-tcid-first-fragment",
+          "status": "REJECTED",
+          "mutation_location": {
+            "record": 1376,
+            "hcc_offset": 92,
+            "boundary": 1,
+            "a3_payload_byte": 0,
+            "before": 128,
+            "after": 129,
+            "target": "First decoded A3 fragment containing DTAP TCID/PI,not the tail application payload"
+          }
+        },
+        {
+          "name": "wrong-pi-first-fragment",
+          "status": "REJECTED",
+          "mutation_location": {
+            "record": 1376,
+            "hcc_offset": 92,
+            "boundary": 1,
+            "a3_payload_byte": 4,
+            "before": 241,
+            "after": 240,
+            "target": "First decoded A3 fragment containing DTAP TCID/PI,not the tail application payload"
+          }
+        }
+      ]
+    },
+    {
+      "round_trips": 56,
+      "corrected_mutations": [
+        {
+          "name": "wrong-tcid-first-fragment",
+          "status": "REJECTED",
+          "mutation_location": {
+            "record": 1376,
+            "hcc_offset": 92,
+            "boundary": 1,
+            "a3_payload_byte": 0,
+            "before": 128,
+            "after": 129,
+            "target": "First decoded A3 fragment containing DTAP TCID/PI,not the tail application payload"
+          }
+        },
+        {
+          "name": "wrong-pi-first-fragment",
+          "status": "REJECTED",
+          "mutation_location": {
+            "record": 1376,
+            "hcc_offset": 92,
+            "boundary": 1,
+            "a3_payload_byte": 4,
+            "before": 241,
+            "after": 240,
+            "target": "First decoded A3 fragment containing DTAP TCID/PI,not the tail application payload"
+          }
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "private_workspace_path": ".dev/audit-dynamic-evidence-v2.py",
+      "sha256": "cdf042c5cb9c355d2144c2af94e85cea6792a30a01db10e0ec7c8fe38ef94d91",
+      "bytes": 6094
+    },
+    {
+      "private_workspace_path": ".dev/dynamic48-first-fragment-audit-v2.json",
+      "sha256": "dbb1fc9394ad5cf41f24b0cab73264b88d6074b2b69e60b03c306f19ba760ba5",
+      "bytes": 2834
+    },
+    {
+      "private_workspace_path": ".dev/dynamic56-long-audit-v2.json",
+      "sha256": "9ff73a831faddf2d2d7e7bf704d11519b924d77242a4459a0ce008fd27da2fc2",
+      "bytes": 3390
+    },
+    {
+      "private_workspace_path": ".dev/reverify-dynamic-cmtc-v1.py",
+      "sha256": "e1ae6164ffc9b48e22e0475c16464a4bb3ba025bcd7c3f4549acbb746c159845",
+      "bytes": 4066
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-v1-reverification.json",
+      "sha256": "d5a4afe85486141f08e7c01fd3f374dc1392ff0abc3bd2af8a7ade59548e02af",
+      "bytes": 1487
+    }
+  ]
+}

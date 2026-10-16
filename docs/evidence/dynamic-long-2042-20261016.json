@@ -1,0 +1,554 @@
+{
+  "schema_version": 1,
+  "status": "REAL_DYNAMIC_2042_AND_SLOT_BUDGET_SCOPED_PASS",
+  "generated_utc": "2026-10-16T05:24:50.744761+00:00",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
+  "executed_tools": "d14c988cdbd5625b37129aa9600d7ecb1df92752",
+  "scope": [
+    "K400/Ucca8 compiled runtime unchanged;preparedguest/Hosttoolsd14c988. Eachphysicalrole A4+B20short andC4long;56totalordinaryRT includes8long2042byteSDU/2047bytePDU. Not complete dynamic multichannel/length/credit scope.",
+    "Actual CMTC and asymmetric TCIDs,per-channel queues,Aclose/Bprogress,real fifthlifetime-slot ENOSPC before staging,and C app checks/replies after refusal in both physical roles. Finite4slot/tombstone policy is not safe reuse or full longterm resource recycling.",
+    "Cactual both-end ordered PB streams reassemble exact random app PDU:9TX fragments vs81SDK111RX chunks. FirmwareRX repackaging is recorded,not assumed identical to USB TX. Payload/MTU2042,PDU/MPS2047,controllerACB254 separate.",
+    "Actual appsuid1000/caps0;bounded SIGSTOP onlyonVM userprocess,original5second pause and10second business deadlines retained. Policy grant/routing not authentication;not protected/reliable mode or hardwareQoS.",
+    "Complete captures,zero-drop stats,VMtaint0 and QEMU/supervisor0 checked. USBwrite/NOCP/log never stand in for actual peer application validation/reply. Not independent RF sniffer or full hardware/firmware proof.",
+    "17offline decoded-capture/metadata negative controls reject corrupt evidence,including actualFIRSTfragment TCID/PI and missing longmiddle/peerreply/ENOSPC. This corrects earlier audit field labels;originaltail-payload mutation outputs remain preserved.",
+    "Existing14 fixed/length/long/close/softwarepressure/fourdevice requalified separately at exactK400/Ucca8/tools4b337;this pilot does not retag those execution tools or count fixed cases as dynamic length results.",
+    "NaturalRCA/nonhuman recovery,NOCP reuse barriers/fullcredit,fullconcurrency/security/Bond/deployment and originalS0-S6/19WP/10FV/12DG remainOPEN. UserHost remainsP4."
+  ],
+  "ordinary_round_trips": 56,
+  "long_round_trips": 8,
+  "application_message_bytes": 2042,
+  "complete_pdu_bytes": 2047,
+  "slot_refusals": 2,
+  "phases": [
+    {
+      "phase": 0,
+      "C_info": {
+        "peer": [
+          1,
+          2,
+          1,
+          0,
+          130,
+          131,
+          241,
+          2042,
+          2047,
+          0,
+          3
+        ],
+        "initiator": [
+          0,
+          1,
+          1,
+          0,
+          131,
+          130,
+          241,
+          2042,
+          2047,
+          0,
+          3
+        ]
+      },
+      "C_round_trips": 4,
+      "maximum_C_round_trip_ms": 401,
+      "C_tx_fragment_counts": [
+        9
+      ],
+      "C_rx_fragment_counts": [
+        81
+      ],
+      "slot_refusal_exit": 1,
+      "slot_refusal_errno": 28,
+      "C_after_refusal": true,
+      "peer_pause_ms": 55.108846
+    },
+    {
+      "phase": 1,
+      "C_info": {
+        "peer": [
+          0,
+          1,
+          3,
+          0,
+          130,
+          131,
+          241,
+          2042,
+          2047,
+          0,
+          3
+        ],
+        "initiator": [
+          1,
+          2,
+          3,
+          0,
+          131,
+          130,
+          241,
+          2042,
+          2047,
+          0,
+          3
+        ]
+      },
+      "C_round_trips": 4,
+      "maximum_C_round_trip_ms": 401,
+      "C_tx_fragment_counts": [
+        9
+      ],
+      "C_rx_fragment_counts": [
+        81
+      ],
+      "slot_refusal_exit": 1,
+      "slot_refusal_errno": 28,
+      "C_after_refusal": true,
+      "peer_pause_ms": 70.268187
+    }
+  ],
+  "capture_packets": 7597,
+  "capture_drops": 0,
+  "qemu_exit": 0,
+  "supervisor_exit": 0,
+  "kernel_taint": 0,
+  "negative_controls": [
+    {
+      "name": "missing-peer-rx",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "wrong-tcid-first-fragment",
+      "status": "REJECTED",
+      "mutation_location": {
+        "record": 1376,
+        "hcc_offset": 92,
+        "boundary": 1,
+        "a3_payload_byte": 0,
+        "before": 128,
+        "after": 129,
+        "target": "First decoded A3 fragment containing DTAP TCID/PI,not the tail application payload"
+      }
+    },
+    {
+      "name": "wrong-pi-first-fragment",
+      "status": "REJECTED",
+      "mutation_location": {
+        "record": 1376,
+        "hcc_offset": 92,
+        "boundary": 1,
+        "a3_payload_byte": 4,
+        "before": 241,
+        "after": 240,
+        "target": "First decoded A3 fragment containing DTAP TCID/PI,not the tail application payload"
+      }
+    },
+    {
+      "name": "wrong-cmtc-id",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "old-lifetime",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-final-close",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-peer-application-reply",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-stopped-receipt",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "running-status",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-long-middle-fragment",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "wrong-slot-errno",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "slot-falsely-staged",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "wrong-long-size",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-long-peer-reply",
+      "status": "REJECTED",
+      "mutation_location": null
+    },
+    {
+      "name": "missing-proof",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-acceptance",
+      "status": "REJECTED"
+    },
+    {
+      "name": "failed-qemu",
+      "status": "REJECTED"
+    }
+  ],
+  "gates": [
+    {
+      "name": "dynamic-2042-slot-budget",
+      "status": "ACTUAL_TWO_END_LONG_AND_SLOT_REFUSAL_PASS",
+      "result": "PASS"
+    }
+  ],
+  "raw_access": {
+    "condition": "Authorized original workspace owner;rawlogs/pcaps/SDK inputs private,no permanent public storage promise",
+    "replay": "Exact long-pilot manifest command; .dev/audit-dynamic-evidence-v2.py --folder .dev/native-dynamic-long-2042-v1-run --tools .dev/dynamic-long-tools-d14c988 --output NEW.json. Exact SDK111 inputs/configuration required; all real driver/USB tests only VM."
+  },
+  "remaining": [
+    "Dynamic249/250/253/254/255/1024byte variants on accurate tools",
+    "Safe resource reuse/fullGrant/credit/concurrency/fairness and alloriginalscope",
+    "Natural root causes and nonhuman recovery remain OPEN"
+  ],
+  "materials": [
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/manifest.json",
+      "sha256": "9b260a2060a0c5938468bc3d8c239043d69fa39a631bb1de1ad5294632e956a4",
+      "bytes": 3010672
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-long-2042-v1-supervisor.json",
+      "sha256": "162507de39b44b22165d2b932011c83e618eb66e3abf5f62c3c4e199826d6186",
+      "bytes": 1289
+    },
+    {
+      "private_workspace_path": ".dev/dynamic56-long-audit-v2.json",
+      "sha256": "9ff73a831faddf2d2d7e7bf704d11519b924d77242a4459a0ce008fd27da2fc2",
+      "bytes": 3390
+    },
+    {
+      "private_workspace_path": ".dev/dynamic48-first-fragment-audit-v2.json",
+      "sha256": "dbb1fc9394ad5cf41f24b0cab73264b88d6074b2b69e60b03c306f19ba760ba5",
+      "bytes": 2834
+    },
+    {
+      "private_workspace_path": ".dev/audit-dynamic-evidence-v2.py",
+      "sha256": "cdf042c5cb9c355d2144c2af94e85cea6792a30a01db10e0ec7c8fe38ef94d91",
+      "bytes": 6094
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-v1-prepared/manifest.json",
+      "sha256": "9769949744d32eff35c85c207c640e4d05936b2a6e3e5c6e60ab29181b9dbe76",
+      "bytes": 261850
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-service-bundle/manifest.json",
+      "sha256": "98fae75622d4a7b43a3c821d68e363000784450b3ff80e6802f1119de93cef20",
+      "bytes": 23270
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "08bbbc66e35812748da6c3a5040794947c356d166f696964ccaabe4819a6f23b",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "84b95457abafab7b432d383d4fb26bf7b72ced6d059b91599dde628e39502f43",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "81d8408f0f3aa354d0963088eeab1afaa073ce47a6f3f98ce7327e1e5a36479c",
+      "bytes": 1939
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "c7911637dfe50df264067d9b1bccf9bd3e8bc30822806ff280f8ae2675409835",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "0d6f7f83768f6067b8b6888b5d763675311fda0e19b07d283af2b0fb5e101745",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "e91e454d4e8d22f8765830e121e360d7a17ddb730414b4f2b01b949db56a46f4",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "0549e408f3323b538ed17c5b5f8bac46d3af64c0e5f1bc10867a5cd363db4ecd",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "a67e2a7212e5804710f182d5d73cbfcc32c7d8de65f92d36366d1d5b46665002",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "562e41334434ce3547df7a205fbda2ad6cf81f89084761d9d5803c5b412a3955",
+      "bytes": 33771
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "b52d304e4d68213a278cf26886e4091b7e1d3e089ba25c776fa94dfc6f293e32",
+      "bytes": 33705
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "41bd531080f5c51bc71f60078c3d2c7396fc83c694a871d4efad07e7da5902cf",
+      "bytes": 2068
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "93f6fe1a407bfe6bf0d4006c0fe61c8d651f204e2ae58fe93935a278b44c4db7",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "30d74a0015de35bffd24812ddd40b71cd6e48aac919e6d8f4949f17dd1ddab70",
+      "bytes": 7483
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "1ca6d56f0160cde63798922b0b873b1e5c26dbfae910fe03a282593a7f2eebb5",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "1ccda65032e40dd7839e63ee72fa1516efc8855beaa4eec0d3a920e7c71e6a22",
+      "bytes": 33772
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "e2c0e41d785c8b39ac5f52000647d12aaf96defd026e9c73dd122cdfdfbeb81c",
+      "bytes": 33705
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/passthrough-control/run.json",
+      "sha256": "04646b4a48ab8fd57f8c9481c5da97c8bd9741101e1b3a544d93e759940a7efc",
+      "bytes": 922345
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/capture-process-status.txt",
+      "sha256": "f918600c13e1cfea31d7ccfc5529ada8a16b6e98d8ff612f6950d85d7c2c4fad",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/capture-stats.txt",
+      "sha256": "9b2b0abe2e39ee390953e0a2e9de38e97e6173fed3d12abae2d154756742d854",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/kernel.log",
+      "sha256": "d27f30ec8db62e9e67fbc8218daaa43f4832b5b9e914c3a45de10561650e18f9",
+      "bytes": 48981
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/passthrough-control-proofs.json",
+      "sha256": "15cc9434f139a167a5e6473b2b3a4d586145ede25504cb7fb29430ea3617aaf6",
+      "bytes": 477854
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/pending-observations-0.json",
+      "sha256": "b97c8e099f0d0f92d9e64c40b5bc6415c14cdb86c58393847816a5fc5ab16ecd",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/pending-observations-1.json",
+      "sha256": "5b4e4431dc89b2714892474990012443c1166206351e76c68dd64c29f36ff99c",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/ready-progress-0.json",
+      "sha256": "51b0d4028eb43acd94dc1063dac01653f698eb2ea3a09a60d6c18744fc9cd3a1",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/ready-progress-1.json",
+      "sha256": "f3271098677e08405b045e10b518adf032490b3e84792ef327cca739e4034b6f",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/slkd-process-status.txt",
+      "sha256": "940d255785e6580848c195b25b06330d69abc454c492f0b63726944086731de6",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/slkd.log",
+      "sha256": "62a2d16100ab7c5ef4126d35cbd00e34f9aa82eec94c89ae3602d9575a3d6fd0",
+      "bytes": 5928
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/ws73.pcap",
+      "sha256": "058938126d462a104924f1e5495bd9f2e81a693dcc35b82e7dfbd2f7528592b8",
+      "bytes": 1238516
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/xhci-trace-stats.txt",
+      "sha256": "574d652a8c20663f84846f9dd42532592ee700d9b4de08235a41d9aca84fd661",
+      "bytes": 286
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-long-2042-v1-run/guest-output/xhci-trace.log",
+      "sha256": "ef27935459df6f55045ad97112f040e30d8515d38f9c36ee14be06d53c48fbe1",
+      "bytes": 3655402
+    }
+  ],
+  "tool_source_hashes": {
+    "tools/ws73_dynamic_channels.py": "47f7dd27e2e771a3a56c14c5909bf8d3f3774e0e3d480ba9cb99793713e0cd9d",
+    "tools/ws73_target.py": "7cda03eb658d436e97618a0736731c081994ad159b7bfcc85f9b0f54869205c3"
+  },
+  "guest_tools": "d14c988cdbd5625b37129aa9600d7ecb1df92752"
+}

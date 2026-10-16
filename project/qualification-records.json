@@ -51,7 +51,8 @@
     "dynamic-new-cli-seven-sizes-400bd68-25df09b",
     "data-lifecycle-eight-plus-two-400bd68",
     "native-sequence-a474a85",
-    "event-performance-baseline"
+    "event-performance-baseline",
+    "socket-benchmark-app-offline-56e9f45"
   ],
   "records": [
     {
@@ -16909,6 +16910,157 @@
       ],
       "required_gates": [
         "baseline-and-event-regression"
+      ]
+    },
+    {
+      "id": "socket-benchmark-app-offline-56e9f45",
+      "title": "普通socket测量工具：13+5本地CLI、20报告检查及30负对照（无性能资格）",
+      "level": "offline",
+      "result": "PASS",
+      "contracts": [
+        "Productionordinaryapplicationpingpongmeasurement",
+        "FailclosedtwoapplicationJSONconsistencyonly"
+      ],
+      "bounds": {
+        "count": [
+          1,
+          10000
+        ],
+        "bytes": [
+          29,
+          2042
+        ],
+        "timeout_seconds": 10,
+        "local_datagrams": true,
+        "private_dbus": true,
+        "report_negative_mutations": 30,
+        "fixtures": [
+          "AF_UNIX datagrams replace Native fd/kernel/USB;queryNative failure is explicitnegative",
+          "SyntheticJSON rowsforreportparser;notmeasuredphysicalclock/artifact/captureclosure"
+        ]
+      },
+      "excluded": [
+        "Final13actualCLI unit tests plus2scan and3Agent private-D-Bus tests at compiledCLI56e9f45 source;real localAF_UNIX datagrams and localbus only",
+        "Existing application-evidence module validates two report JSONs,local per-message timestamp ordering,random peer frames,all samples/attempts and recomputed nearest-rank percentiles;20targetedPython tests including30synthetic negative mutations",
+        "No Native ioctl/Grant/kernel/USB/WS73 execution;no performancebaseline,formalproof,RFdelivery,artifact/captureclosure orresourcequalification"
+      ],
+      "remaining": [
+        "P1wholeopen:fixedrate,windowbidirectional,realordinaryNativeVMbaseline/roles,exactbuild/peer/captureclosure/negativecontrols,resource/timeline/traceoverhead",
+        "P2eventdriven aftercredibleoldbaseline;P3boundedcontinuousTX;P4multichannel/fourdevices;P5measuredsingleRXgapandUSBoptimization;P6longterm/RCA/nonhumanrecovery"
+      ],
+      "sources": {
+        "cli": {
+          "repo": "sparklink",
+          "commit": "56e9f4596e39d4c077e9d8bea833d02578f637c3",
+          "scopes": [
+            "crates/slctl/src/benchmark.rs",
+            "crates/slctl/src/channel.rs",
+            "crates/slctl/src/commands.rs",
+            "crates/slctl/src/main.rs",
+            "crates/slctl/Cargo.toml",
+            "Cargo.lock",
+            "Cargo.toml"
+          ],
+          "files": {
+            "crates/slctl/src/benchmark.rs": "680a3214de4a38528d789135c37ab520415bb3d908809fdf3a7b0a2b66487f50",
+            "crates/slctl/src/channel.rs": "b8244b54e544f4f21d97f241eb823ea18286ed02d074c8c9933e867abda92369",
+            "crates/slctl/src/commands.rs": "2d16908bf9057ddf36a0d1cf1eab79e7e3d663e20f67b9fc82a53fce4950bec3",
+            "crates/slctl/src/main.rs": "71cbc3c3a0d39f8941a991d88bcfcd5ad4dcc7b7dd74d65cf5984fc24b0fad18",
+            "crates/slctl/Cargo.toml": "f390b61589443d09280049b720b1650111b5698a2cc55ca41a7aa5f6dab9f363",
+            "Cargo.lock": "0a35344ae1e0461fede247c2aa1016f03cccb9b941ad74ccd922ce917610afc2",
+            "Cargo.toml": "074d922eba4ac31a421942c95ed84e1ac6e778e2a3baaf7260a0929d6c9d1244"
+          }
+        },
+        "report_tools": {
+          "repo": "sparklink",
+          "commit": "e9cfda93464c10177f04c8cf96ff9e83d0cc4eab",
+          "scopes": [
+            "tools/ws73_channel_socket.py",
+            "tools/tests/test_ws73_channel_socket.py"
+          ],
+          "files": {
+            "tools/ws73_channel_socket.py": "95bb666475f0327fb6407706cc9eb88bc7d53a991ca1c4278d4abf2512f9284a",
+            "tools/tests/test_ws73_channel_socket.py": "b9f49e4a0d813a1c7463e81dfe71c2938d8c5751207f920bf6ef359661c811a4"
+          }
+        }
+      },
+      "report": {
+        "material": "socket-benchmark-app-offline-56e9f45-m3299",
+        "scope_pointer": [
+          "scope"
+        ],
+        "source_pointers": {
+          "cli": [
+            "compiled_cli_source"
+          ],
+          "report_tools": [
+            "report_tool_source"
+          ]
+        },
+        "verdict_pointer": [
+          "status"
+        ],
+        "verdict_results": {
+          "APPLICATION_MEASUREMENT_AND_REPORT_CHECKS_OFFLINE_SCOPED_PASS": "PASS"
+        }
+      },
+      "report_commit": "1f1f24e719e63a0124812b0f404c20c075be8ed8",
+      "artifact_materials": [
+        "socket-benchmark-app-offline-56e9f45-m3299",
+        "socket-benchmark-app-offline-56e9f45-m3317",
+        "socket-benchmark-app-offline-56e9f45-m3300",
+        "socket-benchmark-app-offline-56e9f45-m3301",
+        "socket-benchmark-app-offline-56e9f45-m3302",
+        "socket-benchmark-app-offline-56e9f45-m3303",
+        "socket-benchmark-app-offline-56e9f45-m3304",
+        "socket-benchmark-app-offline-56e9f45-m3305",
+        "socket-benchmark-app-offline-56e9f45-m3306",
+        "socket-benchmark-app-offline-56e9f45-m3307",
+        "socket-benchmark-app-offline-56e9f45-m3308",
+        "socket-benchmark-app-offline-56e9f45-m3309",
+        "socket-benchmark-app-offline-56e9f45-m3310",
+        "socket-benchmark-app-offline-56e9f45-m3311",
+        "socket-benchmark-app-offline-56e9f45-m3312",
+        "socket-benchmark-app-offline-56e9f45-m3313",
+        "socket-benchmark-app-offline-56e9f45-m3314",
+        "socket-benchmark-app-offline-56e9f45-m3315",
+        "socket-benchmark-app-offline-56e9f45-m3316"
+      ],
+      "tool_materials": [
+        "socket-benchmark-app-offline-56e9f45-m3318",
+        "socket-benchmark-app-offline-56e9f45-m3319"
+      ],
+      "configuration_materials": [
+        "socket-benchmark-app-offline-56e9f45-m3320"
+      ],
+      "gates": [
+        {
+          "id": "application-local-and-report-checks",
+          "result": "PASS",
+          "materials": [
+            "socket-benchmark-app-offline-56e9f45-m3299",
+            "socket-benchmark-app-offline-56e9f45-m3300",
+            "socket-benchmark-app-offline-56e9f45-m3301",
+            "socket-benchmark-app-offline-56e9f45-m3302",
+            "socket-benchmark-app-offline-56e9f45-m3303",
+            "socket-benchmark-app-offline-56e9f45-m3304",
+            "socket-benchmark-app-offline-56e9f45-m3305",
+            "socket-benchmark-app-offline-56e9f45-m3306",
+            "socket-benchmark-app-offline-56e9f45-m3307",
+            "socket-benchmark-app-offline-56e9f45-m3308",
+            "socket-benchmark-app-offline-56e9f45-m3309",
+            "socket-benchmark-app-offline-56e9f45-m3310",
+            "socket-benchmark-app-offline-56e9f45-m3311",
+            "socket-benchmark-app-offline-56e9f45-m3312",
+            "socket-benchmark-app-offline-56e9f45-m3313",
+            "socket-benchmark-app-offline-56e9f45-m3314",
+            "socket-benchmark-app-offline-56e9f45-m3315",
+            "socket-benchmark-app-offline-56e9f45-m3316"
+          ]
+        }
+      ],
+      "required_gates": [
+        "application-local-and-report-checks"
       ]
     }
   ],
@@ -44382,6 +44534,187 @@
       "sha256": "cd9f4818f2918f1377ba0cb24ee11dbded35b3137c17898aec4fa46c119aeb57",
       "bytes": 17730,
       "source_commit": "4e75cf56626a639c36296656c5fee321a861d54b"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3299": {
+      "base": "repo",
+      "path": "docs/evidence/socket-benchmark-offline-final-20261016.json",
+      "sha256": "31a05d18eb00a3057a6f914eb74433c0740eea1781e6593fa2e55bca75c3c41a",
+      "bytes": 7164,
+      "access": "public",
+      "format": "json",
+      "source_commit": "1f1f24e719e63a0124812b0f404c20c075be8ed8"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3300": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-build-v1.log",
+      "sha256": "dfc8f0685a779f5d5f314764c3840c76236fa6a8a70b6a4e793f3dd153f9a795",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3301": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-build-v2.log",
+      "sha256": "01c357246975593f225cd2d11c6a36b979af97231dffc62f9af4085e0fb29d16",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3302": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-cli-help-v1.txt",
+      "sha256": "899fc4daf7178969e8ecfde8de5da5f23c16a925a0996e57ba86896cfdc25622",
+      "bytes": 5173,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3303": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-cli-help-v2.txt",
+      "sha256": "899fc4daf7178969e8ecfde8de5da5f23c16a925a0996e57ba86896cfdc25622",
+      "bytes": 5173,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3304": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-clippy-v1.log",
+      "sha256": "e5e21d120d535f5a180bbfcabb9ef60dded7ff4baa3d13557a64cf113e295f24",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3305": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-clippy-v2.log",
+      "sha256": "cfbc6393970e34fc55e9543d9ea1d791194c00e1730714e18449d452c058abd5",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3306": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-clippy-v3.log",
+      "sha256": "2414be58234ed7b5d944b5b8e8ccc4b09538cdfe48ce0e64472774050db0af3a",
+      "bytes": 166,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3307": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-docs-v1.log",
+      "sha256": "e2be870678cd4d5f0a0f9cd8fa149129edf8564722b8a5cc0538a250b796a6cb",
+      "bytes": 175621,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3308": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-report-tests-v1.log",
+      "sha256": "07814966c4a5a6fb41b93e0a9aedfe3126714138ef5ecc8f3548919f6a1f87ed",
+      "bytes": 119,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3309": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-report-tests-v2.log",
+      "sha256": "f2e68ff5eaca5112c86f24c4ad0c9d0d26001ccbe752852d8d57a9abf2564f99",
+      "bytes": 119,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3310": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-tests-sandbox-v1.log",
+      "sha256": "952d4711ed6aff501e4a2f324c53011c777b3ac7d9f38a1a6175cda805e47b5a",
+      "bytes": 1558,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3311": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-tests-v2.log",
+      "sha256": "5791ca6d08ab69918559355335dbdb9ba8fa6155caf9ed3fe5f64fb75c8d225f",
+      "bytes": 2433,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3312": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-tests-v3.log",
+      "sha256": "e9b4eb229ad7f5e8a43ed7ff21e1131d271154b228588e58ef5a4d2fadfeb34f",
+      "bytes": 2549,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3313": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-tests-v4.log",
+      "sha256": "62634d6eb9583cb1635c0a25e0b0354cd82dadb055e74afbdfd2fdb1a0780700",
+      "bytes": 1489,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3314": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/ping-pong-tests-v5-final.log",
+      "sha256": "9dcbe1e0930378a956e892933db154fbfb57934ec552d059f6f26880a368f885",
+      "bytes": 2455,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3315": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/slctl-56e9f45-debug",
+      "sha256": "3c98da6dcb9a263bf07b700bbbd4852743c74cc456a49b28a113f30b44e914ae",
+      "bytes": 81514680,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3316": {
+      "base": "workspace",
+      "path": ".dev/performance-baseline/slctl-56e9f45-unit-tests",
+      "sha256": "831dd9d98b418ba211ef48afd604ba03b2e49eb9da18b105a4611da9052d0790",
+      "bytes": 56535592,
+      "access": "private",
+      "format": "bytes"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3317": {
+      "base": "repo",
+      "path": "docs/evidence/socket-benchmark-ping-pong-offline-20261016.json",
+      "sha256": "fea94ba46bb78d6fa3f72865a767ebf2a29a718445ac271eb797c977d915a01a",
+      "bytes": 8103,
+      "access": "public",
+      "format": "json",
+      "source_commit": "e4bbf265d8e068b1ef0f72f691efaa4ba158fe62"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3318": {
+      "base": "repo",
+      "path": "tools/ws73_channel_socket.py",
+      "sha256": "95bb666475f0327fb6407706cc9eb88bc7d53a991ca1c4278d4abf2512f9284a",
+      "bytes": 42057,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "e9cfda93464c10177f04c8cf96ff9e83d0cc4eab"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3319": {
+      "base": "repo",
+      "path": "crates/slctl/src/benchmark.rs",
+      "sha256": "680a3214de4a38528d789135c37ab520415bb3d908809fdf3a7b0a2b66487f50",
+      "bytes": 20513,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "56e9f4596e39d4c077e9d8bea833d02578f637c3"
+    },
+    "socket-benchmark-app-offline-56e9f45-m3320": {
+      "base": "repo",
+      "path": "Cargo.lock",
+      "sha256": "0a35344ae1e0461fede247c2aa1016f03cccb9b941ad74ccd922ce917610afc2",
+      "bytes": 45213,
+      "access": "public",
+      "format": "bytes",
+      "source_commit": "56e9f4596e39d4c077e9d8bea833d02578f637c3"
     }
   },
   "baseline_record": "dynamic-runtime-fixed14-400bd68"

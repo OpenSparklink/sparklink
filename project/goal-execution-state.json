@@ -1137,6 +1137,10 @@
       "event-performance-baseline": {
         "level": "implemented",
         "result": "MISSING"
+      },
+      "socket-benchmark-app-offline-56e9f45": {
+        "level": "offline",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
@@ -1335,7 +1339,8 @@
     "four_matrix_session": 85012,
     "four_matrix_terminal": 0,
     "real_regression_report": "docs/evidence/cmtc-mtu-mps-real-20261016.json",
-    "real_regression_issues_receipt": "docs/evidence/cmtc-mtu-mps-real-issues-20261016.json"
+    "real_regression_issues_receipt": "docs/evidence/cmtc-mtu-mps-real-issues-20261016.json",
+    "parallel_performance": "ADR0006/P1 credible ordinarysocket baseline remains open;applicationpingpong/reportoffline slice doesnotqualify Native or replace four-device dynamic delivery."
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -1485,7 +1490,7 @@
       "offline": "Final13slctl unit +2scan +3Agent CLI private-D-Bus tests at exact56e9f45 CLI source;strictclippy;application report parser targeted tests. No Native/WS73 performance qualification.",
       "remaining": [
         "Real VM exact new build baseline/role swap and existing-path regression",
-        "Independent peer/capture/artifact closure and negative controls",
+        "VM artifacts/source/firmware/ordinarycredentials/capture/supervisor closure and negatives still missing;application JSON30negativeclasses alone are not physicalclockproof",
         "Absolute-rate/window-bidirectional workloads",
         "CPU/resources/timeline/trace-overhead"
       ],
@@ -1494,7 +1499,15 @@
         "missing explicit private dbus-daemon path"
       ],
       "implementation_commit": "56e9f4596e39d4c077e9d8bea833d02578f637c3",
-      "application_report_checker": "tools/ws73_channel_socket.py benchmark_application_reports;typed original rows/random frame match/local timing/recomputed nearest-rank;30 synthetic mutations failclosed; never performance qualification"
+      "application_report_checker": "tools/ws73_channel_socket.py benchmark_application_reports;typed original rows/random frame match/local timing/recomputed nearest-rank;30 synthetic mutations failclosed; never performance qualification",
+      "offline_record": "socket-benchmark-app-offline-56e9f45",
+      "offline_report": "docs/evidence/socket-benchmark-offline-final-20261016.json",
+      "report_tool_commit": "e9cfda93464c10177f04c8cf96ff9e83d0cc4eab",
+      "qualification_registration": {
+        "initial": "REJECTED:PASS record omitted explicit tool material dependencies;raw failed local check retained",
+        "corrected": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED;SCOPED_SOURCE_AND_BYTES_MATCH_NOT_REPLAYED",
+        "full_native_or_performance_qualification": false
+      }
     }
   }
 }

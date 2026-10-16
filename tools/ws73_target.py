@@ -106,7 +106,7 @@ def prepare(args):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -242,7 +242,7 @@ def prepare(args):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_dynamic_channels.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
+        for name in ['ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_dynamic_channels.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -488,6 +488,9 @@ def _run(args):
     dynamic_burst=bool(getattr(args,'dynamic_channel_burst',False))
     if dynamic_burst and (not dynamic_channels or dynamic_long!=2042):raise ValueError('dynamic burst requires explicit dynamic2042 workload')
     if dynamic_long is not None and (not dynamic_channels or type(dynamic_long) is not int or dynamic_long not in [249,250,253,254,255,1024,2042]):raise ValueError('dynamic long requires explicit dynamic gate and bounded supported size')
+    benchmark_mode=getattr(args,'channel_benchmark',None)
+    if benchmark_mode and (benchmark_mode not in ['rate','window','duplex'] or not passthrough or not connection_verify or support or parallel or acb_probe or agent_mode or dynamic_channels or getattr(args,'daemon_link_resync',False) or getattr(args,'channel_socket_verify',False)):
+        raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
     channel_bytes=getattr(args,'channel_socket_bytes',61)
     channel_boundaries=bool(getattr(args,'channel_socket_boundaries',False))
@@ -653,6 +656,9 @@ def _run(args):
     m['dynamic_channel_long_bytes_requested']=dynamic_long
     m['dynamic_channel_verification_requested']=dynamic_channels
     m['dynamic_channel_acceptance']=False
+    m['socket_benchmark_requested']=benchmark_mode
+    m['socket_benchmark_acceptance']=False
+    m['performance_qualified']=False
     m['channel_socket_verification_requested']=channel_socket
     m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
@@ -813,6 +819,7 @@ def _run(args):
                      (' ws73.channel_prefix_close=1' if channel_close else '')+
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
+                     (f' ws73.benchmark_mode={benchmark_mode}' if benchmark_mode else '')+
                      (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
@@ -1146,6 +1153,14 @@ def _run(args):
                     from ws73_acb_transport_probe import corroborate as acb_corroborate
                     m['acb_transport_selftest_corroboration']=acb_corroborate(control,capture,(share/'kernel.log').read_text())
                     m['expected_external_selftest_taint']=4096
+                if bool(benchmark_mode) != ('socket_benchmark' in control):raise ValueError('benchmark explicit request/evidence mismatch')
+                if benchmark_mode:
+                    from ws73_socket_benchmark import corroborate as benchmark_corroborate
+                    from ws73_channel_socket import validate_application_tools
+                    validate_application_tools(control,args.prepared/'root',package['guest_files'])
+                    if any(r['config']['mode']!=benchmark_mode for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from requested mode')
+                    m['socket_benchmark_corroboration']=benchmark_corroborate(control,capture,share)
+                    m['socket_benchmark_acceptance']=True
                 if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
                 if channel_socket:
                     from ws73_channel_socket import corroborate as channel_corroborate
@@ -1426,6 +1441,13 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record):
+    if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record):return 1
+    if record.get('socket_benchmark_requested'):
+        proof=record.get('socket_benchmark_corroboration',{})
+        mode=record['socket_benchmark_requested']
+        if (mode not in ['rate','window','duplex'] or record.get('socket_benchmark_acceptance') is not True or record.get('performance_qualified') is not False or record.get('qemu_exit')!=0 or proof.get('status')!='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED' or proof.get('mode')!=mode or proof.get('performance_qualified') is not False or proof.get('round_trips')!=(80 if mode=='duplex' else 40) or len(proof.get('proofs',[]))!=2):return 1
+        phases=proof['proofs']
+        if not isinstance(phases,list) or any(not isinstance(p,dict) or p.get('phase')!=n or not isinstance(p.get('legs'),list) or len(p['legs'])!=(80 if mode=='duplex' else 40) or p.get('application',{}).get('status')!='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED' or p['application'].get('performance_qualified') is not False or p['application'].get('fixture') is not False or p['application'].get('messages')!=([20,20] if mode=='duplex' else [20,0]) for n,p in enumerate(phases)):return 1
     burst=record.get('dynamic_channel_burst_requested',False)
     if type(burst) is not bool or (burst and (record.get('dynamic_channel_verification_requested') is not True or record.get('dynamic_channel_long_bytes_requested')!=2042)):return 1
     if 'dynamic_channel_verification_requested' in record and type(record['dynamic_channel_verification_requested']) is not bool:return 1
@@ -1589,6 +1611,7 @@ def main():
             cmd.add_argument('--dynamic-channel-burst',action='store_true',help='require actual dynamic C16x2042 burst/credit/peer-reply evidence;requires dynamic2042 gate')
             cmd.add_argument('--dynamic-channel-long-bytes',type=int,choices=[249,250,253,254,255,1024,2042],help='extend dynamic gate with long C channel and explicit lifetime slot exhaustion;requires --dynamic-channel-verify')
             cmd.add_argument('--dynamic-channel-verify',action='store_true',help='actual two-channel CMTC/asymmetricTCID/app delivery/close isolation, separate bounded VM gate')
+            cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate real20x61/4window application benchmark in both connection roles;not performance qualification')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')

@@ -359,6 +359,12 @@ def verify_passthrough():
         if run['connection_control'].get('connection_objects'):
             from ws73_connection_objects import corroborate as object_corroborate
             object_corroborate(run,capture,connections)
+    benchmark_modes=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_mode=')]
+    if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
+    if benchmark_modes:
+        from ws73_socket_benchmark import corroborate as benchmark_corroborate
+        if any(row['config']['mode']!=benchmark_modes[0] for row in run['socket_benchmark']):raise ValueError('requested benchmark mode differs')
+        proofs.append({'socket_benchmark':benchmark_corroborate(run,capture,EVIDENCE)})
     if 'daemon_removal' in run:
         from ws73_daemon_removal import corroborate_wire
         proofs.append({'daemon_cancel_removal':corroborate_wire(run['daemon_removal'],capture)})

@@ -110,3 +110,18 @@ CLI预算为30秒，显式本地fixture为1秒。旧schema2报告保持原身份
 当前结束屏障资格，不另改schema版本。核对器支持rate/peer、window/peer或duplex/duplex，
 允许方向交换；只在各进程的时间域内运算。应用报告核对不证明监督器确实等待双方，
 该事实必须与实际输入/输出时序及artifact/capture一起单独核验。
+
+
+## Native VM 首批监督入口
+
+现有 `ws73_target.py run` 增加独立 `--channel-benchmark rate|window|duplex`，
+须配合真实两设备 `--qmp-hotplug --connection-verify --connection-advertising negotiable-t`。
+与 `--channel-socket-verify`、动态通道、Agent、外部probe、resync和四设备门禁分开运行；
+不在已关闭CUTC的同lifetime重新绑定。每连接角色固定20条61字节、窗口4，rate间隔
+100ms；两种连接角色各新建一次连接。应用/管理仍使用各自的slktest/slctl二进制。
+
+监督器保留实际进程凭据、启动及结束IO顺序、完整原始报告/hash/stdout/stderr；
+大规模报告写出前双方先Quiescent。host和guest复用已有捕获校验，独立逐条匹配
+请求与校验回复的USB TX/对端RX，并拒绝缺失、重复或无法归属的CUTC业务包。
+真实运行状态及准确资格由唯一能力入口记录；建立入口/合成fixture通过不代表实机通过。
+20条样本不是稳定性能阈值，完整追踪的干扰、分段时钟映射、资源峰值及长期压测仍需另验。

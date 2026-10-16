@@ -1356,3 +1356,9 @@ P1 schema2 应用层闭包批次：复用生产drive/report抽取、双端Quiesc
 58类应用报告负对照、旧测试二进制误选失败及自动身份拒绝。完整P1未完成。
 下一批优先接现有Native VM监督器的真实start/finish/凭据/双端捕获，取得双WS73
 新artifact换向基线及已取得长度资格回归；随后P2，禁止将局部结果当完整性能资格。
+
+
+P1 Native监督切片：现有runner新增独立channel-benchmark参数，先20×61/窗口4，
+两连接角色各一条真实链路。退出为准确新bundle/工具、普通进程、配对start/finish、
+双端原始报告及逐消息USB/HCC请求/回复一致、现有发现/建链断链不退化；性能仍未资格。
+接着rate/window/duplex重复样本和既有长度门禁，测观测开销，再进入P2；不追加控制面前置。

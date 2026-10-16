@@ -14,8 +14,14 @@ slktest取得security1/2固定CUTC，各两连接角色，共16次受保护业�
 撤权/晚到/复用组合仍未证明；53原生入口、实际C sanitizer、279Rust、694执行/695后
 处理工具、42跨语言、39复制真实证据负对照分别记录。原编译/fixture/路径/监督器
 失败保留。动态protected、SMTC安全消费者、protected完整实时失效与完整新数据门禁
-仍缺；十项旧生命周期正按新产物重跑，不能继承旧镜像或充当protected组合通过。
+仍缺；同产物普通通道十项生命周期另有下方独立记录，不能充当protected组合通过。
 机制等级2不是命名身份/Bond或独立RF加密证明；自然RCA/非人工恢复及整项继续OPEN。
+
+[同产物普通通道生命周期保持](../docs/evidence/security-grant-lifecycle-20261017.json)：
+K619/U73/tool73，两端release/最后管理fd/dup/实际Down/原5秒共10门禁，24次控制前
+真实业务往返、10原件重放和100证据负对照；同行仅证明独立lease/Ready/真实扫描。
+原pinned2s配置拒绝保留FAIL，换原已核验QEMU后通过，不改断言。security0测试不能
+授予protected失效、存活的另一业务组、NOCP复用/排空或自然恢复资格。
 
 [实时 Session 机制快照限定结果](../docs/evidence/security-live-state-real-20261017.json)：
 准确K6861/U13bb、执行13bb、后处理6c8。新增d6及GetSecurityState在唯一物理
@@ -294,6 +300,7 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | 实际锁/引用/USB/credit/撤权/晚到/复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 原构造器/路径/fixture/LSan/证明监督器失败保留 | `offline` | `FAIL` |
 | 受保护实时失效/SSAP消费者及完整原范围：仍缺 | `real_device` | `UNPROVED` |
+| K619/U73普通通道十项生命周期：受保护矩阵不继承 | `real_device` | `PASS` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

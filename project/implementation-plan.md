@@ -129,6 +129,7 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | 实际锁/引用/USB/credit/撤权/晚到/复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 原构造器/路径/fixture/LSan/证明监督器失败保留 | `offline` | `FAIL` |
 | 受保护实时失效/SSAP消费者及完整原范围：仍缺 | `real_device` | `UNPROVED` |
+| K619/U73普通通道十项生命周期：受保护矩阵不继承 | `real_device` | `PASS` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1809,7 +1810,9 @@ NOCP/复用/drain、完整数据矩阵和四设备全部保留，未完项不关
 本批[准确资格](../docs/evidence/security-grant-fixed-real-20261017.json)：K619/U73、执行73a/
 后处理02ac，6VM/16受保护与48总往返/20原生等级拒绝/32快照；249/2042保留。
 CBMC79仅纯Grant helper，组合仍UNPROVED；原失败与39真实证据负对照保留。
-下一步正在重跑同产物release/最终fd/dup/Down/原5秒十项旧门禁，随后补protected
-同类交错与SSAP唯一Engine消费者，不把旧普通通道回归描述成受保护失效资格。
+同产物release/最终fd/dup/Down/原5秒十项普通门禁现已独立通过，24次控制前往返、
+10原件重放/100负对照；见[限定证据](../docs/evidence/security-grant-lifecycle-20261017.json)。
+下一步补protected同类交错与SSAP唯一Engine消费者，不把普通通道回归描述成受保护
+失效资格。同行范围仅独立lease/Ready/实际扫描，不是另一组持续业务。
 首次生命周期环境因缺原pinned2s属性被严格拒绝，原FAIL保留；使用原合格QEMU重新
 封存同内核/用户态，不改原断言或监督期限。自然RCA/非人工恢复和整项保持OPEN。

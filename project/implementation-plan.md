@@ -2,22 +2,24 @@
 
 ## 本批退出条件与近期执行顺序
 
+下一条实机切片为WP07的四只WS73/两组同时物理连接：复用当前Runtime/Session/socket、
+连接和channel证据工具，每组每连接角色阶段20次随机业务校验回复，交换角色两阶段，
+合计80次。判据必须包含实际双端USB/HCC/ACB/DTAP证据和两组业务区间重叠；广播
+匹配、模拟回复或仅打开四个adapter不能替代。离线先检查owner分组/完整身份/丢失
+一端捕获/错payload/旧manifest等负对照。首个正向切片后再独立验证一组故障时另一组
+实际持续回复，以及长包/预算/公平性；不以首片关闭WP07或相关整项issues。
+Q3生产状态序列fuzz、提交/撤权/Down/原期限组合及debugVM并行，不设控制竞争全集
+前置；安全所需的最小认证授权只约束保护CPCD等操作。
+
 完整 S0–S6、19 WP、10 FV、12 DG 和原 issues 退出条件保持；VM-only，UserHost P4
 规划不作为前置。旧逐批进度进入[历史快照](../history/architecture/progress-snapshots-20261014.md)，
 当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)。
 
-近期主线复用 WP09 已接通的 Agent/method/调用者绑定、唯一物理 Session、credit 和
-提交票据，继续实际在途/撤权/断链组合。Agent 六模式及保持数据新资格已分别封存，
-准确源码见下列生成摘要；不将旧21组或文档 HEAD 当作新镜像资格。
-并行质量整改先消除当前状态矛盾，然后随 Agent、数据与 SSAP 扩展门禁，不等待
-控制面竞争全集；本批不改内核协议或另造 Engine。
-
-当前增量先接通正式 `slctl agent` 与 `security-request`：无自动批准、原唯一 daemon、
-完整连接引用、原期限及每请求取消。CLI/私有总线检查与旧 broker 实机报告分别记录，
-不能继承85cdf镜像资格。新准确编译6385/工具300a的实际CLI批准/拒绝、两角色relay/
-安装及16次对端业务回复子门禁已封存，首次路径假设失败仍保留；同编译6385/工具300a的
-11项长度/长包/credit等保持矩阵已完整收束并封存，136次业务回复/32超限/两次严格fd。
-本CLI切片退出，不等于WP09、全部数据门禁或整项issue完成。不以全控制面组合阻塞数据/多通道/四设备/SSAP。
+已接通的Agent/CLI及其数据保持资格只按下列生成摘要和原报告表达，不将文档HEAD
+当作新镜像。首次路径假设、监督器及工具失败保留，不再在计划中累加逐轮进度。
+WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续并行；Q3字节fuzz切片
+已有独立本地/CI限定证据，后续状态序列/调试VM/组合仍缺。所有改动仅设置相关门禁，
+不等待控制面全集，也不另造协议Engine。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -47,19 +49,12 @@
 预备/guest 工具 `300a39b9e496f09119769c03a0a77360263a8c1e`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
-Agent入口已接线；离线资格见结构化记录。六模式两角色真实48次业务子门禁已封存
-（准确K8cbf/编译及guest85cdf/Hostdb6e333），普通系统型guest bus+生产XML；
-完整systemd/udev部署、在途安装组合与认证/Bond仍缺，不能由局部通过关闭WP09。
-本批六模式及11保持子门禁已封存；完整WP09仍缺部署/真实安装失败/在途组合。
-以下是已接通行为与继续保持的契约：注册绑定每controller的唯一bus owner与注册epoch，单连接
-请求绑定generation/lifetime/完整reference、原作者和原期限；只开放明确支持的
-无MITM参考方法，未知方法/拒绝/缺Agent不得自动降级。批准前后复核调用者与Agent
-存活/当前epoch，保留原native提交引用与结果，用单请求取消收敛退出/超时；
-不能drop任务后遗失在途物理义务或释放整个controller租约。策略操作结果和
-物理安装/加密观察分开；Agent同意不宣称MITM身份、可信Grant或Bond。
-所列真实批准/拒绝/原期限/退出与两角色业务子门禁已通过；不能代替在途安装/
-故障、完整权限部署、认证及Bond。下一批按相关不变量进入生产fuzz/调试VM/组合，
-数据多通道/四设备及唯一SSAP正向更新并行，不追加控制面全集前置。
+Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
+原期限；未知方法/缺Agent/拒绝不自动降级。丢失作者或Agent不能遗失在途原生引用、
+抹去物理义务或释放整个controller租约。策略批准、真实安装/加密观察、身份认证和
+Bond分别表达；契约见[ADR0004](../docs/decisions/0004-application-ownership-and-delivery.md)，
+历史六模式、正式CLI双模式及新镜像保持范围均见唯一资格入口与准确报告。
+完整systemd/udev权限部署、在途安装组合、认证及Bond仍缺，不能由局部通过关闭WP09。
 
 仅将本批相关不变量设为门禁。在途Status/0011/撤权/Down/复用组合继续并行，
 不再追加控制面竞争全集为数据前置。长包/credit、动态多通道、四设备两组和

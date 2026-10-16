@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "status": "EXACT_READBACK_ORIGINAL_SCOPES_UNCHANGED_ISSUES_OPEN",
+  "observed_utc": "2026-10-16T01:16:41.201361+00:00",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 6,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6205768081",
+      "body_sha256": "e10675224aece3d68acd0c47acd3cbb0788c6aaa24690be52196287504077c7d",
+      "scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6205768831",
+      "body_sha256": "e10675224aece3d68acd0c47acd3cbb0788c6aaa24690be52196287504077c7d",
+      "scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 18,
+      "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6205769584",
+      "body_sha256": "e10675224aece3d68acd0c47acd3cbb0788c6aaa24690be52196287504077c7d",
+      "scope_sha256": "5c2dbee1928dff3ce3caecac72d05f6c37a8509549022002c7911376ed40132b",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6205770385",
+      "body_sha256": "e10675224aece3d68acd0c47acd3cbb0788c6aaa24690be52196287504077c7d",
+      "scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 3,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6205771346",
+      "body_sha256": "e10675224aece3d68acd0c47acd3cbb0788c6aaa24690be52196287504077c7d",
+      "scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 5,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6205772119",
+      "body_sha256": "e10675224aece3d68acd0c47acd3cbb0788c6aaa24690be52196287504077c7d",
+      "scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6205772864",
+      "body_sha256": "e10675224aece3d68acd0c47acd3cbb0788c6aaa24690be52196287504077c7d",
+      "scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN"
+    }
+  ],
+  "real_qualification": {
+    "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "compiled_userspace": "6385e43081bfcbeabee1ac4f18b9d0917c7a6057",
+    "guest_and_host_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
+    "retained_report_publication": "e9f3e47bf939cc249222db15d2e2eb6211fa3b05"
+  },
+  "offline_qualification": {
+    "kernel_test_source": "ddea575bff556d3884375603edd9003b1cc5ffc4",
+    "local_publication": "d85dd9c1d2053a80ae34117d8ce57b7c0aefc41b",
+    "independent_ci_publication": "89701e39b7244c7bedab1ad0b9939c78bffc5eb6",
+    "proof": false,
+    "physical_acceptance": false,
+    "kernel_production_bytes_unchanged_from_real_baseline": true
+  },
+  "remaining": "Original full S0-S6/19WP/10FV/12DG retained, VM-only, UserHostP4, no whole issue complete. Authenticated CPCD, stateful/lifecycle composition/debugVM, multichannel/four-device business, natural RCA/nonhuman recovery and release incomplete."
+}

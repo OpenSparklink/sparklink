@@ -677,7 +677,7 @@
   "issue_sync_status": "Nine current quality comments exact readback; original scope unchanged and OPEN",
   "issue_sync_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
-  "current_goal_turn_classification": "progress: production explicit CLI shipped + two-mode/two-role real relay/install and16 peer application replies; first collector failure retained; data retention running; no full issue closed",
+  "current_goal_turn_classification": "progress: completed real11 retained gates; direct production C fuzz and separate verified CI; source-bound records/issues open. No new formal proof or whole issue closure",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1070,7 +1070,7 @@
         "ws73-codec-fuzz-ddea offline bounded no-finding, not a proof; separate actual CI Clang18 artifact verified, source-bound report linked",
         "next: stateful/submit-revoke-deadline composition and debugVM, dynamic channels/fourdevices; protected CCC requires minimal authenticated security+authorization"
       ],
-      "next": "Add first direct C production codec fuzz/ASAN/UBSAN gate; in-flight model/debugVM and dynamic channels/fourdevices parallel; protected SSAP CCC requires minimum authenticated security+authorization. Full S0-S6 unchanged"
+      "next": "Next real WP07 slice: four WS73/two simultaneous ordinary socket pairs,20 replies perpair perrolephase x2=80 with actual overlapping USB/peer evidence. Stateful production fuzz/submit-revoke-Down-original-deadline/debugVM parallel; no all-control prerequisite. Protected CCC needs minimal authenticated security+authorization; full original scopes retained."
     }
   },
   "agent_workstream": {
@@ -1079,7 +1079,7 @@
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
     "real": "Six explicit modes two-role scoped real result in qualification_view/report; full deployment/permissions/authentication/Bond and in-flight composition still missing",
     "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
-    "next": "production C parser bounded fuzz/sanitizer and controlled in-flight revoke/Down/original-deadline composition; actual multi-channel/fourdevices parallel; CCC requires minimal authenticated security+authorization, no no-MITM bypass",
+    "next": "WP09 controlled in-flight installation/revoke/Down/original-deadline and minimum authenticated security+authorization, parallel to the nextWP07 real four-device socket slice; byte fuzz slice already closed locally/CI, stateful/debugVM still open",
     "offline_record": "agent-policy-offline-16175",
     "first_failures": [
       "preparev1 wrongsmokemanifestdirectory/noVM",
@@ -1184,6 +1184,15 @@
       "99b command stage metadata then corrected exact ddea run"
     ],
     "ci_report": "docs/evidence/ws73-codec-fuzz-ci-20261016.json",
-    "ci_run": 38782753748
+    "ci_run": 38782753748,
+    "issues_receipt": "docs/evidence/codec-fuzz-and-retained-issues-20261016.json"
+  },
+  "next_real_vertical_slice": {
+    "work_package": "WP07",
+    "behavior": "four real WS73, two simultaneous physical connections, ordinary app random socket business and peer validation/replies",
+    "first_exit": "20 roundtrips per pair per connection-role phase,2 role phases,80 total; actual two-end USB/HCC/ACB/DTAP evidence and overlapping business intervals; no simulated replies or radio-only substitution",
+    "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
+    "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
+    "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only"
   }
 }

@@ -20,7 +20,7 @@
       "ws73-codec-fuzz-ddea offline bounded no-finding, not a proof; separate actual CI Clang18 artifact verified, source-bound report linked",
       "next: stateful/submit-revoke-deadline composition and debugVM, dynamic channels/fourdevices; protected CCC requires minimal authenticated security+authorization"
     ],
-    "next": "Add first direct C production codec fuzz/ASAN/UBSAN gate; in-flight model/debugVM and dynamic channels/fourdevices parallel; protected SSAP CCC requires minimum authenticated security+authorization. Full S0-S6 unchanged"
+    "next": "Next real WP07 slice: four WS73/two simultaneous ordinary socket pairs,20 replies perpair perrolephase x2=80 with actual overlapping USB/peer evidence. Stateful production fuzz/submit-revoke-Down-original-deadline/debugVM parallel; no all-control prerequisite. Protected CCC needs minimal authenticated security+authorization; full original scopes retained."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -2879,7 +2879,6 @@
         "Full S0-S6,19WP,10FV,12DG and all unfinished issues remain open; UserHost stays low-priority planning."
       ],
       "remaining": [
-        "new-image eleven data retention gates still running separately",
         "full Agent deployment/SIGKILL/fd inheritance/in-flight installation failure and revoke/Down/NOCP reuse composition",
         "authentication/Bond/multichannel/fourdevices/SSAP updates/natural recovery remain incomplete"
       ],
@@ -3576,6 +3575,9 @@
       "required_gates": [
         "cli-approve",
         "cli-reject"
+      ],
+      "completed_followups": [
+        "security-cli-data11-300a; original CLI report remains a historical snapshot and excludes independent retention results"
       ]
     },
     {

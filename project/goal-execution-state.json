@@ -1008,11 +1008,11 @@
     "registry": "project/qualification-records.json",
     "schema_version": 1,
     "baseline": {
-      "kernel": "90fda1457a8d8191a1a5fab260927e31644b3e50",
-      "compiled_userspace": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
-      "guest_tools": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
-      "executed_tools": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
-      "report_commit": "312f64a23663e102da02e1e693f09914c346bc1c"
+      "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+      "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
+      "guest_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+      "executed_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+      "report_commit": "1c2d92e0e5f19178831a6ece879b0e541488b3a1"
     },
     "current_tree_qualification": "NOT_REVALIDATED",
     "private_evidence_in_ci": "METADATA_ONLY_NOT_REVERIFIED",
@@ -1104,19 +1104,26 @@
       "dynamic-real48-400bd68": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "dynamic-runtime-fixed14-400bd68": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "dynamic-long56-400bd68": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "dynamic-real48-retained14-running",
-      "production_behavior": "Actual K400/Ucca8/4b337 dynamic dual-channel48RT and close isolation SCOPED_PASS;retained14 exact-image regression RUNNING",
+      "id": "fixed14-long2042-qualified-dynamic249-monitor-failed",
+      "production_behavior": "K400/Ucca8 runtime:fixed14 with328ordinaryRT/32refusal/2prefix attools4b337;dynamic48 at4b337 anddynamic2042 pilot56incl8long atd14 qualified separately",
       "exit": [
-        "Actual production codec/state bounded CBMC and mutation counterexample,actual Session worker sanitizer,20000CMTCfuzz",
-        "244Rust allfeatures tests,strict clippy,602tools,cross-language contracts,current selectedPython shared library,strictdocs",
-        "Exact kernel build/artifact and noUSB VM smoke;preserve jobserver warning;frozen SDK111 servicebundle",
-        "Dynamic48 exact USB/CMTC+peer applications,12 damaged-evidence negatives;retained14 not yet qualified"
+        "Original dynamic48,all14attainedfixeddata regressions and2042dynamic pilot actual captures and peer app replies passed on exact records",
+        "769property sixstep pure CBMC with mutation counterexample,actual worker sanitizer,20000codec fuzz separately bounded;not full refinement",
+        "Raw captures/apps replayed,hash/exit/drop/taint checked;firstfragment TCID/PI negative label correction retained with new accurate audit"
       ],
-      "next": "Finish accurate newimage attained14 fixed/length/long/close/pressure/four-device regressions;then dynamic resource/Grant/quality/security vertical slices. Full S0-S6/19WP/10FV/12DG and RCA/nonhuman recovery stayOPEN;no allcontrol prerequisite."
+      "next": "Retain original8297955 dynamic249 matrix FAIL/ENODATA;diagnostic rootcause unresolved. Tool45a658e finite child-pipe capture and613offline tool cases passed;prepare newexactVMand validate and re-run new exact VM matrix without relaxing original deadlines. Runtime/sourceK400/Ucca8 unchanged. FullS0-S6/19WP/10FV/12DG/RCA/nonhuman recovery OPEN."
     }
   },
   "agent_workstream": {
@@ -1308,7 +1315,7 @@
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
     "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
     "gate_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
-    "status": "REAL_DYNAMIC48_SCOPED_PASS_RETAINED14_RUNNING",
+    "status": "FIXED14_AND_DYNAMIC2042_PASS_DYNAMIC249_MATRIX_FAILED_IO",
     "evidence": "docs/evidence/dynamic-cmtc-offline-20261016.json",
     "exit_conditions": [
       "Real unmatched endpoint refusal plus exact CMTC/two-end captures",
@@ -1322,6 +1329,16 @@
     "retained_regression_state": ".dev/dynamic-retained-matrix-v1.json",
     "dynamic_business_real_acceptance": true,
     "real_acceptance_scope": "Only actual2device dynamic CMTC and48 app roundtrips/close isolation;not physicalunplug/fullmultichannel/naturalrecovery",
-    "issues_receipt": "docs/evidence/dynamic-cmtc-issues-20261016.json"
+    "issues_receipt": "docs/evidence/dynamic-cmtc-issues-20261016.json",
+    "retained_regression_result": "ALL14_EXACT_DYNAMIC_IMAGE_RETAINED_DATA_SCOPED_PASS",
+    "retained_regression_report": "docs/evidence/dynamic-runtime-retained14-20261016.json",
+    "dynamic_long_report": "docs/evidence/dynamic-long-2042-20261016.json",
+    "field_audit_correction": "docs/evidence/dynamic-capture-field-audit-correction-20261016.json",
+    "next_gate_tools": "45a658eacd84a829c355e1dc8461a6f9a3d6e8b9",
+    "next_gate": "Bounded child output collector regression and new exact VM replay,original failure preserved",
+    "dynamic_size_matrix": ".dev/dynamic-boundary-matrix-v1.json",
+    "dynamic_size_matrix_status": "FAIL_ENODATA_MONITOR_ROOT_CAUSE_UNRESOLVED",
+    "dynamic_size_failure": "docs/evidence/dynamic249-monitor-failure-20261016.json",
+    "collector_regression": "613 tool tests PASS; bounded pipes/fault/EOF/shortwrite/artifact guards;VM replay pending"
   }
 }

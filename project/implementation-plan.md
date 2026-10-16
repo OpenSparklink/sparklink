@@ -46,17 +46,19 @@ WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续�
 | 生产CMTC编号codec：256值与16字节输入有界限定通过 | `formal_bounded` | `PASS` |
 | 历史d75 MTU/MPS违约FAIL保留；当前K90由独立实机回归记录取代 | `implemented` | `FAIL` |
 | 生产MTU/MPS修复：直接限长与六步状态转换限定证明 | `formal_bounded` | `PASS` |
-| K90/U2ee真实回归：独立MTU/MPS、328次业务往返及2次关闭在途交付 | `real_device` | `PASS` |
+| 历史K90/U2ee固定通道：328次往返及2次在途交付（准确原身份保留） | `real_device` | `PASS` |
 | 动态CMTC生产纯转换：六步有界检查与取消复活负对照 | `formal_bounded` | `PASS` |
 | 双真实WS73动态双通道：48次业务、不对称TCID及关闭同行隔离 | `real_device` | `PASS` |
+| K400/Ucca8既有14组回归：328次往返、32次拒绝、2次在途交付 | `real_device` | `PASS` |
+| 动态2042字节与四槽预算：56次总往返，含8次动态长包 | `real_device` | `PASS` |
 
-保留镜像：K `90fda1457a8d8191a1a5fab260927e31644b3e50`；编译 U `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`；执行工具 `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`。
+保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `4b337331fa1959a86fb01f3cca2449be63371e11`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
@@ -1222,26 +1224,30 @@ ACB 分片254和包 credit 仍独立。U2ee780c 的新捕获要求版本化独�
 此修复属于当前数据改动门禁，后续继续动态 CMTC/TCID/Grant/多通道，不增加控制面全集前置。
 
 
-### 当前纵向批次：动态基础通道的真实业务（2026-10-16）
+### 当前纵向批次：动态基础通道（2026-10-16）
 
-已签名K83c4f2d/400bd681与Ucca8a20接线实际CMTC、Session唯一分流、
-按完整身份发布的Grant及有限独立队列；普通用户入口返回明确的staged fd。
-直接生产codec/纯转换CBMC、实际worker/consent sanitizer、20,000次CMTC fuzz、
-严格Rust与跨语言布局分开验收。完整内核、冻结产物与无USB VM启动通过，
-编译日志保留一个make jobserver警告，不能称全部无警告。
+K83c4f2d/400bd681与Ucca8a20已接线实际CMTC、Session唯一分流、按完整身份
+发布的Grant及有限独立队列；普通用户取得明确staged fd。直接生产纯转换CBMC、
+实际worker/consent sanitizer、20,000次codec fuzz与跨语言检查[分层记录](../docs/evidence/dynamic-cmtc-offline-20261016.json)。
+完整内核、冻结产物与无USB VM启动通过；make jobserver警告保留，不称全日志无警告。
 
-本批实机退出条件：VM-only、SDK111、双端USB/HCC/ACB与普通用户实际回复；
-真实未绑定端口拒绝；同Session两通道并存、不同local/remoteTCID；A最终关闭
-后B继续完成随机业务，交换物理连接角色。随后准确新镜像复核已取得的固定
-通道短包/长度/长包/关闭/软件背压及四设备门禁；新实现不继承旧资格。
-4槽墓碑不缩减完整动态资源回收/长期收敛目标；其他S0–S6/19WP/10FV/12DG、
-认证/Bond、质量、自然故障根因与非人工恢复继续并行，未完成issue保持开放。
+接线批次取得[48次动态短包往返](../docs/evidence/dynamic-cmtc-real-20261016.json)，
+不对称TCID及A关闭/B继续业务均有双端捕获。准确新镜像[14组既有回归](../docs/evidence/dynamic-runtime-retained14-20261016.json)
+也已完成：136次双设备和192次四设备普通往返、32次超限拒绝、两次最后关闭
+在途交付；覆盖已取得的固定通道长度/长包/分片/关闭/软件背压/两组并行及受控断链。
+这些属于准确K400/Ucca8/工具4b33733，不继承或重命名旧K90/U2ee记录。
 
+随后工具d14c988取得[动态2042字节与槽位门禁](../docs/evidence/dynamic-long-2042-20261016.json)：
+56次总往返中8次为2042字节，完整PDU2047，两端分别9TX片/81RX片；真实ENOSPC
+发生后C仍完成实际回复。首片TCID/PI[负对照修正](../docs/evidence/dynamic-capture-field-audit-correction-20261016.json)
+保留早期误标为字段变异的尾载荷变异输出，准确新审计对首片字段拒绝；不改变正向证据。
 
-动态新行为子门禁已在K400/Ucca8/工具4b337完成：交换物理连接角色共48次
-随机业务往返，最长244ms，双端真实CMTC及不同local/remoteTCID、A关闭后B
-业务均有匹配捕获；4345包、零drop、taint0、QEMU/监督器0。原保存证据已按
-准确冻结工具重验，12个损坏证据负对照拒绝，见[限定报告](../docs/evidence/dynamic-cmtc-real-20261016.json)。
-该子成果不关闭整项；完整已取得14组门禁正由`.dev/dynamic-retained-matrix-v1.json`
-跟踪在新镜像执行，完成前不升级全矩阵资格。其余资源复用、生命周期/公平性、
-安全、自然故障根因与非人工恢复保持原验收范围。
+工具8297955开始动态249/250/253/254/255/1024/2042矩阵，但首轮249整项
+[监督器ENODATA失败](../docs/evidence/dynamic249-monitor-failure-20261016.json)，未获得该矩阵资格。
+底层I/O原因未查明；第一角色已完成不能改判整轮。下一批有限管道采集补充
+原始输出、预算、EOF/短写/文件身份与异常栈回归，再用新来源重跑，仍要求匹配该尺寸的
+MTU/MPS、正确的254字节TX分片边界、完整两端PB和对端实际回复，以及槽位拒绝后
+通道继续业务；原5秒调度与10秒业务期限不放宽。通过后进入动态资源/Grant及安全
+纵向链路，不追加控制面全集前置。4槽墓碑不缩减安全回收、长期收敛和完整多通道目标。
+全S0–S6/19WP/10FV/12DG、认证/Bond、质量、自然根因与非人工恢复继续并行，
+未完成issue保持开放。UserHost仍P4规划，所有真实驱动/设备仅VM。

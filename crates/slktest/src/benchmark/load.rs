@@ -619,14 +619,19 @@ fn drive(
     }
 }
 
-fn read_start(fd: nix::libc::c_int, budget: Duration) -> anyhow::Result<()> {
+fn read_control<const N: usize>(
+    fd: nix::libc::c_int,
+    budget: Duration,
+    command: &[u8; N],
+    phase: &str,
+) -> anyhow::Result<()> {
     let deadline = Instant::now() + budget;
-    let mut bytes = [0u8; 6];
+    let mut bytes = [0u8; N];
     let mut used = 0;
     while used < bytes.len() {
         let left = deadline.saturating_duration_since(Instant::now());
         if left.is_zero() {
-            anyhow::bail!("original start-barrier deadline expired");
+            anyhow::bail!("original {phase}-barrier deadline expired");
         }
         let timeout = nix::libc::timespec {
             tv_sec: left.as_secs() as _,
@@ -647,7 +652,7 @@ fn read_start(fd: nix::libc::c_int, budget: Duration) -> anyhow::Result<()> {
             return Err(e.into());
         }
         if p.revents & (nix::libc::POLLERR | nix::libc::POLLNVAL) != 0 {
-            anyhow::bail!("start barrier fd fault");
+            anyhow::bail!("{phase} barrier fd fault");
         }
         if result == 0 {
             continue;
@@ -657,7 +662,7 @@ fn read_start(fd: nix::libc::c_int, budget: Duration) -> anyhow::Result<()> {
         let n =
             unsafe { nix::libc::read(fd, bytes[used..].as_mut_ptr().cast(), bytes.len() - used) };
         if n == 0 {
-            anyhow::bail!("start barrier EOF is author withdrawal");
+            anyhow::bail!("{phase} barrier EOF is author withdrawal");
         }
         if n < 0 {
             let e = std::io::Error::last_os_error();
@@ -671,10 +676,37 @@ fn read_start(fd: nix::libc::c_int, budget: Duration) -> anyhow::Result<()> {
         }
         used += n as usize;
     }
-    if &bytes != b"start\n" {
-        anyhow::bail!("load requires exact explicit start line");
+    if Instant::now() >= deadline {
+        anyhow::bail!("original {phase}-barrier deadline expired");
+    }
+    if &bytes != command {
+        anyhow::bail!("load requires exact explicit {phase} line");
     }
     Ok(())
+}
+
+fn read_start(fd: nix::libc::c_int, budget: Duration) -> anyhow::Result<()> {
+    read_control(fd, budget, b"start\n", "start")
+}
+
+#[derive(Serialize)]
+struct Finalization {
+    completed: bool,
+    budget_ns: u64,
+    elapsed_ns: u64,
+    error: Option<String>,
+}
+fn finish(fd: nix::libc::c_int, budget: Duration) -> Finalization {
+    let origin = Instant::now();
+    let error = read_control(fd, budget, b"finish\n", "finish")
+        .err()
+        .map(|e| format!("{e:#}"));
+    Finalization {
+        completed: error.is_none(),
+        budget_ns: budget.as_nanos() as u64,
+        elapsed_ns: ns(origin),
+        error,
+    }
 }
 
 #[derive(Serialize)]
@@ -717,43 +749,16 @@ fn resources() -> anyhow::Result<ProcessResources> {
     })
 }
 
-/// All load endpoints arm on explicit stdin `start`, outside measured time.
-/// The VM supervisor can check both credentials/Ready before releasing either.
-pub(crate) fn run_load(fd: OwnedFd, config: LoadConfig, path: &Path) -> anyhow::Result<()> {
-    config.validate()?;
-    let mut output = std::fs::OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(path)?;
-    output.write_all(
-        b"{\"schema_version\":2,\"status\":\"INCOMPLETE\",\"performance_qualified\":false}\n",
-    )?;
-    let mut state = State::new(config)?;
-    let fd = crate::channel::prepare_application_fd(fd)?;
-    crate::channel::wait(
-        &fd,
-        nix::libc::POLLOUT,
-        Instant::now() + Duration::from_secs(10),
-    )?;
-    let info = slk_protocol::channel::query(fd.as_raw_fd())?;
-    if info.mode != 0
-        || info.directions != 3
-        || info.local_tcid != 31
-        || info.remote_tcid != 31
-        || info.pi != 241
-        || usize::from(info.mtu) < config.bytes
-        || usize::from(info.mps) < config.bytes + 5
-    {
-        anyhow::bail!("load requires current bidirectional basic CUTC capabilities");
-    }
-    println!(
-        "SocketBenchmarkArmed: mode={:?} count={} bytes={} window={}",
-        config.mode, config.count, config.bytes, config.window
-    );
-    read_start(nix::libc::STDIN_FILENO, Duration::from_secs(30))?;
-    let resource_before = resources();
-    let observation = drive(&fd, &mut state, REQUEST_NS, GRACE_NS, RUN_NS);
-    let resource_after = resources();
+// One production serializer, also used by local report-replay tests. Identity
+// comes from the actual channel ioctl in run_load; test fixtures mark theirs.
+fn report(
+    state: &mut State,
+    observation: &Observation,
+    info: &slk_protocol::channel::SleChannelInfo,
+    resource_summary: serde_json::Value,
+    finalization: &Finalization,
+) -> serde_json::Value {
+    let config = state.config;
     let mut rtts: Vec<_> = state
         .outgoing
         .iter()
@@ -777,7 +782,7 @@ pub(crate) fn run_load(fd: OwnedFd, config: LoadConfig, path: &Path) -> anyhow::
     {
         row.frame_hex = hex(frame);
     }
-    let correctness = state.correctness() && observation.error.is_none();
+    let correctness = state.correctness() && observation.error.is_none() && finalization.completed;
     let outgoing_count = if config.active() { config.count } else { 0 };
     let admitted = state
         .outgoing
@@ -815,18 +820,8 @@ pub(crate) fn run_load(fd: OwnedFd, config: LoadConfig, path: &Path) -> anyhow::
         (observation.active_elapsed_ns > 0)
             .then(|| bytes as f64 * 1_000_000_000.0 / observation.active_elapsed_ns as f64)
     };
-    let resource_summary = match (resource_before, resource_after) {
-        (Ok(before), Ok(after)) => {
-            serde_json::json!({"scope":"process-wide snapshots bracketing drive;includes endpoint probe overhead;maxrss is process lifetime,not interval peak",
-            "user_cpu_delta_ns":after.user_cpu_ns.checked_sub(before.user_cpu_ns),"system_cpu_delta_ns":after.system_cpu_ns.checked_sub(before.system_cpu_ns),
-            "before":before,"after":after,"kernel_workers":null,"kernel_timers":null,"URBs":null,"protocol_credit_peak":null})
-        }
-        (before, after) => {
-            serde_json::json!({"incomplete":true,"before_error":before.err().map(|e|e.to_string()),"after_error":after.err().map(|e|e.to_string())})
-        }
-    };
-    let report = serde_json::json!({"schema_version":2,"status":if observation.error.is_some(){"INCOMPLETE"}else if !correctness {"LOAD_OBSERVED_WITH_FAILURES_NOT_QUALIFIED"}else{"LOAD_OBSERVED_NOT_QUALIFIED"},"performance_qualified":false,
-        "correctness":correctness,"window_domain":"application-awaiting-validated-reply-not-protocol-credit",
+    serde_json::json!({"schema_version":2,"status":if observation.error.is_some() || !finalization.completed {"INCOMPLETE"}else if !correctness {"LOAD_OBSERVED_WITH_FAILURES_NOT_QUALIFIED"}else{"LOAD_OBSERVED_NOT_QUALIFIED"},"performance_qualified":false,
+        "correctness":correctness,"finalization":finalization,"window_domain":"application-awaiting-validated-reply-not-protocol-credit",
         "clock":"process-local-Rust-Instant-relative-nanoseconds","wait_backend":"ppoll-relative-nanoseconds","config":config,"observation":observation,
         "request_deadline_ns":REQUEST_NS,"late_observation_grace_ns":GRACE_NS,"maximum_run_ns":RUN_NS,
         "rtt_definition":"successful send syscall entry to validated reply;success-only excludes timed-out/late;no cross-clock arithmetic",
@@ -846,13 +841,89 @@ pub(crate) fn run_load(fd: OwnedFd, config: LoadConfig, path: &Path) -> anyhow::
             "USB_bytes":null,"USB_bytes_per_second":null},"process_resources":resource_summary,
         "counters":state.counters,"outgoing":if config.active(){&state.outgoing[..]}else{&[]},"incoming":&state.incoming[..state.seen],
         "channel_identity":{"controller":info.controller,"generation":info.generation,"lifetime":info.lifetime,"handle":info.handle,"local_tcid":info.local_tcid,"remote_tcid":info.remote_tcid,"pi":info.pi,"mtu":info.mtu,"mps":info.mps,"mode":info.mode,"directions":info.directions},
-        "unmeasured":["artifact/source/firmware/peer/capture/supervisor closure","USB/Session/NOCP timeline and bytes","interval resource peaks/kernel worker/timer/URB/credit (only process endpoint snapshots collected)","trace overhead","stable VM/WS73 performance qualification"]});
+        "unmeasured":["artifact/source/firmware/peer/capture/supervisor closure","USB/Session/NOCP timeline and bytes","interval resource peaks/kernel worker/timer/URB/credit (only process endpoint snapshots collected)","trace overhead","stable VM/WS73 performance qualification"]})
+}
+
+fn resource_summary(
+    before: anyhow::Result<ProcessResources>,
+    after: anyhow::Result<ProcessResources>,
+) -> serde_json::Value {
+    match (before, after) {
+        (Ok(before), Ok(after)) => {
+            serde_json::json!({"scope":"process-wide snapshots bracketing drive;includes endpoint probe overhead;maxrss is process lifetime,not interval peak",
+            "user_cpu_delta_ns":after.user_cpu_ns.checked_sub(before.user_cpu_ns),"system_cpu_delta_ns":after.system_cpu_ns.checked_sub(before.system_cpu_ns),
+            "before":before,"after":after,"kernel_workers":null,"kernel_timers":null,"URBs":null,"protocol_credit_peak":null})
+        }
+        (before, after) => {
+            serde_json::json!({"incomplete":true,"before_error":before.err().map(|e|e.to_string()),"after_error":after.err().map(|e|e.to_string())})
+        }
+    }
+}
+
+/// Load endpoints arm on `start`; stop reporting until paired `finish`.
+/// The supervisor checks both credentials/Ready before start and both quiescent
+/// markers before finish. Both control waits have independent finite budgets.
+pub(crate) fn run_load(fd: OwnedFd, config: LoadConfig, path: &Path) -> anyhow::Result<()> {
+    config.validate()?;
+    let mut output = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(path)?;
+    output.write_all(
+        b"{\"schema_version\":2,\"status\":\"INCOMPLETE\",\"performance_qualified\":false}\n",
+    )?;
+    let mut state = State::new(config)?;
+    let fd = crate::channel::prepare_application_fd(fd)?;
+    crate::channel::wait(
+        &fd,
+        nix::libc::POLLOUT,
+        Instant::now() + Duration::from_secs(10),
+    )?;
+    let info = slk_protocol::channel::query(fd.as_raw_fd())?;
+    if info.mode != 0
+        || info.directions != 3
+        || info.local_tcid != 31
+        || info.remote_tcid != 31
+        || info.pi != 241
+        || usize::from(info.mtu) < config.bytes
+        || usize::from(info.mps) < config.bytes + 5
+    {
+        anyhow::bail!("load requires current bidirectional basic CUTC capabilities");
+    }
+    println!(
+        "SocketBenchmarkArmed: mode={:?} count={} bytes={} window={}",
+        config.mode, config.count, config.bytes, config.window
+    );
+    read_start(nix::libc::STDIN_FILENO, Duration::from_secs(30))?;
+    let resource_before = resources();
+    let observation = drive(&fd, &mut state, REQUEST_NS, GRACE_NS, RUN_NS);
+    let resource_after = resources();
+    // Keep the channel fd alive and avoid report allocation/hex/JSON until both
+    // application loops have stopped. The supervisor verifies both markers
+    // before sending finish. This cleanup budget does not renew message time.
+    println!(
+        "SocketBenchmarkQuiescent: mode={:?} correctness={}",
+        config.mode,
+        state.correctness() && observation.error.is_none()
+    );
+    let finalization = finish(nix::libc::STDIN_FILENO, Duration::from_secs(30));
+    let correctness = state.correctness() && observation.error.is_none() && finalization.completed;
+    let report = report(
+        &mut state,
+        &observation,
+        &info,
+        resource_summary(resource_before, resource_after),
+        &finalization,
+    );
     use std::io::Seek;
     output.rewind()?;
     output.set_len(0)?;
     serde_json::to_writer(&mut output, &report)?;
     output.write_all(b"\n")?;
     if let Some(error) = &observation.error {
+        anyhow::bail!("{error}");
+    }
+    if let Some(error) = &finalization.error {
         anyhow::bail!("{error}");
     }
     if !correctness {
@@ -1215,5 +1286,150 @@ mod tests {
         ] {
             assert!(c.validate().is_err());
         }
+    }
+    #[test]
+    fn actual_finish_barrier_rejects_partial_wrong_eof_and_keeps_failure_atomic() {
+        use std::io::Write;
+        use std::os::unix::net::UnixStream;
+        for input in [b"finish\n".as_slice(), b"wrong!\n", b"fi"] {
+            let (mut writer, reader) = UnixStream::pair().unwrap();
+            writer.write_all(input).unwrap();
+            let value = finish(reader.as_raw_fd(), Duration::from_millis(10));
+            assert_eq!(value.completed, input == b"finish\n");
+            assert_eq!(value.error.is_none(), value.completed);
+            if input == b"fi" {
+                assert!(value.error.unwrap().contains("deadline"));
+            }
+        }
+        let (writer, reader) = UnixStream::pair().unwrap();
+        drop(writer);
+        let value = finish(reader.as_raw_fd(), Duration::from_secs(1));
+        assert!(!value.completed && value.error.unwrap().contains("EOF"));
+    }
+
+    #[test]
+    fn production_serializer_exports_real_local_pair_reports_for_independent_checker() {
+        use std::io::Write;
+        use std::os::unix::net::UnixStream;
+        for mode in [Mode::Rate, Mode::Window, Mode::Duplex] {
+            let (a, b) = pair();
+            let cfg = LoadConfig {
+                count: 8,
+                window: 8,
+                interval_us: if mode == Mode::Rate { 10000 } else { 0 },
+                ..config(mode)
+            };
+            let mut left = State::new(cfg).unwrap();
+            let right_cfg = if mode == Mode::Duplex {
+                cfg
+            } else {
+                LoadConfig {
+                    mode: Mode::Peer,
+                    interval_us: 0,
+                    ..cfg
+                }
+            };
+            let mut right = State::new(right_cfg).unwrap();
+            let before = resources();
+            let gate = Arc::new(Barrier::new(2));
+            let other = gate.clone();
+            let task = std::thread::spawn(move || {
+                other.wait();
+                let o = drive(&b, &mut right, REQUEST_NS, GRACE_NS, RUN_NS);
+                (right, o)
+            });
+            gate.wait();
+            let observed = drive(&a, &mut left, REQUEST_NS, GRACE_NS, RUN_NS);
+            let (mut right, right_observed) = task.join().unwrap();
+            assert!(observed.error.is_none() && right_observed.error.is_none());
+            assert!(left.correctness() && right.correctness());
+            // Both actual loops are now quiescent; authorize finalization.
+            let (mut control, reader) = UnixStream::pair().unwrap();
+            control.write_all(b"finish\nfinish\n").unwrap();
+            let end_left = finish(reader.as_raw_fd(), Duration::from_secs(1));
+            let end_right = finish(reader.as_raw_fd(), Duration::from_secs(1));
+            assert!(end_left.completed && end_right.completed);
+            let summary = resource_summary(before, resources());
+            let mut pair_reports = Vec::new();
+            for (index, (state, observation, end)) in [
+                (&mut left, &observed, &end_left),
+                (&mut right, &right_observed, &end_right),
+            ]
+            .into_iter()
+            .enumerate()
+            {
+                let info = slk_protocol::channel::SleChannelInfo {
+                    version: 1,
+                    size: 40,
+                    controller: index as u16,
+                    generation: 7 + index as u64,
+                    lifetime: 11 + index as u64,
+                    handle: 0,
+                    mtu: 2042,
+                    mps: 2047,
+                    local_tcid: 31,
+                    remote_tcid: 31,
+                    pi: 241,
+                    directions: 3,
+                    ..Default::default()
+                };
+                info.validate().unwrap();
+                let mut value = report(state, observation, &info, summary.clone(), end);
+                value["test_fixture"] = serde_json::json!(
+                    "AF_UNIX actual production drive/report;identity fixture,notNative or RF;finish budget1s"
+                );
+                assert_eq!(value["correctness"], true);
+                assert_eq!(
+                    value["summary"]["scheduled"],
+                    if state.config.active() { 8 } else { 0 }
+                );
+                pair_reports.push(value);
+            }
+            if let Some(root) = std::env::var_os("SLKTEST_REPORT_FIXTURE_DIR") {
+                let root = std::path::PathBuf::from(root);
+                std::fs::create_dir_all(&root).unwrap();
+                let name = format!("{mode:?}").to_lowercase();
+                for (n, value) in pair_reports.iter().enumerate() {
+                    let mut file = std::fs::OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .open(root.join(format!("{name}-{n}.json")))
+                        .unwrap();
+                    serde_json::to_writer(&mut file, value).unwrap();
+                    file.write_all(b"\n").unwrap();
+                }
+            }
+        }
+    }
+    #[test]
+    fn failed_finish_preserves_original_observation_and_all_scheduled_rows() {
+        let mut state = State::new(config(Mode::Rate)).unwrap();
+        let observation = Observation {
+            elapsed_ns: 20,
+            active_elapsed_ns: 20,
+            error: Some("original driver error fixture".into()),
+        };
+        let end = Finalization {
+            completed: false,
+            budget_ns: 30_000_000_000,
+            elapsed_ns: 10,
+            error: Some("finish EOF fixture".into()),
+        };
+        let value = report(
+            &mut state,
+            &observation,
+            &Default::default(),
+            serde_json::json!({"incomplete":true}),
+            &end,
+        );
+        assert_eq!(value["status"], "INCOMPLETE");
+        assert_eq!(value["correctness"], false);
+        assert_eq!(
+            value["observation"]["error"],
+            "original driver error fixture"
+        );
+        assert_eq!(value["finalization"]["error"], "finish EOF fixture");
+        assert_eq!(value["outgoing"].as_array().unwrap().len(), 64);
+        assert_eq!(value["summary"]["unattempted"], 64);
     }
 }

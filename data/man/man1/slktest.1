@@ -28,6 +28,10 @@ Dynamic measurement is not supported.
 .SH BOUNDS AND FAILURE
 Measure count is 1..10000, bytes29..2042 within actual basic CUTC MTU/MPS.
 Rate/window/duplex and peer --load wait at most30s for start followed by newline.
+After both endpoints print SocketBenchmarkQuiescent, the supervisor writes
+finish followed by newline to each stdin, within an independent original30s
+budget. The fd stays alive until then; hex/JSON conversion follows. EOF/timeout
+fails finalization and does not renew message deadlines.
 Message original deadlines, finite queues, random validation, error and timeout
 records remain enforced. Reports never grant performance qualification.
 See channel subcommand --help and the versioned documentation for precise bounds.

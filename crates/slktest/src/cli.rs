@@ -10,7 +10,7 @@ use std::path::PathBuf;
     name = "slktest",
     version,
     about = "SparkLink application channel correctness and load tests",
-    long_about = "Application tests on ordinary delegated channel fds. Basic CUTC measurements only; dynamic routes are limited correctness exercises. Not a Host, packet capture, kernel selftest, formal prover or performance qualification."
+    long_about = "Application tests on ordinary delegated channel fds. Basic CUTC measurements only; dynamic routes are limited correctness exercises. Not a Host, packet capture, kernel selftest, formal prover or performance qualification. Load modes require stdin start after both Armed, then finish after both Quiescent; each control wait is bounded."
 )]
 struct Cli {
     /// Use a private session bus for integration tests, never hardware qualification.

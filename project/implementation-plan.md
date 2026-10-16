@@ -44,16 +44,17 @@ WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续�
 | 四设备d01/ff13：轮换受控断链，48次对端实际校验回复 | `real_device` | `PASS` |
 | 四设备d01/d42：64次2042字节往返、队列背压及预算观察 | `real_device` | `PASS` |
 | 生产CMTC编号codec：256值与16字节输入有界限定通过 | `formal_bounded` | `PASS` |
-| 历史d75 MTU/MPS已确认FAIL；K90修复已提交、完整实机回归待闭合 | `implemented` | `FAIL` |
+| 历史d75 MTU/MPS违约FAIL保留；当前K90由独立实机回归记录取代 | `implemented` | `FAIL` |
 | 生产MTU/MPS修复：直接限长与六步状态转换限定证明 | `formal_bounded` | `PASS` |
+| K90/U2ee真实回归：独立MTU/MPS、328次业务往返及2次关闭在途交付 | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `d42da67fc29f2958922e30f2ef370f21d10bb1bd`。
+保留镜像：K `90fda1457a8d8191a1a5fab260927e31644b3e50`；编译 U `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`；执行工具 `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `d42da67fc29f2958922e30f2ef370f21d10bb1bd`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
@@ -1205,7 +1206,9 @@ ACB 分片254和包 credit 仍独立。U2ee780c 的新捕获要求版本化独�
 记录341项有界检查/13项主断言、六步任意事件、实际路由/状态发布夹具与 sanitizer、
 两种故意生产源码缺陷的反例及596项工具检查。它不证明真实内核并发或硬件行为。
 新内核编译、产物校验和准确 QEMU 启动检查通过；首轮准备因 QEMU 不匹配正确拒绝，
-没有放宽身份检查。K90/U2ee 两真实设备交换角色40轮短消息通过，完整长度/关闭/
-背压矩阵正在执行，随后必须复验四设备原门禁；未完成前不结束本批或相关整项 issue。
+没有放宽身份检查。[准确K90/U2ee实机回归](../docs/evidence/cmtc-mtu-mps-real-20261016.json)
+已完成11组双设备门禁（136次往返、32次超限、2次严格关闭在途交付）及四设备
+80/48/64次业务门禁，合计328次普通往返。本批MPS修复/原范围回归退出条件满足，
+不等于K17或完整多通道/安全/恢复整项完成。监督器首次误分类保留并按原契约重验。
 历史d75的 MPS 违约 FAIL 和原8cbf/d01/d42实机身份保留，不由局部证明覆盖。
 此修复属于当前数据改动门禁，后续继续动态 CMTC/TCID/Grant/多通道，不增加控制面全集前置。

@@ -1,0 +1,1840 @@
+{
+  "schema_version": 1,
+  "status": "LIVE_SESSION_MECHANISM_SCOPED_REAL_PASS_GRANT_AND_FULL_SECURITY_OPEN",
+  "compiled_kernel": "6861a5bc955b3e7899ce0e196ed1e9e2fcb37b26",
+  "compiled_userspace": "13bb050595c597b7e38c8067618ca85a817f1617",
+  "executed_tools": "13bb050595c597b7e38c8067618ca85a817f1617",
+  "post_processing_tools": "6c8b2548ca72a5e2c391a69015335785a95a197c",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "formal_result": "UNPROVED",
+  "full_exit_result": "UNPROVED",
+  "original_failures_result": "FAIL",
+  "scope": [
+    "VM-only SDK111 Hi3873U ports2/3;Hi3873E port1 excluded. Original S0-S6/19WP/10FV/12DG preserved;UserHost low priority.",
+    "One existing physical Session, Runtime/credit/Ticket/Managed File. Original operation terminal is separate from live mechanism snapshot;no new Engine or raw-key API.",
+    "48byte privileged native d6, typed Rust/C/Python and ordinary control-user D-Bus GetSecurityState. Host per-link ingress revision precedes ordinary RX queue;Owner snapshot uses Host/gate/owner locks and retained Session reference.",
+    "Four real security scenarios in both connection roles: numeric approved gives level2;noMITM approved level1;native-admitted reject and original-deadline late give level0. Sixteen physical Session before/after pairs and32snapshots,independently correlated with recorded per-link receipts.",
+    "Positive levels require real proof/local numeric confirmation when selected/own installation acceptance/0011 and drained own relay. They are mechanism facts,not named identity,local application authorization,trusted Grant,Bond or independent RF cipher attestation.",
+    "Pure tests cover off/failure/withdraw/revision lag/queue loss/overflow/old identity and isolation within explicit allocation/IRQ/USB/crypto fixtures;actual release/Down/unknown/rekey live-query matrix and protected Grant consumption remain missing.",
+    "New artifact retains selected249/2042 and short ordinary peer-validated random roundtrips. Fullsevenlength/tenlifecycle,fullnumericCLI/human/deployment/fourdevice/performance/naturalrecovery qualification not inherited.",
+    "Kani0.68/CBMC6.11 reports2030checks withoutfailure but unsupported caller_location/foreignfunction warnings;result remains UNPROVED. No new LKMM/KCSAN/lockdep,unbounded/cryptography/firmware or implementation refinement proof.",
+    "Captured firmware events carry handle only. Physical reuse/drain,firmware truth,unobserved or duplicate events and RF cipher are not proven by revision. USB success/NOCP/logs do not establish peer application delivery.",
+    "Private build recorder,toolchain,library/OS/QEMU and capture decoder are trusted dependencies. Sealed hashes and checks do not establish independent reproducible-build attestation;copied evidence replay is not an independent decoder or new real run."
+  ],
+  "real_gates": [
+    {
+      "name": "numeric-approve",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/live-security-real-approve-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 8
+    },
+    {
+      "name": "numeric-reject",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/live-security-real-numeric-reject-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 8
+    },
+    {
+      "name": "numeric-late",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/live-security-real-numeric-late-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 8
+    },
+    {
+      "name": "retained-approve",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/live-security-real-retained-approve-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 8
+    },
+    {
+      "name": "retained-boundary249",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/live-security-real-retained-boundary249-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 16,
+      "current_security_snapshots": 0
+    },
+    {
+      "name": "retained-long2042",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/live-security-real-retained-long2042-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 0
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "strict-kernel-build-and-noUSB-root-smoke",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "actual-production34state-51ingress-14link-4authorization-contracts",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "278-workspace-at691-and-exact13bb-CI",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "42-actualsealedlibrary-python-CABI-and32bit-layout-compile",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "691-executedtools-692-posttools-and31-copiedactual-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "four-original-scenario-replays-with-independent-per-link-receipt-count",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "115-strict-documents",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "formal_gates": [
+    {
+      "name": "actual-installation-submit-cancel-event-live-security",
+      "status": "NOT_PROVEN_UNSUPPORTED",
+      "result": "UNPROVED"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "live-query-release-lastfd-dup-Down-rekey-unknown-and-authority-VM-matrix",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "revocable-security-epoch-Grant-final-submit-RX-and-soleSSAPpermissions",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "boundedproof-unsupported-resolution-real-lock-reference-interleavings",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "fullnewsevenlength-tenlifecycle-multichannel-fairness-fourdevice",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "numericCLI-human-deadline-Bond-and-credential-security",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "naturalRCA-nonmanualrecovery-NOCP-reuse-drain-PM-release",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "original_failed_checks": [
+    {
+      "name": "private-artifact-seal-virtual-optin",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "Strict collector rejected missing optional-module baseline flag;original refusal retained. Correct unchanged config explicitly checked,not relaxed."
+    },
+    {
+      "name": "private-artifact-seal-record-adapter",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "Original completed build recorder schema mismatched collector;fresh normalized adapter points to exact new source/config/log/original record."
+    },
+    {
+      "name": "new-witness-requester-ownership-compile",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "E0382 caught query after requester consumed by caller-exit. Fixed by keeping query in original live branch;no clone/no weakened caller-exit assertion."
+    },
+    {
+      "name": "sandbox-Unix-credentials-test",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "EPERM on SO_PASSCRED;original failure retained,alltests rerun in permitted local environment."
+    },
+    {
+      "name": "sandbox-ccache-CABI",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "Read-only home cache refusal;original failure retained,CCACHE_DISABLE=1 reran actual sealed library42tests."
+    }
+  ],
+  "bounds": {
+    "real_vm_success": 6,
+    "connection_role_phases": 12,
+    "security_role_phases": 8,
+    "current_security_snapshots": 32,
+    "peer_business_round_trips": 48,
+    "boundary_rejections": 16,
+    "relay_submits": 58,
+    "opposite_receipts": 58,
+    "actual_installations": 8,
+    "workspace_tests_at691": 278,
+    "frozen_tool_tests": 691,
+    "postprocessor_tool_tests": 692,
+    "python_CABI_tests": 42,
+    "copied_actual_evidence_negatives": 31
+  },
+  "current_mechanism_snapshots": [
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        1,
+        0,
+        2,
+        1,
+        2,
+        15,
+        4,
+        16
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        1,
+        0,
+        3,
+        1,
+        2,
+        15,
+        4,
+        16
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        3,
+        0,
+        2,
+        1,
+        2,
+        15,
+        4,
+        16
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        3,
+        0,
+        3,
+        1,
+        2,
+        15,
+        4,
+        16
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        1,
+        0,
+        2,
+        1,
+        1,
+        13,
+        3,
+        16
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        1,
+        0,
+        3,
+        1,
+        1,
+        13,
+        3,
+        16
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        3,
+        0,
+        2,
+        1,
+        1,
+        13,
+        3,
+        16
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        3,
+        0,
+        3,
+        1,
+        1,
+        13,
+        3,
+        16
+      ]
+    }
+  ],
+  "security_wire_phases": [
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "relay_pdus": 8,
+      "opposite_receipts": 8,
+      "installations": 2
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "relay_pdus": 8,
+      "opposite_receipts": 8,
+      "installations": 2
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "relay_pdus": 9,
+      "opposite_receipts": 9,
+      "installations": 2
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "relay_pdus": 9,
+      "opposite_receipts": 9,
+      "installations": 2
+    }
+  ],
+  "formal": {
+    "status": "PRODUCTION_RELAY_SESSION_FORMAL_NOT_PROVEN",
+    "tests": 34,
+    "default_kernel_implementation": true,
+    "rf_acceptance": false,
+    "source_head": "8757f98f105bf35545eb6e9ed8c15ce71863455b",
+    "source_tree_clean": false,
+    "runner_sha256": "982f7ff31387e44663363ae93675b8ab813921b783397c5bfe1bbbc6bd8932ba",
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+    "sources": {
+      "net/sparklink/sle_security_relay_state.rs": "edd7a961c93a9a567b2b3543150478c9bae78c0d85a935d8ccfc9621b54493fe",
+      "tools/testing/selftests/sparklink/security/relay_session.rs": "c599c141d10159bb71d8728b503cbbe91f6b25899ddae0ec9483299c10965d55",
+      "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "66cb60032482cf18973f0755bedddac64c49c6139408dc6274fd3b307661c4c1"
+    },
+    "formal": {
+      "status": "NOT_PROVEN_UNSUPPORTED",
+      "exit": 0,
+      "generated_checks": [
+        2030
+      ],
+      "command": [
+        "kani",
+        "tools/testing/selftests/sparklink/security/relay_session_kani.rs",
+        "--harness",
+        "installation_submit_cancel_accept_and_event"
+      ],
+      "log_sha256": "6324d590560f6786a373b14d5500dbe41a3814bed6ab008b0866980fbed3a61e",
+      "version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0"
+    },
+    "proof_scope": {
+      "harness": "installation_submit_cancel_accept_and_event",
+      "queue_depth": 2,
+      "capability_payload_bytes": 10,
+      "capability_exchanges": 1,
+      "capability_terminal_replies": 1,
+      "arbitrary_commit_time_u64": false,
+      "unwind": 80,
+      "property_inventory_by_harness": {
+        "capability_withdraw_deadline_and_submit": [
+          "No callback after prior withdraw/expiry or foreign identity",
+          "Submit failure is nondeterministic; only accepted callback creates obligation",
+          "Withdraw/expiry preserve submitted obligation until matching terminal reply"
+        ],
+        "capability_requires_peer_and_terminal_complete": [
+          "Successful Status alone cannot pay obligation or complete exchange",
+          "Both peer ingress and real Complete required in either order; terminal failure cannot revive"
+        ],
+        "key_agreement_job_cancel_and_physical_obligation": [
+          "G public crypto job cannot be created before T response actually submits",
+          "Withdraw/expiry reject either successful or failed crypto receipt and create no continuation",
+          "Submitted T response obligation remains until its actual matching terminal reply"
+        ],
+        "installation_submit_cancel_accept_and_event": [
+          "Drive actual G capability/public/confirm/nonce/proof transitions before installation; no force-ready model",
+          "Every actual submit and crypto job has failure branches; accepted command and real0011 independently required",
+          "Withdraw/expiry before materialize or final submit prevents callback; cancel after submit retains obligation until matching reply",
+          "Late reply or encryption event cannot revive cancelled/failed Session; post-success off invalidates even beyond original deadline",
+          "Command Status pays only command obligation; pending asynchronous install survives cancel/expiry until actual domain evidence or physical retirement"
+        ]
+      },
+      "assumptions": [
+        "Caller serializes exact production methods under Owner lock",
+        "Host/gate identity is current; driver callback atomically accepts or NEVER queues",
+        "Input reply ticket already resolved by Host; peer ingress identity already frozen"
+      ],
+      "excluded": [
+        "Actual locks/references/IRQ/USB callback drain and Host-to-driver mapping",
+        "Wire Complete uniqueness, late/duplicate handle attribution, firmware state clear/reuse barrier",
+        "Unbounded execution, cryptography, authentication, Agent, actual controller key installation and natural recovery",
+        "Actual C key copy, firmware encryption truth, independent radio cipher attestation, T role installation model and uncertain USB failure combination"
+      ],
+      "role": "G only",
+      "original_deadline": 100,
+      "logical_schedule": "fixed0..28, expiry100 and lateroff101/102; not arbitrary time or kernel clock proof",
+      "wire_inputs": "knownoffer10, ownpub64/encoded70, peerpub64 and16byte confirmation/nonce/proof fixtures",
+      "crypto_jobs": 4,
+      "local_relays": 4,
+      "installation_intents": 1,
+      "crypto_dependency": "success/failure nondeterministic, not valid-point/math proof",
+      "installation_scope": "actual metadata transitions; opaque C key copy and actual driver lock/reference/USB excluded",
+      "request_cancel_scope": "Before materialization/final submit and after actual submit/Status, nondeterministic choice of author withdraw or actual production Session.cancel; cancellation idempotence checked. Original File/request validation and Runtime locking are outside this pure harness."
+    },
+    "regression_status": "PASS"
+  },
+  "ci": {
+    "headRefOid": "13bb050595c597b7e38c8067618ca85a817f1617",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:10Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117227995696",
+        "name": "cargo check",
+        "startedAt": "2026-10-16T22:36:41Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:23Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774663/job/117227994930",
+        "name": "Strict Sphinx HTML",
+        "startedAt": "2026-10-16T22:36:41Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:15Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976767459/job/117227969799",
+        "name": "Strict Sphinx HTML",
+        "startedAt": "2026-10-16T22:36:35Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:18Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774659/job/117227995034",
+        "name": "WS73 production C corpus and bounded sanitizer exploration",
+        "startedAt": "2026-10-16T22:36:41Z",
+        "status": "COMPLETED",
+        "workflowName": "Production codec bounded fuzz"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774651/job/117227994850",
+        "name": "Public metadata and negative controls (no hardware qualification)",
+        "startedAt": "2026-10-16T22:36:40Z",
+        "status": "COMPLETED",
+        "workflowName": "Qualification integrity"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:36:59Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976767592/job/117227970730",
+        "name": "Public metadata and negative controls (no hardware qualification)",
+        "startedAt": "2026-10-16T22:36:36Z",
+        "status": "COMPLETED",
+        "workflowName": "Qualification integrity"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:36:38Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774663/job/117227996014",
+        "name": "Independent external links",
+        "startedAt": "2026-10-16T22:36:39Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:36:33Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976767459/job/117227971413",
+        "name": "Independent external links",
+        "startedAt": "2026-10-16T22:36:34Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117227995734",
+        "name": "rustfmt",
+        "startedAt": "2026-10-16T22:36:41Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:23Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117227995691",
+        "name": "Python bindings and kernel ABI conformance",
+        "startedAt": "2026-10-16T22:36:41Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:08Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117227995475",
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "startedAt": "2026-10-16T22:36:41Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:43Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117227995820",
+        "name": "Kernel crypto/wire and archived protocol boundaries",
+        "startedAt": "2026-10-16T22:36:40Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:38:55Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117228164870",
+        "name": "cargo test",
+        "startedAt": "2026-10-16T22:37:13Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:39Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117228164790",
+        "name": "clippy",
+        "startedAt": "2026-10-16T22:37:12Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:37:35Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117228164800",
+        "name": "C header generation",
+        "startedAt": "2026-10-16T22:37:13Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-16T22:40:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38976774675/job/117228719058",
+        "name": "release build",
+        "startedAt": "2026-10-16T22:38:57Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "remaining": [
+    "live-query-release-lastfd-dup-Down-rekey-unknown-and-authority-VM-matrix",
+    "revocable-security-epoch-Grant-final-submit-RX-and-soleSSAPpermissions",
+    "boundedproof-unsupported-resolution-real-lock-reference-interleavings",
+    "fullnewsevenlength-tenlifecycle-multichannel-fairness-fourdevice",
+    "numericCLI-human-deadline-Bond-and-credential-security",
+    "naturalRCA-nonmanualrecovery-NOCP-reuse-drain-PM-release"
+  ],
+  "materials": [
+    {
+      "path": ".dev/live-security-real-approve-v1/manifest.json",
+      "sha256": "4063e2cd95b1ef3f82fd45ccfc3082e2935b229d89aa8275d646f3f0be47ac3c",
+      "bytes": 1221864,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-approve-v1/console.log",
+      "sha256": "94ece0bdd1b600214ea6b8ec7f17c0fc75ac55e49ca2373b0eae89f3f833f9d2",
+      "bytes": 16247,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-approve-v1/guest-output/ws73.pcap",
+      "sha256": "f22e4d739a2861a7117edaa7edbd12ad26d5173c3068111c4747e8f3b35ff8ad",
+      "bytes": 532732,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-approve-v1/guest-output/capture-stats.txt",
+      "sha256": "798730e9c9f533387c50ca93d2823ff8118fb865f8d005f3fadd6e4d074e8a45",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "182340f6c8fa7ba12849d7f4f7b0e91e9571b5df80ae01ffef652006a29b66b3",
+      "bytes": 712202,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-reject-v1/manifest.json",
+      "sha256": "7fdd130e800b5774264b6d28ef11c4f58bcccd31fc411ab0148521e723ed61b2",
+      "bytes": 1177150,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-reject-v1/console.log",
+      "sha256": "84d4adbf7f359f7d3066cc79e26bb6960f84cc3af45e3cca18f2344467feafe5",
+      "bytes": 16247,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-reject-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-reject-v1/guest-output/ws73.pcap",
+      "sha256": "5b5d0e951fadc7cb31c0baf35b9e9bb8b286460c13f07a128e2e13830aa64518",
+      "bytes": 501360,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-reject-v1/guest-output/capture-stats.txt",
+      "sha256": "bce94a4a00f24c14faa7c379bb5c6c358f2450c1cace706262f46261e7cad2ed",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-reject-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "01a104e10e2617b9a8658ea803105128431bda51de73856aa77b060c95401d4b",
+      "bytes": 712218,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-late-v1/manifest.json",
+      "sha256": "237182f14879c3706f65d9672934f4eda5a38fd249f477b2ea249bb94d74f759",
+      "bytes": 1177062,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-late-v1/console.log",
+      "sha256": "ff6b78827c48927c0e65e01d044d5951cb86aa32ee1cd7c79a2a535cf933d0ee",
+      "bytes": 16244,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-late-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-late-v1/guest-output/ws73.pcap",
+      "sha256": "eba7bbdf30973c8b34b02e718b5607a7dea933f701727c276ce8a141db2059bc",
+      "bytes": 501360,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-late-v1/guest-output/capture-stats.txt",
+      "sha256": "bce94a4a00f24c14faa7c379bb5c6c358f2450c1cace706262f46261e7cad2ed",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-numeric-late-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "3666fe3b2254e10def81ff86a2034573f76d031e569f0d52c4d20b7fe72e2249",
+      "bytes": 712126,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-approve-v1/manifest.json",
+      "sha256": "672f83685c19214512aa167919d59c62951985b076f068b362b19fdcfc76df56",
+      "bytes": 1222236,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-approve-v1/console.log",
+      "sha256": "656c0abeb522356990ead5b7edcddf7f88a44d54e2551da91409e7f5a14e43b7",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-approve-v1/guest-output/ws73.pcap",
+      "sha256": "648915a0e6c4d4b93186819d762eafdd2f6a10597b456d1f791f3f382919e8fd",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-approve-v1/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "5d41743bc77b3fa439c95b0171a4c71006e79a71f91da614cf53962c39cf6ae0",
+      "bytes": 702948,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-boundary249-v1/manifest.json",
+      "sha256": "529727785651e8c9ad7a269cb11f31124333d6e2a14f7bee8e5403b11f4a7223",
+      "bytes": 1264026,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-boundary249-v1/console.log",
+      "sha256": "1800361444aacf3e0f3903cd4f69877d12a8bacfc6a38886f8e5a358d85e766d",
+      "bytes": 16238,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-boundary249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-boundary249-v1/guest-output/ws73.pcap",
+      "sha256": "ef01f97d8e734910ab30840e1aac875b75e312dc335073bc5844470b22b5e4e1",
+      "bytes": 530588,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-boundary249-v1/guest-output/capture-stats.txt",
+      "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-boundary249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "d06db3b46ec4b9c230c69ec62522303da88022b0caa297e6fac15796c5070783",
+      "bytes": 743386,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-long2042-v1/manifest.json",
+      "sha256": "90f73076e75e00c8d52c4b47747268a25b84246b633cad89e86506e5925accf8",
+      "bytes": 2243832,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-long2042-v1/console.log",
+      "sha256": "fe64dd3babb38415aa4101609e7c3b9b90a4307565e40a89023437109fd321ec",
+      "bytes": 16213,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-long2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-long2042-v1/guest-output/ws73.pcap",
+      "sha256": "b72e574053a0e93b3c4aae5349a5592caea39bc83f13e6054753e33bb2ec5039",
+      "bytes": 1016972,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-long2042-v1/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-retained-long2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "d5b46f5ae96789f2ef59ce234975b73a2edc1719c6975e9501df793cb98821e8",
+      "bytes": 791643,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-matrix-v1.json",
+      "sha256": "26b4325103bd0d5aaa8d04eefa48b7ad2c8d5a4ad66c02e225f75707231324c5",
+      "bytes": 7823,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-matrix-v1.py",
+      "sha256": "8a1853f1a5e177ab28d3f5f416c7d74354e575cb9725103d098efcdf85918c04",
+      "bytes": 2586,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-v1.json",
+      "sha256": "9277bf5b7a51f14e723762b3aa15ca26dfb490e193aed6e9e83efcd0904bc83c",
+      "bytes": 1186,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-real-v1.py",
+      "sha256": "40d31967df5a01219c47e1454b163a5405e1f17c1bd25f3034e18a806c8fc1fe",
+      "bytes": 1857,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-build-prepare-v1.json",
+      "sha256": "9c2f57d705e13ef486ac96af460ce23f31b49c4c9535e9d45ea5208d357e7343",
+      "bytes": 4390,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-build-prepare-v1.py",
+      "sha256": "17a710d3fee61a4b43715965a56c7669b8490256dc728f3e286feb4bf3fceb67",
+      "bytes": 3213,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/manifest.json",
+      "sha256": "b51be2a0e1769b8972261d065bfc7aef5e35e7d0fd85731a436736dd5a7e7424",
+      "bytes": 26326,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-prepared-v1/manifest.json",
+      "sha256": "000941a1a1dd5bbf94be400d6625b478806c959643564d595f7a3fd40d789f08",
+      "bytes": 264089,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-kernel-build-v1.json",
+      "sha256": "a5cc0d84c29b13f7adaa39e0f252ce8e68e259f34a231d6915722fdf3245ba81",
+      "bytes": 1646,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-kernel-budget-v1.json",
+      "sha256": "6a16c466205760b99dee7f4c4f796f518ae321df3e625cfc062073b3e771242b",
+      "bytes": 1070,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-kernel-build-v1.log",
+      "sha256": "d83d82fff2888c1ed9083bdc871b524e1f74d30addb29e3ff39b34a54c493e1e",
+      "bytes": 2839,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-build-check-input-v2.json",
+      "sha256": "60c894baf10cc4a40e7e0e46c2175a14663122436bf7981800452b29174d4fe0",
+      "bytes": 714,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-kernel-artifacts-v1/manifest.json",
+      "sha256": "5224b0460c2927cecc13c1d85dfea92bc9ce7e85b65cc485233e415de25d7439",
+      "bytes": 229022,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-root-smoke-v1/manifest.json",
+      "sha256": "99cc797c648b27241c89b192adbc80c58ff0fe486c61555e1a18234618aa59bd",
+      "bytes": 36874,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-modules-v1/manifest.json",
+      "sha256": "3cba707edfe1f657066899184208201e72046ec3f4578ca212bc9ddcc30dacaa",
+      "bytes": 2376,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-userspace-test-budget-v1.json",
+      "sha256": "4ae5f25fc263d0e65ae3aff2213239f82a8a126294c9066470111904946e49ba",
+      "bytes": 819,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-userspace-tests-v1.log",
+      "sha256": "ef55fe409a7f168b4dca8a93123d928e023d7023e37627339d8574202b491e1b",
+      "bytes": 26266,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-clippy-budget-v3.json",
+      "sha256": "b233bbe0be9bdb1c5a4f9cb5576363749ed3c9887672e0886858944739f2a984",
+      "bytes": 878,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-clippy-v3.log",
+      "sha256": "b4d940880cd6a3d2599a26d4a5676361bfaad85c3152a16bfeba41e972e50327",
+      "bytes": 500,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-tool-tests-v2.log",
+      "sha256": "019226f6fa564d45a265929ae7cd617ce49bf1f3d768f4be17fe2dd1e6a1e139",
+      "bytes": 826,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-postprocessor-tools-v2.log",
+      "sha256": "fecb74c79363090f759a0c04582e71055a5f7ca79fcb462016fbf69cb48bcfea",
+      "bytes": 827,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-python-tests-v2.log",
+      "sha256": "da428570edbd7156990d21afc3a6fd97d75513cfed1aeb09c0c32533257dbe39",
+      "bytes": 141,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-cbindgen-v1.log",
+      "sha256": "fc48c46417e37da1c68a988b8034b11afafbf6aaf75e1e7d96e57fdea5efd8df",
+      "bytes": 451,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-sparklink-v1.h",
+      "sha256": "25a3ec432b62cc8a6e574d3afcd398a5c78c217f0b59b75df14d2afd3633a091",
+      "bytes": 31617,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-docs-v1.log",
+      "sha256": "80927fb39cb28ecbb5f279b7fdf3640b3c9376f328c74fabf1731d111bacf4d5",
+      "bytes": 300503,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-replay-v1.py",
+      "sha256": "a93f1df3357763f655802c147d70618dcd2e328ebcdbcde8ee8d16f352ccb3ad",
+      "bytes": 5411,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-replay-v1.json",
+      "sha256": "39c536da7696e241aeee45f0421122ed1cc9ae840ca585b0c271e889086b5e32",
+      "bytes": 7268,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-replay-all-v1.json",
+      "sha256": "3f92d03d5c1ffbbec76519d0f5577e74aa796c7bc0ebef99aa7e1b8a6c65d96e",
+      "bytes": 1578,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-ci-13bb-v2.json",
+      "sha256": "d8b9e7bf263a5bf353fa03af9b0f2bc8501b57a3fb6d7bfc5be36ea4e4ad716d",
+      "bytes": 5030,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-state-regression-v2.json",
+      "sha256": "8ba10cc033a7a24e8f9c3f63e2572886d13f4a9b9a0c2f0440afc78ee054d98d",
+      "bytes": 640,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-state-regression-v2.log",
+      "sha256": "7120647bb935da3d66ecb06c300de33dcef12fc2c99de77f48d837bc317ee35a",
+      "bytes": 3269,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-ingress-regression-v2.json",
+      "sha256": "047f4ac287ae2dd137e84e6b3d69cabe9d00f02760282bc558e8d892c79d08a2",
+      "bytes": 2208,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-ingress-regression-v2.log",
+      "sha256": "02d3a9ca8f1e36495f9ff9ea064a39d1fd4e28f388eb47add618c4b5b3cf15d6",
+      "bytes": 11000,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-link-regression-v1.json",
+      "sha256": "ec8b35abd34f2a591c1eace9753f1728cb206a11ed13a1bc9bd994aae3ee1e05",
+      "bytes": 741,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-link-regression-v1.log",
+      "sha256": "734f6b3d7f4bc0ebbd9500a7eda83245c909d09602df421e751cc08ff6c8172f",
+      "bytes": 2124,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-authority-v2.log",
+      "sha256": "120fcf1e1b1ef6883b716f1b33b4fbea79c7089f1d1ff950e98c9608d82abb42",
+      "bytes": 102,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-install-kani-v1.json",
+      "sha256": "982f04265c26da059a2e29823b26136bf66c23b1d18a5d73b9adf2d4f79e01f4",
+      "bytes": 4857,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-install-kani-v1.log",
+      "sha256": "4b5c36ed96597e0926671e469368dd5168c2e95f96637b55e55ad4ae16f5b53c",
+      "bytes": 7102,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-install-kani-v1.kani.log",
+      "sha256": "6324d590560f6786a373b14d5500dbe41a3814bed6ab008b0866980fbed3a61e",
+      "bytes": 1179079,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-artifact-seal-v1.log",
+      "sha256": "5cd93d47652218393b351169ab4901bb26d19ded810040634dff0c344b446781",
+      "bytes": 760,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-artifact-seal-v2.log",
+      "sha256": "4c0eaa1d145bcfd3d34912a091cdcabeb627d0c3ba4b83d714ade6b2ef60521d",
+      "bytes": 810,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-artifact-seal-v3.log",
+      "sha256": "ac0c6491926aa3fab5b0797551ea2e8e17529074ff8b84e695a1ec1548932071",
+      "bytes": 94,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-clippy-v2.log",
+      "sha256": "18b18ba2c50810af65d2fd9885b87e3431bad5d65093231ef126886aafaf2b6e",
+      "bytes": 1705,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-tool-tests-v1.log",
+      "sha256": "361f491b803d4000df0d0b6197fc073e36db0316c67ac2d706f0a861824fb376",
+      "bytes": 1462,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-python-tests-v1.log",
+      "sha256": "5a93dfb9edcd251a3c05f045d0d63318601ca0a0cc580e599484c3dad6fdc1e5",
+      "bytes": 1312,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/build-manifest.json",
+      "sha256": "eb125bad7e5ff3608e46ebb85dc12d80eb6b834694ba4467ae59da7549a502d2",
+      "bytes": 313707,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/qemu-system-x86_64",
+      "sha256": "dea80cfc383881b83b16744904be1fff82a8e4d523dfa65f2d96d5268e885e68",
+      "bytes": 30099216,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/numeric-agent-reference-check-v1.json",
+      "sha256": "3d829e40af096f2c252b6308390b84bd80b3c54c533683a3ad3c04a5cf0a3c5a",
+      "bytes": 567,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-prepared-v1/bzImage",
+      "sha256": "7ada05d447f29863d991ddbed61a45bf7200b163bc3eae57adc8572cc7c0e963",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-prepared-v1/root.btrfs",
+      "sha256": "7478600dc49a7339441301afeeb561f844180446e841cc45bf5f149dbc9f237e",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/13bb050595c5/slkd",
+      "sha256": "95efd3ebcacff186027e85394dd4d81433101844199cee90064bee489c474a9e",
+      "bytes": 10579344,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/13bb050595c5/slctl",
+      "sha256": "a6c0c7432f2f85cd8473a1639603b464208dc9a38dbbdfee2c3d34f21826deef",
+      "bytes": 7828432,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/13bb050595c5/slktest",
+      "sha256": "0cddc14e2451523e086c829309d8f9f03cf0e5cc23e9bf268f035c1bd1b1a04d",
+      "bytes": 5236168,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/13bb050595c5/slkconfig",
+      "sha256": "09560f3e0b4263d08b220ee0dad8a0bf0fd84532cf244bf92bce9dac92acea3d",
+      "bytes": 1404136,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/13bb050595c5/slkmon",
+      "sha256": "b29f1cf8f8e81a3c87d253911b93dfe79d916fcf8fa0c24384d6537c9a14e4ae",
+      "bytes": 1662328,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/13bb050595c5/slkdump",
+      "sha256": "93929b9aaa903d2039077a59a399b978266c461889a5f9251be42f776a40e744",
+      "bytes": 1662200,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/13bb050595c5/liblibsparklink.so",
+      "sha256": "3126822aa5dc51cb00a823d0f9641c33ce22cdbe7fb4e95fd1ecc81fb74460bd",
+      "bytes": 548536,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "e18e75678eaf9c69bcbe931eea40a9936ebb85a6472946be6c1665670e39f05f",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "c85cfae25508c623671cf3b91fd2d5b697d8f24171df4978f258ef633ae8ed29",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsitearchive. Raw USB key-install captures remain private. Missing/hash-mismatched bytes cannot verify a PASS."
+    },
+    {
+      "path": ".dev/live-security-build-check-input-v1.json",
+      "sha256": "55c381413bf9685b036abf5da707a4637956cf2f2d876e7e86e595e02f49bb32",
+      "bytes": 885,
+      "access": "private",
+      "retention": "Invalid unconsumed preparation draft;never a qualification input"
+    }
+  ],
+  "replay": [
+    "Use frozen executed13bb and post6c source roles with originalmanifest USBidentities,check_capture_stats,read_capture,ws73_security_agent.corroborate;compareexactproof andrequire8snapshots persecurityscenario.",
+    "Rawinstallcaptures containkeys;workspaceowner access only,no publishedbytes orverifiedoffsitearchive. Missing originals/hashes/capture completeness/source mapping cannot establishPASS."
+  ],
+  "created_wall_ns": 1792190849779263183,
+  "formal_source_mapping": {
+    "execution_head": "8757f98f105bf35545eb6e9ed8c15ce71863455b",
+    "execution_tree_clean": false,
+    "inputs": {
+      "net/sparklink/sle_security_relay_state.rs": {
+        "sha256": "edd7a961c93a9a567b2b3543150478c9bae78c0d85a935d8ccfc9621b54493fe",
+        "source_commit": "6861a5bc955b3e7899ce0e196ed1e9e2fcb37b26"
+      },
+      "tools/testing/selftests/sparklink/security/relay_session.rs": {
+        "sha256": "c599c141d10159bb71d8728b503cbbe91f6b25899ddae0ec9483299c10965d55",
+        "source_commit": "6861a5bc955b3e7899ce0e196ed1e9e2fcb37b26"
+      },
+      "tools/testing/selftests/sparklink/security/relay_session_kani.rs": {
+        "sha256": "66cb60032482cf18973f0755bedddac64c49c6139408dc6274fd3b307661c4c1",
+        "source_commit": "6861a5bc955b3e7899ce0e196ed1e9e2fcb37b26"
+      }
+    },
+    "runner": {
+      "path": "tools/testing/selftests/sparklink/run_security_relay.py",
+      "source_commit": "8757f98f105bf35545eb6e9ed8c15ce71863455b",
+      "sha256": "982f7ff31387e44663363ae93675b8ab813921b783397c5bfe1bbbc6bd8932ba"
+    },
+    "scope": "Proof executed on explicit dirty inputs beforecommit;every watchedproduction/test/harness inputmapsbyte-for-byte to6861,runner mapsold8757. Unsupported remains UNPROVED."
+  },
+  "private_preparation_notes": [
+    "The first private adapter draft copied old build-record/log references;detected before collector use. Freshv2 adapter binds exactnew originalrecord/log/source/config. Draft retained and neverused toproduce a sealedartifact."
+  ],
+  "build_diagnostics": {
+    "log_sha256": "d83d82fff2888c1ed9083bdc871b524e1f74d30addb29e3ff39b34a54c493e1e",
+    "compiler_warning_count": 0,
+    "compiler_diagnostics": [],
+    "make_warning_count": 1,
+    "make_diagnostics": [
+      "make[4]: 警告: jobserver 不可用: 正使用 -j1。添加 “+” 到父 make 的规则。"
+    ],
+    "unclassified_warning_count": 0,
+    "unclassified_diagnostics": [],
+    "warning_free_log": false
+  },
+  "build_resources": {
+    "jobs": 12,
+    "with_real_device_vm": false,
+    "logical_cpus": 16,
+    "affinity_cpus": 16,
+    "mem_available_kib": 52754352,
+    "policy_sha256": "c10dfb10add9bfac7dc1001d89f8ec3dde2962e422f52d71aa94edb2a76541ba",
+    "inherited_top_level_jobserver_cleared": [],
+    "lock": ".dev/main-build.lock",
+    "nested_make_warning": "One nested make fell back to-j1;mainmake-j12 remainsrecorded;not a warning-free full log."
+  }
+}

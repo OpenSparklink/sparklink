@@ -1507,7 +1507,8 @@
         "initial": "REJECTED:PASS record omitted explicit tool material dependencies;raw failed local check retained",
         "corrected": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED;SCOPED_SOURCE_AND_BYTES_MATCH_NOT_REPLAYED",
         "full_native_or_performance_qualification": false
-      }
+      },
+      "issue_ci_receipt": "docs/evidence/socket-benchmark-issues-ci-20261016.json"
     }
   }
 }

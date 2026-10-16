@@ -113,7 +113,8 @@ python3 tools/ws73_credit_observation.py --run-folder SAVED_VM_RUN --output NEW_
 
 ## 核对四设备两组业务记录
 
-这是集成测试维护者的新增门禁，尚未取得当前准确提交的实机资格。
+这是集成测试维护者的门禁；d01aa82已取得[首轮限定结果](../evidence/four-device-business-20261016.json)，
+其他提交和配置必须重新核对，不能由历史结果继承资格。
 前置条件是已冻结的 Native VM prepared 目录、四只可独占的真实 WS73、原始捕获
 和普通用户工具。不得与广播 parallel、QMP故障或双设备选择项混用：
 

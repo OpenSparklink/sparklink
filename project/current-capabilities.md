@@ -17,7 +17,7 @@
 | 生产原期限算术：四种HZ、100检查 | `formal_bounded` | `PASS` |
 | 生产安装/取消组合：unsupported，1766检查不是证明 | `formal_bounded` | `UNPROVED` |
 | Agent完整权限部署与在途安装退出矩阵：仍缺 | `implemented` | `MISSING` |
-| 动态多通道/四真实设备两组：仍缺 | `implemented` | `MISSING` |
+| 动态多通道/四设备故障与压力全矩阵：仍缺 | `implemented` | `MISSING` |
 | 自然故障根因与非人工恢复：仍缺 | `implemented` | `MISSING` |
 | Agent策略离线16175：15 private-D-Bus +1生产时钟用例 | `offline` | `PASS` |
 | Agent实机85cdf/db6：六模式交换角色48次应用回复 | `real_device` | `PASS` |
@@ -26,22 +26,28 @@
 | CLI镜像6385/300a数据保持：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
 | 生产C codec有界fuzz：19固定+20000探索无发现（非证明） | `offline` | `PASS` |
 | 独立CI Clang18 codec有界探索：artifact/源码/目标执行已核对 | `offline` | `PASS` |
+| 四设备d01aa82：两组两角色80次实际应用回复及USB业务重叠 | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `6385e43081bfcbeabee1ac4f18b9d0917c7a6057`；执行工具 `300a39b9e496f09119769c03a0a77360263a8c1e`。
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `300a39b9e496f09119769c03a0a77360263a8c1e`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
-## 四设备业务测试接线（尚未实机验收）
+## 四设备业务首片（限定实机通过）
 
-独立 `--four-device-business` 模式已接通既有连接及socket证据路径：目标是两组各
-两种连接角色共80次实际回复及USB业务区间重叠。测试工具存在及离线检查不授予
-四设备业务资格；上表缺失状态保持，待准确新提交的VM/捕获/应用结果完成后更新。
-一组故障时同行业务、长包压力、公平性、多通道及自然恢复不属于这次首个正向切片。
+编译/guest/Host工具均为d01aa82，实验内核仍为8cbf53。
+[首轮原始证据索引](../docs/evidence/four-device-business-20261016.json)封存四只独立Ready、
+同一slkd、两组两角色各20轮61字节随机业务，共80次对端实际校验回复。
+5949包、零捕获丢包、taint0、QEMU/监督器0；两个角色阶段分别有875.963ms和
+868.616ms真实USB业务交集。六项损坏证据负对照均拒绝，非独立decoder或形式化证明。
+
+四只warm启动均观察到-110后一次warm recovery result0；保留该事实，不升级为自然
+故障根因闭合或通用自动恢复资格。单组故障下同行实际业务、四设备长包压力/公平性、
+动态多通道和CPCD安全仍缺。旧6385/300a长度矩阵保留准确原身份，不改写为本轮执行。
 
 ## 正式安全 CLI 增量（双模式限定实机通过）
 

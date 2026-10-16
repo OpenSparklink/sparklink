@@ -2,12 +2,11 @@
 
 ## 本批退出条件与近期执行顺序
 
-下一条实机切片为WP07的四只WS73/两组同时物理连接：复用当前Runtime/Session/socket、
-连接和channel证据工具，每组每连接角色阶段20次随机业务校验回复，交换角色两阶段，
-合计80次。判据必须包含实际双端USB/HCC/ACB/DTAP证据和两组业务区间重叠；广播
-匹配、模拟回复或仅打开四个adapter不能替代。离线先检查owner分组/完整身份/丢失
-一端捕获/错payload/旧manifest等负对照。首个正向切片后再独立验证一组故障时另一组
-实际持续回复，以及长包/预算/公平性；不以首片关闭WP07或相关整项issues。
+WP07首个四设备正向切片已在编译/guest/Host d01aa82取得80次真实对端校验回复，
+两连接角色阶段均有原始USB业务区间重叠；准确资格见下方生成摘要与证据索引。
+下一条实机切片是：一组真实Disconnect/Down期间，另一组普通用户socket业务持续
+获得对端实际校验回复；随后四设备长包/预算/公平性、动态多通道。保持现有
+Runtime/Session/socket及唯一用户态SSAP路径，不另造Engine。首片不关闭WP07或相关整项issues。
 Q3生产状态序列fuzz、提交/撤权/Down/原期限组合及debugVM并行，不设控制竞争全集
 前置；安全所需的最小认证授权只约束保护CPCD等操作。
 
@@ -30,7 +29,7 @@ WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续�
 | 生产原期限算术：四种HZ、100检查 | `formal_bounded` | `PASS` |
 | 生产安装/取消组合：unsupported，1766检查不是证明 | `formal_bounded` | `UNPROVED` |
 | Agent完整权限部署与在途安装退出矩阵：仍缺 | `implemented` | `MISSING` |
-| 动态多通道/四真实设备两组：仍缺 | `implemented` | `MISSING` |
+| 动态多通道/四设备故障与压力全矩阵：仍缺 | `implemented` | `MISSING` |
 | 自然故障根因与非人工恢复：仍缺 | `implemented` | `MISSING` |
 | Agent策略离线16175：15 private-D-Bus +1生产时钟用例 | `offline` | `PASS` |
 | Agent实机85cdf/db6：六模式交换角色48次应用回复 | `real_device` | `PASS` |
@@ -39,14 +38,15 @@ WP09剩余的真实在途/撤权/断链/安装失败与最小认证授权继续�
 | CLI镜像6385/300a数据保持：11门禁136回复/32拒绝/2严格fd | `real_device` | `PASS` |
 | 生产C codec有界fuzz：19固定+20000探索无发现（非证明） | `offline` | `PASS` |
 | 独立CI Clang18 codec有界探索：artifact/源码/目标执行已核对 | `offline` | `PASS` |
+| 四设备d01aa82：两组两角色80次实际应用回复及USB业务重叠 | `real_device` | `PASS` |
 
-保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `6385e43081bfcbeabee1ac4f18b9d0917c7a6057`；执行工具 `300a39b9e496f09119769c03a0a77360263a8c1e`。
+保留镜像：K `8cbf53e6a088899229d398b0673a82e8e5aed9ff`；编译 U `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；执行工具 `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `300a39b9e496f09119769c03a0a77360263a8c1e`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `d01aa82ec25bd7dfa1394b0ed7678c714e60f8da`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
@@ -1093,7 +1093,8 @@ ECANCELED分支可见，不模拟成功USB/固件/协议。未运行目标、缺
 
 `tools/ws73_parallel_data.py` 复用现有 Connection/Socket/SSAP 读写观察和两端捕获核对；
 `ws73_target.py run --four-device-business` 独立于旧 `--parallel-pairs` 广播门禁。
-此处是测试接线，**尚未取得新准确提交的四设备业务资格**，不新增生产 Engine。
+首片已在编译/guest/Host d01aa82、K8cbf53取得[限定实机结果](../docs/evidence/four-device-business-20261016.json)：
+80次实际回复、两角色各有USB业务重叠，5949包零丢包、taint0；不新增生产 Engine。
 
 本批退出：四只独立 Ready、同一未重启 slkd、两组各两种连接角色，每组每角色20次
 61字节随机请求及实际对端校验回复，共80次。两角色均需原始 USB/HCC/ACB/DTAP
@@ -1104,3 +1105,7 @@ ECANCELED分支可见，不模拟成功USB/固件/协议。未运行目标、缺
 
 通过本切片后再验一组故障时另一组实际回复、四设备长包/压力/公平性、多通道。
 自然恢复、认证/CPCD、Agent在途组合和完整WP07继续开放，保持原S0–S6范围。
+
+四设备首片结果只满足上述正向退出。下一批把一组真实Disconnect/Down放在另一组
+连续随机业务期间，要求另一组实际对端校验及回复持续发生；不以Ready/日志代替同行业务。
+四次warm-start超时及自动warm序列结果保留，恢复根因/通用非人工恢复仍开放。

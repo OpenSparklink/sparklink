@@ -24,54 +24,63 @@
   ],
   "original_issue_count": 28,
   "hardware_constraint": {
-    "affected_port": "1-2.1.2",
-    "original_restore_verified": false,
-    "user_response": "Again replugged port2or3; observed only port2 USB device85->88, then VM2/3 Ready and4shortRT PASS",
-    "ignored_for_current_operations": true,
-    "do_not_operate_or_request_manual_action": true,
+    "historical_snapshot": {
+      "affected_port": "1-2.1.2",
+      "original_restore_verified": false,
+      "user_response": "Again replugged port2or3; observed only port2 USB device85->88, then VM2/3 Ready and4shortRT PASS",
+      "ignored_for_current_operations": true,
+      "do_not_operate_or_request_manual_action": true,
+      "manual_request_pending": false,
+      "current_available_scope": "Port2/3 Ready and bounded4RT after further manual replug; exact45/37 fixed227 all17 safety/data gates PASS. Historical descriptor/RAM failures retained, no natural recovery/RCA/firmware execution attestation or four-device waiver.",
+      "four_device_gate": "Incomplete, not waived",
+      "natural_recovery_acceptance": false,
+      "previous_directive": "User originally requested ignoreport2. One bounded requalification after ambiguous reported replug failed; no further port2 hardware operation/manual request, continue usable3/1.",
+      "bounded_vm_qualification_only": true,
+      "enumeration_observed": {
+        "port": "1-2.1.2",
+        "vid": "ffff",
+        "pid": "3733",
+        "bus": 1,
+        "device": 85
+      },
+      "manual_replug_port_confirmed": false,
+      "port2_vm_check": {
+        "status": "FAIL",
+        "phase": "guest USB descriptors before firmware",
+        "evidence": "docs/evidence/port-requalification-20261015.json"
+      },
+      "port3_vm_check": {
+        "status": "REAL_SHORT_BUSINESS_SCOPED_PASS",
+        "ports": [
+          "1-2.1.3",
+          "1-2.1.1"
+        ],
+        "round_trips": 4,
+        "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+        "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231"
+      },
+      "port2_second_vm_check": {
+        "status": "REAL_SHORT_BUSINESS_SCOPED_PASS",
+        "round_trips": 4,
+        "ports": [
+          "1-2.1.2",
+          "1-2.1.3"
+        ],
+        "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+        "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+        "natural_recovery": false
+      },
+      "vm_ready_and_business_verified_after_manual_action": true,
+      "firmware_readback_execution_attestation": false,
+      "second_replug_evidence": "docs/evidence/port2-replug-preserved-regression-20261015.json"
+    },
+    "qualification_record": "four-business80-d01aa82",
+    "evidence": "docs/evidence/four-device-business-20261016.json",
     "manual_request_pending": false,
-    "current_available_scope": "Port2/3 Ready and bounded4RT after further manual replug; exact45/37 fixed227 all17 safety/data gates PASS. Historical descriptor/RAM failures retained, no natural recovery/RCA/firmware execution attestation or four-device waiver.",
-    "four_device_gate": "Incomplete, not waived",
-    "natural_recovery_acceptance": false,
-    "previous_directive": "User originally requested ignoreport2. One bounded requalification after ambiguous reported replug failed; no further port2 hardware operation/manual request, continue usable3/1.",
-    "bounded_vm_qualification_only": true,
-    "enumeration_observed": {
-      "port": "1-2.1.2",
-      "vid": "ffff",
-      "pid": "3733",
-      "bus": 1,
-      "device": 85
-    },
-    "manual_replug_port_confirmed": false,
-    "port2_vm_check": {
-      "status": "FAIL",
-      "phase": "guest USB descriptors before firmware",
-      "evidence": "docs/evidence/port-requalification-20261015.json"
-    },
-    "port3_vm_check": {
-      "status": "REAL_SHORT_BUSINESS_SCOPED_PASS",
-      "ports": [
-        "1-2.1.3",
-        "1-2.1.1"
-      ],
-      "round_trips": 4,
-      "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
-      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231"
-    },
-    "port2_second_vm_check": {
-      "status": "REAL_SHORT_BUSINESS_SCOPED_PASS",
-      "round_trips": 4,
-      "ports": [
-        "1-2.1.2",
-        "1-2.1.3"
-      ],
-      "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
-      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
-      "natural_recovery": false
-    },
-    "vm_ready_and_business_verified_after_manual_action": true,
-    "firmware_readback_execution_attestation": false,
-    "second_replug_evidence": "docs/evidence/port2-replug-preserved-regression-20261015.json"
+    "host_installation": false,
+    "constraint": "VM-only; no activity on unrelated libvirt VMs",
+    "current_operational_scope": "Four real ports1/2/3/4 completed first80-reply positive gate at d01aa82. Historical manual/RAM failures retained. No natural RCA/recovery or full four-device waiver.",
+    "recovery_qualification": false
   },
   "packages": [
     {
@@ -658,26 +667,22 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-15T15:54:15.951826+00:00",
+  "updated_at_utc": "2026-10-16T01:39:40.237594+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
     "scope": "Retained prior progress/qualified identities; not live current state"
   },
-  "execution_phase": "S4 data vertical delivery plus parallel unresolved S5 relay and lifecycle remediation",
+  "execution_phase": "WP07 four-controller positive slice sealed; next actual one-pair Down with surviving peer-checked business; Q3/WP09 composition parallel",
   "next_resume_tasks": [
-    "Sixmode session40198 and11data session75561 both terminalexit0. Reports13af39e/3776f47 bind compiled85cdf/guest85cdf/Hostdb6e333/kernel8cbf. No hardwareVM live in this batch; never inherit this scope to modified images.",
-    "Advance production fuzz on actual codecs/transitions and separate debugVM/submit-revoke composition, plus actual installfailure/inflight and deployment permissions; data/dynamicchannels/fourdevices/SSAP updates remain parallel.",
-    "Implement actual per-controller Agent/method/caller binding over existing Session, original deadline and single-request cancel. Positive/reject/caller-loss real two-role business. No more control-race universality prerequisites; data/SSAP/multichannel/four-device parallel.",
-    "Do not retry retired contiguous image. Establish safe downloader workspace/segment ownership and reproducible restore before discontiguous bootstrap or runtime initialization correction; preserve all original tables and separately qualify reduced-memory effects.",
-    "Extend Session channels/four WS73 two-group business, sole userspace SSAP actual CCC/notify/indicate and peer application delivery; then security/Agent/key/Bond/Profile.",
-    "Parallel natural startup/reenumeration/disappearance RCA and nonhuman recovery, partial-init/callback cleanup/events/old-code migration; QMP/manual/hub/injection not natural acceptance.",
-    "Preserve complete S0-S6/19WP/10FV/12DG/all original issue scopes; UserHost planning-only P4, independent Diataxis migration; no partial closure."
+    "WP07 actual one-pair Disconnect/Down during independent surviving-pair random socket traffic; preserve all capture/application failures",
+    "Four-device long payload/budget/fairness and dynamic channels after first isolation exit",
+    "Stateful production fuzz,submit-revoke-Down-original-deadline composition and debugVM parallel; minimum authenticated security and authorization before protected CCC"
   ],
   "issue_sync_status": "Nine current quality comments exact readback; original scope unchanged and OPEN",
   "issue_sync_receipt": "docs/evidence/qualification-quality-issues-20261015.json",
   "previous_goal_turn_classification": "progress: Q1 signed92c75ca/7a9ac12/e27076e, registry/checker/CI/9issue readbacks; originalscope preserved",
-  "current_goal_turn_classification": "progress: completed real11 retained gates; direct production C fuzz and separate verified CI; source-bound records/issues open. No new formal proof or whole issue closure",
+  "current_goal_turn_classification": "progress: d01aa82 signed/pushed gate,87 offline+strictdocs; exact VM4Ready/two-pair/two-role80real replies sealed; no whole goal complete",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "Objective editing unavailable; unchanged full original objective and budget retained. No duplicate goal or false completion.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1000,10 +1005,10 @@
     "schema_version": 1,
     "baseline": {
       "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
-      "compiled_userspace": "6385e43081bfcbeabee1ac4f18b9d0917c7a6057",
-      "guest_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
-      "executed_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
-      "report_commit": "e9f3e47bf939cc249222db15d2e2eb6211fa3b05"
+      "compiled_userspace": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
+      "guest_tools": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
+      "executed_tools": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
+      "report_commit": "878d81ebf56c7cd205cf7d5e8f306351cadda7c8"
     },
     "current_tree_qualification": "NOT_REVALIDATED",
     "private_evidence_in_ci": "METADATA_ONLY_NOT_REVERIFIED",
@@ -1059,22 +1064,26 @@
       "ws73-codec-fuzz-ci18": {
         "level": "offline",
         "result": "PASS"
+      },
+      "four-business80-d01aa82": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "production-parser-fuzz-and-inflight-composition",
-      "production_behavior": "Next parallel Q3: actual production wire/DLI byte fuzz+sanitizer, preserve Session/credit/author lifetime; compose revoke/Down/original-deadline with final submission. No new Engine or relaxed CCC security",
+      "id": "four-controller-business-and-inflight-composition",
+      "production_behavior": "First real four-controller fixed-channel two-pair slice reuses Runtime/Session/socket;80 actual peer replies with overlapping USB business. No new Engine or relaxed CCC.",
       "exit": [
-        "previous CLI2 and data11 real scoped PASS, full issues open",
-        "ws73-codec-fuzz-ddea offline bounded no-finding, not a proof; separate actual CI Clang18 artifact verified, source-bound report linked",
-        "next: stateful/submit-revoke-deadline composition and debugVM, dynamic channels/fourdevices; protected CCC requires minimal authenticated security+authorization"
+        "d01aa82 compiled/guest/Host:4Ready,2pairs x2roles x20=80actual replies; raw overlaps;supervisor/QEMU0,zero capture loss,taint0",
+        "six corrupted real-evidence controls rejected;87 offline and strictdocs separate;no new formal proof",
+        "four warm starts each timed out-110 then one warm recovery succeeded; observations retained, no general natural recovery qualification"
       ],
-      "next": "Next real WP07 slice: four WS73/two simultaneous ordinary socket pairs,20 replies perpair perrolephase x2=80 with actual overlapping USB/peer evidence. Stateful production fuzz/submit-revoke-Down-original-deadline/debugVM parallel; no all-control prerequisite. Protected CCC needs minimal authenticated security+authorization; full original scopes retained."
+      "next": "One pair disconnect/Down while other pair keeps actual peer-checked business, then four-device long/budget/fairness and dynamic channels. Stateful submit-revoke-Down-original-deadline/debugVM and minimum authenticated security+authorization parallel; original S0-S6 remains incomplete."
     }
   },
   "agent_workstream": {
-    "state": "BROKER historical qualification retained; production CLI scoped real two-mode/two-role PASS at compiled6385/guest+Host300a; fresh retained data matrix in progress",
+    "state": "CLI2 and11data scoped historical qualification retained; four-device80 is separate d01aa82 slice; full Agent deployment/authentication/inflight still open",
     "test_scope": "See agent-policy-offline-16175; fixtures and actual dependencies in structured report",
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
     "real": "Six explicit modes two-role scoped real result in qualification_view/report; full deployment/permissions/authentication/Bond and in-flight composition still missing",
@@ -1094,7 +1103,7 @@
     "retained_data_record": "agent-data11-db6e333",
     "cli_real_report": "docs/evidence/security-cli-real-progress-20261016.json",
     "cli_issues_receipt": "docs/evidence/security-cli-issues-20261016.json",
-    "current_validation": "CLI2 and data11 scoped real qualification sealed; no active hardware VM; whole security/data/recovery incomplete",
+    "current_validation": "HistoricalCLI2/data11 retained; four-business80 separate d01aa82 report; no active hardware VM after QEMU0; full security/data/recovery incomplete",
     "cli_retained_report": "docs/evidence/security-cli-retained-data-20261016.json"
   },
   "documentation_remediation": {
@@ -1194,7 +1203,7 @@
     "remaining_after_first_exit": "one pair failure with actual independent peer business on other pair, stress/long payload and full four-device budget/fairness; not entireWP07 complete",
     "parallel": "actual production stateful fuzz/submit-revoke-Down-original-deadline composition/debugVM; protected SSAP minimal authenticated security+authorization, no all-control prerequisite",
     "architecture": "reuse current per-controller Runtime/Session/socket and existing connection/channel evidence; no new Engine; VM-only",
-    "state": "IMPLEMENTED_TEST_GATE_PENDING_NEW_EXACT_SOURCE_VM",
+    "state": "FIRST_POSITIVE_REAL_SCOPED_PASS_REMAINING_OPEN",
     "tool": "tools/ws73_parallel_data.py via ws73_target.py --four-device-business",
     "invariants": [
       "four distinct Ready registrations and unchanged daemon identity",
@@ -1202,6 +1211,8 @@
       "pair-partitioned unchanged connection/socket capture verifier; actual overlapping business windows",
       "own-pair bounded disconnect/radio cleanup; failures retained; no fault/recovery acceptance"
     ],
-    "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification"
+    "offline_scope": "metadata/barrier/capture partition/status negative controls; not kernel concurrency or physical qualification",
+    "report": "docs/evidence/four-device-business-20261016.json",
+    "next": "Actual one-pair Disconnect/Down overlaps surviving pair peer-checked socket replies; then long/budget/fairness/dynamic channels. No wholeWP07 close."
   }
 }

@@ -96,6 +96,10 @@ fuzz仍分层；[负对照字段修正](../docs/evidence/dynamic-capture-field-a
 未通过整体验收。下一批继续提交/撤权/断链/原期限组合，未查明根因与非人工恢复开放。
 
 
+U b791cfa 的综合CI、资格一致性、文档与codec bounded-fuzz均成功，
+[准确运行及issues回执](../docs/evidence/dynamic-burst-issues-ci-20261016.json)另外记录。
+最终工具子树与25df09b逐文件一致，完整614项重跑通过；CI/离线结果不替代上述实机证据。
+
 ## 安全与服务的限定范围
 
 正式slctl Agent批准/拒绝的[16次业务子门禁](../docs/evidence/security-cli-real-progress-20261016.json)

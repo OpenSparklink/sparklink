@@ -1372,7 +1372,7 @@
       "New fullpool refusal,NOCP-linked later submits and final drain,alongside actual peer application reply",
       "No overwrite original failures,no trustedNOCP/reuse/naturalrecovery inference"
     ],
-    "offline": "614tools;7unit+2scan/privateDBus+3securityCLI integration;strictclippy/docs;rawoutput/hash replay20negatives",
+    "offline": "Exact tools25df09b final614fulltests PASS;slctl7unit+2scan+3AgentCLI PASS;strictclippy/docs;20+119decoded evidence negatives",
     "real": "PASS K400/U25df09b/tools25df09b80dynamicRT incl32Cburst;bothphysicalroles;20offlinenegativecontrols;no NOCPtruth/reuse qualification",
     "exit": "Two real WS73 both roles,80dynamicRT including32C2042burst,actualEAGAIN/fullpool/refusal/NOCPresume/drain andtwo-endappchecked captures;retained paths regression required.",
     "scope": "VM-only/fullS0-S6/19WP/10FV/12DG unchanged;all unfinishedissues OPEN",
@@ -1385,6 +1385,18 @@
       "live_session": null
     },
     "next": "Actual submission/revoke/Down/originaldeadline combinations;keep no-all-control-precondition and fullS0-S6/19WP/10FV/12DG",
-    "whole_current_tree_qualified": false
+    "whole_current_tree_qualified": false,
+    "issue_ci_receipt": "docs/evidence/dynamic-burst-issues-ci-20261016.json",
+    "ci": {
+      "source": "b791cfaa550f3bfcde48d6244bc175a7a0efe9fb",
+      "runs": [
+        "https://github.com/OpenSparklink/sparklink/actions/runs/38863820146",
+        "https://github.com/OpenSparklink/sparklink/actions/runs/38863820125",
+        "https://github.com/OpenSparklink/sparklink/actions/runs/38863820130",
+        "https://github.com/OpenSparklink/sparklink/actions/runs/38863820136"
+      ],
+      "status": "ALL4_WORKFLOWS_PASS",
+      "hardware_qualification": false
+    }
   }
 }

@@ -1400,25 +1400,41 @@
       "install-reply-aa0d636-live": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "install-cancel-6166-real": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "install-cancel-6166-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "install-cancel-6166-failed": {
+        "level": "real_device",
+        "result": "FAIL"
+      },
+      "install-cancel-6166-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "wp09-install-reply-barrier-offline-real-pending",
-      "production_behavior": "No production path change; default-disabled QEMU test selector compiled separately; existing Session/credit/Ticket and original Agent reused next.",
+      "id": "wp09-selected-install-request-cancel-real-not-full-security",
+      "production_behavior": "Existing native Session/relay/credit/Ticket andAgent reused; no productionsemantic change. New disposablewitness gate proves selected actual G installation cancellation/lateoriginalacceptance andpeerbusiness; daemoncache isnotfreshnativephysicalstate.",
       "exit": [
-        "Actualfixturecallback/setters ASan/UBSan/LSan,105truncatedexactallocations,18unchangednonmatchcallbacks and bothroles pass.",
-        "Patchchain fullprefix/idempotence/drift refusal and actualpausedunattachedQMP pass; source/object/binary/closure preserved.",
-        "No newrealdevice/formal/security/recovery qualification; originalfailures and exacthistorical WS73 paths preserved."
+        "K14d9/U6166/QEMUdea80,U2/3:4selectedsuccessfulVM/8roles/32actualpeerRT/16boundaryrefusals,2Gnativecancel snapshots whileheld andlateoriginalacceptances;2originaltoolFAILretained.",
+        "681frozentools,strictclippy,2Rust,6oldreportsreplayed and15actualevidence mutants;no newformalproof.",
+        "Completelease/release/finalfd/dup/Down/deadline/postterminalnativephysicaldrain/keywipe/reuse/authentication/Bond/recovery remainOPEN."
       ],
-      "next": "Connect current Agent witness to selected actualinstallation hold, cancel after submission then late reply and real peer app validation, bothroles originaldeadline; Agent/SSAP/multichannel parallel, fullscope unchanged."
+      "next": "Selected gate exitmet; actualauthenticatedsecurity/local authorization andsoleuserspaceSSAP vertical, dynamicmultichannel/fourdevice andperformance parallel; noallcontrolraces prerequisite."
     }
   },
   "agent_workstream": {
     "state": "SelectedG in-flight originalrequest cancel andlateacceptance two physicalroles scopedPASS;3defaultretainedgatesPASS,32peerRTtotal;2originaltoolFAILretained. Fulllease/fd/Down/deadline/auth/Bond andpostlatephysicaldrain unproved.",
     "test_scope": "See agent-policy-offline-16175; fixtures and actual dependencies in structured report",
     "original_deadline": "includesAllocate bus subscription/selection/lockwait; allocatedrequests actively supervised; oldFile submissions joined then originalCANCEL/RESULT",
-    "real": "Six explicit modes two-role scoped real result in qualification_view/report; full deployment/permissions/authentication/Bond and in-flight composition still missing",
+    "real": "Oldsixmodes andCLI qualifiers retained; newK14d9/U6166 originalGrequestinstall-cancel2roles+3selectedretainedgates32peerRT. Snapshotafterlate iscached, notnewnativephysicaldrain. Fullpermissions/auth/Bond/installcomposition incomplete.",
     "formal": "NO_NEW_PROOF; priorunsupported/clockmapping/hardware assumptions unchanged",
     "next": "Advance authenticatedsecurity/localauthorization and soleuserspaceSSAP vertical withexisting Session/relay/credit/Ticket; complete directpostterminalphysical-obligation observation andlease/release/finalfd/dup/Down/deadline installmatrix inparallel, not anallcontrolraceprerequisite.",
     "offline_record": "agent-policy-offline-16175",
@@ -1446,10 +1462,10 @@
       "physical_gate_executed": true,
       "formal_proven": false,
       "owner_cleanup_or_natural_recovery_qualified": false,
-      "next": "Existing Agent witness, exact submitted install held acceptance, original cancellation then unchanged late operation result; real peer ordinary business, both roles, original deadline. Fullrelease/finalfd/dup/Down composition still open.",
-      "maintenance_report": "docs/evidence/security-install-reply-barrier-maintenance-20261017.json",
+      "next": "Selected original-request cancel gate exited; directpostlate physicaldebt/ref/callback andkeywipe/reuse observation plusfulllease/fd/Down/originaldeadline installation matrix stillopen. Advance authenticatedsecurity/authorization andSSAP/multichannel vertical inparallel.",
       "real_report": "docs/evidence/security-install-cancel-real-20261017.json",
-      "current_qualified_scope": "Actualheldinstallacceptance, originalrequest nativecancel snapshotwhileheld, oldacceptdelivered anddaemonterminalimmutable, oppositeTnativecomplete andsamebasicSessionpeerbusiness;not postreleasekernel/debt/drain/keywipe/Grantrevocationproof."
+      "current_qualified_scope": "Actualheldinstallacceptance, originalrequest nativecancel snapshotwhileheld, oldacceptdelivered anddaemonterminalimmutable, oppositeTnativecomplete andsamebasicSessionpeerbusiness;not postreleasekernel/debt/drain/keywipe/Grantrevocationproof.",
+      "offline_maintenance_report": "docs/evidence/security-install-reply-barrier-maintenance-20261017.json"
     }
   },
   "documentation_remediation": {

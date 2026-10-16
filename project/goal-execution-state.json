@@ -1420,6 +1420,13 @@
     "formal_strength": "No newformalproof;seededactualbodyfixture exploration andintendedmutantrejection only",
     "next": "Fourrealdevices/twodynamicgroups actualbusiness;remainingcontrolcomposition/RCA/nonhumanrecovery parallel",
     "live_session": null,
-    "full_scope_unchanged": true
+    "full_scope_unchanged": true,
+    "issue_ci_receipt": "docs/evidence/data-lifecycle-issues-ci-20261016.json",
+    "ci": {
+      "user_commit": "53f77e9fe516d15ccb996bfe5d39b6afe428e068",
+      "user_status": "ALL4_WORKFLOWS_PASS",
+      "kernel_test_commit": "a474a8503637f10cdf1c1160f64f6391c40919a7",
+      "kernel_status": "NO_MATCHING_RUN_NOT_PASS"
+    }
   }
 }

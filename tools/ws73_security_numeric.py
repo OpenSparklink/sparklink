@@ -122,6 +122,8 @@ def verify_exchange(r):
         if wanted[0] == 7 and nrow['terminal_monotonic_ns'] < q.deadline_monotonic_ns:
             raise ValueError('cannot manufacture early original expiry')
         rows = [v for v in nrow['negatives'] if v['index'] == n]
+        if len(rows) != 6 or {v['kind'] for v in rows} != {'code','request','reserved','accept','nonowner','terminal_confirm'}:
+            raise ValueError('all six distinct original decision negatives required')
         terminal = next(v for v in rows if v['kind'] == 'terminal_confirm')
         want = errno.ETIMEDOUT if terminal['before_monotonic_ns'] >= q.deadline_monotonic_ns else errno.ECANCELED
         if len(rows) != 6 or {v['kind']:v['errno'] for v in rows} != dict(code=errno.ESTALE, request=errno.ENOENT, reserved=errno.EINVAL, accept=errno.EINVAL, nonowner=errno.EPERM, terminal_confirm=want):

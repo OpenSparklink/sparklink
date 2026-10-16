@@ -69,6 +69,13 @@ class NumericWitness(unittest.TestCase):
     def test_reject_bad_public_widths(self):
         with self.assertRaises(ValueError):public_comparison(bytes(63),bytes(64),bytes(16),bytes(16))
 
+    def test_missing_or_duplicate_negative_is_an_explicit_validation_failure(self):
+        for index in range(12):
+            r,c=fixture();r['security_capabilities']['numeric']['negatives'].pop(index)
+            with self.subTest(index=index),self.assertRaises(ValueError):verify(r)
+        r,c=fixture();n=r['security_capabilities']['numeric']['negatives'];n[5]=n[4].copy()
+        with self.assertRaises(ValueError):verify(r)
+
     def test_dropped_or_fabricated_stage_never_passes(self):
         for kind in ('code','decision','late','identity','offer','native9','early_proof','public_transcript','missing_peer','install','business','negative','ordinary_confirm'):
             r,c=fixture();row=r['security_capabilities'];n=row['numeric']

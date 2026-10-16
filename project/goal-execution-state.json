@@ -1219,6 +1219,14 @@
         "evidence": "docs/evidence/documentation-book-navigation-20261016.json",
         "runtime_changes": false,
         "existing_dirty_runtime_work_preserved": true
+      },
+      "reading_surface": {
+        "tested_documentation_source": "27022005550ed4c944d8b0e51fb6bd251115be95",
+        "status": "Strict HTML and 25 browser checks PASS; desktop/mobile/dark visually reviewed",
+        "scope": "GitBook-like sidebar, article width/toolbar, table column legibility, code blocks and responsive page navigation; four quadrants only",
+        "evidence": "docs/evidence/documentation-gitbook-reading-20261016.json",
+        "public_deployment_confirmed": false,
+        "runtime_changes": false
       }
     },
     "status_evidence": "docs/evidence/documentation-dq1-and-theme-20261016.json",

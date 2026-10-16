@@ -239,3 +239,6 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [14d9/42e十八项保持：七长度、有限并行及十生命周期](session-status-regressions-20261017.json)：
 552次真实回复/18重放/172负对照；加独立burst共640次。仅限定同行Ready/lease/扫描，未授完整P2d或恢复。
+
+[本批五项issues最终读回、签名、原件完整性及严格文档](session-status-maintenance-20261017.json)
+仅维护凭据，不新增实机/证明资格。完整goal继续active，原issues范围及OPEN保持。

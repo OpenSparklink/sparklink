@@ -1,0 +1,335 @@
+{
+  "schema_version": 1,
+  "status": "FIVE_ISSUES_READBACK_AND_SCOPED_MAINTENANCE_VERIFIED",
+  "compiled_kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
+  "compiled_userspace": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
+  "executed_tools": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
+  "documentation_head_before_maintenance": "03eb115ff12e0e22765dba04f6e18198704b794d",
+  "goal_api_observed": "active",
+  "full_goal_complete": false,
+  "scope": "Only signatures,existingissue readback,scoped registry retainedbytes/negativecontrols and strictHTML;no additional hardware/formal/performance qualification",
+  "issues": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6222610378",
+      "comment_id": 6222610378,
+      "state": "open",
+      "original_body_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+      "readback_original_body_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+      "previous_comment_sha256": "92d2daba69755b54aa746aca1dd875ae528eaec25b68208883d4b1043175958d",
+      "comment_sha256": "c9eb6e5b4c09c32adb197b72d7f27140da8b8d50ea9039a8076dff7a7b8cb7fb",
+      "readback_comment_sha256": "c9eb6e5b4c09c32adb197b72d7f27140da8b8d50ea9039a8076dff7a7b8cb7fb",
+      "original_scope_preserved": true
+    },
+    {
+      "repo": "linux",
+      "issue": 6,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6222611177",
+      "comment_id": 6222611177,
+      "state": "open",
+      "original_body_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+      "readback_original_body_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+      "previous_comment_sha256": "161b5851e32e4a9d5dcbaf79a7c414411e237d2c1f3ad7852d01fb0c07ffc46a",
+      "comment_sha256": "67be188d25b1cce6b2f6d47fb2398e571143c962fdce28394350983926f7cfcd",
+      "readback_comment_sha256": "67be188d25b1cce6b2f6d47fb2398e571143c962fdce28394350983926f7cfcd",
+      "original_scope_preserved": true
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6222612104",
+      "comment_id": 6222612104,
+      "state": "open",
+      "original_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "readback_original_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "previous_comment_sha256": "4a77ea0bb347090a9d6818c2cda49404e2a7c25bd1e4811291ce0cc7bfe208dd",
+      "comment_sha256": "48fb83f579656c0c3722a0aaa738b780ffb107dec1740497e2ec0cfb582f9585",
+      "readback_comment_sha256": "48fb83f579656c0c3722a0aaa738b780ffb107dec1740497e2ec0cfb582f9585",
+      "original_scope_preserved": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6222612955",
+      "comment_id": 6222612955,
+      "state": "open",
+      "original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "readback_original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "previous_comment_sha256": "ffd30acd1911c8e7cce68b02b1e0a9732533cce63ca3134ab08566566dcc45d1",
+      "comment_sha256": "c141a5a20cc4b904c8f7b74239ce584c309c7686c5de530f42aedc5702ae584d",
+      "readback_comment_sha256": "c141a5a20cc4b904c8f7b74239ce584c309c7686c5de530f42aedc5702ae584d",
+      "original_scope_preserved": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6222614236",
+      "comment_id": 6222614236,
+      "state": "open",
+      "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "readback_original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "previous_comment_sha256": "9ceca566f5b1ad498d2399a3e9f9eae2a6706a964b81a773804318b34d165c42",
+      "comment_sha256": "260c8cb4c56d3af62109a5c8c716ae01e13ba2dacd6eab3c7633ea4e04a14142",
+      "readback_comment_sha256": "260c8cb4c56d3af62109a5c8c716ae01e13ba2dacd6eab3c7633ea4e04a14142",
+      "original_scope_preserved": true
+    }
+  ],
+  "ci": {
+    "source": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
+    "runs": [
+      {
+        "conclusion": "success",
+        "name": "Documentation",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38950219738"
+      },
+      {
+        "conclusion": "success",
+        "name": "Qualification integrity",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38950219703"
+      },
+      {
+        "conclusion": "success",
+        "name": "Production codec bounded fuzz",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38950219767"
+      },
+      {
+        "conclusion": "success",
+        "name": "CI",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38950219761"
+      },
+      {
+        "conclusion": "success",
+        "name": "Documentation",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38950208552"
+      },
+      {
+        "conclusion": "success",
+        "name": "Qualification integrity",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38950208569"
+      }
+    ],
+    "scope": "Exactexecutedtool CI terminal;not newest documentationHEAD release acceptance"
+  },
+  "qualification_checks": [
+    {
+      "report": {
+        "path": ".dev/session-status-registry-local-v1.json",
+        "sha256": "09629b1133b7f450a154a7a687e60a1fc38803ee339f577f0251c0746e831a35",
+        "bytes": 1231,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+      },
+      "materials": 182,
+      "verification": {
+        "errors": [],
+        "unavailable_private_materials": [],
+        "unavailable_source_checkouts": [],
+        "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+        "current": "NOT_CHECKED",
+        "overall": "INCOMPLETE"
+      },
+      "negative_controls": 5
+    },
+    {
+      "report": {
+        "path": ".dev/session-status-regressions-registry-local-v1.json",
+        "sha256": "45fc46719d81ced5bc4f84f85c45674b19039150514955c881f468dc93b7ccb2",
+        "bytes": 1303,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+      },
+      "materials": 237,
+      "verification": {
+        "errors": [],
+        "unavailable_private_materials": [],
+        "unavailable_source_checkouts": [],
+        "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+        "current": "NOT_CHECKED",
+        "overall": "INCOMPLETE"
+      },
+      "negative_controls": 5
+    }
+  ],
+  "docs": {
+    "strict_html_documents": 115,
+    "browser_rechecked": false,
+    "site_theme_changed": false,
+    "stale_previous_head_html_rejected": true,
+    "stale_rejection_report": {
+      "path": ".dev/session-status-maintenance-doc-inventory-v1.log",
+      "sha256": "d671c3a28fd8ffb0446de4b27e7701baffbf8f13d086b5a6369aaa1919a8c175",
+      "bytes": 30,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact source-identity,strict build and metadata receipts."
+    },
+    "fresh_strict_build": {
+      "path": ".dev/session-status-maintenance-strict-docs-v2.log",
+      "sha256": "f921dc5046f6d083972e87d5d2e3187198372adc8b97865d9214e390e4bf7463",
+      "bytes": 280753,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact source-identity,strict build and metadata receipts."
+    },
+    "source_audit": {
+      "path": ".dev/session-status-maintenance-documentation-audit-v2.json",
+      "sha256": "236af24c5ff785d30e4f5630c36bc84d6856eaab334907095e6860d367b0463e",
+      "bytes": 132059,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact source-identity,strict build and metadata receipts."
+    },
+    "qualification": "Strictbuild/inventory at statedsourceHEAD with recorded tree;not qualificationof future documentationHEAD or protocol/runtime"
+  },
+  "hardware": {
+    "port1": "Hi3873E userconfirmed excluded",
+    "ports2_3": "Hi3873U selected,VM-only",
+    "mixed_four_device_qualified": false
+  },
+  "remaining": [
+    "Full fairness/P2d matchedperformance,observer/resourcecost",
+    "Callback/ref drain,Free/reuse andNOCPtruth/late/duplicate",
+    "Full S0-S6/19WP/10FV/12DG;Agent/SSAP/fourdevice/security/Bond/PM/release",
+    "NaturalfaultRCA andnonmanualautomaticrecovery OPEN;manual/hub/QMP/injection notnatural qualification"
+  ],
+  "materials": [
+    {
+      "path": ".dev/session-status-issue-receipts-v1.json",
+      "sha256": "9079c7690753d797c162c7c9620c8d8ce0f24f75ac7a7bf4208443f03900ac6d",
+      "bytes": 3338,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-final-issue-receipts-v1.json",
+      "sha256": "cbb81e55d91de3f77515beab245d6863a8484aa4d741c74c1de8ef869c2a289d",
+      "bytes": 3910,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-update-issues-v1.py",
+      "sha256": "0fda8477c9e0ad4d351cabf1c72ca3e176babeee7b02e32b6904038163dcf29c",
+      "bytes": 4527,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-update-issues-v1.log",
+      "sha256": "13f284304687caccf851fb9ccf53b777aa1f146905514ae40ae81acf079a8260",
+      "bytes": 31,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-finalize-issue-comments-v1.py",
+      "sha256": "7173081f66424a86919aaed079b7a5618d602c584bc6fc09b6a7cab0ceb1e8c3",
+      "bytes": 3144,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-finalize-issues-v1.log",
+      "sha256": "a0668e182a3761966f9cafea5b2427e78462525e30bf5cc04d23e90995f7098a",
+      "bytes": 37,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-ci-42ecc6f-v2.json",
+      "sha256": "b132bd347dd511dbc4a8534f2c3cb4210135f4d77ba68ca96b651bc0c1a4e819",
+      "bytes": 897,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-registry-local-v1.json",
+      "sha256": "09629b1133b7f450a154a7a687e60a1fc38803ee339f577f0251c0746e831a35",
+      "bytes": 1231,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-regressions-registry-local-v1.json",
+      "sha256": "45fc46719d81ced5bc4f84f85c45674b19039150514955c881f468dc93b7ccb2",
+      "bytes": 1303,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-final-qualification-metadata-v1.json",
+      "sha256": "40b29bb70dd1baeeca27bd4bbfa1da0815ee1aa6690e95b050d12de575a3ac4c",
+      "bytes": 273140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-final-qualification-metadata-v1.log",
+      "sha256": "40b29bb70dd1baeeca27bd4bbfa1da0815ee1aa6690e95b050d12de575a3ac4c",
+      "bytes": 273140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-final-docs-v1.log",
+      "sha256": "e4a34f08e2f93effd2f729551ced173eeaed78ccfb1cc956b82e33b8f6e2fe01",
+      "bytes": 280753,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-kernel-signature-v1.log",
+      "sha256": "039c69b7a3d4b62b6a3117d75b79a72b613375296bcadd49d949c5ee5d345546",
+      "bytes": 113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-user-signature-v1.log",
+      "sha256": "039c69b7a3d4b62b6a3117d75b79a72b613375296bcadd49d949c5ee5d345546",
+      "bytes": 113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;local receipt/check logs. Public result links and source identities listed separately."
+    },
+    {
+      "path": ".dev/session-status-maintenance-doc-inventory-v1.log",
+      "sha256": "d671c3a28fd8ffb0446de4b27e7701baffbf8f13d086b5a6369aaa1919a8c175",
+      "bytes": 30,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact source-identity,strict build and metadata receipts."
+    },
+    {
+      "path": ".dev/session-status-maintenance-strict-docs-v2.log",
+      "sha256": "f921dc5046f6d083972e87d5d2e3187198372adc8b97865d9214e390e4bf7463",
+      "bytes": 280753,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact source-identity,strict build and metadata receipts."
+    },
+    {
+      "path": ".dev/session-status-maintenance-documentation-audit-v2.json",
+      "sha256": "236af24c5ff785d30e4f5630c36bc84d6856eaab334907095e6860d367b0463e",
+      "bytes": 132059,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact source-identity,strict build and metadata receipts."
+    },
+    {
+      "path": ".dev/session-status-maintenance-metadata-v1.json",
+      "sha256": "40b29bb70dd1baeeca27bd4bbfa1da0815ee1aa6690e95b050d12de575a3ac4c",
+      "bytes": 273140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact source-identity,strict build and metadata receipts."
+    },
+    {
+      "path": ".dev/session-status-maintenance-metadata-v1.log",
+      "sha256": "40b29bb70dd1baeeca27bd4bbfa1da0815ee1aa6690e95b050d12de575a3ac4c",
+      "bytes": 273140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact source-identity,strict build and metadata receipts."
+    }
+  ],
+  "goal_resume_tasks": "Archive completed batch tasklist;sole next_resume_tasks andexecution_phase now target fairness/matchedU2/3cost withAgentSSAPparallel."
+}

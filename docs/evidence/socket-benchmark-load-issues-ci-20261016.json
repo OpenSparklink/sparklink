@@ -1,0 +1,83 @@
+{
+  "commit": "792d39b1495db3cddbfbcd46d52bd60203c194c7",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6211857179",
+      "readback_verified": true,
+      "state": "OPEN",
+      "original_body_unchanged": true
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6211858534",
+      "readback_verified": true,
+      "state": "OPEN",
+      "original_body_unchanged": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6211860360",
+      "readback_verified": true,
+      "state": "OPEN",
+      "original_body_unchanged": true
+    }
+  ],
+  "performance_qualified": false,
+  "old_ci_snapshot": {
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 38873008049,
+    "jobs": [
+      {
+        "name": "rustfmt",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Kernel crypto/wire and archived protocol boundaries",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo check",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Python bindings and kernel ABI conformance",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "clippy",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "C header generation",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo test",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "release build",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "old_ci_scope": "exact12c5c21 run;not0f286bd orNative/WS73qualification"
+}

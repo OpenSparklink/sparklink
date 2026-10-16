@@ -1561,7 +1561,9 @@
       "source_commit": "0f286bdbc26a1d8a59ff375999adf5d0de7f15c0",
       "late_validation_fix": "aeaf6a8",
       "offline_record": "socket-load-app-offline-0f286bd",
-      "offline_report": "docs/evidence/socket-benchmark-load-offline-20261016.json"
+      "offline_report": "docs/evidence/socket-benchmark-load-offline-20261016.json",
+      "issues_receipt": "docs/evidence/socket-benchmark-load-issues-ci-20261016.json",
+      "next": "Implement schema2 oracle and matched VM supervisor with paired start/end and bounded raw evidence. Then exact new artifacts/ordinary credentials/roles/USB captures/retained regressions;do not change kernel scheduling before credible baseline."
     }
   }
 }

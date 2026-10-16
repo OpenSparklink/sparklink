@@ -1,7 +1,7 @@
 use std::os::fd::{AsFd, BorrowedFd, OwnedFd};
 use std::path::Path;
 
-use nix::fcntl::{open, OFlag};
+use nix::fcntl::{OFlag, open};
 use nix::sys::stat::Mode;
 use tracing::debug;
 
@@ -1350,15 +1350,17 @@ mod native_validation_tests {
             ..good
         };
         assert!(validate_diagnostic_result(&rejected, 7, 9).is_ok());
-        assert!(validate_diagnostic_result(
-            &SleDiagnosticResult {
-                status: 1,
-                ..failure
-            },
-            7,
-            9
-        )
-        .is_err());
+        assert!(
+            validate_diagnostic_result(
+                &SleDiagnosticResult {
+                    status: 1,
+                    ..failure
+                },
+                7,
+                9
+            )
+            .is_err()
+        );
     }
 
     #[test]

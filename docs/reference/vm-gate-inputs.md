@@ -85,3 +85,24 @@ C输出包含32条完整十六进制收发记录，版本3的每stdout/stderr预
 其他版本仍128KiB。采集器的短写／EOF／身份／预算／编码失败规则不变。
 离线夹具使用生产receipt与credit观察函数，但USB形状和调度为fixture，
 不属于真实内核并发或空口资格。当前实现需在准确新编译artifact上另行VM实测。
+
+## 受控原期限与生产转换序列输入
+
+`--managed-channel-deadline` 需要独立的pre-daemon Managed channel gate、
+`--managed-connected-case release`、`--managed-channel-grant` 与
+`--managed-channel-revoke-prefix`。原生产期限为5秒；QEMU需有独立8秒的
+`usb-host.test-runtime-in-hold-ms` 能力并实际核对。缺属性或数值不符直接失败。
+更换QEMU先重做同内核/签名模块的无USB root smoke及prepare，禁止沿用旧binary身份。
+受控延迟、QMP与手工操作不属于自然恢复验收。
+
+内核selftests的 `run_native_data.py --output NEW.json` 直接编译生产转换与显式依赖fixture。
+固定种子7536913，1024条序列各先产生一项有效物理提交，再运行32个事件；两个controller、
+handle0、epoch1/2、lifetime查询1..65、ACB容量5/上限254、8字节测试数据、NOCP count1。
+它覆盖顺序组合，不承诺真实锁/USB/worker/VFS/时钟或全部输入域；原期限另由VM验证。
+Host fixture仅使用生产 `admits_data`；`controller_status` 的初始化/Ready投影、完整
+命令处理、注册查找与Poll唤醒仍为替代依赖。不能据此授予完整Host或初始化失败资格。
+
+`NEW.bin` 与 `NEW.fixture.rs` 保留实际测试程序及生成源码，JSON绑定源码/工具链/hash。
+已存在的证据文件拒绝覆盖；测试失败记录FAIL并保留这些输入。配置失败尝试与实际
+原子callback拒绝分别计数，accepted-uncertain不能退款。源码变异须产生预期断言和
+seed/case/操作轨迹，编译失败不算性质反例；PASS也不证明NOCP固件准确或安全复用。

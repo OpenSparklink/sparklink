@@ -1124,18 +1124,26 @@
       "dynamic-new-cli-seven-sizes-400bd68-25df09b": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "data-lifecycle-eight-plus-two-400bd68": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "native-sequence-a474a85": {
+        "level": "offline",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "dynamic-burst80-and-new-cli-seven-sizes-scoped-pass",
-      "production_behavior": "K400/U25df09b/tools25df09b actual dynamicC16x2042perrole:80RT includes32burst;actualEAGAIN/poll/fullpool25and26newrefusals/NOCPresume/drain. Priorseven-sizeUcca8 report unchanged.",
+      "id": "data-lifecycle-eight-plus-two-and-native-sequences-scoped-pass",
+      "production_behavior": "K400/U25df unchanged runtime:8withdrawal/Down plus2independent original5s deadline cases;20precontrol appRT,0partialPDU delivery. Kselftesta474 onlytestchanges.",
       "exit": [
-        "K400/U25df09b/tools25df actual80dynamicRT incl32Cburst withEAGAIN/poll/fullpool25-26newrefusals/NOCPresume/drain;20negativecontrols",
-        "Same compiledCLI seven attaineddynamic sizes separatelyrepeated:392RT/14slotrefusals/119negativecontrols;allraw output/capture/source/artifact bytes checked",
-        "PriorK400/Ucca8 retained14/fourdevice qualification unchanged;no inheritednewcompiledwhole-treequalification"
+        "OriginalmatrixFAIL missingQEMUhold property retained;exactindependent8sQEMU smoke/prepare andtwo deadlinecasespassed",
+        "Raw10successfulcaptures/apps/holds replayed;42offlineevidence negatives;ordinaryuid/cap/peerleaseReady andactualscanwhereapplicable",
+        "Actualproduction-body seeded1024x32 sequences,113actual callbackrejections/125accepteduncertain outcomes,2intended mutationcounterexamples;notformalproof"
       ],
-      "next": "Controlled submission/revoke/Down/originaldeadline composition via existing actual Nativecommit/Ledger/Tickets and explicit failure dependencies;fullscope/RCA/nonhumanrecovery/safeTCIDreuse remain OPEN. No controlrace全集 prerequisite."
+      "next": "Nextvertical data delivery:four real controllers/two groups on dynamic channels,parallel boundedburst and independent pair progress. Continue commit/revoke/Down/deadline/reuse andquality inparallel,notallcontrols prerequisite. FullS0-S6/19WP/10FV/12DG/RCA/nonhumanrecovery OPEN."
     }
   },
   "agent_workstream": {
@@ -1384,7 +1392,7 @@
       "report": "docs/evidence/dynamic-burst-retained-seven-sizes-20261016.json",
       "live_session": null
     },
-    "next": "Actual submission/revoke/Down/originaldeadline combinations;keep no-all-control-precondition and fullS0-S6/19WP/10FV/12DG",
+    "next": "Controlled8+2 scopedgate finished;see submission_lifecycle_batch and generated qualification_view.batch fornextfourdevice dynamicdata work",
     "whole_current_tree_qualified": false,
     "issue_ci_receipt": "docs/evidence/dynamic-burst-issues-ci-20261016.json",
     "ci": {
@@ -1398,5 +1406,20 @@
       "status": "ALL4_WORKFLOWS_PASS",
       "hardware_qualification": false
     }
+  },
+  "submission_lifecycle_batch": {
+    "status": "SCOPED_REAL8_PLUS2_AND_OFFLINE_SEQUENCES_PASS",
+    "runtime_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+    "compiled_userspace": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+    "tools": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+    "test_only_kernel_commit": "a474a8503637f10cdf1c1160f64f6391c40919a7",
+    "real_report": "docs/evidence/data-lifecycle-composition-20261016.json",
+    "offline_report": "docs/evidence/native-sequence-lifecycle-20261016.json",
+    "original_matrix": "FAIL_QEMU_CAPABILITY_MISMATCH_RETAINED",
+    "successful_scope": "8originalrows+2independentdeadline rows,notwholeoriginalmatrixPASS",
+    "formal_strength": "No newformalproof;seededactualbodyfixture exploration andintendedmutantrejection only",
+    "next": "Fourrealdevices/twodynamicgroups actualbusiness;remainingcontrolcomposition/RCA/nonhumanrecovery parallel",
+    "live_session": null,
+    "full_scope_unchanged": true
   }
 }

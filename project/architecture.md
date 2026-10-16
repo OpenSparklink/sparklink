@@ -259,6 +259,12 @@ poll的POLLOUT只承诺当前软件准入机会，不承诺USB提交、控制器
 VM受控延迟的因果关系须由请求、实际QMP状态和guest收到确认组成；宿主与guest
 墙钟有独立偏移，不能直接排序。原期限使用生产准入时钟及同一guest单调时钟核对；
 测试夹具的延迟上界与socket等待超时均不能替代该原期限。
+受控VM的hold能力也是实验输入：需要延迟真实USB-IN超过原5秒期限的门禁，
+必须独立验证QEMU的8秒hold属性及其启动产物，不能放大生产期限或以新binary
+静默替换旧smoke身份。Reference Host f0872df与libws73-usb f4d85d0的完成分发仍
+只有handle/count；其调度/截断策略不是本项目generation/lifetime复用屏障的证明。
+实际转换序列测试须保留fixture依赖和有效初始状态，分别计配置失败尝试与真正执行
+到提交回调的失败；生成二进制、种子及轨迹属于证据，不将随机探索称为穷举证明。
 这些实现预算不代表当前实机资格；准确提交、分层长度边界与仍缺门禁只见
 [CURRENT_CAPABILITIES](current-capabilities.md)。
 

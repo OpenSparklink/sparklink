@@ -11,12 +11,12 @@ Review 基线为 Linux4a3dc86ade58、用户态8cf052c。随后 ec67348 仅新增
 
 ## 唯一所有权
 
-| 对象 | 所有权及失效规则 | 当前差距 |
+| 对象 | 所有权及失效规则 | 验收边界（当前状态只见资格入口） |
 |---|---|---|
-| Runtime | controller generation、Backend生命周期、独立命令/data credit、设备故障及票据 | Host锁下准入与driver提交票据已接通；复用/迟到NOCP可信屏障仍待证明 |
-| ConnectionSession | 物理connection lifetime、CMTC、能力、通道表、连接级唯一RX分流 | Runtime持有Session；Session worker唯一消费ACB并分流，当前固定通道范围见CURRENT_CAPABILITIES；动态多通道仍待实现 |
-| Channel | local/remote TCID、PI、模式、MTU/MPS、独立有界队列、协议关闭 | 当前固定TCID/PI基础模式；动态协商/多通道完整验收未支持 |
-| SocketBinding | VFS fd引用、dup/最后关闭、授权范围/失效 | 已与Session分离；dup共享Binding，最后关闭释放本地队列；无可靠通道关闭协议，拒绝同lifetime重绑 |
+| Runtime | controller generation、Backend生命周期、独立命令/data credit、设备故障及票据 | 命令/data credit独立；实际提交、callback引用与NOCP可信复用屏障分别验证 |
+| ConnectionSession | 物理connection lifetime、CMTC、能力、通道表、连接级唯一RX分流 | Runtime持有Session；唯一RX分流、固定/动态通道协商及旧回调隔离分别验收 |
+| Channel | local/remote TCID、PI、模式、MTU/MPS、独立有界队列、协议关闭 | local/remote TCID独立，协商有原期限终态，关闭/安全复用须有可验证屏障 |
+| SocketBinding | VFS fd引用、dup/最后关闭、授权范围/失效 | dup共享Binding；最后关闭不抹去已开始物理义务；同lifetime重绑须先验证排空屏障 |
 | slkd | 管理策略、授权、SSAP Engine/数据库、Agent、Bond、Profile | 内核Grant已核对全身份/方向/Managed epoch；可信安全与管理所有者死亡仍待验收 |
 
 ConnectionSession 独立于应用fd。最后fd关闭释放Binding和其未提交TX，**不隐式关闭
@@ -141,6 +141,12 @@ Grant/epoch、reservation及不可变编码数据。提交前门禁必须与Revo
 明确未提交、已提交、不确定三个transport结果；不能证明零提交的失败不自动退款。
 不得持registry/state锁跨USB等待、copy或cancel_sync。WP03先记录生产事件顺序表和
 driver落点，FV05与受控VM交错验证同批接入；本ADR不宣称当前同步bulk路径已证明。
+
+直接生产转换的序列探索从有效状态出发，再插入撤权/Down/晚到完成与提交失败；
+实际callback失败次数必须与配置失败尝试分开。保留生成harness、测试二进制及
+seed/操作轨迹，使用会触发指定性质失败的生产源码变异作为负对照；单纯编译失败
+不算反例。USB/锁/owner/clock/consent的fixture不升级为真实内核并发或形式化证明。
+受控VM延迟窗口与原协议期限是不同输入，QEMU能力需独立smoke及身份绑定。
 
 NOCP只有handle/count，同lifetime内重复与跨lifetime迟到分别记录硬件假设。
 旧debt保留且未清算禁止复用；清算之后仍需可信排空/复位屏障。软件epoch或固定等待

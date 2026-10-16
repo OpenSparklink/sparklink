@@ -41,6 +41,8 @@ Ue62a770的[GitBook风格主题检查](../docs/evidence/documentation-gitbook-re
 | 动态七尺寸/槽位门禁：392次往返、14次拒绝，原失败保留 | `real_device` | `PASS` |
 | 动态C突发/真实credit：80次往返（含32次2042突发） | `real_device` | `PASS` |
 | 新编译CLI重验七尺寸：392次动态往返、14次槽位拒绝 | `real_device` | `PASS` |
+| 受控数据生命周期：8项撤权/Down＋2项原期限，原整轮失败保留 | `real_device` | `PASS` |
+| 生产NativeTX序列探索：1024×32事件、2个指定反例 | `offline` | `PASS` |
 
 保留镜像：K `400bd6812608935e2845d6d2b80ec58e7a6a6415`；编译 U `cca8a20107a2b65274a65b7967640ce5690ad63e`；执行工具 `4b337331fa1959a86fb01f3cca2449be63371e11`。
 
@@ -99,6 +101,19 @@ fuzz仍分层；[负对照字段修正](../docs/evidence/dynamic-capture-field-a
 U b791cfa 的综合CI、资格一致性、文档与codec bounded-fuzz均成功，
 [准确运行及issues回执](../docs/evidence/dynamic-burst-issues-ci-20261016.json)另外记录。
 最终工具子树与25df09b逐文件一致，完整614项重跑通过；CI/离线结果不替代上述实机证据。
+
+[受控数据生命周期](../docs/evidence/data-lifecycle-composition-20261016.json)另记录
+K400/U25df09b／工具25df：release、最后File关闭、dup、物理Disconnect各方向共8例；
+原矩阵在缺少QEMU 8秒hold属性时失败，保留FAIL。经独立无USB启动核对后，两项
+原5秒期限另通过：实际5片1270字节、到期后旧操作不续交，释放后5包真实NOCP。
+10个成功用例先各完成2次实际业务，共20次；部分PDU交付计数为0。42个离线证据
+负对照拒绝。peer lease/Ready及适用的实际扫描通过，不等于第三组业务或daemon存活。
+
+K a474a8503637只新增selftests，不改变上述编译运行代码。其[生产函数序列探索](../docs/evidence/native-sequence-lifecycle-20261016.json)
+在有效初始提交后执行1024×32事件：1957次配置失败尝试中113次真正走到原子提交拒绝，
+另125次已接受后不确定失败保留debt；两个指定生产源码变异由实际测试给出种子/轨迹反例。
+这属于离线fixture探索，不是Kani/TLC证明或真实内核并发。首版变异编译失败不算反例。
+本批退出，继续四设备两组动态业务；完整Ticket/NOCP复用、RCA与非人工恢复仍开放。
 
 ## 安全与服务的限定范围
 

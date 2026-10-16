@@ -1698,6 +1698,9 @@
     "cargo_native_development_target": ".dev/cargo-native-dev",
     "qualified_artifacts": "separately frozen;never overwrite recordedoldmanifest/artifact/tool",
     "historical_exception": "a0e1ad7 build launched before request completed at original-j4;first artifactcheck rejected missingexplicitVirtualmoduleoptin thenexactfrozenconfig optincheck passed;no source/config drift",
-    "original_scope_and_vm_only_preserved": true
+    "original_scope_and_vm_only_preserved": true,
+    "evidence": "docs/evidence/build-resources-20261016.json",
+    "actual_new_cargo_jobs": 12,
+    "runtime_binary_hashes_unchanged": true
   }
 }

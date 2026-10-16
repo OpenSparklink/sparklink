@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "status": "BUILD_RESOURCE_POLICY_IMPLEMENTED_AND_SCOPED_CHECKS_PASS",
+  "source_commit": "f355e2a7ca468f089f8f8b9ceacc2e5df50bd8c4",
+  "canonical_policy": "project/build-resource-policy.json",
+  "qualification_upgrade": false,
+  "policy": {
+    "solo_jobs": 12,
+    "with_real_device_vm_jobs": 8,
+    "affinity_cap": true,
+    "shared_lock": ".dev/main-build.lock",
+    "kernel_development_output": ".dev/session-wake-kernel-build-v1",
+    "cargo_native_development_target": ".dev/cargo-native-dev",
+    "fixed_output": "Reuse incremental development directories;seal immutable artifacts/payloads/manifests separately"
+  },
+  "implemented": [
+    "Make build/check/test/clippy wrapper adds lockedCargo/sharedbudget;kernel directmake supported.",
+    "Native servicebundle andprepare sharebudget/lock through compilation andartifact sealing.",
+    "Heavychild inheritsflock descriptor;parent close doesnot drop exclusion whilechildholdsfd.",
+    "Reject jobflag/CARGOenv conflicts;clear stale top-level jobserver descriptors,recordactualCPU/affinity/availablememory/jobs/policyhash;this isnot anOSCPUquota."
+  ],
+  "actual_new_cargo": {
+    "bundle_jobs": 12,
+    "prepare_jobs": 12,
+    "logical_cpus": 16,
+    "affinity_cpus": 16,
+    "mem_available_kib": 52659440,
+    "target_directory": ".dev/cargo-native-dev",
+    "compiled_source": "9385c8a9124332bab09c889fccba4848cb31b19c",
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+    "cargo": "cargo 1.96.1 (356927216 2026-06-26)",
+    "runtime_binaries_unchanged": true
+  },
+  "existing_kernel_build": {
+    "source": "a0e1ad7b3a1c4397f1c187b5875b88a9efcc26bd",
+    "jobs": 4,
+    "status": "BUILD_PASSED",
+    "duration_ns": 1114318496830,
+    "unchanged_record": true,
+    "compiler_warnings": 0,
+    "make_warnings": 1,
+    "scope": "Userrequestarrivedwhilethisbuildrunning;allowed original-j4 tofinish. Dedicated O initialized once;subsequent source changes reuse it. Original recursive make jobserver warning retained,not warning-free."
+  },
+  "checks": {
+    "python": 637,
+    "python_result": "PASS",
+    "strict_html": "PASS",
+    "inventory_documents": 115,
+    "policy_os_tests": 4,
+    "solo_make_smoke_jobs": 12,
+    "vm_mode_make_smoke_jobs": 8,
+    "concurrent_vm_heavy_build_experiment": "NOT_RUN;mode8 validated bycommand/OSlocksmoke only;actualnewCargo12finished beforephysicalVMmeasurement"
+  },
+  "audit": {
+    "private_scripts_with_hardcoded_build_settings": 192,
+    "disposition": "Historical/private scripts andfrozenqualification source/records notrewritten;they do notautomatically acquire newlock. Mainthreaduses newentry goingforward;never runlegacybuilder alongsideanother12jobbuilder.",
+    "ci": "Separate hostedrunner jobs arenot same-host competingmain-threadbuilds;CLIbudget caps by actualaffinity whenused. No change to CIqualification scope."
+  },
+  "scope": [
+    "Build scheduling/cache/record organization only;no protocol architecture,UAPI,deadline,securityorWS73 qualification upgrade.",
+    "S0-S6/19WP/10FV/12DG andVM-only retained;nohostdriverinstallation/loading.",
+    "New actualRuntime a0e1ad7 VMgates andboundedproofs recordedseparately;oldqualification records/artifacts/frozen tools notmutated.",
+    "Full release/installer/recovery/fairness/performance conditions remainOPEN."
+  ],
+  "materials": [
+    {
+      "path": ".dev/build-resource-python-sandbox-v1.log",
+      "sha256": "d88087dba9d3c65c7cd8acc16b3376fe4afff8b36a6aca7a0562e9b9ae16e0e7",
+      "bytes": 1470,
+      "access": "private"
+    },
+    {
+      "path": ".dev/build-resource-python-final.log",
+      "sha256": "71b0cb939e5ce768d639933057621d85d2320a2b8b14f0b2eaf81acdf28a5a1a",
+      "bytes": 772,
+      "access": "private"
+    },
+    {
+      "path": ".dev/build-resource-docs-final.log",
+      "sha256": "f2870fc53e15737d6979799d37bfbba9b8ff619c444b167eaef795fa24887d9b",
+      "bytes": 194397,
+      "access": "private"
+    },
+    {
+      "path": ".dev/build-resource-solo-smoke.json",
+      "sha256": "70bdf2686d23a6a06b75b2c6ee443d3c2ccc9bc0b37e8e171855f4e675c2aa5a",
+      "bytes": 589,
+      "access": "private"
+    },
+    {
+      "path": ".dev/build-resource-vm-smoke.json",
+      "sha256": "41c98cce72a1647032472566a4f1161b27b70a57528d03eb5b57ad58135db6eb",
+      "bytes": 586,
+      "access": "private"
+    },
+    {
+      "path": ".dev/build-parallelism-private-audit-20261016.json",
+      "sha256": "3b6717d9e973c48e7c08ba5af3909f185ba9d3b6466585aa4e7f9ecf3b1e433c",
+      "bytes": 39119,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/manifest.json",
+      "sha256": "6e293527386fd72155bceb096dfc72edd2df0c9a0a875a6e371fff2c140023e0",
+      "bytes": 26235,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-wake-prepared-v3/manifest.json",
+      "sha256": "1a9615216366e9abc1881557588c1852ba07f39a3dd460d64eb8850dd6ab0aaf",
+      "bytes": 259709,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-wake-kernel-build-record-v1.json",
+      "sha256": "298e12a32ba04b4c988287bba4aca136a1e80d06e075220af905e14d93634673",
+      "bytes": 1330,
+      "access": "private"
+    }
+  ]
+}

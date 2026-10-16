@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-10-16T04:34:11.707183+00:00",
+  "status": "SCOPED_DOCUMENTATION_THEME_PASS",
+  "documentation_source_commit": "4485f19b5987f2e75b0dac006616d0b14daeac4a",
+  "documentation_source_sha256": {
+    "docs/conf.py": "03b3b993bf8d1aa1dece434eab7392016812e2d1ad66e80afd3537ae47ea904e",
+    "docs/_static/sparklink.css": "f59c9015da686e2d224e8616f44061711ee8daa9251fed629b29faa991df1be9",
+    "docs/_templates/sparklink-breadcrumbs.html": "6ce679ccf182af2f522b4e2679a6df5e6a9bc8896beee60caea228b9016c7ab9",
+    "docs/reference/documentation-build.md": "29e57aec82279dce802cc0ba81f1ff1ac3b499d2fe1d532159869cef165ed269",
+    "tools/check_docs_browser.py": "a3d90223275442c3c45be109a7c7dbdf99b757743fc0c83eec8c7d2b8bf231e6"
+  },
+  "runtime_changes": false,
+  "pre_existing_dirty_runtime_files_preserved": [
+    "bindings/python/sparklink/native.py",
+    "crates/slctl/src/channel.rs",
+    "crates/slctl/src/commands.rs",
+    "crates/slctl/src/main.rs",
+    "crates/slk-protocol/src/channel.rs",
+    "crates/slkd/src/channel.rs",
+    "crates/slkd/src/connection_object.rs",
+    "data/dbus/sparklink.conf",
+    "tools/channel_socket_contract.py",
+    "tools/tests/test_ws73_observer_policy.py"
+  ],
+  "scope": "Locked Sphinx Book Theme; Sphinx ancestry breadcrumbs, current chapter marker and inline code styling. Home and four reader categories only. No public deployment or new WS73 qualification.",
+  "strict_build": "PASS: make docs, warnings-as-errors, inventory, qualification consistency, negative controls, internal resources",
+  "browser": {
+    "result": "PASS",
+    "checks": {
+      "home_tasks": true,
+      "task_cards_desktop": true,
+      "versioned_brand": true,
+      "navigation": true,
+      "chapter_breadcrumbs": true,
+      "breadcrumb_return": true,
+      "table": true,
+      "book_sidebars": true,
+      "dark_mode": true,
+      "code_block": true,
+      "code_copy_paste": true,
+      "product_tutorial_navigation": true,
+      "javascript_search": true,
+      "chinese_search": true,
+      "mobile_no_page_overflow": true,
+      "task_cards_mobile": true,
+      "mobile_navigation": true,
+      "mobile_table_container": true,
+      "mobile_breadcrumbs": true,
+      "mermaid_rendered": true,
+      "business_evidence_navigation": true,
+      "qualification_explanation": true,
+      "source_only_pages_excluded": true,
+      "legacy_html_redirects": true
+    },
+    "base_path": "/sparklink/",
+    "tool_commit": "4485f19b5987f2e75b0dac006616d0b14daeac4a",
+    "visually_reviewed": [
+      "reference-table.png",
+      "mobile-reference.png"
+    ],
+    "not_covered": "No real device interaction, complete tutorial replay or new external linkcheck"
+  },
+  "publication": {
+    "pages_api": "HTTP404 on this check; not configured or not accessible",
+    "public_deployment_confirmed": false,
+    "output": "CI downloadable HTML artifact"
+  },
+  "remaining": [
+    "DQ2–DQ5 content work and tutorial replay remain open",
+    "Natural recovery, RCA and complete S0–S6 scope unchanged"
+  ],
+  "raw_access": {
+    "condition": "Workspace owner or authorized developer; private workspace evidence not copied into public site",
+    "replay": "Checkout exact documentation source; uv sync --locked --only-group docs; make docs; independent Firefox plus tools/check_docs_browser.py against localhost /sparklink/"
+  },
+  "materials": [
+    {
+      "private_workspace_path": ".dev/docs-gitbook-location-committed-build.log",
+      "sha256": "cada82682fc8bdfb6793fa945ee3e6b9853d2c4b50a814f3ccce80d856f6130d",
+      "bytes": 87870
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-location-4485f19-browser/report.json",
+      "sha256": "e108eb468e5933a89eabb0abf07a0e0ba9815d21eaac753e07dee43335dad517",
+      "bytes": 3100
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-location-4485f19-preview/sparklink/documentation-build.json",
+      "sha256": "737a57c8bbcdb85a80fe82bf0cc9a19faa5b2d79c5fd814810251af8f4e3fba7",
+      "bytes": 3249
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-location-4485f19-browser/reference-table.png",
+      "sha256": "2a663d95d8022ac298b68378400fdb45a03e71cb0efc29ddf7de5dcfc2f03529",
+      "bytes": 210493
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-location-4485f19-browser/mobile-reference.png",
+      "sha256": "c393964c021fe36e7cbccb315711613dd0d14cc29c5d820cdf2589183ede54c6",
+      "bytes": 69436
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-location-4485f19-browser/book-dark-reference.png",
+      "sha256": "1e0ef35380a6b90f1149dac17c3a2ae88d9863c40f0405a957c4b38ec0052a30",
+      "bytes": 213789
+    }
+  ]
+}

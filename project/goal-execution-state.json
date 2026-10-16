@@ -1195,6 +1195,14 @@
         "publication": "HTML artifact only; Pages API404, no deployment claimed",
         "tested_documentation_source": "e62a77044700705ea68e9ac6e5cf2597da2d2bf9",
         "evidence": "docs/evidence/documentation-gitbook-refinement-20261016.json"
+      },
+      "navigation_followup": {
+        "tested_documentation_source": "4485f19b5987f2e75b0dac006616d0b14daeac4a",
+        "status": "Strict build and24 browser checks PASS; desktop/mobile visually reviewed; no public deployment confirmed",
+        "scope": "Sphinx ancestry breadcrumbs, category return, active chapter marker and inline code; four reader quadrants only",
+        "evidence": "docs/evidence/documentation-book-navigation-20261016.json",
+        "runtime_changes": false,
+        "existing_dirty_runtime_work_preserved": true
       }
     },
     "status_evidence": "docs/evidence/documentation-dq1-and-theme-20261016.json",

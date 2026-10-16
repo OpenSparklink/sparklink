@@ -1195,6 +1195,12 @@ GitHub Pages API 当前返回404，不能宣称已部署；继续提供 CI HTML 
 截图已复核；[限定证据](../docs/evidence/documentation-gitbook-refinement-20261016.json)
 保留前一轮布局与测试失败。代码与功能资格不变，公开部署仍未完成。
 
+U4485f19 的后续细化使用 Sphinx 父子关系提供章节路径与返回分类入口，
+并增强当前章节和行内代码的可读性；手机保留分类入口。严格构建与24项浏览器
+检查通过，桌面/手机截图已复核，[限定记录](../docs/evidence/documentation-book-navigation-20261016.json)
+保留准确文档源码及原有 dirty 运行代码边界。Pages API 仍为404，只有 HTML
+artifact，未确认公开部署；不改变运行代码、WS73资格和其余整改范围。
+
 ### MTU/MPS 数据契约修复（2026-10-16）
 
 K90fda1457a8d 将 SDU MTU 与完整 DTAP PDU MPS 分开公布和协商；每通道

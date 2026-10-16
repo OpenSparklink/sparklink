@@ -1265,7 +1265,8 @@
     "mtu_mps_fix_report": "docs/evidence/cmtc-mtu-mps-fix-20261016.json",
     "real_short_manifest": ".dev/native-cmtc-mps-short-v1-run/manifest.json",
     "length_matrix": ".dev/cmtc-mps-retained-matrix.json",
-    "length_matrix_session": 77362
+    "length_matrix_session": 77362,
+    "mtu_mps_fix_issues_receipt": "docs/evidence/cmtc-mtu-mps-fix-issues-20261016.json"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",

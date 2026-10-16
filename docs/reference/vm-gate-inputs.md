@@ -106,3 +106,23 @@ Host fixture仅使用生产 `admits_data`；`controller_status` 的初始化/Rea
 已存在的证据文件拒绝覆盖；测试失败记录FAIL并保留这些输入。配置失败尝试与实际
 原子callback拒绝分别计数，accepted-uncertain不能退款。源码变异须产生预期断言和
 seed/case/操作轨迹，编译失败不算性质反例；PASS也不证明NOCP固件准确或安全复用。
+
+
+## 未完成PDU的Down与空闲观测输入
+
+`--managed-channel-link-down` 与上述独立Managed channel gate、release、Grant和
+revoke-prefix组合使用普通2秒真实IN暂缓。当前工具要求primed模式：四条不同
+61字节消息由对端真实校验，源端实际TX快照为四份未支付debt、空队列且flags=0；
+长PDU先耗尽剩余一份，须观察ACTIVE/BEGUN、未完成offset和五份debt。收到对端
+真实Down后才显式释放原完成。缺前提、限时自动释放或前缀已完整均失败，不能
+以guest成功标记覆盖USB核对。四条单向预备消息不计作四次往返。
+
+`--managed-channel-idle-observe` 仅适用于独立release/Grant/revoke-prefix门禁，
+指定index 0或1；不得和Down、deadline或其他专项模式合并。仅在带scratch标识
+的QEMU VM内建立tracefs实例，绝不在宿主启用追踪。实际普通fd状态显示两端
+credit、队列和在途PDU排空后，观察原2秒区间；前后仍需真实业务和受控前缀工作
+作为正对照。保留trace原件/hash、CPU0/1丢失统计、时钟和过滤器读回。
+
+观察器拒绝区间内任一次sl_work、丢失/截断、错误fd或generation及缺少前后工作。
+同口径旧轮询镜像用于预期拒绝负对照，只记录该镜像身份和原FAIL，不授新内核
+资格。完整CPU/时延/公平性、调度或USB callback drain证明均不在该观察范围。

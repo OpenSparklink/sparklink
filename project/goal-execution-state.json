@@ -1463,6 +1463,22 @@
       "numeric-862-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "numeric-agent-b873-real": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "numeric-agent-b873-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "numeric-agent-b873-failed": {
+        "level": "offline",
+        "result": "FAIL"
+      },
+      "numeric-agent-b873-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",

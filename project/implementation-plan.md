@@ -114,6 +114,10 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | K323：实际crypto材料/数字向量及无USB签名模块VM | `virtual_integration` | `PASS` |
 | 历史数字批次解析器/CI/环境失败：保留FAIL不升级 | `offline` | `FAIL` |
 | 历史U862完整安全范围未闭合；后续b873限定Agent另记，等级/Grant/Bond仍缺 | `real_device` | `UNPROVED` |
+| K323/Ub873：数字Agent六角色与三项保持，48次真实回复 | `real_device` | `PASS` |
+| Ub873：生产privatebus/ENOTTY、688/689工具及38实际证据负对照 | `offline` | `PASS` |
+| 历史私有重放输出元数据错误：原FAIL保留 | `offline` | `FAIL` |
+| 安全等级/可撤销Grant/Bond、数字CLI与完整生命周期/恢复：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

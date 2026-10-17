@@ -9,11 +9,44 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only
 from ws73_north_star import file_record
 
 
 class NativeVMProfile(unittest.TestCase):
+    def test_runtime_only_profile_keeps_board_bytes_and_omits_both_boot_search_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for folder in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
+                p = root / folder
+                p.mkdir(parents=True)
+                for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin', 'bsle_custom.bin', 'pm_config.bin']:
+                    (p / name).write_bytes(b'explicit-fixture')
+            rows = remove_boot_images(root)
+            self.assertEqual(len(rows), 6)
+            self.assertFalse(any((root / row['path'].lstrip('/')).exists() for row in rows))
+            self.assertEqual((root / 'lib/firmware/sparklink/ws73/bsle_custom.bin').read_bytes(), b'explicit-fixture')
+            package = dict(native_vm=dict(runtime_only=True))
+            check_runtime_only(package, {'port': dict(interfaces=[dict(endpoints=5)])}, ['port'])
+            for interfaces in [[], [dict(endpoints=2)], [dict(endpoints=5), dict(endpoints=5)]]:
+                with self.subTest(interfaces=interfaces), self.assertRaises(ValueError):
+                    check_runtime_only(package, {'port': dict(interfaces=interfaces)}, ['port'])
+            with self.assertRaises(ValueError):
+                enabled(SimpleNamespace(native_runtime_only=True))
+
+    def test_runtime_only_missing_image_is_failure_atomic(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for folder in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
+                p = root / folder
+                p.mkdir(parents=True)
+                for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin']:
+                    (p / name).write_bytes(b'fixture')
+            (root / 'usr/lib/firmware/sparklink/ws73/btc_cali.bin').unlink()
+            with self.assertRaises(ValueError):
+                remove_boot_images(root)
+            self.assertEqual(len(list(root.rglob('*.bin'))), 5)
+
     def test_partial_profile_cannot_fall_back_to_builtin_guest(self):
         self.assertFalse(enabled(SimpleNamespace()))
         for name in OPTIONS:

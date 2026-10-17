@@ -28,6 +28,8 @@ class PlatformCaptureTests(unittest.TestCase):
 
     def test_payload_only_platform_unchanged(self):
         self.assertEqual(len(hcc_receive(allocation(advertised=14))[0][3]), 14)
+        with self.assertRaises(CaptureError):
+            hcc_receive(allocation(tag=0x10, advertised=14))
 
     def test_no_relaxation_for_other_routes(self):
         for tag, queue in [(0xa0, 8), (0x50, 10), (0x10, 9), (0x19, 8)]:

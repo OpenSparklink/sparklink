@@ -842,6 +842,8 @@ def _run(args):
         if diagnostic:
             raise ValueError('legacy poll-dependent live diagnostic matrix is retired; current Native queries remain available')
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
+        if not support:
+            native_vm.check_runtime_only(package, devices, args.ports)
         timeline.observe(devices, 'initial')
         if not support:
             m['usb_host_boundary']=usb_host_boundary(package['qemu']['path'])
@@ -1732,6 +1734,8 @@ def main():
     pack.add_argument('--acb-probe-module',type=Path,help='explicit signed external selftest; never ordinary socket qualification')
     pack.add_argument('--native-discovery-config', type=Path,
                       help='freeze a private slkd TOML config in the native VM; checked by staged slkd, no RF qualification')
+    pack.add_argument('--native-runtime-only', action='store_true',
+                      help='native adoption only: omit ROM boot images, refuse initial non-runtime devices; prevents wrong-variant download on mixed boards')
     for name in ['run','support']:
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)

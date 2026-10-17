@@ -26,7 +26,33 @@ def enabled(args):
         raise ValueError('native VM profile requires module tree, boot smoke and service bundle together')
     if getattr(args, 'native_discovery_config', None) is not None and not all(supplied):
         raise ValueError('discovery config requires the complete native VM profile')
+    if getattr(args, 'native_runtime_only', False) and not all(supplied):
+        raise ValueError('runtime-only requires the complete native VM profile')
     return all(supplied)
+
+
+def remove_boot_images(root):
+    """Mixed-board adoption must fail on ROM, never download a wrong variant."""
+    removed = []
+    for directory in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
+        for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin']:
+            path = root / directory / name
+            if not path.is_file() or path.is_symlink():
+                raise ValueError('exact regular staged boot image required: ' + str(path))
+            removed.append(dict(path='/' + str(path.relative_to(root)), sha256=digest(path)))
+    # Validate the entire set before removing anything. Board inputs remain.
+    for row in removed:
+        (root / row['path'].lstrip('/')).unlink()
+    return removed
+
+
+def check_runtime_only(package, devices, ports):
+    if not package.get('native_vm', {}).get('runtime_only', False):
+        return
+    for port in ports:
+        interfaces = devices.get(port, {}).get('interfaces', [])
+        if len(interfaces) != 1 or interfaces[0].get('endpoints') != 5:
+            raise ValueError('runtime-only refuses ROM or unknown descriptor mode: ' + port)
 
 
 def module_plan(tree):
@@ -241,6 +267,8 @@ def stage(args, manifest, root, source, copy_elf):
                              'userspace_head': service['userspace_head'],
                              'host_installation': False, 'native_host_acceptance': False,
                              'systemd_sandbox_acceptance': False, 'board_qualification': 'NOT_ASSERTED'}
+    if getattr(args, 'native_runtime_only', False):
+        manifest['native_vm'].update(runtime_only=True, removed_boot_images=remove_boot_images(root))
 
 
 def pack(args, manifest, root):

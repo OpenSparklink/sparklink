@@ -53,6 +53,8 @@ def hcc_receive(data):
         # SDK SLE RX ignores subtype; real 111 CmdComplete uses a1.
         if (service, queue) == (5, 10) and tag & 15:
             raise CaptureError('nonzero supported-service subtype')
+        if (service, queue) == (1, 9) and tag != 0x19:
+            raise CaptureError('invalid platform subtype')
         slots.append((service, queue, offset, data[offset + 4:offset + 4 + payload_length]))
         offset += length
     if offset != size:

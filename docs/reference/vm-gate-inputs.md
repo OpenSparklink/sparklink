@@ -207,3 +207,16 @@ pre-daemon File/Grant 受控测试，不等同实际 slkd Agent/授权部署或 
 准入状态检查。撤权/旧 lifetime 仍保留 EACCES/ESTALE 的原检查。门禁分别记录新
 prepare 与缓存 submit 的单调 before/after；期限用例必须证实原限制在重试前已过期，
 不能简单要求所有阶段 errno 相同，也不能任意接受错误。跨期限不明确的样本不授通过。
+
+## 混合型号的运行期接管
+
+`ws73_target.py prepare --native-runtime-only` 要求完整 Native VM profile；该产物
+校验完输入后从 `/lib/firmware` 与 `/usr/lib/firmware` 两条查找路径移除三份 ROM
+镜像，保留 BSLE/PM 板级输入，记录移除的原 hash。运行入口要求所选设备均已是
+五端点运行期接口；两端点或未知描述符明确拒绝。意外回到ROM后缺镜像即失败，
+不能借用另一型号的镜像自动下载。已封存磁盘的hash仍由原prepared校验检查。
+
+先在每型号独立VM中受控下载匹配110及校准，并通过实际USB字节核对，再用该模式
+执行混合E/U业务门禁。`ws73_model_evidence.py`复用现有成对USB读取器，要求唯一
+GET_CHIP_TYPE请求、同一USB身份的实际成功回复和后续DLI查询，原消息/长度/状态/
+型号/总线不符即拒绝。该工具没有设备访问；结果不认证硅片、执行固件或真实业务。

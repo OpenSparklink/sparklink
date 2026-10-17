@@ -1,5 +1,13 @@
 # 当前能力与资格
 
+[R3c准确新SDK路径资格](../docs/evidence/application-native-boundary-r3c-20261017.json)：
+K`0cd4731dd3e6` / **编译及工具 `6d30c0f67db2`**，SDK110 U2/3。新slktest经真实SDK
+Client申请fd，四VM门禁保持61/249+16超限/2042/机制2、32真实对端回复、24 Owned案例/
+96审批/120事务、service-only68拒绝；5重放81复制负对照。313默认+313实验、3compile-fail、
+严格clippy、755冻结工具、封存两库+冻结绑定50检查通过。原ctypes崩溃、b0f跨controller
+反例及未执行候选保留。**C/Python是离线两库/ABI资格，不是全部外部消费者RF/部署资格**。
+无新增形式化证明，自然RCA/非人工恢复继续开放。当前R4退休树不继承这项资格。
+
 [R3a Channel操作层准确回归](../docs/evidence/channel-operation-boundary-r3a-20261017.json)：
 K`0cd4731dd3e6` / 编译及工具 **`17ed95f9f55e`**，SDK110 U2/3；四门禁保持
 61/249+16超限/2042/机制2、32真实对端回复、24 Owned案例/96审批/120事务、
@@ -15,11 +23,10 @@ service-only68拒绝、5重放81复制负对照。309默认+309all-features、�
 fixture；**不是128地址RF压力、实机TTL故障或完整生命周期证明**。原Proxy缓存失败
 保留，过期false断言不变，客户端必须显式无缓存查询或Properties.Get。
 
-R3b `82109ac`已迁移Native Rust生产调用者并删除protocol ioctl；R3c开发树进一步
-接通真实Client/独立共享契约及slktest调用，删除SDK→Native和slkd→SDK依赖，Native C/
-Python独立，旧默认Adapter删除。**当前R3c尚无准确新artifact实机资格**，17ed不转授。
-C/Python应用面目前仅已授权fd操作，完整broker/SSAP便利客户端仍缺失；R4旧入口/事件、
-R5门禁及R6干净VM部署未闭合，完整架构整改尚未完成。
+Native/Channel/应用Client/独立共享契约的生产核心边界已接通，SDK→Native和slkd→SDK
+依赖已删除；完整架构整改仍未完成。当前R4a源码删除旧controller安全Rust/C/CLI/DBus门面，
+保留实际Connection机制与Agent，尚需本批准确产物回归；内核遗留声明/selftests、其他旧API/
+事件、R5门禁和R6干净VM部署继续开放。C/Python完整broker/SSAP便利客户端仍缺失。
 
 [退休R1的准确新产物回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
 K`0cd4731dd3e6` / **编译 `cd35db3fd4e4` / 工具 `0568a3d1db1b`**，SDK110 U2/3。
@@ -261,6 +268,7 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | 退休R1：去虚假状态/元数据Bond；cd35四实机保持+服务组权限 | `real_device` | `PASS` |
 | R2观察预算/发布生命周期；6aad四实机保持，非128地址压力资格 | `real_device` | `PASS` |
 | R3a Channel操作层迁移；17ed四实机保持，SDK整体仍缺失 | `real_device` | `PASS` |
+| R3c应用/Native/共享契约：6d30真实新SDK路径四门禁，整架构未完 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

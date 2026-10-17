@@ -13,16 +13,16 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP18-R3-native-client-boundaries",
-    "production_behavior": "R3a Channel operations/callers17ed sealed real preservation. R3b Native Rust operations/callers82109 committed,not yet real-qualified;protocol pure. Next R3c independent sharedcontract/application Client/C-Python caller migration,delete temporary facade.",
-    "state": "R3A_FOUR_REAL_GATES_SCOPED_PASS_R3B_OFFLINE_NOT_REAL_QUALIFIED",
+    "id": "WP18-R4a-retired-controller-security",
+    "production_behavior": "R3c actual SDK/Native/contract/caller boundaries source6d30 sealed scoped real PASS. R4a delete11oldNative/3C/9DBus/2properties+CLI/security SDK types and policy;actual Connection mechanism/Agent retained.",
+    "state": "R3C_FOUR_REAL_GATES_SCOPED_PASS_R4A_IMPLEMENTING_UNQUALIFIED",
     "exit": [
-      "R3a309default+309allfeatures+2compilefail,strictclippy,755frozenPython,48crosslanguage checks,HTML115",
-      "K0cd/U17ed:fourrealgates32peerreplies24Ownedcases96decisions120transactions68roledenials;81copiednegatives",
-      "R3b Native source82109 default/allfeatures/strict,755tools/48ABI/header exact;new artifact real not qualified",
-      "Fullarchitecture incomplete;formalunsupported UNPROVED,naturalRCA/nonmanualrecovery OPEN"
+      "6d30:313default+313allfeatures+3compilefail/strict,755frozen tools,50sealed two-library checks",
+      "K0cd/U6d30:32peerreplies24Ownedcases96decisions120transactions68roledenials;5replays81negatives",
+      "b0f unknown-other-controller counterexample and ctypes SIGSEGV retained;selected-only fresh admission and full prototype publication fixed;not full concurrency proof",
+      "R4a new source needs full strict/ABI/CLI/DBus/newartifact regressions;no transfer from6d30"
     ],
-    "next": "Architecture-first R3c Native C/Python facade retirement and real app Client/sharedcontract migration;R4fullchainAPI/event;R5gates;R6cleanVMdeploy/docs. Preserve lifecycle WIP/verified paths;S0-S6/19WP/10FV/12DG,VM-only/UserHostP4. No all-control prerequisite."
+    "next": "Architecture-first R4 fullchainAPI/events/rawABI/selftests;R5 architecture contracts;R6 cleanVMdeploy/docs. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,existing verified paths/WIP preserved. C/Python complete broker/SSAP and advanced Channel remain original scope. NaturalRCA/nonmanual recovery OPEN."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -169,7 +169,8 @@
     "ssap-owner-c6-remaining",
     "architecture-retirement-r1",
     "observation-retirement-r2",
-    "channel-operation-boundary-r3a"
+    "channel-operation-boundary-r3a",
+    "application-native-boundary-r3c"
   ],
   "records": [
     {
@@ -120350,6 +120351,920 @@
         "architecture-r3a-real-boundary-v1",
         "architecture-r3a-real-sec2-v1"
       ]
+    },
+    {
+      "id": "application-native-boundary-r3c",
+      "title": "R3c应用/Native/共享契约：6d30真实新SDK路径四门禁，整架构未完",
+      "level": "real_device",
+      "result": "PASS",
+      "contracts": [
+        "ApplicationSdkHasNoNativeAuthority",
+        "DaemonDoesNotUseApplicationClient",
+        "PinnedDaemonAndSelectedGeneration",
+        "IndependentNativeAndApplicationFfi",
+        "SingleAuthorizedChannelOperationLayer",
+        "OriginalSessionGrantCreditTicket",
+        "OwnedPolicyAndPairedUsbApplicationDelivery"
+      ],
+      "bounds": {
+        "ordinary_round_trips": 32,
+        "owned_cases": 24,
+        "owner_decisions": 96,
+        "remote_owned_transactions": 120,
+        "owner_exits": 24,
+        "oversize_rejections": 16,
+        "service_role_denials": 68,
+        "real_gates": 4,
+        "exact_replays": 5,
+        "copied_negative_controls": 81,
+        "default_rust_tests": 313,
+        "all_features_rust_tests": 313,
+        "frozen_python_tests": 755,
+        "docs_inventory": 115,
+        "compile_fail_doctests": 3,
+        "c_rust_python_checks": 50
+      },
+      "excluded": [
+        "R3c production: actual Rust broker Client pins caller connection/unique daemon owner,queries selected generation without cache and physical lifetime,requests existing authorized fd and checks actual SparkLink domain. Sole operation implementation and Engine/Session/Grant/credit/Ticket/wire unchanged. slktest actually uses this SDK preparation;business bypasses per-packet D-Bus.",
+        "Application library has no Native dependency/exports;daemon has no application dependency;Native Rust/C and Python management explicit independent library/header,default Python Adapter/Native exports removed. Shared contract is SDK independent. C/Python application scope is existing authorized-fd operations,not complete broker/SSAP convenience clients or complete Channel API.",
+        "Exact K0cd/compiled+tools6d30,SDK110 U2/U3,four real pairedUSB two-role gates:61/249+16oversize/2042/mechanism2,32actual opposite application validated replies.24Ownedcases/96decisions/120remote transactions;owner exits BETWEEN operations only. Guest service-only68denials/local ownership checks,not service-onlyRF or clean-distro install.",
+        "Private-bus fixtures cover SDK owner replacement,no weaker fd fallback,actual wrong-domain refusal and unavailable other controller. Original b0f selected operation coupled to unrelated Generation reproduced against unmodified production and retained;6d selected-only checks fix it. Registry list only membership. Original no-cache assertion moved to stronger actual fd admission refusal with unchanged side-effect count. Not proof of cross-bus/kernel atomicity or real multi-controller fault injection.",
+        "Sealed6d actual two cdylibs with frozen binding/header/C/Rust tests pass50. Eight-thread64first-load calls and exhaustive actual C export separation included. This is offline actual-library/ABI/errno qualification;four RF gates exercise the Rust SDK/slktest path,not all C/Python external consumers in real deployment. Missing frozen Genl kernel-path env attempt retained,rerun with both exact kernel paths.",
+        "Migration ctypes pointer-signature omission caused actual SIGSEGV;original raw faulthandler/diagnostic logs retained,prototype fixed and initialization only published after complete signatures. The faulty uncommitted Python loader/first debug binary were not sealed;exact original whole-tree crash replay is unavailable and is not claimed. Final sealed6d bindings/libraries are separately source-bound and pass50. Header/import/doc-check failures retained with assertions unchanged; b0f prepared candidate never used to qualify6d.",
+        "No new formal proof. Existing unsupported/unstable Kani UNPROVED;callback/drain/firmware/NOCP assumptions not proved. NaturalRCA/nonmanual recovery and fullS0-S6/19WP/10FV/12DG remain OPEN. R4 legacy API/event/ABI retirement,R5/R6 and later C/Python broker/SSAP APIs still missing. Source6d qualification does NOT transfer to current R4 tree."
+      ],
+      "remaining": [
+        "R4 legacy controller-security facades and other connection/scan/PM/AFH/sync/privacy/measurement/RemoteService/event consumers,raw kernel ABI/selftest migration remain;old numbers never reused.",
+        "R5 complete interface/dependency and deployment gates;R6 actual cleanVM install/ordinary+C/Python consumers/upgrade/rollback/uninstall and configuration/state preservation. Current Makefile additions are not deployment qualification.",
+        "Full advanced Channel and C/Python broker/SSAP clients,owner inflight/deadline/revoke/Down,RF cache stress/TTL,CPCD/notifications/indications,protectedE/fullAgent,fullmultichannel/fourdevices/performance/soak/trustedBond remain.",
+        "Natural startup/reenumeration/disappearanceRCA and nonmanual recovery OPEN;old5509ms failure and required historical material-retention incident unchanged.",
+        "Original uncommitted faulty ctypes-loader/debug artifact were not sealed;retain original diagnostics and limited provenance,do not invent original source hashes or count the failed run PASS. Improve per-attempt source/artifact capture in R5."
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+          "scopes": [
+            "drivers/sparklink",
+            "net/sparklink",
+            "include/trace/events/sparklink.h",
+            "include/uapi/linux/sparklink_ioctl.h",
+            "include/uapi/linux/sparklink_socket.h",
+            "include/linux/sparklink_channel.h",
+            "include/linux/sparklink_native.h"
+          ],
+          "files": {
+            "drivers/sparklink/Kconfig": "a4fe289630742cc56513e14d9baccc395b95891b7f49b03d607e213d2789b7a1",
+            "drivers/sparklink/Makefile": "f208817106ac1d72224079f79b486eda1b914bdddfdc9a68efb83043bbc4bdea",
+            "drivers/sparklink/standard_usb.c": "3a33dd49e91052c501b2d185df192184e5c45ad126c42154dfae7578881f7c67",
+            "drivers/sparklink/virtual.c": "b4c13ebca4cdaa80a77f0b5d6e9e90b6ea4abd16b7fdb8de3cff4d871a8391d9",
+            "drivers/sparklink/virtual.h": "774a29ad1ab3ce7dffe8ffbf396191abd2b8a7f68f7d5b342d98eb9a2f2827ef",
+            "drivers/sparklink/virtual_codec.h": "1cb87ed4fff0aeef6e56b259097499573e90a7b20ab90833ce68b9174a0af6c6",
+            "drivers/sparklink/ws73/bsle.c": "692ff47410a671bf138a779c3f6a4c6ba170f90b068a2ceaacd00a4f2e9bb6f3",
+            "drivers/sparklink/ws73/bsle.h": "9b383891602a5a714b00e9740b384f02cfa615073dab1e49afa886b8df38ee81",
+            "drivers/sparklink/ws73/connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+            "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+            "drivers/sparklink/ws73/discovery.c": "584b8e246ae5accce54ce7647ee4469cb410bf41409c79a01799312d4fdb19ca",
+            "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+            "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+            "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+            "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+            "drivers/sparklink/ws73/usb.c": "352d4c83ca1a429c4e2e932f83b68cac29d5e24c9425c6f69d4c4977c4787a9f",
+            "drivers/sparklink/ws73/wire.c": "6ff5310f20c07ff6aa78ef166e48f2751cac1676cd62f8470ce425ffce267568",
+            "drivers/sparklink/ws73/wire.h": "a974edfea58be58bdcaece8502411cd479877068f443d88f9e907a868d3e18ca",
+            "include/linux/sparklink_channel.h": "88f7b99c632182576710b71ae0623a69191afd5e29a9866db70a883a782c40b6",
+            "include/linux/sparklink_native.h": "5bd70d0d098751c031ebb9b95823d40cbe80d029eb4532161f5c6f9ff3b643b4",
+            "include/trace/events/sparklink.h": "279afabf3424aa3b405cd83ffdc2e7c866234a11837d059c04c4e8b67b733800",
+            "include/uapi/linux/sparklink_ioctl.h": "e4a60ceadf753407891a0c365b5ab758cdcdcd66126df8d7a496a6c45881f69d",
+            "include/uapi/linux/sparklink_socket.h": "18299e4eb6aef480aedafce949a10ced185bf9de3a28208a08dbeee9ca591742",
+            "net/sparklink/Kconfig": "352656711a97406f5303dc11b94ce5a5d4f792a6b6adb874814bf890f0a27a18",
+            "net/sparklink/Makefile": "f602d17ad2cebbb1232854b361451c486aed8a433eab2f6241d0820506c2308d",
+            "net/sparklink/experimental/README": "950d51c089ab48be6a7ecc541a5113fe673949a3fb6e2ccba99156265ca4304d",
+            "net/sparklink/sle_authorization.rs": "1031cfc7cb417eef42696d44149eba5b4591d915a772e3ce8db86717c6203991",
+            "net/sparklink/sle_backend.rs": "65d9fec9abaa64edc2fa06756f67ce7bb1a17d3ff73bb744d95d721388bc734d",
+            "net/sparklink/sle_channel_grant.h": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+            "net/sparklink/sle_channel_socket.c": "57ad8003210a8c347dcab6d2b50a326a2f8eb1446238067cfe9b6a74718418cf",
+            "net/sparklink/sle_channel_state.h": "2be8f64ad94f32b698286a19211b8d66954402591239627679b6908327bda565",
+            "net/sparklink/sle_channel_table.h": "6a1ecbcbaf134ca3f6fe66577b93113f2f6fd4e8cad1de97d561d66e27aa039e",
+            "net/sparklink/sle_channel_wire.c": "f64a6850c88177f1e89b2a95f09d5a0a1b19a26570c8907486778f5169ba6af2",
+            "net/sparklink/sle_channel_wire.h": "05b4f91e039982ca4fe4257201f2ac04bc3a54ae27e6cddbe6ff4728b695f32a",
+            "net/sparklink/sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+            "net/sparklink/sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+            "net/sparklink/sle_configfs.rs": "048964fc18927cbd55a470c5c0c6abb865a1214d822ddd839aef8cde36b70b69",
+            "net/sparklink/sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+            "net/sparklink/sle_controller_event.rs": "81423ded2609f8953bf2fc25f44253c83606eeafd88802af0e1685a80d9c21d7",
+            "net/sparklink/sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+            "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c",
+            "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+            "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+            "net/sparklink/sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+            "net/sparklink/sle_dli.rs": "4d8add91d46b78098695949c23679c621ec7f3e0acfbff56ee32fbefc4a7bffd",
+            "net/sparklink/sle_dynamic_state.h": "33835dc321e93a8dd7c7c810bdae5d717e27825c198ec68f660ff192052f3452",
+            "net/sparklink/sle_fragment_cursor.h": "688b3035e6263e5d824c990d3244aaf5abec9162bab3e07013e217a33588714d",
+            "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+            "net/sparklink/sle_host.rs": "97257c14aa68ed9924e9517481052e3e2f3d22e8d116dc99f148805965196d58",
+            "net/sparklink/sle_ingress.rs": "fbc3d68b8ae838e823c72d5923b0e24ac74231e6deae85e2037b72d00edd4978",
+            "net/sparklink/sle_irq_lock.c": "b1f8a8fe4c3cd3697d6c3babd3f4aee0f93f0fb7cf98526f3490767c5d9cd9cf",
+            "net/sparklink/sle_irq_lock.h": "3f9a44812ebdd84d08db0f88834910f370bb92a0ce5760ba9371608a3679cb2d",
+            "net/sparklink/sle_irq_lock.rs": "5b5ca8e8750ea21825a34be4f45dd6eeba63cc43eeeda1e6053f55acbb6476a8",
+            "net/sparklink/sle_link_observation.rs": "864f9f64efd545f53a244208d5999dc53738fae096d8c03125bf52b6ba711784",
+            "net/sparklink/sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+            "net/sparklink/sle_message_security.h": "ffd0efc0ed80051f0dc2704f60ec2a1dc2098cfd598aa5b02d07790c81ff2c44",
+            "net/sparklink/sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+            "net/sparklink/sle_native.rs": "e53457824c6381ee334f2c1e8769438d4317226f98403451ee7af97e1f071652",
+            "net/sparklink/sle_native_data.rs": "9b36144f3377e7c35c536d41b22fd3769472355d559f584214d6ec7acde71f05",
+            "net/sparklink/sle_native_ffi.c": "9e53c93ef5b1dd679227009c0a6b38be26ba47dbbc7aa9b1bed6f9082e6ec00b",
+            "net/sparklink/sle_native_ffi.h": "a4123e5c9eca11b8175cab5143b7e1d1bdb19403b43ee11028934941beb08502",
+            "net/sparklink/sle_pair_crypto.c": "0706143298e86df6013549c2a8886b2b1b283fac82aa750d1d16cd29166900fd",
+            "net/sparklink/sle_pair_material.c": "ed8a1adfca85ea38c113c671f3c38950431fbd93bf370df2a736ef5bbc4653b9",
+            "net/sparklink/sle_pair_material.h": "32429c20a0647e8ecaa65602395a77baaf24b29958d49896835161e683d697e4",
+            "net/sparklink/sle_pair_material.rs": "c31bfee415e9a90724142e1d34a736ce6b5fc7a2a1fe2d8306586f241716ef90",
+            "net/sparklink/sle_security_relay.h": "d741a43c6ad061b56546bfb2a8f182cd79fee2e27c2fb3a1927810167cc3aad7",
+            "net/sparklink/sle_security_relay.rs": "adc4f37655ecf3fb6839d492f8c41a661cc15babe529d88104a5f85fa79699cf",
+            "net/sparklink/sle_security_relay_state.rs": "edd7a961c93a9a567b2b3543150478c9bae78c0d85a935d8ccfc9621b54493fe",
+            "net/sparklink/sle_session_schedule.h": "306e26113573f3ca003dc78f73a320e06e8534220cfa4d1aae9d599e4e0c851e",
+            "net/sparklink/sle_sessions.rs": "594a3b2826ca4a82d25f59670dc44a7e58a78e970dab333c80d0f7469a701d57",
+            "net/sparklink/sle_snoop.rs": "d2a7d85f841066d8ea735d990b80281d01135a8488eb9c60778c790600ea8e73",
+            "net/sparklink/sle_standard_dli.rs": "a07c9af73eb2b71554a3e73fd32f06726cbbab48ef807b250a7c88aeac92e606",
+            "net/sparklink/sle_tx_budget.h": "f75c2f9133170f40651a8addc9a8a739872e5f456ad9fe9f4847bd15a84d0ed2",
+            "net/sparklink/sle_uapi.rs": "cfd250a811b4566033da5fdba8101abd6fdca48246abb4eb7a06d6b5794b5b0e",
+            "net/sparklink/sle_workers.rs": "453e679f479229591b4506d2ac2c463ffaf09fb8f627c5174a54c8a4376ef4ac",
+            "net/sparklink/sparklink_core.rs": "fcb176992e5a5d33056cd84125f55bf977e0b419e3e755e97887bd53b1c7e509",
+            "net/sparklink/sparklink_genl.c": "ffe57e94d4f5da25ae5e4548c25f503510b95a31b64c68271412c145975c2d63"
+          }
+        },
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "6d30c0f67db2e25f08e33742c6fc1db64c3a374c",
+          "scopes": [
+            "crates",
+            "data",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "97c66438989670c78c5ef51c26ccab49c86514d583be641ffdd81be1ce92e57e",
+            "Cargo.toml": "ff5f8d4b74f37fba322e50f3fccd69097259971850da46606cae754949e397eb",
+            "crates/libsparklink/Cargo.toml": "23f684798ae7ef0c65e11be5310e6e8fcbdde09b3872ce197ed5826b2a2bb3f3",
+            "crates/libsparklink/cbindgen.toml": "43e20d719319ecbdc029e3f8ae57b136db3bf427888fc8f29033f08166493812",
+            "crates/libsparklink/include/sparklink.h": "475214480b0fa05ec72d42fb7ab922b67f12cc8517cca2564511c12a05a8a7ba",
+            "crates/libsparklink/src/client.rs": "7808c3d6ad8e29709dad3a85db19109abc4218521688adcdecb3317301e1cebb",
+            "crates/libsparklink/src/ffi.rs": "3767df93edc688cf4a80c88d434e5816e06f76589101dcbafe9251780b9ed716",
+            "crates/libsparklink/src/lib.rs": "fc1127298ed67d4263109e69b91916c2fd75edaf57d059065dd8c9c5e4c54bc6",
+            "crates/libsparklink/tests/application_broker.rs": "a3ae07a32d60c1aafe839d25c9a939ffebf2b4b62b410de39498714f25a0a949",
+            "crates/libsparklink/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/Cargo.toml": "48d0e043766c2128b7e0c932db2b1d8f80613f4c96ff2cd7f8df2ac3fd245c49",
+            "crates/slctl/examples/bus_policy_probe.rs": "3f6b3f92b89d364157b0a04285fede71fa8569b561d42bad28910d0abc3f1591",
+            "crates/slctl/examples/native_security_agent_probe.rs": "7413a4626c63626245b411e167e063ad5f445a8ca2a6203e19fded4e859bcefc",
+            "crates/slctl/src/commands.rs": "572de5b151fe0dd49da7ebce5deaaf6383cd8e5e3bc8bcad21ead33754b90104",
+            "crates/slctl/src/main.rs": "94ee4e049dcc162077fc8d8458d89d2f1837b8c06877dc9c7a6e19804e3ab1e3",
+            "crates/slctl/src/security_agent.rs": "fa20ab7db708321debd9d7036f2f4ac5316fc8362cb28574b4b2835ed353f2f5",
+            "crates/slctl/src/ssap_server.rs": "923177642bb6e2ace1c63d26f9f44d71703bcfdef7156dade899c86ed592b281",
+            "crates/slctl/tests/scan_freshness.rs": "bd7deb97194f01c95c62b43c63ddd4ce4f9ade4a8d9649c1f9f3c9b392998a02",
+            "crates/slctl/tests/security_agent.rs": "4c810768161c1a91be7397840dba1fd4c789fdab02fef16faff37a6b50dce02c",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-channel/Cargo.toml": "1852a9e066d9d9fb966e89be6810c3ab60841a68c081c46fc280f0e679616212",
+            "crates/slk-channel/src/lib.rs": "67cd996111b849076bb7e2393aef5e346bc9d8abe559b8bf3ba684d19870c3ae",
+            "crates/slk-channel/src/security.rs": "c44ee641485f6dafe06f7a7306dd25fde9ba53fcbdc4ad0e042cd6818a405480",
+            "crates/slk-contract/Cargo.toml": "d7c1a2a762cacb0facefa0a919c1fe13060671325dc18b7065b2ac6422bad9df",
+            "crates/slk-contract/src/lib.rs": "d4715de988ae94409b267194fe7aa22a6615019886470b8b3da9c52b867d5848",
+            "crates/slk-experimental/Cargo.toml": "cb5b8a8f128ddc1b70da40582eecfd2f148679c5b594da8b50669dde15c07003",
+            "crates/slk-experimental/README.md": "bb9ecebd88fb9b8caddea4a6c2a7203a40dcc3e8f4e46aca970d578f5a258f11",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "658504ecd9499ed7cd086d7ec9f1705fb6883f387f3e2d165d17cf7c3b3177ea",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-native/Cargo.toml": "6b7291fadb49e0d6474c9d2cbc86e45ca5f9815708b1901538471f8e387cda7b",
+            "crates/slk-native/cbindgen.toml": "c772f0abb4563c75cdafbca6daf75f0ab2d7892d26d03dcbe00615c44b345504",
+            "crates/slk-native/include/sparklink_native.h": "0c109b3de5df55e59535691f5cf154c5be0c17e6d2b7e3707925e689e6346740",
+            "crates/slk-native/src/adapter.rs": "ace03d69c75b4b614ba3027586b765b1f11f8b5327595ac117f2b3e32e4e1aa9",
+            "crates/slk-native/src/controller_events.rs": "5f0796edd8307b3da44eda56bff00428d842babf44524d3e8fe7247b80df931a",
+            "crates/slk-native/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/slk-native/src/event.rs": "728ff9608818e63c09e0df16b7647cbb21b6e16f4680dd2e408ba7d5da9d52d2",
+            "crates/slk-native/src/ffi.rs": "9684b5a3454c405528821ae6fcab2fd38bec0c1563e64307618c9d3aac7f8cdc",
+            "crates/slk-native/src/ffi_native.rs": "cd6fe5758cc000f33408f5996b827c6eb507470680c06e039643ed3b7e6527e7",
+            "crates/slk-native/src/ioctl.rs": "00063cc15365d73e80ec038b2b98454e9944404a018b9c62a170ff5336d679a0",
+            "crates/slk-native/src/lib.rs": "762a9a46139853416ab3eab1dbf34c151ff1be9f70f8e9ffef38d9e7ab039422",
+            "crates/slk-native/src/retired_event.rs": "bf8f5a40f84ef0d08dd0f2e379a37175a72800f17f45209f3c115c0762a84bbf",
+            "crates/slk-native/src/snoop.rs": "3cc3de4abf2d229b5ddb95bae676eacd0145d8c9bcb649a0b788d3c294304292",
+            "crates/slk-native/src/ws73_discovery.rs": "acdaac152c1590194683953896f853ffdae8ae88475f7a63a9622115e00a0a8f",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "46a3576b7c50b86aba933ba3045b7d3209698984b3d083b75c9e4ff1c19c76d6",
+            "crates/slk-protocol/src/channel.rs": "343a0ed2fc1e125c7cf7011970448613ea83dc9d733481c524d2d67adfd195c7",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/lib.rs": "b3813bfb8d42d1e5c81ca121fa8e1c3b049abd3ac8a0bc73318e2ab5c14cac79",
+            "crates/slk-protocol/src/message_security.rs": "002108cc82f7b4e560b4d781ae067338bd1d8bb9451ea8ede4edf503117622d9",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+            "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "1e3c436e9f101084fcb0c0677547f03c859243c966d48d48a0a6b8198298e1f4",
+            "crates/slk-protocol/src/types.rs": "4cf149f471a4ecad899b239d179cafaa1c9cfd4e6d9ab48e102080e7949f2b8a",
+            "crates/slkconfig/Cargo.toml": "f5c51129cccbbd10db446c4e18a7e725cad67cdd8e002741fd6e9d57deeab069",
+            "crates/slkconfig/src/main.rs": "0686c2c2021fd0ae3d01d87de2df242089efd2e65bda2f1b3a07d6c8f100fb79",
+            "crates/slkd/Cargo.toml": "dd50c27cd6b96e2f61e3a1a81d0f8b2598999315c31831231ca52d49afcf32d7",
+            "crates/slkd/src/adapters.rs": "82deace410b785bccce2c7e898eff2a67dea649c011a76577cd7c517fdb30905",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "7812f6b482150dad204ad5d84692d9b7e08ca864fa5e0569b95257c2567d1865",
+            "crates/slkd/src/config.rs": "bee373a36b82ff9432ca1f3c8aea854cb11d8a7caee62602bc65ba64556f4a78",
+            "crates/slkd/src/connection.rs": "76a2896c98cd3f26765598f39903cbe5909a83c1b03de944d239e51f810b6a82",
+            "crates/slkd/src/connection_object.rs": "d38cc1b33a8e8fdf2e210a5336341192a2874931514e0b863e0746d30c4e225a",
+            "crates/slkd/src/controller.rs": "86e5e58e7702bf793ba31817d681442eabc2847d408766ce0f7812aa8f0843c2",
+            "crates/slkd/src/dbus_iface.rs": "c41636dbacb7c05681e6f8274c167c06beba6a89002228d6e003a1dd6d0c46be",
+            "crates/slkd/src/event_loop.rs": "b2c568e7239e45b80100b8fb80b8fd347725dbedc3b631a413898ce1869510ef",
+            "crates/slkd/src/event_loop_tests.rs": "3e3d9f0b2ad1d2e6dd279325fc40c98fba483c7426ea3ee9b38b7a42f251fe3c",
+            "crates/slkd/src/extadv.rs": "b06a92cc02cdd4149c7ee90e0c33ab57f47cc238999341d34549731477f05c8e",
+            "crates/slkd/src/kernel.rs": "21483ca487eb657e4666e414d51b862472186e34d34a7a0f46a1069e89eb3297",
+            "crates/slkd/src/main.rs": "901d5a3759ef3ff466e7904f667dfe1fa4f54818a64597ecf9cafe16e7c1e983",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "1a438ca4edcf0bd4c11b733d3c1419c5287ca7ea20fcc1f6372a5994a8d29bcb",
+            "crates/slkd/src/registration.rs": "8ad85b9c2aad253ecd3ee4997feeeeb1cfd7e8cf166f2feb3625bd537a7ba3ca",
+            "crates/slkd/src/security.rs": "5ec63628e53afb52d89b08f883ef499296f5fed176e8460f93c8982640cb3b6e",
+            "crates/slkd/src/security_policy.rs": "93b5457f2d865ac6b3b594474aee57dcac57b3baf82f94e331c5ce491e06c77a",
+            "crates/slkd/src/security_policy_tests.rs": "3806cd6c8d11520ce525acc3d351b8cd4f00e387d264982ed3a7849859f63a52",
+            "crates/slkd/src/service.rs": "52b374580017a2357f4065baddadfb1ac0849128f029597f2b8cbc35e4838282",
+            "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+            "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+            "crates/slkd/src/ssap_database.rs": "9a33a1f475d39f991220c37b37d572606fa7e7f5c2e76238718835fa7ea1fee0",
+            "crates/slkd/src/ssap_engine.rs": "63c02a97bbfbba11efc7c7a0e3a2c700b0a0540679f0ea908229119d67110553",
+            "crates/slkd/src/state.rs": "58c69ece942d81f1e7d45bd6279e042f49b2ffe83d26eeb483fc4dc5f89591ce",
+            "crates/slkd/tests/config_startup.rs": "ee996e38b047f2fb37a0f57a63466f97c897b81acef56411836373c1011e2a0f",
+            "crates/slkdump/Cargo.toml": "cfa8a051c1f96f1ad16b99de57fc19aa47b99dc7f87d4382147ef5937d39ca64",
+            "crates/slkdump/src/main.rs": "6b4f7a3b271583a5b3d7fc2a3d489f9c6b822dc6f66bf127709373a2edcfe28a",
+            "crates/slkmon/Cargo.toml": "f9c218e1f1b5a0314c65e795cc89d529f271a44f245d5c3d9f7566b6679aa792",
+            "crates/slkmon/src/main.rs": "fe537266f8c5f80310709eb4247fb145cc3fb424137f6075b3123b37474c14b1",
+            "crates/slktest/Cargo.toml": "78656d09a49eb593c495d964a075a32e9911930eaf068cbfa5e6834e98491070",
+            "crates/slktest/src/benchmark.rs": "3fdade2e65655dc24cb4ccda431193beae34e5fa662f51e2d6ba72cc68507780",
+            "crates/slktest/src/benchmark/load.rs": "2d3e667b1dc9fa3c9ab1134997292990273347c288ab918e5221585c9c5dd5ff",
+            "crates/slktest/src/channel.rs": "dd76516470e1ea703b67a22b44596b94cf49edd5f5f7fbc9d98a9fee27aca0f1",
+            "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+            "crates/slktest/src/connection.rs": "614809d5a0af516d9bbd42425390ce3b123f5bc378744c068a7b1d86153fa3e6",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755",
+            "data/config/main.conf": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "696a37e80036d99e8fec82a7b4eb6d8e8df9678d3db0b59ed1aef596fcee3199",
+            "data/man/man1/slctl.1": "3d83eaaf077a23f2666d38a9c3af62950737621a6731d9d8cded0ebe6650bd55",
+            "data/man/man1/slktest.1": "a60700e71e8c334bcdd84c1a4d57b9aebbe05320325100837e4b5e8bf0d2bcd6",
+            "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+            "data/man/man8/slkd.8": "47f6b4b905236906f2257569c010926438cf6ed4fdf1d634bc5893a63e11fecd",
+            "data/pkgconfig/sparklink.pc": "ca12e4bf8d6c4458c868c5468c3afd6d5a3cc1e5a433eadc35a2f765bbcc765f",
+            "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+            "data/udev/99-sparklink.rules": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6"
+          },
+          "manifest_mapping": {
+            "material": "application-native-boundary-r3c-m2",
+            "pointer": [
+              "source_hashes"
+            ]
+          }
+        },
+        "executed_tools": {
+          "repo": "sparklink",
+          "commit": "6d30c0f67db2e25f08e33742c6fc1db64c3a374c",
+          "scopes": [
+            "tools",
+            "bindings/python/sparklink"
+          ],
+          "files": {
+            "bindings/python/sparklink/__init__.py": "1e18db1e14faac2228ec63278b0075e601388aac01117ebf18b0cf8f39f479c2",
+            "bindings/python/sparklink/_library.py": "e6663b067329b95ad68974bae58c98eeebcb80715cb5a363253366b45c553c25",
+            "bindings/python/sparklink/_validation.py": "a4dcb7967b601df96ec7332cd40827c711a2080419964a75bfd1ad08b5cf18db",
+            "bindings/python/sparklink/channel.py": "a6987c91a3640e81d213760ecdc04922f01769648b9deb754bdf9859585708f7",
+            "bindings/python/sparklink/errors.py": "fdc2c925de94a8d04a83bebcb6817173b2839673dac60adb87978c25f259a8b1",
+            "bindings/python/sparklink/native.py": "ed59c8357ce3836098afb22a7f8f33698af7df41931c0a5302e62c6b21572e03",
+            "bindings/python/sparklink/ssap.py": "416fff90340d376c23c383b849a5ca15af38a4dc7e8ab73d57615b2a5caa60ad",
+            "bindings/python/sparklink/structs.py": "bc77a212654add713ac181ff3bea0622644faa9958218ade30ad5473affeca02",
+            "tools/backend_registration_contract.py": "d68e1de74a1501fbdbcda4b2af8795e5be1c033c5086be893b10b8419bf69534",
+            "tools/build_resources.py": "a4e2bc174be731d25e4410db3a4016954597e0bae0a3026789cab302cc9d375c",
+            "tools/channel_socket_contract.py": "0934ffcd5cf17f72150e3fadb781f3218f9d1a52a06cc77c879e8cc9637b2769",
+            "tools/check_doc_examples.py": "834cc8184a50ab046cab610f1099a0b2216c9348d08ead5ba248c50cf59343f9",
+            "tools/check_docs.py": "7d43ffd4922e59294ee8d7c486716e6ade5505c5142fdacb27b6e5c37f12fc5d",
+            "tools/check_docs_browser.py": "1e88324521d9cd1ba35ac1137bdaf796071fb0973814a340112d3426e37025ff",
+            "tools/check_production_dependencies.py": "df1bb6e710d06acbcd4b1e893fb145bf10bf217bd51217fefb4402f56d68bbc9",
+            "tools/check_qualifications.py": "3109fc19fb6a0e63edc447b579978a8e8871433e9bd072ed6e618aa147a50dcf",
+            "tools/docs_integrity.py": "e575e05373d7c447c72c9c394da6a533cea55b59e78e56b77ccb4dfee45fd9c1",
+            "tools/lab/README.md": "f6176251abb7836a3f98db4f721a24f97e474099c37bb04be35f1425d5af7125",
+            "tools/lab/channel_fd_probe/Cargo.lock": "8e676693331fd9519329d25612131c348db58fa967a691e2eb7081cd50a76553",
+            "tools/lab/channel_fd_probe/Cargo.toml": "fe70d9e8acfc8833f309a5b5cc50ed4cf722d6a45a4d36062f44097854656279",
+            "tools/lab/channel_fd_probe/README.md": "0cab2ccf56845a1d87e47b4c78abfe8b47562e1ce7f8ba9fe7f407795c1b8e46",
+            "tools/lab/channel_fd_probe/src/main.rs": "a59a7d827012d922ac977bc9aeb033dde3c5603053360337af388fafe5685100",
+            "tools/lab/retired-event-poll/legacy_probe_run.py.txt": "cfda74810ff5500e8581abf0d0df9742e3263be00544dbc4791dbb3664768a3a",
+            "tools/lab/retired-power/legacy_cli_stats.rs.txt": "7dc19ade5e6ef1f1eee11130818341cc7670d5cedbf5a480ce281fc53f3ad954",
+            "tools/lab/retired-power/legacy_get_stats.rs.txt": "2d6f966182c7201fb9eca14a8f06fded836c6345b70182014bd6265435ba479d",
+            "tools/lab/retired-power/legacy_pm_methods.rs.txt": "367314acd7c2807a2e53103da5db71ad474029a7ebddea889a92e1f6e32bca73",
+            "tools/lab/retired-power/legacy_slkconfig_stats.rs.txt": "0b7891d2cc924d26820d0dd0e6fada1bd33c98da30a84de4fa8bccfdeb22419d",
+            "tools/lab/retired-power/legacy_stats_type.rs.txt": "d324f8f920ec71f1113d0edc8cb34a8f9883721e179dbb223ccc38d289776f71",
+            "tools/lab/retired-power/legacy_stats_values_test.rs.txt": "f6600302c8709e09f07c21f510989ffcdfd005d0415472aed7fe1ba5101ccb13",
+            "tools/lab/retired-read/legacy_copy_execute.py.txt": "aa029f5d524a70bf4009b11a88bc48d439556862929f81ac9087f5289dba8ee9",
+            "tools/lab/security_relay_oracle.c": "ec21b55941590250c9c18c8fe9a79b0fa5db4324d90d5612d79eea4706bc39cb",
+            "tools/lab/security_relay_reference_sdk111.patch": "edc7749cbbbd982e76bf0a8b26654925a1b60522ab52e7f39f3b2d63be9d1140",
+            "tools/lab/security_relay_reference_warm.patch": "fb26b36dd321c53d67b6c4b59a79f5795636b401bf378ab2848abadaec2a1ebc",
+            "tools/lab/ws73_acb_transport_probe.c": "2e2016b778192648b411c1e1d02e273bbcb45846ebc58f337a14b004ef150b37",
+            "tools/reference/fresh_context.c": "92aefd2b25db3d3a8013db0e47c73a5f2dfc24b30b574a342d41e7736b94f3c1",
+            "tools/reference/libusb_trace.c": "d102ae1020ce0e0df1d5e4ee1c03bc3e587d52ef39e2036485625a91fa8e7803",
+            "tools/retired_dli_event.py": "9670b3c1242ec867ffd64e8a04cd438cc9d62ddbb854110c86fa28aa4693a109",
+            "tools/run_formal.py": "984f240839e798f159a087e242716536704cdc62dc9cb23ef77342f477012547",
+            "tools/run_pdu_submit_cbmc.py": "9158f497309ec51f9792dc99c7acfa2cea7bddf520fbd0325179acecc770e78d",
+            "tools/run_registration_proof.py": "a4203308ad217d9aca473183fb7f36ed20df4a1e59e5a84bcba4ed2ff6efb021",
+            "tools/run_standard_metadata_proof.py": "e2c2170019b9d4c976c5506388404e041c5e26b9e3a0fb793a2fe99aa80bd5d1",
+            "tools/run_standard_usb_writer_proof.py": "c1e448350d2fc7235f87bb6ebbc5b7863100d7511409d4851b07f77b7745c522",
+            "tools/run_virtual_codec_proof.py": "82385b75e30cd0be77a9d13ed5da2f399fda9e6cd0ed235b837da1e6d8243057",
+            "tools/tests/data/connected_file_record.json": "9a1f21ba55b369e639f6e010ab24a9bfe35de40d01bf5ba345cb1d05e6490ec4",
+            "tools/tests/data/connected_file_v1_record.json": "f7eb000c53643b21805d912482d189053c100e3f41deafdf1897c3db5ab0ba82",
+            "tools/tests/data/resource_file_remove_record.json": "c1d3db434bfe4989fdc0801d1d767f09bf9119914786de7e61863b4cc46b1ce5",
+            "tools/tests/test_backend_install_formal_scope.py": "f0bf4a7445f1100bf5816165f99955d8630e53e1631f3a9e613066a8682fbb37",
+            "tools/tests/test_build_resources.py": "9da79f86cd86d8508fda4f359501c7fbef848d58cb32ebe1ffe912e21228273e",
+            "tools/tests/test_docs_integrity.py": "d1c43691e9c343db019c0bf57147aadc906ac0400b56c915934df5cebe5f6204",
+            "tools/tests/test_event_copy_probe.py": "06d2de5a579d04916138993f3f051608d0260b6f100ee603edc337b1b46f864a",
+            "tools/tests/test_formal_rx_scope.py": "0222d524faccb4e559809b82d1621ade89bd8d272150feb35d150a297be7728c",
+            "tools/tests/test_install_lifecycle.py": "4335243f07a0fcde3d96b254c15804c01b08e008aefcf2380632a43f5908c8ff",
+            "tools/tests/test_production_dependencies.py": "421f9d5402ef11681afa1e1994578a7499b10122808a5bcb434f868857b04e7b",
+            "tools/tests/test_qualifications.py": "43f50450b07fa3d5f1bb653d6401dcac76af2b86cc5b9ede5fc798085c30f9fa",
+            "tools/tests/test_registration_proof.py": "0dd131dd5b81389cdf33721c021b9864843a55922df689b87176499553eeb9c8",
+            "tools/tests/test_standard_metadata_proof.py": "0188c394532866bbaa72c6ef3041556a0695da8652b1bc6d6086a6a875a962cd",
+            "tools/tests/test_standard_usb_writer_proof.py": "76c10020ee086f208084e3610a242dec3c720516a48562f6e043e7b927cedaf6",
+            "tools/tests/test_verify_ssap_access.py": "b4af21bb126b58663a351e6c803132007358d28e84f2a79f5bf4462727ec32be",
+            "tools/tests/test_ws73_acb_transport_probe.py": "2372bf895f65052b8e8058baab692d52127f741fb87f124e0b626c4c820ae611",
+            "tools/tests/test_ws73_active_close.py": "0361c13f07c0f7a051602e7e3ca59aaf2f28241aa15cfe3d8e373a58c30cd28f",
+            "tools/tests/test_ws73_active_deadline.py": "6f610916f507e76546fac7da65400afdf4ef80e9a47d12f02224b869db49a452",
+            "tools/tests/test_ws73_benchmark.py": "73996f41ce2e8fac3bad8e28d590e7b26cff59e62f054bda35b7726ee169bf53",
+            "tools/tests/test_ws73_benchmark_timeline.py": "8e04d34751861761d67b75dbbae523d9ad8f3d74fb04c6584a5325396375ce3c",
+            "tools/tests/test_ws73_board_config.py": "bf5f69786b82da215853109e082b53fea6c8ec85d60ebc32b3800f12f5eb4db7",
+            "tools/tests/test_ws73_boot_code_evidence.py": "e9d9a36317053ae6039a6b59436d509ed8bbfbd469370e43559d4eace92c8c37",
+            "tools/tests/test_ws73_channel_daemon_crash.py": "ae37be2de198f89f0424f15f325b218c6bbcc570da4a5dadf2183455a76e2586",
+            "tools/tests/test_ws73_channel_deadline.py": "ddfa4e5bb1308ed785bb73262121d9919be641838e803f92a1d7373c7a16d520",
+            "tools/tests/test_ws73_channel_death_mode.py": "d676e229b11d334359f0b756267f45d0294c79f5c5f2d350af4bfc849a653205",
+            "tools/tests/test_ws73_channel_fairness.py": "0dac32c822c1ef1d2a40c8bfecd2141bf4edec86477b7de8147e9064bf473674",
+            "tools/tests/test_ws73_channel_grant.py": "f32d08e018eae1ca505776353da6d104e13a573067132d5a4196462e334b0c50",
+            "tools/tests/test_ws73_channel_link_down.py": "fe713784ada78a34c9db142b3a5c2d962377950036bab48d5f6f3996e02aa238",
+            "tools/tests/test_ws73_channel_prefix_hold.py": "9a2dfb9d573faf960d25a240c5333b9c17b6253e419934c6615eaa5393332dd8",
+            "tools/tests/test_ws73_channel_socket.py": "e75e95db09a61dee7646087c6f60abccadf7ac246bb2784523fc5732ee6955cb",
+            "tools/tests/test_ws73_command_failure.py": "581d44cf3d11c3909ce155cac635d07d4f484c9887498010aed3bd43f5ca6301",
+            "tools/tests/test_ws73_connected_file_gate.py": "c6bdacb28bceed065191d2fda59aef886514378d1016fc9c2350b84c291e3bdb",
+            "tools/tests/test_ws73_connection_control.py": "1901c3eaad5e12ea38b3b563305966399eccfd3f82774381451ef2ebe513ddb0",
+            "tools/tests/test_ws73_connection_objects.py": "703828e815ce5ec680a764ed793bef292dc95c9595316b654058cba70971cada",
+            "tools/tests/test_ws73_connection_queued.py": "a91fc552b1b7a80f319da697e933a1a23eec0f49bd1b4ce162ddbdb7fa4d2439",
+            "tools/tests/test_ws73_credit_observation.py": "cbefbdc04057e9802e2e9ad9ae61d1b647e24928c5eeb3ef3550fefd5464f2c8",
+            "tools/tests/test_ws73_daemon_channel_fd.py": "1caf1ac1e4065e4c219901bb8cb6128efc54f56be600fbc792e24f08ee71fbb2",
+            "tools/tests/test_ws73_daemon_crash.py": "01650d3aad0266f2d53c08be7d4e8046d2f5e7ca119edb3d0b9deef7b340f95f",
+            "tools/tests/test_ws73_daemon_hold.py": "75498594bd65648497776c4639f2e0bf84f8402dfc22cf517d404de60a7952c5",
+            "tools/tests/test_ws73_daemon_removal.py": "59788574570b253fd6e456f21ef43b7592b813b4d102a9e881284f1cfbd10e89",
+            "tools/tests/test_ws73_diagnostic_autonomous.py": "39e34fd0c8de67ed878877e5e5f45267e99290386e8b47eb2142517716376e42",
+            "tools/tests/test_ws73_diagnostic_autonomous_capture.py": "e4e791a026a401df1cf0f6fb0c6933cb1b8ac9da409ebf9eef5e13ea8618ea9e",
+            "tools/tests/test_ws73_diagnostic_cancel.py": "6261ec3f4b1ba3793a6d2e9408b0f08e809862b7674eee6e0538a0cb54be30b5",
+            "tools/tests/test_ws73_diagnostic_cancel_capture.py": "e48e88beb2cfbe0edbb44a66232f69c60c5ea63aa0a472dacb71b46daaabf3d6",
+            "tools/tests/test_ws73_diagnostic_capture.py": "f2a448c6487c2d82ba76f64fe099b52edff96b5600a25f11ef1fc56bd546c4d7",
+            "tools/tests/test_ws73_diagnostic_deadline.py": "c01e6a96d7ceed6c5bbf4329fb088426fdf9ef87368d7c44f4ce578833406658",
+            "tools/tests/test_ws73_diagnostic_deadline_capture.py": "b4f866f535239e486db165b07a56dc51249940a2300740dfc40bfe61b929acb4",
+            "tools/tests/test_ws73_diagnostic_hold.py": "ffcf985958f6178ddbf7d7d64aae89660c8c3059e1539a6712db327bb7006cbd",
+            "tools/tests/test_ws73_diagnostic_probe.py": "dd97984822b9a0fe2c0c6b77a835fb285ef79e98c4c89cb9fec8154e8aed3e4b",
+            "tools/tests/test_ws73_discovery_policy_capture.py": "81c460fe822b87778fa195a4b44f704d2ad835a3a8c7eb984929cde4371726f7",
+            "tools/tests/test_ws73_down_observation.py": "228679274aba283d681e249a722b610dcf995caa2219ec42ac66e2790ff70713",
+            "tools/tests/test_ws73_dynamic_channels.py": "f7eaae6ed6ff3f2f458c2620a1ffb99f737095f0d8d97f8b0004405a2f15266f",
+            "tools/tests/test_ws73_dynamic_output.py": "29f8d5ed548842f32c8b3d57ba3181e84d28a3b80253cfe7839c69f974c4e7a9",
+            "tools/tests/test_ws73_early_fault.py": "11f641aab5c03b2db631fde964cf705d0f2d03c22915510ceab49cc82ed3475f",
+            "tools/tests/test_ws73_encryption.py": "65d199e58c4d6ff0f0518881eabfae1d10fbfda213c7ae20933dfcc5ac7cf073",
+            "tools/tests/test_ws73_firmware.py": "140a3da1cf4b1deac4f7125457f8ef1a8fd368178c9c206957657e6f5943e4ef",
+            "tools/tests/test_ws73_firmware_upload_evidence.py": "6f36a4efdb82594801f979c6db3b0fe5b19af38492e6f56c8c57f8e52ee33b4a",
+            "tools/tests/test_ws73_host_diagnostics.py": "32d3ddea6a98af5d0f5efabe9c69b7d1bbe7e021c9720037608e7479e5fdf738",
+            "tools/tests/test_ws73_host_later_hold.py": "df92d3eecbc0044c40124f9f0af5dee81821620cfebab2aa41c0e87ab1c6e93d",
+            "tools/tests/test_ws73_initialization_lifecycle.py": "417af3449cdf591aab7e3ff3de17f36fd4424fd2186e6aa1db0aa73f4b4f7c42",
+            "tools/tests/test_ws73_initialization_off.py": "61074836efe06c760149e8cf4f2717664ea0a34395a2bc9c214dcce53cde059f",
+            "tools/tests/test_ws73_key_agreement.py": "51d1dd259838fbfb2574150728bd81864424193015c6ca43fc25f9abe0f58b3c",
+            "tools/tests/test_ws73_lifecycle_intents.py": "4c6adead93f5e3b576e482bdef73b886ad0f40ceb35af9a1d551beb9d4a10769",
+            "tools/tests/test_ws73_link_resync.py": "2cd65eeccff8d41bacbed4b10ad505492b65c24aece802e3ca8c2505f737cb6a",
+            "tools/tests/test_ws73_live_security.py": "47bd67dd087f4689dec13a6c8af713211321511632cafc6900e5710c798cc135",
+            "tools/tests/test_ws73_managed_queue_support.py": "754e449dd6c9ccb13f1e7fc2507938317fcf197ed8d45c39467936a8be730b20",
+            "tools/tests/test_ws73_management_eviction.py": "7902537189dfb10909c4d8bb385aa5945bb1abdd36db53aa6623436716cc6974",
+            "tools/tests/test_ws73_management_partial.py": "66dad831125bc175f25e1c1ecca00ea5032688c626669f94b6fdfc6d192ab03a",
+            "tools/tests/test_ws73_management_queue_ready_peer.py": "3ea4507b1020b4c8d14adcbb336518d186861f0f0ddb50470f951abf86b192ab",
+            "tools/tests/test_ws73_management_queued.py": "7f31cd0128c57e486bd78440eb4179e6d735538c5126c9506ac61289eadc38cb",
+            "tools/tests/test_ws73_management_ready_peer.py": "38ceae8a04468e18e7e248710b82e5e77be0c8e3ca50634ef4d56dd7138245b6",
+            "tools/tests/test_ws73_management_setup.py": "503f8ed5e48bf63499245516a5420ae97508c14331a69a928d4c27b4bd5bac69",
+            "tools/tests/test_ws73_model_evidence.py": "1071b3aae734e16d0d17b765217dd5153cf73d17d3113ffc1a91b7ae9b239ad2",
+            "tools/tests/test_ws73_model_hold.py": "128432a42a0b6b64ffef02573ba9cc4d5fa01bd804a156a017e8f1ec9b6dd35f",
+            "tools/tests/test_ws73_native_build_check.py": "d9c59ede4aa1e808a78feb3a5ab7d7ed0062cf45a5c67234feedce2506e3373e",
+            "tools/tests/test_ws73_native_deploy.py": "462392307fbbd3f1052cebc9bc8a8f60f2358cd22ece0174563eaa6db65cc5b6",
+            "tools/tests/test_ws73_native_root_smoke.py": "24679553c3520664f0e8e8965ef6f07df17a455ef4ad212b669c598f12d6d564",
+            "tools/tests/test_ws73_native_service_bundle.py": "37dc26987f12d4acdd5eb9f76054205af2677fd9a0eabb816c4bb3e6c4d34a33",
+            "tools/tests/test_ws73_north_star.py": "3f25ae4fcbe390f391013f905c8122f6eba2e5175acdbcbdf2f7b1bafeae1cb2",
+            "tools/tests/test_ws73_numeric_agent.py": "f6d9573e0e6f633f1e54ad88364327b3b57d2c961cb22bf74892de51b5163ed3",
+            "tools/tests/test_ws73_observer_policy.py": "f5f9355e7b3b204b8ecf1fe367af578bba8caefe7884c00858c4a867b9798e52",
+            "tools/tests/test_ws73_parallel.py": "84ccfd960cab5251117af321c348c2bb0a45f58b601a505a7f284b5a26a7fa81",
+            "tools/tests/test_ws73_parallel_data.py": "9988aad6d2f1e9fda787ac8a32d256f26810c65793c38a41ba02037dddebf197",
+            "tools/tests/test_ws73_platform_capture.py": "c07788311a05b9f58ff3c5d88674b680c6ae27054512e2ac742fe8bada3a7ae8",
+            "tools/tests/test_ws73_protected_grant.py": "e1b9a867a072dd795f1cda80ba018478d7bbf4a1b95db8a86f3a3c6e66f12167",
+            "tools/tests/test_ws73_protected_ssap.py": "c561aeb7e8e6f83af19f1ec5360d83fcbdc65b4a1ce966cd93b226ed7d297a05",
+            "tools/tests/test_ws73_qemu_hold_budget.py": "8161b753b30e1f47f09d7e8172c2eb0bddca173d64b63fa62dfbbfaf2f0d7bdc",
+            "tools/tests/test_ws73_recovery_budget_observation.py": "d8c14901a82a322b310199c4c5080f634e1571edae9dbe82c8c126f7704bf14a",
+            "tools/tests/test_ws73_recovery_capture.py": "330b82a97b17799f29939d10f458f662df30c9b7170bc7650617d05c1c1f5b99",
+            "tools/tests/test_ws73_reference_capture.py": "d7501342c65df75bd2e58a99190d72f1153e6e22847734d6aa839e9392dd7f7e",
+            "tools/tests/test_ws73_relay_firmware_extension.py": "c313003bade9d8c429e2d91b04ef60e3ad2a283d67138f93ba4719094e02dc06",
+            "tools/tests/test_ws73_resource_file_gate.py": "3ad41752e10932c584311b3656f4f5ec58d10de53d4dffa20925926e35de855b",
+            "tools/tests/test_ws73_revoke_prefix.py": "ff9f89b811643632af1f6a4fd32be919fec4e80e89bb042eb094a398135bb236",
+            "tools/tests/test_ws73_rom_chip.py": "9c9babd120ba06f4f6c167b409fd36c8925bbb3876309d5614e5b80c3771bfca",
+            "tools/tests/test_ws73_rom_chip_evidence.py": "e847b32142b5bb96182b31417f3bba96096f974c942752e4a1f1fd9f4dcda7f5",
+            "tools/tests/test_ws73_rx_gap.py": "0692b9ecfa381ece323f3d1364a7841f9cb5b3755e9a888cc34d4b09f880a79f",
+            "tools/tests/test_ws73_security_agent.py": "c933b1b7e3db225f3d399bd1a1487ae0a9b7c7884b42634a9c5b8db7ed2e5cf7",
+            "tools/tests/test_ws73_security_cancel.py": "268175eb9787dfa429e44329414dd0c5862dcfa149d5ecc0aa496203095bf2e8",
+            "tools/tests/test_ws73_security_capabilities.py": "2f071544a70e4f3a542e5a0bf448fd0216d8276730a7e1ccfa649249b19e1b47",
+            "tools/tests/test_ws73_security_cli.py": "0ab47ad88ec488e272ed8fdc5a1221fc572cacaa685b3ccd7ab45e2523890842",
+            "tools/tests/test_ws73_security_install_hold.py": "2810f86b5070ca392eed4c1f8ee7093938e04887e0a00f5dd4c6f2a0c8a6ca5a",
+            "tools/tests/test_ws73_security_numeric.py": "5dbac0dfb4ebb6140504adaade3420454f01b3ec16c2465343119446b44e70f0",
+            "tools/tests/test_ws73_session_drain.py": "d6fe4fc9eba6dfb6b2bf0c3ad6f0b88eae92e2961ac6ddb3b8d9dd119e204708",
+            "tools/tests/test_ws73_session_idle.py": "ac78693acaa77a23a5a739eef1e604c243613a7b06490bde31e3313f581a4842",
+            "tools/tests/test_ws73_session_service.py": "0f277212e3a078e34a1d5d6c5271ed99aacf8915b6e830b7b9f2be31edf9df71",
+            "tools/tests/test_ws73_socket_benchmark.py": "4928316afa1f64ac5e02f6cfd9a15e99fc84d585fcdcecef1125da1541eac714",
+            "tools/tests/test_ws73_ssap_access.py": "b5f30d1b63cc96983f56515ec51b248fdeda07c0015f793d1534efada1062b78",
+            "tools/tests/test_ws73_ssap_discovery.py": "833c4a82425e6a885fbd222fd35131367c374707d919fa570b399e5a2fe1c9f3",
+            "tools/tests/test_ws73_ssap_owned.py": "20b33f53a94a22c7c7d6674355ce2733936b4155c2d0d469326f668509b45321",
+            "tools/tests/test_ws73_ssap_service_policy.py": "a7d82f1e1059e8512014e53ee540da3eb836f38a4f57064299ec967d7ac0cfd5",
+            "tools/tests/test_ws73_ssap_value.py": "37449aa9d535beb6f74dfb9c4742c4066f85641238f577a6c0ed7010d3ab3346",
+            "tools/tests/test_ws73_target.py": "eb40a7d00f42538f17486d4b58f5f057e06d3011720d4e513f4673e0bdacf536",
+            "tools/tests/test_ws73_tx_capture.py": "24200d0df36524e9245606a727ba088d53aeabf2175d688abaef055c7b0d2193",
+            "tools/tests/test_ws73_vm_native_root.py": "4e7bd21d9cdd40eed37366ddea92b8f37616df8a6a8f167c71d4f216c1e76a97",
+            "tools/tests/test_ws73_vm_register_reset.py": "3dfdd19d645ad9ee65d12f004cb650613142a0f1b9fc7814815035a74febb035",
+            "tools/verify_ssap_access.py": "87d3f1169501fca67f166e5fd4c0b2846e4e4f0038daed71aa31cf84c10ff05d",
+            "tools/ws73-board-config.py": "5dfde390c8041f3d9aa33ff7a4e2854e24b5d7a34d837ceab8a76fcba3f9b138",
+            "tools/ws73_acb_transport_probe.py": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+            "tools/ws73_active_deadline.py": "32282a67ef88ac48656027614176bc11623182967d46669034ae26b0ebfa988d",
+            "tools/ws73_benchmark.py": "8c06a3a038c199700d407c694c79cc541628bf59775e9cc63b1da31181cd5823",
+            "tools/ws73_benchmark_timeline.py": "92043a0b33bc498551636428a77a8ae63b5dadaea210921da60f9c26a880896b",
+            "tools/ws73_bindings_probe.c": "eef1abe0668bf452cca7c087e631e76112513b1a64f4aa7410e7c9d3d86359c1",
+            "tools/ws73_bindings_probe.py": "71c1cdc5fbe9182cc68fb461b0ea0ae49c2d9bd12170436dc7b182180dceedcb",
+            "tools/ws73_boot_code_evidence.py": "0ab7823dc6dafe5f59f385fe2335f9ef95e8d4ed5f8df006a66983aaf6a93be5",
+            "tools/ws73_capture.py": "58f057f4927cbb7cd428375b04ad284c630efe7438c46d08294e824c530d2677",
+            "tools/ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+            "tools/ws73_channel_deadline.py": "0f749ba7b88408fc3b6133d0302932c4bbe1d81d39f5d1fd5aa48ac7fbe91dea",
+            "tools/ws73_channel_fairness.py": "240383395f03e3482e6381b41fc526e5e9a831e033e5e66b643dd04ddbb9cc4f",
+            "tools/ws73_channel_grant.py": "dd6c9d6be2592cb2e80f916c33cc48568bc6e9f86e441c5841642dfc94db074e",
+            "tools/ws73_channel_link_down.py": "cd135c9a675e9ca58bd4516d7a02fb1ebf62c123731f6cb94adc902cd66cf523",
+            "tools/ws73_channel_prefix_hold.py": "2a6b8720777f098a6d5d7270af772b25bc46fee4dd4591cabec55459e97052a3",
+            "tools/ws73_channel_socket.py": "b4c1f30964ca002bd8088b8e96177f7839f4816fcef596b200d7f4f389e744d3",
+            "tools/ws73_connected_file_gate.py": "b2ce9f0f44a8700558566c55f519b97f61728ac4217ff53d638475cc266a927f",
+            "tools/ws73_connection_control.py": "9288c04e79c804de70778d17218bb409b3b1bd2e25ea7c9923f38071eb586574",
+            "tools/ws73_connection_objects.py": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+            "tools/ws73_connection_queued.py": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+            "tools/ws73_credit_observation.py": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+            "tools/ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+            "tools/ws73_daemon_crash.py": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+            "tools/ws73_daemon_hold.py": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+            "tools/ws73_daemon_removal.py": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+            "tools/ws73_diagnostic_autonomous.py": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+            "tools/ws73_diagnostic_cancel.py": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+            "tools/ws73_diagnostic_deadline.py": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+            "tools/ws73_diagnostic_hold.py": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+            "tools/ws73_diagnostic_probe.py": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+            "tools/ws73_discovery_policy_capture.py": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+            "tools/ws73_dracut_ldconfig.sh": "b55e4d4e3020fb060b22b4c4f719dbdd9c4cd8888ae3c9dc1bace3f4a694d501",
+            "tools/ws73_dynamic_channels.py": "47f21b92b41d9e4212dd813c67e979c117df89a0c933b308f3df5c0120641bb9",
+            "tools/ws73_early_fault.py": "00372b7486cb3829c704eccac412ddcc51221808c8292398d28af1475f719c64",
+            "tools/ws73_event_copy_probe.py": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+            "tools/ws73_firmware.py": "d48f48e2b169631cac1f4919a1f393a010e5aedd363fe19f9113d041964012fc",
+            "tools/ws73_firmware_upload_evidence.py": "ab140aeddc063f3ceb0baa65f2e572c73d9c03709e774b6d16ec5cd438735bde",
+            "tools/ws73_host_diagnostics.py": "1a53382ccdafce3d34bf2dd853303505955779b2e2b89f1fa00d5616f1e7a347",
+            "tools/ws73_host_later_hold.py": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+            "tools/ws73_initialization_lifecycle.py": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+            "tools/ws73_key_agreement.py": "5c96e2d98efd78d9a7bef7b9cc325a23c9dc00b6b5ea19f081d191ca266bced3",
+            "tools/ws73_link_resync.py": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+            "tools/ws73_managed_queue_probe.c": "1670731a7c5b8a1888ca2c0bc899817a762b03061570ec6a29212b2a855eb7d8",
+            "tools/ws73_managed_queue_support.py": "7c951e9dc3b6bec05c16b8f256f7537c422aceadc7870b5ac74518337944b898",
+            "tools/ws73_management_eviction.py": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+            "tools/ws73_management_partial.py": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+            "tools/ws73_management_queue_ready_peer.py": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+            "tools/ws73_management_queued.py": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+            "tools/ws73_management_ready_peer.py": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+            "tools/ws73_management_setup.py": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+            "tools/ws73_model_evidence.py": "2531db15094c592cfd096f5da306697c57072115e7ec04205fd0237085c9a0d9",
+            "tools/ws73_model_hold.py": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+            "tools/ws73_native_boot_bundle.py": "e8509d094443e0ae3b1cbbb2624c00f9f220b1c9666e22b66c990443c40c6de3",
+            "tools/ws73_native_build_check.py": "cb9ee7a0332766bcdd7b3c04d701e70f253877c66acb9b76a44388e1f2846abc",
+            "tools/ws73_native_deploy.py": "e1ee10a4c6d73bcb710d3141c3d3c20a1cc9d154bb3ab9fca2da8795147871f6",
+            "tools/ws73_native_module_init.sh": "616a30940d90f7b04a3d37fb6a8485217330ae29a4fb0c0d7af2f1ce2ae9d914",
+            "tools/ws73_native_root_smoke.py": "dc0aa6efd5f77c24d3bdb429e897404da4ccef8e97b0db9feadf28656daa3795",
+            "tools/ws73_native_service_bundle.py": "126038b18cface28581f64e1e0acaec97b35c9d2f2e96979e580627d0a5fd928",
+            "tools/ws73_north_star.py": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+            "tools/ws73_observer_policy.py": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+            "tools/ws73_parallel.py": "635565aca4b179de641ffee2a70503e447e272f2eb6dc8a34e8bbe60c2b76894",
+            "tools/ws73_parallel_data.py": "47f105065fdc82c6189fe51a158a33de22cc1304d615efa282beaf753b9af7c4",
+            "tools/ws73_protected_grant.py": "5b81ad146009ce8d31b882f54c78df25483fd6fd1fbf959266ba80c49cd3058d",
+            "tools/ws73_qemu_hold_budget.py": "0e87ae6f55bbc7aab8b0f33822e746cc187beb31e4f66f74802ce4de0a8d01f2",
+            "tools/ws73_reference_capture.py": "1e6893e0992b72586cc0493fc81265f42c2529ff6c11a9f918e52bd84c770935",
+            "tools/ws73_register_reset_init.sh": "57d6899b318d208b0511550fa11df5d7e4eaab48cc1e73d5b1e6c3be7843b43d",
+            "tools/ws73_relay_firmware_extension.py": "03f2086ace2f90087360580d18435b2ef8f0355ec7de5f194d1438bfa0a75b87",
+            "tools/ws73_resource_file_gate.py": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+            "tools/ws73_revoke_prefix.py": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+            "tools/ws73_rf_rounds.py": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+            "tools/ws73_rom_chip.py": "4fe972ec0d9c2d00451b8086a6173f31c54f1214cb46e4f69a4ab6f021837d43",
+            "tools/ws73_rom_chip_evidence.py": "2387138e2625cdd65fc8cade0e05dd7e22023f694c97f6a8b38e34164174a355",
+            "tools/ws73_rx_gap.py": "43b2c647452504b332e4cb1c2268354b9098a5cb1af0755c7d56b0f7030b4390",
+            "tools/ws73_security_agent.py": "fc028f4b01dfe177c9c7a331b4d05392d52d3021f3f2dab6a128ba4293c90133",
+            "tools/ws73_security_cancel.py": "ce4323947002157e98b35b9b15032195a6f04fac6dcf15bc5b0edc8239a71c49",
+            "tools/ws73_security_capabilities.py": "b874b264f963f3c54e3052e4298c61106934f257cd85d85a3dce6dc9ff02e82e",
+            "tools/ws73_security_cli.py": "99bda3dfde564693382723cd00366f7e906a89647ef29edb3b06f9b0295316ce",
+            "tools/ws73_security_install_hold.py": "4db016caf335641e6c58f4567058cd89971b1513d7f84381ccb7ef6389b14728",
+            "tools/ws73_security_numeric.py": "309c694fd94af3a013b8c90454017eb243278090180abf80a3614ce2bd9c2a03",
+            "tools/ws73_security_relay_reference.py": "2352029c8552b5e80cf293a1001bf3cde578f06639c453048389da216d00b361",
+            "tools/ws73_session_drain.py": "e459a71ad26b50d41b260ff6dd758ccb740c6874d5adbdb38148ecbcefa0ffc9",
+            "tools/ws73_session_idle.py": "0e3ba7c5848a974872280c0e2e257c79c12c8ff4a7b33a3da44e46473f37c776",
+            "tools/ws73_session_service.py": "db7d79925dc36d80141beadc76ed06e3924de55b85523dff0332be8776983694",
+            "tools/ws73_socket_benchmark.py": "27b2093a8af18ddfb081c89c35a7b60e72b773351ddb309eda4ebe83b35cdc14",
+            "tools/ws73_ssap_access.py": "fad9c28a2ebbec70867cd9bdc14b10376f456010bf7e38850e8b5ebcff1d7ca6",
+            "tools/ws73_ssap_discovery.py": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+            "tools/ws73_ssap_owned.py": "76d75a064de9bb442f80e50a48cace3a8039cdd099002df11446fc7afee1f240",
+            "tools/ws73_ssap_service_policy.py": "a8a051355cd0db0eef77f8932aa4bbab2267c7551fa1fe02bd928e93310e223c",
+            "tools/ws73_ssap_value.py": "37ed7ba0c85dfa01c2ee4a0bcbc554ed7540ae1f432d23875fb36e3e8f462706",
+            "tools/ws73_target.py": "143ea3b67c34f8a98d75db904c9b00065b23ca7acd5f5958106e48320db39818",
+            "tools/ws73_target_control.py": "05043c7ded78e6f7cdcf15b2da7fbcfeb427c0ce2ac756836244df38f72973ce",
+            "tools/ws73_target_guest.py": "315fe19656178ef5306e916ee12c4586ff146bafaec427714124e754dcff5572",
+            "tools/ws73_target_init.sh": "0a79e55839adf0e217c3612eae5e37b78513fa8561ed7cb7a149da74b29dea53",
+            "tools/ws73_target_recovery.py": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+            "tools/ws73_trace_layout.py": "1220dd5d01e5f748585bfc0dd5646196fd0f10365d2ec791d0a065eada74633d",
+            "tools/ws73_vm_native_root.py": "b9d5fcbbdbd99ac6210fc004aeecc28186255a1b408e69bbec5eea5f9396797b",
+            "tools/ws73_vm_register_reset.py": "1307cf000600913038cd6b96feec56439f8fc0494593c775524d15607bf4aae7"
+          }
+        }
+      },
+      "report_commit": "8ff1f68eb92d8bd7676f64ac5df5d25fe08520fd",
+      "artifact_materials": [
+        "application-native-boundary-r3c-m2",
+        "application-native-boundary-r3c-m3",
+        "application-native-boundary-r3c-m4",
+        "application-native-boundary-r3c-m5",
+        "application-native-boundary-r3c-m6",
+        "application-native-boundary-r3c-m7",
+        "application-native-boundary-r3c-m8",
+        "application-native-boundary-r3c-m9",
+        "application-native-boundary-r3c-m10",
+        "application-native-boundary-r3c-m11",
+        "application-native-boundary-r3c-m12",
+        "application-native-boundary-r3c-m13",
+        "application-native-boundary-r3c-m14",
+        "application-native-boundary-r3c-m15",
+        "application-native-boundary-r3c-m16",
+        "application-native-boundary-r3c-m17",
+        "application-native-boundary-r3c-m18",
+        "application-native-boundary-r3c-m19",
+        "application-native-boundary-r3c-m20",
+        "application-native-boundary-r3c-m21",
+        "application-native-boundary-r3c-m37",
+        "application-native-boundary-r3c-m38",
+        "application-native-boundary-r3c-m39",
+        "application-native-boundary-r3c-m40",
+        "application-native-boundary-r3c-m41",
+        "application-native-boundary-r3c-m42",
+        "application-native-boundary-r3c-m43",
+        "application-native-boundary-r3c-m44",
+        "application-native-boundary-r3c-m45",
+        "application-native-boundary-r3c-m46",
+        "application-native-boundary-r3c-m47",
+        "application-native-boundary-r3c-m48",
+        "application-native-boundary-r3c-m49",
+        "application-native-boundary-r3c-m50",
+        "application-native-boundary-r3c-m51",
+        "application-native-boundary-r3c-m52",
+        "application-native-boundary-r3c-m53",
+        "application-native-boundary-r3c-m54",
+        "application-native-boundary-r3c-m55",
+        "application-native-boundary-r3c-m56",
+        "application-native-boundary-r3c-m57",
+        "application-native-boundary-r3c-m58",
+        "application-native-boundary-r3c-m59",
+        "application-native-boundary-r3c-m60",
+        "application-native-boundary-r3c-m61",
+        "application-native-boundary-r3c-m62",
+        "application-native-boundary-r3c-m63",
+        "application-native-boundary-r3c-m64",
+        "application-native-boundary-r3c-m65",
+        "application-native-boundary-r3c-m66",
+        "application-native-boundary-r3c-m67",
+        "application-native-boundary-r3c-m68",
+        "application-native-boundary-r3c-m69",
+        "application-native-boundary-r3c-m70",
+        "application-native-boundary-r3c-m71",
+        "application-native-boundary-r3c-m72",
+        "application-native-boundary-r3c-m73",
+        "application-native-boundary-r3c-m74",
+        "application-native-boundary-r3c-m75",
+        "application-native-boundary-r3c-m76",
+        "application-native-boundary-r3c-m77",
+        "application-native-boundary-r3c-m78",
+        "application-native-boundary-r3c-m79",
+        "application-native-boundary-r3c-m80",
+        "application-native-boundary-r3c-m81",
+        "application-native-boundary-r3c-m82",
+        "application-native-boundary-r3c-m83",
+        "application-native-boundary-r3c-m84",
+        "application-native-boundary-r3c-m85",
+        "application-native-boundary-r3c-m86",
+        "application-native-boundary-r3c-m87",
+        "application-native-boundary-r3c-m88",
+        "application-native-boundary-r3c-m89",
+        "application-native-boundary-r3c-m90",
+        "application-native-boundary-r3c-m91",
+        "application-native-boundary-r3c-m92",
+        "application-native-boundary-r3c-m93",
+        "application-native-boundary-r3c-m94",
+        "application-native-boundary-r3c-m95",
+        "application-native-boundary-r3c-m96",
+        "application-native-boundary-r3c-m97",
+        "application-native-boundary-r3c-m98",
+        "application-native-boundary-r3c-m99",
+        "application-native-boundary-r3c-m100",
+        "application-native-boundary-r3c-m101",
+        "application-native-boundary-r3c-m102",
+        "application-native-boundary-r3c-m103",
+        "application-native-boundary-r3c-m104",
+        "application-native-boundary-r3c-m105",
+        "application-native-boundary-r3c-m106",
+        "application-native-boundary-r3c-m107",
+        "application-native-boundary-r3c-m108",
+        "application-native-boundary-r3c-m109",
+        "application-native-boundary-r3c-m110",
+        "application-native-boundary-r3c-m111",
+        "application-native-boundary-r3c-m112",
+        "application-native-boundary-r3c-m113",
+        "application-native-boundary-r3c-m114",
+        "application-native-boundary-r3c-m115",
+        "application-native-boundary-r3c-m116",
+        "application-native-boundary-r3c-m117",
+        "application-native-boundary-r3c-m118",
+        "application-native-boundary-r3c-m119",
+        "application-native-boundary-r3c-m120",
+        "application-native-boundary-r3c-m121",
+        "application-native-boundary-r3c-m122",
+        "application-native-boundary-r3c-m123",
+        "application-native-boundary-r3c-m124",
+        "application-native-boundary-r3c-m125",
+        "application-native-boundary-r3c-m126",
+        "application-native-boundary-r3c-m127",
+        "application-native-boundary-r3c-m128",
+        "application-native-boundary-r3c-m129",
+        "application-native-boundary-r3c-m130",
+        "application-native-boundary-r3c-m131",
+        "application-native-boundary-r3c-m132",
+        "application-native-boundary-r3c-m133",
+        "application-native-boundary-r3c-m134",
+        "application-native-boundary-r3c-m135",
+        "application-native-boundary-r3c-m136",
+        "application-native-boundary-r3c-m137",
+        "application-native-boundary-r3c-m138",
+        "application-native-boundary-r3c-m139",
+        "application-native-boundary-r3c-m140",
+        "application-native-boundary-r3c-m141",
+        "application-native-boundary-r3c-m142",
+        "application-native-boundary-r3c-m143",
+        "application-native-boundary-r3c-m144",
+        "application-native-boundary-r3c-m145",
+        "application-native-boundary-r3c-m146",
+        "application-native-boundary-r3c-m147",
+        "application-native-boundary-r3c-m148",
+        "application-native-boundary-r3c-m149",
+        "application-native-boundary-r3c-m150",
+        "application-native-boundary-r3c-m151",
+        "application-native-boundary-r3c-m152",
+        "application-native-boundary-r3c-m153",
+        "application-native-boundary-r3c-m154",
+        "application-native-boundary-r3c-m155",
+        "application-native-boundary-r3c-m156",
+        "application-native-boundary-r3c-m157",
+        "application-native-boundary-r3c-m158",
+        "application-native-boundary-r3c-m159",
+        "application-native-boundary-r3c-m160",
+        "application-native-boundary-r3c-m161",
+        "application-native-boundary-r3c-m162",
+        "application-native-boundary-r3c-m163",
+        "application-native-boundary-r3c-m164",
+        "application-native-boundary-r3c-m165",
+        "application-native-boundary-r3c-m166",
+        "application-native-boundary-r3c-m167",
+        "application-native-boundary-r3c-m168",
+        "application-native-boundary-r3c-m169",
+        "application-native-boundary-r3c-m170",
+        "application-native-boundary-r3c-m171",
+        "application-native-boundary-r3c-m172",
+        "application-native-boundary-r3c-m173",
+        "application-native-boundary-r3c-m174",
+        "application-native-boundary-r3c-m175",
+        "application-native-boundary-r3c-m176",
+        "application-native-boundary-r3c-m177",
+        "application-native-boundary-r3c-m178",
+        "application-native-boundary-r3c-m179",
+        "application-native-boundary-r3c-m180",
+        "application-native-boundary-r3c-m181",
+        "application-native-boundary-r3c-m182",
+        "application-native-boundary-r3c-m183",
+        "application-native-boundary-r3c-m184",
+        "application-native-boundary-r3c-m185",
+        "application-native-boundary-r3c-m186",
+        "application-native-boundary-r3c-m187",
+        "application-native-boundary-r3c-m188",
+        "application-native-boundary-r3c-m189",
+        "application-native-boundary-r3c-m190",
+        "application-native-boundary-r3c-m191",
+        "application-native-boundary-r3c-m192",
+        "application-native-boundary-r3c-m193",
+        "application-native-boundary-r3c-m194",
+        "application-native-boundary-r3c-m195",
+        "application-native-boundary-r3c-m196",
+        "application-native-boundary-r3c-m197",
+        "application-native-boundary-r3c-m198",
+        "application-native-boundary-r3c-m199",
+        "application-native-boundary-r3c-m200",
+        "application-native-boundary-r3c-m201",
+        "application-native-boundary-r3c-m202",
+        "application-native-boundary-r3c-m203",
+        "application-native-boundary-r3c-m204",
+        "application-native-boundary-r3c-m205",
+        "application-native-boundary-r3c-m206",
+        "application-native-boundary-r3c-m207",
+        "application-native-boundary-r3c-m208",
+        "application-native-boundary-r3c-m209",
+        "application-native-boundary-r3c-m210",
+        "application-native-boundary-r3c-m211",
+        "application-native-boundary-r3c-m212",
+        "application-native-boundary-r3c-m213",
+        "application-native-boundary-r3c-m214",
+        "application-native-boundary-r3c-m215",
+        "application-native-boundary-r3c-m216",
+        "application-native-boundary-r3c-m217",
+        "application-native-boundary-r3c-m218",
+        "application-native-boundary-r3c-m219",
+        "application-native-boundary-r3c-m220",
+        "application-native-boundary-r3c-m221",
+        "application-native-boundary-r3c-m222",
+        "application-native-boundary-r3c-m223",
+        "application-native-boundary-r3c-m224",
+        "application-native-boundary-r3c-m225",
+        "application-native-boundary-r3c-m226",
+        "application-native-boundary-r3c-m227",
+        "application-native-boundary-r3c-m228",
+        "application-native-boundary-r3c-m229",
+        "application-native-boundary-r3c-m230",
+        "application-native-boundary-r3c-m231",
+        "application-native-boundary-r3c-m232",
+        "application-native-boundary-r3c-m233",
+        "application-native-boundary-r3c-m234",
+        "application-native-boundary-r3c-m235",
+        "application-native-boundary-r3c-m236",
+        "application-native-boundary-r3c-m237",
+        "application-native-boundary-r3c-m238",
+        "application-native-boundary-r3c-m239",
+        "application-native-boundary-r3c-m240",
+        "application-native-boundary-r3c-m241",
+        "application-native-boundary-r3c-m242",
+        "application-native-boundary-r3c-m243",
+        "application-native-boundary-r3c-m244",
+        "application-native-boundary-r3c-m245",
+        "application-native-boundary-r3c-m246",
+        "application-native-boundary-r3c-m247",
+        "application-native-boundary-r3c-m248",
+        "application-native-boundary-r3c-m249",
+        "application-native-boundary-r3c-m250",
+        "application-native-boundary-r3c-m251",
+        "application-native-boundary-r3c-m252",
+        "application-native-boundary-r3c-m253",
+        "application-native-boundary-r3c-m254",
+        "application-native-boundary-r3c-m255",
+        "application-native-boundary-r3c-m256",
+        "application-native-boundary-r3c-m257",
+        "application-native-boundary-r3c-m258",
+        "application-native-boundary-r3c-m259",
+        "application-native-boundary-r3c-m260",
+        "application-native-boundary-r3c-m261",
+        "application-native-boundary-r3c-m262"
+      ],
+      "tool_materials": [
+        "application-native-boundary-r3c-m4",
+        "application-native-boundary-r3c-m5",
+        "application-native-boundary-r3c-m26",
+        "application-native-boundary-r3c-m27",
+        "application-native-boundary-r3c-m28",
+        "application-native-boundary-r3c-m29",
+        "application-native-boundary-r3c-m30",
+        "application-native-boundary-r3c-m31",
+        "application-native-boundary-r3c-m32",
+        "application-native-boundary-r3c-m33",
+        "application-native-boundary-r3c-m34",
+        "application-native-boundary-r3c-m35",
+        "application-native-boundary-r3c-m36",
+        "application-native-boundary-r3c-m263",
+        "application-native-boundary-r3c-m264",
+        "application-native-boundary-r3c-m265"
+      ],
+      "configuration_materials": [
+        "application-native-boundary-r3c-m11",
+        "application-native-boundary-r3c-m12",
+        "application-native-boundary-r3c-m13",
+        "application-native-boundary-r3c-m14",
+        "application-native-boundary-r3c-m15",
+        "application-native-boundary-r3c-m16",
+        "application-native-boundary-r3c-m17",
+        "application-native-boundary-r3c-m18",
+        "application-native-boundary-r3c-m19",
+        "application-native-boundary-r3c-m22",
+        "application-native-boundary-r3c-m23",
+        "application-native-boundary-r3c-m24",
+        "application-native-boundary-r3c-m25"
+      ],
+      "report": {
+        "material": "application-native-boundary-r3c-report",
+        "scope_pointer": [
+          "scope"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "compiled_kernel"
+          ],
+          "compiled_userspace": [
+            "compiled_userspace"
+          ],
+          "executed_tools": [
+            "executed_tools"
+          ]
+        },
+        "verdict_pointer": [
+          "real_result"
+        ],
+        "verdict_results": {
+          "PASS": "PASS"
+        },
+        "gate_rows_pointer": [
+          "real_gates"
+        ]
+      },
+      "gates": [
+        {
+          "id": "architecture-r3c-isolated-real-short-v1",
+          "result": "PASS",
+          "materials": [
+            "application-native-boundary-r3c-report",
+            "application-native-boundary-r3c-m37",
+            "application-native-boundary-r3c-m91"
+          ],
+          "report_pointer": [
+            "real_gates",
+            0
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "architecture-r3c-isolated-real-long-v1",
+          "result": "PASS",
+          "materials": [
+            "application-native-boundary-r3c-report",
+            "application-native-boundary-r3c-m92",
+            "application-native-boundary-r3c-m151"
+          ],
+          "report_pointer": [
+            "real_gates",
+            1
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "architecture-r3c-isolated-real-boundary-v1",
+          "result": "PASS",
+          "materials": [
+            "application-native-boundary-r3c-report",
+            "application-native-boundary-r3c-m152",
+            "application-native-boundary-r3c-m190"
+          ],
+          "report_pointer": [
+            "real_gates",
+            2
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "architecture-r3c-isolated-real-sec2-v1",
+          "result": "PASS",
+          "materials": [
+            "application-native-boundary-r3c-report",
+            "application-native-boundary-r3c-m191",
+            "application-native-boundary-r3c-m245"
+          ],
+          "report_pointer": [
+            "real_gates",
+            3
+          ],
+          "reported_status": "PASS"
+        }
+      ],
+      "required_gates": [
+        "architecture-r3c-isolated-real-short-v1",
+        "architecture-r3c-isolated-real-long-v1",
+        "architecture-r3c-isolated-real-boundary-v1",
+        "architecture-r3c-isolated-real-sec2-v1"
+      ]
     }
   ],
   "materials": {
@@ -203464,6 +204379,2126 @@
       "path": ".dev/architecture-r3a-service-audit-v1.py",
       "sha256": "4f2449f4c04b6e5c5ee5546c860bbccca8a48b8f8ade1a88506572ddf3d1e955",
       "bytes": 3226,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-report": {
+      "path": "docs/evidence/application-native-boundary-r3c-20261017.json",
+      "sha256": "83bc01c7ad5b1afc078484fe976813664610d3bbcb059f90ce04269b58600ea9",
+      "bytes": 19156,
+      "access": "public",
+      "base": "repo",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m2": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/manifest.json",
+      "sha256": "366b246e0a9a9acec6d99fa34e41be4ecb770e6ec3b28965cefaefee2f0cf589",
+      "bytes": 29067,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m3": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/6d30c0f67db2/slkd",
+      "sha256": "624e4b0493a15a04dc8e0638bee268de768dd9b1468007ddc94a83ca19ff5cf6",
+      "bytes": 10620080,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m4": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/6d30c0f67db2/slctl",
+      "sha256": "52bd33595937c2dd46c4b35734814899464c5d3394664e62b92d9e58142ea23e",
+      "bytes": 8081560,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m5": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/6d30c0f67db2/slktest",
+      "sha256": "e82245d8b88ee4d3b244135f941bd37d41999bde690a86991f46131f00d6399d",
+      "bytes": 5361560,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m6": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/6d30c0f67db2/slkconfig",
+      "sha256": "800edebf601784971425ad83c3803f4cb8194690ef3b0cbb58820c85094bc165",
+      "bytes": 1402256,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m7": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/6d30c0f67db2/slkmon",
+      "sha256": "7b6e92a9c9813bba239afc4d160824e49661a73974ca01636724aef10d170247",
+      "bytes": 1661608,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m8": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/6d30c0f67db2/slkdump",
+      "sha256": "946713944614ad6e63bc6e040530b80cee8386c654d4d2d0e01bdc3f35d4bd1f",
+      "bytes": 1661576,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m9": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/6d30c0f67db2/liblibsparklink.so",
+      "sha256": "41ddadda90602c9191b42c4eb6fbd701ffd092c4889226c39ff37b15f6ad9252",
+      "bytes": 863776,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m10": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/6d30c0f67db2/libslk_native.so",
+      "sha256": "c3fedc40353c68a8fe512d62d719d762482c964066b7c12e23c5e0903add6ea8",
+      "bytes": 540152,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m11": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m12": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m13": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m14": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m15": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m16": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m17": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "696a37e80036d99e8fec82a7b4eb6d8e8df9678d3db0b59ed1aef596fcee3199",
+      "bytes": 8886,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m18": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m19": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "7a0ac9e97acf18895e769d58fac11ca51e71bc0f8ecae8659e78c6dc146a0c9f",
+      "bytes": 507,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m20": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "bc36caaf5b7ecb8cd216fac1ff15748e57115826eec6f6bf947d866add14645f",
+      "bytes": 154,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m21": {
+      "path": ".dev/architecture-r3c-isolated-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "d96fd45e72fcb04710d7ca4296de0991394037c8a7c77d2e0fdba5aec0ffaccb",
+      "bytes": 56,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m22": {
+      "path": ".dev/architecture-r3c-isolated-prepared-v1/manifest.json",
+      "sha256": "a59a32b4e312b4434fb743b98712f0ea2874fea38833a4562a2318bf390bb649",
+      "bytes": 285511,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m23": {
+      "path": ".dev/architecture-r3c-isolated-prepared-v1/root/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m24": {
+      "path": ".dev/architecture-r3c-isolated-sec2-prepared-v1/manifest.json",
+      "sha256": "eb5002f6b8203b1183c140e8e82f7ff3d73f064045a4e8fb71e3592c2cfb756d",
+      "bytes": 291659,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m25": {
+      "path": ".dev/architecture-r3c-isolated-sec2-prepared-v1/root/etc/sparklink/main.conf",
+      "sha256": "dcd8af544928f0d11684f015356545bd676273eb571af8d4d1ac0f3be7aa64a1",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m26": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_target.py",
+      "sha256": "143ea3b67c34f8a98d75db904c9b00065b23ca7acd5f5958106e48320db39818",
+      "bytes": 166791,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m27": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_target_init.sh",
+      "sha256": "0a79e55839adf0e217c3612eae5e37b78513fa8561ed7cb7a149da74b29dea53",
+      "bytes": 34523,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m28": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_north_star.py",
+      "sha256": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+      "bytes": 32042,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m29": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_channel_socket.py",
+      "sha256": "b4c1f30964ca002bd8088b8e96177f7839f4816fcef596b200d7f4f389e744d3",
+      "bytes": 55997,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m30": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_ssap_owned.py",
+      "sha256": "76d75a064de9bb442f80e50a48cace3a8039cdd099002df11446fc7afee1f240",
+      "bytes": 10476,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m31": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_ssap_service_policy.py",
+      "sha256": "a8a051355cd0db0eef77f8932aa4bbab2267c7551fa1fe02bd928e93310e223c",
+      "bytes": 10937,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m32": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_capture.py",
+      "sha256": "58f057f4927cbb7cd428375b04ad284c630efe7438c46d08294e824c530d2677",
+      "bytes": 43066,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m33": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_ssap_access.py",
+      "sha256": "fad9c28a2ebbec70867cd9bdc14b10376f456010bf7e38850e8b5ebcff1d7ca6",
+      "bytes": 10636,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m34": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_security_agent.py",
+      "sha256": "fc028f4b01dfe177c9c7a331b4d05392d52d3021f3f2dab6a128ba4293c90133",
+      "bytes": 28603,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m35": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_connection_control.py",
+      "sha256": "9288c04e79c804de70778d17218bb409b3b1bd2e25ea7c9923f38071eb586574",
+      "bytes": 24347,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m36": {
+      "path": ".dev/architecture-r3c-isolated-source-v1/tools/ws73_connection_objects.py",
+      "sha256": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+      "bytes": 10469,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m37": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/manifest.json",
+      "sha256": "1e94cb173a7d814232bf0a07092eb541ea7aef5ce6d64c1bf86e58c3f31ad814",
+      "bytes": 1788892,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m38": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m39": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "3a73aba5638e2e0caa1826c98b47df8b4906367beee6e2a2682a53e5d9e94316",
+      "bytes": 2579,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m40": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m41": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "a327624e6d273c5bb2312a48b55da5d927152370e6fefb423928c5dbaa21f21d",
+      "bytes": 5086,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m42": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m43": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "983437fc31838bd6d9751e8000cda68ae50b01fffd047f8bf98a588e74a2483f",
+      "bytes": 2579,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m44": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m45": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "bb07ed3fe525e2871f68bb2298f72d5ac498abbdb65200bed2b9ffcb132725f2",
+      "bytes": 5086,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m46": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "500f14268fd4c85db96dbc1736ec027668de6c320dad4eeb71b446f0dbd8d65b",
+      "bytes": 973137,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m47": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m48": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "4a06fc5ea3db98c84a43b3e546e7315c42ed8d1732ed1f4a01454e8282e5786c",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m49": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m50": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "c36154698128bae091900d0c02f5388dd8a7a5783ebefd208b804e07deb1f0f2",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m51": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m52": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "c85ac5398ab8b847056ed4cbd2cd9decd89260fc695e0a75d9b1bf89ee16371e",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m53": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m54": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "c7c08a1669a690d1c5899a8037081b86642da98fafe6582400598b08573d8eba",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m55": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m56": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "d93b495edfb4b9b9451eb483ab7b94a9405b782be1a3d4d19ed6224e7d00a21a",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m57": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m58": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "93c5586ca30610c82463a60f931285631af5d192d91ad239bbf890353a57bf13",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m59": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m60": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "f18afd91febf6a7a5f34ac6abb938f4ae755ea4b9b5c86bf76edafec5562dfd2",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m61": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m62": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "83a1a6d528270047ba78b15574ee8f269edaa8d8b501bc2d3d7aa2022776f7c6",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m63": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m64": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m65": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/capture-process-status.txt",
+      "sha256": "0b102559504338f41aae459456708b0a1bc0c9ea82510467262086406796bb99",
+      "bytes": 1486,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m66": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/capture-stats.txt",
+      "sha256": "72bf840aa129132035ea7e994f6ece7aa53902f46e0d0a4c58342370ead8f489",
+      "bytes": 227,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m67": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m68": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m69": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m70": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/kernel.log",
+      "sha256": "82f8df7e7419de0ba401ed6915cb9df6011fe98e57c7d35d774a9312f79eca8e",
+      "bytes": 49391,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m71": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "b3e698c1cc6836b9313c4e57d817757dfbd6f95397bc78398a4aa97b5887d643",
+      "bytes": 477384,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m72": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/pending-observations-0.json",
+      "sha256": "82e3d7483231a8e83de1dc339e00232ecd8a19023fb41f2c141c316418d75e0f",
+      "bytes": 1125,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m73": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/pending-observations-1.json",
+      "sha256": "07f003416a7184206a26569fe32bdc4e846f6b007b1952d16a043508ab3b49f0",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m74": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/ready-0.json",
+      "sha256": "79159038379598419256faa6e2e0020686a7028cf542b89a0cec7b6c2475bc84",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m75": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/ready-1.json",
+      "sha256": "87cd9cb4a13d7040d45f250888960acc88e23d270eabe69cb44553a91400d875",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m76": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/ready-progress-0.json",
+      "sha256": "5628ac081f8666d3b912633c2d24b7677cf3265ee4419925d6877ec218f9c192",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m77": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/ready-progress-1.json",
+      "sha256": "d387c1b10f1b22ffe8d50a7bbb879960539bfde4f6e9d34c2085ee8b570b0b0d",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m78": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m79": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/slkd-process-status.txt",
+      "sha256": "811315fc9dc1976a06ab004a7f17743acc25a80c1a53838d380ea350fce469ab",
+      "bytes": 1454,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m80": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/slkd.log",
+      "sha256": "5bd88b435c9d508648fd3b417344bf79cf983cd7f4798eb58c5ecf61d35ecb01",
+      "bytes": 6215,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m81": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m82": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m83": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/ws73.pcap",
+      "sha256": "a14b7cd3572eef8b649f3726726e39ca5e431cfc1b7561dbe786223a7ca66431",
+      "bytes": 680528,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m84": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "b9c6f143012e0e22b1c1ed5a9f93366611d8ab74ad6b120fe6f5993b6d521742",
+      "bytes": 281,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m85": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/guest-output/xhci-trace.log",
+      "sha256": "41ee80732179e7e6bfa7b254c723e2118961a5a171c61cf0a18f5f74495bf622",
+      "bytes": 2419025,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m86": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/console.log",
+      "sha256": "57e0e60be12c38745720a17205ea4ede7003109ee0c253ee80f5f3d9b21b38a2",
+      "bytes": 16229,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m87": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/qmp.jsonl",
+      "sha256": "bd4afde700ce41f735e215f151489995cea6772033e147a48b6938f5bc0bd779",
+      "bytes": 1757,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m88": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/host-inventory.jsonl",
+      "sha256": "012da11064b76a757b3d620aa902958fb835bf90b441dd12be4a4b3895ee1e30",
+      "bytes": 7127,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m89": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/usb-lifecycle.events",
+      "sha256": "dc13c1825afeb638bb08fb69b3ec43adca4abc974ad9e397c18d718f572d3255",
+      "bytes": 361,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m90": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1/usb-lifecycle.log",
+      "sha256": "73b45e91a83531b7726a19f3fa76e12fbffc425adc5ccd16544faef1108ee439",
+      "bytes": 458218,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m91": {
+      "path": ".dev/architecture-r3c-isolated-real-short-v1-r3c-owned-audit-v1.json",
+      "sha256": "ad92ed3a200309d6a8c75d91b38b7a45615662cbaf55e1303528ff917255c1a7",
+      "bytes": 3023,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m92": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/manifest.json",
+      "sha256": "ca030a76fe27c6d6141e21fa6e7768afe2e00a19552401f954785f2ce14fef39",
+      "bytes": 2861304,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m93": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m94": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "1188707f940ff6192f1e6442c573b5c5265643d0d4aa53ff488c5aa0f58988a5",
+      "bytes": 34281,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m95": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m96": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "2e12c2c50b48e29b0b1db5053fe1d54aa1676bbe8353c2f87c14af03f946ab7e",
+      "bytes": 36784,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m97": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m98": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "f796853b9ed2e4ac6265798e39ba7c190d4b18f24ceffc7436b52977b3abe682",
+      "bytes": 34282,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m99": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m100": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "2d95a52e0d824a27966218eb2c597e7840016d7d2a8248a826062afd3766c8b4",
+      "bytes": 36785,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m101": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "c17b5f10b1af5c5809774c53ed7b7e05e722ab69f52c3617f66963d7fb8776a5",
+      "bytes": 1099931,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m102": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m103": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "764d45c76abfc842beabcb934abf00aa8c540e5dff816c68e98f17f471ecd758",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m104": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m105": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "4b62e027553a75351d7e6977506998ef05d30c0515428249b475891727fe89d0",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m106": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m107": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "f5d4fb1e123d585c435995ef842375640376c50f4a9af9f698d2c0a9d98040d1",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m108": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m109": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "39c6905f62f0faed2f0be383a1b55fdb203772638bd94924bd06f646224f7e60",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m110": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m111": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "7b4f408f3f645e94bd9f0f4716a768bed34d4809893d93911c88d2828b19668b",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m112": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m113": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "b04601c118822dc9641c19ad4d02f3f233b0b349b93f86dcafb1d9f57186feab",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m114": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m115": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "298b06e17019e6eae68570ec2fb852a3e499b9fddca202212e11f9535a30ccd4",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m116": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m117": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "45189cacbf08b3121ac2ef46062430c0194f3f7da29e7c1e34d3aee3d8295d09",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m118": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m119": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m120": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/capture-process-status.txt",
+      "sha256": "011eef0c1303ebe63cb8c5dd4619b5ed088ca3f085fb7cc3aa18f2c3089b4b77",
+      "bytes": 1486,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m121": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/capture-stats.txt",
+      "sha256": "23c2887ef60ab5757870f962c62b8ab2f0381dbbe9652ef786fd891dda20b50f",
+      "bytes": 227,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m122": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m123": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/dbus.log",
+      "sha256": "f90721a278ee223d1c152dd98117964ac70d68fb3fe49b32efca8f008adc1c2c",
+      "bytes": 22158,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m124": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m125": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/kernel.log",
+      "sha256": "831ccbe28860ad4594daa2df985a8dbccd662c738318e405cbadc61a90bf9766",
+      "bytes": 49449,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m126": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "f1cc7f2a769c3e1cf40ab827af39902fee7bb918c219e1b7bceda5ec467254da",
+      "bytes": 480927,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m127": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/pending-observations-0.json",
+      "sha256": "61a4dbd48165c8981b610884441b14ba5cec15104d78142dacd3dcc0e368438e",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m128": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/pending-observations-1.json",
+      "sha256": "2ac53d04b72c4f2f54e4436c9d0ca53af24f9536938929355e553a4a0253e6f4",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m129": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/ready-0.json",
+      "sha256": "79159038379598419256faa6e2e0020686a7028cf542b89a0cec7b6c2475bc84",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m130": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/ready-1.json",
+      "sha256": "87cd9cb4a13d7040d45f250888960acc88e23d270eabe69cb44553a91400d875",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m131": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/ready-progress-0.json",
+      "sha256": "b8164806425f8b630a30aa238cf4cd6b5ebc268e4f7b418c50875561d1a0a8a9",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m132": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/ready-progress-1.json",
+      "sha256": "cbd501716d0edbbfa697858dba8316f227ee685cc0522e8b67d4fec4f5ac3b4d",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m133": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/service-policy/0.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m134": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/service-policy/0.stdout",
+      "sha256": "1c777c8611e086ff90d25c2a1a8133a3f1eb9d202d629fc7a48da9289a31968e",
+      "bytes": 200,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m135": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/service-policy/1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m136": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/service-policy/1.stdout",
+      "sha256": "df55e8088d3979ae214f5fc7698e047c91aa3d4a7a558cf56afe2919c0b6d34b",
+      "bytes": 200,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m137": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/service-policy/run.json",
+      "sha256": "fd8d88287833ad0db5560f61acb7b29f0555d9ca442da29410c562a5bf0a0104",
+      "bytes": 12276,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m138": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m139": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/slkd-process-status.txt",
+      "sha256": "0a1d5864ad63f83cf144160b017bb61ecaf4ea48051019752be40743381b6a2b",
+      "bytes": 1454,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m140": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/slkd.log",
+      "sha256": "3b739f48392af114799e83b8cc1cbb90dd5a1b5d6ec84d56f89b78038e53c2a4",
+      "bytes": 6215,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m141": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m142": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m143": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/ws73.pcap",
+      "sha256": "0db50b98d5153c34b9c8e1bc4838e9f04560e4ce08550601c0d23ab4f9f1fcbd",
+      "bytes": 1207776,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m144": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "7864d330ae68a4244f307d357c3726b20e5216716040d22cf688a0dd89e26f19",
+      "bytes": 286,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m145": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/guest-output/xhci-trace.log",
+      "sha256": "acf982a2a29026d0a2f6f55e307c1181299a84e770e9051cb8620fbd4996d3df",
+      "bytes": 3624936,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m146": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/console.log",
+      "sha256": "c5765ca95f80cdbe9cb54b15539750d36639977ca50ff154985aef3776315501",
+      "bytes": 16314,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m147": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/qmp.jsonl",
+      "sha256": "534e7ffd4b24fdbf409791f7f99da73f1c5d68ecd0bb99bdf012f0356d76605e",
+      "bytes": 1757,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m148": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/host-inventory.jsonl",
+      "sha256": "71d1d527ce9e39892105c1214d1bc7cbcc0b3d2584be237765b98434d8a97171",
+      "bytes": 7127,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m149": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/usb-lifecycle.events",
+      "sha256": "dc13c1825afeb638bb08fb69b3ec43adca4abc974ad9e397c18d718f572d3255",
+      "bytes": 361,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m150": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1/usb-lifecycle.log",
+      "sha256": "b343ec33cde322a52f9c13ce71f2ed8ee6d87526f5cae8d5d110a5040e912e82",
+      "bytes": 760266,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m151": {
+      "path": ".dev/architecture-r3c-isolated-real-long-v1-r3c-owned-audit-v1.json",
+      "sha256": "2eaefaa71a8c0732145c033f0daca3670e904cd1837e22cf23d6415874bc6145",
+      "bytes": 3023,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m152": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/manifest.json",
+      "sha256": "66285034a7480be62b44893bb09d214c1d9f912e334fb2503a7f1b6ae172c4f9",
+      "bytes": 1600348,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m153": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m154": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "53dff5ac1dc8092c2b05502cb56c0cb913d6ec522d2b988ae0cd836046341478",
+      "bytes": 22160,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m155": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m156": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "103075f577ebba58bb61418d99f7004ac5c54de7ad39a846b800290368ddce6a",
+      "bytes": 24667,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m157": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m158": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "296949e4bbf6d7d251952f103072a57a6eaafaac6ac76e7a29b621553466349d",
+      "bytes": 22160,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m159": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m160": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "81a20049590a645a8c1498dd3ffe9378dd61c7c880bff335c8e76d669179932d",
+      "bytes": 24667,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m161": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "dace486a17389bc130c8f383d66e13d16e60b79631b545b427ed8f807143dd08",
+      "bytes": 952330,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m162": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m163": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m164": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/capture-process-status.txt",
+      "sha256": "b0468edcbaab976b51e2b6415d28aa8f236065376eb65f95739b0d6f0de3970c",
+      "bytes": 1486,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m165": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/capture-stats.txt",
+      "sha256": "e88fff78fe5bcfae43e0b37299cf355cd0584fcfc0d64ea5322846f13720f7f1",
+      "bytes": 227,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m166": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m167": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m168": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m169": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/kernel.log",
+      "sha256": "4164f78552e81455a630fd4257444bce79b6b15341e3612f98c3c07bf0b873ec",
+      "bytes": 49409,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m170": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "cbcdc3801dba21c6293f91868189002e6f8047376efe77ce4f8d092cffad45ae",
+      "bytes": 477381,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m171": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/pending-observations-0.json",
+      "sha256": "43b2038239d94c97a59f9997815053d59afe213412414f5ab3be560c118a315c",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m172": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/pending-observations-1.json",
+      "sha256": "0336f92547659818a6c13383a0d691039862349e942d55b8ea446a91a8aed2de",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m173": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/ready-0.json",
+      "sha256": "79159038379598419256faa6e2e0020686a7028cf542b89a0cec7b6c2475bc84",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m174": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/ready-1.json",
+      "sha256": "87cd9cb4a13d7040d45f250888960acc88e23d270eabe69cb44553a91400d875",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m175": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/ready-progress-0.json",
+      "sha256": "e56b0288a25f89acffbc801eccb1547290abb2b82b91733bb852e4ac9631aead",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m176": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/ready-progress-1.json",
+      "sha256": "23dde0249133c8ad143ef546044961859c487e7f3e2cfb987123842a175997f7",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m177": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m178": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/slkd-process-status.txt",
+      "sha256": "c6055136ff6863e27148a546bb0c6b3152c4e45a2b02c41c934441aad8923d01",
+      "bytes": 1454,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m179": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/slkd.log",
+      "sha256": "18efc77f23160321e0c6e4b2f111f434bd8dea51f5a4432ce2c72140ea492774",
+      "bytes": 5536,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m180": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m181": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m182": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/ws73.pcap",
+      "sha256": "58ec9cd17a73f1e573881d2bf21fa79ad53c3b95bbd188cfe7476d97b930aa09",
+      "bytes": 636160,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m183": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "6ff0a03ea99758e1b65994a3c853f1f1a747b1fb5efc64a89b324ffdc18857de",
+      "bytes": 281,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m184": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/guest-output/xhci-trace.log",
+      "sha256": "c01d71a0321308d4e12c24dc110d1733ccbae373ba8a24b6d1cfdc6df93356a1",
+      "bytes": 2264893,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m185": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/console.log",
+      "sha256": "f34e3ac70399c90169ed5d19aceaf20f63aa671a44c47c11f579d7a4ce743970",
+      "bytes": 16234,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m186": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/qmp.jsonl",
+      "sha256": "049fbcef7cee5b159eabc538ac5116299ae2fc7bd0962aef4e3022a82539a4e3",
+      "bytes": 1757,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m187": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/host-inventory.jsonl",
+      "sha256": "44a1c7ad94af464fbc3281003c8532d865de689f59677d88e513b56a1ae04610",
+      "bytes": 7127,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m188": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/usb-lifecycle.events",
+      "sha256": "dc13c1825afeb638bb08fb69b3ec43adca4abc974ad9e397c18d718f572d3255",
+      "bytes": 361,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m189": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1/usb-lifecycle.log",
+      "sha256": "3d796278cdd705f7191bcb4352527a71050ef1288644c14d9c592a70cd1858c1",
+      "bytes": 427826,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m190": {
+      "path": ".dev/architecture-r3c-isolated-real-boundary-v1-r3c-length-audit-v1.json",
+      "sha256": "ea74b12a6ef9a00c4d7023a03eb46b9b5959a5e2f291c75ce051e026203e7cbe",
+      "bytes": 1508,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m191": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/manifest.json",
+      "sha256": "c42efea2bff9b186eba6aa545a67d6983ff20cab160caebd703860373a36c139",
+      "bytes": 1879455,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m192": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m193": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "38e9dcf6bac3b4dc9f66d4878559e415a58a95b7abd063afb288957dbdbde30d",
+      "bytes": 2579,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m194": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m195": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "4c47a7dd1ac504e587b12fb7bc4d78b467e1d86d2edbf3b5339c0067260dd282",
+      "bytes": 5086,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m196": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m197": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "a0abdfc5b1d787e75bf801853652248d5ea0fc61cee7d4cb4da93176cb2f7a85",
+      "bytes": 2579,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m198": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m199": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "b05e77a6ee1c60465968e2b6c20e006f3f50ac335069f3a555297c5d52fe9788",
+      "bytes": 5086,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m200": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "5ea5cd98f6e6b44a9e74ee5524695902c813afb7bfbd59211bc5fa020be12d38",
+      "bytes": 1034603,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m201": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m202": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "3118d31923ebebb4d8748a5c376fa3738b21f19f4bd4183e5173f74dec15273c",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m203": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m204": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "76dc3e3e8d94c01141d98a040bea1cd6574a7063958c288eff4754d573aec047",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m205": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m206": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "3e74533ad1e8d56492ff90eeee384fbd4cc0131948237a1c8d27ee0d7b17f65f",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m207": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m208": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "1b6252cef13b561e1612400b730f4d543820440773afff5f57a4b4586bb76bf4",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m209": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m210": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "7aa1b11a2c7c52b1c9937487595f61a5ca8d1ddb4c321a9a289e12f0635c9583",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m211": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m212": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "b5b6997d0b8ff990f78e5387b94b140fdc5ce3d4455c14f4ce72c1e2bf16a71a",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m213": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m214": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "26afff39fdc02d27dd226d4e2c7cb74317c76afa974c13fd60a46bb8b10d39fa",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m215": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m216": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "d56e548ebc1664d7e99cd501d207872f1b053da6deac8d0364e97ad95a964a23",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m217": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m218": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m219": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/capture-process-status.txt",
+      "sha256": "533456ff883a84e7f34b1e4ce4ca2c26333a91e1d6f6561c5a39ad58a1d0691c",
+      "bytes": 1486,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m220": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/capture-stats.txt",
+      "sha256": "ceb3b569b0ba922fae5c1d7c4c57c0ac131d8a9474c5b21623a1d7a79d50a2b3",
+      "bytes": 227,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m221": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m222": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m223": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m224": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/kernel.log",
+      "sha256": "6c5c6ea514a6216b2f942e91cbd306b42236208d2b901df435fad31435c151a1",
+      "bytes": 49463,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m225": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "78439178fd31831def4448849668ac1a6b8c0036daebb55593450ca9c97dc4a3",
+      "bytes": 477383,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m226": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/pending-observations-0.json",
+      "sha256": "9dacb50e7828bc9f0b9f24bea333b30689618c3362a063960e5c6542af6fdc05",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m227": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/pending-observations-1.json",
+      "sha256": "62d7c9416406c27283be838e84befffe490ff059f8fe720de334af21d176e7af",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m228": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/ready-0.json",
+      "sha256": "79159038379598419256faa6e2e0020686a7028cf542b89a0cec7b6c2475bc84",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m229": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/ready-1.json",
+      "sha256": "87cd9cb4a13d7040d45f250888960acc88e23d270eabe69cb44553a91400d875",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m230": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/ready-progress-0.json",
+      "sha256": "f707f73e3d8a2e8b27036aee867ee06e8ef1a2e895ae7f39df29fe2e6a1311ac",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m231": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/ready-progress-1.json",
+      "sha256": "1b4d45986c07a592720711e36092e653dedd8cd67cac931eb23dea2a06f83b79",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m232": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/slkd-config.conf",
+      "sha256": "dcd8af544928f0d11684f015356545bd676273eb571af8d4d1ac0f3be7aa64a1",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m233": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/slkd-process-status.txt",
+      "sha256": "3e795017dd52257d9b00b6c0ba7100cf008c8951230947c0095d09d1a0513c18",
+      "bytes": 1454,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m234": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/slkd.log",
+      "sha256": "7773eee4499b2ab966cae4a662ec85a494785151491910825b7bac1fb21dbc96",
+      "bytes": 4857,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m235": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m236": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m237": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/ws73.pcap",
+      "sha256": "45071a1a5a7bc0aeb29065983611c54afca525f0342f60567425ffae604d9f4f",
+      "bytes": 741112,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m238": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "2dcfc160dfd66dd23bd97c0954add2ce36f00b20484c6b99d7f9307c9c2c9458",
+      "bytes": 282,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m239": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/guest-output/xhci-trace.log",
+      "sha256": "006dedf163b63e9d3d0ced52eeada59ce8a0c0213aaeadca1a2f4ec3da05224d",
+      "bytes": 2605406,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m240": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/console.log",
+      "sha256": "f070ea1b978a8d746971f44b872dd54c590bd5156f66b93d45ee88b62be249e4",
+      "bytes": 16265,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m241": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/qmp.jsonl",
+      "sha256": "c7c3a86ea81968ac827277b7dc7e036f031f97acb3521a9e601c73227abfa79a",
+      "bytes": 1757,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m242": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/host-inventory.jsonl",
+      "sha256": "f75ca329e78cb5929828a6d6087098fb4d823be75df3d5c4603a4356faa10eba",
+      "bytes": 7127,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m243": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/usb-lifecycle.events",
+      "sha256": "dc13c1825afeb638bb08fb69b3ec43adca4abc974ad9e397c18d718f572d3255",
+      "bytes": 361,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m244": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1/usb-lifecycle.log",
+      "sha256": "b08dcc9477697a4b8d1118bfd5df400cae5cea4fa00bed7d5d4cd62594b1a427",
+      "bytes": 494760,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m245": {
+      "path": ".dev/architecture-r3c-isolated-real-sec2-v1-r3c-owned-audit-v1.json",
+      "sha256": "8d4dd4262c6b03d74ae8d41c299aca4636924e0ca63e1b8b2639db4f5f5f3054",
+      "bytes": 3023,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m246": {
+      "path": ".dev/architecture-r3c-isolation-default-v1.log",
+      "sha256": "b77a844920256cec6b74f58f95f4851780a0429948738fcfee0908d1b1803026",
+      "bytes": 31582,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m247": {
+      "path": ".dev/architecture-r3c-isolation-allfeatures-v1.log",
+      "sha256": "3c2d1f29a5fb297ce762ee36872677a91b464d20cf292f633e2dedd9471fe6a2",
+      "bytes": 30552,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m248": {
+      "path": ".dev/architecture-r3c-isolation-clippy-default-v1.log",
+      "sha256": "e19fd6d0b12fd499172330b3b8d35d47198eac1a75ef11cfa8dc55f6d8a0f8b6",
+      "bytes": 612,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m249": {
+      "path": ".dev/architecture-r3c-isolation-clippy-all-v1.log",
+      "sha256": "c0bbf1df215d5312a3df6cbb64b6402fd07ad819267f187033f6215d406f342d",
+      "bytes": 406,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m250": {
+      "path": ".dev/architecture-r3c-isolated-frozen-tools-v1.log",
+      "sha256": "24793a78023989443e045a29cf50358dfdfb8f06d762991c961853e5ff06b212",
+      "bytes": 891,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m251": {
+      "path": ".dev/architecture-r3c-isolated-sealed-abi-v1.log",
+      "sha256": "16a9a26bc9d91ab1b6f7e559ae46fdd07f2741cb6d28dbc4915003efcc125daf",
+      "bytes": 1801,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m252": {
+      "path": ".dev/architecture-r3c-isolated-sealed-abi-v2.log",
+      "sha256": "db3a5f9cd6ba2991585e28c9b4382b1a1e25c24c75cccfc1c291f6f29534c51f",
+      "bytes": 149,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m253": {
+      "path": ".dev/architecture-r3c-client-docs-v1.log",
+      "sha256": "0a3c4b914b363665de1077573067ff27605f0f6d1a51c893818b7567649f4712",
+      "bytes": 398184,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m254": {
+      "path": ".dev/architecture-r3c-isolated-service-audit-v1.json",
+      "sha256": "7dd1634bf1cb4d0232616a5277fa84448ee989925f3230ad041a9b72159c2850",
+      "bytes": 3084,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m255": {
+      "path": ".dev/architecture-r3c-prepared-v1/manifest.json",
+      "sha256": "fb8b75695dfc0e8ab8dff06fd22fb7bfb57a7983da98d8a531e910ab8f3baf89",
+      "bytes": 275395,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m256": {
+      "path": ".dev/architecture-r3c-peer-isolation-counterexample-v1.log",
+      "sha256": "e6d8201eaa108de1d46d1cd48e2883d8792acd13879784d2d126af12283b1f5b",
+      "bytes": 1413,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m257": {
+      "path": ".dev/architecture-r3c-peer-isolation-counterexample-v1.json",
+      "sha256": "a8a26b96df80f7bb90ee97b204353e3efb0669d0251175ec8742bf2ccd75e94e",
+      "bytes": 536,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "application-native-boundary-r3c-m258": {
+      "path": ".dev/architecture-r3c-peer-isolation-fixed-v1.log",
+      "sha256": "5cc0a01e770d9fa3ecc134060097d71a3a677246190c67c373001561bc4cfb18",
+      "bytes": 997,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m259": {
+      "path": ".dev/architecture-r3c-client-abi-v1.log",
+      "sha256": "cde18ea8f61347554fcf9a349160250f12c96483c2335388deaa514097f92747",
+      "bytes": 2892,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m260": {
+      "path": ".dev/architecture-r3c-native-diagnostic-v1.log",
+      "sha256": "bbdb7270b714d1c78df732b9b83806c1cb469a80cdc8c0e50e4eeb1c8f84a032",
+      "bytes": 4406,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m261": {
+      "path": ".dev/architecture-r3c-client-abi-v2.log",
+      "sha256": "cee315de1bb53c6bf25f1ea2e5bd182493dc25767a2f219541f93ac3fb005fb3",
+      "bytes": 10694,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m262": {
+      "path": ".dev/architecture-r3c-client-abi-v4.log",
+      "sha256": "e8795c90a916d35a2b04d282f5d637063279029cfb15069e3d8923cd7a203c28",
+      "bytes": 149,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m263": {
+      "path": ".dev/architecture-r3c-isolated-owned-audit-v1.py",
+      "sha256": "42268e5715e172545c3b090214fc8028df460c5723f5c2e72d223b326a812f4b",
+      "bytes": 4570,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m264": {
+      "path": ".dev/architecture-r3c-isolated-length-audit-v1.py",
+      "sha256": "41a792543c85ede0a3195b9b291aa0bee85db5badad1ea9fe29073e91255faeb",
+      "bytes": 2898,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "application-native-boundary-r3c-m265": {
+      "path": ".dev/architecture-r3c-isolated-service-audit-v1.py",
+      "sha256": "58dcaecd3b098def198b2ac4f681688319d287b212b68247fab75b6136e2742a",
+      "bytes": 3253,
       "access": "private",
       "base": "workspace",
       "format": "bytes"

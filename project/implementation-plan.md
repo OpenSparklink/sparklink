@@ -10,12 +10,12 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K2fc/U4736管理应用客户端：四真实VM限定通过，完整R5/R6开放**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放**。
 仅记录范围：`real_device` / `PASS`。
 kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-compiled_userspace `4736dd287ad8edfde2223f776cb4ad3ac5f198f6`。
-executed_tools `4736dd287ad8edfde2223f776cb4ad3ac5f198f6`。
-[准确范围与剩余条件](../docs/evidence/controller-management-client-qualification-20261018.json)。
+compiled_userspace `0fe37cb549b188613ae50360d9555ab5f4d74bf1`。
+executed_tools `8aa7dbd1d6d226997978ff04b272eadd6cf183df`。
+[准确范围与剩余条件](../docs/evidence/typed-peer-retirement-qualification-20261018.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -189,6 +189,7 @@ executed_tools `4736dd287ad8edfde2223f776cb4ad3ac5f198f6`。
 | K2fc/U2c8旧rawABI退休：四真实VM与当前Native测试工具限定通过 | `real_device` | `PASS` |
 | K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U4736管理应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
+| K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1298,6 +1299,26 @@ SDK110/固定NearLink Host/libws73封装差异须注明，不把公共地址样�
 历史v1解码分开。连接侧没有广告时明确unknown；每种连接角色仅要求真实扫描caller
 取得新SDK广告/RSSI/USB证据，跨两角色覆盖两controller，不能要求被动端伪造接收。
 修正工具必须另封来源和新VM，不改写0fe失败或把源码相同当新artifact资格。
+
+R5d有限退出已取得：[编译2fc/0fe、工具8aa资格](../docs/evidence/typed-peer-retirement-qualification-20261018.json)。
+四个新VM中16次实际Peer SDK观察、12次接收端USB匹配、4次真实unknown，保留32次
+对端业务回复和原Owned/长度/限定安全。330最终workspace、50封存库、177原证据
+及56新Peer负对照、5封存schema负对照单列；没有新增形式化证明。类型1只离线验证，
+128地址/TTL实物压力及实际observer部署仍未验收，不据此关闭完整架构或原issue。
+
+##### R5e当前批：现有服务与Agent调用者、共享scope
+
+先审计8aa源码中`security_agent::Daemon`和既有Client的owner约束差异，复用已存在的
+订阅/失效语义，不能在删除重复代码时丢掉更强的Agent撤销检查。本批不另造Engine。
+本地管理staging、Owned注册和安全Agent保持不同权限/所有者/结果语义；方法、值和
+路径放独立契约，应用策略与终端交互保留CLI。逐条迁入现有SDK后删除重复RPC、长
+元组及身份解析；daemon不反向依赖SDK，原SSAP权限类型和唯一Engine继续复用。
+
+退出：实际新SDK/CLI调用、独立producer签名、owner退出/更换、原期限、拒绝/晚到
+回调和清理回归；原生产行为与错误不能因迁移降级，批准不授予认证/Bond或可信Grant。
+准确新artifact的正向Agent/Owned及原WS73门禁分别取得，不能用旧内部方法或旧资格
+代替。C/Python完整高级客户端、外部实际消费与R6干净VM安装仍明确缺失；只实现并
+验证当前生产入口，不先导出整个目标API树或永久NotSupported旧门面。
 
 ##### R5a最小独立导出门禁
 

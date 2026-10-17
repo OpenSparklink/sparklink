@@ -92,6 +92,9 @@ def execute(run, phase):
             row['ssap_receipts'].append(receipt);run.save()
         from ws73_ssap_value import execute as ssap_value_execute
         if not row['close_prefix']:ssap_value_execute(run,row)
+        if row['message_security_required']:
+            from ws73_ssap_access import execute as access_execute
+            access_execute(run,row)
         if hasattr(run, 'channel_barrier'):
             run.channel_barrier(row)
         # Both binds must occur during the same live connection. Never synthesize RX.
@@ -462,6 +465,8 @@ def corroborate(run,capture):
         # Value/discovery matching consumes SDUs to detect unattributed input.
         # Audit the complete lifetime window before that intentional removal.
         protected=protected_ssap_wire(row,capture,sdus)
+        from ws73_ssap_access import audit_rejections as access_audit
+        access_audit(row,sdus)
         prefix=None
         if row.get('close_prefix',False):sent,replies,prefix=prefix_application_frames(row)
         else:sent,replies=application_frames(row)
@@ -498,7 +503,12 @@ def corroborate(run,capture):
                 from ws73_ssap_discovery import corroborate as discovery_corroborate
                 ssap_discovery,discovery_credit=discovery_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=discovery_credit[key]
-            if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in ((1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False) else (8,9,13,14)) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
+            ssap_access=[]
+            if row.get('ssap_access_required',False):
+                from ws73_ssap_access import corroborate as access_corroborate
+                ssap_access,access_credit=access_corroborate(row,value_matched)
+                for key in ssap_credit:ssap_credit[key]+=access_credit[key]
+            if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in ((1,4,5,6,7,8,9,10,11,13,14) if row.get('ssap_access_required',False) else (1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False) else (8,9,13,14)) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
         legs=[]
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
             if data[8:24] in all_nonces:raise CaptureError('random nonce reused across direction phases')
@@ -568,6 +578,7 @@ def corroborate(run,capture):
         if row.get("channel_info_required",False): entry["channel_info"] = channel_info_receipts(row)
         if row.get("ssap_exchange_required",False): entry["ssap_exchange"] = ssap
         if row.get("ssap_value_required",False): entry["ssap_values"] = ssap_values
+        if row.get("ssap_access_required",False): entry["ssap_access"] = ssap_access
         if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if protected is not None:entry['protected_ssap']=protected

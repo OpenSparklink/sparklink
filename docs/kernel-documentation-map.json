@@ -288,6 +288,19 @@
       "disposition": "保留内核自测原路径，网站仅链接固定源码；不构建kernel/project/history额外页面",
       "source_sha256": "8676aaa0a93de61ad4ed8ffb8220de1c06f15628db6fedfd52e5141147e9a692",
       "original_url": "https://github.com/OpenSparklink/linux/blob/ddea575bff556d3884375603edd9003b1cc5ffc4/tools/testing/selftests/sparklink/fuzz/README"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "path": "tools/testing/selftests/sparklink/retired-command-path/README",
+      "reader": "内核贡献者／资格审查者",
+      "purpose": "保留已退休raw command ingress的单项历史故障fixture，区分当前RX门禁",
+      "section": "history",
+      "validity": "历史测试边界；候选Kernel/VM资格以canonical记录为准，不从创建时audit状态推导当前资格",
+      "applicable_version": "b35d0313d29f5797aefdef045b8d559a50a82c09",
+      "authority": "匹配源码及project/implementation-plan.md、project/current-capabilities.md",
+      "disposition": "仅source-link，不构建到四象限站点；旧command fixture不能恢复默认Runtime，审计JSON状态是创建时快照",
+      "source_sha256": "dde0578a6efd1e4e771944ed36cd05ed1ade94b8e7551a604a0443b36906fa0e",
+      "original_url": "https://github.com/OpenSparklink/linux/blob/b35d0313d29f5797aefdef045b8d559a50a82c09/tools/testing/selftests/sparklink/retired-command-path/README"
     }
   ],
   "scope": "Tracked SparkLink/WS73 kernel documentation and selftest READMEs, not all upstream Linux documentation. No source copies in Sphinx site.",

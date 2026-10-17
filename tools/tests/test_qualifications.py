@@ -131,6 +131,34 @@ class QualificationTests(unittest.TestCase):
         (project / 'goal-execution-state.json').write_text(json.dumps(state))
         self.assertTrue(q.sync_views(self.data, self.repo))
 
+    def test_selected_record_is_versioned_and_cannot_reference_retired_or_unknown(self):
+        self.data['selected_qualification'] = {'version': 1, 'record': 'one'}
+        self.assertFalse(self.run_check()['errors'])
+        for value in [None, {}, 'one', {'version': 0, 'record': 'one'},
+                      {'version': True, 'record': 'one'}, {'version': 1, 'record': []},
+                      {'version': 1, 'record': 'unknown'},
+                      {'version': 1, 'record': 'one', 'result': 'PASS'}]:
+            with self.subTest(value=value):
+                self.data['selected_qualification'] = value
+                self.assertTrue(self.run_check()['errors'])
+
+    def test_selection_renders_exact_sources_without_hiding_other_results(self):
+        self.data['baseline'] = {'kernel': 'old-k', 'compiled_userspace': 'old-u', 'executed_tools': 'old-tools'}
+        self.data['batch'] = {'id': 'fixture'}
+        self.data['records'][0]['title'] = 'selected fixture'
+        self.data['selected_qualification'] = {'version': 1, 'record': 'one'}
+        other = dict(self.data['records'][0], id='unproved', title='required unproved', result='UNPROVED')
+        self.data['records'].append(other)
+        self.data['overall_required_records'].append('unproved')
+        rendered = q.render(self.data)
+        self.assertIn(self.data['records'][0]['sources']['production']['commit'], rendered)
+        self.assertIn('required unproved', rendered)
+        self.assertIn('UNPROVED', rendered)
+        self.assertIn('NOT_REVALIDATED', rendered)
+        self.assertIn('历史registry基线（非当前资格）', rendered)
+        self.assertEqual(q.summary(self.data)['overall'], 'INCOMPLETE')
+        self.assertEqual(q.summary(self.data)['selected_qualification'], self.data['selected_qualification'])
+
     def test_missing_required_gate(self):
         self.data['records'][0]['gates'] = []
         self.rejected()

@@ -190,6 +190,12 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
                         changed.append(f'{ident}/{role}')
             except subprocess.CalledProcessError:
                 errors.append(f'{ident}/{role}: source object unavailable')
+    selected = data.get('selected_qualification')
+    if 'selected_qualification' in data:
+        if (not isinstance(selected, dict) or set(selected) != {'version', 'record'}
+                or type(selected.get('version')) is not int or selected.get('version') != 1
+                or not isinstance(selected.get('record'), str) or selected.get('record') not in record_ids):
+            errors.append('invalid selected source-bound qualification record')
     if 'baseline_record' in data:
         baseline_record = next((r for r in data['records'] if r['id'] == data['baseline_record']), None)
         if baseline_record is None:
@@ -250,16 +256,30 @@ def summary(data):
             'baseline': data['baseline'], 'current_tree_qualification': 'NOT_REVALIDATED',
             'private_evidence_in_ci': 'METADATA_ONLY_NOT_REVERIFIED',
             'records': {r['id']: {'level': r['level'], 'result': r['result']} for r in data['records']},
-            'overall': 'INCOMPLETE', 'current_batch': data['batch']}
+            'overall': 'INCOMPLETE', 'current_batch': data['batch'],
+            **({'selected_qualification': data['selected_qualification']} if 'selected_qualification' in data else {})}
 
 
 def render(data):
     lines = ['<!-- qualification-summary:start -->',
              '以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。', '',
              '| 契约（仅所列范围） | 证据层级 | 记录结果 |', '|---|---|---|']
+    if 'selected_qualification' in data:
+        choice = data['selected_qualification']
+        if choice.get('version') != 1:
+            raise ValueError('unsupported selected qualification version')
+        record = next(r for r in data['records'] if r['id'] == choice['record'])
+        selection = ['选定保留产物（不是当前工作树整体资格）：**'+record['title']+'**。',
+                     '仅记录范围：`'+record['level']+'` / `'+record['result']+'`。']
+        selection += [name+' `'+source['commit']+'`。'
+                      for name, source in record['sources'].items()]
+        if record.get('report'):
+            material = data['materials'][record['report']['material']]
+            selection += ['[准确范围与剩余条件](../'+material['path']+')。']
+        lines[2:2] = ['']+selection+['', '以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。', '']
     for record in data['records']:
         lines.append(f'| {record["title"]} | `{record["level"]}` | `{record["result"]}` |')
-    lines += ['', '保留镜像：K `' + data['baseline']['kernel'] + '`；编译 U `' + data['baseline']['compiled_userspace'] +
+    lines += ['', '历史registry基线（非当前资格）：K `' + data['baseline']['kernel'] + '`；编译 U `' + data['baseline']['compiled_userspace'] +
               '`；执行工具 `' + data['baseline']['executed_tools'] + '`。', '',
               '**当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。',
               '公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。',

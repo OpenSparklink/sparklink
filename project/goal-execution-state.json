@@ -1770,20 +1770,27 @@
       "native-interface-retirement-r4d": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "kernel-registry-retirement-r4e": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R4e-kernel-legacy-audit",
-      "production_behavior": "R4d997ea19 full-chain Native interface retirement exact four VM preservation gates plus actual C/CLI metadata scoped PASS. Next audit actual kernel raw ABI/selftest consumers and global masks before retirement.",
-      "state": "R4D_EXACT_FOUR_REAL_GATES_AND_METADATA_SCOPED_PASS_R4E_AUDIT",
+      "id": "WP18-R4e-command-retirement-draft",
+      "production_behavior": "Registry cleanup K64/U0a/tools997 source-bound four real gates/replays scoped PASS;19install+9currentpending and6archived cases separated,49newartifactABI. Command candidateb35 requires sixoffline subsets,actual Rust component Werror,fullKernel/link and exactfourVM/replays before main promotion. R5a namespace check is separate offline scope.",
+      "state": "REGISTRY_QUALIFIED_COMMAND_PROMOTION_GATES_PENDING",
       "exit": [
-        "997ea19:304unit/integration+6compilefail each default/allfeatures,strictclippy,759frozen tools,49sealed ABI,strict115docs and both dependency closures",
-        "K0cd/U997:32peerreplies24Ownedcases96decisions120transactions68roledenials;5data/role replays81negatives",
-        "Four actual metadata replays/56negatives;8Ccount+8CLI snapshots match prepared artifacts and full identities;not business C/Python qualification",
-        "R4e must audit consumers,retain useful tests,retire unused declarations/stubs and module-wide masks with exact kernel regression"
+        "Register exact64/0a/997 inputs,captures andreplays;original failures and unproved scope retained",
+        "Before merging b35 require full kernel/link and exactVM preservation;do not replace old qualification",
+        "Remaining DLI/rawUAPI/monolithic selftests and fullR5/R6 remain"
       ],
-      "next": "Architecture-first R4e rawkernel ABI/selftests/global masks;R5 full contracts/provenance;R6 cleanVMdeploy/docs. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,verified paths/WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
+      "next": "Finish architecture first;fullS0-S6/19WP/10FV/12DG and original scope,VM-only/UserHostP4,owner WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
+    },
+    "selected_qualification": {
+      "version": 1,
+      "record": "kernel-registry-retirement-r4e"
     }
   },
   "agent_workstream": {
@@ -3057,29 +3064,24 @@
     "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
   },
   "architecture_retirement_current_batch": {
-    "status": "R4D_EXACT_997EA19_SCOPED_PASS_R4E_AUDIT_ARCHITECTURE_INCOMPLETE",
+    "status": "R4E_REGISTRY_EXACT64_0A_997_PASS_COMMAND_DRAFT_COMPONENT_ONLY",
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
-    "batch": "R4e kernel raw ABI/selftests/global masks;then R5 contracts/provenance and R6 clean VM deployment",
+    "batch": "Next b35 candidate Kernel/link and VM;remaining DLI/rawABI/selftests,fullR5/R6",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
       "R4 full-chain old API/event/raw ABI and test migration",
       "R5 independent interface/dependency contracts",
       "R6 clean-VM deployment/external SDK/document closure"
     ],
-    "parallel": [
-      "Agent/SSAP",
-      "data/multichannel/four devices",
-      "event-driven performance",
-      "natural fault RCA/nonmanual recovery"
-    ],
     "exit_reference": "Canonical WP18 R4e then R5/R6;not all-control-combination prerequisite",
     "qualification_reference": {
-      "record": "native-interface-retirement-r4d",
-      "report": "docs/evidence/native-interface-retirement-r4d-20261017.json",
-      "compiled_userspace": "997ea198dfc689c96053f6e460fdf1aecb067c70",
+      "record": "kernel-registry-retirement-r4e",
+      "report": "docs/evidence/kernel-registry-retirement-r4e-20261017.json",
+      "compiled_kernel": "64a324844bfc66bc46de2c894bc78598c1cde515",
+      "compiled_userspace": "0a7a605798685bc337057f459cc52c60a7036726",
       "executed_tools": "997ea198dfc689c96053f6e460fdf1aecb067c70",
-      "whole_current_tree": "NOT_QUALIFIED;source-bound record only"
+      "whole_current_tree": "NOT_REVALIDATED;only exact recorded slice"
     },
     "uninstall": "e28 staged-only configuration/state retention;clean-VM deployment remains",
     "user_steering": "2026-10-17:finish architecture arrangement and remediation first;adopt three API views;preserve verified paths and current lifecycle WIP",
@@ -3173,7 +3175,7 @@
       "report": "docs/evidence/native-interface-retirement-r4d-20261017.json"
     },
     "r4e": {
-      "status": "REGISTRY_KERNEL_64_BUILD_PASSED_EXACT_FOUR_VM_RUNNING",
+      "status": "REGISTRY_EXACT_FOUR_VM_AND_REPLAYS_SCOPED_PASS",
       "exit_reference": "Canonical WP18 R4e",
       "invariants": [
         "One production authority and protocol path",
@@ -3188,14 +3190,30 @@
       ],
       "test_report": "docs/evidence/kernel-crypto-retirement-r4e-20261017.json",
       "registry_commit": "64a324844bfc66bc46de2c894bc78598c1cde515",
-      "remaining": "Exact new kernel VM/replay evidence pending;isolated raw-command draft requires component/kernel+VM gates before merge. DLI masks/rawABI/selftests,R5/R6/fullscope remain"
+      "remaining": "Isolatedb35 needs fullKernel/link/exactVM before promotion;DLI/rawABI/selftests,fullR5/R6 and original scope remain",
+      "report": "docs/evidence/kernel-registry-retirement-r4e-20261017.json"
     },
     "r5a": {
-      "status": "IMPLEMENTED_OFFLINE_CANDIDATE_NOT_DEVICE_QUALIFICATION",
+      "status": "SIGNED23F_OFFLINE_NAMESPACE_CHECK_NOT_FULL_R5_OR_DEVICE_QUALIFICATION",
       "production_behavior": "Independent actual ELF function exports against application and explicit Native public headers;no protocol/runtime/caller changes",
       "exit_reference": "Canonical WP18 R5a;fullR5 remains",
       "limits": "No ABI/call/lifetime/permission/RF proof. Five tool tests plus actual sealed997 library comparison only;new checker artifact identity must be recorded separately."
-    }
+    },
+    "command_path_draft": {
+      "branch": "codex/kernel-management-retirement",
+      "source": "b35d0313d29f5797aefdef045b8d559a50a82c09",
+      "status": "FULL_KERNEL_BUILD_PASSED_EXACT_VM_AND_REPLAYS_PENDING_NOT_PROMOTED",
+      "remaining": "Compile/link candidate from same physical source/O path;exactVM preservation before main branch promotion",
+      "retained_failures": ".dev/architecture-r4e-command-failure-replay-v2/manifest.json and component-v1/manifest.json",
+      "working_copy": "Main branch reference remains64;candidateb35 built from detached original source path to reuse sameO,only promote after exactVM gates."
+    },
+    "preserved_workstreams_after_architecture": [
+      "Agent/SSAP",
+      "data/multichannel/four devices",
+      "event-driven performance",
+      "natural fault RCA/nonmanual recovery"
+    ],
+    "feature_delivery_order": "Latest steering:finish finite architecture remediation R4/R5/R6 first,then feature refinement. Preserve all original workstreams/WIP and verified paths;do not demand all control-race combinations as an extra prerequisite."
   },
   "owned_ssap_c6_historical_batch": {
     "production": "Sole actor owner-bound local authorization; original receipt/deadline and fd recheck; no new Engine",
@@ -3226,5 +3244,10 @@
     "next": "Finite actual owner callback/deadline/retirement and service-only policy,thenCPCD/protectedupdates;data/multi/four/performanceparallel,noallcontrolfront",
     "aggregate_integrity": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED;full goal INCOMPLETE;original retention incident not waived",
     "issue_receipts": ".dev/ssap-owner-issue-receipts-v1.json"
+  },
+  "capability_presentation": {
+    "authority": "project/qualification-records.json selected_qualification;generated view in current-capabilities/implementation-plan/qualification_view",
+    "history": "history/current-capabilities-before-registry-retirement-20261017.md;verbatim23f body,not current qualification",
+    "limits": "All original records and required failures/unproved remain;selection never qualifies entire working tree"
   }
 }

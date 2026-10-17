@@ -81,6 +81,18 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
+选定保留产物（不是当前工作树整体资格）：**R4e注册状态整改：K64/U0a/工具997四真实门禁，整架构未完**。
+仅记录范围：`real_device` / `PASS`。
+kernel `64a324844bfc66bc46de2c894bc78598c1cde515`。
+compiled_userspace `0a7a605798685bc337057f459cc52c60a7036726`。
+executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
+kernel_selftest_tools `64a324844bfc66bc46de2c894bc78598c1cde515`。
+independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
+[准确范围与剩余条件](../docs/evidence/kernel-registry-retirement-r4e-20261017.json)。
+
+以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
+
+
 | 契约（仅所列范围） | 证据层级 | 记录结果 |
 |---|---|---|
 | 历史2d81/575：原期限及21组限定实机门禁 | `real_device` | `PASS` |
@@ -241,8 +253,9 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | R4b旧SSAP门面全链退休：6434055四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4c旧Native Event及空Profile feature退休：6841e4e四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4d旧Native接口全链退休：997ea19四真实门禁及C/CLI元数据，整架构未完 | `real_device` | `PASS` |
+| R4e注册状态整改：K64/U0a/工具997四真实门禁，整架构未完 | `real_device` | `PASS` |
 
-保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
+历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
@@ -998,27 +1011,15 @@ Grant/credit/Ticket、VM-only保留；UserHost为P4。保留在途生命周期�
 
 ##### 当前限定资格与边界
 
-当前登记仅由结构化资格记录生成/校验。R3c核心边界准确6d30已封存；R4a准确
-K`0cd4731dd3e6`/编译与工具`98c4b65ede54`四VM门禁32对端校验回复、
-61/249+16超限/2042/机制2、24Owned案例/96审批/120事务、guest service-only68拒绝；
-5重放81复制负对照。314默认+314实验/严格clippy、5compile-fail、755工具、两库48检查。
-R4b准确6434055相同四门禁另取32真实回复、24Owned/96审批/120事务/68角色拒绝、
-5重放81负对照；18旧D-Bus/4slctl/10slkconfig和handle-only发布退休，七Local/Owned保留。
-R4c准确6841e4e移除公开混合Event/空Profile feature后，四新VM另取32回复、同一
-Owned/角色范围及5重放81负对照；完整源码映射/失败在对应报告。
-**C/Python元数据入口在997另有准确VM见证；不是全部业务消费者RF/干净部署资格。**
-无新增形式化证明，旧unsupported/unstable Kani保持UNPROVED。
+当前登记由结构化记录及version1的selected_qualification选择生成/校验：
+[K64/U0a/工具997注册状态整改](../docs/evidence/kernel-registry-retirement-r4e-20261017.json)
+准确四VM、32对端回复、24Owned/96审批/120事务、68角色拒绝，另8C+8CLI元数据。
+19安装+9当前注册与6历史接管fixture分开；49新产物ABI，旧Rust/工具suite不冒充新跑。
+R1–R4d及其他旧资格只按各自身份留在历史/记录索引，不转授当前树。
 
-源码映射、完整失败/反例/假设/原始材料访问及回放均在对应报告，不在本计划逐轮堆叠：
-[R1去虚假状态/元数据Bond](../docs/evidence/architecture-retirement-r1-20261017.json)、
-[R2观察预算](../docs/evidence/observation-retirement-r2-20261017.json)、
-[R3a操作层](../docs/evidence/channel-operation-boundary-r3a-20261017.json)、
-[R3c实际SDK路径](../docs/evidence/application-native-boundary-r3c-20261017.json)、
-[R4a旧安全门面退休](../docs/evidence/controller-security-retirement-r4a-20261017.json)、
-[R4b旧SSAP门面退休](../docs/evidence/ssap-facade-retirement-r4b-20261017.json)、
-[R4c事件退休](../docs/evidence/native-event-retirement-r4c-20261017.json)。
-root-owned pipe失败、动态Proxy缓存失败、ctypes指针签名遗漏SIGSEGV、b0f同行不可查询
-反例、5509ms历史失败及材料保留事故原身份保留，不用新PASS覆盖。
+b35命令候选必须完成六离线子集、实际Rust组件Werror、完整Kernel/link与准确
+四VM/独立重放，才推进主分支；构建通过不是实机资格。其余DLI/全局掩盖/rawABI/旧selftests、R5完整契约与来源、
+R6干净VM部署仍未完成。能力入口不再叠加逐轮进度，原文以23f快照/hash归history。
 
 ##### 三类迁移清单（按生产职责；不是删除行数验收）
 
@@ -1120,7 +1121,7 @@ UAPI后，封存新Kernel artifact并VM内重验发现/连接/短包/既有边�
 撤权/关闭/同行。只门禁本批相关性质，不追加所有控制面组合。历史crypto两文件已由1814b96逐字移入selftests，7f40666同步实际生产
 P256/CMAC include；七Rust/五C故障和专用无USB crypto VM通过。原LSan/模块构建失败
 保留，不转授WS73资格。64a3248已删除注册对象未消费flags/能力/统计和便捷方法，模块改deny(dead_code)，
-19安装+15注册生产函数fixture通过；准确新Kernel正在构建，尚无其WS73资格。
+19安装+9当前注册、6历史静态接管fixture通过；准确新Kernel正在构建，尚无其WS73资格。
 其余已链接模块mask及rawABI仍在审计，未宣称整批内核整改或证明。之后进入R5/R6，完整S0–S6/19WP/10FV/12DG保留。
 
 ##### R5a最小独立导出门禁

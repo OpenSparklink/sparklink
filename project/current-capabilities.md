@@ -1,129 +1,34 @@
 # 当前能力与资格
 
-生产整改的最新准确资格为 [R4d旧Native接口退休](../docs/evidence/native-interface-retirement-r4d-20261017.json)：
-K`0cd4731dd3e6` / 编译与执行工具 **`997ea198dfc6`**，SDK110 U2/U3。
-四VM门禁保持61/249+16超限/2042/机制2、32真实对端回复、24 Owned案例/96审批/
-120事务、service-only68拒绝；另有8次实际C bitmap/count及8次CLI完整身份快照。
-5次数据/角色重放81复制负对照，4次元数据重放56负对照。304默认+304 all-features、
-每配置6compile-fail、严格clippy、759冻结工具、49封存ABI/历史fixture及严格HTML通过。
-元数据是观察入口资格，**不是C/Python业务收发、原子快照或自动恢复资格**。
-Local/Owned、唯一Connection Engine/Session和真实数据路径保留。旧库计数缺陷及
-首次ABI精确errno断言失败保留；报告/文档提交不替代997编译身份。
-**完整架构整改未完**：R4e内核raw ABI/selftests/全局掩盖、R5完整契约与来源、R6干净VM
-部署仍在推进；无新增形式化证明，自然RCA/非人工恢复继续开放。不向新源码转授资格。
+本页是唯一当前资格入口。选定产物、原始门禁、源码和工具身份来自结构化记录；
+报告/文档提交不替代编译身份，源码相同也不转授旧 artifact 的资格。
 
-[R3c准确新SDK路径资格](../docs/evidence/application-native-boundary-r3c-20261017.json)：
-K`0cd4731dd3e6` / **编译及工具 `6d30c0f67db2`**，SDK110 U2/3。新slktest经真实SDK
-Client申请fd，四VM门禁保持61/249+16超限/2042/机制2、32真实对端回复、24 Owned案例/
-96审批/120事务、service-only68拒绝；5重放81复制负对照。313默认+313实验、3compile-fail、
-严格clippy、755冻结工具、封存两库+冻结绑定50检查通过。原ctypes崩溃、b0f跨controller
-反例及未执行候选保留。**C/Python是离线两库/ABI资格，不是全部外部消费者RF/部署资格**。
-无新增形式化证明，自然RCA/非人工恢复继续开放。当前R4退休树不继承这项资格。
+| 范围 | 已取得的限定资格 | 仍缺失／不得推导 |
+|---|---|---|
+| 选定K64/U0a/工具997，SDK110 U2/U3 | 四VM保留发现/连接、61/249+超限/2042/机制2；32实际对端应用回复 | 不是整个当前树或完整S0–S6资格 |
+| 唯一用户态SSAP Engine/Owned | 24案例、96审批、120真实远端事务；owner在操作之间退出 | 活跃callback/原期限/撤权交错、CPCD、完整通知/指示和安全等级 |
+| 普通应用与显式Native分层 | App SDK无Native依赖；slkd不依赖App SDK；业务fd直达唯一Session | 完整C/Python broker/SSAP便利接口、全部CLI消费者收敛 |
+| 注册元数据 | 8次实际C bitmap/count、8次CLI完整身份快照，49新库ABI/历史布局检查 | allocation count不是Ready；不是C/Python业务、原子快照或芯片认证 |
+| 内核注册对象整改 | 已删除未消费flags/能力/统计副本；19安装+9当前注册fixture，另6历史接管fixture | DLI/rawUAPI/旧selftests、剩余全局掩盖、完整生命周期/并发证明 |
+| C导出守卫 | 两库实际ELF与独立公开头、失败/截断/变更负对照 | 名称/函数种类一致不等于ABI调用、权限或实机资格 |
 
-[R3a Channel操作层准确回归](../docs/evidence/channel-operation-boundary-r3a-20261017.json)：
-K`0cd4731dd3e6` / 编译及工具 **`17ed95f9f55e`**，SDK110 U2/3；四门禁保持
-61/249+16超限/2042/机制2、32真实对端回复、24 Owned案例/96审批/120事务、
-service-only68拒绝，5重放81复制负对照。309默认+309实验、2删除入口compile-fail、
-严格clippy、755冻结工具、48跨语言检查和严格HTML通过。**不是新Native产物、完整
-生命周期/多通道/SDK或自然恢复资格**。失败环境调用和旧证据均保留。
-
-[R2准确产物的保持回归](../docs/evidence/observation-retirement-r2-20261017.json)：
-K`0cd4731dd3e6` / 编译及工具 **`6aadcb48d235`**，SDK110 U2/3。四VM门禁含
-61/249+16超限/2042/机制2，32真实业务回复、24 Owned案例/96审批/120远端事务，
-service-only68拒绝、5重放81复制负对照。309默认+309all-features、严格clippy、754冻结
-工具通过。观察数量/字节/TTL/发布冲突/锁阻塞/同行测试是生产函数的私有D-Bus
-fixture；**不是128地址RF压力、实机TTL故障或完整生命周期证明**。原Proxy缓存失败
-保留，过期false断言不变，客户端必须显式无缓存查询或Properties.Get。
-
-Native/Channel/应用Client/独立共享契约的生产核心边界已接通，SDK→Native和slkd→SDK
-依赖已删除；完整架构整改仍未完成。R4a–d已删除旧controller安全、SSAP/Native门面及混合事件，
-保留实际Connection机制与Agent；各准确源码的限定回归见对应记录。内核遗留声明/
-selftests、全局掩盖、R5门禁和R6干净VM部署继续开放。C/Python完整broker/SSAP便利客户端仍缺失。
-
-[退休R1的准确新产物回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
-K`0cd4731dd3e6` / **编译 `cd35db3fd4e4` / 工具 `0568a3d1db1b`**，SDK110 U2/3。
-Powered及历史元数据Bond入口已删，存储仅test编译；四VM门禁32次真实业务回复，
-61/249/2042字节、16次超限拒绝，24 Owned案例/96次审批/120笔远端事务，含实际机制2。
-另有真实service-only组登记/读取/注销、跨owner/管理/通道/设备共68次拒绝；这是guest
-system-bus最小角色门禁，**不是service-only远端业务、完整多应用策略或干净发行版部署**。
-四数据重放与角色重放、81复制负对照；303默认+303all-features、750冻结工具、严格HTML。
-新审批TOKEN的在途/原期限实机门禁仍在开发，不以allow/deny门禁充抵；无新增形式化证明。
-首轮root管道EACCES/Broken pipe实机失败保留，后续只修guest监督器pipe属主；原断言未放宽。
-`e28d1ab`的卸载配置/状态保留只有实际Makefile暂存目录测试；不是完整安装/升级资格。
-R2实机压力及SDK/旧接口/事件/部署剩余见[唯一计划WP18](implementation-plan.md)。
-以上与c6/836等历史资格均保留原编译/工具身份，**不授予当前文档提交或dirty tree整体资格**。
-
-[Owned SSAP 新产物切片](../docs/evidence/ssap-owned-authorization-20261017.json)：
-K`0cd4731dd3e6` / 编译用户态与执行工具 `c6f9d8b96347`。基本通道和实际机制2各交换
-连接角色：16个owner案例、64次真实审批、80笔远端SSAP事务及16次owner退出。允许/
-拒绝读写/UUID读取由对端实际数据库读回与双端USB核对，旧handle在owner退出后真实
-拒绝。同产物另验249/超限及2042完整往返，四门禁共32次随机普通业务回复。
-
-四精确重放/52复制负对照、300默认与300 all-features Rust测试、746冻结工具及严格
-HTML已通过。Kani十性质/93原始检查仍含unstable/unsupported诊断，**未证明**。
-service-only部署、原期限/撤权/Down及活跃watch退休实机交错、CPCD、E受保护及完整
-多应用范围仍缺。下面836镜像的其余历史资格保持原身份，不升级为c6整体资格。
-
-
-[历史文档日志保留事故](../docs/evidence/hcc110-document-retention-incident-20261017.json)：
-初始HCC110整包的一份已封存文档日志被后续构建覆盖。五条原记录与原hash按准确git
-快照保留，但已撤出当前PASS，替换为必须处理的UNPROVED项；没有用新hash冒充原件。
-新0cd数据、f887生命周期、110受保护SSAP及ROM候选的独立实机材料未受影响。当前
-本机校验仅验证活动材料，明确另列不可重放的历史整包；不能宣称全部历史原件完好。
-
-当前选定子资格为[HCC原期限修复后的四项实机门禁](../docs/evidence/ws73-hcc-query-deadline-20261017.json)：
-Linux `0cd4731dd3e6`，编译用户态 `83625029e313`，执行/guest工具 `ee8c4d2d05d8`。
-报告提交 `b01aee81b612` 不替代编译身份。另有[生命周期30项](../docs/evidence/ws73-110-original-intent-lifecycle-20261017.json)
-绑定 K`f887b477f085` / 编译836 / 工具e513，未在0cd上重跑整套；两版net/trace/UAPI及
-对应用户态源码相同的映射不等于实现refinement或硬件等价证明。
-用户已选择统一1.10.110：第1口E用SDK e，2/3/4口U用us；[四只独立下载证据](../docs/evidence/ws73-hcc-model-110-20261017.json)
-核对实际USB字节。HCC自动报告型号与总线，不能认证硅片、校准或执行镜像；尚无HCC
-的ROM阶段不能由此选择首次镜像。混合运行期VM移除ROM镜像，避免错误型号下载。
-
-| 范围 | 当前限定结果 |
-|---|---|
-| HCC型号与独立启动 | E1/U2/U3/U4实际回复、12个镜像实际RAM上传匹配、DLI Setup；新0cd四门禁另有12次实际HCC查询。S及其他板未实测 |
-| 0cd E/U与U2/3业务 | 四门禁、各交换连接角色：32实际随机业务回复、88广播扫描轮次；受控QMP重枚举及动态adapter保持 |
-| 0cd数据及唯一SSAP保持 | 48属性案例（16允许、32真实拒绝）、64旧SSAP对端核对、64原RX上下文、96无效intent/16未知control拒绝 |
-| 0cd长度与预算 | 249字节负载；2043/2046/2047/2048超限共16次拒绝；完整2042往返8次。E ACB1526/6、U254/5逐端校验 |
-| f887生命周期（独立源范围） | 三机制×两来源×release/最后管理fd/dup/Down/原期限，共30门禁；72控制前实际回复、108晚到拒绝、30重放/892复制负对照。同行Ready/租约/扫描，非独立业务组 |
-| 0cd离线与证据 | 1116生产codec/query fixture+ASan/UBSan、730冻结工具、48准确封存ABI；四精确数据重放/128复制负对照 |
-| 历史形式化范围 | chip reply decoder的8语义断言/439原始检查与原件保留；原HCC110整包因文档日志损失暂停资格，非当前全量证明。USB/锁/引用/时钟/排空/整个内核不在证明内 |
-| 当前仍缺 | 完整逐属性授权/交错、CPCD及完整110安全/Agent矩阵、0cd完整生命周期重验、首次冷ROM可靠识别/每设备自动选镜像、S硬件、混合四设备及完整S0–S6 |
-
-新增[110受保护SSAP限定资格](../docs/evidence/ssap-110-protected-access-20261017.json)：
-同K0cd/编译836/工具ee8，U2/3的机制1与2各交换角色，16次实际业务回复、24属性案例
-（20允许、4拒绝）、8次安装及真实双端SMTC；不是E受保护资格、属性授权或完整Agent。
-
-[冷ROM识别候选复核](../docs/evidence/ws73-rom-chip-candidate-20261017.json)结论：**尚不能
-据此可靠启用首次冷下载自动选择**。准确VM工具d4b、离线观察器0ab；已知E1/U4各两次
-软件复位回ROM，12次实际READM在全部校准写入/下载前，四套显式匹配110上传/HCC与
-启动前后寄存器对照。E为`0a000000`，U为`00000000`；U零值能符合固件映射，却未有
-独立读取有效性判据，不能当有效身份。生产自动选择未启用，仍需显式整套E/U输入。
-真正冷断电、失效响应判据、每设备路径及ROM→运行期身份绑定仍缺。741工具、四重放/
-60复制负对照；另在E/U及未操作U2/3取得16次新业务回复，属于维护后功能回归，未证明
-复位同时另一业务组的隔离。原U零值guard失败保留，不因观察工具接纳歧义数据而改标。
-
-110矩阵首项原期限实机FAIL保留：准入至阻塞返回5508.767234–5508.861382毫秒，
-超过原5500毫秒上限，断言未放宽。其后新目录30项通过不解释或关闭原失败根因；
-31次尝试中原失败仍单列。HCC每次USB OUT剩余原2秒预算修复是独立源码问题，
-不冒充这次数据Session超时的根因或修复。真实OUT停滞/stop/drain交错仍待验证。
-首E平台长度EPROTO、U预算常量、相对路径artifact核对、fixture及旧身份audit错误
-均保留；ee8修复路径规范化后不把旧失败重标通过。
-
-此前[SDK111属性访问资格](../docs/evidence/ssap-attribute-access-20261017.json)保持原
-K1bcb/编译d4/工具49身份，不转授110、E或新镜像；其Kani诊断仍未证明。SDK111
-生命周期整轮在用户切换110时中止，不记整批通过。旧U331晚Down及反证保留；
-自然启动/重枚举/消失根因与非人工恢复继续OPEN。人工/hub/QMP/受控RAM复位不算
-自然恢复；USB/NOCP/协议ACK不等于应用处理。
-
-本切片不关闭整项issue。下一纵向链路复用唯一Session/Grant/credit/Ticket及用户态
-Engine，接策略绑定本地属性授权/CPCD与受保护更新；数据/多通道/四设备/可信性能、
-组合验证与RCA并行，不等全部控制面组合。完整S0–S6/19WP/10FV/12DG不缩减，
-UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围阅读，整体INCOMPLETE。
+命令清理候选b35的门禁包括六离线子集、实际Rust组件Werror、完整Kernel/link及
+准确四VM/独立重放；当前尚未提升主分支，不从组件或构建通过推导实机资格。自然启动/重枚举/设备消失根因、非人工恢复继续开放。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
+
+选定保留产物（不是当前工作树整体资格）：**R4e注册状态整改：K64/U0a/工具997四真实门禁，整架构未完**。
+仅记录范围：`real_device` / `PASS`。
+kernel `64a324844bfc66bc46de2c894bc78598c1cde515`。
+compiled_userspace `0a7a605798685bc337057f459cc52c60a7036726`。
+executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
+kernel_selftest_tools `64a324844bfc66bc46de2c894bc78598c1cde515`。
+independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
+[准确范围与剩余条件](../docs/evidence/kernel-registry-retirement-r4e-20261017.json)。
+
+以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
+
 
 | 契约（仅所列范围） | 证据层级 | 记录结果 |
 |---|---|---|
@@ -285,8 +190,9 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | R4b旧SSAP门面全链退休：6434055四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4c旧Native Event及空Profile feature退休：6841e4e四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4d旧Native接口全链退休：997ea19四真实门禁及C/CLI元数据，整架构未完 | `real_device` | `PASS` |
+| R4e注册状态整改：K64/U0a/工具997四真实门禁，整架构未完 | `real_device` | `PASS` |
 
-保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
+历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
@@ -295,120 +201,52 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 预备/guest 工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
+## 尚缺与验证边界
+
+完整S0–S6、19WP、10FV、12DG和全部原验收条件保留，整体INCOMPLETE。
+多通道/四设备、性能/压力、其他长度、安全/Agent、生命周期的旧资格均只属于各自原
+源码和配置；不能从本轮四组保留门禁推导全部矩阵已经重验。缺失新模式持续明确拒绝。
+
+Runtime/generation/lifetime、唯一Session、Grant/credit/Ticket和用户态唯一SSAP Engine
+分层保持；UserHost仍为低优先级规划。R4e其余历史入口、R5完整契约/来源与R6干净VM
+安装、外部SDK、升级/回滚/卸载和管理员配置/状态保留尚未闭合，部分结果不关闭整项。
+
+没有新增形式化证明。unsupported、timeout和不完整展开仍未证明；生产函数fixture不
+替代真实锁、分配器、引用、USB callback/drain、固件清除或NOCP准确性/复用屏障。
+新KASAN/KCSAN/lockdep/故障注入/KCOV配置及完整门禁仍需单独验收。
+
+全部实验驱动和真实WS73保持VM-only。人工拔插、hub切电、QMP和注入不代表自然恢复；
+USB成功、NOCP或协议确认不代表对端应用已经处理。可靠业务仍以实际对端校验/回复为准。
+
+## 历史、证据和CI
+
+逐轮资格、失败和反例见[历史入口快照](../history/current-capabilities-before-registry-retirement-20261017.md)
+及[结构化记录](qualification-records.json)。历史原文保留原身份；本页不继续堆叠逐轮进度。
+[材料保留事故](../docs/evidence/hcc110-document-retention-incident-20261017.json)继续作为
+required UNPROVED，原件损失不以新hash替换或豁免。
+
+原始USB/安全材料可能受限，仅在授权工作区按报告hash保留；不承诺公开下载或异地永久
+保留。公开CI核对元数据，local核对原件，require-current再核对源码；本机完整性检查
+不等于重新执行硬件、独立空口解码或实现证明。准确CI运行单列在相应报告，不以“最新”
+文档HEAD覆盖编译/执行身份。当前实际能力按上方选定产物和对应范围读取。
+
 ## 已封存数据子资格（以下均按各自准确镜像）
 
-[本轮准确新镜像报告](../docs/evidence/dynamic-runtime-retained14-20261016.json)绑定
-K400bd681、编译用户态Ucca8a20、guest/Host工具4b33733；文档提交不是编译身份。
-11组双设备门禁取得136次普通用户随机业务往返、32次超限拒绝、两次最后关闭后
-在途PDU真实交付；覆盖61/248/249/250/253/254/255/1024/2042字节、长包、
-分片及软件背压。四设备两组再取得80次并行业务、48次受控断链隔离业务和
-64次2042字节burst往返。合计328次普通往返；关闭作者的两次交付单独计数。
-
-所有阶段实际捕获identifier0及独立SDU MTU2042/完整PDU MPS2047广告，
-业务PDU最大2047字节；ACB254字节分片与协议credit独立。
-[生产代码限定证明](../docs/evidence/cmtc-mtu-mps-fix-20261016.json)另记六步转换、
-13项主性质/341项有界检查及原源码变异反例。两者不互相替代。
-
-上述实机资格仅固定基础CUTC31/PI241与SMTC10/PI0。真实peer校验回复、PB分片与软件
-背压已取得上述范围资格；均不证明可靠模式、NOCP准确性/重复迟到/复用屏障、
-公平性、慢消费者、长期收敛或真实USB/设备故障隔离。受控连接断开不代表自然故障。
-
-K400/Ucca8动态CMTC的[48次短包门禁](../docs/evidence/dynamic-cmtc-real-20261016.json)
-与[56次含2042字节门禁](../docs/evidence/dynamic-long-2042-20261016.json)分别记录
-工具4b33733/d14c988。后者含8次动态长包往返、两次四槽预算ENOSPC，拒绝后C
-仍实际回复；TX9片/RX81片重组完整2047字节PDU。它不代表所有动态长度已验收。工具8297955的249整轮发生
-[监督器ENODATA失败](../docs/evidence/dynamic249-monitor-failure-20261016.json)，底层原因未查明，
-该历史矩阵保持FAIL。工具45a658e采用有界子进程管道采集后，独立的[七尺寸新矩阵](../docs/evidence/dynamic-seven-sizes-20261016.json)
-已通过：249/250/253/254/255/1024/2042，共392次动态往返（其中56次C尺寸）、14次
-槽位ENOSPC；拒绝后C仍实际回复，交换物理角色。249字节完整PDU254为单片TX，
-其余尺寸按实际两端PB重组；不假定固件RX与TX分片数相同。119个离线证据负对照
-拒绝，原失败未覆盖，也没有证明TCID安全复用、完整credit或自然恢复。
-同镜像固定通道burst的[补充credit观察](../docs/evidence/dynamic-runtime-credit-observation-20261016.json)
-核对两角色源端新增29/25次池满拒绝，各端206次提交/206包NOCP及最终排空；32次
-应用往返属于原burst，不重复计数。NOCP准确性、迟到/重复和复用屏障仍待验证。
-[限定离线证明](../docs/evidence/dynamic-cmtc-offline-20261016.json)与实际函数夹具、
-fuzz仍分层；[负对照字段修正](../docs/evidence/dynamic-capture-field-audit-correction-20261016.json)
-保留原尾分片载荷变异输出，重新针对首片TCID/PI拒绝；真实正向证据不变。
-
-新编译U25df09b／工具25df09b在同一K400取得[动态burst/credit限定门禁](../docs/evidence/dynamic-burst-real-20261016.json)：
-80次动态往返中32次为C的2042字节突发，两物理角色均取得真实EAGAIN/poll背压、
-源端新增25/26次credit池满拒绝、NOCP后恢复提交与最终排空。实际对端逐条校验
-回复，两端PB重组一致，20个离线证据负对照拒绝；不证明NOCP迟到/重复及安全复用。
-同一新编译用户态又[独立重验七尺寸](../docs/evidence/dynamic-burst-retained-seven-sizes-20261016.json)，
-392次动态往返、14次槽位拒绝与119个负对照；不继承或重命名旧Ucca8结果。
-既有14组固定通道/四设备资格仍仅属于其原K400/Ucca8产物；当前整个树和原完整范围
-未通过整体验收。下一批继续提交/撤权/断链/原期限组合，未查明根因与非人工恢复开放。
-
-
-U b791cfa 的综合CI、资格一致性、文档与codec bounded-fuzz均成功，
-[准确运行及issues回执](../docs/evidence/dynamic-burst-issues-ci-20261016.json)另外记录。
-最终工具子树与25df09b逐文件一致，完整614项重跑通过；CI/离线结果不替代上述实机证据。
-
-[受控数据生命周期](../docs/evidence/data-lifecycle-composition-20261016.json)另记录
-K400/U25df09b／工具25df：release、最后File关闭、dup、物理Disconnect各方向共8例；
-原矩阵在缺少QEMU 8秒hold属性时失败，保留FAIL。经独立无USB启动核对后，两项
-原5秒期限另通过：实际5片1270字节、到期后旧操作不续交，释放后5包真实NOCP。
-10个成功用例先各完成2次实际业务，共20次；部分PDU交付计数为0。42个离线证据
-负对照拒绝。peer lease/Ready及适用的实际扫描通过，不等于第三组业务或daemon存活。
-
-K a474a8503637只新增selftests，不改变上述编译运行代码。其[生产函数序列探索](../docs/evidence/native-sequence-lifecycle-20261016.json)
-在有效初始提交后执行1024×32事件：1957次配置失败尝试中113次真正走到原子提交拒绝，
-另125次已接受后不确定失败保留debt；两个指定生产源码变异由实际测试给出种子/轨迹反例。
-这属于离线fixture探索，不是Kani/TLC证明或真实内核并发。首版变异编译失败不算反例。
-本批退出，继续四设备两组动态业务；完整Ticket/NOCP复用、RCA与非人工恢复仍开放。
+此旧锚点保留；逐轮数据叙述在[历史快照](../history/current-capabilities-before-registry-retirement-20261017.md)，
+当前范围以选定记录为准。
 
 ## 安全与服务的限定范围
 
-正式slctl Agent批准/拒绝的[16次业务子门禁](../docs/evidence/security-cli-real-progress-20261016.json)
-仍绑定K8cbf、编译6385、工具300a；[六模式48次业务门禁](../docs/evidence/agent-policy-real-matrix-20261015.json)
-仍绑定各自85cdf/db6身份。上述新数据回归没有重跑全部Agent/安装/取消组合，
-不把旧安全资格转授新镜像。策略批准不产生认证身份、可信Grant或Bond。
-
-当前真实SSAP ExchangeInfo、读写/发现子路径的准确范围见结构化记录和原门禁；
-本地服务数据库不表示远端发布。T/XS20001表40要求CPCD写入具备认证及授权；
-未认证SDK111机制、策略批准和本地Trusted不能满足。通知/指示所需安全前置仍缺，
-未支持入口继续明确拒绝，不为演示放开不安全CCC。
+当前限定范围见上方矩阵和选定报告；旧逐轮资格保留于历史快照，不自动继承。
 
 ## 尚缺与工程边界
 
-四槽/物理lifetime墓碑只是有限策略，完整关闭/复用屏障、多通道全矩阵、
-认证/Bond、安全SSAP更新、正式部署权限/兼容及发布仍未完成。
-普通应用组在真实system-bus/udev/内核授权环境的完整矩阵尚缺；UID1000/caps0
-的VM业务不能替代全部部署权限。单daemon管理设备也不等于独立进程故障域。
-
-自然启动超时、重枚举失败、设备消失的根因及非人工自动恢复继续开放。
-人工拔插、hub切电、QMP和注入只用于其明确实验范围，不授予自然恢复资格。
-当前资格配置及插桩范围以各报告为准；尚未取得KASAN/KCSAN/lockdep/故障注入/
-KCOV的新调试VM资格。生产函数夹具不包含真实内核锁、分配器、引用或调度证明。
+此旧锚点对应上方“尚缺与验证边界”；原始完整验收范围不变。
 
 ## 历史与失败保留
 
-历史d75的[MTU/MPS违约](../docs/evidence/cmtc-mtu-mps-audit-20261016.json)保持FAIL；
-当前固定基础通道由独立K90修复/新实机记录取代。旧[四设备80次](../docs/evidence/four-device-business-20261016.json)、
-[受控隔离48次](../docs/evidence/four-device-disconnect-20261016.json)、
-[burst64次](../docs/evidence/four-device-burst-20261016.json)及
-[旧数据11组](../docs/evidence/security-cli-retained-data-20261016.json)均保留原身份。
-旧成功不能覆盖旧MPS失败，也不能因本文整理升级为新镜像资格。
-
-本轮首个prepare的QEMU身份不一致拒绝、监督器错误地将关闭在途交付判为普通
-往返失败均保留。后者按原有独立prefix契约重验原捕获，并通过缺peer/最终关闭
-负对照；未重跑已通过硬件用例或放宽物理断言。原RAM诊断、缺包、首次panic、
-最后回复关闭丢弃、形式化timeout/unsupported和其他失败仍见原报告；1766检查
-不因工具退出0或其他证明通过变成PASS。
+全部原始失败、反例和身份保留于历史/证据入口，不以随后成功覆盖。
 
 ## 证据访问与CI
 
-公开摘要只包含身份、范围、hash与重放说明；原材料可能含受限材料或密钥，
-只在获授权的原工作区保留，没有公开下载或异地永久保留承诺。访问条件见
-结构化记录access_policy及各报告materials。缺文件/hash不符不能授予当前PASS。
-
-`check_qualifications.py`公开CI只核对元数据；local核对原件，require-current再核对
-声明范围源码。历史记录故意保留旧源码，不能把整库历史的当前匹配失败当作新记录
-通过，或用当前docs HEAD替换编译身份。本地匹配也不是硬件重放或独立decoder证明。
-
-执行工具69314c4的[综合CI](https://github.com/OpenSparklink/sparklink/actions/runs/38921748547)、
-[严格文档](https://github.com/OpenSparklink/sparklink/actions/runs/38921748917)、
-[资格元数据](https://github.com/OpenSparklink/sparklink/actions/runs/38921748794)及
-[限定codec探索](https://github.com/OpenSparklink/sparklink/actions/runs/38921748783)通过；
-准确范围见事件调度报告，不能替代实机、实际内核并发或完整发布资格。后续文档提交
-不改变该工具CI身份，也不自动更新编译artifact的资格。
+此旧锚点对应上方“历史、证据和CI”；私有材料和源码匹配条件不变。

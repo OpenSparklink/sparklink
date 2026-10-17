@@ -22,7 +22,8 @@ class QualificationTests(unittest.TestCase):
                         'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false',
                         'commit', '-qm', 'fixture'], check=True)
         commit = q.git(self.repo, 'rev-parse', 'HEAD').decode().strip()
-        self.report = {'source': commit, 'scope': ['not locks, USB or RF'], 'status': 'SCOPED_PASS'}
+        self.report = {'source': commit, 'scope': ['not locks, USB or RF'],
+                       'status': 'SCOPED_PASS', 'bounds': 'fixture only'}
         (self.repo / 'report.json').write_text(json.dumps(self.report))
         (self.repo / 'artifact').write_bytes(b'compiled fixture artifact')
         materials = {}
@@ -36,6 +37,7 @@ class QualificationTests(unittest.TestCase):
                       sources={'production': dict(repo='sparklink', commit=commit, scopes=['production.rs'],
                                                  files=q.scoped_files(self.repo, commit, ['production.rs']))},
                       report=dict(material='report.json', scope_pointer=['scope'],
+                                  bounds_pointer=['bounds'],
                                   source_pointers={'production': ['source']}, verdict_pointer=['status'],
                                   verdict_results={'SCOPED_PASS': 'PASS', 'UNSUPPORTED': 'UNPROVED'}),
                       artifact_materials=['artifact'], tool_materials=['artifact'], configuration_materials=[],
@@ -168,6 +170,15 @@ class QualificationTests(unittest.TestCase):
                 self.data['selected_qualification'] = value
                 self.assertTrue(self.run_check()['errors'])
 
+    def test_report_bound_counts_cannot_be_replaced_by_an_independent_summary(self):
+        self.data['records'][0]['bounds'] = {'peer_roundtrips': 9999}
+        self.assertIn('one: bounds mismatch', self.run_check()['errors'])
+
+    def test_selected_pass_cannot_omit_bounds_mapping(self):
+        self.data['selected_qualification'] = {'version': 1, 'record': 'one'}
+        del self.data['records'][0]['report']['bounds_pointer']
+        self.assertIn('selected PASS requires report-bound bounds', self.run_check()['errors'])
+
     def test_selection_renders_exact_sources_without_hiding_other_results(self):
         self.data['baseline'] = {'kernel': 'old-k', 'compiled_userspace': 'old-u', 'executed_tools': 'old-tools'}
         self.data['batch'] = {'id': 'fixture'}
@@ -184,6 +195,27 @@ class QualificationTests(unittest.TestCase):
         self.assertIn('历史registry基线（非当前资格）', rendered)
         self.assertEqual(q.summary(self.data)['overall'], 'INCOMPLETE')
         self.assertEqual(q.summary(self.data)['selected_qualification'], self.data['selected_qualification'])
+
+    def test_selected_bounds_follow_record_and_old_generated_counts_are_rejected(self):
+        self.data['baseline'] = {'kernel': 'k', 'compiled_userspace': 'u', 'executed_tools': 't'}
+        self.data['batch'] = {'id': 'fixture'}
+        record = self.data['records'][0]
+        record.update(title='source-bound fixture', bounds={'peer_roundtrips': 48, 'new_formal_proofs': 0})
+        self.data['selected_qualification'] = {'version': 1, 'record': 'one'}
+        project = self.repo / 'project'
+        project.mkdir()
+        for name in ['current-capabilities.md', 'implementation-plan.md']:
+            (project / name).write_text(q.render(self.data))
+        (project / 'goal-execution-state.json').write_text(json.dumps({'qualification_view': q.summary(self.data)}))
+        self.assertFalse(q.sync_views(self.data, self.repo))
+        old = (project / 'current-capabilities.md').read_text()
+        self.assertIn('"peer_roundtrips": 48', old)
+        self.assertIn('"new_formal_proofs": 0', old)
+        record['bounds']['peer_roundtrips'] = 56
+        self.assertIn('current-capabilities.md: stale qualification summary', q.sync_views(self.data, self.repo))
+        self.assertFalse(q.sync_views(self.data, self.repo, write=True))
+        self.assertIn('"peer_roundtrips": 56', (project / 'current-capabilities.md').read_text())
+        self.assertNotIn('"peer_roundtrips": 48', (project / 'current-capabilities.md').read_text())
 
     def test_missing_required_gate(self):
         self.data['records'][0]['gates'] = []

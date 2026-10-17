@@ -667,9 +667,9 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "R5e:existinglocalstaging/Owned/Agent clients/sharedtypes andpublicinterfaceaudit;C-Python highlevelclients stillmissing",
-    "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
-    "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
+    "R5f/R6:remaining public-interface/support audit and actual C/Python consumers;full highlevel broker/SSAP clients remain unimplemented",
+    "R6:consistent build/install/service/pkgconfig/SONAME/permissions andcleanVM upgrade/rollback/uninstall/configretention;reuse existing fixes",
+    "Then original feature workstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
   "architecture_contract_adoption": "docs/decisions/0004-application-ownership-and-delivery.md",
   "proof_policy": {
@@ -801,9 +801,9 @@
   },
   "execution_phase": "ARCHITECTURE_FIRST_R5_CLIENT_CONTRACT_THEN_R6_DEPLOYMENT",
   "next_resume_tasks": [
-    "R5e:existinglocalstaging/Owned/Agent clients/sharedtypes andpublicinterfaceaudit;C-Python highlevelclients stillmissing",
-    "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
-    "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
+    "R5f/R6:remaining public-interface/support audit and actual C/Python consumers;full highlevel broker/SSAP clients remain unimplemented",
+    "R6:consistent build/install/service/pkgconfig/SONAME/permissions andcleanVM upgrade/rollback/uninstall/configretention;reuse existing fixes",
+    "Then original feature workstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
   "issue_sync_status": "R5D_SIX_EXISTING_ISSUES_UPDATED_BODY_UNCHANGED_ALL_OPEN",
   "issue_sync_receipt": ".dev/architecture-r5d-issue-receipts-v1.json",
@@ -1823,24 +1823,28 @@
       "typed-peer-retirement-r5d": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "owned-agent-client-r5e": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R5e-existing-service-agent-callers",
-      "production_behavior": "R4/R5b/R5c retained. R5d defaultDevice/GetDevices/devices/info andduplicatedPeer metadata retired;actualoneboundedtypedPeer/SDK/CLI. Compiled2fc/0fe,correctedtools8aa,fourfreshVMs;16Peer reads/12USBpositive/4honestunknown,original32businessreplies. First0fe-toolsFAILretained,notrelabeled. No newproof orwholeHEADqualification.",
-      "state": "R5D_TYPED_PEER_FINITE_QUALIFIED_FULL_R5_R6_ARCHITECTURE_OPEN",
+      "id": "WP18-R5f-R6-public-consumers-deployment",
+      "production_behavior": "R5e existing local staging/Owned/Agent and original security requests share one Client/contract. Actual Agent epoch/old cleanup checks;CLI directRPC andduplicate scope retired. Compiled2fc/41ae,tools268:sixnewVMs,48peerreplies,40Ownedcases,8actualCLI Agents/8requests. FirstCLIFAIL andstale auditor annotations retained/rejected. Zero newformalproof;notwholecurrentdirtytree.",
+      "state": "R5E_EXISTING_CLIENT_FINITE_QUALIFIED_FULL_ARCHITECTURE_INCOMPLETE",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "R5e reuseexistingClient/sharedcontract forlocalstaging/Owned/Agent actualcallers andremainingpublicinterfaceaudit;no secondEngine orNativeleak. C/Python fullhighlevelclients andR6 cleanVMdeployment stillmissing. Fulloriginalscope,naturalRCA/nonmanualrecoveryOPEN."
+      "next": "Finish remaining public API/supported external C-Python consumers and R6 cleanVM build/install/service/systembus/udev/pkgconfig/SONAME/upgrade/rollback/uninstall/configretention. Reuse existing uninstall retention/Make artifactname fix. FullhighlevelC-Python conveniences,commonOperation/Deadline/EventStream/perappdiscovery remain original scope;no secondEngine. NaturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
-      "record": "typed-peer-retirement-r5d"
+      "record": "owned-agent-client-r5e"
     }
   },
   "agent_workstream": {
@@ -3360,9 +3364,9 @@
       "next": "Resumepreserved101rawAPI/types/callers/currenttestmigration thenfullR5SDK/R6deploy;alloriginalscopeOPEN"
     },
     "remaining_order": [
-      "R5e:existinglocalstaging/Owned/Agent clients/sharedtypes andpublicinterfaceaudit;C-Python highlevelclients stillmissing",
-      "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
-      "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
+      "R5f/R6:remaining public-interface/support audit and actual C/Python consumers;full highlevel broker/SSAP clients remain unimplemented",
+      "R6:consistent build/install/service/pkgconfig/SONAME/permissions andcleanVM upgrade/rollback/uninstall/configretention;reuse existing fixes",
+      "Then original feature workstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
     ],
     "r5_remote_client_slice": {
       "state": "FINITE_SDK_CLI_FOUR_REAL_VM_AND_OFFLINE_QUALIFIED_FULL_R5_OPEN",
@@ -3378,7 +3382,7 @@
       "exit_reference": "CanonicalimplementationplanR5c",
       "state": "FOUR_REAL_VM_AND_OFFLINE_QUALIFIED_FINITE_R5C_ONLY",
       "counterexample": "docs/evidence/controller-owner-counterexample-20261018.json",
-      "remaining": "R5d typedPeer separatelyqualified;localstaging/Owned/Agent/C-Python,R6 andfulloriginalscope remainOPEN",
+      "remaining": "TypedPeer/staging/Owned/Agent separately source-boundqualified;remainingR5f/R6/fulloriginalscope open",
       "qualification_report": "docs/evidence/controller-management-client-qualification-20261018.json"
     },
     "r5_typed_peer_slice": {
@@ -3386,29 +3390,43 @@
       "scope": "One bounded typedPeer observation/publication source replacing address-onlyDevice;existing native link authority remains. No additional Engine/worker.",
       "state": "FOUR_FRESH_VM_AND_OFFLINE_FINITE_PEER_SLICE_QUALIFIED_FULL_ARCHITECTURE_OPEN",
       "exit_reference": "CanonicalimplementationplanR5d",
-      "remaining": "Localstaging/Owned/Agent/sharedcontract/C-Python highlevelclients,R6 andfulloriginalscope;alladdressmodes/128-peerpressure/naturalRCA/nonmanualrecoveryOPEN",
+      "remaining": "Addressmodes/128-peerpressure/observerdeployment andremainingR5f/R6/fulloriginalscope;R5e currentcallers separately qualified",
       "first_vm_failure": "docs/evidence/typed-peer-tool-retirement-failure-20261018.json",
       "qualification_report": "docs/evidence/typed-peer-retirement-qualification-20261018.json"
     },
-    "next_limited_batch": {
-      "id": "R5e-existing-service-agent-callers",
-      "scope": "Reuseexisting Client,callback policy anduniqueSSAPEngine;local staging/Owned/Agent distinct roles. Sharedcontract independentfromSDK.",
-      "state": "READ_ONLY_CALL_AUDIT_NOT_MIGRATED_OR_QUALIFIED",
-      "exit_reference": "CanonicalimplementationplanR5e",
-      "remaining": "ActualnewSDK caller tests/independent signatures/originaldeadline/ownerloss andaccuratenewVMqualification;remainingC-Python/R6/fullscope"
-    },
     "r5e_foundation": {
-      "status": "OFFLINE_ONLY_NEW_REAL_ARTIFACT_PENDING",
+      "status": "SOURCE_BOUND_R5E_ARTIFACT_SCOPED_PASS_FULL_ARCHITECTURE_OPEN",
       "report": "docs/evidence/client-scope-staging-foundation-20261018.json",
-      "remaining": "Owned/Agent shared typed clients,original-owner targeted cleanup,actual new-artifact real gates,remaining R5/R6;full scope unchanged"
+      "remaining": "RemainingR5f/R6/fulloriginalscope;source-bound reports distinguish historical/offline/real slices;no newformalproof",
+      "qualification_report": "docs/evidence/owned-agent-client-qualification-20261018.json",
+      "compiled_userspace": "41ae994b41b3064cae2dc52b5e0da657ef3961f2",
+      "executed_tools": "26813e4ccaf669516ef78cbf9f5e5ae1842233e5"
     },
     "r5e_owned_agent": {
-      "status": "FOUR_PRESERVATION_RUNNERS_ZERO_FIRST_ACTUAL_CLI_RUN_FAIL_CORRECTED_TOOLS_NEW_GATES_PENDING",
+      "status": "SOURCE_BOUND_R5E_ARTIFACT_SCOPED_PASS_FULL_ARCHITECTURE_OPEN",
       "production": "Typed existing Owned/Agent/security-request clients;shared original owner scope;unpublished Agent unregister checks actual caller/path/epoch;CLI policy/UI only",
       "exit_reference": "project/implementation-plan.md / R5e current batch",
-      "remaining": "New CLI approve/reject VM after tool selector correction,independent raw/peer/business audits and source-bound sealing;remaining R5/R6 and original fullscope stay open",
+      "remaining": "RemainingR5f/R6/fulloriginalscope;source-bound reports distinguish historical/offline/real slices;no newformalproof",
       "offline_report": "docs/evidence/owned-agent-client-source-audit-20261018.json",
-      "failure_report": "docs/evidence/owned-agent-cli-grade-failure-20261018.json"
+      "failure_report": "docs/evidence/owned-agent-cli-grade-failure-20261018.json",
+      "qualification_report": "docs/evidence/owned-agent-client-qualification-20261018.json",
+      "compiled_userspace": "41ae994b41b3064cae2dc52b5e0da657ef3961f2",
+      "executed_tools": "26813e4ccaf669516ef78cbf9f5e5ae1842233e5"
+    },
+    "r5_existing_service_agent_slice": {
+      "id": "R5e-existing-service-agent-callers",
+      "scope": "Reuseexisting Client,callback policy anduniqueSSAPEngine;local staging/Owned/Agent distinct roles. Sharedcontract independentfromSDK.",
+      "state": "SIX_FRESH_VM_EXISTING_CLIENT_SLICE_QUALIFIED_FULL_ARCHITECTURE_OPEN",
+      "exit_reference": "CanonicalimplementationplanR5e",
+      "remaining": "R5f/R6 andfulloriginalscope;numeric-human-CLI hardware,C-Python highlevelclients,commonAPI/perappdiscovery,naturalRCA/nonmanualrecovery remain",
+      "qualification_report": "docs/evidence/owned-agent-client-qualification-20261018.json"
+    },
+    "next_limited_batch": {
+      "id": "R5f-R6-supported-public-consumers-deployment",
+      "state": "CURRENT_SOURCE_READ_ONLY_AUDIT_NO_NEW_DEPLOYMENT_QUALIFICATION",
+      "scope": "Existing supported app/Native separation and actual build/deploy permissions;no newHost/Engine or protocol architecture change",
+      "findings": "Make source artifactname and uninstall preservation alreadyfixed;defaultPREFIX/service path,Debian,pc/headers/SONAME,groups/udev/systembus andcleanVM remain",
+      "exit_reference": "Canonical WP18/R6;new deploy artifact must pass staged/cleanVM/external consumers/upgrade/rollback/uninstall/configretention andapplicable real gates"
     }
   },
   "owned_ssap_c6_historical_batch": {

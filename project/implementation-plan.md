@@ -10,12 +10,35 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放**。
 仅记录范围：`real_device` / `PASS`。
 kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-compiled_userspace `0fe37cb549b188613ae50360d9555ab5f4d74bf1`。
-executed_tools `8aa7dbd1d6d226997978ff04b272eadd6cf183df`。
-[准确范围与剩余条件](../docs/evidence/typed-peer-retirement-qualification-20261018.json)。
+compiled_userspace `41ae994b41b3064cae2dc52b5e0da657ef3961f2`。
+executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
+[准确范围与剩余条件](../docs/evidence/owned-agent-client-qualification-20261018.json)。
+
+限定边界由同一记录生成；计数不代替必需门禁、假设或范围：
+```json
+{
+  "actual_cli_agents": 8,
+  "actual_cli_requests": 8,
+  "cli_evidence_negatives": 20,
+  "evidence_negative_controls": 261,
+  "final_workspace_tests": 338,
+  "honest_unknown_observations": 6,
+  "new_formal_proofs": 0,
+  "oversize_refusals": 16,
+  "owned_cases": 40,
+  "peer_evidence_negatives": 84,
+  "peer_roundtrips": 48,
+  "peer_sdk_observations": 24,
+  "peer_usb_positive": 18,
+  "real_runs": 6,
+  "release_bindings_checks": 50,
+  "seal_schema_negatives": 8,
+  "service_role_denials": 68
+}
+```
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -190,6 +213,7 @@ executed_tools `8aa7dbd1d6d226997978ff04b272eadd6cf183df`。
 | K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U4736管理应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
+| K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1320,10 +1344,10 @@ R5d有限退出已取得：[编译2fc/0fe、工具8aa资格](../docs/evidence/ty
 代替。C/Python完整高级客户端、外部实际消费与R6干净VM安装仍明确缺失；只实现并
 验证当前生产入口，不先导出整个目标API树或永久NotSupported旧门面。
 
-R5e第一小批已接入共享Client scope与四个管理staging调用，
+R5e第一小批的历史离线快照：已接入共享Client scope与四个管理staging调用，
 [离线范围与原反例](../docs/evidence/client-scope-staging-foundation-20261018.json)
 记录335 workspace及严格Clippy通过；不是新artifact实机资格。原同owner释放/重取
-反例保留。Owned/Agent仍待迁移，向原owner撤销原资源不能因scope失效而被阻断。
+反例保留；该快照不随后续资格改写。当时待迁移的Owned/Agent已在下列R5e准确新artifact完成限定门禁。
 
 本批三类清单（只收敛现有生产调用，不复制Engine）：
 
@@ -1348,6 +1372,32 @@ R5e首次真实CLI批准VM在后续属性门禁失败，不能记作整轮资格
 新工具身份与新VM另封。该VM一次phase0超时/warm recovery日志保留，根因与
 非人工自然恢复/同行隔离不据此闭合。新增selector/原证据负对照39项通过。
 
+R5e有限退出已取得：[准确编译2fc/41ae、执行工具268](../docs/evidence/owned-agent-client-qualification-20261018.json)。
+六个新VM与现有producer/SDK/CLI调用、338 workspace、严格构建和50封存库检查分别记录；
+限定计数只由结构化资格生成，不在多个“当前矩阵”手工重复。已验证模式是实际CLI
+no-MITM批准/拒绝和原独立probe数值比较；人工numeric CLI硬件资格仍缺。初次CLI
+FAIL、warm启动观察、复制审计摘要的旧source/count标注及封存器拒绝原件保留；
+修正后的独立审计重新映射真实原件，没有新增形式化证明，不关闭完整R5或原issue。
+
+##### R5f／R6当前批：公开支持面与实际部署收敛
+
+核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
+保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取
+错误源库名且缺Native/pc统一安装；pc头目录不符；无正式SONAME与干净VM升级回滚
+实测；组/udev/systembus和外部SDK消费、CI固定资格工具链/发布汇总仍按原任务。
+
+三类清单：立即迁移/删除重复安装规则、硬编码失配路径和过时能力/地址声明；保留
+已有真实Make卸载、独立ABI/导出及历史失败测试（fixture与实际安装分开）；等待实际
+替代/验收的高阶C/Python broker/SSAP、通用Operation/Deadline/EventStream和应用发现
+会话不得由永久NotSupported旧门面代替。默认App与显式Native入口及唯一Engine保持。
+
+本批退出：生产构建/安装/打包采用一个明确布局与实际artifact身份，服务/头/pc/库名/
+SONAME/权限/配置保留一致；先严格构建/独立导出/实际staged布局负向，再在干净VM
+完成服务、普通用户、外部C/Python当前支持入口、升级/回滚/卸载和状态保留。涉及
+数据/授权/事件的改动须新artifact重新取适用真实双设备门禁；旧R5e不转授新产物。
+部分staging/ABI通过不使R6或完整架构完成，不阻断未关联的原纵向功能与自然RCA工作。
+原S0–S6、19WP/10FV/12DG、UserHost P4、VM-only与所有原验收范围保留。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立
@@ -1355,8 +1405,8 @@ nm对照，不由同一客户端或cbindgen输出推导二进制符号。已实�
 离线核对，负对照覆盖额外/缺失/非函数/版本化/空/截断/重复/工具失败和材料变更。
 报告绑定检查器hash和nm版本；这不是ABI调用或新设备资格。生产源码和已有RF工具不改。
 
-仍需R5完整公开接口/实际D-Bus签名/CLI/C-Python/独立权限、SDK现有消费者迁移和
-每次尝试来源闭包；本门禁不使R5完成，也不阻塞正在执行的64内核VM门禁。
+R5a当时的后续公开接口/消费者任务现按R5b–e准确限定报告核对；当前缺口只以R5f/R6
+及下方生成记录为准。该历史导出门禁不代表完整R5，也不表示64内核VM仍在运行。
 
 ##### R3后续需保持的准入契约
 

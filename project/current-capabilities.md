@@ -3,31 +3,29 @@
 本页是唯一当前资格入口。选定产物、原始门禁、源码和工具身份来自结构化记录；
 报告/文档提交不替代编译身份，源码相同也不转授旧 artifact 的资格。
 
-| 范围 | 已取得的限定资格 | 仍缺失／不得推导 |
+当前产物的结果、计数、层级和源码身份统一从下方生成记录读取；不再另写一份手工
+“最新资格”计数表。以下只按任务指向接口与边界，历史 PASS 不转授新产物。
+
+| 任务/主题 | 支持范围的权威入口 | 仍需区分的边界 |
 |---|---|---|
-| 选定产物，SDK110 U2/U3 | 四VM保留发现/连接、61/249+超限/2042/机制2；32实际对端应用回复 | 不是整个当前树或完整S0–S6资格 |
-| 唯一用户态SSAP Engine/Owned | 24案例、96审批、120真实远端事务；owner在操作之间退出 | 活跃callback/原期限/撤权交错、CPCD、完整通知/指示和安全等级 |
-| Rust远端SSAP应用客户端 | 选定产物的新CLI复用固定owner/连接Client，四VM保持实际发现、读写/UUID/ExchangeInfo及Owned路径 | 正向通知/新Session CLI硬件调用、Owned/Agent/高阶接口和C/Python客户端仍缺 |
-| Controller/显式管理应用客户端 | 选定产物的新CLI经现有Client执行四VM管理路径；私有bus验证owner/gen/request拒绝、早期Core和foreign Peer隔离 | 不是全部控制面竞争或system bus部署资格；本地Owned/Agent及共享scope仍待迁移 |
-| Typed Peer观察 | 编译0fe／工具8aa：16次实际SDK观察，12次接收端USB匹配、4次无广告被动端明确unknown；原Device/GetDevices和CLI别名已退休 | 实机仅地址类型0；完整地址/隐私、128地址压力、实际observer部署和全生命周期仍缺 |
-| 普通应用与显式Native分层 | App SDK无Native依赖；slkd不依赖App SDK；业务fd直达唯一Session | 完整C/Python broker/SSAP便利接口、全部CLI消费者收敛 |
-| 注册元数据 | 8次实际C bitmap/count、8次CLI完整身份快照，50新库ABI/历史布局检查 | allocation count不是Ready；不是C/Python业务、原子快照或芯片认证 |
-| 内核注册及命令整改 | 注册假状态/能力统计副本、未消费raw命令和DLI能力投影退休；当前Native快照5项与历史投影5项分开，实际Rust组件与完整Kernel均构建 | 完整SDK/部署、完整生命周期/并发证明 |
-| DLI事件/注册版本整改K4b6 | 仅7类已消费事件、生产DLI deny；剥离已实现；当前与历史decoder/ring/投影分开；组件/内核、Virtual及四真实VM原件保留，parser边界以2d268工具直接注入生产240预算重验；原聚合未证明保留 | 完整SDK与部署仍缺；历史codec不是当前标准互通能力 |
-| 关键故障消费者（选定产物） | 首Fault关闭准入、独立关键观察、原worker/ledger；81+2函数子集，实际可选Virtual两轮和四真实保留VM | 同一作者两个请求，非同controller多作者证明；不是实物HardwareError、自然根因或恢复资格 |
-| C导出守卫 | 两库实际ELF与独立公开头、失败/截断/变更负对照 | 名称/函数种类一致不等于ABI调用、权限或实机资格 |
+| 普通用户业务、长度、实际CLI、Peer观察 | 本页选定记录及其全部必需门禁/双端证据 | 功能回归不等于吞吐、可靠模式、全部地址/隐私或整个当前树资格 |
+| Rust管理/应用、Owned与Agent | [实际接口](../docs/reference/interfaces.md)、选定记录的准确新入口范围 | 本地登记、策略批准、原生准入、机制安装、对端应用处理分别表达 |
+| C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、所选共享库ABI检查 | 完整broker/SSAP便利客户端及外部实际消费仍缺；导出符号不等于部署资格 |
+| 内核Runtime、Session、Grant、credit/Ticket | [唯一架构](architecture.md)、下面各自源码映射的限定记录 | 旧代际、在途义务、有限队列、撤权及未知完成不能由缓存/关闭抹去 |
+| Codec、事件、故障与形式化 | 下方全部限定/历史记录及证明假设 | 旧codec/fixture、工具安装或模型通过不推导当前完整实现通过 |
+| 部署、恢复与发布 | [唯一计划](implementation-plan.md)的R5/R6及原工作包 | 干净VM部署、自然根因和非人工恢复未闭合；人工/QMP/注入不能替代 |
 
 选定保留产物的编译／执行／校验来源只按下方生成记录读取。R4新raw退休产物已取得
 四真实WS73路径保持及单列的模拟controller初始化、usercopy、权限交接资格；
 101旧raw入口删除，53旧布局私有测试，26当前数值不变。
 [14门禁范围报告](../docs/evidence/raw-uapi-retirement-qualification-20261018.json)保留
 原失败、原WIP及准确产物，先前[离线进度快照](../docs/evidence/raw-uapi-retirement-progress-20261018.json)
-仍保留其“待验”历史状态。完整SDK/CLI调用者、C/Python便利接口与干净VM部署仍缺。
+仍保留其“待验”历史状态。高阶SDK/C-Python便利接口、外部实际消费与干净VM部署仍缺。
 自然启动/重枚举/设备消失根因、非人工恢复继续开放；模拟及QMP不能替代。
 
-Typed Peer资格以[准确新记录](../docs/evidence/typed-peer-retirement-qualification-20261018.json)
+历史R5d Typed Peer资格以[原准确记录](../docs/evidence/typed-peer-retirement-qualification-20261018.json)
 为准；[首轮漏迁runner失败](../docs/evidence/typed-peer-tool-retirement-failure-20261018.json)
-仍为FAIL。生产artifact与修正工具分开，不能将首轮失败或整个HEAD改记通过。
+仍为FAIL。当前新增复用范围以本页生成选定记录为准；生产artifact与修正工具分开，不能将首轮失败或整个HEAD改记通过。
 
 标准parser原fixture以255代替生产240预算，原聚合已降UNPROVED并保留
 [反例](../docs/evidence/parser-budget-fixture-review-20261017.json)。新2d268工具直接
@@ -35,15 +33,40 @@ Typed Peer资格以[准确新记录](../docs/evidence/typed-peer-retirement-qual
 复用准确旧编译/Virtual/实机原件，没有重建或重跑这些门禁。标准255完整互通仍缺，
 不把实际240预算或Native A3业务长度混为标准255资格。
 
+## 选定产物与来源
+
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放**。
 仅记录范围：`real_device` / `PASS`。
 kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-compiled_userspace `0fe37cb549b188613ae50360d9555ab5f4d74bf1`。
-executed_tools `8aa7dbd1d6d226997978ff04b272eadd6cf183df`。
-[准确范围与剩余条件](../docs/evidence/typed-peer-retirement-qualification-20261018.json)。
+compiled_userspace `41ae994b41b3064cae2dc52b5e0da657ef3961f2`。
+executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
+[准确范围与剩余条件](../docs/evidence/owned-agent-client-qualification-20261018.json)。
+
+限定边界由同一记录生成；计数不代替必需门禁、假设或范围：
+```json
+{
+  "actual_cli_agents": 8,
+  "actual_cli_requests": 8,
+  "cli_evidence_negatives": 20,
+  "evidence_negative_controls": 261,
+  "final_workspace_tests": 338,
+  "honest_unknown_observations": 6,
+  "new_formal_proofs": 0,
+  "oversize_refusals": 16,
+  "owned_cases": 40,
+  "peer_evidence_negatives": 84,
+  "peer_roundtrips": 48,
+  "peer_sdk_observations": 24,
+  "peer_usb_positive": 18,
+  "real_runs": 6,
+  "release_bindings_checks": 50,
+  "seal_schema_negatives": 8,
+  "service_role_denials": 68
+}
+```
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -218,6 +241,7 @@ executed_tools `8aa7dbd1d6d226997978ff04b272eadd6cf183df`。
 | K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U4736管理应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
+| K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

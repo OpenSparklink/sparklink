@@ -130,6 +130,8 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
                     errors.append(f'{ident}: report/result mismatch')
                 if select(report, binding['scope_pointer']) != record['excluded']:
                     errors.append(f'{ident}: scope mismatch')
+                if 'bounds_pointer' in binding and select(report, binding['bounds_pointer']) != record['bounds']:
+                    errors.append(f'{ident}: bounds mismatch')
                 if 'gate_rows_pointer' in binding and [row['name'] for row in select(report, binding['gate_rows_pointer'])] != record['required_gates']:
                     errors.append(f'{ident}: required gates differ from complete report matrix')
                 for role, pointer in binding['source_pointers'].items():
@@ -196,6 +198,10 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
                 or type(selected.get('version')) is not int or selected.get('version') != 1
                 or not isinstance(selected.get('record'), str) or selected.get('record') not in record_ids):
             errors.append('invalid selected source-bound qualification record')
+        elif next(r for r in data['records'] if r['id'] == selected['record'])['result'] == 'PASS':
+            chosen = next(r for r in data['records'] if r['id'] == selected['record'])
+            if not chosen.get('report', {}).get('bounds_pointer'):
+                errors.append('selected PASS requires report-bound bounds')
     if 'baseline_record' in data:
         baseline_record = next((r for r in data['records'] if r['id'] == data['baseline_record']), None)
         if baseline_record is None:
@@ -276,6 +282,9 @@ def render(data):
         if record.get('report'):
             material = data['materials'][record['report']['material']]
             selection += ['[准确范围与剩余条件](../'+material['path']+')。']
+        selection += ['', '限定边界由同一记录生成；计数不代替必需门禁、假设或范围：',
+                      '```json', json.dumps(record['bounds'], ensure_ascii=False,
+                                           indent=2, sort_keys=True), '```']
         lines[2:2] = ['']+selection+['', '以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。', '']
     for record in data['records']:
         lines.append(f'| {record["title"]} | `{record["level"]}` | `{record["result"]}` |')

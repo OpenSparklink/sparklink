@@ -791,7 +791,7 @@
       "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
     ]
   },
-  "execution_phase": "ACTIVE_SOLE_SSAP_ATTRIBUTE_SLICE_EXIT_SCOPED_LIFECYCLE_AND_LOCALAUTH_NEXT",
+  "execution_phase": "ACTIVE_ORIGINAL_TX_INTENT_LIFECYCLE_VM_MATRIX",
   "next_resume_tasks": [
     "This bounded positive verticalslice exits;continue actualqueue/rekey/off/revocation/finalfd/dup/Down/originaldeadline andprefix obligations, then policy-bound localattributeauthorization/secureSSAP updates onsoleEngine. Data/credit/multi/four/performance/RXgap/oldcleanup parallel;noallcontrolfront. VM-onlyU2/3,E1excluded;UserHostP4/fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecovery remainOPEN.",
     "Preserve original U331 lateDown FAIL and legacy13 fast counterevidence; natural RCA/nonmanual recovery/NOCP/drain/reuse OPEN",
@@ -801,7 +801,7 @@
   "issue_sync_status": "Seven existing issues OPEN with exact comment readback and original bodies unchanged;attribute slice scoped exit,fullscope incomplete",
   "issue_sync_receipt": ".dev/attribute-access-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
-  "current_goal_turn_classification": "PROGRESS_ATTRIBUTE_ACCESS_SIX_REAL_CASES_SCOPED_EXIT_NOT_COMPLETE",
+  "current_goal_turn_classification": "PROGRESS_TYPED_LIFECYCLE_WORKERS_AND_REAL_MATRIX_RUNNING",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1669,14 +1669,15 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP06-WP09-soleSSAP-attribute-access-d4-runner49",
-      "production_behavior": "OriginalRX mechanism before read/UUID/write values; explicit NotSupported localAuthorization; originalfd prepare pins active requests toepoch/minimum/originaldeadline, noGrant orcreditrenewal. No secondEngine.",
+      "id": "WP06-WP09-current-artifact-originalIntent-lifecycle",
+      "production_behavior": "Reuse original ordinary workers/Session/Grant/Ticket;actualtypedprepare/send/recv observations, originalprefixintent retry afterwithdrawal/Down/deadline. Test-entry change,not a second protocol engine or new architecture.",
+      "state": "RUNNING_NOT_QUALIFIED",
       "exit": [
-        "ExactK1bcb/compiledUd4/executed49:6cases72attributes36allowed36denied,48CUTCpeerRT,44activeintent/72registrationrefusals,96originalSSAPchecks/249boundary/full2042 maintained",
-        "713frozen tools/48sealed ABI/83protocol/92daemon/28slktest+2entry+5startup/strictclippy115docs;6replays192copiednegativecontrols",
-        "ActualconstraintGrantCBMC168singlecandidate only. ActualaccessKani toolwarning retained UNPROVED; allkernelconcurrency/Ownertruth/USBcreditlate-reuse composition OPEN. OriginalfirstVM/module,lock,fixture,environment failures retained"
+        "At exact1bcb/compiled-and-tools9fd:grade0/1/2 xrelease/lastmanagementfd/dup/directDown/original5s xbothsourceindices=30actualVMcases;originalfullpool5/incompletePB/QMP2sor8s assertions retained",
+        "OriginalRX/epoch/minimum/absolute deadline receipts plusfreshprepareandunchangedcachedintent rejection;actualboth-end randompeer replies;late physicalobligations retained;peerReady/lease/scan explicitlynot independentbusinesspair",
+        "Frozen717tool regressions and negative receipt mutations;strictbuilt/native48 ABI andrealSSAP/length regression fornewsealedbinary;allfailedattempts retained. FullLKM M/refs/Ownertruth/creditreuse/naturalrecovery stillUNPROVED"
       ],
-      "next": "This bounded positive verticalslice exits;continue actualqueue/rekey/off/revocation/finalfd/dup/Down/originaldeadline andprefix obligations, then policy-bound localattributeauthorization/secureSSAP updates onsoleEngine. Data/credit/multi/four/performance/RXgap/oldcleanup parallel;noallcontrolfront. VM-onlyU2/3,E1excluded;UserHostP4/fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecovery remainOPEN."
+      "next": "Finite currentbatch then soleEngine policy-bound localauthorization/secureupdates;data/credit/multichannel/four/performance/RXgap/oldcleanup parallel,notallcontrolfront;fullS0-S6/19WP/10FV/12DG,VM-onlyU2/3,E1excluded,UserHostP4."
     }
   },
   "agent_workstream": {
@@ -2847,5 +2848,12 @@
     "state_source": "qualification_view generated from qualification-records; no independent current qualification",
     "scope": "Restricted original receipt/active TX intent; local authorization/identity/Bond and actual invalidation combinations remain open",
     "maintenance_report": "docs/evidence/ssap-attribute-maintenance-20261017.json"
+  },
+  "lifecycle_intent_batch": {
+    "execution_record": ".dev/intent-lifecycle-qualification-v1.json",
+    "source": "9fd74a18a19e010daf103d136e83660cee3ccee4",
+    "state": "RUNNING_NOT_QUALIFIED",
+    "previous_turn": "PROGRESS_ATTRIBUTE_ACCESS_AND_SOURCE_PROVENANCE_REPAIR",
+    "source_of_current_batch": "qualification_view derived from qualification-records,not independent current qualification"
   }
 }

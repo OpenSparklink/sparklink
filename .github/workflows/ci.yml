@@ -39,6 +39,7 @@ jobs:
       - name: Test workspace and export actual local application reports
         env:
           SLKTEST_REPORT_FIXTURE_DIR: ${{ runner.temp }}/slktest-report-fixtures
+          SPARKLINK_APPLICATION_FFI_ARTIFACT_DIR: ${{ runner.temp }}/application-client-fixtures
         run: cargo test --locked --workspace --all-features
       - name: Independently check actual production schema2 reports (AF_UNIX only)
         env:
@@ -54,6 +55,14 @@ jobs:
         with:
           name: slktest-local-reports-not-performance-qualification
           path: ${{ runner.temp }}/slktest-report-fixtures
+          if-no-files-found: error
+          retention-days: 14
+      - name: Retain actual C/Python consumer executable and outputs; not device qualification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: application-client-private-bus-not-device-qualification
+          path: ${{ runner.temp }}/application-client-fixtures
           if-no-files-found: error
           retention-days: 14
 

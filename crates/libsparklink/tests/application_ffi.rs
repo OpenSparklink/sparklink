@@ -69,18 +69,24 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "actual test-profile application cdylib missing: {}",
         library.display()
     );
-    let directory = std::env::temp_dir().join(format!("slk-client-ffi-{}", std::process::id()));
+    let retained = std::env::var_os("SPARKLINK_APPLICATION_FFI_ARTIFACT_DIR");
+    let directory = retained.as_ref().map(PathBuf::from).unwrap_or_else(|| {
+        std::env::temp_dir().join(format!("slk-client-ffi-{}", std::process::id()))
+    });
     std::fs::create_dir(&directory)?;
-    struct Cleanup(PathBuf);
+    struct Cleanup(PathBuf, bool);
     impl Drop for Cleanup {
         fn drop(&mut self) {
-            let _ = std::fs::remove_dir_all(&self.0);
+            if self.1 {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
         }
     }
-    let _cleanup = Cleanup(directory.clone());
+    let _cleanup = Cleanup(directory.clone(), retained.is_none());
     // The compiled file has its real installed ABI SONAME. Supply only that
-    // runtime link in this private test directory, as the installer does.
-    std::os::unix::fs::symlink(&library, directory.join("libsparklink.so.0"))?;
+    // runtime name in this private directory, with the exact compiled bytes.
+    let runtime_library = directory.join("libsparklink.so.0");
+    std::fs::copy(&library, &runtime_library)?;
     let c = directory.join("client");
     let compile = Command::new(std::env::var("CC").unwrap_or("cc".into()))
         .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
@@ -96,6 +102,21 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "C header/compile failed: {}",
         String::from_utf8_lossy(&compile.stderr)
     );
+    // Explicit qualification retention keeps the actual executable and outputs;
+    // recompiling a consumer later cannot reconstruct its execution identity.
+    let identities = Command::new("sha256sum")
+        .arg(&library)
+        .arg(&runtime_library)
+        .arg(&c)
+        .arg(root.join("crates/libsparklink/include/sparklink.h"))
+        .arg(root.join("crates/libsparklink/tests/fixtures/application_client.c"))
+        .arg(root.join("crates/libsparklink/tests/fixtures/application_client.py"))
+        .output()?;
+    anyhow::ensure!(
+        identities.status.success() && identities.stderr.is_empty(),
+        "artifact hash command failed"
+    );
+    std::fs::write(directory.join("materials.sha256"), &identities.stdout)?;
     let bus = support::Bus::start();
     let calls = Arc::new(AtomicUsize::new(0));
     let _server = zbus::connection::Builder::address(bus.address.as_str())?
@@ -117,10 +138,12 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         }
         let output = command
             .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
-            .env("LIBSPARKLINK_PATH", &library)
+            .env("LIBSPARKLINK_PATH", &runtime_library)
             .env("PYTHONPATH", root.join("bindings/python"))
             .env("LD_LIBRARY_PATH", &directory)
             .output()?;
+        std::fs::write(directory.join(format!("{language}.stdout")), &output.stdout)?;
+        std::fs::write(directory.join(format!("{language}.stderr")), &output.stderr)?;
         anyhow::ensure!(
             output.status.success(),
             "{language} client failed {:?}: {} {}",
@@ -138,5 +161,17 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         22,
         "no retry or weaker fallback, invalid inputs never reach OpenChannel"
     );
+    let unchanged = Command::new("sha256sum")
+        .arg("--check")
+        .arg(directory.join("materials.sha256"))
+        .output()?;
+    anyhow::ensure!(
+        unchanged.status.success(),
+        "executed artifact changed during test"
+    );
+    std::fs::write(
+        directory.join("COMPLETE"),
+        b"CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS\n",
+    )?;
     Ok(())
 }

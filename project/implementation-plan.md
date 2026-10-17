@@ -1394,6 +1394,12 @@ R5f1 有限批：C/Python 普通应用通过现有 Rust Client 查询 controller
 Kernel Grant 和 WS73 双设备验收另取；原资格不转授。本批不等于完整 C/Python
 SSAP/Agent/Owned/Operation API 或完整架构退出，R6c 与全部原范围继续开放。
 
+跨语言回归可通过 `SPARKLINK_APPLICATION_FFI_ARTIFACT_DIR` 指定尚不存在的保留目录：
+保留真正执行的 C binary、实际加载的库、双端输出及材料 hash；完整标记只在全部
+断言和末尾 hash 复核通过后写入。CI 单独上传该有限 fixture，不称设备资格。
+初次 ABI-major 名称缺失及另一次未指定 worktree 的 Kernel 头路径错误均保留；
+后者是执行配置失败，不能将缺失用例计通过。正式运行必须显式指定匹配 UAPI。
+
 核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
 保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取
 错误源库名且缺Native/pc统一安装；pc头目录不符；无正式SONAME与干净VM升级回滚

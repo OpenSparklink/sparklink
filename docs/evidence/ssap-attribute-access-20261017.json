@@ -1,0 +1,1141 @@
+{
+  "schema_version": 1,
+  "status": "ATTRIBUTE_ACCESS_SIX_REAL_GATES_SCOPED_PASS_LOCAL_AUTH_AND_COMBINATION_OPEN",
+  "compiled_kernel": "1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f",
+  "compiled_userspace": "d4a13e941aefee3ef11ccf56d74b144322947cd3",
+  "executed_tools": "49a648826e42787a709e3e664eaacc5f2ad1a67f",
+  "real_result": "PASS",
+  "failure_result": "FAIL",
+  "original_failed_attempt": {
+    "compiled_kernel": "1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f",
+    "compiled_userspace": "d4a13e941aefee3ef11ccf56d74b144322947cd3",
+    "executed_tools": "d4a13e941aefee3ef11ccf56d74b144322947cd3",
+    "status": "FAIL",
+    "cause": "Missing guest verifier module; attribute gate not run; original retained"
+  },
+  "offline_result": "PASS",
+  "formal_helper_result": "PASS",
+  "formal_access_result": "UNPROVED",
+  "formal_combination_result": "UNPROVED",
+  "full_goal_result": "UNPROVED",
+  "scope": [
+    "VM-only Hi3873U ports2/3; user confirms Hi3873E port1 excluded. SDK111 combined unchanged. Native compiled userspace d4a13e9 and executed runner49a6488 recorded separately; crates/data/Cargo byte-equivalent between them. No host driver/install.",
+    "Separate six-bit local API requirements from canonical table32 operations. Encoding matches fixed NearLink Host NapiPermission; T/XS20001 access section/table51 governs denial8/9/10, not a wire bitmask. SDK111/libws73 wrappers unchanged.",
+    "Sole user Engine evaluates original current native RX mechanism before read/UUID-read/write value access. Public metadata stays separate. Grade2 is installed SDK111 numeric comparison, not named identity/Bond or independent RF cipher attestation.",
+    "Active ExchangeInfo/client requests prepare restricted TX on original delegated fd, pin epoch/minimum/absolute original deadline, no raw fallback. prepare reserves no credit and renews no Grant; every actual USB fragment intersects original authority. Reply receipt must match original request epoch/minimum.",
+    "72 actual attribute cases: 36 allowed read/write with opposite database update and36 denied with actual protocol errors and original value unchanged; each has read/UUID-read/write/read-after plus exact both USB endpoints.72 local registration authorization/reserved refusals leave metadata unchanged.44 active-intent minimum/range refusals never submit their random payload. Denied WRITE bytes may reach peer; rejected server mutation and secret-read non-disclosure are separate checks.",
+    "Six cases retain48 CUTC random peer-validated replies,96 message contexts,144 stale/foreign/expired TX refusals plus24 unknown-control refusals,96 earlier SSAP peer/discovery checks,16 oversize refusals,8 complete2042 round trips. Protected SMTC total1344 USB observations. These are exact functional samples, not full performance/recovery qualification.",
+    "713 frozen tools,48 sealed-library C/Rust/Python tests (32bit layout only),83protocol/92daemon/28slktest+2entry+5startup, strict all-features clippy and115 strict docs. Six exact replays and192 copied actual-evidence negative controls. Shared checker/decoder remains TCB; fixtures do not prove actual kernel concurrency.",
+    "Kernel production constraint/Grant CBMC168 plus3negative controls: one full-width candidate snapshot only. Actual new access predicate Kani87 low-level checks/seven requested semantic properties and3negative controls retains compiler warning; overall NOT_PROVEN. Source8565cd0 and bundled nightly2026-08-21/Kani0.68.0/CBMC6.11.0 are explicit trusted foundations.",
+    "First actual VM d4 runner failed because new module was not guest-copied, no attribute qualification; exact failed original retained. Frozen test missing kernel path4errors, sandbox SO_PASSCRED EPERM, fixture copy-limit40 failure and handwritten Kani lock rewrite failure retained; corrections do not relax assertions. Kernel compiler warnings0/jobserver warning1 retained. Native build12solo, frozen Rust with VM8 shared lock/fixed dev directory; not performance evidence."
+  ],
+  "remaining": [
+    "Local per-attribute authorization/CPCD, named identity/Bond, secure notifications/indications/full SSAP remain missing; authorization registration explicitly NotSupported, no application-supplied approval becomes authority.",
+    "New artifact queue-after-rekey/off/unknown/lease withdrawal/finalfd/dup/Down/original deadline and partial-prefix combinations require distinct actual VM gates; historical narrower artifacts not transferred.",
+    "Actual Owner truth/locks/references/USB callback drain/credit-revocation-late-NOCP-handle reuse combination UNPROVED; bounded helper results not implementation refinement.",
+    "Original U331 late Down failure and old13-fast counterevidence retained; natural startup/re-enumeration/disappearance RCA/nonmanual recovery/NOCP truth/reuse/full S0-S6/19WP/10FV/12DG/multi/four/performance/PM/deployment/release OPEN."
+  ],
+  "bounds": {
+    "real_cases": 6,
+    "attribute_cases": 72,
+    "allowed": 36,
+    "denied": 36,
+    "attribute_remote_operations": 288,
+    "registration_refusals": 72,
+    "active_intent_refusals": 44,
+    "peer_round_trips": 48,
+    "receipt_contexts": 96,
+    "SSAP_peer_checks": 96,
+    "protected_SMTC_USB_observations": 1344,
+    "oversize_refusals": 16,
+    "full2042_round_trips": 8,
+    "exact_replays": 6,
+    "copied_negatives": 192,
+    "CBMC_properties": 168,
+    "Kani_low_level_checks": 87,
+    "Kani_semantic_properties": 7
+  },
+  "real_gates": [
+    {
+      "name": "plain-short0",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/attribute-access-plain-short0-v2/manifest.json",
+      "message_bytes": 61,
+      "minimum": 0,
+      "peer_round_trips": 8,
+      "attribute_cases": 12,
+      "denied_attributes": 8,
+      "receipt_contexts": 16
+    },
+    {
+      "name": "plain-short1",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/attribute-access-plain-short1-v2/manifest.json",
+      "message_bytes": 61,
+      "minimum": 0,
+      "peer_round_trips": 8,
+      "attribute_cases": 12,
+      "denied_attributes": 8,
+      "receipt_contexts": 16
+    },
+    {
+      "name": "sec1-short",
+      "result": "PASS",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": ".dev/attribute-access-sec1-short-v2/manifest.json",
+      "message_bytes": 61,
+      "minimum": 1,
+      "peer_round_trips": 8,
+      "attribute_cases": 12,
+      "denied_attributes": 4,
+      "receipt_contexts": 16
+    },
+    {
+      "name": "sec2-short",
+      "result": "PASS",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": ".dev/attribute-access-sec2-short-v2/manifest.json",
+      "message_bytes": 61,
+      "minimum": 2,
+      "peer_round_trips": 8,
+      "attribute_cases": 12,
+      "denied_attributes": 0,
+      "receipt_contexts": 16
+    },
+    {
+      "name": "plain-boundary249",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/attribute-access-plain-boundary249-v2/manifest.json",
+      "message_bytes": 249,
+      "minimum": 0,
+      "peer_round_trips": 8,
+      "attribute_cases": 12,
+      "denied_attributes": 8,
+      "receipt_contexts": 16
+    },
+    {
+      "name": "plain-long2042",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/attribute-access-plain-long2042-v2/manifest.json",
+      "message_bytes": 2042,
+      "minimum": 0,
+      "peer_round_trips": 8,
+      "attribute_cases": 12,
+      "denied_attributes": 8,
+      "receipt_contexts": 16
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "713-frozen-tools",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "48-sealed-crosslanguage",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "83protocol-92daemon-28slktest-privateDbus-startup",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "strict-allfeatures-clippy-115docs",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "actualSession-extraction-explicit-dependencies",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "six-exact-replays-192-copied-negatives",
+      "result": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "formal_helper_gates": [
+    {
+      "name": "actual-pure-constraint-Grant168-three-negatives",
+      "result": "PASS",
+      "status": "BOUNDED_TX_CONSTRAINT_AND_GRANT_THREE_NEGATIVES_PASS"
+    }
+  ],
+  "formal_access_gates": [
+    {
+      "name": "actual-access-predicate-Kani-tool-diagnostic",
+      "result": "UNPROVED",
+      "status": "NOT_PROVEN_TOOL_DIAGNOSTICS_RETAINED"
+    }
+  ],
+  "formal_combination_gates": [
+    {
+      "name": "Owner-locks-refs-USB-credit-revoke-late-reuse",
+      "result": "UNPROVED",
+      "status": "UNPROVED"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "Local per-attribute authorization/CPCD, named identity/Bond, secure notifications/indications/full SSAP remain missing; authorization registration explicitly NotSupported, no application-supplied approval becomes authority.",
+      "result": "UNPROVED",
+      "status": "NOT_COMPLETE"
+    },
+    {
+      "name": "New artifact queue-after-rekey/off/unknown/lease withdrawal/finalfd/dup/Down/original deadline and partial-prefix combinations require distinct actual VM gates; historical narrower artifacts not transferred.",
+      "result": "UNPROVED",
+      "status": "NOT_COMPLETE"
+    },
+    {
+      "name": "Actual Owner truth/locks/references/USB callback drain/credit-revocation-late-NOCP-handle reuse combination UNPROVED; bounded helper results not implementation refinement.",
+      "result": "UNPROVED",
+      "status": "NOT_COMPLETE"
+    },
+    {
+      "name": "Original U331 late Down failure and old13-fast counterevidence retained; natural startup/re-enumeration/disappearance RCA/nonmanual recovery/NOCP truth/reuse/full S0-S6/19WP/10FV/12DG/multi/four/performance/PM/deployment/release OPEN.",
+      "result": "UNPROVED",
+      "status": "NOT_COMPLETE"
+    }
+  ],
+  "failure_gates": [
+    {
+      "name": "first-VM-missing-guest-module",
+      "result": "FAIL",
+      "status": "FAIL"
+    }
+  ],
+  "formal": {
+    "status": "BOUNDED_TX_CONSTRAINT_AND_GRANT_THREE_NEGATIVES_PASS",
+    "source_head": "1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f",
+    "source_tree_clean": true,
+    "tool": "6.11.0 (cbmc-6.11.0)",
+    "scope": "Actual production TX constraint shape/scope/epoch/deadline plus existingGrant factory/permission helpers; arbitrary full-width fields,onecandidate admission andsubmit snapshot,not actualkernel interleavings/locks/ref/USB/credit/firmware or long-running proof",
+    "assumptions": [
+      "Valid kernel-owned pointers",
+      "Runtime supplies truthful level/revision observations from sole physical Owner under its locks; helpers do not prove that source, locking, reference retention or dequeue integration"
+    ],
+    "expected": [
+      "constraint cannot weaken the original grant floor or epoch",
+      "constraint requires original epoch and bounded sufficient mechanism",
+      "constraint shape excludes unset scope and deadline",
+      "expired absolute deadline rejects a candidate submit",
+      "foreign lifetime or channel cannot obtain submission consent",
+      "minimum zero cannot bypass old epoch"
+    ],
+    "end_wall_ns": 1792206284101850464
+  },
+  "access_verification": {
+    "status": "NOT_PROVEN_TOOL_DIAGNOSTICS_RETAINED",
+    "source_head": "8565cd0b54d749cd551e7194597a6e0ba72d7b0f",
+    "source_tree_clean": true,
+    "source": "crates/slk-protocol/src/ssap/access.rs",
+    "source_sha256": "20cb7b640c8dd632746c207f4fded5b933daa61d5a50b616d52e84e0bab22c83",
+    "harness_sha256": "5112141e9eac95c96e34008d6bca583f73b1a0a48a2f9cf33191cebf17696a58",
+    "tool": "Kani Rust Verifier 0.68.0 (cargo plugin)\nCBMC 6.11.0",
+    "properties": [
+      "access reserved bits are rejected",
+      "access valid mask is exact",
+      "access authorization never fabricated",
+      "access success needs bounded receipt",
+      "access authentication requires original level2",
+      "access encryption requires original level1",
+      "access directions remain independent"
+    ],
+    "scope": "Exact production pure SsapAccess constructor/check, arbitrary full32bit flags/receipt level andbooldirection; no assumptions excluding bad inputs. One predicate evaluation,not actualKernel/receiptTruth/SSAPEngine/DBmutation/Grant/USB/RF/security protocol proof.",
+    "assumptions": [
+      "Rust/compiler/Kani/CBMC semantics and truthful native receipt production remain trusted foundations outside this proof"
+    ],
+    "dependency_contract": "Dependency-free generated crate; retained lock checked byte-identical and CARGO_NET_OFFLINE=true; cargo-kani does not expose Cargo --locked",
+    "lock_sha256": "e55e7c0548cc875d68367a64ddb7dca73339db0d4728555cf83fe74e2acadec5",
+    "wall_ns": 1792206353484674371
+  },
+  "materials": [
+    {
+      "path": ".dev/attribute-access-plain-short0-v2/manifest.json",
+      "sha256": "86966a086734413081b8486e63b1e3cf10abe65e1869d27dbae81a25a39b6d01",
+      "bytes": 1509701,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v2/console.log",
+      "sha256": "1d9f22118b5d2bf930fb00b0d7f5473f493f447d4c46cb21f3ee70e19518968f",
+      "bytes": 16212,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v2/guest-output/ws73.pcap",
+      "sha256": "d8d492df189216b4a17bab881af2904f18ca76b4badc978dfb28bd8b15b08944",
+      "bytes": 591732,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v2/guest-output/capture-stats.txt",
+      "sha256": "622487706bd6eada56ad08028918784ad065554ccd58971c41a038001d36caf6",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "dfab81abc80e9b6debe0a82d70cffe6ca5be37eb23929f22816fad98434b9751",
+      "bytes": 873418,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-audit-v1.json",
+      "sha256": "6dbdd5354589700b40c276743a6bfc4dd2a42b4a943c5e2effcc60b0dd671e67",
+      "bytes": 8797,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short1-v2/manifest.json",
+      "sha256": "84cbee85b785c05bc8f49515ab07b0382eedba3c10e0ad3b92041afed7ae3244",
+      "bytes": 1509701,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short1-v2/console.log",
+      "sha256": "ba7651049765c3851e347b8e1aa56d78d943cc1eb01efeab2ef6e45a8ded6fa6",
+      "bytes": 16211,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short1-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short1-v2/guest-output/ws73.pcap",
+      "sha256": "47f9ea63b97f9a489d8ee3ebed65d2ae0eb54c010f0eb37bc57b948750eee463",
+      "bytes": 591732,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short1-v2/guest-output/capture-stats.txt",
+      "sha256": "622487706bd6eada56ad08028918784ad065554ccd58971c41a038001d36caf6",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short1-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "6963382939606ab280d5e0f458bcfaf1af8fe8ee2f606603aac6e6e455f3ef01",
+      "bytes": 873448,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short1-audit-v1.json",
+      "sha256": "2674758581e4bc4b41c7bf27b71b41ebb321a39d2873e70b8371b33f637aa114",
+      "bytes": 8797,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-short-v2/manifest.json",
+      "sha256": "152a7f650bd05b037a4df7bd60473b74d8ebac0a2a443e1a126f5453298465b4",
+      "bytes": 1580630,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-short-v2/console.log",
+      "sha256": "5940510f5d5416f7f46f1cf42195f8d5f4db9715a59a4b9254c77102b6862274",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-short-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-short-v2/guest-output/ws73.pcap",
+      "sha256": "86a602463d0b06272f82fa72891acaef9ab868bf783bc8efbc13d0745cbcb7f7",
+      "bytes": 646132,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-short-v2/guest-output/capture-stats.txt",
+      "sha256": "fc76aa3983f58315b5027e323b3ddd905ab4afb1ba1737f9d818999327da2085",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-short-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "f2445a00d3fd98b999d697e02eb0bffcaf69b8add5d4baf33da25e60fd31b602",
+      "bytes": 934117,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-short-audit-v1.json",
+      "sha256": "54cc90bcff76123dfad7e6e2694456f98d637f18fd551128f11a4ab04ad4f72c",
+      "bytes": 8768,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-short-v2/manifest.json",
+      "sha256": "5053c53875ae43d6eed22dcd2106caaf03c59c6dee6c81e33561b157f4e4a4fd",
+      "bytes": 1594587,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-short-v2/console.log",
+      "sha256": "e6d889c0db1943f80c7cc47c28bffb47b867dfe64146bdeaf3c524b82d3071c4",
+      "bytes": 16247,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-short-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-short-v2/guest-output/ws73.pcap",
+      "sha256": "95e75a98a0ff729b5353797c6c3f31e0979710a055fb09a36f90100d64a093f0",
+      "bytes": 649612,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-short-v2/guest-output/capture-stats.txt",
+      "sha256": "62ee18eb823280b6f5b22014896ec184502b1d69d22f0f9c1fc28981cad1d5c4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-short-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "fc313fd41e17f75d6318b4baac2beb9c5b4e4633d1bc0efef19c34af094ea871",
+      "bytes": 934955,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-short-audit-v1.json",
+      "sha256": "b216000df911597abd54f53d563af69ef3949ccd8c0d7872b8c7f3f891e426b0",
+      "bytes": 8771,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-boundary249-v2/manifest.json",
+      "sha256": "fed73aba65d25098d4e8b4cd7742a66d7f80fdc41023efb6429292daa7bfa114",
+      "bytes": 1598053,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-boundary249-v2/console.log",
+      "sha256": "606745be4f428dbe3c12bb668ff83b808e9185980f9727c189a6798752407ccb",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-boundary249-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-boundary249-v2/guest-output/ws73.pcap",
+      "sha256": "3de3abbe833e746425c07cdf069781f5d5bdbc83ee2239d383e2df402ed670d0",
+      "bytes": 632596,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-boundary249-v2/guest-output/capture-stats.txt",
+      "sha256": "826db75ea80cfdb811b43ddbafd460477dcacea7102e5eb89cffc68061c3471c",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-boundary249-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "68e7393ac2edf5576dc2f366806ceddef0e11620089aae044c086292c4e71872",
+      "bytes": 952019,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-boundary249-audit-v1.json",
+      "sha256": "e8fb451c45b4ec6cdcc42925ee479e5db87be14fb8188d05cb4b4ea64ba20f1e",
+      "bytes": 8807,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-long2042-v2/manifest.json",
+      "sha256": "b87b307057a6e5f72836fa0457252791718aab4468911315c1205364c5ad14e2",
+      "bytes": 2577854,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-long2042-v2/console.log",
+      "sha256": "0b0e46cca8b580b92ae6bb84dff34329323b16bfe05b66693b323533e302d69e",
+      "bytes": 16213,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-long2042-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-long2042-v2/guest-output/ws73.pcap",
+      "sha256": "b491eae59298140b78e12c465deb14372517e1a15e68aa9003a6b500b768b368",
+      "bytes": 1118980,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-long2042-v2/guest-output/capture-stats.txt",
+      "sha256": "d0399b441a7d95c23dc06c43dd282018c36dec2c16d77fd174231cc82ccbfd03",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-long2042-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "90cb97f6e0ed070492c15c2aaa28c1c8332249e393f1f1782493bb54a2b9a4d5",
+      "bytes": 1000262,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-long2042-audit-v1.json",
+      "sha256": "80bf7636a46d5d41d5760b59659046414fbad91f673019fa855d6de4f8ab84be",
+      "bytes": 8802,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kernel-build-v1.json",
+      "sha256": "24a40bd9a949d10bf87e6fd3d8ba842143a29938e59c8be981db7bf693262a01",
+      "bytes": 1743,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kernel-build-v1.log",
+      "sha256": "96e190c0ecf24b826c5789fbf1acbcc582fcd13c68913966498fe049e7e748b4",
+      "bytes": 2795,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kernel-budget-v1.json",
+      "sha256": "09d0f2c77ccdb0c1e7736f945a5936f2af43480a08bc79e6dda9a6a80eb4b7ca",
+      "bytes": 1076,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kernel-artifacts-v1/manifest.json",
+      "sha256": "4bfb4671f268691e84599fb958e9ba5ea00f9f2c606988f58aa40222d7cd06fd",
+      "bytes": 228956,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-modules-v1/manifest.json",
+      "sha256": "9fac7f8ace0774fbcb24b8ef15e6c0a56abca3075941ae7ec85ff8dbdb1ae362",
+      "bytes": 2391,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/manifest.json",
+      "sha256": "721bf39b3cbf9e28a1f0e4a95f11a6f014c5fdb83312563af5489fc20f569fcf",
+      "bytes": 26981,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-root-smoke-v1/manifest.json",
+      "sha256": "5969d7157ad8e09d2b204ab88f695f7ece857a6bb9cd7e282179341a1e62eda5",
+      "bytes": 37188,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-build-prepare-v1.json",
+      "sha256": "90f0a19dd093b7bc017aad9ddddac3713f0ab3843e150ee7f1dfd7e6dec411ee",
+      "bytes": 8064,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-build-prepare-v2.json",
+      "sha256": "52de5cbf87b5bcc060b03ae5939a83730b133015792ce98c10ac42d0765b4f52",
+      "bytes": 5561,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-build-prepare-v2.py",
+      "sha256": "ce8537d17bfc05ec78316c9aab2ff7187afb09cebeda35a450658c52e1bf11b0",
+      "bytes": 2420,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-qualification-v1.json",
+      "sha256": "2bbbd03d6b00c821a84215f2ace18abdc67e0f1bbf74426425ed9d45170fcdfe",
+      "bytes": 1668,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-qualification-v2.json",
+      "sha256": "466b6d311933a88cc0978649eb1d54cf17a8b97f8638b9e15b9b3727a70c3bd9",
+      "bytes": 8772,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-qualify-v1.py",
+      "sha256": "d7052fff02064c13198cc7d240daf0813da828f970a2c31e832a1da59012519e",
+      "bytes": 3811,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-qualify-v2.py",
+      "sha256": "e2c9c6d7f725fab22d36c8ce5088deffb244e599afa4a736ec35160a91ecadd8",
+      "bytes": 3923,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-case-audit-v1.py",
+      "sha256": "c90dafbbb8c38500a41492d30897aee7d5cc441dc2c279e1e47924ce767dc9e4",
+      "bytes": 10957,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-dispatch-v2.log",
+      "sha256": "69c438ab5d70dd0697e14b2f95075cc519786bc07eea4a8b2889f680b2698352",
+      "bytes": 1342,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-dispatch-v3.log",
+      "sha256": "830cba36c4219f6e9bb02b9c00bd0bc1b605e833fd3a7442014c390e8d35159e",
+      "bytes": 2743,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-dispatch-v3.json",
+      "sha256": "3822c94c10c25037e70268c51bce27bf12530885437cea0b17fdb33625ff2b4e",
+      "bytes": 2673,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-frozen-tools-v3.log",
+      "sha256": "613f897302d6aa627eb4b559f9f013f37f7990f31fd1e8ce6a43c3db29241275",
+      "bytes": 6311,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-frozen-tools-v4.log",
+      "sha256": "03f97082b1faafd5e404ceafa3422a7f02f9698dde78a081329058bd93768dd2",
+      "bytes": 848,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sealed-bindings-v3.log",
+      "sha256": "ee247df1435a101a2f27209d6c10d97dcee4421c8d9e9df66bd3e30d8fef272d",
+      "bytes": 147,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-frozen-rust-budget-v3.json",
+      "sha256": "ca0a385021cd06e7daf9574cb1cff03d30b3e01acd81570ce7f13eb0e44ef6a3",
+      "bytes": 837,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-frozen-rust-v3.log",
+      "sha256": "c882bca5ec10ae6fa80f61ea616f3f18763b2cc9cc13fef022be1b99dafa4f37",
+      "bytes": 27599,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-frozen-clippy-budget-v3.json",
+      "sha256": "d357d9c1ff17a854f949c036794385bfb21f25215d2a53443449214560d77621",
+      "bytes": 918,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-frozen-clippy-v3.log",
+      "sha256": "31de7e739e12c3dd69ae9d95a8697ad4489150ffad33302daf3ca5015bdcd0e6",
+      "bytes": 1505,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-docs-v1.log",
+      "sha256": "15b605757175f31f1cc05251c6f24f95ffeb43ac8510458ad61c22ca99b473f4",
+      "bytes": 340560,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-tools-tests-v1.log",
+      "sha256": "2744c0076b0e6923e473ba9a72361ba224ed0fdef427e80a56773578e70ce0ff",
+      "bytes": 1544,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-tools-tests-v2.log",
+      "sha256": "78d6823c40871aff84ec95f61827b2ec4a6d8c8531372e9505a6cbf40a01dca2",
+      "bytes": 845,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-guest-inventory-test-v2.log",
+      "sha256": "602d0cf4f5d921cb885f369dd514f08228e4228b8343e0a52ef4556532a9468a",
+      "bytes": 796,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-constraint-cbmc-v1/report.json",
+      "sha256": "507ee1bec263b43077bd9f87c426cd71a84a70f254efb6d41071f8aff05d3192",
+      "bytes": 5642,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kani-frozen-v1/report.json",
+      "sha256": "88f46a70d1a41fc16ea683c772dc6f872be7758ff097b422f2eebf44761789a6",
+      "bytes": 1292,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kani-frozen-v2/report.json",
+      "sha256": "9559915100c63977624324d47ae3a2c8a245579ac1e226cc96034a0bed02c561",
+      "bytes": 4246,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-constraint-cbmc-v1/production/raw.json",
+      "sha256": "85687d8dc21f92c02c37d11f9001d3670e71bfea2a4ca7abaa30377b55d948a9",
+      "bytes": 200993,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-constraint-cbmc-v1/missing-epoch-negative/raw.json",
+      "sha256": "04a79c9923a55cb5b2f84a1c617f740f10a5ea4f371b337eb288c5837565bccc",
+      "bytes": 504340,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-constraint-cbmc-v1/missing-level-negative/raw.json",
+      "sha256": "835bd3ff0db0bcacb5758348d84e8016768a7b0aea9ac001a1d9a53677c5ca65",
+      "bytes": 353453,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-constraint-cbmc-v1/missing-properties-negative/raw.json",
+      "sha256": "16a355779acc29e4b8fb410b594a4a43ba0087dbfb9de0f62d0fd2bb8c96f917",
+      "bytes": 1864,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kani-frozen-v2/production/output.log",
+      "sha256": "9388348bdc5cef73e7fa0a9fb49460f74e396335d97089ed6a4db36c66817f23",
+      "bytes": 34100,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kani-frozen-v2/authorization-negative/output.log",
+      "sha256": "3e38a0cec640bbcecdd0543d0ad789ed754504e973834b05ef04ba9cdaf70dfc",
+      "bytes": 34456,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kani-frozen-v2/authentication-negative/output.log",
+      "sha256": "68128e9450d44a4df9424c8a0b2b043c87aed7d7eacbbabb2f735e574b89cd06",
+      "bytes": 34468,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-kani-frozen-v2/empty-inventory-negative/output.log",
+      "sha256": "b5eab0e18ad72b0422e2b62813553f21f482f4daf08d7e6c8b526ce810e6081c",
+      "bytes": 2016,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-prepared-v2/manifest.json",
+      "sha256": "5026b939d849f2c7be496df18e2dacdfbf927ef000b255442656f766ffd5c97d",
+      "bytes": 274295,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-prepared-v2/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-prepared-v2/root.btrfs",
+      "sha256": "830db68fa347805c4752588977477bbf3d7a543a7036290c440915d65537a2df",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-prepared-v2/manifest.json",
+      "sha256": "4d485ca31a3394dafdc5f5a5838fc1ffa9b6d4e329d9117dc582dd8f1a8235b7",
+      "bytes": 274866,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-prepared-v2/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec1-prepared-v2/root.btrfs",
+      "sha256": "706eceb43cfc6d25d10f0075df76104eee7d75e61d103b438c13000c2035bb50",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-prepared-v2/manifest.json",
+      "sha256": "7f364b9c64c62d8d44d84755d6d895ec61b14a30fa83ec2736e7e9aed15c4448",
+      "bytes": 274866,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-prepared-v2/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-sec2-prepared-v2/root.btrfs",
+      "sha256": "dfb6b23e1a58bce998913581c10a320205ad98607880a2870b1ac2345eee297a",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/d4a13e941aef/slkd",
+      "sha256": "c86967115f9ba107d3ee42caf9f75ffe613707b202caf019b2ed5a997c6a271c",
+      "bytes": 10634880,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/d4a13e941aef/slctl",
+      "sha256": "138b84adfa8effbf6a528bf0dbaee9133d798e1f00c2f5aa4b1670c7413ba9fe",
+      "bytes": 7911664,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/d4a13e941aef/slktest",
+      "sha256": "0ffda53bcf2889ed8734398ee6d7a879142a8e80e46cf586e32041bba79675ad",
+      "bytes": 5278024,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/d4a13e941aef/slkconfig",
+      "sha256": "b7b9678f35be4d7ac83e885c75f956d97ccde68ea50922448f9a273a588af299",
+      "bytes": 1403736,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/d4a13e941aef/slkmon",
+      "sha256": "1d6402733c388a693a74764d4c9583701655cc662e20bcbb993ce49dc6585080",
+      "bytes": 1661896,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/d4a13e941aef/slkdump",
+      "sha256": "880c446c2775675bbef373a3f9a07afe970765144eb05210e5c69bd09d37210c",
+      "bytes": 1661768,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/d4a13e941aef/liblibsparklink.so",
+      "sha256": "30758249c58fd5db7fd9fe0fa8f47490a15bd5a45dbd7ff623d2904400d54c6e",
+      "bytes": 552048,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "1b25f45aadf6ed11ebac273992fff829479b9ec5e6eb0b68501a9245ae297d35",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "6b016d433a9486200405aa0784a0818172ba7bf8fac05361599249125451fce4",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "71617a38b169ede37501072756b6e6de93a53d0e6b0df7ab887b2314d0a3c58a",
+      "bytes": 138049,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v1/manifest.json",
+      "sha256": "4c07be8c13d19e6b55c49b3686a099a4c0f297161562b1482b6b1b3abda30eb1",
+      "bytes": 46409,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v1/console.log",
+      "sha256": "fc5aa67c45c3ec2926c93632a7ae6df0c44f54520f7f99715af854abca6aab44",
+      "bytes": 59164,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v1/guest-output/ws73.pcap",
+      "sha256": "11bbb30db6b179d55feb954409adf5678d47362f6f2ac269e485d8e314c09210",
+      "bytes": 186824,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/attribute-access-plain-short0-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "c80cc457613a2973a60579d17005ef3ed83da09be22dc5828baf863778314fba",
+      "bytes": 174440,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Authorized maintainer workspace; USB may contain actual key material, SDK/firmware restricted. No verified offsite archive. Missing/hash/source/scope mismatch cannot PASS."
+    }
+  ],
+  "replay": [
+    "Authorized owner workspace: exact frozen49a6488 capture/connection/object/channel/Agent verifiers; run attribute-access-case-audit-v1.py CASE for exact replay and32 copied negatives. No hardware operations during replay.",
+    "Private raw USB may contain keys. Missing originals/artifacts/hash/source/scope or unexecuted required gate cannot PASS. No offsite retention attestation. Models/tools do not replace actual firmware/RF behavior."
+  ],
+  "wall_ns": 1792206981747254290
+}

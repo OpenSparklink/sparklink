@@ -919,6 +919,25 @@ async fn supervise(
                     }
                     if entry.agent.method.completed(&result, numeric_confirmed) {
                         finish(registry, id, 4, 0).await;
+                        // Prompt the existing service owner only after an
+                        // actual terminal native result and a still-successful
+                        // original policy request. This does not install keys,
+                        // mint a Grant, change its epoch or extend the deadline.
+                        let completed = registry
+                            .lock()
+                            .await
+                            .entries
+                            .get(&id)
+                            .is_some_and(|v| v.observation.phase == 4);
+                        if completed {
+                            crate::event_loop::start_ssap_after_security(
+                                state,
+                                connection,
+                                native.generation,
+                                entry.reference,
+                            )
+                            .await;
+                        }
                         return Ok(());
                     }
                     if matches!(result.state, 4 | 8 | 9 | 11) {

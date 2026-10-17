@@ -119,6 +119,35 @@ impl Drop for EventTask {
     }
 }
 
+/// Real native completion may wake the sole deferred SMTC owner. The path
+/// includes generation and physical lifetime, and bind still revalidates the
+/// live management lease and kernel mechanism. Failure never falls back.
+pub(crate) async fn start_ssap_after_security(
+    state: &SharedState,
+    connection: &zbus::Connection,
+    generation: u64,
+    reference: slk_protocol::SleLinkInfo,
+) {
+    let path = {
+        let st = state.lock().await;
+        if !st.present || st.controller.generation != generation {
+            return;
+        }
+        match st.native_connection_objects.get(&reference.lifetime) {
+            Some(v) if v.published && v.reference == reference => v.path.clone(),
+            _ => return,
+        }
+    };
+    if let Ok(iface) = connection
+        .object_server()
+        .interface::<_, crate::connection_object::ConnectionIface>(path.as_str())
+        .await
+        && let Err(error) = iface.get().await.start_ssap().await
+    {
+        tracing::warn!(%error, %path, "SMTC security requirement not satisfied; no fallback or rebind");
+    }
+}
+
 async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::Connection) {
     match event {
         Ok(libsparklink::Event::AdvReport {
@@ -360,8 +389,9 @@ async fn reconcile_native(
             state.clone(),
             expected.generation,
             entry.reference,
+            state.lock().await.config.ssap.channel_security,
         );
-        if let Err(error) = iface.start_ssap().await {
+        if let Err(error) = iface.start_ssap_on_publication().await {
             error!(%error,path=%entry.path,"SMTC actor binding failed; no SSAP qualification");
         }
         match connection

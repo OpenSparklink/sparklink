@@ -165,3 +165,18 @@ handle 可安全复用。完整 release/最后 fd/dup/Down/期限组合仍是独
 共享checker在运行中变化均失败。数字、无MITM及每个端点/生命周期各自记录；新工具
 必须重新取得实机资格，不能继承旧测试名称的PASS。安全off/rekey、固件排空/复用与
 自然恢复另验；SMTC安全权限消费者仍后续接线。
+
+### 受保护 SSAP 首次绑定
+
+`prepare --native-discovery-config CONFIG` 继续使用已有的冻结配置入口；
+`CONFIG` 可包含 `[ssap] channel_security = 1` 或 `2`。目前该实机门禁分别要求
+`run --security-agent approve` 或 `numeric-approve`，并使用既有
+`--qmp-hotplug --connection-verify --connection-advertising negotiable-t
+--channel-socket-verify`。配置名沿用历史工具，不表示 SSAP 策略属于无线扫描参数。
+准备时以本次 slkd 实际校验配置；运行时核对冻结配置、普通用户探针读取的
+`SsapSecurityRequirement`、安装前真实拒绝及安装后两端 SMTC 包。默认配置的
+历史基本 SMTC 资格不升级为受保护资格；新路径必须另取准确源码/artifact 的报告。
+
+复用原 SSAP discovery/读写/对端本地数据库核对及 CUTC 随机回复，不添加测试 Engine。
+私有 USB 捕获含真实安全材料，不公开；协议 ACK、0011 或 USB 写入不代替业务核对。
+该工具门禁不覆盖属性级授权、Bond 或自然恢复，注入与 QMP 操作也不授予恢复资格。

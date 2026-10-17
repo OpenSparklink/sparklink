@@ -2552,5 +2552,38 @@
     "result": "20protectedFile/Down/5s,48beforecontrolRT,170peerrelays40installations80queries;20replays360negatives;selected249/full2042 add16RT16rejects;originalc51FAIL unchanged",
     "maintenance_report": "docs/evidence/protected-channel-maintenance-20261017.json",
     "issues": "K6/K7/K17/K19/U3/U5/U8OPEN;originalscopebodyunchanged"
+  },
+  "ssap_security_consumer_batch": {
+    "status": "IMPLEMENTED_OFFLINE_CHECKED_PENDING_ACCURATE_REAL_ARTIFACT",
+    "parent_userspace": "002c1c041af80c7d07070959579c60b46c1ade73",
+    "kernel_unchanged": "61905139ff8c3ed2937ccdba697d880880582234",
+    "production_behavior": "Freeze sole SMTC minimum security before first bind;nonzero defers plain publication;actualnativecompletion prompts originalEngine;finalGrant validates liveepoch/lease;no fallback/rebind/secondEngine",
+    "offline": {
+      "daemon": "90 actual daemon tests PASS;private bus/AF_UNIX not kernel concurrency",
+      "tools": "704 tools tests incl verifiernegativecontrols;fixture results not hardwarequalification",
+      "strict_clippy": "workspace alltargets -Dwarnings PASS"
+    },
+    "retained_failures": [
+      "Firstcompile missed migrated testcaller;fixed without weakeningassertions",
+      "Sandbox daemon tests socketdenied:59PASS31FAIL,retained v1;v2 outside sandbox90PASS",
+      "Sandbox tool SO_PASSCRED EPERM retainedv2;v3 outside sandbox rerun"
+    ],
+    "next_gates": [
+      "Freeze signed source and newuser artifacts;reuse exactsealed K619",
+      "VM-only U2/3 protectedSMTC1/2 eachbothroles:beforebindEACCES,realinstall,actualdiscovery/read/write/peerDB",
+      "DefaultplainSSAP andCUTC short/249/2042 newartifactregression",
+      "Exactreplay/evidence negatives andqualificationrecords,issues;no newformalproof claim"
+    ],
+    "remaining": [
+      "Attributelevelsecurity/localauthorization,namedidentity,Bond",
+      "Grant/physicaldebt/drain/reuse and full lifecyclecombinations",
+      "NaturalRCA/nonmanualrecovery,multichannel,fourdevice,performance,fullS0-S6 scopes intact"
+    ],
+    "reference_host": {
+      "communication_nearlink_service": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+      "mapping": "ssap_server_stack_adapter.cpp FillPropertyToService keeps separate permission andoperation;do not reinterpret operations asencryption",
+      "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+      "firmware": "SDK111 unchanged"
+    }
   }
 }

@@ -87,7 +87,7 @@ async fn server(bus: &PrivateBus, state: &SharedState) -> zbus::Connection {
         .unwrap()
         .serve_at(SECURITY, SecurityIface::new(state.clone()))
         .unwrap()
-        .serve_at(LINK, ConnectionIface::new(state.clone(), 7, reference()))
+        .serve_at(LINK, ConnectionIface::new(state.clone(), 7, reference(), 0))
         .unwrap()
         .build()
         .await

@@ -136,12 +136,25 @@ pub(crate) fn open_service(
     lifetime: u64,
     handle: u16,
     lease: u64,
+    security: u32,
 ) -> std::io::Result<OwnedFd> {
-    let mut address = address(controller, generation, lifetime, handle, lease, 3, 0);
+    validate(3, security)?;
+    let address = service_address(controller, generation, lifetime, handle, lease, security);
+    open_address(address)
+}
+fn service_address(
+    controller: u16,
+    generation: u64,
+    lifetime: u64,
+    handle: u16,
+    lease: u64,
+    security: u32,
+) -> Address {
+    let mut address = address(controller, generation, lifetime, handle, lease, 3, security);
     address.local_tcid = 10;
     address.remote_tcid = 10;
     address.pi = 0;
-    open_address(address)
+    address
 }
 fn open_address(address: Address) -> std::io::Result<OwnedFd> {
     open_raw_address(address, false)
@@ -231,6 +244,28 @@ pub(crate) fn transport_info(v: slk_protocol::SleSessionTxStatus) -> TransportIn
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn service_first_bind_preserves_requirement_and_identity() {
+        for security in 0..=2 {
+            let a = service_address(7, 11, 13, 17, 19, security);
+            assert_eq!(
+                (a.controller, a.generation, a.lifetime, a.handle, a.lease),
+                (7, 11, 13, 17, 19)
+            );
+            assert_eq!(
+                (a.local_tcid, a.remote_tcid, a.pi, a.directions, a.security),
+                (10, 10, 0, 3, security)
+            );
+        }
+        for security in [3, u32::MAX] {
+            assert_eq!(
+                open_service(7, 11, 13, 17, 19, security)
+                    .unwrap_err()
+                    .raw_os_error(),
+                Some(nix::libc::EOPNOTSUPP)
+            );
+        }
+    }
     #[test]
     fn scoped_requests_reject_before_socket_creation() {
         for directions in [0, 4, 7, u32::MAX] {

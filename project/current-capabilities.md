@@ -1,5 +1,10 @@
 # 当前能力与资格
 
+当前开发切片新增唯一 SSAP SMTC 的冻结最低机制要求与安全完成后的启动提示。
+这是未重新实机验收的新源码；既有 K619/U390 的受保护 CUTC 资格不转授 SSAP。
+默认普通 SSAP、受保护 SSAP、属性级授权、命名身份及 Bond 分别记录，不合并为
+“安全已完成”。本批准确 artifact 与真实业务证据取得前，新增 SSAP 实机资格仍缺。
+
 本页是唯一当前资格入口；[架构](architecture.md)是目标，
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。

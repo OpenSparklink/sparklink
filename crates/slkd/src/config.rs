@@ -35,6 +35,26 @@ pub struct DaemonConfig {
     pub policy: PolicyConfig,
     #[serde(default)]
     pub ws73: Ws73Config,
+    #[serde(default)]
+    pub ssap: SsapConfig,
+}
+
+/// Immutable daemon policy for the sole SMTC binding. This is a transport
+/// mechanism requirement, not a peer identity, attribute ACL or Bond policy.
+#[derive(Debug, Clone, Copy, Default, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct SsapConfig {
+    pub channel_security: u32,
+}
+impl SsapConfig {
+    fn validate(self) -> Result<(), ConfigError> {
+        if self.channel_security > 2 {
+            return Err(ConfigError::Unsupported(
+                "ssap.channel_security supports only 0, 1 or 2",
+            ));
+        }
+        Ok(())
+    }
 }
 
 /// Applied only to the queried WS73 registration, before acquiring its lease.
@@ -331,6 +351,7 @@ impl DaemonConfig {
 
     pub fn validate(&self) -> Result<(), ConfigError> {
         self.ws73.validate()?;
+        self.ssap.validate()?;
         if self.general.discovery_level > 4 {
             return Err(ConfigError::Invalid("general.discovery_level must be 0..4"));
         }
@@ -428,6 +449,34 @@ mod tests {
     }
     fn parse(text: &str) -> Result<DaemonConfig, ConfigError> {
         DaemonConfig::finish_load(Path::new("fixture.conf"), false, Ok(text.to_owned()))
+    }
+    #[test]
+    fn ssap_mechanism_policy_is_explicit_and_never_falls_back() {
+        assert_eq!(parse("").unwrap().ssap.channel_security, 0);
+        for level in 0..=2 {
+            let config = parse(&format!("[ssap]\nchannel_security={level}")).unwrap();
+            assert_eq!(config.ssap.channel_security, level);
+            config.validate_for_profile(1).unwrap();
+        }
+        for level in [3, u32::MAX] {
+            assert!(matches!(
+                parse(&format!("[ssap]\nchannel_security={level}")),
+                Err(ConfigError::Unsupported(_))
+            ));
+        }
+        for text in [
+            "[ssap]\nchannel_security=-1",
+            "[ssap]\nchannel_security='1'",
+            "[ssap]\nchannel_securty=1",
+        ] {
+            assert!(matches!(parse(text), Err(ConfigError::Parse { .. })));
+        }
+        // A mechanism-only SMTC requirement must not silently enable legacy
+        // automatic pairing or pretend global encryption policy is supported.
+        assert!(matches!(
+            parse("[ssap]\nchannel_security=2\n[policy]\nmin_encryption=2"),
+            Err(ConfigError::Unsupported(_))
+        ));
     }
     #[test]
     fn supported_defaults_and_alias() {

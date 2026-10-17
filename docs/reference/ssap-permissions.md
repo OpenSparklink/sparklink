@@ -40,3 +40,29 @@ peer 身份、连接授权和认证/加密条件。安全/Bond 尚未实机合�
 [权限整改原始记录](../../project/reference/ssap/ssap-operations.md)，已删路径见
 [生产剥离审计](../../history/ssap/ssap-production-separation-20261013.md)。
 当前实机资格仅由[能力入口](../../project/current-capabilities.md)维护。
+
+## 唯一 SMTC 的通道安全要求
+
+`main.conf` 的 `[ssap] channel_security` 在 daemon 启动时校验，允许整数
+`0`、`1`、`2`，默认 `0`。未知字段、负数、错误类型及更高等级拒绝启动，
+不回退默认值。该值复制到每个 Connection 对象，在首次 SMTC 绑定前固定；
+只读 D-Bus 属性 `org.sparklink.Connection.SsapSecurityRequirement` 返回该要求，
+不表示当前已满足。没有运行期热更新或同 lifetime 升级、重绑承诺。
+
+| 要求 | SMTC 首次绑定行为 |
+|---|---|
+| `0` | 保留连接发布时自动启动的基本通道 |
+| `1` | 要求内核当前 Session 的 SDK111 已安装加密机制；未满足不绑定 |
+| `2` | 要求当前 Session 的 SDK111 数字比较机制；仅等级 1 不足 |
+
+非零要求下，发布 Connection 不启动普通 SMTC。真实原生安全请求完成后，
+daemon 提示同一 Engine 启动；显式 SSAP 请求也可尝试首次绑定。最终准入仍由
+内核核对当前 generation、lifetime、lease、安全等级及 epoch。Agent 批准或缓存
+结果不授予通道权限。绑定失败时 SSAP 调用失败，不降级、不新建另一套 Engine。
+Engine 启动后的过期、撤权、断链和旧安全 epoch 由原 Grant/socket 路径拒绝；
+失败 Engine 不在同一 lifetime 自动重开。两端须各自满足本地策略。
+
+这是整个 SMTC 的最低传输要求，不是属性级认证/本地授权或 Bond 策略；
+`policy.min_encryption` 的非零值仍明确不支持。READ/WRITE 等操作位不携带安全
+等级。数字比较机制不等于已绑定命名身份，也不构成独立 RF 加密证明。
+新增实现的离线、形式化和实机资格分别记录，不能继承旧普通 SSAP 通过结论。

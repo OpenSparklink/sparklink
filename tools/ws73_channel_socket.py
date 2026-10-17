@@ -76,6 +76,8 @@ def execute(run, phase):
                boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     row['application_tool']=test_program(run)
     row['security_requirement']={'approve':1,'numeric-approve':2}.get(getattr(run.args,'security_agent',None),0)
+    if run.data.get('security_agent') and run.data['security_agent'][-1].get('ssap_security_requirement'):
+        row['ssap_security_requirement']=run.data['security_agent'][-1]['ssap_security_requirement']
     run.data.setdefault('channel_socket', []).append(row); run.save()
     processes=[];files=ExitStack()
     try:
@@ -370,6 +372,24 @@ def prefix_application_frames(row):
     return [payload],[reply],dict(start_wall_ns=before,end_wall_ns=after,source_reaped_wall_ns=source['end_wall_ns'],dropped=dropped)
 
 
+def protected_ssap_wire(row,capture,sdus):
+    required=row.get('ssap_security_requirement',0)
+    if not required:return None
+    if type(required) is not int or required not in (1,2):raise CaptureError('invalid protected SMTC requirement')
+    packets=0;controllers=[]
+    for entry in row['owners']:
+        owner,obj=entry['owner'],entry['object'];key=(owner['bus'],owner['device']);handle=obj['handle']
+        events=[v for v in capture['native_events'] if (v['bus'],v['device'])==key
+            and row['session_start_wall_ns']<=v['wall_ns']<=row['end_wall_ns'] and v['event']==0x11
+            and v['params']==(b'\0'+handle.to_bytes(2,'little')+b'\1').hex()]
+        if len(events)!=1:raise CaptureError('one actual cipher-on before protected SMTC required')
+        frames=[v for v in sdus if (v['bus'],v['device'])==key and v['handle']==handle
+            and row['session_start_wall_ns']<=v['wall_ns']<=row['end_wall_ns'] and v['data'].startswith('0a00')]
+        if not frames or any(v['wall_ns']<events[0]['wall_ns'] for v in frames):raise CaptureError('protected SMTC cannot transmit or receive before live installation')
+        if {v['direction'] for v in frames}!={'in','out'}:raise CaptureError('both protected SMTC USB directions required')
+        packets+=len(frames);controllers.append(dict(index=owner['index'],generation=obj['generation'],lifetime=obj['lifetime'],handle=handle,cipher_record=events[0]['record'],packets=len(frames)))
+    return dict(required=required,controllers=controllers,packets=packets,scope='Same SMTC actual post-install TX/opposite RX and ordinary peer database checks;not attribute authorization,Bond or RF cipher attestation')
+
 def corroborate(run,capture):
     rows=run.get('channel_socket')
     if rows is None or len(rows)!=2:raise CaptureError('two connection direction phases required')
@@ -476,6 +496,8 @@ def corroborate(run,capture):
         if row.get("ssap_value_required",False): entry["ssap_values"] = ssap_values
         if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
+        protected=protected_ssap_wire(row,capture,sdus)
+        if protected is not None:entry['protected_ssap']=protected
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows if not row.get('close_prefix',False)),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",

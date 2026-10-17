@@ -811,6 +811,13 @@ def _run(args):
         if initializer_lifecycle and 'native_vm' not in package:
             raise ValueError('initializer lifecycle requires qualified native module VM')
         native_vm.check_discovery_config_gate(package, args)
+        if 'native_vm' in package:
+            import tomllib
+            ssap_requirement=tomllib.loads((args.prepared/'root/etc/sparklink/main.conf').read_text()).get('ssap',{}).get('channel_security',0)
+            if type(ssap_requirement) is not int or ssap_requirement not in (0,1,2):raise ValueError('invalid frozen SMTC policy')
+            m['live_ssap_security_requirement']=ssap_requirement
+            if ssap_requirement and (agent_mode,ssap_requirement) not in [('approve',1),('numeric-approve',2)]:raise ValueError('protected SMTC qualification requires matching positive Agent mechanism')
+
         if 'discovery_config' in package:
             m['discovery_config'] = package['discovery_config']
             m['custom_policy_rf_acceptance'] = False
@@ -1215,6 +1222,8 @@ def _run(args):
                         from ws73_security_cli import validate_binary
                         validate_binary(control['slctl'],args.prepared/'root',package['guest_files'])
                     m['security_agent_corroboration']=agent_corroborate(control,capture)
+                    if any(v.get('ssap_security_requirement',0)!=m.get('live_ssap_security_requirement',0) for v in control['security_agent']):raise ValueError('actual SMTC witness differs from frozen configuration')
+
                     if agent_mode=='install-cancel':
                         from ws73_security_install_hold import corroborate as install_corroborate
                         m['security_install_hold']['corroboration']=install_corroborate(m['security_install_hold'],control,capture,(output/'qemu-stderr.log').read_text())
@@ -1543,6 +1552,19 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record):
+    required=record.get('live_ssap_security_requirement',0)
+    if type(required) is not int or required not in (0,1,2):return 1
+    if not required and (any(v.get('ssap_security_requirement',0) for v in record.get('security_agent_corroboration',{}).get('phases',[])) or any(v.get('protected_ssap') for v in record.get('channel_socket_corroboration',{}).get('proofs',[]))):return 1
+    if required:
+        security=record.get('security_agent_corroboration',{}).get('phases',[])
+        business=record.get('channel_socket_corroboration',{}).get('proofs',[])
+        if (record.get('status')!='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS'
+                or len(security)!=2 or len(business)!=2
+                or any(v.get('ssap_security_requirement')!=required for v in security)
+                or any(v.get('protected_ssap',{}).get('required')!=required
+                    or len(v.get('protected_ssap',{}).get('controllers',[]))!=2
+                    or not v.get('ssap_values') or not v.get('ssap_discovery') for v in business)):
+            return 1
     required=record.get('live_channel_security_required',0)
     connected=record.get('connected_file_corroboration',{})
     if not isinstance(connected,dict):return 1

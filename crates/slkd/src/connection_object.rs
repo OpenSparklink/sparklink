@@ -147,6 +147,7 @@ pub(crate) struct ConnectionIface {
     state: SharedState,
     generation: u64,
     reference: SleLinkInfo,
+    ssap_security: u32,
     ssap: tokio::sync::Mutex<Option<crate::ssap_engine::Engine>>,
     remote_services: tokio::sync::Mutex<Option<Vec<slk_protocol::ssap::discovery::Entry>>>,
 }
@@ -156,11 +157,17 @@ enum ChannelKind {
     Dynamic(crate::channel::DynamicConfig),
 }
 impl ConnectionIface {
-    pub(crate) fn new(state: SharedState, generation: u64, reference: SleLinkInfo) -> Self {
+    pub(crate) fn new(
+        state: SharedState,
+        generation: u64,
+        reference: SleLinkInfo,
+        ssap_security: u32,
+    ) -> Self {
         Self {
             state,
             generation,
             reference,
+            ssap_security,
             ssap: tokio::sync::Mutex::new(None),
             remote_services: tokio::sync::Mutex::new(None),
         }
@@ -227,6 +234,7 @@ impl ConnectionIface {
                 self.reference.lifetime,
                 self.reference.handle,
                 token,
+                security,
             ),
             ChannelKind::User => crate::channel::open(
                 index,
@@ -305,12 +313,24 @@ impl ConnectionIface {
         let state = self.state.lock().await;
         (state.controller.dev_index, state.ssap_database.clone())
     }
+    /// Ordinary SMTC keeps the qualified eager start. Protected SMTC is not
+    /// bound before a real mechanism exists; requests and actual security
+    /// completion use start_ssap, which always asks the kernel for the frozen
+    /// requirement. No timer, Agent approval or cached request grants access.
+    pub(crate) async fn start_ssap_on_publication(&self) -> zbus::fdo::Result<()> {
+        if self.ssap_security != 0 {
+            return Ok(());
+        }
+        self.start_ssap().await
+    }
     pub(crate) async fn start_ssap(&self) -> zbus::fdo::Result<()> {
         let mut actor = self.ssap.lock().await;
         if actor.is_some() {
             return Ok(());
         }
-        let fd = self.authorized_fd(3, 0, ChannelKind::Service).await?;
+        let fd = self
+            .authorized_fd(3, self.ssap_security, ChannelKind::Service)
+            .await?;
         let (index, database) = self.ssap_context().await;
         *actor = Some(
             crate::ssap_engine::Engine::start(
@@ -336,6 +356,11 @@ impl ConnectionIface {
 
 #[interface(name = "org.sparklink.Connection")]
 impl ConnectionIface {
+    /// Fixed before the first SMTC bind; this is not a live security grade.
+    #[zbus(property)]
+    fn ssap_security_requirement(&self) -> u32 {
+        self.ssap_security
+    }
     async fn get_info(&self) -> Info {
         let (known, connected) = self.observation().await;
         (
@@ -847,7 +872,7 @@ mod grant_tests {
             handle: 3,
             ..Default::default()
         };
-        let iface = ConnectionIface::new(state.clone(), 7, reference);
+        let iface = ConnectionIface::new(state.clone(), 7, reference, 0);
         assert!(matches!(
             iface.get_security_state().await,
             Err(zbus::fdo::Error::Failed(_))
@@ -889,6 +914,45 @@ mod grant_tests {
         );
     }
     #[tokio::test]
+    async fn protected_smtc_publication_defers_without_binding_or_mutable_policy() {
+        for security in [1, 2] {
+            let state =
+                std::sync::Arc::new(tokio::sync::Mutex::new(crate::state::AdapterState::new(
+                    libsparklink::Adapter::open("/dev/null").unwrap(),
+                    crate::config::DaemonConfig::default(),
+                    crate::bonding::BondingStore::new(
+                        std::path::Path::new("/tmp"),
+                        "ssap-first-bind-policy",
+                    ),
+                    crate::profile::ProfileRegistry::new(),
+                )));
+            let iface = ConnectionIface::new(state.clone(), 7, SleLinkInfo::default(), security);
+            {
+                // Publication needs no native success fixture and must not
+                // touch the management gate/socket before real security.
+                let mut held = state.lock().await;
+                held.config.ssap.channel_security = 0;
+                tokio::time::timeout(
+                    std::time::Duration::from_millis(100),
+                    iface.start_ssap_on_publication(),
+                )
+                .await
+                .unwrap()
+                .unwrap();
+            }
+            assert_eq!(iface.ssap_security_requirement(), security);
+            assert!(iface.ssap.lock().await.is_none());
+            assert!(matches!(
+                iface.start_ssap().await,
+                Err(zbus::fdo::Error::Failed(_))
+            ));
+            assert!(iface.ssap.lock().await.is_none());
+            // A failed admission does not manufacture an Engine or alter its
+            // frozen security requirement. No real AF_SPARKLINK here.
+            assert_eq!(iface.ssap_security_requirement(), security);
+        }
+    }
+    #[tokio::test]
     async fn ssap_start_context_releases_one_adapter_guard_before_actor_arguments() {
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
             libsparklink::Adapter::open("/dev/null").unwrap(),
@@ -900,7 +964,7 @@ mod grant_tests {
             crate::profile::ProfileRegistry::new(),
         )));
         state.lock().await.controller.dev_index = 17;
-        let iface = ConnectionIface::new(state.clone(), 7, SleLinkInfo::default());
+        let iface = ConnectionIface::new(state.clone(), 7, SleLinkInfo::default(), 0);
         let (index, store) =
             tokio::time::timeout(std::time::Duration::from_millis(100), iface.ssap_context())
                 .await
@@ -927,7 +991,7 @@ mod grant_tests {
             handle: 3,
             ..Default::default()
         };
-        let iface = ConnectionIface::new(state.clone(), 7, reference);
+        let iface = ConnectionIface::new(state.clone(), 7, reference, 0);
         assert!(matches!(
             iface.get_transport_status().await,
             Err(zbus::fdo::Error::Failed(_))
@@ -972,7 +1036,7 @@ mod grant_tests {
             ),
             crate::profile::ProfileRegistry::new(),
         )));
-        let interface = ConnectionIface::new(state.clone(), 7, SleLinkInfo::default());
+        let interface = ConnectionIface::new(state.clone(), 7, SleLinkInfo::default(), 0);
         let _held = state.lock().await;
         for directions in [0, 4, u32::MAX] {
             let result = tokio::time::timeout(

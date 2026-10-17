@@ -21,6 +21,15 @@ def execute(run,phase):
         return cli_execute(run,phase,row)
     paths=[v['object']['path'] for v in phase['typed_objects']]
     command=['/bin/ws73-security-agent-probe','--connections',*paths,'--mode',mode]
+    import tomllib
+    from pathlib import Path
+    requirement=tomllib.loads(Path('/etc/sparklink/main.conf').read_text()).get('ssap',{}).get('channel_security',0)
+    if type(requirement) is not int or requirement not in (0,1,2):raise CaptureError('explicit valid SMTC policy required')
+    if requirement:
+        if (mode,requirement) not in [('approve',1),('numeric-approve',2)]:raise CaptureError('protected SMTC gate requires matching positive mechanism')
+        row['ssap_security_requirement']=requirement
+        command+=['--ssap-security-requirement',str(requirement)]
+
     # Same witness/Engine: only add read-only current Session observations.
     row['live_security_required']=mode in ['approve','numeric-approve','numeric-reject','numeric-late']
     if row['live_security_required']:command+=['--observe-connection-security']
@@ -95,6 +104,24 @@ def protected_grant_refusals(stages,paths,infos,mode):
     if seen!=expected:raise CaptureError('all protected Grant refusals required')
     return len(seen)
 
+def ssap_refusals(row,phase,stages):
+    required=row.get('ssap_security_requirement',0)
+    if type(required) is not int or required not in (0,1,2):raise CaptureError('invalid SMTC requirement')
+    values=stages.get('protected_ssap_refusal',[])
+    if not required:
+        if values:raise CaptureError('unrequested SMTC witness')
+        return 0
+    if (row['mode'],required) not in [('approve',1),('numeric-approve',2)] or len(values)!=2:raise CaptureError('both protected SMTC refusal witnesses required')
+    for entry in phase['typed_objects']:
+        obj=entry['object'];path=obj['path'];ref=[obj[k] for k in ['generation','lifetime','handle']]
+        hits=[v for v in values if v['path']==path]
+        if len(hits)!=1:raise CaptureError('one SMTC refusal per actual lifetime required')
+        v=hits[0];snap=next(x for x in stages['current_security_before'] if x['path']==path);alloc=next(x for x in stages['allocated'] if x['path']==path)
+        if (v['identity']!=ref or v['required']!=required or v['configured']!=required
+                or v['error']!='org.freedesktop.DBus.Error.Failed' or v['detail']!='native channel bind: Permission denied (os error 13)'
+                or not snap['wall_ns']<v['wall_ns']<alloc['start_wall_ns']):raise CaptureError('actual frozen-policy refusal before security admission required')
+    return required
+
 def witness(row,phase,daemon,binary=None):
     if row.get('mode','').startswith('cli-'):
         from ws73_security_cli import witness as cli_witness
@@ -107,6 +134,8 @@ def witness(row,phase,daemon,binary=None):
     expected={'probe_identity':1,'allocated':2,'agent_callback':2,'probe_complete':1,
               'caller_loss_cleanup':2} if row['mode']=='caller-exit' else {
                   'probe_identity':1,'allocated':2,'agent_callback':2,'probe_complete':1,'policy_result':2}
+    required_ssap=ssap_refusals(row,phase,stages)
+    if required_ssap:expected['protected_ssap_refusal']=2
     numeric=row['mode'].startswith('numeric-')
     if numeric:expected.update(numeric_callback=2,numeric_decision=2)
     if row.get('live_security_required'):expected.update(current_security_before=2,current_security_after=2)
@@ -288,10 +317,13 @@ def corroborate(control,capture):
         post_terminal_numeric(row,phase,capture)
         if row.get('protected_grant_required') and business.get('security_requirement')!=(2 if row['mode']=='numeric-approve' else 1):
             raise CaptureError('positive application must use the required protected fd, never plain fallback')
+        if row.get('ssap_security_requirement',0)!=business.get('ssap_security_requirement',0):
+            raise CaptureError('sole SMTC requirement cannot be dropped between Agent and SSAP business')
         if business['session_start_wall_ns']!=phase['start_wall_ns'] or business['start_wall_ns']<row['end_wall_ns'] or business.get('close_prefix'):raise CaptureError('same physical Session ordinary application delivery must follow Agent procedure')
         result.append(dict(mode=row['mode'],wire=proof,application_phase=business['phase'],
             current_security_snapshots=4 if row.get('live_security_required') else 0,
             protected_grant_refusals=(6 if row['mode']=='approve' else 4) if row.get('protected_grant_required') else 0,
-            application_security_requirement=business.get('security_requirement',0)))
+            application_security_requirement=business.get('security_requirement',0),
+            ssap_security_requirement=row.get('ssap_security_requirement',0)))
     return dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=result,
         business_round_trips=business_proof['round_trips'],current_security_snapshots=sum(v['current_security_snapshots'] for v in result),scope='Actual ordinary control user Agent callbacks, original owner/reference/deadline, real dual-controller wire and subsequent peer-checked business. Not authentication/Bond/full deployment/udev/systemd/natural recovery.')

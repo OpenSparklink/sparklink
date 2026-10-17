@@ -74,6 +74,9 @@ struct Args {
     /// Refusal witness only; positive fds belong to the ordinary slktest process.
     #[arg(long, requires = "observe_connection_security")]
     protected_grant_probe: bool,
+    /// Check the real sole SMTC's frozen policy and pre-mechanism refusal.
+    #[arg(long, requires = "observe_connection_security", value_parser = clap::value_parser!(u32).range(1..=2))]
+    ssap_security_requirement: Option<u32>,
 }
 type CurrentSecurity = (u64, u64, u16, u64, u32, u32, u32, u8, u8);
 async fn protected_grant_refusal(
@@ -101,6 +104,35 @@ async fn protected_grant_refusal(
         }
         Err(error) => Err(error).context("expected actual native security-grade refusal"),
         Ok(_) => bail!("insufficient mechanism unexpectedly obtained a protected fd"),
+    }
+}
+async fn protected_ssap_refusal(
+    c: &Connection,
+    path: &str,
+    info: &Info,
+    required: u32,
+) -> anyhow::Result<()> {
+    let proxy = link(c, path).await?;
+    let configured: u32 = proxy.get_property("SsapSecurityRequirement").await?;
+    ensure!(
+        configured == required,
+        "sole SMTC policy differs from explicit requirement"
+    );
+    match proxy.call_method("GetSsapInfo", &()).await {
+        Err(zbus::Error::MethodError(name, Some(detail), _))
+            if name.as_str() == "org.freedesktop.DBus.Error.Failed"
+                && detail == "native channel bind: Permission denied (os error 13)" =>
+        {
+            println!(
+                "{}",
+                json!({"stage":"protected_ssap_refusal", "wall_ns":wall(),
+                "path":path,"identity":[info.0,info.1,info.2],"required":required,
+                "configured":configured,"error":name.as_str(),"detail":detail})
+            );
+            Ok(())
+        }
+        Err(error) => Err(error).context("expected actual pre-mechanism SMTC refusal"),
+        Ok(_) => bail!("SSAP unexpectedly started before its required security mechanism"),
     }
 }
 async fn current_security(
@@ -600,6 +632,18 @@ async fn execute(args: Args) -> anyhow::Result<()> {
         );
         for (path, info) in args.connections.iter().zip(&infos) {
             current_security(&requester, path, info, "current_security_before", 0).await?;
+        }
+    }
+    if let Some(required) = args.ssap_security_requirement {
+        ensure!(
+            matches!(
+                (args.mode, required),
+                (Mode::Approve, 1) | (Mode::NumericApprove, 2)
+            ),
+            "explicit positive mechanism must match the frozen SMTC requirement"
+        );
+        for (path, info) in args.connections.iter().zip(&infos) {
+            protected_ssap_refusal(&requester, path, info, required).await?;
         }
     }
     if args.protected_grant_probe {

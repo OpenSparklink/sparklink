@@ -703,3 +703,11 @@ SSAP安全要求必须在其唯一SMTC首次绑定前选定并由内核Grant强�
 绑定前等待/拒绝，不关闭重绑已退休槽、不新造Engine。Service分支必须传递实际
 要求，后续收发仍按当前generation/lifetime/lease/security epoch核对；SSAP操作位、
 认证/加密、本地授权和CPCD分别表达。已验证CUTC不转授为受保护SMTC或完整安全资格。
+
+### SSAP 最低机制与首次绑定
+
+唯一 slkd SSAP Engine 的 SMTC 与 CUTC 共用原物理 Session 和内核 Grant；
+`[ssap] channel_security` 在首次绑定前固定。非零时连接发布不创建普通 SMTC，
+真实原生机制完成或显式 SSAP 请求仅提示准入。内核仍检查 generation/lifetime/
+lease/等级/epoch；失败不降级、不重开退休 slot。此传输要求不替代属性级访问
+策略、身份、Bond 或 Agent 授权。默认普通 SMTC 的行为和其历史身份保留。

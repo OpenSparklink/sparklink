@@ -226,13 +226,26 @@ Managed release、最后 fd、dup、在途回复、设备移除和 daemon crash 
 ```text
 端点校验 → 镜像/板配置校验 → 下载 → 同端口新枚举确认
 → BSP_READY → customize → CUSTOMIZE_RECEIVED
-→ SLE_OPEN → BOOT_FINISH → DLI真实查询
+→ SLE_OPEN → BOOT_FINISH → HCC型号/总线真实查询 → DLI真实查询
 → 按初始化事实确认Radio状态 → Ready
 ```
 
 每阶段共享原始总期限，另有阶段预算、有限重试、完整长度和回复校验。启动通知应由正确接收窗口捕获，不能丢失后本地合成成功。
 
-SDK111 qualification 绑定实际上传的镜像和配置 hash。暖态 version tuple 不证明刚刚上传111。combined 拼接、各段、校准、运行配置分别留来源。SHA 校验只证明内容完整性，不证明厂商签名、来源可信或板级校准。
+历史 SDK111 qualification 绑定实际上传的镜像和配置 hash。暖态 version tuple 不证明刚刚上传111。combined 拼接、各段、校准、运行配置分别留来源。SHA 校验只证明内容完整性，不证明厂商签名、来源可信或板级校准。
+
+2026-10-17 用户当前选择统一1.10.110：U/S的SDK `firmware/us` 与E的 `firmware/e`
+分别保留镜像、校准及组合hash；旧111及旧四U资格不转授新硬件/固件。运行期HCC
+GET_CHIP_TYPE回复自动给出U/S/E与USB/SDIO/UART，属于驱动私有平台消息，不伪装
+成标准DLI或消耗DLI command/data credit。未知/失败/超时不发布Setup；sysfs快照
+受每设备phase锁及元数据有效性保护。SDK110平台分配长度quirk仅限确切平台路由，
+SLE/ACB长度不随之放宽；业务预算逐controller绑定真实DLI，不能硬编码U的254/5。
+
+HCC尚未运行的ROM接口不能使用该查询选择首次冷启动镜像。首次输入仍须显式匹配，
+该缺口待验证ROM识别后解决，不按VID/PID或端口默认U。混合型号业务VM移除两条
+firmware查找路径的ROM镜像，仅接管已单独下载并核对的运行期设备；意外ROM状态
+明确失败，禁止错型下载。固件自报型号不认证硅片/板级校准/执行镜像，平台消息无
+请求nonce；其真实性、旧回复排空及硬件屏障仍是独立验证条件，不授安全资格。
 
 ### 标准、SDK、参考库及 OHOS
 

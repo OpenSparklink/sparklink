@@ -218,6 +218,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | U247：实际Debian分包基础安装/四角色bus/外部SDK/重装remove限定通过；升级发布仍开放 | `virtual_integration` | `PASS` |
 | U40c:C/Python实际Client桥接的限定离线通过；实际权限及WS73仍缺 | `offline` | `PASS` |
 | C/Python当前Client新产物实际部署/内核Grant/WS73及高阶API仍缺 | `implemented` | `MISSING` |
+| U3ff/工具004c:C/Python真实授权fd与双端业务限定通过；完整矩阵仍缺 | `real_device` | `PASS` |
+| U3ff/工具004c:七真实VM原短包与七尺寸保持，完整架构未退出 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1385,156 +1387,68 @@ FAIL、warm启动观察、复制审计摘要的旧source/count标注及封存器
 
 ##### R5f／R6当前批：公开支持面与实际部署收敛
 
-R5f1 有限批：C/Python 普通应用通过现有 Rust Client 查询 controller 并申请已授权
-通道 fd；不把 Native 管理、业务收发或 SSAP Engine 复制进绑定。同步 C 调用使用
-每客户端独立执行线程和有界请求队列，保持 daemon owner 观察任务运行；同一绝对
-单调时钟期限覆盖排队与等待。超时只终止本地等待，不声称远端操作或物理义务取消。
-最后释放停止并 join 本地执行器，不断开连接或撤销其他 fd。退出条件为严格构建、
-实际私有 bus 跨语言调用、完整身份/更换 owner/期限/队列/错误及真实 fd 类型拒绝、
-独立 C header/ELF 导出检查、文档与实际新入口一致。新 artifact 的实际 system bus、
-Kernel Grant 和 WS73 双设备验收另取；原资格不转授。本批不等于完整 C/Python
-SSAP/Agent/Owned/Operation API 或完整架构退出，R6c 与全部原范围继续开放。
+本节只维护当前决定和剩余门禁。[原进度段落按40f50身份归档](../history/architecture/r5f-r6-progress-before-consolidation-20261018.txt)。
+逐轮尝试、失败和源码身份分别保留于下面的报告；
+历史“下一步”“尚未启动”等描述不再作为当前结论。当前架构尚未完整退出，
+先完成已列整改，再扩展能力；完整S0–S6、19WP/10FV/12DG、UserHost P4、VM-only
+及全部原验收范围保持。部分结果不关闭原issue，自然故障根因和非人工恢复仍开放。
 
-跨语言回归可通过 `SPARKLINK_APPLICATION_FFI_ARTIFACT_DIR` 指定尚不存在的保留目录：
-保留真正执行的 C binary、实际加载的库、双端输出及材料 hash；完整标记只在全部
-断言和末尾 hash 复核通过后写入。CI 单独上传该有限 fixture，不称设备资格。
-初次 ABI-major 名称缺失及另一次未指定 worktree 的 Kernel 头路径错误均保留；
-后者是执行配置失败，不能将缺失用例计通过。正式运行必须显式指定匹配 UAPI。
+| 已实施范围 | 准确证据与限定 | 尚缺条件 |
+|---|---|---|
+| C/Python基本公共Client，复用Rust Client与Channel | [限定离线报告](../docs/evidence/application-language-client-offline-20261018.json)：40c生产／867工具，真实private bus、实际ELF/header及两个外部调用者；不是Kernel Grant或RF | 完整高阶broker／SSAP／Owned／Agent客户端，共享Operation／Deadline／Snapshot／EventStream及每应用发现会话 |
+| 实际C/Python普通应用的授权fd业务 | [基本实机报告](../docs/evidence/application-client-basic-real-20261018.json)：编译服务3ff、guest/host004c、kernel2fc、显式SDK110-U；交换应用／连接角色，dup后关闭Client与原fd，真实随机请求／独立回复，最后关闭后同lifetime重绑拒绝；双端USB/HCC重算及八个证据负对照 | 完整权限、release／撤权／Down／原期限交错及同行隔离。原Agent及其他范围不转授 |
+| Native VM运行库及Python fd封装 | 复用canonical SONAME表；显式固定socket family/type/protocol，接收使用同一Channel上下文API；[维护](../docs/evidence/application-language-client-maintenance-20261018.json)及下面原失败均保留 | getname与Python地址型recvmsg等未支持；不能推导多通道、完整SDK或性能资格 |
+| 通用构建／安装／卸载布局 | [准确668干净VM限定资格](../docs/evidence/deployment-clean-vm-qualification-20261018.json)：统一Make清单、PREFIX渲染、两库SONAME、sysusers／udev／pc／头、实际system bus普通用户及基础外部C/Python、重装／卸载配置状态保留 | vendor内核／无USB，不是实际Kernel Grant、新WS73或跨版本升级回滚资格 |
+| 实际Debian分包基础路径 | [准确247限定资格](../docs/evidence/debian-package-base-qualification-20261018.json)：独立构建／新运行VM、真实helper创建组、普通角色、先运行包Python后开发包C、许可原文、同版本重装／remove；[原包构建回执](../docs/evidence/debian-package-build-receipt-20261018.json)另存 | 同版本重装不算升级；dwz／usrmerge警告、完整第三方许可／来源／SBOM、支持组合及CI发布汇总未闭合 |
 
-R5f1 的[限定离线报告](../docs/evidence/application-language-client-offline-20261018.json)
-分别绑定40c release源码和867实际消费者工具；默认完整回归、实际库/ABI、私有bus
-两语言入口、有界执行器、依赖/退休/导出和格式均按报告门禁。六个资格负对照拒绝
-旧源码、缺失/损坏产物、范围错配及缺失/未证明门禁。计数只从结构化记录生成。
-第一次汇总器误把既有CLI owner-loss负例的预期stderr当Cargo失败，拒绝发布；保留
-原汇总器，按具体成功负例/退出码识别后封存，没有修改生产行为或测试断言。
-Python fork负例的多线程警告原样保留并显式识别，不声称安全fork后构造/使用Client。
+第一批已验证的新真实行为是公共C/Python Client取得授权fd并完成独立业务回复。
+原路径保持使用**同一准确新镜像**另验，不能代替该新入口的正向证据；[七真实VM保持报告](../docs/evidence/application-client-preservation-real-20261018.json)
+已独立重算短消息／Owned、249／250／253／254／255／2042原件：56次对端业务回复，
+35个证据负对照拒绝。长度边界按应用字节、DTAP PDU和控制器ACB分别标注，
+不升级为性能或全树资格。
 
-R5f2 下一有限批：先核对native VM root与两库ABI-major名称/加载及真实新入口；
-然后在准确新镜像、实际system bus/普通用户/Kernel Grant下完成新C/Python通道正向
-业务与close/dup/撤权/原期限/同行隔离，以及原发现/连接/短包/已有长度边界。
-保留现有Session、credit/Ticket/Grant与唯一SSAP；新入口不能因离线PASS取得RF资格。
-高阶SSAP/Owned/Agent客户端、通用共享API、R6c及所有原架构退出条件继续开放。
+接下来按实际依赖继续同一整改，不新增平行Engine或永久拒绝的旧门面：
 
-R5f2 首步已复现native VM旧无版本库布局的真实major加载失败；1d8932b改为复用
-canonical SONAME表，先核对两库再复制，旧显式路径探针指向同一runtime副本。
-十项布局回归及封存真实ELF的staged加载通过；[维护证据](../docs/evidence/application-language-client-maintenance-20261018.json)
-保留前后原件，**尚未启动新VM或取得实际权限/设备资格**。继续完成上述R5f2门禁，
-不因修正镜像文件名关闭整项，也不以软件布局修复解释自然设备故障。
+1. 封存当前新artifact的原短消息、已取得长度／分片及适用Owned保持门禁；同步资格
+   摘要、goal关联状态和原issues。准确编译、执行工具与报告提交分别记录。
+2. 通过**实际公共入口**补齐普通应用组／管理组权限、release／撤权、dup／最后关闭、
+   Down、原期限和同行隔离；保留受控屏障原失败与断言。只门禁本批相关性质。
+3. 复用现有Client／Channel／唯一SSAP Engine，收敛高阶跨语言调用者与共享API；
+   管理staging、Owned、ServiceAuthorizer和安全Agent职责不合并。不得由空类型、
+   别名或NotSupported门面宣称API树完成，旧未发布入口迁移后删除，旧编号不复用。
+4. R6c在干净VM完成实际跨版本升级／回滚及迁移边界，收敛debug_info／dwz／动态
+   依赖、第三方许可证、来源／SBOM和CI发布汇总；准确新产物原生权限与WS73另验。
+   部署、文档或离线通过不改变原功能资格。
 
-R5f2 当前纵向退出：专用测试目录下的小型 C/Python 普通应用使用公共 Client，
-从实际 broker 取得固定通道，dup 后关闭原 fd 与 Client，再做单次随机请求/独立
-回复的完整校验；最后引用关闭后同 lifetime 重绑须拒绝。两种语言交换发起/应答
-和连接角色，核对实际身份、应用输出及双端 USB/HCC/ACB 数据。应用仅使用正常
-socket，不新增 Host、codec 或 benchmark 循环。原发现/连接/短包/长度回归使用
-现有 slktest、SSAP 和 capture 设施另验，不能代替新 API 正向交付。先离线实际
-API/参数/故障与镜像校验，再以准确新 artifact 运行 VM；完整权限、release/撤权/
-Down/原期限交错、SDK其余入口和R6c仍按原 scope开放，不弱化原验收范围。
+C同步入口继续保持每客户端独立执行器、有界8请求队列及一个在途请求，不持有
+controller管理lease。绝对CLOCK_MONOTONIC原期限覆盖本地排队和等待；超时不
+宣布远端取消、回滚或credit退款。最后释放join本地执行器，已交付fd独立拥有。
+Python使用相同ABI，不复制D-Bus或协议状态；fork后先exec／spawn再新建Client。
 
-R5f2 首轮实际执行器在启动前过早引用package而失败，[原件保留](../docs/evidence/application-client-preflight-failure-20261018.json)。
-native检查移到prepared镜像完整验证之后；真实CLI预检/最终判定的无硬件回归要求
-缺少已验证native profile时不启动QEMU。镜像与实际执行工具身份继续分别记录，
-这项软件修正不算硬件失败、自然恢复或新设备资格。
+三类清单继续关联上面的当前任务及WP18原清单：**立即删除**已迁移的重复安装规则、
+失配库名／路径和过时完成声明；**移入测试／保留**有价值的历史ABI／权限／codec／
+callback／清理回归及全部失败；**等待替代／验收**仅限上述有明确调用者、依赖与退出
+条件的高阶SDK、共享会话API及R6c，不把它们无限期留成旧生产依赖。
 
-R5f2 首轮设备对照与消费者导入失败均[保留原身份](../docs/evidence/application-client-first-device-attempts-20261018.json)：
-fixed-T在Ready/随机发现后Create超时，无成功Status/outcome，根因仍未定；对齐既有
-SDK110的negotiable-T后实际建链，Python缺少staged SDK路径而在业务前失败。新启动
-环境显式记录PYTHONPATH和应用库ABI-major，先以镜像内实际库/消费者进行离线导入、
-过期Client拒绝和参数检查，再封存新镜像。失败不改写通过，不据重跑宣称自然恢复。
+本批完整退出仍要求生产入口、全部调用者、绑定、权限、生命周期、安装部署和文档
+一致；新artifact在实际system bus／内核授权／双WS73上通过相关门禁。默认App与
+显式Native分离，slkd不依赖自己的应用SDK，业务数据不逐包过D-Bus；所有SSAP仅
+由daemon现有唯一Engine经已验证Channel执行。
 
-R5f2 实机进一步发现[Python fd构造生产缺陷](../docs/evidence/python-channel-constructor-failure-20261018.json)：
-获得真实授权fd后，标准socket自动探测触发当前未支持的getname而EOPNOTSUPP，业务
-未开始。按已知固定DGRAM契约显式family/type/protocol，继续使用标准socket所有权。
-有界C/OS边界fixture与真实Unix fd只验证Python包装/dup/关闭，旧源码反例失败；
-不能算AF_SPARKLINK或实际交付。新源码必须重新封存镜像并取真实双端随机业务证据。
+历史失败按原身份保留，不由成功重跑覆盖：
 
-构造/dup修复后，[原Python地址型recvmsg失败](../docs/evidence/python-channel-receive-address-failure-20261018.json)
-继续保留；标准运行库不能计算未发布family的地址长度。两语言测试消费者改用
-已有公共Channel接收/上下文API，继续严格检查实际载荷、截断、generation/lifetime/
-handle/TCID，而非复制系统调用decoder或减少断言。无地址socket与上下文操作支持
-边界同步参考。仍须新镜像完整正向业务和原回归，不据实际FD/USB局部结果升级。
-
-核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
-保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取
-错误源库名且缺Native/pc统一安装；pc头目录不符；无正式SONAME与干净VM升级回滚
-实测；组/udev/systembus和外部SDK消费、CI固定资格工具链/发布汇总仍按原任务。
-
-三类清单：立即迁移/删除重复安装规则、硬编码失配路径和过时能力/地址声明；保留
-已有真实Make卸载、独立ABI/导出及历史失败测试（fixture与实际安装分开）；等待实际
-替代/验收的高阶C/Python broker/SSAP、通用Operation/Deadline/EventStream和应用发现
-会话不得由永久NotSupported旧门面代替。默认App与显式Native入口及唯一Engine保持。
-
-本批退出：生产构建/安装/打包采用一个明确布局与实际artifact身份，服务/头/pc/库名/
-SONAME/权限/配置保留一致；先严格构建/独立导出/实际staged布局负向，再在干净VM
-完成服务、普通用户、外部C/Python当前支持入口、升级/回滚/卸载和状态保留。涉及
-数据/授权/事件的改动须新artifact重新取适用真实双设备门禁；旧R5e不转授新产物。
-部分staging/ABI通过不使R6或完整架构完成，不阻断未关联的原纵向功能与自然RCA工作。
-原S0–S6、19WP/10FV/12DG、UserHost P4、VM-only与所有原验收范围保留。
-
-R6a最初开发快照：统一Make install-files及Debian分包文件表，固定构建目录/工具链，
-渲染实际Exec/pc，增加两库SONAME、现有三角色sysusers、仅Native字符设备udev；
-配置/状态/权限/symlink和非本版本库保留。已完成开发ELF的两个PREFIX实际暂存、
-外部C/Native链接/errno、配置解析、重装与卸载；这不是新artifact实机或干净VM资格。
-8项布局/原卸载及原bundle文件测试通过，严格新构建已执行；准确新提交、封存产物、
-实际VM服务/组/bus、Python安装消费及包管理升级回滚仍待本批门禁。
-
-R6a运行包复核另发现Python依赖开发`.so`链接：准确dd72源码在仅有真实`.so.0`
-运行库时失败，原反例保留。加载器改为ABI major，显式错误路径继续拒绝；实际ELF
-无开发链接及失败不fallback回归接通。干净VM中的安装wheel与真实system bus另验，
-此修正不改变Rust/内核数据路径，也不转授旧实机资格。
-首轮干净VM完成真实构建/安装/服务启动后，权限探针漏传角色而整轮FAIL，
-[原失败保留](../docs/evidence/deployment-clean-vm-first-failure-20261018.json)。仅修执行参数；
-新轮仍核对四角色实际system bus、无开发链接Python与原配置保留断言，不据局部成功封项。
-第二轮执行器提取后的内嵌缩进错误也保留为[独立失败](../docs/evidence/deployment-probe-extraction-failure-20261018.json)；
-加入实际两段内嵌源码语法预检，仍未宣称实际权限或Python安装通过。
-
-R6a当前有限退出：[准确668干净Debian VM](../docs/evidence/deployment-clean-vm-qualification-20261018.json)
-完成真实构建/安装、四角色system bus与当前基础C/Python外部消费、无开发链接运行库
-加载、服务重启/停止及重装/卸载配置保留；独立原件/源码/产物、最终文件与负对照另验。
-计数只从结构化记录生成。原两轮FAIL保留，vendor内核且无USB，不是实际Kernel Grant、
-新WS73、Debian包管理或跨版本升级回滚资格。R5f高阶客户端/共享API及R6剩余门禁
-继续整改，当前架构尚未完整退出；不得靠别名、空门面或第二Engine填充目标API树。
-
-R6b下一有限批：在独立无USB VM实际构建/安装Debian分包，验证服务/组/配置及
-外部消费者，再测升级、回滚、remove与配置保留。沿用真实版本依赖、固定工具链和
-共享Make清单；不得用跳过依赖检查、空toolchain包或修改预期伪装支持。发行版缺少
-所需编译器时必须记录；实验工具链包若采用，须实际包含准确编译器/库/许可证并单列
-来源及限定范围。generic VM通过不替代此批。包管理通过后仍需准确新artifact的WS73
-与实际内核授权门禁；R5f现有API闭包同步收敛，不为整洁另造框架。
-
-R6b实际构建首个生产缺陷：[原clean失败](../docs/evidence/debian-clean-dispatch-failure-20261018.json)。
-真实编译器/库/许可证实验包已安装，版本依赖通过；Debian清理仍继承通用Make的
-rustup参数，直接Cargo拒绝`+1.96.1`而构建中止。清理与既有构建/测试统一显式
-`CARGO=cargo`，没有降低版本或跳过检查。实际Make dry-run回归通过，准确新提交
-的完整包构建、安装及升级回滚仍待VM；原输入准备失败另存，不算生产缺陷或恢复。
-
-准确9ce已在新VM越过clean并完成生产构建，完整测试仍FAIL：
-[root可读mode000的夹具反例](../docs/evidence/debian-root-config-fixture-failure-20261018.json)。
-生产配置解析行为正确，不能人为禁止root读此文件或SKIP权限用例。保留原文件模式与
-所有拒绝/无fallback断言，仅在实际root测试时以普通UID/GID运行该读取命令；kernel
-EUID来自proc，避免fakeroot元数据误判。普通用户五项CLI和严格检查已通过；实际
-root新源码包构建及其余R6门禁仍须执行，原失败不改写为通过。
-
-准确6cb完整构建已生成[包构建回执](../docs/evidence/debian-package-build-receipt-20261018.json)，
-包含实际root权限用例和完整默认workspace测试；这只是构建产物，不是安装或发布资格。
-dwz缺少项目debug_info、usrmerge动态依赖警告及许可证/来源清单仍须收敛，不屏蔽警告。
-
-[全新运行环境安装](../docs/evidence/debian-role-install-failure-20261018.json)实际发现APT与
-服务启动成功后角色组仍缺失。13.24.2 helper存在但compat13未默认调用，系统触发器
-也不补该定义。源码显式在服务集成前调用现有helper，复用已安装的唯一sysusers文件；
-通用/分包同步保存项目许可证及诚实的归属说明，第三方许可审计仍开放。离线真实
-Make暂存/卸载已验；新包构建、全新安装及普通用户仍待下一VM，不能手工补组算通过。
-
-该修正的有限退出已取得：[准确247实际分包基础资格](../docs/evidence/debian-package-base-qualification-20261018.json)。
-新root构建与无构建残留的运行环境分别验证；真实helper顺序/角色组、普通用户system
-bus、先运行包Python后开发包C、上游许可原文、同版本重装/remove及最终配置状态
-独立核对，计数只由结构化记录生成。原缺组/clean/权限夹具FAIL仍按原身份保留。
-不把同版本重装写成升级回滚，不把UnknownObject写成Kernel Grant，不把基础错误
-消费者写成完整高级SDK或新WS73资格；warning/完整许可来源审计与整项仍开放。
-
-R6c剩余部署批与R5f公开契约同步推进：实际跨版本升级/回滚及迁移边界、debug_info/
-dwz/动态依赖/支持组合、第三方许可/来源/SBOM和CI发布汇总；原生权限及准确新产物
-WS73门禁另取。继续现有Client/Channel/唯一Engine及完整原范围，不恢复旧接口或
-为整洁另建框架；架构完整退出后再扩展功能，UserHost仍P4。
+- [preflight在启动前失败](../docs/evidence/application-client-preflight-failure-20261018.json)、
+  [fixed-T设备对照超时及Python导入失败](../docs/evidence/application-client-first-device-attempts-20261018.json)。
+  SDK110当前资格使用negotiable-T；参数对齐不解释自然恢复根因。
+- [Python自动探测fd构造失败](../docs/evidence/python-channel-constructor-failure-20261018.json)、
+  [地址型接收失败](../docs/evidence/python-channel-receive-address-failure-20261018.json)。
+  封装fixture不替代真实AF_SPARKLINK交付。
+- [首轮部署角色探针失败](../docs/evidence/deployment-clean-vm-first-failure-20261018.json)、
+  [嵌入源码提取失败](../docs/evidence/deployment-probe-extraction-failure-20261018.json)、
+  [Debian clean派发缺陷](../docs/evidence/debian-clean-dispatch-failure-20261018.json)、
+  [root读取mode000夹具反例](../docs/evidence/debian-root-config-fixture-failure-20261018.json)、
+  [安装后角色组缺失](../docs/evidence/debian-role-install-failure-20261018.json)。
+  不改生产root权限、不SKIP、不手工补组或跳过版本依赖来取得PASS。
 
 ##### R5a最小独立导出门禁
 

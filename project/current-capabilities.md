@@ -10,7 +10,7 @@
 |---|---|---|
 | 普通用户业务、长度、实际CLI、Peer观察 | 本页选定记录及其全部必需门禁/双端证据 | 功能回归不等于吞吐、可靠模式、全部地址/隐私或整个当前树资格 |
 | Rust管理/应用、Owned与Agent | [实际接口](../docs/reference/interfaces.md)、选定记录的准确新入口范围 | 本地登记、策略批准、原生准入、机制安装、对端应用处理分别表达 |
-| C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、[当前Client限定离线报告](../docs/evidence/application-language-client-offline-20261018.json)、R6a限定VM记录 | 当前查询/通道申请复用Rust Client，限定离线门禁通过；真实部署权限/新WS73另设必需MISSING，原部署/实机资格不转授；完整SSAP/Agent/Owned客户端仍缺 |
+| C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、[实际Client基本业务限定报告](../docs/evidence/application-client-basic-real-20261018.json)、原限定离线/R6a记录 | 新C/Python普通进程复用Rust Client与Channel，在真实双WS73上取得fd并交换独立随机业务，包含dup/closeClient/最后关闭；完整部署权限/撤权矩阵、高阶SSAP/Agent/Owned仍是必需MISSING；具体源码/边界只按记录 |
 | 内核Runtime、Session、Grant、credit/Ticket | [唯一架构](architecture.md)、下面各自源码映射的限定记录 | 旧代际、在途义务、有限队列、撤权及未知完成不能由缓存/关闭抹去 |
 | Codec、事件、故障与形式化 | 下方全部限定/历史记录及证明假设 | 旧codec/fixture、工具安装或模型通过不推导当前完整实现通过 |
 | 部署、恢复与发布 | [唯一计划](implementation-plan.md)的R5/R6、[实际分包基础限定资格](../docs/evidence/debian-package-base-qualification-20261018.json)及原工作包 | 准确247分包的组、普通用户、基础SDK、同版本重装/remove已验；原缺组FAIL保留；跨版本升级回滚、发布/原生权限/新WS73与自然恢复仍开放 |
@@ -23,6 +23,8 @@
 仍保留其“待验”历史状态。高阶SDK/C-Python便利接口与R6剩余范围仍缺；当前基础部署
 的[独立限定VM资格](../docs/evidence/deployment-clean-vm-qualification-20261018.json)不改变旧实机产物身份，
 也不表示软件包、跨版本升级回滚、实际内核授权或新WS73产物通过。
+[同一新产物的原路径保持](../docs/evidence/application-client-preservation-real-20261018.json)
+单列七真实VM、七个应用尺寸及原短包/Owned条件；完整权限/撤权/原期限矩阵仍缺。
 自然启动/重枚举/设备消失根因、非人工恢复继续开放；模拟及QMP不能替代。
 
 历史R5d Typed Peer资格以[原准确记录](../docs/evidence/typed-peer-retirement-qualification-20261018.json)
@@ -248,6 +250,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | U247：实际Debian分包基础安装/四角色bus/外部SDK/重装remove限定通过；升级发布仍开放 | `virtual_integration` | `PASS` |
 | U40c:C/Python实际Client桥接的限定离线通过；实际权限及WS73仍缺 | `offline` | `PASS` |
 | C/Python当前Client新产物实际部署/内核Grant/WS73及高阶API仍缺 | `implemented` | `MISSING` |
+| U3ff/工具004c:C/Python真实授权fd与双端业务限定通过；完整矩阵仍缺 | `real_device` | `PASS` |
+| U3ff/工具004c:七真实VM原短包与七尺寸保持，完整架构未退出 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

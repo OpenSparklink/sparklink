@@ -799,9 +799,9 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F2_CONTROLLED_C_PYTHON_CONSUMERS_VM_PREPARATION",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F2_BASIC_AND_ORIGINAL_MATRIX_FINITE_PASS_FULL_SCOPE_OPEN",
   "next_resume_tasks": [
-    "R5f2 exactsource controlled C/Python publicSDK consumers+nativeimage preparation;actualtwoWS73 randomrequest/independentreply/dup/closeClient/lastclose andoriginalslktestbaseline/length gates. Actualfullgroup-policy/revoke/deadline/isolation/higherAPI andR6c remain.",
+    "Actual publicclient fullgroup-policy/release/revoke/Down/originaldeadline/peerisolation;higher crosslanguageclients/sharedAPI/perappDiscovery andR6c. AlloriginalS0-S6/19WP/10FV/12DG remain;naturalRCA/nonmanualrecovery OPEN.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
@@ -1843,20 +1843,28 @@
       "application-language-client-real-r5f1": {
         "level": "implemented",
         "result": "MISSING"
+      },
+      "application-client-basic-real-r5f2": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "application-client-preservation-real-r5f2": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R5f2-public-client-VM-gate-preparation",
-      "production_behavior": "Existing publicRustClient/Channel reused byone-shot C/Python externalconsumers in dedicated VM gate;dup/closeClient/originaldeadline/lastclose plusopposite randomreply/USBcorroboration. No newHost/Engine/productionkernel;not yetqualified.",
-      "state": "R5F2_CONTROLLED_CONSUMERS_IMPLEMENTED_REAL_QUALIFICATION_PENDING",
+      "id": "WP18-R5f2-basic-and-preservation-finite-pass-full-architecture-open",
+      "production_behavior": "Service3ff/tools004c/kernel2fc/SDK110 explicitUS. Two publicC-Python peer roundtrips andsevenoriginalrealVMs/56peerroundtrips/sevenapplicationsizes;source-and-artifactbound independentreplay. No fullpermissions/lifecycle/highlevelSDK orrecovery promotion.",
+      "state": "R5F2_BASIC_C_PYTHON_AND_SEVEN_ORIGINAL_GATES_REAL_LIMITED_PASS",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Build exactsource nativeimage,run newpublicclient positive andoriginalbaseline/length regression,then originalprivilege/revoke/deadline/peerisolation matrix andremainingR5f/R6c. No scope shrink orissueclosure."
+      "next": "Actual publicclient fullgroup-policy/release/revoke/Down/originaldeadline/peerisolation;higher crosslanguageclients/sharedAPI/perappDiscovery andR6c. AlloriginalS0-S6/19WP/10FV/12DG remain;naturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3155,15 +3163,15 @@
     "batch": "Current batch authority: qualification_view.current_batch;R4 raw retirement and R5b/R5c retained source-bound reports are history,not pending work",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
-      "R5f actualnewclient VM/RF andremaining highlevel/sharedAPI;R6c remainingdeployment/release",
-      "All originalS0-S6/19WP/10FV/12DG andnaturalRCA/nonmanualrecovery remainOPEN;architectureexit not declared"
+      "Canonical WP18 R5f: basic C/Python and seven original VM gates finite qualified; actual public fullrole/release/revoke/Down/originaldeadline/peerisolation andhigherSDK/sharedAPI/perappdiscovery remain.",
+      "Canonical WP18 R6c: actualcrossversionupgrade/rollback,debug/dependency/thirdpartylicense/provenance andCI release gates remain. AlloriginalS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecovery OPEN."
     ],
-    "exit_reference": "Canonical WP18 R5d then remaining R5/R6;fulloriginalscope unchanged",
+    "exit_reference": "Canonical WP18 R5f/R6c current exit,not historical R5d;full original scope unchanged",
     "qualification_reference": {
       "source": "qualification_view.selected_qualification",
       "scope": "Selected retained artifact only;whole current tree not revalidated"
     },
-    "uninstall": "e28 staged-only configuration/state retention;clean-VM deployment remains",
+    "uninstall": "Generic668 andDebian247 finiteVM config/state-preservation reports exist;crossversionmigration/upgrade/rollback remains. Use qualification-records rather than staged-only status.",
     "user_steering": "2026-10-17:finish architecture arrangement and remediation first;adopt three API views;preserve verified paths and current lifecycle WIP",
     "target_views": "project/architecture.md / API和SDK：三个统一视图",
     "target_dependency_constraints": [
@@ -3479,30 +3487,29 @@
     },
     "next_limited_batch": {
       "id": "R5f-R6-supported-public-consumers-deployment",
-      "state": "CURRENT_SOURCE_READ_ONLY_AUDIT_NO_NEW_DEPLOYMENT_QUALIFICATION",
-      "scope": "Existing supported app/Native separation and actual build/deploy permissions;no newHost/Engine or protocol architecture change",
-      "findings": "Make source artifactname and uninstall preservation alreadyfixed;defaultPREFIX/service path,Debian,pc/headers/SONAME,groups/udev/systembus andcleanVM remain",
-      "exit_reference": "Canonical WP18/R6;new deploy artifact must pass staged/cleanVM/external consumers/upgrade/rollback/uninstall/configretention andapplicable real gates"
+      "state": "CURRENT_AUTHORITY_IS_GENERATED_QUALIFICATION_VIEW_AND_CANONICAL_PLAN",
+      "scope": "Existing Client/Channel/sharedcontract anduniqueSSAPEngine;no newHost orprotocolpath",
+      "findings": "Originalsource-audit findings were resolved in source-boundR6a/R6b slices;current remaining conditions are in canonicalR5f/R6c,not inherited oldsnapshot.",
+      "exit_reference": "project/implementation-plan.md / R5f andR6c current finite exits"
     },
     "r6a": {
       "status": "EXACT_668_GENERIC_CLEAN_VM_LIMITED_PASS_NOT_RF_OR_PACKAGE_QUALIFIED",
       "scope": "OneMake/debian layout;actualSONAMEs/pc/header/Exec;separateapp/native;sharedgroups,no generic rawUSB;config/state retained",
       "private_development_evidence": ".dev/architecture-r6a-stage-v1/manifest.json",
-      "remaining": "R5f highlevelbroker/SSAPclients/commonAPI/perappdiscovery;R6actualDebianpackages/upgrade/rollback,actualkernelpermission/newWS73artifactmatrix andalloriginalscope OPEN",
+      "remaining": "This is historical668 generic qualification;later247 packagebase separately qualified. CurrentR5f/R6c fullscopes remain percanonicalplan.",
       "qualification": "SelectedR5e remains old exact source-bound artifact,not current dirty R6 tree",
       "python_runtime_loader": {
         "state": "INSTALLED_WHEEL_RUNTIME_MAJORS_PASS_NO_DEVELOPMENT_LINKS",
         "report": "docs/evidence/deployment-clean-vm-qualification-20261018.json"
       },
       "first_vm_failure": "docs/evidence/deployment-clean-vm-first-failure-20261018.json",
-      "next_gate": "R6 package andupgrade/rollback VM;actual newartifactWS73 preservingexistingqualification;R5f publiccontractclosure",
+      "next_gate": "CurrentR5f/R6c only;generic668 report doesnottransferqualification to later artifacts.",
       "second_vm_failure": "docs/evidence/deployment-probe-extraction-failure-20261018.json",
       "qualification_report": "docs/evidence/deployment-clean-vm-qualification-20261018.json",
       "maintenance_receipt": "docs/evidence/deployment-clean-vm-maintenance-20261018.json"
     },
     "r6b": {
       "state": "SOURCE_BOUND_PACKAGE_BASE_SCOPE_QUALIFIED_FULL_R5F_R6_OPEN",
-      "source": "Existing668 source archive;current latercommits metadata-only;exacthead nottransferred",
       "execution": ".dev/architecture-r6b-package-v2",
       "exit": "Canonicalplan R6b:actualversiondependencies/packagebuild/install/upgrade/rollback/remove/configretention andexternalconsumers;freshnativeWS73 separately",
       "toolchain": "Actualpinnedcompiler/lib/licensepayload inprivate labpackage,notdummyprovider orofficialDebiantoolchain",
@@ -3517,7 +3524,16 @@
       "build_receipt": "docs/evidence/debian-package-build-receipt-20261018.json",
       "actual_install_failure": "docs/evidence/debian-role-install-failure-20261018.json",
       "qualification_report": "docs/evidence/debian-package-base-qualification-20261018.json",
-      "maintenance_receipt": "docs/evidence/debian-package-maintenance-20261018.json"
+      "maintenance_receipt": "docs/evidence/debian-package-maintenance-20261018.json",
+      "original_development_source": "Existing668 source archive;current latercommits metadata-only;exacthead nottransferred",
+      "source": "Qualifiedpackage source247e3a96569e61fee277e942cb364206ecb4edea;buildandruntimeVMs separately recorded. No transfer to currentHEAD."
+    },
+    "r5f2_basic_public_client": {
+      "state": "TWO_LANGUAGE_ROLES_AND_SEVEN_ORIGINAL_REAL_VM_GATES_FINITE_PASS_FULL_SCOPE_OPEN",
+      "basic_report": "docs/evidence/application-client-basic-real-20261018.json",
+      "preservation_report": "docs/evidence/application-client-preservation-real-20261018.json",
+      "source_authority": "qualification-records/source-bound reports;compiled_service3ff/guest-host004c/kernel2fc",
+      "remaining_reference": "Canonical R5f/R6c,all original scopes andnaturalRCA/nonmanualrecovery remain"
     }
   },
   "owned_ssap_c6_historical_batch": {

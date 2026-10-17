@@ -27,7 +27,7 @@ README.OpenSource 声明 Apache-2.0，源码有相应许可头。本次只读取
 | `services/stack/src/cp/bsl/sle/servm/ssap/include/inner/ssap_pkt.h`、`src/ssapc_client.c`、`src/ssap_link.c` | ExchangeInfo、min MTU/version、1.3 fragment/multiProcessing 扩展、独立重组 timer | 本地标准基线为 V1.2.0；先实现经标准确认的协商与降级，1.3 只作为待核验扩展，不提前宣告支持。SSAP 分片与 ACB 分片各自测试。U#3、K#6 |
 | `services/stack/src/cp/bsl/sle/sm/src/sm_slink.c`、`sm_numcmp.c` | 安全上下文关联 lcid；不同方法状态机、用户确认与密钥安装 | 连接级机制/Agent policy 边界保持既定设计；参考完整失败与确认路径，不继续使用全局安全状态或 fingerprint 代替 credential。K#7/#18、U#5 |
 | `services/stack/src/cp/bal/profile/bas/include/nlstk_bas_def.h` | Battery service=0x060A，percentage attribute=0x1034 | 与已查本地 30011 一致，修复旧 Bluetooth UUID，补真实 PDU/Profile 测试。U#3 |
-| `services/hardware/src/SleDliLayerAdapter.cpp`、`services/hardware/BUILD.gn` | HAL 调用外部 HDI ISleHciInterface；全局实例；service death/reset 使用 SIGKILL；依赖 HDF/IPC/FFRT | 不能直接当 Linux USB 驱动。Linux Native driver 与 vendord Proxy 独立实现；故障只影响对应 controller。K#9/#10/#12，U#7 |
+| `services/hardware/src/SleDliLayerAdapter.cpp`、`services/hardware/BUILD.gn` | HAL 调用外部 HDI ISleHciInterface；全局实例；service death/reset 使用 SIGKILL；依赖 HDF/IPC/FFRT | 不能直接当 Linux USB 驱动。Linux Native 与可选UserHost职责分离；UserHost及厂商Host适配仅P4规划，未实现、未证明；不能照搬其全局故障范围。K#9/#10/#12，U#7 |
 | `services/stack/src/dli/sapi/src/dli_sapi.c`、`dli_data_stub.c` | 真实 HAL 初始化等待与 NEARLINK_SERVICE_STACK_LOCAL_TEST 条件桩分开；桩模拟回复和分片 | 新测试 manifest 必须记录真实 HAL/桩路径。桩测试只能证明软件，不计入 WS73 RF 验收。K#19 |
 | `services/stack/BUILD.gn`、`services/stack/src/dli/BUILD.gn` | GN/OpenHarmony 依赖 SDF、securec、hilog、OpenSSL、硬件服务等 | 不假定普通 Linux 可直接构建。后续先隔离纯 codec 或构建独立参考 harness，实际运行后才称为差分测试。K#13/#19 |
 

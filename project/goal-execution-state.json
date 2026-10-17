@@ -1766,20 +1766,24 @@
       "native-event-retirement-r4c": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "native-interface-retirement-r4d": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R4d-retired-Native-controls",
-      "production_behavior": "R4c6841e4e mixed Event/empty Profile feature retirement exact four real gates scoped PASS. R4d removes old Native/Controller/ExtAdv/C/CLI/device facades and Bool duplicate;five retired layouts test-only. Count now derives Core bitmap,Native C/Python errors explicit.",
-      "state": "R4C_EXACT_FOUR_REAL_GATES_SCOPED_PASS_R4D_OFFLINE_CHECKING_NOT_QUALIFIED",
+      "id": "WP18-R4e-kernel-legacy-audit",
+      "production_behavior": "R4d997ea19 full-chain Native interface retirement exact four VM preservation gates plus actual C/CLI metadata scoped PASS. Next audit actual kernel raw ABI/selftest consumers and global masks before retirement.",
+      "state": "R4D_EXACT_FOUR_REAL_GATES_AND_METADATA_SCOPED_PASS_R4E_AUDIT",
       "exit": [
-        "6841e4e:314unit/integration+6compilefail each default/allfeatures,strictclippy,755tools,48sealed ABI,strict115docs and both dependency closures",
-        "K0cd/U6841e4e:32peerreplies24Ownedcases96decisions120transactions68roledenials;5replays81negatives",
-        "R4d old sealed library count counterexample reproduced with explicit ABI fixture;fixed candidate49ABI and five fixture cases only,not real metadata qualification",
-        "New exact artifact must run actual C count/bitmap,slkconfig lifetime snapshot and four real preserved paths;current R4d tree not qualified"
+        "997ea19:304unit/integration+6compilefail each default/allfeatures,strictclippy,759frozen tools,49sealed ABI,strict115docs and both dependency closures",
+        "K0cd/U997:32peerreplies24Ownedcases96decisions120transactions68roledenials;5data/role replays81negatives",
+        "Four actual metadata replays/56negatives;8Ccount+8CLI snapshots match prepared artifacts and full identities;not business C/Python qualification",
+        "R4e must audit consumers,retain useful tests,retire unused declarations/stubs and module-wide masks with exact kernel regression"
       ],
-      "next": "Architecture-first remaining R4 rawkernel ABI/selftests/global masks;R5 full contracts/provenance;R6 cleanVMdeploy/docs. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,verified paths/WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
+      "next": "Architecture-first R4e rawkernel ABI/selftests/global masks;R5 full contracts/provenance;R6 cleanVMdeploy/docs. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,verified paths/WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
     }
   },
   "agent_workstream": {
@@ -3053,10 +3057,10 @@
     "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
   },
   "architecture_retirement_current_batch": {
-    "status": "R3C_SOURCE_BOUND_REAL_SCOPED_PASS_R4A_UNQUALIFIED",
+    "status": "R4D_EXACT_997EA19_SCOPED_PASS_R4E_AUDIT_ARCHITECTURE_INCOMPLETE",
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
-    "batch": "R4a full-chain legacy controller-security facade retirement;R4 other APIs/events/ABI,R5,R6 remain",
+    "batch": "R4e kernel raw ABI/selftests/global masks;then R5 contracts/provenance and R6 clean VM deployment",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
       "R4 full-chain old API/event/raw ABI and test migration",
@@ -3069,13 +3073,13 @@
       "event-driven performance",
       "natural fault RCA/nonmanual recovery"
     ],
-    "exit_reference": "Canonical WP18 R4a,then other R4 groups/R5/R6;not all-control-combination prerequisite",
+    "exit_reference": "Canonical WP18 R4e then R5/R6;not all-control-combination prerequisite",
     "qualification_reference": {
-      "record": "application-native-boundary-r3c",
-      "report": "docs/evidence/application-native-boundary-r3c-20261017.json",
-      "compiled_userspace": "6d30c0f67db2e25f08e33742c6fc1db64c3a374c",
-      "executed_tools": "6d30c0f67db2e25f08e33742c6fc1db64c3a374c",
-      "whole_current_tree": "NOT_QUALIFIED"
+      "record": "native-interface-retirement-r4d",
+      "report": "docs/evidence/native-interface-retirement-r4d-20261017.json",
+      "compiled_userspace": "997ea198dfc689c96053f6e460fdf1aecb067c70",
+      "executed_tools": "997ea198dfc689c96053f6e460fdf1aecb067c70",
+      "whole_current_tree": "NOT_QUALIFIED;source-bound record only"
     },
     "uninstall": "e28 staged-only configuration/state retention;clean-VM deployment remains",
     "user_steering": "2026-10-17:finish architecture arrangement and remediation first;adopt three API views;preserve verified paths and current lifecycle WIP",
@@ -3086,7 +3090,7 @@
       "slk-protocol contains ABI/value/pure codec-state only,no device/ioctl/DBus operations",
       "slktest uses same application Channel;load/timing/assertions/report remain in tool"
     ],
-    "transition_exception": "SDK->Native and slkd->SDK edges deleted in R3c source;no compatibility facade. New source not qualified by17ed.",
+    "transition_exception": "SDK->Native and slkd->SDK edges retired in R3c;no compatibility facade. Current source-bound evidence in qualification-records,not inherited by future source.",
     "r2": {
       "status": "SOURCE_BOUND_KEEP_PATH_REAL_PASS_NOT_RF_CACHE_STRESS",
       "production": "Bound per-controller observations;one Entry publication state;existing EventTask/time budget/ownership check;do not change physical connection state",
@@ -3101,16 +3105,16 @@
       "remaining": "Real TTL/128-address/fault pressure not qualified;full architecture and lifecycle obligations remain"
     },
     "r3a": {
-      "status": "IMPLEMENTING_NOT_QUALIFIED",
+      "status": "HISTORICAL_17ED_CHANNEL_SPLIT_SUPERSEDED_BY_R4D_PRESERVATION",
       "production": "Move existing authorized-fd operations/test bodies without wire/authority/deadline changes;delete ABI operations and migrate callers",
       "exit_reference": "project/implementation-plan.md WP18 R3a",
-      "remaining": "Native ioctl still in protocol;slkd still temporary libsparklink wrapper;application/sharedcontract/C/Python boundaries and cleanVM deployment remain"
+      "remaining": "No syscall/ioctl operations remain in protocol;R3b/R3c migrated Native/SDK/contract. Advanced SDK/Channel,raw ABI and deployment remain original scope."
     },
     "r3b": {
       "status": "SUPERSEDED_BY_6D30_SCOPED_ARTIFACT_NOT_FULL_NATIVE_C_PY_RF",
       "production": "Move actual Native Rust owner and ioctl operations;slkd/diagnostics/experimental consumers migrated;protocol pure;slctl marker pure shared codec",
-      "transition_exception": "libsparklink C/Python facade temporarily depends on Native until immediate R3c application/sharedcontract/language migration;not target SDK or publish qualification",
-      "remaining": "Strict checks in progress;exact new artifact;remove facade Native dependency/exports and retired APIs across all callers"
+      "transition_exception": "Historical temporary C/Python facade was removed in R3c;no current exception",
+      "remaining": "Current Native controls and separate C/Python scope recorded in R4d;raw kernel ABI and complete external deployment remain"
     },
     "r3c": {
       "status": "SOURCE_BOUND_6D30_REAL_SDK_PATH_SCOPED_PASS",
@@ -3129,7 +3133,7 @@
       "userspace": "d795a3a6b1e98c24e984e2459b2cf1e7db46cff4",
       "linux": "0cd4731dd3e673d1309a2b570b38769f9a98681f"
     },
-    "latest_call_audit": ".dev/architecture-r4b-ssap-call-audit-v2.json (corrected8Remote/18DBus source enumeration,not qualification)",
+    "latest_call_audit": ".dev/architecture-r4d-native-call-audit-v1.json;R4e actual kernel/selftests audit in progress",
     "r4a": {
       "status": "EXACT_98C4B65_FOUR_REAL_GATES_SCOPED_PASS_FULL_ARCHITECTURE_INCOMPLETE",
       "exit_reference": "Canonical WP18 R4a",
@@ -3151,19 +3155,40 @@
       "status": "EXACT_6841E4E_FOUR_REAL_GATES_SCOPED_PASS_FULL_ARCHITECTURE_INCOMPLETE",
       "production": "Remove public mixed Event/old runtime construction and empty daemon profile feature;typed records/snapshots and same bounded advertisement consumer retained;models/actor only tests/dev-dependency",
       "exit_reference": "Canonical WP18 R4c",
-      "remaining": "New exact artifact VM gates;remaining Native APIs/raw ABI/selftests,R5/R6 and original full scope",
+      "remaining": "Historical684 scoped qualification retained;R4d997 later separately qualified. Raw kernel ABI/selftests,R5/R6 and original full scope remain.",
       "call_audit": ".dev/architecture-r4c-events-call-audit-v1.json",
       "compiled_source": "6841e4e125d9be621c8ab16e590c4d8fe691b6f9",
       "tools": "6841e4e125d9be621c8ab16e590c4d8fe691b6f9",
       "report": "docs/evidence/native-event-retirement-r4c-20261017.json"
     },
     "r4d": {
-      "status": "IMPLEMENTED_OFFLINE_CHECKING_NEW_ARTIFACT_REQUIRED",
+      "status": "EXACT_997EA19_FOUR_REAL_GATES_AND_METADATA_SCOPED_PASS",
       "exit_reference": "Canonical WP18 R4d",
       "call_audit": ".dev/architecture-r4d-native-call-audit-v1.json",
       "counterexample": ".dev/architecture-r4d-count-counterexample-v1.json",
       "candidate_snapshot": ".dev/architecture-r4d-debug-candidate-v2/snapshot.json",
-      "remaining": "New exact Cmetadata/CLI and four realVM gates;raw kernel declarations/selftests/global masks,R5/R6 and full original scope"
+      "remaining": "R4e raw kernel declarations/selftests/global masks,R5/R6 and full original scope;C/Python metadata does not qualify all business consumers",
+      "compiled_source": "997ea198dfc689c96053f6e460fdf1aecb067c70",
+      "tools": "997ea198dfc689c96053f6e460fdf1aecb067c70",
+      "report": "docs/evidence/native-interface-retirement-r4d-20261017.json"
+    },
+    "r4e": {
+      "status": "CRYPTO_TEST_ONLY_PASS_REGISTRY_CLEANUP_64A_BUILDING_NOT_DEVICE_QUALIFIED",
+      "exit_reference": "Canonical WP18 R4e",
+      "invariants": [
+        "One production authority and protocol path",
+        "Retired raw numbers not reused;unpublished has no compatibility period",
+        "Valuable codec/permission/lifecycle failures retained test-only",
+        "No global dead_code/unreachable_pub masking"
+      ],
+      "qualification": "Historical7Rust/5Cfault and actual signed noUSB crypto VM scoped PASS;boot0cd/probe7f. Dirty linked module changes not qualified.",
+      "crypto_commits": [
+        "1814b96c5f830411c69388de692bb382473074ca",
+        "7f406664141c647b41be22a3db85caa47b6b4707"
+      ],
+      "test_report": "docs/evidence/kernel-crypto-retirement-r4e-20261017.json",
+      "registry_commit": "64a324844bfc",
+      "remaining": "Exact new kernel build/VM WS73 preservation;DLI/command masks and raw ABI/selftests,R5/R6 and full scope remain"
     }
   },
   "owned_ssap_c6_historical_batch": {

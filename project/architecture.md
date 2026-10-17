@@ -1111,3 +1111,15 @@ Controller只保留真实快照观察，ExtAdv和地址Device控制门面退休�
 Core bitmap，计数不代表Ready；旧Discovering副本删除，UI读取已有ScanningState。
 错误从实际Kernel errno表达，指针open的线程errno与Python OSError一致。历史布局
 归测试，不在当前SDK；R4 raw声明/剩余全局掩盖及R5/R6尚未闭合。
+
+R4e注册对象与测试边界：Core注册表只拥有index/generation、setup/retirement和观察
+元数据；Host Ready、发现/连接、能力与统计由实际Runtime/Backend状态表达。未消费的
+注册flags/能力副本/统计/便捷方法删除，注册模块以deny(dead_code)防回流；真实
+generation复用、候选分配、退休及partial init状态不变。该变更须准确新Kernel VM回归，
+不能沿用旧0cd资格。其余DLI/命令模块全局掩盖仍需实际调用审计，不能全模块换成
+局部allow以消除诊断。
+
+未链接的历史crypto Rust/C已逐字迁入selftests/retired-security-state。原故障依赖与
+专用VM probe继续消费这一份代码；实际生产P256/CMAC保留唯一来源，并由probe明确
+include。历史fixture的module属性不是生产豁免，测试通过不成为认证/Bond或WS73
+当前资格。旧报告原路径/commit/hash保留，新报告明确测试路径及boot/probe不同身份。

@@ -1,12 +1,16 @@
 # 当前能力与资格
 
-生产整改状态：R4a98c／R4b643／[R4c684事件退休](../docs/evidence/native-event-retirement-r4c-20261017.json)
-分别取得准确四VM门禁；最新684保持32对端回复、61/249+超限/2042/机制2、Owned和
-service-only限定范围。当前R4d旧Native/Controller/C/CLI与元数据整改树**尚未取得实机资格**。
-封存旧库的计数缺陷已在显式ABI fixture复现，原RF/ABI范围不覆盖正向C计数。
-Local/Owned、唯一Connection Engine/Session保留；R4 rawABI/全局掩盖、R5/R6和完整原
-范围未完，不转授旧资格。
-
+生产整改的最新准确资格为 [R4d旧Native接口退休](../docs/evidence/native-interface-retirement-r4d-20261017.json)：
+K`0cd4731dd3e6` / 编译与执行工具 **`997ea198dfc6`**，SDK110 U2/U3。
+四VM门禁保持61/249+16超限/2042/机制2、32真实对端回复、24 Owned案例/96审批/
+120事务、service-only68拒绝；另有8次实际C bitmap/count及8次CLI完整身份快照。
+5次数据/角色重放81复制负对照，4次元数据重放56负对照。304默认+304 all-features、
+每配置6compile-fail、严格clippy、759冻结工具、49封存ABI/历史fixture及严格HTML通过。
+元数据是观察入口资格，**不是C/Python业务收发、原子快照或自动恢复资格**。
+Local/Owned、唯一Connection Engine/Session和真实数据路径保留。旧库计数缺陷及
+首次ABI精确errno断言失败保留；报告/文档提交不替代997编译身份。
+**完整架构整改未完**：R4e内核raw ABI/selftests/全局掩盖、R5完整契约与来源、R6干净VM
+部署仍在推进；无新增形式化证明，自然RCA/非人工恢复继续开放。不向新源码转授资格。
 
 [R3c准确新SDK路径资格](../docs/evidence/application-native-boundary-r3c-20261017.json)：
 K`0cd4731dd3e6` / **编译及工具 `6d30c0f67db2`**，SDK110 U2/3。新slktest经真实SDK
@@ -32,9 +36,9 @@ fixture；**不是128地址RF压力、实机TTL故障或完整生命周期证明
 保留，过期false断言不变，客户端必须显式无缓存查询或Properties.Get。
 
 Native/Channel/应用Client/独立共享契约的生产核心边界已接通，SDK→Native和slkd→SDK
-依赖已删除；完整架构整改仍未完成。当前R4a源码删除旧controller安全Rust/C/CLI/DBus门面，
-保留实际Connection机制与Agent，尚需本批准确产物回归；内核遗留声明/selftests、其他旧API/
-事件、R5门禁和R6干净VM部署继续开放。C/Python完整broker/SSAP便利客户端仍缺失。
+依赖已删除；完整架构整改仍未完成。R4a–d已删除旧controller安全、SSAP/Native门面及混合事件，
+保留实际Connection机制与Agent；各准确源码的限定回归见对应记录。内核遗留声明/
+selftests、全局掩盖、R5门禁和R6干净VM部署继续开放。C/Python完整broker/SSAP便利客户端仍缺失。
 
 [退休R1的准确新产物回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
 K`0cd4731dd3e6` / **编译 `cd35db3fd4e4` / 工具 `0568a3d1db1b`**，SDK110 U2/3。
@@ -280,6 +284,7 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | R4a旧controller安全入口退休：98c4b65四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4b旧SSAP门面全链退休：6434055四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4c旧Native Event及空Profile feature退休：6841e4e四真实门禁，整架构未完 | `real_device` | `PASS` |
+| R4d旧Native接口全链退休：997ea19四真实门禁及C/CLI元数据，整架构未完 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

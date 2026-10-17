@@ -240,6 +240,7 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | R4a旧controller安全入口退休：98c4b65四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4b旧SSAP门面全链退休：6434055四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4c旧Native Event及空Profile feature退休：6841e4e四真实门禁，整架构未完 | `real_device` | `PASS` |
+| R4d旧Native接口全链退休：997ea19四真实门禁及C/CLI元数据，整架构未完 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1005,7 +1006,7 @@ R4b准确6434055相同四门禁另取32真实回复、24Owned/96审批/120事务
 5重放81负对照；18旧D-Bus/4slctl/10slkconfig和handle-only发布退休，七Local/Owned保留。
 R4c准确6841e4e移除公开混合Event/空Profile feature后，四新VM另取32回复、同一
 Owned/角色范围及5重放81负对照；完整源码映射/失败在对应报告。
-**C/Python仅离线两库/ABI资格，不是全部外部消费者RF/干净部署资格；当前R4d树不继承。**
+**C/Python元数据入口在997另有准确VM见证；不是全部业务消费者RF/干净部署资格。**
 无新增形式化证明，旧unsupported/unstable Kani保持UNPROVED。
 
 源码映射、完整失败/反例/假设/原始材料访问及回放均在对应报告，不在本计划逐轮堆叠：
@@ -1032,7 +1033,7 @@ root-owned pipe失败、动态Proxy缓存失败、ctypes指针签名遗漏SIGSEG
 | 立即删除，R4b准确643限定通过：旧SSAP门面 | ServiceManager十旧方法、RemoteService全接口、slctl四旧命令/slkconfig十旧命令、observer三白名单；event_loop发布和adapter清理 | 没有真实wire功能，不得描述为现有Engine；保留七个当前本地/Owned方法和Connection唯一actor | 同批删生产门面与调用者；实际bus introspection/UnknownMethod、CLI未知命令；新artifact发现/连接/61/249/2042/Owned/机制2回归 | U#3/#6/#8，K#6/#17/#19 |
 | 移入测试，R4b：旧连接callback模型 | EventTask fixture与on_conn_state_changed仅test/显式实验；历史codec/权限解析仅test | 无Native生产连接权威；实际链接来自gen/lifetime快照 | 删除伪RemoteService发布；保留阻塞callback、cancel、panic、drain、慢存储及权限/Unicode回归；新路径仍唯一Session | U#1/#2/#3，K#6/#17 |
 | 立即删除/移入测试，R4c准确684限定通过：旧Native Event | slk-native混合Event公开导出；slkd广告dispatch借用旧enum及测试handle/metadata分支 | Native typed ControllerEventReceiver/LinkSnapshot为生产权威；广告只更新有界观察 | 删除公开Event/生产旧dispatch，广告直接同一consumer；旧codec/shape和callback actor回归仅test；实验feature不恢复旧路径；新准确artifact四VM保留门禁 | U#2/#3/#6，K#3/#6/#19 |
-| 立即删除，当前R4d：旧Native/Controller/ExtAdv | 80Native包装/87未消费ioctl包装、C九导出、Controller38旧方法/ExtAdv对象、旧CLI及Device/bare-handle入口、Discovering副本/白名单 | 真实Kernel typed请求/结果/快照、单一Core bitmap；不让地址观察对象管理连接 | 保留实际三Controller观察、typed管理/发现/连接/安全、Local/Owned/唯一Session。slkconfig connections迁到完整快照；新精确artifact四VM及实际C计数/CLI metadata见证；C错误统一-errno/open errno | U#3/#6/#8，K#3/#5/#6/#7/#17/#19 |
+| 立即删除，R4d准确997限定通过：旧Native/Controller/ExtAdv | 80Native包装/87未消费ioctl包装、C九导出、Controller38旧方法/ExtAdv对象、旧CLI及Device/bare-handle入口、Discovering副本/白名单 | 真实Kernel typed请求/结果/快照、单一Core bitmap；不让地址观察对象管理连接 | 保留实际三Controller观察、typed管理/发现/连接/安全、Local/Owned/唯一Session。slkconfig connections迁到完整快照；新精确artifact四VM及实际C计数/CLI metadata见证；C错误统一-errno/open errno | U#3/#6/#8，K#3/#5/#6/#7/#17/#19 |
 | 移入测试/等待raw声明同迁，R4d：五旧SDK布局 | Python Scan/Connect/ConnInfo/DliInfo/PhyInfo及旧C头类型 | 仅历史raw ABI fixture，不是当前能力；无公开Python类/旧C函数 | 原C/Rust/kernel布局、64位宽度/写边界保留私有fixture；所有当前public布局继续独立校验；rawKernel声明/selftests下一批审计，旧编号不复用 | U#3，K#5/#19 |
 | 等待调用者迁移，R4其他旧API/事件 | Controller/ExtAdv、旧连接/scan/PM/AFH/sync/privacy/measurement、slkconfig/CLI/C/Python/policy；旧handle事件 | Native typed Peer/Connection按地址类型/gen/lifetime；Device地址alias仅观察 | 按入口审计所有消费者，迁移/拒绝当前未支持新模式后删除旧入口；保留合法管理staging/Owned。抽出实际Native广告消费者，旧模型移test，保留慢callback/cancel/panic/drain；新artifact发现/连接/数据/SSAP及同行回归 | U#1/#2/#3/#5/#6/#8，K#3/#5/#6/#7 |
 | 等待同批迁移，R4 raw ABI/测试 | 内核sle_uapi、UAPI声明及retired C/Rust selftests仍有明确消费者 | 不是支持旧语义或兼容承诺；未发布旧编号不复用 | 审计/迁移selftests和全部绑定后删声明，更新准确CI pin/独立ABI与内核新artifact门禁；不能因旧pin年龄判不一致 | K#5/#7/#19，U#3/#8 |
@@ -1078,7 +1079,7 @@ callback/慢存储/cancel/panic/drain测试保留；不能将fixture当真实并
 新准确artifact四VM发现/连接/普通socket 61/249+超限/2042/Owned/机制2和同行回归。
 其他Native旧API、rawABI/selftests、R5/R6/完整原始scope与自然恢复保持开放。
 
-##### 当前R4d有限退出
+##### R4d有限退出：准确997已取得限定资格
 
 生产行为：退休已明确EOPNOTSUPP/无消费者的Native旧广播/scan/连接收发/PHY/role/
 AFH/PM/sync/privacy/measurement/测试crypto包装，迁移全部C/CLI/DBus/权限调用者。
@@ -1103,6 +1104,24 @@ ioctl约定，其余真实委托；不算Kernel锁/硬件证明。实际Cmetadat
 make arch-check；仅声明级最小防回流，实际ELF/ABI/DBus/CLI独立验证仍须保留。
 不是完整公开API清单或refinement证明。剩余Kernel raw ABI/selftests/global masks、
 R5完整契约/每次尝试来源、R6干净VM部署和所有原范围未完；自然RCA/非人工恢复OPEN。
+
+##### 当前R4e有限退出：内核历史边界
+
+先核对实际调用链，逐条分类，不机械删名称：
+
+| 分类 | 已核对入口/消费者 | 实施与门禁 |
+|---|---|---|
+| 立即删除候选 | `sparklink_core.rs`仅EOPNOTSUPP旧adv/scan/connection/security/infra分派，头/private Rust旧声明；生产Native包装已在997退休 | 先迁移monolithic selftest/绑定历史布局消费者，再删除未发布声明和空门面，保留编号不得复用；实际typed Native、标准Diagnostic统计、Core文件亲和性不误删 |
+| 移入测试候选 | 旧monolithic selftest中模拟连接/crypto/PM/PHY等已失效能力模型；未链接`sle_crypto.rs`仍有remediation/probe脚本消费 | 原codec/权限/失败/callback证据保持身份；原实现只保留一份明确测试归属并迁移全部脚本，不进入生产依赖，不伪Complete |
+| 等待调用审计后替代 | 已链接`sle_dev`/`sle_mgmt`/`sle_dli`全局dead_code；真实USB/标准DLI消费者及实际状态字段 | 删除未消费成员，保留真实生命周期/命令/decoder/driver语义；无模块级mask。不能拿未接通路径做能力声明 |
+
+本批先静态调用清单、严格准确配置构建及实际生产函数回归；影响Kernel Runtime/事件/
+UAPI后，封存新Kernel artifact并VM内重验发现/连接/短包/既有边界/Owned/机制2及相关
+撤权/关闭/同行。只门禁本批相关性质，不追加所有控制面组合。历史crypto两文件已由1814b96逐字移入selftests，7f40666同步实际生产
+P256/CMAC include；七Rust/五C故障和专用无USB crypto VM通过。原LSan/模块构建失败
+保留，不转授WS73资格。64a3248已删除注册对象未消费flags/能力/统计和便捷方法，模块改deny(dead_code)，
+19安装+15注册生产函数fixture通过；准确新Kernel正在构建，尚无其WS73资格。
+其余已链接模块mask及rawABI仍在审计，未宣称整批内核整改或证明。之后进入R5/R6，完整S0–S6/19WP/10FV/12DG保留。
 
 ##### R3后续需保持的准入契约
 

@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "status": "TEST_ONLY_RETIREMENT_SCOPED_PASS_NOT_NEW_WS73_QUALIFICATION",
+  "kernel_changes": [
+    "1814b96c5f830411c69388de692bb382473074ca",
+    "7f406664141c647b41be22a3db85caa47b6b4707"
+  ],
+  "boot_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "probe_source": "7f406664141c647b41be22a3db85caa47b6b4707",
+  "production_change": "No linked Runtime source change in these two commits. Move both unlinked historical crypto files verbatim to selftests/retired-security-state and migrate actual remediation/VM-probe consumers,including production P256/CMAC include. No copied implementation or restored Engine. Later dirty module-mask cleanup excluded.",
+  "original_hashes": {
+    "net/sparklink/sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+    "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c"
+  },
+  "gates": [
+    {
+      "name": "verbatim move",
+      "result": "PASS",
+      "scope": "Both100% git renames;original SHA at new paths"
+    },
+    {
+      "name": "historical failure boundary",
+      "result": "PASS",
+      "scope": "7Rust+5Cfault stages;explicit mocked FFI,ASan/UBSan/LSan;not real kernel locks/RF",
+      "report": {
+        "path": ".dev/architecture-r4e-crypto-remediation-v2.json",
+        "sha256": "ace9646e4b273d7ffdab5d2291fa269441f7d09fd69667c3b8322873ed6e1ed2",
+        "bytes": 1088,
+        "access": "private retained workspace;matching commits and replay command supplied"
+      }
+    },
+    {
+      "name": "actual kernel crypto probe",
+      "result": "PASS",
+      "scope": "Signed test module7f40666 boots sealed0cd noUSBVM,actual vectors/faults,qemu0,taint4096 intentional out-of-tree test module;not normal WS73/trusted pairing qualification",
+      "report": {
+        "path": ".dev/architecture-r4e-crypto-vm-v3/manifest.json",
+        "sha256": "e21e500e5d2c993d0eec4f027d1cb7cd4f3a9089ba8890a98e153345e084a8dc",
+        "bytes": 2513,
+        "access": "private retained workspace;matching commits and replay command supplied"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r4e-crypto-call-audit-v1.json",
+      "sha256": "342dd3c118d51cfb8079300336289777b04f0017eeaa8bbf1a33e9fb12cc1e9a",
+      "bytes": 1189,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-remediation-v2.log",
+      "sha256": "d6ec1083127aa13d36ce5767bce1459e2dafa02be03cfa2c8dede04645b76c9c",
+      "bytes": 1857,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-vm-v3.log",
+      "sha256": "b2387e4878cf14e6f13b776f37b9dcc54d97241e377cfbe9bbaf5486e14e49b2",
+      "bytes": 370,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-vm-v3/console.log",
+      "sha256": "2b35eeb57c03cc90f06015ef2ccc9ba04162995ae4b241bb1d05a3b4b92a71d6",
+      "bytes": 31230,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-vm-v3/build.log",
+      "sha256": "66ef3f19075e38c639677690e87678c002969a24a5fba008ed44faca15e89f14",
+      "bytes": 611,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-budget-v3.json",
+      "sha256": "09e52df6b5bd1d4bd0beb602cd1cf75f6037a01340bb3c347f1e218287300980",
+      "bytes": 1130,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    }
+  ],
+  "failed_attempts": [
+    {
+      "path": ".dev/architecture-r4e-crypto-remediation-v1.log",
+      "sha256": "b7409f211130f917bab71027c31bce42d42d2946fa6dccf25cb27d159226acaa",
+      "bytes": 1779,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-vm-v1.log",
+      "sha256": "8fa3307298d960e46e4fd1c56e53d3042b8c2e1eaf3867210733a287c8efe05d",
+      "bytes": 624,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-vm-v2.log",
+      "sha256": "ec7bcd11f6cddb77570c9e9f68fc51246c3553816d44ade057675c0d7111255a",
+      "bytes": 1210,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-vm-v2/build.log",
+      "sha256": "b42d2f23c4559500696b0ab30e1fc70cac5a915641b48328f5fbcf24e5ac74d8",
+      "bytes": 1295,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    },
+    {
+      "path": ".dev/architecture-r4e-crypto-vm-v2/manifest.json",
+      "sha256": "3e8deab76b1fffe6e41b8d5991d8656cfd0786c426c4ac0fd06c20fe577f3071",
+      "bytes": 1639,
+      "access": "private retained workspace;matching commits and replay command supplied"
+    }
+  ],
+  "failure_interpretation": [
+    "Sandbox ptrace prevented LeakSanitizer:identical test rerun outside sandbox without disabling sanitizer;original failure retained.",
+    "Resource CLI rejected Python script before build;then used existing build_lock/environment API.",
+    "Migrated module failed before VM because archived C includes actual sle_pair_crypto.c;7f40666 supplies explicit production include search path. Archived C unchanged;original failure retained."
+  ],
+  "replay": "CC=clang python3 linux/tools/testing/selftests/sparklink/run_security_remediation.py --output <new path>. run_crypto_vm_probe.py uses retained budget-v3 command and matching key/cert/artifacts. Shared build lock12solo/8realVM. Never host insmod.",
+  "remaining": [
+    "Linked sle_dev/sle_mgmt/sle_dli mask audit in progress,not covered by this report",
+    "Raw UAPI/selftests,R5 contracts/provenance and R6 clean VM deployment",
+    "No new WS73 or whole formal/security qualification;NOCP/drain/firmware assumptions remain bounded",
+    "FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanual recovery and unfinished issues remain open"
+  ]
+}

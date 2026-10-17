@@ -348,3 +348,15 @@ fault分配不等于Ready。C整数错误统一负errno，open用NULL+线程errn
 来源或截断路径。历史ABI五布局移test fixture，当前公开头/类必须缺失；rawKernel仍有
 自测消费者，下一批同迁后删，不复用编号。声明级退休清单门禁只能防已知回流，不能
 取代实际符号、D-Bus、权限、生命周期和准确新artifact回归。
+
+R4e注册对象与测试边界：Core注册表只拥有index/generation、setup/retirement和观察
+元数据；Host Ready、发现/连接、能力与统计由实际Runtime/Backend状态表达。未消费的
+注册flags/能力副本/统计/便捷方法删除，注册模块以deny(dead_code)防回流；真实
+generation复用、候选分配、退休及partial init状态不变。该变更须准确新Kernel VM回归，
+不能沿用旧0cd资格。其余DLI/命令模块全局掩盖仍需实际调用审计，不能全模块换成
+局部allow以消除诊断。
+
+未链接的历史crypto Rust/C已逐字迁入selftests/retired-security-state。原故障依赖与
+专用VM probe继续消费这一份代码；实际生产P256/CMAC保留唯一来源，并由probe明确
+include。历史fixture的module属性不是生产豁免，测试通过不成为认证/Bond或WS73
+当前资格。旧报告原路径/commit/hash保留，新报告明确测试路径及boot/probe不同身份。

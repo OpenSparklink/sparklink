@@ -7,6 +7,9 @@ include /usr/share/dpkg/architecture.mk
 override_dh_auto_clean:
 	$(MAKE) clean CARGO=cargo
 
+execute_before_dh_installsystemd:
+	dh_installsysusers -psparklink
+
 override_dh_auto_build:
 	$(MAKE) build CARGO=cargo CARGO_FLAGS='--release --workspace'
 

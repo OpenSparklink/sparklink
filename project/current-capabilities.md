@@ -13,7 +13,7 @@
 | C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、所选共享库ABI检查及R6a限定VM记录 | 基础绑定已在干净VM实际安装消费；完整broker/SSAP便利客户端仍缺，负向fd调用不等于设备业务资格 |
 | 内核Runtime、Session、Grant、credit/Ticket | [唯一架构](architecture.md)、下面各自源码映射的限定记录 | 旧代际、在途义务、有限队列、撤权及未知完成不能由缓存/关闭抹去 |
 | Codec、事件、故障与形式化 | 下方全部限定/历史记录及证明假设 | 旧codec/fixture、工具安装或模型通过不推导当前完整实现通过 |
-| 部署、恢复与发布 | [唯一计划](implementation-plan.md)的R5/R6及原工作包 | 通用安装有限VM门禁与软件包/升级回滚、原生权限/新WS73产物分开；自然根因和非人工恢复未闭合 |
+| 部署、恢复与发布 | [唯一计划](implementation-plan.md)的R5/R6、[包构建回执](../docs/evidence/debian-package-build-receipt-20261018.json)及原工作包 | 通用安装有限VM资格与构建产物分开；实际分包安装已发现角色组缺失，修正尚待新VM；升级回滚/原生权限/新WS73与自然恢复仍开放 |
 
 选定保留产物的编译／执行／校验来源只按下方生成记录读取。R4新raw退休产物已取得
 四真实WS73路径保持及单列的模拟controller初始化、usercopy、权限交接资格；

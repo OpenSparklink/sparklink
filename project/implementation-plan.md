@@ -1443,6 +1443,16 @@ rustup参数，直接Cargo拒绝`+1.96.1`而构建中止。清理与既有构建
 EUID来自proc，避免fakeroot元数据误判。普通用户五项CLI和严格检查已通过；实际
 root新源码包构建及其余R6门禁仍须执行，原失败不改写为通过。
 
+准确6cb完整构建已生成[包构建回执](../docs/evidence/debian-package-build-receipt-20261018.json)，
+包含实际root权限用例和完整默认workspace测试；这只是构建产物，不是安装或发布资格。
+dwz缺少项目debug_info、usrmerge动态依赖警告及许可证/来源清单仍须收敛，不屏蔽警告。
+
+[全新运行环境安装](../docs/evidence/debian-role-install-failure-20261018.json)实际发现APT与
+服务启动成功后角色组仍缺失。13.24.2 helper存在但compat13未默认调用，系统触发器
+也不补该定义。源码显式在服务集成前调用现有helper，复用已安装的唯一sysusers文件；
+通用/分包同步保存项目许可证及诚实的归属说明，第三方许可审计仍开放。离线真实
+Make暂存/卸载已验；新包构建、全新安装及普通用户仍待下一VM，不能手工补组算通过。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

@@ -83,6 +83,17 @@ class LayoutContract(unittest.TestCase):
             self.assertNotIn('+1.96.1', result.stdout)
             self.assertEqual(sentinel.read_text(), 'dry run only')
 
+    def test_debian_generates_roles_before_the_service_start_integration(self):
+        rules = (layout.ROOT / 'debian/rules').read_text().replace(
+            'include /usr/share/dpkg/architecture.mk',
+            'DEB_HOST_MULTIARCH := x86_64-linux-gnu')
+        result = subprocess.run(
+            ['make', '--no-print-directory', '-f', '-', '-n', 'execute_before_dh_installsystemd'],
+            input=rules, cwd=layout.ROOT, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(result.stdout.strip(), 'dh_installsysusers -psparklink')
+        self.assertIn('debhelper (>= 13.24.2)', (layout.ROOT / 'debian/control').read_text())
+
     def test_install_cannot_silently_build_debug_then_copy_old_release(self):
         result = subprocess.run(['make', '--no-print-directory', '-n', 'install',
                                  'CARGO_FLAGS=--workspace', 'DESTDIR=/unused-stage'],

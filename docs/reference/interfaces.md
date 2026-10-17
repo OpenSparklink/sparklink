@@ -720,6 +720,11 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 资格产物须另行封存。`install-files`先核对实际ELF及SONAME，再渲染运行路径。
 `DESTDIR`只是文件暂存根，不得进入运行期Exec或pkg-config字段。
 
+`DOCDIR`默认`${PREFIX}/share/doc/sparklink`，保存上游`LICENSE`和归属说明；卸载只删除
+本项目这两个文件，保留同目录其他文件。分包也携带这些说明，仍不表示第三方许可、
+SBOM或发布来源审计完成。Debian用已验证的13.24.2或更新helper，在服务启动脚本
+前处理唯一sysusers定义；文件存在或APT成功不能替代实际组与普通用户权限门禁。
+
 通用Make默认使用固定rustup工具链；Debian的清理、构建和测试都显式使用已安装
 的`cargo`，版本仍由Build-Depends和准确构建记录约束，不要求发行版Cargo解析
 rustup的`+版本`参数。该清理修正的源码回归与[原失败](../evidence/debian-clean-dispatch-failure-20261018.json)

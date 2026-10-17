@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "status": "FAIL_RETAINED_ACTUAL_PACKAGE_GROUP_INTEGRATION_FIX_PENDING_VM",
+  "actual_package_source": "6cbf6eda4947bec9ae67f83be011e529ffe56a99",
+  "scope": [
+    "FreshvendorDebianVMwithactualruntimepackages,no buildtoolchain/devpackage/oldrolefixtures installedinroot. Dataartifacts hashchecked;noUSB orhostinstallation.",
+    "APT/packageconfigurationandserviceactivationexit0;rootManagercallactuallyworks,butmandatoryrolelookupfails. Noordinaryapp/functionality orwholeinstallqualification;exit0/active nevermeans Ready.",
+    "Actualprojectpostinsthasnosysuserssnippet. InstalledDebhelper13.24.2helperdiscoversexistingstagedconfs butisnotdefaultinvoked;actualsystemdtriggersdonotcoversysusers. Firstgatefailedwithoutmanualgroupcreation.",
+    "Fixsource explicitlyinvokesexisting dh_installsysusers beforedh_installsystemd,usingonecanonicaldefinition andverifiedhelperminimum;helperhandlesDPKG_ROOT andpropagateserrors. No secondroleauthority orerror-swallowingfallback. Newactualpackagebuild/installpending.",
+    "Packagecontentinspectionalsoshowsmissingnotices. GenericMakeandDebianpreserveupstreamLICENSE/plainattributionnotice;thisisnotcompletecopyright/thirdpartylicense/SBOMorreleaseaudit.",
+    "Tenlayout/uninstall testswithvisiblemetadatafixtures andactualtwoPREFIXstaging/consumers/config/licensebytes/exactuninstall passofflineonly. Originalfailureand6cbbuildwarnings retained. No newRF/formalproof;fulloriginalscopeOPEN."
+  ],
+  "root_cause": "Debhelpercompat13doesnotinvokeexistingsysusershelperbydefault. Merelyinstallingcanonicalconfdoesnotcreatepackageapplicationroles.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r6b-groups-license-layout-tests-v1.log",
+      "sha256": "201c3ab0738be4bc630af057bd906f1b1df0124fa9e738efb0d7ce394be92a63",
+      "bytes": 1895,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/console.log",
+      "sha256": "1e6c953caa4f5281fa7389de64e32b528dcbed006c0ff2d17a684415f35a511f",
+      "bytes": 67183,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/export/install-outputs-v1/actual-package-status.log",
+      "sha256": "47751f5db0df2e5cbc864a1caaa4d10768160bef9ec5a8000fee4f8a68e95120",
+      "bytes": 40,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/export/install-outputs-v1/actual-runtime-package-install.log",
+      "sha256": "708b4820e239e729d51f8d1d8b086be4de3b56177c0c1da9a06a97e259b6cf67",
+      "bytes": 1759,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/export/install-outputs-v1/apt-update.log",
+      "sha256": "f203d921bf9fc3e091d35efc541c0f2fd336188afa017a7716983ab6d98d5735",
+      "bytes": 1427,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/export/install-outputs-v1/failure-journal.log",
+      "sha256": "bad35414f0766a80cf96cdc117b8c4109835b84e8c7352ae70964da9df2e5da8",
+      "bytes": 341,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/export/install-outputs-v1/result.json",
+      "sha256": "909e867ea59869f4fdb6098af391f8b67e636454211ca79aba3eb3a555ff8b92",
+      "bytes": 2577,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/export/install-outputs-v1/root-actual-manager.log",
+      "sha256": "bef6e60affcb4f72c316c416dc26c93bbbedcdb80c293d723c8af6f2e5c973f7",
+      "bytes": 5,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/export/install-outputs-v1/service-active.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/guest.py",
+      "sha256": "6a881842ac49551ac2ef84990be2b9d3868dc0916c3efde587a3827e15b17de5",
+      "bytes": 2730,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/install-inputs.json",
+      "sha256": "370b7f0caa8158fcdffd39523773fff120ef0929f69a8a112e2f1a9cfe01e685",
+      "bytes": 293,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/prepare.py",
+      "sha256": "cf325d0450916e1f78640ceba6acd55fc61db6715bf85ee98a64deb1d020cf42",
+      "bytes": 3104,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/run.json",
+      "sha256": "ddcc0c79d39c44ff30c52580e128704d300587c55442243f5628932fae249b32",
+      "bytes": 1105,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-install-v1/run.py",
+      "sha256": "5497481deb1176aed3b93ee46b39cf5ce3bb7e66b11c83764ef408803960fd61",
+      "bytes": 1486,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/helper-availability-v1.log",
+      "sha256": "0823bd24a3b200a27310872ca7794008d70b316ae5841675b1acf789e4169aec",
+      "bytes": 16,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/system-integration-sources/postinst-sysusers",
+      "sha256": "ef330cfb9d4c94c39452ae252768e48afeae07e8e4132e2e0e9b340f4bbd0656",
+      "bytes": 202,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/system-integration-sources/systemd.postinst",
+      "sha256": "7a95419baad7f5e6cfa7a422ae8965e67a5b25f9c74fa6cb6596090c1c236793",
+      "bytes": 4314,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/system-integration-sources/systemd.triggers",
+      "sha256": "f437e8a59b6a78ef87c93d055c385f203ef4b58cee0d2bfc85adf0a80213e9f8",
+      "bytes": 142,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/sysusers-helper-source-v1.log",
+      "sha256": "6c51fe61df1c67cd64dcd4130fbf472b63a2965b0db296b3280775eababcea8d",
+      "bytes": 3090,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    },
+    {
+      "path": ".dev/architecture-r6b-stage-v1/manifest.json",
+      "sha256": "9cdedcedf56419c70cd6cd0cd7fcb61fde867eea31b9eb09a870a23515d4aeb7",
+      "bytes": 67264,
+      "access": "private workspace retained;actualinstall failure andofflinefix scopes separated"
+    }
+  ]
+}

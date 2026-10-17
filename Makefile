@@ -21,6 +21,7 @@ PKGCONFIGDIR ?= $(LIBDIR)/pkgconfig
 UDEVDIR ?= /usr/lib/udev/rules.d
 SYSUSERSDIR ?= /usr/lib/sysusers.d
 DATADIR ?= $(PREFIX)/share/sparklink
+DOCDIR ?= $(PREFIX)/share/doc/sparklink
 INSTALL ?= install
 UV ?= uv
 DOCS_RUN = $(UV) run --locked --only-group docs
@@ -86,6 +87,8 @@ install-files:
 	if test ! -e "$(DESTDIR)$(SYSCONFDIR)/sparklink" && test ! -L "$(DESTDIR)$(SYSCONFDIR)/sparklink"; then $(INSTALL) -dm755 "$(DESTDIR)$(SYSCONFDIR)/sparklink"; fi
 	if test ! -e "$(DESTDIR)$(SYSCONFDIR)/sparklink/main.conf" && test ! -L "$(DESTDIR)$(SYSCONFDIR)/sparklink/main.conf"; then $(INSTALL) -m644 data/config/main.conf "$(DESTDIR)$(SYSCONFDIR)/sparklink/main.conf"; fi
 	$(INSTALL) -Dm644 data/config/main.conf "$(DESTDIR)$(DATADIR)/main.conf.example"
+	$(INSTALL) -Dm644 LICENSE "$(DESTDIR)$(DOCDIR)/LICENSE"
+	$(INSTALL) -Dm644 debian/copyright "$(DESTDIR)$(DOCDIR)/copyright"
 	$(INSTALL) -Dm644 "$(INSTALL_GENERATED_DIR)/org.sparklink.service" "$(DESTDIR)$(DBUSSERVICEDIR)/org.sparklink.service"
 	$(INSTALL) -Dm644 data/dbus/sparklink.conf "$(DESTDIR)$(DBUSCONFDIR)/sparklink.conf"
 	$(INSTALL) -Dm644 "$(INSTALL_GENERATED_DIR)/sparklink.service" "$(DESTDIR)$(UNITDIR)/sparklink.service"
@@ -103,6 +106,7 @@ uninstall:
 	rm -f "$(DESTDIR)$(MANDIR)/man1/slctl.1" "$(DESTDIR)$(MANDIR)/man1/slktest.1" "$(DESTDIR)$(MANDIR)/man5/sparklink.conf.5" "$(DESTDIR)$(MANDIR)/man8/slkd.8"
 	rm -f "$(DESTDIR)$(DBUSSERVICEDIR)/org.sparklink.service" "$(DESTDIR)$(DBUSCONFDIR)/sparklink.conf" "$(DESTDIR)$(UNITDIR)/sparklink.service"
 	rm -f "$(DESTDIR)$(UDEVDIR)/99-sparklink.rules" "$(DESTDIR)$(SYSUSERSDIR)/sparklink.conf" "$(DESTDIR)$(DATADIR)/main.conf.example"
+	rm -f "$(DESTDIR)$(DOCDIR)/LICENSE" "$(DESTDIR)$(DOCDIR)/copyright"
 	# Configuration, state, unrelated files and other library versions survive.
 
 clean:

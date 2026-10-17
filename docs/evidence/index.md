@@ -1,5 +1,11 @@
 # 证据入口与取得限制
 
+[R6b实际包构建产物](debian-package-build-receipt-20261018.json)绑定准确6cb；
+实际root完整构建和测试完成，但保留debug/动态依赖警告，不是安装或发布资格。
+[实际安装角色组失败](debian-role-install-failure-20261018.json)证明APT/服务成功不能
+替代普通用户入口；源码修正与新VM资格分开。原[clean失败](debian-clean-dispatch-failure-20261018.json)
+和[root权限夹具失败](debian-root-config-fixture-failure-20261018.json)保留，不回写历史。
+
 [R6a干净Debian VM部署限定资格](deployment-clean-vm-qualification-20261018.json)：
 准确668编译及执行，四角色真实system bus、当前支持的外部C/Native与安装Python、
 无开发链接运行库加载、重装/卸载保留配置，完整原件及独立负对照封存。没有连接

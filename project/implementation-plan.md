@@ -1436,6 +1436,13 @@ rustup参数，直接Cargo拒绝`+1.96.1`而构建中止。清理与既有构建
 `CARGO=cargo`，没有降低版本或跳过检查。实际Make dry-run回归通过，准确新提交
 的完整包构建、安装及升级回滚仍待VM；原输入准备失败另存，不算生产缺陷或恢复。
 
+准确9ce已在新VM越过clean并完成生产构建，完整测试仍FAIL：
+[root可读mode000的夹具反例](../docs/evidence/debian-root-config-fixture-failure-20261018.json)。
+生产配置解析行为正确，不能人为禁止root读此文件或SKIP权限用例。保留原文件模式与
+所有拒绝/无fallback断言，仅在实际root测试时以普通UID/GID运行该读取命令；kernel
+EUID来自proc，避免fakeroot元数据误判。普通用户五项CLI和严格检查已通过；实际
+root新源码包构建及其余R6门禁仍须执行，原失败不改写为通过。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

@@ -1,5 +1,10 @@
 //! Actual CLI failures must occur before bus/controller startup.
-use std::{fs, os::unix::fs::PermissionsExt, path::PathBuf, process::Command};
+use std::{
+    fs,
+    os::unix::{fs::PermissionsExt, process::CommandExt},
+    path::PathBuf,
+    process::Command,
+};
 
 struct Fixture(PathBuf);
 impl Fixture {
@@ -13,15 +18,18 @@ impl Fixture {
         Self(base)
     }
     fn reject(&self, path: &std::path::Path, expected: &str) {
-        let output = Command::new(env!("CARGO_BIN_EXE_slkd"))
-            .args(["--session", "--config"])
-            .arg(path)
-            .env(
-                "DBUS_SESSION_BUS_ADDRESS",
-                "unix:path=/nonexistent/slkd-config-test-bus",
-            )
-            .output()
-            .unwrap();
+        Self::assert_rejected(&mut self.command(path), expected);
+    }
+    fn command(&self, path: &std::path::Path) -> Command {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_slkd"));
+        command.args(["--session", "--config"]).arg(path).env(
+            "DBUS_SESSION_BUS_ADDRESS",
+            "unix:path=/nonexistent/slkd-config-test-bus",
+        );
+        command
+    }
+    fn assert_rejected(command: &mut Command, expected: &str) {
+        let output = command.output().unwrap();
         assert!(!output.status.success());
         let stderr = String::from_utf8_lossy(&output.stderr);
         assert!(stderr.contains(expected), "wrong failure: {stderr}");
@@ -72,7 +80,24 @@ fn unreadable_explicit_config_does_not_fall_back() {
     let path = f.0.join("unreadable");
     fs::write(&path, "").unwrap();
     fs::set_permissions(&path, fs::Permissions::from_mode(0o000)).unwrap();
-    f.reject(&path, "cannot read configuration");
+    let mut command = f.command(&path);
+    // Permission denial needs an actually unprivileged reader. Root may read
+    // mode 000 and must not be given a new, artificial production restriction.
+    // Read kernel credentials rather than fakeroot's interposed geteuid().
+    let status = fs::read_to_string("/proc/self/status").unwrap();
+    let euid: u32 = status
+        .lines()
+        .find(|line| line.starts_with("Uid:"))
+        .unwrap()
+        .split_whitespace()
+        .nth(2)
+        .unwrap()
+        .parse()
+        .unwrap();
+    if euid == 0 {
+        command.gid(65534).uid(65534);
+    }
+    Fixture::assert_rejected(&mut command, "cannot read configuration");
 }
 
 #[test]

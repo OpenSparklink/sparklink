@@ -3488,7 +3488,7 @@
       "maintenance_receipt": "docs/evidence/deployment-clean-vm-maintenance-20261018.json"
     },
     "r6b": {
-      "state": "ACTUAL_DEPS_PASS_PACKAGE_CLEAN_FAIL_FIXED_OFFLINE_NEW_VM_PENDING",
+      "state": "ACTUAL_CLEAN_FIX_PASS_PACKAGE_ROOT_PERMISSION_FIXTURE_FAIL_CORRECTED_NEW_VM_PENDING",
       "source": "Existing668 source archive;current latercommits metadata-only;exacthead nottransferred",
       "execution": ".dev/architecture-r6b-package-v2",
       "exit": "Canonicalplan R6b:actualversiondependencies/packagebuild/install/upgrade/rollback/remove/configretention andexternalconsumers;freshnativeWS73 separately",
@@ -3497,7 +3497,10 @@
       "first_failure": ".dev/architecture-r6b-package-v1/export/package-outputs-v1/result.json",
       "first_failure_scope": "Harnessformatteddisposablechildoverlaylostinheritedinputs;no packagebuild. ParentR6aandWIPunmodified. V2 mountsonly/checksactualsourcehash/toolchain/cachebeforeboot.",
       "failure_report": "docs/evidence/debian-clean-dispatch-failure-20261018.json",
-      "next": "Accurate newcommit actualdpkg rebuild,theninstall/upgrade/rollback/remove/config/consumer gates;not yet qualified"
+      "next": "Accurate newsource rootVMfullpackagebuild,then install/upgrade/rollback/remove/config/consumergates;no skiporassertionrelaxation",
+      "root_fixture_failure_report": "docs/evidence/debian-root-config-fixture-failure-20261018.json",
+      "clean_fix_in_actual_vm": "Actual9ce cleanandproductionbuild passed,wholepackagefailedatrootpermissionfixture;notpackagequalification",
+      "additional_issue_receipt": ".dev/architecture-r6b-clean-fix-issues-v1.json"
     }
   },
   "owned_ssap_c6_historical_batch": {

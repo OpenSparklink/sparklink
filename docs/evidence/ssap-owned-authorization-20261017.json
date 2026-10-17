@@ -1,0 +1,1309 @@
+{
+  "schema_version": 1,
+  "status": "OWNED_SSAP_TWO_REAL_SLICES_AND_DATA_REGRESSION_SCOPED_PASS_FULL_SCOPE_INCOMPLETE",
+  "production_commit": "6be14aa2ca702bc253023053e272558e28a489f9",
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "compiled_userspace": "c6f9d8b9634773dbae79a8417814857a8834e9e3",
+  "executed_tools": "c6f9d8b9634773dbae79a8417814857a8834e9e3",
+  "bounds": {
+    "owned_cases": 16,
+    "actual_owner_decisions": 64,
+    "owner_application_value_checks": 16,
+    "remote_owned_transactions": 80,
+    "actual_owner_exits": 16,
+    "ordinary_socket_round_trips": 32,
+    "real_gates": 4,
+    "exact_replays": 4,
+    "copied_negative_controls": 52,
+    "protected_smtc_usb_observations": 832,
+    "actual_security_installations": 4,
+    "default_rust_tests": 300,
+    "all_features_rust_tests": 300,
+    "frozen_python_tests": 746,
+    "docs_inventory": 115,
+    "kani_semantic_properties": 10,
+    "kani_raw_checks": 93
+  },
+  "scope": [
+    "Sole SMTC Engine; original RX controller/generation/lifetime/security epoch/channel/deadline retained. Policy waits outside DB mutex and without protocol credit; final response uses original Grant/Ticket path. No new Host or Engine.",
+    "Real ordinary foreground slctl owner on guest system bus, both connection roles and directions, allow/deny Read/Write/ReadUUID/read-after; owner verifies actual opposite local DB using same unique connection. Actual owner SIGKILL removes registration; old handle returns real remote error4. Exact request/reply/opposite-USB matching plus NOCP count retained.",
+    "Basic and actual installed numeric-comparison mechanism2 policies are separate real gates on same compiled artifact. Four real installations and original response/context checks; local approval does not grant cryptographic identity,Bond or security.",
+    "Additional same-artifact249/oversize and2042 full-message random application reply gates retain fixed CUTC/SMTC paths. No unsupported boundary/multichannel/performance scope inferred.",
+    "Native12job incremental release in fixed directory sealed separately; all-features tests use8job VM budget. Real drivers/hardware operated only in QEMU VM; no host install or power operation."
+  ],
+  "remaining": [
+    "Service-only group deployment and full system-bus multi-application policy not exercised: real publishers are uid1000/caps0 with management-group enrollment; group1005 is empty.",
+    "New owned authorization real revocation/Down/original-deadline/late decision/delete-recreate interleavings remain; corresponding private D-Bus functions use explicit Ready/lease/RX fixtures and do not prove kernel concurrency. Active owner-watch drain during actual controller retirement remains unqualified.",
+    "Kani10-property inventory and93 raw checks include unstable-feature/unsupported-construct diagnostics; result UNPROVED. No implementation refinement,full security protocol,callback/USB drain or hardware assumptions proved.",
+    "SDK110 U2/3 only for these new artifacts. No new E protected,mechanism1 Owned,all250/253/254/255 layer boundaries,multichannel/four-device/performance or long-run qualification. Existing old-artifact qualifications retain their own source identities.",
+    "CPCD/protected update sending,long-write,identity/Bond,Proxy/UserHost/PM/release and all original S0-S6/19WP/10FV/12DG requirements remain;UserHost P4.",
+    "Natural startup/reenumeration/disappearance RCA and nonmanual automatic recovery OPEN;manual/hub/QMP/injection not acceptance. Prior 5509ms failure and historical documentation-retention incident unchanged."
+  ],
+  "real_result": "PASS",
+  "regression_result": "PASS",
+  "offline_result": "PASS",
+  "formal_result": "UNPROVED",
+  "full_goal_result": "UNPROVED",
+  "real_gates": [
+    {
+      "name": "ssap-owner-real-v2",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/ssap-owner-real-v2/manifest.json",
+      "message_bytes": 61,
+      "protected_requirement": 0,
+      "round_trips": 8
+    },
+    {
+      "name": "ssap-owner-sec2-real-v1",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/ssap-owner-sec2-real-v1/manifest.json",
+      "message_bytes": 61,
+      "protected_requirement": 2,
+      "round_trips": 8
+    }
+  ],
+  "regression_gates": [
+    {
+      "name": "ssap-owner-long2042-real-v1",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/ssap-owner-long2042-real-v1/manifest.json",
+      "message_bytes": 2042,
+      "protected_requirement": 0,
+      "round_trips": 8
+    },
+    {
+      "name": "ssap-owner-boundary249-real-v1",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/ssap-owner-boundary249-real-v1/manifest.json",
+      "message_bytes": 249,
+      "protected_requirement": 0,
+      "round_trips": 8
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "production-default-and-all-features-workspace300-each",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "strict-default-all-features-and746-frozen-tools",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "115-documents-strict-html-no-device-execution",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "four-exact-replays52-copied-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "formal_gates": [
+    {
+      "name": "production-access-10properties-diagnostics",
+      "status": "NOT_PROVEN_TOOL_DIAGNOSTICS_RETAINED",
+      "result": "UNPROVED"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "Service-only group deployment and full system-bus multi-application policy not exercised: real publishers are uid1000/caps0 with management-group enrollment; group1005 is empty.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "New owned authorization real revocation/Down/original-deadline/late decision/delete-recreate interleavings remain; corresponding private D-Bus functions use explicit Ready/lease/RX fixtures and do not prove kernel concurrency.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "Kani10-property inventory and93 raw checks include unstable-feature/unsupported-construct diagnostics; result UNPROVED. No implementation refinement,full security protocol,callback/USB drain or hardware assumptions proved.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "SDK110 U2/3 only for these new artifacts. No new E protected,mechanism1 Owned,all250/253/254/255 layer boundaries,multichannel/four-device/performance or long-run qualification. Existing old-artifact qualifications retain their own source identities.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "CPCD/protected update sending,long-write,identity/Bond,Proxy/UserHost/PM/release and all original S0-S6/19WP/10FV/12DG requirements remain;UserHost P4.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "Natural startup/reenumeration/disappearance RCA and nonmanual automatic recovery OPEN;manual/hub/QMP/injection not acceptance. Prior 5509ms failure and historical documentation-retention incident unchanged.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    }
+  ],
+  "failures": [
+    {
+      "kind": "environment",
+      "record": ".dev/ssap-owner-real-v1.log",
+      "scope": "Missing SPARKLINK_KERNEL_SOURCE at frozen-tool launch;failed before device/VM access,corrected in separate v2 log"
+    },
+    {
+      "kind": "environment",
+      "record": ".dev/ssap-owner-full-tools-v1.log",
+      "scope": "SO_PASSCRED denied by sandbox;original failure retained,ordinary-user rerun separate v2 and frozen pass"
+    },
+    {
+      "kind": "strict-check",
+      "record": ".dev/ssap-owner-clippy-v1.log",
+      "scope": "Collapsible if rejected;fixed without suppressing lint"
+    },
+    {
+      "kind": "formal",
+      "record": ".dev/ssap-owner-access-formal-v1/report.json",
+      "scope": "Unsupported and unstable-feature diagnostics retained;NOT PROVEN despite raw successful property statuses"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/ssap-owner-real-v2-owned-audit-v2.json",
+      "sha256": "64328b92015624b5ace52c3735eb11d6f27ce24d8fcfb13a4f8bfc4b088a2db3",
+      "bytes": 2952,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/manifest.json",
+      "sha256": "9d801a5356100a0e8fbb5a5b5ad2ec73374ae56732a694f7610ec965ca53b6ba",
+      "bytes": 1786116,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/console.log",
+      "sha256": "97a8d1bc3c64d9435eaf0a6e9f53c5322734d4ed551f86910b6d7ef22bc9d954",
+      "bytes": 16228,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/qmp.jsonl",
+      "sha256": "931aae88d18f5f8fc841c3c3937cc6072e350493b7c92bfc2dfeea3c469ac0e5",
+      "bytes": 1757,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/ws73.pcap",
+      "sha256": "61e5ab21aee23b0af5bd3ece87f72e87d206063bf106d20c432edae4b9a81694",
+      "bytes": 680528,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/capture-stats.txt",
+      "sha256": "72bf840aa129132035ea7e994f6ece7aa53902f46e0d0a4c58342370ead8f489",
+      "bytes": 227,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/kernel.log",
+      "sha256": "b5c8226bdcae19b00b40fd73085c7e0f1f392617e3b7982803b7109a6326a916",
+      "bytes": 49304,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/slkd.log",
+      "sha256": "57289d35064e5426cf273ce8dad3e0d38841e4709bc8789ecaa885d7fcba7790",
+      "bytes": 5247,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "61b26e7045536776e770c7e5f806b756a024d00a32b8b529e1c9475dd55532d0",
+      "bytes": 972955,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "f2fa13fc98c0e9942c7d0b1bc43cd7a77f859756f6558933315869e46889174c",
+      "bytes": 623,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "1dfe1c7c7b58406b0c461c0649664de9a3fc826820f0ea68ddde079c1de76ed5",
+      "bytes": 627,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "40c7642a88938e55e93a013b515cedd10b07fbfb42fd01da199491d786148a8f",
+      "bytes": 623,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "b1efb7a827f210a87ad0fd69a7075cb7a3f8d95d6933eb96668e0fe6d840a096",
+      "bytes": 627,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "a6821de0c42edc6e205566a1e2df7bff4751ed07c5507a273224a6e8114d187c",
+      "bytes": 623,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "074b380b3a8a3038ea13d1fb880281f39995ca8ecb32f8434b1b99693ab96980",
+      "bytes": 627,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "d523d0b879b8929454e871e96977589cbea4fb4d240eb5aa112e6a04338aa244",
+      "bytes": 623,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "a8cfb10f919f174b31ed5a96a273d1dfd91abb74eda57a6892df32ba3c47bdc9",
+      "bytes": 627,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "7f7d2d98ae3552744b2f1074a660ab18b910f4a1fc8e1ad49b181cbb859357a0",
+      "bytes": 5086,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "d1f8c80aed4ed3887b92a12b434e60e2a0a7d3ad8504151fd41d4fb2e41ff6ec",
+      "bytes": 2579,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "a67669578e34b405cab148098e2906b6551c1f2894319ec5a9254de515f29697",
+      "bytes": 5086,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "6aa345c8a3772254ae16b40793bca3abc53377e920750a567f34498d51216b92",
+      "bytes": 2579,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1-owned-audit-v2.json",
+      "sha256": "129f2fef126387ce3ff6ade73b49cd60c1cecd3f01adfb79570bcd902f8c7ee4",
+      "bytes": 2952,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/manifest.json",
+      "sha256": "13ee2b264dc68ae6e690fc4a1c12dfd52ad62a4872c1b04f9463ac4b930ac9c8",
+      "bytes": 1876956,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/console.log",
+      "sha256": "c765dcca6d893d8a888743c1ea809161f7d796202a243ea482135e959436003f",
+      "bytes": 16265,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/qmp.jsonl",
+      "sha256": "3df3d8b7ce576a815932951597f7ae41f0b005df1ebbb827222dacacd597ea69",
+      "bytes": 1757,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/ws73.pcap",
+      "sha256": "6af31a7a12f61acfdd55d3affacbd0bf9bec36cf4609451186db79293eb5b892",
+      "bytes": 741112,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/capture-stats.txt",
+      "sha256": "ceb3b569b0ba922fae5c1d7c4c57c0ac131d8a9474c5b21623a1d7a79d50a2b3",
+      "bytes": 227,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/kernel.log",
+      "sha256": "cf928bbd9d98ce715cc395dc5cb6d58c99286ef59f6eadf6f2862a3038bf1b98",
+      "bytes": 49288,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/slkd.log",
+      "sha256": "0259a257e1fcb12a621bcbd27e75d88d99ce58e0ce9d379075142243fe0c7942",
+      "bytes": 5926,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "a9da4a722c5dccfb7dee9d315779dabccc6f082d800cd031da2134311ccb6686",
+      "bytes": 1035324,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "e27ddb53d3362e4c3f66f38ac4c093989a6b492c4a201684ae8587e2868a53ad",
+      "bytes": 623,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "bebe96cdf14626333dfd2d8ce45e08e03192b63bab207c10ee812e19c7e2699c",
+      "bytes": 627,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "177fd3ba2f79da8f39314eb5c2b71cf25b58ceb57b6ac5fe2cbc9a6778339730",
+      "bytes": 623,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "94c549ec1d87adfb62a30fe1623aa97d252752eb7bfd47867c0205d374fe3633",
+      "bytes": 627,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "74545f1f295f50e116e794b4add2b9f8230f7e20efcb3058b26598f619e7152d",
+      "bytes": 623,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "621eeeb4d0074cbe2dd0c2f774a58975c0628d9c0857d515e4725e6ea387dca0",
+      "bytes": 627,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "9de799e40225e6313bf567158f5bbb176f4d9ff5d571fc066c0c28def05a8e48",
+      "bytes": 623,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "60e13a310a4782b95615b9d293a269f9f7a284f66f29177ffbc2f4519203f30d",
+      "bytes": 627,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "05ee055b748d7c991db3aea62596458ec2969c5c5eb9bf10cdf3b5173c3bf50b",
+      "bytes": 5086,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "dc9327dfdaa4c9ed823051752840ffac8dc1b6de632c11a64645a935c5d08ba2",
+      "bytes": 2579,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "4deac2e1f79914de02ffad1fb8450762c59bb50e4a13cfca17e88e77efda70b2",
+      "bytes": 5086,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "a7bab83dc7bbfc382716a5f7b29d35b67832baee8fdcbef2a12c9664b538ca4c",
+      "bytes": 2579,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1-length-audit-v1.json",
+      "sha256": "282aa8f3c1790b890ec665752f34a284c6c63471a4b3b8cc44d56cefd32c3e5d",
+      "bytes": 1510,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/manifest.json",
+      "sha256": "3e3e06f754ac7924ffc205d2002068040434eef120c8083e5e1f93534716bee8",
+      "bytes": 2578067,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/console.log",
+      "sha256": "425ffc9e03094343b354a2a8cb6bb4329031330baae1618affcec1d477dfc47c",
+      "bytes": 16212,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/qmp.jsonl",
+      "sha256": "bb05a3fb098700bf51597bd64da0a42e05d568bd5e0565ca3868968c1e3f4e12",
+      "bytes": 1757,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/ws73.pcap",
+      "sha256": "2224d4b75c40d338768a129a863be9fb60021d375ea8ee99062b29cba5c8397c",
+      "bytes": 1122544,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/capture-stats.txt",
+      "sha256": "9ae3d7de6f23bbb1cd7609e27b6ae076e7f3192a4c6fc995506edf25cac426b7",
+      "bytes": 227,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/kernel.log",
+      "sha256": "38852f09da2ff10a7b8adf0db70045046549338b0f916cc7ef2928612fbaf2b2",
+      "bytes": 49534,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/slkd.log",
+      "sha256": "794e32f0cb49629b51e8191b2c93e5fa5cc8c44e1e941d214fe76d0b90bdabba",
+      "bytes": 5925,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "8a73b068f9ed03e06cee1f30c9cdfe63ea803acc1e4793fe815f1ca3c7394925",
+      "bytes": 1000254,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "5df986f311b9ed9ed7c99b506406ba0be1e18df6a5aff2db69c6c457ac6d1123",
+      "bytes": 36784,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "b093b31153f77e968b380f6be1f7a5593f21d8c9e40fa60501574cbece198398",
+      "bytes": 34281,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "f9ef6ab7fa0e5eef2645c200eb90c1f6ba20eb1faa05cc560a5a929421be4504",
+      "bytes": 36785,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "87f082eac11695bd3823f441c5889d74b5652bbbce59c6dd4ac3cf563de38b6c",
+      "bytes": 34282,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-long2042-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1-length-audit-v1.json",
+      "sha256": "07d2e88eabd51f3cbf43ad444428f2cb9359de7526ed76e07537ed97063033d8",
+      "bytes": 1508,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/manifest.json",
+      "sha256": "5f890f866a6341d975b7a99ac23f50ed04c906ced325bec178d2bd4e44695bc8",
+      "bytes": 1598268,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/console.log",
+      "sha256": "a57f5005d63998b396677c7832cd8e1933b65ed33a941d25105ee6d9e5623b3d",
+      "bytes": 16236,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/qmp.jsonl",
+      "sha256": "6ec1e9d0b6888d10e5f8b3d3d2a801a03fe32b6bf77f374296f460748818bdd4",
+      "bytes": 1757,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/ws73.pcap",
+      "sha256": "7118c5245a3dd3c086316b5c36fc70f4d1e7a11ea573a0474742d04bb708a45d",
+      "bytes": 636160,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/capture-stats.txt",
+      "sha256": "e88fff78fe5bcfae43e0b37299cf355cd0584fcfc0d64ea5322846f13720f7f1",
+      "bytes": 227,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/kernel.log",
+      "sha256": "0222f9a621da30e0185479c5caf54dc3ef8b93c1b75a7eb24f902d4c6e67e9a9",
+      "bytes": 49669,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/slkd.log",
+      "sha256": "49390df1e607c42e5849c05d34690940068c59d0e68e95f004a536d52424cc72",
+      "bytes": 5247,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "24d5cac5caabc5c5e399c6d03ec10f8e481737946dd479ddab132faa77c246fa",
+      "bytes": 952530,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "4b271f32e441db8af30df47ba45569f3ce582b152e9fde31cf44d94c9bc79537",
+      "bytes": 24667,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "c6164d8f5666b9fa260753b43e4c7ca571b25858c55712d069a4b1a2312cace5",
+      "bytes": 22160,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "b8db4f18fce9765fd726ad4886bd392a3ce025c848fcf7e179efd23c76530f08",
+      "bytes": 24667,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "cbfce17c6f721f18d7f400f1af4dfdfc4ee186c2fbae2dfc987dd93a871bbf86",
+      "bytes": 22160,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-boundary249-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/manifest.json",
+      "sha256": "2f2ba3aef58ecfdbf06fcd81e1bfbe3002f076b570e5de907d14f3bbe2852d85",
+      "bytes": 27510,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slkd",
+      "sha256": "1c5d050869a91ea209fe6fdb026fba2bfe6ccc9e2f6239f64c8e514e64fa64eb",
+      "bytes": 10872904,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slctl",
+      "sha256": "3ce569c9f5a1ac99d01756466435a1390fade5b4022b9c6dd0c7b881dff79050",
+      "bytes": 8081296,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slktest",
+      "sha256": "6fb54a91f4ebf1e5b82505588a7bbf527e4d6922f7347988f16dd746f77c384f",
+      "bytes": 5278024,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slkconfig",
+      "sha256": "5a1e26a24754d560b74393414784056b6c00a0425653df2fc8c18e285cf5fafe",
+      "bytes": 1404416,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slkmon",
+      "sha256": "f75bb087ee224e7fb61c2e96a11aa557b8afc16fd26b41a9ab523ff44305e593",
+      "bytes": 1662584,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slkdump",
+      "sha256": "c077ec4ef315b4e816a5410dbc6bfb3506d5d2b14bdafb37e9a5c1667d26bb8a",
+      "bytes": 1662464,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/c6f9d8b96347/liblibsparklink.so",
+      "sha256": "a06ad58fe0732804e2078b58a7ab07c4ee833d7242915d904bd5e36e3bfde7d0",
+      "bytes": 552928,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "0009ec3f6a0db4ec201cefe0a1f9201f6196345734c6cf65e29bf406b88ec09d",
+      "bytes": 9032,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "ff7217a6d7939acd7eadbb1e16ab1c694eddf1fc007fa13fdc22ac5ced7e87f7",
+      "bytes": 507,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "c87887ceaff9a3e65c62976d26c2ccb42b8950d49d75493e079864b42c7de1fd",
+      "bytes": 154,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "d96fd45e72fcb04710d7ca4296de0991394037c8a7c77d2e0fdba5aec0ffaccb",
+      "bytes": 56,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-us-bundle-v1/build.log",
+      "sha256": "4f0e7cdfb88c41cf3d4ecc60858ab3c61e52d78c4693c60bea3a87e181112774",
+      "bytes": 1119,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepared-v1/manifest.json",
+      "sha256": "de3f00d173b681005bd742bef07929a034d28e96e2778e29873e52f9c402c9ba",
+      "bytes": 263356,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepared-v1/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepared-v1/root.btrfs",
+      "sha256": "15a9aae62832b11ec5b8ce73dd53e90c1f8034619e09feba8a7656ab2c3843fd",
+      "bytes": 1073741824,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepared-v1/root/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slctl",
+      "sha256": "3ce569c9f5a1ac99d01756466435a1390fade5b4022b9c6dd0c7b881dff79050",
+      "bytes": 8081296,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepared-v1/root/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slkd",
+      "sha256": "1c5d050869a91ea209fe6fdb026fba2bfe6ccc9e2f6239f64c8e514e64fa64eb",
+      "bytes": 10872904,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepared-v1/root/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slktest",
+      "sha256": "6fb54a91f4ebf1e5b82505588a7bbf527e4d6922f7347988f16dd746f77c384f",
+      "bytes": 5278024,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepared-v1/manifest.json",
+      "sha256": "eb0eb8481461dbc9c97ddf7f689ba4005a5aa18808f588489c89cd771631631b",
+      "bytes": 269429,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepared-v1/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepared-v1/root.btrfs",
+      "sha256": "cabc35129d23878c0c36c1946826b1f1b8efcbbbad5c52a8701818bdf60bb359",
+      "bytes": 1073741824,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepared-v1/root/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slctl",
+      "sha256": "3ce569c9f5a1ac99d01756466435a1390fade5b4022b9c6dd0c7b881dff79050",
+      "bytes": 8081296,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepared-v1/root/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slkd",
+      "sha256": "1c5d050869a91ea209fe6fdb026fba2bfe6ccc9e2f6239f64c8e514e64fa64eb",
+      "bytes": 10872904,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepared-v1/root/usr/libexec/opensparklink/native-lab/c6f9d8b96347/slktest",
+      "sha256": "6fb54a91f4ebf1e5b82505588a7bbf527e4d6922f7347988f16dd746f77c384f",
+      "bytes": 5278024,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/report.json",
+      "sha256": "09e3b1285a0131050aace657ff9518264da86469e63937e1db034e16df7d9ea9",
+      "bytes": 4591,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/production/Cargo.toml",
+      "sha256": "3266c088ff568499c91969b125e3e5903f8862c0436abb3cdbd27dfa598bc40d",
+      "bytes": 83,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/production/Cargo.lock",
+      "sha256": "e55e7c0548cc875d68367a64ddb7dca73339db0d4728555cf83fe74e2acadec5",
+      "bytes": 166,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/production/output.log",
+      "sha256": "51dc515872398d01794393894196197fcc2441e35596a58a979e97c91f725e4d",
+      "bytes": 36900,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authorization-negative/Cargo.toml",
+      "sha256": "3266c088ff568499c91969b125e3e5903f8862c0436abb3cdbd27dfa598bc40d",
+      "bytes": 83,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authorization-negative/Cargo.lock",
+      "sha256": "e55e7c0548cc875d68367a64ddb7dca73339db0d4728555cf83fe74e2acadec5",
+      "bytes": 166,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authorization-negative/output.log",
+      "sha256": "a4e7c18a916fe69a6bb9931e4269da9696ac70aa8750edc95c635aa1dd9301eb",
+      "bytes": 37256,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authentication-negative/Cargo.toml",
+      "sha256": "3266c088ff568499c91969b125e3e5903f8862c0436abb3cdbd27dfa598bc40d",
+      "bytes": 83,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authentication-negative/Cargo.lock",
+      "sha256": "e55e7c0548cc875d68367a64ddb7dca73339db0d4728555cf83fe74e2acadec5",
+      "bytes": 166,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authentication-negative/output.log",
+      "sha256": "aa2276a2241c2d358c070a42e784fd32a907a75fc439e7531df06c5df7613d83",
+      "bytes": 37267,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/empty-inventory-negative/Cargo.toml",
+      "sha256": "3266c088ff568499c91969b125e3e5903f8862c0436abb3cdbd27dfa598bc40d",
+      "bytes": 83,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/empty-inventory-negative/Cargo.lock",
+      "sha256": "e55e7c0548cc875d68367a64ddb7dca73339db0d4728555cf83fe74e2acadec5",
+      "bytes": 166,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/empty-inventory-negative/output.log",
+      "sha256": "3575a1b2284c5a629298254457fe00236cc313fa1033904b02cced80e153402b",
+      "bytes": 2008,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/empty-inventory-negative/src/access.rs",
+      "sha256": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+      "bytes": 4076,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/empty-inventory-negative/src/lib.rs",
+      "sha256": "df22cfb69a55c9a787db0fdbde8280cd74fe4e0f1e9a2918e0db0776ed6b6f83",
+      "bytes": 84,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authentication-negative/src/access.rs",
+      "sha256": "37c357805a0414410e9d99ff05daddd7d6978b776ee588121a7ad240d1c3e7d3",
+      "bytes": 4076,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authentication-negative/src/lib.rs",
+      "sha256": "6e4ec79379cd6760afe383318d78683dd5aa64deaaeae856c3467abb9a74fa1d",
+      "bytes": 1472,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authorization-negative/src/access.rs",
+      "sha256": "97cd0baa6700975f99e039a75777b3a1fa7a16bf7442b515f23524216eda6408",
+      "bytes": 4068,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/authorization-negative/src/lib.rs",
+      "sha256": "6e4ec79379cd6760afe383318d78683dd5aa64deaaeae856c3467abb9a74fa1d",
+      "bytes": 1472,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/production/src/access.rs",
+      "sha256": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+      "bytes": 4076,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-access-formal-v1/production/src/lib.rs",
+      "sha256": "6e4ec79379cd6760afe383318d78683dd5aa64deaaeae856c3467abb9a74fa1d",
+      "bytes": 1472,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-workspace-tests-v2.log",
+      "sha256": "01b3617c2a51dc5cf5dccda668f637ae416f92c8ee506bff391134368b55b2dc",
+      "bytes": 28330,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-workspace-all-features-v1.log",
+      "sha256": "0eb38f68677f09aea108f7487c8cf6d4e2178266715221867f69dbb47483432d",
+      "bytes": 28678,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-clippy-v3.log",
+      "sha256": "344f6f176c2778acffc36a4d933fc4a296dd556c0deba24ea8bcc9ba13f73af2",
+      "bytes": 592,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-clippy-v4.log",
+      "sha256": "28bfd509636473812c41bb373709e3ca7a2f703994c7ae9c267fe852abc6e505",
+      "bytes": 498,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-frozen-tools-v1.log",
+      "sha256": "256dcf57c1447a63c2ff4fd394bde8e73e502370959d352db19e9e91b3148774",
+      "bytes": 882,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-docs-v3.log",
+      "sha256": "2fd9aa8106a58a8649f52815c32628934d7959db08b710a6c36c7835b7fbc5c8",
+      "bytes": 362813,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-full-tools-v1.log",
+      "sha256": "69efd2224a6851c41026cb1f6fcb8fe4b56fdb44ba3015c4fb1aa7390351b1b3",
+      "bytes": 1581,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-full-tools-v2.log",
+      "sha256": "463f0b2db8c2be496fb5697df7bcd3511fb9ca9311b770fe0bd25323866b9407",
+      "bytes": 882,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-cli-tests-v1.log",
+      "sha256": "6bc15b4edf542667ecaa8f5367198baf150bf898b20d3ebfc7a1a8113e2becc4",
+      "bytes": 1743,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-real-v1.log",
+      "sha256": "c5664d0e57e68c0a66ae493c5b3d5929a518986b44cdb7b84230c039251fce8a",
+      "bytes": 1224,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-native-build-v1.log",
+      "sha256": "5da2fdc90c7f0d39ed73a09a8a64e5e9ed13d91ef4fd4a64cd9fb2e075242a28",
+      "bytes": 231,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-prepare-v1.json",
+      "sha256": "c805e5ece2cb1aa2f4b393119d49e7d94bbd078626105cd703fa2a7e7f4c4d30",
+      "bytes": 1565,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-sec2-prepare-v1.json",
+      "sha256": "056b3094df12e82082d0181ac7ba3a81a0d1fb6170fcd3e690c9c9fd2ed2c2d1",
+      "bytes": 1556,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-case-audit-v1.py",
+      "sha256": "0bd0bc197d5d2cad4d0685e9af6f59109889dc7567aa6aabc7374b3d60262a67",
+      "bytes": 4496,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-case-audit-v2.py",
+      "sha256": "869db0264265e8b64992969908da2cbd4b67ecba4cee20da9291233ab6dc0113",
+      "bytes": 4484,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-length-audit-v1.py",
+      "sha256": "16c36eb032fd363e1e5c48e3571bf626b147f0edacd8511cb515e3f47135ac5d",
+      "bytes": 2879,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-publish-v1.py",
+      "sha256": "38c538aee4906d8d5200c820c9264eb53651a9ad444a4be822bd37cc8ef2c706",
+      "bytes": 10406,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-publish-v1.log",
+      "sha256": "c8b24aac1a85c272d745aeb8437fb872d02a7bf49b0f7d3219ce65dafcfe56e3",
+      "bytes": 592,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-publish-v2.py",
+      "sha256": "ecfca91dbd9703d0415e869f40e82e1038052a37e782523013932f71d088c1e7",
+      "bytes": 10549,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/firmware-1.10.110-us/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/firmware-1.10.110-us/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/firmware-1.10.110-us/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/protected-ssap-config2-v1.toml",
+      "sha256": "dcd8af544928f0d11684f015356545bd676273eb571af8d4d1ac0f3be7aa64a1",
+      "bytes": 1928,
+      "access": "private authorized workspace; not publicly downloadable"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-artifacts-v3/manifest.json",
+      "sha256": "bc3f5827f0b31e4fa663bedf852abbd49e124ebbd8d3d486c4c521ccb22eecad",
+      "bytes": 229017,
+      "access": "private authorized workspace; not publicly downloadable"
+    }
+  ],
+  "retention": "Private authorized original workspace only;hash/path/size explicit,no verified offsite archive. SDK/firmware/keys/captures not public. Missing/hash/source/scope mismatch invalidates applicable qualification.",
+  "replay": "Frozen c6f9d8b tools plus retained per-run manifests/QEMU commands;USB offline observers and audit scripts with hashes. New physical runs VM-only;this report does not automatically replay hardware.",
+  "wall_ns": 1792219462040618643
+}

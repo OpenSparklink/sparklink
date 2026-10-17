@@ -14,6 +14,11 @@ K619/U8bda 的六项新产物门禁已通过：普通61字节两次、受保护 
 旧[首次 SSAP 记录](../docs/evidence/protected-ssap-first-bind-20261017.json)和
 [离线结果](../docs/evidence/protected-ssap-offline-20261017.json)保留原身份。
 
+当前开发 K8c302d7cfc49 接通RX-only每消息机制观察及全部未知TX control拒绝，
+Rust/C/Python与slktest迁移正在回归；**尚无新artifact实机资格**。下面K619/U8bda
+记录保持原身份，不转授新路由/recvmsg。唯一SSAP Engine尚未使用新上下文，属性级
+授权、最终TX intent及完整失效组合仍缺。
+
 本页是唯一当前资格入口；[架构](architecture.md)是目标，
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。

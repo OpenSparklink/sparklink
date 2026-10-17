@@ -31,6 +31,13 @@ mechanism) or2 (confirmed numeric mechanism), enforced by the kernel's frozen
 security epoch Grant. A refusal never falls back to a plain fd. Nonzero security
 with measurement or dynamic routes is rejected. These mechanism requirements
 do not establish a named identity, Bond or independent RF cipher attestation.
+.PP
+--message-security is limited to fixed regular/boundaries ping/peer --check.
+It verifies the actual kernel recvmsg receipt scope, original epoch and current
+mechanism for every message, and rejects unsupported send control before
+admission. Missing or truncated context fails; no fabricated/plain fallback.
+It does not grant future TX authority, attribute policy or performance
+qualification. Dynamic, burst/prefix-close and measurements reject this option.
 .SH BOUNDS AND FAILURE
 Measure count is 1..10000, bytes29..2042 within actual basic CUTC MTU/MPS.
 Rate/window/duplex and peer --load wait at most30s for start followed by newline.

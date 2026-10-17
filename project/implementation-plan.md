@@ -14,10 +14,17 @@ K619/U8bda 达成：六项真实门禁、48次 CUTC 往返、96组 SSAP 对端�
 
 下一条纵向链路是在同一 Engine/Session/Grant 上接通属性级认证／加密与本地授权
 消费，未支持要求明确拒绝，不把最低机制当命名身份或 Bond。
-先核对请求的 RX 安全归属与响应最终提交的约束：当前裸 send/recv 没有每 PDU
-安全上下文 ABI，不能仅在 answer 前查询快照。复用原 Kernel Grant/Ticket 机制
-承接用户态属性策略；未知 ancillary 的显式拒绝也需接通，不能假定忽略的控制
-信息已生效。具体 ABI 仍为计划，不能宣称已支持或缩减为全通道最低要求。
+近期先交付接收上下文基础：K8c302d7cfc49保留每条数据的原epoch及Owner机制观察，
+已授权dequeue重新核对currentness，不用新钥提升旧包；全部发送control明确拒绝。
+Rust/C/Python及slktest使用同一真实recvmsg解码器，不增加Engine。原全通道最低要求
+保持。新提交准确产物的VM实机资格仍待获取，旧K619资格不转授。
+
+本批退出：严格构建与跨语言32/64布局、原Session生产函数sanitizer、实际纯helper
+CBMC及三负对照；新slktest两端逐条身份/epoch/等级核对，随机载荷实际校验回复、
+未知control拒绝且无USB载荷、plain61/249/2042及protected1/2/原SSAP保持。
+该证明仅一次receipt/dequeue纯转换，不覆盖实际锁、引用、Owner真实性或固件/RF。
+通过后继续最终TX intent与属性策略、真实失效及生命周期组合，不把所有控制面
+组合设为前置。SSAP Engine当前尚未消费新上下文，属性授权仍缺；不能query后裸send。
 内核内部清理和
 预 daemon 探针默认13→10的语义统一及相关生命周期回归并行；原自然故障／
 非人工恢复、完整多通道／四设备、性能、PM、部署与发布继续开放。仅将本批变化

@@ -722,3 +722,13 @@ lease/等级/epoch；失败不降级、不重开退休 slot。此传输要求不
 发布；机制不足的能力须继续拒绝，不能把全通道配置当作完整属性授权的替代终态。
 现有固定最低要求、generation/lifetime/lease 身份及旧 fd 失效契约保持；复用同一
 Session/Engine，不引入第二 Host 或 SSAP 发送路径。所需组合验证只门禁相关改动。
+
+
+### 原消息接收观察与后续授权
+
+每PDU安全消费复用Runtime原ACB receipt epoch、唯一Session分流及SocketBinding，
+不再从应用读取时的最新安全快照推断旧请求资格。RX元数据保留原身份/epoch/机制
+观察，dequeue只重核CURRENT、不升级旧包。它不是命名身份、Bond、RF密码证明、
+本地属性授权或后续发送许可；后续TX intent必须在既有Grant/Ticket最终提交点强制，
+不能仅依赖daemon检查。首批实现为RX-only，sendmsg全部control明确拒绝。
+唯一用户态SSAP Engine后续才消费该机制；本批不新增业务引擎或放宽权限。

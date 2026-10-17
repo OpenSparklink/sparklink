@@ -198,3 +198,13 @@ Native 管理者主动断开使用 SLE 远端用户原因 `0x10`，不套用 Blu
 权限和业务留在同一用户态 Engine；具体 ABI 设计、实现和回归仍待完成，旧 fd
 授权不能因新 lease／lifetime／密钥状态而复活。未知 ancillary 应明确拒绝，
 当前未解析的输入不能作为可用功能。该依赖不扩大为全部控制面竞争前置。
+
+
+## 接收事实与发送授权分离
+
+采用不可变的每消息接收epoch/机制观察。原epoch无法关联时保持unknown，换钥后
+排队数据不获得新资格；CURRENT只描述已授权dequeue瞬间。普通recv可忽略记录，
+需要安全上下文的调用者必须拒绝缺失/CTRUNC。RX上下文不充当未来TX授权，最终
+提交仍由既有Runtime/Grant/Ticket强制。首批RX-only，任何TX ancillary明确拒绝；
+逐属性策略及响应TX intent另行接通。纯helper有界模型的Owner真值/锁假设显式记录，
+其通过不能替代真实内核并发、空口、固件或恢复验收。

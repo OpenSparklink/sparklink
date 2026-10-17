@@ -2,72 +2,38 @@
 
 ## 本批退出条件与近期执行顺序
 
-当前接通同一SSAP Engine响应约束，准确K1bcd766d07bb/U b4ad7dc：48字节TX intent
-只收紧原Grant，保留原RX epoch、观察机制下限和一次确定的CLOCK_MONOTONIC原期限。
-准入、等待/排队定时器及实际USB每片提交不续期；未提交失败只退休本Channel，已有
-PB前缀不抹去物理义务。主动请求仍受原fd Grant，属性策略/本地授权及主动请求细粒度
-intent继续缺失，不把本批当成完整安全SSAP。
+WP06/WP09 的逐属性访问切片已按准确 K1bcb/编译Ud4/执行工具49 收尾，见
+[原件及边界](../docs/evidence/ssap-attribute-access-20261017.json)。复用唯一 Engine、
+原 Session/Grant/credit/Ticket：原 RX 机制先于值读取/变更，主动请求通过原 fd 准备
+收紧 epoch/最低机制/原期限的 TX intent，实际提交仍由内核强制，不续 Grant 或 credit。
+未接通的本地授权/CPCD 明确拒绝；表32 operations 与独立六位 access API 不混用。
 
-本批退出：strict build/44跨语言、生产Session/parser sanitizer、生产纯constraint+Grant
-168项CBMC及三负对照；新冻结产物两角色plain61/secure1/2/249/2042真实响应交付、
-逐条旧epoch/lifetime/过期intent拒绝且无USB载荷、既有SSAP/广播扫描/连接断链保持。
-全新artifact六实机门禁已过：48真实业务往返/受约束响应、144非法intent和24未知
-control拒绝无USB；96SSAP核对/16超限/8完整2042，[原件及范围](../docs/evidence/send-security-constraints-20261017.json)。
-排队后真实换epoch/off及释放组合另列，不以离线模型
-冒充真实并发。本批限定退出已达，现在继续逐属性策略，控制面全集不是前置。
+本批退出门禁：严格生产构建/跨语言、实际数据库和 Engine 测试、真实三机制等级双向
+读/UUID读/响应写/读后核对及拒绝、无泄漏/无拒绝写入副作用、原广播扫描/建链断链/
+短包/249边界/完整2042保持。六 VM 门禁72属性案例/36拒绝、48业务回复、713冻结工具/
+48封存绑定、六重放192复制证据负对照已取得；首轮 guest 模块遗漏 FAIL 保留。
+访问谓词 Kani 有工具诊断，保持未证明；已有 CBMC 仅候选快照，非整体并发证明。
 
-上一批 WP06/WP09 的唯一用户态 SSAP 首次安全 SMTC 切片，限定退出已在
-K619/U8bda 达成：六项真实门禁、48次 CUTC 往返、96组 SSAP 对端数据库核对、
-249边界及完整2042、受保护1/2完整时窗。主动断链请求改为 SDK 远端用户原因10，
-原 Create 参数、五秒预算和断言保持；不恢复旧内核 SSAP 或新增 Engine。
+下一批退出条件先固定：在当前生产路径补受控排队屏障后的 release、最后fd、dup、
+Down、原期限和 rekey/off 交错，分别核对撤销后不新提交、在途义务保留、唯一终态、
+资源收敛及同行 Ready/lease/扫描隔离；两设备不冒充独立四设备业务隔离。复用原
+fixture/worker/提交票据，保持原失败与断言；只门禁相关不变量，不无限追加控制面前置。
+随后接同一用户态 Engine 的策略绑定本地属性授权及受保护更新；无身份/Bond就不授
+可信身份或持久凭据。数据/长包/真实credit/多通道/四设备和性能门禁持续并行。
 
-旧 U331 原超时 FAIL 不改写：重新运行旧13产物也快，说明 reason-alone 因果
-未建立。原包中 USB OUT/Status很快，本端0d约1.977ms、对端07约5.083s；
-仍需核对 firmware/LL/RF/残留状态及事件 lifetime 假设，不能声称已排除全部 Host。
-诊断与主线并行，不要求穷尽控制面竞争才继续 SSAP／数据。
+旧 U331 原晚 Down 超时 FAIL 与重新运行旧13也快的反证都保留，原因码语义修复不能
+作为完整因果结论。自然启动超时/重枚举失败/消失的根因、非人工恢复、NOCP真值/
+复用/USB drain 及部分初始化清理并行保持 OPEN。人工/hub/QMP/注入不授自然恢复。
+内核内部清理和预daemon探针原因码语义统一也独立保留，不恢复旧内核 SSAP。
 
-下一条纵向链路是在同一 Engine/Session/Grant 上接通属性级认证／加密与本地授权
-消费，未支持要求明确拒绝，不把最低机制当命名身份或 Bond。
-近期先交付接收上下文基础：K8c302d7cfc49保留每条数据的原epoch及Owner机制观察，
-已授权dequeue重新核对currentness，不用新钥提升旧包；全部发送control明确拒绝。
-Rust/C/Python及slktest使用同一真实recvmsg解码器，不增加Engine。原全通道最低要求
-保持。准确K8c/U625六项VM实机门禁已通过，旧K619资格不转授；[本批原件](../docs/evidence/message-security-receipts-20261017.json)。
+完整 S0–S6、19WP、10FV、12DG 和原全部范围保持。驱动/实机 VM-only；仅U2/3，E1排除；
+12路独立构建、与实机VM并行8路和共享锁/固定开发目录。UserHost=P4非前置。
+性能链路继续采用 ADR0006：可信基线→事件驱动→有界发送→双端/多通道/四设备→USB/RX
+空窗实测优化→长期/恢复/发布；未经测量不预设单RX URB是瓶颈。普通CLI功能计时不授性能资格。
+原19WP依赖和十类证明/十二门禁仍由本文件后续矩阵定义，不能因本段切片收尾关闭整项。
 
-本批限定退出已达：严格构建与跨语言32/64布局、原Session生产函数sanitizer、实际纯helper
-CBMC及三负对照；新slktest两端逐条身份/epoch/等级核对，随机载荷实际校验回复、
-未知control拒绝且无USB载荷、plain61/249/2042及protected1/2/原SSAP保持。
-该证明仅一次receipt/dequeue纯转换，不覆盖实际锁、引用、Owner真实性或固件/RF。
-现在继续最终TX intent与属性策略、真实失效及生命周期组合，不把所有控制面
-组合设为前置。SSAP Engine当前尚未消费新上下文，属性授权仍缺；不能query后裸send。
-内核内部清理和
-预 daemon 探针默认13→10的语义统一及相关生命周期回归并行；原自然故障／
-非人工恢复、完整多通道／四设备、性能、PM、部署与发布继续开放。仅将本批变化
-相关不变量设为门禁，完整 S0–S6／19WP／10FV／12DG 和原整项 scope 不缩减。
-
-
-WP09 [真实安装后原请求取消](../docs/evidence/security-install-cancel-real-20261017.json)
-已在 K14d9/U6166、SDK111、U2/3 上完成两角色门禁：真实 G 安装提交、原接受帧
-在途保留、原请求取消、迟到原帧交还、daemon 取消结果不改写；另一端真实安装
-完成，随后8次随机业务回复。默认 approve、249边界拒绝、2042长包另外24次回复
-通过。原 v1 init漏传、v2普通用户目录拒绝仍为 FAIL，不重记成功。
-受控期间实际取得原生取消快照；迟到后检查是缓存结果，不证明后续内核 debt/
-callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新增形式化或恢复资格。
-681冻结工具、严格示例clippy、2Rust、六历史原件与15实际证据负对照分别记录。
-本切片退出后，继续真正认证/本地授权所需的安全与用户态SSAP纵向交付，动态
-多通道/四设备及性能并行；完整 lease撤权/release/最后fd/dup/Down/原期限安装
-组合和迟到后原生物理义务观察继续开放，不追加全部控制面竞争前置。
-不关闭 K#7/#19、U#5/#8 或任何安全/恢复整项；旧 U42 长度和生命周期资格仍绑原镜像。
-
-近期增加 ADR0006 性能链路：状态/架构核对→可信基线→Session事件驱动→有界连续发送→
-双设备性能/生命周期回归→多通道/四设备→USB与无线参数测量→长期/恢复/发布。
-正在开发的四设备动态工具保留，与 Agent/用户态SSAP、真实数据扩展并行。固定通道
-四设备、动态双设备及提交/撤权/期限的既有切片仅按下方生成摘要绑定准确镜像；
-原始失败和限定通过继续保留，不升级为性能资格或整项通过。
-
-完整 S0–S6、19 WP、10 FV、12 DG 与原 issues 条件保持；VM-only，UserHost P4
-非前置。只门禁本批相关不变量，控制面竞争全集不阻塞真实纵向交付。自然RCA、
-非人工恢复、部分初始化/事件迁移/旧代码整改持续并行，未完成整项保持开放。
-当前资格只见 [CURRENT_CAPABILITIES](current-capabilities.md)，逐轮进度/失败走证据历史。
+当前资格只见[能力入口](current-capabilities.md)，逐轮失败和历史结论见各自证据；不再把
+先前切片“尚未接通”的文字叠加为当前状态。文档仅四象限公开构建，计划/ADR/证据保持源入口。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -199,14 +165,21 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | 生产constraint/Grant纯guard CBMC168及三负对照：限定有界通过 | `formal_bounded` | `PASS` |
 | Owner真值/锁/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | SSAP属性策略/主动请求intent/实际失效矩阵与完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
+| K1bcb/Ud4/工具49：六实机72属性案例含36真实拒绝与48业务往返 | `real_device` | `PASS` |
+| 属性访问：713冻结工具/48封存绑定/92Engine/192实证负对照 | `offline` | `PASS` |
+| 生产constraint/Grant CBMC168及三负对照：单快照限定通过 | `formal_bounded` | `PASS` |
+| 生产属性访问谓词Kani：诊断保留，未证明 | `formal_bounded` | `UNPROVED` |
+| 实际Owner/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
+| 历史首轮VM缺guest模块：原FAIL保留，未执行属性门禁 | `real_device` | `FAIL` |
+| 本地授权/Bond/新失效组合及完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
 
-保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
+保留镜像：K `1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f`；编译 U `d4a13e941aefee3ef11ccf56d74b144322947cd3`；执行工具 `49a648826e42787a709e3e664eaacc5f2ad1a67f`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `49a648826e42787a709e3e664eaacc5f2ad1a67f`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和

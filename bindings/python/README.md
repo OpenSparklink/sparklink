@@ -118,3 +118,17 @@ Actual C/Python kernel gates run in [WS73 support guest](../../project/reference
 The linked environment includes both virtual support tests and separately gated real
 WS73 runs. A synthetic result never grants physical WS73/RF acceptance; consult
 the exact report identity for the path actually executed.
+
+
+### 原 fd 的发送限制和 SSAP 访问要求
+
+`channel_prepare_tx(fd, minimum, deadline_monotonic_ns)` 仅从真实已授权通道 fd
+准备 `SleSendConstraint`，由 `channel_send_constrained` 实际提交；没有 AF_UNIX 回退、
+Grant 续期或 credit 预留。原始绝对期限和 epoch 仍在内核最终提交检查，准备成功不是
+对端收到。失败不产生有效输出，真实设备操作仅在受控 VM 内进行。
+
+`SsapAccess` 是独立于 `SsapOperations` 的六位本地属性要求，公开常量及错误见
+[权限参考](../../docs/reference/ssap-permissions.md)。`.error(level, write)` 委托实际
+Rust/C 纯谓词，只用于解释/检查要求；应用输入的 level 不成为真实安全事实或权限。
+值访问生产判断由唯一 slkd Engine 消费原始内核 RX 观察，授权位当前明确拒绝。
+本绑定不增加第二个用户态 Host，也不声明完整 SSAP/Bond 或新产物实机资格。

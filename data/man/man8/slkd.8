@@ -132,6 +132,17 @@ RegisterServices takes no JSON argument and Notify takes no value argument.
 The old org.sparklink.RemoteService facade is unsupported. Actual limited
 remote exchange/discovery/read/write uses the Connection SSAP actor.
 Notification/indication, long write and full Profile delivery are not promised.
+
+.PP
+Connection ReadSsapValue(q handle,u minimum), WriteSsapValue(q handle,ay value,u minimum)
+and ReadSsapByUuid(q start,q end,y data_type,ay uuid,u minimum) use mechanism
+minimum 0..2 and the existing authorized SMTC fd. Initial requests and responses
+carry restrictive per-send epoch and original deadline constraints. Preparing
+an intent does not renew authorization or reserve credit. Numeric comparison
+is not a named identity or Bond. Read denial error 8/10 and write denial leave
+protected values undisclosed or unchanged; timeout after admitted write does
+not imply rollback. Exact source/artifact qualification is separate.
+
 .SS Remaining interfaces
 Controller and ExtAdv names do not imply support for legacy PHY, RPA,
 measurement, PM or extended-advertising controls. Unsupported methods fail
@@ -169,13 +180,3 @@ remain tracked; this manual does not certify a clean-distribution deployment.
 .BR slctl (1),
 .BR sparklink.conf (5),
 .BR dbus-daemon (1)
-
-.PP
-Connection ReadSsapValue(q handle,u minimum), WriteSsapValue(q handle,ay value,u minimum)
-and ReadSsapByUuid(q start,q end,y data_type,ay uuid,u minimum) use mechanism
-minimum 0..2 and the existing authorized SMTC fd. Initial requests and responses
-carry restrictive per-send epoch and original deadline constraints. Preparing
-an intent does not renew authorization or reserve credit. Numeric comparison
-is not a named identity or Bond. Read denial error 8/10 and write denial leave
-protected values undisclosed or unchanged; timeout after admitted write does
-not imply rollback. Exact source/artifact qualification is separate.

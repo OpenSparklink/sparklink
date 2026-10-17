@@ -695,7 +695,8 @@ off/failure/rekey/撤权/Down/退休均fail closed；USB callback不获取Sessio
 该revision是软件收到事件的屏障，不证明固件handle复用、真实RF加密或可信身份。
 原操作终态不随当前cipher-off改写；可撤销Grant/SSAP消费端须在实际准入和提交处
 检查当前安全epoch，不能持有一次快照永久授权。K61905139固定通道消费端已接线，
-新artifact实机资格单独验收；动态protected、SSAP安全消费者及可信身份/Bond仍缺。
+新 artifact 实机资格单独验收；动态 protected、可信身份/Bond 及完整失效矩阵仍缺，
+SSAP 消费边界见以下契约与唯一能力入口。
 
 
 SSAP安全要求必须在其唯一SMTC首次绑定前选定并由内核Grant强制。连接发布时的
@@ -718,8 +719,9 @@ lease/等级/epoch；失败不降级、不重开退休 slot。此传输要求不
 本地授权。细粒度属性策略属于唯一用户态 SSAP Engine；Runtime/Session 必须为
 需要保护的请求提供可验证的接收安全归属，并在响应实际提交时经原 Grant/Ticket
 约束所需机制及 epoch。不能先查询当前安全状态，再把早已排队的请求当作当时
-已受保护，也不能用查询后的普通发送代替最终准入。具体每消息 ABI 尚未实现／
-发布；机制不足的能力须继续拒绝，不能把全通道配置当作完整属性授权的替代终态。
+已受保护，也不能用查询后的普通发送代替最终准入。每消息 ABI 未发布，RX 观察与
+受约束 TX 分离，见接口参考；机制不足的能力继续拒绝，不能把全通道配置当作
+完整属性授权的替代终态。
 现有固定最低要求、generation/lifetime/lease 身份及旧 fd 失效契约保持；复用同一
 Session/Engine，不引入第二 Host 或 SSAP 发送路径。所需组合验证只门禁相关改动。
 
@@ -732,4 +734,20 @@ Session/Engine，不引入第二 Host 或 SSAP 发送路径。所需组合验证
 本地属性授权或后续发送许可；后续TX intent必须在既有Grant/Ticket最终提交点强制，
 不能仅依赖daemon检查。历史首批为RX-only；当前新增严格类型TX constraint，只收紧原Grant并在实际提交强制
 原epoch和绝对期限，RX类型/未知control继续拒绝。
-唯一用户态SSAP Engine后续才消费该机制；本批不新增业务引擎或放宽权限。
+唯一用户态 SSAP Engine 消费该机制，不新增业务引擎或放宽原 fd 权限。
+
+
+### 属性值访问与主动请求的限制
+
+SSAP 操作指示与值访问要求分开。采用已有表32操作类型及固定 NearLink Host 的
+六位本地 access API 编码；服务元数据可公开，读值/按 UUID 读/写值均先检查原 RX
+观察机制，再读取值或修改数据库。未知/失效观察不能授予权限。等级2只描述当前
+SDK111 数字比较机制，不授命名身份或 Bond。未接通的本地授权/CPCD 注册明确拒绝，
+不接受应用自报授权、恢复旧 wire Engine 或另造权限语义。
+
+初始 ExchangeInfo 和客户端请求在原授权 fd 上准备 TX intent，保留原 scope/epoch/
+minimum/绝对期限，实际提交仍与原 Grant 相交。准备既不预留 credit，也不续授权；
+旧 protected fd 不随新 epoch 复活。客户端回复的原 RX epoch/机制须满足原请求意图。
+响应/错误/指示 ACK 保留原接收观察。超时或回复发送失败不撤销已执行的数据库写入，
+不能承诺分布式事务回滚。实际接口和错误见[参考](../docs/reference/ssap-permissions.md)，
+当前资格仅见[能力入口](current-capabilities.md)；局部谓词、fixture 和 RF 验收分别记录。

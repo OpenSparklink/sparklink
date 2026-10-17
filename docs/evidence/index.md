@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+
+[逐属性访问与主动请求限制](ssap-attribute-access-20261017.json)：准确K1bcb/编译Ud4/执行49，
+六VM门禁72属性案例（36真实拒绝）、48业务回复与原边界/长包保持；六重放192复制负对照。
+Kani工具诊断仍未证明，原缺guest模块FAIL保留，本地授权/Bond/组合失效/自然恢复OPEN。
+
 当前资格只从 [CURRENT_CAPABILITIES](../../project/current-capabilities.md) 进入。每项报告按其源码 hash、假设和边界阅读，工具安装通过、限定模型通过、USB 写入和对端业务往返是不同事实。
 
 当前纳入机器检查的[版本化资格记录](../../project/qualification-records.json)关联准确编译/执行/报告身份、

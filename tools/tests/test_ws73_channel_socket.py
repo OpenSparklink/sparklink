@@ -323,7 +323,9 @@ class SealedRealEvidence(unittest.TestCase):
         evidence=json.loads(path.read_text());case=evidence['cases'][0]
         run=case['raw_control_record'];capture=case['decoded_capture']
         self.assertEqual(corroborate(run,capture),case['independently_derived']['channel'])
-        links=connection(run,capture);self.assertEqual(links,case['independently_derived']['connection'])
+        # Preserve the historical captured 0x13 bytes and limited identity;
+        # this is not a current management-request or new RF qualification.
+        links=connection(run,capture,expected_disconnect_reason=0x13);self.assertEqual(links,case['independently_derived']['connection'])
         self.assertEqual(objects(run,capture,links),case['independently_derived']['objects'])
         self.assertEqual(len(corroborate_passthrough(run,capture)),22)
         self.assertEqual(len(reassemble_acb(capture)),48)

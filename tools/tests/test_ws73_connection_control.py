@@ -51,7 +51,7 @@ def fixture():
             text=terminal(caller,operation)
             run['commands'].append(dict(stdout=text,exit=0,start_wall_ns=start,end_wall_ns=start+5))
             phase[key]=result(text,caller,operation)
-            params=(b'\x00\x00\x00'+bytes.fromhex(peer['address'].replace(':',''))+bytes(18)) if operation==1 else b'\x00\x00\x13'
+            params=(b'\x00\x00\x00'+bytes.fromhex(peer['address'].replace(':',''))+bytes(18)) if operation==1 else b'\x00\x00\x10'
             identity=dict(bus=caller['bus'],device=caller['device'],wall_ns=start+1)
             capture['commands'].append(identity|dict(opcode=opcode,params=params.hex(),completion=dict(wall_ns=start+2)))
             capture['native_events'].append(identity|dict(event=1,params=(opcode.to_bytes(2,'little')+b'\x01\x00').hex()))
@@ -96,6 +96,20 @@ class ConnectionEvidenceTests(unittest.TestCase):
         for key in ['commands','native_events']:
             bad=copy.deepcopy(capture);bad[key].pop(0)
             with self.subTest(key=key),self.assertRaises(CaptureError):corroborate(run,bad)
+
+    def test_management_disconnect_requires_sle_reason_not_bluetooth_value(self):
+        run,capture=fixture()
+        corroborate(run,capture)
+        for reason in [0,0x11,0x13,255]:
+            wrong=copy.deepcopy(capture)
+            command=next(v for v in wrong['commands'] if v['opcode']==0x1403)
+            command['params']=bytes([0,0,reason]).hex()
+            with self.subTest(reason=reason),self.assertRaises(CaptureError):
+                corroborate(run,wrong)
+        # The outcome is a separate physical fact, not an echo of request reason.
+        for event in capture['native_events']:
+            if event['event']==5:event['params']='00000007'
+        corroborate(run,capture)
 
     def test_false_or_ambiguous_terminal_is_rejected(self):
         owner=dict(generation=1)

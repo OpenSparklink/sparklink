@@ -93,7 +93,11 @@ pub(crate) async fn submit(
         if let Some(reference) = reference {
             request.operation = 2;
             request.handle = u32::from(reference.handle);
-            request.reason = 0x13;
+            // SDK111 sle_disc_reason_t / reference Host DLI reason:
+            // remote user termination is 0x10. 0x13 is a different SLE
+            // error (encryption mode not acceptable), not Bluetooth's code.
+            // Do not manufacture a peer Down from this request or its Status.
+            request.reason = 0x10;
             request.expected_lifetime = reference.lifetime;
             request.expected_address = reference.address;
             request.expected_address_type = reference.address_type;

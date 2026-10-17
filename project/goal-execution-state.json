@@ -2621,5 +2621,23 @@
     "full_window_audit": ".dev/protected-ssap-full-window-replay-v1.json",
     "issues_receipt": ".dev/protected-ssap-issue-receipts-v1.json",
     "formal_strength": "No newformalrun;actualconsumercompositionunproved;unchangedK619pureGrant79retainsoriginalboundaryonly"
+  },
+  "disconnect_reason_batch": {
+    "status": "DAEMON_CANDIDATE_IMPLEMENTED_PENDING_CLEAN_VM_COMPARE",
+    "kernel_unchanged": "61905139ff8c3ed2937ccdba697d880880582234",
+    "parent_userspace": "52175f1f843a7d8d8107f64b22ae723aca295b81",
+    "scope": "Onlynative daemon typedDisconnect request reason13->10;finalcredit/lifetime/lease unchanged. Kernelcleanup/pre-daemontests remain13 untilVM evidence. Currentwireverifier requires10;historicalfixture explicitlyaudits13 withoutrewritingcapture.",
+    "reference_report": ".dev/disconnect-sdk-reference-v1/report.json",
+    "original_failure": "docs/evidence/protected-ssap-first-bind-20261017.json",
+    "exit": [
+      "ActualnewUartifact/plainshort twiceexchangedrole,matchesSDK10requestandbothrawDown beforeoriginal5sproperties",
+      "SameSDK111,connectionparameters/timeout/normalK619/QEMU/U2-3;do notraisebudget/lower supervision",
+      "CorrectedSMTCauditor physical1/2 positives andplain249/2042 preserve;publish failureandsuccess distinctly",
+      "Then unify provenreason acrosskernelcleanup/privilegedprobes andrunlifecycle appropriatechecks"
+    ],
+    "still_open": [
+      "CauseofoldlateDown notinferredfromsourceconstant alone",
+      "NaturalRCA/nonmanualrecovery/fulloriginalS0-S6 scopes unchanged"
+    ]
   }
 }

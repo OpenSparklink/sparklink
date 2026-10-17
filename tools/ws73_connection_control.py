@@ -221,7 +221,12 @@ def execute(run, a, b):
         record['end_wall_ns'] = time.time_ns(); run.save()
 
 
-def corroborate(run, capture):
+def corroborate(run, capture, *, expected_disconnect_reason=0x10):
+    # Current daemon requests exactly the SLE reason. Historical retained
+    # corpora may explicitly audit their old 0x13 request; never infer the
+    # expected byte from captured input or silently accept both in a live gate.
+    if type(expected_disconnect_reason) is not int or expected_disconnect_reason not in (0x10,0x13):
+        raise CaptureError('explicit current or historical disconnect reason required')
     record = run['connection_control']
     if record['status'] != 'CONNECTION_CONTROL_EVIDENCE_PENDING' or len(record['phases']) != 2:
         raise CaptureError('both original role-exchange connection phases required')
@@ -317,7 +322,7 @@ def corroborate(run, capture):
                 body=bytes.fromhex(commands[0]['params'])
                 if len(body)!=27 or body[2]!=phase['peer_address_type'] or body[3:9]!=bytes.fromhex(peer['address'].replace(':','')):
                     raise CaptureError('Create body must target actual peer/type')
-            elif commands[0]['params'] != (terminal['handle'].to_bytes(2,'little')+b'\x13').hex():
+            elif commands[0]['params'] != (terminal['handle'].to_bytes(2,'little')+bytes([expected_disconnect_reason])).hex():
                 raise CaptureError('Disconnect body must target exact handle/reason')
             outcomes=[]
             # Peer publication may follow the caller's terminal slightly; use

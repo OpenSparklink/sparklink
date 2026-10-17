@@ -234,14 +234,16 @@ def worker(data, control, minimum=0):
                     else:raise ValueError('old socket operation succeeded after withdrawal')
                 poll=select.poll();poll.register(data,select.POLLIN|select.POLLOUT);events=poll.poll(0)
                 if last_constraint is None:raise ValueError('original admitted intent required before withdrawal')
-                typed={}
+                typed={};calls={}
                 for name,call in [('prepare',lambda:channel_prepare_tx(data.fileno(),minimum,time.monotonic_ns()+1_000_000_000)),
                                   ('submit',lambda:channel_send_constrained(data.fileno(),marker,last_constraint,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL))]:
+                    calls[name+'_before_monotonic_ns']=time.monotonic_ns()
                     try:call()
                     except OSError as error:typed[name]=error.errno
                     else:raise ValueError('old constrained operation succeeded after withdrawal')
+                    calls[name+'_after_monotonic_ns']=time.monotonic_ns()
                 send(control,dict(stage='denied',errors=values,poll=events[0][1] if events else 0,marker=marker.hex(),
-                                  tx_intent_denial=dict(errors=typed,constraint=bytes(last_constraint).hex()),wall_ns=time.time_ns()))
+                                  tx_intent_denial=dict(errors=typed,calls=calls,constraint=bytes(last_constraint).hex()),wall_ns=time.time_ns()))
             else:raise ValueError('unknown worker command')
     except BaseException as error:
         send(control,dict(error=str(error),error_type=type(error).__name__))
@@ -486,9 +488,20 @@ def verify_intents(row, outer):
     else:receipts=[row[k] for k in ['after_withdrawal','after_successor'] if k in row]
     for a in receipts:
         d=a['tx_intent_denial']
-        if d['errors']!={'prepare':a['errors']['send'],'submit':a['errors']['send']}:raise ValueError('fresh prepare and cached intent must both reject original fd')
+        calls=d['calls'];pb,pa,sb,sa=[calls[k+'_monotonic_ns'] for k in ['prepare_before','prepare_after','submit_before','submit_after']]
+        if not 0<pb<=pa<=sb<=sa:raise ValueError('same-clock before/after actual denial syscalls required')
+        raw=a['errors']['send']
+        if raw not in [errno.EACCES,errno.ESTALE,errno.ENOTCONN]:raise ValueError('original raw denial contract required')
+        expected=raw
+        if 'data_deadline' in outer:
+            cached=decode(SleSendConstraint,d['constraint'])
+            # Actual production sl_prepare_tx rejects inactive Session first;
+            # sl_tx_access checks the expired constraint before later sl_admit.
+            if raw!=errno.ENOTCONN or sb<cached.deadline_monotonic_ns:raise ValueError('original Session timeout before cached expired-intent retry required')
+            expected=errno.ETIMEDOUT
+        if d['errors']!={'prepare':raw,'submit':expected}:raise ValueError('fresh prepare and unchanged cached intent need their exact phase-specific errors')
         if original is not None and d['constraint']!=original:raise ValueError('withdrawal retry must use the original admitted intent unchanged')
-    return dict(status='ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED',business_sends=count,prefix_admission=bool(prefix),late_refusals=len(receipts)*2,
+    return dict(status='ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED',business_sends=count,prefix_admission=bool(prefix),late_refusals=len(receipts)*2,expired_intent_refusals=len(receipts) if 'data_deadline' in outer else 0,
                 scope='Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof')
 
 

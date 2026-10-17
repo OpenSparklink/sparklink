@@ -518,7 +518,7 @@ def _run(args):
         raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
     application_clients=bool(getattr(args,'application_client_verify',False))
-    if application_clients and (not passthrough or not connection_verify or 'native_vm' not in package or any([channel_socket,benchmark_mode,acb_probe,agent_mode,dynamic_channels,fairness,getattr(args,'daemon_link_resync',False)])):
+    if application_clients and (not passthrough or not connection_verify or any([channel_socket,benchmark_mode,acb_probe,agent_mode,dynamic_channels,fairness,getattr(args,'daemon_link_resync',False)])):
         raise ValueError('application clients require a dedicated native real connection VM')
     if application_clients and (any(value for key,value in vars(args).items() if type(value) is bool and key not in ['qmp_hotplug','connection_verify','application_client_verify']) or any(getattr(args,key,None) for key in ['managed_partial_case','managed_connected_case','managed_connected_reply','managed_real_later_step','daemon_hold_case']) or getattr(args,'connection_advertising','fixed-t')!='fixed-t'):
         raise ValueError('application client gate cannot combine fault/lifecycle selectors or protocol contrasts')
@@ -818,6 +818,8 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if application_clients and 'native_vm' not in package:
+            raise ValueError('application clients require the verified native VM profile')
         if agent_mode and ('native_vm' not in package or 'native_security_agent_probe' not in package):raise ValueError('Agent requires native VM and staged real witness')
         if agent_mode=='install-cancel':
             from ws73_security_install_hold import validate_qemu

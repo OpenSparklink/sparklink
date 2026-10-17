@@ -4,12 +4,15 @@ import copy
 import json
 from pathlib import Path
 import sys
+import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parents[1]))
 from ws73_application_client import corroborate, valid_summary
 from ws73_capture import CaptureError
 from ws73_target import run_exit_code
+import ws73_target as target
 
 
 def fixture():
@@ -34,6 +37,20 @@ def fixture():
 
 
 class ApplicationClientEvidence(unittest.TestCase):
+    def test_actual_runner_preflight_reaches_verified_profile_before_guest_or_usb(self):
+        # Only external identity, prepared-package verification and host inventory
+        # are fixtures. Execute the real CLI parser/preflight/final verdict.
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);prepared=root/'prepared';prepared.mkdir();(prepared/'manifest.json').write_text('{}')
+            output=root/'run'
+            argv=['ws73_target.py','run','--prepared',str(prepared),'--output',str(output),'--ports','1-2.1.2','1-2.1.3','--qmp-hotplug','--connection-verify','--application-client-verify']
+            with patch.object(sys,'argv',argv),patch('ws73_target.run',target._run),patch('ws73_target.ordinary_identity'),patch('ws73_target.prepared',return_value={}),patch('ws73_target.lab_module',return_value=SimpleNamespace(inventory=lambda:[])),patch('ws73_target.subprocess.Popen') as guest:
+                self.assertEqual(target.main(),1)
+                guest.assert_not_called()
+            result=json.loads((output/'manifest.json').read_text())
+            self.assertEqual(result['error'],'application clients require the verified native VM profile')
+            self.assertEqual(result['status'],'FAIL')
+
     def test_explicit_fixture_positive_and_full_terminal_shape(self):
         run,sdus=fixture()
         with patch('ws73_application_client.reassemble_acb',return_value=sdus):proof=corroborate(run,{})

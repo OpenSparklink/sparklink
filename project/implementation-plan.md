@@ -1430,6 +1430,11 @@ socket，不新增 Host、codec 或 benchmark 循环。原发现/连接/短包/�
 API/参数/故障与镜像校验，再以准确新 artifact 运行 VM；完整权限、release/撤权/
 Down/原期限交错、SDK其余入口和R6c仍按原 scope开放，不弱化原验收范围。
 
+R5f2 首轮实际执行器在启动前过早引用package而失败，[原件保留](../docs/evidence/application-client-preflight-failure-20261018.json)。
+native检查移到prepared镜像完整验证之后；真实CLI预检/最终判定的无硬件回归要求
+缺少已验证native profile时不启动QEMU。镜像与实际执行工具身份继续分别记录，
+这项软件修正不算硬件失败、自然恢复或新设备资格。
+
 核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
 保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取
 错误源库名且缺Native/pc统一安装；pc头目录不符；无正式SONAME与干净VM升级回滚

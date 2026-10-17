@@ -1762,20 +1762,24 @@
       "ssap-facade-retirement-r4b": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "native-event-retirement-r4c": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R4c-retired-Native-event",
-      "production_behavior": "R4a98/R4b643 old controller-security and SSAP facade retirement exact four VM gates each scoped PASS. R4c removes public mixed Native Event and production legacy construction/dispatch;typed records/link snapshots and same bounded advertisement consumer retained.",
-      "state": "R4B_EXACT_FOUR_REAL_GATES_SCOPED_PASS_R4C_IMPLEMENTING_NOT_QUALIFIED",
+      "id": "WP18-R4d-retired-Native-controls",
+      "production_behavior": "R4c6841e4e mixed Event/empty Profile feature retirement exact four real gates scoped PASS. R4d removes old Native/Controller/ExtAdv/C/CLI/device facades and Bool duplicate;five retired layouts test-only. Count now derives Core bitmap,Native C/Python errors explicit.",
+      "state": "R4C_EXACT_FOUR_REAL_GATES_SCOPED_PASS_R4D_OFFLINE_CHECKING_NOT_QUALIFIED",
       "exit": [
-        "6434055:314unit/integration+5compilefail each default/allfeatures,strictclippy,755tools,48sealed current ABI and strict115docs",
-        "K0cd/U6434055:32peerreplies24Ownedcases96decisions120transactions68roledenials;5replays81negatives",
-        "R4c strict/default/experimental/docs and new exact VM artifact gates required;no transfer from643",
-        "Rawkernel declarations/selftests,remaining Native API,R5 gates and R6 cleanVMdeploy remain;original failures retained"
+        "6841e4e:314unit/integration+6compilefail each default/allfeatures,strictclippy,755tools,48sealed ABI,strict115docs and both dependency closures",
+        "K0cd/U6841e4e:32peerreplies24Ownedcases96decisions120transactions68roledenials;5replays81negatives",
+        "R4d old sealed library count counterexample reproduced with explicit ABI fixture;fixed candidate49ABI and five fixture cases only,not real metadata qualification",
+        "New exact artifact must run actual C count/bitmap,slkconfig lifetime snapshot and four real preserved paths;current R4d tree not qualified"
       ],
-      "next": "Architecture-first remaining R4 APIs/rawABI/selftests;R5 contracts/provenance;R6 cleanVMdeploy/docs. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,verified paths/WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
+      "next": "Architecture-first remaining R4 rawkernel ABI/selftests/global masks;R5 full contracts/provenance;R6 cleanVMdeploy/docs. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,verified paths/WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
     }
   },
   "agent_workstream": {
@@ -3144,11 +3148,22 @@
       "report": "docs/evidence/ssap-facade-retirement-r4b-20261017.json"
     },
     "r4c": {
-      "status": "STRICT_DEFAULT_ALLFEATURES_HEADERS_DEPENDENCIES_TOOLS_DOCS_PASS_NEW_ARTIFACT_REQUIRED",
+      "status": "EXACT_6841E4E_FOUR_REAL_GATES_SCOPED_PASS_FULL_ARCHITECTURE_INCOMPLETE",
       "production": "Remove public mixed Event/old runtime construction and empty daemon profile feature;typed records/snapshots and same bounded advertisement consumer retained;models/actor only tests/dev-dependency",
       "exit_reference": "Canonical WP18 R4c",
       "remaining": "New exact artifact VM gates;remaining Native APIs/raw ABI/selftests,R5/R6 and original full scope",
-      "call_audit": ".dev/architecture-r4c-events-call-audit-v1.json"
+      "call_audit": ".dev/architecture-r4c-events-call-audit-v1.json",
+      "compiled_source": "6841e4e125d9be621c8ab16e590c4d8fe691b6f9",
+      "tools": "6841e4e125d9be621c8ab16e590c4d8fe691b6f9",
+      "report": "docs/evidence/native-event-retirement-r4c-20261017.json"
+    },
+    "r4d": {
+      "status": "IMPLEMENTED_OFFLINE_CHECKING_NEW_ARTIFACT_REQUIRED",
+      "exit_reference": "Canonical WP18 R4d",
+      "call_audit": ".dev/architecture-r4d-native-call-audit-v1.json",
+      "counterexample": ".dev/architecture-r4d-count-counterexample-v1.json",
+      "candidate_snapshot": ".dev/architecture-r4d-debug-candidate-v2/snapshot.json",
+      "remaining": "New exact Cmetadata/CLI and four realVM gates;raw kernel declarations/selftests/global masks,R5/R6 and full original scope"
     }
   },
   "owned_ssap_c6_historical_batch": {

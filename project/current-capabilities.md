@@ -1,10 +1,11 @@
 # 当前能力与资格
 
-生产整改状态：R4a旧controller安全门面与R4b旧SSAP门面已分别删除并取得准确新产物
-限定资格；最新[R4b6434055四VM门禁](../docs/evidence/ssap-facade-retirement-r4b-20261017.json)
-包括32真实对端回复、61/249+超限/2042/机制2、Owned和service-only范围。当前R4c
-Native事件整改树**尚未取得实机资格**；Local/Owned、唯一Connection Engine及Session
-保留。R4其他API/rawABI、R5/R6和完整原范围未完，旧源资格不转授当前树。
+生产整改状态：R4a98c／R4b643／[R4c684事件退休](../docs/evidence/native-event-retirement-r4c-20261017.json)
+分别取得准确四VM门禁；最新684保持32对端回复、61/249+超限/2042/机制2、Owned和
+service-only限定范围。当前R4d旧Native/Controller/C/CLI与元数据整改树**尚未取得实机资格**。
+封存旧库的计数缺陷已在显式ABI fixture复现，原RF/ABI范围不覆盖正向C计数。
+Local/Owned、唯一Connection Engine/Session保留；R4 rawABI/全局掩盖、R5/R6和完整原
+范围未完，不转授旧资格。
 
 
 [R3c准确新SDK路径资格](../docs/evidence/application-native-boundary-r3c-20261017.json)：
@@ -278,6 +279,7 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | R3c应用/Native/共享契约：6d30真实新SDK路径四门禁，整架构未完 | `real_device` | `PASS` |
 | R4a旧controller安全入口退休：98c4b65四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4b旧SSAP门面全链退休：6434055四真实门禁，整架构未完 | `real_device` | `PASS` |
+| R4c旧Native Event及空Profile feature退休：6841e4e四真实门禁，整架构未完 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

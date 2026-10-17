@@ -696,3 +696,10 @@ off/failure/rekey/撤权/Down/退休均fail closed；USB callback不获取Sessio
 原操作终态不随当前cipher-off改写；可撤销Grant/SSAP消费端须在实际准入和提交处
 检查当前安全epoch，不能持有一次快照永久授权。K61905139固定通道消费端已接线，
 新artifact实机资格单独验收；动态protected、SSAP安全消费者及可信身份/Bond仍缺。
+
+
+SSAP安全要求必须在其唯一SMTC首次绑定前选定并由内核Grant强制。连接发布时的
+自动plain绑定不能成为后续升级的隐式前置；需要更高要求时应在同一Engine的首次
+绑定前等待/拒绝，不关闭重绑已退休槽、不新造Engine。Service分支必须传递实际
+要求，后续收发仍按当前generation/lifetime/lease/security epoch核对；SSAP操作位、
+认证/加密、本地授权和CPCD分别表达。已验证CUTC不转授为受保护SMTC或完整安全资格。

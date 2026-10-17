@@ -130,6 +130,12 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | 原构造器/路径/fixture/LSan/证明监督器失败保留 | `offline` | `FAIL` |
 | 受保护实时失效/SSAP消费者及完整原范围：仍缺 | `real_device` | `UNPROVED` |
 | K619/U73普通通道十项生命周期：受保护矩阵不继承 | `real_device` | `PASS` |
+| K619/U390：两等级两端20项受保护通道生命周期，48真实回复 | `real_device` | `PASS` |
+| K619/U390：受保护249边界及完整2042双角色16回复 | `real_device` | `PASS` |
+| 701冻结工具/42新共享库ABI/20重放360负对照；原失败保留 | `offline` | `PASS` |
+| 实际锁/引用/提交撤权晚到与复用组合：未证明，无新形式化运行 | `formal_bounded` | `UNPROVED` |
+| 原c51首个真实受保护release整轮FAIL：命令核算缺口 | `real_device` | `FAIL` |
+| 唯一SSAP安全消费者与完整S0-S6/恢复等原范围：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 
@@ -1830,7 +1836,7 @@ worker、1270-byte未完成前缀/满credit池、真实IN回复屏障及5秒原�
 离线：共享交换及新前置阶段负对照、历史原件完整重放、默认工具严格检查；原普通
 门禁断言参数0保持，非零精确匹配req1/2和真实机制/epoch。SMTC/SSAP消费者后续接通，
 仅本批不变量为门禁，不加控制面全集前置；全S0–S6/19WP/10FV/12DG和恢复开放不变。
-当前仅工具接线/离线通过，新artifact实机尚未执行，不继承K619/U73旧资格。
+本批已取得下述K619/U390独立资格；旧U73资格仍保留原工具/产物身份。
 
 
 c51首个security1/release0在guest完成受保护数据与清理，但parent原全命令核算以
@@ -1840,3 +1846,19 @@ opcode放行；额外控制/relay、安装缺失/变更、plain降级和旧epoch
 701工具与原件离线重放只支持该修复范围，不能将原c51失败改成新实机PASS；重封
 新工具/产物后按原矩阵重跑。fixture共享引用/无效突变及冻结CABI路径错误也保留，
 修正测试输入，不放宽任何原物理或协议断言。
+
+
+本批[20项限定实机退出](../docs/evidence/protected-channel-lifecycle-20261017.json)已达：
+K619/U390/tool390，两等级各两端五生命周期，48实际控制前往返/170相反端relay RX/
+40安装/80实时机制查询；20原件重放/360复制证据负对照。另[249与完整2042](../docs/evidence/protected-channel-lengths-20261017.json)
+增加16真实往返/16边界拒绝。701冻结工具、42新库ABI、115严格文档单列；原c51FAIL
+及测试调用错误不改写。无新形式化证明，不把partial2042当完整交付，不转授未执行范围。
+
+**进入下一条生产链路：唯一SSAP Engine消费实际安全机制与本地权限。** 当前
+`event_loop`发布连接时即自动plain SMTC，`ChannelKind::Service`也忽略security实参；
+必须在首次SMTC bind前冻结有效要求或延后同一个Engine，传播原参数并由内核实际
+Grant准入，不通过关闭后重绑、第二Engine或历史Agent成功缓存升级。权限类型继续
+复用SsapOperations，操作位与认证/加密/本地授权分开；CPCD不弱化，未支持条件明确
+拒绝。优先取得真实受保护SMTC/SSAP读写与原plain回归，再扩展完整安全策略；本次
+审计不代表已经实现消费者。只设相关门禁，不等待控制面全集，数据/四设备/性能、
+自然RCA/非人工恢复及原完整S0–S6/19WP/10FV/12DG保持并行和OPEN。

@@ -4,10 +4,23 @@
 [唯一计划](implementation-plan.md)是待办。当前摘要从
 `project/qualification-records.json` 生成或校验，不以“最新 HEAD”推断实机资格。
 
-本批在原K619上扩展受保护生命周期测试编排：共享typed交换先于首次CUTC绑定，
-原File/Down/期限屏障继续使用。c51首轮因全命令账本未纳入真实安全交换而FAIL，
-原断言/失败保留；只计入已核验具体命令的修复经701项工具和六复制真实证据负对照
-检查，新artifact20项实机重试待执行；下列U73资格不转授到新测试实现。
+[受保护生命周期限定结果](../docs/evidence/protected-channel-lifecycle-20261017.json)：
+准确K619/U390/tool390，等级1/2各两端release、最后管理fd、dup、实际Down、原5秒
+共20项通过；48次控制前真实对端往返，170次relay/对端RX、40安装/0011、80当前
+机制快照。原pool5/1270byte未完成PDU/旧fd与poll/撤权后无新USB提交断言保持。
+20原件重放和360复制证据负对照、701冻结工具及42新共享库跨语言检查分别通过。
+同行仅证明独立lease/Ready/真实扫描，不是另一组持续业务或进程故障隔离。
+
+[受保护长度限定结果](../docs/evidence/protected-channel-lengths-20261017.json)：同产物
+经原slkd/slktest，security1的249边界与security2的完整2042各交换两连接角色，再16次
+实际对端校验回复/16边界拒绝。这8次完整2042往返区别于生命周期的未完成长包前缀。
+两个长度点不是完整长度/credit/多通道/公平性/性能或四设备资格。
+
+本批20项退出已达，转向唯一SSAP安全消费者；首次c51整轮FAIL保留，修复只计入
+已验证具体命令，不按opcode放宽。没有新增形式化证明，旧Grant helper79限定范围
+不扩展；live off/rekey/unknown/query及安装在途矩阵、NOCP/复用/drain、自然RCA/
+非人工恢复和完整S0–S6仍OPEN。SMTC自动普通绑定与Service忽略security实参须在
+首次受保护SMTC前整改，不能事后重绑或增加Engine；机制等级不是命名身份/Bond。
 
 [固定安全epoch Grant限定实机结果](../docs/evidence/security-grant-fixed-real-20261017.json)
 绑定K61905139/U73a2898，执行73a、后处理02ac：普通control组用户通过既有slkd与
@@ -306,6 +319,12 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | 原构造器/路径/fixture/LSan/证明监督器失败保留 | `offline` | `FAIL` |
 | 受保护实时失效/SSAP消费者及完整原范围：仍缺 | `real_device` | `UNPROVED` |
 | K619/U73普通通道十项生命周期：受保护矩阵不继承 | `real_device` | `PASS` |
+| K619/U390：两等级两端20项受保护通道生命周期，48真实回复 | `real_device` | `PASS` |
+| K619/U390：受保护249边界及完整2042双角色16回复 | `real_device` | `PASS` |
+| 701冻结工具/42新共享库ABI/20重放360负对照；原失败保留 | `offline` | `PASS` |
+| 实际锁/引用/提交撤权晚到与复用组合：未证明，无新形式化运行 | `formal_bounded` | `UNPROVED` |
+| 原c51首个真实受保护release整轮FAIL：命令核算缺口 | `real_device` | `FAIL` |
+| 唯一SSAP安全消费者与完整S0-S6/恢复等原范围：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

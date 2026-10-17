@@ -802,7 +802,7 @@
   "issue_sync_status": "K7/K19/U5/U8 liveSessionmechanism/UNPROVED/Grantconditions updated/readbackOPEN;originalscopebodiesunchanged",
   "issue_sync_receipt": "docs/evidence/security-live-state-maintenance-20261017.json",
   "previous_goal_turn_classification": "progress:liveSessionkernel6861/U13bb sixrealVM/32snapshots/48peerRT,31mutants,signedpushedb9,4issuesOPENand115materialscopedregistry",
-  "current_goal_turn_classification": "PROGRESS_SHARED_PROTECTED_LIFECYCLE_ORCHESTRATION_NOT_YET_REAL_QUALIFIED",
+  "current_goal_turn_classification": "PROGRESS_TWENTY_PROTECTED_LIFECYCLE_AND_SELECTED_LENGTHS_REAL_PASS_NEXT_SOLE_SSAPPERMISSIONS",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1535,19 +1535,42 @@
       "security-grant-plain-lifecycle-73a": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "protected-lifecycle-390-real": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "protected-lifecycle-390-lengths": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "protected-lifecycle-390-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "protected-lifecycle-390-formal": {
+        "level": "formal_bounded",
+        "result": "UNPROVED"
+      },
+      "protected-lifecycle-390-failed": {
+        "level": "real_device",
+        "result": "FAIL"
+      },
+      "protected-lifecycle-390-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "wp09-protected-lifecycle-orchestration-real-pending",
-      "production_behavior": "OriginalphysicalSession immutableGrant frozenatbind;currentgrade/epochatsoftwareadmission/poll/dequeue/metadata/atomicUSB,ACBingressrevision/PBisolation;ordinaryslktestsecurity1/2",
+      "id": "wp09-protected-lifecycle-qualified-next-single-SSAP",
+      "production_behavior": "SameK619physicalSession frozenGrade/epochGrant;existingtypedmechanism beforefirstprotectedCUTCbind plus originalFile/Down/5s/credit/prefix;no newHost/Engine",
       "exit": [
-        "K619/U73/tool73/post02:6VM/16protectedand48totalactualpeerRT/20grade-refusals/32snapshots,selectedplain249/2042",
-        "Exactsource-mapped53ingress/actualCsanitizer,279Rust/694executed695posttools/42CABI;CBMC79helperPASSonly,combinedtemporalUNPROVED",
-        "FullbatchexitNOTmet:protectedrelease/finalfd/dup/Down/deadline/inflight andSSAPpermissionconsumers/fulloriginalscopeOPEN",
-        "SameK619/U73:10plainsecurity0lifecycle,24precontrolRT,tenexactreplays100negatives,unchangedpeerlease/Ready/scan;original2s/8sfixtures/5sdeadline;notprotectedinvalidation"
+        "20protected security1/2 x5cases xbothindices realPASS,48peerRT/170oppositerelayreceipts/40installations/80queries;firstc51FAIL retained",
+        "Protected249boundary andcomplete2042 bothroles add16peerRT/16boundaryrejects;selectednotfullmatrix",
+        "701frozenTools/42newCABI/20replays360mutants/6historical+6failuremutants,115strictdocs;no newformalproof andwholegoalINCOMPLETE"
       ],
-      "next": "Freeze newtypedprelude+existinglifecycletools;20VM security1/2 x5cases x2indices withoriginalbarriers/credit/1270prefix/oldfd/poll/peerleaseReadyScan;then soleSSAPsecurityconsumer,noallcontrolprecondition"
+      "next": "SoleSSAPfirstSMTCbind requiredsecurity/policy:existingautoplainstart mustdeferorfreeze strongerrequirement beforebind,passServiceargument andpreserveCPCD;no late rebind/secondEngine/allcontrolprecondition. Relateddata/fourdevice/performance andnaturalRCA/nonmanualrecoveryparallel"
     }
   },
   "agent_workstream": {
@@ -1711,10 +1734,10 @@
   },
   "next_real_vertical_slice": {
     "work_package": "WP09/WP08,WP06/07/16/17 parallel",
-    "state": "FIXED_PROTECTED_GRANT_POSITIVE_REAL_PASS_FULL_EXIT_OPEN",
-    "behavior": "Reuse unique physical Session frozen securityepochGrant at bind/softwareadmission/poll/metadata/dequeue/actualUSB,ingressrevision and PBisolation;soleSSAPsecurityconsumer next",
-    "first_exit": "Protectedlive release/finalfd/dup/Down/deadline/inflight andauthority/isolation;no refundofphysicalobligation;soleSSAPsecurityconsumer followsrelatedgatesonly",
-    "report": "docs/evidence/security-grant-fixed-real-20261017.json",
+    "state": "SOLE_SSAPPERMISSIONS_NEXT_PROTECTED_LIFECYCLE_EXIT_MET",
+    "behavior": "Reuse soleEngine andexistingSMTCpath:fix Service security propagation and freeze requirement/defer before firstautoplainbind;not secondEngine/late-rebind/cachedAgentgrade",
+    "first_exit": "ExactnewprotectedSMTC/SSAPpeer-validatedreadwrite plusoriginalplainregression;strongerunsupportedexplicit,CPCDnotweakened,relatedinvariantsonly",
+    "report": "docs/evidence/protected-channel-lifecycle-20261017.json",
     "parallel": "NumericCLI/humanbudget andcallbackloss/cancel/Down/inflight;fullnewsevenlength/tenlifecycle,fairness/resources,fourdevice,naturalRCA/nonmanualrecovery remainOPEN,noallcontrolprerequisite",
     "architecture": "Existingdrivers/net/slkd/Session/Grant/credit/Ticket;VM-only,U2/3,E1excluded,UserHostP4"
   },
@@ -2499,7 +2522,7 @@
     "executed_tools": "73a2898b05e662afb1bb768fecc9e6eefce5c3f8",
     "post_processing_tools": "02ac76347d42bebaddca60d54447779b368e5fc0",
     "results": "6VM/16protected48totalpeerRT/20gradeRefusals/32snapshots;CBMC79helperonly;combinedUNPROVED",
-    "remaining": "Protectedlive release/finalfd/dup/Down/deadline/inflight+nativeGrantauthority/SSAPsecurityconsumers/fullscopeOPEN",
+    "remaining": "Protected20File/Down/5s andselected249/full2042 qualified separately at390;liveoff/rekey/query/installinflight/soleSSAPsecurityconsumers/fullscopeOPEN",
     "plain_lifecycle": {
       "status": "TEN_SCOPED_REAL_PASS_NOT_PROTECTED",
       "report": "docs/evidence/security-grant-lifecycle-20261017.json",
@@ -2512,13 +2535,19 @@
     "issues_readback": "K7/K17/K19/U5/U8OPEN;originalscopebodyunchanged"
   },
   "protected_lifecycle_batch": {
-    "status": "FIRST_REAL_FAIL_SPECIFIC_COMMAND_ACCOUNTING_FIXED_OFFLINE_RETRY_PENDING",
+    "status": "PLANNED_TWENTY_CASE_EXIT_SCOPED_REAL_PASS",
     "kernel": "61905139ff8c3ed2937ccdba697d880880582234",
     "behavior": "Reuse typed mechanism exchange before first protected CUTC bind,then original File/Down/deadline workers/barriers;no newEngine orkernelchange",
     "exit": "20actualVMcases:security1/2 xrelease/lastfd/dup/Down/originaldeadline xbothindices,originalphysicaldebt/1270prefix/no-postrevoke-submit/poll/oldfd/peerleaseReadyScan unchanged;actualpeerbeforecontrolRT",
-    "missing": "Newartifactrealgates,livecipher-off/rekey/unknown/nativequeryinvalidationandcombinedproof/fullscopeOPEN",
+    "missing": "SoleSSAP firstbind-security/policy/localpermissions/CPCD consumers;liveoff/rekey/unknown/nativequery/installinflight,combinedproof/fullscopeOPEN",
     "first_failed_run": ".dev/protected-lifecycle-qualification-v1.json",
     "first_failure": "Originalallcommandguard omittedexistingrealrelay/installcommands;guestcompletedprotectedbusinessbutwholec51runFAIL preserved",
-    "fix": "Only independentlyvalidatedconcretecommandrecordsjoinoriginalexpectedset;noopcodewideexception;701tools/sixcopiedactualevidencenegatives,notnewphysicalPASS"
+    "fix": "Only independentlyvalidatedconcretecommandrecordsjoinoriginalexpectedset;noopcodewideexception;701tools/sixcopiedactualevidencenegatives,notnewphysicalPASS",
+    "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+    "compiled_userspace": "390a634b60320706e5fb619d3c0b1df661378261",
+    "executed_tools": "390a634b60320706e5fb619d3c0b1df661378261",
+    "report": "docs/evidence/protected-channel-lifecycle-20261017.json",
+    "selected_lengths_report": "docs/evidence/protected-channel-lengths-20261017.json",
+    "result": "20protectedFile/Down/5s,48beforecontrolRT,170peerrelays40installations80queries;20replays360negatives;selected249/full2042 add16RT16rejects;originalc51FAIL unchanged"
   }
 }

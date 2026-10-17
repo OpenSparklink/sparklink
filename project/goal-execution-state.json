@@ -2512,10 +2512,13 @@
     "issues_readback": "K7/K17/K19/U5/U8OPEN;originalscopebodyunchanged"
   },
   "protected_lifecycle_batch": {
-    "status": "IMPLEMENTING_NOT_QUALIFIED",
+    "status": "FIRST_REAL_FAIL_SPECIFIC_COMMAND_ACCOUNTING_FIXED_OFFLINE_RETRY_PENDING",
     "kernel": "61905139ff8c3ed2937ccdba697d880880582234",
     "behavior": "Reuse typed mechanism exchange before first protected CUTC bind,then original File/Down/deadline workers/barriers;no newEngine orkernelchange",
     "exit": "20actualVMcases:security1/2 xrelease/lastfd/dup/Down/originaldeadline xbothindices,originalphysicaldebt/1270prefix/no-postrevoke-submit/poll/oldfd/peerleaseReadyScan unchanged;actualpeerbeforecontrolRT",
-    "missing": "Newartifactrealgates,livecipher-off/rekey/unknown/nativequeryinvalidationandcombinedproof/fullscopeOPEN"
+    "missing": "Newartifactrealgates,livecipher-off/rekey/unknown/nativequeryinvalidationandcombinedproof/fullscopeOPEN",
+    "first_failed_run": ".dev/protected-lifecycle-qualification-v1.json",
+    "first_failure": "Originalallcommandguard omittedexistingrealrelay/installcommands;guestcompletedprotectedbusinessbutwholec51runFAIL preserved",
+    "fix": "Only independentlyvalidatedconcretecommandrecordsjoinoriginalexpectedset;noopcodewideexception;701tools/sixcopiedactualevidencenegatives,notnewphysicalPASS"
   }
 }

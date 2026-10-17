@@ -95,6 +95,20 @@ class ProtectedPrelude(unittest.TestCase):
                 else:r['connected_file_corroboration']=None
                 with self.subTest(level=level,kind=kind):self.assertEqual(run_exit_code(r),1)
 
+    def test_original_all_command_guard_only_counts_exact_verified_records(self):
+        from ws73_protected_grant import command_records
+        r,c=fixture(1);p=corroborate(r,c)
+        commands=command_records(p,c)
+        self.assertEqual(len(commands),11)
+        self.assertNotIn(0x1403,[v['opcode'] for v in commands])
+        for kind in ['missing','duplicate','changed-relay','bad-id']:
+            proof,cap=copy.deepcopy(p),copy.deepcopy(c)
+            if kind=='missing':cap['commands'].remove(next(v for v in cap['commands'] if v['opcode']==0x1c03))
+            elif kind=='duplicate':cap['commands'].append(copy.deepcopy(commands[0]))
+            elif kind=='changed-relay':proof['wire']['controllers'][0]['relays'][0]['command']['params']='00'
+            else:proof['wire']['installations'][0]['command_record']=-1
+            with self.subTest(kind=kind),self.assertRaises(ValueError):command_records(proof,cap)
+
     def test_plain_legacy_has_no_implicit_positive_prelude(self):
         self.assertEqual(requirement({}),0)
         with self.assertRaises(ValueError):requirement(dict(protected_security={}))

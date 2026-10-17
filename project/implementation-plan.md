@@ -1831,3 +1831,12 @@ worker、1270-byte未完成前缀/满credit池、真实IN回复屏障及5秒原�
 门禁断言参数0保持，非零精确匹配req1/2和真实机制/epoch。SMTC/SSAP消费者后续接通，
 仅本批不变量为门禁，不加控制面全集前置；全S0–S6/19WP/10FV/12DG和恢复开放不变。
 当前仅工具接线/离线通过，新artifact实机尚未执行，不继承K619/U73旧资格。
+
+
+c51首个security1/release0在guest完成受保护数据与清理，但parent原全命令核算以
+“unrecorded reset, disconnect or peer command”拒绝，原整轮FAIL保留。修复仅将
+共享wire checker已验证的relay及安装具体record/完整命令加入原预期集合，不按
+opcode放行；额外控制/relay、安装缺失/变更、plain降级和旧epoch复制证据均拒绝。
+701工具与原件离线重放只支持该修复范围，不能将原c51失败改成新实机PASS；重封
+新工具/产物后按原矩阵重跑。fixture共享引用/无效突变及冻结CABI路径错误也保留，
+修正测试输入，不放宽任何原物理或协议断言。

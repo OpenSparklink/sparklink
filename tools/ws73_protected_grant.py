@@ -94,3 +94,19 @@ def corroborate(outer,capture):
     proof=exchange_wire(context,capture,prefix_only=True)
     return dict(status='ACTUAL_PROTECTED_PRELUDE_AND_LIFECYCLE_SCOPE',requirement=required,wire=proof,
                 scope='Explicit privileged mechanism approval followed by existing ordinary protected fd lifecycle;not daemon Agent/human identity/Bond/RF attestation/natural recovery')
+
+
+def command_records(proof,capture):
+    """Only commands already checked by the real exchange verifier.
+
+    Install params stay inside private capture processing, never public proof.
+    No opcode-wide exception to the original all-command accounting.
+    """
+    wire=proof['wire']
+    if wire.get('status')!='REAL_POSITIVE_EXCHANGE_ONLY_CORROBORATED':raise ValueError('verified exchange required')
+    expected=[v['command'] for c in wire['controllers'] for v in c['relays']]
+    ids=[v['record'] for v in expected]+[v['command_record'] for v in wire['installations']]
+    if any(type(v) is not int or v<0 for v in ids) or len(ids)!=len(set(ids)):raise ValueError('distinct actual security command records required')
+    selected=[v for v in capture['commands'] if v['record'] in ids]
+    if len(selected)!=len(ids) or any(v not in selected for v in expected):raise ValueError('original checked command bytes required')
+    return selected

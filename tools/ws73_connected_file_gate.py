@@ -233,7 +233,7 @@ def verify_records(r):
     return snapshots
 
 
-def _corroborate(r, capture, hold=None, stderr=None, expected=None):
+def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None):
     if 'security_capabilities' in r:
         if hold is not None:raise CaptureError('limited capability gate excludes reply hold/recovery')
         from ws73_security_capabilities import corroborate as capability_corroborate
@@ -309,6 +309,9 @@ def _corroborate(r, capture, hold=None, stderr=None, expected=None):
         if any(belongs(c,i,r['first_close_wall_ns'],r['first_close_quiet_end_ns']) and c['opcode']==0x1403 for c in capture['commands']):
             raise CaptureError('first dup close must not disconnect')
     expected_commands=[v['command'] for v in proofs]+[v['command'] for v in links]
+    if prelude is not None:
+        from ws73_protected_grant import command_records
+        expected_commands+=command_records(prelude,capture)
     actual=[c for c in capture['commands'] if any(belongs(c,n,r['start_wall_ns'],r['end_wall_ns']) for n in [0,1])]
     if actual!=sorted(expected_commands,key=lambda c:c['wall_ns']):
         raise CaptureError('unrecorded reset, disconnect or peer command in connected File gate')
@@ -355,8 +358,9 @@ def _corroborate(r, capture, hold=None, stderr=None, expected=None):
 def corroborate(r, capture, hold=None, stderr=None, expected=None):
     from ws73_protected_grant import requirement,corroborate as protected_wire
     security=requirement(r)
-    proof=_corroborate(r,capture,hold,stderr,expected)
-    if security:proof['protected_security']=protected_wire(r,capture)
+    prelude=protected_wire(r,capture) if security else None
+    proof=_corroborate(r,capture,hold,stderr,expected,prelude)
+    if security:proof['protected_security']=prelude
     return proof
 
 

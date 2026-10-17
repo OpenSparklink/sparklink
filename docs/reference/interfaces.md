@@ -73,6 +73,9 @@ Python `sparklink.Client(deadline_ns=...)`、`controllers(deadline_ns=...)` 和
 `open_channel(ControllerId, connection_path, deadline_ns=..., directions=3, minimum=0)`
 调用上述 C ABI，不自行拼 D-Bus。`controllers` 返回 immutable 身份 tuple，
 `open_channel` 返回标准 `socket.socket`，由应用独立关闭/dup/传递。
+固定通道以显式 family=46、SOCK_DGRAM、protocol=0 包装真实 fd；内核尚无 getname
+操作，不能依赖 Python 的 fd 地址自动探测，也不承诺 getsockname/getpeername。
+连接身份从固定 Connection 和内核 channel_info 核对，不从 socket 地址猜测。
 推荐 `with Client(...) as client`；方法与 close 串行，复用同一原始期限。
 关闭不终结通道 fd；管理 lease 撤销/daemon 死亡的影响仍按内核契约。
 客户端不能跨 fork 使用；fork 子进程先 exec，或用 spawn 创建进程后新建客户端。

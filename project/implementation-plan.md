@@ -1441,6 +1441,12 @@ SDK110的negotiable-T后实际建链，Python缺少staged SDK路径而在业务�
 环境显式记录PYTHONPATH和应用库ABI-major，先以镜像内实际库/消费者进行离线导入、
 过期Client拒绝和参数检查，再封存新镜像。失败不改写通过，不据重跑宣称自然恢复。
 
+R5f2 实机进一步发现[Python fd构造生产缺陷](../docs/evidence/python-channel-constructor-failure-20261018.json)：
+获得真实授权fd后，标准socket自动探测触发当前未支持的getname而EOPNOTSUPP，业务
+未开始。按已知固定DGRAM契约显式family/type/protocol，继续使用标准socket所有权。
+有界C/OS边界fixture与真实Unix fd只验证Python包装/dup/关闭，旧源码反例失败；
+不能算AF_SPARKLINK或实际交付。新源码必须重新封存镜像并取真实双端随机业务证据。
+
 核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
 保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取
 错误源库名且缺Native/pc统一安装；pc头目录不符；无正式SONAME与干净VM升级回滚

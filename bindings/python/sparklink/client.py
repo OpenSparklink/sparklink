@@ -158,8 +158,10 @@ class Client:
                     os.close(fd.value)
                 raise
         # Transfer successful ownership directly to the standard socket object.
+        # Family/type/proto are the existing fixed channel contract, not Python's
+        # autodetection: this unpublished kernel family has no getname operation.
         try:
-            return socket.socket(fileno=fd.value)
+            return socket.socket(46, socket.SOCK_DGRAM, 0, fileno=fd.value)
         except BaseException:
             os.close(fd.value)
             raise

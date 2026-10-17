@@ -11,14 +11,15 @@
     "Exact K0cd/compiled+tools6d30,SDK110 U2/U3,four real pairedUSB two-role gates:61/249+16oversize/2042/mechanism2,32actual opposite application validated replies.24Ownedcases/96decisions/120remote transactions;owner exits BETWEEN operations only. Guest service-only68denials/local ownership checks,not service-onlyRF or clean-distro install.",
     "Private-bus fixtures cover SDK owner replacement,no weaker fd fallback,actual wrong-domain refusal and unavailable other controller. Original b0f selected operation coupled to unrelated Generation reproduced against unmodified production and retained;6d selected-only checks fix it. Registry list only membership. Original no-cache assertion moved to stronger actual fd admission refusal with unchanged side-effect count. Not proof of cross-bus/kernel atomicity or real multi-controller fault injection.",
     "Sealed6d actual two cdylibs with frozen binding/header/C/Rust tests pass50. Eight-thread64first-load calls and exhaustive actual C export separation included. This is offline actual-library/ABI/errno qualification;four RF gates exercise the Rust SDK/slktest path,not all C/Python external consumers in real deployment. Missing frozen Genl kernel-path env attempt retained,rerun with both exact kernel paths.",
-    "Migration ctypes pointer-signature omission caused actual SIGSEGV;raw faulthandler/source evidence retained,prototype fixed and initialization only published after complete signatures. Original header macro/import/doc-check failures retained,assertions not weakened. b0f prepared candidate never used to qualify6d.",
+    "Migration ctypes pointer-signature omission caused actual SIGSEGV;original raw faulthandler/diagnostic logs retained,prototype fixed and initialization only published after complete signatures. The faulty uncommitted Python loader/first debug binary were not sealed;exact original whole-tree crash replay is unavailable and is not claimed. Final sealed6d bindings/libraries are separately source-bound and pass50. Header/import/doc-check failures retained with assertions unchanged; b0f prepared candidate never used to qualify6d.",
     "No new formal proof. Existing unsupported/unstable Kani UNPROVED;callback/drain/firmware/NOCP assumptions not proved. NaturalRCA/nonmanual recovery and fullS0-S6/19WP/10FV/12DG remain OPEN. R4 legacy API/event/ABI retirement,R5/R6 and later C/Python broker/SSAP APIs still missing. Source6d qualification does NOT transfer to current R4 tree."
   ],
   "remaining": [
     "R4 legacy controller-security facades and other connection/scan/PM/AFH/sync/privacy/measurement/RemoteService/event consumers,raw kernel ABI/selftest migration remain;old numbers never reused.",
     "R5 complete interface/dependency and deployment gates;R6 actual cleanVM install/ordinary+C/Python consumers/upgrade/rollback/uninstall and configuration/state preservation. Current Makefile additions are not deployment qualification.",
     "Full advanced Channel and C/Python broker/SSAP clients,owner inflight/deadline/revoke/Down,RF cache stress/TTL,CPCD/notifications/indications,protectedE/fullAgent,fullmultichannel/fourdevices/performance/soak/trustedBond remain.",
-    "Natural startup/reenumeration/disappearanceRCA and nonmanual recovery OPEN;old5509ms failure and required historical material-retention incident unchanged."
+    "Natural startup/reenumeration/disappearanceRCA and nonmanual recovery OPEN;old5509ms failure and required historical material-retention incident unchanged.",
+    "Original uncommitted faulty ctypes-loader/debug artifact were not sealed;retain original diagnostics and limited provenance,do not invent original source hashes or count the failed run PASS. Improve per-attempt source/artifact capture in R5."
   ],
   "bounds": {
     "ordinary_round_trips": 32,
@@ -287,6 +288,10 @@
       "sha256": "fb8b75695dfc0e8ab8dff06fd22fb7bfb57a7983da98d8a531e910ab8f3baf89",
       "bytes": 275395,
       "access": "private retained workspace;raw USB/security materials restricted"
+    },
+    "original_faulty_tree": {
+      "status": "UNSEALED_NOT_EXACTLY_REPLAYABLE",
+      "scope": "Only original diagnostic/faulthandler logs retained;final fixed source+sealed release libraries are distinct qualification. Original b0f controller-coupling production source remains available in git."
     }
   },
   "native_bundle": {

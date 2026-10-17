@@ -1420,6 +1420,20 @@ FAIL、warm启动观察、复制审计摘要的旧source/count标注及封存器
    依赖、第三方许可证、来源／SBOM和CI发布汇总；准确新产物原生权限与WS73另验。
    部署、文档或离线通过不改变原功能资格。
 
+R5f3 当前有限批：C/Python的`Connection`沿用原Client caller、固定daemon owner与
+既有`ApplicationConnection`身份核对；只把现有远端SSAP读／短写方法接到相同
+执行器及唯一daemon Engine。关闭Client仅释放一个引用，派生Connection最后释放
+再join同一执行器；不隐式断链、注销服务、撤销他人Grant或退款。输出超限明确拒绝，
+不截断、不重试；本地等待期限不宣称已传播为端到端原始wire期限。
+退出为：实际C/Python外部消费者和真实private bus覆盖确定输入／结果、Client先关、
+过期排队、超时、旧lifetime拒绝、输出不变、ENOBUFS及有界内存、错误与无echo；
+独立header/ELF、严格default/all-features、绑定、文档及相关退休边界一致。随后封存
+准确新artifact，在VM验证新C/Python SSAP入口的实际对端结果及原路径保持。
+private bus仅序列化／身份fixture，不是协议、权限或RF资格。现有apps组没有SSAP
+RPC权利，不能把管理组调用门禁写成普通应用策略完成；对应授权继续单独整改。
+完整Owned／Agent／
+高阶发现、公共共享API和R6c仍是原必需缺项；本有限批不冒充完整架构退出。
+
 C同步入口继续保持每客户端独立执行器、有界8请求队列及一个在途请求，不持有
 controller管理lease。绝对CLOCK_MONOTONIC原期限覆盖本地排队和等待；超时不
 宣布远端取消、回滚或credit退款。最后释放join本地执行器，已交付fd独立拥有。

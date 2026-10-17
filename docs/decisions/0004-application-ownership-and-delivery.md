@@ -26,6 +26,14 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
 仅开放已接通的类型化方法，高阶 API 分批迁移，不以空门面补齐目标树。
 完整参数/错误、fork 与 fd 生命周期见[接口参考](../reference/interfaces.md)。
 
+派生C/Python Connection引用与Client引用共享原caller／执行器；关闭Client不关闭仍
+被Connection引用的caller，最后本地引用才join。Connection固定现有Rust视图的
+identity，远端SSAP读／短写使用同一RemoteSsap方法和daemon Engine。对象释放不
+隐式断链、撤权或回滚。C缓冲不足在远端执行后只是本地结果交付失败，不进行size
+query重试；Python一次分配有界结果缓冲，不截断。当前方法的本地等待期限不能
+被描述为已传播至daemon的端到端原期限；完整期限传递仍保留原整改门禁。
+
+
 1. 应用的扫描租约、通道 Binding 与管理者的 controller/物理连接权限分别授权。
    合并硬件扫描不得扩大客户端过滤或取消范围；按 caller、controller generation、
    原始期限、预算记录应用租约。最后一个有效租约才申请停止硬件扫描；强制管理

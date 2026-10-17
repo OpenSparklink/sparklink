@@ -28,6 +28,12 @@
  */
 typedef struct SlkClient SlkClient;
 
+/**
+ * A pinned physical connection observation, not a management lease or Grant.
+ * Retains its originating caller. Release never disconnects the physical link.
+ */
+typedef struct SlkConnection SlkConnection;
+
 typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
     uint16_t version;
     uint16_t size;
@@ -221,9 +227,10 @@ int slk_ssap_access_error(uint32_t bits, uint32_t level, uint32_t write);
 int slk_client_open_system(uint64_t deadline_ns, struct SlkClient **output);
 
 /**
- * Stop/join this client's local executor and close its broker connection. Null
- * is allowed. Does not close returned channel fds, disconnect a physical link
- * or revoke another application's Grant. Remote effects may outlive a timeout.
+ * Release this Client reference. Null is allowed. Derived connection views
+ * retain the same executor/broker caller until their final release; it then
+ * stops and joins. Does not close returned channel fds, disconnect a physical
+ * link or revoke another application's Grant. Remote effects may outlive timeout.
  * # Safety
  * client is null or one live pointer returned by open_system, freed once only;
  * no concurrent calls or later use. Never share a client across fork;
@@ -267,6 +274,77 @@ int slk_client_open_channel(const struct SlkClient *client,
                             uint32_t minimum,
                             uint64_t deadline_ns,
                             int *output);
+
+/**
+ * Bind an existing canonical connection path at its current immutable identity.
+ * Same path/byte/controller validation as open_channel; no address/handle lookup.
+ * Returns0 or negative errno, output unchanged on error. The view retains the
+ * original Client caller after slk_client_close, never follows daemon replacement.
+ * # Safety
+ * Inputs are live aligned immutable regions through the call; output is an
+ * exclusive aligned writable pointer slot, not aliasing them. No concurrent
+ * Client close. Caller releases a successful view once via connection_close.
+ */
+int slk_client_connection(const struct SlkClient *client,
+                          const struct SlkControllerId *controller,
+                          const uint8_t *path,
+                          uintptr_t path_length,
+                          uint64_t deadline_ns,
+                          struct SlkConnection **output);
+
+/**
+ * Release one owned view, NULL accepted. No implicit disconnect, service
+ * unregister, remote cancellation or credit refund. Final executor release
+ * joins bounded local work. Returned Channel fds have independent ownership.
+ * # Safety
+ * connection is NULL or one live owned pointer, freed once; no concurrent
+ * operations/close or later use. As with Client, do not use after fork.
+ */
+void slk_connection_close(struct SlkConnection *connection);
+
+/**
+ * Execute the existing daemon SSAP read on this fixed lifetime. Returns the
+ * same bytes as Rust RemoteSsap::read, without a second decoder or local echo.
+ * Capacity1..65535 is a language-boundary memory budget, not a negotiated MTU.
+ * ENOBUFS updates length but leaves buffer unchanged; the remote read already
+ * ran, so do not retry as a size query. Other failures leave both unchanged.
+ * The original absolute deadline covers local queue/wait only; ending that
+ * wait cannot undo remote effects. This API adds no end-to-end deadline wire
+ * field. Success is the existing protocol result, not application processing.
+ * # Safety
+ * connection remains live, with no concurrent close; buffer is an exclusive
+ * capacity-byte writable region, length an exclusive aligned writable slot.
+ * Neither aliases connection or each other. Same fork contract as Client.
+ */
+int slk_connection_ssap_read(const struct SlkConnection *connection,
+                             uint16_t handle,
+                             uint32_t minimum,
+                             uint8_t *buffer,
+                             uintptr_t capacity,
+                             uintptr_t *length,
+                             uint64_t deadline_ns);
+
+/**
+ * Execute the existing short-write RPC, returning its exact protocol result
+ * bytes. No long-write fallback, truncation, method echo or new Engine. The
+ * daemon's actual negotiated size/security rules remain authoritative.
+ * value_length<=65535 is a language memory budget, not long-write support;
+ * oversize is EMSGSIZE before copying. Empty values are allowed. No retries.
+ * Output, deadline and remote-effect semantics are identical to ssap_read.
+ * In particular ENOBUFS or timeout may follow an already committed write.
+ * # Safety
+ * Same connection/output contract as ssap_read. value is a live immutable
+ * value_length-byte region (NULL only when empty), not aliasing writable outputs.
+ */
+int slk_connection_ssap_write(const struct SlkConnection *connection,
+                              uint16_t handle,
+                              uint32_t minimum,
+                              const uint8_t *value,
+                              uintptr_t value_length,
+                              uint8_t *buffer,
+                              uintptr_t capacity,
+                              uintptr_t *length,
+                              uint64_t deadline_ns);
 
 #ifdef __cplusplus
 }  // extern "C"

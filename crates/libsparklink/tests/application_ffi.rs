@@ -6,7 +6,7 @@ use std::{
     process::Command,
     sync::{
         Arc,
-        atomic::{AtomicUsize, Ordering},
+        atomic::{AtomicU64, AtomicUsize, Ordering},
     },
 };
 const BASE: &str = "/org/sparklink/slk2_g7";
@@ -26,11 +26,20 @@ impl Adapter {
         7
     }
 }
-struct Link(Arc<AtomicUsize>);
+struct Link(Arc<AtomicUsize>, Arc<AtomicUsize>, Arc<AtomicU64>);
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
     fn get_info(&self) -> slk_contract::ConnectionInfo {
-        (7, 11, 3, 0, 1, "01:02:03:04:05:06".into(), true, true)
+        (
+            7,
+            self.2.load(Ordering::SeqCst),
+            3,
+            0,
+            1,
+            "01:02:03:04:05:06".into(),
+            true,
+            true,
+        )
     }
     fn open_channel(&self) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
         self.0.fetch_add(1, Ordering::SeqCst);
@@ -49,6 +58,41 @@ impl Link {
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
             .into();
         Ok(fd.into())
+    }
+    // Finite broker serialization/identity fixture, not a protocol peer or
+    // successful dependency stub. Wrong requests fail and result != input.
+    async fn read_ssap_value(&self, handle: u16, minimum: u32) -> zbus::fdo::Result<Vec<u8>> {
+        self.1.fetch_add(1, Ordering::SeqCst);
+        match (handle, minimum) {
+            (17, 2) => Ok(vec![0x34, 0x78]),
+            (18, 0) => Ok(vec![0; 65536]), // Over the C output budget, not RF/MTU.
+            (19, 0) => {
+                self.2.store(12, Ordering::SeqCst);
+                Ok(vec![0xff])
+            }
+            (20, 0) => {
+                tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                Ok(vec![0xfe])
+            }
+            _ => Err(zbus::fdo::Error::NotSupported(
+                "unmatched fixture read".into(),
+            )),
+        }
+    }
+    fn write_ssap_value(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        self.1.fetch_add(1, Ordering::SeqCst);
+        match (handle, minimum, value.as_slice()) {
+            (17, 1, [0x56, 0x12]) => Ok(vec![0x90]),
+            (17, 0, []) => Ok(vec![0x91]),
+            _ => Err(zbus::fdo::Error::InvalidArgs(
+                "unmatched fixture write".into(),
+            )),
+        }
     }
 }
 
@@ -119,14 +163,20 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     std::fs::write(directory.join("materials.sha256"), &identities.stdout)?;
     let bus = support::Bus::start();
     let calls = Arc::new(AtomicUsize::new(0));
+    let ssap_calls = Arc::new(AtomicUsize::new(0));
+    let lifetime = Arc::new(AtomicU64::new(11));
     let _server = zbus::connection::Builder::address(bus.address.as_str())?
         .name("org.sparklink")?
         .serve_at("/org/sparklink", Manager)?
         .serve_at(BASE, Adapter)?
-        .serve_at(PATH, Link(calls.clone()))?
+        .serve_at(
+            PATH,
+            Link(calls.clone(), ssap_calls.clone(), lifetime.clone()),
+        )?
         .build()
         .await?;
     for language in ["c", "python"] {
+        lifetime.store(11, Ordering::SeqCst);
         let mut command = Command::new("timeout");
         command.arg("20s");
         if language == "c" {
@@ -179,6 +229,11 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         calls.load(Ordering::SeqCst),
         22,
         "no retry or weaker fallback, invalid inputs never reach OpenChannel"
+    );
+    assert_eq!(
+        ssap_calls.load(Ordering::SeqCst),
+        14,
+        "exact finite RPC count; invalid, expired and retired inputs never retry"
     );
     let unchanged = Command::new("sha256sum")
         .arg("--check")

@@ -799,9 +799,9 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F2_BASIC_AND_ORIGINAL_MATRIX_FINITE_PASS_FULL_SCOPE_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F3_SHARED_CONNECTION_SSAP_LANGUAGE_BOUNDARY_ACTIVE",
   "next_resume_tasks": [
-    "Actual publicclient fullgroup-policy/release/revoke/Down/originaldeadline/peerisolation;higher crosslanguageclients/sharedAPI/perappDiscovery andR6c. AlloriginalS0-S6/19WP/10FV/12DG remain;naturalRCA/nonmanualrecovery OPEN.",
+    "R5f3 source-boundoffline closure andnewactualC-Python SSAP entryVM;fullroles/release/revoke/Down/originaldeadline/peerisolation,remaininghigherSDK/sharedAPI/perappDiscovery/R6c. Basic3ff/004c preserved separately;fullscope/naturalRCA/nonmanualrecovery OPEN.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
@@ -1855,16 +1855,16 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R5f2-basic-and-preservation-finite-pass-full-architecture-open",
-      "production_behavior": "Service3ff/tools004c/kernel2fc/SDK110 explicitUS. Two publicC-Python peer roundtrips andsevenoriginalrealVMs/56peerroundtrips/sevenapplicationsizes;source-and-artifactbound independentreplay. No fullpermissions/lifecycle/highlevelSDK orrecovery promotion.",
-      "state": "R5F2_BASIC_C_PYTHON_AND_SEVEN_ORIGINAL_GATES_REAL_LIMITED_PASS",
+      "id": "WP18-R5f3-pinned-cross-language-connection-and-SSAP",
+      "production_behavior": "C/Python Connection retains existing caller/executor andRust lifetime view;read/shortwrite call existingRemoteSsap/uniqueEngine,no protocolorNativeauthority added. Source-boundfinalchecks/newentryVM pending;earlier3ff/004c records unchanged.",
+      "state": "R5F3_IMPLEMENTED_OFFLINE_CHECKS_REAL_NEW_ENTRY_NOT_QUALIFIED",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Actual publicclient fullgroup-policy/release/revoke/Down/originaldeadline/peerisolation;higher crosslanguageclients/sharedAPI/perappDiscovery andR6c. AlloriginalS0-S6/19WP/10FV/12DG remain;naturalRCA/nonmanualrecovery OPEN."
+      "next": "Seal exactnewsource/artifact offlinechecks andnewpublicSSAPVMpositive gate, thenfullroles/release/revoke/Down/originaldeadline/isolation,higherSDK/sharedAPI/perappDiscovery,R6c. NativeonlyVM;alloriginalscope andnaturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3534,6 +3534,12 @@
       "preservation_report": "docs/evidence/application-client-preservation-real-20261018.json",
       "source_authority": "qualification-records/source-bound reports;compiled_service3ff/guest-host004c/kernel2fc",
       "remaining_reference": "Canonical R5f/R6c,all original scopes andnaturalRCA/nonmanualrecovery remain"
+    },
+    "r5f3": {
+      "state": "IMPLEMENTED_OFFLINE_CHECKS_NEW_REAL_ENTRY_PENDING",
+      "contract": "Samecaller/executor andexistingowner/lifetime view;read/shortwrite viaoneRemoteSsap/Engine,referenceclose notphysicaldisconnect",
+      "exit_reference": "project/implementation-plan.md / R5f3 finite exit",
+      "limits": "No newend-to-enddeadlinewire;apps-onlySSAPpermissionsnotgranted;no newformal orreal qualification transferred."
     }
   },
   "owned_ssap_c6_historical_batch": {

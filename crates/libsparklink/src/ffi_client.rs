@@ -1,10 +1,10 @@
 //! Current synchronous C application broker boundary. No Native controller fd.
 use crate::sync_client::{Deadline, SyncClient};
-use std::{ffi::c_int, os::fd::IntoRawFd};
+use std::{ffi::c_int, os::fd::IntoRawFd, sync::Arc};
 
 /// Opaque caller connection. One bounded local executor; not a controller lease.
 pub struct SlkClient {
-    inner: SyncClient,
+    pub(crate) inner: Arc<SyncClient>,
 }
 
 /// Immutable registration identity only, not Ready, authorization or security.
@@ -14,6 +14,34 @@ pub struct SlkControllerId {
     pub generation: u64,
     pub index: u16,
     pub reserved: [u8; 6],
+}
+
+// Shared language-boundary input validation, not an identity/authorization cache.
+// Caller guarantees valid immutable regions; no operation or output mutation.
+pub(crate) unsafe fn connection_input(
+    controller: *const SlkControllerId,
+    path: *const u8,
+    path_length: usize,
+) -> Result<(slk_contract::ControllerId, String), i32> {
+    if controller.is_null() || path.is_null() || !(1..=256).contains(&path_length) {
+        return Err(nix::libc::EINVAL);
+    }
+    let id = unsafe { *controller };
+    if id.generation == 0 || id.reserved != [0; 6] {
+        return Err(nix::libc::EINVAL);
+    }
+    let raw = unsafe { std::slice::from_raw_parts(path, path_length) };
+    let path = match std::str::from_utf8(raw) {
+        Ok(path) if !path.contains('\0') => path.to_owned(),
+        _ => return Err(nix::libc::EINVAL),
+    };
+    Ok((
+        slk_contract::ControllerId {
+            index: id.index,
+            generation: id.generation,
+        },
+        path,
+    ))
 }
 
 /// Connect to the system broker, pinning its current unique owner. All deadlines
@@ -32,16 +60,21 @@ pub unsafe extern "C" fn slk_client_open_system(
     let result = Deadline::from_monotonic_ns(deadline_ns).and_then(SyncClient::open_system);
     match result {
         Ok(inner) => {
-            unsafe { output.write(Box::into_raw(Box::new(SlkClient { inner }))) };
+            unsafe {
+                output.write(Box::into_raw(Box::new(SlkClient {
+                    inner: Arc::new(inner),
+                })))
+            };
             0
         }
         Err(e) => -e,
     }
 }
 
-/// Stop/join this client's local executor and close its broker connection. Null
-/// is allowed. Does not close returned channel fds, disconnect a physical link
-/// or revoke another application's Grant. Remote effects may outlive a timeout.
+/// Release this Client reference. Null is allowed. Derived connection views
+/// retain the same executor/broker caller until their final release; it then
+/// stops and joins. Does not close returned channel fds, disconnect a physical
+/// link or revoke another application's Grant. Remote effects may outlive timeout.
 /// # Safety
 /// client is null or one live pointer returned by open_system, freed once only;
 /// no concurrent calls or later use. Never share a client across fork;
@@ -125,28 +158,16 @@ pub unsafe extern "C" fn slk_client_open_channel(
     output: *mut c_int,
 ) -> c_int {
     if client.is_null()
-        || controller.is_null()
         || output.is_null()
-        || path.is_null()
-        || !(1..=256).contains(&path_length)
         || directions == 0
         || directions & !3 != 0
         || minimum > 2
     {
         return -nix::libc::EINVAL;
     }
-    let id = unsafe { *controller };
-    if id.generation == 0 || id.reserved != [0; 6] {
-        return -nix::libc::EINVAL;
-    }
-    let raw = unsafe { std::slice::from_raw_parts(path, path_length) };
-    let path = match std::str::from_utf8(raw) {
-        Ok(path) if !path.contains('\0') => path.to_owned(),
-        _ => return -nix::libc::EINVAL,
-    };
-    let id = slk_contract::ControllerId {
-        index: id.index,
-        generation: id.generation,
+    let (id, path) = match unsafe { connection_input(controller, path, path_length) } {
+        Ok(value) => value,
+        Err(e) => return -e,
     };
     let result = Deadline::from_monotonic_ns(deadline_ns).and_then(|deadline| {
         unsafe { &*client }

@@ -54,11 +54,20 @@ def _library():
         "slk_client_open_channel": [ctypes.c_void_p, ctypes.POINTER(_ControllerId), ctypes.c_void_p,
                                     ctypes.c_size_t, ctypes.c_uint32, ctypes.c_uint32,
                                     ctypes.c_uint64, ctypes.POINTER(ctypes.c_int)],
+        "slk_client_connection": [ctypes.c_void_p, ctypes.POINTER(_ControllerId), ctypes.c_void_p,
+                                   ctypes.c_size_t, ctypes.c_uint64, ctypes.POINTER(ctypes.c_void_p)],
+        "slk_connection_close": [ctypes.c_void_p],
+        "slk_connection_ssap_read": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+                                      ctypes.c_void_p, ctypes.c_size_t,
+                                      ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
+        "slk_connection_ssap_write": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+                                       ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p,
+                                       ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
     }
     for name, arguments in signatures.items():
         function = getattr(lib, name)
         function.argtypes = arguments
-        function.restype = None if name == "slk_client_close" else ctypes.c_int
+        function.restype = None if name in ("slk_client_close", "slk_connection_close") else ctypes.c_int
     return lib
 
 
@@ -68,7 +77,8 @@ class Client:
     Use a context manager or close(). Calls and close are serialized. Cannot be
     used in a fork child; exec/spawn before creating a new Client. Sockets own their
     fds independently and keep normal dup/fork/SCM_RIGHTS/kernel Grant semantics.
-    Closing this Client neither closes those sockets nor disconnects a link.
+    Derived Connection objects retain this caller until their final close;
+    closing this Client neither closes sockets nor disconnects a physical link.
     """
     def __init__(self, *, deadline_ns):
         deadline_ns = _deadline(deadline_ns)
@@ -134,24 +144,18 @@ class Client:
         Same-lifetime rebinding/unsupported modes are never retried or downgraded.
         """
         deadline_ns = _deadline(deadline_ns)
-        if not isinstance(controller, ControllerId) or type(connection_path) is not str:
-            raise ValueError("typed ControllerId and connection object path required")
         if type(directions) is not int or directions not in (1, 2, 3):
             raise ValueError("directions must be TX=1, RX=2 or both=3")
         if type(minimum) is not int or minimum not in (0, 1, 2):
             raise ValueError("minimum must be mechanism 0..2")
-        path = connection_path.encode("utf-8")
-        if not 1 <= len(path) <= 256 or b"\0" in path:
-            raise ValueError("connection object path must be 1..256 UTF-8 bytes without NUL")
-        identity = _ControllerId(controller.generation, controller.index)
-        buffer = (ctypes.c_uint8 * len(path)).from_buffer_copy(path)
+        identity, buffer = _connection_input(controller, connection_path)
         fd = ctypes.c_int(-1)
         self._live()
         with self._lock:
             self._live()
             try:
                 _result(self._lib.slk_client_open_channel(self._handle, ctypes.byref(identity), buffer,
-                                                         len(path), directions, minimum, deadline_ns,
+                                                         len(buffer), directions, minimum, deadline_ns,
                                                          ctypes.byref(fd)))
             except BaseException:
                 if fd.value >= 0:
@@ -165,3 +169,134 @@ class Client:
         except BaseException:
             os.close(fd.value)
             raise
+
+    def connection(self, controller, connection_path, *, deadline_ns):
+        """Pin one real connection identity, without owning its physical lifetime.
+
+        The view retains this caller after Client.close; it never follows a
+        replacement daemon/generation/lifetime. No channel or management lease
+        is created. Close the returned view explicitly or use a context manager.
+        """
+        deadline_ns = _deadline(deadline_ns)
+        identity, path = _connection_input(controller, connection_path)
+        view = Connection._empty(self._lib)
+        self._live()
+        with self._lock:
+            self._live()
+            try:
+                _result(self._lib.slk_client_connection(self._handle, ctypes.byref(identity), path,
+                                                        len(path), deadline_ns, ctypes.byref(view._handle)))
+            except BaseException:
+                view.close()
+                raise
+        return view
+
+
+def _connection_input(controller, connection_path):
+    if not isinstance(controller, ControllerId) or type(connection_path) is not str:
+        raise ValueError("typed ControllerId and connection object path required")
+    path = connection_path.encode("utf-8")
+    if not 1 <= len(path) <= 256 or b"\0" in path:
+        raise ValueError("connection object path must be 1..256 UTF-8 bytes without NUL")
+    return (_ControllerId(controller.generation, controller.index),
+            (ctypes.c_uint8 * len(path)).from_buffer_copy(path))
+
+
+class Connection:
+    """Owner/lifetime-pinned observation from Client.connection, not a lease.
+
+    close releases this view and, when last, joins the existing caller executor;
+    it never implicitly disconnects. No use/close of an inherited view after fork.
+    """
+    def __init__(self):
+        raise TypeError("use Client.connection")
+
+    @classmethod
+    def _empty(cls, lib):
+        view = object.__new__(cls)
+        # Allocate the Python wrapper before native ownership exists. A later
+        # ctypes success writes its owned handle directly into this object.
+        view._lib, view._handle = lib, ctypes.c_void_p()
+        view._pid, view._lock = os.getpid(), threading.RLock()
+        return view
+
+    def _live(self):
+        if self._pid != os.getpid():
+            raise RuntimeError("cannot use an inherited Connection after fork")
+        if not self._handle:
+            raise ValueError("Connection is closed")
+
+    def close(self):
+        if self._pid != os.getpid():
+            raise RuntimeError("cannot close an inherited Connection after fork")
+        with self._lock:
+            if self._handle:
+                self._lib.slk_connection_close(self._handle)
+                self._handle = ctypes.c_void_p()
+
+    def __enter__(self):
+        self._live()
+        with self._lock:
+            self._live()
+        return self
+
+    def __exit__(self, *_):
+        self.close()
+
+    def __del__(self):
+        if getattr(self, "_pid", None) == os.getpid() and hasattr(self, "_lock"):
+            self.close()
+
+    def ssap(self):
+        """A thin remote read/write view of slkd's existing unique Engine."""
+        self._live()
+        return RemoteSsap(self)
+
+
+class RemoteSsap:
+    """No wire codec, remote cache, retries or transactions in this binding.
+
+    Methods return exactly the existing Rust RemoteSsap result bytes. This is a
+    protocol result, not evidence that a peer application processed a write.
+    Local timeout does not undo a possibly committed remote operation. The
+    current RPC has no new cross-process original-deadline field.
+    """
+    def __init__(self, connection):
+        self._connection = connection
+
+    def _call(self, handle, minimum, deadline_ns, value):
+        _integer(handle, 16, "handle", nonzero=True)
+        if type(minimum) is not int or minimum not in (0, 1, 2):
+            raise ValueError("minimum must be mechanism 0..2")
+        deadline_ns = _deadline(deadline_ns)
+        # Fixed memory budget, not negotiated MTU or long-write support. A
+        # single operation, never count-query/retry after an executed remote read.
+        output = (ctypes.c_uint8 * 65535)()
+        count = ctypes.c_size_t()
+        connection = self._connection
+        connection._live()
+        with connection._lock:
+            connection._live()
+            if value is None:
+                status = connection._lib.slk_connection_ssap_read(
+                    connection._handle, handle, minimum, output, len(output),
+                    ctypes.byref(count), deadline_ns)
+            else:
+                data = (ctypes.c_uint8 * len(value)).from_buffer_copy(value)
+                status = connection._lib.slk_connection_ssap_write(
+                    connection._handle, handle, minimum, data, len(data), output,
+                    len(output), ctypes.byref(count), deadline_ns)
+            _result(status)
+        return bytes(output[:count.value])
+
+    def read(self, handle, *, deadline_ns, minimum=0):
+        return self._call(handle, minimum, deadline_ns, None)
+
+    def write(self, handle, value, *, deadline_ns, minimum=0):
+        """Existing short write only; oversize explicitly rejected, never sliced."""
+        if not isinstance(value, (bytes, bytearray, memoryview)):
+            raise TypeError("SSAP value must be bytes-like")
+        if len(value) > 65535 or (isinstance(value, memoryview) and value.nbytes > 65535):
+            import errno
+            raise OSError(errno.EMSGSIZE, os.strerror(errno.EMSGSIZE))
+        return self._call(handle, minimum, deadline_ns, bytes(value))

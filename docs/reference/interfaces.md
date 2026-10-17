@@ -45,20 +45,24 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 index 和保留字节由绑定传递，不能代替权限。`slk_client_open_channel` 接收该身份及
 已有的完整 Connection 对象路径，经同一 Rust `Client::connection/open_channel`
 重新核对 generation/lifetime，再由同一 Channel 检查真实 socket domain。
-当前仅开放已有固定应用通道申请；不新增管理租约、动态通道便利封装、SSAP/Agent
-或服务注册接口，也不从地址或 handle 猜一个对象路径。
+当前提供固定应用通道申请和下述连接级远端SSAP读／短写封装；不新增管理租约、
+动态通道便利封装、Agent或服务注册接口，也不从地址或 handle 猜一个对象路径。
 
 | 调用/参数 | 当前契约 |
 |---|---|
 | `open_system(deadline_ns, output)` | 成功输出一个 opaque `SlkClient*`，失败不改输出 |
 | `controllers(client, buffer, capacity, count, deadline_ns)` | capacity=0 查询数量；上限256。ENOBUFS 时只更新所需 count，不截断或改 buffer；其余错误输出不变。两次调用之间 registry 可变 |
 | `open_channel(client, controller, path, path_length, directions, minimum, deadline_ns, output)` | path 是1..256个 UTF-8 字节，不含 NUL，不要求尾零；reserved 必须全零。TX=1/RX=2/双向=3，minimum=0..2。成功输出独立拥有的 fd，失败输出不变 |
-| `close(client)` | 释放一次，NULL 可接受；调用者须排除并发调用/close。停止并 join 本地执行器，不关闭已交付 fd、不强制断链 |
+| `close(client)` | 释放一次，NULL 可接受；调用者须排除并发调用/close。派生Connection仍持有原caller，最后引用释放才停止并join同一执行器；不关闭已交付fd、不强制断链 |
 | `deadline_ns` | 原始绝对 `CLOCK_MONOTONIC` 纳秒，未来且至多30秒；覆盖本地排队与等待，不重置。到期 ETIMEDOUT，不保证取消远端操作，不自动重试 |
 
-每个 C 客户端有一个本地执行线程，至多8个排队请求及1个执行请求；队满 EAGAIN。
+每个 C caller有一个本地执行线程，Client及派生Connection共享至多8个排队请求及1个执行请求；队满 EAGAIN。
 它只桥接同步语言与现有异步 Client，owner 观察在调用间继续执行，不保存协议、
 授权或连接状态。不在调用线程嵌套 Tokio runtime，不使用全局执行器。内核的
+当前SDK链接的Tokio 1.51.0/full副本首次建立IO运行时会保留signal socketpair；
+本批C/Python进程观察为2个固定fd，详见[原反例与来源](../evidence/application-client-runtime-resource-counterexample-20261018.json)。
+不随每个Client退出销毁。每caller线程和其余运行时资源仍须最后释放收敛；不能把
+该固定依赖成本当成每次增长的豁免。它不保存controller、授权或协议状态。
 Grant/credit/Ticket、原期限及物理义务不由该队列改变。返回 fd 仅表示实际 fd
 交付，不表示协商完成、安全安装、USB 提交或对端收到。
 
@@ -86,6 +90,42 @@ Channel 的真实系统调用及截断/身份验证。它不是另一条业务�
 仅 fd 的 fork/SCM_RIGHTS 保持内核 Binding 语义。进程边界在锁之前检查，不尝试 join
 不存在的继承线程。输入指针须遵守 C 的有效区域/独占/生命周期契约；无效指针是
 调用者 UB，和内核 EFAULT 测试分开。
+
+### C/Python连接级远端SSAP读／短写
+
+`slk_client_connection(client, controller, path, path_length, deadline_ns, output)`
+创建opaque `SlkConnection`，沿用同一Rust `Client::connection`核对并固定原daemon、
+generation、physical lifetime、handle和peer身份。它只是观察／调用视图，不拥有
+物理连接或管理lease；关闭Client后仍保持原caller，`slk_connection_close`释放该
+视图，最后本地引用关闭才join原执行器。不会自动断链、注销服务或撤销其他fd。
+不支持fork后使用／关闭该对象，先exec／spawn再创建新Client。
+
+`slk_connection_ssap_read`与`slk_connection_ssap_write`复用现有Rust `RemoteSsap`
+的实际方法及返回字节，经slkd唯一Engine；绑定不解释另一个wire协议、不保存远端
+缓存或事务、不echo写入、不自动重试／降级。minimum为0..2，非零handle为u16。
+读写前后都沿用原身份检查，旧对象不因重连、handle复用或daemon更换复活。
+
+输出参数为`buffer, capacity, length`，capacity必须1..65535。成功完整复制原返回
+字节；`ENOBUFS`只更新所需length，buffer不变，**远端操作已经执行，不能把它当作
+可安全重试的size query**。其他失败二者不变。超出65535的回复为EOVERFLOW。
+write输入允许空值，长度超65535为EMSGSIZE；这个语言内存上限不是协商MTU或长写
+支持，实际大小／安全要求继续由daemon及通道拒绝，不截断输入。
+权限继续按实际system bus策略逐方法拒绝；当前`sparklink-apps`只开放授权通道
+相关入口，没有因新增SDK方法开放SSAP或管理权。现有管理组可用的RPC不等于
+普通应用角色的SSAP授权已经完成，后者仍需独立策略／实际权限门禁。
+C调用者须提供真实有效、独占、无别名且满足声明长度的内存区域；坏指针属于FFI
+调用者契约，不能用来代替内核EFAULT门禁。
+
+Python `Client.connection(ControllerId, full_connection_path, deadline_ns=...)`
+返回可显式close或用`with`的`Connection`；`connection.ssap().read(handle, ...)`
+和`.write(handle, bytes_like, ...)`使用同一C ABI并返回相同字节。每次只执行一次，
+不按错误长度自动重试。关闭Connection后已有SSAP视图失效；不关闭物理连接。
+
+这些入口的deadline仍是覆盖**本地**排队／等待的原始绝对单调时钟期限；当前D-Bus
+方法没有新增跨进程deadline字段，不能宣称已经实现端到端原期限传递。超时、取消
+本地等待或写后输出失败均不撤销已发生的远端副作用。协议结果也不等于对端应用
+已经处理业务。当前新入口的实机资格另取，不继承旧CLI SSAP或基本C/Python通道资格；
+完整高阶发现、Owned、Agent及通用API仍待整改，不能由这些方法推导已支持。
 
 这些是当前源码接口，不把私有 bus 的拒绝/错误 fd 回归升级成实际部署权限或
 WS73 正向交付资格。准确产物与未完成的高阶客户端见唯一能力入口。

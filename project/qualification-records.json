@@ -13,16 +13,16 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP18-R5f2-basic-and-preservation-finite-pass-full-architecture-open",
-    "production_behavior": "Service3ff/tools004c/kernel2fc/SDK110 explicitUS. Two publicC-Python peer roundtrips andsevenoriginalrealVMs/56peerroundtrips/sevenapplicationsizes;source-and-artifactbound independentreplay. No fullpermissions/lifecycle/highlevelSDK orrecovery promotion.",
-    "state": "R5F2_BASIC_C_PYTHON_AND_SEVEN_ORIGINAL_GATES_REAL_LIMITED_PASS",
+    "id": "WP18-R5f3-pinned-cross-language-connection-and-SSAP",
+    "production_behavior": "C/Python Connection retains existing caller/executor andRust lifetime view;read/shortwrite call existingRemoteSsap/uniqueEngine,no protocolorNativeauthority added. Source-boundfinalchecks/newentryVM pending;earlier3ff/004c records unchanged.",
+    "state": "R5F3_IMPLEMENTED_OFFLINE_CHECKS_REAL_NEW_ENTRY_NOT_QUALIFIED",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "Actual publicclient fullgroup-policy/release/revoke/Down/originaldeadline/peerisolation;higher crosslanguageclients/sharedAPI/perappDiscovery andR6c. AlloriginalS0-S6/19WP/10FV/12DG remain;naturalRCA/nonmanualrecovery OPEN."
+    "next": "Seal exactnewsource/artifact offlinechecks andnewpublicSSAPVMpositive gate, thenfullroles/release/revoke/Down/originaldeadline/isolation,higherSDK/sharedAPI/perappDiscovery,R6c. NativeonlyVM;alloriginalscope andnaturalRCA/nonmanualrecovery OPEN."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -162126,9 +162126,9 @@
         "Offline C/Python/boundedexecutor PASS does not satisfy these original production/real-device requirements."
       ],
       "remaining": [
-        "Audit currentnativeVM SONAME-major loading andprepare a new exactartifact image without touchingoriginalWIP",
-        "Actualordinarysystembus/Grant anddualWS73 discovery/connect/short/boundary/close/dup/revoke/deadline/peerisolation;realpeer verifiesand replies",
-        "HigherlanguageSSAP/Agent/Owned/sharedAPI andR6c/fullarchitecture remainoriginalscope"
+        "Basicpublicfd andsevenoriginalpreservationgates on3ff/004c separatelyqualified;complete deploymentrole/release/revoke/Down/originaldeadline/peerisolation matrix stillrequired.",
+        "NewpinnedC-Python Connection read/shortwrite must take exactnewartifact actualSSAP/permissions/WS73 evidence;privatebus passes are not transferred. Apps-onlySSAP broker rights remain unimplemented.",
+        "Remaininghigherbroker/SSAP/Agent/Owned/commonAPI/perappDiscovery,R6c andfullarchitecture remain originalscope."
       ],
       "sources": {},
       "report": null,

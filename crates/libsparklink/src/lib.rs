@@ -5,6 +5,7 @@ mod client;
 pub mod controller;
 pub mod ffi;
 pub mod ffi_client;
+pub mod ffi_connection;
 pub mod peer;
 pub mod security;
 pub mod ssap;

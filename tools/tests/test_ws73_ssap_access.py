@@ -40,6 +40,14 @@ class AttributeEvidence(unittest.TestCase):
             if k not in wire:raise CaptureError('missing exact USB endpoint')
             wire.remove(k);return dict(data=payload.hex())
         return row,matched,wire
+    def test_guest_copy_and_hashed_input_inventories_include_the_actual_gate(self):
+        import ast
+        root=Path(__file__).resolve().parents[1]
+        tree=ast.parse((root/'ws73_target.py').read_text())
+        prepare=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='prepare')
+        mentions=[n for n in ast.walk(prepare) if isinstance(n,ast.Constant) and n.value=='ws73_ssap_access.py']
+        self.assertEqual(len(mentions),2,'both hashed input and actual guest copy required')
+
     def test_three_grades_two_directions_exact_endpoint_and_debt_inventory(self):
         for level in range(3):
             r,m,w=self.fixture(level);p,c=corroborate(r,m)

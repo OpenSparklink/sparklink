@@ -1,38 +1,42 @@
 # 当前能力与资格
 
-当前选定子资格为[HCC型号与110实机切片](../docs/evidence/ws73-hcc-model-110-20261017.json)：
-Linux `f887b477f085`，编译用户态 `83625029e313`，业务执行/guest工具 `e5134791dc30`。
-四只独立下载的launcher/guest为69b7/836；离线729项在fixture修正7f8上执行，
-编译crates/data/Cargo输入相同。报告提交 `8c59cc3057b8` 不替代编译身份。
-用户已选择统一1.10.110：第1口E用SDK e，2/3/4口U用us；均核对实际USB下载字节。
-HCC自动报告型号与总线，不能认证硅片、校准或执行镜像，也不能在尚无HCC的ROM
-阶段自动选择首次镜像。混合运行期VM移除ROM镜像，避免错误型号自动下载。
+当前选定子资格为[HCC原期限修复后的四项实机门禁](../docs/evidence/ws73-hcc-query-deadline-20261017.json)：
+Linux `0cd4731dd3e6`，编译用户态 `83625029e313`，执行/guest工具 `ee8c4d2d05d8`。
+报告提交 `b01aee81b612` 不替代编译身份。另有[生命周期30项](../docs/evidence/ws73-110-original-intent-lifecycle-20261017.json)
+绑定 K`f887b477f085` / 编译836 / 工具e513，未在0cd上重跑整套；两版net/trace/UAPI及
+对应用户态源码相同的映射不等于实现refinement或硬件等价证明。
+用户已选择统一1.10.110：第1口E用SDK e，2/3/4口U用us；[四只独立下载证据](../docs/evidence/ws73-hcc-model-110-20261017.json)
+核对实际USB字节。HCC自动报告型号与总线，不能认证硅片、校准或执行镜像；尚无HCC
+的ROM阶段不能由此选择首次镜像。混合运行期VM移除ROM镜像，避免错误型号下载。
 
 | 范围 | 当前限定结果 |
 |---|---|
-| HCC型号与独立启动 | E1/U2/U3/U4实际回复，12个镜像实际RAM上传字节匹配，DLI Setup；S及其他板未实测 |
-| E/U与U2/3业务 | 四门禁、各交换连接角色：32实际随机业务回复、88广播扫描轮次；受控QMP重枚举与动态adapter保持 |
-| 本轮数据及唯一SSAP保持 | 48属性案例（16允许、32真实拒绝）、64旧SSAP对端核对、64原RX上下文、96无效intent/16未知control拒绝 |
-| 长度与预算 | 249字节负载门禁；实际超限2043/2046/2047/2048共16次拒绝；完整2042往返8次。E ACB1526/6、U254/5逐端校验 |
-| 离线与证据 | 729工具、48准确封存ABI、942生产codec/query fixture+ASan/UBSan、115严格文档；8精确重放与200复制实证负对照 |
-| 形式化限定通过 | 实际chip reply decoder，128字节内任意输入/长度，8语义断言/439原始检查及三负对照；不覆盖USB/锁/引用/时钟/排空/整个内核 |
-| 当前仍缺 | 110受保护SSAP/Agent、完整30项typed生命周期、ROM首次自动型号/镜像选择、S硬件、混合四设备及完整S0–S6 |
+| HCC型号与独立启动 | E1/U2/U3/U4实际回复、12个镜像实际RAM上传匹配、DLI Setup；新0cd四门禁另有12次实际HCC查询。S及其他板未实测 |
+| 0cd E/U与U2/3业务 | 四门禁、各交换连接角色：32实际随机业务回复、88广播扫描轮次；受控QMP重枚举及动态adapter保持 |
+| 0cd数据及唯一SSAP保持 | 48属性案例（16允许、32真实拒绝）、64旧SSAP对端核对、64原RX上下文、96无效intent/16未知control拒绝 |
+| 0cd长度与预算 | 249字节负载；2043/2046/2047/2048超限共16次拒绝；完整2042往返8次。E ACB1526/6、U254/5逐端校验 |
+| f887生命周期（独立源范围） | 三机制×两来源×release/最后管理fd/dup/Down/原期限，共30门禁；72控制前实际回复、108晚到拒绝、30重放/892复制负对照。同行Ready/租约/扫描，非独立业务组 |
+| 0cd离线与证据 | 1116生产codec/query fixture+ASan/UBSan、730冻结工具、48准确封存ABI；四精确数据重放/128复制负对照 |
+| 形式化限定通过 | 实际chip reply decoder，128字节内任意输入/长度，8语义断言/439原始检查及三负对照；源映射未变。不覆盖USB/锁/引用/时钟/排空/整个内核 |
+| 当前仍缺 | 110受保护SSAP/完整Agent、0cd完整生命周期矩阵、ROM首次自动型号/镜像选择、S硬件、混合四设备及完整S0–S6 |
 
-110矩阵首项原期限实机FAIL保留：从准入到阻塞返回约5.509秒，超过原5.5秒上限；
-原断言未放宽。相同参数在新目录采集主机调度后重跑，运行中不授整批资格，重复成功
-也不关闭原失败根因。首E平台长度EPROTO、首混合预算常量、相对路径artifact核对、
-fixture及测试环境/旧身份audit错误均保留原件并排除错误资格。
+110矩阵首项原期限实机FAIL保留：准入至阻塞返回5508.767234–5508.861382毫秒，
+超过原5500毫秒上限，断言未放宽。其后新目录30项通过不解释或关闭原失败根因；
+31次尝试中原失败仍单列。HCC每次USB OUT剩余原2秒预算修复是独立源码问题，
+不冒充这次数据Session超时的根因或修复。真实OUT停滞/stop/drain交错仍待验证。
+首E平台长度EPROTO、U预算常量、相对路径artifact核对、fixture及旧身份audit错误
+均保留；ee8修复路径规范化后不把旧失败重标通过。
 
 此前[SDK111属性访问资格](../docs/evidence/ssap-attribute-access-20261017.json)保持原
 K1bcb/编译d4/工具49身份，不转授110、E或新镜像；其Kani诊断仍未证明。SDK111
-生命周期重跑按用户110指令在当前VM结束后中止，不记整批通过。旧U331晚Down及
-反证仍保留；自然启动/重枚举/消失根因与非人工恢复继续OPEN。人工/hub/QMP/受控RAM
-复位不算自然恢复；USB/NOCP/协议ACK不等于应用处理。
+生命周期整轮在用户切换110时中止，不记整批通过。旧U331晚Down及反证保留；
+自然启动/重枚举/消失根因与非人工恢复继续OPEN。人工/hub/QMP/受控RAM复位不算
+自然恢复；USB/NOCP/协议ACK不等于应用处理。
 
-本切片不关闭整项issue。继续同一Session/Grant/credit/Ticket的撤权/断链/原期限与
-唯一用户态Engine的本地授权/受保护更新；数据/多通道/四设备/可信性能及旧整改并行，
-不等全部控制面组合。完整S0–S6/19WP/10FV/12DG不缩减，UserHost保持P4；驱动与
-实机保持VM-only。以下历史记录均按其准确源和限定范围阅读，整体仍INCOMPLETE。
+本切片不关闭整项issue。下一纵向链路复用唯一Session/Grant/credit/Ticket及用户态
+Engine，接策略绑定本地属性授权/CPCD与受保护更新；数据/多通道/四设备/可信性能、
+组合验证与RCA并行，不等全部控制面组合。完整S0–S6/19WP/10FV/12DG不缩减，
+UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围阅读，整体INCOMPLETE。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -176,14 +180,20 @@ K1bcb/编译d4/工具49身份，不转授110、E或新镜像；其Kani诊断仍�
 | 110接口与证据：729工具/48封存ABI/942生产函数/200实证负对照 | `offline` | `PASS` |
 | 实际HCC reply decoder：128字节/8性质CBMC限定通过 | `formal_bounded` | `PASS` |
 | 110期限5.509s失败/ROM自动选择/自然恢复与全部剩余范围：未闭合 | `real_device` | `UNPROVED` |
+| F887/836/e513：110三机制两来源30项原意图生命周期 | `real_device` | `PASS` |
+| 首110原期限实测5.509秒：原FAIL保留且根因开放 | `real_device` | `FAIL` |
+| 真实时延根因/Owner晚完成复用/完整原范围：仍未闭合 | `real_device` | `UNPROVED` |
+| K0cd/836/ee8：HCC逐笔期限修复新四门禁32真实业务回复 | `real_device` | `PASS` |
+| 新HCC期限：1116生产函数/sanitizer、730冻结工具/48封存ABI | `offline` | `PASS` |
+| 真实OUT阻塞/5.509秒数据失败根因与完整原范围：仍未闭合 | `real_device` | `UNPROVED` |
 
-保留镜像：K `f887b477f0857aa83454b255ba681a9f7b95473f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `e5134791dc3014f3e07c96785d66bbc1a5597383`。
+保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `e5134791dc3014f3e07c96785d66bbc1a5597383`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 ## 已封存数据子资格（以下均按各自准确镜像）

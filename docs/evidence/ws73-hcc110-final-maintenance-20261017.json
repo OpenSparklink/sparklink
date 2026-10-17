@@ -1,0 +1,322 @@
+{
+  "schema_version": 1,
+  "status": "HCC110_SOURCE_BOUND_SLICES_CANONICAL_GOAL_AND_SEVEN_ISSUES_SYNCED",
+  "recorded_wall_ns": 1792213394855409136,
+  "selected_subqualification": {
+    "kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+    "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+    "executed_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+    "guest_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+    "report_commit": "b01aee81b61264f48ab42ce5f8f76ff2706c876f"
+  },
+  "lifecycle_separate_source": {
+    "kernel": "f887b477f0857aa83454b255ba681a9f7b95473f",
+    "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+    "executed_tools": "e5134791dc3014f3e07c96785d66bbc1a5597383",
+    "report_commit": "fd9079532bec22e4e6f849464445741066ba799b",
+    "real_cases": 30,
+    "actual_precontrol_roundtrips": 72,
+    "copied_negative_controls": 892,
+    "transferred_to_selected_kernel": false
+  },
+  "full_goal_result": "INCOMPLETE",
+  "goal_api_status": "active",
+  "full_scope": "S0-S6/19WP/10FV/12DG unchanged;VM-only;UserHostP4;originalunbudgetedgoalretained",
+  "original_110_failure": {
+    "attempts": 31,
+    "failed": 1,
+    "fresh_pass": 30,
+    "blocked_return_bounds_ns": [
+      5508767234,
+      5508861382
+    ],
+    "unchanged_upper_ns": 5500000000,
+    "root_cause": "OPEN;HCC2swritebudgetfixnotassertedcauseorrepair"
+  },
+  "local_verification": {
+    "errors": [],
+    "unavailable_private_materials": [],
+    "unavailable_source_checkouts": [],
+    "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "current": "NOT_CHECKED",
+    "overall": "INCOMPLETE",
+    "completed": true
+  },
+  "strict_html": {
+    "status": "PASS",
+    "inventory_documents": 115,
+    "scope": "Strictbuild/inventory/links/examples;notbrowser/externalnetworkorrealdevicequalification"
+  },
+  "qualification_checker_tests": {
+    "status": "PASS",
+    "tests": 27,
+    "initial_invocation_failure": "MissingPYTHONPATH=tools;retainedv1failedimport,noproductdefect;correctv2passed"
+  },
+  "provenance_negative_groups": [
+    {
+      "record": ".dev/hcc110-registry-local-v1.json",
+      "negative_controls": [
+        {
+          "kind": "stale-source",
+          "result": "REJECTED",
+          "errors": [
+            "hcc110-data: report/source mismatch compiled_userspace",
+            "hcc110-data/compiled_userspace: source object unavailable"
+          ]
+        },
+        {
+          "kind": "missing-artifact",
+          "result": "REJECTED",
+          "errors": [
+            "hcc110-m48: missing material"
+          ]
+        },
+        {
+          "kind": "scope-upgrade",
+          "result": "REJECTED",
+          "errors": [
+            "hcc110-boot: scope mismatch"
+          ]
+        },
+        {
+          "kind": "missing-model",
+          "result": "REJECTED",
+          "errors": [
+            "hcc110-boot: missing/extra/duplicate gate"
+          ]
+        },
+        {
+          "kind": "remaining-upgraded",
+          "result": "REJECTED",
+          "errors": [
+            "hcc110-remaining: PASS hides a required non-PASS gate"
+          ]
+        }
+      ],
+      "verification": {
+        "errors": [],
+        "unavailable_private_materials": [],
+        "unavailable_source_checkouts": [],
+        "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+        "current": "NOT_CHECKED",
+        "overall": "INCOMPLETE"
+      }
+    },
+    {
+      "record": ".dev/intent110-registry-local-v1.json",
+      "negative_controls": [
+        {
+          "kind": "stale-source",
+          "result": "REJECTED",
+          "errors": [
+            "intent110-failure: report/source mismatch compiled_userspace",
+            "intent110-failure/compiled_userspace: source object unavailable"
+          ]
+        },
+        {
+          "kind": "missing-artifact",
+          "result": "REJECTED",
+          "errors": [
+            "intent110-m247: missing material"
+          ]
+        },
+        {
+          "kind": "scope-upgrade",
+          "result": "REJECTED",
+          "errors": [
+            "intent110-real: scope mismatch"
+          ]
+        },
+        {
+          "kind": "missing-model",
+          "result": "REJECTED",
+          "errors": [
+            "intent110-real: missing/extra/duplicate gate"
+          ]
+        },
+        {
+          "kind": "remaining-upgraded",
+          "result": "REJECTED",
+          "errors": [
+            "intent110-remaining: PASS hides a required non-PASS gate"
+          ]
+        }
+      ],
+      "verification": {
+        "errors": [],
+        "unavailable_private_materials": [],
+        "unavailable_source_checkouts": [],
+        "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+        "current": "NOT_CHECKED",
+        "overall": "INCOMPLETE"
+      }
+    },
+    {
+      "record": ".dev/hcc110-timed-registry-local-v1.json",
+      "negative_controls": [
+        {
+          "kind": "stale-source",
+          "result": "REJECTED",
+          "errors": [
+            "hcc-timed110-offline: report/source mismatch compiled_userspace",
+            "hcc-timed110-offline/compiled_userspace: source object unavailable"
+          ]
+        },
+        {
+          "kind": "missing-artifact",
+          "result": "REJECTED",
+          "errors": [
+            "hcc-timed110-m20: missing material"
+          ]
+        },
+        {
+          "kind": "scope-upgrade",
+          "result": "REJECTED",
+          "errors": [
+            "hcc-timed110-data: scope mismatch"
+          ]
+        },
+        {
+          "kind": "missing-model",
+          "result": "REJECTED",
+          "errors": [
+            "hcc-timed110-data: missing/extra/duplicate gate"
+          ]
+        },
+        {
+          "kind": "remaining-upgraded",
+          "result": "REJECTED",
+          "errors": [
+            "hcc-timed110-remaining: PASS hides a required non-PASS gate"
+          ]
+        }
+      ],
+      "verification": {
+        "errors": [],
+        "unavailable_private_materials": [],
+        "unavailable_source_checkouts": [],
+        "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+        "current": "NOT_CHECKED",
+        "overall": "INCOMPLETE"
+      }
+    }
+  ],
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 6,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6229922463",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 7,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6229923028",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6229923463",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6229924017",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6229924658",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 5,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6229925256",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6229925933",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/hcc110-final-local-v1.json",
+      "bytes": 230,
+      "sha256": "2d184cd31561a27ab5d4ede64b57d53741652457cbe0bd9ab3b12b5a53219aae",
+      "access": "private workspace retained;authorized maintainer only;not remotely downloadable"
+    },
+    {
+      "path": ".dev/hcc110-final-issue-receipts-v1.json",
+      "bytes": 2602,
+      "sha256": "1da046686a10251ec5dbac1e24b908803e25f90920d93af4ba171ece25c76660",
+      "access": "private workspace retained;authorized maintainer only;not remotely downloadable"
+    },
+    {
+      "path": ".dev/hcc110-final-docs-v1.log",
+      "bytes": 356644,
+      "sha256": "9899c555f630ecc32836217a052a70306d3e41bee83836b168ea03cef722fd32",
+      "access": "private workspace retained;authorized maintainer only;not remotely downloadable"
+    },
+    {
+      "path": ".dev/hcc110-final-qualification-tests-v1.log",
+      "bytes": 901,
+      "sha256": "848b5e13fa79a3b72fe4ad53f7867e53549bcbd7269fe6f5137bc4e563600a51",
+      "access": "private workspace retained;authorized maintainer only;not remotely downloadable"
+    },
+    {
+      "path": ".dev/hcc110-final-qualification-tests-v2.log",
+      "bytes": 126,
+      "sha256": "adc47b8da5bc3cb1fa04f14ad7fc8e4cd268930f9db25a30ab03ac5cbed3f1ee",
+      "access": "private workspace retained;authorized maintainer only;not remotely downloadable"
+    },
+    {
+      "path": ".dev/intent110-registry-local-v1.json",
+      "bytes": 1234,
+      "sha256": "ec937f79720a48fa12d1a818c4e0976bf069f56f9b9628d66d2b7fbfb7a52950",
+      "access": "private workspace retained;authorized maintainer only;not remotely downloadable"
+    },
+    {
+      "path": ".dev/hcc110-timed-registry-local-v1.json",
+      "bytes": 1246,
+      "sha256": "5883d7694cb88a0dd0e8ce3fda4a90674289c1e2e99ba20e412cca760f660de5",
+      "access": "private workspace retained;authorized maintainer only;not remotely downloadable"
+    }
+  ],
+  "remaining": [
+    "ROMfirstimageautomaticmodelselection",
+    "generalS/Eboardandcalibrationcompatibility,firmware-reportedmodelnotattestation",
+    "selected0cdentire30lifecyclematrixnotrerun",
+    "new110protectedSSAP/fullAgent/localattributeauthorization/CPCD/secureupdates/Bond",
+    "mixedfourdevicefullgates/credibleperformance/composedproofs",
+    "naturalstartup/reenumeration/disappearanceRCAandnonmanualrecovery;manual/hub/QMP/resetnotacceptance"
+  ],
+  "next": "Continue soleEngine policy-boundlocalattributeauthorization/CPCD andprotectedupdates;data/credit/multi/four/performance/RCAparallel,noallcontrolfront."
+}

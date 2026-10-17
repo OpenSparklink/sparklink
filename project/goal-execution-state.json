@@ -791,17 +791,17 @@
       "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
     ]
   },
-  "execution_phase": "ACTIVE_ORIGINAL_TX_INTENT_LIFECYCLE_VM_MATRIX",
+  "execution_phase": "ACTIVE_HCC110_SCOPED_EXIT_SOLE_ENGINE_LOCAL_AUTH_NEXT",
   "next_resume_tasks": [
-    "This bounded positive verticalslice exits;continue actualqueue/rekey/off/revocation/finalfd/dup/Down/originaldeadline andprefix obligations, then policy-bound localattributeauthorization/secureSSAP updates onsoleEngine. Data/credit/multi/four/performance/RXgap/oldcleanup parallel;noallcontrolfront. VM-onlyU2/3,E1excluded;UserHostP4/fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecovery remainOPEN.",
-    "Preserve original U331 lateDown FAIL and legacy13 fast counterevidence; natural RCA/nonmanual recovery/NOCP/drain/reuse OPEN",
-    "Parallel actual data/credit/multichannel/fourdevices/SSAP/performance and singleRXURB-gap measurement, old cleanup; no allcontrolrace prerequisite",
-    "Full S0-S6/19WP/10FV/12DG unchanged; UserHost P4; VM-only U2/3,E1 excluded; build12solo/8withVM/shared lock"
+    "Continue sole userspace Engine policy-bound local attribute authorization/CPCD and protected updates using existing Session/Grant/credit/Ticket. Data/credit/multichannel/fourdevices/performance/RXgap/oldcleanup and formal composition parallel;noallcontrolfront.",
+    "Keep first110 5508.767234-5508.861382ms deadlineFAIL and oldU331 lateDown originals;naturalRCA/nonmanualrecovery/NOCP/drain/reuse remainOPEN. No manual/hub/QMP substitution.",
+    "Preserve exact0cd/836/ee8 fourdata qualification and separatef887/836/e513 thirtylifecycle qualification;new source/artifact changes require related gates.",
+    "FullS0-S6/19WP/10FV/12DG unchanged;UserHostP4;VM-only,E1explicitlyauthorized/U2-4;build12solo/8withVM/sharedlock."
   ],
-  "issue_sync_status": "Seven existing issues OPEN with exact comment readback and original bodies unchanged;attribute slice scoped exit,fullscope incomplete",
-  "issue_sync_receipt": ".dev/attribute-access-issue-receipts-v1.json",
+  "issue_sync_status": "Seven existing issues OPEN;final HCC110 comments read back exactly and original scope bodies unchanged",
+  "issue_sync_receipt": ".dev/hcc110-final-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
-  "current_goal_turn_classification": "PROGRESS_TYPED_LIFECYCLE_WORKERS_AND_REAL_MATRIX_RUNNING",
+  "current_goal_turn_classification": "PROGRESS_HCC_AUTOMODEL_110_REAL_DATA_AND_SEPARATE_THIRTY_LIFECYCLE_GATES",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1129,11 +1129,11 @@
     "registry": "project/qualification-records.json",
     "schema_version": 1,
     "baseline": {
-      "kernel": "f887b477f0857aa83454b255ba681a9f7b95473f",
+      "kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
       "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
-      "executed_tools": "e5134791dc3014f3e07c96785d66bbc1a5597383",
-      "guest_tools": "e5134791dc3014f3e07c96785d66bbc1a5597383",
-      "report_commit": "8c59cc3057b87d3ee5cb60d93cfe4a80595716ef"
+      "executed_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+      "guest_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+      "report_commit": "b01aee81b61264f48ab42ce5f8f76ff2706c876f"
     },
     "current_tree_qualification": "NOT_REVALIDATED",
     "private_evidence_in_ci": "METADATA_ONLY_NOT_REVERIFIED",
@@ -1685,20 +1685,43 @@
       "hcc110-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "intent110-real": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "intent110-failure": {
+        "level": "real_device",
+        "result": "FAIL"
+      },
+      "intent110-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
+      },
+      "hcc-timed110-data": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "hcc-timed110-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "hcc-timed110-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP09-HCC110-slice-exit-originalIntent-lifecycle",
-      "production_behavior": "Actualper-deviceHCCmodelquery,exact110RAMdownload,andE/U32businessRTslice exits. UniqueSession/Grant/Ticket/soleSSAPEngineunchanged. Now originaltypedintent release/lastfd/dup/Down/deadline matrix atsame110 artifacts.",
-      "state": "HCC_DATA_SLICE_SCOPED_PASS_LIFECYCLE_RERUN_RUNNING_FIRST5509MS_FAIL_RETAINED",
+      "id": "WP03-WP06-WP09-HCC110-vertical-slices-exit",
+      "production_behavior": "AutomaticHCCmodel+remainingoriginal2sUSBbudget;new0cd fourdatagates32RT. Frozenf88730typedlifecyclegates/892neg separatelysealed;soleSession/Runtime/Grant/credit/Ticket/SSAPEnginekept.",
+      "state": "SCOPED_SLICES_PASSED_FIRST5509MS_RCA_AND_FULL_SCOPE_OPEN",
       "exit": [
-        "f887/compiled836/executede513 boundedmodel/boot/data/reportgates complete;public8c59report doesnotqualifyremainingmatrix",
-        "30fresh110 U2/3 cases grade0/1/2 xbothindices xrelease/lastmanagementfd/dup/Down/original5s,alloriginalfullpool5/1270prefix/QMP2or8s/5500msupperassertionsretained",
-        "First110deadline lower5508767234ns/upper5508861382ns FAIL retained;no widened deadline. Scheduling-observed freshmatrix separate,notRCAclosure",
-        "Capture/metadata/bindings/negativecontrols;naturalRCA/nonmanualrecovery/ROMfirstidentification/securitySSAPremainingnotwaived"
+        "F887/836/e51330typedlifecyclecases andfirst5509msFAILretained;alloriginaldeadlinesandassertionsunchanged",
+        "New0cd/836/ee8E/U61/249/2042,U2/3short32actualpeerRT,12HCCmodelreplies,1116fixtures+sanitizer,730tools/48ABI;noautomaticqualificationtransfer",
+        "SeparateactualnewHCCOUTstall/stop/draininterleavings,firstdataSession5509msRCA,ROMfirstmodelselection andnaturalrecoveryremainOPEN"
       ],
-      "next": "Finite lifecycle verticalslice then soleEngine localauthorization/secureupdates;data/credit/multi/four/performance/RXgapparallel,noallcontrolfront. FullS0-S6/19WP/10FV/12DG,VM-only,UserHostP4unchanged."
+      "next": "Finitecurrentverticalslice exits;continue soleEngine policy-boundlocalattributeauthorization/secureupdates anddata/credit/multi/four/performance. Noallcontrolfront. FullS0-S6/19WP/10FV/12DG,VM-only,UserHostP4/originalbudgetunchanged."
     }
   },
   "agent_workstream": {
@@ -2873,7 +2896,7 @@
   "lifecycle_intent_batch": {
     "execution_record": ".dev/intent110-lifecycle-qualification-v2.json",
     "source": "f887b477f0857aa83454b255ba681a9f7b95473f",
-    "state": "110_FRESH_MATRIX_RUNNING_ORIGINAL5509MS_FAIL_RETAINED",
+    "state": "110_F887_THIRTY_GATES_SCOPED_PASS_FIRST5509MS_RCA_OPEN",
     "previous_turn": "PROGRESS_ATTRIBUTE_ACCESS_AND_SOURCE_PROVENANCE_REPAIR",
     "source_of_current_batch": "qualification_view derived from qualification-records,not independent current qualification",
     "original_attempt": ".dev/intent-lifecycle-qualification-v1.json",
@@ -2888,11 +2911,19 @@
     "original_upper_ns": 5500000000,
     "original_assertions_unchanged": true,
     "root_cause_closed": false,
-    "scheduling_observations": ".dev/intent110-host-scheduling-v2.jsonl"
+    "scheduling_observations": ".dev/intent110-host-scheduling-v2.jsonl",
+    "report": "docs/evidence/ws73-110-original-intent-lifecycle-20261017.json",
+    "report_commit": "fd9079532bec22e4e6f849464445741066ba799b",
+    "fresh_pass_cases": 30,
+    "total_110_attempts": 31,
+    "actual_precontrol_roundtrips": 72,
+    "late_refusals": 108,
+    "replay_negatives": 892,
+    "transfer_to_0cd": false
   },
   "firmware110_hcc_batch": {
-    "state": "FOUR_HCC_BOOTSTRAPS_FOUR_DATA_GATES_SCOPED_PASS_LIFECYCLE_ONGOING",
-    "kernel_source": "f887b477f0857aa83454b255ba681a9f7b95473f",
+    "state": "0CD_FOUR_REAL_DATA_GATES_PASS_F887_LIFECYCLE_SEPARATE_RCA_OPEN",
+    "kernel_source": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
     "firmware_selection": ".dev/firmware110-selection-v1.json",
     "e_port": "1-2.1.1",
     "u_ports": [
@@ -2909,10 +2940,11 @@
     "full_scope_unchanged": true,
     "first_failure": ".dev/firmware110-e-reset-port1-v1/manifest.json",
     "first_capture": "OAMslot96/HCCpay96/platformalloc88,result0/outputlen2/model2/bus0;first110E RAMbootdownloadobserved,notSetupPASS. Sourcefixnarrowonlyexactplatformroute,942productionfixturechecks/ASanUBSanpass.",
-    "report": "docs/evidence/ws73-hcc-model-110-20261017.json",
-    "report_commit": "8c59cc3057b87d3ee5cb60d93cfe4a80595716ef",
+    "report": "docs/evidence/ws73-hcc-query-deadline-20261017.json",
+    "report_commit": "b01aee81b61264f48ab42ce5f8f76ff2706c876f",
     "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
-    "executed_tools": "e5134791dc3014f3e07c96785d66bbc1a5597383",
-    "scope": "4independentmodel/USBupload/Setup+32businessRT;notgeneralE/Sdeploy,protected110SSAP,ROMautoselectornaturalrecovery"
+    "executed_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+    "scope": "New0cd32actualRT/12HCCqueries/249load/2042andoversize;f88730lifecyclecasesseparate. Notprotected110SSAP,ROMautoselection,generalE/Sdeploy,naturalrecoveryorfullgoal.",
+    "next": "SoleEngine policy-bound local attribute authorization/CPCD and protected updates;data/credit/multi/four/performance,composition andRCAparallel. Noallcontrolfront."
   }
 }

@@ -764,3 +764,8 @@ minimum/绝对期限，实际提交仍与原 Grant 相交。准备既不预留 c
 响应/错误/指示 ACK 保留原接收观察。超时或回复发送失败不撤销已执行的数据库写入，
 不能承诺分布式事务回滚。实际接口和错误见[参考](../docs/reference/ssap-permissions.md)，
 当前资格仅见[能力入口](current-capabilities.md)；局部谓词、fixture 和 RF 验收分别记录。
+
+HCC查询的原始期限还约束每一次USB OUT：每次提交传入剩余2秒预算，过期不得
+开始后续OUT或读通知；保留普通DLI默认超时与恢复上限。该收紧不改协议credit或
+Session原期限。离线时钟fixture不证明USB调度/stop/drain的硬实时界；准确0cd实机
+数据与另源f887生命周期资格分开记录，首5.509秒数据超时根因继续开放。

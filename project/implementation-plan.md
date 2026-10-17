@@ -2,27 +2,32 @@
 
 ## 本批退出条件与近期执行顺序
 
-HCC/110切片已按准确Kf887/编译836/业务工具e513取得[限定退出](../docs/evidence/ws73-hcc-model-110-20261017.json)：
-四只实际110下载/HCC型号/DLI Setup；E/U两端短包、249负载/超限及2042完整长包，
-再加U2/3短包，共32次真实回复与88发现轮次。HCC型号不替代硅片、板级校准或执行
-固件认证，ROM首次镜像自动选择仍缺。S没有实机资格；旧111与旧四U结果不转授。
+当前限定退出分两组准确产物，不能互相转授：
 
-唯一Session、Runtime、Grant/credit/Ticket和用户态SSAP Engine保持。新增驱动查询
-只占bootstrap HCC传输，不借DLI credit或另造Host。E的1526/6与U的254/5按原DLI
-逐设备约束，平台分配长度quirk不放宽SLE/ACB。混合VM只接管运行期设备且没有ROM
-镜像，意外ROM明确失败。自然恢复、共用板配置通用性和安全身份仍须独立验收。
+- [0cd新内核HCC/数据门禁](../docs/evidence/ws73-hcc-query-deadline-20261017.json)：
+  K0cd/编译836/执行ee8，HCC每笔USB OUT受原2秒剩余预算约束；E/U短包、249负载、
+  2042完整长包与U2/3短包共四门禁32次实际回复、88发现轮次、12次实际HCC型号查询。
+  1116生产fixture+ASan/UBSan、730冻结工具、48封存ABI、四重放/128复制负对照。
+- [f887完整typed生命周期30项](../docs/evidence/ws73-110-original-intent-lifecycle-20261017.json)：
+  编译836/执行e513，普通/机制1/机制2×两来源×release、最后管理fd、dup、Down、原期限。
+  72控制前真实回复、108晚到拒绝、30重放/892复制负对照；满池5、原5秒、真实2秒/8秒
+  IN81屏障和逐调用时钟断言保持。实际PB前缀按逐案计数，不假定统一1270字节。
+  同行仅Ready/租约/扫描隔离，非另一业务组；0cd未重跑这整套。net/trace/UAPI和用户态
+  源码相同仅记录映射，不称refinement或硬件等价。
 
-当前近期门禁仍是新110准确产物的30项typed原意图矩阵：普通/机制1/机制2，两个
-来源controller，release、最后管理fd、dup、实际Down、原5秒；保留满池5、1270未
-完成PB前缀、真实2秒/8秒IN81屏障、逐调用原时钟和phase错误检查。同行仅Ready/
-lease/扫描隔离，不冒充另一业务组。SDK111整轮在用户切换110时收尾中止；不继承其
-子PASS。首110期限FAIL为5.509秒，未放宽原5.5秒断言；采集主机调度的新目录重跑
-单列，尚无整批资格，也不以重跑成功关闭原失败根因。
+[四只独立110下载](../docs/evidence/ws73-hcc-model-110-20261017.json)保留准确原身份：
+E1用e、U2/3/4用us。HCC自动型号不认证硅片/校准/执行固件，ROM首次自动镜像选择、
+S/一般板兼容仍缺。混合运行期VM不带ROM镜像，意外ROM明确失败。唯一Session、
+Runtime、Grant/credit/Ticket及SSAP Engine保持；E1526/6、U254/5逐真实DLI约束。
 
-本轮729工具/48封存ABI、942生产函数fixture+ASan/UBSan、八精确重放/200复制实证
-负对照及115严格文档单列。新CBMC只覆盖实际chip reply decoder的128字节输入与
-8语义性质（439原始检查、三负对照），不证明整个聚合parser/USB/引用/锁/期限或
-固件真值。历史access Kani诊断、Owner/撤权/晚NOCP复用组合继续未证明。
+首110期限实机FAIL仍保留：5508.767234–5508.861382ms超过原5500ms，断言未放宽；
+随后30项成功不解释原失败，31次尝试原失败单列且RCA开放。HCC2秒USB提交预算修复
+不冒充其根因；真实OUT停滞/stop/drain组合、自然启动/重枚举/消失及非人工恢复继续OPEN。
+受控RAM复位/人工/hub/QMP不计自然恢复。SDK111中止整轮及旧资格不转授110/E。
+
+CBMC仅实际chip reply decoder的128字节输入、8语义性质（439原始检查、三负对照），
+不证明整个parser/USB/引用/锁/期限/固件真值。历史access Kani及撤权/晚NOCP复用组合
+继续未证明；本批相关门禁退出后进入下一纵向链路，不无限追加控制面前置。
 
 随后接同一Engine的策略绑定本地属性授权/CPCD与受保护更新，未支持项继续拒绝；
 没有身份/Bond就不授可信身份或持久凭据。长包/真实credit/多通道/四设备及性能并行，
@@ -178,14 +183,20 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | 110接口与证据：729工具/48封存ABI/942生产函数/200实证负对照 | `offline` | `PASS` |
 | 实际HCC reply decoder：128字节/8性质CBMC限定通过 | `formal_bounded` | `PASS` |
 | 110期限5.509s失败/ROM自动选择/自然恢复与全部剩余范围：未闭合 | `real_device` | `UNPROVED` |
+| F887/836/e513：110三机制两来源30项原意图生命周期 | `real_device` | `PASS` |
+| 首110原期限实测5.509秒：原FAIL保留且根因开放 | `real_device` | `FAIL` |
+| 真实时延根因/Owner晚完成复用/完整原范围：仍未闭合 | `real_device` | `UNPROVED` |
+| K0cd/836/ee8：HCC逐笔期限修复新四门禁32真实业务回复 | `real_device` | `PASS` |
+| 新HCC期限：1116生产函数/sanitizer、730冻结工具/48封存ABI | `offline` | `PASS` |
+| 真实OUT阻塞/5.509秒数据失败根因与完整原范围：仍未闭合 | `real_device` | `UNPROVED` |
 
-保留镜像：K `f887b477f0857aa83454b255ba681a9f7b95473f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `e5134791dc3014f3e07c96785d66bbc1a5597383`。
+保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `e5134791dc3014f3e07c96785d66bbc1a5597383`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和
@@ -1906,11 +1917,11 @@ Grant准入，不通过关闭后重绑、第二Engine或历史Agent成功缓存�
 自然RCA/非人工恢复及原完整S0–S6/19WP/10FV/12DG保持并行和OPEN。
 
 
-### 当前优先调整：统一110与HCC型号识别
+### 110切换决策记录（2026-10-17；本批结果见页首）
 
 用户要求所有设备暂统一1.10.110，并授权第1口E独立测试。U/S使用SDK `firmware/us`，
 E使用`firmware/e`，两套校准不能混用；U组合hash与固定libws73-usb的110文件完全一致。
-已有111资格保持原始身份；当前typed生命周期矩阵在完成当前VM后停止，不授完整资格。
+已有111资格保持原始身份；当时SDK111 typed生命周期矩阵在完成当前VM后停止，不授完整资格。
 Linux `cdab733c4ed8`、修复 `f887b477f085` 在注册前通过真实HCC GET_CHIP_TYPE查询U/S/E及总线，
 单次请求受原2秒期限约束，错误/未知/非USB拒绝，不占DLI命令/data credit。
 首批退出：严格构建、生产codec/query离线边界及失败原子性；VM内实际两类型回复和

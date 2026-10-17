@@ -9,11 +9,49 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only, stage_runtime_libraries
 from ws73_north_star import file_record
 
 
 class NativeVMProfile(unittest.TestCase):
+    def test_runtime_major_names_share_canonical_identity_and_validate_before_copy(self):
+        import shutil
+        from install_layout import LIBRARIES
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)/'root';root.mkdir();sources = Path(tmp)/'source';sources.mkdir()
+            libraries = []
+            for name in LIBRARIES:
+                path = sources/name;path.write_bytes(b'\x7fELF-explicit-layout-fixture');libraries.append(path)
+            def readelf(command, **kwargs):
+                return subprocess.CompletedProcess(command, 0, stdout='(SONAME) ['+LIBRARIES[Path(command[-1]).name]+']', stderr='')
+            def copy(source, target, _):
+                target.parent.mkdir(parents=True, exist_ok=True);shutil.copy2(source, target)
+            with patch('ws73_vm_native_root.subprocess.run', side_effect=readelf):
+                rows=stage_runtime_libraries(root,libraries,copy)
+            self.assertEqual(len(rows),2)
+            for soname in LIBRARIES.values():
+                target=root/'usr/lib'/soname;alias=target.with_name(soname.rsplit('.',1)[0])
+                self.assertTrue(target.is_file() and not target.is_symlink());self.assertTrue(alias.is_symlink());self.assertEqual(alias.resolve(),target)
+
+    def test_runtime_wrong_second_soname_or_preexisting_alias_is_failure_atomic(self):
+        from install_layout import LIBRARIES
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)/'root';(root/'usr/lib').mkdir(parents=True);sources=Path(tmp)/'source';sources.mkdir()
+            libraries=[]
+            for name in LIBRARIES:
+                path=sources/name;path.write_bytes(b'\x7fELF-layout-fixture');libraries.append(path)
+            calls=[]
+            def readelf(command,**kwargs):
+                name=Path(command[-1]).name;soname=LIBRARIES[name] if name=='liblibsparklink.so' else 'wrong.so.0'
+                return subprocess.CompletedProcess(command,0,stdout='(SONAME) ['+soname+']',stderr='')
+            with patch('ws73_vm_native_root.subprocess.run',side_effect=readelf),self.assertRaisesRegex(ValueError,'SONAME'):
+                stage_runtime_libraries(root,libraries,lambda *args:calls.append(args))
+            self.assertEqual(calls,[]);self.assertEqual(list((root/'usr/lib').iterdir()),[])
+            (root/'usr/lib/libsparklink.so').symlink_to('/outside-test-root')
+            with patch('ws73_vm_native_root.subprocess.run',side_effect=readelf),self.assertRaisesRegex(ValueError,'preexisting'):
+                stage_runtime_libraries(root,libraries,lambda *args:calls.append(args))
+            self.assertEqual(calls,[])
+
     def test_runtime_only_profile_keeps_board_bytes_and_omits_both_boot_search_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

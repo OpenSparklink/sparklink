@@ -16,8 +16,47 @@ from ws73_native_root_smoke import digest
 from ws73_native_service_bundle import PROGRAMS, source_state
 from ws73_north_star import file_record
 from ws73_discovery_policy_capture import normalized_dump
+from install_layout import LIBRARIES
 
 OPTIONS = ('native_module_tree', 'native_boot_smoke', 'native_service_bundle')
+
+
+def stage_runtime_libraries(root, libraries, copy_elf):
+    """Private fresh VM root only; same actual ABI-major libraries as installation.
+
+    Existing explicit-path probes keep linker aliases to that one runtime copy.
+    Validate both SONAMEs/destinations before changing either alias.
+    """
+    root = root.resolve(strict=True)
+    if root == Path('/'):
+        raise ValueError('private VM staging root required')
+    sources = {path.name: path for path in libraries}
+    if len(sources) != len(libraries) or set(sources) != set(LIBRARIES):
+        raise ValueError('both current application/Native runtime libraries required')
+    directory = root / 'usr/lib'
+    directory.resolve().relative_to(root)
+    plans = []
+    for name, soname in LIBRARIES.items():
+        source = sources[name]
+        if source.is_symlink() or source.read_bytes()[:4] != b'\x7fELF':
+            raise ValueError('actual regular runtime ELF required')
+        result = subprocess.run(['readelf', '--dynamic', '--wide', str(source)],
+                                capture_output=True, text=True, check=True)
+        if result.stderr or re.findall(r'\(SONAME\).*?\[([^\]]+)\]', result.stdout) != [soname]:
+            raise ValueError('runtime SONAME mismatch: ' + name)
+        target = directory / soname
+        alias = directory / soname.rsplit('.', 1)[0]
+        if target.exists() or target.is_symlink() or alias.is_symlink() or (alias.exists() and not alias.is_file()):
+            raise ValueError('unexpected preexisting VM runtime destination')
+        plans.append((source, target, alias, digest(source)))
+    for source, target, _, expected in plans:
+        copy_elf(source, target, root)
+        if digest(target) != expected or digest(source) != expected:
+            raise ValueError('runtime changed during VM staging')
+    for _, target, alias, _ in plans:
+        alias.unlink(missing_ok=True)
+        alias.symlink_to(target.name)
+    return [file_record(target) for _, target, _, _ in plans]
 
 
 def enabled(args):
@@ -217,9 +256,9 @@ def stage(args, manifest, root, source, copy_elf):
         (root / 'bin' / name).unlink()
         (root / 'bin' / name).symlink_to('/' + str(prefix / name))
     library = service_path / 'payload' / service['shared_library'].lstrip('/')
-    copy_elf(library, root / 'usr/lib/libsparklink.so', root)
     native_library = service_path / 'payload' / service['native_shared_library'].lstrip('/')
-    copy_elf(native_library, root / 'usr/lib/libslk_native.so', root)
+    manifest['native_runtime_libraries'] = stage_runtime_libraries(
+        root, [library, native_library], copy_elf)
     custom_config = getattr(args, 'native_discovery_config', None)
     if custom_config is not None:
         stage_discovery_config(custom_config, service_path / 'payload' / prefix / 'slkd', root, manifest)

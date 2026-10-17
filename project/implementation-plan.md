@@ -1430,6 +1430,12 @@ R6b下一有限批：在独立无USB VM实际构建/安装Debian分包，验证�
 来源及限定范围。generic VM通过不替代此批。包管理通过后仍需准确新artifact的WS73
 与实际内核授权门禁；R5f现有API闭包同步收敛，不为整洁另造框架。
 
+R6b实际构建首个生产缺陷：[原clean失败](../docs/evidence/debian-clean-dispatch-failure-20261018.json)。
+真实编译器/库/许可证实验包已安装，版本依赖通过；Debian清理仍继承通用Make的
+rustup参数，直接Cargo拒绝`+1.96.1`而构建中止。清理与既有构建/测试统一显式
+`CARGO=cargo`，没有降低版本或跳过检查。实际Make dry-run回归通过，准确新提交
+的完整包构建、安装及升级回滚仍待VM；原输入准备失败另存，不算生产缺陷或恢复。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

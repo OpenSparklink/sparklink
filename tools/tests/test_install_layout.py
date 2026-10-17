@@ -61,6 +61,28 @@ class LayoutContract(unittest.TestCase):
         self.assertIn('debhelper-compat (= 13)', (layout.ROOT / 'debian/control').read_text())
         self.assertIn('--locked', (layout.ROOT / 'Makefile').read_text())
 
+    def test_actual_debian_clean_rule_does_not_require_a_rustup_dispatcher(self):
+        # Fedora lacks dpkg's architecture.mk. Substitute only that platform
+        # metadata; run the real rules and recursive production Make in -n mode.
+        import os
+        rules = (layout.ROOT / 'debian/rules').read_text().replace(
+            'include /usr/share/dpkg/architecture.mk',
+            'DEB_HOST_MULTIARCH := x86_64-linux-gnu')
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / 'target'
+            target.mkdir()
+            sentinel = target / 'must-not-clean'
+            sentinel.write_text('dry run only')
+            env = dict(os.environ, CARGO_TARGET_DIR=str(target), MAKEFLAGS='')
+            env.pop('CARGO', None)
+            result = subprocess.run(
+                ['make', '--no-print-directory', '-f', '-', '-n', 'override_dh_auto_clean'],
+                input=rules, cwd=layout.ROOT, env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('cargo clean', result.stdout.splitlines())
+            self.assertNotIn('+1.96.1', result.stdout)
+            self.assertEqual(sentinel.read_text(), 'dry run only')
+
     def test_install_cannot_silently_build_debug_then_copy_old_release(self):
         result = subprocess.run(['make', '--no-print-directory', '-n', 'install',
                                  'CARGO_FLAGS=--workspace', 'DESTDIR=/unused-stage'],

@@ -685,7 +685,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-17T21:08:36.399207+00:00",
+  "updated_at_utc": "2026-10-17T21:09:46.386068+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -3486,6 +3486,18 @@
       "second_vm_failure": "docs/evidence/deployment-probe-extraction-failure-20261018.json",
       "qualification_report": "docs/evidence/deployment-clean-vm-qualification-20261018.json",
       "maintenance_receipt": "docs/evidence/deployment-clean-vm-maintenance-20261018.json"
+    },
+    "r6b": {
+      "state": "ACTUAL_DEPS_PASS_PACKAGE_CLEAN_FAIL_FIXED_OFFLINE_NEW_VM_PENDING",
+      "source": "Existing668 source archive;current latercommits metadata-only;exacthead nottransferred",
+      "execution": ".dev/architecture-r6b-package-v2",
+      "exit": "Canonicalplan R6b:actualversiondependencies/packagebuild/install/upgrade/rollback/remove/configretention andexternalconsumers;freshnativeWS73 separately",
+      "toolchain": "Actualpinnedcompiler/lib/licensepayload inprivate labpackage,notdummyprovider orofficialDebiantoolchain",
+      "scope": "DedicatedVM,noUSB/hostinstallation;wholeS0-S6 andnaturalRCA/nonmanualrecovery remainOPEN",
+      "first_failure": ".dev/architecture-r6b-package-v1/export/package-outputs-v1/result.json",
+      "first_failure_scope": "Harnessformatteddisposablechildoverlaylostinheritedinputs;no packagebuild. ParentR6aandWIPunmodified. V2 mountsonly/checksactualsourcehash/toolchain/cachebeforeboot.",
+      "failure_report": "docs/evidence/debian-clean-dispatch-failure-20261018.json",
+      "next": "Accurate newcommit actualdpkg rebuild,theninstall/upgrade/rollback/remove/config/consumer gates;not yet qualified"
     }
   },
   "owned_ssap_c6_historical_batch": {

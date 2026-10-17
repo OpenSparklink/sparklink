@@ -81,14 +81,14 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**R4e2命令接线退休：Kb35/UEf/工具997分层门禁，整架构未完**。
+选定保留产物（不是当前工作树整体资格）：**R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完**。
 仅记录范围：`real_device` / `PASS`。
-kernel `b35d0313d29f5797aefdef045b8d559a50a82c09`。
-compiled_userspace `ef746cba1cdf967063c78437dffe6d4a9ecf6749`。
+kernel `7025d21cf7be00d978ec959aab49708d58741c26`。
+compiled_userspace `c032da74ab42b1cbe41ce0d3166fc841095ce0fe`。
 executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
-kernel_selftest_tools `b35d0313d29f5797aefdef045b8d559a50a82c09`。
+kernel_selftest_tools `7025d21cf7be00d978ec959aab49708d58741c26`。
 independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
-[准确范围与剩余条件](../docs/evidence/kernel-command-retirement-r4e2-20261017.json)。
+[准确范围与剩余条件](../docs/evidence/kernel-dli-metadata-retirement-r4f1-20261017.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -255,6 +255,7 @@ independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
 | R4d旧Native接口全链退休：997ea19四真实门禁及C/CLI元数据，整架构未完 | `real_device` | `PASS` |
 | R4e注册状态整改：K64/U0a/工具997四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4e2命令接线退休：Kb35/UEf/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
+| R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1068,7 +1069,7 @@ UnknownMethod，旧RemoteService对象不再发布；未实现的新模式继续
 artifact必须重验61/249+超限/2042/Owned/机制2以及发现/连接/同行。离线或旧98资格
 不能代替新回归。原WIP不覆盖；R4 rawABI/剩余API、R5/R6与全部未完成scope继续开放。
 
-##### 当前R4c有限退出
+##### R4c历史有限退出（准确684资格保留）
 
 起点643/d99调用审计：Native公开混合Event只有广告仍被生产消费者构造；
 其余旧handle/配对/PM仅旧模型/测试。删除公开Event，原codec/shape移为test-only；
@@ -1107,7 +1108,7 @@ make arch-check；仅声明级最小防回流，实际ELF/ABI/DBus/CLI独立验�
 不是完整公开API清单或refinement证明。剩余Kernel raw ABI/selftests/global masks、
 R5完整契约/每次尝试来源、R6干净VM部署和所有原范围未完；自然RCA/非人工恢复OPEN。
 
-##### 当前R4e有限退出：内核历史边界
+##### R4e原始有限退出与历史进度：内核历史边界
 
 先核对实际调用链，逐条分类，不机械删名称：
 
@@ -1122,7 +1123,7 @@ UAPI后，封存新Kernel artifact并VM内重验发现/连接/短包/既有边�
 撤权/关闭/同行。只门禁本批相关性质，不追加所有控制面组合。历史crypto两文件已由1814b96逐字移入selftests，7f40666同步实际生产
 P256/CMAC include；七Rust/五C故障和专用无USB crypto VM通过。原LSan/模块构建失败
 保留，不转授WS73资格。64a3248已删除注册对象未消费flags/能力/统计和便捷方法，模块改deny(dead_code)，
-19安装+9当前注册、6历史静态接管fixture通过；准确新Kernel正在构建，尚无其WS73资格。
+19安装+9当前注册、6历史静态接管fixture当时通过；其后64/0a准确四VM资格已封存，见对应报告，当前选定产物由上方结构化摘要给出。
 其余已链接模块mask及rawABI仍在审计，未宣称整批内核整改或证明。之后进入R5/R6，完整S0–S6/19WP/10FV/12DG保留。
 
 ##### R4e2准确门禁与当前R4f
@@ -1143,6 +1144,37 @@ ioctl/结构/权限表、monolithic selftests和Rust/C/Python历史布局。真�
 文件亲和性、typed Native/Session/DTAP/安全机制不机械删除；仍有消费者先迁移。
 已退休编号不复用，无兼容期；合法尚未支持的新模式仍明确拒绝。每批保持原WS73
 发现/连接/短包/既有边界/Owned/安全路径，准确新artifact再验。不是全部控制面组合前置。
+
+##### R4f1已验收与R4f2唯一待办清单
+
+[准确DLI元数据报告](../docs/evidence/kernel-dli-metadata-retirement-r4f1-20261017.json)
+绑定K7025/编译Uc032/工具997；八子集、实际Rust组件Werror、完整Kernel/link、无USB
+启动、49ABI、独立ELF导出及四真实VM通过。新Native snapshot五项与历史projection
+五项分开；保留32真实对端回复、24Owned/96审批/120事务、68角色拒绝、8C+8CLI
+元数据命令以及81+56重放负对照。没有新增形式化或整生命周期证明。
+
+| 分类 | 生产调用者／实际功能与权威来源 | 替代／删除条件、issues与门禁 |
+|---|---|---|
+| 立即删除，7025已实施 | Native.info写入但无人读取的name、features/ext、PDU/连接上限、MTU/MPS、mode/measurement/security投影；OGF/事件码辅助目录无生产消费者 | 删除虚假接口面；真实NativeInfo/fill_snapshot保留完整5字节version/10字节features及ACB/ICB；Runtime继续唯一Ready/credit来源。K#6/K#17/K#19/U#3/U#8；上述准确分层及实机门禁 |
+| 移入测试，7025已实施 | 旧packet/bus/metadata类型仅历史UART/SPI/USB/serdev需要，旧projection五项只验证历史字段 | exact b35声明/函数/原断言隔离于retired-dli-metadata；当前快照五项独立执行。旧reserve的name写入仅隔离pending fixture适配去掉，原归档函数不改；不声称历史模型是当前设备功能 |
+| 等待调用者迁移，当前R4f2 | 剩余DLI event payload/全局dead_code mask、registry packed version写副本；93旧raw ioctl的声明/授权/分派和monolithic selftests/私有布局 | 刷新精确名引用：7025/c032时21份引用源码，上层生产旧包装已退休；仍需独立AST/实际调用核对，不能把文本无匹配当完整证明。保留真实registry/file-affinity/Diagnostic与typed Host，迁移有价值codec/权限/取消/失败测试后删除旧编号门面，编号不复用；同批跨语言/CI pin/拒绝测试并重验新artifact。K#6/K#17/K#19/U#3/U#8，scope按原任务保持 |
+
+R4f2先处理真实事件归属：源码审计发现HardwareError已由Native/标准decoder构造，
+Host.receive原样退回，RX worker当前只消费relay/installation后计数丢弃。此为缺少
+故障消费者的源码发现，不宣称实机已触发；必须接现有每controller故障/清理契约，
+保留在途物理义务和同行隔离，不能为去掉dead field而删除硬件错误。
+
+R4f2退出不等全部控制面组合：生产不再编入未消费历史业务事件/接口，当前真实事件有
+明确消费者或明确拒绝；原codec/失败/权限/生命周期回归有独立测试去向；已退休编号
+按未发布ABI契约ENOTTY且不复用；当前新模式不支持仍明确拒绝。随后进入完整R5
+SDK/CLI/共享契约收敛及R6干净VM部署，之后再完善新业务；不是只改文档即架构完成。
+包/版本/可信度不得因本批清理升级。原自然RCA/非人工恢复、旧材料保留事故继续OPEN。
+
+R4f2a已落实[两条selftest头路径修复](../docs/evidence/selftest-header-relocation-r4f2a-20261017.json)：
+ccc266仅绝对→相对symlink；当前empty-registry消费者和搬迁树两头严格编译通过，
+恢复原绝对链接的负对照确认为missing header。不是执行probe或新VM/RF资格；
+生产声明范围75文件与7025逐字节相同，选定编译产物仍是7025，不能升级整个ccc HEAD。
+初次ccache环境和raw header include路径失败原样保留，不降Werror。
 
 ##### R5a最小独立导出门禁
 

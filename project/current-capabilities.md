@@ -9,24 +9,25 @@
 | 唯一用户态SSAP Engine/Owned | 24案例、96审批、120真实远端事务；owner在操作之间退出 | 活跃callback/原期限/撤权交错、CPCD、完整通知/指示和安全等级 |
 | 普通应用与显式Native分层 | App SDK无Native依赖；slkd不依赖App SDK；业务fd直达唯一Session | 完整C/Python broker/SSAP便利接口、全部CLI消费者收敛 |
 | 注册元数据 | 8次实际C bitmap/count、8次CLI完整身份快照，49新库ABI/历史布局检查 | allocation count不是Ready；不是C/Python业务、原子快照或芯片认证 |
-| 内核注册及命令整改 | 注册假状态/能力统计副本与未消费raw命令路径退休；199现行函数子集案例、另1历史command fixture，实际Rust组件与完整Kernel均构建 | DLI/rawUAPI/旧selftests、剩余全局掩盖、完整生命周期/并发证明 |
+| 内核注册及命令整改 | 注册假状态/能力统计副本、未消费raw命令和DLI能力投影退休；当前Native快照5项与历史投影5项分开，实际Rust组件与完整Kernel均构建 | DLI/rawUAPI/旧selftests、剩余全局掩盖、完整生命周期/并发证明 |
 | C导出守卫 | 两库实际ELF与独立公开头、失败/截断/变更负对照 | 名称/函数种类一致不等于ABI调用、权限或实机资格 |
 
-b35命令路径已按准确Kb35/UEf/工具997通过分层门禁并推进主分支；旧by-opcode
-作者匹配和未消费raw接线不再进入生产。此限定资格不使完整架构或其他门禁完成。
+7025已按准确K7025/编译Uc032/工具997通过分层门禁并推进主分支；DLI未消费
+能力投影退休，实际查询由现有完整Native快照保存。b35命令退休资格独立保留；
+本批没有新增业务能力，也不使完整架构或其他门禁完成。
 自然启动/重枚举/设备消失根因、非人工恢复继续开放。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**R4e2命令接线退休：Kb35/UEf/工具997分层门禁，整架构未完**。
+选定保留产物（不是当前工作树整体资格）：**R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完**。
 仅记录范围：`real_device` / `PASS`。
-kernel `b35d0313d29f5797aefdef045b8d559a50a82c09`。
-compiled_userspace `ef746cba1cdf967063c78437dffe6d4a9ecf6749`。
+kernel `7025d21cf7be00d978ec959aab49708d58741c26`。
+compiled_userspace `c032da74ab42b1cbe41ce0d3166fc841095ce0fe`。
 executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
-kernel_selftest_tools `b35d0313d29f5797aefdef045b8d559a50a82c09`。
+kernel_selftest_tools `7025d21cf7be00d978ec959aab49708d58741c26`。
 independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
-[准确范围与剩余条件](../docs/evidence/kernel-command-retirement-r4e2-20261017.json)。
+[准确范围与剩余条件](../docs/evidence/kernel-dli-metadata-retirement-r4f1-20261017.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -193,6 +194,7 @@ independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
 | R4d旧Native接口全链退休：997ea19四真实门禁及C/CLI元数据，整架构未完 | `real_device` | `PASS` |
 | R4e注册状态整改：K64/U0a/工具997四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4e2命令接线退休：Kb35/UEf/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
+| R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

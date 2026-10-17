@@ -370,3 +370,9 @@ Runtime Host仍是唯一调度/credit/物理义务来源。Diagnostic、发现�
 原typed准入、原期限和实际提交票据；Backend视图仅元数据/受控关闭，Runtime open
 不由应用fd触发。历史raw ingress回归独立命名为测试，不能重新接入生产。该批准确
 门禁在相应报告，DLI目录/全局掩盖及rawUAPI其余消费者仍待迁移，不宣称整架构完成。
+
+注册元数据不得维护第二套协议能力：Provider的注册视图仅承担已验证总线来源、
+地址和待迁移的legacy版本观察；完整wire version/features及ACB/ICB仍由现有Native
+快照提供。未消费的MTU/MPS、安全位等投影已退休，不能从全零/默认字段推导能力。
+历史UART/SPI/USB元数据只属隔离selftests；实际标准DLI codec和Runtime/Session/
+Grant/credit/Ticket保持原责任。剩余事件模型/全局掩盖及rawABI按唯一计划逐条退休。

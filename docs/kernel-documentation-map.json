@@ -301,6 +301,19 @@
       "disposition": "仅source-link，不构建到四象限站点；旧command fixture不能恢复默认Runtime，审计JSON状态是创建时快照",
       "source_sha256": "dde0578a6efd1e4e771944ed36cd05ed1ade94b8e7551a604a0443b36906fa0e",
       "original_url": "https://github.com/OpenSparklink/linux/blob/b35d0313d29f5797aefdef045b8d559a50a82c09/tools/testing/selftests/sparklink/retired-command-path/README"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "path": "tools/testing/selftests/sparklink/retired-dli-metadata/README",
+      "reader": "内核贡献者／资格审查者",
+      "purpose": "区分当前Native完整快照与只供历史UART/SPI/USB/serdev回归使用的旧DLI元数据",
+      "section": "history",
+      "validity": "历史测试边界；创建时audit不是当前能力或资格",
+      "applicable_version": "7025d21cf7be00d978ec959aab49708d58741c26",
+      "authority": "匹配源码及project/implementation-plan.md、project/current-capabilities.md",
+      "disposition": "仅source-link，不构建四象限站点；不得恢复默认Backend或额外Host",
+      "source_sha256": "b5f92f29e23cbbbe9d2abaffb7af3377bb0d7b57012e6584c9bf05a401227bfe",
+      "original_url": "https://github.com/OpenSparklink/linux/blob/7025d21cf7be00d978ec959aab49708d58741c26/tools/testing/selftests/sparklink/retired-dli-metadata/README"
     }
   ],
   "scope": "Tracked SparkLink/WS73 kernel documentation and selftest READMEs, not all upstream Linux documentation. No source copies in Sphinx site.",

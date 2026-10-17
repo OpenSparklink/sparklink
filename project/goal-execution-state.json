@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-17T02:36:45.378660+00:00",
+  "updated_at_utc": "2026-10-17T13:29:01.017843+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -793,13 +793,12 @@
   },
   "execution_phase": "ACTIVE_SERVICE_ONLY_POLICY_AND_FINITE_OWNER_CALLBACK_LIFECYCLE_GATES",
   "next_resume_tasks": [
-    "ROMcandidate:resolveindependentaccessvalidityandtruecoldstartup,thenperdevicewholee/usimage-selectionandgenerationbinding;noautomaticUfallback. NotprerequisiteforSSAP/data.",
-    "ContinueuniqueEngineboundedper-requestlocalattributeauthorizer withowner/epoch/attributeversion/originalRXlifetime/securityepoch/direction/deadline;thenCPCDandsecureupdates. NoBooleanapprovalorsecondEngine.",
-    "Preserveexact0cd/836/ee8protected110SSAP16RTand24attributes,earlierdata/lengthqualifications,separatef88730lifecycle,originalUzeroFAIL/5509msRCA;newartifactsneedrelatedgates.",
-    "Paralleldata/credit/multi/four/performance/RXgap/formalcomposition/oldcleanup/naturalRCAandnonmanualrecovery. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4/build12solo8VMunchanged.",
-    "Historicaldoclogretentionincident:preserveoldmetadata/hash,requiredUNPROVEDdebtandoriginalfailure;newuniqueexclusive logs/content-addressedreadonlycopies. No historicalbundlePASSuntilappropriate evidencecoverageisreestablished."
+    "R4f2:finish finite production event/metadata authority and full-chain unpublished raw ABI retirement with valuable historical tests preserved",
+    "R5:complete existing AppSDK/CLI/C-Python callers and independent contract/provenance gates;no second Engine",
+    "R6:cleanVM deployment/externalSDK/upgrade/rollback/uninstall/config retention",
+    "Only then refine next real vertical behavior under fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanual recovery stayOPEN"
   ],
-  "issue_sync_status": "Owned SSAP six existing U#3/#5/#8,K#6/#17/#19 OPEN with exact comment readback and unchanged scope;earlier ROM seven and retention followup preserved",
+  "issue_sync_status": "R4F1_READY_TO_POST_AFTER_CANONICAL_PUSH",
   "issue_sync_receipt": ".dev/rom-chip-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
   "current_goal_turn_classification": "PROGRESS_PRODUCTION_OWNED_SSAP_FOUR_REAL_VM_GATES_AND_SOURCE_BOUND_EVIDENCE",
@@ -1124,6 +1123,13 @@
       "fix": "e53b237 canonicalK323 andactualcbindgen0.29.4;41bindingtests passed againstsealedlibrary",
       "scope": "No newphysicalqualification;fullscope remainsOPEN;explicitinvalidlibraryoverride fallbackfollowup remains",
       "final": "K8757 guestrow andU88workspaceformat;full88CI passed;oldfailuresretained"
+    },
+    "last_online_snapshot": {
+      "receipt": ".dev/architecture-r4f1-online-ci-v1.json",
+      "sha256": "7c0e1cf1dd449869d573b76bc24e881d8096eafbc54d5513102a54681a7042a9",
+      "userspace": "c032da74ab42b1cbe41ce0d3166fc841095ce0fe",
+      "scope": "Four workflow families completed success,not7025kernelCI or whole newestdocsHEADqualification. Linux7025hadnoactionsruns. Both development branch protection endpoints returnedHTTP404 Branch not protected;required checks enforcement absent in this snapshot,not changed.",
+      "remaining": "Pin Actions/minimal tokens/release gate aggregation and branch-protection policy remainR5/R6;not a signed commit or CI success substitute for peer review/artifact provenance."
     }
   },
   "qualification_view": {
@@ -1778,23 +1784,27 @@
       "kernel-command-retirement-r4e2": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "kernel-dli-metadata-retirement-r4f1": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R4f-DLI-and-raw-ABI-retirement",
-      "production_behavior": "Command pathb35 source-bound10gate matrix PASS:6offline subsets,wholeRustWerror,fullKernel/link,boot,49ABI,namespace and4realVM with paired replays. Main promoted only after gates;remaining DLI/globalmask/rawABI consumers not completed.",
-      "state": "COMMAND_RETIREMENT_SOURCE_BOUND_PASS_REMAINING_ARCHITECTURE_INCOMPLETE",
+      "id": "WP18-R4f2-DLI-events-raw-ABI-and-test-retirement",
+      "production_behavior": "DLI metadata7025 source-bound ten-gate matrix PASS:8offline subsets,wholeRustWerror,fullKernel/link,boot,49ABI,namespace and4realVM with paired replays. Main promoted only after gates;remaining event/globalmask/registry copy/rawABI consumers not completed.",
+      "state": "DLI_METADATA_SOURCE_BOUND_PASS_REMAINING_ARCHITECTURE_INCOMPLETE",
       "exit": [
-        "Kb35/compiledEf/tools997:32peerreplies24Owned96decisions120transactions68roledenials;8C+8CLI and81+56negativecontrols",
-        "199current function-subset cases plus1archived command fixture explicitly separated;no whole lifecycle/concurrency/formal claim",
-        "Retire remaining DLI metadata/catalog/globalmask and93rawAPI with full consumer/selftest/ABI migration;then fullR5/R6"
+        "K7025/compiledc032/tools997:32peerreplies24Owned96decisions120transactions68roledenials;8C+8CLI and81+56negativecontrols",
+        "Current5Native snapshot cases and5separate historical projections,Backend19,pending9,Runtime8,Host70+cleanup2,Port2;USB19C and11historicalRust explicitly scoped;not wholeKernel concurrency/formal",
+        "Retire remaining DLI event/globalmask/packedversion and93rawAPI with full consumer/selftest/ABI migration;then fullR5/R6"
       ],
       "next": "Architecture-first finite cleanup;fullS0-S6/19WP/10FV/12DG and original scope,VM-only/UserHostP4,owner WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
-      "record": "kernel-command-retirement-r4e2"
+      "record": "kernel-dli-metadata-retirement-r4f1"
     }
   },
   "agent_workstream": {
@@ -3068,15 +3078,16 @@
     "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
   },
   "architecture_retirement_current_batch": {
-    "status": "R4E2_SOURCE_BOUND_PASS_R4F_DLI_RAW_ABI_AUDIT",
+    "status": "R4F1_SOURCE_BOUND_PASS_R4F2_EVENT_RAW_ABI_MIGRATION",
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
-    "batch": "Remaining DLI metadata/catalog/globalmask,93rawUAPI and oldselftests;then fullR5/R6",
+    "batch": "R4f2 DLI event/global-mask/raw ABI and current/historical selftest migration",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
-      "R4 full-chain old API/event/raw ABI and test migration",
-      "R5 independent interface/dependency contracts",
-      "R6 clean-VM deployment/external SDK/document closure"
+      "R4f2:finish finite production event/metadata authority and full-chain unpublished raw ABI retirement with valuable historical tests preserved",
+      "R5:complete existing AppSDK/CLI/C-Python callers and independent contract/provenance gates;no second Engine",
+      "R6:cleanVM deployment/externalSDK/upgrade/rollback/uninstall/config retention",
+      "Only then refine next real vertical behavior under fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanual recovery stayOPEN"
     ],
     "exit_reference": "Canonical WP18 R4e then R5/R6;not all-control-combination prerequisite",
     "qualification_reference": {
@@ -3220,10 +3231,30 @@
       "report": "docs/evidence/kernel-command-retirement-r4e2-20261017.json"
     },
     "r4f": {
-      "status": "CALL_AUDIT_NOT_IMPLEMENTED",
-      "inventory": ".dev/architecture-r4e-raw-call-audit-v1.json;refresh against latestb35 and userspace before edits",
-      "exit_reference": "WP18 R4f finite raw interface and DLI consumer migration",
-      "limits": "No unqualified alias/fake success/globaldeadcode;valuable tests remain;unpublished IDs never reused"
+      "status": "CALL_INVENTORY_UPDATED_NOT_ALL_RETIRED",
+      "inventory": ".dev/architecture-r4f2-raw-call-audit-v1.json",
+      "inventory_sha256": "ebe3ce4bcad31ea457dbec1c867e57027a5835a148303062db1d76cc61f5b781",
+      "raw_candidates": 93,
+      "referencing_source_files": 21,
+      "scan_limits": "Exact names,not AST/dynamic call proof;two tracked broken historical absolute UAPI symlinks identified;do not copy host paths into current tests. Preserve existing lifecycle WIP.",
+      "next": "Remaining DLI event/globalmask/registry version copy and full-chain raw declarations/auth/dispatch/test/private layout migration;actual typed Native and standard Diagnostic/file affinity retained.",
+      "first_production_gap": "HardwareError constructed in Native/standard codec returns from Host.receive unchanged;current RXworker handles only relay/installation then drops/counts remainder. Source-confirmed missing consumer,not observed RF/hardware incident. Connect existing per-controller fail/cleanup contract before removing unused event variants;preserve credit/physical obligations and othercontroller."
+    },
+    "r4f1": {
+      "status": "SOURCE_BOUND_TEN_GATE_MATRIX_PASS_MAIN_PROMOTED",
+      "kernel": "7025d21cf7be00d978ec959aab49708d58741c26",
+      "compiled_userspace": "c032da74ab42b1cbe41ce0d3166fc841095ce0fe",
+      "executed_tools": "997ea198dfc689c96053f6e460fdf1aecb067c70",
+      "qualification_record": "kernel-dli-metadata-retirement-r4f1",
+      "report": "docs/evidence/kernel-dli-metadata-retirement-r4f1-20261017.json",
+      "scope": "Unconsumed metadata/catalog retirement only;current snapshot5,historical projection5;actual component/fullKernel/boot/49ABI/ELF/fourrealVM withpairedreplay. Whole architecture and original scope not complete."
+    },
+    "r4f2a": {
+      "status": "TEST_LINK_COMPILE_RELOCATION_ONLY",
+      "commit": "ccc26618105bfe32450c6bcc975e9cbe3fa3ae61",
+      "report": "docs/evidence/selftest-header-relocation-r4f2a-20261017.json",
+      "selected_artifact_unchanged": "kernel-dli-metadata-retirement-r4f1",
+      "remaining": "No raw ioctl/event/globalmask retirement completed by this two-link patch."
     }
   },
   "owned_ssap_c6_historical_batch": {

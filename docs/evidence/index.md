@@ -1,5 +1,11 @@
 # 证据入口与取得限制
 
+[远端SSAP应用客户端迁移限定资格](application-ssap-client-qualification-20261018.json)：
+准确K2fc／编译与工具a37，四新VM共32次对端业务回复及原Owned/长度资格；
+新CLI实际经现有Client到唯一Engine。316最终workspace、50封存库检查、独立签名、
+177证据负对照及5封存schema负对照单列；未发布宽松封存候选已拒绝并保留。
+完整R5/C-Python和R6部署、真实通知及Session新CLI硬件调用、自然恢复仍缺。
+
 [旧 raw ABI 退休与当前路径保持](raw-uapi-retirement-qualification-20261018.json)：
 准确编译 K2fc／U2c8／实机工具2c8，四 VM 共32次对端应用回复；101退休命令、
 53私有历史类型、26保留命令和跨语言契约分开核对。c396仅更新测试工具和专用模拟

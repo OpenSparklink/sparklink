@@ -2,6 +2,27 @@
 
 ## 本批退出条件与近期执行顺序
 
+证据保留事故并行整改：原HCC110文档日志被复用文件名覆盖，原hash不改，五条历史
+整包记录按git原样归档，当前以required UNPROVED事故项替代，不默默保留PASS。
+新实机报告独立材料仍保留；使用排他创建的新日志路径和只读封存，不再覆盖旧证据。
+完整历史原件恢复/适当替代资格范围需另核，严格构建重跑不冒充恢复原字节。
+
+本次固件适配候选复核已取得[四轮软件回ROM对照](../docs/evidence/ws73-rom-chip-candidate-20261017.json)，
+**首次冷下载可靠自动选择仍未验收**：SDK110两56字节函数/特殊指令/HCC日志调用匹配；
+E/U各两轮，12次真实ROM读取在任何校准写入及下载前，显式整套镜像上传后HCC一致。
+E0x0a、U0；U零值不能单凭USB成功/四字节/重复就证明访问有效，原拒绝失败保留。
+真正冷启动、独立有效性判据、每设备整套路径选择和重枚举/新generation绑定保持
+WP03/K#13–15/#19未决。S/SDIO、E/UART、不一致/短回复/超时不得默认U。当前不改
+生产选择，不关闭相关issue；维护后两组16真实回复不代替复位同时同行业务门禁。
+
+同时收尾[110受保护SSAP](../docs/evidence/ssap-110-protected-access-20261017.json)：
+准确0cd/编译836/工具ee8，U2/3两机制共16实际回复、24属性案例（20允许4拒绝）。
+继续唯一Engine的有界本地授权义务，按ADR0004绑定审批者unique owner/epoch、属性
+登记版本、原RX lifetime/security epoch/方向/期限；不得用布尔配置或安全Agent批准
+放行。下一批退出包含真实允许/拒绝/缺审批者、退出、迟到/重复、删除重建、撤权/Down
+及原期限。CPCD和通知/指示发送随后另取证据，不恢复旧wire Engine。ROM候选验证与
+此线及数据/多通道/四设备/性能并行，不要求冷启动或控制竞争全集先完成。
+
 当前限定退出分两组准确产物，不能互相转授：
 
 - [0cd新内核HCC/数据门禁](../docs/evidence/ws73-hcc-query-deadline-20261017.json)：
@@ -178,17 +199,19 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | 实际Owner/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 历史首轮VM缺guest模块：原FAIL保留，未执行属性门禁 | `real_device` | `FAIL` |
 | 本地授权/Bond/新失效组合及完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
-| 110四只E/U：实际RAM字节/HCC自动型号/DLI Setup限定通过 | `real_device` | `PASS` |
-| Kf887/U836/e513：E/U110与U2/3四门禁32真实业务回复 | `real_device` | `PASS` |
-| 110接口与证据：729工具/48封存ABI/942生产函数/200实证负对照 | `offline` | `PASS` |
-| 实际HCC reply decoder：128字节/8性质CBMC限定通过 | `formal_bounded` | `PASS` |
-| 110期限5.509s失败/ROM自动选择/自然恢复与全部剩余范围：未闭合 | `real_device` | `UNPROVED` |
 | F887/836/e513：110三机制两来源30项原意图生命周期 | `real_device` | `PASS` |
 | 首110原期限实测5.509秒：原FAIL保留且根因开放 | `real_device` | `FAIL` |
 | 真实时延根因/Owner晚完成复用/完整原范围：仍未闭合 | `real_device` | `UNPROVED` |
 | K0cd/836/ee8：HCC逐笔期限修复新四门禁32真实业务回复 | `real_device` | `PASS` |
 | 新HCC期限：1116生产函数/sanitizer、730冻结工具/48封存ABI | `offline` | `PASS` |
 | 真实OUT阻塞/5.509秒数据失败根因与完整原范围：仍未闭合 | `real_device` | `UNPROVED` |
+| K0cd/836/ee8：110两安全机制受保护SSAP及16真实业务回复 | `real_device` | `PASS` |
+| 110受保护SSAP：两准确重放及64复制实证负对照 | `offline` | `PASS` |
+| 逐属性授权/CPCD、完整安全范围及自然恢复仍未闭合 | `real_device` | `UNPROVED` |
+| ROM候选：四轮E/U软件复位对照，非首次冷启动识别 | `real_device` | `PASS` |
+| ROM候选：特殊指令/741工具/四重放60负对照 | `offline` | `PASS` |
+| 首次冷启动、零值有效性及每设备自动固件选择未验收 | `real_device` | `UNPROVED` |
+| 历史HCC110整包原文档日志丢失：原hash保留，整包重放未证明 | `implemented` | `UNPROVED` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

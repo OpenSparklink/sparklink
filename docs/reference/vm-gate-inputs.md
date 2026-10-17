@@ -225,3 +225,19 @@ SDK110 型号差异不能由 U 型常量覆盖：本轮 E 的实际 DLI ACB 为1
 U 为254字节/5 credit。普通通道预算和分片证据必须逐发送controller匹配其原DLI
 元数据；仍检查debt/outstanding/peak/capacity守恒、队列上限和实际物理分片限长。
 错误的另一端容量、未知或缺失元数据不允许通过；E的较大容量不放宽U的限长。
+
+
+## ROM 型号候选的专用维护探针
+
+`ws73_vm_register_reset.py --rom-chip-expected E|U` 只用于专用QEMU scratch root；
+内核命令行须同时含`ws73.register_reset_lab=1`、`ws73.rom_chip_probe=1`及恰好一个
+匹配的`ws73.rom_chip_expected=E|U`。不能与wakeup、route、clear-halt或其他reset模式
+混用；不在宿主运行。探针先三读运行期寄存器，软件寄存器复位后确认两端点ROM，
+三次发送确切的`READM 0x40019000 4 `（尾部空格），再由显式匹配固件启动/HCC，
+退役该测试driver后读取三次运行期寄存器。它不启动daemon或给生产路径自动选镜像。
+
+IN请求512字节，实际回复必须恰好4字节；短/长/错误/型号不一致停止且无默认U。
+已知U的全零仅保留为歧义观察，`candidate_variant`仍拒绝，所有结果的自动选择和
+访问有效性标记为false/未证明。软件复位不是冷断电，HCC是固件自报。每设备路径、
+真正冷启动、有效性及并行业务门禁未满足时继续显式板卡配置。证据核对使用现有
+USB配对/HCC/上传读器；运行期字节是guest观察，不宣称另一独立寄存器decoder。

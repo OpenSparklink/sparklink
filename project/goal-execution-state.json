@@ -791,17 +791,18 @@
       "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
     ]
   },
-  "execution_phase": "ACTIVE_HCC110_SCOPED_EXIT_SOLE_ENGINE_LOCAL_AUTH_NEXT",
+  "execution_phase": "ACTIVE_ROM_CANDIDATE_UNPROVED_EXPLICIT_FIRMWARE_SSAP_AUTH_PARALLEL",
   "next_resume_tasks": [
-    "Continue sole userspace Engine policy-bound local attribute authorization/CPCD and protected updates using existing Session/Grant/credit/Ticket. Data/credit/multichannel/fourdevices/performance/RXgap/oldcleanup and formal composition parallel;noallcontrolfront.",
-    "Keep first110 5508.767234-5508.861382ms deadlineFAIL and oldU331 lateDown originals;naturalRCA/nonmanualrecovery/NOCP/drain/reuse remainOPEN. No manual/hub/QMP substitution.",
-    "Preserve exact0cd/836/ee8 fourdata qualification and separatef887/836/e513 thirtylifecycle qualification;new source/artifact changes require related gates.",
-    "FullS0-S6/19WP/10FV/12DG unchanged;UserHostP4;VM-only,E1explicitlyauthorized/U2-4;build12solo/8withVM/sharedlock."
+    "ROMcandidate:resolveindependentaccessvalidityandtruecoldstartup,thenperdevicewholee/usimage-selectionandgenerationbinding;noautomaticUfallback. NotprerequisiteforSSAP/data.",
+    "ContinueuniqueEngineboundedper-requestlocalattributeauthorizer withowner/epoch/attributeversion/originalRXlifetime/securityepoch/direction/deadline;thenCPCDandsecureupdates. NoBooleanapprovalorsecondEngine.",
+    "Preserveexact0cd/836/ee8protected110SSAP16RTand24attributes,earlierdata/lengthqualifications,separatef88730lifecycle,originalUzeroFAIL/5509msRCA;newartifactsneedrelatedgates.",
+    "Paralleldata/credit/multi/four/performance/RXgap/formalcomposition/oldcleanup/naturalRCAandnonmanualrecovery. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4/build12solo8VMunchanged.",
+    "Historicaldoclogretentionincident:preserveoldmetadata/hash,requiredUNPROVEDdebtandoriginalfailure;newuniqueexclusive logs/content-addressedreadonlycopies. No historicalbundlePASSuntilappropriate evidencecoverageisreestablished."
   ],
-  "issue_sync_status": "Seven existing issues OPEN;final HCC110 comments read back exactly and original scope bodies unchanged",
-  "issue_sync_receipt": ".dev/hcc110-final-issue-receipts-v1.json",
+  "issue_sync_status": "Seven existing ROM/firmware/reference/USB/hardware/security/SSAP/plan issues OPEN with exact readback;retention incident followup also readback OPEN,original bodies unchanged",
+  "issue_sync_receipt": ".dev/rom-chip-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
-  "current_goal_turn_classification": "PROGRESS_HCC_AUTOMODEL_110_REAL_DATA_AND_SEPARATE_THIRTY_LIFECYCLE_GATES",
+  "current_goal_turn_classification": "PROGRESS_110_PROTECTED_SSAP_AND_FOUR_REAL_ROM_CANDIDATE_COMPARISONS",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1666,26 +1667,6 @@
         "level": "real_device",
         "result": "UNPROVED"
       },
-      "hcc110-boot": {
-        "level": "real_device",
-        "result": "PASS"
-      },
-      "hcc110-data": {
-        "level": "real_device",
-        "result": "PASS"
-      },
-      "hcc110-offline": {
-        "level": "offline",
-        "result": "PASS"
-      },
-      "hcc110-decoder": {
-        "level": "formal_bounded",
-        "result": "PASS"
-      },
-      "hcc110-remaining": {
-        "level": "real_device",
-        "result": "UNPROVED"
-      },
       "intent110-real": {
         "level": "real_device",
         "result": "PASS"
@@ -1709,19 +1690,49 @@
       "hcc-timed110-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "ssap110-protected-data": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "ssap110-protected-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "ssap110-protected-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
+      },
+      "rom-chip-candidate-data": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "rom-chip-candidate-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "rom-chip-candidate-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
+      },
+      "hcc110-document-retention-incident": {
+        "level": "implemented",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP09-HCC110-vertical-slices-exit",
-      "production_behavior": "AutomaticHCCmodel+remainingoriginal2sUSBbudget;new0cd fourdatagates32RT. Frozenf88730typedlifecyclegates/892neg separatelysealed;soleSession/Runtime/Grant/credit/Ticket/SSAPEnginekept.",
-      "state": "SCOPED_SLICES_PASSED_FIRST5509MS_RCA_AND_FULL_SCOPE_OPEN",
+      "id": "WP03-WP08-WP09-ROM-candidate-and-110-protected-SSAP",
+      "production_behavior": "ReadonlyVMROMcandidatecompares12actualREADMbeforeallwritesandexplicitE/Uuploads,HCCandruntimewords. No productionautoselection. Existing110protectedSSAPslice16RTremainsseparate.",
+      "state": "SOFT_ROM_COMPARISONS_PASS_COLD_ZERO_VALIDITY_AND_AUTO_SELECTION_UNPROVED",
       "exit": [
-        "F887/836/e51330typedlifecyclecases andfirst5509msFAILretained;alloriginaldeadlinesandassertionsunchanged",
-        "New0cd/836/ee8E/U61/249/2042,U2/3short32actualpeerRT,12HCCmodelreplies,1116fixtures+sanitizer,730tools/48ABI;noautomaticqualificationtransfer",
-        "SeparateactualnewHCCOUTstall/stop/draininterleavings,firstdataSession5509msRCA,ROMfirstmodelselection andnaturalrecoveryremainOPEN"
+        "FourknownE/Usoftware-resetcomparisons/12ROMreads/4actual3imageuploads/HCC;741tools/fourreplays60negatives",
+        "E0a000000,U00000000ambiguous;automaticselectiondisabled,explicitmatchingE/Uinputsretained",
+        "TwofreshpostmaintenanceE/UanduntouchedU2/3gates16actualRT;notconcurrentbusinessisolation",
+        "OriginalUzeroFAIL/5509msdeadlineRCA/naturalrecoveryremainOPEN",
+        "HistoricalHCC110originaldocloglost;fiveoriginalrecordsretiredwithrequiredUNPROVEDincident,notrehashedorquietlyPASS."
       ],
-      "next": "Finitecurrentverticalslice exits;continue soleEngine policy-boundlocalattributeauthorization/secureupdates anddata/credit/multi/four/performance. Noallcontrolfront. FullS0-S6/19WP/10FV/12DG,VM-only,UserHostP4/originalbudgetunchanged."
+      "next": "ResolveindependentROMaccessvalidityandtruecoldstartupbeforeanyautomaticselector;perdevicewholevariantpath/generationassociationstillneeded. UniqueEngineauthorizer/localownership/CPCDsecureupdates,data/multi/four/performancecontinueparallel. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4unchanged."
     }
   },
   "agent_workstream": {
@@ -2946,5 +2957,32 @@
     "executed_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
     "scope": "New0cd32actualRT/12HCCqueries/249load/2042andoversize;f88730lifecyclecasesseparate. Notprotected110SSAP,ROMautoselection,generalE/Sdeploy,naturalrecoveryorfullgoal.",
     "next": "SoleEngine policy-bound local attribute authorization/CPCD and protected updates;data/credit/multi/four/performance,composition andRCAparallel. Noallcontrolfront."
+  },
+  "rom_chip_candidate_batch": {
+    "report": "docs/evidence/ws73-rom-chip-candidate-20261017.json",
+    "state": "SOFT_ROM_SCOPED_OBSERVATIONS_PASS_COLD_AND_VALIDITY_UNPROVED",
+    "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+    "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+    "vm_tools": "d4b681cf3af073a697e89619ba9dc663d97c8648",
+    "post_tools": "0ab1f9d917ccb8aadad12a714d6885c2e36fbb0e",
+    "known_e_raw": "0a000000",
+    "known_u_raw": "00000000",
+    "cold_power_verified": false,
+    "access_validity_proven": false,
+    "automatic_selection_permitted": false,
+    "explicit_variant_inputs_retained": true,
+    "first_u_guard_failure_retained": true,
+    "full_scope_unchanged": true,
+    "maintenance_report": "docs/evidence/ws73-rom-chip-maintenance-20261017.json"
+  },
+  "historical_evidence_retention_incident": {
+    "report": "docs/evidence/hcc110-document-retention-incident-20261017.json",
+    "state": "UNPROVED_ORIGINAL_DOC_LOG_LOST",
+    "original_hash_preserved": true,
+    "retired_records": 5,
+    "required_incident_record": "hcc110-document-retention-incident",
+    "active_real_captures_unchanged": true,
+    "whole_history_bytes_verified": false,
+    "verification": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED"
   }
 }

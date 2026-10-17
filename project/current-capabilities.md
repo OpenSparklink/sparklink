@@ -1,5 +1,11 @@
 # 当前能力与资格
 
+[历史文档日志保留事故](../docs/evidence/hcc110-document-retention-incident-20261017.json)：
+初始HCC110整包的一份已封存文档日志被后续构建覆盖。五条原记录与原hash按准确git
+快照保留，但已撤出当前PASS，替换为必须处理的UNPROVED项；没有用新hash冒充原件。
+新0cd数据、f887生命周期、110受保护SSAP及ROM候选的独立实机材料未受影响。当前
+本机校验仅验证活动材料，明确另列不可重放的历史整包；不能宣称全部历史原件完好。
+
 当前选定子资格为[HCC原期限修复后的四项实机门禁](../docs/evidence/ws73-hcc-query-deadline-20261017.json)：
 Linux `0cd4731dd3e6`，编译用户态 `83625029e313`，执行/guest工具 `ee8c4d2d05d8`。
 报告提交 `b01aee81b612` 不替代编译身份。另有[生命周期30项](../docs/evidence/ws73-110-original-intent-lifecycle-20261017.json)
@@ -17,8 +23,21 @@ Linux `0cd4731dd3e6`，编译用户态 `83625029e313`，执行/guest工具 `ee8c
 | 0cd长度与预算 | 249字节负载；2043/2046/2047/2048超限共16次拒绝；完整2042往返8次。E ACB1526/6、U254/5逐端校验 |
 | f887生命周期（独立源范围） | 三机制×两来源×release/最后管理fd/dup/Down/原期限，共30门禁；72控制前实际回复、108晚到拒绝、30重放/892复制负对照。同行Ready/租约/扫描，非独立业务组 |
 | 0cd离线与证据 | 1116生产codec/query fixture+ASan/UBSan、730冻结工具、48准确封存ABI；四精确数据重放/128复制负对照 |
-| 形式化限定通过 | 实际chip reply decoder，128字节内任意输入/长度，8语义断言/439原始检查及三负对照；源映射未变。不覆盖USB/锁/引用/时钟/排空/整个内核 |
-| 当前仍缺 | 110受保护SSAP/完整Agent、0cd完整生命周期矩阵、ROM首次自动型号/镜像选择、S硬件、混合四设备及完整S0–S6 |
+| 历史形式化范围 | chip reply decoder的8语义断言/439原始检查与原件保留；原HCC110整包因文档日志损失暂停资格，非当前全量证明。USB/锁/引用/时钟/排空/整个内核不在证明内 |
+| 当前仍缺 | 逐属性本地授权/CPCD及完整110安全/Agent矩阵、0cd完整生命周期重验、首次冷ROM可靠识别/每设备自动选镜像、S硬件、混合四设备及完整S0–S6 |
+
+新增[110受保护SSAP限定资格](../docs/evidence/ssap-110-protected-access-20261017.json)：
+同K0cd/编译836/工具ee8，U2/3的机制1与2各交换角色，16次实际业务回复、24属性案例
+（20允许、4拒绝）、8次安装及真实双端SMTC；不是E受保护资格、属性授权或完整Agent。
+
+[冷ROM识别候选复核](../docs/evidence/ws73-rom-chip-candidate-20261017.json)结论：**尚不能
+据此可靠启用首次冷下载自动选择**。准确VM工具d4b、离线观察器0ab；已知E1/U4各两次
+软件复位回ROM，12次实际READM在全部校准写入/下载前，四套显式匹配110上传/HCC与
+启动前后寄存器对照。E为`0a000000`，U为`00000000`；U零值能符合固件映射，却未有
+独立读取有效性判据，不能当有效身份。生产自动选择未启用，仍需显式整套E/U输入。
+真正冷断电、失效响应判据、每设备路径及ROM→运行期身份绑定仍缺。741工具、四重放/
+60复制负对照；另在E/U及未操作U2/3取得16次新业务回复，属于维护后功能回归，未证明
+复位同时另一业务组的隔离。原U零值guard失败保留，不因观察工具接纳歧义数据而改标。
 
 110矩阵首项原期限实机FAIL保留：准入至阻塞返回5508.767234–5508.861382毫秒，
 超过原5500毫秒上限，断言未放宽。其后新目录30项通过不解释或关闭原失败根因；
@@ -175,17 +194,19 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | 实际Owner/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 历史首轮VM缺guest模块：原FAIL保留，未执行属性门禁 | `real_device` | `FAIL` |
 | 本地授权/Bond/新失效组合及完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
-| 110四只E/U：实际RAM字节/HCC自动型号/DLI Setup限定通过 | `real_device` | `PASS` |
-| Kf887/U836/e513：E/U110与U2/3四门禁32真实业务回复 | `real_device` | `PASS` |
-| 110接口与证据：729工具/48封存ABI/942生产函数/200实证负对照 | `offline` | `PASS` |
-| 实际HCC reply decoder：128字节/8性质CBMC限定通过 | `formal_bounded` | `PASS` |
-| 110期限5.509s失败/ROM自动选择/自然恢复与全部剩余范围：未闭合 | `real_device` | `UNPROVED` |
 | F887/836/e513：110三机制两来源30项原意图生命周期 | `real_device` | `PASS` |
 | 首110原期限实测5.509秒：原FAIL保留且根因开放 | `real_device` | `FAIL` |
 | 真实时延根因/Owner晚完成复用/完整原范围：仍未闭合 | `real_device` | `UNPROVED` |
 | K0cd/836/ee8：HCC逐笔期限修复新四门禁32真实业务回复 | `real_device` | `PASS` |
 | 新HCC期限：1116生产函数/sanitizer、730冻结工具/48封存ABI | `offline` | `PASS` |
 | 真实OUT阻塞/5.509秒数据失败根因与完整原范围：仍未闭合 | `real_device` | `UNPROVED` |
+| K0cd/836/ee8：110两安全机制受保护SSAP及16真实业务回复 | `real_device` | `PASS` |
+| 110受保护SSAP：两准确重放及64复制实证负对照 | `offline` | `PASS` |
+| 逐属性授权/CPCD、完整安全范围及自然恢复仍未闭合 | `real_device` | `UNPROVED` |
+| ROM候选：四轮E/U软件复位对照，非首次冷启动识别 | `real_device` | `PASS` |
+| ROM候选：特殊指令/741工具/四重放60负对照 | `offline` | `PASS` |
+| 首次冷启动、零值有效性及每设备自动固件选择未验收 | `real_device` | `UNPROVED` |
+| 历史HCC110整包原文档日志丢失：原hash保留，整包重放未证明 | `implemented` | `UNPROVED` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

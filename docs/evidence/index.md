@@ -1,5 +1,19 @@
 # 证据入口与取得限制
 
+[ROM候选/110受保护SSAP维护回执](ws73-rom-chip-maintenance-20261017.json)：
+七项现有issues和事故补充读回OPEN；743工具/29资格检查及115严格文档，活动原件核对
+另列不可用历史材料，不授冷启动/自动选镜像或整项目资格。原hash不改，goal继续active。
+
+[历史HCC110文档日志保留事故](hcc110-document-retention-incident-20261017.json)：
+原件被复用文件名覆盖，原hash不变；五条原记录按git快照保留，当前整包资格未证明。
+活动材料核对不代表丢失的历史原件已恢复；新的实机报告与原抓包分开维护。
+
+[ROM寄存器候选复核](ws73-rom-chip-candidate-20261017.json)：四轮E/U软件回ROM对照、
+12次下载前原始READM及四套实际上传/HCC；E0x0a、U0歧义，冷启动/有效性/自动选择
+仍未验收。原U guard失败保留；维护后16业务回复不代表同时复位的同行隔离。
+[110受保护SSAP](ssap-110-protected-access-20261017.json)：准确0cd/836/ee8，
+U2/3两机制16业务回复、24属性案例20允许4拒绝；本地授权/CPCD/Bond仍缺。
+
 [HCC/110本批最终维护回执](ws73-hcc110-final-maintenance-20261017.json)：
 新0cd四数据门禁与f887三十生命周期门禁分源记录；完整原件/hash核对、27检查器用例、
 115严格文档及七项issues原scope不变且OPEN。首5.509秒失败及自然恢复仍开放，

@@ -7,6 +7,7 @@
 |---|---|---|
 | 选定产物，SDK110 U2/U3 | 四VM保留发现/连接、61/249+超限/2042/机制2；32实际对端应用回复 | 不是整个当前树或完整S0–S6资格 |
 | 唯一用户态SSAP Engine/Owned | 24案例、96审批、120真实远端事务；owner在操作之间退出 | 活跃callback/原期限/撤权交错、CPCD、完整通知/指示和安全等级 |
+| Rust远端SSAP应用客户端 | 准确a37新CLI复用固定owner/连接Client，四VM保持实际发现、读写/UUID/ExchangeInfo及Owned路径 | 正向通知/新Session CLI硬件调用、全部管理/Owned/Agent/高阶接口和C/Python客户端仍缺 |
 | 普通应用与显式Native分层 | App SDK无Native依赖；slkd不依赖App SDK；业务fd直达唯一Session | 完整C/Python broker/SSAP便利接口、全部CLI消费者收敛 |
 | 注册元数据 | 8次实际C bitmap/count、8次CLI完整身份快照，50新库ABI/历史布局检查 | allocation count不是Ready；不是C/Python业务、原子快照或芯片认证 |
 | 内核注册及命令整改 | 注册假状态/能力统计副本、未消费raw命令和DLI能力投影退休；当前Native快照5项与历史投影5项分开，实际Rust组件与完整Kernel均构建 | 完整SDK/部署、完整生命周期/并发证明 |
@@ -31,15 +32,12 @@
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K2fc/U2c8旧rawABI退休：四真实VM与当前Native测试工具限定通过**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放**。
 仅记录范围：`real_device` / `PASS`。
 kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-compiled_userspace `2c8e05cf8b467bed702adabf9ba42c577a862f4e`。
-executed_tools `2c8e05cf8b467bed702adabf9ba42c577a862f4e`。
-kernel_offline_virtual_tools `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-kernel_lifecycle_tools `c39686a8095818d8aed9e42ac1d15e0eee47e1e6`。
-independent_receipt_tools `29268b70f091de442e873289dda5b88b3477d23f`。
-[准确范围与剩余条件](../docs/evidence/raw-uapi-retirement-qualification-20261018.json)。
+compiled_userspace `a37c4cb0366b9c182e3f3b5da95146b24824e7f4`。
+executed_tools `a37c4cb0366b9c182e3f3b5da95146b24824e7f4`。
+[准确范围与剩余条件](../docs/evidence/application-ssap-client-qualification-20261018.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -211,6 +209,7 @@ independent_receipt_tools `29268b70f091de442e873289dda5b88b3477d23f`。
 | 历史K4b6/U2bd总门禁：parser预算依赖不匹配，聚合未证明 | `real_device` | `UNPROVED` |
 | K4b6/U2bd保留产物：2d268直接生产预算修正，实际240边界限定通过 | `real_device` | `PASS` |
 | K2fc/U2c8旧rawABI退休：四真实VM与当前Native测试工具限定通过 | `real_device` | `PASS` |
+| K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

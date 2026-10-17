@@ -10,15 +10,12 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K2fc/U2c8旧rawABI退休：四真实VM与当前Native测试工具限定通过**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放**。
 仅记录范围：`real_device` / `PASS`。
 kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-compiled_userspace `2c8e05cf8b467bed702adabf9ba42c577a862f4e`。
-executed_tools `2c8e05cf8b467bed702adabf9ba42c577a862f4e`。
-kernel_offline_virtual_tools `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-kernel_lifecycle_tools `c39686a8095818d8aed9e42ac1d15e0eee47e1e6`。
-independent_receipt_tools `29268b70f091de442e873289dda5b88b3477d23f`。
-[准确范围与剩余条件](../docs/evidence/raw-uapi-retirement-qualification-20261018.json)。
+compiled_userspace `a37c4cb0366b9c182e3f3b5da95146b24824e7f4`。
+executed_tools `a37c4cb0366b9c182e3f3b5da95146b24824e7f4`。
+[准确范围与剩余条件](../docs/evidence/application-ssap-client-qualification-20261018.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -190,6 +187,7 @@ independent_receipt_tools `29268b70f091de442e873289dda5b88b3477d23f`。
 | 历史K4b6/U2bd总门禁：parser预算依赖不匹配，聚合未证明 | `real_device` | `UNPROVED` |
 | K4b6/U2bd保留产物：2d268直接生产预算修正，实际240边界限定通过 | `real_device` | `PASS` |
 | K2fc/U2c8旧rawABI退休：四真实VM与当前Native测试工具限定通过 | `real_device` | `PASS` |
+| K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1236,7 +1234,7 @@ SSAP Engine；迁移slctl中自行拼接连接身份、SSAP方法字符串和长
 共享wire值/签名归slk-contract，应用封装不导出Native lease；daemon不依赖应用SDK。
 现有staging、Owned注册与安全Agent分别保留，不因名字相近合并。
 
-1. R5b源码已迁移实际远端SSAP/连接观察入口，复用现有Client，CLI输出保留；新artifact VM待验。检查daemon owner、
+1. R5b已迁移实际远端SSAP/连接观察入口，复用现有Client，CLI输出保留；准确a37四新VM限定门禁通过。检查daemon owner、
    controller generation、physical lifetime，旧对象不自动跟随新daemon/连接。
 2. 原方法仍由唯一daemon Engine执行；SDK不维护事务、远端缓存或生成协议成功。
    超限/不支持明确拒绝，错误不降级；回调授权与安全Agent仍是不同职责。
@@ -1244,6 +1242,13 @@ SSAP Engine；迁移slctl中自行拼接连接身份、SSAP方法字符串和长
    再用准确新artifact VM验证迁移入口及原WS73路径保持，不能用内部旧函数测试代替。
 4. 此后补完整管理/本地Owned/Agent客户端和C/Python实际消费，删除迁移后的重复入口；
    R6在干净VM验证部署链。局部入口迁移不是完整R5或整个架构完成。
+
+R5b收尾依据：[准确资格](../docs/evidence/application-ssap-client-qualification-20261018.json)。
+编译K2fc、用户态/执行工具a37，32对端业务回复；发现/cache/read/write/UUID/ExchangeInfo
+经新SDK路径，正向通知/新Session CLI硬件调用不在本批资格。316最终workspace、
+50封存库检查、177证据及5封存schema负对照与CI分别记录。未发布宽松schema封存
+候选在发布前被拒绝，原件保留。当前继续完整管理/Owned/Agent/高阶对象和C/Python
+实际客户端迁移及公开接口审计，再做R6干净VM部署；不能据本批关闭整架构或原issue。
 
 ##### R5a最小独立导出门禁
 

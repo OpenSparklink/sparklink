@@ -1812,24 +1812,28 @@
       "raw-uapi-retirement-r4f2e": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "application-ssap-client-r5b": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP18-R5-application-client-and-shared-contract",
-      "production_behavior": "R4rawABI14gates scopedqualified:compiledK2fc/U2c8/executed2c8;currenttesttoolsc396/receipt29268 separate. Existing Runtime/Session/Grant/credit/Ticket/soleSSAPEngine retained. Now migrate duplicateCLI/applicationD-Bus clients through existingSDK/sharedcontract,then fullC/Python andR6deployment.",
-      "state": "R4_FINITE_SCOPED_QUALIFICATION_R5_R6_ARCHITECTURE_INCOMPLETE",
+      "production_behavior": "R4retirement retained;R5existingClient nowownsremoteSSAP/Sessionobservation wrappers andslctlconsumers/sharewirealiases. Accurate2fc/a37/a37fourrealVM and316offline/50ABI/177+5evidence negatives. FullR5management/localOwned/Agent/highlevel/C-Python thenR6cleanVMdeploy,notwholearchitecturecomplete.",
+      "state": "R5_REMOTE_CLIENT_SLICE_QUALIFIED_FULL_R5_R6_ARCHITECTURE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Complete R5SDK/CLI/SSAP/C-Python andR6deployment beforefeature expansion;alloriginalS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery remainOPEN."
+      "next": "Complete remainingR5typedcontroller/management/localOwned/Agent/C-Python andpublicinterfaceaudit;thenR6cleanVMdeployment. Preservealloriginalfeature scope,VM-only,naturalRCA/nonmanualrecovery andunfinishedissuesOPEN."
     },
     "selected_qualification": {
       "version": 1,
-      "record": "raw-uapi-retirement-r4f2e"
+      "record": "application-ssap-client-r5b"
     }
   },
   "agent_workstream": {
@@ -3319,7 +3323,6 @@
     },
     "r4f2e": {
       "state": "FINITE_FOURTEEN_GATES_SCOPED_QUALIFIED_ARCHITECTURE_INCOMPLETE",
-      "source": "4b6dda28490d61864eacaa791e72cac1cfea2c0c",
       "candidates": 101,
       "previous_snapshot_candidates": 93,
       "added_scope": "8unsupportedPHYrawstubs,no production wrapper or real implementation",
@@ -3333,7 +3336,8 @@
       "implementation_report": "docs/evidence/raw-uapi-retirement-progress-20261018.json",
       "test_tools_kernel": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
       "independent_receipt_tools": "29268b70f091de442e873289dda5b88b3477d23f",
-      "qualification_report": "docs/evidence/raw-uapi-retirement-qualification-20261018.json"
+      "qualification_report": "docs/evidence/raw-uapi-retirement-qualification-20261018.json",
+      "audit_baseline": "4b6dda28490d61864eacaa791e72cac1cfea2c0c"
     },
     "parser_budget_review": {
       "production": 240,
@@ -3355,10 +3359,11 @@
       "Then originalfeaturedevelopment;keepfullscope andallprioracceptance"
     ],
     "r5_remote_client_slice": {
-      "state": "SOURCE_IMPLEMENTED_LOCAL_BROKER_CLI_TESTS_NEW_ARTIFACT_VM_PENDING",
+      "state": "FINITE_SDK_CLI_FOUR_REAL_VM_AND_OFFLINE_QUALIFIED_FULL_R5_OPEN",
       "production": "Existingowner-pinned Client/uniqueSSAPEngine;CLIremote methods andsharedwirealiases migrated,noNativelease ornewengine",
       "exit_reference": "CanonicalWP18/R5limitedclient slice",
-      "remaining": "ExactnewartifactVM/RFpreservation;fullmanagement/localOwned/Agent/C-Python clients andR6cleanVMdeploy;alloriginalscopeOPEN"
+      "remaining": "FullR5controller/management/Owned/Agent/highlevel/C-Python;R6cleanVM;positiveupdates/newSessionCLIhardwareinvocation andalloriginalscope/naturalRCA/nonmanualrecoveryOPEN",
+      "qualification_report": "docs/evidence/application-ssap-client-qualification-20261018.json"
     }
   },
   "owned_ssap_c6_historical_batch": {

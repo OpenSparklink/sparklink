@@ -1,5 +1,11 @@
 # 当前能力与资格
 
+生产整改状态：R4a删除旧controller安全门面，准确98c4b65新产物正分别回归；
+R4b删除旧SSAP门面/调用者/白名单及handle-only对象发布，严格离线与新artifact门禁
+进行中。当前dirty/R4b树**尚未取得实机资格**。下面已封存6d30资格仍绑定原源码，
+不转授后续树；Local/Owned和Connection唯一Engine保留，R4其他API/raw ABI、R5/R6未完。
+
+
 [R3c准确新SDK路径资格](../docs/evidence/application-native-boundary-r3c-20261017.json)：
 K`0cd4731dd3e6` / **编译及工具 `6d30c0f67db2`**，SDK110 U2/3。新slktest经真实SDK
 Client申请fd，四VM门禁保持61/249+16超限/2042/机制2、32真实对端回复、24 Owned案例/

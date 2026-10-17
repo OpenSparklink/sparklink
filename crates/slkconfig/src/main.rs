@@ -77,76 +77,6 @@ enum Command {
         /// Connection handle (hex, e.g. 0x0001)
         handle: String,
     },
-
-    /// Show SSAP service summary
-    Services,
-
-    /// List local services
-    ListServices,
-
-    /// Read a local property value
-    ReadProp {
-        /// Property handle (hex, e.g. 0x0001)
-        handle: String,
-    },
-
-    /// Write a local property value
-    WriteProp {
-        /// Property handle (hex, e.g. 0x0001)
-        handle: String,
-        /// Value as hex bytes
-        value: String,
-    },
-
-    /// Discover services on a remote peer
-    RemoteDiscover {
-        /// Connection handle (hex, e.g. 0x0001)
-        conn: String,
-    },
-
-    /// Read a property on a remote peer
-    RemoteRead {
-        /// Connection handle
-        conn: String,
-        /// Property handle
-        handle: String,
-    },
-
-    /// Write a property on a remote peer
-    RemoteWrite {
-        /// Connection handle
-        conn: String,
-        /// Property handle
-        handle: String,
-        /// Value as hex bytes
-        value: String,
-    },
-
-    /// Call a method on a remote peer
-    CallMethod {
-        /// Connection handle
-        conn: String,
-        /// Method handle
-        handle: String,
-        /// Input data as hex bytes
-        input: String,
-    },
-
-    /// Find a remote service by UUID
-    FindByUuid {
-        /// Connection handle
-        conn: String,
-        /// 16-bit UUID in hex (e.g. 0x1800)
-        uuid: String,
-    },
-
-    /// Read a remote property by UUID
-    ReadByUuid {
-        /// Connection handle
-        conn: String,
-        /// 16-bit UUID in hex (e.g. 0x2A00)
-        uuid: String,
-    },
 }
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
@@ -279,24 +209,6 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         Command::Scan { duration } => cmd_scan(&adapter, duration),
         Command::Connect { address } => cmd_connect(&adapter, &address),
         Command::Disconnect { handle } => cmd_disconnect(&adapter, &handle),
-        Command::Services => cmd_services(&adapter),
-        Command::ListServices => cmd_list_services(&adapter),
-        Command::ReadProp { handle } => cmd_read_prop(&adapter, &handle),
-        Command::WriteProp { handle, value } => cmd_write_prop(&adapter, &handle, &value),
-        Command::RemoteDiscover { conn } => cmd_remote_discover(&adapter, &conn),
-        Command::RemoteRead { conn, handle } => cmd_remote_read(&adapter, &conn, &handle),
-        Command::RemoteWrite {
-            conn,
-            handle,
-            value,
-        } => cmd_remote_write(&adapter, &conn, &handle, &value),
-        Command::CallMethod {
-            conn,
-            handle,
-            input,
-        } => cmd_call_method(&adapter, &conn, &handle, &input),
-        Command::FindByUuid { conn, uuid } => cmd_find_by_uuid(&adapter, &conn, &uuid),
-        Command::ReadByUuid { conn, uuid } => cmd_read_by_uuid(&adapter, &conn, &uuid),
     };
 
     result?;
@@ -637,107 +549,13 @@ fn parse_addr(s: &str) -> Result<[u8; 6], &'static str> {
     Ok(addr)
 }
 
-fn cmd_services(adapter: &Adapter) -> slk_native::Result<()> {
-    let _ = adapter;
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_list_services(adapter: &Adapter) -> slk_native::Result<()> {
-    let _ = adapter;
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_read_prop(adapter: &Adapter, handle_str: &str) -> slk_native::Result<()> {
-    let _ = (adapter, handle_str);
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_write_prop(adapter: &Adapter, handle_str: &str, value_hex: &str) -> slk_native::Result<()> {
-    if parse_hex_bytes(value_hex)?.len() > 252 {
-        return Err(slk_native::Error::InvalidParam(
-            "removed legacy service input limit exceeded",
-        ));
-    }
-    let _ = (adapter, handle_str, value_hex);
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_remote_discover(adapter: &Adapter, conn_str: &str) -> slk_native::Result<()> {
-    let _ = (adapter, conn_str);
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_remote_read(adapter: &Adapter, conn_str: &str, handle_str: &str) -> slk_native::Result<()> {
-    let _ = (adapter, conn_str, handle_str);
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_remote_write(
-    adapter: &Adapter,
-    conn_str: &str,
-    handle_str: &str,
-    value_hex: &str,
-) -> slk_native::Result<()> {
-    if parse_hex_bytes(value_hex)?.len() > 248 {
-        return Err(slk_native::Error::InvalidParam(
-            "removed legacy service input limit exceeded",
-        ));
-    }
-    let _ = (adapter, conn_str, handle_str, value_hex);
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_call_method(
-    adapter: &Adapter,
-    conn_str: &str,
-    handle_str: &str,
-    input_hex: &str,
-) -> slk_native::Result<()> {
-    if parse_hex_bytes(input_hex)?.len() > 248 {
-        return Err(slk_native::Error::InvalidParam(
-            "removed legacy service input limit exceeded",
-        ));
-    }
-    let _ = (adapter, conn_str, handle_str, input_hex);
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_find_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> slk_native::Result<()> {
-    let _ = (adapter, conn_str, uuid_str);
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
-fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> slk_native::Result<()> {
-    let _ = (adapter, conn_str, uuid_str);
-    Err(slk_native::Error::NotSupported(
-        "kernel SSAP API removed; user Engine not implemented",
-    ))
-}
-
 #[cfg(test)]
 fn parse_handle(s: &str) -> slk_native::Result<u16> {
     let s = s.strip_prefix("0x").unwrap_or(s);
     u16::from_str_radix(s, 16).map_err(|_| slk_native::Error::InvalidParam("invalid hex handle"))
 }
 
+#[cfg(test)]
 fn parse_hex_bytes(hex: &str) -> slk_native::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
     if !hex.len().is_multiple_of(2) {
@@ -931,16 +749,23 @@ mod tests {
     }
 
     #[test]
-    fn legacy_service_commands_reject_oversize_before_ioctl() {
-        let adapter = Adapter::open("/dev/null").unwrap();
-        for result in [
-            cmd_write_prop(&adapter, "1", &"ab".repeat(253)),
-            cmd_remote_write(&adapter, "1", "1", &"ab".repeat(249)),
-            cmd_call_method(&adapter, "1", "1", &"ab".repeat(249)),
+    fn retired_service_commands_are_absent_before_device_open() {
+        for args in [
+            vec!["services"],
+            vec!["list-services"],
+            vec!["read-prop", "1"],
+            vec!["write-prop", "1", "ab"],
+            vec!["remote-discover", "1"],
+            vec!["remote-read", "1", "1"],
+            vec!["remote-write", "1", "1", "ab"],
+            vec!["call-method", "1", "1", "ab"],
+            vec!["find-by-uuid", "1", "1"],
+            vec!["read-by-uuid", "1", "1"],
         ] {
-            // An attempted ioctl on /dev/null would yield an Ioctl error,
-            // not this input validation error.
-            assert!(matches!(result, Err(slk_native::Error::InvalidParam(_))));
+            let result = Cli::try_parse_from(std::iter::once("slkconfig").chain(args));
+            assert!(
+                matches!(result, Err(error) if error.kind() == clap::error::ErrorKind::InvalidSubcommand)
+            );
         }
     }
 

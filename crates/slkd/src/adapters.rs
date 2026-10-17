@@ -13,7 +13,7 @@ use crate::{
     event_loop::EventTask,
     extadv::ExtAdvIface,
     security::SecurityIface,
-    service::{RemoteServiceIface, SsapManagerIface},
+    service::SsapManagerIface,
     state::{
         AdapterDirectory, AdapterRegistration, AdapterState, InitializationOff, NativeLease,
         NativeManagement, RegistrationDirectory, SharedState,
@@ -415,18 +415,12 @@ impl Node {
             let _ = event.shutdown().await;
         }
         let _ = self.init.await;
-        let (device_paths, handles) = {
+        let device_paths = {
             let st = self.state.lock().await;
-            (
-                st.devices
-                    .values()
-                    .map(|d| d.object_path.clone())
-                    .collect::<Vec<_>>(),
-                st.devices
-                    .values()
-                    .filter_map(|d| d.conn_handle)
-                    .collect::<Vec<_>>(),
-            )
+            st.devices
+                .values()
+                .map(|d| d.object_path.clone())
+                .collect::<Vec<_>>()
         };
         let connection_paths = {
             let st = self.state.lock().await;
@@ -467,13 +461,6 @@ impl Node {
             let _ = connection
                 .object_server()
                 .remove::<DeviceIface, _>(path.as_str())
-                .await;
-        }
-        for handle in handles {
-            let path = format!("{}/conn_{handle:04x}", self.path);
-            let _ = connection
-                .object_server()
-                .remove::<RemoteServiceIface, _>(path.as_str())
                 .await;
         }
         remove_interfaces(connection, &self.path).await;

@@ -4,10 +4,9 @@ use std::future::Future;
 use slk_native::{Event, Result};
 use tokio::sync::oneshot;
 use tokio::task::{JoinError, JoinHandle};
-use tracing::{error, info};
+use tracing::error;
 
-use crate::dbus_iface::{self, DeviceIface};
-use crate::service;
+use crate::dbus_iface::DeviceIface;
 use crate::state::SharedState;
 
 #[cfg(test)]
@@ -167,6 +166,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
             drop(st);
             maintain_observations(state, connection).await;
         }
+        #[cfg(any(test, feature = "experimental-legacy-profiles"))]
         Ok(slk_native::Event::ConnectionStateChanged {
             handle,
             state: conn_state,
@@ -178,20 +178,13 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
             let profiles = st.profiles.clone();
             let connected = conn_state == slk_protocol::ConnState::Connected as u8;
             drop(st);
-            info!(
-                address = %dbus_iface::format_addr(&peer_addr),
+            tracing::info!(
+                address = %crate::dbus_iface::format_addr(&peer_addr),
                 handle,
                 connected,
                 "connection state changed"
             );
 
-            if connected {
-                let path = format!("{}/conn_{handle:04x}", state.lock().await.object_path);
-                let iface = service::RemoteServiceIface::new(state.clone(), handle);
-                if let Err(e) = connection.object_server().at(path.as_str(), iface).await {
-                    error!(%e, path, "failed to register remote service interface");
-                }
-            }
             #[cfg(any(test, feature = "experimental-legacy-profiles"))]
             if let Err(e) = profiles.connection_changed(handle, connected).await {
                 error!(%e, handle, "profile connection callback failed");
@@ -208,7 +201,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
                 2 => "PSK",
                 _ => "None",
             };
-            info!(
+            tracing::info!(
                 state = sec_state,
                 method = method_label,
                 encrypted,
@@ -224,7 +217,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
                     if let Err(e) = bonding.save(addr, info).await {
                         error!(%e, "failed to save bonding");
                     } else {
-                        info!(address = %dbus_iface::format_addr(&addr), "legacy pairing metadata saved");
+                        tracing::info!(address = %crate::dbus_iface::format_addr(&addr), "legacy pairing metadata saved");
                     }
                 }
             }

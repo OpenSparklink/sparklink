@@ -50,7 +50,7 @@ or
 .SH SUPPORT BOUNDARY
 Controller-wide pair/security spellings are removed; actual Connection security
 uses security-request and Agent. This unreleased CLI still retains legacy
-services/remote-services/read/write, PHY setters, RAL/RPA, sync, measurement,
+PHY setters, RAL/RPA, sync, measurement,
 PM and extended-advertising commands are not qualified Native capabilities
 and may explicitly fail NotSupported. Their descriptions below name the
 historical operation, not an implementation promise. Current SSAP operations
@@ -119,18 +119,11 @@ general human pairing and numeric CLI physical qualification remain separate.
 Rejection, timeout, ownership loss and incomplete native results exit nonzero.
 Legacy Pair/Encrypt do not invoke this workflow.
 .SS SSAP Services
-.TP
-.B services
-Legacy facade; currently NotSupported. Use the distinct local SSAP API.
-.TP
-.B remote\-services
-Legacy facade; currently NotSupported. Remote SSAP uses a Connection actor.
-.TP
-.BI read " handle"
-Legacy facade; currently NotSupported.
-.TP
-.BI write " handle hex_data"
-Legacy facade; currently NotSupported.
+The unpublished services, remote-services, read and write legacy commands
+are removed. Use the distinct ssap-list/register/serve/remove/local-read
+operations for local state and ssap-discover/read/write with an exact
+Connection path for the implemented remote protocol. Local registration
+is not proof of remote delivery; Owned authorization is separate from pairing.
 .SS PHY and Radio Control
 .TP
 .BI role " [g|t]"

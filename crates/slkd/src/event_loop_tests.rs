@@ -434,7 +434,7 @@ async fn blocked_profile_callback_leaves_state_and_dbus_responsive() {
         assert_eq!(st.devices[&[5; 6]].conn_handle, Some(5));
         (st.profiles.clone(), st.bonding.clone())
     };
-    // The connection object is published before entering user callback code.
+    // Historical callbacks must not publish a second, handle-only SSAP facade.
     let remote = zbus::Proxy::new(
         &client,
         "org.sparklink",
@@ -443,10 +443,12 @@ async fn blocked_profile_callback_leaves_state_and_dbus_responsive() {
     )
     .await
     .unwrap();
-    timeout(Duration::from_secs(2), remote.introspect())
-        .await
-        .unwrap()
-        .unwrap();
+    assert!(
+        timeout(Duration::from_secs(2), remote.introspect())
+            .await
+            .unwrap()
+            .is_err()
+    );
     timeout(Duration::from_secs(2), task.shutdown())
         .await
         .unwrap()

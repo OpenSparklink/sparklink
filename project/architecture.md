@@ -1087,3 +1087,9 @@ SDK的controller列表仅是注册成员观察；不能据此授予Ready或授�
 准入只核对选中controller的无缓存generation和固定lifetime，同行不可查询不作为
 前置条件；原b0f全controller属性前置造成的实际私有bus反例保留，旧generation的
 负对照改在实际fd准入处验证，不能以列表重排或缓存隐藏该故障。
+
+旧SSAP门面退休（R4b）：ServiceManager只保留实际Local/Owned数据库接口，
+旧RegisterServices/AddProperty等及RemoteService完整移除；旧handle事件不得再发布
+第二套SSAP对象。真正远端收发仍由完整generation/lifetime的Connection唯一actor承担。
+历史callback模型只保留在测试/明确实验构建，Native生产以typed事件/快照更新观察。
+删除门面不扩大当前资格；每批准确artifact单独回归，rawABI/部署剩余工作继续开放。

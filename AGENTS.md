@@ -30,7 +30,7 @@ python3 tools/build_resources.py -- cargo +1.96.1 test --locked --workspace
 | `libsparklink` | lib + cdylib | 真实D-Bus Client及授权fd操作；无Native依赖/管理导出；C/Python完整broker和SSAP客户端仍缺失 |
 | `slk-contract` | lib | SDK独立的共享D-Bus值/路径/名字；producer/caller共同消费，独立signature检查保留 |
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
-| `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset/services/list-services/read-prop/write-prop/remote-discover/remote-read/remote-write 子命令, clap 4 |
+| `slkconfig` | bin | 显式 Native 管理/诊断，clap 4；旧安全及 SSAP 门面命令已删除，剩余历史入口继续审计 |
 | `slctl` | bin | 交互式控制工具 (对标 bluetoothctl): rustyline 15, 通过 D-Bus 与 slkd 通信 |
 | `slktest` | bin + internal lib | 应用通道正确性/时延/速率/窗口/双向测试；普通授权fd，不是Host或协议Engine |
 | `slkmon` | bin | 协议分析器 (对标 btmon): DLI 帧解码、事件过滤、hexdump、文件填出 |
@@ -92,7 +92,7 @@ unsafe { ioctl::sl_stop_adv(self.raw_fd())? };
 
 - 总线名称: `org.sparklink`
 - 对象路径: `/org/sparklink`, `/org/sparklink/slk{index}_g{generation}`；Peer/Connection 按完整 lifetime 路径，不使用旧 adapterN 别名
-- 接口: `org.sparklink.Manager`, `org.sparklink.Adapter`, `org.sparklink.Device`, `org.sparklink.Security`, `org.sparklink.ServiceManager`, `org.sparklink.RemoteService`
+- 接口: `org.sparklink.Manager`, `org.sparklink.Adapter`, `org.sparklink.Device`, `org.sparklink.Security`, `org.sparklink.ServiceManager`；远端 SSAP 使用具完整身份的 Connection，不再发布 RemoteService
 
 ### Commit 规范
 
@@ -128,7 +128,7 @@ Trailer 要求:
 ├── AGENTS.md
 ├── crates/
 │   ├── slk-protocol/src/ (ioctl.rs, types.rs, genl.rs)
-│   ├── libsparklink/src/ (adapter.rs, error.rs, event.rs)
+│   ├── libsparklink/src/ (client.rs, ffi_channel.rs：应用 SDK，无 Native 管理)
 │   ├── slkd/src/ (main.rs, config.rs, kernel.rs, dbus_iface.rs, state.rs, security.rs, service.rs)
 │   └── slkconfig/src/ (main.rs)
 │   ├── slctl/src/ (main.rs, commands.rs)
@@ -136,7 +136,7 @@ Trailer 要求:
 │   ├── slkmon/src/ (main.rs, decode.rs)
 │   └── slkdump/src/ (main.rs)
 ├── bindings/
-│   └── python/ (pyproject.toml, sparklink/__init__.py, structs.py, adapter.py)
+│   └── python/ (pyproject.toml, sparklink/channel.py, native.py：显式区分应用与 Native)
 ├── data/
 │   ├── config/main.conf
 │   ├── dbus/ (org.sparklink.service, sparklink.conf)

@@ -27,12 +27,13 @@ C `include/uapi/linux/sparklink_ioctl.h` 的 `SL_SSAP_OP_*`、valid/allows/fits_
 和 Rust `slk_protocol::SsapOperations` 使用同一 mask。
 Python `bindings/python/sparklink/ssap.py` 拒绝 bool、负数、超32位和保留位；
 `to_legacy_bits` 显式拒绝 descriptor 权向8位缩窄。
-legacy narrowing 仅用于遗留 facade 输入和回归，不恢复已删除的数据库/业务 ioctl。
+legacy narrowing 仅保留历史 ABI/权限回归，不再有生产 facade 消费者；不恢复已删除的数据库/业务 ioctl。
 
-slkd `Service.AddProperty` 先校验权限和值（最多248字节），合法业务仍 NotSupported；
-遗留 WriteProperty 超252字节、RemoteService.Write/CallMethod 超248字节拒绝，不静默截断。该输入上限不是新 Engine 的协商 MTU
-或真实长写资格。无响应写和有响应写、通知和指示分别授权；设置位不能绕过
-peer 身份、连接授权和认证/加密条件。安全/Bond 尚未实机合格时不得宣称可信权限。
+旧 AddProperty/WriteProperty/RemoteService.Write/CallMethod 等未发布入口已删除，
+CLI 和观察者白名单同步退休。原权限、超限和不截断语义由实际 codec/数据库及
+现有纯测试保留；不再把历史 248/252 输入限值描述成当前 Engine 的协商 MTU。
+真实读写仍核对操作位、连接身份、安全上下文、原期限和本地授权；登记成功不能
+代替对端收到。通知/指示和长写的未实现部分继续明确拒绝。
 
 `org.sparklink.ServiceManager.RegisterLocalService` 是现有唯一用户态数据库的
 入口，当前只接通 READ 和 WRITE_WITH_RSP（mask `0x05`）；其他有效操作位返回

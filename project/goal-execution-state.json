@@ -3104,7 +3104,7 @@
       "status": "SOURCE_BOUND_6D30_REAL_SDK_PATH_SCOPED_PASS",
       "production": "SDK broker Client and independent contract,sole authorized-fd path;slktest caller migrated;Native C/Python separate/default Native and Adapter removed",
       "exit_reference": "project/implementation-plan.md WP18 R3c",
-      "remaining": "Exact newartifact VM realgates;R4 semantic oldAPI/events;R5 gates;R6 cleanVMdeploy;C/Python broker/SSAP convenience and full Channel contract remain original WP03/06/08",
+      "remaining": "R4 old API/events/raw ABI,R5/R6;C/Python broker/SSAP conveniences and full Channel contract remain original WP03/06/08",
       "failure_retained": "architecture-r3c-client-abi-v1.log and native-diagnostic-v1.log:actual ctypes missing pointer signature SIGSEGV;fixed signature,headers/imports;assertions retained",
       "selection_isolation": {
         "status": "FIXED_PRODUCTION_PRIVATE_BUS_AND_6D30_ORDINARY_RF_PRESERVATION_NOT_FAULT_INJECTION",
@@ -3122,6 +3122,12 @@
       "status": "STRICT_DEFAULT_EXPERIMENTAL_CLI_DBUS_ABI_PASS_NEW_ARTIFACT_REAL_PENDING",
       "exit_reference": "Canonical WP18 R4a",
       "remaining": "New artifact VM preservation gates;raw kernel ABI/private declarations/selftests and other R4 groups;R5/R6 remain"
+    },
+    "r4b": {
+      "status": "IMPLEMENTED_OFFLINE_AND_NEW_ARTIFACT_GATES_PENDING",
+      "production": "Remove old SSAP D-Bus/CLI/observer/event facades;keep current Local/Owned and sole Connection Engine",
+      "exit_reference": "Canonical WP18 R4b",
+      "remaining": "New exact artifact preservation gates;remaining R4/raw ABI,R5/R6;full original scope unchanged"
     }
   },
   "owned_ssap_c6_historical_batch": {

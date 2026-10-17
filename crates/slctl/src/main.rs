@@ -152,10 +152,6 @@ Commands:
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   disconnect <address> [type]    Disconnect an unambiguous current peer
   disconnect-link <addr> <type> <handle> <lifetime> <role>  Disconnect exact link
-  services                      List local SSAP services
-  remote-services               List remote services
-  read <handle>                 Read property value
-  write <handle> <hex>          Write property value
   role [g|t]                    Get/set role
   phy                           Show PHY parameters
   stats                         Show subsystem statistics

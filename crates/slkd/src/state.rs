@@ -362,7 +362,8 @@ impl AdapterState {
         self.observation_cursor = Some(address);
     }
 
-    /// Update connection state from kernel event
+    /// Historical callback fixture; Native state comes from lifetime-scoped snapshots.
+    #[cfg(any(test, feature = "experimental-legacy-profiles"))]
     pub fn on_conn_state_changed(&mut self, handle: u16, state: u8, peer_addr: SleAddr) {
         let connected = state == slk_protocol::ConnState::Connected as u8;
         if !connected {

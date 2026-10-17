@@ -139,13 +139,13 @@ joins their watches outside the database lock. A timed-out admitted write
 may have committed; failure is not rollback. Controller power and trusted
 persistent Bond remain separate unimplemented contracts.
 .PP
-The old RegisterServices(), AddService(q,b), AddProperty(q,y,ay),
-ReadProperty(q), WriteProperty(q,ay), Notify(q) and other legacy facade
-methods remain NotSupported (InvalidArgs may precede it). In particular,
-RegisterServices takes no JSON argument and Notify takes no value argument.
-The old org.sparklink.RemoteService facade is unsupported. Actual limited
-remote exchange/discovery/read/write uses the Connection SSAP actor.
-Notification/indication, long write and full Profile delivery are not promised.
+The unpublished RegisterServices, AddService, AddProperty, ReadProperty,
+WriteProperty, Notify and other legacy facade methods are removed, together
+with org.sparklink.RemoteService. Their old signatures are no longer an API.
+Owned and management-local database methods remain distinct and supported
+within their documented scope. Actual limited remote exchange/discovery/read/write
+uses the sole Connection SSAP actor. Notification/indication sending, long write
+and full Profile delivery are not promised.
 
 .PP
 Connection ReadSsapValue(q handle,u minimum), WriteSsapValue(q handle,ay value,u minimum)

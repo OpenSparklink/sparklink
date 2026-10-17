@@ -323,3 +323,9 @@ Native/旧Adapter，显式两库路径错误不回退。实际Cargo闭包拒绝S
 两份头及实际C导出独立负对照。fd域检查不授Ready；本地owner核对不是跨总线/内核
 原子证明，内核Grant/最终提交仍强制权限。C/Python完整broker/SSAP便利接口尚缺，
 不生成虚假方法；R4旧拒绝入口/事件、R5门禁、R6干净VM部署仍须按原scope完成。
+
+R4b决定删除未发布旧SSAP门面，而不是将其永远保留为NotSupported：它们没有
+业务实现，且错误注释声称Engine尚不存在；保留会制造第二API与状态来源。
+实际管理staging和Owned注册有不同资源/权限用途，均保留；远端只经现有Connection
+actor/Channel。旧handle callback不发布RemoteService，保留原callback退出/阻塞/drain
+测试。旧codec/权限语义继续复用，缺失新模式仍明确拒绝；删除入口不复用编号。

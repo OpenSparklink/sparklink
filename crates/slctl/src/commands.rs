@@ -403,20 +403,6 @@ impl Context {
                     .await?;
                 wait_connection(&proxy, id).await
             }
-            "services" => self.cmd_services().await,
-            "remote-services" => self.cmd_remote_services().await,
-            "read" => {
-                if args.len() < 2 {
-                    anyhow::bail!("usage: read <handle>");
-                }
-                self.cmd_read(args[1]).await
-            }
-            "write" => {
-                if args.len() < 3 {
-                    anyhow::bail!("usage: write <handle> <hex>");
-                }
-                self.cmd_write(args[1], args[2]).await
-            }
             "role" => {
                 let value = args.get(1).copied();
                 self.cmd_role(value).await
@@ -525,16 +511,6 @@ impl Context {
             "org.sparklink",
             self.selected_path().await?,
             "org.sparklink.Adapter",
-        )
-        .await?)
-    }
-
-    async fn service_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
-        Ok(zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            format!("{}/services", self.selected_path().await?),
-            "org.sparklink.ServiceManager",
         )
         .await?)
     }
@@ -1227,58 +1203,6 @@ impl Context {
         }
     }
 
-    async fn cmd_services(&self) -> anyhow::Result<()> {
-        let proxy = self.service_proxy().await?;
-        let services: Vec<(u16, u16, u16, bool)> = proxy.call("ListServices", &()).await?;
-        if services.is_empty() {
-            println!("No services registered");
-        } else {
-            for (start, end, uuid16, primary) in &services {
-                let kind = if *primary { "Primary" } else { "Secondary" };
-                println!(
-                    "  [{:#06x}-{:#06x}] UUID={:#06x} {kind}",
-                    start, end, uuid16
-                );
-            }
-        }
-        Ok(())
-    }
-
-    async fn cmd_remote_services(&self) -> anyhow::Result<()> {
-        println!("Remote service discovery requires an active connection.");
-        println!("Use 'connect <address> <address-type>' first, then the daemon exposes");
-        println!(
-            "org.sparklink.RemoteService at {}/conn_<handle>",
-            self.selected_path().await?
-        );
-        Ok(())
-    }
-
-    async fn cmd_read(&self, handle_str: &str) -> anyhow::Result<()> {
-        let handle = parse_handle(handle_str)?;
-        let proxy = self.service_proxy().await?;
-        let data: Vec<u8> = proxy.call("ReadProperty", &(handle,)).await?;
-        println!("Property {:#06x} ({} bytes):", handle, data.len());
-        print!("  ");
-        for b in &data {
-            print!("{:02x} ", b);
-        }
-        println!();
-        if let Ok(s) = std::str::from_utf8(&data) {
-            println!("  UTF-8: \"{s}\"");
-        }
-        Ok(())
-    }
-
-    async fn cmd_write(&self, handle_str: &str, value_hex: &str) -> anyhow::Result<()> {
-        let handle = parse_handle(handle_str)?;
-        let value = parse_hex_bytes(value_hex)?;
-        let proxy = self.service_proxy().await?;
-        let _: () = proxy.call("WriteProperty", &(handle, value)).await?;
-        println!("Written to property {:#06x}", handle);
-        Ok(())
-    }
-
     async fn cmd_role(&self, value: Option<&str>) -> anyhow::Result<()> {
         let proxy = self.controller_proxy().await?;
         match value {
@@ -1685,11 +1609,6 @@ impl Context {
         println!("  Queue Depth:       {}", stats.3);
         Ok(())
     }
-}
-
-fn parse_handle(s: &str) -> anyhow::Result<u16> {
-    let s = s.strip_prefix("0x").unwrap_or(s);
-    Ok(u16::from_str_radix(s, 16)?)
 }
 
 fn parse_peer_address(text: &str) -> anyhow::Result<String> {

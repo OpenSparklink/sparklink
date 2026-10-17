@@ -381,6 +381,7 @@ impl AdapterIface {
         let st = self.state.lock().await;
         st.devices
             .values()
+            .filter(|d| d.publication == crate::state::DevicePublication::Published)
             .map(|d| {
                 let addr_hex = d
                     .addr
@@ -514,6 +515,28 @@ impl AdapterIface {
         )
     }
 
+    /// Bounded address-only discovery observations, not Runtime/Peer truth.
+    #[zbus(property(emits_changed_signal = "false"))]
+    async fn observation_count(&self) -> u32 {
+        self.state.lock().await.devices.len() as u32
+    }
+    #[zbus(property(emits_changed_signal = "false"))]
+    async fn observation_bytes(&self) -> u32 {
+        self.state.lock().await.observation_bytes() as u32
+    }
+    #[zbus(property(emits_changed_signal = "false"))]
+    async fn observation_drops(&self) -> u64 {
+        self.state.lock().await.observation_drops
+    }
+    #[zbus(property(emits_changed_signal = "false"))]
+    async fn observation_publication_errors(&self) -> u64 {
+        self.state.lock().await.observation_publication_errors
+    }
+    #[zbus(property(emits_changed_signal = "false"))]
+    async fn observation_retirement_errors(&self) -> u64 {
+        self.state.lock().await.observation_retirement_errors
+    }
+
     /// Whether discovery is active
     #[zbus(property)]
     async fn discovering(&self) -> bool {
@@ -541,6 +564,9 @@ pub struct DeviceIface {
 impl DeviceIface {
     pub fn new(state: SharedState, addr: slk_protocol::SleAddr) -> Self {
         Self { state, addr }
+    }
+    pub(crate) fn belongs_to(&self, state: &SharedState, address: slk_protocol::SleAddr) -> bool {
+        self.addr == address && std::sync::Arc::ptr_eq(&self.state, state)
     }
 }
 
@@ -572,6 +598,17 @@ impl DeviceIface {
             .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
         st.disconnect_device(handle)
             .map_err(|e| zbus::fdo::Error::Failed(format!("disconnect failed: {e}")))
+    }
+
+    /// Validity of advertisement observations only; never connection/security.
+    #[zbus(property(emits_changed_signal = "false"))]
+    async fn observation_valid(&self) -> bool {
+        let state = self.state.lock().await;
+        state.present
+            && state
+                .devices
+                .get(&self.addr)
+                .is_some_and(|d| d.observation_valid())
     }
 
     /// Device MAC address "AA:BB:CC:DD:EE:FF"

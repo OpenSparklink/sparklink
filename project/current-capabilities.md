@@ -1,5 +1,9 @@
 # 当前能力与资格
 
+R2观察缓存/发布整改已接线，当前开发树尚未取得新artifact实机资格；下面R1源身份
+不转授R2。原默认Proxy缓存失败已保留，过期false断言不变，客户端按false注解显式
+无缓存查询；完整Native/Channel/SDK三视图迁移仍未完成，按唯一WP18推进。
+
 [退休R1的准确新产物回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
 K`0cd4731dd3e6` / **编译 `cd35db3fd4e4` / 工具 `0568a3d1db1b`**，SDK110 U2/3。
 Powered及历史元数据Bond入口已删，存储仅test编译；四VM门禁32次真实业务回复，

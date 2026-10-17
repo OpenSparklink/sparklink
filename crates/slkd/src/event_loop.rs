@@ -83,6 +83,11 @@ impl EventTask {
                                 _ = refresh_native(&state, &connection, expected, 0) => {},
                             }
                         }
+                        tokio::select! {
+                            biased;
+                            _ = &mut cancelled => break,
+                            _ = maintain_observations(&state, &connection) => {},
+                        }
                         continue;
                     },
                     event = receiver.next_event() => event,
@@ -158,26 +163,9 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
             adv_data,
         }) => {
             let mut st = state.lock().await;
-            let is_new = st.on_adv_report(addr, rssi, discovery_level, name.clone(), adv_data);
-            if is_new {
-                let object_path = st.devices[&addr].object_path.clone();
-                drop(st);
-                let iface = DeviceIface::new(state.clone(), addr);
-                if let Err(e) = connection
-                    .object_server()
-                    .at(object_path.as_str(), iface)
-                    .await
-                {
-                    error!(%e, path = %object_path, "failed to register device object");
-                } else {
-                    info!(
-                        address = %dbus_iface::format_addr(&addr),
-                        name = %name,
-                        rssi,
-                        "new device discovered"
-                    );
-                }
-            }
+            st.on_adv_report(addr, rssi, discovery_level, name, adv_data);
+            drop(st);
+            maintain_observations(state, connection).await;
         }
         Ok(libsparklink::Event::ConnectionStateChanged {
             handle,
@@ -251,6 +239,124 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
     }
 }
 
+/// Only the registration's existing EventTask runs this bounded maintenance.
+/// No new callback/task or unbounded retry queue. State locks never cross bus
+/// registration/removal, and foreign interfaces are never removed or adopted.
+async fn maintain_observations(state: &SharedState, connection: &zbus::Connection) {
+    use crate::state::DevicePublication;
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_millis(100);
+    let Ok(mut st) = tokio::time::timeout_at(deadline, state.lock()).await else {
+        return;
+    };
+    let work = st.observation_work();
+    drop(st);
+    for (address, path, phase) in work {
+        if tokio::time::Instant::now() >= deadline {
+            break;
+        }
+        {
+            let Ok(mut st) = tokio::time::timeout_at(deadline, state.lock()).await else {
+                break;
+            };
+            if !st.present {
+                break;
+            }
+            st.observation_attempted(address);
+        }
+        let outcome = match tokio::time::timeout_at(deadline, async {
+            match phase {
+                DevicePublication::Pending => {
+                    connection
+                        .object_server()
+                        .at(path.as_str(), DeviceIface::new(state.clone(), address))
+                        .await?;
+                    let iface = connection
+                        .object_server()
+                        .interface::<_, DeviceIface>(path.as_str())
+                        .await?;
+                    if !iface.get().await.belongs_to(state, address) {
+                        return Err(zbus::Error::Failure(
+                            "observation path belongs to another owner".into(),
+                        ));
+                    }
+                    Ok(())
+                }
+                DevicePublication::Retiring => {
+                    match connection
+                        .object_server()
+                        .interface::<_, DeviceIface>(path.as_str())
+                        .await
+                    {
+                        Ok(iface) => {
+                            if !iface.get().await.belongs_to(state, address) {
+                                return Err(zbus::Error::Failure(
+                                    "refusing to retire another observation owner".into(),
+                                ));
+                            }
+                            match connection
+                                .object_server()
+                                .remove::<DeviceIface, _>(path.as_str())
+                                .await
+                            {
+                                Ok(_) | Err(zbus::Error::InterfaceNotFound) => Ok(()),
+                                Err(error) => Err(error),
+                            }
+                        }
+                        // No instance of our concrete interface exists. Never
+                        // delete a foreign interface just for sharing its name.
+                        Err(zbus::Error::InterfaceNotFound) => Ok(()),
+                        Err(error) => Err(error),
+                    }
+                }
+                DevicePublication::Published => {
+                    unreachable!("work excludes published observations")
+                }
+            }
+        })
+        .await
+        {
+            Ok(result) => result,
+            Err(_) => Err(zbus::Error::Failure(
+                "observation original maintenance deadline elapsed".into(),
+            )),
+        };
+        let success = outcome.is_ok();
+        // Never wait beyond the original maintenance budget to finalize an
+        // outcome. Unconfirmed work remains charged and is revalidated on the
+        // next pass, even if ObjectServer already performed its side effect.
+        let Ok(mut st) = state.try_lock() else {
+            tracing::warn!(%path,?phase,?outcome,"observation bookkeeping deferred; slot remains charged");
+            break;
+        };
+        if !st.present
+            || st
+                .devices
+                .get(&address)
+                .is_none_or(|d| d.object_path != path || d.publication != phase)
+        {
+            continue;
+        }
+        if success {
+            if phase == DevicePublication::Pending {
+                st.devices.get_mut(&address).unwrap().publication = DevicePublication::Published;
+            } else {
+                st.devices.remove(&address);
+            }
+        } else {
+            let errors = if phase == DevicePublication::Pending {
+                &mut st.observation_publication_errors
+            } else {
+                &mut st.observation_retirement_errors
+            };
+            *errors = errors.saturating_add(1);
+            // Bounded diagnostic volume for finalized failures.
+            if errors.is_power_of_two() {
+                tracing::warn!(%path,?phase,count=*errors,error=?outcome.err(),"device observation publication pending; bounded retry");
+            }
+        }
+    }
+}
+
 async fn reconcile_native(
     state: &SharedState,
     connection: &zbus::Connection,
@@ -259,7 +365,6 @@ async fn reconcile_native(
     snapshot: zbus::fdo::Result<slk_protocol::SleLinkSnapshot>,
 ) {
     let (
-        new,
         paths,
         known,
         barrier,
@@ -276,7 +381,7 @@ async fn reconcile_native(
         if !st.present || st.controller.generation != expected.generation {
             return;
         }
-        let new = match snapshot {
+        match snapshot {
             Ok(table) => match st.apply_native_links(table, minimum_seq) {
                 Ok(new) => new,
                 Err(()) => {
@@ -306,7 +411,6 @@ async fn reconcile_native(
             .map(|entry| entry.path.clone())
             .collect::<Vec<_>>();
         (
-            new,
             st.devices
                 .values()
                 .map(|d| d.object_path.clone())
@@ -415,15 +519,7 @@ async fn reconcile_native(
             }
         }
     }
-    for (address, path) in new {
-        if let Err(error) = connection
-            .object_server()
-            .at(path.as_str(), DeviceIface::new(state.clone(), address))
-            .await
-        {
-            error!(%error, "canonical peer publication failed");
-        }
-    }
+    maintain_observations(state, connection).await;
     for path in paths {
         crate::adapters::invalidate_device_properties(
             connection,

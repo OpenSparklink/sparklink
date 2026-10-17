@@ -611,3 +611,28 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 历史元数据。实际Makefile已在临时DESTDIR回归；这不是干净VM安装、服务启动、升级、
 回滚或外部C/Python消费者资格。PREFIX/服务路径、共享库命名/SONAME和pkg-config
 仍在整改，不能据此推荐通用安装已可投入使用。实验bundle与通用安装资格分别记录。
+
+
+## 地址观察缓存（R2源码整改；实机资格按准确产物）
+
+Device是按地址的兼容观察对象，不能代替含地址类型的Peer或connection lifetime。
+每controller上限128条，名称/广告/UUID/path的实际容量合计64KiB；单名称256字节、
+opaque广告2048字节。超限拒绝整个更新并计数，不静默截断。Pending和Retiring也占
+预算；容量压力使最老的无当前连接观察进入Retiring，确认移除前不接收替换条目。
+无新报告60秒且没有已知canonical连接引用时退役；已连接观察可保留，过期的广告值
+仍会失去有效性。Raw native_reports环与Typed Peer/Connection保持各自职责。
+
+GetDevices只列Published。Device.ObservationValid表示该广告观察仍在60秒预算内且
+对象已确认发布、确有广告而非仅连接别名、controller仍在；不是连接成功、当前空口可达、授权或安全等级。
+缓存值需结合有效性读取；连接观察仍依据ConnectionKnown/实际typed快照。
+Adapter的ObservationCount、ObservationBytes、ObservationDrops、ObservationPublicationErrors、
+ObservationRetirementErrors为RO计数，包含pending/retiring占用。上述动态属性声明
+EmitsChangedSignal=false；客户端须禁用对应属性缓存或直接调用Properties.Get，
+不承诺未经发出的变化信号。动态zbus Proxy默认不会自动按服务端注解禁缓存，不能
+把其缓存值当新观察；共享客户端必须固定这项策略。原错误假设的回归失败日志保留。
+
+现有EventTask每轮最多8项与同一100ms本地维护期限，既有1秒tick重试/清理；这不是
+协议期限或硬件恢复策略。失败保留占用，不能靠重复缓存插入宣布发布成功；记账锁竞争时不释放slot，下一轮
+重新核对实际对象，诊断日志记录未确认结果，错误计数只计已记账失败。foreign
+对象不被收编或删除。数量/字节是资源上限，不承诺所有报告都进入观察列表。数据
+通道、Managed权限、扫描租约与实际业务交付资格不由这些观察计数决定。

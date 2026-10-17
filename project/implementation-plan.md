@@ -1032,6 +1032,24 @@ slk-protocol，拒绝默认test/experimental、slctl/slktest及逆向依赖；�
 错误根/逆向依赖负对照。R3明确Native/Channel/app拆分后相应审查allowlist；这不证明
 完整SDK导出/权限分离，all-features实验构建独立，不将本门禁作用到实验配置。
 
+R2当前有限批次（源码已接线，新artifact尚未验收）：每controller128观察、64KiB
+可变buffer/path容量、名称256/opaque payload2048输入上限；60秒无新报告且没有
+canonical连接引用时退役。Pending/Published/Retiring在同一Entry，发布失败保留pending，
+退役确认前不释放slot，拒绝重用Retiring；只由现有EventTask维护，无新后台任务。
+每轮最多8实际操作与同一个100ms期限（从等待状态锁前开始），cursor只按实际尝试推进，避免超时跳过其余项
+导致永久饥饿；1秒既有tick触发静默重试/TTL。这是有界每轮预算，不是硬件恢复资格。
+无缓存锁跨ObjectServer await；只确认/删除属于同一State Arc/地址的具体接口，不能
+收编或删foreign owner。GetDevices只列已Published；ObservationValid为60秒观察有效性，
+与Typed Peer/Connection/generation/lifetime及真实连接状态分开；RO计数不授予Ready。
+
+门禁：实际纯预算/拒绝原子性与D-Bus冲突无新报告重试、blocked退役/定额保持、同总线
+同行读回和TTL validity按无缓存契约重复实际查询；
+首全回归DefaultProxy仍缓存的失败保留：服务端false注解不自动配置动态zbus客户端，
+原“过期为false”断言不变，测试显式无缓存，R3共享client必须落实此策略；default/all-features严格构建及既有回归；
+准确新VM产物验证发现/连接/普通用户短消息、已取得边界与Owned/机制2保持。真实128
+地址负载、完整TTL/再发现长时门禁及发布故障压力仍需按范围单列，不将private-bus
+fixture或普通RF保持升级为全量cache实机资格。此包不改变Runtime/Grant/credit/Ticket。
+
 R2预算与发布修复优先于SDK大迁移；R3–R6分小批逐入口交付。安全Agent、SSAP的
 service-only/审批退出原期限门禁、数据/多通道/四设备/性能继续并行。先前尝试复用c6
 bundle已被完整source-scope校验拒绝并保留失败；已另建a2准确bundle，不能再称其为

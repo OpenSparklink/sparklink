@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 use std::sync::Arc;
+use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
 
 use libsparklink::Adapter;
@@ -13,9 +14,23 @@ use crate::profile::ProfileRegistry;
 #[cfg(any(test, feature = "experimental-legacy-profiles"))]
 use crate::profile_runtime::ProfileService;
 
+pub(crate) const OBSERVATION_MAX_ENTRIES: usize = 128;
+pub(crate) const OBSERVATION_MAX_BYTES: usize = 64 * 1024;
+pub(crate) const OBSERVATION_TTL: Duration = Duration::from_secs(60);
+pub(crate) const OBSERVATION_WORK_BUDGET: usize = 8;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum DevicePublication {
+    Pending,
+    Published,
+    Retiring,
+}
+
 /// Discovered device info maintained by the daemon
 #[derive(Debug, Clone)]
 pub struct DeviceEntry {
+    pub(crate) publication: DevicePublication,
+    pub(crate) observed_at: Instant,
     pub addr: SleAddr,
     pub name: String,
     pub rssi: i8,
@@ -28,6 +43,20 @@ pub struct DeviceEntry {
     pub adv_data: Vec<u8>,
     pub service_uuids: Vec<u16>,
     pub tx_power: Option<i8>,
+}
+
+impl DeviceEntry {
+    pub(crate) fn observation_bytes(&self) -> usize {
+        self.name.capacity()
+            + self.adv_data.capacity()
+            + self.service_uuids.capacity() * std::mem::size_of::<u16>()
+            + self.object_path.capacity()
+    }
+    pub(crate) fn observation_valid(&self) -> bool {
+        self.publication == DevicePublication::Published
+            && self.rssi_known
+            && self.observed_at.elapsed() < OBSERVATION_TTL
+    }
 }
 
 /// One shared credential and admission gate for RPCs, bootstrap and removal.
@@ -77,6 +106,10 @@ pub struct AdapterState {
     pub config: DaemonConfig,
     pub discovering: bool,
     pub devices: HashMap<SleAddr, DeviceEntry>,
+    pub(crate) observation_drops: u64,
+    pub(crate) observation_publication_errors: u64,
+    pub(crate) observation_retirement_errors: u64,
+    observation_cursor: Option<SleAddr>,
     pub name: String,
     #[cfg(test)]
     pub bonding: BondingService,
@@ -121,6 +154,10 @@ impl AdapterState {
             config,
             discovering: false,
             devices: HashMap::new(),
+            observation_drops: 0,
+            observation_publication_errors: 0,
+            observation_retirement_errors: 0,
+            observation_cursor: None,
             name,
             #[cfg(test)]
             bonding: BondingService::new(bonding),
@@ -190,23 +227,31 @@ impl AdapterState {
         name: String,
         adv_data: Vec<u8>,
     ) -> bool {
-        let is_new = !self.devices.contains_key(&addr);
+        if name.len() > 256 || adv_data.len() > 2048 || self.object_path.len() > 256 {
+            self.observation_drops = self.observation_drops.saturating_add(1);
+            return false;
+        }
+        let now = Instant::now();
+        self.expire_observations(now);
+        if self
+            .devices
+            .get(&addr)
+            .is_some_and(|d| d.publication == DevicePublication::Retiring)
+        {
+            self.observation_drops = self.observation_drops.saturating_add(1);
+            return false;
+        }
+        // Build one bounded proposal before mutating any existing observation.
+        // Tight buffers prevent spare caller capacity bypassing the byte budget.
+        let name = name.into_boxed_str().into_string();
+        let adv_data = adv_data.into_boxed_slice().into_vec();
         let object_path = format!(
             "{}/dev_{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
             self.object_path, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]
         );
-
-        // Native discovery payloads are opaque here. Do not interpret them as
-        // the legacy advertising codec or invent SSAP/name fields.
-        let (entries, _) = if self.controller.profile == 0 {
-            slk_protocol::parse_adv_data(&adv_data)
-        } else {
-            (Vec::new(), Vec::new())
-        };
-        let service_uuids = slk_protocol::collect_service_uuids16(&entries);
-        let tx_power = slk_protocol::find_tx_power(&entries);
-
-        let entry = self.devices.entry(addr).or_insert_with(|| DeviceEntry {
+        let mut entry = self.devices.get(&addr).cloned().unwrap_or(DeviceEntry {
+            publication: DevicePublication::Pending,
+            observed_at: now,
             addr,
             name: String::new(),
             rssi: 0,
@@ -223,15 +268,98 @@ impl AdapterState {
         entry.rssi = rssi;
         entry.rssi_known = true;
         entry.discovery_level = discovery_level;
+        entry.observed_at = now;
         if !name.is_empty() {
             entry.name = name;
         }
         if !adv_data.is_empty() || self.controller.profile != 0 {
+            // Native payloads remain opaque; this is not an SSAP/wire decoder.
+            let (entries, _) = if self.controller.profile == 0 {
+                slk_protocol::parse_adv_data(&adv_data)
+            } else {
+                (Vec::new(), Vec::new())
+            };
+            entry.service_uuids = slk_protocol::collect_service_uuids16(&entries)
+                .into_boxed_slice()
+                .into_vec();
+            entry.tx_power = slk_protocol::find_tx_power(&entries);
             entry.adv_data = adv_data;
-            entry.service_uuids = service_uuids;
-            entry.tx_power = tx_power;
         }
-        is_new
+        let old_bytes = self
+            .devices
+            .get(&addr)
+            .map_or(0, DeviceEntry::observation_bytes);
+        if (!self.devices.contains_key(&addr) && self.devices.len() >= OBSERVATION_MAX_ENTRIES)
+            || self.observation_bytes() - old_bytes + entry.observation_bytes()
+                > OBSERVATION_MAX_BYTES
+        {
+            self.observation_drops = self.observation_drops.saturating_add(1);
+            // Keep the old entry until actual unpublication. Never allocate a
+            // replacement while its D-Bus object still consumes the old slot.
+            let oldest = self
+                .devices
+                .iter()
+                .filter(|(a, d)| {
+                    **a != addr
+                        && d.publication != DevicePublication::Retiring
+                        && !self.device_connection(a).1
+                })
+                .min_by_key(|(_, d)| d.observed_at)
+                .map(|(a, _)| *a);
+            if let Some(oldest) = oldest {
+                self.devices.get_mut(&oldest).unwrap().publication = DevicePublication::Retiring;
+            }
+            return false;
+        }
+        let pending = entry.publication == DevicePublication::Pending;
+        self.devices.insert(addr, entry);
+        pending
+    }
+
+    pub(crate) fn observation_bytes(&self) -> usize {
+        self.devices
+            .values()
+            .map(DeviceEntry::observation_bytes)
+            .sum()
+    }
+    pub(crate) fn expire_observations(&mut self, now: Instant) {
+        let expired = self
+            .devices
+            .iter()
+            .filter(|(address, d)| {
+                now.saturating_duration_since(d.observed_at) >= OBSERVATION_TTL
+                    && !self.device_connection(address).1
+            })
+            .map(|(address, _)| *address)
+            .collect::<Vec<_>>();
+        for address in expired {
+            self.devices.get_mut(&address).unwrap().publication = DevicePublication::Retiring;
+        }
+    }
+    /// The sole registration EventTask performs this work. Failed work remains
+    /// charged to the same bounded slot; a rotating cursor prevents starvation.
+    pub(crate) fn observation_work(&mut self) -> Vec<(SleAddr, String, DevicePublication)> {
+        self.expire_observations(Instant::now());
+        if !self.present {
+            return Vec::new();
+        }
+        let mut work = self
+            .devices
+            .iter()
+            .filter(|(_, d)| d.publication != DevicePublication::Published)
+            .map(|(a, d)| (*a, d.object_path.clone(), d.publication))
+            .collect::<Vec<_>>();
+        work.sort_by_key(|(a, _, _)| {
+            (
+                self.observation_cursor.is_some_and(|cursor| *a <= cursor),
+                *a,
+            )
+        });
+        work.truncate(OBSERVATION_WORK_BUDGET);
+        work
+    }
+    pub(crate) fn observation_attempted(&mut self, address: SleAddr) {
+        self.observation_cursor = Some(address);
     }
 
     /// Update connection state from kernel event
@@ -255,33 +383,15 @@ impl AdapterState {
             dev.connection_known = true;
             dev.conn_handle = if connected { Some(handle) } else { None };
         } else if connected {
-            let object_path = format!(
-                "{}/dev_{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-                self.object_path,
-                peer_addr[0],
-                peer_addr[1],
-                peer_addr[2],
-                peer_addr[3],
-                peer_addr[4],
-                peer_addr[5]
-            );
-            self.devices.insert(
-                peer_addr,
-                DeviceEntry {
-                    addr: peer_addr,
-                    name: String::new(),
-                    rssi: 0,
-                    rssi_known: false,
-                    discovery_level: 0,
-                    connected: true,
-                    connection_known: true,
-                    conn_handle: Some(handle),
-                    object_path,
-                    adv_data: Vec::new(),
-                    service_uuids: Vec::new(),
-                    tx_power: None,
-                },
-            );
+            self.on_adv_report(peer_addr, 0, 0, String::new(), Vec::new());
+            if let Some(dev) = self.devices.get_mut(&peer_addr)
+                && dev.publication != DevicePublication::Retiring
+            {
+                dev.connected = true;
+                dev.connection_known = true;
+                dev.conn_handle = Some(handle);
+                dev.rssi_known = false;
+            }
         }
     }
 

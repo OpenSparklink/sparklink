@@ -1230,3 +1230,378 @@ async fn retired_power_and_metadata_bond_interfaces_are_absent() {
     );
     drop(server);
 }
+
+// Observation tests invoke the actual production cache and ObjectServer paths.
+// /dev/null, private bus and manual observation age are explicit fixtures;
+// they do not establish kernel/RF timing, physical links or controller Ready.
+fn observation_address(n: u16) -> slk_protocol::SleAddr {
+    let b = n.to_le_bytes();
+    [b[0], b[1], 1, 2, 3, 4]
+}
+
+#[tokio::test]
+async fn observation_count_bytes_failure_atomicity_and_connection_insertion_are_bounded() {
+    use crate::state::{OBSERVATION_MAX_BYTES, OBSERVATION_MAX_ENTRIES};
+    let shared = state();
+    let mut st = shared.lock().await;
+    for n in 0..OBSERVATION_MAX_ENTRIES as u16 {
+        assert!(st.on_adv_report(observation_address(n), -3, 0, String::new(), vec![1]));
+    }
+    assert!(!st.on_adv_report(observation_address(400), -3, 0, String::new(), vec![1]));
+    assert_eq!(st.devices.len(), OBSERVATION_MAX_ENTRIES);
+    assert!(st.observation_bytes() <= OBSERVATION_MAX_BYTES);
+    assert_eq!(st.observation_drops, 1);
+    st.on_conn_state_changed(
+        7,
+        slk_protocol::ConnState::Connected as u8,
+        observation_address(401),
+    );
+    assert!(!st.devices.contains_key(&observation_address(401)));
+    assert_eq!(st.observation_drops, 2);
+    drop(st);
+    let shared = state();
+    let mut st = shared.lock().await;
+    st.controller.profile = 1; // Opaque data; no legacy advertisement interpretation.
+    for n in 0..128 {
+        st.on_adv_report(observation_address(n), -5, 0, "name".into(), vec![1; 2048]);
+    }
+    assert!(st.devices.len() < OBSERVATION_MAX_ENTRIES);
+    assert!(st.observation_bytes() <= OBSERVATION_MAX_BYTES && st.observation_drops > 0);
+    let before = st.devices.len();
+    assert!(!st.on_adv_report(
+        observation_address(900),
+        -9,
+        0,
+        String::new(),
+        vec![0; 2049]
+    ));
+    assert!(!st.on_adv_report(observation_address(901), -9, 0, "n".repeat(257), Vec::new()));
+    assert_eq!(st.devices.len(), before);
+    // An existing observation must not be partly overwritten on rejection.
+    let shared = state();
+    let mut st = shared.lock().await;
+    let a = observation_address(1);
+    st.on_adv_report(a, -15, 0, "first".into(), vec![1]);
+    let old = st.devices[&a].clone();
+    assert!(!st.on_adv_report(a, -20, 0, "replacement".into(), vec![0; 2049]));
+    assert_eq!(
+        (
+            st.devices[&a].name.as_str(),
+            st.devices[&a].rssi,
+            st.devices[&a].observed_at
+        ),
+        (old.name.as_str(), old.rssi, old.observed_at)
+    );
+}
+
+#[tokio::test]
+async fn observation_ttl_and_retry_cursor_do_not_free_or_starve_slots() {
+    use crate::state::{DevicePublication, OBSERVATION_TTL, OBSERVATION_WORK_BUDGET};
+    let shared = state();
+    let mut st = shared.lock().await;
+    for n in 0..20 {
+        st.on_adv_report(observation_address(n), -1, 0, String::new(), Vec::new());
+    }
+    let first = st.observation_work();
+    assert_eq!(first.len(), OBSERVATION_WORK_BUDGET);
+    // Only an actually attempted item advances the cursor. A timeout must not
+    // skip the other seven forever when every first item is blocked.
+    st.observation_attempted(first[0].0);
+    let second = st.observation_work();
+    assert_eq!(second[0].0, first[1].0);
+    assert_eq!(st.devices.len(), 20);
+    let a = observation_address(0);
+    st.devices.get_mut(&a).unwrap().observed_at -= OBSERVATION_TTL;
+    let b = observation_address(1);
+    st.devices.get_mut(&b).unwrap().observed_at -= OBSERVATION_TTL;
+    st.on_conn_state_changed(3, slk_protocol::ConnState::Connected as u8, b);
+    st.expire_observations(Instant::now());
+    assert_eq!(st.devices[&a].publication, DevicePublication::Retiring);
+    assert_ne!(st.devices[&b].publication, DevicePublication::Retiring);
+    assert!(!st.on_adv_report(a, -8, 0, String::new(), Vec::new()));
+    assert_eq!(st.devices.len(), 20);
+    assert_eq!(st.observation_drops, 1);
+}
+
+#[tokio::test]
+async fn observation_publication_conflict_retries_without_new_report_and_preserves_foreign_owner() {
+    use crate::state::DevicePublication;
+    let bus = PrivateBus::start();
+    let shared = state();
+    let foreign = state();
+    let server = server(&bus, shared.clone()).await;
+    let a = observation_address(7);
+    shared
+        .lock()
+        .await
+        .on_adv_report(a, -12, 0, "device".into(), vec![1]);
+    let path = shared.lock().await.devices[&a].object_path.clone();
+    server
+        .object_server()
+        .at(path.as_str(), DeviceIface::new(foreign.clone(), a))
+        .await
+        .unwrap();
+    maintain_observations(&shared, &server).await;
+    assert_eq!(
+        shared.lock().await.devices[&a].publication,
+        DevicePublication::Pending
+    );
+    assert_eq!(shared.lock().await.observation_publication_errors, 1);
+    let iface = server
+        .object_server()
+        .interface::<_, DeviceIface>(path.as_str())
+        .await
+        .unwrap();
+    assert!(iface.get().await.belongs_to(&foreign, a));
+    let client = client(&bus).await;
+    let adapter = adapter_proxy(&client).await;
+    assert!(
+        adapter
+            .call::<_, _, Vec<(String, String, i16, bool)>>("GetDevices", &())
+            .await
+            .unwrap()
+            .is_empty()
+    );
+    server
+        .object_server()
+        .remove::<DeviceIface, _>(path.as_str())
+        .await
+        .unwrap();
+    maintain_observations(&shared, &server).await;
+    assert_eq!(
+        shared.lock().await.devices[&a].publication,
+        DevicePublication::Published
+    );
+    assert_eq!(
+        adapter
+            .call::<_, _, Vec<(String, String, i16, bool)>>("GetDevices", &())
+            .await
+            .unwrap()
+            .len(),
+        1
+    );
+    let iface = server
+        .object_server()
+        .interface::<_, DeviceIface>(path.as_str())
+        .await
+        .unwrap();
+    assert!(iface.get().await.belongs_to(&shared, a));
+}
+
+#[tokio::test]
+async fn observation_expiry_unpublishes_only_its_controller_and_retains_slots_until_confirmed() {
+    use crate::state::{DevicePublication, OBSERVATION_TTL};
+    let bus = PrivateBus::start();
+    let shared = state();
+    let other = state();
+    other.lock().await.object_path = "/org/sparklink/slk1_g2".into();
+    let server = server(&bus, shared.clone()).await;
+    let a = observation_address(8);
+    for owner in [&shared, &other] {
+        owner
+            .lock()
+            .await
+            .on_adv_report(a, -11, 0, String::new(), Vec::new());
+        maintain_observations(owner, &server).await;
+    }
+    let old_path = shared.lock().await.devices[&a].object_path.clone();
+    let other_path = other.lock().await.devices[&a].object_path.clone();
+    server
+        .object_server()
+        .at("/org/sparklink/slk1_g2", AdapterIface::new(other.clone()))
+        .await
+        .unwrap();
+    let client = client(&bus).await;
+    // A dynamic zbus Proxy does not inspect EmitsChangedSignal=false to
+    // disable its default cache. The original failing run is retained. Query
+    // this documented uncached observation contract explicitly; the stale
+    // value assertion below is unchanged. R3's shared client must do likewise.
+    let observed = zbus::proxy::Builder::<zbus::Proxy<'_>>::new(&client)
+        .destination("org.sparklink")
+        .unwrap()
+        .path(old_path.as_str())
+        .unwrap()
+        .interface("org.sparklink.Device")
+        .unwrap()
+        .cache_properties(zbus::proxy::CacheProperties::No)
+        .build()
+        .await
+        .unwrap();
+    let peer = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk1_g2",
+        "org.sparklink.Adapter",
+    )
+    .await
+    .unwrap();
+    let adapter = zbus::proxy::Builder::<zbus::Proxy<'_>>::new(&client)
+        .destination("org.sparklink")
+        .unwrap()
+        .path("/org/sparklink/slk0")
+        .unwrap()
+        .interface("org.sparklink.Adapter")
+        .unwrap()
+        .cache_properties(zbus::proxy::CacheProperties::No)
+        .build()
+        .await
+        .unwrap();
+    assert!(
+        observed
+            .get_property::<bool>("ObservationValid")
+            .await
+            .unwrap()
+    );
+    assert_eq!(
+        adapter
+            .get_property::<u32>("ObservationCount")
+            .await
+            .unwrap(),
+        1
+    );
+    let iface = server
+        .object_server()
+        .interface::<_, DeviceIface>(old_path.as_str())
+        .await
+        .unwrap();
+    let lock = iface.get_mut().await;
+    shared.lock().await.devices.get_mut(&a).unwrap().observed_at -= OBSERVATION_TTL;
+    // Hold a real interface lock: the production maintenance's one original
+    // 100ms budget must stop, retaining the slot for a later retry.
+    let (finished, peer_name) = tokio::join!(
+        timeout(
+            Duration::from_secs(1),
+            maintain_observations(&shared, &server)
+        ),
+        timeout(
+            Duration::from_millis(500),
+            peer.get_property::<String>("Name")
+        )
+    );
+    finished.unwrap();
+    assert!(peer_name.unwrap().is_ok());
+    assert_eq!(
+        shared.lock().await.devices[&a].publication,
+        DevicePublication::Retiring
+    );
+    assert_eq!(shared.lock().await.observation_retirement_errors, 1);
+    assert_eq!(
+        other.lock().await.devices[&a].publication,
+        DevicePublication::Published
+    );
+    assert!(
+        server
+            .object_server()
+            .interface::<_, DeviceIface>(other_path.as_str())
+            .await
+            .is_ok()
+    );
+    drop(lock);
+    // Real repeated uncached D-Bus Get, not an assumed cache invalidation.
+    assert!(
+        !observed
+            .get_property::<bool>("ObservationValid")
+            .await
+            .unwrap()
+    );
+    maintain_observations(&shared, &server).await;
+    assert!(!shared.lock().await.devices.contains_key(&a));
+    assert_eq!(
+        adapter
+            .get_property::<u32>("ObservationCount")
+            .await
+            .unwrap(),
+        0
+    );
+    assert!(matches!(
+        server
+            .object_server()
+            .interface::<_, DeviceIface>(old_path.as_str())
+            .await,
+        Err(zbus::Error::InterfaceNotFound)
+    ));
+    assert!(
+        server
+            .object_server()
+            .interface::<_, DeviceIface>(other_path.as_str())
+            .await
+            .unwrap()
+            .get()
+            .await
+            .belongs_to(&other, a)
+    );
+}
+
+#[tokio::test]
+async fn observation_original_maintenance_budget_includes_state_lock_wait() {
+    let bus = PrivateBus::start();
+    let shared = state();
+    let server = server(&bus, shared.clone()).await;
+    let locked = shared.lock().await;
+    timeout(
+        Duration::from_millis(500),
+        maintain_observations(&shared, &server),
+    )
+    .await
+    .unwrap();
+    assert!(locked.devices.is_empty());
+    assert_eq!(locked.observation_publication_errors, 0); // no operation started
+}
+
+#[tokio::test]
+async fn observation_connection_alias_never_invents_an_advertisement() {
+    let bus = PrivateBus::start();
+    let shared = state();
+    let server = server(&bus, shared.clone()).await;
+    let a = observation_address(22);
+    {
+        let mut st = shared.lock().await;
+        st.controller = slk_protocol::SleControllerSnapshot {
+            generation: 7,
+            profile: 1,
+            ..Default::default()
+        };
+        // Explicit kernel-snapshot fixture; this is not physical-link evidence.
+        st.apply_native_links(native_table(20, 2, &[(1, 4, 0, 0, a)]), 0)
+            .unwrap();
+        assert!(!st.devices[&a].rssi_known);
+    }
+    maintain_observations(&shared, &server).await;
+    let path = shared.lock().await.devices[&a].object_path.clone();
+    let client = client(&bus).await;
+    let device = zbus::proxy::Builder::<zbus::Proxy<'_>>::new(&client)
+        .destination("org.sparklink")
+        .unwrap()
+        .path(path.as_str())
+        .unwrap()
+        .interface("org.sparklink.Device")
+        .unwrap()
+        .cache_properties(zbus::proxy::CacheProperties::No)
+        .build()
+        .await
+        .unwrap();
+    assert!(
+        !device
+            .get_property::<bool>("ObservationValid")
+            .await
+            .unwrap()
+    );
+    dispatch(
+        Ok(Event::AdvReport {
+            addr: a,
+            rssi: -10,
+            discovery_level: 0,
+            name: String::new(),
+            adv_data: vec![1, 2],
+        }),
+        &shared,
+        &server,
+    )
+    .await;
+    assert!(
+        device
+            .get_property::<bool>("ObservationValid")
+            .await
+            .unwrap()
+    );
+}

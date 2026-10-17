@@ -789,7 +789,11 @@ slkd采用最小能力、受限文件路径及服务sandbox。privileged机制�
 |---|---|---|
 | 立即删除 | 固定nonce、test-key fallback、伪Complete、错误吞掉、提前成功状态 | 调用审计、失败无副作用、相关基线保持 |
 | 移入测试 | codec/golden、故障注入、模型、callback actor生命周期 | 专用后端/selftests，不进入默认生产 |
-| 等待替代 | 旧event ring、local SSAP staging、旧UAPI、总线enum/全局parser | 调用者迁移、同契约回归后删除 |
+| 等待替代（原则，不是当前清单） | 仍有实际消费者的旧接口/事件/状态源 | 在唯一WP18清单核对；替代调用者和回归接通后删除 |
+
+旧event ring及若干全局parser已经退休，不再列为当前待迁移实现。管理SSAP staging
+与Owned注册用途不同，按实际权限/消费者保留；不能一概归为将删旧业务。逐入口当前
+清单只维护在[唯一计划WP18](implementation-plan.md)，原14项在下表按历史发现阅读。
 
 新旧生产状态不能长期双写或双消费。无调用者模块接通、隔离或删除，不用全局allow(dead_code)隐藏。原失败证据和有价值回归保留。
 

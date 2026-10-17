@@ -3013,7 +3013,7 @@
     "reason": "ROM readonly replay restated the already-bounded conclusion;continued with pending production work rather than treating it as a blocker"
   },
   "service_callback_current_batch": {
-    "status": "SERVICE_ONLY_SCOPED_RECORDED_INFLIGHT_CALLBACK_TOOLS_NOT_QUALIFIED",
+    "status": "PRESERVED_WIP_UNQUALIFIED_ARCHITECTURE_FIRST_STEERING",
     "production_programs": "Compiled cd35/tools0568 R1 exact qualification referenced;current dirty callback runner unqualified. No new Engine.",
     "finite_exit": [
       "Real owner exit during approval",
@@ -3068,7 +3068,20 @@
       "slk-protocol contains ABI/value/pure codec-state only,no device/ioctl/DBus operations",
       "slktest uses same application Channel;load/timing/assertions/report remain in tool"
     ],
-    "transition_exception": "R1a allows existing libsparklink Native wrapper only until R3 production callers migrate;delete edge and update gate at R3 exit"
+    "transition_exception": "R1a allows existing libsparklink Native wrapper only until R3 production callers migrate;delete edge and update gate at R3 exit",
+    "r2": {
+      "status": "IMPLEMENTING_NOT_REAL_QUALIFIED",
+      "production": "Bound per-controller observations;one Entry publication state;existing EventTask/time budget/ownership check;do not change physical connection state",
+      "exit_reference": "project/implementation-plan.md WP18 R2 finite batch",
+      "limits": {
+        "entries": 128,
+        "variable_bytes": 65536,
+        "ttl_seconds": 60,
+        "work_items": 8,
+        "original_maintenance_budget_ms": 100
+      },
+      "remaining": "Full strict/default/experimental and exact-artifact WS73 preservation;real TTL/128-address/fault pressure not claimed"
+    }
   },
   "owned_ssap_c6_historical_batch": {
     "production": "Sole actor owner-bound local authorization; original receipt/deadline and fd recheck; no new Engine",

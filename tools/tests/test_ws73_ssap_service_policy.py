@@ -16,7 +16,7 @@ def fixture():
     r=dict(version=1,status=STATUS,daemon=run['daemon_before'],slctl=run['slctl'],probe={'path':'/bin/probe','sha256':'b'*64},start_wall_ns=1,end_wall_ns=900,cases=[])
     for n,owner in enumerate(owners):
         secret=f'{n+1:02x}'*32;start=16;h=17
-        c=dict(owner=owner,exit=0,stderr='',secret=secret,start=start,end=h,handle=h,start_wall_ns=10+n*400,end_wall_ns=390+n*400,credentials={'Uid':['1005']*4,'Gid':['1005']*4,'Groups':[],**{k:['0'] for k in ['CapInh','CapEff','CapPrm','CapAmb']}},args=['/bin/slctl','--adapter',owner['path'],'ssap-serve','11'*16,'22'*16,'5','36',secret,'allow'],stdout=f'SsapOwnedService: start=16 end=17 property=17; local registration only\nSsapOwnedValue: handle=17 value={secret}\n',commands=[])
+        c=dict(stdin={'uid':1005,'gid':1005,'mode':0o600,'fifo':True},owner=owner,exit=0,stderr='',secret=secret,start=start,end=h,handle=h,start_wall_ns=10+n*400,end_wall_ns=390+n*400,credentials={'Uid':['1005']*4,'Gid':['1005']*4,'Groups':[],**{k:['0'] for k in ['CapInh','CapEff','CapPrm','CapAmb']}},args=['/bin/slctl','--adapter',owner['path'],'ssap-serve','11'*16,'22'*16,'5','36',secret,'allow'],stdout=f'SsapOwnedService: start=16 end=17 property=17; local registration only\nSsapOwnedValue: handle=17 value={secret}\n',commands=[])
         for i,(role,mode,uid,gid) in enumerate([('service','service-only',1005,1005),('channel','service-channel',1004,1004),('observer','service-observer',1001,1001)]):
             labels=['own-service']+(['interface-less-own-read']+SERVICE_DENIED*2 if role=='service' else ['RegisterOwnedLocalService']+DENIED*2)
             text=f'AUTH_CREDENTIALS: uid={uid} gid={gid} caps=0\nAUTH_SERVICE_KERNEL_ACCESS: denied\n'
@@ -33,9 +33,10 @@ class ServicePolicy(unittest.TestCase):
         p=corroborate(*fixture());self.assertEqual(len(p),2);self.assertEqual(sum(v['denials'] for v in p),68)
 
     def test_missing_wrong_role_scope_and_terminal_evidence_are_rejected(self):
-        for kind in ('missing','uid','group','capability','probe-uid','denial','positive','kernel','registration','value','foreign-cleanup','retained','exit','stderr','daemon','late','phase','duplicate-owner','interval'):
+        for kind in ('pipe','missing','uid','group','capability','probe-uid','denial','positive','kernel','registration','value','foreign-cleanup','retained','exit','stderr','daemon','late','phase','duplicate-owner','interval'):
             r,run=fixture();c=r['cases'][0]
-            if kind=='missing':r['cases'].pop()
+            if kind=='pipe':c['stdin']['uid']=0
+            elif kind=='missing':r['cases'].pop()
             elif kind=='uid':c['credentials']['Uid']=['0']*4
             elif kind=='group':c['credentials']['Groups']=['1000']
             elif kind=='capability':c['credentials']['CapEff']=['1']

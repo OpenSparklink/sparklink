@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import stat
 import subprocess
 import time
 from ws73_capture import CaptureError
@@ -50,7 +51,16 @@ def record(application,owners,daemon_pid,folder=Path('/evidence/service-policy')
             process=None
             try:
                 with ExitStack() as files:
-                    process=subprocess.Popen(args,text=True,stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),user=1005,group=1005,extra_groups=[])
+                    # The CLI deliberately reopens stdin for an independent
+                    # O_NONBLOCK description. A root-owned inherited pipe is
+                    # not reopenable after setuid, despite its inherited fd.
+                    readfd,writefd=os.pipe2(os.O_CLOEXEC)
+                    files.callback(os.close,readfd)
+                    writer=files.enter_context(os.fdopen(writefd,'wb',buffering=0))
+                    os.fchown(readfd,1005,1005);os.fchmod(readfd,0o600)
+                    pipe=os.fstat(readfd)
+                    entry['stdin']={'uid':pipe.st_uid,'gid':pipe.st_gid,'mode':stat.S_IMODE(pipe.st_mode),'fifo':stat.S_ISFIFO(pipe.st_mode)}
+                    process=subprocess.Popen(args,text=True,stdin=readfd,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),user=1005,group=1005,extra_groups=[])
                     entry.update(pid=process.pid,credentials=credentials(process.pid));save()
                     matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
                     if len(matches)!=1:raise CaptureError('one actual service-only owner registration required')
@@ -58,10 +68,10 @@ def record(application,owners,daemon_pid,folder=Path('/evidence/service-policy')
                     for role,mode in [('service','service-only'),('channel','service-channel'),('observer','service-observer')]:
                         c=command(role,[result['probe']['path'],owner['path'],mode,str(start),str(handle)]);entry['commands'].append(c);save()
                         if c['exit']:raise CaptureError('actual service-role bus probe failed: '+c['stderr'])
-                    process.stdin.write('value\n');process.stdin.flush()
+                    writer.write(b'value\n')
                     observed,_=wait_text(process,out,r'^SsapOwnedValue: handle=(\d+) value=([0-9a-f]*)$',time.monotonic()+2)
                     if observed!=[(str(handle),secret)]:raise CaptureError('foreign participants modified original owner value')
-                    process.stdin.write('quit\n');process.stdin.flush();entry['exit']=process.wait(timeout=3)
+                    writer.write(b'quit\n');entry['exit']=process.wait(timeout=3)
                     if entry['exit']:raise CaptureError('service-only owner could not unregister')
                     c=command('ws73',[result['slctl']['path'],'--adapter',owner['path'],'ssap-list']);entry['after_quit']=c
                     rows=re.findall(r'^SsapLocalServices: (.+)$',c['stdout'],re.M)
@@ -81,6 +91,8 @@ def corroborate(record,run):
         raise CaptureError('complete real guest service roles and same daemon/binary required')
     if not record['start_wall_ns']<=record['end_wall_ns']<run['connection_control']['phases'][0]['start_wall_ns']:raise CaptureError('service-role gate must finish before real connection phase')
     proof=[];fresh=set()
+    for entry in record['cases']:
+        if entry.get('stdin')!={'uid':1005,'gid':1005,'mode':0o600,'fifo':True}:raise CaptureError('actual service-owned pollable input pipe required')
     for case,owner in zip(record['cases'],run['initial'],strict=True):
         if not stable(case['owner'],owner) or case['exit']!=0 or case['stderr']:raise CaptureError('same actual registration and successful original owner required')
         if not record['start_wall_ns']<=case['start_wall_ns']<=case['end_wall_ns']<=record['end_wall_ns']:raise CaptureError('original service-role case interval required')

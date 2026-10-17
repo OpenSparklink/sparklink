@@ -137,14 +137,14 @@ impl ReceiptExpectation {
     }
 }
 fn receive(fd: &OwnedFd, deadline: Instant) -> anyhow::Result<Vec<u8>> {
-    receive_checked(fd, deadline, None, 0)
+    receive_checked(fd, deadline, None, 0).map(|v| v.0)
 }
 fn receive_checked(
     fd: &OwnedFd,
     deadline: Instant,
     receipt: Option<ReceiptExpectation>,
     sequence: u32,
-) -> anyhow::Result<Vec<u8>> {
+) -> anyhow::Result<(Vec<u8>, Option<slk_protocol::SleMessageSecurity>)> {
     loop {
         wait(fd, nix::libc::POLLIN, deadline)?;
         let mut buffer = [0u8; 2042];
@@ -173,7 +173,7 @@ fn receive_checked(
                         context.security_epoch,
                         context.flags
                     );
-                    return Ok(buffer[..count].to_vec());
+                    return Ok((buffer[..count].to_vec(), Some(context)));
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => continue,
                 Err(error) => return Err(error.into()),
@@ -192,7 +192,7 @@ fn receive_checked(
             anyhow::bail!("oversized socket message");
         }
         if result > 0 {
-            return Ok(buffer[..result as usize].to_vec());
+            return Ok((buffer[..result as usize].to_vec(), None));
         }
         if result == 0 {
             anyhow::bail!("channel socket EOF");
@@ -304,6 +304,46 @@ fn reject_send_control(fd: &OwnedFd) -> anyhow::Result<()> {
         nix::libc::EOPNOTSUPP,
         hex(&payload)
     );
+    Ok(())
+}
+
+fn reject_stale_intents(
+    fd: &OwnedFd,
+    good: slk_protocol::SleSendConstraint,
+    sequence: u32,
+) -> anyhow::Result<()> {
+    for kind in ["epoch", "lifetime", "deadline"] {
+        let mut bad = good;
+        if kind == "epoch" {
+            bad.security_epoch = good.security_epoch.checked_add(1).unwrap_or(1);
+        } else if kind == "lifetime" {
+            bad.lifetime = good.lifetime.checked_add(1).unwrap_or(1);
+        } else {
+            bad.deadline_monotonic_ns = 1;
+        }
+        let mut payload = [0u8; 61];
+        payload[..8].copy_from_slice(b"SLKINTRE");
+        std::fs::File::open("/dev/urandom")?.read_exact(&mut payload[8..])?;
+        let expected = if kind == "deadline" {
+            nix::libc::ETIMEDOUT
+        } else {
+            nix::libc::EACCES
+        };
+        let result = slk_protocol::message_security::send(
+            fd.as_raw_fd(),
+            &payload,
+            nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
+            &bad,
+        );
+        anyhow::ensure!(
+            result.as_ref().err().and_then(|e| e.raw_os_error()) == Some(expected),
+            "invalid intent unexpectedly admitted: {kind} {result:?}"
+        );
+        println!(
+            "NativeConstraintRejected: sequence={sequence} kind={kind} errno={expected} bytes={}",
+            hex(&payload)
+        );
+    }
     Ok(())
 }
 
@@ -722,7 +762,7 @@ fn exercise_messages(
         let started = Instant::now();
         let deadline = started + Duration::from_secs(10);
         if responder {
-            let mut frame = receive_checked(&fd, deadline, receipt, sequence)?;
+            let (mut frame, context) = receive_checked(&fd, deadline, receipt, sequence)?;
             if frame.len() != message_bytes {
                 anyhow::bail!("peer application message length mismatch");
             }
@@ -739,7 +779,37 @@ fn exercise_messages(
                 hex(&frame)
             );
             frame[28] = 1;
-            send(&fd, &frame, deadline)?;
+            if let Some(context) = context {
+                let absolute = slk_protocol::message_security::deadline_at(
+                    deadline.min(Instant::now() + Duration::from_secs(5)),
+                )?;
+                let intent = slk_protocol::SleSendConstraint::from_receipt(
+                    context,
+                    context.security,
+                    absolute,
+                )?;
+                reject_stale_intents(&fd, intent, sequence)?;
+                loop {
+                    wait(&fd, nix::libc::POLLOUT, deadline)?;
+                    match slk_protocol::message_security::send(
+                        fd.as_raw_fd(),
+                        &frame,
+                        nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
+                        &intent,
+                    ) {
+                        Ok(n) if n == frame.len() => break,
+                        Ok(_) => anyhow::bail!("partial constrained datagram"),
+                        Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => continue,
+                        Err(e) => return Err(e.into()),
+                    }
+                }
+                println!(
+                    "NativeConstrainedReply: sequence={sequence} epoch={} minimum={} deadline_ns={}",
+                    intent.security_epoch, intent.minimum, intent.deadline_monotonic_ns
+                );
+            } else {
+                send(&fd, &frame, deadline)?;
+            }
             println!(
                 "NativeChannelReply: sequence={sequence} bytes={}",
                 hex(&frame)
@@ -760,7 +830,7 @@ fn exercise_messages(
                 hex(&frame)
             );
             send(&fd, &frame, deadline)?;
-            let received = receive_checked(&fd, deadline, receipt, sequence)?;
+            let (received, _) = receive_checked(&fd, deadline, receipt, sequence)?;
             validate(&received, wire_sequence, true, message_bytes)?;
             frame[28] = 1;
             if received != frame {

@@ -472,7 +472,8 @@ class CurrentApplicationArguments(unittest.TestCase):
 
 
 class MessageSecurityReceipts(unittest.TestCase):
-    def test_original_scope_mechanism_counts_and_refusals_are_required(self):
+    @staticmethod
+    def receipt_fixture():
         from ws73_channel_socket import message_security_receipts
         row=fixture();row.update(message_security_required=True,security_requirement=1,
             owners=[dict(owner=dict(index=1,generation=7),object=dict(lifetime=9,handle=0)),
@@ -483,6 +484,11 @@ class MessageSecurityReceipts(unittest.TestCase):
                 app['stdout']+=f"NativeMessageSecurity: sequence={n} index={o['index']} generation={o['generation']} lifetime={c['lifetime']} handle={c['handle']} local=31 remote=31 pi=241 security=1 epoch=2 flags=3\n"
             raw=b'SLKCMREJ'+bytes([o['index']])*53
             app['stdout']+=f"NativeControlRejected: errno=95 bytes={raw.hex()}\n"
+        return row
+
+    def test_original_scope_mechanism_counts_and_refusals_are_required(self):
+        from ws73_channel_socket import message_security_receipts
+        row=self.receipt_fixture()
         good,rejected=message_security_receipts(row)
         self.assertEqual((len(good),len(rejected)),(8,2))
         for old,new in [('generation=7','generation=70'),('lifetime=9','lifetime=90'),
@@ -494,3 +500,20 @@ class MessageSecurityReceipts(unittest.TestCase):
             with self.subTest(old=old,new=new),self.assertRaises(CaptureError):message_security_receipts(bad)
         # The old source has no receipt flag and gains no new qualification.
         self.assertEqual(message_security_receipts(fixture()),([],[]))
+
+
+class SendConstraintReceipts(unittest.TestCase):
+    def test_replies_pin_original_context_and_require_all_refusals(self):
+        from ws73_channel_socket import send_constraint_receipts
+        row=MessageSecurityReceipts.receipt_fixture();row['tx_constraint_required']=True
+        peer=row['applications'][1]
+        for n in range(4):
+            peer['stdout']+=f'NativeConstrainedReply: sequence={n} epoch=2 minimum=1 deadline_ns=123456\n'
+            for i,kind in enumerate(['epoch','lifetime','deadline']):
+                raw=b'SLKINTRE'+bytes([n*3+i+1])*53
+                peer['stdout']+=f'NativeConstraintRejected: sequence={n} kind={kind} errno={110 if kind=="deadline" else 13} bytes={raw.hex()}\n'
+        receipts,rejected=send_constraint_receipts(row);self.assertEqual((len(receipts),len(rejected)),(4,12))
+        for old,new in [('NativeConstrainedReply: sequence=0 epoch=2','NativeConstrainedReply: sequence=0 epoch=9'),('minimum=1','minimum=0'),('deadline_ns=123456','deadline_ns=0'),('errno=13','errno=0'),('errno=110','errno=11'),('NativeConstrainedReply:','Missing:'),('NativeConstraintRejected:','Missing:'),('kind=lifetime','kind=epoch')]:
+            bad=copy.deepcopy(row);bad['applications'][1]['stdout']=bad['applications'][1]['stdout'].replace(old,new)
+            with self.subTest(old=old),self.assertRaises(CaptureError):send_constraint_receipts(bad)
+        self.assertEqual(send_constraint_receipts(fixture()),([],[]))

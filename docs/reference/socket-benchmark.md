@@ -249,4 +249,7 @@ Host、guest cmdline、控制器监督器、实际 slktest argv、两端 schema2
 和最低机制，并测试发送control的明确EOPNOTSUPP及随机拒绝载荷未进入USB。
 只支持固定CUTC regular/boundaries正确性门禁；动态、burst/prefix-close及性能报告
 模式明确拒绝该选项。当前VM runner新固定regular/boundaries记录要求这些原始收据；
-旧报告不增加新资格。此检查不是属性级授权、完整密码证明或性能资格。
+旧报告不增加新资格。新版本应答端将原RX上下文带到受约束响应发送；每轮分别
+测试旧epoch、旧lifetime及过期期限的真实拒绝及对应载荷无USB。正常响应使用一次
+确定的原期限；不增加收发循环或协议Engine。此检查不是属性级授权、完整密码证明
+或性能资格。

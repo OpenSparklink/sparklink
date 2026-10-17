@@ -78,6 +78,7 @@ def execute(run, phase):
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
                boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     row['message_security_required']=not (row['close_prefix'] or row['burst'])
+    row['tx_constraint_required']=row['message_security_required']
     row['application_tool']=test_program(run)
     row['security_requirement']={'approve':1,'numeric-approve':2}.get(getattr(run.args,'security_agent',None),0)
     if run.data.get('security_agent') and run.data['security_agent'][-1].get('ssap_security_requirement'):
@@ -250,6 +251,38 @@ def message_security_receipts(row):
         raw=bytes.fromhex(refusal[0][1])
         if len(raw)!=61 or raw[:8]!=b'SLKCMREJ':raise CaptureError('original random refused control payload required')
         rejected.append(raw);receipts.extend(dict(role=app['role'],**m) for m in samples)
+    return receipts,rejected
+
+
+def send_constraint_receipts(row):
+    if not row.get('tx_constraint_required',False):return [],[]
+    contexts,_=message_security_receipts(row)
+    if not contexts:raise CaptureError('TX constraints require actual receipt evidence')
+    receipts=[];rejected=[]
+    for app in row['applications']:
+        values=re.findall(r'^NativeConstrainedReply: sequence=(\d+) epoch=(\d+) minimum=(\d+) deadline_ns=(\d+)$',app['stdout'],re.M)
+        invalid=re.findall(r'^NativeConstraintRejected: sequence=(\d+) kind=(epoch|lifetime|deadline) errno=(\d+) bytes=([0-9a-f]+)$',app['stdout'],re.M)
+        if len(values)!=app['stdout'].count('NativeConstrainedReply:') or len(invalid)!=app['stdout'].count('NativeConstraintRejected:'):
+            raise CaptureError('malformed original constraint receipts')
+        if app['role']=='initiator':
+            if values or invalid:raise CaptureError('this gate constrains only actual responder messages')
+            continue
+        if len(values)!=row['rounds'] or len(invalid)!=3*row['rounds']:
+            raise CaptureError('each response needs one constrained send and three real refusals')
+        for n,value in enumerate(values):
+            seq,epoch,minimum,deadline=map(int,value)
+            m=next(c for c in contexts if c['role']=='peer' and c['sequence']==n)
+            if (seq,epoch,minimum)!=(n,m['epoch'],m['security']) or not deadline:
+                raise CaptureError('response constraint differs from original receipt')
+            receipts.append(dict(sequence=seq,epoch=epoch,minimum=minimum,deadline_monotonic_ns=deadline))
+        expected=[(n,k) for n in range(row['rounds']) for k in ['epoch','lifetime','deadline']]
+        if [(int(n),k) for n,k,_,_ in invalid]!=expected:raise CaptureError('original ordered rejection coverage required')
+        for n,kind,error,raw in invalid:
+            data=bytes.fromhex(raw)
+            if int(error)!=(110 if kind=='deadline' else 13) or len(data)!=61 or data[:8]!=b'SLKINTRE':
+                raise CaptureError('invalid intent must refuse with original errno/payload')
+            rejected.append(data)
+    if len(set(rejected))!=len(rejected):raise CaptureError('random rejected intents must be distinct')
     return receipts,rejected
 
 
@@ -433,7 +466,8 @@ def corroborate(run,capture):
         if row.get('close_prefix',False):sent,replies,prefix=prefix_application_frames(row)
         else:sent,replies=application_frames(row)
         receipt_context,control_rejected=message_security_receipts(row)
-        rejected=rejected_frames(row)+control_rejected
+        intents,intent_rejected=send_constraint_receipts(row)
+        rejected=rejected_frames(row)+control_rejected+intent_rejected
         for raw in rejected:
             if any(raw.hex() in p['data'] and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('rejected message reached USB data path')
         limits=dtap_limits(row)
@@ -524,6 +558,9 @@ def corroborate(run,capture):
         if row.get('message_security_required',False):
             entry['message_security']=receipt_context
             entry['unsupported_control_rejections']=len(control_rejected)
+        if row.get('tx_constraint_required',False):
+            entry['constrained_replies']=intents
+            entry['invalid_intent_refusals']=len(intent_rejected)
         if limits:entry.update(dtap_limits_version=1,independent_mtu_mps=True)
         if row.get('tx_status_required',False):entry['tx_status']=tx_status_receipts(row)
         if row.get('burst',False):entry['burst_pressure']=burst_pressure_receipts(row)

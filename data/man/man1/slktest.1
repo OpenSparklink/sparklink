@@ -36,7 +36,10 @@ do not establish a named identity, Bond or independent RF cipher attestation.
 It verifies the actual kernel recvmsg receipt scope, original epoch and current
 mechanism for every message, and rejects unsupported send control before
 admission. Missing or truncated context fails; no fabricated/plain fallback.
-It does not grant future TX authority, attribute policy or performance
+The responder sends a typed restrictive constraint pinned to that receipt and
+its original monotonic deadline, checks stale epoch/lifetime and expired intent
+refusals, then obtains the actual peer response. RX facts do not themselves grant
+future TX authority, attribute policy or performance
 qualification. Dynamic, burst/prefix-close and measurements reject this option.
 .SH BOUNDS AND FAILURE
 Measure count is 1..10000, bytes29..2042 within actual basic CUTC MTU/MPS.

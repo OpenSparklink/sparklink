@@ -3106,7 +3106,13 @@
       "production": "SDK broker Client and independent contract,sole authorized-fd path;slktest caller migrated;Native C/Python separate/default Native and Adapter removed",
       "exit_reference": "project/implementation-plan.md WP18 R3c",
       "remaining": "Exact newartifact VM realgates;R4 semantic oldAPI/events;R5 gates;R6 cleanVMdeploy;C/Python broker/SSAP convenience and full Channel contract remain original WP03/06/08",
-      "failure_retained": "architecture-r3c-client-abi-v1.log and native-diagnostic-v1.log:actual ctypes missing pointer signature SIGSEGV;fixed signature,headers/imports;assertions retained"
+      "failure_retained": "architecture-r3c-client-abi-v1.log and native-diagnostic-v1.log:actual ctypes missing pointer signature SIGSEGV;fixed signature,headers/imports;assertions retained",
+      "selection_isolation": {
+        "status": "FIXED_STRICT_OFFLINE_PASS_REAL_PENDING",
+        "counterexample": ".dev/architecture-r3c-peer-isolation-counterexample-v1.json",
+        "contract": "registry listing is membership only;select/admit checks only selected generation fresh;old Connection rechecks generation;unavailable other controller not prerequisite",
+        "candidate": "b0f prepared but not used as fix qualification;new artifact required"
+      }
     }
   },
   "owned_ssap_c6_historical_batch": {

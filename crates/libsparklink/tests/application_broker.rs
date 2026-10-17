@@ -105,9 +105,9 @@ async fn actual_sdk_pins_identity_and_does_not_fallback_or_accept_unix_fd() -> a
     assert_eq!(calls.load(Ordering::SeqCst), 11); // No weaker OpenChannel fallback.
     generation.store(8, Ordering::SeqCst);
     assert!(matches!(
-        client.controllers().await,
+        link.open_channel(3, 0).await,
         Err(ApplicationError::Identity(_))
-    )); // Must re-read,not cached7.
+    )); // Fresh selected-generation check refuses actual fd admission,not just a list.
     assert_eq!(calls.load(Ordering::SeqCst), 11);
     Ok(())
 }
@@ -131,5 +131,42 @@ async fn actual_sdk_does_not_follow_replacement_daemon() -> anyhow::Result<()> {
         client.controllers().await,
         Err(ApplicationError::Identity(_))
     ));
+    Ok(())
+}
+
+struct ManagerWithUnavailablePeer;
+#[zbus::interface(name = "org.sparklink.Manager")]
+impl ManagerWithUnavailablePeer {
+    fn list_adapters(&self) -> Vec<String> {
+        vec![BASE.into(), "/org/sparklink/slk3_g9".into()]
+    }
+}
+#[tokio::test]
+async fn selected_controller_does_not_query_an_unavailable_other_controller() -> anyhow::Result<()>
+{
+    let bus = support::Bus::start();
+    let calls = Arc::new(AtomicUsize::new(0));
+    let _server = zbus::connection::Builder::address(bus.address.as_str())?
+        .name("org.sparklink")?
+        .serve_at("/org/sparklink", ManagerWithUnavailablePeer)?
+        .serve_at(BASE, Adapter(Arc::new(AtomicU64::new(7))))?
+        .serve_at(
+            PATH,
+            Link {
+                calls: calls.clone(),
+            },
+        )?
+        .build()
+        .await?;
+    let caller = zbus::connection::Builder::address(bus.address.as_str())?
+        .build()
+        .await?;
+    let client = Client::from_connection(caller).await?;
+    // There is deliberately no object for the other registered controller.
+    let selected = client.connection(BASE, PATH).await?;
+    assert!(
+        matches!(selected.open_channel(3,0).await,Err(ApplicationError::Bus(zbus::Error::MethodError(name,_,_))) if name.as_str()=="org.freedesktop.DBus.Error.AccessDenied")
+    );
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
     Ok(())
 }

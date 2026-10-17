@@ -30,7 +30,8 @@
 ## 应用、Native与共享契约
 
 Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总线连接，绑定daemon
-唯一owner和controller generation/connection lifetime。`open_channel`与动态staging
+唯一owner和controller generation/connection lifetime。注册列表只表达成员观察，不是Ready；
+选择连接及每次准入只重新核对自己的Generation，不查询同行属性作为前置条件。`open_channel`与动态staging
 复用已有方法，接收fd检查实际AF_SPARKLINK；失败不降级，不暴露管理lease。
 `slk-contract`是独立的值类型/路径/方法名契约；slkd直接依赖Native、Channel和契约，
 不依赖SDK。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。

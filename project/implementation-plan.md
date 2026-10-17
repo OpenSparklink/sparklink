@@ -2102,3 +2102,12 @@ SSAP/长度范围。保留分库遗漏ctypes指针签名导致的实际崩溃/�
 契约继续按WP03/06/08；未实现不先造门面。R4继续逐入口退休Native/CLI/DBus旧拒绝
 API及旧事件消费者，R5扩独立架构门禁，R6仍须干净VM安装/外部SDK/升级/回滚/卸载。
 新名字/新crate或源码编译不授予上述资格；无新增形式化证明，自然RCA/非人工恢复OPEN。
+
+
+R3c准入隔离修复：b0f首次Client把所有controller属性查询作为选中连接的前置条件，
+已用实际SDK+私有bus的第二不可用controller复现UnknownObject，保留原源码/fixture/
+日志hash。改为只核对Manager成员身份和选中controller的无缓存Generation；旧Connection
+每次info/申请也重新核对该generation。controllers()只是注册成员列表，不宣称Ready。
+原无缓存负对照从列表失败移到更强的实际open_channel拒绝，副作用计数仍不增加；
+新增同行不可查询但选中请求可达的生产入口回归，不接受Unix替代fd。b0f准备镜像保留，
+不执行/授予最新修复资格，使用修复后准确artifact实机回归。

@@ -1081,3 +1081,9 @@ D-Bus/内核原子证明。Native C导出移到独立库/头，App库不导出Na
 Native入口和旧Adapter模块删除，错误显式库路径不回退。C/Python现有应用面仅授权fd
 操作，完整broker/SSAP便利客户端未实现，不添加假门面。slk-native仍含待R4逐入口
 退休的旧拒绝逻辑；部署完整性与实机资格按准确产物另验。
+
+
+SDK的controller列表仅是注册成员观察；不能据此授予Ready或授权。连接选择/每次
+准入只核对选中controller的无缓存generation和固定lifetime，同行不可查询不作为
+前置条件；原b0f全controller属性前置造成的实际私有bus反例保留，旧generation的
+负对照改在实际fd准入处验证，不能以列表重排或缓存隐藏该故障。

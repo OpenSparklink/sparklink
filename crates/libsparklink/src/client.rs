@@ -58,23 +58,31 @@ impl Client {
             .build()
             .await?)
     }
-    pub async fn controllers(&self) -> Result<Vec<ControllerId>> {
+    async fn registration_paths(&self) -> Result<Vec<String>> {
         let manager = self
             .proxy(contract::MANAGER_PATH, contract::MANAGER)
             .await?;
-        let paths: Vec<String> = manager.call(contract::LIST_ADAPTERS, &()).await?;
+        Ok(manager.call(contract::LIST_ADAPTERS, &()).await?)
+    }
+    async fn check_generation(&self, id: ControllerId) -> Result<()> {
+        let current: u64 = self
+            .proxy(&id.path(), contract::ADAPTER)
+            .await?
+            .get_property("Generation")
+            .await?;
+        if current != id.generation {
+            return Err(ApplicationError::Identity("controller generation"));
+        }
+        Ok(())
+    }
+    /// Registry membership observation, not Ready or a still-live controller.
+    /// Unrelated controller properties are never a selected operation's gate.
+    pub async fn controllers(&self) -> Result<Vec<ControllerId>> {
+        let paths = self.registration_paths().await?;
         let mut controllers = Vec::with_capacity(paths.len());
         for path in paths {
             let id = ControllerId::from_path(&path)
                 .ok_or(ApplicationError::Identity("noncanonical controller path"))?;
-            let generation: u64 = self
-                .proxy(&path, contract::ADAPTER)
-                .await?
-                .get_property("Generation")
-                .await?;
-            if generation != id.generation {
-                return Err(ApplicationError::Identity("controller generation"));
-            }
             if controllers.contains(&id) {
                 return Err(ApplicationError::Identity("duplicate controller"));
             }
@@ -85,9 +93,15 @@ impl Client {
     pub async fn connection(&self, controller: &str, path: &str) -> Result<ApplicationConnection> {
         let id = ControllerId::from_path(controller)
             .ok_or(ApplicationError::Invalid("controller path"))?;
-        if !self.controllers().await?.contains(&id) {
+        if !self
+            .registration_paths()
+            .await?
+            .iter()
+            .any(|p| p == controller)
+        {
             return Err(ApplicationError::Identity("registration removed"));
         }
+        self.check_generation(id).await?;
         if !path.starts_with(&format!("{controller}/peer_t")) {
             return Err(ApplicationError::Identity("foreign controller"));
         }
@@ -120,6 +134,7 @@ impl ApplicationConnection {
         &self.path
     }
     pub async fn info(&self) -> Result<ConnectionInfo> {
+        self.client.check_generation(self.controller).await?;
         let info: ConnectionInfo = self
             .client
             .proxy(&self.path, contract::CONNECTION)

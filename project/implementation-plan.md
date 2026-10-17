@@ -234,6 +234,7 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | 生产access审批性质：Kani诊断未消除，未证明 | `formal_bounded` | `UNPROVED` |
 | Owned SSAP完整交错/权限部署/CPCD等范围仍缺 | `real_device` | `UNPROVED` |
 | 退休R1：去虚假状态/元数据Bond；cd35四实机保持+服务组权限 | `real_device` | `PASS` |
+| R2观察预算/发布生命周期；6aad四实机保持，非128地址压力资格 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -994,7 +995,7 @@ R1已取得[准确新artifact的限定回归](../docs/evidence/architecture-reti
 61/249+16超限/2042及机制2；guest service-only68拒绝，五重放81复制负对照。默认及
 实验各303、冻结工具750、严格clippy/HTML通过。首轮root-owned pipe实机FAIL保留，
 修监督器pipe属主后重跑，不改生产Input权限或放宽断言。无新增形式化证明。
-R6a卸载保留配置/状态仅staged Makefile通过，完整部署未验收。下一整改为R2，仍与
+R6a卸载保留配置/状态仅staged Makefile通过，完整部署未验收。R2已取得下述保持回归，R3仍与
 正在开发的审批退出/原期限工具及数据/多通道/四设备并行，不追加控制面全集前置。
 
 审查重新核对用户态 `d795a3a6b1e98c24e984e2459b2cf1e7db46cff4`、Linux
@@ -1032,7 +1033,7 @@ slk-protocol，拒绝默认test/experimental、slctl/slktest及逆向依赖；�
 错误根/逆向依赖负对照。R3明确Native/Channel/app拆分后相应审查allowlist；这不证明
 完整SDK导出/权限分离，all-features实验构建独立，不将本门禁作用到实验配置。
 
-R2当前有限批次（源码已接线，新artifact尚未验收）：每controller128观察、64KiB
+R2当前有限批次（6aad准确artifact保持门禁通过，完整RF压力未验收）：每controller128观察、64KiB
 可变buffer/path容量、名称256/opaque payload2048输入上限；60秒无新报告且没有
 canonical连接引用时退役。Pending/Published/Retiring在同一Entry，发布失败保留pending，
 退役确认前不释放slot，拒绝重用Retiring；只由现有EventTask维护，无新后台任务。
@@ -1049,6 +1050,20 @@ canonical连接引用时退役。Pending/Published/Retiring在同一Entry，发�
 准确新VM产物验证发现/连接/普通用户短消息、已取得边界与Owned/机制2保持。真实128
 地址负载、完整TTL/再发现长时门禁及发布故障压力仍需按范围单列，不将private-bus
 fixture或普通RF保持升级为全量cache实机资格。此包不改变Runtime/Grant/credit/Ticket。
+
+R2封存于[准确6aad报告](../docs/evidence/observation-retirement-r2-20261017.json)：
+309默认+309all-features、严格clippy/754工具；四实际VM门禁32业务回复，既有长度和
+Owned/机制2/service-only保持，81复制负对照。原动态Proxy缓存导致的TTL失败保留，
+无新增形式化证明或128地址RF压力资格。状态和报告只由结构化资格记录绑定，不转授R3。
+
+R3a有限切片：将已有query/TX状态/Session状态ioctl、deadline/prepare/sendmsg/recvmsg
+及完整原测试从slk-protocol迁入slk-channel，ABI值类型与纯验证留原层；daemon唯一
+Engine、slktest和C桥同步切换，删除旧操作入口，无alias、无新收发循环。权限、
+SCM、错误、原期限、Grant/credit/Ticket及wire不变。退出为严格default/all-features、
+实际调用与跨语言ABI/依赖检查、准确新artifact真实既有路径回归；不是整个SDK整改完成。
+slk-protocol中的Native ioctl还需R3b迁出，slkd→旧Native包装libsparklink仍是待删过渡边。
+后续将Native生产调用迁出、独立共享D-Bus契约和真正应用Client接通，再同步C/Python、
+CLI、安装/包与门禁。禁止仅新建空Client或只返回NotSupported的规划门面。
 
 R2预算与发布修复优先于SDK大迁移；R3–R6分小批逐入口交付。安全Agent、SSAP的
 service-only/审批退出原期限门禁、数据/多通道/四设备/性能继续并行。先前尝试复用c6

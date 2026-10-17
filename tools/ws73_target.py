@@ -520,8 +520,8 @@ def _run(args):
     application_clients=bool(getattr(args,'application_client_verify',False))
     if application_clients and (not passthrough or not connection_verify or any([channel_socket,benchmark_mode,acb_probe,agent_mode,dynamic_channels,fairness,getattr(args,'daemon_link_resync',False)])):
         raise ValueError('application clients require a dedicated native real connection VM')
-    if application_clients and (any(value for key,value in vars(args).items() if type(value) is bool and key not in ['qmp_hotplug','connection_verify','application_client_verify']) or any(getattr(args,key,None) for key in ['managed_partial_case','managed_connected_case','managed_connected_reply','managed_real_later_step','daemon_hold_case']) or getattr(args,'connection_advertising','fixed-t')!='fixed-t'):
-        raise ValueError('application client gate cannot combine fault/lifecycle selectors or protocol contrasts')
+    if application_clients and (any(value for key,value in vars(args).items() if type(value) is bool and key not in ['qmp_hotplug','connection_verify','application_client_verify']) or any(getattr(args,key,None) for key in ['managed_partial_case','managed_connected_case','managed_connected_reply','managed_real_later_step','daemon_hold_case'])):
+        raise ValueError('application client gate cannot combine fault/lifecycle selectors')
     service_policy=bool(getattr(args,'ssap_service_policy',False))
     if service_policy and (not channel_socket or not passthrough or agent_mode or dynamic_channels or fairness):raise ValueError('service-role gate requires separate ordinary native two-device socket baseline')
     channel_bytes=getattr(args,'channel_socket_bytes',61)

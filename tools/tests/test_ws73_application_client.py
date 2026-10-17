@@ -43,7 +43,7 @@ class ApplicationClientEvidence(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);prepared=root/'prepared';prepared.mkdir();(prepared/'manifest.json').write_text('{}')
             output=root/'run'
-            argv=['ws73_target.py','run','--prepared',str(prepared),'--output',str(output),'--ports','1-2.1.2','1-2.1.3','--qmp-hotplug','--connection-verify','--application-client-verify']
+            argv=['ws73_target.py','run','--prepared',str(prepared),'--output',str(output),'--ports','1-2.1.2','1-2.1.3','--qmp-hotplug','--connection-verify','--connection-advertising','negotiable-t','--application-client-verify']
             with patch.object(sys,'argv',argv),patch('ws73_target.run',target._run),patch('ws73_target.ordinary_identity'),patch('ws73_target.prepared',return_value={}),patch('ws73_target.lab_module',return_value=SimpleNamespace(inventory=lambda:[])),patch('ws73_target.subprocess.Popen') as guest:
                 self.assertEqual(target.main(),1)
                 guest.assert_not_called()

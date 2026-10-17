@@ -23,10 +23,12 @@ VM-only，主机不安装实验内核、驱动或服务。普通应用业务权�
 
 ## 公共 C/Python 客户端的专用门禁
 
-`run --qmp-hotplug --connection-verify --application-client-verify` 选择独立的
+`run --qmp-hotplug --connection-verify --connection-advertising negotiable-t --application-client-verify` 选择独立的
 真实双设备 SDK 用例，要求完整 native VM 输入，不能与 socket benchmark、注入、
 Agent 或其他生命周期选择器组合。QMP 拔插仅是 guest 控制对照，不是自然恢复。
 本段描述 runner 输入，新增产物是否通过仍以准确资格记录为准。
+`negotiable-t` 与既有 SDK110 封存建链条件一致；`fixed-t` 是独立对照，已有 Ready/
+发现后连接超时失败，不能当作该已验证条件。广播参数和实际生效身份仍逐项核对。
 
 专用测试目录内的两个小应用调用公共 Client：固定连接对象申请 fd，dup 后关闭
 原 fd 与 Client，等待双方原期限内的 start 屏障，验证一次随机请求及不同的随机

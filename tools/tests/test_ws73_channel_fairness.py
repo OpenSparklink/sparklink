@@ -24,7 +24,7 @@ def fixture():
             capture['acb_packets'].append(dict(record=serial,bus=owner['owner']['bus'],device=owner['owner']['device'],handle=owner['object']['handle'],direction=direction,data=chunk.hex(),wall_ns=clock,boundary=0 if len(chunks)==1 else 1 if n==0 else 3 if n==len(chunks)-1 else 2))
     def pair(a,b,raw):emit(a,'out',raw);emit(b,'in',raw)
     for phase in range(2):
-        owners=[dict(owner=dict(index=i,generation=7,path=f'/org/sparklink/slk{i}_g7',bus=1,device=5+i),object=dict(generation=7,lifetime=11+phase,handle=3+i,path=f'/link{i}_{phase}')) for i in range(2)]
+        owners=[dict(owner=dict(index=i,generation=7,path=f'/org/sparklink/slk{i}_g7',bus=1,device=5+i,buffers=[254,5,0,0]),object=dict(generation=7,lifetime=11+phase,handle=3+i,path=f'/link{i}_{phase}')) for i in range(2)]
         run['connection_control']['phases'].append(dict(typed_objects=owners));clock+=100
         tool=dict(path='/bin/slktest',sha256='a'*64)
         row=dict(version=1,phase=phase,status='CONCURRENT_CHANNELS_USB_EVIDENCE_PENDING',owners=owners,start_wall_ns=clock,channels=[],starts=[],armed=[],cleanup_errors=[],unbound_refusal=dict(exit=1,stdout='NativeDynamicStaged:\n'))

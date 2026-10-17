@@ -229,6 +229,14 @@ def run(args):
     if Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU' or not Path('/scratch-root-uuid').is_file():
         raise ValueError('dedicated QEMU scratch root required')
     if ctypes.sizeof(Bulk)!=24 or ctypes.sizeof(Control)!=24:raise ValueError('qualified 64-bit usbfs ABI required')
+    rom_model=getattr(args,'rom_chip_expected',None)
+    if rom_model is not None:
+        tokens=Path('/proc/cmdline').read_text().split()
+        if (rom_model not in ('E','U') or 'ws73.rom_chip_probe=1' not in tokens or
+                [v for v in tokens if v.startswith('ws73.rom_chip_expected=')]!=[f'ws73.rom_chip_expected={rom_model}']):
+            raise ValueError('explicit known E/U ROM candidate VM boot required')
+        if any(getattr(args,k,False) for k in ['usb_credit_read_only','runtime_route_before_module','guest_set_interface_before_route','guest_clear_halt_before_route','guest_clear_halt_before_register_read','guest_usb_reset_before_read','sdk_wakeup_before_read','async_read_only']):
+            raise ValueError('ROM candidate comparison excludes other maintenance modes')
     credit=getattr(args,'usb_credit_read_only',False)
     if type(credit) is not bool:raise ValueError('typed explicit credit probe mode required')
     credit_tokens=[v for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.usb_credit_lab=')]
@@ -316,6 +324,11 @@ def run(args):
             x=Bulk(endpoint,size,2000,ctypes.addressof(buffer))
             if fcntl.ioctl(fd,0xc0185502,bytearray(bytes(x)))!=size:raise ValueError('short maintenance USB transfer')
             return buffer.raw[:size]
+        if rom_model is not None:
+            from ws73_rom_chip import runtime_observations
+            record.update(rom_chip_expected=rom_model,boot_origin='SOFTWARE_REGISTER_RESET_NOT_COLD_POWER',
+                          automatic_firmware_selection=False,read_validity_proven=False)
+            record['runtime_chip_before']=runtime_observations(transfer,rom_model);save()
         if args.async_read_only:
             if 'ws73.register_async_read_lab=1' not in Path('/proc/cmdline').read_text().split():
                 raise ValueError('explicit SDK asynchronous read-only boot required')
@@ -355,6 +368,15 @@ def run(args):
             interface,device=wait_interface(2,15)
             record.update(boot_mode_observed_wall_ns=time.time_ns(),boot_device=int((device/'devnum').read_text()))
             save()
+            if rom_model is not None:
+                from ws73_rom_chip import rom_observations
+                if (interface/'driver').exists():raise ValueError('ROM read must precede driver ownership/download')
+                node=Path('/dev/bus/usb')/f'{int((device/"busnum").read_text()):03}'/f'{int((device/"devnum").read_text()):03}'
+                record['rom_node']=str(node);save()
+                fd=os.open(node,os.O_RDWR|os.O_CLOEXEC)
+                fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
+                rom_observations(fd,record,save,rom_model)
+                os.close(fd);fd=None
         elif not route:
             record.update(register_write_not_requested=True,wakeup_only_experiment=True);save()
             os.close(fd);fd=None
@@ -375,6 +397,25 @@ def run(args):
             if time.monotonic()>deadline:raise TimeoutError('real rebootstrap Setup metadata')
             time.sleep(.02)
         status='VM_CLEAR_HALT_GUEST_SETUP_REQUIRES_HOST_CORROBORATION' if clear_halt else 'VM_INTERFACE_REBIND_SETUP_PASS' if rebind else 'VM_RUNTIME_ROUTE_SETUP_PASS' if route else 'VM_SDK_WAKEUP_RUNTIME_SETUP_PASS' if args.sdk_wakeup_before_read else 'VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS'
+        if rom_model is not None:
+            interface,device=wait_interface(5,10)
+            observed=(interface/'chip_information').read_text().strip()
+            required=f'source=HCC_GET_CHIP_TYPE model=WS73{rom_model} model_id={2 if rom_model=="E" else 0} bus=USB bus_id=0'
+            record['hcc_chip_information']=observed;save()
+            if observed!=required:raise ValueError('HCC differs from explicit board/ROM candidate')
+            # Setup/HCC has been saved. Retire this one test controller before
+            # exclusively claiming its register endpoints; no daemon is running.
+            driver=(interface/'driver').resolve(strict=True)
+            (driver/'unbind').write_text(interface.name)
+            if (interface/'driver').exists():raise ValueError('register read requires completed driver unbind')
+            node=Path('/dev/bus/usb')/f'{int((device/"busnum").read_text()):03}'/f'{int((device/"devnum").read_text()):03}'
+            fd=os.open(node,os.O_RDWR|os.O_CLOEXEC)
+            fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
+            record['runtime_chip_after']=runtime_observations(transfer,rom_model);save()
+            values={r['raw'] for k in ['runtime_chip_before','runtime_chip_after'] for r in record[k]}
+            values.update(r['reply'] for r in record['rom_chip_reads'])
+            if len(values)!=1:raise ValueError('ROM/runtime chip register changed across explicit firmware boot')
+            status='VM_SOFT_ROM_CHIP_COMPARE_PASS_NOT_COLD_OR_AUTOMATIC_SELECTION'
         record.update(status=status,finished_wall_ns=time.time_ns());save()
     except BaseException as error:
         record.update(status='FAIL',error=str(error),error_type=type(error).__name__,errno=getattr(error,'errno',None));save();raise
@@ -386,4 +427,4 @@ def run(args):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--usb-credit-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-register-read',action='store_true');run(p.parse_args())
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--usb-credit-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-register-read',action='store_true');p.add_argument('--rom-chip-expected',choices=['E','U']);run(p.parse_args())

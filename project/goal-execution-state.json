@@ -1738,20 +1738,24 @@
       "ssap-owner-c6-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "architecture-retirement-r1": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-WP09-WP16-owned-SSAP-original-RX",
-      "production_behavior": "Application-ownedlocalSSAPandper-requestpolicyonthesoleEngine;originalRXconstraint,deferredpolicy,explicitretirementdrain. ExistingCUTC/Session/credit/Grant/Ticketretained.",
-      "state": "C6_TWO_REAL_OWNED_SLICES_AND_LENGTH_REGRESSION_SCOPED_PASS_FULL_SCOPE_UNPROVED",
+      "id": "WP16-WP17-WP18-R1-retirement",
+      "production_behavior": "Remove false Powered and metadata Bond public exports/callers;legacy metadata cfg(test). Existing sole Session/Engine/Grant/credit/Ticket retained.",
+      "state": "CD35_FOUR_REAL_GATES_SCOPED_PASS_R2_AND_FULL_SCOPE_OPEN",
       "exit": [
-        "ExactK0cd/compiledC6/toolsC6,16actualownerrecords/64decisions/80remoteSSAPtransactions;basicandinstalledmechanism2two-roles",
-        "Fourrealgates32actualordinarypeerreplies;249/oversizerefusalsand2042fullmessage;fourreplays52negatives",
-        "300default+300allfeaturesRust;746frozentools;strictbuild/docs. Kani10properties93rawcheckshavedisalloweddiagnostics:UNPROVED",
-        "Service-onlydeployment/realownerretirement/revoke/Down/deadlineinterleavings/CPCDandfullgoalremainOPEN"
+        "303default+303allfeaturesRust/strictclippy,750frozenPython,strictHTML115",
+        "K0cd/compiledcd35/tools0568:32realpeerreplies/24Ownedcases/96decisions/120remotetransactions;61/249+16oversize/2042/mechanism2",
+        "Actualguestservice-onlyrole:68denials;fourdatareplays+roleReplay81copiednegatives;originalrootpipefailurekept",
+        "Stageduninstallconfigpreservatione28ONLY;notcleanVMinstallation. ExistingformalUNPROVED,fullgoalINCOMPLETE"
       ],
-      "next": "Completeactualownercallback/deadline/retirementinterleavingsandservice-onlypolicy;thenCPCD/protectedupdatesonsoleEngine. Data/multi/four/performanceandROMvalidity/cold/RCAparallel,noallcontrolfront.FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4unchanged."
+      "next": "Architecture-first per user2026-10-17:finishthreeAPIviews,R2boundedobservation/publication,R3Native/Channel/sharedcontract/applicationSDK,R4full-chainoldAPI/eventretirement,R5gates,R6cleanVMdeploy/docs;preserveinflightlifecycleWIPandverifiedpaths. Regressions/necessaryfixescontinue;noall-control-combinationprerequisite.FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,naturalRCA/nonmanualrecoveryOPEN."
     }
   },
   "agent_workstream": {
@@ -3004,7 +3008,69 @@
     "whole_history_bytes_verified": false,
     "verification": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED"
   },
-  "owned_ssap_current_batch": {
+  "previous_goal_turn_audit": {
+    "classification": "NO_PROGRESS_REVALIDATED",
+    "reason": "ROM readonly replay restated the already-bounded conclusion;continued with pending production work rather than treating it as a blocker"
+  },
+  "service_callback_current_batch": {
+    "status": "SERVICE_ONLY_SCOPED_RECORDED_INFLIGHT_CALLBACK_TOOLS_NOT_QUALIFIED",
+    "production_programs": "Compiled cd35/tools0568 R1 exact qualification referenced;current dirty callback runner unqualified. No new Engine.",
+    "finite_exit": [
+      "Real owner exit during approval",
+      "Original deadline and late old approval rejected with opposite DB value unchanged",
+      "Existing CUTC ordinary app reply and peer remain after failed SMTC"
+    ],
+    "remaining_after_exit": [
+      "Active-owner controller retirement",
+      "CPCD/protected update delivery",
+      "Full original S0-S6/19WP/10FV/12DG and prior open conditions"
+    ],
+    "constraint": "VM-only;12 jobs solo/8 with VM;do not overwrite user WIP or sealed evidence",
+    "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
+  },
+  "architecture_retirement_current_batch": {
+    "status": "R1_SCOPED_REAL_RECORDED_R2_OPEN",
+    "audited_heads": {
+      "userspace": "d795a3a6b1e98c24e984e2459b2cf1e7db46cff4",
+      "linux": "0cd4731dd3e673d1309a2b570b38769f9a98681f"
+    },
+    "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
+    "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
+    "batch": "R1 remove false Powered and metadata Bond exports/callers;test-only legacy storage",
+    "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
+    "next": [
+      "R2 bounded observation and retryable publication",
+      "R3 Native/Channel/shared D-Bus contract/application Client migration",
+      "R4 old API/C/Python/CLI/event full-chain retirement",
+      "R5 independent contracts and dependency gates",
+      "R6 clean-VM deployment/external SDK/document closure"
+    ],
+    "parallel": [
+      "Agent/SSAP",
+      "data/multichannel/four devices",
+      "event-driven performance",
+      "natural fault RCA/nonmanual recovery"
+    ],
+    "exit_reference": "Canonical plan R1 finite exit;not full-control prerequisite",
+    "qualification_reference": {
+      "record": "architecture-retirement-r1",
+      "report": "docs/evidence/architecture-retirement-r1-20261017.json",
+      "compiled_userspace": "cd35db3fd4e4e31197d261f8656a4880404e439e",
+      "executed_tools": "0568a3d1db1beee3ec57b668e369970092112505",
+      "whole_current_tree": "NOT_QUALIFIED"
+    },
+    "uninstall": "e28 staged-only configuration/state retention;clean-VM deployment remains",
+    "user_steering": "2026-10-17:finish architecture arrangement and remediation first;adopt three API views;preserve verified paths and current lifecycle WIP",
+    "target_views": "project/architecture.md / API和SDK：三个统一视图",
+    "target_dependency_constraints": [
+      "Application libsparklink does not depend on Native or export controller leases by default",
+      "slkd uses Native/Channel/shared contract,not its application SDK",
+      "slk-protocol contains ABI/value/pure codec-state only,no device/ioctl/DBus operations",
+      "slktest uses same application Channel;load/timing/assertions/report remain in tool"
+    ],
+    "transition_exception": "R1a allows existing libsparklink Native wrapper only until R3 production callers migrate;delete edge and update gate at R3 exit"
+  },
+  "owned_ssap_c6_historical_batch": {
     "production": "Sole actor owner-bound local authorization; original receipt/deadline and fd recheck; no new Engine",
     "status": "C6_TWO_REAL_OWNED_SLICES_AND_LENGTH_REGRESSION_SCOPED_PASS_FULL_SCOPE_UNPROVED",
     "limits": {
@@ -3033,51 +3099,5 @@
     "next": "Finite actual owner callback/deadline/retirement and service-only policy,thenCPCD/protectedupdates;data/multi/four/performanceparallel,noallcontrolfront",
     "aggregate_integrity": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED;full goal INCOMPLETE;original retention incident not waived",
     "issue_receipts": ".dev/ssap-owner-issue-receipts-v1.json"
-  },
-  "previous_goal_turn_audit": {
-    "classification": "NO_PROGRESS_REVALIDATED",
-    "reason": "ROM readonly replay restated the already-bounded conclusion;continued with pending production work rather than treating it as a blocker"
-  },
-  "service_callback_current_batch": {
-    "status": "IMPLEMENTING_NOT_QUALIFIED",
-    "production_programs": "New exact-source bundle required; c6 reuse attempt rejected by source guard; a2 profile prepared but not real qualified; d795 prompt token and R1 need new build",
-    "finite_exit": [
-      "VM service-only local register/read/unregister plus actual cross-owner/management/channel/kernel-device refusals",
-      "Real owner exit during approval",
-      "Original deadline and late old approval rejected with opposite DB value unchanged",
-      "Existing CUTC ordinary app reply and peer remain after failed SMTC"
-    ],
-    "remaining_after_exit": [
-      "Active-owner controller retirement",
-      "CPCD/protected update delivery",
-      "Full original S0-S6/19WP/10FV/12DG and prior open conditions"
-    ],
-    "constraint": "VM-only;12 jobs solo/8 with VM;do not overwrite user WIP or sealed evidence"
-  },
-  "architecture_retirement_current_batch": {
-    "status": "IMPLEMENTING_NOT_QUALIFIED",
-    "audited_heads": {
-      "userspace": "d795a3a6b1e98c24e984e2459b2cf1e7db46cff4",
-      "linux": "0cd4731dd3e673d1309a2b570b38769f9a98681f"
-    },
-    "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
-    "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
-    "batch": "R1 remove false Powered and metadata Bond exports/callers;test-only legacy storage",
-    "qualification": "No new real-device or formal qualification;old source/artifact identities retained",
-    "next": [
-      "R1 exact-artifact VM plus current SSAP owner callback/service-role gates",
-      "R2 bounded observation cache and retryable publication",
-      "R3 application/Native boundary",
-      "R4 per-entry retirement and event migration",
-      "R5 typed contracts",
-      "R6 clean-VM installation and SDK consumers"
-    ],
-    "parallel": [
-      "Agent/SSAP",
-      "data/multichannel/four devices",
-      "event-driven performance",
-      "natural fault RCA/nonmanual recovery"
-    ],
-    "exit_reference": "Canonical plan R1 finite exit;not full-control prerequisite"
   }
 }

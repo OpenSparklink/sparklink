@@ -357,9 +357,264 @@ per-controller actor 不等于独立进程故障域。daemon 崩溃、最终 fd 
 
 重启时枚举、快照、确认旧owner撤销、新lease、订阅水位、重新应用策略。不能盲目重放连接／写属性等未知副作用；旧fd有效性由Grant决定。
 
-### API和SDK
+### API和SDK：三个统一视图
 
-管理和服务经授权D-Bus/高层SDK，数据经授权fd。C/Rust/Python映射同一契约，不各自实现wire状态机。CLI显示请求、等待和实际状态；UNKNOWN/UNSUPPORTED/Fault明确呈现。
+采用2026-10-17用户提供的组件依赖、应用接口、运行时调用提案。下列均是**目标设计**，
+不是当前已开放接口清单。只能在实际实现、迁移调用者并取得对应验收后逐项开放；
+不能先生成未接线的成功facade，也不为未来模式保留永久NotSupported门面。
+三视图共用以下所有权与契约，名称/文件数不作为验收目标；物理crate按真实权限和依赖
+边界落实。完整迁移顺序只维护于唯一计划WP16/18，当前资格只见能力入口。
+
+#### 组件依赖视图
+
+箭头表示“使用／依赖”，共享 D-Bus 契约的物理位置可以稍后确定，但必须独立于应用 SDK，避免 slkd 反向依赖自己的客户端。
+
+```mermaid
+flowchart TB
+    APP["Rust 普通应用"]
+    BIND["C ABI／Python 绑定"]
+    CLI["slctl／slktest"]
+    SYS["系统诊断／抓包工具"]
+
+    LIB["libsparklink<br/>应用客户端 SDK"]
+    DAEMON["slkd<br/>管理、策略、SSAP、Profile"]
+    CONTRACT["共享 D-Bus 契约<br/>类型、签名、路径规则、错误"]
+
+    NATIVE["slk-native<br/>内核管理、租约、诊断<br/>事件订阅、状态观察"]
+    CHANNEL["slk-channel<br/>已授权 fd 的收发与 poll<br/>通道状态、安全上下文、关闭"]
+    PROTOCOL["slk-protocol<br/>内核 ABI、共享值类型<br/>必要 codec 与纯状态逻辑"]
+
+    APP --> LIB
+    BIND --> LIB
+    CLI --> LIB
+    SYS --> NATIVE
+
+    LIB --> CHANNEL
+    LIB --> CONTRACT
+    LIB --> PROTOCOL
+
+    DAEMON --> NATIVE
+    DAEMON --> CHANNEL
+    DAEMON --> CONTRACT
+    DAEMON --> PROTOCOL
+
+    CONTRACT --> PROTOCOL
+    NATIVE --> PROTOCOL
+    CHANNEL --> PROTOCOL
+```
+
+这里有四条明确的依赖约束：
+
+- `libsparklink` **不依赖 `slk-native`**，不向应用导出 controller 管理 lease。
+- `slkd` **不依赖 `libsparklink`**，直接使用 Native、Channel 和共享契约。
+- `slk-protocol` 不打开设备、不执行 ioctl、不访问 D-Bus；系统调用属于操作层。
+- `slktest` 使用同一应用通道接口，负载生成、计时、报告和测试断言保留在工具内。
+
+#### 应用接口视图
+
+`libsparklink` 的目标公开接口按下面的模块组织。这里的目录表示 API 命名空间，不要求机械拆成同样数量的 crate。
+
+```text
+libsparklink
+│
+├── Client
+│   ├── open_system()                 连接系统 slkd
+│   ├── controllers()                 枚举实际 controller
+│   ├── controller_events()           设备新增、移除、观察失效
+│   ├── ssap()                        本地应用服务入口
+│   ├── management()                  显式管理入口，另行授权
+│   └── agents()                      安全交互注册入口，另行授权
+│
+├── controller
+│   ├── ControllerId                  index + generation
+│   ├── Controller
+│   │   ├── snapshot()
+│   │   ├── capabilities()
+│   │   └── discover()
+│   └── DiscoverySession
+│       ├── next()
+│       ├── update_filter()
+│       └── release()                 只释放自己的发现会话
+│
+├── peer
+│   ├── PeerId                        controller + 地址类型 + 地址
+│   └── Peer
+│       ├── observation()
+│       └── start_connect()
+│
+├── connection
+│   ├── ConnectionId                  controller + physical lifetime
+│   └── Connection
+│       ├── snapshot()
+│       ├── events()
+│       ├── security_snapshot()
+│       ├── open_channel()
+│       └── ssap()                    此连接的远端 SSAP 入口
+│
+├── channel                           复用 slk-channel
+│   ├── ChannelOptions                模式、尺寸、安全要求、预算
+│   ├── ChannelInfo                   实际协商结果与绑定身份
+│   └── Channel
+│       ├── send() / try_send()
+│       ├── recv() / try_recv()
+│       ├── readable() / writable()
+│       ├── info()
+│       ├── try_clone()                同一 binding 的 fd 引用
+│       └── fd 互操作                  所有权转移必须显式
+│
+├── ssap
+│   ├── definition                    纯服务定义与权限类型
+│   │   ├── ServiceDefinition
+│   │   ├── PropertyDefinition
+│   │   ├── DescriptorDefinition
+│   │   └── AccessRequirements
+│   │
+│   ├── local                         应用拥有的本地服务
+│   │   ├── LocalServices
+│   │   │   └── register_service()
+│   │   ├── ServiceRegistration
+│   │   │   ├── read_local()
+│   │   │   ├── update_local()
+│   │   │   ├── notify()
+│   │   │   ├── indicate()
+│   │   │   └── unregister()
+│   │   └── ServiceAuthorizer
+│   │       └── decide(original_request)
+│   │
+│   └── remote                        绑定实际连接 lifetime
+│       ├── RemoteSsap
+│       │   └── discover_services()
+│       ├── RemoteService
+│       │   └── properties()
+│       ├── RemoteProperty
+│       │   ├── read()
+│       │   ├── write()
+│       │   ├── descriptors()
+│       │   └── subscribe()
+│       └── Subscription
+│           ├── next()
+│           └── unsubscribe()
+│
+├── management                        经过 slkd 的受权管理
+│   ├── controller 管理操作
+│   ├── 强制断开物理连接
+│   └── 查询管理请求结果
+│
+├── agent                             安全策略交互
+│   ├── AgentRegistration
+│   ├── SecurityPrompt
+│   └── SecurityDecision
+│
+└── common                            各模块使用同一契约
+    ├── Operation<T>                  请求身份、等待、取消、终态
+    ├── Deadline                      原始绝对期限
+    ├── Snapshot<T>                    观察时间、版本、有效性
+    ├── EventStream<T>                 有限队列、溢出、重同步
+    ├── CapabilitySet                 支持的模式与明确限制
+    └── Error                         稳定分类 + 原始错误上下文
+```
+
+其中，`ssap::local` 和 `ssap::remote` 都是 **slkd 的客户端封装**。`ServiceAuthorizer` 是应用的属性访问决策回调；它与安全配对 Agent 分开，不能通过批准属性访问来制造认证、加密或 Bond 状态。
+
+#### 运行时调用视图
+
+这张图中的两个 `slk-channel` 是同一库在不同进程中的使用实例。
+
+```mermaid
+flowchart TB
+    subgraph AP["应用进程：普通应用／slctl／slktest"]
+        CONTROL["libsparklink<br/>发现、连接、管理申请"]
+        SSAPAPI["libsparklink::ssap<br/>本地服务、远端属性、订阅"]
+        APPCH["Channel<br/>slk-channel 应用实例"]
+        CALLBACK["应用回调<br/>ServiceAuthorizer／Agent"]
+    end
+
+    subgraph DA["slkd 进程"]
+        BROKER["D-Bus 服务与策略<br/>调用者身份、权限、请求期限"]
+        ENGINE["唯一 SSAP Engine<br/>协商、事务、codec、分片<br/>服务数据库、远端缓存"]
+        PROFILE["Profile<br/>复用 SSAP 或 Channel"]
+        NATIVE["slk-native<br/>管理租约与内核观察"]
+        DCH["slk-channel<br/>daemon 持有的通道"]
+    end
+
+    subgraph KE["Linux 内核"]
+        SOCKET["socket／SocketBinding<br/>Grant、fd 引用、撤权、有限队列"]
+        SESSION["唯一 ConnectionSession<br/>CMTC、通道表、RX 分流<br/>DTAP、连接 lifetime"]
+        RUNTIME["每 controller Runtime<br/>generation、DLI<br/>命令／data credit、提交 Ticket"]
+        DRIVER["drivers/sparklink<br/>固件、USB、HCC、BSLE<br/>资源所有权、stop／drain"]
+    end
+
+    HW["WS73／真实对端"]
+
+    CONTROL <-->|"D-Bus 请求／状态事件"| BROKER
+    SSAPAPI <-->|"类型化 SSAP 调用／事件"| ENGINE
+    ENGINE <-->|"原请求的属性授权"| CALLBACK
+    BROKER <-->|"安全交互"| CALLBACK
+
+    BROKER --> NATIVE
+    BROKER -->|"申请内核授权并交付 fd"| APPCH
+    PROFILE --> ENGINE
+    PROFILE --> DCH
+    ENGINE --> DCH
+
+    APPCH <-->|"业务消息直接走 socket"| SOCKET
+    DCH <-->|"SSAP 等协议通道"| SOCKET
+    NATIVE <-->|"管理／订阅／查询"| RUNTIME
+
+    SOCKET <--> SESSION
+    SESSION <--> RUNTIME
+    RUNTIME <--> DRIVER
+    DRIVER <--> HW
+```
+
+这张图对应三条应用路径：
+
+| 应用需求 | 实际路径 |
+|---|---|
+| 发现设备、请求连接、申请通道 | SDK → D-Bus → slkd 策略 → Native 内核接口 |
+| 已授权通道上的自定义业务数据 | SDK `Channel` → socket → 内核 Session → WS73 |
+| SSAP 服务发现、属性读写、通知／指示 | SDK SSAP 接口 → slkd 唯一 Engine → 通道 socket → 内核 Session → WS73 |
+
+自定义业务数据取得 fd 后，不需要逐包经过 D-Bus。SSAP 操作由 daemon 执行事务，SDK 不另建 SSAP Engine，也不另维护一套远端协议状态。
+
+最后，需要把对象的“持有”与底层资源的“所有权”固定下来：
+
+| 对象／状态 | 权威所有者 | 应用对象结束时的含义 |
+|---|---|---|
+| Controller generation、Ready、故障 | 内核 Runtime | 释放观察引用，不改变硬件状态 |
+| 发现租约 | slkd 的调用者会话管理 | 释放自己的租约，不停止别人的扫描 |
+| 物理 connection lifetime | 内核 ConnectionSession | 丢弃应用引用不等于强制断链 |
+| Channel binding、Grant、fd 引用 | 内核 | 关闭一个 fd 引用；最后关闭按内核契约清理 |
+| 已提交发送、credit debt | 内核 Runtime／Ticket | 不能因应用退出而消失或凭空退款 |
+| 本地 SSAP 服务与属性数据库 | slkd，登记到应用 owner | 注销或 owner 退出按既定协议清理 |
+| SSAP 事务、远端缓存 | slkd 唯一 Engine | 取消等待不自动撤销已发生的远端操作 |
+| 安全机制与实际安装结果 | 内核机制状态；slkd 负责策略流程 | 本地批准不能直接改成认证／加密成功 |
+| 持久 Bond | 未来合格的 slkd 凭据存储 | 必须有独立撤销与持久化契约 |
+
+所有公开接口还应共同遵循：
+
+- **成功阶段明确**：软件准入、USB 提交、控制器完成、对端协议确认、对端应用处理分别表达。
+- **身份不会自动更新**：旧对象不能因重连、handle 复用或 daemon 重启而悄悄获得新授权。
+- **期限不重置**：D-Bus 排队、回调、内部重试和分片共享原始期限。
+- **缓存带有效性**：未知、过期、事件丢失必须可见；缓存不能制造 Ready 或安全资格。
+- **能力逐项开放**：描述符、通知／指示、长写、可靠通道、持久 Bond 等须取得对应实现和验收，不能由 API 名称推导已支持。
+- **语言绑定语义一致**：Rust、C、Python 可以有不同调用形式，但身份、错误、取消、关闭和完成含义一致。
+
+#### 源码差距与迁移规则（2026-10-17复核）
+
+| 目标职责 | 当前源码差距／已存在内容 | 迁移与验收边界 |
+|---|---|---|
+| Native | `libsparklink::Adapter`实际打开设备、管理lease、事件/snoop、WS73控制；daemon/诊断直接使用 | 抽出同一实现及其实际调用者；Native不能作为应用SDK默认导出或反向依赖SDK |
+| Channel | syscall与安全上下文仍在`slk-protocol::channel/message_security`；slktest有已验业务循环 | syscall/poll/fd操作归Channel，Native管理建bind与业务fd能力分开；复用现有循环/原期限/Ticket，不复制Engine |
+| 共享契约 | 一些SSAP/Registration tuple已共享，CLI和daemon仍有方法/路径字符串与长元组重复 | 独立于应用SDK，统一类型/签名/路径/错误；保留独立introspection和真实bus校验 |
+| 应用SDK | libsparklink目前混合Native/FFI；尚非目标Client，Python默认仍暴露Adapter | 应用经slkd申请管理/通道授权，数据直达socket；C/Python应用/Native入口区分，迁移后删除旧默认导出 |
+| SSAP | 当前唯一slkd actor、Owned数据库/审批及部分真实远端操作已存在；不是从零建Engine | local/remote为daemon客户端封装；描述符/订阅/长写等未支持项不因API树而开放；原权限类型与codec复用 |
+| slk-protocol | 当前还包含ioctl/syscall包装；此状态不满足纯值/codec边界 | 移走操作层，保留准确ABI/必要纯codec与状态转换；源码/形式化映射随迁移更新，不转授旧证明 |
+| 临时依赖 | R1a当前允许slkd→libsparklink这个Native包装以保护实测路径 | 仅迁移期间例外；R3接通Native/Channel/契约后必须删除该边，更新依赖门禁并实机回归，无长期alias |
+
+应用DiscoverySession、稳定公共Client、完整远端Subscription和真实持久Bond仍属待接通
+目标；当前管理扫描不能被包装成已拥有应用发现租约。对象API结束不能隐式清理别人的
+controller、物理连接或已提交credit义务。未经实现/验收不得由缓存或命名推导资格。
 
 
 ## SSAP、服务与Profile

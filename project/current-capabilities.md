@@ -1,8 +1,17 @@
 # 当前能力与资格
 
-本轮退休整改正在开发：移除虚假Powered及历史元数据Bond入口，存储只保留test编译；
-新代码尚未取得实机资格。三类清单及退出条件见[唯一计划WP18](implementation-plan.md)。
-以下c6/836等记录保留原编译和工具身份，不转授当前HEAD或dirty tree。
+[退休R1的准确新产物回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
+K`0cd4731dd3e6` / **编译 `cd35db3fd4e4` / 工具 `0568a3d1db1b`**，SDK110 U2/3。
+Powered及历史元数据Bond入口已删，存储仅test编译；四VM门禁32次真实业务回复，
+61/249/2042字节、16次超限拒绝，24 Owned案例/96次审批/120笔远端事务，含实际机制2。
+另有真实service-only组登记/读取/注销、跨owner/管理/通道/设备共68次拒绝；这是guest
+system-bus最小角色门禁，**不是service-only远端业务、完整多应用策略或干净发行版部署**。
+四数据重放与角色重放、81复制负对照；303默认+303all-features、750冻结工具、严格HTML。
+新审批TOKEN的在途/原期限实机门禁仍在开发，不以allow/deny门禁充抵；无新增形式化证明。
+首轮root管道EACCES/Broken pipe实机失败保留，后续只修guest监督器pipe属主；原断言未放宽。
+`e28d1ab`的卸载配置/状态保留只有实际Makefile暂存目录测试；不是完整安装/升级资格。
+R2观察缓存与发布重试、SDK/旧接口/事件/部署剩余见[唯一计划WP18](implementation-plan.md)。
+以上与c6/836等历史资格均保留原编译/工具身份，**不授予当前文档提交或dirty tree整体资格**。
 
 [Owned SSAP 新产物切片](../docs/evidence/ssap-owned-authorization-20261017.json)：
 K`0cd4731dd3e6` / 编译用户态与执行工具 `c6f9d8b96347`。基本通道和实际机制2各交换
@@ -228,6 +237,7 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | Owned SSAP：严格构建、生产函数/私有D-Bus及冻结工具 | `offline` | `PASS` |
 | 生产access审批性质：Kani诊断未消除，未证明 | `formal_bounded` | `UNPROVED` |
 | Owned SSAP完整交错/权限部署/CPCD等范围仍缺 | `real_device` | `UNPROVED` |
+| 退休R1：去虚假状态/元数据Bond；cd35四实机保持+服务组权限 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

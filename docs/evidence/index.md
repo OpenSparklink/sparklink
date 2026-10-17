@@ -311,3 +311,5 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 [本批四项issues读回、准确f2 CI及限定原件检查](matched-u23-maintenance-20261017.json)
 只维护凭据，不增加性能/协议/形式化资格。完整goal继续active，原范围和未决条件保留。
+
+[历史实现退休R1与准确新产物回归（2026-10-17）](architecture-retirement-r1-20261017.json)：cd35/0568，保留失败及尚未覆盖范围；不转授文档HEAD。

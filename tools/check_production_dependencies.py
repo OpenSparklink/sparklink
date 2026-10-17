@@ -7,6 +7,7 @@ allowlist does not claim its application/management API split is complete.
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tomllib
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -38,7 +39,9 @@ def main():
         # Keep actual default features enabled. Dev dependencies are excluded;
         # an optional test backend accidentally enabled by default must fail.
         command=['cargo','tree','--locked','--color','never','--edges','normal','--prefix','none','-p',package]
-        result=subprocess.run(command,cwd=ROOT,check=True,capture_output=True,text=True)
+        result=subprocess.run(command,cwd=ROOT,capture_output=True,text=True)
+        if result.stderr:print(result.stderr,end='',file=sys.stderr)
+        result.check_returncode()
         closure=check_tree(package,result.stdout,internal)
         print(f'{package}: default normal internal closure {closure}')
     print('Default production dependency boundary PASS; not API/RF or complete architecture qualification')

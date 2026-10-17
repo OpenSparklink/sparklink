@@ -233,6 +233,7 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | Owned SSAP：严格构建、生产函数/私有D-Bus及冻结工具 | `offline` | `PASS` |
 | 生产access审批性质：Kani诊断未消除，未证明 | `formal_bounded` | `UNPROVED` |
 | Owned SSAP完整交错/权限部署/CPCD等范围仍缺 | `real_device` | `UNPROVED` |
+| 退休R1：去虚假状态/元数据Bond；cd35四实机保持+服务组权限 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -976,6 +977,17 @@ Backend及D-Bus代理不是它们。此次范围调整不表示U#7/K#1/#5或其�
 
 
 #### 2026-10-17：历史实现退休与架构一致性（进行中）
+
+最新顺序按用户“先完整架构整理和整改”：先完成本节的目标架构迁移，再扩展新功能；
+三视图已合入唯一architecture的API/SDK节，不另建平行设计。当前已验路径与在途
+生命周期工具保留，回归/必要故障修复继续；不把控制面竞争全集设为架构或数据面门禁。
+R2有界观察与发布→R3真实Native/Channel/共享契约及应用Client边界→R4逐入口/绑定/
+CLI/事件全链退休→R5独立契约与依赖门禁→R6部署/外部SDK/文档闭合。按实际依赖可
+并行小切片（如R6a卸载），每条接通调用者/验收后删除临时旧边。R1a允许当前Native
+包装只是明确的R3过渡例外，不是目标架构完成；退出时slkd不依赖libsparklink，应用
+SDK不依赖Native，slk-protocol不执行设备/DBus/ioctl，slktest共用应用通道接口。
+完整S0–S6、19WP、10FV、12DG与原资格门禁均保留，UserHost仍P4；自然RCA/非人工
+恢复及其他未完成整项继续OPEN。不得以这一顺序恢复旧wire Engine或删除正在开发代码。
 
 R1已取得[准确新artifact的限定回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
 编译cd35/工具0568/K0cd，四门禁32真实业务回复、24 Owned案例/96审批/120远端事务、

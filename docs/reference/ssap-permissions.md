@@ -132,7 +132,8 @@ Bond及属性授权不继承。当前版本适用范围仍只由能力入口的�
 表示不提供审批；带授权位的登记此时返回 NotSupported。服务登记仍只表示本地配置。
 `UnregisterOwnedLocalService(start:q)` 和 `ReadOwnedLocalValue(handle:q)->ay` 只允许
 原 owner；管理组的显式全局移除/本地读权限仍独立。`sparklink-services` 策略只允许
-这三个 Owned 方法，不授 controller 管理或普通通道权限；实际最小权限部署门禁待验。
+这三个 Owned 方法，不授 controller 管理或普通通道权限；[cd35/0568的guest最小角色门禁](../evidence/architecture-retirement-r1-20261017.json)
+已核对实际system bus、组/凭据及设备权限，不代表service-only远端RF或完整发行版部署。
 
 审批调用原 unique owner 的 `org.sparklink.SsapAuthorizer.AuthorizeValue(prompt)->b`。
 `prompt` 是 `(request_id:t, identity:(qttqtuyyy), property:q, write:b, deadline:t, value:ay)`；

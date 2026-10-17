@@ -284,3 +284,17 @@ CLI/权限项/--storage删除，存储和旧配对写入只保留test编译。�
 所有改动分有限批次；实际生产接口/调用者/绑定/测试/文档同时更新，不新增长期拒绝
 门面。缓存预算/发布、Typed身份观察、SDK依赖方向与部署继续按唯一计划WP18清单
 推进，不能以源码删除或私有bus通过代替新artifact的VM实机门禁；不阻塞SSAP和数据面。
+
+
+## 2026-10-17：API三视图与依赖整改
+
+采用唯一architecture中组件依赖、应用命名空间及运行时三视图。libsparklink是应用客户端，
+不依赖Native或默认暴露管理lease；slkd直接依赖Native/Channel/独立共享契约，不依赖
+自己的SDK；slk-protocol只含ABI/值/必要纯codec及转换，不执行设备、ioctl或D-Bus。
+SSAP local/remote均是唯一daemon Engine的客户端，ServiceAuthorizer与安全Agent分开。
+slktest经同一应用Channel，测试负载/计时/断言/报告留在工具，不把业务逐包送D-Bus。
+目标API树不授予描述符、订阅、长写、可靠通道或Bond资格；缺实现的目标不先生成假门面。
+
+按用户最新顺序先完成架构迁移，保留实测路径与在途工作，回归和必要修复继续；不等待
+控制面竞争全集。R1a临时允许现有slkd→libsparklink Native包装只为连续迁移，R3调用者
+接通后删该边并更新依赖门禁。每项例外须有明确替代和退出，不成为永久架构。

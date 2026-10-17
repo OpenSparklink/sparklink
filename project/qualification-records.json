@@ -13,16 +13,16 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP08-WP09-WP16-owned-SSAP-original-RX",
-    "production_behavior": "Application-ownedlocalSSAPandper-requestpolicyonthesoleEngine;originalRXconstraint,deferredpolicy,explicitretirementdrain. ExistingCUTC/Session/credit/Grant/Ticketretained.",
-    "state": "C6_TWO_REAL_OWNED_SLICES_AND_LENGTH_REGRESSION_SCOPED_PASS_FULL_SCOPE_UNPROVED",
+    "id": "WP16-WP17-WP18-R1-retirement",
+    "production_behavior": "Remove false Powered and metadata Bond public exports/callers;legacy metadata cfg(test). Existing sole Session/Engine/Grant/credit/Ticket retained.",
+    "state": "CD35_FOUR_REAL_GATES_SCOPED_PASS_R2_AND_FULL_SCOPE_OPEN",
     "exit": [
-      "ExactK0cd/compiledC6/toolsC6,16actualownerrecords/64decisions/80remoteSSAPtransactions;basicandinstalledmechanism2two-roles",
-      "Fourrealgates32actualordinarypeerreplies;249/oversizerefusalsand2042fullmessage;fourreplays52negatives",
-      "300default+300allfeaturesRust;746frozentools;strictbuild/docs. Kani10properties93rawcheckshavedisalloweddiagnostics:UNPROVED",
-      "Service-onlydeployment/realownerretirement/revoke/Down/deadlineinterleavings/CPCDandfullgoalremainOPEN"
+      "303default+303allfeaturesRust/strictclippy,750frozenPython,strictHTML115",
+      "K0cd/compiledcd35/tools0568:32realpeerreplies/24Ownedcases/96decisions/120remotetransactions;61/249+16oversize/2042/mechanism2",
+      "Actualguestservice-onlyrole:68denials;fourdatareplays+roleReplay81copiednegatives;originalrootpipefailurekept",
+      "Stageduninstallconfigpreservatione28ONLY;notcleanVMinstallation. ExistingformalUNPROVED,fullgoalINCOMPLETE"
     ],
-    "next": "Completeactualownercallback/deadline/retirementinterleavingsandservice-onlypolicy;thenCPCD/protectedupdatesonsoleEngine. Data/multi/four/performanceandROMvalidity/cold/RCAparallel,noallcontrolfront.FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4unchanged."
+    "next": "Architecture-first per user2026-10-17:finishthreeAPIviews,R2boundedobservation/publication,R3Native/Channel/sharedcontract/applicationSDK,R4full-chainoldAPI/eventretirement,R5gates,R6cleanVMdeploy/docs;preserveinflightlifecycleWIPandverifiedpaths. Regressions/necessaryfixescontinue;noall-control-combinationprerequisite.FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,naturalRCA/nonmanualrecoveryOPEN."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -166,7 +166,8 @@
     "ssap-owner-c6-length",
     "ssap-owner-c6-offline",
     "ssap-owner-c6-formal",
-    "ssap-owner-c6-remaining"
+    "ssap-owner-c6-remaining",
+    "architecture-retirement-r1"
   ],
   "records": [
     {
@@ -117688,6 +117689,892 @@
         "CPCD/protected update sending,long-write,identity/Bond,Proxy/UserHost/PM/release and all original S0-S6/19WP/10FV/12DG requirements remain;UserHost P4.",
         "Natural startup/reenumeration/disappearance RCA and nonmanual automatic recovery OPEN;manual/hub/QMP/injection not acceptance. Prior 5509ms failure and historical documentation-retention incident unchanged."
       ]
+    },
+    {
+      "id": "architecture-retirement-r1",
+      "title": "退休R1：去虚假状态/元数据Bond；cd35四实机保持+服务组权限",
+      "level": "real_device",
+      "result": "PASS",
+      "contracts": [
+        "SingleKernelObservationAuthority",
+        "NoMetadataTrustedBond",
+        "NoUnpublishedRetiredFacade",
+        "OriginalSessionGrantCreditTicket",
+        "OwnedPolicyAndPairedUsbApplicationDelivery",
+        "ServiceOnlyOwnershipNotControllerAuthority"
+      ],
+      "bounds": {
+        "ordinary_round_trips": 32,
+        "owned_cases": 24,
+        "owner_decisions": 96,
+        "remote_owned_transactions": 120,
+        "owner_exits": 24,
+        "oversize_rejections": 16,
+        "service_role_denials": 68,
+        "real_gates": 4,
+        "exact_replays": 5,
+        "copied_negative_controls": 81,
+        "default_rust_tests": 303,
+        "all_features_rust_tests": 303,
+        "frozen_python_tests": 750,
+        "docs_inventory": 115
+      },
+      "excluded": [
+        "Production retirement: unpublished Powered getter/setter/state/CLI consumer and metadata ListBonded/RemoveBond/bonded/--storage removed with active callers; legacy store and untyped pairing write are cfg(test), including experimental daemon builds. Historical files are not loaded,migrated,modified or deleted by daemon. Actual Agent/Connection security,management staging and sole Owned SSAP Engine retained.",
+        "Exact K0cd/compiled cd35/tools0568 SDK110 U2/3 only:four ordinary-user two-role gates,actual opposite application validation/reply and original paired USB/HCC/NOCP checks. Role gate uses UID1005/no extra groups/caps0,actual guest system bus/udev/device permissions;not service-only remote RF or full clean-distribution install.",
+        "Owned allow/deny/read/write/UUID/read-after plus original owner value check and owner SIGKILL/old-handle rejection retained on basic short/long and actual mechanism2 gates. Owner death occurs after transactions;inflight callback/deadline/revoke/Down/active watch retirement are NOT newly qualified.",
+        "No new formal proof. Existing access Kani unstable/unsupported diagnostics stay UNPROVED;no kernel/runtime/USB drain/firmware/NOCP assumptions proved. Old natural fault RCA and nonmanual recovery remain OPEN;manual/hub/QMP/injection not acceptance.",
+        "The first real service-only attempt failed because root-owned inherited stdin could not be independently reopened after setuid. Tool0568 assigns only the disposable guest pipe to1005;same production binary/CLI semantics. Original FAIL and assertions retained. Boundary+Owned combination rejected before VM;correct separate boundary mode unchanged.",
+        "R6a uninstall preservation is independently staged-only,not clean-VM deployment. New documentation/Makefile commits do not rename the compiled cd35 artifact;full current tree is NOT_QUALIFIED. Complete S0-S6/19WP/10FV/12DG and all original issues remain open as applicable;UserHost P4."
+      ],
+      "remaining": [
+        "Bounded per-controller observation cache/TTL/bytes and retryable publication;SDK application/Native split;full per-entry caller/binding/policy retirement and typed event migration.",
+        "Actual owner callback exit/original-deadline/late approval,active-controller retirement and full revoke/Down/lifetime matrix remain current work;d795 human-token source fix is not fully exercised by these allow/deny real runs.",
+        "E protected SSAP,full mechanism1/2 Agent negative matrix,CPCD/notifications/indications,long write,full multichannel/four-device/performance/soak and trusted identity/Bond remain.",
+        "Installation prefix/library/SONAME/pkg-config,actual clean-VM install/start/C-Python consumers/upgrade/rollback/uninstall;staged-only R6a is not that qualification.",
+        "Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;original 5509ms failure and required HCC110 documentation-retention incident unchanged."
+      ],
+      "sources": {
+        "kernel": {
+          "repo": "linux",
+          "commit": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+          "scopes": [
+            "drivers/sparklink",
+            "net/sparklink",
+            "include/trace/events/sparklink.h",
+            "include/uapi/linux/sparklink_ioctl.h",
+            "include/uapi/linux/sparklink_socket.h",
+            "include/linux/sparklink_channel.h",
+            "include/linux/sparklink_native.h"
+          ],
+          "files": {
+            "drivers/sparklink/Kconfig": "a4fe289630742cc56513e14d9baccc395b95891b7f49b03d607e213d2789b7a1",
+            "drivers/sparklink/Makefile": "f208817106ac1d72224079f79b486eda1b914bdddfdc9a68efb83043bbc4bdea",
+            "drivers/sparklink/standard_usb.c": "3a33dd49e91052c501b2d185df192184e5c45ad126c42154dfae7578881f7c67",
+            "drivers/sparklink/virtual.c": "b4c13ebca4cdaa80a77f0b5d6e9e90b6ea4abd16b7fdb8de3cff4d871a8391d9",
+            "drivers/sparklink/virtual.h": "774a29ad1ab3ce7dffe8ffbf396191abd2b8a7f68f7d5b342d98eb9a2f2827ef",
+            "drivers/sparklink/virtual_codec.h": "1cb87ed4fff0aeef6e56b259097499573e90a7b20ab90833ce68b9174a0af6c6",
+            "drivers/sparklink/ws73/bsle.c": "692ff47410a671bf138a779c3f6a4c6ba170f90b068a2ceaacd00a4f2e9bb6f3",
+            "drivers/sparklink/ws73/bsle.h": "9b383891602a5a714b00e9740b384f02cfa615073dab1e49afa886b8df38ee81",
+            "drivers/sparklink/ws73/connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+            "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+            "drivers/sparklink/ws73/discovery.c": "584b8e246ae5accce54ce7647ee4469cb410bf41409c79a01799312d4fdb19ca",
+            "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+            "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+            "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+            "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+            "drivers/sparklink/ws73/usb.c": "352d4c83ca1a429c4e2e932f83b68cac29d5e24c9425c6f69d4c4977c4787a9f",
+            "drivers/sparklink/ws73/wire.c": "6ff5310f20c07ff6aa78ef166e48f2751cac1676cd62f8470ce425ffce267568",
+            "drivers/sparklink/ws73/wire.h": "a974edfea58be58bdcaece8502411cd479877068f443d88f9e907a868d3e18ca",
+            "include/linux/sparklink_channel.h": "88f7b99c632182576710b71ae0623a69191afd5e29a9866db70a883a782c40b6",
+            "include/linux/sparklink_native.h": "5bd70d0d098751c031ebb9b95823d40cbe80d029eb4532161f5c6f9ff3b643b4",
+            "include/trace/events/sparklink.h": "279afabf3424aa3b405cd83ffdc2e7c866234a11837d059c04c4e8b67b733800",
+            "include/uapi/linux/sparklink_ioctl.h": "e4a60ceadf753407891a0c365b5ab758cdcdcd66126df8d7a496a6c45881f69d",
+            "include/uapi/linux/sparklink_socket.h": "18299e4eb6aef480aedafce949a10ced185bf9de3a28208a08dbeee9ca591742",
+            "net/sparklink/Kconfig": "352656711a97406f5303dc11b94ce5a5d4f792a6b6adb874814bf890f0a27a18",
+            "net/sparklink/Makefile": "f602d17ad2cebbb1232854b361451c486aed8a433eab2f6241d0820506c2308d",
+            "net/sparklink/experimental/README": "950d51c089ab48be6a7ecc541a5113fe673949a3fb6e2ccba99156265ca4304d",
+            "net/sparklink/sle_authorization.rs": "1031cfc7cb417eef42696d44149eba5b4591d915a772e3ce8db86717c6203991",
+            "net/sparklink/sle_backend.rs": "65d9fec9abaa64edc2fa06756f67ce7bb1a17d3ff73bb744d95d721388bc734d",
+            "net/sparklink/sle_channel_grant.h": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+            "net/sparklink/sle_channel_socket.c": "57ad8003210a8c347dcab6d2b50a326a2f8eb1446238067cfe9b6a74718418cf",
+            "net/sparklink/sle_channel_state.h": "2be8f64ad94f32b698286a19211b8d66954402591239627679b6908327bda565",
+            "net/sparklink/sle_channel_table.h": "6a1ecbcbaf134ca3f6fe66577b93113f2f6fd4e8cad1de97d561d66e27aa039e",
+            "net/sparklink/sle_channel_wire.c": "f64a6850c88177f1e89b2a95f09d5a0a1b19a26570c8907486778f5169ba6af2",
+            "net/sparklink/sle_channel_wire.h": "05b4f91e039982ca4fe4257201f2ac04bc3a54ae27e6cddbe6ff4728b695f32a",
+            "net/sparklink/sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+            "net/sparklink/sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+            "net/sparklink/sle_configfs.rs": "048964fc18927cbd55a470c5c0c6abb865a1214d822ddd839aef8cde36b70b69",
+            "net/sparklink/sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+            "net/sparklink/sle_controller_event.rs": "81423ded2609f8953bf2fc25f44253c83606eeafd88802af0e1685a80d9c21d7",
+            "net/sparklink/sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+            "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c",
+            "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+            "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+            "net/sparklink/sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+            "net/sparklink/sle_dli.rs": "4d8add91d46b78098695949c23679c621ec7f3e0acfbff56ee32fbefc4a7bffd",
+            "net/sparklink/sle_dynamic_state.h": "33835dc321e93a8dd7c7c810bdae5d717e27825c198ec68f660ff192052f3452",
+            "net/sparklink/sle_fragment_cursor.h": "688b3035e6263e5d824c990d3244aaf5abec9162bab3e07013e217a33588714d",
+            "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+            "net/sparklink/sle_host.rs": "97257c14aa68ed9924e9517481052e3e2f3d22e8d116dc99f148805965196d58",
+            "net/sparklink/sle_ingress.rs": "fbc3d68b8ae838e823c72d5923b0e24ac74231e6deae85e2037b72d00edd4978",
+            "net/sparklink/sle_irq_lock.c": "b1f8a8fe4c3cd3697d6c3babd3f4aee0f93f0fb7cf98526f3490767c5d9cd9cf",
+            "net/sparklink/sle_irq_lock.h": "3f9a44812ebdd84d08db0f88834910f370bb92a0ce5760ba9371608a3679cb2d",
+            "net/sparklink/sle_irq_lock.rs": "5b5ca8e8750ea21825a34be4f45dd6eeba63cc43eeeda1e6053f55acbb6476a8",
+            "net/sparklink/sle_link_observation.rs": "864f9f64efd545f53a244208d5999dc53738fae096d8c03125bf52b6ba711784",
+            "net/sparklink/sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+            "net/sparklink/sle_message_security.h": "ffd0efc0ed80051f0dc2704f60ec2a1dc2098cfd598aa5b02d07790c81ff2c44",
+            "net/sparklink/sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+            "net/sparklink/sle_native.rs": "e53457824c6381ee334f2c1e8769438d4317226f98403451ee7af97e1f071652",
+            "net/sparklink/sle_native_data.rs": "9b36144f3377e7c35c536d41b22fd3769472355d559f584214d6ec7acde71f05",
+            "net/sparklink/sle_native_ffi.c": "9e53c93ef5b1dd679227009c0a6b38be26ba47dbbc7aa9b1bed6f9082e6ec00b",
+            "net/sparklink/sle_native_ffi.h": "a4123e5c9eca11b8175cab5143b7e1d1bdb19403b43ee11028934941beb08502",
+            "net/sparklink/sle_pair_crypto.c": "0706143298e86df6013549c2a8886b2b1b283fac82aa750d1d16cd29166900fd",
+            "net/sparklink/sle_pair_material.c": "ed8a1adfca85ea38c113c671f3c38950431fbd93bf370df2a736ef5bbc4653b9",
+            "net/sparklink/sle_pair_material.h": "32429c20a0647e8ecaa65602395a77baaf24b29958d49896835161e683d697e4",
+            "net/sparklink/sle_pair_material.rs": "c31bfee415e9a90724142e1d34a736ce6b5fc7a2a1fe2d8306586f241716ef90",
+            "net/sparklink/sle_security_relay.h": "d741a43c6ad061b56546bfb2a8f182cd79fee2e27c2fb3a1927810167cc3aad7",
+            "net/sparklink/sle_security_relay.rs": "adc4f37655ecf3fb6839d492f8c41a661cc15babe529d88104a5f85fa79699cf",
+            "net/sparklink/sle_security_relay_state.rs": "edd7a961c93a9a567b2b3543150478c9bae78c0d85a935d8ccfc9621b54493fe",
+            "net/sparklink/sle_session_schedule.h": "306e26113573f3ca003dc78f73a320e06e8534220cfa4d1aae9d599e4e0c851e",
+            "net/sparklink/sle_sessions.rs": "594a3b2826ca4a82d25f59670dc44a7e58a78e970dab333c80d0f7469a701d57",
+            "net/sparklink/sle_snoop.rs": "d2a7d85f841066d8ea735d990b80281d01135a8488eb9c60778c790600ea8e73",
+            "net/sparklink/sle_standard_dli.rs": "a07c9af73eb2b71554a3e73fd32f06726cbbab48ef807b250a7c88aeac92e606",
+            "net/sparklink/sle_tx_budget.h": "f75c2f9133170f40651a8addc9a8a739872e5f456ad9fe9f4847bd15a84d0ed2",
+            "net/sparklink/sle_uapi.rs": "cfd250a811b4566033da5fdba8101abd6fdca48246abb4eb7a06d6b5794b5b0e",
+            "net/sparklink/sle_workers.rs": "453e679f479229591b4506d2ac2c463ffaf09fb8f627c5174a54c8a4376ef4ac",
+            "net/sparklink/sparklink_core.rs": "fcb176992e5a5d33056cd84125f55bf977e0b419e3e755e97887bd53b1c7e509",
+            "net/sparklink/sparklink_genl.c": "ffe57e94d4f5da25ae5e4548c25f503510b95a31b64c68271412c145975c2d63"
+          }
+        },
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "cd35db3fd4e4e31197d261f8656a4880404e439e",
+          "scopes": [
+            "crates",
+            "data",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "171164a0b8b962c0243a7f22119ef96e9e50748c35b4f82703c1ab5e192c5509",
+            "Cargo.toml": "18a1334d7e309bc28a2bddffb614bf3415bee043eb5b4a80d2c832f996bf12d8",
+            "crates/libsparklink/Cargo.toml": "12bf208733281aa2d93669f1b4660fb61ae1d0df4438a773282bc11eb80aaec5",
+            "crates/libsparklink/cbindgen.toml": "cc515d006735a4986d4051bcbef7fc30d5936999cd792653e5824cceeef74c48",
+            "crates/libsparklink/include/sparklink.h": "158dd116682d6fc4da36705aecf05314b28a5766a37d17ee216da1c825d470ae",
+            "crates/libsparklink/src/adapter.rs": "6debc98b129bead8f5167d3b807932128d475b34cd5e04cf6174d83c98736421",
+            "crates/libsparklink/src/controller_events.rs": "cb52719ffe814af8f963936e448209211cab6a26b7eb4945c3e409e0017da356",
+            "crates/libsparklink/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/libsparklink/src/event.rs": "728ff9608818e63c09e0df16b7647cbb21b6e16f4680dd2e408ba7d5da9d52d2",
+            "crates/libsparklink/src/ffi.rs": "9684b5a3454c405528821ae6fcab2fd38bec0c1563e64307618c9d3aac7f8cdc",
+            "crates/libsparklink/src/ffi_native.rs": "3a75a34a2c36a97ba2e1aa5ec1638aebc016bbeefbe0d170d0aacd73061ecf7c",
+            "crates/libsparklink/src/lib.rs": "5a9c45e9a299dc75b790be28f28793204ceb8d89220c8d21548269614014d0ce",
+            "crates/libsparklink/src/retired_event.rs": "bf8f5a40f84ef0d08dd0f2e379a37175a72800f17f45209f3c115c0762a84bbf",
+            "crates/libsparklink/src/snoop.rs": "d32180800723109c067eb7a51ad1215a9983f04a8985cd193140b365e4c8fad1",
+            "crates/libsparklink/src/ws73_discovery.rs": "ee0ad25307cec94fed54b95cc5cb5921de1eb496885b7fa374fe88db9240bf91",
+            "crates/slctl/Cargo.toml": "f390b61589443d09280049b720b1650111b5698a2cc55ca41a7aa5f6dab9f363",
+            "crates/slctl/examples/bus_policy_probe.rs": "3f6b3f92b89d364157b0a04285fede71fa8569b561d42bad28910d0abc3f1591",
+            "crates/slctl/examples/native_security_agent_probe.rs": "7413a4626c63626245b411e167e063ad5f445a8ca2a6203e19fded4e859bcefc",
+            "crates/slctl/src/commands.rs": "89085ce34c5d160e27aa460054b9a2ddc571c335094fbec8b77d0f6d4a950fe4",
+            "crates/slctl/src/main.rs": "94ee4e049dcc162077fc8d8458d89d2f1837b8c06877dc9c7a6e19804e3ab1e3",
+            "crates/slctl/src/security_agent.rs": "fa20ab7db708321debd9d7036f2f4ac5316fc8362cb28574b4b2835ed353f2f5",
+            "crates/slctl/src/ssap_server.rs": "923177642bb6e2ace1c63d26f9f44d71703bcfdef7156dade899c86ed592b281",
+            "crates/slctl/tests/scan_freshness.rs": "d3679776de69bb7c2dbcf58eded3024a266ddacb9df151e57e063092ad1f5fe9",
+            "crates/slctl/tests/security_agent.rs": "4c810768161c1a91be7397840dba1fd4c789fdab02fef16faff37a6b50dce02c",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-experimental/Cargo.toml": "f4f874a9e3d4e9e9e04aa161e3ed6bf2ccfacd46cc0f800f3a6ef15dfc9f157e",
+            "crates/slk-experimental/README.md": "bb9ecebd88fb9b8caddea4a6c2a7203a40dcc3e8f4e46aca970d578f5a258f11",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "578d136b61749d812c1db624f493ca50f4a76bc73a04f5e7615e5a4a00933263",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "c8c68a94e1c268c5bfb80ce0dbb98bc39e16b5d6a7685e68c3ab1f8479ecb3a1",
+            "crates/slk-protocol/src/channel.rs": "60773bd352bfc9f3bdb4fae33f945d55d2af453dbb8d5f4477baa9bc19d5062c",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/ioctl.rs": "2c31ada482a043e7fb75dd2017ab3035655e3fcfe8cfcb250b91c46e9d067aa3",
+            "crates/slk-protocol/src/lib.rs": "de1fb487263dfe08865c2f2edaa4e47444d84e5adb1427d272e25b37e7724265",
+            "crates/slk-protocol/src/message_security.rs": "55916bc1232514166cb0e8ffa71797ac0e2bf88dec9fe4a7bd84978904339173",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+            "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "0faff47303886b82e826047d44c64c755599f0bf31975185014e6226ce272343",
+            "crates/slk-protocol/src/types.rs": "4cf149f471a4ecad899b239d179cafaa1c9cfd4e6d9ab48e102080e7949f2b8a",
+            "crates/slkconfig/Cargo.toml": "050fceaff604f8c3827367733f87150be35011e3330d83bbcdeba2c96d4abe54",
+            "crates/slkconfig/src/main.rs": "638f0d579565eee6ab350e39764659e184d81fb3f7eb4ac75ff1bd4c02a4285c",
+            "crates/slkd/Cargo.toml": "a0af013f553fa4a96c2fa82ffa9b3934bfbabc424c2375c3b5df58678f1278ee",
+            "crates/slkd/src/adapters.rs": "b944748f5eb42beae6b46c79e6bbb480f997f259b4f5f646051819785ec6dced",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "7812f6b482150dad204ad5d84692d9b7e08ca864fa5e0569b95257c2567d1865",
+            "crates/slkd/src/config.rs": "21cae8f4ad0dcc78a43ce08a513d7d13b3b37e6407ec3696e22260b7387826ff",
+            "crates/slkd/src/connection.rs": "695b1f917faadc8f2e91641b7e3f9922073899013de8a6db02e4a31ce4386163",
+            "crates/slkd/src/connection_object.rs": "c5d01edde314f579767a9742c6cd954a77d31f193b61e897c4c72dd1142b703c",
+            "crates/slkd/src/controller.rs": "89621843d9dcd8bfce9d61dd070b9edc5ca9c9a6af3ef2b5f7d9e913f2838d62",
+            "crates/slkd/src/dbus_iface.rs": "0c9d5e5e474e3383e7ce0c8c0fd6c481c0a865d2a5cf608a5768c901d3d75efb",
+            "crates/slkd/src/event_loop.rs": "d727890b6a8fc2368c0ccd7750e53acb2f73965a6765d5d0842eeef9abac8404",
+            "crates/slkd/src/event_loop_tests.rs": "54bd497d7704a3cd2606402bb5dd16a6c124b3e93cc5cf4b052cdf110dfd1ffc",
+            "crates/slkd/src/extadv.rs": "d80ca3d949a4f3a5974b03b8f43584053c8c3e675c782848fd9a70547a2474cb",
+            "crates/slkd/src/kernel.rs": "fc7dc11c930710f06e1ede116ba40edc5c73b1d77c4ff9509d999d89919c85ae",
+            "crates/slkd/src/main.rs": "901d5a3759ef3ff466e7904f667dfe1fa4f54818a64597ecf9cafe16e7c1e983",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "60fd41e9830cea2f8a1599f0b5c404b42050816eeb5ffd46d1d1863dfef7cb9f",
+            "crates/slkd/src/registration.rs": "ae2a1e82b49cd4e8cf6194fb020e4c45fc72c307339d9bbce6ab840b4500e4b8",
+            "crates/slkd/src/security.rs": "5ec63628e53afb52d89b08f883ef499296f5fed176e8460f93c8982640cb3b6e",
+            "crates/slkd/src/security_policy.rs": "510f952e2531b223bd4a01c3f3b7cb1d0f2f3564c9ba87b50147cf027aaa9422",
+            "crates/slkd/src/security_policy_tests.rs": "3806cd6c8d11520ce525acc3d351b8cd4f00e387d264982ed3a7849859f63a52",
+            "crates/slkd/src/service.rs": "c899dfd82885189439592aa5c8d8451ac3d775f8822ea81270ebf2eb4e793df8",
+            "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+            "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+            "crates/slkd/src/ssap_database.rs": "9a33a1f475d39f991220c37b37d572606fa7e7f5c2e76238718835fa7ea1fee0",
+            "crates/slkd/src/ssap_engine.rs": "e4db534db95a609a8f6b04751fff95a60b9c6e0c342d3a842326331f1b16a580",
+            "crates/slkd/src/state.rs": "c17a85b7377742fa228dd18327f6f6baf307096d526c971b841f7d500fb50331",
+            "crates/slkd/tests/config_startup.rs": "ee996e38b047f2fb37a0f57a63466f97c897b81acef56411836373c1011e2a0f",
+            "crates/slkdump/Cargo.toml": "38f9b701c304207ec581c5be5a504b08016e1a3401b06a8dd6eda9cad493672e",
+            "crates/slkdump/src/main.rs": "4a8781eda8d03ca63d00bc0c35133712660b4adc97cf82fa861349fd71f77629",
+            "crates/slkmon/Cargo.toml": "b9fd1c1362473d58b973ea4ae4f1b857e4e165f2a294b2bf888a1ddfbef59753",
+            "crates/slkmon/src/main.rs": "9e9cfb3ca5cdf37122ccc731d53c7a147f12860371efdfc62284715f511abab4",
+            "crates/slktest/Cargo.toml": "6135ddb03866cdb5bc6d7e33549b99e5adabbc73e9e7d45291a66b56ad1d413b",
+            "crates/slktest/src/benchmark.rs": "d5c8f49be14a0935ec5ae2473a074dcab38b5877ab51625252ca63bed033b1b9",
+            "crates/slktest/src/benchmark/load.rs": "23fc98702c43bb98bc948ec5f6a0250ef7e5efcc08662515ec78779f52487518",
+            "crates/slktest/src/channel.rs": "f2be3099ee3802760cde379593865dcfebc62dba301a5e8f689d56d602271180",
+            "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+            "crates/slktest/src/connection.rs": "93bb13db9df10a5bb243dd35cc7101475dc46524e9984dd6055590ab1d6e6e17",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755",
+            "data/config/main.conf": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "696a37e80036d99e8fec82a7b4eb6d8e8df9678d3db0b59ed1aef596fcee3199",
+            "data/man/man1/slctl.1": "be32a5323c6e56de313bdd17e2b34ea3eb982e7f373f2825295bff0fa5578c6e",
+            "data/man/man1/slktest.1": "a60700e71e8c334bcdd84c1a4d57b9aebbe05320325100837e4b5e8bf0d2bcd6",
+            "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+            "data/man/man8/slkd.8": "a9aed5e15e1c11c8cb5a1408c58d8b5f937e44f6c4cf8b2509aee7bccf7f4dac",
+            "data/pkgconfig/sparklink.pc": "ca12e4bf8d6c4458c868c5468c3afd6d5a3cc1e5a433eadc35a2f765bbcc765f",
+            "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+            "data/udev/99-sparklink.rules": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6"
+          },
+          "manifest_mapping": {
+            "material": "architecture-retirement-r1-m2",
+            "pointer": [
+              "source_hashes"
+            ]
+          }
+        },
+        "executed_tools": {
+          "repo": "sparklink",
+          "commit": "0568a3d1db1beee3ec57b668e369970092112505",
+          "scopes": [
+            "tools",
+            "bindings/python/sparklink"
+          ],
+          "files": {
+            "bindings/python/sparklink/__init__.py": "2b02eab96a0960a13a9239407b768ea7ca560c9c1bef4183253bfa7f488c7180",
+            "bindings/python/sparklink/adapter.py": "67b3a001e048a4a0d28edd009162a8a10c31b809edec0b1787fb758d864d7706",
+            "bindings/python/sparklink/native.py": "d1397de5b2b9f72c6c16e01ce0953baee03f6c332aee0f39ad48ff12fb779448",
+            "bindings/python/sparklink/ssap.py": "2fccd87d2100b409b8f9c6e69334945bd050875c2a408268fe2748e0e3072ac7",
+            "bindings/python/sparklink/structs.py": "bc77a212654add713ac181ff3bea0622644faa9958218ade30ad5473affeca02",
+            "tools/backend_registration_contract.py": "d68e1de74a1501fbdbcda4b2af8795e5be1c033c5086be893b10b8419bf69534",
+            "tools/build_resources.py": "a4e2bc174be731d25e4410db3a4016954597e0bae0a3026789cab302cc9d375c",
+            "tools/channel_socket_contract.py": "0934ffcd5cf17f72150e3fadb781f3218f9d1a52a06cc77c879e8cc9637b2769",
+            "tools/check_doc_examples.py": "3e407da3f1604658d396dcd4fcdd8a88c992b1be8ac9560eb8913bd69ccb6e2b",
+            "tools/check_docs.py": "7d43ffd4922e59294ee8d7c486716e6ade5505c5142fdacb27b6e5c37f12fc5d",
+            "tools/check_docs_browser.py": "1e88324521d9cd1ba35ac1137bdaf796071fb0973814a340112d3426e37025ff",
+            "tools/check_qualifications.py": "3109fc19fb6a0e63edc447b579978a8e8871433e9bd072ed6e618aa147a50dcf",
+            "tools/docs_integrity.py": "e575e05373d7c447c72c9c394da6a533cea55b59e78e56b77ccb4dfee45fd9c1",
+            "tools/lab/README.md": "f6176251abb7836a3f98db4f721a24f97e474099c37bb04be35f1425d5af7125",
+            "tools/lab/channel_fd_probe/Cargo.lock": "8e676693331fd9519329d25612131c348db58fa967a691e2eb7081cd50a76553",
+            "tools/lab/channel_fd_probe/Cargo.toml": "fe70d9e8acfc8833f309a5b5cc50ed4cf722d6a45a4d36062f44097854656279",
+            "tools/lab/channel_fd_probe/README.md": "0cab2ccf56845a1d87e47b4c78abfe8b47562e1ce7f8ba9fe7f407795c1b8e46",
+            "tools/lab/channel_fd_probe/src/main.rs": "a59a7d827012d922ac977bc9aeb033dde3c5603053360337af388fafe5685100",
+            "tools/lab/retired-event-poll/legacy_probe_run.py.txt": "cfda74810ff5500e8581abf0d0df9742e3263be00544dbc4791dbb3664768a3a",
+            "tools/lab/retired-power/legacy_cli_stats.rs.txt": "7dc19ade5e6ef1f1eee11130818341cc7670d5cedbf5a480ce281fc53f3ad954",
+            "tools/lab/retired-power/legacy_get_stats.rs.txt": "2d6f966182c7201fb9eca14a8f06fded836c6345b70182014bd6265435ba479d",
+            "tools/lab/retired-power/legacy_pm_methods.rs.txt": "367314acd7c2807a2e53103da5db71ad474029a7ebddea889a92e1f6e32bca73",
+            "tools/lab/retired-power/legacy_slkconfig_stats.rs.txt": "0b7891d2cc924d26820d0dd0e6fada1bd33c98da30a84de4fa8bccfdeb22419d",
+            "tools/lab/retired-power/legacy_stats_type.rs.txt": "d324f8f920ec71f1113d0edc8cb34a8f9883721e179dbb223ccc38d289776f71",
+            "tools/lab/retired-power/legacy_stats_values_test.rs.txt": "f6600302c8709e09f07c21f510989ffcdfd005d0415472aed7fe1ba5101ccb13",
+            "tools/lab/retired-read/legacy_copy_execute.py.txt": "aa029f5d524a70bf4009b11a88bc48d439556862929f81ac9087f5289dba8ee9",
+            "tools/lab/security_relay_oracle.c": "ec21b55941590250c9c18c8fe9a79b0fa5db4324d90d5612d79eea4706bc39cb",
+            "tools/lab/security_relay_reference_sdk111.patch": "edc7749cbbbd982e76bf0a8b26654925a1b60522ab52e7f39f3b2d63be9d1140",
+            "tools/lab/security_relay_reference_warm.patch": "fb26b36dd321c53d67b6c4b59a79f5795636b401bf378ab2848abadaec2a1ebc",
+            "tools/lab/ws73_acb_transport_probe.c": "2e2016b778192648b411c1e1d02e273bbcb45846ebc58f337a14b004ef150b37",
+            "tools/reference/fresh_context.c": "92aefd2b25db3d3a8013db0e47c73a5f2dfc24b30b574a342d41e7736b94f3c1",
+            "tools/reference/libusb_trace.c": "d102ae1020ce0e0df1d5e4ee1c03bc3e587d52ef39e2036485625a91fa8e7803",
+            "tools/retired_dli_event.py": "9670b3c1242ec867ffd64e8a04cd438cc9d62ddbb854110c86fa28aa4693a109",
+            "tools/run_formal.py": "984f240839e798f159a087e242716536704cdc62dc9cb23ef77342f477012547",
+            "tools/run_pdu_submit_cbmc.py": "9158f497309ec51f9792dc99c7acfa2cea7bddf520fbd0325179acecc770e78d",
+            "tools/run_registration_proof.py": "a4203308ad217d9aca473183fb7f36ed20df4a1e59e5a84bcba4ed2ff6efb021",
+            "tools/run_standard_metadata_proof.py": "e2c2170019b9d4c976c5506388404e041c5e26b9e3a0fb793a2fe99aa80bd5d1",
+            "tools/run_standard_usb_writer_proof.py": "c1e448350d2fc7235f87bb6ebbc5b7863100d7511409d4851b07f77b7745c522",
+            "tools/run_virtual_codec_proof.py": "82385b75e30cd0be77a9d13ed5da2f399fda9e6cd0ed235b837da1e6d8243057",
+            "tools/tests/data/connected_file_record.json": "9a1f21ba55b369e639f6e010ab24a9bfe35de40d01bf5ba345cb1d05e6490ec4",
+            "tools/tests/data/connected_file_v1_record.json": "f7eb000c53643b21805d912482d189053c100e3f41deafdf1897c3db5ab0ba82",
+            "tools/tests/data/resource_file_remove_record.json": "c1d3db434bfe4989fdc0801d1d767f09bf9119914786de7e61863b4cc46b1ce5",
+            "tools/tests/test_backend_install_formal_scope.py": "f0bf4a7445f1100bf5816165f99955d8630e53e1631f3a9e613066a8682fbb37",
+            "tools/tests/test_build_resources.py": "9da79f86cd86d8508fda4f359501c7fbef848d58cb32ebe1ffe912e21228273e",
+            "tools/tests/test_docs_integrity.py": "d1c43691e9c343db019c0bf57147aadc906ac0400b56c915934df5cebe5f6204",
+            "tools/tests/test_event_copy_probe.py": "06d2de5a579d04916138993f3f051608d0260b6f100ee603edc337b1b46f864a",
+            "tools/tests/test_formal_rx_scope.py": "0222d524faccb4e559809b82d1621ade89bd8d272150feb35d150a297be7728c",
+            "tools/tests/test_qualifications.py": "43f50450b07fa3d5f1bb653d6401dcac76af2b86cc5b9ede5fc798085c30f9fa",
+            "tools/tests/test_registration_proof.py": "0dd131dd5b81389cdf33721c021b9864843a55922df689b87176499553eeb9c8",
+            "tools/tests/test_standard_metadata_proof.py": "0188c394532866bbaa72c6ef3041556a0695da8652b1bc6d6086a6a875a962cd",
+            "tools/tests/test_standard_usb_writer_proof.py": "76c10020ee086f208084e3610a242dec3c720516a48562f6e043e7b927cedaf6",
+            "tools/tests/test_verify_ssap_access.py": "b4af21bb126b58663a351e6c803132007358d28e84f2a79f5bf4462727ec32be",
+            "tools/tests/test_ws73_acb_transport_probe.py": "2372bf895f65052b8e8058baab692d52127f741fb87f124e0b626c4c820ae611",
+            "tools/tests/test_ws73_active_close.py": "0361c13f07c0f7a051602e7e3ca59aaf2f28241aa15cfe3d8e373a58c30cd28f",
+            "tools/tests/test_ws73_active_deadline.py": "6f610916f507e76546fac7da65400afdf4ef80e9a47d12f02224b869db49a452",
+            "tools/tests/test_ws73_benchmark.py": "73996f41ce2e8fac3bad8e28d590e7b26cff59e62f054bda35b7726ee169bf53",
+            "tools/tests/test_ws73_benchmark_timeline.py": "8e04d34751861761d67b75dbbae523d9ad8f3d74fb04c6584a5325396375ce3c",
+            "tools/tests/test_ws73_board_config.py": "bf5f69786b82da215853109e082b53fea6c8ec85d60ebc32b3800f12f5eb4db7",
+            "tools/tests/test_ws73_boot_code_evidence.py": "e9d9a36317053ae6039a6b59436d509ed8bbfbd469370e43559d4eace92c8c37",
+            "tools/tests/test_ws73_channel_daemon_crash.py": "ae37be2de198f89f0424f15f325b218c6bbcc570da4a5dadf2183455a76e2586",
+            "tools/tests/test_ws73_channel_deadline.py": "ddfa4e5bb1308ed785bb73262121d9919be641838e803f92a1d7373c7a16d520",
+            "tools/tests/test_ws73_channel_death_mode.py": "d676e229b11d334359f0b756267f45d0294c79f5c5f2d350af4bfc849a653205",
+            "tools/tests/test_ws73_channel_fairness.py": "0dac32c822c1ef1d2a40c8bfecd2141bf4edec86477b7de8147e9064bf473674",
+            "tools/tests/test_ws73_channel_grant.py": "f32d08e018eae1ca505776353da6d104e13a573067132d5a4196462e334b0c50",
+            "tools/tests/test_ws73_channel_link_down.py": "fe713784ada78a34c9db142b3a5c2d962377950036bab48d5f6f3996e02aa238",
+            "tools/tests/test_ws73_channel_prefix_hold.py": "9a2dfb9d573faf960d25a240c5333b9c17b6253e419934c6615eaa5393332dd8",
+            "tools/tests/test_ws73_channel_socket.py": "e75e95db09a61dee7646087c6f60abccadf7ac246bb2784523fc5732ee6955cb",
+            "tools/tests/test_ws73_command_failure.py": "581d44cf3d11c3909ce155cac635d07d4f484c9887498010aed3bd43f5ca6301",
+            "tools/tests/test_ws73_connected_file_gate.py": "c6bdacb28bceed065191d2fda59aef886514378d1016fc9c2350b84c291e3bdb",
+            "tools/tests/test_ws73_connection_control.py": "1901c3eaad5e12ea38b3b563305966399eccfd3f82774381451ef2ebe513ddb0",
+            "tools/tests/test_ws73_connection_objects.py": "703828e815ce5ec680a764ed793bef292dc95c9595316b654058cba70971cada",
+            "tools/tests/test_ws73_connection_queued.py": "a91fc552b1b7a80f319da697e933a1a23eec0f49bd1b4ce162ddbdb7fa4d2439",
+            "tools/tests/test_ws73_credit_observation.py": "cbefbdc04057e9802e2e9ad9ae61d1b647e24928c5eeb3ef3550fefd5464f2c8",
+            "tools/tests/test_ws73_daemon_channel_fd.py": "1caf1ac1e4065e4c219901bb8cb6128efc54f56be600fbc792e24f08ee71fbb2",
+            "tools/tests/test_ws73_daemon_crash.py": "01650d3aad0266f2d53c08be7d4e8046d2f5e7ca119edb3d0b9deef7b340f95f",
+            "tools/tests/test_ws73_daemon_hold.py": "75498594bd65648497776c4639f2e0bf84f8402dfc22cf517d404de60a7952c5",
+            "tools/tests/test_ws73_daemon_removal.py": "59788574570b253fd6e456f21ef43b7592b813b4d102a9e881284f1cfbd10e89",
+            "tools/tests/test_ws73_diagnostic_autonomous.py": "39e34fd0c8de67ed878877e5e5f45267e99290386e8b47eb2142517716376e42",
+            "tools/tests/test_ws73_diagnostic_autonomous_capture.py": "e4e791a026a401df1cf0f6fb0c6933cb1b8ac9da409ebf9eef5e13ea8618ea9e",
+            "tools/tests/test_ws73_diagnostic_cancel.py": "6261ec3f4b1ba3793a6d2e9408b0f08e809862b7674eee6e0538a0cb54be30b5",
+            "tools/tests/test_ws73_diagnostic_cancel_capture.py": "e48e88beb2cfbe0edbb44a66232f69c60c5ea63aa0a472dacb71b46daaabf3d6",
+            "tools/tests/test_ws73_diagnostic_capture.py": "f2a448c6487c2d82ba76f64fe099b52edff96b5600a25f11ef1fc56bd546c4d7",
+            "tools/tests/test_ws73_diagnostic_deadline.py": "c01e6a96d7ceed6c5bbf4329fb088426fdf9ef87368d7c44f4ce578833406658",
+            "tools/tests/test_ws73_diagnostic_deadline_capture.py": "b4f866f535239e486db165b07a56dc51249940a2300740dfc40bfe61b929acb4",
+            "tools/tests/test_ws73_diagnostic_hold.py": "ffcf985958f6178ddbf7d7d64aae89660c8c3059e1539a6712db327bb7006cbd",
+            "tools/tests/test_ws73_diagnostic_probe.py": "dd97984822b9a0fe2c0c6b77a835fb285ef79e98c4c89cb9fec8154e8aed3e4b",
+            "tools/tests/test_ws73_discovery_policy_capture.py": "81c460fe822b87778fa195a4b44f704d2ad835a3a8c7eb984929cde4371726f7",
+            "tools/tests/test_ws73_down_observation.py": "228679274aba283d681e249a722b610dcf995caa2219ec42ac66e2790ff70713",
+            "tools/tests/test_ws73_dynamic_channels.py": "f7eaae6ed6ff3f2f458c2620a1ffb99f737095f0d8d97f8b0004405a2f15266f",
+            "tools/tests/test_ws73_dynamic_output.py": "29f8d5ed548842f32c8b3d57ba3181e84d28a3b80253cfe7839c69f974c4e7a9",
+            "tools/tests/test_ws73_early_fault.py": "11f641aab5c03b2db631fde964cf705d0f2d03c22915510ceab49cc82ed3475f",
+            "tools/tests/test_ws73_encryption.py": "65d199e58c4d6ff0f0518881eabfae1d10fbfda213c7ae20933dfcc5ac7cf073",
+            "tools/tests/test_ws73_firmware.py": "140a3da1cf4b1deac4f7125457f8ef1a8fd368178c9c206957657e6f5943e4ef",
+            "tools/tests/test_ws73_firmware_upload_evidence.py": "6f36a4efdb82594801f979c6db3b0fe5b19af38492e6f56c8c57f8e52ee33b4a",
+            "tools/tests/test_ws73_host_diagnostics.py": "32d3ddea6a98af5d0f5efabe9c69b7d1bbe7e021c9720037608e7479e5fdf738",
+            "tools/tests/test_ws73_host_later_hold.py": "df92d3eecbc0044c40124f9f0af5dee81821620cfebab2aa41c0e87ab1c6e93d",
+            "tools/tests/test_ws73_initialization_lifecycle.py": "417af3449cdf591aab7e3ff3de17f36fd4424fd2186e6aa1db0aa73f4b4f7c42",
+            "tools/tests/test_ws73_initialization_off.py": "61074836efe06c760149e8cf4f2717664ea0a34395a2bc9c214dcce53cde059f",
+            "tools/tests/test_ws73_key_agreement.py": "51d1dd259838fbfb2574150728bd81864424193015c6ca43fc25f9abe0f58b3c",
+            "tools/tests/test_ws73_lifecycle_intents.py": "4c6adead93f5e3b576e482bdef73b886ad0f40ceb35af9a1d551beb9d4a10769",
+            "tools/tests/test_ws73_link_resync.py": "2cd65eeccff8d41bacbed4b10ad505492b65c24aece802e3ca8c2505f737cb6a",
+            "tools/tests/test_ws73_live_security.py": "47bd67dd087f4689dec13a6c8af713211321511632cafc6900e5710c798cc135",
+            "tools/tests/test_ws73_managed_queue_support.py": "754e449dd6c9ccb13f1e7fc2507938317fcf197ed8d45c39467936a8be730b20",
+            "tools/tests/test_ws73_management_eviction.py": "7902537189dfb10909c4d8bb385aa5945bb1abdd36db53aa6623436716cc6974",
+            "tools/tests/test_ws73_management_partial.py": "66dad831125bc175f25e1c1ecca00ea5032688c626669f94b6fdfc6d192ab03a",
+            "tools/tests/test_ws73_management_queue_ready_peer.py": "3ea4507b1020b4c8d14adcbb336518d186861f0f0ddb50470f951abf86b192ab",
+            "tools/tests/test_ws73_management_queued.py": "7f31cd0128c57e486bd78440eb4179e6d735538c5126c9506ac61289eadc38cb",
+            "tools/tests/test_ws73_management_ready_peer.py": "38ceae8a04468e18e7e248710b82e5e77be0c8e3ca50634ef4d56dd7138245b6",
+            "tools/tests/test_ws73_management_setup.py": "503f8ed5e48bf63499245516a5420ae97508c14331a69a928d4c27b4bd5bac69",
+            "tools/tests/test_ws73_model_evidence.py": "1071b3aae734e16d0d17b765217dd5153cf73d17d3113ffc1a91b7ae9b239ad2",
+            "tools/tests/test_ws73_model_hold.py": "128432a42a0b6b64ffef02573ba9cc4d5fa01bd804a156a017e8f1ec9b6dd35f",
+            "tools/tests/test_ws73_native_build_check.py": "d9c59ede4aa1e808a78feb3a5ab7d7ed0062cf45a5c67234feedce2506e3373e",
+            "tools/tests/test_ws73_native_deploy.py": "462392307fbbd3f1052cebc9bc8a8f60f2358cd22ece0174563eaa6db65cc5b6",
+            "tools/tests/test_ws73_native_root_smoke.py": "24679553c3520664f0e8e8965ef6f07df17a455ef4ad212b669c598f12d6d564",
+            "tools/tests/test_ws73_native_service_bundle.py": "37dc26987f12d4acdd5eb9f76054205af2677fd9a0eabb816c4bb3e6c4d34a33",
+            "tools/tests/test_ws73_north_star.py": "3f25ae4fcbe390f391013f905c8122f6eba2e5175acdbcbdf2f7b1bafeae1cb2",
+            "tools/tests/test_ws73_numeric_agent.py": "f6d9573e0e6f633f1e54ad88364327b3b57d2c961cb22bf74892de51b5163ed3",
+            "tools/tests/test_ws73_observer_policy.py": "f5f9355e7b3b204b8ecf1fe367af578bba8caefe7884c00858c4a867b9798e52",
+            "tools/tests/test_ws73_parallel.py": "84ccfd960cab5251117af321c348c2bb0a45f58b601a505a7f284b5a26a7fa81",
+            "tools/tests/test_ws73_parallel_data.py": "9988aad6d2f1e9fda787ac8a32d256f26810c65793c38a41ba02037dddebf197",
+            "tools/tests/test_ws73_platform_capture.py": "c07788311a05b9f58ff3c5d88674b680c6ae27054512e2ac742fe8bada3a7ae8",
+            "tools/tests/test_ws73_protected_grant.py": "e1b9a867a072dd795f1cda80ba018478d7bbf4a1b95db8a86f3a3c6e66f12167",
+            "tools/tests/test_ws73_protected_ssap.py": "c561aeb7e8e6f83af19f1ec5360d83fcbdc65b4a1ce966cd93b226ed7d297a05",
+            "tools/tests/test_ws73_qemu_hold_budget.py": "8161b753b30e1f47f09d7e8172c2eb0bddca173d64b63fa62dfbbfaf2f0d7bdc",
+            "tools/tests/test_ws73_recovery_budget_observation.py": "d8c14901a82a322b310199c4c5080f634e1571edae9dbe82c8c126f7704bf14a",
+            "tools/tests/test_ws73_recovery_capture.py": "330b82a97b17799f29939d10f458f662df30c9b7170bc7650617d05c1c1f5b99",
+            "tools/tests/test_ws73_reference_capture.py": "d7501342c65df75bd2e58a99190d72f1153e6e22847734d6aa839e9392dd7f7e",
+            "tools/tests/test_ws73_relay_firmware_extension.py": "c313003bade9d8c429e2d91b04ef60e3ad2a283d67138f93ba4719094e02dc06",
+            "tools/tests/test_ws73_resource_file_gate.py": "3ad41752e10932c584311b3656f4f5ec58d10de53d4dffa20925926e35de855b",
+            "tools/tests/test_ws73_revoke_prefix.py": "ff9f89b811643632af1f6a4fd32be919fec4e80e89bb042eb094a398135bb236",
+            "tools/tests/test_ws73_rom_chip.py": "9c9babd120ba06f4f6c167b409fd36c8925bbb3876309d5614e5b80c3771bfca",
+            "tools/tests/test_ws73_rom_chip_evidence.py": "e847b32142b5bb96182b31417f3bba96096f974c942752e4a1f1fd9f4dcda7f5",
+            "tools/tests/test_ws73_rx_gap.py": "0692b9ecfa381ece323f3d1364a7841f9cb5b3755e9a888cc34d4b09f880a79f",
+            "tools/tests/test_ws73_security_agent.py": "c933b1b7e3db225f3d399bd1a1487ae0a9b7c7884b42634a9c5b8db7ed2e5cf7",
+            "tools/tests/test_ws73_security_cancel.py": "268175eb9787dfa429e44329414dd0c5862dcfa149d5ecc0aa496203095bf2e8",
+            "tools/tests/test_ws73_security_capabilities.py": "2f071544a70e4f3a542e5a0bf448fd0216d8276730a7e1ccfa649249b19e1b47",
+            "tools/tests/test_ws73_security_cli.py": "0ab47ad88ec488e272ed8fdc5a1221fc572cacaa685b3ccd7ab45e2523890842",
+            "tools/tests/test_ws73_security_install_hold.py": "2810f86b5070ca392eed4c1f8ee7093938e04887e0a00f5dd4c6f2a0c8a6ca5a",
+            "tools/tests/test_ws73_security_numeric.py": "5dbac0dfb4ebb6140504adaade3420454f01b3ec16c2465343119446b44e70f0",
+            "tools/tests/test_ws73_session_drain.py": "d6fe4fc9eba6dfb6b2bf0c3ad6f0b88eae92e2961ac6ddb3b8d9dd119e204708",
+            "tools/tests/test_ws73_session_idle.py": "ac78693acaa77a23a5a739eef1e604c243613a7b06490bde31e3313f581a4842",
+            "tools/tests/test_ws73_session_service.py": "0f277212e3a078e34a1d5d6c5271ed99aacf8915b6e830b7b9f2be31edf9df71",
+            "tools/tests/test_ws73_socket_benchmark.py": "4928316afa1f64ac5e02f6cfd9a15e99fc84d585fcdcecef1125da1541eac714",
+            "tools/tests/test_ws73_ssap_access.py": "b5f30d1b63cc96983f56515ec51b248fdeda07c0015f793d1534efada1062b78",
+            "tools/tests/test_ws73_ssap_discovery.py": "833c4a82425e6a885fbd222fd35131367c374707d919fa570b399e5a2fe1c9f3",
+            "tools/tests/test_ws73_ssap_owned.py": "20b33f53a94a22c7c7d6674355ce2733936b4155c2d0d469326f668509b45321",
+            "tools/tests/test_ws73_ssap_service_policy.py": "a7d82f1e1059e8512014e53ee540da3eb836f38a4f57064299ec967d7ac0cfd5",
+            "tools/tests/test_ws73_ssap_value.py": "37449aa9d535beb6f74dfb9c4742c4066f85641238f577a6c0ed7010d3ab3346",
+            "tools/tests/test_ws73_target.py": "eb40a7d00f42538f17486d4b58f5f057e06d3011720d4e513f4673e0bdacf536",
+            "tools/tests/test_ws73_tx_capture.py": "24200d0df36524e9245606a727ba088d53aeabf2175d688abaef055c7b0d2193",
+            "tools/tests/test_ws73_vm_native_root.py": "4e7bd21d9cdd40eed37366ddea92b8f37616df8a6a8f167c71d4f216c1e76a97",
+            "tools/tests/test_ws73_vm_register_reset.py": "3dfdd19d645ad9ee65d12f004cb650613142a0f1b9fc7814815035a74febb035",
+            "tools/verify_ssap_access.py": "87d3f1169501fca67f166e5fd4c0b2846e4e4f0038daed71aa31cf84c10ff05d",
+            "tools/ws73-board-config.py": "5dfde390c8041f3d9aa33ff7a4e2854e24b5d7a34d837ceab8a76fcba3f9b138",
+            "tools/ws73_acb_transport_probe.py": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+            "tools/ws73_active_deadline.py": "32282a67ef88ac48656027614176bc11623182967d46669034ae26b0ebfa988d",
+            "tools/ws73_benchmark.py": "8c06a3a038c199700d407c694c79cc541628bf59775e9cc63b1da31181cd5823",
+            "tools/ws73_benchmark_timeline.py": "92043a0b33bc498551636428a77a8ae63b5dadaea210921da60f9c26a880896b",
+            "tools/ws73_bindings_probe.c": "e0e1f33c2b939d95aeffba2acd1f791422d963af3fde35c4408b787ad5403fd3",
+            "tools/ws73_bindings_probe.py": "a8cee9e23dd6680345a7c278b04d84101bfd347ec3b9bc1629e330466c350683",
+            "tools/ws73_boot_code_evidence.py": "0ab7823dc6dafe5f59f385fe2335f9ef95e8d4ed5f8df006a66983aaf6a93be5",
+            "tools/ws73_capture.py": "58f057f4927cbb7cd428375b04ad284c630efe7438c46d08294e824c530d2677",
+            "tools/ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+            "tools/ws73_channel_deadline.py": "0f749ba7b88408fc3b6133d0302932c4bbe1d81d39f5d1fd5aa48ac7fbe91dea",
+            "tools/ws73_channel_fairness.py": "240383395f03e3482e6381b41fc526e5e9a831e033e5e66b643dd04ddbb9cc4f",
+            "tools/ws73_channel_grant.py": "67028a48162c9b2f3600afd2b5c9a352f99fa4083c2e930c475d38bbebb4de90",
+            "tools/ws73_channel_link_down.py": "cd135c9a675e9ca58bd4516d7a02fb1ebf62c123731f6cb94adc902cd66cf523",
+            "tools/ws73_channel_prefix_hold.py": "2a6b8720777f098a6d5d7270af772b25bc46fee4dd4591cabec55459e97052a3",
+            "tools/ws73_channel_socket.py": "b4c1f30964ca002bd8088b8e96177f7839f4816fcef596b200d7f4f389e744d3",
+            "tools/ws73_connected_file_gate.py": "b2ce9f0f44a8700558566c55f519b97f61728ac4217ff53d638475cc266a927f",
+            "tools/ws73_connection_control.py": "9288c04e79c804de70778d17218bb409b3b1bd2e25ea7c9923f38071eb586574",
+            "tools/ws73_connection_objects.py": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+            "tools/ws73_connection_queued.py": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+            "tools/ws73_credit_observation.py": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+            "tools/ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+            "tools/ws73_daemon_crash.py": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+            "tools/ws73_daemon_hold.py": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+            "tools/ws73_daemon_removal.py": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+            "tools/ws73_diagnostic_autonomous.py": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+            "tools/ws73_diagnostic_cancel.py": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+            "tools/ws73_diagnostic_deadline.py": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+            "tools/ws73_diagnostic_hold.py": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+            "tools/ws73_diagnostic_probe.py": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+            "tools/ws73_discovery_policy_capture.py": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+            "tools/ws73_dracut_ldconfig.sh": "b55e4d4e3020fb060b22b4c4f719dbdd9c4cd8888ae3c9dc1bace3f4a694d501",
+            "tools/ws73_dynamic_channels.py": "47f21b92b41d9e4212dd813c67e979c117df89a0c933b308f3df5c0120641bb9",
+            "tools/ws73_early_fault.py": "4e90b25cde9f7ce2f46b63a99ff8e70b4deb1e6448146e6741bda3ba3d23c604",
+            "tools/ws73_event_copy_probe.py": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+            "tools/ws73_firmware.py": "d48f48e2b169631cac1f4919a1f393a010e5aedd363fe19f9113d041964012fc",
+            "tools/ws73_firmware_upload_evidence.py": "ab140aeddc063f3ceb0baa65f2e572c73d9c03709e774b6d16ec5cd438735bde",
+            "tools/ws73_host_diagnostics.py": "1a53382ccdafce3d34bf2dd853303505955779b2e2b89f1fa00d5616f1e7a347",
+            "tools/ws73_host_later_hold.py": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+            "tools/ws73_initialization_lifecycle.py": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+            "tools/ws73_key_agreement.py": "5c96e2d98efd78d9a7bef7b9cc325a23c9dc00b6b5ea19f081d191ca266bced3",
+            "tools/ws73_link_resync.py": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+            "tools/ws73_managed_queue_probe.c": "1670731a7c5b8a1888ca2c0bc899817a762b03061570ec6a29212b2a855eb7d8",
+            "tools/ws73_managed_queue_support.py": "7c951e9dc3b6bec05c16b8f256f7537c422aceadc7870b5ac74518337944b898",
+            "tools/ws73_management_eviction.py": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+            "tools/ws73_management_partial.py": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+            "tools/ws73_management_queue_ready_peer.py": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+            "tools/ws73_management_queued.py": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+            "tools/ws73_management_ready_peer.py": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+            "tools/ws73_management_setup.py": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+            "tools/ws73_model_evidence.py": "2531db15094c592cfd096f5da306697c57072115e7ec04205fd0237085c9a0d9",
+            "tools/ws73_model_hold.py": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+            "tools/ws73_native_boot_bundle.py": "e8509d094443e0ae3b1cbbb2624c00f9f220b1c9666e22b66c990443c40c6de3",
+            "tools/ws73_native_build_check.py": "cb9ee7a0332766bcdd7b3c04d701e70f253877c66acb9b76a44388e1f2846abc",
+            "tools/ws73_native_deploy.py": "e1ee10a4c6d73bcb710d3141c3d3c20a1cc9d154bb3ab9fca2da8795147871f6",
+            "tools/ws73_native_module_init.sh": "616a30940d90f7b04a3d37fb6a8485217330ae29a4fb0c0d7af2f1ce2ae9d914",
+            "tools/ws73_native_root_smoke.py": "dc0aa6efd5f77c24d3bdb429e897404da4ccef8e97b0db9feadf28656daa3795",
+            "tools/ws73_native_service_bundle.py": "1009f6ddd73782a3afe5e458119cc44c063d9e66728810f7795ee400ab6f5260",
+            "tools/ws73_north_star.py": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+            "tools/ws73_observer_policy.py": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+            "tools/ws73_parallel.py": "635565aca4b179de641ffee2a70503e447e272f2eb6dc8a34e8bbe60c2b76894",
+            "tools/ws73_parallel_data.py": "47f105065fdc82c6189fe51a158a33de22cc1304d615efa282beaf753b9af7c4",
+            "tools/ws73_protected_grant.py": "5b81ad146009ce8d31b882f54c78df25483fd6fd1fbf959266ba80c49cd3058d",
+            "tools/ws73_qemu_hold_budget.py": "0e87ae6f55bbc7aab8b0f33822e746cc187beb31e4f66f74802ce4de0a8d01f2",
+            "tools/ws73_reference_capture.py": "1e6893e0992b72586cc0493fc81265f42c2529ff6c11a9f918e52bd84c770935",
+            "tools/ws73_register_reset_init.sh": "57d6899b318d208b0511550fa11df5d7e4eaab48cc1e73d5b1e6c3be7843b43d",
+            "tools/ws73_relay_firmware_extension.py": "03f2086ace2f90087360580d18435b2ef8f0355ec7de5f194d1438bfa0a75b87",
+            "tools/ws73_resource_file_gate.py": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+            "tools/ws73_revoke_prefix.py": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+            "tools/ws73_rf_rounds.py": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+            "tools/ws73_rom_chip.py": "4fe972ec0d9c2d00451b8086a6173f31c54f1214cb46e4f69a4ab6f021837d43",
+            "tools/ws73_rom_chip_evidence.py": "2387138e2625cdd65fc8cade0e05dd7e22023f694c97f6a8b38e34164174a355",
+            "tools/ws73_rx_gap.py": "43b2c647452504b332e4cb1c2268354b9098a5cb1af0755c7d56b0f7030b4390",
+            "tools/ws73_security_agent.py": "fc028f4b01dfe177c9c7a331b4d05392d52d3021f3f2dab6a128ba4293c90133",
+            "tools/ws73_security_cancel.py": "ce4323947002157e98b35b9b15032195a6f04fac6dcf15bc5b0edc8239a71c49",
+            "tools/ws73_security_capabilities.py": "b874b264f963f3c54e3052e4298c61106934f257cd85d85a3dce6dc9ff02e82e",
+            "tools/ws73_security_cli.py": "99bda3dfde564693382723cd00366f7e906a89647ef29edb3b06f9b0295316ce",
+            "tools/ws73_security_install_hold.py": "4db016caf335641e6c58f4567058cd89971b1513d7f84381ccb7ef6389b14728",
+            "tools/ws73_security_numeric.py": "309c694fd94af3a013b8c90454017eb243278090180abf80a3614ce2bd9c2a03",
+            "tools/ws73_security_relay_reference.py": "2352029c8552b5e80cf293a1001bf3cde578f06639c453048389da216d00b361",
+            "tools/ws73_session_drain.py": "e459a71ad26b50d41b260ff6dd758ccb740c6874d5adbdb38148ecbcefa0ffc9",
+            "tools/ws73_session_idle.py": "0e3ba7c5848a974872280c0e2e257c79c12c8ff4a7b33a3da44e46473f37c776",
+            "tools/ws73_session_service.py": "db7d79925dc36d80141beadc76ed06e3924de55b85523dff0332be8776983694",
+            "tools/ws73_socket_benchmark.py": "27b2093a8af18ddfb081c89c35a7b60e72b773351ddb309eda4ebe83b35cdc14",
+            "tools/ws73_ssap_access.py": "fad9c28a2ebbec70867cd9bdc14b10376f456010bf7e38850e8b5ebcff1d7ca6",
+            "tools/ws73_ssap_discovery.py": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+            "tools/ws73_ssap_owned.py": "76d75a064de9bb442f80e50a48cace3a8039cdd099002df11446fc7afee1f240",
+            "tools/ws73_ssap_service_policy.py": "a8a051355cd0db0eef77f8932aa4bbab2267c7551fa1fe02bd928e93310e223c",
+            "tools/ws73_ssap_value.py": "37ed7ba0c85dfa01c2ee4a0bcbc554ed7540ae1f432d23875fb36e3e8f462706",
+            "tools/ws73_target.py": "9a4b7dcc4914ebab0daedc1e6e9d416c888c5de834d258fe43649187c84ab30d",
+            "tools/ws73_target_control.py": "05043c7ded78e6f7cdcf15b2da7fbcfeb427c0ce2ac756836244df38f72973ce",
+            "tools/ws73_target_guest.py": "315fe19656178ef5306e916ee12c4586ff146bafaec427714124e754dcff5572",
+            "tools/ws73_target_init.sh": "0a79e55839adf0e217c3612eae5e37b78513fa8561ed7cb7a149da74b29dea53",
+            "tools/ws73_target_recovery.py": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+            "tools/ws73_trace_layout.py": "1220dd5d01e5f748585bfc0dd5646196fd0f10365d2ec791d0a065eada74633d",
+            "tools/ws73_vm_native_root.py": "9c87731a3214942e817a467526ebadf1530cc9636fadaa389ce7bc57787d2cc5",
+            "tools/ws73_vm_register_reset.py": "1307cf000600913038cd6b96feec56439f8fc0494593c775524d15607bf4aae7"
+          }
+        }
+      },
+      "report_commit": "9fa835950598e96c85a680e7716896d9a003ecf5",
+      "artifact_materials": [
+        "architecture-retirement-r1-m2",
+        "architecture-retirement-r1-m3",
+        "architecture-retirement-r1-m4",
+        "architecture-retirement-r1-m5",
+        "architecture-retirement-r1-m6",
+        "architecture-retirement-r1-m7",
+        "architecture-retirement-r1-m8",
+        "architecture-retirement-r1-m9",
+        "architecture-retirement-r1-m10",
+        "architecture-retirement-r1-m11",
+        "architecture-retirement-r1-m12",
+        "architecture-retirement-r1-m13",
+        "architecture-retirement-r1-m14",
+        "architecture-retirement-r1-m15",
+        "architecture-retirement-r1-m16",
+        "architecture-retirement-r1-m17",
+        "architecture-retirement-r1-m18",
+        "architecture-retirement-r1-m19",
+        "architecture-retirement-r1-m20",
+        "architecture-retirement-r1-m36",
+        "architecture-retirement-r1-m37",
+        "architecture-retirement-r1-m38",
+        "architecture-retirement-r1-m39",
+        "architecture-retirement-r1-m40",
+        "architecture-retirement-r1-m41",
+        "architecture-retirement-r1-m42",
+        "architecture-retirement-r1-m43",
+        "architecture-retirement-r1-m44",
+        "architecture-retirement-r1-m45",
+        "architecture-retirement-r1-m46",
+        "architecture-retirement-r1-m47",
+        "architecture-retirement-r1-m48",
+        "architecture-retirement-r1-m49",
+        "architecture-retirement-r1-m50",
+        "architecture-retirement-r1-m51",
+        "architecture-retirement-r1-m52",
+        "architecture-retirement-r1-m53",
+        "architecture-retirement-r1-m54",
+        "architecture-retirement-r1-m55",
+        "architecture-retirement-r1-m56",
+        "architecture-retirement-r1-m57",
+        "architecture-retirement-r1-m58",
+        "architecture-retirement-r1-m59",
+        "architecture-retirement-r1-m60",
+        "architecture-retirement-r1-m61",
+        "architecture-retirement-r1-m62",
+        "architecture-retirement-r1-m63",
+        "architecture-retirement-r1-m64",
+        "architecture-retirement-r1-m65",
+        "architecture-retirement-r1-m66",
+        "architecture-retirement-r1-m67",
+        "architecture-retirement-r1-m68",
+        "architecture-retirement-r1-m69",
+        "architecture-retirement-r1-m70",
+        "architecture-retirement-r1-m71",
+        "architecture-retirement-r1-m72",
+        "architecture-retirement-r1-m73",
+        "architecture-retirement-r1-m74",
+        "architecture-retirement-r1-m75",
+        "architecture-retirement-r1-m76",
+        "architecture-retirement-r1-m77",
+        "architecture-retirement-r1-m78",
+        "architecture-retirement-r1-m79",
+        "architecture-retirement-r1-m80",
+        "architecture-retirement-r1-m81",
+        "architecture-retirement-r1-m82",
+        "architecture-retirement-r1-m83",
+        "architecture-retirement-r1-m84",
+        "architecture-retirement-r1-m85",
+        "architecture-retirement-r1-m86",
+        "architecture-retirement-r1-m87",
+        "architecture-retirement-r1-m88",
+        "architecture-retirement-r1-m89",
+        "architecture-retirement-r1-m90",
+        "architecture-retirement-r1-m91",
+        "architecture-retirement-r1-m92",
+        "architecture-retirement-r1-m93",
+        "architecture-retirement-r1-m94",
+        "architecture-retirement-r1-m95",
+        "architecture-retirement-r1-m96",
+        "architecture-retirement-r1-m97",
+        "architecture-retirement-r1-m98",
+        "architecture-retirement-r1-m99",
+        "architecture-retirement-r1-m100",
+        "architecture-retirement-r1-m101",
+        "architecture-retirement-r1-m102",
+        "architecture-retirement-r1-m103",
+        "architecture-retirement-r1-m104",
+        "architecture-retirement-r1-m105",
+        "architecture-retirement-r1-m106",
+        "architecture-retirement-r1-m107",
+        "architecture-retirement-r1-m108",
+        "architecture-retirement-r1-m109",
+        "architecture-retirement-r1-m110",
+        "architecture-retirement-r1-m111",
+        "architecture-retirement-r1-m112",
+        "architecture-retirement-r1-m113",
+        "architecture-retirement-r1-m114",
+        "architecture-retirement-r1-m115",
+        "architecture-retirement-r1-m116",
+        "architecture-retirement-r1-m117",
+        "architecture-retirement-r1-m118",
+        "architecture-retirement-r1-m119",
+        "architecture-retirement-r1-m120",
+        "architecture-retirement-r1-m121",
+        "architecture-retirement-r1-m122",
+        "architecture-retirement-r1-m123",
+        "architecture-retirement-r1-m124",
+        "architecture-retirement-r1-m125",
+        "architecture-retirement-r1-m126",
+        "architecture-retirement-r1-m127",
+        "architecture-retirement-r1-m128",
+        "architecture-retirement-r1-m129",
+        "architecture-retirement-r1-m130",
+        "architecture-retirement-r1-m131",
+        "architecture-retirement-r1-m132",
+        "architecture-retirement-r1-m133",
+        "architecture-retirement-r1-m134",
+        "architecture-retirement-r1-m135",
+        "architecture-retirement-r1-m136",
+        "architecture-retirement-r1-m137",
+        "architecture-retirement-r1-m138",
+        "architecture-retirement-r1-m139",
+        "architecture-retirement-r1-m140",
+        "architecture-retirement-r1-m141",
+        "architecture-retirement-r1-m142",
+        "architecture-retirement-r1-m143",
+        "architecture-retirement-r1-m144",
+        "architecture-retirement-r1-m145",
+        "architecture-retirement-r1-m146",
+        "architecture-retirement-r1-m147",
+        "architecture-retirement-r1-m148",
+        "architecture-retirement-r1-m149",
+        "architecture-retirement-r1-m150",
+        "architecture-retirement-r1-m151",
+        "architecture-retirement-r1-m152",
+        "architecture-retirement-r1-m153",
+        "architecture-retirement-r1-m154",
+        "architecture-retirement-r1-m155",
+        "architecture-retirement-r1-m156",
+        "architecture-retirement-r1-m157",
+        "architecture-retirement-r1-m158",
+        "architecture-retirement-r1-m159",
+        "architecture-retirement-r1-m160",
+        "architecture-retirement-r1-m161",
+        "architecture-retirement-r1-m162",
+        "architecture-retirement-r1-m163",
+        "architecture-retirement-r1-m164",
+        "architecture-retirement-r1-m165",
+        "architecture-retirement-r1-m166",
+        "architecture-retirement-r1-m167",
+        "architecture-retirement-r1-m168",
+        "architecture-retirement-r1-m169",
+        "architecture-retirement-r1-m170",
+        "architecture-retirement-r1-m171",
+        "architecture-retirement-r1-m172",
+        "architecture-retirement-r1-m173",
+        "architecture-retirement-r1-m174",
+        "architecture-retirement-r1-m175",
+        "architecture-retirement-r1-m176",
+        "architecture-retirement-r1-m177",
+        "architecture-retirement-r1-m178",
+        "architecture-retirement-r1-m179",
+        "architecture-retirement-r1-m180",
+        "architecture-retirement-r1-m181",
+        "architecture-retirement-r1-m182",
+        "architecture-retirement-r1-m183",
+        "architecture-retirement-r1-m184",
+        "architecture-retirement-r1-m185",
+        "architecture-retirement-r1-m186",
+        "architecture-retirement-r1-m187",
+        "architecture-retirement-r1-m188",
+        "architecture-retirement-r1-m189",
+        "architecture-retirement-r1-m190",
+        "architecture-retirement-r1-m191",
+        "architecture-retirement-r1-m192",
+        "architecture-retirement-r1-m193",
+        "architecture-retirement-r1-m194",
+        "architecture-retirement-r1-m195",
+        "architecture-retirement-r1-m196",
+        "architecture-retirement-r1-m197",
+        "architecture-retirement-r1-m198",
+        "architecture-retirement-r1-m199",
+        "architecture-retirement-r1-m200",
+        "architecture-retirement-r1-m201",
+        "architecture-retirement-r1-m202",
+        "architecture-retirement-r1-m203",
+        "architecture-retirement-r1-m204",
+        "architecture-retirement-r1-m205",
+        "architecture-retirement-r1-m206",
+        "architecture-retirement-r1-m207",
+        "architecture-retirement-r1-m208",
+        "architecture-retirement-r1-m209",
+        "architecture-retirement-r1-m210",
+        "architecture-retirement-r1-m211",
+        "architecture-retirement-r1-m212",
+        "architecture-retirement-r1-m213",
+        "architecture-retirement-r1-m214",
+        "architecture-retirement-r1-m215",
+        "architecture-retirement-r1-m216",
+        "architecture-retirement-r1-m217",
+        "architecture-retirement-r1-m218",
+        "architecture-retirement-r1-m219",
+        "architecture-retirement-r1-m220",
+        "architecture-retirement-r1-m221",
+        "architecture-retirement-r1-m222",
+        "architecture-retirement-r1-m223",
+        "architecture-retirement-r1-m224",
+        "architecture-retirement-r1-m225",
+        "architecture-retirement-r1-m226",
+        "architecture-retirement-r1-m227",
+        "architecture-retirement-r1-m228",
+        "architecture-retirement-r1-m229",
+        "architecture-retirement-r1-m230",
+        "architecture-retirement-r1-m231",
+        "architecture-retirement-r1-m232",
+        "architecture-retirement-r1-m233",
+        "architecture-retirement-r1-m234",
+        "architecture-retirement-r1-m235",
+        "architecture-retirement-r1-m236",
+        "architecture-retirement-r1-m237",
+        "architecture-retirement-r1-m238",
+        "architecture-retirement-r1-m239",
+        "architecture-retirement-r1-m240",
+        "architecture-retirement-r1-m241",
+        "architecture-retirement-r1-m242",
+        "architecture-retirement-r1-m243",
+        "architecture-retirement-r1-m244",
+        "architecture-retirement-r1-m245",
+        "architecture-retirement-r1-m246",
+        "architecture-retirement-r1-m247",
+        "architecture-retirement-r1-m248",
+        "architecture-retirement-r1-m249",
+        "architecture-retirement-r1-m250",
+        "architecture-retirement-r1-m251",
+        "architecture-retirement-r1-m252",
+        "architecture-retirement-r1-m253",
+        "architecture-retirement-r1-m254",
+        "architecture-retirement-r1-m255",
+        "architecture-retirement-r1-m256",
+        "architecture-retirement-r1-m257"
+      ],
+      "tool_materials": [
+        "architecture-retirement-r1-m4",
+        "architecture-retirement-r1-m5",
+        "architecture-retirement-r1-m25",
+        "architecture-retirement-r1-m26",
+        "architecture-retirement-r1-m27",
+        "architecture-retirement-r1-m28",
+        "architecture-retirement-r1-m29",
+        "architecture-retirement-r1-m30",
+        "architecture-retirement-r1-m31",
+        "architecture-retirement-r1-m32",
+        "architecture-retirement-r1-m33",
+        "architecture-retirement-r1-m34",
+        "architecture-retirement-r1-m35",
+        "architecture-retirement-r1-m258",
+        "architecture-retirement-r1-m259",
+        "architecture-retirement-r1-m260"
+      ],
+      "configuration_materials": [
+        "architecture-retirement-r1-m10",
+        "architecture-retirement-r1-m11",
+        "architecture-retirement-r1-m12",
+        "architecture-retirement-r1-m13",
+        "architecture-retirement-r1-m14",
+        "architecture-retirement-r1-m15",
+        "architecture-retirement-r1-m16",
+        "architecture-retirement-r1-m17",
+        "architecture-retirement-r1-m18",
+        "architecture-retirement-r1-m21",
+        "architecture-retirement-r1-m22",
+        "architecture-retirement-r1-m23",
+        "architecture-retirement-r1-m24"
+      ],
+      "report": {
+        "material": "architecture-retirement-r1-report",
+        "scope_pointer": [
+          "scope"
+        ],
+        "source_pointers": {
+          "kernel": [
+            "compiled_kernel"
+          ],
+          "compiled_userspace": [
+            "compiled_userspace"
+          ],
+          "executed_tools": [
+            "executed_tools"
+          ]
+        },
+        "verdict_pointer": [
+          "real_result"
+        ],
+        "verdict_results": {
+          "PASS": "PASS"
+        },
+        "gate_rows_pointer": [
+          "real_gates"
+        ]
+      },
+      "gates": [
+        {
+          "id": "architecture-retirement-r1-real-short-v1",
+          "result": "PASS",
+          "materials": [
+            "architecture-retirement-r1-report",
+            "architecture-retirement-r1-m36",
+            "architecture-retirement-r1-m90"
+          ],
+          "report_pointer": [
+            "real_gates",
+            0
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "architecture-retirement-r1-real-long-v2",
+          "result": "PASS",
+          "materials": [
+            "architecture-retirement-r1-report",
+            "architecture-retirement-r1-m91",
+            "architecture-retirement-r1-m150"
+          ],
+          "report_pointer": [
+            "real_gates",
+            1
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "architecture-retirement-r1-real-boundary-v2",
+          "result": "PASS",
+          "materials": [
+            "architecture-retirement-r1-report",
+            "architecture-retirement-r1-m151",
+            "architecture-retirement-r1-m189"
+          ],
+          "report_pointer": [
+            "real_gates",
+            2
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "architecture-retirement-r1-real-sec2-v1",
+          "result": "PASS",
+          "materials": [
+            "architecture-retirement-r1-report",
+            "architecture-retirement-r1-m190",
+            "architecture-retirement-r1-m244"
+          ],
+          "report_pointer": [
+            "real_gates",
+            3
+          ],
+          "reported_status": "PASS"
+        }
+      ],
+      "required_gates": [
+        "architecture-retirement-r1-real-short-v1",
+        "architecture-retirement-r1-real-long-v2",
+        "architecture-retirement-r1-real-boundary-v2",
+        "architecture-retirement-r1-real-sec2-v1"
+      ]
     }
   ],
   "materials": {
@@ -194605,6 +195492,2086 @@
       "access": "private",
       "base": "workspace",
       "format": "json"
+    },
+    "architecture-retirement-r1-report": {
+      "path": "docs/evidence/architecture-retirement-r1-20261017.json",
+      "sha256": "a49d628330f264dc71024dac2125dd95025b3f5d708f73450105eea28ff5b6d3",
+      "bytes": 16003,
+      "access": "public",
+      "base": "repo",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m2": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/manifest.json",
+      "sha256": "d63f06149805c2b2bd05cbc70857bc2ec27d681b47515cef1e1621ab974cd895",
+      "bytes": 27364,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m3": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/cd35db3fd4e4/slkd",
+      "sha256": "8841dfb2d32e061f7771735870cb967ad7b56a92b2ea46466eb07c243ee2d47b",
+      "bytes": 10529632,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m4": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/cd35db3fd4e4/slctl",
+      "sha256": "e4813efc47a0c533be2230a75e5974a547861bf6403473de59fe59d5dab4dc4b",
+      "bytes": 8086704,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m5": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/cd35db3fd4e4/slktest",
+      "sha256": "6fb54a91f4ebf1e5b82505588a7bbf527e4d6922f7347988f16dd746f77c384f",
+      "bytes": 5278024,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m6": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/cd35db3fd4e4/slkconfig",
+      "sha256": "5a1e26a24754d560b74393414784056b6c00a0425653df2fc8c18e285cf5fafe",
+      "bytes": 1404416,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m7": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/cd35db3fd4e4/slkmon",
+      "sha256": "f75bb087ee224e7fb61c2e96a11aa557b8afc16fd26b41a9ab523ff44305e593",
+      "bytes": 1662584,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m8": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/cd35db3fd4e4/slkdump",
+      "sha256": "c077ec4ef315b4e816a5410dbc6bfb3506d5d2b14bdafb37e9a5c1667d26bb8a",
+      "bytes": 1662464,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m9": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/cd35db3fd4e4/liblibsparklink.so",
+      "sha256": "a06ad58fe0732804e2078b58a7ab07c4ee833d7242915d904bd5e36e3bfde7d0",
+      "bytes": 552928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m10": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m11": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m12": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m13": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m14": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m15": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m16": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "696a37e80036d99e8fec82a7b4eb6d8e8df9678d3db0b59ed1aef596fcee3199",
+      "bytes": 8886,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m17": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m18": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "f65e33d40024b00661630011ec86f2d1e176107cc18196ab762dca272c15e9cb",
+      "bytes": 507,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m19": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "a89006830841a5740500c826510cefd48851cb83bf457684d69243f1a53bbfff",
+      "bytes": 154,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m20": {
+      "path": ".dev/architecture-retirement-r1-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "d96fd45e72fcb04710d7ca4296de0991394037c8a7c77d2e0fdba5aec0ffaccb",
+      "bytes": 56,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m21": {
+      "path": ".dev/architecture-retirement-r1-prepared-v2/manifest.json",
+      "sha256": "78467a94a83db78b892d421e0c8f6f4830051f74c24c6d54796561941c626881",
+      "bytes": 281284,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m22": {
+      "path": ".dev/architecture-retirement-r1-prepared-v2/root/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m23": {
+      "path": ".dev/architecture-retirement-r1-sec2-prepared-v1/manifest.json",
+      "sha256": "a7bcdfc44ae7231c7e28254a8e609d6787ef17176a3526b31df3a9715a67e6a3",
+      "bytes": 287410,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m24": {
+      "path": ".dev/architecture-retirement-r1-sec2-prepared-v1/root/etc/sparklink/main.conf",
+      "sha256": "dcd8af544928f0d11684f015356545bd676273eb571af8d4d1ac0f3be7aa64a1",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m25": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_target.py",
+      "sha256": "9a4b7dcc4914ebab0daedc1e6e9d416c888c5de834d258fe43649187c84ab30d",
+      "bytes": 166628,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m26": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_target_init.sh",
+      "sha256": "0a79e55839adf0e217c3612eae5e37b78513fa8561ed7cb7a149da74b29dea53",
+      "bytes": 34523,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m27": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_north_star.py",
+      "sha256": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+      "bytes": 32042,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m28": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_channel_socket.py",
+      "sha256": "b4c1f30964ca002bd8088b8e96177f7839f4816fcef596b200d7f4f389e744d3",
+      "bytes": 55997,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m29": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_ssap_owned.py",
+      "sha256": "76d75a064de9bb442f80e50a48cace3a8039cdd099002df11446fc7afee1f240",
+      "bytes": 10476,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m30": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_ssap_service_policy.py",
+      "sha256": "a8a051355cd0db0eef77f8932aa4bbab2267c7551fa1fe02bd928e93310e223c",
+      "bytes": 10937,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m31": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_capture.py",
+      "sha256": "58f057f4927cbb7cd428375b04ad284c630efe7438c46d08294e824c530d2677",
+      "bytes": 43066,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m32": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_ssap_access.py",
+      "sha256": "fad9c28a2ebbec70867cd9bdc14b10376f456010bf7e38850e8b5ebcff1d7ca6",
+      "bytes": 10636,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m33": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_security_agent.py",
+      "sha256": "fc028f4b01dfe177c9c7a331b4d05392d52d3021f3f2dab6a128ba4293c90133",
+      "bytes": 28603,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m34": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_connection_control.py",
+      "sha256": "9288c04e79c804de70778d17218bb409b3b1bd2e25ea7c9923f38071eb586574",
+      "bytes": 24347,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m35": {
+      "path": ".dev/architecture-retirement-r1-tools-v2/tools/ws73_connection_objects.py",
+      "sha256": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+      "bytes": 10469,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m36": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/manifest.json",
+      "sha256": "3bfc0c187700ce10bb00de995a7c61ea9298b44b6c3e08ef9f2692aa259aca94",
+      "bytes": 1789047,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m37": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m38": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "104cf37d813be4f12abe4e533d95b8c86d65b50c89294711e7b8f20d02864836",
+      "bytes": 2579,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m39": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m40": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "e3fcb4959f0615f5dd79282b0314207de294c607fc3a38a27d430d0a91e71bd9",
+      "bytes": 5086,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m41": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m42": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "b15f3e5b5ee4ecea86fdf15e5a61307a449c3987a9f97598cb5f85967f43a1b7",
+      "bytes": 2579,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m43": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m44": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "5e0ef5f9ccc9656d8157aaf8c7c4645d74a767383a14d188d7316361dfa5c33c",
+      "bytes": 5086,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m45": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "0fd4890a015e61f74514a9981ea02594d954bb19c6b74e2905fc3ebbcb7e9fe4",
+      "bytes": 973070,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m46": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m47": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "6171a86c78df878ad1a98865e7b00708984098dd536bc28d960cb043b2708db7",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m48": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m49": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "17d2e26987dc4ba91f5bb7b71b0fa54557fe5009f1f5c26df236ea217fe595b7",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m50": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m51": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "ba51ffcc1690ec5b1cb8b546ec177c0b682891e25590cb64f4dd844afe2bd3ed",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m52": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m53": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "50d8f886e7f2876d167871074082dd8be46763a5e8e2f8914d181b6432d07afc",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m54": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m55": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "56232e9b51675f951ea5cd41f6e9875b3b57bcffd5e77c298bf28e99c1628e2b",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m56": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m57": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "39ffff8f3ad1472dd62a9b97b6494e99485a5db7c72f4ba7fc9b8ef45e4fec8b",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m58": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m59": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "6299ddd6ed59d076fd556d46e4426a637c2e8b55cd4e91d92e9d598fec08c1ea",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m60": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m61": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "e4ec5bae12d3543c4f8444aa00a12ccb36125c3f03424986c0939df631ce4bdc",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m62": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m63": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m64": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/capture-process-status.txt",
+      "sha256": "8d809d2bed0077917b00730f005b27d862af490f48227c49f297cb92f0b72066",
+      "bytes": 1486,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m65": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/capture-stats.txt",
+      "sha256": "72bf840aa129132035ea7e994f6ece7aa53902f46e0d0a4c58342370ead8f489",
+      "bytes": 227,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m66": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m67": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m68": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m69": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/kernel.log",
+      "sha256": "1dff7214607ee490a9593add9c5d08f47a6bfd526f544b085ca8f1632c78c63e",
+      "bytes": 49391,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m70": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "8ccb7cdd180dbd2c7b4ae1861ca8bd7aaee7a85b22e71d64bd477c968178d936",
+      "bytes": 477383,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m71": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/pending-observations-0.json",
+      "sha256": "37483b5f9f14f9b6b7cb2d984779a88ff861e922d70b3edc9de7cec2ecd96c50",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m72": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/pending-observations-1.json",
+      "sha256": "5dbd8ec2fab1eb00bdc34d63893b86fe4820c1188e92f6e13a0ae0f97e645405",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m73": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/ready-0.json",
+      "sha256": "79159038379598419256faa6e2e0020686a7028cf542b89a0cec7b6c2475bc84",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m74": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/ready-1.json",
+      "sha256": "87cd9cb4a13d7040d45f250888960acc88e23d270eabe69cb44553a91400d875",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m75": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/ready-progress-0.json",
+      "sha256": "2b96a7b96a277c12130a914c860ad651cd6a918d9cd2b7b9f3ef989855b3b95d",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m76": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/ready-progress-1.json",
+      "sha256": "61045ca6ac8074f0047c1108e43e3c1aa8bfcc967bcc4c2b7a67ccb4d29dc7c7",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m77": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m78": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/slkd-process-status.txt",
+      "sha256": "93ae8921ac5c6fb63547ef34018a94feb22039918bb0ef5a6f6cf53a29a8456e",
+      "bytes": 1454,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m79": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/slkd.log",
+      "sha256": "a237920f7e9da40d1988364703e44803bc58fc5080585e61cc48bd344400e311",
+      "bytes": 5926,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m80": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m81": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m82": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/ws73.pcap",
+      "sha256": "23c15b0316405eb47e285c9ab9b490697f445147db1ca7eee8328bc19f8021a9",
+      "bytes": 680528,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m83": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "5b42eb81bdd2cf9daba43ed623dda60544b6956a8d12039e88b5b7769947f9f6",
+      "bytes": 281,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m84": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/xhci-trace.log",
+      "sha256": "1740a9786e9dba82b87195765252cdbb638fbce1717554a069a9e08ca8301927",
+      "bytes": 2419083,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m85": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/console.log",
+      "sha256": "8cc3c6c7ab784755d348f3a04d3e1c5a43fdc480ebf58e2c09338d2674f10e9d",
+      "bytes": 16418,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m86": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/qmp.jsonl",
+      "sha256": "79bc4930e97081c003ba1c60bd88c92f894732e2278596e33cd687fcac9634c0",
+      "bytes": 1757,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m87": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/host-inventory.jsonl",
+      "sha256": "4831b105a96edf09c658ae07238b01a41923d545831e7e0ba4e1460ba62dffb9",
+      "bytes": 7127,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m88": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/usb-lifecycle.events",
+      "sha256": "dc13c1825afeb638bb08fb69b3ec43adca4abc974ad9e397c18d718f572d3255",
+      "bytes": 361,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m89": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1/usb-lifecycle.log",
+      "sha256": "0d5e4a0685ec28e0b047ea22d3eae171bc37ebc536848ce4eb3c4b2fc4e318fd",
+      "bytes": 458218,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m90": {
+      "path": ".dev/architecture-retirement-r1-real-short-v1-r1-owned-audit-v1.json",
+      "sha256": "7ee2e0da1b39126512c719299f2f41635c9169aaf9ac0aae9caff0bce095d51e",
+      "bytes": 2990,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m91": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/manifest.json",
+      "sha256": "3e1df058ad7bcdaefc1806d2936ac7aa2a4556c568ee7d21a69fc1dd157d2e12",
+      "bytes": 2861464,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m92": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m93": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "c2c0bc1b75e2534c589f5527b4f8ba97f5c65b2e906f8b5dc9b5fe8b1afa7059",
+      "bytes": 34281,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m94": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m95": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "130f04c1dd4eb0767004fd567269025919ab42f8f24370c3cdb02420bf17dfaa",
+      "bytes": 36784,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m96": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m97": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "885d2ec7197e77bd1629e37fde45e28d8257a6dcea6227fdc58316a19cffc485",
+      "bytes": 34282,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m98": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m99": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "bd5a239d48320155ae3fff81013eac9a012f52af2faf6e8e3558c9a2a52e1bac",
+      "bytes": 36785,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m100": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "d60e40c83fca4e4bfa42998152f84f8a4f453fbaedaf633b2966b326b0ad8a22",
+      "bytes": 1099934,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m101": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m102": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "95c0c43e2132a236c4430fa365713ce8bad85c27a19933b3520ffcb0a79979ac",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m103": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m104": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "f20cd92555049a4c5e3b1a437e134b3b7af51968d62372f92d8764425ca96db5",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m105": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m106": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "0119d4c80b7e0172f6619cc36f6b409e759a14288d4f929fd1d765ed78c8692e",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m107": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m108": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "627ffb5446e533685e1cc380e70f8e21c06d47245e5001e9612119c60fb0128f",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m109": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m110": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "153fda43843e3e15e4612b8f04fad78a8ff45aaef8833bb42e0f92e365fa3e8f",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m111": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m112": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "b8c2ce4b80a954ccaf89e596156d4a603318873736994a18858a9c5dd68885d9",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m113": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m114": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "217513c0c1166edfdbbe83d3ba3653a1fa12464fa6bab7f9ab24eab30ba3c560",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m115": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m116": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "ba4c066499fe9ab3d00a86b58d07001e94bf7d7c2eb6faab217e80599ef7e3b5",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m117": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m118": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m119": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/capture-process-status.txt",
+      "sha256": "ad8617f7fd8884d3f87310a8c756331b2aae95542cb186190216d15145b82799",
+      "bytes": 1486,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m120": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/capture-stats.txt",
+      "sha256": "23c2887ef60ab5757870f962c62b8ab2f0381dbbe9652ef786fd891dda20b50f",
+      "bytes": 227,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m121": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m122": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/dbus.log",
+      "sha256": "e6e2cff8d5b1935a731dff173b9bb323a0ac14ecd5a0d82a2b0d28685816d746",
+      "bytes": 22158,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m123": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m124": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/kernel.log",
+      "sha256": "2c863c583508dce6298430adda2350f68995237c6bbe9aa16c612a4764b9e040",
+      "bytes": 49575,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m125": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "78f0b33cb6619fee94ea0e34a30af686377413c1a1c25e659473d6b840a881f6",
+      "bytes": 480927,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m126": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/pending-observations-0.json",
+      "sha256": "767ae89cdeb6ef4b89b4c350a42720f357862bf9067da331eb737eca0f407a73",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m127": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/pending-observations-1.json",
+      "sha256": "8665f9e86c7a9ea362927b76232590cbbd6082238346803ba05b8bc1430f8739",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m128": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/ready-0.json",
+      "sha256": "79159038379598419256faa6e2e0020686a7028cf542b89a0cec7b6c2475bc84",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m129": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/ready-1.json",
+      "sha256": "87cd9cb4a13d7040d45f250888960acc88e23d270eabe69cb44553a91400d875",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m130": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/ready-progress-0.json",
+      "sha256": "50d661282bc2483432cf9360910e9e342ce7e52cd878cbd6a676c4f20ed024cd",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m131": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/ready-progress-1.json",
+      "sha256": "fd2b79bb2d9c2fd11da354db2ffaf865bf61cf83222db208fafe0674f5d826c5",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m132": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/service-policy/0.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m133": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/service-policy/0.stdout",
+      "sha256": "2d4dad21ff33219d52eaaa09bae6f6395020bbf172ad691676a417d639ef772c",
+      "bytes": 200,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m134": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/service-policy/1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m135": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/service-policy/1.stdout",
+      "sha256": "1519eed32566587ef84808241978747882694ab3e530d6588c84dd8660661844",
+      "bytes": 200,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m136": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/service-policy/run.json",
+      "sha256": "289c301c37f7cbefef58c189dfe3b687fa0ee84210ebc821f234fcb89bbca5f4",
+      "bytes": 12276,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m137": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m138": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/slkd-process-status.txt",
+      "sha256": "223adee2c6a4d7501b02f064c05f0e09b6bc414e1180c67f4d9ffa6b5c286269",
+      "bytes": 1454,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m139": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/slkd.log",
+      "sha256": "1cd022334eb378f421e6bdf9addfda61637663b0a95a1fa96274925c076a2a2c",
+      "bytes": 5925,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m140": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m141": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m142": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/ws73.pcap",
+      "sha256": "b36b46f224f25f2311594d6c4e45b72719651e7ac0ea185f50670963759fa5fe",
+      "bytes": 1207776,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m143": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "dc9e1988a8faf64ec1da2f6a112b6d4f8c3d3fe2fc9d6f52783f36a7c56b9b72",
+      "bytes": 286,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m144": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/xhci-trace.log",
+      "sha256": "bcb697c3e207270a6333d13ad3d92b6c8dcf0453bc9c9da9a76dfad2fd93b3db",
+      "bytes": 3684482,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m145": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/console.log",
+      "sha256": "994f29633e662d73507117bb0c59fb6b8079b8e4d62d9b81644ab8778eac88ef",
+      "bytes": 16314,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m146": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/qmp.jsonl",
+      "sha256": "e9382e3f233b933f09adf695562ba3ddb23d68ae334f521bdd7f0b66450bc112",
+      "bytes": 1757,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m147": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/host-inventory.jsonl",
+      "sha256": "aec82ce3ccdeabb8e43b851697fabfa4e890db1ea63d38e4a2cfb44a7468120c",
+      "bytes": 7127,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m148": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/usb-lifecycle.events",
+      "sha256": "dc13c1825afeb638bb08fb69b3ec43adca4abc974ad9e397c18d718f572d3255",
+      "bytes": 361,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m149": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2/usb-lifecycle.log",
+      "sha256": "29556fb9d05887fbb8b370f2e7699262b5a257239bc3318bf5b8a8b7b1a39f9c",
+      "bytes": 760266,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m150": {
+      "path": ".dev/architecture-retirement-r1-real-long-v2-r1-owned-audit-v1.json",
+      "sha256": "50a128f9c9276eba72c569450d1e93bd979b687be714d69fcf97df1459b71a3a",
+      "bytes": 2990,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m151": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/manifest.json",
+      "sha256": "d0633f7758a6efc8d63672507c087faa245e700ab3621c6e731a705e5b7b1f19",
+      "bytes": 1600487,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m152": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m153": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "a7e4a00c7c6500a5bfaf3e24403168bb635dcfaeaa37a3369663251c5895c320",
+      "bytes": 22160,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m154": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m155": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "969cb07a2192971e3b554f4661e828f7a0ae78cd80989c273a027b7c8ef79692",
+      "bytes": 24667,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m156": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m157": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "5f41f79c885e4979b0990bfa02fbcfc668dff0dff7610541d8af10ba72e4650b",
+      "bytes": 22160,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m158": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m159": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "2cfe00c0af485055d007897a4f113d66cb286619a8148fa7e8d748d517cfcde9",
+      "bytes": 24667,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m160": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "2fec06fe57d5f51efdb6f9a0b4e1387072135368802d6bb444902187f83a0a70",
+      "bytes": 951840,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m161": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m162": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m163": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/capture-process-status.txt",
+      "sha256": "ebe2c30cf721121f08745b7d3fc16f6fc6a2bd650dadb884a2f99d07f10c4171",
+      "bytes": 1486,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m164": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/capture-stats.txt",
+      "sha256": "e88fff78fe5bcfae43e0b37299cf355cd0584fcfc0d64ea5322846f13720f7f1",
+      "bytes": 227,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m165": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m166": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m167": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m168": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/kernel.log",
+      "sha256": "73902649c49be3e6e505c3cec327cd91e5d85a413f7a52fda8cc41f5d1054fed",
+      "bytes": 49447,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m169": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "a2be922d4de79abd9fb9f31b97c9da328420ac8ee143d5a12b7af162aee6ed0c",
+      "bytes": 477384,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m170": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/pending-observations-0.json",
+      "sha256": "4b087b93f9338deb6d3526b3345edeae26c52f4d9f91217d040869c53e61c463",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m171": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/pending-observations-1.json",
+      "sha256": "76b4cc16d339fdc74fed7700145b3f166d2afa6843d9896bb1988480fc687480",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m172": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/ready-0.json",
+      "sha256": "79159038379598419256faa6e2e0020686a7028cf542b89a0cec7b6c2475bc84",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m173": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/ready-1.json",
+      "sha256": "87cd9cb4a13d7040d45f250888960acc88e23d270eabe69cb44553a91400d875",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m174": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/ready-progress-0.json",
+      "sha256": "9c7b050f7fd7bb0dad1e292ee276f992de0cb8dca751c1ec5aada8e6b960e8f1",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m175": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/ready-progress-1.json",
+      "sha256": "993740221dae1ff8c784f2389da86c747c6661aa1a5130912d1a130c782b8d84",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m176": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m177": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/slkd-process-status.txt",
+      "sha256": "82c420b69fa3e0c62c2fb04d5284b98291bdc78b3b2c15d0c88964598808bc01",
+      "bytes": 1454,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m178": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/slkd.log",
+      "sha256": "1f8f97d7f0b8c4d0d97606003fea5555686455a4cf744f2307f03dc5f2200dea",
+      "bytes": 6605,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m179": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m180": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m181": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/ws73.pcap",
+      "sha256": "98a188f369f5493e045d21a83233f3056295b615b9db8ff8a35ab39dd8a4fade",
+      "bytes": 636160,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m182": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "72827aeeb0ccff81fb090a401cc0c360dd1f05a4dde386c42b6278108bee1f08",
+      "bytes": 282,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m183": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/xhci-trace.log",
+      "sha256": "5df29c5ff18e775884bb6e4b509546ef0a30f0a314ada70da038d91e644226e5",
+      "bytes": 2266011,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m184": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/console.log",
+      "sha256": "b1ffbcf570b5797150059e8c07322e3f7601c815ec8b2940005fca2a23c9b1e2",
+      "bytes": 16238,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m185": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/qmp.jsonl",
+      "sha256": "496c9961078c49d46dbd4e623877a9e15641e1c659a1db336eb5250b36dc6ca6",
+      "bytes": 1757,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m186": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/host-inventory.jsonl",
+      "sha256": "ec31847a8a407c6688e590c5cab19ee008f5291c4218ad2ef1e9d19c45045942",
+      "bytes": 7127,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m187": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/usb-lifecycle.events",
+      "sha256": "dc13c1825afeb638bb08fb69b3ec43adca4abc974ad9e397c18d718f572d3255",
+      "bytes": 361,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m188": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2/usb-lifecycle.log",
+      "sha256": "f40759b5650f078468822be659d72f2923c56b67fd1edb3d88cd2ea7af419974",
+      "bytes": 427826,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m189": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v2-r1-length-audit-v1.json",
+      "sha256": "0ecaec516d070b45f1c2a25a853726e00e316f17308e9488b8583b8fc06e5fbb",
+      "bytes": 1508,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m190": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/manifest.json",
+      "sha256": "ab8275cad3a05da20eefc9dd38c9bf1933f11a889e2090d698d21defec8749e5",
+      "bytes": 1879614,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m191": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m192": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "5359d4ff9f3437b6a7ab547f7bb3d35b430100bfd00b9dc8ee546421d5162763",
+      "bytes": 2579,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m193": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m194": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "99f86858055f1422827ccb6559ea5877dd446a82d330fa001c5329cc05e2ad02",
+      "bytes": 5086,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m195": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m196": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "1b965821629425df1f8bfa3031ed516547416b569a18700f5265d5b97445d264",
+      "bytes": 2579,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m197": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m198": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "4d07def111b045243a41eb669bf4364a3b432d1a034e9ec3651daf43fb5be134",
+      "bytes": 5086,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m199": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "ec7f0b037fbc78f95d54cfda3ddb3043aef1676ab4b83e66d0ad3c7c6ee1b3b3",
+      "bytes": 1034672,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m200": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m201": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "b88be2ad21ef85f399f03d84764fa32387c415463dcc9ecf6697768bfb8e94cb",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m202": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m203": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "35cd4c9826741b130e32d9d068b7acc2f3dcf7d34036e8eec7621e9c7c2c669f",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m204": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m205": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "9241b41ab6d37082575f08332652b8db8cf11c0093bde12e1511547ebe171640",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m206": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m207": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "c16d8efb34450bfe1328168e529925a0d0992a1d27983ca0a27631944594ddba",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m208": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m209": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "1453174a1cf803982702c7d4cafc7e7d80ab5e3b8d1225a5284252f2959b434c",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m210": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m211": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "db71f5f58d43bf8ba004a9cf687e4c6adff6580594a94573a30cc9bd59c55abb",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m212": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m213": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "dd8891e340e4efb08e817bfe0ce86ea38dcbee3e73357c9bb38ebec4bdd70cb1",
+      "bytes": 623,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m214": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m215": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "291fdca31387c66315977a83b57f195f6eafe140dd10db9bec18949473d5ee3e",
+      "bytes": 627,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m216": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m217": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m218": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/capture-process-status.txt",
+      "sha256": "06642ea239c4b9541251178d34dc213444d165f92fdefe86087137d2000d7212",
+      "bytes": 1486,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m219": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/capture-stats.txt",
+      "sha256": "ceb3b569b0ba922fae5c1d7c4c57c0ac131d8a9474c5b21623a1d7a79d50a2b3",
+      "bytes": 227,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m220": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m221": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m222": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m223": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/kernel.log",
+      "sha256": "39a96a136237c73c157c2145b96a75b4b640b4aa94f18dedda51392cd3a3cd28",
+      "bytes": 49463,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m224": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "3e5d5a5ba6e18c8bf05fbd047f6c29948861ee2f3053531ecdf50af3df488f31",
+      "bytes": 477384,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m225": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/pending-observations-0.json",
+      "sha256": "a075924193f0e3ab929b04d2fecc7f2ea8cba75dfe16cad97b0fbb15bea7071f",
+      "bytes": 1125,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m226": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/pending-observations-1.json",
+      "sha256": "515a5ffe8edffedbd4ee483b82c63c0fb89d69af7b59befaa9b40e58a0601742",
+      "bytes": 1126,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m227": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/ready-0.json",
+      "sha256": "79159038379598419256faa6e2e0020686a7028cf542b89a0cec7b6c2475bc84",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m228": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/ready-1.json",
+      "sha256": "87cd9cb4a13d7040d45f250888960acc88e23d270eabe69cb44553a91400d875",
+      "bytes": 861,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m229": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/ready-progress-0.json",
+      "sha256": "2eb70781c74eb9eca2568f84f770d1d480b8ae9f4a3c7a3f0f70c905339ebb10",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m230": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/ready-progress-1.json",
+      "sha256": "0554d445df73e195d423d782e4d6f106eab2b303fa41c46941f40ac7d61bc643",
+      "bytes": 1098,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m231": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/slkd-config.conf",
+      "sha256": "dcd8af544928f0d11684f015356545bd676273eb571af8d4d1ac0f3be7aa64a1",
+      "bytes": 1928,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m232": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/slkd-process-status.txt",
+      "sha256": "d14ef4d1ed67f5fa80086864936c51b5691706591498398c2cc44b2424ace70c",
+      "bytes": 1454,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m233": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/slkd.log",
+      "sha256": "7301fb9af2ef28323c916e60c12ebb66b59c70b61f04f62afee5dc9fe720ca71",
+      "bytes": 5926,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m234": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m235": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m236": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/ws73.pcap",
+      "sha256": "9815da1ba2094a0773901cc8f8c5003dc990366fc9c54ea860d5447e70fecff6",
+      "bytes": 741112,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m237": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "5fd55fe2c13c1a5e6a26f710f92c93c1d14bf3b023226bd7b2d4d2a09691831c",
+      "bytes": 282,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m238": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/xhci-trace.log",
+      "sha256": "74e624838ddbb111e400761af9fece923f625330396f1a0ac28000d329fdda26",
+      "bytes": 2605540,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m239": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/console.log",
+      "sha256": "5cb9dd48fec4c5c4beb883d4b1e6cb5d5d6c038ba3882c048c5a1f15900d43c3",
+      "bytes": 16265,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m240": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/qmp.jsonl",
+      "sha256": "ab828abfd0b72d0d77c3fc27dc144674732d647de283b51ac213ada2bdfec09b",
+      "bytes": 1757,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m241": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/host-inventory.jsonl",
+      "sha256": "882d6e0ac565e0869d143fae96cfa9e6d6c01509e13eddbb5e356af3205e2bbc",
+      "bytes": 7127,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m242": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/usb-lifecycle.events",
+      "sha256": "dc13c1825afeb638bb08fb69b3ec43adca4abc974ad9e397c18d718f572d3255",
+      "bytes": 361,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m243": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1/usb-lifecycle.log",
+      "sha256": "f52c19eb95387efbb873816f780ed3f86eb5110f5ed966e6295d313e2372386e",
+      "bytes": 494760,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m244": {
+      "path": ".dev/architecture-retirement-r1-real-sec2-v1-r1-owned-audit-v1.json",
+      "sha256": "6ddca169e95c8404fa62d54b991caec2a25e4ff65634e69c48ca9d50373995a5",
+      "bytes": 2990,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m245": {
+      "path": ".dev/architecture-retirement-r1-tests-v1.log",
+      "sha256": "4f48e37b6632e4abb5c2b07c5022604de51192e0101bed1107cd2db6aac7cfdf",
+      "bytes": 3602,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m246": {
+      "path": ".dev/architecture-retirement-r1-tests-v2.log",
+      "sha256": "6214045ca8d2518fae46bcad991328ff4ce975f5c1e513674c75d280dc8a3b05",
+      "bytes": 28691,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m247": {
+      "path": ".dev/architecture-retirement-r1-allfeatures-v1.log",
+      "sha256": "cba7b371ffc711fd3edafcf1a3fef06df30682abb41115f7550b15012db0944f",
+      "bytes": 27979,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m248": {
+      "path": ".dev/architecture-retirement-r1-clippy-default-v1.log",
+      "sha256": "35c06825b4f9cb1318f7d293be1c37e6c156b7792834f89566a0abdf4515b200",
+      "bytes": 592,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m249": {
+      "path": ".dev/architecture-retirement-r1-clippy-all-v1.log",
+      "sha256": "bad011128dfb9df1624566f2341b35ee502c638494bbf6198193377d705eabfc",
+      "bytes": 498,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m250": {
+      "path": ".dev/architecture-retirement-r1-docs-v1.log",
+      "sha256": "82a2cdb760d798cc118b3d4e8f82d700202d4dc8268e7615a44d41912a8659e8",
+      "bytes": 367617,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m251": {
+      "path": ".dev/architecture-retirement-r1-tools-v1.log",
+      "sha256": "5658f20d6beae0057ee2e380659be55dc1c5a989c7790999c88e230043a2979b",
+      "bytes": 128974,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m252": {
+      "path": ".dev/architecture-retirement-r1-tools-v2.log",
+      "sha256": "6c8b7b342a25970ba0e17331a4684eff3b268724ea7ea7d0b13c2aab41ad7786",
+      "bytes": 122694,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m253": {
+      "path": ".dev/architecture-retirement-r1-tools-v3.log",
+      "sha256": "111ecef8c12fa0465401438744bfceb264ba21b97411336b2aaf19ab15324372",
+      "bytes": 122694,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m254": {
+      "path": ".dev/architecture-retirement-r1-service-audit-v1.json",
+      "sha256": "e49815c4ae5b43a6860ebf885128d555b88232f33e39fb12df455bca23db9f40",
+      "bytes": 3051,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m255": {
+      "path": ".dev/architecture-retirement-r1-real-long-v1/manifest.json",
+      "sha256": "548746549ed4ed2c5345791fc411a2c53f5d02163aae3c1666e035280bc85544",
+      "bytes": 49718,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m256": {
+      "path": ".dev/architecture-retirement-r1-real-long-v1/guest-output/service-policy/run.json",
+      "sha256": "73a564a36d0c7a118315c9ffdc6d4527e1969ad5bc55293044189d47106d9a82",
+      "bytes": 5612,
+      "access": "private",
+      "base": "workspace",
+      "format": "json"
+    },
+    "architecture-retirement-r1-m257": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v1.log",
+      "sha256": "4129788d9e33e578d959d7e9b41df4349e7bdb8394c7192745b6eb4bc6b93a3b",
+      "bytes": 1310,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m258": {
+      "path": ".dev/architecture-retirement-r1-owned-audit-v1.py",
+      "sha256": "35287fa0df520749ef9ec64ea9096f8e4de8fc401e52117b1a94af26a57607ea",
+      "bytes": 4536,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m259": {
+      "path": ".dev/architecture-retirement-r1-length-audit-v1.py",
+      "sha256": "c611c556ec46bbe8dc49765ee434df34e771b643fff3599662c7c9df4435ddcb",
+      "bytes": 2897,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
+    },
+    "architecture-retirement-r1-m260": {
+      "path": ".dev/architecture-retirement-r1-service-audit-v1.py",
+      "sha256": "2b3070ddcd5cb79c40a53745624afd059baea0cfef658f523492369cf12042b5",
+      "bytes": 3222,
+      "access": "private",
+      "base": "workspace",
+      "format": "bytes"
     }
   },
   "baseline_record": "hcc-timed110-data",

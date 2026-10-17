@@ -99,8 +99,12 @@ int main(int argc,char **argv) {
         if (send(duplicate,outgoing,request_n,MSG_DONTWAIT|MSG_NOSIGNAL)!=(ssize_t)request_n) goto done;
     }
     if (wait_fd(duplicate,POLLIN,deadline)) goto done;
-    ssize_t got=recv(duplicate,received,sizeof received,MSG_DONTWAIT|MSG_TRUNC);
-    if (got!=(ssize_t)request_n || memcmp(received,expected,request_n)) { errno=EPROTO;goto done; }
+    struct SleMessageSecurity receipt={0};int flags=0;
+    intptr_t got=slk_channel_recv_security(duplicate,received,sizeof received,MSG_DONTWAIT|MSG_TRUNC,&receipt,&flags);
+    if (got<0) { errno=(int)-got;goto done; }
+    if (got!=(intptr_t)request_n || memcmp(received,expected,request_n) || flags&(MSG_TRUNC|MSG_CTRUNC)
+        || receipt.controller!=info.controller || receipt.generation!=info.generation || receipt.lifetime!=info.lifetime
+        || receipt.handle!=info.handle || receipt.local_tcid!=31 || receipt.remote_tcid!=31 || receipt.pi!=241) { errno=EPROTO;goto done; }
     if (role) {
         if (wait_fd(duplicate,POLLOUT,deadline)) goto done;
         if (send(duplicate,outgoing,request_n,MSG_DONTWAIT|MSG_NOSIGNAL)!=(ssize_t)request_n) goto done;

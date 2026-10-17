@@ -8,7 +8,7 @@ import socket
 import struct
 import sys
 import time
-from sparklink import Client, ControllerId, channel_info
+from sparklink import Client, ControllerId, channel_info, channel_recv_security
 
 
 def wait(fd, event, deadline):
@@ -50,8 +50,9 @@ def main():
             wait(data.fileno(),select.POLLOUT,deadline)
             if data.send(outgoing,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL)!=len(outgoing):raise ValueError("incomplete admission")
         wait(data.fileno(),select.POLLIN,deadline)
-        actual,_,flags,_=data.recvmsg(2042,0,socket.MSG_DONTWAIT)
-        if actual!=expected or flags&socket.MSG_TRUNC:raise ValueError("peer application payload mismatch")
+        actual,receipt,flags,count=channel_recv_security(data.fileno(),2042,socket.MSG_DONTWAIT)
+        if actual!=expected or count!=len(expected) or flags&(socket.MSG_TRUNC|socket.MSG_CTRUNC):raise ValueError("peer application payload mismatch")
+        if (receipt.controller,receipt.generation,receipt.lifetime,receipt.handle,receipt.local_tcid,receipt.remote_tcid,receipt.pi)!=(info.controller,info.generation,info.lifetime,info.handle,31,31,241):raise ValueError("actual RX lifetime differs from delegated fd")
         if role:
             wait(data.fileno(),select.POLLOUT,deadline)
             if data.send(outgoing,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL)!=len(outgoing):raise ValueError("incomplete admission")

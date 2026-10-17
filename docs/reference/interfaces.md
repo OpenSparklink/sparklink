@@ -76,6 +76,10 @@ Python `sparklink.Client(deadline_ns=...)`、`controllers(deadline_ns=...)` 和
 固定通道以显式 family=46、SOCK_DGRAM、protocol=0 包装真实 fd；内核尚无 getname
 操作，不能依赖 Python 的 fd 地址自动探测，也不承诺 getsockname/getpeername。
 连接身份从固定 Connection 和内核 channel_info 核对，不从 socket 地址猜测。
+当前 Python 运行库也不能为该未发布 family 计算 recvmsg/recvfrom/sendto 等地址
+缓冲区；需要接收上下文时调用现有 `channel_recv_security(fd, ...)`，使用同一
+Channel 的真实系统调用及截断/身份验证。它不是另一条业务通路，也不以缺失的
+地址信息代替实际连接身份。普通无地址 send/recv、poll、dup、关闭按各自契约使用。
 推荐 `with Client(...) as client`；方法与 close 串行，复用同一原始期限。
 关闭不终结通道 fd；管理 lease 撤销/daemon 死亡的影响仍按内核契约。
 客户端不能跨 fork 使用；fork 子进程先 exec，或用 spawn 创建进程后新建客户端。

@@ -1447,6 +1447,12 @@ R5f2 实机进一步发现[Python fd构造生产缺陷](../docs/evidence/python-
 有界C/OS边界fixture与真实Unix fd只验证Python包装/dup/关闭，旧源码反例失败；
 不能算AF_SPARKLINK或实际交付。新源码必须重新封存镜像并取真实双端随机业务证据。
 
+构造/dup修复后，[原Python地址型recvmsg失败](../docs/evidence/python-channel-receive-address-failure-20261018.json)
+继续保留；标准运行库不能计算未发布family的地址长度。两语言测试消费者改用
+已有公共Channel接收/上下文API，继续严格检查实际载荷、截断、generation/lifetime/
+handle/TCID，而非复制系统调用decoder或减少断言。无地址socket与上下文操作支持
+边界同步参考。仍须新镜像完整正向业务和原回归，不据实际FD/USB局部结果升级。
+
 核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
 保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取
 错误源库名且缺Native/pc统一安装；pc头目录不符；无正式SONAME与干净VM升级回滚

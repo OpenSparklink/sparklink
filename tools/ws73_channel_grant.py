@@ -86,7 +86,12 @@ def take_channel(control, token, family=46):
         for fd in delivered:os.close(fd)
 
 
-def worker(data, control):
+def intent_receipt(constraint, before, prepared, after):
+    return dict(constraint=bytes(constraint).hex(),before_monotonic_ns=before,
+                prepared_monotonic_ns=prepared,after_monotonic_ns=after)
+
+
+def worker(data, control, minimum=0):
     keep={0,1,2,control.fileno()}
     if data is not None:keep.add(data.fileno())
     for name in os.listdir('/proc/self/fd'):
@@ -120,6 +125,31 @@ def worker(data, control):
     ready=dict(stage='ready',pid=os.getpid(),fd=data.fileno(),original=original,original_errno=original_errno,credentials=identity,wall_ns=time.time_ns())
     if transfer is not None:ready['scm_rights']=transfer
     send(control,ready)
+    from sparklink.native import channel_prepare_tx, channel_send_constrained, channel_recv_security
+    from sparklink.structs import SleSendConstraint
+    last_constraint=None
+    def transmit(payload,flags=socket.MSG_NOSIGNAL,receipt=None):
+        nonlocal last_constraint
+        before=time.monotonic_ns();deadline=before+5_000_000_000
+        if receipt is None:
+            c=channel_prepare_tx(data.fileno(),minimum,deadline)
+        else:
+            if receipt.flags!=3 or receipt.security<minimum:
+                raise ValueError('original known current reply mechanism required')
+            c=SleSendConstraint(version=1,size=48,minimum=receipt.security,
+                generation=receipt.generation,lifetime=receipt.lifetime,security_epoch=receipt.security_epoch,
+                controller=receipt.controller,handle=receipt.handle,local_tcid=receipt.local_tcid,
+                remote_tcid=receipt.remote_tcid,pi=receipt.pi,deadline_monotonic_ns=deadline)
+        prepared=time.monotonic_ns()
+        if channel_send_constrained(data.fileno(),bytes(payload),c,flags)!=len(payload):
+            raise ValueError('partial constrained application admission')
+        last_constraint=c
+        return intent_receipt(c,before,prepared,time.monotonic_ns())
+    def consume():
+        payload,context,flags,count=channel_recv_security(data.fileno(),249,socket.MSG_TRUNC)
+        if flags or count!=len(payload) or context.flags!=3 or context.security<minimum:
+            raise ValueError('complete original scoped RX required')
+        return payload,context
     try:
         while True:
             command=receive(control);kind=command['kind']
@@ -130,14 +160,17 @@ def worker(data, control):
                 events=poll.poll(8000)
                 if len(events)!=1 or events[0][1]&(select.POLLERR|select.POLLHUP|select.POLLNVAL) or not events[0][1]&select.POLLOUT:raise ValueError('actual channel Ready required')
                 if command['initiator']:
-                    if data.send(payload,socket.MSG_NOSIGNAL)!=len(payload):raise ValueError('partial application PDU')
-                    arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,True)
+                    intent=transmit(payload)
+                    arrived,context=consume();validate(arrived,payload,True)
+                    from sparklink.structs import SleSendConstraint
+                    requested=SleSendConstraint.from_buffer_copy(bytes.fromhex(intent['constraint']))
+                    if context.security_epoch!=requested.security_epoch or context.security<requested.minimum:raise ValueError('reply differs from original TX intent')
                     sent=payload
                 else:
-                    arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False)
+                    arrived,context=consume();validate(arrived,payload,False)
                     sent=bytearray(arrived);sent[28]=1
-                    if data.send(sent,socket.MSG_NOSIGNAL)!=len(sent):raise ValueError('partial application reply')
-                send(control,dict(stage='business',initiator=command['initiator'],sent=sent.hex(),received=arrived.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
+                    intent=transmit(sent,receipt=context)
+                send(control,dict(stage='business',initiator=command['initiator'],sent=sent.hex(),received=arrived.hex(),tx_intent=intent,rx_context=bytes(context).hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
             elif kind=='oneway':
                 payload=bytes.fromhex(command['payload']);start=time.time_ns();marker=b'SCPDENY1'+secrets.token_bytes(32)
                 if command['initiator']:
@@ -146,7 +179,7 @@ def worker(data, control):
                     try:data.recv(249,socket.MSG_DONTWAIT)
                     except OSError as error:denied=error.errno
                     else:raise ValueError('TX-only receive succeeded')
-                    if data.send(payload,socket.MSG_NOSIGNAL)!=len(payload):raise ValueError('partial directional send')
+                    intent=transmit(payload)
                     sent=payload.hex();arrived=None
                 else:
                     poll=select.poll();poll.register(data,select.POLLOUT)
@@ -154,7 +187,7 @@ def worker(data, control):
                     try:data.send(marker,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL)
                     except OSError as error:denied=error.errno
                     else:raise ValueError('RX-only send succeeded')
-                    arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False);arrived=arrived.hex();sent=None
+                    arrived,context=consume();validate(arrived,payload,False);arrived=arrived.hex();sent=None
                 if denied!=errno.EACCES:raise ValueError('exact forbidden direction EACCES required')
                 send(control,dict(stage='oneway',initiator=command['initiator'],sent=sent,received=arrived,direction_errno=denied,denied_marker=marker.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
             elif kind=='prime':
@@ -164,7 +197,7 @@ def worker(data, control):
                 for payload in payloads:
                     validate(payload,payload,False)
                     if command['sender']:
-                        if data.send(payload,socket.MSG_NOSIGNAL)!=len(payload):raise ValueError('partial priming send')
+                        transmit(payload)
                         values.append(payload.hex())
                     else:
                         arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False);values.append(arrived.hex())
@@ -178,7 +211,7 @@ def worker(data, control):
                     prefix=bytes.fromhex(prefix)
                     if len(prefix)!=2042 or prefix[:8]!=b'SLKREV01':raise ValueError('bounded random revocation PDU required')
                     admission=dict(admission_before_wall_ns=time.time_ns(),admission_before_monotonic_ns=time.monotonic_ns())
-                    if data.send(prefix,socket.MSG_NOSIGNAL)!=len(prefix):raise ValueError('partial revoke-prefix admission')
+                    admission['tx_intent']=transmit(prefix)
                     admission.update(admission_after_wall_ns=time.time_ns(),admission_after_monotonic_ns=time.monotonic_ns())
                 if command.get('sample_before_block'):
                     if prefix is None:raise ValueError('TX observation requires bounded original PDU')
@@ -200,7 +233,15 @@ def worker(data, control):
                     except OSError as error:values[name]=error.errno
                     else:raise ValueError('old socket operation succeeded after withdrawal')
                 poll=select.poll();poll.register(data,select.POLLIN|select.POLLOUT);events=poll.poll(0)
-                send(control,dict(stage='denied',errors=values,poll=events[0][1] if events else 0,marker=marker.hex(),wall_ns=time.time_ns()))
+                if last_constraint is None:raise ValueError('original admitted intent required before withdrawal')
+                typed={}
+                for name,call in [('prepare',lambda:channel_prepare_tx(data.fileno(),minimum,time.monotonic_ns()+1_000_000_000)),
+                                  ('submit',lambda:channel_send_constrained(data.fileno(),marker,last_constraint,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL))]:
+                    try:call()
+                    except OSError as error:typed[name]=error.errno
+                    else:raise ValueError('old constrained operation succeeded after withdrawal')
+                send(control,dict(stage='denied',errors=values,poll=events[0][1] if events else 0,marker=marker.hex(),
+                                  tx_intent_denial=dict(errors=typed,constraint=bytes(last_constraint).hex()),wall_ns=time.time_ns()))
             else:raise ValueError('unknown worker command')
     except BaseException as error:
         send(control,dict(error=str(error),error_type=type(error).__name__))
@@ -214,7 +255,7 @@ class Gate:
         if security!=requirement(record):raise ValueError('requested protected binding and original prelude must agree')
         self.directional=directional
         self.index=index;self.record=record;self.save=save;self.children=[];self.parents=[]
-        self.row=dict(status='STARTING',index=index,owners=[],workers=[],business=[],start_wall_ns=time.time_ns())
+        self.row=dict(status='STARTING',index=index,owners=[],workers=[],business=[],tx_constraint_required=not directional,start_wall_ns=time.time_ns())
         if directional:self.row.update(directional=True,bind_rejections=[])
         if scm_rights:self.row.update(scm_rights=True,transfers=[])
         record['channel_grant']=self.row;save();channels=[];pairs=[]
@@ -242,7 +283,7 @@ class Gate:
             for n in range(2):
                 pid=os.fork()
                 if pid==0:
-                    try:worker(None if scm_rights else channels[n],pairs[n][1]);os._exit(0)
+                    try:worker(None if scm_rights else channels[n],pairs[n][1],minimum=security);os._exit(0)
                     except BaseException as error:
                         try:send(pairs[n][1],dict(error=str(error),error_type=type(error).__name__))
                         except OSError:pass
@@ -408,8 +449,52 @@ def verify(row, outer):
     return row
 
 
+def verify_intents(row, outer):
+    """Current real fd calls; not a proof of kernel locks, credit or firmware truth."""
+    from sparklink.structs import SleSendConstraint, SleMessageSecurity, SleConnectionSecurity
+    from ws73_management_setup import decode
+    from ws73_protected_grant import requirement
+    floor=requirement(outer);count=0
+    def scope(v,owner):
+        return (v.controller,v.generation,v.lifetime,v.handle,v.local_tcid,v.remote_tcid,v.pi)==(owner['index'],owner['generation'],owner['lifetime'],owner['handle'],31,31,241)
+    def intent(record,owner):
+        c=decode(SleSendConstraint,record['constraint'])
+        if c.version!=1 or c.size!=48 or c.reserved or not scope(c,owner) or not c.security_epoch or not floor<=c.minimum<=2:raise ValueError('exact original scoped restrictive TX required')
+        before,prepared,after=[record[k] for k in ['before_monotonic_ns','prepared_monotonic_ns','after_monotonic_ns']]
+        if not 0<before<=prepared<=after<c.deadline_monotonic_ns or c.deadline_monotonic_ns!=before+5_000_000_000:raise ValueError('one original absolute5s intent before admission required')
+        # A new basic-Grant request may observe a newer epoch; this does not
+        # renew the cached original intent or an epoch-bound protected Grant.
+        if floor:
+            observed=decode(SleConnectionSecurity,outer['protected_security']['after'][owner['index']])
+            if c.security_epoch!=observed.security_epoch:raise ValueError('intent must match actual installed native epoch')
+        return c
+    for b in row['business']:
+        for n,a in enumerate(b['applications']):
+            c=intent(a['tx_intent'],row['owners'][n]);m=decode(SleMessageSecurity,a['rx_context'])
+            if m.version!=1 or m.size!=40 or m.flags!=3 or not scope(m,row['owners'][n]) or m.security_epoch!=c.security_epoch or not c.minimum<=m.security<=2:raise ValueError('actual original RX scope/epoch/grade required')
+            if c.minimum!=(floor if b['initiator']==n else m.security):raise ValueError('initiator minimum and original reply observation required')
+            count+=1
+    armed=row.get('armed',{});prefix=armed.get('tx_intent')
+    if 'revoke_prefix' in row:
+        if prefix is None:raise ValueError('actual long PDU admission must carry TX intent')
+        c=intent(prefix,row['owners'][outer['index']])
+        if c.minimum!=floor or not armed['admission_before_monotonic_ns']<=prefix['before_monotonic_ns']<=prefix['after_monotonic_ns']<=armed['admission_after_monotonic_ns']:raise ValueError('prefix cannot refresh original admission deadline')
+        original=prefix['constraint']
+    else:original=None
+    if 'data_deadline' in outer:receipts=[outer['data_deadline'][k] for k in ['old_fd_before_release','old_fd_after_release']]
+    elif 'data_link_down' in outer:receipts=[outer['data_link_down']['old_fd']]
+    else:receipts=[row[k] for k in ['after_withdrawal','after_successor'] if k in row]
+    for a in receipts:
+        d=a['tx_intent_denial']
+        if d['errors']!={'prepare':a['errors']['send'],'submit':a['errors']['send']}:raise ValueError('fresh prepare and cached intent must both reject original fd')
+        if original is not None and d['constraint']!=original:raise ValueError('withdrawal retry must use the original admitted intent unchanged')
+    return dict(status='ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED',business_sends=count,prefix_admission=bool(prefix),late_refusals=len(receipts)*2,
+                scope='Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof')
+
+
 def business_evidence(row, outer, capture):
     """Shared actual application TX/opposite RX evidence, independent of closure."""
+    if row.get('tx_constraint_required'):verify_intents(row,outer)
     sdus=reassemble_acb(capture);legs=[]
     for business in row['business']:
         for n,application in enumerate(business['applications']):

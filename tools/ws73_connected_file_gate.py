@@ -361,6 +361,9 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
     prelude=protected_wire(r,capture) if security else None
     proof=_corroborate(r,capture,hold,stderr,expected,prelude)
     if security:proof['protected_security']=prelude
+    if r.get('channel_grant',{}).get('tx_constraint_required'):
+        from ws73_channel_grant import verify_intents
+        proof['tx_constraints']=verify_intents(r['channel_grant'],r)
     return proof
 
 

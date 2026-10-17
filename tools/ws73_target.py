@@ -1317,6 +1317,7 @@ def _run(args):
                 if connected_case:
                     from ws73_connected_file_gate import corroborate as connected_corroborate
                     probe=json.loads((share/'connected-file/run.json').read_text())
+                    if channel_grant and not channel_directions and not probe.get('channel_grant',{}).get('tx_constraint_required'):raise ValueError('current lifecycle gate requires original typed TX intents')
                     if bool(probe.get('channel_grant',{}).get('directional',False))!=channel_directions:raise ValueError('requested directional Grant gate mismatch')
                     if bool(probe.get('channel_grant',{}).get('scm_rights',False))!=channel_scm_rights:raise ValueError('requested SCM_RIGHTS Grant gate mismatch')
                     if bool(probe.get('channel_grant'))!=channel_grant:raise ValueError('requested real channel Grant gate mismatch')

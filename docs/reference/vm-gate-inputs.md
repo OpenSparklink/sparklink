@@ -180,3 +180,23 @@ handle 可安全复用。完整 release/最后 fd/dup/Down/期限组合仍是独
 复用原 SSAP discovery/读写/对端本地数据库核对及 CUTC 随机回复，不添加测试 Engine。
 私有 USB 捕获含真实安全材料，不公开；协议 ACK、0011 或 USB 写入不代替业务核对。
 该工具门禁不覆盖属性级授权、Bond 或自然恢复，注入与 QMP 操作也不授予恢复资格。
+
+## 原发送意图的生命周期门禁
+
+当前 `--managed-channel-grant` 的双向模式复用原普通工作进程，实际调用统一
+`channel_prepare_tx`、`channel_send_constrained`、`channel_recv_security`。它是
+pre-daemon File/Grant 受控测试，不等同实际 slkd Agent/授权部署或 daemon 崩溃资格。
+工作进程是 uid1000/caps0，保留原 dup/最终管理引用、阻塞 syscall 见证及两端随机业务
+校验；回复固定原 RX 机制和 epoch，发起端检查真实回复上下文。
+
+`channel_grant.tx_constraint_required=true` 表示该轮必须提供每次业务发送的48字节
+原始限制、40字节接收观察和单调时钟区间。前缀 PDU 也记录实际准入意图，绝对期限
+只创建一次、最多5秒；撤权/Down/原期限后分别尝试新 prepare 和原缓存 intent，
+不得改成新的 epoch/期限来冒充旧请求已被拒绝。原 raw send/recv/poll 拒绝检查保留。
+新 basic Grant 请求可以观察新 epoch，不能因此更新缓存旧 intent 或 protected Grant。
+
+原2秒/8秒 QEMU fixture 只暂扣真实成功 IN81，不能生成回复、NOCP、credit 或恢复。
+必须保留完整的 held/released 因果握手、满池5个实际 debt、确切不完整前缀和原5秒
+期限；不能降低断言以适应当前输出。两个 controller 的 Ready/lease/扫描隔离不代表
+四设备独立业务隔离。USB 写成功/NOCP 与对端应用校验仍分开。此新增门禁的源码、
+实机资格和旧失败记录分别维护；当前实现不等于新镜像已通过该矩阵。

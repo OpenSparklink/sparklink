@@ -1123,3 +1123,9 @@ generation复用、候选分配、退休及partial init状态不变。该变更�
 专用VM probe继续消费这一份代码；实际生产P256/CMAC保留唯一来源，并由probe明确
 include。历史fixture的module属性不是生产豁免，测试通过不成为认证/Bond或WS73
 当前资格。旧报告原路径/commit/hash保留，新报告明确测试路径及boot/probe不同身份。
+
+R4e2命令所有权收敛：未消费的裸命令链和按opcode寻找作者的结果入口退休；当前
+Runtime Host仍是唯一调度/credit/物理义务来源。Diagnostic、发现、连接和relay使用
+原typed准入、原期限和实际提交票据；Backend视图仅元数据/受控关闭，Runtime open
+不由应用fd触发。历史raw ingress回归独立命名为测试，不能重新接入生产。该批准确
+门禁在相应报告，DLI目录/全局掩盖及rawUAPI其余消费者仍待迁移，不宣称整架构完成。

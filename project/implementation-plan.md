@@ -1,82 +1,11 @@
 # SparkLink / Linux 联合实施方案
 
-[本批Owned SSAP纵向切片已实测](../docs/evidence/ssap-owned-authorization-20261017.json)：
-K0cd/编译与工具c6，基本与机制2两门禁16个owner案例、64次审批、80笔实际远端事务；
-owner退出旧handle拒绝，对端数据库核对与双端USB闭包。另249/超限、2042完整往返，
-四门禁32次普通业务回复。16 watch/8 actor义务上限与原RX约束继续保留；300默认+
-300 all-features/746工具/四重放52负对照通过。Kani诊断仍未证明，不以局部成功关闭整项。
-下一条有限链路为实际owner回调的期限/退出/退休交错与service-only权限部署，再接CPCD/
-受保护通知指示；数据/多通道/四设备/性能并行。缺审批者、删除重建、原生fd失败当前
-有生产函数/私有D-Bus门禁，尚非全部真实撤权/Down/迟到资格。保留完整S0–S6/19WP/
-10FV/12DG，不以全部控制面组合或ROM真冷识别为前置。
-
-本批有限门禁：先实际VM service-only账号/组/正式system-bus策略的登记、读回、注销及
-跨owner/管理/通道/设备拒绝；接着审批中owner退出、原期限到期及迟到旧批准，最后
-在受影响SMTC失败后核对原CUTC业务和同行。完整source-scope禁止用c6 bundle混搭新probe；新产物单列
-编译与执行身份；不将新角色验证解释为发行版完整部署或整套多应用证明。active-owner
-controller退休和后续CPCD仍单列，不以控制竞争全集延后数据/多通道/四设备主线。
-
-## 本批退出条件与近期执行顺序
-
-证据保留事故并行整改：原HCC110文档日志被复用文件名覆盖，原hash不改，五条历史
-整包记录按git原样归档，当前以required UNPROVED事故项替代，不默默保留PASS。
-新实机报告独立材料仍保留；使用排他创建的新日志路径和只读封存，不再覆盖旧证据。
-完整历史原件恢复/适当替代资格范围需另核，严格构建重跑不冒充恢复原字节。
-
-本次固件适配候选复核已取得[四轮软件回ROM对照](../docs/evidence/ws73-rom-chip-candidate-20261017.json)，
-**首次冷下载可靠自动选择仍未验收**：SDK110两56字节函数/特殊指令/HCC日志调用匹配；
-E/U各两轮，12次真实ROM读取在任何校准写入及下载前，显式整套镜像上传后HCC一致。
-E0x0a、U0；U零值不能单凭USB成功/四字节/重复就证明访问有效，原拒绝失败保留。
-真正冷启动、独立有效性判据、每设备整套路径选择和重枚举/新generation绑定保持
-WP03/K#13–15/#19未决。S/SDIO、E/UART、不一致/短回复/超时不得默认U。当前不改
-生产选择，不关闭相关issue；维护后两组16真实回复不代替复位同时同行业务门禁。
-
-同时收尾[110受保护SSAP](../docs/evidence/ssap-110-protected-access-20261017.json)：
-准确0cd/编译836/工具ee8，U2/3两机制共16实际回复、24属性案例（20允许4拒绝）。
-继续唯一Engine的有界本地授权义务，按ADR0004绑定审批者unique owner/epoch、属性
-登记版本、原RX lifetime/security epoch/方向/期限；不得用布尔配置或安全Agent批准
-放行。下一批退出包含真实允许/拒绝/缺审批者、退出、迟到/重复、删除重建、撤权/Down
-及原期限。CPCD和通知/指示发送随后另取证据，不恢复旧wire Engine。ROM候选验证与
-此线及数据/多通道/四设备/性能并行，不要求冷启动或控制竞争全集先完成。
-
-当前限定退出分两组准确产物，不能互相转授：
-
-- [0cd新内核HCC/数据门禁](../docs/evidence/ws73-hcc-query-deadline-20261017.json)：
-  K0cd/编译836/执行ee8，HCC每笔USB OUT受原2秒剩余预算约束；E/U短包、249负载、
-  2042完整长包与U2/3短包共四门禁32次实际回复、88发现轮次、12次实际HCC型号查询。
-  1116生产fixture+ASan/UBSan、730冻结工具、48封存ABI、四重放/128复制负对照。
-- [f887完整typed生命周期30项](../docs/evidence/ws73-110-original-intent-lifecycle-20261017.json)：
-  编译836/执行e513，普通/机制1/机制2×两来源×release、最后管理fd、dup、Down、原期限。
-  72控制前真实回复、108晚到拒绝、30重放/892复制负对照；满池5、原5秒、真实2秒/8秒
-  IN81屏障和逐调用时钟断言保持。实际PB前缀按逐案计数，不假定统一1270字节。
-  同行仅Ready/租约/扫描隔离，非另一业务组；0cd未重跑这整套。net/trace/UAPI和用户态
-  源码相同仅记录映射，不称refinement或硬件等价。
-
-[四只独立110下载](../docs/evidence/ws73-hcc-model-110-20261017.json)保留准确原身份：
-E1用e、U2/3/4用us。HCC自动型号不认证硅片/校准/执行固件，ROM首次自动镜像选择、
-S/一般板兼容仍缺。混合运行期VM不带ROM镜像，意外ROM明确失败。唯一Session、
-Runtime、Grant/credit/Ticket及SSAP Engine保持；E1526/6、U254/5逐真实DLI约束。
-
-首110期限实机FAIL仍保留：5508.767234–5508.861382ms超过原5500ms，断言未放宽；
-随后30项成功不解释原失败，31次尝试原失败单列且RCA开放。HCC2秒USB提交预算修复
-不冒充其根因；真实OUT停滞/stop/drain组合、自然启动/重枚举/消失及非人工恢复继续OPEN。
-受控RAM复位/人工/hub/QMP不计自然恢复。SDK111中止整轮及旧资格不转授110/E。
-
-CBMC仅实际chip reply decoder的128字节输入、8语义性质（439原始检查、三负对照），
-不证明整个parser/USB/引用/锁/期限/固件真值。历史access Kani及撤权/晚NOCP复用组合
-继续未证明；本批相关门禁退出后进入下一纵向链路，不无限追加控制面前置。
-
-随后接同一Engine的策略绑定本地属性授权/CPCD与受保护更新，未支持项继续拒绝；
-没有身份/Bond就不授可信身份或持久凭据。长包/真实credit/多通道/四设备及性能并行，
-不把控制面全集改成前置。旧U331晚Down、5.509秒期限、自然启动/重枚举/设备消失
-根因、非人工恢复、NOCP真值/复用/USB drain和部分初始化清理保持OPEN，人工/hub/
-QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原范围保持。
-
-构建遵守12路独立、与真实VM并行8路，共享锁和固定增量目录，资格产物另封存。
-性能仍按ADR0006测量基线→事件驱动→有界发送→多/四设备→USB/RX空窗实测优化；
-未经测量不认定单RX URB是瓶颈，功能样本不授性能资格。UserHost=P4非前置。
-当前资格只见[能力入口](current-capabilities.md)，原失败与历史源身份见证据索引；
-文档只构建四象限，计划/ADR/证据保持源入口，不形成平行规划。
+当前按2026-10-17架构优先指令，先完成现有生产路径的R4退休、R5应用接口/调用者和
+R6干净VM部署收敛，再扩展功能。采用唯一架构中的组件依赖、应用接口、运行时三视图；
+不是另建Host/Engine或把全部控制面竞争组合变成前置。保留完整S0–S6、19WP、10FV、
+12DG、VM-only、已封存WS73路径及未提交生命周期开发，UserHost仍为P4规划。
+当前有限批为WP18/R4f2e，退出条件和剩余条件见下文；历史Owned/安全/数据资格只按
+[当前能力入口](current-capabilities.md)所选准确产物及记录保留，不转授新HEAD。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -1015,15 +944,15 @@ Grant/credit/Ticket、VM-only保留；UserHost为P4。保留在途生命周期�
 外部SDK/文档闭合。每批生产代码、消费者、绑定、测试、文档同步，小签名提交；迁移
 接通后删旧路，不用永久alias/NotSupported门面、测试成功或全局dead_code掩盖未实现。
 
-##### 当前限定资格与边界
+##### R4阶段历史资格与迁移边界（不替代当前资格）
 
-当前登记由结构化记录及version1的selected_qualification选择生成/校验：
+以下为原R4e阶段的保留记录；当前选择由结构化selected_qualification生成/校验：
 [K64/U0a/工具997注册状态整改](../docs/evidence/kernel-registry-retirement-r4e-20261017.json)
 准确四VM、32对端回复、24Owned/96审批/120事务、68角色拒绝，另8C+8CLI元数据。
 19安装+9当前注册与6历史接管fixture分开；49新产物ABI，旧Rust/工具suite不冒充新跑。
 R1–R4d及其他旧资格只按各自身份留在历史/记录索引，不转授当前树。
 
-b35命令候选必须完成六离线子集、实际Rust组件Werror、完整Kernel/link与准确
+b35命令候选当时要求完成六离线子集、实际Rust组件Werror、完整Kernel/link与准确
 四VM/独立重放，才推进主分支；构建通过不是实机资格。其余DLI/全局掩盖/rawABI/旧selftests、R5完整契约与来源、
 R6干净VM部署仍未完成。能力入口不再叠加逐轮进度，原文以23f快照/hash归history。
 
@@ -1263,25 +1192,35 @@ Virtual4b6与四真实VM原件未重建/重跑，不授整个2d268 HEAD资格。
 240是当前标准profile软件预算，不是A3业务249/2042长度；标准255互通资格仍缺，
 不得将修测试描述成实现已符合完整标准。详见[反例](../docs/evidence/parser-budget-fixture-review-20261017.json)。
 
-##### R4f2e近期退出：旧raw ABI全链退休
+##### R4f2e源码已迁移；新VM／实机资格待验
 
-刷新实际源码后，旧清单93项之外还有8个PHY裸接口仅返回不支持；当前候选总数为
-101，不沿用93作为完整数量。127个C宏中其余26为真实当前控制/观察入口，保留
-registry/file-affinity、Typed Native、Diagnostic和标准profile真实MGMT_STATS。
-32/64位C宏求值一致且无新旧碰撞，只是静态/数值审计，不是运行内核ABI资格。
+签名源码K`2fc210af68ee`／U`2c8e05cf8b46`已落实101旧raw声明/分类/仅拒绝分派退休；
+26真实入口及现有状态权威保留。旧编码ENOTTY，在CAP、Runtime和usercopy之前拒绝，
+编号不复用；不支持的新模式仍按当前契约拒绝。53无生产消费者的Rust布局移到私有
+cfg(test)见证，当前ABI和5份历史跨语言布局分开；实际权限类型和唯一SSAP Engine保留。
+[本批范围和材料身份](../docs/evidence/raw-uapi-retirement-progress-20261018.json)。
 
-- 立即删除：101项未发布旧声明、权限分类及仅拒绝的分派门面；旧编号保留不复用，
-  退休后统一ENOTTY。未支持的新模式仍明确拒绝，不通过旧接口恢复模型行为。
-- 移入测试：独立冻结旧数值/布局、旧monolithic模型和有价值的权限/取消/失败证据；
-  当前syscall负对照覆盖全部退休编号，独立保留有效Affinity/管理权限测试。
-- 等待替代：标准profile连接业务、完整共享SDK及部署按原scope继续；不因为
-  旧公开名字相似就合并管理staging与Owned应用注册，也不另造Engine。
+三类清单：
 
-同步迁移Kernel头/Rust、C/Python及CLI剩余类型、VM runner/bundle/CI pin/帮助，
-保留原生命周期WIP。当前已有上层旧包装已退休，下一批按实际依赖逐条删底层
-声明和测试调用者；不得只加新入口让旧门面长期共存。门禁包含严格default/allfeatures、
-独立跨语言/真实D-Bus、实际VM权限/退休编号、准确新artifact双设备保留回归。
-历史83项EOPNOTSUPP快照不改成新ENOTTY资格；新工具建立独立身份。
+| 处理 | 生产调用者／实际功能 | 替代与验收条件 | issues |
+|---|---|---|---|
+| 立即删除，源码已实施 | 101旧raw只有声明/拒绝门面，上层包装已退休；53旧Rust布局只有单元测试 | Typed Native/授权Channel；26数值不变、旧101实际ENOTTY和不改输出；新VM待验 | K#6/#17/#19、U#3/#6/#8 |
+| 移入测试，已实施 | 13原suite/CLI/runner精确来源、旧C/Rust布局、权限helper、原失败 | 当前初始化/usercopy/作者结果迁到Typed诊断；原文件/hash及取消/故障回归保留；不是旧raw成功接口 | 同上 |
+| 等待替代／验收 | 旧合成USB终态/重复回复/热插拔/恢复情景；完整AppSDK/CLI/C-Python及部署 | 有价值情景经当前接口重建后取新VM证据；当前Virtual不声称全覆盖。R5/R6及原全部范围开放 | K#19、U#8及原权限/socket/SSAP范围 |
+
+有限退出条件（不追加全部控制面组合）：
+
+1. 严格默认/allfeatures、整个Kernel与组件、独立32/64位数值和失败负对照、当前C/Python
+   ABI/导出/权限；构建与离线已通过，准确环境见报告。真实接口与历史fixture分别表达。
+2. 新Virtual实际syscall：全部101编号的三种地址、Root/普通用户、原Affinity/dup；
+   当前12特权/12观察及退休configfs状态，Native部分初始化/用户copy和同行隔离按相关VM门禁。
+3. 准确新K/U/tool/bundle的双WS73发现/连接、61、249及超限、2042、Owned/机制2保持；
+   对端实际校验回复和双端USB证据，独立重放/缺失/身份/载荷负对照。旧资格不转授。
+4. 默认不含旧业务/模拟成功、调用者/绑定/CIpin/帮助一致，保留原生命周期WIP。
+   此后进入完整R5 AppSDK/CLI/契约及R6干净VM部署；整架构尚未完成。
+
+原83项EOPNOTSUPP历史快照不改写为101ENOTTY。原parser预算反例及旧聚合UNPROVED
+继续保留；新raw批不是标准255互通、自然故障根因或非人工恢复资格。全部原scope开放。
 
 ##### R5a最小独立导出门禁
 

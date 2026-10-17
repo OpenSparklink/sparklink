@@ -14,14 +14,15 @@
   },
   "batch": {
     "id": "WP18-R4f2e-raw-ABI-and-test-retirement",
-    "production_behavior": "Only testdependency corrected:production4b6 unchanged,offline tools2d268 useactual240constant. OldaggregateUNPROVED andcounterexample retained;all11originalgates/contractspreserved undernewrecord with exactoldRF/build/Virtual/artifacts. No newphysical orwholeHEADclaim.",
-    "state": "PRODUCTION_BUDGET_CORRECTION_SCOPED_PASS_ARCHITECTURE_INCOMPLETE",
+    "production_behavior": "K2fc/U2c8retire101rawfacades/53unusedpubliclayouts;retain26actualcontrols andsameRuntime/Session/Grant/credit/Ticket/soleSSAPEngine. Kernelbuild/offlinechecks done;newVM/RFpending. Oldselectedqualification unchanged.",
+    "state": "RAW_ABI_SOURCE_MIGRATED_OFFLINE_PASS_NEW_VM_PENDING",
     "exit": [
-      "14exact offline subsets including current6/historical1event-ring groups,Native snapshot5/install19/pending9;prior full projection5/minimalversion5 and USB history explicitly separate;wholeRustWerror/fullKernel/boot",
-      "K4b6/U2bd/tools997:4realVM32peerreplies24Owned96decisions120transactions68roledenials,81+56negativecontrols;Virtual2rounds/12negatives;49newlibraryABI andactualELF",
-      "Fresh101rawstubs include8PHY missed by93snapshot;retire headers/types/authorization/dispatch/callers and preserve meaningful selftests,then fullAppSDK/CLI/C-Python/R5provenance/R6cleanVMdeployment"
+      "Strict current default/allfeatures+wholeKernel/component+independent32/64numeric/ABI/ELF/permission andnegativecontrols",
+      "ActualnewVirtual101ENOTTY/303checks root+ordinary andcurrent CAP/observation;Nativepartialopen/usercopy/peer isolation",
+      "ExactnewK2fc/U2c8/tools2c8/bundle WS73short/boundary/long/Owned/security peerverifiedUSB preservation",
+      "Complete callers/bindings/CIpin/docs andpreserved originalWIP;thenfullR5SDK/CLI/C-Python/contracts,R6cleanVMdeployment;notwholearchitecturecomplete"
     ],
-    "next": "Resume preserved101rawABI/caller/type/currenttest migration,then fullR5AppSDK/CLI/C-Python andR6cleanVMdeploy. Fulloriginalscope,standard255interoperability,naturalRCA/nonmanualrecovery remainOPEN."
+    "next": "Finish finite newVM/RFpreservation;then fullR5/R6architecture beforefeature expansion. OriginalS0-S6/19WP/10FV/12DG,standard255,naturalRCA/nonmanualrecovery remainOPEN."
   },
   "overall_required_records": [
     "deadline-real21",

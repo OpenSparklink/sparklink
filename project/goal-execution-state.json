@@ -667,12 +667,10 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "K6861/U13bb/tool13bb/post6c scopedcurrentmechanism:6VM/32snapshots/48peerRT,positivelevel1/2 andnative-admitted reject/expiry0. Nextlivequeryrelease/finalfd/dup/Down/originaldeadline andprotectedGrantactualadmission/submit/RXthenSSAP;not cachedoperation-as-security.",
-    "Currentartifact retainsselected249/2042,notfullnewsevenlength/tenlifecycle. Oldsourcequalificationskeepexactidentities;multichannel/fourdevice/fairness/performancecontinueparallel,Eport1excluded.",
-    "SameuniqueSession/credit/Ticket/RuntimeGrant;joinphysicalobligations onauthorloss;authenticatedmechanism andlocalappauthorization distinct. No additionalHost/Engine.",
-    "Parallel exactnumericCLI/humanoriginalbudget andownerloss/inflight;no allcontrolcompetition prerequisite.",
-    "Parallel naturalRCA/nonmanualrecovery,partial-init/drain/eventmigration/old-code,performance andfourdevice;no QMP/manual/hub/injection-as-naturalproof.",
-    "FullS0-S6/19WP/10FV/12DG/originalissues retained;UserHostP4 andDiataxisindependent."
+    "R4f2:finish finite production event/metadata authority and full-chain unpublished raw ABI retirement with valuable historical tests preserved",
+    "R5:complete existing AppSDK/CLI/C-Python callers and independent contract/provenance gates;no second Engine",
+    "R6:cleanVM deployment/externalSDK/upgrade/rollback/uninstall/config retention",
+    "Only then refine next real vertical behavior under fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanual recovery stayOPEN"
   ],
   "architecture_contract_adoption": "docs/decisions/0004-application-ownership-and-delivery.md",
   "proof_policy": {
@@ -688,7 +686,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-17T13:29:01.017843+00:00",
+  "updated_at_utc": "2026-10-17T16:06:58.554005+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -789,9 +787,20 @@
       "Continue length/layer253-255/longPDUs, real credit exhaustion/backpressure/finite queues, Session demux/multichannel/four devices; do not wait for all control competition or S5 security completeness to maintain data development.",
       "Parallel natural startup/reenumeration/disappearance root cause and nonhuman recovery, partial-init/callback cleanup/events/old-code remediation; injected/QMP/manual/hub actions not natural acceptance.",
       "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
-    ]
+    ],
+    "pre_raw_batch_priority_20261018": {
+      "execution_phase": "ACTIVE_SERVICE_ONLY_POLICY_AND_FINITE_OWNER_CALLBACK_LIFECYCLE_GATES",
+      "next_slices": [
+        "K6861/U13bb/tool13bb/post6c scopedcurrentmechanism:6VM/32snapshots/48peerRT,positivelevel1/2 andnative-admitted reject/expiry0. Nextlivequeryrelease/finalfd/dup/Down/originaldeadline andprotectedGrantactualadmission/submit/RXthenSSAP;not cachedoperation-as-security.",
+        "Currentartifact retainsselected249/2042,notfullnewsevenlength/tenlifecycle. Oldsourcequalificationskeepexactidentities;multichannel/fourdevice/fairness/performancecontinueparallel,Eport1excluded.",
+        "SameuniqueSession/credit/Ticket/RuntimeGrant;joinphysicalobligations onauthorloss;authenticatedmechanism andlocalappauthorization distinct. No additionalHost/Engine.",
+        "Parallel exactnumericCLI/humanoriginalbudget andownerloss/inflight;no allcontrolcompetition prerequisite.",
+        "Parallel naturalRCA/nonmanualrecovery,partial-init/drain/eventmigration/old-code,performance andfourdevice;no QMP/manual/hub/injection-as-naturalproof.",
+        "FullS0-S6/19WP/10FV/12DG/originalissues retained;UserHostP4 andDiataxisindependent."
+      ]
+    }
   },
-  "execution_phase": "ACTIVE_SERVICE_ONLY_POLICY_AND_FINITE_OWNER_CALLBACK_LIFECYCLE_GATES",
+  "execution_phase": "ARCHITECTURE_FIRST_R4_RAW_ABI_VM_QUALIFICATION_THEN_FULL_R5_R6",
   "next_resume_tasks": [
     "R4f2:finish finite production event/metadata authority and full-chain unpublished raw ABI retirement with valuable historical tests preserved",
     "R5:complete existing AppSDK/CLI/C-Python callers and independent contract/provenance gates;no second Engine",
@@ -1805,14 +1814,15 @@
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP18-R4f2e-raw-ABI-and-test-retirement",
-      "production_behavior": "Only testdependency corrected:production4b6 unchanged,offline tools2d268 useactual240constant. OldaggregateUNPROVED andcounterexample retained;all11originalgates/contractspreserved undernewrecord with exactoldRF/build/Virtual/artifacts. No newphysical orwholeHEADclaim.",
-      "state": "PRODUCTION_BUDGET_CORRECTION_SCOPED_PASS_ARCHITECTURE_INCOMPLETE",
+      "production_behavior": "K2fc/U2c8retire101rawfacades/53unusedpubliclayouts;retain26actualcontrols andsameRuntime/Session/Grant/credit/Ticket/soleSSAPEngine. Kernelbuild/offlinechecks done;newVM/RFpending. Oldselectedqualification unchanged.",
+      "state": "RAW_ABI_SOURCE_MIGRATED_OFFLINE_PASS_NEW_VM_PENDING",
       "exit": [
-        "14exact offline subsets including current6/historical1event-ring groups,Native snapshot5/install19/pending9;prior full projection5/minimalversion5 and USB history explicitly separate;wholeRustWerror/fullKernel/boot",
-        "K4b6/U2bd/tools997:4realVM32peerreplies24Owned96decisions120transactions68roledenials,81+56negativecontrols;Virtual2rounds/12negatives;49newlibraryABI andactualELF",
-        "Fresh101rawstubs include8PHY missed by93snapshot;retire headers/types/authorization/dispatch/callers and preserve meaningful selftests,then fullAppSDK/CLI/C-Python/R5provenance/R6cleanVMdeployment"
+        "Strict current default/allfeatures+wholeKernel/component+independent32/64numeric/ABI/ELF/permission andnegativecontrols",
+        "ActualnewVirtual101ENOTTY/303checks root+ordinary andcurrent CAP/observation;Nativepartialopen/usercopy/peer isolation",
+        "ExactnewK2fc/U2c8/tools2c8/bundle WS73short/boundary/long/Owned/security peerverifiedUSB preservation",
+        "Complete callers/bindings/CIpin/docs andpreserved originalWIP;thenfullR5SDK/CLI/C-Python/contracts,R6cleanVMdeployment;notwholearchitecturecomplete"
       ],
-      "next": "Resume preserved101rawABI/caller/type/currenttest migration,then fullR5AppSDK/CLI/C-Python andR6cleanVMdeploy. Fulloriginalscope,standard255interoperability,naturalRCA/nonmanualrecovery remainOPEN."
+      "next": "Finish finite newVM/RFpreservation;then fullR5/R6architecture beforefeature expansion. OriginalS0-S6/19WP/10FV/12DG,standard255,naturalRCA/nonmanualrecovery remainOPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3103,7 +3113,7 @@
     "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
   },
   "architecture_retirement_current_batch": {
-    "status": "PARSER_BUDGET_CORRECTION_SCOPED_PASS_RAW_ABI_SDK_DEPLOYMENT_INCOMPLETE",
+    "status": "RAW_ABI_SOURCE_MIGRATED_OFFLINE_PASS_NEW_VM_PENDING",
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
     "batch": "R4f2 DLI event/global-mask/raw ABI and current/historical selftest migration",
@@ -3171,7 +3181,7 @@
       "userspace": "d795a3a6b1e98c24e984e2459b2cf1e7db46cff4",
       "linux": "0cd4731dd3e673d1309a2b570b38769f9a98681f"
     },
-    "latest_call_audit": ".dev/architecture-r4d-native-call-audit-v1.json;R4e actual kernel/selftests audit in progress",
+    "latest_call_audit": "Kernelretired-raw-uapi retirement/type/test audits;history/raw-abi-type-retirement.json;2fc/2c8exactsource",
     "r4a": {
       "status": "EXACT_98C4B65_FOUR_REAL_GATES_SCOPED_PASS_FULL_ARCHITECTURE_INCOMPLETE",
       "exit_reference": "Canonical WP18 R4a",
@@ -3305,7 +3315,7 @@
       "report": "docs/evidence/kernel-event-registry-retirement-r4f2cd-20261017.json"
     },
     "r4f2e": {
-      "state": "FRESH_STATIC_NUMERIC_CALL_AUDIT_ONLY_NOT_RETIRED",
+      "state": "SOURCE_MIGRATED_FULL_KERNEL_AND_OFFLINE_PASS_NEW_VM_PENDING",
       "source": "4b6dda28490d61864eacaa791e72cac1cfea2c0c",
       "candidates": 101,
       "previous_snapshot_candidates": 93,
@@ -3313,7 +3323,11 @@
       "retained_current_commands": 26,
       "numeric_scope": "x86_64/i386 Cmacro values identical,no collisions;not runtime compat/retirement proof",
       "exit_reference": "WP18 R4f2e canonical plan",
-      "remaining": "Full declaration/type/auth/dispatch/caller/test/CI migration and exact newVMqualification"
+      "remaining": "NewactualVMpermission/retirednumbers/Nativeopen+usercopy andexactWS73preservation;fullR5/R6. UsefuloldsyntheticUSBterminal/hotplug/recovery notclaimedcoveredbyVirtual.",
+      "kernel_source": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+      "userspace_source": "2c8e05cf8b467bed702adabf9ba42c577a862f4e",
+      "unused_rust_layouts_privatized": 53,
+      "implementation_report": "docs/evidence/raw-uapi-retirement-progress-20261018.json"
     },
     "parser_budget_review": {
       "production": 240,

@@ -9,16 +9,17 @@
 | 唯一用户态SSAP Engine/Owned | 24案例、96审批、120真实远端事务；owner在操作之间退出 | 活跃callback/原期限/撤权交错、CPCD、完整通知/指示和安全等级 |
 | 普通应用与显式Native分层 | App SDK无Native依赖；slkd不依赖App SDK；业务fd直达唯一Session | 完整C/Python broker/SSAP便利接口、全部CLI消费者收敛 |
 | 注册元数据 | 8次实际C bitmap/count、8次CLI完整身份快照，49新库ABI/历史布局检查 | allocation count不是Ready；不是C/Python业务、原子快照或芯片认证 |
-| 内核注册及命令整改 | 注册假状态/能力统计副本、未消费raw命令和DLI能力投影退休；当前Native快照5项与历史投影5项分开，实际Rust组件与完整Kernel均构建 | 旧rawUAPI/调用者迁移、其余旧声明/局部豁免、完整生命周期/并发证明 |
-| DLI事件/注册版本整改K4b6 | 仅7类已消费事件、生产DLI deny；剥离已实现；当前与历史decoder/ring/投影分开；组件/内核、Virtual及四真实VM原件保留，parser边界以2d268工具直接注入生产240预算重验；原聚合未证明保留 | 101旧raw接口全链退休、完整SDK与部署仍缺；历史codec不是当前标准互通能力 |
+| 内核注册及命令整改 | 注册假状态/能力统计副本、未消费raw命令和DLI能力投影退休；当前Native快照5项与历史投影5项分开，实际Rust组件与完整Kernel均构建 | 新raw退休artifact的VM资格、完整SDK/部署、完整生命周期/并发证明 |
+| DLI事件/注册版本整改K4b6 | 仅7类已消费事件、生产DLI deny；剥离已实现；当前与历史decoder/ring/投影分开；组件/内核、Virtual及四真实VM原件保留，parser边界以2d268工具直接注入生产240预算重验；原聚合未证明保留 | 新raw退休artifact待验、完整SDK与部署仍缺；历史codec不是当前标准互通能力 |
 | 关键故障消费者（选定产物） | 首Fault关闭准入、独立关键观察、原worker/ledger；81+2函数子集，实际可选Virtual两轮和四真实保留VM | 同一作者两个请求，非同controller多作者证明；不是实物HardwareError、自然根因或恢复资格 |
 | C导出守卫 | 两库实际ELF与独立公开头、失败/截断/变更负对照 | 名称/函数种类一致不等于ABI调用、权限或实机资格 |
 
 选定产物为准确K4b6／编译U2bd／硬件工具997，离线工具2d268与原Virtual探针K4b6分别记录。
 本批四VM保持已验证发现、连接、短长消息与限定Owned/机制2路径；故障输入仅在
 显式测试后端验证，不能转作自然硬件故障验收。旧34a/7025/b35资格保留原身份。
-完整架构仍缺101旧raw接口、完整SDK调用者与干净VM部署。初始清单93未覆盖
-8个PHY拒绝门面，现已纳入；这次发现不意味着已完成退休。
+新源码K2fc/U2c8已退休101旧raw入口并私有化53旧Rust布局；新Kernel构建与离线门禁
+通过，[范围记录](../docs/evidence/raw-uapi-retirement-progress-20261018.json)明确区分当前ABI与历史见证。
+新VM/实机资格尚待取得，不能转授上列保留产物。完整SDK/CLI调用者与干净VM部署仍缺。
 自然启动/重枚举/设备消失根因、非人工恢复继续开放。
 
 标准parser原fixture以255代替生产240预算，原聚合已降UNPROVED并保留

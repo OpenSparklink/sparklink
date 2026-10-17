@@ -1,5 +1,13 @@
 # 证据入口与取得限制
 
+[Controller 管理调用者迁移限定资格](controller-management-client-qualification-20261018.json)：
+准确 K2fc／编译与工具4736，四新VM共32次对端业务回复，保留发现、连接、长度和
+Owned／限定安全路径；管理CLI复用固定owner的现有Client。324最终workspace、50
+封存库检查、177证据及5封存schema负对照分列，无新增形式化证明。
+[旧CLI的owner失效反例](controller-owner-counterexample-20261018.json)来自实际旧二进制
+和私有bus，不能描述为实机串包。地址索引Device、本地Owned／Agent、C/Python完整
+客户端与干净VM部署仍缺；本批不关闭整项架构或自然恢复事项。
+
 [远端SSAP应用客户端迁移限定资格](application-ssap-client-qualification-20261018.json)：
 准确K2fc／编译与工具a37，四新VM共32次对端业务回复及原Owned/长度资格；
 新CLI实际经现有Client到唯一Engine。316最终workspace、50封存库检查、独立签名、

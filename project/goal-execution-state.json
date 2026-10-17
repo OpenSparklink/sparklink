@@ -685,7 +685,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-17T21:09:46.386068+00:00",
+  "updated_at_utc": "2026-10-17T22:00:24.192697+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -799,19 +799,19 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R6A_GENERIC_VM_QUALIFIED_R5F_R6_PACKAGES_AND_NEW_RF_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R6B_PACKAGE_BASE_QUALIFIED_R5F_R6C_AND_NEW_RF_OPEN",
   "next_resume_tasks": [
-    "R5f:remainingpublic/supportcontractandhighlevelC-Pythonbroker/SSAPclients,commonOperation/Deadline/EventStream/perappdiscovery;reuseexistingClient/Channel/Engine",
-    "R6:genericcleanVMfinite668qualified;actualDebianpackages/crossversionupgrade/rollback,actualnativepermissions andnewWS73artifactmatrix stillOPEN",
+    "R5f:close actualpublic/sharedAPI/supportboundaries,higherC-Pythonbroker/SSAPclients/commonOperation-Deadline-EventStream/perappdiscovery,usingexistingClient/Channel/uniqueEngine",
+    "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
-  "issue_sync_status": "SIX_EXISTING_ISSUES_UPDATED_READBACK_BODY_UNCHANGED_ALL_OPEN",
-  "issue_sync_receipt": ".dev/architecture-r6a-issue-receipts-v1.json",
-  "previous_goal_turn_classification": "PROGRESS_PRODUCTION_OWNED_SSAP_FOUR_REAL_VM_GATES_AND_SOURCE_BOUND_EVIDENCE",
-  "current_goal_turn_classification": "PROGRESS_ARCHITECTURE_R6A_EXACT_GENERIC_VM_LIMITED_QUALIFICATION_FULL_R5F_R6_OPEN",
+  "issue_sync_status": "R6A_SIX_EXISTING_PLUS_R6B_RELEVANT_UPDATES_READBACK_OPEN_NO_SCOPE_CHANGE",
+  "issue_sync_receipt": ".dev/architecture-r6b-qualified-issues-v1.json",
+  "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_R6A_EXACT_GENERIC_VM_LIMITED_QUALIFICATION_FULL_R5F_R6_OPEN",
+  "current_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
-  "issue_sync_receipt_previous": ".dev/architecture-r5d-issue-receipts-v1.json",
+  "issue_sync_receipt_previous": ".dev/architecture-r6a-issue-receipts-v1.json",
   "additional_reference_review": {
     "source": "docs/evidence/openharmony-peripheral-reference-20261015.json",
     "repository": "https://gitcode.com/openharmony/drivers_peripheral",
@@ -1831,20 +1831,24 @@
       "deployment-clean-vm-r6a": {
         "level": "virtual_integration",
         "result": "PASS"
+      },
+      "debian-package-base-r6b": {
+        "level": "virtual_integration",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R6a-generic-deployment-qualified-R5f-R6-open",
-      "production_behavior": "Canonical installation,actualSONAMEs,role groups andruntimePythonloader. Exact668cleanDebianVM passesfinite44gates,actualsystembus roles/externalbasicC-Python/configretention;twooriginalharnessfailuresretained. No newWS73/formalproof;selectedR5erealartifact unchanged.",
-      "state": "R6A_GENERIC_VM_FINITE_PASS_ARCHITECTURE_R5F_R6_INCOMPLETE",
+      "id": "WP18-R6b-package-base-qualified-R5f-R6c-open",
+      "production_behavior": "Actual247canonicalroles/installedSDK/notices/reinstall/remove base-scope qualified in twoVMs. Originalclean/rootfixture/missinggroupsFAIL retained;warnings unchanged. No newRF/formalproof;selectedoldR5erealartifactunchanged.",
+      "state": "R6B_PACKAGE_BASE_FINITE_PASS_FULL_ARCHITECTURE_R5F_R6C_INCOMPLETE",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Finish remainingpublic/sharedAPIandC-Pythonhighlevelclients,R6actualpackagebuild/install/upgrade/rollback andfreshaccurateWS73artifactmatrix before architectureexit. GenericVM alonecannotqualifyNativeGrant ordevices. Fulloriginalscope/naturalRCA/nonmanualrecovery remainOPEN."
+      "next": "Finish R5f actualpublic/sharedcontracts andhigherlanguageclients,R6crossversionupgrade/rollback/debug/dependency/license/provenance/release,currentnativepermission/newWS73artifactmatrix before architectureexit. Do notrestoreoldinterfacesorcreateEngines. NaturalRCA/nonmanualrecovery andalloriginalscopeOPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3368,8 +3372,8 @@
       "next": "Resumepreserved101rawAPI/types/callers/currenttestmigration thenfullR5SDK/R6deploy;alloriginalscopeOPEN"
     },
     "remaining_order": [
-      "R5f:remainingpublic/supportcontractandhighlevelC-Pythonbroker/SSAPclients,commonOperation/Deadline/EventStream/perappdiscovery;reuseexistingClient/Channel/Engine",
-      "R6:genericcleanVMfinite668qualified;actualDebianpackages/crossversionupgrade/rollback,actualnativepermissions andnewWS73artifactmatrix stillOPEN",
+      "R5f:close actualpublic/sharedAPI/supportboundaries,higherC-Pythonbroker/SSAPclients/commonOperation-Deadline-EventStream/perappdiscovery,usingexistingClient/Channel/uniqueEngine",
+      "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
       "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
     ],
     "r5_remote_client_slice": {
@@ -3488,7 +3492,7 @@
       "maintenance_receipt": "docs/evidence/deployment-clean-vm-maintenance-20261018.json"
     },
     "r6b": {
-      "state": "BUILD_6CB_COMPLETED_WITH_WARNINGS_FRESH_INSTALL_ROLE_FAIL_FIX_OFFLINE_PENDING_VM",
+      "state": "SOURCE_BOUND_PACKAGE_BASE_SCOPE_QUALIFIED_FULL_R5F_R6_OPEN",
       "source": "Existing668 source archive;current latercommits metadata-only;exacthead nottransferred",
       "execution": ".dev/architecture-r6b-package-v2",
       "exit": "Canonicalplan R6b:actualversiondependencies/packagebuild/install/upgrade/rollback/remove/configretention andexternalconsumers;freshnativeWS73 separately",
@@ -3497,12 +3501,14 @@
       "first_failure": ".dev/architecture-r6b-package-v1/export/package-outputs-v1/result.json",
       "first_failure_scope": "Harnessformatteddisposablechildoverlaylostinheritedinputs;no packagebuild. ParentR6aandWIPunmodified. V2 mountsonly/checksactualsourcehash/toolchain/cachebeforeboot.",
       "failure_report": "docs/evidence/debian-clean-dispatch-failure-20261018.json",
-      "next": "Accurate newpackagebuild andfreshinstall verifiesgroupsbeforedaemon,ordinarybus/libraryconsumers andlicensepayloads;dwz/usrmergewarnings,upgrade/rollback/remove/permissions/newWS73 matrix remainOPEN",
+      "next": "R5f higherSDK/sharedpubliccontracts;R6crossversionupgrade/rollback anddebug/dependency/license/provenance releasegates,newnativeWS73artifactmatrix. No wholescopeclosure.",
       "root_fixture_failure_report": "docs/evidence/debian-root-config-fixture-failure-20261018.json",
       "clean_fix_in_actual_vm": "Actual9ce cleanandproductionbuild passed,wholepackagefailedatrootpermissionfixture;notpackagequalification",
       "additional_issue_receipt": ".dev/architecture-r6b-clean-fix-issues-v1.json",
       "build_receipt": "docs/evidence/debian-package-build-receipt-20261018.json",
-      "actual_install_failure": "docs/evidence/debian-role-install-failure-20261018.json"
+      "actual_install_failure": "docs/evidence/debian-role-install-failure-20261018.json",
+      "qualification_report": "docs/evidence/debian-package-base-qualification-20261018.json",
+      "maintenance_receipt": "docs/evidence/debian-package-maintenance-20261018.json"
     }
   },
   "owned_ssap_c6_historical_batch": {

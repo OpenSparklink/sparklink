@@ -215,6 +215,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
 | U668：干净Debian VM通用安装、四角色system bus与外部基础SDK限定通过；软件包/实机另验 | `virtual_integration` | `PASS` |
+| U247：实际Debian分包基础安装/四角色bus/外部SDK/重装remove限定通过；升级发布仍开放 | `virtual_integration` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1452,6 +1453,18 @@ dwz缺少项目debug_info、usrmerge动态依赖警告及许可证/来源清单�
 也不补该定义。源码显式在服务集成前调用现有helper，复用已安装的唯一sysusers文件；
 通用/分包同步保存项目许可证及诚实的归属说明，第三方许可审计仍开放。离线真实
 Make暂存/卸载已验；新包构建、全新安装及普通用户仍待下一VM，不能手工补组算通过。
+
+该修正的有限退出已取得：[准确247实际分包基础资格](../docs/evidence/debian-package-base-qualification-20261018.json)。
+新root构建与无构建残留的运行环境分别验证；真实helper顺序/角色组、普通用户system
+bus、先运行包Python后开发包C、上游许可原文、同版本重装/remove及最终配置状态
+独立核对，计数只由结构化记录生成。原缺组/clean/权限夹具FAIL仍按原身份保留。
+不把同版本重装写成升级回滚，不把UnknownObject写成Kernel Grant，不把基础错误
+消费者写成完整高级SDK或新WS73资格；warning/完整许可来源审计与整项仍开放。
+
+R6c剩余部署批与R5f公开契约同步推进：实际跨版本升级/回滚及迁移边界、debug_info/
+dwz/动态依赖/支持组合、第三方许可/来源/SBOM和CI发布汇总；原生权限及准确新产物
+WS73门禁另取。继续现有Client/Channel/唯一Engine及完整原范围，不恢复旧接口或
+为整洁另建框架；架构完整退出后再扩展功能，UserHost仍P4。
 
 ##### R5a最小独立导出门禁
 

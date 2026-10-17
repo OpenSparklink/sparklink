@@ -725,6 +725,12 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 SBOM或发布来源审计完成。Debian用已验证的13.24.2或更新helper，在服务启动脚本
 前处理唯一sysusers定义；文件存在或APT成功不能替代实际组与普通用户权限门禁。
 
+准确247分包的[基础限定VM资格](../evidence/debian-package-base-qualification-20261018.json)
+已覆盖上述实际组/服务/普通用户、运行包Python、开发包C和配置保留。分包许可证
+按Debian惯例压缩为`LICENSE.gz`，解压字节与上游一致；通用Make保留未压缩文件。
+同版本重装不等于跨版本升级/回滚；debug/依赖警告及完整许可来源审计、实际原生
+权限和新设备产物资格分别待验。历史失败与原产物身份继续保留。
+
 通用Make默认使用固定rustup工具链；Debian的清理、构建和测试都显式使用已安装
 的`cargo`，版本仍由Build-Depends和准确构建记录约束，不要求发行版Cargo解析
 rustup的`+版本`参数。该清理修正的源码回归与[原失败](../evidence/debian-clean-dispatch-failure-20261018.json)

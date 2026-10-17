@@ -1,5 +1,12 @@
 # 证据入口与取得限制
 
+[Typed Peer统一与地址门面退休限定资格](typed-peer-retirement-qualification-20261018.json)：
+编译K2fc／U0fe，修正工具8aa，四个新VM；16次实际新SDK观察中12次与接收端USB
+一致，4次没有广告的被动端明确unknown。两种连接角色分别取得随机标识与RSSI。
+原32次业务回复、Owned／边界／长包／限定安全保持；330 workspace、50封存库检查、
+177原证据＋56新Peer负对照及5封存schema负对照分列，无新增形式化证明。
+原首轮FAIL不改写，本地Owned／Agent调用者、完整语言客户端和干净VM部署继续开放。
+
 [Typed Peer首轮工具迁移失败](typed-peer-tool-retirement-failure-20261018.json)：0fe编译/工具，
 真实发现/建链后漏迁runner仍调用旧info；整轮FAIL和原件保留，新资格须用修正工具另取。
 

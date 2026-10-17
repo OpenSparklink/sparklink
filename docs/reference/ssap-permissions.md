@@ -1,7 +1,8 @@
 # SSAP 操作权限语义
 
-源码核对：Linux `31769ea4b8c0`；用户态已提交 `ac64b3566f33`。
-这里是仍复用的权限类型契约，不表示 SSAP 服务/安全/长写已经接通。
+权限位审查的历史基线：Linux `31769ea4b8c0`、用户态 `ac64b3566f33`。
+本页维护仍复用的权限类型及当前入口契约；实际服务、安全与长写范围须分别核对
+[当前资格](../../project/current-capabilities.md)，不能由权限位声明推导。
 标准语义来源为项目审查使用的 T/XS 20001-2025 V1.2.0 表32；受限原材料不发布。
 
 | 命名 | 值 | 含义 |
@@ -32,6 +33,11 @@ slkd `Service.AddProperty` 先校验权限和值（最多248字节），合法�
 遗留 WriteProperty 超252字节、RemoteService.Write/CallMethod 超248字节拒绝，不静默截断。该输入上限不是新 Engine 的协商 MTU
 或真实长写资格。无响应写和有响应写、通知和指示分别授权；设置位不能绕过
 peer 身份、连接授权和认证/加密条件。安全/Bond 尚未实机合格时不得宣称可信权限。
+
+`org.sparklink.ServiceManager.RegisterLocalService` 是现有唯一用户态数据库的
+入口，当前只接通 READ 和 WRITE_WITH_RSP（mask `0x05`）；其他有效操作位返回
+NotSupported，保留位返回 InvalidArgs。注册成功只表示本地 staging；远端真实
+发现/读取/写入须经唯一 Engine 和对端业务核对，不能使用已退休的 facade 代替。
 
 ## 测试和证明边界
 

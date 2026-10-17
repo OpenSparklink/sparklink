@@ -2554,7 +2554,7 @@
     "issues": "K6/K7/K17/K19/U3/U5/U8OPEN;originalscopebodyunchanged"
   },
   "ssap_security_consumer_batch": {
-    "status": "IMPLEMENTED_OFFLINE_CHECKED_PENDING_ACCURATE_REAL_ARTIFACT",
+    "status": "TWO_PROTECTED_REAL_CASES_PASS_WHOLE_BASELINE_BATCH_FAIL_RETAINED",
     "parent_userspace": "002c1c041af80c7d07070959579c60b46c1ade73",
     "kernel_unchanged": "61905139ff8c3ed2937ccdba697d880880582234",
     "production_behavior": "Freeze sole SMTC minimum security before first bind;nonzero defers plain publication;actualnativecompletion prompts originalEngine;finalGrant validates liveepoch/lease;no fallback/rebind/secondEngine",
@@ -2569,10 +2569,9 @@
       "Sandbox tool SO_PASSCRED EPERM retainedv2;v3 outside sandbox rerun"
     ],
     "next_gates": [
-      "Freeze signed source and newuser artifacts;reuse exactsealed K619",
-      "VM-only U2/3 protectedSMTC1/2 eachbothroles:beforebindEACCES,realinstall,actualdiscovery/read/write/peerDB",
-      "DefaultplainSSAP andCUTC short/249/2042 newartifactregression",
-      "Exactreplay/evidence negatives andqualificationrecords,issues;no newformalproof claim"
+      "Freeze corrected verifier accurately;repeat newartifact protectedSMTC1/2 and defaultshort/249/2042 without weakening original5sDown budget",
+      "Investigate default peerDown reason0x07 at5.064s vs caller0x0d immediate;firmware/RFcauseunproved,do not raisebudget or shorten supervision to manufacturePASS",
+      "Complete evidence/qualifiedrecords/issue sync thenattribute permissions over sameEngine;fullS0-S6remainsactive"
     ],
     "remaining": [
       "Attributelevelsecurity/localauthorization,namedidentity,Bond",
@@ -2584,6 +2583,12 @@
       "mapping": "ssap_server_stack_adapter.cpp FillPropertyToService keeps separate permission andoperation;do not reinterpret operations asencryption",
       "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
       "firmware": "SDK111 unchanged"
-    }
+    },
+    "compiled_userspace": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+    "executed_tools": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+    "real_evidence": ".dev/protected-ssap-qualification-v1.json",
+    "failure_evidence": ".dev/protected-ssap-plain-down-failure-v1.json",
+    "qualification_limit": "Protected1/2 bothroles actualdiscovery/16readwritechecks percase plus8CUTC RT;plainshort8CUTC and16SSAPchecks butwholeFAIL peerDownafter5s. Baseline249/2042 NOT_RUN. No inheritednewartifactlengthqualification.",
+    "audit_order": "FullSMTCpreinstallcheck moved beforedestructive matching;240ratherthan8 observations perphase onactualsec1. Botholdandnewrejectcopiedearlyextra,not establishedfalsePASS. No change to Rust/Kernel production behavior."
   }
 }

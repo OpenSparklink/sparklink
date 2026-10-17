@@ -396,6 +396,9 @@ def corroborate(run,capture):
     sdus=reassemble_acb(capture);proofs=[];all_nonces=set();all_sequences=set()
     for n,row in enumerate(rows):
         if row['phase']!=n or row['status']!='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING':raise CaptureError('original successful socket phase required')
+        # Value/discovery matching consumes SDUs to detect unattributed input.
+        # Audit the complete lifetime window before that intentional removal.
+        protected=protected_ssap_wire(row,capture,sdus)
         prefix=None
         if row.get('close_prefix',False):sent,replies,prefix=prefix_application_frames(row)
         else:sent,replies=application_frames(row)
@@ -496,7 +499,6 @@ def corroborate(run,capture):
         if row.get("ssap_value_required",False): entry["ssap_values"] = ssap_values
         if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
-        protected=protected_ssap_wire(row,capture,sdus)
         if protected is not None:entry['protected_ssap']=protected
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows if not row.get('close_prefix',False)),proofs=proofs,

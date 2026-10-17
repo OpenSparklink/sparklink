@@ -1029,7 +1029,7 @@ Session/Engine，不引入第二 Host 或 SSAP 发送路径。所需组合验证
 SSAP 操作指示与值访问要求分开。采用已有表32操作类型及固定 NearLink Host 的
 六位本地 access API 编码；服务元数据可公开，读值/按 UUID 读/写值均先检查原 RX
 观察机制，再读取值或修改数据库。未知/失效观察不能授予权限。等级2只描述当前
-SDK111 数字比较机制，不授命名身份或 Bond。未接通的本地授权/CPCD 注册明确拒绝，
+SDK111 数字比较机制，不授命名身份或 Bond。Owned本地授权已接通逐请求审批，管理staging仍拒绝授权位；CPCD 注册明确拒绝，
 不接受应用自报授权、恢复旧 wire Engine 或另造权限语义。
 
 初始 ExchangeInfo 和客户端请求在原授权 fd 上准备 TX intent，保留原 scope/epoch/
@@ -1056,8 +1056,9 @@ security epoch and absolute deadline. It does not create a second Engine or gran
 security from local approval. Retirement revokes registrations under the database
 mutex, then joins owner watches outside locks. Kernel/DB admission is a snapshot,
 not an atomic cross-process transaction; already committed writes cannot be undone
-by later revocation. Current-artifact real qualification, service-only deployment,
-revocation/Down/deadline interleavings, CPCD and Bond remain separately gated.
+by later revocation. Exact source-bound Owned and service-only deployment slices are recorded in the
+capability registry;pending-callback revocation/Down/deadline interleavings, CPCD,
+full clean deployment and Bond remain separately gated.
 
 
 ## 历史实现退休约束

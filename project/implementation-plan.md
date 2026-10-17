@@ -237,6 +237,7 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | R2观察预算/发布生命周期；6aad四实机保持，非128地址压力资格 | `real_device` | `PASS` |
 | R3a Channel操作层迁移；17ed四实机保持，SDK整体仍缺失 | `real_device` | `PASS` |
 | R3c应用/Native/共享契约：6d30真实新SDK路径四门禁，整架构未完 | `real_device` | `PASS` |
+| R4a旧controller安全入口退休：98c4b65四真实门禁，整架构未完 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -994,18 +995,19 @@ Grant/credit/Ticket、VM-only保留；UserHost为P4。保留在途生命周期�
 
 ##### 当前限定资格与边界
 
-当前登记仅由结构化资格记录生成/校验。R3c准确K`0cd4731dd3e6`/编译和工具
-`6d30c0f67db2`：真实SDK/slktest路径四VM门禁32对端校验回复、61/249+16超限/2042/
-机制2、24Owned案例/96审批/120事务、guest service-only68拒绝；5重放81复制负对照。
-313默认+313实验/严格clippy、3compile-fail、755冻结工具、封存两库50跨语言检查。
-**C/Python为离线两库/ABI资格，不是全部外部消费者RF/干净部署资格；当前R4树不继承。**
+当前登记仅由结构化资格记录生成/校验。R3c核心边界准确6d30已封存；R4a准确
+K`0cd4731dd3e6`/编译与工具`98c4b65ede54`四VM门禁32对端校验回复、
+61/249+16超限/2042/机制2、24Owned案例/96审批/120事务、guest service-only68拒绝；
+5重放81复制负对照。314默认+314实验/严格clippy、5compile-fail、755工具、两库48检查。
+**C/Python为离线两库/ABI资格，不是全部外部消费者RF/干净部署资格；当前643/R4b树不继承。**
 无新增形式化证明，旧unsupported/unstable Kani保持UNPROVED。
 
 源码映射、完整失败/反例/假设/原始材料访问及回放均在对应报告，不在本计划逐轮堆叠：
 [R1去虚假状态/元数据Bond](../docs/evidence/architecture-retirement-r1-20261017.json)、
 [R2观察预算](../docs/evidence/observation-retirement-r2-20261017.json)、
 [R3a操作层](../docs/evidence/channel-operation-boundary-r3a-20261017.json)、
-[R3c实际SDK路径](../docs/evidence/application-native-boundary-r3c-20261017.json)。
+[R3c实际SDK路径](../docs/evidence/application-native-boundary-r3c-20261017.json)、
+[R4a旧安全门面退休](../docs/evidence/controller-security-retirement-r4a-20261017.json)。
 root-owned pipe失败、动态Proxy缓存失败、ctypes指针签名遗漏SIGSEGV、b0f同行不可查询
 反例、5509ms历史失败及材料保留事故原身份保留，不用新PASS覆盖。
 
@@ -1017,7 +1019,7 @@ root-owned pipe失败、动态Proxy缓存失败、ctypes指针签名遗漏SIGSEG
 | 移入测试，R1已隔离：历史存储/配对写入 | bonding.rs/旧SecurityChanged元数据、磁盘阻塞/cancel/退出回归 | 仅test，实验feature也不进入生产 | 原fixture与故障证据保留；实际安全/Agent不依赖旧库 | U#1/#5，K#7/#18 |
 | 等待完整验收，R2已接线：观察预算/发布 | on_adv_report、EventTask/dispatch、DeviceIface、adapters::remove | 每controller观察，非Peer/连接权威 | 128条/64KiB、name256/payload2048/path256、TTL60s；Pending/Published/Retiring，确认前占slot；每轮8实际操作/同一100ms原期限，1stick静默重试；无锁跨bus await，同State Arc/地址接口所有权。真实128地址/TTL/发布故障/长时压力仍缺 | U#2/#6，K#3/#19 |
 | 等待完整接口/部署验收，R3核心边界已接通 | Native Rust/C/明确Python、SDK Client、Channel、独立contract、slktest、VM/bundle/CI | Native管理与普通fd分离；slkd不依赖SDK；protocol无设备/ioctl操作；App无Native依赖/导出 | 唯一Channel实现/Engine；旧默认Adapter及申请重复逻辑删除；typed路径/tuple共用、独立signature检查保留。C/Python完整broker/SSAP、高级Channel API仍属WP03/06/08，不生成假门面 | U#3/#6，K#5/#6 |
-| 立即删除，R4a已实施待新产物回归：旧controller安全门面 | Native11方法/C3导出、Security9方法/2属性、slctl pair/security、slkconfig五组、observer白名单、旧SDK2类型 | 仅拒绝，没有真实连接安全；实际机制/安装结果权威在Kernel，策略在slkd | 下方有限批次；真实Agent Register/Unregister和Connection机制保留；缺失入口/符号/CLI强负对照与新artifact回归 | U#5/#8，K#7/#19 |
+| 立即删除，R4a准确98限定通过：旧controller安全门面 | Native11方法/C3导出、Security9方法/2属性、slctl pair/security、slkconfig五组、observer白名单、旧SDK2类型 | 仅拒绝，没有真实连接安全；实际机制/安装结果权威在Kernel，策略在slkd | 下方有限批次；真实Agent Register/Unregister和Connection机制保留；缺失入口/符号/CLI强负对照与新artifact回归 | U#5/#8，K#7/#19 |
 | 移入测试，R4a：旧PSK输入格式 | 仅旧SetPsk使用的十六进制/Unicode解析 | 历史格式fixture，无生产key/Host | 原Unicode拒绝测试保留；删除生产解析/业务入口，不把fixture当可信安装 | U#5，K#7 |
 | 立即删除，当前R4b：旧SSAP门面 | ServiceManager十旧方法、RemoteService全接口、slctl四旧命令/slkconfig十旧命令、observer三白名单；event_loop发布和adapter清理 | 没有真实wire功能，不得描述为现有Engine；保留七个当前本地/Owned方法和Connection唯一actor | 同批删生产门面与调用者；实际bus introspection/UnknownMethod、CLI未知命令；新artifact发现/连接/61/249/2042/Owned/机制2回归 | U#3/#6/#8，K#6/#17/#19 |
 | 移入测试，R4b：旧连接callback模型 | EventTask fixture与on_conn_state_changed仅test/显式实验；历史codec/权限解析仅test | 无Native生产连接权威；实际链接来自gen/lifetime快照 | 删除伪RemoteService发布；保留阻塞callback、cancel、panic、drain、慢存储及权限/Unicode回归；新路径仍唯一Session | U#1/#2/#3，K#6/#17 |

@@ -1,8 +1,8 @@
 # 当前能力与资格
 
-生产整改状态：R4a删除旧controller安全门面，准确98c4b65新产物正分别回归；
-R4b删除旧SSAP门面/调用者/白名单及handle-only对象发布，严格离线与新artifact门禁
-进行中。当前dirty/R4b树**尚未取得实机资格**。下面已封存6d30资格仍绑定原源码，
+生产整改状态：R4a删除旧controller安全门面，[准确98c4b65四VM门禁限定通过](../docs/evidence/controller-security-retirement-r4a-20261017.json)；
+R4b删除旧SSAP门面/调用者/白名单及handle-only对象发布，严格离线/48封存ABI已过，新artifact门禁
+进行中。当前6434055/R4b树**尚未取得实机资格**。下面已封存6d30资格仍绑定原源码，
 不转授后续树；Local/Owned和Connection唯一Engine保留，R4其他API/raw ABI、R5/R6未完。
 
 
@@ -275,6 +275,7 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | R2观察预算/发布生命周期；6aad四实机保持，非128地址压力资格 | `real_device` | `PASS` |
 | R3a Channel操作层迁移；17ed四实机保持，SDK整体仍缺失 | `real_device` | `PASS` |
 | R3c应用/Native/共享契约：6d30真实新SDK路径四门禁，整架构未完 | `real_device` | `PASS` |
+| R4a旧controller安全入口退休：98c4b65四真实门禁，整架构未完 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -73,6 +73,7 @@ def run(out):
             (folder/'Cargo.lock').write_text('version = 4\n[[package]]\nname = "sparklink-access-proof"\nversion = "0.0.0"\n')
             command=['cargo','kani','--manifest-path',str(folder/'Cargo.toml'),'--harness','verify_access','--output-format','regular']
             raw=folder/'output.log'
+            subprocess.run(['cargo','generate-lockfile','--offline','--manifest-path',str(folder/'Cargo.toml')],check=True,capture_output=True,env=os.environ|{'CARGO_NET_OFFLINE':'true'})
             lock=(folder/'Cargo.lock').read_bytes()
             with raw.open('x') as stream:done=subprocess.run(command,stdout=stream,stderr=subprocess.STDOUT,env=os.environ|{'CARGO_BUILD_JOBS':'1','CARGO_NET_OFFLINE':'true'},timeout=180)
             assert (folder/'Cargo.lock').read_bytes()==lock, 'verifier lock changed'

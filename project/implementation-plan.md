@@ -216,6 +216,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
 | U668：干净Debian VM通用安装、四角色system bus与外部基础SDK限定通过；软件包/实机另验 | `virtual_integration` | `PASS` |
 | U247：实际Debian分包基础安装/四角色bus/外部SDK/重装remove限定通过；升级发布仍开放 | `virtual_integration` | `PASS` |
+| R5f1:C/Python复用实际Rust Client；准确新产物门禁待验 | `implemented` | `MISSING` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1382,6 +1383,16 @@ FAIL、warm启动观察、复制审计摘要的旧source/count标注及封存器
 修正后的独立审计重新映射真实原件，没有新增形式化证明，不关闭完整R5或原issue。
 
 ##### R5f／R6当前批：公开支持面与实际部署收敛
+
+R5f1 有限批：C/Python 普通应用通过现有 Rust Client 查询 controller 并申请已授权
+通道 fd；不把 Native 管理、业务收发或 SSAP Engine 复制进绑定。同步 C 调用使用
+每客户端独立执行线程和有界请求队列，保持 daemon owner 观察任务运行；同一绝对
+单调时钟期限覆盖排队与等待。超时只终止本地等待，不声称远端操作或物理义务取消。
+最后释放停止并 join 本地执行器，不断开连接或撤销其他 fd。退出条件为严格构建、
+实际私有 bus 跨语言调用、完整身份/更换 owner/期限/队列/错误及真实 fd 类型拒绝、
+独立 C header/ELF 导出检查、文档与实际新入口一致。新 artifact 的实际 system bus、
+Kernel Grant 和 WS73 双设备验收另取；原资格不转授。本批不等于完整 C/Python
+SSAP/Agent/Owned/Operation API 或完整架构退出，R6c 与全部原范围继续开放。
 
 核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
 保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取

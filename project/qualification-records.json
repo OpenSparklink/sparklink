@@ -13,16 +13,16 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP18-R6b-package-base-qualified-R5f-R6c-open",
-    "production_behavior": "Actual247canonicalroles/installedSDK/notices/reinstall/remove base-scope qualified in twoVMs. Originalclean/rootfixture/missinggroupsFAIL retained;warnings unchanged. No newRF/formalproof;selectedoldR5erealartifactunchanged.",
-    "state": "R6B_PACKAGE_BASE_FINITE_PASS_FULL_ARCHITECTURE_R5F_R6C_INCOMPLETE",
+    "id": "WP18-R5f1-application-C-Python-client-source",
+    "production_behavior": "Current C/Python broker entry reuses owner-pinned Rust Client and Channel;bounded local executor and absolute wait deadline. No Native/protocol/SSAP implementation duplicated;new source not granted RF qualification.",
+    "state": "R5F1_SOURCE_IMPLEMENTED_EXACT_ARTIFACT_GATES_PENDING_FULL_ARCHITECTURE_INCOMPLETE",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "Finish R5f actualpublic/sharedcontracts andhigherlanguageclients,R6crossversionupgrade/rollback/debug/dependency/license/provenance/release,currentnativepermission/newWS73artifactmatrix before architectureexit. Do notrestoreoldinterfacesorcreateEngines. NaturalRCA/nonmanualrecovery andalloriginalscopeOPEN."
+    "next": "Seal exactsource and run actual C/Python/executor/export/strict regressions;then systembus/KernelGrant/newWS73positiveconsumer. Continue higherSSAP/Owned/Agent/sharedAPI and R6c;fulloriginalscopeOPEN."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -186,7 +186,8 @@
     "typed-peer-retirement-r5d",
     "owned-agent-client-r5e",
     "deployment-clean-vm-r6a",
-    "debian-package-base-r6b"
+    "debian-package-base-r6b",
+    "application-language-client-r5f1"
   ],
   "records": [
     {
@@ -161443,6 +161444,45 @@
         "actual-source-pinned-default-workspace-build",
         "actual-control-hook-and-license-payloads",
         "independent-material-role-and-post-state-audit"
+      ]
+    },
+    {
+      "id": "application-language-client-r5f1",
+      "title": "R5f1:C/Python复用实际Rust Client；准确新产物门禁待验",
+      "level": "implemented",
+      "result": "MISSING",
+      "contracts": [
+        "OneApplicationBrokerClient",
+        "OwnerGenerationLifetimeScope",
+        "BoundedSynchronousExecutor",
+        "OriginalWaitDeadlineNotRemoteCancellation",
+        "IndependentChannelFdOwnership"
+      ],
+      "bounds": "Source implementation;development tests do not qualify a sealed artifact or physical device.",
+      "excluded": [
+        "No fullSSAP/Agent/Owned/sharedOperation API;noNativelease,Ready orpeerreceiptqualification.",
+        "No newformalproof;currenthardwarequalification stays bound to originalR5e artifacts."
+      ],
+      "remaining": [
+        "Exact committed-source strict/C-Python/privatebus/queue/deadline/export checks",
+        "Actual systembus/kernelGrant andnewWS73positiveclient regression",
+        "Higherlanguage SSAP/Owned/Agent/sharedAPI andR6c/fulloriginalscope"
+      ],
+      "sources": {},
+      "report": null,
+      "report_commit": null,
+      "artifact_materials": [],
+      "tool_materials": [],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "application-language-client-exact-artifact",
+          "result": "MISSING",
+          "materials": []
+        }
+      ],
+      "required_gates": [
+        "application-language-client-exact-artifact"
       ]
     }
   ],

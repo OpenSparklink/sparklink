@@ -23,6 +23,11 @@
 
 #define SSAP_ACCESS_VALID_MASK 63
 
+/**
+ * Opaque caller connection. One bounded local executor; not a controller lease.
+ */
+typedef struct SlkClient SlkClient;
+
 typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
     uint16_t version;
     uint16_t size;
@@ -125,6 +130,15 @@ typedef struct SPARKLINK_ALIGN(8) SleSendConstraint {
     uint64_t deadline_monotonic_ns;
 } SleSendConstraint;
 
+/**
+ * Immutable registration identity only, not Ready, authorization or security.
+ */
+typedef struct SlkControllerId {
+    uint64_t generation;
+    uint16_t index;
+    uint8_t reserved[6];
+} SlkControllerId;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -196,6 +210,63 @@ int slk_channel_prepare_tx(int fd,
  * Pure requirement validation, not a grant or native security observation.
  */
 int slk_ssap_access_error(uint32_t bits, uint32_t level, uint32_t write);
+
+/**
+ * Connect to the system broker, pinning its current unique owner. All deadlines
+ * here are absolute CLOCK_MONOTONIC nanoseconds, future and at most 30 seconds
+ * away. Returns 0 or -errno; output unchanged on failure. No fallback/retry.
+ * # Safety
+ * output is nonnull and points to an exclusive aligned writable pointer slot.
+ */
+int slk_client_open_system(uint64_t deadline_ns, struct SlkClient **output);
+
+/**
+ * Stop/join this client's local executor and close its broker connection. Null
+ * is allowed. Does not close returned channel fds, disconnect a physical link
+ * or revoke another application's Grant. Remote effects may outlive a timeout.
+ * # Safety
+ * client is null or one live pointer returned by open_system, freed once only;
+ * no concurrent calls or later use. Never share a client across fork;
+ * exec/spawn before creating one in a child. Channel fd semantics unchanged.
+ */
+void slk_client_close(struct SlkClient *client);
+
+/**
+ * List registered controller identities, not Ready. Capacity 0 queries count.
+ * Capacity is at most 256. On ENOBUFS count is the required length and buffer
+ * remains unchanged. Other failures leave all outputs unchanged. No truncation.
+ * Registry can change between calls; each call rechecks the pinned owner.
+ * # Safety
+ * client is live for the call; count is exclusive aligned writable. buffer is
+ * null only when capacity=0, otherwise exclusive aligned capacity-sized region.
+ */
+int slk_client_controllers(const struct SlkClient *client,
+                           struct SlkControllerId *buffer,
+                           uintptr_t capacity,
+                           uintptr_t *count,
+                           uint64_t deadline_ns);
+
+/**
+ * Request an application channel for an existing exact connection object.
+ * Path is UTF-8 bytes (1..256, no NUL), not a C string. reserved must be zero.
+ * directions=1 TX,2 RX,3 both; minimum=0..2; broker/kernel enforce actual rights.
+ * Returns an owned fd only after the shared Channel socket-domain check. fd
+ * availability is not negotiation Ready, security installation or peer delivery.
+ * On error output is unchanged. Timeout ends local waiting only; remote request
+ * may have executed. No automatic retry, downgrade, disconnect or cancellation.
+ * # Safety
+ * client, controller and path are live immutable regions through the call;
+ * output is exclusive aligned writable and does not alias them. No concurrent
+ * client close. Caller owns successful fd and must close it independently.
+ */
+int slk_client_open_channel(const struct SlkClient *client,
+                            const struct SlkControllerId *controller,
+                            const uint8_t *path,
+                            uintptr_t path_length,
+                            uint32_t directions,
+                            uint32_t minimum,
+                            uint64_t deadline_ns,
+                            int *output);
 
 #ifdef __cplusplus
 }  // extern "C"

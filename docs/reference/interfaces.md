@@ -4,7 +4,7 @@
 |---|---|---|
 | 内核 UAPI／socket | 匹配的 Linux `include/uapi/linux/sparklink*.h`，及 Rust `slk-protocol` | 尚未发布，按当前调用路径核对 |
 | D-Bus | `crates/slkd/src/dbus_iface.rs` 及相关对象模块 | 观察、管理与授权分开；对象绑定当前设备生命周期 |
-| C应用fd API | `crates/libsparklink/include/sparklink.h` | 已授权通道操作；无Native管理导出，当前不含完整broker/SSAP客户端 |
+| C应用 API | `crates/libsparklink/include/sparklink.h` | 当前 broker 查询/通道申请及已授权 fd 操作；无 Native 管理导出，非完整 SSAP/Agent 客户端 |
 | C Native API | `crates/slk-native/include/sparklink_native.h` | 显式管理/观察库；匹配libslk_native，不授予访问权限 |
 | Python | `bindings/python/sparklink/` 与 ABI 检查 | 与文档构建的 Python 项目分开 |
 | CLI | 当前构建的 `slctl --help`、`slkconfig --help` | 原生管理、离线诊断和迁移中的旧命令有不同限制 |
@@ -37,6 +37,51 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 不依赖SDK。Rust Client提供成员/连接观察、fd申请与下述已有远端SSAP方法的类型化封装；
 通用Operation/跨进程原始Deadline/EventStream尚未开放，future取消不承诺撤销已开始的物理义务。
 内核/daemon/工具既有原期限、最后关闭和Grant规则继续执行。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
+
+### C/Python 同步应用入口
+
+`slk_client_open_system` 创建一个调用者 bus 连接，固定当前 daemon unique owner；
+`slk_client_controllers` 只列注册身份，不表示 Ready。`SlkControllerId` 的 generation、
+index 和保留字节由绑定传递，不能代替权限。`slk_client_open_channel` 接收该身份及
+已有的完整 Connection 对象路径，经同一 Rust `Client::connection/open_channel`
+重新核对 generation/lifetime，再由同一 Channel 检查真实 socket domain。
+当前仅开放已有固定应用通道申请；不新增管理租约、动态通道便利封装、SSAP/Agent
+或服务注册接口，也不从地址或 handle 猜一个对象路径。
+
+| 调用/参数 | 当前契约 |
+|---|---|
+| `open_system(deadline_ns, output)` | 成功输出一个 opaque `SlkClient*`，失败不改输出 |
+| `controllers(client, buffer, capacity, count, deadline_ns)` | capacity=0 查询数量；上限256。ENOBUFS 时只更新所需 count，不截断或改 buffer；其余错误输出不变。两次调用之间 registry 可变 |
+| `open_channel(client, controller, path, path_length, directions, minimum, deadline_ns, output)` | path 是1..256个 UTF-8 字节，不含 NUL，不要求尾零；reserved 必须全零。TX=1/RX=2/双向=3，minimum=0..2。成功输出独立拥有的 fd，失败输出不变 |
+| `close(client)` | 释放一次，NULL 可接受；调用者须排除并发调用/close。停止并 join 本地执行器，不关闭已交付 fd、不强制断链 |
+| `deadline_ns` | 原始绝对 `CLOCK_MONOTONIC` 纳秒，未来且至多30秒；覆盖本地排队与等待，不重置。到期 ETIMEDOUT，不保证取消远端操作，不自动重试 |
+
+每个 C 客户端有一个本地执行线程，至多8个排队请求及1个执行请求；队满 EAGAIN。
+它只桥接同步语言与现有异步 Client，owner 观察在调用间继续执行，不保存协议、
+授权或连接状态。不在调用线程嵌套 Tokio runtime，不使用全局执行器。内核的
+Grant/credit/Ticket、原期限及物理义务不由该队列改变。返回 fd 仅表示实际 fd
+交付，不表示协商完成、安全安装、USB 提交或对端收到。
+
+C 返回0或负 errno；Invalid→EINVAL、旧身份/丢失 owner→ESTALE、权限→EACCES、
+NotSupported→EOPNOTSUPP、UnknownObject→ENOENT、缺服务→ENOTCONN，其他未分类
+broker 错误→EIO；实际 Channel 系统调用 errno 保留。没有本地模拟成功或弱要求降级。
+失去 daemon 后须显式创建新客户端；旧 scope 不随相同进程重新取得名称而复活。
+超时后的远端执行结果可能不确定；晚到未交付 fd 在本地销毁，不据此退款或宣布
+远端清理。当前同 lifetime 重绑限制仍有效，不能盲目重试。
+
+Python `sparklink.Client(deadline_ns=...)`、`controllers(deadline_ns=...)` 和
+`open_channel(ControllerId, connection_path, deadline_ns=..., directions=3, minimum=0)`
+调用上述 C ABI，不自行拼 D-Bus。`controllers` 返回 immutable 身份 tuple，
+`open_channel` 返回标准 `socket.socket`，由应用独立关闭/dup/传递。
+推荐 `with Client(...) as client`；方法与 close 串行，复用同一原始期限。
+关闭不终结通道 fd；管理 lease 撤销/daemon 死亡的影响仍按内核契约。
+客户端不能跨 fork 使用；fork 子进程先 exec，或用 spawn 创建进程后新建客户端。
+仅 fd 的 fork/SCM_RIGHTS 保持内核 Binding 语义。进程边界在锁之前检查，不尝试 join
+不存在的继承线程。输入指针须遵守 C 的有效区域/独占/生命周期契约；无效指针是
+调用者 UB，和内核 EFAULT 测试分开。
+
+这些是当前源码接口，不把私有 bus 的拒绝/错误 fd 回归升级成实际部署权限或
+WS73 正向交付资格。准确产物与未完成的高阶客户端见唯一能力入口。
 
 ### 控制器观察与显式管理
 
@@ -114,7 +159,7 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 引用/Grant/credit/Ticket契约。已有操作层保留query与约束SCM收发，完整高级异步接口
 仍按实际实现开放。
 
-Python默认导出仅访问要求和授权fd操作，旧`Adapter`及默认`NativeAdapter`导出已删除。
+Python默认导出当前 Client/ControllerId、访问要求和授权fd操作；旧`Adapter`及默认`NativeAdapter`导出已删除。
 Native需显式`from sparklink.native import NativeAdapter`并加载`libslk_native.so.0`；应用
 fd操作用`libsparklink.so.0`。Python使用运行库major，不要求开发包的无版本链接。
 `LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定准确产物，

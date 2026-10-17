@@ -322,6 +322,11 @@ VM受控延迟的因果关系须由请求、实际QMP状态和guest收到确认�
 以IMPLEMENTATION_PLAN为准，避免在本文件维护另一套执行清单。
 ## 管理、事件与用户态
 
+同步语言绑定通过现有 Rust Client 访问 broker，通过现有 Channel/普通 socket
+处理业务；C/Python 不各自维护 D-Bus 路径、Host、授权或 SSAP 状态。每客户端
+有界执行器仅跨越同步/异步语言边界，原期限、owner 失效、join 与返回 fd 的独立
+生命周期见 ADR0004。不得由该执行器发布 Ready 或把本地等待超时当远端取消。
+
 ### 应用资源与管理权限
 
 应用释放自己的扫描租约或通道，与管理者停止硬件扫描、停用 controller 或断开

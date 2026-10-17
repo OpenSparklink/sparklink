@@ -19,6 +19,13 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
 
 ## 决策
 
+同步 C/Python 应用边界复用唯一 Rust Client；为持续运行 owner 观察而采用每客户端
+一个本地异步执行线程及有界请求队列，避免在未知调用者 runtime 中嵌套 block_on。
+这不是 Host/授权 actor，不持 Native lease，也不新增 Engine。绝对单调期限覆盖
+排队和等待，超时仅取消本地等待，不声称撤销远端/物理义务；最后释放停止并 join。
+仅开放已接通的类型化方法，高阶 API 分批迁移，不以空门面补齐目标树。
+完整参数/错误、fork 与 fd 生命周期见[接口参考](../reference/interfaces.md)。
+
 1. 应用的扫描租约、通道 Binding 与管理者的 controller/物理连接权限分别授权。
    合并硬件扫描不得扩大客户端过滤或取消范围；按 caller、controller generation、
    原始期限、预算记录应用租约。最后一个有效租约才申请停止硬件扫描；强制管理

@@ -4,9 +4,11 @@ pub mod agent;
 mod client;
 pub mod controller;
 pub mod ffi;
+pub mod ffi_client;
 pub mod peer;
 pub mod security;
 pub mod ssap;
+mod sync_client;
 pub use client::{ApplicationConnection, ApplicationError, Client};
 pub use slk_channel::Channel;
 /// Local SSAP API access requirements, separate from operation indicators.

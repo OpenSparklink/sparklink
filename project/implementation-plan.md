@@ -81,14 +81,15 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**历史K4b6/U2bd总门禁：parser预算依赖不匹配，聚合未证明**。
-仅记录范围：`real_device` / `UNPROVED`。
+选定保留产物（不是当前工作树整体资格）：**K4b6/U2bd保留产物：2d268直接生产预算修正，实际240边界限定通过**。
+仅记录范围：`real_device` / `PASS`。
 kernel `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
 compiled_userspace `2bd9873a2cd99d40922a3f00c5ae1ebd19da8aaa`。
 executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
-kernel_selftest_tools `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
+kernel_selftest_tools `2d268bd0dfe53496d10309e645733d1a6cbe9a89`。
 independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
-[准确范围与剩余条件](../docs/evidence/kernel-event-registry-retirement-r4f2cd-20261017.json)。
+compiled_virtual_tools `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
+[准确范围与剩余条件](../docs/evidence/parser-budget-source-correction-20261017.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -258,6 +259,7 @@ independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
 | R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 | R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete | `real_device` | `PASS` |
 | 历史K4b6/U2bd总门禁：parser预算依赖不匹配，聚合未证明 | `real_device` | `UNPROVED` |
+| K4b6/U2bd保留产物：2d268直接生产预算修正，实际240边界限定通过 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1253,8 +1255,11 @@ Backend install19、pending9及既有历史五测试须重新执行；新历史�
 
 Parser依赖复核（原件不改）：生产标准事件预算为240，旧codec fixture及新标准
 事件fixture注入255；用生产常量执行旧最大接受断言得到固定反例。原11项RawPASS
-聚合已降UNPROVED，四真实VM及其他独立门禁原件保留但不替代该子集。修正工具
-必须直接提取生产常量/hash，重跑实际边界/拒绝和相关原门禁，另立准确工具身份。
+聚合已降UNPROVED，四真实VM及其他独立门禁原件保留但不替代该子集。修正工具2d268
+已直接提取生产常量/hash，重跑14相关子集及2适配器方法，另立准确工具身份。
+[新记录](../docs/evidence/parser-budget-source-correction-20261017.json)
+保留原aggregate UNPROVED与反例，所有11门禁和原契约保持；编译4b6/U2bd、
+Virtual4b6与四真实VM原件未重建/重跑，不授整个2d268 HEAD资格。
 240是当前标准profile软件预算，不是A3业务249/2042长度；标准255互通资格仍缺，
 不得将修测试描述成实现已符合完整标准。详见[反例](../docs/evidence/parser-budget-fixture-review-20261017.json)。
 

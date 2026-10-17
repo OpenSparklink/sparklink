@@ -1796,23 +1796,27 @@
       "kernel-event-registry-retirement-r4f2cd": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "parser-budget-source-correction": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP18-R4f2e-raw-ABI-and-test-retirement",
-      "production_behavior": "Production unchanged:standard parser240budget,fixture255mismatch. Aggregatecurrent qualificationUNPROVED while exactRF inputs retained. Related direct-source testcorrection before continuing rawABI/SDK/deployment.",
-      "state": "PARSER_FIXTURE_DEPENDENCY_MISMATCH_CORRECTION_RUNNING",
+      "production_behavior": "Only testdependency corrected:production4b6 unchanged,offline tools2d268 useactual240constant. OldaggregateUNPROVED andcounterexample retained;all11originalgates/contractspreserved undernewrecord with exactoldRF/build/Virtual/artifacts. No newphysical orwholeHEADclaim.",
+      "state": "PRODUCTION_BUDGET_CORRECTION_SCOPED_PASS_ARCHITECTURE_INCOMPLETE",
       "exit": [
         "14exact offline subsets including current6/historical1event-ring groups,Native snapshot5/install19/pending9;prior full projection5/minimalversion5 and USB history explicitly separate;wholeRustWerror/fullKernel/boot",
         "K4b6/U2bd/tools997:4realVM32peerreplies24Owned96decisions120transactions68roledenials,81+56negativecontrols;Virtual2rounds/12negatives;49newlibraryABI andactualELF",
         "Fresh101rawstubs include8PHY missed by93snapshot;retire headers/types/authorization/dispatch/callers and preserve meaningful selftests,then fullAppSDK/CLI/C-Python/R5provenance/R6cleanVMdeployment"
       ],
-      "next": "Fix directproductionconstant injection/sourcebinding andnegativecontrols;new exacttool record before any aggregatePASS. Fulloriginalscope preserved."
+      "next": "Resume preserved101rawABI/caller/type/currenttest migration,then fullR5AppSDK/CLI/C-Python andR6cleanVMdeploy. Fulloriginalscope,standard255interoperability,naturalRCA/nonmanualrecovery remainOPEN."
     },
     "selected_qualification": {
       "version": 1,
-      "record": "kernel-event-registry-retirement-r4f2cd"
+      "record": "parser-budget-source-correction"
     }
   },
   "agent_workstream": {
@@ -3099,7 +3103,7 @@
     "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
   },
   "architecture_retirement_current_batch": {
-    "status": "PARSER_FIXTURE_BUDGET_SCOPE_CORRECTION_RUNNING",
+    "status": "PARSER_BUDGET_CORRECTION_SCOPED_PASS_RAW_ABI_SDK_DEPLOYMENT_INCOMPLETE",
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
     "batch": "R4f2 DLI event/global-mask/raw ABI and current/historical selftest migration",
@@ -3315,7 +3319,15 @@
       "production": 240,
       "old_fixture": 255,
       "counterexample": "docs/evidence/parser-budget-fixture-review-20261017.json",
-      "scope": "No production or original realVM change;effectiveaggregateUNPROVED. Raw101candidate WIP preserved. Correct direct-source fixture before continuing."
+      "scope": "Oldaggregate effectiveUNPROVED/counterexample preserved;newactualsource240dependency correction separatelyqualified,not productionchange/fullstandard255support. Raw101WIP preserved."
+    },
+    "parser_budget_correction": {
+      "state": "FOURTEEN_ACTUAL_SOURCE_SUBSETS_AND_TWO_ADAPTER_METHODS_PASS",
+      "test_tools": "2d268bd0dfe53496d10309e645733d1a6cbe9a89",
+      "compiled_kernel_unchanged": "4b6dda28490d61864eacaa791e72cac1cfea2c0c",
+      "report": "docs/evidence/parser-budget-source-correction-20261017.json",
+      "reused_scope": "Exactunchangedcomponent/build/boot/ABI/ELF/Virtual4b6 and4realVM4b6/U2bd/tools997;notfreshVM orwholeHEADqualification",
+      "next": "Resumepreserved101rawAPI/types/callers/currenttestmigration thenfullR5SDK/R6deploy;alloriginalscopeOPEN"
     }
   },
   "owned_ssap_c6_historical_batch": {

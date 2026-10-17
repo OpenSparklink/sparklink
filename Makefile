@@ -73,7 +73,7 @@ uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/slkdump
 	rm -f $(DESTDIR)$(LIBDIR)/libsparklink.so*
 	rm -f $(DESTDIR)$(INCLUDEDIR)/sparklink.h
-	rm -rf $(DESTDIR)$(SYSCONFDIR)/sparklink
+	# Administrator configuration and state survive uninstall.
 	rm -f $(DESTDIR)$(DBUSSERVICEDIR)/org.sparklink.service
 	rm -f $(DESTDIR)$(DBUSCONFDIR)/sparklink.conf
 	rm -f $(DESTDIR)$(UNITDIR)/sparklink.service

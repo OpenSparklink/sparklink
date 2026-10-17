@@ -1001,6 +1001,11 @@ R1 有限退出：上述生产导出、调用者、权限项、帮助与man同�
 边界及Owned SSAP，适用owner原期限/退出与同行继续；未执行前保持 NOT_QUALIFIED。
 R1不改内核Runtime/Session/Grant/credit/Ticket，也不声称自然恢复、完整Bond或权限部署。
 
+R6a小切片：通用 `make uninstall` 移除递归删除配置目录的命令；管理员配置、
+嵌套文件、配置目录symlink和状态保留，实际Makefile临时DESTDIR正/负对照。
+这仅验证staging卸载，不是干净VM构建/安装/启动/外部SDK/升级回滚的完整部署资格；
+安装路径、共享库名称/SONAME/pkg-config及安装覆盖配置仍留R6。无自动purge入口。
+
 R2预算与发布修复优先于SDK大迁移；R3–R6分小批逐入口交付。安全Agent、SSAP的
 service-only/审批退出原期限门禁、数据/多通道/四设备/性能继续并行。先前尝试复用c6
 bundle已被完整source-scope校验拒绝并保留失败；已另建a2准确bundle，不能再称其为

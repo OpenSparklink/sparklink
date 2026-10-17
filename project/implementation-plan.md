@@ -2,41 +2,39 @@
 
 ## 本批退出条件与近期执行顺序
 
-WP06/WP09 的逐属性访问切片已按准确 K1bcb/编译Ud4/执行工具49 收尾，见
-[原件及边界](../docs/evidence/ssap-attribute-access-20261017.json)。复用唯一 Engine、
-原 Session/Grant/credit/Ticket：原 RX 机制先于值读取/变更，主动请求通过原 fd 准备
-收紧 epoch/最低机制/原期限的 TX intent，实际提交仍由内核强制，不续 Grant 或 credit。
-未接通的本地授权/CPCD 明确拒绝；表32 operations 与独立六位 access API 不混用。
+HCC/110切片已按准确Kf887/编译836/业务工具e513取得[限定退出](../docs/evidence/ws73-hcc-model-110-20261017.json)：
+四只实际110下载/HCC型号/DLI Setup；E/U两端短包、249负载/超限及2042完整长包，
+再加U2/3短包，共32次真实回复与88发现轮次。HCC型号不替代硅片、板级校准或执行
+固件认证，ROM首次镜像自动选择仍缺。S没有实机资格；旧111与旧四U结果不转授。
 
-本批退出门禁：严格生产构建/跨语言、实际数据库和 Engine 测试、真实三机制等级双向
-读/UUID读/响应写/读后核对及拒绝、无泄漏/无拒绝写入副作用、原广播扫描/建链断链/
-短包/249边界/完整2042保持。六 VM 门禁72属性案例/36拒绝、48业务回复、713冻结工具/
-48封存绑定、六重放192复制证据负对照已取得；首轮 guest 模块遗漏 FAIL 保留。
-访问谓词 Kani 有工具诊断，保持未证明；已有 CBMC 仅候选快照，非整体并发证明。
+唯一Session、Runtime、Grant/credit/Ticket和用户态SSAP Engine保持。新增驱动查询
+只占bootstrap HCC传输，不借DLI credit或另造Host。E的1526/6与U的254/5按原DLI
+逐设备约束，平台分配长度quirk不放宽SLE/ACB。混合VM只接管运行期设备且没有ROM
+镜像，意外ROM明确失败。自然恢复、共用板配置通用性和安全身份仍须独立验收。
 
-当前批次（准确 K1bcb/编译9fd/修正执行工具836，首轮FAIL保留、重跑未授整批资格）退出条件固定：
-在当前生产路径补受控排队屏障后的 release、最后fd、dup、
-Down、原期限和 rekey/off 交错，分别核对撤销后不新提交、在途义务保留、唯一终态、
-资源收敛及同行 Ready/lease/扫描隔离；两设备不冒充独立四设备业务隔离。
-普通/机制1/机制2分别交换来源controller，三十项原意图门禁；复用两秒/八秒真实IN81
-暂扣配置，原满池5/确切前缀/五秒断言不放宽。新prepare和原缓存intent分开拒绝核对。复用原
-fixture/worker/提交票据，保持原失败与断言；只门禁相关不变量，不无限追加控制面前置。
-随后接同一用户态 Engine 的策略绑定本地属性授权及受保护更新；无身份/Bond就不授
-可信身份或持久凭据。数据/长包/真实credit/多通道/四设备和性能门禁持续并行。
+当前近期门禁仍是新110准确产物的30项typed原意图矩阵：普通/机制1/机制2，两个
+来源controller，release、最后管理fd、dup、实际Down、原5秒；保留满池5、1270未
+完成PB前缀、真实2秒/8秒IN81屏障、逐调用原时钟和phase错误检查。同行仅Ready/
+lease/扫描隔离，不冒充另一业务组。SDK111整轮在用户切换110时收尾中止；不继承其
+子PASS。首110期限FAIL为5.509秒，未放宽原5.5秒断言；采集主机调度的新目录重跑
+单列，尚无整批资格，也不以重跑成功关闭原失败根因。
 
-旧 U331 原晚 Down 超时 FAIL 与重新运行旧13也快的反证都保留，原因码语义修复不能
-作为完整因果结论。自然启动超时/重枚举失败/消失的根因、非人工恢复、NOCP真值/
-复用/USB drain 及部分初始化清理并行保持 OPEN。人工/hub/QMP/注入不授自然恢复。
-内核内部清理和预daemon探针原因码语义统一也独立保留，不恢复旧内核 SSAP。
+本轮729工具/48封存ABI、942生产函数fixture+ASan/UBSan、八精确重放/200复制实证
+负对照及115严格文档单列。新CBMC只覆盖实际chip reply decoder的128字节输入与
+8语义性质（439原始检查、三负对照），不证明整个聚合parser/USB/引用/锁/期限或
+固件真值。历史access Kani诊断、Owner/撤权/晚NOCP复用组合继续未证明。
 
-完整 S0–S6、19WP、10FV、12DG 和原全部范围保持。驱动/实机 VM-only；仅U2/3，E1排除；
-12路独立构建、与实机VM并行8路和共享锁/固定开发目录。UserHost=P4非前置。
-性能链路继续采用 ADR0006：可信基线→事件驱动→有界发送→双端/多通道/四设备→USB/RX
-空窗实测优化→长期/恢复/发布；未经测量不预设单RX URB是瓶颈。普通CLI功能计时不授性能资格。
-原19WP依赖和十类证明/十二门禁仍由本文件后续矩阵定义，不能因本段切片收尾关闭整项。
+随后接同一Engine的策略绑定本地属性授权/CPCD与受保护更新，未支持项继续拒绝；
+没有身份/Bond就不授可信身份或持久凭据。长包/真实credit/多通道/四设备及性能并行，
+不把控制面全集改成前置。旧U331晚Down、5.509秒期限、自然启动/重枚举/设备消失
+根因、非人工恢复、NOCP真值/复用/USB drain和部分初始化清理保持OPEN，人工/hub/
+QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原范围保持。
 
-当前资格只见[能力入口](current-capabilities.md)，逐轮失败和历史结论见各自证据；不再把
-先前切片“尚未接通”的文字叠加为当前状态。文档仅四象限公开构建，计划/ADR/证据保持源入口。
+构建遵守12路独立、与真实VM并行8路，共享锁和固定增量目录，资格产物另封存。
+性能仍按ADR0006测量基线→事件驱动→有界发送→多/四设备→USB/RX空窗实测优化；
+未经测量不认定单RX URB是瓶颈，功能样本不授性能资格。UserHost=P4非前置。
+当前资格只见[能力入口](current-capabilities.md)，原失败与历史源身份见证据索引；
+文档只构建四象限，计划/ADR/证据保持源入口，不形成平行规划。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -175,14 +173,19 @@ fixture/worker/提交票据，保持原失败与断言；只门禁相关不变�
 | 实际Owner/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 历史首轮VM缺guest模块：原FAIL保留，未执行属性门禁 | `real_device` | `FAIL` |
 | 本地授权/Bond/新失效组合及完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
+| 110四只E/U：实际RAM字节/HCC自动型号/DLI Setup限定通过 | `real_device` | `PASS` |
+| Kf887/U836/e513：E/U110与U2/3四门禁32真实业务回复 | `real_device` | `PASS` |
+| 110接口与证据：729工具/48封存ABI/942生产函数/200实证负对照 | `offline` | `PASS` |
+| 实际HCC reply decoder：128字节/8性质CBMC限定通过 | `formal_bounded` | `PASS` |
+| 110期限5.509s失败/ROM自动选择/自然恢复与全部剩余范围：未闭合 | `real_device` | `UNPROVED` |
 
-保留镜像：K `1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f`；编译 U `d4a13e941aefee3ef11ccf56d74b144322947cd3`；执行工具 `49a648826e42787a709e3e664eaacc5f2ad1a67f`。
+保留镜像：K `f887b477f0857aa83454b255ba681a9f7b95473f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `e5134791dc3014f3e07c96785d66bbc1a5597383`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `49a648826e42787a709e3e664eaacc5f2ad1a67f`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `e5134791dc3014f3e07c96785d66bbc1a5597383`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 Agent注册按controller绑定唯一bus owner和epoch，请求绑定完整连接引用、原作者和

@@ -3,6 +3,8 @@
 [WS73 HCC自动型号与110切换](ws73-hcc-model-110-20261017.json)：准确Kf887/编译836/执行e513，
 四只实际RAM下载及E/U HCC回复、32次普通用户业务与完整2042/超限拒绝；原失败保留。
 CBMC仅128字节内实际reply decoder，硬件真实性/ROM选择/期限与自动恢复仍开放。
+[维护回执](ws73-hcc110-maintenance-20261017.json)记录五项资格来源/范围负对照、完整
+原件核对、115严格文档和七项原scope不变且OPEN的issues；110完整生命周期仍在重跑。
 
 
 [逐属性访问与主动请求限制](ssap-attribute-access-20261017.json)：准确K1bcb/编译Ud4/执行49，

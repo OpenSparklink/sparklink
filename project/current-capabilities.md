@@ -1,38 +1,38 @@
 # 当前能力与资格
 
-当前选择的功能子资格是[唯一 SSAP 属性访问与主动请求限制](../docs/evidence/ssap-attribute-access-20261017.json)：
-准确 Linux `1bcb1cd84530`，编译用户态 `d4a13e941aef`，执行工具 `49a648826e42`。
-编译用户态与执行工具提交间的 crates/data/Cargo 输入相同；runner 修复 guest 清单。
-报告提交不替代编译身份。
-编译 `9fd74a18a19e` 的生命周期首轮因新判定器错误要求相同errno而FAIL，原件保留；
-修正工具 `8362502` 按生产检查阶段及逐调用单调时钟重跑，完成前不授整批资格。
-上述资格仍仅限原 SDK111/Hi3873U 第2/3口。用户现要求统一1.10.110，已分别校验
-SDK e/us 输入；第1口 Hi3873E 已授权独立测试，尚无本批实机资格，不继承四U资格。
-HCC 自动型号查询及真实平台长度修复已实现于 Linux `f887b477f085`；严格构建及
-942生产函数检查、ASan/UBSan通过。首个110 E实机因平台分配长度EPROTO失败保留；
-观察到实际下载及型号回复，修复后新VM资格仍待取得。
-正在进行的 SDK111 重跑在当前 VM 收尾后中止；保留所有子结果，不算整批通过。
+当前选定子资格为[HCC型号与110实机切片](../docs/evidence/ws73-hcc-model-110-20261017.json)：
+Linux `f887b477f085`，编译用户态 `83625029e313`，业务执行/guest工具 `e5134791dc30`。
+四只独立下载的launcher/guest为69b7/836；离线729项在fixture修正7f8上执行，
+编译crates/data/Cargo输入相同。报告提交 `8c59cc3057b8` 不替代编译身份。
+用户已选择统一1.10.110：第1口E用SDK e，2/3/4口U用us；均核对实际USB下载字节。
+HCC自动报告型号与总线，不能认证硅片、校准或执行镜像，也不能在尚无HCC的ROM
+阶段自动选择首次镜像。混合运行期VM移除ROM镜像，避免错误型号自动下载。
 
 | 范围 | 当前限定结果 |
 |---|---|
-| 原 RX 机制检查普通读、UUID读及写值；主动请求固定原 fd/epoch/期限 | 已实现，唯一 Engine，无 raw-send 回退；本地授权注册仍 NotSupported |
-| 六组实机，各交换连接角色 | 72属性案例：36成功、36协议拒绝且原值不变；288远端操作双端USB匹配；44主动意图及72注册拒绝 |
-| 既有真实路径回归 | 48次随机业务回复、96条RX上下文、96组原SSAP对端核对、249边界16拒绝、完整2042往返8次；广播扫描/建链断链保持 |
-| 离线 | 713冻结工具、48封存共享库/跨语言（32位仅布局）、83protocol/92daemon/28slktest及入口/启动、严格all-features clippy；六原件重放、192复制证据负对照 |
-| 形式化 | 生产constraint/Grant CBMC168及三负对照仅单快照有界通过；生产access Kani七性质/87低层检查虽成功，工具编译诊断保留，整体未证明 |
-| 仍缺 | 本地属性授权/CPCD、命名身份/Bond、受保护更新、实际排队后撤权/rekey/off/最后fd/dup/Down/原期限/物理前缀组合、完整SSAP及所有原整项范围 |
+| HCC型号与独立启动 | E1/U2/U3/U4实际回复，12个镜像实际RAM上传字节匹配，DLI Setup；S及其他板未实测 |
+| E/U与U2/3业务 | 四门禁、各交换连接角色：32实际随机业务回复、88广播扫描轮次；受控QMP重枚举与动态adapter保持 |
+| 本轮数据及唯一SSAP保持 | 48属性案例（16允许、32真实拒绝）、64旧SSAP对端核对、64原RX上下文、96无效intent/16未知control拒绝 |
+| 长度与预算 | 249字节负载门禁；实际超限2043/2046/2047/2048共16次拒绝；完整2042往返8次。E ACB1526/6、U254/5逐端校验 |
+| 离线与证据 | 729工具、48准确封存ABI、942生产codec/query fixture+ASan/UBSan、115严格文档；8精确重放与200复制实证负对照 |
+| 形式化限定通过 | 实际chip reply decoder，128字节内任意输入/长度，8语义断言/439原始检查及三负对照；不覆盖USB/锁/引用/时钟/排空/整个内核 |
+| 当前仍缺 | 110受保护SSAP/Agent、完整30项typed生命周期、ROM首次自动型号/镜像选择、S硬件、混合四设备及完整S0–S6 |
 
-第一轮缺 guest 模块的实机 FAIL、错误 fixture/路径/锁定输入、沙箱限制及工具诊断
-均保留原件，不被后续成功覆盖。SDK111 数字比较等级2不是命名身份/Bond或独立RF证明；
-USB/NOCP/协议ACK不是应用处理。旧 U331 晚 Down FAIL 和旧13快速反证继续保留，
-根因未闭合；自然启动/重枚举/消失及非人工恢复继续 OPEN。完整 S0–S6/19WP/10FV/12DG
-没有缩减，当前整体仍 NOT_REVALIDATED/INCOMPLETE。
+110矩阵首项原期限实机FAIL保留：从准入到阻塞返回约5.509秒，超过原5.5秒上限；
+原断言未放宽。相同参数在新目录采集主机调度后重跑，运行中不授整批资格，重复成功
+也不关闭原失败根因。首E平台长度EPROTO、首混合预算常量、相对路径artifact核对、
+fixture及测试环境/旧身份audit错误均保留原件并排除错误资格。
 
-本批是相关功能切片退出，不能关闭整项 issue。下一批补当前路径的受控撤权/断链/
-原期限交错及原物理义务，接同一 Engine 的本地授权与受保护服务更新；数据/credit/
-多通道/四设备/可信性能和旧清理并行，不等控制面全集。UserHost 仍 P4 规划。
-精确历史源码、失败和限定通过由以下结构化记录及[证据入口](../docs/evidence/index.md)
-维护；移除先前叠加的“当前进度”文字不改写原报告或 git 历史。
+此前[SDK111属性访问资格](../docs/evidence/ssap-attribute-access-20261017.json)保持原
+K1bcb/编译d4/工具49身份，不转授110、E或新镜像；其Kani诊断仍未证明。SDK111
+生命周期重跑按用户110指令在当前VM结束后中止，不记整批通过。旧U331晚Down及
+反证仍保留；自然启动/重枚举/消失根因与非人工恢复继续OPEN。人工/hub/QMP/受控RAM
+复位不算自然恢复；USB/NOCP/协议ACK不等于应用处理。
+
+本切片不关闭整项issue。继续同一Session/Grant/credit/Ticket的撤权/断链/原期限与
+唯一用户态Engine的本地授权/受保护更新；数据/多通道/四设备/可信性能及旧整改并行，
+不等全部控制面组合。完整S0–S6/19WP/10FV/12DG不缩减，UserHost保持P4；驱动与
+实机保持VM-only。以下历史记录均按其准确源和限定范围阅读，整体仍INCOMPLETE。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
@@ -171,14 +171,19 @@ USB/NOCP/协议ACK不是应用处理。旧 U331 晚 Down FAIL 和旧13快速反�
 | 实际Owner/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 历史首轮VM缺guest模块：原FAIL保留，未执行属性门禁 | `real_device` | `FAIL` |
 | 本地授权/Bond/新失效组合及完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
+| 110四只E/U：实际RAM字节/HCC自动型号/DLI Setup限定通过 | `real_device` | `PASS` |
+| Kf887/U836/e513：E/U110与U2/3四门禁32真实业务回复 | `real_device` | `PASS` |
+| 110接口与证据：729工具/48封存ABI/942生产函数/200实证负对照 | `offline` | `PASS` |
+| 实际HCC reply decoder：128字节/8性质CBMC限定通过 | `formal_bounded` | `PASS` |
+| 110期限5.509s失败/ROM自动选择/自然恢复与全部剩余范围：未闭合 | `real_device` | `UNPROVED` |
 
-保留镜像：K `1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f`；编译 U `d4a13e941aefee3ef11ccf56d74b144322947cd3`；执行工具 `49a648826e42787a709e3e664eaacc5f2ad1a67f`。
+保留镜像：K `f887b477f0857aa83454b255ba681a9f7b95473f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `e5134791dc3014f3e07c96785d66bbc1a5597383`。
 
 **当前工作树整体资格：NOT_REVALIDATED；完整范围：INCOMPLETE。** 分项按各自准确源码记录。
 公开 CI 只验证元数据（METADATA_ONLY_NOT_REVERIFIED）；私有原材料不可取得时不授予当前 PASS。
 本地完整性核对也不等于重放、独立空口解码或实现证明。层级、假设及门禁见
 [资格契约 ADR](../docs/decisions/0005-qualification-and-quality-gates.md)。
-预备/guest 工具 `49a648826e42787a709e3e664eaacc5f2ad1a67f`；上列执行工具为 Host 校验工具，分别记录。
+预备/guest 工具 `e5134791dc3014f3e07c96785d66bbc1a5597383`；上列执行工具为 Host 校验工具，分别记录。
 <!-- qualification-summary:end -->
 
 ## 已封存数据子资格（以下均按各自准确镜像）

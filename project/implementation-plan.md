@@ -12,7 +12,7 @@ owner退出旧handle拒绝，对端数据库核对与双端USB闭包。另249/�
 
 本批有限门禁：先实际VM service-only账号/组/正式system-bus策略的登记、读回、注销及
 跨owner/管理/通道/设备拒绝；接着审批中owner退出、原期限到期及迟到旧批准，最后
-在受影响SMTC失败后核对原CUTC业务和同行。复用c6封存生产程序，新probe/runner单列
+在受影响SMTC失败后核对原CUTC业务和同行。完整source-scope禁止用c6 bundle混搭新probe；新产物单列
 编译与执行身份；不将新角色验证解释为发行版完整部署或整套多应用证明。active-owner
 controller退休和后续CPCD仍单列，不以控制竞争全集延后数据/多通道/四设备主线。
 
@@ -973,6 +973,39 @@ Backend及D-Bus代理不是它们。此次范围调整不表示U#7/K#1/#5或其�
 - 动作：调用者迁移和回归同批，删重复生产路径；保留测试和失败历史；失效配置/完成标记删除。
 - 依赖：对应替代包，不要求全项目先迁移。
 - 退出：只有一条权威生产路径；采用内容只维护canonical文档，不保留第二套长期规划。
+
+
+#### 2026-10-17：历史实现退休与架构一致性（进行中）
+
+审查重新核对用户态 `d795a3a6b1e98c24e984e2459b2cf1e7db46cff4`、Linux
+`0cd4731dd3e673d1309a2b570b38769f9a98681f`，没有将历史实机资格转授 dirty tree。
+保留现有生命周期 runner 的未提交工作及两份用户 WIP；既有 S0–S6、19 WP、10 FV、
+12 DG 不变。当前 goal 保持 active，不另建总跟踪。以下是调用审计与迁移清单，
+“已删源码”不表示新 artifact 已取得离线或实机资格。
+
+| 分类／项 | 生产入口与消费者／实际功能 | 状态、权限及资源所有者 | 替代与依赖／删除条件及门禁 | 现有 issue |
+|---|---|---|---|---|
+| 立即删除 R1：Powered | `dbus_iface::AdapterIface` getter/setter → `AdapterState.powered=true`；`slctl show`；bus probe 观察集；只有内存修改 | 无物理电源依据；管理者写入也不能制造真实状态 | getter/setter/字段/CLI消费一起删除；ControllerState/Generation/Ready只表示实际观察，非电源；真实D-Bus GetAll/introspection/Get/Set负对照，准确新artifact回归 | U#6/#8，K#10/#19 |
+| 立即删除 R1：元数据 Bond 门面 | `Security.ListBonded/RemoveBond` → `BondingService`；`slctl bonded`、帮助、observer白名单、`slkd --storage`、VM启动器 | 旧本地文件，没有密钥安装/可信身份/真实撤销依据 | 同批移除全部已检出调用者和参数，不新增 NotSupported 门面；不读写/升级/删除历史文件；真实方法 UnknownMethod、CLI拒绝旧参数、default/all-features | U#5/#8 |
+| 移入测试 R1：配对存储与事件 | `bonding.rs`、`pairing_record`、旧 SecurityChanged 元数据写入；原磁盘阻塞/取消/退出测试 | 仅测试 fixture；不接真实 Native 安全权威 | cfg(test)隔离，实验feature也不能加载历史文件；保留直接存储调用的取消/退出测试与旧证据；真实安全/Agent不受影响 | U#1/#5，K#7/#18 |
+| 等待替代 R2（P1）：观察预算与发布 | `state::on_adv_report`、`event_loop::dispatch/reconcile_native`、`DeviceIface`、`adapters::remove` | 每controller观察缓存和D-Bus对象，不是连接权威；现有128条native_reports不限制devices | 数量/字节/TTL、pending/published/retiring、删除重试/丢弃计数；完整生产消费者审计后设计有限预算；失败不留下不可重试cache；虚拟乱序/慢总线+真实发现/同行门禁 | U#2/#6，K#3/#19 |
+| 等待替代 R3：应用/Native SDK边界 | `libsparklink::Adapter`、C ffi/ffi_native、Python默认导出；slctl/slktest授权fd与长元组 | 内核管理、普通应用授权、Channel的所有者不同 | 先核对导出与全调用图；提取已有Channel/类型化client，daemon仅依赖Native/Channel，不依赖自己的D-Bus客户端；实际新入口及C/Python契约，不以crate数量验收 | U#3/#6，K#5/#6 |
+| 等待替代 R4：已拒绝旧入口全链退休 | Controller/Security/ExtAdv及slkconfig、Rust/C/Python、policy、CLI/man；旧scan/connect/PM/AFH/sync等 | 未发布旧模型不代表实际Native能力；不能仅看函数存在 | 按入口复核真实调用者后逐条删除；保留当前管理staging、Owned和真实Connection机制；旧编号永不复用；导出/实际调用/负对照 | U#2/#5/#8，K#3/#5/#7 |
+| 移入测试，待迁移：旧事件模型 | 共用dispatch的handle连接/RemoteService与实验Profile分支；Native仅借广告分支 | Typed Peer/Connection按地址类型/gen/lifetime，Device当前按地址观察 | 抽离真实广告消费者后将历史模型移入测试；保留慢callback/cancel/panic/drain；必须真实事件/发现/连接/SSAP回归再删除 | U#1/#2/#3/#6，K#3/#6 |
+| 等待替代 R5：共享契约和模块导出 | daemon、slctl、slktest方法字符串/路径；slk-protocol混合模块 | 唯一类型化契约，观察缓存不能独立造资格 | 复用现有tuple类型与Channel路径；按实际依赖边界收敛，不机械拆crate；独立signature/system-bus检查仍保留 | U#3/#6，K#6 |
+| 等待替代 R6：部署/供应链 | Makefile `/usr/local`与固定`/usr/sbin`、Debian `libsparklink.so`、SONAME/header/pc、uninstall、CI | 管理员配置/状态由管理员所有，artifact不等于qualified release | 已确认路径/文件名不一致及递归配置删除；干净VM实际外部C/Python、升级/回滚/卸载/配置保留；锁定构建/default与实验分开；UAPI pin逐字节核对，不以年龄判错 | U#8，K#19 |
+
+R1 有限退出：上述生产导出、调用者、权限项、帮助与man同步退休；历史存储仅在test
+编译；独立真实D-Bus负对照与保留的storage/callback测试通过；严格default/all-features、
+工具测试、文档通过。准确新bundle在VM重新验证发现/连接/普通用户短消息、已取得长度
+边界及Owned SSAP，适用owner原期限/退出与同行继续；未执行前保持 NOT_QUALIFIED。
+R1不改内核Runtime/Session/Grant/credit/Ticket，也不声称自然恢复、完整Bond或权限部署。
+
+R2预算与发布修复优先于SDK大迁移；R3–R6分小批逐入口交付。安全Agent、SSAP的
+service-only/审批退出原期限门禁、数据/多通道/四设备/性能继续并行。先前尝试复用c6
+bundle已被完整source-scope校验拒绝并保留失败；已另建a2准确bundle，不能再称其为
+“复用c6程序”资格。d795本地审批TOKEN修复及本批R1代码须独立新编译/执行身份。
+未完成整项、自然故障根因及非人工恢复继续开放。
 
 
 ## 应用测试入口整改（WP06/07/16/17）

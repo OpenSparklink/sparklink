@@ -5,6 +5,7 @@ use tokio::sync::Mutex;
 use libsparklink::Adapter;
 use slk_protocol::{SleAddr, SleConnectParams, SleScanParams};
 
+#[cfg(test)]
 use crate::bonding::{BondingService, BondingStore};
 use crate::config::DaemonConfig;
 #[cfg(any(test, feature = "experimental-legacy-profiles"))]
@@ -74,10 +75,10 @@ pub struct AdapterState {
         BTreeMap<(u8, SleAddr), crate::connection_object::PeerRegistration>,
     pub(crate) retiring_peer_objects: BTreeSet<String>,
     pub config: DaemonConfig,
-    pub powered: bool,
     pub discovering: bool,
     pub devices: HashMap<SleAddr, DeviceEntry>,
     pub name: String,
+    #[cfg(test)]
     pub bonding: BondingService,
     #[cfg(any(test, feature = "experimental-legacy-profiles"))]
     pub profiles: ProfileService,
@@ -87,7 +88,7 @@ impl AdapterState {
     pub fn new(
         adapter: impl Into<Arc<Adapter>>,
         config: DaemonConfig,
-        bonding: BondingStore,
+        #[cfg(test)] bonding: BondingStore,
         #[cfg(any(test, feature = "experimental-legacy-profiles"))] profiles: ProfileRegistry,
     ) -> Self {
         let adapter = adapter.into();
@@ -118,10 +119,10 @@ impl AdapterState {
             native_peer_objects: BTreeMap::new(),
             retiring_peer_objects: BTreeSet::new(),
             config,
-            powered: true,
             discovering: false,
             devices: HashMap::new(),
             name,
+            #[cfg(test)]
             bonding: BondingService::new(bonding),
             #[cfg(any(test, feature = "experimental-legacy-profiles"))]
             profiles: ProfileService::new(profiles),
@@ -493,7 +494,8 @@ pub struct RegistrationObserver {
 }
 pub type RegistrationDirectory = Arc<Mutex<BTreeMap<String, RegistrationObserver>>>;
 
-/// Drain experimental callbacks and Bond I/O without holding adapter state.
+/// Drain production owners and experimental callbacks without holding adapter state.
+/// Historical metadata I/O exists only in unit-test builds.
 pub async fn shutdown_services(state: &SharedState) {
     crate::security_policy::retire(state).await;
     let database = state.lock().await.ssap_database.clone();
@@ -507,12 +509,13 @@ pub async fn shutdown_services(state: &SharedState) {
     for owner in owners {
         owner.shutdown().await;
     }
+    #[cfg(test)]
     let bonding = state.lock().await.bonding.clone();
     #[cfg(any(test, feature = "experimental-legacy-profiles"))]
     {
         let profiles = state.lock().await.profiles.clone();
-        tokio::join!(bonding.shutdown(), profiles.shutdown());
+        profiles.shutdown().await;
     }
-    #[cfg(not(any(test, feature = "experimental-legacy-profiles")))]
+    #[cfg(test)]
     bonding.shutdown().await;
 }

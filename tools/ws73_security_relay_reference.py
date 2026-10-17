@@ -124,7 +124,7 @@ if ! grep -q 'downloaded sparklink/ws73/ws73.bin' /evidence/oracle-initial-kerne
 reset_ret=$?
 echo "$reset_ret" > /evidence/controlled-reset-exit.txt
 echo RELAY_CONTROLLED_RESET_TERMINAL
-/bin/slkd $config_args --storage "$storage" -n > /evidence/slkd-reloaded.log 2>&1 & daemon=$!
+/bin/slkd $config_args -n > /evidence/slkd-reloaded.log 2>&1 & daemon=$!
 /bin/python3 -c "import sys;sys.path.insert(0,'/usr/share/sparklink/tools');from ws73_target_guest import ready;ready(0)" > /evidence/reloaded-ready-supervisor.log 2>&1 || fail 'actual reloaded registration Ready'
 dmesg > /evidence/reloaded-kernel.log
 grep -q 'downloaded sparklink/ws73/ws73.bin' /evidence/reloaded-kernel.log || fail 'firmware file was not actually uploaded'
@@ -153,7 +153,7 @@ echo '1-1:1.0' > /sys/bus/usb/drivers/sparklink_ws73_usb/unbind || fail 'native 
 /bin/relay-oracle --reset-only > /evidence/native-controlled-reset.txt 2>&1
 reset_ret=$?
 echo "$reset_ret" > /evidence/native-controlled-reset-exit.txt
-/bin/slkd $config_args --storage "$storage" -n > /evidence/slkd-native-reloaded.log 2>&1 & daemon=$!
+/bin/slkd $config_args -n > /evidence/slkd-native-reloaded.log 2>&1 & daemon=$!
 /bin/python3 -c "import sys;sys.path.insert(0,'/usr/share/sparklink/tools');from ws73_target_guest import ready;ready(0)" > /evidence/native-reloaded-ready.log 2>&1 || fail 'native reloaded Ready'
 fi
 dmesg > /evidence/native-reloaded-kernel.log

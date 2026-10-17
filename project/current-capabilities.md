@@ -1,5 +1,9 @@
 # 当前能力与资格
 
+本轮退休整改正在开发：移除虚假Powered及历史元数据Bond入口，存储只保留test编译；
+新代码尚未取得实机资格。三类清单及退出条件见[唯一计划WP18](implementation-plan.md)。
+以下c6/836等记录保留原编译和工具身份，不转授当前HEAD或dirty tree。
+
 [Owned SSAP 新产物切片](../docs/evidence/ssap-owned-authorization-20261017.json)：
 K`0cd4731dd3e6` / 编译用户态与执行工具 `c6f9d8b96347`。基本通道和实际机制2各交换
 连接角色：16个owner案例、64次真实审批、80笔远端SSAP事务及16次owner退出。允许/

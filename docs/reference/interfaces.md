@@ -14,6 +14,18 @@
 新的用户态 SSAP Engine 已完整实现。错误和 NotSupported 行为以当前源码及资格为准。
 
 
+## 已退休的 daemon 电源与历史元数据接口
+
+`org.sparklink.Adapter.Powered` 已删除（getter/setter 均无替代别名），
+`slctl show` 使用 `ControllerState` / `Generation` 等实际观察。Ready 不是物理上电证明；
+当前没有电源控制契约，不能用 daemon 布尔值制造电源状态。
+`Security.ListBonded` / `RemoveBond`、`slctl bonded` 和 `slkd --storage` 已删除。
+默认及实验 daemon 均不读取、改写、删除或升级旧配对元数据；旧文件由管理员保留，
+不作为真实密钥、可信身份、重连或撤销依据。历史存储仅用于单元测试的取消/退出回归。
+未来真实 Bond 需独立的密钥安装、持久化、撤销及恢复门禁，不能恢复上述门面冒充实现。
+实际 Agent、Connection 安全机制、唯一用户态 SSAP Engine、管理 staging 与 Owned
+服务注册保持原职责。本段描述源码整改，实机资格仍按能力入口的准确 artifact。
+
 ## 本批源码核对的状态（未发布 ABI）
 
 当前接口说明复核用户态 `8121ba0fc038` 与 Linux `8cbf53e6a088`；仅描述源码可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。

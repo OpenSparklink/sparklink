@@ -175,7 +175,6 @@ Commands:
   sync <sub>                    Sync link management
   meas <sub>                    Measurement / ranging control
   peer <sub>                    Peer capability queries
-  bonded [list|remove <addr>]   Manage bonded devices
   help                          Print this help
   quit                          Exit";
 

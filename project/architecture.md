@@ -794,3 +794,17 @@ mutex, then joins owner watches outside locks. Kernel/DB admission is a snapshot
 not an atomic cross-process transaction; already committed writes cannot be undone
 by later revocation. Current-artifact real qualification, service-only deployment,
 revocation/Down/deadline interleavings, CPCD and Bond remain separately gated.
+
+
+## 历史实现退休约束
+
+每个生产状态只有一个权威来源。D-Bus/SDK缓存只表达有效观察，不能通过本地布尔值
+制造Ready、电源、连接、安全或完成。每个入口应明确角色、权限、完整生命周期身份、
+资源所有者、原始期限及取消/关闭/错误语义。未发布旧入口在调用者迁移后删除，无兼容
+门面，旧编号不复用。唯一SSAP Engine复用Channel；daemon不依赖自己的应用D-Bus
+客户端。管理staging与Owned注册用途不同，不因名字相近合并。
+生产不得自动加载历史配对元数据为可信Bond。实验存储/事件模型保留为显式测试，
+真实Bond必须接真实安装、凭据撤销和持久化协议。权限与依赖边界决定结构，不能借
+全局开关、隐式fallback或机械拆crate绕过。例外须有理由、边界与退出门禁。
+退休清单、批次及状态只维护在[唯一计划WP18](implementation-plan.md)，
+资格只维护在[当前能力](current-capabilities.md)。完整原范围与VM-only不变。

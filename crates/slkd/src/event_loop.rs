@@ -209,6 +209,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
                 error!(%e, handle, "profile connection callback failed");
             }
         }
+        #[cfg(test)]
         Ok(libsparklink::Event::SecurityChanged {
             state: sec_state,
             method,
@@ -587,6 +588,7 @@ async fn dispatch_native_with<
     .await;
 }
 
+#[cfg(test)]
 async fn pairing_record(
     state: &SharedState,
     method: &str,

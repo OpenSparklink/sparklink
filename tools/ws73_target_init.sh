@@ -222,11 +222,6 @@ if grep -q 'ws73.active_deadline=1' /proc/cmdline; then
     if grep -q 'ws73.active_close=1' /proc/cmdline; then close_arg='--last-file-close'; fi
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_active_deadline.py $close_arg --output /evidence/active-deadline > /evidence/active-deadline-supervisor.log 2>&1 || fail 'active deadline retirement gate'
 fi
-storage=/tmp/bonds
-if [ -f /scratch-root-uuid ]; then
-    storage=/var/lib/sparklink
-    mkdir -p "$storage"; chown 0:0 "$storage"; chmod 0700 "$storage"
-fi
 config_args=''
 if [ -f /expected-discovery-config-sha256 ]; then
     chown 0:0 /expected-discovery-config-sha256 /etc/sparklink/main.conf || fail 'frozen config ownership'
@@ -241,7 +236,7 @@ if [ -f /expected-discovery-config-sha256 ]; then
     /bin/slkd --check-config --config /etc/sparklink/main.conf > /evidence/discovery-config-validation.txt 2>&1 || fail 'guest config validation'
     config_args='--config /etc/sparklink/main.conf'
 fi
-/bin/slkd $config_args --storage "$storage" -n > /evidence/slkd.log 2>&1 & daemon=$!
+/bin/slkd $config_args -n > /evidence/slkd.log 2>&1 & daemon=$!
 if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline && ! grep -q 'ws73.setup_release=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
 fi
@@ -296,7 +291,7 @@ if grep -qw ws73.channel_daemon_crash=1 /proc/cmdline; then
         ticks=$((ticks+1)); [ "$ticks" -lt 150 ] || fail 'daemon fd cleanup deadline'
         sleep 0.1
     done
-    /bin/slkd $config_args --storage "$storage" -n > /evidence/slkd-successor.log 2>&1 & daemon=$!
+    /bin/slkd $config_args -n > /evidence/slkd-successor.log 2>&1 & daemon=$!
     for slot in 0 1; do
         /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready "$slot" || fail 'daemon fd successor Ready'
     done
@@ -324,7 +319,7 @@ if grep -q 'ws73.daemon_crash=1' /proc/cmdline; then
     [ "$killed_exit" = 137 ] || fail 'guest SIGKILL wait status'
     daemon=''
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py daemon-crash free "$old_daemon" "$killed_exit" || fail 'last-File real cleanup'
-    /bin/slkd $config_args --storage "$storage" -n > /evidence/slkd-successor.log 2>&1 & daemon=$!
+    /bin/slkd $config_args -n > /evidence/slkd-successor.log 2>&1 & daemon=$!
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py daemon-crash after "$daemon" || fail 'same-generation successor'
 fi
 cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'daemon process credentials'

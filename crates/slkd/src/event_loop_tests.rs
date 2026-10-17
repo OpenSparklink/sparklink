@@ -332,6 +332,13 @@ async fn blocked_bond_storage_does_not_block_dbus_adapter_or_event_shutdown() {
     let (source, _events, entered, dropped) = source();
     let task = EventTask::start(source, state.clone(), server);
     entered.await.unwrap();
+    let error = security
+        .call::<_, _, ()>("RemoveBond", &("01:02:03:04:05:06",))
+        .await
+        .unwrap_err();
+    assert!(
+        matches!(error, zbus::Error::MethodError(ref name, _, _) if name.as_str() == "org.freedesktop.DBus.Error.UnknownMethod")
+    );
     let bonding = state.lock().await.bonding.clone();
     let (storage_entered, storage_entered_rx) = oneshot::channel();
     let (release, release_rx) = std::sync::mpsc::channel();
@@ -346,7 +353,7 @@ async fn blocked_bond_storage_does_not_block_dbus_adapter_or_event_shutdown() {
             .await
     });
     storage_entered_rx.await.unwrap();
-    let removal = security.call::<_, _, ()>("RemoveBond", &("01:02:03:04:05:06",));
+    let removal = bonding.remove([1, 2, 3, 4, 5, 6]);
     tokio::pin!(removal);
     assert!(
         timeout(Duration::from_millis(100), &mut removal)
@@ -1138,4 +1145,88 @@ async fn actual_ssap_receive_scope_cancels_on_private_bus_caller_death() {
         .unwrap(),
         7
     );
+}
+
+/// Actual production D-Bus export, with /dev/null and a private bus as explicit
+/// fixtures: no controller state, deployed policy, kernel or RF qualification.
+#[tokio::test]
+async fn retired_power_and_metadata_bond_interfaces_are_absent() {
+    let bus = PrivateBus::start();
+    let shared = state();
+    let server = server(&bus, shared.clone()).await;
+    let client = client(&bus).await;
+    let adapter = adapter_proxy(&client).await;
+    let properties = zbus::fdo::PropertiesProxy::builder(&client)
+        .destination("org.sparklink")
+        .unwrap()
+        .path("/org/sparklink/slk0")
+        .unwrap()
+        .build()
+        .await
+        .unwrap();
+    let all = properties
+        .get_all("org.sparklink.Adapter".try_into().unwrap())
+        .await
+        .unwrap();
+    assert!(!all.contains_key("Powered"));
+    assert!(
+        adapter
+            .get_property::<bool>("Powered")
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("UnknownProperty")
+    );
+    let err = properties
+        .set(
+            "org.sparklink.Adapter".try_into().unwrap(),
+            "Powered",
+            zbus::zvariant::Value::Bool(false),
+        )
+        .await
+        .unwrap_err();
+    assert!(err.to_string().contains("UnknownProperty"));
+    let security = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk0/security",
+        "org.sparklink.Security",
+    )
+    .await
+    .unwrap();
+    let err = security
+        .call::<_, _, Vec<String>>("ListBonded", &())
+        .await
+        .unwrap_err();
+    assert!(
+        matches!(err, zbus::Error::MethodError(ref name, _, _) if name.as_str() == "org.freedesktop.DBus.Error.UnknownMethod")
+    );
+    let err = security
+        .call::<_, _, ()>("RemoveBond", &("01:02:03:04:05:06",))
+        .await
+        .unwrap_err();
+    assert!(
+        matches!(err, zbus::Error::MethodError(ref name, _, _) if name.as_str() == "org.freedesktop.DBus.Error.UnknownMethod")
+    );
+    let introspection = zbus::fdo::IntrospectableProxy::builder(&client)
+        .destination("org.sparklink")
+        .unwrap()
+        .path("/org/sparklink/slk0")
+        .unwrap()
+        .build()
+        .await
+        .unwrap()
+        .introspect()
+        .await
+        .unwrap();
+    assert!(!introspection.contains("name=\"Powered\""));
+    assert!(
+        !shared
+            .lock()
+            .await
+            .controller
+            .flags
+            .eq(&slk_protocol::CONTROLLER_READY)
+    );
+    drop(server);
 }

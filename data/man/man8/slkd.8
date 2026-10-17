@@ -6,7 +6,6 @@ slkd \- per-controller SparkLink management and application service daemon
 .RB [ \-c " " path ]
 .RB [ \-d " " path ]
 .RB [ \-n ]
-.RB [ \-\-storage " " directory ]
 .RB [ \-\-session ]
 .br
 .B slkd \-\-config
@@ -52,10 +51,6 @@ Requires --check-config. Print normalized WS73 policy diagnostics.
 .TP
 .BI \-d " path" ", \-\-device " path
 Kernel character device; default /dev/sparklink.
-.TP
-.BI \-\-storage " directory"
-Metadata store root; default /var/lib/sparklink. Legacy metadata is not a
-trusted key store, native Bond implementation or authenticated credential.
 .TP
 .B \-\-session
 Use a session bus for isolated tests. Does not reproduce deployed system-bus
@@ -109,8 +104,10 @@ D-Bus signature. Policy approval does not authenticate the peer or install a Bon
 SDK111-specific unauthenticated key agreement/installation has narrowly
 qualified two-device evidence. Generic Pair(s), Encrypt(), GetInfo(), SetPsk(s),
 passkey methods, Reset(), and Encrypted/Paired properties remain NotSupported;
-invalid arguments may be rejected first. ListBonded()/RemoveBond(s) operate
-legacy local metadata only and do not establish or revoke real trusted keys.
+invalid arguments may be rejected first. Legacy ListBonded()/RemoveBond(s),
+Adapter.Powered and --storage have been removed without a compatibility period.
+The daemon does not load, modify, delete or upgrade historical pairing files.
+ControllerState/Ready are kernel observations, not a physical power property.
 .SS Local service data and remote SSAP
 org.sparklink.ServiceManager is at /services.
 RegisterLocalService(ay uuid, a(ayuuay) properties) returns (qqaq): service

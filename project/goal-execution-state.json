@@ -3040,7 +3040,7 @@
   },
   "service_callback_current_batch": {
     "status": "IMPLEMENTING_NOT_QUALIFIED",
-    "production_programs": "Existing sealed c6 artifact; no new Host/Engine or native protocol implementation",
+    "production_programs": "New exact-source bundle required; c6 reuse attempt rejected by source guard; a2 profile prepared but not real qualified; d795 prompt token and R1 need new build",
     "finite_exit": [
       "VM service-only local register/read/unregister plus actual cross-owner/management/channel/kernel-device refusals",
       "Real owner exit during approval",
@@ -3053,5 +3053,31 @@
       "Full original S0-S6/19WP/10FV/12DG and prior open conditions"
     ],
     "constraint": "VM-only;12 jobs solo/8 with VM;do not overwrite user WIP or sealed evidence"
+  },
+  "architecture_retirement_current_batch": {
+    "status": "IMPLEMENTING_NOT_QUALIFIED",
+    "audited_heads": {
+      "userspace": "d795a3a6b1e98c24e984e2459b2cf1e7db46cff4",
+      "linux": "0cd4731dd3e673d1309a2b570b38769f9a98681f"
+    },
+    "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
+    "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
+    "batch": "R1 remove false Powered and metadata Bond exports/callers;test-only legacy storage",
+    "qualification": "No new real-device or formal qualification;old source/artifact identities retained",
+    "next": [
+      "R1 exact-artifact VM plus current SSAP owner callback/service-role gates",
+      "R2 bounded observation cache and retryable publication",
+      "R3 application/Native boundary",
+      "R4 per-entry retirement and event migration",
+      "R5 typed contracts",
+      "R6 clean-VM installation and SDK consumers"
+    ],
+    "parallel": [
+      "Agent/SSAP",
+      "data/multichannel/four devices",
+      "event-driven performance",
+      "natural fault RCA/nonmanual recovery"
+    ],
+    "exit_reference": "Canonical plan R1 finite exit;not full-control prerequisite"
   }
 }

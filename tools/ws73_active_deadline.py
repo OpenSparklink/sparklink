@@ -343,7 +343,7 @@ def run(args):
                 print('WS73_TARGET_ACTIVE_METADATA: slot=0', flush=True)
         for row in record['initializations']: row['start_wall_ns']=time.time_ns()
         with (folder/'initializer.log').open('wb') as log:
-            initializer=subprocess.Popen(['/bin/slkd','--storage','/tmp/active-init-bonds','-n'],stdout=log,stderr=subprocess.STDOUT)
+            initializer=subprocess.Popen(['/bin/slkd','-n'],stdout=log,stderr=subprocess.STDOUT)
             record.update(initializer_method='EXISTING_SLKD_MANAGED_STANDBY',initializer_pid=initializer.pid);save()
             deadline=time.monotonic()+20
             while not all(adapter.snapshot().flags==1 for adapter in adapters):

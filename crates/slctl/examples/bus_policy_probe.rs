@@ -269,13 +269,7 @@ async fn probe(path: &str, mode: &str, native_phase: Option<&str>) -> anyhow::Re
     // Bus denial must leave the daemon's state and native admission untouched.
     let after: HashMap<String, zbus::zvariant::OwnedValue> =
         properties.call("GetAll", &(ADAPTER,)).await?;
-    for property in [
-        "Ready",
-        "Powered",
-        "Generation",
-        "AdvertisingState",
-        "ScanningState",
-    ] {
+    for property in ["Ready", "Generation", "AdvertisingState", "ScanningState"] {
         ensure!(before.contains_key(property), "missing observed {property}");
         ensure!(
             before.get(property) == after.get(property),

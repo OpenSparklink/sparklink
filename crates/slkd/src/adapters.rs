@@ -7,7 +7,6 @@ use crate::profile::ProfileRegistry;
 use crate::profile::{BatteryProfile, DeviceInfoProfile};
 use crate::registration::RegistrationNode;
 use crate::{
-    bonding::BondingStore,
     config::DaemonConfig,
     controller::ControllerIface,
     dbus_iface::{AdapterIface, DeviceIface},
@@ -232,7 +231,6 @@ impl Node {
         adapter: Adapter,
         snapshot: SleControllerSnapshot,
         config: DaemonConfig,
-        storage: &str,
         connection: &zbus::Connection,
         directory: &AdapterDirectory,
     ) -> anyhow::Result<Self> {
@@ -274,24 +272,11 @@ impl Node {
             }))
         });
         let control = adapter.clone();
-        let storage = storage.to_owned();
-        let (adapter, bonding) = tokio::task::spawn_blocking(move || {
-            let key = format!(
-                "p{}-{}",
-                snapshot.profile,
-                snapshot
-                    .address
-                    .iter()
-                    .map(|b| format!("{b:02x}"))
-                    .collect::<String>()
-            );
-            let mut bonding = BondingStore::new(std::path::Path::new(&storage), &key);
-            if let Err(error) = bonding.load() {
-                info!(%error, "no bonding metadata loaded");
-            }
-            (adapter, bonding)
-        })
-        .await?;
+        // Historical pairing files are not trusted credentials and are never
+        // loaded by the daemon, including its experimental feature build.
+        #[cfg(test)]
+        let bonding =
+            crate::bonding::BondingStore::new(&std::env::temp_dir(), "unused-registration-test");
         #[cfg(any(test, feature = "experimental-legacy-profiles"))]
         let profiles = {
             let fd = adapter.clone();
@@ -299,9 +284,15 @@ impl Node {
                 .await?
         };
         #[cfg(any(test, feature = "experimental-legacy-profiles"))]
-        let mut state = AdapterState::new(adapter, config, bonding, profiles);
+        let mut state = AdapterState::new(
+            adapter,
+            config,
+            #[cfg(test)]
+            bonding,
+            profiles,
+        );
         #[cfg(not(any(test, feature = "experimental-legacy-profiles")))]
-        let mut state = AdapterState::new(adapter, config, bonding);
+        let mut state = AdapterState::new(adapter, config);
         state.object_path = path.clone();
         state.controller = snapshot;
         if snapshot.profile == 1 {
@@ -541,7 +532,6 @@ impl AdapterManager {
     pub(crate) fn start(
         device: String,
         config: DaemonConfig,
-        storage: String,
         connection: zbus::Connection,
         directory: AdapterDirectory,
         registrations: RegistrationDirectory,
@@ -592,10 +582,9 @@ impl AdapterManager {
             }
         }));
         for id in 0..16 {
-            let (device, config, storage, connection, directory, registrations, mut cancelled) = (
+            let (device, config, connection, directory, registrations, mut cancelled) = (
                 device.clone(),
                 config.clone(),
-                storage.clone(),
                 connection.clone(),
                 directory.clone(),
                 registrations.clone(),
@@ -643,7 +632,7 @@ impl AdapterManager {
                     } else if let Some(observed) = observed.filter(|s| s.state == slk_protocol::REGISTRATION_INSTALLED)
                         && let Ok((adapter, snapshot)) = open_selected(device.clone(), id).await
                         && snapshot.generation == observed.generation {
-                        match Node::create(&device, adapter, snapshot, config.clone(), &storage, &connection, &directory).await {
+                        match Node::create(&device, adapter, snapshot, config.clone(), &connection, &directory).await {
                             Ok(ready) => node = Some(ready),
                             Err(error) => warn!(%error, index=id, "adapter registration failed"),
                         }

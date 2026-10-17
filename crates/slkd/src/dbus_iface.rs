@@ -514,17 +514,6 @@ impl AdapterIface {
         )
     }
 
-    /// Adapter power state
-    #[zbus(property)]
-    async fn powered(&self) -> bool {
-        self.state.lock().await.powered
-    }
-
-    #[zbus(property)]
-    async fn set_powered(&self, value: bool) {
-        self.state.lock().await.powered = value;
-    }
-
     /// Whether discovery is active
     #[zbus(property)]
     async fn discovering(&self) -> bool {

@@ -3,6 +3,7 @@ use slk_experimental::hid;
 #[cfg(any(test, feature = "experimental-legacy-profiles"))]
 use slk_experimental::profile;
 mod adapters;
+#[cfg(test)]
 mod bonding;
 mod channel;
 mod config;
@@ -50,10 +51,6 @@ struct Cli {
     /// Print normalized WS73 policies while checking explicit configuration.
     #[arg(long, requires = "check_config")]
     dump_ws73_policies: bool,
-
-    /// Bond metadata directory (no native key persistence is claimed).
-    #[arg(long, default_value = "/var/lib/sparklink")]
-    storage: String,
 
     /// Use a session bus for isolated tests.
     #[arg(long)]
@@ -119,7 +116,6 @@ async fn main() -> anyhow::Result<()> {
     let manager = AdapterManager::start(
         cli.device,
         config,
-        cli.storage,
         connection.clone(),
         directory,
         registrations,
@@ -141,6 +137,16 @@ async fn main() -> anyhow::Result<()> {
 #[cfg(test)]
 mod cli_tests {
     use super::*;
+    #[test]
+    fn retired_metadata_storage_option_is_rejected_before_startup() {
+        assert_eq!(
+            Cli::try_parse_from(["slkd", "--storage", "/tmp/old-bonds"])
+                .err()
+                .unwrap()
+                .kind(),
+            clap::error::ErrorKind::UnknownArgument
+        );
+    }
     #[test]
     fn implicit_and_explicit_default_paths_remain_distinct() {
         assert!(Cli::try_parse_from(["slkd"]).unwrap().config.is_none());

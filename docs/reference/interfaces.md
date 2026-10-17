@@ -190,6 +190,11 @@ socket，不是NativeAdapter的控制fd。32位仅C布局已验，真实compat�
 
 ServiceManager新增明确本地 RegisterLocalService/ListLocalServices/ReadLocalValue/RemoveLocalService；
 Connection新增ReadSsapValue/WriteSsapValue经真实SMTC，写要求peer校验回复。
+Connection 只读属性 `SsapSecurityRequirement`（D-Bus `u`）返回首次 SMTC 绑定前
+固定的最低机制要求 `0|1|2`；它不是当前安全等级。启动配置、延迟启动、拒绝及
+无降级/重绑行为见[SSAP权限与通道要求](ssap-permissions.md)。不改变本地 staging
+与实际远端操作的区分，也不授属性级认证、本地授权或 Bond。
+
 旧未接通facade仍NotSupported。数据库配置不是远端发布；原始门禁及安全/失败
 语义见准确资格和证据，不转授为完整服务支持。
 

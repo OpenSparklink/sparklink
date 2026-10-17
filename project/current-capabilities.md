@@ -1,9 +1,13 @@
 # 当前能力与资格
 
-当前开发切片新增唯一 SSAP SMTC 的冻结最低机制要求与安全完成后的启动提示。
-这是未重新实机验收的新源码；既有 K619/U390 的受保护 CUTC 资格不转授 SSAP。
-默认普通 SSAP、受保护 SSAP、属性级授权、命名身份及 Bond 分别记录，不合并为
-“安全已完成”。本批准确 artifact 与真实业务证据取得前，新增 SSAP 实机资格仍缺。
+K619/U331 新产物已通过两个受保护 SSAP 门禁（等级1/2、交换连接角色）：
+32组远端读写及对端数据库核对、32份 discovery、16次 CUTC 随机回复；
+安装前8次真实 SSAP 拒绝。唯一 Engine 首次绑定固定最低机制，无普通回退。
+但默认普通短包整轮因对端 Down 超原5秒预算而 FAIL，249/2042未运行，
+本批退出未达。f46完整 SMTC 时窗检查目前仅离线重放，未获新硬件执行资格。
+属性级授权、命名身份、Bond 和自然恢复仍未完成，不从此最低传输机制推导。
+准确身份、失败和范围见[本批原件](../docs/evidence/protected-ssap-first-bind-20261017.json)
+及[冻结离线结果](../docs/evidence/protected-ssap-offline-20261017.json)。
 
 本页是唯一当前资格入口；[架构](architecture.md)是目标，
 [唯一计划](implementation-plan.md)是待办。当前摘要从
@@ -330,6 +334,11 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | 实际锁/引用/提交撤权晚到与复用组合：未证明，无新形式化运行 | `formal_bounded` | `UNPROVED` |
 | 原c51首个真实受保护release整轮FAIL：命令核算缺口 | `real_device` | `FAIL` |
 | 唯一SSAP安全消费者与完整S0-S6/恢复等原范围：仍缺 | `real_device` | `UNPROVED` |
+| K619/U331：唯一受保护SSAP首次绑定，两等级两角色32组读写及16 CUTC回复 | `real_device` | `PASS` |
+| 干净331/f46：90daemon与704工具、准确CI及完整SMTC离线核对 | `offline` | `PASS` |
+| U331默认短包整轮FAIL：对端Down超原5秒，249/2042未运行 | `real_device` | `FAIL` |
+| 新SSAP消费者的实际锁/Grant/撤权/提交与晚到组合：未证明 | `formal_bounded` | `UNPROVED` |
+| 默认回归、属性权限/Bond及完整S0-S6/恢复：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

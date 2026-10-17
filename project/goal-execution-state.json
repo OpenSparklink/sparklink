@@ -77,7 +77,7 @@
     "manual_request_pending": false,
     "host_installation": false,
     "constraint": "VM-only; no activity on unrelated libvirt VMs",
-    "current_operational_scope": "Fresh U2/3 ten lifecyclegates24precontrolRT;E1/U4 initialtwo releasechildPASS only,whole interruptedmatrixFAIL,not generalE compatibility/mixedfourdevicequalification.",
+    "current_operational_scope": "OnlyU2/3 newprotectedSSAP1/2 bothroles32readwritechecks/16CUTC RT;defaultshortwholeFAIL peerDownoutside5s;originalU2/3 qualificationsretainoriginalidentities. Hi3873E1 excluded;no mixedfourdevicequalification.",
     "recovery_qualification": false,
     "topology_revision": {
       "date": "2026-10-17",
@@ -1559,18 +1559,38 @@
       "protected-lifecycle-390-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "protected-ssap-331-real": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "protected-ssap-331-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "protected-ssap-331-failed": {
+        "level": "real_device",
+        "result": "FAIL"
+      },
+      "protected-ssap-331-formal": {
+        "level": "formal_bounded",
+        "result": "UNPROVED"
+      },
+      "protected-ssap-331-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "wp09-protected-lifecycle-qualified-next-single-SSAP",
-      "production_behavior": "SameK619physicalSession frozenGrade/epochGrant;existingtypedmechanism beforefirstprotectedCUTCbind plus originalFile/Down/5s/credit/prefix;no newHost/Engine",
+      "id": "wp06-wp09-sole-SSAP-first-bind-partial-real-baselineFAIL",
+      "production_behavior": "UniqueexistingSMTCEngine firstbind freezes0/1/2;nativecompletion prompts,originalK619Grant enforceslivegrade/epoch/lease;no fallback/rebind/secondEngine",
       "exit": [
-        "20protected security1/2 x5cases xbothindices realPASS,48peerRT/170oppositerelayreceipts/40installations/80queries;firstc51FAIL retained",
-        "Protected249boundary andcomplete2042 bothroles add16peerRT/16boundaryrejects;selectednotfullmatrix",
-        "701frozenTools/42newCABI/20replays360mutants/6historical+6failuremutants,115strictdocs;no newformalproof andwholegoalINCOMPLETE"
+        "Two331protectedrealcasesPASS,32SSAPreadwritepeerchecks/32discoveryrecords/16CUTC RT;original331tools separatefromf46offlinefullwindowaudit",
+        "WholedefaultbaselineFAIL:peerDown5.064s exceedsoriginal5s;249/2042NOT_RUN. FullbatchexitNOT_ACHIEVED",
+        "90cleanfrozen331daemon/704cleanf46tools and6accurateCI;no newformalproof,fullgoalINCOMPLETE"
       ],
-      "next": "SoleSSAPfirstSMTCbind requiredsecurity/policy:existingautoplainstart mustdeferorfreeze strongerrequirement beforebind,passServiceargument andpreserveCPCD;no late rebind/secondEngine/allcontrolprecondition. Relateddata/fourdevice/performance andnaturalRCA/nonmanualrecoveryparallel"
+      "next": "BoundedVM SDK111 reason0x13/current vsSDK/OHOS0x10 comparison withunchangedtimeouts/parameters;currentconstdiscrepancy iscandidateNOT provenRCA. NewcorrectedauditorVM anddefaultshort/249/2042;thenperattributeauthorization onsoleEngine. Data/multi/fourdevice/performance andnaturalRCA/nonmanualrecovery remainparallel,noallcontrolprecondition."
     }
   },
   "agent_workstream": {
@@ -2559,8 +2579,8 @@
     "kernel_unchanged": "61905139ff8c3ed2937ccdba697d880880582234",
     "production_behavior": "Freeze sole SMTC minimum security before first bind;nonzero defers plain publication;actualnativecompletion prompts originalEngine;finalGrant validates liveepoch/lease;no fallback/rebind/secondEngine",
     "offline": {
-      "daemon": "90 actual daemon tests PASS;private bus/AF_UNIX not kernel concurrency",
-      "tools": "704 tools tests incl verifiernegativecontrols;fixture results not hardwarequalification",
+      "daemon": "90 cleanfrozen331actualdaemon tests PASS,actualELFsealed;privatebus/AF_UNIX notkernelconcurrency",
+      "tools": "704 cleanfrozenf46tool tests PASS;fixtures/not hardware",
       "strict_clippy": "workspace alltargets -Dwarnings PASS"
     },
     "retained_failures": [
@@ -2589,6 +2609,17 @@
     "real_evidence": ".dev/protected-ssap-qualification-v1.json",
     "failure_evidence": ".dev/protected-ssap-plain-down-failure-v1.json",
     "qualification_limit": "Protected1/2 bothroles actualdiscovery/16readwritechecks percase plus8CUTC RT;plainshort8CUTC and16SSAPchecks butwholeFAIL peerDownafter5s. Baseline249/2042 NOT_RUN. No inheritednewartifactlengthqualification.",
-    "audit_order": "FullSMTCpreinstallcheck moved beforedestructive matching;240ratherthan8 observations perphase onactualsec1. Botholdandnewrejectcopiedearlyextra,not establishedfalsePASS. No change to Rust/Kernel production behavior."
+    "audit_order": "FullSMTCpreinstallcheck moved beforedestructive matching;240ratherthan8 observations perphase onactualsec1. Botholdandnewrejectcopiedearlyextra,not establishedfalsePASS. No change to Rust/Kernel production behavior.",
+    "public_report": "docs/evidence/protected-ssap-first-bind-20261017.json",
+    "offline_report": "docs/evidence/protected-ssap-offline-20261017.json",
+    "real_report_commit": "0b1a306",
+    "offline_report_commit": "21e157d",
+    "corrected_offline_tools": "f46f740c985c2e37621470b7011452ae73ab5c97",
+    "offline_source_attribution": "Cleanfrozen33190daemon plussealedactualtestELF;cleanfrozenf46704tools;prodRust/data/Cargo331=f46;notcurrentdirtytreequalification",
+    "batch_exit": "NOT_ACHIEVED_ORIGINAL_DEFAULT_DOWN_FAIL_AND_LENGTHS_NOT_RUN",
+    "reference_audit": ".dev/protected-ssap-disconnect-reference-audit-v1.json",
+    "full_window_audit": ".dev/protected-ssap-full-window-replay-v1.json",
+    "issues_receipt": ".dev/protected-ssap-issue-receipts-v1.json",
+    "formal_strength": "No newformalrun;actualconsumercompositionunproved;unchangedK619pureGrant79retainsoriginalboundaryonly"
   }
 }

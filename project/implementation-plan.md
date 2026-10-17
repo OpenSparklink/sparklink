@@ -5,8 +5,11 @@
 当前 WP06/WP09 切片：唯一用户态 SSAP 的首次 SMTC 安全要求在绑定前固定。
 默认基本路径保持，非零 `[ssap] channel_security` 延迟初次绑定；实际原生安全完成
 只提示重新准入，最终等级/epoch/lease 仍由原内核 Grant 强制，无普通回退或同
-lifetime 重绑。已接通源码与离线检查不授新实机资格；本批退出需新 artifact 的
-两等级、两角色真实 discovery/读写/对端数据库检查，安装前拒绝、原 CUTC 短包及
+lifetime 重绑。新 K619/U331 已完成两等级、两角色真实 discovery/读写/对端数据库检查、
+安装前拒绝及16次 CUTC 回复；但默认短包对端 Down 约5.064秒、超原5秒预算，
+整轮 FAIL 保留，249/2042未运行。本批退出未达。下一步在 VM 中保持原连接参数、
+期限和断言，核对当前0x13与 SDK/OHOS0x10断链原因的差异；它目前是源码线索，
+不能宣布根因。f46完整 SMTC 时窗检查只已离线重放，须新硬件执行与默认路径／
 长度保持。属性级安全/本地授权、Bond 与完整生命周期组合继续开放，非本批替代项。
 沿用唯一 Engine，不恢复旧内核 wire 实现；完整 S0–S6 及数据/性能并行条件不变。
 
@@ -144,6 +147,11 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | 实际锁/引用/提交撤权晚到与复用组合：未证明，无新形式化运行 | `formal_bounded` | `UNPROVED` |
 | 原c51首个真实受保护release整轮FAIL：命令核算缺口 | `real_device` | `FAIL` |
 | 唯一SSAP安全消费者与完整S0-S6/恢复等原范围：仍缺 | `real_device` | `UNPROVED` |
+| K619/U331：唯一受保护SSAP首次绑定，两等级两角色32组读写及16 CUTC回复 | `real_device` | `PASS` |
+| 干净331/f46：90daemon与704工具、准确CI及完整SMTC离线核对 | `offline` | `PASS` |
+| U331默认短包整轮FAIL：对端Down超原5秒，249/2042未运行 | `real_device` | `FAIL` |
+| 新SSAP消费者的实际锁/Grant/撤权/提交与晚到组合：未证明 | `formal_bounded` | `UNPROVED` |
+| 默认回归、属性权限/Bond及完整S0-S6/恢复：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

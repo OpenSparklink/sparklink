@@ -14,14 +14,14 @@
   },
   "batch": {
     "id": "WP18-R4f2e-raw-ABI-and-test-retirement",
-    "production_behavior": "K4b6 retires unconsumed standard event models/untaggedring APIs and write-only registry version. Seven consumed kinds with DLI deny guards;Native full snapshots and unique Session remain. Four real preservationVMs andVirtual2rounds exactly scoped;not fullarchitecture.",
-    "state": "EVENT_REGISTRY_SCOPED_GATES_PASS_RAW_ABI_SDK_DEPLOYMENT_INCOMPLETE",
+    "production_behavior": "Production unchanged:standard parser240budget,fixture255mismatch. Aggregatecurrent qualificationUNPROVED while exactRF inputs retained. Related direct-source testcorrection before continuing rawABI/SDK/deployment.",
+    "state": "PARSER_FIXTURE_DEPENDENCY_MISMATCH_CORRECTION_RUNNING",
     "exit": [
       "14exact offline subsets including current6/historical1event-ring groups,Native snapshot5/install19/pending9;prior full projection5/minimalversion5 and USB history explicitly separate;wholeRustWerror/fullKernel/boot",
       "K4b6/U2bd/tools997:4realVM32peerreplies24Owned96decisions120transactions68roledenials,81+56negativecontrols;Virtual2rounds/12negatives;49newlibraryABI andactualELF",
       "Fresh101rawstubs include8PHY missed by93snapshot;retire headers/types/authorization/dispatch/callers and preserve meaningful selftests,then fullAppSDK/CLI/C-Python/R5provenance/R6cleanVMdeployment"
     ],
-    "next": "Architecture-first;fullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4 and owner WIP preserved. No new formalproof;naturalRCA/nonmanualrecovery OPEN."
+    "next": "Fix directproductionconstant injection/sourcebinding andnegativecontrols;new exacttool record before any aggregatePASS. Fulloriginalscope preserved."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -130225,9 +130225,9 @@
     },
     {
       "id": "kernel-event-registry-retirement-r4f2cd",
-      "title": "R4f2c/d event and registry retirement: K4b6/U2bd/tools997;architecture incomplete",
+      "title": "历史K4b6/U2bd总门禁：parser预算依赖不匹配，聚合未证明",
       "level": "real_device",
-      "result": "PASS",
+      "result": "UNPROVED",
       "contracts": [
         "OnlyConsumedProductionDliEvents",
         "NoUntaggedRingProductionFacade",
@@ -130297,7 +130297,8 @@
         "Remaining DLI decoded-but-unconsumed event model/global mask and registry packed-version copy;93raw UAPI declarations/stubs/authorization/monolithic tests and cross-language private layouts require full-chain migration;old numbers never reused.",
         "Complete existing SDK/CLI/C-Python application interface migration and full R5 contracts/provenance;R6cleanVM install/external consumers/upgrade/rollback/uninstall/config-state retention.",
         "Original owner inflight/deadline/revoke/Down,multichannel/four-device/Agent/Bond/security/SSAP/performance/soak/PM/recovery matrices;natural RCA/nonmanual recovery remain open.",
-        "No whole Kernel/refinement/NOCP/callback-drain/firmware proof or partial-issue closure;historical failures and retention incident preserved."
+        "No whole Kernel/refinement/NOCP/callback-drain/firmware proof or partial-issue closure;historical failures and retention incident preserved.",
+        "Parser fixture dependency counterexample confirmed;aggregate downgrade,both correctedrunners andexact productionconstant-bound reruns required. ActualRF originalgates preserved,not substitutes."
       ],
       "sources": {
         "kernel": {
@@ -131473,7 +131474,8 @@
         "kernel-event-registry-retirement-r4f2cd-m584",
         "kernel-event-registry-retirement-r4f2cd-m585",
         "kernel-event-registry-retirement-r4f2cd-m586",
-        "kernel-event-registry-retirement-r4f2cd-m587"
+        "kernel-event-registry-retirement-r4f2cd-m587",
+        "parser-budget-review-public"
       ],
       "tool_materials": [
         "kernel-event-registry-retirement-r4f2cd-m4",
@@ -131647,7 +131649,7 @@
           "real_result"
         ],
         "verdict_results": {
-          "PASS": "PASS"
+          "PASS": "UNPROVED"
         },
         "gate_rows_pointer": [
           "gate_matrix"
@@ -131712,16 +131714,23 @@
         },
         {
           "id": "4b6-source-fixtures",
-          "result": "PASS",
+          "result": "UNPROVED",
           "materials": [
             "kernel-event-registry-retirement-r4f2cd-report",
-            "kernel-event-registry-retirement-r4f2cd-m257"
+            "kernel-event-registry-retirement-r4f2cd-m257",
+            "parser-budget-review-public"
           ],
           "report_pointer": [
             "gate_matrix",
             4
           ],
-          "reported_status": "PASS"
+          "reported_status": "PASS",
+          "curation": {
+            "review_material": "parser-budget-review-public",
+            "reason": "ReportedPASSpreserved;production240vsfixture255invalidates parser-boundary attribution",
+            "raw_reported_status": "PASS",
+            "effective_result": "UNPROVED"
+          }
         },
         {
           "id": "4b6-whole-rust-component",
@@ -245908,6 +245917,14 @@
       "access": "private",
       "base": "workspace",
       "format": "bytes"
+    },
+    "parser-budget-review-public": {
+      "path": "docs/evidence/parser-budget-fixture-review-20261017.json",
+      "sha256": "74fcd8dfda861c75dc7cff2a99c6e8c04d89bf0a22faeda6b04202c4e39574a1",
+      "bytes": 2864,
+      "access": "public",
+      "base": "repo",
+      "format": "json"
     }
   },
   "baseline_record": "hcc-timed110-data",

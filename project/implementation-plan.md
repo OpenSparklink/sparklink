@@ -81,8 +81,8 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**R4f2c/d event and registry retirement: K4b6/U2bd/tools997;architecture incomplete**。
-仅记录范围：`real_device` / `PASS`。
+选定保留产物（不是当前工作树整体资格）：**历史K4b6/U2bd总门禁：parser预算依赖不匹配，聚合未证明**。
+仅记录范围：`real_device` / `UNPROVED`。
 kernel `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
 compiled_userspace `2bd9873a2cd99d40922a3f00c5ae1ebd19da8aaa`。
 executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
@@ -257,7 +257,7 @@ independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
 | R4e2命令接线退休：Kb35/UEf/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 | R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 | R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete | `real_device` | `PASS` |
-| R4f2c/d event and registry retirement: K4b6/U2bd/tools997;architecture incomplete | `real_device` | `PASS` |
+| 历史K4b6/U2bd总门禁：parser预算依赖不匹配，聚合未证明 | `real_device` | `UNPROVED` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1217,7 +1217,7 @@ ccc266仅绝对→相对symlink；当前empty-registry消费者和搬迁树两�
 生产声明范围75文件与7025逐字节相同，选定编译产物仍是7025，不能升级整个ccc HEAD。
 初次ccache环境和raw header include路径失败原样保留，不降Werror。
 
-##### R4f2c限定退出：未消费标准事件与ring接口
+##### R4f2c已剥离／门禁复核：未消费标准事件与ring接口
 
 实际调用核对：生产worker消费命令结果、Native relay/installation及关键故障；
 WS73发现/物理连接/ACB/NOCP走既有Native生命周期路径。旧标准decoder的广播、
@@ -1236,7 +1236,7 @@ codec子集已离线运行；fixture首次namespace导入失败保留，非生�
 已完成：14离线子集、严格组件/完整Kernel、Virtual两轮及四真实保留VM，另有实际
 49 ABI和ELF检查、独立抓包/负对照。原失败保留；只授所列范围，不升级整个当前树。
 
-##### R4f2d限定退出：注册版本副本退休
+##### R4f2d已剥离／门禁复核：注册版本副本退休
 
 SleDev的packed版本只有构造/安装时写入，无生产读取；Native.info的4字节投影
 仅用于再写入该副本。候选删除这条链，将安装输入改为明确的queried_address；
@@ -1250,6 +1250,13 @@ Backend install19、pending9及既有历史五测试须重新执行；新历史�
 本批以同一K4b6／编译U2bd／工具997通过上述分层门禁；普通用户32次对端回复、
 24Owned/96决策/120事务、68角色拒绝、81+56+12负对照分别记录。
 完整Native快照5字节版本保留；注册表副本删除不等于芯片认证或恢复验收。
+
+Parser依赖复核（原件不改）：生产标准事件预算为240，旧codec fixture及新标准
+事件fixture注入255；用生产常量执行旧最大接受断言得到固定反例。原11项RawPASS
+聚合已降UNPROVED，四真实VM及其他独立门禁原件保留但不替代该子集。修正工具
+必须直接提取生产常量/hash，重跑实际边界/拒绝和相关原门禁，另立准确工具身份。
+240是当前标准profile软件预算，不是A3业务249/2042长度；标准255互通资格仍缺，
+不得将修测试描述成实现已符合完整标准。详见[反例](../docs/evidence/parser-budget-fixture-review-20261017.json)。
 
 ##### R4f2e近期退出：旧raw ABI全链退休
 

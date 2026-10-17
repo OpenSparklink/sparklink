@@ -1,0 +1,705 @@
+{
+  "schema_version": 1,
+  "status": "TWO_PROTECTED_SSAP_REAL_PASS_WHOLE_BASELINE_BATCH_FAIL",
+  "batch_exit_result": "FAIL",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "formal_result": "UNPROVED",
+  "full_goal_result": "UNPROVED",
+  "historical_failure_result": "FAIL",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+  "executed_tools": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+  "offline_executed_tools": "f46f740c985c2e37621470b7011452ae73ab5c97",
+  "scope": [
+    "VM-only SDK111 Hi3873U2/3;userconfirmedHi3873E1 excluded. No host driver/install. Exact K619,U331 artifacts;security1/2 eachtwo physicalconnectionroles.",
+    "Sole existing slkd SSAP Engine/SMTC;minimum requirement frozen beforefirstbind;nonzero skips plainautobind. Realnativecompletion prompts sameEngine;originalkernelGrant checkslease/grade/epoch,generation/lifetime. No fallback,rebind,newHost ornewEngine.",
+    "Actual ordinary controluser witness reads requirement and receives nativeEACCES beforemechanism. Existing actualAgent/typedrelay/Complete/peerRX/install/0011/currentd6 snapshots;grade is not namedidentity,attributeACL,Bond orindependentRF cipherattestation.",
+    "Two realpositiveVMcases:32 actual SSAP read/write/localpeerDB checks plus32 hierarchical/UUIDdiscovery records;16 random CUTC RT. Localstaging isnot peerpublication;actualremotecommands andbothUSB/HCC/ACB ends verified.",
+    "Defaultplainshort completed8CUTC RT and16SSAPchecks butwholecase FAIL onsecondrole peerDown observedafter original5sbudget. Following249/2042 plannedcases NOT_RUN. No fullbatch ornewartifactlengthqualification.",
+    "Frozen331 verifier exactreplays and24copiedevidence negatives. f46 offlinefullSMTC audit beforedestructiveSDU matching covers960observations,6additionalnegatives,allnonSMTCproofexact. This is not freshf46hardwareexecution orindependentdecoder.",
+    "Old explicitpost-install audit saw8remainingExchangeInfoobservations perphase;knownvalue/discoverywindowchecks separatelyremained. Bothold/newrejectcopiedearlyunknownSMTC,so no falsePASS orproductionbypass established. Initialcounterexample assertionfailed retained;not a confirmed defect.",
+    "90daemon tests/privateD-Bus+AF_UNIX,704tools,strictworkspacealltargetsclippy;115docs beforemetadataupdate. Sandboxsocket failures andmissedconstructor testcaller fixedseparately;not kernelconcurrency orformalqualification.",
+    "NO NEW formalrun. OriginalpureGrantCBMC79onlyboundstoK619;actuallocks/refs/drain/revoke/late/reuse andnewdaemonconsumercompositionUNPROVED. Modelsuccess/NOCP/USBwrite isnot peerbusinessdelivery.",
+    "CompleteS0-S6/19WP/10FV/12DG originalscope intact. DefaultlateDown/RCA,mixedfourdevice,naturalstartup/re-enum/disappearance andnonmanualrecovery remainOPEN;QMP/manual/hub/injections are not recoveryqualification."
+  ],
+  "real_gates": [
+    {
+      "name": "sec1-short",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/protected-ssap-sec1-short-v1/manifest.json",
+      "security_requirement": 1,
+      "scope": "Two physical roles;ordinary peer database and random CUTC validation. Whole defaultcaseFAIL remainsFAIL even with actualbusinesssuccess."
+    },
+    {
+      "name": "sec2-short",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/protected-ssap-sec2-short-v1/manifest.json",
+      "security_requirement": 2,
+      "scope": "Two physical roles;ordinary peer database and random CUTC validation. Whole defaultcaseFAIL remainsFAIL even with actualbusinesssuccess."
+    }
+  ],
+  "failed_gates": [
+    {
+      "name": "plain-short",
+      "status": "FAIL",
+      "result": "FAIL",
+      "manifest": ".dev/protected-ssap-plain-short-v1/manifest.json",
+      "security_requirement": 0,
+      "scope": "Two physical roles;ordinary peer database and random CUTC validation. Whole defaultcaseFAIL remainsFAIL even with actualbusinesssuccess."
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "90-actual-daemon-tests",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "704-tool-contracts-and-negative-controls",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "strict-workspace-clippy",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "two-original-exact-replays-24-copied-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "two-f46-offline-full-window-replays-six-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "formal_gates": [
+    {
+      "name": "actual-Grant-Session-consumer-submit-revoke-late-reuse-composition",
+      "status": "NO_NEW_FORMAL_PROOF",
+      "result": "UNPROVED"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "defaultshort-latepeerDown-preservedFAIL-and249-2042-NOT_RUN",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "newf46-hardwareexecution-of-corrected-auditor",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "perattribute-authentication-localAuthorization-CPCD-Bond",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "fullSSAP-lifecycle-securityepoch-revoke-Down-deadline-composition",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "fulloriginalS0-S6-multichannel-fourdevice-performance-PM-recovery-release",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "bounds": {
+    "successful_real_cases": 2,
+    "failed_real_cases": 1,
+    "protected_connection_roles": 4,
+    "protected_CUTC_round_trips": 16,
+    "protected_SSAP_read_write_peer_checks": 32,
+    "protected_discovery_records": 32,
+    "protected_current_mechanism_snapshots": 16,
+    "presecurity_native_SSAP_refusals": 8,
+    "full_window_offline_USB_observations": 960,
+    "original_exact_replays": 2,
+    "original_copied_negatives": 24,
+    "full_window_negatives": 6,
+    "daemon_tests": 90,
+    "tool_tests": 704
+  },
+  "remaining": [
+    "Wholebatch NOT exited:defaultDownwithin5s failed,249/2042unrun;do not weaken assertions orraisebudget.",
+    "Reference discrepancy:daemon andkernelcleanup use0x13 like libws73;SDK/OHOS identify remoteusertermination0x10 and0x13 encryptionnotacceptable. ActualfailedcallerDown0x0d,peer0x07 at5.064s;source/firmwaredialectcause unproved,need boundedVM comparison.",
+    "Attributelevelsecurity/localauthorization/namedidentity/Bond remain separate fromtransportmechanism.",
+    "FulloriginalscopeandallissuesremainOPEN;newpositivebehavior isnot completequalification."
+  ],
+  "materials": [
+    {
+      "path": ".dev/protected-ssap-sec1-short-v1/manifest.json",
+      "sha256": "674dd51061cb742867c5f5dcc91524f9203c8becbb54436e84a29401d957199d",
+      "bytes": 1225364,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-short-v1/console.log",
+      "sha256": "3ec0fddef7369cc1cc2c92abf26eda2f19b68ac8a3f08aafaff959423185aa27",
+      "bytes": 16240,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-short-v1/guest-output/ws73.pcap",
+      "sha256": "372e3285941ad1b073dc9095d937631b054aeedbe49b20366ca6b13a4db1c762",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-short-v1/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "15ac6b26013b3069cdb7ee66d8a5be36d04adcd76f5f8eef32876484b8573a7e",
+      "bytes": 721880,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-short-replay-v1.json",
+      "sha256": "c21a963d506c6b31f7e93e205a2109e32708519baa1bdf88ae2200687d8373cb",
+      "bytes": 2877,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-short-v1/manifest.json",
+      "sha256": "0229358da02bf54e1abeef26d08734b262af4657da1796b6a3f01f506cd40f82",
+      "bytes": 1225349,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-short-v1/console.log",
+      "sha256": "ae561086b41017fd4f1a0211b6a183917863ca753aa534220f4540194af63bc5",
+      "bytes": 16248,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-short-v1/guest-output/ws73.pcap",
+      "sha256": "a2e527a6a7dc03cb0ca0caaac442fb58abf605e98dd74fa57fae77651ffe71a2",
+      "bytes": 532732,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-short-v1/guest-output/capture-stats.txt",
+      "sha256": "798730e9c9f533387c50ca93d2823ff8118fb865f8d005f3fadd6e4d074e8a45",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "5b335885b772a01ee4bb180f0b9e54a07277ae73c63245d840f24fd516fdef45",
+      "bytes": 726394,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-short-replay-v1.json",
+      "sha256": "c2e5418f82558b37705abb6b5b1ab972ca0df3aee45aaa43d269e3ba3c21a322",
+      "bytes": 2877,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/manifest.json",
+      "sha256": "adf0abe353f9ac8699361261eb76397a63495dccda9d7b58aaaad09d05d5eb24",
+      "bytes": 48131,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/console.log",
+      "sha256": "61b97916a7496dd248373c1a707a4a0bd5427b72822bddd6d570b6093f74c8f3",
+      "bytes": 61340,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/guest-output/ws73.pcap",
+      "sha256": "375724bff802aeccc2248ed20f0ae75f8bb801176fc2c6314c5ee7f05f96c525",
+      "bytes": 358690,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/guest-output/capture-stats.txt",
+      "sha256": "5c5d0249a469e7385e763a4b90a8a297b12c642a99846f8420cdee585568cba5",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "5c9f44269cd1ccc16251367569953187b3c0af2b44278d7d8582699ee91cde3f",
+      "bytes": 481305,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-qualification-v1.json",
+      "sha256": "16a3aa2eafedba0da9f74e299cfc717a44a2109ee7fc991900bfd1dbea8ee4ee",
+      "bytes": 3858,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-qualify-v1.py",
+      "sha256": "82256037d651e488ecf44c27cdb7e2907ee4b83a84727f992ee28dec338f8256",
+      "bytes": 2967,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-build-prepare-v1.json",
+      "sha256": "b385251f3d1f4350d7f853e70681d2fe6618462dc99327fe6ec7708a4de4014a",
+      "bytes": 6628,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-build-prepare-v1.py",
+      "sha256": "95e08c6b5624b22af863717652cef4d27aeee45a066b31924d13643b7f88b71a",
+      "bytes": 2879,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/manifest.json",
+      "sha256": "cd922b3f614349979545bd7b9373e0cdf63d232128267a6e38d12b51f35a3d61",
+      "bytes": 26493,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-down-failure-v1.json",
+      "sha256": "b76a374d12b8229497a9ab56d76c20e1b90a74d21ac7e3c724b58a486f220579",
+      "bytes": 1363,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-full-window-replay-v1.json",
+      "sha256": "8889bc3d527e0bddb687fc401ab6be54926547591a34daaa3e807f5c3e5c385d",
+      "bytes": 2460620,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-full-window-replay-v1.py",
+      "sha256": "47603d342d565ff42829a87e78880dc2f6b58e0d371a1e2b6e01e55eac9bb229",
+      "bytes": 3170,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-checker-order-audit-v1.json",
+      "sha256": "803d11deb1d8de4b72f26b9193dfb141a863955fb7de48e99aace48733a64db7",
+      "bytes": 764,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-checker-order-audit-v1.py",
+      "sha256": "db2242b592497c624feb3c8670347d5faaf26a17b5bf2f975f7f5efb6bfac93a",
+      "bytes": 2562,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-checker-order-counterexample-v2.py",
+      "sha256": "d5c6747abacd6e6898a03c03f4367576d0168f6b5bc74e51f0ab695652739bc1",
+      "bytes": 2376,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-replay-case-v1.py",
+      "sha256": "0425221c599bf2bd0ede80f1d1c17c7dc63aa6c484f3b7777c23fa7ef61797f4",
+      "bytes": 4366,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-user-tests-v1.log",
+      "sha256": "7e44e81a0bdd35ffc1da36e9d70d8f7991c8a34d3809a7cc6a6f466b65fe5373",
+      "bytes": 23974,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-user-tests-v2.log",
+      "sha256": "b1061cc962676f36e986d328277df8ad838d9e4acc8d35773a98e53f75f4dc4d",
+      "bytes": 8142,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-tools-v1.log",
+      "sha256": "14cf9219207d8f92d94866d2c4fe355c79904cc8cd6ab4e87ae495be18d350ce",
+      "bytes": 1535,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-tools-v2.log",
+      "sha256": "95e729b8275d18de8e00e1980a4822fbe4a230a3283c4e9bbcecc0336e379ba8",
+      "bytes": 1538,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-tools-v3.log",
+      "sha256": "280576a506731e63368d6f39a7d95e21854d0d226d0158a82f1c8d7161a799c0",
+      "bytes": 839,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-tools-v4.log",
+      "sha256": "775d1ccc2c53b044d2172c4df62206eca67571c43c43f1e82b0151648719f22c",
+      "bytes": 839,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-clippy-v2.log",
+      "sha256": "d53d6e2ebc27a35bc20c54ff56b46b377825bdeade2aafd640f99117e2bb2f44",
+      "bytes": 406,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-docs-v1.log",
+      "sha256": "24422de6eee83ceab2bcd31625617683d410d944c2453c1d5958ba5f8655bc7e",
+      "bytes": 324394,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-ci331-v1.json",
+      "sha256": "0ce129d42690bdfe2a66937ac27675d572f96d6baa3c38226338a9ab4d2cc665",
+      "bytes": 1413,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-config1-v1.toml",
+      "sha256": "1663a83d591c4331c82851dbc14c6b96d1ca8f05c269b3690e187ceeee002fb8",
+      "bytes": 1928,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-config2-v1.toml",
+      "sha256": "dcd8af544928f0d11684f015356545bd676273eb571af8d4d1ac0f3be7aa64a1",
+      "bytes": 1928,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-artifacts-v1/manifest.json",
+      "sha256": "1ccf3d01364acb2fb673d837fd41e3e42cddaed629d4d7b4bfa9446477e7cbb7",
+      "bytes": 229023,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-modules-v1/manifest.json",
+      "sha256": "ff09ea1cac0c96aea94c04f5f9031cb2f252508e97f31005d473301e28b4e079",
+      "bytes": 2381,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-smoke-v2/manifest.json",
+      "sha256": "51c51999218a7762c4696caf75374fb12a09d6f9e2a3cdaeb0ffe609bbd0f85b",
+      "bytes": 37497,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-prepared-v1/manifest.json",
+      "sha256": "60b6c4d42bb6b2bcfc8037d3dd096427a8129c68e7e5b2a29ae02d6e0bc1c82f",
+      "bytes": 271172,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-prepared-v1/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-prepared-v1/root.btrfs",
+      "sha256": "37715d7165482070a56c11de09eb8670142341bb2038f611bcb3a9d5c237ac9d",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-prepared-v1/manifest.json",
+      "sha256": "278a7b4cd0c729d6ea44161fc77f505ab1d525171c3ea80e8c7d4287d4c85e5b",
+      "bytes": 271738,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-prepared-v1/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec1-prepared-v1/root.btrfs",
+      "sha256": "8878612ab5e302284991781bc660d3259483b674a3888fc74bc369a13bdfa6d4",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-prepared-v1/manifest.json",
+      "sha256": "048033d4f4f86dc7d095900f81045960a7e1ca5952ab40e60bc0c81d9be05e89",
+      "bytes": 271738,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-prepared-v1/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-sec2-prepared-v1/root.btrfs",
+      "sha256": "8f5ed67b8572f8b1f513d9224b3c81d424e3b13d3ef8e29fa1434314fadc6683",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/331950258acf/slkd",
+      "sha256": "3c49f61067c3d0455145dd99c5f8f5935d2a4ea67b9da49093dda20ce584b7de",
+      "bytes": 10614192,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/331950258acf/slctl",
+      "sha256": "a6c0c7432f2f85cd8473a1639603b464208dc9a38dbbdfee2c3d34f21826deef",
+      "bytes": 7828432,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/331950258acf/slktest",
+      "sha256": "5bb2e137ac1139f528ec0ccfa06e2285fb6f99a72e089792ca717c3a88c42dab",
+      "bytes": 5264304,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/331950258acf/slkconfig",
+      "sha256": "09560f3e0b4263d08b220ee0dad8a0bf0fd84532cf244bf92bce9dac92acea3d",
+      "bytes": 1404136,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/331950258acf/slkmon",
+      "sha256": "b29f1cf8f8e81a3c87d253911b93dfe79d916fcf8fa0c24384d6537c9a14e4ae",
+      "bytes": 1662328,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/331950258acf/slkdump",
+      "sha256": "93929b9aaa903d2039077a59a399b978266c461889a5f9251be42f776a40e744",
+      "bytes": 1662200,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/331950258acf/liblibsparklink.so",
+      "sha256": "3126822aa5dc51cb00a823d0f9641c33ce22cdbe7fb4e95fd1ecc81fb74460bd",
+      "bytes": 548536,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "71c7785390e2d4c282d623cee5cc2f192abe262d2b388329e1b30bbf0a2fd2c1",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "2daa081165d9405742870fac020a3a01630cd8683b7793da7975c14256d1e578",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Owner workspace originals,authorized maintainers only;no verified offsite archive. Actual keys/firmware/USB stay private;missing/hash mismatch cannot verify PASS."
+    }
+  ],
+  "replay": [
+    "Privateoriginals availableonlytoauthorizedmaintainers inownerworkspace. No verified offsitearchive;retainlistedhashes andactualbinary/config/firmwaremanifests.",
+    "Frozen331 read_capture/check_capture_stats -> channel_socket/security_agent corroborate;comparecanonicalJSON notPython tuple/listidentity;thenretainedcopiednegativecases.",
+    "Offlinef46 repeatscompletewindowcorroboration beforeSDUconsumption;allnonSMTCproofJSON equal. PrivateUSB captures containrealinstallkeys,neverpublishraw."
+  ],
+  "wall_ns": 1792198554889376916
+}

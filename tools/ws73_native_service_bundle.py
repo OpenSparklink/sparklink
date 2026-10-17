@@ -21,7 +21,7 @@ from ws73_native_build_check import elf_header, release_name
 from ws73_native_root_smoke import digest, save
 from build_resources import build_lock, configuration, environment as build_environment, workspace
 
-PROGRAMS = ('slkd', 'slctl', 'slktest', 'slkconfig', 'slkmon', 'slkdump')
+from install_layout import PROGRAMS, render, check_artifacts
 SOURCE_SCOPE = ('crates', 'data', 'Cargo.toml', 'Cargo.lock')
 
 
@@ -81,7 +81,7 @@ def stage_locked(args, build_fd):
     output.mkdir(mode=0o700)
     tool_inputs = {str(Path(__file__).with_name(name)): digest(Path(__file__).with_name(name))
                    for name in ('ws73_native_service_bundle.py', 'ws73_firmware.py',
-                                'ws73_native_build_check.py', 'ws73_native_root_smoke.py',
+                                'ws73_native_build_check.py', 'ws73_native_root_smoke.py', 'install_layout.py',
                                 'build_resources.py')}
     policy = Path(__file__).resolve().parents[1] / 'project/build-resource-policy.json'
     tool_inputs[str(policy)] = digest(policy)
@@ -114,6 +114,7 @@ def stage_locked(args, build_fd):
         record['build_exit'] = result.returncode
         if result.returncode != 0 or source_state(source) != (head, source_hashes):
             raise ValueError('build failed or compiled/policy source changed')
+        check_artifacts(build / 'release')
         payload = output / 'payload'
         payload.mkdir()
         prefix = Path('usr/libexec/opensparklink/native-lab') / head[:12]
@@ -179,15 +180,14 @@ def stage_locked(args, build_fd):
         copy(source / 'data/config/main.conf', Path('etc/sparklink/main.conf'))
         copy(source / 'data/dbus/sparklink.conf', Path('etc/dbus-1/system.d/sparklink-native-lab.conf'))
         copy(source / 'data/udev/99-sparklink.rules', Path('etc/udev/rules.d/99-sparklink-native-lab.rules'))
-        unit = (source / 'data/systemd/sparklink.service').read_text()
-        if unit.count('ExecStart=/usr/sbin/slkd\n') != 1:
-            raise ValueError('unexpected source service ExecStart')
-        unit = unit.replace('ExecStart=/usr/sbin/slkd\n', 'ExecStart=/' + str(prefix / 'slkd') + '\n')
+        generated = render('/' + str(prefix), '/' + str(prefix), '/usr/include',
+                           '/etc', '/var/lib/sparklink', '/usr', source_root=source)
+        unit = generated['sparklink.service']
         write(Path('etc/systemd/system/opensparklink-native-lab.service'), unit.encode())
-        activation = ('[D-BUS Service]\nName=org.sparklink\nExec=/' + str(prefix / 'slkd')
-                      + '\nUser=root\nSystemdService=opensparklink-native-lab.service\n')
+        activation = generated['org.sparklink.service'].replace(
+            'SystemdService=sparklink.service', 'SystemdService=opensparklink-native-lab.service')
         write(Path('usr/share/dbus-1/system-services/org.sparklink.service'), activation.encode())
-        write(Path('usr/lib/sysusers.d/opensparklink-native-lab.conf'), b'g sparklink -\ng sparklink-apps -\ng sparklink-services -\n')
+        copy(source / 'data/sysusers/sparklink.conf', Path('usr/lib/sysusers.d/opensparklink-native-lab.conf'))
         plan = {'kernel_release': release, 'binary_prefix': '/' + str(prefix),
                 'service': 'opensparklink-native-lab.service', 'dbus_name': 'org.sparklink',
                 'control_group': 'sparklink', 'default_activation': 'not activated',

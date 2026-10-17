@@ -4,21 +4,30 @@ BINDIR ?= $(PREFIX)/bin
 LIBDIR ?= $(PREFIX)/lib
 INCLUDEDIR ?= $(PREFIX)/include
 SYSCONFDIR ?= /etc
-DBUSSERVICEDIR ?= $(PREFIX)/share/dbus-1/system-services
-DBUSCONFDIR ?= $(PREFIX)/share/dbus-1/system.d
-UNITDIR ?= $(PREFIX)/lib/systemd/system
+DBUSSERVICEDIR ?= /usr/share/dbus-1/system-services
+DBUSCONFDIR ?= /usr/share/dbus-1/system.d
+UNITDIR ?= /usr/lib/systemd/system
 STATEDIR ?= /var/lib/sparklink
 MANDIR ?= $(PREFIX)/share/man
 
-CARGO ?= cargo
+CARGO ?= cargo +1.96.1
 CARGO_FLAGS ?= --release --workspace
+CARGO_TARGET_DIR ?= $(shell python3 tools/install_layout.py --print-target)
+export CARGO_TARGET_DIR
+ARTIFACT_DIR ?= $(CARGO_TARGET_DIR)/release
+INSTALL_GENERATED_DIR ?= $(CARGO_TARGET_DIR)/install-generated
+VERSION := $(shell python3 tools/install_layout.py --print-version)
+PKGCONFIGDIR ?= $(LIBDIR)/pkgconfig
+UDEVDIR ?= /usr/lib/udev/rules.d
+SYSUSERSDIR ?= /usr/lib/sysusers.d
+DATADIR ?= $(PREFIX)/share/sparklink
 INSTALL ?= install
 UV ?= uv
 DOCS_RUN = $(UV) run --locked --only-group docs
 BUILD_RUN = python3 tools/build_resources.py --
 SPHINX_FLAGS = -n -W --keep-going
 
-.PHONY: all build check test arch-check install uninstall clean docs docs-live docs-linkcheck
+.PHONY: all build check test arch-check install install-files uninstall clean docs docs-live docs-linkcheck
 
 all: build
 
@@ -44,49 +53,57 @@ clippy:
 fmt:
 	$(CARGO) fmt --all
 
-install: build
-	# Daemon
-	$(INSTALL) -Dm755 target/release/slkd        $(DESTDIR)$(SBINDIR)/slkd
-	# CLI tools
-	$(INSTALL) -Dm755 target/release/slkconfig    $(DESTDIR)$(BINDIR)/slkconfig
-	$(INSTALL) -Dm755 target/release/slctl        $(DESTDIR)$(BINDIR)/slctl
-	$(INSTALL) -Dm755 target/release/slktest        $(DESTDIR)$(BINDIR)/slktest
-	$(INSTALL) -Dm755 target/release/slkmon       $(DESTDIR)$(BINDIR)/slkmon
-	$(INSTALL) -Dm755 target/release/slkdump      $(DESTDIR)$(BINDIR)/slkdump
-	$(INSTALL) -Dm644 data/man/man1/slktest.1 $(DESTDIR)$(MANDIR)/man1/slktest.1
-	# Shared library
-	$(INSTALL) -Dm755 target/release/liblibsparklink.so $(DESTDIR)$(LIBDIR)/libsparklink.so.0.1.0
-	$(INSTALL) -Dm755 target/release/libslk_native.so $(DESTDIR)$(LIBDIR)/libslk_native.so
-	ln -sf libsparklink.so.0.1.0 $(DESTDIR)$(LIBDIR)/libsparklink.so.0
-	ln -sf libsparklink.so.0     $(DESTDIR)$(LIBDIR)/libsparklink.so
-	# Header
-	$(INSTALL) -Dm644 crates/libsparklink/include/sparklink.h $(DESTDIR)$(INCLUDEDIR)/sparklink.h
-	$(INSTALL) -Dm644 crates/slk-native/include/sparklink_native.h $(DESTDIR)$(INCLUDEDIR)/sparklink_native.h
-	# Configuration
-	$(INSTALL) -Dm644 data/config/main.conf       $(DESTDIR)$(SYSCONFDIR)/sparklink/main.conf
-	# D-Bus
-	$(INSTALL) -Dm644 data/dbus/org.sparklink.service $(DESTDIR)$(DBUSSERVICEDIR)/org.sparklink.service
-	$(INSTALL) -Dm644 data/dbus/sparklink.conf        $(DESTDIR)$(DBUSCONFDIR)/sparklink.conf
-	# systemd
-	$(INSTALL) -Dm644 data/systemd/sparklink.service  $(DESTDIR)$(UNITDIR)/sparklink.service
-	# State directory
-	$(INSTALL) -dm755 $(DESTDIR)$(STATEDIR)
+install:
+	test "$(abspath $(ARTIFACT_DIR))" = "$(abspath $(CARGO_TARGET_DIR))/release"
+	$(BUILD_RUN) $(CARGO) build --locked --release --workspace
+	$(MAKE) install-files
+
+# Packaging reuses this list after its own locked build, with an explicit root.
+install-files:
+	python3 tools/install_layout.py --check-artifacts "$(ARTIFACT_DIR)"
+	python3 tools/install_layout.py --output "$(INSTALL_GENERATED_DIR)" --prefix "$(PREFIX)" --sbindir "$(SBINDIR)" --libdir "$(LIBDIR)" --includedir "$(INCLUDEDIR)" --sysconfdir "$(SYSCONFDIR)" --statedir "$(STATEDIR)"
+	$(INSTALL) -Dm755 "$(ARTIFACT_DIR)/slkd" "$(DESTDIR)$(SBINDIR)/slkd"
+	$(INSTALL) -Dm755 "$(ARTIFACT_DIR)/slkconfig" "$(DESTDIR)$(BINDIR)/slkconfig"
+	$(INSTALL) -Dm755 "$(ARTIFACT_DIR)/slctl" "$(DESTDIR)$(BINDIR)/slctl"
+	$(INSTALL) -Dm755 "$(ARTIFACT_DIR)/slktest" "$(DESTDIR)$(BINDIR)/slktest"
+	$(INSTALL) -Dm755 "$(ARTIFACT_DIR)/slkmon" "$(DESTDIR)$(BINDIR)/slkmon"
+	$(INSTALL) -Dm755 "$(ARTIFACT_DIR)/slkdump" "$(DESTDIR)$(BINDIR)/slkdump"
+	$(INSTALL) -Dm644 data/man/man1/slctl.1 "$(DESTDIR)$(MANDIR)/man1/slctl.1"
+	$(INSTALL) -Dm644 data/man/man1/slktest.1 "$(DESTDIR)$(MANDIR)/man1/slktest.1"
+	$(INSTALL) -Dm644 data/man/man5/sparklink.conf.5 "$(DESTDIR)$(MANDIR)/man5/sparklink.conf.5"
+	$(INSTALL) -Dm644 data/man/man8/slkd.8 "$(DESTDIR)$(MANDIR)/man8/slkd.8"
+	$(INSTALL) -Dm755 "$(ARTIFACT_DIR)/liblibsparklink.so" "$(DESTDIR)$(LIBDIR)/libsparklink.so.$(VERSION)"
+	ln -sfn "libsparklink.so.$(VERSION)" "$(DESTDIR)$(LIBDIR)/libsparklink.so.0"
+	ln -sfn libsparklink.so.0 "$(DESTDIR)$(LIBDIR)/libsparklink.so"
+	$(INSTALL) -Dm755 "$(ARTIFACT_DIR)/libslk_native.so" "$(DESTDIR)$(LIBDIR)/libslk_native.so.$(VERSION)"
+	ln -sfn "libslk_native.so.$(VERSION)" "$(DESTDIR)$(LIBDIR)/libslk_native.so.0"
+	ln -sfn libslk_native.so.0 "$(DESTDIR)$(LIBDIR)/libslk_native.so"
+	$(INSTALL) -Dm644 crates/libsparklink/include/sparklink.h "$(DESTDIR)$(INCLUDEDIR)/sparklink.h"
+	$(INSTALL) -Dm644 crates/slk-native/include/sparklink_native.h "$(DESTDIR)$(INCLUDEDIR)/sparklink_native.h"
+	$(INSTALL) -Dm644 "$(INSTALL_GENERATED_DIR)/sparklink.pc" "$(DESTDIR)$(PKGCONFIGDIR)/sparklink.pc"
+	$(INSTALL) -Dm644 "$(INSTALL_GENERATED_DIR)/sparklink-native.pc" "$(DESTDIR)$(PKGCONFIGDIR)/sparklink-native.pc"
+	# Existing configuration (including symlinks) and state are administrator-owned.
+	if test ! -e "$(DESTDIR)$(SYSCONFDIR)/sparklink" && test ! -L "$(DESTDIR)$(SYSCONFDIR)/sparklink"; then $(INSTALL) -dm755 "$(DESTDIR)$(SYSCONFDIR)/sparklink"; fi
+	if test ! -e "$(DESTDIR)$(SYSCONFDIR)/sparklink/main.conf" && test ! -L "$(DESTDIR)$(SYSCONFDIR)/sparklink/main.conf"; then $(INSTALL) -m644 data/config/main.conf "$(DESTDIR)$(SYSCONFDIR)/sparklink/main.conf"; fi
+	$(INSTALL) -Dm644 data/config/main.conf "$(DESTDIR)$(DATADIR)/main.conf.example"
+	$(INSTALL) -Dm644 "$(INSTALL_GENERATED_DIR)/org.sparklink.service" "$(DESTDIR)$(DBUSSERVICEDIR)/org.sparklink.service"
+	$(INSTALL) -Dm644 data/dbus/sparklink.conf "$(DESTDIR)$(DBUSCONFDIR)/sparklink.conf"
+	$(INSTALL) -Dm644 "$(INSTALL_GENERATED_DIR)/sparklink.service" "$(DESTDIR)$(UNITDIR)/sparklink.service"
+	$(INSTALL) -Dm644 data/udev/99-sparklink.rules "$(DESTDIR)$(UDEVDIR)/99-sparklink.rules"
+	$(INSTALL) -Dm644 data/sysusers/sparklink.conf "$(DESTDIR)$(SYSUSERSDIR)/sparklink.conf"
+	if test ! -e "$(DESTDIR)$(STATEDIR)" && test ! -L "$(DESTDIR)$(STATEDIR)"; then $(INSTALL) -dm700 "$(DESTDIR)$(STATEDIR)"; fi
 
 uninstall:
-	rm -f $(DESTDIR)$(SBINDIR)/slkd
-	rm -f $(DESTDIR)$(BINDIR)/slkconfig
-	rm -f $(DESTDIR)$(BINDIR)/slctl
-	rm -f $(DESTDIR)$(BINDIR)/slktest
-	rm -f $(DESTDIR)$(MANDIR)/man1/slktest.1
-	rm -f $(DESTDIR)$(BINDIR)/slkmon
-	rm -f $(DESTDIR)$(BINDIR)/slkdump
-	rm -f $(DESTDIR)$(LIBDIR)/libsparklink.so*
-	rm -f $(DESTDIR)$(INCLUDEDIR)/sparklink.h
-	rm -f $(DESTDIR)$(INCLUDEDIR)/sparklink_native.h $(DESTDIR)$(LIBDIR)/libslk_native.so
-	# Administrator configuration and state survive uninstall.
-	rm -f $(DESTDIR)$(DBUSSERVICEDIR)/org.sparklink.service
-	rm -f $(DESTDIR)$(DBUSCONFDIR)/sparklink.conf
-	rm -f $(DESTDIR)$(UNITDIR)/sparklink.service
+	rm -f "$(DESTDIR)$(SBINDIR)/slkd"
+	rm -f $(addprefix "$(DESTDIR)$(BINDIR)/,$(addsuffix ",slkconfig slctl slktest slkmon slkdump))
+	rm -f "$(DESTDIR)$(LIBDIR)/libsparklink.so" "$(DESTDIR)$(LIBDIR)/libsparklink.so.0" "$(DESTDIR)$(LIBDIR)/libsparklink.so.$(VERSION)"
+	rm -f "$(DESTDIR)$(LIBDIR)/libslk_native.so" "$(DESTDIR)$(LIBDIR)/libslk_native.so.0" "$(DESTDIR)$(LIBDIR)/libslk_native.so.$(VERSION)"
+	rm -f "$(DESTDIR)$(INCLUDEDIR)/sparklink.h" "$(DESTDIR)$(INCLUDEDIR)/sparklink_native.h"
+	rm -f "$(DESTDIR)$(PKGCONFIGDIR)/sparklink.pc" "$(DESTDIR)$(PKGCONFIGDIR)/sparklink-native.pc"
+	rm -f "$(DESTDIR)$(MANDIR)/man1/slctl.1" "$(DESTDIR)$(MANDIR)/man1/slktest.1" "$(DESTDIR)$(MANDIR)/man5/sparklink.conf.5" "$(DESTDIR)$(MANDIR)/man8/slkd.8"
+	rm -f "$(DESTDIR)$(DBUSSERVICEDIR)/org.sparklink.service" "$(DESTDIR)$(DBUSCONFDIR)/sparklink.conf" "$(DESTDIR)$(UNITDIR)/sparklink.service"
+	rm -f "$(DESTDIR)$(UDEVDIR)/99-sparklink.rules" "$(DESTDIR)$(SYSUSERSDIR)/sparklink.conf" "$(DESTDIR)$(DATADIR)/main.conf.example"
+	# Configuration, state, unrelated files and other library versions survive.
 
 clean:
 	$(CARGO) clean

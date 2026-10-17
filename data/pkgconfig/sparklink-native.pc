@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: sparklink-native
+Description: Explicit SparkLink Native management and observation API (kernel permissions required)
+Version: 0.1.0
+Libs: -L${libdir} -lslk_native
+Cflags: -I${includedir}

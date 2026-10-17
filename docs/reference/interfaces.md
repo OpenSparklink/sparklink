@@ -703,12 +703,39 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 实际约束发送，不代表 CPCD、长写、可信身份、Bond 或全部多应用部署已验收。
 
 
-## 通用卸载的配置保留边界
+## 安装布局与卸载边界
 
-`make uninstall` 保留管理员配置和状态目录，包括配置子目录及其symlink，不自动清除
-历史元数据。实际Makefile已在临时DESTDIR回归；这不是干净VM安装、服务启动、升级、
-回滚或外部C/Python消费者资格。PREFIX/服务路径、共享库命名/SONAME和pkg-config
-仍在整改，不能据此推荐通用安装已可投入使用。实验bundle与通用安装资格分别记录。
+通用Make与Debian都调用`install-files`；编译只走锁定Cargo与共享预算。
+`make install`固定构建release/workspace，不接受build目标的CARGO_FLAGS改变profile；
+只安装已封存产物用`install-files`。`CARGO_TARGET_DIR`默认采用固定开发目录，
+`ARTIFACT_DIR`默认其release子目录，
+资格产物须另行封存。`install-files`先核对实际ELF及SONAME，再渲染运行路径。
+`DESTDIR`只是文件暂存根，不得进入运行期Exec或pkg-config字段。
+
+| 文件/入口 | 当前源码契约 |
+|---|---|
+| daemon/工具 | `SBINDIR`/`BINDIR`来自PREFIX；systemd与D-Bus实际Exec匹配，带显式`--config SYSCONFDIR/sparklink/main.conf` |
+| 应用C库 | Cargo产物`liblibsparklink.so`安装成`libsparklink.so.<version>`；SONAME `libsparklink.so.0`，开发链接名`libsparklink.so` |
+| 显式Native库 | `libslk_native.so.<version>`；SONAME `libslk_native.so.0`，开发链接名`libslk_native.so`；不成为默认App管理权限 |
+| 头/pc | `sparklink.h`、`sparklink_native.h`位于INCLUDEDIR；`sparklink.pc`/`sparklink-native.pc`分别表达两种API，`-I`指向真实头目录 |
+| 系统集成 | 默认`/usr/share/dbus-1/{system-services,system.d}`及`/usr/lib/{systemd/system,udev/rules.d,sysusers.d}`，独立于程序PREFIX，可显式覆盖 |
+| 配置/状态 | 既有main.conf、配置目录权限/symlink与状态不覆盖；默认示例单独安装；新建保留状态目录0700，目前不是合格Bond库 |
+
+运行路径须为canonical绝对ASCII路径，不接受空格、`..`、systemd/pc元字符；不能安全
+渲染的布局明确失败。暂存根可含空格。API尚未发布，SONAME0不表示旧未发布接口具有
+兼容期；未来ABI升级和发布资格仍需独立评审。
+
+`make uninstall`只删除明确版本的包拥有文件，保留管理员配置、状态、子目录/symlink
+与其他版本库。没有自动purge、组成员加入、服务启用或真实设备操作。
+三个既有角色组sparklink、sparklink-apps、sparklink-services用同一sysusers来源；
+普通应用从slkd取得授权fd，默认udev只配置Native字符设备，不授予raw USB绕过路径。
+实验USB直通是另行授权的实验室策略，不能由普通应用权限推导。
+
+上述是当前源码与实际开发ELF的离线暂存检查范围；干净VM服务、包管理升级/回滚及
+安装后的Python消费者仍须另验，旧WS73资格不转授此改动。D-Bus默认策略目录依据
+[官方daemon文档](https://dbus.freedesktop.org/doc/dbus-daemon.1.html)，Debian的sysusers
+集成由[debhelper](https://manpages.debian.org/testing/debhelper/dh_installsysusers.1.en.html)
+处理；声明文件存在不等于实际组、bus权限或服务已经验收。
 
 
 ## Typed Peer观察与资源边界

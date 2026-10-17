@@ -3466,6 +3466,13 @@
       "scope": "Existing supported app/Native separation and actual build/deploy permissions;no newHost/Engine or protocol architecture change",
       "findings": "Make source artifactname and uninstall preservation alreadyfixed;defaultPREFIX/service path,Debian,pc/headers/SONAME,groups/udev/systembus andcleanVM remain",
       "exit_reference": "Canonical WP18/R6;new deploy artifact must pass staged/cleanVM/external consumers/upgrade/rollback/uninstall/configretention andapplicable real gates"
+    },
+    "r6a": {
+      "status": "IMPLEMENTED_DEVELOPMENT_STAGED_ELF_OFFLINE_NOT_VM_OR_NEW_RF_QUALIFIED",
+      "scope": "OneMake/debian layout;actualSONAMEs/pc/header/Exec;separateapp/native;sharedgroups,no generic rawUSB;config/state retained",
+      "private_development_evidence": ".dev/architecture-r6a-stage-v1/manifest.json",
+      "remaining": "Frozen source/artifact,new real VM gates,cleanVM actual systembus/udev/service/external C-Python andupgrade/rollback/uninstall;wholeoriginalscope remains",
+      "qualification": "SelectedR5e remains old exact source-bound artifact,not current dirty R6 tree"
     }
   },
   "owned_ssap_c6_historical_batch": {

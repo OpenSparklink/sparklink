@@ -1,26 +1,28 @@
 Source: sparklink
 Section: net
 Priority: optional
-Maintainer: SparkLink Maintainers <sparklink@example.com>
-Build-Depends: debhelper-compat (= 13), cargo, rustc (>= 1.85)
+Maintainer: sanchuanhehe <wyihe5220@gmail.com>
+Build-Depends: debhelper-compat (= 13), cargo (>= 1.96.1), rustc (>= 1.96.1), python3 (>= 3.11), pkgconf, binutils
 Standards-Version: 4.6.2
-Homepage: https://gitee.com/sparklinkZ/sparklink-userspace
+Homepage: https://github.com/OpenSparklink/sparklink
 
 Package: sparklink
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, dbus
+Depends: ${shlibs:Depends}, ${misc:Depends}, dbus, systemd | systemd-standalone-sysusers
 Description: SparkLink wireless protocol userspace stack
- Complete userspace infrastructure for the SparkLink (星闪) wireless
- communication protocol. Includes the management daemon (slkd),
- command-line tools, and shared library.
+ Development userspace infrastructure for SparkLink (星闪). Includes the
+ management daemon and command-line tools. Capability and device qualification
+ are limited to the source-bound project records; full protocol support is
+ not implied by package installation.
 
 Package: libsparklink0
 Architecture: any
 Section: libs
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: SparkLink shared library
- C-compatible shared library (libsparklink.so) providing programmatic
- access to SparkLink hardware through ioctl/chardev interfaces.
+ Authorized-channel C API (libsparklink.so.0) and separate explicit Native
+ library (libslk_native.so.0). Application calls do not grant controller
+ management authority. Full broker/SSAP language clients remain incomplete.
 
 Package: libsparklink-dev
 Architecture: any

@@ -1398,6 +1398,13 @@ SONAME/权限/配置保留一致；先严格构建/独立导出/实际staged布�
 部分staging/ABI通过不使R6或完整架构完成，不阻断未关联的原纵向功能与自然RCA工作。
 原S0–S6、19WP/10FV/12DG、UserHost P4、VM-only与所有原验收范围保留。
 
+R6a当前源码批：统一Make install-files及Debian分包文件表，固定构建目录/工具链，
+渲染实际Exec/pc，增加两库SONAME、现有三角色sysusers、仅Native字符设备udev；
+配置/状态/权限/symlink和非本版本库保留。已完成开发ELF的两个PREFIX实际暂存、
+外部C/Native链接/errno、配置解析、重装与卸载；这不是新artifact实机或干净VM资格。
+7项布局/原卸载及原bundle文件测试通过，严格新构建已执行；准确新提交、封存产物、
+实际VM服务/组/bus、Python安装消费及包管理升级回滚仍待本批门禁。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

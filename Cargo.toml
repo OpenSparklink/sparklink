@@ -18,7 +18,7 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
-repository = "https://gitee.com/sparklinkZ/sparklink-userspace"
+repository = "https://github.com/OpenSparklink/sparklink"
 
 [workspace.dependencies]
 slk-protocol = { path = "crates/slk-protocol" }

@@ -208,3 +208,14 @@ Native 管理者主动断开使用 SLE 远端用户原因 `0x10`，不套用 Blu
 提交仍由既有Runtime/Grant/Ticket强制。首批RX-only，任何TX ancillary明确拒绝；
 逐属性策略及响应TX intent另行接通。纯helper有界模型的Owner真值/锁假设显式记录，
 其通过不能替代真实内核并发、空口、固件或恢复验收。
+
+
+### 响应原期限与最终提交约束
+
+采用单个48字节TX constraint，与原fd Grant相交，minimum0也不解除epoch固定。
+CLOCK_MONOTONIC绝对期限在响应义务创建时确定，最多剩余5秒；等待、排队清理和
+每次实际USB提交复核，重试不续期。未知control及RX类型不能伪装此意图。
+无物理前缀时过期/机制失效只退休该Channel；已有PB前缀继续按原物理错误路径处理，
+不能为了隔离宣称义务消失或退款。SSAP响应/错误/ACK用原RX上下文，主动请求仍依赖
+原Grant，逐属性与本地授权另接。模型仅证明候选快照的生产纯guard，实际队列/锁/
+Owner真实性/USB/credit/撤权晚到复用仍需实测与组合验证。

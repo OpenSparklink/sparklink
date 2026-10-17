@@ -2,6 +2,18 @@
 
 ## 本批退出条件与近期执行顺序
 
+当前接通同一SSAP Engine响应约束，准确K1bcd766d07bb/U b4ad7dc：48字节TX intent
+只收紧原Grant，保留原RX epoch、观察机制下限和一次确定的CLOCK_MONOTONIC原期限。
+准入、等待/排队定时器及实际USB每片提交不续期；未提交失败只退休本Channel，已有
+PB前缀不抹去物理义务。主动请求仍受原fd Grant，属性策略/本地授权及主动请求细粒度
+intent继续缺失，不把本批当成完整安全SSAP。
+
+本批退出：strict build/44跨语言、生产Session/parser sanitizer、生产纯constraint+Grant
+168项CBMC及三负对照；新冻结产物两角色plain61/secure1/2/249/2042真实响应交付、
+逐条旧epoch/lifetime/过期intent拒绝且无USB载荷、既有SSAP/广播扫描/连接断链保持。
+全新artifact实机结果仍待获取；排队后真实换epoch/off及释放组合另列，不以离线模型
+冒充真实并发。通过本批后继续逐属性策略，控制面全集不是前置。
+
 上一批 WP06/WP09 的唯一用户态 SSAP 首次安全 SMTC 切片，限定退出已在
 K619/U8bda 达成：六项真实门禁、48次 CUTC 往返、96组 SSAP 对端数据库核对、
 249边界及完整2042、受保护1/2完整时窗。主动断链请求改为 SDK 远端用户原因10，

@@ -730,5 +730,6 @@ Session/Engine，不引入第二 Host 或 SSAP 发送路径。所需组合验证
 不再从应用读取时的最新安全快照推断旧请求资格。RX元数据保留原身份/epoch/机制
 观察，dequeue只重核CURRENT、不升级旧包。它不是命名身份、Bond、RF密码证明、
 本地属性授权或后续发送许可；后续TX intent必须在既有Grant/Ticket最终提交点强制，
-不能仅依赖daemon检查。首批实现为RX-only，sendmsg全部control明确拒绝。
+不能仅依赖daemon检查。历史首批为RX-only；当前新增严格类型TX constraint，只收紧原Grant并在实际提交强制
+原epoch和绝对期限，RX类型/未知control继续拒绝。
 唯一用户态SSAP Engine后续才消费该机制；本批不新增业务引擎或放宽权限。

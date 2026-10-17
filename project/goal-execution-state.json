@@ -688,7 +688,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-17T02:05:50.406898+00:00",
+  "updated_at_utc": "2026-10-17T02:24:48.997148+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -793,14 +793,14 @@
   },
   "execution_phase": "ACTIVE_LIVE_MECHANISM_CORE_REAL_PASS_INVALIDATION_AND_SECURITY_GRANT_THEN_SSAP",
   "next_resume_tasks": [
-    "RXfoundation scopedexitachievedK8c/U625;next soleSSAP verifiedRXconsumer+finalTXintent underoriginalGrant/Ticket,then perattribute policy/localpermissions,no snapshotthenrawsend/newEngine",
+    "Finish currentTXconstraintSSAPresponse batch frozenexactartifactVM gates;then soleEngine granularattributepolicy/localpermissions+activeclientintent;no allcontrolprecondition",
     "Preserve originalU331DownFAIL and freshlegacy13fast counterevidence; naturalRCA/nonmanualrecovery OPEN",
     "Parallel multichannel/fourdevice/credit/long/performance/RXgap measurement and oldcleanup; no allcontrolrace prerequisite",
     "FullS0-S6/19WP/10FV/12DG scope unchanged;UserHostP4;Hi3873E1excluded;VM-only;build12solo/8VM"
   ],
   "issue_sync_status": "7existingissues OPEN exactcommentreadback/originalscopebodyunchanged;RXfoundationscopedpass,fullissuesnotclosed",
   "issue_sync_receipt": ".dev/message-context-issue-receipts-v1.json",
-  "previous_goal_turn_classification": "progress:liveSessionkernel6861/U13bb sixrealVM/32snapshots/48peerRT,31mutants,signedpushedb9,4issuesOPENand115materialscopedregistry",
+  "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
   "current_goal_turn_classification": "PROGRESS_TWENTY_PROTECTED_LIFECYCLE_AND_SELECTED_LENGTHS_REAL_PASS_NEXT_SOLE_SSAPPERMISSIONS",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
@@ -2748,5 +2748,29 @@
     "batch_exit": "ACHIEVED_RX_FOUNDATION_ONLY;SSAPEngineconsumer/finalTXintent/attributepolicy remainmissing;newartifactfullinvalidationnotqualified",
     "qualification_registry": "5source-scopedrecords/122materials and5actualnegatives;overallINCOMPLETE",
     "issues_receipt": ".dev/message-context-issue-receipts-v1.json"
+  },
+  "tx_constraint_ssap_batch": {
+    "status": "IMPLEMENTED_OFFLINE_PASS_FROZEN_ARTIFACTS_PREPARING_NOT_REAL_QUALIFIED",
+    "kernel": "1bcd766d07bba2b045f4b381d41b7af9e96c05ad",
+    "compiled_userspace": "b4ad7dcf6930a7e2382d8bd4fa4f31674deab02b",
+    "executed_tools": "b4ad7dcf6930a7e2382d8bd4fa4f31674deab02b",
+    "production": "SoleEngine realRX;response/error/ACK pinoriginalepoch/mechanism/onceabsoluteMonotonicdeadline toKernel48byteconstraint;intersectionwithoriginalGrant atadmission/everyactualUSBfragment;wait/cleanupdeadline no renewal;noEngine/Hostduplication",
+    "exit": [
+      "strictlockedbuild/44CABI/707frozenTools/productionSessionParserASanUBSan/actualpureConstraintGrantCBMC168+3controls",
+      "NewartifactrealU2/3 sixselectedcasesbothroles48peerRT/SSAPchecks;typedresponse plusstalelife/epoch/expiredintent refusals andnoUSB,61/249/2042 andexistingpaths maintained"
+    ],
+    "proof": "Onecandidateproductionpureguard snapshot,not actualOwnertruth/locking/ref/queue/drain/USB/credit/lifecyclecombination proof",
+    "remaining": [
+      "Perattributeauth/encryption/localpolicy andactiveclientgranularintent",
+      "Newartifactoff/rekey/unknown/release/lastfd/dup/Down/deadline combinations andinflightphysicalobligations",
+      "NaturalRCA/nonmanualrecovery/NOCPtruth/reuse/drain/fullS0-S6 unchanged"
+    ],
+    "retained_failures": [
+      "fixture initiallyomittedHostmarker atfragmentconsent;Ownerassertionkeptanddependencycorrected",
+      "MissingexplicitDBuspath29failures;newfrozenrerunwithvalidatedpath",
+      "SharedbuildlockrefusedconcurrentCargorun,notnewtestPASS;rerunsequential",
+      "Sealerstartedbeforecleanworktreeexisted;originalfailure retained,nowfreezeandrerun",
+      "Evidencefixture changedbothRXandTXepoch;targetednegativealtersonlyTX,correlationassertionpreserved"
+    ]
   }
 }

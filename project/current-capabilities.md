@@ -1,5 +1,9 @@
 # 当前能力与资格
 
+正在开发K1bcd766d07bb／Ub4ad7dc的TX约束与唯一SSAP响应接线，离线通过但
+**新artifact实机资格尚待获取**。后文K8c/U625接收上下文资格保持原身份，不转授新
+最终提交/SSAP消费者。当前仍未支持逐属性策略、本地授权、完整失效和主动请求细粒度intent。
+
 [RX-only消息上下文限定资格](../docs/evidence/message-security-receipts-20261017.json)：
 准确K8c302d7cfc49／编译及执行U6251931，VM-only、SDK111、Hi3873U2/3；Hi3873E1排除。
 六项门禁各交换连接角色，48次实际对端随机校验回复、96条消息身份/epoch/机制观察、

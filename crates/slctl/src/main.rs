@@ -128,8 +128,8 @@ Commands:
   result <request-id>           Inspect retained native operation result
   cancel-discovery              Cancel both native policies and drain this device
   management                    Query native kernel management state without token
-  devices                       List discovered devices
-  info <address>                Show device details
+  peers                         List typed peers and observation validity
+  peer-observation <path>        Show one typed Peer advertisement (unknown RSSI explicit)
   agent [method]                Foreground Agent [sdk111-no-mitm|sdk111-numeric-comparison], no auto-approval
   security-request <path> [ms] [method]  Request exact Connection security (1..5000ms)
   connect <address>             Connect to device

@@ -487,3 +487,29 @@ fn native_management_abi() {
     assert_eq!(nix::request_code_write!(b'S', 0x8c, 32), 0x4020538c);
     assert_eq!(nix::request_code_readwrite!(b'S', 0x8d, 48), 0xc030538d);
 }
+
+#[test]
+fn ws73_peer_identity_does_not_reinterpret_unknown_type_or_vendor_header() {
+    let mut e = SleControllerEvent {
+        generation: 7,
+        profile: CONTROLLER_EVENT_PROFILE_WS73_HCC,
+        seq: 1,
+        event_code: 0x180b,
+        payload_len: 23,
+        ..Default::default()
+    };
+    e.payload[2..8].copy_from_slice(&[1, 2, 3, 4, 5, 6]);
+    for kind in 0..=255u8 {
+        e.payload[1] = kind;
+        let r = e.ws73_discovery().unwrap();
+        assert_eq!(r.header[1], kind);
+        assert_eq!(
+            r.peer_identity(),
+            if kind <= 1 {
+                Some((kind, [1, 2, 3, 4, 5, 6]))
+            } else {
+                None
+            }
+        );
+    }
+}

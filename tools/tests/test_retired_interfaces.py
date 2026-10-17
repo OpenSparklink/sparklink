@@ -29,8 +29,11 @@ class RetiredEntryGuard(unittest.TestCase):
             ('crates/slk-native/include/sparklink_native.h','\nint slk_connect(void);'),
             ('crates/slkd/src/controller.rs','\nasync fn get_role() {}'),
             ('crates/slkd/src/dbus_iface.rs','\nasync fn connect() {}'),
+            ('crates/slkd/src/dbus_iface.rs','\nasync fn get_devices() {}'),
+            ('crates/slkd/src/dbus_iface.rs','\npub struct DeviceIface;'),
             ('bindings/python/sparklink/structs.py','\nclass SleConnInfo(ctypes.Structure): pass'),
             ('crates/slctl/src/commands.rs','\n"role" => facade(),'),
+            ('crates/slctl/src/commands.rs','\n"devices" if true => facade(),'),
         ]
         for path,addition in cases:
             with self.subTest(path=path):

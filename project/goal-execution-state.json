@@ -667,8 +667,7 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "R5c:remainingtypedcontroller/explicitmanagementCLIviaexistingowner-pinnedClient/sharedcontract;realprivatebusownerchangebetweenallocate/submit/result andexactnewVMpreservation",
-    "R5:remaininglocalOwned/Agent/highlevel/C-Pythonactualclients/publicinterfaceaudit;noNativeleak orsecondEngine",
+    "R5d:typedPeer observations/addressDevice retirement,thenlocalOwned/Agent/C-Python actualclients/publicinterfaceaudit",
     "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
   ],
@@ -806,13 +805,13 @@
     "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
   ],
-  "issue_sync_status": "R4F1_SIX_EXISTING_ISSUES_UPDATED_ALL_REMAIN_OPEN",
-  "issue_sync_receipt": ".dev/architecture-r4f1-issue-receipts-v1.json",
+  "issue_sync_status": "R5C_SIX_EXISTING_ISSUES_UPDATED_BODY_UNCHANGED_ALL_OPEN",
+  "issue_sync_receipt": ".dev/architecture-r5c-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
   "current_goal_turn_classification": "PROGRESS_PRODUCTION_OWNED_SSAP_FOUR_REAL_VM_GATES_AND_SOURCE_BOUND_EVIDENCE",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
-  "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
+  "issue_sync_receipt_previous": ".dev/architecture-r4f1-issue-receipts-v1.json",
   "additional_reference_review": {
     "source": "docs/evidence/openharmony-peripheral-reference-20261015.json",
     "repository": "https://gitcode.com/openharmony/drivers_peripheral",
@@ -2040,7 +2039,8 @@
         "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6234561921",
         "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6234562274"
       ]
-    }
+    },
+    ".dev/architecture-r5c-issue-receipts-v1.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -3124,18 +3124,15 @@
     "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
   },
   "architecture_retirement_current_batch": {
-    "status": "RAW_ABI_SOURCE_MIGRATED_OFFLINE_PASS_NEW_VM_PENDING",
+    "status": "IN_PROGRESS_FULL_ARCHITECTURE_NOT_QUALIFIED",
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
-    "batch": "R4f2 DLI event/global-mask/raw ABI and current/historical selftest migration",
+    "batch": "Current batch authority: qualification_view.current_batch;R4 raw retirement and R5b/R5c retained source-bound reports are history,not pending work",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
-      "R4f2:finish finite production event/metadata authority and full-chain unpublished raw ABI retirement with valuable historical tests preserved",
-      "R5:complete existing AppSDK/CLI/C-Python callers and independent contract/provenance gates;no second Engine",
-      "R6:cleanVM deployment/externalSDK/upgrade/rollback/uninstall/config retention",
-      "Only then refine next real vertical behavior under fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanual recovery stayOPEN"
+      "See next_resume_tasks and canonical implementation-plan R5d/R5/R6"
     ],
-    "exit_reference": "Canonical WP18 R4f2 then complete R5/R6;not all-control-combination prerequisite",
+    "exit_reference": "Canonical WP18 R5d then remaining R5/R6;fulloriginalscope unchanged",
     "qualification_reference": {
       "source": "qualification_view.selected_qualification",
       "scope": "Selected retained artifact only;whole current tree not revalidated"
@@ -3381,10 +3378,10 @@
     },
     "next_limited_batch": {
       "id": "R5d-typed-observation-and-caller-retirement",
-      "scope": "One bounded typedPeer observation source,connection association remains actualNative state;localstaging/Owned/Agent distinct;no newEngine orNativeleak",
-      "state": "AUDITED_NOT_IMPLEMENTED_NOT_WIRE_QUALIFIED",
+      "scope": "One bounded typedPeer observation/publication source replacing address-onlyDevice;existing native link authority remains. No additional Engine/worker.",
+      "state": "SOURCE_MIGRATED_OFFLINE_IN_PROGRESS_NEW_ARTIFACT_VM_PENDING",
       "exit_reference": "CanonicalimplementationplanR5d",
-      "remaining": "Default production address-onlyDevice andtemporary CLI exceptions must retire after typed replacement andactual caller regression;C-Python/R6/fullscope remain"
+      "remaining": "Strict finalchecks/newartifact positive Peer SDK evidence andfourWS73 preservation;thenlocalstaging/Owned/Agent/C-Python,R6/fullscope"
     }
   },
   "owned_ssap_c6_historical_batch": {

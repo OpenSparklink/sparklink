@@ -1,4 +1,4 @@
-.TH SLCTL 1 "2025-04-05" "SparkLink" "User Commands"
+.TH SLCTL 1 "2026-10-18" "SparkLink" "User Commands"
 .SH NAME
 slctl \- SparkLink device control utility
 .SH SYNOPSIS
@@ -67,14 +67,20 @@ Show adapter information and status.
 .B scan on|off
 Start or stop device scanning.
 .TP
-.B devices
-List discovered devices.
+.B peers
+List typed peers under the selected controller generation. Advertisement validity,
+unknown RSSI and unknown connection state are explicit. This grants no channel
+or security authority.
 .TP
-.BI info " address"
-Show detailed information for a device.
+.BI peer-observation " typed-peer-path"
+Read the pinned daemon observation: raw vendor header/data, original Native
+sequence and kernel boottime. RSSI is unknown for an unavailable or expired
+observation or the SDK sentinel. This does not discover SSAP services or certify
+physical connectivity. Old devices/info commands and address-only objects are removed.
 .TP
-.BI connect " address"
-Connect to a device.
+.BI connect " address address-type"
+Request an explicitly typed physical connection; controller management permission
+is required. A Peer advertisement is not an authentication credential.
 .TP
 .BI disconnect " [address]"
 Disconnect the current or specified device.

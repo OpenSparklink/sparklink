@@ -172,3 +172,95 @@ async fn scan_missing_argument_is_usage_before_any_controller_or_daemon_lookup()
     assert!(!error.contains("NameHasNoOwner"));
     Ok(())
 }
+
+struct ObservationAdapter;
+#[zbus::interface(name = "org.sparklink.Adapter")]
+impl ObservationAdapter {
+    #[zbus(property(emits_changed_signal = "false"))]
+    fn generation(&self) -> u64 {
+        7
+    }
+    fn list_peers(&self) -> Vec<String> {
+        vec![format!("{BASE}/peer_t01_010203040506")]
+    }
+}
+// Independent literal wire shape, not imported from the production contract.
+type ObservationWire = (
+    u64,
+    u8,
+    String,
+    bool,
+    bool,
+    i16,
+    Vec<u8>,
+    Vec<u8>,
+    u64,
+    u64,
+    u64,
+);
+struct ObservationPeer;
+#[zbus::interface(name = "org.sparklink.Peer")]
+impl ObservationPeer {
+    fn get_info(&self) -> (u64, u8, String, bool, bool, Vec<String>) {
+        (7, 1, "01:02:03:04:05:06".into(), false, false, vec![])
+    }
+    fn get_observation(&self) -> ObservationWire {
+        (
+            7,
+            1,
+            "01:02:03:04:05:06".into(),
+            true,
+            false,
+            0,
+            vec![0; 23],
+            vec![1, 2],
+            9,
+            10,
+            0,
+        )
+    }
+}
+#[tokio::test]
+async fn actual_cli_uses_typed_peer_sdk_and_displays_unknown_without_old_aliases()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let path = format!("{BASE}/peer_t01_010203040506");
+    let _server = zbus::connection::Builder::address(bus.address.as_str())?
+        .name("org.sparklink")?
+        .serve_at("/org/sparklink", Manager)?
+        .serve_at(BASE, ObservationAdapter)?
+        .serve_at(path.as_str(), ObservationPeer)?
+        .build()
+        .await?;
+    for command in [vec!["peers"], vec!["peer-observation", path.as_str()]] {
+        let out = tokio::process::Command::new(env!("CARGO_BIN_EXE_slctl"))
+            .env("DBUS_SESSION_BUS_ADDRESS", &bus.address)
+            .args(["--session", "--adapter", BASE])
+            .args(command)
+            .output()
+            .await?;
+        let text = String::from_utf8(out.stdout)?;
+        assert!(
+            out.status.success(),
+            "{}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        assert!(
+            text.contains("rssi=unknown") && text.contains("address_type=1"),
+            "{text}"
+        );
+        assert!(!text.contains("rssi=0"), "{text}");
+    }
+    let unowned_bus = support::Bus::start();
+    for args in [vec!["devices"], vec!["info", "01:02:03:04:05:06"]] {
+        let out = tokio::process::Command::new(env!("CARGO_BIN_EXE_slctl"))
+            .env("DBUS_SESSION_BUS_ADDRESS", &unowned_bus.address)
+            .args(["--session"])
+            .args(args)
+            .output()
+            .await?;
+        assert!(!out.status.success());
+        assert!(String::from_utf8(out.stderr)?.contains("unknown command"));
+    }
+    Ok(())
+}

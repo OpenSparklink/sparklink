@@ -140,7 +140,7 @@ ControllerSlot（接入定位、跨重枚举恢复预算）
 |---|---|
 | ControllerSlot | 定位同端口，记录当前 USB incarnation、恢复次数、阶段和期限；不是密码学身份 |
 | Runtime | 一次注册 generation；Host、credit、worker、事件、连接表；退休后旧回调不得修改新实例 |
-| PeerObservation | 某 Runtime 的发现缓存；同地址也分 controller；不是认证或连接事实 |
+| PeerObservation | 按controller generation/地址类型/地址的有界发现观察；不是认证或连接事实 |
 | ConnectionSession | 一次物理连接 lifetime；信令、协商、通道表、安全和 RX 分流；独立于 Binding |
 | Channel | TCID、PI、模式、MTU/MPS、协议队列及关闭事务；重建产生新的本地 incarnation |
 | SocketBinding | 一个授权应用绑定；拥有软件准入、等待和文件清理；新 lease 不复活旧 Binding |
@@ -602,22 +602,22 @@ flowchart TB
 - **能力逐项开放**：描述符、通知／指示、长写、可靠通道、持久 Bond 等须取得对应实现和验收，不能由 API 名称推导已支持。
 - **语言绑定语义一致**：Rust、C、Python 可以有不同调用形式，但身份、错误、取消、关闭和完成含义一致。
 
-#### 源码差距与迁移规则（2026-10-17复核）
+#### 依赖与公开边界
 
-| 目标职责 | 当前源码差距／已存在内容 | 迁移与验收边界 |
-|---|---|---|
-| Native | `libsparklink::Adapter`实际打开设备、管理lease、事件/snoop、WS73控制；daemon/诊断直接使用 | 抽出同一实现及其实际调用者；Native不能作为应用SDK默认导出或反向依赖SDK |
-| Channel | syscall与安全上下文仍在`slk-protocol::channel/message_security`；slktest有已验业务循环 | syscall/poll/fd操作归Channel，Native管理建bind与业务fd能力分开；复用现有循环/原期限/Ticket，不复制Engine |
-| 共享契约 | 一些SSAP/Registration tuple已共享，CLI和daemon仍有方法/路径字符串与长元组重复 | 独立于应用SDK，统一类型/签名/路径/错误；保留独立introspection和真实bus校验 |
-| 应用SDK | libsparklink目前混合Native/FFI；尚非目标Client，Python默认仍暴露Adapter | 应用经slkd申请管理/通道授权，数据直达socket；C/Python应用/Native入口区分，迁移后删除旧默认导出 |
-| SSAP | 当前唯一slkd actor、Owned数据库/审批及部分真实远端操作已存在；不是从零建Engine | local/remote为daemon客户端封装；描述符/订阅/长写等未支持项不因API树而开放；原权限类型与codec复用 |
-| slk-protocol | 当前还包含ioctl/syscall包装；此状态不满足纯值/codec边界 | 移走操作层，保留准确ABI/必要纯codec与状态转换；源码/形式化映射随迁移更新，不转授旧证明 |
-| R3c源码边界 | libsparklink→Channel/契约/protocol，slkd→Native/Channel/契约/protocol；Native无SDK/Channel依赖 | 实际默认Cargo闭包及独立符号/头检查；新artifact尚未验收，完整C/Python broker/SSAP客户端与R4/R6仍缺失 |
+Native设备操作只在slk-native；授权fd系统调用只在slk-channel；slk-protocol只保留
+ABI/共享值/必要codec。libsparklink依赖Channel及独立slk-contract，不导出Native lease；
+slkd直接使用Native/Channel/契约，不反向依赖自己的客户端。CLI保留参数、显示和
+工具断言，业务和SSAP均复用既有路径。C/Python应用与Native库显式分开，不隐藏回退。
+实际接口开放及尚缺客户端仅按唯一计划/能力记录读取；依赖图本身不是全部接口资格。
+旧差距快照保留在history，不继续作为当前实现描述。
 
-R3a把现有Channel query/TX/Session status、SCM安全上下文和期限/系统调用迁入
-slk-channel；ABI值与纯校验留slk-protocol，无旧操作alias。生产调用者同步切换，
-不改wire或权限。R3b已将Native管理/事件/抓包及ioctl和对应调用者迁入slk-native；独立共享契约及真实应用Client仍待迁移，表中目标
-不能解读为当前全部实现；准确资格只看结构化记录对应编译/执行身份。
+Peer观察身份是controller generation、地址类型和地址。广告和物理连接共享这一
+身份的发布元数据；只有Native快照决定连接关系，广告不授予Ready/安全/Grant。
+一个有界pending/published/retiring集合负责对象生命周期，失败清理占用原预算，
+已有连接引用未知时不能以未知作为已断链来删除它。广告TTL只使广告失效；连接
+lifetime、socket Binding和在途物理义务不受缓存淘汰支配。没有广告的连接Peer必须
+明确没有广告/RSSI，不能生成虚构字段。同地址不同类型不合并，未知wire类型保留
+原始报告而不进入默认公共地址路径。复用原EventTask维护，不增加观察Engine。
 
 应用DiscoverySession、稳定公共Client、完整远端Subscription和真实持久Bond仍属待接通
 目标；当前管理扫描不能被包装成已拥有应用发现租约。对象API结束不能隐式清理别人的

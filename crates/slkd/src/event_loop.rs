@@ -7,7 +7,7 @@ use tokio::sync::oneshot;
 use tokio::task::{JoinError, JoinHandle};
 use tracing::error;
 
-use crate::dbus_iface::DeviceIface;
+use crate::connection_object::PeerIface;
 use crate::state::SharedState;
 
 // Historical event fixture only. Runtime consumes typed ControllerEventReceiver
@@ -174,6 +174,7 @@ pub(crate) async fn start_ssap_after_security(
 
 /// The sole production advertisement consumer; no legacy connection/security
 /// event branch. Caller already validated the Native generation and payload.
+#[cfg(test)]
 async fn publish_advertisement(
     state: &SharedState,
     connection: &zbus::Connection,
@@ -237,11 +238,12 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
 /// No new callback/task or unbounded retry queue. State locks never cross bus
 /// registration/removal, and foreign interfaces are never removed or adopted.
 async fn maintain_observations(state: &SharedState, connection: &zbus::Connection) {
-    use crate::state::DevicePublication;
+    use crate::state::PeerPublication;
     let deadline = tokio::time::Instant::now() + std::time::Duration::from_millis(100);
     let Ok(mut st) = tokio::time::timeout_at(deadline, state.lock()).await else {
         return;
     };
+    let generation = st.controller.generation;
     let work = st.observation_work();
     drop(st);
     for (address, path, phase) in work {
@@ -252,44 +254,47 @@ async fn maintain_observations(state: &SharedState, connection: &zbus::Connectio
             let Ok(mut st) = tokio::time::timeout_at(deadline, state.lock()).await else {
                 break;
             };
-            if !st.present {
+            if !st.present || st.controller.generation != generation {
                 break;
             }
             st.observation_attempted(address);
         }
         let outcome = match tokio::time::timeout_at(deadline, async {
             match phase {
-                DevicePublication::Pending => {
+                PeerPublication::Pending => {
                     connection
                         .object_server()
-                        .at(path.as_str(), DeviceIface::new(state.clone(), address))
+                        .at(
+                            path.as_str(),
+                            PeerIface::new(state.clone(), generation, address.0, address.1),
+                        )
                         .await?;
                     let iface = connection
                         .object_server()
-                        .interface::<_, DeviceIface>(path.as_str())
+                        .interface::<_, PeerIface>(path.as_str())
                         .await?;
-                    if !iface.get().await.belongs_to(state, address) {
+                    if !iface.get().await.belongs_to(state, generation, address) {
                         return Err(zbus::Error::Failure(
                             "observation path belongs to another owner".into(),
                         ));
                     }
                     Ok(())
                 }
-                DevicePublication::Retiring => {
+                PeerPublication::Retiring => {
                     match connection
                         .object_server()
-                        .interface::<_, DeviceIface>(path.as_str())
+                        .interface::<_, PeerIface>(path.as_str())
                         .await
                     {
                         Ok(iface) => {
-                            if !iface.get().await.belongs_to(state, address) {
+                            if !iface.get().await.belongs_to(state, generation, address) {
                                 return Err(zbus::Error::Failure(
                                     "refusing to retire another observation owner".into(),
                                 ));
                             }
                             match connection
                                 .object_server()
-                                .remove::<DeviceIface, _>(path.as_str())
+                                .remove::<PeerIface, _>(path.as_str())
                                 .await
                             {
                                 Ok(_) | Err(zbus::Error::InterfaceNotFound) => Ok(()),
@@ -302,7 +307,7 @@ async fn maintain_observations(state: &SharedState, connection: &zbus::Connectio
                         Err(error) => Err(error),
                     }
                 }
-                DevicePublication::Published => {
+                PeerPublication::Published => {
                     unreachable!("work excludes published observations")
                 }
             }
@@ -323,21 +328,22 @@ async fn maintain_observations(state: &SharedState, connection: &zbus::Connectio
             break;
         };
         if !st.present
+            || st.controller.generation != generation
             || st
-                .devices
+                .peers
                 .get(&address)
                 .is_none_or(|d| d.object_path != path || d.publication != phase)
         {
             continue;
         }
         if success {
-            if phase == DevicePublication::Pending {
-                st.devices.get_mut(&address).unwrap().publication = DevicePublication::Published;
+            if phase == PeerPublication::Pending {
+                st.peers.get_mut(&address).unwrap().publication = PeerPublication::Published;
             } else {
-                st.devices.remove(&address);
+                st.peers.remove(&address);
             }
         } else {
-            let errors = if phase == DevicePublication::Pending {
+            let errors = if phase == PeerPublication::Pending {
                 &mut st.observation_publication_errors
             } else {
                 &mut st.observation_retirement_errors
@@ -359,7 +365,6 @@ async fn reconcile_native(
     snapshot: zbus::fdo::Result<slk_protocol::SleLinkSnapshot>,
 ) {
     let (
-        paths,
         known,
         barrier,
         revision,
@@ -367,8 +372,6 @@ async fn reconcile_native(
         publications,
         retired,
         connection_paths,
-        peer_publications,
-        retired_peers,
         peer_paths,
     ) = {
         let mut st = state.lock().await;
@@ -377,27 +380,24 @@ async fn reconcile_native(
         }
         match snapshot {
             Ok(table) => match st.apply_native_links(table, minimum_seq) {
-                Ok(new) => new,
+                Ok(()) => {}
                 Err(()) => {
                     error!(
                         generation = expected.generation,
                         "invalid or stale canonical link snapshot"
                     );
-                    Vec::new()
                 }
             },
             Err(error) => {
                 st.invalidate_native_connections();
                 tracing::warn!(%error, generation=expected.generation, "canonical links unknown; bounded-rate refresh scheduled");
-                Vec::new()
             }
         };
         let (publications, retired) = st.connection_publications();
-        let (peer_publications, retired_peers) = st.peer_publications();
         let peer_paths = st
-            .native_peer_objects
+            .peers
             .values()
-            .map(|entry| entry.path.clone())
+            .map(|entry| entry.object_path.clone())
             .collect::<Vec<_>>();
         let connection_paths = st
             .native_connection_objects
@@ -405,10 +405,6 @@ async fn reconcile_native(
             .map(|entry| entry.path.clone())
             .collect::<Vec<_>>();
         (
-            st.devices
-                .values()
-                .map(|d| d.object_path.clone())
-                .collect::<Vec<_>>(),
             st.native_links_known(),
             st.native_link_barrier,
             st.native_link_revision,
@@ -416,8 +412,6 @@ async fn reconcile_native(
             publications,
             retired,
             connection_paths,
-            peer_publications,
-            retired_peers,
             peer_paths,
         )
     };
@@ -439,47 +433,6 @@ async fn reconcile_native(
             }
             Err(error) => {
                 error!(%error, %path, "retired connection object removal failed; will retry")
-            }
-        }
-    }
-    for path in retired_peers {
-        match connection
-            .object_server()
-            .remove::<crate::connection_object::PeerIface, _>(path.as_str())
-            .await
-        {
-            Ok(_) | Err(zbus::Error::InterfaceNotFound) => {
-                state.lock().await.retiring_peer_objects.remove(&path);
-            }
-            Err(error) => error!(%error, %path, "retired typed peer removal failed; will retry"),
-        }
-    }
-    for entry in peer_publications {
-        match connection
-            .object_server()
-            .at(
-                entry.path.as_str(),
-                crate::connection_object::PeerIface::new(
-                    state.clone(),
-                    expected.generation,
-                    entry.address_type,
-                    entry.address,
-                ),
-            )
-            .await
-        {
-            Ok(_) => {
-                if let Some(current) = state
-                    .lock()
-                    .await
-                    .native_peer_objects
-                    .get_mut(&(entry.address_type, entry.address))
-                {
-                    current.published = true;
-                }
-            }
-            Err(error) => {
-                error!(%error,path=%entry.path,"typed peer publication failed; will retry")
             }
         }
     }
@@ -514,14 +467,6 @@ async fn reconcile_native(
         }
     }
     maintain_observations(state, connection).await;
-    for path in paths {
-        crate::adapters::invalidate_device_properties(
-            connection,
-            &path,
-            &["Connected", "ConnectionKnown"],
-        )
-        .await;
-    }
     for path in connection_paths {
         crate::adapters::invalidate_connection_properties(
             connection,
@@ -664,16 +609,13 @@ async fn dispatch_native_with<
     if event.lost != 0 {
         crate::adapters::invalidate_properties(connection, &path, &["EventsLost"]).await;
     }
-    publish_advertisement(
-        state,
-        connection,
-        address,
-        report.rssi,
-        0,
-        String::new(),
-        report.data.to_vec(),
-    )
-    .await;
+    let mut st = state.lock().await;
+    // Recheck after awaits; a retired registration cannot consume new data.
+    if st.present && st.controller.generation == event.generation {
+        st.on_native_adv_report(&event, &report);
+    }
+    drop(st);
+    maintain_observations(state, connection).await;
 }
 
 #[cfg(test)]
@@ -686,7 +628,7 @@ async fn pairing_record(
     crate::bonding::BondingInfo,
 )> {
     let st = state.lock().await;
-    let mut connected = st.devices.iter().filter(|(_, device)| device.connected);
+    let mut connected = st.peers.iter().filter(|(_, device)| device.connected);
     let (&addr, device) = connected.next()?;
     if connected.next().is_some() {
         tracing::warn!("cannot attribute legacy security event to multiple connected peers");
@@ -702,7 +644,7 @@ async fn pairing_record(
             .as_secs()
             .to_string(),
     };
-    Some((st.bonding.clone(), addr, info))
+    Some((st.bonding.clone(), addr.1, info))
 }
 
 #[cfg(test)]

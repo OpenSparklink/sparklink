@@ -324,12 +324,12 @@ impl Context {
                 }
                 self.cmd_scan(args).await
             }
-            "devices" => self.cmd_devices().await,
-            "info" => {
-                if args.len() < 2 {
-                    anyhow::bail!("usage: info <address>");
+            "peers" if args.len() == 1 => self.cmd_peers().await,
+            "peer-observation" => {
+                if args.len() != 2 {
+                    anyhow::bail!("usage: peer-observation <typed-peer-path>");
                 }
-                self.cmd_info(args[1]).await
+                self.cmd_peer_observation(args[1]).await
             }
             "connect" => {
                 if args.len() < 2 {
@@ -831,55 +831,59 @@ impl Context {
         Ok(())
     }
 
-    async fn cmd_devices(&self) -> anyhow::Result<()> {
-        let proxy = self.controller().await?;
-        // R5d: retire/replace the address-only observation facade. This
-        // temporary read-only caller cannot silently follow a new daemon.
-        let object = zbus::Proxy::new(
-            &self.conn,
-            self.application().await?.daemon_owner(),
-            proxy.path(),
-            "org.sparklink.Adapter",
-        )
-        .await?;
-        let devices: Vec<(String, String, i16, bool)> = object.call("GetDevices", &()).await?;
-        proxy.generation().await?;
-        if devices.is_empty() {
-            println!("No devices found");
-        } else {
-            for (addr, name, rssi, connected) in &devices {
-                let status = if *connected { "connected" } else { "" };
-                println!("  {addr}  {name:<20} RSSI={rssi:>4} {status}");
-            }
+    async fn cmd_peers(&self) -> anyhow::Result<()> {
+        let peers = self.controller().await?.peers().await?;
+        if peers.is_empty() {
+            println!("No peers observed");
+        }
+        for peer in peers {
+            let info = peer.info().await?;
+            let observation = peer.observation().await?;
+            println!(
+                "Peer: path={} address={} address_type={} observation_valid={} rssi={} connection={}",
+                peer.path(),
+                info.2,
+                info.1,
+                observation.valid,
+                observation
+                    .rssi
+                    .map(|v| v.to_string())
+                    .unwrap_or_else(|| "unknown".into()),
+                if !info.3 {
+                    "unknown"
+                } else if info.4 {
+                    "connected"
+                } else {
+                    "disconnected"
+                }
+            );
         }
         Ok(())
     }
-
-    async fn cmd_info(&self, address: &str) -> anyhow::Result<()> {
+    async fn cmd_peer_observation(&self, path: &str) -> anyhow::Result<()> {
         let controller = self.controller().await?;
-        let object_path = format!(
-            "{}/dev_{}",
-            self.selected_path().await?,
-            address.replace(':', "").to_lowercase()
+        let id = slk_contract::PeerId::from_path(path)
+            .ok_or_else(|| anyhow::anyhow!("typed Peer path required"))?;
+        if id.controller != controller.id() {
+            anyhow::bail!("foreign controller Peer");
+        }
+        let peer = self.application().await?.peer(path).await?;
+        let o = peer.observation().await?;
+        println!(
+            "PeerObservation: path={} generation={} address_type={} valid={} rssi={} sequence={} kernel_boottime_ns={} lost={} header={} data={}",
+            peer.path(),
+            o.id.controller.generation,
+            o.id.address_type,
+            o.valid,
+            o.rssi
+                .map(|v| v.to_string())
+                .unwrap_or_else(|| "unknown".into()),
+            o.sequence,
+            o.kernel_boottime_ns,
+            o.lost,
+            hex_bytes(&o.header),
+            hex_bytes(&o.data)
         );
-        // R5d read-only exception; no new address-only SDK object.
-        let proxy = zbus::proxy::Builder::<zbus::Proxy<'_>>::new(&self.conn)
-            .destination(self.application().await?.daemon_owner())?
-            .path(object_path.as_str())?
-            .interface("org.sparklink.Device")?
-            .cache_properties(zbus::proxy::CacheProperties::No)
-            .build()
-            .await?;
-
-        let name: String = proxy.get_property("Name").await?;
-        let rssi: i16 = proxy.get_property("Rssi").await?;
-        let connected: bool = proxy.get_property("Connected").await?;
-
-        controller.generation().await?;
-        println!("Device {address}:");
-        println!("  Name:      {name}");
-        println!("  RSSI:      {rssi} dBm");
-        println!("  Connected: {connected}");
         Ok(())
     }
 

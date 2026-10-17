@@ -688,29 +688,42 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 仍在整改，不能据此推荐通用安装已可投入使用。实验bundle与通用安装资格分别记录。
 
 
-## 地址观察缓存（R2源码整改；实机资格按准确产物）
+## Typed Peer观察与资源边界
 
-Device是按地址的兼容观察对象，不能代替含地址类型的Peer或connection lifetime。
-每controller上限128条，名称/广告/UUID/path的实际容量合计64KiB；单名称256字节、
-opaque广告2048字节。超限拒绝整个更新并计数，不静默截断。Pending和Retiring也占
-预算；容量压力使最老的无当前连接观察进入Retiring，确认移除前不接收替换条目。
-无新报告60秒且没有已知canonical连接引用时退役；已连接观察可保留，过期的广告值
-仍会失去有效性。Raw native_reports环与Typed Peer/Connection保持各自职责。
+`Adapter.ListPeers() -> as`仅返回已确认发布的Peer路径，格式为
+`/org/sparklink/slk{index}_g{generation}/peer_t{type:02x}_{address:12hex}`。
+同地址不同类型不合并；旧Device、GetDevices及dev路径已退休，无兼容期。
+`Peer.GetInfo`的ConnectionKnown/Connected及Connection路径来自当前Native快照，
+与广告/RSSI有效性分开；Peer对象及其地址不代表认证身份或授权。
 
-GetDevices只列Published。Device.ObservationValid表示该广告观察仍在60秒预算内且
-对象已确认发布、确有广告而非仅连接别名、controller仍在；不是连接成功、当前空口可达、授权或安全等级。
-缓存值需结合有效性读取；连接观察仍依据ConnectionKnown/实际typed快照。
-Adapter的ObservationCount、ObservationBytes、ObservationDrops、ObservationPublicationErrors、
-ObservationRetirementErrors为RO计数，包含pending/retiring占用。上述动态属性声明
-EmitsChangedSignal=false；客户端须禁用对应属性缓存或直接调用Properties.Get，
-不承诺未经发出的变化信号。动态zbus Proxy默认不会自动按服务端注解禁缓存，不能
-把其缓存值当新观察；共享客户端必须固定这项策略。原错误假设的回归失败日志保留。
+`Peer.GetObservation() -> (tysbbnayayttt)`依次返回generation、地址类型、地址、广告
+有效、RSSI已知、RSSI数值、原始WS73头、原始数据、Native序号、kernel boottime ns、
+该报告lost。RSSI已知=false时数字字段没有意义；Rust SDK为None，CLI显示unknown。
+SDK哨兵0x7f、仅连接而没有广告、过期观察不会显示为0 dBm。Header/data是单次
+原始vendor报告，不重组分片、不推导名称、DiscoveryLevel、SSAP UUID或安全状态。
+类型0/1使用公共前缀；其他类型保留在raw reports，不静默改成0。实际地址模式资格
+仍见能力入口，不能由parser可解码推导全部类型/隐私已实机通过。
 
-现有EventTask每轮最多8项与同一100ms本地维护期限，既有1秒tick重试/清理；这不是
-协议期限或硬件恢复策略。失败保留占用，不能靠重复缓存插入宣布发布成功；记账锁竞争时不释放slot，下一轮
-重新核对实际对象，诊断日志记录未确认结果，错误计数只计已记账失败。foreign
-对象不被收编或删除。数量/字节是资源上限，不承诺所有报告都进入观察列表。数据
-通道、Managed权限、扫描租约与实际业务交付资格不由这些观察计数决定。
+Rust使用`Controller.peers()`及`Peer.info()/observation()`；固定daemon owner、controller
+和typed身份，无属性缓存或替代daemon回退。`slctl peers`和`peer-observation <path>`
+消费同一SDK，旧devices/info已删除。C/Python完整broker/SSAP客户端仍待接通。
+
+每controller最多128个Peer（含仅连接、pending和retiring），header/data/path实际
+分配容量合计64KiB；固定对象/映射开销另由数量上限约束。这不是daemon整体内存
+上限。容量不足拒绝整个更新并计数，最老且没有连接引用的Peer进入Retiring；实际
+移除前不释放slot或收编foreign对象。无新广告60秒则广告失效；有当前或Unknown
+旧连接引用的Peer继续保留，只有实际已知快照才能确认相应关系不存在。
+
+Adapter的PeerCount、PeerBytes、PeerDrops、PeerPublicationErrors、PeerRetirementErrors
+为RO统计，包含未完成发布/清理。Peer.ObservationValid/RssiKnown及这些统计声明
+EmitsChangedSignal=false；调用者应直接Get或禁用属性缓存。动态zbus Proxy不会自动
+按服务端注解禁缓存，原错误假设及失败证据保留。原始native_reports环保留其独立
+证据职责，不是另一个连接状态来源。
+
+同一个EventTask每轮最多8项、共享100ms本地维护期限，以既有1秒tick重试和清理；
+这不是协议期限或恢复策略。未确认记账保留slot，轮转防止单个失败项目独占重试；
+通知不能直接授予连接、credit或权限。操作失败、未知generation和发布冲突明确拒绝。
+生产源码、离线/形式化和实机范围分别记录于唯一能力入口，新代码不继承历史资格。
 
 ## 退休 Native 控制门面与元数据错误
 
@@ -719,7 +732,7 @@ measurement和测试crypto ioctl包装已删除。旧C九函数、相应CLI、Co
 ExtAdv对象/白名单同步退休；不保留只返回不支持的门面。真正发现/连接/安全继续使用
 版本化Native请求/结果；Controller仅GetLinkSummary/GetControllerEventPosition/ConnCount。
 标准profile未接通的扫描/连接模式明确NotSupported，没有旧模型fallback。
-Device是观察对象，旧Connect/Disconnect/GetConnectionInfo删除；按完整身份使用Peer/Connection。
+旧Device观察对象和其Connect/Disconnect/GetConnectionInfo均已退休；按完整身份使用Peer/Connection。
 `slctl show`读取ScanningState，不再消费旧Discovering布尔副本。
 
 Native `slk_device_count`读取与枚举同一Core注册bitmap，包含pending/fault分配，不是

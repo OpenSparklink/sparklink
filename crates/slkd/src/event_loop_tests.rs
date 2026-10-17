@@ -255,15 +255,15 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
         })
         .await
         .unwrap();
-    let path = "/org/sparklink/slk0/dev_010203040506";
+    let path = "/org/sparklink/slk0/peer_t00_010203040506";
     timeout(Duration::from_secs(2), async {
         loop {
             if let Ok(device) =
-                zbus::Proxy::new(&client, "org.sparklink", path, "org.sparklink.Device").await
+                zbus::Proxy::new(&client, "org.sparklink", path, "org.sparklink.Peer").await
                 && device
-                    .get_property::<String>("Name")
+                    .call::<_, _, slk_contract::PeerObservation>("GetObservation", &())
                     .await
-                    .is_ok_and(|name| name == "event-after-silence")
+                    .is_ok_and(|o| o.3 && o.4 && o.5 == -40)
             {
                 break;
             }
@@ -272,7 +272,7 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
     })
     .await
     .unwrap();
-    assert_eq!(state.lock().await.devices.len(), 1);
+    assert_eq!(state.lock().await.peers.len(), 1);
     // The receiver is once again blocked, but shutdown must join and drop it.
     timeout(Duration::from_secs(2), task.shutdown())
         .await
@@ -311,7 +311,7 @@ async fn shutdown_with_business_state_locked() {
         .unwrap()
         .unwrap();
     dropped.await.unwrap();
-    assert!(lock.devices.is_empty());
+    assert!(lock.peers.is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -431,7 +431,7 @@ async fn blocked_profile_callback_leaves_state_and_dbus_responsive() {
     );
     let (profiles, bonding) = {
         let st = timeout(Duration::from_secs(2), state.lock()).await.unwrap();
-        assert_eq!(st.devices[&[5; 6]].conn_handle, Some(5));
+        assert_eq!(st.peers[&(0, [5; 6])].conn_handle, Some(5));
         (st.profiles.clone(), st.bonding.clone())
     };
     // Historical callbacks must not publish a second, handle-only SSAP facade.
@@ -509,8 +509,21 @@ async fn native_reports_preserve_identity_opaque_bytes_and_loss() {
         assert_eq!(report.rssi, -42);
         assert_eq!(report.header, event.payload[..23]);
         assert_eq!(report.data, event.payload[23..278]);
-        let peer = &st.devices[&report.address];
-        assert_eq!(peer.object_path, "/org/sparklink/slk3_g42/dev_010203040506");
+        // Raw evidence retains unsupported type 6; no public-address fallback.
+        assert!(st.peers.is_empty());
+        assert_eq!(st.observation_drops, 1);
+    }
+    event.payload[1] = 0;
+    event.seq = 10;
+    super::dispatch_native(Ok(event), &state, &connection, expected).await;
+    {
+        let st = state.lock().await;
+        let peer = &st.peers[&(0, [1, 2, 3, 4, 5, 6])];
+        assert_eq!(
+            peer.object_path,
+            "/org/sparklink/slk3_g42/peer_t00_010203040506"
+        );
+        assert_eq!(peer.sequence, 10);
         assert!(peer.name.is_empty() && peer.service_uuids.is_empty() && peer.tx_power.is_none());
     }
     event.generation = 43;
@@ -521,13 +534,13 @@ async fn native_reports_preserve_identity_opaque_bytes_and_loss() {
     event.dev_index = 3;
     event.profile = 2;
     super::dispatch_native(Ok(event), &state, &connection, expected).await;
-    assert_eq!(state.lock().await.native_reports.len(), 1);
+    assert_eq!(state.lock().await.native_reports.len(), 2);
     {
         state.lock().await.present = false;
     }
     event.profile = 1;
     super::dispatch_native(Ok(event), &state, &connection, expected).await;
-    assert_eq!(state.lock().await.native_reports.len(), 1);
+    assert_eq!(state.lock().await.native_reports.len(), 2);
     let (bonding, profiles) = {
         let st = state.lock().await;
         (st.bonding.clone(), st.profiles.clone())
@@ -627,12 +640,12 @@ async fn canonical_startup_loss_resync_and_barrier_preserve_reused_handle_peer()
     let address = [1, 2, 3, 4, 5, 6];
     let original = native_table(10, 1, &[(1, 0, 0, 0, address)]);
     reconcile_native(&state, &server, expected, 0, Ok(original)).await;
-    let path = state.lock().await.devices[&address].object_path.clone();
+    let path = state.lock().await.peers[&(0, address)].object_path.clone();
     let device = zbus::Proxy::new(
         &client,
         "org.sparklink",
         path.as_str(),
-        "org.sparklink.Device",
+        "org.sparklink.Peer",
     )
     .await
     .unwrap();
@@ -698,8 +711,30 @@ async fn canonical_startup_loss_resync_and_barrier_preserve_reused_handle_peer()
     // A retry obtains a new lifetime with the same handle, after an omitted Down.
     let replacement = native_table(20, 3, &[(3, 0, 1, 1, address)]);
     reconcile_native(&state, &server, expected, 12, Ok(replacement)).await;
-    property_eventually(&device, "ConnectionKnown", true).await;
-    property_eventually(&device, "Connected", true).await;
+    // A typed Peer is not an address-only alias for the replacement type.
+    assert!(device.introspect().await.is_err());
+    let replacement_peer_path = state.lock().await.peers[&(1, address)].object_path.clone();
+    assert_ne!(replacement_peer_path, path);
+    let replacement_peer = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        replacement_peer_path,
+        "org.sparklink.Peer",
+    )
+    .await
+    .unwrap();
+    assert!(
+        replacement_peer
+            .get_property::<bool>("Connected")
+            .await
+            .unwrap()
+    );
+    assert!(
+        replacement_peer
+            .get_property::<bool>("ConnectionKnown")
+            .await
+            .unwrap()
+    );
     let mut stale_down = old_down;
     stale_down.seq = 19;
     dispatch_native_with(Ok(stale_down), &state, &server, expected, || async {
@@ -718,8 +753,11 @@ async fn canonical_startup_loss_resync_and_barrier_preserve_reused_handle_peer()
         Ok(native_table(21, 4, &[]))
     })
     .await;
-    property_eventually(&device, "Connected", false).await;
-    property_eventually(&device, "ConnectionKnown", true).await;
+    assert!(replacement_peer.introspect().await.is_err());
+    assert_eq!(
+        state.lock().await.peer_connection(&(1, address)),
+        (true, false)
+    );
     // Successful loss resync restores Known; author success is never consulted.
     let lost = slk_protocol::SleControllerEvent {
         seq: 25,
@@ -730,7 +768,11 @@ async fn canonical_startup_loss_resync_and_barrier_preserve_reused_handle_peer()
         Ok(native_table(30, 5, &[(5, 7, 0, 0, address)]))
     })
     .await;
-    property_eventually(&device, "Connected", true).await;
+    // The same type/address may be observed again, but the old physical
+    // Connection object's lifetime remains retired and is never rebound.
+    let info: crate::connection_object::PeerInfo = device.call("GetInfo", &()).await.unwrap();
+    assert!(info.3 && info.4);
+    assert!(info.5.iter().all(|p| p.ends_with("/link_0000000000000005")));
     assert_eq!(state.lock().await.native_link_barrier, 30);
     assert_eq!(
         adapter
@@ -742,7 +784,7 @@ async fn canonical_startup_loss_resync_and_barrier_preserve_reused_handle_peer()
 }
 
 #[tokio::test]
-async fn canonical_state_rejects_identity_rollback_and_ambiguous_address_alias_without_losing_rssi()
+async fn canonical_state_rejects_identity_rollback_and_separates_address_types_without_losing_rssi()
 {
     let state = state();
     let address = [1; 6];
@@ -759,11 +801,12 @@ async fn canonical_state_rejects_identity_rollback_and_ambiguous_address_alias_w
         0,
     )
     .unwrap();
-    assert_eq!(st.device_connection(&address), (false, false));
+    assert_eq!(st.peer_connection(&(0, address)), (true, true));
+    assert_eq!(st.peer_connection(&(1, address)), (true, true));
     assert_eq!(
         (
-            st.devices[&address].rssi,
-            st.devices[&address].adv_data.clone()
+            st.peers[&(0, address)].rssi,
+            st.peers[&(0, address)].adv_data.clone()
         ),
         (-45, vec![1, 2])
     );
@@ -779,13 +822,13 @@ async fn canonical_state_rejects_identity_rollback_and_ambiguous_address_alias_w
             _ => unreachable!(),
         }
         assert!(st.apply_native_links(bad, 20).is_err(), "{field}");
-        assert_eq!(st.device_connection(&address), (false, false));
+        assert_eq!(st.peer_connection(&(0, address)), (false, false));
         assert_eq!(st.native_link_barrier, 20);
     }
     st.apply_native_links(native_table(22, 3, &[]), 20).unwrap();
-    assert_eq!(st.device_connection(&address), (true, false));
+    assert_eq!(st.peer_connection(&(0, address)), (true, false));
     st.present = false;
-    assert_eq!(st.device_connection(&address), (false, false));
+    assert_eq!(st.peer_connection(&(0, address)), (false, false));
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -814,8 +857,12 @@ async fn typed_connection_objects_separate_types_retire_lifetimes_and_preserve_u
     assert!(paths[0].contains("/peer_t00_"));
     assert!(paths[1].contains("/peer_t01_"));
     assert_eq!(
-        state.lock().await.device_connection(&address),
-        (false, false)
+        state.lock().await.peer_connection(&(0, address)),
+        (true, true)
+    );
+    assert_eq!(
+        state.lock().await.peer_connection(&(1, address)),
+        (true, true)
     );
     let mut objects = Vec::new();
     let mut peers = Vec::new();
@@ -887,8 +934,7 @@ async fn typed_connection_objects_separate_types_retire_lifetimes_and_preserve_u
                 .is_err()
         );
     }
-    assert!(state.lock().await.native_peer_objects.is_empty());
-    assert!(state.lock().await.retiring_peer_objects.is_empty());
+    assert!(state.lock().await.peers.is_empty());
     let reused = native_table(14, 4, &[(4, 7, 0, 0, address)]);
     reconcile_native(&state, &server, expected, 14, Ok(reused)).await;
     let current = state.lock().await.native_connection_objects[&4]
@@ -1236,7 +1282,7 @@ async fn observation_count_bytes_failure_atomicity_and_connection_insertion_are_
         assert!(st.on_adv_report(observation_address(n), -3, 0, String::new(), vec![1]));
     }
     assert!(!st.on_adv_report(observation_address(400), -3, 0, String::new(), vec![1]));
-    assert_eq!(st.devices.len(), OBSERVATION_MAX_ENTRIES);
+    assert_eq!(st.peers.len(), OBSERVATION_MAX_ENTRIES);
     assert!(st.observation_bytes() <= OBSERVATION_MAX_BYTES);
     assert_eq!(st.observation_drops, 1);
     st.on_conn_state_changed(
@@ -1244,7 +1290,7 @@ async fn observation_count_bytes_failure_atomicity_and_connection_insertion_are_
         slk_protocol::ConnState::Connected as u8,
         observation_address(401),
     );
-    assert!(!st.devices.contains_key(&observation_address(401)));
+    assert!(!st.peers.contains_key(&(0, observation_address(401))));
     assert_eq!(st.observation_drops, 2);
     drop(st);
     let shared = state();
@@ -1253,9 +1299,9 @@ async fn observation_count_bytes_failure_atomicity_and_connection_insertion_are_
     for n in 0..128 {
         st.on_adv_report(observation_address(n), -5, 0, "name".into(), vec![1; 2048]);
     }
-    assert!(st.devices.len() < OBSERVATION_MAX_ENTRIES);
+    assert!(st.peers.len() < OBSERVATION_MAX_ENTRIES);
     assert!(st.observation_bytes() <= OBSERVATION_MAX_BYTES && st.observation_drops > 0);
-    let before = st.devices.len();
+    let before = st.peers.len();
     assert!(!st.on_adv_report(
         observation_address(900),
         -9,
@@ -1264,19 +1310,19 @@ async fn observation_count_bytes_failure_atomicity_and_connection_insertion_are_
         vec![0; 2049]
     ));
     assert!(!st.on_adv_report(observation_address(901), -9, 0, "n".repeat(257), Vec::new()));
-    assert_eq!(st.devices.len(), before);
+    assert_eq!(st.peers.len(), before);
     // An existing observation must not be partly overwritten on rejection.
     let shared = state();
     let mut st = shared.lock().await;
     let a = observation_address(1);
     st.on_adv_report(a, -15, 0, "first".into(), vec![1]);
-    let old = st.devices[&a].clone();
+    let old = st.peers[&(0, a)].clone();
     assert!(!st.on_adv_report(a, -20, 0, "replacement".into(), vec![0; 2049]));
     assert_eq!(
         (
-            st.devices[&a].name.as_str(),
-            st.devices[&a].rssi,
-            st.devices[&a].observed_at
+            st.peers[&(0, a)].name.as_str(),
+            st.peers[&(0, a)].rssi,
+            st.peers[&(0, a)].observed_at
         ),
         (old.name.as_str(), old.rssi, old.observed_at)
     );
@@ -1284,7 +1330,7 @@ async fn observation_count_bytes_failure_atomicity_and_connection_insertion_are_
 
 #[tokio::test]
 async fn observation_ttl_and_retry_cursor_do_not_free_or_starve_slots() {
-    use crate::state::{DevicePublication, OBSERVATION_TTL, OBSERVATION_WORK_BUDGET};
+    use crate::state::{OBSERVATION_TTL, OBSERVATION_WORK_BUDGET, PeerPublication};
     let shared = state();
     let mut st = shared.lock().await;
     for n in 0..20 {
@@ -1297,23 +1343,23 @@ async fn observation_ttl_and_retry_cursor_do_not_free_or_starve_slots() {
     st.observation_attempted(first[0].0);
     let second = st.observation_work();
     assert_eq!(second[0].0, first[1].0);
-    assert_eq!(st.devices.len(), 20);
+    assert_eq!(st.peers.len(), 20);
     let a = observation_address(0);
-    st.devices.get_mut(&a).unwrap().observed_at -= OBSERVATION_TTL;
+    st.peers.get_mut(&(0, a)).unwrap().observed_at -= OBSERVATION_TTL;
     let b = observation_address(1);
-    st.devices.get_mut(&b).unwrap().observed_at -= OBSERVATION_TTL;
+    st.peers.get_mut(&(0, b)).unwrap().observed_at -= OBSERVATION_TTL;
     st.on_conn_state_changed(3, slk_protocol::ConnState::Connected as u8, b);
     st.expire_observations(Instant::now());
-    assert_eq!(st.devices[&a].publication, DevicePublication::Retiring);
-    assert_ne!(st.devices[&b].publication, DevicePublication::Retiring);
+    assert_eq!(st.peers[&(0, a)].publication, PeerPublication::Retiring);
+    assert_ne!(st.peers[&(0, b)].publication, PeerPublication::Retiring);
     assert!(!st.on_adv_report(a, -8, 0, String::new(), Vec::new()));
-    assert_eq!(st.devices.len(), 20);
+    assert_eq!(st.peers.len(), 20);
     assert_eq!(st.observation_drops, 1);
 }
 
 #[tokio::test]
 async fn observation_publication_conflict_retries_without_new_report_and_preserves_foreign_owner() {
-    use crate::state::DevicePublication;
+    use crate::state::PeerPublication;
     let bus = PrivateBus::start();
     let shared = state();
     let foreign = state();
@@ -1323,46 +1369,46 @@ async fn observation_publication_conflict_retries_without_new_report_and_preserv
         .lock()
         .await
         .on_adv_report(a, -12, 0, "device".into(), vec![1]);
-    let path = shared.lock().await.devices[&a].object_path.clone();
+    let path = shared.lock().await.peers[&(0, a)].object_path.clone();
     server
         .object_server()
-        .at(path.as_str(), DeviceIface::new(foreign.clone(), a))
+        .at(path.as_str(), PeerIface::new(foreign.clone(), 0, 0, a))
         .await
         .unwrap();
     maintain_observations(&shared, &server).await;
     assert_eq!(
-        shared.lock().await.devices[&a].publication,
-        DevicePublication::Pending
+        shared.lock().await.peers[&(0, a)].publication,
+        PeerPublication::Pending
     );
     assert_eq!(shared.lock().await.observation_publication_errors, 1);
     let iface = server
         .object_server()
-        .interface::<_, DeviceIface>(path.as_str())
+        .interface::<_, PeerIface>(path.as_str())
         .await
         .unwrap();
-    assert!(iface.get().await.belongs_to(&foreign, a));
+    assert!(iface.get().await.belongs_to(&foreign, 0, (0, a)));
     let client = client(&bus).await;
     let adapter = adapter_proxy(&client).await;
     assert!(
         adapter
-            .call::<_, _, Vec<(String, String, i16, bool)>>("GetDevices", &())
+            .call::<_, _, Vec<String>>("ListPeers", &())
             .await
             .unwrap()
             .is_empty()
     );
     server
         .object_server()
-        .remove::<DeviceIface, _>(path.as_str())
+        .remove::<PeerIface, _>(path.as_str())
         .await
         .unwrap();
     maintain_observations(&shared, &server).await;
     assert_eq!(
-        shared.lock().await.devices[&a].publication,
-        DevicePublication::Published
+        shared.lock().await.peers[&(0, a)].publication,
+        PeerPublication::Published
     );
     assert_eq!(
         adapter
-            .call::<_, _, Vec<(String, String, i16, bool)>>("GetDevices", &())
+            .call::<_, _, Vec<String>>("ListPeers", &())
             .await
             .unwrap()
             .len(),
@@ -1370,15 +1416,15 @@ async fn observation_publication_conflict_retries_without_new_report_and_preserv
     );
     let iface = server
         .object_server()
-        .interface::<_, DeviceIface>(path.as_str())
+        .interface::<_, PeerIface>(path.as_str())
         .await
         .unwrap();
-    assert!(iface.get().await.belongs_to(&shared, a));
+    assert!(iface.get().await.belongs_to(&shared, 0, (0, a)));
 }
 
 #[tokio::test]
 async fn observation_expiry_unpublishes_only_its_controller_and_retains_slots_until_confirmed() {
-    use crate::state::{DevicePublication, OBSERVATION_TTL};
+    use crate::state::{OBSERVATION_TTL, PeerPublication};
     let bus = PrivateBus::start();
     let shared = state();
     let other = state();
@@ -1392,8 +1438,8 @@ async fn observation_expiry_unpublishes_only_its_controller_and_retains_slots_un
             .on_adv_report(a, -11, 0, String::new(), Vec::new());
         maintain_observations(owner, &server).await;
     }
-    let old_path = shared.lock().await.devices[&a].object_path.clone();
-    let other_path = other.lock().await.devices[&a].object_path.clone();
+    let old_path = shared.lock().await.peers[&(0, a)].object_path.clone();
+    let other_path = other.lock().await.peers[&(0, a)].object_path.clone();
     server
         .object_server()
         .at("/org/sparklink/slk1_g2", AdapterIface::new(other.clone()))
@@ -1409,7 +1455,7 @@ async fn observation_expiry_unpublishes_only_its_controller_and_retains_slots_un
         .unwrap()
         .path(old_path.as_str())
         .unwrap()
-        .interface("org.sparklink.Device")
+        .interface("org.sparklink.Peer")
         .unwrap()
         .cache_properties(zbus::proxy::CacheProperties::No)
         .build()
@@ -1440,20 +1486,20 @@ async fn observation_expiry_unpublishes_only_its_controller_and_retains_slots_un
             .await
             .unwrap()
     );
-    assert_eq!(
-        adapter
-            .get_property::<u32>("ObservationCount")
-            .await
-            .unwrap(),
-        1
-    );
+    assert_eq!(adapter.get_property::<u32>("PeerCount").await.unwrap(), 1);
     let iface = server
         .object_server()
-        .interface::<_, DeviceIface>(old_path.as_str())
+        .interface::<_, PeerIface>(old_path.as_str())
         .await
         .unwrap();
     let lock = iface.get_mut().await;
-    shared.lock().await.devices.get_mut(&a).unwrap().observed_at -= OBSERVATION_TTL;
+    shared
+        .lock()
+        .await
+        .peers
+        .get_mut(&(0, a))
+        .unwrap()
+        .observed_at -= OBSERVATION_TTL;
     // Hold a real interface lock: the production maintenance's one original
     // 100ms budget must stop, retaining the slot for a later retry.
     let (finished, peer_name) = tokio::join!(
@@ -1469,18 +1515,18 @@ async fn observation_expiry_unpublishes_only_its_controller_and_retains_slots_un
     finished.unwrap();
     assert!(peer_name.unwrap().is_ok());
     assert_eq!(
-        shared.lock().await.devices[&a].publication,
-        DevicePublication::Retiring
+        shared.lock().await.peers[&(0, a)].publication,
+        PeerPublication::Retiring
     );
     assert_eq!(shared.lock().await.observation_retirement_errors, 1);
     assert_eq!(
-        other.lock().await.devices[&a].publication,
-        DevicePublication::Published
+        other.lock().await.peers[&(0, a)].publication,
+        PeerPublication::Published
     );
     assert!(
         server
             .object_server()
-            .interface::<_, DeviceIface>(other_path.as_str())
+            .interface::<_, PeerIface>(other_path.as_str())
             .await
             .is_ok()
     );
@@ -1493,30 +1539,24 @@ async fn observation_expiry_unpublishes_only_its_controller_and_retains_slots_un
             .unwrap()
     );
     maintain_observations(&shared, &server).await;
-    assert!(!shared.lock().await.devices.contains_key(&a));
-    assert_eq!(
-        adapter
-            .get_property::<u32>("ObservationCount")
-            .await
-            .unwrap(),
-        0
-    );
+    assert!(!shared.lock().await.peers.contains_key(&(0, a)));
+    assert_eq!(adapter.get_property::<u32>("PeerCount").await.unwrap(), 0);
     assert!(matches!(
         server
             .object_server()
-            .interface::<_, DeviceIface>(old_path.as_str())
+            .interface::<_, PeerIface>(old_path.as_str())
             .await,
         Err(zbus::Error::InterfaceNotFound)
     ));
     assert!(
         server
             .object_server()
-            .interface::<_, DeviceIface>(other_path.as_str())
+            .interface::<_, PeerIface>(other_path.as_str())
             .await
             .unwrap()
             .get()
             .await
-            .belongs_to(&other, a)
+            .belongs_to(&other, 0, (0, a))
     );
 }
 
@@ -1532,7 +1572,7 @@ async fn observation_original_maintenance_budget_includes_state_lock_wait() {
     )
     .await
     .unwrap();
-    assert!(locked.devices.is_empty());
+    assert!(locked.peers.is_empty());
     assert_eq!(locked.observation_publication_errors, 0); // no operation started
 }
 
@@ -1552,17 +1592,18 @@ async fn observation_connection_alias_never_invents_an_advertisement() {
         // Explicit kernel-snapshot fixture; this is not physical-link evidence.
         st.apply_native_links(native_table(20, 2, &[(1, 4, 0, 0, a)]), 0)
             .unwrap();
-        assert!(!st.devices[&a].rssi_known);
+        st.observation_work();
+        assert!(!st.peers[&(0, a)].rssi_known);
     }
     maintain_observations(&shared, &server).await;
-    let path = shared.lock().await.devices[&a].object_path.clone();
+    let path = shared.lock().await.peers[&(0, a)].object_path.clone();
     let client = client(&bus).await;
     let device = zbus::proxy::Builder::<zbus::Proxy<'_>>::new(&client)
         .destination("org.sparklink")
         .unwrap()
         .path(path.as_str())
         .unwrap()
-        .interface("org.sparklink.Device")
+        .interface("org.sparklink.Peer")
         .unwrap()
         .cache_properties(zbus::proxy::CacheProperties::No)
         .build()
@@ -1592,4 +1633,194 @@ async fn observation_connection_alias_never_invents_an_advertisement() {
             .await
             .unwrap()
     );
+}
+
+#[tokio::test]
+async fn typed_native_advertisements_share_peer_identity_without_inventing_rssi_or_links() {
+    // Actual producer/parser/ObjectServer; /dev/null and explicit snapshot are
+    // dependency fixtures, not a firmware/RF or real concurrency qualification.
+    let bus = PrivateBus::start();
+    let shared = state();
+    let expected = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    shared.lock().await.controller = expected;
+    let server = server(&bus, shared.clone()).await;
+    let client = client(&bus).await;
+    let address = [1, 2, 3, 4, 5, 6];
+    let mut event = slk_protocol::SleControllerEvent {
+        generation: 7,
+        profile: 1,
+        seq: 1,
+        event_code: 0x180b,
+        payload_len: 25,
+        ..Default::default()
+    };
+    event.payload[2..8].copy_from_slice(&address);
+    event.payload[21] = 127;
+    event.payload[22] = 2;
+    event.payload[23..25].copy_from_slice(&[0xa1, 0xb2]);
+    dispatch_native(Ok(event), &shared, &server, expected).await;
+    let path0 = crate::connection_object::peer_path("/org/sparklink/slk0", 0, address);
+    let peer0 = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        path0.as_str(),
+        "org.sparklink.Peer",
+    )
+    .await
+    .unwrap();
+    let o: slk_contract::PeerObservation = peer0.call("GetObservation", &()).await.unwrap();
+    assert!(o.3 && !o.4);
+    assert_eq!((o.0, o.1, o.8), (7, 0, 1));
+    assert_eq!(o.7, [0xa1, 0xb2]);
+    let info: crate::connection_object::PeerInfo = peer0.call("GetInfo", &()).await.unwrap();
+    assert!(!info.3 && !info.4 && info.5.is_empty());
+    event.seq = 2;
+    event.payload[1] = 1;
+    event.payload[21] = (-50i8) as u8;
+    dispatch_native(Ok(event), &shared, &server, expected).await;
+    let path1 = crate::connection_object::peer_path("/org/sparklink/slk0", 1, address);
+    let peer1 = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        path1.as_str(),
+        "org.sparklink.Peer",
+    )
+    .await
+    .unwrap();
+    let o: slk_contract::PeerObservation = peer1.call("GetObservation", &()).await.unwrap();
+    assert!(o.3 && o.4);
+    assert_eq!((o.1, o.5, o.8), (1, -50, 2));
+    event.seq = 3;
+    event.payload[1] = 6;
+    dispatch_native(Ok(event), &shared, &server, expected).await;
+    assert_eq!(shared.lock().await.peers.len(), 2);
+    assert_eq!(shared.lock().await.native_reports.len(), 3); // Unsupported identity still raw evidence.
+    assert_eq!(shared.lock().await.observation_drops, 1);
+    let adapter = adapter_proxy(&client).await;
+    let paths: Vec<String> = adapter.call("ListPeers", &()).await.unwrap();
+    assert_eq!(paths, vec![path0.clone(), path1.clone()]);
+    assert!(
+        adapter
+            .call::<_, _, Vec<String>>("GetDevices", &())
+            .await
+            .is_err()
+    );
+    let retired = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk0/dev_010203040506",
+        "org.sparklink.Device",
+    )
+    .await
+    .unwrap();
+    assert!(retired.introspect().await.is_err());
+    // Independent literal signature; shared producer/client aliases are not its oracle.
+    let xml = peer0.introspect().await.unwrap();
+    let method = xml
+        .split("<method name=\"GetObservation\">")
+        .nth(1)
+        .unwrap()
+        .split("</method>")
+        .next()
+        .unwrap();
+    assert!(method.contains("type=\"(tysbbnayayttt)\""), "{method}");
+    let iface = server
+        .object_server()
+        .interface::<_, PeerIface>(path0.as_str())
+        .await
+        .unwrap();
+    assert!(iface.get().await.belongs_to(&shared, 7, (0, address)));
+    // Same original production budget and lifecycle, now with full peer keys.
+    shared
+        .lock()
+        .await
+        .peers
+        .get_mut(&(0, address))
+        .unwrap()
+        .observed_at -= crate::state::OBSERVATION_TTL;
+    reconcile_native(
+        &shared,
+        &server,
+        expected,
+        0,
+        Ok(native_table(10, 1, &[(1, 4, 0, 0, address)])),
+    )
+    .await;
+    let o: slk_contract::PeerObservation = peer0.call("GetObservation", &()).await.unwrap();
+    let i: crate::connection_object::PeerInfo = peer0.call("GetInfo", &()).await.unwrap();
+    assert!(!o.3 && !o.4);
+    assert!(i.3 && i.4);
+    reconcile_native(
+        &shared,
+        &server,
+        expected,
+        11,
+        Err(zbus::fdo::Error::Failed("explicit unknown snapshot".into())),
+    )
+    .await;
+    assert!(shared.lock().await.peers.contains_key(&(0, address))); // Unknown cannot authorize retirement.
+    let i: crate::connection_object::PeerInfo = peer0.call("GetInfo", &()).await.unwrap();
+    assert!(!i.3 && !i.4);
+    reconcile_native(&shared, &server, expected, 12, Ok(native_table(12, 2, &[]))).await;
+    assert!(peer0.introspect().await.is_err());
+    assert!(peer1.introspect().await.is_ok());
+    let i: crate::connection_object::PeerInfo = peer1.call("GetInfo", &()).await.unwrap();
+    assert!(i.3 && !i.4);
+}
+
+#[tokio::test]
+async fn typed_peer_replay_and_capacity_never_replace_unretired_or_pinned_slots() {
+    let shared = state();
+    let mut st = shared.lock().await;
+    st.controller = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    let mut e = slk_protocol::SleControllerEvent {
+        generation: 7,
+        profile: 1,
+        seq: 5,
+        event_code: 0x180b,
+        payload_len: 24,
+        ..Default::default()
+    };
+    e.payload[2..8].copy_from_slice(&[1; 6]);
+    e.payload[21] = (-40i8) as u8;
+    e.payload[22] = 1;
+    e.payload[23] = 0xaa;
+    st.on_native_adv_report(&e, &e.ws73_discovery().unwrap());
+    e.seq = 4;
+    e.payload[21] = (-80i8) as u8;
+    e.payload[23] = 0xbb;
+    st.on_native_adv_report(&e, &e.ws73_discovery().unwrap());
+    assert_eq!(
+        (
+            st.peers[&(0, [1; 6])].rssi,
+            st.peers[&(0, [1; 6])].adv_data.clone()
+        ),
+        (-40, vec![0xaa])
+    );
+    for n in 0..crate::state::OBSERVATION_MAX_ENTRIES as u16 - 1 {
+        st.on_adv_report(observation_address(n), -5, 0, String::new(), vec![1]);
+    }
+    assert_eq!(st.peers.len(), crate::state::OBSERVATION_MAX_ENTRIES);
+    let linked = [9; 6];
+    st.apply_native_links(native_table(10, 1, &[(1, 3, 0, 1, linked)]), 0)
+        .unwrap();
+    st.observation_work();
+    assert!(!st.peers.contains_key(&(1, linked)));
+    assert_eq!(st.peers.len(), crate::state::OBSERVATION_MAX_ENTRIES);
+    assert!(
+        st.peers
+            .values()
+            .any(|p| p.publication == crate::state::PeerPublication::Retiring)
+    );
+    assert!(st.observation_bytes() <= crate::state::OBSERVATION_MAX_BYTES);
+    // Cleanup must actually unpublish before its old slot is reusable. Existing
+    // ObjectServer tests cover timeout, conflicting owner and eventual retry.
 }

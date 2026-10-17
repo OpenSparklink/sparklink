@@ -28,15 +28,15 @@ def check(policy, files):
     reject('native_c_symbols','crates/slk-native/include/sparklink_native.h',r'\b(slk_\w+)\s*\(')
     reject('controller_methods','crates/slkd/src/controller.rs',r'^\s*async fn (\w+)')
     text = files.get('crates/slkd/src/dbus_iface.rs','')
-    if 'impl DeviceIface {' not in text:
-        errors.append('missing Device interface boundary')
-    else:
-        adapter, device = text.split('impl DeviceIface {',1)
-        for key, part in [('adapter_methods',adapter),('device_methods',device)]:
-            for name in set(re.findall(r'^\s*async fn (\w+)',part,re.M)) & set(policy[key]):
-                errors.append(f'retired {key}: {name}')
+    if 'impl AdapterIface {' not in text:
+        errors.append('missing Adapter interface boundary')
+    if 'DeviceIface' in text or 'org.sparklink.Device' in text:
+        errors.append('retired address-only Device interface')
+    retired=set(policy['adapter_methods']) | set(policy['device_methods'])
+    for name in set(re.findall(r'^\s*async fn (\w+)',text,re.M)) & retired:
+        errors.append(f'retired adapter/device method: {name}')
     reject('python_types','bindings/python/sparklink/structs.py',r'^class (\w+)\(')
-    reject('slctl_commands','crates/slctl/src/commands.rs',r'"([a-z][a-z-]*)"\s*=>')
+    reject('slctl_commands','crates/slctl/src/commands.rs',r'"([a-z][a-z-]*)"\s*(?:if[^\n]*?)?=>')
     for name in policy['slkconfig_variants']:
         text = files.get('crates/slkconfig/src/main.rs','')
         if 'enum Command {' not in text:

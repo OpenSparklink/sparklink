@@ -154,6 +154,20 @@ pub struct Ws73DiscoveryReport<'a> {
     pub rssi: i8,
 }
 
+impl Ws73DiscoveryReport<'_> {
+    /// Native Peer identity uses the shared address-type/address prefix only.
+    /// SDK110/Host prefix differs from the WS73 23-byte vendor header in later
+    /// fields; raw reports retain unsupported types instead of defaulting to public.
+    pub fn peer_identity(&self) -> Option<(u8, SleAddr)> {
+        (self.header[1] <= 1).then(|| {
+            (
+                self.header[1],
+                self.header[2..8].try_into().expect("fixed address"),
+            )
+        })
+    }
+}
+
 impl SleControllerEvent {
     /// Decode exactly one WS73 0x180b report. Fragment/truncation flags in
     /// header[0] are retained; this does not reassemble or invent a level.

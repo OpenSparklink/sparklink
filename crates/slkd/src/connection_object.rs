@@ -61,13 +61,6 @@ pub(crate) struct Registration {
     pub path: String,
     pub published: bool,
 }
-#[derive(Clone)]
-pub(crate) struct PeerRegistration {
-    pub address_type: u8,
-    pub address: [u8; 6],
-    pub path: String,
-    pub published: bool,
-}
 pub(crate) use slk_contract::PeerInfo;
 pub(crate) struct PeerIface {
     state: SharedState,
@@ -84,21 +77,32 @@ impl PeerIface {
             address,
         }
     }
+    pub(crate) fn belongs_to(
+        &self,
+        state: &SharedState,
+        generation: u64,
+        key: crate::state::PeerKey,
+    ) -> bool {
+        self.generation == generation
+            && (self.kind, self.address) == key
+            && std::sync::Arc::ptr_eq(&self.state, state)
+    }
     async fn observation(&self) -> (bool, bool, Vec<String>) {
         let st = self.state.lock().await;
-        let known = st.controller.generation == self.generation && st.native_links_known();
-        let matching =
-            |link: &SleLinkInfo| link.address_type == self.kind && link.address == self.address;
-        let connected = known
-            && st
-                .native_links
-                .as_ref()
-                .is_some_and(|table| table.links[..table.count as usize].iter().any(matching));
+        let (known, connected) = if st.controller.generation == self.generation {
+            st.peer_connection(&(self.kind, self.address))
+        } else {
+            (false, false)
+        };
         let objects = st
             .native_connection_objects
             .values()
-            .filter(|entry| entry.published && matching(&entry.reference))
-            .map(|entry| entry.path.clone())
+            .filter(|e| {
+                e.published
+                    && e.reference.address_type == self.kind
+                    && e.reference.address == self.address
+            })
+            .map(|e| e.path.clone())
             .collect();
         (known, connected, objects)
     }
@@ -115,6 +119,44 @@ impl PeerIface {
             connected,
             objects,
         )
+    }
+    /// Advertisement validity and RSSI availability are independent of links.
+    async fn get_observation(&self) -> zbus::fdo::Result<slk_contract::PeerObservation> {
+        let st = self.state.lock().await;
+        if !st.present || st.controller.generation != self.generation {
+            return Err(zbus::fdo::Error::Failed("peer registration retired".into()));
+        }
+        let p = st
+            .peers
+            .get(&(self.kind, self.address))
+            .filter(|p| p.publication == crate::state::PeerPublication::Published)
+            .ok_or_else(|| zbus::fdo::Error::Failed("peer publication unavailable".into()))?;
+        let valid = p.observation_valid();
+        Ok((
+            self.generation,
+            self.kind,
+            crate::dbus_iface::format_addr(&self.address),
+            valid,
+            valid && p.rssi_known,
+            if valid && p.rssi_known {
+                i16::from(p.rssi)
+            } else {
+                0
+            },
+            p.header.clone(),
+            p.adv_data.clone(),
+            p.sequence,
+            p.kernel_boottime_ns,
+            p.lost,
+        ))
+    }
+    #[zbus(property(emits_changed_signal = "false"))]
+    async fn observation_valid(&self) -> bool {
+        self.get_observation().await.is_ok_and(|v| v.3)
+    }
+    #[zbus(property(emits_changed_signal = "false"))]
+    async fn rssi_known(&self) -> bool {
+        self.get_observation().await.is_ok_and(|v| v.4)
     }
     #[zbus(property)]
     fn generation(&self) -> u64 {

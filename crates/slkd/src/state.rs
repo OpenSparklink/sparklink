@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
@@ -14,48 +14,57 @@ use crate::profile::ProfileRegistry;
 #[cfg(test)]
 use crate::profile_runtime::ProfileService;
 
-pub(crate) const OBSERVATION_MAX_ENTRIES: usize = 128;
+pub(crate) const OBSERVATION_MAX_ENTRIES: usize = slk_contract::MAX_PEERS;
 pub(crate) const OBSERVATION_MAX_BYTES: usize = 64 * 1024;
 pub(crate) const OBSERVATION_TTL: Duration = Duration::from_secs(60);
 pub(crate) const OBSERVATION_WORK_BUDGET: usize = 8;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum DevicePublication {
+pub(crate) enum PeerPublication {
     Pending,
     Published,
     Retiring,
 }
 
-/// Discovered device info maintained by the daemon
+pub(crate) type PeerKey = (u8, SleAddr);
+
+/// Bounded observation/publication only; connections remain canonical Native facts.
 #[derive(Debug, Clone)]
-pub struct DeviceEntry {
-    pub(crate) publication: DevicePublication,
+pub(crate) struct PeerEntry {
+    pub(crate) advertisement_seen: bool,
+    pub(crate) header: Vec<u8>,
+    pub(crate) sequence: u64,
+    pub(crate) kernel_boottime_ns: u64,
+    pub(crate) lost: u64,
+    pub(crate) publication: PeerPublication,
     pub(crate) observed_at: Instant,
-    pub addr: SleAddr,
+    #[cfg(test)]
     pub name: String,
     pub rssi: i8,
     pub rssi_known: bool,
+    #[cfg(test)]
     pub discovery_level: u8,
+    #[cfg(test)]
     pub connected: bool,
+    #[cfg(test)]
     pub connection_known: bool,
     #[cfg(test)]
     pub conn_handle: Option<u16>,
     pub object_path: String,
     pub adv_data: Vec<u8>,
+    #[cfg(test)]
     pub service_uuids: Vec<u16>,
+    #[cfg(test)]
     pub tx_power: Option<i8>,
 }
 
-impl DeviceEntry {
+impl PeerEntry {
     pub(crate) fn observation_bytes(&self) -> usize {
-        self.name.capacity()
-            + self.adv_data.capacity()
-            + self.service_uuids.capacity() * std::mem::size_of::<u16>()
-            + self.object_path.capacity()
+        self.adv_data.capacity() + self.header.capacity() + self.object_path.capacity()
     }
     pub(crate) fn observation_valid(&self) -> bool {
-        self.publication == DevicePublication::Published
-            && self.rssi_known
+        self.publication == PeerPublication::Published
+            && self.advertisement_seen
             && self.observed_at.elapsed() < OBSERVATION_TTL
     }
 }
@@ -101,15 +110,12 @@ pub struct AdapterState {
     /// D-Bus publication metadata only. Physical state remains native_links.
     pub(crate) native_connection_objects: BTreeMap<u64, crate::connection_object::Registration>,
     pub(crate) retiring_connection_objects: BTreeSet<String>,
-    pub(crate) native_peer_objects:
-        BTreeMap<(u8, SleAddr), crate::connection_object::PeerRegistration>,
-    pub(crate) retiring_peer_objects: BTreeSet<String>,
     pub config: DaemonConfig,
-    pub devices: HashMap<SleAddr, DeviceEntry>,
+    pub(crate) peers: BTreeMap<PeerKey, PeerEntry>,
     pub(crate) observation_drops: u64,
     pub(crate) observation_publication_errors: u64,
     pub(crate) observation_retirement_errors: u64,
-    observation_cursor: Option<SleAddr>,
+    observation_cursor: Option<PeerKey>,
     pub name: String,
     #[cfg(test)]
     pub bonding: BondingService,
@@ -149,10 +155,8 @@ impl AdapterState {
             native_link_revision: 0,
             native_connection_objects: BTreeMap::new(),
             retiring_connection_objects: BTreeSet::new(),
-            native_peer_objects: BTreeMap::new(),
-            retiring_peer_objects: BTreeSet::new(),
             config,
-            devices: HashMap::new(),
+            peers: BTreeMap::new(),
             observation_drops: 0,
             observation_publication_errors: 0,
             observation_retirement_errors: 0,
@@ -165,7 +169,130 @@ impl AdapterState {
         }
     }
 
-    /// Record a discovered device from an advertisement report
+    fn peer_pinned(&self, key: &PeerKey) -> bool {
+        #[cfg(test)]
+        if self.controller.profile == 0 {
+            return self
+                .peers
+                .get(key)
+                .is_some_and(|p| p.connected && p.connection_known);
+        }
+        if self.native_links_known() {
+            return self.native_links.as_ref().is_some_and(|t| {
+                t.links[..t.count as usize]
+                    .iter()
+                    .any(|l| (l.address_type, l.address) == *key)
+            });
+        }
+        // Unknown cannot authorize retirement of a previously observed link.
+        self.native_connection_objects
+            .values()
+            .any(|v| (v.reference.address_type, v.reference.address) == *key)
+    }
+    fn peer_proposal(&mut self, key: PeerKey) -> Option<PeerEntry> {
+        if key.0 > 1 || self.object_path.len() > 256 {
+            self.observation_drops = self.observation_drops.saturating_add(1);
+            return None;
+        }
+        if let Some(v) = self.peers.get(&key) {
+            if v.publication == PeerPublication::Retiring {
+                self.observation_drops = self.observation_drops.saturating_add(1);
+                return None;
+            }
+            return Some(v.clone());
+        }
+        Some(PeerEntry {
+            publication: PeerPublication::Pending,
+            advertisement_seen: false,
+            observed_at: Instant::now(),
+            object_path: crate::connection_object::peer_path(&self.object_path, key.0, key.1),
+            header: Vec::new(),
+            adv_data: Vec::new(),
+            sequence: 0,
+            kernel_boottime_ns: 0,
+            lost: 0,
+            rssi: 0,
+            rssi_known: false,
+            #[cfg(test)]
+            name: String::new(),
+            #[cfg(test)]
+            discovery_level: 0,
+            #[cfg(test)]
+            connected: false,
+            #[cfg(test)]
+            connection_known: self.controller.profile == 0,
+            #[cfg(test)]
+            conn_handle: None,
+            #[cfg(test)]
+            service_uuids: Vec::new(),
+            #[cfg(test)]
+            tx_power: None,
+        })
+    }
+    fn admit_peer(&mut self, key: PeerKey, entry: PeerEntry) -> bool {
+        let old_bytes = self.peers.get(&key).map_or(0, PeerEntry::observation_bytes);
+        if (!self.peers.contains_key(&key) && self.peers.len() >= OBSERVATION_MAX_ENTRIES)
+            || self.observation_bytes() - old_bytes + entry.observation_bytes()
+                > OBSERVATION_MAX_BYTES
+        {
+            self.observation_drops = self.observation_drops.saturating_add(1);
+            let oldest = self
+                .peers
+                .iter()
+                .filter(|(k, p)| {
+                    **k != key && p.publication != PeerPublication::Retiring && !self.peer_pinned(k)
+                })
+                .min_by_key(|(_, p)| p.observed_at)
+                .map(|(k, _)| *k);
+            if let Some(k) = oldest {
+                self.peers.get_mut(&k).unwrap().publication = PeerPublication::Retiring;
+            }
+            // Budget is retained until actual unpublication, including failures.
+            return false;
+        }
+        let pending = entry.publication == PeerPublication::Pending;
+        self.peers.insert(key, entry);
+        pending
+    }
+    pub(crate) fn on_native_adv_report(
+        &mut self,
+        event: &slk_protocol::SleControllerEvent,
+        report: &slk_protocol::Ws73DiscoveryReport<'_>,
+    ) {
+        let Some(key) = report.peer_identity() else {
+            self.observation_drops = self.observation_drops.saturating_add(1);
+            return;
+        };
+        let Some(mut p) = self.peer_proposal(key) else {
+            return;
+        };
+        if p.advertisement_seen && event.seq <= p.sequence {
+            self.observation_drops = self.observation_drops.saturating_add(1);
+            return;
+        }
+        p.advertisement_seen = true;
+        p.observed_at = Instant::now();
+        p.rssi = report.rssi;
+        p.rssi_known = report.rssi != 0x7f;
+        p.header = report.header.to_vec();
+        p.adv_data = report.data.to_vec();
+        p.sequence = event.seq;
+        p.kernel_boottime_ns = event.timestamp_ns;
+        p.lost = event.lost;
+        self.expire_observations(Instant::now());
+        // Expiry may have begun retirement of this same peer. Do not revive it.
+        if self
+            .peers
+            .get(&key)
+            .is_some_and(|p| p.publication == PeerPublication::Retiring)
+        {
+            self.observation_drops = self.observation_drops.saturating_add(1);
+            return;
+        }
+        self.admit_peer(key, p);
+    }
+    /// Retained legacy advertisement/callback fixture. No Native wire decoder.
+    #[cfg(test)]
     pub fn on_adv_report(
         &mut self,
         addr: SleAddr,
@@ -174,142 +301,84 @@ impl AdapterState {
         name: String,
         adv_data: Vec<u8>,
     ) -> bool {
-        if name.len() > 256 || adv_data.len() > 2048 || self.object_path.len() > 256 {
+        if name.len() > 256 || adv_data.len() > 2048 {
             self.observation_drops = self.observation_drops.saturating_add(1);
             return false;
         }
-        let now = Instant::now();
-        self.expire_observations(now);
-        if self
-            .devices
-            .get(&addr)
-            .is_some_and(|d| d.publication == DevicePublication::Retiring)
-        {
-            self.observation_drops = self.observation_drops.saturating_add(1);
+        self.expire_observations(Instant::now());
+        let key = (0, addr);
+        let Some(mut p) = self.peer_proposal(key) else {
             return false;
-        }
-        // Build one bounded proposal before mutating any existing observation.
-        // Tight buffers prevent spare caller capacity bypassing the byte budget.
-        let name = name.into_boxed_str().into_string();
-        let adv_data = adv_data.into_boxed_slice().into_vec();
-        let object_path = format!(
-            "{}/dev_{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-            self.object_path, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]
-        );
-        let mut entry = self.devices.get(&addr).cloned().unwrap_or(DeviceEntry {
-            publication: DevicePublication::Pending,
-            observed_at: now,
-            addr,
-            name: String::new(),
-            rssi: 0,
-            rssi_known: true,
-            discovery_level: 0,
-            connected: false,
-            connection_known: self.controller.profile == 0,
-            #[cfg(test)]
-            conn_handle: None,
-            object_path,
-            adv_data: Vec::new(),
-            service_uuids: Vec::new(),
-            tx_power: None,
-        });
-        entry.rssi = rssi;
-        entry.rssi_known = true;
-        entry.discovery_level = discovery_level;
-        entry.observed_at = now;
+        };
+        p.advertisement_seen = true;
+        p.observed_at = Instant::now();
+        p.rssi = rssi;
+        p.rssi_known = rssi != 0x7f;
+        p.discovery_level = discovery_level;
         if !name.is_empty() {
-            entry.name = name;
+            p.name = name.into_boxed_str().into_string();
         }
         if !adv_data.is_empty() || self.controller.profile != 0 {
-            // Native payloads remain opaque; this is not an SSAP/wire decoder.
             let (entries, _) = if self.controller.profile == 0 {
                 slk_protocol::parse_adv_data(&adv_data)
             } else {
                 (Vec::new(), Vec::new())
             };
-            entry.service_uuids = slk_protocol::collect_service_uuids16(&entries)
-                .into_boxed_slice()
-                .into_vec();
-            entry.tx_power = slk_protocol::find_tx_power(&entries);
-            entry.adv_data = adv_data;
+            p.service_uuids = slk_protocol::collect_service_uuids16(&entries);
+            p.tx_power = slk_protocol::find_tx_power(&entries);
+            p.adv_data = adv_data.into_boxed_slice().into_vec();
         }
-        let old_bytes = self
-            .devices
-            .get(&addr)
-            .map_or(0, DeviceEntry::observation_bytes);
-        if (!self.devices.contains_key(&addr) && self.devices.len() >= OBSERVATION_MAX_ENTRIES)
-            || self.observation_bytes() - old_bytes + entry.observation_bytes()
-                > OBSERVATION_MAX_BYTES
-        {
-            self.observation_drops = self.observation_drops.saturating_add(1);
-            // Keep the old entry until actual unpublication. Never allocate a
-            // replacement while its D-Bus object still consumes the old slot.
-            let oldest = self
-                .devices
-                .iter()
-                .filter(|(a, d)| {
-                    **a != addr
-                        && d.publication != DevicePublication::Retiring
-                        && !self.device_connection(a).1
-                })
-                .min_by_key(|(_, d)| d.observed_at)
-                .map(|(a, _)| *a);
-            if let Some(oldest) = oldest {
-                self.devices.get_mut(&oldest).unwrap().publication = DevicePublication::Retiring;
-            }
-            return false;
-        }
-        let pending = entry.publication == DevicePublication::Pending;
-        self.devices.insert(addr, entry);
-        pending
+        self.admit_peer(key, p)
     }
-
     pub(crate) fn observation_bytes(&self) -> usize {
-        self.devices
-            .values()
-            .map(DeviceEntry::observation_bytes)
-            .sum()
+        self.peers.values().map(PeerEntry::observation_bytes).sum()
     }
     pub(crate) fn expire_observations(&mut self, now: Instant) {
         let expired = self
-            .devices
+            .peers
             .iter()
-            .filter(|(address, d)| {
-                now.saturating_duration_since(d.observed_at) >= OBSERVATION_TTL
-                    && !self.device_connection(address).1
+            .filter(|(k, p)| {
+                (!p.advertisement_seen
+                    || now.saturating_duration_since(p.observed_at) >= OBSERVATION_TTL)
+                    && !self.peer_pinned(k)
             })
-            .map(|(address, _)| *address)
+            .map(|(k, _)| *k)
             .collect::<Vec<_>>();
-        for address in expired {
-            self.devices.get_mut(&address).unwrap().publication = DevicePublication::Retiring;
+        for k in expired {
+            self.peers.get_mut(&k).unwrap().publication = PeerPublication::Retiring;
         }
     }
-    /// The sole registration EventTask performs this work. Failed work remains
-    /// charged to the same bounded slot; a rotating cursor prevents starvation.
-    pub(crate) fn observation_work(&mut self) -> Vec<(SleAddr, String, DevicePublication)> {
+    /// Sole EventTask retries both connected-only and advertised Peer objects.
+    /// No second publication map, worker or authority for connection state.
+    pub(crate) fn observation_work(&mut self) -> Vec<(PeerKey, String, PeerPublication)> {
+        if self.native_links_known() {
+            let table = self.native_links.expect("known");
+            for link in &table.links[..table.count as usize] {
+                let key = (link.address_type, link.address);
+                if !self.peers.contains_key(&key)
+                    && let Some(p) = self.peer_proposal(key)
+                {
+                    self.admit_peer(key, p);
+                }
+            }
+        }
         self.expire_observations(Instant::now());
         if !self.present {
             return Vec::new();
         }
         let mut work = self
-            .devices
+            .peers
             .iter()
-            .filter(|(_, d)| d.publication != DevicePublication::Published)
-            .map(|(a, d)| (*a, d.object_path.clone(), d.publication))
+            .filter(|(_, p)| p.publication != PeerPublication::Published)
+            .map(|(k, p)| (*k, p.object_path.clone(), p.publication))
             .collect::<Vec<_>>();
-        work.sort_by_key(|(a, _, _)| {
-            (
-                self.observation_cursor.is_some_and(|cursor| *a <= cursor),
-                *a,
-            )
-        });
+        work.sort_by_key(|(k, _, _)| (self.observation_cursor.is_some_and(|c| *k <= c), *k));
         work.truncate(OBSERVATION_WORK_BUDGET);
         work
     }
-    pub(crate) fn observation_attempted(&mut self, address: SleAddr) {
-        self.observation_cursor = Some(address);
+    pub(crate) fn observation_attempted(&mut self, key: PeerKey) {
+        self.observation_cursor = Some(key);
     }
-
     /// Historical callback fixture; Native state comes from lifetime-scoped snapshots.
     #[cfg(test)]
     pub fn on_conn_state_changed(&mut self, handle: u16, state: u8, peer_addr: SleAddr) {
@@ -317,7 +386,7 @@ impl AdapterState {
         if !connected {
             // Disconnection: look up by handle first (DLI Disconnected may lack addr)
             if let Some(dev) = self
-                .devices
+                .peers
                 .values_mut()
                 .find(|d| d.conn_handle == Some(handle))
             {
@@ -327,14 +396,14 @@ impl AdapterState {
                 return;
             }
         }
-        if let Some(dev) = self.devices.get_mut(&peer_addr) {
+        if let Some(dev) = self.peers.get_mut(&(0, peer_addr)) {
             dev.connected = connected;
             dev.connection_known = true;
             dev.conn_handle = if connected { Some(handle) } else { None };
         } else if connected {
             self.on_adv_report(peer_addr, 0, 0, String::new(), Vec::new());
-            if let Some(dev) = self.devices.get_mut(&peer_addr)
-                && dev.publication != DevicePublication::Retiring
+            if let Some(dev) = self.peers.get_mut(&(0, peer_addr))
+                && dev.publication != PeerPublication::Retiring
             {
                 dev.connected = true;
                 dev.connection_known = true;
@@ -356,29 +425,25 @@ impl AdapterState {
                 .as_ref()
                 .is_some_and(|table| table.flags == slk_protocol::LINK_SNAPSHOT_KNOWN)
     }
-    /// Address-only discovery objects are aliases, not a typed connection
-    /// identity. Multiple current lifetimes/types at that address are Unknown.
-    pub fn device_connection(&self, address: &SleAddr) -> (bool, bool) {
+    pub(crate) fn peer_connection(&self, key: &PeerKey) -> (bool, bool) {
+        #[cfg(test)]
         if self.controller.profile == 0 {
             return self
-                .devices
-                .get(address)
-                .map(|d| (d.connection_known, d.connected && d.connection_known))
+                .peers
+                .get(key)
+                .map(|p| (p.connection_known, p.connected && p.connection_known))
                 .unwrap_or((false, false));
         }
         if !self.native_links_known() {
             return (false, false);
         }
-        let table = self.native_links.as_ref().expect("known table");
-        let count = table.links[..table.count as usize]
-            .iter()
-            .filter(|link| &link.address == address)
-            .count();
-        if count > 1 {
-            (false, false)
-        } else {
-            (true, count == 1)
-        }
+        let t = self.native_links.as_ref().expect("known table");
+        (
+            true,
+            t.links[..t.count as usize]
+                .iter()
+                .any(|l| (l.address_type, l.address) == *key),
+        )
     }
     /// Replace the whole observation only if its identity and replay position
     /// cover the triggering event. Return newly discovered publication paths.
@@ -386,7 +451,7 @@ impl AdapterState {
         &mut self,
         table: slk_protocol::SleLinkSnapshot,
         minimum_seq: u64,
-    ) -> Result<Vec<(SleAddr, String)>, ()> {
+    ) -> Result<(), ()> {
         if !self.present
             || self.controller.profile != 1
             || !table.valid_for(self.controller.generation)
@@ -408,19 +473,8 @@ impl AdapterState {
         self.native_link_barrier = table.event_seq;
         self.native_link_revision = table.revision;
         self.native_links = Some(table);
-        let mut new = Vec::new();
-        if table.flags == slk_protocol::LINK_SNAPSHOT_KNOWN {
-            for link in &table.links[..table.count as usize] {
-                if !self.devices.contains_key(&link.address)
-                    && self.on_adv_report(link.address, 0, 0, String::new(), Vec::new())
-                {
-                    let device = self.devices.get_mut(&link.address).expect("new peer");
-                    device.rssi_known = false;
-                    new.push((link.address, device.object_path.clone()));
-                }
-            }
-        }
-        Ok(new)
+        // Peer metadata is reconciled by the same bounded observation task.
+        Ok(())
     }
 
     /// Reconcile bounded publication metadata from the canonical table.
@@ -467,49 +521,10 @@ impl AdapterState {
                 .native_connection_objects
                 .values()
                 .any(|entry| !entry.published)
-            || !self.retiring_peer_objects.is_empty()
             || self
-                .native_peer_objects
+                .peers
                 .values()
-                .any(|entry| !entry.published)
-    }
-    pub(crate) fn peer_publications(
-        &mut self,
-    ) -> (Vec<crate::connection_object::PeerRegistration>, Vec<String>) {
-        if self.native_links_known() {
-            let table = self.native_links.expect("known table");
-            self.native_peer_objects.retain(|key, entry| {
-                let keep = table.links[..table.count as usize]
-                    .iter()
-                    .any(|link| (link.address_type, link.address) == *key);
-                if !keep {
-                    self.retiring_peer_objects.insert(entry.path.clone());
-                }
-                keep
-            });
-            for link in &table.links[..table.count as usize] {
-                self.native_peer_objects
-                    .entry((link.address_type, link.address))
-                    .or_insert_with(|| crate::connection_object::PeerRegistration {
-                        address_type: link.address_type,
-                        address: link.address,
-                        path: crate::connection_object::peer_path(
-                            &self.object_path,
-                            link.address_type,
-                            link.address,
-                        ),
-                        published: false,
-                    });
-            }
-        }
-        (
-            self.native_peer_objects
-                .values()
-                .filter(|entry| !entry.published)
-                .cloned()
-                .collect(),
-            self.retiring_peer_objects.iter().cloned().collect(),
-        )
+                .any(|p| p.publication != PeerPublication::Published)
     }
 }
 

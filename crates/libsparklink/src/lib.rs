@@ -3,6 +3,7 @@
 mod client;
 pub mod controller;
 pub mod ffi;
+pub mod peer;
 pub mod ssap;
 pub use client::{ApplicationConnection, ApplicationError, Client};
 pub use slk_channel::Channel;

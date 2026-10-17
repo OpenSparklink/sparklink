@@ -60,6 +60,27 @@ impl Controller {
         self.client.check_generation(self.id).await?;
         Ok(value)
     }
+    pub async fn peers(&self) -> Result<Vec<crate::peer::Peer>> {
+        let paths: Vec<String> = self
+            .call(contract::ADAPTER, contract::LIST_PEERS, &())
+            .await?;
+        if paths.len() > contract::MAX_PEERS {
+            return Err(ApplicationError::Identity("Peer list budget"));
+        }
+        let mut peers = Vec::with_capacity(paths.len());
+        for path in paths {
+            let id = contract::PeerId::from_path(&path)
+                .ok_or(ApplicationError::Identity("Peer path"))?;
+            if id.controller != self.id || peers.iter().any(|p: &crate::peer::Peer| p.id() == id) {
+                return Err(ApplicationError::Identity("foreign or duplicate Peer"));
+            }
+            peers.push(crate::peer::Peer {
+                client: self.client.clone(),
+                id,
+            });
+        }
+        Ok(peers)
+    }
     pub async fn generation(&self) -> Result<u64> {
         self.client.check_generation(self.id).await?;
         Ok(self.id.generation)

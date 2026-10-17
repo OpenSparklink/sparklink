@@ -14,6 +14,9 @@ Owned／限定安全路径；管理CLI复用固定owner的现有Client。324最�
 177证据负对照及5封存schema负对照单列；未发布宽松封存候选已拒绝并保留。
 完整R5/C-Python和R6部署、真实通知及Session新CLI硬件调用、自然恢复仍缺。
 
+[R5c维护回执](controller-client-maintenance-20261018.json)记录六项issue原body不变、
+OPEN、严格HTML、资格检查和原uv网络失败；不是新的RF或形式化资格。
+
 [旧 raw ABI 退休与当前路径保持](raw-uapi-retirement-qualification-20261018.json)：
 准确编译 K2fc／U2c8／实机工具2c8，四 VM 共32次对端应用回复；101退休命令、
 53私有历史类型、26保留命令和跨语言契约分开核对。c396仅更新测试工具和专用模拟

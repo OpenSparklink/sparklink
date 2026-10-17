@@ -225,7 +225,8 @@
   ],
   "adapter_methods": [
     "connect_device",
-    "disconnect_device"
+    "disconnect_device",
+    "get_devices"
   ],
   "device_methods": [
     "connect",
@@ -254,7 +255,9 @@
     "meas",
     "peer",
     "bandwidth",
-    "mgmt"
+    "mgmt",
+    "devices",
+    "info"
   ],
   "slkconfig_variants": [
     "Phy",

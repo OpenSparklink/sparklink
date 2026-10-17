@@ -424,3 +424,17 @@ broker授权的请求，不持有/泄露Native lease。每次操作固定owner/g
 另验；观察失败不等于物理取消或确定未提交。旧a37私有总线反例保留，不扩大成RF串包
 结论。地址Device只读观察是R5d明确待替代例外，先固定owner/无缓存/读后generation；
 不为旧接口新增SDK门面。管理staging与Owned注册及安全Agent保持不同职责，继续迁移。
+
+
+## Typed Peer观察替代地址门面
+
+广告观察与连接关联复用同一个完整Peer身份及有界发布集合，不维护地址Device与
+连接Peer两套生产对象。pending/published/retiring和确认清理前的预算沿用现有机制；
+连接事实仍来自Native快照，观察TTL不能断链或撤销别人的fd。Unknown保留旧连接
+引用等待实际重同步；RSSI哨兵及过期观察显式无值，SDK不显示为0。
+
+未发布Device/GetDevices/dev路径和devices/info调用者在新路径接通后删除，无兼容期。
+历史callback/TLV/慢回调测试隔离为cfg(test)，实际生产缓存、发布与归属仍直接回归。
+SDK只封装固定daemon owner和typed身份的观察，不拥有另一个缓存/Host；缺失或
+不一致返回错误。完整Peer接口、地址模式/隐私及后续RF资格逐项开放，源码迁移或
+公共地址样本不能推出任意地址类型均已实机验收。

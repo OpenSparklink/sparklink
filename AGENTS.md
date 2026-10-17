@@ -87,7 +87,7 @@ ABI结构、errno和输出身份校验集中在当前封装中，避免调用者
 
 - 总线名称: `org.sparklink`
 - 对象路径: `/org/sparklink`, `/org/sparklink/slk{index}_g{generation}`；Peer/Connection 按完整 lifetime 路径，不使用旧 adapterN 别名
-- 接口: `org.sparklink.Manager`, `org.sparklink.Adapter`, `org.sparklink.Device`, `org.sparklink.Security`, `org.sparklink.ServiceManager`；远端 SSAP 使用具完整身份的 Connection，不再发布 RemoteService
+- 接口: `org.sparklink.Manager`, `org.sparklink.Adapter`, `org.sparklink.Peer`, `org.sparklink.Connection`, `org.sparklink.Security`, `org.sparklink.ServiceManager`；远端 SSAP 使用具完整身份的 Connection，不再发布 RemoteService
 
 ### Commit 规范
 
@@ -142,7 +142,7 @@ Trailer 要求:
 ## 内核侧对应关系
 
 内核子系统位于 `~/Documents/opensparklink/linux/net/sparklink/`，提供:
-- `/dev/sparklink` chardev (版本化 Native 管理/事件/诊断及待迁移旧 ioctl)
+- `/dev/sparklink` chardev (版本化 Native 管理/事件/诊断，旧 raw ioctl 已退休)
 - Generic Netlink `sparklink` 定义（接通与验收按具体调用路径核对）
 - debugfs `/sys/kernel/debug/sparklink/`
 - configfs 旧配置消费者已退休；不能据目录或旧声明承诺固件/名称控制能力

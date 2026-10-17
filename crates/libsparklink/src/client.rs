@@ -123,9 +123,18 @@ impl Client {
             .await?;
         Ok((self.owner.clone(), pid, uid))
     }
+    pub async fn peer(&self, path: &str) -> Result<crate::peer::Peer> {
+        let id = contract::PeerId::from_path(path)
+            .ok_or(ApplicationError::Invalid("typed Peer path"))?;
+        let _ = self.controller(&id.controller.path()).await?;
+        Ok(crate::peer::Peer {
+            client: self.clone(),
+            id,
+        })
+    }
     pub async fn peer_info(&self, controller: &str, path: &str) -> Result<contract::PeerInfo> {
         let view = self.controller(controller).await?;
-        if !path.starts_with(&format!("{}/peer_t", view.path())) {
+        if !contract::PeerId::from_path(path).is_some_and(|id| id.controller == view.id()) {
             return Err(ApplicationError::Identity("foreign controller peer"));
         }
         let value: contract::PeerInfo = self

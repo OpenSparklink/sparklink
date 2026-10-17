@@ -303,9 +303,11 @@ impl AdapterIface {
             .filter(|entry| {
                 entry.published
                     && st
-                        .native_peer_objects
+                        .peers
                         .get(&(entry.reference.address_type, entry.reference.address))
-                        .is_some_and(|peer| peer.published)
+                        .is_some_and(|peer| {
+                            peer.publication == crate::state::PeerPublication::Published
+                        })
             })
             .map(|entry| {
                 let link = entry.reference;
@@ -344,25 +346,14 @@ impl AdapterIface {
         ))
     }
 
-    async fn get_devices(&self) -> Vec<(String, String, i16, bool)> {
-        let st = self.state.lock().await;
-        st.devices
+    async fn list_peers(&self) -> Vec<String> {
+        self.state
+            .lock()
+            .await
+            .peers
             .values()
-            .filter(|d| d.publication == crate::state::DevicePublication::Published)
-            .map(|d| {
-                let addr_hex = d
-                    .addr
-                    .iter()
-                    .map(|b| format!("{b:02X}"))
-                    .collect::<Vec<_>>()
-                    .join(":");
-                (
-                    addr_hex,
-                    d.name.clone(),
-                    d.rssi as i16,
-                    st.device_connection(&d.addr).1,
-                )
-            })
+            .filter(|p| p.publication == crate::state::PeerPublication::Published)
+            .map(|p| p.object_path.clone())
             .collect()
     }
 
@@ -482,25 +473,25 @@ impl AdapterIface {
         )
     }
 
-    /// Bounded address-only discovery observations, not Runtime/Peer truth.
+    /// Bounded Peer observation/publication metadata, not Runtime/link truth.
     #[zbus(property(emits_changed_signal = "false"))]
-    async fn observation_count(&self) -> u32 {
-        self.state.lock().await.devices.len() as u32
+    async fn peer_count(&self) -> u32 {
+        self.state.lock().await.peers.len() as u32
     }
     #[zbus(property(emits_changed_signal = "false"))]
-    async fn observation_bytes(&self) -> u32 {
+    async fn peer_bytes(&self) -> u32 {
         self.state.lock().await.observation_bytes() as u32
     }
     #[zbus(property(emits_changed_signal = "false"))]
-    async fn observation_drops(&self) -> u64 {
+    async fn peer_drops(&self) -> u64 {
         self.state.lock().await.observation_drops
     }
     #[zbus(property(emits_changed_signal = "false"))]
-    async fn observation_publication_errors(&self) -> u64 {
+    async fn peer_publication_errors(&self) -> u64 {
         self.state.lock().await.observation_publication_errors
     }
     #[zbus(property(emits_changed_signal = "false"))]
-    async fn observation_retirement_errors(&self) -> u64 {
+    async fn peer_retirement_errors(&self) -> u64 {
         self.state.lock().await.observation_retirement_errors
     }
 
@@ -508,122 +499,6 @@ impl AdapterIface {
     #[zbus(property)]
     async fn name(&self) -> String {
         self.state.lock().await.name.clone()
-    }
-}
-
-/// D-Bus object representing a discovered device
-pub struct DeviceIface {
-    state: SharedState,
-    addr: slk_protocol::SleAddr,
-}
-
-impl DeviceIface {
-    pub fn new(state: SharedState, addr: slk_protocol::SleAddr) -> Self {
-        Self { state, addr }
-    }
-    pub(crate) fn belongs_to(&self, state: &SharedState, address: slk_protocol::SleAddr) -> bool {
-        self.addr == address && std::sync::Arc::ptr_eq(&self.state, state)
-    }
-}
-
-#[interface(name = "org.sparklink.Device")]
-impl DeviceIface {
-    /// Validity of advertisement observations only; never connection/security.
-    #[zbus(property(emits_changed_signal = "false"))]
-    async fn observation_valid(&self) -> bool {
-        let state = self.state.lock().await;
-        state.present
-            && state
-                .devices
-                .get(&self.addr)
-                .is_some_and(|d| d.observation_valid())
-    }
-
-    /// Device MAC address "AA:BB:CC:DD:EE:FF"
-    #[zbus(property)]
-    async fn address(&self) -> String {
-        format_addr(&self.addr)
-    }
-
-    /// Device name from advertisement
-    #[zbus(property)]
-    async fn name(&self) -> String {
-        let st = self.state.lock().await;
-        st.devices
-            .get(&self.addr)
-            .map(|d| d.name.clone())
-            .unwrap_or_default()
-    }
-
-    /// Last seen RSSI
-    #[zbus(property)]
-    async fn rssi(&self) -> i16 {
-        let st = self.state.lock().await;
-        st.devices
-            .get(&self.addr)
-            .map(|d| d.rssi as i16)
-            .unwrap_or(0)
-    }
-
-    #[zbus(property)]
-    async fn connection_known(&self) -> bool {
-        self.state.lock().await.device_connection(&self.addr).0
-    }
-
-    #[zbus(property)]
-    async fn rssi_known(&self) -> bool {
-        self.state
-            .lock()
-            .await
-            .devices
-            .get(&self.addr)
-            .is_some_and(|d| d.rssi_known)
-    }
-
-    /// Whether the device is currently connected
-    #[zbus(property)]
-    async fn connected(&self) -> bool {
-        self.state.lock().await.device_connection(&self.addr).1
-    }
-
-    /// Discovery level from advertisement
-    #[zbus(property)]
-    async fn discovery_level(&self) -> u8 {
-        let st = self.state.lock().await;
-        st.devices
-            .get(&self.addr)
-            .map(|d| d.discovery_level)
-            .unwrap_or(0)
-    }
-
-    /// Raw advertisement data bytes
-    async fn get_adv_data(&self) -> Vec<u8> {
-        let st = self.state.lock().await;
-        st.devices
-            .get(&self.addr)
-            .map(|d| d.adv_data.clone())
-            .unwrap_or_default()
-    }
-
-    /// Parsed 16-bit service UUIDs from advertisement TLV data
-    #[zbus(property)]
-    async fn service_uuids(&self) -> Vec<u16> {
-        let st = self.state.lock().await;
-        st.devices
-            .get(&self.addr)
-            .map(|d| d.service_uuids.clone())
-            .unwrap_or_default()
-    }
-
-    /// TX power level from advertisement (dBm), -128 if absent
-    #[zbus(property)]
-    async fn tx_power(&self) -> i16 {
-        let st = self.state.lock().await;
-        st.devices
-            .get(&self.addr)
-            .and_then(|d| d.tx_power)
-            .map(|p| p as i16)
-            .unwrap_or(-128)
     }
 }
 

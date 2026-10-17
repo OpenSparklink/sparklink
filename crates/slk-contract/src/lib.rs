@@ -14,6 +14,25 @@ pub const OPEN_CHANNEL_SCOPED: &str = "OpenChannelScoped";
 pub const PREPARE_DYNAMIC_CHANNEL: &str = "PrepareDynamicChannel";
 
 pub type ConnectionInfo = (u64, u64, u16, u8, u8, String, bool, bool);
+/// generation, address type/address, valid advertisement, RSSI known/value,
+/// raw WS73 header/data, Native sequence/kernel boottime/lost. Unknown RSSI's
+/// numeric field is non-authoritative; the SDK presents it as None.
+pub type PeerObservation = (
+    u64,
+    u8,
+    String,
+    bool,
+    bool,
+    i16,
+    Vec<u8>,
+    Vec<u8>,
+    u64,
+    u64,
+    u64,
+);
+pub const MAX_PEERS: usize = 128;
+pub const LIST_PEERS: &str = "ListPeers";
+pub const PEER_OBSERVATION: &str = "GetObservation";
 pub type PeerInfo = (u64, u8, String, bool, bool, Vec<String>);
 pub type ConnectionObjects = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8, String)>);
 pub type SecurityState = (u64, u64, u16, u64, u32, u32, u32, u8, u8);
@@ -90,6 +109,40 @@ pub fn peer_path(base: &str, kind: u8, address: SleAddr) -> String {
         .map(|v| format!("{v:02x}"))
         .collect::<String>();
     format!("{base}/peer_t{kind:02x}_{address}")
+}
+/// Stable observation identity only. Not a connection lifetime or a Grant.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct PeerId {
+    pub controller: ControllerId,
+    pub address_type: u8,
+    pub address: SleAddr,
+}
+impl PeerId {
+    pub fn path(self) -> String {
+        peer_path(&self.controller.path(), self.address_type, self.address)
+    }
+    pub fn from_path(path: &str) -> Option<Self> {
+        let (base, suffix) = path.rsplit_once("/peer_t")?;
+        let (kind, address) = suffix.split_once('_')?;
+        if kind.len() != 2 || address.len() != 12 || !address.bytes().all(|b| b.is_ascii_hexdigit())
+        {
+            return None;
+        }
+        let address_type = u8::from_str_radix(kind, 16).ok()?;
+        if address_type > 1 {
+            return None;
+        }
+        let mut bytes = [0; 6];
+        for (i, b) in bytes.iter_mut().enumerate() {
+            *b = u8::from_str_radix(&address[i * 2..i * 2 + 2], 16).ok()?;
+        }
+        let id = Self {
+            controller: ControllerId::from_path(base)?,
+            address_type,
+            address: bytes,
+        };
+        (id.path() == path).then_some(id)
+    }
 }
 pub fn connection_path(base: &str, kind: u8, address: SleAddr, lifetime: u64) -> String {
     format!("{}/link_{lifetime:016x}", peer_path(base, kind, address))
@@ -206,4 +259,26 @@ pub fn matches_peer(controller: ControllerId, path: &str, info: &PeerInfo) -> bo
     info.0 == controller.generation
         && parse_address(&info.2)
             .is_some_and(|address| peer_path(&controller.path(), info.1, address) == path)
+}
+
+#[cfg(test)]
+mod peer_identity_tests {
+    use super::*;
+    #[test]
+    fn typed_peer_ids_require_canonical_controller_type_address_and_no_link_alias() {
+        let p = "/org/sparklink/slk2_g7/peer_t01_010203040506";
+        let id = PeerId::from_path(p).unwrap();
+        assert_eq!(id.address_type, 1);
+        assert_eq!(id.path(), p);
+        for bad in [
+            p.replace("t01_", "t06_"),
+            p.replace("slk2_", "slk02_"),
+            p.replace("g7/", "g0/"),
+            p.replace("010203040506", "01020304050F"),
+            format!("{p}/link_0000000000000001"),
+            p.replace("010203040506", "中文中文"),
+        ] {
+            assert!(PeerId::from_path(&bad).is_none(), "{bad}");
+        }
+    }
 }

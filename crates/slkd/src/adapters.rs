@@ -7,7 +7,7 @@ use crate::registration::RegistrationNode;
 use crate::{
     config::DaemonConfig,
     controller::ControllerIface,
-    dbus_iface::{AdapterIface, DeviceIface},
+    dbus_iface::AdapterIface,
     event_loop::EventTask,
     security::SecurityIface,
     service::SsapManagerIface,
@@ -411,11 +411,11 @@ impl Node {
             let _ = event.shutdown().await;
         }
         let _ = self.init.await;
-        let device_paths = {
+        let peer_paths = {
             let st = self.state.lock().await;
-            st.devices
-                .values()
-                .map(|d| d.object_path.clone())
+            st.peers
+                .iter()
+                .map(|(key, p)| (*key, p.object_path.clone(), st.controller.generation))
                 .collect::<Vec<_>>()
         };
         let connection_paths = {
@@ -439,25 +439,26 @@ impl Node {
                 .remove::<crate::connection_object::ConnectionIface, _>(path.as_str())
                 .await;
         }
-        let peer_paths = {
-            let st = self.state.lock().await;
-            st.native_peer_objects
-                .values()
-                .map(|entry| entry.path.clone())
-                .chain(st.retiring_peer_objects.iter().cloned())
-                .collect::<Vec<_>>()
-        };
-        for path in peer_paths {
-            let _ = connection
+        for (key, path, generation) in peer_paths {
+            let Ok(iface) = connection
+                .object_server()
+                .interface::<_, crate::connection_object::PeerIface>(path.as_str())
+                .await
+            else {
+                continue;
+            };
+            // Release the interface guard before removing from ObjectServer.
+            let owned = iface.get().await.belongs_to(&self.state, generation, key);
+            if !owned {
+                continue;
+            }
+            if let Err(error) = connection
                 .object_server()
                 .remove::<crate::connection_object::PeerIface, _>(path.as_str())
-                .await;
-        }
-        for path in device_paths {
-            let _ = connection
-                .object_server()
-                .remove::<DeviceIface, _>(path.as_str())
-                .await;
+                .await
+            {
+                warn!(%error,%path,"owned Peer removal failed during registration retirement");
+            }
         }
         remove_interfaces(connection, &self.path).await;
         crate::state::shutdown_services(&self.state).await;
@@ -640,9 +641,7 @@ impl AdapterManager {
 pub(crate) async fn invalidate_properties(c: &zbus::Connection, path: &str, names: &[&str]) {
     invalidate_interface_properties(c, path, "org.sparklink.Adapter", names).await;
 }
-pub(crate) async fn invalidate_device_properties(c: &zbus::Connection, path: &str, names: &[&str]) {
-    invalidate_interface_properties(c, path, "org.sparklink.Device", names).await;
-}
+
 pub(crate) async fn invalidate_connection_properties(
     c: &zbus::Connection,
     path: &str,
@@ -728,16 +727,16 @@ mod retired_interface_tests {
         .await
         .unwrap();
         assert!(old.introspect().await.is_err());
-        let device_path = format!("{path}/dev_010203040506");
+        let device_path = format!("{path}/peer_t00_010203040506");
         server
             .object_server()
             .at(
                 device_path.as_str(),
-                DeviceIface::new(state, [1, 2, 3, 4, 5, 6]),
+                crate::connection_object::PeerIface::new(state, 3, 0, [1, 2, 3, 4, 5, 6]),
             )
             .await
             .unwrap();
-        let device = zbus::Proxy::new(&client, name, device_path.as_str(), "org.sparklink.Device")
+        let device = zbus::Proxy::new(&client, name, device_path.as_str(), "org.sparklink.Peer")
             .await
             .unwrap();
         let xml = device.introspect().await.unwrap();

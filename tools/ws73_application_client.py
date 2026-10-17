@@ -14,7 +14,14 @@ from ws73_channel_socket import credentials
 from ws73_north_star import file_record
 
 
+def application_environment(root=Path('/')):
+    """Explicit private-image SDK location, also used by staged import checks."""
+    root=Path(root).resolve()
+    return dict(PYTHONPATH=os.pathsep.join(str(root/p) for p in ['usr/share/sparklink/python','usr/share/sparklink/tools']),LIBSPARKLINK_PATH=str(root/'usr/lib/libsparklink.so.0'))
+
+
 def receipts(app, entry):
+    if app.get('environment')!=application_environment():raise CaptureError('exact staged SDK environment required')
     try:rows=[json.loads(line) for line in app['stdout'].splitlines()]
     except (ValueError,KeyError) as exc:raise CaptureError('complete original application JSON required') from exc
     if len(rows)!=2 or [r.get('stage') for r in rows]!=['ready','complete'] or any(r.get('api')!=app['api'] for r in rows):raise CaptureError('one actual ready/complete pair per API required')
@@ -40,10 +47,11 @@ def execute(run, phase):
             for position in [1,0]:
                 entry=row['owners'][position];owner=entry['owner'];api=('c' if position==0 else 'python') if n==0 else ('python' if position==0 else 'c')
                 args=([str(c)] if api=='c' else ['/bin/python3',str(python)])+[str(owner['index']),str(owner['generation']),entry['object']['path'],str(position),request.hex(),reply.hex()]
-                app=dict(api=api,position=position,args=args,start_wall_ns=time.time_ns())
+                environment=application_environment()
+                app=dict(api=api,position=position,args=args,environment=environment,start_wall_ns=time.time_ns())
                 stdout=run.output/f'app-client-{n}-{api}.stdout';stderr=run.output/f'app-client-{n}-{api}.stderr'
                 app['output_files']=[str(stdout),str(stderr)];row['applications'].append(app);run.save()
-                proc=subprocess.Popen(args,stdin=subprocess.PIPE,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
+                proc=subprocess.Popen(args,env=dict(os.environ,**environment),stdin=subprocess.PIPE,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
                 processes.append((proc,app));app['pid']=proc.pid;app['credentials']=credentials(proc.pid)
                 status=Path(f'/proc/{proc.pid}/status').read_text()
                 fields=dict(line.split(':',1) for line in status.splitlines() if ':' in line)

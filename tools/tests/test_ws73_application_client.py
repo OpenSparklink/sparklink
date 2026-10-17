@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_application_client import corroborate, valid_summary
+from ws73_application_client import corroborate, valid_summary, application_environment
 from ws73_capture import CaptureError
 from ws73_target import run_exit_code
 import ws73_target as target
@@ -26,7 +26,7 @@ def fixture():
             ready=dict(stage='ready',api=api,index=i,generation=owner['generation'],lifetime=obj['lifetime'],handle=obj['handle'],dup_alive=True,client_closed=True)
             sent,received=(reply,request) if i else (request,reply)
             complete=dict(stage='complete',api=api,sent=sent.hex(),received=received.hex(),last_close_rebind='NotSupported')
-            apps.append(dict(position=i,api=api,stdout=json.dumps(ready)+'\n'+json.dumps(complete)+'\n',stderr='',exit=0,credentials=dict(uids=[1000]*4,capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']})))
+            apps.append(dict(position=i,api=api,environment=application_environment(),stdout=json.dumps(ready)+'\n'+json.dumps(complete)+'\n',stderr='',exit=0,credentials=dict(uids=[1000]*4,capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']})))
         row=dict(phase=n,owners=owners,request=request.hex(),reply=reply.hex(),applications=apps,start_wall_ns=100+n*100,end_wall_ns=199+n*100,status='APPLICATION_CLIENT_EVIDENCE_PENDING')
         rows.append(row)
         for source,target,payload in [(0,1,request),(1,0,reply)]:
@@ -37,6 +37,12 @@ def fixture():
 
 
 class ApplicationClientEvidence(unittest.TestCase):
+    def test_private_image_has_explicit_sdk_path_without_host_native_fallback(self):
+        env=application_environment(Path('/private-image'))
+        self.assertEqual(env['PYTHONPATH'],'/private-image/usr/share/sparklink/python:/private-image/usr/share/sparklink/tools')
+        self.assertEqual(env['LIBSPARKLINK_PATH'],'/private-image/usr/lib/libsparklink.so.0')
+        self.assertNotIn('LIBSLK_NATIVE_PATH',env)
+
     def test_actual_runner_preflight_reaches_verified_profile_before_guest_or_usb(self):
         # Only external identity, prepared-package verification and host inventory
         # are fixtures. Execute the real CLI parser/preflight/final verdict.

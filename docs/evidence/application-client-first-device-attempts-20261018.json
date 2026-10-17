@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "result": "FAIL",
+  "scope": "Retained attempts,not currentqualification orautomatedrecovery.",
+  "attempts": [
+    {
+      "run": "architecture-r5f2-real-clients-v2",
+      "result": "FAIL",
+      "compiled_userspace": "5bfe6fa307766d098aa98fabf6bb4822a4f1dde1",
+      "host_tools": "ccc5953de2829e697c7620b964b5809df39ec502",
+      "qemu_exit": 0,
+      "supervisor_exit": 1,
+      "reason": "Fixed-T contrast: both actual Ready and random discovery; Create command timed out without successful Status/outcome. No SDK consumer ran;root cause unresolved.",
+      "materials": [
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v2/manifest.json",
+          "sha256": "1c95cce3500148c1cea4e787a290e29f9167cf1c38168ebcad39196f998ca1e0",
+          "bytes": 47080
+        },
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v2/console.log",
+          "sha256": "bc9e4ab8860286ac286b4ad769d5f63a6c4d933f5de586a66830de6ce70e3916",
+          "bytes": 59482
+        },
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v2/guest-output/ws73.pcap",
+          "sha256": "8ea6c9e95b241f3af685c1d016ccb1d248ed84b78ddeeb3d125c785c34c74a61",
+          "bytes": 48470
+        },
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v2/guest-output/capture-stats.txt",
+          "sha256": "95e18afaff8956806aee283a842291678aa05598d8c4afe33fb99fecfdfc13f0",
+          "bytes": 225
+        },
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v2/guest-output/application/passthrough-control/run.json",
+          "sha256": "c0b7e6c179c9e7280b1ad0d038be551275b5643f27b2c5f25ab7e110fb289c87",
+          "bytes": 21564
+        }
+      ]
+    },
+    {
+      "run": "architecture-r5f2-real-clients-v3",
+      "result": "FAIL",
+      "compiled_userspace": "5bfe6fa307766d098aa98fabf6bb4822a4f1dde1",
+      "host_tools": "59b0faf7995ed7d5d9994909edc6416a6f7ab9a1",
+      "qemu_exit": 0,
+      "supervisor_exit": 1,
+      "reason": "Negotiable-T connected, but the first Python consumer could not import the staged SDK. No successful SDK traffic;explicit consumer environment is required.",
+      "materials": [
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v3/manifest.json",
+          "sha256": "b39142ce1008b95c6bf091b73e4e3cfe60bc0a52d32b6359637ec80bede391ee",
+          "bytes": 47624
+        },
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v3/console.log",
+          "sha256": "515cde974d9abe9e85d7de13380ef7c8a7bbe239f45d5607e350614b01e64620",
+          "bytes": 59142
+        },
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v3/guest-output/ws73.pcap",
+          "sha256": "2067e3cc47ee31ebda8ff90dd3a1a7eecf042fcb6c4359fdf24f62e4228152f9",
+          "bytes": 59124
+        },
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v3/guest-output/capture-stats.txt",
+          "sha256": "e796804c71472d2dbe4643c827ace3edaaa7c07fbd8a7edf5b9714ea1d12ff58",
+          "bytes": 225
+        },
+        {
+          "path": ".dev/architecture-r5f2-real-clients-v3/guest-output/application/passthrough-control/run.json",
+          "sha256": "fb00d43a58ae011cd4d98abd42e3d48c153db96b1981eb2f8947007ca71c9799",
+          "bytes": 49106
+        }
+      ]
+    }
+  ],
+  "remaining": [
+    "Actualmatchedparameter SDK request/reply proof andalloriginalgates remainpending.",
+    "No manualpower/hostinstallation ornewformalproof;parametercontrast is not faultRCA."
+  ]
+}

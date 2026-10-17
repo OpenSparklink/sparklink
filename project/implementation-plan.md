@@ -1435,6 +1435,12 @@ native检查移到prepared镜像完整验证之后；真实CLI预检/最终判�
 缺少已验证native profile时不启动QEMU。镜像与实际执行工具身份继续分别记录，
 这项软件修正不算硬件失败、自然恢复或新设备资格。
 
+R5f2 首轮设备对照与消费者导入失败均[保留原身份](../docs/evidence/application-client-first-device-attempts-20261018.json)：
+fixed-T在Ready/随机发现后Create超时，无成功Status/outcome，根因仍未定；对齐既有
+SDK110的negotiable-T后实际建链，Python缺少staged SDK路径而在业务前失败。新启动
+环境显式记录PYTHONPATH和应用库ABI-major，先以镜像内实际库/消费者进行离线导入、
+过期Client拒绝和参数检查，再封存新镜像。失败不改写通过，不据重跑宣称自然恢复。
+
 核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
 保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取
 错误源库名且缺Native/pc统一安装；pc头目录不符；无正式SONAME与干净VM升级回滚

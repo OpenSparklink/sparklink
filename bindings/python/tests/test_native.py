@@ -8,8 +8,9 @@ import errno
 from pathlib import Path
 import unittest
 
-from sparklink import NativeAdapter, registration_snapshot
-from sparklink.native import _get_native_lib, channel_info
+from sparklink.native import NativeAdapter, registration_snapshot
+from sparklink.native import _get_native_lib
+from sparklink.channel import _get_channel_lib, channel_info
 from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
@@ -66,11 +67,11 @@ class NativeBindingTests(unittest.TestCase):
 
     def test_message_context_requires_real_domain_and_preserves_failed_outputs(self):
         from sparklink.structs import SleMessageSecurity
-        from sparklink.native import channel_recv_security
+        from sparklink.channel import channel_recv_security
         import socket
         out=SleMessageSecurity(generation=99,security_epoch=123)
         actual=ctypes.c_int(77);buffer=(ctypes.c_uint8 * 8)();before=bytes(out)
-        fn=self.lib.slk_channel_recv_security
+        fn=_get_channel_lib().slk_channel_recv_security
         self.assertEqual(fn(-1,buffer,8,0,ctypes.byref(out),ctypes.byref(actual)),-errno.EBADF)
         self.assertEqual(bytes(out),before);self.assertEqual(actual.value,77)
         self.assertEqual(fn(-1,None,8,0,ctypes.byref(out),ctypes.byref(actual)),-errno.EINVAL)
@@ -83,30 +84,30 @@ class NativeBindingTests(unittest.TestCase):
 
     def test_typed_send_is_actual_syscall_without_plain_fallback(self):
         from sparklink.structs import SleSendConstraint
-        from sparklink.native import channel_send_constrained
+        from sparklink.channel import channel_send_constrained
         import socket
         c=SleSendConstraint(version=1,size=48,minimum=1,generation=7,lifetime=9,
             security_epoch=2,controller=1,handle=3,local_tcid=31,remote_tcid=31,pi=241,
             deadline_monotonic_ns=123456)
         payload=(ctypes.c_uint8*1)(42);before=bytes(c)
-        self.assertEqual(self.lib.slk_channel_send_constrained(-1,payload,1,0,ctypes.byref(c)),-errno.EBADF)
+        self.assertEqual(_get_channel_lib().slk_channel_send_constrained(-1,payload,1,0,ctypes.byref(c)),-errno.EBADF)
         self.assertEqual(bytes(c),before)
-        self.assertEqual(self.lib.slk_channel_send_constrained(-1,payload,1,0,None),-errno.EINVAL)
-        self.assertEqual(self.lib.slk_channel_send_constrained(-1,None,1,0,ctypes.byref(c)),-errno.EINVAL)
+        self.assertEqual(_get_channel_lib().slk_channel_send_constrained(-1,payload,1,0,None),-errno.EINVAL)
+        self.assertEqual(_get_channel_lib().slk_channel_send_constrained(-1,None,1,0,ctypes.byref(c)),-errno.EINVAL)
         with socket.socket(socket.AF_UNIX,socket.SOCK_DGRAM) as unix:
             with self.assertRaises(OSError) as caught:channel_send_constrained(unix.fileno(),b'x',c,socket.MSG_DONTWAIT)
             self.assertEqual(caught.exception.errno,errno.EAFNOSUPPORT)
         c.minimum=3
-        self.assertEqual(self.lib.slk_channel_send_constrained(-1,payload,1,0,ctypes.byref(c)),-errno.EINVAL)
+        self.assertEqual(_get_channel_lib().slk_channel_send_constrained(-1,payload,1,0,ctypes.byref(c)),-errno.EINVAL)
         for args in [(True,b'x',c),(0,bytearray(b'x'),c),(0,b'x'*2043,c)]:
             with self.assertRaises(ValueError):channel_send_constrained(*args)
 
     def test_prepare_tx_requires_real_domain_and_preserves_failed_output(self):
         from sparklink.structs import SleSendConstraint
-        from sparklink.native import channel_prepare_tx
+        from sparklink.channel import channel_prepare_tx
         import socket
         out=SleSendConstraint(generation=99,security_epoch=123);before=bytes(out)
-        fn=self.lib.slk_channel_prepare_tx
+        fn=_get_channel_lib().slk_channel_prepare_tx
         self.assertEqual(fn(-1,0,1,ctypes.byref(out)),-errno.EBADF)
         self.assertEqual(bytes(out),before)
         self.assertEqual(fn(-1,0,1,None),-errno.EINVAL)
@@ -122,9 +123,9 @@ class NativeBindingTests(unittest.TestCase):
     def test_channel_info_errors_preserve_output_and_errno(self):
         out = SleChannelInfo(generation=99, reserved=123)
         before = bytes(out)
-        self.assertEqual(self.lib.slk_channel_info(-1, ctypes.byref(out)), -errno.EBADF)
+        self.assertEqual(_get_channel_lib().slk_channel_info(-1, ctypes.byref(out)), -errno.EBADF)
         self.assertEqual(bytes(out), before)
-        self.assertEqual(self.lib.slk_channel_info(-1, None), -errno.EINVAL)
+        self.assertEqual(_get_channel_lib().slk_channel_info(-1, None), -errno.EINVAL)
         with self.assertRaises(OSError) as caught:
             channel_info(-1)
         self.assertEqual(caught.exception.errno, errno.EBADF)
@@ -134,16 +135,16 @@ class NativeBindingTests(unittest.TestCase):
     def test_tx_status_denies_bad_fd_without_overwriting(self):
         out=SleChannelTxStatus(generation=99,reserved=44)
         before=bytes(out)
-        self.assertEqual(self.lib.slk_channel_tx_status(-1,ctypes.byref(out)),-errno.EBADF)
+        self.assertEqual(_get_channel_lib().slk_channel_tx_status(-1,ctypes.byref(out)),-errno.EBADF)
         self.assertEqual(bytes(out),before)
-        self.assertEqual(self.lib.slk_channel_tx_status(-1,None),-errno.EINVAL)
+        self.assertEqual(_get_channel_lib().slk_channel_tx_status(-1,None),-errno.EINVAL)
 
     def test_session_status_denies_bad_fd_without_overwriting(self):
         out=SleSessionTxStatus(generation=99)
         before=bytes(out)
-        self.assertEqual(self.lib.slk_session_tx_status(-1,ctypes.byref(out)),-errno.EBADF)
+        self.assertEqual(_get_channel_lib().slk_session_tx_status(-1,ctypes.byref(out)),-errno.EBADF)
         self.assertEqual(bytes(out),before)
-        self.assertEqual(self.lib.slk_session_tx_status(-1,None),-errno.EINVAL)
+        self.assertEqual(_get_channel_lib().slk_session_tx_status(-1,None),-errno.EINVAL)
 
     def test_registration_probe_rejects_invalid_index_and_closes_on_error(self):
         before = len(list(Path('/proc/self/fd').iterdir()))
@@ -160,6 +161,7 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(self.lib.slk_registration_snapshot(None, 0, 1, ctypes.byref(out)), -errno.EINVAL)
 
     def test_borrowed_fd_is_live_and_new_api_preserves_errno(self):
+        self.assertEqual(self.lib.slk_device_count.argtypes, [ctypes.c_void_p])
         fd = self.lib.slk_adapter_fd(self.handle)
         self.assertGreaterEqual(fd, 0)
         self.assertEqual(self.lib.slk_adapter_select(self.handle, 0), -errno.ENOTTY)
@@ -311,3 +313,40 @@ class NativeConnectionMethodTests(unittest.TestCase):
         with self.assertRaises(OSError) as error:
             self.adapter.connection_result(1, 1)
         self.assertEqual(error.exception.errno, errno.EBADF)
+
+
+class ApplicationNativeBoundary(unittest.TestCase):
+    def test_default_package_and_actual_libraries_do_not_reexport_native_authority(self):
+        import sparklink
+        import importlib
+        self.assertFalse(hasattr(sparklink, "Adapter"))
+        self.assertFalse(hasattr(sparklink, "NativeAdapter"))
+        self.assertFalse(hasattr(sparklink, "registration_snapshot"))
+        with self.assertRaises(ModuleNotFoundError):
+            importlib.import_module("sparklink.adapter")
+        app=_get_channel_lib()
+        import re
+        repo=Path(__file__).resolve().parents[3]
+        native_names=re.findall(r'\b(slk_\w+)\s*\(', (repo/'crates/slk-native/include/sparklink_native.h').read_text())
+        app_names=re.findall(r'\b(slk_\w+)\s*\(', (repo/'crates/libsparklink/include/sparklink.h').read_text())
+        self.assertTrue(native_names)
+        self.assertTrue(app_names)
+        for name in native_names:
+            with self.subTest(name=name),self.assertRaises(AttributeError):getattr(app,name)
+        native=_get_native_lib()
+        for name in app_names:
+            with self.subTest(name=name),self.assertRaises(AttributeError):getattr(native,name)
+
+    def test_concurrent_first_native_load_never_publishes_untyped_pointer_calls(self):
+        import concurrent.futures
+        import sparklink.native as module
+        module._native_library=None
+        def call(_):
+            lib=module._get_native_lib()
+            self.assertEqual(lib.slk_device_count.argtypes,[ctypes.c_void_p])
+            self.assertEqual(lib.slk_adapter_open.restype,ctypes.c_void_p)
+            handle=lib.slk_adapter_open(b"/dev/null")
+            self.assertTrue(handle)
+            try:self.assertEqual(lib.slk_device_count(handle),-1)
+            finally:lib.slk_adapter_free(handle)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:list(pool.map(call,range(64)))

@@ -27,7 +27,8 @@ python3 tools/build_resources.py -- cargo +1.96.1 test --locked --workspace
 | `slk-protocol` | lib | ABI/纯值/codec；Channel和Native系统调用均已迁出；纯ABI/codec层 |
 | `slk-channel` | lib | 已授权fd查询、SCM安全上下文、原期限和系统调用；不打开controller或获取管理lease |
 | `slk-native` | lib | Native管理、ioctl、观察、事件、抓包；无应用客户端或Channel依赖 |
-| `libsparklink` | lib + cdylib | R3c待整改C/Python门面，暂依赖Native，尚不是目标应用SDK；不得把过渡接口当已发布兼容承诺 |
+| `libsparklink` | lib + cdylib | 真实D-Bus Client及授权fd操作；无Native依赖/管理导出；C/Python完整broker和SSAP客户端仍缺失 |
+| `slk-contract` | lib | SDK独立的共享D-Bus值/路径/名字；producer/caller共同消费，独立signature检查保留 |
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
 | `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset/services/list-services/read-prop/write-prop/remote-discover/remote-read/remote-write 子命令, clap 4 |
 | `slctl` | bin | 交互式控制工具 (对标 bluetoothctl): rustyline 15, 通过 D-Bus 与 slkd 通信 |

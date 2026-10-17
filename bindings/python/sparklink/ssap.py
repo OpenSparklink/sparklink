@@ -71,7 +71,7 @@ class SsapAccess:
         """Pure production requirement check; never observes/mints authority."""
         if type(level) is not int or not 0<=level<=2 or type(write) is not bool:
             raise ValueError('bounded mechanism and bool direction required')
-        from .native import _get_native_lib
-        result=_get_native_lib().slk_ssap_access_error(self.bits,level,int(write))
+        from .channel import _get_channel_lib
+        result=_get_channel_lib().slk_ssap_access_error(self.bits,level,int(write))
         if result<0:raise ValueError('invalid access context')
         return result

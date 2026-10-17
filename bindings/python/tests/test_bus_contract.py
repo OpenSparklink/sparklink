@@ -23,7 +23,7 @@ class BusContract(unittest.TestCase):
             return '#include <stdio.h>\n#include "' + str(header) + '"\nint main(void){printf("[%u,%u,%u,%u,%u,%u,%u]",' + ','.join(prefix(n) for n in NAMES) + ');return 0;}\n'
         sources = {
             'kernel': c_probe(KERNEL/'sparklink.h', lambda n: 'SPARKLINK_BUS_'+n.upper()),
-            'sdk': c_probe(ROOT/'crates/libsparklink/include/sparklink.h', lambda n: 'BusType_'+n),
+            'sdk': c_probe(ROOT/'crates/slk-native/include/sparklink_native.h', lambda n: 'BusType_'+n),
         }
         observed = {'python': [int(BusType[n]) for n in NAMES]}
         with tempfile.TemporaryDirectory(prefix='sparklink-bus-contract-') as tmp:

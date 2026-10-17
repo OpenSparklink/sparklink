@@ -24,6 +24,7 @@ KERNEL_HEADER = Path(os.environ.get(
     WORKSPACE.parent / "linux/include/uapi/linux/sparklink_ioctl.h",
 )).resolve()
 PUBLIC_HEADER = WORKSPACE / "crates/libsparklink/include/sparklink.h"
+NATIVE_HEADER = WORKSPACE / "crates/slk-native/include/sparklink_native.h"
 RUST_TYPES = WORKSPACE / "crates/slk-protocol/src/types.rs"
 
 # These are name mappings only. Fields, sizes, alignments and offsets come from
@@ -128,7 +129,7 @@ class TestAbiConformance(unittest.TestCase):
             )
         cls.socket_header = KERNEL_HEADER.with_name("sparklink_socket.h")
         cls.kernel_source = KERNEL_HEADER.read_text() + cls.socket_header.read_text()
-        cls.public_source = PUBLIC_HEADER.read_text()
+        cls.public_source = PUBLIC_HEADER.read_text() + NATIVE_HEADER.read_text()
         channel_source = (RUST_TYPES.parent / "channel.rs").read_text()
         channel_type = "\n".join(re.findall(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct (?:SleChannel(?:Info|TxStatus)|SleSessionTxStatus) \{[^}]+\}", channel_source))
         message_source = (RUST_TYPES.parent / "message_security.rs").read_text()
@@ -148,6 +149,7 @@ class TestAbiConformance(unittest.TestCase):
             f"#include {json.dumps(str(KERNEL_HEADER))}",
             f"#include {json.dumps(str(cls.socket_header))}",
             f"#include {json.dumps(str(PUBLIC_HEADER))}",
+            f"#include {json.dumps(str(NATIVE_HEADER))}",
             "int main(void) {",
         ]
         for name in ['SECURITY_CAPABILITY_ONLY','SECURITY_KEY_AGREEMENT_ONLY','SECURITY_UNAUTHENTICATED_ENCRYPTION','SNOOP_REDACTED']:
@@ -204,7 +206,8 @@ class TestAbiConformance(unittest.TestCase):
         assertions = ["#include <stddef.h>",
                       f"#include {json.dumps(str(KERNEL_HEADER))}",
             f"#include {json.dumps(str(cls.socket_header))}",
-                      f"#include {json.dumps(str(PUBLIC_HEADER))}"]
+                      f"#include {json.dumps(str(PUBLIC_HEADER))}",
+                      f"#include {json.dumps(str(NATIVE_HEADER))}"]
         for name, kernel_name in STRUCT_NAMES.items():
             kernel = "struct " + kernel_name
             assertions += [

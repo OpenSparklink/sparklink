@@ -3044,7 +3044,7 @@
     },
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
-    "batch": "R3a sealed source17ed actual VM gates in progress;R3b Native Rust move implementing",
+    "batch": "R3c actual app Client/shared contract/independent Native C-Python migration;new artifact real gates pending",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
       "R3 Native/Channel/shared D-Bus contract/application Client migration",
@@ -3075,7 +3075,7 @@
       "slk-protocol contains ABI/value/pure codec-state only,no device/ioctl/DBus operations",
       "slktest uses same application Channel;load/timing/assertions/report remain in tool"
     ],
-    "transition_exception": "slkd Native-wrapper edge removed in R3b source;remaining C/Python Native facade only until R3c production callers migrate and old Native exports removed",
+    "transition_exception": "SDK->Native and slkd->SDK edges deleted in R3c source;no compatibility facade. New source not qualified by17ed.",
     "r2": {
       "status": "SOURCE_BOUND_KEEP_PATH_REAL_PASS_NOT_RF_CACHE_STRESS",
       "production": "Bound per-controller observations;one Entry publication state;existing EventTask/time budget/ownership check;do not change physical connection state",
@@ -3100,6 +3100,13 @@
       "production": "Move actual Native Rust owner and ioctl operations;slkd/diagnostics/experimental consumers migrated;protocol pure;slctl marker pure shared codec",
       "transition_exception": "libsparklink C/Python facade temporarily depends on Native until immediate R3c application/sharedcontract/language migration;not target SDK or publish qualification",
       "remaining": "Strict checks in progress;exact new artifact;remove facade Native dependency/exports and retired APIs across all callers"
+    },
+    "r3c": {
+      "status": "SOURCE_CONNECTED_STRICT_OFFLINE_IN_PROGRESS_NOT_REAL_QUALIFIED",
+      "production": "SDK broker Client and independent contract,sole authorized-fd path;slktest caller migrated;Native C/Python separate/default Native and Adapter removed",
+      "exit_reference": "project/implementation-plan.md WP18 R3c",
+      "remaining": "Exact newartifact VM realgates;R4 semantic oldAPI/events;R5 gates;R6 cleanVMdeploy;C/Python broker/SSAP convenience and full Channel contract remain original WP03/06/08",
+      "failure_retained": "architecture-r3c-client-abi-v1.log and native-diagnostic-v1.log:actual ctypes missing pointer signature SIGSEGV;fixed signature,headers/imports;assertions retained"
     }
   },
   "owned_ssap_c6_historical_batch": {

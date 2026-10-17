@@ -2,13 +2,13 @@
 import errno
 import unittest
 from sparklink import SsapAccess
-from sparklink.native import _get_native_lib
+from sparklink.channel import _get_channel_lib
 
 class AccessContract(unittest.TestCase):
     def test_six_reference_api_bits_are_separate_from_operation_bits(self):
         self.assertEqual([SsapAccess.WRITE_ENCRYPTED,SsapAccess.WRITE_AUTHENTICATED,SsapAccess.WRITE_AUTHORIZED,SsapAccess.READ_ENCRYPTED,SsapAccess.READ_AUTHENTICATED,SsapAccess.READ_AUTHORIZED],[1,2,4,8,16,32])
     def test_exhaustive_api_mask_level_direction_through_actual_shared_library(self):
-        lib=_get_native_lib()
+        lib=_get_channel_lib()
         for bits in range(256):
             for level in range(4):
                 for write in range(3):

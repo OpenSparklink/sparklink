@@ -8,7 +8,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include "sparklink.h"
+#include "sparklink_native.h"
 
 #define CHECK(x) do { if (!(x)) { fprintf(stderr, "BINDING_C_FAIL:%d: %s\n", __LINE__, #x); exit(1); } } while (0)
 

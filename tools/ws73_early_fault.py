@@ -51,7 +51,7 @@ def ordinary_attributes(interface):
 def ordinary_core_snapshot(index,generation):
     # Uses the installed Python -> actual C cdylib -> Rust -> kernel ioctl.
     # Opens an unbound observation fd; never selects/acquires management.
-    command=('import sys,json,os;os.environ["LIBSPARKLINK_PATH"]="/usr/lib/libsparklink.so";sys.path[:0]=['+repr(str(TOOLS))+',"/usr/share/sparklink/python"];from ws73_north_star import ordinary_identity;from sparklink import registration_snapshot;d={"credentials":ordinary_identity()};'
+    command=('import sys,json,os;os.environ["LIBSLK_NATIVE_PATH"]="/usr/lib/libslk_native.so";sys.path[:0]=['+repr(str(TOOLS))+',"/usr/share/sparklink/python"];from ws73_north_star import ordinary_identity;from sparklink.native import registration_snapshot;d={"credentials":ordinary_identity()};'
              +'\ntry:\n s=registration_snapshot('+str(index)+','+str(generation)+');d["snapshot"]={n:getattr(s,n) for n in ["version","dev_index","generation","state","profile","bus","phase","error","reserved_byte"]};d["snapshot"]["reserved"]=list(s.reserved)'
              +'\nexcept OSError as e:d["errno"]=e.errno;d["error"]=str(e)\nprint(json.dumps(d))')
     r=application('/bin/python3','-c',command,capture_output=True,timeout=10)

@@ -1,0 +1,113 @@
+//! Shared transport contract, independent of application SDK and daemon.
+//! Values describe observations, not authority or proof of physical completion.
+use slk_protocol::SleAddr;
+
+pub const SERVICE: &str = "org.sparklink";
+pub const MANAGER_PATH: &str = "/org/sparklink";
+pub const MANAGER: &str = "org.sparklink.Manager";
+pub const ADAPTER: &str = "org.sparklink.Adapter";
+pub const CONNECTION: &str = "org.sparklink.Connection";
+pub const GET_INFO: &str = "GetInfo";
+pub const LIST_ADAPTERS: &str = "ListAdapters";
+pub const OPEN_CHANNEL: &str = "OpenChannel";
+pub const OPEN_CHANNEL_SCOPED: &str = "OpenChannelScoped";
+pub const PREPARE_DYNAMIC_CHANNEL: &str = "PrepareDynamicChannel";
+
+pub type ConnectionInfo = (u64, u64, u16, u8, u8, String, bool, bool);
+pub type PeerInfo = (u64, u8, String, bool, bool, Vec<String>);
+pub type ConnectionObjects = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8, String)>);
+pub type SecurityState = (u64, u64, u16, u64, u32, u32, u32, u8, u8);
+pub type DynamicRequest = (u16, u16, u16, u16, u16, u8, bool);
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ControllerId {
+    pub index: u16,
+    pub generation: u64,
+}
+impl ControllerId {
+    pub fn path(self) -> String {
+        format!("{MANAGER_PATH}/slk{}_g{}", self.index, self.generation)
+    }
+    pub fn from_path(path: &str) -> Option<Self> {
+        let suffix = path.strip_prefix(&format!("{MANAGER_PATH}/slk"))?;
+        let (index, generation) = suffix.split_once("_g")?;
+        let id = Self {
+            index: index.parse().ok()?,
+            generation: generation.parse().ok()?,
+        };
+        (id.generation != 0 && id.path() == path).then_some(id)
+    }
+}
+
+pub fn peer_path(base: &str, kind: u8, address: SleAddr) -> String {
+    let address = address
+        .iter()
+        .map(|v| format!("{v:02x}"))
+        .collect::<String>();
+    format!("{base}/peer_t{kind:02x}_{address}")
+}
+pub fn connection_path(base: &str, kind: u8, address: SleAddr, lifetime: u64) -> String {
+    format!("{}/link_{lifetime:016x}", peer_path(base, kind, address))
+}
+pub fn parse_address(value: &str) -> Option<SleAddr> {
+    let mut result = [0; 6];
+    let mut components = value.split(':');
+    for octet in &mut result {
+        let value = components.next()?;
+        if value.len() != 2 || !value.bytes().all(|b| b.is_ascii_hexdigit()) {
+            return None;
+        }
+        *octet = u8::from_str_radix(value, 16).ok()?;
+    }
+    components.next().is_none().then_some(result)
+}
+/// Identity only, not Ready, security, authorization or future connection state.
+pub fn matches_connection(controller: ControllerId, path: &str, info: &ConnectionInfo) -> bool {
+    info.0 == controller.generation
+        && info.1 != 0
+        && parse_address(&info.5).is_some_and(|address| {
+            connection_path(&controller.path(), info.4, address, info.1) == path
+        })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn literal_identity_and_alias_rejection() {
+        let id = ControllerId {
+            index: 2,
+            generation: 7,
+        };
+        assert_eq!(id.path(), "/org/sparklink/slk2_g7");
+        assert_eq!(ControllerId::from_path(&id.path()), Some(id));
+        for p in [
+            "/org/sparklink/slk02_g7",
+            "/org/sparklink/slk2_g0",
+            "/org/sparklink/slk2_g7/extra",
+        ] {
+            assert_eq!(ControllerId::from_path(p), None);
+        }
+        let path = "/org/sparklink/slk2_g7/peer_t01_010203040506/link_000000000000000b";
+        let info = (7, 11, 3, 0, 1, "01:02:03:04:05:06".into(), true, true);
+        assert!(matches_connection(id, path, &info));
+        for index in [0, 1] {
+            let mut bad = info.clone();
+            if index == 0 {
+                bad.0 += 1;
+            } else {
+                bad.1 += 1;
+            }
+            assert!(!matches_connection(id, path, &bad));
+        }
+        for address in [
+            "010203040506",
+            "01:02:03:04:05",
+            "01:02:03:04:05:06:07",
+            "01:02:03:04:05:gg",
+            "1:02:03:04:05:06",
+        ] {
+            assert!(parse_address(address).is_none());
+        }
+    }
+}

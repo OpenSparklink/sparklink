@@ -153,12 +153,13 @@ def stage_locked(args, build_fd):
         metadata = json.loads(subprocess.check_output(
             ['cargo', 'metadata', '--offline', '--locked', '--no-deps', '--format-version', '1'],
             cwd=source, text=True))
-        package = next(item for item in metadata['packages'] if item['name'] == 'libsparklink')
-        target = next(item for item in package['targets'] if 'cdylib' in item['crate_types'])
-        library = build / 'release' / ('lib' + target['name'] + '.so')
-        elf_header(library, {3})
-        copy(library, prefix / library.name)
-        record['shared_library'] = '/' + str(prefix / library.name)
+        for package_name, field in [('libsparklink', 'shared_library'), ('slk-native', 'native_shared_library')]:
+            package = next(item for item in metadata['packages'] if item['name'] == package_name)
+            target = next(item for item in package['targets'] if 'cdylib' in item['crate_types'])
+            library = build / 'release' / ('lib' + target['name'] + '.so')
+            elf_header(library, {3})
+            copy(library, prefix / library.name)
+            record[field] = '/' + str(prefix / library.name)
         # Dependencies are recorded, not copied over distribution libraries.
         env = dict(os.environ, DBUS_SYSTEM_BUS_ADDRESS='unix:path=/tmp/ws73-staging-no-bus.sock',
                    DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/ws73-staging-no-session-bus.sock')

@@ -7,6 +7,8 @@ publish = false
 
 [dependencies]
 slk-protocol = { workspace = true }
+slk-contract = { workspace = true }
+libsparklink = { workspace = true }
 slk-channel = { workspace = true }
 zbus = { workspace = true }
 tokio = { workspace = true }

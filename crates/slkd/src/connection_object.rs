@@ -1,16 +1,16 @@
 //! One immutable registration/type/address/lifetime identity per physical link.
 //! Properties are canonical observation, never an author operation result.
 type SsapEntry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
-type DynamicRequest = (u16, u16, u16, u16, u16, u8, bool);
+use slk_contract::DynamicRequest;
 type SsapDiscovery = (Vec<SsapEntry>, Vec<(Vec<u8>, Vec<u8>)>);
 use crate::state::SharedState;
 use slk_protocol::SleLinkInfo;
 use zbus::interface;
 
-pub(crate) type Info = (u64, u64, u16, u8, u8, String, bool, bool);
-pub(crate) type Objects = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8, String)>);
+pub(crate) use slk_contract::ConnectionInfo as Info;
+pub(crate) use slk_contract::ConnectionObjects as Objects;
 /// Kernel mechanism facts, never policy authorization or a future TX grant.
-type SecurityState = (u64, u64, u16, u64, u32, u32, u32, u8, u8);
+use slk_contract::SecurityState;
 
 /// Subscribe before checking ownership or polling the receive future. Known
 /// bus-owner loss cancels the call-owned queue; it does not erase queued ACKs.
@@ -46,19 +46,14 @@ pub(crate) async fn caller_scoped<T>(
     }
 }
 pub(crate) fn path(base: &str, reference: SleLinkInfo) -> String {
-    format!(
-        "{}/link_{:016x}",
-        peer_path(base, reference.address_type, reference.address),
-        reference.lifetime
+    slk_contract::connection_path(
+        base,
+        reference.address_type,
+        reference.address,
+        reference.lifetime,
     )
 }
-pub(crate) fn peer_path(base: &str, kind: u8, address: [u8; 6]) -> String {
-    let address = address
-        .iter()
-        .map(|v| format!("{v:02x}"))
-        .collect::<String>();
-    format!("{base}/peer_t{kind:02x}_{address}")
-}
+pub(crate) use slk_contract::peer_path;
 
 #[derive(Clone)]
 pub(crate) struct Registration {
@@ -73,7 +68,7 @@ pub(crate) struct PeerRegistration {
     pub path: String,
     pub published: bool,
 }
-pub(crate) type PeerInfo = (u64, u8, String, bool, bool, Vec<String>);
+pub(crate) use slk_contract::PeerInfo;
 pub(crate) struct PeerIface {
     state: SharedState,
     generation: u64,

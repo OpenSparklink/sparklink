@@ -151,14 +151,14 @@ def prepare_locked(args, build_fd):
         build_env['CARGO_TARGET_DIR'] = str(build_target)
         manifest['build_resources']['cargo_target_directory'] = str(build_target)
         with (output/'build.log').open('w') as log:
-            subprocess.run(['cargo','build','--offline','--locked','-p','libsparklink','--lib'],cwd=USERSPACE,
+            subprocess.run(['cargo','build','--offline','--locked','-p','libsparklink','-p','slk-native','--lib'],cwd=USERSPACE,
                            env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['cargo','build','--offline','--locked','-p','slkd','-p','slctl','-p','slktest','-p','slkconfig',
                             '-p','slkmon','-p','slkdump','--bins','--examples'],cwd=USERSPACE,
                            env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror',
-                            '-I'+str(USERSPACE/'crates/libsparklink/include'),str(HERE/'ws73_bindings_probe.c'),
-                            '-L'+str(build_target/'debug'),'-Wl,-rpath,/usr/lib','-l:liblibsparklink.so',
+                            '-I'+str(USERSPACE/'crates/slk-native/include'),str(HERE/'ws73_bindings_probe.c'),
+                            '-L'+str(build_target/'debug'),'-Wl,-rpath,/usr/lib','-l:libslk_native.so',
                             '-o',str(output/'native-bindings-probe')],stdout=log,stderr=subprocess.STDOUT,check=True)
         root = output/'root'
         for name in ['bin','usr/bin','dev','proc','sys','etc','tmp','run','evidence','boot']:
@@ -233,14 +233,16 @@ def prepare_locked(args, build_fd):
         programs['ws73-security-agent-probe'] = build_target/'debug/examples/native_security_agent_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
         shared_library=build_target/'debug/liblibsparklink.so'
-        manifest['unstripped_programs'] = [file_record(p) for p in [*programs.values(),shared_library]]
+        native_shared_library=build_target/'debug/libslk_native.so'
+        manifest['unstripped_programs'] = [file_record(p) for p in [*programs.values(),shared_library,native_shared_library]]
         for name, source in programs.items():
             copy_elf(source,root/'bin'/name,root)
             (root/'bin'/name).chmod(0o755)
             subprocess.run(['strip','--strip-debug',str(root/'bin'/name)],check=True)
-        copy_elf(shared_library,root/'usr/lib/liblibsparklink.so',root)
-        (root/'usr/lib/libsparklink.so').symlink_to('liblibsparklink.so')
-        subprocess.run(['strip','--strip-debug',str(root/'usr/lib/liblibsparklink.so')],check=True)
+        copy_elf(shared_library,root/'usr/lib/libsparklink.so',root)
+        copy_elf(native_shared_library,root/'usr/lib/libslk_native.so',root)
+        for filename in ('libsparklink.so', 'libslk_native.so'):
+            subprocess.run(['strip','--strip-debug',str(root/'usr/lib'/filename)],check=True)
         manifest['native_security_agent_probe']=file_record(root/'bin/ws73-security-agent-probe')
         shutil.copytree(USERSPACE/'bindings/python/sparklink',root/'usr/share/sparklink/python/sparklink',
                         ignore=shutil.ignore_patterns('__pycache__'))

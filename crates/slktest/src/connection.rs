@@ -1,5 +1,4 @@
 use zbus::Connection;
-type NativeObjectInfo = (u64, u64, u16, u8, u8, String, bool, bool);
 pub(crate) struct DynamicExercise {
     pub(crate) rounds: u32,
     pub(crate) bytes: usize,
@@ -9,6 +8,7 @@ pub(crate) struct DynamicExercise {
 }
 
 pub(crate) struct Client {
+    app: tokio::sync::OnceCell<libsparklink::Client>,
     conn: Connection,
     selected: String,
     security: u32,
@@ -17,6 +17,7 @@ pub(crate) struct Client {
 impl Client {
     pub(crate) fn new(conn: Connection, selected: String) -> Self {
         Self {
+            app: tokio::sync::OnceCell::new(),
             conn,
             selected,
             security: 0,
@@ -32,28 +33,11 @@ impl Client {
         self.message_security = enabled;
         self
     }
-    async fn selected_path(&self) -> anyhow::Result<String> {
-        let manager = zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            "/org/sparklink",
-            "org.sparklink.Manager",
-        )
-        .await?;
-        let paths: Vec<String> = manager.call("ListAdapters", &()).await?;
-        if !paths.contains(&self.selected) {
-            anyhow::bail!("selected registration removed;select its replacement with slctl");
-        }
-        Ok(self.selected.clone())
-    }
-    async fn adapter_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
-        Ok(zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            self.selected_path().await?,
-            "org.sparklink.Adapter",
-        )
-        .await?)
+    async fn application(&self) -> anyhow::Result<&libsparklink::Client> {
+        Ok(self
+            .app
+            .get_or_try_init(|| libsparklink::Client::from_connection(self.conn.clone()))
+            .await?)
     }
     pub(crate) async fn cmd_dynamic_channel(
         &self,
@@ -74,39 +58,20 @@ impl Client {
             mode,
         } = exercise;
         use std::os::fd::AsRawFd;
-        let selected = self.selected_path().await?;
-        if !path.starts_with(&format!("{selected}/peer_t")) {
-            anyhow::bail!("dynamic connection belongs to another adapter");
-        }
         if !(29..=2042).contains(&bytes) || !(1..=20).contains(&rounds) {
             anyhow::bail!("dynamic exercise requires1..20 rounds and29..2042 bytes");
         }
-        let object = zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            path,
-            "org.sparklink.Connection",
-        )
-        .await?;
-        let info: NativeObjectInfo = object.call("GetInfo", &()).await?;
-        let generation: u64 = self
-            .adapter_proxy()
+        let connection = self
+            .application()
             .await?
-            .get_property("Generation")
+            .connection(&self.selected, path)
             .await?;
-        let expected = format!(
-            "{selected}/peer_t{:02x}_{}/link_{:016x}",
-            info.4,
-            info.5.replace(':', "").to_lowercase(),
-            info.1
-        );
-        if info.0 != generation || path != expected || !info.6 || !info.7 {
-            anyhow::bail!("dynamic immutable connection is not known/live");
-        }
         let mtu = u16::try_from(bytes.max(249))?;
         let request = (route.0, route.1, route.2, mtu, mtu + 5, 1u8, responder);
-        let fd: zbus::zvariant::OwnedFd = object.call("PrepareDynamicChannel", &(request,)).await?;
-        let fd: std::os::fd::OwnedFd = fd.into();
+        let fd = connection
+            .prepare_dynamic_channel(request)
+            .await?
+            .into_owned_fd();
         // An explicit test/coordinated-service hold keeps the final VFS
         // reference alive until both applications have validated their data.
         let retained = if hold {
@@ -146,41 +111,14 @@ impl Client {
         &self,
         path: &str,
     ) -> anyhow::Result<std::os::fd::OwnedFd> {
-        let selected = self.selected_path().await?;
-        if !path.starts_with(&format!("{selected}/peer_t")) {
-            anyhow::bail!("connection object belongs to another adapter");
-        }
-        let object = zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            path,
-            "org.sparklink.Connection",
-        )
-        .await?;
-        let info: NativeObjectInfo = object.call("GetInfo", &()).await?;
-        let adapter = self.adapter_proxy().await?;
-        let generation: u64 = adapter.get_property("Generation").await?;
-        let expected = format!(
-            "{selected}/peer_t{:02x}_{}/link_{:016x}",
-            info.4,
-            info.5.replace(':', "").to_lowercase(),
-            info.1
-        );
-        if info.0 != generation || path != expected {
-            anyhow::bail!("immutable channel connection identity mismatch");
-        }
-        if !info.6 || !info.7 {
-            anyhow::bail!("connection is not known/live");
-        }
-        let fd: zbus::zvariant::OwnedFd = if self.security == 0 {
-            object.call("OpenChannel", &()).await?
-        } else {
-            // No fallback to an unprotected fd on any broker/kernel failure.
-            object
-                .call("OpenChannelScoped", &(3u32, self.security))
-                .await?
-        };
-        Ok(fd.into())
+        Ok(self
+            .application()
+            .await?
+            .connection(&self.selected, path)
+            .await?
+            .open_channel(3, self.security)
+            .await?
+            .into_owned_fd())
     }
     pub(crate) async fn cmd_channel(
         &self,
@@ -191,13 +129,11 @@ impl Client {
         mode: crate::channel::Mode,
     ) -> anyhow::Result<()> {
         let fd = self.open_application_channel(path).await?;
-        let object = zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            path,
-            "org.sparklink.Connection",
-        )
-        .await?;
+        let connection = self
+            .application()
+            .await?
+            .connection(&self.selected, path)
+            .await?;
         crate::channel::exercise(
             fd,
             responder,
@@ -208,15 +144,9 @@ impl Client {
         )?;
         // Last-close must not silently recreate the connection CMTC session.
         // Basic CUTC has no qualified close/rebind barrier in this lifetime.
-        let reopened: zbus::Result<zbus::zvariant::OwnedFd> = if self.security == 0 {
-            object.call("OpenChannel", &()).await
-        } else {
-            object
-                .call("OpenChannelScoped", &(3u32, self.security))
-                .await
-        };
+        let reopened = connection.open_channel(3, self.security).await;
         match reopened {
-            Err(zbus::Error::MethodError(name, _, _))
+            Err(libsparklink::ApplicationError::Bus(zbus::Error::MethodError(name, _, _)))
                 if name.as_str() == "org.freedesktop.DBus.Error.NotSupported" =>
             {
                 println!("NativeChannelLastClose: same_lifetime_reopen=NotSupported");

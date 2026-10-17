@@ -1,378 +1,168 @@
-use std::ffi::{CStr, c_char, c_int};
-use std::ptr;
+//! Application Channel C ABI. Native controller operations live in slk-native.
+//! Each function uses the same Channel operation implementation; no Host Engine.
+use slk_protocol::*;
+use std::ffi::c_int;
 
-use crate::Adapter;
-
-#[path = "ffi_native.rs"]
-mod native;
-pub use native::*;
-
-/// Opaque adapter handle for C consumers
-pub struct SlkAdapter {
-    inner: Adapter,
-}
-
-/// Open a SparkLink adapter device.
-/// Returns null on failure.
-///
+/// Read actual capabilities of a delegated logical-channel socket.
+/// Returns 0 or negative errno; output remains unchanged on error.
 /// # Safety
-/// `dev_path` must be a valid null-terminated C string.
+/// `output` is null or points to a live, aligned, writable SleChannelInfo.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_adapter_open(dev_path: *const c_char) -> *mut SlkAdapter {
-    if dev_path.is_null() {
-        return ptr::null_mut();
+pub unsafe extern "C" fn slk_channel_info(fd: c_int, output: *mut SleChannelInfo) -> c_int {
+    if output.is_null() {
+        return -nix::libc::EINVAL;
     }
-    let path = match unsafe { CStr::from_ptr(dev_path) }.to_str() {
-        Ok(s) => s,
-        Err(_) => return ptr::null_mut(),
-    };
-    match Adapter::open(path) {
-        Ok(adapter) => Box::into_raw(Box::new(SlkAdapter { inner: adapter })),
-        Err(_) => ptr::null_mut(),
-    }
-}
-
-/// Free an adapter handle.
-///
-/// # Safety
-/// `adapter` must be a valid pointer returned by `slk_adapter_open`, or null.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_adapter_free(adapter: *mut SlkAdapter) {
-    if !adapter.is_null() {
-        drop(unsafe { Box::from_raw(adapter) });
-    }
-}
-
-/// Get the device count.
-/// Returns -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_device_count(adapter: *const SlkAdapter) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.device_count() {
-        Ok(n) => n as c_int,
-        Err(_) => -1,
-    }
-}
-
-/// Start scanning.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-/// `params` must point to a valid `SleScanParams` struct.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_start_scan(
-    adapter: *const SlkAdapter,
-    params: *const slk_protocol::SleScanParams,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    let params = match unsafe { params.as_ref() } {
-        Some(p) => p,
-        None => return -1,
-    };
-    match adapter.inner.start_scan(params) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Stop scanning.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_stop_scan(adapter: *const SlkAdapter) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.stop_scan() {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Initiate a connection.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-/// `params` must point to a valid `SleConnectParams` struct.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_connect(
-    adapter: *const SlkAdapter,
-    params: *const slk_protocol::SleConnectParams,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    let params = match unsafe { params.as_ref() } {
-        Some(p) => p,
-        None => return -1,
-    };
-    match adapter.inner.connect(params) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Disconnect a connection by handle.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_disconnect(adapter: *const SlkAdapter, handle: u16) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.disconnect(handle) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Get connection info.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_conn_info(
-    adapter: *const SlkAdapter,
-    handle: u16,
-    out: *mut slk_protocol::SleConnInfo,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
-    }
-    match adapter.inner.conn_info(handle) {
+    match slk_channel::query(fd) {
         Ok(info) => {
-            unsafe { *out = info };
+            unsafe {
+                output.write(info);
+            }
             0
         }
-        Err(_) => -1,
+        Err(error) => -error.raw_os_error().unwrap_or(nix::libc::EPROTO),
     }
 }
 
-/// Unavailable controller-global security snapshot.
-/// Returns -EOPNOTSUPP for valid pointers without changing output; -1 for invalid pointers.
-///
+/// Coherent read-only queue and reservation observation of an authorized fd.
+/// Returns0 or negative errno; output unchanged on error. No credit mutation.
 /// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
+/// output is null or a live aligned writable SleChannelTxStatus object.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_sec_info(
-    adapter: *const SlkAdapter,
-    out: *mut slk_protocol::SleSecInfo,
+pub unsafe extern "C" fn slk_channel_tx_status(
+    fd: c_int,
+    output: *mut SleChannelTxStatus,
 ) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
+    if output.is_null() {
+        return -nix::libc::EINVAL;
     }
-    match adapter.inner.sec_info() {
-        Ok(info) => {
-            unsafe { *out = info };
+    match slk_channel::query_tx_status(fd) {
+        Ok(value) => {
+            unsafe { output.write(value) };
             0
         }
-        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
-        Err(_) => -1,
+        Err(error) => -error.raw_os_error().unwrap_or(nix::libc::EPROTO),
     }
 }
 
-/// Unavailable legacy pairing facade.
-/// Returns -EOPNOTSUPP for a valid request, -1 for invalid pointers.
-///
+/// Coherent read-only Session mechanism observation of an authorized fd.
+/// Returns0 or negative errno; output unchanged on error. No credit mutation.
 /// # Safety
-/// `adapter` and `params` must be valid non-null pointers.
+/// output is null or a live aligned writable SleSessionTxStatus object.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_pair(
-    adapter: *const SlkAdapter,
-    params: *const slk_protocol::SlePairParams,
+pub unsafe extern "C" fn slk_session_tx_status(
+    fd: c_int,
+    output: *mut SleSessionTxStatus,
 ) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    let params = match unsafe { params.as_ref() } {
-        Some(p) => p,
-        None => return -1,
-    };
-    match adapter.inner.pair(params) {
-        Ok(()) => 0,
-        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
-        Err(_) => -1,
+    if output.is_null() {
+        return -nix::libc::EINVAL;
     }
-}
-
-/// Unavailable legacy encryption facade.
-/// Returns -EOPNOTSUPP for a valid handle, -1 for an invalid pointer.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_encrypt_on(adapter: *const SlkAdapter) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.encrypt_on() {
-        Ok(()) => 0,
-        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
-        Err(_) => -1,
-    }
-}
-
-/// Get device info.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_device_info(
-    adapter: *const SlkAdapter,
-    out: *mut slk_protocol::SciDevInfo,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
-    }
-    match adapter.inner.device_info() {
-        Ok(info) => {
-            unsafe { *out = info };
+    match slk_channel::query_session_tx_status(fd) {
+        Ok(value) => {
+            unsafe { output.write(value) };
             0
         }
-        Err(_) => -1,
+        Err(error) => -error.raw_os_error().unwrap_or(nix::libc::EPROTO),
     }
 }
 
-/// Unavailable legacy DLI aggregate; use selected controller snapshot.
-/// Returns -EOPNOTSUPP without changing output; -1 for invalid pointers.
-///
+/// Receive actual kernel receipt context alongside a datagram. Returns count
+/// or -errno. Output objects unchanged on error; payload may already be copied
+/// or consumed. With MSG_TRUNC count may exceed length. No future TX authority.
 /// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
+/// Caller retains fd and valid exclusive writable buffers/output objects for
+/// the full call. buffer may be null only for zero length; other outputs cannot
+/// be null. No concurrent close/reuse of fd or aliasing these writable regions.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_dli_info(
-    adapter: *const SlkAdapter,
-    out: *mut slk_protocol::SleDliInfo,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
+pub unsafe extern "C" fn slk_channel_recv_security(
+    fd: c_int,
+    buffer: *mut u8,
+    length: usize,
+    flags: c_int,
+    output: *mut SleMessageSecurity,
+    received_flags: *mut c_int,
+) -> isize {
+    if output.is_null()
+        || received_flags.is_null()
+        || length > isize::MAX as usize
+        || (buffer.is_null() && length != 0)
+    {
+        return -(nix::libc::EINVAL as isize);
     }
-    match adapter.inner.dli_info() {
-        Ok(info) => {
-            unsafe { *out = info };
+    let bytes = if length == 0 {
+        &mut []
+    } else {
+        // SAFETY: caller provides the exclusive live region described above.
+        unsafe { std::slice::from_raw_parts_mut(buffer, length) }
+    };
+    match slk_channel::security::recv(fd, bytes, flags) {
+        Ok((count, context, actual_flags)) => {
+            unsafe {
+                output.write(context);
+                received_flags.write(actual_flags);
+            }
+            count as isize
+        }
+        Err(error) => -(error.raw_os_error().unwrap_or(nix::libc::EPROTO) as isize),
+    }
+}
+
+/// Restrictive sendmsg software admission; never USB/controller/peer completion.
+/// # Safety
+/// Caller holds a stable fd and live readable, nonaliased input regions through
+/// the call. buffer may be null only for zero length; constraint must be valid.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_channel_send_constrained(
+    fd: c_int,
+    buffer: *const u8,
+    length: usize,
+    flags: c_int,
+    constraint: *const SleSendConstraint,
+) -> isize {
+    if constraint.is_null() || length > isize::MAX as usize || (buffer.is_null() && length != 0) {
+        return -(nix::libc::EINVAL as isize);
+    }
+    let bytes = if length == 0 {
+        &[]
+    } else {
+        unsafe { std::slice::from_raw_parts(buffer, length) }
+    };
+    match slk_channel::security::send(fd, bytes, flags, unsafe { &*constraint }) {
+        Ok(count) => count as isize,
+        Err(error) => -(error.raw_os_error().unwrap_or(nix::libc::EPROTO) as isize),
+    }
+}
+
+/// Prepare a restrictive intent through the already authorized fd, no Grant
+/// renewal or credit reservation. Actual sendmsg must still carry the result.
+/// # Safety
+/// Caller holds a stable fd and exclusive live aligned writable output object.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_channel_prepare_tx(
+    fd: c_int,
+    minimum: u32,
+    deadline: u64,
+    out: *mut SleSendConstraint,
+) -> c_int {
+    if out.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    match slk_channel::security::prepare(fd, minimum, deadline) {
+        Ok(c) => {
+            unsafe { out.write(c) };
             0
         }
-        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
-        Err(_) => -1,
+        Err(e) => -e.raw_os_error().unwrap_or(nix::libc::EIO),
     }
 }
 
-/// Get PHY info.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
+/// Pure requirement validation, not a grant or native security observation.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_phy_info(
-    adapter: *const SlkAdapter,
-    out: *mut slk_protocol::SlePhyInfo,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
+pub extern "C" fn slk_ssap_access_error(bits: u32, level: u32, write: u32) -> c_int {
+    if write > 1 || level > 2 {
+        return -nix::libc::EINVAL;
     }
-    match adapter.inner.phy_info() {
-        Ok(info) => {
-            unsafe { *out = info };
-            0
-        }
-        Err(_) => -1,
-    }
-}
-
-/// Set device role (0 = G-node, 1 = T-node).
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_set_role(adapter: *const SlkAdapter, role: u8) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.set_role(role) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Get device role.
-/// Returns role (0 or 1) on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_get_role(adapter: *const SlkAdapter) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.get_role() {
-        Ok(r) => r as c_int,
-        Err(_) => -1,
-    }
-}
-
-#[cfg(test)]
-mod retired_security_tests {
-    use super::*;
-    #[test]
-    fn legacy_security_c_returns_unsupported_without_mutating_output() {
-        let handle = SlkAdapter {
-            inner: Adapter::open("/dev/null").unwrap(),
-        };
-        let mut info: slk_protocol::SleSecInfo = unsafe { std::mem::zeroed() };
-        info.state = 0xa5;
-        let params = slk_protocol::SlePairParams {
-            method: 0,
-            _reserved: [0; 3],
-        };
-        unsafe {
-            assert_eq!(slk_sec_info(&handle, &mut info), -nix::libc::EOPNOTSUPP);
-            assert_eq!(slk_pair(&handle, &params), -nix::libc::EOPNOTSUPP);
-            assert_eq!(slk_encrypt_on(&handle), -nix::libc::EOPNOTSUPP);
-        }
-        assert_eq!(info.state, 0xa5);
+    match slk_protocol::ssap::access::SsapAccess::from_bits(bits) {
+        Err(_) => -nix::libc::EINVAL,
+        Ok(p) => p.check(level, write != 0).map_or_else(i32::from, |()| 0),
     }
 }

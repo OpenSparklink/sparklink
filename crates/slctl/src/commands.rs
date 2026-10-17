@@ -6,8 +6,8 @@ use zbus::Connection;
 type NativeReportRecord = (u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
 type NativeLinksRecord = (u64, u64, u64, u32, i32, Vec<(u64, u16, u8, u8, String)>);
 type NativeObjectsRecord = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8, String)>);
-type NativeObjectInfo = (u64, u64, u16, u8, u8, String, bool, bool);
-type NativePeerInfo = (u64, u8, String, bool, bool, Vec<String>);
+use slk_contract::ConnectionInfo as NativeObjectInfo;
+use slk_contract::PeerInfo as NativePeerInfo;
 
 pub struct Context {
     conn: Connection,

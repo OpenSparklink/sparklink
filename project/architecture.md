@@ -610,7 +610,7 @@ flowchart TB
 | 应用SDK | libsparklink目前混合Native/FFI；尚非目标Client，Python默认仍暴露Adapter | 应用经slkd申请管理/通道授权，数据直达socket；C/Python应用/Native入口区分，迁移后删除旧默认导出 |
 | SSAP | 当前唯一slkd actor、Owned数据库/审批及部分真实远端操作已存在；不是从零建Engine | local/remote为daemon客户端封装；描述符/订阅/长写等未支持项不因API树而开放；原权限类型与codec复用 |
 | slk-protocol | 当前还包含ioctl/syscall包装；此状态不满足纯值/codec边界 | 移走操作层，保留准确ABI/必要纯codec与状态转换；源码/形式化映射随迁移更新，不转授旧证明 |
-| 临时依赖 | R3b已切换slkd/诊断/实验调用者到slk-native；旧C/Python门面libsparklink暂依赖Native | R3c必须接通真实应用Client/共享契约并迁移语言绑定，删除Native导出及依赖；不允许作为应用SDK发布或长期alias |
+| R3c源码边界 | libsparklink→Channel/契约/protocol，slkd→Native/Channel/契约/protocol；Native无SDK/Channel依赖 | 实际默认Cargo闭包及独立符号/头检查；新artifact尚未验收，完整C/Python broker/SSAP客户端与R4/R6仍缺失 |
 
 R3a把现有Channel query/TX/Session status、SCM安全上下文和期限/系统调用迁入
 slk-channel；ABI值与纯校验留slk-protocol，无旧操作alias。生产调用者同步切换，
@@ -1072,3 +1072,12 @@ revocation/Down/deadline interleavings, CPCD and Bond remain separately gated.
 全局开关、隐式fallback或机械拆crate绕过。例外须有理由、边界与退出门禁。
 退休清单、批次及状态只维护在[唯一计划WP18](implementation-plan.md)，
 资格只维护在[当前能力](current-capabilities.md)。完整原范围与VM-only不变。
+
+
+R3c源码已接通真实应用Client并迁移slktest授权fd申请；保留唯一Engine/Session。
+共享契约独立于SDK，实际producer和caller共用路径/元组。Client绑定唯一daemon owner、
+不缓存generation，不跟随替换者，内核仍最终强制Grant/身份；这是观察核对，不是跨
+D-Bus/内核原子证明。Native C导出移到独立库/头，App库不导出Native，Python默认
+Native入口和旧Adapter模块删除，错误显式库路径不回退。C/Python现有应用面仅授权fd
+操作，完整broker/SSAP便利客户端未实现，不添加假门面。slk-native仍含待R4逐入口
+退休的旧拒绝逻辑；部署完整性与实机资格按准确产物另验。

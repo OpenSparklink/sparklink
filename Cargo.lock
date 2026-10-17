@@ -556,13 +556,15 @@ checksum = "48f5d2a454e16a5ea0f4ced81bd44e4cfc7bd3a507b61887c99fd3538b28e4af"
 name = "libsparklink"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "nix 0.30.1",
  "slk-channel",
- "slk-native",
+ "slk-contract",
  "slk-protocol",
  "thiserror",
  "tokio",
  "tracing",
+ "zbus",
 ]
 
 [[package]]
@@ -971,6 +973,7 @@ dependencies = [
  "rustyline",
  "serde",
  "serde_json",
+ "slk-contract",
  "slk-protocol",
  "tokio",
  "zbus",
@@ -981,6 +984,13 @@ name = "slk-channel"
 version = "0.1.0"
 dependencies = [
  "nix 0.30.1",
+ "slk-protocol",
+]
+
+[[package]]
+name = "slk-contract"
+version = "0.1.0"
+dependencies = [
  "slk-protocol",
 ]
 
@@ -1032,6 +1042,7 @@ dependencies = [
  "nix 0.30.1",
  "serde",
  "slk-channel",
+ "slk-contract",
  "slk-experimental",
  "slk-native",
  "slk-protocol",
@@ -1073,10 +1084,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "libsparklink",
  "nix 0.30.1",
  "serde",
  "serde_json",
  "slk-channel",
+ "slk-contract",
  "slk-protocol",
  "tokio",
  "zbus",

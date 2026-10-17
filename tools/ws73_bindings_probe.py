@@ -10,8 +10,8 @@ import select
 import time
 
 sys.path.insert(0,'/usr/share/sparklink/python')
-os.environ['LIBSPARKLINK_PATH']='/usr/lib/libsparklink.so'
-from sparklink import NativeAdapter
+os.environ['LIBSLK_NATIVE_PATH']='/usr/lib/libslk_native.so'
+from sparklink.native import NativeAdapter
 from sparklink.structs import SleDiscoverySubmit
 
 

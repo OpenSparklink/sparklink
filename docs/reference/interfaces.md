@@ -4,7 +4,8 @@
 |---|---|---|
 | 内核 UAPI／socket | 匹配的 Linux `include/uapi/linux/sparklink*.h`，及 Rust `slk-protocol` | 尚未发布，按当前调用路径核对 |
 | D-Bus | `crates/slkd/src/dbus_iface.rs` 及相关对象模块 | 观察、管理与授权分开；对象绑定当前设备生命周期 |
-| C API | `crates/libsparklink/include/sparklink.h` 与生成配置 | 保持头文件、实际 cdylib 与匹配内核版本一致 |
+| C应用fd API | `crates/libsparklink/include/sparklink.h` | 已授权通道操作；无Native管理导出，当前不含完整broker/SSAP客户端 |
+| C Native API | `crates/slk-native/include/sparklink_native.h` | 显式管理/观察库；匹配libslk_native，不授予访问权限 |
 | Python | `bindings/python/sparklink/` 与 ABI 检查 | 与文档构建的 Python 项目分开 |
 | CLI | 当前构建的 `slctl --help`、`slkconfig --help` | 原生管理、离线诊断和迁移中的旧命令有不同限制 |
 | 当前资格 | [CURRENT_CAPABILITIES](../../project/current-capabilities.md) | 区分源码、离线、模型、实机与未决条件 |
@@ -26,14 +27,35 @@
 实际 Agent、Connection 安全机制、唯一用户态 SSAP Engine、管理 staging 与 Owned
 服务注册保持原职责。本段描述源码整改，实机资格仍按能力入口的准确 artifact。
 
+## 应用、Native与共享契约
+
+Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总线连接，绑定daemon
+唯一owner和controller generation/connection lifetime。`open_channel`与动态staging
+复用已有方法，接收fd检查实际AF_SPARKLINK；失败不降级，不暴露管理lease。
+`slk-contract`是独立的值类型/路径/方法名契约；slkd直接依赖Native、Channel和契约，
+不依赖SDK。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
+
+`slk-channel::Channel`持有一个fd引用，构造只检查实际domain，**不是Ready或交付**。
+`try_clone`共享同一内核binding，`into_owned_fd`明确转移所有权；关闭仍服从内核最后
+引用/Grant/credit/Ticket契约。已有操作层保留query与约束SCM收发，完整高级异步接口
+仍按实际实现开放。
+
+Python默认导出仅访问要求和授权fd操作，旧`Adapter`及默认`NativeAdapter`导出已删除。
+Native需显式`from sparklink.native import NativeAdapter`并加载`libslk_native.so`；应用
+fd操作用`libsparklink.so`。`LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定准确产物，
+错误覆盖路径直接失败，不静默回退。两库C头/符号分别检查。**C/Python尚无完整broker、
+远端SSAP或回调客户端**；不得从新库名称推导已实现所有目标API。Native旧不支持入口
+仍按R4全链清单退休，不以移动文件表示整改全部完成。
+
+
 ## 本批源码核对的状态（未发布 ABI）
 
-当前接口说明复核用户态 `8121ba0fc038` 与 Linux `8cbf53e6a088`；仅描述源码可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。
+本批接口说明按WP18/R3源码及Linux `0cd4731dd3e6`核对；Native/API迁移未验收的部分不能继承17ed资格。仅描述可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。
 
 | 范围 | 当前状态与限制 | 源码定位 |
 |---|---|---|
 | Native 管理／诊断 | 版本化请求，controller generation／所有权检查；已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-native/src/ioctl.rs`、内核 `sparklink_core.rs` |
-| Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`libsparklink` Native API、内核 socket |
+| Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`slk-native` API、内核 socket |
 | D-Bus ServiceManager／RemoteService | 新 RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；旧 facade 与 RemoteService 仍 NotSupported；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
 | 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-native/src/ioctl.rs`、内核 UAPI |
 | 旧 property／write facade | property 超 248、write 超 252 字节拒绝；这是遗留输入校验，不是新 Engine MTU 承诺 | `slkd/src/service.rs` |

@@ -13,11 +13,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def check_python_examples(text, root=ROOT):
     methods = {}
-    for source in ('adapter.py', 'native.py'):
+    for source in ('native.py', 'channel.py'):
         tree = ast.parse((root / 'bindings/python/sparklink' / source).read_text())
         for node in tree.body:
             if isinstance(node, ast.ClassDef):
                 methods[node.name] = {x.name for x in node.body if isinstance(x, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    # A retired constructor is recognized only to reject its historical calls;
+    # it is not reconstructed or imported into a production binding.
+    methods['Adapter'] = set()
     blocks = re.findall(r'^```python\n(.*?)^```', text, re.M | re.S)
     errors = []
     if not blocks:
@@ -28,6 +31,13 @@ def check_python_examples(text, root=ROOT):
         except SyntaxError as exc:
             errors.append(f'example {i}: {exc}')
             continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module == 'sparklink':
+                for name in node.names:
+                    if name.name in {'Adapter', 'NativeAdapter', 'registration_snapshot'}:
+                        errors.append(f'example {i}: {name.name} is not a default application export')
+            if isinstance(node, ast.ImportFrom) and node.module == 'sparklink.adapter':
+                errors.append(f'example {i}: retired sparklink.adapter module')
         bindings = {}
         for node in ast.walk(tree):
             if isinstance(node, ast.withitem) and isinstance(node.context_expr, ast.Call):

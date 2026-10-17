@@ -12,7 +12,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from sparklink.adapter import Adapter
+from sparklink.native import NativeAdapter
 
 from sparklink import SsapOperations as Ops
 
@@ -97,4 +97,4 @@ class OperationsConformance(unittest.TestCase):
 class RemovedLegacyApi(unittest.TestCase):
     def test_removed_raw_ssap_methods_cannot_load_or_call_ffi(self):
         for name in ('ssap_info', 'ssap_read', 'ssap_write'):
-            self.assertFalse(hasattr(Adapter, name))
+            self.assertFalse(hasattr(NativeAdapter, name))

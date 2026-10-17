@@ -38,6 +38,34 @@ pub fn query_session_tx_status(fd: RawFd) -> io::Result<SleSessionTxStatus> {
     Ok(value)
 }
 
+/// One owned fd reference. Construction checks the actual socket domain, not
+/// Ready, connectivity, security or future authority. Dup shares the kernel
+/// binding; only the final VFS reference triggers its cleanup contract.
+#[derive(Debug)]
+pub struct Channel(std::os::fd::OwnedFd);
+impl Channel {
+    pub fn from_owned(fd: std::os::fd::OwnedFd) -> io::Result<Self> {
+        use std::os::fd::AsRawFd;
+        security::check_domain(fd.as_raw_fd())?;
+        Ok(Self(fd))
+    }
+    pub fn into_owned_fd(self) -> std::os::fd::OwnedFd {
+        self.0
+    }
+    pub fn try_clone(&self) -> io::Result<Self> {
+        Ok(Self(self.0.try_clone()?))
+    }
+    pub fn info(&self) -> io::Result<SleChannelInfo> {
+        use std::os::fd::AsRawFd;
+        query(self.0.as_raw_fd())
+    }
+}
+impl std::os::fd::AsFd for Channel {
+    fn as_fd(&self) -> std::os::fd::BorrowedFd<'_> {
+        std::os::fd::AsFd::as_fd(&self.0)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

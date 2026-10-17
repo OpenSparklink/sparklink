@@ -5,6 +5,9 @@ version.workspace = true
 edition.workspace = true
 publish = false
 
+[lib]
+crate-type = ["rlib", "cdylib"]
+
 [dependencies]
 slk-protocol = { workspace = true }
 tokio = { workspace = true }

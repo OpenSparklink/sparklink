@@ -1,6 +1,6 @@
 [package]
 name = "libsparklink"
-description = "SparkLink userspace library - adapter, device, connection, and service management"
+description = "SparkLink application broker client and authorized-channel SDK"
 version.workspace = true
 edition.workspace = true
 
@@ -9,9 +9,13 @@ crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 slk-protocol = { workspace = true }
-slk-native = { workspace = true }
+slk-contract = { workspace = true }
 slk-channel = { workspace = true }
+zbus = { workspace = true }
 tokio = { workspace = true }
 nix = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
+
+[dev-dependencies]
+anyhow = "1"

@@ -196,8 +196,9 @@ def stage(args, manifest, root, source, copy_elf):
         raise ValueError('compiled/policy sources differ from service bundle')
     if not re.fullmatch(r'/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}', service['binary_prefix']):
         raise ValueError('invalid versioned executable prefix')
-    if service['shared_library'] != service['binary_prefix'] + '/liblibsparklink.so':
-        raise ValueError('unexpected shared library pathname')
+    if (service['shared_library'] != service['binary_prefix'] + '/liblibsparklink.so'
+            or service['native_shared_library'] != service['binary_prefix'] + '/libslk_native.so'):
+        raise ValueError('unexpected application/Native shared library pathname')
     for relative, record in service['files'].items():
         path = Path(relative)
         if path.is_absolute() or '..' in path.parts:
@@ -216,7 +217,9 @@ def stage(args, manifest, root, source, copy_elf):
         (root / 'bin' / name).unlink()
         (root / 'bin' / name).symlink_to('/' + str(prefix / name))
     library = service_path / 'payload' / service['shared_library'].lstrip('/')
-    copy_elf(library, root / 'usr/lib/liblibsparklink.so', root)
+    copy_elf(library, root / 'usr/lib/libsparklink.so', root)
+    native_library = service_path / 'payload' / service['native_shared_library'].lstrip('/')
+    copy_elf(native_library, root / 'usr/lib/libslk_native.so', root)
     custom_config = getattr(args, 'native_discovery_config', None)
     if custom_config is not None:
         stage_discovery_config(custom_config, service_path / 'payload' / prefix / 'slkd', root, manifest)

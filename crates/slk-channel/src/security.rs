@@ -105,7 +105,7 @@ pub fn send(
     }
 }
 
-fn check_domain(fd: RawFd) -> io::Result<()> {
+pub(crate) fn check_domain(fd: RawFd) -> io::Result<()> {
     let mut domain: i32 = 0;
     let mut domain_size = mem::size_of_val(&domain) as nix::libc::socklen_t;
     // SAFETY: live aligned output locals, caller retains fd through the syscall.

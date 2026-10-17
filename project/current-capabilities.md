@@ -15,8 +15,11 @@ service-only68拒绝、5重放81复制负对照。309默认+309all-features、�
 fixture；**不是128地址RF压力、实机TTL故障或完整生命周期证明**。原Proxy缓存失败
 保留，过期false断言不变，客户端必须显式无缓存查询或Properties.Get。
 
-R3b `82109ac`已迁移Native Rust生产调用者并删除protocol ioctl；此提交尚无新artifact
-实机资格，17ed不转授。C/Python混合门面仍待R3c完整迁移、删除Native默认导出。完整Native/Channel/共享契约/应用SDK三视图迁移仍未完成，按唯一WP18推进。
+R3b `82109ac`已迁移Native Rust生产调用者并删除protocol ioctl；R3c开发树进一步
+接通真实Client/独立共享契约及slktest调用，删除SDK→Native和slkd→SDK依赖，Native C/
+Python独立，旧默认Adapter删除。**当前R3c尚无准确新artifact实机资格**，17ed不转授。
+C/Python应用面目前仅已授权fd操作，完整broker/SSAP便利客户端仍缺失；R4旧入口/事件、
+R5门禁及R6干净VM部署未闭合，完整架构整改尚未完成。
 
 [退休R1的准确新产物回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
 K`0cd4731dd3e6` / **编译 `cd35db3fd4e4` / 工具 `0568a3d1db1b`**，SDK110 U2/3。

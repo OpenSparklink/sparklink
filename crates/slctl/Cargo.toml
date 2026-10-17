@@ -10,6 +10,7 @@ path = "src/main.rs"
 
 [dependencies]
 slk-protocol = { workspace = true }
+slk-contract = { workspace = true }
 zbus = { workspace = true }
 tokio = { workspace = true }
 rustyline = { workspace = true }

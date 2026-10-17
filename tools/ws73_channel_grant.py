@@ -125,7 +125,7 @@ def worker(data, control, minimum=0):
     ready=dict(stage='ready',pid=os.getpid(),fd=data.fileno(),original=original,original_errno=original_errno,credentials=identity,wall_ns=time.time_ns())
     if transfer is not None:ready['scm_rights']=transfer
     send(control,ready)
-    from sparklink.native import channel_prepare_tx, channel_send_constrained, channel_recv_security
+    from sparklink.channel import channel_prepare_tx, channel_send_constrained, channel_recv_security
     from sparklink.structs import SleSendConstraint
     last_constraint=None
     def transmit(payload,flags=socket.MSG_NOSIGNAL,receipt=None):
@@ -203,7 +203,7 @@ def worker(data, control, minimum=0):
                         arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False);values.append(arrived.hex())
                 send(control,dict(stage='primed',sender=command['sender'],values=values,pid=os.getpid(),fd=data.fileno(),start_wall_ns=before,end_wall_ns=time.time_ns()))
             elif kind=='tx_status':
-                from sparklink.native import channel_tx_status
+                from sparklink.channel import channel_tx_status
                 send(control,dict(stage='tx_status',pid=os.getpid(),fd=data.fileno(),value=bytes(channel_tx_status(data.fileno())).hex(),wall_ns=time.time_ns()))
             elif kind=='block':
                 prefix=command.get('prefix');admission={}
@@ -215,7 +215,7 @@ def worker(data, control, minimum=0):
                     admission.update(admission_after_wall_ns=time.time_ns(),admission_after_monotonic_ns=time.monotonic_ns())
                 if command.get('sample_before_block'):
                     if prefix is None:raise ValueError('TX observation requires bounded original PDU')
-                    from sparklink.native import channel_tx_status
+                    from sparklink.channel import channel_tx_status
                     time.sleep(.25)
                     admission['pre_block_tx_status']=bytes(channel_tx_status(data.fileno())).hex()
                     admission['pre_block_tx_status_wall_ns']=time.time_ns()

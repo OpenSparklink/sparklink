@@ -2081,3 +2081,24 @@ WP18/R3b有限切片：实际迁移Native Adapter/错误/事件/观察/抓包/io
 退出为default/all-features/严格clippy、实际依赖闭包、头和跨语言独立校验；准确新
 artifact实机保持，不把17ed的R3a资格转授此变更。原121候选方法/46C导出词法审计
 只是迁移输入，仍须R4逐项语义审查，不以全部源码搬家取代退休。
+
+
+WP18/R3c有限切片（源码接通，尚无新artifact实机资格）：独立slk-contract承载现有
+方法/路径/元组，producer与CLI/SDK实际消费；libsparklink::Client绑定真实daemon唯一
+owner、controller generation、connection lifetime，显式无缓存查询和无降级申请fd。
+slktest原基本/动态授权逻辑迁到SDK，负载/断言/报告仍在工具；授权后的fd检查实际domain。
+Native C FFI、头和cdylib迁到slk-native，App保留同一Channel薄桥及纯权限谓词；Python
+默认Native/旧Adapter模块删除，Native需显式导入独立库；错误显式库路径不回退。
+同步VM/debug/native bundle、安装、CI、跨语言头/符号与文档，删除重复申请逻辑。
+
+相关不变量：无SDK→Native/slkd→SDK逆边，只有一份Channel系统调用；旧对象不跟随
+replacement daemon/新gen/lifetime；protected申请不降级；fd域/权限失败不造成功。
+退出：默认/实验/严格clippy、实际新Client私有bus交错/拒绝、独立头与完整C/Rust/Python
+布局/符号、工具/文档；准确新artifact四真实WS73保持门禁验证新slktest/SDK入口及现有
+SSAP/长度范围。保留分库遗漏ctypes指针签名导致的实际崩溃/原始faulthandler和后续
+头冲突/导入失败，修复不删断言。默认Native库不含Channel桥，应用库无Native导出。
+
+这不是完整SDK目标树：C/Python broker与SSAP便利客户端、完整高级Channel等待/错误
+契约继续按WP03/06/08；未实现不先造门面。R4继续逐入口退休Native/CLI/DBus旧拒绝
+API及旧事件消费者，R5扩独立架构门禁，R6仍须干净VM安装/外部SDK/升级/回滚/卸载。
+新名字/新crate或源码编译不授予上述资格；无新增形式化证明，自然RCA/非人工恢复OPEN。

@@ -49,10 +49,12 @@ install: build
 	$(INSTALL) -Dm644 data/man/man1/slktest.1 $(DESTDIR)$(MANDIR)/man1/slktest.1
 	# Shared library
 	$(INSTALL) -Dm755 target/release/liblibsparklink.so $(DESTDIR)$(LIBDIR)/libsparklink.so.0.1.0
+	$(INSTALL) -Dm755 target/release/libslk_native.so $(DESTDIR)$(LIBDIR)/libslk_native.so
 	ln -sf libsparklink.so.0.1.0 $(DESTDIR)$(LIBDIR)/libsparklink.so.0
 	ln -sf libsparklink.so.0     $(DESTDIR)$(LIBDIR)/libsparklink.so
 	# Header
 	$(INSTALL) -Dm644 crates/libsparklink/include/sparklink.h $(DESTDIR)$(INCLUDEDIR)/sparklink.h
+	$(INSTALL) -Dm644 crates/slk-native/include/sparklink_native.h $(DESTDIR)$(INCLUDEDIR)/sparklink_native.h
 	# Configuration
 	$(INSTALL) -Dm644 data/config/main.conf       $(DESTDIR)$(SYSCONFDIR)/sparklink/main.conf
 	# D-Bus
@@ -73,6 +75,7 @@ uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/slkdump
 	rm -f $(DESTDIR)$(LIBDIR)/libsparklink.so*
 	rm -f $(DESTDIR)$(INCLUDEDIR)/sparklink.h
+	rm -f $(DESTDIR)$(INCLUDEDIR)/sparklink_native.h $(DESTDIR)$(LIBDIR)/libslk_native.so
 	# Administrator configuration and state survive uninstall.
 	rm -f $(DESTDIR)$(DBUSSERVICEDIR)/org.sparklink.service
 	rm -f $(DESTDIR)$(DBUSCONFDIR)/sparklink.conf

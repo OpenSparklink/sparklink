@@ -17,6 +17,7 @@ experimental-legacy-profiles = ["dep:slk-experimental"]
 slk-experimental = { path = "../slk-experimental", optional = true }
 anyhow = "1"
 slk-protocol = { workspace = true }
+slk-contract = { workspace = true }
 slk-channel = { workspace = true }
 slk-native = { workspace = true }
 tokio = { workspace = true }

@@ -91,6 +91,11 @@ jobs:
         run: cbindgen --config cbindgen.toml --crate libsparklink --output /tmp/sparklink.h
       - name: Verify header unchanged
         run: diff -u crates/libsparklink/include/sparklink.h /tmp/sparklink.h
+      - name: Generate Native header
+        working-directory: crates/slk-native
+        run: cbindgen --config cbindgen.toml --crate slk-native --output /tmp/sparklink_native.h
+      - name: Verify independent Native header
+        run: diff -u crates/slk-native/include/sparklink_native.h /tmp/sparklink_native.h
 
   build-release:
     name: release build
@@ -113,6 +118,7 @@ jobs:
             target/release/slkmon
             target/release/slkdump
             target/release/liblibsparklink.so
+            target/release/libslk_native.so
           retention-days: 14
 
   python-check:
@@ -140,17 +146,18 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-multilib
-          cargo build -p libsparklink --lib
+          cargo build --locked -p libsparklink -p slk-native --lib
       - name: Compare actual C and broker socket v2/v3 layout
         run: CC=cc python tools/channel_socket_contract.py --kernel .kernel-uapi
       - run: python -m py_compile bindings/python/sparklink/__init__.py
       - run: python -m py_compile bindings/python/sparklink/structs.py
-      - run: python -m py_compile bindings/python/sparklink/adapter.py
+      - run: python -m compileall -q bindings/python/sparklink
       - run: python -m py_compile bindings/python/sparklink/native.py
       - name: Run Python unit and compiled C/Rust ABI tests
         env:
           PYTHONPATH: bindings/python
           LIBSPARKLINK_PATH: ${{ github.workspace }}/target/debug/liblibsparklink.so
+          LIBSLK_NATIVE_PATH: ${{ github.workspace }}/target/debug/libslk_native.so
           SPARKLINK_KERNEL_UAPI: ${{ github.workspace }}/.kernel-uapi/include/uapi/linux/sparklink_ioctl.h
           SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-uapi
         run: python -m unittest discover -s bindings/python/tests -v

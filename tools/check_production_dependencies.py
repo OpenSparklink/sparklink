@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Check actual default Cargo normal-dependency closures, not protocol behavior.
 
-Native Rust consumers have moved to slk-native. The C/Python facade still
-uses Native pending WP18/R3c; this is not the finished application SDK split.
+Native Rust consumers have moved to slk-native. The application client and C/Python surfaces use independent libraries.
+This gate checks dependencies,not full API or lifecycle qualification.
 """
 from pathlib import Path
 import re
@@ -12,11 +12,14 @@ import tomllib
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={
-    'slkd':{'slkd','slk-native','slk-channel','slk-protocol'},
-    'libsparklink':{'libsparklink','slk-native','slk-channel','slk-protocol'},
+    'slkd':{'slkd','slk-native','slk-channel','slk-contract','slk-protocol'},
+    'libsparklink':{'libsparklink','slk-channel','slk-contract','slk-protocol'},
     'slk-protocol':{'slk-protocol'},
     'slk-channel':{'slk-channel','slk-protocol'},
     'slk-native':{'slk-native','slk-protocol'},
+    'slk-contract':{'slk-contract','slk-protocol'},
+    'slktest':{'slktest','libsparklink','slk-channel','slk-contract','slk-protocol'},
+    'slctl':{'slctl','slk-contract','slk-protocol'},
 }
 
 

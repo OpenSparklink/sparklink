@@ -313,3 +313,13 @@ slctl共用纯marker编码不再依赖Native包装。剩余例外转为C/Python�
 仅限紧接的R3c完整调用者迁移；该门面不能以应用SDK名义发布，不是最终权限隔离。
 R3c退出必须删除Native默认导出及依赖，不保留长期转发别名。旧未支持入口按R4全链
 清单退休，不能将移动到Native误写成能力已验收。Native库自身不依赖Channel或客户端。
+
+
+R3c实际接线：独立slk-contract承载现有路径/tuple/method，slkd/SDK/CLI均消费；
+libsparklink的真实Client只向当前唯一daemon owner请求，显式无缓存核对原gen/lifetime，
+不跟随替换者。slktest复用SDK申请fd，保留原业务循环/计时/断言，无每包D-Bus。
+Native C薄桥/头/库迁入slk-native，应用库仅Channel薄桥/纯要求；默认Python不再导出
+Native/旧Adapter，显式两库路径错误不回退。实际Cargo闭包拒绝SDK→Native和slkd→SDK，
+两份头及实际C导出独立负对照。fd域检查不授Ready；本地owner核对不是跨总线/内核
+原子证明，内核Grant/最终提交仍强制权限。C/Python完整broker/SSAP便利接口尚缺，
+不生成虚假方法；R4旧拒绝入口/事件、R5门禁、R6干净VM部署仍须按原scope完成。

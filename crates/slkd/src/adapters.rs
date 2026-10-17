@@ -84,10 +84,11 @@ pub(crate) async fn relinquish(
 }
 
 pub(crate) fn object_path(snapshot: &SleControllerSnapshot) -> String {
-    format!(
-        "/org/sparklink/slk{}_g{}",
-        snapshot.dev_index, snapshot.generation
-    )
+    slk_contract::ControllerId {
+        index: snapshot.dev_index,
+        generation: snapshot.generation,
+    }
+    .path()
 }
 
 async fn open_selected(path: String, id: u16) -> anyhow::Result<(Adapter, SleControllerSnapshot)> {

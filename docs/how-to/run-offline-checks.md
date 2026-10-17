@@ -10,9 +10,9 @@
 
 ```sh
 cargo +1.96.1 fmt --all -- --check
-cargo +1.96.1 check --locked --workspace --all-targets --all-features
-cargo +1.96.1 test --locked --workspace --all-features
-cargo +1.96.1 clippy --locked --workspace --all-targets --all-features -- -D warnings
+python3 tools/build_resources.py -- cargo +1.96.1 check --locked --workspace --all-targets --all-features
+python3 tools/build_resources.py -- cargo +1.96.1 test --locked --workspace --all-features
+python3 tools/build_resources.py -- cargo +1.96.1 clippy --locked --workspace --all-targets --all-features -- -D warnings
 ```
 
 ## 控制本机主线程构建资源
@@ -55,6 +55,21 @@ workspace `.dev/cargo-native-dev`，可用 `--build-dir` 指定另一稳定的�
 
 离线模型、合成后端和人工故障注入各有资格边界。需要真实 USB/HCC/对端业务
 证据的事项，继续使用 VM-only 的独立实机门禁。
+
+## 核对已封存的退休 ioctl 收据
+
+先取得匹配的 VM run、prepared 根及其 manifest，设置 `RUN_ROOT`、`PREPARED_ROOT`，
+将 `KERNEL_COMMIT`、`USERSPACE_COMMIT` 设为准确的40位编译提交，`NEW_RECEIPT_REPORT`
+设为尚不存在的新文件。以下步骤只读已封存材料，不运行驱动或访问设备：
+
+```sh
+python3 tools/ws73_raw_uapi.py --run "$RUN_ROOT" --prepared "$PREPARED_ROOT" --kernel "$KERNEL_COMMIT" --userspace "$USERSPACE_COMMIT" --output "$NEW_RECEIPT_REPORT"
+```
+
+检查输出的有限范围、每角色/每设备收据和负对照。缺少收据、实际 probe、hash不符、
+源身份不符或退出非零均应失败，不能用旧83项报告代替当前101项ENOTTY/303检查。
+该收据只说明实际guest C探针的结果；业务交付仍须另外核对对端应用和双端捕获。
+无法取得私有prepared根或原始材料时，保持未核验，不用日志截图补成PASS。
 
 
 ## 对生产 C codec 重放语料和短 fuzz

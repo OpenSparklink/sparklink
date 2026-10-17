@@ -687,7 +687,7 @@ impl Wire {
         if self.fixture {
             return receive_fixture(fd, bytes).map(|n| (n, None));
         }
-        let (size, m, flags) = slk_protocol::message_security::recv(
+        let (size, m, flags) = slk_channel::security::recv(
             fd.as_raw_fd(),
             bytes,
             nix::libc::MSG_DONTWAIT | nix::libc::MSG_TRUNC,
@@ -736,7 +736,7 @@ impl Wire {
             }
             return Ok(None);
         }
-        slk_protocol::message_security::prepare(
+        slk_channel::security::prepare(
             self.fd.get_ref().as_raw_fd(),
             minimum,
             monotonic_deadline(deadline)?,
@@ -749,7 +749,7 @@ impl Wire {
             return send(fd, &packet.bytes);
         }
         if let Some(c) = packet.constraint {
-            let count = slk_protocol::message_security::send(
+            let count = slk_channel::security::send(
                 fd.as_raw_fd(),
                 &packet.bytes,
                 nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
@@ -765,7 +765,7 @@ impl Wire {
     }
 }
 fn monotonic_deadline(deadline: Instant) -> io::Result<u64> {
-    slk_protocol::message_security::deadline_at(deadline.into_std())
+    slk_channel::security::deadline_at(deadline.into_std())
 }
 fn encode(kind: ExchangeKind, mtu: u16) -> io::Result<Vec<u8>> {
     let info = ExchangeInfo {
@@ -832,7 +832,7 @@ async fn run(
             _ = tokio::time::sleep_until(original_deadline) => return Err(io::Error::new(io::ErrorKind::TimedOut, "SMTC capability deadline")),
             ready = fd.writable() => {
                 let mut ready = ready?;
-                match ready.try_io(|fd| slk_protocol::channel::query(fd.get_ref().as_raw_fd())) {
+                match ready.try_io(|fd| slk_channel::query(fd.get_ref().as_raw_fd())) {
                     Ok(info) => break info?, Err(_) => continue,
                 }
             }
@@ -965,19 +965,19 @@ async fn exchange_loop(
                 if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.deadline) || server.as_ref().is_some_and(|v|Instant::now()>=v.0) || server_queue.iter().any(|v|Instant::now()>=v.deadline) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP obligation deadline"));
                 }
-                slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
+                slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
             }
             query = incoming.recv() => {
                 let Some(query)=query else { return Ok(()); };
                 if let Query::Incoming{handles,modes,deadline,reply}=query {
                     if reply.is_closed(){continue;}
                     if incoming_wait.is_some() || !initial_done || Instant::now()>=deadline || handles.is_empty() || handles.len()>32 || modes==0 || modes&!3!=0 || handles.contains(&0) || handles.iter().enumerate().any(|(i,h)|handles[..i].contains(h)) {let _=reply.send(Err("SSAP local receive busy/not-ready/invalid/expired".into()));continue;}
-                    slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
+                    slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
                     incoming_wait=Some(IncomingWait{handles,modes,deadline,reply});continue;
                 }
                 if let Query::Value{bytes,deadline,minimum,reply}=query {
                     if client.is_some() || pending.len()+server_load>=8 || !initial_done || Instant::now()>=deadline {let _=reply.send(Err("SSAP busy/not-ready/expired".into()));continue;}
-                    slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
+                    slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
                     if bytes.len()>usize::from(capabilities.mtu) {let _=reply.send(Err("SSAP request exceeds channel".into()));continue;}
                     if reply.is_closed(){continue;}
                     let constraint=match wire.prepare(minimum,deadline) {Ok(c)=>c,Err(e)=>{let _=reply.send(Err(format!("SSAP send intent refused: {e}")));continue;}};
@@ -989,7 +989,7 @@ async fn exchange_loop(
                     let result=if Instant::now()>=deadline {
                         Err("transport observation original deadline".into())
                     } else {
-                        slk_protocol::channel::query_session_tx_status(wire.fd.get_ref().as_raw_fd())
+                        slk_channel::query_session_tx_status(wire.fd.get_ref().as_raw_fd())
                             .map_err(|error|error.to_string()).and_then(|current| {
                                 if (current.controller,current.generation,current.lifetime,current.handle)
                                     != (capabilities.controller,capabilities.generation,capabilities.lifetime,capabilities.handle) {
@@ -1001,7 +1001,7 @@ async fn exchange_loop(
                 }
                 let Query::Info(reply)=query else {unreachable!()};
                 let result=match state.borrow().clone() {
-                    Status::Negotiated(info) => slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd()).map_err(|e|e.to_string()).and_then(|current| {
+                    Status::Negotiated(info) => slk_channel::query(wire.fd.get_ref().as_raw_fd()).map_err(|e|e.to_string()).and_then(|current| {
                         if current != capabilities { Err("SMTC capability/lifetime changed".into()) } else { Ok(info) }
                     }),
                     Status::Starting => Err("SSAP response obligation pending".into()),
@@ -1041,14 +1041,14 @@ async fn exchange_loop(
                     if matches!(raw[0],15|16) {
                         if raw[0]==16 && pending.len()+server_load>=8{return Err(io::Error::other("SSAP ACK queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
-                        slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
+                        slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
                         let ack=incoming_packet(negotiated,raw,&mut incoming_wait)?;
                         if !ack.is_empty(){pending.push_back(Pending{bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});}
                     } else if matches!(raw[0],4|6|8|10|13) {
                         if !initial_done {return Err(io::Error::other("SSAP value/discovery before ExchangeInfo completion"));}
                         if pending.len()+server_load>=8 {return Err(io::Error::other("SSAP response obligation queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
-                        slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
+                        slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
                         next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
                         server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:negotiated,level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
                     } else if matches!(raw[0],1|5|7|9|11|14) {

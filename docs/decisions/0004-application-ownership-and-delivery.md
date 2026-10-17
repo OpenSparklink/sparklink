@@ -298,3 +298,10 @@ slktest经同一应用Channel，测试负载/计时/断言/报告留在工具，
 按用户最新顺序先完成架构迁移，保留实测路径与在途工作，回归和必要修复继续；不等待
 控制面竞争全集。R1a临时允许现有slkd→libsparklink Native包装只为连续迁移，R3调用者
 接通后删该边并更新依赖门禁。每项例外须有明确替代和退出，不成为永久架构。
+
+
+R3a实现先将现有已授权fd的查询、安全SCM/期限和系统调用迁到slk-channel；
+slk-protocol保留同一ABI及纯校验，旧操作导出删除，不保留转发alias。Engine、
+slktest和C桥用同一操作实现，测试/decoder一并迁移，不能复制循环或创建新Engine。
+这只完成Channel操作边界；Native ioctl与SDK/共享D-Bus契约仍须下一切片迁移，
+不能以一个新crate或离线通过宣称三视图架构全部达成。

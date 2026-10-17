@@ -24,7 +24,8 @@ python3 tools/build_resources.py -- cargo +1.96.1 test --locked --workspace
 
 | Crate | 类型 | 职责 |
 |-------|------|------|
-| `slk-protocol` | lib | UAPI 绑定: ioctl 包装、repr(C) 结构体、Generic Netlink 常量；以当前源码及能力门禁为准 |
+| `slk-protocol` | lib | ABI/纯值/codec；Channel系统调用已迁出，Native ioctl待R3下一切片迁出，不能宣称纯操作边界已完整达成 |
+| `slk-channel` | lib | 已授权fd查询、SCM安全上下文、原期限和系统调用；不打开controller或获取管理lease |
 | `libsparklink` | lib + cdylib | 高层 API: 异步 Adapter 抽象, AsyncFd 事件循环, Error/Event 类型, C FFI (ffi.rs/ffi_native.rs), cbindgen 生成 sparklink.h |
 | `slkd` | bin | D-Bus 守护进程: org.sparklink, TOML 配置, tracing-journald, zbus 5 |
 | `slkconfig` | bin | CLI 工具: info/dli/phy/role/reset/stats/connections/scan/connect/disconnect/security/pair/encrypt/set-psk/sec-reset/services/list-services/read-prop/write-prop/remote-discover/remote-read/remote-write 子命令, clap 4 |

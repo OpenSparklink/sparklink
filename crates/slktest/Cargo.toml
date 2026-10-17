@@ -7,6 +7,7 @@ publish = false
 
 [dependencies]
 slk-protocol = { workspace = true }
+slk-channel = { workspace = true }
 zbus = { workspace = true }
 tokio = { workspace = true }
 nix = { workspace = true }

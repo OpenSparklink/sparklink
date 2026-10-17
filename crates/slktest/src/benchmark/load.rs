@@ -879,7 +879,7 @@ pub(crate) fn run_load(fd: OwnedFd, config: LoadConfig, path: &Path) -> anyhow::
         nix::libc::POLLOUT,
         Instant::now() + Duration::from_secs(10),
     )?;
-    let info = slk_protocol::channel::query(fd.as_raw_fd())?;
+    let info = slk_channel::query(fd.as_raw_fd())?;
     if info.mode != 0
         || info.directions != 3
         || info.local_tcid != 31

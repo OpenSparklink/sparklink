@@ -17,7 +17,7 @@ fn tx_status(
     stage: &str,
     sequence: usize,
 ) -> anyhow::Result<slk_protocol::channel::SleChannelTxStatus> {
-    let s = slk_protocol::channel::query_tx_status(fd.as_raw_fd())?;
+    let s = slk_channel::query_tx_status(fd.as_raw_fd())?;
     println!(
         "NativeTxStatus: stage={stage} sequence={sequence} index={} generation={} lifetime={} handle={} maximum={} capacity={} outstanding={} debt={} peak={} queued={} limit={} busy={} bytes={} offset={} flags={} blocks={}",
         s.controller,
@@ -149,7 +149,7 @@ fn receive_checked(
         wait(fd, nix::libc::POLLIN, deadline)?;
         let mut buffer = [0u8; 2042];
         if let Some(expected) = receipt {
-            match slk_protocol::message_security::recv(
+            match slk_channel::security::recv(
                 fd.as_raw_fd(),
                 &mut buffer,
                 nix::libc::MSG_DONTWAIT | nix::libc::MSG_TRUNC,
@@ -231,7 +231,7 @@ fn reject_boundaries(fd: &OwnedFd) -> anyhow::Result<()> {
         nix::libc::POLLOUT,
         Instant::now() + Duration::from_secs(10),
     )?;
-    let mtu = usize::from(slk_protocol::channel::query(fd.as_raw_fd())?.mtu);
+    let mtu = usize::from(slk_channel::query(fd.as_raw_fd())?.mtu);
     for length in [mtu + 1, mtu + 4, mtu + 5, mtu + 6] {
         let mut bytes = vec![0u8; length];
         std::fs::File::open("/dev/urandom")?.read_exact(&mut bytes)?;
@@ -329,7 +329,7 @@ fn reject_stale_intents(
         } else {
             nix::libc::EACCES
         };
-        let result = slk_protocol::message_security::send(
+        let result = slk_channel::security::send(
             fd.as_raw_fd(),
             &payload,
             nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
@@ -384,7 +384,7 @@ fn info_copy_retry(fd: &OwnedFd, expected: slk_protocol::SleChannelInfo) -> anyh
         target.write_bytes(0xa5, 16);
     }
     // No Rust reference is created across the guard; the kernel must EFAULT.
-    let result = unsafe { slk_protocol::channel::sl_channel_info(fd.as_raw_fd(), target.cast()) };
+    let result = unsafe { slk_channel::sl_channel_info(fd.as_raw_fd(), target.cast()) };
     if result != Err(nix::errno::Errno::EFAULT) {
         anyhow::bail!("channel snapshot guard did not EFAULT: {result:?}");
     }
@@ -393,7 +393,7 @@ fn info_copy_retry(fd: &OwnedFd, expected: slk_protocol::SleChannelInfo) -> anyh
     if changed == 0 {
         anyhow::bail!("no partial channel snapshot copy observed");
     }
-    if slk_protocol::channel::query(fd.as_raw_fd())? != expected {
+    if slk_channel::query(fd.as_raw_fd())? != expected {
         anyhow::bail!("channel snapshot changed after copy fault");
     }
     println!("NativeChannelInfoCopy: partial={changed} retry=1 unchanged=1");
@@ -513,7 +513,7 @@ fn exercise_channel(
         nix::libc::POLLOUT,
         Instant::now() + Duration::from_secs(10),
     )?;
-    let info = slk_protocol::channel::query(fd.as_raw_fd())?;
+    let info = slk_channel::query(fd.as_raw_fd())?;
     let valid_pair = if dynamic {
         (0x80..=0xdf).contains(&info.local_tcid) && (0x80..=0xdf).contains(&info.remote_tcid)
     } else {
@@ -780,7 +780,7 @@ fn exercise_messages(
             );
             frame[28] = 1;
             if let Some(context) = context {
-                let absolute = slk_protocol::message_security::deadline_at(
+                let absolute = slk_channel::security::deadline_at(
                     deadline.min(Instant::now() + Duration::from_secs(5)),
                 )?;
                 let intent = slk_protocol::SleSendConstraint::from_receipt(
@@ -791,7 +791,7 @@ fn exercise_messages(
                 reject_stale_intents(&fd, intent, sequence)?;
                 loop {
                     wait(&fd, nix::libc::POLLOUT, deadline)?;
-                    match slk_protocol::message_security::send(
+                    match slk_channel::security::send(
                         fd.as_raw_fd(),
                         &frame,
                         nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,

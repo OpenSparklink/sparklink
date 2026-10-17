@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "crates/slk-protocol",
+    "crates/slk-channel",
     "crates/libsparklink",
     "crates/slkd",
     "crates/slk-experimental",
@@ -19,6 +20,7 @@ repository = "https://gitee.com/sparklinkZ/sparklink-userspace"
 
 [workspace.dependencies]
 slk-protocol = { path = "crates/slk-protocol" }
+slk-channel = { path = "crates/slk-channel" }
 libsparklink = { path = "crates/libsparklink" }
 tokio = { version = "1", features = ["full"] }
 zbus = { version = "5", default-features = false, features = ["tokio"] }

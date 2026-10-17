@@ -429,7 +429,7 @@ pub unsafe extern "C" fn slk_channel_info(fd: c_int, output: *mut SleChannelInfo
     if output.is_null() {
         return -nix::libc::EINVAL;
     }
-    match slk_protocol::channel::query(fd) {
+    match slk_channel::query(fd) {
         Ok(info) => {
             unsafe {
                 output.write(info);
@@ -452,7 +452,7 @@ pub unsafe extern "C" fn slk_channel_tx_status(
     if output.is_null() {
         return -nix::libc::EINVAL;
     }
-    match slk_protocol::channel::query_tx_status(fd) {
+    match slk_channel::query_tx_status(fd) {
         Ok(value) => {
             unsafe { output.write(value) };
             0
@@ -473,7 +473,7 @@ pub unsafe extern "C" fn slk_session_tx_status(
     if output.is_null() {
         return -nix::libc::EINVAL;
     }
-    match slk_protocol::channel::query_session_tx_status(fd) {
+    match slk_channel::query_session_tx_status(fd) {
         Ok(value) => {
             unsafe { output.write(value) };
             0
@@ -623,7 +623,7 @@ pub unsafe extern "C" fn slk_channel_recv_security(
         // SAFETY: caller provides the exclusive live region described above.
         unsafe { std::slice::from_raw_parts_mut(buffer, length) }
     };
-    match slk_protocol::message_security::recv(fd, bytes, flags) {
+    match slk_channel::security::recv(fd, bytes, flags) {
         Ok((count, context, actual_flags)) => {
             unsafe {
                 output.write(context);
@@ -655,7 +655,7 @@ pub unsafe extern "C" fn slk_channel_send_constrained(
     } else {
         unsafe { std::slice::from_raw_parts(buffer, length) }
     };
-    match slk_protocol::message_security::send(fd, bytes, flags, unsafe { &*constraint }) {
+    match slk_channel::security::send(fd, bytes, flags, unsafe { &*constraint }) {
         Ok(count) => count as isize,
         Err(error) => -(error.raw_os_error().unwrap_or(nix::libc::EPROTO) as isize),
     }
@@ -675,7 +675,7 @@ pub unsafe extern "C" fn slk_channel_prepare_tx(
     if out.is_null() {
         return -nix::libc::EINVAL;
     }
-    match slk_protocol::message_security::prepare(fd, minimum, deadline) {
+    match slk_channel::security::prepare(fd, minimum, deadline) {
         Ok(c) => {
             unsafe { out.write(c) };
             0

@@ -12,9 +12,10 @@ import tomllib
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={
-    'slkd':{'slkd','libsparklink','slk-protocol'},
-    'libsparklink':{'libsparklink','slk-protocol'},
+    'slkd':{'slkd','libsparklink','slk-channel','slk-protocol'},
+    'libsparklink':{'libsparklink','slk-channel','slk-protocol'},
     'slk-protocol':{'slk-protocol'},
+    'slk-channel':{'slk-channel','slk-protocol'},
 }
 
 

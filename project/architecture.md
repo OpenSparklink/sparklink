@@ -612,6 +612,11 @@ flowchart TB
 | slk-protocol | 当前还包含ioctl/syscall包装；此状态不满足纯值/codec边界 | 移走操作层，保留准确ABI/必要纯codec与状态转换；源码/形式化映射随迁移更新，不转授旧证明 |
 | 临时依赖 | R1a当前允许slkd→libsparklink这个Native包装以保护实测路径 | 仅迁移期间例外；R3接通Native/Channel/契约后必须删除该边，更新依赖门禁并实机回归，无长期alias |
 
+R3a把现有Channel query/TX/Session status、SCM安全上下文和期限/系统调用迁入
+slk-channel；ABI值与纯校验留slk-protocol，无旧操作alias。生产调用者同步切换，
+不改wire或权限。Native ioctl、独立共享契约及真实应用Client仍待迁移，表中目标
+不能解读为当前全部实现；准确资格只看结构化记录对应编译/执行身份。
+
 应用DiscoverySession、稳定公共Client、完整远端Subscription和真实持久Bond仍属待接通
 目标；当前管理扫描不能被包装成已拥有应用发现租约。对象API结束不能隐式清理别人的
 controller、物理连接或已提交credit义务。未经实现/验收不得由缓存或命名推导资格。

@@ -323,7 +323,7 @@ pub(crate) fn run(fd: OwnedFd, responder: bool, config: Config, path: &Path) -> 
     // discarded at peer last-close. Only source validation proves delivery.
     let fd = crate::channel::prepare_application_fd(fd)?;
     crate::channel::wait(&fd, nix::libc::POLLOUT, Instant::now() + DEADLINE)?;
-    let info = slk_protocol::channel::query(fd.as_raw_fd())?;
+    let info = slk_channel::query(fd.as_raw_fd())?;
     if info.mode != 0
         || info.directions != 3
         || usize::from(info.mtu) < config.bytes

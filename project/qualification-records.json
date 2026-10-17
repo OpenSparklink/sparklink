@@ -13,16 +13,16 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP18-R5f1-application-C-Python-client-source",
-    "production_behavior": "Current C/Python broker entry reuses owner-pinned Rust Client and Channel;bounded local executor and absolute wait deadline. No Native/protocol/SSAP implementation duplicated;new source not granted RF qualification.",
-    "state": "R5F1_SOURCE_IMPLEMENTED_EXACT_ARTIFACT_GATES_PENDING_FULL_ARCHITECTURE_INCOMPLETE",
+    "id": "WP18-R5f1-offline-qualified-actual-client-VM-and-R6c-open",
+    "production_behavior": "C/Python reuses actualowner-pinned RustClient/Channel;release40c andconsumer867 separate. Eightfiniteofflinegates pass;no newRF/formalproof. Actualnewclient production/SystemBus/KernelGrant/RF andhigherAPI remainrequiredMISSING.",
+    "state": "R5F1_OFFLINE_FINITE_PASS_FULL_ARCHITECTURE_AND_ACTUAL_CLIENT_GATES_INCOMPLETE",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "Seal exactsource and run actual C/Python/executor/export/strict regressions;then systembus/KernelGrant/newWS73positiveconsumer. Continue higherSSAP/Owned/Agent/sharedAPI and R6c;fulloriginalscopeOPEN."
+    "next": "R5f actualnewclient deployment/WS73 andhigherSSAP/Agent/Owned/sharedAPI;R6c crossversionupgrade/rollback/debug/deps/license/provenance/release. Preserve fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanualrecovery andalloriginalscopeOPEN."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -187,7 +187,8 @@
     "owned-agent-client-r5e",
     "deployment-clean-vm-r6a",
     "debian-package-base-r6b",
-    "application-language-client-r5f1"
+    "application-language-client-r5f1",
+    "application-language-client-real-r5f1"
   ],
   "records": [
     {
@@ -161448,9 +161449,9 @@
     },
     {
       "id": "application-language-client-r5f1",
-      "title": "R5f1:C/Python复用实际Rust Client；准确新产物门禁待验",
-      "level": "implemented",
-      "result": "MISSING",
+      "title": "U40c:C/Python实际Client桥接的限定离线通过；实际权限及WS73仍缺",
+      "level": "offline",
+      "result": "PASS",
       "contracts": [
         "OneApplicationBrokerClient",
         "OwnerGenerationLifetimeScope",
@@ -161458,15 +161459,674 @@
         "OriginalWaitDeadlineNotRemoteCancellation",
         "IndependentChannelFdOwnership"
       ],
-      "bounds": "Source implementation;development tests do not qualify a sealed artifact or physical device.",
+      "bounds": {
+        "default_workspace_tests": 342,
+        "default_workspace_suites": 38,
+        "binding_abi_tests": 51,
+        "actual_private_bus_consumer_processes": 2,
+        "executor_tests": 3,
+        "executor_queued_limit": 8,
+        "executor_active_limit": 1,
+        "max_wait_seconds": 30,
+        "controller_list_limit": 256,
+        "path_bytes_limit": 256,
+        "real_ws73_runs": 0,
+        "new_formal_proofs": 0
+      },
       "excluded": [
-        "No fullSSAP/Agent/Owned/sharedOperation API;noNativelease,Ready orpeerreceiptqualification.",
-        "No newformalproof;currenthardwarequalification stays bound to originalR5e artifacts."
+        "Finite offline current application Client bridge only;no fullC/Python SSAP/Agent/Owned/commonOperation/Discovery API.",
+        "Privatebus explicitdenial/AF_UNIX fixtures are not positiveSparkLink channels or actualdeployed permissions. No newWS73/RF/KernelGrant/lifetime/peerisolation orperformance qualification.",
+        "Bounded user-process executor tests are not formalproof or kernel concurrency. No newKani/TLC/LKMM/CBMC result. No productionsecurity/credit changes or debt refund on timeout.",
+        "Actual systembus,newartifactpositive C/Python business/close/dup/revoke/lifetime andoriginalpath regressions remainOPEN. NaturalfaultRCA/nonmanualrecovery andfullS0-S6/19WP/10FV/12DG remainOPEN."
       ],
       "remaining": [
-        "Exact committed-source strict/C-Python/privatebus/queue/deadline/export checks",
-        "Actual systembus/kernelGrant andnewWS73positiveclient regression",
-        "Higherlanguage SSAP/Owned/Agent/sharedAPI andR6c/fulloriginalscope"
+        "Actualnewclient systembus/nativeGrant/realdualWS73 positiveFD andpeerapplication verification",
+        "HigherSSAP/Owned/Agent/sharedAPI,fullChannel/lifetime andR6c;fullarchitectureexit not declared"
+      ],
+      "sources": {
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "40c47570ec348cc1d87216aec572870de9e9f3f6",
+          "scopes": [
+            "Cargo.toml",
+            "Cargo.lock",
+            "bindings/python/sparklink",
+            "crates/libsparklink/src",
+            "crates/libsparklink/Cargo.toml",
+            "crates/libsparklink/build.rs",
+            "crates/slctl/src",
+            "crates/slctl/Cargo.toml",
+            "crates/slk-channel/src",
+            "crates/slk-channel/Cargo.toml",
+            "crates/slk-contract/src",
+            "crates/slk-contract/Cargo.toml",
+            "crates/slk-experimental/src",
+            "crates/slk-experimental/Cargo.toml",
+            "crates/slk-native/src",
+            "crates/slk-native/Cargo.toml",
+            "crates/slk-native/build.rs",
+            "crates/slk-protocol/src",
+            "crates/slk-protocol/Cargo.toml",
+            "crates/slkconfig/src",
+            "crates/slkconfig/Cargo.toml",
+            "crates/slkd/src",
+            "crates/slkd/Cargo.toml",
+            "crates/slkdump/src",
+            "crates/slkdump/Cargo.toml",
+            "crates/slkmon/src",
+            "crates/slkmon/Cargo.toml",
+            "crates/slktest/src",
+            "crates/slktest/Cargo.toml",
+            "crates/libsparklink/include",
+            "crates/slk-native/include"
+          ],
+          "files": {
+            "Cargo.lock": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+            "bindings/python/sparklink/__init__.py": "6e2d29cd5aaa5022419a19e52fa5a1f981563efe30b16b76ee0ee2dd259dd997",
+            "bindings/python/sparklink/_library.py": "72de10aa15b1c9383c2db8c75a43b0cdd8f86842e7344d4d8146882e92ec1fe1",
+            "bindings/python/sparklink/_validation.py": "a4dcb7967b601df96ec7332cd40827c711a2080419964a75bfd1ad08b5cf18db",
+            "bindings/python/sparklink/channel.py": "a6987c91a3640e81d213760ecdc04922f01769648b9deb754bdf9859585708f7",
+            "bindings/python/sparklink/client.py": "7c504a8008ac1371aa4d9ed4b513da94f9d617be5dc2ab2aa39fa996cd72e03e",
+            "bindings/python/sparklink/native.py": "0b87e5eda601d719b8509d27ef8fd46402d14f4b44b8849c23c95919ddc2eea7",
+            "bindings/python/sparklink/ssap.py": "416fff90340d376c23c383b849a5ca15af38a4dc7e8ab73d57615b2a5caa60ad",
+            "bindings/python/sparklink/structs.py": "acb1892bf9d990a8e0ebbddeb60f850886610d30fe532a4c039e10af0d54ad38",
+            "crates/libsparklink/Cargo.toml": "110c2fd1a2b073e47ce69b7264d92981e4e87ad1c2333b9bd215a5a1c15c7a5f",
+            "crates/libsparklink/build.rs": "b3e8c5660d724b7ac271e62b4af8766aaf4da2543034480ca9d4f4890195c332",
+            "crates/libsparklink/include/sparklink.h": "87672addb53e2190af5c3e5c8d4e4d1d3e62f99a0c393226bde6a734d07a5748",
+            "crates/libsparklink/src/agent.rs": "228eda84396aa941c602d6d68c0a46df919464ee3228e41dc4f1acbb541c606c",
+            "crates/libsparklink/src/client.rs": "d08132b8daaa050df18f0d8e44f19b39c107424680ebb62a9ef08ad3d500046f",
+            "crates/libsparklink/src/controller.rs": "b2e118baa9e291499927f77ad499d61c82c9154b03c9ffb006ed69086d7e1c2b",
+            "crates/libsparklink/src/ffi.rs": "3767df93edc688cf4a80c88d434e5816e06f76589101dcbafe9251780b9ed716",
+            "crates/libsparklink/src/ffi_client.rs": "fb273093aae3af6b9c7ca93a731674e058bdb775823f70dd142a7e3d53482db7",
+            "crates/libsparklink/src/lib.rs": "aaadf064515665eee96f09a351d6f6a38a0133b9d94337302e1d11bd1126bfe8",
+            "crates/libsparklink/src/peer.rs": "832620f318b104711cda8189ec743c0b3d61cf9bc934b24d5fffbe57e047a603",
+            "crates/libsparklink/src/security.rs": "e9f1b28e3126f737850caa8ee6c471b00cae73c1a4807d656a0aeb37abead0b6",
+            "crates/libsparklink/src/ssap.rs": "838985089f592cd8f3b44f310ced89a1d5d0485f95dd01e26a03924684c957be",
+            "crates/libsparklink/src/ssap/local.rs": "90513938236cdadf3303f0c1651711a89d771652bddb84c27bbfbb1b057c9842",
+            "crates/libsparklink/src/sync_client.rs": "cdb8ae07bb287d5c84918c1bae78b8ae7d5ed1781ba044d3f62858eeb330ab3b",
+            "crates/libsparklink/src/sync_client/tests.rs": "f99891d7de3b4192bda9c108d987c9205051777f0e6ae3a744b3c49b3105d0b8",
+            "crates/slctl/Cargo.toml": "f7589f3c0b47984ca6253879138adb1c2bb22901e1477d94a432e63b0c08af56",
+            "crates/slctl/src/commands.rs": "c01a09ef217fe77b7009fd9c7cae11b2dc445d8a8a721279e25ae1ae5b0625d2",
+            "crates/slctl/src/main.rs": "dfcffdf74388b78389a4037f864bbfa308a65ae62d0d00b0f9301e09cc0e10b5",
+            "crates/slctl/src/security_agent.rs": "76dd1972113be126bf51ab607eb437aa54014604f21b8082195fe786d1ce6123",
+            "crates/slctl/src/ssap_server.rs": "d63113241dad6198c3186bc12800df9ee579a3e32c152867d5f4686a1c4e8948",
+            "crates/slk-channel/Cargo.toml": "1852a9e066d9d9fb966e89be6810c3ab60841a68c081c46fc280f0e679616212",
+            "crates/slk-channel/src/lib.rs": "67cd996111b849076bb7e2393aef5e346bc9d8abe559b8bf3ba684d19870c3ae",
+            "crates/slk-channel/src/security.rs": "c44ee641485f6dafe06f7a7306dd25fde9ba53fcbdc4ad0e042cd6818a405480",
+            "crates/slk-contract/Cargo.toml": "a6c5fdf4de6e5a90cfc51c9bb91f8c6e9bff0c912bee47d0b7061a3453e0abb0",
+            "crates/slk-contract/src/lib.rs": "8fe91afd5eafec92e72428ca9b31f1cd6ed946ba7bfe558ee0244378e0076faa",
+            "crates/slk-contract/src/security.rs": "4a63aa6821844b784e061b73d59151c51c56cac18e8fdf2ef44eb3ddcb8f1054",
+            "crates/slk-experimental/Cargo.toml": "cb5b8a8f128ddc1b70da40582eecfd2f148679c5b594da8b50669dde15c07003",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "658504ecd9499ed7cd086d7ec9f1705fb6883f387f3e2d165d17cf7c3b3177ea",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-native/Cargo.toml": "6b7291fadb49e0d6474c9d2cbc86e45ca5f9815708b1901538471f8e387cda7b",
+            "crates/slk-native/build.rs": "be3b6be28f5692fd1da3977b6ea6c6ff64349bf496f8798fbcda0222b8c5c98c",
+            "crates/slk-native/include/sparklink_native.h": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+            "crates/slk-native/src/adapter.rs": "d0096de48a574a367b213710b50f320b90c3146bb075c54a6904eb64d6b4ea17",
+            "crates/slk-native/src/controller_events.rs": "5f0796edd8307b3da44eda56bff00428d842babf44524d3e8fe7247b80df931a",
+            "crates/slk-native/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/slk-native/src/ffi.rs": "f96b55125dbfce1ad4a758616e2da3f97bb572b64baddaf83aa0ca2d87440dba",
+            "crates/slk-native/src/ffi_native.rs": "6c20c5b36739376c4af24ae7fedb51c198ed8a6e6269fedaddda3659a215cf7b",
+            "crates/slk-native/src/ioctl.rs": "849d9daa032491822632ca2014d4f167bcc0635e5de65f1681c5feb9e820836b",
+            "crates/slk-native/src/lib.rs": "74bb9dad38567fb772be4b83e56097cbdb6ff476df0b21134ceda3dd70b0306b",
+            "crates/slk-native/src/retired_event.rs": "399da4e4c6814435f6fa16c33fc10691316c8df0709202a912dbffa56b7e49dd",
+            "crates/slk-native/src/snoop.rs": "3cc3de4abf2d229b5ddb95bae676eacd0145d8c9bcb649a0b788d3c294304292",
+            "crates/slk-native/src/ws73_discovery.rs": "acdaac152c1590194683953896f853ffdae8ae88475f7a63a9622115e00a0a8f",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "46a3576b7c50b86aba933ba3045b7d3209698984b3d083b75c9e4ff1c19c76d6",
+            "crates/slk-protocol/src/channel.rs": "343a0ed2fc1e125c7cf7011970448613ea83dc9d733481c524d2d67adfd195c7",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/lib.rs": "d02ac33715bd05dc96dd8965f8729b71c6131c94b0c3c55f20641703493cbc9f",
+            "crates/slk-protocol/src/message_security.rs": "002108cc82f7b4e560b4d781ae067338bd1d8bb9451ea8ede4edf503117622d9",
+            "crates/slk-protocol/src/retired_types.rs": "727d3a70590115006823ec92012e1f8d00c538ef46d10894c2314fa723ef88b4",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+            "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "624407534c5b9896bf97fdd0b80a4c80f2e20bd1b3bceb6a7a4501ac9e434d0d",
+            "crates/slk-protocol/src/types.rs": "ebcccd1368abcb2bf4a20022b1e0f6be92724085ae5dd50afed4a832971e9be2",
+            "crates/slkconfig/Cargo.toml": "f5c51129cccbbd10db446c4e18a7e725cad67cdd8e002741fd6e9d57deeab069",
+            "crates/slkconfig/src/main.rs": "603c7db900894bfc70282ef5be838a8495cbca2427ce1c9953b76402444ebd75",
+            "crates/slkd/Cargo.toml": "762675a8cddbb4297dc47841faee7b40966f6f3b4acb700ca8b839f70b2a354a",
+            "crates/slkd/src/adapters.rs": "a2c09a550eab96637ac680bf59d642edb7713ea0bf0a711a3c4a873151088d52",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "54a298d0b250921c3d8ea1a70ef562c8ecea19754569f67797594a19d8376b72",
+            "crates/slkd/src/config.rs": "bee373a36b82ff9432ca1f3c8aea854cb11d8a7caee62602bc65ba64556f4a78",
+            "crates/slkd/src/connection.rs": "76a2896c98cd3f26765598f39903cbe5909a83c1b03de944d239e51f810b6a82",
+            "crates/slkd/src/connection_object.rs": "1f95c69081d49371297e4b462ef61776215f29b0cecfb7978138ebb6ad8c4e05",
+            "crates/slkd/src/controller.rs": "93d075b1ad094990e7fee97c589e62ed2b7d01d1d94b31ffd8b2decb446cf569",
+            "crates/slkd/src/dbus_iface.rs": "b3815a9d93ed54a0216a9990349f695c23fcceb8f00abdd111193e2c09c725e3",
+            "crates/slkd/src/event_loop.rs": "40897923299bf566785e88074a5b2c9e19baba80b1902f1102ff5840dce0e7b1",
+            "crates/slkd/src/event_loop_tests.rs": "d738a24caf1d54b58d9e95e414291b0e8c30f5ee069f1a872fa90cbe60a019da",
+            "crates/slkd/src/kernel.rs": "21483ca487eb657e4666e414d51b862472186e34d34a7a0f46a1069e89eb3297",
+            "crates/slkd/src/main.rs": "af8da1e72b77ac49047232b3d89430f18759e85245fd3cc8f773027af7c70cac",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "1a438ca4edcf0bd4c11b733d3c1419c5287ca7ea20fcc1f6372a5994a8d29bcb",
+            "crates/slkd/src/registration.rs": "8ad85b9c2aad253ecd3ee4997feeeeb1cfd7e8cf166f2feb3625bd537a7ba3ca",
+            "crates/slkd/src/security.rs": "0310a37899df07ab594b61cf3e2317a510e66d70474b704695ff7c15720fb467",
+            "crates/slkd/src/security_policy.rs": "d90ea650bb6ada178ffbc756fedf064c5e79968b8aa6c9c1bf19f656dcb7482c",
+            "crates/slkd/src/security_policy_tests.rs": "65f6ea3ecbadfc80e970b5459cd13d2deb0bb20517eab85b2172f5f594f0da5e",
+            "crates/slkd/src/service.rs": "d22210adcc9d0212fe50bdeff581b803493464687b5e38cd710e6b41e2f5d6f1",
+            "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+            "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+            "crates/slkd/src/ssap_database.rs": "2422a8c6dfd3940595e70c27eac9b6f834d466deb4d18a3e413320fb4fd4e3e8",
+            "crates/slkd/src/ssap_engine.rs": "5c1d41cca4b2388c821b0fab776013e90890eb1b96d8741745f89c9091a5d327",
+            "crates/slkd/src/state.rs": "3c4ec48c0b04c89f33cbf118a05555d0c668563577e7bdc11b3ef0e5bbe39c08",
+            "crates/slkdump/Cargo.toml": "cfa8a051c1f96f1ad16b99de57fc19aa47b99dc7f87d4382147ef5937d39ca64",
+            "crates/slkdump/src/main.rs": "6b4f7a3b271583a5b3d7fc2a3d489f9c6b822dc6f66bf127709373a2edcfe28a",
+            "crates/slkmon/Cargo.toml": "f9c218e1f1b5a0314c65e795cc89d529f271a44f245d5c3d9f7566b6679aa792",
+            "crates/slkmon/src/main.rs": "fe537266f8c5f80310709eb4247fb145cc3fb424137f6075b3123b37474c14b1",
+            "crates/slktest/Cargo.toml": "78656d09a49eb593c495d964a075a32e9911930eaf068cbfa5e6834e98491070",
+            "crates/slktest/src/benchmark.rs": "3fdade2e65655dc24cb4ccda431193beae34e5fa662f51e2d6ba72cc68507780",
+            "crates/slktest/src/benchmark/load.rs": "2d3e667b1dc9fa3c9ab1134997292990273347c288ab918e5221585c9c5dd5ff",
+            "crates/slktest/src/channel.rs": "dd76516470e1ea703b67a22b44596b94cf49edd5f5f7fbc9d98a9fee27aca0f1",
+            "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+            "crates/slktest/src/connection.rs": "614809d5a0af516d9bbd42425390ce3b123f5bc378744c068a7b1d86153fa3e6",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e"
+          }
+        },
+        "executed_consumer_tools": {
+          "repo": "sparklink",
+          "commit": "86755183d934b201aa9b6dacc004622ec0a9ae0e",
+          "scopes": [
+            "crates/libsparklink/tests",
+            "tools/check_public_symbols.py"
+          ],
+          "files": {
+            "crates/libsparklink/tests/application_broker.rs": "a3ae07a32d60c1aafe839d25c9a939ffebf2b4b62b410de39498714f25a0a949",
+            "crates/libsparklink/tests/application_ffi.rs": "c641a63d090d4cfc21243b6a4f55f82cc85ac8b35785645009618d0e4367ecb0",
+            "crates/libsparklink/tests/client_scope.rs": "6f15c094a7e9f5ec53f126010131c239dcd7ab9c0680c58491ec1deaae2a3abe",
+            "crates/libsparklink/tests/controller_client.rs": "bea22dd7a490fba2631bda82cdeea7063f99dbcd407b64b139c01223e3f522c8",
+            "crates/libsparklink/tests/fixtures/application_client.c": "fb4909111618426ba0b09c3dd637689c4577fbc920fdeb734d17632716d37b58",
+            "crates/libsparklink/tests/fixtures/application_client.py": "3f94f3a1966208b169378d165977d23452d78fcbaf122f0025919fd8cdc076b6",
+            "crates/libsparklink/tests/local_staging_client.rs": "46425c48da1fe9a7d7b3ef114d05a5c37e655d6eb3084c2e075dad046ee5cf87",
+            "crates/libsparklink/tests/owned_client.rs": "36438c7eaf26280d14cb49c24c41875f6aabc8832fb06c725b40703b2eb2d6a3",
+            "crates/libsparklink/tests/peer_client.rs": "2c04cb8b0cbe209fd30bf0e97b0c3b88b52a4c51065bf337033e8fcf54b2df92",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "4c1c25bbbfa5dcef03b306cb0899259a3d7c5299321e87520a02b2fa46434e6d",
+            "crates/libsparklink/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "tools/check_public_symbols.py": "a88ceef0f13c9adf7263cd3ee7af168f8d34e1f078e2603b0f083bc02b3758d7"
+          }
+        },
+        "workspace_tests": {
+          "repo": "sparklink",
+          "commit": "40c47570ec348cc1d87216aec572870de9e9f3f6",
+          "scopes": [
+            "crates",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+            "crates/libsparklink/Cargo.toml": "110c2fd1a2b073e47ce69b7264d92981e4e87ad1c2333b9bd215a5a1c15c7a5f",
+            "crates/libsparklink/build.rs": "b3e8c5660d724b7ac271e62b4af8766aaf4da2543034480ca9d4f4890195c332",
+            "crates/libsparklink/cbindgen.toml": "43e20d719319ecbdc029e3f8ae57b136db3bf427888fc8f29033f08166493812",
+            "crates/libsparklink/include/sparklink.h": "87672addb53e2190af5c3e5c8d4e4d1d3e62f99a0c393226bde6a734d07a5748",
+            "crates/libsparklink/src/agent.rs": "228eda84396aa941c602d6d68c0a46df919464ee3228e41dc4f1acbb541c606c",
+            "crates/libsparklink/src/client.rs": "d08132b8daaa050df18f0d8e44f19b39c107424680ebb62a9ef08ad3d500046f",
+            "crates/libsparklink/src/controller.rs": "b2e118baa9e291499927f77ad499d61c82c9154b03c9ffb006ed69086d7e1c2b",
+            "crates/libsparklink/src/ffi.rs": "3767df93edc688cf4a80c88d434e5816e06f76589101dcbafe9251780b9ed716",
+            "crates/libsparklink/src/ffi_client.rs": "fb273093aae3af6b9c7ca93a731674e058bdb775823f70dd142a7e3d53482db7",
+            "crates/libsparklink/src/lib.rs": "aaadf064515665eee96f09a351d6f6a38a0133b9d94337302e1d11bd1126bfe8",
+            "crates/libsparklink/src/peer.rs": "832620f318b104711cda8189ec743c0b3d61cf9bc934b24d5fffbe57e047a603",
+            "crates/libsparklink/src/security.rs": "e9f1b28e3126f737850caa8ee6c471b00cae73c1a4807d656a0aeb37abead0b6",
+            "crates/libsparklink/src/ssap.rs": "838985089f592cd8f3b44f310ced89a1d5d0485f95dd01e26a03924684c957be",
+            "crates/libsparklink/src/ssap/local.rs": "90513938236cdadf3303f0c1651711a89d771652bddb84c27bbfbb1b057c9842",
+            "crates/libsparklink/src/sync_client.rs": "cdb8ae07bb287d5c84918c1bae78b8ae7d5ed1781ba044d3f62858eeb330ab3b",
+            "crates/libsparklink/src/sync_client/tests.rs": "f99891d7de3b4192bda9c108d987c9205051777f0e6ae3a744b3c49b3105d0b8",
+            "crates/libsparklink/tests/application_broker.rs": "a3ae07a32d60c1aafe839d25c9a939ffebf2b4b62b410de39498714f25a0a949",
+            "crates/libsparklink/tests/application_ffi.rs": "9dcbadc98a3298b0727f20bc47a8a357579ec10eb7bf238305fecb7de6c4c747",
+            "crates/libsparklink/tests/client_scope.rs": "6f15c094a7e9f5ec53f126010131c239dcd7ab9c0680c58491ec1deaae2a3abe",
+            "crates/libsparklink/tests/controller_client.rs": "bea22dd7a490fba2631bda82cdeea7063f99dbcd407b64b139c01223e3f522c8",
+            "crates/libsparklink/tests/fixtures/application_client.c": "fb4909111618426ba0b09c3dd637689c4577fbc920fdeb734d17632716d37b58",
+            "crates/libsparklink/tests/fixtures/application_client.py": "3f94f3a1966208b169378d165977d23452d78fcbaf122f0025919fd8cdc076b6",
+            "crates/libsparklink/tests/local_staging_client.rs": "46425c48da1fe9a7d7b3ef114d05a5c37e655d6eb3084c2e075dad046ee5cf87",
+            "crates/libsparklink/tests/owned_client.rs": "36438c7eaf26280d14cb49c24c41875f6aabc8832fb06c725b40703b2eb2d6a3",
+            "crates/libsparklink/tests/peer_client.rs": "2c04cb8b0cbe209fd30bf0e97b0c3b88b52a4c51065bf337033e8fcf54b2df92",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "4c1c25bbbfa5dcef03b306cb0899259a3d7c5299321e87520a02b2fa46434e6d",
+            "crates/libsparklink/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/Cargo.toml": "f7589f3c0b47984ca6253879138adb1c2bb22901e1477d94a432e63b0c08af56",
+            "crates/slctl/examples/bus_policy_probe.rs": "3f6b3f92b89d364157b0a04285fede71fa8569b561d42bad28910d0abc3f1591",
+            "crates/slctl/examples/native_security_agent_probe.rs": "58d191fc9163d30a24c31fbf136ea8f2eb035158109284431d0d191f9b29de5f",
+            "crates/slctl/src/commands.rs": "c01a09ef217fe77b7009fd9c7cae11b2dc445d8a8a721279e25ae1ae5b0625d2",
+            "crates/slctl/src/main.rs": "dfcffdf74388b78389a4037f864bbfa308a65ae62d0d00b0f9301e09cc0e10b5",
+            "crates/slctl/src/security_agent.rs": "76dd1972113be126bf51ab607eb437aa54014604f21b8082195fe786d1ce6123",
+            "crates/slctl/src/ssap_server.rs": "d63113241dad6198c3186bc12800df9ee579a3e32c152867d5f4686a1c4e8948",
+            "crates/slctl/tests/application_ssap.rs": "597216ec4b1cde0ac77ec13a00d6309a17581fdf1ebe7872392fdb57d621ec63",
+            "crates/slctl/tests/local_staging.rs": "9b213cf27a2ad591fdb7862e2351d894af49e6acb597bc6f62fc6c66942d89ff",
+            "crates/slctl/tests/management_owner.rs": "0665f718e90bcfe578557ee8f1333db77a5f1f89ad0f8af2e95fdb9c868142de",
+            "crates/slctl/tests/owned_local.rs": "5352abd93f1f9e4c2cdb00184b3d4da4d689c49ec68227e5d5f30c585f229b1c",
+            "crates/slctl/tests/retired_security.rs": "7cdc2f39374460b5f2073e378d4d5179657f93a3be8d43f33f5986c7e1cdb845",
+            "crates/slctl/tests/scan_freshness.rs": "bd7deb97194f01c95c62b43c63ddd4ce4f9ade4a8d9649c1f9f3c9b392998a02",
+            "crates/slctl/tests/security_agent.rs": "5711568f02d3c1c864657b1b30ce4e7693d3c23387df21dfbb76feecc3ecb608",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-channel/Cargo.toml": "1852a9e066d9d9fb966e89be6810c3ab60841a68c081c46fc280f0e679616212",
+            "crates/slk-channel/src/lib.rs": "67cd996111b849076bb7e2393aef5e346bc9d8abe559b8bf3ba684d19870c3ae",
+            "crates/slk-channel/src/security.rs": "c44ee641485f6dafe06f7a7306dd25fde9ba53fcbdc4ad0e042cd6818a405480",
+            "crates/slk-contract/Cargo.toml": "a6c5fdf4de6e5a90cfc51c9bb91f8c6e9bff0c912bee47d0b7061a3453e0abb0",
+            "crates/slk-contract/src/lib.rs": "8fe91afd5eafec92e72428ca9b31f1cd6ed946ba7bfe558ee0244378e0076faa",
+            "crates/slk-contract/src/security.rs": "4a63aa6821844b784e061b73d59151c51c56cac18e8fdf2ef44eb3ddcb8f1054",
+            "crates/slk-experimental/Cargo.toml": "cb5b8a8f128ddc1b70da40582eecfd2f148679c5b594da8b50669dde15c07003",
+            "crates/slk-experimental/README.md": "febc95f37c0ed8e932d168ee199f4f0c602c0ea4ab5c718252029623fb8c3aa1",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "658504ecd9499ed7cd086d7ec9f1705fb6883f387f3e2d165d17cf7c3b3177ea",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-native/Cargo.toml": "6b7291fadb49e0d6474c9d2cbc86e45ca5f9815708b1901538471f8e387cda7b",
+            "crates/slk-native/build.rs": "be3b6be28f5692fd1da3977b6ea6c6ff64349bf496f8798fbcda0222b8c5c98c",
+            "crates/slk-native/cbindgen.toml": "c772f0abb4563c75cdafbca6daf75f0ab2d7892d26d03dcbe00615c44b345504",
+            "crates/slk-native/include/sparklink_native.h": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+            "crates/slk-native/src/adapter.rs": "d0096de48a574a367b213710b50f320b90c3146bb075c54a6904eb64d6b4ea17",
+            "crates/slk-native/src/controller_events.rs": "5f0796edd8307b3da44eda56bff00428d842babf44524d3e8fe7247b80df931a",
+            "crates/slk-native/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/slk-native/src/ffi.rs": "f96b55125dbfce1ad4a758616e2da3f97bb572b64baddaf83aa0ca2d87440dba",
+            "crates/slk-native/src/ffi_native.rs": "6c20c5b36739376c4af24ae7fedb51c198ed8a6e6269fedaddda3659a215cf7b",
+            "crates/slk-native/src/ioctl.rs": "849d9daa032491822632ca2014d4f167bcc0635e5de65f1681c5feb9e820836b",
+            "crates/slk-native/src/lib.rs": "74bb9dad38567fb772be4b83e56097cbdb6ff476df0b21134ceda3dd70b0306b",
+            "crates/slk-native/src/retired_event.rs": "399da4e4c6814435f6fa16c33fc10691316c8df0709202a912dbffa56b7e49dd",
+            "crates/slk-native/src/snoop.rs": "3cc3de4abf2d229b5ddb95bae676eacd0145d8c9bcb649a0b788d3c294304292",
+            "crates/slk-native/src/ws73_discovery.rs": "acdaac152c1590194683953896f853ffdae8ae88475f7a63a9622115e00a0a8f",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "46a3576b7c50b86aba933ba3045b7d3209698984b3d083b75c9e4ff1c19c76d6",
+            "crates/slk-protocol/src/channel.rs": "343a0ed2fc1e125c7cf7011970448613ea83dc9d733481c524d2d67adfd195c7",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/lib.rs": "d02ac33715bd05dc96dd8965f8729b71c6131c94b0c3c55f20641703493cbc9f",
+            "crates/slk-protocol/src/message_security.rs": "002108cc82f7b4e560b4d781ae067338bd1d8bb9451ea8ede4edf503117622d9",
+            "crates/slk-protocol/src/retired_types.rs": "727d3a70590115006823ec92012e1f8d00c538ef46d10894c2314fa723ef88b4",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+            "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "624407534c5b9896bf97fdd0b80a4c80f2e20bd1b3bceb6a7a4501ac9e434d0d",
+            "crates/slk-protocol/src/types.rs": "ebcccd1368abcb2bf4a20022b1e0f6be92724085ae5dd50afed4a832971e9be2",
+            "crates/slkconfig/Cargo.toml": "f5c51129cccbbd10db446c4e18a7e725cad67cdd8e002741fd6e9d57deeab069",
+            "crates/slkconfig/src/main.rs": "603c7db900894bfc70282ef5be838a8495cbca2427ce1c9953b76402444ebd75",
+            "crates/slkd/Cargo.toml": "762675a8cddbb4297dc47841faee7b40966f6f3b4acb700ca8b839f70b2a354a",
+            "crates/slkd/src/adapters.rs": "a2c09a550eab96637ac680bf59d642edb7713ea0bf0a711a3c4a873151088d52",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "54a298d0b250921c3d8ea1a70ef562c8ecea19754569f67797594a19d8376b72",
+            "crates/slkd/src/config.rs": "bee373a36b82ff9432ca1f3c8aea854cb11d8a7caee62602bc65ba64556f4a78",
+            "crates/slkd/src/connection.rs": "76a2896c98cd3f26765598f39903cbe5909a83c1b03de944d239e51f810b6a82",
+            "crates/slkd/src/connection_object.rs": "1f95c69081d49371297e4b462ef61776215f29b0cecfb7978138ebb6ad8c4e05",
+            "crates/slkd/src/controller.rs": "93d075b1ad094990e7fee97c589e62ed2b7d01d1d94b31ffd8b2decb446cf569",
+            "crates/slkd/src/dbus_iface.rs": "b3815a9d93ed54a0216a9990349f695c23fcceb8f00abdd111193e2c09c725e3",
+            "crates/slkd/src/event_loop.rs": "40897923299bf566785e88074a5b2c9e19baba80b1902f1102ff5840dce0e7b1",
+            "crates/slkd/src/event_loop_tests.rs": "d738a24caf1d54b58d9e95e414291b0e8c30f5ee069f1a872fa90cbe60a019da",
+            "crates/slkd/src/kernel.rs": "21483ca487eb657e4666e414d51b862472186e34d34a7a0f46a1069e89eb3297",
+            "crates/slkd/src/main.rs": "af8da1e72b77ac49047232b3d89430f18759e85245fd3cc8f773027af7c70cac",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "1a438ca4edcf0bd4c11b733d3c1419c5287ca7ea20fcc1f6372a5994a8d29bcb",
+            "crates/slkd/src/registration.rs": "8ad85b9c2aad253ecd3ee4997feeeeb1cfd7e8cf166f2feb3625bd537a7ba3ca",
+            "crates/slkd/src/security.rs": "0310a37899df07ab594b61cf3e2317a510e66d70474b704695ff7c15720fb467",
+            "crates/slkd/src/security_policy.rs": "d90ea650bb6ada178ffbc756fedf064c5e79968b8aa6c9c1bf19f656dcb7482c",
+            "crates/slkd/src/security_policy_tests.rs": "65f6ea3ecbadfc80e970b5459cd13d2deb0bb20517eab85b2172f5f594f0da5e",
+            "crates/slkd/src/service.rs": "d22210adcc9d0212fe50bdeff581b803493464687b5e38cd710e6b41e2f5d6f1",
+            "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+            "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+            "crates/slkd/src/ssap_database.rs": "2422a8c6dfd3940595e70c27eac9b6f834d466deb4d18a3e413320fb4fd4e3e8",
+            "crates/slkd/src/ssap_engine.rs": "5c1d41cca4b2388c821b0fab776013e90890eb1b96d8741745f89c9091a5d327",
+            "crates/slkd/src/state.rs": "3c4ec48c0b04c89f33cbf118a05555d0c668563577e7bdc11b3ef0e5bbe39c08",
+            "crates/slkd/tests/config_startup.rs": "be6ebe8269e1c160844d91c31278c3306dbd117e8ae940fff8c3aa63359bcaa9",
+            "crates/slkdump/Cargo.toml": "cfa8a051c1f96f1ad16b99de57fc19aa47b99dc7f87d4382147ef5937d39ca64",
+            "crates/slkdump/src/main.rs": "6b4f7a3b271583a5b3d7fc2a3d489f9c6b822dc6f66bf127709373a2edcfe28a",
+            "crates/slkmon/Cargo.toml": "f9c218e1f1b5a0314c65e795cc89d529f271a44f245d5c3d9f7566b6679aa792",
+            "crates/slkmon/src/main.rs": "fe537266f8c5f80310709eb4247fb145cc3fb424137f6075b3123b37474c14b1",
+            "crates/slktest/Cargo.toml": "78656d09a49eb593c495d964a075a32e9911930eaf068cbfa5e6834e98491070",
+            "crates/slktest/src/benchmark.rs": "3fdade2e65655dc24cb4ccda431193beae34e5fa662f51e2d6ba72cc68507780",
+            "crates/slktest/src/benchmark/load.rs": "2d3e667b1dc9fa3c9ab1134997292990273347c288ab918e5221585c9c5dd5ff",
+            "crates/slktest/src/channel.rs": "dd76516470e1ea703b67a22b44596b94cf49edd5f5f7fbc9d98a9fee27aca0f1",
+            "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+            "crates/slktest/src/connection.rs": "614809d5a0af516d9bbd42425390ce3b123f5bc378744c068a7b1d86153fa3e6",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755"
+          }
+        },
+        "binding_tests": {
+          "repo": "sparklink",
+          "commit": "40c47570ec348cc1d87216aec572870de9e9f3f6",
+          "scopes": [
+            "bindings/python/tests"
+          ],
+          "files": {
+            "bindings/python/tests/retired_fixture_provenance.json": "1e5da176377ed80668ed5ba9f24997de66ded189e8507f769d02c1c8aad0b2e1",
+            "bindings/python/tests/retired_kernel_layouts.h": "60dd1fb9a912ce5ddaa11536e8863187b7d306ef042353b08e7a4f7b9a1ac336",
+            "bindings/python/tests/retired_native_layouts.h": "42eedc6d1795dc5a4b47c19ed6fadcd5ac9bae581590a31cc8ce65796f2da778",
+            "bindings/python/tests/retired_ssap_permissions.h": "bd8cb10b2ba0d22297925da4743da79de9f5fcc9047c326885cb4386e13b51ef",
+            "bindings/python/tests/retired_structs.py": "92271b951011dcea67de224cf9966a6ccaa42e253c66cff55dc254530b04370f",
+            "bindings/python/tests/test_abi.py": "bfabcba6d7e84187f304802056e51fe3fa778201e922ad7c24f7a8c37fb2af7e",
+            "bindings/python/tests/test_bus_contract.py": "37efcf263bbe5598ff99ecaeb5c50611ac2053c1eeaf03350d7d9ad9de8c6a3d",
+            "bindings/python/tests/test_genl_contract.py": "52e915a3c7a224483f900e72d1367f0ffcc29dadf85f469a2900c71e60a1560f",
+            "bindings/python/tests/test_library_loading.py": "4d1f1dbd907e83d89f0e63f71be65290df0c96b9a8075628fc2a344c5c6ea9f0",
+            "bindings/python/tests/test_native.py": "d3886df73374c70043ea10613bb62af910de16e9c38c1fe05d949ff3e412fbf2",
+            "bindings/python/tests/test_ssap_access.py": "1220bb4684cd1543a3d1d47d885c3b350b1983c5315bac1956b4a7ee558ba7e9",
+            "bindings/python/tests/test_ssap_operations.py": "6087c950532f31be64891f1d9710a2835ff9bb7341bcf9810c0eb10f8fa251a1",
+            "bindings/python/tests/test_structs.py": "11a82f649a843326f3697e76eab49dbb5553e52924069caabcfea7bdb431db73"
+          }
+        },
+        "kernel_headers": {
+          "repo": "linux",
+          "commit": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+          "scopes": [
+            "include/uapi/linux/sparklink.h",
+            "include/uapi/linux/sparklink_ioctl.h",
+            "include/uapi/linux/sparklink_socket.h"
+          ],
+          "files": {
+            "include/uapi/linux/sparklink.h": "ef5af1a66226e1cec12b4a8f45613617e9a29afafa2976dfe9cec6a6513be7e6",
+            "include/uapi/linux/sparklink_ioctl.h": "454f556f0b9c1da3a5fc91982ccfffa656090143a3d35ae7b199a2f6225f9d45",
+            "include/uapi/linux/sparklink_socket.h": "18299e4eb6aef480aedafce949a10ced185bf9de3a28208a08dbeee9ca591742"
+          }
+        }
+      },
+      "report": {
+        "material": "application-language-client-r5f1-m1",
+        "verdict_pointer": [
+          "result"
+        ],
+        "verdict_results": {
+          "PASS": "PASS"
+        },
+        "scope_pointer": [
+          "scope"
+        ],
+        "bounds_pointer": [
+          "bounds"
+        ],
+        "source_pointers": {
+          "compiled_userspace": [
+            "compiled_userspace"
+          ],
+          "executed_consumer_tools": [
+            "executed_consumer_tools"
+          ],
+          "workspace_tests": [
+            "workspace_tests"
+          ],
+          "binding_tests": [
+            "binding_tests"
+          ],
+          "kernel_headers": [
+            "gates",
+            3,
+            "detail",
+            "kernel_headers"
+          ]
+        },
+        "gate_rows_pointer": [
+          "gates"
+        ]
+      },
+      "report_commit": "f0c9d82f4fa1d7f21cf98772dc0ba03468dd1ff3",
+      "artifact_materials": [
+        "application-language-client-r5f1-m60",
+        "application-language-client-r5f1-m61",
+        "application-language-client-r5f1-m62",
+        "application-language-client-r5f1-m63",
+        "application-language-client-r5f1-m64",
+        "application-language-client-r5f1-m65",
+        "application-language-client-r5f1-m66",
+        "application-language-client-r5f1-m67",
+        "application-language-client-r5f1-m68",
+        "application-language-client-r5f1-m69",
+        "application-language-client-r5f1-m70",
+        "application-language-client-r5f1-m71",
+        "application-language-client-r5f1-m72"
+      ],
+      "tool_materials": [
+        "application-language-client-r5f1-m10",
+        "application-language-client-r5f1-m11",
+        "application-language-client-r5f1-m12",
+        "application-language-client-r5f1-m13",
+        "application-language-client-r5f1-m14",
+        "application-language-client-r5f1-m15",
+        "application-language-client-r5f1-m16",
+        "application-language-client-r5f1-m17",
+        "application-language-client-r5f1-m18",
+        "application-language-client-r5f1-m19",
+        "application-language-client-r5f1-m20",
+        "application-language-client-r5f1-m21",
+        "application-language-client-r5f1-m22",
+        "application-language-client-r5f1-m23",
+        "application-language-client-r5f1-m24",
+        "application-language-client-r5f1-m25",
+        "application-language-client-r5f1-m26",
+        "application-language-client-r5f1-m27",
+        "application-language-client-r5f1-m28",
+        "application-language-client-r5f1-m29",
+        "application-language-client-r5f1-m3",
+        "application-language-client-r5f1-m30",
+        "application-language-client-r5f1-m31",
+        "application-language-client-r5f1-m32",
+        "application-language-client-r5f1-m33",
+        "application-language-client-r5f1-m34",
+        "application-language-client-r5f1-m35",
+        "application-language-client-r5f1-m36",
+        "application-language-client-r5f1-m38",
+        "application-language-client-r5f1-m40",
+        "application-language-client-r5f1-m41",
+        "application-language-client-r5f1-m49",
+        "application-language-client-r5f1-m52",
+        "application-language-client-r5f1-m54",
+        "application-language-client-r5f1-m55",
+        "application-language-client-r5f1-m56",
+        "application-language-client-r5f1-m58",
+        "application-language-client-r5f1-m59",
+        "application-language-client-r5f1-m6",
+        "application-language-client-r5f1-m7",
+        "application-language-client-r5f1-m75",
+        "application-language-client-r5f1-m76",
+        "application-language-client-r5f1-m8",
+        "application-language-client-r5f1-m9"
+      ],
+      "configuration_materials": [
+        "application-language-client-r5f1-kernel-header0",
+        "application-language-client-r5f1-kernel-header1",
+        "application-language-client-r5f1-kernel-header2"
+      ],
+      "gates": [
+        {
+          "id": "release-build",
+          "result": "PASS",
+          "materials": [
+            "application-language-client-r5f1-m1",
+            "application-language-client-r5f1-m2",
+            "application-language-client-r5f1-m3",
+            "application-language-client-r5f1-m4"
+          ],
+          "report_pointer": [
+            "gates",
+            0
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "exact-default-workspace",
+          "result": "PASS",
+          "materials": [
+            "application-language-client-r5f1-m1",
+            "application-language-client-r5f1-m5",
+            "application-language-client-r5f1-m6",
+            "application-language-client-r5f1-m7",
+            "application-language-client-r5f1-m8",
+            "application-language-client-r5f1-m9",
+            "application-language-client-r5f1-m10",
+            "application-language-client-r5f1-m11",
+            "application-language-client-r5f1-m12",
+            "application-language-client-r5f1-m13",
+            "application-language-client-r5f1-m14",
+            "application-language-client-r5f1-m15",
+            "application-language-client-r5f1-m16",
+            "application-language-client-r5f1-m17",
+            "application-language-client-r5f1-m18",
+            "application-language-client-r5f1-m19",
+            "application-language-client-r5f1-m20",
+            "application-language-client-r5f1-m21",
+            "application-language-client-r5f1-m22",
+            "application-language-client-r5f1-m23",
+            "application-language-client-r5f1-m24",
+            "application-language-client-r5f1-m25",
+            "application-language-client-r5f1-m26",
+            "application-language-client-r5f1-m27",
+            "application-language-client-r5f1-m28",
+            "application-language-client-r5f1-m29",
+            "application-language-client-r5f1-m30",
+            "application-language-client-r5f1-m31",
+            "application-language-client-r5f1-m32",
+            "application-language-client-r5f1-m33",
+            "application-language-client-r5f1-m34",
+            "application-language-client-r5f1-m35",
+            "application-language-client-r5f1-m36"
+          ],
+          "report_pointer": [
+            "gates",
+            1
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "actual-c-python-private-bus",
+          "result": "PASS",
+          "materials": [
+            "application-language-client-r5f1-m1",
+            "application-language-client-r5f1-m37",
+            "application-language-client-r5f1-m38",
+            "application-language-client-r5f1-m39",
+            "application-language-client-r5f1-m40",
+            "application-language-client-r5f1-m41",
+            "application-language-client-r5f1-m42",
+            "application-language-client-r5f1-m43",
+            "application-language-client-r5f1-m44",
+            "application-language-client-r5f1-m45",
+            "application-language-client-r5f1-m46",
+            "application-language-client-r5f1-m47",
+            "application-language-client-r5f1-m48"
+          ],
+          "report_pointer": [
+            "gates",
+            2
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "sealed-release-cross-language-abi",
+          "result": "PASS",
+          "materials": [
+            "application-language-client-r5f1-m1",
+            "application-language-client-r5f1-m49",
+            "application-language-client-r5f1-kernel-header0",
+            "application-language-client-r5f1-kernel-header1",
+            "application-language-client-r5f1-kernel-header2"
+          ],
+          "report_pointer": [
+            "gates",
+            3
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "actual-independent-c-exports",
+          "result": "PASS",
+          "materials": [
+            "application-language-client-r5f1-m1",
+            "application-language-client-r5f1-m50"
+          ],
+          "report_pointer": [
+            "gates",
+            4
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "strict-all-targets-all-features",
+          "result": "PASS",
+          "materials": [
+            "application-language-client-r5f1-m1",
+            "application-language-client-r5f1-m51",
+            "application-language-client-r5f1-m52",
+            "application-language-client-r5f1-m53",
+            "application-language-client-r5f1-m54"
+          ],
+          "report_pointer": [
+            "gates",
+            5
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "dependency-retired-export-negative-controls",
+          "result": "PASS",
+          "materials": [
+            "application-language-client-r5f1-m1",
+            "application-language-client-r5f1-m55",
+            "application-language-client-r5f1-m56"
+          ],
+          "report_pointer": [
+            "gates",
+            6
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "generated-header-and-format",
+          "result": "PASS",
+          "materials": [
+            "application-language-client-r5f1-m1",
+            "application-language-client-r5f1-m57",
+            "application-language-client-r5f1-m58",
+            "application-language-client-r5f1-m59"
+          ],
+          "report_pointer": [
+            "gates",
+            7
+          ],
+          "reported_status": "PASS"
+        }
+      ],
+      "required_gates": [
+        "release-build",
+        "exact-default-workspace",
+        "actual-c-python-private-bus",
+        "sealed-release-cross-language-abi",
+        "actual-independent-c-exports",
+        "strict-all-targets-all-features",
+        "dependency-retired-export-negative-controls",
+        "generated-header-and-format"
+      ]
+    },
+    {
+      "id": "application-language-client-real-r5f1",
+      "title": "C/Python当前Client新产物实际部署/内核Grant/WS73及高阶API仍缺",
+      "level": "implemented",
+      "result": "MISSING",
+      "contracts": [
+        "ActualApplicationBrokerPolicy",
+        "NewArtifactDelegatedFdBusinessAndLifetime",
+        "OneSharedClientAndSsapEngine"
+      ],
+      "bounds": "No positive device or deployed permission qualification transferred from finite private-bus tests or older artifacts.",
+      "excluded": [
+        "Offline C/Python/boundedexecutor PASS does not satisfy these original production/real-device requirements."
+      ],
+      "remaining": [
+        "Audit currentnativeVM SONAME-major loading andprepare a new exactartifact image without touchingoriginalWIP",
+        "Actualordinarysystembus/Grant anddualWS73 discovery/connect/short/boundary/close/dup/revoke/deadline/peerisolation;realpeer verifiesand replies",
+        "HigherlanguageSSAP/Agent/Owned/sharedAPI andR6c/fullarchitecture remainoriginalscope"
       ],
       "sources": {},
       "report": null,
@@ -161476,13 +162136,13 @@
       "configuration_materials": [],
       "gates": [
         {
-          "id": "application-language-client-exact-artifact",
+          "id": "actual-application-client-production-qualification",
           "result": "MISSING",
           "materials": []
         }
       ],
       "required_gates": [
-        "application-language-client-exact-artifact"
+        "actual-application-client-production-qualification"
       ]
     }
   ],
@@ -374121,6 +374781,638 @@
       "base": "workspace",
       "format": "json",
       "access": "private"
+    },
+    "application-language-client-r5f1-m1": {
+      "path": "docs/evidence/application-language-client-offline-20261018.json",
+      "sha256": "5ce960d187a119e65f48d252b81fd1fb3aa64b59890ed327f0311e45d9c9a7cf",
+      "bytes": 53305,
+      "base": "repo",
+      "access": "public",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m2": {
+      "path": ".dev/architecture-r5f-release-build-v1.json",
+      "sha256": "202396bcccf7a22f2412743f97e26d3348291bf31481b5b0856e942c458b7d6b",
+      "bytes": 887,
+      "base": "workspace",
+      "access": "private",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m3": {
+      "path": ".dev/architecture-r5f-release-build-v1.log",
+      "sha256": "db93b085f1130467a6e9f023f01b5ab4b390b6deaabc13350e13d263ed90af70",
+      "bytes": 796,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m4": {
+      "path": ".dev/architecture-r5f-artifacts-v1/manifest-v1.json",
+      "sha256": "0cc5f7f75a251193c04f37d45aca9a50def0391e3664146ea7cddfa367d29e11",
+      "bytes": 2308,
+      "base": "workspace",
+      "access": "private",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m5": {
+      "path": ".dev/architecture-r5f-exact-workspace-v1.json",
+      "sha256": "8dd779823eba3d8d9fdefc5f58de456e4e2286a915218302acc82dfa17488bbb",
+      "bytes": 869,
+      "base": "workspace",
+      "access": "private",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m6": {
+      "path": ".dev/architecture-r5f-exact-workspace-v1.log",
+      "sha256": "ae0f7bb419947ff10485867c4bebf5e9e75bd0abab587dabea19de3eb31f43b7",
+      "bytes": 36612,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m7": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/libsparklink-37a3804d1d0bec37",
+      "sha256": "5ca3186da06436d7d372f040e958fb316fec537dce61f970e155642f2d66a002",
+      "bytes": 63598480,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m8": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/application_broker-436eb7280a162504",
+      "sha256": "ee33608e7bb39d6b3cb24c98fedb69223651f83d87f752c30a01a6340796f6f8",
+      "bytes": 61260440,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m9": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/client_scope-6415e6e5cb824fbd",
+      "sha256": "bfb654686a8b87fefe47836b09d03e6db26801a3d5f5f813d0fe5f934351e743",
+      "bytes": 62915272,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m10": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/controller_client-486f8d9267e42ec1",
+      "sha256": "427b96af274df8c9ba777ad1f8e7ea3222c6e4e3ff1f190496ac827cabb3db1f",
+      "bytes": 63330848,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m11": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/local_staging_client-1e50c217e705b3dd",
+      "sha256": "e74957d0dfbaae2f11aee20aa237ed3a69e67d3ca106e7ffc207ff0f334deaa4",
+      "bytes": 64765960,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m12": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/owned_client-33e550af30da0580",
+      "sha256": "05ca4533912fade66e7e69255f056c8af5cc6918b331130b7b1296fbacf66592",
+      "bytes": 63953576,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m13": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/peer_client-528d89ecbf7058d7",
+      "sha256": "8f12bd51f7e8a69f436a23c2990bd2c05ecd81844894b777dcc68ac501a1fdb2",
+      "bytes": 62056968,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m14": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/remote_ssap_client-f021d03a6dc85d55",
+      "sha256": "1a75179622c5db1a64e8ad0027d8901264ccbca765a23ada1f6ff61e8133929d",
+      "bytes": 63941376,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m15": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slctl-edc8f2051ef0b75c",
+      "sha256": "00afd16e2f8539780bec7550ec36d400142347ec7fe775cc46aa7455478ac381",
+      "bytes": 66365376,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m16": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/application_ssap-c98e35f0aa8a8fbf",
+      "sha256": "7a14e182fa739e327b0493363fd4aaf3aa870725aefe0c64b8710a6b0e85190e",
+      "bytes": 52589640,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m17": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/local_staging-aa17959ddd872e70",
+      "sha256": "7803b5fdfdaf33d0e17b4e6cb973be8fca00da4373717607b6e701297471dac9",
+      "bytes": 52771712,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m18": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/management_owner-7ffdd0adaa7659c1",
+      "sha256": "725f4179053b0dc922fc51c743d1cd34c6832b94c2fa21cccfe40ffcbf05e250",
+      "bytes": 53436016,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m19": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/owned_local-458996ee3a54bc53",
+      "sha256": "88010f7f6c3fd61704477dad0f0a48305e09513a5ded50eb7cccee1478ffb4f8",
+      "bytes": 52761064,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m20": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/retired_security-93e67fd87599e3e0",
+      "sha256": "dcef5066d52c0bf4f48ebe4329d54cdf00c978c72027d10f6821a8cf0b4bcec6",
+      "bytes": 7525576,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m21": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/scan_freshness-5a708a68d5401942",
+      "sha256": "0519cb65fa07e14f21b42c3affc537fa0918d34b5c2d9a40e73467822d56177b",
+      "bytes": 53965712,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m22": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/security_agent-c47a132382d1e7e2",
+      "sha256": "47af8c78e1348c13bce667d959d6365f369c39332196514da6be45f62fc49042",
+      "bytes": 56445400,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m23": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/tool_boundary-7f786ef157458341",
+      "sha256": "c6be27182db70cce79a6692943435f2b8af1f8082bc7c4f82a25df39ac5b6fc5",
+      "bytes": 7447944,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m24": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slk_channel-e33630fa725ef720",
+      "sha256": "0ec61db3382660bf90f8fc3d4f489a96ba75c23eb93b7575f90dbc0b8d22232b",
+      "bytes": 9215184,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m25": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slk_contract-269e028873639091",
+      "sha256": "9ee4907cf6e463df658ef919c02932512e91dad74438b6c3f34c44fc58451411",
+      "bytes": 18843104,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m26": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slk_experimental-c46a0fc7dd3c0aa3",
+      "sha256": "efb5489f765df92e008aea2f1915d8daeec702a3bbac5261beb0f37d5a11d2cc",
+      "bytes": 19641760,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m27": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slk_native-bdcfe92dbe3340ff",
+      "sha256": "5873342d7fe0e1da3b4eeedeec4a83d59f67a59c2e8f3731e0bbee8abcf4fb71",
+      "bytes": 21501072,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m28": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slk_protocol-d6226b5ec5715618",
+      "sha256": "d48026255b7fce2a7021b6c5acd0bb0e68e698b9be8ce70624caf1cfa99159fe",
+      "bytes": 10292848,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m29": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slkconfig-755ebc5ccd0ca65b",
+      "sha256": "234c96e9908cbcee740b9d49d46cab47cb64b3c6cb80c6772d2d556c9d33d39a",
+      "bytes": 29310632,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m30": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slkd-d75fe32529fb42dd",
+      "sha256": "b6f68669b333ef873981d49dd974fe4dde73e74bf5d6511a3fb163d7d1af4ef0",
+      "bytes": 140743168,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m31": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/config_startup-95becc7ff2176486",
+      "sha256": "a86581f9e4a10fd7afabd3668ee4db68cbe99492de7ad5a2fa41fb39914c84f1",
+      "bytes": 7550456,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m32": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slkdump-bdfaba434ddef545",
+      "sha256": "dfc3b1de37e4875cc2bef0e2a34c98fc37f771d73f2408f19b91bed71b804f34",
+      "bytes": 18643304,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m33": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slkmon-d89c8fdb13f78669",
+      "sha256": "7aaba8be7adfb31eb42fa7342a95fa7fc6b80f69940bf591d83050e476b28510",
+      "bytes": 18643288,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m34": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slktest-3bf69d8e25921b73",
+      "sha256": "c1c67baaf40e9302c7e87acec1a0d45963c33454dd2f9fb7fe74c8ba9cfc6d9a",
+      "bytes": 67058256,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m35": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/slktest-96bc2885fd7aef22",
+      "sha256": "6d51caf36e836a706d6ca7b115e2e4674a05024049321a85756e5dab1a40642d",
+      "bytes": 50349840,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m36": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/workspace-test-binaries/entrypoint-986f70f4c6e9b30f",
+      "sha256": "99bc38c8a05fbcc77a798852c6a791129539248d7df261c21496e13f0c79a2e9",
+      "bytes": 7414648,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m37": {
+      "path": ".dev/architecture-r5f-ffi-retention-v3.json",
+      "sha256": "377ff0b001457329c506b2bb2fe2e5ee5b97474abe12c0cbdf52f5f2bd2378ef",
+      "bytes": 946,
+      "base": "workspace",
+      "access": "private",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m38": {
+      "path": ".dev/architecture-r5f-ffi-retention-v3.log",
+      "sha256": "1eed40c08684facd837530f7afc2aea6b7cacb9f6d59dee8a8cf9b9d324cd71e",
+      "bytes": 891,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m39": {
+      "path": ".dev/architecture-r5f-ffi-retained-v3/libsparklink.so.0",
+      "sha256": "a1fa38432e9d0fac501e77313a136c8ebbeca5ffca85215de6561b016e259e8d",
+      "bytes": 56419416,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m40": {
+      "path": ".dev/architecture-r5f-ffi-retained-v3/client",
+      "sha256": "ec427f8a3e5669d5a1bdfc6c4e49ebf2a13becb1f05709ccef395635381a401c",
+      "bytes": 13096,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m41": {
+      "path": ".dev/architecture-r5f-ffi-retained-v3/materials.sha256",
+      "sha256": "84e83eb05a06309680a2327c7bf43509d420ea6241048717ace7d6dd472ef60a",
+      "bytes": 1089,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m42": {
+      "path": ".dev/architecture-r5f-ffi-retained-v3/c.stdout",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m43": {
+      "path": ".dev/architecture-r5f-ffi-retained-v3/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m44": {
+      "path": ".dev/architecture-r5f-ffi-retained-v3/python.stdout",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m45": {
+      "path": ".dev/architecture-r5f-ffi-retained-v3/python.stderr",
+      "sha256": "a0eb4ce2b3cc046d3da4ff91728451d3513e4c28f51f53a7603aa8bb8279a88c",
+      "bytes": 283,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m46": {
+      "path": ".dev/architecture-r5f-ffi-retained-v3/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m47": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/application_ffi-bde94cc6f810f893",
+      "sha256": "d21222f2793763ca85872ef10c54f2523a534362e481d48703ae593f3078e531",
+      "bytes": 54109768,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m48": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/application_ffi-f083532d147d37b7",
+      "sha256": "46d791f9357769b7d499a47a1b0f8fdcac53471a5ea9470f0f45f98caaff1e25",
+      "bytes": 53639000,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m49": {
+      "path": ".dev/architecture-r5f-bindings-v2.log",
+      "sha256": "254944ae039a5bdcc45e56be840b08f95132a8873d4c5c3f9e18b3667f960e93",
+      "bytes": 150,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m50": {
+      "path": ".dev/architecture-r5f-public-symbols-v1.json",
+      "sha256": "1872714206933d7dad1a99a6bcde6f3896c2cbea91be813b7caff717c73efab4",
+      "bytes": 3459,
+      "base": "workspace",
+      "access": "private",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m51": {
+      "path": ".dev/architecture-r5f-strict-v3.json",
+      "sha256": "752fa8cb7c48e299b29d867aff0ac648aa151fe13863184a2ea850f4d0250e4a",
+      "bytes": 939,
+      "base": "workspace",
+      "access": "private",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m52": {
+      "path": ".dev/architecture-r5f-strict-v3.log",
+      "sha256": "7531583a4b4fc092901b290dbfa1f4b81ce11c76f185fbd578ee8840e2ac5060",
+      "bytes": 547,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m53": {
+      "path": ".dev/architecture-r5f-strict-v2.json",
+      "sha256": "3034740eb10af1356d339afc04dee53f5541bd0ad025928fff7bf0b1cee7b70d",
+      "bytes": 950,
+      "base": "workspace",
+      "access": "private",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m54": {
+      "path": ".dev/architecture-r5f-strict-v2.log",
+      "sha256": "bef6dfdb2f7bea39131c53375ba1d5d65ce7f731bff5fa6320c2a4bc5e20e098",
+      "bytes": 805,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m55": {
+      "path": ".dev/architecture-r5f-architecture-check-v1.log",
+      "sha256": "3858f828dbe36a0cf742f82ab1a4d05b8085aff1e4f07b9c800f2f50f78c6ba7",
+      "bytes": 2378,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m56": {
+      "path": ".dev/architecture-r5f-dependencies-v1.log",
+      "sha256": "aaa57004ae775b4baa0f563dffa39d6ecf250b372df3a99f6e2581d7a7cfb9cd",
+      "bytes": 1628,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m57": {
+      "path": ".dev/architecture-r5f-application-header-v1.h",
+      "sha256": "87672addb53e2190af5c3e5c8d4e4d1d3e62f99a0c393226bde6a734d07a5748",
+      "bytes": 9462,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m58": {
+      "path": ".dev/architecture-r5f-cbindgen-v1.log",
+      "sha256": "8a8fb7b251a3738a67aef171901a5eb23da17887f190f0a0c9b233cfc98e5f38",
+      "bytes": 390,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m59": {
+      "path": ".dev/architecture-r5f-format-v1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m60": {
+      "path": ".dev/architecture-r5f-artifacts-v1/release/slkd",
+      "sha256": "e67d5eb1c0b38d17a58760d0163dfa55cd0567928b8fbdddc47a9e54ac847bf8",
+      "bytes": 9973408,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m61": {
+      "path": ".dev/architecture-r5f-artifacts-v1/release/slctl",
+      "sha256": "4782b12918babd1ef06c15ddffa28ed40fdc4d64ac8deddfc44d9ba9c8f0f4d8",
+      "bytes": 8436832,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m62": {
+      "path": ".dev/architecture-r5f-artifacts-v1/release/slktest",
+      "sha256": "541c197ac558f99f31e2648c9b597ffefca2c702bdff18222c7702f4c80e599e",
+      "bytes": 5747024,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m63": {
+      "path": ".dev/architecture-r5f-artifacts-v1/release/slkconfig",
+      "sha256": "93692380bfc4bad64760da23f9e8fcd3b2672396da8e4bd1f7cbd9defc35a9cf",
+      "bytes": 1338336,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m64": {
+      "path": ".dev/architecture-r5f-artifacts-v1/release/slkmon",
+      "sha256": "5e7cef50f9543a5acdf88884e2c65a3d3f13a2843ea312c173e2b73b2b5ec81a",
+      "bytes": 1661328,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m65": {
+      "path": ".dev/architecture-r5f-artifacts-v1/release/slkdump",
+      "sha256": "0d38b26507f2ccd7730c0cc3e67d9bbb9e5a6ba14ca3e1f22f3130affdcec8de",
+      "bytes": 1661136,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m66": {
+      "path": ".dev/architecture-r5f-artifacts-v1/release/liblibsparklink.so",
+      "sha256": "aa969da00e5cd9bdb3f8a93148c47cffcd5833819d30ed71dc40bdf7986bb432",
+      "bytes": 4394472,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m67": {
+      "path": ".dev/architecture-r5f-artifacts-v1/release/libslk_native.so",
+      "sha256": "6968f08bce73bfde7a95e55a7c3bf5eecd3269e395f69737e783c410302c791d",
+      "bytes": 531096,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m68": {
+      "path": ".dev/architecture-r5f-artifacts-v1/debug/liblibsparklink.so",
+      "sha256": "25deb42f7a9ab6692eeeb4751e8b7ba02f48c75e9d3c52e3354422cbe52ebe8a",
+      "bytes": 57018152,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m69": {
+      "path": ".dev/architecture-r5f-artifacts-v1/crates/libsparklink/include/sparklink.h",
+      "sha256": "87672addb53e2190af5c3e5c8d4e4d1d3e62f99a0c393226bde6a734d07a5748",
+      "bytes": 9462,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m70": {
+      "path": ".dev/architecture-r5f-artifacts-v1/crates/slk-native/include/sparklink_native.h",
+      "sha256": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+      "bytes": 24050,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m71": {
+      "path": ".dev/architecture-r5f-artifacts-v1/Cargo.lock",
+      "sha256": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+      "bytes": 45882,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m72": {
+      "path": ".dev/architecture-r5f-artifacts-v1/source.tar",
+      "sha256": "0fac38ffaecfde7fa2d86877ebe3848a274917873192f8b41d6f419f74a245eb",
+      "bytes": 209838080,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m73": {
+      "path": ".dev/architecture-r5f-offline-seal-v1.py",
+      "sha256": "d82a55fed66b4bb64fc725dad6f99b0ebd302dd8121dc2ef44698e5027c6e15f",
+      "bytes": 9596,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m74": {
+      "path": ".dev/architecture-r5f-cross-language-v1.json",
+      "sha256": "db51e3a66eaf955a168729f114a124086c2892888d91cde961fb01c78eca3671",
+      "bytes": 948,
+      "base": "workspace",
+      "access": "private",
+      "format": "json"
+    },
+    "application-language-client-r5f1-m75": {
+      "path": ".dev/architecture-r5f-bindings-v1.log",
+      "sha256": "4ea6703b9cb4194d24d5052236b98a409e792031f8d53077075eeb792959fff1",
+      "bytes": 3953,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-m76": {
+      "path": ".dev/architecture-r5f-offline-seal-v2.py",
+      "sha256": "56d6cd9812ef6511c1476a832f59c064883a06f910cabf4c4f092d897c99723a",
+      "bytes": 10434,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-kernel-header0": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/kernel-headers-v1/sparklink.h",
+      "sha256": "ef5af1a66226e1cec12b4a8f45613617e9a29afafa2976dfe9cec6a6513be7e6",
+      "bytes": 9637,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-kernel-header1": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/kernel-headers-v1/sparklink_ioctl.h",
+      "sha256": "454f556f0b9c1da3a5fc91982ccfffa656090143a3d35ae7b199a2f6225f9d45",
+      "bytes": 24104,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
+    },
+    "application-language-client-r5f1-kernel-header2": {
+      "path": ".dev/architecture-r5f-offline-evidence-v2/kernel-headers-v1/sparklink_socket.h",
+      "sha256": "18299e4eb6aef480aedafce949a10ced185bf9de3a28208a08dbeee9ca591742",
+      "bytes": 8153,
+      "base": "workspace",
+      "access": "private",
+      "format": "bytes"
     }
   },
   "baseline_record": "hcc-timed110-data",

@@ -799,9 +799,9 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F1_APPLICATION_LANGUAGE_CLIENT_EXACT_GATES_PENDING_R6C_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F1_OFFLINE_FINITE_PASS_ACTUAL_CLIENT_VM_R5F_R6C_OPEN",
   "next_resume_tasks": [
-    "R5f1:seal exactcommitted application C/Python Client,run strict/privatebus/queue/deadline/export and actualnewclient systembus/KernelGrant/WS73positive gates;then higherSSAP/Agent/Owned/sharedAPI. Reuse Client/Channel/uniqueEngine.",
+    "R5f:newClientactualVM/systembus/KernelGrant/WS73positive+close/dup/revoke/deadline/peerisolation (auditnativeVMmajorloading first);thenhigherC-PythonSSAP/Agent/Owned/sharedAPI usinguniqueClient/Channel/Engine. Offline40c/867doesnotqualifyhardware.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
@@ -1837,22 +1837,26 @@
         "result": "PASS"
       },
       "application-language-client-r5f1": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "application-language-client-real-r5f1": {
         "level": "implemented",
         "result": "MISSING"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R5f1-application-C-Python-client-source",
-      "production_behavior": "Current C/Python broker entry reuses owner-pinned Rust Client and Channel;bounded local executor and absolute wait deadline. No Native/protocol/SSAP implementation duplicated;new source not granted RF qualification.",
-      "state": "R5F1_SOURCE_IMPLEMENTED_EXACT_ARTIFACT_GATES_PENDING_FULL_ARCHITECTURE_INCOMPLETE",
+      "id": "WP18-R5f1-offline-qualified-actual-client-VM-and-R6c-open",
+      "production_behavior": "C/Python reuses actualowner-pinned RustClient/Channel;release40c andconsumer867 separate. Eightfiniteofflinegates pass;no newRF/formalproof. Actualnewclient production/SystemBus/KernelGrant/RF andhigherAPI remainrequiredMISSING.",
+      "state": "R5F1_OFFLINE_FINITE_PASS_FULL_ARCHITECTURE_AND_ACTUAL_CLIENT_GATES_INCOMPLETE",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Seal exactsource and run actual C/Python/executor/export/strict regressions;then systembus/KernelGrant/newWS73positiveconsumer. Continue higherSSAP/Owned/Agent/sharedAPI and R6c;fulloriginalscopeOPEN."
+      "next": "R5f actualnewclient deployment/WS73 andhigherSSAP/Agent/Owned/sharedAPI;R6c crossversionupgrade/rollback/debug/deps/license/provenance/release. Preserve fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanualrecovery andalloriginalscopeOPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3151,8 +3155,8 @@
     "batch": "Current batch authority: qualification_view.current_batch;R4 raw retirement and R5b/R5c retained source-bound reports are history,not pending work",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
-      "R5f1 exact-artifact gates andnewconsumerVM/RF;remaining R5f higherclients/sharedAPI andR6c",
-      "No fullarchitecture exit or originalissue closure;fullS0-S6/19WP/10FV/12DG preserved"
+      "R5f actualnewclient VM/RF andremaining highlevel/sharedAPI;R6c remainingdeployment/release",
+      "All originalS0-S6/19WP/10FV/12DG andnaturalRCA/nonmanualrecovery remainOPEN;architectureexit not declared"
     ],
     "exit_reference": "Canonical WP18 R5d then remaining R5/R6;fulloriginalscope unchanged",
     "qualification_reference": {

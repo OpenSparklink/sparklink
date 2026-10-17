@@ -10,7 +10,7 @@
 |---|---|---|
 | 普通用户业务、长度、实际CLI、Peer观察 | 本页选定记录及其全部必需门禁/双端证据 | 功能回归不等于吞吐、可靠模式、全部地址/隐私或整个当前树资格 |
 | Rust管理/应用、Owned与Agent | [实际接口](../docs/reference/interfaces.md)、选定记录的准确新入口范围 | 本地登记、策略批准、原生准入、机制安装、对端应用处理分别表达 |
-| C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、所选共享库ABI检查及R6a限定VM记录 | 当前 C/Python Client 查询/通道申请已接源码，准确新产物门禁待验；原基础绑定干净VM资格不转授；完整SSAP/Agent/Owned客户端仍缺，负向fd不等于业务资格 |
+| C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、[当前Client限定离线报告](../docs/evidence/application-language-client-offline-20261018.json)、R6a限定VM记录 | 当前查询/通道申请复用Rust Client，限定离线门禁通过；真实部署权限/新WS73另设必需MISSING，原部署/实机资格不转授；完整SSAP/Agent/Owned客户端仍缺 |
 | 内核Runtime、Session、Grant、credit/Ticket | [唯一架构](architecture.md)、下面各自源码映射的限定记录 | 旧代际、在途义务、有限队列、撤权及未知完成不能由缓存/关闭抹去 |
 | Codec、事件、故障与形式化 | 下方全部限定/历史记录及证明假设 | 旧codec/fixture、工具安装或模型通过不推导当前完整实现通过 |
 | 部署、恢复与发布 | [唯一计划](implementation-plan.md)的R5/R6、[实际分包基础限定资格](../docs/evidence/debian-package-base-qualification-20261018.json)及原工作包 | 准确247分包的组、普通用户、基础SDK、同版本重装/remove已验；原缺组FAIL保留；跨版本升级回滚、发布/原生权限/新WS73与自然恢复仍开放 |
@@ -246,7 +246,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
 | U668：干净Debian VM通用安装、四角色system bus与外部基础SDK限定通过；软件包/实机另验 | `virtual_integration` | `PASS` |
 | U247：实际Debian分包基础安装/四角色bus/外部SDK/重装remove限定通过；升级发布仍开放 | `virtual_integration` | `PASS` |
-| R5f1:C/Python复用实际Rust Client；准确新产物门禁待验 | `implemented` | `MISSING` |
+| U40c:C/Python实际Client桥接的限定离线通过；实际权限及WS73仍缺 | `offline` | `PASS` |
+| C/Python当前Client新产物实际部署/内核Grant/WS73及高阶API仍缺 | `implemented` | `MISSING` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -216,7 +216,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
 | U668：干净Debian VM通用安装、四角色system bus与外部基础SDK限定通过；软件包/实机另验 | `virtual_integration` | `PASS` |
 | U247：实际Debian分包基础安装/四角色bus/外部SDK/重装remove限定通过；升级发布仍开放 | `virtual_integration` | `PASS` |
-| R5f1:C/Python复用实际Rust Client；准确新产物门禁待验 | `implemented` | `MISSING` |
+| U40c:C/Python实际Client桥接的限定离线通过；实际权限及WS73仍缺 | `offline` | `PASS` |
+| C/Python当前Client新产物实际部署/内核Grant/WS73及高阶API仍缺 | `implemented` | `MISSING` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1399,6 +1400,26 @@ SSAP/Agent/Owned/Operation API 或完整架构退出，R6c 与全部原范围继
 断言和末尾 hash 复核通过后写入。CI 单独上传该有限 fixture，不称设备资格。
 初次 ABI-major 名称缺失及另一次未指定 worktree 的 Kernel 头路径错误均保留；
 后者是执行配置失败，不能将缺失用例计通过。正式运行必须显式指定匹配 UAPI。
+
+R5f1 的[限定离线报告](../docs/evidence/application-language-client-offline-20261018.json)
+分别绑定40c release源码和867实际消费者工具；默认完整回归、实际库/ABI、私有bus
+两语言入口、有界执行器、依赖/退休/导出和格式均按报告门禁。六个资格负对照拒绝
+旧源码、缺失/损坏产物、范围错配及缺失/未证明门禁。计数只从结构化记录生成。
+第一次汇总器误把既有CLI owner-loss负例的预期stderr当Cargo失败，拒绝发布；保留
+原汇总器，按具体成功负例/退出码识别后封存，没有修改生产行为或测试断言。
+Python fork负例的多线程警告原样保留并显式识别，不声称安全fork后构造/使用Client。
+
+R5f2 下一有限批：先核对native VM root与两库ABI-major名称/加载及真实新入口；
+然后在准确新镜像、实际system bus/普通用户/Kernel Grant下完成新C/Python通道正向
+业务与close/dup/撤权/原期限/同行隔离，以及原发现/连接/短包/已有长度边界。
+保留现有Session、credit/Ticket/Grant与唯一SSAP；新入口不能因离线PASS取得RF资格。
+高阶SSAP/Owned/Agent客户端、通用共享API、R6c及所有原架构退出条件继续开放。
+
+R5f2 首步已复现native VM旧无版本库布局的真实major加载失败；1d8932b改为复用
+canonical SONAME表，先核对两库再复制，旧显式路径探针指向同一runtime副本。
+十项布局回归及封存真实ELF的staged加载通过；[维护证据](../docs/evidence/application-language-client-maintenance-20261018.json)
+保留前后原件，**尚未启动新VM或取得实际权限/设备资格**。继续完成上述R5f2门禁，
+不因修正镜像文件名关闭整项，也不以软件布局修复解释自然设备故障。
 
 核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
 保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取

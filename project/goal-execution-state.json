@@ -802,10 +802,9 @@
   },
   "execution_phase": "ARCHITECTURE_FIRST_R5_CLIENT_CONTRACT_THEN_R6_DEPLOYMENT",
   "next_resume_tasks": [
-    "R4f2:finish finite production event/metadata authority and full-chain unpublished raw ABI retirement with valuable historical tests preserved",
-    "R5:complete existing AppSDK/CLI/C-Python callers and independent contract/provenance gates;no second Engine",
-    "R6:cleanVM deployment/externalSDK/upgrade/rollback/uninstall/config retention",
-    "Only then refine next real vertical behavior under fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanual recovery stayOPEN"
+    "R5d:typedPeer observations/addressDevice retirement,thenlocalOwned/Agent/C-Python actualclients/publicinterfaceaudit",
+    "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
+    "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
   ],
   "issue_sync_status": "R4F1_SIX_EXISTING_ISSUES_UPDATED_ALL_REMAIN_OPEN",
   "issue_sync_receipt": ".dev/architecture-r4f1-issue-receipts-v1.json",
@@ -1817,24 +1816,28 @@
       "application-ssap-client-r5b": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "controller-management-client-r5c": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R5-application-client-and-shared-contract",
-      "production_behavior": "R4retirement retained;R5existingClient nowownsremoteSSAP/Sessionobservation wrappers andslctlconsumers/sharewirealiases. Accurate2fc/a37/a37fourrealVM and316offline/50ABI/177+5evidence negatives. FullR5management/localOwned/Agent/highlevel/C-Python thenR6cleanVMdeploy,notwholearchitecturecomplete.",
-      "state": "R5_REMOTE_CLIENT_SLICE_QUALIFIED_FULL_R5_R6_ARCHITECTURE_OPEN",
+      "id": "WP18-R5d-typed-observations-and-remaining-callers",
+      "production_behavior": "R4/R5b retained;R5c existingClient nowownsactualcontroller/explicitmanagement/registration/Peer/ConnectionCLI calls. Accurate2fc/4736/4736 fourrealVM;324offline/50ABI/177+5evidence negatives. No Nativelease ornewengine. AddressDevice/localOwned/Agent/C-Python andR6 remain.",
+      "state": "R5C_CONTROLLER_CLIENT_SLICE_QUALIFIED_FULL_R5_R6_ARCHITECTURE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Complete remainingR5typedcontroller/management/localOwned/Agent/C-Python andpublicinterfaceaudit;thenR6cleanVMdeployment. Preservealloriginalfeature scope,VM-only,naturalRCA/nonmanualrecovery andunfinishedissuesOPEN."
+      "next": "R5d unify typedPeer observations and retire address-only Device callers,then remaining localOwned/Agent/C-Python actualclients andpublicinterfaceaudit;R6 cleanVM deployment. Fulloriginalscope andnaturalRCA/nonmanualrecoveryOPEN."
     },
     "selected_qualification": {
       "version": 1,
-      "record": "application-ssap-client-r5b"
+      "record": "controller-management-client-r5c"
     }
   },
   "agent_workstream": {
@@ -3355,8 +3358,7 @@
       "next": "Resumepreserved101rawAPI/types/callers/currenttestmigration thenfullR5SDK/R6deploy;alloriginalscopeOPEN"
     },
     "remaining_order": [
-      "R5c:remainingtypedcontroller/explicitmanagementCLIviaexistingowner-pinnedClient/sharedcontract;realprivatebusownerchangebetweenallocate/submit/result andexactnewVMpreservation",
-      "R5:remaininglocalOwned/Agent/highlevel/C-Pythonactualclients/publicinterfaceaudit;noNativeleak orsecondEngine",
+      "R5d:typedPeer observations/addressDevice retirement,thenlocalOwned/Agent/C-Python actualclients/publicinterfaceaudit",
       "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
       "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
     ],
@@ -3364,17 +3366,25 @@
       "state": "FINITE_SDK_CLI_FOUR_REAL_VM_AND_OFFLINE_QUALIFIED_FULL_R5_OPEN",
       "production": "Existingowner-pinned Client/uniqueSSAPEngine;CLIremote methods andsharedwirealiases migrated,noNativelease ornewengine",
       "exit_reference": "CanonicalWP18/R5limitedclient slice",
-      "remaining": "FullR5controller/management/Owned/Agent/highlevel/C-Python;R6cleanVM;positiveupdates/newSessionCLIhardwareinvocation andalloriginalscope/naturalRCA/nonmanualrecoveryOPEN",
+      "remaining": "R5c controller migration separately qualified;R5d typedPeer/localOwned/Agent/C-Python,R6 andalloriginalscope remainOPEN",
       "qualification_report": "docs/evidence/application-ssap-client-qualification-20261018.json"
     },
-    "next_limited_batch": {
+    "r5_controller_client_slice": {
       "id": "R5c-controller-management-callers",
       "scope": "ExistingCLIactualproductioncallers,notallcontrolracecombinations",
       "source_review": "Olda37actualCLI/privatebus ownerlostterminalobservation counterexample retained;notRFmisdelivery",
       "exit_reference": "CanonicalimplementationplanR5c",
-      "state": "SOURCE_MIGRATED_SDK_CLI_LOCAL_PASS_NEW_ARTIFACT_VM_PENDING",
+      "state": "FOUR_REAL_VM_AND_OFFLINE_QUALIFIED_FINITE_R5C_ONLY",
       "counterexample": "docs/evidence/controller-owner-counterexample-20261018.json",
-      "remaining": "Fullstrictworkspace/accuratenewartifactVM;R5daddressDevice/localOwned/Agent callers,C-Python,R6 andalloriginalscope"
+      "remaining": "R5d typedPeer observations/address-onlyDevice/localstaging/Owned/Agent,C-Python;R6 cleanVM andalloriginalscope",
+      "qualification_report": "docs/evidence/controller-management-client-qualification-20261018.json"
+    },
+    "next_limited_batch": {
+      "id": "R5d-typed-observation-and-caller-retirement",
+      "scope": "One bounded typedPeer observation source,connection association remains actualNative state;localstaging/Owned/Agent distinct;no newEngine orNativeleak",
+      "state": "AUDITED_NOT_IMPLEMENTED_NOT_WIRE_QUALIFIED",
+      "exit_reference": "CanonicalimplementationplanR5d",
+      "remaining": "Default production address-onlyDevice andtemporary CLI exceptions must retire after typed replacement andactual caller regression;C-Python/R6/fullscope remain"
     }
   },
   "owned_ssap_c6_historical_batch": {

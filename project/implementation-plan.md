@@ -10,12 +10,12 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/U4736管理应用客户端：四真实VM限定通过，完整R5/R6开放**。
 仅记录范围：`real_device` / `PASS`。
 kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-compiled_userspace `a37c4cb0366b9c182e3f3b5da95146b24824e7f4`。
-executed_tools `a37c4cb0366b9c182e3f3b5da95146b24824e7f4`。
-[准确范围与剩余条件](../docs/evidence/application-ssap-client-qualification-20261018.json)。
+compiled_userspace `4736dd287ad8edfde2223f776cb4ad3ac5f198f6`。
+executed_tools `4736dd287ad8edfde2223f776cb4ad3ac5f198f6`。
+[准确范围与剩余条件](../docs/evidence/controller-management-client-qualification-20261018.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -188,6 +188,7 @@ executed_tools `a37c4cb0366b9c182e3f3b5da95146b24824e7f4`。
 | K4b6/U2bd保留产物：2d268直接生产预算修正，实际240边界限定通过 | `real_device` | `PASS` |
 | K2fc/U2c8旧rawABI退休：四真实VM与当前Native测试工具限定通过 | `real_device` | `PASS` |
 | K2fc/Ua37远端SSAP应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
+| K2fc/U4736管理应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1250,13 +1251,16 @@ R5b收尾依据：[准确资格](../docs/evidence/application-ssap-client-qualif
 候选在发布前被拒绝，原件保留。当前继续完整管理/Owned/Agent/高阶对象和C/Python
 实际客户端迁移及公开接口审计，再做R6干净VM部署；不能据本批关闭整架构或原issue。
 
-##### R5c下一批：剩余管理CLI与固定daemon owner
+##### R5c有限退出：管理CLI与固定daemon owner
 
 审计基线a37源码仍有slctl `manager_proxy`／`adapter_proxy`／`controller_proxy`直接使用
 well-known服务名，部分控制/结果轮询尚未消费SDK。旧a37私有D-Bus已复现owner更换后仍接受旧RPC成功观察，
 不是实机串包；[原失败与范围](../docs/evidence/controller-owner-counterexample-20261018.json)保留。
 R5b依赖图通过不等于全部运行时调用者已经迁移。R5c源码已移除通用管理proxy，
-实际SDK/CLI局部回归通过，准确新artifact/VM尚待验收。
+实际SDK/CLI及准确4736新artifact四VM限定门禁通过，见
+[编译身份、实机与离线范围](../docs/evidence/controller-management-client-qualification-20261018.json)。
+32次对端业务回复、24 Owned案例、16超限、324最终workspace和50封存库检查分别记录；
+177证据负对照及5封存schema负对照通过，无新增形式化证明。不转授整个文档HEAD。
 
 生产退出：现有控制器观察与显式受权管理操作复用Client固定owner，shared contract
 统一wire值/方法，slctl只做参数和显示；不公开万能Proxy、不暴露Native lease、不另建
@@ -1272,6 +1276,22 @@ R5c保留的临时例外：`devices/info`是地址索引的旧只读观察，暂
 缓存并在读后检查generation，没有为它新建SDK对象；R5d迁到typed Peer观察后删除旧
 入口。管理staging、Owned服务和Agent模块仍各有明确用途及待迁移调用，不能因名称
 相似合并，也不据本批宣布全部CLI已通过SDK。此处是有退出条件的清单，非长期并行实现。
+
+##### R5d当前批：统一观察身份并退休地址索引门面
+
+立即删除：迁移后的默认生产Device/GetDevices和CLI自行拼接dev路径；不得为旧门面
+新增SDK对象。移入测试：有价值的历史广告/连接callback、取消、慢回调和清理fixture。
+等待替代：将现有有限缓存、TTL、数量/字节预算、pending/published/retiring、失败重试
+和轮转维护合入完整controller generation、地址类型、地址的Peer观察；物理连接状态
+继续来自Native快照，广告过期不能制造断链，未知RSSI不能显示为0。
+
+本批退出：生产观察和连接关联只有一个Peer身份来源；类型/帧长无效输入拒绝且不改变
+既有状态，广告不能授予连接/安全资格；只有本controller的已拥有对象可发布/退休，
+失败清理继续占用预算；CLI和共享契约实际迁移、旧入口从权限/帮助/测试同步退休。
+保留原缓存/回收负向测试并适配生产函数，新增同地址不同类型、未知RSSI、过期与连接
+组合用例；严格构建/独立D-Bus签名/实际SDK调用和准确新artifact双WS73保持回归。
+SDK110/固定NearLink Host/libws73封装差异须注明，不把公共地址样本授予完整地址模式。
+本地staging、Owned和Agent随后按不同角色迁移；完整C/Python客户端与R6部署仍缺。
 
 ##### R5a最小独立导出门禁
 

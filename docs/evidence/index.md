@@ -7,6 +7,9 @@
 177原证据＋56新Peer负对照及5封存schema负对照分列，无新增形式化证明。
 原首轮FAIL不改写，本地Owned／Agent调用者、完整语言客户端和干净VM部署继续开放。
 
+[R5d维护回执](typed-peer-maintenance-20261018.json)记录资格检查、严格文档、六项OPEN
+issues和原WIP保留；不增加实机或形式化资格。
+
 [Typed Peer首轮工具迁移失败](typed-peer-tool-retirement-failure-20261018.json)：0fe编译/工具，
 真实发现/建链后漏迁runner仍调用旧info；整轮FAIL和原件保留，新资格须用修正工具另取。
 

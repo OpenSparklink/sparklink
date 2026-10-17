@@ -805,13 +805,13 @@
     "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
   ],
-  "issue_sync_status": "R5C_SIX_EXISTING_ISSUES_UPDATED_BODY_UNCHANGED_ALL_OPEN",
-  "issue_sync_receipt": ".dev/architecture-r5c-issue-receipts-v1.json",
+  "issue_sync_status": "R5D_SIX_EXISTING_ISSUES_UPDATED_BODY_UNCHANGED_ALL_OPEN",
+  "issue_sync_receipt": ".dev/architecture-r5d-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
   "current_goal_turn_classification": "PROGRESS_PRODUCTION_OWNED_SSAP_FOUR_REAL_VM_GATES_AND_SOURCE_BOUND_EVIDENCE",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
-  "issue_sync_receipt_previous": ".dev/architecture-r4f1-issue-receipts-v1.json",
+  "issue_sync_receipt_previous": ".dev/architecture-r5c-issue-receipts-v1.json",
   "additional_reference_review": {
     "source": "docs/evidence/openharmony-peripheral-reference-20261015.json",
     "repository": "https://gitcode.com/openharmony/drivers_peripheral",
@@ -2044,7 +2044,8 @@
         "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6234562274"
       ]
     },
-    ".dev/architecture-r5c-issue-receipts-v1.json"
+    ".dev/architecture-r5c-issue-receipts-v1.json",
+    ".dev/architecture-r5d-issue-receipts-v1.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
